@@ -7,6 +7,7 @@ import {
   CalendarClock,
   type LucideIcon,
   Home,
+  Inbox,
   LayoutDashboard,
   MessageSquare,
   RefreshCw,
@@ -30,6 +31,7 @@ interface NavItem {
   icon: LucideIcon;
   label: string;
   href: string;
+  badge?: number;
 }
 
 const navOps = [
@@ -39,7 +41,12 @@ const navOps = [
   { icon: Users, label: 'Leads', href: '/admin#leads' },
   { icon: MessageSquare, label: 'Feedback', href: '/admin#feedback' },
   { icon: CalendarClock, label: 'Follow-up', href: '/admin#follow-up' },
+  { icon: Inbox, label: 'Mensajes', href: '/admin/messages' },
 ] satisfies NavItem[];
+
+interface ConversationsApiResponse {
+  conversations?: Array<{ unreadCount: number }>;
+}
 
 export function AdminShell({
   children,
@@ -49,6 +56,7 @@ export function AdminShell({
 }: AdminShellProps): React.ReactElement {
   const pathname = usePathname();
   const [hash, setHash] = useState('');
+  const [unreadMessages, setUnreadMessages] = useState(0);
 
   useEffect(() => {
     const syncHash = (): void => {
@@ -65,9 +73,40 @@ export function AdminShell({
     };
   }, []);
 
+  // Poll for unread message count every 30s
+  useEffect(() => {
+    const fetchUnread = async (): Promise<void> => {
+      try {
+        const res = await fetch('/api/admin/messages', { credentials: 'include' });
+        if (!res.ok) return;
+        const data = (await res.json()) as ConversationsApiResponse;
+        const total = (data.conversations ?? []).reduce(
+          (sum, c) => sum + (c.unreadCount ?? 0),
+          0
+        );
+        setUnreadMessages(total);
+      } catch {
+        // silently ignore
+      }
+    };
+
+    void fetchUnread();
+    const interval = setInterval(() => {
+      void fetchUnread();
+    }, 30_000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
   const isActive = (item: NavItem): boolean => {
     if (item.label === 'Landing') {
       return pathname === '/';
+    }
+
+    if (item.label === 'Mensajes') {
+      return pathname.startsWith('/admin/messages');
     }
 
     if (pathname !== '/admin') {
@@ -123,21 +162,29 @@ export function AdminShell({
           <p className="px-3 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/45">
             Panel
           </p>
-          {navOps.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className={cn(
-                'mb-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition-colors',
-                isActive(item)
-                  ? 'bg-white/12 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]'
-                  : 'text-white/72 hover:bg-white/7 hover:text-white'
-              )}
-            >
-              <item.icon className="h-4 w-4 opacity-80" aria-hidden />
-              {item.label}
-            </Link>
-          ))}
+          {navOps.map((item) => {
+            const showBadge = item.label === 'Mensajes' && unreadMessages > 0;
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={cn(
+                  'mb-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition-colors',
+                  isActive(item)
+                    ? 'bg-white/12 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]'
+                    : 'text-white/72 hover:bg-white/7 hover:text-white'
+                )}
+              >
+                <item.icon className="h-4 w-4 opacity-80" aria-hidden />
+                <span className="flex-1">{item.label}</span>
+                {showBadge ? (
+                  <span className="rounded-full bg-rose-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                    {unreadMessages > 99 ? '99+' : unreadMessages}
+                  </span>
+                ) : null}
+              </Link>
+            );
+          })}
         </nav>
       </aside>
 

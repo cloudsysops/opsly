@@ -2,11 +2,12 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { pickCorsOrigin } from './lib/cors-origins';
 import { HTTP_STATUS } from './lib/constants';
-import { checkRateLimit, RATE_LIMIT_MAX_REQUESTS, type RateLimitResult } from './lib/rate-limiter';
+import { checkRateLimit, RESET_RATE_LIMIT_MS, type RateLimitResult } from './lib/rate-limiter';
 
 const CORS_METHODS = 'GET,POST,PATCH,DELETE,OPTIONS';
 const CORS_HEADERS = 'Content-Type,Authorization,x-admin-token';
 const API_VERSION = '1';
+const RATE_LIMIT_MAX_REQUESTS = 100;
 const BASE64_BLOCK_SIZE = 4;
 const PORTAL_HEALTH_PATH = '/api/portal/health';
 const TENANT_PATH_MARKER = 'tenant';

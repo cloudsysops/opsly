@@ -71,10 +71,34 @@ async function fetchPrefs(
   }
 }
 
+async function generateMagicLinkUrl(email: string, redirectTo = '/familias/submissions'): Promise<string> {
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXT_PUBLIC_TENANT_DOMAIN ?? '').replace(/\/$/, '');
+  const fallback = appUrl ? `${appUrl}/familias` : '/familias';
+
+  if (!appUrl) {
+    return fallback;
+  }
+
+  try {
+    const res = await fetch(`${appUrl}/api/auth/magic-link`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, redirectTo }),
+      signal: AbortSignal.timeout(8_000),
+    });
+    if (!res.ok) return fallback;
+    const data = (await res.json()) as { url?: string };
+    return typeof data.url === 'string' && data.url ? data.url : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 async function sendEmail(params: {
   to: string;
   subject: string;
   body: string;
+  platformUrl?: string;
 }): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
@@ -83,7 +107,12 @@ async function sendEmail(params: {
   }
 
   const from = process.env.RESEND_FROM_EMAIL ?? 'noreply@op-sly.com';
-  const html = `<!DOCTYPE html><html><body style="font-family:sans-serif;padding:24px;max-width:600px;margin:auto"><h2 style="color:#1a1a1a">${escapeHtml(params.subject)}</h2><p style="color:#444;line-height:1.6">${escapeHtml(params.body)}</p></body></html>`;
+
+  const ctaButton = params.platformUrl
+    ? `<div style="margin-top:24px;text-align:center"><a href="${params.platformUrl}" style="display:inline-block;background:#6366f1;color:#fff;font-family:sans-serif;font-size:14px;font-weight:600;text-decoration:none;padding:12px 28px;border-radius:10px">Ver en Peskids →</a></div>`
+    : '';
+
+  const html = `<!DOCTYPE html><html><body style="font-family:sans-serif;padding:24px;max-width:600px;margin:auto"><h2 style="color:#1a1a1a">${escapeHtml(params.subject)}</h2><p style="color:#444;line-height:1.6">${escapeHtml(params.body)}</p>${ctaButton}</body></html>`;
 
   try {
     const res = await fetch('https://api.resend.com/emails', {
@@ -115,6 +144,7 @@ async function sendWhatsApp(params: {
   body: string;
   metadata: Record<string, unknown>;
   tenantSlug: string;
+  recipientEmail?: string;
 }): Promise<void> {
   const base = process.env.N8N_WEBHOOK_BASE_URL?.replace(/\/$/, '');
   if (!base) {
@@ -133,7 +163,10 @@ async function sendWhatsApp(params: {
         title: params.title,
         body: params.body,
         tenant_id: params.tenantSlug,
-        metadata: params.metadata,
+        metadata: {
+          ...params.metadata,
+          recipientEmail: params.recipientEmail,
+        },
       }),
       signal: AbortSignal.timeout(12_000),
     });
@@ -279,13 +312,20 @@ export async function sendNotification(params: SendNotificationParams): Promise<
   const tasks: Promise<void>[] = [];
 
   if (eventEnabled && prefs.email_enabled && params.recipientEmail) {
-    tasks.push(
-      sendEmail({
-        to: params.recipientEmail,
+    // Generate magic link for "Ver en Peskids" CTA in email (fire-and-forget safe: falls back to /familias)
+    const emailWithMagicLink = (async () => {
+      const platformUrl = await generateMagicLinkUrl(
+        params.recipientEmail!,
+        '/familias/submissions'
+      );
+      await sendEmail({
+        to: params.recipientEmail!,
         subject: params.title,
         body: params.body,
-      })
-    );
+        platformUrl,
+      });
+    })();
+    tasks.push(emailWithMagicLink);
   }
 
   if (eventEnabled && prefs.whatsapp_enabled && params.recipientPhone) {
@@ -297,6 +337,7 @@ export async function sendNotification(params: SendNotificationParams): Promise<
         body: params.body,
         metadata,
         tenantSlug,
+        recipientEmail: params.recipientEmail,
       })
     );
   }
