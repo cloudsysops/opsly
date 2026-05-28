@@ -31,7 +31,7 @@
     "@anthropic-ai/sdk": "^0.57.0",
     "@intcloudsysops/types": "^1.0.0",
     "@supabase/supabase-js": "^2.106.0",
-    "redis": "^4.7.1"
+    "redis": "^5.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.19.41",

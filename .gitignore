@@ -136,3 +136,4 @@ logs/
 # Agent bootstrap state (generated per-agent, local to session)
 .agent-bootstrap-state/
 runtime/peskids.env
+.superpowers/

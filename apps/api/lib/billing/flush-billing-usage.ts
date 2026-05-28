@@ -156,22 +156,21 @@ export async function runFlushBillingUsage(): Promise<FlushBillingUsageResult> {
   let keysDeleted = 0;
 
   try {
-    for await (const key of redis.scanIterator({
+    for await (const keys of redis.scanIterator({
       MATCH: 'usage:*',
       COUNT: 200,
     })) {
-      if (typeof key !== 'string') {
-        continue;
-      }
-      keysScanned += 1;
-      const outcome = await flushOneKey(redis, key, errors);
-      if (outcome === 'inserted_deleted') {
-        rowsInserted += 1;
-        keysDeleted += 1;
-      } else if (outcome === 'inserted_redis_del_failed') {
-        rowsInserted += 1;
-      } else {
-        keysSkipped += 1;
+      for (const key of keys) {
+        keysScanned += 1;
+        const outcome = await flushOneKey(redis, key, errors);
+        if (outcome === 'inserted_deleted') {
+          rowsInserted += 1;
+          keysDeleted += 1;
+        } else if (outcome === 'inserted_redis_del_failed') {
+          rowsInserted += 1;
+        } else {
+          keysSkipped += 1;
+        }
       }
     }
   } catch (e) {

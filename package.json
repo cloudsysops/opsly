@@ -216,7 +216,6 @@
     }
   },
   "dependencies": {
-    "@redis/client": "^1.6.1",
     "js-tiktoken": "^1.0.21",
     "react": "^19.2.6",
     "react-dom": "^19.2.6"
