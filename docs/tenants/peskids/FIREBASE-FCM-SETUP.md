@@ -67,6 +67,18 @@ Manual: Actions → **Deploy Peskids** → Run workflow.
 
 **Capacitor:** `npm run cap:ios` / `npm run cap:android` tras cambios nativos.
 
+**Android (CLI, Java 21 + SDK):**
+
+```bash
+npm run peskids:cap:android              # raíz monorepo
+npm run peskids:cap:android:open         # abre Android Studio
+npm run cap:android:build                # desde apps/peskids
+```
+
+Script: `scripts/peskids-cap-android.sh` (`--dry-run`, `--sync-only`, `--variant release`).
+
+APK debug: `apps/peskids/android/app/build/outputs/apk/debug/app-debug.apk`
+
 ## Admin SDK (backend)
 
 Solo si añades `firebase-admin` en API:
