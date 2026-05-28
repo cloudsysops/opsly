@@ -9,6 +9,8 @@ tools/usb-kit/secrets/
 # Nunca commitear secretos locales derivados del config
 config/opsly.secrets.json
 config/doppler-ready.json
+config/peskids-firebase-admin.json
+config/serviceAccountKey.json
 config/failover-monitor.env
 config/gcp.env
 config/worker-tailscale.env

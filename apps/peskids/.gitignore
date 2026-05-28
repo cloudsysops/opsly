@@ -16,6 +16,11 @@ runtime/*
 !runtime/tenant-auth-routing.ts
 !runtime/tenant-auth-surface.ts
 
+# Firebase Admin SDK (nunca en git)
+.secrets/
+*-firebase-adminsdk-*.json
+serviceAccountKey.json
+
 # Environment
 .env
 .env.local
