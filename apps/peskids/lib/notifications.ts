@@ -1,9 +1,10 @@
 /**
  * Multi-channel notification dispatcher for Peskids.
- * Channels: email (Resend), WhatsApp (n8n), in-app (Supabase peskids.notifications).
+ * Channels: email (Resend), WhatsApp (n8n), in-app (Supabase peskids.notifications), Web Push.
  * All channels are fire-and-forget — errors are logged, never thrown.
  */
 
+import webpush from 'web-push';
 import { supabaseServer } from '@/lib/supabase';
 import type { NotificationEventType } from '@/lib/types';
 
@@ -174,6 +175,78 @@ async function insertInApp(params: {
   }
 }
 
+interface WebPushPayload {
+  title: string;
+  body: string;
+  url?: string;
+  tag?: string;
+}
+
+async function sendWebPush(userId: string, payload: WebPushPayload): Promise<void> {
+  const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+
+  if (!vapidPublicKey || !vapidPrivateKey) {
+    console.warn('[notifications] VAPID keys not configured — skipping Web Push');
+    return;
+  }
+
+  webpush.setVapidDetails(
+    'mailto:noreply@op-sly.com',
+    vapidPublicKey,
+    vapidPrivateKey
+  );
+
+  let subscriptions: Array<{ endpoint: string; p256dh: string; auth: string }> = [];
+
+  try {
+    const client = supabaseServer();
+    const { data, error } = await client
+      .schema('peskids')
+      .from('push_subscriptions')
+      .select('endpoint, p256dh, auth')
+      .eq('user_id', userId)
+      .eq('tenant_slug', 'peskids');
+
+    if (error) {
+      console.error('[notifications] sendWebPush fetch subscriptions error', error);
+      return;
+    }
+
+    subscriptions = data ?? [];
+  } catch (err) {
+    console.error('[notifications] sendWebPush fetch subscriptions exception', err);
+    return;
+  }
+
+  if (subscriptions.length === 0) {
+    return;
+  }
+
+  const notificationPayload = JSON.stringify({
+    title: payload.title,
+    body: payload.body,
+    url: payload.url ?? '/familias',
+    tag: payload.tag ?? 'peskids-notification',
+  });
+
+  await Promise.allSettled(
+    subscriptions.map(async (sub) => {
+      try {
+        await webpush.sendNotification(
+          {
+            endpoint: sub.endpoint,
+            keys: { p256dh: sub.p256dh, auth: sub.auth },
+          },
+          notificationPayload
+        );
+      } catch (err) {
+        console.error('[notifications] sendWebPush delivery error for endpoint', sub.endpoint, err);
+      }
+    })
+  );
+}
+
 function escapeHtml(str: string): string {
   return str
     .replaceAll('&', '&amp;')
@@ -237,6 +310,17 @@ export async function sendNotification(params: SendNotificationParams): Promise<
         title: params.title,
         body: params.body,
         metadata,
+      })
+    );
+  }
+
+  // Web Push — reuses inapp_enabled preference; runs when userId is known
+  if (eventEnabled && prefs.inapp_enabled && params.recipientUserId) {
+    tasks.push(
+      sendWebPush(params.recipientUserId, {
+        title: params.title,
+        body: params.body,
+        url: typeof metadata.url === 'string' ? metadata.url : '/familias',
       })
     );
   }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState, type ComponentType } from 'react';
-import { CalendarClock, Gift, Loader2, MessageSquare, Star } from 'lucide-react';
+import { Bell, CalendarClock, Gift, Home, Loader2, MessageSquare, Settings, Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { SubmissionsDashboard } from '@/components/dashboards/submissions-dashboard';
 import { FeedbackComposer } from '@/components/feedback/feedback-composer';
@@ -11,6 +11,12 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase-browser';
+import { MessagesPanel } from '@/components/portal/messages-panel';
+import { FamilyNotificationsPanel } from '@/components/portal/family-notifications-panel';
+import { InstallBanner } from '@/components/portal/install-banner';
+import { cn } from '@/lib/utils';
+
+type PortalTab = 'inicio' | 'mensajes' | 'notificaciones';
 
 interface FormSubmissionSummary {
   formId: string;
@@ -44,6 +50,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
   const [familyEmail, setFamilyEmail] = useState<string | null>(null);
   const [familyUserId, setFamilyUserId] = useState<string | null>(null);
   const [familyNotes, setFamilyNotes] = useState<FamilyFeedbackNote[]>([]);
+  const [activeTab, setActiveTab] = useState<PortalTab>('inicio');
 
   const fetchSubmissions = useCallback(async (): Promise<void> => {
     try {
@@ -149,6 +156,50 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
   return (
     <div className="min-h-screen bg-pk-bg p-4 sm:p-6">
       <div className="mx-auto max-w-6xl">
+        <InstallBanner />
+
+        {/* Tab navigation */}
+        <nav className="mb-6 flex gap-1 overflow-x-auto rounded-2xl border border-pk-border bg-white p-1.5 shadow-card" aria-label="Secciones del portal">
+          <TabButton
+            active={activeTab === 'inicio'}
+            onClick={() => setActiveTab('inicio')}
+            icon={Home}
+            label="Inicio"
+          />
+          <TabButton
+            active={activeTab === 'mensajes'}
+            onClick={() => setActiveTab('mensajes')}
+            icon={MessageSquare}
+            label="Mensajes"
+          />
+          <TabButton
+            active={activeTab === 'notificaciones'}
+            onClick={() => setActiveTab('notificaciones')}
+            icon={Bell}
+            label="Notificaciones"
+          />
+          <a
+            href="/settings/notifications"
+            className="flex items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium text-pk-sub transition-colors hover:bg-pk-snow hover:text-pk-ink"
+          >
+            <Settings className="h-4 w-4" aria-hidden />
+            Configuración
+          </a>
+        </nav>
+
+        {/* Messages tab */}
+        {activeTab === 'mensajes' ? (
+          <MessagesPanel />
+        ) : null}
+
+        {/* Notifications tab */}
+        {activeTab === 'notificaciones' ? (
+          <FamilyNotificationsPanel />
+        ) : null}
+
+        {/* Inicio tab — all the existing content */}
+        <div className={activeTab !== 'inicio' ? 'hidden' : undefined}>
+
         <div className="mb-8 overflow-hidden rounded-[2rem] border border-pk-border bg-gradient-to-br from-white via-white to-teal-50/60 shadow-card">
           <div className="grid gap-6 px-5 py-6 sm:px-8 sm:py-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:px-10 lg:py-10">
             <div>
@@ -398,8 +449,37 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
           isLoading={loading}
           onViewSubmission={handleViewSubmission}
         />
+        </div>{/* end inicio tab */}
       </div>
     </div>
+  );
+}
+
+function TabButton({
+  active,
+  onClick,
+  icon: Icon,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: ComponentType<{ className?: string; 'aria-hidden'?: boolean }>;
+  label: string;
+}): React.ReactElement {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'flex items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition-all',
+        active
+          ? 'bg-pk-primary text-white shadow-sm'
+          : 'text-pk-sub hover:bg-pk-snow hover:text-pk-ink'
+      )}
+    >
+      <Icon className="h-4 w-4" aria-hidden />
+      {label}
+    </button>
   );
 }
 
