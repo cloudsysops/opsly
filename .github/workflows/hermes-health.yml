@@ -17,5 +17,11 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
+      - name: Build orchestrator workspace deps
+        run: |
+          npm run build --workspace=@intcloudsysops/git-branch-orchestrator
+          npm run build --workspace=@intcloudsysops/session-manager
+          npm run build --workspace=@intcloudsysops/runtime
+          npm run build --workspace=@intcloudsysops/ml
       - run: npm run type-check --workspace=@intcloudsysops/orchestrator
       - run: npm run test:hermes --workspace=@intcloudsysops/orchestrator

@@ -20,6 +20,8 @@ jobs:
         with:
           python-version: '3.12'
       - run: npm ci
+      - name: Build NotebookLM agent package
+        run: npm run build --workspace=@intcloudsysops/notebooklm-agent
       - name: Install notebooklm-py (optional)
         continue-on-error: true
         run: pip install "notebooklm-py[browser]" || pip install notebooklm-py || true
