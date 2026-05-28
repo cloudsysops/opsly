@@ -57,6 +57,11 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
   const [error, setError] = useState('');
   const [selectedSubmissionId, setSelectedSubmissionId] = useState<string | null>(null);
   const [staffUserId, setStaffUserId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkNotification, setBulkNotification] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
 
   const fetchSubmissions = useCallback(async (): Promise<void> => {
     try {
@@ -171,6 +176,77 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
     anchor.click();
     URL.revokeObjectURL(url);
   }, [submissions]);
+
+  const clearBulkNotification = useCallback((): void => {
+    setBulkNotification(null);
+  }, []);
+
+  useEffect(() => {
+    if (bulkNotification) {
+      const timer = setTimeout(clearBulkNotification, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [bulkNotification, clearBulkNotification]);
+
+  const handleBulkMarkReviewed = useCallback(async (ids: string[]): Promise<void> => {
+    try {
+      const response = await fetch('/api/submissions/bulk-grade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ submissionIds: ids, action: 'mark_reviewed' }),
+      });
+      if (!response.ok) {
+        const err = (await response.json()) as { error?: string };
+        throw new Error(err.error || 'Error al marcar como revisadas');
+      }
+      setBulkNotification({ type: 'success', message: `${ids.length} entrega${ids.length !== 1 ? 's' : ''} marcada${ids.length !== 1 ? 's' : ''} como revisada${ids.length !== 1 ? 's' : ''}` });
+      await fetchSubmissions();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error al marcar como revisadas';
+      setBulkNotification({ type: 'error', message });
+    }
+  }, [fetchSubmissions]);
+
+  const handleBulkSendObservations = useCallback(async (ids: string[]): Promise<void> => {
+    try {
+      const response = await fetch('/api/submissions/bulk-grade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ submissionIds: ids, action: 'send_observations' }),
+      });
+      if (!response.ok) {
+        const err = (await response.json()) as { error?: string };
+        throw new Error(err.error || 'Error al enviar observaciones');
+      }
+      setBulkNotification({ type: 'success', message: `Observaciones enviadas para ${ids.length} entrega${ids.length !== 1 ? 's' : ''}` });
+      await fetchSubmissions();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error al enviar observaciones';
+      setBulkNotification({ type: 'error', message });
+    }
+  }, [fetchSubmissions]);
+
+  const handleBulkReassign = useCallback(async (ids: string[]): Promise<void> => {
+    try {
+      const response = await fetch('/api/submissions/bulk-grade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ submissionIds: ids, action: 'reassign' }),
+      });
+      if (!response.ok) {
+        const err = (await response.json()) as { error?: string };
+        throw new Error(err.error || 'Error al reasignar');
+      }
+      setBulkNotification({ type: 'success', message: `${ids.length} entrega${ids.length !== 1 ? 's' : ''} reasignada${ids.length !== 1 ? 's' : ''}` });
+      await fetchSubmissions();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error al reasignar';
+      setBulkNotification({ type: 'error', message });
+    }
+  }, [fetchSubmissions]);
 
   if (loading) {
     return (
@@ -375,11 +451,28 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
           </Card>
         ) : null}
 
+        {bulkNotification && (
+          <div
+            className={`rounded-2xl border p-4 text-sm ${
+              bulkNotification.type === 'success'
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                : 'border-red-200 bg-red-50 text-red-800'
+            }`}
+          >
+            {bulkNotification.message}
+          </div>
+        )}
+
         <TeacherDashboard
           submissions={submissions}
           isLoading={false}
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           onReviewSubmission={handleReviewSubmission}
           onExportSubmissions={handleExportSubmissions}
+          onBulkMarkReviewed={handleBulkMarkReviewed}
+          onBulkSendObservations={handleBulkSendObservations}
+          onBulkReassign={handleBulkReassign}
         />
       </div>
     </div>

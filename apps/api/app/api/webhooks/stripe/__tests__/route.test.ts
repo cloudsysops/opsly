@@ -66,6 +66,25 @@ function makeSubscriptionInsertChain() {
         if (table === 'subscriptions') {
           return { insert: insertFn };
         }
+        if (table === 'billing_subscriptions') {
+          return {
+            update: () => ({ eq: vi.fn().mockResolvedValue({ error: null }) }),
+          };
+        }
+        if (table === 'invoices') {
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({ data: null, error: null }),
+              }),
+            }),
+            insert: vi.fn().mockResolvedValue({ error: null }),
+            update: () => ({ eq: vi.fn().mockResolvedValue({ error: null }) }),
+          };
+        }
+        if (table === 'stripe_sync_logs') {
+          return { insert: vi.fn().mockResolvedValue({ error: null }) };
+        }
         return {};
       },
     }),
@@ -192,7 +211,7 @@ describe('POST /api/webhooks/stripe', () => {
   });
 
   describe('invoice.payment_failed', () => {
-    it('calls suspendTenant and notifyInvoicePaymentFailed', async () => {
+    it('records dunning and notifies on payment failure (does not suspend before 5th)', async () => {
       makeSubscriptionInsertChain();
       const mockEvent = {
         type: 'invoice.payment_failed',
@@ -206,7 +225,8 @@ describe('POST /api/webhooks/stripe', () => {
 
       const res = await POST(makeRequest(JSON.stringify(mockEvent)));
       expect(res.status).toBe(200);
-      expect(suspendTenant).toHaveBeenCalledWith('t1', 'stripe-webhook');
+      // Dunning service requires 5 failures before suspension
+      expect(suspendTenant).not.toHaveBeenCalled();
       expect(notifyInvoicePaymentFailed).toHaveBeenCalledWith('acme', 'in_789');
     });
 
