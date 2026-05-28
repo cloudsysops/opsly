@@ -249,25 +249,23 @@ describe('POST /api/webhooks/stripe', () => {
   });
 
   it('customer.subscription.updated persists when tenant_id in metadata', async () => {
-    vi.mocked(supabaseMod.getServiceClient).mockReturnValue({
+    const queryChain: any = {
+      eq: () => queryChain,
+      select: () => queryChain,
+      is: () => queryChain,
+      maybeSingle: () => Promise.resolve({ data: null, error: null }),
+      insert: () => Promise.resolve({ error: null }),
+      update: () => queryChain,
+      then: (resolve: any) => resolve({ error: null }),
+    };
+
+    const mockDb = {
       schema: () => ({
-        from: (table: string) => {
-          if (table === 'subscriptions') {
-            return {
-              insert: () => Promise.resolve({ error: null }),
-            };
-          }
-          if (table === 'tenants') {
-            return {
-              update: () => ({
-                eq: () => Promise.resolve({ error: null }),
-              }),
-            };
-          }
-          return {};
-        },
+        from: () => queryChain,
       }),
-    } as ReturnType<typeof supabaseMod.getServiceClient>);
+    } as unknown as ReturnType<typeof supabaseMod.getServiceClient>;
+
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(mockDb);
 
     vi.mocked(stripeLib.constructWebhookEvent).mockReturnValue({
       id: 'evt_sub',
@@ -294,23 +292,27 @@ describe('POST /api/webhooks/stripe', () => {
   });
 
   it('invoice.payment_failed suspends tenant when row found', async () => {
-    vi.mocked(supabaseMod.getServiceClient).mockReturnValue({
-      schema: () => ({
-        from: () => ({
-          select: () => ({
-            eq: () => ({
-              is: () => ({
-                maybeSingle: () =>
-                  Promise.resolve({
-                    data: { id: TENANT_ID, slug: 'acme' },
-                    error: null,
-                  }),
-              }),
-            }),
-          }),
+    const queryChain: any = {
+      eq: () => queryChain,
+      select: () => queryChain,
+      is: () => queryChain,
+      maybeSingle: () =>
+        Promise.resolve({
+          data: { id: TENANT_ID, slug: 'acme' },
+          error: null,
         }),
+      insert: () => Promise.resolve({ error: null }),
+      update: () => queryChain,
+      then: (resolve: any) => resolve({ error: null }),
+    };
+
+    const mockDb = {
+      schema: () => ({
+        from: () => queryChain,
       }),
-    } as ReturnType<typeof supabaseMod.getServiceClient>);
+    } as unknown as ReturnType<typeof supabaseMod.getServiceClient>;
+
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(mockDb);
 
     vi.mocked(stripeLib.constructWebhookEvent).mockReturnValue({
       id: 'evt_inv',
@@ -323,15 +325,18 @@ describe('POST /api/webhooks/stripe', () => {
       },
     } as never);
 
-    const res = await stripeWebhookPost(
-      new Request('http://x', {
-        method: 'POST',
-        headers: { 'stripe-signature': 'sig' },
-        body: '{}',
-      })
-    );
-    expect(res.status).toBe(200);
-    expect(orchestratorMod.suspendTenant).toHaveBeenCalledWith(TENANT_ID, 'stripe-webhook');
+    // Trigger multiple failures to reach threshold (SUSPEND_AFTER_FAILURES = 5)
+    for (let i = 0; i < 5; i++) {
+      await stripeWebhookPost(
+        new Request('http://x', {
+          method: 'POST',
+          headers: { 'stripe-signature': 'sig' },
+          body: '{}',
+        })
+      );
+    }
+
+    expect(orchestratorMod.suspendTenant).toHaveBeenCalledWith(TENANT_ID, 'stripe-webhook-dunning');
     expect(notificationsMod.notifyInvoicePaymentFailed).toHaveBeenCalledWith('acme', 'in_1');
   });
 });

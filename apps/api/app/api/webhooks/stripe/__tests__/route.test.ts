@@ -45,6 +45,8 @@ function makeRequest(body: string, signature = 't=1,v1=abc') {
 function makeSubscriptionInsertChain() {
   const insertFn = vi.fn().mockResolvedValue({ error: null });
   const updateFn = vi.fn().mockResolvedValue({ error: null });
+  const maybeSingleFn = vi.fn().mockResolvedValue({ data: null, error: null });
+
   return (getServiceClient as ReturnType<typeof vi.fn>).mockReturnValue({
     schema: () => ({
       from: (table: string) => {
@@ -64,9 +66,19 @@ function makeSubscriptionInsertChain() {
           };
         }
         if (table === 'subscriptions') {
-          return { insert: insertFn };
+          return { insert: insertFn, update: () => ({ eq: updateFn }) };
         }
-        return {};
+        if (table === 'billing_subscriptions' || table === 'invoices') {
+          return {
+            select: () => ({ eq: () => ({ maybeSingle: maybeSingleFn }) }),
+            insert: insertFn,
+            update: () => ({ eq: updateFn }),
+          };
+        }
+        return {
+          insert: insertFn,
+          update: () => ({ eq: updateFn }),
+        };
       },
     }),
   });
@@ -204,9 +216,12 @@ describe('POST /api/webhooks/stripe', () => {
       (suspendTenant as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
       (notifyInvoicePaymentFailed as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
 
-      const res = await POST(makeRequest(JSON.stringify(mockEvent)));
-      expect(res.status).toBe(200);
-      expect(suspendTenant).toHaveBeenCalledWith('t1', 'stripe-webhook');
+      // Trigger multiple failures to reach threshold (SUSPEND_AFTER_FAILURES = 5)
+      for (let i = 0; i < 5; i++) {
+        await POST(makeRequest(JSON.stringify(mockEvent)));
+      }
+
+      expect(suspendTenant).toHaveBeenCalledWith('t1', 'stripe-webhook-dunning');
       expect(notifyInvoicePaymentFailed).toHaveBeenCalledWith('acme', 'in_789');
     });
 
