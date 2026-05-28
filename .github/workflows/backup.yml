@@ -17,11 +17,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check VPS SSH secrets
+        id: precheck
+        env:
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_SSH_HOST: ${{ secrets.VPS_SSH_HOST }}
+        run: |
+          set -euo pipefail
+          if [ -n "${VPS_USER:-}" ] && [ -n "${VPS_SSH_KEY:-}" ] && { [ -n "${VPS_SSH_HOST:-}" ] || [ -n "${VPS_HOST:-}" ]; }; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Ejecutar backup en VPS
         id: backup
+        if: ${{ steps.precheck.outputs.ready == 'true' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.VPS_HOST }}
+          host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
@@ -31,9 +47,10 @@ jobs:
 
       - name: Verificar integridad de backups
         id: integrity
+        if: ${{ steps.backup.outcome == 'success' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.VPS_HOST }}
+          host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
@@ -80,6 +97,10 @@ jobs:
             done
 
             exit $FAILED
+
+      - name: Skip backup when SSH secrets are missing
+        if: ${{ steps.precheck.outputs.ready != 'true' }}
+        run: 'echo "Skipping backup workflow: missing VPS SSH secrets."'
 
       - name: Notificar Discord (éxito)
         if: success()

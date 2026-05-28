@@ -14,6 +14,8 @@ jobs:
   health-check:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      ORCHESTRATOR_ENDPOINT: ${{ secrets.ORCHESTRATOR_ENDPOINT || vars.ORCHESTRATOR_ENDPOINT }}
 
     steps:
       - uses: actions/checkout@v4
@@ -28,9 +30,13 @@ jobs:
 
       - name: Run Watchdog Health Check
         id: watchdog
-        run: npx tsx scripts/watchdog-validation-orchestrator.ts
+        run: |
+          if [ -z "${ORCHESTRATOR_ENDPOINT:-}" ]; then
+            echo "ORCHESTRATOR_ENDPOINT not configured, skipping watchdog run"
+            exit 0
+          fi
+          npx tsx scripts/watchdog-validation-orchestrator.ts
         env:
-          ORCHESTRATOR_ENDPOINT: ${{ secrets.ORCHESTRATOR_ENDPOINT || 'http://localhost:3011' }}
           DISCORD_WEBHOOK_HEALTH: ${{ secrets.DISCORD_WEBHOOK_HEALTH }}
         continue-on-error: true
 
@@ -48,6 +54,7 @@ jobs:
       - name: Create Issue on Critical Failure
         if: failure() && steps.watchdog.outcome == 'failure'
         uses: actions/github-script@v7
+        continue-on-error: true
         with:
           script: |
             github.rest.issues.create({
@@ -62,7 +69,7 @@ jobs:
               - **Branch**: ${context.ref}
               - **Timestamp**: ${new Date().toISOString()}
 
-              Check the [workflow run](${context.server_url}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.
+              Check the [workflow run](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.
               `,
               labels: ['health-check', 'critical']
             })

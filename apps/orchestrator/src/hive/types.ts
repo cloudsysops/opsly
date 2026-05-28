@@ -5,7 +5,10 @@ export type BotRole =
   | 'tester'         // Escribe y ejecuta pruebas
   | 'deployer'       // Despliega cambios
   | 'doc-writer'     // Genera documentación
-  | 'security';      // Análisis de seguridad
+  | 'security'       // Análisis de seguridad
+  | 'dns'            // Monitorea DNS y dominios
+  | 'secrets'        // Detecta secretos expuestos
+  | 'billing';       // Detecta anomalías de facturación
 
 export interface Bot {
   id: string;

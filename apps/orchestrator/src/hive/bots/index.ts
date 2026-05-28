@@ -4,4 +4,7 @@ export { TesterBot, startTesterBot } from './tester-bot.js';
 export { DeployerBot, startDeployerBot } from './deployer-bot.js';
 export { DocWriterBot, startDocWriterBot } from './doc-writer-bot.js';
 export { SecurityBot, startSecurityBot } from './security-bot.js';
+export { DnsBot, startDnsBot } from './dns-bot.js';
+export { SecretsBot, startSecretsBot } from './secrets-bot.js';
+export { BillingBot, startBillingBot } from './billing-bot.js';
 export { BotFactory } from './bot-factory.js';

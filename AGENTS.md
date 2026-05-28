@@ -652,6 +652,26 @@ Week 4: Docs + runbook + MVP validation
 
 <!-- Actualizar al final de cada sesión -->
 
+**Sesión 2026-05-28 — Skills cargados, Shield integrado, Billing consolidado ✅**
+
+**Branch activo:** `feat/shield-scan-worker-integration` (PR pendiente de abrir por CLI; usar `gh pr create` o web)
+
+- ✅ **content-studio dist**: `lib/content-studio` dist estaba stale post-`82e86c66`; rebuilt → `npm run type-check` 33/33 FULL TURBO
+- ✅ **ShieldScanWorker** integrado en `apps/orchestrator/src/index.ts` (import + cleanup)
+- ✅ **Security Defense portal** actualizado: static mock → live Guardian Grid vía `requirePortalPayloadWithShield` + `ShieldDashboardClient`
+- ✅ **Billing consolidado**: `dunning-service.ts`, `unified-webhook.ts`, `unify-migration.ts` + wiring en rutas Stripe
+- ✅ **Hive bots**: `billing-bot.ts`, `dns-bot.ts`, `secrets-bot.ts` + registrados en `bot-factory.ts` / `hive-orchestrator.ts`
+- ✅ **Portal register flow**: `apps/portal/app/register/` + `checkout.ts` server action
+- ✅ **Peskids forms**: renombradas PascalCase → kebab-case; `FormBuilder` ampliado (310→438 líneas); barrel `forms/index.ts`
+- ✅ **Skills system nativo**: `scripts/patch-skills-frontmatter.py` parcha 35 SKILL.md con `name`+`description`; `scripts/register-skills.sh` crea symlinks `.claude/skills/` → `packages/skills/user/` (usuario debe ejecutar el script)
+- ✅ **npm audit**: 0 vulnerabilidades
+
+**Pendientes para próxima sesión:**
+1. `! bash scripts/register-skills.sh` → crea symlinks para invocación nativa de skills via `Skill` tool
+2. Abrir PR: `gh pr create` o web para `feat/shield-scan-worker-integration`
+3. Phase 6 continuation: test FormSubmissionService con datos reales de Supabase
+4. Investigar coverage de `apps/orchestrator` para subir del 46.4% actual
+
 **Sesión 2026-05-26 — Peskids production readiness cerrada ✅**
 - ✅ VPS `app` reconstruido desde fuente con `apps/api/Dockerfile` actualizado: `npm ci` ya ve el grafo completo de workspaces y la imagen `intcloudsysops-api:peskids-latest` vuelve a arrancar sana.
 - ✅ `https://api.op-sly.com/api/health` responde `200` desde producción.

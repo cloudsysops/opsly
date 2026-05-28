@@ -1,4 +1,7 @@
 ---
+name: opsly-infra
+description: >
+  Opsly Infra Skill
 status: draft
 owner: operations
 last_review: 2026-05-24

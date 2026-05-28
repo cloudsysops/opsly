@@ -74,6 +74,9 @@ export function FormBuilder({
       type: fieldType,
       label: `Campo de ${fieldType}`,
       required: false,
+      options: ['select', 'radio', 'checkbox'].includes(fieldType)
+        ? [{ value: 'option1', label: 'Opción 1' }]
+        : undefined,
     };
 
     setForm((prev) => ({
@@ -277,6 +280,42 @@ export function FormBuilder({
                           className="pk-input min-h-[60px] text-sm"
                         />
                       </div>
+
+                      {['select', 'radio', 'checkbox'].includes(field.type) && field.options && (
+                        <div>
+                          <Label className="text-sm">Opciones</Label>
+                          <div className="mt-1 space-y-2">
+                            {field.options.map((option, idx) => (
+                              <div key={idx} className="flex gap-2">
+                                <input
+                                  type="text"
+                                  value={option.label}
+                                  onChange={(e) => {
+                                    const newOptions = [...field.options!];
+                                    newOptions[idx] = { ...newOptions[idx], label: e.target.value };
+                                    handleUpdateField(field.id, { options: newOptions });
+                                  }}
+                                  className="pk-input flex-1"
+                                  placeholder="Etiqueta de la opción"
+                                />
+                              </div>
+                            ))}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newOptions = [
+                                  ...(field.options || []),
+                                  { value: `option_${Date.now()}`, label: '' },
+                                ];
+                                handleUpdateField(field.id, { options: newOptions });
+                              }}
+                              className="text-xs font-medium text-pk-primary hover:underline"
+                            >
+                              + Agregar opción
+                            </button>
+                          </div>
+                        </div>
+                      )}
 
                       <label className="flex items-center gap-2">
                         <input

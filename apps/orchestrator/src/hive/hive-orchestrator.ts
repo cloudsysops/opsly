@@ -41,6 +41,9 @@ export class HiveOrchestrator {
       'deployer',
       'doc-writer',
       'security',
+      'dns',
+      'secrets',
+      'billing',
     ];
 
     const bots = await this.botFactory.createBotTeam(defaultBotRoles);

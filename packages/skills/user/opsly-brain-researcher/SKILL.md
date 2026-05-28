@@ -1,4 +1,7 @@
 ---
+name: opsly-brain-researcher
+description: >
+  opsly-brain-researcher
 status: draft
 owner: operations
 last_review: 2026-05-24
