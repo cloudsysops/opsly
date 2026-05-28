@@ -1,6 +1,7 @@
 'use client';
 
-import { BookOpen, Users, CheckCircle, MessageSquare, Download } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { BookOpen, Users, CheckCircle, MessageSquare, Download, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { peskidsColorTokens } from '@/lib/tokens';
@@ -17,19 +18,74 @@ interface StudentSubmission {
   status: 'reviewed' | 'pending' | 'needs_revision';
 }
 
+interface BulkActionState {
+  action: 'mark_reviewed' | 'send_observations' | 'reassign' | null;
+  loading: boolean;
+}
+
 interface TeacherDashboardProps {
   submissions: StudentSubmission[];
   isLoading?: boolean;
+  selectedIds?: string[];
+  onSelectionChange?: (ids: string[]) => void;
   onReviewSubmission?: (submissionId: string) => void;
   onExportSubmissions?: () => void;
+  onBulkMarkReviewed?: (ids: string[]) => Promise<void>;
+  onBulkSendObservations?: (ids: string[]) => Promise<void>;
+  onBulkReassign?: (ids: string[]) => Promise<void>;
 }
 
 export function TeacherDashboard({
   submissions,
   isLoading = false,
+  selectedIds = [],
+  onSelectionChange = () => {},
   onReviewSubmission,
   onExportSubmissions,
+  onBulkMarkReviewed,
+  onBulkSendObservations,
+  onBulkReassign,
 }: TeacherDashboardProps): React.ReactElement {
+  const [bulkState, setBulkState] = useState<BulkActionState>({
+    action: null,
+    loading: false,
+  });
+
+  const allSelected = submissions.length > 0 && selectedIds.length === submissions.length;
+  const someSelected = selectedIds.length > 0 && !allSelected;
+
+  const handleSelectAll = useCallback((): void => {
+    if (allSelected) {
+      onSelectionChange([]);
+    } else {
+      onSelectionChange(submissions.map((s) => s.submissionId));
+    }
+  }, [allSelected, submissions, onSelectionChange]);
+
+  const handleSelectOne = useCallback(
+    (submissionId: string): void => {
+      if (selectedIds.includes(submissionId)) {
+        onSelectionChange(selectedIds.filter((id) => id !== submissionId));
+      } else {
+        onSelectionChange([...selectedIds, submissionId]);
+      }
+    },
+    [selectedIds, onSelectionChange]
+  );
+
+  const handleBulkAction = useCallback(
+    async (action: BulkActionState['action'], handler?: (ids: string[]) => Promise<void>): Promise<void> => {
+      if (!handler || selectedIds.length === 0) return;
+      setBulkState({ action, loading: true });
+      try {
+        await handler(selectedIds);
+        onSelectionChange([]);
+      } finally {
+        setBulkState({ action: null, loading: false });
+      }
+    },
+    [selectedIds, onSelectionChange]
+  );
   const reviewedCount = submissions.filter((s) => s.status === 'reviewed').length;
   const pendingCount = submissions.filter((s) => s.status === 'pending').length;
   const needsRevisionCount = submissions.filter((s) => s.status === 'needs_revision').length;
@@ -209,6 +265,18 @@ export function TeacherDashboard({
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-pk-border">
+                    <th className="w-10 py-2 px-2 text-center">
+                      <input
+                        type="checkbox"
+                        checked={allSelected}
+                        ref={(el) => {
+                          if (el) el.indeterminate = someSelected;
+                        }}
+                        onChange={handleSelectAll}
+                        className="h-4 w-4 rounded border-pk-border text-pk-primary focus:ring-pk-primary"
+                        aria-label="Seleccionar todas"
+                      />
+                    </th>
                     <th className="text-left py-2 px-3 font-medium text-pk-ink">Estudiante</th>
                     <th className="text-left py-2 px-3 font-medium text-pk-ink">Formulario</th>
                     <th className="text-left py-2 px-3 font-medium text-pk-ink">Fecha</th>
@@ -221,8 +289,19 @@ export function TeacherDashboard({
                   {submissions.map((submission) => (
                     <tr
                       key={submission.submissionId}
-                      className="border-b border-pk-border hover:bg-pk-bg"
+                      className={`border-b border-pk-border hover:bg-pk-bg ${
+                        selectedIds.includes(submission.submissionId) ? 'bg-pk-primary/5' : ''
+                      }`}
                     >
+                      <td className="py-3 px-2 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.includes(submission.submissionId)}
+                          onChange={() => handleSelectOne(submission.submissionId)}
+                          className="h-4 w-4 rounded border-pk-border text-pk-primary focus:ring-pk-primary"
+                          aria-label={`Seleccionar ${submission.studentName}`}
+                        />
+                      </td>
                       <td className="py-3 px-3 text-pk-ink font-medium">
                         {submission.studentName}
                       </td>
@@ -297,18 +376,63 @@ export function TeacherDashboard({
       {/* Bulk Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Acciones del aula</CardTitle>
-          <CardDescription>Realiza acciones sobre múltiples entregas</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Acciones del aula</CardTitle>
+              <CardDescription>
+                {selectedIds.length > 0
+                  ? `${selectedIds.length} entrega${selectedIds.length !== 1 ? 's' : ''} seleccionada${selectedIds.length !== 1 ? 's' : ''}`
+                  : 'Selecciona entregas para realizar acciones masivas'}
+              </CardDescription>
+            </div>
+            {selectedIds.length > 0 && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => onSelectionChange([])}
+              >
+                Limpiar selección
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-3">
-            <Button type="button" variant="secondary" size="sm" disabled={submissions.length === 0}>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={selectedIds.length === 0 || (bulkState.loading && bulkState.action === 'mark_reviewed')}
+              onClick={() => void handleBulkAction('mark_reviewed', onBulkMarkReviewed)}
+            >
+              {bulkState.loading && bulkState.action === 'mark_reviewed' ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : null}
               Marcar como revisadas
             </Button>
-            <Button type="button" variant="secondary" size="sm" disabled={submissions.length === 0}>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={selectedIds.length === 0 || (bulkState.loading && bulkState.action === 'send_observations')}
+              onClick={() => void handleBulkAction('send_observations', onBulkSendObservations)}
+            >
+              {bulkState.loading && bulkState.action === 'send_observations' ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : null}
               Enviar observaciones
             </Button>
-            <Button type="button" variant="secondary" size="sm" disabled={submissions.length === 0}>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={selectedIds.length === 0 || (bulkState.loading && bulkState.action === 'reassign')}
+              onClick={() => void handleBulkAction('reassign', onBulkReassign)}
+            >
+              {bulkState.loading && bulkState.action === 'reassign' ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : null}
               Reasignar a estudiantes
             </Button>
           </div>
