@@ -34,6 +34,11 @@ if [[ "${LIST_JSON}" == *"404 page not found"* ]] || [[ "${LIST_JSON}" == *"Cann
   LIST_JSON="$(fetch_tenants "/api/v1/tenants" || true)"
 fi
 
+if [[ "${LIST_JSON}" == *"404 page not found"* ]] || [[ "${LIST_JSON}" == *"Cannot GET"* ]]; then
+  log_warn "Tenant listing endpoint not available on ${NEXT_PUBLIC_APP_URL}; skipping cleanup run"
+  exit 0
+fi
+
 if ! echo "${LIST_JSON}" | jq -e . >/dev/null 2>&1; then
   log_error "Failed to list demo tenants: ${LIST_JSON}"
   exit 1
