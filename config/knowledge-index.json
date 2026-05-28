@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/Users/dragon/cboteros/proyectos/intcloudsysops",
-  "generated_at": "2026-05-27T22:26:30.256Z",
+  "generated_at": "2026-05-28T04:24:38.477Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -3636,8 +3636,11 @@
       "title": "sentinel",
       "keywords": [
         "2026",
+        "actors",
         "api",
+        "audit",
         "authorization",
+        "hardcoded",
         "markdown",
         "missing",
         "opsly",
@@ -3645,7 +3648,7 @@
         "portal",
         "sentinel"
       ],
-      "size_bytes": 1014
+      "size_bytes": 1721
     },
     {
       "path": ".n8n/2-context/AGENTS.md",
@@ -95664,6 +95667,7 @@
       "docs/reports/audit-2026-04-07.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
       "docs/reports/CYBER-NEO-OPSLY-2026-05-21.md",
+      ".jules/sentinel.md",
       "lib/telemetry/GOVERNANCE.md",
       "vendor/agency-agents/integrations/openclaw/ai-data-remediation-engineer/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/ai-data-remediation-engineer/AGENTS.md",
@@ -137251,7 +137255,8 @@
       "docs/security/SECURITY-POSTURE-AUDIT.md"
     ],
     "hardcoded": [
-      "docs/security/SECURITY-POSTURE-AUDIT.md"
+      "docs/security/SECURITY-POSTURE-AUDIT.md",
+      ".jules/sentinel.md"
     ],
     "incomplete": [
       "docs/security/SECURITY-POSTURE-AUDIT.md",
@@ -145545,6 +145550,9 @@
     ],
     "grant": [
       ".codex/LOCAL-AUTOMATION.md"
+    ],
+    "actors": [
+      ".jules/sentinel.md"
     ],
     "sentinel": [
       ".jules/sentinel.md",

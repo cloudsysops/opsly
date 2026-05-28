@@ -55,6 +55,7 @@ import { startOpenClawSkepticWorker } from './workers/OpenClawSkepticWorker.js';
 import { startAgentFarmWorker } from './workers/AgentFarmWorker.js';
 import { superOrchestratorIntegration } from './super-orchestrator-integration.js';
 // Maia Life Systems — 6 workers autónomos
+import { startShieldScanWorker } from './workers/ShieldScanWorker.js';
 import { startSelfHealWorker } from './workers/SelfHealWorker.js';
 import { startAutoDeployWorker } from './workers/AutoDeployWorker.js';
 import { startCostGateWorker } from './workers/CostGateWorker.js';
@@ -143,6 +144,7 @@ function startAllWorkers(): AsyncCleanup[] {
   const claudeCodeWorker = startClaudeCodeWorker(connection);
   const validationWorker = startValidationWorker(connection);
   const memoryWriterWorker = startMemoryWriterWorker(connection);
+  const shieldScanWorker = startShieldScanWorker();
 
   cleanup.push(
     async () => cursorWorker.close(),
@@ -182,6 +184,7 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => claudeCodeWorker.close(),
     async () => validationWorker.close(),
     async () => memoryWriterWorker.close(),
+    async () => shieldScanWorker.stop(),
   );
 
   const localWorkersLabel = localAgentUnifiedOnly
@@ -191,7 +194,7 @@ function startAllWorkers(): AsyncCleanup[] {
   const agentFarmLabel = agentFarmWorkerEnabled ? ', agent-farm' : '';
   const approvalGateLabel = approvalGateWorkerEnabled ? ', approval-gate' : '';
   console.log(
-    `[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, evolution, intent_dispatch, terminal_task, jcode, hive, defense-audit, research, planner, skeptic${localWorkersLabel}${superWorkerLabel}${agentFarmLabel}${approvalGateLabel}` +
+    `[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, evolution, intent_dispatch, terminal_task, jcode, hive, defense-audit, shield-scan, research, planner, skeptic${localWorkersLabel}${superWorkerLabel}${agentFarmLabel}${approvalGateLabel}` +
     (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
     (process.env.OPSLY_SANDBOX_WORKER_ENABLED === 'true' ? ', sandbox' : '') +
     '; Hermes tick → servicio opsly-hermes (no este proceso).'
