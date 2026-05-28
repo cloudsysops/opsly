@@ -17,6 +17,7 @@ import { PeskidsLogo } from '@/components/brand/peskids-logo';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { formatRelativeTime } from '@/lib/utils';
+import { NotificationBell } from '@/components/notifications/notification-bell';
 
 interface AdminShellProps {
   children: React.ReactNode;
@@ -180,6 +181,7 @@ export function AdminShell({
                 <RefreshCw className={cn('h-4 w-4', refreshing && 'animate-spin')} aria-hidden />
               </Button>
             ) : null}
+            <NotificationBell />
             <Link href="/">
               <Button variant="ghost" size="sm">
                 <Home className="h-4 w-4" aria-hidden />
