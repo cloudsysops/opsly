@@ -13,7 +13,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 
 const DOCS = [
-  'ARCHITECTURE.md',
+  'docs/00-architecture/ARCHITECTURE.md',
   'AGENTS.md',
   'docs/03-agents/AGENT-STARTUP-PROMPT.md',
   'docs/obsidian/TAXONOMY.md',

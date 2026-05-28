@@ -100,7 +100,7 @@ jobs:
 
       - name: Skip backup when SSH secrets are missing
         if: ${{ steps.precheck.outputs.ready != 'true' }}
-        run: echo "Skipping backup workflow: missing VPS SSH secrets."
+        run: 'echo "Skipping backup workflow: missing VPS SSH secrets."'
 
       - name: Notificar Discord (éxito)
         if: success()
