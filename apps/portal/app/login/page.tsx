@@ -2,6 +2,7 @@
 
 import type { FormEvent, ReactElement } from 'react';
 import { Loader2 } from 'lucide-react';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -320,7 +321,15 @@ export default function LoginPage(): ReactElement {
             )}
           </Button>
         </form>
-        <p className="text-center text-xs leading-relaxed text-ops-gray">
+        <p className="mt-6 text-center text-sm">
+          <Link
+            href="/register"
+            className="text-ops-green underline-offset-4 hover:underline"
+          >
+            Crear cuenta — Registrarse
+          </Link>
+        </p>
+        <p className="mt-4 text-center text-xs leading-relaxed text-ops-gray">
           Staff: invitación y contraseña. Familias: Google o invitación según el tenant.
         </p>
       </div>

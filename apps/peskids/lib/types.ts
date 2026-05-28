@@ -1,6 +1,109 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
+export type NotificationEventType =
+  | 'submission_reviewed'
+  | 'submission_observation'
+  | 'submission_reassigned'
+  | 'followup_due'
+  | 'weekly_report';
+
 export type Database = {
+  peskids: {
+    Tables: {
+      notification_preferences: {
+        Row: {
+          id: string;
+          user_id: string;
+          tenant_slug: string;
+          email_enabled: boolean;
+          whatsapp_enabled: boolean;
+          inapp_enabled: boolean;
+          events: string[];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          tenant_slug?: string;
+          email_enabled?: boolean;
+          whatsapp_enabled?: boolean;
+          inapp_enabled?: boolean;
+          events?: string[];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          email_enabled?: boolean;
+          whatsapp_enabled?: boolean;
+          inapp_enabled?: boolean;
+          events?: string[];
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      push_subscriptions: {
+        Row: {
+          id: string;
+          user_id: string;
+          tenant_slug: string;
+          endpoint: string;
+          p256dh: string;
+          auth: string;
+          user_agent: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          tenant_slug?: string;
+          endpoint: string;
+          p256dh: string;
+          auth: string;
+          user_agent?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          p256dh?: string;
+          auth?: string;
+          user_agent?: string | null;
+        };
+        Relationships: [];
+      };
+      notifications: {
+        Row: {
+          id: string;
+          user_id: string;
+          tenant_slug: string;
+          type: string;
+          title: string;
+          body: string;
+          metadata: Record<string, unknown>;
+          read_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          tenant_slug?: string;
+          type: string;
+          title: string;
+          body: string;
+          metadata?: Record<string, unknown>;
+          read_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          read_at?: string | null;
+        };
+        Relationships: [];
+      };
+    };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
+  };
   public: {
     Tables: {
       leads: {

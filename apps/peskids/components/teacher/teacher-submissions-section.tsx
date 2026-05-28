@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TeacherDashboard } from '@/components/dashboards/teacher-dashboard';
@@ -37,6 +38,8 @@ export function TeacherSubmissionsSection({
   isLoading,
   error,
 }: TeacherSubmissionsSectionProps): React.ReactElement {
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
   return (
     <section className="rounded-3xl border border-pk-border bg-white p-5 shadow-card sm:p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -92,6 +95,8 @@ export function TeacherSubmissionsSection({
           <TeacherDashboard
             submissions={data?.submissions ?? []}
             isLoading={false}
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
             onReviewSubmission={() => {
               window.location.href = '/teacher/submissions';
             }}

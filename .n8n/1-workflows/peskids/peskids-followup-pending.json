@@ -1,0 +1,185 @@
+{
+  "id": "peskids-followup-pending",
+  "name": "Peskids - Daily Followup Digest",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "id": "f2a3b4c5",
+      "name": "Every Day at 08:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/followups",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "tenant_slug", "value": "eq.peskids" },
+            { "name": "status", "value": "eq.pending" },
+            { "name": "select", "value": "id,type,due_date,notes,contact_id,contact_type" },
+            { "name": "order", "value": "due_date.asc" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a3b4c5d6",
+      "name": "Query Pending Followups",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ Array.isArray($json) ? $json.length : 0 }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b4c5d6e7",
+      "name": "Has Pending Followups?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [520, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst followups = items[0]?.json;\nconst list = Array.isArray(followups) ? followups : [];\nconst today = new Date().toLocaleDateString('es-CO', { timeZone: 'America/Bogota', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });\n\nconst overdue = list.filter(f => f.due_date && new Date(f.due_date) < new Date());\nconst dueToday = list.filter(f => {\n  if (!f.due_date) return false;\n  const d = new Date(f.due_date);\n  const now = new Date();\n  return d.toDateString() === now.toDateString();\n});\nconst upcoming = list.filter(f => {\n  if (!f.due_date) return true;\n  const d = new Date(f.due_date);\n  const now = new Date();\n  return d > now && d.toDateString() !== now.toDateString();\n});\n\nconst formatRow = (f) => {\n  const due = f.due_date ? new Date(f.due_date).toLocaleDateString('es-CO', { timeZone: 'America/Bogota' }) : 'sin fecha';\n  return `• [${f.type || 'general'}] ${f.notes || 'sin nota'} — vence: ${due} (${f.contact_type || 'contacto'}: ${f.contact_id || 'N/A'})`;\n};\n\nconst sections = [];\nif (overdue.length > 0) sections.push(`**VENCIDOS (${overdue.length}):**\\n${overdue.map(formatRow).join('\\n')}`);\nif (dueToday.length > 0) sections.push(`**HOY (${dueToday.length}):**\\n${dueToday.map(formatRow).join('\\n')}`);\nif (upcoming.length > 0) sections.push(`**PRÓXIMOS (${upcoming.length}):**\\n${upcoming.map(formatRow).join('\\n')}`);\n\nconst digestText = sections.join('\\n\\n') || 'Sin detalles disponibles.';\n\nreturn [{\n  json: {\n    total: list.length,\n    overdue_count: overdue.length,\n    today_count: dueToday.length,\n    upcoming_count: upcoming.length,\n    digest_text: digestText,\n    date_label: today,\n    discord_message: {\n      embeds: [{\n        title: `📋 Resumen diario de seguimientos — Peskids`,\n        color: overdue.length > 0 ? 15158332 : 3447003,\n        description: digestText.length > 3900 ? digestText.substring(0, 3900) + '\\n...' : digestText,\n        fields: [\n          { name: 'Total pendientes', value: String(list.length), inline: true },\n          { name: 'Vencidos', value: String(overdue.length), inline: true },\n          { name: 'Vencen hoy', value: String(dueToday.length), inline: true }\n        ],\n        footer: { text: today }\n      }]\n    }\n  }\n}];"
+      },
+      "id": "c5d6e7f8",
+      "name": "Format Followup Digest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [780, 180]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.OPSLY_CRM_NOTIFY_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.discord_message) }}",
+        "options": {}
+      },
+      "id": "d6e7f8a9",
+      "name": "Discord Followup Digest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1040, 180],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $env.RESEND_API_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ from: 'Peskids <noreply@peskids.com>', to: [$env.PESKIDS_OWNER_EMAIL], subject: `Peskids: ${$json.total} seguimiento(s) pendiente(s) — ${$json.date_label}`, html: '<h2>Resumen de seguimientos pendientes</h2><pre style=\"font-family:monospace;font-size:13px\">' + $json.digest_text + '</pre><p>Total: ' + $json.total + ' | Vencidos: ' + $json.overdue_count + ' | Hoy: ' + $json.today_count + '</p>' }) }}",
+        "options": {}
+      },
+      "id": "e7f8a9b0",
+      "name": "Email Followup Digest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1040, 360],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { skipped: true, reason: 'No hay seguimientos pendientes', checked_at: new Date().toISOString() } }];"
+      },
+      "id": "f8a9b0c1",
+      "name": "No Followups - Stop",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [780, 480]
+    }
+  ],
+  "connections": {
+    "Every Day at 08:00": {
+      "main": [
+        [
+          { "node": "Query Pending Followups", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Query Pending Followups": {
+      "main": [
+        [
+          { "node": "Has Pending Followups?", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Has Pending Followups?": {
+      "main": [
+        [
+          { "node": "Format Followup Digest", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "No Followups - Stop", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Format Followup Digest": {
+      "main": [
+        [
+          { "node": "Discord Followup Digest", "type": "main", "index": 0 },
+          { "node": "Email Followup Digest", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "peskids"
+  }
+}
