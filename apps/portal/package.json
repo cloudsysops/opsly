@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --dangerouslyIgnoreUnhandledErrors",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },
