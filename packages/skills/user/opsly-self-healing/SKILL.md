@@ -1,4 +1,7 @@
 ---
+name: opsly-self-healing
+description: >
+  Opsly Self-Healing Skill
 status: draft
 owner: operations
 last_review: 2026-05-24

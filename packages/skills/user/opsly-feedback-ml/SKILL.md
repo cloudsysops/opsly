@@ -1,4 +1,7 @@
 ---
+name: opsly-feedback-ml
+description: >
+  Opsly Feedback ML Skill
 status: draft
 owner: operations
 last_review: 2026-05-24
