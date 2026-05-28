@@ -1,7 +1,6 @@
 {
   "id": "opsly-vault-001",
   "name": "Opsly Docs",
-  "baseFontSize": 16,
   "useTab": false,
   "lineLength": 80,
   "readableLineLength": true,
@@ -9,7 +8,10 @@
   "alwaysUpdateLinks": true,
   "showFrontmatter": true,
   "spellcheck": true,
-  "spellcheckLanguages": ["en-US", "es"],
+  "spellcheckLanguages": [
+    "en-US",
+    "es"
+  ],
   "strictLineBreaks": false,
   "showLineNumbers": false,
   "showInlineTitle": true,

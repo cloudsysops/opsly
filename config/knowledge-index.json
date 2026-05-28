@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/Users/dragon/cboteros/proyectos/intcloudsysops",
-  "generated_at": "2026-05-26T17:16:44.905Z",
+  "generated_at": "2026-05-27T22:26:30.256Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -3793,7 +3793,7 @@
         "usar",
         "vivo"
       ],
-      "size_bytes": 272048
+      "size_bytes": 273160
     },
     {
       "path": "apps/admin/INVITATIONS_UI.md",
@@ -9951,7 +9951,7 @@
         "supremo",
         "trabajo"
       ],
-      "size_bytes": 226545
+      "size_bytes": 227578
     },
     {
       "path": "docs/03-agents/AUTONOMOUS-EXECUTION-GUIDE.md",
@@ -22329,10 +22329,11 @@
         "smoke",
         "solo",
         "tras",
+        "update",
         "urls",
         "vps"
       ],
-      "size_bytes": 5430
+      "size_bytes": 6198
     },
     {
       "path": "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
@@ -23316,32 +23317,30 @@
       "path": "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "title": "PESKIDS REFACTOR AUDIT REPORT",
       "keywords": [
-        "150l",
+        "147",
+        "200l",
         "2026",
-        "250",
-        "250l",
-        "282",
-        "300",
+        "504",
         "719",
         "951",
+        "added",
         "admin",
         "audit",
         "code",
+        "complete",
         "completed",
         "component",
         "components",
-        "composer",
         "dashboard",
-        "exist",
         "extract",
         "extraction",
-        "feedback",
-        "giant",
         "implemented",
-        "incomplete",
         "jelou",
         "landing",
+        "large",
         "lines",
+        "markdown",
+        "opsly",
         "page",
         "patterns",
         "peskids",
@@ -23352,20 +23351,21 @@
         "refactor",
         "remove",
         "report",
+        "reviewed",
         "service",
         "showcase",
         "split",
         "splitting",
         "stale",
-        "still",
         "teacher",
+        "tests",
         "tsx",
         "validation",
         "view",
-        "yet",
+        "weekly",
         "zod"
       ],
-      "size_bytes": 6168
+      "size_bytes": 11412
     },
     {
       "path": "docs/tenants/peskids/SPRINT-01-STATUS.md",
@@ -23500,7 +23500,7 @@
         "sprint",
         "supabase"
       ],
-      "size_bytes": 3419
+      "size_bytes": 3858
     },
     {
       "path": "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md",
@@ -82658,6 +82658,9 @@
     "129": [
       "docs/infrastructure/AGENT-BOOTSTRAP-SYSTEM.md"
     ],
+    "147": [
+      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
+    ],
     "151": [
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md"
     ],
@@ -82685,18 +82688,11 @@
     "222": [
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md"
     ],
-    "250": [
-      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
-    ],
     "277": [
       "docs/history/consolidation/CONSOLIDATION-INDEX.md"
     ],
-    "282": [
-      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
-    ],
     "300": [
-      "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md",
-      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
+      "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md"
     ],
     "310": [
       "packages/skills/user/opsly-frontend/SKILL.md"
@@ -82744,6 +82740,7 @@
       "docs/runbooks/OPERATIONS-HANDBOOK.md"
     ],
     "504": [
+      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md"
     ],
     "671": [
@@ -84979,6 +84976,7 @@
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/peskids/design-pack/README.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
+      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/WORKFLOWS.md",
       "docs/tenants/peskids/ARCHITECTURE.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
@@ -87512,6 +87510,7 @@
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/peskids/design-pack/README.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
+      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/WORKFLOWS.md",
       "docs/tenants/peskids/ARCHITECTURE.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
@@ -96886,6 +96885,7 @@
       "docs/06-multi-agent/PARALLEL-EXECUTION-ARCHITECTURE.md",
       "docs/04-infrastructure/PRODUCTION-READINESS.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
+      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-HANDOFF-FOR-VPS-EXECUTION.md",
       "docs/01-development/PHASE-5-2-3-4-COMPLETE-SPECS.md",
@@ -98208,6 +98208,7 @@
       "docs/02-tools/NOTEBOOKLM-INTEGRATION.md",
       "docs/02-tools/MCP-STATUS-ANALYSIS.md",
       "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
+      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
       "docs/00-architecture/LLM-GATEWAY.md",
       "docs/00-architecture/REDIS_NAMESPACE_ISOLATION.md",
@@ -114645,6 +114646,7 @@
       "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
       "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
+      "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
@@ -127998,7 +128000,6 @@
       "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md",
       "docs/06-multi-agent/PARALLEL-EXECUTION-GUIDE.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
-      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/WORKFLOWS.md",
       "docs/tenants/peskids/SPRINT-01.md",
       "docs/tenants/peskids/FORMS-SPEC.md",
@@ -135389,6 +135390,7 @@
       "docs/blueprints/opsly-operational-blueprint/MODULES.md",
       "docs/plans/AUTONOMY-GO-NO-GO-WEEKLY.md",
       "docs/runbooks/OPERATIONS-HANDBOOK.md",
+      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/WORKFLOWS.md",
       "docs/tenants/peskids/OWNER-RUNBOOK.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
@@ -136766,8 +136768,7 @@
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md"
     ],
     "exist": [
-      "docs/audits/DATABASE-QUERY-AUDIT.md",
-      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
+      "docs/audits/DATABASE-QUERY-AUDIT.md"
     ],
     "improve": [
       "docs/audits/DATABASE-QUERY-AUDIT.md"
@@ -137254,7 +137255,6 @@
     ],
     "incomplete": [
       "docs/security/SECURITY-POSTURE-AUDIT.md",
-      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/00-architecture/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
       "docs/01-development/TECHNICAL-DEBT.md"
     ],
@@ -139200,8 +139200,7 @@
       "docs/obsidian/inbox/MOC.md"
     ],
     "still": [
-      "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
-      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
+      "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md"
     ],
     "disk": [
       "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
@@ -139494,10 +139493,10 @@
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md"
     ],
-    "150l": [
+    "200l": [
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
     ],
-    "250l": [
+    "added": [
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
     ],
     "completed": [
@@ -139506,16 +139505,12 @@
       "docs/tenants/peskids/EVENT-CONTRACT.md",
       "docs/ops/issue-bankruptcy-2026-05-03.md"
     ],
-    "composer": [
-      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
-    ],
     "extract": [
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "packages/skills/vendor/agent-skills/doubt-driven-development/SKILL.md"
     ],
-    "giant": [
-      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
-      "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md"
+    "large": [
+      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
     ],
     "lines": [
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
@@ -139544,6 +139539,9 @@
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md"
     ],
+    "reviewed": [
+      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
+    ],
     "showcase": [
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md"
@@ -139561,9 +139559,6 @@
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md"
-    ],
-    "yet": [
-      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
     ],
     "zod": [
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
@@ -145254,6 +145249,9 @@
     "deduplication": [
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
       "vendor/agency-agents/integrations/openclaw/email-intelligence-engineer/AGENTS.md"
+    ],
+    "giant": [
+      "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md"
     ],
     "structural": [
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
