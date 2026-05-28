@@ -224,28 +224,28 @@ export async function sendPortalInvitationForTenant(
     ? 'EMAIL_DELIVERY_MODE=test (no Resend send)'
     : undefined;
   if (!emailDeliverySkipped) {
-  try {
-    await sendHtmlEmail({
-      to: params.email,
-      subject: `Tu plataforma ${params.name} está lista 🚀`,
-      html,
-      from: getInviteFromEmail(),
-    });
-  } catch (err) {
-    if (!isNonFatalEmailDeliveryError(err)) {
-      throw err;
+    try {
+      await sendHtmlEmail({
+        to: params.email,
+        subject: `Tu plataforma ${params.name} está lista 🚀`,
+        html,
+        from: getInviteFromEmail(),
+      });
+    } catch (err) {
+      if (!isNonFatalEmailDeliveryError(err)) {
+        throw err;
+      }
+      emailDeliverySkipped = true;
+      emailDeliveryWarning =
+        err instanceof Error
+          ? err.message
+          : 'Email delivery skipped (test mode or provider restriction)';
     }
-    emailDeliverySkipped = true;
-    emailDeliveryWarning =
-      err instanceof Error ? err.message : 'Email delivery skipped (test mode or provider restriction)';
-  }
   }
 
   return {
     link: activateUrl,
     token,
-    ...(emailDeliverySkipped
-      ? { emailDeliverySkipped: true, emailDeliveryWarning }
-      : {}),
+    ...(emailDeliverySkipped ? { emailDeliverySkipped: true, emailDeliveryWarning } : {}),
   };
 }

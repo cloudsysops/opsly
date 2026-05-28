@@ -13,8 +13,14 @@ export type InstallPlan = {
   message: string;
 };
 
-export async function createInstallPlan(toolId: string, actor = 'admin'): Promise<InstallPlan | null> {
-  const [status, policy] = await Promise.all([inspectRegisteredTools(), loadLocalAutomationPolicy()]);
+export async function createInstallPlan(
+  toolId: string,
+  actor = 'admin'
+): Promise<InstallPlan | null> {
+  const [status, policy] = await Promise.all([
+    inspectRegisteredTools(),
+    loadLocalAutomationPolicy(),
+  ]);
   const tool = status.tools.find((item) => item.id === toolId);
   if (!tool) {
     return null;
@@ -22,7 +28,14 @@ export async function createInstallPlan(toolId: string, actor = 'admin'): Promis
   const allowed = tool.install.provider === 'brew' && tool.install.allowed;
   const commands =
     allowed && tool.install.package
-      ? [{ command: 'brew', args: ['install', tool.app?.brew_cask ? '--cask' : '', tool.install.package].filter(Boolean) }]
+      ? [
+          {
+            command: 'brew',
+            args: ['install', tool.app?.brew_cask ? '--cask' : '', tool.install.package].filter(
+              Boolean
+            ),
+          },
+        ]
       : [];
 
   const event = await appendAutomationAuditEvent({

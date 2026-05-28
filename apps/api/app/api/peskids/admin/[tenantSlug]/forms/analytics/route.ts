@@ -76,7 +76,9 @@ export async function GET(
     if (formIds.length > 0) {
       const { data: analyticsData, error: analyticsError } = await supabase
         .from('peskids.form_analytics')
-        .select('form_id, submissions_count, unique_users, avg_completion_time_seconds, abandonment_rate, error_count')
+        .select(
+          'form_id, submissions_count, unique_users, avg_completion_time_seconds, abandonment_rate, error_count'
+        )
         .eq('tenant_slug', tenantSlug)
         .in('form_id', formIds);
 
@@ -122,12 +124,13 @@ export async function GET(
     const stats: StatsResponse = {
       totalSubmissions: formsWithAnalytics.reduce((sum, f) => sum + f.submissionCount, 0),
       totalForms: formsWithAnalytics.length,
-      avgCompletionTime: formsWithAnalytics.length > 0
-        ? Math.round(
-            formsWithAnalytics.reduce((sum, f) => sum + f.avgCompletionTimeSeconds, 0) /
-              formsWithAnalytics.length
-          )
-        : 0,
+      avgCompletionTime:
+        formsWithAnalytics.length > 0
+          ? Math.round(
+              formsWithAnalytics.reduce((sum, f) => sum + f.avgCompletionTimeSeconds, 0) /
+                formsWithAnalytics.length
+            )
+          : 0,
       totalErrors: formsWithAnalytics.reduce((sum, f) => sum + f.errorCount, 0),
     };
 

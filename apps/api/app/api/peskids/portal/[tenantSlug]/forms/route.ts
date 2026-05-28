@@ -159,9 +159,7 @@ export async function POST(
         created_at: new Date().toISOString(),
       }));
 
-      const { error: fieldsError } = await supabase
-        .from('peskids.form_fields')
-        .insert(fieldsData);
+      const { error: fieldsError } = await supabase.from('peskids.form_fields').insert(fieldsData);
 
       if (fieldsError) {
         console.error('Failed to create form fields:', fieldsError);

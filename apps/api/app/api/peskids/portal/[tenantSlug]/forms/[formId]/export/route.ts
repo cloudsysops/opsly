@@ -41,7 +41,14 @@ function convertToCSV(submissions: FormSubmission[]): string {
   });
 
   // Build header
-  const header = ['submission_id', 'completed_at', 'status', 'score', 'feedback', ...Array.from(fieldNames)];
+  const header = [
+    'submission_id',
+    'completed_at',
+    'status',
+    'score',
+    'feedback',
+    ...Array.from(fieldNames),
+  ];
 
   // Build rows
   const rows = submissions.map((sub) => {
@@ -64,7 +71,14 @@ function convertToCSV(submissions: FormSubmission[]): string {
       }
     });
 
-    return row.map((cell) => (typeof cell === 'string' && (cell.includes(',') || cell.includes('"') || cell.includes('\n')) ? `"${cell}"` : cell)).join(',');
+    return row
+      .map((cell) =>
+        typeof cell === 'string' &&
+        (cell.includes(',') || cell.includes('"') || cell.includes('\n'))
+          ? `"${cell}"`
+          : cell
+      )
+      .join(',');
   });
 
   return [header.join(','), ...rows].join('\n');
