@@ -41,7 +41,8 @@ export default async function DashboardPage() {
         </p>
         <h1 className="text-4xl font-bold tracking-tight">⚽ Panini Lab</h1>
         <p className="text-zinc-400 text-sm max-w-2xl">
-          Gestiona tu colección de figuritas con voz y texto. Powered by Opsly Conversational Runtime.{' '}
+          Gestiona tu colección de figuritas con voz y texto. Powered by Opsly Conversational
+          Runtime.{' '}
           <span className="text-zinc-600">
             Storage: {supabaseConfigured() ? 'Supabase (panini_lab)' : 'in-memory (local)'}
           </span>
@@ -74,7 +75,9 @@ export default async function DashboardPage() {
 
       {/* Manual input hint */}
       <section className="rounded-xl border border-dashed border-zinc-700 p-4 text-xs text-zinc-500 font-mono space-y-1">
-        <p className="font-semibold text-zinc-400 not-italic font-sans text-sm mb-2">Webhook manual (curl / Postman)</p>
+        <p className="font-semibold text-zinc-400 not-italic font-sans text-sm mb-2">
+          Webhook manual (curl / Postman)
+        </p>
         <p>POST /api/webhooks/inbound</p>
         <p>{`{ "text": "Tengo la 10 de Colombia y la 45 de Brasil repetida", "sender": "demo" }`}</p>
         <p className="text-zinc-600">Header opcional: x-panini-webhook-secret</p>
@@ -104,7 +107,9 @@ export default async function DashboardPage() {
                 className="flex items-center justify-between rounded-lg border border-zinc-800 px-3 py-2 text-sm gap-2"
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="font-mono text-zinc-300 w-8 shrink-0">#{item.sticker_number}</span>
+                  <span className="font-mono text-zinc-300 w-8 shrink-0">
+                    #{item.sticker_number}
+                  </span>
                   {item.country && (
                     <span className="text-zinc-500 text-xs truncate">{item.country}</span>
                   )}

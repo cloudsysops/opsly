@@ -139,7 +139,9 @@ export default function VoiceInput() {
       )}
 
       {reply && (
-        <p className={`text-sm font-medium ${status === 'ok' ? 'text-emerald-400' : 'text-red-400'}`}>
+        <p
+          className={`text-sm font-medium ${status === 'ok' ? 'text-emerald-400' : 'text-red-400'}`}
+        >
           {reply}
         </p>
       )}

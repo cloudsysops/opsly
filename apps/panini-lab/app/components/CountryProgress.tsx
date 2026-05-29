@@ -16,7 +16,10 @@ function flagForCountry(name: string): string {
 }
 
 function buildSummaries(items: CollectionItemRow[]): CountrySummary[] {
-  const map = new Map<string, { owned: number; duplicate: number; missing: number; total: number }>();
+  const map = new Map<
+    string,
+    { owned: number; duplicate: number; missing: number; total: number }
+  >();
 
   for (const item of items) {
     const key = item.country ?? 'Sin país';

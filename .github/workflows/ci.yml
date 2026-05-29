@@ -260,11 +260,13 @@ jobs:
           (cd apps/portal && npm run build) & pid3=$!
           # Use hoisted workspace deps from root npm ci — nested npm install duplicates @types/react and breaks next build
           (cd apps/peskids && npm run build) & pid4=$!
+          (cd apps/panini-lab && npm run build) & pid5=$!
           status=0
           wait $pid1 || status=1
           wait $pid2 || status=1
           wait $pid3 || status=1
           wait $pid4 || status=1
+          wait $pid5 || status=1
           exit $status
 
   scripts-check:
