@@ -16,7 +16,23 @@ export type AgentErrorCode =
   | 'AI_PARSE_FAILED'
   | 'DISPATCH_FAILED';
 
-export type AiProviderKind = 'mock' | 'gemini';
+/** Implemented today: mock, gemini. Others are contract stubs for future llm-gateway wiring. */
+export type AiProviderKind =
+  | 'mock'
+  | 'gemini'
+  | 'openai'
+  | 'anthropic'
+  | 'openrouter'
+  | 'ollama';
+
+/** Public AI provider contract — implemented by mock, gemini, and future gateway adapters. */
+export interface AiProvider {
+  readonly kind: AiProviderKind;
+  parseIntent(
+    request: IntentRequest,
+    tenant: TenantConfig,
+  ): Promise<ParsedIntent | null>;
+}
 
 export interface WorkflowTarget {
   kind: WorkflowKind;
@@ -45,6 +61,9 @@ export interface ParsedIntent {
   payload: Readonly<Record<string, unknown>>;
   confidence: number;
 }
+
+/** Structured intent returned by AI providers (alias for stable public API). */
+export type StructuredIntent = ParsedIntent;
 
 export interface IntentRequest {
   tenantSlug: TenantSlug;

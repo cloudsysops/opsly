@@ -26,6 +26,7 @@ function defaultPayloadForIntent(intent: IntentName): Record<string, unknown> {
 
 export function createMockGateway(): AiGateway {
   return {
+    kind: 'mock',
     async parseIntent(
       request: IntentRequest,
       tenant: TenantConfig,

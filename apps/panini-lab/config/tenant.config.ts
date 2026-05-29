@@ -6,7 +6,16 @@ export const paniniLabTenantConfig: TenantConfig = {
   mode: 'demo',
   allowedIntents: ['UPDATE_COLLECTION'],
   intentKeywords: {
-    UPDATE_COLLECTION: ['update collection', 'album', 'stickers', 'colección'],
+    UPDATE_COLLECTION: [
+      'update collection',
+      'album',
+      'stickers',
+      'colección',
+      'figurita',
+      'tengo la',
+      'repetida',
+      'colombia',
+    ],
   },
   intents: {
     UPDATE_COLLECTION: {

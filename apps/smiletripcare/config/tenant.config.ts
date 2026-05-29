@@ -7,7 +7,16 @@ export const smileTripCareTenantConfig: TenantConfig = {
   mode: 'shadow',
   allowedIntents: ['CREATE_LEAD'],
   intentKeywords: {
-    CREATE_LEAD: ['create lead', 'new lead', 'interested', 'contact me', 'lead'],
+    CREATE_LEAD: [
+      'create lead',
+      'new lead',
+      'interested',
+      'contact me',
+      'lead',
+      'valoración dental',
+      'valoracion dental',
+      'necesito',
+    ],
   },
   intents: {
     CREATE_LEAD: {

@@ -6,7 +6,16 @@ export const paniniLabTenantConfig: TenantConfig = {
   mode: 'demo',
   allowedIntents: ['UPDATE_COLLECTION'],
   intentKeywords: {
-    UPDATE_COLLECTION: ['update collection', 'album', 'stickers', 'colección'],
+    UPDATE_COLLECTION: [
+      'update collection',
+      'album',
+      'stickers',
+      'colección',
+      'figurita',
+      'tengo la',
+      'repetida',
+      'colombia',
+    ],
   },
   intents: {
     UPDATE_COLLECTION: {
@@ -27,7 +36,16 @@ export const peskidsTenantConfig: TenantConfig = {
   mode: 'shadow',
   allowedIntents: ['REPORT_ABSENCE'],
   intentKeywords: {
-    REPORT_ABSENCE: ['report absence', 'absent', 'ausencia', 'falta'],
+    REPORT_ABSENCE: [
+      'report absence',
+      'absent',
+      'ausencia',
+      'falta',
+      'no va',
+      'fiebre',
+      'mamá',
+      'mama',
+    ],
   },
   intents: {
     REPORT_ABSENCE: {
@@ -49,7 +67,16 @@ export const smileTripCareTenantConfig: TenantConfig = {
   mode: 'shadow',
   allowedIntents: ['CREATE_LEAD'],
   intentKeywords: {
-    CREATE_LEAD: ['create lead', 'new lead', 'interested', 'contact me', 'lead'],
+    CREATE_LEAD: [
+      'create lead',
+      'new lead',
+      'interested',
+      'contact me',
+      'lead',
+      'valoración dental',
+      'valoracion dental',
+      'necesito',
+    ],
   },
   intents: {
     CREATE_LEAD: {

@@ -6,15 +6,15 @@ import { smileTripCareTenantConfig } from '../../../../apps/smiletripcare/config
 const samples = [
   {
     tenantSlug: paniniLabTenantConfig.slug,
-    utterance: 'Update collection album Mundial 2026',
+    utterance: 'Tengo la 10 de Colombia y repetida la 30',
   },
   {
     tenantSlug: peskidsTenantConfig.slug,
-    utterance: 'Report absence for María on Friday',
+    utterance: 'Soy la mamá de Thiago, hoy no va a clase porque tiene fiebre',
   },
   {
     tenantSlug: smileTripCareTenantConfig.slug,
-    utterance: 'New lead interested in dental implants',
+    utterance: 'Necesito una valoración dental',
   },
 ] as const;
 
