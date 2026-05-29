@@ -105,8 +105,48 @@ export class UnifiedLocalAgentWorker {
       has_iterations: Boolean(localJob.max_iterations),
     });
 
-    // Step 1: Initialize iteration session if needed
-    let sessionId = localJob.request_id || job.id;
+    const sessionId = await this.initializeSession(localJob, goal, promptBody, agentRole);
+    const { response, duration, result } = await this.executeAndTrack(
+      job,
+      localJob,
+      promptBody,
+      agentRole,
+      goal
+    );
+
+    if (!response.success) {
+      logWorkerError('local-agents', 'Agent service failed', {
+        agent_role: agentRole,
+        error: response.error,
+      });
+      throw new Error(`Agent service failed: ${response.error}`);
+    }
+
+    const { shouldIterate, nextPrompt } = await this.analyzeResults(
+      localJob,
+      sessionId,
+      result,
+      duration
+    );
+
+    await this.handleIterations(job, localJob, sessionId, shouldIterate, nextPrompt, agentRole);
+
+    return {
+      success: true,
+      result_length: result.length,
+      duration,
+      iterations: localJob.max_iterations || 1,
+      session_id: localJob.max_iterations ? sessionId : undefined,
+    };
+  }
+
+  private async initializeSession(
+    localJob: LocalAgentJob,
+    goal: string,
+    promptBody: string,
+    agentRole: 'cursor' | 'claude' | 'copilot' | 'opencode'
+  ): Promise<string> {
+    let sessionId = localJob.request_id || '';
     if (localJob.max_iterations && localJob.max_iterations > 0) {
       const session = await this.orchestrator.initializeSession(
         sessionId,
@@ -121,19 +161,19 @@ export class UnifiedLocalAgentWorker {
         max_iterations: localJob.max_iterations,
       });
     }
+    return sessionId;
+  }
 
-    // Step 2: Execute prompt via HTTP agent service
+  private async executeAndTrack(
+    job: any,
+    localJob: LocalAgentJob,
+    promptBody: string,
+    agentRole: 'cursor' | 'claude' | 'copilot' | 'opencode',
+    goal: string
+  ): Promise<{ response: AgentResponse; duration: number; result: string }> {
     const startTime = Date.now();
     const response = await this.executeViaAgentService(localJob, promptBody, agentRole);
     const duration = Date.now() - startTime;
-
-    if (!response.success) {
-      logWorkerError('local-agents', 'Agent service failed', {
-        agent_role: agentRole,
-        error: response.error,
-      });
-      throw new Error(`Agent service failed: ${response.error}`);
-    }
 
     const result = response.result || '';
     logWorkerInfo('local-agents', 'Agent execution complete', {
@@ -141,7 +181,28 @@ export class UnifiedLocalAgentWorker {
       result_length: result.length,
     });
 
-    // Step 3: Record result and determine if we should iterate
+    await this.writeResponse(job.id, result);
+    await this.trainer.recordExecution({
+      job_id: job.id,
+      timestamp: new Date().toISOString(),
+      agent_role: agentRole,
+      prompt: promptBody,
+      result,
+      duration_ms: duration,
+      success: response.success,
+      iterations: 1,
+      task_category: this.extractCategory(goal),
+    });
+
+    return { response, duration, result };
+  }
+
+  private async analyzeResults(
+    localJob: LocalAgentJob,
+    sessionId: string,
+    result: string,
+    duration: number
+  ): Promise<{ shouldIterate: boolean; nextPrompt?: string }> {
     let shouldIterate = false;
     let nextPrompt: string | undefined;
 
@@ -156,67 +217,65 @@ export class UnifiedLocalAgentWorker {
       });
     }
 
-    // Step 4: Write result to responses folder
-    await this.writeResponse(job.id, result);
+    return { shouldIterate, nextPrompt };
+  }
 
-    // Step 5: Train on this execution
-    await this.trainer.recordExecution({
-      job_id: job.id,
-      timestamp: new Date().toISOString(),
-      agent_role: agentRole,
-      prompt: promptBody,
-      result,
-      duration_ms: duration,
-      success: response.success,
-      iterations: 1,
-      task_category: this.extractCategory(goal),
-    });
-
-    // Step 6: Auto-iterate if needed
+  private async handleIterations(
+    job: any,
+    localJob: LocalAgentJob,
+    sessionId: string,
+    shouldIterate: boolean,
+    nextPrompt: string | undefined,
+    agentRole: 'cursor' | 'claude' | 'copilot' | 'opencode'
+  ): Promise<void> {
     if (shouldIterate && nextPrompt) {
-      logWorkerInfo('local-agents', 'Auto-iterating', { session_id: sessionId });
-
-      const nextJob: LocalAgentJob = {
-        type: localJob.type || 'local_cursor',
-        taskId: `${localJob.taskId || 'task'}-iter-${Date.now()}`,
-        tenant_slug: localJob.tenant_slug,
-        tenant_id: localJob.tenant_id,
-        request_id: `${sessionId}-auto-iter`,
-        initiated_by: 'system',
-        agent_role: agentRole as any,
-        max_iterations: 0,
-        payload: localJob.payload || {},
-        metadata: {
-          ...localJob.metadata,
-          prompt_body: nextPrompt,
-          iteration_session: sessionId,
-          parent_job_id: job.id,
-        },
-      };
-
-      await enqueueLocalAgentJob(nextJob);
-      logWorkerInfo('local-agents', 'Next iteration enqueued', { parent_job: job.id });
+      await this.enqueueNextIteration(job, localJob, sessionId, nextPrompt, agentRole);
     } else if (!shouldIterate && localJob.max_iterations && localJob.max_iterations > 0) {
-      // Session is complete
-      await this.orchestrator.completeSession(sessionId);
-      const summary = await this.orchestrator.getSummary(sessionId);
-      logWorkerInfo('local-agents', 'Iteration session complete', { summary });
-
-      // Generate patterns report
-      const report = await this.trainer.generatePatterns();
-      logWorkerInfo('local-agents', 'Trainer report generated', {
-        total_executions: report.total_executions,
-        patterns_found: report.patterns.length,
-      });
+      await this.completeIterationSession(sessionId);
     }
+  }
 
-    return {
-      success: true,
-      result_length: result.length,
-      duration,
-      iterations: localJob.max_iterations || 1,
-      session_id: localJob.max_iterations ? sessionId : undefined,
+  private async enqueueNextIteration(
+    job: any,
+    localJob: LocalAgentJob,
+    sessionId: string,
+    nextPrompt: string,
+    agentRole: 'cursor' | 'claude' | 'copilot' | 'opencode'
+  ): Promise<void> {
+    logWorkerInfo('local-agents', 'Auto-iterating', { session_id: sessionId });
+
+    const nextJob: LocalAgentJob = {
+      type: localJob.type || 'local_cursor',
+      taskId: `${localJob.taskId || 'task'}-iter-${Date.now()}`,
+      tenant_slug: localJob.tenant_slug,
+      tenant_id: localJob.tenant_id,
+      request_id: `${sessionId}-auto-iter`,
+      initiated_by: 'system',
+      agent_role: agentRole as any,
+      max_iterations: 0,
+      payload: localJob.payload || {},
+      metadata: {
+        ...localJob.metadata,
+        prompt_body: nextPrompt,
+        iteration_session: sessionId,
+        parent_job_id: job.id,
+      },
     };
+
+    await enqueueLocalAgentJob(nextJob);
+    logWorkerInfo('local-agents', 'Next iteration enqueued', { parent_job: job.id });
+  }
+
+  private async completeIterationSession(sessionId: string): Promise<void> {
+    await this.orchestrator.completeSession(sessionId);
+    const summary = await this.orchestrator.getSummary(sessionId);
+    logWorkerInfo('local-agents', 'Iteration session complete', { summary });
+
+    const report = await this.trainer.generatePatterns();
+    logWorkerInfo('local-agents', 'Trainer report generated', {
+      total_executions: report.total_executions,
+      patterns_found: report.patterns.length,
+    });
   }
 
   /**

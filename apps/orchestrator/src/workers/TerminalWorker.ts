@@ -41,6 +41,45 @@ function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((entry) => typeof entry === 'string');
 }
 
+function extractString(value: unknown, defaultValue: string): string {
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : defaultValue;
+}
+
+function extractTimeout(value: unknown): number {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return Math.max(1, Math.min(MAX_TIMEOUT_SECONDS, Math.floor(value)));
+  }
+  return DEFAULT_TIMEOUT_SECONDS;
+}
+
+function validatePayload(
+  payload: TerminalTaskPayload,
+  baseAgentDir: string
+): {
+  agentId: string;
+  sessionId: string;
+  commands: string[];
+  timeoutSeconds: number;
+  cwd: string;
+  processLabel?: string;
+  objective?: string;
+} {
+  const agentId = extractString(payload.agent_id, `agent-${randomUUID()}`);
+  const sessionId = extractString(payload.session_id, randomUUID());
+  const commands = isStringArray(payload.commands)
+    ? payload.commands.map((c) => c.trim()).filter((c) => c.length > 0)
+    : [];
+  if (commands.length === 0) {
+    throw new Error('terminal_task requires payload.commands[]');
+  }
+  const timeoutSeconds = extractTimeout(payload.timeout_seconds);
+  const cwd = extractString(payload.cwd, baseAgentDir);
+  const processLabel = extractString(payload.process_label, '') || undefined;
+  const objective = extractString(payload.objective, '') || undefined;
+
+  return { agentId, sessionId, commands, timeoutSeconds, cwd, processLabel, objective };
+}
+
 function runCommand(
   agentId: string,
   sessionId: string,
@@ -88,44 +127,22 @@ function runCommand(
 async function processTerminalJob(job: Job) {
   const data = job.data as TerminalTaskJobData;
   const payload = data.payload ?? {};
-
-  const rawAgentId = typeof payload.agent_id === 'string' ? payload.agent_id.trim() : '';
-  const agentId = rawAgentId.length > 0 ? rawAgentId : `agent-${randomUUID()}`;
-  const sessionId =
-    typeof payload.session_id === 'string' && payload.session_id.trim().length > 0
-      ? payload.session_id.trim()
-      : randomUUID();
-  const tenantSlug =
-    typeof payload.tenant_slug === 'string' && payload.tenant_slug.trim().length > 0
-      ? payload.tenant_slug.trim()
-      : (data.tenant_slug ?? 'opsly-internal');
-  const commands = isStringArray(payload.commands)
-    ? payload.commands.map((c) => c.trim()).filter((c) => c.length > 0)
-    : [];
-  if (commands.length === 0) {
-    throw new Error('terminal_task requires payload.commands[]');
-  }
-  const timeoutRaw = payload.timeout_seconds;
-  const timeoutSeconds =
-    typeof timeoutRaw === 'number' && Number.isFinite(timeoutRaw)
-      ? Math.max(1, Math.min(MAX_TIMEOUT_SECONDS, Math.floor(timeoutRaw)))
-      : DEFAULT_TIMEOUT_SECONDS;
+  const tenantSlug = extractString(payload.tenant_slug, data.tenant_slug ?? 'opsly-internal');
 
   const baseDir = resolve(
     process.env.OPSLY_TERMINAL_BASE_DIR ?? join(process.cwd(), 'runtime', 'agents')
   );
-  const agentDir = resolve(baseDir, sanitizeAgentId(agentId));
-  const cwd =
-    typeof payload.cwd === 'string' && payload.cwd.trim().length > 0 ? payload.cwd : agentDir;
-  const processLabel =
-    typeof payload.process_label === 'string' && payload.process_label.trim().length > 0
-      ? payload.process_label.trim()
-      : undefined;
-  const objective =
-    typeof payload.objective === 'string' && payload.objective.trim().length > 0
-      ? payload.objective.trim()
-      : undefined;
+  const defaultAgentDir = resolve(
+    baseDir,
+    sanitizeAgentId(
+      typeof payload.agent_id === 'string' ? payload.agent_id.trim() : `agent-${randomUUID()}`
+    )
+  );
 
+  const { agentId, sessionId, commands, timeoutSeconds, cwd, processLabel, objective } =
+    validatePayload(payload, defaultAgentDir);
+
+  const agentDir = resolve(baseDir, sanitizeAgentId(agentId));
   await mkdir(agentDir, { recursive: true });
   startTerminalSession(agentId, tenantSlug, sessionId, cwd, processLabel, objective);
 
@@ -149,12 +166,9 @@ async function processTerminalJob(job: Job) {
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
+    const rawAgentId = typeof payload.agent_id === 'string' ? payload.agent_id.trim() : '';
     if (rawAgentId.length > 0) {
-      const sid =
-        typeof payload.session_id === 'string' && payload.session_id.trim().length > 0
-          ? payload.session_id.trim()
-          : undefined;
-      failTerminalSession(rawAgentId, message, sid);
+      failTerminalSession(rawAgentId, message, sessionId);
     }
     throw error;
   }
