@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-05-29T13:00:39.153Z",
+  "generated_at": "2026-05-29T13:19:47.102Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -3607,6 +3607,39 @@
         "world"
       ],
       "size_bytes": 7027
+    },
+    {
+      "path": "apps/panini-lab/README.md",
+      "title": "🎟️ BBC - Panini Sticker Collection Assistant",
+      "keywords": [
+        "api",
+        "architecture",
+        "assistant",
+        "bbc",
+        "collection",
+        "contributing",
+        "development",
+        "environment",
+        "features",
+        "hooks",
+        "markdown",
+        "next",
+        "opsly",
+        "pages",
+        "panini",
+        "phases",
+        "quick",
+        "readme",
+        "related",
+        "routes",
+        "stack",
+        "start",
+        "steps",
+        "sticker",
+        "tech",
+        "variables"
+      ],
+      "size_bytes": 3211
     },
     {
       "path": "apps/peskids/CLAUDE.md",
@@ -82836,6 +82869,7 @@
       "apps/peskids/README.md",
       "apps/peskids/CLAUDE.md",
       "apps/peskids/DEPLOYMENT.md",
+      "apps/panini-lab/README.md",
       "apps/admin/INVITATIONS_UI.md",
       "apps/orchestrator/src/meta/README.md",
       "apps/orchestrator/README.md",
@@ -85212,6 +85246,7 @@
       "apps/peskids/README.md",
       "apps/peskids/CLAUDE.md",
       "apps/peskids/DEPLOYMENT.md",
+      "apps/panini-lab/README.md",
       "apps/admin/INVITATIONS_UI.md",
       "apps/orchestrator/src/meta/README.md",
       "apps/orchestrator/README.md",
@@ -88205,6 +88240,7 @@
       "lib/workflow/README.md",
       "lib/voice-messaging/README.md",
       "lib/security/README.md",
+      "apps/panini-lab/README.md",
       "apps/task-orchestrator/README.md",
       "vendor/agency-agents/integrations/qwen/agents/blender-add-on-engineer.md",
       "vendor/agency-agents/integrations/qwen/agents/carousel-growth-engine.md",
@@ -90679,6 +90715,7 @@
       "lib/config/README.md",
       "apps/peskids/CLAUDE.md",
       "apps/peskids/DEPLOYMENT.md",
+      "apps/panini-lab/README.md",
       "apps/task-orchestrator/README.md",
       "vendor/agency-agents/integrations/qwen/agents/geographer.md",
       "vendor/agency-agents/integrations/qwen/agents/image-prompt-engineer.md",
@@ -91596,6 +91633,7 @@
       ".cursor/prompts/local-services-ops-admin.md",
       ".cursor/responses/response-test-e2e-1777827139.md",
       "apps/peskids/DEPLOYMENT.md",
+      "apps/panini-lab/README.md",
       "vendor/agency-agents/integrations/qwen/agents/discovery-coach.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/discovery-coach/SKILL.md",
       "vendor/agency-agents/integrations/kimi/discovery-coach/system.md",
@@ -97794,6 +97832,7 @@
       "packages/skills/user/opsly-frontend/SKILL.md",
       "packages/skills/README.md",
       "lib/components/README.md",
+      "apps/panini-lab/README.md",
       "docs/runbooks/dev.md",
       "docs/00-architecture/hooks-system.md",
       "docs/01-development/RTK.md",
@@ -98146,6 +98185,7 @@
       "tools/agent-packs/vendor/the-architect/knowledge/archetypes/saas-webapp.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/state-management.md",
       "tools/agent-packs/vendor/the-architect/knowledge/stack-compatibility.md",
+      "apps/panini-lab/README.md",
       "vendor/agency-agents/integrations/qwen/agents/ai-data-remediation-engineer.md",
       "vendor/agency-agents/integrations/qwen/agents/carousel-growth-engine.md",
       "vendor/agency-agents/integrations/qwen/agents/senior-project-manager.md",
@@ -99387,6 +99427,7 @@
       "lib/voice-messaging/README.md",
       "apps/peskids/README.md",
       "apps/peskids/CLAUDE.md",
+      "apps/panini-lab/README.md",
       "apps/task-orchestrator/README.md",
       "vendor/agency-agents/integrations/qwen/agents/technical-writer.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/technical-writer/SKILL.md",
@@ -99494,6 +99535,7 @@
       "tools/productivity-starter/README.md",
       "lib/voice-messaging/README.md",
       "apps/peskids/README.md",
+      "apps/panini-lab/README.md",
       "apps/task-orchestrator/README.md",
       "vendor/agency-agents/integrations/qwen/agents/technical-writer.md",
       "vendor/agency-agents/integrations/qwen/agents/sales-engineer.md",
@@ -102267,6 +102309,7 @@
       "packages/skills/vendor/agent-skills/spec-driven-development/SKILL.md",
       "packages/skills/vendor/agent-skills/test-driven-development/SKILL.md",
       "packages/skills/vendor/agent-skills/doubt-driven-development/SKILL.md",
+      "apps/panini-lab/README.md",
       "vendor/agency-agents/integrations/qwen/agents/visual-storyteller.md",
       "vendor/agency-agents/integrations/qwen/agents/corporate-training-designer.md",
       "vendor/agency-agents/integrations/qwen/agents/livestream-commerce-coach.md",
@@ -104056,6 +104099,7 @@
       "lib/security/README.md",
       "apps/notion-mcp/README.md",
       "apps/peskids/README.md",
+      "apps/panini-lab/README.md",
       "apps/orchestrator/src/meta/README.md",
       "apps/orchestrator/README.md",
       "apps/experimental/context-builder-v2-archive/README.md",
@@ -105714,6 +105758,7 @@
       "apps/peskids/README.md",
       "apps/peskids/CLAUDE.md",
       "apps/peskids/DEPLOYMENT.md",
+      "apps/panini-lab/README.md",
       "apps/experimental/context-builder-v2-archive/src/design/architecture.md",
       "apps/task-orchestrator/README.md",
       "vendor/agency-agents/integrations/qwen/agents/lsp-index-engineer.md",
@@ -113006,6 +113051,7 @@
       "tools/agent-packs/vendor/the-architect/templates/blueprint-template.md",
       "tools/agent-packs/vendor/the-architect/questions/phase-1-discovery.md",
       "tools/productivity-starter/offer.md",
+      "apps/panini-lab/README.md",
       "vendor/agency-agents/integrations/openclaw/unreal-technical-artist/AGENTS.md",
       ".agents/skills/cyber-neo/SKILL.md",
       ".agents/skills/the-architect/references/templates/claude-md-template.md",
@@ -117892,6 +117938,7 @@
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/api-design-patterns.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/frontend-stacks.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/styling-systems.md",
+      "apps/panini-lab/README.md",
       "vendor/agency-agents/integrations/qwen/agents/book-co-author.md",
       "vendor/agency-agents/integrations/qwen/agents/discovery-coach.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/discovery-coach/SKILL.md",
@@ -123596,6 +123643,7 @@
       "tools/cli/README.md",
       "lib/config/README.md",
       "apps/peskids/DEPLOYMENT.md",
+      "apps/panini-lab/README.md",
       "apps/experimental/ingestion-service-archive/README.md",
       "apps/mcp/README.md",
       "docs/infrastructure/NOTEBOOKLM-BRAIN-SYNC.md",
@@ -124295,6 +124343,7 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/auth-authz-patterns.md",
       "tools/agent-packs/vendor/the-architect/templates/blueprint-template.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/auth-patterns.md",
+      "apps/panini-lab/README.md",
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
       "docs/01-development/SEMANA-5-INFORME.md",
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
@@ -125450,6 +125499,7 @@
     ],
     "phases": [
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/SKILL.md",
+      "apps/panini-lab/README.md",
       "vendor/agency-agents/integrations/qwen/agents/agents-orchestrator.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/agents-orchestrator/SKILL.md",
       "vendor/agency-agents/integrations/kimi/agents-orchestrator/system.md",
@@ -125695,7 +125745,8 @@
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md"
     ],
     "contributing": [
-      "tools/agent-packs/vendor/cyber-neo/CLAUDE.md"
+      "tools/agent-packs/vendor/cyber-neo/CLAUDE.md",
+      "apps/panini-lab/README.md"
     ],
     "contributor": [
       "tools/agent-packs/vendor/cyber-neo/CLAUDE.md"
@@ -127385,6 +127436,7 @@
     "pages": [
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/deployment-patterns.md",
       "tools/agent-packs/vendor/the-architect/questions/phase-2-branches.md",
+      "apps/panini-lab/README.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/deployment-patterns.md",
       ".agents/skills/the-architect/references/questions/phase-2-branches.md"
     ],
@@ -128336,6 +128388,7 @@
       "lib/voice-messaging/README.md",
       "lib/security/README.md",
       "apps/peskids/README.md",
+      "apps/panini-lab/README.md",
       "vendor/agency-agents/integrations/qwen/agents/visionos-spatial-engineer.md",
       "vendor/agency-agents/integrations/qwen/agents/mobile-app-builder.md",
       "vendor/agency-agents/integrations/qwen/agents/sales-engineer.md",
@@ -129819,6 +129872,71 @@
       "docs/adr/ADR-043-supplement/COMPLETE-INDEX.md",
       "docs/adr/ADR-043-supplement/README.md",
       "docs/adr/ADR-043-supplement/DECISION-RATIONALE.md"
+    ],
+    "assistant": [
+      "apps/panini-lab/README.md",
+      "vendor/agency-agents/integrations/qwen/agents/loan-officer-assistant.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/loan-officer-assistant/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/loan-officer-assistant/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-loan-officer-assistant/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/loan-officer-assistant.md",
+      "vendor/agency-agents/integrations/openclaw/loan-officer-assistant/IDENTITY.md",
+      "vendor/agency-agents/integrations/openclaw/loan-officer-assistant/AGENTS.md",
+      "docs/adr/ADR-040-technician-scaling-solo-to-assistant.md",
+      "docs/blueprints/opsly-operational-blueprint/MODULES.md"
+    ],
+    "bbc": [
+      "apps/panini-lab/README.md"
+    ],
+    "collection": [
+      "apps/panini-lab/README.md",
+      "vendor/agency-agents/integrations/qwen/agents/test-results-analyzer.md",
+      "vendor/agency-agents/integrations/qwen/agents/feedback-synthesizer.md",
+      "vendor/agency-agents/integrations/qwen/agents/legal-client-intake.md",
+      "vendor/agency-agents/integrations/qwen/agents/real-estate-buyer-seller.md",
+      "vendor/agency-agents/integrations/qwen/agents/unreal-systems-engineer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/feedback-synthesizer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/test-results-analyzer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/real-estate-buyer-seller/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-systems-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/legal-client-intake/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/feedback-synthesizer/system.md",
+      "vendor/agency-agents/integrations/kimi/test-results-analyzer/system.md",
+      "vendor/agency-agents/integrations/kimi/real-estate-buyer-seller/system.md",
+      "vendor/agency-agents/integrations/kimi/unreal-systems-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/legal-client-intake/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-test-results-analyzer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-legal-client-intake/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-real-estate-buyer-seller/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-feedback-synthesizer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-unreal-systems-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/test-results-analyzer.md",
+      "vendor/agency-agents/integrations/opencode/agents/feedback-synthesizer.md",
+      "vendor/agency-agents/integrations/opencode/agents/legal-client-intake.md",
+      "vendor/agency-agents/integrations/opencode/agents/real-estate-buyer-seller.md",
+      "vendor/agency-agents/integrations/opencode/agents/unreal-systems-engineer.md",
+      "vendor/agency-agents/integrations/openclaw/compliance-auditor/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/feedback-synthesizer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/test-results-analyzer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/real-estate-buyer-seller/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/unreal-systems-engineer/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/legal-client-intake/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/loan-officer-assistant/AGENTS.md",
+      "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB683486-SEED419215-20180924-00000.md",
+      "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB1177123-SEED419213-20200602-00000.md"
+    ],
+    "panini": [
+      "apps/panini-lab/README.md",
+      "docs/panini-lab/OVERVIEW.md"
+    ],
+    "related": [
+      "apps/panini-lab/README.md",
+      "docs/.obsidian/templates/doc-template.md",
+      "docs/adr/ADR-036-cli-consolidation-tools-cli-first.md",
+      "docs/adr/ADR-035-safe-autonomous-evolution-framework.md"
+    ],
+    "sticker": [
+      "apps/panini-lab/README.md"
     ],
     "exito": [
       "apps/admin/INVITATIONS_UI.md",
@@ -137257,42 +137375,6 @@
       "vendor/agency-agents/integrations/openclaw/test-results-analyzer/IDENTITY.md",
       "vendor/agency-agents/integrations/openclaw/test-results-analyzer/AGENTS.md"
     ],
-    "collection": [
-      "vendor/agency-agents/integrations/qwen/agents/test-results-analyzer.md",
-      "vendor/agency-agents/integrations/qwen/agents/feedback-synthesizer.md",
-      "vendor/agency-agents/integrations/qwen/agents/legal-client-intake.md",
-      "vendor/agency-agents/integrations/qwen/agents/real-estate-buyer-seller.md",
-      "vendor/agency-agents/integrations/qwen/agents/unreal-systems-engineer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/feedback-synthesizer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/test-results-analyzer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/real-estate-buyer-seller/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-systems-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/legal-client-intake/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/feedback-synthesizer/system.md",
-      "vendor/agency-agents/integrations/kimi/test-results-analyzer/system.md",
-      "vendor/agency-agents/integrations/kimi/real-estate-buyer-seller/system.md",
-      "vendor/agency-agents/integrations/kimi/unreal-systems-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/legal-client-intake/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-test-results-analyzer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-legal-client-intake/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-real-estate-buyer-seller/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-feedback-synthesizer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-unreal-systems-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/test-results-analyzer.md",
-      "vendor/agency-agents/integrations/opencode/agents/feedback-synthesizer.md",
-      "vendor/agency-agents/integrations/opencode/agents/legal-client-intake.md",
-      "vendor/agency-agents/integrations/opencode/agents/real-estate-buyer-seller.md",
-      "vendor/agency-agents/integrations/opencode/agents/unreal-systems-engineer.md",
-      "vendor/agency-agents/integrations/openclaw/compliance-auditor/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/feedback-synthesizer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/test-results-analyzer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/real-estate-buyer-seller/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/unreal-systems-engineer/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/legal-client-intake/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/loan-officer-assistant/AGENTS.md",
-      "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB683486-SEED419215-20180924-00000.md",
-      "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB1177123-SEED419213-20200602-00000.md"
-    ],
     "readiness": [
       "vendor/agency-agents/integrations/qwen/agents/test-results-analyzer.md",
       "vendor/agency-agents/integrations/qwen/agents/incident-response-commander.md",
@@ -142423,17 +142505,6 @@
       "vendor/agency-agents/integrations/antigravity/agency-roblox-experience-designer/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/roblox-experience-designer.md",
       "vendor/agency-agents/integrations/openclaw/roblox-experience-designer/AGENTS.md"
-    ],
-    "assistant": [
-      "vendor/agency-agents/integrations/qwen/agents/loan-officer-assistant.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/loan-officer-assistant/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/loan-officer-assistant/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-loan-officer-assistant/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/loan-officer-assistant.md",
-      "vendor/agency-agents/integrations/openclaw/loan-officer-assistant/IDENTITY.md",
-      "vendor/agency-agents/integrations/openclaw/loan-officer-assistant/AGENTS.md",
-      "docs/adr/ADR-040-technician-scaling-solo-to-assistant.md",
-      "docs/blueprints/opsly-operational-blueprint/MODULES.md"
     ],
     "borrower": [
       "vendor/agency-agents/integrations/qwen/agents/loan-officer-assistant.md",
@@ -149359,9 +149430,6 @@
     "lab": [
       "docs/panini-lab/OVERVIEW.md"
     ],
-    "panini": [
-      "docs/panini-lab/OVERVIEW.md"
-    ],
     "credentials": [
       "docs/panini-lab/PROVIDER-SETUP.md",
       "docs/panini-lab/TROUBLESHOOTING.md",
@@ -151342,11 +151410,6 @@
     ],
     "vinzent03": [
       "docs/.obsidian/PLUGINS-TO-INSTALL.md"
-    ],
-    "related": [
-      "docs/.obsidian/templates/doc-template.md",
-      "docs/adr/ADR-036-cli-consolidation-tools-cli-first.md",
-      "docs/adr/ADR-035-safe-autonomous-evolution-framework.md"
     ],
     "desplegar": [
       "docs/runbooks/e2e-hybrid-write.md",
@@ -157065,6 +157128,7 @@
     "apps/notion-mcp/README.md",
     "apps/orchestrator/README.md",
     "apps/orchestrator/src/meta/README.md",
+    "apps/panini-lab/README.md",
     "apps/peskids/CLAUDE.md",
     "apps/peskids/DEPLOYMENT.md",
     "apps/peskids/README.md",
