@@ -129,10 +129,9 @@ export async function handleAgentRegistryChangeRequest(
   registerOpenClawAgent(modifiedAgent);
 
   // 5. Set auto-revert timer
-  let revertTimer: NodeJS.Timeout | null = null;
   if (request.provisionalUntil) {
     const delayMs = Math.max(0, request.provisionalUntil - Date.now());
-    revertTimer = setTimeout(() => {
+    const revertTimer = setTimeout(() => {
       const reverted: OpenClawAgentDescriptor = {
         ...modifiedAgent,
         modelTier: originalTier,

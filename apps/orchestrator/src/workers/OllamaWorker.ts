@@ -280,23 +280,18 @@ async function processOllamaJob(job: Job) {
 
   const url = `${gatewayBaseUrl()}/v1/text`;
   const t0 = Date.now();
-  let res: Response;
-  try {
-    res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        tenant_slug: tenantSlug,
-        tenant_plan: data.plan,
-        request_id: data.request_id,
-        task_type: taskType,
-        prompt,
-      }),
-      signal: AbortSignal.timeout(120_000),
-    });
-  } catch (err) {
-    throw err;
-  }
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      tenant_slug: tenantSlug,
+      tenant_plan: data.plan,
+      request_id: data.request_id,
+      task_type: taskType,
+      prompt,
+    }),
+    signal: AbortSignal.timeout(120_000),
+  });
 
   if (!res.ok) {
     const errText = await res.text();

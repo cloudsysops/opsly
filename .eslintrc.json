@@ -68,6 +68,10 @@
       },
       "rules": {
         "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+        ],
         "complexity": ["error", 15],
         "max-lines-per-function": [
           "warn",
