@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-05-29T13:47:55.911Z",
+  "generated_at": "2026-05-29T13:54:31.494Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -3639,7 +3639,7 @@
         "tech",
         "variables"
       ],
-      "size_bytes": 3211
+      "size_bytes": 3661
     },
     {
       "path": "apps/peskids/CLAUDE.md",
