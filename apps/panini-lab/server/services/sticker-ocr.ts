@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 interface OcrExtractionResult {
   player_name?: string;
@@ -9,30 +9,38 @@ interface OcrExtractionResult {
   confidence: number;
 }
 
-interface StickerScanResult {
-  matches: Array<{
-    id: string;
-    number: number;
-    player_name: string;
-    country: string;
-    card_type: string;
-    confidence: number;
-  }>;
+interface StickerMatch {
+  id: string;
+  number: number;
+  player_name: string;
+  country: string;
+  card_type: string;
   confidence: number;
-  primary_match: {
-    id: string;
-    number: number;
-    player_name: string;
-    country: string;
-    card_type: string;
-    confidence: number;
-  } | null;
+}
+
+interface StickerScanResult {
+  matches: StickerMatch[];
+  confidence: number;
+  primary_match: StickerMatch | null;
   extracted_metadata: OcrExtractionResult;
   message: string;
 }
 
+interface StoredSticker {
+  id: string;
+  number: number;
+  player_name?: string;
+  country?: string;
+  card_type?: string;
+  tournament_id: string;
+}
+
+interface InventoryItem {
+  quantity: number;
+}
+
 export class StickerOCRService {
-  private supabase: any;
+  private supabase: SupabaseClient;
   private openaiApiKey: string;
 
   constructor(supabaseUrl: string, supabaseKey: string, openaiApiKey: string) {
@@ -43,7 +51,8 @@ export class StickerOCRService {
   async scanSticker(
     imageBuffer: Buffer,
     tournamentId: string,
-    tenantId: string
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _tenantId: string
   ): Promise<StickerScanResult> {
     // Extract metadata from image using vision API
     const metadata = await this.extractMetadataFromImage(imageBuffer);
@@ -66,14 +75,13 @@ export class StickerOCRService {
     };
   }
 
-  private async extractMetadataFromImage(
-    imageBuffer: Buffer
-  ): Promise<OcrExtractionResult> {
+  private async extractMetadataFromImage(imageBuffer: Buffer): Promise<OcrExtractionResult> {
     // For now, return mock extraction
     // In production, call OpenAI Vision API or Google Cloud Vision
 
     const base64Image = imageBuffer.toString('base64');
-    const mimeType = this.detectImageMimeType(imageBuffer);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const _mimeType = this.detectImageMimeType(imageBuffer);
 
     try {
       // Mock extraction for MVP
@@ -90,9 +98,8 @@ export class StickerOCRService {
     }
   }
 
-  private async mockVisionExtraction(
-    base64Image: string
-  ): Promise<OcrExtractionResult> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private async mockVisionExtraction(_base64Image: string): Promise<OcrExtractionResult> {
     // This is a placeholder for actual OpenAI Vision integration
     // In real implementation, call OpenAI's GPT-4V endpoint
 
@@ -111,12 +118,7 @@ export class StickerOCRService {
     if (buffer[0] === 0xff && buffer[1] === 0xd8) {
       return 'image/jpeg';
     }
-    if (
-      buffer[0] === 0x89 &&
-      buffer[1] === 0x50 &&
-      buffer[2] === 0x4e &&
-      buffer[3] === 0x47
-    ) {
+    if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) {
       return 'image/png';
     }
     return 'image/jpeg';
@@ -125,26 +127,12 @@ export class StickerOCRService {
   private async findMatches(
     metadata: OcrExtractionResult,
     tournamentId: string
-  ): Promise<any[]> {
-    const filters: any = { tournament_id: tournamentId };
-
-    if (metadata.player_name && metadata.player_name !== 'Unknown') {
-      filters.player_name = `ilike.%${metadata.player_name}%`;
-    }
-
-    if (metadata.card_number) {
-      filters.number = `eq.${metadata.card_number}`;
-    }
-
-    if (metadata.country && metadata.country !== 'Unknown') {
-      filters.country = `ilike.%${metadata.country}%`;
-    }
-
-    const { data: stickers, error } = await this.supabase
+  ): Promise<StoredSticker[]> {
+    const { data: stickers, error } = (await this.supabase
       .from('stickers')
       .select('*')
-      .eq(filters.tournament_id ? 'tournament_id' : 'id', tournamentId)
-      .limit(10);
+      .eq('tournament_id', tournamentId)
+      .limit(10)) as unknown as { data: StoredSticker[] | null; error: unknown };
 
     if (error) {
       console.error('Sticker search error:', error);
@@ -154,22 +142,12 @@ export class StickerOCRService {
     return stickers || [];
   }
 
-  private rankMatches(
-    metadata: OcrExtractionResult,
-    matches: any[]
-  ): Array<{
-    id: string;
-    number: number;
-    player_name: string;
-    country: string;
-    card_type: string;
-    confidence: number;
-  }> {
+  private rankMatches(metadata: OcrExtractionResult, matches: StoredSticker[]): StickerMatch[] {
     if (!matches || matches.length === 0) {
       return [];
     }
 
-    const scored = matches.map((sticker: any) => {
+    const scored = matches.map((sticker: StoredSticker) => {
       let score = metadata.confidence * 100;
 
       // Boost confidence if player name matches
@@ -215,35 +193,33 @@ export class StickerOCRService {
     tenantId: string
   ): Promise<{ success: boolean; message: string }> {
     try {
-      const { error } = await this.supabase
-        .from('sticker_inventory')
-        .insert({
-          user_id: userId,
-          sticker_id: stickerId,
-          tenant_id: tenantId,
-          condition,
-          source: 'scanned',
-          acquired_date: new Date().toISOString(),
-          quantity: 1,
-        } as any);
+      const { error } = await this.supabase.from('sticker_inventory').insert({
+        user_id: userId,
+        sticker_id: stickerId,
+        tenant_id: tenantId,
+        condition,
+        source: 'scanned',
+        acquired_date: new Date().toISOString(),
+        quantity: 1,
+      });
 
       if (error) {
-        if (error.code === '23505') {
+        if ((error as unknown as { code: string }).code === '23505') {
           // Unique constraint violation, increment quantity
           const { data: existing } = (await this.supabase
             .from('sticker_inventory')
             .select('quantity')
             .eq('sticker_id', stickerId)
             .eq('user_id', userId)
-            .single()) as any;
+            .single()) as unknown as { data: InventoryItem | null };
 
           if (existing) {
-            const newQty = (existing as any).quantity + 1;
-            await (this.supabase
+            const newQty = existing.quantity + 1;
+            await this.supabase
               .from('sticker_inventory')
-              .update({ quantity: newQty } as any)
+              .update({ quantity: newQty })
               .eq('sticker_id', stickerId)
-              .eq('user_id', userId) as any);
+              .eq('user_id', userId);
           }
 
           return {

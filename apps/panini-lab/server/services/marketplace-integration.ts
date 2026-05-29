@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 interface MarketplaceListing {
   id: string;
@@ -22,8 +22,48 @@ interface SearchResult {
   message: string;
 }
 
+interface Sticker {
+  id: string;
+  player_name?: string;
+  country?: string;
+}
+
+interface CachedListing {
+  id: string;
+  marketplace: string;
+  seller_id?: string;
+  price: number;
+  currency?: string;
+  shipping_cost?: number;
+  condition?: string;
+  seller_rating?: number;
+  listing_url?: string;
+  in_stock: boolean;
+  expires_at?: string;
+}
+
+interface WishlistItem {
+  id: string;
+  max_price?: number;
+  stickers?: {
+    id: string;
+    player_name?: string;
+    country?: string;
+    sticker_marketplace_listings?: Array<{
+      price: number;
+      marketplace: string;
+    }>;
+  };
+}
+
+interface PriceHistoryRecord {
+  price: number;
+  marketplace: string;
+  scraped_at: string;
+}
+
 export class MarketplaceService {
-  private supabase: any;
+  private supabase: SupabaseClient;
   private mercadolibreAccessToken: string;
 
   constructor(supabaseUrl: string, supabaseKey: string, mercadolibreAccessToken: string) {
@@ -37,7 +77,7 @@ export class MarketplaceService {
       .from('stickers')
       .select('*')
       .eq('id', stickerId)
-      .single()) as any;
+      .single()) as unknown as { data: Sticker | null };
 
     if (!sticker) {
       return {
@@ -55,13 +95,13 @@ export class MarketplaceService {
       .eq('sticker_id', stickerId)
       .gt('expires_at', new Date().toISOString())
       .order('price', { ascending: true })
-      .limit(20)) as any;
+      .limit(20)) as unknown as { data: CachedListing[] | null };
 
     if (cached && cached.length > 0) {
       const cheapest = this.formatListing(cached[0]);
       return {
         sticker_id: stickerId,
-        listings: (cached as any[]).map((c: any) => this.formatListing(c)),
+        listings: cached.map((c: CachedListing) => this.formatListing(c)),
         cheapest,
         message: `Encontré ${cached.length} oferta${cached.length === 1 ? '' : 's'} para "${sticker.player_name || 'esta estampa'}"`,
       };
@@ -69,7 +109,7 @@ export class MarketplaceService {
 
     // Search live (would call MercadoLibre API)
     // For MVP, return cached results or mock
-    const mockResults = await this.generateMockListings(sticker as any);
+    const mockResults = await this.generateMockListings(sticker);
 
     const stickerName = sticker ? sticker.player_name || 'esta estampa' : 'esta estampa';
     return {
@@ -80,7 +120,7 @@ export class MarketplaceService {
     };
   }
 
-  private formatListing(listing: any): MarketplaceListing {
+  private formatListing(listing: CachedListing): MarketplaceListing {
     const shippingCost = listing.shipping_cost || 0;
     const totalPrice = listing.price + shippingCost;
 
@@ -100,7 +140,7 @@ export class MarketplaceService {
     };
   }
 
-  private async generateMockListings(sticker: any): Promise<MarketplaceListing[]> {
+  private async generateMockListings(sticker: Sticker): Promise<MarketplaceListing[]> {
     // For MVP development, generate mock listings
     // Real implementation would call MercadoLibre API
     const basePrice = Math.random() * 500 + 50; // $50-$550
@@ -165,14 +205,12 @@ export class MarketplaceService {
         return { success: false, message: 'Estampa no encontrada' };
       }
 
-      const { error } = await this.supabase
-        .from('sticker_wishlist')
-        .insert({
-          user_id: userId,
-          sticker_id: stickerId,
-          tenant_id: tenantId,
-          max_price: maxPrice,
-        } as any);
+      const { error } = await this.supabase.from('sticker_wishlist').insert({
+        user_id: userId,
+        sticker_id: stickerId,
+        tenant_id: tenantId,
+        max_price: maxPrice,
+      });
 
       if (error) {
         if (error.code === '23505') {
@@ -191,16 +229,18 @@ export class MarketplaceService {
     }
   }
 
-  async getPriceHistory(stickerId: string, days = 30): Promise<any[]> {
+  async getPriceHistory(stickerId: string, days = 30): Promise<PriceHistoryRecord[]> {
     const since = new Date();
     since.setDate(since.getDate() - days);
 
-    const { data: history } = await this.supabase
+    const { data: history } = (await this.supabase
       .from('sticker_marketplace_listings')
       .select('price, marketplace, scraped_at')
       .eq('sticker_id', stickerId)
       .gte('scraped_at', since.toISOString())
-      .order('scraped_at', { ascending: true });
+      .order('scraped_at', { ascending: true })) as unknown as {
+      data: PriceHistoryRecord[] | null;
+    };
 
     return history || [];
   }
@@ -218,7 +258,7 @@ export class MarketplaceService {
       max_price?: number;
     }>
   > {
-    const { data: wishlist } = await this.supabase
+    const { data: wishlist } = (await this.supabase
       .from('sticker_wishlist')
       .select(
         `
@@ -234,10 +274,12 @@ export class MarketplaceService {
       )
       .eq('user_id', userId)
       .eq('tenant_id', tenantId)
-      .order('priority', { ascending: true });
+      .order('priority', { ascending: true })) as unknown as {
+      data: WishlistItem[] | null;
+    };
 
     return (
-      wishlist?.map((w: any) => ({
+      wishlist?.map((w: WishlistItem) => ({
         id: w.id,
         player_name: w.stickers?.player_name || 'Unknown',
         country: w.stickers?.country || 'Unknown',

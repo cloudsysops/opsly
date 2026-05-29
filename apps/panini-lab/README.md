@@ -39,23 +39,23 @@ npm run dev
 
 ### Pages
 
-| Page | Purpose |
-|------|---------|
-| `/chat` | Main BBC Q&A interface (voice + text) |
-| `/scan` | Camera scanner for sticker recognition |
-| `/inventory` | View collection by tournament |
-| `/wishlist` | Missing stickers + price tracking |
-| `/marketplace` | Cross-venue price comparison |
+| Page           | Purpose                                |
+| -------------- | -------------------------------------- |
+| `/chat`        | Main BBC Q&A interface (voice + text)  |
+| `/scan`        | Camera scanner for sticker recognition |
+| `/inventory`   | View collection by tournament          |
+| `/wishlist`    | Missing stickers + price tracking      |
+| `/marketplace` | Cross-venue price comparison           |
 
 ### API Routes
 
-| Route | Method | Purpose |
-|-------|--------|---------|
-| `/api/chat` | POST | BBC message handling |
-| `/api/scan/ocr` | POST | Image → sticker identification |
-| `/api/inventory` | GET/POST | Inventory queries + add sticker |
-| `/api/wishlist` | GET/POST | Wishlist management |
-| `/api/marketplace/search` | POST | Cross-venue search |
+| Route                     | Method   | Purpose                         |
+| ------------------------- | -------- | ------------------------------- |
+| `/api/chat`               | POST     | BBC message handling            |
+| `/api/scan/ocr`           | POST     | Image → sticker identification  |
+| `/api/inventory`          | GET/POST | Inventory queries + add sticker |
+| `/api/wishlist`           | GET/POST | Wishlist management             |
+| `/api/marketplace/search` | POST     | Cross-venue search              |
 
 ### Hooks
 
@@ -64,15 +64,15 @@ npm run dev
 
 ## Development Phases
 
-| Phase | Status | Duration |
-|-------|--------|----------|
-| 1. Database Schema | ✅ Complete | 1 day |
-| 2. Frontend (this) | 🔄 In Progress | 2 days |
-| 3. Backend Services | Pending | 2 days |
-| 4. OCR + CV | Pending | 2 days |
-| 5. Marketplace APIs | Pending | 2 days |
-| 6. LLM Integration | Pending | 2 days |
-| 7. Testing + Deployment | Pending | 2 days |
+| Phase                   | Status         | Duration |
+| ----------------------- | -------------- | -------- |
+| 1. Database Schema      | ✅ Complete    | 1 day    |
+| 2. Frontend (this)      | 🔄 In Progress | 2 days   |
+| 3. Backend Services     | Pending        | 2 days   |
+| 4. OCR + CV             | Pending        | 2 days   |
+| 5. Marketplace APIs     | Pending        | 2 days   |
+| 6. LLM Integration      | Pending        | 2 days   |
+| 7. Testing + Deployment | Pending        | 2 days   |
 
 ## Environment Variables
 
