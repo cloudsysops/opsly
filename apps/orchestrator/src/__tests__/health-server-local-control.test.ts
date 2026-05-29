@@ -142,7 +142,11 @@ describe('health-server local hybrid control plane', () => {
     );
 
     expect(status).toBe(202);
-    const parsed = JSON.parse(raw) as { success?: boolean; job_type?: string; control_mode?: string };
+    const parsed = JSON.parse(raw) as {
+      success?: boolean;
+      job_type?: string;
+      control_mode?: string;
+    };
     expect(parsed.success).toBe(true);
     expect(parsed.job_type).toBe('local_codex');
     expect(parsed.control_mode).toBe('opsly_control');
@@ -172,7 +176,11 @@ describe('health-server local hybrid control plane', () => {
     );
 
     expect(status).toBe(202);
-    const parsed = JSON.parse(raw) as { success?: boolean; control_mode?: string; prepared_only?: boolean };
+    const parsed = JSON.parse(raw) as {
+      success?: boolean;
+      control_mode?: string;
+      prepared_only?: boolean;
+    };
     expect(parsed.success).toBe(true);
     expect(parsed.control_mode).toBe('ide_fallback');
     expect(parsed.prepared_only).toBe(true);

@@ -21,7 +21,6 @@ type ValidationJobResult =
   | { status: 'max_retries'; task_id: string }
   | { status: 'fail'; retry_count: number };
 
-
 const REPO = process.env.OPSLY_GITHUB_REPO ?? 'cloudsysops/opsly';
 const MAX_RETRIES = 3;
 const POLL_INTERVAL_MS = 30_000;

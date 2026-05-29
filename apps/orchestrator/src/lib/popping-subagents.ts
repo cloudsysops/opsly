@@ -236,7 +236,9 @@ function activeRoleIdsForGoal(goal: string): PoppingSubagentId[] {
   return ['repo-scout', 'risk-checker', 'pr-summarizer'];
 }
 
-async function workerHealth(worker: PoppingSubagentWorker): Promise<{ healthy: boolean | null; url: string | null }> {
+async function workerHealth(
+  worker: PoppingSubagentWorker
+): Promise<{ healthy: boolean | null; url: string | null }> {
   const registry = getAgentServiceRegistry();
   try {
     const service = await registry.getWorkingService(worker);
@@ -252,7 +254,11 @@ async function workerHealth(worker: PoppingSubagentWorker): Promise<{ healthy: b
   }
 }
 
-function buildPromptForRole(role: PoppingSubagentRole, goal: string, context: BuildPoppingSubagentPlanInput): string {
+function buildPromptForRole(
+  role: PoppingSubagentRole,
+  goal: string,
+  context: BuildPoppingSubagentPlanInput
+): string {
   const lines = [
     `Goal: ${goal}`,
     `Role: ${role.role}`,
@@ -269,9 +275,14 @@ function buildPromptForRole(role: PoppingSubagentRole, goal: string, context: Bu
   return lines.join('\n');
 }
 
-async function buildAnalysis(input: BuildPoppingSubagentPlanInput): Promise<PoppingSubagentAnalysis> {
+async function buildAnalysis(
+  input: BuildPoppingSubagentPlanInput
+): Promise<PoppingSubagentAnalysis> {
   if (input.branchName) {
-    const entry = await getBranchByName(input.tenantSlug ?? 'intcloudsysops', input.branchName).catch(() => null);
+    const entry = await getBranchByName(
+      input.tenantSlug ?? 'intcloudsysops',
+      input.branchName
+    ).catch(() => null);
     if (entry) {
       try {
         const advisor = await buildMergeAdvisorReport(entry);
@@ -302,7 +313,9 @@ async function buildAnalysis(input: BuildPoppingSubagentPlanInput): Promise<Popp
   }
 
   if (input.sessionId) {
-    const recovery = await buildRecoverySnapshot(input.sessionId, input.tenantSlug).catch(() => null);
+    const recovery = await buildRecoverySnapshot(input.sessionId, input.tenantSlug).catch(
+      () => null
+    );
     if (recovery) {
       const files = recovery.changedFiles ?? [];
       const highRisk = files.some((file) => file.includes('apps/api') || file.includes('infra/'));

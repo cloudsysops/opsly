@@ -113,7 +113,7 @@ export async function selectWorker(input: SelectWorkerInput): Promise<SelectWork
   const needsApproval =
     risk === 'high' ||
     input.writeRequired === true ||
-    cap?.write_access === true && risk !== 'low';
+    (cap?.write_access === true && risk !== 'low');
 
   const rationaleParts = [
     `role=${role}`,

@@ -130,7 +130,9 @@ describe('popping subagents', () => {
     ]);
     expect(plan.analysis.risk).toBe('MODERATE');
     expect(plan.analysis.humanApprovalRequired).toBe(true);
-    expect(plan.analysis.filesTouched).toContain('apps/orchestrator/src/http/routes/mission-control.ts');
+    expect(plan.analysis.filesTouched).toContain(
+      'apps/orchestrator/src/http/routes/mission-control.ts'
+    );
     expect(plan.missionControlHint).toContain('repo-scout -> risk-checker -> pr-summarizer');
   });
 });

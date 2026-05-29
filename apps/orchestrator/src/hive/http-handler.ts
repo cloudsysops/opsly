@@ -12,7 +12,10 @@ export async function initializeHiveHandler(): Promise<HiveOrchestrator> {
   return orchestrator;
 }
 
-export async function handleSubmitObjective(req: IncomingMessage, res: ServerResponse): Promise<void> {
+export async function handleSubmitObjective(
+  req: IncomingMessage,
+  res: ServerResponse
+): Promise<void> {
   if (!orchestrator) {
     res.writeHead(503, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Hive orchestrator no inicializado' }));
@@ -112,7 +115,10 @@ export async function handleRetrySubtask(
   }
 }
 
-export async function handleListActiveBots(req: IncomingMessage, res: ServerResponse): Promise<void> {
+export async function handleListActiveBots(
+  req: IncomingMessage,
+  res: ServerResponse
+): Promise<void> {
   if (!orchestrator) {
     res.writeHead(503, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Hive orchestrator no inicializado' }));

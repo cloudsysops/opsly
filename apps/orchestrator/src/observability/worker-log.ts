@@ -35,11 +35,11 @@ export type WorkerName =
   | 'autonomous_revenue'
   | 'research'
   | 'agent_farm'
-	| 'super_orchestrator'
-	| 'shield-scan'
-	| 'insight-generator'
-	| 'webhook'
-	| 'test-validator'
+  | 'super_orchestrator'
+  | 'shield-scan'
+  | 'insight-generator'
+  | 'webhook'
+  | 'test-validator'
   // Maia Life Systems
   | 'self-heal'
   | 'auto-deploy'
@@ -63,8 +63,7 @@ export function extractJobContext(job: Job): {
     payload?: { tenant_id?: string; tenant_slug?: string };
   };
   const autonomyRisk =
-    parseAutonomyRiskLevel(d.autonomy_risk) ??
-    parseAutonomyRiskLevel(d.metadata?.autonomy_risk);
+    parseAutonomyRiskLevel(d.autonomy_risk) ?? parseAutonomyRiskLevel(d.metadata?.autonomy_risk);
   return {
     task_id: d.taskId,
     tenant_slug: d.tenant_slug ?? d.payload?.tenant_slug,
@@ -101,15 +100,27 @@ function writeWorkerLog(
   }
 }
 
-export function logWorkerInfo(worker: WorkerName, message: string, extra?: Record<string, unknown>): void {
+export function logWorkerInfo(
+  worker: WorkerName,
+  message: string,
+  extra?: Record<string, unknown>
+): void {
   writeWorkerLog('info', worker, message, extra);
 }
 
-export function logWorkerWarn(worker: WorkerName, message: string, extra?: Record<string, unknown>): void {
+export function logWorkerWarn(
+  worker: WorkerName,
+  message: string,
+  extra?: Record<string, unknown>
+): void {
   writeWorkerLog('warn', worker, message, extra);
 }
 
-export function logWorkerError(worker: WorkerName, message: string, extra?: Record<string, unknown>): void {
+export function logWorkerError(
+  worker: WorkerName,
+  message: string,
+  extra?: Record<string, unknown>
+): void {
   writeWorkerLog('error', worker, message, extra);
 }
 

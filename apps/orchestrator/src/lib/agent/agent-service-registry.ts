@@ -74,7 +74,9 @@ export class AgentServiceRegistry {
     }
 
     console.error('[AgentServiceRegistry] ❌ Error loading config:', errors.join(' | '));
-    throw new Error(`Failed to load agent services config. Tried: ${this.candidateConfigPaths().join(', ')}`);
+    throw new Error(
+      `Failed to load agent services config. Tried: ${this.candidateConfigPaths().join(', ')}`
+    );
   }
 
   /**
@@ -96,7 +98,8 @@ export class AgentServiceRegistry {
   }
 
   private normalizeService(serviceName: string, raw: Record<string, unknown>): AgentService {
-    const url = typeof raw.url === 'string' ? raw.url : typeof raw.endpoint === 'string' ? raw.endpoint : '';
+    const url =
+      typeof raw.url === 'string' ? raw.url : typeof raw.endpoint === 'string' ? raw.endpoint : '';
     const envVar =
       typeof raw.env_var === 'string'
         ? raw.env_var
@@ -129,7 +132,10 @@ export class AgentServiceRegistry {
       retry_backoff_ms: typeof raw.retry_backoff_ms === 'number' ? raw.retry_backoff_ms : 1000,
       health_check_interval_ms:
         typeof raw.health_check_interval_ms === 'number' ? raw.health_check_interval_ms : 30000,
-      description: typeof raw.description === 'string' ? raw.description : `${serviceName} local agent service`,
+      description:
+        typeof raw.description === 'string'
+          ? raw.description
+          : `${serviceName} local agent service`,
     };
   }
 
@@ -198,7 +204,10 @@ export class AgentServiceRegistry {
   async getAvailableServices(): Promise<string[]> {
     const config = await this.getConfig();
     return Object.entries(config.services)
-      .filter(([name, service]) => this.normalizeService(name, service as unknown as Record<string, unknown>).enabled)
+      .filter(
+        ([name, service]) =>
+          this.normalizeService(name, service as unknown as Record<string, unknown>).enabled
+      )
       .map(([name, _]) => name.replace(/^local_/, ''));
   }
 
@@ -260,7 +269,9 @@ export class AgentServiceRegistry {
    * Get a working service from fallback chain
    * Tries primary, then falls back through chain until one is healthy
    */
-  async getWorkingService(preferredService?: string): Promise<{ name: string; service: AgentService } | null> {
+  async getWorkingService(
+    preferredService?: string
+  ): Promise<{ name: string; service: AgentService } | null> {
     const config = await this.getConfig();
     const chain = preferredService
       ? [preferredService, ...config.defaults.fallback_chain.filter((s) => s !== preferredService)]
@@ -299,7 +310,10 @@ export class AgentServiceRegistry {
 
     for (const [name, service] of Object.entries(config.services)) {
       const normalizedName = name.replace(/^local_/, '');
-      const normalized = this.normalizeService(normalizedName, service as unknown as Record<string, unknown>);
+      const normalized = this.normalizeService(
+        normalizedName,
+        service as unknown as Record<string, unknown>
+      );
       const healthy = await this.isServiceHealthy(normalizedName);
       services.push({
         name: normalizedName,
@@ -333,7 +347,9 @@ export class AgentServiceRegistry {
     const config = await this.getConfig();
     if (config.services[serviceName]) {
       config.services[serviceName].enabled = enabled;
-      console.log(`[AgentServiceRegistry] Service ${serviceName} ${enabled ? 'enabled' : 'disabled'}`);
+      console.log(
+        `[AgentServiceRegistry] Service ${serviceName} ${enabled ? 'enabled' : 'disabled'}`
+      );
     } else {
       throw new Error(`Service ${serviceName} not found in config`);
     }

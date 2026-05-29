@@ -20,7 +20,8 @@ export interface GoalGeneratorContext {
 }
 
 export class GoalGenerator {
-  private readonly gatewayUrl = process.env.ORCHESTRATOR_LLM_GATEWAY_URL ?? 'http://llm-gateway:3010';
+  private readonly gatewayUrl =
+    process.env.ORCHESTRATOR_LLM_GATEWAY_URL ?? 'http://llm-gateway:3010';
 
   async generateQuarterlyGoals(context: GoalGeneratorContext): Promise<StrategicGoal[]> {
     const prompt = [
@@ -62,7 +63,9 @@ export class GoalGenerator {
       return [];
     }
     try {
-      const parsed = JSON.parse(text.slice(start, end + 1)) as { goals?: Array<Record<string, unknown>> };
+      const parsed = JSON.parse(text.slice(start, end + 1)) as {
+        goals?: Array<Record<string, unknown>>;
+      };
       if (!Array.isArray(parsed.goals)) {
         return [];
       }
@@ -130,7 +133,8 @@ export class GoalGenerator {
     return [
       {
         name: 'Mejorar confiabilidad del runtime autonomo',
-        description: 'Reducir fallos por indisponibilidad de servicios core y mejorar señales de observabilidad.',
+        description:
+          'Reducir fallos por indisponibilidad de servicios core y mejorar señales de observabilidad.',
         rationale: `La salud tecnica actual (${context.techHealth}) requiere baseline mas robusta.`,
         keyResults: [
           {

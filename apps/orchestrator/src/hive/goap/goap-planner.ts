@@ -165,14 +165,9 @@ export function applyActionEffects(state: GOAPState, action: GOAPAction): GOAPSt
   return newState;
 }
 
-export function getAvailableActions(
-  state: GOAPState,
-  actions: GOAPAction[]
-): GOAPAction[] {
+export function getAvailableActions(state: GOAPState, actions: GOAPAction[]): GOAPAction[] {
   return actions.filter((action) => {
-    return Object.entries(action.preconditions).every(
-      ([key, value]) => state[key] === value
-    );
+    return Object.entries(action.preconditions).every(([key, value]) => state[key] === value);
   });
 }
 
@@ -216,9 +211,7 @@ export function aStarSearch(
       return rebuildPlan(current);
     }
 
-    const stateKey = JSON.stringify(
-      Object.entries(current.state).sort()
-    );
+    const stateKey = JSON.stringify(Object.entries(current.state).sort());
     if (visitedKeys.has(stateKey)) continue;
     visitedKeys.add(stateKey);
 

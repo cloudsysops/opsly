@@ -33,7 +33,7 @@ export function sampleHostResources(): HostResourceSnapshot {
 
 export function resourcePressureWarnings(
   snap: HostResourceSnapshot,
-  thresholds?: { memory_percent?: number; load_per_cpu?: number },
+  thresholds?: { memory_percent?: number; load_per_cpu?: number }
 ): string[] {
   const memThreshold = thresholds?.memory_percent ?? 85;
   const loadPerCpu = thresholds?.load_per_cpu ?? 1.5;
@@ -44,7 +44,9 @@ export function resourcePressureWarnings(
   }
   const loadRatio = snap.cpu_count > 0 ? snap.load_avg_1m / snap.cpu_count : snap.load_avg_1m;
   if (loadRatio >= loadPerCpu) {
-    warnings.push(`Host load ${snap.load_avg_1m} on ${snap.cpu_count} CPUs (ratio ${loadRatio.toFixed(2)})`);
+    warnings.push(
+      `Host load ${snap.load_avg_1m} on ${snap.cpu_count} CPUs (ratio ${loadRatio.toFixed(2)})`
+    );
   }
   return warnings;
 }

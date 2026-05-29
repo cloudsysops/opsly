@@ -154,7 +154,9 @@ function pickLatestSession(sessions: RuntimeSessionMetadata[]): RuntimeSessionMe
   return [...sessions].sort((a, b) => b.lastSeenAt.localeCompare(a.lastSeenAt))[0] ?? null;
 }
 
-function compactSession(session: RuntimeSessionMetadata): NonNullable<MissionControlChatResponse['session']> {
+function compactSession(
+  session: RuntimeSessionMetadata
+): NonNullable<MissionControlChatResponse['session']> {
   return {
     sessionId: session.sessionId,
     name: session.name,
@@ -191,7 +193,9 @@ function recommendationForSession(session: RuntimeSessionMetadata | null): Worke
 }
 
 function summarizeStaleSessions(sessions: RuntimeSessionMetadata[]): RuntimeSessionMetadata[] {
-  return sessions.filter((session) => session.status === 'resumable' || session.status === 'stopped');
+  return sessions.filter(
+    (session) => session.status === 'resumable' || session.status === 'stopped'
+  );
 }
 export async function handleMissionControlChat(ctx: RouteContext): Promise<void> {
   if (!requireAdmin(ctx)) {

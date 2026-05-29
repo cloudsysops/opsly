@@ -79,7 +79,8 @@ describe('Phase 3 Economics - Integration Tests', () => {
     it('cache hit reduces latency by ~95%', () => {
       const cacheCheckLatency = 10; // Redis get: ~10ms
       const queryExecutionLatency = 200; // DB query: ~200ms
-      const latencyReduction = ((queryExecutionLatency - cacheCheckLatency) / queryExecutionLatency) * 100;
+      const latencyReduction =
+        ((queryExecutionLatency - cacheCheckLatency) / queryExecutionLatency) * 100;
 
       expect(latencyReduction).toBeGreaterThan(90);
     });
@@ -196,9 +197,9 @@ describe('Phase 3 Economics - Integration Tests', () => {
 
       expect(metrics.optimizations_applied).toBe(3);
       expect(metrics.total_savings_estimated_monthly).toBe(190);
-      expect(
-        metrics.cost_baseline_monthly - metrics.total_savings_estimated_monthly
-      ).toBe(metrics.cost_after_optimizations_monthly);
+      expect(metrics.cost_baseline_monthly - metrics.total_savings_estimated_monthly).toBe(
+        metrics.cost_after_optimizations_monthly
+      );
     });
 
     it('metrics exposed via runtime API (embeddings: hit/miss, cache: TTL, polling: interval)', () => {

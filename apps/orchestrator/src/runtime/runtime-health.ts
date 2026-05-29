@@ -150,11 +150,10 @@ async function redisPing(): Promise<boolean> {
     return false;
   }
   try {
-    const result = await execa(
-      'redis-cli',
-      ['-u', process.env.REDIS_URL, 'ping'],
-      { reject: false, timeout: 3000 },
-    );
+    const result = await execa('redis-cli', ['-u', process.env.REDIS_URL, 'ping'], {
+      reject: false,
+      timeout: 3000,
+    });
     return result.stdout.trim().toUpperCase() === 'PONG';
   } catch {
     return false;
@@ -201,16 +200,15 @@ async function queueSnapshot(name: string): Promise<RuntimeQueueSnapshot> {
 
 export async function collectRuntimeHealthSnapshot(): Promise<RuntimeHealthSnapshot> {
   const deps = createDefaultDeps();
-  const [profile, disk, ram, tmuxSessions, redisConnected, sessions, queues] =
-    await Promise.all([
-      detectEnvironment(deps),
-      diskUsagePercent(),
-      Promise.resolve(ramUsagePercent()),
-      Promise.all(TMUX_SESSION_NAMES.map((n) => tmuxSessionStatus(n))),
-      redisPing(),
-      listSessions().catch(() => []),
-      Promise.all(RUNTIME_QUEUE_NAMES.map((n) => queueSnapshot(n))),
-    ]);
+  const [profile, disk, ram, tmuxSessions, redisConnected, sessions, queues] = await Promise.all([
+    detectEnvironment(deps),
+    diskUsagePercent(),
+    Promise.resolve(ramUsagePercent()),
+    Promise.all(TMUX_SESSION_NAMES.map((n) => tmuxSessionStatus(n))),
+    redisPing(),
+    listSessions().catch(() => []),
+    Promise.all(RUNTIME_QUEUE_NAMES.map((n) => queueSnapshot(n))),
+  ]);
   const capabilities = await detectCapabilityRegistry(deps, profile);
 
   const mem = process.memoryUsage();

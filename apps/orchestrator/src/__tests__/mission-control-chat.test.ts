@@ -325,7 +325,8 @@ describe('mission control chat', () => {
           checkpointRequired: true,
           enabledByDefault: true,
           sequenceOrder: 2,
-          rationale: 'Architecture and impact review should use the review-oriented local Claude worker.',
+          rationale:
+            'Architecture and impact review should use the review-oriented local Claude worker.',
           prompt: 'risk',
           expectedOutput: ['risk score', 'approval recommendation', 'blocking issues'],
           order: 2,
@@ -361,7 +362,8 @@ describe('mission control chat', () => {
         recommendation: 'request_changes',
         humanApprovalRequired: true,
       },
-      missionControlHint: 'Sequential popping subagents: repo-scout -> risk-checker -> pr-summarizer',
+      missionControlHint:
+        'Sequential popping subagents: repo-scout -> risk-checker -> pr-summarizer',
     });
 
     const ctx = createContext({ message: 'analyze this PR', session_id: 'sess-3' });

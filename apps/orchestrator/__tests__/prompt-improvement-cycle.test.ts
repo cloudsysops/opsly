@@ -147,9 +147,7 @@ describe('Meta-Optimizer: Prompt Improvement Cycle', () => {
     it('should reject prompts that are too long', async () => {
       const original = 'Validate intent payload structure';
       const improved =
-        original +
-        ' ' +
-        'Additional lengthy explanation that goes on and on'.repeat(50);
+        original + ' ' + 'Additional lengthy explanation that goes on and on'.repeat(50);
 
       const testCases = [{ input: 'test', expectedKeywords: ['validate'] }];
 
@@ -235,9 +233,7 @@ describe('Meta-Optimizer: Prompt Improvement Cycle', () => {
     });
 
     it('should handle LLM Gateway timeouts and errors', async () => {
-      global.fetch = vi.fn(() =>
-        Promise.reject(new Error('Connection timeout'))
-      );
+      global.fetch = vi.fn(() => Promise.reject(new Error('Connection timeout')));
 
       const result = await evaluatePromptImprovement({
         promptName: 'test-prompt',

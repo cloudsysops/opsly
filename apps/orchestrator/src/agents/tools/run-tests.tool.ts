@@ -20,7 +20,8 @@ interface TestResult {
 
 export const RunTestsTool: ToolManifest = {
   name: 'run_tests',
-  description: 'Ejecuta los tests de un workspace específico y reporta resultados (pass/fail/errors)',
+  description:
+    'Ejecuta los tests de un workspace específico y reporta resultados (pass/fail/errors)',
   capabilities: ['testing', 'diagnostics', 'quality-assurance'],
   riskLevel: 'low',
   async execute(input: unknown): Promise<TestResult> {

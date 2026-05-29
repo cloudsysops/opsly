@@ -103,21 +103,30 @@ export class PluginLoader {
         console.log(`[PluginLoader] Started: ${entry.name} (${entry.id})`);
       } catch (err) {
         console.error(`[PluginLoader] Failed to start ${entry.name}:`, err);
-        results.push({ id: entry.id, name: entry.name, status: `error: ${err instanceof Error ? err.message : String(err)}` });
+        results.push({
+          id: entry.id,
+          name: entry.name,
+          status: `error: ${err instanceof Error ? err.message : String(err)}`,
+        });
       }
     }
 
     return results;
   }
 
-  async loadAll(): Promise<{ manifest: string; results: { id: string; name: string; status: string }[] }[]> {
+  async loadAll(): Promise<
+    { manifest: string; results: { id: string; name: string; status: string }[] }[]
+  > {
     if (!existsSync(this.manifestsDir)) {
       console.warn(`[PluginLoader] Manifests directory not found: ${this.manifestsDir}`);
       return [];
     }
 
     const files = readdirSync(this.manifestsDir).filter((f) => f.endsWith('.json'));
-    const allResults: { manifest: string; results: { id: string; name: string; status: string }[] }[] = [];
+    const allResults: {
+      manifest: string;
+      results: { id: string; name: string; status: string }[];
+    }[] = [];
 
     for (const file of files) {
       const name = file.replace('.json', '');
@@ -134,9 +143,7 @@ export class PluginLoader {
     const startFn = mod[entry.export];
 
     if (typeof startFn !== 'function') {
-      throw new Error(
-        `Plugin ${entry.id}: export '${entry.export}' not found in ${modulePath}`
-      );
+      throw new Error(`Plugin ${entry.id}: export '${entry.export}' not found in ${modulePath}`);
     }
 
     const instance = startFn(this.connection);
@@ -149,7 +156,11 @@ export class PluginLoader {
       return instance;
     }
 
-    return { close: async () => { /* no-op */ } };
+    return {
+      close: async () => {
+        /* no-op */
+      },
+    };
   }
 
   getLoadedPlugins(): Map<string, { close: () => Promise<void> }> {

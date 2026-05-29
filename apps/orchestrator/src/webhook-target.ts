@@ -21,7 +21,10 @@ export interface WebhookJobData {
 
 function isPrivateIpv4(hostname: string): boolean {
   const parts = hostname.split('.').map((part) => Number.parseInt(part, 10));
-  if (parts.length !== 4 || parts.some((part) => !Number.isInteger(part) || part < 0 || part > 255)) {
+  if (
+    parts.length !== 4 ||
+    parts.some((part) => !Number.isInteger(part) || part < 0 || part > 255)
+  ) {
     return false;
   }
   const [a, b] = parts;
@@ -74,7 +77,9 @@ export function isAllowedWebhookUrl(rawUrl: string): boolean {
   }
 }
 
-export function parseWebhookJobData(body: unknown): { ok: true; data: WebhookJobData } | { ok: false; error: string } {
+export function parseWebhookJobData(
+  body: unknown
+): { ok: true; data: WebhookJobData } | { ok: false; error: string } {
   if (body === null || typeof body !== 'object') {
     return { ok: false, error: 'invalid body' };
   }

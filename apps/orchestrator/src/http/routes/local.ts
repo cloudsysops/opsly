@@ -1,5 +1,11 @@
 import type { RouteContext } from '../router.js';
-import { verifyPlatformAdminToken, parseBody, assertTenantSlugOrThrow, enrichAutonomyMetadata, randomUUID } from '../utils.js';
+import {
+  verifyPlatformAdminToken,
+  parseBody,
+  assertTenantSlugOrThrow,
+  enrichAutonomyMetadata,
+  randomUUID,
+} from '../utils.js';
 import { enqueueJob, enqueueLocalAgentJob } from '../../queue.js';
 import type { OrchestratorJob } from '../../types.js';
 import {
@@ -8,7 +14,10 @@ import {
   parseControlMode,
   setLocalControlMode,
 } from '../../control-mode.js';
-import { getAgentServiceRegistry, type AgentService } from '../../lib/agent/agent-service-registry.js';
+import {
+  getAgentServiceRegistry,
+  type AgentService,
+} from '../../lib/agent/agent-service-registry.js';
 import {
   isLocalAgentKind,
   jobTypeForLocalAgent,
@@ -42,7 +51,10 @@ function recordRecentLocalJob(job: LocalRecentJob): void {
   }
 }
 
-function resolveLocalPromptAgentKind(b: Record<string, unknown>, promptForFrontmatter: string): string {
+function resolveLocalPromptAgentKind(
+  b: Record<string, unknown>,
+  promptForFrontmatter: string
+): string {
   const explicit = typeof b.agent === 'string' ? b.agent.trim() : '';
   if (explicit.length > 0) {
     return normalizeLocalAgentKind(explicit);
@@ -92,24 +104,27 @@ export async function handleLocalState(ctx: RouteContext): Promise<void> {
     const agents = Object.entries(config.services)
       .filter(([name]) => isConfigurableLocalBridgeKey(name))
       .map(([name, service]) => {
-      const s = service as AgentService;
-      const legacy = service as unknown as { endpoint?: string };
-      const raw = service as unknown as { external_cli?: string };
-      const agentKind = normalizeLocalAgentKind(name);
-      const externalFromConfig = typeof raw.external_cli === 'string' ? raw.external_cli.trim() : '';
-      const external_cli =
-        externalFromConfig.length > 0 ? externalFromConfig : externalCliLabelForOpslyLocalAgent(agentKind);
-      return {
-        id: agentKind,
-        name: agentKind,
-        external_cli,
-        enabled: s.enabled,
-        url: s.url ?? legacy.endpoint,
-        type: s.type,
-        job_type: jobTypeForLocalAgent(agentKind),
-        capabilities: s.capabilities ?? [],
-      };
-    });
+        const s = service as AgentService;
+        const legacy = service as unknown as { endpoint?: string };
+        const raw = service as unknown as { external_cli?: string };
+        const agentKind = normalizeLocalAgentKind(name);
+        const externalFromConfig =
+          typeof raw.external_cli === 'string' ? raw.external_cli.trim() : '';
+        const external_cli =
+          externalFromConfig.length > 0
+            ? externalFromConfig
+            : externalCliLabelForOpslyLocalAgent(agentKind);
+        return {
+          id: agentKind,
+          name: agentKind,
+          external_cli,
+          enabled: s.enabled,
+          url: s.url ?? legacy.endpoint,
+          type: s.type,
+          job_type: jobTypeForLocalAgent(agentKind),
+          capabilities: s.capabilities ?? [],
+        };
+      });
     jsonResponse(ctx.res, 200, {
       success: true,
       control_mode: getLocalControlMode(),
@@ -161,10 +176,14 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
 
   const agentRole = (typeof b.agent_role === 'string' ? b.agent_role : 'executor').trim();
   const goal = typeof b.goal === 'string' ? b.goal.trim() : '';
-  const maxSteps = typeof b.max_steps === 'number' && Number.isFinite(b.max_steps) ? Math.floor(b.max_steps) : 10;
+  const maxSteps =
+    typeof b.max_steps === 'number' && Number.isFinite(b.max_steps) ? Math.floor(b.max_steps) : 10;
   const context =
-    typeof b.context === 'object' && b.context !== null ? (b.context as Record<string, unknown>) : {};
-  const requestId = typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
+    typeof b.context === 'object' && b.context !== null
+      ? (b.context as Record<string, unknown>)
+      : {};
+  const requestId =
+    typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
 
   const agentKind = resolveLocalPromptAgentKind(b, promptForAgentResolve);
   const jobType = jobTypeForLocalAgent(agentKind);
@@ -194,7 +213,9 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
     }
 
     if (controlMode === 'ide_fallback') {
-      console.log(`[LocalPromptSubmit] Prepared ${job.type} job ${requestId} (${agentKind}) for manual IDE fallback`);
+      console.log(
+        `[LocalPromptSubmit] Prepared ${job.type} job ${requestId} (${agentKind}) for manual IDE fallback`
+      );
       recordRecentLocalJob({
         request_id: requestId,
         job_id: null,
@@ -219,7 +240,9 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
 
     const bull = await enqueueLocalAgentJob(job);
     const bullJobId = bull.id != null ? String(bull.id) : null;
-    console.log(`[LocalPromptSubmit] Enqueued ${job.type} job ${bull.id} (${agentKind}) to local-agents queue`);
+    console.log(
+      `[LocalPromptSubmit] Enqueued ${job.type} job ${bull.id} (${agentKind}) to local-agents queue`
+    );
     recordRecentLocalJob({
       request_id: requestId,
       job_id: bullJobId,
@@ -230,7 +253,12 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
       status: 'queued',
       submitted_at: new Date().toISOString(),
     });
-    recordOpenClawIntentQueued({ requestId, intent: `execute_${job.type}`, tenantSlug, jobId: bullJobId });
+    recordOpenClawIntentQueued({
+      requestId,
+      intent: `execute_${job.type}`,
+      tenantSlug,
+      jobId: bullJobId,
+    });
     jsonResponse(ctx.res, 202, {
       success: true,
       ok: true,

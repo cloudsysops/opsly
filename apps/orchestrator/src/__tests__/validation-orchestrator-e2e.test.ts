@@ -163,7 +163,10 @@ describe('ValidationOrchestrator E2E - Feedback Loop Integration', () => {
         },
       };
 
-      const result = await feedbackLayer.applyValidationFeedback('execute_code', mockDecision as any);
+      const result = await feedbackLayer.applyValidationFeedback(
+        'execute_code',
+        mockDecision as any
+      );
       expect(result).toBeDefined();
       expect(result.adapted).toBeDefined();
       expect(result.confidence).toBeGreaterThanOrEqual(0);
@@ -196,7 +199,10 @@ describe('ValidationOrchestrator E2E - Feedback Loop Integration', () => {
         },
       };
 
-      const result = await feedbackLayer.applyValidationFeedback('unknown_intent', mockDecision as any);
+      const result = await feedbackLayer.applyValidationFeedback(
+        'unknown_intent',
+        mockDecision as any
+      );
       expect(result.adapted).toBeDefined();
     });
 
@@ -215,7 +221,10 @@ describe('ValidationOrchestrator E2E - Feedback Loop Integration', () => {
         agent: { role: 'executor' },
       };
 
-      const result = await feedbackLayer.applyValidationFeedback('test_intent', mockDecision as any);
+      const result = await feedbackLayer.applyValidationFeedback(
+        'test_intent',
+        mockDecision as any
+      );
       expect(result.adapted.llm.routing_bias).toBe('quality');
       expect(result.adaptations[0]).toContain('High escalation rate');
     });
@@ -240,7 +249,10 @@ describe('ValidationOrchestrator E2E - Feedback Loop Integration', () => {
         agent: { role: 'executor' },
       };
 
-      const result = await feedbackLayer.applyValidationFeedback('test_intent', mockDecision as any);
+      const result = await feedbackLayer.applyValidationFeedback(
+        'test_intent',
+        mockDecision as any
+      );
       expect(result.adapted.llm.routing_bias).toBe('cost');
     });
   });

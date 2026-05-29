@@ -151,7 +151,12 @@ const AGENT_REGISTRY = new Map<string, OpenClawAgentDescriptor>([
     {
       id: 'codex-engineering',
       role: 'architect',
-      capabilities: ['code-review', 'architecture-design', 'engineering-decisions', 'system-design'],
+      capabilities: [
+        'code-review',
+        'architecture-design',
+        'engineering-decisions',
+        'system-design',
+      ],
       skillBinding: 'opsly-architect-senior',
       targets: ['queue', 'skill', 'mcp'],
       modelTier: 'premium',
@@ -245,11 +250,15 @@ export function listOpenClawAgentsByRole(role: OpenClawAgentRole): OpenClawAgent
   return listOpenClawAgents().filter((agent) => agent.role === role && agent.enabled);
 }
 
-export function resolveOpenClawAgentForRole(role: OpenClawAgentRole): OpenClawAgentDescriptor | null {
+export function resolveOpenClawAgentForRole(
+  role: OpenClawAgentRole
+): OpenClawAgentDescriptor | null {
   return listOpenClawAgentsByRole(role)[0] ?? null;
 }
 
-export function resolveOpenClawControllerForRole(role: OpenClawAgentRole): OpenClawControllerContract {
+export function resolveOpenClawControllerForRole(
+  role: OpenClawAgentRole
+): OpenClawControllerContract {
   const firstEnabledForRole = listOpenClawAgentsByRole(role)[0];
   const controllerName = firstEnabledForRole?.defaultController ?? 'default';
   return getOpenClawController(controllerName);

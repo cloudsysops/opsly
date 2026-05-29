@@ -35,10 +35,14 @@ export class TesterBot implements Bot {
   }
 
   private setupListeners(): void {
-    void this.pheromoneChannel.subscribe(this.id, ['subtask_assignment'], async (message: PheromoneMessage) => {
-      const subtask = message.payload as Subtask;
-      await this.handleTask(subtask);
-    });
+    void this.pheromoneChannel.subscribe(
+      this.id,
+      ['subtask_assignment'],
+      async (message: PheromoneMessage) => {
+        const subtask = message.payload as Subtask;
+        await this.handleTask(subtask);
+      }
+    );
   }
 
   async handleTask(subtask: Subtask): Promise<void> {
@@ -94,7 +98,12 @@ export class TesterBot implements Bot {
 
   private async executeTest(subtask: Subtask): Promise<unknown> {
     const prompt = `Ejecuta tests para: ${subtask.description}\nResponde con { passed, failed, coverage }`;
-    return processIntent({ intent: 'oar_react', context: { prompt }, initiated_by: 'system', tenant_slug: 'opsly' });
+    return processIntent({
+      intent: 'oar_react',
+      context: { prompt },
+      initiated_by: 'system',
+      tenant_slug: 'opsly',
+    });
   }
 
   async stop(): Promise<void> {

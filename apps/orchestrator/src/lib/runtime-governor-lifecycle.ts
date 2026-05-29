@@ -25,7 +25,7 @@ export function setJobLifecycle(
   jobId: string,
   state: AgentLifecycleState,
   role: string,
-  tenantSlug?: string,
+  tenantSlug?: string
 ): void {
   lifecycleByJob.set(jobId, {
     jobId,
@@ -58,7 +58,10 @@ export function countByState(state: AgentLifecycleState): number {
   return n;
 }
 
-export function hasActiveImplementation(cfgRoles: string[], implementationRoles: string[]): boolean {
+export function hasActiveImplementation(
+  cfgRoles: string[],
+  implementationRoles: string[]
+): boolean {
   for (const e of lifecycleByJob.values()) {
     if (e.state !== 'RUNNING' && e.state !== 'QUEUED') {
       continue;

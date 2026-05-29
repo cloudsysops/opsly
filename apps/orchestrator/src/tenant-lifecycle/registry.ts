@@ -47,7 +47,8 @@ export const TENANT_LIFECYCLE_STAGES: readonly TenantLifecycleStage[] = [
   {
     id: 'connected_client_platform',
     label: 'Connected Client Platform',
-    description: 'Extracted client platform remains connected to Opsly for governance and visibility.',
+    description:
+      'Extracted client platform remains connected to Opsly for governance and visibility.',
     next: [],
   },
 ] as const;

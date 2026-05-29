@@ -94,9 +94,12 @@ function inferIntentComplexity(intent: Intent): 'simple' | 'medium' | 'complex' 
  *
  * Prioritizes local agents when appropriate, falling back to default agents.
  */
-export async function applyOpenClawControlLayer(req: IntentRequest): Promise<OpenClawControlDecisionContract> {
+export async function applyOpenClawControlLayer(
+  req: IntentRequest
+): Promise<OpenClawControlDecisionContract> {
   const routing = routeOpenClawIntent(req);
-  const role = (req.agent_role as OpenClawAgentRole | undefined) ?? inferRoleForIntent(routing.intent);
+  const role =
+    (req.agent_role as OpenClawAgentRole | undefined) ?? inferRoleForIntent(routing.intent);
 
   // Try to route to appropriate local agent first
   const complexity = inferIntentComplexity(routing.intent);
@@ -188,12 +191,17 @@ export async function applyOpenClawControlLayer(req: IntentRequest): Promise<Ope
     const feedbackResult = await feedbackLayer.applyValidationFeedback(routing.intent, decision);
 
     if (feedbackResult.adaptations.length > 0) {
-      console.log(`[OpenClawControlLayer] Applied ${feedbackResult.adaptations.length} feedback adaptation(s)`);
+      console.log(
+        `[OpenClawControlLayer] Applied ${feedbackResult.adaptations.length} feedback adaptation(s)`
+      );
       feedbackResult.adaptations.forEach((a) => console.log(`  - ${a}`));
       decision = feedbackResult.adapted;
     }
   } catch (err) {
-    console.warn('[OpenClawControlLayer] Validation feedback error (using original decision):', err);
+    console.warn(
+      '[OpenClawControlLayer] Validation feedback error (using original decision):',
+      err
+    );
   }
 
   return decision;

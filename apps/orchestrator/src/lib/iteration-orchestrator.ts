@@ -1,7 +1,11 @@
 import { promises as fsp } from 'fs';
 import * as path from 'path';
 import { IterationManager } from './iteration/iteration-manager.js';
-import { AgentTrainer, type PatternSuggestion, type ExecutionPattern } from './agent/agent-trainer.js';
+import {
+  AgentTrainer,
+  type PatternSuggestion,
+  type ExecutionPattern,
+} from './agent/agent-trainer.js';
 
 export interface IterationSession {
   jobId: string;
@@ -43,9 +47,12 @@ export class IterationOrchestrator {
   }
 
   private startCleanupSchedule(): void {
-    this.cleanupInterval = setInterval(() => {
-      this.cleanupOldSessions(24 * 60 * 60 * 1000); // Clean sessions older than 24 hours
-    }, 24 * 60 * 60 * 1000); // Run every 24 hours
+    this.cleanupInterval = setInterval(
+      () => {
+        this.cleanupOldSessions(24 * 60 * 60 * 1000); // Clean sessions older than 24 hours
+      },
+      24 * 60 * 60 * 1000
+    ); // Run every 24 hours
   }
 
   destroy(): void {
@@ -61,7 +68,7 @@ export class IterationOrchestrator {
   async startIterationSession(
     jobId: string,
     maxIterations: number = 5,
-    goal: string = '',
+    goal: string = ''
   ): Promise<IterationSession> {
     const session: IterationSession = {
       jobId,
@@ -75,7 +82,7 @@ export class IterationOrchestrator {
 
     this.sessions.set(jobId, session);
     console.log(
-      `[IterationOrchestrator] 🚀 Started iteration session for job ${jobId} (max ${maxIterations} iterations)`,
+      `[IterationOrchestrator] 🚀 Started iteration session for job ${jobId} (max ${maxIterations} iterations)`
     );
 
     return session;
@@ -89,7 +96,7 @@ export class IterationOrchestrator {
     jobId: string,
     lastResult: string,
     agentRole: string = 'executor',
-    intent: string = 'execute_code',
+    intent: string = 'execute_code'
   ): Promise<{ nextPrompt: string; confidence: number }> {
     const session = this.sessions.get(jobId);
 
@@ -98,9 +105,7 @@ export class IterationOrchestrator {
     }
 
     if (session.currentIteration >= session.maxIterations) {
-      throw new Error(
-        `[IterationOrchestrator] Max iterations (${session.maxIterations}) reached`,
-      );
+      throw new Error(`[IterationOrchestrator] Max iterations (${session.maxIterations}) reached`);
     }
 
     // Get last prompt from history
@@ -113,14 +118,10 @@ export class IterationOrchestrator {
     const patterns = await this.agentTrainer.getPatterns(agentRole, intent);
 
     // Get suggestion with patterns
-    const suggestion = await this.agentTrainer.suggestNextPrompt(
-      lastPrompt,
-      lastResult,
-      patterns,
-    );
+    const suggestion = await this.agentTrainer.suggestNextPrompt(lastPrompt, lastResult, patterns);
 
     console.log(
-      `[IterationOrchestrator] 💡 Suggested iteration ${session.currentIteration + 1} (confidence: ${Math.round(suggestion.confidence * 100)}%)`,
+      `[IterationOrchestrator] 💡 Suggested iteration ${session.currentIteration + 1} (confidence: ${Math.round(suggestion.confidence * 100)}%)`
     );
 
     return {
@@ -136,7 +137,7 @@ export class IterationOrchestrator {
   async enqueueNextPrompt(
     jobId: string,
     nextPrompt: string,
-    iterationNumber: number,
+    iterationNumber: number
   ): Promise<string> {
     const session = this.sessions.get(jobId);
 
@@ -154,13 +155,15 @@ export class IterationOrchestrator {
       const filename = `iteration-${jobId}-${iterationNumber}.md`;
       const filepath = path.join(promptsDir, filename);
 
-      const content = this.formatIterationPrompt(nextPrompt, iterationNumber, session.maxIterations);
+      const content = this.formatIterationPrompt(
+        nextPrompt,
+        iterationNumber,
+        session.maxIterations
+      );
 
       await fsp.writeFile(filepath, content, 'utf-8');
 
-      console.log(
-        `[IterationOrchestrator] ✅ Enqueued iteration ${iterationNumber}: ${filepath}`,
-      );
+      console.log(`[IterationOrchestrator] ✅ Enqueued iteration ${iterationNumber}: ${filepath}`);
 
       return filepath;
     } catch (err) {
@@ -175,7 +178,7 @@ export class IterationOrchestrator {
   async completeSession(
     jobId: string,
     finalResult: string,
-    iterationHistory?: IterationEntry[],
+    iterationHistory?: IterationEntry[]
   ): Promise<IterationSession> {
     const session = this.sessions.get(jobId);
 
@@ -197,7 +200,7 @@ export class IterationOrchestrator {
     const duration = new Date(session.endTime!).getTime() - new Date(session.startTime).getTime();
 
     console.log(
-      `[IterationOrchestrator] ✅ Completed session for job ${jobId} in ${session.history.length} iterations (${Math.round(duration / 1000)}s)`,
+      `[IterationOrchestrator] ✅ Completed session for job ${jobId} in ${session.history.length} iterations (${Math.round(duration / 1000)}s)`
     );
 
     return session;
@@ -212,7 +215,7 @@ export class IterationOrchestrator {
     prompt: string,
     result: string,
     validationStatus: 'passed' | 'failed',
-    duration: number,
+    duration: number
   ): void {
     const session = this.sessions.get(jobId);
 
@@ -233,9 +236,7 @@ export class IterationOrchestrator {
     session.history.push(entry);
     session.currentIteration = iteration;
 
-    console.log(
-      `[IterationOrchestrator] 📝 Recorded iteration ${iteration}: ${validationStatus}`,
-    );
+    console.log(`[IterationOrchestrator] 📝 Recorded iteration ${iteration}: ${validationStatus}`);
   }
 
   /**
@@ -244,7 +245,7 @@ export class IterationOrchestrator {
   private formatIterationPrompt(
     prompt: string,
     iterationNumber: number,
-    maxIterations: number,
+    maxIterations: number
   ): string {
     const header = `---
 agent_role: executor

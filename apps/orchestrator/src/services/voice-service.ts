@@ -96,21 +96,19 @@ export class VoiceServiceLayer {
     return this.callManager.getCall(tenantId, callId);
   }
 
-  async updateCallState(tenantId: string, callId: string, options: UpdateCallStateOptions): Promise<Call> {
+  async updateCallState(
+    tenantId: string,
+    callId: string,
+    options: UpdateCallStateOptions
+  ): Promise<Call> {
     const { callState } = options;
 
     return this.callManager.updateCallState(tenantId, callId, callState);
   }
 
   async recordVoiceMessage(options: RecordVoiceMessageOptions): Promise<VoiceMessage> {
-    const {
-      tenantId,
-      senderContact,
-      senderName,
-      audioUrl,
-      channel,
-      audioDurationSeconds,
-    } = options;
+    const { tenantId, senderContact, senderName, audioUrl, channel, audioDurationSeconds } =
+      options;
 
     const voiceMessage: VoiceMessage = {
       id: crypto.randomUUID(),
@@ -134,13 +132,7 @@ export class VoiceServiceLayer {
   }
 
   async submitTranscription(options: SubmitTranscriptionOptions): Promise<VoiceTranscription> {
-    const {
-      tenantId,
-      callId,
-      speakerRole,
-      transcriptText,
-      confidence,
-    } = options;
+    const { tenantId, callId, speakerRole, transcriptText, confidence } = options;
 
     const transcription: VoiceTranscription = {
       id: crypto.randomUUID(),

@@ -26,7 +26,9 @@ function readFiles(value: unknown): string[] | undefined {
   if (!Array.isArray(value)) {
     return undefined;
   }
-  const files = value.filter((entry): entry is string => typeof entry === 'string' && entry.trim().length > 0);
+  const files = value.filter(
+    (entry): entry is string => typeof entry === 'string' && entry.trim().length > 0
+  );
   return files.length > 0 ? files : undefined;
 }
 

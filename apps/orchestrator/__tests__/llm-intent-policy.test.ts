@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { parseMetadataLlmOverrides, resolveLlmPolicyFromIntent } from '../src/openclaw/llm-intent-policy.js';
+import {
+  parseMetadataLlmOverrides,
+  resolveLlmPolicyFromIntent,
+} from '../src/openclaw/llm-intent-policy.js';
 import type { IntentRequest } from '../src/types.js';
 
 describe('resolveLlmPolicyFromIntent', () => {

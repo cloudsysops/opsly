@@ -1,4 +1,10 @@
-export { Router, jsonResponse, errorResponse, type RouteContext, type RouteHandler } from './router.js';
+export {
+  Router,
+  jsonResponse,
+  errorResponse,
+  type RouteContext,
+  type RouteHandler,
+} from './router.js';
 export {
   parseBody,
   verifyPlatformAdminToken,

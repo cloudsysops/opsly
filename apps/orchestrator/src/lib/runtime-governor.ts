@@ -6,10 +6,7 @@ import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 
-import {
-  listSessions,
-  type RuntimeSessionMetadata,
-} from '@intcloudsysops/session-manager';
+import { listSessions, type RuntimeSessionMetadata } from '@intcloudsysops/session-manager';
 
 import {
   countByState,
@@ -154,7 +151,7 @@ function resolveTierKey(plan?: string): string {
 
 export function effectiveLimits(
   cfg: RuntimeGovernorConfig,
-  tenantPlan?: string,
+  tenantPlan?: string
 ): GovernorStatusSnapshot['effective_limits'] {
   const tier = cfg.tier_limits?.[resolveTierKey(tenantPlan)] ?? {};
   return {
@@ -181,7 +178,7 @@ async function collectMetrics(cfg: RuntimeGovernorConfig): Promise<GovernorMetri
   try {
     const sessions = await listSessions();
     tmuxCount = sessions.filter(
-      (s: RuntimeSessionMetadata) => s.status === 'running' || s.status === 'created',
+      (s: RuntimeSessionMetadata) => s.status === 'running' || s.status === 'created'
     ).length;
   } catch {
     /* ignore */
@@ -201,7 +198,7 @@ async function collectMetrics(cfg: RuntimeGovernorConfig): Promise<GovernorMetri
 export function registerActiveLocalJob(
   jobId: string,
   agentRole: string,
-  tenantSlug?: string,
+  tenantSlug?: string
 ): void {
   const role = normalizeRole(agentRole);
   activeLocalJobs.set(jobId, { role, startedAt: Date.now() });
@@ -215,7 +212,10 @@ export function markJobRunning(jobId: string): void {
   }
 }
 
-export function releaseActiveLocalJob(jobId: string, finalState: AgentLifecycleState = 'COMPLETED'): void {
+export function releaseActiveLocalJob(
+  jobId: string,
+  finalState: AgentLifecycleState = 'COMPLETED'
+): void {
   const entry = activeLocalJobs.get(jobId);
   if (entry) {
     setJobLifecycle(jobId, finalState, entry.role);
@@ -245,10 +245,8 @@ export async function evaluateEnqueue(ctx: GovernorEnqueueContext): Promise<Gove
   const host = sampleHostResources();
   warnings.push(...resourcePressureWarnings(host, cfg.resource_thresholds));
 
-  const isSandbox =
-    ctx.job_type === 'sandbox_execution' || ctx.job_type === 'jcode_execution';
-  const isLocal =
-    ctx.job_type.startsWith('local_') || ctx.job_type === 'runtime_session';
+  const isSandbox = ctx.job_type === 'sandbox_execution' || ctx.job_type === 'jcode_execution';
+  const isLocal = ctx.job_type.startsWith('local_') || ctx.job_type === 'runtime_session';
 
   if (!isLocal && !isSandbox) {
     return { allowed: true, reason: 'non-governed job exempt', warnings, metrics };
@@ -266,7 +264,10 @@ export async function evaluateEnqueue(ctx: GovernorEnqueueContext): Promise<Gove
     warnings.push('Sandbox limit exceeded with approval');
   }
 
-  if (isReviewRole(cfg, role) && hasActiveImplementation(cfg.implementation_roles, cfg.implementation_roles)) {
+  if (
+    isReviewRole(cfg, role) &&
+    hasActiveImplementation(cfg.implementation_roles, cfg.implementation_roles)
+  ) {
     if (!ctx.autonomy_approved) {
       return {
         allowed: false,
@@ -291,7 +292,10 @@ export async function evaluateEnqueue(ctx: GovernorEnqueueContext): Promise<Gove
       warnings.push('Parallel jobs at limit');
     }
 
-    if (isImplementationRole(cfg, role) && metrics.active_implementation >= limits.max_active_implementation_workers) {
+    if (
+      isImplementationRole(cfg, role) &&
+      metrics.active_implementation >= limits.max_active_implementation_workers
+    ) {
       if (!ctx.autonomy_approved) {
         return {
           allowed: false,
@@ -303,7 +307,10 @@ export async function evaluateEnqueue(ctx: GovernorEnqueueContext): Promise<Gove
       warnings.push('Implementation limit exceeded with approval');
     }
 
-    if (isPlanningRole(cfg, role) && metrics.active_planning >= limits.max_active_planning_workers) {
+    if (
+      isPlanningRole(cfg, role) &&
+      metrics.active_planning >= limits.max_active_planning_workers
+    ) {
       if (!ctx.autonomy_approved) {
         return {
           allowed: false,
@@ -315,7 +322,10 @@ export async function evaluateEnqueue(ctx: GovernorEnqueueContext): Promise<Gove
       warnings.push('Planning limit exceeded with approval');
     }
 
-    if (ctx.job_type === 'runtime_session' && metrics.tmux_sessions >= limits.max_background_tmux_sessions) {
+    if (
+      ctx.job_type === 'runtime_session' &&
+      metrics.tmux_sessions >= limits.max_background_tmux_sessions
+    ) {
       if (!ctx.autonomy_approved) {
         return {
           allowed: false,
@@ -331,7 +341,9 @@ export async function evaluateEnqueue(ctx: GovernorEnqueueContext): Promise<Gove
   return { allowed: true, reason: 'within governor limits', warnings, metrics };
 }
 
-export async function getGovernorStatusSnapshot(tenantPlan?: string): Promise<GovernorStatusSnapshot> {
+export async function getGovernorStatusSnapshot(
+  tenantPlan?: string
+): Promise<GovernorStatusSnapshot> {
   const cfg = await loadRuntimeGovernorConfig();
   const limits = effectiveLimits(cfg, tenantPlan);
   const metrics = await collectMetrics(cfg);
@@ -342,17 +354,17 @@ export async function getGovernorStatusSnapshot(tenantPlan?: string): Promise<Go
 
   if (metrics.active_local_jobs >= limits.max_parallel_jobs) {
     mission_control_alerts.push(
-      `At parallel job limit (${metrics.active_local_jobs}/${limits.max_parallel_jobs})`,
+      `At parallel job limit (${metrics.active_local_jobs}/${limits.max_parallel_jobs})`
     );
   }
   if (metrics.tmux_sessions >= limits.max_background_tmux_sessions) {
     mission_control_alerts.push(
-      `Tmux sessions at cap (${metrics.tmux_sessions}/${limits.max_background_tmux_sessions})`,
+      `Tmux sessions at cap (${metrics.tmux_sessions}/${limits.max_background_tmux_sessions})`
     );
   }
   if (metrics.active_sandboxes >= limits.max_docker_sandboxes) {
     mission_control_alerts.push(
-      `Docker sandboxes at cap (${metrics.active_sandboxes}/${limits.max_docker_sandboxes})`,
+      `Docker sandboxes at cap (${metrics.active_sandboxes}/${limits.max_docker_sandboxes})`
     );
   }
   if (cfg.prefer_sequential_execution && metrics.active_implementation > 1) {

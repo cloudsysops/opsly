@@ -1,5 +1,11 @@
 import type { RouteContext } from '../router.js';
-import { verifyPlatformAdminToken, parseBody, assertTenantSlugOrThrow, enrichAutonomyMetadata, randomUUID } from '../utils.js';
+import {
+  verifyPlatformAdminToken,
+  parseBody,
+  assertTenantSlugOrThrow,
+  enrichAutonomyMetadata,
+  randomUUID,
+} from '../utils.js';
 import { enqueueJob } from '../../queue.js';
 import type { OrchestratorJob } from '../../types.js';
 import { recordOpenClawIntentQueued } from '../../openclaw/runtime-events.js';
@@ -58,7 +64,11 @@ export async function handleEnqueueAgentFarm(ctx: RouteContext): Promise<void> {
       return;
     }
     const bull = await enqueueJob(job);
-    jsonResponse(ctx.res, 202, { success: true, job_id: bull.id != null ? String(bull.id) : null, request_id: requestId });
+    jsonResponse(ctx.res, 202, {
+      success: true,
+      job_id: bull.id != null ? String(bull.id) : null,
+      request_id: requestId,
+    });
   } catch (err) {
     errorResponse(ctx.res, 500, String(err));
   }

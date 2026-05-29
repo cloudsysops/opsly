@@ -79,9 +79,12 @@ export class AgentTrainer {
   }
 
   private startCleanupSchedule(): void {
-    this.cleanupInterval = setInterval(() => {
-      this.clearOldMemory(30 * 60 * 1000); // Clear entries older than 30 minutes
-    }, 30 * 60 * 1000); // Run every 30 minutes
+    this.cleanupInterval = setInterval(
+      () => {
+        this.clearOldMemory(30 * 60 * 1000); // Clear entries older than 30 minutes
+      },
+      30 * 60 * 1000
+    ); // Run every 30 minutes
   }
 
   destroy(): void {
@@ -101,7 +104,7 @@ export class AgentTrainer {
     duration: number,
     iterationCount: number,
     success: boolean = false,
-    failedChecks?: string[],
+    failedChecks?: string[]
   ): Promise<boolean> {
     const record: ExecutionRecord = {
       jobId: crypto.randomUUID(),
@@ -162,7 +165,7 @@ export class AgentTrainer {
     intent: string,
     iterationCount: number = 1,
     validationTime: number = 0,
-    failedChecks?: string[],
+    failedChecks?: string[]
   ): Promise<boolean> {
     const record: DecisionRecord = {
       jobId,
@@ -180,7 +183,7 @@ export class AgentTrainer {
 
     // This data should be captured via validation_metrics table
     console.log(
-      `[AgentTrainer] 📊 Decision recorded: ${action} for ${agentRole} on intent ${intent}`,
+      `[AgentTrainer] 📊 Decision recorded: ${action} for ${agentRole} on intent ${intent}`
     );
 
     return true;
@@ -211,7 +214,7 @@ export class AgentTrainer {
 
       if (!data) {
         console.log(
-          `[AgentTrainer] No patterns found for ${agentRole} / ${intent} (needs >10 executions)`,
+          `[AgentTrainer] No patterns found for ${agentRole} / ${intent} (needs >10 executions)`
         );
         return null;
       }
@@ -239,7 +242,7 @@ export class AgentTrainer {
   async suggestNextPrompt(
     lastPrompt: string,
     lastResult: string,
-    patterns: ExecutionPattern | null,
+    patterns: ExecutionPattern | null
   ): Promise<PatternSuggestion> {
     let confidence = 0.3; // Base confidence without patterns
     let rationale = 'Generated suggestion without historical patterns';
@@ -262,7 +265,7 @@ export class AgentTrainer {
       lastPrompt,
       lastResult,
       commonErrors,
-      patterns,
+      patterns
     );
 
     return {
@@ -280,7 +283,7 @@ export class AgentTrainer {
     originalPrompt: string,
     lastResult: string,
     commonErrors: string[],
-    patterns: ExecutionPattern | null,
+    patterns: ExecutionPattern | null
   ): string {
     let refinedPrompt = originalPrompt;
 
@@ -331,7 +334,7 @@ Ensure your implementation will pass all these checks in order.
   async aggregatePatterns(
     agentRole: string,
     intent: string,
-    minExecutions: number = 10,
+    minExecutions: number = 10
   ): Promise<ExecutionPattern | null> {
     if (!this.supabase) {
       console.warn('[AgentTrainer] Cannot aggregate patterns: Supabase not configured');
@@ -355,7 +358,7 @@ Ensure your implementation will pass all these checks in order.
 
       if (!executions || executions.length < minExecutions) {
         console.log(
-          `[AgentTrainer] Not enough executions (${executions?.length || 0} < ${minExecutions}) for pattern aggregation`,
+          `[AgentTrainer] Not enough executions (${executions?.length || 0} < ${minExecutions}) for pattern aggregation`
         );
         return null;
       }
@@ -364,7 +367,7 @@ Ensure your implementation will pass all these checks in order.
       const successCount = executions.filter((e) => e.action === 'commit').length;
       const successRate = successCount / executions.length;
       const avgIterations = Math.round(
-        executions.reduce((sum, e) => sum + (e.iteration_count || 1), 0) / executions.length,
+        executions.reduce((sum, e) => sum + (e.iteration_count || 1), 0) / executions.length
       );
 
       // Extract common errors
@@ -384,9 +387,8 @@ Ensure your implementation will pass all these checks in order.
 
       // Infer typical sequence from successful runs
       const successfulRuns = executions.filter((e) => e.action === 'commit');
-      const typicalSequence = successfulRuns.length > 0
-        ? this.inferSequence(successfulRuns)
-        : DEFAULT_VALIDATION_CHECKS;
+      const typicalSequence =
+        successfulRuns.length > 0 ? this.inferSequence(successfulRuns) : DEFAULT_VALIDATION_CHECKS;
 
       // Upsert pattern record
       const pattern: ExecutionPattern = {
@@ -400,25 +402,23 @@ Ensure your implementation will pass all these checks in order.
         typicalSequence,
       };
 
-      const { error: upsertError } = await this.supabase
-        .from('agent_execution_patterns')
-        .upsert(
-          [
-            {
-              agent_role: agentRole,
-              intent,
-              success_rate: successRate,
-              avg_iterations: avgIterations,
-              total_executions: executions.length,
-              common_errors: commonErrors,
-              typical_sequence: typicalSequence,
-              last_updated: new Date().toISOString(),
-            },
-          ],
+      const { error: upsertError } = await this.supabase.from('agent_execution_patterns').upsert(
+        [
           {
-            onConflict: 'agent_role,intent',
+            agent_role: agentRole,
+            intent,
+            success_rate: successRate,
+            avg_iterations: avgIterations,
+            total_executions: executions.length,
+            common_errors: commonErrors,
+            typical_sequence: typicalSequence,
+            last_updated: new Date().toISOString(),
           },
-        );
+        ],
+        {
+          onConflict: 'agent_role,intent',
+        }
+      );
 
       if (upsertError) {
         console.error('[AgentTrainer] Failed to upsert pattern:', upsertError);
@@ -426,7 +426,7 @@ Ensure your implementation will pass all these checks in order.
       }
 
       console.log(
-        `[AgentTrainer] ✅ Aggregated pattern for ${agentRole}/${intent}: ${Math.round(successRate * 100)}% success rate`,
+        `[AgentTrainer] ✅ Aggregated pattern for ${agentRole}/${intent}: ${Math.round(successRate * 100)}% success rate`
       );
       return pattern;
     } catch (err) {

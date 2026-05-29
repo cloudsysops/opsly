@@ -50,12 +50,7 @@ export class BillingBot implements Bot {
   id: string;
   role: 'billing' = 'billing';
   status: 'idle' | 'working' | 'blocked' | 'offline' = 'idle';
-  skills = [
-    'cost_analyzer',
-    'usage_pattern_detector',
-    'anomaly_detector',
-    'budget_forecaster',
-  ];
+  skills = ['cost_analyzer', 'usage_pattern_detector', 'anomaly_detector', 'budget_forecaster'];
   capacity = 2;
   concurrentTasks = 0;
   lastHeartbeat = new Date();
@@ -84,10 +79,14 @@ export class BillingBot implements Bot {
   }
 
   private setupListeners(): void {
-    void this.pheromoneChannel.subscribe(this.id, ['subtask_assignment'], async (message: PheromoneMessage) => {
-      const subtask = message.payload as Subtask;
-      await this.handleTask(subtask);
-    });
+    void this.pheromoneChannel.subscribe(
+      this.id,
+      ['subtask_assignment'],
+      async (message: PheromoneMessage) => {
+        const subtask = message.payload as Subtask;
+        await this.handleTask(subtask);
+      }
+    );
   }
 
   async handleTask(subtask: Subtask): Promise<void> {
@@ -192,9 +191,10 @@ export class BillingBot implements Bot {
       totalHistorical += historicalCost;
 
       if (profile.tier !== 'fixed' && variance > 0) {
-        const percentChange = historicalCost > 0
-          ? Math.round(((currentCost - historicalCost) / historicalCost) * 100)
-          : 0;
+        const percentChange =
+          historicalCost > 0
+            ? Math.round(((currentCost - historicalCost) / historicalCost) * 100)
+            : 0;
 
         let severity: 'info' | 'warning' | 'critical' = 'info';
         if (percentChange >= ANOMALY_THRESHOLD_CRITICAL) {
@@ -218,9 +218,10 @@ export class BillingBot implements Bot {
       }
     }
 
-    const totalChangePercent = totalHistorical > 0
-      ? Math.round(((totalEstimatedCost - totalHistorical) / totalHistorical) * 100)
-      : 0;
+    const totalChangePercent =
+      totalHistorical > 0
+        ? Math.round(((totalEstimatedCost - totalHistorical) / totalHistorical) * 100)
+        : 0;
 
     return {
       anomalies,

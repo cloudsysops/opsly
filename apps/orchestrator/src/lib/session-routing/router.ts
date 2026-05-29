@@ -1,13 +1,7 @@
 import { listBranchEntries, resolveRepoRoot } from '@intcloudsysops/git-branch-orchestrator';
 import { listSessions } from '@intcloudsysops/session-manager';
 
-export type SessionRouteAction =
-  | 'continue'
-  | 'resume'
-  | 'recover'
-  | 'review'
-  | 'merge'
-  | 'archive';
+export type SessionRouteAction = 'continue' | 'resume' | 'recover' | 'review' | 'merge' | 'archive';
 
 export interface SessionProposal {
   kind: 'session' | 'branch';
@@ -52,7 +46,7 @@ function hoursSince(iso: string): number {
 function scoreSession(
   messageTokens: string[],
   session: Awaited<ReturnType<typeof listSessions>>[number],
-  tmuxAlive: boolean,
+  tmuxAlive: boolean
 ): { score: number; actions: SessionRouteAction[] } {
   let score = 0;
   const hay = [
@@ -115,7 +109,7 @@ function scoreSession(
 
 function scoreBranch(
   messageTokens: string[],
-  entry: Awaited<ReturnType<typeof listBranchEntries>>[number],
+  entry: Awaited<ReturnType<typeof listBranchEntries>>[number]
 ): { score: number; actions: SessionRouteAction[] } {
   let score = 0;
   const hay = [
@@ -234,9 +228,10 @@ export async function routeSessions(input: SessionRouteRequest): Promise<Session
     .sort((a, b) => b.score - a.score)
     .slice(0, 8);
 
-  const visible = proposals.length > 0 ? proposals : [...sessionProposals, ...branchProposals]
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 3);
+  const visible =
+    proposals.length > 0
+      ? proposals
+      : [...sessionProposals, ...branchProposals].sort((a, b) => b.score - a.score).slice(0, 3);
 
   const summary =
     visible.length === 0

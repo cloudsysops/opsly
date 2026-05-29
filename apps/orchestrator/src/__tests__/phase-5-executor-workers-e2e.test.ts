@@ -198,7 +198,7 @@ export function hello(): string {
       const startTime = Date.now();
 
       // Simulate execution delay
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       const executionTime = Date.now() - startTime;
 
@@ -213,9 +213,7 @@ export function hello(): string {
         tenantPermissions: ['self'],
       });
 
-      mockEnqueueJob.mockRejectedValue(
-        new Error('Cursor service not responding')
-      );
+      mockEnqueueJob.mockRejectedValue(new Error('Cursor service not responding'));
 
       await expect(
         mockEnqueueJob({
@@ -283,9 +281,7 @@ export function hello(): string {
     });
 
     it('should handle analysis timeout gracefully', async () => {
-      mockEnqueueJob.mockRejectedValue(
-        new Error('Analysis timeout after 30s')
-      );
+      mockEnqueueJob.mockRejectedValue(new Error('Analysis timeout after 30s'));
 
       await expect(
         mockEnqueueJob({
@@ -498,9 +494,7 @@ export function hello(): string {
 
   describe('7. Error Handling & Resilience', () => {
     it('should escalate when worker service is unavailable', async () => {
-      mockEnqueueJob.mockRejectedValue(
-        new Error('Worker service unavailable')
-      );
+      mockEnqueueJob.mockRejectedValue(new Error('Worker service unavailable'));
 
       await expect(
         mockEnqueueJob({
@@ -556,9 +550,7 @@ export function hello(): string {
       const metadata = {
         job_id: jobId,
         timestamp: new Date().toISOString(),
-        validations: [
-          { type: 'type-check', status: 'passed', duration_ms: 1200 },
-        ],
+        validations: [{ type: 'type-check', status: 'passed', duration_ms: 1200 }],
         overall_status: 'passed',
       };
 
@@ -718,14 +710,17 @@ export function hello(): string {
     it('all workers are testable', () => {
       const workers = ['cursor', 'claude', 'validator', 'intent-dispatch'];
       expect(workers.length).toBeGreaterThan(0);
-      workers.forEach(w => expect(typeof w).toBe('string'));
+      workers.forEach((w) => expect(typeof w).toBe('string'));
     });
 
     it('response files are created in correct location', async () => {
       const testFile = path.join(responsesDir, 'test-response.md');
       await fsp.writeFile(testFile, '# Test Response');
 
-      const exists = await fsp.access(testFile).then(() => true).catch(() => false);
+      const exists = await fsp
+        .access(testFile)
+        .then(() => true)
+        .catch(() => false);
       expect(exists).toBe(true);
     });
 
@@ -733,7 +728,10 @@ export function hello(): string {
       const metaFile = path.join(validationDir, 'test-meta.json');
       await fsp.writeFile(metaFile, '{}');
 
-      const exists = await fsp.access(metaFile).then(() => true).catch(() => false);
+      const exists = await fsp
+        .access(metaFile)
+        .then(() => true)
+        .catch(() => false);
       expect(exists).toBe(true);
     });
 

@@ -1,6 +1,6 @@
 /**
  * Super Orchestrator Bridge - Conecta Python scripts con TypeScript orchestrator
- * 
+ *
  * Provee una capa de abstracción para usar los scripts Python:
  * - provider_selector.py
  * - prompt_controller.py
@@ -27,17 +27,17 @@ interface SuperOrchestratorConfig {
 const DEFAULT_CONFIG: SuperOrchestratorConfig = {
   pythonPath: 'python3',
   scriptsDir: join(process.cwd(), 'scripts/super_orchestrator'),
-  configDir: join(process.cwd(), 'config')
+  configDir: join(process.cwd(), 'config'),
 };
 
 export class SuperOrchestratorBridge {
   private config: SuperOrchestratorConfig;
-  
+
   constructor(config: Partial<SuperOrchestratorConfig> = {}) {
     this.config = { ...DEFAULT_CONFIG, ...config };
     this.validatePaths();
   }
-  
+
   private validatePaths(): void {
     if (!existsSync(this.config.scriptsDir)) {
       console.warn(`[super-orchestrator] Scripts dir not found: ${this.config.scriptsDir}`);
@@ -46,41 +46,37 @@ export class SuperOrchestratorBridge {
       console.warn(`[super-orchestrator] Config dir not found: ${this.config.configDir}`);
     }
   }
-  
+
   private async runPythonScript(scriptName: string, args: string[] = []): Promise<any> {
     return new Promise((resolve, reject) => {
       const scriptPath = join(this.config.scriptsDir, scriptName);
-      
+
       if (!existsSync(scriptPath)) {
         reject(new Error(`Script not found: ${scriptPath}`));
         return;
       }
-      
-      const proc: ChildProcess = spawn(
-        this.config.pythonPath,
-        [scriptPath, ...args],
-        {
-          cwd: this.config.scriptsDir,
-          env: { ...process.env, PYTHONPATH: this.config.scriptsDir },
-          stdio: ['ignore', 'pipe', 'pipe']
-        } as SpawnOptions
-      );
-      
+
+      const proc: ChildProcess = spawn(this.config.pythonPath, [scriptPath, ...args], {
+        cwd: this.config.scriptsDir,
+        env: { ...process.env, PYTHONPATH: this.config.scriptsDir },
+        stdio: ['ignore', 'pipe', 'pipe'],
+      } as SpawnOptions);
+
       let stdout = '';
       let stderr = '';
-      
+
       if (proc.stdout) {
         proc.stdout.on('data', (data: Buffer) => {
           stdout += data.toString();
         });
       }
-      
+
       if (proc.stderr) {
         proc.stderr.on('data', (data: Buffer) => {
           stderr += data.toString();
         });
       }
-      
+
       proc.on('close', (code: number | null) => {
         if (code === 0) {
           try {
@@ -92,25 +88,29 @@ export class SuperOrchestratorBridge {
           reject(new Error(`Script exited with code ${code}: ${stderr}`));
         }
       });
-      
+
       proc.on('error', (err: Error) => {
         reject(err);
       });
     });
   }
-  
+
   // === Provider Selection ===
-  
+
   async selectProvider(prompt: string): Promise<{ provider: string; reasoning: string }> {
     try {
-      const result = await this.runPythonScript('provider_selector.py', ['--select', '--prompt', prompt]);
+      const result = await this.runPythonScript('provider_selector.py', [
+        '--select',
+        '--prompt',
+        prompt,
+      ]);
       return result;
     } catch (err) {
       console.error('[super-orchestrator] selectProvider error:', err);
       return { provider: 'ollama-qwen', reasoning: 'Fallback to default' };
     }
   }
-  
+
   async getProviderStatus(): Promise<any> {
     try {
       return await this.runPythonScript('provider_selector.py', ['--status']);
@@ -119,9 +119,9 @@ export class SuperOrchestratorBridge {
       return {};
     }
   }
-  
+
   // === Performance Tracking ===
-  
+
   async recordPerformance(
     providerId: string,
     taskType: string,
@@ -132,17 +132,22 @@ export class SuperOrchestratorBridge {
     try {
       await this.runPythonScript('performance_tracker.py', [
         '--record',
-        '--provider', providerId,
-        '--task', taskType,
-        '--latency', String(latencyMs),
-        '--success', String(success),
-        '--cost', String(cost)
+        '--provider',
+        providerId,
+        '--task',
+        taskType,
+        '--latency',
+        String(latencyMs),
+        '--success',
+        String(success),
+        '--cost',
+        String(cost),
       ]);
     } catch (err) {
       console.error('[super-orchestrator] recordPerformance error:', err);
     }
   }
-  
+
   async getPerformanceStats(): Promise<any> {
     try {
       return await this.runPythonScript('performance_tracker.py', ['--stats']);
@@ -151,7 +156,7 @@ export class SuperOrchestratorBridge {
       return {};
     }
   }
-  
+
   async getPerformanceDashboard(): Promise<string> {
     try {
       const result = await this.runPythonScript('performance_tracker.py', ['--dashboard']);
@@ -161,9 +166,9 @@ export class SuperOrchestratorBridge {
       return 'Error generating dashboard';
     }
   }
-  
+
   // === Auto Evolution ===
-  
+
   async generateEvolutionIdeas(): Promise<any[]> {
     try {
       const result = await this.runPythonScript('auto_evolution.py', ['--analyze']);
@@ -173,7 +178,7 @@ export class SuperOrchestratorBridge {
       return [];
     }
   }
-  
+
   async getPendingIdeas(): Promise<any[]> {
     try {
       return await this.runPythonScript('auto_evolution.py', ['--pending']);
@@ -182,7 +187,7 @@ export class SuperOrchestratorBridge {
       return [];
     }
   }
-  
+
   async applyIdea(ideaId: string): Promise<{ success: boolean; action: any }> {
     try {
       return await this.runPythonScript('auto_evolution.py', ['--apply', ideaId]);
@@ -191,7 +196,7 @@ export class SuperOrchestratorBridge {
       return { success: false, action: null };
     }
   }
-  
+
   async getEvolutionReport(): Promise<string> {
     try {
       const result = await this.runPythonScript('auto_evolution.py', ['--report']);
@@ -201,9 +206,9 @@ export class SuperOrchestratorBridge {
       return 'Error generating report';
     }
   }
-  
+
   // === Agent Pool Manager ===
-  
+
   async getAgentPoolStatus(): Promise<any> {
     try {
       return await this.runPythonScript('agent_pool_manager.py', ['--status']);
@@ -212,7 +217,7 @@ export class SuperOrchestratorBridge {
       return {};
     }
   }
-  
+
   async findAvailableAgent(capabilities: string[], maxLatency?: number): Promise<string | null> {
     try {
       const args = ['--find', ...capabilities];
@@ -226,7 +231,7 @@ export class SuperOrchestratorBridge {
       return null;
     }
   }
-  
+
   async healthCheckAllAgents(): Promise<any> {
     try {
       return await this.runPythonScript('agent_pool_manager.py', ['--health-check']);
@@ -235,7 +240,7 @@ export class SuperOrchestratorBridge {
       return { healthy: 0, unhealthy: 0, total: 0 };
     }
   }
-  
+
   async getAgentPoolDashboard(): Promise<string> {
     try {
       const result = await this.runPythonScript('agent_pool_manager.py', ['--dashboard']);
@@ -245,9 +250,9 @@ export class SuperOrchestratorBridge {
       return 'Error generating dashboard';
     }
   }
-  
+
   // === Health Monitor ===
-  
+
   async checkSystemHealth(): Promise<any> {
     try {
       return await this.runPythonScript('health_monitor.py', ['--check']);
@@ -256,9 +261,9 @@ export class SuperOrchestratorBridge {
       return {};
     }
   }
-  
+
   // === Cost Optimizer ===
-  
+
   async getCostReport(): Promise<any> {
     try {
       return await this.runPythonScript('cost_optimizer.py', ['--report']);
@@ -267,7 +272,7 @@ export class SuperOrchestratorBridge {
       return {};
     }
   }
-  
+
   async getCostAlerts(): Promise<any[]> {
     try {
       return await this.runPythonScript('cost_optimizer.py', ['--alerts']);
@@ -276,9 +281,9 @@ export class SuperOrchestratorBridge {
       return [];
     }
   }
-  
+
   // === Idea Generator ===
-  
+
   async generateIdeas(context: string): Promise<any[]> {
     try {
       return await this.runPythonScript('idea_generator.py', ['--generate', context]);
@@ -287,9 +292,9 @@ export class SuperOrchestratorBridge {
       return [];
     }
   }
-  
+
   // === Git Automation ===
-  
+
   async autoCommit(message: string, branch?: string): Promise<any> {
     try {
       const args = ['--commit', message];
@@ -300,7 +305,7 @@ export class SuperOrchestratorBridge {
       return { success: false, error: String(err) };
     }
   }
-  
+
   async autoPush(branch: string = 'main'): Promise<any> {
     try {
       return await this.runPythonScript('git_automation.py', ['--push', branch]);
@@ -309,58 +314,66 @@ export class SuperOrchestratorBridge {
       return { success: false, error: String(err) };
     }
   }
-  
+
   // === N8n Trigger ===
-  
+
   async triggerN8nWorkflow(workflowName: string, payload: object): Promise<any> {
     try {
       return await this.runPythonScript('n8n_trigger.py', [
-        '--trigger', workflowName,
-        '--payload', JSON.stringify(payload)
+        '--trigger',
+        workflowName,
+        '--payload',
+        JSON.stringify(payload),
       ]);
     } catch (err) {
       console.error('[super-orchestrator] triggerN8nWorkflow error:', err);
       return { success: false, error: String(err) };
     }
   }
-  
+
   // === Unified Dashboard ===
-  
+
   async getUnifiedDashboard(): Promise<string> {
     const sections: string[] = [];
-    
+
     try {
       sections.push('=== SUPER ORCHESTRATOR DASHBOARD ===\n');
-      
+
       // Performance
       const perfStats = await this.getPerformanceStats();
       sections.push('📊 PERFORMANCE:');
       if (perfStats.providers) {
-        for (const [provider, stats] of Object.entries(perfStats.providers as Record<string, any>)) {
+        for (const [provider, stats] of Object.entries(
+          perfStats.providers as Record<string, any>
+        )) {
           if (stats.status !== 'no_data') {
-            sections.push(`   ${provider}: ${(stats.success_rate * 100).toFixed(1)}% success, ${stats.avg_latency_ms?.toFixed(0)}ms`);
+            sections.push(
+              `   ${provider}: ${(stats.success_rate * 100).toFixed(1)}% success, ${stats.avg_latency_ms?.toFixed(0)}ms`
+            );
           }
         }
       }
-      
+
       // Agent Pool
       const poolStatus = await this.getAgentPoolStatus();
       sections.push('\n🤖 AGENT POOL:');
-      sections.push(`   Total: ${poolStatus.total_agents || 0}, Load: ${poolStatus.total_load || 0}/${poolStatus.max_load || 0}`);
-      
+      sections.push(
+        `   Total: ${poolStatus.total_agents || 0}, Load: ${poolStatus.total_load || 0}/${poolStatus.max_load || 0}`
+      );
+
       // Health
       const health = await this.checkSystemHealth();
       sections.push('\n💚 HEALTH:');
       for (const [service, status] of Object.entries(health as Record<string, any>)) {
         sections.push(`   ${service}: ${status.status || 'unknown'}`);
       }
-      
+
       // Ideas
       const ideas = await this.getPendingIdeas();
       sections.push(`\n💡 PENDING IDEAS: ${ideas.length}`);
-      
+
       sections.push('\n' + '='.repeat(50));
-      
+
       return sections.join('\n');
     } catch (err) {
       return `Error generating unified dashboard: ${err}`;
@@ -374,9 +387,9 @@ export const superOrchestrator = new SuperOrchestratorBridge();
 // CLI entry point
 if (require.main === module) {
   const bridge = new SuperOrchestratorBridge();
-  
+
   const command = process.argv[2];
-  
+
   switch (command) {
     case 'dashboard':
       bridge.getUnifiedDashboard().then(console.log);

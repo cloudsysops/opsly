@@ -1,5 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ValidationMetricsStore, type ValidationMetric, type AgentPerformanceStats } from '../lib/validation/validation-metrics.js';
+import {
+  ValidationMetricsStore,
+  type ValidationMetric,
+  type AgentPerformanceStats,
+} from '../lib/validation/validation-metrics.js';
 import { ValidationFeedbackLayer } from '../lib/validation/validation-feedback.js';
 import { ValidationDashboard } from '../lib/validation/validation-dashboard.js';
 import type { OpenClawControlDecisionContract } from '../openclaw/contracts.js';

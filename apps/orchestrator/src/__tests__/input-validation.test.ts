@@ -52,14 +52,7 @@ describe('Input Validation Tests', () => {
     it('handles very long prompt (>10KB)', async () => {
       const longPrompt = 'x'.repeat(15000); // 15KB
 
-      const result = await trainer.recordExecution(
-        longPrompt,
-        'executor',
-        'Result',
-        100,
-        1,
-        false
-      );
+      const result = await trainer.recordExecution(longPrompt, 'executor', 'Result', 100, 1, false);
 
       expect(typeof result).toBe('boolean');
     });
@@ -257,11 +250,7 @@ describe('Input Validation Tests', () => {
     });
 
     it('handles null goal gracefully', async () => {
-      const session = await orchestrator.startIterationSession(
-        'job-123',
-        5,
-        null as any
-      );
+      const session = await orchestrator.startIterationSession('job-123', 5, null as any);
 
       expect(session).toBeDefined();
     });
@@ -290,11 +279,7 @@ describe('Input Validation Tests', () => {
     });
 
     it('handles duplicate job IDs', async () => {
-      const session1 = await orchestrator.startIterationSession(
-        'duplicate-job',
-        5,
-        'Goal 1'
-      );
+      const session1 = await orchestrator.startIterationSession('duplicate-job', 5, 'Goal 1');
 
       const session2 = await orchestrator.startIterationSession(
         'duplicate-job', // Same ID

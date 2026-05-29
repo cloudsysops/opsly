@@ -22,8 +22,6 @@ export function assertAgentRoleContract(role: AgentRole | undefined, intent: Int
   }
   const allowed = getAllowedIntentsForRole(role);
   if (!allowed.includes(intent)) {
-    throw new Error(
-      `agent_role contract violation: role=${role} cannot execute intent=${intent}`
-    );
+    throw new Error(`agent_role contract violation: role=${role} cannot execute intent=${intent}`);
   }
 }

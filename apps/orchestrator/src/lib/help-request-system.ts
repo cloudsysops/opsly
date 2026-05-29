@@ -105,11 +105,7 @@ export class HelpRequestSystem {
     const prompt = this.generatePromptForExternalAgent(request);
     await writeFile(requestFile, `${JSON.stringify(request, null, 2)}\n`, 'utf-8');
     await writeFile(promptFile, prompt, 'utf-8');
-    await writeFile(
-      this.activeRequestPath,
-      `# Solicitud activa de Opsly\n\n${prompt}`,
-      'utf-8'
-    );
+    await writeFile(this.activeRequestPath, `# Solicitud activa de Opsly\n\n${prompt}`, 'utf-8');
   }
 
   private generatePromptForExternalAgent(request: HelpRequest): string {
@@ -122,7 +118,11 @@ export class HelpRequestSystem {
   private async notifyViaDiscord(request: HelpRequest): Promise<void> {
     const title = `🚨 Opsly necesita ayuda (${request.blockageType})`;
     const message = `Tarea: ${request.jobName}\nTenant: ${request.tenantSlug}\nAccion: ${request.suggestedAction}\nArchivo: context/help-requests/${request.id}-prompt.md`;
-    await notifyDiscord(title, message, request.blockageType === 'permission' ? 'error' : 'warning');
+    await notifyDiscord(
+      title,
+      message,
+      request.blockageType === 'permission' ? 'error' : 'warning'
+    );
   }
 
   private async reactivateBlockedJob(jobId: string, resolution: string): Promise<void> {
@@ -131,11 +131,15 @@ export class HelpRequestSystem {
       return;
     }
     const retryId = `${jobId}-retry-${Date.now()}`;
-    await orchestratorQueue.add(job.name, {
-      ...job.data,
-      helpResolution: resolution,
-      helpResolvedAt: new Date().toISOString(),
-    }, { jobId: retryId });
+    await orchestratorQueue.add(
+      job.name,
+      {
+        ...job.data,
+        helpResolution: resolution,
+        helpResolvedAt: new Date().toISOString(),
+      },
+      { jobId: retryId }
+    );
   }
 }
 

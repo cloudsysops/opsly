@@ -158,9 +158,7 @@ export async function validatePromptSandbox(
   // Check 3: Length sanity (improved should be within 50-200% of original)
   const lengthRatio = improvedPrompt.length / originalPrompt.length;
   if (lengthRatio < 0.5 || lengthRatio > 2.0) {
-    errors.push(
-      `Prompt length unreasonable: ${(lengthRatio * 100).toFixed(0)}% of original`
-    );
+    errors.push(`Prompt length unreasonable: ${(lengthRatio * 100).toFixed(0)}% of original`);
   }
 
   // Check 4: Test cases (validate that improved prompt would handle inputs)

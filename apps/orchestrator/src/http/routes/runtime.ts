@@ -60,7 +60,7 @@ export async function handleRuntimeCreateSession(ctx: RouteContext): Promise<voi
   const name = typeof b.name === 'string' ? b.name : 'runtime';
   const agentId = typeof b.agentId === 'string' ? b.agentId : 'orchestrator';
   const workspace =
-    typeof b.workspace === 'string' ? b.workspace : process.env.OPSLY_ROOT ?? '/opt/opsly';
+    typeof b.workspace === 'string' ? b.workspace : (process.env.OPSLY_ROOT ?? '/opt/opsly');
   const jobId = typeof b.jobId === 'string' ? b.jobId : undefined;
   const branch = typeof b.branch === 'string' ? b.branch : undefined;
   const initialCommand = typeof b.initialCommand === 'string' ? b.initialCommand : undefined;

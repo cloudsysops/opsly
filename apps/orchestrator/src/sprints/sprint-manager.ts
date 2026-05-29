@@ -81,7 +81,7 @@ export class SprintManager {
     }
 
     const toolRegistry = createDefaultToolRegistry();
-    let steps: SprintStepJson[] = [...row.steps];
+    const steps: SprintStepJson[] = [...row.steps];
 
     await updateSprint(sprintId, { status: 'running', steps });
 

@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-05-29T13:35:05.774Z",
+  "generated_at": "2026-05-29T13:39:51.850Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -3278,7 +3278,7 @@
         "usar",
         "vivo"
       ],
-      "size_bytes": 274869
+      "size_bytes": 277233
     },
     {
       "path": "apps/admin/INVITATIONS_UI.md",

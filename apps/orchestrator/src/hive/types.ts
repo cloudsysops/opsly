@@ -1,14 +1,14 @@
 export type BotRole =
-  | 'queen'          // Director: planifica y asigna
-  | 'coder'          // Escribe y modifica código
-  | 'researcher'     // Investiga en web y documentación
-  | 'tester'         // Escribe y ejecuta pruebas
-  | 'deployer'       // Despliega cambios
-  | 'doc-writer'     // Genera documentación
-  | 'security'       // Análisis de seguridad
-  | 'dns'            // Monitorea DNS y dominios
-  | 'secrets'        // Detecta secretos expuestos
-  | 'billing';       // Detecta anomalías de facturación
+  | 'queen' // Director: planifica y asigna
+  | 'coder' // Escribe y modifica código
+  | 'researcher' // Investiga en web y documentación
+  | 'tester' // Escribe y ejecuta pruebas
+  | 'deployer' // Despliega cambios
+  | 'doc-writer' // Genera documentación
+  | 'security' // Análisis de seguridad
+  | 'dns' // Monitorea DNS y dominios
+  | 'secrets' // Detecta secretos expuestos
+  | 'billing'; // Detecta anomalías de facturación
 
 export interface Bot {
   id: string;
@@ -23,7 +23,13 @@ export interface Bot {
   handleTask?(subtask: Subtask): Promise<void>;
 }
 
-export type PheromoneType = 'finding' | 'request_help' | 'task_complete' | 'error' | 'status_update' | 'subtask_assignment';
+export type PheromoneType =
+  | 'finding'
+  | 'request_help'
+  | 'task_complete'
+  | 'error'
+  | 'status_update'
+  | 'subtask_assignment';
 
 export interface PheromoneMessage {
   id?: string;

@@ -20,9 +20,7 @@ export function parseSalesAgentPayload(payload: Record<string, unknown>): SalesA
     return null;
   }
   const rawHistory = payload.conversation_history;
-  const conversationHistory = Array.isArray(rawHistory)
-    ? rawHistory.filter(isChatTurn)
-    : [];
+  const conversationHistory = Array.isArray(rawHistory) ? rawHistory.filter(isChatTurn) : [];
   const contextBlock =
     typeof payload.context_block === 'string' ? payload.context_block : undefined;
   return {

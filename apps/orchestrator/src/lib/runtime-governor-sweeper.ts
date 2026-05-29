@@ -41,7 +41,9 @@ export async function sweepIdleSessions(): Promise<IdleSweepResult> {
       await stopSession(session.sessionId);
       result.stopped.push(session.sessionId);
     } catch (err) {
-      result.errors.push(`${session.sessionId}: ${err instanceof Error ? err.message : String(err)}`);
+      result.errors.push(
+        `${session.sessionId}: ${err instanceof Error ? err.message : String(err)}`
+      );
     }
   }
 
@@ -63,7 +65,7 @@ export function startRuntimeGovernorSweeper(intervalMinutes = 5): void {
             event: 'governor_idle_sweep',
             stopped: r.stopped.length,
             errors: r.errors.length,
-          }) + '\n',
+          }) + '\n'
         );
       }
     });

@@ -47,7 +47,9 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
-async function withRedis<T>(fn: (client: ReturnType<typeof createClient>) => Promise<T>): Promise<T> {
+async function withRedis<T>(
+  fn: (client: ReturnType<typeof createClient>) => Promise<T>
+): Promise<T> {
   const client = createClient({
     url: REDIS_URL,
     password: process.env.REDIS_PASSWORD,

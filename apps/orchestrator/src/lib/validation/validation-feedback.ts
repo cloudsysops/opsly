@@ -25,11 +25,11 @@ export class ValidationFeedbackLayer {
    */
   async applyValidationFeedback(
     intent: string,
-    originalDecision: OpenClawControlDecisionContract,
+    originalDecision: OpenClawControlDecisionContract
   ): Promise<AdaptedDecision> {
     const adaptations: string[] = [];
     // Deep copy the decision to adapt it
-    let adapted = JSON.parse(JSON.stringify(originalDecision)) as OpenClawControlDecisionContract;
+    const adapted = JSON.parse(JSON.stringify(originalDecision)) as OpenClawControlDecisionContract;
     let confidence = 0.5;
 
     try {
@@ -53,7 +53,9 @@ export class ValidationFeedbackLayer {
         const escalationRate = intentHistory.escalate_count / intentHistory.total_validations;
         if (escalationRate > 0.2) {
           adapted.llm.routing_bias = 'quality';
-          adaptations.push(`High escalation rate (${(escalationRate * 100).toFixed(1)}%) → increase quality bias`);
+          adaptations.push(
+            `High escalation rate (${(escalationRate * 100).toFixed(1)}%) → increase quality bias`
+          );
           confidence = Math.max(confidence, 0.7);
         }
       }
@@ -62,16 +64,20 @@ export class ValidationFeedbackLayer {
       if (agentPerformance && agentPerformance.iterate_rate > 0.3) {
         adapted.llm.routing_bias = 'quality';
         adaptations.push(
-          `High iteration rate (${(agentPerformance.iterate_rate * 100).toFixed(1)}%) → increase quality bias for better first-time success`,
+          `High iteration rate (${(agentPerformance.iterate_rate * 100).toFixed(1)}%) → increase quality bias for better first-time success`
         );
         confidence = Math.max(confidence, 0.75);
       }
 
       // Adaptation 3: Consistently successful → optimize for cost
-      if (agentPerformance && agentPerformance.commit_rate > 0.85 && agentPerformance.avg_iterations < 1.3) {
+      if (
+        agentPerformance &&
+        agentPerformance.commit_rate > 0.85 &&
+        agentPerformance.avg_iterations < 1.3
+      ) {
         adapted.llm.routing_bias = 'cost';
         adaptations.push(
-          `Consistently successful (commit rate ${(agentPerformance.commit_rate * 100).toFixed(1)}%) → optimize for cost`,
+          `Consistently successful (commit rate ${(agentPerformance.commit_rate * 100).toFixed(1)}%) → optimize for cost`
         );
         confidence = Math.max(confidence, 0.8);
       }
@@ -85,14 +91,18 @@ export class ValidationFeedbackLayer {
       }
 
       // Adaptation 5: Very low escalation rate → optimize for cost
-      if (intentHistory && intentHistory.escalate_count === 0 && intentHistory.total_validations > 10) {
+      if (
+        intentHistory &&
+        intentHistory.escalate_count === 0 &&
+        intentHistory.total_validations > 10
+      ) {
         adapted.llm.routing_bias = 'cost';
         adaptations.push('Zero escalations in history → prioritize cost optimization');
         confidence = Math.max(confidence, 0.9);
       }
 
       console.log(
-        `[ValidationFeedbackLayer] Applied ${adaptations.length} adaptation(s) for intent "${intent}" (confidence: ${confidence})`,
+        `[ValidationFeedbackLayer] Applied ${adaptations.length} adaptation(s) for intent "${intent}" (confidence: ${confidence})`
       );
       adaptations.forEach((a) => console.log(`  - ${a}`));
 

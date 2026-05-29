@@ -1,5 +1,11 @@
 import type { RouteContext } from '../router.js';
-import { verifyPlatformAdminToken, parseBody, assertTenantSlugOrThrow, enrichAutonomyMetadata, randomUUID } from '../utils.js';
+import {
+  verifyPlatformAdminToken,
+  parseBody,
+  assertTenantSlugOrThrow,
+  enrichAutonomyMetadata,
+  randomUUID,
+} from '../utils.js';
 import { enqueueJob } from '../../queue.js';
 import {
   initializeHiveHandler,
@@ -60,7 +66,11 @@ export async function handleHiveObjective(ctx: RouteContext): Promise<void> {
       return;
     }
     const bull = await enqueueJob(job);
-    jsonResponse(ctx.res, 202, { success: true, taskId: bull.id != null ? String(bull.id) : null, request_id: requestId });
+    jsonResponse(ctx.res, 202, {
+      success: true,
+      taskId: bull.id != null ? String(bull.id) : null,
+      request_id: requestId,
+    });
   } catch (err) {
     errorResponse(ctx.res, 500, String(err));
   }

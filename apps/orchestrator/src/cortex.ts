@@ -67,8 +67,12 @@ export class OpslyCortex {
   private readonly intervalMs = this.intervalMinutes * 60 * 1000;
   private readonly strategicHourUtc = parsePositiveIntEnv('OPSLY_CORTEX_STRATEGIC_HOUR_UTC', 5);
   private readonly reflectionHourUtc = parsePositiveIntEnv('OPSLY_CORTEX_REFLECTION_HOUR_UTC', 20);
-  private readonly gatewayUrl = process.env.ORCHESTRATOR_LLM_GATEWAY_URL ?? 'http://llm-gateway:3010';
-  private readonly maxEnqueuesPerHour = parsePositiveIntEnv('OPSLY_CORTEX_MAX_ENQUEUES_PER_HOUR', 8);
+  private readonly gatewayUrl =
+    process.env.ORCHESTRATOR_LLM_GATEWAY_URL ?? 'http://llm-gateway:3010';
+  private readonly maxEnqueuesPerHour = parsePositiveIntEnv(
+    'OPSLY_CORTEX_MAX_ENQUEUES_PER_HOUR',
+    8
+  );
   private enqueueHourToken = '';
   private enqueueCountThisHour = 0;
   private timer: NodeJS.Timeout | null = null;
@@ -112,7 +116,11 @@ export class OpslyCortex {
 
   private async safeEnqueueJob(job: OrchestratorJob, rateLimitExempt: boolean): Promise<void> {
     if (this.isDryRun()) {
-      console.log('[orchestrator] OpslyCortex dry-run skip enqueue', job.type, job.idempotency_key ?? '');
+      console.log(
+        '[orchestrator] OpslyCortex dry-run skip enqueue',
+        job.type,
+        job.idempotency_key ?? ''
+      );
       return;
     }
     if (!rateLimitExempt) {
@@ -160,11 +168,16 @@ export class OpslyCortex {
     const tenantCount = Array.isArray(tenants) ? tenants.length : 0;
     const econ = state?.economics;
     const mrr =
-      econ && typeof econ === 'object' && econ !== null && 'projected_monthly_with_optimizations' in econ
+      econ &&
+      typeof econ === 'object' &&
+      econ !== null &&
+      'projected_monthly_with_optimizations' in econ
         ? Number((econ as Record<string, unknown>).projected_monthly_with_optimizations ?? 0)
         : 0;
     const techHealth =
-      typeof state?.next_action === 'string' && state.next_action.length > 0 ? 'documented' : 'unknown';
+      typeof state?.next_action === 'string' && state.next_action.length > 0
+        ? 'documented'
+        : 'unknown';
     const signals: string[] = [];
     if (typeof state?.phase === 'string') {
       signals.push(`phase:${state.phase}`);
@@ -254,7 +267,10 @@ export class OpslyCortex {
   }
 
   private async oodaCycle(): Promise<void> {
-    const [metrics, signals] = await Promise.all([this.gatherSystemMetrics(), this.getExternalSignals()]);
+    const [metrics, signals] = await Promise.all([
+      this.gatherSystemMetrics(),
+      this.getExternalSignals(),
+    ]);
     const analysis = await this.analyzeSituation({ metrics, signals, state: this.cognitiveState });
     if (analysis.emotionalAdjustment) {
       this.cognitiveState.emotionalState = analysis.emotionalAdjustment;
@@ -382,7 +398,9 @@ export class OpslyCortex {
       const systemHealth = parsed.systemHealth;
       const urgency = parsed.urgency;
       if (
-        (systemHealth !== 'optimal' && systemHealth !== 'degraded' && systemHealth !== 'critical') ||
+        (systemHealth !== 'optimal' &&
+          systemHealth !== 'degraded' &&
+          systemHealth !== 'critical') ||
         (urgency !== 'low' && urgency !== 'medium' && urgency !== 'high')
       ) {
         return null;
@@ -463,7 +481,10 @@ export class OpslyCortex {
   private async runDailyStrategicSessionIfDue(): Promise<void> {
     const now = new Date();
     const today = now.toISOString().slice(0, 10);
-    if (now.getUTCHours() !== this.strategicHourUtc || this.runtimeState.lastStrategicDate === today) {
+    if (
+      now.getUTCHours() !== this.strategicHourUtc ||
+      this.runtimeState.lastStrategicDate === today
+    ) {
       return;
     }
     this.runtimeState.lastStrategicDate = today;
@@ -484,7 +505,10 @@ export class OpslyCortex {
     }
     this.runtimeState.lastReflectionWeek = weekToken;
     const note = `weekly_reflection:${weekToken}:${this.cognitiveState.currentStrategy ?? 'n/a'}`;
-    this.cognitiveState.recentExperiences = [...this.cognitiveState.recentExperiences.slice(-9), { note }];
+    this.cognitiveState.recentExperiences = [
+      ...this.cognitiveState.recentExperiences.slice(-9),
+      { note },
+    ];
     await this.persistCognitiveSnapshot();
   }
 

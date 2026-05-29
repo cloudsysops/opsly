@@ -1,7 +1,4 @@
-import {
-  listOpenClawAgents,
-  type OpenClawAgentDescriptor,
-} from './registry.js';
+import { listOpenClawAgents, type OpenClawAgentDescriptor } from './registry.js';
 
 export interface OpenClawGovernanceRecord {
   id: string;

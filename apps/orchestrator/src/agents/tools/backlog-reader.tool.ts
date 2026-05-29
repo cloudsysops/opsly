@@ -39,17 +39,9 @@ function extractTasks(content: string, source: string): Task[] {
 
       // Try to infer priority from keywords
       let priority: Task['priority'] = 'medium';
-      if (
-        title.includes('CRITICAL') ||
-        title.includes('critical') ||
-        title.includes('urgent')
-      ) {
+      if (title.includes('CRITICAL') || title.includes('critical') || title.includes('urgent')) {
         priority = 'critical';
-      } else if (
-        title.includes('HIGH') ||
-        title.includes('High') ||
-        title.includes('important')
-      ) {
+      } else if (title.includes('HIGH') || title.includes('High') || title.includes('important')) {
         priority = 'high';
       } else if (title.includes('LOW') || title.includes('Low')) {
         priority = 'low';

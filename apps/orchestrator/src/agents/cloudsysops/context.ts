@@ -54,9 +54,7 @@ export function buildOpsAgentContextBlock(
   prior: PriorServiceSummary[]
 ): string {
   const priorLine =
-    prior.length > 0
-      ? prior.map((p) => p.recommendations).join('; ')
-      : 'none on record';
+    prior.length > 0 ? prior.map((p) => p.recommendations).join('; ') : 'none on record';
   return [
     `Customer: ${booking.customerName}`,
     `Service: ${booking.serviceType}`,

@@ -112,12 +112,16 @@ function startAllWorkers(): AsyncCleanup[] {
   const terminalWorker = startTerminalWorker(connection);
   const localAgentsWorker = startLocalAgentsUnifiedWorker(connection);
   const localClaudeWorker = localAgentUnifiedOnly ? undefined : startLocalClaudeWorker(connection);
-  const localCopilotWorker = localAgentUnifiedOnly ? undefined : startLocalCopilotWorker(connection);
-  const localOpenCodeWorker = localAgentUnifiedOnly ? undefined : startLocalOpenCodeWorker(connection);
+  const localCopilotWorker = localAgentUnifiedOnly
+    ? undefined
+    : startLocalCopilotWorker(connection);
+  const localOpenCodeWorker = localAgentUnifiedOnly
+    ? undefined
+    : startLocalOpenCodeWorker(connection);
   const localCursorWorker = localAgentUnifiedOnly ? undefined : startLocalCursorWorker(connection);
   const superOrchestratorWorker = superOrchestratorWorkerEnabled
-  ? startSuperOrchestratorWorker(connection)
-  : undefined;
+    ? startSuperOrchestratorWorker(connection)
+    : undefined;
 
   let agentClassifierCleanup: AsyncCleanup[] = [];
   if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true') {
@@ -126,7 +130,9 @@ function startAllWorkers(): AsyncCleanup[] {
   }
 
   const sandboxWorker =
-  process.env.OPSLY_SANDBOX_WORKER_ENABLED === 'true' ? startSandboxWorker(connection) : undefined;
+    process.env.OPSLY_SANDBOX_WORKER_ENABLED === 'true'
+      ? startSandboxWorker(connection)
+      : undefined;
   const jcodeWorker = startJcodeWorker(connection);
   const hiveWorker = startHiveWorker(connection);
   const defenseAuditWorker = startDefenseAuditWorker(connection);
@@ -136,7 +142,9 @@ function startAllWorkers(): AsyncCleanup[] {
   const agentFarmWorkerEnabled = process.env.OPSLY_AGENT_FARM_WORKER_ENABLED === 'true';
   const agentFarmWorker = agentFarmWorkerEnabled ? startAgentFarmWorker(connection) : undefined;
   const approvalGateWorkerEnabled = process.env.OPSLY_APPROVAL_GATE_WORKER_ENABLED === 'true';
-  const approvalGateResult = approvalGateWorkerEnabled ? startApprovalGateWorker(connection) : undefined;
+  const approvalGateResult = approvalGateWorkerEnabled
+    ? startApprovalGateWorker(connection)
+    : undefined;
   // Maia Life Systems
   const selfHealWorker = startSelfHealWorker(connection);
   const autoDeployWorker = startAutoDeployWorker(connection);
@@ -167,16 +175,16 @@ function startAllWorkers(): AsyncCleanup[] {
     ...(localOpenCodeWorker ? [async () => localOpenCodeWorker.close()] : []),
     ...(localCursorWorker ? [async () => localCursorWorker.close()] : []),
     ...(superOrchestratorWorker ? [async () => superOrchestratorWorker.close()] : []),
-  ...(sandboxWorker ? [async () => sandboxWorker.close()] : []),
-  async () => jcodeWorker.close(),
-  async () => hiveWorker.close(),
-  async () => defenseAuditWorker.close(),
-  async () => researchWorker.close(),
-  async () => plannerWorker.close(),
-  async () => skepticWorker.close(),
-  ...(agentFarmWorker ? [async () => agentFarmWorker.close()] : []),
-  ...(approvalGateResult ? [async () => approvalGateResult.worker.close()] : []),
-  ...agentClassifierCleanup,
+    ...(sandboxWorker ? [async () => sandboxWorker.close()] : []),
+    async () => jcodeWorker.close(),
+    async () => hiveWorker.close(),
+    async () => defenseAuditWorker.close(),
+    async () => researchWorker.close(),
+    async () => plannerWorker.close(),
+    async () => skepticWorker.close(),
+    ...(agentFarmWorker ? [async () => agentFarmWorker.close()] : []),
+    ...(approvalGateResult ? [async () => approvalGateResult.worker.close()] : []),
+    ...agentClassifierCleanup,
     // Maia Life Systems
     async () => selfHealWorker.close(),
     async () => autoDeployWorker.close(),
@@ -184,7 +192,7 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => claudeCodeWorker.close(),
     async () => validationWorker.close(),
     async () => memoryWriterWorker.close(),
-    async () => shieldScanWorker.stop(),
+    async () => shieldScanWorker.stop()
   );
 
   const localWorkersLabel = localAgentUnifiedOnly
@@ -195,9 +203,9 @@ function startAllWorkers(): AsyncCleanup[] {
   const approvalGateLabel = approvalGateWorkerEnabled ? ', approval-gate' : '';
   console.log(
     `[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, evolution, intent_dispatch, terminal_task, jcode, hive, defense-audit, shield-scan, research, planner, skeptic${localWorkersLabel}${superWorkerLabel}${agentFarmLabel}${approvalGateLabel}` +
-    (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
-    (process.env.OPSLY_SANDBOX_WORKER_ENABLED === 'true' ? ', sandbox' : '') +
-    '; Hermes tick → servicio opsly-hermes (no este proceso).'
+      (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
+      (process.env.OPSLY_SANDBOX_WORKER_ENABLED === 'true' ? ', sandbox' : '') +
+      '; Hermes tick → servicio opsly-hermes (no este proceso).'
   );
   return cleanup;
 }
@@ -236,7 +244,10 @@ async function main(): Promise<void> {
   const healthServer = startOrchestratorHealthServer();
   cleanupTasks.push(async () => closeHttpServer(healthServer));
 
-  if (shouldRunControlPlane(role) && process.env.OPSLY_RUNTIME_GOVERNOR_SWEEPER_ENABLED !== 'false') {
+  if (
+    shouldRunControlPlane(role) &&
+    process.env.OPSLY_RUNTIME_GOVERNOR_SWEEPER_ENABLED !== 'false'
+  ) {
     startRuntimeGovernorSweeper(5);
   }
   cleanupTasks.push(async () => drainMeteringOperations());

@@ -122,7 +122,7 @@ describe('Phase 7: Autonomous Iteration + Pattern Learning', () => {
 
       // Third should fail
       await expect(
-        orchestrator.suggestNextIteration(jobId, 'result2', 'executor', 'test'),
+        orchestrator.suggestNextIteration(jobId, 'result2', 'executor', 'test')
       ).rejects.toThrow('Max iterations');
     });
   });
@@ -213,7 +213,7 @@ describe('Phase 7: Autonomous Iteration + Pattern Learning', () => {
         jobId,
         'Previous result had errors',
         'executor',
-        'execute_code',
+        'execute_code'
       );
 
       expect(suggestion).toBeDefined();
@@ -231,7 +231,7 @@ describe('Phase 7: Autonomous Iteration + Pattern Learning', () => {
         jobId,
         'Error result',
         'executor',
-        'unknown-intent',
+        'unknown-intent'
       );
 
       // Without patterns, confidence should be lower
@@ -257,7 +257,7 @@ describe('Phase 7: Autonomous Iteration + Pattern Learning', () => {
           jobId,
           result,
           'executor',
-          'execute_code',
+          'execute_code'
         );
 
         // Record entry
@@ -267,7 +267,7 @@ describe('Phase 7: Autonomous Iteration + Pattern Learning', () => {
           suggestion.nextPrompt,
           `result-${i}`,
           i === 3 ? 'passed' : 'failed',
-          100 + i * 10,
+          100 + i * 10
         );
 
         // Enqueue for execution
@@ -300,7 +300,8 @@ describe('Phase 7: Autonomous Iteration + Pattern Learning', () => {
       // Last 2 should show improvement
       const session = orchestrator.getSession(jobId);
       const lastTwo = session!.history.slice(-2);
-      const improved = lastTwo[0].validationStatus === 'failed' && lastTwo[1].validationStatus === 'passed';
+      const improved =
+        lastTwo[0].validationStatus === 'failed' && lastTwo[1].validationStatus === 'passed';
       expect(improved).toBe(true);
     });
   });
@@ -313,7 +314,7 @@ describe('Phase 7: Autonomous Iteration + Pattern Learning', () => {
         'function createEndpoint() { }',
         150,
         1,
-        true,
+        true
       );
 
       // Should return true if recording succeeded
@@ -328,7 +329,7 @@ describe('Phase 7: Autonomous Iteration + Pattern Learning', () => {
         'execute_code',
         2,
         250,
-        [],
+        []
       );
 
       expect(recorded).toBeDefined();
@@ -401,7 +402,7 @@ describe('Phase 7: Autonomous Iteration + Pattern Learning', () => {
   describe('Test 9: Error Handling', () => {
     it('should throw on non-existent session', async () => {
       await expect(
-        orchestrator.suggestNextIteration('non-existent', 'result', 'executor', 'test'),
+        orchestrator.suggestNextIteration('non-existent', 'result', 'executor', 'test')
       ).rejects.toThrow('Session not found');
     });
 
@@ -434,7 +435,7 @@ describe('Phase 7: Autonomous Iteration + Pattern Learning', () => {
           jobId,
           i === 1 ? 'Initial attempt' : `Iteration ${i - 1} result`,
           'executor',
-          'execute_code',
+          'execute_code'
         );
 
         // Enqueue
@@ -449,7 +450,7 @@ describe('Phase 7: Autonomous Iteration + Pattern Learning', () => {
           suggestion.nextPrompt,
           `Result from iteration ${i}`,
           success ? 'passed' : 'failed',
-          100 + i * 10,
+          100 + i * 10
         );
       }
 
@@ -458,7 +459,10 @@ describe('Phase 7: Autonomous Iteration + Pattern Learning', () => {
       expect(improved).toBe(true); // Went from failed to passed
 
       // 4. Complete session
-      const completed = await orchestrator.completeSession(jobId, 'Successfully completed workflow');
+      const completed = await orchestrator.completeSession(
+        jobId,
+        'Successfully completed workflow'
+      );
       expect(completed.status).toBe('completed');
       expect(completed.history).toHaveLength(3);
 

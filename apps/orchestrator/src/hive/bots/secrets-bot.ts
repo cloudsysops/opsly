@@ -94,12 +94,7 @@ export class SecretsBot implements Bot {
   id: string;
   role: 'secrets' = 'secrets';
   status: 'idle' | 'working' | 'blocked' | 'offline' = 'idle';
-  skills = [
-    'secret_scanner',
-    'git_history_auditor',
-    'env_var_inspector',
-    'config_file_analyzer',
-  ];
+  skills = ['secret_scanner', 'git_history_auditor', 'env_var_inspector', 'config_file_analyzer'];
   capacity = 2;
   concurrentTasks = 0;
   lastHeartbeat = new Date();
@@ -128,10 +123,14 @@ export class SecretsBot implements Bot {
   }
 
   private setupListeners(): void {
-    void this.pheromoneChannel.subscribe(this.id, ['subtask_assignment'], async (message: PheromoneMessage) => {
-      const subtask = message.payload as Subtask;
-      await this.handleTask(subtask);
-    });
+    void this.pheromoneChannel.subscribe(
+      this.id,
+      ['subtask_assignment'],
+      async (message: PheromoneMessage) => {
+        const subtask = message.payload as Subtask;
+        await this.handleTask(subtask);
+      }
+    );
   }
 
   async handleTask(subtask: Subtask): Promise<void> {
@@ -265,7 +264,10 @@ export class SecretsBot implements Bot {
       }
     }
 
-    if (description.toLowerCase().includes('git history') || description.toLowerCase().includes('historial')) {
+    if (
+      description.toLowerCase().includes('git history') ||
+      description.toLowerCase().includes('historial')
+    ) {
       findings.push({
         secretType: 'git_history',
         severity: 'medium',

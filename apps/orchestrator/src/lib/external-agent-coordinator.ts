@@ -53,7 +53,7 @@ export function clearExternalAgentCoordinatorCache(): void {
 }
 
 export async function routeToExternalBinary(
-  input: RouteExternalWorkerInput,
+  input: RouteExternalWorkerInput
 ): Promise<ResolvedExternalWorker> {
   const registry = await getExternalAgentRegistry();
   return routeExternalWorker(registry, input);
@@ -74,8 +74,7 @@ export async function resolveOpslyJobTypeForPrompt(input: {
   if (input.explicitAgent?.trim()) {
     const kind = normalizeLocalAgentKind(input.explicitAgent);
     const worker =
-      listEnabledWorkers(registry).find((w) => w.entry.opsly_job_type === kind) ??
-      null;
+      listEnabledWorkers(registry).find((w) => w.entry.opsly_job_type === kind) ?? null;
     if (worker) {
       return {
         opslyJobType: kind,

@@ -19,8 +19,7 @@ function parseReportContent(raw: unknown): OpsReportContent | null {
   const findings = typeof raw.findings === 'string' ? raw.findings : '';
   const actions = typeof raw.actions === 'string' ? raw.actions : '';
   const results = typeof raw.results === 'string' ? raw.results : '';
-  const recommendations =
-    typeof raw.recommendations === 'string' ? raw.recommendations : '';
+  const recommendations = typeof raw.recommendations === 'string' ? raw.recommendations : '';
   if (!findings && !actions && !results && !recommendations) {
     return null;
   }

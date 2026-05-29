@@ -26,7 +26,10 @@ export class IterationOrchestrator {
   private stateDir: string;
   private trainer: AgentTrainer;
 
-  constructor(stateDir: string = '.cursor/iteration-state', trainerDir: string = '.cursor/training') {
+  constructor(
+    stateDir: string = '.cursor/iteration-state',
+    trainerDir: string = '.cursor/training'
+  ) {
     this.stateDir = stateDir;
     this.trainer = new AgentTrainer(trainerDir);
   }
@@ -39,7 +42,7 @@ export class IterationOrchestrator {
     taskGoal: string,
     initialPrompt: string,
     agentRole: 'cursor' | 'claude' | 'copilot' | 'opencode' = 'cursor',
-    maxIterations: number = 5,
+    maxIterations: number = 5
   ): Promise<IterationState> {
     const state: IterationState = {
       job_id: jobId,
@@ -63,7 +66,7 @@ export class IterationOrchestrator {
   async recordResult(
     jobId: string,
     result: string,
-    durationMs: number,
+    durationMs: number
   ): Promise<{
     should_iterate: boolean;
     next_prompt?: string;
@@ -195,7 +198,8 @@ export class IterationOrchestrator {
       iterations: state.current_iteration,
       max_iterations: state.max_iterations,
       status: state.status,
-      duration_ms: new Date(state.completed_at || new Date()).getTime() - new Date(state.started_at).getTime(),
+      duration_ms:
+        new Date(state.completed_at || new Date()).getTime() - new Date(state.started_at).getTime(),
       final_result: state.history[state.history.length - 1]?.result || null,
     };
   }

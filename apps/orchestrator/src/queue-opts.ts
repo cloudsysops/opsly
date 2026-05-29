@@ -84,9 +84,10 @@ export function buildQueueAddOptions(job: OrchestratorJob): JobsOptions {
   const policy = resolveAutonomyPolicy(job.type, job.autonomy_risk ?? riskFromMetadata);
   const basePriority = planToQueuePriority(job.plan);
   const plannerBoosted = isPlannerDerivedJob(job) ? Math.max(0, basePriority - 5000) : basePriority;
-  const growthBoosted = isGrowthCritical(job) ? Math.max(0, plannerBoosted - 15_000) : plannerBoosted;
-  const boosted =
-    policy.riskLevel === 'high' ? Math.max(0, growthBoosted - 10_000) : growthBoosted;
+  const growthBoosted = isGrowthCritical(job)
+    ? Math.max(0, plannerBoosted - 15_000)
+    : plannerBoosted;
+  const boosted = policy.riskLevel === 'high' ? Math.max(0, growthBoosted - 10_000) : growthBoosted;
   const opts: JobsOptions = {
     attempts: policy.maxAttempts,
     backoff: { type: 'exponential', delay: policy.backoffDelayMs },

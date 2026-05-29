@@ -1,6 +1,11 @@
 export { handleHealthCheck } from './health.js';
 export { handleOpenclawJobStatus, handleJobById, handleJobStatusAlias } from './jobs.js';
-export { handleEnqueueOllama, handleEnqueueWebhook, handleEnqueueSandbox, handleEnqueueJcode } from './queue.js';
+export {
+  handleEnqueueOllama,
+  handleEnqueueWebhook,
+  handleEnqueueSandbox,
+  handleEnqueueJcode,
+} from './queue.js';
 export {
   handleHiveObjective,
   handleHiveObjectiveStatus,
@@ -10,7 +15,11 @@ export {
   handleHiveShutdown,
   handleHiveInit,
 } from './hive.js';
-export { handleEnqueueAgentFarm, handleOpenClawImproveDocumentation, handleMetaOptimizerMetrics } from './internal.js';
+export {
+  handleEnqueueAgentFarm,
+  handleOpenClawImproveDocumentation,
+  handleMetaOptimizerMetrics,
+} from './internal.js';
 export {
   handleStartTerminalTask,
   handleTerminalStatus,

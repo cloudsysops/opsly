@@ -1,9 +1,9 @@
 /**
  * Supabase-backed memory adapter using pgvector for semantic search.
  * Tabla: `memory_embeddings` (tenant-scoped).
- * 
+ *
  * Embeddings: OpenAI text-embedding-3-small (1536 dims).
- * 
+ *
  * TODO(ADR-033): Migrar a LLM Gateway para métricas unificadas
  * import { getEmbeddingsViaGateway } from '@intcloudsysops/runtime/llm-gateway-embeddings';
  */

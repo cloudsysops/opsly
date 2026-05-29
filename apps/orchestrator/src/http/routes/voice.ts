@@ -173,7 +173,11 @@ export async function handleUpdateCallState(ctx: RouteContext): Promise<void> {
 
   const validStates: CallState[] = ['ringing', 'connected', 'hold', 'ended', 'failed'];
   if (!validStates.includes(callStateStr as CallState)) {
-    errorResponse(ctx.res, 400, 'call_state must be one of: ringing, connected, hold, ended, failed');
+    errorResponse(
+      ctx.res,
+      400,
+      'call_state must be one of: ringing, connected, hold, ended, failed'
+    );
     return;
   }
 
@@ -222,7 +226,8 @@ export async function handleRecordVoiceMessage(ctx: RouteContext): Promise<void>
   const senderName = typeof b.sender_name === 'string' ? b.sender_name.trim() : '';
   const audioUrl = typeof b.audio_url === 'string' ? b.audio_url.trim() : '';
   const channelStr = typeof b.channel === 'string' ? b.channel.trim() : '';
-  const audioDurationSeconds = typeof b.audio_duration_seconds === 'number' ? b.audio_duration_seconds : 0;
+  const audioDurationSeconds =
+    typeof b.audio_duration_seconds === 'number' ? b.audio_duration_seconds : 0;
 
   if (!tenantId || !senderContact || !audioUrl || !channelStr) {
     errorResponse(ctx.res, 400, 'tenant_id, sender_contact, audio_url, channel required');

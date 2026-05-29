@@ -1,5 +1,11 @@
 import type { RouteContext } from '../router.js';
-import { randomUUID, parseBody, verifyPlatformAdminToken, assertTenantSlugOrThrow, enrichAutonomyMetadata } from '../utils.js';
+import {
+  randomUUID,
+  parseBody,
+  verifyPlatformAdminToken,
+  assertTenantSlugOrThrow,
+  enrichAutonomyMetadata,
+} from '../utils.js';
 import { enqueueJob } from '../../queue.js';
 import { enqueueWebhookJob } from '../../workers/WebhookWorker.js';
 import type { OrchestratorJob } from '../../types.js';
@@ -37,7 +43,10 @@ export async function handleEnqueueOllama(ctx: RouteContext): Promise<void> {
   }
   const taskRaw = b.task_type;
   const taskType =
-    taskRaw === 'analyze' || taskRaw === 'generate' || taskRaw === 'review' || taskRaw === 'summarize'
+    taskRaw === 'analyze' ||
+    taskRaw === 'generate' ||
+    taskRaw === 'review' ||
+    taskRaw === 'summarize'
       ? taskRaw
       : 'summarize';
   let plan: OrchestratorJob['plan'];
@@ -55,7 +64,10 @@ export async function handleEnqueueOllama(ctx: RouteContext): Promise<void> {
       : undefined;
   const agentRoleRaw = b.agent_role;
   const agentRole =
-    agentRoleRaw === 'planner' || agentRoleRaw === 'executor' || agentRoleRaw === 'tool' || agentRoleRaw === 'notifier'
+    agentRoleRaw === 'planner' ||
+    agentRoleRaw === 'executor' ||
+    agentRoleRaw === 'tool' ||
+    agentRoleRaw === 'notifier'
       ? agentRoleRaw
       : undefined;
   const metadata =
@@ -83,7 +95,11 @@ export async function handleEnqueueOllama(ctx: RouteContext): Promise<void> {
       return;
     }
     const bull = await enqueueJob(job);
-    jsonResponse(ctx.res, 202, { ok: true, job_id: bull.id != null ? String(bull.id) : null, request_id: requestId });
+    jsonResponse(ctx.res, 202, {
+      ok: true,
+      job_id: bull.id != null ? String(bull.id) : null,
+      request_id: requestId,
+    });
   } catch (err) {
     errorResponse(ctx.res, 500, String(err));
   }
@@ -179,7 +195,11 @@ export async function handleEnqueueSandbox(ctx: RouteContext): Promise<void> {
       return;
     }
     const bull = await enqueueJob(job);
-    jsonResponse(ctx.res, 202, { success: true, job_id: bull.id != null ? String(bull.id) : null, request_id: requestId });
+    jsonResponse(ctx.res, 202, {
+      success: true,
+      job_id: bull.id != null ? String(bull.id) : null,
+      request_id: requestId,
+    });
   } catch (err) {
     errorResponse(ctx.res, 500, String(err));
   }
@@ -242,7 +262,11 @@ export async function handleEnqueueJcode(ctx: RouteContext): Promise<void> {
       return;
     }
     const bull = await enqueueJob(job);
-    jsonResponse(ctx.res, 202, { success: true, job_id: bull.id != null ? String(bull.id) : null, request_id: requestId });
+    jsonResponse(ctx.res, 202, {
+      success: true,
+      job_id: bull.id != null ? String(bull.id) : null,
+      request_id: requestId,
+    });
   } catch (err) {
     errorResponse(ctx.res, 500, String(err));
   }
