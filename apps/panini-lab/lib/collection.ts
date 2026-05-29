@@ -21,7 +21,7 @@ export async function listCollectionItems(): Promise<CollectionItemRow[]> {
 
   const { data, error } = await paniniDb(client)
     .from('collection_items')
-    .select('sticker_number, status, notes, updated_at')
+    .select('sticker_number, status, country, player_name, notes, updated_at')
     .eq('tenant_slug', TENANT_SLUG)
     .order('sticker_number', { ascending: true });
 
@@ -32,6 +32,8 @@ export async function listCollectionItems(): Promise<CollectionItemRow[]> {
   return (data ?? []).map((row) => ({
     sticker_number: row.sticker_number as number,
     status: row.status as CollectionStatus,
+    country: (row.country as string | null) ?? null,
+    player_name: (row.player_name as string | null) ?? null,
     notes: (row.notes as string | null) ?? null,
     updated_at: row.updated_at as string,
   }));
@@ -73,18 +75,22 @@ export async function applyCollectionUpdates(
             tenant_slug: TENANT_SLUG,
             sticker_number: update.stickerNumber,
             status: update.status,
+            country: update.country ?? null,
+            player_name: update.playerName ?? null,
             notes: utterance.slice(0, 500),
             updated_at: new Date().toISOString(),
           },
           { onConflict: 'tenant_slug,sticker_number' },
         )
-        .select('sticker_number, status, notes, updated_at')
+        .select('sticker_number, status, country, player_name, notes, updated_at')
         .single();
 
       if (!error && data) {
         applied.push({
           sticker_number: data.sticker_number as number,
           status: data.status as CollectionStatus,
+          country: (data.country as string | null) ?? null,
+          player_name: (data.player_name as string | null) ?? null,
           notes: (data.notes as string | null) ?? null,
           updated_at: data.updated_at as string,
         });
@@ -96,6 +102,8 @@ export async function applyCollectionUpdates(
       memoryUpsertCollectionItem({
         stickerNumber: update.stickerNumber,
         status: update.status,
+        country: update.country,
+        playerName: update.playerName,
         notes: utterance.slice(0, 500),
       }),
     );
