@@ -158,6 +158,18 @@
       "governance": "lib/migrations/GOVERNANCE.md",
       "mainFile": "lib/migrations/index.ts",
       "exports": ["MigrationRunner", "Migration"]
+    },
+    "voice-messaging": {
+      "name": "@intcloudsysops/voice-messaging",
+      "version": "1.0.0",
+      "path": "lib/voice-messaging",
+      "owner": "claude",
+      "description": "Modular voice + chat library supporting calls, voice messages, recording, and analytics",
+      "status": "beta",
+      "dependencies": [],
+      "governance": "lib/voice-messaging/GOVERNANCE.md",
+      "mainFile": "lib/voice-messaging/src/index.ts",
+      "exports": ["BaseVoiceProvider", "VoiceProviderFactory", "TwilioVoiceProvider", "CallManager", "VoiceMessagesService", "TranscriptionService"]
     }
   },
   "consumers": {
