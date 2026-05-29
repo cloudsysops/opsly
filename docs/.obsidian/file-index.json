@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-29T17:06:35.612Z",
-  "totalFiles": 619,
+  "lastIndexed": "2026-05-29T17:32:27.547Z",
+  "totalFiles": 620,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -609,6 +609,7 @@
     "tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
     "tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
     "tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
+    "tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
     "tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
     "tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
     "tenants/peskids/QUICK-START-PRODUCTION.md",
