@@ -1,11 +1,13 @@
 -- Voice Messaging Tables
 -- Supports calls, voice messages, and transcriptions across WhatsApp, Telegram, and web
 
+BEGIN;
+
 -- Calls table
 CREATE TABLE IF NOT EXISTS public.calls (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id TEXT NOT NULL,
-  call_id TEXT NOT NULL,
+  call_id TEXT NOT NULL UNIQUE,
   initiator_contact TEXT NOT NULL,
   recipient_contact TEXT NOT NULL,
   channel TEXT NOT NULL CHECK (channel IN ('whatsapp', 'telegram', 'web')),
@@ -52,39 +54,41 @@ CREATE INDEX IF NOT EXISTS idx_voice_transcriptions_created_at ON public.voice_t
 -- RLS Policies for calls table
 ALTER TABLE public.calls ENABLE ROW LEVEL SECURITY;
 
--- Service role can insert, update, delete
-CREATE POLICY calls_service_role_all ON public.calls
-  FOR ALL
-  USING (auth.uid() IS NULL OR auth.jwt() ->> 'role' = 'service_role');
+DO $$ BEGIN
+  CREATE POLICY calls_service_role_all ON public.calls FOR ALL
+    USING (auth.uid() IS NULL OR auth.jwt() ->> 'role' = 'service_role');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
--- Authenticated users can read their own tenant calls
-CREATE POLICY calls_authenticated_select ON public.calls
-  FOR SELECT
-  USING (
-    auth.uid() IS NOT NULL
-    AND tenant_id = (
-      SELECT tenant_slug FROM public.portal_sessions
-      WHERE user_id = auth.uid()
-      LIMIT 1
-    )
-  );
+DO $$ BEGIN
+  CREATE POLICY calls_authenticated_select ON public.calls FOR SELECT
+    USING (
+      auth.uid() IS NOT NULL
+      AND tenant_id = (
+        SELECT tenant_slug FROM public.portal_sessions
+        WHERE user_id = auth.uid()
+        LIMIT 1
+      )
+    );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- RLS Policies for voice_transcriptions table
 ALTER TABLE public.voice_transcriptions ENABLE ROW LEVEL SECURITY;
 
--- Service role can insert, update, delete
-CREATE POLICY voice_transcriptions_service_role_all ON public.voice_transcriptions
-  FOR ALL
-  USING (auth.uid() IS NULL OR auth.jwt() ->> 'role' = 'service_role');
+DO $$ BEGIN
+  CREATE POLICY voice_transcriptions_service_role_all ON public.voice_transcriptions FOR ALL
+    USING (auth.uid() IS NULL OR auth.jwt() ->> 'role' = 'service_role');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
--- Authenticated users can read their own tenant transcriptions
-CREATE POLICY voice_transcriptions_authenticated_select ON public.voice_transcriptions
-  FOR SELECT
-  USING (
-    auth.uid() IS NOT NULL
-    AND tenant_id = (
-      SELECT tenant_slug FROM public.portal_sessions
-      WHERE user_id = auth.uid()
-      LIMIT 1
-    )
-  );
+DO $$ BEGIN
+  CREATE POLICY voice_transcriptions_authenticated_select ON public.voice_transcriptions FOR SELECT
+    USING (
+      auth.uid() IS NOT NULL
+      AND tenant_id = (
+        SELECT tenant_slug FROM public.portal_sessions
+        WHERE user_id = auth.uid()
+        LIMIT 1
+      )
+    );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+COMMIT;
