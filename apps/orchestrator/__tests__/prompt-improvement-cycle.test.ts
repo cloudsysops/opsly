@@ -12,7 +12,7 @@ import {
   validatePromptSandbox,
   evaluatePromptImprovement,
   IMPROVEMENT_THRESHOLD_PCT,
-  EMBEDDING_DISTANCE_WORSE_THRESHOLD,
+  EMBEDDING_DISTANCE_WORSE_THRESHOLD as _EMBEDDING_DISTANCE_WORSE_THRESHOLD,
 } from '../src/meta/prompt-improvement-cycle.js';
 import { metricsStore } from '../src/meta/orchestrator-metrics-store.js';
 import {

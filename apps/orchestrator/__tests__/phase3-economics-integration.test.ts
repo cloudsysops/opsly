@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi as _vi } from 'vitest';
 
 /**
  * Integration test for Phase 3 Economics Optimizations.
@@ -48,7 +48,7 @@ describe('Phase 3 Economics - Integration Tests', () => {
     it('cache hit rate of 40-60% saves 8-12% monthly costs', () => {
       const staticQueryCost = 1.0; // Cost per search
       const cacheHitRate = 0.5; // 50% hit rate
-      const savedCalls = Math.floor(100 * cacheHitRate); // 50 out of 100
+      const _savedCalls = Math.floor(100 * cacheHitRate); // 50 out of 100
 
       const costBefore = 100 * staticQueryCost;
       const costAfter = 50 * staticQueryCost;

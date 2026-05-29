@@ -59,7 +59,7 @@ describe('Orchestrator Smoke E2E — Semana 2', () => {
       data: { plan: 'business' },
     });
 
-    const task: HermesTask = {
+    const _task: HermesTask = {
       id: 'task-smoke-1',
       name: 'Smoke test task',
       type: 'feature',
