@@ -1,0 +1,7 @@
+{
+  "tenant_name": "Panini Lab",
+  "tenant_slug": "panini-lab",
+  "schema_name": "panini_lab",
+  "platform_domain": "op-sly.com",
+  "notes": "Demo lab for conversational runtime — sticker collection MVP. Sprint 2: apps/panini-lab Next.js app."
+}
