@@ -1,0 +1,32 @@
+services:
+  panini-lab:
+    image: ghcr.io/cloudsysops/intcloudsysops-panini-lab:${PANINI_IMAGE_TAG:-latest}
+    container_name: panini-lab
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3005"
+      # Supabase — panini_lab schema
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      # Webhook auth (required in prod)
+      PANINI_INBOUND_WEBHOOK_SECRET: ${PANINI_INBOUND_WEBHOOK_SECRET}
+      # LLM gateway (internal docker network)
+      LLM_GATEWAY_URL: ${LLM_GATEWAY_URL:-http://opsly_llm_gateway:3010}
+      # Gemini (for voice/image transcription via gateway)
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    networks:
+      - traefik-public
+      - internal
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3005/dashboard',r=>{if(r.statusCode>=500)process.exit(1)})"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+
+networks:
+  traefik-public:
+    external: true
+  internal:
+    external: true
