@@ -65,6 +65,8 @@
       "@intcloudsysops/telemetry/*": ["./lib/telemetry/*"],
       "@intcloudsysops/testing": ["./lib/testing"],
       "@intcloudsysops/testing/*": ["./lib/testing/*"],
+      "@intcloudsysops/voice-messaging": ["./lib/voice-messaging"],
+      "@intcloudsysops/voice-messaging/*": ["./lib/voice-messaging/*"],
       "@intcloudsysops/workflow": ["./lib/workflow"],
       "@intcloudsysops/workflow/*": ["./lib/workflow/*"],
       "@intcloudsysops/runtime": ["./lib/runtime"],
