@@ -6,7 +6,10 @@ export async function GET(req: NextRequest) {
   const requestId = resolveRequestId(req);
   try {
     const items = await listCollectionItems();
-    return successJson(requestId, { items, storage: process.env.SUPABASE_URL ? 'supabase' : 'memory' });
+    return successJson(requestId, {
+      items,
+      storage: process.env.SUPABASE_URL ? 'supabase' : 'memory',
+    });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to load collection';
     return errorJson(requestId, message, 500);

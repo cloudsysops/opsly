@@ -30,7 +30,9 @@ export function getPaniniRuntime(): ConversationalRuntime {
     geminiApiKey: process.env.GEMINI_API_KEY,
     ports: {
       memory: createPaniniMemoryPort(),
-      transcription: gatewayUrl ? createGatewayTranscriptionPort({ baseUrl: gatewayUrl }) : undefined,
+      transcription: gatewayUrl
+        ? createGatewayTranscriptionPort({ baseUrl: gatewayUrl })
+        : undefined,
       logger: {
         info(message, context) {
           console.log(JSON.stringify({ level: 'info', message, ...context }));

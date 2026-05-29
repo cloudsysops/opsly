@@ -34,7 +34,11 @@ function parseChannel(raw: string): ChannelKind {
   return 'web';
 }
 
-function toInputMessage(body: InboundPayload, sender: string, channelRaw: string): InputMessage | null {
+function toInputMessage(
+  body: InboundPayload,
+  sender: string,
+  channelRaw: string
+): InputMessage | null {
   const channel = parseChannel(channelRaw);
   const audio = body.audio_url?.trim();
   const image = body.image_url?.trim();

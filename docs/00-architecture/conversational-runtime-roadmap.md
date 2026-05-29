@@ -14,10 +14,10 @@ Opsly demuestra **incubadora multi-tenant**: un motor reutilizable + configs por
 |--------|---------------|------------|--------|
 | **1 — OS Core MVP** | `feat/opsly-os-core-mvp` | `packages/opsly-core` — tenant-config, AI gateway (mock/gemini), agent-runtime, events, dispatcher, observability | ✅ Código + 6 tests |
 | **1b — Conversational layer** | misma rama | `lib/conversational-runtime` — ports/adapters sobre opsly-core, `InputMessage` → `AgentResponse` | ✅ Skeleton + 4 tests |
-| **2 — Panini Lab app** | `feat/conversational-runtime` | `apps/panini-lab` (Next :3005), webhook `/api/webhooks/inbound`, dashboard, migración `0065_panini_lab_schema.sql` | ✅ Código |
+| **2 — Panini Lab app** | `feat/conversational-runtime` | `apps/panini-lab` (:3005), webhook, dashboard Mundial (voz, país, stats), `0065` + `0066` | ✅ Código |
 | **2b — Gateway Gemini** | `feat/conversational-runtime` | `gemini` en llm-gateway + `POST /v1/transcribe` | ✅ Código |
-| **3 — Peskids shadow** | `feat/conversational-runtime` | `POST/GET /api/internal/conversational/shadow`, audit in-memory, sin writes prod | ✅ Código |
-| **4 — Demo concurso** | — | Voz + dos tenants en vivo | ⏳ |
+| **3 — Peskids shadow** | `feat/conversational-runtime` | `POST /api/internal/conversational/shadow`, audit in-memory | ✅ Código |
+| **4 — Demo concurso** | — | Deploy panini + prod smoke, álbum foto (visión) | ⏳ |
 
 ## Arquitectura (ports & adapters)
 

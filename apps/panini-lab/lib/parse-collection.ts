@@ -9,20 +9,67 @@ export interface ParsedCollectionUpdate {
 
 // Canonical country name → ISO alpha-2 code for flag emoji lookup
 export const COUNTRY_ALIASES: Record<string, string> = {
-  argentina: 'AR', brasil: 'BR', brazil: 'BR', colombia: 'CO', uruguay: 'UY',
-  chile: 'CL', paraguay: 'PY', ecuador: 'EC', peru: 'PE', perú: 'PE',
-  bolivia: 'BO', venezuela: 'VE',
-  españa: 'ES', espana: 'ES', spain: 'ES', francia: 'FR', france: 'FR',
-  alemania: 'DE', germany: 'DE', portugal: 'PT', italia: 'IT', italy: 'IT',
-  holanda: 'NL', netherlands: 'NL', belgica: 'BE', bélgica: 'BE', belgium: 'BE',
-  croacia: 'HR', croatia: 'HR', suiza: 'CH', switzerland: 'CH',
-  inglaterra: 'GB', england: 'GB', uk: 'GB',
-  mexico: 'MX', méxico: 'MX', usa: 'US', 'estados unidos': 'US', canada: 'CA', canadá: 'CA',
-  marruecos: 'MA', morocco: 'MA', nigeria: 'NG', senegal: 'SN',
-  japon: 'JP', japón: 'JP', japan: 'JP', corea: 'KR', korea: 'KR',
-  australia: 'AU', 'nueva zelanda': 'NZ',
-  ghana: 'GH', camerun: 'CM', camerún: 'CM', egypt: 'EG', egipto: 'EG',
-  arabia: 'SA', 'arabia saudita': 'SA', iran: 'IR', irán: 'IR', qatar: 'QA',
+  argentina: 'AR',
+  brasil: 'BR',
+  brazil: 'BR',
+  colombia: 'CO',
+  uruguay: 'UY',
+  chile: 'CL',
+  paraguay: 'PY',
+  ecuador: 'EC',
+  peru: 'PE',
+  perú: 'PE',
+  bolivia: 'BO',
+  venezuela: 'VE',
+  españa: 'ES',
+  espana: 'ES',
+  spain: 'ES',
+  francia: 'FR',
+  france: 'FR',
+  alemania: 'DE',
+  germany: 'DE',
+  portugal: 'PT',
+  italia: 'IT',
+  italy: 'IT',
+  holanda: 'NL',
+  netherlands: 'NL',
+  belgica: 'BE',
+  bélgica: 'BE',
+  belgium: 'BE',
+  croacia: 'HR',
+  croatia: 'HR',
+  suiza: 'CH',
+  switzerland: 'CH',
+  inglaterra: 'GB',
+  england: 'GB',
+  uk: 'GB',
+  mexico: 'MX',
+  méxico: 'MX',
+  usa: 'US',
+  'estados unidos': 'US',
+  canada: 'CA',
+  canadá: 'CA',
+  marruecos: 'MA',
+  morocco: 'MA',
+  nigeria: 'NG',
+  senegal: 'SN',
+  japon: 'JP',
+  japón: 'JP',
+  japan: 'JP',
+  corea: 'KR',
+  korea: 'KR',
+  australia: 'AU',
+  'nueva zelanda': 'NZ',
+  ghana: 'GH',
+  camerun: 'CM',
+  camerún: 'CM',
+  egypt: 'EG',
+  egipto: 'EG',
+  arabia: 'SA',
+  'arabia saudita': 'SA',
+  iran: 'IR',
+  irán: 'IR',
+  qatar: 'QA',
 };
 
 export function countryToFlag(isoCode: string): string {
@@ -44,7 +91,8 @@ export function resolveCountry(raw: string): string | null {
 const NUMBER_PATTERN = /\b(\d{1,4})\b/g;
 
 // Matches "de Colombia", "de la Argentina", "de Brasil" — captures up to 2 words
-const COUNTRY_AFTER_NUMBER = /\bde(?:\s+l[ao]s?)?\s+([A-Za-záéíóúÁÉÍÓÚñÑüÜ]+(?:\s+[A-Za-záéíóúÁÉÍÓÚñÑüÜ]+)?)/i;
+const COUNTRY_AFTER_NUMBER =
+  /\bde(?:\s+l[ao]s?)?\s+([A-Za-záéíóúÁÉÍÓÚñÑüÜ]+(?:\s+[A-Za-záéíóúÁÉÍÓÚñÑüÜ]+)?)/i;
 
 function inferStatus(utterance: string): CollectionStatus {
   const lower = utterance.toLowerCase();
@@ -67,7 +115,10 @@ function extractCountryFromSegment(segment: string): string | null {
 
 /** Domain parser — lives in the app, not opsly-core. */
 export function parseCollectionUpdatesFromUtterance(utterance: string): ParsedCollectionUpdate[] {
-  const segments = utterance.split(/\s+y\s+|\s*,\s*/i).map((s) => s.trim()).filter(Boolean);
+  const segments = utterance
+    .split(/\s+y\s+|\s*,\s*/i)
+    .map((s) => s.trim())
+    .filter(Boolean);
   const parts = segments.length > 0 ? segments : [utterance];
   const updates: ParsedCollectionUpdate[] = [];
 

@@ -59,9 +59,7 @@ export async function listRecentConversations(limit = 30): Promise<ConversationE
   return (data ?? []) as ConversationEventRow[];
 }
 
-export async function applyCollectionUpdates(
-  utterance: string,
-): Promise<CollectionItemRow[]> {
+export async function applyCollectionUpdates(utterance: string): Promise<CollectionItemRow[]> {
   const updates = parseCollectionUpdatesFromUtterance(utterance);
   const client = supabaseServer();
   const applied: CollectionItemRow[] = [];
@@ -80,7 +78,7 @@ export async function applyCollectionUpdates(
             notes: utterance.slice(0, 500),
             updated_at: new Date().toISOString(),
           },
-          { onConflict: 'tenant_slug,sticker_number' },
+          { onConflict: 'tenant_slug,sticker_number' }
         )
         .select('sticker_number, status, country, player_name, notes, updated_at')
         .single();
@@ -105,7 +103,7 @@ export async function applyCollectionUpdates(
         country: update.country,
         playerName: update.playerName,
         notes: utterance.slice(0, 500),
-      }),
+      })
     );
   }
 
@@ -117,15 +115,17 @@ export function createPaniniMemoryPort(): MemoryPort {
     async persistConversation(input) {
       const client = supabaseServer();
       if (client) {
-        await paniniDb(client).from('conversation_events').insert({
-          tenant_slug: TENANT_SLUG,
-          channel: input.channel,
-          sender: input.sender ?? null,
-          raw_input: input.rawInput,
-          intent: input.intent ?? null,
-          entities: input.entities ?? {},
-          opsly_events: input.opslyEvents ?? [],
-        });
+        await paniniDb(client)
+          .from('conversation_events')
+          .insert({
+            tenant_slug: TENANT_SLUG,
+            channel: input.channel,
+            sender: input.sender ?? null,
+            raw_input: input.rawInput,
+            intent: input.intent ?? null,
+            entities: input.entities ?? {},
+            opsly_events: input.opslyEvents ?? [],
+          });
         return;
       }
 
