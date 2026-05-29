@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { StickerContextService } from '../../../server/services/sticker-context';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 export async function POST(req: NextRequest) {
   try {
-    const { message } = await req.json();
+    const { message, userId, tournamentId } = await req.json();
 
     if (!message) {
       return NextResponse.json(
@@ -11,46 +15,38 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // TODO: Call LLM Gateway with sticker tools
-    // For now, return mock response based on keywords
-    let response: string;
-    let actions: Array<{ label: string; action: string }> = [];
+    // TODO: Get userId from session
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'User ID is required' },
+        { status: 401 }
+      );
+    }
 
-    const lowerMessage = message.toLowerCase();
+    const tenantId = 'default'; // TODO: Get from session
+    const currentTournamentId = tournamentId || 'default'; // TODO: Get active tournament
 
-    if (lowerMessage.includes('messi')) {
-      response = 'Tienes 2 estampillas de Messi en tu colección: Argentina #10 y su tarjeta de club. ¡Te falta la variante #11!';
-      actions = [
-        { label: '➕ Agregar a deseos', action: 'add_to_wishlist:messi_11' },
-        { label: '🔍 Buscar precios', action: 'search_marketplace:messi_11' },
-      ];
-    } else if (lowerMessage.includes('argentina') || lowerMessage.includes('qué me falta')) {
-      response = 'Te faltan 5 estampillas de Argentina. Los jugadores más difíciles de encontrar son el portero del banco y los defensas suplentes.';
-      actions = [
-        { label: '📋 Ver lista completa', action: 'show_missing:argentina' },
-        { label: '💰 Mejores precios', action: 'search_missing:argentina' },
-      ];
-    } else if (lowerMessage.includes('tengo')) {
-      response = 'Tienes 327 estampillas de 620 en total. Completas 4 de 8 equipos. ¡Vas muy bien!';
-      actions = [
-        { label: '📊 Ver estadísticas', action: 'show_stats' },
-        { label: '📚 Mi colección', action: 'show_inventory' },
-      ];
-    } else {
-      response = '¿Puedo ayudarte con tu colección Panini? Puedo:' +
-        '\n• Decirte qué estampillas tienes o te faltan' +
-        '\n• Buscar los mejores precios en MercadoLibre y eBay' +
-        '\n• Organizar tu lista de deseos' +
-        '\n• Reconocer estampillas por foto';
-      actions = [
-        { label: '¿Tengo a Messi?', action: 'do_i_have:messi' },
-        { label: 'Ver mi colección', action: 'show_inventory' },
-        { label: '📷 Escanear', action: 'open_scanner' },
-      ];
+    const service = new StickerContextService(supabaseUrl, supabaseKey);
+    const result = await service.queryInventory(
+      message,
+      userId,
+      tenantId,
+      currentTournamentId
+    );
+
+    const actions: Array<{ label: string; action: string }> = [];
+
+    if (result.found && result.stickers.length > 0) {
+      actions.push({ label: '➕ Agregar a deseos', action: 'add_to_wishlist' });
+      actions.push({ label: '🔍 Buscar precios', action: 'search_marketplace' });
+    } else if (!result.found) {
+      actions.push({ label: '📷 Escanear', action: 'open_scanner' });
+      actions.push({ label: 'Ver mi colección', action: 'show_inventory' });
     }
 
     return NextResponse.json({
-      content: response,
+      content: result.message,
+      stickers: result.stickers,
       actions,
     });
   } catch (error) {
