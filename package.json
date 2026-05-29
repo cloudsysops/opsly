@@ -57,6 +57,7 @@
     "opsly:core:test": "npm run test --workspace=@intcloudsysops/opsly-core",
     "opsly:conversational:test": "npm run test --workspace=@intcloudsysops/conversational-runtime",
     "opsly:panini:test": "npm run test --workspace=@intcloudsysops/panini-lab",
+    "opsly:panini:smoke": "bash scripts/test-panini-lab-smoke.sh",
     "opsly:peskids-shadow:test": "npm run test --workspace=peskids -- __tests__/peskids-shadow-runtime.test.ts",
     "opsly:verify:core": "npm run opsly:core:test && npm run opsly:conversational:test && npm run opsly:panini:test && npm run opsly:peskids-shadow:test",
     "test:unit": "npm run test --workspace=@intcloudsysops/api && npm run test --workspace=@intcloudsysops/portal && npm run test --workspace=@intcloudsysops/mcp && npm run test --workspace=@intcloudsysops/ml && npm run test --workspace=@intcloudsysops/llm-gateway -- --exclude __tests__/cache-namespace.test.ts && npm run opsly:verify:core",
