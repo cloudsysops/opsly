@@ -1,0 +1,103 @@
+{
+  "id": "panini-transcription-completed",
+  "name": "Panini - Transcription Completed",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "panini/transcription",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "panini-transcription-webhook",
+      "name": "Transcription Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json;\nconst now = new Date().toISOString();\nreturn [{\n  json: {\n    id: body.id || body.transcription_id || '',\n    tenant_id: body.tenant_id || 'peskids',\n    call_id: body.call_id || body.externalCallId || '',\n    speaker_role: body.speaker_role || body.speakerRole || 'caller',\n    transcript_text: body.transcript_text || body.transcript || body.text || '',\n    confidence: body.confidence || body.confidence_score || null,\n    timestamp: body.timestamp || now,\n    created_at: body.created_at || now,\n    processed_at: now\n  }\n}];"
+      },
+      "id": "panini-normalize-transcription",
+      "name": "Normalize Transcription",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/voice_transcriptions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "Prefer", "value": "return=representation" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ id: $json.id, tenant_id: $json.tenant_id, call_id: $json.call_id, speaker_role: $json.speaker_role, transcript_text: $json.transcript_text, confidence: $json.confidence, timestamp: $json.timestamp, created_at: $json.created_at }) }}",
+        "options": {}
+      },
+      "id": "panini-supabase-transcriptions",
+      "name": "Store Transcription to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, id: $json[0]?.id ?? null, call_id: $json[0]?.call_id ?? null, workflow: 'panini-transcription-completed', processed_at: new Date().toISOString() } }}",
+        "options": {
+          "responseCode": 202
+        }
+      },
+      "id": "panini-response-transcription",
+      "name": "Accepted",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [780, 0]
+    }
+  ],
+  "connections": {
+    "Transcription Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Transcription",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Transcription": {
+      "main": [
+        [
+          {
+            "node": "Store Transcription to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Transcription to Supabase": {
+      "main": [
+        [
+          {
+            "node": "Accepted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
