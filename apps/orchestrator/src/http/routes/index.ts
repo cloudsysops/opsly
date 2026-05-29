@@ -71,3 +71,4 @@ export {
   handleSubmitTranscription,
   handleGetTranscriptions,
 } from './voice.js';
+export { handlePaniniChat } from './chat.js';

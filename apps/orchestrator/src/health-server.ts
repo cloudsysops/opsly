@@ -66,6 +66,7 @@ import {
   handleGetVoiceMessage,
   handleSubmitTranscription,
   handleGetTranscriptions,
+  handlePaniniChat,
 } from './http/routes/index.js';
 
 const DEFAULT_PORT = 3011;
@@ -171,6 +172,9 @@ function buildRouter(): Router {
   r.get('/internal/voice/messages/:messageId', handleGetVoiceMessage);
   r.post('/internal/voice/transcriptions', handleSubmitTranscription);
   r.get('/internal/voice/transcriptions/:callId', handleGetTranscriptions);
+
+  // Panini Lab sticker chat endpoint
+  r.post('/api/chat', handlePaniniChat);
 
   return r;
 }

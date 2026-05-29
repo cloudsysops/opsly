@@ -1,0 +1,120 @@
+{
+  "name": "Panini Price Update Scheduler",
+  "description": "Scheduled job: actualiza precios de laminitas en wishlist (cada 6 horas)",
+  "nodes": [
+    {
+      "name": "Scheduler Trigger",
+      "type": "scheduleTrigger",
+      "typeVersion": 1,
+      "position": [100, 300],
+      "parameters": {
+        "rule": {
+          "interval": [6, "hours"]
+        }
+      }
+    },
+    {
+      "name": "Get All Wishlists",
+      "type": "httpRequest",
+      "typeVersion": 3,
+      "position": [300, 300],
+      "parameters": {
+        "url": "http://orchestrator:3011/api/wishlist/all",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer {{ $env.ORCHESTRATOR_ADMIN_TOKEN }}"
+        },
+        "options": {}
+      }
+    },
+    {
+      "name": "Loop Each Sticker",
+      "type": "splitInBatches",
+      "typeVersion": 1,
+      "position": [500, 300],
+      "parameters": {
+        "batchSize": 10
+      }
+    },
+    {
+      "name": "Search Current Prices",
+      "type": "httpRequest",
+      "typeVersion": 3,
+      "position": [700, 300],
+      "parameters": {
+        "url": "http://orchestrator:3011/api/marketplace/search",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer {{ $env.ORCHESTRATOR_ADMIN_TOKEN }}"
+        },
+        "body": "={\n  \"sticker_id\": $json.sticker_id,\n  \"refresh\": true,\n  \"timestamp\": new Date().toISOString()\n}",
+        "options": {}
+      }
+    },
+    {
+      "name": "Update Price Cache",
+      "type": "httpRequest",
+      "typeVersion": 3,
+      "position": [900, 300],
+      "parameters": {
+        "url": "http://orchestrator:3011/api/marketplace/update-prices",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer {{ $env.ORCHESTRATOR_ADMIN_TOKEN }}"
+        },
+        "body": "={\n  \"sticker_id\": $input.first().json.sticker_id,\n  \"listings\": $json.data,\n  \"scraped_at\": new Date().toISOString()\n}",
+        "options": {}
+      }
+    },
+    {
+      "name": "Check Price Drops",
+      "type": "code",
+      "typeVersion": 1,
+      "position": [1100, 300],
+      "parameters": {
+        "jsCode": "// Identificar si el precio bajó significativamente\nconst listings = $json.data || [];\nif (listings.length === 0) return { notified: false };\n\nconst bestPrice = Math.min(...listings.map(l => (l.price + (l.shipping_cost || 0))));\nconst prevBestPrice = $input.first().json.previous_best_price || bestPrice;\n\nif (bestPrice < prevBestPrice * 0.9) {\n  // Price dropped >10%, notify user\n  return { notified: true, newPrice: bestPrice, previousPrice: prevBestPrice, discount: Math.round((1 - bestPrice/prevBestPrice) * 100) };\n}\n\nreturn { notified: false };"
+      }
+    },
+    {
+      "name": "Send Price Alert",
+      "type": "httpRequest",
+      "typeVersion": 3,
+      "position": [1300, 300],
+      "parameters": {
+        "url": "https://api.twilio.com/2010-04-01/Accounts/{{ $env.TWILIO_ACCOUNT_SID }}/Messages",
+        "method": "POST",
+        "authentication": "basicAuth",
+        "genericAuthType": "httpBasicAuth",
+        "auth": "{{ $env.TWILIO_ACCOUNT_SID }}:{{ $env.TWILIO_AUTH_TOKEN }}",
+        "body": "=From=whatsapp:%2B14155238886&To=whatsapp:{{ encodeURIComponent($input.nth(2).json.user_id) }}&Body={{ encodeURIComponent('¡Alerta! La laminita bajó a $' + $json.newPrice + '. Ahorrás ' + $json.discount + '%') }}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Scheduler Trigger": {
+      "main": [[{"node": "Get All Wishlists", "type": "main", "index": 0}]]
+    },
+    "Get All Wishlists": {
+      "main": [[{"node": "Loop Each Sticker", "type": "main", "index": 0}]]
+    },
+    "Loop Each Sticker": {
+      "main": [[{"node": "Search Current Prices", "type": "main", "index": 0}]]
+    },
+    "Search Current Prices": {
+      "main": [[{"node": "Update Price Cache", "type": "main", "index": 0}]]
+    },
+    "Update Price Cache": {
+      "main": [[{"node": "Check Price Drops", "type": "main", "index": 0}]]
+    },
+    "Check Price Drops": {
+      "main": [[{"node": "Send Price Alert", "type": "main", "index": 0}]]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "name": "Panini Sticker Scan → Inventory",
+  "description": "OCR scanning de laminita física → identificación → agregar a inventario",
+  "nodes": [
+    {
+      "name": "Scan Image Webhook",
+      "type": "webhook",
+      "typeVersion": 1,
+      "position": [100, 300],
+      "parameters": {
+        "path": "panini/scan",
+        "responseMode": "onReceived",
+        "responseData": "={\"status\": \"scanning\", \"messageId\": $json.messageId}"
+      },
+      "webhookId": "panini-scan-sticker"
+    },
+    {
+      "name": "Extract Scan Data",
+      "type": "code",
+      "typeVersion": 1,
+      "position": [300, 300],
+      "parameters": {
+        "jsCode": "const body = $input.first().body;\nreturn {\n  image_url: body.image_url || body.image,\n  user_id: body.user_id,\n  tenant_id: body.tenant_id,\n  tournament_id: body.tournament_id,\n  messageId: body.messageId,\n  timestamp: new Date().toISOString()\n};"
+      }
+    },
+    {
+      "name": "Call OCR Service",
+      "type": "httpRequest",
+      "typeVersion": 3,
+      "position": [500, 300],
+      "parameters": {
+        "url": "http://orchestrator:3011/api/scan/ocr",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer {{ $env.ORCHESTRATOR_ADMIN_TOKEN }}"
+        },
+        "body": "={\n  \"image_url\": $json.image_url,\n  \"tournament_id\": $json.tournament_id,\n  \"tenant_id\": $json.tenant_id\n}",
+        "options": {}
+      }
+    },
+    {
+      "name": "Check Confidence",
+      "type": "code",
+      "typeVersion": 1,
+      "position": [700, 300],
+      "parameters": {
+        "jsCode": "const result = $json;\nif (result.confidence < 0.7) {\n  return { success: false, error: 'low_confidence', message: 'No reconocí bien la laminita. Intenta nuevamente.' };\n}\n\nif (!result.primary_match) {\n  return { success: false, error: 'no_match', message: 'No encontré esa laminita en la base de datos.' };\n}\n\nreturn { success: true, sticker: result.primary_match, confidence: result.confidence };"
+      }
+    },
+    {
+      "name": "Add to Inventory",
+      "type": "httpRequest",
+      "typeVersion": 3,
+      "position": [900, 300],
+      "parameters": {
+        "url": "http://orchestrator:3011/api/inventory",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer {{ $env.ORCHESTRATOR_ADMIN_TOKEN }}"
+        },
+        "body": "={\n  \"sticker_id\": $json.sticker.id,\n  \"user_id\": $input.first().json.user_id,\n  \"tenant_id\": $input.first().json.tenant_id,\n  \"condition\": \"near_mint\",\n  \"source\": \"scanned\",\n  \"acquired_date\": new Date().toISOString()\n}",
+        "options": {}
+      }
+    },
+    {
+      "name": "Send Confirmation",
+      "type": "httpRequest",
+      "typeVersion": 3,
+      "position": [1100, 300],
+      "parameters": {
+        "url": "https://api.twilio.com/2010-04-01/Accounts/{{ $env.TWILIO_ACCOUNT_SID }}/Messages",
+        "method": "POST",
+        "authentication": "basicAuth",
+        "genericAuthType": "httpBasicAuth",
+        "auth": "{{ $env.TWILIO_ACCOUNT_SID }}:{{ $env.TWILIO_AUTH_TOKEN }}",
+        "body": "=From=whatsapp:%2B14155238886&To=whatsapp:{{ encodeURIComponent($input.first().json.user_id) }}&Body={{ encodeURIComponent('✅ Agregada laminita: ' + $input.nth(3).json.sticker.player_name + ' (' + $input.nth(3).json.sticker.country + ')') }}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Scan Image Webhook": {
+      "main": [[{"node": "Extract Scan Data", "type": "main", "index": 0}]]
+    },
+    "Extract Scan Data": {
+      "main": [[{"node": "Call OCR Service", "type": "main", "index": 0}]]
+    },
+    "Call OCR Service": {
+      "main": [[{"node": "Check Confidence", "type": "main", "index": 0}]]
+    },
+    "Check Confidence": {
+      "main": [[{"node": "Add to Inventory", "type": "main", "index": 0}]]
+    },
+    "Add to Inventory": {
+      "main": [[{"node": "Send Confirmation", "type": "main", "index": 0}]]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "name": "WhatsApp → BBC Chat (Panini Inventory)",
+  "description": "Recibe mensajes de WhatsApp, envía a BBC para procesamiento de inventario, retorna respuesta",
+  "nodes": [
+    {
+      "name": "WhatsApp Webhook",
+      "type": "webhook",
+      "typeVersion": 1,
+      "position": [100, 300],
+      "parameters": {
+        "path": "panini/whatsapp",
+        "responseMode": "onReceived",
+        "responseData": "={\n  \"success\": true,\n  \"messageId\": $json.messageId\n}"
+      },
+      "webhookId": "panini-whatsapp-chat"
+    },
+    {
+      "name": "Extract Message Data",
+      "type": "code",
+      "typeVersion": 1,
+      "position": [300, 300],
+      "parameters": {
+        "jsCode": "// Parse incoming WhatsApp message\nconst body = $input.first().body;\nconst from = body.From || body.from;\nconst text = body.Body || body.body;\nconst messageId = body.MessageSid || body.messageId;\n\nreturn {\n  phone: from.replace('whatsapp:', ''),\n  message: text,\n  messageId: messageId,\n  timestamp: new Date().toISOString(),\n  channel: 'whatsapp'\n};"
+      }
+    },
+    {
+      "name": "Extract Tenant",
+      "type": "code",
+      "typeVersion": 1,
+      "position": [500, 300],
+      "parameters": {
+        "jsCode": "// Map phone to tenant (from DB or config)\n// In production, query Supabase for phone→tenant mapping\nconst phoneToTenant = {\n  '+5491234567890': 'tenant-demo',\n  '+5491111111111': 'tenant-test'\n};\n\nconst tenant = phoneToTenant[$json.phone] || 'tenant-default';\n\nreturn {\n  ...$json,\n  tenantSlug: tenant\n};"
+      }
+    },
+    {
+      "name": "Call Orchestrator Chat API",
+      "type": "httpRequest",
+      "typeVersion": 3,
+      "position": [700, 300],
+      "parameters": {
+        "url": "http://orchestrator:3011/api/chat",
+        "method": "POST",
+        "headers": {\n          \"Content-Type\": \"application/json\",\n          \"Authorization\": \"Bearer {{ $env.ORCHESTRATOR_ADMIN_TOKEN }}\"\n        },\n        "body": "={\n  \"message\": $json.message,\n  \"tenantSlug\": $json.tenantSlug,\n  \"channel\": \"whatsapp\",\n  \"userId\": $json.phone,\n  \"messageId\": $json.messageId\n}",
+        "options": {}
+      }
+    },
+    {
+      "name": "Process BBC Response",
+      "type": "code",
+      "typeVersion": 1,
+      "position": [900, 300],
+      "parameters": {
+        "jsCode": "// Process response from BBC\nconst response = $json.body || $json;\nconst message = response.output || response.text || 'No se pudo procesar el mensaje';\nconst actions = response.suggestedActions || [];\n\nreturn {\n  phone: $input.last().json.phone,\n  messageId: $input.last().json.messageId,\n  bbcResponse: message,\n  actions: actions,\n  timestamp: new Date().toISOString()\n};"
+      }
+    },
+    {
+      "name": "Send WhatsApp Reply",
+      "type": "httpRequest",\n      \"typeVersion\": 3,\n      \"position\": [1100, 300],\n      \"parameters\": {\n        \"url\": \"https://api.twilio.com/2010-04-01/Accounts/{{ $env.TWILIO_ACCOUNT_SID }}/Messages\",\n        \"method\": \"POST\",\n        \"authentication\": \"basicAuth\",\n        \"genericAuthType\": \"httpBasicAuth\",\n        \"auth\": \"{{ $env.TWILIO_ACCOUNT_SID }}:{{ $env.TWILIO_AUTH_TOKEN }}\",\n        \"body\": \"=From=whatsapp:%2B14155238886&To=whatsapp:{{ encodeURIComponent($json.phone) }}&Body={{ encodeURIComponent($json.bbcResponse) }}\",\n        \"options\": {}\n      }\n    },\n    {\n      \"name\": \"Log Activity\",\n      \"type\": \"httpRequest\",\n      \"typeVersion\": 3,\n      \"position\": [1300, 300],\n      \"parameters\": {\n        \"url\": \"http://orchestrator:3011/api/chat/log\",\n        \"method\": \"POST\",\n        \"headers\": {\n          \"Content-Type\": \"application/json\",\n          \"Authorization\": \"Bearer {{ $env.ORCHESTRATOR_ADMIN_TOKEN }}\"\n        },\n        \"body\": \"={\n          \\\"messageId\\\": $json.messageId,\n          \\\"tenantSlug\\\": $input.last().json.tenantSlug,\n          \\\"userPhone\\\": $json.phone,\n          \\\"incomingMessage\\\": $input.last().json.message,\n          \\\"bbcResponse\\\": $json.bbcResponse,\n          \\\"timestamp\\\": $json.timestamp\n        }\",\n        \"options\": {}\n      }\n    }\n  ],\n  \"connections\": {\n    \"WhatsApp Webhook\": {\n      \"main\": [[{\"node\": \"Extract Message Data\", \"type\": \"main\", \"index\": 0}]]\n    },\n    \"Extract Message Data\": {\n      \"main\": [[{\"node\": \"Extract Tenant\", \"type\": \"main\", \"index\": 0}]]\n    },\n    \"Extract Tenant\": {\n      \"main\": [[{\"node\": \"Call Orchestrator Chat API\", \"type\": \"main\", \"index\": 0}]]\n    },\n    \"Call Orchestrator Chat API\": {\n      \"main\": [[{\"node\": \"Process BBC Response\", \"type\": \"main\", \"index\": 0}]]\n    },\n    \"Process BBC Response\": {\n      \"main\": [[{\"node\": \"Send WhatsApp Reply\", \"type\": \"main\", \"index\": 0}]]\n    },\n    \"Send WhatsApp Reply\": {\n      \"main\": [[{\"node\": \"Log Activity\", \"type\": \"main\", \"index\": 0}]]\n    }\n  },\n  \"active\": true,\n  \"settings\": {\n    \"executionOrder\": \"v1\"\n  }\n}

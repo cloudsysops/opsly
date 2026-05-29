@@ -1,0 +1,104 @@
+{
+  "name": "Panini Marketplace Purchase Flow",
+  "description": "Coordina compra de laminitas: búsqueda cross-venue, notificación usuario, redirección a marketplace",
+  "nodes": [
+    {
+      "name": "User Initiates Buy",
+      "type": "webhook",
+      "typeVersion": 1,
+      "position": [100, 300],
+      "parameters": {
+        "path": "panini/buy",
+        "responseMode": "onReceived",
+        "responseData": "={\"status\": \"processing\", \"jobId\": $json.jobId}"
+      },
+      "webhookId": "panini-buy-sticker"
+    },
+    {
+      "name": "Extract Buy Request",
+      "type": "code",
+      "typeVersion": 1,
+      "position": [300, 300],
+      "parameters": {
+        "jsCode": "const body = $input.first().body;\nreturn {\n  sticker_id: body.sticker_id,\n  user_id: body.user_id,\n  tenant_id: body.tenant_id,\n  max_price: body.max_price || 1000,\n  marketplace: body.marketplace || 'mercadolibre',\n  timestamp: new Date().toISOString()\n};"
+      }
+    },
+    {
+      "name": "Search Marketplace",
+      "type": "httpRequest",
+      "typeVersion": 3,
+      "position": [500, 300],
+      "parameters": {
+        "url": "http://orchestrator:3011/api/marketplace/search",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer {{ $env.ORCHESTRATOR_ADMIN_TOKEN }}"
+        },
+        "body": "={\n  \"sticker_id\": $json.sticker_id,\n  \"tenant_id\": $json.tenant_id,\n  \"max_price\": $json.max_price,\n  \"marketplace\": $json.marketplace\n}",
+        "options": {}
+      }
+    },
+    {
+      "name": "Filter Best Price",
+      "type": "code",
+      "typeVersion": 1,
+      "position": [700, 300],
+      "parameters": {
+        "jsCode": "const listings = $json.data || [];\nif (listings.length === 0) {\n  return { error: 'No listings found', bestListing: null };\n}\nconst sorted = listings.sort((a, b) => (a.price + (a.shipping_cost || 0)) - (b.price + (b.shipping_cost || 0)));\nreturn { bestListing: sorted[0], allListings: listings.slice(0, 3) };"
+      }
+    },
+    {
+      "name": "Send Notification",
+      "type": "httpRequest",
+      "typeVersion": 3,
+      "position": [900, 300],
+      "parameters": {
+        "url": "https://api.twilio.com/2010-04-01/Accounts/{{ $env.TWILIO_ACCOUNT_SID }}/Messages",
+        "method": "POST",
+        "authentication": "basicAuth",
+        "genericAuthType": "httpBasicAuth",
+        "auth": "{{ $env.TWILIO_ACCOUNT_SID }}:{{ $env.TWILIO_AUTH_TOKEN }}",
+        "body": "=From=whatsapp:%2B14155238886&To=whatsapp:{{ encodeURIComponent($input.last().json.user_id) }}&Body={{ encodeURIComponent('Encontré la laminita! Mejor precio: $' + $json.bestListing.price + ' en ' + $json.bestListing.marketplace) }}",
+        "options": {}
+      }
+    },
+    {
+      "name": "Log Purchase Tracking",
+      "type": "httpRequest",
+      "typeVersion": 3,
+      "position": [1100, 300],
+      "parameters": {
+        "url": "http://orchestrator:3011/api/actions/buy",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer {{ $env.ORCHESTRATOR_ADMIN_TOKEN }}"
+        },
+        "body": "={\n  \"sticker_id\": $input.first().json.sticker_id,\n  \"user_id\": $input.first().json.user_id,\n  \"tenant_id\": $input.first().json.tenant_id,\n  \"listing_url\": $json.bestListing.listing_url,\n  \"marketplace\": $json.bestListing.marketplace,\n  \"price\": $json.bestListing.price,\n  \"timestamp\": new Date().toISOString()\n}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "User Initiates Buy": {
+      "main": [[{"node": "Extract Buy Request", "type": "main", "index": 0}]]
+    },
+    "Extract Buy Request": {
+      "main": [[{"node": "Search Marketplace", "type": "main", "index": 0}]]
+    },
+    "Search Marketplace": {
+      "main": [[{"node": "Filter Best Price", "type": "main", "index": 0}]]
+    },
+    "Filter Best Price": {
+      "main": [[{"node": "Send Notification", "type": "main", "index": 0}]]
+    },
+    "Send Notification": {
+      "main": [[{"node": "Log Purchase Tracking", "type": "main", "index": 0}]]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
