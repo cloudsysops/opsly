@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-05-29T12:05:13.673Z",
+  "generated_at": "2026-05-29T13:00:39.153Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -18274,6 +18274,40 @@
         "webhook"
       ],
       "size_bytes": 14673
+    },
+    {
+      "path": "docs/panini-lab/TROUBLESHOOTING.md",
+      "title": "Troubleshooting Guide: Voice Calls & Messages",
+      "keywords": [
+        "call",
+        "calls",
+        "credentials",
+        "diagnosis",
+        "doppler",
+        "environment",
+        "failed",
+        "guide",
+        "hangs",
+        "initiate",
+        "initiated",
+        "initiation",
+        "invalid",
+        "issue",
+        "issues",
+        "markdown",
+        "messages",
+        "missing",
+        "opsly",
+        "provider",
+        "quick",
+        "ringing",
+        "state",
+        "supabase",
+        "troubleshooting",
+        "unknown",
+        "voice"
+      ],
+      "size_bytes": 28474
     },
     {
       "path": "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
@@ -84295,6 +84329,7 @@
       "docs/04-operations/COST-MONITORING-GUIDE.md",
       "docs/panini-lab/OVERVIEW.md",
       "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/database/DATABASE-OPERATIONS.md",
       "docs/database/SUPABASE-MIGRATION-AUDIT.md",
@@ -86673,6 +86708,7 @@
       "docs/04-operations/COST-MONITORING-GUIDE.md",
       "docs/panini-lab/OVERVIEW.md",
       "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/database/DATABASE-OPERATIONS.md",
       "docs/database/SUPABASE-MIGRATION-AUDIT.md",
@@ -88443,6 +88479,7 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/cwe-top-25.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/iac-docker.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/logging-patterns.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/runbooks/OPERATIONS-HANDBOOK.md",
       "docs/00-architecture/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
       "docs/01-development/QA-REVIEW-COMPLETE.md",
@@ -90175,6 +90212,7 @@
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/state-management.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/auth-patterns.md",
       "docs/generated/implementation-progress.auto.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/database/SUPABASE-MIGRATION-AUDIT.md",
       "docs/history/plans/IMPLEMENTATION-STATUS.md",
@@ -90660,6 +90698,7 @@
       "vendor/agency-agents/integrations/openclaw/image-prompt-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/geographer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/technical-artist/AGENTS.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/infrastructure/NOTEBOOKLM-BRAIN-SYNC.md",
       "docs/governance/SOC2-READINESS.md",
@@ -93827,6 +93866,7 @@
       "lib/voice-messaging/GOVERNANCE.md",
       "docs/panini-lab/OVERVIEW.md",
       "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/00-architecture/LLM-GATEWAY-WORKPLAN.md",
       "docs/02-tools/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
@@ -99357,6 +99397,7 @@
       "vendor/agency-agents/integrations/openclaw/technical-writer/AGENTS.md",
       "infra/monitoring/README.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/database/DATABASE-OPERATIONS.md",
       "docs/ops/issue-bankruptcy-2026-05-03/quick-wins.md",
       "docs/history/consolidation/CONSOLIDATION-SUMMARY.md",
@@ -101547,6 +101588,7 @@
     "troubleshooting": [
       "packages/skills/user/opsly-quantum/templates/runbook.md",
       ".n8n/README.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/runbooks/INCUBATION-PLATFORM-FOUNDATION.md",
       "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
       "docs/runbooks/TROUBLESHOOTING-GUIDE.md",
@@ -106445,6 +106487,7 @@
       "vendor/agency-agents/integrations/openclaw/discovery-coach/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/workflow-optimizer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/game-audio-engineer/AGENTS.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/history/consolidation/CONSOLIDATION-PLAN.md",
       "docs/obsidian/sources/archive/2026-04-21/india.highcourt.judgement.hbhc010399162001.md",
       "docs/00-architecture/ARCHITECTURE.md",
@@ -109431,6 +109474,7 @@
     "messages": [
       "packages/skills/vendor/agent-skills/git-workflow-and-versioning/SKILL.md",
       "vendor/agency-agents/integrations/openclaw/whimsy-injector/AGENTS.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/tenants/peskids/DATA-MODEL.md"
     ],
     "often": [
@@ -114011,6 +114055,7 @@
       "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
       "docs/04-operations/COST-MONITORING-GUIDE.md",
       "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/database/DATABASE-OPERATIONS.md",
       "docs/infrastructure/REDIS-QUEUE-GUIDE.md",
@@ -114479,6 +114524,7 @@
       "vendor/agency-agents/integrations/openclaw/evidence-collector/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/tax-strategist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/accessibility-auditor/AGENTS.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/database/SUPABASE-MIGRATION-AUDIT.md",
       "docs/ops/issue-bankruptcy-2026-05-03/epics-breakdown.md",
       "docs/ops/issue-bankruptcy-2026-05-03/issues-triage.md",
@@ -115565,6 +115611,7 @@
       "config/doppler-audit-2026-04-07.md",
       "docs/generated/implementation-progress.auto.md",
       "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/ops/runbook-redis.md",
       "docs/infrastructure/NOTEBOOKLM-BRAIN-SYNC.md",
@@ -116855,6 +116902,7 @@
       ".cursor/prompts/fix-organize-autonomous-system.md",
       "vendor/agency-agents/integrations/openclaw/support-responder/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/accessibility-auditor/AGENTS.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/ops/issue-bankruptcy-2026-05-03/issues-triage.md",
       "docs/ops/issue-bankruptcy-2026-05-03.md",
       "docs/runbooks/OPERATIONS-HANDBOOK.md",
@@ -129154,6 +129202,7 @@
       "vendor/agency-agents/integrations/openclaw/discovery-coach/AGENTS.md",
       "docs/panini-lab/OVERVIEW.md",
       "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/04-infrastructure/MCP-ORCHESTRATOR-DEPLOYMENT.md",
       "docs/adr/ADR-043-supplement/DECISION-RATIONALE.md",
@@ -129299,6 +129348,7 @@
       "vendor/agency-agents/integrations/openclaw/game-audio-engineer/AGENTS.md",
       "docs/panini-lab/OVERVIEW.md",
       "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/00-architecture/ELEVENLABS-ADVANCED-INTEGRATION.md"
     ],
@@ -147919,6 +147969,7 @@
     ],
     "diagnosis": [
       "vendor/agency-agents/integrations/openclaw/incident-response-commander/AGENTS.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/runbooks/TROUBLESHOOTING-GUIDE.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md"
     ],
@@ -148133,6 +148184,7 @@
     "initiation": [
       "vendor/agency-agents/integrations/openclaw/project-shepherd/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/retail-customer-returns/AGENTS.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/panini-lab/ACTIVATION-GUIDE.md"
     ],
     "investigation": [
@@ -148144,6 +148196,7 @@
     "calls": [
       "vendor/agency-agents/integrations/openclaw/blockchain-security-auditor/AGENTS.md",
       "docs/04-operations/COST-MONITORING-GUIDE.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/audits/COST-DEEP-DIVE.md"
     ],
@@ -149311,6 +149364,7 @@
     ],
     "credentials": [
       "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/TROUBLESHOOTING.md",
       "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/03-agents/SYRA-IMPLEMENTATION-GUIDE.md",
       "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md"
@@ -149320,6 +149374,30 @@
     ],
     "recording": [
       "docs/panini-lab/PROVIDER-SETUP.md"
+    ],
+    "failed": [
+      "docs/panini-lab/TROUBLESHOOTING.md",
+      "docs/runbooks/OPERATIONS-HANDBOOK.md"
+    ],
+    "hangs": [
+      "docs/panini-lab/TROUBLESHOOTING.md",
+      "docs/runbooks/TROUBLESHOOTING-GUIDE.md"
+    ],
+    "initiate": [
+      "docs/panini-lab/TROUBLESHOOTING.md"
+    ],
+    "initiated": [
+      "docs/panini-lab/TROUBLESHOOTING.md"
+    ],
+    "invalid": [
+      "docs/panini-lab/TROUBLESHOOTING.md"
+    ],
+    "ringing": [
+      "docs/panini-lab/TROUBLESHOOTING.md"
+    ],
+    "unknown": [
+      "docs/panini-lab/TROUBLESHOOTING.md",
+      "docs/security/SECURITY-POSTURE-AUDIT.md"
     ],
     "activate": [
       "docs/panini-lab/ACTIVATION-GUIDE.md",
@@ -151287,9 +151365,6 @@
     "degraded": [
       "docs/runbooks/OPERATIONS-HANDBOOK.md"
     ],
-    "failed": [
-      "docs/runbooks/OPERATIONS-HANDBOOK.md"
-    ],
     "handbook": [
       "docs/runbooks/OPERATIONS-HANDBOOK.md"
     ],
@@ -151785,9 +151860,6 @@
     "down": [
       "docs/runbooks/TROUBLESHOOTING-GUIDE.md",
       "docs/blueprints/opsly-operational-blueprint/EXTRACTION-PATTERN.md"
-    ],
-    "hangs": [
-      "docs/runbooks/TROUBLESHOOTING-GUIDE.md"
     ],
     "slow": [
       "docs/runbooks/TROUBLESHOOTING-GUIDE.md"
@@ -156706,9 +156778,6 @@
     "sanitization": [
       "docs/security/SECURITY-POSTURE-AUDIT.md"
     ],
-    "unknown": [
-      "docs/security/SECURITY-POSTURE-AUDIT.md"
-    ],
     "localizacion": [
       ".claude/3-slash-commands/skill.md"
     ],
@@ -157459,6 +157528,7 @@
     "docs/panini-lab/ACTIVATION-GUIDE.md",
     "docs/panini-lab/OVERVIEW.md",
     "docs/panini-lab/PROVIDER-SETUP.md",
+    "docs/panini-lab/TROUBLESHOOTING.md",
     "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
     "docs/plans/AUTONOMY-COMPLETION-PLAN-2026-04-27.md",
     "docs/plans/AUTONOMY-GO-NO-GO-WEEKLY.md",

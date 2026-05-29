@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-29T12:05:12.009Z",
-  "totalFiles": 625,
+  "lastIndexed": "2026-05-29T13:00:38.005Z",
+  "totalFiles": 626,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -458,6 +458,7 @@
     "panini-lab/ACTIVATION-GUIDE.md",
     "panini-lab/OVERVIEW.md",
     "panini-lab/PROVIDER-SETUP.md",
+    "panini-lab/TROUBLESHOOTING.md",
     "plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
     "plans/AUTONOMY-COMPLETION-PLAN-2026-04-27.md",
     "plans/AUTONOMY-GO-NO-GO-WEEKLY.md",
