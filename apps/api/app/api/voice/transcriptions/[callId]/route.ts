@@ -1,19 +1,21 @@
-import { requireAdminAccessUnlessDemoRead } from '../../../../../../lib/auth';
-import { proxyRuntimeOrchestrator } from '../../../../../../lib/runtime-proxy';
+import { requireAdminAccessUnlessDemoRead } from '../../../../../lib/auth';
+import { proxyRuntimeOrchestrator } from '../../../../../lib/runtime-proxy';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(
   request: Request,
-  { params }: { params: { callId: string } }
+  context: { params: Promise<{ callId: string }> }
 ): Promise<Response> {
   const authError = await requireAdminAccessUnlessDemoRead(request);
   if (authError) {
     return authError;
   }
 
+  const { callId } = await context.params;
+
   return proxyRuntimeOrchestrator(
-    `/internal/voice/transcriptions/${params.callId}`,
+    `/internal/voice/transcriptions/${callId}`,
     {
       method: 'GET',
     }

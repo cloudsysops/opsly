@@ -1,5 +1,5 @@
-import { requireAdminAccessUnlessDemoRead } from '../../../../../../lib/auth';
-import { proxyRuntimeOrchestrator } from '../../../../../../lib/runtime-proxy';
+import { requireAdminAccessUnlessDemoRead } from '../../../../../lib/auth';
+import { proxyRuntimeOrchestrator } from '../../../../../lib/runtime-proxy';
 
 export const dynamic = 'force-dynamic';
 

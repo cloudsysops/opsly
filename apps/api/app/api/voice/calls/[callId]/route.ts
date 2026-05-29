@@ -1,5 +1,5 @@
-import { requireAdminAccessUnlessDemoRead } from '../../../../../../lib/auth';
-import { proxyRuntimeOrchestrator } from '../../../../../../lib/runtime-proxy';
+import { requireAdminAccessUnlessDemoRead } from '../../../../../lib/auth';
+import { proxyRuntimeOrchestrator } from '../../../../../lib/runtime-proxy';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -10,21 +10,23 @@ const UpdateCallStateSchema = z.object({
 
 export async function GET(
   request: Request,
-  { params }: { params: { callId: string } }
+  context: { params: Promise<{ callId: string }> }
 ): Promise<Response> {
   const authError = await requireAdminAccessUnlessDemoRead(request);
   if (authError) {
     return authError;
   }
 
-  return proxyRuntimeOrchestrator(`/internal/voice/calls/${params.callId}`, {
+  const { callId } = await context.params;
+
+  return proxyRuntimeOrchestrator(`/internal/voice/calls/${callId}`, {
     method: 'GET',
   });
 }
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { callId: string } }
+  context: { params: Promise<{ callId: string }> }
 ): Promise<Response> {
   const authError = await requireAdminAccessUnlessDemoRead(request);
   if (authError) {
@@ -32,10 +34,11 @@ export async function PATCH(
   }
 
   try {
+    const { callId } = await context.params;
     const body = await request.json();
     const validated = UpdateCallStateSchema.parse(body);
 
-    return proxyRuntimeOrchestrator(`/internal/voice/calls/${params.callId}`, {
+    return proxyRuntimeOrchestrator(`/internal/voice/calls/${callId}`, {
       method: 'PATCH',
       body: JSON.stringify(validated),
       headers: {
