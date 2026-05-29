@@ -5,7 +5,8 @@ export type ProviderKind =
   | 'openai'
   | 'deepseek'
   | 'nvidia'
-  | 'groq';
+  | 'groq'
+  | 'gemini';
 
 export interface ProviderDefinition {
   /** Model id for the upstream API */
@@ -134,6 +135,14 @@ export const PROVIDERS = {
     cost_per_1k_output: 0,
     baseUrl: groqBase,
     healthKey: 'groq',
+  },
+  /** Gemini Flash — intent/transcribe via dedicated routes; chat chain optional. */
+  gemini_flash: {
+    model: process.env.GEMINI_MODEL?.trim() || 'gemini-2.0-flash',
+    kind: 'gemini',
+    cost_per_1k_input: 0.0001,
+    cost_per_1k_output: 0.0004,
+    healthKey: 'gemini',
   },
 } as const satisfies Record<string, ProviderDefinition>;
 

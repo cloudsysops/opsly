@@ -17,6 +17,8 @@ export interface AgentResponse {
   ok: boolean;
   reply: string;
   traceId: Uuid;
+  /** Normalized text after transcription (if any). */
+  utterance?: string;
   intent?: string;
   eventIds: readonly Uuid[];
   runtime: AgentRuntimeResult;
