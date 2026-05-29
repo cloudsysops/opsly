@@ -149,7 +149,7 @@ for var in "${REQUIRED_VARS[@]}"; do
   val=$(read_env_var "${var}")
   if [[ -n "${val}" ]]; then
     # Mask sensitive values for display
-    local display_val
+    display_val=""
     case "${var}" in
       *_KEY|*_SECRET|*_PASSWORD|*_TOKEN)
         display_val="${val:0:4}...${val: -4}"
@@ -365,7 +365,6 @@ if [[ "${CHECK_VPS}" == "true" ]]; then
 
       # Health endpoints
       for ep in "http://localhost:3000/api/health" "http://localhost:3001" "http://localhost:3002"; do
-        local ep_name
         ep_name=$(echo "${ep}" | sed 's|http://localhost:||' | sed 's|/.*||')
         if ssh -o BatchMode=yes -o ConnectTimeout=5 "${SSH_USER}@${SSH_HOST}" \
           "curl -sf -o /dev/null --max-time 3 '${ep}'" 2>/dev/null; then
