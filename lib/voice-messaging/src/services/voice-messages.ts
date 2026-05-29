@@ -1,4 +1,4 @@
-import { VoiceMessage, MessageDirection } from '../types';
+import { VoiceMessage, MessageDirection } from '../types.js';
 
 interface VoiceMessagesServiceConfig {
   supabaseUrl: string;

@@ -1,4 +1,4 @@
-import { VoiceTranscription, SpeakerRole } from '../types';
+import { VoiceTranscription, SpeakerRole } from '../types.js';
 
 interface TranscriptionServiceConfig {
   supabaseUrl: string;

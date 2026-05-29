@@ -5,7 +5,7 @@ import {
   InitiateCallOptions,
   RecordVoiceMessageOptions,
   TranscribeCallOptions,
-} from '../types';
+} from '../types.js';
 
 export abstract class BaseVoiceProvider {
   abstract provider: string;
@@ -30,9 +30,9 @@ export abstract class BaseVoiceProvider {
 type VoiceProviderType = 'twilio' | 'vonage';
 
 export class VoiceProviderFactory {
-  private static providers: Map<VoiceProviderType, typeof BaseVoiceProvider> = new Map();
+  private static providers: Map<VoiceProviderType, new (config: Record<string, unknown>) => BaseVoiceProvider> = new Map();
 
-  static register(type: VoiceProviderType, providerClass: typeof BaseVoiceProvider) {
+  static register(type: VoiceProviderType, providerClass: new (config: Record<string, unknown>) => BaseVoiceProvider) {
     this.providers.set(type, providerClass);
   }
 

@@ -1,3 +1,3 @@
-export { CallManager } from './call-manager';
-export { VoiceMessagesService } from './voice-messages';
-export { TranscriptionService } from './transcription';
+export { CallManager } from './call-manager.js';
+export { VoiceMessagesService } from './voice-messages.js';
+export { TranscriptionService } from './transcription.js';

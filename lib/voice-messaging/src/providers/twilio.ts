@@ -8,8 +8,8 @@ import {
   InitiateCallOptions,
   RecordVoiceMessageOptions,
   TranscribeCallOptions,
-} from '../types';
-import { BaseVoiceProvider } from './index';
+} from '../types.js';
+import { BaseVoiceProvider } from './index.js';
 
 export class TwilioVoiceProvider extends BaseVoiceProvider {
   provider = 'twilio';
@@ -147,7 +147,7 @@ export class TwilioVoiceProvider extends BaseVoiceProvider {
   }
 
   async handleCallStateWebhook(payload: Record<string, unknown>): Promise<Call> {
-    const typedPayload = payload as CallWebhookPayload;
+    const typedPayload = payload as unknown as CallWebhookPayload;
 
     return {
       id: typedPayload.callId,
@@ -167,7 +167,7 @@ export class TwilioVoiceProvider extends BaseVoiceProvider {
   }
 
   async handleVoiceMessageWebhook(payload: Record<string, unknown>): Promise<VoiceMessage> {
-    const typedPayload = payload as VoiceMessageWebhookPayload;
+    const typedPayload = payload as unknown as VoiceMessageWebhookPayload;
 
     return {
       id: typedPayload.externalId || crypto.randomUUID(),
@@ -184,7 +184,7 @@ export class TwilioVoiceProvider extends BaseVoiceProvider {
   }
 
   async handleTranscriptionWebhook(payload: Record<string, unknown>): Promise<VoiceTranscription> {
-    const typedPayload = payload as TranscriptionWebhookPayload;
+    const typedPayload = payload as unknown as TranscriptionWebhookPayload;
 
     return {
       id: crypto.randomUUID(),

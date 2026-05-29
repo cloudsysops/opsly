@@ -1,4 +1,4 @@
-import { Call, CallState } from '../types';
+import { Call, CallState } from '../types.js';
 
 interface CallManagerConfig {
   supabaseUrl: string;
