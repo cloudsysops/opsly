@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from '../../lib/database.types';
 
 interface StickerQueryResult {
   found: boolean;
@@ -33,10 +32,10 @@ interface MissingSticker {
 }
 
 export class StickerContextService {
-  private supabase: ReturnType<typeof createClient<Database>>;
+  private supabase: any;
 
   constructor(supabaseUrl: string, supabaseKey: string) {
-    this.supabase = createClient<Database>(supabaseUrl, supabaseKey);
+    this.supabase = createClient(supabaseUrl, supabaseKey);
   }
 
   async queryInventory(
@@ -236,7 +235,7 @@ export class StickerContextService {
     tenantId: string,
     tournamentId: string
   ): Promise<StickerQueryResult> {
-    const { data: teams, error } = await this.supabase
+    const { data: teams, error } = (await this.supabase
       .from('stickers')
       .select(
         `
@@ -246,8 +245,7 @@ export class StickerContextService {
         )
       `
       )
-      .eq('tournament_id', tournamentId)
-      .returns<any[]>();
+      .eq('tournament_id', tournamentId)) as any;
 
     if (error || !teams) {
       return {
