@@ -234,6 +234,14 @@ export const TIME_PARSING = {
   TIME_COMPONENT_PAD: 2,
 } as const;
 
+/** Métricas de facturación soportadas en Redis y DB. */
+export const BILLING_METRICS = [
+  'cpu_seconds',
+  'ai_tokens',
+  'storage_gb',
+  'worker_seconds',
+] as const;
+
 /** Heurística solapes en grid de slots (buffer mínimo implícito en comparación). */
 export const TECHNICIAN_SLOT_GRID = {
   BUSY_STATUSES: ['requested', 'confirmed'] as const,

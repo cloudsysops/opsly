@@ -1,5 +1,5 @@
 import { unitCostUsdForMetric } from './billing-meter-pricing';
-import { parseUsageRedisKey } from './billing/flush-billing-usage';
+import { BILLING_METRICS } from './constants';
 import { getMeteringRedis } from './billing/redis-metering';
 
 const CENTS = 100;
@@ -60,7 +60,7 @@ export function getBillingMonthBoundsUtc(now: Date): BillingMonthBounds {
   };
 }
 
-function parseQuantity(raw: string | undefined): number {
+function parseQuantity(raw: string | null | undefined): number {
   if (raw === undefined || raw === null || raw === '') {
     return 0;
   }
@@ -72,30 +72,25 @@ async function aggregatePendingUsdForTenant(
   redis: ConnectedMeteringRedis,
   tenantId: string
 ): Promise<number> {
-  const pattern = `usage:${tenantId}:*`;
+  const keys = BILLING_METRICS.map((m) => `usage:${tenantId}:${m}`);
+
   let pending = 0;
   try {
-    for await (const keys of redis.scanIterator({
-      MATCH: pattern,
-      COUNT: 100,
-    })) {
-      for (const key of keys) {
-        const parsed = parseUsageRedisKey(key);
-        if (parsed?.tenantId !== tenantId) {
-          continue;
-        }
-        const raw = await redis.get(key);
-        const qty = parseQuantity(raw ?? undefined);
-        if (qty <= 0) {
-          continue;
-        }
-        const unit = unitCostUsdForMetric(parsed.metricType);
-        pending += qty * unit;
+    // Bolt Optimization: Replace O(N) SCAN + individual GETs with O(1) MGET.
+    // Reduces Redis roundtrips from N+1 to 1 and avoids scanning the entire keyspace.
+    const values = await redis.mGet(keys);
+
+    for (let i = 0; i < BILLING_METRICS.length; i++) {
+      const qty = parseQuantity(values[i]);
+      if (qty <= 0) {
+        continue;
       }
+      const unit = unitCostUsdForMetric(BILLING_METRICS[i]);
+      pending += qty * unit;
     }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    warnBillingRedisDegraded(`(scan/get failed: ${msg})`);
+    warnBillingRedisDegraded(`(mget failed: ${msg})`);
     return 0;
   }
   return pending;
@@ -103,7 +98,7 @@ async function aggregatePendingUsdForTenant(
 
 /**
  * Coste USD pendiente en Redis (`usage:{tenantId}:*`) sin flush.
- * Usa `SCAN` con `MATCH` (no `KEYS *`); métrica y precio vía `parseUsageRedisKey` + `unitCostUsdForMetric`.
+ * Bolt Optimization: Usa `MGET` para métricas conocidas; precio vía `unitCostUsdForMetric`.
  */
 export async function sumPendingRedisUsageUsd(tenantId: string): Promise<number> {
   const redisUrlConfigured = Boolean(process.env.REDIS_URL?.trim());
