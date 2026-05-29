@@ -20,9 +20,9 @@ export class StickerContextService {
 
   async queryInventory(
     query: string,
-    userId: string,
-    tenantId: string,
-    tournamentId: string
+    _userId: string,
+    _tenantId: string,
+    _tournamentId: string
   ): Promise<StickerQueryResult> {
     try {
       // Parse the natural language query for player names
@@ -60,8 +60,8 @@ export class StickerContextService {
   }
 
   async findPlayerInInventory(
-    playerName: string,
-    userId: string
+    _playerName: string,
+    _userId: string
   ): Promise<
     Array<{
       id: string;
@@ -70,14 +70,13 @@ export class StickerContextService {
       number: number;
     }>
   > {
-    // Mock implementation for MVP
     return [];
   }
 
   async findMissingByTeam(
-    country: string,
-    userId: string,
-    tournamentId: string
+    _country: string,
+    _userId: string,
+    _tournamentId: string
   ): Promise<
     Array<{
       id: string;
@@ -85,7 +84,6 @@ export class StickerContextService {
       number: number;
     }>
   > {
-    // Mock implementation for MVP
     return [];
   }
 }
