@@ -3,6 +3,8 @@ export type CollectionStatus = 'owned' | 'duplicate' | 'missing' | 'want';
 export interface CollectionItemRow {
   sticker_number: number;
   status: CollectionStatus;
+  country: string | null;
+  player_name: string | null;
   notes: string | null;
   updated_at: string;
 }
@@ -24,11 +26,15 @@ const conversations: ConversationEventRow[] = [];
 export function memoryUpsertCollectionItem(input: {
   stickerNumber: number;
   status: CollectionStatus;
+  country?: string | null;
+  playerName?: string | null;
   notes?: string;
 }): CollectionItemRow {
   const row: CollectionItemRow = {
     sticker_number: input.stickerNumber,
     status: input.status,
+    country: input.country ?? null,
+    player_name: input.playerName ?? null,
     notes: input.notes ?? null,
     updated_at: new Date().toISOString(),
   };
