@@ -117,7 +117,13 @@ function convertToCSV(submissions: FormSubmission[]): string {
   ];
 
   const rows = submissions.map((sub) => {
-    const row = [sub.submission_id, sub.completed_at, sub.status, sub.score ?? '', sub.feedback ?? ''];
+    const row = [
+      sub.submission_id,
+      sub.completed_at,
+      sub.status,
+      sub.score ?? '',
+      sub.feedback ?? '',
+    ];
 
     fieldNames.forEach((fieldName) => {
       const value = sub.submission_data?.[fieldName];
