@@ -1,25 +1,9 @@
 import type { NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { jsonError, jsonOk } from '@/lib/api-response';
 import { HTTP_STATUS } from '@/lib/constants';
 import { triggerWebhooks } from '@/lib/peskids-webhook-trigger';
 import type { WebhookConfig, WebhookTriggerResult } from '@/lib/peskids-types';
-
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value;
-}
-
-function getSupabaseClient() {
-  const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
-  const serviceKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
-  return createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-}
+import { getServiceClient } from '@/lib/supabase';
 
 interface FormSubmissionPayload {
   formId: string;
@@ -45,11 +29,12 @@ export async function POST(
       return jsonError('Submission data is required', HTTP_STATUS.BAD_REQUEST);
     }
 
-    const supabase = getSupabaseClient();
+    const supabase = getServiceClient();
 
     // Get form to find tenant_slug
     const { data: form, error: formError } = await supabase
-      .schema('peskids').from('forms')
+      .schema('peskids')
+      .from('forms')
       .select('id, form_id, tenant_slug')
       .eq('form_id', formId)
       .single();
@@ -62,7 +47,8 @@ export async function POST(
 
     // Create submission
     const { data: submission, error: submissionError } = await supabase
-      .schema('peskids').from('form_submissions')
+      .schema('peskids')
+      .from('form_submissions')
       .insert({
         submission_id: submissionId,
         form_id: formId,
@@ -86,7 +72,8 @@ export async function POST(
     let webhookResults: WebhookTriggerResult | null = null;
     try {
       const { data: webhooks } = await supabase
-        .schema('peskids').from('webhook_configs')
+        .schema('peskids')
+        .from('webhook_configs')
         .select('id, webhook_url, secret, is_active, failure_count')
         .eq('form_id', formId)
         .eq('tenant_slug', form.tenant_slug)

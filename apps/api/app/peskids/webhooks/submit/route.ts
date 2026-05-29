@@ -1,8 +1,8 @@
 import type { NextRequest } from 'next/server';
 import { createHmac } from 'crypto';
-import { createClient } from '@supabase/supabase-js';
 import { jsonError, jsonOk } from '../../../../lib/api-response';
 import { HTTP_STATUS } from '../../../../lib/constants';
+import { getServiceClient } from '../../../../lib/supabase';
 
 interface WebhookPayload {
   form_id: string;
@@ -13,21 +13,6 @@ interface WebhookPayload {
   timestamp: number;
 }
 
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value;
-}
-
-function getSupabaseClient() {
-  const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
-  const serviceKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
-  return createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-}
 
 function verifyWebhookSignature(payload: string, signature: string, secret: string): boolean {
   const expectedSig = createHmac('sha256', secret).update(payload).digest('hex');
@@ -36,21 +21,21 @@ function verifyWebhookSignature(payload: string, signature: string, secret: stri
 }
 
 async function logAuditEvent(
-  supabase: ReturnType<typeof getSupabaseClient>,
+  supabase: ReturnType<typeof getServiceClient>,
   tenantSlug: string,
   action: string,
   resourceId: string,
   metadata: Record<string, unknown>,
   ipAddress?: string
 ): Promise<void> {
-  const { error } = await supabase.rpc('peskids.log_audit_event', {
+  const { error } = await supabase.schema('peskids').rpc('log_audit_event', {
     p_tenant_slug: tenantSlug,
     p_actor_id: null,
     p_action: action,
     p_resource_type: 'form_submission',
     p_resource_id: resourceId,
     p_metadata: metadata,
-    p_ip_address: ipAddress,
+    p_ip_address: ipAddress || null,
     p_user_agent: null,
   });
 
@@ -61,7 +46,7 @@ async function logAuditEvent(
 
 export async function POST(request: NextRequest): Promise<Response> {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getServiceClient();
     const ipAddress = (request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip'))
       ?.split(',')[0]
       ?.trim();
@@ -135,7 +120,8 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     // Fetch webhook config for this form
     const { data: webhookConfig, error: fetchError } = await supabase
-      .from('peskids.webhook_configs')
+      .schema('peskids')
+      .from('webhook_configs')
       .select('id, secret')
       .eq('tenant_slug', tenant_slug)
       .eq('form_id', form_id)
@@ -189,17 +175,20 @@ export async function POST(request: NextRequest): Promise<Response> {
     );
 
     // Store submission event
-    const { error: eventError } = await supabase.from('peskids.submission_events').insert({
-      tenant_slug,
-      form_id,
-      submission_id: submission_id as string,
-      user_id: payload.user_id || null,
-      event_type: 'completed',
-      metadata: {
-        webhook_triggered: true,
-        timestamp: payload.timestamp,
-      },
-    });
+    const { error: eventError } = await supabase
+      .schema('peskids')
+      .from('submission_events')
+      .insert({
+        tenant_slug,
+        form_id,
+        submission_id: submission_id as string,
+        user_id: payload.user_id || null,
+        event_type: 'completed',
+        metadata: {
+          webhook_triggered: true,
+          timestamp: payload.timestamp,
+        },
+      });
 
     if (eventError) {
       console.error('Failed to store submission event:', eventError);
@@ -207,7 +196,8 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     // Update webhook last_triggered_at
     await supabase
-      .from('peskids.webhook_configs')
+      .schema('peskids')
+      .from('webhook_configs')
       .update({
         last_triggered_at: new Date().toISOString(),
         failure_count: 0,
