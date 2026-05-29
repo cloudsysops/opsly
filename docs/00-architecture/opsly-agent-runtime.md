@@ -141,24 +141,6 @@ apps/peskids/config/tenant.config.ts         # shadow
 apps/smiletripcare/config/tenant.config.ts   # shadow
 ```
 
-## Sprint 2 — Panini Lab + gateway transcribe
-
-| Piece | Path |
-|-------|------|
-| Demo app (Next `:3005`) | `apps/panini-lab` — `POST /api/webhooks/inbound`, `GET /dashboard` |
-| DB schema | `supabase/migrations/0065_panini_lab_schema.sql` (`panini_lab.*`) |
-| Multimodal transcribe | `apps/llm-gateway` — `POST /v1/transcribe` (Gemini; `GEMINI_API_KEY`) |
-| Runtime adapter | `lib/conversational-runtime/src/adapters/gateway-transcription.ts` |
-
-Local dev:
-
-```bash
-npm run dev --workspace=@intcloudsysops/panini-lab
-# Webhook (dev, no secret): curl -X POST http://localhost:3005/api/webhooks/inbound \
-#   -H 'Content-Type: application/json' \
-#   -d '{"text":"Tengo la figurita 45 repetida"}'
-```
-
 ## Design rules
 
 1. IDs via `crypto.randomUUID()` — never `Math.random()`.
@@ -168,5 +150,6 @@ npm run dev --workspace=@intcloudsysops/panini-lab
 
 ## Related
 
+- **Panini Lab prod:** [`docs/tenants/panini-lab/README.md`](../tenants/panini-lab/README.md) · [`docs/runbooks/PANINI-LAB-GOLIVE.md`](../runbooks/PANINI-LAB-GOLIVE.md) · `https://panini.op-sly.com`
 - Demo walkthrough: [`docs/demo/hackathon-demo.md`](../demo/hackathon-demo.md)
 - OpenClaw orchestration: [`docs/OPENCLAW-ARCHITECTURE.md`](../OPENCLAW-ARCHITECTURE.md)

@@ -129,6 +129,7 @@ jobs:
           script: |
             set -euo pipefail
             cd /opt/opsly
+            git fetch origin main && git checkout main && git pull --ff-only
 
             docker logout ghcr.io 2>/dev/null || true
             echo "$GITHUB_DEPLOY_TOKEN" | docker login ghcr.io -u "$GITHUB_DEPLOY_ACTOR" --password-stdin
@@ -141,14 +142,13 @@ jobs:
             doppler run --project ops-intcloudsysops --config prd -- \
               docker compose -f infra/docker-compose.panini-lab.yml up -d --remove-orphans
 
-            # Local health check on VPS
-            sleep 5
-            for i in 1 2 3; do
-              if curl -sf http://localhost:3005/dashboard >/dev/null 2>&1; then
-                echo "✅ panini-lab local health OK (intento $i)"
+            sleep 8
+            for i in 1 2 3 4 5; do
+              if curl -sf http://127.0.0.1:3005/dashboard >/dev/null 2>&1; then
+                echo "✅ panini-lab localhost:3005 OK (intento $i)"
                 break
               fi
-              echo "Intento $i/3 — esperando..."
+              echo "Intento $i/5 — esperando..."
               sleep 10
             done
 

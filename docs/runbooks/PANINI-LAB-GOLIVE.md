@@ -1,19 +1,35 @@
 # Panini Lab — Go-Live Runbook
 
 **URL destino:** `https://panini.op-sly.com`  
-**Puerto interno:** `3005`  
+**Puerto interno:** `3005` (localhost bind `127.0.0.1:3005` para ops)  
 **Imagen:** `ghcr.io/cloudsysops/intcloudsysops-panini-lab:latest`  
 **Compose:** `infra/docker-compose.panini-lab.yml`  
-**Traefik:** `infra/traefik/dynamic/panini-lab.yml`
+**Traefik:** `infra/traefik/dynamic/panini-lab.yml`  
+**Redes Docker:** `traefik-public` + `infra_internal` (LLM gateway plataforma)
+
+---
+
+## Checklist ejecutivo
+
+| # | Paso | Responsable | Estado |
+|---|------|-------------|--------|
+| 1 | Merge PR `feat/panini-lab-prod` → `main` | Dev | ☐ |
+| 2 | CI verde + imagen en GHCR | CI | ☐ |
+| 3 | Doppler secrets (tabla abajo) | Humano | ☐ |
+| 4 | Supabase `0065` + `0066` | Humano (ámbar) | ☐ |
+| 5 | DNS `panini` en Cloudflare (proxy ON) | Humano | ☐ |
+| 6 | Deploy VPS (Actions o script manual) | Ops | ☐ |
+| 7 | `./scripts/test-panini-lab-smoke.sh` | Ops | ☐ |
 
 ---
 
 ## Prerequisitos
 
 - [ ] PR `feat/panini-lab-prod` mergeado a `main`
-- [ ] CI verde (type-check + tests + build)
+- [ ] CI verde (type-check + tests + build incl. panini-lab)
 - [ ] Imagen `intcloudsysops-panini-lab:latest` en GHCR
-- [ ] Secrets configurados en Doppler (`ops-intcloudsysops / prd`)
+- [ ] Redes Docker en VPS: `traefik-public`, `infra_internal` (creadas por platform compose)
+- [ ] Secrets en Doppler (`ops-intcloudsysops / prd`)
 - [ ] Migraciones `0065` + `0066` aplicadas en Supabase
 
 ---
@@ -24,84 +40,81 @@ Agregar en **Doppler → ops-intcloudsysops → prd**:
 
 | Variable | Descripción | Requerido |
 |----------|-------------|-----------|
-| `PANINI_INBOUND_WEBHOOK_SECRET` | Secreto para header `x-panini-webhook-secret` | ✅ prod |
-| `SUPABASE_URL` | Ya existe en prd (compartido) | ✅ |
-| `SUPABASE_SERVICE_ROLE_KEY` | Ya existe en prd (compartido) | ✅ |
-| `LLM_GATEWAY_URL` | `http://opsly_llm_gateway:3010` (red interna) | ✅ |
-| `GEMINI_API_KEY` | Para transcripción voz/imagen vía gateway | ⚠️ opcional |
+| `PANINI_INBOUND_WEBHOOK_SECRET` | Header `x-panini-webhook-secret` en prod | ✅ |
+| `SUPABASE_URL` | Compartido plataforma | ✅ |
+| `SUPABASE_SERVICE_ROLE_KEY` | Compartido plataforma | ✅ |
+| `LLM_GATEWAY_URL` | Default compose: `http://opsly_llm_gateway:3010` | ⚠️ opcional |
+| `GEMINI_API_KEY` | Transcripción voz/imagen vía gateway | ⚠️ opcional |
+| `AUTH_SECRET` | NextAuth (`openssl rand -base64 32`) | ⚠️ si proteges dashboard |
+| `PANINI_AUTH_URL` | `https://panini.op-sly.com` | ⚠️ si NextAuth |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Login Google en `/dashboard` | ⚠️ opcional |
+
+**Google OAuth redirect URI** (si usas login):
+
+`https://panini.op-sly.com/api/auth/callback/google`
 
 ```bash
-# Verificar que existen
-doppler secrets --project ops-intcloudsysops --config prd | grep -E 'PANINI|SUPABASE|GEMINI|LLM_GATEWAY'
+doppler secrets --project ops-intcloudsysops --config prd | grep -E 'PANINI|SUPABASE|GEMINI|LLM_GATEWAY|AUTH_SECRET|GOOGLE_CLIENT'
 ```
 
 ---
 
 ## Fase B — Migraciones Supabase (humano, zona ámbar)
 
-> ⚠️ **Revisar SQL antes de aplicar.** Estas son additive-only (no dropean columnas existentes).
+> ⚠️ **Revisar SQL antes de aplicar.** Additive-only.
 
 ```bash
-# Desde entorno con supabase CLI enlazado al proyecto jkwykpldnitavhmtuzmo
-cd /path/to/intcloudsysops
-
-# Revisar las migraciones antes
 cat supabase/migrations/0065_panini_lab_schema.sql
 cat supabase/migrations/0066_panini_lab_add_country.sql
-
-# Aplicar
 npx supabase db push --project-id jkwykpldnitavhmtuzmo
-
-# Verificar tablas creadas
-npx supabase db psql --project-id jkwykpldnitavhmtuzmo \
-  -c "\dt panini_lab.*"
+npx supabase db psql --project-id jkwykpldnitavhmtuzmo -c "\dt panini_lab.*"
 ```
 
-Exponer schema en Supabase API (si necesitas PostgREST):
-- Dashboard → Settings → API → Schema exposure → añadir `panini_lab`
+Exponer schema en Supabase API si aplica: Settings → API → Schema exposure → `panini_lab`.
 
 ---
 
 ## Fase C — DNS + Cloudflare
 
-1. En Cloudflare, zona `op-sly.com`:
-   - Crear registro tipo **A** → nombre `panini` → IP del VPS (`157.245.223.7` o la actual)
-   - **Proxy: naranja ON** (política Opsly)
-
-2. Verificar propagación:
-   ```bash
-   dig +short panini.op-sly.com
-   # Debe resolver a la IP de Cloudflare, no directo al VPS
-   ```
+1. Zona `op-sly.com`: registro **A** `panini` → IP VPS (o wildcard `*.op-sly.com`)
+2. **Proxy naranja ON**
+3. Verificar: `dig +short panini.op-sly.com`
 
 ---
 
 ## Fase D — Deploy en VPS
 
+### Opción 1 — GitHub Actions (recomendado)
+
+Tras merge a `main`, workflow **Deploy Panini Lab** corre cuando CI pasa.  
+Manual: Actions → Deploy Panini Lab → Run workflow.
+
+### Opción 2 — Script manual
+
 ```bash
-# Conectar al VPS vía Tailscale
 ssh vps-dragon@100.120.151.91
+cd /opt/opsly && git pull --ff-only
+./scripts/deploy-panini-lab-vps.sh
+```
 
-cd /opt/opsly
+### Opción 3 — Comandos explícitos
 
-# Actualizar repo
-git pull --ff-only
+```bash
+ssh vps-dragon@100.120.151.91
+cd /opt/opsly && git pull --ff-only
 
-# Copiar Traefik config (reload automático)
-cp infra/traefik/dynamic/panini-lab.yml /opt/opsly/infra/traefik/dynamic/
-# Traefik recarga dinámicamente — no necesita restart
+# Traefik file provider recarga solo al detectar cambios en infra/traefik/dynamic/
+ls infra/traefik/dynamic/panini-lab.yml
 
-# Pull imagen
 doppler run --project ops-intcloudsysops --config prd -- \
   docker compose -f infra/docker-compose.panini-lab.yml pull
 
-# Levantar
 doppler run --project ops-intcloudsysops --config prd -- \
   docker compose -f infra/docker-compose.panini-lab.yml up -d
 
-# Ver estado
 docker compose -f infra/docker-compose.panini-lab.yml ps
 docker logs panini-lab --tail=30
+curl -sf http://127.0.0.1:3005/dashboard | head -c 200
 ```
 
 ---
@@ -109,90 +122,53 @@ docker logs panini-lab --tail=30
 ## Fase E — Smoke Tests
 
 ```bash
-# 1. Health local en VPS
-curl -sf http://localhost:3005/dashboard | grep -o "Panini Lab" && echo "✅ Local OK"
+# Desde Mac (con Doppler)
+./scripts/test-panini-lab-smoke.sh
 
-# 2. HTTPS público
-curl -sfL https://panini.op-sly.com/dashboard | grep -o "Panini Lab" && echo "✅ HTTPS OK"
+# O manual
+curl -sfL https://panini.op-sly.com/dashboard | grep -o "Panini Lab"
 
-# 3. Webhook con figurita de prueba
+doppler run --project ops-intcloudsysops --config prd -- bash -c '
 curl -X POST https://panini.op-sly.com/api/webhooks/inbound \
-  -H 'Content-Type: application/json' \
+  -H "Content-Type: application/json" \
   -H "x-panini-webhook-secret: $PANINI_INBOUND_WEBHOOK_SECRET" \
-  -d '{"text":"Tengo la 10 de Colombia y la 45 de Brasil repetida","sender":"smoke-test"}'
-# Esperado: { "ok": true, "intent": "UPDATE_COLLECTION", "collection_updates": [...] }
-
-# 4. Verificar dato en dashboard
-curl -sfL https://panini.op-sly.com/dashboard | grep -o "Colombia" && echo "✅ Data visible"
+  -d "{\"text\":\"Tengo la 10 de Colombia\",\"sender\":\"smoke\"}"
+'
 ```
 
 ---
 
-## Operaciones comunes
+## Operaciones
 
-### Actualizar a nueva versión
-
-```bash
-# El deploy workflow lo hace automáticamente en cada merge a main.
-# Manual si necesario:
-cd /opt/opsly && git pull --ff-only
-doppler run --project ops-intcloudsysops --config prd -- \
-  docker compose -f infra/docker-compose.panini-lab.yml pull && \
-  docker compose -f infra/docker-compose.panini-lab.yml up -d
-```
-
-### Ver logs
-
-```bash
-docker logs panini-lab -f --tail=100
-```
-
-### Reiniciar
-
-```bash
-docker compose -f infra/docker-compose.panini-lab.yml restart panini-lab
-```
-
-### Parar
-
-```bash
-docker compose -f infra/docker-compose.panini-lab.yml down
-```
-
-### Ver variables activas
-
-```bash
-docker inspect panini-lab --format='{{range .Config.Env}}{{println .}}{{end}}' | grep -v KEY
-```
+| Acción | Comando |
+|--------|---------|
+| Actualizar imagen | Re-merge a main o `deploy-panini-lab-vps.sh` |
+| Logs | `docker logs panini-lab -f --tail=100` |
+| Reiniciar | `docker compose -f infra/docker-compose.panini-lab.yml restart panini-lab` |
+| Parar | `docker compose -f infra/docker-compose.panini-lab.yml down` |
 
 ---
 
 ## Troubleshooting
 
-| Síntoma | Causa probable | Fix |
-|---------|---------------|-----|
-| 502 Bad Gateway en Traefik | Container no levantó | `docker logs panini-lab` |
-| `Unauthorized` en webhook | Secret header faltante/incorrecto | Header `x-panini-webhook-secret` |
-| `Storage: in-memory` en dashboard | `SUPABASE_URL` o `SUPABASE_SERVICE_ROLE_KEY` no configurados | Verificar Doppler |
-| No persiste datos entre reinicios | En-memory mode activo | Ver punto anterior |
-| Transcripción voz no funciona | `LLM_GATEWAY_URL` o `GEMINI_API_KEY` faltante | Verificar gateway y Doppler |
-| TLS 404 / cert no emite | DNS aún propagando | Esperar 1-5 min, verificar Cloudflare proxy ON |
+| Síntoma | Causa | Fix |
+|---------|-------|-----|
+| 502 Bad Gateway | Container caído o red | `docker logs panini-lab`; verificar `traefik-public` |
+| Webhook 401 | Secret faltante | `PANINI_INBOUND_WEBHOOK_SECRET` + header correcto |
+| In-memory storage | Supabase env vacío | Doppler `SUPABASE_*` |
+| Voz no transcribe | Gateway inalcanzable | Red `infra_internal`; `opsly_llm_gateway` healthy |
+| Login Google falla | OAuth redirect | URI callback en Google Cloud Console |
 
 ---
 
-## Arquitectura de referencia
+## Arquitectura
 
 ```
-Usuario / WhatsApp bridge
-  ↓ HTTPS
-Cloudflare Proxy (ON)
-  ↓
-Traefik :443 → panini.op-sly.com → panini-lab:3005
-  ↓ server-side
-Supabase (panini_lab schema) — persistencia colección
-LLM Gateway :3010 → Gemini API — transcripción voz/imagen
+Usuario / bridge WhatsApp
+  → Cloudflare (proxy ON)
+  → Traefik :443 → panini.op-sly.com → panini-lab:3005
+  → Supabase panini_lab (persistencia)
+  → opsly_llm_gateway:3010 → Gemini (transcripción)
 ```
 
----
-
-*Runbook generado con Opsly Conversational Runtime — feat/panini-lab-prod*
+**Docs tenant:** [`docs/tenants/panini-lab/README.md`](../tenants/panini-lab/README.md)

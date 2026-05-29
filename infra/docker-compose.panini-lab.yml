@@ -1,3 +1,9 @@
+# Panini Lab — standalone app on VPS (not a full tenant stack).
+# Deploy: doppler run --project ops-intcloudsysops --config prd -- \
+#   docker compose -f infra/docker-compose.panini-lab.yml up -d
+#
+# Networks: traefik-public (edge) + infra_internal (LLM gateway on platform compose).
+
 services:
   panini-lab:
     image: ghcr.io/cloudsysops/intcloudsysops-panini-lab:${PANINI_IMAGE_TAG:-latest}
@@ -5,28 +11,41 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      PORT: "3005"
+      PORT: '3005'
       # Supabase — panini_lab schema
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
       # Webhook auth (required in prod)
       PANINI_INBOUND_WEBHOOK_SECRET: ${PANINI_INBOUND_WEBHOOK_SECRET}
-      # LLM gateway (internal docker network)
+      # LLM gateway (platform internal network; container_name from platform compose)
       LLM_GATEWAY_URL: ${LLM_GATEWAY_URL:-http://opsly_llm_gateway:3010}
-      # Gemini (for voice/image transcription via gateway)
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      # NextAuth (optional — dashboard/analytics protected when set)
+      AUTH_SECRET: ${AUTH_SECRET:-}
+      AUTH_URL: ${PANINI_AUTH_URL:-https://panini.op-sly.com}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+    ports:
+      # Localhost only — smoke tests and VPS ops (Traefik uses docker network)
+      - '127.0.0.1:3005:3005'
     networks:
       - traefik-public
-      - internal
+      - infra_internal
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3005/dashboard',r=>{if(r.statusCode>=500)process.exit(1)})"]
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "require('http').get('http://127.0.0.1:3005/dashboard',r=>{if(r.statusCode>=500)process.exit(1)})",
+        ]
       interval: 30s
       timeout: 10s
-      start_period: 30s
+      start_period: 45s
       retries: 3
 
 networks:
   traefik-public:
     external: true
-  internal:
+  infra_internal:
     external: true
