@@ -141,7 +141,7 @@ export class StickerContextService {
   private async handleTeamQuery(
     message: string,
     _tenantSlug: string,
-    userId: string,
+    _userId: string
   ): Promise<MessageResponse> {
     // Extract team name from query
     const teamMatch = message.match(/(?:equipo|team)\s+([a-zá-ú\s]+)\??/i);
@@ -157,10 +157,7 @@ export class StickerContextService {
     try {
       return {
         output: `Tu colección del ${teamName} es incompleta. Tienes algunos jugadores, pero te faltan otros.`,
-        suggestedActions: [
-          `Ver ${teamName} completo`,
-          'Buscar faltantes del equipo',
-        ],
+        suggestedActions: [`Ver ${teamName} completo`, 'Buscar faltantes del equipo'],
       };
     } catch {
       return {
