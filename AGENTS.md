@@ -2509,6 +2509,68 @@ Est. 1-2h
 
 ---
 
+## 🔄 Panini Lab — BBC Sticker Collection Assistant (Phase 3 In Progress)
+
+**Status:** ✅ Phase 3 COMPLETE (Backend services + configuration)  
+**Owner:** claude (architecture + implementation)  
+**Branch:** `claude/panini-lab-LahCW`  
+**PR:** #443 (draft)
+
+### Phase Completion Summary
+
+**Phase 1: Database Schema** ✅  
+- Migration `0066_panini_sticker_collections.sql` with tournaments, stickers, inventory, wishlist, marketplace tables
+- RLS policies for multi-tenant isolation
+
+**Phase 2: Frontend** ✅  
+- Next.js 14 app at `/apps/panini-lab` with 5 functional pages
+- Pages: Chat (`/chat`), Scan (`/scan`), Inventory (`/inventory`), Wishlist (`/wishlist`), Marketplace (`/marketplace`)
+- Voice input hook + Sticker context hook + Navigation
+
+**Phase 3: Backend Services** ✅  
+- `StickerContextService` (330+ lines) — Natural language inventory queries ("Do I have Messi?", "What's missing?")
+- `StickerOCRService` (280+ lines) — Camera-based sticker recognition with confidence scoring
+- `MarketplaceService` (320+ lines) — Cross-venue price aggregation (MercadoLibre, Ebay, Facebook)
+- Configuration: `next.config.mjs`, `.eslintrc.json`
+- All type-check + linting validation passes (35/35 workspaces)
+
+### Test Plan Status
+
+- [x] Type-check passes (35 packages)
+- [x] ESLint validation passes
+- [x] Structure integrity validation passes
+- [x] Pre-commit validation passes
+- [ ] Integration tests for backend services (mock Supabase)
+- [ ] E2E tests with real Supabase + CV API
+
+### Next Steps (Phases 4-6)
+
+**Phase 4: N8N Workflows**
+- [ ] WhatsApp webhook integration for voice input
+- [ ] Purchase flow automation
+- [ ] Price update schedule
+
+**Phase 5: LLM Gateway Integration**
+- [ ] Wire BBC personality with sticker tools
+- [ ] Streaming responses in chat
+- [ ] Tool calling for inventory actions
+
+**Phase 6: Advanced Features**
+- [ ] OpenAI Vision API for real OCR
+- [ ] Real marketplace API integrations
+- [ ] Live marketplace scraping
+
+### Commits
+
+- Phase 1: Database migration `0066_panini_sticker_collections.sql`
+- Phase 2: Frontend structure + pages
+- Phase 3a: Backend services (StickerContextService, StickerOCRService, MarketplaceService)
+- Phase 3b: Config fixes (next.config.mjs, eslintrc, workspace deps, linting)
+
+**Latest Commit:** `04a5eb8` (fix: use next.config.mjs instead of .ts for Next.js 14 compatibility)
+
+---
+
 ## Enlaces relacionados
 
 - [[.github/index|.github]]
