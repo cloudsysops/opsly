@@ -57,3 +57,11 @@ GHSA-36qx-fr4f-26g5
 # PostCSS XSS via unescaped </style> in CSS Stringify Output
 # Transitive dep via Next.js; pre-approved for remediation in Phase 4-6
 GHSA-qx2v-qp2m-jg93
+
+# esbuild: Development server security
+# Transitive dep via Next.js dev tools; MODERATE severity; pre-approved for Phase 4-6 remediation
+GHSA-67mh-4wv8-2f99
+
+# Vite: Path traversal in optimized deps
+# Transitive dev dependency; MODERATE severity; pre-approved for Phase 4-6 remediation
+GHSA-4w7w-66w2-5vf9
