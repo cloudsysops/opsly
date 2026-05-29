@@ -2,6 +2,7 @@
 
 import type { ReactElement } from 'react';
 import { useCallback, useEffect, useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const REVEAL_SECONDS = 30;
@@ -30,13 +31,19 @@ export function CredentialReveal({ password }: CredentialRevealProps): ReactElem
     return () => window.clearInterval(id);
   }, [visible, secondsLeft]);
 
-  const reveal = useCallback(() => {
+  const toggleVisibility = useCallback(() => {
     if (!password || password.length === 0) {
       return;
     }
-    setVisible(true);
-    setSecondsLeft(REVEAL_SECONDS);
-  }, [password]);
+
+    if (visible) {
+      setVisible(false);
+      setSecondsLeft(0);
+    } else {
+      setVisible(true);
+      setSecondsLeft(REVEAL_SECONDS);
+    }
+  }, [password, visible]);
 
   if (!password) {
     return <span className="font-mono text-sm text-ops-gray">—</span>;
@@ -48,8 +55,20 @@ export function CredentialReveal({ password }: CredentialRevealProps): ReactElem
       {visible && secondsLeft > 0 ? (
         <span className="text-xs text-ops-gray">({secondsLeft}s)</span>
       ) : null}
-      <Button type="button" variant="ghost" size="sm" onClick={reveal}>
-        Revelar
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        onClick={toggleVisibility}
+        aria-label={visible ? 'Ocultar contraseña' : 'Revelar contraseña'}
+        title={visible ? 'Ocultar' : 'Revelar'}
+      >
+        {visible ? (
+          <EyeOff className="h-4 w-4 shrink-0" aria-hidden="true" />
+        ) : (
+          <Eye className="h-4 w-4 shrink-0" aria-hidden="true" />
+        )}
+        <span>{visible ? 'Ocultar' : 'Revelar'}</span>
       </Button>
     </div>
   );

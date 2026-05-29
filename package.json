@@ -204,7 +204,7 @@
     "@supabase/supabase-js": "^2.106.0",
     "@supabase/ssr": "^0.6.1",
     "tar": "^7.5.15",
-    "undici": "^6.24.0",
+    "undici": "^7.25.0",
     "mermaid": "^11.4.0",
     "next": "15.5.18",
     "qs": "6.15.2",
