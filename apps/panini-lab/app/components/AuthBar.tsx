@@ -3,11 +3,7 @@ import Image from 'next/image';
 
 export default async function AuthBar() {
   if (!authEnabled) {
-    return (
-      <span className="text-xs text-zinc-600 italic">
-        Auth: dev mode (sin Google)
-      </span>
-    );
+    return <span className="text-xs text-zinc-600 italic">Auth: dev mode (sin Google)</span>;
   }
 
   const session = await auth();
@@ -27,9 +23,7 @@ export default async function AuthBar() {
           className="rounded-full"
         />
       )}
-      <span className="text-sm text-zinc-400 hidden sm:block">
-        {session.user.email}
-      </span>
+      <span className="text-sm text-zinc-400 hidden sm:block">{session.user.email}</span>
       <form
         action={async () => {
           'use server';

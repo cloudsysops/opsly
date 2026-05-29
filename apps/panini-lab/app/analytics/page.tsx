@@ -28,9 +28,7 @@ export default async function AnalyticsPage() {
   const finalPrediction = headToHead(top2[0], top2[1]);
 
   // User's most-collected teams (personal bias)
-  const userFavorites = [...byCountry.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5);
+  const userFavorites = [...byCountry.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10 space-y-8">
@@ -49,13 +47,17 @@ export default async function AnalyticsPage() {
           )}
         </p>
         <div className="flex gap-4 text-sm">
-          <Link href="/dashboard" className="text-zinc-500 hover:text-zinc-300">← Dashboard</Link>
+          <Link href="/dashboard" className="text-zinc-500 hover:text-zinc-300">
+            ← Dashboard
+          </Link>
         </div>
       </header>
 
       {/* Final prediction highlight */}
       <section className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-6 space-y-3">
-        <h2 className="text-sm font-medium text-amber-400 uppercase tracking-wide">🎯 Predicción Final</h2>
+        <h2 className="text-sm font-medium text-amber-400 uppercase tracking-wide">
+          🎯 Predicción Final
+        </h2>
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div className="text-center flex-1">
             <p className="text-3xl mb-1">{flagEmoji(top2[0].team.iso)}</p>
@@ -73,7 +75,9 @@ export default async function AnalyticsPage() {
         </div>
         <div className="text-center space-y-1">
           <p className="text-2xl font-bold text-amber-400">
-            {flagEmoji(scores.find(s => s.team.name === finalPrediction.winner)?.team.iso ?? 'AR')}{' '}
+            {flagEmoji(
+              scores.find((s) => s.team.name === finalPrediction.winner)?.team.iso ?? 'AR'
+            )}{' '}
             {finalPrediction.winner}
           </p>
           <p className="text-sm text-zinc-400">
@@ -86,7 +90,8 @@ export default async function AnalyticsPage() {
       <section className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 space-y-4">
         <h2 className="text-lg font-medium">📊 Top 10 — Power Score</h2>
         <p className="text-zinc-500 text-xs">
-          Fórmula: Ranking FIFA (40%) + Forma reciente (35%) + Experiencia WC (15%) + Tu colección (10%)
+          Fórmula: Ranking FIFA (40%) + Forma reciente (35%) + Experiencia WC (15%) + Tu colección
+          (10%)
         </p>
         <TopContendersChart scores={scores} />
       </section>
@@ -111,12 +116,13 @@ export default async function AnalyticsPage() {
                 {teams.map((t) => {
                   const isLeader = leader?.team.name === t.name;
                   return (
-                    <div key={t.name} className={`flex items-center gap-2 text-xs ${isLeader ? 'text-emerald-400 font-medium' : 'text-zinc-400'}`}>
+                    <div
+                      key={t.name}
+                      className={`flex items-center gap-2 text-xs ${isLeader ? 'text-emerald-400 font-medium' : 'text-zinc-400'}`}
+                    >
                       <span>{flagEmoji(t.iso)}</span>
                       <span className="truncate">{t.name}</span>
-                      {byCountry.has(t.name) && (
-                        <span className="ml-auto text-emerald-600">★</span>
-                      )}
+                      {byCountry.has(t.name) && <span className="ml-auto text-emerald-600">★</span>}
                     </div>
                   );
                 })}
@@ -132,13 +138,17 @@ export default async function AnalyticsPage() {
         <section className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 space-y-3">
           <h2 className="text-lg font-medium">❤️ Tus selecciones favoritas (por colección)</h2>
           <p className="text-zinc-500 text-sm">
-            Basado en cuántas figuritas tienes de cada selección — tu &ldquo;apuesta emocional&rdquo;.
+            Basado en cuántas figuritas tienes de cada selección — tu &ldquo;apuesta
+            emocional&rdquo;.
           </p>
           <div className="flex flex-wrap gap-3">
             {userFavorites.map(([country, count]) => {
               const team = scores.find((s) => s.team.name === country);
               return (
-                <div key={country} className="flex items-center gap-2 rounded-lg border border-zinc-800 px-3 py-2 text-sm">
+                <div
+                  key={country}
+                  className="flex items-center gap-2 rounded-lg border border-zinc-800 px-3 py-2 text-sm"
+                >
                   <span className="text-lg">{flagEmoji(team?.team.iso ?? 'XX')}</span>
                   <span className="font-medium">{country}</span>
                   <span className="text-zinc-500">{count} 🃏</span>
@@ -156,8 +166,8 @@ export default async function AnalyticsPage() {
 
       {/* Disclaimer */}
       <p className="text-center text-xs text-zinc-700">
-        Predicciones con fines de entretenimiento. Grupos simulados — draw oficial FIFA 2026 puede diferir.
-        No constituye consejo de apuestas.
+        Predicciones con fines de entretenimiento. Grupos simulados — draw oficial FIFA 2026 puede
+        diferir. No constituye consejo de apuestas.
       </p>
     </main>
   );

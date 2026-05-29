@@ -1,8 +1,14 @@
 'use client';
 
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
 } from 'recharts';
 import type { TeamScore } from '@/lib/world-cup-data';
 import { flagEmoji } from '@/lib/world-cup-data';
@@ -17,7 +23,18 @@ export function TopContendersChart({ scores }: { scores: TeamScore[] }) {
     winPct: s.winProbability,
   }));
 
-  const colors = ['#f59e0b', '#9ca3af', '#b45309', '#10b981', '#10b981', '#10b981', '#6b7280', '#6b7280', '#6b7280', '#6b7280'];
+  const colors = [
+    '#f59e0b',
+    '#9ca3af',
+    '#b45309',
+    '#10b981',
+    '#10b981',
+    '#10b981',
+    '#6b7280',
+    '#6b7280',
+    '#6b7280',
+    '#6b7280',
+  ];
 
   return (
     <ResponsiveContainer width="100%" height={320}>

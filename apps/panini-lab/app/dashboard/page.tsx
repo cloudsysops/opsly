@@ -52,7 +52,10 @@ export default async function DashboardPage() {
             Storage: {supabaseConfigured() ? 'Supabase (panini_lab)' : 'in-memory (local)'}
           </span>
         </p>
-        <Link href="/analytics" className="inline-flex items-center gap-1 text-sm text-amber-400 hover:text-amber-300 transition-colors">
+        <Link
+          href="/analytics"
+          className="inline-flex items-center gap-1 text-sm text-amber-400 hover:text-amber-300 transition-colors"
+        >
           🏆 Ver predicciones del Mundial →
         </Link>
       </header>

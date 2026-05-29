@@ -26,9 +26,9 @@ COPY packages/opsly-core/        ./packages/opsly-core/
 COPY packages/types/             ./packages/types/
 COPY apps/panini-lab/            ./apps/panini-lab/
 
-# Build
+# Build — no-lint: ESLint runs in CI separately; AUTH_SECRET dummy prevents next-auth crash at build time
 WORKDIR /app/apps/panini-lab
-RUN NEXT_TELEMETRY_DISABLED=1 npx next build
+RUN AUTH_SECRET=build-placeholder NEXT_TELEMETRY_DISABLED=1 npx next build --no-lint
 
 # ─── Stage 2: runner ─────────────────────────────────────────────────────────
 FROM node:20-alpine AS runner

@@ -1,9 +1,19 @@
 'use client';
 
 import {
-  PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Area, AreaChart,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Area,
+  AreaChart,
 } from 'recharts';
 import type { CollectionItemRow } from '@/lib/memory-store';
 import type { ConversationEventRow } from '@/lib/memory-store';
@@ -57,9 +67,7 @@ export function StatusPieChart({ items }: { items: CollectionItemRow[] }) {
           labelStyle={{ color: '#a1a1aa' }}
           itemStyle={{ color: '#e4e4e7' }}
         />
-        <Legend
-          formatter={(value) => <span className="text-xs text-zinc-400">{value}</span>}
-        />
+        <Legend formatter={(value) => <span className="text-xs text-zinc-400">{value}</span>} />
       </PieChart>
     </ResponsiveContainer>
   );
