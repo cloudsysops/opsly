@@ -191,7 +191,7 @@ async function handleFullCycle(job: Job<FullCycleJobData>): Promise<any> {
 
 async function executeResearch(
   niche: string,
-  tenant_slug: string
+  _tenant_slug: string
 ): Promise<Record<string, unknown>> {
   return {
     phase: 'research',
@@ -206,7 +206,7 @@ async function executeResearch(
 }
 
 async function executeIdeaGeneration(
-  researchResults: Record<string, unknown>
+  _researchResults: Record<string, unknown>
 ): Promise<Record<string, unknown>> {
   return {
     phase: 'idea',
@@ -223,7 +223,7 @@ async function executeIdeaGeneration(
 
 async function executeProjectCreation(
   projectName: string,
-  options: Record<string, unknown>
+  _options: Record<string, unknown>
 ): Promise<Record<string, unknown>> {
   return {
     phase: 'project',

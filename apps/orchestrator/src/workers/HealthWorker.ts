@@ -1,6 +1,10 @@
 import { createClient } from 'redis';
 import { notifyDiscord } from './NotifyWorker.js';
-import { logWorkerInfo as _logWorkerInfo, logWorkerWarn, logWorkerError } from '../observability/worker-log.js';
+import {
+  logWorkerInfo as _logWorkerInfo,
+  logWorkerWarn,
+  logWorkerError,
+} from '../observability/worker-log.js';
 
 const HEALTH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutos
 const MAX_CONSECUTIVE_FAILURES = 3;

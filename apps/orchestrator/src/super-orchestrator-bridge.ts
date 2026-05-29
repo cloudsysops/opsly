@@ -16,7 +16,7 @@
 
 import { spawn, ChildProcess, SpawnOptions } from 'child_process';
 import { existsSync } from 'fs';
-import { resolve, join } from 'path';
+import { resolve as _resolve, join } from 'path';
 
 interface SuperOrchestratorConfig {
   pythonPath: string;

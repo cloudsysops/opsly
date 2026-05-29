@@ -91,7 +91,7 @@ export function startAPIFactoryWorker(): Worker {
 }
 
 async function handleApiGenerate(job: Job<ApiGenerateJobData>): Promise<any> {
-  const { api_name, description, endpoints, tenant_slug, options } = job.data;
+  const { api_name, description, endpoints, tenant_slug, options: _options } = job.data;
 
   await setJobState(job.id!, {
     status: 'running',

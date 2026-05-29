@@ -72,10 +72,10 @@ export class SuperOrchestratorIntegration {
   async executeTask(
     task: SuperOrchestratorTask,
     tenantSlug: string,
-    initiatedBy: string = 'system'
+    _initiatedBy: string = 'system'
   ): Promise<SuperOrchestratorResult> {
     const startTime = Date.now();
-    const correlationId = randomUUID();
+    const _correlationId = randomUUID();
 
     try {
       // 1. Seleccionar provider
