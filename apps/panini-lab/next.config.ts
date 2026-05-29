@@ -20,6 +20,8 @@ const nextConfig: NextConfig = {
           destination: 'http://localhost:3011/api/:path*',
         },
       ],
+      afterFiles: [],
+      fallback: [],
     };
   },
   redirects: async () => {

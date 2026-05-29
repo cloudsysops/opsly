@@ -5,9 +5,30 @@ import Link from 'next/link';
 
 export default function MarketplacePage() {
   const listings = [
-    { id: 1, marketplace: 'MercadoLibre', seller: 'tienda_oficial', price: 145, shipping: 10, rating: 4.8 },
-    { id: 2, marketplace: 'Ebay', seller: 'sports_collector', price: 155, shipping: 20, rating: 4.9 },
-    { id: 3, marketplace: 'Facebook', seller: 'vendedor_local', price: 140, shipping: 0, rating: 4.5 },
+    {
+      id: 1,
+      marketplace: 'MercadoLibre',
+      seller: 'tienda_oficial',
+      price: 145,
+      shipping: 10,
+      rating: 4.8,
+    },
+    {
+      id: 2,
+      marketplace: 'Ebay',
+      seller: 'sports_collector',
+      price: 155,
+      shipping: 20,
+      rating: 4.9,
+    },
+    {
+      id: 3,
+      marketplace: 'Facebook',
+      seller: 'vendedor_local',
+      price: 140,
+      shipping: 0,
+      rating: 4.5,
+    },
   ];
 
   return (
@@ -25,7 +46,10 @@ export default function MarketplacePage() {
 
       <div className="space-y-3">
         {listings.map((listing) => (
-          <div key={listing.id} className="bg-white border border-gray-300 rounded-lg p-4 hover:shadow-lg transition">
+          <div
+            key={listing.id}
+            className="bg-white border border-gray-300 rounded-lg p-4 hover:shadow-lg transition"
+          >
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1">
                 <h3 className="font-bold text-gray-900">{listing.marketplace}</h3>

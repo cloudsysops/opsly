@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     // TODO: Fetch user's inventory from Supabase
     return NextResponse.json({
@@ -9,10 +9,7 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error('Inventory API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -28,9 +25,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('Inventory API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

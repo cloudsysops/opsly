@@ -15,16 +15,23 @@ export default function WishlistPage() {
       <h1 className="text-3xl font-bold text-indigo-900 mb-6">⭐ Lista de Deseos</h1>
 
       <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 mb-6">
-        <p className="text-sm text-gray-600">Te faltan <strong>23 estampillas</strong> para completar tu colección</p>
+        <p className="text-sm text-gray-600">
+          Te faltan <strong>23 estampillas</strong> para completar tu colección
+        </p>
       </div>
 
       <div className="space-y-3">
         {wishlist.map((item) => (
-          <div key={item.id} className="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:bg-gray-100 transition">
+          <div
+            key={item.id}
+            className="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:bg-gray-100 transition"
+          >
             <div className="flex items-start justify-between mb-2">
               <div className="flex-1">
                 <h3 className="font-bold text-gray-900">{item.player}</h3>
-                <p className="text-sm text-gray-600">{item.country} • #{item.number}</p>
+                <p className="text-sm text-gray-600">
+                  {item.country} • #{item.number}
+                </p>
               </div>
               <div className="text-right">
                 <p className="text-lg font-bold text-green-600">${item.bestPrice}</p>

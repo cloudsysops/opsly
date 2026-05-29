@@ -9,30 +9,19 @@ export async function POST(req: NextRequest) {
     const { message, userId, tournamentId } = await req.json();
 
     if (!message) {
-      return NextResponse.json(
-        { error: 'Message is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Message is required' }, { status: 400 });
     }
 
     // TODO: Get userId from session
     if (!userId) {
-      return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'User ID is required' }, { status: 401 });
     }
 
     const tenantId = 'default'; // TODO: Get from session
     const currentTournamentId = tournamentId || 'default'; // TODO: Get active tournament
 
     const service = new StickerContextService(supabaseUrl, supabaseKey);
-    const result = await service.queryInventory(
-      message,
-      userId,
-      tenantId,
-      currentTournamentId
-    );
+    const result = await service.queryInventory(message, userId, tenantId, currentTournamentId);
 
     const actions: Array<{ label: string; action: string }> = [];
 
@@ -51,9 +40,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('Chat API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

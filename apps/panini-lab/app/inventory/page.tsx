@@ -20,7 +20,9 @@ export default function InventoryPage() {
               <p className="text-3xl font-bold">{((owned / total) * 100).toFixed(1)}%</p>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-bold">{owned}/{total}</p>
+              <p className="text-2xl font-bold">
+                {owned}/{total}
+              </p>
               <p className="text-sm opacity-90">estampillas</p>
             </div>
           </div>

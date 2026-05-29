@@ -17,7 +17,8 @@ export default function ChatPage() {
     {
       id: '1',
       role: 'bbc',
-      content: '¡Hola! Soy BBC, tu asistente de colecciones Panini. ¿Qué quieres saber sobre tus estampillas?',
+      content:
+        '¡Hola! Soy BBC, tu asistente de colecciones Panini. ¿Qué quieres saber sobre tus estampillas?',
       timestamp: new Date(),
       actions: [
         { label: '¿Tengo a Messi?', action: 'do_i_have:messi' },
@@ -30,7 +31,7 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { isRecording, startRecording, stopRecording, transcript } = useVoiceInput();
-  const { queryInventory } = useStickerContext();
+  useStickerContext();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

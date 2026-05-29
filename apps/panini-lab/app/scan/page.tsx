@@ -3,11 +3,19 @@
 import React, { useRef, useState } from 'react';
 import Link from 'next/link';
 
+interface ScannedResult {
+  player_name: string;
+  country: string;
+  number: number;
+  confidence: number;
+  card_type: string;
+}
+
 export default function ScanPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
-  const [scannedResult, setScannedResult] = useState<any>(null);
+  const [scannedResult, setScannedResult] = useState<ScannedResult | null>(null);
 
   const startCamera = async () => {
     try {
@@ -28,8 +36,14 @@ export default function ScanPage() {
     if (videoRef.current && canvasRef.current) {
       const context = canvasRef.current.getContext('2d');
       if (context) {
-        context.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
-        const imageData = canvasRef.current.toDataURL('image/jpeg');
+        context.drawImage(
+          videoRef.current,
+          0,
+          0,
+          canvasRef.current.width,
+          canvasRef.current.height
+        );
+        canvasRef.current.toDataURL('image/jpeg');
 
         // TODO: Send to OCR API
         setScannedResult({
@@ -46,16 +60,15 @@ export default function ScanPage() {
   const confirmScan = async () => {
     if (scannedResult) {
       try {
-        const response = await fetch('/api/scan/identify', {
+        await fetch('/api/scan/identify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(scannedResult),
         });
-        const data = await response.json();
         alert(`✅ Se añadió ${scannedResult.player_name} a tu colección!`);
         setScannedResult(null);
-      } catch (error) {
-        console.error('Error confirming scan:', error);
+      } catch (e) {
+        console.error('Error confirming scan:', e);
       }
     }
   };
@@ -83,18 +96,8 @@ export default function ScanPage() {
       {isCameraActive && !scannedResult && (
         <div className="space-y-4">
           <div className="bg-black rounded-lg overflow-hidden aspect-square">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              className="w-full h-full object-cover"
-            />
-            <canvas
-              ref={canvasRef}
-              width={640}
-              height={640}
-              className="hidden"
-            />
+            <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
+            <canvas ref={canvasRef} width={640} height={640} className="hidden" />
           </div>
           <div className="flex gap-3">
             <button
@@ -116,9 +119,7 @@ export default function ScanPage() {
       {scannedResult && (
         <div className="space-y-4">
           <div className="bg-indigo-50 p-6 rounded-lg border-2 border-indigo-200">
-            <h2 className="text-xl font-bold text-indigo-900 mb-2">
-              {scannedResult.player_name}
-            </h2>
+            <h2 className="text-xl font-bold text-indigo-900 mb-2">{scannedResult.player_name}</h2>
             <div className="grid grid-cols-2 gap-3 mb-4">
               <div>
                 <p className="text-sm text-gray-600">País</p>
