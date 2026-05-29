@@ -7,7 +7,16 @@ export const peskidsTenantConfig: TenantConfig = {
   mode: 'shadow',
   allowedIntents: ['REPORT_ABSENCE'],
   intentKeywords: {
-    REPORT_ABSENCE: ['report absence', 'absent', 'ausencia', 'falta'],
+    REPORT_ABSENCE: [
+      'report absence',
+      'absent',
+      'ausencia',
+      'falta',
+      'no va',
+      'fiebre',
+      'mamá',
+      'mama',
+    ],
   },
   intents: {
     REPORT_ABSENCE: {

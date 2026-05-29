@@ -78,10 +78,44 @@ Inject the Supabase client from `apps/api` — the core only defines the adapter
 
 ## AI providers
 
-- **`mock`** (default): keyword routing from `tenant.intentKeywords` — no external API.
-- **`gemini`**: optional; falls back to mock when `GEMINI_API_KEY` is unset.
+| Provider | Status in opsly-core MVP | Notes |
+|----------|---------------------------|-------|
+| `mock` | ✅ Implemented | Keyword routing from `tenant.intentKeywords` |
+| `gemini` | ✅ Implemented | Direct API; falls back to mock if no key |
+| `openai` | Stub | Throws `AiProviderNotConfiguredError` — wire via `@intcloudsysops/llm-gateway` (Sprint 2) |
+| `anthropic` | Stub | Same |
+| `openrouter` | Stub | Same |
+| `ollama` | Stub | Same |
 
 Env: `OPSLY_AI_PROVIDER=mock|gemini`, `GEMINI_API_KEY`.
+
+Public types: `TenantConfig`, `IntentRequest`, `StructuredIntent` (`ParsedIntent`), `OpslyEvent`, `AgentRuntimeResult`, `EventLogStore`, `AiProvider`, `AiProviderKind`.
+
+Channel types (`InputMessage`, `AgentResponse`) live in `@intcloudsysops/conversational-runtime`.
+
+## Complemento, no duplicado (integración con Opsly existente)
+
+| Componente existente | Rol en plataforma | Relación con opsly-core |
+|---------------------|-------------------|-------------------------|
+| `apps/llm-gateway` | LLM routing, metering, `tenant_slug`, cache | **Complementario.** Core MVP usa `mock`/`gemini` directo; Sprint 2 añade `LlmPort` adapter sobre `llmCall`. No reemplaza el gateway. |
+| `apps/orchestrator` | BullMQ jobs, workers, OAR | **Complementario.** Core `WorkflowDispatcher` opera a nivel intent/tenant; orchestrator encola jobs pesados. Futuro: dispatcher emite a cola OpenClaw. |
+| `apps/mcp` | Tools para agentes externos | **Complementario.** MCP expone tools; core procesa utterances → eventos. |
+| `apps/ml` | Clasificación, embeddings | **Complementario.** No duplicado; puede enriquecer `understand()` más adelante. |
+| `config/tenants/*.json` | Onboarding metadata | **Extendido.** JSON = registry; `apps/*/config/tenant.config.ts` = intents/workflows. |
+| `apps/peskids/lib/events.ts` | Event bus emitter | **Patrón reutilizado.** Generalizado en `EventSinkPort` (Sprint 2). |
+| `lib/observability` | Logs/metrics | **Reutilizable.** Core tiene logger mínimo; apps pueden wrap `createLogger`. |
+
+**Riesgo de duplicación:** BAJO si se mantiene la regla: todo LLM productivo pasa por llm-gateway; opsly-core gemini es solo MVP/demo hasta el adapter.
+
+## Event log — modos de operación
+
+| Modo | Store | Cuándo |
+|------|-------|--------|
+| Tests / CLI demo | `InMemoryEventLogStore` | Default `createOpslyCore()` |
+| Panini Lab (futuro app) | Supabase `platform.opsly_event_log` | Tras aplicar SQL manualmente |
+| Peskids / SmileTripCare shadow | In-memory o Supabase | **Solo append de eventos; dispatcher no-op** — sin writes a prod |
+
+**No ejecutar migraciones automáticamente.** Usar el SQL de la sección [Event log (Postgres / Supabase)](#event-log-postgres--supabase) arriba cuando staging esté listo.
 
 ## Package layout
 

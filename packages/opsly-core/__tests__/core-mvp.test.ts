@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import {
   demoTenantConfigs,
 } from './fixtures/demo-tenants.js';
-import { createOpslyCore } from '../src/index.js';
+import { createOpslyCore, createAiGateway, AiProviderNotConfiguredError } from '../src/index.js';
 import type { TenantConfig } from '../src/types/index.js';
 import { InMemoryEventLogStore } from '../src/observability/event-log.js';
 
@@ -21,12 +21,12 @@ function createTestCore(eventLog = new InMemoryEventLogStore()) {
 }
 
 describe('Opsly OS Core MVP', () => {
-  it('Panini UPDATE_COLLECTION', async () => {
+  it('Panini UPDATE_COLLECTION (hackathon utterance)', async () => {
     const { runtime, eventLog } = createTestCore();
 
     const result = await runtime.handle({
       tenantSlug: 'panini-lab',
-      utterance: 'Please update collection album 2026',
+      utterance: 'Tengo la 10 de Colombia y repetida la 30',
     });
 
     expect(result.error).toBeUndefined();
@@ -38,12 +38,12 @@ describe('Opsly OS Core MVP', () => {
     expect(logged[0]?.intent).toBe('UPDATE_COLLECTION');
   });
 
-  it('Peskids REPORT_ABSENCE (shadow)', async () => {
+  it('Peskids REPORT_ABSENCE shadow (hackathon utterance)', async () => {
     const { runtime, eventLog } = createTestCore();
 
     const result = await runtime.handle({
       tenantSlug: 'peskids',
-      utterance: 'Report absence for student tomorrow',
+      utterance: 'Soy la mamá de Thiago, hoy no va a clase porque tiene fiebre',
     });
 
     expect(result.error).toBeUndefined();
@@ -54,17 +54,29 @@ describe('Opsly OS Core MVP', () => {
     expect(logged[0]?.metadata).toMatchObject({ mode: 'shadow' });
   });
 
-  it('SmileTripCare CREATE_LEAD (shadow)', async () => {
+  it('SmileTripCare CREATE_LEAD shadow (hackathon utterance)', async () => {
     const { runtime } = createTestCore();
 
     const result = await runtime.handle({
       tenantSlug: 'smiletripcare',
-      utterance: 'I am interested — create lead for implants',
+      utterance: 'Necesito una valoración dental',
     });
 
     expect(result.code).toBeUndefined();
     expect(result.event?.intent).toBe('CREATE_LEAD');
     expect(result.event?.status).toBe('accepted');
+  });
+
+  it('stub AI provider throws controlled error', async () => {
+    const gateway = createAiGateway({ provider: 'openai' });
+    const tenant = demoTenants[0];
+
+    await expect(
+      gateway.parseIntent(
+        { tenantSlug: tenant.slug, utterance: 'hello' },
+        tenant,
+      ),
+    ).rejects.toBeInstanceOf(AiProviderNotConfiguredError);
   });
 
   it('rejects intent not allowed for tenant', async () => {

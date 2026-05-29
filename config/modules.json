@@ -158,6 +158,28 @@
       "governance": "lib/migrations/GOVERNANCE.md",
       "mainFile": "lib/migrations/index.ts",
       "exports": ["MigrationRunner", "Migration"]
+    },
+    "opsly-core": {
+      "name": "@intcloudsysops/opsly-core",
+      "version": "0.1.0",
+      "path": "packages/opsly-core",
+      "owner": "platform",
+      "description": "Tenant-agnostic conversational OS core — intents, events, AI gateway MVP",
+      "status": "experimental",
+      "dependencies": [],
+      "mainFile": "packages/opsly-core/src/index.ts",
+      "exports": ["createOpslyCore", "TenantConfig", "AgentRuntime", "EventLogStore"]
+    },
+    "conversational-runtime": {
+      "name": "@intcloudsysops/conversational-runtime",
+      "version": "0.1.0",
+      "path": "lib/conversational-runtime",
+      "owner": "platform",
+      "description": "Channel layer (InputMessage → AgentResponse) over opsly-core",
+      "status": "experimental",
+      "dependencies": ["opsly-core"],
+      "mainFile": "lib/conversational-runtime/src/index.ts",
+      "exports": ["createConversationalRuntime", "InputMessage", "AgentResponse"]
     }
   },
   "consumers": {

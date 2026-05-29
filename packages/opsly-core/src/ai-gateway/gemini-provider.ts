@@ -64,6 +64,7 @@ export function createGeminiGateway(options: GeminiGatewayOptions = {}): AiGatew
   const fallback = createMockGateway();
 
   return {
+    kind: 'gemini',
     async parseIntent(
       request: IntentRequest,
       tenant: TenantConfig,

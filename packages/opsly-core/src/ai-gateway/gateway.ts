@@ -1,5 +1,6 @@
-import type { IntentRequest, ParsedIntent, TenantConfig } from '../types/index.js';
+import type { AiProvider, AiProviderKind, IntentRequest, ParsedIntent, TenantConfig } from '../types/index.js';
 
-export interface AiGateway {
+export interface AiGateway extends AiProvider {
+  readonly kind: AiProviderKind;
   parseIntent(request: IntentRequest, tenant: TenantConfig): Promise<ParsedIntent | null>;
 }
