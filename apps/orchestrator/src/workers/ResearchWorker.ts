@@ -1,7 +1,7 @@
 import { Job } from 'bullmq';
 import { createClient } from '@supabase/supabase-js';
 import { v4 as randomUUID } from 'uuid';
-import { createWorker, type WorkerName } from './create-worker.js';
+import { createWorker, type WorkerName as _WorkerName } from './create-worker.js';
 
 export interface ResearchExecutionPayload {
   query: string;

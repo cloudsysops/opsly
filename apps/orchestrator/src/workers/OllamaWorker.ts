@@ -6,7 +6,7 @@ import {
   logWorkerInfo,
   logWorkerWarn,
   logWorkerError,
-  type WorkerName,
+  type WorkerName as _WorkerName,
 } from '../observability/worker-log.js';
 
 const DEFAULT_GATEWAY = 'http://127.0.0.1:3010';
@@ -83,7 +83,7 @@ async function handleAutoCommit(ctx: {
   }
 }
 
-async function runEvolutionLoop(ctx: {
+async function runEvolutionLoop(_ctx: {
   persona: string;
   runId: string;
   tenantSlug: string;
@@ -133,7 +133,7 @@ async function runEvolutionLoop(ctx: {
   logWorkerInfo('ollama', 'Evolution analysis complete');
 }
 
-async function runAutoSync(ctx: {
+async function runAutoSync(_ctx: {
   persona: string;
   runId: string;
   tenantSlug: string;

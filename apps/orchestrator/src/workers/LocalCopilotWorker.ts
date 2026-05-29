@@ -57,7 +57,7 @@ async function processLocalCopilotJob(
   jobId: string,
   agentRole: string,
   modelTier: string,
-  registry: ReturnType<typeof getAgentServiceRegistry>
+  _registry: ReturnType<typeof getAgentServiceRegistry>
 ): Promise<CopilotExecutionResponse> {
   const startTime = Date.now();
   const cursorDir = path.join(process.cwd(), '.cursor');

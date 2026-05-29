@@ -1,6 +1,6 @@
 import { createClient } from 'redis';
 import { notifyDiscord } from './NotifyWorker.js';
-import { logWorkerInfo, logWorkerWarn, logWorkerError } from '../observability/worker-log.js';
+import { logWorkerInfo as _logWorkerInfo, logWorkerWarn, logWorkerError } from '../observability/worker-log.js';
 
 const HEALTH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutos
 const MAX_CONSECUTIVE_FAILURES = 3;
@@ -62,7 +62,7 @@ function buildServiceUrls(slug: string): Record<string, string> {
   };
 }
 
-async function getFailureCount(
+async function _getFailureCount(
   redis: ReturnType<typeof createClient>,
   key: string
 ): Promise<number> {

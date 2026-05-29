@@ -4,12 +4,12 @@ import * as path from 'path';
 import { getAgentServiceRegistry } from '../lib/agent/agent-service-registry.js';
 import {
   createValidationOrchestrator,
-  ValidationDecision,
+  ValidationDecision as _ValidationDecision,
 } from '../lib/validation/validation-orchestrator.js';
 import {
   logWorkerLifecycle,
   logWorkerInfo,
-  logWorkerWarn,
+  logWorkerWarn as _logWorkerWarn,
   logWorkerError,
 } from '../observability/worker-log.js';
 import { getWorkerConcurrency } from '../worker-concurrency.js';

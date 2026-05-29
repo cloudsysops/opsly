@@ -1,4 +1,4 @@
-import { execSync, spawn } from 'child_process';
+import { execSync, spawn as _spawn } from 'child_process';
 import { promises as fsp } from 'fs';
 import * as path from 'path';
 import { logWorkerInfo, logWorkerWarn, logWorkerError } from '../observability/worker-log.js';
@@ -84,7 +84,7 @@ export class TestValidatorWorker {
 
     try {
       let command = '';
-      const args: string[] = [];
+      const _args: string[] = [];
 
       switch (type) {
         case 'type-check':

@@ -12,7 +12,11 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Queue, Worker, Job } from 'bullmq';
 import Redis from 'ioredis';
 import { z as _z } from 'zod';
-import { logWorkerInfo, logWorkerWarn as _logWorkerWarn, logWorkerError } from '../observability/worker-log.js';
+import {
+  logWorkerInfo,
+  logWorkerWarn as _logWorkerWarn,
+  logWorkerError,
+} from '../observability/worker-log.js';
 
 // ============================================
 // TYPES & INTERFACES

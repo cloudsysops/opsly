@@ -2,7 +2,7 @@ import { Job } from 'bullmq';
 import { execa } from 'execa';
 import { createWorker } from './create-worker.js';
 
-async function processDriveJob(job: Job): Promise<{ success: true }> {
+async function processDriveJob(_job: Job): Promise<{ success: true }> {
   await execa('bash', ['./scripts/drive-sync.sh'], {
     cwd: process.cwd(),
   });
