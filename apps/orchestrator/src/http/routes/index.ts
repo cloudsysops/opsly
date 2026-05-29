@@ -52,3 +52,13 @@ export {
   handleGitIntegrationMergeAdvisor,
   handleGitBranchMergeAdvisor,
 } from './git-branch.js';
+export {
+  handleInitiateCall,
+  handleListCalls,
+  handleGetCallDetails,
+  handleUpdateCallState,
+  handleRecordVoiceMessage,
+  handleGetVoiceMessage,
+  handleSubmitTranscription,
+  handleGetTranscriptions,
+} from './voice.js';

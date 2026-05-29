@@ -1,0 +1,103 @@
+{
+  "id": "panini-voice-message-received",
+  "name": "Panini - Voice Message Received",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "panini/voice-message",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "panini-voice-message-webhook",
+      "name": "Voice Message Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json;\nconst now = new Date().toISOString();\nreturn [{\n  json: {\n    id: body.id || body.message_id || '',\n    tenant_id: body.tenant_id || 'peskids',\n    sender_contact: body.sender_contact || body.from || '',\n    sender_name: body.sender_name || 'Unknown',\n    audio_url: body.audio_url || '',\n    audio_duration_seconds: body.audio_duration_seconds || 0,\n    channel: body.channel || 'web',\n    direction: body.direction || 'inbound',\n    external_id: body.external_id || body.externalId || null,\n    created_at: body.created_at || now,\n    received_at: now\n  }\n}];"
+      },
+      "id": "panini-normalize-message",
+      "name": "Normalize Voice Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "Prefer", "value": "return=representation" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ id: $json.id, tenant_id: $json.tenant_id, sender_contact: $json.sender_contact, sender_name: $json.sender_name, audio_url: $json.audio_url, audio_duration_seconds: $json.audio_duration_seconds, channel: $json.channel, direction: $json.direction, external_id: $json.external_id, created_at: $json.created_at, message_type: 'voice' }) }}",
+        "options": {}
+      },
+      "id": "panini-supabase-messages",
+      "name": "Store Voice Message to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, id: $json[0]?.id ?? null, workflow: 'panini-voice-message-received', processed_at: new Date().toISOString() } }}",
+        "options": {
+          "responseCode": 202
+        }
+      },
+      "id": "panini-response-message",
+      "name": "Accepted",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [780, 0]
+    }
+  ],
+  "connections": {
+    "Voice Message Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Voice Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Voice Message": {
+      "main": [
+        [
+          {
+            "node": "Store Voice Message to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Voice Message to Supabase": {
+      "main": [
+        [
+          {
+            "node": "Accepted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

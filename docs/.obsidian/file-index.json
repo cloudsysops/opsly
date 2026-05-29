@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-28T04:24:24.006Z",
-  "totalFiles": 619,
+  "lastIndexed": "2026-05-29T11:40:09.924Z",
+  "totalFiles": 622,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -501,6 +501,7 @@
     "runbooks/AUTONOMOUS-PROD-60D.md",
     "runbooks/AUTONOMOUS-PRODUCTION-GO-LIVE-CHECKLIST.md",
     "runbooks/AUTONOMY-JOB-POLICY-MAP.md",
+    "runbooks/BACKUP-RECOVERY.md",
     "runbooks/COMPUTER-CONTROL-OPERATOR-MODE.md",
     "runbooks/CORTEX-OBSERVATION-WINDOW.md",
     "runbooks/CYBER-NEO-AND-ARCHITECT.md",
@@ -527,6 +528,7 @@
     "runbooks/ONBOARDING-NEW-CLIENT.md",
     "runbooks/OPERATIONS-HANDBOOK.md",
     "runbooks/OPSLY-OPENCLAW-STARTUP.md",
+    "runbooks/PRODUCTION-DEPLOY.md",
     "runbooks/PRODUCTION-SECURITY-BASELINE.md",
     "runbooks/README.md",
     "runbooks/SECRET-ROTATION-AFTER-EXPOSURE.md",
@@ -556,6 +558,7 @@
     "stubs/VISION.md",
     "superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
     "superpowers/specs/2026-05-26-content-studio-ai-design.md",
+    "superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
     "tenants/legalvial/LEGALVIAL-ARCHITECTURE-DECISION.md",
     "tenants/onboarding-prompts/DEPLOYMENT-VALIDATION.md",
     "tenants/onboarding-prompts/INFRASTRUCTURE-SETUP.md",

@@ -13,6 +13,7 @@ const fontNunito = Nunito({
   variable: '--font-nunito',
   display: 'swap',
   weight: ['400', '600', '700', '800', '900'],
+  preload: false,
 });
 
 const fontBrush = Caveat_Brush({
@@ -20,6 +21,7 @@ const fontBrush = Caveat_Brush({
   variable: '--font-brush',
   display: 'swap',
   weight: '400',
+  preload: false,
 });
 
 const fontMono = JetBrains_Mono({
@@ -27,6 +29,7 @@ const fontMono = JetBrains_Mono({
   variable: '--font-mono',
   display: 'swap',
   weight: ['500', '700'],
+  preload: false,
 });
 
 export const metadata: Metadata = {
