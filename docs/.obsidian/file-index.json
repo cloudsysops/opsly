@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-29T16:55:08.071Z",
-  "totalFiles": 615,
+  "lastIndexed": "2026-05-29T17:06:35.612Z",
+  "totalFiles": 619,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -578,6 +578,7 @@
     "tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
     "tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
     "tenants/peskids/CLIENT-PITCH.md",
+    "tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
     "tenants/peskids/DASHBOARD-SPEC.md",
     "tenants/peskids/DATA-MODEL.md",
     "tenants/peskids/DEMO-SCRIPT.md",
@@ -592,6 +593,7 @@
     "tenants/peskids/FUTURE-REPO-SEED.md",
     "tenants/peskids/INCUBATION-CHECKLIST.md",
     "tenants/peskids/INSTAGRAM-FEED.md",
+    "tenants/peskids/INVITATION-FLOW-VERIFICATION.md",
     "tenants/peskids/MVP-BACKLOG.md",
     "tenants/peskids/MVP-PLAN.md",
     "tenants/peskids/N8N-SETUP.md",
@@ -608,6 +610,8 @@
     "tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
     "tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
     "tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
+    "tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
+    "tenants/peskids/QUICK-START-PRODUCTION.md",
     "tenants/peskids/README.md",
     "tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
     "tenants/peskids/SPRINT-01-STATUS.md",
