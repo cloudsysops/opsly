@@ -5,8 +5,6 @@ import { createClient, type RedisClientType } from 'redis';
 
 import { getOpenClawMissionControlSnapshot } from './admin-mission-control-openclaw';
 
-type JsonObject = Record<string, unknown>;
-
 export type HealthSignal = 'up' | 'down' | 'unknown';
 export type ReadinessSignal = 'ready' | 'blocked' | 'unknown';
 export type OperationalStatus = 'healthy' | 'degraded' | 'blocked' | 'unknown';
