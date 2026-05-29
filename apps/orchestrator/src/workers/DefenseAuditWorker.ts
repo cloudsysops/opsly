@@ -128,7 +128,126 @@ async function callDefenseLlm(params: {
   return text;
 }
 
-export async function processDefenseAuditJob(job: Job<OrchestratorJob>): Promise<void> {
+export function buildUserPrompt(
+  auditId: string,
+  tenantId: string,
+  payload: DefensePayload
+): string {
+  const auditType = typeof payload.audit_type === 'string' ? payload.audit_type : 'security';
+  const framework = typeof payload.framework === 'string' ? payload.framework : '';
+  const scopeText = Array.isArray(payload.scope)
+    ? payload.scope.join(', ')
+    : JSON.stringify(payload.scope ?? []);
+
+  return [
+    `Audit ID: ${auditId}`,
+    `Tenant ID: ${tenantId}`,
+    `Audit type: ${auditType}`,
+    framework.length > 0 ? `Framework: ${framework}` : '',
+    `Scope targets: ${scopeText}`,
+    'Produce JSON only as specified in the system message.',
+  ]
+    .filter(Boolean)
+    .join('\n');
+}
+
+function buildVulnerabilityRow(
+  v: LlmVulnerability,
+  auditId: string,
+  tenantId: string
+): Record<string, unknown> {
+  const title = typeof v.title === 'string' && v.title.length > 0 ? v.title : 'Untitled finding';
+  const sev = normalizeSeverity(v.severity);
+  const cvss =
+    typeof v.cvss_score === 'number' && Number.isFinite(v.cvss_score)
+      ? Math.min(10, Math.max(0, v.cvss_score)).toFixed(1)
+      : null;
+  return {
+    audit_id: auditId,
+    tenant_id: tenantId,
+    title,
+    description: typeof v.description === 'string' ? v.description : null,
+    cvss_score: cvss,
+    severity: sev,
+    affected_component: 'assessment',
+    cve_id: typeof v.cve_id === 'string' ? v.cve_id : null,
+    status: 'open' as const,
+    remediation: typeof v.remediation === 'string' ? v.remediation : null,
+  };
+}
+
+function calculateSummaryStats(
+  summary: Record<string, unknown>,
+  rows: Record<string, unknown>[]
+): { criticalCount: number; highCount: number; totalFindings: number } {
+  const criticalCount =
+    typeof summary.critical_count === 'number'
+      ? summary.critical_count
+      : rows.filter((r) => (r as Record<string, unknown>).severity === 'critical').length;
+  const highCount =
+    typeof summary.high_count === 'number'
+      ? summary.high_count
+      : rows.filter((r) => (r as Record<string, unknown>).severity === 'high').length;
+  const totalFindings =
+    typeof summary.total_findings === 'number' ? summary.total_findings : rows.length;
+
+  return { criticalCount, highCount, totalFindings };
+}
+
+async function insertVulnerabilities(
+  supabase: any,
+  rows: Record<string, unknown>[]
+): Promise<void> {
+  if (rows.length === 0) return;
+
+  const { error: insErr } = await supabase
+    .schema('defense')
+    .from('vulnerabilities')
+    .insert(rows);
+  if (insErr) {
+    throw new Error(insErr.message);
+  }
+}
+
+async function completeAudit(
+  supabase: any,
+  auditId: string,
+  findingsDoc: Record<string, unknown>,
+  stats: { criticalCount: number; highCount: number; totalFindings: number }
+): Promise<void> {
+  const completed = new Date().toISOString();
+  const { error: upErr } = await supabase
+    .schema('defense')
+    .from('audits')
+    .update({
+      status: 'completed',
+      completed_at: completed,
+      findings: findingsDoc,
+      total_findings: stats.totalFindings,
+      critical_count: stats.criticalCount,
+      high_count: stats.highCount,
+    })
+    .eq('id', auditId);
+
+  if (upErr) {
+    throw new Error(upErr.message);
+  }
+}
+
+async function failAudit(supabase: any, auditId: string, error: Error | unknown): Promise<void> {
+  const msg = error instanceof Error ? error.message : String(error);
+  await supabase
+    .schema('defense')
+    .from('audits')
+    .update({
+      status: 'failed',
+      completed_at: new Date().toISOString(),
+      findings: { error: msg },
+    })
+    .eq('id', auditId);
+}
+
+async function processDefenseAuditJob(job: Job<OrchestratorJob>): Promise<void> {
   const data = job.data;
   const payload = data.payload as DefensePayload;
   const auditId = typeof payload.audit_id === 'string' ? payload.audit_id.trim() : '';
@@ -158,23 +277,7 @@ export async function processDefenseAuditJob(job: Job<OrchestratorJob>): Promise
     .update({ status: 'in_progress', started_at: started })
     .eq('id', auditId);
 
-  const auditType = typeof payload.audit_type === 'string' ? payload.audit_type : 'security';
-  const framework = typeof payload.framework === 'string' ? payload.framework : '';
-  const scopeText = Array.isArray(payload.scope)
-    ? payload.scope.join(', ')
-    : JSON.stringify(payload.scope ?? []);
-
-  const userPrompt = [
-    `Audit ID: ${auditId}`,
-    `Tenant ID: ${tenantId}`,
-    `Audit type: ${auditType}`,
-    framework.length > 0 ? `Framework: ${framework}` : '',
-    `Scope targets: ${scopeText}`,
-    'Produce JSON only as specified in the system message.',
-  ]
-    .filter(Boolean)
-    .join('\n');
-
+  const userPrompt = buildUserPrompt(auditId, tenantId, payload);
   const requestId =
     typeof data.request_id === 'string' && data.request_id.length > 0
       ? data.request_id
@@ -190,83 +293,19 @@ export async function processDefenseAuditJob(job: Job<OrchestratorJob>): Promise
     const vulns = Array.isArray(parsed.vulnerabilities) ? parsed.vulnerabilities : [];
     const summary = parsed.summary ?? {};
 
-    const rows = vulns.map((v) => {
-      const title =
-        typeof v.title === 'string' && v.title.length > 0 ? v.title : 'Untitled finding';
-      const sev = normalizeSeverity(v.severity);
-      const cvss =
-        typeof v.cvss_score === 'number' && Number.isFinite(v.cvss_score)
-          ? Math.min(10, Math.max(0, v.cvss_score)).toFixed(1)
-          : null;
-      return {
-        audit_id: auditId,
-        tenant_id: tenantId,
-        title,
-        description: typeof v.description === 'string' ? v.description : null,
-        cvss_score: cvss,
-        severity: sev,
-        affected_component: 'assessment',
-        cve_id: typeof v.cve_id === 'string' ? v.cve_id : null,
-        status: 'open' as const,
-        remediation: typeof v.remediation === 'string' ? v.remediation : null,
-      };
-    });
+    const rows = vulns.map((v) => buildVulnerabilityRow(v, auditId, tenantId));
+    await insertVulnerabilities(supabase, rows);
 
-    if (rows.length > 0) {
-      const { error: insErr } = await supabase
-        .schema('defense')
-        .from('vulnerabilities')
-        .insert(rows);
-      if (insErr) {
-        throw new Error(insErr.message);
-      }
-    }
-
-    const criticalCount =
-      typeof summary.critical_count === 'number'
-        ? summary.critical_count
-        : rows.filter((r) => r.severity === 'critical').length;
-    const highCount =
-      typeof summary.high_count === 'number'
-        ? summary.high_count
-        : rows.filter((r) => r.severity === 'high').length;
-    const totalFindings =
-      typeof summary.total_findings === 'number' ? summary.total_findings : rows.length;
-
+    const stats = calculateSummaryStats(summary, rows);
     const findingsDoc = {
       recommendations: Array.isArray(parsed.recommendations) ? parsed.recommendations : [],
       compliance_score:
         typeof summary.compliance_score === 'number' ? summary.compliance_score : null,
     };
 
-    const completed = new Date().toISOString();
-    const { error: upErr } = await supabase
-      .schema('defense')
-      .from('audits')
-      .update({
-        status: 'completed',
-        completed_at: completed,
-        findings: findingsDoc,
-        total_findings: totalFindings,
-        critical_count: criticalCount,
-        high_count: highCount,
-      })
-      .eq('id', auditId);
-
-    if (upErr) {
-      throw new Error(upErr.message);
-    }
+    await completeAudit(supabase, auditId, findingsDoc, stats);
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    await supabase
-      .schema('defense')
-      .from('audits')
-      .update({
-        status: 'failed',
-        completed_at: new Date().toISOString(),
-        findings: { error: msg },
-      })
-      .eq('id', auditId);
+    await failAudit(supabase, auditId, err);
     throw err;
   }
 }
