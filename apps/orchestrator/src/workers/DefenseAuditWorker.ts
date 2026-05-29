@@ -200,10 +200,7 @@ async function insertVulnerabilities(
 ): Promise<void> {
   if (rows.length === 0) return;
 
-  const { error: insErr } = await supabase
-    .schema('defense')
-    .from('vulnerabilities')
-    .insert(rows);
+  const { error: insErr } = await supabase.schema('defense').from('vulnerabilities').insert(rows);
   if (insErr) {
     throw new Error(insErr.message);
   }
