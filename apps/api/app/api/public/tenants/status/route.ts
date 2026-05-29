@@ -2,6 +2,7 @@ import { createClient } from 'redis';
 import { z } from 'zod';
 import { jsonError, serverErrorLogged, tryRoute } from '../../../../../lib/api-response';
 import { HTTP_STATUS } from '../../../../../lib/constants';
+import { sanitizePublicPortalServices } from '../../../../../lib/portal-me';
 import { getServiceClient } from '../../../../../lib/supabase';
 import type { Json } from '../../../../../lib/supabase/types';
 import { formatZodError } from '../../../../../lib/validation';
@@ -77,7 +78,7 @@ export function GET(request: Request): Promise<Response> {
     const { data: tenant, error } = await getServiceClient()
       .schema('platform')
       .from('tenants')
-      .select('status, progress, services')
+      .select('status, progress, services, slug')
       .eq('owner_email', parsed.data.email)
       .is('deleted_at', null)
       .order('created_at', { ascending: false })
@@ -95,7 +96,7 @@ export function GET(request: Request): Promise<Response> {
     return Response.json({
       status: tenant.status,
       progress: tenant.progress,
-      services: tenant.services as Json,
+      services: sanitizePublicPortalServices(tenant.slug, tenant.services as Json),
     });
   });
 }
