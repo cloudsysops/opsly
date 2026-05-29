@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-05-29T12:00:36.502Z",
+  "generated_at": "2026-05-29T12:05:13.673Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -18165,6 +18165,115 @@
         "superficie"
       ],
       "size_bytes": 3471
+    },
+    {
+      "path": "docs/panini-lab/ACTIVATION-GUIDE.md",
+      "title": "Activation Guide: Voice Calls in Peskids",
+      "keywords": [
+        "activate",
+        "activation",
+        "add",
+        "call",
+        "calls",
+        "components",
+        "credentials",
+        "development",
+        "doppler",
+        "environment",
+        "guide",
+        "import",
+        "initialize",
+        "initiation",
+        "load",
+        "markdown",
+        "opsly",
+        "orchestrator",
+        "panel",
+        "peskids",
+        "phase",
+        "portal",
+        "prerequisites",
+        "provider",
+        "schema",
+        "secrets",
+        "servers",
+        "setup",
+        "start",
+        "supabase",
+        "test",
+        "verify",
+        "via",
+        "voice"
+      ],
+      "size_bytes": 13424
+    },
+    {
+      "path": "docs/panini-lab/OVERVIEW.md",
+      "title": "Panini Lab — Voice Messaging & Call Management Overview",
+      "keywords": [
+        "abstraction",
+        "api",
+        "apps",
+        "architecture",
+        "call",
+        "channels",
+        "concepts",
+        "database",
+        "key",
+        "lab",
+        "lib",
+        "management",
+        "markdown",
+        "messaging",
+        "modules",
+        "opsly",
+        "orchestrator",
+        "overview",
+        "panini",
+        "peskids",
+        "provider",
+        "schema",
+        "states",
+        "voice",
+        "what"
+      ],
+      "size_bytes": 12694
+    },
+    {
+      "path": "docs/panini-lab/PROVIDER-SETUP.md",
+      "title": "Provider Setup Guide: Voice Call Providers",
+      "keywords": [
+        "account",
+        "call",
+        "configure",
+        "create",
+        "credentials",
+        "current",
+        "doppler",
+        "enable",
+        "guide",
+        "markdown",
+        "obtain",
+        "opsly",
+        "optional",
+        "overview",
+        "prerequisites",
+        "pricing",
+        "production",
+        "provider",
+        "providers",
+        "recording",
+        "setup",
+        "steps",
+        "store",
+        "test",
+        "transcription",
+        "twilio",
+        "url",
+        "voice",
+        "webhook"
+      ],
+      "size_bytes": 14673
     },
     {
       "path": "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
@@ -84184,6 +84293,9 @@
       "docs/04-operations/README.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
       "docs/04-operations/COST-MONITORING-GUIDE.md",
+      "docs/panini-lab/OVERVIEW.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/database/DATABASE-OPERATIONS.md",
       "docs/database/SUPABASE-MIGRATION-AUDIT.md",
       "docs/ops/issue-bankruptcy-2026-05-03/epics-breakdown.md",
@@ -86559,6 +86671,9 @@
       "docs/04-operations/README.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
       "docs/04-operations/COST-MONITORING-GUIDE.md",
+      "docs/panini-lab/OVERVIEW.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/database/DATABASE-OPERATIONS.md",
       "docs/database/SUPABASE-MIGRATION-AUDIT.md",
       "docs/ops/issue-bankruptcy-2026-05-03/epics-breakdown.md",
@@ -88080,6 +88195,7 @@
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
       "docs/04-operations/COST-MONITORING-GUIDE.md",
+      "docs/panini-lab/OVERVIEW.md",
       "docs/ops/branch-protection-setup.md",
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/history/plans/SPRINT-ROADMAP.md",
@@ -88350,6 +88466,8 @@
       "apps/peskids/DEPLOYMENT.md",
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
+      "docs/panini-lab/OVERVIEW.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/governance/DATA-CLASSIFICATION.md",
       "docs/governance/POLICY-REGISTRY.md",
       "docs/governance/SUB-PROCESSORS.md",
@@ -88407,6 +88525,7 @@
       ".cursor/prompts/local-services-mvp.md",
       "lib/components/README.md",
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md",
       "docs/runbooks/managed.md",
       "docs/runbooks/frontend-audit.md",
@@ -90056,6 +90175,7 @@
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/state-management.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/auth-patterns.md",
       "docs/generated/implementation-progress.auto.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/database/SUPABASE-MIGRATION-AUDIT.md",
       "docs/history/plans/IMPLEMENTATION-STATUS.md",
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
@@ -90104,6 +90224,7 @@
       "docs/superpowers/specs/2026-05-26-content-studio-ai-design.md",
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
       "docs/plans/CLI-MIGRATION-CHECKLIST.md",
+      "docs/panini-lab/OVERVIEW.md",
       "docs/history/consolidation/CONSOLIDATION-PLAN.md",
       "docs/design/AGENT-ORCHESTRATION-INDEX.md",
       "docs/01-development/MAIA-WORKERS.md",
@@ -90539,6 +90660,7 @@
       "vendor/agency-agents/integrations/openclaw/image-prompt-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/geographer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/technical-artist/AGENTS.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/infrastructure/NOTEBOOKLM-BRAIN-SYNC.md",
       "docs/governance/SOC2-READINESS.md",
       "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
@@ -90976,6 +91098,7 @@
       "docs/generated/implementation-progress.auto.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
       "docs/04-operations/COST-MONITORING-GUIDE.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/history/plans/IMPLEMENTATION-STATUS.md",
       "docs/history/consolidation/CONSOLIDATION-SUMMARY.md",
       "docs/history/consolidation/CONSOLIDATION-INDEX.md",
@@ -91442,6 +91565,7 @@
       "vendor/agency-agents/integrations/openclaw/executive-summary-generator/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/discovery-coach/AGENTS.md",
       "docs/generated/implementation-progress.auto.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/history/plans/IMPLEMENTATION-STATUS.md",
       "docs/history/consolidation/CONSOLIDATION-PLAN.md",
@@ -93701,6 +93825,9 @@
       "lib/telemetry/GOVERNANCE.md",
       "lib/voice-messaging/README.md",
       "lib/voice-messaging/GOVERNANCE.md",
+      "docs/panini-lab/OVERVIEW.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/00-architecture/LLM-GATEWAY-WORKPLAN.md",
       "docs/02-tools/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
       "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
@@ -97394,6 +97521,8 @@
       "vendor/agency-agents/integrations/openclaw/agents-orchestrator/IDENTITY.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
+      "docs/panini-lab/OVERVIEW.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/infrastructure/REDIS-QUEUE-GUIDE.md",
       "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/history/plans/SPRINT-ROADMAP.md",
@@ -99060,6 +99189,7 @@
       "vendor/agency-agents/integrations/openclaw/private-domain-operator/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/financial-analyst/AGENTS.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md",
+      "docs/panini-lab/OVERVIEW.md",
       "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB683486-SEED419215-20180924-00000.md",
       "docs/obsidian/sources/archive/2026-04-21/vics-basement-26.md",
       "docs/obsidian/sources/archive/2026-04-21/SFGTV_20181210_150000_Government_Access_Programming.md",
@@ -99338,6 +99468,7 @@
       "vendor/agency-agents/integrations/openclaw/technical-writer/AGENTS.md",
       "infra/monitoring/README.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/00-architecture/RENDERING-ENGINE.md",
       "docs/01-development/LIBRARY-MODULES.md",
       "docs/01-development/PHASE-2-DEPLOYMENT.md",
@@ -99509,6 +99640,7 @@
       "docs/superpowers/specs/2026-05-26-content-studio-ai-design.md",
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md",
+      "docs/panini-lab/OVERVIEW.md",
       "docs/obsidian/research/frontier-pattern-radar.md",
       "docs/obsidian/research/saas-pattern-radar.md",
       "docs/obsidian/research/trading-pattern-radar.md",
@@ -99986,6 +100118,8 @@
       "vendor/agency-agents/integrations/openclaw/book-co-author/AGENTS.md",
       "infra/monitoring/README.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/database/SUPABASE-MIGRATION-AUDIT.md",
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/stubs/E2E-TEST-SCENARIOS.md",
@@ -101950,6 +102084,7 @@
       "vendor/agency-agents/integrations/openclaw/godot-gameplay-scripter/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/blender-add-on-engineer/IDENTITY.md",
       "vendor/agency-agents/integrations/openclaw/blender-add-on-engineer/AGENTS.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
       "docs/00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md",
       "docs/00-architecture/ELEVENLABS-ADVANCED-INTEGRATION.md",
@@ -102224,6 +102359,7 @@
       "vendor/agency-agents/integrations/openclaw/ai-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/senior-project-manager/AGENTS.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/obsidian/sources/archive/2026-04-21/embeddedsoftware0000mass.md",
       "docs/01-development/README.md",
       "docs/01-development/AGENT-SKILLS-INTEGRATION.md",
@@ -102635,6 +102771,8 @@
       "vendor/agency-agents/integrations/openclaw/studio-producer/AGENTS.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
+      "docs/panini-lab/OVERVIEW.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
       "docs/growth/WEEK-1-AGENCIAS-OUTREACH.md",
       "docs/design/DESIGN_REFERENCES.md",
       "docs/.obsidian/templates/doc-template.md",
@@ -103639,6 +103777,7 @@
       "vendor/agency-agents/integrations/openclaw/legal-billing-time-tracking/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/developer-advocate/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/outbound-strategist/AGENTS.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/04-infrastructure/GOOGLE-CLOUD-SETUP.md",
       "docs/04-infrastructure/DOPPLER-CI-RUNBOOK.md",
@@ -104200,6 +104339,7 @@
       ".n8n/3-webhooks/discord-webhook.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/api-design-patterns.md",
       "vendor/agency-agents/integrations/openclaw/seo-specialist/AGENTS.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
       "docs/obsidian/templates/source-note.md",
       "docs/obsidian/sources/frontier-pattern-sources.md",
       "docs/obsidian/sources/saas-pattern-sources.md",
@@ -104430,6 +104570,8 @@
       "vendor/agency-agents/integrations/openclaw/ai-citation-strategist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/identity-graph-operator/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/backend-architect/AGENTS.md",
+      "docs/panini-lab/OVERVIEW.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/database/DATABASE-OPERATIONS.md",
       "docs/history/consolidation/CONSOLIDATION-PLAN.md",
       "docs/history/consolidation/CONSOLIDATION-EFFORT-BREAKDOWN.md",
@@ -105686,6 +105828,7 @@
       "vendor/agency-agents/integrations/openclaw/game-audio-engineer/AGENTS.md",
       "docs/superpowers/specs/2026-05-26-content-studio-ai-design.md",
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
+      "docs/panini-lab/OVERVIEW.md",
       "docs/infrastructure/AGENT-BOOTSTRAP-SYSTEM.md",
       "docs/infrastructure/NOTEBOOKLM-BRAIN-SYNC.md",
       "docs/growth/WEEK-1-AGENCIAS-OUTREACH.md",
@@ -106255,6 +106398,7 @@
       "vendor/agency-agents/integrations/openclaw/studio-producer/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/studio-producer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/sales-outreach/AGENTS.md",
+      "docs/panini-lab/OVERVIEW.md",
       "docs/governance/SOC2-READINESS.md",
       "docs/governance/internal/CHANGE-MANAGEMENT-POLICY.md",
       "docs/governance/internal/VENDOR-MANAGEMENT-POLICY.md",
@@ -113866,6 +114010,8 @@
       "docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
       "docs/04-operations/COST-MONITORING-GUIDE.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/database/DATABASE-OPERATIONS.md",
       "docs/infrastructure/REDIS-QUEUE-GUIDE.md",
       "docs/runbooks/TROUBLESHOOTING-GUIDE.md",
@@ -114543,6 +114689,7 @@
       "lib/security/README.md",
       "apps/peskids/DEPLOYMENT.md",
       "vendor/agency-agents/integrations/openclaw/workflow-architect/SOUL.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/growth/WEEK-1-AGENCIAS-OUTREACH.md",
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
@@ -115127,6 +115274,7 @@
       "vendor/agency-agents/integrations/openclaw/database-optimizer/IDENTITY.md",
       "vendor/agency-agents/integrations/openclaw/database-optimizer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/backend-architect/AGENTS.md",
+      "docs/panini-lab/OVERVIEW.md",
       "docs/database/DATABASE-OPERATIONS.md",
       "docs/database/SUPABASE-MIGRATION-AUDIT.md",
       "docs/governance/internal/CHANGE-MANAGEMENT-POLICY.md",
@@ -115416,6 +115564,8 @@
     "doppler": [
       "config/doppler-audit-2026-04-07.md",
       "docs/generated/implementation-progress.auto.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/ops/runbook-redis.md",
       "docs/infrastructure/NOTEBOOKLM-BRAIN-SYNC.md",
       "docs/history/plans/IMPLEMENTATION-STATUS.md",
@@ -115764,6 +115914,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-unity-editor-tool-developer/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/unity-editor-tool-developer.md",
       "vendor/agency-agents/integrations/openclaw/unity-editor-tool-developer/AGENTS.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/01-development/N8N-IMPORT-GUIDE.md",
       "docs/03-agents/AGENT-KNOWLEDGE-CAPTURE-GUIDE.md",
       "docs/adr/ADR-016-legalvial-multitenant-model.md",
@@ -117089,6 +117240,7 @@
     "optional": [
       ".cursor/prompts/local-services-automation.md",
       "tools/agent-packs/vendor/the-architect/questions/phase-1-discovery.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
       "docs/history/consolidation/CONSOLIDATION-SUMMARY.md",
       "docs/.obsidian/PLUGINS-TO-INSTALL.md",
       "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
@@ -121432,6 +121584,8 @@
       "vendor/agency-agents/integrations/opencode/agents/studio-operations.md",
       "vendor/agency-agents/integrations/openclaw/studio-operations/AGENTS.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
       "docs/03-agents/LOCAL-AGENT-EXECUTION.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
@@ -121822,6 +121976,8 @@
       "vendor/agency-agents/integrations/openclaw/private-domain-operator/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/livestream-commerce-coach/AGENTS.md",
       "infra/monitoring/README.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/ops/branch-protection-setup.md",
       "docs/.obsidian/PLUGINS-TO-INSTALL.md",
       "docs/01-development/N8N-SETUP.md",
@@ -122337,6 +122493,7 @@
       "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md",
       "docs/04-operations/COST-MONITORING-GUIDE.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/history/consolidation/CONSOLIDATION-PLAN.md",
       "docs/governance/internal/VENDOR-MANAGEMENT-POLICY.md",
@@ -122411,6 +122568,7 @@
       "vendor/agency-agents/integrations/openclaw/unity-editor-tool-developer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/ai-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/voice-ai-integration-engineer/AGENTS.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
       "docs/database/SUPABASE-MIGRATION-AUDIT.md",
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/stubs/TENANT-PRODUCTION-CHECKLIST.md",
@@ -123250,6 +123408,7 @@
       ".n8n/3-webhooks/discord-webhook.md",
       "infra/monitoring/README.md",
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
       "docs/01-development/N8N-SETUP.md",
       "docs/01-development/SPRINT-PLANNING-SETUP.md",
       "docs/01-development/AUTO-SYNC-DOCS-SETUP.md",
@@ -123751,6 +123910,7 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/iac-docker.md",
       "apps/peskids/DEPLOYMENT.md",
       "docs/generated/implementation-progress.auto.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/history/plans/IMPLEMENTATION-STATUS.md",
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
       "docs/01-development/GITHUB-SETTINGS.md",
@@ -123993,6 +124153,7 @@
     "twilio": [
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/secrets-patterns.md",
       "lib/voice-messaging/README.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
       ".agents/skills/cyber-neo/references/secrets-patterns.md"
     ],
     "catches": [
@@ -125208,6 +125369,7 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/SKILL.md",
       "lib/config/README.md",
       "lib/prompts/README.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/01-development/AGENT-SKILLS-INTEGRATION.md",
       ".agents/skills/cyber-neo/SKILL.md"
     ],
@@ -125984,6 +126146,7 @@
       "vendor/agency-agents/integrations/openclaw/app-store-optimizer/IDENTITY.md",
       "vendor/agency-agents/integrations/openclaw/app-store-optimizer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/china-e-commerce-operator/AGENTS.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/mobile-app.md"
     ],
     "support": [
@@ -126620,6 +126783,7 @@
       "vendor/agency-agents/integrations/openclaw/workflow-architect/AGENTS.md",
       "infra/monitoring/README.md",
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/infrastructure/AGENT-BOOTSTRAP-SYSTEM.md",
       "docs/history/consolidation/CONSOLIDATION-SUMMARY.md",
       "docs/history/consolidation/CONSOLIDATION-INDEX.md",
@@ -126962,6 +127126,7 @@
     ],
     "providers": [
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/auth-patterns.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
       "docs/01-development/STATE-OF-PLATFORM.md",
       "docs/03-agents/SUPER-ORCHESTRATOR.md",
       "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md",
@@ -128037,6 +128202,7 @@
       "lib/security/GOVERNANCE.md",
       "docs/superpowers/specs/2026-05-26-content-studio-ai-design.md",
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
+      "docs/panini-lab/OVERVIEW.md",
       "docs/history/consolidation/CONSOLIDATION-PLAN.md",
       "docs/01-development/PHASE2-ROADMAP.md",
       "docs/01-development/SPRINTS_13_14.md",
@@ -128186,6 +128352,7 @@
       "lib/errors/GOVERNANCE.md",
       "lib/workflow/GOVERNANCE.md",
       "lib/security/GOVERNANCE.md",
+      "docs/panini-lab/OVERVIEW.md",
       "docs/history/consolidation/CONSOLIDATION-PLAN.md",
       "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
       "docs/00-architecture/ARCHITECTURE.md",
@@ -128452,6 +128619,7 @@
     ],
     "pricing": [
       "lib/telemetry/GOVERNANCE.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
       "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md"
     ],
     "retention": [
@@ -128822,7 +128990,8 @@
     ],
     "initialize": [
       "lib/prompts/README.md",
-      "lib/voice-messaging/README.md"
+      "lib/voice-messaging/README.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md"
     ],
     "list": [
       "lib/prompts/README.md",
@@ -128983,6 +129152,9 @@
       "vendor/agency-agents/integrations/openclaw/sales-coach/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/developer-advocate/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/discovery-coach/AGENTS.md",
+      "docs/panini-lab/OVERVIEW.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/04-infrastructure/MCP-ORCHESTRATOR-DEPLOYMENT.md",
       "docs/adr/ADR-043-supplement/DECISION-RATIONALE.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
@@ -129045,6 +129217,7 @@
       "vendor/agency-agents/integrations/openclaw/whimsy-injector/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/lsp-index-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/ux-architect/AGENTS.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
       "docs/ops/issue-bankruptcy-2026-05-03/epics-breakdown.md",
       "docs/01-development/PHASE2-ROADMAP.md",
       "docs/06-multi-agent/PARALLEL-EXECUTION-GUIDE.md",
@@ -129089,6 +129262,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-unity-architect/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/unity-architect.md",
       "vendor/agency-agents/integrations/openclaw/unity-architect/AGENTS.md",
+      "docs/panini-lab/OVERVIEW.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md"
     ],
     "transcriptionservice": [
@@ -129123,6 +129297,9 @@
       "vendor/agency-agents/integrations/openclaw/voice-ai-integration-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/game-audio-engineer/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/game-audio-engineer/AGENTS.md",
+      "docs/panini-lab/OVERVIEW.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/00-architecture/ELEVENLABS-ADVANCED-INTEGRATION.md"
     ],
     "voicemessagesservice": [
@@ -129577,6 +129754,7 @@
     ],
     "configure": [
       "apps/peskids/DEPLOYMENT.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
       "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
       "docs/03-agents/SYRA-IMPLEMENTATION-GUIDE.md",
       "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md",
@@ -134342,6 +134520,7 @@
       "vendor/agency-agents/integrations/openclaw/analytics-reporter/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/finance-tracker/AGENTS.md",
       "infra/monitoring/README.md",
+      "docs/panini-lab/PROVIDER-SETUP.md",
       "docs/audits/LINT-RULES-GUIDE.md",
       "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md"
     ],
@@ -142950,6 +143129,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-blender-add-on-engineer/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/blender-add-on-engineer.md",
       "vendor/agency-agents/integrations/openclaw/blender-add-on-engineer/AGENTS.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/04-infrastructure/WORKER-TEAM-BILLING.md",
       "docs/audits/TEST-COVERAGE-BASELINE.md",
       "docs/tenants/peskids/OWNER-RUNBOOK.md",
@@ -143853,7 +144033,8 @@
       "vendor/agency-agents/integrations/kimi/voice-ai-integration-engineer/system.md",
       "vendor/agency-agents/integrations/antigravity/agency-voice-ai-integration-engineer/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/voice-ai-integration-engineer.md",
-      "vendor/agency-agents/integrations/openclaw/voice-ai-integration-engineer/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/voice-ai-integration-engineer/AGENTS.md",
+      "docs/panini-lab/PROVIDER-SETUP.md"
     ],
     "algorithmic": [
       "vendor/agency-agents/integrations/qwen/agents/video-optimization-specialist.md",
@@ -143986,6 +144167,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-supply-chain-strategist/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/supply-chain-strategist.md",
       "vendor/agency-agents/integrations/openclaw/supply-chain-strategist/AGENTS.md",
+      "docs/panini-lab/OVERVIEW.md",
       "docs/adr/ADR-039-sales-channels-email-whatsapp.md"
     ],
     "efficient": [
@@ -144173,6 +144355,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-mcp-builder/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/mcp-builder.md",
       "vendor/agency-agents/integrations/openclaw/mcp-builder/AGENTS.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
       "docs/02-tools/MCP-SERVERS.md"
     ],
@@ -147949,7 +148132,8 @@
     ],
     "initiation": [
       "vendor/agency-agents/integrations/openclaw/project-shepherd/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/retail-customer-returns/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/retail-customer-returns/AGENTS.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md"
     ],
     "investigation": [
       "vendor/agency-agents/integrations/openclaw/support-responder/AGENTS.md"
@@ -147960,6 +148144,7 @@
     "calls": [
       "vendor/agency-agents/integrations/openclaw/blockchain-security-auditor/AGENTS.md",
       "docs/04-operations/COST-MONITORING-GUIDE.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/audits/COST-DEEP-DIVE.md"
     ],
     "initialization": [
@@ -147978,6 +148163,7 @@
     ],
     "via": [
       "vendor/agency-agents/integrations/openclaw/roblox-experience-designer/AGENTS.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/runbooks/DEPLOY-GITHUB-ACTIONS.md",
       "docs/runbooks/admin.md",
@@ -148479,7 +148665,8 @@
       "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md"
     ],
     "states": [
-      "vendor/agency-agents/integrations/openclaw/workflow-architect/SOUL.md"
+      "vendor/agency-agents/integrations/openclaw/workflow-architect/SOUL.md",
+      "docs/panini-lab/OVERVIEW.md"
     ],
     "timing": [
       "vendor/agency-agents/integrations/openclaw/workflow-architect/SOUL.md",
@@ -149109,6 +149296,44 @@
     "planned": [
       "docs/04-operations/COST-MONITORING-GUIDE.md",
       ".agents/IMPLEMENTATION-CHECKLIST.md"
+    ],
+    "abstraction": [
+      "docs/panini-lab/OVERVIEW.md"
+    ],
+    "concepts": [
+      "docs/panini-lab/OVERVIEW.md"
+    ],
+    "lab": [
+      "docs/panini-lab/OVERVIEW.md"
+    ],
+    "panini": [
+      "docs/panini-lab/OVERVIEW.md"
+    ],
+    "credentials": [
+      "docs/panini-lab/PROVIDER-SETUP.md",
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
+      "docs/03-agents/SYRA-IMPLEMENTATION-GUIDE.md",
+      "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md"
+    ],
+    "obtain": [
+      "docs/panini-lab/PROVIDER-SETUP.md"
+    ],
+    "recording": [
+      "docs/panini-lab/PROVIDER-SETUP.md"
+    ],
+    "activate": [
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
+      ".agents/UNIFIED-AGENT-ARCHITECTURE.md"
+    ],
+    "activation": [
+      "docs/panini-lab/ACTIVATION-GUIDE.md",
+      "docs/04-infrastructure/CLOUDFLARE-PROXY-ACTIVATION.md",
+      "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
+      "docs/04-infrastructure/GCP-ACTIVATION-CHECKLIST.md",
+      "docs/04-infrastructure/PRODUCTION-READINESS.md",
+      "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md",
+      "docs/adr/ADR-044-core-first-tenant-slug-extraction.md",
+      "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md"
     ],
     "automatic": [
       "docs/database/DATABASE-OPERATIONS.md",
@@ -153795,15 +154020,6 @@
     "acme": [
       "docs/04-infrastructure/CLOUDFLARE-PROXY-ACTIVATION.md"
     ],
-    "activation": [
-      "docs/04-infrastructure/CLOUDFLARE-PROXY-ACTIVATION.md",
-      "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
-      "docs/04-infrastructure/GCP-ACTIVATION-CHECKLIST.md",
-      "docs/04-infrastructure/PRODUCTION-READINESS.md",
-      "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md",
-      "docs/adr/ADR-044-core-first-tenant-slug-extraction.md",
-      "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md"
-    ],
     "autoritativo": [
       "docs/04-infrastructure/CLOUDFLARE-PROXY-ACTIVATION.md"
     ],
@@ -154558,10 +154774,6 @@
     ],
     "profiles": [
       "docs/03-agents/AGENT-TEAM-OVERVIEW.md"
-    ],
-    "credentials": [
-      "docs/03-agents/SYRA-IMPLEMENTATION-GUIDE.md",
-      "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md"
     ],
     "rationale": [
       "docs/03-agents/AGENT-PROMPTS-REFERENCE.md",
@@ -156642,9 +156854,6 @@
     "temporal": [
       ".claude/1-agent-teams/orchestrator.md"
     ],
-    "activate": [
-      ".agents/UNIFIED-AGENT-ARCHITECTURE.md"
-    ],
     "goes": [
       ".agents/UNIFIED-AGENT-ARCHITECTURE.md"
     ],
@@ -157247,6 +157456,9 @@
     "docs/ops/workflows-audit.md",
     "docs/ops/workflows-index.md",
     "docs/orchestrator/REPAIR-QUEUE.md",
+    "docs/panini-lab/ACTIVATION-GUIDE.md",
+    "docs/panini-lab/OVERVIEW.md",
+    "docs/panini-lab/PROVIDER-SETUP.md",
     "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
     "docs/plans/AUTONOMY-COMPLETION-PLAN-2026-04-27.md",
     "docs/plans/AUTONOMY-GO-NO-GO-WEEKLY.md",
