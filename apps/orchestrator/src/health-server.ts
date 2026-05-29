@@ -58,6 +58,14 @@ import {
   handleGitChatOpsDispatch,
   handleGitIntegrationMergeAdvisor,
   handleGitBranchMergeAdvisor,
+  handleInitiateCall,
+  handleListCalls,
+  handleGetCallDetails,
+  handleUpdateCallState,
+  handleRecordVoiceMessage,
+  handleGetVoiceMessage,
+  handleSubmitTranscription,
+  handleGetTranscriptions,
 } from './http/routes/index.js';
 
 const DEFAULT_PORT = 3011;
@@ -153,6 +161,16 @@ function buildRouter(): Router {
   // Maia Life Systems loop endpoints
   r.post('/api/maia/callback', handleMaiaCallback);
   r.post('/api/maia/self-heal', handleMaiaSelfHeal);
+
+  // Voice messaging endpoints
+  r.post('/internal/voice/calls', handleInitiateCall);
+  r.get('/internal/voice/calls', handleListCalls);
+  r.get('/internal/voice/calls/:callId', handleGetCallDetails);
+  r.patch('/internal/voice/calls/:callId', handleUpdateCallState);
+  r.post('/internal/voice/messages/voice', handleRecordVoiceMessage);
+  r.get('/internal/voice/messages/:messageId', handleGetVoiceMessage);
+  r.post('/internal/voice/transcriptions', handleSubmitTranscription);
+  r.get('/internal/voice/transcriptions/:callId', handleGetTranscriptions);
 
   return r;
 }
