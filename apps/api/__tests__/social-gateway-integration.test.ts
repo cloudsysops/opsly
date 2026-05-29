@@ -37,6 +37,15 @@ vi.mock('../lib/knowledge/syra-capture', () => ({
   capturePublishError: vi.fn(),
 }));
 
+// Mock auth
+vi.mock('../lib/auth', async (importOriginal) => {
+  const actual = (await importOriginal()) as any;
+  return {
+    ...actual,
+    requireAdminAccess: vi.fn().mockResolvedValue(null),
+  };
+});
+
 // Mock social publisher
 vi.mock('../lib/social/adapters/publisher', () => ({
   multiPlatformPublisher: {
