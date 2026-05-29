@@ -6,3 +6,7 @@ export {
   type ConversationalRuntime,
   type ConversationalRuntimeOptions,
 } from './runtime.js';
+export {
+  createGatewayTranscriptionPort,
+  type GatewayTranscriptionOptions,
+} from './adapters/gateway-transcription.js';
