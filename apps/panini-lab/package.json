@@ -16,8 +16,10 @@
     "@intcloudsysops/opsly-core": "*",
     "@supabase/supabase-js": "^2.106.0",
     "next": "^15.5.18",
+    "next-auth": "^5.0.0-beta",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "recharts": "^3.8.1",
     "zod": "^3.25.76"
   },
   "devDependencies": {
