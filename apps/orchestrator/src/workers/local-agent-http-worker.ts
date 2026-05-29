@@ -23,7 +23,7 @@ import {
 } from '../lib/local-worker-utils.js';
 import {
   logWorkerInfo,
-  logWorkerWarn,
+  logWorkerWarn as _logWorkerWarn,
   logWorkerError,
   logWorkerLifecycle,
 } from '../observability/worker-log.js';

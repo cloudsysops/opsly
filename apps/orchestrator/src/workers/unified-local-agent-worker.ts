@@ -1,5 +1,5 @@
 import { Worker } from 'bullmq';
-import { localAgentQueue } from '../queue.js';
+import { localAgentQueue as _localAgentQueue } from '../queue.js';
 import { IterationOrchestrator } from '../lib/iteration/iteration-orchestrator.js';
 import { AgentTrainer } from '../lib/training/agent-trainer.js';
 import { enqueueLocalAgentJob } from '../queue.js';
