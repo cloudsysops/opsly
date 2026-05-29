@@ -53,6 +53,7 @@ jobs:
           (cd lib/git-branch-orchestrator && npm run build)
           (cd lib/session-manager && npm run build)
           (cd lib/runtime && npm run build)
+          (cd lib/voice-messaging && npm run build)
           (cd apps/context-builder && npm run build)
 
       - name: TypeScript (api + admin + portal + mcp + orchestrator + ml + llm-gateway + context-builder)
@@ -138,6 +139,7 @@ jobs:
           (cd lib/git-branch-orchestrator && npm run build)
           (cd lib/session-manager && npm run build)
           (cd lib/runtime && npm run build)
+          (cd lib/voice-messaging && npm run build)
           (cd apps/mcp && npm run build)
           (cd apps/context-builder && npm run build)
           # Unit-oriented suites (without Redis service dependency)
@@ -190,6 +192,7 @@ jobs:
           (cd lib/git-branch-orchestrator && npm run build)
           (cd lib/session-manager && npm run build)
           (cd lib/runtime && npm run build)
+          (cd lib/voice-messaging && npm run build)
           (cd apps/orchestrator && npm run build)
           (cd apps/context-builder && npm run build)
           # Integration suites requiring Redis
@@ -251,6 +254,7 @@ jobs:
           (cd lib/git-branch-orchestrator && npm run build)
           (cd lib/session-manager && npm run build)
           (cd lib/runtime && npm run build)
+          (cd lib/voice-messaging && npm run build)
           (cd apps/orchestrator && npm run build)
           (cd apps/mcp && npm run build)
           (cd apps/context-builder && npm run build)
