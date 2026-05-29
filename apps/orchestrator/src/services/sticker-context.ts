@@ -20,7 +20,7 @@ export class StickerContextService {
   private supabase = createClient(supabaseUrl, supabaseKey);
 
   async processUserMessage(input: MessageInput): Promise<MessageResponse> {
-    const { message, tenantSlug, userId, channel } = input;
+    const { message, tenantSlug, userId, channel: _channel } = input;
 
     // Simple intent detection for sticker queries
     const lowerMsg = message.toLowerCase();
@@ -47,30 +47,24 @@ export class StickerContextService {
 
     // Default: help message with quick actions
     return {
-      output: '¿En qué puedo ayudarte con tu colección? Puedo decirte: qué laminitas tienes, cuáles te faltan, o ayudarte a organizarte.',
-      suggestedActions: [
-        '¿Tengo el Messi?',
-        'Qué me falta completar',
-        'Cuántas me faltan',
-      ],
+      output:
+        '¿En qué puedo ayudarte con tu colección? Puedo decirte: qué laminitas tienes, cuáles te faltan, o ayudarte a organizarte.',
+      suggestedActions: ['¿Tengo el Messi?', 'Qué me falta completar', 'Cuántas me faltan'],
     };
   }
 
   private async handleHaveQuery(
     message: string,
     tenantSlug: string,
-    userId: string,
+    userId: string
   ): Promise<MessageResponse> {
     // Extract player/team name from query
-    const playerMatch = message.match(
-      /(?:tengo|have)\s+(?:el\s+)?([a-zá-ú\s]+)\??/i,
-    );
+    const playerMatch = message.match(/(?:tengo|have)\s+(?:el\s+)?([a-zá-ú\s]+)\??/i);
     const playerName = playerMatch ? playerMatch[1].trim() : '';
 
     if (!playerName) {
       return {
-        output:
-          '¿Quién buscas? Dame el nombre del jugador o equipo (ejemplo: Messi, Argentina)',
+        output: '¿Quién buscas? Dame el nombre del jugador o equipo (ejemplo: Messi, Argentina)',
         suggestedActions: [],
       };
     }
@@ -111,21 +105,14 @@ export class StickerContextService {
     }
   }
 
-  private async handleMissingQuery(
-    tenantSlug: string,
-    userId: string,
-  ): Promise<MessageResponse> {
+  private async handleMissingQuery(_tenantSlug: string, _userId: string): Promise<MessageResponse> {
     try {
       // This would query all stickers not in inventory
       // For MVP, return a generic response with suggested actions
       return {
         output:
           'Tu colección no está completa. Puedo ayudarte a encontrar las laminitas que te faltan a los mejores precios.',
-        suggestedActions: [
-          'Mostrar lo que me falta',
-          'Buscar ofertas',
-          'Ver mi progreso',
-        ],
+        suggestedActions: ['Mostrar lo que me falta', 'Buscar ofertas', 'Ver mi progreso'],
       };
     } catch {
       return {
@@ -135,20 +122,13 @@ export class StickerContextService {
     }
   }
 
-  private async handleCountQuery(
-    tenantSlug: string,
-    userId: string,
-  ): Promise<MessageResponse> {
+  private async handleCountQuery(_tenantSlug: string, _userId: string): Promise<MessageResponse> {
     try {
       // Calculate missing count
       return {
         output:
           'Te faltan muchas laminitas para completar. ¿Quieres que te busque las mejores ofertas?',
-        suggestedActions: [
-          'Buscar ofertas',
-          'Mi progreso actual',
-          'Ver lista de deseos',
-        ],
+        suggestedActions: ['Buscar ofertas', 'Mi progreso actual', 'Ver lista de deseos'],
       };
     } catch {
       return {
@@ -160,7 +140,7 @@ export class StickerContextService {
 
   private async handleTeamQuery(
     message: string,
-    tenantSlug: string,
+    _tenantSlug: string,
     userId: string,
   ): Promise<MessageResponse> {
     // Extract team name from query
