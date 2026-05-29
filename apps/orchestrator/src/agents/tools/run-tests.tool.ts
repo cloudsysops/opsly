@@ -4,7 +4,7 @@ import type { ToolManifest } from './types.js';
 
 const execFileAsync = promisify(execFile);
 
-interface RunTestsInput {
+interface _RunTestsInput {
   workspace?: string;
   pattern?: string;
 }

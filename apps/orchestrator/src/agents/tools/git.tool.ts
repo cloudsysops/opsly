@@ -4,7 +4,7 @@ import type { ToolManifest } from './types.js';
 
 const execFileAsync = promisify(execFile);
 
-interface GitAction {
+interface _GitAction {
   action: 'status' | 'add' | 'commit' | 'log' | 'branch' | 'diff';
   files?: string[]; // para 'add'
   message?: string; // para 'commit'
@@ -53,7 +53,7 @@ export const GitTool: ToolManifest = {
     }
 
     try {
-      const start = Date.now();
+      const _start = Date.now();
 
       switch (action) {
         case 'status': {

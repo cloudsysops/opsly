@@ -17,7 +17,7 @@ export const TypeCheckTool: ToolManifest = {
   description: 'Ejecuta npm run type-check para validar TypeScript sin errores',
   capabilities: ['quality-assurance', 'validation', 'typescript'],
   riskLevel: 'low',
-  async execute(input: unknown): Promise<TypeCheckResult> {
+  async execute(_input: unknown): Promise<TypeCheckResult> {
     const start = Date.now();
 
     try {

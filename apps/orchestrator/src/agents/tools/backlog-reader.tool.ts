@@ -17,18 +17,18 @@ interface BacklogResult {
   error?: string;
 }
 
-function extractTasks(content: string, source: string): Task[] {
+function extractTasks(content: string, _source: string): Task[] {
   const tasks: Task[] = [];
 
   // Simple markdown parsing: look for `- [ ]` or `- [x]` patterns
   const lines = content.split('\n');
-  let currentSection = '';
+  let _currentSection = '';
 
   for (const line of lines) {
     // Detect section headers (## or ###)
     const headerMatch = line.match(/^#+\s+(.+)/);
     if (headerMatch) {
-      currentSection = headerMatch[1].toLowerCase();
+      _currentSection = headerMatch[1].toLowerCase();
     }
 
     // Detect task checkboxes: - [ ] or - [x]
@@ -84,7 +84,7 @@ export const BacklogReaderTool: ToolManifest = {
   description: 'Lee AGENTS.md y ROADMAP.md para extraer tareas pendientes, prioridades y scope',
   capabilities: ['backlog', 'planning', 'task-management'],
   riskLevel: 'low',
-  async execute(input: unknown): Promise<BacklogResult> {
+  async execute(_input: unknown): Promise<BacklogResult> {
     const tasks: Task[] = [];
 
     try {
