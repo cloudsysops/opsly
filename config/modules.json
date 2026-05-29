@@ -174,10 +174,10 @@
   },
   "consumers": {
     "apps/orchestrator": {
-      "depends": ["prompts", "observability", "evaluation", "errors", "workflow", "config", "security"]
+      "depends": ["prompts", "observability", "evaluation", "errors", "workflow", "config", "security", "voice-messaging"]
     },
     "apps/api": {
-      "depends": ["prompts", "observability", "evaluation", "errors", "api", "security", "config", "services", "telemetry"]
+      "depends": ["prompts", "observability", "evaluation", "errors", "api", "security", "config", "services", "telemetry", "voice-messaging"]
     },
     "apps/gateway": {
       "depends": ["observability", "errors", "security", "config", "telemetry", "workflow"]
