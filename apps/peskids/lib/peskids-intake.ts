@@ -19,6 +19,8 @@ type PeskidsClassModality = NonNullable<PeskidsIntakeProfile['classModality']>;
 
 export type PeskidsIntakeTurn = {
   stage: PeskidsIntakeStage;
+  /** 0-1 completion ratio (= progress). Alias for semantic clarity in callers. */
+  confidence: number;
   progress: number;
   reply: string;
   supportDraft: string | null;
@@ -545,6 +547,7 @@ export async function buildPeskidsIntakeTurn(params: {
 
   return {
     stage,
+    confidence: progress, // 0-1: same as progress; callers may gate handoff on confidence > 0.75
     progress,
     reply,
     supportDraft,
