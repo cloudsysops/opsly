@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@intcloudsysops/conversational-runtime": "*",
+    "@intcloudsysops/openwa": "*",
     "@intcloudsysops/opsly-core": "*",
     "@supabase/supabase-js": "^2.106.0",
     "next": "^15.5.18",

@@ -1,13 +1,8 @@
 # Panini Lab — standalone app on VPS (not a full tenant stack).
 # Deploy: doppler run --project ops-intcloudsysops --config prd -- \
-#   docker compose -p panini-lab -f infra/docker-compose.panini-lab.yml up -d
-#
-# IMPORTANT: use project name `panini-lab` (see `name:` below). Never run with the
-# default `infra` project + --remove-orphans — that deletes Traefik/app/admin/portal.
+#   docker compose -f infra/docker-compose.panini-lab.yml up -d
 #
 # Networks: traefik-public (edge) + infra_internal (LLM gateway on platform compose).
-
-name: panini-lab
 
 services:
   panini-lab:
@@ -54,3 +49,6 @@ networks:
     external: true
   infra_internal:
     external: true
+
+volumes:
+  openwa_panini_data:

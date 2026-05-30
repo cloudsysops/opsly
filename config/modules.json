@@ -193,6 +193,17 @@
       "dependencies": ["opsly-core"],
       "mainFile": "lib/conversational-runtime/src/index.ts",
       "exports": ["createConversationalRuntime", "InputMessage", "AgentResponse"]
+    },
+    "openwa": {
+      "name": "@intcloudsysops/openwa",
+      "version": "0.1.0",
+      "path": "lib/openwa",
+      "owner": "platform",
+      "description": "OpenWA gateway client — reusable WhatsApp channel for any tenant (HMAC verify, send, session, webhooks)",
+      "status": "experimental",
+      "dependencies": [],
+      "mainFile": "lib/openwa/src/index.ts",
+      "exports": ["sendTextMessage", "verifySignature", "parseInboundMessage", "isOpenWAEnabled", "getSession", "createWebhook"]
     }
   },
   "consumers": {
