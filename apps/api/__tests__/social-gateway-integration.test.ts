@@ -3,6 +3,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import * as gateway from '@intcloudsysops/llm-gateway';
+import { requireAdminAccess } from '../lib/auth';
 import {
   callGatewayForContent,
   callGatewayForMultipleContentTypes,
@@ -14,6 +15,10 @@ import { POST as publishRoute } from '../app/api/social/publish/route';
 vi.mock('@intcloudsysops/llm-gateway', () => ({
   llmCall: vi.fn(),
   logUsage: vi.fn(),
+}));
+
+vi.mock('../lib/auth', () => ({
+  requireAdminAccess: vi.fn().mockResolvedValue(null),
 }));
 
 // Publish route uses getServiceClient().schema('platform')
