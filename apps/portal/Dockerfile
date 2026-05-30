@@ -12,8 +12,8 @@ WORKDIR /repo
 COPY --from=deps /repo/node_modules ./node_modules
 COPY apps/portal ./apps/portal
 COPY config/n8n-workflows/catalog.json ./config/n8n-workflows/catalog.json
-# Shared runtime helpers imported via ../../../lib/runtime from apps/portal/lib/*
-COPY lib/runtime ./lib/runtime
+# Monorepo libs imported from apps/portal (runtime, design tokens in tailwind, etc.)
+COPY lib ./lib
 WORKDIR /repo/apps/portal
 ENV NEXT_TELEMETRY_DISABLED=1
 ARG NEXT_PUBLIC_SUPABASE_URL

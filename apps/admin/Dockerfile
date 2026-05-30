@@ -13,8 +13,8 @@ COPY --from=deps /repo/node_modules ./node_modules
 COPY --from=deps /repo/package.json ./package.json
 COPY --from=deps /repo/package-lock.json ./package-lock.json
 COPY apps/admin ./apps/admin
-# Shared runtime helpers imported via ../../../lib/runtime from apps/admin/lib/*
-COPY lib/runtime ./lib/runtime
+# Monorepo libs imported from apps/admin (runtime, design tokens in tailwind, etc.)
+COPY lib ./lib
 RUN npm ci --ignore-scripts --include=dev -w @intcloudsysops/admin
 WORKDIR /repo/apps/admin
 ENV NEXT_TELEMETRY_DISABLED=1
