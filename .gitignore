@@ -8,6 +8,8 @@ tools/usb-kit/secrets/
 
 # Nunca commitear secretos locales derivados del config
 config/opsly.secrets.json
+config/peskids-firebase-admin.json
+**/*-firebase-admin.json
 config/doppler-ready.json
 config/failover-monitor.env
 config/gcp.env
@@ -104,6 +106,9 @@ supabase/migrations/supabase/.temp/
 # Playwright (apps/portal)
 apps/portal/test-results/
 apps/portal/playwright-report/
+
+# Tenant app secrets (Doppler / Firebase / local overrides)
+apps/*/.secrets/
 
 # Obsidian — ignore runtime/personal state (vault en docs/)
 docs/.obsidian/cache
