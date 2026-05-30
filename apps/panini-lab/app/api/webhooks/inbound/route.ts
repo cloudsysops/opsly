@@ -34,11 +34,7 @@ function parseChannel(raw: string): ChannelKind {
   return 'web';
 }
 
-function toInputMessage(
-  body: InboundPayload,
-  sender: string,
-  channelRaw: string
-): InputMessage | null {
+function toInputMessage(body: InboundPayload, sender: string, channelRaw: string): InputMessage | null {
   const channel = parseChannel(channelRaw);
   const audio = body.audio_url?.trim();
   const image = body.image_url?.trim();
@@ -100,8 +96,18 @@ export async function POST(req: NextRequest) {
   const response = await runtime.handle({ ...input, requestId });
 
   let collectionUpdates: Awaited<ReturnType<typeof applyCollectionUpdates>> = [];
-  if (response.intent === 'UPDATE_COLLECTION' && response.ok && response.utterance) {
-    collectionUpdates = await applyCollectionUpdates(response.utterance);
+  const utteranceForCollection =
+    response.utterance ?? (input.messageType === 'text' ? input.content : undefined);
+
+  if (response.intent === 'UPDATE_COLLECTION' && response.ok && utteranceForCollection) {
+    collectionUpdates = await applyCollectionUpdates(utteranceForCollection);
+  } else if (
+    !response.ok &&
+    response.intent === 'UNPARSED' &&
+    input.messageType === 'text' &&
+    input.content.trim()
+  ) {
+    collectionUpdates = await applyCollectionUpdates(input.content);
   }
 
   return successJson(requestId, {

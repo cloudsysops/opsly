@@ -14,10 +14,10 @@ Opsly demuestra **incubadora multi-tenant**: un motor reutilizable + configs por
 |--------|---------------|------------|--------|
 | **1 — OS Core MVP** | `feat/opsly-os-core-mvp` | `packages/opsly-core` — tenant-config, AI gateway (mock/gemini), agent-runtime, events, dispatcher, observability | ✅ Código + 6 tests |
 | **1b — Conversational layer** | misma rama | `lib/conversational-runtime` — ports/adapters sobre opsly-core, `InputMessage` → `AgentResponse` | ✅ Skeleton + 4 tests |
-| **2 — Panini Lab app** | `feat/conversational-runtime` | `apps/panini-lab` (Next :3005), webhook `/api/webhooks/inbound`, dashboard, migración `0065_panini_lab_schema.sql` | ✅ Código |
+| **2 — Panini Lab app** | `feat/conversational-runtime` | `apps/panini-lab` (Next :3005), webhook `/api/webhooks/inbound`, dashboard, migración `0067_panini_lab_schema.sql` | ✅ Código |
 | **2b — Gateway Gemini** | `feat/conversational-runtime` | `gemini` en llm-gateway + `POST /v1/transcribe` | ✅ Código |
 | **3 — Peskids shadow** | `feat/conversational-runtime` | Mismo runtime, `mode: shadow`, sin writes prod | ⏳ Config lista |
-| **4 — Demo concurso** | `feat/panini-lab-prod` | Deploy `panini.op-sly.com`, smoke, voz E2E | ⏳ Infra lista; merge + Doppler + DNS |
+| **4 — Demo concurso** | — | Voz + dos tenants en vivo | ⏳ |
 
 ## Arquitectura (ports & adapters)
 

@@ -85,19 +85,23 @@ export function createGeminiGateway(options: GeminiGatewayOptions = {}): AiGatew
       });
 
       if (!response.ok) {
-        return null;
+        return fallback.parseIntent(request, tenant);
       }
 
       const body = (await response.json()) as GeminiResponse;
       const text = body.candidates?.[0]?.content?.parts?.[0]?.text;
       if (!text) {
-        return null;
+        return fallback.parseIntent(request, tenant);
       }
 
       try {
-        return parseGeminiJson(text);
+        const parsed = parseGeminiJson(text);
+        if (parsed) {
+          return parsed;
+        }
+        return fallback.parseIntent(request, tenant);
       } catch {
-        return null;
+        return fallback.parseIntent(request, tenant);
       }
     },
   };

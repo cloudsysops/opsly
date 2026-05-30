@@ -64,8 +64,8 @@ doppler secrets --project ops-intcloudsysops --config prd | grep -E 'PANINI|SUPA
 > ⚠️ **Revisar SQL antes de aplicar.** Additive-only.
 
 ```bash
-cat supabase/migrations/0065_panini_lab_schema.sql
-cat supabase/migrations/0066_panini_lab_add_country.sql
+cat supabase/migrations/0067_panini_lab_schema.sql
+cat supabase/migrations/0068_panini_lab_add_country.sql
 npx supabase db push --project-id jkwykpldnitavhmtuzmo
 npx supabase db psql --project-id jkwykpldnitavhmtuzmo -c "\dt panini_lab.*"
 ```

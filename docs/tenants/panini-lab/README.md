@@ -10,7 +10,7 @@ type: tenant
 **URL producción:** [https://panini.op-sly.com](https://panini.op-sly.com)  
 **Tipo:** Demo / hackathon — **no** stack tenant completo (sin n8n/uptime por defecto)  
 **App:** `apps/panini-lab` (Next.js, puerto **3005**)  
-**Schema Supabase:** `panini_lab` (migraciones `0065`, `0066`)
+**Schema Supabase:** `panini_lab` (migraciones `0067`, `0068`)
 
 ## Qué es
 

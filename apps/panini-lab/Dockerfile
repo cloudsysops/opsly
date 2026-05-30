@@ -28,7 +28,8 @@ COPY apps/panini-lab/            ./apps/panini-lab/
 
 # Build — no-lint: ESLint runs in CI separately; AUTH_SECRET dummy prevents next-auth crash at build time
 WORKDIR /app/apps/panini-lab
-RUN AUTH_SECRET=build-placeholder NEXT_TELEMETRY_DISABLED=1 npx next build --no-lint
+RUN mkdir -p public \
+ && AUTH_SECRET=build-placeholder NEXT_TELEMETRY_DISABLED=1 npx next build --no-lint
 
 # ─── Stage 2: runner ─────────────────────────────────────────────────────────
 FROM node:20-alpine AS runner
@@ -38,6 +39,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3005
+ENV HOSTNAME=0.0.0.0
 
 # Standalone server + static assets
 COPY --from=builder /app/apps/panini-lab/.next/standalone ./

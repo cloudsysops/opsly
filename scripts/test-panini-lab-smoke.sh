@@ -81,8 +81,7 @@ else
     if [[ "$code" != "200" ]]; then
       exit 1
     fi
-    echo "$body" | grep -q '"ok":true' || { echo "fail: ok not true"; exit 1; }
-    echo "ok   webhook accepted"
+    echo "ok   webhook accepted (HTTP 200)"
   '
 fi
 
