@@ -20,6 +20,7 @@ WORKDIR /repo
 COPY --from=deps /repo/node_modules ./node_modules
 COPY --from=deps /repo/package.json ./package.json
 COPY --from=deps /repo/package-lock.json ./package-lock.json
+COPY --from=deps /repo/lib/content-studio/node_modules ./lib/content-studio/node_modules
 COPY tsconfig.json ./tsconfig.json
 COPY packages/types ./packages/types
 COPY lib/services ./lib/services
