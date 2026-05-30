@@ -1,5 +1,5 @@
+import { BILLING_METRICS } from './constants';
 import { unitCostUsdForMetric } from './billing-meter-pricing';
-import { parseUsageRedisKey } from './billing/flush-billing-usage';
 import { getMeteringRedis } from './billing/redis-metering';
 
 const CENTS = 100;
@@ -72,30 +72,26 @@ async function aggregatePendingUsdForTenant(
   redis: ConnectedMeteringRedis,
   tenantId: string
 ): Promise<number> {
-  const pattern = `usage:${tenantId}:*`;
   let pending = 0;
   try {
-    for await (const keys of redis.scanIterator({
-      MATCH: pattern,
-      COUNT: 100,
-    })) {
-      for (const key of keys) {
-        const parsed = parseUsageRedisKey(key);
-        if (parsed?.tenantId !== tenantId) {
-          continue;
-        }
-        const raw = await redis.get(key);
-        const qty = parseQuantity(raw ?? undefined);
-        if (qty <= 0) {
-          continue;
-        }
-        const unit = unitCostUsdForMetric(parsed.metricType);
+    /**
+     * Optimización: Usamos MGET en lugar de SCAN + GET individuales.
+     * Esto reduce la complejidad de O(N) operaciones de red a O(1) roundtrip.
+     */
+    const keys = BILLING_METRICS.map((m) => `usage:${tenantId}:${m}`);
+    const results = await redis.mGet(keys);
+
+    results.forEach((raw, index) => {
+      const qty = parseQuantity(raw ?? undefined);
+      if (qty > 0) {
+        const metric = BILLING_METRICS[index];
+        const unit = unitCostUsdForMetric(metric);
         pending += qty * unit;
       }
-    }
+    });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    warnBillingRedisDegraded(`(scan/get failed: ${msg})`);
+    warnBillingRedisDegraded(`(mget failed: ${msg})`);
     return 0;
   }
   return pending;
@@ -103,7 +99,7 @@ async function aggregatePendingUsdForTenant(
 
 /**
  * Coste USD pendiente en Redis (`usage:{tenantId}:*`) sin flush.
- * Usa `SCAN` con `MATCH` (no `KEYS *`); métrica y precio vía `parseUsageRedisKey` + `unitCostUsdForMetric`.
+ * Optimizado con MGET para evitar SCAN O(N).
  */
 export async function sumPendingRedisUsageUsd(tenantId: string): Promise<number> {
   const redisUrlConfigured = Boolean(process.env.REDIS_URL?.trim());

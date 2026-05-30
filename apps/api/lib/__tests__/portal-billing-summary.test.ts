@@ -75,4 +75,27 @@ describe('sumPendingRedisUsageUsd', () => {
     expect(log).toHaveBeenCalledWith(expect.stringContaining('REDIS_URL not set'));
     log.mockRestore();
   });
+
+  it('calcula la suma correcta usando MGET cuando hay datos en Redis', async () => {
+    vi.stubEnv('REDIS_URL', 'redis://127.0.0.1:6379');
+    const mockMGet = vi.fn().mockResolvedValue(['100', '5000', '0.5', '200']);
+    vi.mocked(redisMetering.getMeteringRedis).mockResolvedValue({
+      mGet: mockMGet,
+    } as any);
+
+    const n = await sumPendingRedisUsageUsd(tenantId);
+
+    // cpu_seconds: 100 * 0.00001 = 0.001
+    // ai_tokens: 5000 * 0.0001 = 0.5
+    // storage_gb: 0.5 * 0.001 = 0.0005
+    // worker_seconds: 200 * 0.00001 = 0.002
+    // Total: 0.001 + 0.5 + 0.0005 + 0.002 = 0.5035
+    expect(n).toBe(0.5035);
+    expect(mockMGet).toHaveBeenCalledWith([
+      `usage:${tenantId}:cpu_seconds`,
+      `usage:${tenantId}:ai_tokens`,
+      `usage:${tenantId}:storage_gb`,
+      `usage:${tenantId}:worker_seconds`,
+    ]);
+  });
 });

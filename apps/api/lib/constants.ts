@@ -238,3 +238,11 @@ export const TIME_PARSING = {
 export const TECHNICIAN_SLOT_GRID = {
   BUSY_STATUSES: ['requested', 'confirmed'] as const,
 } as const;
+
+/** Métricas de facturación soportadas. */
+export const BILLING_METRICS = [
+  'cpu_seconds',
+  'ai_tokens',
+  'storage_gb',
+  'worker_seconds',
+] as const;
