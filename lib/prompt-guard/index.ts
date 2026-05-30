@@ -35,3 +35,10 @@ export {
 } from './src/validate-message.js';
 
 export { guardLlmTextPrompt } from './src/guard-llm-text.js';
+
+export {
+  type ActivePromptGuardResult,
+  assertActivePromptWriteAllowed,
+  guardActivePromptDocument,
+  guardActivePromptDocumentOrThrow,
+} from './src/active-prompt-write.js';

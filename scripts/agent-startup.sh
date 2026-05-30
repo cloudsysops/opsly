@@ -70,6 +70,17 @@ echo "  Tenants: $(cat context/system_state.json | jq -r '.tenants[] .slug' 2>/d
 echo ""
 echo "=== LISTO PARA TRABAJAR ==="
 echo ""
+if [[ -x "$REPO_ROOT/scripts/opsly-local-blindaje-check.sh" ]]; then
+  echo "6. Blindaje local (agentes / ACTIVE-PROMPT)..."
+  if [[ "${OPSLY_ACTIVE_PROMPT_WRITES_DISABLED:-}" != "1" ]]; then
+    echo "  ⚠️  export OPSLY_ACTIVE_PROMPT_WRITES_DISABLED=1  # recomendado en Mac/Cursor"
+  fi
+  if [[ "${OPSLY_CLI_AGENT_DRY_RUN:-}" != "1" ]]; then
+    echo "  ⚠️  export OPSLY_CLI_AGENT_DRY_RUN=1  # evita ejecutar CLIs reales"
+  fi
+  bash "$REPO_ROOT/scripts/opsly-local-blindaje-check.sh" || true
+  echo ""
+fi
 echo "Próximos pasos:"
 echo "  - Revisa AGENTS.md para estado de sesión"
 echo "  - Revisa docs/03-agents/AGENT-STARTUP-PROMPT.md para el orden de arranque"

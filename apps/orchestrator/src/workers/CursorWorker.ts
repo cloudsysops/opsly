@@ -1,9 +1,11 @@
 import { Job } from 'bullmq';
+import { guardActivePromptDocumentOrThrow } from '@intcloudsysops/prompt-guard';
 import { resolveGithubPat } from '../lib/github-pat.js';
 import { notifyDiscord } from './NotifyWorker.js';
 import { createWorker } from './create-worker.js';
 
 async function writeActivePrompt(content: string): Promise<void> {
+  const safe = guardActivePromptDocumentOrThrow(content);
   const token = resolveGithubPat();
   if (!token) {
     throw new Error('GITHUB_TOKEN or GITHUB_TOKEN_N8N is required for GitHub API');
@@ -36,7 +38,7 @@ async function writeActivePrompt(content: string): Promise<void> {
     },
     body: JSON.stringify({
       message: `chore(orchestrator): cursor worker job ${new Date().toISOString()}`,
-      content: Buffer.from(content).toString('base64'),
+      content: Buffer.from(safe).toString('base64'),
       sha: current.sha,
     }),
   });
