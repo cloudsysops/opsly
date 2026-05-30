@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import { guardLlmTextPrompt } from '@intcloudsysops/prompt-guard';
 import { GatewayHttpError, llmCallDirect } from './llm-direct.js';
 import type { RoutingBias } from './routing-hints.js';
 import type { LLMRequest, LlmProviderHint, TenantPlan } from './types.js';
@@ -13,6 +14,7 @@ export interface TextCompletionBody {
   request_id?: string;
   task_type?: OllamaTaskType;
   prompt: string;
+  system?: string;
   routing_bias?: RoutingBias;
   provider_hint?: LlmProviderHint;
   user_id?: string;
@@ -107,11 +109,19 @@ export async function handleTextCompletionHttp(
     res.end(JSON.stringify({ error: 'tenant_slug required' }));
     return true;
   }
-  if (typeof prompt !== 'string' || prompt.trim().length === 0) {
+  if (typeof prompt !== 'string') {
     res.writeHead(400, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'prompt required' }));
     return true;
   }
+
+  const guardedPrompt = guardLlmTextPrompt(prompt);
+  if (!guardedPrompt.ok) {
+    res.writeHead(guardedPrompt.status, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: guardedPrompt.error }));
+    return true;
+  }
+
   const taskType = body.task_type;
   if (!isTaskType(taskType)) {
     res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -143,12 +153,17 @@ export async function handleTextCompletionHttp(
       : undefined;
   const providerHint = parseProviderHintBody(body.provider_hint);
 
-  const userContent = `${prefixForTask(taskType)}${prompt.trim()}`;
+  const systemRaw = body.system;
+  const systemText =
+    typeof systemRaw === 'string' && systemRaw.trim().length > 0 ? systemRaw.trim() : undefined;
+
+  const userContent = `${prefixForTask(taskType)}${guardedPrompt.prompt}`;
   const llmReq: LLMRequest = {
     tenant_slug: tenantSlug,
     tenant_plan: tenantPlan,
     request_id: requestId,
     messages: [{ role: 'user', content: userContent }],
+    ...(systemText !== undefined ? { system: systemText } : {}),
     legacy_pipeline: true,
     model: 'cheap',
     routing_bias: routingBias ?? 'cost',

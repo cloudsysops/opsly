@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@intcloudsysops/llm-gateway": "^1.0.0",
+    "@intcloudsysops/prompt-guard": "*",
     "@supabase/supabase-js": "^2.106.0",
     "zod": "^3.25.76"
   },

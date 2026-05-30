@@ -20,9 +20,7 @@
     "cap:build": "next build && npx cap sync"
   },
   "dependencies": {
-    "@intcloudsysops/conversational-runtime": "*",
-    "@intcloudsysops/openwa": "*",
-    "@intcloudsysops/opsly-core": "*",
+    "@intcloudsysops/prompt-guard": "*",
     "@capacitor/android": "^8.3.4",
     "@capacitor/app": "^8.1.0",
     "@capacitor/cli": "^8.3.4",

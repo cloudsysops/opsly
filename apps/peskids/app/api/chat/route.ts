@@ -1,12 +1,11 @@
 import { NextRequest } from 'next/server';
+import { validateChatUserMessage } from '@intcloudsysops/prompt-guard';
 import { triggerN8nMessagePipeline } from '@/lib/chat-assistant';
 import { storeDraftReply, storeInboundMessage, storeOutboundMessage } from '@/lib/message-store';
 import { emitEvent } from '@/lib/events';
 import { buildPeskidsIntakeTurn } from '@/lib/peskids-intake';
 import { submitLeadFromIntake } from '@/lib/peskids-lead-from-intake';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
-
-const MAX_MESSAGE_LENGTH = 2000;
 
 export async function POST(req: NextRequest) {
   const requestId = resolveRequestId(req);
@@ -19,12 +18,28 @@ export async function POST(req: NextRequest) {
       mode?: 'admissions' | 'support';
     };
 
-    const messageText = body.message?.trim() ?? '';
     const sessionId = body.session_id?.trim() ?? 'web-anonymous';
-
-    if (!messageText || messageText.length > MAX_MESSAGE_LENGTH) {
-      return errorJson(requestId, 'message required (max 2000 chars)', 400);
+    const validated = validateChatUserMessage(body.message ?? '');
+    if (!validated.ok) {
+      if (validated.safeResponse) {
+        return successJson(requestId, {
+          ok: true,
+          message_id: null,
+          draft_id: null,
+          reply: validated.safeResponse,
+          stage: 'blocked',
+          progress: 0,
+          profile: null,
+          support_draft: null,
+          input_mode: 'text',
+          quick_replies: [],
+          from_llm: false,
+          disclaimer: 'Mensaje revisado por políticas de seguridad.',
+        });
+      }
+      return errorJson(requestId, validated.error, validated.status);
     }
+    const messageText = validated.message;
 
     const { message, error: storeError } = await storeInboundMessage({
       source: 'web',
