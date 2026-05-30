@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import { getAuthPublicConfig } from '@/lib/auth-public-config'
 import { SupportLogin } from './support-login'
 
 export const metadata = {
@@ -7,6 +8,8 @@ export const metadata = {
 }
 
 export default function SupportLoginPage(): React.ReactElement {
+  const authConfig = getAuthPublicConfig()
+
   return (
     <Suspense
       fallback={
@@ -15,7 +18,7 @@ export default function SupportLoginPage(): React.ReactElement {
         </div>
       }
     >
-      <SupportLogin />
+      <SupportLogin authConfig={authConfig} />
     </Suspense>
   )
 }

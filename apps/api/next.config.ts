@@ -13,6 +13,14 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  transpilePackages: ['@intcloudsysops/openwa', '@intcloudsysops/tenant-profile'],
+  webpack: (config) => {
+    config.resolve.extensionAlias = {
+      '.js': ['.ts', '.tsx', '.js'],
+      '.jsx': ['.tsx', '.jsx'],
+    };
+    return config;
+  },
 };
 
 export default nextConfig;

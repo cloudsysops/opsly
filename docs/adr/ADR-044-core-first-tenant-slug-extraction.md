@@ -100,6 +100,7 @@ dedicated VPS with minimal code changes.
 ## Related Documents
 
 - `AGENTS.md`
+- `docs/01-development/MODULARITY-CONTRACT.md`
 - `docs/01-development/VISION.md`
 - `docs/00-architecture/TENANT-INCUBATION-LIFECYCLE.md`
 - `docs/00-architecture/ARCHITECTURE.md`

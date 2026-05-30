@@ -1613,6 +1613,15 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 ## 🔄 Próximo paso inmediato
 
+**Sigma agent harness (2026-05-30):** [PR #457](https://github.com/cloudsysops/opsly/pull/457) — merge cuando apruebes; post-merge en VPS:
+
+```bash
+cd /opt/opsly && git pull --ff-only
+npm run sigma:install
+# redeploy orchestrator + MCP (compose pull/up según runbook deploy)
+npm run sigma:smoke   # opcional en VPS tras install
+```
+
 **Status PRs Cleanup (2026-05-22 — SESSION FINAL):**
 
 | PR | Status | Blockers | Owner |

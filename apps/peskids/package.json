@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@intcloudsysops/conversational-runtime": "*",
+    "@intcloudsysops/openwa": "*",
     "@intcloudsysops/opsly-core": "*",
     "@capacitor/android": "^8.3.4",
     "@capacitor/app": "^8.1.0",

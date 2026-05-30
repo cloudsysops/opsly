@@ -30,6 +30,7 @@ export type WorkerConcurrencyKey =
   | 'local-playwright'
   | 'cloudsysops_agents'
   | 'defense_audit'
+  | 'sigma_decision'
   | 'openclaw-planner'
   | 'openclaw-skeptic'
   | 'api_factory'
@@ -69,6 +70,7 @@ const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'local-playwright': 1,
   'cloudsysops_agents': 2,
   'defense_audit': 2,
+  'sigma_decision': 2,
   'openclaw-planner': 2,
   'openclaw-skeptic': 1,
   api_factory: 3,
@@ -109,6 +111,7 @@ const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'local-playwright': 1,
   'cloudsysops_agents': 1,
   'defense_audit': 1,
+  'sigma_decision': 1,
   'openclaw-planner': 1,
   'openclaw-skeptic': 1,
   api_factory: 1,
@@ -149,6 +152,7 @@ const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
   'local-playwright': 'ORCHESTRATOR_LOCAL_PLAYWRIGHT_CONCURRENCY',
   'cloudsysops_agents': 'ORCHESTRATOR_CLOUDSYSOPS_AGENTS_CONCURRENCY',
   'defense_audit': 'ORCHESTRATOR_DEFENSE_AUDIT_CONCURRENCY',
+  'sigma_decision': 'ORCHESTRATOR_SIGMA_DECISION_CONCURRENCY',
   'openclaw-planner': 'ORCHESTRATOR_OPENCLAW_PLANNER_CONCURRENCY',
   'openclaw-skeptic': 'ORCHESTRATOR_OPENCLAW_SKEPTIC_CONCURRENCY',
   api_factory: 'ORCHESTRATOR_API_FACTORY_CONCURRENCY',

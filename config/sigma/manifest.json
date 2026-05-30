@@ -1,0 +1,16 @@
+{
+  "upstream": "https://github.com/SigmaHQ/sigma",
+  "release": "r2026-04-01",
+  "vendorPath": "vendor/sigma",
+  "ruleRoots": [
+    "rules",
+    "rules-threat-hunting",
+    "rules-emerging-threats"
+  ],
+  "harness": {
+    "quorumMinReviews": 2,
+    "defaultReviewers": ["skeptic", "security", "planner"],
+    "consensusThreshold": 0.66,
+    "redisKeyPrefix": "sigma:harness"
+  }
+}

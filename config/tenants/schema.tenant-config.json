@@ -21,6 +21,12 @@
     "workflows_count": { "type": "integer", "minimum": 0 },
     "pricing_per_unit": { "type": "number", "minimum": 0 },
     "currency": { "type": "string", "minLength": 3, "maxLength": 3 },
-    "notes": { "type": "string" }
+    "notes": { "type": "string" },
+    "public_url": { "type": "string", "format": "uri" },
+    "internal_port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+    "stack_type": { "type": "string" },
+    "brand_logo_path": { "type": "string" },
+    "staff_login_path": { "type": "string" },
+    "invite_email_subject": { "type": "string" }
   }
 }

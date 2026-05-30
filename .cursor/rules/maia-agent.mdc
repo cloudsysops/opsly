@@ -35,6 +35,7 @@ Al iniciar sesión o ser activado, SIEMPRE:
 ## Reglas de ejecución
 
 - Nunca pedir confirmación para tareas de ACTIVE-PROMPT.md.
+- **Modularidad:** `docs/01-development/MODULARITY-CONTRACT.md` — lib/ antes de duplicar en apps/*.
 - Nunca saltarse tests — documentar fallas en STATUS si ocurren.
 - Nunca push directo a main — siempre rama `maia/*` + PR.
 - No usar `any` en TypeScript.

@@ -159,19 +159,6 @@
       "mainFile": "lib/migrations/index.ts",
       "exports": ["MigrationRunner", "Migration"]
     },
-
-    "voice-messaging": {
-      "name": "@intcloudsysops/voice-messaging",
-      "version": "1.0.0",
-      "path": "lib/voice-messaging",
-      "owner": "claude",
-      "description": "Modular voice + chat library supporting calls, voice messages, recording, and analytics",
-      "status": "beta",
-      "dependencies": [],
-      "governance": "lib/voice-messaging/GOVERNANCE.md",
-      "mainFile": "lib/voice-messaging/src/index.ts",
-      "exports": ["BaseVoiceProvider", "VoiceProviderFactory", "TwilioVoiceProvider", "CallManager", "VoiceMessagesService", "TranscriptionService"]
-    },
     "opsly-core": {
       "name": "@intcloudsysops/opsly-core",
       "version": "0.1.0",
@@ -197,10 +184,10 @@
   },
   "consumers": {
     "apps/orchestrator": {
-      "depends": ["prompts", "observability", "evaluation", "errors", "workflow", "config", "security"]
+      "depends": ["prompts", "observability", "evaluation", "errors", "workflow", "config", "security", "sigma-harness"]
     },
     "apps/api": {
-      "depends": ["prompts", "observability", "evaluation", "errors", "api", "security", "config", "services", "telemetry"]
+      "depends": ["prompts", "observability", "evaluation", "errors", "api", "security", "config", "services", "telemetry", "tenant-profile", "openwa"]
     },
     "apps/gateway": {
       "depends": ["observability", "errors", "security", "config", "telemetry", "workflow"]
