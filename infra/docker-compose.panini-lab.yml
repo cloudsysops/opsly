@@ -25,6 +25,10 @@ services:
       AUTH_URL: ${PANINI_AUTH_URL:-https://panini.op-sly.com}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      OPENWA_PANINI_LAB_API_URL: ${OPENWA_PANINI_LAB_API_URL:-http://openwa-panini-lab:2785}
+      OPENWA_PANINI_LAB_API_KEY: ${OPENWA_PANINI_LAB_API_KEY:-}
+      OPENWA_PANINI_LAB_SESSION_ID: ${OPENWA_PANINI_LAB_SESSION_ID:-panini-lab}
+      OPENWA_PANINI_LAB_WEBHOOK_SECRET: ${OPENWA_PANINI_LAB_WEBHOOK_SECRET:-}
     ports:
       # Localhost only — smoke tests and VPS ops (Traefik uses docker network)
       - '127.0.0.1:3005:3005'
@@ -49,6 +53,3 @@ networks:
     external: true
   infra_internal:
     external: true
-
-volumes:
-  openwa_panini_data:

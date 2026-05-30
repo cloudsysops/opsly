@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
   const proto = req.headers.get('x-forwarded-proto') ?? 'https';
   try {
     const result = await openwaRegisterWebhook({ host, proto }, undefined, 'peskids');
-    return successJson(requestId, result);
+    return successJson(requestId, { ...result });
   } catch (err) {
     return errorJson(
       requestId,

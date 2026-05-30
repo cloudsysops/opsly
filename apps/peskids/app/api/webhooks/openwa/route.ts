@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { parseOpenWAWebhookRequest, sendTextMessage } from '@intcloudsysops/openwa';
+import { parseOpenWAWebhookRequest, sendTextMessageForTenant } from '@intcloudsysops/openwa';
 import { buildPeskidsIntakeTurn } from '@/lib/peskids-intake';
 import { submitLeadFromIntake } from '@/lib/peskids-lead-from-intake';
 import { storeInboundMessage, storeOutboundMessage } from '@/lib/message-store';
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 
     const replyText = intake.reply;
     if (replyText) {
-      void sendTextMessage(msg.chatId, replyText).catch((err: unknown) => {
+      void sendTextMessageForTenant('peskids', msg.chatId, replyText).catch((err: unknown) => {
         console.error('[openwa/peskids] sendTextMessage failed', {
           to: msg.chatId,
           error: err instanceof Error ? err.message : String(err),

@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { parseOpenWAWebhookRequest, sendTextMessage } from '@intcloudsysops/openwa';
+import { parseOpenWAWebhookRequest, sendTextMessageForTenant } from '@intcloudsysops/openwa';
 import { applyCollectionUpdates } from '@/lib/collection';
 import { getPaniniRuntime } from '@/lib/panini-runtime';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (response.reply) {
-    void sendTextMessage(msg.chatId, response.reply).catch((err: unknown) => {
+    void sendTextMessageForTenant('panini-lab', msg.chatId, response.reply).catch((err: unknown) => {
       console.error('[openwa/panini] reply failed', {
         to: msg.chatId,
         error: err instanceof Error ? err.message : String(err),

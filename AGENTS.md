@@ -194,6 +194,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - `Tenant` = sirve a un cliente.
 - `Agent` = ejecuta trabajo gobernado.
 - `Skill` = define cómo trabaja un agente.
+- **Modularidad (todo agente):** `docs/01-development/MODULARITY-CONTRACT.md` + skill `opsly-modularity` — lib primero, tenant delgado, sin duplicar.
 
 **No negociar:**
 - No crear control planes paralelos.

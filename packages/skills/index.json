@@ -22,6 +22,15 @@
       "path": "skills/user/opsly-context/"
     },
     {
+      "name": "opsly-modularity",
+      "version": "1.0.0",
+      "description": "Contrato core-first: lib compartida, tenant delgado, activación por tenant_slug, sin duplicar integraciones. OBLIGATORIO antes de implementar.",
+      "category": "architecture",
+      "priority": "critical",
+      "usage": "Antes de cualquier código en apps/* o integraciones; buscar lib/ primero",
+      "path": "skills/user/opsly-modularity/"
+    },
+    {
       "name": "opsly-quantum",
       "version": "2.0.0",
       "description": "Skill maestro: orquestación segura + acciones reales vía scripts del repo",
@@ -625,10 +634,10 @@
   ],
   "categories": {
     "tooling": ["opsly-skill-creator"],
-    "bootstrap": ["opsly-context", "opsly-bootstrap"],
+    "bootstrap": ["opsly-context", "opsly-modularity", "opsly-bootstrap"],
     "master": ["opsly-quantum"],
     "autonomy": ["opsly-autonomous"],
-    "architecture": ["opsly-architect-senior", "opsly-architect"],
+    "architecture": ["opsly-modularity", "opsly-architect-senior", "opsly-architect"],
     "development": ["opsly-api", "opsly-bash", "opsly-frontend"],
     "ai": ["opsly-llm", "opsly-notebooklm", "opsly-feedback-ml", "opsly-ai-sdk-vercel"],
     "integration": ["opsly-mcp", "opsly-google-cloud"],
@@ -649,10 +658,10 @@
     ]
   },
   "quick_reference": {
-    "nueva_sesion": ["opsly-context"],
+    "nueva_sesion": ["opsly-context", "opsly-modularity"],
     "orquestacion": ["opsly-quantum"],
     "autonomo": ["opsly-autonomous"],
-    "desarrollo_api": ["opsly-api", "opsly-bash", "opsly-jcode"],
+    "desarrollo_api": ["opsly-modularity", "opsly-api", "opsly-bash", "opsly-jcode"],
     "ia_ml": ["opsly-llm", "opsly-feedback-ml", "opsly-notebooklm"],
     "infra": ["opsly-infra", "opsly-tenant", "opsly-discord", "opsly-self-healing"],
     "self_healing": ["opsly-self-healing", "opsly-infra", "opsly-discord"],

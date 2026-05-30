@@ -1,0 +1,27 @@
+---
+description: Opsly — modularidad core-first (obligatorio antes de código)
+alwaysApply: true
+---
+
+# Modularity — no duplicar, no forkar
+
+**Contrato canónico:** `docs/01-development/MODULARITY-CONTRACT.md`  
+**Skill:** `opsly-modularity` (`node scripts/load-skills.js show opsly-modularity`)
+
+## Antes de cualquier implementación
+
+1. `grep` / buscar en `lib/` y `config/modules.json` — **reutilizar** si existe.
+2. Si la capability es reusable → **`lib/<name>/`** (`@intcloudsysops/<name>`), no en `apps/<tenant>/`.
+3. Tenant app (`apps/peskids`, `apps/panini-lab`, …) → **rutas delgadas**: auth/webhook parse en lib; dominio en tenant.
+4. Activación por **`tenant_slug`** y env `CAPABILITY_{SLUG}_*`, no `if (slug === 'x')` como diseño.
+5. Control plane Opsly → `apps/api` admin routes; no duplicar en cada tenant.
+
+## Prohibido
+
+- Copiar clientes HTTP, verify HMAC, o setup entre tenants.
+- Features compartidas implementadas solo en un `apps/*` sin plan de extracción a lib.
+- Segundo orchestrator, MCP, o cola paralela.
+
+## ADR
+
+`docs/adr/ADR-044-core-first-tenant-slug-extraction.md`

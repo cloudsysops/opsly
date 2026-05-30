@@ -33,13 +33,14 @@ Antes de modificar codigo, infra, tests, workflows o docs operativas:
 1. Leer `AGENTS.md`.
 2. Leer `VISION.md` (raíz repo) o `docs/stubs/VISION.md` / `docs/01-development/VISION.md`.
 3. Leer este contrato: `docs/03-agents/AGENT-BRAIN-CONTRACT.md`.
-4. Consultar `config/knowledge-index.json` si existe.
-5. Consultar `config/github-module-graph.json` si existe.
-6. Si la tarea toca un modulo concreto, revisar su nota Obsidian en
+4. Leer modularidad: `docs/01-development/MODULARITY-CONTRACT.md` (core-first; no duplicar entre tenants).
+5. Consultar `config/knowledge-index.json` si existe.
+6. Consultar `config/github-module-graph.json` si existe.
+7. Si la tarea toca un modulo concreto, revisar su nota Obsidian en
    `docs/brain/modules/` cuando exista.
-7. Aplicar guardrails: `docs/03-agents/AGENT-GUARDRAILS.md`.
-8. Aplicar Git workflow: `docs/01-development/GIT-WORKFLOW.md`.
-9. Revisar la taxonomia: `docs/obsidian/TAXONOMY.md` si la tarea implica
+8. Aplicar guardrails: `docs/03-agents/AGENT-GUARDRAILS.md`.
+9. Aplicar Git workflow: `docs/01-development/GIT-WORKFLOW.md`.
+10. Revisar la taxonomia: `docs/obsidian/TAXONOMY.md` si la tarea implica
    clasificacion, sintesis o organizacion del vault.
 
 Si falta `config/github-module-graph.json`, el agente debe operar con el repo
@@ -52,20 +53,23 @@ Todo agente nuevo debe recibir este paquete minimo antes de ejecutar tareas:
 1. `AGENTS.md` — estado operativo y reglas de sesion.
 2. `VISION.md` — norte de producto.
 3. `docs/03-agents/AGENT-BRAIN-CONTRACT.md` — contrato del cerebro compartido.
-4. `docs/03-agents/AGENT-GUARDRAILS.md` — limites de seguridad/produccion.
-5. `docs/01-development/GIT-WORKFLOW.md` — ramas, PRs y cierre de trabajo.
-6. `config/knowledge-index.json` — indice documental si existe.
-7. `config/github-module-graph.json` — grafo de modulos si existe.
-8. `docs/obsidian/research/agent-pattern-matrix.md` — mapa de patrones reutilizables para runtime Python, security, training y verticales monetizables.
-9. `docs/obsidian/TAXONOMY.md` — taxonomia canonica de nodos, claims, patrones y promociones.
+4. `docs/01-development/MODULARITY-CONTRACT.md` — core-first; lib compartida; tenant delgado.
+5. `docs/03-agents/AGENT-GUARDRAILS.md` — limites de seguridad/produccion.
+6. `docs/01-development/GIT-WORKFLOW.md` — ramas, PRs y cierre de trabajo.
+7. `config/knowledge-index.json` — indice documental si existe.
+8. `config/github-module-graph.json` — grafo de modulos si existe.
+9. `docs/obsidian/research/agent-pattern-matrix.md` — mapa de patrones reutilizables para runtime Python, security, training y verticales monetizables.
+10. `docs/obsidian/TAXONOMY.md` — taxonomia canonica de nodos, claims, patrones y promociones.
 
 Prompt minimo recomendado:
 
 ```text
-Lee AGENTS.md, VISION.md y docs/03-agents/AGENT-BRAIN-CONTRACT.md.
+Lee AGENTS.md, VISION.md, docs/03-agents/AGENT-BRAIN-CONTRACT.md y
+docs/01-development/MODULARITY-CONTRACT.md.
 Trabaja como agente Opsly usando OpenClaw, Obsidian Brain y Graphyfi.
-No crees memoria paralela. Consulta config/knowledge-index.json y
-config/github-module-graph.json cuando existan. Respeta guardrails y Git workflow.
+No crees memoria paralela. Reutiliza lib/ antes de duplicar en apps/*.
+Consulta config/knowledge-index.json y config/github-module-graph.json cuando existan.
+Respeta guardrails y Git workflow.
 ```
 
 Si la tarea toca agentes, seguridad defensiva, training o verticales nuevas,

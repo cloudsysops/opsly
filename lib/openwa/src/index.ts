@@ -43,3 +43,5 @@ export type { SetupRequestContext } from './setup.js';
 
 export { parseOpenWAWebhookRequest } from './webhook.js';
 export type { ParsedOpenWAWebhook } from './webhook.js';
+
+export { sendTextMessageForTenant } from './tenant-messaging.js';

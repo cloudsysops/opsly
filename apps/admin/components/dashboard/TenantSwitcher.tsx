@@ -36,7 +36,11 @@ export function TenantSwitcher(): React.ReactElement {
       return;
     }
     if (tenants.length > 0) {
-      const preferred = tenants.find((tenant) => tenant.slug === 'peskids') ?? tenants[0];
+      const defaultSlug = process.env.NEXT_PUBLIC_OPSLY_DEFAULT_TENANT_SLUG?.trim();
+      const matched = defaultSlug
+        ? tenants.find((tenant) => tenant.slug === defaultSlug)
+        : undefined;
+      const preferred = matched ?? tenants[0];
       setSelectedSlug(preferred.slug);
       window.localStorage.setItem(LAST_SELECTED_KEY, preferred.slug);
     }

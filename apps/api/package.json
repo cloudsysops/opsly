@@ -21,6 +21,7 @@
     "@intcloudsysops/ml": "^1.0.0",
     "@intcloudsysops/notebooklm-agent": "^1.0.0",
     "@intcloudsysops/openwa": "*",
+    "@intcloudsysops/tenant-profile": "*",
     "@supabase/supabase-js": "^2.106.0",
     "bullmq": "^5.76.10",
     "execa": "^9.6.1",
