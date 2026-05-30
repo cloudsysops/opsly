@@ -15,7 +15,6 @@ COPY --from=deps /repo/package-lock.json ./package-lock.json
 COPY apps/admin ./apps/admin
 # Monorepo libs imported from apps/admin (runtime, design tokens in tailwind, etc.)
 COPY lib ./lib
-RUN npm ci --ignore-scripts --include=dev -w @intcloudsysops/admin
 WORKDIR /repo/apps/admin
 ENV NEXT_TELEMETRY_DISABLED=1
 # Producción: false (login Supabase obligatorio). Solo local/staging: --build-arg NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=true
