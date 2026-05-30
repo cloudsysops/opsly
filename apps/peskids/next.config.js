@@ -5,6 +5,13 @@ const nextConfig = {
   reactStrictMode: true,
   outputFileTracingRoot: path.join(__dirname, '../..'),
   transpilePackages: ['@intcloudsysops/opsly-core', '@intcloudsysops/conversational-runtime'],
+  webpack: (config) => {
+    config.resolve.extensionAlias = {
+      '.js': ['.ts', '.tsx', '.js'],
+      '.jsx': ['.tsx', '.jsx'],
+    };
+    return config;
+  },
 }
 
 module.exports = nextConfig
