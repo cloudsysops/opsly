@@ -106,6 +106,12 @@ apps/portal/playwright-report/
 
 # Tenant app secrets (Doppler / Firebase / local overrides)
 apps/*/.secrets/
+config/peskids-firebase-admin.json
+**/*-firebase-admin.json
+**/*service-account*.json
+
+# Playwright MCP local browser state (may contain session cookies)
+.playwright-mcp/
 
 # Cryptographic material (never commit)
 **/*.pem
