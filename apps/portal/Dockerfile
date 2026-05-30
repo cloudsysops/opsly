@@ -5,11 +5,15 @@ FROM node:20-alpine AS deps
 WORKDIR /repo
 COPY package.json package-lock.json ./
 COPY apps/portal/package.json ./apps/portal/
+COPY lib/components/package.json ./lib/components/
+COPY lib/runtime/package.json ./lib/runtime/
 RUN npm ci --ignore-scripts
 
 FROM node:20-alpine AS builder
 WORKDIR /repo
 COPY --from=deps /repo/node_modules ./node_modules
+COPY --from=deps /repo/package.json ./package.json
+COPY --from=deps /repo/package-lock.json ./package-lock.json
 COPY apps/portal ./apps/portal
 COPY config/n8n-workflows/catalog.json ./config/n8n-workflows/catalog.json
 # Monorepo libs imported from apps/portal (runtime, design tokens in tailwind, etc.)

@@ -137,10 +137,17 @@ jobs:
             export PANINI_IMAGE_TAG
 
             doppler run --project ops-intcloudsysops --config prd -- \
-              docker compose -f infra/docker-compose.panini-lab.yml pull
+              docker compose -p panini-lab -f infra/docker-compose.panini-lab.yml pull
+
+            docker rm -f panini-lab 2>/dev/null || true
 
             doppler run --project ops-intcloudsysops --config prd -- \
-              docker compose -f infra/docker-compose.panini-lab.yml up -d --remove-orphans
+              docker compose -p panini-lab -f infra/docker-compose.panini-lab.yml up -d
+
+            cd infra
+            doppler run --project ops-intcloudsysops --config prd -- \
+              docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d traefik app admin portal
+            cd ..
 
             sleep 8
             for i in 1 2 3 4 5; do
@@ -152,7 +159,7 @@ jobs:
               sleep 10
             done
 
-            docker compose -p panini-lab -f infra/docker-compose.panini-lab.yml ps
+            docker compose -f infra/docker-compose.panini-lab.yml ps
 
       - name: Public health check
         run: |
