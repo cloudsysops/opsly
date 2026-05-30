@@ -30,6 +30,7 @@
     "obsidian:sync": "bash scripts/obsidian-ide-sync.sh",
     "obsidian:check": "npm run obsidian:file-index && npm run validate-structure",
     "sigma:install": "bash scripts/install-sigma-rules.sh",
+    "sigma:smoke": "bash scripts/sigma-harness-smoke.sh",
     "validate-skills": "npm run validate-skills --prefix packages/skills/manifest",
     "test-skills-manifest": "npm test --prefix packages/skills/manifest",
     "skills:list": "node scripts/load-skills.js list",
