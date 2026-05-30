@@ -22,6 +22,8 @@ export type PeskidsIntakeTurn = {
   /** 0-1 completion ratio (= progress). Alias for semantic clarity in callers. */
   confidence: number;
   progress: number;
+  /** Total inbound turns seen for this sender (used for ECC stuck-loop detection). */
+  turnCount: number;
   reply: string;
   supportDraft: string | null;
   profile: PeskidsIntakeProfile;
@@ -549,6 +551,7 @@ export async function buildPeskidsIntakeTurn(params: {
     stage,
     confidence: progress, // 0-1: same as progress; callers may gate handoff on confidence > 0.75
     progress,
+    turnCount: inboundHistory.length,
     reply,
     supportDraft,
     profile,
