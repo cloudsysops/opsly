@@ -63,9 +63,28 @@ export interface OpslyPattern {
 
 export type AnyPattern = HarnessPattern | TenantPattern | OpslyPattern;
 
+export interface PatternCatalogIntegration {
+  module?: string;
+  path?: string;
+  npm?: Record<string, string>;
+  mcp?: string[];
+  sigmaHarness?: Record<string, string>;
+  tenantProfile?: Record<string, string>;
+  consumers?: string[];
+  ci?: string[];
+}
+
+export interface PatternTenantBinding {
+  stack_type?: string;
+  pattern_ids: string[];
+}
+
 export interface PatternCatalogIndex {
   version: string;
   description: string;
+  layout?: Record<string, string>;
+  integration?: PatternCatalogIntegration;
+  tenantBindings?: Record<string, PatternTenantBinding>;
   harness: string[];
   tenant: string[];
   opsly: string[];

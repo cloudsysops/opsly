@@ -184,10 +184,13 @@
   },
   "consumers": {
     "apps/orchestrator": {
-      "depends": ["prompts", "observability", "evaluation", "errors", "workflow", "config", "security", "sigma-harness"]
+      "depends": ["prompts", "observability", "evaluation", "errors", "workflow", "config", "security"]
     },
     "apps/api": {
-      "depends": ["prompts", "observability", "evaluation", "errors", "api", "security", "config", "services", "telemetry", "tenant-profile", "openwa"]
+      "depends": ["prompts", "observability", "evaluation", "errors", "api", "security", "config", "services", "telemetry", "tenant-profile", "pattern-catalog"]
+    },
+    "apps/mcp": {
+      "depends": ["pattern-catalog", "sigma-harness", "observability", "security", "config"]
     },
     "apps/gateway": {
       "depends": ["observability", "errors", "security", "config", "telemetry", "workflow"]

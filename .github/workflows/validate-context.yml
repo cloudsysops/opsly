@@ -28,6 +28,9 @@ jobs:
       - name: Skills (manifest + SKILL.md)
         run: npm run validate-skills
 
+      - name: Pattern catalog (index + files)
+        run: npm run patterns:validate
+
       - name: Tests skills-manifest
         run: npm run test-skills-manifest
 
