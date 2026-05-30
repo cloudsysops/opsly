@@ -47,13 +47,15 @@ export async function POST(req: NextRequest) {
 
     const replyText = intake.reply;
     if (replyText) {
-      void sendTextMessageForTenant('peskids', msg.chatId, replyText).catch((err: unknown) => {
-        console.error('[openwa/peskids] sendTextMessage failed', {
-          to: msg.chatId,
-          error: err instanceof Error ? err.message : String(err),
-          requestId,
-        });
-      });
+      void sendTextMessageForTenant('peskids', msg.chatId, replyText).catch(
+        (err: unknown) => {
+          console.error('[openwa/peskids] sendTextMessage failed', {
+            to: msg.chatId,
+            error: err instanceof Error ? err.message : String(err),
+            requestId,
+          });
+        }
+      );
     }
 
     await storeOutboundMessage({

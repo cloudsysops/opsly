@@ -5,7 +5,12 @@ const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   outputFileTracingRoot: path.join(__dirname, '../..'),
-  transpilePackages: ['@intcloudsysops/opsly-core', '@intcloudsysops/conversational-runtime'],
+  transpilePackages: [
+    '@intcloudsysops/opsly-core',
+    '@intcloudsysops/conversational-runtime',
+    '@intcloudsysops/openwa',
+    '@intcloudsysops/tenant-profile',
+  ],
   webpack: (config) => {
     config.resolve.extensionAlias = {
       '.js': ['.ts', '.tsx', '.js'],

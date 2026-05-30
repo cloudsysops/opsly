@@ -35,13 +35,15 @@ export async function POST(req: NextRequest) {
   }
 
   if (response.reply) {
-    void sendTextMessageForTenant('panini-lab', msg.chatId, response.reply).catch((err: unknown) => {
-      console.error('[openwa/panini] reply failed', {
-        to: msg.chatId,
-        error: err instanceof Error ? err.message : String(err),
-        requestId,
-      });
-    });
+    void sendTextMessageForTenant('panini-lab', msg.chatId, response.reply).catch(
+      (err: unknown) => {
+        console.error('[openwa/panini] reply failed', {
+          to: msg.chatId,
+          error: err instanceof Error ? err.message : String(err),
+          requestId,
+        });
+      }
+    );
   }
 
   return successJson(requestId, {
