@@ -8,19 +8,10 @@ import { PeskidsLockup } from '@/components/brand/peskids-logo'
 import { Button } from '@/components/ui/button'
 import { buildRecoveryRedirectTo } from '@/lib/auth-recovery'
 import { isStaffUser } from '@/lib/staff-user'
+import type { AuthPublicConfig } from '@/lib/auth-public-config'
+import { authFetchErrorMessage, isAuthFetchError } from '@/lib/auth-login-messages'
 import { createClient } from '@/lib/supabase-browser'
 import { tenantRoleFromUserMetadata } from '@/lib/runtime/tenant-identity'
-
-function browserSupabaseConfigured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim()
-  )
-}
-
-function authFetchErrorMessage(): string {
-  return 'El acceso al panel no está configurado correctamente en este despliegue. Usa recuperación o avisa al equipo.'
-}
 
 function resolvePostLoginPath(role: string | undefined): string {
   if (role === 'teacher') {
@@ -32,9 +23,16 @@ function resolvePostLoginPath(role: string | undefined): string {
   return '/admin'
 }
 
-export function SupportLogin(): React.ReactElement {
+export function SupportLogin({ authConfig }: { authConfig: AuthPublicConfig }): React.ReactElement {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const supabaseConfig = useMemo(
+    () => ({
+      supabaseUrl: authConfig.supabaseUrl,
+      supabaseAnonKey: authConfig.supabaseAnonKey,
+    }),
+    [authConfig.supabaseAnonKey, authConfig.supabaseUrl]
+  )
   const next = useMemo(() => searchParams.get('next')?.trim() ?? '', [searchParams])
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -52,7 +50,10 @@ export function SupportLogin(): React.ReactElement {
   }, [searchParams])
 
   useEffect(() => {
-    const supabase = createClient()
+    if (!authConfig.configured) {
+      return
+    }
+    const supabase = createClient(supabaseConfig)
     void supabase.auth.getSession().then(({ data }) => {
       if (data.session?.user) {
         const role = tenantRoleFromUserMetadata(data.session.user)
@@ -60,7 +61,7 @@ export function SupportLogin(): React.ReactElement {
         router.refresh()
       }
     })
-  }, [router])
+  }, [authConfig.configured, router, supabaseConfig])
 
   async function onForgotPassword(): Promise<void> {
     const trimmed = email.trim()
@@ -68,7 +69,7 @@ export function SupportLogin(): React.ReactElement {
       setError('Escribe tu email arriba y vuelve a pulsar «¿Olvidaste tu contraseña?».')
       return
     }
-    if (!browserSupabaseConfigured()) {
+    if (!authConfig.configured) {
       setError(authFetchErrorMessage())
       return
     }
@@ -76,18 +77,14 @@ export function SupportLogin(): React.ReactElement {
     setError('')
     setResetSent(false)
     try {
-      const supabase = createClient()
+      const supabase = createClient(supabaseConfig)
       const origin =
         typeof window !== 'undefined' ? window.location.origin : 'https://peskids.op-sly.com'
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(trimmed, {
         redirectTo: buildRecoveryRedirectTo(origin),
       })
       if (resetError) {
-        setError(
-          resetError.message.toLowerCase().includes('fetch')
-            ? authFetchErrorMessage()
-            : resetError.message
-        )
+        setError(isAuthFetchError(resetError.message) ? authFetchErrorMessage() : resetError.message)
         return
       }
       setResetSent(true)
@@ -105,21 +102,17 @@ export function SupportLogin(): React.ReactElement {
     setResetSent(false)
 
     try {
-      if (!browserSupabaseConfigured()) {
+      if (!authConfig.configured) {
         setError(authFetchErrorMessage())
         return
       }
-      const supabase = createClient()
+      const supabase = createClient(supabaseConfig)
       const { data, error: signError } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
       })
       if (signError) {
-        setError(
-          signError.message.toLowerCase().includes('fetch')
-            ? authFetchErrorMessage()
-            : signError.message
-        )
+        setError(isAuthFetchError(signError.message) ? authFetchErrorMessage() : signError.message)
         return
       }
       const user = data.user
