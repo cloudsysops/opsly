@@ -7,3 +7,8 @@
 **Vulnerability:** Several sensitive operations (exports, webhooks, bulk-grading) in the Peskids Portal API used a hardcoded string ('teacher') as the actor ID in audit logs instead of the actual authenticated user's ID.
 **Learning:** Even when security wrappers like `runTrustedPortalDalForPathSlug` are used, functional modules might still implement "security theater" by hardcoding metadata in audit trails, which defeats the purpose of non-repudiation.
 **Prevention:** Always extract and use `session.user.id` (or equivalent) for audit logging. Perform a cross-module audit of `log_audit_event` calls to ensure real actor IDs are being captured.
+
+## 2026-05-28 - [Missing Authorization in Social Publishing API]
+**Vulnerability:** The `/api/social/publish` endpoint in `apps/api` lacked any authentication or authorization checks, allowing anyone to trigger multi-platform social media publishing.
+**Learning:** Sensitive endpoints located outside the standard `portal/` or `admin/` directory structures can be easily overlooked if they don't use common multi-tenant path segments that usually signal the need for security wrappers.
+**Prevention:** Conduct periodic reviews of all `POST`, `PATCH`, and `DELETE` handlers in `apps/api` to ensure they are explicitly protected by `requireAdminAccess` or other appropriate security middleware.

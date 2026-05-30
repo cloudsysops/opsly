@@ -16,6 +16,11 @@ vi.mock('@intcloudsysops/llm-gateway', () => ({
   logUsage: vi.fn(),
 }));
 
+vi.mock('../lib/auth', () => ({
+  requireAdminAccess: vi.fn(() => Promise.resolve(null)),
+  requireAdminAccessUnlessDemoRead: vi.fn(() => Promise.resolve(null)),
+}));
+
 // Publish route uses getServiceClient().schema('platform')
 vi.mock('../lib/supabase', () => ({
   getServiceClient: vi.fn(() => ({

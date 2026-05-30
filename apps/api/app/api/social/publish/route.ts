@@ -1,14 +1,15 @@
 // apps/api/app/api/social/publish/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdminAccess } from '../../../../lib/auth';
+import { capturePublishError, capturePublishEvent } from '../../../../lib/knowledge/syra-capture';
+import { HTTP_STATUS } from '../../../../lib/constants';
 import {
   multiPlatformPublisher,
   type ContentPayload,
   type PublishResult,
 } from '../../../../lib/social/adapters/publisher';
-import { capturePublishEvent, capturePublishError } from '../../../../lib/knowledge/syra-capture';
 import { getServiceClient } from '../../../../lib/supabase';
-import { HTTP_STATUS } from '../../../../lib/constants';
 
 type PublishBody = {
   content_id: string;
@@ -101,6 +102,11 @@ function scheduleFailureKnowledgeCaptures(results: PublishResult[], contentId: s
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const authError = await requireAdminAccess(request);
+  if (authError) {
+    return authError as NextResponse;
+  }
+
   try {
     const body = (await request.json()) as PublishBody;
     const errResponse = validatePublishBody(body);
