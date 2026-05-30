@@ -56,6 +56,7 @@ import { startAgentFarmWorker } from './workers/AgentFarmWorker.js';
 import { superOrchestratorIntegration } from './super-orchestrator-integration.js';
 // Maia Life Systems — 6 workers autónomos
 import { startShieldScanWorker } from './workers/ShieldScanWorker.js';
+import { startSigmaHarnessWorker } from './workers/SigmaHarnessWorker.js';
 import { startSelfHealWorker } from './workers/SelfHealWorker.js';
 import { startAutoDeployWorker } from './workers/AutoDeployWorker.js';
 import { startCostGateWorker } from './workers/CostGateWorker.js';
@@ -145,6 +146,10 @@ function startAllWorkers(): AsyncCleanup[] {
   const validationWorker = startValidationWorker(connection);
   const memoryWriterWorker = startMemoryWriterWorker(connection);
   const shieldScanWorker = startShieldScanWorker();
+  const sigmaHarnessWorker =
+    process.env.OPSLY_SIGMA_HARNESS_WORKER_ENABLED !== 'false'
+      ? startSigmaHarnessWorker(connection)
+      : undefined;
 
   cleanup.push(
     async () => cursorWorker.close(),
@@ -185,6 +190,7 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => validationWorker.close(),
     async () => memoryWriterWorker.close(),
     async () => shieldScanWorker.stop(),
+    ...(sigmaHarnessWorker ? [async () => sigmaHarnessWorker.close()] : []),
   );
 
   const localWorkersLabel = localAgentUnifiedOnly

@@ -22,6 +22,7 @@ export type JobType =
   | 'local_goose'
   | 'local_playwright'
   | 'defense_audit'
+  | 'sigma_decision'
   | 'hive_objective'
   /** Payload: `{ intent_request: IntentRequest }` — ejecuta `processIntent` (p. ej. `oar_react`) en worker. */
   | 'intent_dispatch'

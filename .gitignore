@@ -1,5 +1,5 @@
-# Git worktrees (isolated development)
-.worktrees/
+# SigmaHQ upstream rules (install via npm run sigma:install)
+vendor/sigma/
 
 # USB kit: overrides locales (SSH Host, etc.)
 tools/usb-kit/pen.local.json

@@ -180,33 +180,11 @@
       "dependencies": ["opsly-core"],
       "mainFile": "lib/conversational-runtime/src/index.ts",
       "exports": ["createConversationalRuntime", "InputMessage", "AgentResponse"]
-    },
-    "openwa": {
-      "name": "@intcloudsysops/openwa",
-      "version": "0.1.0",
-      "path": "lib/openwa",
-      "owner": "platform",
-      "description": "OpenWA WhatsApp client — tenant env OPENWA_{SLUG}_*, webhooks, messaging",
-      "status": "experimental",
-      "dependencies": [],
-      "mainFile": "lib/openwa/src/index.ts",
-      "exports": ["getConfigForTenant", "sendTextMessageForTenant", "verifyWebhookSignature"]
-    },
-    "tenant-profile": {
-      "name": "@intcloudsysops/tenant-profile",
-      "version": "0.1.0",
-      "path": "lib/tenant-profile",
-      "owner": "platform",
-      "description": "Tenant config from config/tenants — site URLs, invite branding, routing",
-      "status": "stable",
-      "dependencies": [],
-      "mainFile": "lib/tenant-profile/src/index.ts",
-      "exports": ["loadTenantProfile", "getPortalInviteBranding", "buildTenantSiteRoutingConfig"]
     }
   },
   "consumers": {
     "apps/orchestrator": {
-      "depends": ["prompts", "observability", "evaluation", "errors", "workflow", "config", "security"]
+      "depends": ["prompts", "observability", "evaluation", "errors", "workflow", "config", "security", "sigma-harness"]
     },
     "apps/api": {
       "depends": ["prompts", "observability", "evaluation", "errors", "api", "security", "config", "services", "telemetry", "tenant-profile", "openwa"]

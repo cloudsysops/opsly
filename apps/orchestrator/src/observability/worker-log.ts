@@ -29,6 +29,7 @@ export type WorkerName =
   | 'local-agents'
   | 'cloudsysops_agents'
   | 'defense_audit'
+  | 'sigma_decision'
   | 'openclaw-planner'
   | 'openclaw-skeptic'
   | 'api_factory'
