@@ -116,11 +116,27 @@ const GROQ_HEALTH_CHECK: Record<'groq', HealthCheckFn> = {
   },
 };
 
+const GEMINI_HEALTH_CHECK: Record<'gemini', HealthCheckFn> = {
+  gemini: async () => {
+    const start = Date.now();
+    const apiKey = process.env.GEMINI_API_KEY?.trim() ?? '';
+    if (!apiKey) throw new Error('GEMINI_API_KEY missing');
+    const model = process.env.GEMINI_MODEL?.trim() || 'gemini-2.0-flash';
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}?key=${apiKey}`,
+      { signal: AbortSignal.timeout(5000) },
+    );
+    if (!res.ok) throw new Error(`Gemini HTTP ${res.status}`);
+    return Date.now() - start;
+  },
+};
+
 const HEALTH_CHECKS: Record<string, HealthCheckFn> = {
   ...BASE_HEALTH_CHECKS,
   ...(process.env.DEEPSEEK_API_KEY?.trim() ? DEEPSEEK_HEALTH_CHECK : {}),
   ...(process.env.NVIDIA_API_KEY?.trim() ? NVIDIA_HEALTH_CHECK : {}),
   ...(process.env.GROQ_API_KEY?.trim() ? GROQ_HEALTH_CHECK : {}),
+  ...(process.env.GEMINI_API_KEY?.trim() ? GEMINI_HEALTH_CHECK : {}),
 };
 
 export class HealthDaemon {

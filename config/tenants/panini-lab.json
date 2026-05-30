@@ -1,0 +1,15 @@
+{
+  "tenant_name": "Panini Lab",
+  "tenant_slug": "panini-lab",
+  "schema_name": "panini_lab",
+  "platform_domain": "op-sly.com",
+  "public_url": "https://panini.op-sly.com",
+  "internal_port": 3005,
+  "image": "ghcr.io/cloudsysops/intcloudsysops-panini-lab:latest",
+  "compose_file": "infra/docker-compose.panini-lab.yml",
+  "traefik_dynamic": "infra/traefik/dynamic/panini-lab.yml",
+  "runbook": "docs/runbooks/PANINI-LAB-GOLIVE.md",
+  "deploy_workflow": ".github/workflows/deploy-panini-lab.yml",
+  "stack_type": "incubator-app",
+  "notes": "Demo lab for conversational runtime — sticker collection MVP. Not a full tenant stack (no n8n/uptime by default)."
+}

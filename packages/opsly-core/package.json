@@ -1,0 +1,21 @@
+{
+  "name": "@intcloudsysops/opsly-core",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Opsly OS Core MVP — tenant config, AI gateway, agent runtime, events",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "type-check": "tsc --noEmit",
+    "demo": "tsx src/cli/demo.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.22.3",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

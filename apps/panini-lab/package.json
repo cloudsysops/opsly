@@ -1,0 +1,37 @@
+{
+  "name": "@intcloudsysops/panini-lab",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Panini Lab demo — conversational sticker collection (Opsly incubator)",
+  "scripts": {
+    "dev": "next dev -p 3005",
+    "build": "next build",
+    "start": "next start -p 3005",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@intcloudsysops/conversational-runtime": "*",
+    "@intcloudsysops/opsly-core": "*",
+    "@supabase/supabase-js": "^2.106.0",
+    "next": "^15.5.18",
+    "next-auth": "^5.0.0-beta",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "recharts": "^3.8.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.41",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "^10.5.0",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^15.5.18",
+    "postcss": "^8.5.13",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
