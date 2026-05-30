@@ -1,0 +1,20 @@
+{
+  "id": "modularity-change",
+  "kind": "harness",
+  "title": "Core / lib modularity change",
+  "description": "Gate PRs that add cross-tenant logic — enforce MODULARITY-CONTRACT before merge.",
+  "sigmaTags": [],
+  "sigmaQueryHints": ["execution", "script", "persistence"],
+  "reviewers": [
+    { "agent_id": "architect-worker", "role": "architect" },
+    { "agent_id": "skeptic-worker", "role": "skeptic" },
+    { "agent_id": "validator-worker", "role": "validator" }
+  ],
+  "harnessOverrides": {
+    "quorumMinReviews": 2,
+    "consensusThreshold": 0.66
+  },
+  "proposalTemplate": {
+    "topicPrefix": "[modularity] "
+  }
+}

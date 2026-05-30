@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { applyHarnessPattern } from '@intcloudsysops/pattern-catalog';
 import { Redis } from 'ioredis';
 import { computeConsensus, roundIsFinal } from './consensus.js';
 import { findRulesForText } from './rule-index.js';
@@ -62,10 +63,26 @@ export class SigmaDecisionHarness {
     proposal: DecisionProposal;
   }): Promise<DecisionRound> {
     const now = new Date().toISOString();
-    const related = findRulesForText(
-      `${input.proposal.topic} ${input.proposal.summary}`,
-      8
-    ).map((rule) => rule.id);
+    let topic = input.proposal.topic;
+    let summary = input.proposal.summary;
+    const patternId = input.proposal.patternId;
+    let harnessOverrides: DecisionRound['harnessOverrides'];
+    let sigmaSearchText = `${topic} ${summary}`;
+
+    if (patternId) {
+      const applied = applyHarnessPattern({
+        patternId,
+        topic: input.proposal.topic,
+        summary: input.proposal.summary,
+      });
+      if (applied) {
+        topic = applied.topic;
+        harnessOverrides = applied.harnessOverrides;
+        sigmaSearchText = applied.sigmaSearchText;
+      }
+    }
+
+    const related = findRulesForText(sigmaSearchText, 8).map((rule) => rule.id);
 
     const round: DecisionRound = {
       id: randomUUID(),
@@ -73,8 +90,13 @@ export class SigmaDecisionHarness {
       requestId: input.requestId,
       proposal: {
         ...input.proposal,
+        topic,
+        summary,
+        patternId,
         relatedRuleIds: input.proposal.relatedRuleIds ?? related,
       },
+      patternId,
+      harnessOverrides,
       status: 'open',
       reviews: [],
       createdAt: now,
@@ -86,7 +108,7 @@ export class SigmaDecisionHarness {
       type: 'decision_opened',
       roundId: round.id,
       tenantSlug: round.tenantSlug,
-      payload: { proposal: round.proposal },
+      payload: { proposal: round.proposal, patternId: round.patternId },
       timestamp: now,
     });
     return round;
@@ -124,9 +146,10 @@ export class SigmaDecisionHarness {
 
     const reviews = [...round.reviews.filter((r) => r.agentId !== input.agentId), review];
     const harness = getHarnessConfig();
+    const overrides = round.harnessOverrides ?? {};
     const consensus = computeConsensus(reviews, {
-      quorumMinReviews: harness.quorumMinReviews,
-      consensusThreshold: harness.consensusThreshold,
+      quorumMinReviews: overrides.quorumMinReviews ?? harness.quorumMinReviews,
+      consensusThreshold: overrides.consensusThreshold ?? harness.consensusThreshold,
     });
 
     const updated: DecisionRound = {

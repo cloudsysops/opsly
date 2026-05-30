@@ -20,6 +20,13 @@ export interface DecisionProposal {
   summary: string;
   context?: Record<string, unknown>;
   relatedRuleIds?: string[];
+  /** config/patterns/harness/* id used to enrich topic, Sigma search, reviewers */
+  patternId?: string;
+}
+
+export interface HarnessRoundOverrides {
+  quorumMinReviews?: number;
+  consensusThreshold?: number;
 }
 
 export interface DecisionReview {
@@ -40,6 +47,8 @@ export interface DecisionRound {
   proposal: DecisionProposal;
   status: DecisionRoundStatus;
   reviews: DecisionReview[];
+  patternId?: string;
+  harnessOverrides?: HarnessRoundOverrides;
   consensus?: {
     verdict: DecisionVerdict;
     score: number;

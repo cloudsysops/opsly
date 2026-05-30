@@ -1,0 +1,7 @@
+{
+  "version": "1.0.0",
+  "description": "Fixture pattern catalog for unit tests",
+  "harness": ["harness/test-harness.json"],
+  "tenant": ["tenant/test-tenant.json"],
+  "opsly": []
+}

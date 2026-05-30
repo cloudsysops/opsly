@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "description": "Opsly pattern catalog — harness decision templates, tenant capability bundles, opsly module scaffolds",
+  "harness": [
+    "harness/tenant-deploy-gate.json",
+    "harness/integration-webhook.json",
+    "harness/modularity-change.json",
+    "harness/security-incident.json"
+  ],
+  "tenant": [
+    "tenant/incubator-app.json",
+    "tenant/crm-starter-stack.json",
+    "tenant/full-tenant-stack.json"
+  ],
+  "opsly": [
+    "opsly/lib-module-scaffold.json",
+    "opsly/openwa-channel.json"
+  ],
+  "upstream": {
+    "sigmaRules": {
+      "install": "npm run sigma:install",
+      "manifest": "config/sigma/manifest.json",
+      "notes": "SigmaHQ YAML rules vendored under vendor/sigma — context for harness auto_review"
+    }
+  }
+}

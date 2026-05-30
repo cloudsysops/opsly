@@ -149,6 +149,7 @@ jobs:
           (cd apps/ml && npm test) & pid3=$!
           (cd apps/llm-gateway && npm test -- --exclude __tests__/cache-namespace.test.ts) & pid4=$!
           (cd lib/sigma-harness && npm test) & pid5=$!
+          (cd lib/pattern-catalog && npm test) & pid6=$!
           status=0
           wait $pid_api || status=1
           wait $pid0 || status=1
@@ -156,6 +157,7 @@ jobs:
           wait $pid3 || status=1
           wait $pid4 || status=1
           wait $pid5 || status=1
+          wait $pid6 || status=1
           exit $status
 
   test-integration:

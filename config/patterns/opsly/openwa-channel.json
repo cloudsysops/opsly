@@ -1,0 +1,13 @@
+{
+  "id": "openwa-channel",
+  "kind": "opsly",
+  "title": "OpenWA WhatsApp channel",
+  "description": "Core-first WhatsApp via OpenWA — lib client, thin tenant webhooks, admin status route.",
+  "module": "@intcloudsysops/openwa",
+  "lib_path": "lib/openwa",
+  "admin_route": "apps/api/app/api/admin/channels/openwa/[slug]/status/route.ts",
+  "tenant_routes": ["app/api/webhooks/openwa/route.ts", "app/api/setup/openwa/route.ts"],
+  "env_template": "OPENWA_{SLUG}_API_URL",
+  "scripts": ["scripts/setup-openwa-tenant.sh"],
+  "harness_pattern": "integration-webhook"
+}

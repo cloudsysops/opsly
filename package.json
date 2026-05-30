@@ -125,7 +125,10 @@
     "opsly:repos:status": "bash scripts/opsly-repo-align.sh --status",
     "opsly:repos:align": "bash scripts/opsly-repo-align.sh --local --vps --branch main --vps-reset",
     "prepare": "husky",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "patterns:install": "bash scripts/install-patterns.sh --with-sigma",
+    "patterns:validate": "bash scripts/install-patterns.sh",
+    "patterns:list": "bash scripts/list-patterns.sh"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",

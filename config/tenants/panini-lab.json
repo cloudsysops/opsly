@@ -11,5 +11,6 @@
   "runbook": "docs/runbooks/PANINI-LAB-GOLIVE.md",
   "deploy_workflow": ".github/workflows/deploy-panini-lab.yml",
   "stack_type": "incubator-app",
+  "pattern_ids": ["incubator-app"],
   "notes": "Demo lab for conversational runtime — sticker collection MVP. Not a full tenant stack (no n8n/uptime by default)."
 }
