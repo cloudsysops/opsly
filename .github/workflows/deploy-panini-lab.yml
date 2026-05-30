@@ -152,7 +152,7 @@ jobs:
               sleep 10
             done
 
-            docker compose -f infra/docker-compose.panini-lab.yml ps
+            docker compose -p panini-lab -f infra/docker-compose.panini-lab.yml ps
 
       - name: Public health check
         run: |

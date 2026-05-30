@@ -1,8 +1,13 @@
 # Panini Lab — standalone app on VPS (not a full tenant stack).
 # Deploy: doppler run --project ops-intcloudsysops --config prd -- \
-#   docker compose -f infra/docker-compose.panini-lab.yml up -d
+#   docker compose -p panini-lab -f infra/docker-compose.panini-lab.yml up -d
+#
+# IMPORTANT: use project name `panini-lab` (see `name:` below). Never run with the
+# default `infra` project + --remove-orphans — that deletes Traefik/app/admin/portal.
 #
 # Networks: traefik-public (edge) + infra_internal (LLM gateway on platform compose).
+
+name: panini-lab
 
 services:
   panini-lab:
@@ -12,7 +17,6 @@ services:
     environment:
       NODE_ENV: production
       PORT: '3005'
-      HOSTNAME: '0.0.0.0'
       # Supabase — panini_lab schema
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
