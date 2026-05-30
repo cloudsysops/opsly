@@ -26,6 +26,7 @@ tools/agents/prompts/secrets-*.md
 
 # Cursor / entorno local
 .cursor/mcp.json
+.playwright-mcp/
 .cursor/responses/
 .cursor/hooks/logs/
 .cursor/.validation/
@@ -103,9 +104,6 @@ supabase/migrations/supabase/.temp/
 # Playwright (apps/portal)
 apps/portal/test-results/
 apps/portal/playwright-report/
-
-# Tenant app secrets (Doppler / Firebase / local overrides)
-apps/*/.secrets/
 
 # Obsidian — ignore runtime/personal state (vault en docs/)
 docs/.obsidian/cache
