@@ -9,6 +9,7 @@ const nextConfig = {
     '@intcloudsysops/opsly-core',
     '@intcloudsysops/conversational-runtime',
     '@intcloudsysops/openwa',
+    '@intcloudsysops/prompt-guard',
     '@intcloudsysops/tenant-profile',
   ],
   webpack: (config) => {
