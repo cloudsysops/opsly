@@ -20,10 +20,10 @@ WORKDIR /repo
 COPY --from=deps /repo/node_modules ./node_modules
 COPY --from=deps /repo/package.json ./package.json
 COPY --from=deps /repo/package-lock.json ./package-lock.json
-COPY tsconfig.json ./tsconfig.json
 COPY packages/types ./packages/types
 COPY lib/services ./lib/services
 COPY lib/content-studio ./lib/content-studio
+COPY lib/prompt-guard ./lib/prompt-guard
 COPY apps/mcp ./apps/mcp
 COPY apps/llm-gateway ./apps/llm-gateway
 COPY apps/notebooklm-agent ./apps/notebooklm-agent

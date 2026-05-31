@@ -3,10 +3,12 @@ FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY packages/types/package.json ./packages/types/
+COPY lib/prompt-guard/package.json ./lib/prompt-guard/
 COPY apps/llm-gateway/package.json ./apps/llm-gateway/
 RUN npm ci --ignore-scripts
 RUN npm ci --ignore-scripts \
   -w @intcloudsysops/types \
+  -w @intcloudsysops/prompt-guard \
   -w @intcloudsysops/llm-gateway
 
 FROM node:20-alpine AS builder
@@ -16,9 +18,11 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/package.json ./package.json
 COPY --from=deps /app/package-lock.json ./package-lock.json
 COPY packages/types ./packages/types
+COPY lib/prompt-guard ./lib/prompt-guard
 COPY apps/llm-gateway ./apps/llm-gateway
 RUN npm ci --ignore-scripts \
   -w @intcloudsysops/types \
+  -w @intcloudsysops/prompt-guard \
   -w @intcloudsysops/llm-gateway
 RUN npm run build -w @intcloudsysops/types && \
     npm run build -w @intcloudsysops/llm-gateway
