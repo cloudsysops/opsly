@@ -21,6 +21,8 @@
   "dependencies": {
     "@ai-sdk/openai": "^3.0.53",
     "@anthropic-ai/sdk": "^0.57.0",
+    "@intcloudsysops/content-studio": "*",
+    "@intcloudsysops/content-studio": "*",
     "@intcloudsysops/llm-gateway": "*",
     "@intcloudsysops/ml": "^1.0.0",
     "@intcloudsysops/prompt-guard": "*",

@@ -21,7 +21,7 @@ filter_peskids_docker_env() {
   fi
 }
 
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+if [[ "${BASH_SOURCE[0]:-}" == "${0}" ]]; then
   [[ $# -eq 1 ]] || {
     echo "Usage: $0 <docker-env-file>" >&2
     exit 1

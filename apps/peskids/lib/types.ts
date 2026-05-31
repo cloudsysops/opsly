@@ -98,6 +98,134 @@ export type Database = {
         };
         Relationships: [];
       };
+      pools: {
+        Row: {
+          id: string;
+          tenant_slug: string;
+          name: string;
+          location: 'llanogrande' | 'domicilio';
+          max_capacity: number;
+          active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_slug?: string;
+          name: string;
+          location: 'llanogrande' | 'domicilio';
+          max_capacity: number;
+          active?: boolean;
+          created_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['pools']['Insert']>;
+        Relationships: [];
+      };
+      classes: {
+        Row: {
+          id: string;
+          tenant_slug: string;
+          title: string;
+          level: number;
+          professor_user_id: string;
+          pool_id: string;
+          location: 'llanogrande' | 'domicilio';
+          starts_at: string;
+          ends_at: string;
+          capacity: number;
+          price_cents: number;
+          currency: string;
+          status: 'scheduled' | 'cancelled' | 'completed';
+          cancelled_reason: string | null;
+          series_id: string | null;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_slug?: string;
+          title: string;
+          level: number;
+          professor_user_id: string;
+          pool_id: string;
+          location: 'llanogrande' | 'domicilio';
+          starts_at: string;
+          ends_at: string;
+          capacity: number;
+          price_cents: number;
+          currency?: string;
+          status?: 'scheduled' | 'cancelled' | 'completed';
+          cancelled_reason?: string | null;
+          series_id?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['classes']['Insert']>;
+        Relationships: [];
+      };
+      class_enrollments: {
+        Row: {
+          id: string;
+          tenant_slug: string;
+          class_id: string;
+          student_id: string;
+          family_user_id: string;
+          status: 'reserved' | 'confirmed' | 'cancelled' | 'no_show' | 'attended';
+          payment_status: 'pending' | 'paid' | 'failed' | 'refunded';
+          attendance: 'present' | 'absent' | 'excused' | null;
+          joined_at: string;
+          cancelled_at: string | null;
+          stripe_checkout_session_id: string | null;
+        };
+        Insert: {
+          id?: string;
+          tenant_slug?: string;
+          class_id: string;
+          student_id: string;
+          family_user_id: string;
+          status?: 'reserved' | 'confirmed' | 'cancelled' | 'no_show' | 'attended';
+          payment_status?: 'pending' | 'paid' | 'failed' | 'refunded';
+          attendance?: 'present' | 'absent' | 'excused' | null;
+          joined_at?: string;
+          cancelled_at?: string | null;
+          stripe_checkout_session_id?: string | null;
+        };
+        Update: Partial<Database['peskids']['Tables']['class_enrollments']['Insert']>;
+        Relationships: [];
+      };
+      payments: {
+        Row: {
+          id: string;
+          tenant_slug: string;
+          family_user_id: string;
+          enrollment_id: string | null;
+          amount_cents: number;
+          currency: string;
+          status: 'pending' | 'paid' | 'failed' | 'refunded';
+          stripe_payment_intent_id: string | null;
+          stripe_checkout_session_id: string | null;
+          paid_at: string | null;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_slug?: string;
+          family_user_id: string;
+          enrollment_id?: string | null;
+          amount_cents: number;
+          currency?: string;
+          status?: 'pending' | 'paid' | 'failed' | 'refunded';
+          stripe_payment_intent_id?: string | null;
+          stripe_checkout_session_id?: string | null;
+          paid_at?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['payments']['Insert']>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -153,6 +281,7 @@ export type Database = {
           grade: string;
           status: 'active' | 'inactive';
           parent_email: string | null;
+          family_user_id: string | null;
           enrollment_date: string;
           created_at: string;
           updated_at: string;
@@ -163,6 +292,7 @@ export type Database = {
           grade: string;
           status?: 'active' | 'inactive';
           parent_email?: string | null;
+          family_user_id?: string | null;
           enrollment_date?: string;
         };
         Update: Partial<Database['public']['Tables']['students']['Insert']>;
@@ -304,6 +434,14 @@ export interface OpslyEvent {
   trace_id?: string;
 }
 
+export interface DashboardOperationsMetrics {
+  classes_today: number;
+  enrollments_today: number;
+  attendance_rate_pct: number | null;
+  revenue_month_cents: number;
+  pending_payments_cents: number;
+}
+
 export interface DashboardData {
   new_leads_count: number;
   new_leads: Pick<
@@ -379,6 +517,7 @@ export interface DashboardData {
       conversation_mode: 'admissions' | 'support';
     }
   >;
+  operations: DashboardOperationsMetrics;
 }
 
 export interface PeskidsBiSnapshot {

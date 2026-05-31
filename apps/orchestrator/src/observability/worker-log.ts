@@ -48,7 +48,8 @@ export type WorkerName =
   | 'cost-check'
   | 'claude-code'
   | 'validation'
-  | 'memory-writer';
+  | 'memory-writer'
+  | 'content-video';
 
 export function extractJobContext(job: Job): {
   task_id?: string;

@@ -63,6 +63,7 @@ import { startCostGateWorker } from './workers/CostGateWorker.js';
 import { startClaudeCodeWorker } from './workers/ClaudeCodeWorker.js';
 import { startValidationWorker } from './workers/ValidationWorker.js';
 import { startMemoryWriterWorker } from './workers/MemoryWriterWorker.js';
+import { startContentVideoWorker } from './workers/ContentVideoWorker.js';
 
 type AsyncCleanup = () => Promise<void>;
 
@@ -151,6 +152,8 @@ function startAllWorkers(): AsyncCleanup[] {
       ? startSigmaHarnessWorker(connection)
       : undefined;
 
+  const contentVideoWorker = startContentVideoWorker();
+
   cleanup.push(
     async () => cursorWorker.close(),
     async () => n8nWorker.close(),
@@ -191,6 +194,7 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => memoryWriterWorker.close(),
     async () => shieldScanWorker.stop(),
     ...(sigmaHarnessWorker ? [async () => sigmaHarnessWorker.close()] : []),
+    async () => contentVideoWorker.close(),
   );
 
   const localWorkersLabel = localAgentUnifiedOnly
@@ -200,7 +204,7 @@ function startAllWorkers(): AsyncCleanup[] {
   const agentFarmLabel = agentFarmWorkerEnabled ? ', agent-farm' : '';
   const approvalGateLabel = approvalGateWorkerEnabled ? ', approval-gate' : '';
   console.log(
-    `[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, evolution, intent_dispatch, terminal_task, jcode, hive, defense-audit, shield-scan, research, planner, skeptic${localWorkersLabel}${superWorkerLabel}${agentFarmLabel}${approvalGateLabel}` +
+    `[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, evolution, intent_dispatch, terminal_task, jcode, hive, defense-audit, shield-scan, research, planner, skeptic, content-video${localWorkersLabel}${superWorkerLabel}${agentFarmLabel}${approvalGateLabel}` +
     (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
     (process.env.OPSLY_SANDBOX_WORKER_ENABLED === 'true' ? ', sandbox' : '') +
     '; Hermes tick → servicio opsly-hermes (no este proceso).'

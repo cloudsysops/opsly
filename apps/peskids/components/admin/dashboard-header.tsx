@@ -71,6 +71,22 @@ export function DashboardHeader({
             <span className="rounded-full border border-pk-border bg-pk-muted px-3 py-1">
               Mensajes: {data.recent_messages.length}
             </span>
+            <span className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1">
+              Clases hoy: {data.operations.classes_today}
+            </span>
+            <span className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1">
+              Reservas hoy: {data.operations.enrollments_today}
+            </span>
+            {data.operations.pending_payments_cents > 0 ? (
+              <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-amber-800">
+                Cobros pendientes:{' '}
+                {new Intl.NumberFormat('es-CO', {
+                  style: 'currency',
+                  currency: 'COP',
+                  maximumFractionDigits: 0,
+                }).format(data.operations.pending_payments_cents / 100)}
+              </span>
+            ) : null}
           </div>
         </div>
 

@@ -38,7 +38,8 @@ export type WorkerConcurrencyKey =
   | 'research'
   | 'agent_farm'
   | 'super_orchestrator'
-  | 'approval-gate';
+  | 'approval-gate'
+  | 'content-video';
 
 const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   cursor: 3,
@@ -79,6 +80,7 @@ const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   agent_farm: 2,
   super_orchestrator: 3,
   'approval-gate': 2,
+  'content-video': 1,
 };
 
 const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
@@ -120,6 +122,7 @@ const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   agent_farm: 1,
   super_orchestrator: 1,
   'approval-gate': 1,
+  'content-video': 1,
 };
 
 const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
@@ -161,6 +164,7 @@ const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
   agent_farm: 'ORCHESTRATOR_AGENT_FARM_CONCURRENCY',
   super_orchestrator: 'ORCHESTRATOR_SUPER_ORCHESTRATOR_CONCURRENCY',
   'approval-gate': 'ORCHESTRATOR_APPROVAL_GATE_CONCURRENCY',
+  'content-video': 'ORCHESTRATOR_CONTENT_VIDEO_CONCURRENCY',
 };
 
 function parsePositiveInt(raw: string | undefined): number | null {

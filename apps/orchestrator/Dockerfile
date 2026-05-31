@@ -13,6 +13,7 @@ COPY config ./config
 RUN npm ci --ignore-scripts
 
 RUN npm run build -w @intcloudsysops/types && \
+    npm run build -w @intcloudsysops/content-studio && \
     npm run build -w @intcloudsysops/llm-gateway && \
     npm run build -w @intcloudsysops/ml && \
     npm run build -w @intcloudsysops/git-branch-orchestrator && \
@@ -42,6 +43,10 @@ COPY --from=builder /app/lib/git-branch-orchestrator/dist ./lib/git-branch-orche
 COPY --from=builder /app/lib/git-branch-orchestrator/package.json ./lib/git-branch-orchestrator/package.json
 COPY --from=builder /app/lib/runtime/dist ./lib/runtime/dist
 COPY --from=builder /app/lib/runtime/package.json ./lib/runtime/package.json
+COPY --from=builder /app/lib/content-studio/dist ./lib/content-studio/dist
+COPY --from=builder /app/lib/content-studio/package.json ./lib/content-studio/package.json
+COPY --from=builder /app/lib/content-studio/dist ./lib/content-studio/dist
+COPY --from=builder /app/lib/content-studio/package.json ./lib/content-studio/package.json
 COPY --from=builder /app/lib/voice-messaging/dist ./lib/voice-messaging/dist
 COPY --from=builder /app/lib/voice-messaging/package.json ./lib/voice-messaging/package.json
 COPY --from=builder /app/scripts ./scripts

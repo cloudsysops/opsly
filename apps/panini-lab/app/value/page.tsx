@@ -2,7 +2,12 @@ import Link from 'next/link';
 import { headers } from 'next/headers';
 import { getTeams, getTopValueSignals, getActiveMarkets } from '@/lib/data/repos';
 import { fetchWorldCupMarkets } from '@/lib/polymarket/client';
-import { computeEdge, filterValueSignals, type ComputedEdge, type SignalType } from '@/lib/polymarket/edge';
+import {
+  computeEdge,
+  filterValueSignals,
+  type ComputedEdge,
+  type SignalType,
+} from '@/lib/polymarket/edge';
 import { tournamentWinProbabilities } from '@/lib/predictions/match-model';
 import { isRestricted } from '@/lib/affiliate';
 import ValueBetCard from '@/app/components/ValueBetCard';
@@ -12,10 +17,13 @@ export const dynamic = 'force-dynamic';
 /** Map signal type to display label + color */
 function signalDisplay(signal: SignalType): { label: string; cls: string } {
   const map: Record<SignalType, { label: string; cls: string }> = {
-    strong_value: { label: '🔥 Value Fuerte', cls: 'text-emerald-400 bg-emerald-950 border-emerald-800' },
-    value:        { label: '✅ Value',        cls: 'text-lime-400 bg-lime-950 border-lime-800' },
-    fair:         { label: '⚖️ Justo',        cls: 'text-zinc-400 bg-zinc-800 border-zinc-700' },
-    overpriced:   { label: '⚠️ Caro',         cls: 'text-red-400 bg-red-950 border-red-800' },
+    strong_value: {
+      label: '🔥 Value Fuerte',
+      cls: 'text-emerald-400 bg-emerald-950 border-emerald-800',
+    },
+    value: { label: '✅ Value', cls: 'text-lime-400 bg-lime-950 border-lime-800' },
+    fair: { label: '⚖️ Justo', cls: 'text-zinc-400 bg-zinc-800 border-zinc-700' },
+    overpriced: { label: '⚠️ Caro', cls: 'text-red-400 bg-red-950 border-red-800' },
   };
   return map[signal];
 }
@@ -120,8 +128,8 @@ export default async function ValuePage(): Promise<React.ReactElement> {
         <p className="font-semibold text-zinc-400 text-sm">⚠️ Aviso importante</p>
         <p>
           Predicciones para entretenimiento e información únicamente. No constituyen consejo de
-          inversión ni de apuestas. Las apuestas implican riesgo de pérdida. Solo para mayores de
-          18 años. Juega responsablemente.
+          inversión ni de apuestas. Las apuestas implican riesgo de pérdida. Solo para mayores de 18
+          años. Juega responsablemente.
         </p>
         <p>
           Panini Lab es una herramienta de análisis. Polymarket es una plataforma de predicción
@@ -171,8 +179,8 @@ export default async function ValuePage(): Promise<React.ReactElement> {
           <p className="text-3xl">📡</p>
           <h2 className="text-lg font-medium text-zinc-300">Conectando con Polymarket…</h2>
           <p className="text-zinc-500 text-sm max-w-md mx-auto">
-            Los mercados del Mundial 2026 en Polymarket se activan a medida que el torneo se
-            acerca. Vuelve a revisar cuando comiencen a publicarse.
+            Los mercados del Mundial 2026 en Polymarket se activan a medida que el torneo se acerca.
+            Vuelve a revisar cuando comiencen a publicarse.
           </p>
           <p className="text-zinc-600 text-xs">El Mundial 2026 arranca el 11 de junio de 2026.</p>
           <Link
@@ -192,9 +200,9 @@ export default async function ValuePage(): Promise<React.ReactElement> {
         <div className="grid sm:grid-cols-2 gap-4 text-sm text-zinc-400">
           <div className="space-y-2">
             <p>
-              <span className="text-emerald-400 font-medium">Nuestro modelo</span> usa ranking
-              FIFA, forma reciente, historial de Mundiales y la colección de figuritas del usuario
-              para calcular probabilidades.
+              <span className="text-emerald-400 font-medium">Nuestro modelo</span> usa ranking FIFA,
+              forma reciente, historial de Mundiales y la colección de figuritas del usuario para
+              calcular probabilidades.
             </p>
             <p>
               <span className="text-amber-400 font-medium">El mercado Polymarket</span> refleja las
@@ -204,8 +212,8 @@ export default async function ValuePage(): Promise<React.ReactElement> {
           <div className="space-y-2">
             <p>
               <span className="text-emerald-400 font-medium">Edge positivo</span> significa que
-              nuestro modelo le asigna más probabilidad que el mercado. Si el modelo es correcto,
-              el pago de Polymarket sería superior al riesgo implícito.
+              nuestro modelo le asigna más probabilidad que el mercado. Si el modelo es correcto, el
+              pago de Polymarket sería superior al riesgo implícito.
             </p>
             <p className="text-zinc-600 text-xs">
               Los modelos de predicción no son infalibles. Las apuestas conllevan riesgo real.
