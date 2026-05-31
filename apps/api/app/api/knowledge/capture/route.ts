@@ -3,6 +3,7 @@ import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';
 import { requireAdminAccess } from '../../../../lib/auth';
+import { serverErrorLogged } from '../../../../lib/api-response';
 
 export interface KnowledgeCapture {
   agent: string;
@@ -76,10 +77,10 @@ Captured insights from autonomous agents.
  *   tags: ["syra", "publishing", "optimization"]
  * }
  */
-export async function POST(req: NextRequest): Promise<NextResponse> {
+export async function POST(req: NextRequest): Promise<Response> {
   const authResponse = await requireAdminAccess(req);
   if (authResponse) {
-    return authResponse as NextResponse;
+    return authResponse;
   }
 
   try {
@@ -110,8 +111,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Knowledge capture error:', error);
-    return NextResponse.json({ error: 'Invalid request format' }, { status: 400 });
+    return serverErrorLogged('Knowledge capture error', error);
   }
 }
 
@@ -120,10 +120,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
  *
  * Get today's captured insights.
  */
-export async function GET(req: NextRequest): Promise<NextResponse> {
+export async function GET(req: NextRequest): Promise<Response> {
   const authResponse = await requireAdminAccess(req);
   if (authResponse) {
-    return authResponse as NextResponse;
+    return authResponse;
   }
 
   try {
@@ -147,7 +147,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       { status: 200 }
     );
   } catch (error) {
-    console.error('Knowledge retrieval error:', error);
-    return NextResponse.json({ error: 'Failed to retrieve knowledge' }, { status: 500 });
+    return serverErrorLogged('Knowledge retrieval error', error);
   }
 }
