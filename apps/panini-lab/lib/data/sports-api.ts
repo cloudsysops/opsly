@@ -17,7 +17,7 @@ export interface ApiTeam {
   apiId: number;
   name: string;
   shortName: string | null;
-  iso: string | null;          // ISO alpha-2 country code for flag
+  iso: string | null; // ISO alpha-2 country code for flag
   continent: string | null;
   logoUrl: string | null;
 }
@@ -25,7 +25,7 @@ export interface ApiTeam {
 export interface ApiPlayer {
   apiId: number;
   name: string;
-  position: string | null;     // 'Goalkeeper'|'Defender'|'Midfielder'|'Attacker'
+  position: string | null; // 'Goalkeeper'|'Defender'|'Midfielder'|'Attacker'
   nationality: string | null;
   age: number | null;
   jerseyNumber: number | null;
@@ -38,15 +38,15 @@ export interface ApiPlayer {
   redCards: number;
   minutesPlayed: number;
   shotsTotal: number;
-  rating: number | null;       // 0–10 float
+  rating: number | null; // 0–10 float
 }
 
 export interface ApiFixture {
   apiId: number;
   homeTeamApiId: number;
   awayTeamApiId: number;
-  stage: string;               // 'Group A', 'Final', etc.
-  matchDate: string;           // ISO datetime string
+  stage: string; // 'Group A', 'Final', etc.
+  matchDate: string; // ISO datetime string
   venue: string | null;
   city: string | null;
   status: 'scheduled' | 'live' | 'finished' | 'postponed';
@@ -111,7 +111,9 @@ async function footballDataFetch<T>(url: string, apiKey: string): Promise<T | nu
 // ── API-Football response shapes (minimal, only what we use) ──────────────────
 
 interface AFTeamResponse {
-  response?: Array<{ team: { id: number; name: string; code: string | null; country: string; logo: string } }>;
+  response?: Array<{
+    team: { id: number; name: string; code: string | null; country: string; logo: string };
+  }>;
 }
 
 interface AFPlayerResponse {
@@ -126,7 +128,12 @@ interface AFPlayerResponse {
     };
     statistics: Array<{
       team: { id: number };
-      games: { position: string | null; number: number | null; minutes: number | null; rating: string | null };
+      games: {
+        position: string | null;
+        number: number | null;
+        minutes: number | null;
+        rating: string | null;
+      };
       goals: { total: number | null; assists: number | null };
       cards: { yellow: number | null; red: number | null };
       shots: { total: number | null };
@@ -162,13 +169,38 @@ function mapStatus(short: string): ApiFixture['status'] {
 // ── Map continent from API-Football country to canonical ────────────────────
 
 const COUNTRY_CONTINENT: Record<string, string> = {
-  Argentina: 'CONMEBOL', Brazil: 'CONMEBOL', Uruguay: 'CONMEBOL', Colombia: 'CONMEBOL',
-  Ecuador: 'CONMEBOL', Venezuela: 'CONMEBOL', Chile: 'CONMEBOL', Paraguay: 'CONMEBOL',
-  Spain: 'UEFA', France: 'UEFA', Portugal: 'UEFA', Germany: 'UEFA', England: 'UEFA',
-  Italy: 'UEFA', Netherlands: 'UEFA', Belgium: 'UEFA', Croatia: 'UEFA', Switzerland: 'UEFA',
-  Mexico: 'CONCACAF', 'United States': 'CONCACAF', USA: 'CONCACAF', Canada: 'CONCACAF',
-  Morocco: 'CAF', Nigeria: 'CAF', Senegal: 'CAF', Ghana: 'CAF', Egypt: 'CAF',
-  Japan: 'AFC', 'South Korea': 'AFC', Australia: 'AFC', 'Saudi Arabia': 'AFC', Iran: 'AFC',
+  Argentina: 'CONMEBOL',
+  Brazil: 'CONMEBOL',
+  Uruguay: 'CONMEBOL',
+  Colombia: 'CONMEBOL',
+  Ecuador: 'CONMEBOL',
+  Venezuela: 'CONMEBOL',
+  Chile: 'CONMEBOL',
+  Paraguay: 'CONMEBOL',
+  Spain: 'UEFA',
+  France: 'UEFA',
+  Portugal: 'UEFA',
+  Germany: 'UEFA',
+  England: 'UEFA',
+  Italy: 'UEFA',
+  Netherlands: 'UEFA',
+  Belgium: 'UEFA',
+  Croatia: 'UEFA',
+  Switzerland: 'UEFA',
+  Mexico: 'CONCACAF',
+  'United States': 'CONCACAF',
+  USA: 'CONCACAF',
+  Canada: 'CONCACAF',
+  Morocco: 'CAF',
+  Nigeria: 'CAF',
+  Senegal: 'CAF',
+  Ghana: 'CAF',
+  Egypt: 'CAF',
+  Japan: 'AFC',
+  'South Korea': 'AFC',
+  Australia: 'AFC',
+  'Saudi Arabia': 'AFC',
+  Iran: 'AFC',
 };
 
 // ── Public API ────────────────────────────────────────────────────────────────

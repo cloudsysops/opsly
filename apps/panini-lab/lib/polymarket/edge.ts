@@ -18,7 +18,7 @@ import type { DbTeam } from '@/lib/data/repos';
 
 export interface ValueSignalInput {
   market: GammaMarket;
-  ourProbPct: number;   // our model probability 0–100
+  ourProbPct: number; // our model probability 0–100
   teamName?: string;
 }
 
@@ -27,11 +27,11 @@ export type SignalType = 'strong_value' | 'value' | 'fair' | 'overpriced';
 export interface ComputedEdge {
   conditionId: string;
   question: string;
-  ourProb: number;        // 0–100
-  marketImplied: number;  // 0–100
-  edge: number;           // ourProb - marketImplied (pp)
+  ourProb: number; // 0–100
+  marketImplied: number; // 0–100
+  edge: number; // ourProb - marketImplied (pp)
   signal: SignalType;
-  yesPrice: number;       // raw price (0–1)
+  yesPrice: number; // raw price (0–1)
   volumeUsdc: number;
   polymarketUrl: string;
   closesAt: string | null;
@@ -90,10 +90,7 @@ export function computeEdge(input: ValueSignalInput): ComputedEdge | null {
  * Try to match a Polymarket market question to a team by name.
  * Returns the matching team or null.
  */
-export function matchMarketToTeam(
-  market: GammaMarket,
-  teams: DbTeam[]
-): DbTeam | null {
+export function matchMarketToTeam(market: GammaMarket, teams: DbTeam[]): DbTeam | null {
   const q = market.question.toLowerCase();
   for (const team of teams) {
     const name = team.name.toLowerCase();
@@ -109,10 +106,7 @@ export function matchMarketToTeam(
  * Filter and sort computed edges to return only actionable signals.
  * Minimum volume: 1000 USDC (to filter out illiquid markets).
  */
-export function filterValueSignals(
-  edges: ComputedEdge[],
-  minVolume = 1000
-): ComputedEdge[] {
+export function filterValueSignals(edges: ComputedEdge[], minVolume = 1000): ComputedEdge[] {
   return edges
     .filter((e) => e.volumeUsdc >= minVolume)
     .filter((e) => e.signal === 'strong_value' || e.signal === 'value')

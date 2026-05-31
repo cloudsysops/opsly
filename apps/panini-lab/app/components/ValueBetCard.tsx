@@ -52,10 +52,14 @@ export default function ValueBetCard({
     <div className={`rounded-xl border ${signalDisplay.cls} p-4 space-y-3`}>
       {/* Question */}
       <div className="flex items-start justify-between gap-2">
-        <p className={`text-sm font-medium leading-snug ${compact ? 'text-zinc-300' : 'text-zinc-100'}`}>
+        <p
+          className={`text-sm font-medium leading-snug ${compact ? 'text-zinc-300' : 'text-zinc-100'}`}
+        >
           {signal.question}
         </p>
-        <span className={`text-xs font-semibold shrink-0 px-2 py-0.5 rounded-full border ${signalDisplay.cls}`}>
+        <span
+          className={`text-xs font-semibold shrink-0 px-2 py-0.5 rounded-full border ${signalDisplay.cls}`}
+        >
           {signalDisplay.label}
         </span>
       </div>
@@ -69,7 +73,8 @@ export default function ValueBetCard({
         <div>
           <p className="text-xs text-zinc-500">Edge</p>
           <p className={`text-lg font-bold tabular-nums ${edgeColor}`}>
-            {signal.edge > 0 ? '+' : ''}{signal.edge}pp
+            {signal.edge > 0 ? '+' : ''}
+            {signal.edge}pp
           </p>
         </div>
         <div>

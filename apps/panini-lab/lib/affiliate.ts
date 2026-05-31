@@ -24,11 +24,7 @@ export const RESTRICTED_COUNTRIES = new Set(['US']);
  * Falls back to null if not detectable.
  */
 export function detectCountry(req: NextRequest): string | null {
-  return (
-    req.headers.get('cf-ipcountry') ??
-    req.headers.get('x-country-code') ??
-    null
-  );
+  return req.headers.get('cf-ipcountry') ?? req.headers.get('x-country-code') ?? null;
 }
 
 /**

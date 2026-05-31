@@ -703,16 +703,18 @@ export async function insertAffiliateClick(click: {
   const client = supabaseServer();
   if (!client) return false;
 
-  const { error } = await paniniDb(client).from('affiliate_clicks').insert({
-    session_id: click.sessionId ?? null,
-    market_id: click.marketId ?? null,
-    signal_id: click.signalId ?? null,
-    ref_code: click.refCode ?? null,
-    destination_url: click.destinationUrl,
-    ip_country: click.ipCountry ?? null,
-    user_agent: click.userAgent ?? null,
-    clicked_at: new Date().toISOString(),
-  });
+  const { error } = await paniniDb(client)
+    .from('affiliate_clicks')
+    .insert({
+      session_id: click.sessionId ?? null,
+      market_id: click.marketId ?? null,
+      signal_id: click.signalId ?? null,
+      ref_code: click.refCode ?? null,
+      destination_url: click.destinationUrl,
+      ip_country: click.ipCountry ?? null,
+      user_agent: click.userAgent ?? null,
+      clicked_at: new Date().toISOString(),
+    });
 
   return !error;
 }

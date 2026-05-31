@@ -194,9 +194,7 @@ export default async function AnalyticsPage() {
                     >
                       <span>{flagEmoji(t.iso)}</span>
                       <span className="truncate">{t.name}</span>
-                      {byCountry.has(t.name) && (
-                        <span className="ml-auto text-emerald-600">★</span>
-                      )}
+                      {byCountry.has(t.name) && <span className="ml-auto text-emerald-600">★</span>}
                     </div>
                   );
                 })}

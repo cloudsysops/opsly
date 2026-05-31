@@ -11,10 +11,10 @@ export interface GammaMarket {
   conditionId: string;
   question: string;
   category: string | null;
-  outcomePrices: string;   // JSON array: e.g. '["0.62","0.38"]'
-  outcomes: string;        // JSON array: e.g. '["Yes","No"]'
-  volume: string;          // total volume in USDC
-  endDate: string | null;  // ISO string
+  outcomePrices: string; // JSON array: e.g. '["0.62","0.38"]'
+  outcomes: string; // JSON array: e.g. '["Yes","No"]'
+  volume: string; // total volume in USDC
+  endDate: string | null; // ISO string
   active: boolean;
   closed: boolean;
   tags: Array<{ label: string }>;
@@ -48,18 +48,14 @@ export async function fetchWorldCupMarkets(): Promise<GammaMarket[]> {
     const json = (await res.json()) as GammaApiResponse | GammaMarket[];
 
     // Gamma API returns either an array directly or { data/markets: [...] }
-    const markets: GammaMarket[] = Array.isArray(json)
-      ? json
-      : (json.data ?? json.markets ?? []);
+    const markets: GammaMarket[] = Array.isArray(json) ? json : (json.data ?? json.markets ?? []);
 
     // Filter to World Cup related markets
     return markets.filter((m) => {
       const q = m.question.toLowerCase();
       const tags = m.tags?.map((t) => t.label.toLowerCase()) ?? [];
       return (
-        FOOTBALL_TAGS.some((tag) => q.includes(tag) || tags.includes(tag)) &&
-        m.active &&
-        !m.closed
+        FOOTBALL_TAGS.some((tag) => q.includes(tag) || tags.includes(tag)) && m.active && !m.closed
       );
     });
   } catch (err) {
