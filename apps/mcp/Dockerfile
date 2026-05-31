@@ -23,7 +23,6 @@ COPY --from=deps /repo/package-lock.json ./package-lock.json
 COPY packages/types ./packages/types
 COPY lib/services ./lib/services
 COPY lib/content-studio ./lib/content-studio
-COPY lib/prompt-guard ./lib/prompt-guard
 COPY apps/mcp ./apps/mcp
 COPY apps/llm-gateway ./apps/llm-gateway
 COPY apps/notebooklm-agent ./apps/notebooklm-agent
@@ -43,6 +42,7 @@ COPY --from=builder /repo/package-lock.json ./package-lock.json
 COPY --from=builder /repo/node_modules ./node_modules
 COPY --from=builder /repo/apps/mcp ./apps/mcp
 COPY --from=builder /repo/lib/content-studio ./lib/content-studio
+COPY --from=builder /repo/lib/prompt-guard ./lib/prompt-guard
 COPY --from=builder /repo/apps/llm-gateway ./apps/llm-gateway
 COPY --from=builder /repo/apps/notebooklm-agent ./apps/notebooklm-agent
 WORKDIR /app/apps/mcp
