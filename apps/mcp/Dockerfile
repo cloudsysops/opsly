@@ -24,6 +24,7 @@ COPY tsconfig.json tsconfig.workspace-paths.json ./
 COPY packages/types ./packages/types
 COPY lib/services ./lib/services
 COPY lib/content-studio ./lib/content-studio
+COPY --from=deps /repo/lib/content-studio/node_modules ./lib/content-studio/node_modules
 COPY lib/prompt-guard ./lib/prompt-guard
 COPY apps/mcp ./apps/mcp
 COPY apps/llm-gateway ./apps/llm-gateway

@@ -24,6 +24,8 @@ echo "==> Build internal packages (required before tsc / vitest)"
 (cd lib/git-branch-orchestrator && npm run build)
 (cd lib/session-manager && npm run build)
 (cd lib/runtime && npm run build)
+(cd lib/voice-messaging && npm run build)
+(cd lib/content-studio && npm run build)
 (cd apps/llm-gateway && npm run build)
 
 echo "==> TypeScript gate (api/admin/portal/peskids/mcp/orchestrator/ml/llm-gateway/context-builder)"

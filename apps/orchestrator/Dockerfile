@@ -18,6 +18,7 @@ RUN npm run build -w @intcloudsysops/types && \
     npm run build -w @intcloudsysops/git-branch-orchestrator && \
     npm run build -w @intcloudsysops/session-manager && \
     npm run build -w @intcloudsysops/runtime && \
+    npm run build -w @intcloudsysops/voice-messaging && \
     npm run build -w @intcloudsysops/orchestrator
 # NO npm prune --omit=dev aquí, puede borrar dependencias transitivas compartilhadas
 
@@ -41,6 +42,8 @@ COPY --from=builder /app/lib/git-branch-orchestrator/dist ./lib/git-branch-orche
 COPY --from=builder /app/lib/git-branch-orchestrator/package.json ./lib/git-branch-orchestrator/package.json
 COPY --from=builder /app/lib/runtime/dist ./lib/runtime/dist
 COPY --from=builder /app/lib/runtime/package.json ./lib/runtime/package.json
+COPY --from=builder /app/lib/voice-messaging/dist ./lib/voice-messaging/dist
+COPY --from=builder /app/lib/voice-messaging/package.json ./lib/voice-messaging/package.json
 COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/config/git-branch-policy.json ./config/git-branch-policy.json
 
