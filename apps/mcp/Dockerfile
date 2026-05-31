@@ -25,7 +25,6 @@ COPY packages/types ./packages/types
 COPY lib/services ./lib/services
 COPY lib/content-studio ./lib/content-studio
 COPY --from=deps /repo/lib/content-studio/node_modules ./lib/content-studio/node_modules
-COPY --from=deps /repo/lib/prompt-guard/node_modules ./lib/prompt-guard/node_modules
 COPY lib/prompt-guard ./lib/prompt-guard
 COPY apps/mcp ./apps/mcp
 COPY --from=deps /repo/apps/mcp/node_modules ./apps/mcp/node_modules
