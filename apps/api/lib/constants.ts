@@ -69,6 +69,14 @@ export const CACHE_TTL = {
   LONG: 3600,
 } as const;
 
+/** Métricas de facturación soportadas (autoritativo). */
+export const BILLING_METRICS = [
+  'cpu_seconds',
+  'ai_tokens',
+  'storage_gb',
+  'worker_seconds',
+] as const;
+
 /** Polling de health en orquestación (onboarding / resume). */
 export const ORCHESTRATION_HEALTH = {
   MAX_ATTEMPTS: 12,

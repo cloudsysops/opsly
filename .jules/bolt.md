@@ -5,3 +5,7 @@
 ## 2026-05-27 - [LLM Usage Aggregation Caching]
 **Learning:** Performing O(N) in-memory aggregation of database rows on every request (especially within critical paths like LLM budget checks) is a major scalability bottleneck. As usage grows, latency increases linearly. Caching these aggregates in Redis with a short TTL (e.g., 60s) converts a heavy database query into a constant-time O(1) cache lookup, which is essential for performance-critical gateway paths.
 **Action:** Prefer caching aggregated metrics in the service layer when those metrics are used for real-time policy decisions (budgets, rate limits).
+
+## 2026-05-28 - [Optimizing Redis Pending Usage Aggregation]
+**Learning:** Using `SCAN` with `MATCH` followed by multiple `GET` calls for a known, small set of keys is a performance anti-pattern. While `SCAN` avoids blocking the Redis event loop, for fixed-schema keys like per-tenant billing metrics, constructing the keys and using `MGET` (Multi-GET) reduces network roundtrips from $N+1$ to 1 and provides $O(1)$ lookup complexity, significantly reducing latency for real-time dashboard updates.
+**Action:** Prefer `MGET` over `SCAN` + `GET` loops when the set of keys to aggregate is small and predictable based on a fixed schema.

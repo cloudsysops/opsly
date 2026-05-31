@@ -75,4 +75,33 @@ describe('sumPendingRedisUsageUsd', () => {
     expect(log).toHaveBeenCalledWith(expect.stringContaining('REDIS_URL not set'));
     log.mockRestore();
   });
+
+  it('suma correctamente el uso pendiente usando mGet', async () => {
+    const mockRedis = {
+      mGet: vi.fn().mockResolvedValue(['100', '50.5', '2', '0']),
+    } as any;
+    vi.mocked(redisMetering.getMeteringRedis).mockResolvedValue(mockRedis);
+
+    // Mètricas: ['cpu_seconds', 'ai_tokens', 'storage_gb', 'worker_seconds']
+    // Precios:
+    // cpu_seconds: 0.00001
+    // ai_tokens: 0.0001
+    // storage_gb: 0.001
+    // worker_seconds: 0.00001
+
+    // 100 * 0.00001 = 0.001
+    // 50.5 * 0.0001 = 0.00505
+    // 2 * 0.001 = 0.002
+    // 0 * 0.00001 = 0
+    // Total = 0.001 + 0.00505 + 0.002 = 0.00805
+
+    const n = await sumPendingRedisUsageUsd(tenantId);
+    expect(mockRedis.mGet).toHaveBeenCalledWith([
+      `usage:${tenantId}:cpu_seconds`,
+      `usage:${tenantId}:ai_tokens`,
+      `usage:${tenantId}:storage_gb`,
+      `usage:${tenantId}:worker_seconds`,
+    ]);
+    expect(n).toBeCloseTo(0.00805, 5);
+  });
 });
