@@ -10,6 +10,8 @@ import {
   searchRules,
   getRulesByIds,
 } from '@intcloudsysops/sigma-harness';
+import { applyHarnessPattern } from '@intcloudsysops/pattern-catalog';
+import type { PatternReviewer } from '@intcloudsysops/pattern-catalog';
 import { getOpenclawQueueConnection } from '../lib/redis-queue.js';
 import type { ToolDefinition } from '../types/index.js';
 
@@ -23,6 +25,7 @@ const startDecisionSchema = z.object({
   topic: z.string().min(1),
   summary: z.string().min(1),
   context: z.record(z.unknown()).optional(),
+  pattern_id: z.string().min(1).optional(),
   auto_review: z.boolean().default(true),
 });
 
@@ -38,6 +41,12 @@ const submitReviewSchema = z.object({
 const getDecisionSchema = z.object({
   round_id: z.string().uuid(),
 });
+
+const DEFAULT_REVIEWERS: PatternReviewer[] = [
+  { agent_id: 'skeptic-worker', role: 'skeptic' },
+  { agent_id: 'security-bot', role: 'security' },
+  { agent_id: 'planner-worker', role: 'planner' },
+];
 
 export const sigmaSearchRulesTool: ToolDefinition<
   z.infer<typeof searchInputSchema>,
@@ -66,7 +75,7 @@ export const sigmaStartDecisionTool: ToolDefinition<
 > = {
   name: 'sigma:start_decision',
   description:
-    'Open a multi-agent decision round. Optionally enqueues auto-reviews from skeptic/security/planner workers.',
+    'Open a multi-agent decision round. Optional pattern_id from config/patterns/harness. Optionally enqueues auto-reviews.',
   inputSchema: startDecisionSchema,
   handler: async (input) => {
     const harness = new SigmaDecisionHarness();
@@ -79,6 +88,7 @@ export const sigmaStartDecisionTool: ToolDefinition<
           topic: input.topic,
           summary: input.summary,
           context: input.context,
+          patternId: input.pattern_id,
         },
       });
 
@@ -88,11 +98,14 @@ export const sigmaStartDecisionTool: ToolDefinition<
         if (conn) {
           const queue = new Queue('openclaw', { connection: conn });
           try {
-            const reviewers = [
-              { agent_id: 'skeptic-worker', role: 'skeptic' as const },
-              { agent_id: 'security-bot', role: 'security' as const },
-              { agent_id: 'planner-worker', role: 'planner' as const },
-            ];
+            const applied = input.pattern_id
+              ? applyHarnessPattern({
+                  patternId: input.pattern_id,
+                  topic: input.topic,
+                  summary: input.summary,
+                })
+              : null;
+            const reviewers = applied?.reviewers ?? DEFAULT_REVIEWERS;
             for (const reviewer of reviewers) {
               const job = await queue.add(
                 'sigma_decision',
@@ -105,8 +118,8 @@ export const sigmaStartDecisionTool: ToolDefinition<
                     round_id: round.id,
                     tenant_slug: input.tenant_slug,
                     proposal: {
-                      topic: input.topic,
-                      summary: input.summary,
+                      topic: round.proposal.topic,
+                      summary: round.proposal.summary,
                     },
                     reviewer,
                   },

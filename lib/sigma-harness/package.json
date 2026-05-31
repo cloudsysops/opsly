@@ -10,6 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@intcloudsysops/pattern-catalog": "*",
     "ioredis": "^5.4.2",
     "yaml": "^2.9.0"
   },

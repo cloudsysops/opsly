@@ -1,0 +1,16 @@
+{
+  "name": "@intcloudsysops/pattern-catalog",
+  "version": "0.1.0",
+  "description": "Opsly pattern catalog loader — harness, tenant, and opsly scaffolds from config/patterns",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}

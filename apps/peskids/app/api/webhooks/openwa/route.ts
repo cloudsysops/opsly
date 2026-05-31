@@ -45,7 +45,12 @@ export async function POST(req: NextRequest) {
       latestMessage: msg.text,
     });
 
-    const replyText = intake.reply;
+    // ECC: after 8+ inbound turns with confidence < 0.3 the bot is stuck — escalate.
+    const stuckInLoop = intake.turnCount >= 8 && intake.confidence < 0.3;
+    const replyText = stuckInLoop
+      ? 'Déjame conectarte con alguien del equipo Peskids que pueda ayudarte mejor. 🤝'
+      : intake.reply;
+
     if (replyText) {
       void sendTextMessageForTenant('peskids', msg.chatId, replyText).catch(
         (err: unknown) => {

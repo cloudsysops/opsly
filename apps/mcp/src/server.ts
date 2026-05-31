@@ -32,6 +32,7 @@ import { gitStatusLogTool } from './tools/git-status-log.tool.js';
 import { npmRunTool } from './tools/npm-run.tool.js';
 import { rgCliTool } from './tools/rg-cli.tool.js';
 import { sigmaHarnessTools } from './tools/sigma-harness.js';
+import { patternCatalogTools } from './tools/pattern-catalog.js';
 import type { ToolContext, ToolDefinition } from './types/index.js';
 
 interface RegisteredTool {

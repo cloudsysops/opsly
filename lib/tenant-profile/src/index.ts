@@ -5,3 +5,4 @@ export { loadTenantProfile, listTenantProfiles } from './load.js';
 export { isProductionRuntime, resolveIncubatedTenantSiteUrl } from './site-url.js';
 export { getPortalInviteBranding } from './invite-branding.js';
 export { buildTenantSiteRoutingConfig } from './site-routing.js';
+export { enrichTenantProfile, resolveTenantCapabilities } from './capabilities.js';

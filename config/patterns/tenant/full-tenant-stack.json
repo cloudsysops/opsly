@@ -1,0 +1,12 @@
+{
+  "id": "full-tenant-stack",
+  "kind": "tenant",
+  "title": "Full tenant stack (n8n + Uptime Kuma)",
+  "description": "Standard Opsly tenant compose — platform subdomain, n8n, uptime monitoring.",
+  "stack_type": "full-tenant-stack",
+  "capabilities": ["n8n", "uptime-kuma", "portal-health"],
+  "modules": ["@intcloudsysops/tenant-profile"],
+  "harness_patterns": ["tenant-deploy-gate", "integration-webhook"],
+  "scripts": ["scripts/onboard-tenant.sh", "scripts/setup-n8n-tenant.sh"],
+  "compose_template": "infra/templates/docker-compose.tenant.yml"
+}

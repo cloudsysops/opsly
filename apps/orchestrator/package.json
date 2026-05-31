@@ -23,6 +23,7 @@
     "@anthropic-ai/sdk": "^0.57.0",
     "@intcloudsysops/llm-gateway": "*",
     "@intcloudsysops/ml": "^1.0.0",
+    "@intcloudsysops/prompt-guard": "*",
     "@intcloudsysops/types": "*",
     "@intcloudsysops/voice-messaging": "*",
     "@llamaindex/postgres": "^0.0.65",

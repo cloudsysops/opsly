@@ -12,6 +12,12 @@ export interface TenantProfile {
   staff_login_path?: string;
   invite_email_subject?: string;
   notes?: string;
+  /** Pattern catalog ids — see config/patterns/tenant/ */
+  pattern_ids?: string[];
+  /** Merged from pattern_ids + explicit overrides */
+  capabilities?: string[];
+  modules?: string[];
+  harness_patterns?: string[];
 }
 
 export interface PortalInviteBranding {

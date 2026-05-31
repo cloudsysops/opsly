@@ -15,6 +15,7 @@
     "@intcloudsysops/content-studio": "*",
     "@intcloudsysops/llm-gateway": "^1.0.0",
     "@intcloudsysops/notebooklm-agent": "^1.0.0",
+    "@intcloudsysops/prompt-guard": "*",
     "@intcloudsysops/sigma-harness": "*",
     "@intcloudsysops/services": "^1.0.0",
     "@modelcontextprotocol/sdk": "^1.29.0",

@@ -125,3 +125,8 @@ if [[ -n "$warning" ]]; then
 else
   echo "- Recomendacion: mantener esta sesión dentro de un solo tema."
 fi
+
+echo ""
+echo "📚 Skills:"
+echo "   → node scripts/skill-finder.js \"<tema>\" para cadena de skills"
+echo "   → docs/brain/skills/README.md para mapa completo en Obsidian"

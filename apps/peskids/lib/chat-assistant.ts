@@ -1,4 +1,9 @@
 import { randomUUID } from 'crypto';
+import {
+  guardChatOutput,
+  validateChatUserMessage,
+  wrapUntrustedUserText,
+} from '@intcloudsysops/prompt-guard';
 
 const TENANT_SLUG = 'peskids';
 const FALLBACK_REPLY =
@@ -43,7 +48,17 @@ export async function generatePeskidsChatReply(
   senderName?: string
 ): Promise<ChatAssistantResult> {
   const requestId = randomUUID();
-  const prompt = `${SYSTEM_CONTEXT}\n\nVisitante${senderName ? ` (${senderName})` : ''} pregunta:\n${userMessage.trim()}`;
+  const validated = validateChatUserMessage(userMessage);
+  if (!validated.ok) {
+    return {
+      reply: validated.safeResponse ?? FALLBACK_REPLY,
+      request_id: requestId,
+      from_llm: false,
+    };
+  }
+
+  const visitorLabel = senderName ? `Visitante (${senderName})` : 'Visitante';
+  const userPrompt = `${visitorLabel} pregunta:\n${wrapUntrustedUserText(validated.message)}`;
 
   try {
     const res = await fetch(`${llmGatewayUrl()}/v1/text`, {
@@ -56,7 +71,8 @@ export async function generatePeskidsChatReply(
         task_type: 'generate',
         routing_bias: 'cost',
         feature: 'peskids_chat_widget',
-        prompt,
+        system: SYSTEM_CONTEXT,
+        prompt: userPrompt,
       }),
       signal: AbortSignal.timeout(25_000),
     });
@@ -72,7 +88,7 @@ export async function generatePeskidsChatReply(
       return { reply: FALLBACK_REPLY, request_id: requestId, from_llm: false };
     }
 
-    return { reply: content, request_id: requestId, from_llm: true };
+    return { reply: guardChatOutput(content), request_id: requestId, from_llm: true };
   } catch (err) {
     console.warn('LLM gateway unreachable:', err);
     return { reply: FALLBACK_REPLY, request_id: requestId, from_llm: false };

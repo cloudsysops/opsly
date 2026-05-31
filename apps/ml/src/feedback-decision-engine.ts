@@ -3,6 +3,15 @@
  */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { llmCall } from '@intcloudsysops/llm-gateway';
+import {
+  FEEDBACK_ANALYSIS_SYSTEM_PROMPT,
+  buildFeedbackAnalysisUserPayload,
+  detectPromptInjection,
+  guardChatOutput,
+  sanitizeImplementationPrompt,
+  wrapConversationHistory,
+  type ChatTurn,
+} from '@intcloudsysops/prompt-guard';
 import { writeActivePrompt } from './write-active-prompt.js';
 
 function requireEnv(name: string): string {
@@ -138,7 +147,43 @@ function parseDecisionFromLlm(content: string): Omit<DecisionOutput, 'notify_dis
   if (out.criticality === 'critical') {
     out = { ...out, decision_type: 'needs_approval' };
   }
-  return out;
+  return applyImplementationPromptGuard(out);
+}
+
+function applyImplementationPromptGuard(
+  out: Omit<DecisionOutput, 'notify_discord'>
+): Omit<DecisionOutput, 'notify_discord'> {
+  if (!out.implementation_prompt) {
+    return out;
+  }
+
+  const sanitized = sanitizeImplementationPrompt(out.implementation_prompt);
+  if (sanitized.ok) {
+    return { ...out, implementation_prompt: sanitized.sanitized };
+  }
+
+  return {
+    ...out,
+    decision_type: 'needs_approval',
+    implementation_prompt: undefined,
+    reasoning: `${out.reasoning} [implementation_prompt bloqueado: ${sanitized.violations.join(', ')}]`,
+    user_response: guardChatOutput(out.user_response),
+  };
+}
+
+function conversationHasBlockedInjection(messages: Array<{ role: string; content: string }>): boolean {
+  return messages.some(
+    (m) => m.role === 'user' && detectPromptInjection(m.content).blocked
+  );
+}
+
+function toChatTurns(messages: Array<{ role: string; content: string }>): ChatTurn[] {
+  return messages
+    .filter((m) => m.role === 'user' || m.role === 'assistant')
+    .map((m) => ({
+      role: m.role as 'user' | 'assistant',
+      content: m.content,
+    }));
 }
 
 export interface AnalyzeFeedbackResult {
@@ -150,57 +195,62 @@ export async function analyzeFeedback(
   input: FeedbackInput,
   supabase: SupabaseClient = getSupabase()
 ): Promise<AnalyzeFeedbackResult> {
-  const conversation = input.messages.map((m) => `${m.role}: ${m.content}`).join('\n');
+  if (conversationHasBlockedInjection(input.messages)) {
+    const output: DecisionOutput = {
+      decision_type: 'needs_approval',
+      criticality: 'medium',
+      reasoning: 'Contenido bloqueado por política anti prompt-injection',
+      user_response: 'Gracias por tu feedback. Un miembro del equipo lo revisará manualmente.',
+      notify_discord: true,
+    };
+    return persistDecision(supabase, input.conversation_id, output);
+  }
+
+  const conversationBlock = wrapConversationHistory(toChatTurns(input.messages));
+  const userPayload = [
+    buildFeedbackAnalysisUserPayload(conversationBlock),
+    '',
+    'AUTO_IMPLEMENT (implementar solo, sin aprobación):',
+    ...AUTO_IMPLEMENT_RULES.map((r) => `- ${r}`),
+    '',
+    'NEEDS_APPROVAL (requiere aprobación humana):',
+    ...NEEDS_APPROVAL_RULES.map((r) => `- ${r}`),
+    '',
+    'CRITICAL (urgente, notificar inmediatamente):',
+    ...CRITICAL_RULES.map((r) => `- ${r}`),
+    '',
+    'REJECTED: si no aplica, es spam, o está fuera de scope.',
+  ].join('\n');
 
   const analysis = await llmCall({
     tenant_slug: 'platform',
     model: 'haiku',
     temperature: 0,
     cache: false,
-    messages: [
-      {
-        role: 'user',
-        content: `Analiza este feedback de usuario y decide qué hacer.
-
-AUTO_IMPLEMENT (implementar solo, sin aprobación):
-${AUTO_IMPLEMENT_RULES.map((r) => `- ${r}`).join('\n')}
-
-NEEDS_APPROVAL (requiere aprobación humana):
-${NEEDS_APPROVAL_RULES.map((r) => `- ${r}`).join('\n')}
-
-CRITICAL (urgente, notificar inmediatamente):
-${CRITICAL_RULES.map((r) => `- ${r}`).join('\n')}
-
-REJECTED: si no aplica, es spam, o está fuera de scope.
-
-Conversación:
-${conversation}
-
-Responde SOLO en JSON:
-{
-  "decision_type": "auto_implement|needs_approval|rejected|scheduled",
-  "criticality": "low|medium|high|critical",
-  "reasoning": "por qué tomaste esta decisión",
-  "implementation_prompt": "prompt exacto para Cursor si es auto_implement, null si no",
-  "user_response": "mensaje amigable para el usuario explicando qué pasará",
-  "category": "bug|feature|improvement|security|billing|other",
-  "estimated_effort": "minutes|hours|days"
-}`,
-      },
-    ],
+    system: FEEDBACK_ANALYSIS_SYSTEM_PROMPT,
+    messages: [{ role: 'user', content: userPayload }],
   });
 
   const base = parseDecisionFromLlm(analysis.content);
   const output: DecisionOutput = {
     ...base,
+    user_response: guardChatOutput(base.user_response),
     notify_discord: base.criticality !== 'low',
   };
 
+  return persistDecision(supabase, input.conversation_id, output);
+}
+
+async function persistDecision(
+  supabase: SupabaseClient,
+  conversationId: string,
+  output: DecisionOutput
+): Promise<AnalyzeFeedbackResult> {
   const { data: inserted, error: insErr } = await supabase
     .schema('platform')
     .from('feedback_decisions')
     .insert({
-      conversation_id: input.conversation_id,
+      conversation_id: conversationId,
       decision_type: output.decision_type,
       criticality: output.criticality,
       reasoning: output.reasoning,
@@ -223,7 +273,7 @@ Responde SOLO en JSON:
       status: conversationStatusForDecision(output.decision_type),
       updated_at: new Date().toISOString(),
     })
-    .eq('id', input.conversation_id);
+    .eq('id', conversationId);
 
   if (updErr) {
     console.error('[feedback-decision-engine] update conversation:', updErr);
@@ -237,21 +287,22 @@ export async function executeAutoImplement(
   prompt: string,
   tenantSlug: string
 ): Promise<void> {
+  const sanitized = sanitizeImplementationPrompt(prompt);
+  if (!sanitized.ok) {
+    throw new Error(
+      `implementation_prompt rejected: ${sanitized.violations.join(', ')}`
+    );
+  }
+
   const fullPrompt = [
     `# Auto-implementación desde feedback`,
     `# Decision ID: ${decisionId}`,
     `# Tenant: ${tenantSlug}`,
     `# Fecha: ${new Date().toISOString()}`,
-    `# IMPORTANTE: Este cambio fue aprobado automáticamente por ML`,
-    `# Solo implementar si es un cambio menor y seguro`,
+    `# IMPORTANTE: Este cambio fue aprobado por un administrador`,
+    `# Solo implementar si es un cambio menor y seguro (sin comandos shell)`,
     ``,
-    prompt,
-    ``,
-    `# Al terminar: notificar Discord con el resultado`,
-    `./scripts/utils/notify-discord.sh \\`,
-    `  "✅ Auto-implementado desde feedback" \\`,
-    `  "Decision: ${decisionId}" \\`,
-    `  "success"`,
+    sanitized.sanitized,
   ].join('\n');
 
   await writeActivePrompt(fullPrompt);
