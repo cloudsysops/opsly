@@ -10,6 +10,7 @@ RUN npm ci --ignore-scripts
 COPY packages/types ./packages/types
 COPY apps/llm-gateway ./apps/llm-gateway
 COPY apps/context-builder ./apps/context-builder
+COPY lib/prompt-guard ./lib/prompt-guard
 COPY AGENTS.md ./AGENTS.md
 COPY VISION.md ./VISION.md
 COPY docs ./docs
