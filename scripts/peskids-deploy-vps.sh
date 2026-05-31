@@ -30,6 +30,29 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
+# Fast-forward main; remove untracked files that would block merge (common on VPS).
+pull_main_ff_only() {
+  local pull_err
+  pull_err="$(mktemp)"
+  trap 'rm -f "$pull_err"' RETURN
+
+  if git pull --ff-only origin main 2>"$pull_err"; then
+    return 0
+  fi
+
+  if grep -q "would be overwritten by merge" "$pull_err"; then
+    echo "Removing untracked files blocking git pull..."
+    awk '/^\t/{ sub(/^\t/, ""); print }' "$pull_err" | while IFS= read -r path; do
+      [[ -n "$path" && -e "$path" ]] && rm -f "$path"
+    done
+    git pull --ff-only origin main
+    return 0
+  fi
+
+  cat "$pull_err" >&2
+  return 1
+}
+
 run_deploy_on_host() {
   local repo_path="$1"
   local image="$2"
@@ -37,7 +60,7 @@ run_deploy_on_host() {
   cd "$repo_path"
   git fetch origin main
   git checkout main
-  git pull --ff-only origin main
+  pull_main_ff_only
 
   echo "Pulling ${image}..."
   docker pull "$image"
@@ -83,7 +106,22 @@ set -euo pipefail
 cd "$REPO_PATH"
 git fetch origin main
 git checkout main
-git pull --ff-only origin main
+
+pull_err="$(mktemp)"
+if ! git pull --ff-only origin main 2>"$pull_err"; then
+  if grep -q "would be overwritten by merge" "$pull_err"; then
+    echo "Removing untracked files blocking git pull..."
+    awk '/^\t/{ sub(/^\t/, ""); print }' "$pull_err" | while IFS= read -r path; do
+      [[ -n "$path" && -e "$path" ]] && rm -f "$path"
+    done
+    git pull --ff-only origin main
+  else
+    cat "$pull_err" >&2
+    rm -f "$pull_err"
+    exit 1
+  fi
+fi
+rm -f "$pull_err"
 
 echo "Pulling ${IMAGE}..."
 docker pull "$IMAGE"

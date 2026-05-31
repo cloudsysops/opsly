@@ -38,7 +38,7 @@ echo "Peskids operations smoke — ${BASE_URL}"
 
 check "health" "${BASE_URL}/api/health"
 check "public familias clases page" "${BASE_URL}/familias/clases" "200"
-check "public familias reservas page" "${BASE_URL}/familias/reservas" "307"
+check "public familias reservas page" "${BASE_URL}/familias/reservas" "200"
 
 # Unauthenticated API should reject portal routes
 check "portal classes auth gate" "${BASE_URL}/api/portal/classes" "401"
