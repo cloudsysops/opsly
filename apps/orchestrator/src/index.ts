@@ -64,7 +64,6 @@ import { startClaudeCodeWorker } from './workers/ClaudeCodeWorker.js';
 import { startValidationWorker } from './workers/ValidationWorker.js';
 import { startMemoryWriterWorker } from './workers/MemoryWriterWorker.js';
 import { startContentVideoWorker } from './workers/ContentVideoWorker.js';
-import { startContentVideoWorker } from './workers/ContentVideoWorker.js';
 
 type AsyncCleanup = () => Promise<void>;
 
