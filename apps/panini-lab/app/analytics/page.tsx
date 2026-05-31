@@ -38,23 +38,19 @@ export default async function AnalyticsPage() {
   let scores: TeamScore[];
 
   if (hasDbTeams) {
-    // Build TeamScore from DB teams + collection bonus
-    const maxStickers = Math.max(...byCountry.values(), 1);
+    // Build TeamScore from DB teams using only real data
     const wcScores = tournamentWinProbabilities(
       dbTeams.map((t) => ({
         name: t.name,
         fifaRank: t.fifaRank ?? 50,
         recentForm: t.recentForm ?? 65,
         wcWins: t.wcWins ?? 0,
-        collectionCount: byCountry.get(t.name) ?? 0,
       }))
     );
 
     scores = wcScores.map((s) => {
       const team = TEAMS.find((t) => t.name === s.name);
       const dbTeam = dbTeams.find((t) => t.name === s.name);
-      const owned = byCountry.get(s.name) ?? 0;
-      const collectionBonus = maxStickers > 0 ? Math.round((owned / maxStickers) * 20) : 0;
       return {
         team: team ?? {
           name: s.name,
@@ -66,7 +62,7 @@ export default async function AnalyticsPage() {
           recentForm: dbTeam?.recentForm ?? 65,
         },
         powerScore: s.powerScore,
-        collectionBonus,
+        collectionBonus: 0,
         winProbability: s.winProbability,
       };
     });
@@ -162,8 +158,8 @@ export default async function AnalyticsPage() {
       <section className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 space-y-4">
         <h2 className="text-lg font-medium">📊 Top 10 — Power Score</h2>
         <p className="text-zinc-500 text-xs">
-          Fórmula: Ranking FIFA (40%) + Forma reciente (35%) + Experiencia WC (15%) + Tu colección
-          (10%)
+          Fórmula basada en datos reales: Ranking FIFA (40%) + Forma reciente (35%) + Experiencia
+          WC (25%)
         </p>
         <TopContendersChart scores={scores} />
       </section>
