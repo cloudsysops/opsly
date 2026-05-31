@@ -265,7 +265,7 @@ export default function LoginPage(): ReactElement {
               required
               value={password}
               onChange={(ev) => setPassword(ev.target.value)}
-              className="bg-ops-bg/80"
+              className="input-terminal-caret rounded-sm bg-ops-bg/80 py-2.5 focus:border-ops-green focus:ring-2 focus:ring-ops-green/30"
             />
             <div className="mt-2 flex justify-end">
               <button

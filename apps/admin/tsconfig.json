@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -14,11 +18,48 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ],
+      "@intcloudsysops/components": [
+        "../../lib/components"
+      ],
+      "@intcloudsysops/components/*": [
+        "../../lib/components/*"
+      ],
+      "@intcloudsysops/types": [
+        "../../packages/types/src"
+      ],
+      "@intcloudsysops/types/*": [
+        "../../packages/types/src/*"
+      ],
+      "@intcloudsysops/ml": [
+        "../ml/src"
+      ],
+      "@intcloudsysops/ml/*": [
+        "../ml/src/*"
+      ],
+      "@intcloudsysops/llm-gateway": [
+        "../llm-gateway/src"
+      ],
+      "@intcloudsysops/llm-gateway/*": [
+        "../llm-gateway/src/*"
+      ]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

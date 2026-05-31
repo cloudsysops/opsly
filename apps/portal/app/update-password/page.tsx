@@ -83,7 +83,7 @@ function UpdatePasswordForm(): ReactElement {
           <PasswordInput
             value={password}
             onChange={(ev) => setPassword(ev.target.value)}
-            className="bg-ops-bg/80"
+            className="input-terminal-caret bg-ops-bg/80 py-2.5"
             autoComplete="new-password"
             required
             minLength={8}
@@ -92,7 +92,7 @@ function UpdatePasswordForm(): ReactElement {
           <PasswordInput
             value={confirm}
             onChange={(ev) => setConfirm(ev.target.value)}
-            className="bg-ops-bg/80"
+            className="input-terminal-caret bg-ops-bg/80 py-2.5"
             autoComplete="new-password"
             required
             minLength={8}
