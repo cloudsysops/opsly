@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/input';
 import {
   inviteActivationErrorMessage,
   validateInviteActivationForm,
@@ -127,9 +127,8 @@ export function InviteActivate() {
             <label htmlFor="pw" className="font-sans text-xs text-ops-gray">
               Nueva contraseña
             </label>
-            <Input
+            <PasswordInput
               id="pw"
-              type="password"
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -141,9 +140,8 @@ export function InviteActivate() {
             <label htmlFor="pw2" className="font-sans text-xs text-ops-gray">
               Confirmar contraseña
             </label>
-            <Input
+            <PasswordInput
               id="pw2"
-              type="password"
               autoComplete="new-password"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}

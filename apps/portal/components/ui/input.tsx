@@ -1,5 +1,7 @@
 import * as React from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from './button';
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
@@ -20,4 +22,32 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 );
 Input.displayName = 'Input';
 
-export { Input };
+const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, ...props }, ref) => {
+    const [show, setShow] = React.useState(false);
+    return (
+      <div className="relative">
+        <Input
+          type={show ? 'text' : 'password'}
+          className={cn('pr-10', className)}
+          ref={ref}
+          {...props}
+        />
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+          onClick={() => setShow((s) => !s)}
+          aria-label={show ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+          title={show ? 'Ocultar' : 'Mostrar'}
+        >
+          {show ? <EyeOff className="h-4 w-4 text-ops-gray" /> : <Eye className="h-4 w-4 text-ops-gray" />}
+        </Button>
+      </div>
+    );
+  }
+);
+PasswordInput.displayName = 'PasswordInput';
+
+export { Input, PasswordInput };
