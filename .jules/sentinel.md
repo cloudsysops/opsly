@@ -7,3 +7,8 @@
 **Vulnerability:** Several sensitive operations (exports, webhooks, bulk-grading) in the Peskids Portal API used a hardcoded string ('teacher') as the actor ID in audit logs instead of the actual authenticated user's ID.
 **Learning:** Even when security wrappers like `runTrustedPortalDalForPathSlug` are used, functional modules might still implement "security theater" by hardcoding metadata in audit trails, which defeats the purpose of non-repudiation.
 **Prevention:** Always extract and use `session.user.id` (or equivalent) for audit logging. Perform a cross-module audit of `log_audit_event` calls to ensure real actor IDs are being captured.
+
+## 2026-05-31 - [Unauthenticated Filesystem Write via Knowledge Capture]
+**Vulnerability:** The `/api/knowledge/capture` endpoint in `apps/api` allowed unauthenticated POST requests to append content to the local filesystem (`docs/obsidian/inbox/`). It also allowed unauthenticated GET requests to read these files.
+**Learning:** This endpoint was likely designed for internal agent-to-agent communication but was exposed as a public route without the standard `requireAdminAccess` check. It lacked the multi-tenant protection usually found in the portal routes, as it was considered a "global" platform utility.
+**Prevention:** All "internal" or "agent" endpoints must explicitly call `requireAdminAccess` or use a shared secret/token. New endpoints that interact with the filesystem or platform-wide docs must be audited for authentication before being committed.
