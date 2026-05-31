@@ -7,8 +7,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   redirectUrl.pathname = nextPath.startsWith('/') ? nextPath : '/admin';
   redirectUrl.search = '';
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? '';
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ?? '';
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || process.env.SUPABASE_URL?.trim() || '';
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() || process.env.SUPABASE_ANON_KEY?.trim() || '';
   const hasConfig = !!(url && anon);
 
   if (!hasConfig) {
