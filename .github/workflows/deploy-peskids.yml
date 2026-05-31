@@ -83,7 +83,7 @@ jobs:
       - name: Build and push Peskids image
         uses: docker/build-push-action@v5
         with:
-          context: apps/peskids
+          context: .
           file: apps/peskids/Dockerfile
           push: true
           tags: |
