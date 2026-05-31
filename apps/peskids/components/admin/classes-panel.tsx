@@ -80,11 +80,26 @@ export function ClassesPanel(): React.ReactElement {
 
       if (teamRes.ok) {
         const teamJson = (await teamRes.json()) as {
-          members?: Array<{ user_id: string; name: string; role: string }>;
+          members?: Array<{
+            user_id: string | null;
+            display_name: string | null;
+            email: string;
+            role: string;
+          }>;
         };
         const teacherOptions = (teamJson.members ?? [])
-          .filter((m) => m.role === 'teacher' || m.role === 'admin' || m.role === 'owner')
-          .map((m) => ({ user_id: m.user_id, name: m.name, role: m.role }));
+          .filter(
+            (member) =>
+              (member.role === 'teacher' ||
+                member.role === 'admin' ||
+                member.role === 'owner') &&
+              Boolean(member.user_id)
+          )
+          .map((member) => ({
+            user_id: member.user_id as string,
+            name: member.display_name?.trim() || member.email,
+            role: member.role,
+          }));
         setTeachers(teacherOptions);
       }
 

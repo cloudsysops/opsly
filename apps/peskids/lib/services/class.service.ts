@@ -115,7 +115,7 @@ export async function listClasses(input: {
 export async function getClassById(classId: string): Promise<ClassListItem | null> {
   const { data, error } = await peskidsClient()
     .from('classes')
-    .select('*, pools(name)')
+    .select('*')
     .eq('id', classId)
     .eq('tenant_slug', tenantSlug())
     .maybeSingle();
@@ -123,9 +123,11 @@ export async function getClassById(classId: string): Promise<ClassListItem | nul
   if (error) throw error;
   if (!data) return null;
 
-  const row = data as PeskidsClass & { pools: { name: string } | null };
+  const row = data as PeskidsClass;
+  const poolRows = await listPools();
+  const poolName = poolRows.find((pool) => pool.id === row.pool_id)?.name;
   const enrolled_count = await countActiveEnrollments(row.id);
-  return { ...row, pool_name: row.pools?.name, enrolled_count };
+  return { ...row, pool_name: poolName, enrolled_count };
 }
 
 export async function createClass(
