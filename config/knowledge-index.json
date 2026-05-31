@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/Users/dragon/cboteros/proyectos/intcloudsysops",
-  "generated_at": "2026-05-30T11:05:07.458Z",
+  "generated_at": "2026-05-30T14:47:57.069Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -24923,7 +24923,7 @@
         "usage",
         "validate"
       ],
-      "size_bytes": 3731
+      "size_bytes": 3783
     },
     {
       "path": "lib/index.md",
@@ -25066,6 +25066,48 @@
         "usage"
       ],
       "size_bytes": 2941
+    },
+    {
+      "path": "lib/pattern-catalog/README.md",
+      "title": "@intcloudsysops/pattern-catalog",
+      "keywords": [
+        "api",
+        "apps",
+        "catalog",
+        "cli",
+        "harness",
+        "intcloudsysops",
+        "layout",
+        "markdown",
+        "mcp",
+        "opsly",
+        "pattern",
+        "readme",
+        "sigma",
+        "tests"
+      ],
+      "size_bytes": 1850
+    },
+    {
+      "path": "lib/prompt-guard/README.md",
+      "title": "@intcloudsysops/prompt-guard",
+      "keywords": [
+        "adversarial",
+        "blindaje",
+        "cursor",
+        "dataset",
+        "guard",
+        "intcloudsysops",
+        "integracion",
+        "local",
+        "mac",
+        "markdown",
+        "opsly",
+        "prompt",
+        "readme",
+        "uso"
+      ],
+      "size_bytes": 1864
     },
     {
       "path": "lib/prompts/GOVERNANCE.md",
@@ -86722,6 +86764,8 @@
       ".github/index.md",
       "lib/migrations/GOVERNANCE.md",
       "lib/migrations/README.md",
+      "lib/pattern-catalog/README.md",
+      "lib/prompt-guard/README.md",
       "lib/config/GOVERNANCE.md",
       "lib/config/README.md",
       "lib/security/GOVERNANCE.md",
@@ -89323,6 +89367,8 @@
       ".github/index.md",
       "lib/migrations/GOVERNANCE.md",
       "lib/migrations/README.md",
+      "lib/pattern-catalog/README.md",
+      "lib/prompt-guard/README.md",
       "lib/config/GOVERNANCE.md",
       "lib/config/README.md",
       "lib/security/GOVERNANCE.md",
@@ -91692,6 +91738,7 @@
       "docs/01-development/HYBRID-OPSLY-ADMIN.md",
       "docs/01-development/MAIA-WORKERS.md",
       "packages/skills/README.md",
+      "lib/prompt-guard/README.md",
       "AGENTS.md"
     ],
     "execution": [
@@ -92647,6 +92694,7 @@
       "docs/01-development/AUTO-SYNC-DOCS-SETUP.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
       ".codex/LOCAL-AUTOMATION.md",
+      "lib/prompt-guard/README.md",
       "apps/experimental/ingestion-service-archive/README.md"
     ],
     "001": [
@@ -92971,6 +93019,7 @@
       "docs/reports/REAL-PROMPT-EXECUTION-SUCCESS.md",
       "scripts/agent-training/README.md",
       ".n8n/2-context/AGENTS.md",
+      "lib/prompt-guard/README.md",
       "lib/prompts/GOVERNANCE.md",
       "lib/prompts/README.md",
       "apps/orchestrator/src/meta/README.md",
@@ -94023,6 +94072,7 @@
       "docs/obsidian/sources/trading-pattern-sources.md",
       "packages/skills/user/opsly-agent-skills-bridge/SKILL.md",
       "packages/skills/vendor/agent-skills/test-driven-development/SKILL.md",
+      "lib/pattern-catalog/README.md",
       "apps/orchestrator/src/meta/README.md",
       "vendor/agency-agents/integrations/openclaw/security-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/proposal-strategist/SOUL.md",
@@ -94743,6 +94793,7 @@
       "packages/skills/templates/template-test.md",
       "packages/skills/templates/template-api-route.md",
       "packages/skills/vendor/agent-skills/api-and-interface-design/SKILL.md",
+      "lib/pattern-catalog/README.md",
       "lib/config/README.md",
       "lib/security/README.md",
       "lib/voice-messaging/README.md",
@@ -99761,6 +99812,7 @@
       "packages/skills/templates/template-api-route.md",
       "packages/skills/vendor/agent-skills/test-driven-development/SKILL.md",
       "packages/skills/vendor/agent-skills/ci-cd-and-automation/SKILL.md",
+      "lib/pattern-catalog/README.md",
       "lib/testing/README.md",
       "lib/evaluation/README.md",
       "vendor/sigma/Releases.md"
@@ -100198,6 +100250,8 @@
       ".n8n/README.md",
       ".github/README-github-templates.md",
       "lib/migrations/README.md",
+      "lib/pattern-catalog/README.md",
+      "lib/prompt-guard/README.md",
       "lib/config/README.md",
       "lib/security/README.md",
       "lib/voice-messaging/README.md",
@@ -109509,7 +109563,8 @@
       "packages/skills/API.md",
       "packages/skills/user/opsly-supabase/SKILL.md",
       "packages/skills/user/opsly-quantum/SKILL.md",
-      "packages/skills/README.md"
+      "packages/skills/README.md",
+      "lib/pattern-catalog/README.md"
     ],
     "entorno": [
       "tools/cli/README.md",
@@ -109575,6 +109630,7 @@
       "packages/skills/user/opsly-discord/SKILL.md",
       "packages/skills/templates/template-bash-script.md",
       ".n8n/README.md",
+      "lib/prompt-guard/README.md",
       "apps/notebooklm-agent/README.md"
     ],
     "variables": [
@@ -116836,6 +116892,7 @@
       "docs/tenants/peskids/DASHBOARD-SPEC.md",
       "docs/00-architecture/opsly-agent-runtime.md",
       "packages/skills/vendor/agent-skills/frontend-ui-engineering/SKILL.md",
+      "lib/pattern-catalog/README.md",
       "vendor/agency-agents/integrations/openclaw/level-designer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/ux-architect/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/unity-shader-graph-artist/AGENTS.md",
@@ -121506,6 +121563,8 @@
       "docs/01-development/LIBRARY-MODULES.md",
       "README.md",
       "lib/migrations/README.md",
+      "lib/pattern-catalog/README.md",
+      "lib/prompt-guard/README.md",
       "lib/config/README.md",
       "lib/security/README.md",
       "lib/voice-messaging/README.md",
@@ -125085,7 +125144,8 @@
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
       "docs/01-development/LOCAL-MAC-IMPROVEMENT-PLAN.md",
-      "docs/01-development/SESSION-GIT-SYNC.md"
+      "docs/01-development/SESSION-GIT-SYNC.md",
+      "lib/prompt-guard/README.md"
     ],
     "maquina": [
       ".claude/SYNC-GUIDE.md",
@@ -125830,6 +125890,7 @@
       "docs/superpowers/specs/2026-05-26-content-studio-ai-design.md",
       "packages/skills/user/opsly-simplify/SKILL.md",
       "packages/skills/user/opsly-mcp/SKILL.md",
+      "lib/pattern-catalog/README.md",
       "apps/index.md",
       "vendor/agency-agents/integrations/openclaw/mobile-app-builder/AGENTS.md",
       "vendor/agency-agents/integrations/qwen/agents/mobile-app-builder.md",
@@ -128767,6 +128828,7 @@
       "packages/skills/user/opsly-mcp/SKILL.md",
       "packages/skills/templates/template-mcp-tool.md",
       "packages/skills/vendor/agent-skills/browser-testing-with-devtools/SKILL.md",
+      "lib/pattern-catalog/README.md",
       "AGENTS.md",
       "apps/mcp/README.md",
       "apps/notion-mcp/README.md",
@@ -129418,7 +129480,8 @@
       "docs/01-development/OBSERVABILITY.md",
       "docs/01-development/MAIA-WORKERS.md",
       "packages/skills/templates/template-test.md",
-      ".n8n/README.md"
+      ".n8n/README.md",
+      "lib/prompt-guard/README.md"
     ],
     "recomendados": [
       "docs/03-agents/SUPER-ORCHESTRATOR.md",
@@ -133868,7 +133931,8 @@
       "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md"
     ],
     "catalog": [
-      "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md"
+      "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
+      "lib/pattern-catalog/README.md"
     ],
     "fixed": [
       "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
@@ -148388,6 +148452,7 @@
     ],
     "guard": [
       "packages/skills/vendor/agent-skills/debugging-and-error-recovery/SKILL.md",
+      "lib/prompt-guard/README.md",
       "vendor/agency-agents/integrations/openclaw/brand-guardian/AGENTS.md",
       "vendor/agency-agents/integrations/qwen/agents/brand-guardian.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/brand-guardian/SKILL.md",
@@ -149185,6 +149250,37 @@
     "previous": [
       "lib/migrations/README.md"
     ],
+    "harness": [
+      "lib/pattern-catalog/README.md"
+    ],
+    "sigma": [
+      "lib/pattern-catalog/README.md",
+      "vendor/sigma/Releases.md",
+      "vendor/sigma/README.md",
+      "vendor/sigma/CONTRIBUTING.md",
+      "vendor/agency-agents/integrations/openclaw/threat-detection-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/qwen/agents/threat-detection-engineer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/threat-detection-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-threat-detection-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/threat-detection-engineer/system.md",
+      "vendor/agency-agents/integrations/opencode/agents/threat-detection-engineer.md"
+    ],
+    "adversarial": [
+      "lib/prompt-guard/README.md",
+      "vendor/agency-agents/integrations/openclaw/security-engineer/SOUL.md",
+      "vendor/agency-agents/integrations/qwen/agents/security-engineer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/security-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-security-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/security-engineer/system.md",
+      "vendor/agency-agents/integrations/opencode/agents/security-engineer.md"
+    ],
+    "blindaje": [
+      "lib/prompt-guard/README.md"
+    ],
+    "dataset": [
+      "lib/prompt-guard/README.md",
+      "lib/evaluation/README.md"
+    ],
     "depend": [
       "lib/config/GOVERNANCE.md",
       "lib/security/GOVERNANCE.md",
@@ -149299,9 +149395,6 @@
       "lib/evaluation/README.md"
     ],
     "calculate": [
-      "lib/evaluation/README.md"
-    ],
-    "dataset": [
       "lib/evaluation/README.md"
     ],
     "golden": [
@@ -149544,17 +149637,6 @@
       "vendor/agency-agents/integrations/antigravity/agency-git-workflow-master/SKILL.md",
       "vendor/agency-agents/integrations/kimi/git-workflow-master/system.md",
       "vendor/agency-agents/integrations/opencode/agents/git-workflow-master.md"
-    ],
-    "sigma": [
-      "vendor/sigma/Releases.md",
-      "vendor/sigma/README.md",
-      "vendor/sigma/CONTRIBUTING.md",
-      "vendor/agency-agents/integrations/openclaw/threat-detection-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/qwen/agents/threat-detection-engineer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/threat-detection-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-threat-detection-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/threat-detection-engineer/system.md",
-      "vendor/agency-agents/integrations/opencode/agents/threat-detection-engineer.md"
     ],
     "threats": [
       "vendor/sigma/Releases.md",
@@ -150876,14 +150958,6 @@
       "vendor/agency-agents/integrations/antigravity/agency-reddit-community-builder/SKILL.md",
       "vendor/agency-agents/integrations/kimi/reddit-community-builder/system.md",
       "vendor/agency-agents/integrations/opencode/agents/reddit-community-builder.md"
-    ],
-    "adversarial": [
-      "vendor/agency-agents/integrations/openclaw/security-engineer/SOUL.md",
-      "vendor/agency-agents/integrations/qwen/agents/security-engineer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/security-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-security-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/security-engineer/system.md",
-      "vendor/agency-agents/integrations/opencode/agents/security-engineer.md"
     ],
     "mindset": [
       "vendor/agency-agents/integrations/openclaw/security-engineer/SOUL.md",
@@ -161543,6 +161617,8 @@
     "lib/migrations/README.md",
     "lib/observability/GOVERNANCE.md",
     "lib/observability/README.md",
+    "lib/pattern-catalog/README.md",
+    "lib/prompt-guard/README.md",
     "lib/prompts/GOVERNANCE.md",
     "lib/prompts/README.md",
     "lib/security/GOVERNANCE.md",
