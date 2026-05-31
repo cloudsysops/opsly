@@ -13,6 +13,19 @@ COPY packages/types/package.json ./packages/types/
 COPY apps/llm-gateway/package.json ./apps/llm-gateway/
 RUN npm ci
 
+# Copy source files for workspaces that need to be built via tsc
+COPY packages/types/package.json packages/types/tsconfig.json ./packages/types/
+COPY packages/types/src ./packages/types/src
+COPY apps/llm-gateway/package.json apps/llm-gateway/tsconfig.json ./apps/llm-gateway/
+COPY apps/llm-gateway/src ./apps/llm-gateway/src
+COPY apps/ml/package.json apps/ml/tsconfig.json ./apps/ml/
+COPY apps/ml/src ./apps/ml/src
+COPY apps/notebooklm-agent/package.json apps/notebooklm-agent/tsconfig.json ./apps/notebooklm-agent/
+COPY apps/notebooklm-agent/src ./apps/notebooklm-agent/src
+COPY apps/orchestrator/package.json apps/orchestrator/tsconfig.json ./apps/orchestrator/
+COPY apps/orchestrator/src ./apps/orchestrator/src
+
+
 RUN npm run build -w @intcloudsysops/types \
   && npm run build -w @intcloudsysops/llm-gateway \
   && npm run build -w @intcloudsysops/ml \

@@ -41,8 +41,6 @@ COPY apps/notebooklm-agent ./apps/notebooklm-agent
 RUN npm run build -w @intcloudsysops/types && \
     npm run build -w @intcloudsysops/services && \
     npm run build -w @intcloudsysops/content-studio && \
-    npm run build -w @intcloudsysops/pattern-catalog && \
-    npm run build -w @intcloudsysops/sigma-harness && \
     npm run build -w @intcloudsysops/llm-gateway && \
     npm run build -w @intcloudsysops/notebooklm-agent && \
     npm run build -w @intcloudsysops/mcp
