@@ -33,7 +33,6 @@ COPY --from=builder /app/package-lock.json ./package-lock.json
 COPY --from=builder /app/node_modules ./node_modules
 # Workspaces enlazan node_modules/@intcloudsysops/types → ../../packages/types; sin esta copia el runner rompe.
 COPY --from=builder /app/packages/types ./packages/types
-COPY --from=builder /app/packages/types/node_modules ./packages/types/node_modules
 COPY --from=builder /app/apps/llm-gateway/node_modules ./apps/llm-gateway/node_modules
 COPY --from=builder /app/apps/llm-gateway ./apps/llm-gateway
 COPY --from=builder /app/apps/context-builder/dist ./apps/context-builder/dist
