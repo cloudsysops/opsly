@@ -59,6 +59,16 @@ Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**). Opsly
 
 Ver detalle en [MVP-PLAN.md](./MVP-PLAN.md). En una línea: **visibilidad + captura de leads + feedback de padres + seguimiento con aprobación humana + reporte semanal**, sin mensajería autónoma.
 
+## Fase Operación (2026-05) — clases, pagos, calendario
+
+Paquete listo para cliente + implementación:
+
+| Documento | Propósito |
+|-----------|-----------|
+| [CLASSES-SYSTEM-SPEC.md](./CLASSES-SYSTEM-SPEC.md) | Spec técnica: SQL, API, wireframes, reglas de negocio |
+| [CLIENT-DECK-OPERATIONS-2026-05.md](./CLIENT-DECK-OPERATIONS-2026-05.md) | Presentación 8 slides para reunión comercial |
+| [SPRINT-BACKLOG-OPERATIONS-2026.md](./SPRINT-BACKLOG-OPERATIONS-2026.md) | Issues PES-001…043 con estimaciones y dependencias |
+
 ## Mapa de documentación
 
 | Documento | Propósito |

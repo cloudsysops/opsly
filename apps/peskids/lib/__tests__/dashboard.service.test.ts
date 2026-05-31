@@ -8,6 +8,12 @@ vi.mock('../supabase', () => ({
   supabaseServer: supabaseServerMock,
 }))
 
+const fetchOperationsMetricsMock = vi.fn()
+
+vi.mock('../services/operations-metrics.service', () => ({
+  fetchOperationsMetrics: fetchOperationsMetricsMock,
+}))
+
 function createFilterQuery(result: { data: unknown; error: unknown }) {
   const query = {
     select: vi.fn(() => query),
@@ -37,6 +43,14 @@ describe('fetchDashboardData', () => {
   beforeEach(() => {
     getRecentMessagesMock.mockReset()
     supabaseServerMock.mockReset()
+    fetchOperationsMetricsMock.mockReset()
+    fetchOperationsMetricsMock.mockResolvedValue({
+      classes_today: 2,
+      enrollments_today: 1,
+      attendance_rate_pct: 80,
+      revenue_month_cents: 17000000,
+      pending_payments_cents: 8500000,
+    })
   })
 
   it('returns dashboard aggregates using the expanded feedback schema', async () => {
@@ -109,6 +123,8 @@ describe('fetchDashboardData', () => {
     expect(result.recent_messages).toEqual([
       { id: 'message-1', sender_contact: 'web:support:maria@example.com' },
     ])
+    expect(result.operations.classes_today).toBe(2)
+    expect(result.operations.revenue_month_cents).toBe(17000000)
   })
 
   it('falls back to the legacy feedback shape when expanded columns are missing', async () => {

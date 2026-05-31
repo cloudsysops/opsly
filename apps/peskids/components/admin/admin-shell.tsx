@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import {
   CalendarClock,
   type LucideIcon,
+  GraduationCap,
   Home,
   Inbox,
   LayoutDashboard,
@@ -38,6 +39,7 @@ const navOps = [
   { icon: Home, label: 'Landing', href: '/' },
   { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },
   { icon: ShieldCheck, label: 'Equipo', href: '/admin#team' },
+  { icon: GraduationCap, label: 'Clases', href: '/admin#classes' },
   { icon: Users, label: 'Leads', href: '/admin#leads' },
   { icon: MessageSquare, label: 'Feedback', href: '/admin#feedback' },
   { icon: CalendarClock, label: 'Follow-up', href: '/admin#follow-up' },
@@ -119,6 +121,10 @@ export function AdminShell({
 
     if (item.label === 'Equipo') {
       return hash === '#team';
+    }
+
+    if (item.label === 'Clases') {
+      return hash === '#classes';
     }
 
     if (item.label === 'Leads') {

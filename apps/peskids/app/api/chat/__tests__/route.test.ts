@@ -52,7 +52,7 @@ describe('POST /api/chat', () => {
     expect(response.status).toBe(400)
     await expect(response.json()).resolves.toEqual({
       ok: false,
-      error: 'message required (max 2000 chars)',
+      error: 'message required',
       request_id: 'req-chat-400',
     })
   })

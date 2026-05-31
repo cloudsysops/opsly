@@ -1,0 +1,55 @@
+import { z } from 'zod';
+
+export const swimLocationSchema = z.enum(['llanogrande', 'domicilio']);
+
+export const createClassSchema = z
+  .object({
+    title: z.string().trim().min(3).max(120),
+    level: z.number().int().min(1).max(6),
+    professor_user_id: z.string().uuid(),
+    pool_id: z.string().uuid(),
+    location: swimLocationSchema,
+    starts_at: z.string().datetime(),
+    ends_at: z.string().datetime(),
+    capacity: z.number().int().positive(),
+    price_cents: z.number().int().nonnegative(),
+    currency: z.string().trim().min(3).max(3).default('cop'),
+  })
+  .refine((data) => new Date(data.ends_at).getTime() > new Date(data.starts_at).getTime(), {
+    message: 'ends_at must be after starts_at',
+    path: ['ends_at'],
+  });
+
+export const updateClassSchema = z.object({
+  title: z.string().trim().min(3).max(120).optional(),
+  level: z.number().int().min(1).max(6).optional(),
+  professor_user_id: z.string().uuid().optional(),
+  pool_id: z.string().uuid().optional(),
+  location: swimLocationSchema.optional(),
+  starts_at: z.string().datetime().optional(),
+  ends_at: z.string().datetime().optional(),
+  capacity: z.number().int().positive().optional(),
+  price_cents: z.number().int().nonnegative().optional(),
+  status: z.enum(['scheduled', 'cancelled', 'completed']).optional(),
+  cancelled_reason: z.string().trim().max(500).optional(),
+});
+
+export const createEnrollmentSchema = z.object({
+  class_id: z.string().uuid(),
+  student_id: z.string().uuid(),
+});
+
+export const attendanceUpdateSchema = z.object({
+  updates: z
+    .array(
+      z.object({
+        enrollment_id: z.string().uuid(),
+        attendance: z.enum(['present', 'absent', 'excused']),
+      })
+    )
+    .min(1),
+});
+
+export const checkoutSchema = z.object({
+  enrollment_id: z.string().uuid(),
+});
