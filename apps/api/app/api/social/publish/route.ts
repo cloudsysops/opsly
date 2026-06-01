@@ -5,10 +5,11 @@ import {
   multiPlatformPublisher,
   type ContentPayload,
   type PublishResult,
-} from '../../../../lib/social/adapters/publisher';
-import { capturePublishEvent, capturePublishError } from '../../../../lib/knowledge/syra-capture';
-import { getServiceClient } from '../../../../lib/supabase';
-import { HTTP_STATUS } from '../../../../lib/constants';
+} from '@/lib/social/adapters/publisher';
+import { capturePublishEvent, capturePublishError } from '@/lib/knowledge/syra-capture';
+import { getServiceClient } from '@/lib/supabase';
+import { requireAdminAccess } from '@/lib/auth';
+import { HTTP_STATUS } from '@/lib/constants';
 
 type PublishBody = {
   content_id: string;
@@ -100,7 +101,12 @@ function scheduleFailureKnowledgeCaptures(results: PublishResult[], contentId: s
   }
 }
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
+export async function POST(request: NextRequest): Promise<NextResponse | Response> {
+  const authError = await requireAdminAccess(request);
+  if (authError) {
+    return authError;
+  }
+
   try {
     const body = (await request.json()) as PublishBody;
     const errResponse = validatePublishBody(body);
