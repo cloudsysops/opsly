@@ -1,6 +1,7 @@
 // apps/api/app/api/social/publish/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdminAccess } from '../../../../lib/auth';
 import {
   multiPlatformPublisher,
   type ContentPayload,
@@ -102,6 +103,11 @@ function scheduleFailureKnowledgeCaptures(results: PublishResult[], contentId: s
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
+    const authError = await requireAdminAccess(request);
+    if (authError) {
+      return authError as NextResponse;
+    }
+
     const body = (await request.json()) as PublishBody;
     const errResponse = validatePublishBody(body);
     if (errResponse) {

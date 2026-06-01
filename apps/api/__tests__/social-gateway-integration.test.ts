@@ -37,6 +37,11 @@ vi.mock('../lib/knowledge/syra-capture', () => ({
   capturePublishError: vi.fn(),
 }));
 
+// Mock auth
+vi.mock('../lib/auth', () => ({
+  requireAdminAccess: vi.fn(() => Promise.resolve(null)),
+}));
+
 // Mock social publisher
 vi.mock('../lib/social/adapters/publisher', () => ({
   multiPlatformPublisher: {
