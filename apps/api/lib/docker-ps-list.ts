@@ -1,6 +1,11 @@
 import { execa } from 'execa';
 
-import { DOCKER_PS_LIST_MAX, DOCKER_PS_LIST_MAX_BUFFER_BYTES } from './constants';
+import {
+  CACHE_TTL,
+  DOCKER_PS_LIST_MAX,
+  DOCKER_PS_LIST_MAX_BUFFER_BYTES,
+} from './constants';
+import { getCache, setCache } from './redis-cache';
 
 export type ListedDockerContainer = {
   id: string;
@@ -15,6 +20,8 @@ export type ListedDockerContainer = {
 };
 
 type DockerPsJson = Record<string, unknown>;
+
+const CACHE_KEY = 'docker:ps_list';
 
 function readString(obj: DockerPsJson, keys: string[]): string {
   for (const key of keys) {
@@ -85,8 +92,15 @@ export type DockerPsListResult =
 
 /**
  * Lista contenedores del host donde corre la API (`docker ps -a`), vía socket montado en el contenedor.
+ *
+ * Optimización Bolt: Cacheado en Redis (60s) para evitar procesar repetidamente el JSON masivo de Docker ps.
  */
 export async function listDockerContainers(): Promise<DockerPsListResult> {
+  const cached = await getCache<DockerPsListResult>(CACHE_KEY);
+  if (cached !== null) {
+    return cached;
+  }
+
   try {
     const result = await execa('docker', ['ps', '-a', '--no-trunc', '--format', '{{json .}}'], {
       reject: false,
@@ -112,7 +126,12 @@ export async function listDockerContainers(): Promise<DockerPsListResult> {
         containers.push(mapped);
       }
     }
-    return { ok: true, containers, truncated };
+    const finalResult: DockerPsListResult = { ok: true, containers, truncated };
+
+    // Cacheamos solo si la operación fue exitosa
+    await setCache(CACHE_KEY, finalResult, CACHE_TTL.SHORT);
+
+    return finalResult;
   } catch (e) {
     const message = e instanceof Error ? e.message : 'docker unavailable';
     return { ok: false, error: message };
