@@ -73,7 +73,10 @@ export class PostScheduler {
       // Call publish endpoint
       const response = await fetch('http://localhost:3000/api/social/publish', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.PLATFORM_ADMIN_TOKEN}`,
+        },
         body: JSON.stringify({
           content_id: post.content_id,
           platforms: post.platforms,
