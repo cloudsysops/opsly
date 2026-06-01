@@ -233,6 +233,22 @@
 
 ---
 
+## 🔒 Phase 5 — Security & access surfaces (2026-05-27)
+
+| Change | Files | Rule |
+|--------|-------|------|
+| Familias: enlace seguro por correo (sin Google OAuth) | `app/familias/login/family-email-login.tsx`, `POST /api/families/access` | Regla 6 |
+| Auth callback: redirect por rol + login surface en errores | `app/auth/callback/route.ts`, `lib/auth-callback.ts` | Regla 7 |
+| Middleware: protege admin, teacher, support y rutas familias operativas | `middleware.ts`, `lib/surface-route-guards.ts` | Reglas 5, 9 |
+
+**Tests:** `lib/__tests__/surface-route-guards.test.ts`, `app/auth/__tests__/callback-route.test.ts` (rol `parent`).
+
+**Pendiente (siguiente bloque):** ~~unificar escritura de leads~~ ✅ proxy a `POST /api/public/tenants/peskids/leads`; separar UI support vs admin (parcial: oculta equipo/clases); chat/BI con datos live; ADR si se canoniza auth familias en Opsly core.
+
+| Bloque 2 — leads canónicos | `lib/peskids-canonical-api.ts`, `app/api/leads/route.ts` | Escritura única vía Opsly API → `platform.peskids_leads` |
+
+---
+
 ## 📋 Next Steps
 
 **GOTO:** keep new Peskids API work on the shared `lib/api-response.ts` contract and add route tests first when touching new endpoints  
