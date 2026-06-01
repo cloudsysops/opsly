@@ -370,12 +370,16 @@ describe('Gateway Integration - Unit Tests (callGatewayForContent)', () => {
 });
 
 describe('Gateway Integration - Integration Tests (POST /api/social/publish)', () => {
+  const ADMIN_TOKEN = 'test-admin-token';
+
   beforeEach(() => {
     vi.clearAllMocks();
+    process.env.PLATFORM_ADMIN_TOKEN = ADMIN_TOKEN;
   });
 
   afterEach(() => {
     vi.clearAllMocks();
+    delete process.env.PLATFORM_ADMIN_TOKEN;
   });
 
   // === INTEGRATION TEST: request_id propagation ===
@@ -398,6 +402,9 @@ describe('Gateway Integration - Integration Tests (POST /api/social/publish)', (
 
     const request = new NextRequest('http://localhost/api/social/publish', {
       method: 'POST',
+      headers: {
+        authorization: `Bearer ${ADMIN_TOKEN}`,
+      },
       body: JSON.stringify({
         content_id: 'content-123',
         platforms: ['twitter', 'linkedin'],
@@ -425,6 +432,9 @@ describe('Gateway Integration - Integration Tests (POST /api/social/publish)', (
 
     const request = new NextRequest('http://localhost/api/social/publish', {
       method: 'POST',
+      headers: {
+        authorization: `Bearer ${ADMIN_TOKEN}`,
+      },
       body: JSON.stringify({
         content_id: 'content-123',
         platforms: ['twitter'],
@@ -480,8 +490,7 @@ describe('Gateway Integration - Integration Tests (POST /api/social/publish)', (
 
     const eventMetadata = {
       milestone_id: 'milestone-456',
-      deployment_phase: 'phase3',
-      team: 'platform-eng',
+      deployment_phase: 'phase3', team: 'platform-eng',
     };
 
     await callGatewayForContent({
