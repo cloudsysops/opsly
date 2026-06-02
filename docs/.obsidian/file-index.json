@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-06-02T11:34:49.091Z",
-  "totalFiles": 620,
+  "lastIndexed": "2026-06-02T11:44:23.904Z",
+  "totalFiles": 621,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -465,6 +465,7 @@
     "plans/CLI-MIGRATION-CHECKLIST.md",
     "plans/README.md",
     "postman/README.md",
+    "projects/PESKIDS-SCOPE.md",
     "prompts/README.md",
     "prompts/tenant-onboarding/DEPLOYMENT-VALIDATION.md",
     "prompts/tenant-onboarding/INFRASTRUCTURE-SETUP.md",
