@@ -5,3 +5,7 @@
 ## 2026-05-27 - [LLM Usage Aggregation Caching]
 **Learning:** Performing O(N) in-memory aggregation of database rows on every request (especially within critical paths like LLM budget checks) is a major scalability bottleneck. As usage grows, latency increases linearly. Caching these aggregates in Redis with a short TTL (e.g., 60s) converts a heavy database query into a constant-time O(1) cache lookup, which is essential for performance-critical gateway paths.
 **Action:** Prefer caching aggregated metrics in the service layer when those metrics are used for real-time policy decisions (budgets, rate limits).
+
+## 2026-06-02 - [Tenant Budget Check Caching]
+**Learning:** Wrapping complex multi-resource checks (like budget enforcement which involves tenant metadata, plan limits, and usage aggregation) in a short-lived Redis cache (60s) drastically reduces DB pressure in batch operations like admin dashboards. It prevents N+1 query patterns when the dashboard lists many tenants.
+**Action:** Use `getCache`/`setCache` with `CACHE_TTL.SHORT` for composite status checks that are frequently called in loops.
