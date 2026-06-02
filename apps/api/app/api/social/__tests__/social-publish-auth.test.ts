@@ -48,7 +48,6 @@ describe('POST /api/social/publish auth', () => {
 
     const res = await POST(req);
 
-    // This is expected to fail until the fix is implemented
     expect(authMod.requireAdminAccess).toHaveBeenCalled();
     expect(res.status).toBe(403);
   });
