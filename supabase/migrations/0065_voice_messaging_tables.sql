@@ -69,7 +69,7 @@ DO $$ BEGIN
         LIMIT 1
       )
     );
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+EXCEPTION WHEN duplicate_object THEN NULL; WHEN undefined_table THEN NULL; END $$;
 
 -- RLS Policies for voice_transcriptions table
 ALTER TABLE public.voice_transcriptions ENABLE ROW LEVEL SECURITY;
@@ -89,6 +89,6 @@ DO $$ BEGIN
         LIMIT 1
       )
     );
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+EXCEPTION WHEN duplicate_object THEN NULL; WHEN undefined_table THEN NULL; END $$;
 
 COMMIT;
