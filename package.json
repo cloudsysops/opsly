@@ -124,6 +124,7 @@
     "opsly:git-sync": "bash scripts/git-sync-repo.sh",
     "opsly:repos:status": "bash scripts/opsly-repo-align.sh --status",
     "opsly:repos:align": "bash scripts/opsly-repo-align.sh --local --vps --branch main --vps-reset",
+    "postinstall": "cd lib/content-studio && npm run build 2>/dev/null || true",
     "prepare": "husky",
     "commit": "git-cz",
     "patterns:install": "bash scripts/install-patterns.sh --with-sigma",
