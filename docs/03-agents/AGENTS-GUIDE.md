@@ -18,9 +18,9 @@ tags:
 >
 > If an agent's task conflicts with this goal, **escalate to Founder immediately.** Don't work around it.
 
-> **No es un segundo `AGENTS.md`.** La **fuente de verdad del estado operativo** (bloqueantes, próximo paso, URL raw, Peskids go-live) está en **`AGENTS.md`** en la raíz del repo — léelo **siempre** al iniciar trabajo. Luego revisa **`FOUNDER-MODE-OPERATING-GOAL.md`** para entender si tu tarea está alineada. **Este documento** define únicamente **cómo coordinar varios asistentes o procesos** (Cursor, Claude, n8n, orchestrator) sin pisarse ni duplicar contexto, **siempre dentro de Founder Mode.**
+> **No es un segundo `AGENTS.md`.** La **fuente de verdad del estado operativo** (bloqueantes, próximo paso, URL raw, Peskids go-live) está en **`AGENTS.md`** en la raíz del repo — léelo **siempre** al iniciar trabajo. Luego revisa **`docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md`** para entender si tu tarea está alineada. **Este documento** define únicamente **cómo coordinar varios asistentes o procesos** (Cursor, Claude, n8n, orchestrator) sin pisarse ni duplicar contexto, **siempre dentro de Founder Mode.**
 
-Convenciones para operar varios asistentes (Cursor, Claude, automatismos) sobre el mismo repo sin divergir del contexto publicado en `AGENTS.md` / `VISION.md` / `FOUNDER-MODE-OPERATING-GOAL.md`.
+Convenciones para operar varios asistentes (Cursor, Claude, automatismos) sobre el mismo repo sin divergir del contexto publicado en `AGENTS.md` / `VISION.md` / `docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md`.
 
 **Guardrails legales y operativos (producción, secretos, infra):** lee siempre [`AGENT-GUARDRAILS.md`](AGENT-GUARDRAILS.md) — qué un agente **no** debe modificar sin humano.
 

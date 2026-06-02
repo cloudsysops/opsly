@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-06-02T21:29:03.122Z",
+  "generated_at": "2026-06-02T21:31:58.738Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -3176,7 +3176,7 @@
         "usar",
         "what"
       ],
-      "size_bytes": 272694
+      "size_bytes": 272714
     },
     {
       "path": "apps/admin/INVITATIONS_UI.md",
@@ -5341,6 +5341,52 @@
         "vivo"
       ],
       "size_bytes": 1953
+    },
+    {
+      "path": "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
+      "title": "Founder Mode Operating Goal — Peskids → Blueprint → Agency Replication",
+      "keywords": [
+        "agency",
+        "architecture",
+        "blockers",
+        "blueprint",
+        "boundary",
+        "branch",
+        "decision",
+        "every",
+        "examples",
+        "first",
+        "founder",
+        "gate",
+        "gets",
+        "goal",
+        "hard",
+        "infra",
+        "live",
+        "markdown",
+        "mode",
+        "model",
+        "negotiable",
+        "non",
+        "operating",
+        "opsly",
+        "peskids",
+        "platform",
+        "prioritized",
+        "products",
+        "reject",
+        "replaces",
+        "replication",
+        "rules",
+        "scope",
+        "services",
+        "task",
+        "this",
+        "tier",
+        "what",
+        "why"
+      ],
+      "size_bytes": 7721
     },
     {
       "path": "docs/01-development/GIT-WORKFLOW.md",
@@ -8944,7 +8990,7 @@
         "what",
         "without"
       ],
-      "size_bytes": 7004
+      "size_bytes": 7044
     },
     {
       "path": "docs/03-agents/AGENTS-ORCHESTRATION.md",
@@ -14868,7 +14914,7 @@
         "timeline",
         "work"
       ],
-      "size_bytes": 5009
+      "size_bytes": 5039
     },
     {
       "path": "docs/brain/agents/README.md",
@@ -15527,52 +15573,6 @@
         "welcome"
       ],
       "size_bytes": 3532
-    },
-    {
-      "path": "docs/FOUNDER-MODE-OPERATING-GOAL.md",
-      "title": "Founder Mode Operating Goal — Peskids → Blueprint → Agency Replication",
-      "keywords": [
-        "agency",
-        "architecture",
-        "blockers",
-        "blueprint",
-        "boundary",
-        "branch",
-        "decision",
-        "every",
-        "examples",
-        "first",
-        "founder",
-        "gate",
-        "gets",
-        "goal",
-        "hard",
-        "infra",
-        "live",
-        "markdown",
-        "mode",
-        "model",
-        "negotiable",
-        "non",
-        "operating",
-        "opsly",
-        "peskids",
-        "platform",
-        "prioritized",
-        "products",
-        "reject",
-        "replaces",
-        "replication",
-        "rules",
-        "scope",
-        "services",
-        "task",
-        "this",
-        "tier",
-        "what",
-        "why"
-      ],
-      "size_bytes": 7721
     },
     {
       "path": "docs/generated/AGENTS-ASSIGNMENTS.md",
@@ -82573,7 +82573,6 @@
       "docs/stubs/TENANT-PRODUCTION-BASELINE.md",
       "docs/stubs/TENANT-PRODUCTION-ROLLOUT.md",
       "docs/stubs/API-CORE-PORTFOLIO.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/.obsidian/PLUGINS-TO-INSTALL.md",
       "docs/.obsidian/templates/doc-template.md",
       "docs/runbooks/e2e-hybrid-write.md",
@@ -82676,6 +82675,7 @@
       "docs/01-development/TECHNICAL-DEBT.md",
       "docs/01-development/ROADMAP.md",
       "docs/01-development/QA-REVIEW-COMPLETE.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/SEMANA-4-INFORME.md",
       "docs/01-development/VISION.md",
       "docs/01-development/RTK.md",
@@ -84905,7 +84905,6 @@
       "docs/stubs/TENANT-PRODUCTION-BASELINE.md",
       "docs/stubs/TENANT-PRODUCTION-ROLLOUT.md",
       "docs/stubs/API-CORE-PORTFOLIO.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/.obsidian/PLUGINS-TO-INSTALL.md",
       "docs/.obsidian/templates/doc-template.md",
       "docs/runbooks/e2e-hybrid-write.md",
@@ -85008,6 +85007,7 @@
       "docs/01-development/TECHNICAL-DEBT.md",
       "docs/01-development/ROADMAP.md",
       "docs/01-development/QA-REVIEW-COMPLETE.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/SEMANA-4-INFORME.md",
       "docs/01-development/VISION.md",
       "docs/01-development/RTK.md",
@@ -86984,12 +86984,12 @@
       "docs/plans/AUTONOMY-GO-NO-GO-WEEKLY.md",
       "docs/history/consolidation/CONSOLIDATION-INDEX.md",
       "docs/governance/internal/CHANGE-MANAGEMENT-POLICY.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/runbooks/FIX-TYPECHECK-BLOCKER.md",
       "docs/00-architecture/TENANT-INCUBATION-LIFECYCLE.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
       "docs/00-architecture/POLICY-AI-LOCAL-FIRST.md",
       "docs/01-development/HEAVY-SERVICES-DECISION.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/SPRINTS_13_14.md",
       "docs/03-agents/AGENT-PROMPTS-REFERENCE.md",
       "docs/03-agents/AGENTS-GUIDE.md",
@@ -88987,10 +88987,10 @@
       "docs/governance/POLICY-REGISTRY.md",
       "docs/governance/SUB-PROCESSORS.md",
       "docs/obsidian/research/frontier-pattern-radar.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/runbooks/LLM-PLATFORM-RECOVERY.md",
       "docs/00-architecture/TENANT-INCUBATION-LIFECYCLE.md",
       "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/OPSLY-AGENCY-DIVISION.md",
       "docs/01-development/TROUBLESHOOTING.md",
       "docs/01-development/STATE-OF-PLATFORM.md",
@@ -89158,11 +89158,11 @@
       "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
       "docs/history/consolidation/CONSOLIDATION-SUMMARY.md",
       "docs/history/consolidation/CONSOLIDATION-INDEX.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/runbooks/LOCAL-SERVICES-GO-LIVE.md",
       "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
       "docs/01-development/LIBRARY-MODULES.md",
       "docs/01-development/HEAVY-SERVICES-DECISION.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/PHASE-5-IMPLEMENTATION-BLUEPRINT.md",
       "docs/01-development/PHASE-2-DEPLOYMENT.md",
       "docs/01-development/STATE-OF-PLATFORM.md",
@@ -90425,7 +90425,7 @@
       ".github/PULL_REQUEST_TEMPLATE.md",
       "README.md",
       "docs/README.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/SCRIPTS-AUDIT-2026-04-24.md",
       "docs/adr/ADR-031-token-optimization-ollama-primary.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
@@ -96316,12 +96316,12 @@
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/styling-systems.md",
       "apps/orchestrator/src/meta/README.md",
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
       "docs/runbooks/COMPUTER-CONTROL-OPERATOR-MODE.md",
       "docs/00-architecture/LLM-GATEWAY.md",
       "docs/00-architecture/ORCHESTRATOR.md",
       "docs/00-architecture/hooks-system.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/04-infrastructure/DOPPLER-VARS.md",
       "docs/03-agents/AGENTS-GUIDE.md",
       "docs/tenants/peskids/README.md",
@@ -96581,10 +96581,10 @@
       "docs/obsidian/research/frontier-pattern-radar.md",
       "docs/obsidian/sources/frontier-pattern-sources.md",
       "docs/obsidian/sources/archive/2026-04-21/jdo6safjptanvblfo772ajzohhy1vzo7f8u2svvc.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/00-architecture/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
       "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
       "docs/01-development/QA-REVIEW-COMPLETE.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/DEPLOYMENT-ARCHITECTURE.md",
       "docs/01-development/PHASE1-QUICK-START.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
@@ -96674,11 +96674,11 @@
       "docs/obsidian/research/security-pattern-radar.md",
       "docs/obsidian/sources/frontier-pattern-sources.md",
       "docs/obsidian/sources/archive/2026-04-21/jhyx0v1z9vu6lvvqnqog10m8tv1eewytitmmsofa.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
       "docs/00-architecture/hooks-system.md",
       "docs/01-development/NEXT-STEPS.md",
       "docs/01-development/QA-REVIEW-COMPLETE.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/04-infrastructure/MCP-ORCHESTRATOR-DEPLOYMENT.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
       "docs/03-agents/QUICK-REFERENCE-HERMES-OPSLY.md",
@@ -100877,7 +100877,7 @@
       "vendor/agency-agents/integrations/openclaw/real-estate-buyer-seller/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/developer-advocate/AGENTS.md",
       "docs/plans/AUTONOMY-COMPLETION-PLAN-2026-04-27.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/03-agents/AGENTS-GUIDE.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md"
@@ -101335,8 +101335,8 @@
       "vendor/agency-agents/integrations/openclaw/embedded-firmware-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/senior-project-manager/AGENTS.md",
       "docs/history/consolidation/CONSOLIDATION-EFFORT-BREAKDOWN.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/SPRINT-PLANNING-SETUP.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/PHASE-5-2-3-4-COMPLETE-SPECS.md",
       "docs/01-development/SPRINTS_13_14.md",
       "docs/04-infrastructure/WORKER-TEAM-BILLING.md",
@@ -104560,8 +104560,8 @@
       "docs/plans/AUTONOMY-GO-NO-GO-WEEKLY.md",
       "docs/governance/internal/EMPLOYEE-LIFECYCLE-POLICY.md",
       "docs/governance/internal/ACCESS-CONTROL-POLICY.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/runbooks/AUTONOMOUS-PROD-60D.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/02-tools/MCP-STATUS-ANALYSIS.md",
       "docs/adr/ADR-035-safe-autonomous-evolution-framework.md",
       "docs/tenants/peskids/SPRINT-01.md",
@@ -105192,10 +105192,10 @@
       "vendor/agency-agents/integrations/opencode/agents/kuaishou-strategist.md",
       "vendor/agency-agents/integrations/openclaw/kuaishou-strategist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/china-e-commerce-operator/AGENTS.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/runbooks/LOCAL-SERVICES-GO-LIVE.md",
       "docs/runbooks/AUTONOMOUS-PRODUCTION-GO-LIVE-CHECKLIST.md",
       "docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/DESIGN-REFERENCES.md",
       "docs/04-infrastructure/MACOS-LOCAL-AI-AUTOMATION.md",
       "docs/tenants/peskids/README.md",
@@ -109696,7 +109696,6 @@
       "docs/growth/WEEK-1-AGENCIAS-OUTREACH.md",
       "docs/governance/internal/CHANGE-MANAGEMENT-POLICY.md",
       "docs/obsidian/research/frontier-pattern-radar.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
       "docs/00-architecture/DISTRIBUTED-ARCHITECTURE.md",
@@ -109708,6 +109707,7 @@
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
       "docs/01-development/NEXT-STEPS.md",
       "docs/01-development/SEMANA-5-INFORME.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/PHASE-5-ADVANCED-FEATURES.md",
       "docs/01-development/PHASE-5-2-3-4-COMPLETE-SPECS.md",
       "docs/01-development/PHASE-5-IMPLEMENTATION-BLUEPRINT.md",
@@ -110414,10 +110414,10 @@
       "vendor/agency-agents/integrations/openclaw/unity-editor-tool-developer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/book-co-author/AGENTS.md",
       "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/runbooks/CYBER-NEO-AND-ARCHITECT.md",
       "docs/00-architecture/POLICY-AI-LOCAL-FIRST.md",
       "docs/00-architecture/CONTEXT-BUILDER.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/PHASE-5-2-3-4-COMPLETE-SPECS.md",
       "docs/01-development/LOCAL-FIRST-ARCHITECTURE.md",
       "docs/04-infrastructure/RUNBOOK-AI-LOCAL-FIRST.md",
@@ -110532,8 +110532,8 @@
       "vendor/agency-agents/integrations/openclaw/unity-multiplayer-engineer/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/recruitment-specialist/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/embedded-firmware-engineer/AGENTS.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/00-architecture/TENANT-INCUBATION-LIFECYCLE.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/audits/DOCKER-OPTIMIZATION.md",
       "docs/adr/ADR-036-cli-consolidation-tools-cli-first.md",
       "docs/adr/ADR-035-safe-autonomous-evolution-framework.md",
@@ -112519,10 +112519,10 @@
       "vendor/agency-agents/integrations/openclaw/voice-ai-integration-engineer/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/sales-outreach/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/game-audio-engineer/SOUL.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/runbooks/COMPUTER-CONTROL-OPERATOR-MODE.md",
       "docs/00-architecture/OPSLY-CONTROL-PLANE.md",
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/04-infrastructure/DOMAIN-CUTOVER-OP-SLY.md",
       "docs/audits/LINT-RULES-GUIDE.md",
       "docs/03-agents/COPILOT-CODING-AGENT.md",
@@ -113608,9 +113608,9 @@
       "vendor/agency-agents/integrations/openclaw/jira-workflow-steward/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/jira-workflow-steward/AGENTS.md",
       "docs/ops/branch-protection-setup.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
       "docs/01-development/GITHUB-SETTINGS.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/blueprints/README.md"
     ],
     "commands": [
@@ -113798,7 +113798,7 @@
       "vendor/agency-agents/integrations/openclaw/zk-steward/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/minimal-change-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/workflow-architect/SOUL.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/03-agents/AGENTS-GUIDE.md",
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/database-patterns.md",
@@ -113818,7 +113818,7 @@
     ],
     "founder": [
       "AGENTS.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/04-infrastructure/SECURITY_CHECKLIST.md",
       "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
       "docs/03-agents/AGENTS-GUIDE.md",
@@ -113856,8 +113856,8 @@
       "docs/generated/implementation-progress.auto.md",
       "docs/history/plans/SPRINT-TRACKING.md",
       "docs/history/plans/IMPLEMENTATION-STATUS.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/LAYERS-SANDBOX-QA-PROD.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/03-agents/SPRINT-CURSOR-PROMPTS.md",
       "docs/03-agents/AGENTS-GUIDE.md",
       "docs/adr/ADR-023-approval-gate-phase1.md"
@@ -116375,7 +116375,7 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/supply-chain.md",
       "tools/productivity-starter/offer.md",
       "vendor/agency-agents/integrations/openclaw/blender-add-on-engineer/AGENTS.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/PHASE-5-ADVANCED-FEATURES.md",
       "docs/04-infrastructure/REDIS-QUEUE-GUIDE.md",
       "docs/03-agents/SOCIAL-MEDIA-AGENT-SYRA.md",
@@ -117395,7 +117395,7 @@
       "docs/obsidian/research/saas-pattern-radar.md",
       "docs/obsidian/research/trading-pattern-radar.md",
       "docs/obsidian/research/security-pattern-radar.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/DEPLOYMENT-ARCHITECTURE.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
       "docs/adr/ADR-036-cli-consolidation-tools-cli-first.md",
@@ -117511,7 +117511,7 @@
       "vendor/agency-agents/integrations/openclaw/unreal-systems-engineer/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/unreal-systems-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/private-domain-operator/AGENTS.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/PHASE-5-IMPLEMENTATION-BLUEPRINT.md",
       "docs/03-agents/OPSLY-2-0-MULTI-AGENT-BLUEPRINT.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
@@ -118026,12 +118026,12 @@
       "vendor/agency-agents/integrations/openclaw/financial-analyst/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/ai-engineer/AGENTS.md",
       "docs/04-operations/COST-MONITORING-GUIDE.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
       "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
       "docs/00-architecture/OPSLY-CONTROL-PLANE.md",
       "docs/01-development/NEXT-STEPS.md",
       "docs/01-development/SEMANA-5-INFORME.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/PHASE-5-ADVANCED-FEATURES.md",
       "docs/01-development/PHASE-5-IMPLEMENTATION-BLUEPRINT.md",
       "docs/04-infrastructure/MACOS-LOCAL-AI-AUTOMATION.md",
@@ -120130,7 +120130,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-technical-artist/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/technical-artist.md",
       "vendor/agency-agents/integrations/openclaw/technical-artist/AGENTS.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       ".agents/skills/the-architect/references/questions/phase-3-confirmation.md"
     ],
     "present": [
@@ -124221,7 +124221,7 @@
       "docs/governance/SUB-PROCESSORS.md",
       "docs/obsidian/inbox/2026-05-22.md",
       "docs/legal/peskids/DPIA-2026.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/03-agents/AGENT-URL-VALIDATION.md",
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
@@ -130693,7 +130693,7 @@
       "vendor/agency-agents/integrations/openclaw/zk-steward/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/unity-multiplayer-engineer/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/recruitment-specialist/SOUL.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md"
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md"
     ],
     "netcode": [
       "vendor/agency-agents/integrations/qwen/agents/unity-multiplayer-engineer.md",
@@ -138923,9 +138923,9 @@
       "vendor/agency-agents/integrations/openclaw/weibo-strategist/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/studio-operations/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/fp-a-analyst/AGENTS.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/runbooks/COMPUTER-CONTROL-OPERATOR-MODE.md",
       "docs/00-architecture/OPSLY-CONTROL-PLANE.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/04-infrastructure/MACOS-LOCAL-AI-AUTOMATION.md"
     ],
     "targets": [
@@ -140090,9 +140090,9 @@
       "vendor/agency-agents/integrations/opencode/agents/accounts-payable-agent.md",
       "vendor/agency-agents/integrations/openclaw/accounts-payable-agent/AGENTS.md",
       "docs/growth/AGENCY-PILOT-OUTREACH.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/runbooks/AGENCY-DEVOPS-OS-DEMO.md",
       "docs/runbooks/AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/OPSLY-AGENCY-DIVISION.md",
       "docs/01-development/AGENCY-DEVOPS-OS-OFFER.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
@@ -140570,7 +140570,7 @@
       "vendor/agency-agents/integrations/openclaw/french-consulting-market-navigator/AGENTS.md",
       "docs/ops/workflows-index.md",
       "docs/growth/WEEK-1-AGENCIAS-OUTREACH.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/04-infrastructure/MCP-ORCHESTRATOR-DEPLOYMENT.md",
       "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md",
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md",
@@ -140866,7 +140866,7 @@
       "vendor/agency-agents/integrations/openclaw/unreal-multiplayer-architect/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/unreal-multiplayer-architect/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/model-qa-specialist/AGENTS.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md"
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md"
     ],
     "rpc": [
       "vendor/agency-agents/integrations/qwen/agents/unreal-multiplayer-architect.md",
@@ -142699,8 +142699,8 @@
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/history/plans/SPRINT-TRACKING.md",
       "docs/history/plans/IMPLEMENTATION-STATUS.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
       "docs/04-infrastructure/VPS-ARCHITECTURE.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md"
     ],
@@ -143013,7 +143013,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-chief-of-staff/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/chief-of-staff.md",
       "vendor/agency-agents/integrations/openclaw/chief-of-staff/SOUL.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md"
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md"
     ],
     "place": [
       "vendor/agency-agents/integrations/qwen/agents/chief-of-staff.md",
@@ -143988,8 +143988,8 @@
       "vendor/agency-agents/integrations/antigravity/agency-unreal-systems-engineer/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/unreal-systems-engineer.md",
       "vendor/agency-agents/integrations/openclaw/unreal-systems-engineer/SOUL.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md",
-      "docs/00-architecture/OPSLY-CONTROL-PLANE.md"
+      "docs/00-architecture/OPSLY-CONTROL-PLANE.md",
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md"
     ],
     "garbage": [
       "vendor/agency-agents/integrations/qwen/agents/unreal-systems-engineer.md",
@@ -145496,7 +145496,7 @@
     ],
     "prioritized": [
       "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md"
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md"
     ],
     "exit": [
       "docs/plans/AUTONOMY-COMPLETION-PLAN-2026-04-27.md"
@@ -147693,15 +147693,6 @@
       "docs/runbooks/TENANT-PRODUCTION-ROLLOUT.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md"
     ],
-    "products": [
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md"
-    ],
-    "reject": [
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md"
-    ],
-    "replaces": [
-      "docs/FOUNDER-MODE-OPERATING-GOAL.md"
-    ],
     "dataview": [
       "docs/.obsidian/PLUGINS-TO-INSTALL.md"
     ],
@@ -149567,6 +149558,15 @@
     ],
     "well": [
       "docs/01-development/QA-REVIEW-COMPLETE.md"
+    ],
+    "products": [
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md"
+    ],
+    "reject": [
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md"
+    ],
+    "replaces": [
+      "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md"
     ],
     "enablement": [
       "docs/01-development/SEMANA-4-INFORME.md"
@@ -153554,6 +153554,7 @@
     "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
     "docs/01-development/DOCUMENTATION-LIFECYCLE.md",
     "docs/01-development/FAQ.md",
+    "docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md",
     "docs/01-development/GIT-WORKFLOW.md",
     "docs/01-development/GITHUB-SETTINGS.md",
     "docs/01-development/GITHUB-TOKEN.md",
@@ -153862,7 +153863,6 @@
     "docs/design/DESIGN_REFERENCES.md",
     "docs/design/OAR.md",
     "docs/emails/tenant-welcome-email.md",
-    "docs/FOUNDER-MODE-OPERATING-GOAL.md",
     "docs/generated/AGENTS-ASSIGNMENTS.md",
     "docs/generated/implementation-progress.auto.md",
     "docs/generated/README.md",

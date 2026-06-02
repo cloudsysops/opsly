@@ -135,7 +135,7 @@ Contributes to: blueprint
 
 ## Related Docs
 
-- **Founder Mode Goal:** [`../FOUNDER-MODE-OPERATING-GOAL.md`](../FOUNDER-MODE-OPERATING-GOAL.md)
+- **Founder Mode Goal:** [`../01-development/FOUNDER-MODE-OPERATING-GOAL.md`](../01-development/FOUNDER-MODE-OPERATING-GOAL.md)
 - **Peskids Case Study:** [`../tenants/peskids/README.md`](../tenants/peskids/README.md)
 - **Peskids Extraction Plan:** [`../tenants/peskids/EXTRACTION-PLAN.md`](../tenants/peskids/EXTRACTION-PLAN.md)
 - **Agency Division (older):** [`../01-development/OPSLY-AGENCY-DIVISION.md`](../01-development/OPSLY-AGENCY-DIVISION.md) ← Reconcile with new Founder Mode goal

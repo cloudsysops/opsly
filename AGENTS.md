@@ -20,7 +20,7 @@ last_review: 2026-06-02
 > **Hard Rules:** No K8s, no Terraform, no multi-cloud, no new marketplace, no autonomous agents.  
 > **Scope Boundary:** If it doesn't help Peskids go live or make the Blueprint repeatable, don't do it.
 > 
-> See: [`docs/FOUNDER-MODE-OPERATING-GOAL.md`](docs/FOUNDER-MODE-OPERATING-GOAL.md) (new file, canonical)
+> See: [`docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md`](docs/01-development/FOUNDER-MODE-OPERATING-GOAL.md) (canonical)
 
 **📚 Wiki:** [`docs/README.md`](docs/README.md) — índice completo de documentación  
 **⚡ Cheatsheet:** [`docs/QUICK-REFERENCE.md`](docs/QUICK-REFERENCE.md) — SSH, comandos, vars, sprint actual  
