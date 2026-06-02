@@ -51,7 +51,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node scripts/skill-finder.js --autonomous"
+            "command": "bash .claude/hooks/founder-mode-startup.sh"
+          },
+          {
+            "type": "command",
+            "command": "node scripts/skill-finder.js --autonomous --context founder-mode"
           }
         ]
       }

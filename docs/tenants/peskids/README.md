@@ -1,13 +1,24 @@
 ---
-status: draft
-owner: product
-last_review: 2026-05-18
+status: canonical
+owner: founder
+last_review: 2026-06-02
 tenant_slug: peskids
+role: live-case-study
+priority: CRITICAL
 ---
 
-# Peskids — tenant incubado en Opsly
+# Peskids — Live Case Study for Founder Mode (2026-06-02+)
 
-Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**). Opsly actúa como **incubadora y plano de control**: stack n8n + monitoreo, CRM base y futura capa de datos/producto. El objetivo a medio plazo es **extraer** un producto independiente (`peskids-platform`) sin romper Opsly ni depender permanentemente del runtime de orquestación de Opsly.
+**Peskids is the PRIMARY SUCCESS METRIC for Opsly.**
+
+This is **not an experiment** or **incubation**. It is the **live, revenue-generating case** that validates:
+1. Opsly can run a real product (not just multi-tenant infrastructure)
+2. Blueprint extraction is possible (repeatable, not one-off)
+3. Agency replication model works (blueprint → new client → revenue)
+
+**Opsly's role:** Incubator + control plane for Peskids MVP. Stack: n8n + Uptime Kuma + future Supabase product layer.  
+**Success criteria:** Go-live by [DATE], uptime 99%+, revenue flowing, extraction plan validated.  
+**Failure mode:** If Peskids doesn't go live, Founder Mode fails.
 
 ## Estado actual (snapshot repo)
 

@@ -1,18 +1,68 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-05-21
+last_review: 2026-06-02
 ---
 
 # Opsly — Contexto del Agente
 
-> Fuente de verdad para cada sesión nueva.
-> Al iniciar: lee este archivo completo antes de cualquier acción.
-> Al terminar: actualiza las secciones marcadas con 🔄.
+> **🎯 FOUNDER MODE — REPO-WIDE PRIORITY (2026-06-02+)**
+> 
+> **Current Operating Goal: Peskids → Blueprint → Agency Replication**
+> 
+> Every agent session, every branch, every decision prioritizes this goal.  
+> No new platform work, no new products, no infra upgrades unless they directly support:
+> - Capturing leads (Peskids as live case)
+> - Converting leads (Blueprint reusability)
+> - Measuring conversion (Metrics)
+> - Replicating the model (Agency distribution)
+> 
+> **Hard Rules:** No K8s, no Terraform, no multi-cloud, no new marketplace, no autonomous agents.  
+> **Scope Boundary:** If it doesn't help Peskids go live or make the Blueprint repeatable, don't do it.
+> 
+> See: [`docs/FOUNDER-MODE-OPERATING-GOAL.md`](docs/FOUNDER-MODE-OPERATING-GOAL.md) (new file, canonical)
 
 **📚 Wiki:** [`docs/README.md`](docs/README.md) — índice completo de documentación  
 **⚡ Cheatsheet:** [`docs/QUICK-REFERENCE.md`](docs/QUICK-REFERENCE.md) — SSH, comandos, vars, sprint actual  
 **🧠 Sistema de conocimiento:** [`docs/KNOWLEDGE-SYSTEM.md`](docs/KNOWLEDGE-SYSTEM.md) — NotebookLM + Obsidian, flujo para agentes
+
+---
+
+## 🚨 FOUNDER MODE EXPLICIT RULES (2026-06-02+)
+
+### What You Own
+
+- **Peskids:** Live production case study. Go-live is real metric (revenue, users, downtime).
+- **Blueprint:** Reusable template extracted from Peskids. Must be operationally complete.
+- **Agency:** Distribution channel for Blueprint replication (not a new platform, not a new product).
+
+### What You NEVER Do
+
+| Forbidden | Reason |
+|-----------|--------|
+| New platform modules | Scope creep; Blueprint must be the artifact |
+| Kubernetes, Swarm, Terraform, multi-cloud | Complexity antithetical to replication |
+| New marketplace, autonomous agents, AI memory | Out of founder scope |
+| Refactoring unrelated to Peskids/Blueprint | Distraction from goal |
+| Adding to SDKs/APIs that don't serve lead capture/conversion | Bloat |
+
+### Decision Gate for Every Branch
+
+**Before starting work, ask:**
+1. Does this help Peskids go live? (YES = proceed; NO = next question)
+2. Does this make Blueprint easier to replicate? (YES = proceed; NO = next question)
+3. Does this measure lead capture/conversion? (YES = proceed; NO = DON'T DO IT)
+
+**If "no" to all three → escalate or defer to Founder.**
+
+### Session Rules
+
+- **One branch = One theme.** No mixing Peskids + Blueprint + unrelated refactors.
+- **Commit message must tag the goal.** E.g., `feat(peskids): ...` or `docs(blueprint): ...`
+- **PR description must explain contribution to goal.** Don't just describe the code.
+- **If blocked by goal ambiguity, ask Founder explicitly.** Don't guess.
+
+---
 
 **Mapa de documentación (evitar duplicar con `docs/AGENTS-GUIDE.md`):** `VISION.md` = norte de producto; **`AGENTS.md` (este archivo)** = estado operativo, próximo paso, bloqueantes e incrementos **por sesión**; **`docs/AGENTS-GUIDE.md`** = convenciones **solo** para varios asistentes/automatismos en paralelo (no sustituye AGENTS). `docs/adr/` = decisiones de arquitectura. No copiar tablas de límites por plan aquí: enlazar `AGENTS-GUIDE` + `VISION.md`.
 

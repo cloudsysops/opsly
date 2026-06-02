@@ -14,11 +14,24 @@ tags: [opsly/claude-config]
 
 ## SESSION STARTUP
 
-1. Read (in order): [AGENTS.md](https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md) → [VISION.md](https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md)
-2. `git status && git log --oneline -3`
-3. `node scripts/skill-finder.js "your task" --autonomous`
+**🎯 BEFORE ANYTHING: Confirm Operating Goal**
 
-**Abort if:** Doppler secrets missing · AGENTS.md >7 days stale · VPS/Redis unreachable
+Every session starts with:
+```
+Current Goal (from AGENTS.md): Peskids → Blueprint → Agency Replication
+Your task must align with this goal or be explicitly deferred.
+```
+
+Then follow:
+
+1. Read (in order): [AGENTS.md](https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md) → [VISION.md](https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md)
+   - **Pay special attention** to "FOUNDER MODE EXPLICIT RULES" section in AGENTS.md
+2. `git status && git log --oneline -3`
+3. `node scripts/skill-finder.js "your task" --autonomous --goal "peskids|blueprint|agency"`
+
+**Abort if:** 
+- Doppler secrets missing · AGENTS.md >7 days stale · VPS/Redis unreachable
+- **Task conflicts with Founder Mode goal** (escalate, don't assume you can override)
 
 ---
 

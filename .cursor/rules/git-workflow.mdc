@@ -1,9 +1,62 @@
 ---
-description: Git — ramas, PRs e higiene (Opsly)
+description: Git — ramas, PRs e higiene (Opsly) — FOUNDER MODE PRIORITY 2026-06-02+
 alwaysApply: true
+priority: CRITICAL
 ---
 
-# Git workflow (Cursor)
+# Git workflow (Cursor) — FOUNDER MODE ENFORCEMENT
+
+## 🎯 FOUNDER MODE GATE (2026-06-02+)
+
+**Before creating any branch, ask:**
+1. Does this help Peskids go live? (YES = proceed; NO = next Q)
+2. Does this make Blueprint replicable? (YES = proceed; NO = next Q)
+3. Does this measure lead conversion? (YES = proceed; NO = DON'T BRANCH)
+
+**If NO to all three → do NOT push. Escalate to Founder.**
+
+### Branch Naming Enforcement
+- **Peskids work:** `peskids/*` (e.g., `peskids/go-live-fixes`, `peskids/auth-flow`)
+- **Blueprint work:** `blueprint/*` (e.g., `blueprint/extract-template`, `blueprint/docs`)
+- **Agency work:** `agency/*` (e.g., `agency/replication-guide`)
+- **Docs/rules updates:** `docs/*` (e.g., `docs/founder-mode-goal`)
+- **Bug fixes:** `fix/{peskids|blueprint|agency}/*` (tag the goal)
+- **Refactor:** Only if tagged to goal; `refactor/{peskids|blueprint}/*`
+
+**No arbitrary feature branches.** Every branch must map to Founder Mode goal.
+
+### Commit Message Format (ENFORCED)
+```
+{type}({scope}): {description}
+
+{body}
+
+Contributes to: peskids|blueprint|agency
+```
+
+**Scopes that map to goal:**
+- `peskids` — go-live, production fixes
+- `blueprint` — reusable template, extraction
+- `agency` — replication, distribution
+- `docs` — FOUNDER MODE rules, AGENTS.md updates
+
+**Example:**
+```
+feat(peskids): add whatsapp notifications for go-live
+
+Enable SMS/WhatsApp alerts so live customers get instant notifications.
+
+Contributes to: peskids
+```
+
+**Rejected (don't commit):**
+```
+refactor(orchestrator): cleanup unused types  # ← Not tied to goal
+feat(platform): add new MCP tool               # ← Platform bloat
+docs(unrelated): update README                 # ← Not tagged
+```
+
+---
 
 ## Principios
 
