@@ -15,6 +15,17 @@ interface StudentSubmission {
 }
 
 
+interface SubmissionRow {
+  id: string;
+  submission_id: string;
+  form_id: string;
+  form_data: Record<string, unknown>;
+  completed_at: string;
+  score: number | null;
+  feedback: string | null;
+  status: string;
+}
+
 function mapStatusToSubmissionStatus(
   status: string,
   hasScore: boolean,
@@ -23,6 +34,79 @@ function mapStatusToSubmissionStatus(
   if (status === 'graded' || hasScore) return 'graded';
   if (hasFeedback) return 'reviewed';
   return 'pending_review';
+}
+
+async function buildSubmissionsQuery(
+  supabase: ReturnType<typeof getSupabaseClient>,
+  tenantSlug: string,
+  statusParam: string
+) {
+  let query = supabase
+    .from('peskids.form_submissions')
+    .select('id, submission_id, form_id, form_data, completed_at, score, feedback, status')
+    .eq('tenant_slug', tenantSlug);
+
+  if (statusParam === 'pending') {
+    query = query.is('score', null);
+  } else if (statusParam === 'reviewed') {
+    query = query.not('feedback', 'is', null).is('score', null);
+  }
+
+  const { data: submissions, error: submissionsError } = await query.order('completed_at', {
+    ascending: false,
+  });
+
+  if (submissionsError) {
+    console.error('Failed to fetch submissions:', submissionsError);
+    return { ok: false as const, error: 'Failed to fetch submissions' };
+  }
+
+  return { ok: true as const, submissions: submissions || [] };
+}
+
+async function fetchFormTitleMap(
+  supabase: ReturnType<typeof getSupabaseClient>,
+  formIds: Set<string>
+): Promise<Map<string, string>> {
+  const titleMap = new Map<string, string>();
+  if (formIds.size === 0) return titleMap;
+
+  const { data: forms } = await supabase
+    .from('peskids.forms')
+    .select('id, title')
+    .in('id', Array.from(formIds));
+
+  forms?.forEach((form) => {
+    titleMap.set(form.id, form.title);
+  });
+
+  return titleMap;
+}
+
+function mapSubmissionToStudentSubmission(
+  sub: SubmissionRow,
+  formTitleMap: Map<string, string>
+): StudentSubmission {
+  const submissionStatus = mapStatusToSubmissionStatus(
+    sub.status,
+    Boolean(sub.score),
+    Boolean(sub.feedback)
+  );
+
+  const studentName =
+    (sub.form_data?.['student_name'] as string) ||
+    (sub.form_data?.['student_full_name'] as string) ||
+    'Anonymous';
+
+  return {
+    submissionId: sub.submission_id,
+    studentName,
+    formTitle: formTitleMap.get(sub.form_id) || 'Unknown Form',
+    submittedAt: sub.completed_at || new Date().toISOString(),
+    status: submissionStatus,
+    score: sub.score || undefined,
+    feedbackProvided: Boolean(sub.feedback),
+  };
 }
 
 export async function GET(
@@ -42,81 +126,25 @@ export async function GET(
           return jsonError('Missing tenant slug', HTTP_STATUS.BAD_REQUEST);
         }
 
-        const supabase = getServiceClient();
+    const submissionsResult = await buildSubmissionsQuery(supabase, tenantSlug, statusParam);
+    if (!submissionsResult.ok) {
+      return jsonError(submissionsResult.error, HTTP_STATUS.INTERNAL_ERROR);
+    }
 
-        // Build query for submissions
-        let query = supabase
-          .schema('peskids').from('form_submissions')
-          .select('id, submission_id, form_id, form_data, completed_at, score, feedback, status')
-          .eq('tenant_slug', tenantSlug);
+    const formIds = new Set<string>();
+    submissionsResult.submissions.forEach((sub) => {
+      if (sub.form_id) formIds.add(sub.form_id);
+    });
 
-        // Filter by status if not 'all'
-        if (statusParam === 'pending') {
-          query = query.is('score', null);
-        } else if (statusParam === 'reviewed') {
-          query = query.not('feedback', 'is', null).is('score', null);
-        }
+    const formTitleMap = await fetchFormTitleMap(supabase, formIds);
 
-        const { data: submissions, error: submissionsError } = await query.order('completed_at', {
-          ascending: false,
-        });
+    const studentSubmissions: StudentSubmission[] = submissionsResult.submissions.map((sub) =>
+      mapSubmissionToStudentSubmission(sub as SubmissionRow, formTitleMap)
+    );
 
-        if (submissionsError) {
-          console.error('Failed to fetch submissions:', submissionsError);
-          return jsonError('Failed to fetch submissions', HTTP_STATUS.INTERNAL_ERROR);
-        }
-
-        // Fetch form details for each submission
-        const formIds = new Set<string>();
-        submissions?.forEach((sub) => {
-          if (sub.form_id) formIds.add(sub.form_id);
-        });
-
-        const formTitleMap = new Map<string, string>();
-        if (formIds.size > 0) {
-          const { data: forms } = await supabase
-            .schema('peskids').from('forms')
-            .select('id, title')
-            .in('id', Array.from(formIds));
-
-          forms?.forEach((form) => {
-            formTitleMap.set(form.id, form.title);
-          });
-        }
-
-        // Map to StudentSubmission format
-        const studentSubmissions: StudentSubmission[] = (submissions || []).map((sub) => {
-          const submissionStatus = mapStatusToSubmissionStatus(
-            sub.status,
-            Boolean(sub.score),
-            Boolean(sub.feedback)
-          );
-
-          // Try to extract student name from form_data
-          const studentName =
-            (sub.form_data?.['student_name'] as string) ||
-            (sub.form_data?.['student_full_name'] as string) ||
-            'Anonymous';
-
-          return {
-            submissionId: sub.submission_id,
-            studentName,
-            formTitle: formTitleMap.get(sub.form_id) || 'Unknown Form',
-            submittedAt: sub.completed_at || new Date().toISOString(),
-            status: submissionStatus,
-            score: sub.score || undefined,
-            feedbackProvided: Boolean(sub.feedback),
-          };
-        });
-
-        return jsonOk({
-          submissions: studentSubmissions,
-        });
-      } catch (error) {
-        console.error('Teacher submissions endpoint error:', error);
-        return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
-      }
-    },
-    PORTAL_READ_ACCESS
-  );
+    return jsonOk({ submissions: studentSubmissions });
+  } catch (error) {
+    console.error('Teacher submissions endpoint error:', error);
+    return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
+  }
 }

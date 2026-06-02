@@ -255,11 +255,17 @@ describe('Input Validation Tests', () => {
     let orchestrator: IterationOrchestrator;
 
     beforeEach(() => {
+      // Set minimal Supabase env vars for testing
+      process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost:54321';
+      process.env.SUPABASE_SERVICE_ROLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test';
+
       orchestrator = new IterationOrchestrator();
     });
 
     afterEach(() => {
-      if (orchestrator) orchestrator.destroy();
+      orchestrator.destroy();
+      delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+      delete process.env.SUPABASE_SERVICE_ROLE_KEY;
     });
 
     it('handles empty goal string', async () => {

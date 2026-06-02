@@ -5,19 +5,21 @@ import { randomBytes } from 'crypto';
 import { runTrustedPortalDalForPathSlug, PORTAL_READ_ACCESS } from '@/lib/portal-tenant-dal';
 import { getServiceClient } from '@/lib/supabase';
 
-interface WebhookConfig {
-  id: string;
-  form_id: string;
-  tenant_slug: string;
-  webhook_url: string;
-  secret: string;
-  is_active: boolean;
-  failure_count: number;
-  last_triggered_at: string | null;
-  created_at: string;
-  updated_at: string;
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing environment variable: ${name}`);
+  }
+  return value;
 }
 
+function getSupabaseClient() {
+  const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
+  const serviceKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
+  return createClient(url, serviceKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+}
 
 function generateSecret(): string {
   return randomBytes(32).toString('hex');
