@@ -5,6 +5,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY turbo.json ./
+COPY tsconfig.json ./
 COPY apps ./apps
 COPY packages ./packages
 COPY lib ./lib

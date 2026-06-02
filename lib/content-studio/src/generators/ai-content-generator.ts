@@ -263,6 +263,6 @@ export async function generateAIContentBilingual(
     call_to_action: output.call_to_action_es,
     image_prompt: output.image_prompt,
     reel_script: output.reel_script as ReelScene[],
-    captions: output.captions,
+    captions: output.captions as BilingualCaption[],
   };
 }
