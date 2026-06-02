@@ -105,6 +105,28 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 -- TABLE: feedback
 -- ============================================================================
 
+ALTER TABLE IF EXISTS public.feedback
+  ADD COLUMN IF NOT EXISTS author_type text NOT NULL DEFAULT 'parent',
+  ADD COLUMN IF NOT EXISTS author_ref_id uuid,
+  ADD COLUMN IF NOT EXISTS subject_type text NOT NULL DEFAULT 'student',
+  ADD COLUMN IF NOT EXISTS subject_ref_id uuid,
+  ADD COLUMN IF NOT EXISTS body text,
+  ADD COLUMN IF NOT EXISTS rating smallint,
+  ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'new',
+  ADD COLUMN IF NOT EXISTS ai_summary text;
+
+DO $$ BEGIN
+  ALTER TABLE public.feedback
+    ADD CONSTRAINT feedback_author_type_check
+      CHECK (author_type IN ('parent', 'teacher', 'staff'));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  ALTER TABLE public.feedback
+    ADD CONSTRAINT feedback_subject_type_check
+      CHECK (subject_type IN ('general', 'class', 'student', 'operations'));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
 ALTER TABLE IF EXISTS public.feedback ENABLE ROW LEVEL SECURITY;
 
 DO $$ BEGIN
@@ -158,6 +180,9 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 -- ============================================================================
 -- TABLE: followups
 -- ============================================================================
+
+ALTER TABLE IF EXISTS public.followups
+  ADD COLUMN IF NOT EXISTS assigned_to text;
 
 ALTER TABLE IF EXISTS public.followups ENABLE ROW LEVEL SECURITY;
 
