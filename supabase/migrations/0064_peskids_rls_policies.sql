@@ -153,7 +153,7 @@ DO $$ BEGIN
         ))
       ))
     );
-EXCEPTION WHEN duplicate_object THEN NULL; WHEN undefined_column THEN NULL; END $$;
+EXCEPTION WHEN duplicate_object THEN NULL; WHEN undefined_column THEN NULL; WHEN undefined_table THEN NULL; END $$;
 
 DO $$ BEGIN
   CREATE POLICY "parent_read_own_feedback" ON public.feedback FOR SELECT
@@ -261,6 +261,6 @@ CREATE INDEX IF NOT EXISTS idx_leads_created_by ON public.leads(created_by) WHER
 DO $$ BEGIN
   CREATE INDEX IF NOT EXISTS idx_feedback_author_ref ON public.feedback(author_ref_id) WHERE author_ref_id IS NOT NULL;
 EXCEPTION WHEN undefined_column THEN NULL; END $$;
-CREATE INDEX IF NOT EXISTS idx_messages_tenant ON public.messages(tenant_slug) WHERE tenant_slug IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_messages_tenant ON public.messages(tenant_id) WHERE tenant_id IS NOT NULL;
 
 COMMIT;
