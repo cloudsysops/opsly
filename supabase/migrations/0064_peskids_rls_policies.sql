@@ -63,6 +63,9 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 -- TABLE: students
 -- ============================================================================
 
+ALTER TABLE IF EXISTS public.students
+  ADD COLUMN IF NOT EXISTS family_user_id uuid;
+
 ALTER TABLE IF EXISTS public.students ENABLE ROW LEVEL SECURITY;
 
 DO $$ BEGIN
@@ -80,13 +83,22 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN
   CREATE POLICY "parent_read_own_children" ON public.students FOR SELECT
-    USING (is_owner() OR (parent_id IS NOT NULL AND parent_id = auth.uid()));
+    USING (
+      is_owner()
+      OR (family_user_id IS NOT NULL AND family_user_id = auth.uid())
+    );
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN
   CREATE POLICY "parent_update_own_children" ON public.students FOR UPDATE
-    USING (is_owner() OR (parent_id IS NOT NULL AND parent_id = auth.uid()))
-    WITH CHECK (is_owner() OR (parent_id IS NOT NULL AND parent_id = auth.uid()));
+    USING (
+      is_owner()
+      OR (family_user_id IS NOT NULL AND family_user_id = auth.uid())
+    )
+    WITH CHECK (
+      is_owner()
+      OR (family_user_id IS NOT NULL AND family_user_id = auth.uid())
+    );
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- ============================================================================
@@ -119,7 +131,7 @@ DO $$ BEGIN
         ))
       ))
     );
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+EXCEPTION WHEN duplicate_object THEN NULL; WHEN undefined_column THEN NULL; END $$;
 
 DO $$ BEGIN
   CREATE POLICY "parent_read_own_feedback" ON public.feedback FOR SELECT
@@ -127,7 +139,7 @@ DO $$ BEGIN
       tenant_id = 'peskids'
       AND (is_owner() OR (author_type = 'parent' AND author_ref_id = auth.uid()))
     );
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+EXCEPTION WHEN duplicate_object THEN NULL; WHEN undefined_column THEN NULL; END $$;
 
 DO $$ BEGIN
   CREATE POLICY "parent_insert_feedback" ON public.feedback FOR INSERT
@@ -135,7 +147,7 @@ DO $$ BEGIN
       tenant_id = 'peskids'
       AND (is_owner() OR (author_type = 'parent' AND author_ref_id = auth.uid()))
     );
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+EXCEPTION WHEN duplicate_object THEN NULL; WHEN undefined_column THEN NULL; END $$;
 
 -- Anonymous feedback submission (landing page form)
 DO $$ BEGIN
@@ -221,7 +233,9 @@ EXCEPTION WHEN duplicate_object THEN NULL; WHEN undefined_table THEN NULL; END $
 
 CREATE INDEX IF NOT EXISTS idx_leads_tenant_id ON public.leads(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_leads_created_by ON public.leads(created_by) WHERE created_by IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_feedback_author_ref ON public.feedback(author_ref_id) WHERE author_ref_id IS NOT NULL;
+DO $$ BEGIN
+  CREATE INDEX IF NOT EXISTS idx_feedback_author_ref ON public.feedback(author_ref_id) WHERE author_ref_id IS NOT NULL;
+EXCEPTION WHEN undefined_column THEN NULL; END $$;
 CREATE INDEX IF NOT EXISTS idx_messages_tenant ON public.messages(tenant_slug) WHERE tenant_slug IS NOT NULL;
 
 COMMIT;
