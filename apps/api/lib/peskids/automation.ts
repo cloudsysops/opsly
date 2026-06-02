@@ -1,7 +1,7 @@
 import type { GoHighLevelLeadWebhook } from './ghl-contract';
 import { buildPeskidsAutomationPayload } from './ghl-contract';
 
-const N8N_LEAD_WEBHOOK_PATH = '/peskids-lead-intake';
+export const PESKIDS_N8N_LEAD_INTAKE_PATH = '/peskids-lead-intake';
 
 export async function dispatchPeskidsLeadAutomation(
   payload: GoHighLevelLeadWebhook
@@ -12,7 +12,7 @@ export async function dispatchPeskidsLeadAutomation(
   }
 
   try {
-    const response = await fetch(`${base}${N8N_LEAD_WEBHOOK_PATH}`, {
+    const response = await fetch(`${base}${PESKIDS_N8N_LEAD_INTAKE_PATH}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(buildPeskidsAutomationPayload(payload)),

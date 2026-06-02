@@ -42,12 +42,30 @@ function normalizeGrade(grade: string): 'K-5' | '6-8' | '9-12' | 'Other' {
 
 function normalizeReferralSource(
   source: string | undefined
-): 'Google' | 'Friend' | 'Facebook' | 'Instagram' | 'Other' | 'Not sure' | undefined {
+):
+  | 'Facebook'
+  | 'Instagram'
+  | 'Website'
+  | 'Referral'
+  | 'Google'
+  | 'Friend'
+  | 'Other'
+  | 'Not sure'
+  | undefined {
   if (!source?.trim()) {
     return undefined;
   }
-  const allowed = ['Google', 'Friend', 'Facebook', 'Instagram', 'Other', 'Not sure'] as const;
-  const match = allowed.find((item) => item.toLowerCase() === source.trim().toLowerCase());
+  const normalized = source.trim().toLowerCase();
+  if (['instagram', 'ig', 'insta'].includes(normalized)) return 'Instagram';
+  if (['facebook', 'fb', 'meta'].includes(normalized)) return 'Facebook';
+  if (['website', 'web', 'site', 'direct', 'organic', 'search', 'google'].includes(normalized)) {
+    return 'Website';
+  }
+  if (['referral', 'friend', 'referido', 'recommendation', 'recomendation'].includes(normalized)) {
+    return 'Referral';
+  }
+  const allowed = ['Google', 'Friend', 'Facebook', 'Instagram', 'Website', 'Referral', 'Other', 'Not sure'] as const;
+  const match = allowed.find((item) => item.toLowerCase() === normalized);
   return match ?? 'Other';
 }
 

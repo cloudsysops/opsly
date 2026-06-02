@@ -56,8 +56,20 @@ describe('fetchDashboardData', () => {
   it('returns dashboard aggregates using the expanded feedback schema', async () => {
     const leadsQuery = createOrderQuery({
       data: [
-        { id: 'lead-1', name: 'Ana', email: 'ana@example.com', status: 'new' },
-        { id: 'lead-2', name: 'Luis', email: 'luis@example.com', status: 'new' },
+        {
+          id: 'lead-1',
+          name: 'Ana',
+          email: 'ana@example.com',
+          status: 'new',
+          referral_source: 'Instagram',
+        },
+        {
+          id: 'lead-2',
+          name: 'Luis',
+          email: 'luis@example.com',
+          status: 'enrolled',
+          referral_source: 'Referral',
+        },
       ],
       error: null,
     })
@@ -115,6 +127,15 @@ describe('fetchDashboardData', () => {
     const result = await fetchDashboardData('peskids', 'week')
 
     expect(result.new_leads_count).toBe(2)
+    expect(result.converted_leads_count).toBe(1)
+    expect(result.conversion_rate_pct).toBe(50)
+    expect(result.lead_sources).toEqual({
+      instagram: 1,
+      facebook: 0,
+      website: 0,
+      referral: 1,
+      other: 0,
+    })
     expect(result.active_students_count).toBe(3)
     expect(result.students_by_grade).toEqual({ '3A': 2, '4B': 1 })
     expect(result.recent_feedback).toHaveLength(1)

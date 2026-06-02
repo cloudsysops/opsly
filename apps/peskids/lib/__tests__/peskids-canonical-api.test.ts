@@ -20,6 +20,7 @@ describe('peskids-canonical-api', () => {
         email: 'ana@example.com',
         grade_interested: '3A',
         phone: ' 300 ',
+        referral_source: 'Referral',
       })
     ).toEqual({
       tenant_slug: 'peskids',
@@ -29,7 +30,20 @@ describe('peskids-canonical-api', () => {
       class_modality: 'llanogrande',
       neighborhood: 'Por confirmar',
       grade_interested: 'Other',
-      referral_source: undefined,
+      referral_source: 'Referral',
+    });
+  });
+
+  it('normalizes legacy source labels to the commercial buckets', () => {
+    expect(
+      buildCanonicalLeadPayload({
+        name: 'Ana',
+        email: 'ana@example.com',
+        grade_interested: '3A',
+        referral_source: 'google',
+      })
+    ).toMatchObject({
+      referral_source: 'Website',
     });
   });
 

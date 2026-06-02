@@ -444,22 +444,35 @@ export interface DashboardOperationsMetrics {
 
 export interface DashboardData {
   new_leads_count: number;
-  new_leads: Pick<
-    Database['public']['Tables']['leads']['Row'],
-    | 'id'
-    | 'name'
-    | 'email'
-    | 'phone'
-    | 'class_modality'
-    | 'neighborhood'
-    | 'grade_interested'
-    | 'status'
-    | 'admin_notes'
-    | 'referral_code'
-    | 'referred_by_code'
-    | 'referral_discount_cents'
-    | 'referral_redemptions'
-  >[];
+  converted_leads_count: number;
+  conversion_rate_pct: number | null;
+  lead_sources: {
+    instagram: number;
+    facebook: number;
+    website: number;
+    referral: number;
+    other: number;
+  };
+  new_leads: Array<
+    Pick<
+      Database['public']['Tables']['leads']['Row'],
+      | 'id'
+      | 'name'
+      | 'email'
+      | 'phone'
+      | 'class_modality'
+      | 'neighborhood'
+      | 'grade_interested'
+      | 'status'
+      | 'admin_notes'
+      | 'referral_code'
+      | 'referred_by_code'
+      | 'referral_discount_cents'
+      | 'referral_redemptions'
+    > & {
+      referral_source?: string | null;
+    }
+  >;
   active_students_count: number;
   students_by_grade: Record<string, number>;
   recent_feedback: Pick<

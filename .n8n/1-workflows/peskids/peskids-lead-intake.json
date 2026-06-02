@@ -1,0 +1,49 @@
+{
+  "id": "peskids-lead-intake",
+  "name": "Peskids - GHL Lead Intake",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "peskids-lead-intake",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "pli-webhook",
+      "name": "GHL Lead Intake Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.body ?? $input.first().json;\nconst body = typeof raw === 'string' ? JSON.parse(raw) : raw;\nconst errors = [];\nconst tenant = String(body.tenant_slug || '').trim();\nconst leadId = String(body.lead_id || '').trim();\nconst eventId = String(body.event_id || '').trim();\nconst eventType = String(body.event_type || '').trim();\nconst lead = body.lead && typeof body.lead === 'object' ? body.lead : null;\n\nif (tenant !== 'peskids') errors.push('tenant_slug must be peskids');\nif (!leadId) errors.push('lead_id is required');\nif (!eventId) errors.push('event_id is required');\nif (eventType && eventType !== 'lead.created') errors.push('event_type must be lead.created');\nif (!lead) {\n  errors.push('lead object is required');\n} else {\n  if (!String(lead.parent_name || '').trim()) errors.push('lead.parent_name is required');\n  if (!String(lead.phone || '').trim()) errors.push('lead.phone is required');\n  if (!String(lead.email || '').trim()) errors.push('lead.email is required');\n}\n\nconst staticData = $getWorkflowStaticData('global');\nstaticData.seen = staticData.seen || {};\nconst duplicate = Boolean(eventId && staticData.seen[eventId]);\nif (!duplicate && errors.length === 0 && eventId) {\n  staticData.seen[eventId] = Date.now();\n  const keys = Object.keys(staticData.seen);\n  if (keys.length > 500) {\n    keys.sort((a, b) => (staticData.seen[a] || 0) - (staticData.seen[b] || 0));\n    for (let i = 0; i < keys.length - 400; i += 1) delete staticData.seen[keys[i]];\n  }\n}\n\nreturn [{\n  json: {\n    workflow: 'peskids-lead-intake',\n    ok: errors.length === 0,\n    duplicate,\n    tenant_slug: tenant,\n    lead_id: leadId,\n    event_id: eventId,\n    event_type: eventType || 'lead.created',\n    source: body.source || 'gohighlevel',\n    stage: body.stage || 'New Lead',\n    lead,\n    automation: body.automation || {},\n    next_actions: Array.isArray(body.next_actions) ? body.next_actions : [],\n    errors,\n    received_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "pli-validate",
+      "name": "Validate And Dedupe",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 300]
+    }
+  ],
+  "connections": {
+    "GHL Lead Intake Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate And Dedupe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "peskids"
+  }
+}

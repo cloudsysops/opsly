@@ -158,14 +158,14 @@ export function DashboardStatsGrid({ data, search }: DashboardStatsGridProps): R
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
       <StatCard
         sectionId="classes"
-        title="Clases hoy"
+        title="Clases prueba hoy"
         description="Sesiones programadas"
         value={data.operations.classes_today}
         icon={GraduationCap}
         accent="teal"
       >
         <p className="text-sm text-pk-sub">
-          Reservas nuevas hoy:{' '}
+          Inscripciones nuevas hoy:{' '}
           <span className="font-semibold text-pk-ink">{data.operations.enrollments_today}</span>
         </p>
         {data.operations.attendance_rate_pct !== null ? (

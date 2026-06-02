@@ -121,6 +121,8 @@ The API emits a compact n8n envelope with the three starter actions only:
 
 No WhatsApp, email, or calendar engine lives in Opsly. n8n remains the operational executor.
 
+**n8n webhook:** `POST {N8N_WEBHOOK_BASE_URL}/peskids-lead-intake` — see `.n8n/1-workflows/peskids/peskids-lead-intake.json` and `./scripts/smoke-peskids-n8n-lead-intake.sh`.
+
 ## Executive read model
 
 `GET /api/admin/peskids/peskids/executive`
@@ -128,8 +130,11 @@ No WhatsApp, email, or calendar engine lives in Opsly. n8n remains the operation
 Metrics exposed:
 
 - New leads
-- Converted leads
-- Active students
+- Clases prueba
+- Inscripciones
+- Alumnos activos
+- Conversión
+- Fuentes de captación
 - Revenue
 - Pending payments
 - Alerts
