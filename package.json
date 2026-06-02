@@ -158,9 +158,10 @@
     "playwright": "^1.59.1",
     "prettier": "^3.8.3",
     "turbo": "^2.9.14",
+    "twilio": "^4.0.0",
     "typescript": "^5.9.3",
-    "yaml": "^2.9.0",
-    "twilio": "^4.0.0"
+    "vitest": "^4.1.8",
+    "yaml": "^2.9.0"
   },
   "config": {
     "commitizen": {
