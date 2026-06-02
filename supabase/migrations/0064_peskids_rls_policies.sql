@@ -17,6 +17,9 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- TABLE: leads
 -- ============================================================================
 
+ALTER TABLE IF EXISTS public.leads
+  ADD COLUMN IF NOT EXISTS created_by uuid;
+
 ALTER TABLE IF EXISTS public.leads ENABLE ROW LEVEL SECURITY;
 
 DO $$ BEGIN

@@ -10,6 +10,9 @@ import type {
   ListResponse,
 } from './types.js';
 import { GoHighLevelClient } from './client.js';
+import { resolveGoHighLevelEnv, resolveGoHighLevelPeskidsEnv } from './env-config.js';
+
+const PESKIDS_TENANT_ID = 'peskids';
 
 interface TenantConfig {
   apiKey: string;
@@ -42,8 +45,12 @@ export class GoHighLevelService {
         );
       }
 
-      const baseUrl = process.env.GOHIGHLEVEL_API_URL || 'https://api.gohighlevel.com';
-      const client = new GoHighLevelClient(apiKey, baseUrl);
+      const envConfig = resolveGoHighLevelEnv();
+      const locationId = config?.locationId || envConfig.locationId;
+      const client = new GoHighLevelClient(apiKey, envConfig.baseUrl, {
+        locationId,
+        apiVersion: envConfig.apiVersion,
+      });
       this.clients.set(tenantId, client);
     }
 
@@ -110,6 +117,13 @@ let instance: GoHighLevelService | null = null;
 export function getGoHighLevelService(): GoHighLevelService {
   if (!instance) {
     instance = new GoHighLevelService();
+    const peskidsEnv = resolveGoHighLevelPeskidsEnv();
+    if (peskidsEnv.apiKey) {
+      instance.registerTenant(PESKIDS_TENANT_ID, {
+        apiKey: peskidsEnv.apiKey,
+        locationId: peskidsEnv.locationId,
+      });
+    }
   }
   return instance;
 }

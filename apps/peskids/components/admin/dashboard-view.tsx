@@ -27,7 +27,9 @@ export function DashboardView({
   onRangeChange,
   onRefresh,
   refreshing,
+  surface = 'admin',
 }: DashboardViewProps): React.ReactElement {
+  const isSupportSurface = surface === 'support';
   const [search, setSearch] = useState('');
 
   const messageSummary = useMemo(() => {
@@ -64,7 +66,7 @@ export function DashboardView({
       };
     }
 
-    if (messageSummary.admissionsPending > 0) {
+    if (!isSupportSurface && messageSummary.admissionsPending > 0) {
       return {
         title: 'Responder admisiones pendientes',
         description: `${messageSummary.admissionsPending} conversación(es) esperan revisión.`,
@@ -73,7 +75,7 @@ export function DashboardView({
       };
     }
 
-    if (data.pending_followups_count > 0) {
+    if (!isSupportSurface && data.pending_followups_count > 0) {
       return {
         title: 'Cerrar seguimientos abiertos',
         description: `${data.pending_followups_count} seguimiento(s) siguen en cola.`,
@@ -82,7 +84,7 @@ export function DashboardView({
       };
     }
 
-    if (data.new_leads_count > 0) {
+    if (!isSupportSurface && data.new_leads_count > 0) {
       return {
         title: 'Trabajar nuevos leads',
         description: `${data.new_leads_count} lead(s) listos para contacto.`,
@@ -102,6 +104,7 @@ export function DashboardView({
     data.pending_followups_count,
     messageSummary.admissionsPending,
     messageSummary.supportPending,
+    isSupportSurface,
   ]);
 
   const syncLabel = useMemo(() => formatRelativeTime(lastUpdated), [lastUpdated]);
@@ -134,13 +137,17 @@ export function DashboardView({
         messageSummary={messageSummary}
       />
 
-      <div className="mb-5">
-        <TeamPanel />
-      </div>
+      {!isSupportSurface ? (
+        <>
+          <div className="mb-5">
+            <TeamPanel />
+          </div>
 
-      <div className="mb-5" data-admin-section="classes">
-        <ClassesPanel />
-      </div>
+          <div className="mb-5" data-admin-section="classes">
+            <ClassesPanel />
+          </div>
+        </>
+      ) : null}
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
         <DashboardStatsGrid data={data} search={search} />

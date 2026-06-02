@@ -1,7 +1,7 @@
 # ADR-046: Family access via email invite and approved reservation gate
 
 ## Status
-Accepted
+Accepted — implemented in Peskids app (2026-05-27): `/familias/login` uses `POST /api/families/access`; auth callback routes by role; middleware guards operational family routes.
 
 ## Date
 2026-05-26

@@ -34,9 +34,10 @@ done
 pull_main_ff_only() {
   local pull_err
   pull_err="$(mktemp)"
-  trap 'rm -f "$pull_err"' RETURN
+  trap "rm -f '${pull_err}'" RETURN
 
   if git pull --ff-only origin main 2>"$pull_err"; then
+    trap - RETURN
     return 0
   fi
 
@@ -50,6 +51,7 @@ pull_main_ff_only() {
   fi
 
   cat "$pull_err" >&2
+  trap - RETURN
   return 1
 }
 
