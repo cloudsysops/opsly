@@ -80,7 +80,7 @@ export async function fetchDashboardLeads(
   const { data, error } = await supabase
     .from('leads')
     .select(
-      'id, name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, created_at'
+      'id, name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source, created_at'
     )
     .eq('tenant_id', tenantSlug)
     .gte('created_at', periodStartISO)

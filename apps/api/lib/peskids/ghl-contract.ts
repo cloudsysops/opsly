@@ -57,7 +57,7 @@ export const goHighLevelLeadWebhookSchema = z
     tenant_slug: z.literal('peskids'),
     source: z.enum(['gohighlevel', 'n8n', 'web']).default('gohighlevel'),
     lead_id: z.string().trim().min(1),
-    pipeline_stage: z.enum(PESKIDS_PIPELINE_STAGES).or(z.string()),
+    pipeline_stage: z.enum(PESKIDS_PIPELINE_STAGES).or(z.string().trim().min(1)),
     occurred_at: z.string().datetime(),
     lead: peskidsLeadIntakeSchema,
     automation: z
