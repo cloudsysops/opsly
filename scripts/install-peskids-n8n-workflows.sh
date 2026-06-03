@@ -66,29 +66,33 @@ n8n_image() {
 }
 
 # n8n 2.x applies publish/activate while the main process is stopped (see publish:workflow note).
-# Pass live container's DB config so publish:workflow finds the production database.
+# Pass live container's DB config + network + password so publish:workflow finds the production database.
 n8n_offline() {
-  local volume image db_type db_postgresdb_host db_postgresdb_port db_postgresdb_database db_postgresdb_user
+  local volume image network db_type db_postgresdb_host db_postgresdb_port db_postgresdb_database db_postgresdb_user db_postgresdb_password
   volume="$(n8n_volume)"
   image="$(n8n_image)"
   if [[ -z "$volume" || -z "$image" ]]; then
     echo "Could not resolve n8n volume/image for $CONTAINER" >&2
     return 1
   fi
-  # Extract database config from live container environment
+  # Extract network and database config from live container
+  network="$(docker inspect "$CONTAINER" --format='{{range $k,$v := .NetworkSettings.Networks}}{{$k}}{{end}}' 2>/dev/null | head -1)"
   db_type="$(docker exec "$CONTAINER" sh -c 'echo "$DB_TYPE"' 2>/dev/null || echo '')"
   db_postgresdb_host="$(docker exec "$CONTAINER" sh -c 'echo "$DB_POSTGRESDB_HOST"' 2>/dev/null || echo '')"
   db_postgresdb_port="$(docker exec "$CONTAINER" sh -c 'echo "$DB_POSTGRESDB_PORT"' 2>/dev/null || echo '')"
   db_postgresdb_database="$(docker exec "$CONTAINER" sh -c 'echo "$DB_POSTGRESDB_DATABASE"' 2>/dev/null || echo '')"
   db_postgresdb_user="$(docker exec "$CONTAINER" sh -c 'echo "$DB_POSTGRESDB_USER"' 2>/dev/null || echo '')"
+  db_postgresdb_password="$(docker exec "$CONTAINER" sh -c 'echo "$DB_POSTGRESDB_PASSWORD"' 2>/dev/null || echo '')"
 
-  # Build docker run command with environment passthrough
+  # Build docker run command with network + env passthrough
   local docker_args=(--rm -v "${volume}:/home/node/.n8n" --entrypoint n8n)
+  [[ -n "$network" ]] && docker_args+=(--network "$network")
   [[ -n "$db_type" ]] && docker_args+=(-e "DB_TYPE=$db_type")
   [[ -n "$db_postgresdb_host" ]] && docker_args+=(-e "DB_POSTGRESDB_HOST=$db_postgresdb_host")
   [[ -n "$db_postgresdb_port" ]] && docker_args+=(-e "DB_POSTGRESDB_PORT=$db_postgresdb_port")
   [[ -n "$db_postgresdb_database" ]] && docker_args+=(-e "DB_POSTGRESDB_DATABASE=$db_postgresdb_database")
   [[ -n "$db_postgresdb_user" ]] && docker_args+=(-e "DB_POSTGRESDB_USER=$db_postgresdb_user")
+  [[ -n "$db_postgresdb_password" ]] && docker_args+=(-e "DB_POSTGRESDB_PASSWORD=$db_postgresdb_password")
 
   docker run "${docker_args[@]}" "$image" "$@"
 }
