@@ -4,6 +4,18 @@ import { HTTP_STATUS } from '@/lib/constants';
 import { runTrustedPortalDalForPathSlug, PORTAL_READ_ACCESS } from '@/lib/portal-tenant-dal';
 import { getServiceClient } from '@/lib/supabase';
 
+// peskids.* tables pending DB type codegen
+interface PeskidsQB {
+  select(cols: string): PeskidsQB;
+  eq(col: string, val: unknown): PeskidsQB;
+  in(col: string, vals: unknown[]): PeskidsQB;
+  is(col: string, val: unknown): PeskidsQB;
+  not(col: string, ...args: unknown[]): PeskidsQB;
+  order(col: string, opts?: unknown): PeskidsQB;
+  then<T>(r: (v: { data: unknown[] | null; error: unknown }) => T, j?: (e: unknown) => T): Promise<T>;
+}
+interface PeskidsClient { from(table: string): PeskidsQB; }
+
 interface StudentSubmission {
   submissionId: string;
   studentName: string;
@@ -37,11 +49,12 @@ function mapStatusToSubmissionStatus(
 }
 
 async function buildSubmissionsQuery(
-  supabase: ReturnType<typeof getSupabaseClient>,
+  supabase: ReturnType<typeof getServiceClient>,
   tenantSlug: string,
   statusParam: string
 ) {
-  let query = supabase
+  const db = supabase as unknown as PeskidsClient;
+  let query = db
     .from('peskids.form_submissions')
     .select('id, submission_id, form_id, form_data, completed_at, score, feedback, status')
     .eq('tenant_slug', tenantSlug);
@@ -52,9 +65,10 @@ async function buildSubmissionsQuery(
     query = query.not('feedback', 'is', null).is('score', null);
   }
 
-  const { data: submissions, error: submissionsError } = await query.order('completed_at', {
+  const { data: rawSubs, error: submissionsError } = await query.order('completed_at', {
     ascending: false,
   });
+  const submissions = rawSubs as SubmissionRow[] | null;
 
   if (submissionsError) {
     console.error('Failed to fetch submissions:', submissionsError);
@@ -65,16 +79,16 @@ async function buildSubmissionsQuery(
 }
 
 async function fetchFormTitleMap(
-  supabase: ReturnType<typeof getSupabaseClient>,
+  supabase: ReturnType<typeof getServiceClient>,
   formIds: Set<string>
 ): Promise<Map<string, string>> {
   const titleMap = new Map<string, string>();
   if (formIds.size === 0) return titleMap;
 
-  const { data: forms } = await supabase
-    .from('peskids.forms')
-    .select('id, title')
-    .in('id', Array.from(formIds));
+  const db = supabase as unknown as PeskidsClient;
+  const { data: rawForms } = await db.from('peskids.forms').select('id, title').in('id', Array.from(formIds));
+  type FormRow = { id: string; title: string };
+  const forms = rawForms as FormRow[] | null;
 
   forms?.forEach((form) => {
     titleMap.set(form.id, form.title);
@@ -126,6 +140,7 @@ export async function GET(
           return jsonError('Missing tenant slug', HTTP_STATUS.BAD_REQUEST);
         }
 
+        const supabase = getServiceClient();
     const submissionsResult = await buildSubmissionsQuery(supabase, tenantSlug, statusParam);
     if (!submissionsResult.ok) {
       return jsonError(submissionsResult.error, HTTP_STATUS.INTERNAL_ERROR);
@@ -147,4 +162,7 @@ export async function GET(
     console.error('Teacher submissions endpoint error:', error);
     return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
   }
+    },
+    PORTAL_READ_ACCESS
+  );
 }

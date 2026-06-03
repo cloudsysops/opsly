@@ -4,6 +4,15 @@ import { jsonError, jsonOk } from '../../../../lib/api-response';
 import { HTTP_STATUS } from '../../../../lib/constants';
 import { getServiceClient } from '../../../../lib/supabase';
 
+// peskids.* tables pending DB type codegen
+interface PeskidsQB {
+  insert(data: Record<string, unknown>): PeskidsQB;
+  update(data: Record<string, unknown>): PeskidsQB;
+  eq(col: string, val: unknown): PeskidsQB;
+  then<T>(r: (v: { data: unknown[] | null; error: unknown }) => T, j?: (e: unknown) => T): Promise<T>;
+}
+interface PeskidsClient { from(table: string): PeskidsQB; }
+
 interface WebhookPayload {
   form_id: string;
   submission_id: string;
@@ -16,22 +25,6 @@ interface WebhookPayload {
 interface WebhookConfig {
   id: string;
   secret: string;
-}
-
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value;
-}
-
-function getSupabaseClient() {
-  const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
-  const serviceKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
-  return createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
 }
 
 function verifyWebhookSignature(payload: string, signature: string, secret: string): boolean {
@@ -65,7 +58,7 @@ async function logAuditEvent(
 }
 
 async function validateSignatureHeader(
-  supabase: ReturnType<typeof getSupabaseClient>,
+  supabase: ReturnType<typeof getServiceClient>,
   signatureHeader: string,
   ipAddress: string | undefined
 ): Promise<string | Response> {
@@ -91,7 +84,7 @@ async function validateSignatureHeader(
 }
 
 async function parseAndValidatePayload(
-  supabase: ReturnType<typeof getSupabaseClient>,
+  supabase: ReturnType<typeof getServiceClient>,
   bodyText: string,
   ipAddress: string | undefined
 ): Promise<WebhookPayload | Response> {
@@ -143,7 +136,7 @@ async function parseAndValidatePayload(
 }
 
 async function fetchAndVerifyConfig(
-  supabase: ReturnType<typeof getSupabaseClient>,
+  supabase: ReturnType<typeof getServiceClient>,
   tenantSlug: string,
   formId: string,
   submissionId: string,
@@ -176,34 +169,29 @@ async function fetchAndVerifyConfig(
 }
 
 async function storeWebhookEventAndUpdateConfig(
-  supabase: ReturnType<typeof getSupabaseClient>,
+  supabase: ReturnType<typeof getServiceClient>,
   payload: WebhookPayload,
   bodyText: string,
   webhookConfig: WebhookConfig,
   ipAddress: string | undefined
 ): Promise<void> {
-  const { error: eventError } = await supabase.from('peskids.submission_events').insert({
+  const db = supabase as unknown as PeskidsClient;
+  const { error: eventError } = await db.from('peskids.submission_events').insert({
     tenant_slug: payload.tenant_slug,
     form_id: payload.form_id,
     submission_id: payload.submission_id as string,
     user_id: payload.user_id || null,
     event_type: 'completed',
-    metadata: {
-      webhook_triggered: true,
-      timestamp: payload.timestamp,
-    },
+    metadata: { webhook_triggered: true, timestamp: payload.timestamp },
   });
 
   if (eventError) {
     console.error('Failed to store submission event:', eventError);
   }
 
-  await supabase
+  await db
     .from('peskids.webhook_configs')
-    .update({
-      last_triggered_at: new Date().toISOString(),
-      failure_count: 0,
-    })
+    .update({ last_triggered_at: new Date().toISOString(), failure_count: 0 })
     .eq('id', webhookConfig.id);
 
   await logAuditEvent(

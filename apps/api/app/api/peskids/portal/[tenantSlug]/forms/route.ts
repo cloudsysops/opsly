@@ -4,6 +4,18 @@ import { HTTP_STATUS } from '@/lib/constants';
 import { runTrustedPortalDalForPathSlug, PORTAL_READ_ACCESS } from '@/lib/portal-tenant-dal';
 import { getServiceClient } from '@/lib/supabase';
 
+// peskids.* tables pending DB type codegen
+interface PeskidsQB {
+  select(cols?: string, opts?: Record<string, unknown>): PeskidsQB;
+  insert(data: Record<string, unknown> | Record<string, unknown>[]): PeskidsQB;
+  eq(col: string, val: unknown): PeskidsQB;
+  in(col: string, vals: unknown[]): PeskidsQB;
+  order(col: string, opts?: unknown): PeskidsQB;
+  single(): Promise<{ data: unknown | null; error: unknown }>;
+  then<T>(r: (v: { data: unknown[] | null; error: unknown }) => T, j?: (e: unknown) => T): Promise<T>;
+}
+interface PeskidsClient { from(table: string): PeskidsQB; }
+
 interface FormMetadata {
   formId: string;
   formTitle: string;
@@ -33,22 +45,6 @@ interface FormRecord {
   created_at: string;
 }
 
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value;
-}
-
-function getSupabaseClient() {
-  const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
-  const serviceKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
-  return createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-}
-
 function validateCreateFormRequest(
   tenantSlug: unknown,
   title: unknown
@@ -63,14 +59,13 @@ function validateCreateFormRequest(
 }
 
 async function fetchFormsWithSubmissionStats(
-  supabase: ReturnType<typeof getSupabaseClient>,
+  supabase: ReturnType<typeof getServiceClient>,
   tenantSlug: string
 ) {
-  const { data: forms, error: formsError } = await supabase
-    .from('peskids.forms')
-    .select('id, form_id, title, description, status')
-    .eq('tenant_slug', tenantSlug)
-    .order('created_at', { ascending: false });
+  const db = supabase as unknown as PeskidsClient;
+  const { data: rawForms, error: formsError } = await db.from('peskids.forms').select('id, form_id, title, description, status').eq('tenant_slug', tenantSlug).order('created_at', { ascending: false });
+  type FormRow = { id: string; form_id: string; title: string; description: string; status: string };
+  const forms = rawForms as FormRow[] | null;
 
   if (formsError) {
     console.error('Failed to fetch forms:', formsError);
@@ -82,14 +77,11 @@ async function fetchFormsWithSubmissionStats(
   const lastSubmissions = new Map<string, string>();
 
   if (formIds.length > 0) {
-    const { data: submissions, error: submissionsError } = await supabase
-      .from('peskids.form_submissions')
-      .select('form_id, completed_at')
-      .eq('tenant_slug', tenantSlug)
-      .in('form_id', formIds);
+    const { data: rawSubs, error: submissionsError } = await db.from('peskids.form_submissions').select('form_id, completed_at').eq('tenant_slug', tenantSlug).in('form_id', formIds);
+    const submissions = rawSubs as FormSubmissionData[] | null;
 
     if (!submissionsError && submissions) {
-      (submissions as FormSubmissionData[]).forEach((sub) => {
+      submissions.forEach((sub) => {
         const count = submissionCounts.get(sub.form_id) || 0;
         submissionCounts.set(sub.form_id, count + 1);
 
@@ -110,14 +102,15 @@ async function fetchFormsWithSubmissionStats(
 }
 
 async function createFormRecord(
-  supabase: ReturnType<typeof getSupabaseClient>,
+  supabase: ReturnType<typeof getServiceClient>,
   formId: string,
   tenantSlug: string,
   title: string,
   description: string | undefined,
   status: string | undefined
 ) {
-  const { data: form, error: formError } = await supabase
+  const db = supabase as unknown as PeskidsClient;
+  const { data: rawForm, error: formError } = await db
     .from('peskids.forms')
     .insert({
       form_id: formId,
@@ -135,11 +128,11 @@ async function createFormRecord(
     console.error('Failed to create form:', formError);
     return { ok: false as const, error: 'Failed to create form' };
   }
-  return { ok: true as const, form: form as FormRecord };
+  return { ok: true as const, form: rawForm as FormRecord };
 }
 
 async function createFormFields(
-  supabase: ReturnType<typeof getSupabaseClient>,
+  supabase: ReturnType<typeof getServiceClient>,
   formId: string,
   tenantSlug: string,
   fields: InputFormField[] | undefined
@@ -160,7 +153,8 @@ async function createFormFields(
     created_at: new Date().toISOString(),
   }));
 
-  const { error: fieldsError } = await supabase.from('peskids.form_fields').insert(fieldsData);
+  const db = supabase as unknown as PeskidsClient;
+  const { error: fieldsError } = await db.from('peskids.form_fields').insert(fieldsData as unknown as Record<string, unknown>[]);
 
   if (fieldsError) {
     console.error('Failed to create form fields:', fieldsError);
@@ -202,7 +196,7 @@ export async function GET(
       description: form.description,
       submissionCount: result.submissionCounts.get(form.id) || 0,
       lastSubmissionAt: result.lastSubmissions.get(form.id),
-      status: form.status,
+      status: form.status as FormMetadata['status'],
     }));
 
     return jsonOk({ forms: formMetadata });
@@ -210,6 +204,9 @@ export async function GET(
     console.error('Forms endpoint error:', error);
     return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
   }
+    },
+    PORTAL_READ_ACCESS
+  );
 }
 
 export async function POST(
@@ -226,7 +223,7 @@ export async function POST(
       return validation.error;
     }
 
-    const supabase = getSupabaseClient();
+    const supabase = getServiceClient();
     const formId = crypto.randomUUID();
 
     const formResult = await createFormRecord(

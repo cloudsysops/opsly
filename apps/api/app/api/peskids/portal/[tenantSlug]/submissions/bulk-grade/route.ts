@@ -4,6 +4,18 @@ import { HTTP_STATUS } from '@/lib/constants';
 import { runTrustedPortalDalForPathSlug } from '@/lib/portal-tenant-dal';
 import { getServiceClient } from '@/lib/supabase';
 
+// peskids.* tables pending DB type codegen
+interface PeskidsQB {
+  update(data: Record<string, unknown>): PeskidsQB;
+  eq(col: string, val: unknown): PeskidsQB;
+  in(col: string, vals: unknown[]): PeskidsQB;
+  select(cols: string): Promise<{ data: unknown[] | null; error: unknown }>;
+}
+interface PeskidsClient {
+  from(table: string): PeskidsQB;
+  rpc(fn: string, params: Record<string, unknown>): Promise<{ data: unknown; error: unknown }>;
+}
+
 interface BulkGradeRequest {
   submissionIds: string[];
   score: number;
@@ -49,23 +61,21 @@ function validateBulkGradeRequest(
 }
 
 async function gradeSubmissionsAndAudit(
-  supabase: ReturnType<typeof getSupabaseClient>,
+  supabase: ReturnType<typeof getServiceClient>,
   tenantSlug: string,
   submissionIds: string[],
   score: number,
   feedback: string | undefined
 ) {
-  const { data: updated, error: updateError } = await supabase
+  const db = supabase as unknown as PeskidsClient;
+  const { data: rawUpdated, error: updateError } = await db
     .from('peskids.form_submissions')
-    .update({
-      score,
-      feedback: feedback || null,
-      status: 'graded',
-      updated_at: new Date().toISOString(),
-    })
+    .update({ score, feedback: feedback || null, status: 'graded', updated_at: new Date().toISOString() })
     .eq('tenant_slug', tenantSlug)
     .in('submission_id', submissionIds)
     .select('submission_id');
+  type UpdatedRow = { submission_id: string };
+  const updated = rawUpdated as UpdatedRow[] | null;
 
   if (updateError) {
     console.error('Failed to grade submissions:', updateError);
@@ -73,7 +83,7 @@ async function gradeSubmissionsAndAudit(
   }
 
   try {
-    await supabase.rpc('log_audit_event', {
+    await db.rpc('log_audit_event', {
       p_action: 'form_submissions_bulk_graded',
       p_actor_id: 'teacher',
       p_tenant_slug: tenantSlug,
@@ -99,7 +109,7 @@ export async function POST(
   { params }: { params: Promise<{ tenantSlug: string }> }
 ): Promise<Response> {
   const { tenantSlug } = await params;
-
+  try {
     if (!tenantSlug) {
       return jsonError('Missing tenant slug', HTTP_STATUS.BAD_REQUEST);
     }
@@ -111,7 +121,7 @@ export async function POST(
       return validation.error;
     }
 
-    const supabase = getSupabaseClient();
+    const supabase = getServiceClient();
 
     const result = await gradeSubmissionsAndAudit(
       supabase,

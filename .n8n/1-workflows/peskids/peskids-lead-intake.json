@@ -13,8 +13,9 @@
       "id": "pli-webhook",
       "name": "GHL Lead Intake Webhook",
       "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [0, 300]
+      "typeVersion": 1,
+      "position": [0, 300],
+      "webhookId": "a8f4c2e1-5b6d-4f3a-9e0d-1c7b8a9d0e2f"
     },
     {
       "parameters": {
