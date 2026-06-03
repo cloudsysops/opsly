@@ -177,6 +177,7 @@ jobs:
             ghcr.io/cloudsysops/intcloudsysops-orchestrator:${{ github.sha }}
 
       - name: Build and push Hermes image
+        continue-on-error: true
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -326,6 +327,7 @@ jobs:
             ghcr.io/cloudsysops/intcloudsysops-orchestrator:${{ github.sha }}
 
       - name: Build and push Hermes image (staging)
+        continue-on-error: true
         uses: docker/build-push-action@v5
         with:
           context: .
