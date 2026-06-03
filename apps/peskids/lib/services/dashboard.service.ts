@@ -2,6 +2,7 @@ import { supabaseServer, getRecentMessages } from '@/lib/supabase';
 import { isMissingExpandedFeedbackColumn } from '@/lib/utils/db-compat';
 import type { Database, DashboardData } from '@/lib/types';
 import { fetchOperationsMetrics } from '@/lib/services/operations-metrics.service';
+import { fetchDashboardLeads } from '@/lib/peskids-platform-dashboard';
 
 type Range = 'week' | 'month';
 type LeadSourceKey = 'instagram' | 'facebook' | 'website' | 'referral' | 'other';
@@ -41,16 +42,8 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
   periodStart.setHours(0, 0, 0, 0);
   const periodStartISO = periodStart.toISOString();
 
-  const { data: newLeads, error: leadsError } = await supabase
-    .from('leads')
-    .select(
-      'id, name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_source'
-    )
-    .eq('tenant_id', tenantId)
-    .gte('created_at', periodStartISO)
-    .order('created_at', { ascending: false });
-
-  if (leadsError) throw leadsError;
+  const platformLeadsResult = await fetchDashboardLeads(tenantId, periodStartISO);
+  const newLeads = platformLeadsResult.rows;
 
   const { data: students, error: studentsError } = await supabase
     .from('students')

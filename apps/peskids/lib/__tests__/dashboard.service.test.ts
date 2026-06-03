@@ -2,10 +2,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const getRecentMessagesMock = vi.fn()
 const supabaseServerMock = vi.fn()
+const fetchDashboardLeadsMock = vi.fn()
 
 vi.mock('../supabase', () => ({
   getRecentMessages: getRecentMessagesMock,
   supabaseServer: supabaseServerMock,
+}))
+
+vi.mock('../peskids-platform-dashboard', () => ({
+  fetchDashboardLeads: fetchDashboardLeadsMock,
 }))
 
 const fetchOperationsMetricsMock = vi.fn()
@@ -43,6 +48,7 @@ describe('fetchDashboardData', () => {
   beforeEach(() => {
     getRecentMessagesMock.mockReset()
     supabaseServerMock.mockReset()
+    fetchDashboardLeadsMock.mockReset()
     fetchOperationsMetricsMock.mockReset()
     fetchOperationsMetricsMock.mockResolvedValue({
       classes_today: 2,
@@ -54,25 +60,6 @@ describe('fetchDashboardData', () => {
   })
 
   it('returns dashboard aggregates using the expanded feedback schema', async () => {
-    const leadsQuery = createOrderQuery({
-      data: [
-        {
-          id: 'lead-1',
-          name: 'Ana',
-          email: 'ana@example.com',
-          status: 'new',
-          referral_source: 'Instagram',
-        },
-        {
-          id: 'lead-2',
-          name: 'Luis',
-          email: 'luis@example.com',
-          status: 'enrolled',
-          referral_source: 'Referral',
-        },
-      ],
-      error: null,
-    })
     const studentsQuery = createOrderQuery({
       data: [
         { id: 'student-1', grade: '3A', status: 'active' },
@@ -112,12 +99,48 @@ describe('fetchDashboardData', () => {
 
     supabaseServerMock.mockReturnValue({
       from: vi.fn((table: string) => {
-        if (table === 'leads') return leadsQuery
         if (table === 'students') return studentsQuery
         if (table === 'feedback') return feedbackQuery
         if (table === 'followups') return followupsQuery
         throw new Error(`Unexpected table ${table}`)
       }),
+    })
+    fetchDashboardLeadsMock.mockResolvedValue({
+      source: 'platform',
+      rows: [
+        {
+          id: 'lead-1',
+          name: 'Ana',
+          email: 'ana@example.com',
+          phone: null,
+          class_modality: null,
+          neighborhood: null,
+          grade_interested: '3A',
+          status: 'new',
+          admin_notes: null,
+          referral_source: 'Instagram',
+          referral_code: null,
+          referred_by_code: null,
+          referral_discount_cents: 0,
+          referral_redemptions: 0,
+        },
+        {
+          id: 'lead-2',
+          name: 'Luis',
+          email: 'luis@example.com',
+          phone: null,
+          class_modality: null,
+          neighborhood: null,
+          grade_interested: '4B',
+          status: 'enrolled',
+          admin_notes: null,
+          referral_source: 'Referral',
+          referral_code: null,
+          referred_by_code: null,
+          referral_discount_cents: 0,
+          referral_redemptions: 0,
+        },
+      ],
     })
     getRecentMessagesMock.mockResolvedValue([
       { id: 'message-1', sender_contact: 'web:support:maria@example.com' },
@@ -149,7 +172,6 @@ describe('fetchDashboardData', () => {
   })
 
   it('falls back to the legacy feedback shape when expanded columns are missing', async () => {
-    const leadsQuery = createOrderQuery({ data: [], error: null })
     const studentsQuery = createOrderQuery({ data: [], error: null })
     const expandedFeedbackQuery = createFilterQuery({
       data: null,
@@ -164,7 +186,6 @@ describe('fetchDashboardData', () => {
     let feedbackCalls = 0
     supabaseServerMock.mockReturnValue({
       from: vi.fn((table: string) => {
-        if (table === 'leads') return leadsQuery
         if (table === 'students') return studentsQuery
         if (table === 'feedback') {
           feedbackCalls += 1
@@ -174,6 +195,7 @@ describe('fetchDashboardData', () => {
         throw new Error(`Unexpected table ${table}`)
       }),
     })
+    fetchDashboardLeadsMock.mockResolvedValue({ source: 'legacy', rows: [] })
     getRecentMessagesMock.mockResolvedValue([])
 
     const { fetchDashboardData } = await import('../services/dashboard.service')

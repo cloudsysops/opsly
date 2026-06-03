@@ -10,6 +10,7 @@ export type PlatformPeskidsLeadRow = {
   grade_interested: string;
   status: string;
   admin_notes: string | null;
+  referral_source?: string | null;
   created_at?: string;
 };
 
@@ -67,6 +68,7 @@ export function mapPlatformLeadRow(row: PlatformPeskidsLeadRow): DashboardLead {
     referred_by_code: null,
     referral_discount_cents: 0,
     referral_redemptions: 0,
+    referral_source: row.referral_source ?? null,
   };
 }
 
