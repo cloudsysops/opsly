@@ -1,10 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-const mockRender = vi.fn();
+const mockRender = vi.hoisted(() => vi.fn());
+const moneyPrinterTurboRenderClientMock = vi.hoisted(() =>
+  vi.fn(function MoneyPrinterTurboRenderClient(this: unknown) {
+    return {
+      render: mockRender,
+    };
+  })
+);
 vi.mock('@intcloudsysops/content-studio', () => ({
-  MoneyPrinterTurboRenderClient: vi.fn(() => ({
-    render: mockRender,
-  })),
+  MoneyPrinterTurboRenderClient: moneyPrinterTurboRenderClientMock,
   buildMoneyPrinterTurboPayload: vi.fn((r) => ({
     tenant_slug: r.tenant_slug,
     request_id: r.request_id,
