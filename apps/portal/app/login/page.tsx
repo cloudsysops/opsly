@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { PasswordInput } from '@/components/ui/input';
 import {
   isValidPortalDemoLogin,
   PORTAL_DEMO_COOKIE,
@@ -257,10 +258,9 @@ export default function LoginPage(): ReactElement {
             >
               Contraseña
             </label>
-            <input
+            <PasswordInput
               id="password"
               name="password"
-              type="password"
               autoComplete="current-password"
               required
               value={password}

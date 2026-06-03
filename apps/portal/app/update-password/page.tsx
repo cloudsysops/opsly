@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react'
 import { Suspense, useEffect, useState, type ReactElement } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { PasswordInput } from '@/components/ui/input'
 import { isPortalTenantUser } from '@/lib/portal-access'
 import { createClient } from '@/lib/supabase'
 
@@ -79,8 +80,7 @@ function UpdatePasswordForm(): ReactElement {
             : 'Abre el enlace del correo o solicita uno nuevo en /login.'}
         </p>
         <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
-          <input
-            type="password"
+          <PasswordInput
             value={password}
             onChange={(ev) => setPassword(ev.target.value)}
             className="input-terminal-caret w-full rounded-sm border border-ops-border bg-ops-bg/80 px-3 py-2.5 text-sm"
@@ -89,8 +89,7 @@ function UpdatePasswordForm(): ReactElement {
             minLength={8}
             placeholder="Contraseña nueva"
           />
-          <input
-            type="password"
+          <PasswordInput
             value={confirm}
             onChange={(ev) => setConfirm(ev.target.value)}
             className="input-terminal-caret w-full rounded-sm border border-ops-border bg-ops-bg/80 px-3 py-2.5 text-sm"
