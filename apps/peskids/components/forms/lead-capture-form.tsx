@@ -269,9 +269,11 @@ export function LeadCaptureForm(): React.ReactElement {
               className="pk-select"
             >
               <option value="">Selecciona una opción</option>
+              <option value="Instagram">Instagram</option>
+              <option value="Facebook">Facebook</option>
+              <option value="Website">Website</option>
+              <option value="Referral">Referral / recomendación</option>
               <option value="Google">Google / búsqueda</option>
-              <option value="Friend">Recomendación</option>
-              <option value="Instagram">Instagram / redes</option>
               <option value="Other">Otro</option>
             </select>
           </div>

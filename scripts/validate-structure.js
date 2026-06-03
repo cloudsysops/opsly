@@ -12,6 +12,8 @@ const allowedRootMarkdown = new Set([
   'SECURITY.md',
   'CONTRIBUTING.md',
   'CODE_OF_CONDUCT.md',
+  'OPSLY_CONTEXT.md',
+  'AGENCY_CONTEXT.md',
 ]);
 const requiredPaths = [
   'apps/mcp',

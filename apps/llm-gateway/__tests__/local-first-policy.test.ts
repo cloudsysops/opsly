@@ -11,11 +11,13 @@ const notifyBudgetWarningMock = vi.hoisted(() => vi.fn());
 const notifyProviderRateLimitMock = vi.hoisted(() => vi.fn());
 
 vi.mock('@anthropic-ai/sdk', () => ({
-  default: vi.fn(() => ({
-    messages: {
-      create: createMock,
-    },
-  })),
+  default: vi.fn(function AnthropicMock(this: unknown) {
+    return {
+      messages: {
+        create: createMock,
+      },
+    };
+  }),
 }));
 
 vi.mock('../src/cache.js', () => ({

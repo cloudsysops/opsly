@@ -3,6 +3,19 @@ import { HTTP_STATUS } from '@/lib/constants';
 import { runTrustedPortalDalForPathSlug, PORTAL_READ_ACCESS } from '@/lib/portal-tenant-dal';
 import { getServiceClient } from '@/lib/supabase';
 
+// peskids.* tables pending DB type codegen
+interface PeskidsQB {
+  select(cols?: string, opts?: Record<string, unknown>): PeskidsQB;
+  eq(col: string, val: unknown): PeskidsQB;
+  order(col: string, opts?: unknown): PeskidsQB;
+  single(): Promise<{ data: unknown | null; error: unknown }>;
+  then<T>(r: (v: { data: unknown[] | null; error: unknown }) => T, j?: (e: unknown) => T): Promise<T>;
+}
+interface PeskidsClient {
+  from(table: string): PeskidsQB;
+  rpc(fn: string, params: Record<string, unknown>): Promise<{ data: unknown; error: unknown }>;
+}
+
 interface FormSubmission {
   submission_id: string;
   submission_data: Record<string, string | number | boolean | null>;
@@ -16,22 +29,6 @@ interface ExportContent {
   content: string;
   contentType: string;
   filename: string;
-}
-
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value;
-}
-
-function getSupabaseClient() {
-  const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
-  const serviceKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
-  return createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
 }
 
 function validateExportRequest(
@@ -59,16 +56,14 @@ function validateExportRequest(
 }
 
 async function fetchFormForExport(
-  supabase: ReturnType<typeof getSupabaseClient>,
+  supabase: ReturnType<typeof getServiceClient>,
   formId: string,
   tenantSlug: string
 ) {
-  const { data: form, error: formError } = await supabase
-    .from('peskids.forms')
-    .select('id, title')
-    .eq('form_id', formId)
-    .eq('tenant_slug', tenantSlug)
-    .single();
+  const db = supabase as unknown as PeskidsClient;
+  const { data: rawForm, error: formError } = await db.from('peskids.forms').select('id, title').eq('form_id', formId).eq('tenant_slug', tenantSlug).single();
+  type FormRow = { id: string; title: string };
+  const form = rawForm as FormRow | null;
 
   if (formError || !form) {
     return { ok: false as const, error: 'Form not found' };
@@ -77,16 +72,13 @@ async function fetchFormForExport(
 }
 
 async function fetchFormSubmissions(
-  supabase: ReturnType<typeof getSupabaseClient>,
+  supabase: ReturnType<typeof getServiceClient>,
   formId: string,
   tenantSlug: string
 ) {
-  const { data: submissions, error: submissionsError } = await supabase
-    .from('peskids.form_submissions')
-    .select('submission_id, submission_data, completed_at, status, score, feedback')
-    .eq('form_id', formId)
-    .eq('tenant_slug', tenantSlug)
-    .order('completed_at', { ascending: false });
+  const db = supabase as unknown as PeskidsClient;
+  const { data: rawSubs, error: submissionsError } = await db.from('peskids.form_submissions').select('submission_id, submission_data, completed_at, status, score, feedback').eq('form_id', formId).eq('tenant_slug', tenantSlug).order('completed_at', { ascending: false });
+  const submissions = rawSubs as FormSubmission[] | null;
 
   if (submissionsError) {
     console.error('Failed to fetch submissions:', submissionsError);
@@ -168,14 +160,15 @@ function buildExportContent(
 }
 
 async function logExportAuditEvent(
-  supabase: ReturnType<typeof getSupabaseClient>,
+  supabase: ReturnType<typeof getServiceClient>,
   format: string,
   tenantSlug: string,
   formId: string,
   count: number
 ): Promise<void> {
   try {
-    await supabase.rpc('log_audit_event', {
+    const db = supabase as unknown as PeskidsClient;
+    await db.rpc('log_audit_event', {
       p_action: 'form_submissions_exported',
       p_actor_id: 'teacher',
       p_tenant_slug: tenantSlug,
@@ -193,17 +186,13 @@ export async function GET(
   { params }: { params: Promise<{ tenantSlug: string; formId: string }> }
 ): Promise<Response> {
   const { tenantSlug, formId } = await params;
-
+  const format = request.nextUrl.searchParams.get('format') ?? 'csv';
+  const supabase = getServiceClient();
+  try {
     const validation = validateExportRequest(tenantSlug, formId, format);
     if (!validation.valid) {
       return validation.error;
     }
-
-        if (!['csv', 'json'].includes(format)) {
-          return new Response('Invalid format. Use csv or json', {
-            status: HTTP_STATUS.BAD_REQUEST,
-          });
-        }
 
     const formResult = await fetchFormForExport(supabase, formId as string, tenantSlug as string);
     if (!formResult.ok) {

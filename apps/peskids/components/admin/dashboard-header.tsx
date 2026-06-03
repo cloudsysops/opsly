@@ -5,6 +5,14 @@ import type { DashboardData } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
+const leadSourceLabels: Record<keyof DashboardData['lead_sources'], string> = {
+  instagram: 'Instagram',
+  facebook: 'Facebook',
+  website: 'Website',
+  referral: 'Referral',
+  other: 'Otros',
+};
+
 interface DashboardHeaderProps {
   data: DashboardData;
   range: 'week' | 'month';
@@ -52,7 +60,7 @@ export function DashboardHeader({
             Peskids / Admin
           </p>
           <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight text-pk-ink sm:text-3xl">
-            Operación diaria de familias, leads y soporte.
+            Executive Peskids: leads, pruebas e inscripciones.
           </h2>
           <p className="mt-2 max-w-xl text-sm leading-6 text-pk-sub">
             Un panel para decidir rápido qué atender, qué cerrar y qué seguir hoy.
@@ -63,30 +71,31 @@ export function DashboardHeader({
               Leads nuevos: {data.new_leads_count}
             </span>
             <span className="rounded-full border border-pk-border bg-pk-muted px-3 py-1">
-              Estudiantes activos: {data.active_students_count}
+              Clases prueba: {data.operations.enrollments_today}
             </span>
             <span className="rounded-full border border-pk-border bg-pk-muted px-3 py-1">
-              Seguimientos: {data.pending_followups_count}
+              Inscripciones: {data.converted_leads_count}
             </span>
             <span className="rounded-full border border-pk-border bg-pk-muted px-3 py-1">
-              Mensajes: {data.recent_messages.length}
+              Alumnos activos: {data.active_students_count}
             </span>
             <span className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1">
-              Clases hoy: {data.operations.classes_today}
+              Conversión:{' '}
+              {data.conversion_rate_pct !== null ? `${data.conversion_rate_pct}%` : '—'}
             </span>
-            <span className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1">
-              Reservas hoy: {data.operations.enrollments_today}
-            </span>
-            {data.operations.pending_payments_cents > 0 ? (
-              <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-amber-800">
-                Cobros pendientes:{' '}
-                {new Intl.NumberFormat('es-CO', {
-                  style: 'currency',
-                  currency: 'COP',
-                  maximumFractionDigits: 0,
-                }).format(data.operations.pending_payments_cents / 100)}
-              </span>
-            ) : null}
+          </div>
+
+          <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-medium text-pk-sub">
+            {(Object.entries(data.lead_sources) as Array<[keyof DashboardData['lead_sources'], number]>)
+              .filter(([, count]) => count > 0)
+              .map(([source, count]) => (
+                <span
+                  key={source}
+                  className="rounded-full border border-pk-border bg-white px-3 py-1"
+                >
+                  {leadSourceLabels[source]}: {count}
+                </span>
+              ))}
           </div>
         </div>
 

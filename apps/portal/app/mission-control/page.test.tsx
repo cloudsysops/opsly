@@ -1,5 +1,6 @@
 /* @vitest-environment jsdom */
 import '@testing-library/jest-dom/vitest';
+import { createElement } from 'react';
 
 // @ts-ignore - screen is exported from @testing-library/react but TypeScript doesn't resolve it
 import { render, screen } from '@testing-library/react';
@@ -57,7 +58,7 @@ describe('Mission Control auth regression', () => {
       };
     }) as never);
 
-    render(<MissionControlPage />);
+    render(createElement(MissionControlPage));
 
     expect(screen.getByText(/Unauthorized/i)).toBeInTheDocument();
     expect(fetchSpy).not.toHaveBeenCalled();
@@ -111,7 +112,7 @@ describe('Mission Control auth regression', () => {
       };
     }) as never);
 
-    render(<MissionControlPage />);
+    render(createElement(MissionControlPage));
 
     expect(screen.getByText('api')).toBeInTheDocument();
     expect(screen.getByText('orchestrator')).toBeInTheDocument();

@@ -3,12 +3,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const createMock = vi.hoisted(() => vi.fn());
 
 vi.mock('@anthropic-ai/sdk', () => {
-  return {
-    default: vi.fn(() => ({
+  function AnthropicMock(this: unknown) {
+    return {
       messages: {
         create: createMock,
       },
-    })),
+    };
+  }
+
+  return {
+    default: vi.fn(AnthropicMock),
   };
 });
 

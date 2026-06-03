@@ -81,7 +81,7 @@ describe('POST /api/public/tenants/peskids/webhooks/gohighlevel/leads', () => {
       automation_ready: true,
       automation: {
         next_actions: ['welcome_message', 'reminder', 'trial_class_invitation'],
-        dispatch: { ok: true, detail: 'queued in n8n' },
+        dispatch: true,
       },
       request_id: 'req-ghl-1',
     });
@@ -89,6 +89,93 @@ describe('POST /api/public/tenants/peskids/webhooks/gohighlevel/leads', () => {
     expect(dispatchPeskidsLeadAutomationMock).toHaveBeenCalledWith(
       expect.objectContaining({ lead_id: 'lead-1' })
     );
+  });
+
+  it('rejects requests with invalid webhook secret', async () => {
+    process.env.PESKIDS_INBOUND_WEBHOOK_SECRET = 's3cret';
+    persistPeskidsLeadMock.mockResolvedValue({
+      ok: true,
+      created: true,
+      row: {
+        id: 'row-1',
+        tenant_slug: 'peskids',
+        lead_id: 'lead-1',
+        source: 'gohighlevel',
+        stage: 'New Lead',
+        created_at: '2026-06-01T10:00:00.000Z',
+      },
+    });
+
+    const { POST } = await import('../route');
+    const response = await POST({
+      headers: new Headers({
+        'x-request-id': 'req-ghl-3',
+        'x-webhook-secret': 'wr0ng',
+      }),
+      json: async () => ({
+        event_id: 'evt-1',
+        event_type: 'lead.created',
+        tenant_slug: 'peskids',
+        source: 'gohighlevel',
+        lead_id: 'lead-1',
+        pipeline_stage: 'New Lead',
+        occurred_at: '2026-06-01T10:00:00.000Z',
+        lead: {
+          parent_name: 'Maria Rodriguez',
+          phone: '+573001112233',
+          email: 'maria@example.com',
+          child_name: 'Mateo',
+          age: 8,
+          interest: 'Trial class',
+        },
+      }),
+    } as never);
+
+    expect(response.status).toBe(401);
+    expect(persistPeskidsLeadMock).not.toHaveBeenCalled();
+    delete process.env.PESKIDS_INBOUND_WEBHOOK_SECRET;
+  });
+
+  it('returns dispatch=false for duplicate leads', async () => {
+    persistPeskidsLeadMock.mockResolvedValue({
+      ok: true,
+      created: false,
+      row: {
+        id: 'row-1',
+        tenant_slug: 'peskids',
+        lead_id: 'lead-1',
+        source: 'gohighlevel',
+        stage: 'New Lead',
+        created_at: '2026-06-01T10:00:00.000Z',
+      },
+    });
+
+    const { POST } = await import('../route');
+    const response = await POST({
+      headers: new Headers({ 'x-request-id': 'req-ghl-4' }),
+      json: async () => ({
+        event_id: 'evt-1',
+        event_type: 'lead.created',
+        tenant_slug: 'peskids',
+        source: 'gohighlevel',
+        lead_id: 'lead-1',
+        pipeline_stage: 'New Lead',
+        occurred_at: '2026-06-01T10:00:00.000Z',
+        lead: {
+          parent_name: 'Maria Rodriguez',
+          phone: '+573001112233',
+          email: 'maria@example.com',
+          child_name: 'Mateo',
+          age: 8,
+          interest: 'Trial class',
+        },
+      }),
+    } as never);
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.automation.dispatch).toBe(false);
+    expect(dispatchPeskidsLeadAutomationMock).not.toHaveBeenCalled();
   });
 
   it('rejects invalid webhook payloads', async () => {

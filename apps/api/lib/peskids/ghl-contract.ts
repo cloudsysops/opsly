@@ -26,6 +26,7 @@ export const PESKIDS_PIPELINE_STAGES = [
   'Enrolled',
   'Active Student',
   'Renewal',
+  'Lost',
 ] as const;
 
 export type PeskidsPipelineStage = (typeof PESKIDS_PIPELINE_STAGES)[number];
@@ -56,7 +57,7 @@ export const goHighLevelLeadWebhookSchema = z
     tenant_slug: z.literal('peskids'),
     source: z.enum(['gohighlevel', 'n8n', 'web']).default('gohighlevel'),
     lead_id: z.string().trim().min(1),
-    pipeline_stage: z.string().trim().min(1),
+    pipeline_stage: z.enum(PESKIDS_PIPELINE_STAGES).or(z.string().trim().min(1)),
     occurred_at: z.string().datetime(),
     lead: peskidsLeadIntakeSchema,
     automation: z
@@ -98,6 +99,8 @@ export function normalizePeskidsPipelineStage(value: string): PeskidsPipelineSta
       return 'Active Student';
     case 'renewal':
       return 'Renewal';
+    case 'lost':
+      return 'Lost';
     default:
       return 'New Lead';
   }
@@ -105,7 +108,7 @@ export function normalizePeskidsPipelineStage(value: string): PeskidsPipelineSta
 
 export function leadStatusFromPipelineStage(
   stage: PeskidsPipelineStage
-): 'new' | 'contacted' | 'qualified' | 'converted' {
+): 'new' | 'contacted' | 'qualified' | 'converted' | 'lost' {
   switch (stage) {
     case 'Contacted':
       return 'contacted';
@@ -115,6 +118,8 @@ export function leadStatusFromPipelineStage(
     case 'Active Student':
     case 'Renewal':
       return 'converted';
+    case 'Lost':
+      return 'lost';
     default:
       return 'new';
   }

@@ -212,6 +212,8 @@
     "@next/eslint-plugin-next": "15.5.18",
     "@supabase/supabase-js": "^2.106.0",
     "@supabase/ssr": "^0.6.1",
+    "vitest": "4.1.8",
+    "@vitest/coverage-v8": "4.1.8",
     "tar": "^7.5.15",
     "undici": "^7.25.0",
     "mermaid": "^11.4.0",

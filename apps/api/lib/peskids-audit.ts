@@ -1,5 +1,9 @@
 import { getServiceClient } from './supabase';
 
+// peskids.* tables pending DB type codegen
+interface PeskidsQB { insert(data: Record<string, unknown>): Promise<{ error: unknown }>; }
+interface PeskidsClient { from(table: string): PeskidsQB; }
+
 interface AuditLogOptions {
   tenantSlug: string;
   actorId?: string | null;
@@ -81,7 +85,7 @@ export async function trackFormSubmissionEvent(
   }
 ): Promise<void> {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getServiceClient();
     const eventData = buildSubmissionEventData(
       tenantSlug,
       formId,
@@ -90,7 +94,8 @@ export async function trackFormSubmissionEvent(
       options
     );
 
-    const { error } = await supabase.from('peskids.submission_events').insert(eventData);
+    const db = supabase as unknown as PeskidsClient;
+    const { error } = await db.from('peskids.submission_events').insert(eventData);
 
     if (error) {
       console.error('Failed to track form submission event:', error);

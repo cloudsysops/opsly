@@ -5,6 +5,20 @@ import { triggerWebhooks } from '@/lib/peskids-webhook-trigger';
 import type { WebhookConfig, WebhookTriggerResult } from '@/lib/peskids-types';
 import { getServiceClient } from '@/lib/supabase';
 
+// peskids.* tables pending DB type codegen — loose client interface for schema-qualified access
+interface PeskidsQB {
+  select(cols?: string, opts?: Record<string, unknown>): PeskidsQB;
+  insert(data: Record<string, unknown> | Record<string, unknown>[]): PeskidsQB;
+  eq(col: string, val: unknown): PeskidsQB;
+  order(col: string, opts?: unknown): PeskidsQB;
+  single(): Promise<{ data: unknown | null; error: unknown }>;
+  then<T>(r: (v: { data: unknown[] | null; error: unknown }) => T, j?: (e: unknown) => T): Promise<T>;
+}
+interface PeskidsClient {
+  from(table: string): PeskidsQB;
+  rpc(fn: string, params: Record<string, unknown>): Promise<{ data: unknown; error: unknown }>;
+}
+
 interface FormSubmissionPayload {
   formId: string;
   submissionData: Record<string, string | number | boolean | null>;
@@ -35,29 +49,27 @@ function validateFormSubmissionRequest(
 }
 
 async function fetchFormByFormId(
-  supabase: ReturnType<typeof getSupabaseClient>,
+  supabase: ReturnType<typeof getServiceClient>,
   formId: string
 ): Promise<FormData | Response> {
-  const { data: form, error: formError } = await supabase
-    .from('peskids.forms')
-    .select('id, form_id, tenant_slug')
-    .eq('form_id', formId)
-    .single();
+  const db = supabase as unknown as PeskidsClient;
+  const { data: rawForm, error: formError } = await db.from('peskids.forms').select('id, form_id, tenant_slug').eq('form_id', formId).single();
 
-  if (formError || !form) {
+  if (formError || !rawForm) {
     return jsonError('Form not found', HTTP_STATUS.NOT_FOUND);
   }
-  return form as FormData;
+  return rawForm as FormData;
 }
 
 async function createSubmissionRecord(
-  supabase: ReturnType<typeof getSupabaseClient>,
+  supabase: ReturnType<typeof getServiceClient>,
   submissionId: string,
   formId: string,
   tenantSlug: string,
   body: Partial<FormSubmissionPayload>
 ) {
-  const { data: submission, error: submissionError } = await supabase
+  const db = supabase as unknown as PeskidsClient;
+  const { data: rawSubmission, error: submissionError } = await db
     .from('peskids.form_submissions')
     .insert({
       submission_id: submissionId,
@@ -73,6 +85,9 @@ async function createSubmissionRecord(
     .select()
     .single();
 
+  type SubmissionRow = { id: string; completed_at: string };
+  const submission = rawSubmission as SubmissionRow | null;
+
   if (submissionError) {
     console.error('Failed to create submission:', submissionError);
     return { ok: false as const, error: submissionError };
@@ -81,7 +96,7 @@ async function createSubmissionRecord(
 }
 
 async function triggerSubmissionWebhooks(
-  supabase: ReturnType<typeof getSupabaseClient>,
+  supabase: ReturnType<typeof getServiceClient>,
   formId: string,
   tenantSlug: string,
   submissionId: string,
@@ -89,12 +104,9 @@ async function triggerSubmissionWebhooks(
   userId?: string
 ): Promise<WebhookTriggerResult | null> {
   try {
-    const { data: webhooks } = await supabase
-      .from('peskids.webhook_configs')
-      .select('id, webhook_url, secret, is_active, failure_count')
-      .eq('form_id', formId)
-      .eq('tenant_slug', tenantSlug)
-      .eq('is_active', true);
+    const db = supabase as unknown as PeskidsClient;
+    const { data: rawWebhooks } = await db.from('peskids.webhook_configs').select('id, webhook_url, secret, is_active, failure_count').eq('form_id', formId).eq('tenant_slug', tenantSlug).eq('is_active', true);
+    const webhooks = rawWebhooks as unknown[] | null;
 
     if (!webhooks || webhooks.length === 0) {
       return null;
@@ -115,7 +127,7 @@ async function triggerSubmissionWebhooks(
 }
 
 async function logSubmissionAuditEvent(
-  supabase: ReturnType<typeof getSupabaseClient>,
+  supabase: ReturnType<typeof getServiceClient>,
   formId: string,
   submissionId: string,
   tenantSlug: string,
@@ -124,7 +136,8 @@ async function logSubmissionAuditEvent(
   webhookResults: WebhookTriggerResult | null
 ): Promise<void> {
   try {
-    await supabase.rpc('log_audit_event', {
+    const db = supabase as unknown as PeskidsClient;
+    await db.rpc('log_audit_event', {
       p_action: 'form_submission_created',
       p_actor_id: userId || 'anonymous',
       p_tenant_slug: tenantSlug,
@@ -172,7 +185,7 @@ export async function POST(
       form.tenant_slug,
       body
     );
-    if (!submissionResult.ok) {
+    if (!submissionResult.ok || !submissionResult.submission) {
       return jsonError('Failed to save submission', HTTP_STATUS.INTERNAL_ERROR);
     }
 
