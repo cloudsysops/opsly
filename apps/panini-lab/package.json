@@ -15,6 +15,7 @@
     "@intcloudsysops/conversational-runtime": "*",
     "@intcloudsysops/openwa": "*",
     "@intcloudsysops/opsly-core": "*",
+    "@reduxjs/toolkit": "^1.9.7",
     "@supabase/supabase-js": "^2.106.0",
     "next": "^15.5.18",
     "next-auth": "^5.0.0-beta",
