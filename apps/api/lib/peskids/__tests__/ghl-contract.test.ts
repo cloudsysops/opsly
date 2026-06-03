@@ -18,6 +18,7 @@ describe('ghl-contract', () => {
     expect(leadStatusFromPipelineStage('Contacted')).toBe('contacted');
     expect(leadStatusFromPipelineStage('Trial Class')).toBe('qualified');
     expect(leadStatusFromPipelineStage('Active Student')).toBe('converted');
+    expect(leadStatusFromPipelineStage('Lost')).toBe('lost');
   });
 
   it('validates the minimal GHL webhook payload', () => {

@@ -86,16 +86,28 @@ describe('peskids executive read model', () => {
     const followupsQuery = createThenableQuery({ data: [], count: 1, error: null });
 
     getServiceClientMock.mockReturnValue({
-      schema: vi.fn(() => ({
-        from: vi.fn((table: string) => {
-          if (table === 'peskids_leads') return leadsQuery;
-          throw new Error(`Unexpected schema table ${table}`);
-        }),
-      })),
+      schema: vi.fn((schemaName: string) => {
+        if (schemaName === 'platform') {
+          return {
+            from: vi.fn((table: string) => {
+              if (table === 'peskids_leads') return leadsQuery;
+              if (table === 'peskids_feedback') return feedbackQuery;
+              throw new Error(`Unexpected platform table ${table}`);
+            }),
+          };
+        }
+        if (schemaName === 'peskids') {
+          return {
+            from: vi.fn((table: string) => {
+              if (table === 'payments') return createPaymentsQuery();
+              throw new Error(`Unexpected peskids table ${table}`);
+            }),
+          };
+        }
+        throw new Error(`Unexpected schema ${schemaName}`);
+      }),
       from: vi.fn((table: string) => {
         if (table === 'students') return studentsQuery;
-        if (table === 'payments') return createPaymentsQuery();
-        if (table === 'feedback') return feedbackQuery;
         if (table === 'followups') return followupsQuery;
         throw new Error(`Unexpected table ${table}`);
       }),
@@ -111,7 +123,7 @@ describe('peskids executive read model', () => {
     expect(result.metrics.revenue_cents).toBe(250000);
     expect(result.metrics.pending_payments_cents).toBe(125000);
     expect(result.metrics.alerts).toBe(4);
-    expect(result.pipeline_stages).toHaveLength(6);
+    expect(result.pipeline_stages).toHaveLength(7);
     expect(result.lead_sources).toEqual({
       instagram: 1,
       facebook: 0,

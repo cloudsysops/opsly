@@ -1,4 +1,5 @@
 import { getServiceClient } from '../supabase';
+import { logger } from '../logger';
 import { PESKIDS_PIPELINE_STAGES, type PeskidsPipelineStage } from './ghl-contract';
 
 type PlatformLeadRow = {
@@ -131,6 +132,7 @@ async function fetchActiveStudents(tenantSlug: string): Promise<number> {
     .eq('status', 'active');
 
   if (error !== null) {
+    logger.warn('peskids.executive.active_students', { tenantSlug, error: error.message });
     return 0;
   }
 
@@ -150,12 +152,14 @@ async function fetchRevenueMetrics(tenantSlug: string): Promise<{
 
     const [paidResult, pendingResult] = await Promise.all([
       db
+        .schema('peskids')
         .from('payments')
         .select('amount_cents')
         .eq('tenant_slug', tenantSlug)
         .eq('status', 'paid')
         .gte('paid_at', monthStart.toISOString()),
       db
+        .schema('peskids')
         .from('payments')
         .select('amount_cents', { count: 'exact' })
         .eq('tenant_slug', tenantSlug)
@@ -176,7 +180,11 @@ async function fetchRevenueMetrics(tenantSlug: string): Promise<{
       pending_payments_cents,
       pending_payments_count: pendingResult.count ?? 0,
     };
-  } catch {
+  } catch (error) {
+    logger.warn('peskids.executive.revenue_metrics', {
+      tenantSlug,
+      error: error instanceof Error ? error.message : String(error),
+    });
     return {
       revenue_cents: 0,
       pending_payments_cents: 0,
@@ -188,13 +196,15 @@ async function fetchRevenueMetrics(tenantSlug: string): Promise<{
 async function fetchFeedbackAlerts(tenantSlug: string): Promise<number> {
   const db = getServiceClient();
   const { count, error } = await db
-    .from('feedback')
+    .schema('platform')
+    .from('peskids_feedback')
     .select('id', { count: 'exact', head: true })
-    .eq('tenant_id', tenantSlug)
+    .eq('tenant_slug', tenantSlug)
     .lt('satisfaction', 3)
     .eq('status', 'action_required');
 
   if (error !== null) {
+    logger.warn('peskids.executive.feedback_alerts', { tenantSlug, error: error.message });
     return 0;
   }
 
@@ -212,6 +222,7 @@ async function fetchPendingFollowups(tenantSlug: string): Promise<number> {
     .lt('due_date', now);
 
   if (error !== null) {
+    logger.warn('peskids.executive.pending_followups', { tenantSlug, error: error.message });
     return 0;
   }
 

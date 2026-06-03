@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'node:crypto';
 import type { NextRequest } from 'next/server';
 import { parseJsonBody, jsonError } from '../../../../../../../../lib/api-response';
 import { HTTP_STATUS } from '../../../../../../../../lib/constants';
@@ -12,11 +13,31 @@ import {
 } from '../../../../../../../../lib/peskids/lead-ingest';
 import { formatZodError } from '../../../../../../../../lib/validation';
 
+function constantTimeEqual(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) {
+    timingSafeEqual(bufA, bufA);
+    return false;
+  }
+  return timingSafeEqual(bufA, bufB);
+}
+
 /**
  * POST /api/public/tenants/peskids/webhooks/gohighlevel/leads
  * GHL -> Opsly bridge contract for lead capture, persistence, and minimal automation handoff.
  */
 export async function POST(request: NextRequest): Promise<Response> {
+  const secret = process.env.PESKIDS_INBOUND_WEBHOOK_SECRET;
+  if (secret) {
+    const header = request.headers.get('x-webhook-secret')?.trim() ?? '';
+    if (!header || !constantTimeEqual(header, secret)) {
+      return jsonError('invalid webhook secret', HTTP_STATUS.UNAUTHORIZED);
+    }
+  } else {
+    console.warn('[peskids/gohighlevel] PESKIDS_INBOUND_WEBHOOK_SECRET not set — webhook is unauthenticated');
+  }
+
   const requestId = request.headers.get('x-request-id')?.trim() || globalThis.crypto.randomUUID();
   const parsedBody = await parseJsonBody(request);
   if (!parsedBody.ok) {
@@ -38,9 +59,13 @@ export async function POST(request: NextRequest): Promise<Response> {
     return Response.json({ error: result.error, request_id: requestId }, { status: 500 });
   }
 
-  const automation = result.created
-    ? await dispatchPeskidsLeadAutomation(parsed.data)
-    : { ok: false as const, detail: 'duplicate lead ignored' };
+  // Fire-and-forget: automation dispatch must not block the HTTP response
+  if (result.created) {
+    dispatchPeskidsLeadAutomation(parsed.data).catch((err: unknown) => {
+      console.error('[peskids] automation dispatch failed:', err);
+    });
+  }
+
   const stage = result.row.stage ?? normalizePeskidsPipelineStage(parsed.data.pipeline_stage);
 
   return Response.json(
@@ -54,8 +79,10 @@ export async function POST(request: NextRequest): Promise<Response> {
       created_at: result.row.created_at,
       automation_ready: true,
       automation: {
-        next_actions: ['welcome_message', 'reminder', 'trial_class_invitation'],
-        dispatch: automation,
+        next_actions: Object.entries(parsed.data.automation)
+          .filter(([, enabled]) => enabled)
+          .map(([action]) => action),
+        dispatch: result.created,
       },
       request_id: requestId,
     },
