@@ -1,5 +1,5 @@
 import { jsonError, tryRoute } from '../../../../../../../lib/api-response';
-import { requireAdminToken } from '../../../../../../../lib/auth';
+import { requireAdminAccess } from '../../../../../../../lib/auth';
 import { HTTP_STATUS } from '../../../../../../../lib/constants';
 import { getConfigForTenant, getSession, isOpenWAEnabledForTenant } from '@intcloudsysops/openwa';
 
@@ -8,7 +8,7 @@ type RouteParams = { params: Promise<{ slug: string }> };
 /** GET /api/admin/channels/openwa/:slug — Opsly admin: OpenWA session status per tenant */
 export async function GET(request: Request, { params }: RouteParams): Promise<Response> {
   return tryRoute(`GET /api/admin/channels/openwa/${(await params).slug}/status`, async () => {
-    const authError = requireAdminToken(request);
+    const authError = await requireAdminAccess(request);
     if (authError) return authError;
 
     const { slug } = await params;

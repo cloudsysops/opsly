@@ -5,7 +5,7 @@ import { requireAdminAccess } from '../../../../../lib/auth';
 const ORCHESTRATOR_HEALTH_FETCH_MS = 2000;
 
 function getRedisUrl(): string {
-  return process.env.REDIS_URL ?? 'redis://localhost:6379';
+  return process.env.REDIS_URL?.trim() ?? '';
 }
 
 function getOrchestratorInternalBaseUrl(): string {
@@ -58,8 +58,12 @@ function fallbackModeAndRoleFromApiEnv(): OrchestratorHealthPayload {
 }
 
 async function createRedis(): Promise<RedisClientType> {
+  const url = getRedisUrl();
+  if (!url) {
+    throw new Error('REDIS_URL is not configured');
+  }
   const { createClient } = await import('redis');
-  return createClient({ url: getRedisUrl() }) as RedisClientType;
+  return createClient({ url }) as RedisClientType;
 }
 
 async function readOpenclawQueueLengths(redis: RedisClientType): Promise<{

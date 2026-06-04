@@ -1,5 +1,5 @@
 import { jsonError, tryRoute } from '../../../../lib/api-response';
-import { requireAdminToken } from '../../../../lib/auth';
+import { requireAdminAccess } from '../../../../lib/auth';
 import { HTTP_STATUS } from '../../../../lib/constants';
 import { getServiceClient } from '../../../../lib/supabase';
 
@@ -70,7 +70,7 @@ function buildPage(
  */
 export function GET(request: Request): Promise<Response> {
   return tryRoute('GET /api/admin/audit', async () => {
-    const authError = requireAdminToken(request);
+    const authError = await requireAdminAccess(request);
     if (authError) return authError;
 
     const filters = parseFilters(new URL(request.url));
