@@ -4,17 +4,12 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const root = process.cwd();
-const allowedRootMarkdown = new Set([
-  'AGENTS.md',
-  'README.md',
-  'ROADMAP.md',
-  'VISION.md',
-  'SECURITY.md',
-  'CONTRIBUTING.md',
-  'CODE_OF_CONDUCT.md',
-  'OPSLY_CONTEXT.md',
-  'AGENCY_CONTEXT.md',
-]);
+const { findDocsRootViolations, CONFIG_REL: DOCS_CONFIG_REL } = require('./lib/docs-root-layout');
+const {
+  CONFIG_REL: ROOT_CONFIG_REL,
+  findRootWhitelistViolations,
+} = require('./lib/root-whitelist-layout');
+
 const requiredPaths = [
   'apps/mcp',
   'apps/orchestrator',
@@ -26,6 +21,7 @@ const requiredPaths = [
   'runtime/tenants',
   'runtime/letsencrypt',
   'docs',
+  ROOT_CONFIG_REL,
 ];
 
 const missing = requiredPaths.filter((relativePath) => {
@@ -57,24 +53,33 @@ if (forbiddenPresent.length > 0) {
   process.exit(1);
 }
 
-const rootMarkdownFiles = fs
-  .readdirSync(root, { withFileTypes: true })
-  .filter((entry) => entry.isFile() && entry.name.endsWith('.md'))
-  .map((entry) => entry.name)
-  .filter((fileName) => !allowedRootMarkdown.has(fileName));
+let rootCheck;
+try {
+  rootCheck = findRootWhitelistViolations(root, { skipGitIgnored: true });
+} catch (error) {
+  console.error(`Root whitelist check failed: ${error.message}`);
+  process.exit(1);
+}
 
-if (rootMarkdownFiles.length > 0) {
-  console.error('Forbidden Markdown files found in repository root:');
-  for (const item of rootMarkdownFiles) {
+if (rootCheck.violations.length > 0) {
+  console.error(`Forbidden or unknown entries at repository root (see ${ROOT_CONFIG_REL}):`);
+  for (const item of rootCheck.violations) {
     console.error(`- ${item}`);
   }
   console.error(
-    'Hint: keep root Markdown limited to AGENTS.md, README.md, ROADMAP.md, VISION.md, SECURITY.md (GitHub policy), CONTRIBUTING.md, CODE_OF_CONDUCT.md. Move all other docs under docs/.',
+    'Hint: move artifacts under runtime/tmp/, docs/, or tools/. Do not expand the whitelist to pass CI — document in docs/reports/REPOSITORY-AUDIT-*.md REVIEW section.',
   );
   process.exit(1);
 }
 
-const { findDocsRootViolations, CONFIG_REL } = require('./lib/docs-root-layout');
+if (rootCheck.symlinkReview.length > 0) {
+  console.error('Undocumented root symlinks require human REVIEW before allowlisting:');
+  for (const item of rootCheck.symlinkReview) {
+    console.error(`- ${item}`);
+  }
+  process.exit(1);
+}
+
 let docsViolations = [];
 try {
   docsViolations = findDocsRootViolations(root);
@@ -84,12 +89,14 @@ try {
 }
 
 if (docsViolations.length > 0) {
-  console.error('Files at docs/ root must be hubs only (README, index, STRUCTURE-GUARDRAILS); stubs live in docs/stubs/. See docs/STRUCTURE-GUARDRAILS.md:');
+  console.error(
+    'Files at docs/ root must be hubs only (README, index, STRUCTURE-GUARDRAILS); stubs live in docs/stubs/. See docs/STRUCTURE-GUARDRAILS.md:',
+  );
   for (const item of docsViolations) {
     console.error(`- docs/${item}`);
   }
   console.error(
-    `Hint: move new docs into a owning folder (e.g. docs/01-development/). To extend the exception list, update ${CONFIG_REL} with explicit review.`,
+    `Hint: move new docs into a owning folder (e.g. docs/01-development/). To extend the exception list, update ${DOCS_CONFIG_REL} with explicit review.`,
   );
   process.exit(1);
 }

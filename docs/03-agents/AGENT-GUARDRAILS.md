@@ -59,7 +59,11 @@ npm run validate-openapi   # si API / contrato portal
 npm run validate-skills    # si skills/
 ```
 
-En CI: `validate-structure-strict` con `CI=true` valida raíz contra whitelist.
+En CI: `validate-structure` valida la raíz completa contra `config/root-whitelist.json` (archivos, carpetas, symlinks documentados). Entradas gitignored no cuentan.
+
+**Contaminación en raíz (staged):** el pre-commit bloquea `git add` de `*.py`, imágenes, `dump.rdb`, `.env*` (salvo allowlisted), y `*.json` no allowlisted en raíz. Mover a `runtime/tmp/`, `scripts/`, o carpeta dueña.
+
+**No ampliar whitelist para pasar CI:** documentar en `docs/reports/REPOSITORY-AUDIT-*.md` sección REVIEW y escalar a humano.
 
 ## 6. Relación con otras reglas
 
