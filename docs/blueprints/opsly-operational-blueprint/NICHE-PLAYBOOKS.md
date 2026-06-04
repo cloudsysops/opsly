@@ -21,18 +21,18 @@ Cómo aplicar el blueprint por vertical. **Un nicho = un MVP acotado.**
 
 ---
 
-## Swim schools / Peskids (ejemplo)
+## Academy / Schools / Courses
 
 | | |
 |-|-|
-| **Core problem** | Padres preguntan horarios; leads se pierden en WhatsApp; poca visibilidad de satisfacción. |
-| **First dashboard** | Leads esta semana, clases activas, feedback reciente, pendientes follow-up. |
-| **First workflow** | Form web → lead → notificación staff → follow-up 48h. |
-| **First feedback loop** | Encuesta post-clase (1–5 + comentario). |
-| **First automation** | Recordatorio staff si lead sin respuesta; reporte semanal (no auto-envío al padre). |
-| **Content opportunities** | Logros alumnos, tips seguridad agua, horarios temporada — borrador IA + aprobación. |
+| **Core problem** | Leads llegan por varios canales; se pierde el seguimiento; no queda claro qué convierte a una clase de prueba en alumno activo. |
+| **First dashboard** | Leads nuevos, clases de prueba, inscripciones, alumnos activos, conversion, ingresos. |
+| **First workflow** | Formulario de prueba → lead → oportunidad → seguimiento → clase de prueba → inscripción. |
+| **First feedback loop** | Confirmación post-clase y registro simple de interes / no interes. |
+| **First automation** | Recordatorios de clase de prueba y follow-up post-clase con aprobacion humana. |
+| **Content opportunities** | Horarios, resultados de alumnos, historias de progreso, eventos, vacantes. |
 
-**Nota:** Peskids es referencia incubada; ver `docs/tenants/peskids/`. No definir todo el blueprint solo para natación.
+**Nota:** Peskids sigue siendo la referencia incubada; este playbook ya cubre academias y centros educativos en general.
 
 ---
 

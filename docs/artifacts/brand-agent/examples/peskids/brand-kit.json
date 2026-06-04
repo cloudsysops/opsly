@@ -1,0 +1,84 @@
+{
+  "clientKey": "peskids",
+  "companyName": "Peskids",
+  "shortName": "Peskids",
+  "logoPrompt": "Design a premium logo for Peskids (Peskids). Logo style: friendly swim-academy mark with playful but premium feel. Brand tone: warm, parent-facing, trustworthy, clear. Industry: Academy / Education. Niche: Swimming academy for children and families. Color direction: #0D4C63, #2DB7B0, #A8DDE3, #FF5A1F. The mark must read as structure + visibility + automation + growth, not generic AI monitoring.",
+  "colorPalette": [
+    {
+      "name": "Dark",
+      "hex": "#0D4C63",
+      "usage": "Dark"
+    },
+    {
+      "name": "Teal",
+      "hex": "#2DB7B0",
+      "usage": "Teal"
+    },
+    {
+      "name": "Light Teal",
+      "hex": "#A8DDE3",
+      "usage": "Light Teal"
+    },
+    {
+      "name": "Orange",
+      "hex": "#FF5A1F",
+      "usage": "Orange"
+    },
+    {
+      "name": "Yellow",
+      "hex": "#FFC20E",
+      "usage": "Yellow"
+    },
+    {
+      "name": "Light",
+      "hex": "#FFFFFF",
+      "usage": "Light"
+    }
+  ],
+  "typography": {
+    "primary": "Poppins",
+    "secondary": "Inter",
+    "fallback": "system-ui"
+  },
+  "taglineOptions": [
+    "Aprenden. Se divierten. Son Peskids.",
+    "From trial class to active student.",
+    "Capture. Automate. Convert."
+  ],
+  "missionStatement": "Help families enroll faster, follow up consistently, and keep every trial class moving toward active membership.",
+  "emailFooter": "Peskids\nHelp families enroll faster, follow up consistently, and keep every trial class moving toward active membership.",
+  "socialBio": "Peskids helps families move from inquiry to enrollment with a clearer, friendlier academy experience.",
+  "landingHeroCopy": {
+    "headline": "Aprenden. Se divierten. Crecen.",
+    "subheadline": "Un sistema de captación y seguimiento para llevar más familias desde la consulta hasta la inscripción.",
+    "supportingLine": "Peskids helps parents move from inquiry to enrollment with a clear trial-class and follow-up system."
+  },
+  "ctaLabels": [
+    "Book a Free Trial",
+    "Check Availability",
+    "Enroll Now",
+    "Talk to the Team"
+  ],
+  "dashboardSectionNames": [
+    "Growth",
+    "Automation",
+    "Visibility",
+    "Operations",
+    "Revenue"
+  ],
+  "voiceGuidelines": {
+    "tone": [
+      "warm",
+      "parent-facing",
+      "trustworthy",
+      "clear",
+      "conversion-oriented"
+    ],
+    "avoid": [
+      "generic AI hype",
+      "overly technical jargon",
+      "vague promises",
+      "stack leakage on tenant-facing copy"
+    ]
+  }
+}

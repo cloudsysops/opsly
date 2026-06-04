@@ -1,0 +1,83 @@
+{
+  "clientKey": "agency-partner",
+  "companyName": "Marketing Agency Partner",
+  "shortName": "Partner",
+  "logoPrompt": "Design a premium logo for Marketing Agency Partner (Partner). Logo style: minimal agency monogram with a growth signal and systems feel. Brand tone: strategic, professional, concise, implementation-ready. Industry: Marketing. Niche: Lead generation, automation, and client acquisition for service businesses. Color direction: #111111, #2563EB, #06B6D4, #8B5CF6. The mark must read as structure + visibility + automation + growth, not generic AI monitoring.",
+  "colorPalette": [
+    {
+      "name": "Dark",
+      "hex": "#111111",
+      "usage": "Dark"
+    },
+    {
+      "name": "Primary Blue",
+      "hex": "#2563EB",
+      "usage": "Primary Blue"
+    },
+    {
+      "name": "Cyan",
+      "hex": "#06B6D4",
+      "usage": "Cyan"
+    },
+    {
+      "name": "Purple",
+      "hex": "#8B5CF6",
+      "usage": "Purple"
+    },
+    {
+      "name": "Teal",
+      "hex": "#14B8A6",
+      "usage": "Teal"
+    },
+    {
+      "name": "Light",
+      "hex": "#F8FAFC",
+      "usage": "Light"
+    }
+  ],
+  "typography": {
+    "primary": "Poppins",
+    "secondary": "Inter",
+    "fallback": "system-ui"
+  },
+  "taglineOptions": [
+    "Capture. Automate. Convert.",
+    "From chaos to clarity."
+  ],
+  "missionStatement": "Give agency teams a clean system to capture leads, move them through the pipeline, and measure growth without chaos.",
+  "emailFooter": "Marketing Agency Partner\nCapture. Automate. Convert.",
+  "socialBio": "We help service businesses turn lead flow into an operationally clean growth system.",
+  "landingHeroCopy": {
+    "headline": "Capture. Automate. Convert.",
+    "subheadline": "A clean client acquisition system that keeps follow-up, booking, and reporting under control.",
+    "supportingLine": "Marketing Agency Partner helps agency owners and service businesses that need a repeatable client acquisition system with Lead capture systems and visible outcomes."
+  },
+  "ctaLabels": [
+    "Book Discovery",
+    "See the Workflow",
+    "Request a Proposal",
+    "Start Onboarding"
+  ],
+  "dashboardSectionNames": [
+    "Growth",
+    "Automation",
+    "Visibility",
+    "Operations",
+    "Revenue"
+  ],
+  "voiceGuidelines": {
+    "tone": [
+      "strategic",
+      "professional",
+      "concise",
+      "implementation-ready",
+      "performance-driven"
+    ],
+    "avoid": [
+      "generic AI hype",
+      "overly technical jargon",
+      "vague promises",
+      "stack leakage on tenant-facing copy"
+    ]
+  }
+}

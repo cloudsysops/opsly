@@ -1,0 +1,29 @@
+{
+  "companyName": "Agency Partner",
+  "shortName": "Agency Partner",
+  "industry": "Marketing Services",
+  "niche": "Partner agency growth systems",
+  "country": "United States",
+  "language": "en",
+  "targetCustomer": "Agency owners who want repeatable client onboarding and delivery",
+  "services": ["Client onboarding", "Snapshot deployment", "Automation systems", "Reporting setup"],
+  "brandTone": "confident, strategic, systems-first",
+  "website": "https://agencypartner.example",
+  "instagram": "@agencypartner",
+  "colorPreferences": {
+    "dark": "#0A0A0A",
+    "primaryBlue": "#2563EB",
+    "cyan": "#06B6D4",
+    "purple": "#8B5CF6",
+    "green": "#22C55E",
+    "light": "#F3F4F6"
+  },
+  "logoStyle": "agency system mark with growth indicators",
+  "tagline": "Deliver faster. Scale cleaner.",
+  "mission": "We help agencies capture leads, automate delivery, and maintain operational visibility.",
+  "assets": {
+    "logo": "brand/agency-partner/logo-primary.png",
+    "favicon": "brand/agency-partner/favicon.png"
+  }
+}
+

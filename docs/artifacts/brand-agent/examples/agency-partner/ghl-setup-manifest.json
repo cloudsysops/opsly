@@ -1,0 +1,427 @@
+{
+  "clientKey": "agency-partner",
+  "companyName": "Marketing Agency Partner",
+  "shortName": "Partner",
+  "setupTemplate": "partner",
+  "pipelineName": "Partner Growth Pipeline",
+  "pipelineStages": [
+    {
+      "name": "New Lead",
+      "description": "New inbound inquiry from a partner prospect.",
+      "objective": "Capture and route the lead quickly.",
+      "entryCriteria": [
+        "Form submitted",
+        "Inbound call",
+        "Referral received"
+      ],
+      "exitCriteria": [
+        "Contact created",
+        "Opportunity opened"
+      ]
+    },
+    {
+      "name": "Qualified",
+      "description": "Partner fit and budget have been validated.",
+      "objective": "Move into discovery scheduling.",
+      "entryCriteria": [
+        "Need confirmed",
+        "Decision maker identified"
+      ],
+      "exitCriteria": [
+        "Discovery booked"
+      ]
+    },
+    {
+      "name": "Discovery Scheduled",
+      "description": "Discovery call is on the calendar.",
+      "objective": "Prepare the team and reminder flow.",
+      "entryCriteria": [
+        "Calendar booking completed"
+      ],
+      "exitCriteria": [
+        "Discovery completed"
+      ]
+    },
+    {
+      "name": "Proposal Sent",
+      "description": "Proposal and scope have been delivered.",
+      "objective": "Nudge toward close.",
+      "entryCriteria": [
+        "Discovery complete",
+        "Offer agreed"
+      ],
+      "exitCriteria": [
+        "Won",
+        "Lost"
+      ]
+    },
+    {
+      "name": "Won",
+      "description": "Partner has agreed to proceed.",
+      "objective": "Trigger onboarding and implementation.",
+      "entryCriteria": [
+        "Proposal approved",
+        "Payment or authorization received"
+      ],
+      "exitCriteria": [
+        "Onboarding completed"
+      ]
+    },
+    {
+      "name": "Onboarding",
+      "description": "Implementation is underway.",
+      "objective": "Collect assets and complete setup.",
+      "entryCriteria": [
+        "Kickoff completed"
+      ],
+      "exitCriteria": [
+        "Active"
+      ]
+    },
+    {
+      "name": "Active",
+      "description": "The partner is live and operating.",
+      "objective": "Track delivery and outcomes.",
+      "entryCriteria": [
+        "Setup complete"
+      ],
+      "exitCriteria": [
+        "Renewal",
+        "Churn"
+      ]
+    },
+    {
+      "name": "Lost",
+      "description": "Prospect did not convert or paused the deal.",
+      "objective": "Close and record the reason.",
+      "entryCriteria": [
+        "No response",
+        "Budget mismatch",
+        "Not a fit"
+      ],
+      "exitCriteria": [
+        "Archived"
+      ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "partner_lead",
+      "purpose": "New partner lead"
+    },
+    {
+      "name": "partner_discovery",
+      "purpose": "Discovery stage"
+    },
+    {
+      "name": "partner_proposal",
+      "purpose": "Proposal sent"
+    },
+    {
+      "name": "partner_onboarding",
+      "purpose": "Onboarding active"
+    },
+    {
+      "name": "partner_active",
+      "purpose": "Active client or partner"
+    },
+    {
+      "name": "partner_lost",
+      "purpose": "Lost / paused"
+    },
+    {
+      "name": "partner_referral",
+      "purpose": "Referral source"
+    },
+    {
+      "name": "partner_website",
+      "purpose": "Website source"
+    }
+  ],
+  "customFields": [
+    {
+      "fieldName": "Client Name",
+      "fieldType": "text",
+      "required": true,
+      "usage": "Partner or buyer name"
+    },
+    {
+      "fieldName": "Industry",
+      "fieldType": "text",
+      "required": true,
+      "usage": "Target vertical"
+    },
+    {
+      "fieldName": "Offer",
+      "fieldType": "textarea",
+      "required": true,
+      "usage": "Core service or offer"
+    },
+    {
+      "fieldName": "Website",
+      "fieldType": "text",
+      "required": false,
+      "usage": "Official site"
+    },
+    {
+      "fieldName": "Lead Source",
+      "fieldType": "dropdown",
+      "required": false,
+      "usage": "Acquisition source"
+    },
+    {
+      "fieldName": "Primary Goal",
+      "fieldType": "textarea",
+      "required": false,
+      "usage": "Main business goal"
+    }
+  ],
+  "calendars": [
+    {
+      "name": "Discovery Call",
+      "purpose": "Initial qualification and needs discovery",
+      "durationMinutes": 30
+    },
+    {
+      "name": "Implementation Check-in",
+      "purpose": "Project onboarding and delivery review",
+      "durationMinutes": 20
+    }
+  ],
+  "emailTemplates": [
+    {
+      "name": "Welcome Email",
+      "purpose": "Immediate confirmation after intake",
+      "subject": "Marketing Agency Partner intake received",
+      "preview": "Thanks for reaching out. We have your request and will follow up shortly."
+    },
+    {
+      "name": "Reminder Email",
+      "purpose": "Reminder before the next scheduled step",
+      "subject": "Reminder from Partner",
+      "preview": "A short reminder to keep the process moving."
+    },
+    {
+      "name": "Conversion Follow-up Email",
+      "purpose": "Push toward the next business action",
+      "subject": "Next step to keep momentum",
+      "preview": "Here is the next step to move from interest to action."
+    }
+  ],
+  "smsTemplates": [
+    {
+      "name": "Welcome SMS",
+      "purpose": "Fast acknowledgment after intake",
+      "preview": "Thanks for contacting Partner. We received your request and will follow up soon."
+    },
+    {
+      "name": "Reminder SMS",
+      "purpose": "Reminder for the next scheduled action",
+      "preview": "Quick reminder: your next step is coming up soon."
+    },
+    {
+      "name": "Follow-up SMS",
+      "purpose": "Move the lead or client forward",
+      "preview": "Just checking in to keep this moving. Reply if you want to continue."
+    }
+  ],
+  "forms": [
+    {
+      "name": "Client Intake Form",
+      "fields": [
+        {
+          "label": "Company Name",
+          "fieldType": "text",
+          "required": true,
+          "validation": "required"
+        },
+        {
+          "label": "Contact Name",
+          "fieldType": "text",
+          "required": true,
+          "validation": "required"
+        },
+        {
+          "label": "Email",
+          "fieldType": "email",
+          "required": true,
+          "validation": "valid email"
+        },
+        {
+          "label": "Phone",
+          "fieldType": "phone",
+          "required": true,
+          "validation": "valid phone number"
+        },
+        {
+          "label": "Website",
+          "fieldType": "text",
+          "required": false,
+          "validation": "optional"
+        },
+        {
+          "label": "Primary Goal",
+          "fieldType": "textarea",
+          "required": true,
+          "validation": "required"
+        }
+      ],
+      "successMessage": "Thanks. Your intake is in the queue and we will contact you with the next step."
+    }
+  ],
+  "workflowsChecklist": [
+    {
+      "name": "Partner Intake",
+      "trigger": "Form submitted",
+      "actions": [
+        "Create opportunity",
+        "Assign tag",
+        "Send welcome SMS",
+        "Notify team"
+      ],
+      "implementation": "manual",
+      "notes": "Manual authoring in GHL or snapshot."
+    },
+    {
+      "name": "Discovery Reminder",
+      "trigger": "Discovery scheduled",
+      "actions": [
+        "24h reminder",
+        "2h reminder"
+      ],
+      "implementation": "manual",
+      "notes": "Short and professional reminder cadence."
+    },
+    {
+      "name": "Proposal Follow Up",
+      "trigger": "Proposal sent",
+      "actions": [
+        "Check-in email",
+        "Check-in SMS",
+        "Notify owner if no response"
+      ],
+      "implementation": "manual",
+      "notes": "Keep the sequence concise."
+    },
+    {
+      "name": "Onboarding Success",
+      "trigger": "Partner won",
+      "actions": [
+        "Move stage",
+        "Tag active partner",
+        "Send welcome email"
+      ],
+      "implementation": "manual",
+      "notes": "Post-sale handoff to implementation."
+    }
+  ],
+  "snapshotChecklist": [
+    {
+      "name": "Pipelines",
+      "why": "Lifecycle and stage routing",
+      "owner": "GHL admin"
+    },
+    {
+      "name": "Tags",
+      "why": "Segmentation and workflow triggers",
+      "owner": "Automation manager"
+    },
+    {
+      "name": "Custom Fields",
+      "why": "Structured intake and reporting",
+      "owner": "Automation manager"
+    },
+    {
+      "name": "Forms",
+      "why": "Lead capture and client intake",
+      "owner": "Sales manager"
+    },
+    {
+      "name": "Calendars",
+      "why": "Booking and scheduling",
+      "owner": "Sales manager"
+    },
+    {
+      "name": "Workflows",
+      "why": "Reminder and follow-up automation",
+      "owner": "Automation manager"
+    },
+    {
+      "name": "Templates",
+      "why": "Email and SMS communication blocks",
+      "owner": "Automation manager"
+    },
+    {
+      "name": "Dashboard Widgets",
+      "why": "Visibility for the client",
+      "owner": "Analyst"
+    },
+    {
+      "name": "Branding",
+      "why": "Visual consistency",
+      "owner": "Admin"
+    }
+  ],
+  "unsupportedManualSteps": [
+    {
+      "area": "Brand Board / Whitelabel",
+      "why": "Supported inconsistently through API/MCP and still not part of the dry-run executor.",
+      "checklist": [
+        "Upload logos",
+        "Set colors and fonts",
+        "Mark the default brand board",
+        "Verify login branding"
+      ]
+    },
+    {
+      "area": "Domains",
+      "why": "Needs DNS and account-level setup outside the dry-run engine.",
+      "checklist": [
+        "Configure whitelabel domain",
+        "Configure branded API domain",
+        "Validate DNS records",
+        "Verify SSL"
+      ]
+    },
+    {
+      "area": "Roles",
+      "why": "Agency role provisioning remains a manual setup task in this slice.",
+      "checklist": [
+        "Create Admin role",
+        "Create Sales Manager role",
+        "Create Automation Manager role",
+        "Create Support role",
+        "Create Analyst role"
+      ]
+    },
+    {
+      "area": "Workflow Authoring",
+      "why": "The current setup agent only produces the checklist, not the workflow builder payload.",
+      "checklist": [
+        "Build the lead intake workflow",
+        "Build reminders",
+        "Build follow-up sequence",
+        "Build enrollment success flow"
+      ]
+    },
+    {
+      "area": "Snapshot Authoring",
+      "why": "Snapshot export/build remains a manual or UI-driven step in this slice.",
+      "checklist": [
+        "Create the snapshot in GHL",
+        "Add all setup assets",
+        "Export and version the snapshot"
+      ]
+    },
+    {
+      "area": "Full Agency Setup",
+      "why": "Agency profile, mobile branding, and email branding still need a human review.",
+      "checklist": [
+        "Verify agency profile",
+        "Upload email branding",
+        "Upload mobile branding",
+        "Review login screen"
+      ]
+    }
+  ]
+}

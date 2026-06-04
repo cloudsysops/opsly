@@ -1,0 +1,117 @@
+{
+  "generatedAt": "2026-06-04T00:00:00Z",
+  "features": [
+    {
+      "feature": "Contacts",
+      "wrapperSupport": "FULL",
+      "mcpAdapterSupport": "FULL",
+      "ghlApiSupport": "FULL",
+      "executionChannel": "REST",
+      "notes": "Use REST for deterministic CRUD/search; MCP for conversational flows."
+    },
+    {
+      "feature": "Opportunities",
+      "wrapperSupport": "FULL",
+      "mcpAdapterSupport": "NONE",
+      "ghlApiSupport": "FULL",
+      "executionChannel": "REST",
+      "notes": "Wrapper has CRUD/search; pipeline creation remains manual."
+    },
+    {
+      "feature": "Calendars",
+      "wrapperSupport": "FULL",
+      "mcpAdapterSupport": "NONE",
+      "ghlApiSupport": "FULL",
+      "executionChannel": "REST",
+      "notes": "Keep calendar provisioning deterministic in REST."
+    },
+    {
+      "feature": "Conversations",
+      "wrapperSupport": "PARTIAL",
+      "mcpAdapterSupport": "PARTIAL",
+      "ghlApiSupport": "FULL",
+      "executionChannel": "MCP",
+      "notes": "MCP is better for inbox/thread operations."
+    },
+    {
+      "feature": "Tags",
+      "wrapperSupport": "FULL",
+      "mcpAdapterSupport": "NONE",
+      "ghlApiSupport": "FULL",
+      "executionChannel": "REST",
+      "notes": "Wrapper handles tag CRUD."
+    },
+    {
+      "feature": "Custom Fields",
+      "wrapperSupport": "FULL",
+      "mcpAdapterSupport": "NONE",
+      "ghlApiSupport": "FULL",
+      "executionChannel": "REST",
+      "notes": "Wrapper handles list/create custom fields."
+    },
+    {
+      "feature": "Forms",
+      "wrapperSupport": "NONE",
+      "mcpAdapterSupport": "NONE",
+      "ghlApiSupport": "PARTIAL",
+      "executionChannel": "CHROME",
+      "notes": "Forms authoring remains UI/manual."
+    },
+    {
+      "feature": "Email Templates",
+      "wrapperSupport": "NONE",
+      "mcpAdapterSupport": "NONE",
+      "ghlApiSupport": "FULL",
+      "executionChannel": "REST",
+      "notes": "Email template APIs exist; wrapper does not expose them yet."
+    },
+    {
+      "feature": "SMS Templates",
+      "wrapperSupport": "NONE",
+      "mcpAdapterSupport": "NONE",
+      "ghlApiSupport": "PARTIAL",
+      "executionChannel": "CHROME",
+      "notes": "Template management remains manual for this slice."
+    },
+    {
+      "feature": "Workflows",
+      "wrapperSupport": "NONE",
+      "mcpAdapterSupport": "NONE",
+      "ghlApiSupport": "PARTIAL",
+      "executionChannel": "CHROME",
+      "notes": "Authoring remains UI/manual."
+    },
+    {
+      "feature": "Snapshots",
+      "wrapperSupport": "NONE",
+      "mcpAdapterSupport": "NONE",
+      "ghlApiSupport": "PARTIAL",
+      "executionChannel": "CHROME",
+      "notes": "Snapshot authoring/export remains UI/manual."
+    },
+    {
+      "feature": "Brand Board",
+      "wrapperSupport": "NONE",
+      "mcpAdapterSupport": "NONE",
+      "ghlApiSupport": "NONE",
+      "executionChannel": "CHROME",
+      "notes": "Brand board is UI-only."
+    },
+    {
+      "feature": "Domains",
+      "wrapperSupport": "NONE",
+      "mcpAdapterSupport": "NONE",
+      "ghlApiSupport": "NONE",
+      "executionChannel": "CHROME",
+      "notes": "DNS and whitelabel are UI/account level."
+    },
+    {
+      "feature": "Roles",
+      "wrapperSupport": "NONE",
+      "mcpAdapterSupport": "NONE",
+      "ghlApiSupport": "NONE",
+      "executionChannel": "CHROME",
+      "notes": "Role provisioning remains manual."
+    }
+  ]
+}

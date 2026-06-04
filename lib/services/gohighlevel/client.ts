@@ -8,6 +8,18 @@ import type {
   SendMessageRequest,
   ListContactsFilter,
   ListResponse,
+  Tag,
+  CreateTagRequest,
+  UpdateTagRequest,
+  CustomField,
+  CreateCustomFieldRequest,
+  CustomFieldModel,
+  Opportunity,
+  CreateOpportunityRequest,
+  UpdateOpportunityRequest,
+  SearchOpportunitiesFilter,
+  Calendar,
+  CreateCalendarRequest,
 } from './types.js';
 
 export interface GoHighLevelClientOptions {
@@ -23,6 +35,7 @@ export class GoHighLevelClient {
   private locationId: string;
   private apiVersion: string;
   private usesLeadConnector: boolean;
+  private locationAccessToken: string | null = null;
 
   constructor(
     apiKey: string,
@@ -42,6 +55,10 @@ export class GoHighLevelClient {
 
   private async sleep(ms: number): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  private async getBearerToken(): Promise<string> {
+    return this.locationAccessToken ?? this.apiKey;
   }
 
   private parseRetryAfter(retryAfter: string | null): number | null {
@@ -71,10 +88,13 @@ export class GoHighLevelClient {
     return Math.min(maxDelayMs, exponentialDelay + jitter);
   }
 
-  private async request<T>(
+  private async requestWithToken<T>(
+    authToken: string,
     method: string,
     path: string,
-    body?: unknown
+    body?: unknown,
+    contentType = 'application/json',
+    allowLocationTokenRefresh = true
   ): Promise<T> {
     const url = `${this.baseUrl}${path}`;
     const maxRateLimitRetries = 3;
@@ -85,8 +105,8 @@ export class GoHighLevelClient {
 
       try {
         const headers: Record<string, string> = {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.apiKey}`,
+          'Content-Type': contentType,
+          Authorization: `Bearer ${authToken}`,
           Accept: 'application/json',
         };
         if (this.usesLeadConnector) {
@@ -96,7 +116,12 @@ export class GoHighLevelClient {
         const response = await fetch(url, {
           method,
           headers,
-          body: body ? JSON.stringify(body) : undefined,
+          body:
+            body === undefined
+              ? undefined
+              : typeof body === 'string'
+                ? body
+                : JSON.stringify(body),
           signal: controller.signal,
         });
 
@@ -117,11 +142,41 @@ export class GoHighLevelClient {
             continue;
           }
 
+          if (
+            allowLocationTokenRefresh &&
+            this.usesLeadConnector &&
+            response.status >= 401 &&
+            response.status < 404 &&
+            authToken === this.apiKey
+          ) {
+            try {
+              const locationAccessToken = await this.deriveLocationAccessToken();
+              return this.requestWithToken<T>(
+                locationAccessToken,
+                method,
+                path,
+                body,
+                contentType,
+                false
+              );
+            } catch {
+              // Fall through to the original auth error.
+            }
+          }
+
           throw new Error(errorMessage);
         }
 
-        const data = await response.json() as T;
-        return data;
+        const responseText = await response.text();
+        if (!responseText) {
+          return {} as T;
+        }
+
+        try {
+          return JSON.parse(responseText) as T;
+        } catch {
+          return {} as T;
+        }
       } catch (err) {
         if (err instanceof Error) {
           if (err.name === 'AbortError') {
@@ -138,6 +193,54 @@ export class GoHighLevelClient {
     throw new Error('GoHighLevel API request failed after rate-limit retries');
   }
 
+  private async request<T>(
+    method: string,
+    path: string,
+    body?: unknown
+  ): Promise<T> {
+    return this.requestWithToken<T>(await this.getBearerToken(), method, path, body);
+  }
+
+  private async deriveLocationAccessToken(): Promise<string> {
+    if (this.locationAccessToken) {
+      return this.locationAccessToken;
+    }
+
+    const locationId = this.requireLocationId();
+    const locationResponse = await this.requestWithToken<{
+      location?: { companyId?: string };
+      data?: { companyId?: string };
+      companyId?: string;
+    }>(this.apiKey, 'GET', `/locations/${locationId}`, undefined, 'application/json', false);
+
+    const companyId =
+      locationResponse.location?.companyId ?? locationResponse.data?.companyId ?? locationResponse.companyId;
+
+    if (!companyId) {
+      throw new Error(`Unable to resolve companyId for location ${locationId}`);
+    }
+
+    const exchangeResponse = await this.requestWithToken<{
+      access_token?: string;
+      accessToken?: string;
+    }>(
+      this.apiKey,
+      'POST',
+      '/oauth/locationToken',
+      new URLSearchParams({ companyId, locationId }).toString(),
+      'application/x-www-form-urlencoded',
+      false
+    );
+
+    const accessToken = exchangeResponse.access_token ?? exchangeResponse.accessToken;
+    if (!accessToken) {
+      throw new Error(`Failed to derive location access token for ${locationId}`);
+    }
+
+    this.locationAccessToken = accessToken;
+    return accessToken;
+  }
+
   private requireLocationId(): string {
     if (!this.locationId) {
       throw new Error('GOHIGHLEVEL_LOCATION_ID is required for LeadConnector API calls');
@@ -145,47 +248,61 @@ export class GoHighLevelClient {
     return this.locationId;
   }
 
-  async getContacts(filter?: ListContactsFilter): Promise<ListResponse<Contact>> {
-    const params = new URLSearchParams();
-    if (this.usesLeadConnector) {
-      params.append('locationId', this.requireLocationId());
-    }
-    if (filter?.status) {
-      params.append('status', filter.status);
-    }
-    if (filter?.source) {
-      params.append('source', filter.source);
-    }
-    if (filter?.search) {
-      params.append('query', filter.search);
-    }
-    if (filter?.limit) {
-      params.append('limit', String(filter.limit));
-    }
-    if (filter?.offset) {
-      params.append('offset', String(filter.offset));
-    }
-
-    const path = this.usesLeadConnector
-      ? `/contacts/${params.toString() ? `?${params.toString()}` : ''}`
-      : `/v1/contacts${params.toString() ? `?${params.toString()}` : ''}`;
-
-    const response = await this.request<{
-      data?: Contact[];
-      contacts?: Contact[];
-      total?: number;
-      limit?: number;
-      offset?: number;
-    }>('GET', path);
-
-    const rows = response.contacts ?? response.data ?? [];
-
+  private normalizeListResponse<T>(
+    response: { data?: T[]; contacts?: T[]; total?: number; count?: number; limit?: number; offset?: number },
+    fallback: T[] = []
+  ): ListResponse<T> {
+    const rows = response.contacts ?? response.data ?? fallback;
     return {
       data: rows,
-      total: response.total ?? rows.length,
+      total: response.total ?? response.count ?? rows.length,
       limit: response.limit,
       offset: response.offset,
     };
+  }
+
+  private applyLocationId<T extends Record<string, unknown>>(data: T): T & { locationId?: string } {
+    if (!this.usesLeadConnector) {
+      return data;
+    }
+    return {
+      ...data,
+      locationId: this.requireLocationId(),
+    };
+  }
+
+  async searchContacts(filter: Record<string, unknown> = {}): Promise<ListResponse<Contact>> {
+    const path = this.usesLeadConnector ? '/contacts/search' : '/v1/contacts/search';
+    const response = await this.request<{
+      data?: Contact[];
+      contacts?: Contact[];
+      count?: number;
+      total?: number;
+      limit?: number;
+      offset?: number;
+    }>('POST', path, filter);
+
+    return this.normalizeListResponse<Contact>(response);
+  }
+
+  async getContacts(filter?: ListContactsFilter): Promise<ListResponse<Contact>> {
+    const searchFilter: Record<string, unknown> = {};
+    if (filter?.status) {
+      searchFilter.status = filter.status;
+    }
+    if (filter?.source) {
+      searchFilter.source = filter.source;
+    }
+    if (filter?.search) {
+      searchFilter.query = filter.search;
+    }
+    if (filter?.limit !== undefined) {
+      searchFilter.limit = filter.limit;
+    }
+    if (filter?.offset !== undefined) {
+      searchFilter.offset = filter.offset;
+    }
+    return this.searchContacts(searchFilter);
   }
 
   async getContact(contactId: string): Promise<Contact> {
@@ -223,6 +340,192 @@ export class GoHighLevelClient {
       throw new Error(`Failed to update contact ${contactId}`);
     }
     return contact;
+  }
+
+  async listTags(): Promise<Tag[]> {
+    const path = this.usesLeadConnector
+      ? `/locations/${encodeURIComponent(this.requireLocationId())}/tags`
+      : `/v1/tags`;
+    const response = await this.request<{ tags?: Tag[]; data?: Tag[] }>('GET', path);
+    return response.tags ?? response.data ?? [];
+  }
+
+  async createTag(data: CreateTagRequest): Promise<Tag> {
+    const path = this.usesLeadConnector
+      ? `/locations/${encodeURIComponent(this.requireLocationId())}/tags`
+      : '/v1/tags';
+    const response = await this.request<{ tag?: Tag; data?: Tag }>('POST', path, data);
+    const tag = response.tag ?? response.data;
+    if (!tag) {
+      throw new Error('Failed to create tag');
+    }
+    return tag;
+  }
+
+  async updateTag(tagId: string, data: UpdateTagRequest): Promise<Tag> {
+    const path = this.usesLeadConnector
+      ? `/locations/${encodeURIComponent(this.requireLocationId())}/tags/${tagId}`
+      : `/v1/tags/${tagId}`;
+    const response = await this.request<{ tag?: Tag; data?: Tag }>('PUT', path, data);
+    const tag = response.tag ?? response.data;
+    if (!tag) {
+      throw new Error(`Failed to update tag ${tagId}`);
+    }
+    return tag;
+  }
+
+  async deleteTag(tagId: string): Promise<{ success: boolean }> {
+    const path = this.usesLeadConnector
+      ? `/locations/${encodeURIComponent(this.requireLocationId())}/tags/${tagId}`
+      : `/v1/tags/${tagId}`;
+    const response = await this.request<{ succeded?: boolean; succeeded?: boolean; success?: boolean }>(
+      'DELETE',
+      path
+    );
+    return {
+      success: response.success ?? response.succeded ?? response.succeeded ?? true,
+    };
+  }
+
+  async listCustomFields(model?: CustomFieldModel): Promise<CustomField[]> {
+    const params = new URLSearchParams();
+    if (model && model !== 'all') {
+      params.append('model', model);
+    }
+    const path = this.usesLeadConnector
+      ? `/locations/${encodeURIComponent(this.requireLocationId())}/customFields${params.toString() ? `?${params.toString()}` : ''}`
+      : `/v1/customFields${params.toString() ? `?${params.toString()}` : ''}`;
+    const response = await this.request<{ customFields?: CustomField[]; data?: CustomField[] }>('GET', path);
+    return response.customFields ?? response.data ?? [];
+  }
+
+  async createCustomField(data: CreateCustomFieldRequest): Promise<CustomField> {
+    const path = this.usesLeadConnector
+      ? `/locations/${encodeURIComponent(this.requireLocationId())}/customFields`
+      : '/v1/customFields';
+    const response = await this.request<{ customField?: CustomField; customFields?: CustomField[]; data?: CustomField }>(
+      'POST',
+      path,
+      data
+    );
+    const customField = response.customField ?? response.data ?? response.customFields?.[0];
+    if (!customField) {
+      throw new Error('Failed to create custom field');
+    }
+    return customField;
+  }
+
+  async getOpportunity(opportunityId: string): Promise<Opportunity> {
+    const path = this.usesLeadConnector
+      ? `/opportunities/${opportunityId}`
+      : `/v1/opportunities/${opportunityId}`;
+    const response = await this.request<{ opportunity?: Opportunity; data?: Opportunity }>('GET', path);
+    const opportunity = response.opportunity ?? response.data;
+    if (!opportunity) {
+      throw new Error(`Opportunity ${opportunityId} not found`);
+    }
+    return opportunity;
+  }
+
+  async createOpportunity(data: CreateOpportunityRequest): Promise<Opportunity> {
+    const path = this.usesLeadConnector ? '/opportunities/' : '/v1/opportunities';
+    const payload = this.usesLeadConnector
+      ? this.applyLocationId({
+          ...data,
+          customFields: data.customFields,
+        })
+      : data;
+    const response = await this.request<{ opportunity?: Opportunity; data?: Opportunity }>('POST', path, payload);
+    const opportunity = response.opportunity ?? response.data;
+    if (!opportunity) {
+      throw new Error('Failed to create opportunity');
+    }
+    return opportunity;
+  }
+
+  async updateOpportunity(opportunityId: string, data: UpdateOpportunityRequest): Promise<Opportunity> {
+    const path = this.usesLeadConnector
+      ? `/opportunities/${opportunityId}`
+      : `/v1/opportunities/${opportunityId}`;
+    const payload = this.usesLeadConnector ? this.applyLocationId({ ...data }) : data;
+    const response = await this.request<{ opportunity?: Opportunity; data?: Opportunity }>('PUT', path, payload);
+    const opportunity = response.opportunity ?? response.data;
+    if (!opportunity) {
+      throw new Error(`Failed to update opportunity ${opportunityId}`);
+    }
+    return opportunity;
+  }
+
+  async deleteOpportunity(opportunityId: string): Promise<{ success: boolean }> {
+    const path = this.usesLeadConnector
+      ? `/opportunities/${opportunityId}`
+      : `/v1/opportunities/${opportunityId}`;
+    const response = await this.request<{ succeded?: boolean; succeeded?: boolean; success?: boolean }>(
+      'DELETE',
+      path
+    );
+    return {
+      success: response.success ?? response.succeded ?? response.succeeded ?? true,
+    };
+  }
+
+  async searchOpportunities(filter: SearchOpportunitiesFilter = {}): Promise<ListResponse<Opportunity>> {
+    const path = this.usesLeadConnector ? '/opportunities/search' : '/v1/opportunities/search';
+    const payload = this.usesLeadConnector ? this.applyLocationId({ ...filter }) : filter;
+    const response = await this.request<{
+      opportunities?: Opportunity[];
+      data?: Opportunity[];
+      total?: number;
+      count?: number;
+      limit?: number;
+      offset?: number;
+    }>('POST', path, payload);
+    return this.normalizeListResponse<Opportunity>(
+      {
+        data: response.data ?? response.opportunities,
+        total: response.total,
+        count: response.count,
+        limit: response.limit,
+        offset: response.offset,
+      },
+      []
+    );
+  }
+
+  async getCalendars(
+    filter?: Record<string, unknown> & { groupId?: string; showDrafted?: boolean }
+  ): Promise<Calendar[]> {
+    const params = new URLSearchParams();
+    if (this.usesLeadConnector) {
+      params.append('locationId', this.requireLocationId());
+    }
+    if (filter?.groupId) {
+      params.append('groupId', String(filter.groupId));
+    }
+    if (filter?.showDrafted !== undefined) {
+      params.append('showDrafted', String(filter.showDrafted));
+    }
+
+    const path = this.usesLeadConnector
+      ? `/calendars/${params.toString() ? `?${params.toString()}` : ''}`
+      : `/v1/calendars${params.toString() ? `?${params.toString()}` : ''}`;
+    const response = await this.request<{ calendars?: Calendar[]; data?: Calendar[] }>('GET', path);
+    return response.calendars ?? response.data ?? [];
+  }
+
+  async createCalendar(data: CreateCalendarRequest): Promise<Calendar> {
+    const path = this.usesLeadConnector ? '/calendars/' : '/v1/calendars';
+    const payload = this.usesLeadConnector ? this.applyLocationId({ ...data }) : data;
+    const response = await this.request<{ calendar?: Calendar; data?: Calendar; calendars?: Calendar[] }>(
+      'POST',
+      path,
+      payload
+    );
+    const calendar = response.calendar ?? response.data ?? response.calendars?.[0];
+    if (!calendar) {
+      throw new Error('Failed to create calendar');
+    }
+    return calendar;
   }
 
   async getTasks(contactId?: string): Promise<Task[]> {
@@ -272,5 +575,22 @@ export class GoHighLevelClient {
       id: response.id || '',
       status: response.status || 'sent',
     };
+  }
+
+  async updateOpportunityStage(
+    opportunityId: string,
+    stageId: string
+  ): Promise<{ success: boolean }> {
+    const path = this.usesLeadConnector
+      ? `/opportunities/${opportunityId}/stage?locationId=${encodeURIComponent(this.requireLocationId())}`
+      : `/v1/opportunities/${opportunityId}/stage`;
+
+    const response = await this.request<{ success?: boolean }>(
+      'PATCH',
+      path,
+      { stageId }
+    );
+
+    return { success: response.success ?? true };
   }
 }

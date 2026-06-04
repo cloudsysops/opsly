@@ -8,6 +8,18 @@ import type {
   SendMessageRequest,
   ListContactsFilter,
   ListResponse,
+  Tag,
+  CreateTagRequest,
+  UpdateTagRequest,
+  CustomField,
+  CreateCustomFieldRequest,
+  CustomFieldModel,
+  Opportunity,
+  CreateOpportunityRequest,
+  UpdateOpportunityRequest,
+  SearchOpportunitiesFilter,
+  Calendar,
+  CreateCalendarRequest,
 } from './types.js';
 import { GoHighLevelClient } from './client.js';
 import { resolveGoHighLevelEnv, resolveGoHighLevelPeskidsEnv } from './env-config.js';
@@ -31,7 +43,7 @@ export class GoHighLevelService {
 
   registerTenant(tenantId: string, config: TenantConfig): void {
     this.configs.set(tenantId, config);
-    this.clients.delete(tenantId); // Clear cached client
+    this.clients.delete(tenantId);
   }
 
   private getClient(tenantId: string): GoHighLevelClient {
@@ -62,6 +74,11 @@ export class GoHighLevelService {
     return client.getContacts(filter);
   }
 
+  async searchContacts(tenantId: string, filter?: Record<string, unknown>): Promise<ListResponse<Contact>> {
+    const client = this.getClient(tenantId);
+    return client.searchContacts(filter);
+  }
+
   async getContact(tenantId: string, contactId: string): Promise<Contact> {
     const client = this.getClient(tenantId);
     return client.getContact(contactId);
@@ -79,6 +96,78 @@ export class GoHighLevelService {
   ): Promise<Contact> {
     const client = this.getClient(tenantId);
     return client.updateContact(contactId, data);
+  }
+
+  async listTags(tenantId: string): Promise<Tag[]> {
+    const client = this.getClient(tenantId);
+    return client.listTags();
+  }
+
+  async createTag(tenantId: string, data: CreateTagRequest): Promise<Tag> {
+    const client = this.getClient(tenantId);
+    return client.createTag(data);
+  }
+
+  async updateTag(tenantId: string, tagId: string, data: UpdateTagRequest): Promise<Tag> {
+    const client = this.getClient(tenantId);
+    return client.updateTag(tagId, data);
+  }
+
+  async deleteTag(tenantId: string, tagId: string): Promise<{ success: boolean }> {
+    const client = this.getClient(tenantId);
+    return client.deleteTag(tagId);
+  }
+
+  async listCustomFields(tenantId: string, model?: CustomFieldModel): Promise<CustomField[]> {
+    const client = this.getClient(tenantId);
+    return client.listCustomFields(model);
+  }
+
+  async createCustomField(tenantId: string, data: CreateCustomFieldRequest): Promise<CustomField> {
+    const client = this.getClient(tenantId);
+    return client.createCustomField(data);
+  }
+
+  async getOpportunity(tenantId: string, opportunityId: string): Promise<Opportunity> {
+    const client = this.getClient(tenantId);
+    return client.getOpportunity(opportunityId);
+  }
+
+  async createOpportunity(tenantId: string, data: CreateOpportunityRequest): Promise<Opportunity> {
+    const client = this.getClient(tenantId);
+    return client.createOpportunity(data);
+  }
+
+  async updateOpportunity(
+    tenantId: string,
+    opportunityId: string,
+    data: UpdateOpportunityRequest
+  ): Promise<Opportunity> {
+    const client = this.getClient(tenantId);
+    return client.updateOpportunity(opportunityId, data);
+  }
+
+  async deleteOpportunity(tenantId: string, opportunityId: string): Promise<{ success: boolean }> {
+    const client = this.getClient(tenantId);
+    return client.deleteOpportunity(opportunityId);
+  }
+
+  async searchOpportunities(
+    tenantId: string,
+    filter?: SearchOpportunitiesFilter
+  ): Promise<ListResponse<Opportunity>> {
+    const client = this.getClient(tenantId);
+    return client.searchOpportunities(filter);
+  }
+
+  async getCalendars(tenantId: string, filter?: Record<string, unknown>): Promise<Calendar[]> {
+    const client = this.getClient(tenantId);
+    return client.getCalendars(filter);
+  }
+
+  async createCalendar(tenantId: string, data: CreateCalendarRequest): Promise<Calendar> {
+    const client = this.getClient(tenantId);
+    return client.createCalendar(data);
   }
 
   async getTasks(tenantId: string, contactId?: string): Promise<Task[]> {
@@ -108,6 +197,15 @@ export class GoHighLevelService {
   async sendMessage(tenantId: string, data: SendMessageRequest): Promise<{ id: string; status: string }> {
     const client = this.getClient(tenantId);
     return client.sendMessage(data);
+  }
+
+  async updateOpportunityStage(
+    tenantId: string,
+    opportunityId: string,
+    stageId: string
+  ): Promise<{ success: boolean }> {
+    const client = this.getClient(tenantId);
+    return client.updateOpportunityStage(opportunityId, stageId);
   }
 }
 

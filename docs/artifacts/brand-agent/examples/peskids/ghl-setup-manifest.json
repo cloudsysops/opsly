@@ -1,0 +1,475 @@
+{
+  "clientKey": "peskids",
+  "companyName": "Peskids",
+  "shortName": "Peskids",
+  "setupTemplate": "academy",
+  "pipelineName": "Academy Growth Pipeline",
+  "pipelineStages": [
+    {
+      "name": "New Lead",
+      "description": "Fresh parent or student inquiry captured from a form or conversation.",
+      "objective": "Register the lead and start the follow-up sequence.",
+      "entryCriteria": [
+        "Form submitted",
+        "Inbound inquiry received",
+        "Lead imported"
+      ],
+      "exitCriteria": [
+        "Contact created",
+        "Tag assigned",
+        "Opportunity opened"
+      ]
+    },
+    {
+      "name": "Contacted",
+      "description": "Team has acknowledged the lead and started the first follow-up.",
+      "objective": "Move the lead into an active conversation.",
+      "entryCriteria": [
+        "Welcome message sent",
+        "Follow-up task created"
+      ],
+      "exitCriteria": [
+        "Reply received",
+        "Trial class interest confirmed"
+      ]
+    },
+    {
+      "name": "Interested",
+      "description": "Parent or student has shown clear intent to book a class.",
+      "objective": "Convert interest into a scheduled trial.",
+      "entryCriteria": [
+        "Interest confirmed",
+        "Schedule request received"
+      ],
+      "exitCriteria": [
+        "Trial class booked"
+      ]
+    },
+    {
+      "name": "Trial Class Scheduled",
+      "description": "Trial class has been booked on the calendar.",
+      "objective": "Prepare reminders and attendance.",
+      "entryCriteria": [
+        "Calendar booking completed"
+      ],
+      "exitCriteria": [
+        "Trial reminder workflow active",
+        "Calendar event confirmed"
+      ]
+    },
+    {
+      "name": "Trial Class Completed",
+      "description": "Trial class happened and feedback should be collected.",
+      "objective": "Collect feedback and push the enrollment offer.",
+      "entryCriteria": [
+        "Trial session completed"
+      ],
+      "exitCriteria": [
+        "Feedback sent",
+        "Enrollment follow-up started"
+      ]
+    },
+    {
+      "name": "Enrollment Pending",
+      "description": "The family is evaluating the offer after the trial.",
+      "objective": "Nudge toward conversion without pressure.",
+      "entryCriteria": [
+        "Trial completed",
+        "Enrollment proposal shared"
+      ],
+      "exitCriteria": [
+        "Enrollment accepted",
+        "Lost marked"
+      ]
+    },
+    {
+      "name": "Active Student",
+      "description": "Student is enrolled and attending classes.",
+      "objective": "Track active revenue and retention.",
+      "entryCriteria": [
+        "Enrollment confirmed",
+        "Payment or registration complete"
+      ],
+      "exitCriteria": [
+        "Student paused",
+        "Renewal needed"
+      ]
+    },
+    {
+      "name": "Lost",
+      "description": "Lead did not convert or stopped engaging.",
+      "objective": "Close the loop and record the reason.",
+      "entryCriteria": [
+        "No response",
+        "Not interested",
+        "Declined offer"
+      ],
+      "exitCriteria": [
+        "Archived",
+        "Re-engagement list updated"
+      ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "academy_lead",
+      "purpose": "Fresh lead intake"
+    },
+    {
+      "name": "academy_trial",
+      "purpose": "Trial class flow"
+    },
+    {
+      "name": "academy_parent",
+      "purpose": "Parent contact"
+    },
+    {
+      "name": "academy_student",
+      "purpose": "Student record"
+    },
+    {
+      "name": "academy_active",
+      "purpose": "Active student state"
+    },
+    {
+      "name": "academy_lost",
+      "purpose": "Lost / inactive lead"
+    },
+    {
+      "name": "academy_referral",
+      "purpose": "Referral source"
+    },
+    {
+      "name": "academy_instagram",
+      "purpose": "Instagram source"
+    },
+    {
+      "name": "academy_facebook",
+      "purpose": "Facebook source"
+    },
+    {
+      "name": "academy_website",
+      "purpose": "Website source"
+    },
+    {
+      "name": "academy_whatsapp",
+      "purpose": "WhatsApp source"
+    }
+  ],
+  "customFields": [
+    {
+      "fieldName": "Student Name",
+      "fieldType": "text",
+      "required": true,
+      "usage": "Primary student identity"
+    },
+    {
+      "fieldName": "Parent Name",
+      "fieldType": "text",
+      "required": true,
+      "usage": "Responsible adult contact"
+    },
+    {
+      "fieldName": "Student Age",
+      "fieldType": "number",
+      "required": true,
+      "usage": "Class fit and safety"
+    },
+    {
+      "fieldName": "Program Interest",
+      "fieldType": "dropdown",
+      "required": true,
+      "usage": "Class or program selection"
+    },
+    {
+      "fieldName": "Preferred Schedule",
+      "fieldType": "text",
+      "required": false,
+      "usage": "Preferred class timing"
+    },
+    {
+      "fieldName": "Trial Class Date",
+      "fieldType": "date",
+      "required": false,
+      "usage": "Trial booking date"
+    },
+    {
+      "fieldName": "Enrollment Date",
+      "fieldType": "date",
+      "required": false,
+      "usage": "Enrollment timestamp"
+    },
+    {
+      "fieldName": "Lead Source",
+      "fieldType": "dropdown",
+      "required": false,
+      "usage": "Source attribution"
+    }
+  ],
+  "calendars": [
+    {
+      "name": "Trial Class Booking",
+      "purpose": "Book the trial session",
+      "durationMinutes": 30
+    },
+    {
+      "name": "Enrollment Follow-up",
+      "purpose": "Post-trial conversion call",
+      "durationMinutes": 20
+    }
+  ],
+  "emailTemplates": [
+    {
+      "name": "Welcome Email",
+      "purpose": "Immediate confirmation after intake",
+      "subject": "Peskids intake received",
+      "preview": "Thanks for reaching out. We have your request and will follow up shortly."
+    },
+    {
+      "name": "Reminder Email",
+      "purpose": "Reminder before the next scheduled step",
+      "subject": "Reminder from Peskids",
+      "preview": "A short reminder to keep the process moving."
+    },
+    {
+      "name": "Conversion Follow-up Email",
+      "purpose": "Push toward the next business action",
+      "subject": "Next step to keep momentum",
+      "preview": "Here is the next step to move from interest to action."
+    }
+  ],
+  "smsTemplates": [
+    {
+      "name": "Welcome SMS",
+      "purpose": "Fast acknowledgment after intake",
+      "preview": "Thanks for contacting Peskids. We received your request and will follow up soon."
+    },
+    {
+      "name": "Reminder SMS",
+      "purpose": "Reminder for the next scheduled action",
+      "preview": "Quick reminder: your next step is coming up soon."
+    },
+    {
+      "name": "Follow-up SMS",
+      "purpose": "Move the lead or client forward",
+      "preview": "Just checking in to keep this moving. Reply if you want to continue."
+    }
+  ],
+  "forms": [
+    {
+      "name": "Free Trial Form",
+      "fields": [
+        {
+          "label": "Nombre",
+          "fieldType": "text",
+          "required": true,
+          "validation": "min 2 chars"
+        },
+        {
+          "label": "Teléfono",
+          "fieldType": "phone",
+          "required": true,
+          "validation": "valid phone number"
+        },
+        {
+          "label": "Email",
+          "fieldType": "email",
+          "required": true,
+          "validation": "valid email"
+        },
+        {
+          "label": "Edad",
+          "fieldType": "number",
+          "required": true,
+          "validation": "1-18 range"
+        },
+        {
+          "label": "Programa",
+          "fieldType": "text",
+          "required": true,
+          "validation": "required"
+        },
+        {
+          "label": "Horario Preferido",
+          "fieldType": "text",
+          "required": false,
+          "validation": "optional"
+        },
+        {
+          "label": "Consentimiento",
+          "fieldType": "checkbox",
+          "required": true,
+          "validation": "must be checked"
+        }
+      ],
+      "successMessage": "Thank you. We received your request and will follow up shortly."
+    }
+  ],
+  "workflowsChecklist": [
+    {
+      "name": "Lead Intake",
+      "trigger": "Form submitted",
+      "actions": [
+        "Create opportunity",
+        "Assign tag",
+        "Send welcome SMS",
+        "Send welcome email",
+        "Notify team"
+      ],
+      "implementation": "manual",
+      "notes": "Build in GHL or snapshot because workflow authoring is not automated here."
+    },
+    {
+      "name": "Trial Reminder",
+      "trigger": "Trial class booking",
+      "actions": [
+        "24h reminder",
+        "3h reminder",
+        "30min reminder"
+      ],
+      "implementation": "manual",
+      "notes": "Time-based reminder sequence."
+    },
+    {
+      "name": "Post Trial Follow Up",
+      "trigger": "Trial class completed",
+      "actions": [
+        "Request feedback",
+        "Share enrollment offer",
+        "Continue follow-up"
+      ],
+      "implementation": "manual",
+      "notes": "Keep the sequence human and short."
+    },
+    {
+      "name": "Enrollment Success",
+      "trigger": "Student enrolled",
+      "actions": [
+        "Move stage",
+        "Tag active student",
+        "Send welcome email",
+        "Notify team"
+      ],
+      "implementation": "manual",
+      "notes": "Mark the lead as active and stop reminder flows."
+    }
+  ],
+  "snapshotChecklist": [
+    {
+      "name": "Pipelines",
+      "why": "Lifecycle and stage routing",
+      "owner": "GHL admin"
+    },
+    {
+      "name": "Tags",
+      "why": "Segmentation and workflow triggers",
+      "owner": "Automation manager"
+    },
+    {
+      "name": "Custom Fields",
+      "why": "Structured intake and reporting",
+      "owner": "Automation manager"
+    },
+    {
+      "name": "Forms",
+      "why": "Lead capture and client intake",
+      "owner": "Sales manager"
+    },
+    {
+      "name": "Calendars",
+      "why": "Booking and scheduling",
+      "owner": "Sales manager"
+    },
+    {
+      "name": "Workflows",
+      "why": "Reminder and follow-up automation",
+      "owner": "Automation manager"
+    },
+    {
+      "name": "Templates",
+      "why": "Email and SMS communication blocks",
+      "owner": "Automation manager"
+    },
+    {
+      "name": "Dashboard Widgets",
+      "why": "Visibility for the client",
+      "owner": "Analyst"
+    },
+    {
+      "name": "Branding",
+      "why": "Visual consistency",
+      "owner": "Admin"
+    }
+  ],
+  "unsupportedManualSteps": [
+    {
+      "area": "Brand Board / Whitelabel",
+      "why": "Supported inconsistently through API/MCP and still not part of the dry-run executor.",
+      "checklist": [
+        "Upload logos",
+        "Set colors and fonts",
+        "Mark the default brand board",
+        "Verify login branding"
+      ]
+    },
+    {
+      "area": "Domains",
+      "why": "Needs DNS and account-level setup outside the dry-run engine.",
+      "checklist": [
+        "Configure whitelabel domain",
+        "Configure branded API domain",
+        "Validate DNS records",
+        "Verify SSL"
+      ]
+    },
+    {
+      "area": "Roles",
+      "why": "Agency role provisioning remains a manual setup task in this slice.",
+      "checklist": [
+        "Create Admin role",
+        "Create Sales Manager role",
+        "Create Automation Manager role",
+        "Create Support role",
+        "Create Analyst role"
+      ]
+    },
+    {
+      "area": "Workflow Authoring",
+      "why": "The current setup agent only produces the checklist, not the workflow builder payload.",
+      "checklist": [
+        "Build the lead intake workflow",
+        "Build reminders",
+        "Build follow-up sequence",
+        "Build enrollment success flow"
+      ]
+    },
+    {
+      "area": "Snapshot Authoring",
+      "why": "Snapshot export/build remains a manual or UI-driven step in this slice.",
+      "checklist": [
+        "Create the snapshot in GHL",
+        "Add all setup assets",
+        "Export and version the snapshot"
+      ]
+    },
+    {
+      "area": "Full Agency Setup",
+      "why": "Agency profile, mobile branding, and email branding still need a human review.",
+      "checklist": [
+        "Verify agency profile",
+        "Upload email branding",
+        "Upload mobile branding",
+        "Review login screen"
+      ]
+    },
+    {
+      "area": "Live Tenant Safety",
+      "why": "Peskids must remain untouched in production during dry-run generation.",
+      "checklist": [
+        "Do not write to live tenant settings",
+        "Use dry-run only",
+        "Review all actions before execution"
+      ]
+    }
+  ]
+}

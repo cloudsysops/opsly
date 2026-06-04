@@ -1,0 +1,43 @@
+{
+  "companyName": "IntCloudSysOps",
+  "shortName": "ICSO",
+  "logoPrompt": "Design a premium logo for IntCloudSysOps (ICSO) with a hexagon eye brain circuits with growth accent style.",
+  "colorPalette": {
+    "dark": "#0A0A0A",
+    "primaryBlue": "#2563EB",
+    "cyan": "#06B6D4",
+    "purple": "#8B5CF6",
+    "green": "#22C55E",
+    "light": "#F3F4F6"
+  },
+  "typography": {
+    "primary": "Poppins",
+    "secondary": "Inter",
+    "fallback": "system-ui"
+  },
+  "taglineOptions": [
+    "SEE. AUTOMATE. GROW.",
+    "From Leads to Revenue.",
+    "From Chaos to Visibility."
+  ],
+  "missionStatement": "We help businesses capture leads, automate follow-ups, gain visibility into their operations and scale revenue.",
+  "emailFooter": "IntCloudSysOps\nAI Powered Growth Operations\nSEE. AUTOMATE. GROW.",
+  "socialBio": "ICSO helps businesses capture leads, automate follow-up, and gain operational visibility.",
+  "landingHeroCopy": {
+    "headline": "SEE. AUTOMATE. GROW.",
+    "subheadline": "We help businesses capture leads, automate follow-ups, gain visibility into their operations and scale revenue."
+  },
+  "ctaLabels": [
+    "Book a Strategy Call",
+    "See the System",
+    "Get the Blueprint",
+    "Start the Intake"
+  ],
+  "dashboardSectionNames": [
+    "Growth",
+    "Automation",
+    "Visibility",
+    "Operations",
+    "Revenue"
+  ]
+}

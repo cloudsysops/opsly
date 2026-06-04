@@ -1,0 +1,29 @@
+{
+  "companyName": "IntCloudSysOps",
+  "shortName": "ICSO",
+  "industry": "Business Growth & Automation",
+  "niche": "Growth operations agency",
+  "country": "United States",
+  "language": "en",
+  "targetCustomer": "Founders and operators who need leads, automation, and visibility",
+  "services": ["Growth strategy", "GoHighLevel setup", "Automation design", "Executive dashboards"],
+  "brandTone": "premium, technical, clear, operational",
+  "website": "https://intcloudsysops.com",
+  "instagram": "@intcloudsysops",
+  "colorPreferences": {
+    "dark": "#0A0A0A",
+    "primaryBlue": "#2563EB",
+    "cyan": "#06B6D4",
+    "purple": "#8B5CF6",
+    "green": "#22C55E",
+    "light": "#F3F4F6"
+  },
+  "logoStyle": "hexagon eye brain circuits with growth accent",
+  "tagline": "SEE. AUTOMATE. GROW.",
+  "mission": "We help businesses capture leads, automate follow-ups, gain visibility into their operations and scale revenue.",
+  "assets": {
+    "logo": "brand/icso/logo-primary.png",
+    "favicon": "brand/icso/favicon.png"
+  }
+}
+

@@ -1,0 +1,382 @@
+{
+  "source": {
+    "kind": "preset",
+    "ref": "icso"
+  },
+  "profile": {
+    "companyName": "IntCloudSysOps",
+    "shortName": "ICSO",
+    "industry": "Business Growth & Automation",
+    "niche": "Growth operations agency",
+    "country": "United States",
+    "language": "en",
+    "targetCustomer": "Founders and operators who need leads, automation, and visibility",
+    "services": [
+      "Growth strategy",
+      "GoHighLevel setup",
+      "Automation design",
+      "Executive dashboards"
+    ],
+    "brandTone": "premium, technical, clear, operational",
+    "website": "https://intcloudsysops.com",
+    "instagram": "@intcloudsysops",
+    "colorPreferences": {
+      "dark": "#0A0A0A",
+      "primaryBlue": "#2563EB",
+      "cyan": "#06B6D4",
+      "purple": "#8B5CF6",
+      "green": "#22C55E",
+      "light": "#F3F4F6"
+    },
+    "logoStyle": "hexagon eye brain circuits with growth accent",
+    "tagline": "SEE. AUTOMATE. GROW.",
+    "mission": "We help businesses capture leads, automate follow-ups, gain visibility into their operations and scale revenue.",
+    "assets": {
+      "logo": "brand/icso/logo-primary.png",
+      "favicon": "brand/icso/favicon.png"
+    }
+  },
+  "summary": {
+    "companyName": "IntCloudSysOps",
+    "shortName": "ICSO",
+    "slug": "icso",
+    "outputDir": "artifacts/brand-agent/examples/icso"
+  },
+  "files": {
+    "brandKit": "brand-kit.json",
+    "ghlSetupManifest": "ghl-setup-manifest.json",
+    "dryRunReport": "dry-run-report.json"
+  },
+  "apiActionsPossible": [
+    {
+      "resource": "contacts",
+      "operation": "search",
+      "status": "available"
+    },
+    {
+      "resource": "tags",
+      "operation": "create",
+      "value": "icso_lead",
+      "status": "available"
+    },
+    {
+      "resource": "tags",
+      "operation": "create",
+      "value": "icso_active",
+      "status": "available"
+    },
+    {
+      "resource": "tags",
+      "operation": "create",
+      "value": "icso_lost",
+      "status": "available"
+    },
+    {
+      "resource": "customFields",
+      "operation": "create",
+      "value": "Company Name",
+      "status": "available"
+    },
+    {
+      "resource": "customFields",
+      "operation": "create",
+      "value": "Industry",
+      "status": "available"
+    },
+    {
+      "resource": "customFields",
+      "operation": "create",
+      "value": "Niche",
+      "status": "available"
+    },
+    {
+      "resource": "customFields",
+      "operation": "create",
+      "value": "Website",
+      "status": "available"
+    },
+    {
+      "resource": "customFields",
+      "operation": "create",
+      "value": "Instagram",
+      "status": "available"
+    },
+    {
+      "resource": "customFields",
+      "operation": "create",
+      "value": "Target Customer",
+      "status": "available"
+    },
+    {
+      "resource": "customFields",
+      "operation": "create",
+      "value": "Services",
+      "status": "available"
+    },
+    {
+      "resource": "customFields",
+      "operation": "create",
+      "value": "Brand Tone",
+      "status": "available"
+    },
+    {
+      "resource": "calendars",
+      "operation": "create",
+      "value": "Discovery Call",
+      "status": "available"
+    },
+    {
+      "resource": "calendars",
+      "operation": "create",
+      "value": "Implementation Check-in",
+      "status": "available"
+    },
+    {
+      "resource": "emailTemplates",
+      "operation": "create",
+      "status": "available"
+    },
+    {
+      "resource": "opportunities",
+      "operation": "prepare",
+      "status": "available"
+    }
+  ],
+  "manualActionsRequired": [
+    "Manual step: Brand Board",
+    "Manual step: Whitelabel",
+    "Manual step: Domains",
+    "Manual step: Roles",
+    "Manual step: Workflow authoring",
+    "Manual step: Snapshot authoring",
+    "Manual step: Full agency setup"
+  ],
+  "generatedCounts": {
+    "apiActions": 16,
+    "manualActions": 7
+  },
+  "brandKit": {
+    "companyName": "IntCloudSysOps",
+    "shortName": "ICSO",
+    "logoPrompt": "Design a premium logo for IntCloudSysOps (ICSO) with a hexagon eye brain circuits with growth accent style.",
+    "colorPalette": {
+      "dark": "#0A0A0A",
+      "primaryBlue": "#2563EB",
+      "cyan": "#06B6D4",
+      "purple": "#8B5CF6",
+      "green": "#22C55E",
+      "light": "#F3F4F6"
+    },
+    "typography": {
+      "primary": "Poppins",
+      "secondary": "Inter",
+      "fallback": "system-ui"
+    },
+    "taglineOptions": [
+      "SEE. AUTOMATE. GROW.",
+      "From Leads to Revenue.",
+      "From Chaos to Visibility."
+    ],
+    "missionStatement": "We help businesses capture leads, automate follow-ups, gain visibility into their operations and scale revenue.",
+    "emailFooter": "IntCloudSysOps\nAI Powered Growth Operations\nSEE. AUTOMATE. GROW.",
+    "socialBio": "ICSO helps businesses capture leads, automate follow-up, and gain operational visibility.",
+    "landingHeroCopy": {
+      "headline": "SEE. AUTOMATE. GROW.",
+      "subheadline": "We help businesses capture leads, automate follow-ups, gain visibility into their operations and scale revenue."
+    },
+    "ctaLabels": [
+      "Book a Strategy Call",
+      "See the System",
+      "Get the Blueprint",
+      "Start the Intake"
+    ],
+    "dashboardSectionNames": [
+      "Growth",
+      "Automation",
+      "Visibility",
+      "Operations",
+      "Revenue"
+    ]
+  },
+  "ghlSetupManifest": {
+    "clientKey": "icso",
+    "companyName": "IntCloudSysOps",
+    "shortName": "ICSO",
+    "setupTemplate": "agency",
+    "pipelineName": "Agency Growth Pipeline",
+    "pipelineStages": [
+      {
+        "name": "New Lead",
+        "description": "Fresh intake",
+        "objective": "Start follow-up"
+      },
+      {
+        "name": "Contacted",
+        "description": "Initial outreach sent",
+        "objective": "Engage the lead"
+      },
+      {
+        "name": "Interested",
+        "description": "Lead shows intent",
+        "objective": "Move toward the next step"
+      },
+      {
+        "name": "Ready",
+        "description": "Ready for handoff",
+        "objective": "Close the loop"
+      },
+      {
+        "name": "Lost",
+        "description": "Lead did not convert",
+        "objective": "Preserve the record"
+      }
+    ],
+    "tags": [
+      {
+        "name": "icso_lead",
+        "purpose": "icso lead"
+      },
+      {
+        "name": "icso_active",
+        "purpose": "icso active"
+      },
+      {
+        "name": "icso_lost",
+        "purpose": "icso lost"
+      }
+    ],
+    "customFields": [
+      {
+        "fieldName": "Company Name",
+        "fieldType": "text",
+        "required": true,
+        "usage": "Client legal or trade name"
+      },
+      {
+        "fieldName": "Industry",
+        "fieldType": "text",
+        "required": true,
+        "usage": "Client industry"
+      },
+      {
+        "fieldName": "Niche",
+        "fieldType": "text",
+        "required": true,
+        "usage": "Client niche"
+      },
+      {
+        "fieldName": "Website",
+        "fieldType": "text",
+        "required": false,
+        "usage": "Client website"
+      },
+      {
+        "fieldName": "Instagram",
+        "fieldType": "text",
+        "required": false,
+        "usage": "Social reference"
+      },
+      {
+        "fieldName": "Target Customer",
+        "fieldType": "textarea",
+        "required": true,
+        "usage": "ICP or target audience"
+      },
+      {
+        "fieldName": "Services",
+        "fieldType": "textarea",
+        "required": true,
+        "usage": "Offer stack summary"
+      },
+      {
+        "fieldName": "Brand Tone",
+        "fieldType": "textarea",
+        "required": true,
+        "usage": "Voice and tone guidance"
+      }
+    ],
+    "calendars": [
+      {
+        "name": "Discovery Call",
+        "purpose": "Initial qualification and needs discovery",
+        "durationMinutes": 30
+      },
+      {
+        "name": "Implementation Check-in",
+        "purpose": "Project onboarding and delivery review",
+        "durationMinutes": 20
+      }
+    ],
+    "emailTemplates": [
+      {
+        "name": "Welcome Email",
+        "purpose": "Immediate confirmation after intake",
+        "subject": "IntCloudSysOps intake received",
+        "preview": "Thanks for reaching out. We have your request and will follow up shortly."
+      },
+      {
+        "name": "Reminder Email",
+        "purpose": "Reminder before the next scheduled step",
+        "subject": "Reminder from ICSO",
+        "preview": "A short reminder to keep the process moving."
+      },
+      {
+        "name": "Conversion Follow-up Email",
+        "purpose": "Push toward the next business action",
+        "subject": "Next step to keep momentum",
+        "preview": "Here is the next step to move from interest to action."
+      }
+    ],
+    "smsTemplates": [
+      {
+        "name": "Welcome SMS",
+        "purpose": "Fast acknowledgment after intake",
+        "preview": "Thanks for contacting ICSO. We received your request and will follow up soon."
+      },
+      {
+        "name": "Reminder SMS",
+        "purpose": "Reminder for the next scheduled action",
+        "preview": "Quick reminder: your next step is coming up soon."
+      },
+      {
+        "name": "Follow-up SMS",
+        "purpose": "Move the lead or client forward",
+        "preview": "Just checking in to keep this moving. Reply if you want to continue."
+      }
+    ],
+    "forms": [
+      {
+        "name": "Client Intake Form",
+        "fields": [],
+        "successMessage": "Thanks. We will contact you with the next step."
+      }
+    ],
+    "workflowsChecklist": [
+      "Lead Intake",
+      "Trial Reminder",
+      "Post Trial Follow Up",
+      "Enrollment Success"
+    ],
+    "snapshotChecklist": [
+      "Pipelines",
+      "Tags",
+      "Custom Fields",
+      "Forms",
+      "Calendars",
+      "Workflows",
+      "Email Templates",
+      "SMS Templates",
+      "Dashboard Widgets",
+      "Branding"
+    ],
+    "unsupportedManualSteps": [
+      "Brand Board",
+      "Whitelabel",
+      "Domains",
+      "Roles",
+      "Workflow authoring",
+      "Snapshot authoring",
+      "Full agency setup"
+    ]
+  }
+}

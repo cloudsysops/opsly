@@ -1,0 +1,1033 @@
+{
+  "brandProfile": {
+    "client_key": "peskids",
+    "company_name": "Peskids",
+    "short_name": "Peskids",
+    "industry": "Academy / Education",
+    "niche": "Swimming academy for children and families",
+    "website": "https://peskids.op-sly.com",
+    "instagram": "",
+    "target_customer": "Parents looking for a safe, friendly, and structured swim academy for kids",
+    "services": [
+      "Free trial class intake",
+      "Class scheduling and reminders",
+      "Enrollment follow-up",
+      "Family communication and student visibility"
+    ],
+    "brand_tone": [
+      "warm",
+      "parent-facing",
+      "trustworthy",
+      "clear",
+      "conversion-oriented"
+    ],
+    "color_preferences": [
+      "#0D4C63",
+      "#2DB7B0",
+      "#A8DDE3",
+      "#FF5A1F",
+      "#FFC20E",
+      "#FFFFFF"
+    ],
+    "logo_style": "friendly swim-academy mark with playful but premium feel",
+    "tagline": "Aprenden. Se divierten. Son Peskids.",
+    "mission": "Help families enroll faster, follow up consistently, and keep every trial class moving toward active membership.",
+    "country": "CO",
+    "language": "es",
+    "assets": [
+      {
+        "kind": "logo",
+        "name": "Peskids primary logo",
+        "url": null,
+        "note": "Use existing live brand assets"
+      },
+      {
+        "kind": "favicon",
+        "name": "Peskids favicon",
+        "url": null,
+        "note": "Existing app favicon / icon set"
+      }
+    ]
+  },
+  "brandKit": {
+    "clientKey": "peskids",
+    "companyName": "Peskids",
+    "shortName": "Peskids",
+    "logoPrompt": "Design a premium logo for Peskids (Peskids). Logo style: friendly swim-academy mark with playful but premium feel. Brand tone: warm, parent-facing, trustworthy, clear. Industry: Academy / Education. Niche: Swimming academy for children and families. Color direction: #0D4C63, #2DB7B0, #A8DDE3, #FF5A1F. The mark must read as structure + visibility + automation + growth, not generic AI monitoring.",
+    "colorPalette": [
+      {
+        "name": "Dark",
+        "hex": "#0D4C63",
+        "usage": "Dark"
+      },
+      {
+        "name": "Teal",
+        "hex": "#2DB7B0",
+        "usage": "Teal"
+      },
+      {
+        "name": "Light Teal",
+        "hex": "#A8DDE3",
+        "usage": "Light Teal"
+      },
+      {
+        "name": "Orange",
+        "hex": "#FF5A1F",
+        "usage": "Orange"
+      },
+      {
+        "name": "Yellow",
+        "hex": "#FFC20E",
+        "usage": "Yellow"
+      },
+      {
+        "name": "Light",
+        "hex": "#FFFFFF",
+        "usage": "Light"
+      }
+    ],
+    "typography": {
+      "primary": "Poppins",
+      "secondary": "Inter",
+      "fallback": "system-ui"
+    },
+    "taglineOptions": [
+      "Aprenden. Se divierten. Son Peskids.",
+      "From trial class to active student.",
+      "Capture. Automate. Convert."
+    ],
+    "missionStatement": "Help families enroll faster, follow up consistently, and keep every trial class moving toward active membership.",
+    "emailFooter": "Peskids\nHelp families enroll faster, follow up consistently, and keep every trial class moving toward active membership.",
+    "socialBio": "Peskids helps families move from inquiry to enrollment with a clearer, friendlier academy experience.",
+    "landingHeroCopy": {
+      "headline": "Aprenden. Se divierten. Crecen.",
+      "subheadline": "Un sistema de captación y seguimiento para llevar más familias desde la consulta hasta la inscripción.",
+      "supportingLine": "Peskids helps parents move from inquiry to enrollment with a clear trial-class and follow-up system."
+    },
+    "ctaLabels": [
+      "Book a Free Trial",
+      "Check Availability",
+      "Enroll Now",
+      "Talk to the Team"
+    ],
+    "dashboardSectionNames": [
+      "Growth",
+      "Automation",
+      "Visibility",
+      "Operations",
+      "Revenue"
+    ],
+    "voiceGuidelines": {
+      "tone": [
+        "warm",
+        "parent-facing",
+        "trustworthy",
+        "clear",
+        "conversion-oriented"
+      ],
+      "avoid": [
+        "generic AI hype",
+        "overly technical jargon",
+        "vague promises",
+        "stack leakage on tenant-facing copy"
+      ]
+    }
+  },
+  "ghlSetupManifest": {
+    "clientKey": "peskids",
+    "companyName": "Peskids",
+    "shortName": "Peskids",
+    "setupTemplate": "academy",
+    "pipelineName": "Academy Growth Pipeline",
+    "pipelineStages": [
+      {
+        "name": "New Lead",
+        "description": "Fresh parent or student inquiry captured from a form or conversation.",
+        "objective": "Register the lead and start the follow-up sequence.",
+        "entryCriteria": [
+          "Form submitted",
+          "Inbound inquiry received",
+          "Lead imported"
+        ],
+        "exitCriteria": [
+          "Contact created",
+          "Tag assigned",
+          "Opportunity opened"
+        ]
+      },
+      {
+        "name": "Contacted",
+        "description": "Team has acknowledged the lead and started the first follow-up.",
+        "objective": "Move the lead into an active conversation.",
+        "entryCriteria": [
+          "Welcome message sent",
+          "Follow-up task created"
+        ],
+        "exitCriteria": [
+          "Reply received",
+          "Trial class interest confirmed"
+        ]
+      },
+      {
+        "name": "Interested",
+        "description": "Parent or student has shown clear intent to book a class.",
+        "objective": "Convert interest into a scheduled trial.",
+        "entryCriteria": [
+          "Interest confirmed",
+          "Schedule request received"
+        ],
+        "exitCriteria": [
+          "Trial class booked"
+        ]
+      },
+      {
+        "name": "Trial Class Scheduled",
+        "description": "Trial class has been booked on the calendar.",
+        "objective": "Prepare reminders and attendance.",
+        "entryCriteria": [
+          "Calendar booking completed"
+        ],
+        "exitCriteria": [
+          "Trial reminder workflow active",
+          "Calendar event confirmed"
+        ]
+      },
+      {
+        "name": "Trial Class Completed",
+        "description": "Trial class happened and feedback should be collected.",
+        "objective": "Collect feedback and push the enrollment offer.",
+        "entryCriteria": [
+          "Trial session completed"
+        ],
+        "exitCriteria": [
+          "Feedback sent",
+          "Enrollment follow-up started"
+        ]
+      },
+      {
+        "name": "Enrollment Pending",
+        "description": "The family is evaluating the offer after the trial.",
+        "objective": "Nudge toward conversion without pressure.",
+        "entryCriteria": [
+          "Trial completed",
+          "Enrollment proposal shared"
+        ],
+        "exitCriteria": [
+          "Enrollment accepted",
+          "Lost marked"
+        ]
+      },
+      {
+        "name": "Active Student",
+        "description": "Student is enrolled and attending classes.",
+        "objective": "Track active revenue and retention.",
+        "entryCriteria": [
+          "Enrollment confirmed",
+          "Payment or registration complete"
+        ],
+        "exitCriteria": [
+          "Student paused",
+          "Renewal needed"
+        ]
+      },
+      {
+        "name": "Lost",
+        "description": "Lead did not convert or stopped engaging.",
+        "objective": "Close the loop and record the reason.",
+        "entryCriteria": [
+          "No response",
+          "Not interested",
+          "Declined offer"
+        ],
+        "exitCriteria": [
+          "Archived",
+          "Re-engagement list updated"
+        ]
+      }
+    ],
+    "tags": [
+      {
+        "name": "academy_lead",
+        "purpose": "Fresh lead intake"
+      },
+      {
+        "name": "academy_trial",
+        "purpose": "Trial class flow"
+      },
+      {
+        "name": "academy_parent",
+        "purpose": "Parent contact"
+      },
+      {
+        "name": "academy_student",
+        "purpose": "Student record"
+      },
+      {
+        "name": "academy_active",
+        "purpose": "Active student state"
+      },
+      {
+        "name": "academy_lost",
+        "purpose": "Lost / inactive lead"
+      },
+      {
+        "name": "academy_referral",
+        "purpose": "Referral source"
+      },
+      {
+        "name": "academy_instagram",
+        "purpose": "Instagram source"
+      },
+      {
+        "name": "academy_facebook",
+        "purpose": "Facebook source"
+      },
+      {
+        "name": "academy_website",
+        "purpose": "Website source"
+      },
+      {
+        "name": "academy_whatsapp",
+        "purpose": "WhatsApp source"
+      }
+    ],
+    "customFields": [
+      {
+        "fieldName": "Student Name",
+        "fieldType": "text",
+        "required": true,
+        "usage": "Primary student identity"
+      },
+      {
+        "fieldName": "Parent Name",
+        "fieldType": "text",
+        "required": true,
+        "usage": "Responsible adult contact"
+      },
+      {
+        "fieldName": "Student Age",
+        "fieldType": "number",
+        "required": true,
+        "usage": "Class fit and safety"
+      },
+      {
+        "fieldName": "Program Interest",
+        "fieldType": "dropdown",
+        "required": true,
+        "usage": "Class or program selection"
+      },
+      {
+        "fieldName": "Preferred Schedule",
+        "fieldType": "text",
+        "required": false,
+        "usage": "Preferred class timing"
+      },
+      {
+        "fieldName": "Trial Class Date",
+        "fieldType": "date",
+        "required": false,
+        "usage": "Trial booking date"
+      },
+      {
+        "fieldName": "Enrollment Date",
+        "fieldType": "date",
+        "required": false,
+        "usage": "Enrollment timestamp"
+      },
+      {
+        "fieldName": "Lead Source",
+        "fieldType": "dropdown",
+        "required": false,
+        "usage": "Source attribution"
+      }
+    ],
+    "calendars": [
+      {
+        "name": "Trial Class Booking",
+        "purpose": "Book the trial session",
+        "durationMinutes": 30
+      },
+      {
+        "name": "Enrollment Follow-up",
+        "purpose": "Post-trial conversion call",
+        "durationMinutes": 20
+      }
+    ],
+    "emailTemplates": [
+      {
+        "name": "Welcome Email",
+        "purpose": "Immediate confirmation after intake",
+        "subject": "Peskids intake received",
+        "preview": "Thanks for reaching out. We have your request and will follow up shortly."
+      },
+      {
+        "name": "Reminder Email",
+        "purpose": "Reminder before the next scheduled step",
+        "subject": "Reminder from Peskids",
+        "preview": "A short reminder to keep the process moving."
+      },
+      {
+        "name": "Conversion Follow-up Email",
+        "purpose": "Push toward the next business action",
+        "subject": "Next step to keep momentum",
+        "preview": "Here is the next step to move from interest to action."
+      }
+    ],
+    "smsTemplates": [
+      {
+        "name": "Welcome SMS",
+        "purpose": "Fast acknowledgment after intake",
+        "preview": "Thanks for contacting Peskids. We received your request and will follow up soon."
+      },
+      {
+        "name": "Reminder SMS",
+        "purpose": "Reminder for the next scheduled action",
+        "preview": "Quick reminder: your next step is coming up soon."
+      },
+      {
+        "name": "Follow-up SMS",
+        "purpose": "Move the lead or client forward",
+        "preview": "Just checking in to keep this moving. Reply if you want to continue."
+      }
+    ],
+    "forms": [
+      {
+        "name": "Free Trial Form",
+        "fields": [
+          {
+            "label": "Nombre",
+            "fieldType": "text",
+            "required": true,
+            "validation": "min 2 chars"
+          },
+          {
+            "label": "Teléfono",
+            "fieldType": "phone",
+            "required": true,
+            "validation": "valid phone number"
+          },
+          {
+            "label": "Email",
+            "fieldType": "email",
+            "required": true,
+            "validation": "valid email"
+          },
+          {
+            "label": "Edad",
+            "fieldType": "number",
+            "required": true,
+            "validation": "1-18 range"
+          },
+          {
+            "label": "Programa",
+            "fieldType": "text",
+            "required": true,
+            "validation": "required"
+          },
+          {
+            "label": "Horario Preferido",
+            "fieldType": "text",
+            "required": false,
+            "validation": "optional"
+          },
+          {
+            "label": "Consentimiento",
+            "fieldType": "checkbox",
+            "required": true,
+            "validation": "must be checked"
+          }
+        ],
+        "successMessage": "Thank you. We received your request and will follow up shortly."
+      }
+    ],
+    "workflowsChecklist": [
+      {
+        "name": "Lead Intake",
+        "trigger": "Form submitted",
+        "actions": [
+          "Create opportunity",
+          "Assign tag",
+          "Send welcome SMS",
+          "Send welcome email",
+          "Notify team"
+        ],
+        "implementation": "manual",
+        "notes": "Build in GHL or snapshot because workflow authoring is not automated here."
+      },
+      {
+        "name": "Trial Reminder",
+        "trigger": "Trial class booking",
+        "actions": [
+          "24h reminder",
+          "3h reminder",
+          "30min reminder"
+        ],
+        "implementation": "manual",
+        "notes": "Time-based reminder sequence."
+      },
+      {
+        "name": "Post Trial Follow Up",
+        "trigger": "Trial class completed",
+        "actions": [
+          "Request feedback",
+          "Share enrollment offer",
+          "Continue follow-up"
+        ],
+        "implementation": "manual",
+        "notes": "Keep the sequence human and short."
+      },
+      {
+        "name": "Enrollment Success",
+        "trigger": "Student enrolled",
+        "actions": [
+          "Move stage",
+          "Tag active student",
+          "Send welcome email",
+          "Notify team"
+        ],
+        "implementation": "manual",
+        "notes": "Mark the lead as active and stop reminder flows."
+      }
+    ],
+    "snapshotChecklist": [
+      {
+        "name": "Pipelines",
+        "why": "Lifecycle and stage routing",
+        "owner": "GHL admin"
+      },
+      {
+        "name": "Tags",
+        "why": "Segmentation and workflow triggers",
+        "owner": "Automation manager"
+      },
+      {
+        "name": "Custom Fields",
+        "why": "Structured intake and reporting",
+        "owner": "Automation manager"
+      },
+      {
+        "name": "Forms",
+        "why": "Lead capture and client intake",
+        "owner": "Sales manager"
+      },
+      {
+        "name": "Calendars",
+        "why": "Booking and scheduling",
+        "owner": "Sales manager"
+      },
+      {
+        "name": "Workflows",
+        "why": "Reminder and follow-up automation",
+        "owner": "Automation manager"
+      },
+      {
+        "name": "Templates",
+        "why": "Email and SMS communication blocks",
+        "owner": "Automation manager"
+      },
+      {
+        "name": "Dashboard Widgets",
+        "why": "Visibility for the client",
+        "owner": "Analyst"
+      },
+      {
+        "name": "Branding",
+        "why": "Visual consistency",
+        "owner": "Admin"
+      }
+    ],
+    "unsupportedManualSteps": [
+      {
+        "area": "Brand Board / Whitelabel",
+        "why": "Supported inconsistently through API/MCP and still not part of the dry-run executor.",
+        "checklist": [
+          "Upload logos",
+          "Set colors and fonts",
+          "Mark the default brand board",
+          "Verify login branding"
+        ]
+      },
+      {
+        "area": "Domains",
+        "why": "Needs DNS and account-level setup outside the dry-run engine.",
+        "checklist": [
+          "Configure whitelabel domain",
+          "Configure branded API domain",
+          "Validate DNS records",
+          "Verify SSL"
+        ]
+      },
+      {
+        "area": "Roles",
+        "why": "Agency role provisioning remains a manual setup task in this slice.",
+        "checklist": [
+          "Create Admin role",
+          "Create Sales Manager role",
+          "Create Automation Manager role",
+          "Create Support role",
+          "Create Analyst role"
+        ]
+      },
+      {
+        "area": "Workflow Authoring",
+        "why": "The current setup agent only produces the checklist, not the workflow builder payload.",
+        "checklist": [
+          "Build the lead intake workflow",
+          "Build reminders",
+          "Build follow-up sequence",
+          "Build enrollment success flow"
+        ]
+      },
+      {
+        "area": "Snapshot Authoring",
+        "why": "Snapshot export/build remains a manual or UI-driven step in this slice.",
+        "checklist": [
+          "Create the snapshot in GHL",
+          "Add all setup assets",
+          "Export and version the snapshot"
+        ]
+      },
+      {
+        "area": "Full Agency Setup",
+        "why": "Agency profile, mobile branding, and email branding still need a human review.",
+        "checklist": [
+          "Verify agency profile",
+          "Upload email branding",
+          "Upload mobile branding",
+          "Review login screen"
+        ]
+      },
+      {
+        "area": "Live Tenant Safety",
+        "why": "Peskids must remain untouched in production during dry-run generation.",
+        "checklist": [
+          "Do not write to live tenant settings",
+          "Use dry-run only",
+          "Review all actions before execution"
+        ]
+      }
+    ]
+  },
+  "apiActionsPossible": [
+    {
+      "feature": "Tags",
+      "action": "createTag",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "academy_lead",
+      "payload": {
+        "name": "academy_lead",
+        "purpose": "Fresh lead intake",
+        "client": "peskids",
+        "shortName": "Peskids"
+      }
+    },
+    {
+      "feature": "Tags",
+      "action": "createTag",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "academy_trial",
+      "payload": {
+        "name": "academy_trial",
+        "purpose": "Trial class flow",
+        "client": "peskids",
+        "shortName": "Peskids"
+      }
+    },
+    {
+      "feature": "Tags",
+      "action": "createTag",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "academy_parent",
+      "payload": {
+        "name": "academy_parent",
+        "purpose": "Parent contact",
+        "client": "peskids",
+        "shortName": "Peskids"
+      }
+    },
+    {
+      "feature": "Tags",
+      "action": "createTag",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "academy_student",
+      "payload": {
+        "name": "academy_student",
+        "purpose": "Student record",
+        "client": "peskids",
+        "shortName": "Peskids"
+      }
+    },
+    {
+      "feature": "Tags",
+      "action": "createTag",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "academy_active",
+      "payload": {
+        "name": "academy_active",
+        "purpose": "Active student state",
+        "client": "peskids",
+        "shortName": "Peskids"
+      }
+    },
+    {
+      "feature": "Tags",
+      "action": "createTag",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "academy_lost",
+      "payload": {
+        "name": "academy_lost",
+        "purpose": "Lost / inactive lead",
+        "client": "peskids",
+        "shortName": "Peskids"
+      }
+    },
+    {
+      "feature": "Tags",
+      "action": "createTag",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "academy_referral",
+      "payload": {
+        "name": "academy_referral",
+        "purpose": "Referral source",
+        "client": "peskids",
+        "shortName": "Peskids"
+      }
+    },
+    {
+      "feature": "Tags",
+      "action": "createTag",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "academy_instagram",
+      "payload": {
+        "name": "academy_instagram",
+        "purpose": "Instagram source",
+        "client": "peskids",
+        "shortName": "Peskids"
+      }
+    },
+    {
+      "feature": "Tags",
+      "action": "createTag",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "academy_facebook",
+      "payload": {
+        "name": "academy_facebook",
+        "purpose": "Facebook source",
+        "client": "peskids",
+        "shortName": "Peskids"
+      }
+    },
+    {
+      "feature": "Tags",
+      "action": "createTag",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "academy_website",
+      "payload": {
+        "name": "academy_website",
+        "purpose": "Website source",
+        "client": "peskids",
+        "shortName": "Peskids"
+      }
+    },
+    {
+      "feature": "Tags",
+      "action": "createTag",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "academy_whatsapp",
+      "payload": {
+        "name": "academy_whatsapp",
+        "purpose": "WhatsApp source",
+        "client": "peskids",
+        "shortName": "Peskids"
+      }
+    },
+    {
+      "feature": "Custom Fields",
+      "action": "createCustomField",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "Student Name",
+      "payload": {
+        "name": "Student Name",
+        "dataType": "text",
+        "required": true,
+        "usage": "Primary student identity"
+      }
+    },
+    {
+      "feature": "Custom Fields",
+      "action": "createCustomField",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "Parent Name",
+      "payload": {
+        "name": "Parent Name",
+        "dataType": "text",
+        "required": true,
+        "usage": "Responsible adult contact"
+      }
+    },
+    {
+      "feature": "Custom Fields",
+      "action": "createCustomField",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "Student Age",
+      "payload": {
+        "name": "Student Age",
+        "dataType": "number",
+        "required": true,
+        "usage": "Class fit and safety"
+      }
+    },
+    {
+      "feature": "Custom Fields",
+      "action": "createCustomField",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "Program Interest",
+      "payload": {
+        "name": "Program Interest",
+        "dataType": "dropdown",
+        "required": true,
+        "usage": "Class or program selection"
+      }
+    },
+    {
+      "feature": "Custom Fields",
+      "action": "createCustomField",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "Preferred Schedule",
+      "payload": {
+        "name": "Preferred Schedule",
+        "dataType": "text",
+        "required": false,
+        "usage": "Preferred class timing"
+      }
+    },
+    {
+      "feature": "Custom Fields",
+      "action": "createCustomField",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "Trial Class Date",
+      "payload": {
+        "name": "Trial Class Date",
+        "dataType": "date",
+        "required": false,
+        "usage": "Trial booking date"
+      }
+    },
+    {
+      "feature": "Custom Fields",
+      "action": "createCustomField",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "Enrollment Date",
+      "payload": {
+        "name": "Enrollment Date",
+        "dataType": "date",
+        "required": false,
+        "usage": "Enrollment timestamp"
+      }
+    },
+    {
+      "feature": "Custom Fields",
+      "action": "createCustomField",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "Lead Source",
+      "payload": {
+        "name": "Lead Source",
+        "dataType": "dropdown",
+        "required": false,
+        "usage": "Source attribution"
+      }
+    },
+    {
+      "feature": "Calendars",
+      "action": "createCalendar",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "Trial Class Booking",
+      "payload": {
+        "name": "Trial Class Booking",
+        "purpose": "Book the trial session",
+        "durationMinutes": 30
+      }
+    },
+    {
+      "feature": "Calendars",
+      "action": "createCalendar",
+      "transport": "rest",
+      "status": "implemented",
+      "target": "Enrollment Follow-up",
+      "payload": {
+        "name": "Enrollment Follow-up",
+        "purpose": "Post-trial conversion call",
+        "durationMinutes": 20
+      }
+    },
+    {
+      "feature": "Opportunities",
+      "action": "prepareOpportunityStages",
+      "transport": "rest",
+      "status": "available_in_api",
+      "target": "Academy Growth Pipeline",
+      "payload": {
+        "pipelineName": "Academy Growth Pipeline",
+        "stageNames": [
+          "New Lead",
+          "Contacted",
+          "Interested",
+          "Trial Class Scheduled",
+          "Trial Class Completed",
+          "Enrollment Pending",
+          "Active Student",
+          "Lost"
+        ]
+      }
+    }
+  ],
+  "manualActionsRequired": [
+    {
+      "area": "Brand Board / Whitelabel",
+      "why": "Supported inconsistently through API/MCP and still not part of the dry-run executor.",
+      "checklist": [
+        "Upload logos",
+        "Set colors and fonts",
+        "Mark the default brand board",
+        "Verify login branding"
+      ]
+    },
+    {
+      "area": "Domains",
+      "why": "Needs DNS and account-level setup outside the dry-run engine.",
+      "checklist": [
+        "Configure whitelabel domain",
+        "Configure branded API domain",
+        "Validate DNS records",
+        "Verify SSL"
+      ]
+    },
+    {
+      "area": "Roles",
+      "why": "Agency role provisioning remains a manual setup task in this slice.",
+      "checklist": [
+        "Create Admin role",
+        "Create Sales Manager role",
+        "Create Automation Manager role",
+        "Create Support role",
+        "Create Analyst role"
+      ]
+    },
+    {
+      "area": "Workflow Authoring",
+      "why": "The current setup agent only produces the checklist, not the workflow builder payload.",
+      "checklist": [
+        "Build the lead intake workflow",
+        "Build reminders",
+        "Build follow-up sequence",
+        "Build enrollment success flow"
+      ]
+    },
+    {
+      "area": "Snapshot Authoring",
+      "why": "Snapshot export/build remains a manual or UI-driven step in this slice.",
+      "checklist": [
+        "Create the snapshot in GHL",
+        "Add all setup assets",
+        "Export and version the snapshot"
+      ]
+    },
+    {
+      "area": "Full Agency Setup",
+      "why": "Agency profile, mobile branding, and email branding still need a human review.",
+      "checklist": [
+        "Verify agency profile",
+        "Upload email branding",
+        "Upload mobile branding",
+        "Review login screen"
+      ]
+    },
+    {
+      "area": "Live Tenant Safety",
+      "why": "Peskids must remain untouched in production during dry-run generation.",
+      "checklist": [
+        "Do not write to live tenant settings",
+        "Use dry-run only",
+        "Review all actions before execution"
+      ]
+    }
+  ],
+  "capabilityMatrix": [
+    {
+      "feature": "Contacts",
+      "currentWrapper": "implemented",
+      "mcp": "implemented",
+      "recommended": "mcp",
+      "notes": "Use MCP for AI-facing operations; REST wrapper still supports deterministic CRUD/search."
+    },
+    {
+      "feature": "Opportunities",
+      "currentWrapper": "implemented",
+      "mcp": "available_in_api",
+      "recommended": "rest",
+      "notes": "Wrapper already has CRUD/search; MCP is useful for read/update flows."
+    },
+    {
+      "feature": "Calendars",
+      "currentWrapper": "implemented",
+      "mcp": "available_in_api",
+      "recommended": "rest",
+      "notes": "Keep scheduling deterministic in REST until the MCP surface broadens."
+    },
+    {
+      "feature": "Conversations",
+      "currentWrapper": "available_in_api",
+      "mcp": "implemented",
+      "recommended": "mcp",
+      "notes": "MCP is the better path for read/write inbox operations."
+    },
+    {
+      "feature": "Tags",
+      "currentWrapper": "implemented",
+      "mcp": "available_in_api",
+      "recommended": "rest",
+      "notes": "Wrapper handles tag definition CRUD; MCP can still manage contact tags."
+    },
+    {
+      "feature": "Custom Fields",
+      "currentWrapper": "implemented",
+      "mcp": "available_in_api",
+      "recommended": "rest",
+      "notes": "Keep field definitions on REST for now."
+    },
+    {
+      "feature": "Workflows",
+      "currentWrapper": "blocked_by_ghl",
+      "mcp": "blocked_by_ghl",
+      "recommended": "manual",
+      "notes": "Workflow authoring is still a manual/snapshot task."
+    },
+    {
+      "feature": "Snapshots",
+      "currentWrapper": "blocked_by_ghl",
+      "mcp": "blocked_by_ghl",
+      "recommended": "manual",
+      "notes": "Snapshot authoring/export is still a human checklist item."
+    }
+  ]
+}

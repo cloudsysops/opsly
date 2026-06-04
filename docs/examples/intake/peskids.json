@@ -1,0 +1,29 @@
+{
+  "companyName": "Peskids",
+  "shortName": "Peskids",
+  "industry": "Education",
+  "niche": "Academy and student growth",
+  "country": "Mexico",
+  "language": "es",
+  "targetCustomer": "Parents looking for a structured academy experience for their children",
+  "services": ["Trial class capture", "Enrollment follow-up", "Student lifecycle tracking", "Parent communication"],
+  "brandTone": "warm, trustworthy, parent-friendly, operational",
+  "website": "https://peskids.op-sly.com",
+  "instagram": "@peskids",
+  "colorPreferences": {
+    "dark": "#0A0A0A",
+    "primaryBlue": "#2563EB",
+    "cyan": "#06B6D4",
+    "purple": "#8B5CF6",
+    "green": "#22C55E",
+    "light": "#F3F4F6"
+  },
+  "logoStyle": "playful academy mark with clean modern geometry",
+  "tagline": "Learn. Grow. Repeat.",
+  "mission": "We help families capture opportunities, automate follow-ups, and keep visibility into student progress.",
+  "assets": {
+    "logo": "brand/peskids/logo-primary.png",
+    "favicon": "brand/peskids/favicon.png"
+  }
+}
+

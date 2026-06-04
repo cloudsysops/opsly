@@ -1,0 +1,181 @@
+{
+  "clientKey": "icso",
+  "companyName": "IntCloudSysOps",
+  "shortName": "ICSO",
+  "setupTemplate": "agency",
+  "pipelineName": "Agency Growth Pipeline",
+  "pipelineStages": [
+    {
+      "name": "New Lead",
+      "description": "Fresh intake",
+      "objective": "Start follow-up"
+    },
+    {
+      "name": "Contacted",
+      "description": "Initial outreach sent",
+      "objective": "Engage the lead"
+    },
+    {
+      "name": "Interested",
+      "description": "Lead shows intent",
+      "objective": "Move toward the next step"
+    },
+    {
+      "name": "Ready",
+      "description": "Ready for handoff",
+      "objective": "Close the loop"
+    },
+    {
+      "name": "Lost",
+      "description": "Lead did not convert",
+      "objective": "Preserve the record"
+    }
+  ],
+  "tags": [
+    {
+      "name": "icso_lead",
+      "purpose": "icso lead"
+    },
+    {
+      "name": "icso_active",
+      "purpose": "icso active"
+    },
+    {
+      "name": "icso_lost",
+      "purpose": "icso lost"
+    }
+  ],
+  "customFields": [
+    {
+      "fieldName": "Company Name",
+      "fieldType": "text",
+      "required": true,
+      "usage": "Client legal or trade name"
+    },
+    {
+      "fieldName": "Industry",
+      "fieldType": "text",
+      "required": true,
+      "usage": "Client industry"
+    },
+    {
+      "fieldName": "Niche",
+      "fieldType": "text",
+      "required": true,
+      "usage": "Client niche"
+    },
+    {
+      "fieldName": "Website",
+      "fieldType": "text",
+      "required": false,
+      "usage": "Client website"
+    },
+    {
+      "fieldName": "Instagram",
+      "fieldType": "text",
+      "required": false,
+      "usage": "Social reference"
+    },
+    {
+      "fieldName": "Target Customer",
+      "fieldType": "textarea",
+      "required": true,
+      "usage": "ICP or target audience"
+    },
+    {
+      "fieldName": "Services",
+      "fieldType": "textarea",
+      "required": true,
+      "usage": "Offer stack summary"
+    },
+    {
+      "fieldName": "Brand Tone",
+      "fieldType": "textarea",
+      "required": true,
+      "usage": "Voice and tone guidance"
+    }
+  ],
+  "calendars": [
+    {
+      "name": "Discovery Call",
+      "purpose": "Initial qualification and needs discovery",
+      "durationMinutes": 30
+    },
+    {
+      "name": "Implementation Check-in",
+      "purpose": "Project onboarding and delivery review",
+      "durationMinutes": 20
+    }
+  ],
+  "emailTemplates": [
+    {
+      "name": "Welcome Email",
+      "purpose": "Immediate confirmation after intake",
+      "subject": "IntCloudSysOps intake received",
+      "preview": "Thanks for reaching out. We have your request and will follow up shortly."
+    },
+    {
+      "name": "Reminder Email",
+      "purpose": "Reminder before the next scheduled step",
+      "subject": "Reminder from ICSO",
+      "preview": "A short reminder to keep the process moving."
+    },
+    {
+      "name": "Conversion Follow-up Email",
+      "purpose": "Push toward the next business action",
+      "subject": "Next step to keep momentum",
+      "preview": "Here is the next step to move from interest to action."
+    }
+  ],
+  "smsTemplates": [
+    {
+      "name": "Welcome SMS",
+      "purpose": "Fast acknowledgment after intake",
+      "preview": "Thanks for contacting ICSO. We received your request and will follow up soon."
+    },
+    {
+      "name": "Reminder SMS",
+      "purpose": "Reminder for the next scheduled action",
+      "preview": "Quick reminder: your next step is coming up soon."
+    },
+    {
+      "name": "Follow-up SMS",
+      "purpose": "Move the lead or client forward",
+      "preview": "Just checking in to keep this moving. Reply if you want to continue."
+    }
+  ],
+  "forms": [
+    {
+      "name": "Client Intake Form",
+      "fields": [],
+      "successMessage": "Thanks. We will contact you with the next step."
+    }
+  ],
+  "workflowsChecklist": [
+    "Lead Intake",
+    "Trial Reminder",
+    "Post Trial Follow Up",
+    "Enrollment Success"
+  ],
+  "snapshotChecklist": [
+    "Pipelines",
+    "Tags",
+    "Custom Fields",
+    "Forms",
+    "Calendars",
+    "Workflows",
+    "Email Templates",
+    "SMS Templates",
+    "Dashboard Widgets",
+    "Branding"
+  ],
+  "unsupportedManualSteps": [
+    "Brand Board",
+    "Whitelabel",
+    "Domains",
+    "Roles",
+    "Workflow authoring",
+    "Snapshot authoring",
+    "Full agency setup"
+  ]
+}
