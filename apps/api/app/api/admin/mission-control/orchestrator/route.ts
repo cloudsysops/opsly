@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { RedisClientType } from 'redis';
+import { requireAdminAccess } from '../../../../../lib/auth';
 
 const ORCHESTRATOR_HEALTH_FETCH_MS = 2000;
 
@@ -101,7 +102,12 @@ function buildWorkersSnapshot(): Record<string, { concurrency: number; active: n
   };
 }
 
-export async function GET(): Promise<Response> {
+export async function GET(request: Request): Promise<Response> {
+  const authError = await requireAdminAccess(request);
+  if (authError) {
+    return authError;
+  }
+
   try {
     const redis = await createRedis();
     await redis.connect();

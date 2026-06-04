@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServiceClient } from '../../../../../lib/supabase';
+import { requireAdminAccess } from '../../../../../lib/auth';
 
 /** Umbral: si fallos > completed * ratio → status error. */
 const FAILURE_DOMINANCE_RATIO = 0.5;
@@ -58,7 +59,12 @@ function applyResultRow(
   existing.status = statusFromCounts(existing.completedTasks, existing.failedTasks);
 }
 
-export async function GET(): Promise<Response> {
+export async function GET(request: Request): Promise<Response> {
+  const authError = await requireAdminAccess(request);
+  if (authError) {
+    return authError;
+  }
+
   try {
     const supabase = getServiceClient();
     const { data: teams, error } = await supabase
