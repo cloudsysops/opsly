@@ -1,18 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if ! command -v npx >/dev/null 2>&1; then
-  for candidate in \
-    /usr/local/opt/node@20/bin \
-    /opt/homebrew/opt/node@20/bin
-  do
-    if [ -d "$candidate" ]; then
-      export PATH="$candidate:$PATH"
-      break
-    fi
-  done
-fi
-
 ROOT="$(git rev-parse --show-toplevel)"
 MSG_FILE="${1:-}"
 
@@ -23,10 +11,16 @@ fi
 
 cd "$ROOT"
 
-# Read commit message
+# shellcheck source=scripts/hooks/hook-bootstrap.sh
+source "$ROOT/scripts/hooks/hook-bootstrap.sh"
+opsly_hook_bootstrap_runtime || {
+  echo "❌ Could not resolve npx for commit-msg" >&2
+  exit 1
+}
+opsly_hook_require npx
+
 COMMIT_MSG=$(cat "$MSG_FILE")
 
-# Check if canonical files are being modified
 CANONICAL_FILES="VISION.md ROADMAP.md AGENTS.md README.md docs/README.md docs/index.md docs/STRUCTURE-GUARDRAILS.md config/docs-root-allowlist.json config/modules.json"
 MODIFIED_CANONICAL=""
 
@@ -36,7 +30,6 @@ for file in $CANONICAL_FILES; do
   fi
 done
 
-# If canonical files modified, ensure commit message indicates intentional update
 if [ -n "$MODIFIED_CANONICAL" ]; then
   if ! echo "$COMMIT_MSG" | grep -qE "^(docs|chore|feat)(\(.+\))?: |^\[CANONICAL\]|^UPDATE_DOCS"; then
     echo ""
