@@ -26,14 +26,12 @@ if [[ "$TENANT" == "peskids" ]]; then
   LOC_VAR=GOHIGHLEVEL_PESKIDS_LOCATION_ID
   VERSION_VAR=GOHIGHLEVEL_PESKIDS_API_VERSION
   LABEL="Peskids"
-elif [[ "$TENANT" == "agency" || "$TENANT" == "intcloudsysops" ]]; then
+else
   KEY_VAR=GOHIGHLEVEL_API_KEY
   URL_VAR=GOHIGHLEVEL_API_URL
   LOC_VAR=GOHIGHLEVEL_LOCATION_ID
   VERSION_VAR=GOHIGHLEVEL_API_VERSION
   LABEL="agency (Intcloudsysops)"
-else
-  fail "unknown tenant: $TENANT (use peskids, intcloudsysops, or agency)"
 fi
 
 for name in "$KEY_VAR" "$URL_VAR" "$LOC_VAR"; do
@@ -64,6 +62,23 @@ doppler run --project "$PROJECT" --config "$CONFIG" -- bash -c "
       exit 1
     elif [[ \"\$loc_code\" != \"200\" ]]; then
       echo \"validate-ghl-config: unexpected locations response (expected 200, got \${loc_code})\" >&2
+      exit 1
+    fi
+
+    tags_code=\$(curl -sS -o /dev/null -w '%{http_code}' \\
+      -H \"Authorization: Bearer \${key}\" \\
+      -H 'Accept: application/json' \\
+      -H \"Version: \${version}\" \\
+      \"\${base%/}/locations/\${loc}/tags\")
+    echo \"validate-ghl-config: GET /locations/\${loc}/tags HTTP \${tags_code}\"
+    if [[ \"\$tags_code\" == \"401\" || \"\$tags_code\" == \"403\" ]]; then
+      echo 'validate-ghl-config: tags denied — regenerate Private Integration token and update Doppler' >&2
+      echo \"  doppler secrets set ${KEY_VAR} --project ${PROJECT} --config ${CONFIG}\" >&2
+      if [[ \"\$tenant\" == \"peskids\" || \"\$tenant\" == \"intcloudsysops\" || \"\$tenant\" == \"agency\" ]]; then
+        exit 1
+      fi
+    elif [[ \"\$tags_code\" != \"200\" ]]; then
+      echo \"validate-ghl-config: unexpected tags response (got \${tags_code})\" >&2
       exit 1
     fi
   fi

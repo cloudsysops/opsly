@@ -69,6 +69,8 @@
     "ghl-provision": "tsx scripts/ghl-provision.ts",
     "ghl-provision:intcloudsysops": "bash scripts/ghl-provision-intcloudsysops.sh",
     "ghl-provision:peskids": "bash scripts/ghl-provision-peskids.sh",
+    "ghl:scope-smoke": "bash scripts/ghl-scope-smoke.sh",
+    "ghl:reprovision-all": "bash scripts/ghl-reprovision-all.sh",
     "opsly:local-prompt-watcher": "tsx scripts/local-prompt-watcher.ts",
     "opsly:local-prompt-watcher:once": "tsx scripts/local-prompt-watcher.ts --once",
     "opsly:agent-cli": "tsx scripts/opsly-agent-cli.ts",

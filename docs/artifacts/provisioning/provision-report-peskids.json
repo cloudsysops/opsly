@@ -3,13 +3,13 @@
   "tenantSlug": "peskids",
   "locationId": "KJ5LawrOOe3hIerqtMRu",
   "dryRun": false,
-  "startedAt": "2026-06-04T09:03:04.768Z",
-  "finishedAt": "2026-06-04T09:03:10.128Z",
+  "startedAt": "2026-06-04T09:49:15.729Z",
+  "finishedAt": "2026-06-04T09:49:17.263Z",
   "summary": {
-    "created": 11,
+    "created": 0,
     "skipped": 0,
-    "alreadyExists": 0,
-    "manualRequired": 5,
+    "alreadyExists": 12,
+    "manualRequired": 4,
     "blocked": 0,
     "wouldCreate": 0
   },
@@ -17,55 +17,55 @@
     {
       "resourceType": "tag",
       "name": "lead-web",
-      "status": "created",
+      "status": "already_exists",
       "resourceId": "8KcvFYRH27MrNeXvOoPx"
     },
     {
       "resourceType": "tag",
       "name": "lead-n8n",
-      "status": "created",
+      "status": "already_exists",
       "resourceId": "LJVbq2OtiUEf1yRGwynJ"
     },
     {
       "resourceType": "tag",
       "name": "trial-booked",
-      "status": "created",
+      "status": "already_exists",
       "resourceId": "4TyFxkBVlomWtu9H54FJ"
     },
     {
       "resourceType": "tag",
       "name": "active-student",
-      "status": "created",
+      "status": "already_exists",
       "resourceId": "LhkRi3dwG5JXIYHZvis6"
     },
     {
       "resourceType": "tag",
       "name": "renewal-due",
-      "status": "created",
+      "status": "already_exists",
       "resourceId": "j8BFpLZ7s1agR3RvXSv6"
     },
     {
       "resourceType": "custom_field",
       "name": "child_name",
-      "status": "created",
+      "status": "already_exists",
       "resourceId": "Mfp5OHVE9ZeTUHDkcu7L"
     },
     {
       "resourceType": "custom_field",
       "name": "child_age",
-      "status": "created",
+      "status": "already_exists",
       "resourceId": "eTwe7i69DeTghzGmaVBe"
     },
     {
       "resourceType": "custom_field",
       "name": "interest_level",
-      "status": "created",
+      "status": "already_exists",
       "resourceId": "06cxG6FTwcR56tTgkrAt"
     },
     {
       "resourceType": "custom_field",
       "name": "preferred_schedule",
-      "status": "created",
+      "status": "already_exists",
       "resourceId": "1pkF1oI1IRcExcGnB7Du"
     },
     {
@@ -95,20 +95,22 @@
     {
       "resourceType": "pipeline",
       "name": "Peskids Enrollment",
-      "status": "manual_required",
-      "message": "Pipeline not found in location — create in GHL UI or import snapshot"
+      "status": "already_exists",
+      "message": "Pipeline and stages validated",
+      "resourceId": "bWKAQuLTQUjeGAvgf9fX"
     },
     {
       "resourceType": "calendar",
       "name": "Trial Class",
-      "status": "created",
-      "message": "Calendar and availability schedule created",
+      "status": "already_exists",
+      "message": "Calendar exists — availability schedule applied",
       "resourceId": "rodtWST0HJJpvrfzPZo5"
     },
     {
       "resourceType": "calendar",
       "name": "Assessment",
-      "status": "created",
+      "status": "already_exists",
+      "message": "Calendar validated",
       "resourceId": "cdqSVs1H4DUcoV6WFkeg"
     }
   ]

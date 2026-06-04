@@ -51,7 +51,17 @@ npm run ghl-provision -- \
 
 Reportes: `docs/artifacts/provisioning/provision-report-intcloudsysops.{json,md}`
 
-**Estado execute (2026-06-04):** dry-run OK (13 `would_create`). `--execute` bloqueado por scopes faltantes en el token agencia (`The token is not authorized for this scope`). Añadir scopes de la tabla anterior en GHL → Settings → Private Integrations y re-ejecutar `./scripts/ghl-provision-intcloudsysops.sh --execute`.
+**Estado execute (2026-06-04):** dry-run OK (13 `would_create`). `--execute` bloqueado: el token en **Doppler** (`GOHIGHLEVEL_API_KEY`) devuelve HTTP 401 en `GET /locations/{id}/tags` aunque los scopes estén marcados en la UI. **Acción:** regenerar Access Token en Private Integrations y actualizar Doppler, luego:
+
+```bash
+./scripts/ghl-scope-smoke.sh --tenant intcloudsysops   # debe exit 0
+./scripts/ghl-provision-intcloudsysops.sh --execute
+```
+
+```bash
+doppler secrets set GOHIGHLEVEL_API_KEY --project ops-intcloudsysops --config prd
+# pegar token nuevo (stdin)
+```
 
 ## UI-only (no API)
 
