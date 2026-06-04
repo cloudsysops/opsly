@@ -1,6 +1,10 @@
 import { execa } from 'execa';
 
-import { DOCKER_PS_LIST_MAX, DOCKER_PS_LIST_MAX_BUFFER_BYTES } from './constants';
+import { CACHE_TTL, DOCKER_PS_LIST_MAX, DOCKER_PS_LIST_MAX_BUFFER_BYTES } from './constants';
+import { getCache, setCache } from './redis-cache';
+
+const DOCKER_CMD_TIMEOUT_MS = 2000;
+const CACHE_KEY_LIST = 'docker:ps_list';
 
 export type ListedDockerContainer = {
   id: string;
@@ -83,26 +87,38 @@ export type DockerPsListResult =
     }
   | { ok: false; error: string };
 
+async function fetchDockerPsStdout(): Promise<string> {
+  const result = await execa('docker', ['ps', '-a', '--no-trunc', '--format', '{{json .}}'], {
+    reject: false,
+    maxBuffer: DOCKER_PS_LIST_MAX_BUFFER_BYTES,
+    timeout: DOCKER_CMD_TIMEOUT_MS,
+  });
+  if (result.exitCode !== 0) {
+    const err =
+      typeof result.stderr === 'string' && result.stderr.length > 0
+        ? result.stderr.trim()
+        : 'docker ps failed';
+    throw new Error(err);
+  }
+  if (typeof result.stdout !== 'string') {
+    throw new Error('docker ps returned no stdout');
+  }
+  return result.stdout;
+}
+
 /**
  * Lista contenedores del host donde corre la API (`docker ps -a`), vía socket montado en el contenedor.
  */
 export async function listDockerContainers(): Promise<DockerPsListResult> {
+  // Bolt Optimization: check cache first to avoid expensive CLI call (~1.1s)
+  const cached = await getCache<DockerPsListResult>(CACHE_KEY_LIST);
+  if (cached !== null) {
+    return cached;
+  }
+
   try {
-    const result = await execa('docker', ['ps', '-a', '--no-trunc', '--format', '{{json .}}'], {
-      reject: false,
-      maxBuffer: DOCKER_PS_LIST_MAX_BUFFER_BYTES,
-    });
-    if (result.exitCode !== 0) {
-      const err =
-        typeof result.stderr === 'string' && result.stderr.length > 0
-          ? result.stderr.trim()
-          : 'docker ps failed';
-      return { ok: false, error: err };
-    }
-    if (typeof result.stdout !== 'string') {
-      return { ok: false, error: 'docker ps returned no stdout' };
-    }
-    const lines = result.stdout.split('\n').filter((l) => l.trim().length > 0);
+    const stdout = await fetchDockerPsStdout();
+    const lines = stdout.split('\n').filter((l) => l.trim().length > 0);
     const truncated = lines.length > DOCKER_PS_LIST_MAX;
     const slice = truncated ? lines.slice(0, DOCKER_PS_LIST_MAX) : lines;
     const containers: ListedDockerContainer[] = [];
@@ -112,7 +128,13 @@ export async function listDockerContainers(): Promise<DockerPsListResult> {
         containers.push(mapped);
       }
     }
-    return { ok: true, containers, truncated };
+
+    const output: DockerPsListResult = { ok: true, containers, truncated };
+
+    // Background cache set to avoid blocking
+    void setCache(CACHE_KEY_LIST, output, CACHE_TTL.SHORT);
+
+    return output;
   } catch (e) {
     const message = e instanceof Error ? e.message : 'docker unavailable';
     return { ok: false, error: message };
