@@ -14,6 +14,10 @@ fail() {
   exit 1
 }
 
+warn() {
+  echo "validate-ghl-config: WARN $1" >&2
+}
+
 command -v doppler >/dev/null 2>&1 || fail "doppler CLI not found"
 
 if [[ "$TENANT" == "peskids" ]]; then
@@ -53,24 +57,36 @@ doppler run --project "$PROJECT" --config "$CONFIG" -- bash -c "
       -H \"Version: \${version}\" \\
       \"\${base%/}/locations/\${loc}\")
     echo \"validate-ghl-config: GET /locations/\${loc} HTTP \${loc_code}\"
-    if [[ \"\$loc_code\" != \"200\" ]]; then
+    if [[ \"\$loc_code\" == \"401\" || \"\$loc_code\" == \"403\" ]]; then
+      echo 'validate-ghl-config: auth/scope failure on locations — check API key and location access' >&2
+      exit 1
+    elif [[ \"\$loc_code\" != \"200\" ]]; then
+      echo \"validate-ghl-config: unexpected locations response (expected 200, got \${loc_code})\" >&2
       exit 1
     fi
   fi
 
   if [[ -n \"\$loc\" ]]; then
     contacts_code=\$(curl -sS -o /dev/null -w '%{http_code}' \\
+      -X POST \\
       -H \"Authorization: Bearer \${key}\" \\
       -H 'Accept: application/json' \\
-      -H \"Version: \${version}\" \\
-      \"\${base%/}/contacts/?locationId=\${loc}&limit=1\")
-    echo \"validate-ghl-config: contacts HTTP \${contacts_code}\"
+      -H 'Content-Type: application/json' \\
+      -H 'Version: 2023-02-21' \\
+      \"\${base%/}/contacts/search\" \\
+      --data '{\"locationId\":\"'\"\${loc}\"'\",\"page\":1,\"limit\":1}')
+    echo \"validate-ghl-config: POST /contacts/search HTTP \${contacts_code}\"
     if [[ \"\$contacts_code\" == \"401\" || \"\$contacts_code\" == \"403\" ]]; then
-      echo 'validate-ghl-config: WARN contacts denied — enable contacts.readonly on Private Integration in GHL' >&2
+      echo 'validate-ghl-config: contacts denied — likely missing contacts.readonly scope on Private Integration' >&2
       if [[ \"\$tenant\" == \"peskids\" ]]; then
         exit 1
       fi
-    elif [[ \"\$contacts_code\" != \"200\" ]]; then
+      echo 'validate-ghl-config: continuing (non-peskids tenant treats scope gap as warning)' >&2
+    elif [[ \"\$contacts_code\" == \"404\" || \"\$contacts_code\" == \"405\" ]]; then
+      echo 'validate-ghl-config: contacts endpoint mismatch — expected POST /contacts/search (LeadConnector API 2023-02-21)' >&2
+      exit 1
+    elif [[ \"\$contacts_code\" != \"200\" && \"\$contacts_code\" != \"400\" ]]; then
+      echo \"validate-ghl-config: unexpected contacts response (got \${contacts_code})\" >&2
       exit 1
     fi
   fi
