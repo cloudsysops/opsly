@@ -79,9 +79,14 @@ export class GhlProvisioningAgent {
         pushItem(items, 'tag', tag.name, 'would_create', 'Dry run — tag would be created');
         continue;
       }
-      const created = await this.client.createTag({ name: tag.name });
-      pushItem(items, 'tag', tag.name, 'created', undefined, created.id);
-      byName.set(normalizeName(tag.name), created);
+      try {
+        const created = await this.client.createTag({ name: tag.name });
+        pushItem(items, 'tag', tag.name, 'created', undefined, created.id);
+        byName.set(normalizeName(tag.name), created);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        pushItem(items, 'tag', tag.name, 'blocked', message);
+      }
     }
   }
 
@@ -121,14 +126,31 @@ export class GhlProvisioningAgent {
         );
         continue;
       }
-      const created = await this.client.createCustomField({
-        name: field.name,
-        dataType: field.dataType,
-        model: field.model,
-        placeholder: field.placeholder,
-      });
-      pushItem(items, 'custom_field', field.name, 'created', undefined, created.id);
-      byName.set(normalizeName(field.name), created);
+      try {
+        const created = await this.client.createCustomField({
+          name: field.name,
+          dataType: field.dataType,
+          model: field.model,
+          placeholder: field.placeholder,
+        });
+        pushItem(items, 'custom_field', field.name, 'created', undefined, created.id);
+        byName.set(normalizeName(field.name), created);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        const status =
+          message.includes('Standard Field') || message.includes('company_name')
+            ? 'skipped'
+            : 'blocked';
+        pushItem(
+          items,
+          'custom_field',
+          field.name,
+          status,
+          status === 'skipped'
+            ? `Use GHL standard field instead — ${message}`
+            : message
+        );
+      }
     }
   }
 

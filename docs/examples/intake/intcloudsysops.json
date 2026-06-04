@@ -12,7 +12,7 @@
     { "name": "churn-risk" }
   ],
   "customFields": [
-    { "name": "company_name", "dataType": "TEXT", "model": "contact" },
+    { "name": "client_company", "dataType": "TEXT", "model": "contact" },
     { "name": "deal_value", "dataType": "NUMERICAL", "model": "contact" },
     { "name": "service_tier", "dataType": "TEXT", "model": "contact" },
     { "name": "tenant_slug", "dataType": "TEXT", "model": "contact" },
@@ -27,7 +27,7 @@
     {
       "name": "Opsly — Discovery Call Confirmation",
       "subject": "Your discovery call is scheduled",
-      "bodyHtml": "<p>Looking forward to learning about {{company_name}}.</p>"
+      "bodyHtml": "<p>Looking forward to learning about {{contact.company_name}}.</p>"
     }
   ],
   "smsTemplates": [
