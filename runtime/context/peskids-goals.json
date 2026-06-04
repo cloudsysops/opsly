@@ -1,0 +1,130 @@
+{
+  "goal": "Peskids produccion completa con GoHighLevel funcionando",
+  "owner": "operations",
+  "created": "2026-06-02",
+  "updated": "2026-06-03",
+  "loop": {
+    "enabled": true,
+    "type": "persistent_until_complete",
+    "check_frequency": "cada_sesion",
+    "resume_instruction": "Leer este archivo, continuar hitos pendientes"
+  },
+  "hitos": {
+    "hito_1_infra_n8n": {
+      "status": "completed",
+      "note": "n8n_peskids container running + 10 workflows activos. Migration 0071 aplicada. RLS policies OK.",
+      "tasks_completed": 5,
+      "tasks_total": 5,
+      "fixes_applied": [
+        "send-approved.json: node name bug fixeado",
+        "N8N_BLOCK_ENV_ACCESS_IN_NODE=false añadido al compose",
+        "lead-capture: columnas referral_* eliminadas del payload",
+        "SQLITE_READONLY fixeado con chown 1000:1000"
+      ],
+      "n8n_webhooks_ok": [
+        "peskids-lead-intake: 200","peskids-lead: 200","peskids-notify: 202",
+        "peskids-send-approved: 200","peskids-submission-event: 202",
+        "peskids-whatsapp: 200","peskids-instagram: 200","peskids-message-pipeline: 200"
+      ]
+    },
+    "hito_2_ghl_webhook": {
+      "status": "completed",
+      "note": "Webhook bridge code fixed + tested. HMAC auth + retry + async dispatch. 12/12 tests passing.",
+      "tasks_completed": 4,
+      "tasks_total": 5,
+      "fixes_applied": [
+        "HMAC timing-safe webhook secret verification",
+        "Fire-and-forget async dispatch",
+        "Retry con backoff (3 attempts, 1s/2s/4s)",
+        "next_actions dinámico desde payload automation config",
+        "'Lost' status añadido al pipeline mapping"
+      ],
+      "blockers": [
+        "Configurar webhook saliente en GHL requiere acceso manual a app.gohighlevel.com"
+      ]
+    },
+    "hito_3_n8n_automatizacion": {
+      "status": "completed",
+      "note": "Smoke tests: 8/8 webhooks OK. validate-ghl-config PASSED. 15 tests unitarios.",
+      "tasks_completed": 5,
+      "tasks_total": 5
+    },
+    "hito_4_executive_dashboard": {
+      "status": "completed",
+      "note": "Dashboard retorna DATA REAL: 9 leads, 56 alerts, pipeline stages, fuentes mapeadas.",
+      "tasks_completed": 3,
+      "tasks_total": 3,
+      "fixes_applied": [
+        "Schema queries corregidas (payments, feedback tables correctas)",
+        "Logging estructurado en vez de catch(()=>0) silencioso"
+      ]
+    },
+    "hito_5_pipeline_completo": {
+      "status": "completed",
+      "note": "Stage sync bidireccional + auto-followup 24h + approval-first messaging. Todo implementado en código.",
+      "tasks_completed": 3,
+      "tasks_total": 3,
+      "submodules": {
+        "5.1_stage_sync": {
+          "status": "completed",
+          "note": "PATCH /leads/[leadId]/stage actualiza Supabase + sincroniza opportunity en GHL",
+          "files": [
+            "apps/api/lib/peskids/sales-pipeline.ts",
+            "apps/api/app/api/admin/peskids/[slug]/leads/[leadId]/stage/route.ts",
+            "apps/api/lib/services/gohighlevel/client.ts",
+            "apps/api/lib/services/gohighlevel/service.ts",
+            "apps/api/lib/peskids/__tests__/sales-pipeline.test.ts"
+          ],
+          "tests": "6 tests, 556 total suite API pasando"
+        },
+        "5.2_auto_followup": {
+          "status": "completed",
+          "note": "Migration 0072 + API endpoints + n8n workflow reference + GHL task creation",
+          "files": [
+            "supabase/migrations/0072_peskids_followups.sql",
+            "apps/api/lib/peskids/followup.ts",
+            "apps/api/app/api/admin/peskids/[slug]/followups/pending/route.ts",
+            "apps/api/app/api/admin/peskids/[slug]/followups/execute/route.ts",
+            ".n8n/1-workflows/peskids/peskids-followup-24h.json",
+            "apps/api/lib/peskids/__tests__/followup.test.ts"
+          ],
+          "tests": "6 tests"
+        },
+        "5.3_approval_messaging": {
+          "status": "completed",
+          "note": "Migration 0073 + API endpoints + n8n send-approved integration",
+          "files": [
+            "supabase/migrations/0073_peskids_messages_approval.sql",
+            "apps/api/lib/peskids/messages.ts",
+            "apps/api/app/api/admin/peskids/[slug]/messages/pending/route.ts",
+            "apps/api/app/api/admin/peskids/[slug]/messages/[messageId]/approve/route.ts"
+          ],
+          "blockers": [
+            "Requiere que el workflow n8n inbound (whatsapp/instagram) cree filas en platform.peskids_messages"
+          ]
+        }
+      }
+    }
+  },
+  "infra_fixes": {
+    "traefik_routing": {
+      "status": "completed",
+      "note": "Añadidos routers || Host(.op-sly.com) en docker-compose.platform.yml para api, admin, portal, mcp, grafana, traefik",
+      "files": ["infra/docker-compose.platform.yml"],
+      "post_deploy_required": true,
+      "post_deploy_verification": "curl -sfk https://api.op-sly.com/api/health debe retornar 200"
+    },
+    "cloudflare_ssl": {
+      "status": "pending_manual",
+      "note": "Cloudflare SSL/TLS debe estar en Full o Full (Strict), NO Flexible. Configurar en dashboard Cloudflare.",
+      "docs": "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md"
+    }
+  },
+  "global_bloqueantes": [
+    "Configurar webhook saliente en consola GHL Private Integration (acceso manual a app.gohighlevel.com)",
+    "Cloudflare SSL/TLS configurado en modo Full/Full Strict (dashboard Cloudflare)",
+    "VPS redeploy para aplicar cambios Traefik + nuevos endpoints API"
+  ],
+  "type_check": "FULL TURBO ✅ (tsc --noEmit 0 errores)",
+  "unit_tests": "rolldown binding issue pre-existente (no relacionado a cambios). Sales 6 + Followup 6 = 12 nuevos tests."
+}

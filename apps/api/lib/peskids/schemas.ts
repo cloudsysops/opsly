@@ -49,5 +49,13 @@ export const peskidsFeedbackBodySchema = z.object({
   contact_me_back: z.boolean().optional().default(false),
 });
 
+export const peskidsMessageApprovalSchema = z.object({
+  approved: z.boolean(),
+  modified_response: z.string().trim().max(2000).optional(),
+  rejection_reason: z.string().trim().max(500).optional(),
+});
+
+export type PeskidsMessageApprovalBody = z.infer<typeof peskidsMessageApprovalSchema>;
+
 export type PeskidsLeadBody = z.infer<typeof peskidsLeadBodySchema>;
 export type PeskidsFeedbackBody = z.infer<typeof peskidsFeedbackBodySchema>;

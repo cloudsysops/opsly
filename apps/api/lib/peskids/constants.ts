@@ -35,5 +35,13 @@ export const PESKIDS_LEAD_STATUSES = [
 
 export const PESKIDS_FEEDBACK_STATUSES = ['new', 'reviewed', 'action_required', 'closed'] as const;
 
+export const PESKIDS_MESSAGE_STATUSES = [
+  'pending_approval',
+  'approved',
+  'rejected',
+  'sent',
+  'failed',
+] as const;
+
 /** Ratings at or below this value set feedback status to action_required. */
 export const PESKIDS_LOW_SATISFACTION_THRESHOLD = 3;
