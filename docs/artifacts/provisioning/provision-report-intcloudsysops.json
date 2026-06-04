@@ -1,0 +1,126 @@
+{
+  "tenantName": "Intcloudsysops",
+  "tenantSlug": "intcloudsysops",
+  "locationId": "qD7Z9jt3owk0LMtKElow",
+  "dryRun": false,
+  "startedAt": "2026-06-04T09:02:49.018Z",
+  "finishedAt": "2026-06-04T09:02:49.543Z",
+  "summary": {
+    "created": 0,
+    "skipped": 0,
+    "alreadyExists": 0,
+    "manualRequired": 4,
+    "blocked": 14,
+    "wouldCreate": 0
+  },
+  "items": [
+    {
+      "resourceType": "tag",
+      "name": "lead-web",
+      "status": "blocked",
+      "message": "The token is not authorized for this scope."
+    },
+    {
+      "resourceType": "tag",
+      "name": "lead-referral",
+      "status": "blocked",
+      "message": "The token is not authorized for this scope."
+    },
+    {
+      "resourceType": "tag",
+      "name": "lead-partner",
+      "status": "blocked",
+      "message": "The token is not authorized for this scope."
+    },
+    {
+      "resourceType": "tag",
+      "name": "hot-lead",
+      "status": "blocked",
+      "message": "The token is not authorized for this scope."
+    },
+    {
+      "resourceType": "tag",
+      "name": "opsly-tenant",
+      "status": "blocked",
+      "message": "The token is not authorized for this scope."
+    },
+    {
+      "resourceType": "tag",
+      "name": "active-client",
+      "status": "blocked",
+      "message": "The token is not authorized for this scope."
+    },
+    {
+      "resourceType": "tag",
+      "name": "churn-risk",
+      "status": "blocked",
+      "message": "The token is not authorized for this scope."
+    },
+    {
+      "resourceType": "custom_field",
+      "name": "company_name",
+      "status": "blocked",
+      "message": "The token is not authorized for this scope."
+    },
+    {
+      "resourceType": "custom_field",
+      "name": "deal_value",
+      "status": "blocked",
+      "message": "The token is not authorized for this scope."
+    },
+    {
+      "resourceType": "custom_field",
+      "name": "service_tier",
+      "status": "blocked",
+      "message": "The token is not authorized for this scope."
+    },
+    {
+      "resourceType": "custom_field",
+      "name": "tenant_slug",
+      "status": "blocked",
+      "message": "The token is not authorized for this scope."
+    },
+    {
+      "resourceType": "custom_field",
+      "name": "lead_score",
+      "status": "blocked",
+      "message": "The token is not authorized for this scope."
+    },
+    {
+      "resourceType": "email_template",
+      "name": "Opsly — Welcome Lead",
+      "status": "manual_required",
+      "message": "Email templates must be created or imported in GHL UI (Claude Chrome / manual). Opsly records spec only."
+    },
+    {
+      "resourceType": "email_template",
+      "name": "Opsly — Discovery Call Confirmation",
+      "status": "manual_required",
+      "message": "Email templates must be created or imported in GHL UI (Claude Chrome / manual). Opsly records spec only."
+    },
+    {
+      "resourceType": "sms_template",
+      "name": "Opsly — Discovery Reminder",
+      "status": "manual_required",
+      "message": "SMS templates require GHL UI or Conversation AI setup — not exposed for safe automation."
+    },
+    {
+      "resourceType": "form",
+      "name": "Opsly Agency Lead Capture",
+      "status": "manual_required",
+      "message": "The token is not authorized for this scope."
+    },
+    {
+      "resourceType": "pipeline",
+      "name": "Opsly Agency Sales",
+      "status": "blocked",
+      "message": "The token is not authorized for this scope."
+    },
+    {
+      "resourceType": "calendar",
+      "name": "Discovery Call",
+      "status": "blocked",
+      "message": "The token is not authorized for this scope."
+    }
+  ]
+}

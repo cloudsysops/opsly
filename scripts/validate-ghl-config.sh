@@ -26,12 +26,14 @@ if [[ "$TENANT" == "peskids" ]]; then
   LOC_VAR=GOHIGHLEVEL_PESKIDS_LOCATION_ID
   VERSION_VAR=GOHIGHLEVEL_PESKIDS_API_VERSION
   LABEL="Peskids"
-else
+elif [[ "$TENANT" == "agency" || "$TENANT" == "intcloudsysops" ]]; then
   KEY_VAR=GOHIGHLEVEL_API_KEY
   URL_VAR=GOHIGHLEVEL_API_URL
   LOC_VAR=GOHIGHLEVEL_LOCATION_ID
   VERSION_VAR=GOHIGHLEVEL_API_VERSION
   LABEL="agency (Intcloudsysops)"
+else
+  fail "unknown tenant: $TENANT (use peskids, intcloudsysops, or agency)"
 fi
 
 for name in "$KEY_VAR" "$URL_VAR" "$LOC_VAR"; do

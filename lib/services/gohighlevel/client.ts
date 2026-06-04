@@ -1,3 +1,4 @@
+import { GOHIGHLEVEL_CALENDAR_API_VERSION } from './env-config.js';
 import type {
   Contact,
   CreateContactRequest,
@@ -8,6 +9,17 @@ import type {
   SendMessageRequest,
   ListContactsFilter,
   ListResponse,
+  Opportunity,
+  GhlTag,
+  CreateGhlTagRequest,
+  GhlCustomField,
+  CreateGhlCustomFieldRequest,
+  GhlForm,
+  CreateGhlFormRequest,
+  GhlPipeline,
+  GhlCalendar,
+  CreateGhlCalendarRequest,
+  CreateGhlCalendarScheduleRequest,
 } from './types.js';
 
 export interface GoHighLevelClientOptions {
@@ -74,7 +86,8 @@ export class GoHighLevelClient {
   private async request<T>(
     method: string,
     path: string,
-    body?: unknown
+    body?: unknown,
+    options?: { apiVersion?: string }
   ): Promise<T> {
     const url = `${this.baseUrl}${path}`;
     const maxRateLimitRetries = 3;
@@ -90,7 +103,7 @@ export class GoHighLevelClient {
           Accept: 'application/json',
         };
         if (this.usesLeadConnector) {
-          headers.Version = this.apiVersion;
+          headers.Version = options?.apiVersion ?? this.apiVersion;
         }
 
         const response = await fetch(url, {
@@ -143,6 +156,26 @@ export class GoHighLevelClient {
       throw new Error('GOHIGHLEVEL_LOCATION_ID is required for LeadConnector API calls');
     }
     return this.locationId;
+  }
+
+  private extractList<T>(response: Record<string, unknown>, keys: string[]): T[] {
+    for (const key of keys) {
+      const value = response[key];
+      if (Array.isArray(value)) {
+        return value as T[];
+      }
+    }
+    return [];
+  }
+
+  private extractEntity<T>(response: Record<string, unknown>, keys: string[]): T {
+    for (const key of keys) {
+      const value = response[key];
+      if (value && typeof value === 'object') {
+        return value as T;
+      }
+    }
+    throw new Error('GoHighLevel API returned empty payload');
   }
 
   async getContacts(filter?: ListContactsFilter): Promise<ListResponse<Contact>> {
@@ -253,6 +286,45 @@ export class GoHighLevelClient {
     return response.data || [];
   }
 
+  async updateOpportunityStageForContact(
+    contactId: string,
+    pipelineStageId: string
+  ): Promise<Opportunity> {
+    if (!this.usesLeadConnector) {
+      throw new Error('updateOpportunityStageForContact requires LeadConnector API');
+    }
+
+    const locationId = this.requireLocationId();
+    const searchResponse = await this.request<{
+      opportunities?: Opportunity[];
+      data?: Opportunity[];
+    }>('POST', '/opportunities/search', {
+      locationId,
+      contactId,
+      page: 1,
+      limit: 1,
+    });
+
+    const opportunities = searchResponse.opportunities ?? searchResponse.data ?? [];
+    const opportunity = opportunities[0];
+    if (!opportunity?.id) {
+      throw new Error(`No GoHighLevel opportunity found for contact ${contactId}`);
+    }
+
+    const updateResponse = await this.request<{ opportunity?: Opportunity; data?: Opportunity }>(
+      'PUT',
+      `/opportunities/${opportunity.id}`,
+      { pipelineStageId }
+    );
+
+    const updated = updateResponse.opportunity ?? updateResponse.data;
+    if (!updated) {
+      throw new Error(`Failed to update opportunity stage for contact ${contactId}`);
+    }
+
+    return updated;
+  }
+
   async sendMessage(data: SendMessageRequest): Promise<{ id: string; status: string }> {
     const endpoint = data.channel === 'email' ? '/v1/emails/send' : '/v1/messages/send';
     const payload = {
@@ -272,5 +344,123 @@ export class GoHighLevelClient {
       id: response.id || '',
       status: response.status || 'sent',
     };
+  }
+
+  async listTags(): Promise<GhlTag[]> {
+    const locationId = this.requireLocationId();
+    const response = await this.request<Record<string, unknown>>(
+      'GET',
+      `/locations/${encodeURIComponent(locationId)}/tags`
+    );
+    return this.extractList<GhlTag>(response, ['tags']);
+  }
+
+  async createTag(data: CreateGhlTagRequest): Promise<GhlTag> {
+    const locationId = this.requireLocationId();
+    const response = await this.request<Record<string, unknown>>(
+      'POST',
+      `/locations/${encodeURIComponent(locationId)}/tags`,
+      { name: data.name }
+    );
+    return this.extractEntity<GhlTag>(response, ['tag']);
+  }
+
+  async listCustomFields(): Promise<GhlCustomField[]> {
+    const locationId = this.requireLocationId();
+    const response = await this.request<Record<string, unknown>>(
+      'GET',
+      `/locations/${encodeURIComponent(locationId)}/customFields`
+    );
+    return this.extractList<GhlCustomField>(response, ['customFields']);
+  }
+
+  async createCustomField(data: CreateGhlCustomFieldRequest): Promise<GhlCustomField> {
+    const locationId = this.requireLocationId();
+    const response = await this.request<Record<string, unknown>>(
+      'POST',
+      `/locations/${encodeURIComponent(locationId)}/customFields`,
+      {
+        name: data.name,
+        dataType: data.dataType,
+        model: data.model,
+        ...(data.placeholder ? { placeholder: data.placeholder } : {}),
+      }
+    );
+    return this.extractEntity<GhlCustomField>(response, ['customField']);
+  }
+
+  async listForms(): Promise<GhlForm[]> {
+    const locationId = this.requireLocationId();
+    const response = await this.request<Record<string, unknown>>(
+      'GET',
+      `/forms/?locationId=${encodeURIComponent(locationId)}`
+    );
+    return this.extractList<GhlForm>(response, ['forms']);
+  }
+
+  async createForm(data: CreateGhlFormRequest): Promise<GhlForm> {
+    const locationId = this.requireLocationId();
+    const response = await this.request<Record<string, unknown>>(
+      'POST',
+      '/forms/',
+      {
+        locationId,
+        name: data.name,
+        ...(data.fields ? { fields: data.fields } : {}),
+      }
+    );
+    return this.extractEntity<GhlForm>(response, ['form']);
+  }
+
+  async listPipelines(): Promise<GhlPipeline[]> {
+    const locationId = this.requireLocationId();
+    const response = await this.request<Record<string, unknown>>(
+      'GET',
+      `/opportunities/pipelines?locationId=${encodeURIComponent(locationId)}`
+    );
+    return this.extractList<GhlPipeline>(response, ['pipelines']);
+  }
+
+  async listCalendars(): Promise<GhlCalendar[]> {
+    const locationId = this.requireLocationId();
+    const response = await this.request<Record<string, unknown>>(
+      'GET',
+      `/calendars/?locationId=${encodeURIComponent(locationId)}`,
+      undefined,
+      { apiVersion: GOHIGHLEVEL_CALENDAR_API_VERSION }
+    );
+    return this.extractList<GhlCalendar>(response, ['calendars']);
+  }
+
+  async createCalendar(data: CreateGhlCalendarRequest): Promise<GhlCalendar> {
+    const locationId = this.requireLocationId();
+    const response = await this.request<Record<string, unknown>>(
+      'POST',
+      '/calendars/',
+      {
+        locationId,
+        name: data.name,
+        ...(data.slug ? { slug: data.slug } : {}),
+        ...(data.calendarType ? { calendarType: data.calendarType } : {}),
+        ...(data.slotDuration !== undefined ? { slotDuration: data.slotDuration } : {}),
+        ...(data.slotDurationUnit ? { slotDurationUnit: data.slotDurationUnit } : {}),
+        ...(data.isActive !== undefined ? { isActive: data.isActive } : {}),
+      },
+      { apiVersion: GOHIGHLEVEL_CALENDAR_API_VERSION }
+    );
+    return this.extractEntity<GhlCalendar>(response, ['calendar']);
+  }
+
+  async createEventCalendarSchedule(
+    calendarId: string,
+    schedule: CreateGhlCalendarScheduleRequest
+  ): Promise<{ id: string }> {
+    const response = await this.request<Record<string, unknown>>(
+      'POST',
+      `/calendars/schedules/event-calendar/${encodeURIComponent(calendarId)}`,
+      schedule,
+      { apiVersion: GOHIGHLEVEL_CALENDAR_API_VERSION }
+    );
+    return this.extractEntity<{ id: string }>(response, ['schedule']);
   }
 }
