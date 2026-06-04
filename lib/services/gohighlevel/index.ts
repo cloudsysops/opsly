@@ -21,4 +21,5 @@ export type {
   ListContactsFilter,
   GoHighLevelResponse,
   ListResponse,
+  Opportunity,
 } from './types.js';

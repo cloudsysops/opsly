@@ -8,6 +8,7 @@ import type {
   SendMessageRequest,
   ListContactsFilter,
   ListResponse,
+  Opportunity,
 } from './types.js';
 
 export interface GoHighLevelClientOptions {
@@ -251,6 +252,45 @@ export class GoHighLevelClient {
     const path = contactId ? `/v1/appointments?contactId=${contactId}` : '/v1/appointments';
     const response = await this.request<{ data?: Appointment[] }>('GET', path);
     return response.data || [];
+  }
+
+  async updateOpportunityStageForContact(
+    contactId: string,
+    pipelineStageId: string
+  ): Promise<Opportunity> {
+    if (!this.usesLeadConnector) {
+      throw new Error('updateOpportunityStageForContact requires LeadConnector API');
+    }
+
+    const locationId = this.requireLocationId();
+    const searchResponse = await this.request<{
+      opportunities?: Opportunity[];
+      data?: Opportunity[];
+    }>('POST', '/opportunities/search', {
+      locationId,
+      contactId,
+      page: 1,
+      limit: 1,
+    });
+
+    const opportunities = searchResponse.opportunities ?? searchResponse.data ?? [];
+    const opportunity = opportunities[0];
+    if (!opportunity?.id) {
+      throw new Error(`No GoHighLevel opportunity found for contact ${contactId}`);
+    }
+
+    const updateResponse = await this.request<{ opportunity?: Opportunity; data?: Opportunity }>(
+      'PUT',
+      `/opportunities/${opportunity.id}`,
+      { pipelineStageId }
+    );
+
+    const updated = updateResponse.opportunity ?? updateResponse.data;
+    if (!updated) {
+      throw new Error(`Failed to update opportunity stage for contact ${contactId}`);
+    }
+
+    return updated;
   }
 
   async sendMessage(data: SendMessageRequest): Promise<{ id: string; status: string }> {

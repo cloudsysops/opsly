@@ -1,6 +1,6 @@
 import { getServiceClient } from '../supabase';
 import { logger } from '../logger';
-import { PESKIDS_PIPELINE_STAGES, type PeskidsPipelineStage } from './ghl-contract';
+import type { PeskidsPipelineStage } from './ghl-contract';
 import { getGoHighLevelService } from '@intcloudsysops/services/gohighlevel';
 
 export const PESKIDS_TO_GHL_STAGE: Record<PeskidsPipelineStage, string | undefined> = {

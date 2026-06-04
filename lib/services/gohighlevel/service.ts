@@ -109,6 +109,16 @@ export class GoHighLevelService {
     const client = this.getClient(tenantId);
     return client.sendMessage(data);
   }
+
+  /** Sync pipeline stage in GHL for the contact's primary opportunity. */
+  async updateOpportunityStage(
+    tenantId: string,
+    contactId: string,
+    pipelineStageId: string
+  ): Promise<void> {
+    const client = this.getClient(tenantId);
+    await client.updateOpportunityStageForContact(contactId, pipelineStageId);
+  }
 }
 
 // Singleton instance

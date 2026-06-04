@@ -94,3 +94,11 @@ export interface ListResponse<T> {
   limit?: number;
   offset?: number;
 }
+
+export interface Opportunity {
+  id: string;
+  contactId?: string;
+  pipelineStageId?: string;
+  pipelineId?: string;
+  name?: string;
+}
