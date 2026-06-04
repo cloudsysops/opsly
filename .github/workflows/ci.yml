@@ -335,18 +335,15 @@ jobs:
       - name: npm ci
         run: |
           npm ci
-      - name: Validate E2E required secrets
+      - name: Run legacy invite smoke (non-blocking)
         run: |
-          set -euo pipefail
-          test -n "${{ secrets.PLATFORM_ADMIN_TOKEN }}"
-          test -n "${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
-          test -n "${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
-      - name: Run E2E invite script
-        run: |
-          export ADMIN_TOKEN="${{ secrets.PLATFORM_ADMIN_TOKEN }}"
-          export OWNER_EMAIL="jkbotero78@gmail.com"
-          export TENANT_SLUG="localrank"
-          bash scripts/test-e2e-invite-flow.sh
+          set +e
+          bash scripts/test-e2e-invite-flow.sh --dry-run
+          status=$?
+          set -e
+          if [[ "${status}" -ne 0 ]]; then
+            echo "::warning::Legacy invite smoke failed with exit code ${status}; ignored because invite delivery now lives in GHL."
+          fi
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
