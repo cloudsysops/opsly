@@ -22,6 +22,13 @@ npm run type-check --workspace=@intcloudsysops/icso
 - App: `public/brand/` (served at `/brand/*`)
 - Canonical copies: `docs/brand/icso/` (GHL upload / handoff)
 
+## Deploy (VPS)
+
+- Image: `ghcr.io/cloudsysops/intcloudsysops-icso:latest`
+- Compose service `icso` in `infra/docker-compose.platform.yml` (port **3015**)
+- Traefik hosts: `ICSO_DOMAIN` (default `intcloudsysops.com`)
+- Doppler optional: `ICSO_APP_IMAGE`, `ICSO_DOMAIN`, `NEXT_PUBLIC_SITE_URL`
+
 ## Scope
 
 Frontend-only marketing app. Does not include Opsly checkout, API routes, GHL, or tenant apps.
