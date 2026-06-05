@@ -1,5 +1,7 @@
+import { BILLING_METRICS } from '../constants';
+
 /** Tipos de métrica alineados a `platform.billing_usage.metric_type` (migración 0015). */
-export type BillingMetricType = 'cpu_seconds' | 'ai_tokens' | 'storage_gb' | 'worker_seconds';
+export type BillingMetricType = (typeof BILLING_METRICS)[number];
 
 export type MeteringOperationKind = 'resource' | 'token';
 

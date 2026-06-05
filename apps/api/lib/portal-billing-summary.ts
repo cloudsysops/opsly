@@ -1,6 +1,6 @@
 import { unitCostUsdForMetric } from './billing-meter-pricing';
-import { parseUsageRedisKey } from './billing/flush-billing-usage';
 import { getMeteringRedis } from './billing/redis-metering';
+import { BILLING_METRICS } from './constants';
 
 const CENTS = 100;
 const ISO_DATE_SLICE = 10;
@@ -72,30 +72,21 @@ async function aggregatePendingUsdForTenant(
   redis: ConnectedMeteringRedis,
   tenantId: string
 ): Promise<number> {
-  const pattern = `usage:${tenantId}:*`;
+  const keys = BILLING_METRICS.map((m) => `usage:${tenantId}:${m}`);
   let pending = 0;
   try {
-    for await (const keys of redis.scanIterator({
-      MATCH: pattern,
-      COUNT: 100,
-    })) {
-      for (const key of keys) {
-        const parsed = parseUsageRedisKey(key);
-        if (parsed?.tenantId !== tenantId) {
-          continue;
-        }
-        const raw = await redis.get(key);
-        const qty = parseQuantity(raw ?? undefined);
-        if (qty <= 0) {
-          continue;
-        }
-        const unit = unitCostUsdForMetric(parsed.metricType);
-        pending += qty * unit;
+    const values = await redis.mGet(keys);
+    for (let i = 0; i < BILLING_METRICS.length; i++) {
+      const qty = parseQuantity(values[i] ?? undefined);
+      if (qty <= 0) {
+        continue;
       }
+      const unit = unitCostUsdForMetric(BILLING_METRICS[i]);
+      pending += qty * unit;
     }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    warnBillingRedisDegraded(`(scan/get failed: ${msg})`);
+    warnBillingRedisDegraded(`(mGet failed: ${msg})`);
     return 0;
   }
   return pending;
