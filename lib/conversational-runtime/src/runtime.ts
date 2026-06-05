@@ -66,7 +66,7 @@ export function createConversationalRuntime(
     eventLog: core.eventLog,
     async handle(input: InputMessage): Promise<AgentResponse> {
       const traceId = newRequestId(input.requestId);
-      let utterance = input.content;
+      let utterance: string;
 
       try {
         if (input.messageType === 'audio_url') {
