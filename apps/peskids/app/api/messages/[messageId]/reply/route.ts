@@ -1,27 +1,26 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { validateStaffSession } from '@/lib/staff-auth'
-import { enqueueApprovedReply } from '@/lib/n8n-send'
-import { supabaseServer } from '@/lib/supabase'
+import { NextRequest } from 'next/server';
+import { validateStaffSession } from '@/lib/staff-auth';
+import { enqueueApprovedReply } from '@/lib/n8n-send';
+import { supabaseServer } from '@/lib/supabase';
+import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 
-export async function POST(
-  req: NextRequest,
-  context: { params: Promise<{ messageId: string }> }
-) {
+export async function POST(req: NextRequest, context: { params: Promise<{ messageId: string }> }) {
+  const requestId = resolveRequestId(req);
   try {
-    const auth = await validateStaffSession()
+    const auth = await validateStaffSession();
     if (!auth.ok) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status })
+      return errorJson(requestId, auth.error, auth.status);
     }
 
-    const { messageId } = await context.params
-    const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids'
-    const { replyText } = await req.json()
+    const { messageId } = await context.params;
+    const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids';
+    const { replyText } = await req.json();
 
     if (!replyText || replyText.trim().length === 0) {
-      return NextResponse.json({ error: 'Reply text cannot be empty' }, { status: 400 })
+      return errorJson(requestId, 'Reply text cannot be empty', 400);
     }
 
-    const supabase = supabaseServer()
+    const supabase = supabaseServer();
 
     // Get original message to know source + contact
     const { data: originalMessage, error: fetchError } = await supabase
@@ -29,10 +28,10 @@ export async function POST(
       .select('*')
       .eq('id', messageId)
       .eq('tenant_id', tenantId)
-      .single()
+      .single();
 
     if (fetchError || !originalMessage) {
-      return NextResponse.json({ error: 'Message not found' }, { status: 404 })
+      return errorJson(requestId, 'Message not found', 404);
     }
 
     const { data: replyRecord, error: insertError } = await supabase
@@ -50,35 +49,35 @@ export async function POST(
         ai_generated: false,
       })
       .select()
-      .single()
+      .single();
 
-    if (insertError) throw insertError
+    if (insertError) throw insertError;
 
     const sendResult = await enqueueApprovedReply({
       messageId,
       source: String(originalMessage.source),
       sender_contact: String(originalMessage.sender_contact),
       reply_text: replyText.trim(),
-    })
+    });
 
     if (sendResult.ok) {
       await supabase
         .from('messages')
         .update({ status: 'sent' })
         .eq('id', messageId)
-        .eq('tenant_id', tenantId)
+        .eq('tenant_id', tenantId);
     }
 
-    const rawBus = process.env.OPSLY_EVENT_BUS_URL?.trim() ?? ''
+    const rawBus = process.env.OPSLY_EVENT_BUS_URL?.trim() ?? '';
     const eventBus = rawBus
       ? rawBus.endsWith('/events')
         ? rawBus
         : `${rawBus.replace(/\/$/, '')}/events`
-      : ''
+      : '';
 
     try {
       if (!eventBus || eventBus.includes('localhost') || eventBus.includes('127.0.0.1')) {
-        throw new Error('OPSLY_EVENT_BUS_URL not configured for production')
+        throw new Error('OPSLY_EVENT_BUS_URL not configured for production');
       }
       await fetch(eventBus, {
         method: 'POST',
@@ -91,14 +90,16 @@ export async function POST(
           reply_text: replyText,
           timestamp: new Date().toISOString(),
         }),
-      })
+      });
     } catch (error) {
-      console.warn('Failed to emit event:', error)
+      console.warn('Failed to emit event:', error);
       // Non-blocking: continue even if event bus fails
     }
 
-    return NextResponse.json(
+    return successJson(
+      requestId,
       {
+        ok: true,
         success: true,
         replyRecord,
         n8n: sendResult,
@@ -106,10 +107,10 @@ export async function POST(
           ? 'Respuesta registrada y encolada en n8n para envío.'
           : 'Respuesta registrada. n8n no disponible — revisa N8N_WEBHOOK_BASE_URL.',
       },
-      { status: 201 }
-    )
+      201
+    );
   } catch (error) {
-    console.error('Reply API error:', error)
-    return NextResponse.json({ error: 'Failed to process reply' }, { status: 500 })
+    console.error('Reply API error:', error, { request_id: requestId });
+    return errorJson(requestId, 'Failed to process reply', 500);
   }
 }

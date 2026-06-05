@@ -3,6 +3,23 @@ import { AgentTrainer } from '../lib/agent/agent-trainer.js';
 import { ValidationOrchestrator } from '../lib/validation/validation-orchestrator.js';
 import { IterationOrchestrator } from '../lib/iteration-orchestrator.js';
 
+vi.mock('@supabase/supabase-js', () => ({
+  createClient: vi.fn(() => ({
+    from: vi.fn(() => ({
+      insert: vi.fn().mockResolvedValue({ error: null }),
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          order: vi.fn(() => ({
+            limit: vi.fn().mockResolvedValue({ data: [], error: null }),
+          })),
+          maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+        })),
+      })),
+      upsert: vi.fn().mockResolvedValue({ error: null }),
+    })),
+  })),
+}));
+
 describe('Input Validation Tests', () => {
   describe('AgentTrainer.recordExecution()', () => {
     let trainer: AgentTrainer;
@@ -16,7 +33,7 @@ describe('Input Validation Tests', () => {
     });
 
     afterEach(() => {
-      trainer.destroy();
+      if (trainer) trainer.destroy();
       delete process.env.NEXT_PUBLIC_SUPABASE_URL;
       delete process.env.SUPABASE_SERVICE_ROLE_KEY;
     });
@@ -238,11 +255,17 @@ describe('Input Validation Tests', () => {
     let orchestrator: IterationOrchestrator;
 
     beforeEach(() => {
+      // Set minimal Supabase env vars for testing
+      process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost:54321';
+      process.env.SUPABASE_SERVICE_ROLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test';
+
       orchestrator = new IterationOrchestrator();
     });
 
     afterEach(() => {
       orchestrator.destroy();
+      delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+      delete process.env.SUPABASE_SERVICE_ROLE_KEY;
     });
 
     it('handles empty goal string', async () => {

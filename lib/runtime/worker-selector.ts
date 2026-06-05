@@ -3,7 +3,12 @@
  * Local-First: intenta local primero, fallback a remoto
  */
 
-import { detectEnvironment, healthCheck, EnvironmentCapabilities, HealthCheckResult } from './environment-detector';
+import {
+  detectEnvironment,
+  healthCheck,
+  EnvironmentCapabilities,
+  HealthCheckResult,
+} from './environment-detector';
 
 export type WorkerType = 'local' | 'ollama' | 'vps' | 'worker-mac2011' | 'remote';
 
@@ -100,15 +105,12 @@ export const getWorkerConfig = (env: EnvironmentCapabilities): WorkerConfig[] =>
  * Seleccionar mejor worker basado en criteria
  */
 export async function selectWorker(criteria: SelectionCriteria): Promise<SelectionResult> {
-  const [env, health] = await Promise.all([
-    detectEnvironment(),
-    healthCheck(),
-  ]);
+  const [env, health] = await Promise.all([detectEnvironment(), healthCheck()]);
 
   const workers = getWorkerConfig(env);
 
   // Filtrar por disponibilidad y salud
-  const availableWorkers = workers.filter(w => {
+  const availableWorkers = workers.filter((w) => {
     if (!w.available) return false;
 
     // Skip workers con problemas de salud
@@ -119,7 +121,7 @@ export async function selectWorker(criteria: SelectionCriteria): Promise<Selecti
   });
 
   // Scoring basado en budget
-  const scoredWorkers = availableWorkers.map(worker => {
+  const scoredWorkers = availableWorkers.map((worker) => {
     let score = 100 - worker.priority; // base score
 
     // Budget adjustment
@@ -149,7 +151,7 @@ export async function selectWorker(criteria: SelectionCriteria): Promise<Selecti
   scoredWorkers.sort((a, b) => b.score - a.score);
 
   const selected = scoredWorkers[0];
-  const fallback = scoredWorkers.slice(1).map(s => s.worker);
+  const fallback = scoredWorkers.slice(1).map((s) => s.worker);
 
   // Generate reason
   const reason = generateReason(selected.worker, criteria, health);

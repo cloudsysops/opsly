@@ -31,6 +31,62 @@ type RunResult = {
   error?: string;
 };
 
+async function processRetentionSchedule(
+  schedule: RetentionScheduleRow,
+  client: ReturnType<typeof getServiceClient>,
+  dryRun: boolean
+): Promise<RunResult> {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - schedule.ttl_days);
+  const schemaName = schedule.schema_name as keyof Database;
+
+  if (dryRun) {
+    const { count, error } = await client
+      .schema(schemaName)
+      .from(schedule.table_name)
+      .select('*', { count: 'exact', head: true })
+      .lt(schedule.date_column, cutoff.toISOString());
+
+    return {
+      schedule_id: schedule.id,
+      tenant_id: schedule.tenant_id,
+      table: `${schedule.schema_name}.${schedule.table_name}`,
+      rows_affected: count ?? 0,
+      action: schedule.action,
+      dry_run: true,
+      error: error?.message,
+    };
+  }
+
+  if (schedule.action === 'delete') {
+    const { error, count } = await client
+      .schema(schemaName)
+      .from(schedule.table_name)
+      .delete({ count: 'exact' })
+      .lt(schedule.date_column, cutoff.toISOString());
+
+    return {
+      schedule_id: schedule.id,
+      tenant_id: schedule.tenant_id,
+      table: `${schedule.schema_name}.${schedule.table_name}`,
+      rows_affected: count ?? 0,
+      action: schedule.action,
+      dry_run: false,
+      error: error?.message,
+    };
+  }
+
+  return {
+    schedule_id: schedule.id,
+    tenant_id: schedule.tenant_id,
+    table: `${schedule.schema_name}.${schedule.table_name}`,
+    rows_affected: 0,
+    action: schedule.action,
+    dry_run: dryRun,
+    error: 'Action not implemented',
+  };
+}
+
 export async function GET(request: NextRequest): Promise<Response> {
   if (!isAuthorized(request)) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
@@ -39,7 +95,6 @@ export async function GET(request: NextRequest): Promise<Response> {
   const dryRun = request.nextUrl.searchParams.get('dry_run') !== 'false';
   const client = getServiceClient();
 
-  // Fetch active retention schedules
   const { data: schedules, error: fetchError } = await client
     .schema('governance')
     .from('retention_schedule')
@@ -52,47 +107,9 @@ export async function GET(request: NextRequest): Promise<Response> {
   }
 
   const results: RunResult[] = [];
-
   for (const schedule of (schedules as RetentionScheduleRow[]) ?? []) {
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - schedule.ttl_days);
-
-    const schemaName = schedule.schema_name as keyof Database;
-    if (dryRun) {
-      // Count rows that would be affected without deleting
-      const { count, error } = await client
-        .schema(schemaName)
-        .from(schedule.table_name)
-        .select('*', { count: 'exact', head: true })
-        .lt(schedule.date_column, cutoff.toISOString());
-
-      results.push({
-        schedule_id: schedule.id,
-        tenant_id: schedule.tenant_id,
-        table: `${schedule.schema_name}.${schedule.table_name}`,
-        rows_affected: count ?? 0,
-        action: schedule.action,
-        dry_run: true,
-        error: error?.message,
-      });
-    } else if (schedule.action === 'delete') {
-      const { error, count } = await client
-        .schema(schemaName)
-        .from(schedule.table_name)
-        .delete({ count: 'exact' })
-        .lt(schedule.date_column, cutoff.toISOString());
-
-      results.push({
-        schedule_id: schedule.id,
-        tenant_id: schedule.tenant_id,
-        table: `${schedule.schema_name}.${schedule.table_name}`,
-        rows_affected: count ?? 0,
-        action: schedule.action,
-        dry_run: false,
-        error: error?.message,
-      });
-    }
-    // 'anonymize' and 'archive' actions are stubs — implement when needed
+    const result = await processRetentionSchedule(schedule, client, dryRun);
+    results.push(result);
   }
 
   console.info('[cron][retention] completed', { dry_run: dryRun, schedules: results.length });

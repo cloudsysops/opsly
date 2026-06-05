@@ -1,109 +1,84 @@
-#!/bin/bash
-# Pre-commit hooks for Opsly modules
+#!/usr/bin/env bash
+# Lightweight pre-commit: structure + diff-scoped checks only.
+# Heavy validation (type-check, openapi, manifest tests) runs in pre-push / CI.
 
-set -e
+set -euo pipefail
 
-if ! command -v npm >/dev/null 2>&1; then
-  for candidate in \
-    /usr/local/opt/node@20/bin \
-    /opt/homebrew/opt/node@20/bin
-  do
-    if [ -d "$candidate" ]; then
-      export PATH="$candidate:$PATH"
-      break
-    fi
-  done
-fi
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
 
-echo "🔍 Running pre-commit validation..."
+# shellcheck source=scripts/hooks/hook-bootstrap.sh
+source "$ROOT/scripts/hooks/hook-bootstrap.sh"
 
-# 1. Repository structure
-echo "🧭 Validating repository structure..."
-npm run validate-structure --silent || {
-  echo "❌ Structure validation failed"
+opsly_hook_bootstrap_runtime || {
+  echo "❌ Could not resolve node/npm/npx for pre-commit" >&2
   exit 1
 }
+opsly_hook_require npm
 
-if [ -x scripts/hooks/structure-guard.sh ]; then
-  bash scripts/hooks/structure-guard.sh || {
-    echo "❌ Structure guard failed"
-    exit 1
-  }
+STAGED_FILES="$(opsly_hook_staged_files)"
+
+if [[ -z "$STAGED_FILES" ]]; then
+  echo "ℹ️ No staged files; skipping pre-commit."
+  exit 0
 fi
 
-# 2. Type check
-echo "📋 Type checking..."
-npm run type-check 2>/dev/null || {
-  echo "❌ Type check failed"
-  exit 1
-}
+echo "🔍 pre-commit (lightweight)..."
 
-# 3. Validate lib/prompts
-if git diff --cached --name-only | grep -q "lib/prompts/"; then
-  echo "🔐 Validating prompts..."
-  npm run test --workspace=@intcloudsysops/prompts 2>/dev/null || {
-    echo "❌ Prompt validation failed"
-    exit 1
-  }
+echo "🧭 validate-structure"
+npm run validate-structure --silent
+
+if [[ -x scripts/hooks/structure-guard.sh ]]; then
+  bash scripts/hooks/structure-guard.sh
 fi
 
-# 4. Validate lib/observability
-if git diff --cached --name-only | grep -q "lib/observability/"; then
-  echo "📊 Validating observability..."
-  npm run test --workspace=@intcloudsysops/observability 2>/dev/null || {
-    echo "❌ Observability validation failed"
-    exit 1
-  }
+# Diff-scoped workspace tests (lib modules only — cheap, no turbo)
+if opsly_hook_files_match "$STAGED_FILES" '^lib/prompts/'; then
+  echo "🔐 lib/prompts changed → test @intcloudsysops/prompts"
+  npm run test --workspace=@intcloudsysops/prompts --silent
 fi
 
-# 5. Validate lib/components
-if git diff --cached --name-only | grep -q "lib/components/"; then
-  echo "🎨 Validating components..."
-  npm run test --workspace=@intcloudsysops/components 2>/dev/null || {
-    echo "❌ Component validation failed"
-    exit 1
-  }
+if opsly_hook_files_match "$STAGED_FILES" '^lib/observability/'; then
+  echo "📊 lib/observability changed → test @intcloudsysops/observability"
+  npm run test --workspace=@intcloudsysops/observability --silent
 fi
 
-# 6. Validate lib/evaluation
-if git diff --cached --name-only | grep -q "lib/evaluation/"; then
-  echo "✅ Validating evaluation..."
-  npm run test --workspace=@intcloudsysops/evaluation 2>/dev/null || {
-    echo "❌ Evaluation validation failed"
-    exit 1
-  }
+if opsly_hook_files_match "$STAGED_FILES" '^lib/components/'; then
+  echo "🎨 lib/components changed → test @intcloudsysops/components"
+  npm run test --workspace=@intcloudsysops/components --silent
 fi
 
-# 7. Check for duplicates
-echo "🔎 Checking for code duplication..."
-bash scripts/check-duplicates.sh lib/components lib/services 2>/dev/null || true
+if opsly_hook_files_match "$STAGED_FILES" '^lib/evaluation/'; then
+  echo "✅ lib/evaluation changed → test @intcloudsysops/evaluation"
+  npm run test --workspace=@intcloudsysops/evaluation --silent
+fi
 
-# 8. Lint
-echo "🎯 Linting..."
-npm run lint -- --fix 2>/dev/null || true
+CANONICAL_FILES=(
+  "VISION.md"
+  "ROADMAP.md"
+  "AGENTS.md"
+  "README.md"
+  "docs/README.md"
+  "docs/index.md"
+  "docs/STRUCTURE-GUARDRAILS.md"
+  "config/docs-root-allowlist.json"
+  "config/modules.json"
+)
 
-# 9. Protect canonical documentation
-echo "🔒 Validating canonical documentation integrity..."
-CANONICAL_FILES="VISION.md ROADMAP.md AGENTS.md README.md docs/README.md docs/index.md docs/STRUCTURE-GUARDRAILS.md config/docs-root-allowlist.json config/modules.json"
-MODIFIED_CANONICAL=""
-
-for file in $CANONICAL_FILES; do
-  if git diff --cached --name-only | grep -q "^$file$"; then
-    MODIFIED_CANONICAL="$MODIFIED_CANONICAL $file"
+MODIFIED_CANONICAL=()
+for file in "${CANONICAL_FILES[@]}"; do
+  if printf '%s\n' "$STAGED_FILES" | grep -qx "$file"; then
+    MODIFIED_CANONICAL+=("$file")
   fi
 done
 
-if [ -n "$MODIFIED_CANONICAL" ]; then
-  echo "⚠️  Canonical files detected in commit:$MODIFIED_CANONICAL"
-
-  # Check if commit message indicates intentional update
-  COMMIT_MSG=$(cat /dev/stdin 2>/dev/null || echo "")
-  if ! echo "$COMMIT_MSG" | grep -qE "(docs|chore|feat)(\(.*\))?: |UPDATE_CANONICAL=true"; then
-    # During pre-commit, we don't have the commit message yet
-    # Just warn the user; the actual validation happens in commit-msg hook
-    echo "ℹ️  Canonical file changes require commit message like: docs(agents): update session state"
-  fi
+if ((${#MODIFIED_CANONICAL[@]} > 0)); then
+  echo "⚠️  Canonical files staged: ${MODIFIED_CANONICAL[*]}"
+  echo "   commit-msg hook will require docs/chore/feat prefix."
 fi
 
-echo "✨ Pre-commit validation passed!"
+echo "🔎 duplicate scan (non-blocking)"
+bash scripts/check-duplicates.sh lib/components lib/services 2>/dev/null || true
+
+echo "✨ pre-commit OK"
 exit 0

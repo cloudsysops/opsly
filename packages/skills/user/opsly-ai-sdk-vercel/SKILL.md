@@ -1,4 +1,7 @@
 ---
+name: opsly-ai-sdk-vercel
+description: >
+  Opsly Vercel AI SDK (marketplace)
 status: draft
 owner: operations
 last_review: 2026-05-24

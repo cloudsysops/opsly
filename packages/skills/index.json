@@ -1,6 +1,6 @@
 {
   "version": "3.1.0",
-  "generated": "2026-05-10T00:00:00Z",
+  "generated": "2026-05-26T00:00:00Z",
   "description": "Índice de todos los skills disponibles en Opsly para agentes IA autónomos (incl. adaptaciones marketplace Cursor)",
   "skills": [
     {
@@ -22,6 +22,15 @@
       "path": "skills/user/opsly-context/"
     },
     {
+      "name": "opsly-modularity",
+      "version": "1.0.0",
+      "description": "Contrato core-first: lib compartida, tenant delgado, activación por tenant_slug, sin duplicar integraciones. OBLIGATORIO antes de implementar.",
+      "category": "architecture",
+      "priority": "critical",
+      "usage": "Antes de cualquier código en apps/* o integraciones; buscar lib/ primero",
+      "path": "skills/user/opsly-modularity/"
+    },
+    {
       "name": "opsly-quantum",
       "version": "2.0.0",
       "description": "Skill maestro: orquestación segura + acciones reales vía scripts del repo",
@@ -29,6 +38,26 @@
       "priority": "critical",
       "usage": "Visión completa del monorepo + diagnóstico + acciones",
       "path": "skills/user/opsly-quantum/"
+    },
+    {
+      "name": "opsly-agent-skills-bridge",
+      "version": "1.0.0",
+      "description": "Bridge layer integrating Addy Osmani's agent-skills (23 production best practices) with Opsly domain patterns. Maps /spec, /plan, /build, /test, /review, /simplify, /ship to Opsly context (API, orchestrator, multi-tenant, security).",
+      "category": "development",
+      "priority": "high",
+      "usage": "Activate with /spec, /plan, /build, /test, /review, /code-simplify, /ship or run: node scripts/load-agent-skills.js --phase <phase>",
+      "path": "skills/user/opsly-agent-skills-bridge/",
+      "triggers": [
+        "spec",
+        "plan",
+        "build",
+        "test",
+        "review",
+        "simplify",
+        "ship",
+        "agent-skills",
+        "best practices"
+      ]
     },
     {
       "name": "opsly-autonomous",
@@ -111,15 +140,24 @@
       "usage": "Crear migraciones SQL o diseñar queries contra schema platform",
       "path": "skills/user/opsly-supabase/"
     },
-    {
-      "name": "opsly-tenant",
-      "version": "1.0.0",
-      "description": "Onboarding, suspensión, resume, diagnóstico de stacks por tenant. Onboarding, suspensión, resume o diagnóstico de stacks por tenant",
-      "category": "operations",
-      "priority": "high",
-      "usage": "Onboarding, suspensión, resume o diagnóstico de stacks por tenant",
-      "path": "skills/user/opsly-tenant/"
-    },
+      {
+        "name": "opsly-tenant",
+        "version": "1.0.0",
+        "description": "Onboarding, suspensión, resume, diagnóstico de stacks por tenant. Onboarding, suspensión, resume o diagnóstico de stacks por tenant",
+        "category": "operations",
+        "priority": "high",
+        "usage": "Onboarding, suspensión, resume o diagnóstico de stacks por tenant",
+        "path": "skills/user/opsly-tenant/"
+      },
+      {
+        "name": "opsly-peskids",
+        "version": "1.0.0",
+        "description": "Peskids tenant-specific product and operations work. Use when changing landing, admin, teacher, support, families, auth, routes, docs, or deployment for the Peskids tenant.",
+        "category": "operations",
+        "priority": "high",
+        "usage": "Peskids tenant-specific product, auth, routing, docs, deployment, and role-specific UI work",
+        "path": "skills/user/opsly-peskids/"
+      },
     {
       "name": "opsly-infra",
       "version": "1.1.0",
@@ -262,7 +300,10 @@
       "category": "ai",
       "priority": "low",
       "usage": "Generar contenido a partir de documentos (PDF→podcast+slides+infografía)",
-      "requires": ["NOTEBOOKLM_ENABLED=true", "plan: business|enterprise"],
+      "requires": [
+        "NOTEBOOKLM_ENABLED=true",
+        "plan: business|enterprise"
+      ],
       "path": "skills/user/opsly-notebooklm/"
     },
     {
@@ -593,15 +634,15 @@
   ],
   "categories": {
     "tooling": ["opsly-skill-creator"],
-    "bootstrap": ["opsly-context", "opsly-bootstrap"],
+    "bootstrap": ["opsly-context", "opsly-modularity", "opsly-bootstrap"],
     "master": ["opsly-quantum"],
     "autonomy": ["opsly-autonomous"],
-    "architecture": ["opsly-architect-senior", "opsly-architect"],
+    "architecture": ["opsly-modularity", "opsly-architect-senior", "opsly-architect"],
     "development": ["opsly-api", "opsly-bash", "opsly-frontend"],
     "ai": ["opsly-llm", "opsly-notebooklm", "opsly-feedback-ml", "opsly-ai-sdk-vercel"],
     "integration": ["opsly-mcp", "opsly-google-cloud"],
     "database": ["opsly-supabase", "opsly-supabase-marketplace"],
-    "operations": ["opsly-tenant"],
+    "operations": ["opsly-tenant", "opsly-peskids"],
     "infrastructure": ["opsly-infra"],
     "orchestration": ["opsly-orchestrator", "opsly-agent-teams", "opsly-jcode"],
     "billing": ["opsly-billing", "opsly-stripe-marketplace"],
@@ -617,10 +658,10 @@
     ]
   },
   "quick_reference": {
-    "nueva_sesion": ["opsly-context"],
+    "nueva_sesion": ["opsly-context", "opsly-modularity"],
     "orquestacion": ["opsly-quantum"],
     "autonomo": ["opsly-autonomous"],
-    "desarrollo_api": ["opsly-api", "opsly-bash", "opsly-jcode"],
+    "desarrollo_api": ["opsly-modularity", "opsly-api", "opsly-bash", "opsly-jcode"],
     "ia_ml": ["opsly-llm", "opsly-feedback-ml", "opsly-notebooklm"],
     "infra": ["opsly-infra", "opsly-tenant", "opsly-discord", "opsly-self-healing"],
     "self_healing": ["opsly-self-healing", "opsly-infra", "opsly-discord"],

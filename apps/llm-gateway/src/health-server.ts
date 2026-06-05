@@ -3,6 +3,7 @@ import { handleApprovalAnalyzeHttp } from './approval-route.js';
 import { handlePlannerHttp } from './planner-route.js';
 import { handleSearchHttp } from './search-route.js';
 import { handleTextCompletionHttp } from './text-completion-route.js';
+import { handleTranscribeHttp } from './transcribe-route.js';
 
 const DEFAULT_PORT = 3010;
 
@@ -18,6 +19,10 @@ export function createHealthServer(port?: number): void {
   const server = createServer((req, res) => {
     void (async () => {
       try {
+        const transcribeHandled = await handleTranscribeHttp(req, res);
+        if (transcribeHandled) {
+          return;
+        }
         const textHandled = await handleTextCompletionHttp(req, res);
         if (textHandled) {
           return;

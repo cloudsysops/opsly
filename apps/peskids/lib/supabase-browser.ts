@@ -1,17 +1,30 @@
-import { createBrowserClient } from '@supabase/ssr'
-import type { Database } from './types'
+import { createBrowserClient } from '@supabase/ssr';
+import type { Database } from './types';
 
-export function createClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  const fallbackUrl = url || 'https://placeholder.supabase.co'
-  const fallbackAnon = anon || 'placeholder'
+export type SupabaseBrowserConfig = {
+  supabaseUrl: string;
+  supabaseAnonKey: string;
+};
 
-  return createBrowserClient<Database>(fallbackUrl, fallbackAnon, {
+function resolveBrowserConfig(config?: Partial<SupabaseBrowserConfig>): SupabaseBrowserConfig {
+  const supabaseUrl =
+    config?.supabaseUrl?.trim() || process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || '';
+  const supabaseAnonKey =
+    config?.supabaseAnonKey?.trim() || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() || '';
+  return {
+    supabaseUrl: supabaseUrl || 'https://placeholder.supabase.co',
+    supabaseAnonKey: supabaseAnonKey || 'placeholder',
+  };
+}
+
+export function createClient(config?: Partial<SupabaseBrowserConfig>) {
+  const { supabaseUrl, supabaseAnonKey } = resolveBrowserConfig(config);
+
+  return createBrowserClient<Database>(supabaseUrl, supabaseAnonKey, {
     auth: {
       detectSessionInUrl: true,
       flowType: 'pkce',
       experimental: { passkey: true },
     },
-  })
+  });
 }

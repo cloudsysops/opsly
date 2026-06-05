@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-05-21
+last_review: 2026-05-26
 ---
 
 # Opsly — Contexto del Agente
@@ -388,6 +388,7 @@ node scripts/load-skills.js show opsly-api
 | Nomenclatura CLI `openclaw` vs orquestador   | `docs/01-development/OPENCLAW-TERMINOLOGY.md`                                                                                                  |
 | Docker tenant aislado                        | `scripts/lib/docker-helpers.sh` — `--project-name tenant_<slug>`                                                                                 |
 | Agency Division (nuevo 2026-05-06)            | `docs/01-development/OPSLY-AGENCY-DIVISION.md` — API Factory, Agent Management, Security API, Autonomous Revenue                                 |
+| Panini Lab (incubator demo)                   | `apps/panini-lab` — colección conversacional de stickers; prod `https://panini.op-sly.com`; runbook `docs/runbooks/PANINI-LAB-GOLIVE.md`         |
 
 ## 🚀 Peskids (Tenant Project, Phase 2 Implementation Ready)
 
@@ -651,6 +652,40 @@ Week 4: Docs + runbook + MVP validation
 ## 🔄 Estado actual
 
 <!-- Actualizar al final de cada sesión -->
+
+**Sesión 2026-06-04 — ICSO marketing site v2 (PR #495) ✅**
+- ✅ **`apps/icso`**: sitio agency frontend-only (hero, soluciones, Peskids case study, pricing placeholder, `/services`, `/about`, `/case-studies`, `/contact`); dev `:3015`
+- ✅ **Brand assets**: `docs/brand/icso/` + `apps/icso/public/brand/` (logo-primary, logo-square, favicon)
+- ⏳ **Deploy**: Traefik + `NEXT_PUBLIC_SITE_URL` para dominio ICSO; PR https://github.com/cloudsysops/opsly/pull/495
+
+**Sesión 2026-05-28 — Skills cargados, Shield integrado, Billing consolidado ✅**
+
+**Branch activo:** `feat/shield-scan-worker-integration` (PR pendiente de abrir por CLI; usar `gh pr create` o web)
+
+- ✅ **content-studio dist**: `lib/content-studio` dist estaba stale post-`82e86c66`; rebuilt → `npm run type-check` 33/33 FULL TURBO
+- ✅ **ShieldScanWorker** integrado en `apps/orchestrator/src/index.ts` (import + cleanup)
+- ✅ **Security Defense portal** actualizado: static mock → live Guardian Grid vía `requirePortalPayloadWithShield` + `ShieldDashboardClient`
+- ✅ **Billing consolidado**: `dunning-service.ts`, `unified-webhook.ts`, `unify-migration.ts` + wiring en rutas Stripe
+- ✅ **Hive bots**: `billing-bot.ts`, `dns-bot.ts`, `secrets-bot.ts` + registrados en `bot-factory.ts` / `hive-orchestrator.ts`
+- ✅ **Portal register flow**: `apps/portal/app/register/` + `checkout.ts` server action
+- ✅ **Peskids forms**: renombradas PascalCase → kebab-case; `FormBuilder` ampliado (310→438 líneas); barrel `forms/index.ts`
+- ✅ **Skills system nativo**: `scripts/patch-skills-frontmatter.py` parcha 35 SKILL.md con `name`+`description`; `scripts/register-skills.sh` crea symlinks `.claude/skills/` → `packages/skills/user/` (usuario debe ejecutar el script)
+- ✅ **npm audit**: 0 vulnerabilidades
+
+**Pendientes para próxima sesión:**
+1. `! bash scripts/register-skills.sh` → crea symlinks para invocación nativa de skills via `Skill` tool
+2. Abrir PR: `gh pr create` o web para `feat/shield-scan-worker-integration`
+3. Phase 6 continuation: test FormSubmissionService con datos reales de Supabase
+4. Investigar coverage de `apps/orchestrator` para subir del 46.4% actual
+
+**Sesión 2026-05-26 — Peskids production readiness cerrada ✅**
+- ✅ VPS `app` reconstruido desde fuente con `apps/api/Dockerfile` actualizado: `npm ci` ya ve el grafo completo de workspaces y la imagen `intcloudsysops-api:peskids-latest` vuelve a arrancar sana.
+- ✅ `https://api.op-sly.com/api/health` responde `200` desde producción.
+- ✅ `https://api.op-sly.com/api/portal/health?slug=peskids` devuelve los endpoints canónicos de monitoreo:
+  - `https://n8n-peskids.op-sly.com`
+  - `https://uptime-peskids.op-sly.com`
+- ✅ Smoke de Peskids completo en producción: landing, admin login, health, lead `201`, feedback `201`, n8n health, Uptime Kuma.
+- ✅ Árbol local limpio al final de la sesión; solo se mantuvo WIP ajeno fuera del alcance y fue limpiado.
 
 **Sesión 2026-05-22 (Continuación 4) — Deep Cleanup & Infrastructure Merge ✅**
 
@@ -920,19 +955,20 @@ Week 4: Docs + runbook + MVP validation
 
 **Hermes + LLM local (Cursor/Claude/Copilot en doc):** con `HERMES_DISPATCH_OPENCLAW=true` y `HERMES_LOCAL_LLM_FIRST=true`, tareas `decision` + esfuerzo `S` encolan job `ollama` (gateway `llama_local`). Matriz: [`docs/HERMES-LOCAL-AGENTS-STACK.md`](docs/HERMES-LOCAL-AGENTS-STACK.md).
 
-**Servicios VPS (2026-04-14 01:45 UTC):**
+**Servicios VPS (2026-05-26 21:15 UTC):**
 
-| Servicio      | Status        | Puerto | Notes                                           |
-| ------------- | ------------- | ------ | ----------------------------------------------- |
-| Traefik       | ✅ Running    | 80/443 | Router principal                                |
-| API (app)     | ⚠️ Error      | 3000   | `[id] !== [ref]` conflict en imagen GHCR        |
-| Admin         | ✅ Running    | 3001   | `admin.op-sly.com`                   |
-| Portal        | ✅ Running    | 3002   | `portal.op-sly.com`                  |
-| MCP           | ✅ Running    | 3003   | Herramientas disponibles                        |
-| Orchestrator  | ✅ Running    | 3011   | OAR + Mode System COMPLETO (Semana 1)           |
-| Redis         | ✅ Running    | 6379   | Sin password (bug compose)                      |
-| n8n (tenants) | ✅ Running    | -      | smiletripcare, localrank, jkboterolabs, peskids |
-| Uptime Kuma   | ✅ Running    | -      | Por tenant                                      |
+| Servicio          | Status            | Puerto | Notes                                                     |
+| ------------------ | ----------------- | ------ | --------------------------------------------------------- |
+| Traefik            | ✅ Running        | 80/443 | Router principal                                          |
+| API (app)          | ✅ Healthy        | 3000   | `api.op-sly.com/api/health` OK                            |
+| Admin              | ✅ Running        | 3001   | `admin.op-sly.com`                                        |
+| Portal             | ✅ Running        | 3002   | `portal.op-sly.com`                                       |
+| MCP                | ✅ Running        | 3003   | Herramientas disponibles                                  |
+| Orchestrator       | ✅ Running        | 3011   | OAR + Mode System COMPLETO (Semana 1)                    |
+| Redis              | ✅ Running        | 6379   | Sin password (bug compose documentado en histórico)       |
+| n8n (tenants)      | ✅ Running        | -      | smiletripcare, localrank, jkboterolabs, peskids          |
+| Uptime Kuma        | ✅ Running        | -      | Por tenant                                                |
+| Peskids app stack  | ✅ Running        | 3004   | `peskids` healthy, `n8n_peskids` / `uptime_peskids` live  |
 
 **Sesión 2026-04-20 — Semana 5 Completada ✅ (Feedback Loop API)**
 
@@ -1582,6 +1618,15 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 ## 🔄 Próximo paso inmediato
 
+**Sigma agent harness (2026-05-30):** [PR #457](https://github.com/cloudsysops/opsly/pull/457) — merge cuando apruebes; post-merge en VPS:
+
+```bash
+cd /opt/opsly && git pull --ff-only
+npm run sigma:install
+# redeploy orchestrator + MCP (compose pull/up según runbook deploy)
+npm run sigma:smoke   # opcional en VPS tras install
+```
+
 **Status PRs Cleanup (2026-05-22 — SESSION FINAL):**
 
 | PR | Status | Blockers | Owner |
@@ -2193,6 +2238,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 │   ├── admin/               # Next.js dashboard admin
 │   ├── portal/              # Next.js portal cliente (login, invitación, modos)
 │   ├── web/                 # App web (workspace)
+│   ├── icso/                # Marketing site IntCloud SysOps (agency, frontend-only)
 │   ├── mcp/                 # OpenClaw MCP server (tools → API / GitHub)
 │   ├── orchestrator/        # OpenClaw BullMQ + processIntent
 │   ├── ml/                  # OpenClaw ML (RAG, clasificación, embeddings)

@@ -4,6 +4,9 @@ import { TesterBot, startTesterBot } from './tester-bot.js';
 import { DeployerBot, startDeployerBot } from './deployer-bot.js';
 import { DocWriterBot, startDocWriterBot } from './doc-writer-bot.js';
 import { SecurityBot, startSecurityBot } from './security-bot.js';
+import { DnsBot, startDnsBot } from './dns-bot.js';
+import { SecretsBot, startSecretsBot } from './secrets-bot.js';
+import { BillingBot, startBillingBot } from './billing-bot.js';
 import type { BotRole, Bot } from '../types.js';
 
 export type { BotRole };
@@ -35,6 +38,15 @@ export class BotFactory {
         break;
       case 'security':
         bot = startSecurityBot();
+        break;
+      case 'dns':
+        bot = startDnsBot();
+        break;
+      case 'secrets':
+        bot = startSecretsBot();
+        break;
+      case 'billing':
+        bot = startBillingBot();
         break;
       default:
         throw new Error(`Rol de bot desconocido: ${role as string}`);

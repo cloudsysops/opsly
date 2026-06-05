@@ -18,13 +18,26 @@ require_command jq curl
 
 NOW_ISO="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
-LIST_JSON="$(
-  curl -sS -G "${NEXT_PUBLIC_APP_URL}/api/tenants" \
+fetch_tenants() {
+  local endpoint="$1"
+  curl -sS -G "${NEXT_PUBLIC_APP_URL}${endpoint}" \
     --data-urlencode "plan=demo" \
     --data-urlencode "limit=500" \
     --data-urlencode "page=1" \
-    -H "Authorization: Bearer ${PLATFORM_ADMIN_TOKEN}"
-)"
+    -H "Authorization: Bearer ${PLATFORM_ADMIN_TOKEN}" \
+    -H "x-admin-token: ${PLATFORM_ADMIN_TOKEN}"
+}
+
+LIST_JSON="$(fetch_tenants "/api/tenants" || true)"
+
+if [[ "${LIST_JSON}" == *"404 page not found"* ]] || [[ "${LIST_JSON}" == *"Cannot GET"* ]]; then
+  LIST_JSON="$(fetch_tenants "/api/v1/tenants" || true)"
+fi
+
+if [[ "${LIST_JSON}" == *"404 page not found"* ]] || [[ "${LIST_JSON}" == *"Cannot GET"* ]]; then
+  log_warn "Tenant listing endpoint not available on ${NEXT_PUBLIC_APP_URL}; skipping cleanup run"
+  exit 0
+fi
 
 if ! echo "${LIST_JSON}" | jq -e . >/dev/null 2>&1; then
   log_error "Failed to list demo tenants: ${LIST_JSON}"

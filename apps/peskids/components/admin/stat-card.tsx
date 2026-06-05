@@ -1,15 +1,15 @@
-import type { LucideIcon } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
+import type { LucideIcon } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 interface StatCardProps {
-  title: string
-  description?: string
-  value: number
-  icon: LucideIcon
-  accent?: 'teal' | 'green' | 'amber' | 'coral' | 'violet' | 'slate'
-  sectionId?: string
-  children?: React.ReactNode
+  title: string;
+  description?: string;
+  value: number | string;
+  icon: LucideIcon;
+  accent?: 'teal' | 'green' | 'amber' | 'coral' | 'violet' | 'slate';
+  sectionId?: string;
+  children?: React.ReactNode;
 }
 
 const iconTone: Record<NonNullable<StatCardProps['accent']>, string> = {
@@ -19,7 +19,7 @@ const iconTone: Record<NonNullable<StatCardProps['accent']>, string> = {
   coral: 'bg-orange-50 text-pk-accent',
   violet: 'bg-violet-50 text-violet-700',
   slate: 'bg-pk-muted text-pk-sub',
-}
+};
 
 export function StatCard({
   title,
@@ -48,8 +48,10 @@ export function StatCard({
       </CardHeader>
       <CardContent className="flex flex-1 flex-col pt-0">
         <p className="text-4xl font-bold tabular-nums tracking-tight text-pk-ink">{value}</p>
-        {children ? <div className="mt-4 flex-1 border-t border-pk-border pt-4">{children}</div> : null}
+        {children ? (
+          <div className="mt-4 flex-1 border-t border-pk-border pt-4">{children}</div>
+        ) : null}
       </CardContent>
     </Card>
-  )
+  );
 }

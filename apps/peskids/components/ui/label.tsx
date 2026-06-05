@@ -1,5 +1,5 @@
-import * as React from 'react'
-import { cn } from '@/lib/utils'
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
 export function Label({
   className,
@@ -12,5 +12,5 @@ export function Label({
       {children}
       {required ? <span className="ml-0.5 text-pk-coral">*</span> : null}
     </label>
-  )
+  );
 }

@@ -1,72 +1,72 @@
-'use client'
+'use client';
 
-import { Loader2 } from 'lucide-react'
-import { Suspense, useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { PeskidsLogo } from '@/components/brand/peskids-logo'
-import { Button } from '@/components/ui/button'
-import { isStaffUser } from '@/lib/staff-user'
-import { createClient } from '@/lib/supabase-browser'
+import { Loader2 } from 'lucide-react';
+import { Suspense, useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { PeskidsLogo } from '@/components/brand/peskids-logo';
+import { Button } from '@/components/ui/button';
+import { isStaffUser } from '@/lib/staff-user';
+import { createClient } from '@/lib/supabase-browser';
 
 function UpdatePasswordForm(): React.ReactElement {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [password, setPassword] = useState('')
-  const [confirm, setConfirm] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [ready, setReady] = useState(false)
-  const [error, setError] = useState('')
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const loginError = searchParams.get('error')
+    const loginError = searchParams.get('error');
     if (loginError) {
-      setError(loginError)
+      setError(loginError);
     }
-    const supabase = createClient()
+    const supabase = createClient();
     void supabase.auth.getSession().then(({ data }) => {
-      const session = data.session
+      const session = data.session;
       if (!session?.user) {
-        setReady(false)
-        return
+        setReady(false);
+        return;
       }
       if (!isStaffUser(session.user)) {
         setError(
           'Esta cuenta no tiene acceso al panel Peskids. Solicita acceso al equipo de Peskids.'
-        )
-        setReady(false)
-        return
+        );
+        setReady(false);
+        return;
       }
-      setReady(true)
-    })
-  }, [searchParams])
+      setReady(true);
+    });
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent): Promise<void> {
-    e.preventDefault()
-    setError('')
+    e.preventDefault();
+    setError('');
 
     if (password.length < 8) {
-      setError('La contraseña debe tener al menos 8 caracteres.')
-      return
+      setError('La contraseña debe tener al menos 8 caracteres.');
+      return;
     }
     if (password !== confirm) {
-      setError('Las contraseñas no coinciden.')
-      return
+      setError('Las contraseñas no coinciden.');
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const supabase = createClient()
-      const { error: updateError } = await supabase.auth.updateUser({ password })
+      const supabase = createClient();
+      const { error: updateError } = await supabase.auth.updateUser({ password });
       if (updateError) {
-        setError(updateError.message)
-        return
+        setError(updateError.message);
+        return;
       }
-      router.push('/admin')
-      router.refresh()
+      router.push('/admin');
+      router.refresh();
     } catch {
-      setError('No se pudo guardar la contraseña. Solicita un enlace nuevo desde login.')
+      setError('No se pudo guardar la contraseña. Solicita un enlace nuevo desde login.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -123,7 +123,7 @@ function UpdatePasswordForm(): React.ReactElement {
         </form>
       </div>
     </div>
-  )
+  );
 }
 
 export default function AdminUpdatePasswordPage(): React.ReactElement {
@@ -137,5 +137,5 @@ export default function AdminUpdatePasswordPage(): React.ReactElement {
     >
       <UpdatePasswordForm />
     </Suspense>
-  )
+  );
 }

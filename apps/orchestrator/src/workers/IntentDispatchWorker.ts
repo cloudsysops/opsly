@@ -4,10 +4,7 @@
 import { Job } from 'bullmq';
 import { processIntent } from '../engine.js';
 import { runOpenClawController } from '../openclaw/controller.js';
-import {
-  recordOpenClawCompletion,
-  recordOpenClawStage,
-} from '../openclaw/runtime-events.js';
+import { recordOpenClawCompletion, recordOpenClawStage } from '../openclaw/runtime-events.js';
 import { createWorker } from './create-worker.js';
 import type { IntentRequest, OrchestratorJob } from '../types.js';
 

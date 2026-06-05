@@ -1,4 +1,7 @@
 ---
+name: opsly-architect-senior
+description: >
+  Opsly Architect Senior Skill
 status: draft
 owner: operations
 last_review: 2026-05-24

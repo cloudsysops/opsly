@@ -1,4 +1,10 @@
-import { getPlatformAgentRegistry, getPlatformTenantRegistry, type PlatformTenantRegistryEntry, type TenantLifecycleStage, type TenantLifecycleStageId } from './platform-foundation';
+import {
+  getPlatformAgentRegistry,
+  getPlatformTenantRegistry,
+  type PlatformTenantRegistryEntry,
+  type TenantLifecycleStage,
+  type TenantLifecycleStageId,
+} from './platform-foundation';
 
 export type IncubationStepStatus = 'completed' | 'ready' | 'blocked';
 
@@ -190,7 +196,10 @@ function gateReason(tenant: PlatformTenantRegistryEntry | null, label: string): 
     : `${tenant.slug} still needs governed work before ${label.toLowerCase()}.`;
 }
 
-function buildGates(tenant: PlatformTenantRegistryEntry | null, healthyAgents: number): IncubationMachineGate[] {
+function buildGates(
+  tenant: PlatformTenantRegistryEntry | null,
+  healthyAgents: number
+): IncubationMachineGate[] {
   const templateReady = Boolean(tenant && tenant.workflows_count > 0);
   const workflowReady = Boolean(tenant && tenant.workflows_count >= 2);
   const agentReady = healthyAgents > 0;
@@ -271,15 +280,13 @@ export async function getIncubationMachineSnapshot(input?: {
 
   const selectedSlug = getSelectedTenantSlug(tenantRegistry.items, input?.tenantSlug ?? null);
   const selectedTenant = selectedSlug
-    ? tenantRegistry.items.find((tenant) => tenant.slug === selectedSlug) ?? null
+    ? (tenantRegistry.items.find((tenant) => tenant.slug === selectedSlug) ?? null)
     : null;
   const currentStage = selectedTenant
-    ? tenantRegistry.stages.find((stage) => stage.id === selectedTenant.lifecycle_stage) ?? null
+    ? (tenantRegistry.stages.find((stage) => stage.id === selectedTenant.lifecycle_stage) ?? null)
     : null;
   const currentStageIndex = currentStage ? tenantRegistry.stages.indexOf(currentStage) : -1;
-  const nextStage = currentStage
-    ? tenantRegistry.stages[currentStageIndex + 1] ?? null
-    : null;
+  const nextStage = currentStage ? (tenantRegistry.stages[currentStageIndex + 1] ?? null) : null;
   const healthyAgents = agentRegistry.summary.healthy;
 
   return {

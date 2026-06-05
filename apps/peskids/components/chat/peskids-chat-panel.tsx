@@ -1,24 +1,24 @@
-'use client'
+'use client';
 
-import React, { type RefObject } from 'react'
-import { Check, Send, X } from 'lucide-react'
-import type { PeskidsChatMessage, PeskidsChatQuickReply } from '@/hooks/use-peskids-chat'
-import type { PeskidsChatMode } from '@/lib/peskids-intake-messages'
-import { cn } from '@/lib/utils'
+import React, { type RefObject } from 'react';
+import { Check, Send, X } from 'lucide-react';
+import type { PeskidsChatMessage, PeskidsChatQuickReply } from '@/hooks/use-peskids-chat';
+import type { PeskidsChatMode } from '@/lib/peskids-intake-messages';
+import { cn } from '@/lib/utils';
 
 type PeskidsChatPanelProps = {
-  messages: PeskidsChatMessage[]
-  input: string
-  sending: boolean
-  listRef: RefObject<HTMLDivElement | null>
-  onInputChange: (value: string) => void
-  onSend: () => void
-  onQuickReply?: (reply: PeskidsChatQuickReply) => void
-  onClose?: () => void
-  variant: 'inline' | 'floating'
-  mode?: PeskidsChatMode
-  className?: string
-}
+  messages: PeskidsChatMessage[];
+  input: string;
+  sending: boolean;
+  listRef: RefObject<HTMLDivElement | null>;
+  onInputChange: (value: string) => void;
+  onSend: () => void;
+  onQuickReply?: (reply: PeskidsChatQuickReply) => void;
+  onClose?: () => void;
+  variant: 'inline' | 'floating';
+  mode?: PeskidsChatMode;
+  className?: string;
+};
 
 export function PeskidsChatPanel({
   messages,
@@ -33,8 +33,8 @@ export function PeskidsChatPanel({
   mode = 'admissions',
   className,
 }: PeskidsChatPanelProps): React.ReactElement {
-  const isInline = variant === 'inline'
-  const isSupport = mode === 'support'
+  const isInline = variant === 'inline';
+  const isSupport = mode === 'support';
 
   return (
     <div
@@ -51,7 +51,13 @@ export function PeskidsChatPanel({
       <header className="flex items-center justify-between bg-pk-primary px-4 py-3 text-white">
         <div>
           <p className="font-display text-sm font-bold">
-            {isSupport ? (isInline ? 'Soporte de familias' : 'Peskids · Soporte') : isInline ? 'Reserva por chat' : 'Peskids'}
+            {isSupport
+              ? isInline
+                ? 'Soporte de familias'
+                : 'Peskids · Soporte'
+              : isInline
+                ? 'Reserva por chat'
+                : 'Peskids'}
           </p>
           <p className="text-[11px] opacity-90">
             {isSupport
@@ -73,12 +79,15 @@ export function PeskidsChatPanel({
         ) : null}
       </header>
 
-      <div ref={listRef as React.LegacyRef<HTMLDivElement>} className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
+      <div
+        ref={listRef as React.LegacyRef<HTMLDivElement>}
+        className="flex-1 space-y-3 overflow-y-auto px-3 py-3"
+      >
         {messages.length === 0 ? (
           <p className="rounded-xl bg-pk-muted px-3 py-2 text-[11px] leading-relaxed text-pk-sub">
-            Este chat usa <strong>inteligencia artificial</strong> para orientarte. Las
-            respuestas son informativas y no reemplazan la evaluación de nuestros instructores.
-            Las conversaciones se almacenan temporalmente para mejorar el servicio.{' '}
+            Este chat usa <strong>inteligencia artificial</strong> para orientarte. Las respuestas
+            son informativas y no reemplazan la evaluación de nuestros instructores. Las
+            conversaciones se almacenan temporalmente para mejorar el servicio.{' '}
             <a href="/privacy" className="text-pk-primary hover:underline">
               Ver política de privacidad.
             </a>
@@ -127,8 +136,8 @@ export function PeskidsChatPanel({
       <form
         className="flex gap-2 border-t border-pk-border p-3"
         onSubmit={(e) => {
-          e.preventDefault()
-          onSend()
+          e.preventDefault();
+          onSend();
         }}
       >
         <input
@@ -157,5 +166,5 @@ export function PeskidsChatPanel({
         </button>
       </form>
     </div>
-  )
+  );
 }

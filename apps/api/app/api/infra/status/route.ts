@@ -20,17 +20,19 @@ export async function GET(request: Request): Promise<Response> {
       const seen = new Set<string>();
       const services: ServiceHeartbeatStatus[] = [];
 
-      for await (const key of redis.scanIterator({
+      for await (const keys of redis.scanIterator({
         MATCH: 'heartbeat:*',
         COUNT: 100,
       })) {
-        if (typeof key !== 'string') {
-          continue;
+        for (const key of keys) {
+          if (typeof key !== 'string') {
+            continue;
+          }
+          const name = key.replace(/^heartbeat:/, '');
+          seen.add(name);
+          const [raw, ttl] = await Promise.all([redis.get(key), redis.ttl(key)]);
+          services.push(classifyHeartbeat(name, raw, ttl, now));
         }
-        const name = key.replace(/^heartbeat:/, '');
-        seen.add(name);
-        const [raw, ttl] = await Promise.all([redis.get(key), redis.ttl(key)]);
-        services.push(classifyHeartbeat(name, raw, ttl, now));
       }
 
       for (const expected of EXPECTED_SERVICES) {

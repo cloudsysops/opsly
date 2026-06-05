@@ -1,0 +1,9 @@
+# /etc/cron.d/peskids-bi-snapshot — copiar desde repo: infra/cron/peskids-bi-snapshot
+# Formato: minuto hora día mes dow user comando
+# Logs bajo /opt/opsly/runtime/logs
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# BI snapshot diario de Peskids (02:10 UTC)
+10 2 * * * root /bin/bash -lc 'set -a; [ -f /opt/opsly/.env ] && . /opt/opsly/.env; set +a; /opt/opsly/scripts/peskids-bi-snapshot.sh >> /opt/opsly/runtime/logs/peskids-bi-snapshot.log 2>&1'

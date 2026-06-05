@@ -5,13 +5,22 @@ import { promisify } from 'node:util';
 
 import { expandHome, loadLocalAutomationPolicy, loadLocalAutomationTools } from './registry';
 import { isBrewInstallAllowed } from './permissions';
-import type { AppStatus, BinaryStatus, ToolStatus } from './types';
+import type {
+  AppStatus,
+  BinaryStatus,
+  ToolStatus,
+  LocalAutomationTool,
+  LocalAutomationPolicy,
+} from './types';
 
 const execFileAsync = promisify(execFile);
 const EXEC_TIMEOUT_MS = 4_000;
 const OUTPUT_LIMIT = 2_000;
 
-async function safeExec(command: string, args: string[]): Promise<{ stdout: string; stderr: string }> {
+async function safeExec(
+  command: string,
+  args: string[]
+): Promise<{ stdout: string; stderr: string }> {
   const result = await execFileAsync(command, args, {
     timeout: EXEC_TIMEOUT_MS,
     maxBuffer: 64 * 1024,
@@ -95,7 +104,9 @@ async function isAppRunning(appName: string): Promise<boolean> {
   const processName = appName.replace(/\.app$/i, '');
   try {
     const { stdout } = await safeExec('/bin/ps', ['-axo', 'comm=']);
-    return stdout.split('\n').some((line) => line.includes(`/${processName}.app/`) || line.endsWith(`/${processName}`));
+    return stdout
+      .split('\n')
+      .some((line) => line.includes(`/${processName}.app/`) || line.endsWith(`/${processName}`));
   } catch {
     return false;
   }
@@ -103,7 +114,9 @@ async function isAppRunning(appName: string): Promise<boolean> {
 
 export async function listApplicationsDirectory(): Promise<AppStatus[]> {
   const config = await loadLocalAutomationTools();
-  const appTools = Object.entries(config.tools).filter(([, tool]) => typeof tool.app_name === 'string');
+  const appTools = Object.entries(config.tools).filter(
+    ([, tool]) => typeof tool.app_name === 'string'
+  );
   return Promise.all(
     appTools.map(async ([id, tool]) => {
       const appName = tool.app_name ?? id;
@@ -141,6 +154,77 @@ export async function listApplicationsSafe(): Promise<{
   };
 }
 
+function isInstalled(
+  binariesLength: number,
+  appDefined: boolean,
+  hasBinary: boolean,
+  hasApp: boolean
+): boolean {
+  if (binariesLength > 0 && appDefined) {
+    return hasBinary || hasApp;
+  }
+  if (binariesLength > 0) {
+    return hasBinary;
+  }
+  return hasApp;
+}
+
+function getBrewKind(tool: LocalAutomationTool): 'formula' | 'cask' | null {
+  if (tool.brew_formula) {
+    return 'formula';
+  }
+  if (tool.brew_cask) {
+    return 'cask';
+  }
+  return null;
+}
+
+function getBrewInstallAllowed(
+  policy: LocalAutomationPolicy,
+  brewPackage: string | null,
+  brewKind: 'formula' | 'cask' | null
+): boolean {
+  if (brewPackage === null || brewKind === null) {
+    return false;
+  }
+  return isBrewInstallAllowed(policy, brewKind, brewPackage);
+}
+
+async function buildToolStatus(
+  id: string,
+  tool: LocalAutomationTool,
+  appByName: Map<string, AppStatus>,
+  policy: LocalAutomationPolicy
+): Promise<ToolStatus> {
+  const binaries = await Promise.all((tool.binaries ?? []).map(inspectBinary));
+  const app = appByName.get(id);
+  const missing = [
+    ...binaries.filter((binary) => !binary.installed).map((binary) => binary.name),
+    ...(app && !app.installed ? [app.app_name] : []),
+  ];
+  const hasBinary = binaries.some((binary) => binary.installed);
+  const hasApp = app?.installed === true;
+  const installed = isInstalled(binaries.length, app !== undefined, hasBinary, hasApp);
+  const brewPackage = tool.brew_formula ?? tool.brew_cask ?? null;
+  const brewKind = getBrewKind(tool);
+
+  return {
+    id,
+    type: tool.type,
+    required: tool.required === true,
+    installed,
+    missing,
+    binaries,
+    app,
+    install: {
+      provider: brewPackage ? 'brew' : 'none',
+      package: brewPackage,
+      allowed: getBrewInstallAllowed(policy, brewPackage, brewKind),
+      approval_required: true,
+    },
+  } satisfies ToolStatus;
+}
+
 export async function inspectRegisteredTools(): Promise<{
   generated_at: string;
   workspace_root: string;
@@ -154,42 +238,7 @@ export async function inspectRegisteredTools(): Promise<{
   ]);
   const appByName = new Map(apps.map((app) => [app.id, app]));
   const tools = await Promise.all(
-    Object.entries(config.tools).map(async ([id, tool]) => {
-      const binaries = await Promise.all((tool.binaries ?? []).map(inspectBinary));
-      const app = appByName.get(id);
-      const missing = [
-        ...binaries.filter((binary) => !binary.installed).map((binary) => binary.name),
-        ...(app && !app.installed ? [app.app_name] : []),
-      ];
-      const hasBinary = binaries.some((binary) => binary.installed);
-      const hasApp = app?.installed === true;
-      const installed =
-        binaries.length > 0 && app !== undefined
-          ? hasBinary || hasApp
-          : binaries.length > 0
-            ? hasBinary
-            : hasApp;
-      const brewPackage = tool.brew_formula ?? tool.brew_cask ?? null;
-      const brewKind = tool.brew_formula ? 'formula' : tool.brew_cask ? 'cask' : null;
-      return {
-        id,
-        type: tool.type,
-        required: tool.required === true,
-        installed,
-        missing,
-        binaries,
-        app,
-        install: {
-          provider: brewPackage ? 'brew' : 'none',
-          package: brewPackage,
-          allowed:
-            brewPackage !== null && brewKind !== null
-              ? isBrewInstallAllowed(policy, brewKind, brewPackage)
-              : false,
-          approval_required: true,
-        },
-      } satisfies ToolStatus;
-    })
+    Object.entries(config.tools).map(([id, tool]) => buildToolStatus(id, tool, appByName, policy))
   );
   return {
     generated_at: new Date().toISOString(),

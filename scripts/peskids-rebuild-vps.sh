@@ -55,10 +55,12 @@ trap 'rm -f "$ENV_FILE"' EXIT
 doppler secrets download --no-file --format docker --project ops-intcloudsysops --config prd >"$ENV_FILE"
 source /opt/opsly/scripts/lib/peskids-docker-env-filter.sh
 filter_peskids_docker_env "$ENV_FILE"
+source /opt/opsly/scripts/lib/peskids-traefik-labels.sh
 docker run -d --name peskids --restart unless-stopped \
   --network traefik-public \
   -p 127.0.0.1:3004:3004 \
   --env-file "$ENV_FILE" \
+  "${PESKIDS_TRAEFIK_LABELS[@]}" \
   ghcr.io/cloudsysops/peskids:latest
 sleep 3
 curl -sf http://127.0.0.1:3004/ >/dev/null && echo "ok   peskids local health"

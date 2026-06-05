@@ -1,0 +1,85 @@
+{
+  "id": "peskids-lead-capture",
+  "name": "Peskids - Lead Capture",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "peskids-lead",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "peskids-lead-webhook",
+      "name": "Lead Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json;\nconst now = new Date().toISOString();\nreturn [{\n  json: {\n    tenant_id: 'peskids',\n    name: (body.full_name || body.name || '').trim() || 'Unknown',\n    email: (body.email || '').trim().toLowerCase() || null,\n    phone: body.phone?.trim() || null,\n    class_modality: body.class_modality || null,\n    neighborhood: body.neighborhood?.trim() || null,\n    grade_interested: body.grade_interested || null,\n    referral_source: body.referral_source?.trim() || null,\n    referral_code: body.referral_code?.trim()?.toUpperCase() || null,\n    referred_by_code: body.referred_by_code?.trim()?.toUpperCase() || null,\n    referral_discount_cents: 0,\n    referral_redemptions: 0,\n    status: 'new',\n    received_at: now\n  }\n}];"
+      },
+      "id": "peskids-normalize",
+      "name": "Normalize Lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/leads",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "Prefer", "value": "return=representation" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ tenant_id: $json.tenant_id, name: $json.name, email: $json.email, phone: $json.phone, class_modality: $json.class_modality, neighborhood: $json.neighborhood, grade_interested: $json.grade_interested, referral_source: $json.referral_source, referral_code: $json.referral_code, referred_by_code: $json.referred_by_code, referral_discount_cents: $json.referral_discount_cents, referral_redemptions: $json.referral_redemptions, status: $json.status }) }}",
+        "options": {}
+      },
+      "id": "peskids-supabase-insert",
+      "name": "Insert Lead to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 0]
+    }
+  ],
+  "connections": {
+    "Lead Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Lead": {
+      "main": [
+        [
+          {
+            "node": "Insert Lead to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Lead to Supabase": { "main": [[]] }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "peskids"
+  }
+}

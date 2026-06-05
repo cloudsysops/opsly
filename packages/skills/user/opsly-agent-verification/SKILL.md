@@ -1,4 +1,7 @@
 ---
+name: opsly-agent-verification
+description: >
+  Opsly agent verification (marketplace discipline)
 status: draft
 owner: operations
 last_review: 2026-05-24

@@ -1,0 +1,297 @@
+{
+  "id": "peskids-notify",
+  "name": "Peskids - Notify (WhatsApp deep link)",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "peskids-notify",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "n1-webhook",
+      "name": "Peskids Notify Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, workflow: 'peskids-notify', received_at: new Date().toISOString() } }}",
+        "options": {
+          "responseCode": 202
+        }
+      },
+      "id": "n2-accepted",
+      "name": "Accepted",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [260, 100]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body ?? $input.first().json;\nreturn [{\n  json: {\n    type: body.type || 'notification',\n    tenant_id: body.tenant_id || 'peskids',\n    to: body.to || '',\n    title: body.title || '',\n    body: body.body || '',\n    metadata: body.metadata || {},\n    recipientEmail: (body.metadata && body.metadata.recipientEmail) ? body.metadata.recipientEmail : null\n  }\n}];"
+      },
+      "id": "n3-parse",
+      "name": "Parse Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 450]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\nconst hasEmail = data.recipientEmail && data.recipientEmail.includes('@');\nreturn [{ json: { ...data, hasEmail } }];"
+      },
+      "id": "n4-check-email",
+      "name": "Check Has Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [520, 450]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.hasEmail }}",
+                    "rightValue": true,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "with_email"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.hasEmail }}",
+                    "rightValue": false,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "no_email"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "n5-route-email",
+      "name": "Route By Email",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [780, 450]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.PESKIDS_APP_URL }}/api/auth/magic-link",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ email: $json.recipientEmail, redirectTo: '/familias/submissions' }) }}",
+        "options": {}
+      },
+      "id": "n6-magic-link",
+      "name": "Generate Magic Link",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1040, 300],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const magicLinkResponse = $json;\nconst url = magicLinkResponse.url || null;\n// Retrieve original payload from node n5-route-email (index 0 = with_email branch)\nconst payload = $('Route By Email').first().json;\nreturn [{\n  json: {\n    to: payload.to,\n    title: payload.title,\n    body: payload.body,\n    platformUrl: url\n  }\n}];"
+      },
+      "id": "n7-format-with-link",
+      "name": "Format Message With Link",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1300, 300],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = $json;\nreturn [{\n  json: {\n    to: payload.to,\n    title: payload.title,\n    body: payload.body,\n    platformUrl: null\n  }\n}];"
+      },
+      "id": "n8-format-no-link",
+      "name": "Format Message No Link",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1040, 600],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $json;\nconst platformLine = d.platformUrl ? `\\n\\n👉 Ver en la app: ${d.platformUrl}` : '';\nconst text = `*${d.title}*\\n${d.body}${platformLine}`;\nreturn [{ json: { to: d.to, text } }];"
+      },
+      "id": "n9-compose-wa",
+      "name": "Compose WhatsApp Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1560, 300],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $json;\nconst text = `*${d.title}*\\n${d.body}`;\nreturn [{ json: { to: d.to, text } }];"
+      },
+      "id": "n10-compose-wa-no-link",
+      "name": "Compose WhatsApp Text No Link",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1300, 600],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.BAILEYS_SEND_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ to: $json.to, text: $json.text }) }}",
+        "options": {}
+      },
+      "id": "n11-send-wa-with-link",
+      "name": "Send WhatsApp With Link",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1820, 300],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.BAILEYS_SEND_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ to: $json.to, text: $json.text }) }}",
+        "options": {}
+      },
+      "id": "n12-send-wa-no-link",
+      "name": "Send WhatsApp No Link",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1560, 600],
+      "continueOnFail": true
+    }
+  ],
+  "connections": {
+    "Peskids Notify Webhook": {
+      "main": [
+        [
+          { "node": "Accepted", "type": "main", "index": 0 },
+          { "node": "Parse Payload", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Parse Payload": {
+      "main": [
+        [
+          { "node": "Check Has Email", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Check Has Email": {
+      "main": [
+        [
+          { "node": "Route By Email", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Route By Email": {
+      "main": [
+        [
+          { "node": "Generate Magic Link", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Format Message No Link", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Generate Magic Link": {
+      "main": [
+        [
+          { "node": "Format Message With Link", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Format Message With Link": {
+      "main": [
+        [
+          { "node": "Compose WhatsApp Text", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Format Message No Link": {
+      "main": [
+        [
+          { "node": "Compose WhatsApp Text No Link", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Compose WhatsApp Text": {
+      "main": [
+        [
+          { "node": "Send WhatsApp With Link", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Compose WhatsApp Text No Link": {
+      "main": [
+        [
+          { "node": "Send WhatsApp No Link", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "peskids"
+  }
+}

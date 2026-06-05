@@ -57,42 +57,47 @@ export function createFieldValidator(fieldType: string, config?: ValidationConfi
           }
           break;
         case 'minLength':
-          schema = schema instanceof z.ZodString
-            ? schema.min(rule.value, rule.message || `Minimum ${rule.value} characters required`)
-            : schema;
+          schema =
+            schema instanceof z.ZodString
+              ? schema.min(rule.value, rule.message || `Minimum ${rule.value} characters required`)
+              : schema;
           break;
         case 'maxLength':
-          schema = schema instanceof z.ZodString
-            ? schema.max(rule.value, rule.message || `Maximum ${rule.value} characters allowed`)
-            : schema;
+          schema =
+            schema instanceof z.ZodString
+              ? schema.max(rule.value, rule.message || `Maximum ${rule.value} characters allowed`)
+              : schema;
           break;
         case 'pattern':
-          schema = schema instanceof z.ZodString
-            ? schema.regex(new RegExp(rule.value), rule.message || 'Invalid format')
-            : schema;
+          schema =
+            schema instanceof z.ZodString
+              ? schema.regex(new RegExp(rule.value), rule.message || 'Invalid format')
+              : schema;
           break;
         case 'email':
-          schema = schema instanceof z.ZodString
-            ? schema.email(rule.message || 'Invalid email address')
-            : schema;
+          schema =
+            schema instanceof z.ZodString
+              ? schema.email(rule.message || 'Invalid email address')
+              : schema;
           break;
         case 'url':
-          schema = schema instanceof z.ZodString
-            ? schema.url(rule.message || 'Invalid URL')
-            : schema;
+          schema =
+            schema instanceof z.ZodString ? schema.url(rule.message || 'Invalid URL') : schema;
           break;
         case 'number':
           schema = z.coerce.number();
           break;
         case 'min':
-          schema = schema instanceof z.ZodNumber
-            ? schema.min(rule.value, rule.message || `Minimum value is ${rule.value}`)
-            : schema;
+          schema =
+            schema instanceof z.ZodNumber
+              ? schema.min(rule.value, rule.message || `Minimum value is ${rule.value}`)
+              : schema;
           break;
         case 'max':
-          schema = schema instanceof z.ZodNumber
-            ? schema.max(rule.value, rule.message || `Maximum value is ${rule.value}`)
-            : schema;
+          schema =
+            schema instanceof z.ZodNumber
+              ? schema.max(rule.value, rule.message || `Maximum value is ${rule.value}`)
+              : schema;
           break;
       }
     }
@@ -103,7 +108,7 @@ export function createFieldValidator(fieldType: string, config?: ValidationConfi
 
 export function validateFormData(
   fields: Array<{ id: string; type: string; required: boolean; validation?: ValidationConfig }>,
-  data: Record<string, any>
+  data: Record<string, string | number | boolean | undefined>
 ): { valid: boolean; errors: Record<string, string> } {
   const errors: Record<string, string> = {};
 

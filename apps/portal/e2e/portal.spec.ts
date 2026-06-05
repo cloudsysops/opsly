@@ -15,7 +15,8 @@ test.describe('Portal — public pages', () => {
       if (msg.type() === 'error') errors.push(msg.text());
     });
     await page.goto('/login');
-    await expect(page.getByRole('heading', { name: 'Opsly' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /portal de cliente/i })).toBeVisible();
+    await expect(page.getByText('Opsly')).toBeVisible();
     await expect(page.getByLabel(/email/i)).toBeVisible();
     await expect(page.getByLabel(/contraseña/i)).toBeVisible();
     await expect(page.getByRole('button', { name: /entrar/i })).toBeVisible();

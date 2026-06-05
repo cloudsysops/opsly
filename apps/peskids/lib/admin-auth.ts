@@ -1,28 +1,28 @@
-import { NextRequest } from 'next/server'
+import { NextRequest } from 'next/server';
 
 export function getAdminSecret(): string | undefined {
-  return process.env.DASHBOARD_ADMIN_SECRET
+  return process.env.DASHBOARD_ADMIN_SECRET;
 }
 
 export function validateAdminRequest(req: NextRequest): { valid: boolean; error?: string } {
-  const adminSecret = getAdminSecret()
+  const adminSecret = getAdminSecret();
   if (!adminSecret) {
-    return { valid: false, error: 'Admin authentication not configured' }
+    return { valid: false, error: 'Admin authentication not configured' };
   }
 
-  const authHeader = req.headers.get('authorization')
+  const authHeader = req.headers.get('authorization');
   if (authHeader) {
-    const token = authHeader.replace(/^Bearer\s+/i, '')
+    const token = authHeader.replace(/^Bearer\s+/i, '');
     if (token === adminSecret) {
-      return { valid: true }
+      return { valid: true };
     }
-    return { valid: false, error: 'Invalid admin token' }
+    return { valid: false, error: 'Invalid admin token' };
   }
 
-  const cookieToken = req.cookies.get('admin-token')?.value
+  const cookieToken = req.cookies.get('admin-token')?.value;
   if (cookieToken && cookieToken === adminSecret) {
-    return { valid: true }
+    return { valid: true };
   }
 
-  return { valid: false, error: 'Missing authorization header' }
+  return { valid: false, error: 'Missing authorization header' };
 }

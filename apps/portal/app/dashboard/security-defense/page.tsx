@@ -1,27 +1,20 @@
 import type { ReactElement } from 'react';
 import { DashboardShell, PageLead } from '@/components/dashboard/premium-dashboard';
+import { ShieldDashboardClient } from '@/components/shield/shield-dashboard-client';
 import { PortalShell } from '@/components/layout/portal-shell';
+import { requirePortalPayloadWithShield } from '@/lib/portal-server';
 
-export default function SecurityDefenseDashboardPage(): ReactElement {
+export default async function SecurityDefenseDashboardPage(): Promise<ReactElement> {
+  const { payload, shieldScore } = await requirePortalPayloadWithShield();
+
   return (
-    <PortalShell title="Security Defense" showModeLink>
+    <PortalShell title={`Security Defense — ${payload.slug}`} showModeLink>
       <DashboardShell>
         <PageLead>
-          Vista defensiva para revisar riesgos, workflows críticos y acciones que requieren
-          aprobación humana.
+          Guardian Grid: puntuación de seguridad, tendencia y hallazgos de secretos en tiempo real
+          para {payload.slug}.
         </PageLead>
-        <div className="grid gap-4 md:grid-cols-3">
-          {[
-            ['Postura', 'Sin incidentes activos en demo local'],
-            ['Aprobaciones', 'Las acciones de producción requieren confirmación humana'],
-            ['Siguiente acción', 'Conectar marketplace de workflows a install/activate'],
-          ].map(([title, body]) => (
-            <section key={title} className="rounded-lg border border-ops-border bg-ops-surface p-5">
-              <h2 className="text-sm font-semibold text-neutral-100">{title}</h2>
-              <p className="mt-2 text-sm leading-6 text-neutral-400">{body}</p>
-            </section>
-          ))}
-        </div>
+        <ShieldDashboardClient tenantSlug={payload.slug} initialScore={shieldScore} />
       </DashboardShell>
     </PortalShell>
   );

@@ -1,5 +1,5 @@
-import { Suspense } from 'react'
-import { InviteActivate } from './invite-activate'
+import { Suspense } from 'react';
+import { InviteActivate } from './invite-activate';
 
 export default function InvitePage(): React.ReactElement {
   return (
@@ -12,5 +12,5 @@ export default function InvitePage(): React.ReactElement {
     >
       <InviteActivate />
     </Suspense>
-  )
+  );
 }

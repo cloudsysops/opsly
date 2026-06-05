@@ -1,4 +1,7 @@
 ---
+name: opsly-agent-teams
+description: >
+  Opsly Agent Teams Skill
 status: draft
 owner: operations
 last_review: 2026-05-24

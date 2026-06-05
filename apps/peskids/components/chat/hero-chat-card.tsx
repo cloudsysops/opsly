@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { MessageCircle } from 'lucide-react'
-import { PeskidsChatPanel } from '@/components/chat/peskids-chat-panel'
-import { WhatsAppLink } from '@/components/contact/whatsapp-link'
-import { usePeskidsChatContext } from '@/components/chat/peskids-chat-provider'
+import React from 'react';
+import { MessageCircle } from 'lucide-react';
+import { PeskidsChatPanel } from '@/components/chat/peskids-chat-panel';
+import { WhatsAppLink } from '@/components/contact/whatsapp-link';
+import { usePeskidsChatContext } from '@/components/chat/peskids-chat-provider';
 
 /** Hero: chat interactivo en lugar del formulario plano. Ancla #contacto para navegación. */
 export function HeroChatCard(): React.ReactElement {
-  const chat = usePeskidsChatContext()
+  const chat = usePeskidsChatContext();
 
   return (
     <div id="contacto" className="scroll-mt-24">
@@ -27,5 +27,5 @@ export function HeroChatCard(): React.ReactElement {
         <WhatsAppLink variant="ghost" label="WhatsApp" className="text-xs" showIcon={false} />
       </p>
     </div>
-  )
+  );
 }

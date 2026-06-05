@@ -1,7 +1,7 @@
 /**
  * Gateway Embeddings Wrapper
  * DR-033: Migrar llamadas IA legacy a LLM Gateway
- * 
+ *
  * Uso en lugar de llamadas directas a OpenAI API
  * Proporciona: caching, métricas, rate limiting, trazabilidad
  */
@@ -21,7 +21,7 @@ export interface EmbeddingsResponse {
 
 /**
  * Obtener embeddings via LLM Gateway
- * 
+ *
  * @param text - Texto a embeber (o array de textos)
  * @param tenant_slug - Para métricas y trazabilidad
  * @returns Array de embeddings
@@ -31,7 +31,7 @@ export async function getEmbeddingsViaGateway(
   tenant_slug?: string
 ): Promise<number[][]> {
   const input = Array.isArray(text) ? text : [text];
-  
+
   const response = await fetch(`${GATEWAY_URL}/v1/embeddings`, {
     method: 'POST',
     headers: {
@@ -50,15 +50,13 @@ export async function getEmbeddingsViaGateway(
   }
 
   const result: EmbeddingsResponse = await response.json();
-  
+
   if (result.error) {
     throw new Error(`Gateway embeddings error: ${result.error}`);
   }
 
   // Ordenar por índice para mantener orden
-  const embeddings = result.data
-    ?.sort((a, b) => a.index - b.index)
-    .map(d => d.embedding) || [];
+  const embeddings = result.data?.sort((a, b) => a.index - b.index).map((d) => d.embedding) || [];
 
   return embeddings;
 }
@@ -66,10 +64,7 @@ export async function getEmbeddingsViaGateway(
 /**
  * Obtener embedding para un solo texto
  */
-export async function getSingleEmbedding(
-  text: string,
-  tenant_slug?: string
-): Promise<number[]> {
+export async function getSingleEmbedding(text: string, tenant_slug?: string): Promise<number[]> {
   const embeddings = await getEmbeddingsViaGateway(text, tenant_slug);
   return embeddings[0];
 }

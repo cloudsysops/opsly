@@ -1,0 +1,20 @@
+{
+  "id": "integration-webhook",
+  "kind": "harness",
+  "title": "New webhook or external integration",
+  "description": "Review inbound webhooks, OAuth callbacks, and third-party channel integrations (OpenWA, Stripe, n8n).",
+  "sigmaTags": ["web", "proxy"],
+  "sigmaQueryHints": ["webhook", "oauth", "powershell", "credential"],
+  "reviewers": [
+    { "agent_id": "security-bot", "role": "security" },
+    { "agent_id": "architect-worker", "role": "architect" },
+    { "agent_id": "skeptic-worker", "role": "skeptic" }
+  ],
+  "harnessOverrides": {
+    "quorumMinReviews": 2,
+    "consensusThreshold": 0.75
+  },
+  "proposalTemplate": {
+    "topicPrefix": "[integration] "
+  }
+}

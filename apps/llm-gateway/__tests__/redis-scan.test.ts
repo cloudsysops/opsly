@@ -1,14 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { countKeysByPattern } from '../src/redis-scan.js';
 
-function mockRedisWithKeys(keys: string[]) {
+function mockRedisWithKeys(keys: string[], batchSize = 10) {
   return {
     scanIterator: async function* ({ MATCH }: { MATCH?: string; COUNT?: number }) {
       const prefix = MATCH?.replace(/\*$/, '') ?? '';
-      for (const key of keys) {
-        if (key.startsWith(prefix)) {
-          yield key;
-        }
+      const matched = keys.filter(k => k.startsWith(prefix));
+      for (let i = 0; i < matched.length; i += batchSize) {
+        yield matched.slice(i, i + batchSize);
       }
     },
   };

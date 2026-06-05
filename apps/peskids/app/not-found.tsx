@@ -5,5 +5,5 @@ export default function NotFound(): React.ReactElement {
         Página no encontrada
       </div>
     </main>
-  )
+  );
 }

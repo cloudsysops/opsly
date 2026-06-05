@@ -4,26 +4,26 @@ export const PESKIDS_INSTAGRAM = {
   profileUrl: 'https://www.instagram.com/peskidsnatacion/',
   handle: '@peskidsnatacion',
   displayName: 'Peskids Natación',
-} as const
+} as const;
 
-export type InstagramMediaType = 'image' | 'video' | 'reel' | 'carousel'
+export type InstagramMediaType = 'image' | 'video' | 'reel' | 'carousel';
 
-export type InstagramFallbackTone = 'teal' | 'deep' | 'coral' | 'sun'
+export type InstagramFallbackTone = 'teal' | 'deep' | 'coral' | 'sun';
 
 export type InstagramFeedItem = {
-  id: string
-  permalink: string
-  mediaType: InstagramMediaType
-  caption?: string
-  thumbnailUrl?: string
+  id: string;
+  permalink: string;
+  mediaType: InstagramMediaType;
+  caption?: string;
+  thumbnailUrl?: string;
   /** Cuando oEmbed no devuelve miniatura (sin permalinks en env o post privado). */
   fallback?: {
-    title: string
-    body: string
-    tone: InstagramFallbackTone
-    mediaLabel?: string
-  }
-}
+    title: string;
+    body: string;
+    tone: InstagramFallbackTone;
+    mediaLabel?: string;
+  };
+};
 
 /** Publicaciones de respaldo (marca) hasta pegar permalinks reales en Doppler. */
 export const INSTAGRAM_FALLBACK_ITEMS: InstagramFeedItem[] = [
@@ -93,19 +93,19 @@ export const INSTAGRAM_FALLBACK_ITEMS: InstagramFeedItem[] = [
       mediaLabel: 'Video',
     },
   },
-]
+];
 
 /** Permalinks separados por coma en Doppler/VPS (`runtime/peskids.env`). */
 export function getInstagramPermalinksFromEnv(): string[] {
-  const raw = process.env.INSTAGRAM_POST_PERMALINKS ?? ''
+  const raw = process.env.INSTAGRAM_POST_PERMALINKS ?? '';
   return raw
     .split(',')
     .map((s) => s.trim())
-    .filter((s) => s.startsWith('https://www.instagram.com/'))
+    .filter((s) => s.startsWith('https://www.instagram.com/'));
 }
 
 export function inferInstagramMediaType(permalink: string): InstagramMediaType {
-  if (permalink.includes('/reel/')) return 'reel'
-  if (permalink.includes('/tv/')) return 'video'
-  return 'image'
+  if (permalink.includes('/reel/')) return 'reel';
+  if (permalink.includes('/tv/')) return 'video';
+  return 'image';
 }

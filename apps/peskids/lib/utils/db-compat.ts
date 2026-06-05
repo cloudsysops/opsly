@@ -1,7 +1,7 @@
 export function isMissingExpandedFeedbackColumn(
   error: { message?: string } | null | undefined
 ): boolean {
-  const message = error?.message?.toLowerCase() ?? ''
+  const message = error?.message?.toLowerCase() ?? '';
   return (
     message.includes('author_type') ||
     message.includes('author_ref_id') ||
@@ -13,5 +13,5 @@ export function isMissingExpandedFeedbackColumn(
     message.includes('status') ||
     message.includes('visibility') ||
     message.includes('audience')
-  )
+  );
 }

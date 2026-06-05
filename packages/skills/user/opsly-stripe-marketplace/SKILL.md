@@ -1,4 +1,7 @@
 ---
+name: opsly-stripe-marketplace
+description: >
+  Opsly Stripe (marketplace / oficial)
 status: draft
 owner: operations
 last_review: 2026-05-24

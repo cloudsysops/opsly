@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-04-27
+last_review: 2026-05-26
 ---
 
 # Opsly — Contexto del Agente
@@ -322,7 +322,16 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-26 — **Estabilización prod:** health `https://api.op-sly.com/api/health` OK (supabase+redis); E2E invite ejecutado en `prd` con `scripts/test-e2e-invite-flow.sh --tenant-ref intcloudsysops` (resultado idempotente: usuario ya registrado, smoke aceptado); workflow deploy activo en GitHub Actions (`deploy.yml`) tras fix de sintaxis Tailscale y timeout SSH 2m. **Sprint histórico Semana 5:** [`docs/SEMANA-5-INFORME.md`](docs/SEMANA-5-INFORME.md), [`ROADMAP.md`](ROADMAP.md).
+**Sesión 2026-05-26 — Peskids production readiness cerrada ✅**
+- ✅ VPS `app` reconstruido desde fuente con `apps/api/Dockerfile` actualizado: `npm ci` ya ve el grafo completo de workspaces y la imagen `intcloudsysops-api:peskids-latest` vuelve a arrancar sana.
+- ✅ `https://api.op-sly.com/api/health` responde `200` desde producción.
+- ✅ `https://api.op-sly.com/api/portal/health?slug=peskids` devuelve los endpoints canónicos de monitoreo:
+  - `https://n8n-peskids.op-sly.com`
+  - `https://uptime-peskids.op-sly.com`
+- ✅ Smoke de Peskids completo en producción: landing, admin login, health, lead `201`, feedback `201`, n8n health, Uptime Kuma.
+- ✅ Árbol local limpio al final de la sesión; solo se mantuvo WIP ajeno fuera del alcance y fue limpiado.
+
+**Fecha última actualización:** 2026-05-26 — **Estabilización prod:** health `https://api.op-sly.com/api/health` OK (supabase+redis); Peskids live con portal health canónico `n8n-peskids.op-sly.com` + `uptime-peskids.op-sly.com`; smoke completo revalidado en producción el 2026-05-26. **Sprint histórico Semana 5:** [`docs/SEMANA-5-INFORME.md`](docs/SEMANA-5-INFORME.md), [`ROADMAP.md`](ROADMAP.md).
 
 **Siguiente fase:** Semana 6 (Segundo Cliente + E2E), ventana **2026-04-29 → 2026-05-03** ⏳ **EN PROGRESO**. Plan: [`docs/SEMANA-6-PLAN.md`](docs/SEMANA-6-PLAN.md).
 
@@ -343,19 +352,20 @@ node scripts/load-skills.js show opsly-api
 
 **Hermes + LLM local (Cursor/Claude/Copilot en doc):** con `HERMES_DISPATCH_OPENCLAW=true` y `HERMES_LOCAL_LLM_FIRST=true`, tareas `decision` + esfuerzo `S` encolan job `ollama` (gateway `llama_local`). Matriz: [`docs/HERMES-LOCAL-AGENTS-STACK.md`](docs/HERMES-LOCAL-AGENTS-STACK.md).
 
-**Servicios VPS (2026-04-14 01:45 UTC):**
+**Servicios VPS (2026-05-26 21:15 UTC):**
 
-| Servicio      | Status     | Puerto | Notes                                           |
-| ------------- | ---------- | ------ | ----------------------------------------------- |
-| Traefik       | ✅ Running | 80/443 | Router principal                                |
-| API (app)     | ⚠️ Error   | 3000   | `[id] !== [ref]` conflict en imagen GHCR        |
-| Admin         | ✅ Running | 3001   | `admin.op-sly.com`                   |
-| Portal        | ✅ Running | 3002   | `portal.op-sly.com`                  |
-| MCP           | ✅ Running | 3003   | Herramientas disponibles                        |
-| Orchestrator  | ✅ Running | 3011   | OAR + Mode System COMPLETO (Semana 1)           |
-| Redis         | ✅ Running | 6379   | Sin password (bug compose)                      |
-| n8n (tenants) | ✅ Running | -      | smiletripcare, localrank, jkboterolabs, peskids |
-| Uptime Kuma   | ✅ Running | -      | Por tenant                                      |
+| Servicio          | Status            | Puerto | Notes                                                     |
+| ------------------ | ----------------- | ------ | --------------------------------------------------------- |
+| Traefik            | ✅ Running        | 80/443 | Router principal                                          |
+| API (app)          | ✅ Healthy        | 3000   | `api.op-sly.com/api/health` OK                            |
+| Admin              | ✅ Running        | 3001   | `admin.op-sly.com`                                        |
+| Portal             | ✅ Running        | 3002   | `portal.op-sly.com`                                       |
+| MCP                | ✅ Running        | 3003   | Herramientas disponibles                                  |
+| Orchestrator       | ✅ Running        | 3011   | OAR + Mode System COMPLETO (Semana 1)                    |
+| Redis              | ✅ Running        | 6379   | Sin password (bug compose documentado en histórico)       |
+| n8n (tenants)      | ✅ Running        | -      | smiletripcare, localrank, jkboterolabs, peskids          |
+| Uptime Kuma        | ✅ Running        | -      | Por tenant                                                |
+| Peskids app stack  | ✅ Running        | 3004   | `peskids` healthy, `n8n_peskids` / `uptime_peskids` live  |
 
 **Sesión 2026-04-20 — Semana 5 Completada ✅ (Feedback Loop API)**
 

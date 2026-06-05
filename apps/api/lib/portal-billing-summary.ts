@@ -75,24 +75,23 @@ async function aggregatePendingUsdForTenant(
   const pattern = `usage:${tenantId}:*`;
   let pending = 0;
   try {
-    for await (const key of redis.scanIterator({
+    for await (const keys of redis.scanIterator({
       MATCH: pattern,
       COUNT: 100,
     })) {
-      if (typeof key !== 'string') {
-        continue;
+      for (const key of keys) {
+        const parsed = parseUsageRedisKey(key);
+        if (parsed?.tenantId !== tenantId) {
+          continue;
+        }
+        const raw = await redis.get(key);
+        const qty = parseQuantity(raw ?? undefined);
+        if (qty <= 0) {
+          continue;
+        }
+        const unit = unitCostUsdForMetric(parsed.metricType);
+        pending += qty * unit;
       }
-      const parsed = parseUsageRedisKey(key);
-      if (parsed?.tenantId !== tenantId) {
-        continue;
-      }
-      const raw = await redis.get(key);
-      const qty = parseQuantity(raw ?? undefined);
-      if (qty <= 0) {
-        continue;
-      }
-      const unit = unitCostUsdForMetric(parsed.metricType);
-      pending += qty * unit;
     }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);

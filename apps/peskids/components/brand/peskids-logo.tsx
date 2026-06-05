@@ -1,9 +1,9 @@
-import { cn } from '@/lib/utils'
-import { peskidsColorTokens } from '@/lib/tokens'
+import { cn } from '@/lib/utils';
+import { peskidsColorTokens } from '@/lib/tokens';
 
 interface PeskidsLogoProps {
-  size?: number
-  className?: string
+  size?: number;
+  className?: string;
 }
 
 /** Logo circular pinwheel (4 colores) + wordmark brush */
@@ -14,8 +14,7 @@ export function PeskidsLogo({ size = 96, className }: PeskidsLogoProps): React.R
       style={{
         width: size,
         height: size,
-        background:
-          `conic-gradient(from -45deg, ${peskidsColorTokens.primary.teal} 0deg 90deg, ${peskidsColorTokens.secondary.yellow} 90deg 180deg, ${peskidsColorTokens.primary.blue} 180deg 270deg, ${peskidsColorTokens.secondary.orange} 270deg 360deg)`,
+        background: `conic-gradient(from -45deg, ${peskidsColorTokens.primary.teal} 0deg 90deg, ${peskidsColorTokens.secondary.yellow} 90deg 180deg, ${peskidsColorTokens.primary.blue} 180deg 270deg, ${peskidsColorTokens.secondary.orange} 270deg 360deg)`,
       }}
       aria-hidden
     >
@@ -38,14 +37,14 @@ export function PeskidsLogo({ size = 96, className }: PeskidsLogoProps): React.R
         </span>
       </div>
     </div>
-  )
+  );
 }
 
 interface PeskidsLockupProps {
-  height?: number
-  color?: string
-  tag?: string
-  className?: string
+  height?: number;
+  color?: string;
+  tag?: string;
+  className?: string;
 }
 
 export function PeskidsLockup({
@@ -79,15 +78,15 @@ export function PeskidsLockup({
         ) : null}
       </div>
     </div>
-  )
+  );
 }
 
 interface PeskidsBrushProps {
-  children: React.ReactNode
-  size?: number
-  color?: string
-  tilt?: number
-  className?: string
+  children: React.ReactNode;
+  size?: number;
+  color?: string;
+  tilt?: number;
+  className?: string;
 }
 
 export function PeskidsBrush({
@@ -108,7 +107,7 @@ export function PeskidsBrush({
     >
       {children}
     </span>
-  )
+  );
 }
 
 export function PeskidsWave({
@@ -116,9 +115,9 @@ export function PeskidsWave({
   color = peskidsColorTokens.primary.teal,
   height = 40,
 }: {
-  className?: string
-  color?: string
-  height?: number
+  className?: string;
+  color?: string;
+  height?: number;
 }): React.ReactElement {
   return (
     <svg
@@ -133,7 +132,7 @@ export function PeskidsWave({
         fill={color}
       />
     </svg>
-  )
+  );
 }
 
 export function WiggleLine({
@@ -141,9 +140,9 @@ export function WiggleLine({
   color = peskidsColorTokens.primary.teal,
   className,
 }: {
-  width?: number
-  color?: string
-  className?: string
+  width?: number;
+  color?: string;
+  className?: string;
 }): React.ReactElement {
   return (
     <svg viewBox="0 0 80 18" width={width} height={18} className={className} aria-hidden>
@@ -155,7 +154,7 @@ export function WiggleLine({
         strokeLinecap="round"
       />
     </svg>
-  )
+  );
 }
 
 export function StarBurst({
@@ -163,9 +162,9 @@ export function StarBurst({
   color = peskidsColorTokens.secondary.yellow,
   className,
 }: {
-  size?: number
-  color?: string
-  className?: string
+  size?: number;
+  color?: string;
+  className?: string;
 }): React.ReactElement {
   return (
     <svg viewBox="0 0 40 40" width={size} height={size} className={className} aria-hidden>
@@ -174,5 +173,5 @@ export function StarBurst({
         fill={color}
       />
     </svg>
-  )
+  );
 }

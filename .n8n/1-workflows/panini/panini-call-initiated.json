@@ -1,0 +1,103 @@
+{
+  "id": "panini-call-initiated",
+  "name": "Panini - Call Initiated",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "panini/call-initiated",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "panini-call-webhook",
+      "name": "Call Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json;\nconst now = new Date().toISOString();\nreturn [{\n  json: {\n    id: body.id || body.call_id || '',\n    tenant_id: body.tenant_id || 'peskids',\n    call_id: body.call_id || body.external_call_id || '',\n    initiator_contact: body.initiator_contact || body.from || '',\n    recipient_contact: body.recipient_contact || body.to || '',\n    channel: body.channel || 'web',\n    call_state: body.call_state || body.state || 'ringing',\n    started_at: body.started_at || now,\n    ended_at: body.ended_at || null,\n    duration_seconds: body.duration_seconds || null,\n    recording_url: body.recording_url || null,\n    recording_id: body.recording_id || null,\n    created_at: body.created_at || now,\n    processed_at: now\n  }\n}];"
+      },
+      "id": "panini-normalize-call",
+      "name": "Normalize Call",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/calls",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "Prefer", "value": "return=representation" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ id: $json.id, tenant_id: $json.tenant_id, call_id: $json.call_id, initiator_contact: $json.initiator_contact, recipient_contact: $json.recipient_contact, channel: $json.channel, call_state: $json.call_state, started_at: $json.started_at, ended_at: $json.ended_at, duration_seconds: $json.duration_seconds, recording_url: $json.recording_url, recording_id: $json.recording_id, created_at: $json.created_at }) }}",
+        "options": {}
+      },
+      "id": "panini-supabase-calls",
+      "name": "Store Call to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, id: $json[0]?.id ?? null, call_id: $json[0]?.call_id ?? null, workflow: 'panini-call-initiated', processed_at: new Date().toISOString() } }}",
+        "options": {
+          "responseCode": 202
+        }
+      },
+      "id": "panini-response-call",
+      "name": "Accepted",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [780, 0]
+    }
+  ],
+  "connections": {
+    "Call Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Call": {
+      "main": [
+        [
+          {
+            "node": "Store Call to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Call to Supabase": {
+      "main": [
+        [
+          {
+            "node": "Accepted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

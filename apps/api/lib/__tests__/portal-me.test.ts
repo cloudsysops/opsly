@@ -5,12 +5,20 @@ import {
   parsePortalServices,
   portalUrlReachable,
   readPortalTenantSlugFromUser,
+  resolvePortalServicesForTenant,
+  sanitizePublicPortalServices,
 } from '../portal-me';
+import * as redisCacheMod from '../redis-cache';
 import * as supabaseMod from '../supabase';
 import type { Json } from '../supabase/types';
 
 vi.mock('../supabase', () => ({
   getServiceClient: vi.fn(),
+}));
+
+vi.mock('../redis-cache', () => ({
+  getCache: vi.fn(),
+  setCache: vi.fn(),
 }));
 
 describe('parsePortalServices', () => {
@@ -55,6 +63,65 @@ describe('parsePortalServices', () => {
   });
 });
 
+describe('resolvePortalServicesForTenant', () => {
+  it('uses canonical Peskids monitoring URLs regardless of stored services', () => {
+    expect(
+      resolvePortalServicesForTenant('peskids', {
+        n8n: 'https://n8n.old.example',
+        uptime: 'https://uptime.old.example',
+        n8n_basic_auth_user: 'u',
+        n8n_basic_auth_password: 'p',
+      })
+    ).toEqual({
+      n8n_url: 'https://n8n-peskids.op-sly.com',
+      uptime_url: 'https://uptime-peskids.op-sly.com',
+      n8n_user: 'u',
+      n8n_password: 'p',
+    });
+  });
+
+  it('keeps generic tenants unchanged', () => {
+    expect(
+      resolvePortalServicesForTenant('acme', {
+        n8n: 'https://n8n.acme',
+        uptime: 'https://uptime.acme',
+      })
+    ).toEqual({
+      n8n_url: 'https://n8n.acme',
+      uptime_url: 'https://uptime.acme',
+      n8n_user: null,
+      n8n_password: null,
+    });
+  });
+});
+
+describe('sanitizePublicPortalServices', () => {
+  it('omits sensitive credentials and internal ports', () => {
+    const services = {
+      n8n: 'https://n8n.acme',
+      uptime: 'https://uptime.acme',
+      n8n_user: 'admin',
+      n8n_password: 'secret-password',
+      mcp_port: 1234,
+      context_builder_port: 5678,
+    };
+    expect(sanitizePublicPortalServices('acme', services)).toEqual({
+      n8n_url: 'https://n8n.acme',
+      uptime_url: 'https://uptime.acme',
+    });
+  });
+
+  it('still uses Peskids canonical URLs', () => {
+    const services = {
+      n8n_password: 'secret-password',
+    };
+    expect(sanitizePublicPortalServices('peskids', services)).toEqual({
+      n8n_url: 'https://n8n-peskids.op-sly.com',
+      uptime_url: 'https://uptime-peskids.op-sly.com',
+    });
+  });
+});
+
 describe('parsePortalMode', () => {
   it('reads mode from meta', () => {
     expect(parsePortalMode({ mode: 'developer' })).toBe('developer');
@@ -75,6 +142,7 @@ describe('parsePortalMode', () => {
 describe('portalUrlReachable', () => {
   beforeEach(() => {
     vi.stubGlobal('fetch', vi.fn());
+    vi.mocked(redisCacheMod.getCache).mockResolvedValue(null);
   });
   afterEach(() => {
     vi.unstubAllGlobals();
@@ -104,6 +172,18 @@ describe('portalUrlReachable', () => {
   it('is false when fetch throws', async () => {
     vi.mocked(fetch).mockRejectedValueOnce(new Error('network'));
     await expect(portalUrlReachable('https://x')).resolves.toBe(false);
+  });
+
+  it('returns cached value if present', async () => {
+    vi.mocked(redisCacheMod.getCache).mockResolvedValueOnce(true);
+    await expect(portalUrlReachable('https://cached')).resolves.toBe(true);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('sets cache on success', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(new Response(null, { status: 200 }));
+    await portalUrlReachable('https://new');
+    expect(redisCacheMod.setCache).toHaveBeenCalledWith('reachable:https://new', true, expect.any(Number));
   });
 });
 

@@ -1,4 +1,7 @@
 ---
+name: opsly-billing
+description: >
+  Opsly Billing Skill
 status: draft
 owner: operations
 last_review: 2026-05-24

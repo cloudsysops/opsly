@@ -1,12 +1,21 @@
 import { describe, expect, it } from 'vitest';
-import {
-  detectCapabilityRegistry,
-  type DetectorDeps,
-  type RuntimeProfile,
-} from '../src/index.js';
+import { detectCapabilityRegistry, type DetectorDeps, type RuntimeProfile } from '../src/index.js';
 
 function mockDeps(overrides: Partial<DetectorDeps> & { tools?: string[] } = {}): DetectorDeps {
-  const tools = new Set(overrides.tools ?? ['docker', 'colima', 'ollama', 'redis-cli', 'tmux', 'gh', 'claude', 'codex', 'cursor', 'code']);
+  const tools = new Set(
+    overrides.tools ?? [
+      'docker',
+      'colima',
+      'ollama',
+      'redis-cli',
+      'tmux',
+      'gh',
+      'claude',
+      'codex',
+      'cursor',
+      'code',
+    ]
+  );
   return {
     platform: 'darwin',
     arch: 'arm64',
@@ -53,7 +62,9 @@ describe('detectCapabilityRegistry', () => {
     const registry = await detectCapabilityRegistry(mockDeps(), profile);
     expect(registry.machine.topologyType).toBe('local-only');
     expect(registry.capabilities.some((cap) => cap.id === 'opsly-orchestrator')).toBe(true);
-    expect(registry.capabilities.some((cap) => cap.id === 'tmux' && cap.presence === 'available')).toBe(true);
+    expect(
+      registry.capabilities.some((cap) => cap.id === 'tmux' && cap.presence === 'available')
+    ).toBe(true);
     expect(registry.detectedEditors).toContain('Cursor');
     expect(registry.detectedAgents).toContain('Claude Code');
   });

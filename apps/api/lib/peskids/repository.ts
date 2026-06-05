@@ -1,8 +1,5 @@
 import { getServiceClient } from '../supabase';
-import {
-  PESKIDS_LOW_SATISFACTION_THRESHOLD,
-  PESKIDS_TENANT_SLUG,
-} from './constants';
+import { PESKIDS_LOW_SATISFACTION_THRESHOLD, PESKIDS_TENANT_SLUG } from './constants';
 import type { PeskidsFeedbackBody, PeskidsLeadBody } from './schemas';
 
 export type PeskidsLeadRow = {
@@ -70,8 +67,7 @@ export async function peskidsInsertLead(
 export async function peskidsInsertFeedback(
   body: PeskidsFeedbackBody
 ): Promise<{ ok: true; row: PeskidsFeedbackRow } | { ok: false; error: string }> {
-  const status =
-    body.satisfaction < PESKIDS_LOW_SATISFACTION_THRESHOLD ? 'action_required' : 'new';
+  const status = body.satisfaction < PESKIDS_LOW_SATISFACTION_THRESHOLD ? 'action_required' : 'new';
 
   const client = getServiceClient();
   const { data, error } = await client
@@ -113,6 +109,23 @@ export type PeskidsDashboardSummary = {
   feedback_action_required: number;
   low_rating_alerts: PeskidsFeedbackRow[];
 };
+
+interface QueryResponse {
+  error?: { message: string } | null;
+}
+
+function getFirstQueryError(
+  leadsWeek: QueryResponse,
+  recentLeads: QueryResponse,
+  recentFeedback: QueryResponse,
+  actionCount: QueryResponse
+): string | null {
+  if (leadsWeek.error) return leadsWeek.error.message;
+  if (recentLeads.error) return recentLeads.error.message;
+  if (recentFeedback.error) return recentFeedback.error.message;
+  if (actionCount.error) return actionCount.error.message;
+  return null;
+}
 
 export async function peskidsFetchDashboardSummary(): Promise<
   { ok: true; summary: PeskidsDashboardSummary } | { ok: false; error: string }
@@ -164,14 +177,9 @@ export async function peskidsFetchDashboardSummary(): Promise<
       .limit(5),
   ]);
 
-  if (leadsWeek.error || recentLeads.error || recentFeedback.error || actionCount.error) {
-    const msg =
-      leadsWeek.error?.message ??
-      recentLeads.error?.message ??
-      recentFeedback.error?.message ??
-      actionCount.error?.message ??
-      'query failed';
-    return { ok: false, error: msg };
+  const errorMsg = getFirstQueryError(leadsWeek, recentLeads, recentFeedback, actionCount);
+  if (errorMsg) {
+    return { ok: false, error: errorMsg };
   }
 
   return {

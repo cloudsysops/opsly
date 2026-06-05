@@ -248,14 +248,20 @@ function parseToken(actionLink) {
     }
   }
 
-  const adminBase = (process.env.ADMIN_SITE_URL || '').replace(/\/$/, '')
+  const platformAdminBase = (process.env.ADMIN_SITE_URL || '').replace(/\/$/, '')
     || (process.env.PLATFORM_DOMAIN
       ? `https://admin.${process.env.PLATFORM_DOMAIN.trim()}`
       : 'https://admin.op-sly.com');
+  const peskidsAdminBase = (process.env.PESKIDS_SITE_URL || 'https://peskids.op-sly.com').replace(
+    /\/$/,
+    ''
+  );
+  const recoveryBase =
+    tenantSlug === 'peskids' && !isSuperuser ? peskidsAdminBase : platformAdminBase;
 
   if (!dryRun) {
     if (existing) {
-      const recoveryPayload = await generateRecoveryLink(adminBase);
+      const recoveryPayload = await generateRecoveryLink(recoveryBase);
       const recoveryLink =
         recoveryPayload?.action_link || recoveryPayload?.properties?.action_link;
       if (recoveryLink) {
@@ -264,8 +270,8 @@ function parseToken(actionLink) {
         console.log(recoveryLink);
         console.log('');
         console.log('Si Supabase redirige al portal: añade en Dashboard → Auth → URL:');
-        console.log(`  ${adminBase}/auth/recovery`);
-        console.log(`  ${adminBase}/update-password`);
+        console.log(`  ${recoveryBase}/auth/recovery`);
+        console.log(`  ${recoveryBase}/update-password`);
       }
     } else {
       const linkPayload = await generateInviteLink();
@@ -284,7 +290,7 @@ function parseToken(actionLink) {
 
   console.log('');
   console.log('Acceso esperado tras activar contraseña:');
-  console.log(`  admin:  ${adminBase}/login  ← superuser / plataforma`);
+  console.log(`  admin:  ${platformAdminBase}/login  ← superuser / plataforma`);
   if (isSuperuser || tenantSlug === 'peskids') {
     console.log('  peskids: https://peskids.op-sly.com/admin/login');
   }

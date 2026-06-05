@@ -61,11 +61,16 @@ log_line() {
 
 if [[ "${DISK_USAGE}" -ge "${EMERGENCY_THRESHOLD}" ]]; then
   log_line "EMERGENCY disco ${DISK_USAGE}% — iniciando limpieza agresiva"
-  send_discord "EMERGENCY" "Disco al ${DISK_USAGE}%. Ejecutando vps-cleanup-robust.sh --aggressive."
-  if [[ -x "${OPS_ROOT}/scripts/vps-cleanup-robust.sh" ]]; then
+  send_discord "EMERGENCY" "Disco al ${DISK_USAGE}%. Ejecutando housekeeping de emergencia."
+  if [[ -f "${OPS_ROOT}/scripts/ops/vps_docker_housekeeping.py" ]]; then
+    python3 "${OPS_ROOT}/scripts/ops/vps_docker_housekeeping.py" \
+      --emergency --aggressive --notify-discord \
+      >>"${LOG_DIR}/vps-docker-housekeeping.log" 2>&1 \
+      || log_warn "Housekeeping Python devolvió error"
+  elif [[ -x "${OPS_ROOT}/scripts/vps-cleanup-robust.sh" ]]; then
     bash "${OPS_ROOT}/scripts/vps-cleanup-robust.sh" --aggressive || log_warn "Limpieza agresiva devolvió error"
   else
-    log_warn "No se encontró ${OPS_ROOT}/scripts/vps-cleanup-robust.sh"
+    log_warn "No se encontró housekeeping (Python ni vps-cleanup-robust.sh)"
   fi
 elif [[ "${DISK_USAGE}" -ge "${CRITICAL_THRESHOLD}" ]]; then
   log_line "CRITICAL disco ${DISK_USAGE}%"

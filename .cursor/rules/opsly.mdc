@@ -15,7 +15,7 @@ Todos los procedimientos viven en `skills/user/<nombre>/SKILL.md` (índice: `ski
 
 | Prioridad | Skills |
 |-----------|--------|
-| critical | `opsly-context`, `opsly-quantum` (siempre al inicio de sesión) |
+| critical | `opsly-context`, `opsly-modularity`, `opsly-quantum` (siempre al inicio de sesión) |
 | high | `opsly-architect-senior`, `opsly-api`, `opsly-bash`, `opsly-llm`, `opsly-mcp`, `opsly-supabase`, `opsly-tenant` |
 | medium | `opsly-agent-teams`, `opsly-discord`, `opsly-feedback-ml`, `opsly-google-cloud` |
 | low | `opsly-notebooklm`, `opsly-simplify` |
@@ -73,6 +73,7 @@ Citar explícitamente qué fuente alimenta cada bloque del plan. **Excepción:**
 
 ## Antes de código
 
+- **Modularidad (obligatorio):** leer `docs/01-development/MODULARITY-CONTRACT.md` o skill `opsly-modularity`; regla Cursor `.cursor/rules/modularity.mdc`
 - ¿Existe en `lib/`? → reutilizar
 - Función >50 líneas → dividir
 - Query Supabase → Repository pattern (`lib/repositories/`)

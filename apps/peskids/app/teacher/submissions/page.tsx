@@ -1,37 +1,37 @@
-'use client'
+'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Download, Loader2, MessageSquare, Sparkles, Users, ArrowRight } from 'lucide-react'
-import { TeacherDashboard } from '@/components/dashboards/teacher-dashboard'
-import { FeedbackComposer } from '@/components/feedback/feedback-composer'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { gradeInterestedLabel } from '@/lib/peskids-intake-messages'
-import { createClient } from '@/lib/supabase-browser'
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Download, Loader2, MessageSquare, Sparkles, Users, ArrowRight } from 'lucide-react';
+import { TeacherDashboard } from '@/components/dashboards/teacher-dashboard';
+import { FeedbackComposer } from '@/components/feedback/feedback-composer';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { gradeInterestedLabel } from '@/lib/peskids-intake-messages';
+import { createClient } from '@/lib/supabase-browser';
 
 interface StudentSubmission {
-  submissionId: string
-  studentName: string
-  studentId: string
-  formTitle: string
-  submittedAt: string
-  parentEmail?: string | null
-  grade?: number
-  maxGrade: number
-  feedback?: string
-  status: 'reviewed' | 'pending' | 'needs_revision'
-  studentLevel?: string
-  progressPercent?: number
+  submissionId: string;
+  studentName: string;
+  studentId: string;
+  formTitle: string;
+  submittedAt: string;
+  parentEmail?: string | null;
+  grade?: number;
+  maxGrade: number;
+  feedback?: string;
+  status: 'reviewed' | 'pending' | 'needs_revision';
+  studentLevel?: string;
+  progressPercent?: number;
 }
 
 interface TeacherSubmissionsPayload {
-  submissions: StudentSubmission[]
+  submissions: StudentSubmission[];
   stats: {
-    reviewedCount: number
-    pendingCount: number
-    needsRevisionCount: number
-    uniqueStudents: number
-  }
+    reviewedCount: number;
+    pendingCount: number;
+    needsRevisionCount: number;
+    uniqueStudents: number;
+  };
 }
 
 function formatDateTime(dateString: string): string {
@@ -41,94 +41,116 @@ function formatDateTime(dateString: string): string {
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    })
+    });
   } catch {
-    return dateString
+    return dateString;
   }
 }
 
 function escapeCsvCell(value: string): string {
-  return `"${value.split('"').join('""')}"`
+  return `"${value.split('"').join('""')}"`;
 }
 
 export default function TeacherSubmissionsPage(): React.ReactElement {
-  const [submissions, setSubmissions] = useState<StudentSubmission[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [selectedSubmissionId, setSelectedSubmissionId] = useState<string | null>(null)
-  const [staffUserId, setStaffUserId] = useState<string | null>(null)
+  const [submissions, setSubmissions] = useState<StudentSubmission[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [selectedSubmissionId, setSelectedSubmissionId] = useState<string | null>(null);
+  const [staffUserId, setStaffUserId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkNotification, setBulkNotification] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
 
   const fetchSubmissions = useCallback(async (): Promise<void> => {
     try {
-      setLoading(true)
+      setLoading(true);
       const response = await fetch('/api/submissions/teacher', {
         credentials: 'include',
-      })
+      });
       if (!response.ok) {
-        throw new Error('Failed to fetch submissions')
+        throw new Error('Failed to fetch submissions');
       }
 
-      const data = (await response.json()) as TeacherSubmissionsPayload
-      setSubmissions(data.submissions || [])
-      setError('')
+      const data = (await response.json()) as TeacherSubmissionsPayload;
+      setSubmissions(data.submissions || []);
+      setError('');
     } catch (err) {
-      setError('No se pudieron cargar las respuestas de estudiantes. Intenta más tarde.')
-      console.error(err)
+      setError('No se pudieron cargar las respuestas de estudiantes. Intenta más tarde.');
+      console.error(err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    void fetchSubmissions()
-  }, [fetchSubmissions])
+    void fetchSubmissions();
+  }, [fetchSubmissions]);
 
   useEffect(() => {
-    const supabase = createClient()
+    const supabase = createClient();
     void (async () => {
-      const { data } = await supabase.auth.getSession()
-      const user = data.session?.user
+      const { data } = await supabase.auth.getSession();
+      const user = data.session?.user;
       if (user) {
-        setStaffUserId(user.id)
+        setStaffUserId(user.id);
       }
-    })()
-  }, [])
+    })();
+  }, []);
 
   const stats = useMemo(() => {
-    const reviewedCount = submissions.filter((submission) => submission.status === 'reviewed').length
-    const pendingCount = submissions.filter((submission) => submission.status === 'pending').length
-    const needsRevisionCount = submissions.filter((submission) => submission.status === 'needs_revision').length
-    const uniqueStudents = new Set(submissions.map((submission) => submission.studentId)).size
+    const reviewedCount = submissions.filter(
+      (submission) => submission.status === 'reviewed'
+    ).length;
+    const pendingCount = submissions.filter((submission) => submission.status === 'pending').length;
+    const needsRevisionCount = submissions.filter(
+      (submission) => submission.status === 'needs_revision'
+    ).length;
+    const uniqueStudents = new Set(submissions.map((submission) => submission.studentId)).size;
 
     return {
       reviewedCount,
       pendingCount,
       needsRevisionCount,
       uniqueStudents,
-    }
-  }, [submissions])
+    };
+  }, [submissions]);
 
   const selectedSubmission = useMemo(
-    () => submissions.find((submission) => submission.submissionId === selectedSubmissionId) ?? null,
+    () =>
+      submissions.find((submission) => submission.submissionId === selectedSubmissionId) ?? null,
     [selectedSubmissionId, submissions]
-  )
+  );
 
   const selectedLevel = selectedSubmission?.studentLevel
     ? gradeInterestedLabel(selectedSubmission.studentLevel)
-    : 'No informado'
-  const selectedProgress = selectedSubmission?.progressPercent ?? 0
+    : 'No informado';
+  const selectedProgress = selectedSubmission?.progressPercent ?? 0;
 
   const handleReviewSubmission = useCallback((submissionId: string): void => {
-    setSelectedSubmissionId(submissionId)
-    document.getElementById('submission-preview')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }, [])
+    setSelectedSubmissionId(submissionId);
+    document
+      .getElementById('submission-preview')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
 
   const handleExportSubmissions = useCallback((): void => {
     if (submissions.length === 0) {
-      return
+      return;
     }
 
-    const headers = ['submissionId', 'studentName', 'studentId', 'formTitle', 'submittedAt', 'grade', 'maxGrade', 'status', 'feedback']
+    const headers = [
+      'submissionId',
+      'studentName',
+      'studentId',
+      'formTitle',
+      'submittedAt',
+      'grade',
+      'maxGrade',
+      'status',
+      'feedback',
+    ];
     const rows = submissions.map((submission) =>
       [
         submission.submissionId,
@@ -140,18 +162,91 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
         submission.maxGrade.toString(),
         submission.status,
         submission.feedback ?? '',
-      ].map(escapeCsvCell).join(',')
-    )
+      ]
+        .map(escapeCsvCell)
+        .join(',')
+    );
 
-    const csv = [headers.map(escapeCsvCell).join(','), ...rows].join('\n')
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const anchor = document.createElement('a')
-    anchor.href = url
-    anchor.download = `peskids-teacher-submissions-${new Date().toISOString().slice(0, 10)}.csv`
-    anchor.click()
-    URL.revokeObjectURL(url)
-  }, [submissions])
+    const csv = [headers.map(escapeCsvCell).join(','), ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `peskids-teacher-submissions-${new Date().toISOString().slice(0, 10)}.csv`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }, [submissions]);
+
+  const clearBulkNotification = useCallback((): void => {
+    setBulkNotification(null);
+  }, []);
+
+  useEffect(() => {
+    if (bulkNotification) {
+      const timer = setTimeout(clearBulkNotification, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [bulkNotification, clearBulkNotification]);
+
+  const handleBulkMarkReviewed = useCallback(async (ids: string[]): Promise<void> => {
+    try {
+      const response = await fetch('/api/submissions/bulk-grade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ submissionIds: ids, action: 'mark_reviewed' }),
+      });
+      if (!response.ok) {
+        const err = (await response.json()) as { error?: string };
+        throw new Error(err.error || 'Error al marcar como revisadas');
+      }
+      setBulkNotification({ type: 'success', message: `${ids.length} entrega${ids.length !== 1 ? 's' : ''} marcada${ids.length !== 1 ? 's' : ''} como revisada${ids.length !== 1 ? 's' : ''}` });
+      await fetchSubmissions();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error al marcar como revisadas';
+      setBulkNotification({ type: 'error', message });
+    }
+  }, [fetchSubmissions]);
+
+  const handleBulkSendObservations = useCallback(async (ids: string[]): Promise<void> => {
+    try {
+      const response = await fetch('/api/submissions/bulk-grade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ submissionIds: ids, action: 'send_observations' }),
+      });
+      if (!response.ok) {
+        const err = (await response.json()) as { error?: string };
+        throw new Error(err.error || 'Error al enviar observaciones');
+      }
+      setBulkNotification({ type: 'success', message: `Observaciones enviadas para ${ids.length} entrega${ids.length !== 1 ? 's' : ''}` });
+      await fetchSubmissions();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error al enviar observaciones';
+      setBulkNotification({ type: 'error', message });
+    }
+  }, [fetchSubmissions]);
+
+  const handleBulkReassign = useCallback(async (ids: string[]): Promise<void> => {
+    try {
+      const response = await fetch('/api/submissions/bulk-grade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ submissionIds: ids, action: 'reassign' }),
+      });
+      if (!response.ok) {
+        const err = (await response.json()) as { error?: string };
+        throw new Error(err.error || 'Error al reasignar');
+      }
+      setBulkNotification({ type: 'success', message: `${ids.length} entrega${ids.length !== 1 ? 's' : ''} reasignada${ids.length !== 1 ? 's' : ''}` });
+      await fetchSubmissions();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error al reasignar';
+      setBulkNotification({ type: 'error', message });
+    }
+  }, [fetchSubmissions]);
 
   if (loading) {
     return (
@@ -159,7 +254,7 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
         <Loader2 className="h-10 w-10 animate-spin text-pk-primary" aria-hidden />
         <p className="text-sm text-pk-sub">Cargando respuestas de estudiantes…</p>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -172,7 +267,7 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
           </Button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -201,7 +296,11 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
                 <Download className="h-4 w-4" aria-hidden />
                 <span className="ml-1">Exportar CSV</span>
               </Button>
-              <Button type="button" variant="ghost" onClick={() => (window.location.href = '/teacher/dashboard')}>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => (window.location.href = '/teacher/dashboard')}
+              >
                 Volver al dashboard
               </Button>
             </div>
@@ -293,7 +392,9 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
                   <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-pk-mutedText">
                     Fecha
                   </p>
-                  <p className="mt-1 text-sm text-pk-ink">{formatDateTime(selectedSubmission.submittedAt)}</p>
+                  <p className="mt-1 text-sm text-pk-ink">
+                    {formatDateTime(selectedSubmission.submittedAt)}
+                  </p>
                 </div>
                 <div className="rounded-2xl border border-pk-border bg-white p-4">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-pk-mutedText">
@@ -330,7 +431,7 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
                   type="button"
                   variant="secondary"
                   onClick={() => {
-                    window.location.href = `/teacher/submissions/${selectedSubmission.submissionId}`
+                    window.location.href = `/teacher/submissions/${selectedSubmission.submissionId}`;
                   }}
                 >
                   Abrir ficha
@@ -340,7 +441,7 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
                   type="button"
                   variant="ghost"
                   onClick={() => {
-                    setSelectedSubmissionId(null)
+                    setSelectedSubmissionId(null);
                   }}
                 >
                   Cerrar vista
@@ -350,13 +451,30 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
           </Card>
         ) : null}
 
+        {bulkNotification && (
+          <div
+            className={`rounded-2xl border p-4 text-sm ${
+              bulkNotification.type === 'success'
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                : 'border-red-200 bg-red-50 text-red-800'
+            }`}
+          >
+            {bulkNotification.message}
+          </div>
+        )}
+
         <TeacherDashboard
           submissions={submissions}
           isLoading={false}
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           onReviewSubmission={handleReviewSubmission}
           onExportSubmissions={handleExportSubmissions}
+          onBulkMarkReviewed={handleBulkMarkReviewed}
+          onBulkSendObservations={handleBulkSendObservations}
+          onBulkReassign={handleBulkReassign}
         />
       </div>
     </div>
-  )
+  );
 }

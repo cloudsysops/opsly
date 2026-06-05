@@ -1,29 +1,35 @@
-'use client'
+'use client';
 
-import { BarChart3, TrendingUp, AlertCircle, Users } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { peskidsColorTokens } from '@/lib/tokens'
+import { BarChart3, TrendingUp, AlertCircle, Users } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { peskidsColorTokens } from '@/lib/tokens';
 
 interface FormMetrics {
-  formId: string
-  formTitle: string
-  submissionsCount: number
-  abandonmentRate: number
-  avgCompletionTime: number
-  errorCount: number
+  formId: string;
+  formTitle: string;
+  submissionsCount: number;
+  abandonmentRate: number;
+  avgCompletionTime: number;
+  errorCount: number;
 }
 
 interface FormAnalyticsDashboardProps {
-  metrics: FormMetrics[]
-  isLoading?: boolean
+  metrics: FormMetrics[];
+  isLoading?: boolean;
 }
 
-export function FormAnalyticsDashboard({ metrics, isLoading = false }: FormAnalyticsDashboardProps): React.ReactElement {
-  const totalSubmissions = metrics.reduce((sum, m) => sum + m.submissionsCount, 0)
-  const avgAbandonmentRate = metrics.length > 0 ? metrics.reduce((sum, m) => sum + m.abandonmentRate, 0) / metrics.length : 0
-  const totalErrors = metrics.reduce((sum, m) => sum + m.errorCount, 0)
+export function FormAnalyticsDashboard({
+  metrics,
+  isLoading = false,
+}: FormAnalyticsDashboardProps): React.ReactElement {
+  const totalSubmissions = metrics.reduce((sum, m) => sum + m.submissionsCount, 0);
+  const avgAbandonmentRate =
+    metrics.length > 0
+      ? metrics.reduce((sum, m) => sum + m.abandonmentRate, 0) / metrics.length
+      : 0;
+  const totalErrors = metrics.reduce((sum, m) => sum + m.errorCount, 0);
 
-  const skeletonClass = 'h-20 bg-pk-muted animate-pulse rounded-lg'
+  const skeletonClass = 'h-20 bg-pk-muted animate-pulse rounded-lg';
 
   return (
     <div className="space-y-6">
@@ -64,7 +70,9 @@ export function FormAnalyticsDashboard({ metrics, isLoading = false }: FormAnaly
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-pk-mutedText">Tasa abandono promedio</p>
-                    <p className="text-3xl font-bold text-pk-ink mt-1">{avgAbandonmentRate.toFixed(1)}%</p>
+                    <p className="text-3xl font-bold text-pk-ink mt-1">
+                      {avgAbandonmentRate.toFixed(1)}%
+                    </p>
                   </div>
                   <div
                     className="rounded-lg p-3"
@@ -116,10 +124,7 @@ export function FormAnalyticsDashboard({ metrics, isLoading = false }: FormAnaly
                     className="rounded-lg p-3"
                     style={{ backgroundColor: `${peskidsColorTokens.primary.blue}20` }}
                   >
-                    <Users
-                      className="h-6 w-6"
-                      style={{ color: peskidsColorTokens.primary.blue }}
-                    />
+                    <Users className="h-6 w-6" style={{ color: peskidsColorTokens.primary.blue }} />
                   </div>
                 </div>
               </div>
@@ -151,7 +156,9 @@ export function FormAnalyticsDashboard({ metrics, isLoading = false }: FormAnaly
                     <th className="text-left py-2 px-3 font-medium text-pk-ink">Formulario</th>
                     <th className="text-right py-2 px-3 font-medium text-pk-ink">Respuestas</th>
                     <th className="text-right py-2 px-3 font-medium text-pk-ink">Abandono</th>
-                    <th className="text-right py-2 px-3 font-medium text-pk-ink">Tiempo promedio</th>
+                    <th className="text-right py-2 px-3 font-medium text-pk-ink">
+                      Tiempo promedio
+                    </th>
                     <th className="text-right py-2 px-3 font-medium text-pk-ink">Errores</th>
                   </tr>
                 </thead>
@@ -240,9 +247,11 @@ export function FormAnalyticsDashboard({ metrics, isLoading = false }: FormAnaly
               ))}
             </div>
           )}
-          <p className="mt-3 text-xs text-pk-mutedText text-center">Representación de actividad por hora (UTC)</p>
+          <p className="mt-3 text-xs text-pk-mutedText text-center">
+            Representación de actividad por hora (UTC)
+          </p>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

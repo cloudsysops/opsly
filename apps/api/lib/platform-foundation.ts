@@ -5,8 +5,6 @@ import { createClient, type RedisClientType } from 'redis';
 
 import { getOpenClawMissionControlSnapshot } from './admin-mission-control-openclaw';
 
-type JsonObject = Record<string, unknown>;
-
 export type HealthSignal = 'up' | 'down' | 'unknown';
 export type ReadinessSignal = 'ready' | 'blocked' | 'unknown';
 export type OperationalStatus = 'healthy' | 'degraded' | 'blocked' | 'unknown';
@@ -353,7 +351,11 @@ function deriveExtractionReadiness(tenant: {
   if (tenant.plan === 'demo') {
     return { ready: false, reason: 'demo tenants are never extracted' };
   }
-  if (tenant.workflowsCount >= 4 || tenant.stage === 'dedicated_vps' || tenant.stage === 'independent_platform') {
+  if (
+    tenant.workflowsCount >= 4 ||
+    tenant.stage === 'dedicated_vps' ||
+    tenant.stage === 'independent_platform'
+  ) {
     return { ready: true, reason: 'workflow bundle and operational boundary are in place' };
   }
   return { ready: false, reason: 'more workflow coverage or operational stabilization required' };
@@ -464,7 +466,9 @@ function permissionIdsForAgent(
   }
 
   const catalog = foundation.agent_governance.permissions_catalog;
-  return Array.from(permissions).filter((permission) => catalog.some((item) => item.id === permission));
+  return Array.from(permissions).filter((permission) =>
+    catalog.some((item) => item.id === permission)
+  );
 }
 
 function deriveAgentConnectivity(agent: AgentsTeamEntry): PlatformAgentConnectivity {
@@ -487,44 +491,69 @@ function normalizeAgentRows(
   servicesConfig: AgentServicesConfig,
   foundation: PlatformFoundationConfig
 ): PlatformAgentRegistryEntry[] {
-  return agentsTeam.agents.map((agent) => {
-    const service = servicesConfig.services[agent.id] ?? null;
-    const lastSeen = agent._registered_at ?? null;
-    const permissions = permissionIdsForAgent(agent, foundation);
-    const capabilities = Array.from(
-      new Set([
-        ...agent.allowed_tools,
-        ...agent.allowed_paths.map((p) => `path:${p}`),
-        ...(agent.specialization ?? []).map((item) => `specialization:${item}`),
-      ])
-    );
-    return {
-      id: agent.id,
-      name: agent.name,
-      role: agent.role,
-      tenant_scope: agent.allowed_paths.some((p) => p.startsWith('apps/peskids') || p.includes('tenant'))
-        ? 'tenant-scoped'
-        : 'global',
-      capabilities,
-      permissions,
-      enabled: Boolean(service?.enabled ?? true),
-      approval_boundary: agent.local_only ? 'workflow-first' : 'approval-first',
-      health: {
-        status: deriveAgentStatus(agent),
-        connectivity: deriveAgentConnectivity(agent),
-      },
-      heartbeat: {
-        last_seen_at: lastSeen,
-        interval_seconds: agent.rate_limit?.requests_per_minute ? Math.max(10, Math.floor(60 / agent.rate_limit.requests_per_minute)) : 60,
-        stale_after_seconds: 5 * 60,
-        source: lastSeen ? 'config' : 'manual',
-      },
-      model: agent.model,
-      fallback_model: agent.fallback_model,
-      url: service?.url ?? null,
-      specialization: agent.specialization ?? [],
-    };
-  });
+  return agentsTeam.agents.map((agent) =>
+    buildAgentRegistryEntry(agent, servicesConfig, foundation)
+  );
+}
+
+function buildAgentCapabilities(agent: AgentsTeamEntry): string[] {
+  return Array.from(
+    new Set([
+      ...agent.allowed_tools,
+      ...agent.allowed_paths.map((p) => `path:${p}`),
+      ...(agent.specialization ?? []).map((item) => `specialization:${item}`),
+    ])
+  );
+}
+
+function determineTenantScope(allowedPaths: string[]): 'tenant-scoped' | 'global' {
+  const isTenantScoped = allowedPaths.some(
+    (p) => p.startsWith('apps/peskids') || p.includes('tenant')
+  );
+  return isTenantScoped ? 'tenant-scoped' : 'global';
+}
+
+function calculateHeartbeatInterval(agent: AgentsTeamEntry): number {
+  if (agent.rate_limit?.requests_per_minute) {
+    return Math.max(10, Math.floor(60 / agent.rate_limit.requests_per_minute));
+  }
+  return 60;
+}
+
+function buildAgentRegistryEntry(
+  agent: AgentsTeamEntry,
+  servicesConfig: AgentServicesConfig,
+  foundation: PlatformFoundationConfig
+): PlatformAgentRegistryEntry {
+  const service = servicesConfig.services[agent.id] ?? null;
+  const lastSeen = agent._registered_at ?? null;
+  const permissions = permissionIdsForAgent(agent, foundation);
+  const capabilities = buildAgentCapabilities(agent);
+
+  return {
+    id: agent.id,
+    name: agent.name,
+    role: agent.role,
+    tenant_scope: determineTenantScope(agent.allowed_paths),
+    capabilities,
+    permissions,
+    enabled: Boolean(service?.enabled ?? true),
+    approval_boundary: agent.local_only ? 'workflow-first' : 'approval-first',
+    health: {
+      status: deriveAgentStatus(agent),
+      connectivity: deriveAgentConnectivity(agent),
+    },
+    heartbeat: {
+      last_seen_at: lastSeen,
+      interval_seconds: calculateHeartbeatInterval(agent),
+      stale_after_seconds: 5 * 60,
+      source: lastSeen ? 'config' : 'manual',
+    },
+    model: agent.model,
+    fallback_model: agent.fallback_model,
+    url: service?.url ?? null,
+    specialization: agent.specialization ?? [],
+  };
 }
 
 async function createRedisClient(): Promise<RedisClientType> {
@@ -611,7 +640,9 @@ async function buildTenantRegistry(): Promise<PlatformTenantRegistryEntry[]> {
   ]);
   const baseDomain = opslyConfig.domains?.base ?? 'op-sly.com';
   const opslyTenants = new Map((opslyConfig.tenants ?? []).map((tenant) => [tenant.slug, tenant]));
-  return tenantFiles.map((fileRow) => normalizeTenantRow(fileRow, opslyTenants.get(fileRow.tenant_slug), foundation, baseDomain));
+  return tenantFiles.map((fileRow) =>
+    normalizeTenantRow(fileRow, opslyTenants.get(fileRow.tenant_slug), foundation, baseDomain)
+  );
 }
 
 async function buildAgentRegistry(): Promise<PlatformAgentRegistryEntry[]> {
@@ -623,7 +654,9 @@ async function buildAgentRegistry(): Promise<PlatformAgentRegistryEntry[]> {
   return normalizeAgentRows(agentsTeam, servicesConfig, foundation);
 }
 
-function summarizeByStage(items: PlatformTenantRegistryEntry[]): Record<TenantLifecycleStageId, number> {
+function summarizeByStage(
+  items: PlatformTenantRegistryEntry[]
+): Record<TenantLifecycleStageId, number> {
   const summary: Record<TenantLifecycleStageId, number> = {
     incubated_tenant: 0,
     mvp_validation: 0,
@@ -703,26 +736,123 @@ export async function getPlatformAgentRegistry(): Promise<{
   };
 }
 
-export async function getMissionControlFoundationReadModel(): Promise<MissionControlReadModel> {
-  const [tenantRegistry, agentRegistry, openclaw, opslyConfig, orchestratorHealth, llmHealth, redisHealth, approvalQueue] =
-    await Promise.all([
-      getPlatformTenantRegistry(),
-      getPlatformAgentRegistry(),
-      getOpenClawMissionControlSnapshot(),
-      readOpslyConfig(),
-      probeBaseUrl(process.env.ORCHESTRATOR_INTERNAL_URL?.trim() ?? 'http://orchestrator:3011'),
-      probeBaseUrl(
-        process.env.MCP_LLM_GATEWAY_URL?.trim() ??
-          process.env.LLM_GATEWAY_INTERNAL_URL?.trim() ??
-          process.env.ORCHESTRATOR_LLM_GATEWAY_URL?.trim() ??
-          process.env.LLM_GATEWAY_URL?.trim() ??
-          'http://llm-gateway:3010'
-      ),
-      pingRedis(),
-      readApprovalGateQueue(),
-    ]);
+function buildVpsSection(
+  vpsStatus: OperationalStatus,
+  orchestratorHealth: HealthSignal,
+  llmHealth: HealthSignal,
+  redisHealth: HealthSignal
+) {
+  return {
+    host: process.env.OPSLY_VPS_HOST?.trim() ?? 'vps-dragon',
+    status: vpsStatus,
+    api_connectivity: 'up' as HealthSignal,
+    orchestrator_connectivity: orchestratorHealth,
+    llm_gateway_connectivity: llmHealth,
+    redis_connectivity: redisHealth,
+  };
+}
 
-  const apiConnectivity: HealthSignal = 'up';
+function buildBackupsSection(backupsReady: number, opslyConfig: PlatformConfig) {
+  const cronStatus = readString(opslyConfig.backups?.cron) ? 'ready' : 'blocked';
+  return {
+    status: aggregateReadiness([backupsReady > 0 ? 'ready' : 'blocked', cronStatus]),
+    policy: `cron=${opslyConfig.backups?.cron ?? 'unknown'} retention=${opslyConfig.backups?.retention_days ?? 'unknown'}d`,
+    ready_tenants: backupsReady,
+    last_success_at: null,
+  };
+}
+
+function buildSslSection(sslReady: number, opslyConfig: PlatformConfig) {
+  return {
+    status: aggregateReadiness([sslReady > 0 ? 'ready' : 'blocked']),
+    wildcard_domain: opslyConfig.domains?.wildcard ?? '*.op-sly.com',
+    ready_tenants: sslReady,
+  };
+}
+
+function buildWorkflowsSection(
+  workflowsReady: number,
+  tenantRegistry: { items: PlatformTenantRegistryEntry[] }
+) {
+  const totalWorkflows = tenantRegistry.items.reduce(
+    (sum: number, tenant: PlatformTenantRegistryEntry) => sum + tenant.workflows_count,
+    0
+  );
+  return {
+    status: aggregateReadiness([workflowsReady > 0 ? 'ready' : 'blocked']),
+    total: totalWorkflows,
+    bootstrap_ready: workflowsReady,
+  };
+}
+
+function getLlmGatewayUrl(): string {
+  return (
+    process.env.MCP_LLM_GATEWAY_URL?.trim() ??
+    process.env.LLM_GATEWAY_INTERNAL_URL?.trim() ??
+    process.env.ORCHESTRATOR_LLM_GATEWAY_URL?.trim() ??
+    process.env.LLM_GATEWAY_URL?.trim() ??
+    'http://llm-gateway:3010'
+  );
+}
+
+function buildUptimeServices(
+  orchestratorHealth: HealthSignal,
+  llmHealth: HealthSignal,
+  redisHealth: HealthSignal
+) {
+  return [
+    { name: 'api', status: 'up' as HealthSignal, url: null },
+    {
+      name: 'orchestrator',
+      status: orchestratorHealth,
+      url: process.env.ORCHESTRATOR_INTERNAL_URL?.trim() ?? 'http://orchestrator:3011',
+    },
+    {
+      name: 'llm-gateway',
+      status: llmHealth,
+      url: getLlmGatewayUrl(),
+    },
+    {
+      name: 'redis',
+      status: redisHealth,
+      url: process.env.REDIS_URL?.trim() ?? 'redis://localhost:6379',
+    },
+  ];
+}
+
+function buildUptimeSection(
+  vpsStatus: OperationalStatus,
+  orchestratorHealth: HealthSignal,
+  llmHealth: HealthSignal,
+  redisHealth: HealthSignal
+) {
+  return {
+    status: aggregateReadiness([vpsStatus === 'healthy' ? 'ready' : 'blocked']),
+    services: buildUptimeServices(orchestratorHealth, llmHealth, redisHealth),
+  };
+}
+
+export async function getMissionControlFoundationReadModel(): Promise<MissionControlReadModel> {
+  const [
+    tenantRegistry,
+    agentRegistry,
+    openclaw,
+    opslyConfig,
+    orchestratorHealth,
+    llmHealth,
+    redisHealth,
+    approvalQueue,
+  ] = await Promise.all([
+    getPlatformTenantRegistry(),
+    getPlatformAgentRegistry(),
+    getOpenClawMissionControlSnapshot(),
+    readOpslyConfig(),
+    probeBaseUrl(process.env.ORCHESTRATOR_INTERNAL_URL?.trim() ?? 'http://orchestrator:3011'),
+    probeBaseUrl(getLlmGatewayUrl()),
+    pingRedis(),
+    readApprovalGateQueue(),
+  ]);
+
   const vpsStatus = aggregateVpsStatus({
     orchestrator: orchestratorHealth,
     llmGateway: llmHealth,
@@ -743,65 +873,17 @@ export async function getMissionControlFoundationReadModel(): Promise<MissionCon
 
   return {
     generated_at: new Date().toISOString(),
-    vps: {
-      host: process.env.OPSLY_VPS_HOST?.trim() ?? 'vps-dragon',
-      status: vpsStatus,
-      api_connectivity: apiConnectivity,
-      orchestrator_connectivity: orchestratorHealth,
-      llm_gateway_connectivity: llmHealth,
-      redis_connectivity: redisHealth,
-    },
+    vps: buildVpsSection(vpsStatus, orchestratorHealth, llmHealth, redisHealth),
     tenants: {
       total: tenantRegistry.items.length,
       by_stage: tenantRegistry.by_stage,
       extraction_ready: tenantRegistry.extraction_ready,
       items: tenantRegistry.items,
     },
-    backups: {
-      status: aggregateReadiness([
-        backupsReady > 0 ? 'ready' : 'blocked',
-        readString(opslyConfig.backups?.cron) ? 'ready' : 'blocked',
-      ]),
-      policy: `cron=${opslyConfig.backups?.cron ?? 'unknown'} retention=${opslyConfig.backups?.retention_days ?? 'unknown'}d`,
-      ready_tenants: backupsReady,
-      last_success_at: null,
-    },
-    ssl: {
-      status: aggregateReadiness([sslReady > 0 ? 'ready' : 'blocked']),
-      wildcard_domain: opslyConfig.domains?.wildcard ?? '*.op-sly.com',
-      ready_tenants: sslReady,
-    },
-    workflows: {
-      status: aggregateReadiness([workflowsReady > 0 ? 'ready' : 'blocked']),
-      total: tenantRegistry.items.reduce((sum, tenant) => sum + tenant.workflows_count, 0),
-      bootstrap_ready: workflowsReady,
-    },
-    uptime: {
-      status: aggregateReadiness([vpsStatus === 'healthy' ? 'ready' : 'blocked']),
-      services: [
-        { name: 'api', status: apiConnectivity, url: null },
-        {
-          name: 'orchestrator',
-          status: orchestratorHealth,
-          url: process.env.ORCHESTRATOR_INTERNAL_URL?.trim() ?? 'http://orchestrator:3011',
-        },
-        {
-          name: 'llm-gateway',
-          status: llmHealth,
-          url:
-            process.env.MCP_LLM_GATEWAY_URL?.trim() ??
-            process.env.LLM_GATEWAY_INTERNAL_URL?.trim() ??
-            process.env.ORCHESTRATOR_LLM_GATEWAY_URL?.trim() ??
-            process.env.LLM_GATEWAY_URL?.trim() ??
-            'http://llm-gateway:3010',
-        },
-        {
-          name: 'redis',
-          status: redisHealth,
-          url: process.env.REDIS_URL?.trim() ?? 'redis://localhost:6379',
-        },
-      ],
-    },
+    backups: buildBackupsSection(backupsReady, opslyConfig),
+    ssl: buildSslSection(sslReady, opslyConfig),
+    workflows: buildWorkflowsSection(workflowsReady, tenantRegistry),
+    uptime: buildUptimeSection(vpsStatus, orchestratorHealth, llmHealth, redisHealth),
     ai_agents: {
       total: agentSummary.total,
       healthy: agentSummary.healthy,

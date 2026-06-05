@@ -1,4 +1,7 @@
 ---
+name: opsly-google-cloud
+description: >
+  Opsly Google Cloud Skill
 status: draft
 owner: operations
 last_review: 2026-05-24

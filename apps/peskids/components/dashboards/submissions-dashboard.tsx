@@ -1,23 +1,23 @@
-'use client'
+'use client';
 
-import { ArrowRight, Clock } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { peskidsColorTokens } from '@/lib/tokens'
+import { ArrowRight, Clock } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { peskidsColorTokens } from '@/lib/tokens';
 
 interface FormSubmissionSummary {
-  formId: string
-  formTitle: string
-  submissionId: string
-  submittedAt: string
-  status: 'completed' | 'pending' | 'reviewed'
-  studentName?: string
+  formId: string;
+  formTitle: string;
+  submissionId: string;
+  submittedAt: string;
+  status: 'completed' | 'pending' | 'reviewed';
+  studentName?: string;
 }
 
 interface SubmissionsDashboardProps {
-  submissions: FormSubmissionSummary[]
-  isLoading?: boolean
-  onViewSubmission?: (submissionId: string) => void
+  submissions: FormSubmissionSummary[];
+  isLoading?: boolean;
+  onViewSubmission?: (submissionId: string) => void;
 }
 
 export function SubmissionsDashboard({
@@ -25,51 +25,51 @@ export function SubmissionsDashboard({
   isLoading = false,
   onViewSubmission,
 }: SubmissionsDashboardProps): React.ReactElement {
-  const completedCount = submissions.filter((s) => s.status === 'completed').length
-  const pendingCount = submissions.filter((s) => s.status === 'pending').length
-  const reviewedCount = submissions.filter((s) => s.status === 'reviewed').length
+  const completedCount = submissions.filter((s) => s.status === 'completed').length;
+  const pendingCount = submissions.filter((s) => s.status === 'pending').length;
+  const reviewedCount = submissions.filter((s) => s.status === 'reviewed').length;
 
-  const skeletonClass = 'h-20 bg-pk-muted animate-pulse rounded-lg'
+  const skeletonClass = 'h-20 bg-pk-muted animate-pulse rounded-lg';
 
   const formatDate = (dateString: string): string => {
     try {
-      const date = new Date(dateString)
+      const date = new Date(dateString);
       return date.toLocaleDateString('es-CO', {
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-      })
+      });
     } catch {
-      return dateString
+      return dateString;
     }
-  }
+  };
 
   const getStatusColor = (status: string): string => {
     switch (status) {
       case 'completed':
-        return peskidsColorTokens.status.success
+        return peskidsColorTokens.status.success;
       case 'reviewed':
-        return peskidsColorTokens.primary.blue
+        return peskidsColorTokens.primary.blue;
       case 'pending':
-        return peskidsColorTokens.secondary.orange
+        return peskidsColorTokens.secondary.orange;
       default:
-        return peskidsColorTokens.neutral.mediumGray
+        return peskidsColorTokens.neutral.mediumGray;
     }
-  }
+  };
 
   const getStatusLabel = (status: string): string => {
     switch (status) {
       case 'completed':
-        return 'Completado'
+        return 'Completado';
       case 'reviewed':
-        return 'Revisado'
+        return 'Revisado';
       case 'pending':
-        return 'Pendiente'
+        return 'Pendiente';
       default:
-        return status
+        return status;
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -119,7 +119,9 @@ export function SubmissionsDashboard({
       <Card>
         <CardHeader>
           <CardTitle>Formularios disponibles</CardTitle>
-          <CardDescription>Haz clic en un formulario para responder o ver tus respuestas</CardDescription>
+          <CardDescription>
+            Haz clic en un formulario para responder o ver tus respuestas
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -165,7 +167,9 @@ export function SubmissionsDashboard({
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-pk-ink truncate">{submission.formTitle}</p>
                     {submission.studentName ? (
-                      <p className="mt-0.5 text-xs text-pk-mutedText truncate">{submission.studentName}</p>
+                      <p className="mt-0.5 text-xs text-pk-mutedText truncate">
+                        {submission.studentName}
+                      </p>
                     ) : null}
                     <div className="flex items-center gap-2 mt-1 text-xs text-pk-mutedText">
                       <Clock className="h-3 w-3" />
@@ -244,5 +248,5 @@ export function SubmissionsDashboard({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

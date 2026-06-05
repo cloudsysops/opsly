@@ -25,9 +25,7 @@ export function createWorker(opts: CreateWorkerOpts): Worker {
     workerOptions,
   } = opts;
 
-  const concurrency = concurrencyKey
-    ? getWorkerConcurrency(concurrencyKey)
-    : 1;
+  const concurrency = concurrencyKey ? getWorkerConcurrency(concurrencyKey) : 1;
 
   const worker = new Worker(
     queueName,
@@ -56,7 +54,7 @@ export function createWorker(opts: CreateWorkerOpts): Worker {
       connection,
       concurrency,
       ...workerOptions,
-    },
+    }
   );
 
   return worker;

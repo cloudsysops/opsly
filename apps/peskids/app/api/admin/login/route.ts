@@ -1,31 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getAdminSecret } from '@/lib/admin-auth'
+import { NextRequest } from 'next/server';
+import { getAdminSecret } from '@/lib/admin-auth';
+import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 
 export async function POST(req: NextRequest) {
-  const adminSecret = getAdminSecret()
+  const requestId = resolveRequestId(req);
+  const adminSecret = getAdminSecret();
   if (!adminSecret) {
-    return NextResponse.json({ error: 'Admin authentication not configured' }, { status: 503 })
+    return errorJson(requestId, 'Admin authentication not configured', 503);
   }
 
-  let token = ''
+  let token = '';
   try {
-    const body = (await req.json()) as { token?: string }
-    token = (body.token || '').trim()
+    const body = (await req.json()) as { token?: string };
+    token = (body.token || '').trim();
   } catch {
-    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+    return errorJson(requestId, 'Invalid JSON body', 400);
   }
 
   if (!token || token !== adminSecret) {
-    return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+    return errorJson(requestId, 'Invalid token', 401);
   }
 
-  const response = NextResponse.json({ ok: true })
+  const response = successJson(requestId, { ok: true });
   response.cookies.set('admin-token', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
     maxAge: 60 * 60 * 12,
-  })
-  return response
+  });
+  return response;
 }

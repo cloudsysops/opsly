@@ -38,6 +38,19 @@ Make.com (plataforma + hook Peskids): [`MAKE-SETUP.md`](../../01-development/MAK
 | `DASHBOARD_ADMIN_SECRET` | Generado (`openssl rand -hex 32`) |
 | `JELOU_WEBHOOK_SECRET` | Generado; configurar el mismo valor en Jelou al activar webhooks |
 | `NEXT_PUBLIC_JELOU_*` | `placeholder` hasta tener IDs reales de Jelou |
+| `NEXT_PUBLIC_FIREBASE_*` | Firebase web + FCM — ver [[FIREBASE-FCM-SETUP|FIREBASE-FCM-SETUP]] |
+
+### GitHub Secrets (Firebase — build Docker)
+
+Tras cargar vars en Doppler:
+
+```bash
+./scripts/sync-peskids-firebase-secrets-to-github.sh --dry-run
+./scripts/sync-peskids-firebase-secrets-to-github.sh
+./scripts/doppler-set-peskids-firebase-admin.sh --file apps/peskids/.secrets/firebase-admin.json
+```
+
+Incluye las 8 claves `NEXT_PUBLIC_FIREBASE_*` listadas en [[FIREBASE-FCM-SETUP|FIREBASE-FCM-SETUP]].
 
 ## Después de Doppler
 

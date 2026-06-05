@@ -1,0 +1,20 @@
+{
+  "_comment": "PLACEHOLDER — Replace with real file from Firebase Console > Project Settings > Your apps > Android app",
+  "_instructions": "1. Go to https://console.firebase.google.com 2. Create project 'peskids' 3. Add Android app with package com.peskids.app 4. Download google-services.json and replace this file",
+  "project_info": {
+    "project_number": "REPLACE_ME",
+    "project_id": "peskids-app",
+    "storage_bucket": "peskids-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "REPLACE_ME",
+        "android_client_info": { "package_name": "com.peskids.app" }
+      },
+      "api_key": [{ "current_key": "REPLACE_ME" }],
+      "services": { "appinvite_service": { "other_platform_oauth_client": [] } }
+    }
+  ],
+  "configuration_version": "1"
+}

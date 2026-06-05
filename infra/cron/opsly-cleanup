@@ -1,18 +1,18 @@
 # /etc/cron.d/opsly-cleanup — copiar desde repo: infra/cron/opsly-cleanup
 # Formato: minuto hora día mes dow user comando
-# Logs bajo /opt/opsly/logs (crear con install-vps-cleanup.sh).
+# Logs bajo /opt/opsly/runtime/logs (crear con install-vps-cleanup.sh).
 
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-# Limpieza ligera (solo Docker) cada 6 horas
-0 */6 * * * root /bin/bash -lc '/opt/opsly/scripts/vps-cleanup-robust.sh --light >> /opt/opsly/logs/opsly-cleanup.log 2>&1'
+# Limpieza ligera (solo Docker) cada 6 horas — Python (fallback: vps-cleanup-robust.sh --light)
+0 */6 * * * root /bin/bash -lc 'if [ -f /opt/opsly/scripts/ops/vps_docker_housekeeping.py ]; then python3 /opt/opsly/scripts/ops/vps_docker_housekeeping.py --light; else /opt/opsly/scripts/vps-cleanup-robust.sh --light; fi >> /opt/opsly/runtime/logs/opsly-cleanup.log 2>&1'
 
-# Limpieza completa diaria (03:00 UTC)
-0 3 * * * root /bin/bash -lc '/opt/opsly/scripts/vps-cleanup-robust.sh >> /opt/opsly/logs/opsly-cleanup.log 2>&1'
+# Limpieza completa diaria (03:00 UTC) — modo auto según % disco + Discord si .env
+0 3 * * * root /bin/bash -lc 'set -a; [ -f /opt/opsly/.env ] && . /opt/opsly/.env; set +a; if [ -f /opt/opsly/scripts/ops/vps_docker_housekeeping.py ]; then python3 /opt/opsly/scripts/ops/vps_docker_housekeeping.py --auto --notify-discord; else /opt/opsly/scripts/vps-cleanup-robust.sh; fi >> /opt/opsly/runtime/logs/opsly-cleanup.log 2>&1'
 
-# Limpieza agresiva semanal (domingo 04:00 UTC)
-0 4 * * 0 root /bin/bash -lc '/opt/opsly/scripts/vps-cleanup-robust.sh --aggressive >> /opt/opsly/logs/opsly-cleanup.log 2>&1'
+# Limpieza agresiva semanal (domingo 04:00 UTC) — volume prune solo domingos
+0 4 * * 0 root /bin/bash -lc 'set -a; [ -f /opt/opsly/.env ] && . /opt/opsly/.env; set +a; if [ -f /opt/opsly/scripts/ops/vps_docker_housekeeping.py ]; then python3 /opt/opsly/scripts/ops/vps_docker_housekeeping.py --aggressive --notify-discord; else /opt/opsly/scripts/vps-cleanup-robust.sh --aggressive; fi >> /opt/opsly/runtime/logs/opsly-cleanup.log 2>&1'
 
 # Alertas de disco cada 5 minutos (carga .env para Discord opcional)
-*/5 * * * * root /bin/bash -lc 'set -a; [ -f /opt/opsly/.env ] && . /opt/opsly/.env; set +a; /opt/opsly/scripts/disk-alert.sh >> /opt/opsly/logs/disk-alert-cron.log 2>&1'
+*/5 * * * * root /bin/bash -lc 'set -a; [ -f /opt/opsly/.env ] && . /opt/opsly/.env; set +a; /opt/opsly/scripts/disk-alert.sh >> /opt/opsly/runtime/logs/disk-alert-cron.log 2>&1'

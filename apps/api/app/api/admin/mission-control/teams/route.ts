@@ -1,15 +1,7 @@
 import { NextResponse } from 'next/server';
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '../../../../../lib/supabase/types';
-
-function getSupabase(): SupabaseClient<Database> {
-  const supabaseUrl = process.env.SUPABASE_URL ?? 'https://jkwykpldnitavhmtuzmo.supabase.co';
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
-  if (!supabaseKey) {
-    throw new Error('SUPABASE_SERVICE_ROLE_KEY is required');
-  }
-  return createClient<Database>(supabaseUrl, supabaseKey);
-}
+import { requireAdminAccess } from '../../../../../lib/auth';
+import { getServiceClient } from '../../../../../lib/supabase';
+import { requireAdminAccess } from '../../../../../lib/auth';
 
 /** Umbral: si fallos > completed * ratio → status error. */
 const FAILURE_DOMINANCE_RATIO = 0.5;
@@ -68,9 +60,14 @@ function applyResultRow(
   existing.status = statusFromCounts(existing.completedTasks, existing.failedTasks);
 }
 
-export async function GET(): Promise<Response> {
+export async function GET(request: Request): Promise<Response> {
+  const authError = await requireAdminAccess(request);
+  if (authError) {
+    return authError;
+  }
+
   try {
-    const supabase = getSupabase();
+    const supabase = getServiceClient();
     const { data: teams, error } = await supabase
       .schema('sandbox')
       .from('agent_task_results')

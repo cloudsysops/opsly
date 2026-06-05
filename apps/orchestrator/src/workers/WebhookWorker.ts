@@ -49,14 +49,14 @@ export function createWebhookWorker(): Worker<WebhookJobData> {
     logWorkerInfo('webhook', 'Job active', {
       jobId: job.id,
       webhookId: job.data.webhookId,
-      webhookEvent: job.data.payload.event
+      webhookEvent: job.data.payload.event,
     });
   });
 
   worker.on('completed', (job) => {
     logWorkerInfo('webhook', 'Job completed', {
       jobId: job.id,
-      webhookId: job.data.webhookId
+      webhookId: job.data.webhookId,
     });
   });
 
@@ -65,7 +65,7 @@ export function createWebhookWorker(): Worker<WebhookJobData> {
       jobId: job?.id,
       webhookId: job?.data.webhookId,
       error: err.message,
-      attemptsMade: job?.attemptsMade
+      attemptsMade: job?.attemptsMade,
     });
   });
 

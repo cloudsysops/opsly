@@ -10,7 +10,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Cleanup demos
-        run: bash scripts/cleanup-demos.sh
+        run: |
+          set -euo pipefail
+          if [ -z "${PLATFORM_ADMIN_TOKEN:-}" ] || [ -z "${NEXT_PUBLIC_APP_URL:-}" ]; then
+            echo "Skipping cleanup workflow: missing API URL or PLATFORM_ADMIN_TOKEN secret."
+            exit 0
+          fi
+          bash scripts/cleanup-demos.sh
         env:
           PLATFORM_ADMIN_TOKEN: ${{ secrets.PLATFORM_ADMIN_TOKEN }}
-          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_API_URL || secrets.NEXT_PUBLIC_APP_URL }}

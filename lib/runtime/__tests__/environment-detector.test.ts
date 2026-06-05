@@ -2,7 +2,13 @@
  * Tests for Environment Detector
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { detectEnvironment, healthCheck, detectOS, selectRecommendedAgent, calculateConfidence } from '../environment-detector';
+import {
+  detectEnvironment,
+  healthCheck,
+  detectOS,
+  selectRecommendedAgent,
+  calculateConfidence,
+} from '../environment-detector';
 
 describe('environment-detector', () => {
   describe('detectOS', () => {

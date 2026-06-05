@@ -1,25 +1,60 @@
-'use client'
+'use client';
 
-import { useMemo, useState } from 'react'
-import { BadgeCheck, ChevronRight, Sparkles } from 'lucide-react'
-import { SWIM_LEVELS } from '@/lib/brand'
-import { cn } from '@/lib/utils'
+import { useMemo, useState } from 'react';
+import { Sparkles } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 type MascotOption = {
-  id: string
-  name: string
-  emoji: string
-  subtitle: string
-  tone: 'teal' | 'amber' | 'violet' | 'coral' | 'green'
-}
+  id: string;
+  name: string;
+  emoji: string;
+  ageGroup: string;
+  subtitle: string;
+  tone: 'teal' | 'amber' | 'violet' | 'coral' | 'green';
+};
 
 const mascotOptions: MascotOption[] = [
-  { id: 'bubble', name: 'Burbuja', emoji: '💧', subtitle: 'Primer contacto', tone: 'teal' },
-  { id: 'fish', name: 'Peces', emoji: '🐠', subtitle: 'Flota y juega', tone: 'green' },
-  { id: 'dolphin', name: 'Delfín', emoji: '🐬', subtitle: 'Coordina y avanza', tone: 'amber' },
-  { id: 'shark', name: 'Tiburón', emoji: '🦈', subtitle: 'Fuerza y control', tone: 'violet' },
-  { id: 'trophy', name: 'Campeón', emoji: '🏆', subtitle: 'Meta superada', tone: 'coral' },
-]
+  {
+    id: 'turtle',
+    name: 'Tortuga',
+    emoji: '🐢',
+    ageGroup: '2–3 años',
+    subtitle: 'Exploración y confianza',
+    tone: 'teal',
+  },
+  {
+    id: 'fish',
+    name: 'Pez',
+    emoji: '🐠',
+    ageGroup: '3–4 años',
+    subtitle: 'Flota y juega',
+    tone: 'green',
+  },
+  {
+    id: 'dolphin',
+    name: 'Delfín',
+    emoji: '🐬',
+    ageGroup: '4–5 años',
+    subtitle: 'Coordina y avanza',
+    tone: 'amber',
+  },
+  {
+    id: 'shark',
+    name: 'Tiburón',
+    emoji: '🦈',
+    ageGroup: '5–6 años',
+    subtitle: 'Fuerza y control',
+    tone: 'violet',
+  },
+  {
+    id: 'whale',
+    name: 'Ballena',
+    emoji: '🐳',
+    ageGroup: '6–7 años',
+    subtitle: 'Seguridad y fluidez',
+    tone: 'coral',
+  },
+];
 
 const toneStyles: Record<MascotOption['tone'], string> = {
   teal: 'border-teal-200 bg-teal-50 text-teal-700',
@@ -27,34 +62,38 @@ const toneStyles: Record<MascotOption['tone'], string> = {
   violet: 'border-violet-200 bg-violet-50 text-violet-700',
   coral: 'border-rose-200 bg-rose-50 text-rose-700',
   green: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-}
+};
 
 export function MascotPathWidget({
   title = 'Elige tu mascota',
-  description = 'Tu peque puede escoger su avatar y verlo crecer con cada nivel.',
+  description = 'Tu peque puede escoger un avatar animal y verlo crecer dentro de su grupo por edad.',
   className,
 }: {
-  title?: string
-  description?: string
-  className?: string
+  title?: string;
+  description?: string;
+  className?: string;
 }): React.ReactElement {
-  const [selectedMascotId, setSelectedMascotId] = useState(mascotOptions[1]?.id ?? mascotOptions[0].id)
+  const [selectedMascotId, setSelectedMascotId] = useState(
+    mascotOptions[1]?.id ?? mascotOptions[0].id
+  );
 
   const selectedMascot = useMemo(
     () => mascotOptions.find((option) => option.id === selectedMascotId) ?? mascotOptions[0],
     [selectedMascotId]
-  )
+  );
 
-  const currentLevel = useMemo(() => {
-    const index = mascotOptions.findIndex((option) => option.id === selectedMascot.id)
-    return Math.min(SWIM_LEVELS.length, Math.max(1, index + 2))
-  }, [selectedMascot.id])
+  const ageGroups = useMemo(() => mascotOptions, []);
 
   return (
-    <section className={cn('overflow-hidden rounded-[2rem] border border-pk-border bg-white shadow-card', className)}>
+    <section
+      className={cn(
+        'overflow-hidden rounded-[2rem] border border-pk-border bg-white shadow-card',
+        className
+      )}
+    >
       <div className="border-b border-pk-border bg-pk-snow px-5 py-4">
         <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-pk-mutedText">
-          Mascota y avatar
+          Avatar y grupo por edad
         </p>
         <div className="mt-1 flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -62,7 +101,7 @@ export function MascotPathWidget({
             <p className="mt-1 text-sm text-pk-sub">{description}</p>
           </div>
           <div className="rounded-full bg-pk-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-pk-primary">
-            Nivel {currentLevel}
+            {selectedMascot.ageGroup}
           </div>
         </div>
       </div>
@@ -78,24 +117,24 @@ export function MascotPathWidget({
             </div>
             <div className="min-w-0">
               <p className="text-2xl font-bold tracking-tight">{selectedMascot.name}</p>
-              <p className="mt-1 text-sm text-white/75">{selectedMascot.subtitle}</p>
+              <p className="mt-1 text-sm text-white/75">{selectedMascot.ageGroup}</p>
+              <p className="mt-1 text-sm text-white/65">{selectedMascot.subtitle}</p>
             </div>
           </div>
 
           <div className="mt-5 rounded-[1.5rem] bg-white/10 p-4">
             <div className="flex items-center gap-2">
-              <BadgeCheck className="h-4 w-4 text-pk-sun" aria-hidden />
+              <Sparkles className="h-4 w-4 text-pk-sun" aria-hidden />
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/75">
-                Crecimiento por niveles
+                Grupos por edad
               </p>
             </div>
             <div className="mt-3 space-y-2">
-              {SWIM_LEVELS.map((level) => {
-                const active = level.n <= currentLevel
-                const reached = level.n === currentLevel
+              {ageGroups.map((group) => {
+                const active = group.id === selectedMascot.id;
                 return (
                   <div
-                    key={level.n}
+                    key={group.id}
                     className={cn(
                       'flex items-center gap-3 rounded-2xl border px-3 py-2',
                       active ? 'border-white/15 bg-white/10' : 'border-white/10 bg-white/5'
@@ -107,23 +146,19 @@ export function MascotPathWidget({
                         active ? 'bg-white/15' : 'bg-white/10'
                       )}
                     >
-                      {level.emoji}
+                      {group.emoji}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold">{level.name}</p>
-                      <p className="text-[11px] text-white/70">{level.desc}</p>
+                      <p className="text-sm font-semibold">{group.ageGroup}</p>
+                      <p className="text-[11px] text-white/70">{group.subtitle}</p>
                     </div>
-                    {reached ? (
+                    {active ? (
                       <span className="rounded-full bg-pk-sun px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-pk-ink">
-                        Hoy
-                      </span>
-                    ) : active ? (
-                      <span className="rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white">
-                        En camino
+                        Actual
                       </span>
                     ) : null}
                   </div>
-                )
+                );
               })}
             </div>
           </div>
@@ -136,68 +171,76 @@ export function MascotPathWidget({
                 <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-pk-mutedText">
                   Selección
                 </p>
-                <p className="mt-1 text-sm font-semibold text-pk-ink">Toca un avatar para elegirlo</p>
+                <p className="mt-1 text-sm font-semibold text-pk-ink">
+                  Toca un avatar para elegirlo
+                </p>
               </div>
               <Sparkles className="h-5 w-5 text-pk-primary" aria-hidden />
             </div>
 
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="mt-4 grid grid-cols-5 gap-2">
               {mascotOptions.map((option) => {
-                const active = option.id === selectedMascotId
+                const active = option.id === selectedMascotId;
                 return (
                   <button
                     key={option.id}
                     type="button"
                     onClick={() => setSelectedMascotId(option.id)}
+                    aria-label={`Seleccionar ${option.name}, ${option.ageGroup}`}
                     className={cn(
-                      'flex items-center gap-3 rounded-2xl border px-4 py-3 text-left transition',
+                      'flex aspect-square items-center justify-center rounded-2xl border text-3xl transition',
                       active
                         ? `${toneStyles[option.tone]} ring-2 ring-pk-primary/30`
                         : 'border-pk-border bg-white hover:border-pk-primary/30 hover:bg-pk-bg'
                     )}
                   >
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
-                      {option.emoji}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-pk-ink">{option.name}</p>
-                      <p className="text-xs text-pk-mutedText">{option.subtitle}</p>
-                    </div>
-                    <ChevronRight className={cn('h-4 w-4 shrink-0', active ? 'text-pk-primary' : 'text-pk-mutedText')} aria-hidden />
+                    <span aria-hidden>{option.emoji}</span>
+                    <span className="sr-only">{option.name}</span>
                   </button>
-                )
+                );
               })}
             </div>
           </div>
 
           <div className="rounded-[1.75rem] border border-pk-border bg-white p-4">
             <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-pk-mutedText">
-              Cómo crece
+              Cómo se organiza
             </p>
             <p className="mt-1 text-sm text-pk-sub">
-              El avatar cambia de forma con el avance del niño: primero aprende, luego flota,
-              después coordina y finalmente domina el nivel.
+              La experiencia de Peskids se ordena por grupos por edad. El avatar acompaña el
+              avance del peque sin usar escalas visibles en el portal.
             </p>
 
-            <div className="mt-4 grid grid-cols-6 gap-2">
-              {SWIM_LEVELS.map((level) => {
-                const active = level.n <= currentLevel
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              {ageGroups.map((group) => {
+                const active = group.id === selectedMascot.id;
                 return (
                   <div
-                    key={level.n}
+                    key={group.id}
                     className={cn(
-                      'flex aspect-square items-center justify-center rounded-2xl border text-xl',
+                      'flex items-center gap-3 rounded-2xl border px-3 py-3',
                       active ? 'border-pk-primary bg-pk-primary/10' : 'border-pk-border bg-pk-snow'
                     )}
                   >
-                    {level.emoji}
+                    <div
+                      className={cn(
+                        'flex h-10 w-10 items-center justify-center rounded-2xl text-lg',
+                        active ? 'bg-white' : 'bg-white'
+                      )}
+                    >
+                      {group.emoji}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-pk-ink">{group.ageGroup}</p>
+                      <p className="text-[11px] text-pk-mutedText">{group.name}</p>
+                    </div>
                   </div>
-                )
+                );
               })}
             </div>
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }

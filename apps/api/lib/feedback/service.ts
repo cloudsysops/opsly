@@ -1,6 +1,11 @@
 import type { NextRequest } from 'next/server';
 import { llmCall } from '@intcloudsysops/llm-gateway';
 import { analyzeFeedback } from '@intcloudsysops/ml';
+import {
+  guardChatOutput,
+  validateFeedbackMessage,
+  wrapUntrustedUserText,
+} from '@intcloudsysops/prompt-guard';
 import { notifyDiscordFeedback } from '../feedback-notify';
 import {
   resolveTrustedFeedbackIdentity,
@@ -255,7 +260,20 @@ export async function handleFeedbackPost(req: NextRequest): Promise<Response> {
   const fieldsOrErr = parseFeedbackPostFields(bodyOrErr, trusted.identity);
   if (fieldsOrErr instanceof Response) return fieldsOrErr;
 
-  return processFeedbackPost(fieldsOrErr);
+  const validated = validateFeedbackMessage(fieldsOrErr.message);
+  if (!validated.ok) {
+    if (validated.safeResponse) {
+      return Response.json({
+        conversation_id: fieldsOrErr.conversation_id ?? null,
+        message: validated.safeResponse,
+        decision_type: null,
+        criticality: null,
+      });
+    }
+    return Response.json({ error: validated.error }, { status: validated.status });
+  }
+
+  return processFeedbackPost({ ...fieldsOrErr, message: validated.message });
 }
 
 async function ensureConversationId(
@@ -360,9 +378,13 @@ async function runClarifyBranch(
     temperature: 0.7,
     cache: false,
     system: SYSTEM_PROMPT,
-    messages,
+    messages: messages.map((m) =>
+      m.role === 'user'
+        ? { role: 'user', content: wrapUntrustedUserText(m.content) }
+        : m
+    ),
   });
-  return { assistantResponse: llmResponse.content };
+  return { assistantResponse: guardChatOutput(llmResponse.content) };
 }
 
 export async function handleFeedbackGet(req: NextRequest): Promise<Response> {

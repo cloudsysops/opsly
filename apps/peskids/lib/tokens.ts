@@ -5,21 +5,21 @@ export const peskidsColorTokens = {
   // Primary brand colors
   primary: {
     whatsapp: '#25D366', // WhatsApp green
-    teal: '#2DB7B0',     // Teal accent
-    blue: '#0D4C63',     // Deep blue
+    teal: '#2DB7B0', // Teal accent
+    blue: '#0D4C63', // Deep blue
   },
 
   // Secondary colors
   secondary: {
-    orange: '#FF5A1F',   // Orange accent
-    yellow: '#FFC20E',   // Yellow accent
-    lightTeal: '#A8DDE3',// Light teal
+    orange: '#FF5A1F', // Orange accent
+    yellow: '#FFC20E', // Yellow accent
+    lightTeal: '#A8DDE3', // Light teal
     lightYellow: '#FFE38A', // Light yellow
   },
 
   // Status colors
   status: {
-    success: '#1ebe57',  // Success green
+    success: '#1ebe57', // Success green
   },
 
   // Neutral colors
@@ -42,13 +42,13 @@ export const peskidsColorTokens = {
 } as const;
 
 export const peskidsSpacingTokens = {
-  xs: '0.25rem',  // 4px
-  sm: '0.5rem',   // 8px
-  md: '1rem',     // 16px
-  lg: '1.5rem',   // 24px
-  xl: '2rem',     // 32px
-  '2xl': '2.5rem',// 40px
-  '3xl': '3rem',  // 48px
+  xs: '0.25rem', // 4px
+  sm: '0.5rem', // 8px
+  md: '1rem', // 16px
+  lg: '1.5rem', // 24px
+  xl: '2rem', // 32px
+  '2xl': '2.5rem', // 40px
+  '3xl': '3rem', // 48px
 } as const;
 
 export const peskidsTypographyTokens = {

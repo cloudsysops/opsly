@@ -51,6 +51,10 @@ export class Router {
     this.register('POST', pattern, handler);
   }
 
+  patch(pattern: string, handler: RouteHandler): void {
+    this.register('PATCH', pattern, handler);
+  }
+
   findMatch(method: string, path: string): { route: Route; params: Record<string, string> } | null {
     for (const route of this.routes) {
       if (route.method !== method.toUpperCase()) continue;

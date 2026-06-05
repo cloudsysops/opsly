@@ -29,14 +29,15 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.57.0",
+    "@intcloudsysops/prompt-guard": "*",
     "@intcloudsysops/types": "^1.0.0",
     "@supabase/supabase-js": "^2.106.0",
-    "redis": "^4.7.1"
+    "redis": "^5.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.19.41",
     "tsx": "^4.22.3",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.8"
   }
 }

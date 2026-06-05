@@ -1,0 +1,301 @@
+{
+  "id": "peskids-submission-event",
+  "name": "Peskids - Submission Event Dispatcher",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "peskids-submission-event",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1b2c3d4",
+      "name": "Submission Event Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, workflow: 'peskids-submission-event', received_at: new Date().toISOString() } }}",
+        "options": {
+          "responseCode": 202
+        }
+      },
+      "id": "b2c3d4e5",
+      "name": "Accepted",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body ?? $input.first().json;\nreturn [{\n  json: {\n    type: body.type,\n    tenant_id: body.tenant_id || 'peskids',\n    submissions: Array.isArray(body.submissions) ? body.submissions : [],\n    submissions_count: Array.isArray(body.submissions) ? body.submissions.length : 0,\n    triggered_at: body.triggered_at || new Date().toISOString(),\n    triggered_by: body.triggered_by || null\n  }\n}];"
+      },
+      "id": "c3d4e5f6",
+      "name": "Parse Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [520, 300]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "mark_reviewed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "mark_reviewed"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "send_observations",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "send_observations"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "reassign",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "reassign"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d4e5f6a7",
+      "name": "Route By Type",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [780, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\nconst count = data.submissions_count;\nconst time = new Date(data.triggered_at).toLocaleString('es-CO', { timeZone: 'America/Bogota' });\nreturn [{\n  json: {\n    discord_message: {\n      embeds: [{\n        title: `📝 Entregas marcadas como revisadas`,\n        color: 3066993,\n        fields: [\n          { name: 'Cantidad', value: String(count), inline: true },\n          { name: 'Acción', value: 'mark_reviewed', inline: true },\n          { name: 'Por', value: data.triggered_by || 'sistema', inline: true }\n        ],\n        description: `${count} entrega(s) marcada(s) como revisada(s)`,\n        footer: { text: `⏰ ${time} (Bogotá)` }\n      }]\n    }\n  }\n}];"
+      },
+      "id": "e5f6a7b8",
+      "name": "Format Reviewed Discord",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1040, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\nconst count = data.submissions_count;\nconst observations = data.submissions.map((s, i) => `${i + 1}. [${s.submission_id}]: ${s.feedback || 'sin observación'}`).join('\\n');\nconst time = new Date(data.triggered_at).toLocaleString('es-CO', { timeZone: 'America/Bogota' });\nreturn [{\n  json: {\n    count,\n    observations_text: observations,\n    triggered_by: data.triggered_by || 'sistema',\n    triggered_at_fmt: time,\n    discord_message: {\n      embeds: [{\n        title: `💬 Observaciones enviadas a padres`,\n        color: 5793266,\n        description: observations.length > 1800 ? observations.substring(0, 1800) + '...' : observations,\n        fields: [\n          { name: 'Cantidad', value: String(count), inline: true },\n          { name: 'Por', value: data.triggered_by || 'sistema', inline: true }\n        ],\n        footer: { text: `⏰ ${time} (Bogotá)` }\n      }]\n    }\n  }\n}];"
+      },
+      "id": "f6a7b8c9",
+      "name": "Format Observations Discord",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1040, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\nconst count = data.submissions_count;\nconst time = new Date(data.triggered_at).toLocaleString('es-CO', { timeZone: 'America/Bogota' });\nreturn [{\n  json: {\n    discord_message: {\n      embeds: [{\n        title: `🔄 Entregas reasignadas`,\n        color: 16776960,\n        fields: [\n          { name: 'Cantidad', value: String(count), inline: true },\n          { name: 'Acción', value: 'reassign', inline: true },\n          { name: 'Por', value: data.triggered_by || 'sistema', inline: true }\n        ],\n        description: `${count} entrega(s) reasignada(s)`,\n        footer: { text: `⏰ ${time} (Bogotá)` }\n      }]\n    }\n  }\n}];"
+      },
+      "id": "a7b8c9d0",
+      "name": "Format Reassign Discord",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1040, 600]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.OPSLY_CRM_NOTIFY_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.discord_message) }}",
+        "options": {}
+      },
+      "id": "b8c9d0e1",
+      "name": "Discord Reviewed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1300, 0],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.OPSLY_CRM_NOTIFY_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.discord_message) }}",
+        "options": {}
+      },
+      "id": "c9d0e1f2",
+      "name": "Discord Observations",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1300, 300],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $env.RESEND_API_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ from: 'Peskids <noreply@peskids.com>', to: [$env.PESKIDS_OWNER_EMAIL], subject: `Peskids: ${$json.count} observación(es) enviada(s)`, html: '<pre>' + $json.observations_text + '</pre>' }) }}",
+        "options": {}
+      },
+      "id": "d0e1f2a3",
+      "name": "Email Observations",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1300, 480],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.OPSLY_CRM_NOTIFY_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.discord_message) }}",
+        "options": {}
+      },
+      "id": "e1f2a3b4",
+      "name": "Discord Reassigned",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1300, 600],
+      "continueOnFail": true
+    }
+  ],
+  "connections": {
+    "Submission Event Webhook": {
+      "main": [
+        [
+          { "node": "Accepted", "type": "main", "index": 0 },
+          { "node": "Parse Payload", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Parse Payload": {
+      "main": [
+        [
+          { "node": "Route By Type", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Route By Type": {
+      "main": [
+        [
+          { "node": "Format Reviewed Discord", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Format Observations Discord", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Format Reassign Discord", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Format Reviewed Discord": {
+      "main": [
+        [
+          { "node": "Discord Reviewed", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Format Observations Discord": {
+      "main": [
+        [
+          { "node": "Discord Observations", "type": "main", "index": 0 },
+          { "node": "Email Observations", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Format Reassign Discord": {
+      "main": [
+        [
+          { "node": "Discord Reassigned", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "peskids"
+  }
+}

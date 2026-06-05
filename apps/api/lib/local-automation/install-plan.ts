@@ -13,17 +13,50 @@ export type InstallPlan = {
   message: string;
 };
 
-export async function createInstallPlan(toolId: string, actor = 'admin'): Promise<InstallPlan | null> {
-  const [status, policy] = await Promise.all([inspectRegisteredTools(), loadLocalAutomationPolicy()]);
+function buildInstallCommands(
+  tool: ToolStatus,
+  allowed: boolean
+): Array<{ command: string; args: string[] }> {
+  if (!allowed || !tool.install.package) {
+    return [];
+  }
+
+  return [
+    {
+      command: 'brew',
+      args: ['install', tool.app?.brew_cask ? '--cask' : '', tool.install.package].filter(Boolean),
+    },
+  ];
+}
+
+function getAuditMessage(toolId: string, allowed: boolean): string {
+  if (allowed) {
+    return `Install plan created for ${toolId}; human approval required.`;
+  }
+  return `Install not allowed by policy for ${toolId}.`;
+}
+
+function getResultMessage(approvalRequired: boolean, allowed: boolean): string {
+  if (approvalRequired && allowed) {
+    return 'Approval required before execution. This endpoint does not install.';
+  }
+  return 'Install is denied by policy.';
+}
+
+export async function createInstallPlan(
+  toolId: string,
+  actor = 'admin'
+): Promise<InstallPlan | null> {
+  const [status, policy] = await Promise.all([
+    inspectRegisteredTools(),
+    loadLocalAutomationPolicy(),
+  ]);
   const tool = status.tools.find((item) => item.id === toolId);
   if (!tool) {
     return null;
   }
   const allowed = tool.install.provider === 'brew' && tool.install.allowed;
-  const commands =
-    allowed && tool.install.package
-      ? [{ command: 'brew', args: ['install', tool.app?.brew_cask ? '--cask' : '', tool.install.package].filter(Boolean) }]
-      : [];
+  const commands = buildInstallCommands(tool, allowed);
 
   const event = await appendAutomationAuditEvent({
     actor,
@@ -33,9 +66,7 @@ export async function createInstallPlan(toolId: string, actor = 'admin'): Promis
     allowed,
     approved: false,
     status: allowed ? 'planned' : 'denied',
-    message: allowed
-      ? `Install plan created for ${toolId}; human approval required.`
-      : `Install not allowed by policy for ${toolId}.`,
+    message: getAuditMessage(toolId, allowed),
   });
 
   return {
@@ -45,9 +76,6 @@ export async function createInstallPlan(toolId: string, actor = 'admin'): Promis
     allowed,
     approval_required: true,
     commands,
-    message:
-      policy.approval_required.includes('binary.install') && allowed
-        ? 'Approval required before execution. This endpoint does not install.'
-        : 'Install is denied by policy.',
+    message: getResultMessage(policy.approval_required.includes('binary.install'), allowed),
   };
 }

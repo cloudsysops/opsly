@@ -5,6 +5,8 @@ FROM node:20-alpine AS deps
 WORKDIR /repo
 COPY package.json package-lock.json ./
 COPY apps/admin/package.json ./apps/admin/
+COPY lib/components/package.json ./lib/components/
+COPY lib/runtime/package.json ./lib/runtime/
 RUN npm ci --ignore-scripts
 
 FROM node:20-alpine AS builder
@@ -13,7 +15,8 @@ COPY --from=deps /repo/node_modules ./node_modules
 COPY --from=deps /repo/package.json ./package.json
 COPY --from=deps /repo/package-lock.json ./package-lock.json
 COPY apps/admin ./apps/admin
-RUN npm ci --ignore-scripts --include=dev -w @intcloudsysops/admin
+# Monorepo libs imported from apps/admin (runtime, design tokens, shared UI)
+COPY lib ./lib
 WORKDIR /repo/apps/admin
 ENV NEXT_TELEMETRY_DISABLED=1
 # Producción: false (login Supabase obligatorio). Solo local/staging: --build-arg NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=true

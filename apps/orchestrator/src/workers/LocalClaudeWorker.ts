@@ -1,7 +1,12 @@
 import { Job, Worker } from 'bullmq';
 import { promises as fsp } from 'fs';
 import * as path from 'path';
-import { logWorkerLifecycle, logWorkerInfo, logWorkerWarn, logWorkerError } from '../observability/worker-log.js';
+import {
+  logWorkerLifecycle,
+  logWorkerInfo,
+  logWorkerWarn,
+  logWorkerError,
+} from '../observability/worker-log.js';
 import { getWorkerConcurrency } from '../worker-concurrency.js';
 import { ValidationOrchestrator } from '../lib/validation/validation-orchestrator.js';
 
@@ -77,7 +82,11 @@ async function callClaudeApiDirect(
   const apiUrl = process.env.CLAUDE_API_URL || 'https://api.anthropic.com';
 
   try {
-    logWorkerInfo('local-claude', 'Calling Claude API', { model, attempt: retryCount + 1, maxAttempts: maxRetries + 1 });
+    logWorkerInfo('local-claude', 'Calling Claude API', {
+      model,
+      attempt: retryCount + 1,
+      maxAttempts: maxRetries + 1,
+    });
 
     const response = await fetch(`${apiUrl}/v1/messages`, {
       method: 'POST',
@@ -190,13 +199,17 @@ ${responseText}
           );
           logWorkerInfo('local-claude', 'Validation decision', { action: decision.action });
         } catch (validationErr) {
-          const errorMsg = validationErr instanceof Error ? validationErr.message : String(validationErr);
+          const errorMsg =
+            validationErr instanceof Error ? validationErr.message : String(validationErr);
           logWorkerError('local-claude', 'Validation error', { error: errorMsg });
 
           // Distinguish error type: timeout/connection → mark for escalation
           const isRetriable = errorMsg.includes('timeout') || errorMsg.includes('ECONNREFUSED');
           if (isRetriable) {
-            logWorkerError('local-claude', 'Validation service unavailable (retriable), escalating');
+            logWorkerError(
+              'local-claude',
+              'Validation service unavailable (retriable), escalating'
+            );
             decision = {
               action: 'escalate',
               reason: `Validation orchestrator unavailable: ${errorMsg}`,

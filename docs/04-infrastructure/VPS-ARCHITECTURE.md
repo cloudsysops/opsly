@@ -71,6 +71,7 @@ Todos estos stacks mostraron n8n y Uptime Kuma corriendo healthy en el VPS:
 | `api.op-sly.com` | `app` | 3000 | Degradado; `404` público en `/api/health`, `500` interno |
 | `traefik.${PLATFORM_DOMAIN}` | dashboard Traefik + BasicAuth | api@internal | Activo si router coincide con `.env` |
 | Tenant n8n/uptime hosts | routers por stack tenant | 5678 / 3001 | Healthy para tenants observados |
+| `panini.op-sly.com` | `panini-lab` (incubator app) | 3005 | Ver [`docs/runbooks/PANINI-LAB-GOLIVE.md`](../runbooks/PANINI-LAB-GOLIVE.md) |
 
 ## Current blockers
 

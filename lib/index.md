@@ -29,6 +29,7 @@ Librerías compartidas del monorepo Opsly.
 - `session-manager/` — Gestión de sesiones de agente
 - `telemetry/` — Costo y rendimiento por agente
 - `testing/` — Framework de tests unificado
+- `voice-messaging/` — Voice + chat library (calls, voice messages, recording, analytics)
 - `workflow/` — Ejecución segura de agentes con timeouts y costos
 
 Otras: `external-agent-registry/`, `git-branch-orchestrator/`, `repo-governance/`

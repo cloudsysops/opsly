@@ -3,8 +3,21 @@
   "tenant_slug": "peskids",
   "schema_name": "peskids",
   "platform_domain": "op-sly.com",
+  "public_url": "https://peskids.op-sly.com",
+  "internal_port": 3004,
+  "stack_type": "incubator-app",
+  "pattern_ids": ["incubator-app", "crm-starter-stack"],
+  "staff_login_path": "/admin/login",
   "workflows_count": 4,
   "pricing_per_unit": 0,
   "currency": "USD",
-  "notes": "Incubado en Opsly (piloto). Tenant directo, plan startup, owner sierrasantiango90@gmail.com. CRM Starter Pack (4 workflows) documentado en VPS 2026-04-30. MVP y extracción: docs/tenants/peskids/. Sin parent_tenant_slug."
+  "notes": "Incubado en Opsly (piloto). Tenant directo, plan startup, owner sierrasantiago90@gmail.com. CRM Starter Pack (4 workflows) documentado en VPS 2026-04-30. MVP y extracción: docs/tenants/peskids/. Sin parent_tenant_slug.",
+  "gohighlevel": {
+    "location_id": "KJ5LawrOOe3hIerqtMRu",
+    "location_name": "Peskids — Academia de natación",
+    "private_integration_id": "6a1e407730bb8f804a59d247",
+    "settings_url": "https://app.gohighlevel.com/v2/location/KJ5LawrOOe3hIerqtMRu/settings/private-integrations/6a1e407730bb8f804a59d247",
+    "doppler_secrets_prefix": "GOHIGHLEVEL_PESKIDS_",
+    "webhook_inbound_url": "https://api.op-sly.com/api/public/tenants/peskids/webhooks/gohighlevel/leads"
+  }
 }

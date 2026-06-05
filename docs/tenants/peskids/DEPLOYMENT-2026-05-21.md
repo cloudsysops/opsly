@@ -1,7 +1,7 @@
 ---
 status: active
 owner: operations
-last_review: 2026-05-21
+last_review: 2026-05-26
 tenant_slug: peskids
 ---
 
@@ -19,6 +19,16 @@ Registro operativo del cierre **Sprint 02** en API Opsly (`api.op-sly.com`). Com
 | Smoke MVP | PASS (2026-05-21 ~22:30 UTC) |
 | Owner sign-off | Pendiente (`sierrasantiago90@gmail.com`) |
 
+## Update 2026-05-26
+
+- El VPS fue reconstruido con el `apps/api/Dockerfile` actualizado.
+- El `npm ci` del build del API ahora ve el grafo completo de workspaces y compila sin el bloqueo del lockfile.
+- Smoke de producción revalidado el `2026-05-26`:
+  - `https://peskids.op-sly.com` responde.
+  - `https://api.op-sly.com/api/health` responde `200`.
+  - `https://api.op-sly.com/api/portal/health?slug=peskids` devuelve `n8n-peskids.op-sly.com` y `uptime-peskids.op-sly.com`.
+  - `POST /api/public/tenants/peskids/leads` y `POST /api/public/tenants/peskids/feedback` siguen respondiendo `201`.
+
 ## Contexto: por qué no bastó `docker pull` GHCR
 
 1. Workflow **Deploy** en `main` falla en `release-gate` (`npm ci` / lockfile; ver run `26247950024`).
@@ -26,6 +36,8 @@ Registro operativo del cierre **Sprint 02** en API Opsly (`api.op-sly.com`). Com
 3. El repo en `/opt/opsly` sí tenía el código (`main` @ `9b538a81`) tras `git pull`.
 
 **Mitigación aplicada:** build de API en el VPS desde el monorepo y recreación de `app` con esa imagen.
+
+**Estado actual:** el VPS ya quedó actualizado con el build corregido y el monitoreo público de Peskids apunta a `n8n-peskids.op-sly.com` + `uptime-peskids.op-sly.com`.
 
 ## Pasos ejecutados (VPS)
 

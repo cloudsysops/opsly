@@ -13,7 +13,6 @@ interface LocalAgentJob extends OrchestratorJob {
   max_steps?: number;
 }
 
-
 interface AgentResponse {
   success: boolean;
   result?: string;
@@ -43,9 +42,12 @@ export class UnifiedLocalAgentWorker {
       claude: 'http://localhost:5002',
       copilot: 'http://localhost:5003',
       opencode: 'http://localhost:5004',
-    },
+    }
   ) {
-    this.orchestrator = new IterationOrchestrator(`${cursorDir}/iteration-state`, `${cursorDir}/training`);
+    this.orchestrator = new IterationOrchestrator(
+      `${cursorDir}/iteration-state`,
+      `${cursorDir}/training`
+    );
     this.trainer = new AgentTrainer(`${cursorDir}/training`);
 
     this.worker = new Worker('local-agents', this.processJob.bind(this), {
@@ -63,7 +65,11 @@ export class UnifiedLocalAgentWorker {
     });
 
     this.worker.on('failed', (job, err) => {
-      logWorkerError('local-agents', 'Job failed', { jobId: job?.id, error: err.message, job_type: job?.name });
+      logWorkerError('local-agents', 'Job failed', {
+        jobId: job?.id,
+        error: err.message,
+        job_type: job?.name,
+      });
     });
 
     this.worker.on('error', (err) => {
@@ -84,14 +90,20 @@ export class UnifiedLocalAgentWorker {
   private async processJob(job: any): Promise<any> {
     const localJob = job.data as LocalAgentJob;
     const promptBody = (localJob as any).prompt_body || localJob.metadata?.prompt_body || '';
-    const agentRole = ((localJob as any).agent_role || 'cursor') as 'cursor' | 'claude' | 'copilot' | 'opencode';
-    const goal = ((localJob as any).goal || localJob.metadata?.goal || 'Unspecified goal') as string;
+    const agentRole = ((localJob as any).agent_role || 'cursor') as
+      | 'cursor'
+      | 'claude'
+      | 'copilot'
+      | 'opencode';
+    const goal = ((localJob as any).goal ||
+      localJob.metadata?.goal ||
+      'Unspecified goal') as string;
 
-logWorkerInfo('local-agents', 'Processing local agent job', {
-    jobId: job.id,
-    agent_role: agentRole,
-    has_iterations: Boolean(localJob.max_iterations),
-  });
+    logWorkerInfo('local-agents', 'Processing local agent job', {
+      jobId: job.id,
+      agent_role: agentRole,
+      has_iterations: Boolean(localJob.max_iterations),
+    });
 
     // Step 1: Initialize iteration session if needed
     let sessionId = localJob.request_id || job.id;
@@ -101,10 +113,13 @@ logWorkerInfo('local-agents', 'Processing local agent job', {
         goal,
         promptBody,
         agentRole,
-        localJob.max_iterations,
+        localJob.max_iterations
       );
       sessionId = session.job_id;
-      logWorkerInfo('local-agents', 'Iteration session initialized', { session_id: sessionId, max_iterations: localJob.max_iterations });
+      logWorkerInfo('local-agents', 'Iteration session initialized', {
+        session_id: sessionId,
+        max_iterations: localJob.max_iterations,
+      });
     }
 
     // Step 2: Execute prompt via HTTP agent service
@@ -113,15 +128,18 @@ logWorkerInfo('local-agents', 'Processing local agent job', {
     const duration = Date.now() - startTime;
 
     if (!response.success) {
-logWorkerError('local-agents', 'Agent service failed', {
-      agent_role: agentRole,
-      error: response.error,
-    });
+      logWorkerError('local-agents', 'Agent service failed', {
+        agent_role: agentRole,
+        error: response.error,
+      });
       throw new Error(`Agent service failed: ${response.error}`);
     }
 
     const result = response.result || '';
-    logWorkerInfo('local-agents', 'Agent execution complete', { duration, result_length: result.length });
+    logWorkerInfo('local-agents', 'Agent execution complete', {
+      duration,
+      result_length: result.length,
+    });
 
     // Step 3: Record result and determine if we should iterate
     let shouldIterate = false;
@@ -132,10 +150,10 @@ logWorkerError('local-agents', 'Agent service failed', {
       shouldIterate = iteration.should_iterate;
       nextPrompt = iteration.next_prompt;
 
-logWorkerInfo('local-agents', 'Iteration analysis complete', {
-      should_iterate: shouldIterate,
-      reasoning: iteration.reasoning,
-    });
+      logWorkerInfo('local-agents', 'Iteration analysis complete', {
+        should_iterate: shouldIterate,
+        reasoning: iteration.reasoning,
+      });
     }
 
     // Step 4: Write result to responses folder
@@ -186,10 +204,10 @@ logWorkerInfo('local-agents', 'Iteration analysis complete', {
 
       // Generate patterns report
       const report = await this.trainer.generatePatterns();
-logWorkerInfo('local-agents', 'Trainer report generated', {
-      total_executions: report.total_executions,
-      patterns_found: report.patterns.length,
-    });
+      logWorkerInfo('local-agents', 'Trainer report generated', {
+        total_executions: report.total_executions,
+        patterns_found: report.patterns.length,
+      });
     }
 
     return {
@@ -207,7 +225,7 @@ logWorkerInfo('local-agents', 'Trainer report generated', {
   private async executeViaAgentService(
     job: LocalAgentJob,
     promptBody: string,
-    agentRole: 'cursor' | 'claude' | 'copilot' | 'opencode',
+    agentRole: 'cursor' | 'claude' | 'copilot' | 'opencode'
   ): Promise<AgentResponse> {
     const serviceUrl = this.agentServices[agentRole];
     if (!serviceUrl) {

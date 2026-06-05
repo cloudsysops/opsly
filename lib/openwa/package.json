@@ -1,0 +1,16 @@
+{
+  "name": "@intcloudsysops/openwa",
+  "version": "0.1.0",
+  "description": "OpenWA gateway client — reusable WhatsApp channel for any Opsly tenant",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2",
+    "vitest": "^4.1.8"
+  }
+}

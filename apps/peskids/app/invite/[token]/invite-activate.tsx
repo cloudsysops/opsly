@@ -1,105 +1,105 @@
-'use client'
+'use client';
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   inviteActivationErrorMessage,
   validateInviteActivationForm,
-} from '@/lib/invite-activation-validation'
-import { recoveryTargetFromMetadata } from '@/lib/auth-recovery'
-import { createClient } from '@/lib/supabase-browser'
-import { useParams, useSearchParams } from 'next/navigation'
-import { useMemo, useState } from 'react'
+} from '@/lib/invite-activation-validation';
+import { recoveryTargetFromMetadata } from '@/lib/auth-recovery';
+import { createClient } from '@/lib/supabase-browser';
+import { useParams, useSearchParams } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
-type FormSubmitEvent = Parameters<NonNullable<React.ComponentProps<'form'>['onSubmit']>>[0]
+type FormSubmitEvent = Parameters<NonNullable<React.ComponentProps<'form'>['onSubmit']>>[0];
 
 function targetPathForTenant(meta: Record<string, unknown>): string {
-  const target = recoveryTargetFromMetadata(meta)
+  const target = recoveryTargetFromMetadata(meta);
   if (target.app === 'platform_admin') {
-    return `${target.origin.replace(/\/$/, '')}/dashboard`
+    return `${target.origin.replace(/\/$/, '')}/dashboard`;
   }
   if (target.app === 'peskids_staff') {
-    return `${target.origin.replace(/\/$/, '')}/admin`
+    return `${target.origin.replace(/\/$/, '')}/admin`;
   }
-  return `${target.origin.replace(/\/$/, '')}/dashboard`
+  return `${target.origin.replace(/\/$/, '')}/dashboard`;
 }
 
 export function InviteActivate(): React.ReactElement {
-  const params = useParams()
-  const searchParams = useSearchParams()
-  const tokenRaw = typeof params.token === 'string' ? params.token : ''
-  const token = useMemo(() => decodeURIComponent(tokenRaw), [tokenRaw])
-  const email = searchParams.get('email') ?? ''
-  const code = searchParams.get('code')
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const tokenRaw = typeof params.token === 'string' ? params.token : '';
+  const token = useMemo(() => decodeURIComponent(tokenRaw), [tokenRaw]);
+  const email = searchParams.get('email') ?? '';
+  const code = searchParams.get('code');
 
-  const [password, setPassword] = useState('')
-  const [confirm, setConfirm] = useState('')
-  const [err, setErr] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [err, setErr] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const displayName = email.includes('@') ? email.split('@')[0] : 'equipo'
+  const displayName = email.includes('@') ? email.split('@')[0] : 'equipo';
 
   async function onSubmit(e: FormSubmitEvent): Promise<void> {
-    e.preventDefault()
-    setErr(null)
+    e.preventDefault();
+    setErr(null);
     const validation = validateInviteActivationForm({
       password,
       confirm,
       email,
       token,
-    })
+    });
     if (validation) {
-      setErr(inviteActivationErrorMessage(validation))
-      return
+      setErr(inviteActivationErrorMessage(validation));
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const supabase = createClient()
+      const supabase = createClient();
       if (code && code.length > 0) {
-        const { error: exchangeError, data } = await supabase.auth.exchangeCodeForSession(code)
+        const { error: exchangeError, data } = await supabase.auth.exchangeCodeForSession(code);
         if (exchangeError) {
-          setErr(exchangeError.message)
-          return
+          setErr(exchangeError.message);
+          return;
         }
         const meta = {
           ...((data.user?.app_metadata ?? {}) as Record<string, unknown>),
           ...((data.user?.user_metadata ?? {}) as Record<string, unknown>),
-        }
-        const redirectPath = targetPathForTenant(meta)
-        const { error: pwError } = await supabase.auth.updateUser({ password })
+        };
+        const redirectPath = targetPathForTenant(meta);
+        const { error: pwError } = await supabase.auth.updateUser({ password });
         if (pwError) {
-          setErr(pwError.message)
-          return
+          setErr(pwError.message);
+          return;
         }
-      window.location.replace(redirectPath)
-      return
+        window.location.replace(redirectPath);
+        return;
       }
 
       const { error: otpError, data } = await supabase.auth.verifyOtp({
         email,
         token,
         type: 'invite',
-      })
+      });
       if (otpError) {
-        setErr(otpError.message)
-        return
+        setErr(otpError.message);
+        return;
       }
       const meta = {
         ...((data.user?.app_metadata ?? {}) as Record<string, unknown>),
         ...((data.user?.user_metadata ?? {}) as Record<string, unknown>),
-      }
-      const redirectPath = targetPathForTenant(meta)
-      const { error: pwError } = await supabase.auth.updateUser({ password })
+      };
+      const redirectPath = targetPathForTenant(meta);
+      const { error: pwError } = await supabase.auth.updateUser({ password });
       if (pwError) {
-        setErr(pwError.message)
-        return
+        setErr(pwError.message);
+        return;
       }
-      window.location.replace(redirectPath)
+      window.location.replace(redirectPath);
     } catch (error) {
-      setErr(error instanceof Error ? error.message : 'No se pudo activar la cuenta')
+      setErr(error instanceof Error ? error.message : 'No se pudo activar la cuenta');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -143,5 +143,5 @@ export function InviteActivate(): React.ReactElement {
         </form>
       </div>
     </div>
-  )
+  );
 }

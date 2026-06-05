@@ -82,8 +82,10 @@ CREATE POLICY "authenticated_read_analytics" ON peskids.form_analytics
   FOR SELECT
   USING (
     tenant_slug IN (
-      SELECT tenant_slug FROM public.tenant_memberships
-      WHERE user_id = auth.uid() AND status = 'active'
+      SELECT t.slug
+      FROM platform.tenant_memberships tm
+      INNER JOIN platform.tenants t ON t.id = tm.tenant_id
+      WHERE tm.user_id = auth.uid() AND tm.status = 'active'
     )
   );
 
@@ -91,8 +93,10 @@ CREATE POLICY "authenticated_read_events" ON peskids.submission_events
   FOR SELECT
   USING (
     tenant_slug IN (
-      SELECT tenant_slug FROM public.tenant_memberships
-      WHERE user_id = auth.uid() AND status = 'active'
+      SELECT t.slug
+      FROM platform.tenant_memberships tm
+      INNER JOIN platform.tenants t ON t.id = tm.tenant_id
+      WHERE tm.user_id = auth.uid() AND tm.status = 'active'
     )
   );
 
@@ -100,16 +104,20 @@ CREATE POLICY "authenticated_read_webhooks" ON peskids.webhook_configs
   FOR SELECT
   USING (
     tenant_slug IN (
-      SELECT tenant_slug FROM public.tenant_memberships
-      WHERE user_id = auth.uid() AND status = 'active'
+      SELECT t.slug
+      FROM platform.tenant_memberships tm
+      INNER JOIN platform.tenants t ON t.id = tm.tenant_id
+      WHERE tm.user_id = auth.uid() AND tm.status = 'active'
     )
   );
 
 CREATE POLICY "authenticated_write_webhooks" ON peskids.webhook_configs
   FOR INSERT WITH CHECK (
     tenant_slug IN (
-      SELECT tenant_slug FROM public.tenant_memberships
-      WHERE user_id = auth.uid() AND status = 'active'
+      SELECT t.slug
+      FROM platform.tenant_memberships tm
+      INNER JOIN platform.tenants t ON t.id = tm.tenant_id
+      WHERE tm.user_id = auth.uid() AND tm.status = 'active'
     )
   );
 

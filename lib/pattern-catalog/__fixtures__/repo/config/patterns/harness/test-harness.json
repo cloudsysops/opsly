@@ -1,0 +1,12 @@
+{
+  "id": "test-harness",
+  "kind": "harness",
+  "title": "Test harness pattern",
+  "description": "Fixture only",
+  "sigmaQueryHints": ["webhook"],
+  "reviewers": [
+    { "agent_id": "security-bot", "role": "security" },
+    { "agent_id": "skeptic-worker", "role": "skeptic" }
+  ],
+  "proposalTemplate": { "topicPrefix": "[test] " }
+}

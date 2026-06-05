@@ -1,0 +1,53 @@
+{
+  "name": "opsly-peskids",
+  "version": "1.0.0",
+  "description": "Peskids After-School Swimming Program — DB schema, ops dashboard, classes/enrollments/payments, auth flows, Stripe checkout, and client-delivery checklist.",
+  "triggers": [
+    "peskids",
+    "Peskids",
+    "clases de natación",
+    "after-school",
+    "sierrasantiago",
+    "pools",
+    "piscina",
+    "enrollments",
+    "inscripción",
+    "familias",
+    "teacher",
+    "support",
+    "admin",
+    "landing",
+    "dashboard",
+    "leads",
+    "feedback",
+    "tenant_slug",
+    "peskids.op-sly.com"
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "surface": {
+        "type": "string",
+        "description": "landing | families | teacher | support | admin | api | docs | deploy"
+      },
+      "task": {
+        "type": "string",
+        "description": "Qué se necesita cambiar o validar"
+      },
+      "tenantSlug": {
+        "type": "string",
+        "description": "Tenant slug, normalmente peskids"
+      }
+    },
+    "additionalProperties": true
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "tenantSlug": { "type": "string" },
+      "surface": { "type": "string" },
+      "nextAction": { "type": "string" }
+    }
+  },
+  "crossReferences": ["opsly-tenant", "opsly-frontend", "opsly-api", "opsly-supabase", "opsly-infra", "opsly-qa"]
+}

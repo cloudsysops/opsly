@@ -1,12 +1,12 @@
-import Link from 'next/link'
-import { ExternalLink, Instagram } from 'lucide-react'
-import { InstagramFeedRotator } from '@/components/marketing/instagram-feed-rotator'
-import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
-import { loadInstagramFeedItems } from '@/lib/instagram-feed-loader'
+import Link from 'next/link';
+import { ExternalLink, Instagram } from 'lucide-react';
+import { InstagramFeedRotator } from '@/components/marketing/instagram-feed-rotator';
+import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed';
+import { loadInstagramFeedItems } from '@/lib/instagram-feed-loader';
 
 export async function InstagramFeedSection(): Promise<React.ReactElement> {
-  const items = await loadInstagramFeedItems()
-  const usingLivePosts = items.some((item) => item.thumbnailUrl)
+  const items = await loadInstagramFeedItems();
+  const usingLivePosts = items.some((item) => item.thumbnailUrl);
 
   return (
     <section
@@ -31,7 +31,9 @@ export async function InstagramFeedSection(): Promise<React.ReactElement> {
               Fotos, reels y momentos de clase en un solo vistazo.
             </p>
             {!usingLivePosts ? (
-              <p className="mt-3 text-sm text-pk-mutedText">Mostramos piezas de marca hasta cargar publicaciones reales.</p>
+              <p className="mt-3 text-sm text-pk-mutedText">
+                Mostramos piezas de marca hasta cargar publicaciones reales.
+              </p>
             ) : null}
           </div>
 
@@ -65,5 +67,5 @@ export async function InstagramFeedSection(): Promise<React.ReactElement> {
         </p>
       </div>
     </section>
-  )
+  );
 }

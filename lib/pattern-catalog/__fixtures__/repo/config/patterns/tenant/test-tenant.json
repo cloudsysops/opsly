@@ -1,0 +1,8 @@
+{
+  "id": "test-tenant",
+  "kind": "tenant",
+  "title": "Test tenant pattern",
+  "description": "Fixture only",
+  "capabilities": ["openwa"],
+  "harness_patterns": ["test-harness"]
+}

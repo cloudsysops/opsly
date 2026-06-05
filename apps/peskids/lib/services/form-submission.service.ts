@@ -1,48 +1,51 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
 
 function getSupabaseClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !serviceRole) {
-    return null
+    return null;
   }
 
-  return createClient(url, serviceRole)
+  return createClient(url, serviceRole);
 }
 
 export interface FormSubmissionSummary {
-  formId: string
-  formTitle: string
-  submissionId: string
-  submittedAt: string
-  status: 'completed' | 'pending' | 'reviewed'
-  studentName?: string
+  formId: string;
+  formTitle: string;
+  submissionId: string;
+  submittedAt: string;
+  status: 'completed' | 'pending' | 'reviewed';
+  studentName?: string;
 }
 
 export interface StudentSubmission {
-  submissionId: string
-  studentName: string
-  studentId: string
-  formTitle: string
-  submittedAt: string
-  parentEmail?: string | null
-  grade?: number
-  maxGrade: number
-  feedback?: string
-  status: 'reviewed' | 'pending' | 'needs_revision'
-  studentLevel?: string
-  progressPercent?: number
+  submissionId: string;
+  studentName: string;
+  studentId: string;
+  formTitle: string;
+  submittedAt: string;
+  parentEmail?: string | null;
+  grade?: number;
+  maxGrade: number;
+  feedback?: string;
+  status: 'reviewed' | 'pending' | 'needs_revision';
+  studentLevel?: string;
+  progressPercent?: number;
 }
 
 export class FormSubmissionService {
-  private tenantSlug = 'peskids'
+  private tenantSlug = 'peskids';
 
-  async getParentSubmissions(): Promise<FormSubmissionSummary[]> {
-    const supabase = getSupabaseClient()
-    if (!supabase) return []
+  async getParentSubmissions(parentEmail?: string): Promise<FormSubmissionSummary[]> {
+    const normalizedParentEmail = parentEmail?.trim().toLowerCase() ?? '';
+    if (!normalizedParentEmail) return [];
 
-    const { data, error } = await supabase
+    const supabase = getSupabaseClient();
+    if (!supabase) return [];
+
+    const query = supabase
       .from('form_submissions')
       .select(
         `
@@ -55,12 +58,15 @@ export class FormSubmissionService {
       `
       )
       .eq('tenant_slug', this.tenantSlug)
+      .eq('parent_email', normalizedParentEmail)
       .not('user_id', 'is', null)
-      .order('completed_at', { ascending: false })
+      .order('completed_at', { ascending: false });
+
+    const { data, error } = await query;
 
     if (error) {
-      console.error('Failed to fetch parent submissions:', error)
-      return []
+      console.error('Failed to fetch parent submissions:', error);
+      return [];
     }
 
     return (data || []).map((row: any) => ({
@@ -68,14 +74,19 @@ export class FormSubmissionService {
       formTitle: row.form?.title || 'Untitled Form',
       submissionId: row.submission_id,
       submittedAt: row.completed_at || new Date().toISOString(),
-      status: row.status === 'graded' ? 'reviewed' : row.status === 'submitted' ? 'completed' : 'pending',
-      studentName: row.form_data?.student_name || row.form_data?.child_name || row.form_data?.name || undefined,
-    }))
+      status:
+        row.status === 'graded' ? 'reviewed' : row.status === 'submitted' ? 'completed' : 'pending',
+      studentName:
+        row.form_data?.student_name ||
+        row.form_data?.child_name ||
+        row.form_data?.name ||
+        undefined,
+    }));
   }
 
   async getTeacherSubmissions(): Promise<StudentSubmission[]> {
-    const supabase = getSupabaseClient()
-    if (!supabase) return []
+    const supabase = getSupabaseClient();
+    if (!supabase) return [];
 
     const { data, error } = await supabase
       .from('form_submissions')
@@ -92,11 +103,11 @@ export class FormSubmissionService {
       `
       )
       .eq('tenant_slug', this.tenantSlug)
-      .order('completed_at', { ascending: false })
+      .order('completed_at', { ascending: false });
 
     if (error) {
-      console.error('Failed to fetch teacher submissions:', error)
-      return []
+      console.error('Failed to fetch teacher submissions:', error);
+      return [];
     }
 
     return (data || []).map((row: any) => ({
@@ -114,7 +125,12 @@ export class FormSubmissionService {
       grade: row.score,
       maxGrade: 100,
       feedback: row.feedback,
-      status: row.status === 'graded' ? 'reviewed' : row.status === 'submitted' ? 'pending' : 'needs_revision',
+      status:
+        row.status === 'graded'
+          ? 'reviewed'
+          : row.status === 'submitted'
+            ? 'pending'
+            : 'needs_revision',
       studentLevel:
         row.form_data?.grade_interested ||
         row.form_data?.gradeInterested ||
@@ -129,55 +145,65 @@ export class FormSubmissionService {
             : row.status === 'submitted'
               ? 70
               : 45,
-    }))
+    }));
   }
 
-  async getFormAnalytics(): Promise<{
-    formId: string
-    formTitle: string
-    submissionsCount: number
-    abandonmentRate: number
-    avgCompletionTime: number
-    errorCount: number
-  }[]> {
-    const supabase = getSupabaseClient()
-    if (!supabase) return []
+  async getFormAnalytics(): Promise<
+    {
+      formId: string;
+      formTitle: string;
+      submissionsCount: number;
+      abandonmentRate: number;
+      avgCompletionTime: number;
+      errorCount: number;
+    }[]
+  > {
+    const supabase = getSupabaseClient();
+    if (!supabase) return [];
 
     const { data: forms, error: formsError } = await supabase
       .from('forms')
       .select('id, title')
-      .eq('tenant_slug', this.tenantSlug)
+      .eq('tenant_slug', this.tenantSlug);
 
     if (formsError) {
-      console.error('Failed to fetch forms:', formsError)
-      return []
+      console.error('Failed to fetch forms:', formsError);
+      return [];
     }
 
     const { data: submissions, error: submissionsError } = await supabase
       .from('form_submissions')
       .select('form_id, status, started_at, completed_at')
-      .eq('tenant_slug', this.tenantSlug)
+      .eq('tenant_slug', this.tenantSlug);
 
     if (submissionsError) {
-      console.error('Failed to fetch submissions:', submissionsError)
-      return []
+      console.error('Failed to fetch submissions:', submissionsError);
+      return [];
     }
 
     return (forms || []).map((form: any) => {
-      const formSubmissions = (submissions || []).filter((s: any) => s.form_id === form.id)
-      const completed = formSubmissions.filter((s: any) => s.status === 'submitted' || s.status === 'graded')
-      const started = formSubmissions.filter((s: any) => s.status === 'started')
+      const formSubmissions = (submissions || []).filter((s: any) => s.form_id === form.id);
+      const completed = formSubmissions.filter(
+        (s: any) => s.status === 'submitted' || s.status === 'graded'
+      );
+      const started = formSubmissions.filter((s: any) => s.status === 'started');
 
       const completionTimes = completed
         .filter((s: any) => s.started_at && s.completed_at)
         .map((s: any) => {
-          const start = new Date(s.started_at).getTime()
-          const end = new Date(s.completed_at).getTime()
-          return (end - start) / 1000 / 60 // minutes
-        })
+          const start = new Date(s.started_at).getTime();
+          const end = new Date(s.completed_at).getTime();
+          return (end - start) / 1000 / 60; // minutes
+        });
 
-      const avgCompletionTime = completionTimes.length > 0 ? Math.round(completionTimes.reduce((a, b) => a + b, 0) / completionTimes.length) : 0
-      const abandonmentRate = started.length > 0 ? Math.round((started.length / (started.length + completed.length)) * 100) : 0
+      const avgCompletionTime =
+        completionTimes.length > 0
+          ? Math.round(completionTimes.reduce((a, b) => a + b, 0) / completionTimes.length)
+          : 0;
+      const abandonmentRate =
+        started.length > 0
+          ? Math.round((started.length / (started.length + completed.length)) * 100)
+          : 0;
 
       return {
         formId: form.id,
@@ -186,9 +212,9 @@ export class FormSubmissionService {
         abandonmentRate,
         avgCompletionTime,
         errorCount: 0, // TODO: track validation errors
-      }
-    })
+      };
+    });
   }
 }
 
-export const createFormSubmissionService = () => new FormSubmissionService()
+export const createFormSubmissionService = () => new FormSubmissionService();

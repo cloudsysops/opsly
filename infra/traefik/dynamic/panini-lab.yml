@@ -1,0 +1,17 @@
+http:
+  routers:
+    panini-lab:
+      rule: "Host(`panini.op-sly.com`)"
+      service: panini-lab
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: panini.op-sly.com
+
+  services:
+    panini-lab:
+      loadBalancer:
+        servers:
+          - url: "http://panini-lab:3005"

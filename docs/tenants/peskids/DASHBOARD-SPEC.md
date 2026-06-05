@@ -11,6 +11,8 @@ tags:
 
 **Purpose:** Single-screen view of all active leads, students, and feedback. Admin can quickly see what needs attention and take action (follow up, respond, etc.).
 
+**Executive KPI strip:** Leads, clases prueba, inscripciones, alumnos activos, conversión y fuente de captación.
+
 **Target User:** Admin staff, owner  
 **Access:** Authenticated admin only (RLS on Supabase)  
 **Load time:** <3 seconds  

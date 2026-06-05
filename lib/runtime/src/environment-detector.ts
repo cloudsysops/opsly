@@ -70,7 +70,7 @@ export function detectOs(platform: NodeJS.Platform): OpsOs {
 
 export async function commandExists(
   name: string,
-  deps: Pick<DetectorDeps, 'platform' | 'runCommand'>,
+  deps: Pick<DetectorDeps, 'platform' | 'runCommand'>
 ): Promise<boolean> {
   if (deps.platform === 'win32') {
     const result = await deps.runCommand('where.exe', [name]);
@@ -88,7 +88,7 @@ async function defaultDiskFreeGb(path: string): Promise<number> {
 
 async function detectGpu(
   opsOs: OpsOs,
-  deps: DetectorDeps,
+  deps: DetectorDeps
 ): Promise<{ gpuAvailable: boolean; gpuMemoryGb?: number }> {
   if (opsOs === 'macos' && deps.arch === 'arm64') {
     return { gpuAvailable: true };
@@ -105,9 +105,7 @@ async function detectGpu(
   const firstLine = nvidia.stdout.trim().split('\n')[0] ?? '';
   const memoryMb = Number.parseInt(firstLine, 10);
   const gpuMemoryGb =
-    Number.isFinite(memoryMb) && memoryMb > 0
-      ? Math.round((memoryMb / 1024) * 10) / 10
-      : undefined;
+    Number.isFinite(memoryMb) && memoryMb > 0 ? Math.round((memoryMb / 1024) * 10) / 10 : undefined;
 
   return { gpuAvailable: true, gpuMemoryGb };
 }
@@ -217,7 +215,9 @@ export function createDefaultDeps(): DetectorDeps {
   };
 }
 
-export async function detectEnvironment(deps: DetectorDeps = createDefaultDeps()): Promise<RuntimeProfile> {
+export async function detectEnvironment(
+  deps: DetectorDeps = createDefaultDeps()
+): Promise<RuntimeProfile> {
   const opsOs = detectOs(deps.platform);
   const [
     dockerAvailable,
@@ -262,7 +262,7 @@ export async function detectEnvironment(deps: DetectorDeps = createDefaultDeps()
 }
 
 export async function validateEnvironment(
-  profile: RuntimeProfile,
+  profile: RuntimeProfile
 ): Promise<{ valid: boolean; errors: string[] }> {
   const errors: string[] = [];
   const { system } = profile;

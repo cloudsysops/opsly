@@ -133,7 +133,7 @@ skill_validate
 skill_list
 ```
 
-## Skills Disponibles (14)
+## Skills Disponibles (15)
 
 ### Critical (2)
 
@@ -142,7 +142,7 @@ skill_list
 | `opsly-bootstrap`     | sesión, inicio, contexto       | Bootstrap de sesión modular          |
 | `opsly-skill-creator` | crear skill, capturar workflow | Meta-skill de creación/normalización |
 
-### High (9)
+### High (10)
 
 | Skill                | Triggers                  | Descripción    |
 | -------------------- | ------------------------- | -------------- |
@@ -153,6 +153,7 @@ skill_list
 | `opsly-mcp`          | mcp, tool, oauth          | MCP OpenClaw   |
 | `opsly-llm`          | llm, ai, modelo           | LLM Gateway    |
 | `opsly-tenant`       | tenant, onboard, n8n      | Onboarding     |
+| `opsly-peskids`      | Peskids, familias, teacher | Tenant Peskids |
 | `opsly-orchestrator` | oar, workflow, n8n        | Orquestador    |
 | `opsly-billing`      | stripe, metering, invoice | Billing        |
 

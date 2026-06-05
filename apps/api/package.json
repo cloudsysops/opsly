@@ -19,14 +19,17 @@
     "@aws-sdk/nested-clients": "^3.997.10",
     "@intcloudsysops/llm-gateway": "^1.0.0",
     "@intcloudsysops/ml": "^1.0.0",
+    "@intcloudsysops/prompt-guard": "*",
     "@intcloudsysops/notebooklm-agent": "^1.0.0",
+    "@intcloudsysops/openwa": "*",
+    "@intcloudsysops/tenant-profile": "*",
     "@supabase/supabase-js": "^2.106.0",
     "bullmq": "^5.76.10",
     "execa": "^9.6.1",
     "next": "^15.5.18",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "redis": "^4.7.1",
+    "redis": "^5.0.0",
     "resend": "^4.8.0",
     "stripe": "^17.7.0",
     "zod": "^3.25.76"
@@ -35,10 +38,10 @@
     "@types/node": "^22.13.10",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/coverage-v8": "^4.1.8",
     "eslint": "^9.39.4",
     "tsx": "^4.22.3",
     "typescript": "^5.9.3",
-    "vitest": "^3.0.5"
+    "vitest": "^4.1.8"
   }
 }

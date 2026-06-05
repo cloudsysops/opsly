@@ -1,30 +1,45 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { triggerN8nMessagePipeline } from '@/lib/chat-assistant'
-import { storeDraftReply, storeInboundMessage, storeOutboundMessage } from '@/lib/message-store'
-import { emitEvent } from '@/lib/events'
-import { buildPeskidsIntakeTurn } from '@/lib/peskids-intake'
-import { submitLeadFromIntake } from '@/lib/peskids-lead-from-intake'
-
-const MAX_MESSAGE_LENGTH = 2000
+import { NextRequest } from 'next/server';
+import { validateChatUserMessage } from '@intcloudsysops/prompt-guard';
+import { triggerN8nMessagePipeline } from '@/lib/chat-assistant';
+import { storeDraftReply, storeInboundMessage, storeOutboundMessage } from '@/lib/message-store';
+import { emitEvent } from '@/lib/events';
+import { buildPeskidsIntakeTurn } from '@/lib/peskids-intake';
+import { submitLeadFromIntake } from '@/lib/peskids-lead-from-intake';
+import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 
 export async function POST(req: NextRequest) {
+  const requestId = resolveRequestId(req);
+
   try {
     const body = (await req.json()) as {
-      message?: string
-      session_id?: string
-      sender_name?: string
-      mode?: 'admissions' | 'support'
-    }
+      message?: string;
+      session_id?: string;
+      sender_name?: string;
+      mode?: 'admissions' | 'support';
+    };
 
-    const messageText = body.message?.trim() ?? ''
-    const sessionId = body.session_id?.trim() ?? 'web-anonymous'
-
-    if (!messageText || messageText.length > MAX_MESSAGE_LENGTH) {
-      return NextResponse.json(
-        { error: 'message required (max 2000 chars)' },
-        { status: 400 }
-      )
+    const sessionId = body.session_id?.trim() ?? 'web-anonymous';
+    const validated = validateChatUserMessage(body.message ?? '');
+    if (!validated.ok) {
+      if (validated.safeResponse) {
+        return successJson(requestId, {
+          ok: true,
+          message_id: null,
+          draft_id: null,
+          reply: validated.safeResponse,
+          stage: 'blocked',
+          progress: 0,
+          profile: null,
+          support_draft: null,
+          input_mode: 'text',
+          quick_replies: [],
+          from_llm: false,
+          disclaimer: 'Mensaje revisado por políticas de seguridad.',
+        });
+      }
+      return errorJson(requestId, validated.error, validated.status);
     }
+    const messageText = validated.message;
 
     const { message, error: storeError } = await storeInboundMessage({
       source: 'web',
@@ -32,10 +47,10 @@ export async function POST(req: NextRequest) {
       sender_name: body.sender_name?.trim() || 'Visitante web',
       message_text: messageText,
       external_id: `web-${sessionId}-${Date.now()}`,
-    })
+    });
 
     if (storeError || !message) {
-      return NextResponse.json({ error: 'Failed to store message' }, { status: 500 })
+      return errorJson(requestId, 'Failed to store message', 500);
     }
 
     const intake = await buildPeskidsIntakeTurn({
@@ -44,7 +59,7 @@ export async function POST(req: NextRequest) {
       source: 'web',
       latestMessage: messageText,
       mode: body.mode ?? 'admissions',
-    })
+    });
 
     await storeOutboundMessage({
       parentId: message.id,
@@ -54,20 +69,20 @@ export async function POST(req: NextRequest) {
       aiGenerated: true,
       senderName: 'Asistente Peskids',
       status: 'sent',
-    })
+    });
 
     const draft = intake.supportDraft
       ? await storeDraftReply(message.id, intake.supportDraft, 'web', {
           senderName: 'Asistente Peskids',
           status: 'pending',
         })
-      : { draft: null }
+      : { draft: null };
 
     if (body.mode !== 'support' && intake.stage === 'handoff') {
-      void submitLeadFromIntake(intake.profile)
+      void submitLeadFromIntake(intake.profile);
     }
 
-    void triggerN8nMessagePipeline(message.id, messageText)
+    void triggerN8nMessagePipeline(message.id, messageText);
 
     await emitEvent('message.received', {
       source: 'web',
@@ -77,9 +92,9 @@ export async function POST(req: NextRequest) {
       intake_progress: intake.progress,
       intake_missing_field: intake.missingField,
       timestamp: new Date().toISOString(),
-    })
+    });
 
-    return NextResponse.json({
+    return successJson(requestId, {
       ok: true,
       message_id: message.id,
       draft_id: draft.draft?.id ?? null,
@@ -95,11 +110,11 @@ export async function POST(req: NextRequest) {
         body.mode === 'support'
           ? 'Tu caso quedó listo para el equipo de soporte. Si requiere reprogramación o cancelación, primero lo valida una persona del equipo.'
           : intake.stage === 'handoff'
-          ? 'Gracias. Un asesor de Peskids revisará tu caso y te contactará para confirmar los siguientes pasos.'
-          : 'Te haré algunas preguntas cortas para completar tu solicitud.',
-    })
+            ? 'Gracias. Un asesor de Peskids revisará tu caso y te contactará para confirmar los siguientes pasos.'
+            : 'Te haré algunas preguntas cortas para completar tu solicitud.',
+    });
   } catch (error) {
-    console.error('Chat API error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Chat API error:', error, { request_id: requestId });
+    return errorJson(requestId, 'Internal server error', 500);
   }
 }

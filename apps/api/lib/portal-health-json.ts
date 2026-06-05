@@ -1,5 +1,9 @@
 import { HTTP_STATUS } from './constants';
-import { fetchPortalTenantRowBySlug, parsePortalServices, portalUrlReachable } from './portal-me';
+import {
+  fetchPortalTenantRowBySlug,
+  portalUrlReachable,
+  resolvePortalServicesForTenant,
+} from './portal-me';
 
 /**
  * Respuesta JSON de health para un tenant (compartida por
@@ -19,7 +23,7 @@ export async function respondPortalTenantHealth(tenantSlug: string): Promise<Res
     );
   }
 
-  const svc = parsePortalServices(lookup.row.services);
+  const svc = resolvePortalServicesForTenant(lookup.row.slug, lookup.row.services);
   const [n8n_reachable, uptime_reachable] = await Promise.all([
     portalUrlReachable(svc.n8n_url),
     portalUrlReachable(svc.uptime_url),

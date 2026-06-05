@@ -10,18 +10,34 @@ import type {
   ListResponse,
 } from './types.js';
 
+export interface GoHighLevelClientOptions {
+  timeoutMs?: number;
+  locationId?: string;
+  apiVersion?: string;
+}
+
 export class GoHighLevelClient {
   private apiKey: string;
   private baseUrl: string;
   private requestTimeout: number;
+  private locationId: string;
+  private apiVersion: string;
+  private usesLeadConnector: boolean;
 
-  constructor(apiKey: string, baseUrl = 'https://api.gohighlevel.com', timeoutMs = 30000) {
+  constructor(
+    apiKey: string,
+    baseUrl = 'https://services.leadconnectorhq.com',
+    options: GoHighLevelClientOptions = {}
+  ) {
     if (!apiKey || !apiKey.trim()) {
       throw new Error('GoHighLevel API key is required');
     }
     this.apiKey = apiKey;
     this.baseUrl = baseUrl.replace(/\/$/, '');
-    this.requestTimeout = timeoutMs;
+    this.requestTimeout = options.timeoutMs ?? 30000;
+    this.locationId = options.locationId?.trim() ?? '';
+    this.apiVersion = options.apiVersion?.trim() ?? '2021-07-28';
+    this.usesLeadConnector = this.baseUrl.includes('leadconnectorhq.com');
   }
 
   private async sleep(ms: number): Promise<void> {
@@ -68,13 +84,18 @@ export class GoHighLevelClient {
       const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
 
       try {
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.apiKey}`,
+          Accept: 'application/json',
+        };
+        if (this.usesLeadConnector) {
+          headers.Version = this.apiVersion;
+        }
+
         const response = await fetch(url, {
           method,
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.apiKey}`,
-            'Accept': 'application/json',
-          },
+          headers,
           body: body ? JSON.stringify(body) : undefined,
           signal: controller.signal,
         });
@@ -117,8 +138,18 @@ export class GoHighLevelClient {
     throw new Error('GoHighLevel API request failed after rate-limit retries');
   }
 
+  private requireLocationId(): string {
+    if (!this.locationId) {
+      throw new Error('GOHIGHLEVEL_LOCATION_ID is required for LeadConnector API calls');
+    }
+    return this.locationId;
+  }
+
   async getContacts(filter?: ListContactsFilter): Promise<ListResponse<Contact>> {
     const params = new URLSearchParams();
+    if (this.usesLeadConnector) {
+      params.append('locationId', this.requireLocationId());
+    }
     if (filter?.status) {
       params.append('status', filter.status);
     }
@@ -126,7 +157,7 @@ export class GoHighLevelClient {
       params.append('source', filter.source);
     }
     if (filter?.search) {
-      params.append('search', filter.search);
+      params.append('query', filter.search);
     }
     if (filter?.limit) {
       params.append('limit', String(filter.limit));
@@ -135,42 +166,63 @@ export class GoHighLevelClient {
       params.append('offset', String(filter.offset));
     }
 
-    const path = `/v1/contacts${params.toString() ? `?${params.toString()}` : ''}`;
-    const response = await this.request<{ data?: Contact[]; total?: number; limit?: number; offset?: number }>(
-      'GET',
-      path
-    );
+    const path = this.usesLeadConnector
+      ? `/contacts/${params.toString() ? `?${params.toString()}` : ''}`
+      : `/v1/contacts${params.toString() ? `?${params.toString()}` : ''}`;
+
+    const response = await this.request<{
+      data?: Contact[];
+      contacts?: Contact[];
+      total?: number;
+      limit?: number;
+      offset?: number;
+    }>('GET', path);
+
+    const rows = response.contacts ?? response.data ?? [];
 
     return {
-      data: response.data || [],
-      total: response.total || 0,
+      data: rows,
+      total: response.total ?? rows.length,
       limit: response.limit,
       offset: response.offset,
     };
   }
 
   async getContact(contactId: string): Promise<Contact> {
-    const response = await this.request<{ data?: Contact }>('GET', `/v1/contacts/${contactId}`);
-    if (!response.data) {
+    const path = this.usesLeadConnector
+      ? `/contacts/${contactId}?locationId=${encodeURIComponent(this.requireLocationId())}`
+      : `/v1/contacts/${contactId}`;
+    const response = await this.request<{ data?: Contact; contact?: Contact }>('GET', path);
+    const contact = response.contact ?? response.data;
+    if (!contact) {
       throw new Error(`Contact ${contactId} not found`);
     }
-    return response.data;
+    return contact;
   }
 
   async createContact(data: CreateContactRequest): Promise<Contact> {
-    const response = await this.request<{ data?: Contact }>('POST', '/v1/contacts', data);
-    if (!response.data) {
+    const payload = this.usesLeadConnector
+      ? { ...data, locationId: this.requireLocationId() }
+      : data;
+    const path = this.usesLeadConnector ? '/contacts/' : '/v1/contacts';
+    const response = await this.request<{ data?: Contact; contact?: Contact }>('POST', path, payload);
+    const contact = response.contact ?? response.data;
+    if (!contact) {
       throw new Error('Failed to create contact');
     }
-    return response.data;
+    return contact;
   }
 
   async updateContact(contactId: string, data: UpdateContactRequest): Promise<Contact> {
-    const response = await this.request<{ data?: Contact }>('PUT', `/v1/contacts/${contactId}`, data);
-    if (!response.data) {
+    const path = this.usesLeadConnector
+      ? `/contacts/${contactId}?locationId=${encodeURIComponent(this.requireLocationId())}`
+      : `/v1/contacts/${contactId}`;
+    const response = await this.request<{ data?: Contact; contact?: Contact }>('PUT', path, data);
+    const contact = response.contact ?? response.data;
+    if (!contact) {
       throw new Error(`Failed to update contact ${contactId}`);
     }
-    return response.data;
+    return contact;
   }
 
   async getTasks(contactId?: string): Promise<Task[]> {

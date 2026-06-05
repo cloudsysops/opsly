@@ -1,10 +1,10 @@
-import * as React from 'react'
-import { cn } from '@/lib/utils'
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
-type BadgeTone = 'neutral' | 'teal' | 'green' | 'amber' | 'coral' | 'violet'
+type BadgeTone = 'neutral' | 'teal' | 'green' | 'amber' | 'coral' | 'violet';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  tone?: BadgeTone
+  tone?: BadgeTone;
 }
 
 const toneClasses: Record<BadgeTone, string> = {
@@ -14,7 +14,7 @@ const toneClasses: Record<BadgeTone, string> = {
   amber: 'bg-amber-50 text-amber-900 ring-1 ring-amber-200/80',
   coral: 'bg-rose-50 text-rose-800 ring-1 ring-rose-200/80',
   violet: 'bg-violet-50 text-violet-800 ring-1 ring-violet-200/80',
-}
+};
 
 export function Badge({ className, tone = 'neutral', ...props }: BadgeProps): React.ReactElement {
   return (
@@ -26,5 +26,5 @@ export function Badge({ className, tone = 'neutral', ...props }: BadgeProps): Re
       )}
       {...props}
     />
-  )
+  );
 }

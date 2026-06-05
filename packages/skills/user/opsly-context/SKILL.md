@@ -1,4 +1,7 @@
 ---
+name: opsly-context
+description: >
+  Opsly Context Skill
 status: draft
 owner: operations
 last_review: 2026-05-24
@@ -53,6 +56,7 @@ done
 
 ## Antes de seguir
 
+0. **Modularidad:** `docs/01-development/MODULARITY-CONTRACT.md` o `node scripts/load-skills.js show opsly-modularity` — buscar `lib/` antes de crear código.
 1. **Reporta gaps**: servicios caídos, SSH por ruta incorrecta, vars vacías o cualquier desalineación visible contra `AGENTS.md`.
 2. **No ejecutes nada más** hasta que el responsable confirme el reporte inicial.
 3. Si `GITHUB_TOKEN` está vacío, consulta `docs/GITHUB-TOKEN.md`.

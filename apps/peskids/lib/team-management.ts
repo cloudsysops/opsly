@@ -1,62 +1,62 @@
-import { supabaseServer } from '@/lib/supabase'
-import { PESKIDS_APP_ORIGIN } from '@/lib/app-url'
+import { supabaseServer } from '@/lib/supabase';
+import { PESKIDS_APP_ORIGIN } from '@/lib/app-url';
 
-const TENANT_SLUG = 'peskids'
-const DEFAULT_OWNER_EMAIL = 'sierrasantiago90@gmail.com'
+const TENANT_SLUG = 'peskids';
+const DEFAULT_OWNER_EMAIL = 'sierrasantiago90@gmail.com';
 
-export type TeamRole = 'owner' | 'admin' | 'support' | 'teacher'
-export type TeamMemberStatus = 'invited' | 'active' | 'disabled'
-export type TeamInviteFlow = 'invite' | 'recovery'
+export type TeamRole = 'owner' | 'admin' | 'support' | 'teacher';
+export type TeamMemberStatus = 'invited' | 'active' | 'disabled';
+export type TeamInviteFlow = 'invite' | 'recovery';
 
 export type TeamMemberSummary = {
-  id: string
-  email: string
-  role: TeamRole
-  status: TeamMemberStatus
-  invited_by: string | null
-  user_id: string | null
-  display_name: string | null
-  created_at: string
-  updated_at: string
-}
+  id: string;
+  email: string;
+  role: TeamRole;
+  status: TeamMemberStatus;
+  invited_by: string | null;
+  user_id: string | null;
+  display_name: string | null;
+  created_at: string;
+  updated_at: string;
+};
 
 export type TeamViewData = {
-  tenant_slug: string
-  tenant_name: string
-  owner_email: string
-  members: TeamMemberSummary[]
-  warnings: string[]
-}
+  tenant_slug: string;
+  tenant_name: string;
+  owner_email: string;
+  members: TeamMemberSummary[];
+  warnings: string[];
+};
 
 export type TeamInviteResult = {
-  ok: true
-  flow: TeamInviteFlow
-  link: string
-  token: string
-  emailDeliverySkipped?: boolean
-  emailDeliveryWarning?: string
-  warning?: string
-  member: TeamMemberSummary
-}
+  ok: true;
+  flow: TeamInviteFlow;
+  link: string;
+  token: string;
+  emailDeliverySkipped?: boolean;
+  emailDeliveryWarning?: string;
+  warning?: string;
+  member: TeamMemberSummary;
+};
 
 type TenantRow = {
-  id: string
-  slug: string
-  name: string | null
-  owner_email: string | null
-}
+  id: string;
+  slug: string;
+  name: string | null;
+  owner_email: string | null;
+};
 
 type TenantMembershipRow = {
-  id: string
-  email: string
-  role: TeamRole
-  status: TeamMemberStatus
-  invited_by: string | null
-  user_id: string | null
-  metadata: Record<string, unknown> | null
-  created_at: string
-  updated_at: string
-}
+  id: string;
+  email: string;
+  role: TeamRole;
+  status: TeamMemberStatus;
+  invited_by: string | null;
+  user_id: string | null;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+  updated_at: string;
+};
 
 function escapeHtml(value: string): string {
   return value
@@ -64,65 +64,72 @@ function escapeHtml(value: string): string {
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;')
+    .replaceAll("'", '&#39;');
 }
 
 function isEmailDeliverySkipped(): boolean {
-  if (process.env.DISABLE_EMAIL_SEND === 'true') return true
-  const mode = process.env.EMAIL_DELIVERY_MODE?.trim().toLowerCase()
-  return mode === 'test' || mode === 'skip' || mode === 'off'
+  if (process.env.DISABLE_EMAIL_SEND === 'true') return true;
+  const mode = process.env.EMAIL_DELIVERY_MODE?.trim().toLowerCase();
+  return mode === 'test' || mode === 'skip' || mode === 'off';
 }
 
 function isNonFatalEmailError(err: unknown): boolean {
-  const message = err instanceof Error ? err.message : String(err)
-  const normalized = message.toLowerCase()
+  const message = err instanceof Error ? err.message : String(err);
+  const normalized = message.toLowerCase();
   return (
     normalized.includes('only send testing emails to your own email address') ||
     normalized.includes('you can only send testing emails')
-  )
+  );
 }
 
 function getPeskidsSiteUrl(): string {
-  return PESKIDS_APP_ORIGIN.replace(/\/$/, '')
+  return PESKIDS_APP_ORIGIN.replace(/\/$/, '');
 }
 
 function getLogoUrl(): string {
-  return `${getPeskidsSiteUrl()}/brand/logo-reference.png`
+  return `${getPeskidsSiteUrl()}/brand/logo-reference.png`;
 }
 
 function getFromAddress(): string {
-  const inviteFrom = process.env.RESEND_INVITE_FROM_EMAIL?.trim()
-  if (inviteFrom) return inviteFrom
-  const fromEmail = process.env.RESEND_FROM_EMAIL?.trim()
-  if (fromEmail) return fromEmail
-  const fromAddress = process.env.RESEND_FROM_ADDRESS?.trim()
-  if (fromAddress) return fromAddress
-  throw new Error('Missing required environment variable: RESEND_INVITE_FROM_EMAIL or RESEND_FROM_EMAIL')
+  const inviteFrom = process.env.RESEND_INVITE_FROM_EMAIL?.trim();
+  if (inviteFrom) return inviteFrom;
+  const fromEmail = process.env.RESEND_FROM_EMAIL?.trim();
+  if (fromEmail) return fromEmail;
+  const fromAddress = process.env.RESEND_FROM_ADDRESS?.trim();
+  if (fromAddress) return fromAddress;
+  throw new Error(
+    'Missing required environment variable: RESEND_INVITE_FROM_EMAIL or RESEND_FROM_EMAIL'
+  );
 }
 
 async function sendTeamEmail(params: {
-  to: string
-  subject: string
-  html: string
+  to: string;
+  subject: string;
+  html: string;
 }): Promise<{ skipped: boolean; warning?: string }> {
   if (isEmailDeliverySkipped()) {
-    return { skipped: true, warning: 'EMAIL_DELIVERY_MODE=test (no Resend send)' }
+    return { skipped: true, warning: 'EMAIL_DELIVERY_MODE=test (no Resend send)' };
   }
 
-  const apiKey = process.env.RESEND_API_KEY?.trim()
+  const apiKey = process.env.RESEND_API_KEY?.trim();
   if (!apiKey) {
-    return { skipped: true, warning: 'Missing RESEND_API_KEY; invite link created but email not sent' }
+    return {
+      skipped: true,
+      warning: 'Missing RESEND_API_KEY; invite link created but email not sent',
+    };
   }
 
-  let from: string
+  let from: string;
   try {
-    from = getFromAddress()
+    from = getFromAddress();
   } catch (err) {
     return {
       skipped: true,
       warning:
-        err instanceof Error ? err.message : 'Missing sender address; invite link created but email not sent',
-    }
+        err instanceof Error
+          ? err.message
+          : 'Missing sender address; invite link created but email not sent',
+    };
   }
 
   try {
@@ -138,69 +145,86 @@ async function sendTeamEmail(params: {
         subject: params.subject,
         html: params.html,
       }),
-    })
+    });
 
-    const text = await response.text()
+    const text = await response.text();
     if (!response.ok) {
       if (isNonFatalEmailError(new Error(text))) {
-        return { skipped: true, warning: text || 'Email delivery skipped (provider restriction)' }
+        return { skipped: true, warning: text || 'Email delivery skipped (provider restriction)' };
       }
       return {
         skipped: true,
         warning: text || `Email delivery failed with status ${response.status}`,
-      }
+      };
     }
 
-    return { skipped: false }
+    return { skipped: false };
   } catch (err) {
     return {
       skipped: true,
-      warning: err instanceof Error ? err.message : 'Email provider unavailable; invite link created',
-    }
+      warning:
+        err instanceof Error ? err.message : 'Email provider unavailable; invite link created',
+    };
   }
 }
 
 async function getPlatformClient(): Promise<ReturnType<typeof supabaseServer>> {
-  return supabaseServer() as ReturnType<typeof supabaseServer>
+  return supabaseServer() as ReturnType<typeof supabaseServer>;
+}
+
+async function resolveAuthUserIdByEmail(email: string): Promise<string | null> {
+  const normalized = email.trim().toLowerCase();
+  if (!normalized) return null;
+
+  try {
+    const admin = await getPlatformClient();
+    const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    if (error) return null;
+
+    const match = data.users.find((user) => user.email?.trim().toLowerCase() === normalized);
+    return match?.id ?? null;
+  } catch {
+    return null;
+  }
 }
 
 async function resolveTenantRow(): Promise<{ tenant: TenantRow | null; warnings: string[] }> {
-  const warnings: string[] = []
+  const warnings: string[] = [];
   try {
-    const client = (await getPlatformClient()) as any
-    const platform = client.schema('platform') as any
+    const client = (await getPlatformClient()) as any;
+    const platform = client.schema('platform') as any;
     const { data, error } = await platform
       .from('tenants')
       .select('id, slug, name, owner_email')
       .eq('slug', TENANT_SLUG)
       .is('deleted_at', null)
-      .maybeSingle()
+      .maybeSingle();
 
     if (error) {
-      warnings.push(error.message || 'tenant lookup failed')
-      return { tenant: null, warnings }
+      warnings.push(error.message || 'tenant lookup failed');
+      return { tenant: null, warnings };
     }
 
     if (!data) {
-      warnings.push('Peskids tenant row not found; using fallback owner email')
-      return { tenant: null, warnings }
+      warnings.push('Peskids tenant row not found; using fallback owner email');
+      return { tenant: null, warnings };
     }
 
-    return { tenant: data as TenantRow, warnings }
+    return { tenant: data as TenantRow, warnings };
   } catch (err) {
-    warnings.push(err instanceof Error ? err.message : 'Tenant lookup failed')
-    return { tenant: null, warnings }
+    warnings.push(err instanceof Error ? err.message : 'Tenant lookup failed');
+    return { tenant: null, warnings };
   }
 }
 
 function membershipFromRow(row: TenantMembershipRow): TeamMemberSummary {
-  const metadata = row.metadata ?? {}
+  const metadata = row.metadata ?? {};
   const displayName =
     typeof metadata.display_name === 'string' && metadata.display_name.trim().length > 0
       ? metadata.display_name.trim()
       : typeof metadata.full_name === 'string' && metadata.full_name.trim().length > 0
         ? metadata.full_name.trim()
-        : null
+        : null;
 
   return {
     id: row.id,
@@ -212,11 +236,15 @@ function membershipFromRow(row: TenantMembershipRow): TeamMemberSummary {
     display_name: displayName,
     created_at: row.created_at,
     updated_at: row.updated_at,
-  }
+  };
 }
 
-function ownerFallbackMember(ownerEmail: string, tenantId: string | null, tenantName: string): TeamMemberSummary {
-  const now = new Date().toISOString()
+function ownerFallbackMember(
+  ownerEmail: string,
+  tenantId: string | null,
+  tenantName: string
+): TeamMemberSummary {
+  const now = new Date().toISOString();
   return {
     id: `owner-${tenantId ?? 'peskids'}`,
     email: ownerEmail,
@@ -227,79 +255,88 @@ function ownerFallbackMember(ownerEmail: string, tenantId: string | null, tenant
     display_name: tenantName,
     created_at: now,
     updated_at: now,
-  }
+  };
 }
 
 export async function loadPeskidsTeam(): Promise<TeamViewData> {
-  const resolved = await resolveTenantRow()
-  const tenantName = resolved.tenant?.name?.trim() || 'Peskids'
-  const ownerEmail = resolved.tenant?.owner_email?.trim() || DEFAULT_OWNER_EMAIL
-  const members: TeamMemberSummary[] = []
-  const warnings = [...resolved.warnings]
+  const resolved = await resolveTenantRow();
+  const tenantName = resolved.tenant?.name?.trim() || 'Peskids';
+  const ownerEmail = resolved.tenant?.owner_email?.trim() || DEFAULT_OWNER_EMAIL;
+  const members: TeamMemberSummary[] = [];
+  const warnings = [...resolved.warnings];
 
   if (resolved.tenant) {
     try {
-      const client = (await getPlatformClient()) as any
-      const platform = client.schema('platform') as any
+      const client = (await getPlatformClient()) as any;
+      const platform = client.schema('platform') as any;
       const { data, error } = await platform
         .from('tenant_memberships')
         .select('id, email, role, status, invited_by, user_id, metadata, created_at, updated_at')
         .eq('tenant_id', resolved.tenant.id)
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: false });
 
       if (error) {
-        warnings.push(error.message || 'membership lookup failed')
+        warnings.push(error.message || 'membership lookup failed');
       } else {
         for (const row of (data ?? []) as TenantMembershipRow[]) {
-          members.push(membershipFromRow(row))
+          members.push(membershipFromRow(row));
         }
       }
     } catch (err) {
-      warnings.push(err instanceof Error ? err.message : 'membership lookup failed')
+      warnings.push(err instanceof Error ? err.message : 'membership lookup failed');
     }
   }
 
-  if (!members.some((member) => member.role === 'owner' && member.email.toLowerCase() === ownerEmail.toLowerCase())) {
-    members.unshift(ownerFallbackMember(ownerEmail, resolved.tenant?.id ?? null, tenantName))
+  if (
+    !members.some(
+      (member) => member.role === 'owner' && member.email.toLowerCase() === ownerEmail.toLowerCase()
+    )
+  ) {
+    members.unshift(ownerFallbackMember(ownerEmail, resolved.tenant?.id ?? null, tenantName));
   }
 
-  const deduped = new Map<string, TeamMemberSummary>()
+  const deduped = new Map<string, TeamMemberSummary>();
   for (const member of members) {
-    const key = `${member.email.toLowerCase()}::${member.role}`
+    const key = `${member.email.toLowerCase()}::${member.role}`;
     if (!deduped.has(key)) {
-      deduped.set(key, member)
+      deduped.set(key, member);
     }
   }
+
+  const hydratedMembers = await Promise.all(
+    Array.from(deduped.values()).map(async (member) => {
+      if (member.user_id) return member;
+      const userId = await resolveAuthUserIdByEmail(member.email);
+      if (!userId) return member;
+      return { ...member, user_id: userId };
+    })
+  );
 
   return {
     tenant_slug: TENANT_SLUG,
     tenant_name: tenantName,
     owner_email: ownerEmail,
-    members: Array.from(deduped.values()),
+    members: hydratedMembers,
     warnings,
-  }
+  };
 }
 
 function buildInviteHtml(params: {
-  displayName: string
-  role: TeamRole
-  link: string
-  loginUrl: string
-  brandName: string
-  flow: TeamInviteFlow
+  displayName: string;
+  role: TeamRole;
+  link: string;
+  loginUrl: string;
+  brandName: string;
+  flow: TeamInviteFlow;
 }): string {
-  const logoUrl = escapeHtml(getLogoUrl())
-  const safeLink = escapeHtml(params.link)
-  const safeLoginUrl = escapeHtml(params.loginUrl)
-  const safeBrandName = escapeHtml(params.brandName)
-  const safeDisplayName = escapeHtml(params.displayName)
+  const logoUrl = escapeHtml(getLogoUrl());
+  const safeLink = escapeHtml(params.link);
+  const safeLoginUrl = escapeHtml(params.loginUrl);
+  const safeBrandName = escapeHtml(params.brandName);
+  const safeDisplayName = escapeHtml(params.displayName);
   const roleLabel =
-    params.role === 'admin'
-      ? 'Administrador'
-      : params.role === 'support'
-        ? 'Soporte'
-        : 'Profesor'
-  const flowLabel = params.flow === 'recovery' ? 'Definir contraseña' : 'Activar acceso'
+    params.role === 'admin' ? 'Administrador' : params.role === 'support' ? 'Soporte' : 'Profesor';
+  const flowLabel = params.flow === 'recovery' ? 'Definir contraseña' : 'Activar acceso';
   return `<!DOCTYPE html>
   <html lang="es"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>${safeBrandName}</title></head>
   <body style="margin:0;background:#eef7fb;color:#0f172a;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;">
@@ -348,21 +385,21 @@ function buildInviteHtml(params: {
         </table>
       </td></tr>
     </table>
-  </body></html>`
+  </body></html>`;
 }
 
 async function createAuthLink(params: {
-  email: string
-  name: string
-  role: TeamRole
-  flow: TeamInviteFlow
+  email: string;
+  name: string;
+  role: TeamRole;
+  flow: TeamInviteFlow;
 }): Promise<{ link: string; token: string }> {
-  const admin = supabaseServer()
+  const admin = supabaseServer();
   const userData: Record<string, string> = {
     full_name: params.name,
     tenant_slug: TENANT_SLUG,
     role: params.role,
-  }
+  };
   const { data, error } = await (admin.auth.admin.generateLink as any)({
     type: params.flow,
     email: params.email,
@@ -373,20 +410,20 @@ async function createAuthLink(params: {
           ? `${getPeskidsSiteUrl()}/auth/recovery`
           : `${getPeskidsSiteUrl()}/invite`,
     },
-  })
+  });
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error(error.message);
   }
 
-  const actionLink = data.properties?.action_link
+  const actionLink = data.properties?.action_link;
   if (!actionLink) {
-    throw new Error('generateLink did not return action_link')
+    throw new Error('generateLink did not return action_link');
   }
 
-  const token = new URL(actionLink).searchParams.get('token')
+  const token = new URL(actionLink).searchParams.get('token');
   if (!token) {
-    throw new Error('Could not parse invite token from action_link')
+    throw new Error('Could not parse invite token from action_link');
   }
 
   return {
@@ -395,33 +432,33 @@ async function createAuthLink(params: {
         ? `${getPeskidsSiteUrl()}/auth/recovery?token=${encodeURIComponent(token)}`
         : `${getPeskidsSiteUrl()}/invite/${encodeURIComponent(token)}?email=${encodeURIComponent(params.email)}`,
     token,
-  }
+  };
 }
 
 export async function invitePeskidsTeamMember(params: {
-  email: string
-  name: string
-  role: Exclude<TeamRole, 'owner'>
+  email: string;
+  name: string;
+  role: Exclude<TeamRole, 'owner'>;
 }): Promise<TeamInviteResult> {
-  const resolved = await resolveTenantRow()
-  const tenantId = resolved.tenant?.id ?? null
-  const tenantName = resolved.tenant?.name?.trim() || 'Peskids'
-  const ownerEmail = resolved.tenant?.owner_email?.trim() || DEFAULT_OWNER_EMAIL
+  const resolved = await resolveTenantRow();
+  const tenantId = resolved.tenant?.id ?? null;
+  const tenantName = resolved.tenant?.name?.trim() || 'Peskids';
+  const ownerEmail = resolved.tenant?.owner_email?.trim() || DEFAULT_OWNER_EMAIL;
 
-  const displayName = params.name.trim().length > 0 ? params.name.trim() : params.email.trim()
+  const displayName = params.name.trim().length > 0 ? params.name.trim() : params.email.trim();
   const existingMember =
-    tenantId !== null ? await findExistingMember(tenantId, params.email) : null
+    tenantId !== null ? await findExistingMember(tenantId, params.email) : null;
   const flow: TeamInviteFlow =
-    existingMember && existingMember.status === 'active' ? 'recovery' : 'invite'
+    existingMember && existingMember.status === 'active' ? 'recovery' : 'invite';
 
   const authLink = await createAuthLink({
     email: params.email,
     name: displayName,
     role: params.role,
     flow,
-  })
+  });
 
-  const loginUrl = `${getPeskidsSiteUrl()}/admin/login`
+  const loginUrl = `${getPeskidsSiteUrl()}/admin/login`;
   const html = buildInviteHtml({
     displayName,
     role: params.role,
@@ -429,18 +466,16 @@ export async function invitePeskidsTeamMember(params: {
     loginUrl,
     brandName: tenantName,
     flow,
-  })
+  });
 
   const sendResult = await sendTeamEmail({
     to: params.email,
     subject:
-      flow === 'recovery'
-        ? 'Tu acceso de Peskids está listo'
-        : `Invitación para ${tenantName}`,
+      flow === 'recovery' ? 'Tu acceso de Peskids está listo' : `Invitación para ${tenantName}`,
     html,
-  })
+  });
 
-  const now = new Date().toISOString()
+  const now = new Date().toISOString();
   const member: TeamMemberSummary = existingMember
     ? {
         ...existingMember,
@@ -459,11 +494,11 @@ export async function invitePeskidsTeamMember(params: {
         display_name: displayName,
         created_at: now,
         updated_at: now,
-      }
+      };
 
   if (tenantId) {
     try {
-      await upsertMemberRow(tenantId, member, displayName, ownerEmail)
+      await upsertMemberRow(tenantId, member, displayName, ownerEmail);
     } catch {
       // No bloqueamos el envío de correo si la sincronización de memberships falla.
     }
@@ -482,7 +517,7 @@ export async function invitePeskidsTeamMember(params: {
       : {}),
     ...(sendResult.warning ? { warning: sendResult.warning } : {}),
     member,
-  }
+  };
 }
 
 async function findExistingMember(
@@ -490,19 +525,19 @@ async function findExistingMember(
   email: string
 ): Promise<TeamMemberSummary | null> {
   try {
-    const client = (await getPlatformClient()) as any
-    const platform = client.schema('platform') as any
+    const client = (await getPlatformClient()) as any;
+    const platform = client.schema('platform') as any;
     const { data, error } = await platform
       .from('tenant_memberships')
       .select('id, email, role, status, invited_by, user_id, metadata, created_at, updated_at')
       .eq('tenant_id', tenantId)
       .ilike('email', email)
-      .maybeSingle()
+      .maybeSingle();
 
-    if (error || !data) return null
-    return membershipFromRow(data as TenantMembershipRow)
+    if (error || !data) return null;
+    return membershipFromRow(data as TenantMembershipRow);
   } catch {
-    return null
+    return null;
   }
 }
 
@@ -512,16 +547,16 @@ async function upsertMemberRow(
   displayName: string,
   invitedBy: string
 ): Promise<void> {
-  const client = (await getPlatformClient()) as any
-  const platform = client.schema('platform') as any
+  const client = (await getPlatformClient()) as any;
+  const platform = client.schema('platform') as any;
   const metadata = {
     display_name: displayName,
     invited_via: 'peskids-admin-panel',
     invited_by: invitedBy,
     tenant_slug: TENANT_SLUG,
-  }
+  };
 
-  const existing = await findExistingMember(tenantId, member.email)
+  const existing = await findExistingMember(tenantId, member.email);
   if (existing) {
     await platform
       .from('tenant_memberships')
@@ -533,7 +568,7 @@ async function upsertMemberRow(
         updated_at: new Date().toISOString(),
       })
       .eq('tenant_id', tenantId)
-      .eq('email', member.email)
+      .eq('email', member.email);
   } else {
     await platform.from('tenant_memberships').insert({
       tenant_id: tenantId,
@@ -542,6 +577,6 @@ async function upsertMemberRow(
       status: member.status,
       invited_by: invitedBy,
       metadata,
-    })
+    });
   }
 }

@@ -58,9 +58,15 @@ export class ValidationMetricsStore {
       console.warn('[ValidationMetricsStore] Supabase credentials not configured, metrics disabled');
       this.supabase = null;
     } else {
-      this.supabase = createClient(url, key, {
-        auth: { persistSession: false },
-      });
+      try {
+        this.supabase = createClient(url, key, {
+          auth: { persistSession: false },
+        });
+      } catch (err) {
+        // Node.js 20 can throw when realtime websocket is unavailable.
+        console.warn('[ValidationMetricsStore] Supabase client unavailable, metrics disabled:', err);
+        this.supabase = null;
+      }
     }
   }
 

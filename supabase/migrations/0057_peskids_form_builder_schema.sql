@@ -83,8 +83,10 @@ CREATE POLICY "authenticated_read_forms" ON peskids.forms
   FOR SELECT
   USING (
     tenant_slug IN (
-      SELECT tenant_slug FROM public.tenant_memberships
-      WHERE user_id = auth.uid() AND status = 'active'
+      SELECT t.slug
+      FROM platform.tenant_memberships tm
+      INNER JOIN platform.tenants t ON t.id = tm.tenant_id
+      WHERE tm.user_id = auth.uid() AND tm.status = 'active'
     )
   );
 
@@ -94,8 +96,10 @@ CREATE POLICY "authenticated_read_form_fields" ON peskids.form_fields
     form_id IN (
       SELECT id FROM peskids.forms
       WHERE tenant_slug IN (
-        SELECT tenant_slug FROM public.tenant_memberships
-        WHERE user_id = auth.uid() AND status = 'active'
+        SELECT t.slug
+        FROM platform.tenant_memberships tm
+        INNER JOIN platform.tenants t ON t.id = tm.tenant_id
+        WHERE tm.user_id = auth.uid() AND tm.status = 'active'
       )
     )
   );
@@ -104,16 +108,20 @@ CREATE POLICY "authenticated_read_form_submissions" ON peskids.form_submissions
   FOR SELECT
   USING (
     tenant_slug IN (
-      SELECT tenant_slug FROM public.tenant_memberships
-      WHERE user_id = auth.uid() AND status = 'active'
+      SELECT t.slug
+      FROM platform.tenant_memberships tm
+      INNER JOIN platform.tenants t ON t.id = tm.tenant_id
+      WHERE tm.user_id = auth.uid() AND tm.status = 'active'
     )
   );
 
 CREATE POLICY "authenticated_write_form_submissions" ON peskids.form_submissions
   FOR INSERT WITH CHECK (
     tenant_slug IN (
-      SELECT tenant_slug FROM public.tenant_memberships
-      WHERE user_id = auth.uid() AND status = 'active'
+      SELECT t.slug
+      FROM platform.tenant_memberships tm
+      INNER JOIN platform.tenants t ON t.id = tm.tenant_id
+      WHERE tm.user_id = auth.uid() AND tm.status = 'active'
     )
   );
 

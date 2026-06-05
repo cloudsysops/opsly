@@ -139,7 +139,10 @@ export class ApprovalGateWorker {
           const dim = emb.dimension;
           logWorkerInfo('approval-gate', 'Embedding stored', { dims: dim });
           if (dim !== VERTEX_TEXT_EMBEDDING_004_DIM) {
-logWorkerWarn('approval-gate', 'Embedding dimension mismatch', { expected: VERTEX_TEXT_EMBEDDING_004_DIM, got: dim });
+            logWorkerWarn('approval-gate', 'Embedding dimension mismatch', {
+              expected: VERTEX_TEXT_EMBEDDING_004_DIM,
+              got: dim,
+            });
           }
         }
       } catch (e) {
@@ -165,7 +168,9 @@ export function startApprovalGateWorker(connection: object): {
       vertex = new VertexAIClient();
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
-      logWorkerWarn('approval-gate', 'VERTEX_AI_EMBED_ENABLED but client init failed', { message: msg });
+      logWorkerWarn('approval-gate', 'VERTEX_AI_EMBED_ENABLED but client init failed', {
+        message: msg,
+      });
     }
   }
   const gate = new ApprovalGateWorker(supabase, client, vertex);

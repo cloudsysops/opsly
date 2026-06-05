@@ -1,0 +1,189 @@
+# Panini Lab — build GHCR + deploy VPS after CI passes on main.
+# Mirrors the deploy-peskids.yml pattern.
+#
+# Secrets needed (repository or production environment):
+#   VPS_USER, VPS_SSH_KEY, VPS_SSH_HOST (or VPS_HOST)
+#   TAILSCALE_AUTHKEY (recommended for SSH via tailnet)
+#   DISCORD_WEBHOOK_URL (optional — failure alerts)
+#
+# Manual: Actions → Deploy Panini Lab → Run workflow
+
+name: Deploy Panini Lab
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-panini-lab-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.sha.outputs.sha }}
+    steps:
+      - id: sha
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+  build-and-push:
+    needs: gate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.gate.outputs.sha }}
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Panini Lab image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/panini-lab/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-panini-lab:latest
+            ghcr.io/cloudsysops/intcloudsysops-panini-lab:${{ needs.gate.outputs.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build summary
+        run: |
+          echo "Image: ghcr.io/cloudsysops/intcloudsysops-panini-lab:${{ needs.gate.outputs.sha }}"
+          echo "Dashboard: https://panini.op-sly.com/dashboard"
+
+  deploy-vps:
+    needs: [gate, build-and-push]
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      packages: read
+    env:
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.gate.outputs.sha }}
+
+      - name: Validate deploy secrets
+        env:
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_SSH_HOST: ${{ secrets.VPS_SSH_HOST }}
+        run: |
+          set -euo pipefail
+          missing=0
+          [ -n "${VPS_USER:-}" ] || { echo "Missing VPS_USER" >&2; missing=1; }
+          [ -n "${VPS_SSH_KEY:-}" ] || { echo "Missing VPS_SSH_KEY" >&2; missing=1; }
+          if [ -z "${VPS_SSH_HOST:-}" ] && [ -z "${VPS_HOST:-}" ]; then
+            echo "Missing VPS_SSH_HOST or VPS_HOST" >&2; missing=1
+          fi
+          [ "$missing" -eq 0 ]
+
+      - name: Connect Tailscale for SSH
+        if: env.TAILSCALE_AUTHKEY != ''
+        uses: tailscale/github-action@v2
+        with:
+          authkey: ${{ env.TAILSCALE_AUTHKEY }}
+          version: 1.94.2
+
+      - name: Deploy Panini Lab to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          GITHUB_DEPLOY_TOKEN: ${{ github.token }}
+          GITHUB_DEPLOY_ACTOR: ${{ github.actor }}
+          PANINI_IMAGE_TAG: ${{ needs.gate.outputs.sha }}
+        with:
+          host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          timeout: 5m
+          envs: GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR,PANINI_IMAGE_TAG
+          script: |
+            set -euo pipefail
+            cd /opt/opsly
+            git fetch origin main && git checkout main && git pull --ff-only
+
+            docker logout ghcr.io 2>/dev/null || true
+            echo "$GITHUB_DEPLOY_TOKEN" | docker login ghcr.io -u "$GITHUB_DEPLOY_ACTOR" --password-stdin
+
+            export PANINI_IMAGE_TAG
+
+            doppler run --project ops-intcloudsysops --config prd -- \
+              docker compose -p panini-lab -f infra/docker-compose.panini-lab.yml pull
+
+            docker rm -f panini-lab 2>/dev/null || true
+
+            doppler run --project ops-intcloudsysops --config prd -- \
+              docker compose -p panini-lab -f infra/docker-compose.panini-lab.yml up -d
+
+            cd infra
+            doppler run --project ops-intcloudsysops --config prd -- \
+              docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d traefik app admin portal
+            cd ..
+
+            sleep 8
+            for i in 1 2 3 4 5; do
+              if curl -sf http://127.0.0.1:3005/dashboard >/dev/null 2>&1; then
+                echo "✅ panini-lab localhost:3005 OK (intento $i)"
+                break
+              fi
+              echo "Intento $i/5 — esperando..."
+              sleep 10
+            done
+
+            docker compose -f infra/docker-compose.panini-lab.yml ps
+
+      - name: Public health check
+        run: |
+          set -euo pipefail
+          for i in 1 2 3 4 5; do
+            if curl -sfL "https://panini.op-sly.com/dashboard" | grep -q "Panini Lab\|MUNDIAL"; then
+              echo "✅ panini.op-sly.com OK (intento $i)"
+              exit 0
+            fi
+            echo "Intento $i/5..."
+            sleep 15
+          done
+          echo "::warning::Health check inconclusive (DNS/TLS puede tardar en propagar)"
+          exit 0
+
+      - name: Notify Discord on failure
+        if: failure()
+        continue-on-error: true
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then exit 0; fi
+          curl -fsS -X POST "$DISCORD_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n \
+              --arg url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+              '{embeds:[{title:"❌ Deploy Panini Lab fallido",color:15158332,fields:[{name:"Run",value:$url}]}]}')"

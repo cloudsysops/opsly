@@ -1,7 +1,8 @@
 import type { NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { jsonError, jsonOk } from '@/lib/api-response';
 import { HTTP_STATUS } from '@/lib/constants';
+import { runTrustedPortalDalForPathSlug, PORTAL_READ_ACCESS } from '@/lib/portal-tenant-dal';
+import { getServiceClient } from '@/lib/supabase';
 
 interface FormAnalytics {
   formId: string;
@@ -21,122 +22,179 @@ interface StatsResponse {
   totalErrors: number;
 }
 
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
+
+async function fetchFormsList(
+  supabase: ReturnType<typeof getServiceClient>,
+  tenantSlug: string
+): Promise<Array<{ id: string; form_id: string; title: string }> | Response> {
+  const { data: forms, error: formsError } = await supabase
+    .from('peskids.forms')
+    .select('id, form_id, title')
+    .eq('tenant_slug', tenantSlug)
+    .eq('status', 'active');
+
+  if (formsError) {
+    console.error('Failed to fetch forms:', formsError);
+    return jsonError('Failed to fetch forms', HTTP_STATUS.INTERNAL_ERROR);
   }
-  return value;
+
+  return forms || [];
 }
 
-function getSupabaseClient() {
-  const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
-  const serviceKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
-  return createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
+async function fetchFormAnalytics(
+  supabase: ReturnType<typeof getServiceClient>,
+  tenantSlug: string,
+  formIds: string[]
+): Promise<
+  Array<{
+    form_id: string;
+    submissions_count: number;
+    unique_users: number;
+    avg_completion_time_seconds: number;
+    abandonment_rate: number;
+    error_count: number;
+  }>
+> {
+  if (formIds.length === 0) {
+    return [];
+  }
+
+  const { data: analyticsData, error: analyticsError } = await supabase
+    .from('peskids.form_analytics')
+    .select(
+      'form_id, submissions_count, unique_users, avg_completion_time_seconds, abandonment_rate, error_count'
+    )
+    .eq('tenant_slug', tenantSlug)
+    .in('form_id', formIds);
+
+  return !analyticsError && analyticsData ? analyticsData : [];
+}
+
+async function fetchLastSubmissions(
+  supabase: ReturnType<typeof getServiceClient>,
+  tenantSlug: string
+): Promise<Map<string, string>> {
+  const { data: rawSubmissions } = await supabase
+    .from('peskids.form_submissions')
+    .select('form_id, completed_at')
+    .eq('tenant_slug', tenantSlug)
+    .eq('status', 'submitted')
+    .order('completed_at', { ascending: false })
+    .limit(1);
+
+  type Row = { form_id: string; completed_at: string };
+  const submissions = rawSubmissions as Row[] | null;
+
+  const lastSubmissionMap = new Map<string, string>();
+  submissions?.forEach((sub) => {
+    if (sub.form_id && sub.completed_at && !lastSubmissionMap.has(sub.form_id)) {
+      lastSubmissionMap.set(sub.form_id, sub.completed_at);
+    }
   });
+
+  return lastSubmissionMap;
+}
+
+interface FormAnalyticsData {
+  form_id: string;
+  submissions_count: number;
+  unique_users: number;
+  avg_completion_time_seconds: number;
+  abandonment_rate: number;
+  error_count: number;
+}
+
+function getAnalyticsValue<K extends keyof FormAnalyticsData>(
+  analytics: FormAnalyticsData | undefined,
+  key: K,
+  defaultValue: number
+): number {
+  return analytics && analytics[key] ? (analytics[key] as number) : defaultValue;
+}
+
+function buildFormAnalyticObject(
+  form: { id: string; form_id: string; title: string },
+  analytics: FormAnalyticsData | undefined,
+  lastSubmissionMap: Map<string, string>
+): FormAnalytics {
+  return {
+    formId: form.form_id,
+    formTitle: form.title,
+    submissionCount: getAnalyticsValue(analytics, 'submissions_count', 0),
+    abandonnmentRate: getAnalyticsValue(analytics, 'abandonment_rate', 0),
+    avgCompletionTimeSeconds: getAnalyticsValue(analytics, 'avg_completion_time_seconds', 0),
+    errorCount: getAnalyticsValue(analytics, 'error_count', 0),
+    uniqueUsers: getAnalyticsValue(analytics, 'unique_users', 0),
+    lastSubmissionAt: lastSubmissionMap.get(form.id),
+  };
+}
+
+function calculateStats(formsWithAnalytics: FormAnalytics[]): StatsResponse {
+  const totalSubmissions = formsWithAnalytics.reduce((sum, f) => sum + f.submissionCount, 0);
+  const totalForms = formsWithAnalytics.length;
+  const avgCompletionTime =
+    formsWithAnalytics.length > 0
+      ? Math.round(
+          formsWithAnalytics.reduce((sum, f) => sum + f.avgCompletionTimeSeconds, 0) / totalForms
+        )
+      : 0;
+  const totalErrors = formsWithAnalytics.reduce((sum, f) => sum + f.errorCount, 0);
+
+  return {
+    totalSubmissions,
+    totalForms,
+    avgCompletionTime,
+    totalErrors,
+  };
 }
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ tenantSlug: string }> }
 ): Promise<Response> {
-  try {
-    const { tenantSlug } = await params;
+  const { tenantSlug } = await params;
 
-    if (!tenantSlug) {
-      return jsonError('Missing tenant slug', HTTP_STATUS.BAD_REQUEST);
+  return runTrustedPortalDalForPathSlug(
+    request,
+    tenantSlug,
+    async () => {
+      try {
+        if (!tenantSlug) {
+          return jsonError('Missing tenant slug', HTTP_STATUS.BAD_REQUEST);
+        }
+
+        const supabase = getServiceClient();
+
+    const formsResult = await fetchFormsList(supabase, tenantSlug);
+    if (formsResult instanceof Response) {
+      return formsResult;
     }
+    const forms = formsResult;
 
-    const supabase = getSupabaseClient();
+    const formIds = forms.map((f) => f.id);
+    const [formAnalytics, lastSubmissionMap] = await Promise.all([
+      fetchFormAnalytics(supabase, tenantSlug, formIds),
+      fetchLastSubmissions(supabase, tenantSlug),
+    ]);
 
-    // Fetch forms for this tenant
-    const { data: forms, error: formsError } = await supabase
-      .from('peskids.forms')
-      .select('id, form_id, title')
-      .eq('tenant_slug', tenantSlug)
-      .eq('status', 'active');
-
-    if (formsError) {
-      console.error('Failed to fetch forms:', formsError);
-      return jsonError('Failed to fetch forms', HTTP_STATUS.INTERNAL_ERROR);
-    }
-
-    // Fetch analytics for these forms
-    const formIds = forms?.map((f) => f.id) || [];
-    let formAnalytics: Array<{
-      form_id: string;
-      submissions_count: number;
-      unique_users: number;
-      avg_completion_time_seconds: number;
-      abandonment_rate: number;
-      error_count: number;
-    }> = [];
-
-    if (formIds.length > 0) {
-      const { data: analyticsData, error: analyticsError } = await supabase
-        .from('peskids.form_analytics')
-        .select('form_id, submissions_count, unique_users, avg_completion_time_seconds, abandonment_rate, error_count')
-        .eq('tenant_slug', tenantSlug)
-        .in('form_id', formIds);
-
-      if (!analyticsError && analyticsData) {
-        formAnalytics = analyticsData;
-      }
-    }
-
-    // Fetch latest submissions for each form
-    const { data: submissions, error: submissionsError } = await supabase
-      .from('peskids.form_submissions')
-      .select('form_id, completed_at')
-      .eq('tenant_slug', tenantSlug)
-      .eq('status', 'submitted')
-      .order('completed_at', { ascending: false })
-      .limit(1);
-
-    const lastSubmissionMap = new Map<string, string>();
-    submissions?.forEach((sub) => {
-      if (sub.form_id && sub.completed_at && !lastSubmissionMap.has(sub.form_id)) {
-        lastSubmissionMap.set(sub.form_id, sub.completed_at);
-      }
-    });
-
-    // Map analytics to forms
     const analyticsMap = new Map(formAnalytics.map((a) => [a.form_id, a]));
 
-    const formsWithAnalytics: FormAnalytics[] = (forms || []).map((form) => {
+    const formsWithAnalytics: FormAnalytics[] = forms.map((form) => {
       const analytics = analyticsMap.get(form.id);
-      return {
-        formId: form.form_id,
-        formTitle: form.title,
-        submissionCount: analytics?.submissions_count || 0,
-        abandonnmentRate: analytics?.abandonment_rate || 0,
-        avgCompletionTimeSeconds: analytics?.avg_completion_time_seconds || 0,
-        errorCount: analytics?.error_count || 0,
-        uniqueUsers: analytics?.unique_users || 0,
-        lastSubmissionAt: lastSubmissionMap.get(form.id),
-      };
+      return buildFormAnalyticObject(form, analytics, lastSubmissionMap);
     });
 
-    // Calculate stats
-    const stats: StatsResponse = {
-      totalSubmissions: formsWithAnalytics.reduce((sum, f) => sum + f.submissionCount, 0),
-      totalForms: formsWithAnalytics.length,
-      avgCompletionTime: formsWithAnalytics.length > 0
-        ? Math.round(
-            formsWithAnalytics.reduce((sum, f) => sum + f.avgCompletionTimeSeconds, 0) /
-              formsWithAnalytics.length
-          )
-        : 0,
-      totalErrors: formsWithAnalytics.reduce((sum, f) => sum + f.errorCount, 0),
-    };
+    const stats = calculateStats(formsWithAnalytics);
 
-    return jsonOk({
-      forms: formsWithAnalytics,
-      stats,
-    });
-  } catch (error) {
-    console.error('Analytics endpoint error:', error);
-    return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
-  }
+        return jsonOk({
+          forms: formsWithAnalytics,
+          stats,
+        });
+      } catch (error) {
+        console.error('Analytics endpoint error:', error);
+        return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
+      }
+    },
+    PORTAL_READ_ACCESS
+  );
 }

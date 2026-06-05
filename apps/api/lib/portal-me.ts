@@ -1,4 +1,5 @@
-import { PORTAL_URL_PROBE } from './constants';
+import { CACHE_TTL, PORTAL_URL_PROBE } from './constants';
+import { getCache, setCache } from './redis-cache';
 import { getServiceClient } from './supabase';
 import type { Json, Tenant, TenantMembership } from './supabase/types';
 
@@ -44,6 +45,42 @@ export function parsePortalServices(services: Json): {
   return { n8n_url, uptime_url, n8n_user, n8n_password };
 }
 
+export function resolvePortalServicesForTenant(
+  tenantSlug: string,
+  services: Json
+): {
+  n8n_url: string | null;
+  uptime_url: string | null;
+  n8n_user: string | null;
+  n8n_password: string | null;
+} {
+  const parsed = parsePortalServices(services);
+
+  if (tenantSlug === 'peskids') {
+    return {
+      ...parsed,
+      n8n_url: 'https://n8n-peskids.op-sly.com',
+      uptime_url: 'https://uptime-peskids.op-sly.com',
+    };
+  }
+
+  return parsed;
+}
+
+export function sanitizePublicPortalServices(
+  tenantSlug: string,
+  services: Json
+): {
+  n8n_url: string | null;
+  uptime_url: string | null;
+} {
+  const resolved = resolvePortalServicesForTenant(tenantSlug, services);
+  return {
+    n8n_url: resolved.n8n_url,
+    uptime_url: resolved.uptime_url,
+  };
+}
+
 export function parsePortalMode(meta: unknown): PortalMode | null {
   const raw = readString(meta, 'mode') ?? readString(meta, 'portal_mode');
   if (raw === 'developer' || raw === 'managed' || raw === 'security_defense') {
@@ -56,14 +93,30 @@ export async function portalUrlReachable(url: string | null): Promise<boolean> {
   if (url === null || url.length === 0) {
     return false;
   }
+
+  // Cache reachability to avoid redundant HTTP probes on every dashboard load.
+  // Bolt Optimization: reduces external network calls and dashboard latency.
+  const cacheKey = `reachable:${url}`;
+  const cached = await getCache<boolean>(cacheKey);
+  if (cached !== null) {
+    return cached;
+  }
+
   try {
     const res = await fetch(url, {
       method: 'GET',
       redirect: 'follow',
       signal: AbortSignal.timeout(PORTAL_URL_PROBE.TIMEOUT_MS),
     });
-    return res.status > 0 && res.status < PORTAL_URL_PROBE.STATUS_EXCLUSIVE_MAX;
+    const reachable = res.status > 0 && res.status < PORTAL_URL_PROBE.STATUS_EXCLUSIVE_MAX;
+
+    // Background cache set
+    void setCache(cacheKey, reachable, CACHE_TTL.SHORT);
+
+    return reachable;
   } catch {
+    // Also cache failures briefly to prevent hammering an offline service
+    void setCache(cacheKey, false, CACHE_TTL.SHORT);
     return false;
   }
 }

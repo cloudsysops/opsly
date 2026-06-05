@@ -1,24 +1,57 @@
 #!/usr/bin/env bash
+# Pre-push: structure + heavy checks scoped to what is being pushed.
+
 set -euo pipefail
 
-if ! command -v npm >/dev/null 2>&1; then
-  for candidate in \
-    /usr/local/opt/node@20/bin \
-    /opt/homebrew/opt/node@20/bin
-  do
-    if [ -d "$candidate" ]; then
-      export PATH="$candidate:$PATH"
-      break
-    fi
-  done
-fi
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
 
-echo "🚀 Validando antes de push..."
+# shellcheck source=scripts/hooks/hook-bootstrap.sh
+source "$ROOT/scripts/hooks/hook-bootstrap.sh"
+
+opsly_hook_bootstrap_runtime || {
+  echo "❌ Could not resolve node/npm/npx for pre-push" >&2
+  exit 1
+}
+opsly_hook_require npm
+opsly_hook_require node
+
+echo "🚀 pre-push validation..."
+
 npm run validate-structure --silent
 bash scripts/hooks/structure-guard.sh
-echo "🧪 Validando contexto y contratos..."
-npm run validate-openapi --silent
-# npm run validate-skills --silent  # Skipped due to tsx socket env issue; test-skills-manifest validates manifests
-npm run test-skills-manifest --silent
-python3 -m json.tool context/system_state.json > /dev/null
+
+PUSHED_FILES="$(opsly_hook_push_changed_files)"
+
+if [[ -z "$PUSHED_FILES" ]]; then
+  echo "ℹ️ No file diff detected for push; skipping scoped checks."
+  echo "✅ Listo para push"
+  exit 0
+fi
+
+if opsly_hook_files_match "$PUSHED_FILES" '^(apps/|lib/|packages/)'; then
+  echo "📋 type-check (monorepo — apps/lib/packages touched)"
+  npm run type-check --silent
+fi
+
+if opsly_hook_files_match "$PUSHED_FILES" '^(apps/api|apps/mcp|apps/orchestrator|lib/|packages/)'; then
+  echo "🧪 validate-openapi"
+  npm run validate-openapi --silent
+fi
+
+if opsly_hook_files_match "$PUSHED_FILES" '^skills/'; then
+  echo "📦 validate-skills + test-skills-manifest"
+  npm run validate-skills --silent
+  npm run test-skills-manifest --silent
+fi
+
+if opsly_hook_files_match "$PUSHED_FILES" '^(tools/|scripts/)'; then
+  echo "📦 test-skills-manifest (scripts/tools touched)"
+  npm run test-skills-manifest --silent || true
+fi
+
+if [[ -f context/system_state.json || -f runtime/context/system_state.json ]]; then
+  python3 -m json.tool "$(bash scripts/hooks/resolve-system-state.sh)" >/dev/null
+fi
+
 echo "✅ Listo para push"

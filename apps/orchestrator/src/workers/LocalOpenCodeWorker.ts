@@ -2,7 +2,12 @@ import { Job, Worker } from 'bullmq';
 import { promises as fsp } from 'fs';
 import * as path from 'path';
 import { getAgentServiceRegistry } from '../lib/agent/agent-service-registry.js';
-import { logWorkerLifecycle, logWorkerInfo, logWorkerWarn, logWorkerError } from '../observability/worker-log.js';
+import {
+  logWorkerLifecycle,
+  logWorkerInfo,
+  logWorkerWarn,
+  logWorkerError,
+} from '../observability/worker-log.js';
 import { getWorkerConcurrency } from '../worker-concurrency.js';
 import { createValidationOrchestrator } from '../lib/validation/validation-orchestrator.js';
 import { writeValidationGuard } from '../lib/validation/validation-utils.js';
@@ -100,7 +105,7 @@ async function processLocalOpenCodeJob(
         response = await fetch('https://api.v0.dev/generate', {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${vercelToken}`,
+            Authorization: `Bearer ${vercelToken}`,
             'Content-Type': 'application/json',
             'User-Agent': 'Opsly-OpenCode-Worker/1.0',
           },
@@ -120,7 +125,11 @@ async function processLocalOpenCodeJob(
         }
 
         const backoffMs = Math.pow(2, retryCount) * 1000; // exponential backoff: 2s, 4s
-        logWorkerWarn('local-opencode', 'Retrying after backoff', { retry: retryCount, maxRetries, backoffMs });
+        logWorkerWarn('local-opencode', 'Retrying after backoff', {
+          retry: retryCount,
+          maxRetries,
+          backoffMs,
+        });
         await new Promise((resolve) => setTimeout(resolve, backoffMs));
       }
     }
@@ -136,7 +145,9 @@ async function processLocalOpenCodeJob(
 
     // Handle authentication errors
     if (response!.status === 401 || response!.status === 403) {
-      logWorkerWarn('local-opencode', 'Authentication failed, falling back to Claude', { status: response!.status });
+      logWorkerWarn('local-opencode', 'Authentication failed, falling back to Claude', {
+        status: response!.status,
+      });
       return await fallbackToClaudeViaGateway(
         promptContent,
         jobId,
@@ -148,20 +159,14 @@ async function processLocalOpenCodeJob(
 
     // Handle other HTTP errors
     if (!response!.ok) {
-      throw new Error(
-        `Vercel v0 API error: ${response!.status} ${response!.statusText}`
-      );
+      throw new Error(`Vercel v0 API error: ${response!.status} ${response!.statusText}`);
     }
 
     const result = (await response!.json()) as any;
 
     // Extract code from response (v0 API returns different formats)
-    let generatedCode =
-      result.code ||
-      result.component ||
-      result.content ||
-      result.generated_code ||
-      '';
+    const generatedCode =
+      result.code || result.component || result.content || result.generated_code || '';
 
     if (!generatedCode) {
       throw new Error('Empty response from Vercel v0 API');
@@ -215,7 +220,10 @@ ${codeBlock}
       3
     );
 
-    logWorkerInfo('local-opencode', 'Validation decision', { action: decision.action, reason: decision.reason });
+    logWorkerInfo('local-opencode', 'Validation decision', {
+      action: decision.action,
+      reason: decision.reason,
+    });
 
     // Write validation guard to prevent double-commits
     await writeValidationGuard(jobId, decision.action, path.join(cursorDir, '.validation'));
@@ -248,8 +256,7 @@ ${codeBlock}
         validationOrchestrator
       );
     } catch (fallbackErr) {
-      const fallbackMsg =
-        fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
+      const fallbackMsg = fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
       logWorkerError('local-opencode', 'Claude fallback also failed', { error: fallbackMsg });
 
       return {
@@ -288,9 +295,7 @@ async function fallbackToClaudeViaGateway(
   });
 
   if (!response.ok) {
-    throw new Error(
-      `Claude fallback error: ${response.status} ${response.statusText}`
-    );
+    throw new Error(`Claude fallback error: ${response.status} ${response.statusText}`);
   }
 
   const result = (await response.json()) as any;
@@ -323,11 +328,7 @@ ${responseText}
     3
   );
 
-  await writeValidationGuard(
-    jobId,
-    decision.action,
-    path.join(cursorDir, '.validation')
-  );
+  await writeValidationGuard(jobId, decision.action, path.join(cursorDir, '.validation'));
 
   return {
     success: true,

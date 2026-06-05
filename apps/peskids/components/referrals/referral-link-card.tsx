@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { useMemo, useState } from 'react'
-import { Copy, CheckCheck, Gift } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { useMemo, useState } from 'react';
+import { Copy, CheckCheck, Gift } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 function formatCurrency(cents: number): string {
   return new Intl.NumberFormat('es-CO', {
     style: 'currency',
     currency: 'COP',
     maximumFractionDigits: 0,
-  }).format(cents / 100)
+  }).format(cents / 100);
 }
 
 export function ReferralLinkCard({
@@ -17,24 +17,24 @@ export function ReferralLinkCard({
   referralCode,
   discountCents = 20000,
 }: {
-  referralLink: string
-  referralCode: string
-  discountCents?: number
+  referralLink: string;
+  referralCode: string;
+  discountCents?: number;
 }): React.ReactElement {
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState(false);
   const shareText = useMemo(
     () =>
       `Hola, te comparto mi link de Peskids para clase de prueba: ${referralLink}. Si te inscribes, también me ayudas a acumular descuento.`,
     [referralLink]
-  )
+  );
 
   async function copyLink(): Promise<void> {
     try {
-      await navigator.clipboard.writeText(referralLink)
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 1800)
+      await navigator.clipboard.writeText(referralLink);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
     } catch {
-      setCopied(false)
+      setCopied(false);
     }
   }
 
@@ -81,10 +81,14 @@ export function ReferralLinkCard({
 
       <div className="mt-4 flex flex-wrap gap-2">
         <Button type="button" onClick={() => void copyLink()} variant="primary">
-          {copied ? <CheckCheck className="h-4 w-4" aria-hidden /> : <Copy className="h-4 w-4" aria-hidden />}
+          {copied ? (
+            <CheckCheck className="h-4 w-4" aria-hidden />
+          ) : (
+            <Copy className="h-4 w-4" aria-hidden />
+          )}
           {copied ? 'Copiado' : 'Copiar link'}
         </Button>
       </div>
     </div>
-  )
+  );
 }
