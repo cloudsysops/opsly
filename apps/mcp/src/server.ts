@@ -31,6 +31,8 @@ import { logViewerTool } from './tools/log-viewer.tool.js';
 import { gitStatusLogTool } from './tools/git-status-log.tool.js';
 import { npmRunTool } from './tools/npm-run.tool.js';
 import { rgCliTool } from './tools/rg-cli.tool.js';
+import { sigmaHarnessTools } from './tools/sigma-harness.js';
+import { patternCatalogTools } from './tools/pattern-catalog.js';
 import type { ToolContext, ToolDefinition } from './types/index.js';
 
 interface RegisteredTool {
@@ -105,6 +107,10 @@ export const TOOL_REQUIRED_SCOPES: Record<string, string> = {
   'git_status_log': 'metrics:read',
   'npm_run': 'agents:write',
   'rg_cli': 'metrics:read',
+  'sigma:search_rules': 'metrics:read',
+  'sigma:start_decision': 'agents:write',
+  'sigma:submit_review': 'agents:write',
+  'sigma:get_decision': 'metrics:read',
 };
 
 export type CallToolOptions = {
@@ -221,6 +227,7 @@ export function getAllToolDefinitions(): ToolDefinition<unknown, unknown>[] {
     gitStatusLogTool,
     npmRunTool,
     rgCliTool,
+    ...sigmaHarnessTools,
     ...superOrchestratorTools,
     ...runtimeSessionsTools,
     ...brainTools,

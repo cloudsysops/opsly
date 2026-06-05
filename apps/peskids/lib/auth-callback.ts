@@ -10,7 +10,7 @@ export function resolveLoginPath(nextPath: string): string {
 export function resolvePostAuthPath(next: string | null, user: User): string {
   if (next) return next.startsWith('/') ? next : '/admin';
   const role = (user.user_metadata as Record<string, unknown>)?.role as string | undefined;
-  if (role === 'family') return '/familias/submissions';
+  if (role === 'family' || role === 'parent') return '/familias/submissions';
   if (role === 'teacher') return '/teacher/dashboard';
   if (role === 'support') return '/support/dashboard';
   return '/admin';

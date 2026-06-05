@@ -1,6 +1,17 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { mapDockerPsJsonLine } from '../docker-ps-list';
+import * as redisCache from '../redis-cache';
+import { listDockerContainers, mapDockerPsJsonLine } from '../docker-ps-list';
+import { execa } from 'execa';
+
+vi.mock('../redis-cache', () => ({
+  getCache: vi.fn(),
+  setCache: vi.fn(),
+}));
+
+vi.mock('execa', () => ({
+  execa: vi.fn(),
+}));
 
 describe('mapDockerPsJsonLine', () => {
   it('parses a typical docker ps json line (capital keys)', () => {
@@ -38,5 +49,64 @@ describe('mapDockerPsJsonLine', () => {
   it('returns null for invalid json', () => {
     expect(mapDockerPsJsonLine('not json')).toBeNull();
     expect(mapDockerPsJsonLine('')).toBeNull();
+  });
+});
+
+describe('listDockerContainers with caching', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('returns cached data if available', async () => {
+    const cachedResult = { ok: true, containers: [{ id: 'cached' }], truncated: false };
+    vi.mocked(redisCache.getCache).mockResolvedValue(cachedResult);
+
+    const result = await listDockerContainers();
+
+    expect(result).toEqual(cachedResult);
+    expect(execa).not.toHaveBeenCalled();
+  });
+
+  it('calls docker ps and caches result if not in cache', async () => {
+    vi.mocked(redisCache.getCache).mockResolvedValue(null);
+    vi.mocked(execa).mockResolvedValue({
+      exitCode: 0,
+      stdout: JSON.stringify({ ID: 'new', Names: 'new-container', Image: 'img', State: 'running' }),
+      stderr: '',
+    } as unknown);
+
+    const result = await listDockerContainers();
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.containers[0].id).toBe('new');
+    }
+    expect(execa).toHaveBeenCalledWith(
+      'docker',
+      expect.arrayContaining(['ps', '-a']),
+      expect.objectContaining({
+        timeout: 2000,
+      })
+    );
+    expect(redisCache.setCache).toHaveBeenCalledWith(
+      'docker:ps_list',
+      expect.anything(),
+      expect.anything()
+    );
+  });
+
+  it('handles docker failure', async () => {
+    vi.mocked(redisCache.getCache).mockResolvedValue(null);
+    vi.mocked(execa).mockResolvedValue({
+      exitCode: 1,
+      stderr: 'docker daemon down',
+    } as unknown);
+
+    const result = await listDockerContainers();
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toBe('docker daemon down');
+    }
   });
 });

@@ -3,6 +3,7 @@ import { PESKIDS_APP_ORIGIN } from '@/lib/app-url'
 
 const TENANT_SLUG = 'peskids'
 const DEFAULT_FROM_EMAIL = 'Peskids <no-reply@peskids.op-sly.com>'
+const FAMILY_DASHBOARD_PATH = '/familias/submissions'
 
 type FamilyAccessEligibility = {
   email: string
@@ -203,7 +204,7 @@ async function createFamilyAccessLink(params: {
         tenant_slug: TENANT_SLUG,
         role: 'family',
       },
-      redirectTo: `${getPeskidsSiteUrl()}/auth/callback?next=%2Ffamilias%2Fsubmissions`,
+      redirectTo: `${getPeskidsSiteUrl()}/auth/callback?next=${encodeURIComponent(FAMILY_DASHBOARD_PATH)}`,
     },
   })
 

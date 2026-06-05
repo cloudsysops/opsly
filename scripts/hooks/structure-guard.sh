@@ -23,7 +23,9 @@ is_rule_definition_file() {
     [[ "$file" == "scripts/sync-references.sh" ]] || \
     [[ "$file" == "docs/00-architecture/hooks-system.md" ]] || \
     [[ "$file" == "docs/STRUCTURE-GUARDRAILS.md" ]] || \
-    [[ "$file" == "config/docs-root-allowlist.json" ]]
+    [[ "$file" == "config/docs-root-allowlist.json" ]] || \
+    [[ "$file" == "config/root-whitelist.json" ]] || \
+    [[ "$file" == "scripts/lib/root-whitelist-layout.js" ]]
 }
 
 check_forbidden_path() {
@@ -93,6 +95,63 @@ check_docs_root_staged() {
     echo "💡 config/docs-root-allowlist.json solo para hubs en raíz de docs/; stubs en docs/stubs/"
     return 1
   fi
+  return 0
+}
+
+check_root_pollution_staged() {
+  echo ""
+  echo "🧹 Verificando contaminación en raíz (solo staged)..."
+
+  local staged_root
+  staged_root="$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null | rg '^[^/]+$' || true)"
+  if [[ -z "$staged_root" ]]; then
+    echo "  ✅ Sin archivos staged en raíz"
+    return 0
+  fi
+
+  if [[ ! -f "$WHITELIST_FILE" ]]; then
+    echo "⚠️ Falta $WHITELIST_FILE; omitiendo check de contaminación"
+    return 0
+  fi
+
+  local allowed_files
+  allowed_files="$(node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync('$WHITELIST_FILE','utf8'));console.log((d.allowed_files||[]).join('\n'))")"
+
+  local pollution_errors=0
+  local blocked=""
+
+  while IFS= read -r file; do
+    [[ -z "$file" ]] && continue
+
+    if echo "$allowed_files" | rg -x "$file" >/dev/null 2>&1; then
+      echo "  ✅ $file (allowlist)"
+      continue
+    fi
+
+    local reason=""
+    case "$file" in
+      *.py) reason="scripts Python deben vivir en tools/ o scripts/, no en raíz" ;;
+      *.png|*.jpg|*.jpeg|*.webp|*.gif) reason="imágenes temporales → runtime/tmp/ o docs/artifacts/" ;;
+      dump.rdb) reason="volcado Redis local; no commitear" ;;
+      .env*) reason="secretos locales; solo .env.example y .env.local-workers.example están allowlisted" ;;
+      *.json) reason="JSON en raíz debe estar en config/root-whitelist.json allowed_files" ;;
+    esac
+
+    if [[ -n "$reason" ]]; then
+      blocked="$blocked"$'\n'"  ❌ $file — $reason"
+      ((pollution_errors++))
+    fi
+  done <<< "$staged_root"
+
+  if (( pollution_errors > 0 )); then
+    echo ""
+    echo "🚫 CONTAMINACIÓN EN RAÍZ (staged):"
+    echo "$blocked"
+    echo ""
+    echo "💡 Mover a runtime/tmp/, .archived/, o carpeta dueña antes de git add."
+    return 1
+  fi
+
   return 0
 }
 
@@ -292,6 +351,7 @@ for forbidden in logs tenants letsencrypt agents workspaces cli; do
   fi
 done
 
+check_root_pollution_staged || ((errors++))
 check_root_whitelist || ((errors++))
 check_docs_root_staged || ((errors++))
 check_root_folders_whitelist || ((errors++))

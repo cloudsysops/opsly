@@ -15,9 +15,13 @@
     "cap:sync": "npx cap sync",
     "cap:ios": "npx cap sync && npx cap open ios",
     "cap:android": "npx cap sync && npx cap open android",
+    "cap:android:build": "bash ../../scripts/peskids-cap-android.sh",
+    "cap:android:studio": "bash ../../scripts/peskids-cap-android.sh --open",
     "cap:build": "next build && npx cap sync"
   },
   "dependencies": {
+    "@intcloudsysops/prompt-guard": "*",
+    "@intcloudsysops/openwa": "*",
     "@capacitor/android": "^8.3.4",
     "@capacitor/app": "^8.1.0",
     "@capacitor/cli": "^8.3.4",
@@ -47,6 +51,7 @@
     "eslint": "^9.39.4",
     "eslint-config-next": "^15.5.18",
     "postcss": "^8.5.13",
+    "vitest": "^4.1.8",
     "tailwindcss": "^3.4.19",
     "tailwindcss-animate": "^1.0.7"
   }

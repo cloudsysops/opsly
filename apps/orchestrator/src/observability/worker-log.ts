@@ -29,6 +29,7 @@ export type WorkerName =
   | 'local-agents'
   | 'cloudsysops_agents'
   | 'defense_audit'
+  | 'sigma_decision'
   | 'openclaw-planner'
   | 'openclaw-skeptic'
   | 'api_factory'
@@ -47,7 +48,8 @@ export type WorkerName =
   | 'cost-check'
   | 'claude-code'
   | 'validation'
-  | 'memory-writer';
+  | 'memory-writer'
+  | 'content-video';
 
 export function extractJobContext(job: Job): {
   task_id?: string;

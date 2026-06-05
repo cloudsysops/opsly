@@ -2,6 +2,7 @@ import { createClient } from 'redis';
 import { z } from 'zod';
 import { jsonError, serverErrorLogged, tryRoute } from '../../../../../lib/api-response';
 import { HTTP_STATUS } from '../../../../../lib/constants';
+import { sanitizePublicPortalServices } from '../../../../../lib/portal-me';
 import { getServiceClient } from '../../../../../lib/supabase';
 import type { Json } from '../../../../../lib/supabase/types';
 import { formatZodError } from '../../../../../lib/validation';
@@ -13,15 +14,22 @@ const querySchema = z.object({
 const RATE_WINDOW_SECONDS = 60;
 const RATE_MAX = 30;
 
+const RATE_LIMIT_LUA = `
+local current = redis.call('INCR', KEYS[1])
+if current == 1 then
+  redis.call('EXPIRE', KEYS[1], ARGV[1])
+end
+return current
+`;
+
 type RedisClient = ReturnType<typeof createClient>;
 
 let redisConnect: Promise<RedisClient> | null = null;
 
-async function getRedis(): Promise<RedisClient> {
+async function getRedis(): Promise<RedisClient | null> {
   const url = process.env.REDIS_URL?.trim();
-  if (!url) {
-    throw new Error('Missing REDIS_URL');
-  }
+  if (!url) return null;
+
   if (!redisConnect) {
     redisConnect = (async (): Promise<RedisClient> => {
       const c = createClient({ url });
@@ -34,6 +42,11 @@ async function getRedis(): Promise<RedisClient> {
 }
 
 function clientIp(request: Request): string {
+  const cfIp = request.headers.get('cf-connecting-ip');
+  if (cfIp) {
+    return cfIp.trim();
+  }
+
   const forwarded = request.headers.get('x-forwarded-for');
   if (forwarded) {
     const first = forwarded.split(',')[0]?.trim();
@@ -56,20 +69,23 @@ export function GET(request: Request): Promise<Response> {
       return jsonError(formatZodError(parsed.error), HTTP_STATUS.BAD_REQUEST);
     }
 
-    let redis: RedisClient;
-    try {
-      redis = await getRedis();
-    } catch {
-      return jsonError('Rate limiting unavailable', HTTP_STATUS.SERVICE_UNAVAILABLE);
-    }
-
     const ip = clientIp(request);
     const key = `ratelimit:public-status:${ip}`;
+    let count = 0;
 
-    const count = await redis.incr(key);
-    if (count === 1) {
-      await redis.expire(key, RATE_WINDOW_SECONDS);
+    try {
+      const redis = await getRedis();
+      if (redis) {
+        const result = await redis.sendCommand(['EVAL', RATE_LIMIT_LUA, '1', key, String(RATE_WINDOW_SECONDS)]);
+        count = typeof result === 'number' ? result : Number(result);
+      } else {
+        // Sentinel: Fail-secure if Redis (the rate limit backend) is unavailable.
+        return jsonError('Service temporarily unavailable', HTTP_STATUS.SERVICE_UNAVAILABLE);
+      }
+    } catch (e) {
+      return serverErrorLogged('public status rate limit:', e);
     }
+
     if (count > RATE_MAX) {
       return jsonError('Too many requests', HTTP_STATUS.TOO_MANY_REQUESTS);
     }
@@ -77,7 +93,7 @@ export function GET(request: Request): Promise<Response> {
     const { data: tenant, error } = await getServiceClient()
       .schema('platform')
       .from('tenants')
-      .select('status, progress, services')
+      .select('status, progress, services, slug')
       .eq('owner_email', parsed.data.email)
       .is('deleted_at', null)
       .order('created_at', { ascending: false })
@@ -95,7 +111,7 @@ export function GET(request: Request): Promise<Response> {
     return Response.json({
       status: tenant.status,
       progress: tenant.progress,
-      services: tenant.services as Json,
+      services: sanitizePublicPortalServices(tenant.slug, tenant.services as Json),
     });
   });
 }

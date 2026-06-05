@@ -1,7 +1,9 @@
 {
   "name": "intcloudsysops",
   "private": true,
-  "packageManager": "npm@10.5.0",
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.9.7"
+  },
   "workspaces": [
     "apps/*",
     "apps/notebooklm-agent",
@@ -29,6 +31,8 @@
     "obsidian:file-index": "node scripts/update-obsidian-file-index.mjs",
     "obsidian:sync": "bash scripts/obsidian-ide-sync.sh",
     "obsidian:check": "npm run obsidian:file-index && npm run validate-structure",
+    "sigma:install": "bash scripts/install-sigma-rules.sh",
+    "sigma:smoke": "bash scripts/sigma-harness-smoke.sh",
     "validate-skills": "npm run validate-skills --prefix packages/skills/manifest",
     "test-skills-manifest": "npm test --prefix packages/skills/manifest",
     "skills:list": "node scripts/load-skills.js list",
@@ -113,8 +117,6 @@
     "layer:deploy": "bash scripts/deploy-layer.sh",
     "peskids:cap:android": "bash scripts/peskids-cap-android.sh",
     "peskids:cap:android:open": "bash scripts/peskids-cap-android.sh --open",
-    "peskids:cap:android": "bash scripts/peskids-cap-android.sh",
-    "peskids:cap:android:open": "bash scripts/peskids-cap-android.sh --open",
     "superagents:install": "bash scripts/install-superagents-stack.sh",
     "superagents:up": "bash scripts/superagents-up.sh",
     "superagents:doctor": "bash scripts/superagents-doctor.sh",
@@ -124,8 +126,12 @@
     "opsly:git-sync": "bash scripts/git-sync-repo.sh",
     "opsly:repos:status": "bash scripts/opsly-repo-align.sh --status",
     "opsly:repos:align": "bash scripts/opsly-repo-align.sh --local --vps --branch main --vps-reset",
+    "postinstall": "cd lib/content-studio && npm run build 2>/dev/null || true",
     "prepare": "husky",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "patterns:install": "bash scripts/install-patterns.sh --with-sigma",
+    "patterns:validate": "bash scripts/install-patterns.sh",
+    "patterns:list": "bash scripts/list-patterns.sh"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
@@ -155,7 +161,8 @@
     "prettier": "^3.8.3",
     "turbo": "^2.9.14",
     "typescript": "^5.9.3",
-    "yaml": "^2.9.0"
+    "yaml": "^2.9.0",
+    "twilio": "^4.0.0"
   },
   "config": {
     "commitizen": {
@@ -207,8 +214,10 @@
     "@next/eslint-plugin-next": "15.5.18",
     "@supabase/supabase-js": "^2.106.0",
     "@supabase/ssr": "^0.6.1",
+    "vitest": "4.1.8",
+    "@vitest/coverage-v8": "4.1.8",
     "tar": "^7.5.15",
-    "undici": "^6.24.0",
+    "undici": "^7.25.0",
     "mermaid": "^11.4.0",
     "next": "15.5.18",
     "qs": "6.15.2",

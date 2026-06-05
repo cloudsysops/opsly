@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { jsonError, jsonOk } from '@/lib/api-response';
 import { HTTP_STATUS } from '@/lib/constants';
+import { getServiceClient } from '@/lib/supabase';
 
 interface FormField {
   id: string;
@@ -33,22 +33,6 @@ interface Form {
   updatedAt: string;
 }
 
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value;
-}
-
-function getSupabaseClient() {
-  const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
-  const serviceKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
-  return createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-}
-
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ formId: string }> }
@@ -60,11 +44,12 @@ export async function GET(
       return jsonError('Missing form ID', HTTP_STATUS.BAD_REQUEST);
     }
 
-    const supabase = getSupabaseClient();
+    const supabase = getServiceClient();
 
     // Get form
     const { data: form, error: formError } = await supabase
-      .schema('peskids').from('forms')
+      .schema('peskids')
+      .from('forms')
       .select('id, form_id, tenant_slug, title, description, status, created_at, updated_at')
       .eq('form_id', formId)
       .single();
@@ -75,7 +60,8 @@ export async function GET(
 
     // Get form fields
     const { data: fields, error: fieldsError } = await supabase
-      .schema('peskids').from('form_fields')
+      .schema('peskids')
+      .from('form_fields')
       .select('field_id, field_type, label, required, options, order')
       .eq('form_id', formId)
       .order('order', { ascending: true });

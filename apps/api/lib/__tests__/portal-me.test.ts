@@ -6,6 +6,7 @@ import {
   portalUrlReachable,
   readPortalTenantSlugFromUser,
   resolvePortalServicesForTenant,
+  sanitizePublicPortalServices,
 } from '../portal-me';
 import * as redisCacheMod from '../redis-cache';
 import * as supabaseMod from '../supabase';
@@ -90,6 +91,33 @@ describe('resolvePortalServicesForTenant', () => {
       uptime_url: 'https://uptime.acme',
       n8n_user: null,
       n8n_password: null,
+    });
+  });
+});
+
+describe('sanitizePublicPortalServices', () => {
+  it('omits sensitive credentials and internal ports', () => {
+    const services = {
+      n8n: 'https://n8n.acme',
+      uptime: 'https://uptime.acme',
+      n8n_user: 'admin',
+      n8n_password: 'secret-password',
+      mcp_port: 1234,
+      context_builder_port: 5678,
+    };
+    expect(sanitizePublicPortalServices('acme', services)).toEqual({
+      n8n_url: 'https://n8n.acme',
+      uptime_url: 'https://uptime.acme',
+    });
+  });
+
+  it('still uses Peskids canonical URLs', () => {
+    const services = {
+      n8n_password: 'secret-password',
+    };
+    expect(sanitizePublicPortalServices('peskids', services)).toEqual({
+      n8n_url: 'https://n8n-peskids.op-sly.com',
+      uptime_url: 'https://uptime-peskids.op-sly.com',
     });
   });
 });

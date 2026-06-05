@@ -10,9 +10,20 @@ describe('peskidsLeadBodySchema', () => {
       class_modality: 'llanogrande',
       neighborhood: 'Llanogrande',
       grade_interested: 'K-5',
-      referral_source: 'Friend',
+      referral_source: 'Referral',
     });
     expect(parsed.success).toBe(true);
+
+    const parsedWebsite = peskidsLeadBodySchema.safeParse({
+      name: 'Maria Lopez',
+      email: 'maria@example.com',
+      phone: '555-1234',
+      class_modality: 'llanogrande',
+      neighborhood: 'Llanogrande',
+      grade_interested: 'K-5',
+      referral_source: 'Website',
+    });
+    expect(parsedWebsite.success).toBe(true);
   });
 
   it('rejects invalid grade', () => {

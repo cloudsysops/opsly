@@ -1,6 +1,12 @@
 import { escapeHtml, getInviteFromEmail, sendHtmlEmail } from './email';
 import { isEmailDeliverySkipped, isNonFatalEmailDeliveryError } from './email/delivery-mode';
 import { getServiceClient } from './supabase';
+import {
+  buildTenantSiteRoutingConfig,
+  getPortalInviteBranding,
+  loadTenantProfile,
+  resolveIncubatedTenantSiteUrl,
+} from '@intcloudsysops/tenant-profile';
 import { resolveTenantSiteTarget } from '../../../lib/runtime/src/tenant-site-routing';
 
 export type PortalInviteParams = {
@@ -134,32 +140,17 @@ export function getPortalSiteUrl(): string {
   });
 }
 
-function getTenantSiteUrl(slug: string): string {
-  const portalSiteUrl = getPortalSiteUrl();
-  const peskidsSiteUrl =
-    process.env.NEXT_PUBLIC_PESKIDS_SITE_URL?.trim() ??
-    process.env.PESKIDS_SITE_URL?.trim() ??
-    getSiteUrlFromEnv({
-      envName: 'NEXT_PUBLIC_PESKIDS_SITE_URL',
-      localPort: 3004,
-      prodSubdomain: 'peskids',
-      prodFallback: 'https://peskids.op-sly.com',
-    });
+async function getTenantSiteUrl(slug: string): Promise<string> {
+  const profile = await loadTenantProfile(slug);
+  if (profile) {
+    return resolveIncubatedTenantSiteUrl(profile);
+  }
+  const routing = await buildTenantSiteRoutingConfig(getPortalSiteUrl());
+  return resolveTenantSiteTarget(slug, routing).siteUrl;
+}
 
-  return resolveTenantSiteTarget(slug, {
-    portal: {
-      siteUrl: portalSiteUrl,
-      loginPath: '/login',
-    },
-    tenantRules: [
-      {
-        tenantSlug: 'peskids',
-        siteUrl: peskidsSiteUrl,
-        loginPath: '/login',
-        staffLoginPath: '/admin/login',
-      },
-    ],
-  }).siteUrl;
+async function getTenantSiteRouting() {
+  return buildTenantSiteRoutingConfig(getPortalSiteUrl());
 }
 
 function parseInviteTokenFromActionLink(actionLink: string): string | null {
@@ -229,7 +220,7 @@ async function generateInviteLink(
   mode?: 'developer' | 'managed'
 ): Promise<PortalInviteLinkResult> {
   const admin = getServiceClient();
-  const tenantBase = getTenantSiteUrl(slug);
+  const tenantBase = await getTenantSiteUrl(slug);
 
   const userData: Record<string, string> = {
     full_name: name,
@@ -278,30 +269,24 @@ export async function sendPortalInvitationForTenant(
     params.mode
   );
 
-  const siteUrl = getTenantSiteUrl(params.slug);
-  const logoUrl = params.slug === 'peskids' ? `${siteUrl}/brand/logo-reference.png` : null;
-  const homeUrl = resolveTenantSiteTarget(params.slug, {
-    portal: {
-      siteUrl: getPortalSiteUrl(),
-      loginPath: '/login',
-    },
-    tenantRules: [
-      {
-        tenantSlug: 'peskids',
-        siteUrl,
-        loginPath: '/login',
-        staffLoginPath: '/admin/login',
-      },
-    ],
-  }).loginUrl;
-  const brandName = params.slug === 'peskids' ? 'Peskids' : 'Opsly';
+  const siteUrl = await getTenantSiteUrl(params.slug);
+  const profile = await loadTenantProfile(params.slug);
+  const routing = await getTenantSiteRouting();
+  const homeUrl = resolveTenantSiteTarget(params.slug, routing).loginUrl;
+  const branding = profile
+    ? getPortalInviteBranding(profile, siteUrl)
+    : {
+        brandName: params.name,
+        logoUrl: null as string | null,
+        emailSubject: `Tu plataforma ${params.name} está lista 🚀`,
+      };
   const html = buildPortalInviteHtml(
     params.name,
     params.name,
     activateUrl,
     homeUrl,
-    brandName,
-    logoUrl
+    branding.brandName,
+    branding.logoUrl
   );
 
   let emailDeliverySkipped = isEmailDeliverySkipped();
@@ -312,10 +297,7 @@ export async function sendPortalInvitationForTenant(
     try {
       await sendHtmlEmail({
         to: params.email,
-        subject:
-          params.slug === 'peskids'
-            ? 'Tu acceso al panel de Peskids está listo'
-            : `Tu plataforma ${params.name} está lista 🚀`,
+        subject: branding.emailSubject,
         html,
         from: getInviteFromEmail(),
       });

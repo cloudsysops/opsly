@@ -2,9 +2,15 @@
  * Líneas JSON en stdout para agregación (mismo espíritu que orchestrator job-log).
  */
 export interface GatewayLogFields {
-  event: 'llm_call_complete' | 'llm_call_error';
+  event:
+    | 'llm_call_complete'
+    | 'llm_call_error'
+    | 'gateway_transcribe_complete'
+    | 'gateway_transcribe_error';
   tenant_slug: string;
   request_id: string;
+  media_type?: string;
+  message?: string;
   model_used?: string;
   tokens_input?: number;
   tokens_output?: number;

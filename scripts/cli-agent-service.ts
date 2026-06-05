@@ -5,6 +5,7 @@ import { spawn } from 'node:child_process';
 import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { guardLlmTextPrompt } from '@intcloudsysops/prompt-guard';
 
 type ExecuteRequest = {
   job_id?: string;
@@ -32,6 +33,7 @@ const allowedRoot = resolve(process.env.OPSLY_CLI_AGENT_ALLOWED_CWD_PREFIX || re
 const cwd = resolve(process.env.OPSLY_CLI_AGENT_CWD || repoRoot);
 const dryRun = process.env.OPSLY_CLI_AGENT_DRY_RUN === '1';
 const executeToken = process.env.OPSLY_CLI_AGENT_TOKEN || '';
+const bindHost = process.env.OPSLY_CLI_AGENT_BIND?.trim() || '127.0.0.1';
 let inFlightJobId: string | null = null;
 
 function positiveInteger(value: string | undefined, fallback: number): number {
@@ -382,7 +384,13 @@ app.post('/execute', async (req, res) => {
       return;
     }
 
-    const prompt = buildPrompt({ ...body, job_id: jobId });
+    const guarded = guardLlmTextPrompt(promptContent(body));
+    if (!guarded.ok) {
+      res.status(guarded.status).json({ success: false, job_id: jobId, error: guarded.error });
+      return;
+    }
+
+    const prompt = buildPrompt({ ...body, job_id: jobId, prompt_content: guarded.prompt });
 
     if (dryRun) {
       res.json({
@@ -424,8 +432,8 @@ app.post('/execute', async (req, res) => {
   }
 });
 
-app.listen(port, '0.0.0.0', () => {
-  console.log(`[${agent}] CLI agent service listening on http://127.0.0.1:${port}`);
+app.listen(port, bindHost, () => {
+  console.log(`[${agent}] CLI agent service listening on http://${bindHost}:${port}`);
   console.log(`[${agent}] cwd=${cwd}`);
   console.log(`[${agent}] dryRun=${dryRun}`);
 });

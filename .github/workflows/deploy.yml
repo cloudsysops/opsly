@@ -156,6 +156,18 @@ jobs:
             NEXT_PUBLIC_SUPPORT_EMAIL=${{ secrets.NEXT_PUBLIC_SUPPORT_EMAIL }}
             NEXT_PUBLIC_PLATFORM_DOMAIN=${{ secrets.PLATFORM_DOMAIN }}
 
+      - name: Build and push ICSO marketing image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/icso/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-icso:latest
+            ghcr.io/cloudsysops/intcloudsysops-icso:${{ github.sha }}
+          build-args: |
+            NEXT_PUBLIC_SITE_URL=https://intcloudsysops.com
+
       - name: Build and push LLM Gateway image
         uses: docker/build-push-action@v5
         with:
@@ -177,6 +189,7 @@ jobs:
             ghcr.io/cloudsysops/intcloudsysops-orchestrator:${{ github.sha }}
 
       - name: Build and push Hermes image
+        continue-on-error: true
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -305,6 +318,18 @@ jobs:
             NEXT_PUBLIC_SUPPORT_EMAIL=${{ secrets.NEXT_PUBLIC_SUPPORT_EMAIL }}
             NEXT_PUBLIC_PLATFORM_DOMAIN=${{ steps.staging_domain.outputs.domain }}
 
+      - name: Build and push ICSO marketing image (staging)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/icso/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-icso:staging
+            ghcr.io/cloudsysops/intcloudsysops-icso:${{ github.sha }}
+          build-args: |
+            NEXT_PUBLIC_SITE_URL=https://intcloudsysops.com
+
       - name: Build and push LLM Gateway image (staging)
         uses: docker/build-push-action@v5
         with:
@@ -326,6 +351,7 @@ jobs:
             ghcr.io/cloudsysops/intcloudsysops-orchestrator:${{ github.sha }}
 
       - name: Build and push Hermes image (staging)
+        continue-on-error: true
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -480,10 +506,10 @@ jobs:
             echo "$GITHUB_DEPLOY_TOKEN" | docker login ghcr.io -u "$GITHUB_DEPLOY_ACTOR" --password-stdin
 
             echo "Pulling staging images..."
-            docker compose --env-file "$DEPLOY_PATH/.env" -f docker-compose.platform.yml pull traefik app admin portal prometheus node-exporter || true
+            docker compose --env-file "$DEPLOY_PATH/.env" -f docker-compose.platform.yml pull traefik app admin portal icso prometheus node-exporter || true
             docker compose --env-file "$DEPLOY_PATH/.env" -f docker-compose.platform.yml pull mcp llm-gateway orchestrator hermes context-builder || true
 
-            docker compose --env-file "$DEPLOY_PATH/.env" -f docker-compose.platform.yml up -d --no-deps --force-recreate traefik app admin portal prometheus node-exporter
+            docker compose --env-file "$DEPLOY_PATH/.env" -f docker-compose.platform.yml up -d --no-deps --force-recreate traefik app admin portal icso prometheus node-exporter
             docker compose --env-file "$DEPLOY_PATH/.env" -f docker-compose.platform.yml up -d --no-deps --force-recreate mcp llm-gateway orchestrator hermes context-builder || true
 
             echo "Esperando Traefik (staging)..."
@@ -678,12 +704,12 @@ jobs:
             fi
             # Core runtime must always deploy. Optional services are best-effort.
             echo "Pulling core services (required)..."
-            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull traefik app admin portal prometheus node-exporter
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull traefik app admin portal icso prometheus node-exporter
             echo "Pulling optional services (best-effort)..."
             docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull mcp llm-gateway orchestrator hermes context-builder || true
 
             # --force-recreate: evita réplicas app (deploy.replicas: 2) quedando en Created mientras otras siguen Up.
-            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps --force-recreate traefik app admin portal prometheus node-exporter
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps --force-recreate traefik app admin portal icso prometheus node-exporter
             # Optional services: no bloquear deploy si falta imagen/tag.
             docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps --force-recreate mcp llm-gateway orchestrator hermes context-builder || true
 

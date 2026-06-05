@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { Input, PasswordInput } from '@/components/ui/input';
+import { SkipLink } from '@/components/ui/accessibility';
 import {
   isValidPortalDemoLogin,
   PORTAL_DEMO_COOKIE,
@@ -171,12 +173,7 @@ export default function LoginPage(): ReactElement {
       id="main-content"
       className="ops-auth-backdrop flex min-h-screen flex-col items-center justify-center px-4 py-12"
     >
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-10 focus:rounded-sm focus:bg-ops-green focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-ops-bg"
-      >
-        Saltar al formulario
-      </a>
+      <SkipLink href="#login-form">Saltar al formulario</SkipLink>
       <div className="relative w-full max-w-sm space-y-8">
         <div className="text-center">
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-ops-gray">Opsly</p>
@@ -188,6 +185,7 @@ export default function LoginPage(): ReactElement {
           </p>
         </div>
         <form
+          id="login-form"
           onSubmit={(e) => void onSubmit(e)}
           className="space-y-4 rounded-lg border border-ops-border/80 bg-ops-surface/60 p-6 shadow-xl shadow-black/30 backdrop-blur-sm"
           aria-busy={loading}
@@ -239,7 +237,7 @@ export default function LoginPage(): ReactElement {
             >
               Email
             </label>
-            <input
+            <Input
               id="email"
               name="email"
               type="email"
@@ -247,7 +245,7 @@ export default function LoginPage(): ReactElement {
               required
               value={email}
               onChange={(ev) => setEmail(ev.target.value)}
-              className="input-terminal-caret w-full rounded-sm border border-ops-border bg-ops-bg/80 px-3 py-2.5 text-sm text-neutral-100 outline-none transition-colors focus:border-ops-green focus:ring-2 focus:ring-ops-green/30"
+              className="input-terminal-caret bg-ops-bg/80"
             />
           </div>
           <div>
@@ -257,15 +255,14 @@ export default function LoginPage(): ReactElement {
             >
               Contraseña
             </label>
-            <input
+            <PasswordInput
               id="password"
               name="password"
-              type="password"
               autoComplete="current-password"
               required
               value={password}
               onChange={(ev) => setPassword(ev.target.value)}
-              className="input-terminal-caret w-full rounded-sm border border-ops-border bg-ops-bg/80 px-3 py-2.5 text-sm text-neutral-100 outline-none transition-colors focus:border-ops-green focus:ring-2 focus:ring-ops-green/30"
+              className="input-terminal-caret bg-ops-bg/80"
             />
             <div className="mt-2 flex justify-end">
               <button

@@ -1,0 +1,20 @@
+{
+  "id": "tenant-deploy-gate",
+  "kind": "harness",
+  "title": "Tenant deploy / config change gate",
+  "description": "Multi-agent review before promoting tenant config, env, or compose changes to production.",
+  "sigmaTags": ["process", "network"],
+  "sigmaQueryHints": ["deploy", "configuration", "docker"],
+  "reviewers": [
+    { "agent_id": "skeptic-worker", "role": "skeptic" },
+    { "agent_id": "security-bot", "role": "security" },
+    { "agent_id": "validator-worker", "role": "validator" }
+  ],
+  "harnessOverrides": {
+    "quorumMinReviews": 2,
+    "consensusThreshold": 0.66
+  },
+  "proposalTemplate": {
+    "topicPrefix": "[deploy-gate] "
+  }
+}

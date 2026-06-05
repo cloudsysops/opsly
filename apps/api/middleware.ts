@@ -2,7 +2,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { pickCorsOrigin } from './lib/cors-origins';
 import { HTTP_STATUS } from './lib/constants';
-import { checkRateLimit, type RateLimitResult } from './lib/rate-limiter';
+import { checkRateLimit, type RateLimitResult } from './lib/rate-limiter-memory';
 
 const CORS_METHODS = 'GET,POST,PATCH,DELETE,OPTIONS';
 const CORS_HEADERS = 'Content-Type,Authorization,x-admin-token';

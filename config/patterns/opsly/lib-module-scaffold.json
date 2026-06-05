@@ -1,0 +1,17 @@
+{
+  "id": "lib-module-scaffold",
+  "kind": "opsly",
+  "title": "Reusable lib module scaffold",
+  "description": "Pattern for new @intcloudsysops/* packages per MODULARITY-CONTRACT.",
+  "doc": "docs/01-development/MODULARITY-CONTRACT.md",
+  "structure": [
+    "lib/{name}/package.json",
+    "lib/{name}/src/client.ts",
+    "lib/{name}/src/config.ts",
+    "lib/{name}/src/types.ts",
+    "lib/{name}/src/index.ts",
+    "lib/{name}/__tests__/"
+  ],
+  "register_in": "config/modules.json",
+  "check_script": "scripts/check-modularity.sh"
+}

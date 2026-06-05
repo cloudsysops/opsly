@@ -16,6 +16,7 @@ Hub para **multi-tenant**: producción, runbooks, pruebas, onboarding y subclien
 | [`onboarding-prompts/`](onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md) | Plantillas y validación de onboarding (histórico `docs/prompts/tenant-onboarding/`). |
 | [`legalvial/`](legalvial/LEGALVIAL-ARCHITECTURE-DECISION.md) | Notas del subcliente LegalVial (LocalRank). |
 | [`peskids/`](peskids/README.md) | Tenant incubado Peskids (MVP, extracción a `peskids-platform`). |
+| [`panini-lab/`](panini-lab/README.md) | Demo conversacional Mundial 2026 — `panini.op-sly.com`, runtime incubator. |
 
 **Stubs de compatibilidad** (no editar): `docs/stubs/TENANT-PRODUCTION-*.md`, `docs/04-infrastructure/TENANT-PRODUCTION-*.md`, `docs/runbooks/TENANT-*.md` relevantes, `docs/01-development/TENANT-TESTING-*.md`, `docs/prompts/tenant-onboarding/*.md`.
 

@@ -1,0 +1,12 @@
+{
+  "id": "crm-starter-stack",
+  "kind": "tenant",
+  "title": "CRM starter pack (n8n workflows)",
+  "description": "Adds CRM bonus workflows via config/n8n-workflows — lead capture, hot lead, follow-up, digest.",
+  "capabilities": ["n8n-crm-starter"],
+  "modules": [],
+  "harness_patterns": ["integration-webhook"],
+  "n8n_pack_id": "crm-starter-pack",
+  "scripts": ["scripts/install-crm-workflows.sh"],
+  "config_refs": ["config/n8n-workflows/tenant-bonus-packs.json"]
+}

@@ -1,15 +1,29 @@
-# Multi-stage build for peskids Next.js 14 application
+# Peskids — multi-stage monorepo build (context: repo root)
+#   docker build -f apps/peskids/Dockerfile .
+
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
 COPY package*.json ./
+COPY turbo.json ./
 
-# Install dependencies (npm install: lockfile may lag package.json in standalone app)
-RUN npm install
+COPY lib/conversational-runtime/package.json ./lib/conversational-runtime/
+COPY lib/prompt-guard/package.json ./lib/prompt-guard/
+COPY lib/openwa/package.json ./lib/openwa/
+COPY packages/opsly-core/package.json ./packages/opsly-core/
+COPY packages/types/package.json ./packages/types/
+COPY apps/peskids/package.json ./apps/peskids/
 
-# Contact / WhatsApp (wa.me) — bake at build for client components
+RUN npm ci --ignore-scripts
+
+COPY lib/conversational-runtime/ ./lib/conversational-runtime/
+COPY lib/prompt-guard/ ./lib/prompt-guard/
+COPY lib/openwa/ ./lib/openwa/
+COPY packages/opsly-core/ ./packages/opsly-core/
+COPY packages/types/ ./packages/types/
+COPY apps/peskids/ ./apps/peskids/
+
 ARG NEXT_PUBLIC_SUPABASE_URL=
 ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ARG NEXT_PUBLIC_PESKIDS_WHATSAPP_E164=
@@ -39,27 +53,30 @@ ENV NEXT_PUBLIC_FIREBASE_APP_ID=$NEXT_PUBLIC_FIREBASE_APP_ID
 ENV NEXT_PUBLIC_FIREBASE_VAPID_KEY=$NEXT_PUBLIC_FIREBASE_VAPID_KEY
 ENV NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=$NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 
-# Copy application code
-COPY . .
+WORKDIR /app/apps/peskids
+RUN mkdir -p public \
+ && NEXT_TELEMETRY_DISABLED=1 npx next build --no-lint
 
-# Build Next.js application
-RUN mkdir -p public && npm run build
-
-# Production stage — reuse builder deps (lockfile is monorepo-managed)
-FROM node:20-alpine
+FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.js ./next.config.js
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3004
+ENV HOSTNAME=0.0.0.0
 
-# Health check for Opsly infrastructure monitoring
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3004', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+COPY --from=builder /app/apps/peskids/.next/standalone ./
+COPY --from=builder /app/apps/peskids/.next/static ./apps/peskids/.next/static
+COPY --from=builder /app/apps/peskids/public ./apps/peskids/public
+
+RUN addgroup --system --gid 1001 nodejs \
+ && adduser --system --uid 1001 nextjs
+USER nextjs
 
 EXPOSE 3004
 
-CMD ["npm", "start"]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3004', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+
+CMD ["node", "apps/peskids/server.js"]

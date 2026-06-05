@@ -1,44 +1,49 @@
-import { createServerClient, type SetAllCookies } from '@supabase/ssr';
-import { NextResponse, type NextRequest } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { resolveLoginPath, resolvePostAuthPath } from '@/lib/auth-callback';
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const nextPath = request.nextUrl.searchParams.get('next') || '/admin';
-  const redirectUrl = request.nextUrl.clone();
-  redirectUrl.pathname = nextPath.startsWith('/') ? nextPath : '/admin';
-  redirectUrl.search = '';
+  const requestUrl = new URL(request.url);
+  const code = requestUrl.searchParams.get('code');
+  const next = requestUrl.searchParams.get('next');
+  const nextPath = next && next.startsWith('/') ? next : null;
+  const errorLoginPath = resolveLoginPath(nextPath ?? '/admin');
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? '';
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ?? '';
-  const hasConfig = !!(url && anon);
-
-  if (!hasConfig) {
-    return NextResponse.redirect(redirectUrl);
+  if (!code) {
+    return NextResponse.redirect(new URL(errorLoginPath, requestUrl.origin));
   }
 
-  const response = NextResponse.redirect(redirectUrl);
-  const supabase = createServerClient(url, anon, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+          });
+        },
       },
-      setAll(cookiesToSet: Parameters<SetAllCookies>[0]) {
-        cookiesToSet.forEach(({ name, value, options }) => {
-          response.cookies.set(name, value, options);
-        });
-      },
-    },
-  });
-
-  const code = request.nextUrl.searchParams.get('code');
-  if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (error) {
-      const errorUrl = request.nextUrl.clone();
-      errorUrl.pathname = '/admin/login';
-      errorUrl.searchParams.set('error', error.message);
-      return NextResponse.redirect(errorUrl);
     }
+  );
+
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+  if (error) {
+    console.error('Auth callback error:', error.message);
+    return NextResponse.redirect(new URL(errorLoginPath, requestUrl.origin));
   }
 
-  return response;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const redirectPath = user ? resolvePostAuthPath(nextPath, user) : errorLoginPath;
+  return NextResponse.redirect(new URL(redirectPath, requestUrl.origin));
 }

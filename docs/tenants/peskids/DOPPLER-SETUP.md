@@ -45,7 +45,9 @@ Make.com (plataforma + hook Peskids): [`MAKE-SETUP.md`](../../01-development/MAK
 Tras cargar vars en Doppler:
 
 ```bash
+./scripts/sync-peskids-firebase-secrets-to-github.sh --dry-run
 ./scripts/sync-peskids-firebase-secrets-to-github.sh
+./scripts/doppler-set-peskids-firebase-admin.sh --file apps/peskids/.secrets/firebase-admin.json
 ```
 
 Incluye las 8 claves `NEXT_PUBLIC_FIREBASE_*` listadas en [[FIREBASE-FCM-SETUP|FIREBASE-FCM-SETUP]].

@@ -388,6 +388,7 @@ node scripts/load-skills.js show opsly-api
 | Nomenclatura CLI `openclaw` vs orquestador   | `docs/01-development/OPENCLAW-TERMINOLOGY.md`                                                                                                  |
 | Docker tenant aislado                        | `scripts/lib/docker-helpers.sh` — `--project-name tenant_<slug>`                                                                                 |
 | Agency Division (nuevo 2026-05-06)            | `docs/01-development/OPSLY-AGENCY-DIVISION.md` — API Factory, Agent Management, Security API, Autonomous Revenue                                 |
+| Panini Lab (incubator demo)                   | `apps/panini-lab` — colección conversacional de stickers; prod `https://panini.op-sly.com`; runbook `docs/runbooks/PANINI-LAB-GOLIVE.md`         |
 
 ## 🚀 Peskids (Tenant Project, Phase 2 Implementation Ready)
 
@@ -651,6 +652,11 @@ Week 4: Docs + runbook + MVP validation
 ## 🔄 Estado actual
 
 <!-- Actualizar al final de cada sesión -->
+
+**Sesión 2026-06-04 — ICSO marketing site v2 (PR #495) ✅**
+- ✅ **`apps/icso`**: sitio agency frontend-only (hero, soluciones, Peskids case study, pricing placeholder, `/services`, `/about`, `/case-studies`, `/contact`); dev `:3015`
+- ✅ **Brand assets**: `docs/brand/icso/` + `apps/icso/public/brand/` (logo-primary, logo-square, favicon)
+- ⏳ **Deploy**: Traefik + `NEXT_PUBLIC_SITE_URL` para dominio ICSO; PR https://github.com/cloudsysops/opsly/pull/495
 
 **Sesión 2026-05-28 — Skills cargados, Shield integrado, Billing consolidado ✅**
 
@@ -1612,6 +1618,15 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 ## 🔄 Próximo paso inmediato
 
+**Sigma agent harness (2026-05-30):** [PR #457](https://github.com/cloudsysops/opsly/pull/457) — merge cuando apruebes; post-merge en VPS:
+
+```bash
+cd /opt/opsly && git pull --ff-only
+npm run sigma:install
+# redeploy orchestrator + MCP (compose pull/up según runbook deploy)
+npm run sigma:smoke   # opcional en VPS tras install
+```
+
 **Status PRs Cleanup (2026-05-22 — SESSION FINAL):**
 
 | PR | Status | Blockers | Owner |
@@ -2223,6 +2238,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 │   ├── admin/               # Next.js dashboard admin
 │   ├── portal/              # Next.js portal cliente (login, invitación, modos)
 │   ├── web/                 # App web (workspace)
+│   ├── icso/                # Marketing site IntCloud SysOps (agency, frontend-only)
 │   ├── mcp/                 # OpenClaw MCP server (tools → API / GitHub)
 │   ├── orchestrator/        # OpenClaw BullMQ + processIntent
 │   ├── ml/                  # OpenClaw ML (RAG, clasificación, embeddings)

@@ -8,17 +8,16 @@ echo "📦 Instalando hooks de protección..."
 
 mkdir -p .githooks .husky
 
-cat > .githooks/pre-push <<'EOF'
-#!/usr/bin/env bash
-set -euo pipefail
-
-echo "🚀 Validando antes de push..."
-npm run validate-structure --silent
-bash scripts/hooks/structure-guard.sh
-echo "✅ Listo para push"
-EOF
-
-chmod +x scripts/hooks/structure-guard.sh scripts/hooks/install-hooks.sh .githooks/pre-push
+chmod +x \
+  scripts/hooks/hook-bootstrap.sh \
+  scripts/hooks/git-hook-env.sh \
+  scripts/hooks/structure-guard.sh \
+  scripts/hooks/install-hooks.sh \
+  .githooks/commit-msg \
+  .githooks/post-checkout \
+  .githooks/post-commit \
+  .githooks/pre-commit \
+  .githooks/pre-push
 
 if [[ -f .husky/pre-push ]]; then
   cp .husky/pre-push .husky/pre-push.bak
@@ -40,6 +39,6 @@ if [[ -f .husky/pre-commit ]]; then
   chmod +x .husky/pre-commit
 fi
 
-echo "✅ Hook pre-push instalado en .githooks y delegado desde Husky"
+echo "✅ Hooks de Git actualizados"
 echo "ℹ️ Hook activo actual: $(git config --get core.hooksPath || echo '.git/hooks (default)')"
 echo "🎉 Instalación completada"

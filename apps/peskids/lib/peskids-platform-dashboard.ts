@@ -1,0 +1,178 @@
+import { supabaseServer } from '@/lib/supabase';
+import type { DashboardData } from '@/lib/types';
+import {
+  isMissingPlatformPeskidsTable,
+  mapPlatformFeedbackRow,
+  mapPlatformLeadRow,
+  type PlatformPeskidsFeedbackRow,
+  type PlatformPeskidsLeadRow,
+} from '@/lib/peskids-platform-read';
+import { isMissingExpandedFeedbackColumn } from '@/lib/utils/db-compat';
+
+function platformFrom(table: 'peskids_leads' | 'peskids_feedback') {
+  const client = supabaseServer() as {
+    schema: (name: string) => {
+      from: (tableName: string) => ReturnType<ReturnType<typeof supabaseServer>['from']>;
+    };
+  };
+  return client.schema('platform').from(table);
+}
+
+export async function fetchPlatformLeadsForDashboard(
+  tenantSlug: string,
+  periodStartISO: string
+): Promise<
+  | { ok: true; rows: PlatformPeskidsLeadRow[] }
+  | { ok: false; error: { message?: string } }
+> {
+  const { data, error } = await platformFrom('peskids_leads')
+    .select(
+      'id, full_name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_source, created_at'
+    )
+    .eq('tenant_slug', tenantSlug)
+    .gte('created_at', periodStartISO)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    return { ok: false, error };
+  }
+
+  return { ok: true, rows: (data ?? []) as PlatformPeskidsLeadRow[] };
+}
+
+export async function fetchPlatformFeedbackForDashboard(
+  tenantSlug: string,
+  limit: number
+): Promise<
+  | { ok: true; rows: PlatformPeskidsFeedbackRow[] }
+  | { ok: false; error: { message?: string } }
+> {
+  const { data, error } = await platformFrom('peskids_feedback')
+    .select('id, child_name, satisfaction, suggestion, status, created_at')
+    .eq('tenant_slug', tenantSlug)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    return { ok: false, error };
+  }
+
+  return { ok: true, rows: (data ?? []) as PlatformPeskidsFeedbackRow[] };
+}
+
+export async function fetchDashboardLeads(
+  tenantSlug: string,
+  periodStartISO: string
+): Promise<{ rows: ReturnType<typeof mapPlatformLeadRow>[]; source: 'platform' | 'legacy' }> {
+  const platformResult = await fetchPlatformLeadsForDashboard(tenantSlug, periodStartISO);
+  if (platformResult.ok) {
+    return {
+      source: 'platform',
+      rows: platformResult.rows.map(mapPlatformLeadRow),
+    };
+  }
+
+  if (!isMissingPlatformPeskidsTable(platformResult.error)) {
+    throw platformResult.error;
+  }
+
+  const supabase = supabaseServer();
+  const { data, error } = await supabase
+    .from('leads')
+    .select(
+      'id, name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source, created_at'
+    )
+    .eq('tenant_id', tenantSlug)
+    .gte('created_at', periodStartISO)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return {
+    source: 'legacy',
+    rows: (data ?? []) as ReturnType<typeof mapPlatformLeadRow>[],
+  };
+}
+
+export async function fetchDashboardFeedback(
+  tenantSlug: string,
+  limit: number
+): Promise<{
+  recentFeedback: ReturnType<typeof mapPlatformFeedbackRow>[];
+  privateFamilyNotes: DashboardData['private_family_notes'];
+  source: 'platform' | 'legacy';
+}> {
+  const platformResult = await fetchPlatformFeedbackForDashboard(tenantSlug, limit);
+  if (platformResult.ok) {
+    return {
+      source: 'platform',
+      recentFeedback: platformResult.rows.slice(0, 5).map(mapPlatformFeedbackRow),
+      privateFamilyNotes: [],
+    };
+  }
+
+  if (!isMissingPlatformPeskidsTable(platformResult.error)) {
+    throw platformResult.error;
+  }
+
+  return fetchLegacyDashboardFeedback(tenantSlug, limit);
+}
+
+async function fetchLegacyDashboardFeedback(
+  tenantSlug: string,
+  limit: number
+): Promise<{
+  recentFeedback: DashboardData['recent_feedback'];
+  privateFamilyNotes: DashboardData['private_family_notes'];
+  source: 'legacy';
+}> {
+  const supabase = supabaseServer();
+
+  const feedbackResult = await supabase
+    .from('feedback')
+    .select(
+      'id, child_name, satisfaction, suggestion, author_type, subject_type, visibility, audience, parent_email, body, rating, status, created_at'
+    )
+    .eq('tenant_id', tenantSlug)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  const feedbackRows = (feedbackResult.data ?? []) as Array<
+    DashboardData['recent_feedback'][number] & { created_at?: string }
+  >;
+
+  if (!feedbackResult.error) {
+    return {
+      source: 'legacy',
+      recentFeedback: feedbackRows
+        .filter((f) => f.visibility !== 'private')
+        .slice(0, 5) as DashboardData['recent_feedback'],
+      privateFamilyNotes: feedbackRows
+        .filter((f) => f.visibility === 'private' && f.audience === 'family')
+        .slice(0, 5) as DashboardData['private_family_notes'],
+    };
+  }
+
+  if (isMissingExpandedFeedbackColumn(feedbackResult.error)) {
+    const fallback = await supabase
+      .from('feedback')
+      .select('id, child_name, satisfaction, suggestion')
+      .eq('tenant_id', tenantSlug)
+      .order('created_at', { ascending: false })
+      .limit(5);
+
+    if (fallback.error) {
+      throw fallback.error;
+    }
+
+    return {
+      source: 'legacy',
+      recentFeedback: (fallback.data ?? []) as DashboardData['recent_feedback'],
+      privateFamilyNotes: [],
+    };
+  }
+
+  throw feedbackResult.error;
+}

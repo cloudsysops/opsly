@@ -1,0 +1,20 @@
+{
+  "id": "security-incident",
+  "kind": "harness",
+  "title": "Security incident or suspicious activity",
+  "description": "Fast-track security review with Sigma rule context and higher quorum.",
+  "sigmaTags": ["attack", "credential_access"],
+  "sigmaQueryHints": ["malware", "lateral", "exfiltration", "powershell"],
+  "reviewers": [
+    { "agent_id": "security-bot", "role": "security" },
+    { "agent_id": "planner-worker", "role": "planner" },
+    { "agent_id": "skeptic-worker", "role": "skeptic" }
+  ],
+  "harnessOverrides": {
+    "quorumMinReviews": 3,
+    "consensusThreshold": 0.75
+  },
+  "proposalTemplate": {
+    "topicPrefix": "[sec-incident] "
+  }
+}

@@ -124,9 +124,8 @@ describe('MCP Tools', () => {
       message: 'restart request written to docs/ACTIVE-PROMPT.md',
     });
     expect(writeActivePrompt).toHaveBeenCalledTimes(1);
-    expect(vi.mocked(writeActivePrompt).mock.calls[0]?.[0]).toContain(
-      "docker restart 'infra-app-1'"
-    );
+    expect(vi.mocked(writeActivePrompt).mock.calls[0]?.[0]).toContain('infra-app-1');
+    expect(vi.mocked(writeActivePrompt).mock.calls[0]?.[0]).not.toContain('docker restart');
   });
 
   it('restart_container rechaza nombres inseguros', async () => {

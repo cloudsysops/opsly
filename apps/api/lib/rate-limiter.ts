@@ -1,4 +1,17 @@
 import { createClient } from 'redis';
+import {
+  checkRateLimit as checkRateLimitMemory,
+  RATE_LIMIT_MAX_REQUESTS,
+  RATE_LIMIT_WINDOW_SECONDS,
+  resetRateLimiterMemoryStateForTests,
+  type RateLimitResult,
+} from './rate-limiter-memory';
+
+export {
+  RATE_LIMIT_MAX_REQUESTS,
+  RATE_LIMIT_WINDOW_SECONDS,
+  type RateLimitResult,
+} from './rate-limiter-memory';
 
 type RedisClient = ReturnType<typeof createClient>;
 type RateLimitReply = {
@@ -6,8 +19,6 @@ type RateLimitReply = {
   ttlSeconds: number;
 };
 
-export const RATE_LIMIT_WINDOW_SECONDS = 60;
-export const RATE_LIMIT_MAX_REQUESTS = 100;
 const RATE_LIMIT_REPLY_LENGTH = 2;
 
 const RATE_LIMIT_LUA_SCRIPT = `
@@ -22,13 +33,6 @@ return { current, ttl }
 let client: RedisClient | null = null;
 let connectPromise: Promise<RedisClient | null> | null = null;
 let hasLoggedMissingRedisUrl = false;
-const memoryBuckets = new Map<string, { count: number; resetAtMs: number }>();
-
-export interface RateLimitResult {
-  allowed: boolean;
-  remaining: number;
-  resetAt: Date;
-}
 
 function redisUrl(): string | null {
   const url = process.env.REDIS_URL?.trim();
@@ -70,30 +74,6 @@ function parseRateLimitReply(reply: unknown): RateLimitReply {
   return {
     count: parseRedisInteger(reply[0], 'count'),
     ttlSeconds: parseRedisInteger(reply[1], 'ttl'),
-  };
-}
-
-function fallbackMemoryResult(tenantSlug: string, nowMs: number): RateLimitResult {
-  const key = rateLimitKey(tenantSlug);
-  const current = memoryBuckets.get(key);
-
-  if (!current || current.resetAtMs <= nowMs) {
-    const resetAtMs = nowMs + RATE_LIMIT_WINDOW_SECONDS * 1000;
-    memoryBuckets.set(key, { count: 1, resetAtMs });
-    return {
-      allowed: true,
-      remaining: RATE_LIMIT_MAX_REQUESTS - 1,
-      resetAt: new Date(resetAtMs),
-    };
-  }
-
-  const nextCount = current.count + 1;
-  memoryBuckets.set(key, { count: nextCount, resetAtMs: current.resetAtMs });
-
-  return {
-    allowed: nextCount <= RATE_LIMIT_MAX_REQUESTS,
-    remaining: Math.max(0, RATE_LIMIT_MAX_REQUESTS - nextCount),
-    resetAt: new Date(current.resetAtMs),
   };
 }
 
@@ -144,7 +124,7 @@ export async function checkRateLimit(tenantSlug: string): Promise<RateLimitResul
   const nowMs = Date.now();
   const redis = await getRateLimitRedis();
   if (!redis) {
-    return fallbackMemoryResult(normalizedTenantSlug, nowMs);
+    return checkRateLimitMemory(normalizedTenantSlug);
   }
 
   const key = rateLimitKey(normalizedTenantSlug);
@@ -167,7 +147,7 @@ export async function checkRateLimit(tenantSlug: string): Promise<RateLimitResul
     };
   } catch (error) {
     console.error('[rate-limiter] request failed', error);
-    return fallbackMemoryResult(normalizedTenantSlug, nowMs);
+    return checkRateLimitMemory(normalizedTenantSlug);
   }
 }
 
@@ -175,5 +155,5 @@ export function resetRateLimiterStateForTests(): void {
   client = null;
   connectPromise = null;
   hasLoggedMissingRedisUrl = false;
-  memoryBuckets.clear();
+  resetRateLimiterMemoryStateForTests();
 }

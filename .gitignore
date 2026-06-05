@@ -1,5 +1,5 @@
-# Git worktrees (isolated development)
-.worktrees/
+# SigmaHQ upstream rules (install via npm run sigma:install)
+vendor/sigma/
 
 # USB kit: overrides locales (SSH Host, etc.)
 tools/usb-kit/pen.local.json
@@ -92,11 +92,13 @@ infra/terraform/tfplan
 runtime/logs/*
 runtime/letsencrypt/*
 runtime/tenants/*
+runtime/tmp/*
 runtime/pids/*
 !runtime/pids/.gitkeep
 !runtime/logs/.gitkeep
 !runtime/letsencrypt/.gitkeep
 !runtime/tenants/.gitkeep
+!runtime/tmp/.gitkeep
 
 # Supabase CLI local link metadata (regenerable)
 supabase/.temp/
@@ -105,6 +107,37 @@ supabase/migrations/supabase/.temp/
 # Playwright (apps/portal)
 apps/portal/test-results/
 apps/portal/playwright-report/
+
+# Tenant app secrets (Doppler / Firebase / local overrides)
+apps/*/.secrets/
+config/peskids-firebase-admin.json
+**/*-firebase-admin.json
+**/*service-account*.json
+
+# Playwright MCP local browser state (may contain session cookies)
+.playwright-mcp/
+
+# Cryptographic material (never commit)
+**/*.pem
+**/*.p12
+**/*.pfx
+**/*.keystore
+**/*.jks
+**/*.mobileprovision
+
+# Doppler CLI local metadata
+.doppler/
+
+# Capacitor / native mobile build outputs (not source)
+**/.gradle/
+**/android/**/build/
+**/android/.gradle/
+**/ios/App/Pods/
+**/ios/App/build/
+**/capacitor-cordova-android-plugins/build/
+
+# Local QA screenshots (repo root)
+/panini-*.png
 
 # Obsidian — ignore runtime/personal state (vault en docs/)
 docs/.obsidian/cache

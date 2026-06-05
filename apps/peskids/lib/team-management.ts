@@ -172,6 +172,22 @@ async function getPlatformClient(): Promise<ReturnType<typeof supabaseServer>> {
   return supabaseServer() as ReturnType<typeof supabaseServer>;
 }
 
+async function resolveAuthUserIdByEmail(email: string): Promise<string | null> {
+  const normalized = email.trim().toLowerCase();
+  if (!normalized) return null;
+
+  try {
+    const admin = await getPlatformClient();
+    const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    if (error) return null;
+
+    const match = data.users.find((user) => user.email?.trim().toLowerCase() === normalized);
+    return match?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
 async function resolveTenantRow(): Promise<{ tenant: TenantRow | null; warnings: string[] }> {
   const warnings: string[] = [];
   try {
@@ -287,11 +303,20 @@ export async function loadPeskidsTeam(): Promise<TeamViewData> {
     }
   }
 
+  const hydratedMembers = await Promise.all(
+    Array.from(deduped.values()).map(async (member) => {
+      if (member.user_id) return member;
+      const userId = await resolveAuthUserIdByEmail(member.email);
+      if (!userId) return member;
+      return { ...member, user_id: userId };
+    })
+  );
+
   return {
     tenant_slug: TENANT_SLUG,
     tenant_name: tenantName,
     owner_email: ownerEmail,
-    members: Array.from(deduped.values()),
+    members: hydratedMembers,
     warnings,
   };
 }

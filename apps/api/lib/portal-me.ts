@@ -67,6 +67,20 @@ export function resolvePortalServicesForTenant(
   return parsed;
 }
 
+export function sanitizePublicPortalServices(
+  tenantSlug: string,
+  services: Json
+): {
+  n8n_url: string | null;
+  uptime_url: string | null;
+} {
+  const resolved = resolvePortalServicesForTenant(tenantSlug, services);
+  return {
+    n8n_url: resolved.n8n_url,
+    uptime_url: resolved.uptime_url,
+  };
+}
+
 export function parsePortalMode(meta: unknown): PortalMode | null {
   const raw = readString(meta, 'mode') ?? readString(meta, 'portal_mode');
   if (raw === 'developer' || raw === 'managed' || raw === 'security_defense') {
