@@ -77,11 +77,14 @@ run_deploy_on_host() {
   # shellcheck source=scripts/lib/peskids-docker-env-filter.sh
   source "${repo_path}/scripts/lib/peskids-docker-env-filter.sh"
   filter_peskids_docker_env "$ENV_FILE"
+  # shellcheck source=scripts/lib/peskids-traefik-labels.sh
+  source "${repo_path}/scripts/lib/peskids-traefik-labels.sh"
 
   docker run -d --name peskids --restart unless-stopped \
     --network traefik-public \
     -p 127.0.0.1:3004:3004 \
     --env-file "$ENV_FILE" \
+    "${PESKIDS_TRAEFIK_LABELS[@]}" \
     "$image"
 
   sleep 3
@@ -136,11 +139,13 @@ trap 'rm -f "$ENV_FILE"' EXIT
 doppler secrets download --no-file --format docker --project ops-intcloudsysops --config prd >"$ENV_FILE"
 source "${REPO_PATH}/scripts/lib/peskids-docker-env-filter.sh"
 filter_peskids_docker_env "$ENV_FILE"
+source "${REPO_PATH}/scripts/lib/peskids-traefik-labels.sh"
 
 docker run -d --name peskids --restart unless-stopped \
   --network traefik-public \
   -p 127.0.0.1:3004:3004 \
   --env-file "$ENV_FILE" \
+  "${PESKIDS_TRAEFIK_LABELS[@]}" \
   "$IMAGE"
 
 sleep 3

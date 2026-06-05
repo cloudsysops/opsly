@@ -103,7 +103,7 @@ services:
         FIK_DASHBOARD_BASIC_AUTH_USERS}"
       # Dashboard Traefik (no usar admin.* — reservado para la app Opsly Admin)
       - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.${PLATFORM_D\
-        OMAIN}`)"
+        OMAIN}`) || Host(`traefik.op-sly.com`)"
       - 'traefik.http.routers.traefik-dashboard.entrypoints=websecure'
       - 'traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt'
       - 'traefik.http.routers.traefik-dashboard.service=api@internal'
@@ -219,7 +219,7 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.docker.network=traefik-public'
-      - 'traefik.http.routers.app.rule=Host(`api.${PLATFORM_DOMAIN}`)'
+      - 'traefik.http.routers.app.rule=Host(`api.${PLATFORM_DOMAIN}`) || Host(`api.op-sly.com`)'
       - 'traefik.http.routers.app.entrypoints=websecure'
       - 'traefik.http.routers.app.tls=true'
       - 'traefik.http.routers.app.tls.certresolver=letsencrypt'
@@ -259,7 +259,7 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.docker.network=traefik-public'
-      - 'traefik.http.routers.opsly-admin.rule=Host(`admin.${PLATFORM_DOMAIN}`)'
+      - 'traefik.http.routers.opsly-admin.rule=Host(`admin.${PLATFORM_DOMAIN}`) || Host(`admin.op-sly.com`)'
       - 'traefik.http.routers.opsly-admin.entrypoints=websecure'
       - 'traefik.http.routers.opsly-admin.tls=true'
       - 'traefik.http.routers.opsly-admin.tls.certresolver=letsencrypt'
@@ -296,7 +296,7 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.docker.network=traefik-public'
-      - 'traefik.http.routers.portal.rule=Host(`portal.${PLATFORM_DOMAIN}`) || Host(`app.${PLATFORM_DOMAIN}`) || Host(`${PLATFORM_DOMAIN}`)'
+      - 'traefik.http.routers.portal.rule=Host(`portal.${PLATFORM_DOMAIN}`) || Host(`portal.op-sly.com`) || Host(`app.${PLATFORM_DOMAIN}`) || Host(`${PLATFORM_DOMAIN}`) || Host(`op-sly.com`)'
       - 'traefik.http.routers.portal.entrypoints=websecure'
       - 'traefik.http.routers.portal.tls=true'
       - 'traefik.http.routers.portal.tls.certresolver=letsencrypt'
@@ -368,7 +368,7 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.docker.network=traefik-public'
-      - 'traefik.http.routers.mcp.rule=Host(`mcp.${PLATFORM_DOMAIN}`)'
+      - 'traefik.http.routers.mcp.rule=Host(`mcp.${PLATFORM_DOMAIN}`) || Host(`mcp.op-sly.com`)'
       - 'traefik.http.routers.mcp.entrypoints=websecure'
       - 'traefik.http.routers.mcp.tls=true'
       - 'traefik.http.routers.mcp.tls.certresolver=letsencrypt'
@@ -682,7 +682,7 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.docker.network=traefik-public'
-      - 'traefik.http.routers.grafana.rule=Host(`grafana.${PLATFORM_DOMAIN}`)'
+      - 'traefik.http.routers.grafana.rule=Host(`grafana.${PLATFORM_DOMAIN}`) || Host(`grafana.op-sly.com`)'
       - 'traefik.http.routers.grafana.entrypoints=websecure'
       - 'traefik.http.routers.grafana.tls=true'
       - 'traefik.http.routers.grafana.tls.certresolver=letsencrypt'
