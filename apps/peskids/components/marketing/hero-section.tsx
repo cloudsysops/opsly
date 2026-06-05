@@ -9,7 +9,7 @@ import { peskidsColorTokens } from '@/lib/tokens';
 const stats = [
   { num: '14', label: 'años enseñando' },
   { num: '2 800+', label: 'niños certificados' },
-  { num: '6', label: 'niveles graduados' },
+  { num: '6', label: 'grupos por edad' },
 ];
 
 export function HeroSection(): React.ReactElement {
@@ -65,14 +65,14 @@ export function HeroSection(): React.ReactElement {
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55">
                     Familias
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-white">Entrar con Google</p>
+                  <p className="mt-1 text-sm font-semibold text-white">Portal familias</p>
                 </div>
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/12 text-white">
                   <Waves className="h-5 w-5" aria-hidden />
                 </div>
               </div>
               <p className="mt-3 text-xs leading-5 text-white/65">
-                Acceso directo al panel de familias y sus reservas.
+                Acceso directo al portal de familias, sus reservas y mensajes.
               </p>
               <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-pk-primary">
                 Ir al acceso
@@ -144,11 +144,11 @@ export function HeroSection(): React.ReactElement {
             <HeroChatCta />
             <WhatsAppLink variant="hero" label="Escribir por WhatsApp" />
             <Link
-              href="#niveles"
+              href="#grupos-edad"
               className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/10 px-6 text-sm font-bold text-white transition hover:border-white/30 hover:bg-white/15"
             >
               <Waves className="h-5 w-5" aria-hidden />
-              Ver niveles
+              Ver grupos por edad
             </Link>
           </div>
 
