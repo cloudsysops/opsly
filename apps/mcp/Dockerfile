@@ -4,6 +4,7 @@ COPY package.json package-lock.json ./
 COPY packages/types/package.json ./packages/types/
 COPY lib/services/package.json ./lib/services/
 COPY lib/content-studio/package.json ./lib/content-studio/
+COPY lib/prompt-guard/package.json ./lib/prompt-guard/
 COPY apps/mcp/package.json ./apps/mcp/
 COPY apps/llm-gateway/package.json ./apps/llm-gateway/
 COPY apps/notebooklm-agent/package.json ./apps/notebooklm-agent/
@@ -11,6 +12,7 @@ RUN npm ci --ignore-scripts \
   -w @intcloudsysops/types \
   -w @intcloudsysops/services \
   -w @intcloudsysops/content-studio \
+  -w @intcloudsysops/prompt-guard \
   -w @intcloudsysops/llm-gateway \
   -w @intcloudsysops/notebooklm-agent \
   -w @intcloudsysops/mcp
@@ -23,6 +25,7 @@ COPY --from=deps /repo/package-lock.json ./package-lock.json
 COPY packages/types ./packages/types
 COPY lib/services ./lib/services
 COPY lib/content-studio ./lib/content-studio
+COPY lib/prompt-guard ./lib/prompt-guard
 COPY apps/mcp ./apps/mcp
 COPY apps/llm-gateway ./apps/llm-gateway
 COPY apps/notebooklm-agent ./apps/notebooklm-agent
@@ -30,6 +33,7 @@ COPY apps/notebooklm-agent ./apps/notebooklm-agent
 RUN npm run build -w @intcloudsysops/types && \
     npm run build -w @intcloudsysops/services && \
     npm run build -w @intcloudsysops/content-studio && \
+    npm run build -w @intcloudsysops/prompt-guard && \
     npm run build -w @intcloudsysops/llm-gateway && \
     npm run build -w @intcloudsysops/notebooklm-agent && \
     npm run build -w @intcloudsysops/mcp
