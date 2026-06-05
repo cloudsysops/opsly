@@ -5,14 +5,19 @@ import { BillingUsageRepository } from '../repositories/billing-usage-repository
 import { getServiceClient } from '../supabase';
 import type { Json } from '../supabase/types';
 import { runWithTenantContext } from '../tenant-context';
+import { BILLING_METRICS } from '../constants';
 import { getMeteringRedis } from './redis-metering';
 import type { BillingMetricType } from './types';
 
 type RedisClient = ReturnType<typeof createClient>;
 
 /** Patrón `usage:{tenantUuid}:{metric}` (clave Redis de medición). */
-const USAGE_KEY_PATTERN =
-  /^usage:([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}):(cpu_seconds|ai_tokens|storage_gb|worker_seconds)$/i;
+const USAGE_KEY_PATTERN = new RegExp(
+  `^usage:([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}):(${BILLING_METRICS.join(
+    '|'
+  )})$`,
+  'i'
+);
 
 const REGEX_TENANT_GROUP = 1;
 const REGEX_METRIC_GROUP = 2;
