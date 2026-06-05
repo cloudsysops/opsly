@@ -191,3 +191,86 @@ export interface SearchOpportunitiesResponse {
   page?: number;
   limit?: number;
 }
+
+export interface GhlTag {
+  id: string;
+  name: string;
+}
+
+export interface CreateGhlTagRequest {
+  name: string;
+}
+
+export interface GhlCustomField {
+  id: string;
+  name: string;
+  dataType?: string;
+  model?: string;
+}
+
+export interface CreateGhlCustomFieldRequest {
+  name: string;
+  dataType: string;
+  model: 'contact' | 'opportunity';
+  placeholder?: string;
+}
+
+export interface GhlFormFieldSpec {
+  name: string;
+  type?: string;
+  required?: boolean;
+}
+
+export interface GhlForm {
+  id: string;
+  name: string;
+}
+
+export interface CreateGhlFormRequest {
+  name: string;
+  fields?: GhlFormFieldSpec[];
+}
+
+export interface GhlPipelineStage {
+  id: string;
+  name: string;
+}
+
+export interface GhlPipeline {
+  id: string;
+  name: string;
+  stages?: GhlPipelineStage[];
+}
+
+export interface GhlCalendar {
+  id: string;
+  name: string;
+  slug?: string;
+}
+
+export interface CreateGhlCalendarRequest {
+  name: string;
+  slug?: string;
+  calendarType?: string;
+  slotDuration?: number;
+  slotDurationUnit?: string;
+  isActive?: boolean;
+}
+
+export interface GhlCalendarScheduleInterval {
+  from: string;
+  to: string;
+}
+
+export interface GhlCalendarScheduleRule {
+  type: 'wday' | 'date';
+  day?: string;
+  date?: string;
+  intervals: GhlCalendarScheduleInterval[];
+}
+
+export interface CreateGhlCalendarScheduleRequest {
+  timezone: string;
+  rules: GhlCalendarScheduleRule[];
+}
+

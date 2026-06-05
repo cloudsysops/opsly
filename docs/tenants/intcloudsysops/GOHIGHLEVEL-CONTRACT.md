@@ -51,7 +51,7 @@ npm run ghl-provision -- \
 
 Reportes: `docs/artifacts/provisioning/provision-report-intcloudsysops.{json,md}`
 
-**Estado API (2026-06-04):** ✅ **13 already_exists** (tags, custom fields, calendario Discovery Call). **Pendiente: 5 manual UI** (checklist abajo).
+**Estado API (2026-06-04):** 13 `already_exists` (tags, custom fields, calendario Discovery Call). **Pendiente: 5 manual UI** (checklist abajo).
 
 ## Manual UI — checklist agencia (5 ítems)
 
@@ -79,9 +79,27 @@ Specs: `docs/examples/intake/intcloudsysops.json`. Tras UI: `./scripts/ghl-provi
 - [ ] Smoke E2E Peskids (siguiente paso)
 - [ ] Patrón replicable para nuevos blueprints
 
+## Token / scopes — rotación y auto-provision
+
+Si el token agencia devuelve HTTP 401 en tags, regenerar en GHL y actualizar Doppler:
+
+```bash
+doppler secrets set GOHIGHLEVEL_API_KEY --project ops-intcloudsysops --config prd
+./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+./scripts/ghl-provision-intcloudsysops.sh --execute
+```
+
+**Auto-provision mientras actualizas token:**
+
+```bash
+npm run ghl:agency-auto-provision
+# poll cada 2 min; al detectar scopes OK ejecuta --execute solo
+```
+
 ## UI-only (post-MVP)
 
 - Workflows GHL (Lead Intake, follow-ups)
+- Plantillas email/SMS
 - Ajustes finos de formularios / automations
 
 Opsly CRM n8n pack: `docs/n8n-workflows/crm/README.md` (tenant `intcloudsysops` en VPS).

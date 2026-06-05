@@ -3,12 +3,12 @@
   "tenantSlug": "intcloudsysops",
   "locationId": "qD7Z9jt3owk0LMtKElow",
   "dryRun": false,
-  "startedAt": "2026-06-05T01:14:13.031Z",
-  "finishedAt": "2026-06-05T01:14:15.006Z",
+  "startedAt": "2026-06-04T11:42:46.978Z",
+  "finishedAt": "2026-06-04T11:42:50.597Z",
   "summary": {
-    "created": 0,
+    "created": 6,
     "skipped": 0,
-    "alreadyExists": 13,
+    "alreadyExists": 7,
     "manualRequired": 5,
     "blocked": 0,
     "wouldCreate": 0
@@ -59,31 +59,31 @@
     {
       "resourceType": "custom_field",
       "name": "client_company",
-      "status": "already_exists",
+      "status": "created",
       "resourceId": "RZjpRO7hCQwqJUjzriSO"
     },
     {
       "resourceType": "custom_field",
       "name": "deal_value",
-      "status": "already_exists",
+      "status": "created",
       "resourceId": "CrTqOXsdhERPIOt5nult"
     },
     {
       "resourceType": "custom_field",
       "name": "service_tier",
-      "status": "already_exists",
+      "status": "created",
       "resourceId": "QgIontXoCYTuCESlmdKa"
     },
     {
       "resourceType": "custom_field",
       "name": "tenant_slug",
-      "status": "already_exists",
+      "status": "created",
       "resourceId": "tiES0Vw9LJocuaiMUiaL"
     },
     {
       "resourceType": "custom_field",
       "name": "lead_score",
-      "status": "already_exists",
+      "status": "created",
       "resourceId": "50xLyYT8R0DnYUZRGqiD"
     },
     {
@@ -119,8 +119,8 @@
     {
       "resourceType": "calendar",
       "name": "Discovery Call",
-      "status": "already_exists",
-      "message": "Calendar exists — availability schedule applied",
+      "status": "created",
+      "message": "Calendar and availability schedule created",
       "resourceId": "KjOYb5jSVnj2K2GsQhti"
     }
   ]

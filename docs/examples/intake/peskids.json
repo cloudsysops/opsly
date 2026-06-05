@@ -1,0 +1,106 @@
+{
+  "tenantName": "Peskids",
+  "tenantSlug": "peskids",
+  "industry": "swim-academy",
+  "tags": [
+    { "name": "lead-web" },
+    { "name": "lead-n8n" },
+    { "name": "trial-booked" },
+    { "name": "active-student" },
+    { "name": "renewal-due" }
+  ],
+  "customFields": [
+    { "name": "child_name", "dataType": "TEXT", "model": "contact" },
+    { "name": "child_age", "dataType": "NUMERICAL", "model": "contact" },
+    { "name": "interest_level", "dataType": "TEXT", "model": "contact" },
+    { "name": "preferred_schedule", "dataType": "TEXT", "model": "contact" }
+  ],
+  "emailTemplates": [
+    {
+      "name": "Peskids — Welcome Parent",
+      "subject": "Welcome to Peskids Swim Academy",
+      "bodyHtml": "<p>Thanks for your interest in swim lessons for {{child_name}}.</p>"
+    },
+    {
+      "name": "Peskids — Trial Class Confirmation",
+      "subject": "Your trial class is scheduled",
+      "bodyHtml": "<p>We look forward to meeting {{child_name}} at the pool.</p>"
+    }
+  ],
+  "smsTemplates": [
+    {
+      "name": "Peskids — Trial Reminder",
+      "body": "Reminder: {{child_name}} has a Peskids trial class tomorrow."
+    }
+  ],
+  "forms": [
+    {
+      "name": "Peskids Lead Capture",
+      "fields": [
+        { "name": "parent_name", "type": "text", "required": true },
+        { "name": "email", "type": "email", "required": true },
+        { "name": "phone", "type": "phone", "required": true },
+        { "name": "child_name", "type": "text", "required": true },
+        { "name": "child_age", "type": "number", "required": true }
+      ]
+    }
+  ],
+  "pipelines": [
+    {
+      "name": "Peskids Enrollment",
+      "stages": [
+        "New Lead",
+        "Contacted",
+        "Trial Class",
+        "Enrolled",
+        "Active Student",
+        "Renewal",
+        "Lost"
+      ]
+    }
+  ],
+  "calendars": [
+    {
+      "name": "Trial Class",
+      "slug": "trial-class",
+      "calendarType": "event",
+      "slotDurationMinutes": 30,
+      "schedule": {
+        "timezone": "America/Bogota",
+        "rules": [
+          {
+            "type": "wday",
+            "day": "monday",
+            "intervals": [{ "from": "16:00", "to": "20:00" }]
+          },
+          {
+            "type": "wday",
+            "day": "tuesday",
+            "intervals": [{ "from": "16:00", "to": "20:00" }]
+          },
+          {
+            "type": "wday",
+            "day": "wednesday",
+            "intervals": [{ "from": "16:00", "to": "20:00" }]
+          },
+          {
+            "type": "wday",
+            "day": "thursday",
+            "intervals": [{ "from": "16:00", "to": "20:00" }]
+          },
+          {
+            "type": "wday",
+            "day": "friday",
+            "intervals": [{ "from": "16:00", "to": "20:00" }]
+          },
+          {
+            "type": "wday",
+            "day": "saturday",
+            "intervals": [{ "from": "08:00", "to": "12:00" }]
+          }
+        ]
+      }
+    },
+    { "name": "Assessment", "slug": "assessment", "calendarType": "event", "slotDurationMinutes": 30 }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "tenantName": "Intcloudsysops",
+  "tenantSlug": "intcloudsysops",
+  "industry": "agency-opsly",
+  "tags": [
+    { "name": "lead-web" },
+    { "name": "lead-referral" },
+    { "name": "lead-partner" },
+    { "name": "hot-lead" },
+    { "name": "opsly-tenant" },
+    { "name": "active-client" },
+    { "name": "churn-risk" }
+  ],
+  "customFields": [
+    { "name": "client_company", "dataType": "TEXT", "model": "contact" },
+    { "name": "deal_value", "dataType": "NUMERICAL", "model": "contact" },
+    { "name": "service_tier", "dataType": "TEXT", "model": "contact" },
+    { "name": "tenant_slug", "dataType": "TEXT", "model": "contact" },
+    { "name": "lead_score", "dataType": "NUMERICAL", "model": "contact" }
+  ],
+  "emailTemplates": [
+    {
+      "name": "Opsly — Welcome Lead",
+      "subject": "Thanks for reaching out to Intcloudsysops",
+      "bodyHtml": "<p>We received your inquiry and will follow up shortly.</p>"
+    },
+    {
+      "name": "Opsly — Discovery Call Confirmation",
+      "subject": "Your discovery call is scheduled",
+      "bodyHtml": "<p>Looking forward to learning about {{contact.company_name}}.</p>"
+    }
+  ],
+  "smsTemplates": [
+    {
+      "name": "Opsly — Discovery Reminder",
+      "body": "Reminder: your Opsly discovery call is tomorrow."
+    }
+  ],
+  "forms": [
+    {
+      "name": "Opsly Agency Lead Capture",
+      "fields": [
+        { "name": "name", "type": "text", "required": true },
+        { "name": "email", "type": "email", "required": true },
+        { "name": "phone", "type": "phone", "required": true },
+        { "name": "company", "type": "text", "required": false },
+        { "name": "service_interest", "type": "text", "required": false }
+      ]
+    }
+  ],
+  "pipelines": [
+    {
+      "name": "Opsly Agency Sales",
+      "stages": [
+        "New Lead",
+        "Contacted",
+        "Discovery",
+        "Proposal",
+        "Negotiation",
+        "Won",
+        "Lost"
+      ]
+    }
+  ],
+  "calendars": [
+    {
+      "name": "Discovery Call",
+      "slug": "discovery-call",
+      "calendarType": "event",
+      "slotDurationMinutes": 30,
+      "schedule": {
+        "timezone": "America/New_York",
+        "rules": [
+          {
+            "type": "wday",
+            "day": "monday",
+            "intervals": [{ "from": "09:00", "to": "17:00" }]
+          },
+          {
+            "type": "wday",
+            "day": "tuesday",
+            "intervals": [{ "from": "09:00", "to": "17:00" }]
+          },
+          {
+            "type": "wday",
+            "day": "wednesday",
+            "intervals": [{ "from": "09:00", "to": "17:00" }]
+          },
+          {
+            "type": "wday",
+            "day": "thursday",
+            "intervals": [{ "from": "09:00", "to": "17:00" }]
+          },
+          {
+            "type": "wday",
+            "day": "friday",
+            "intervals": [{ "from": "09:00", "to": "17:00" }]
+          }
+        ]
+      }
+    }
+  ]
+}
