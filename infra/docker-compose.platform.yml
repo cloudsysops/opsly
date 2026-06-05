@@ -318,6 +318,38 @@ services:
       start_period: 60s
     deploy: *deploy-large
 
+  icso:
+    image: ${ICSO_APP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-icso:latest}
+    container_name: opsly_icso
+    env_file:
+      - ../.env
+    environment:
+      PORT: '3015'
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://intcloudsysops.com}
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=traefik-public'
+      - 'traefik.http.routers.icso.rule=Host(`www.${ICSO_DOMAIN:-intcloudsysops.com}`) || Host(`${ICSO_DOMAIN:-intcloudsysops.com}`)'
+      - 'traefik.http.routers.icso.entrypoints=websecure'
+      - 'traefik.http.routers.icso.tls=true'
+      - 'traefik.http.routers.icso.tls.certresolver=letsencrypt'
+      - 'traefik.http.services.icso.loadbalancer.server.port=3015'
+      - 'com.centurylinklabs.watchtower.enable=true'
+    logging: *default-logging
+    networks:
+      - traefik-public
+    restart: unless-stopped
+    healthcheck:
+      <<: *healthcheck-node
+      test: [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3015').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      start_period: 45s
+    deploy: *deploy-large
+
   mcp:
     image: ${MCP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-mcp:${MCP_IMAGE_TAG:-v0.42.0}}
     container_name: opsly_mcp

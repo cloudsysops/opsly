@@ -653,6 +653,11 @@ Week 4: Docs + runbook + MVP validation
 
 <!-- Actualizar al final de cada sesión -->
 
+**Sesión 2026-06-04 — ICSO marketing site v2 (PR #495) ✅**
+- ✅ **`apps/icso`**: sitio agency frontend-only (hero, soluciones, Peskids case study, pricing placeholder, `/services`, `/about`, `/case-studies`, `/contact`); dev `:3015`
+- ✅ **Brand assets**: `docs/brand/icso/` + `apps/icso/public/brand/` (logo-primary, logo-square, favicon)
+- ⏳ **Deploy**: Traefik + `NEXT_PUBLIC_SITE_URL` para dominio ICSO; PR https://github.com/cloudsysops/opsly/pull/495
+
 **Sesión 2026-05-28 — Skills cargados, Shield integrado, Billing consolidado ✅**
 
 **Branch activo:** `feat/shield-scan-worker-integration` (PR pendiente de abrir por CLI; usar `gh pr create` o web)
@@ -2233,6 +2238,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 │   ├── admin/               # Next.js dashboard admin
 │   ├── portal/              # Next.js portal cliente (login, invitación, modos)
 │   ├── web/                 # App web (workspace)
+│   ├── icso/                # Marketing site IntCloud SysOps (agency, frontend-only)
 │   ├── mcp/                 # OpenClaw MCP server (tools → API / GitHub)
 │   ├── orchestrator/        # OpenClaw BullMQ + processIntent
 │   ├── ml/                  # OpenClaw ML (RAG, clasificación, embeddings)

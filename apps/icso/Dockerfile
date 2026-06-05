@@ -1,0 +1,37 @@
+# Build from repository root:
+#   docker build -f apps/icso/Dockerfile .
+
+FROM node:20-alpine AS deps
+WORKDIR /repo
+COPY package.json package-lock.json ./
+COPY apps/icso/package.json ./apps/icso/
+RUN npm ci --ignore-scripts
+
+FROM node:20-alpine AS builder
+WORKDIR /repo
+COPY --from=deps /repo/node_modules ./node_modules
+COPY --from=deps /repo/package.json ./package.json
+COPY --from=deps /repo/package-lock.json ./package-lock.json
+COPY apps/icso ./apps/icso
+WORKDIR /repo/apps/icso
+ENV NEXT_TELEMETRY_DISABLED=1
+ARG NEXT_PUBLIC_SITE_URL=https://intcloudsysops.com
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+RUN npm run build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=3015
+ENV HOSTNAME=0.0.0.0
+
+COPY --from=builder /repo/apps/icso/.next/standalone ./
+COPY --from=builder /repo/apps/icso/.next/static ./apps/icso/.next/static
+COPY --from=builder /repo/apps/icso/public ./apps/icso/public
+
+WORKDIR /app/apps/icso
+
+EXPOSE 3015
+
+CMD ["node", "server.js"]
