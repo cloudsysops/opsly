@@ -9,6 +9,13 @@ import type {
   ListContactsFilter,
   ListResponse,
   Opportunity,
+  SearchOpportunitiesFilter,
+  Conversation,
+  ConversationMessage,
+  SearchConversationsFilter,
+  SearchConversationsResponse,
+  SendConversationMessageRequest,
+  SendConversationMessageResponse,
 } from './types.js';
 
 export interface GoHighLevelClientOptions {
@@ -24,6 +31,8 @@ export class GoHighLevelClient {
   private locationId: string;
   private apiVersion: string;
   private usesLeadConnector: boolean;
+  private lastRateLimitRemaining: number | null = null;
+  private lastRateLimitReset: string | null = null;
 
   constructor(
     apiKey: string,
@@ -75,7 +84,8 @@ export class GoHighLevelClient {
   private async request<T>(
     method: string,
     path: string,
-    body?: unknown
+    body?: unknown,
+    options?: { apiVersion?: string; headers?: Record<string, string> }
   ): Promise<T> {
     const url = `${this.baseUrl}${path}`;
     const maxRateLimitRetries = 3;
@@ -89,9 +99,10 @@ export class GoHighLevelClient {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.apiKey}`,
           Accept: 'application/json',
+          ...(options?.headers ?? {}),
         };
         if (this.usesLeadConnector) {
-          headers.Version = this.apiVersion;
+          headers.Version = options?.apiVersion ?? this.apiVersion;
         }
 
         const response = await fetch(url, {
@@ -119,6 +130,15 @@ export class GoHighLevelClient {
           }
 
           throw new Error(errorMessage);
+        }
+
+        const rateLimitRemaining = response.headers.get('X-RateLimit-Remaining');
+        const rateLimitReset = response.headers.get('X-RateLimit-Reset');
+        if (rateLimitRemaining !== null) {
+          this.lastRateLimitRemaining = Number(rateLimitRemaining);
+        }
+        if (rateLimitReset !== null) {
+          this.lastRateLimitReset = rateLimitReset;
         }
 
         const data = await response.json() as T;
@@ -254,6 +274,130 @@ export class GoHighLevelClient {
     return response.data || [];
   }
 
+  async searchConversations(
+    filter: SearchConversationsFilter & { locationId?: string } = {}
+  ): Promise<{ conversations: Conversation[]; total: number }> {
+    if (!this.usesLeadConnector) {
+      return { conversations: [], total: 0 };
+    }
+
+    const locationId = filter.locationId ?? this.requireLocationId();
+    const params = new URLSearchParams();
+    params.append('locationId', locationId);
+    if (filter.contactId) params.append('contactId', filter.contactId);
+    if (filter.query) params.append('query', filter.query);
+    if (filter.status) params.append('status', filter.status);
+    if (filter.page) params.append('page', String(filter.page));
+    if (filter.limit) params.append('limit', String(filter.limit));
+    if (filter.pageLimit) params.append('pageLimit', String(filter.pageLimit));
+
+    const response = await this.request<SearchConversationsResponse>(
+      'GET',
+      `/conversations/search${params.toString() ? `?${params.toString()}` : ''}`,
+      undefined,
+      { apiVersion: '2023-02-21' }
+    );
+
+    const rows = response.conversations ?? response.data ?? [];
+    return { conversations: rows, total: response.total ?? rows.length };
+  }
+
+  async getConversation(conversationId: string): Promise<Conversation> {
+    if (!this.usesLeadConnector) {
+      throw new Error('getConversation requires LeadConnector API');
+    }
+
+    const locationId = this.requireLocationId();
+    const response = await this.request<{ conversation?: Conversation; data?: Conversation }>(
+      'GET',
+      `/conversations/${conversationId}?locationId=${encodeURIComponent(locationId)}`,
+      undefined,
+      { apiVersion: '2023-02-21' }
+    );
+
+    const conversation = response.conversation ?? response.data;
+    if (!conversation) {
+      throw new Error(`Conversation ${conversationId} not found`);
+    }
+    return conversation;
+  }
+
+  async getConversationMessages(
+    conversationId: string,
+    options: { locationId?: string; limit?: number; page?: number } = {}
+  ): Promise<ConversationMessage[]> {
+    if (!this.usesLeadConnector) {
+      return [];
+    }
+
+    const locationId = options.locationId ?? this.requireLocationId();
+    const params = new URLSearchParams();
+    params.append('locationId', locationId);
+    if (options.limit) params.append('limit', String(options.limit));
+    if (options.page) params.append('page', String(options.page));
+
+    const response = await this.request<{
+      messages?: ConversationMessage[];
+      data?: ConversationMessage[];
+    }>(
+      'GET',
+      `/conversations/${conversationId}/messages${params.toString() ? `?${params.toString()}` : ''}`,
+      undefined,
+      { apiVersion: '2023-02-21' }
+    );
+
+    return response.messages ?? response.data ?? [];
+  }
+
+  async findConversationByContactId(contactId: string): Promise<Conversation | null> {
+    try {
+      const { conversations } = await this.searchConversations({ contactId, limit: 1 });
+      return conversations[0] ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  async sendConversationMessage(
+    data: SendConversationMessageRequest
+  ): Promise<SendConversationMessageResponse> {
+    if (!this.usesLeadConnector) {
+      throw new Error('sendConversationMessage requires LeadConnector API');
+    }
+
+    const locationId = this.requireLocationId();
+    const payload = {
+      locationId,
+      message: data.message,
+      type:
+        data.channel === 'email'
+          ? 'Email'
+          : data.channel === 'whatsapp'
+            ? 'WhatsApp'
+            : 'SMS',
+      status: data.status ?? 'pending',
+      ...(data.contactId && { contactId: data.contactId }),
+      ...(data.conversationId && { conversationId: data.conversationId }),
+      ...(data.replyToMessageId && { replyToMessageId: data.replyToMessageId }),
+      ...(data.templateId && { templateId: data.templateId }),
+      ...(data.variables && { variables: data.variables }),
+    };
+
+    const response = await this.request<{
+      id?: string;
+      status?: string;
+      conversationId?: string;
+      messageId?: string;
+    }>('POST', '/conversations/messages', payload, { apiVersion: '2023-02-21' });
+
+    return {
+      id: response.id || response.messageId || '',
+      status: response.status || 'pending',
+      conversationId: response.conversationId ?? data.conversationId,
+      messageId: response.messageId ?? response.id,
+    };
+  }
+
   async updateOpportunityStageForContact(
     contactId: string,
     pipelineStageId: string
@@ -293,7 +437,96 @@ export class GoHighLevelClient {
     return updated;
   }
 
+  getLastRateLimitInfo(): { remaining: number | null; resetAt: string | null } {
+    return {
+      remaining: this.lastRateLimitRemaining,
+      resetAt: this.lastRateLimitReset,
+    };
+  }
+
+  async listTags(): Promise<Array<{ id: string; name: string }>> {
+    const locationId = this.requireLocationId();
+    const path = `/tags/?locationId=${encodeURIComponent(locationId)}`;
+    const response = await this.request<{
+      tags?: Array<{ id: string; name: string }>;
+      data?: Array<{ id: string; name: string }>;
+    }>('GET', path);
+    return response.tags ?? response.data ?? [];
+  }
+
+  async deleteContact(contactId: string): Promise<void> {
+    const locationId = this.requireLocationId();
+    const path = `/contacts/${contactId}?locationId=${encodeURIComponent(locationId)}`;
+    await this.request<Record<string, unknown>>('DELETE', path);
+  }
+
+  async addContactTags(contactId: string, tags: string[]): Promise<void> {
+    const locationId = this.requireLocationId();
+    await this.request<Record<string, unknown>>('POST', `/contacts/${contactId}/tags`, {
+      locationId,
+      tags,
+    });
+  }
+
+  async searchOpportunities(
+    filter: SearchOpportunitiesFilter & { locationId?: string }
+  ): Promise<{ opportunities: Opportunity[]; total: number }> {
+    const locationId = filter.locationId ?? this.requireLocationId();
+    const response = await this.request<{
+      opportunities?: Opportunity[];
+      data?: Opportunity[];
+      total?: number;
+    }>('POST', '/opportunities/search', {
+      locationId,
+      ...(filter.pipelineId && { pipelineId: filter.pipelineId }),
+      ...(filter.pipelineStageId && { pipelineStageId: filter.pipelineStageId }),
+      ...(filter.contactId && { contactId: filter.contactId }),
+      page: filter.page ?? 1,
+      limit: filter.limit ?? 100,
+      ...(filter.pageLimit && { pageLimit: filter.pageLimit }),
+    });
+
+    const rows = response.opportunities ?? response.data ?? [];
+    return { opportunities: rows, total: response.total ?? rows.length };
+  }
+
   async sendMessage(data: SendMessageRequest): Promise<{ id: string; status: string }> {
+    if (this.usesLeadConnector && (data.conversationId || data.replyToMessageId)) {
+      const response = await this.sendConversationMessage({
+        contactId: data.contactId,
+        conversationId: data.conversationId,
+        replyToMessageId: data.replyToMessageId,
+        message: data.message,
+        channel: data.channel,
+        templateId: data.templateId,
+        variables: data.variables,
+      });
+
+      return {
+        id: response.id,
+        status: response.status,
+      };
+    }
+
+    if (this.usesLeadConnector && data.channel !== 'email') {
+      const conversation = await this.findConversationByContactId(data.contactId);
+      if (conversation?.id) {
+        const response = await this.sendConversationMessage({
+          contactId: data.contactId,
+          conversationId: conversation.id,
+          message: data.message,
+          channel: data.channel,
+          templateId: data.templateId,
+          variables: data.variables,
+        });
+
+        return {
+          id: response.id,
+          status: response.status,
+        };
+      }
+    }
+
     const endpoint = data.channel === 'email' ? '/v1/emails/send' : '/v1/messages/send';
     const payload = {
       contactId: data.contactId,

@@ -1,5 +1,5 @@
 import type { Contact } from '@intcloudsysops/services/gohighlevel';
-import type { GoHighLevelClient } from '@intcloudsysops/services/gohighlevel';
+import type { PeskidsGoHighLevelThreadClient } from '@/lib/gohighlevel-thread-client';
 
 const DEFAULT_LLM_GATEWAY_URL = 'http://localhost:3010';
 
@@ -15,7 +15,38 @@ export interface ReengagementCandidate {
 }
 
 export class LeadFollowupService {
-  constructor(private ghlClient: GoHighLevelClient) {}
+  constructor(private ghlClient: PeskidsGoHighLevelThreadClient) {}
+
+  private extractConversationId(contact: Contact): string | null {
+    const customFields = contact.customFields ?? {};
+    const candidates = [
+      customFields.ghl_conversation_id,
+      customFields.conversation_id,
+      customFields.conversationId,
+    ];
+
+    for (const candidate of candidates) {
+      if (typeof candidate === 'string' && candidate.trim()) {
+        return candidate.trim();
+      }
+    }
+
+    return null;
+  }
+
+  async resolveConversationId(contact: Contact): Promise<string | null> {
+    const fromFields = this.extractConversationId(contact);
+    if (fromFields) {
+      return fromFields;
+    }
+
+    try {
+      const conversation = await this.ghlClient.findConversationByContactId(contact.id);
+      return conversation?.id ?? null;
+    } catch {
+      return null;
+    }
+  }
 
   async findStaleLeads(hoursThreshold = 24): Promise<Contact[]> {
     const response = await this.ghlClient.getContacts({
@@ -99,14 +130,23 @@ export class LeadFollowupService {
   async sendFollowup(
     contactId: string,
     message: string,
-    channel: 'sms' | 'whatsapp'
+    channel: 'sms' | 'whatsapp',
+    options?: { conversationId?: string; replyToMessageId?: string }
   ): Promise<boolean> {
     try {
-      const result = await this.ghlClient.sendMessage({
-        contactId,
-        message,
-        channel,
-      });
+      const result = options?.conversationId
+        ? await this.ghlClient.sendConversationMessage({
+            contactId,
+            conversationId: options.conversationId,
+            replyToMessageId: options.replyToMessageId,
+            message,
+            channel,
+          })
+        : await this.ghlClient.sendMessage({
+            contactId,
+            message,
+            channel,
+          });
       return result.status === 'sent' || result.status === 'pending';
     } catch {
       return false;
@@ -142,7 +182,10 @@ export class LeadFollowupService {
     for (const contact of staleLeads) {
       try {
         const message = await this.generateFollowupMessage(contact, llmGatewayUrl);
-        const sent = await this.sendFollowup(contact.id, message, channel);
+        const conversationId = await this.resolveConversationId(contact);
+        const sent = await this.sendFollowup(contact.id, message, channel, {
+          ...(conversationId ? { conversationId } : {}),
+        });
 
         if (!sent) {
           failed++;

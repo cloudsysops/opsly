@@ -71,6 +71,75 @@ export interface SendMessageRequest {
   channel: 'whatsapp' | 'sms' | 'email';
   templateId?: string;
   variables?: Record<string, unknown>;
+  conversationId?: string;
+  replyToMessageId?: string;
+}
+
+export interface Conversation {
+  id: string;
+  contactId?: string;
+  locationId?: string;
+  status?: string;
+  unreadCount?: number;
+  lastMessageAt?: string;
+  lastMessagePreview?: string;
+  contact?: Contact;
+  assigneeId?: string;
+  source?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ConversationMessage {
+  id: string;
+  conversationId?: string;
+  contactId?: string;
+  direction?: 'inbound' | 'outbound';
+  channel?: 'sms' | 'whatsapp' | 'email' | 'call' | string;
+  body?: string;
+  text?: string;
+  message?: string;
+  subject?: string;
+  senderName?: string;
+  senderContact?: string;
+  status?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SearchConversationsFilter {
+  contactId?: string;
+  query?: string;
+  status?: string;
+  page?: number;
+  limit?: number;
+  pageLimit?: number;
+}
+
+export interface SearchConversationsResponse {
+  conversations?: Conversation[];
+  data?: Conversation[];
+  total?: number;
+  page?: number;
+  limit?: number;
+}
+
+export interface SendConversationMessageRequest {
+  contactId?: string;
+  conversationId?: string;
+  replyToMessageId?: string;
+  message: string;
+  channel: 'whatsapp' | 'sms' | 'email';
+  templateId?: string;
+  variables?: Record<string, unknown>;
+  status?: 'pending' | 'delivered' | 'failed' | 'read';
+}
+
+export interface SendConversationMessageResponse {
+  id: string;
+  status: string;
+  conversationId?: string;
+  messageId?: string;
 }
 
 export interface ListContactsFilter {
@@ -101,4 +170,24 @@ export interface Opportunity {
   pipelineStageId?: string;
   pipelineId?: string;
   name?: string;
+  status?: string;
+  createdAt?: string;
+  contact?: Contact;
+}
+
+export interface SearchOpportunitiesFilter {
+  pipelineId?: string;
+  pipelineStageId?: string;
+  contactId?: string;
+  page?: number;
+  limit?: number;
+  pageLimit?: number;
+}
+
+export interface SearchOpportunitiesResponse {
+  opportunities?: Opportunity[];
+  data?: Opportunity[];
+  total?: number;
+  page?: number;
+  limit?: number;
 }

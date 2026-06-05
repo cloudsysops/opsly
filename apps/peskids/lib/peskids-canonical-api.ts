@@ -1,4 +1,5 @@
 import { resolveAppOrigin } from '@/lib/app-url';
+import { sendLeadToGHL } from '@/lib/gohighlevel-lead-sync';
 
 export const OPSLY_API_ORIGIN = resolveAppOrigin({
   envName: 'NEXT_PUBLIC_OPSLY_API_URL',
@@ -25,6 +26,7 @@ export type CanonicalLeadResult =
       leadId: string;
       tenantSlug: string;
       createdAt: string;
+      ghlContactId?: string;
     }
   | {
       ok: false;
@@ -69,7 +71,10 @@ function normalizeReferralSource(
   return match ?? 'Other';
 }
 
-export function buildCanonicalLeadPayload(body: PeskidsLeadCaptureBody): Record<string, unknown> {
+export function buildCanonicalLeadPayload(
+  body: PeskidsLeadCaptureBody,
+  ghlContactId?: string
+): Record<string, unknown> {
   return {
     tenant_slug: 'peskids',
     name: body.name.trim(),
@@ -79,12 +84,14 @@ export function buildCanonicalLeadPayload(body: PeskidsLeadCaptureBody): Record<
     neighborhood: body.neighborhood?.trim() || 'Por confirmar',
     grade_interested: normalizeGrade(body.grade_interested),
     referral_source: normalizeReferralSource(body.referral_source),
+    ...(ghlContactId ? { ghl_contact_id: ghlContactId } : {}),
   };
 }
 
 export async function postPeskidsCanonicalLead(
   body: PeskidsLeadCaptureBody,
-  requestId: string
+  requestId: string,
+  ghlContactId?: string
 ): Promise<CanonicalLeadResult> {
   const url = `${OPSLY_API_ORIGIN}/api/public/tenants/peskids/leads`;
 
@@ -96,7 +103,7 @@ export async function postPeskidsCanonicalLead(
         'Content-Type': 'application/json',
         'x-request-id': requestId,
       },
-      body: JSON.stringify(buildCanonicalLeadPayload(body)),
+      body: JSON.stringify(buildCanonicalLeadPayload(body, ghlContactId)),
       cache: 'no-store',
     });
   } catch (error) {
@@ -129,5 +136,30 @@ export async function postPeskidsCanonicalLead(
     leadId,
     tenantSlug: typeof payload.tenant_slug === 'string' ? payload.tenant_slug : 'peskids',
     createdAt: typeof payload.created_at === 'string' ? payload.created_at : new Date().toISOString(),
+    ghlContactId,
   };
+}
+
+export async function postPeskidsLeadWithGHL(
+  body: PeskidsLeadCaptureBody,
+  requestId: string
+): Promise<CanonicalLeadResult> {
+  let ghlContactId: string | undefined;
+
+  try {
+    const ghlResult = await sendLeadToGHL({
+      parentName: body.name,
+      email: body.email,
+      phone: body.phone,
+      gradeInterested: body.grade_interested,
+      source: body.referral_source || 'web',
+    });
+    if (ghlResult) {
+      ghlContactId = ghlResult.ghlContactId;
+    }
+  } catch (err) {
+    console.warn('[peskids][lead] GHL sync failed, continuing with canonical:', err);
+  }
+
+  return postPeskidsCanonicalLead(body, requestId, ghlContactId);
 }

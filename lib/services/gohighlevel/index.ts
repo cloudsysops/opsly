@@ -22,4 +22,10 @@ export type {
   GoHighLevelResponse,
   ListResponse,
   Opportunity,
+  Conversation,
+  ConversationMessage,
+  SearchConversationsFilter,
+  SearchConversationsResponse,
+  SendConversationMessageRequest,
+  SendConversationMessageResponse,
 } from './types.js';

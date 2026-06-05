@@ -237,6 +237,7 @@ export type Database = {
       leads: {
         Row: {
           id: string;
+          ghl_contact_id: string | null;
           tenant_id: string;
           name: string;
           email: string;
@@ -249,12 +250,13 @@ export type Database = {
           referred_by_code: string | null;
           referral_discount_cents: number;
           referral_redemptions: number;
-          status: 'new' | 'contacted' | 'enrolled' | 'archived';
+          status: 'new' | 'contacted' | 'trial' | 'enrolled' | 'active' | 'renewal' | 'archived';
           admin_notes: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
+          ghl_contact_id?: string | null;
           tenant_id: string;
           name: string;
           email: string;
@@ -267,7 +269,7 @@ export type Database = {
           referred_by_code?: string | null;
           referral_discount_cents?: number;
           referral_redemptions?: number;
-          status?: 'new' | 'contacted' | 'enrolled' | 'archived';
+          status?: 'new' | 'contacted' | 'trial' | 'enrolled' | 'active' | 'renewal' | 'archived';
           admin_notes?: string | null;
         };
         Update: Partial<Database['public']['Tables']['leads']['Insert']>;
@@ -276,6 +278,7 @@ export type Database = {
       students: {
         Row: {
           id: string;
+          ghl_contact_id: string | null;
           tenant_id: string;
           name: string;
           grade: string;
@@ -287,6 +290,7 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
+          ghl_contact_id?: string | null;
           tenant_id: string;
           name: string;
           grade: string;

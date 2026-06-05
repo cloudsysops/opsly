@@ -1,20 +1,23 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { LeadFollowupService } from '../lead-followup.service';
-import type { GoHighLevelClient, Contact, ListResponse } from '@intcloudsysops/services/gohighlevel';
+import type { Contact, ListResponse } from '@intcloudsysops/services/gohighlevel';
+import type { PeskidsGoHighLevelThreadClient } from '@/lib/gohighlevel-thread-client';
 
-function createMockClient(): GoHighLevelClient {
+function createMockClient(): PeskidsGoHighLevelThreadClient {
   return {
     getContacts: vi.fn(),
     getContact: vi.fn(),
+    findConversationByContactId: vi.fn(),
     createContact: vi.fn(),
     updateContact: vi.fn(),
     sendMessage: vi.fn(),
+    sendConversationMessage: vi.fn(),
     createTask: vi.fn(),
     updateTask: vi.fn(),
     getTasks: vi.fn(),
     getAppointments: vi.fn(),
     updateOpportunityStageForContact: vi.fn(),
-  } as unknown as GoHighLevelClient;
+  } as unknown as PeskidsGoHighLevelThreadClient;
 }
 
 function makeContact(overrides: Partial<Contact> & { id: string }): Contact {
@@ -34,7 +37,7 @@ function makeContact(overrides: Partial<Contact> & { id: string }): Contact {
 }
 
 describe('LeadFollowupService', () => {
-  let mockClient: GoHighLevelClient;
+  let mockClient: PeskidsGoHighLevelThreadClient;
   let service: LeadFollowupService;
 
   beforeEach(() => {
@@ -160,10 +163,31 @@ describe('LeadFollowupService', () => {
       const result = await service.sendFollowup('c1', 'Hola!', 'sms');
       expect(result).toBe(false);
     });
+
+    it('passes conversation id when available', async () => {
+      vi.mocked(mockClient.sendConversationMessage).mockResolvedValue({
+        id: 'msg-thread',
+        status: 'pending',
+      });
+
+      const result = await service.sendFollowup('c1', 'Hola!', 'sms', {
+        conversationId: 'conv-1',
+      });
+
+      expect(result).toBe(true);
+      expect(mockClient.sendConversationMessage).toHaveBeenCalledWith({
+        contactId: 'c1',
+        conversationId: 'conv-1',
+        message: 'Hola!',
+        channel: 'sms',
+      });
+    });
   });
 
   describe('generateFollowupMessage', () => {
     it('builds fallback message when LLM Gateway is unreachable', async () => {
+      const fetchStub = vi.fn().mockResolvedValue(new Response('', { status: 500 }));
+      vi.stubGlobal('fetch', fetchStub);
       const contact = makeContact({
         id: 'c1',
         name: 'Maria Rodriguez',
@@ -172,12 +196,13 @@ describe('LeadFollowupService', () => {
 
       const message = await service.generateFollowupMessage(
         contact,
-        'http://localhost:1'
+        'http://gateway:3010'
       );
 
       expect(message).toContain('Maria');
       expect(message).toContain('Mateo');
       expect(message).toContain('Peskids');
+      vi.unstubAllGlobals();
     });
 
     it('returns fallback when LLM returns empty', async () => {
@@ -209,6 +234,8 @@ describe('LeadFollowupService', () => {
         data: [stale],
         total: 1,
       });
+
+      vi.mocked(mockClient.findConversationByContactId).mockResolvedValue(null);
 
       vi.spyOn(service, 'generateFollowupMessage').mockResolvedValue(
         'Hola Pedro, ¿te gustaría agendar una clase de prueba?'
@@ -246,6 +273,8 @@ describe('LeadFollowupService', () => {
         data: [stale],
         total: 1,
       });
+
+      vi.mocked(mockClient.findConversationByContactId).mockResolvedValue(null);
 
       vi.spyOn(service, 'generateFollowupMessage').mockResolvedValue('Test message');
       vi.mocked(mockClient.sendMessage).mockRejectedValue(new Error('Send failed'));
