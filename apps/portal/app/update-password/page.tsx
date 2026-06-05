@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react'
 import { Suspense, useEffect, useState, type ReactElement } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { PasswordInput } from '@/components/ui/input'
 import { isPortalTenantUser } from '@/lib/portal-access'
 import { createClient } from '@/lib/supabase'
 
@@ -79,26 +80,42 @@ function UpdatePasswordForm(): ReactElement {
             : 'Abre el enlace del correo o solicita uno nuevo en /login.'}
         </p>
         <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
-          <input
-            type="password"
-            value={password}
-            onChange={(ev) => setPassword(ev.target.value)}
-            className="input-terminal-caret w-full rounded-sm border border-ops-border bg-ops-bg/80 px-3 py-2.5 text-sm"
-            autoComplete="new-password"
-            required
-            minLength={8}
-            placeholder="Contraseña nueva"
-          />
-          <input
-            type="password"
-            value={confirm}
-            onChange={(ev) => setConfirm(ev.target.value)}
-            className="input-terminal-caret w-full rounded-sm border border-ops-border bg-ops-bg/80 px-3 py-2.5 text-sm"
-            autoComplete="new-password"
-            required
-            minLength={8}
-            placeholder="Confirmar"
-          />
+          <div>
+            <label
+              htmlFor="new-password"
+              className="mb-1 block text-xs uppercase tracking-wide text-ops-gray"
+            >
+              Nueva contraseña
+            </label>
+            <PasswordInput
+              id="new-password"
+              value={password}
+              onChange={(ev) => setPassword(ev.target.value)}
+              className="input-terminal-caret bg-ops-bg/80"
+              autoComplete="new-password"
+              required
+              minLength={8}
+              placeholder="Escribe tu nueva contraseña"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="confirm-password"
+              className="mb-1 block text-xs uppercase tracking-wide text-ops-gray"
+            >
+              Confirmar contraseña
+            </label>
+            <PasswordInput
+              id="confirm-password"
+              value={confirm}
+              onChange={(ev) => setConfirm(ev.target.value)}
+              className="input-terminal-caret bg-ops-bg/80"
+              autoComplete="new-password"
+              required
+              minLength={8}
+              placeholder="Repite la contraseña"
+            />
+          </div>
           {error ? (
             <p role="alert" className="text-sm text-ops-red">
               {error}
