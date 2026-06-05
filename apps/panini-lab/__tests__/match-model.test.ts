@@ -118,6 +118,11 @@ describe('tournamentWinProbabilities', () => {
     wcWins,
   }));
 
+  it('returns empty array for empty input', () => {
+    const results = tournamentWinProbabilities([]);
+    expect(results).toEqual([]);
+  });
+
   it('all probabilities are positive', () => {
     const results = tournamentWinProbabilities(teams);
     for (const r of results) {

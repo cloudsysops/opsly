@@ -8,8 +8,8 @@
  *  2. Model home and away expected goals (λ_home, λ_away) via Poisson.
  *  3. Compute P(win), P(draw), P(away win) by summing P(home goals = i) * P(away goals = j)
  *     over a grid (0..MAX_GOALS × 0..MAX_GOALS).
- *  4. Optionally apply a small collection bonus (fan engagement signal) — cosmetic only,
- *     capped at ±5% probability shift.
+ *  4. Optionally apply a small collection bonus (fan engagement signal) — shifts win/draw/loss
+ *     probabilities by up to ±5 percentage points when sticker collection data is present.
  *
  * References:
  *  - Dixon & Coles (1997) — bivariate Poisson with low-score correction
@@ -50,7 +50,8 @@ const DC_RHO = -0.13;
 // ── Poisson probability P(X = k | λ) ─────────────────────────────────────────
 
 function poissonPmf(lambda: number, k: number): number {
-  if (lambda <= 0 || k < 0) return 0;
+  if (k < 0) return 0;
+  if (lambda === 0) return k === 0 ? 1 : 0;
   // Use log-space to avoid overflow for large k
   let logP = -lambda;
   for (let i = 1; i <= k; i++) {
@@ -62,11 +63,13 @@ function poissonPmf(lambda: number, k: number): number {
 // ── Dixon-Coles τ correction for {0,0} {1,0} {0,1} {1,1} ────────────────────
 
 function dcCorrection(homeGoals: number, awayGoals: number, lh: number, la: number): number {
-  if (homeGoals === 0 && awayGoals === 0) return 1 - lh * la * DC_RHO;
-  if (homeGoals === 1 && awayGoals === 0) return 1 + la * DC_RHO;
-  if (homeGoals === 0 && awayGoals === 1) return 1 + lh * DC_RHO;
-  if (homeGoals === 1 && awayGoals === 1) return 1 - DC_RHO;
-  return 1;
+  let tau: number;
+  if (homeGoals === 0 && awayGoals === 0) tau = 1 - lh * la * DC_RHO;
+  else if (homeGoals === 1 && awayGoals === 0) tau = 1 + la * DC_RHO;
+  else if (homeGoals === 0 && awayGoals === 1) tau = 1 + lh * DC_RHO;
+  else if (homeGoals === 1 && awayGoals === 1) tau = 1 - DC_RHO;
+  else tau = 1;
+  return Math.max(0, tau);
 }
 
 // ── Derive attack/defense rating from team metadata ────────────────────────────
@@ -150,7 +153,7 @@ function applyCollectionBonus(
  *
  * @param home - Home team strength data
  * @param away - Away team strength data
- * @param options.homeAdvantage - home advantage multiplier (default 1.1 for WC neutral venues)
+ * @param options.homeAdvantage - home advantage multiplier (default 1.05 for WC neutral venues)
  * @param options.applyCollectionBonus - apply fan sticker collection nudge (default false)
  */
 export function predictMatch(
@@ -208,9 +211,13 @@ export function predictMatch(
     expectedGoalsAway: Math.round(lambdaAway * 100) / 100,
   };
 
-  // Apply collection bonus if requested
+  const collectionBonusApplied =
+    options.applyCollectionBonus === true &&
+    ((home.collectionCount ?? 0) + (away.collectionCount ?? 0)) > 0;
+
+  // Apply collection bonus if requested and collection data is present
   const { probHomeWin, probDraw, probAwayWin } =
-    options.applyCollectionBonus
+    collectionBonusApplied
       ? applyCollectionBonus(rawPred, home, away)
       : rawPred;
 
@@ -225,7 +232,7 @@ export function predictMatch(
     expectedGoalsHome: rawPred.expectedGoalsHome,
     expectedGoalsAway: rawPred.expectedGoalsAway,
     label,
-    collectionBonusApplied: Boolean(options.applyCollectionBonus),
+    collectionBonusApplied,
   };
 }
 
@@ -258,12 +265,14 @@ function buildLabel(
  *   - Recent form / qualifying performance (35%)
  *   - World Cup historical experience (25%)
  *
- * Collection of figuritas is intentionally excluded — predictions must be
- * based on real market data, not fan engagement.
+ * Collection of figuritas is intentionally excluded — predictions are based on
+ * real football data, not fan engagement.
  */
 export function tournamentWinProbabilities(
   teams: Array<{ name: string; fifaRank: number; recentForm: number; wcWins: number }>
 ): Array<{ name: string; winProbability: number; powerScore: number }> {
+  if (teams.length === 0) return [];
+
   const scores = teams.map((t) => {
     const rankScore = Math.max(40, 100 - (t.fifaRank - 1) * 1.0);
     const formScore = t.recentForm;
