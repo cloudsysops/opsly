@@ -6,16 +6,16 @@ vi.mock('../../../../../lib/supabase', () => ({
 }));
 
 vi.mock('../../../../../lib/auth', () => ({
-  requireAdminToken: vi.fn(),
+  requireAdminAccess: vi.fn(),
 }));
 
 import { getServiceClient } from '../../../../../lib/supabase';
-import { requireAdminToken } from '../../../../../lib/auth';
+import { requireAdminAccess } from '../../../../../lib/auth';
 
 const ADMIN_TOKEN = 'test-admin-token';
 
 function mockAuth(allow = true) {
-  (requireAdminToken as ReturnType<typeof vi.fn>).mockReturnValue(
+  (requireAdminAccess as ReturnType<typeof vi.fn>).mockResolvedValue(
     allow ? null : Response.json({ error: 'Unauthorized' }, { status: 401 })
   );
 }
