@@ -19,7 +19,7 @@ test.describe('Portal — public pages', () => {
     await expect(page.getByText('Opsly')).toBeVisible();
     await expect(page.getByLabel(/email/i)).toBeVisible();
     await expect(page.getByLabel(/^contraseña$/i)).toBeVisible();
-    await expect(page.getByRole('button', { name: /entrar/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Entrar', exact: true })).toBeVisible();
     expect(errors.filter((e) => !e.includes('favicon')).length).toBe(0);
   });
 
