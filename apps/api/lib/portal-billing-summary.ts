@@ -68,6 +68,10 @@ function parseQuantity(raw: string | undefined): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+/**
+ * Agrega el coste USD pendiente para un tenant consultando todas las métricas en una sola llamada MGET.
+ * Optimización Bolt: reduce network roundtrips de N+1 a 1.
+ */
 async function aggregatePendingUsdForTenant(
   redis: ConnectedMeteringRedis,
   tenantId: string
