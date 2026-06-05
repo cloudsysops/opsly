@@ -18,7 +18,7 @@ test.describe('Portal — public pages', () => {
     await expect(page.getByRole('heading', { name: /portal de cliente/i })).toBeVisible();
     await expect(page.getByText('Opsly')).toBeVisible();
     await expect(page.getByLabel(/email/i)).toBeVisible();
-    await expect(page.getByLabel(/contraseña/i)).toBeVisible();
+    await expect(page.getByLabel(/^contraseña$/i)).toBeVisible();
     await expect(page.getByRole('button', { name: /entrar/i })).toBeVisible();
     expect(errors.filter((e) => !e.includes('favicon')).length).toBe(0);
   });
