@@ -1,0 +1,41 @@
+# GHL Provisioning Report — Intcloudsysops
+
+- **Tenant slug:** intcloudsysops
+- **Location ID:** qD7Z9jt3owk0LMtKElow
+- **Mode:** EXECUTE
+- **Started:** 2026-06-05T01:14:13.031Z
+- **Finished:** 2026-06-05T01:14:15.006Z
+
+## Summary
+
+| Status | Count |
+|--------|-------|
+| Created | 0 |
+| Would create | 0 |
+| Already exists | 13 |
+| Skipped | 0 |
+| Manual required | 5 |
+| Blocked | 0 |
+
+## Items
+
+| Type | Name | Status | Notes |
+|------|------|--------|-------|
+| tag | lead-web | already_exists | HSGoktyN6DduGLNozEh6 |
+| tag | lead-referral | already_exists | hVBNPcuOtTgv70LYDTXt |
+| tag | lead-partner | already_exists | 1LsddrCHyTCIIVGyQpeh |
+| tag | hot-lead | already_exists | pm68gsBeyPi6NpZFRy9Z |
+| tag | opsly-tenant | already_exists | uv1ctxz4smV7cxJp3Bs9 |
+| tag | active-client | already_exists | dqSWsewag1Mz7mUkmRhE |
+| tag | churn-risk | already_exists | yKKqEKTCIpjtie9rJBfj |
+| custom_field | client_company | already_exists | RZjpRO7hCQwqJUjzriSO |
+| custom_field | deal_value | already_exists | CrTqOXsdhERPIOt5nult |
+| custom_field | service_tier | already_exists | QgIontXoCYTuCESlmdKa |
+| custom_field | tenant_slug | already_exists | tiES0Vw9LJocuaiMUiaL |
+| custom_field | lead_score | already_exists | 50xLyYT8R0DnYUZRGqiD |
+| email_template | Opsly — Welcome Lead | manual_required | Email templates must be created or imported in GHL UI (Claude Chrome / manual). Opsly records spec only. |
+| email_template | Opsly — Discovery Call Confirmation | manual_required | Email templates must be created or imported in GHL UI (Claude Chrome / manual). Opsly records spec only. |
+| sms_template | Opsly — Discovery Reminder | manual_required | SMS templates require GHL UI or Conversation AI setup — not exposed for safe automation. |
+| form | Opsly Agency Lead Capture | manual_required | This route is not yet supported by the IAM Service. Please update your IAM config. |
+| pipeline | Opsly Agency Sales | manual_required | Pipeline not found in location — create in GHL UI or import snapshot |
+| calendar | Discovery Call | already_exists | Calendar exists — availability schedule applied |

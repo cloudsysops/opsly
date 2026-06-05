@@ -1,0 +1,117 @@
+{
+  "tenantName": "Peskids",
+  "tenantSlug": "peskids",
+  "locationId": "KJ5LawrOOe3hIerqtMRu",
+  "dryRun": false,
+  "startedAt": "2026-06-05T01:08:38.963Z",
+  "finishedAt": "2026-06-05T01:08:41.126Z",
+  "summary": {
+    "created": 0,
+    "skipped": 0,
+    "alreadyExists": 12,
+    "manualRequired": 4,
+    "blocked": 0,
+    "wouldCreate": 0
+  },
+  "items": [
+    {
+      "resourceType": "tag",
+      "name": "lead-web",
+      "status": "already_exists",
+      "resourceId": "8KcvFYRH27MrNeXvOoPx"
+    },
+    {
+      "resourceType": "tag",
+      "name": "lead-n8n",
+      "status": "already_exists",
+      "resourceId": "LJVbq2OtiUEf1yRGwynJ"
+    },
+    {
+      "resourceType": "tag",
+      "name": "trial-booked",
+      "status": "already_exists",
+      "resourceId": "4TyFxkBVlomWtu9H54FJ"
+    },
+    {
+      "resourceType": "tag",
+      "name": "active-student",
+      "status": "already_exists",
+      "resourceId": "LhkRi3dwG5JXIYHZvis6"
+    },
+    {
+      "resourceType": "tag",
+      "name": "renewal-due",
+      "status": "already_exists",
+      "resourceId": "j8BFpLZ7s1agR3RvXSv6"
+    },
+    {
+      "resourceType": "custom_field",
+      "name": "child_name",
+      "status": "already_exists",
+      "resourceId": "Mfp5OHVE9ZeTUHDkcu7L"
+    },
+    {
+      "resourceType": "custom_field",
+      "name": "child_age",
+      "status": "already_exists",
+      "resourceId": "eTwe7i69DeTghzGmaVBe"
+    },
+    {
+      "resourceType": "custom_field",
+      "name": "interest_level",
+      "status": "already_exists",
+      "resourceId": "06cxG6FTwcR56tTgkrAt"
+    },
+    {
+      "resourceType": "custom_field",
+      "name": "preferred_schedule",
+      "status": "already_exists",
+      "resourceId": "1pkF1oI1IRcExcGnB7Du"
+    },
+    {
+      "resourceType": "email_template",
+      "name": "Peskids — Welcome Parent",
+      "status": "manual_required",
+      "message": "Email templates must be created or imported in GHL UI (Claude Chrome / manual). Opsly records spec only."
+    },
+    {
+      "resourceType": "email_template",
+      "name": "Peskids — Trial Class Confirmation",
+      "status": "manual_required",
+      "message": "Email templates must be created or imported in GHL UI (Claude Chrome / manual). Opsly records spec only."
+    },
+    {
+      "resourceType": "sms_template",
+      "name": "Peskids — Trial Reminder",
+      "status": "manual_required",
+      "message": "SMS templates require GHL UI or Conversation AI setup — not exposed for safe automation."
+    },
+    {
+      "resourceType": "form",
+      "name": "Peskids Lead Capture",
+      "status": "manual_required",
+      "message": "This route is not yet supported by the IAM Service. Please update your IAM config."
+    },
+    {
+      "resourceType": "pipeline",
+      "name": "Peskids Enrollment",
+      "status": "already_exists",
+      "message": "Pipeline and stages validated",
+      "resourceId": "bWKAQuLTQUjeGAvgf9fX"
+    },
+    {
+      "resourceType": "calendar",
+      "name": "Trial Class",
+      "status": "already_exists",
+      "message": "Calendar exists — availability schedule applied",
+      "resourceId": "rodtWST0HJJpvrfzPZo5"
+    },
+    {
+      "resourceType": "calendar",
+      "name": "Assessment",
+      "status": "already_exists",
+      "message": "Calendar validated",
+      "resourceId": "cdqSVs1H4DUcoV6WFkeg"
+    }
+  ]
+}

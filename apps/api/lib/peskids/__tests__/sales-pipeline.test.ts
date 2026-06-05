@@ -129,7 +129,8 @@ describe('updateLeadStage', () => {
       expect.objectContaining({ stage: 'Contacted' })
     );
     expect(fromQuery.update).toHaveBeenCalledTimes(1);
-    expect(updateOpportunityStageMock).toHaveBeenCalledWith('peskids', 'ghl-lead-1', '2');
+    // Real GHL stage ID for "Contacted" in the Peskids Enrollment pipeline
+    expect(updateOpportunityStageMock).toHaveBeenCalledWith('peskids', 'ghl-lead-1', '75742c84-9063-4539-b755-b09bfdeb6346');
   });
 
   it('updates stage locally but allows GHL to fail gracefully', async () => {
@@ -185,7 +186,7 @@ describe('updateLeadStage', () => {
     expect(updateOpportunityStageMock).toHaveBeenCalled();
   });
 
-  it('skips GHL sync when stage has no mapping (Active Student)', async () => {
+  it('syncs Active Student to GHL using real stage ID', async () => {
     const fetchQuery = createQuery({
       data: {
         id: 'lead-2',
@@ -225,6 +226,8 @@ describe('updateLeadStage', () => {
       })),
     });
 
+    updateOpportunityStageMock.mockResolvedValue({ success: true });
+
     const { updateLeadStage } = await import('../sales-pipeline');
     const result = await updateLeadStage('peskids', 'lead-2', 'Active Student');
 
@@ -232,7 +235,12 @@ describe('updateLeadStage', () => {
       ok: true,
       lead: expect.objectContaining({ id: 'lead-2', stage: 'Active Student' }),
     });
-    expect(updateOpportunityStageMock).not.toHaveBeenCalled();
+    // All stages now have real GHL IDs — Active Student must sync
+    expect(updateOpportunityStageMock).toHaveBeenCalledWith(
+      'peskids',
+      'ghl-lead-2',
+      'c9b615f7-b4da-416c-a3b1-28be6da1d063' // Real GHL stage ID for Active Student
+    );
   });
 
   it('returns error when database update fails', async () => {

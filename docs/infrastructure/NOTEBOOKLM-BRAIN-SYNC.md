@@ -90,6 +90,14 @@ NOTEBOOKLM_NOTEBOOK_ID=8447967c-f375-47d6-a920-c3100efd7e7b
 NOTEBOOKLM_DEFAULT_TENANT_SLUG=platform  # optional, defaults to "platform"
 ```
 
+### NotebookLM reference notebook
+
+Notebook de consulta compartido para contexto operativo y sesiones de coordinación:
+
+- `https://notebooklm.google.com/notebook/2255b572-9468-425b-8260-806bdccecdc9?authuser=1`
+
+Use this as a reference notebook only. It does not replace the production NotebookLM ID stored in Doppler.
+
 ### Dependencies
 
 - **Node.js 20+** (for running scripts)
