@@ -199,7 +199,7 @@ export function ClassesPanel(): React.ReactElement {
                 />
               </div>
               <div>
-                <Label htmlFor="class-level">Nivel (1–6)</Label>
+                <Label htmlFor="class-level">Grupo de edad (1–6)</Label>
                 <Input
                   id="class-level"
                   type="number"

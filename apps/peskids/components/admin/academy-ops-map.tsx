@@ -108,7 +108,7 @@ function buildAcademyDomains(data: DashboardData): AcademyDomain[] {
       status: 'ready',
       owner: 'Opsly',
       summary: `${data.operations.enrollments_today} inscripciones hoy y calendario de clases activo.`,
-      nextAction: 'Mantener cupos, niveles y sesiones en el dashboard operativo.',
+      nextAction: 'Mantener cupos, grupos por edad y sesiones en el dashboard operativo.',
       icon: iconMap.classes,
     },
     {

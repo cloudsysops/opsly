@@ -304,7 +304,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
           achievements={['Primera clase completada', 'Burbujas', 'Flotación dorsal']}
           streakLabel="Racha familiar"
           streakValue="8"
-          progressLabel="Progreso hacia el siguiente nivel"
+          progressLabel="Progreso hacia el siguiente grupo de edad"
           progressPercent={62}
           accent="amber"
           className="mb-8"
@@ -313,7 +313,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
         <MascotPathWidget
           className="mb-8"
           title="Tu mascota del agua"
-          description="Cada peque elige un avatar y lo hace crecer mientras sube de nivel."
+          description="Cada peque elige un avatar animal y lo acompaña dentro de su grupo por edad."
         />
 
         <Card className="mb-8 overflow-hidden border-pk-border bg-white shadow-card">

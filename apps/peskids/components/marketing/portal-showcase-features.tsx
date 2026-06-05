@@ -41,13 +41,13 @@ const adminLeads = [
   {
     name: 'Camila Restrepo',
     email: 'camila@correo.com',
-    note: 'Nivel 2 · solicita clase de prueba',
+    note: 'Grupo 2 · solicita clase de prueba',
     tone: 'teal',
   },
   {
     name: 'Sebastián Pérez',
     email: 'sebastian@correo.com',
-    note: 'Nivel 4 · pidió cupo nocturno',
+    note: 'Grupo 4 · pidió cupo nocturno',
     tone: 'amber',
   },
   {
@@ -224,20 +224,20 @@ function SchedulePreview(): React.ReactElement {
 function ProgressPreview(): React.ReactElement {
   return (
     <div className="rounded-[1.75rem] border border-pk-border bg-white p-4">
-      <div className="flex items-center gap-3">
-        <div
-          className="flex h-12 w-12 items-center justify-center rounded-2xl text-2xl"
-          style={{
-            backgroundImage: `linear-gradient(to bottom right, ${peskidsColorTokens.secondary.lightYellow}, #FFC20E)`,
-          }}
-        >
-          🦈
+        <div className="flex items-center gap-3">
+          <div
+            className="flex h-12 w-12 items-center justify-center rounded-2xl text-2xl"
+            style={{
+              backgroundImage: `linear-gradient(to bottom right, ${peskidsColorTokens.secondary.lightYellow}, #FFC20E)`,
+            }}
+          >
+            🦈
+          </div>
+          <div>
+            <p className="text-xs text-pk-mutedText">Mateo · 5 años</p>
+            <p className="text-lg font-bold tracking-tight text-pk-ink">Grupo por edad · Delfín</p>
+          </div>
         </div>
-        <div>
-          <p className="text-xs text-pk-mutedText">Mateo · 5 años</p>
-          <p className="text-lg font-bold tracking-tight text-pk-ink">Nivel 3 · Delfines</p>
-        </div>
-      </div>
 
       <div className="mt-4 rounded-[1.5rem] bg-pk-deep p-4 text-white">
         <div className="flex items-center justify-between gap-3">
@@ -547,7 +547,7 @@ export function PortalShowcaseFeatures(): React.ReactElement {
 
       <PreviewFrame
         eyebrow="Progreso"
-        title="Nivel y logros"
+        title="Grupos por edad y logros"
         description="Lo que ya avanzó y lo que viene después."
         accent="amber"
       >

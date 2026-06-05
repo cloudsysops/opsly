@@ -48,10 +48,13 @@ export function FamilyEmailLogin(): React.ReactElement {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-pk-bg px-4 py-12">
       <div className="w-full max-w-md rounded-2xl border border-pk-border bg-pk-surface p-8 shadow-lg">
-        <h1 className="text-2xl font-semibold text-pk-text">Acceso familias</h1>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-pk-mutedText">
+          Acceso por invitación
+        </p>
+        <h1 className="mt-2 text-2xl font-semibold text-pk-text">Portal familias</h1>
         <p className="mt-2 text-sm text-pk-sub">
-          Ingresa el correo asociado a tu reserva o estudiante. Solo recibirás enlace si ya estás
-          registrado en Peskids.
+          Ingresa el correo asociado a tu reserva o estudiante. Solo recibirás acceso si ya
+          estás invitado al portal de familias de Peskids.
         </p>
 
         {state === 'sent' ? (
@@ -60,7 +63,9 @@ export function FamilyEmailLogin(): React.ReactElement {
             role="status"
           >
             {message}
-            <p className="mt-2 text-pk-sub">Revisa bandeja de entrada y spam. El enlace expira en poco tiempo.</p>
+            <p className="mt-2 text-pk-sub">
+              Revisa bandeja de entrada y spam. El enlace expira en poco tiempo.
+            </p>
           </div>
         ) : (
           <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
@@ -104,7 +109,7 @@ export function FamilyEmailLogin(): React.ReactElement {
               disabled={state === 'submitting'}
               className="w-full rounded-lg bg-pk-primary px-4 py-2.5 font-medium text-white hover:bg-pk-primary/90 disabled:opacity-60"
             >
-              {state === 'submitting' ? 'Enviando…' : 'Enviar enlace seguro'}
+              {state === 'submitting' ? 'Enviando…' : 'Solicitar acceso por invitación'}
             </button>
           </form>
         )}
