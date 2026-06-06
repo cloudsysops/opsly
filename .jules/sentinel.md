@@ -17,3 +17,8 @@
 **Vulnerability:** The public tenant status endpoint extracted client IP by trusting the first element of `x-forwarded-for` or falling back to `x-real-ip`. This is vulnerable to spoofing if the application is fronted by a proxy (like Cloudflare) that doesn't strip existing `x-forwarded-for` headers.
 **Learning:** Standard IP extraction logic in standard libraries or simple helper functions is often insufficient for security-critical operations like rate limiting or geo-fencing when behind a CDN.
 **Prevention:** Prioritize platform-specific, verified headers like `cf-connecting-ip` (Cloudflare) or `x-envoy-external-address`. Never trust user-provided `x-forwarded-for` without verifying the proxy chain.
+
+## 2026-06-05 - [Missing Authorization in Social Publish API]
+**Vulnerability:** The `/api/social/publish` endpoint was exposed without any authentication or authorization checks. Anyone could trigger social media publishing by sending a POST request to this endpoint with valid content.
+**Learning:** Functional modules (like Social Publish) might be implemented without considering the centralized security helpers (`requireAdminAccess`) if they are developed as independent features or "autonomous agent" tools.
+**Prevention:** Audit all POST/PATCH/DELETE handlers in the API to ensure they explicitly call authorization helpers. Ensure that integration tests for these features actually test with and without valid authorization headers.
