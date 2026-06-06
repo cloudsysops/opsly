@@ -20,7 +20,7 @@ test.describe('Portal — public pages', () => {
     await expect(page.getByLabel(/email/i)).toBeVisible();
     // Use locator().first() or a more specific role for the password input to resolve ambiguity
     await expect(page.locator('input[name="password"]')).toBeVisible();
-    await expect(page.getByRole('button', { name: /entrar/i, exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Entrar', exact: true })).toBeVisible();
     expect(errors.filter((e) => !e.includes('favicon')).length).toBe(0);
   });
 
