@@ -36,7 +36,7 @@ export async function verifySignature(
   parsedPayload?: OpenWAWebhookPayload
 ): Promise<boolean> {
   const s = secret ?? getWebhookSecret();
-  if (!s) return true;
+  if (!s) return false;
   if (!signatureHeader) return false;
 
   const normalized = signatureHeader.startsWith('sha256=')

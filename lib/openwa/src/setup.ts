@@ -44,7 +44,8 @@ export async function openwaRegisterWebhook(
   if (!c) throw new Error('OpenWA not configured');
 
   const webhookUrl = webhookUrlFromContext(ctx);
-  const hmacKey = getWebhookSecret(tenantSlug) ?? '';
+  const hmacKey = getWebhookSecret(tenantSlug);
+  if (!hmacKey) throw new Error('OpenWA webhook secret not configured');
 
   const session = await getSession(c).catch(() => createSession(undefined, c));
   const existing = await listWebhooks(c).catch(() => []);

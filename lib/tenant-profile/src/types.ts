@@ -1,4 +1,4 @@
-export type TenantStackType = 'incubator-app' | 'full-tenant-stack' | string;
+export type TenantStackType = 'incubator-app' | 'full-tenant-stack' | (string & Record<never, never>);
 
 export interface TenantProfile {
   tenant_name: string;

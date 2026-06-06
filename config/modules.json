@@ -190,7 +190,7 @@
       "status": "experimental",
       "dependencies": [],
       "mainFile": "lib/openwa/src/index.ts",
-      "exports": ["getConfigForTenant", "sendTextMessageForTenant", "verifyWebhookSignature"]
+      "exports": ["getConfigForTenant", "sendTextMessageForTenant", "verifySignature"]
     },
     "tenant-profile": {
       "name": "@intcloudsysops/tenant-profile",

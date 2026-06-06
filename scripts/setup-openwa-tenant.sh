@@ -37,7 +37,8 @@ run() {
 }
 
 if [[ -z "${!API_KEY_VAR:-}" && -z "${OPENWA_API_KEY:-}" ]]; then
-  echo "WARN: set ${API_KEY_VAR} or OPENWA_API_KEY in Doppler before production" >&2
+  echo "ERROR: set ${API_KEY_VAR} or OPENWA_API_KEY before running this script" >&2
+  exit 1
 fi
 
 if docker ps -a --format '{{.Names}}' | grep -qx "$CONTAINER"; then
@@ -48,7 +49,7 @@ else
   run docker run -d \
     --name "$CONTAINER" \
     --restart unless-stopped \
-    -e "API_KEY=${!API_KEY_VAR:-${OPENWA_API_KEY:-change-me}}" \
+    -e "API_KEY=${!API_KEY_VAR:-${OPENWA_API_KEY}}" \
     -e DATABASE_PATH=/app/data/openwa.sqlite \
     -v "${CONTAINER}_data:/app/data" \
     -p "127.0.0.1:2785:2785" \

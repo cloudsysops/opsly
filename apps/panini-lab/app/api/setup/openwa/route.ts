@@ -1,14 +1,22 @@
 import { NextRequest } from 'next/server';
-import { isOpenWAEnabled, openwaRegisterWebhook, openwaSetupStatus } from '@intcloudsysops/openwa';
+import {
+  getConfigForTenant,
+  isOpenWAEnabledForTenant,
+  openwaRegisterWebhook,
+  openwaSetupStatus,
+} from '@intcloudsysops/openwa';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
+
+const TENANT_SLUG = 'panini-lab';
 
 export async function GET(req: NextRequest) {
   const requestId = resolveRequestId(req);
-  if (!isOpenWAEnabled()) {
-    return errorJson(requestId, 'OpenWA not configured (OPENWA_API_URL / OPENWA_API_KEY)', 503);
+  if (!isOpenWAEnabledForTenant(TENANT_SLUG)) {
+    return errorJson(requestId, 'OpenWA not configured (OPENWA_PANINI_LAB_API_URL / OPENWA_PANINI_LAB_API_KEY)', 503);
   }
   try {
-    const { session, qrCode } = await openwaSetupStatus();
+    const cfg = getConfigForTenant(TENANT_SLUG)!;
+    const { session, qrCode } = await openwaSetupStatus(cfg);
     return successJson(requestId, { session, qrCode });
   } catch (err) {
     return errorJson(
@@ -21,13 +29,14 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const requestId = resolveRequestId(req);
-  if (!isOpenWAEnabled()) {
+  if (!isOpenWAEnabledForTenant(TENANT_SLUG)) {
     return errorJson(requestId, 'OpenWA not configured', 503);
   }
   const host = req.headers.get('host') ?? 'panini.op-sly.com';
   const proto = req.headers.get('x-forwarded-proto') ?? 'https';
   try {
-    const result = await openwaRegisterWebhook({ host, proto }, undefined, 'panini-lab');
+    const cfg = getConfigForTenant(TENANT_SLUG)!;
+    const result = await openwaRegisterWebhook({ host, proto }, cfg, TENANT_SLUG);
     return successJson(requestId, { ...result });
   } catch (err) {
     return errorJson(

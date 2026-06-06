@@ -27,7 +27,7 @@ done < <(find apps/peskids apps/panini-lab apps/portal apps/admin -path '*/lib/*
 
 # Duplicate integration client filenames across tenant apps (same basename)
 dupes=$(find apps -path '*/lib/*client*.ts' ! -path '*/node_modules/*' 2>/dev/null \
-  | xargs -I{} basename {} \
+  | while IFS= read -r f; do basename "$f"; done \
   | sort | uniq -d || true)
 if [[ -n "$dupes" ]]; then
   while IFS= read -r base; do
