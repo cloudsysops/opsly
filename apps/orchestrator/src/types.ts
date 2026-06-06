@@ -37,7 +37,9 @@ export type JobType =
   /** Validación npm (type-check / test / build) en `repo_root`; escribe `.cursor/responses/validation-*.json`. */
   | 'test_validation'
   /** Super Orchestrator v2 - inteligente multi-agente */
-  | 'super_orchestrator';
+  | 'super_orchestrator'
+  /** Content Studio → MoneyPrinterTurbo video rendering. Payload: `ContentVideoPayload`. */
+  | 'content_video';
 
 export interface TestValidationPayload {
   type: 'test_validation';

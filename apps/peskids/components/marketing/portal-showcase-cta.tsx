@@ -40,7 +40,7 @@ function ReferralSection(): React.ReactElement {
             <MiniReferralStep
               icon={Gift}
               title="2. Se registra"
-              text="La familia entra con tu código."
+              text="La familia entra con invitación."
             />
             <MiniReferralStep
               icon={BadgePercent}
@@ -55,7 +55,7 @@ function ReferralSection(): React.ReactElement {
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-bold text-pk-ink">Tu espacio de familia</p>
-                <p className="mt-1 text-xs text-pk-mutedText">Código, referidos y saldo.</p>
+                <p className="mt-1 text-xs text-pk-mutedText">Invitación, referidos y saldo.</p>
               </div>
               <span className="rounded-full bg-pk-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-pk-primary">
                 Activo
@@ -65,7 +65,7 @@ function ReferralSection(): React.ReactElement {
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl bg-white p-4 shadow-sm">
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-pk-mutedText">
-                  Código de familia
+                  Invitación de familia
                 </p>
                 <p className="mt-2 font-mono text-lg font-semibold text-pk-ink">PK-8H2KQ9</p>
               </div>

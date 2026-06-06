@@ -7,7 +7,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "peskids-lead",
-        "responseMode": "responseNode",
+        "responseMode": "lastNode",
         "options": {}
       },
       "id": "peskids-lead-webhook",
@@ -49,20 +49,6 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [520, 0]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ { ok: true, id: $json[0]?.id ?? null, workflow: 'peskids-lead-capture', received_at: new Date().toISOString() } }}",
-        "options": {
-          "responseCode": 202
-        }
-      },
-      "id": "peskids-response",
-      "name": "Accepted",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [780, 0]
     }
   ],
   "connections": {
@@ -88,17 +74,7 @@
         ]
       ]
     },
-    "Insert Lead to Supabase": {
-      "main": [
-        [
-          {
-            "node": "Accepted",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    }
+    "Insert Lead to Supabase": { "main": [[]] }
   },
   "settings": {
     "executionOrder": "v1"

@@ -1,5 +1,6 @@
 'use client';
 
+import { type MouseEvent } from 'react';
 import Link from 'next/link';
 import { WhatsAppIcon } from '@/components/contact/whatsapp-icon';
 import { buildWhatsAppUrl, PESKIDS_CONTACT } from '@/lib/contact-channels';
@@ -79,14 +80,14 @@ export function WhatsAppLink({
             color: whatsappDark,
           })),
       }}
-      onMouseEnter={(e) => {
+      onMouseEnter={(e: MouseEvent<HTMLAnchorElement>) => {
         if (variant === 'hero' || variant === 'button' || variant === 'onDark') {
           e.currentTarget.style.backgroundColor = whatsappHover;
         } else if (variant === 'pill') {
           e.currentTarget.style.backgroundColor = `${whatsappGreen}26`;
         }
       }}
-      onMouseLeave={(e) => {
+      onMouseLeave={(e: MouseEvent<HTMLAnchorElement>) => {
         if (variant === 'hero' || variant === 'button' || variant === 'onDark') {
           e.currentTarget.style.backgroundColor = whatsappGreen;
         } else if (variant === 'pill') {

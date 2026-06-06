@@ -63,10 +63,9 @@ DO $$ BEGIN
   CREATE POLICY calls_authenticated_select ON public.calls FOR SELECT
     USING (
       auth.uid() IS NOT NULL
-      AND tenant_id = (
-        SELECT tenant_slug FROM public.portal_sessions
-        WHERE user_id = auth.uid()
-        LIMIT 1
+      AND tenant_id = COALESCE(
+        auth.jwt() #>> '{user_metadata,tenant_slug}',
+        auth.jwt() #>> '{app_metadata,tenant_slug}'
       )
     );
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
@@ -83,10 +82,9 @@ DO $$ BEGIN
   CREATE POLICY voice_transcriptions_authenticated_select ON public.voice_transcriptions FOR SELECT
     USING (
       auth.uid() IS NOT NULL
-      AND tenant_id = (
-        SELECT tenant_slug FROM public.portal_sessions
-        WHERE user_id = auth.uid()
-        LIMIT 1
+      AND tenant_id = COALESCE(
+        auth.jwt() #>> '{user_metadata,tenant_slug}',
+        auth.jwt() #>> '{app_metadata,tenant_slug}'
       )
     );
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;

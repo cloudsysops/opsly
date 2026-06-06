@@ -1,88 +1,89 @@
 ---
-status: draft
+status: canon
 owner: operations
-last_review: 2026-05-24
-type: agent-doc
-tags:
-  - opsly/agents
+last_review: 2026-06-02
+scope: multi-agent-conventions
 ---
 
-# Guía de agentes en paralelo — Opsly
+# AGENTS-GUIDE — Conventions for Parallel Agents
 
-> **No es un segundo `AGENTS.md`.** La **fuente de verdad del estado operativo** (bloqueantes, próximo paso, URL raw, Fase 4) está en **`AGENTS.md`** en la raíz del repo — léelo **siempre** al iniciar trabajo. **Este documento** define únicamente **cómo coordinar varios asistentes o procesos** (Cursor, Claude, n8n, orchestrator) sin pisarse ni duplicar contexto.
+> This file is only for multi-agent conventions. It does not replace `AGENTS.md`.
+> `AGENTS.md` = current session state, blockers, and next increment.
+> This guide = shared rules for parallel sessions and automation.
 
-Convenciones para operar varios asistentes (Cursor, Claude, automatismos) sobre el mismo repo sin divergir del contexto publicado en `AGENTS.md` / `VISION.md`.
+## /goal
 
-**Guardrails legales y operativos (producción, secretos, infra):** lee siempre [`AGENT-GUARDRAILS.md`](AGENT-GUARDRAILS.md) — qué un agente **no** debe modificar sin humano.
+Founder Mode — Peskids → Blueprint → Agency Replication
 
-### SSH y usuarios remotos
+- Peskids is the live case and visible brand.
+- Blueprint is the reusable artifact extracted from Peskids.
+- Agency is the distribution channel for replicating the Blueprint.
+- Do not create new platform or infrastructure work unless it directly helps capture leads, convert leads, measure conversion, or replicate the model.
 
-Antes de proponer comandos `ssh`, leer **[`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md)** (`vps-dragon` en el VPS, `opslyquantum` en el worker Ubuntu, `cboteros` solo como ejemplo de usuario en la Mac admin). El humano **no** debe cambiar de usuario local en la Mac para usar Cursor; el agente sí debe usar el usuario **remoto** correcto en cada host.
+## What "Go Live" means for Peskids
 
-**GitHub Copilot en comentarios de PR:** no puede usar SSH/Tailscale; ver **[`COPILOT-CODING-AGENT.md`](COPILOT-CODING-AGENT.md)**. Cursor local y Actions con secrets sí.
+Peskids is Go Live only when the end-to-end path exists:
 
-## Qué es un agente en Opsly
+1. Lead enters through GHL.
+2. Lead/contact fields are captured and validated.
+3. Follow-up exists and is operational.
+4. Trial class can be offered and tracked.
+5. Enrollment is recorded.
+6. Active student is visible in the dashboard or Opsly Executive.
+7. Supabase persists the event with tenant-scoped identity.
 
-- **Agente humano + herramienta:** persona que sigue `AGENTS.md`, `VISION.md` y ADRs.
-- **Agente automatizado:** proceso que lee contexto publicado (URL raw de `AGENTS.md`), ejecuta jobs (`orchestrator`), o reacciona a webhooks (n8n, Discord, `cursor-prompt-monitor`).
-- **MCP OpenClaw:** `apps/mcp` expone tools que llaman al API de control y opcionalmente GitHub; sirve como “brazo” uniforme para LLMs.
+If any of those steps are missing, Peskids is not Go Live yet.
 
-## Cómo crear un agente nuevo
+## Session Discipline
 
-1. **Documentar** el rol y límites en `AGENTS.md` (sección Completado / Próximo paso) o en un runbook bajo `docs/`.
-2. **Autenticación:** tokens solo en Doppler (`ops-intcloudsysops` / `prd`); nunca en git.
-3. **Ejecución:** si es batch, preferir cola `openclaw` + worker; si es interactivo, MCP o API con `PLATFORM_ADMIN_TOKEN` según política.
-4. **Contexto:** tras cambios de arquitectura, actualizar `VISION.md` o un ADR en `docs/adr/`.
+- One session = one theme = one branch.
+- Do not mix Peskids, Blueprint, and Agency in the same worktree unless the task explicitly requires all three.
+- If the work spans more than one theme, split it before editing.
+- If a branch does not represent the theme, rename or recreate it.
 
-## Límites por plan (startup:2, business:5, enterprise:∞)
+## Scope Priority
 
-Referencia de producto alineada con `VISION.md` y `docs/OPENCLAW-ARCHITECTURE.md`:
+1. Peskids live case.
+2. Academy Blueprint.
+3. Agency Blueprint.
+4. Broader Opsly platform work only when it directly supports capture, conversion, measurement, or replication.
 
-| Plan       | Agentes paralelos (orientativo) | Notas                                     |
-| ---------- | ------------------------------- | ----------------------------------------- |
-| Startup    | 2                               | Colas y workers con menor paralelismo.    |
-| Business   | 5                               | Mayor profundidad de cola y concurrencia. |
-| Enterprise | Sin tope contractual en código  | Ajustar en política/infra por contrato.   |
+## Where Each Thing Belongs
 
-La aplicación de estos límites en runtime es responsabilidad del motor de decisiones y de la configuración de BullMQ / rate limits por tenant.
+- `OPSLY_CONTEXT.md`: global stable context.
+- `docs/tenants/<slug>/TENANT_<SLUG>.md`: tenant context entrypoint.
+- `docs/blueprints/*.md`: compact blueprint context.
+- `AGENCY_CONTEXT.md`: agency / partner context.
+- `AGENTS.md`: current session state, blockers, and next action.
+- `docs/AGENTS-GUIDE.md`: conventions for parallel work only.
+- `docs/tenants/peskids/*`: live tenant contract, operational docs, and extraction inputs.
+- `docs/blueprints/*`: reusable Academy / Agency playbooks, SOPs, and onboarding.
+- `VISION.md`: product north star.
 
-## Ejemplos de agentes
+## Parallel Agent Rules
 
-- **Cursor + ACTIVE-PROMPT:** el `CursorWorker` materializa tareas en `docs/ACTIVE-PROMPT.md` en GitHub para que un humano o `cursor-prompt-monitor` ejecute.
-- **n8n por tenant:** automatización por cliente; OpenClaw encola remediaciones cuando la plataforma lo requiere.
-- **MCP + Claude/otro LLM:** herramientas `get_health`, `onboard_tenant`, etc., sin exponer secretos en el prompt.
+- Before starting, read `OPSLY_CONTEXT.md`, `AGENTS.md`, and only the relevant tenant/blueprint/agency file.
+- Every agent should declare which part of the `/goal` it is unblocking.
+- Do not duplicate session state here.
+- Do not create a second source of truth for the goal.
+- Do not open a new platform initiative just because the codebase makes it easy.
+- Keep outputs reviewable, reusable, and narrow.
 
-Enlaces: `docs/OPENCLAW-ARCHITECTURE.md`, `docs/ORCHESTRATOR.md`, `apps/mcp/README.md` (si existe).
+## Blueprint Exit Criteria
 
----
+The Blueprint is ready when:
 
-## 🔄 Sistema de conocimiento
+- A new academy can be deployed in under 1 hour.
+- Pipeline, form, landing, workflows, dashboard, and SOPs are all reusable.
+- No tenant-specific fork is required for the common case.
+- The operating model can be handed to another operator without extra code changes.
 
-**LEER PRIMERO para cualquier sesión:**
+## Agency Exit Criteria
 
-1. [`docs/KNOWLEDGE-SYSTEM.md`](KNOWLEDGE-SYSTEM.md) — cómo funcionan NotebookLM + Obsidian
-2. [`docs/NOTEBOOKLM-SETUP.md`](NOTEBOOKLM-SETUP.md) — configuración paso a paso
-3. Query startup obligatorio: `"¿Cuál es el estado actual de Opsly?"`
+The Agency Blueprint is ready when:
 
----
+- A partner agency can sell the offer without knowing the underlying stack.
+- The handoff process is documented.
+- Lead capture, follow-up, and reporting are repeatable across tenants.
+- IntCloudSysOps keeps ownership of the common model and the agency gets the channel role.
 
-### Estado del sistema (2026-04-14)
-
-| Servicio     | Status | URL/Notas                                  |
-| ------------ | ------ | ------------------------------------------ |
-| Traefik      | ✅     | Puertos 80/443                             |
-| Admin        | ✅     | admin.op-sly.com                |
-| Portal       | ✅     | portal.op-sly.com               |
-| MCP          | ✅     | Puerto 3003                                |
-| API          | ⚠️     | Error `[id] !== [ref]` — carpeta duplicada |
-| Orchestrator | ⏳     | Esperando rebuild CI                       |
-| Redis        | ✅     | Sin password                               |
-
-**Fix pendientes:** API `[id] !== [ref]` conflict (eliminar `apps/api/app/api/tenants/[ref]`), orchestrator rebuild con packages/ml.
-
----
-
-## Enlaces relacionados
-
-- [[03-agents/README|03-agents]]
-- [[brain/README|Brain Central]]

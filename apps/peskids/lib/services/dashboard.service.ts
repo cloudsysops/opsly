@@ -1,8 +1,33 @@
 import { supabaseServer, getRecentMessages } from '@/lib/supabase';
 import { isMissingExpandedFeedbackColumn } from '@/lib/utils/db-compat';
 import type { Database, DashboardData } from '@/lib/types';
+import { fetchOperationsMetrics } from '@/lib/services/operations-metrics.service';
+import { fetchDashboardLeads } from '@/lib/peskids-platform-dashboard';
 
 type Range = 'week' | 'month';
+type LeadSourceKey = 'instagram' | 'facebook' | 'website' | 'referral' | 'other';
+
+const EMPTY_LEAD_SOURCES: Record<LeadSourceKey, number> = {
+  instagram: 0,
+  facebook: 0,
+  website: 0,
+  referral: 0,
+  other: 0,
+};
+
+function normalizeLeadSource(value: string | null | undefined): LeadSourceKey {
+  const normalized = value?.trim().toLowerCase();
+  if (!normalized) return 'other';
+  if (['instagram', 'ig', 'insta'].includes(normalized)) return 'instagram';
+  if (['facebook', 'fb', 'meta'].includes(normalized)) return 'facebook';
+  if (['website', 'web', 'site', 'direct', 'organic', 'search', 'google'].includes(normalized)) {
+    return 'website';
+  }
+  if (['referral', 'friend', 'referido', 'recommendation', 'recomendation'].includes(normalized)) {
+    return 'referral';
+  }
+  return 'other';
+}
 
 export async function fetchDashboardData(tenantId: string, range: Range): Promise<DashboardData> {
   const supabase = supabaseServer();
@@ -17,16 +42,8 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
   periodStart.setHours(0, 0, 0, 0);
   const periodStartISO = periodStart.toISOString();
 
-  const { data: newLeads, error: leadsError } = await supabase
-    .from('leads')
-    .select(
-      'id, name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes'
-    )
-    .eq('tenant_id', tenantId)
-    .gte('created_at', periodStartISO)
-    .order('created_at', { ascending: false });
-
-  if (leadsError) throw leadsError;
+  const platformLeadsResult = await fetchDashboardLeads(tenantId, periodStartISO);
+  const newLeads = platformLeadsResult.rows;
 
   const { data: students, error: studentsError } = await supabase
     .from('students')
@@ -95,9 +112,22 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
 
   const pendingFollowups = (followups ?? []).filter((f) => f.status === 'pending');
   const recentMessages = await getRecentMessages(tenantId, 10);
+  const operations = await fetchOperationsMetrics();
+  const convertedLeadsCount = (newLeads ?? []).filter((lead) => lead.status === 'enrolled').length;
+  const conversionRatePct =
+    (newLeads?.length ?? 0) > 0
+      ? Math.round((convertedLeadsCount / (newLeads?.length ?? 0)) * 100)
+      : null;
+  const leadSources = (newLeads ?? []).reduce((acc, lead) => {
+    acc[normalizeLeadSource(lead.referral_source)] += 1;
+    return acc;
+  }, { ...EMPTY_LEAD_SOURCES });
 
   return {
     new_leads_count: newLeads?.length || 0,
+    converted_leads_count: convertedLeadsCount,
+    conversion_rate_pct: conversionRatePct,
+    lead_sources: leadSources,
     new_leads: (newLeads as unknown as DashboardData['new_leads']) || [],
     active_students_count: students?.length || 0,
     students_by_grade: studentsByGrade,
@@ -108,5 +138,6 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
     pending_followups: (pendingFollowups as DashboardData['pending_followups']) || [],
     followups: (followups as DashboardData['followups']) || [],
     recent_messages: (recentMessages as DashboardData['recent_messages']) || [],
+    operations,
   };
 }

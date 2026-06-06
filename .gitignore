@@ -90,11 +90,13 @@ infra/terraform/tfplan
 runtime/logs/*
 runtime/letsencrypt/*
 runtime/tenants/*
+runtime/tmp/*
 runtime/pids/*
 !runtime/pids/.gitkeep
 !runtime/logs/.gitkeep
 !runtime/letsencrypt/.gitkeep
 !runtime/tenants/.gitkeep
+!runtime/tmp/.gitkeep
 
 # Supabase CLI local link metadata (regenerable)
 supabase/.temp/

@@ -110,6 +110,23 @@ export type PeskidsDashboardSummary = {
   low_rating_alerts: PeskidsFeedbackRow[];
 };
 
+interface QueryResponse {
+  error?: { message: string } | null;
+}
+
+function getFirstQueryError(
+  leadsWeek: QueryResponse,
+  recentLeads: QueryResponse,
+  recentFeedback: QueryResponse,
+  actionCount: QueryResponse
+): string | null {
+  if (leadsWeek.error) return leadsWeek.error.message;
+  if (recentLeads.error) return recentLeads.error.message;
+  if (recentFeedback.error) return recentFeedback.error.message;
+  if (actionCount.error) return actionCount.error.message;
+  return null;
+}
+
 export async function peskidsFetchDashboardSummary(): Promise<
   { ok: true; summary: PeskidsDashboardSummary } | { ok: false; error: string }
 > {
@@ -160,14 +177,9 @@ export async function peskidsFetchDashboardSummary(): Promise<
       .limit(5),
   ]);
 
-  if (leadsWeek.error || recentLeads.error || recentFeedback.error || actionCount.error) {
-    const msg =
-      leadsWeek.error?.message ??
-      recentLeads.error?.message ??
-      recentFeedback.error?.message ??
-      actionCount.error?.message ??
-      'query failed';
-    return { ok: false, error: msg };
+  const errorMsg = getFirstQueryError(leadsWeek, recentLeads, recentFeedback, actionCount);
+  if (errorMsg) {
+    return { ok: false, error: errorMsg };
   }
 
   return {

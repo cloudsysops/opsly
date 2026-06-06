@@ -14,11 +14,11 @@ export function DashboardActivityCards({ data }: DashboardActivityCardsProps): R
       <Card accent="slate" className="md:col-span-2 xl:col-span-1">
         <CardHeader>
           <CardTitle className="text-base">Estado de la semana</CardTitle>
-          <CardDescription>Lectura breve de la operación</CardDescription>
+          <CardDescription>Lectura breve de captación y alertas</CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-2 gap-4">
           <div className="rounded-xl bg-pk-muted p-4">
-            <p className="text-xs font-medium uppercase tracking-wide text-pk-sub">CRM</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-pk-sub">Captación</p>
             <p className="mt-1 font-display text-2xl font-bold text-pk-primary">
               {data.new_leads_count}
             </p>

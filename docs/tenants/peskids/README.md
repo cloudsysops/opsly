@@ -9,6 +9,7 @@ tenant_slug: peskids
 
 > Nota de contexto: la producción activa hoy vive en `https://peskids.op-sly.com` sobre VPS + Docker.
 > Los documentos antiguos que mencionan `peskids.vercel.app` son históricos y no representan el deploy actual.
+> Contexto compacto para agentes: [`TENANT_PESKIDS.md`](./TENANT_PESKIDS.md); úsalo junto con [`../../OPSLY_CONTEXT.md`](../../OPSLY_CONTEXT.md) y [`../../blueprints/academy.md`](../../blueprints/academy.md) cuando la sesión sea Peskids.
 
 Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**). Opsly actúa como **incubadora y plano de control**: stack n8n + monitoreo, CRM base y futura capa de datos/producto. El objetivo a medio plazo es **extraer** un producto independiente (`peskids-platform`) sin romper Opsly ni depender permanentemente del runtime de orquestación de Opsly.
 
@@ -58,6 +59,16 @@ Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**). Opsly
 ## Primer MVP (resumen)
 
 Ver detalle en [MVP-PLAN.md](./MVP-PLAN.md). En una línea: **visibilidad + captura de leads + feedback de padres + seguimiento con aprobación humana + reporte semanal**, sin mensajería autónoma.
+
+## Fase Operación (2026-05) — clases, pagos, calendario
+
+Paquete listo para cliente + implementación:
+
+| Documento | Propósito |
+|-----------|-----------|
+| [CLASSES-SYSTEM-SPEC.md](./CLASSES-SYSTEM-SPEC.md) | Spec técnica: SQL, API, wireframes, reglas de negocio |
+| [CLIENT-DECK-OPERATIONS-2026-05.md](./CLIENT-DECK-OPERATIONS-2026-05.md) | Presentación 8 slides para reunión comercial |
+| [SPRINT-BACKLOG-OPERATIONS-2026.md](./SPRINT-BACKLOG-OPERATIONS-2026.md) | Issues PES-001…043 con estimaciones y dependencias |
 
 ## Mapa de documentación
 

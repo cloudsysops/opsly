@@ -47,3 +47,14 @@ export {
   type LLMClient,
 } from './llm/client.js';
 export { generateAvatarPrompt, generateAvatarPrompts } from './generators/avatar-prompt.js';
+export {
+  getDefaultTenantContentPresets,
+  resolveTenantContentPreset,
+  getDefaultContentSurfaces,
+} from './presets/tenant-content-presets.js';
+export {
+  MoneyPrinterTurboRenderClient,
+  buildMoneyPrinterTurboPayload,
+  type MoneyPrinterTurboPayload,
+  type MoneyPrinterTurboRenderClientOptions,
+} from './rendering/moneyprinterturbo.js';

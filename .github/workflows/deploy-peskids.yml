@@ -8,6 +8,7 @@
 #   NEXT_PUBLIC_PESKIDS_WHATSAPP_E164, NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY,
 #   NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL (baked at build; sync from Doppler prd)
 #   NEXT_PUBLIC_FIREBASE_* (FCM web; sync: ./scripts/sync-peskids-firebase-secrets-to-github.sh)
+#   All build secrets: ./scripts/sync-peskids-secrets-to-github.sh [--group supabase|firebase|whatsapp|all]
 #
 # Manual: Actions → Deploy Peskids → Run workflow
 
@@ -79,29 +80,10 @@ jobs:
             echo "n8n_lead=${N8N_LEAD:-https://n8n-peskids.op-sly.com/webhook/peskids-lead}"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Validate Supabase build secrets
-        env:
-          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_ANON: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-        run: |
-          set -euo pipefail
-          missing=0
-          if [ -z "${SUPABASE_URL:-}" ]; then
-            echo "::warning::NEXT_PUBLIC_SUPABASE_URL missing in GitHub secrets — sync from Doppler prd (./scripts/sync-peskids-supabase-secrets-to-github.sh)"
-            missing=1
-          fi
-          if [ -z "${SUPABASE_ANON:-}" ]; then
-            echo "::warning::NEXT_PUBLIC_SUPABASE_ANON_KEY missing in GitHub secrets — sync from Doppler prd"
-            missing=1
-          fi
-          if [ "$missing" -eq 1 ]; then
-            echo "Login pages use runtime Doppler env as fallback; build-args still recommended for client bundles."
-          fi
-
       - name: Build and push Peskids image
         uses: docker/build-push-action@v5
         with:
-          context: apps/peskids
+          context: .
           file: apps/peskids/Dockerfile
           push: true
           tags: |

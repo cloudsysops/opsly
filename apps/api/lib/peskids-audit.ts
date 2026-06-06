@@ -1,5 +1,9 @@
 import { getServiceClient } from './supabase';
 
+// peskids.* tables pending DB type codegen
+interface PeskidsQB { insert(data: Record<string, unknown>): Promise<{ error: unknown }>; }
+interface PeskidsClient { from(table: string): PeskidsQB; }
+
 interface AuditLogOptions {
   tenantSlug: string;
   actorId?: string | null;
@@ -38,6 +42,30 @@ export async function logPeskidsAuditEvent(options: AuditLogOptions): Promise<st
   }
 }
 
+function buildSubmissionEventData(
+  tenantSlug: string,
+  formId: string,
+  submissionId: string,
+  eventType: string,
+  options?: {
+    userId?: string;
+    fieldName?: string;
+    errorMessage?: string;
+    metadata?: Record<string, unknown>;
+  }
+) {
+  return {
+    tenant_slug: tenantSlug,
+    form_id: formId,
+    submission_id: submissionId,
+    user_id: options?.userId || null,
+    event_type: eventType,
+    field_name: options?.fieldName || null,
+    error_message: options?.errorMessage || null,
+    metadata: options?.metadata || {},
+  };
+}
+
 export async function trackFormSubmissionEvent(
   tenantSlug: string,
   formId: string,
@@ -58,20 +86,16 @@ export async function trackFormSubmissionEvent(
 ): Promise<void> {
   try {
     const supabase = getServiceClient();
+    const eventData = buildSubmissionEventData(
+      tenantSlug,
+      formId,
+      submissionId,
+      eventType,
+      options
+    );
 
-    const { error } = await supabase
-      .schema('peskids')
-      .from('submission_events')
-      .insert({
-        tenant_slug: tenantSlug,
-        form_id: formId,
-        submission_id: submissionId,
-        user_id: options?.userId || null,
-        event_type: eventType,
-        field_name: options?.fieldName || null,
-        error_message: options?.errorMessage || null,
-        metadata: options?.metadata || {},
-      });
+    const db = supabase as unknown as PeskidsClient;
+    const { error } = await db.from('peskids.submission_events').insert(eventData);
 
     if (error) {
       console.error('Failed to track form submission event:', error);

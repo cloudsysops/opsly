@@ -3,6 +3,19 @@ import { HTTP_STATUS } from '@/lib/constants';
 import { runTrustedPortalDalForPathSlug, PORTAL_READ_ACCESS } from '@/lib/portal-tenant-dal';
 import { getServiceClient } from '@/lib/supabase';
 
+// peskids.* tables pending DB type codegen
+interface PeskidsQB {
+  select(cols?: string, opts?: Record<string, unknown>): PeskidsQB;
+  eq(col: string, val: unknown): PeskidsQB;
+  order(col: string, opts?: unknown): PeskidsQB;
+  single(): Promise<{ data: unknown | null; error: unknown }>;
+  then<T>(r: (v: { data: unknown[] | null; error: unknown }) => T, j?: (e: unknown) => T): Promise<T>;
+}
+interface PeskidsClient {
+  from(table: string): PeskidsQB;
+  rpc(fn: string, params: Record<string, unknown>): Promise<{ data: unknown; error: unknown }>;
+}
+
 interface FormSubmission {
   submission_id: string;
   submission_data: Record<string, string | number | boolean | null>;
@@ -12,13 +25,73 @@ interface FormSubmission {
   feedback: string | null;
 }
 
+interface ExportContent {
+  content: string;
+  contentType: string;
+  filename: string;
+}
+
+function validateExportRequest(
+  tenantSlug: unknown,
+  formId: unknown,
+  format: unknown
+): { valid: true } | { valid: false; error: Response } {
+  if (!tenantSlug || !formId) {
+    return {
+      valid: false,
+      error: new Response('Missing tenant slug or form ID', {
+        status: HTTP_STATUS.BAD_REQUEST,
+      }),
+    };
+  }
+  if (!['csv', 'json'].includes(format as string)) {
+    return {
+      valid: false,
+      error: new Response('Invalid format. Use csv or json', {
+        status: HTTP_STATUS.BAD_REQUEST,
+      }),
+    };
+  }
+  return { valid: true };
+}
+
+async function fetchFormForExport(
+  supabase: ReturnType<typeof getServiceClient>,
+  formId: string,
+  tenantSlug: string
+) {
+  const db = supabase as unknown as PeskidsClient;
+  const { data: rawForm, error: formError } = await db.from('peskids.forms').select('id, title').eq('form_id', formId).eq('tenant_slug', tenantSlug).single();
+  type FormRow = { id: string; title: string };
+  const form = rawForm as FormRow | null;
+
+  if (formError || !form) {
+    return { ok: false as const, error: 'Form not found' };
+  }
+  return { ok: true as const, form };
+}
+
+async function fetchFormSubmissions(
+  supabase: ReturnType<typeof getServiceClient>,
+  formId: string,
+  tenantSlug: string
+) {
+  const db = supabase as unknown as PeskidsClient;
+  const { data: rawSubs, error: submissionsError } = await db.from('peskids.form_submissions').select('submission_id, submission_data, completed_at, status, score, feedback').eq('form_id', formId).eq('tenant_slug', tenantSlug).order('completed_at', { ascending: false });
+  const submissions = rawSubs as FormSubmission[] | null;
+
+  if (submissionsError) {
+    console.error('Failed to fetch submissions:', submissionsError);
+    return { ok: false as const, error: 'Failed to export submissions' };
+  }
+  return { ok: true as const, submissions: submissions || [] };
+}
 
 function convertToCSV(submissions: FormSubmission[]): string {
   if (!submissions || submissions.length === 0) {
     return 'submission_id,completed_at,status,score,feedback\n';
   }
 
-  // Get all unique field names from submission data
   const fieldNames = new Set<string>();
   submissions.forEach((sub) => {
     if (sub.submission_data) {
@@ -26,7 +99,6 @@ function convertToCSV(submissions: FormSubmission[]): string {
     }
   });
 
-  // Build header
   const header = [
     'submission_id',
     'completed_at',
@@ -36,7 +108,6 @@ function convertToCSV(submissions: FormSubmission[]): string {
     ...Array.from(fieldNames),
   ];
 
-  // Build rows
   const rows = submissions.map((sub) => {
     const row = [
       sub.submission_id,
@@ -46,7 +117,6 @@ function convertToCSV(submissions: FormSubmission[]): string {
       sub.feedback ?? '',
     ];
 
-    // Add field values
     fieldNames.forEach((fieldName) => {
       const value = sub.submission_data?.[fieldName];
       if (value === null || value === undefined) {
@@ -70,106 +140,97 @@ function convertToCSV(submissions: FormSubmission[]): string {
   return [header.join(','), ...rows].join('\n');
 }
 
+function buildExportContent(
+  format: string,
+  submissions: FormSubmission[],
+  formTitle: string
+): ExportContent {
+  if (format === 'json') {
+    return {
+      content: JSON.stringify(submissions, null, 2),
+      contentType: 'application/json',
+      filename: `${formTitle}-responses.json`,
+    };
+  }
+  return {
+    content: convertToCSV(submissions),
+    contentType: 'text/csv',
+    filename: `${formTitle}-responses.csv`,
+  };
+}
+
+async function logExportAuditEvent(
+  supabase: ReturnType<typeof getServiceClient>,
+  format: string,
+  tenantSlug: string,
+  formId: string,
+  count: number
+): Promise<void> {
+  try {
+    const db = supabase as unknown as PeskidsClient;
+    await db.rpc('log_audit_event', {
+      p_action: 'form_submissions_exported',
+      p_actor_id: 'teacher',
+      p_tenant_slug: tenantSlug,
+      p_resource_id: formId,
+      p_resource_type: 'form',
+      p_metadata: { format, count },
+    });
+  } catch (auditError) {
+    console.error('Failed to log audit event:', auditError);
+  }
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ tenantSlug: string; formId: string }> }
 ): Promise<Response> {
   const { tenantSlug, formId } = await params;
+  const format = request.nextUrl.searchParams.get('format') ?? 'csv';
+  const supabase = getServiceClient();
+  try {
+    const validation = validateExportRequest(tenantSlug, formId, format);
+    if (!validation.valid) {
+      return validation.error;
+    }
 
-  return runTrustedPortalDalForPathSlug(
-    request,
-    tenantSlug,
-    async (session) => {
-      try {
-        const { searchParams } = new URL(request.url);
-        const format = searchParams.get('format') || 'csv';
+    const formResult = await fetchFormForExport(supabase, formId as string, tenantSlug as string);
+    if (!formResult.ok) {
+      return new Response(formResult.error, { status: HTTP_STATUS.NOT_FOUND });
+    }
 
-        if (!tenantSlug || !formId) {
-          return new Response('Missing tenant slug or form ID', {
-            status: HTTP_STATUS.BAD_REQUEST,
-          });
-        }
+    const submissionsResult = await fetchFormSubmissions(
+      supabase,
+      formId as string,
+      tenantSlug as string
+    );
+    if (!submissionsResult.ok) {
+      return new Response(submissionsResult.error, { status: HTTP_STATUS.INTERNAL_ERROR });
+    }
 
-        if (!['csv', 'json'].includes(format)) {
-          return new Response('Invalid format. Use csv or json', {
-            status: HTTP_STATUS.BAD_REQUEST,
-          });
-        }
+    const exportContent = buildExportContent(
+      format as string,
+      submissionsResult.submissions,
+      formResult.form.title
+    );
 
-        const supabase = getServiceClient();
+    await logExportAuditEvent(
+      supabase,
+      format as string,
+      tenantSlug as string,
+      formId as string,
+      submissionsResult.submissions.length
+    );
 
-        // Verify form exists
-        const { data: form, error: formError } = await supabase
-          .schema('peskids').from('forms')
-          .select('id, title')
-          .eq('form_id', formId)
-          .eq('tenant_slug', tenantSlug)
-          .single();
-
-        if (formError || !form) {
-          return new Response('Form not found', { status: HTTP_STATUS.NOT_FOUND });
-        }
-
-        // Get submissions
-        const { data: submissions, error: submissionsError } = await supabase
-          .schema('peskids').from('form_submissions')
-          .select('submission_id, submission_data, completed_at, status, score, feedback')
-          .eq('form_id', formId)
-          .eq('tenant_slug', tenantSlug)
-          .order('completed_at', { ascending: false });
-
-        if (submissionsError) {
-          console.error('Failed to fetch submissions:', submissionsError);
-          return new Response('Failed to export submissions', {
-            status: HTTP_STATUS.INTERNAL_ERROR,
-          });
-        }
-
-        let content: string;
-        let contentType: string;
-        let filename: string;
-
-        if (format === 'json') {
-          content = JSON.stringify(submissions, null, 2);
-          contentType = 'application/json';
-          filename = `${form.title}-responses.json`;
-        } else {
-          content = convertToCSV(submissions || []);
-          contentType = 'text/csv';
-          filename = `${form.title}-responses.csv`;
-        }
-
-        // Log audit event
-        try {
-          await supabase.schema('peskids').rpc('log_audit_event', {
-            p_action: 'form_submissions_exported',
-            p_actor_id: session.user.id,
-            p_tenant_slug: tenantSlug,
-            p_resource_id: formId,
-            p_resource_type: 'form',
-            p_metadata: {
-              format,
-              count: submissions?.length || 0,
-            },
-          });
-        } catch (auditError) {
-          console.error('Failed to log audit event:', auditError);
-        }
-
-        return new Response(content, {
-          status: HTTP_STATUS.OK,
-          headers: {
-            'Content-Type': contentType,
-            'Content-Disposition': `attachment; filename="${filename}"`,
-          },
-        });
-      } catch (error) {
-        console.error('Export error:', error);
-        return new Response('Internal server error', {
-          status: HTTP_STATUS.INTERNAL_ERROR,
-        });
-      }
-    },
-    PORTAL_READ_ACCESS
-  );
+    return new Response(exportContent.content, {
+      status: HTTP_STATUS.OK,
+      headers: {
+        'Content-Type': exportContent.contentType,
+        'Content-Disposition': `attachment; filename="${exportContent.filename}"`,
+      },
+    });
+  } catch (error) {
+    console.error('Export error:', error);
+    return new Response('Internal server error', { status: HTTP_STATUS.INTERNAL_ERROR });
+  }
 }

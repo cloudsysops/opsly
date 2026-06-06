@@ -21,9 +21,15 @@
   "dependencies": {
     "@ai-sdk/openai": "^3.0.53",
     "@anthropic-ai/sdk": "^0.57.0",
+    "@intcloudsysops/content-studio": "*",
+    "@intcloudsysops/external-agent-registry": "*",
+    "@intcloudsysops/git-branch-orchestrator": "*",
     "@intcloudsysops/llm-gateway": "*",
     "@intcloudsysops/ml": "^1.0.0",
     "@intcloudsysops/prompt-guard": "*",
+    "@intcloudsysops/runtime": "*",
+    "@intcloudsysops/session-manager": "*",
+    "@intcloudsysops/sigma-harness": "*",
     "@intcloudsysops/types": "*",
     "@intcloudsysops/voice-messaging": "*",
     "@llamaindex/postgres": "^0.0.65",
@@ -44,20 +50,18 @@
     "redis": "^5.0.0",
     "stripe": "^17.7.0",
     "tavily": "^2.0.0",
-    "zod": "^3.25.76",
-    "@intcloudsysops/sigma-harness": "*",
-    "@intcloudsysops/session-manager": "*",
-    "@intcloudsysops/git-branch-orchestrator": "*",
-    "@intcloudsysops/runtime": "*",
-    "@intcloudsysops/external-agent-registry": "*"
+    "ws": "^8.17.1",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.19.12",
     "@types/pg": "^8.20.0",
     "@types/uuid": "^10.0.0",
+    "@types/ws": "^8.5.11",
+    "@vitest/coverage-v8": "^4.1.8",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.8"
   }
 }
