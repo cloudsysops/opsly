@@ -1,4 +1,5 @@
 import { CACHE_TTL, HOST_METRICS } from './constants';
+import { logger } from './logger';
 import { aggregateInstantVector, promInstantQuery, type PromVectorResult } from './prometheus';
 import { getCache, setCache } from './redis-cache';
 
