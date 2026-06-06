@@ -53,8 +53,7 @@ export function CredentialReveal({ password }: CredentialRevealProps): ReactElem
     try {
       await navigator.clipboard.writeText(password);
       setCopied(true);
-      const id = window.setTimeout(() => setCopied(false), 2000);
-      return () => window.clearTimeout(id);
+      window.setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy: ', err);
     }
@@ -90,8 +89,8 @@ export function CredentialReveal({ password }: CredentialRevealProps): ReactElem
         variant="ghost"
         size="sm"
         onClick={() => void copyToClipboard()}
-        aria-label="Copiar contraseña"
-        title="Copiar"
+        aria-label={copied ? 'Copiado' : 'Copiar contraseña'}
+        title={copied ? 'Copiado' : 'Copiar'}
       >
         {copied ? (
           <Check className="h-4 w-4 shrink-0 text-ops-green" aria-hidden="true" />
