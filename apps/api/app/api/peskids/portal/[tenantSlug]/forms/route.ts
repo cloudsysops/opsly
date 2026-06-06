@@ -213,43 +213,46 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ tenantSlug: string }> }
 ): Promise<Response> {
-  try {
-    const { tenantSlug } = await params;
-    const body = await request.json();
-    const { title, description, fields, status } = body;
+  const { tenantSlug } = await params;
 
-    const validation = validateCreateFormRequest(tenantSlug, title);
-    if (!validation.valid) {
-      return validation.error;
+  return runTrustedPortalDalForPathSlug(request, tenantSlug, async () => {
+    try {
+      const body = await request.json();
+      const { title, description, fields, status } = body;
+
+      const validation = validateCreateFormRequest(tenantSlug, title);
+      if (!validation.valid) {
+        return validation.error;
+      }
+
+      const supabase = getServiceClient();
+      const formId = crypto.randomUUID();
+
+      const formResult = await createFormRecord(
+        supabase,
+        formId,
+        tenantSlug as string,
+        title,
+        description,
+        status
+      );
+      if (!formResult.ok) {
+        return jsonError(formResult.error, HTTP_STATUS.INTERNAL_ERROR);
+      }
+
+      await createFormFields(supabase, formId, tenantSlug as string, fields);
+
+      return jsonOk({
+        id: formResult.form.id,
+        formId,
+        title,
+        description,
+        status,
+        createdAt: formResult.form.created_at,
+      });
+    } catch (error) {
+      console.error('Form creation error:', error);
+      return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
     }
-
-    const supabase = getServiceClient();
-    const formId = crypto.randomUUID();
-
-    const formResult = await createFormRecord(
-      supabase,
-      formId,
-      tenantSlug as string,
-      title,
-      description,
-      status
-    );
-    if (!formResult.ok) {
-      return jsonError(formResult.error, HTTP_STATUS.INTERNAL_ERROR);
-    }
-
-    await createFormFields(supabase, formId, tenantSlug as string, fields);
-
-    return jsonOk({
-      id: formResult.form.id,
-      formId,
-      title,
-      description,
-      status,
-      createdAt: formResult.form.created_at,
-    });
-  } catch (error) {
-    console.error('Form creation error:', error);
-    return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
-  }
+  });
 }

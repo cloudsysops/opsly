@@ -22,3 +22,8 @@
 **Vulnerability:** The `/api/social/publish` endpoint was exposed without any authentication or authorization checks. Anyone could trigger social media publishing by sending a POST request to this endpoint with valid content.
 **Learning:** Functional modules (like Social Publish) might be implemented without considering the centralized security helpers (`requireAdminAccess`) if they are developed as independent features or "autonomous agent" tools.
 **Prevention:** Audit all POST/PATCH/DELETE handlers in the API to ensure they explicitly call authorization helpers. Ensure that integration tests for these features actually test with and without valid authorization headers.
+
+## 2026-06-06 - [Missing Authorization and Hardcoded Actors in Peskids Portal]
+**Vulnerability:** Endpoints `POST /forms`, `POST /bulk-grade`, and `GET /export` in Peskids Portal were missing authorization checks and used a hardcoded 'teacher' actor for audit logs.
+**Learning:** MVP features developed outside the main portal structure might omit established security wrappers like `runTrustedPortalDalForPathSlug`.
+**Prevention:** Enforce usage of `runTrustedPortalDalForPathSlug` for all tenant-specific portal routes and ensure `session.user.id` is used for all audit logging.

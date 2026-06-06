@@ -60,87 +60,71 @@ function validateBulkGradeRequest(
   };
 }
 
-async function gradeSubmissionsAndAudit(
-  supabase: ReturnType<typeof getServiceClient>,
-  tenantSlug: string,
-  submissionIds: string[],
-  score: number,
-  feedback: string | undefined
-) {
-  const db = supabase as unknown as PeskidsClient;
-  const { data: rawUpdated, error: updateError } = await db
-    .from('peskids.form_submissions')
-    .update({ score, feedback: feedback || null, status: 'graded', updated_at: new Date().toISOString() })
-    .eq('tenant_slug', tenantSlug)
-    .in('submission_id', submissionIds)
-    .select('submission_id');
-  type UpdatedRow = { submission_id: string };
-  const updated = rawUpdated as UpdatedRow[] | null;
-
-  if (updateError) {
-    console.error('Failed to grade submissions:', updateError);
-    return { ok: false as const, error: 'Failed to grade submissions' };
-  }
-
-  try {
-    await db.rpc('log_audit_event', {
-      p_action: 'form_submissions_bulk_graded',
-      p_actor_id: 'teacher',
-      p_tenant_slug: tenantSlug,
-      p_resource_id: 'bulk',
-      p_resource_type: 'form_submission',
-      p_metadata: {
-        count: updated?.length || 0,
-        score,
-      },
-    });
-  } catch (auditError) {
-    console.error('Failed to log audit event:', auditError);
-  }
-
-  return {
-    ok: true as const,
-    updated: updated || [],
-  };
-}
-
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ tenantSlug: string }> }
 ): Promise<Response> {
   const { tenantSlug } = await params;
-  try {
-    if (!tenantSlug) {
-      return jsonError('Missing tenant slug', HTTP_STATUS.BAD_REQUEST);
+
+  return runTrustedPortalDalForPathSlug(request, tenantSlug, async (session) => {
+    try {
+      if (!tenantSlug) {
+        return jsonError('Missing tenant slug', HTTP_STATUS.BAD_REQUEST);
+      }
+
+      const body = (await request.json()) as Partial<BulkGradeRequest>;
+
+      const validation = validateBulkGradeRequest(body);
+      if (!validation.valid) {
+        return validation.error;
+      }
+
+      const supabase = getServiceClient();
+
+      const db = supabase as unknown as PeskidsClient;
+      const { data: rawUpdated, error: updateError } = await db
+        .from('peskids.form_submissions')
+        .update({
+          score: validation.request.score,
+          feedback: validation.request.feedback || null,
+          status: 'graded',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('tenant_slug', tenantSlug)
+        .in('submission_id', validation.request.submissionIds)
+        .select('submission_id');
+
+      type UpdatedRow = { submission_id: string };
+      const updated = rawUpdated as UpdatedRow[] | null;
+
+      if (updateError) {
+        console.error('Failed to grade submissions:', updateError);
+        return jsonError('Failed to grade submissions', HTTP_STATUS.INTERNAL_ERROR);
+      }
+
+      try {
+        await db.rpc('log_audit_event', {
+          p_action: 'form_submissions_bulk_graded',
+          p_actor_id: session.user.id,
+          p_tenant_slug: tenantSlug,
+          p_resource_id: 'bulk',
+          p_resource_type: 'form_submission',
+          p_metadata: {
+            count: updated?.length || 0,
+            score: validation.request.score,
+          },
+        });
+      } catch (auditError) {
+        console.error('Failed to log audit event:', auditError);
+      }
+
+      return jsonOk({
+        updated: (updated || []).length,
+        submissionIds: (updated || []).map((u) => u.submission_id),
+      });
+    } catch (error) {
+      console.error('Bulk grade error:', error);
+      return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
     }
-
-    const body = (await request.json()) as Partial<BulkGradeRequest>;
-
-    const validation = validateBulkGradeRequest(body);
-    if (!validation.valid) {
-      return validation.error;
-    }
-
-    const supabase = getServiceClient();
-
-    const result = await gradeSubmissionsAndAudit(
-      supabase,
-      tenantSlug,
-      validation.request.submissionIds,
-      validation.request.score,
-      validation.request.feedback
-    );
-
-    if (!result.ok) {
-      return jsonError(result.error, HTTP_STATUS.INTERNAL_ERROR);
-    }
-
-    return jsonOk({
-      updated: result.updated.length,
-      submissionIds: result.updated.map((u) => u.submission_id),
-    });
-  } catch (error) {
-    console.error('Bulk grade error:', error);
-    return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
-  }
+  });
 }
