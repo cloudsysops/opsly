@@ -53,13 +53,18 @@ export function CredentialReveal({ password }: CredentialRevealProps): ReactElem
     try {
       await navigator.clipboard.writeText(password);
       setCopied(true);
-      const id = window.setTimeout(() => setCopied(false), 2000);
-      return () => window.clearTimeout(id);
     } catch (err) {
       console.error('Failed to copy: ', err);
     }
   }, [password]);
 
+  useEffect(() => {
+    if (!copied) {
+      return;
+    }
+    const id = window.setTimeout(() => setCopied(false), 2000);
+    return () => window.clearTimeout(id);
+  }, [copied]);
   if (!password) {
     return <span className="font-mono text-sm text-ops-gray">—</span>;
   }
