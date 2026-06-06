@@ -132,7 +132,7 @@ Edge cases and attack vectors:
 
 ```
 datasets/adversarial/
-├── prompt-injection.json       # Jailbreak attempts
+├── prompt-injection.json       # Jailbreak attempts (canonical: lib/prompt-guard/datasets/adversarial/)
 ├── pii-leak.json               # PII in prompts
 └── hallucination.json          # Factually incorrect inputs
 ```

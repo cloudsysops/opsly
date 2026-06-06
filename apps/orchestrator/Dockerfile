@@ -5,6 +5,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY turbo.json ./
+COPY tsconfig.json ./
 COPY apps ./apps
 COPY packages ./packages
 COPY lib ./lib
@@ -13,11 +14,13 @@ COPY config ./config
 RUN npm ci --ignore-scripts
 
 RUN npm run build -w @intcloudsysops/types && \
+    npm run build -w @intcloudsysops/content-studio && \
     npm run build -w @intcloudsysops/llm-gateway && \
     npm run build -w @intcloudsysops/ml && \
     npm run build -w @intcloudsysops/git-branch-orchestrator && \
     npm run build -w @intcloudsysops/session-manager && \
     npm run build -w @intcloudsysops/runtime && \
+    npm run build -w @intcloudsysops/voice-messaging && \
     npm run build -w @intcloudsysops/orchestrator
 # NO npm prune --omit=dev aquí, puede borrar dependencias transitivas compartilhadas
 
@@ -41,6 +44,12 @@ COPY --from=builder /app/lib/git-branch-orchestrator/dist ./lib/git-branch-orche
 COPY --from=builder /app/lib/git-branch-orchestrator/package.json ./lib/git-branch-orchestrator/package.json
 COPY --from=builder /app/lib/runtime/dist ./lib/runtime/dist
 COPY --from=builder /app/lib/runtime/package.json ./lib/runtime/package.json
+COPY --from=builder /app/lib/content-studio/dist ./lib/content-studio/dist
+COPY --from=builder /app/lib/content-studio/package.json ./lib/content-studio/package.json
+COPY --from=builder /app/lib/content-studio/dist ./lib/content-studio/dist
+COPY --from=builder /app/lib/content-studio/package.json ./lib/content-studio/package.json
+COPY --from=builder /app/lib/voice-messaging/dist ./lib/voice-messaging/dist
+COPY --from=builder /app/lib/voice-messaging/package.json ./lib/voice-messaging/package.json
 COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/config/git-branch-policy.json ./config/git-branch-policy.json
 

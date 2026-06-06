@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { executeAutoImplement } from '@intcloudsysops/ml';
+import { sanitizeImplementationPrompt } from '@intcloudsysops/prompt-guard';
 import { notifyDiscordFeedback } from '../feedback-notify';
 import { requireAdminAccess } from '../auth';
 import { getServiceClient } from '../supabase';
@@ -98,11 +99,18 @@ async function approveFlow(
     .eq('id', row.conversation_id);
 
   const slug = tenantSlugFromDecision(row);
-  await executeAutoImplement(
-    decision_id,
-    row.implementation_prompt ?? '# Implementar feedback aprobado',
-    slug
-  );
+  const rawPrompt = row.implementation_prompt ?? 'Implementar feedback aprobado (describir cambio en Markdown).';
+  const sanitized = sanitizeImplementationPrompt(rawPrompt);
+  if (!sanitized.ok) {
+    await notifyDiscordFeedback(
+      '⚠️ implementation_prompt bloqueado',
+      `Decision ID: ${decision_id}\nViolaciones: ${sanitized.violations.join(', ')}`,
+      'warning'
+    );
+    return;
+  }
+
+  await executeAutoImplement(decision_id, sanitized.sanitized, slug);
 
   await notifyDiscordFeedback(
     '✅ Feedback aprobado — enviado a Cursor',

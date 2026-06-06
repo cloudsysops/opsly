@@ -2,10 +2,21 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const getRecentMessagesMock = vi.fn()
 const supabaseServerMock = vi.fn()
+const fetchDashboardLeadsMock = vi.fn()
 
 vi.mock('../supabase', () => ({
   getRecentMessages: getRecentMessagesMock,
   supabaseServer: supabaseServerMock,
+}))
+
+vi.mock('../peskids-platform-dashboard', () => ({
+  fetchDashboardLeads: fetchDashboardLeadsMock,
+}))
+
+const fetchOperationsMetricsMock = vi.fn()
+
+vi.mock('../services/operations-metrics.service', () => ({
+  fetchOperationsMetrics: fetchOperationsMetricsMock,
 }))
 
 function createFilterQuery(result: { data: unknown; error: unknown }) {
@@ -37,16 +48,18 @@ describe('fetchDashboardData', () => {
   beforeEach(() => {
     getRecentMessagesMock.mockReset()
     supabaseServerMock.mockReset()
+    fetchDashboardLeadsMock.mockReset()
+    fetchOperationsMetricsMock.mockReset()
+    fetchOperationsMetricsMock.mockResolvedValue({
+      classes_today: 2,
+      enrollments_today: 1,
+      attendance_rate_pct: 80,
+      revenue_month_cents: 17000000,
+      pending_payments_cents: 8500000,
+    })
   })
 
   it('returns dashboard aggregates using the expanded feedback schema', async () => {
-    const leadsQuery = createOrderQuery({
-      data: [
-        { id: 'lead-1', name: 'Ana', email: 'ana@example.com', status: 'new' },
-        { id: 'lead-2', name: 'Luis', email: 'luis@example.com', status: 'new' },
-      ],
-      error: null,
-    })
     const studentsQuery = createOrderQuery({
       data: [
         { id: 'student-1', grade: '3A', status: 'active' },
@@ -86,12 +99,48 @@ describe('fetchDashboardData', () => {
 
     supabaseServerMock.mockReturnValue({
       from: vi.fn((table: string) => {
-        if (table === 'leads') return leadsQuery
         if (table === 'students') return studentsQuery
         if (table === 'feedback') return feedbackQuery
         if (table === 'followups') return followupsQuery
         throw new Error(`Unexpected table ${table}`)
       }),
+    })
+    fetchDashboardLeadsMock.mockResolvedValue({
+      source: 'platform',
+      rows: [
+        {
+          id: 'lead-1',
+          name: 'Ana',
+          email: 'ana@example.com',
+          phone: null,
+          class_modality: null,
+          neighborhood: null,
+          grade_interested: '3A',
+          status: 'new',
+          admin_notes: null,
+          referral_source: 'Instagram',
+          referral_code: null,
+          referred_by_code: null,
+          referral_discount_cents: 0,
+          referral_redemptions: 0,
+        },
+        {
+          id: 'lead-2',
+          name: 'Luis',
+          email: 'luis@example.com',
+          phone: null,
+          class_modality: null,
+          neighborhood: null,
+          grade_interested: '4B',
+          status: 'enrolled',
+          admin_notes: null,
+          referral_source: 'Referral',
+          referral_code: null,
+          referred_by_code: null,
+          referral_discount_cents: 0,
+          referral_redemptions: 0,
+        },
+      ],
     })
     getRecentMessagesMock.mockResolvedValue([
       { id: 'message-1', sender_contact: 'web:support:maria@example.com' },
@@ -101,6 +150,15 @@ describe('fetchDashboardData', () => {
     const result = await fetchDashboardData('peskids', 'week')
 
     expect(result.new_leads_count).toBe(2)
+    expect(result.converted_leads_count).toBe(1)
+    expect(result.conversion_rate_pct).toBe(50)
+    expect(result.lead_sources).toEqual({
+      instagram: 1,
+      facebook: 0,
+      website: 0,
+      referral: 1,
+      other: 0,
+    })
     expect(result.active_students_count).toBe(3)
     expect(result.students_by_grade).toEqual({ '3A': 2, '4B': 1 })
     expect(result.recent_feedback).toHaveLength(1)
@@ -109,10 +167,11 @@ describe('fetchDashboardData', () => {
     expect(result.recent_messages).toEqual([
       { id: 'message-1', sender_contact: 'web:support:maria@example.com' },
     ])
+    expect(result.operations.classes_today).toBe(2)
+    expect(result.operations.revenue_month_cents).toBe(17000000)
   })
 
   it('falls back to the legacy feedback shape when expanded columns are missing', async () => {
-    const leadsQuery = createOrderQuery({ data: [], error: null })
     const studentsQuery = createOrderQuery({ data: [], error: null })
     const expandedFeedbackQuery = createFilterQuery({
       data: null,
@@ -127,7 +186,6 @@ describe('fetchDashboardData', () => {
     let feedbackCalls = 0
     supabaseServerMock.mockReturnValue({
       from: vi.fn((table: string) => {
-        if (table === 'leads') return leadsQuery
         if (table === 'students') return studentsQuery
         if (table === 'feedback') {
           feedbackCalls += 1
@@ -137,6 +195,7 @@ describe('fetchDashboardData', () => {
         throw new Error(`Unexpected table ${table}`)
       }),
     })
+    fetchDashboardLeadsMock.mockResolvedValue({ source: 'legacy', rows: [] })
     getRecentMessagesMock.mockResolvedValue([])
 
     const { fetchDashboardData } = await import('../services/dashboard.service')

@@ -8,6 +8,7 @@
 #   NEXT_PUBLIC_PESKIDS_WHATSAPP_E164, NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY,
 #   NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL (baked at build; sync from Doppler prd)
 #   NEXT_PUBLIC_FIREBASE_* (FCM web; sync: ./scripts/sync-peskids-firebase-secrets-to-github.sh)
+#   All build secrets: ./scripts/sync-peskids-secrets-to-github.sh [--group supabase|firebase|whatsapp|all]
 #
 # Manual: Actions → Deploy Peskids → Run workflow
 

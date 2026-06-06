@@ -15,6 +15,8 @@
     "@intcloudsysops/content-studio": "*",
     "@intcloudsysops/llm-gateway": "^1.0.0",
     "@intcloudsysops/notebooklm-agent": "^1.0.0",
+    "@intcloudsysops/prompt-guard": "*",
+    "@intcloudsysops/sigma-harness": "*",
     "@intcloudsysops/services": "^1.0.0",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "bullmq": "^5.76.10",
@@ -25,6 +27,6 @@
     "@types/node": "^20.19.41",
     "tsx": "^4.22.3",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.8"
   }
 }

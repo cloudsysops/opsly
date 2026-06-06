@@ -21,16 +21,17 @@ npm run install-hooks
 
 ## Hooks Instalados
 
-### `pre-commit`
+### `pre-commit` (lightweight — ver PR #493)
 
-- Valida estructura mínima con `npm run validate-structure`.
-- Ejecuta guardián referencial para rutas legacy.
-- Bloquea commits que violen la estructura.
+- `npm run validate-structure` — raíz completa + hubs `docs/`.
+- `scripts/hooks/structure-guard.sh` — rutas legacy, whitelist staged, **contaminación en raíz** (`.py`, imágenes, `.env*`, JSON no allowlisted).
+- Tests diff-scoped en `lib/*` cuando aplica.
+- **No** type-check global ni lint --fix (eso va en pre-push / CI).
 
-### `pre-push`
+### `pre-push` (heavy scoped)
 
-- Ejecuta validación extendida antes de push.
-- Repite guardián de estructura y referencias.
+- Type-check, OpenAPI, skills manifest cuando cambian paths relevantes.
+- Ver `scripts/hooks/hook-bootstrap.sh` para PATH node/npm.
 
 ## Validación Manual
 

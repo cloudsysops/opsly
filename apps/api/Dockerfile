@@ -16,6 +16,7 @@ FROM node:20-alpine AS builder
 WORKDIR /repo
 COPY --from=deps /repo ./
 RUN npm run build -w @intcloudsysops/types && \
+    npm run build -w @intcloudsysops/runtime && \
     npm run build -w @intcloudsysops/llm-gateway && \
     npm run build -w @intcloudsysops/ml && \
     npm run build -w @intcloudsysops/notebooklm-agent

@@ -17,6 +17,9 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- TABLE: leads
 -- ============================================================================
 
+ALTER TABLE IF EXISTS public.leads
+  ADD COLUMN IF NOT EXISTS created_by uuid;
+
 ALTER TABLE IF EXISTS public.leads ENABLE ROW LEVEL SECURITY;
 
 DO $$ BEGIN
@@ -60,6 +63,9 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 -- TABLE: students
 -- ============================================================================
 
+ALTER TABLE IF EXISTS public.students
+  ADD COLUMN IF NOT EXISTS family_user_id uuid;
+
 ALTER TABLE IF EXISTS public.students ENABLE ROW LEVEL SECURITY;
 
 DO $$ BEGIN
@@ -77,18 +83,49 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN
   CREATE POLICY "parent_read_own_children" ON public.students FOR SELECT
-    USING (is_owner() OR (parent_id IS NOT NULL AND parent_id = auth.uid()));
+    USING (
+      is_owner()
+      OR (family_user_id IS NOT NULL AND family_user_id = auth.uid())
+    );
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN
   CREATE POLICY "parent_update_own_children" ON public.students FOR UPDATE
-    USING (is_owner() OR (parent_id IS NOT NULL AND parent_id = auth.uid()))
-    WITH CHECK (is_owner() OR (parent_id IS NOT NULL AND parent_id = auth.uid()));
+    USING (
+      is_owner()
+      OR (family_user_id IS NOT NULL AND family_user_id = auth.uid())
+    )
+    WITH CHECK (
+      is_owner()
+      OR (family_user_id IS NOT NULL AND family_user_id = auth.uid())
+    );
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- ============================================================================
 -- TABLE: feedback
 -- ============================================================================
+
+ALTER TABLE IF EXISTS public.feedback
+  ADD COLUMN IF NOT EXISTS author_type text NOT NULL DEFAULT 'parent',
+  ADD COLUMN IF NOT EXISTS author_ref_id uuid,
+  ADD COLUMN IF NOT EXISTS subject_type text NOT NULL DEFAULT 'student',
+  ADD COLUMN IF NOT EXISTS subject_ref_id uuid,
+  ADD COLUMN IF NOT EXISTS body text,
+  ADD COLUMN IF NOT EXISTS rating smallint,
+  ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'new',
+  ADD COLUMN IF NOT EXISTS ai_summary text;
+
+DO $$ BEGIN
+  ALTER TABLE public.feedback
+    ADD CONSTRAINT feedback_author_type_check
+      CHECK (author_type IN ('parent', 'teacher', 'staff'));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  ALTER TABLE public.feedback
+    ADD CONSTRAINT feedback_subject_type_check
+      CHECK (subject_type IN ('general', 'class', 'student', 'operations'));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 ALTER TABLE IF EXISTS public.feedback ENABLE ROW LEVEL SECURITY;
 
@@ -116,7 +153,7 @@ DO $$ BEGIN
         ))
       ))
     );
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+EXCEPTION WHEN duplicate_object THEN NULL; WHEN undefined_column THEN NULL; WHEN undefined_table THEN NULL; END $$;
 
 DO $$ BEGIN
   CREATE POLICY "parent_read_own_feedback" ON public.feedback FOR SELECT
@@ -124,7 +161,7 @@ DO $$ BEGIN
       tenant_id = 'peskids'
       AND (is_owner() OR (author_type = 'parent' AND author_ref_id = auth.uid()))
     );
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+EXCEPTION WHEN duplicate_object THEN NULL; WHEN undefined_column THEN NULL; END $$;
 
 DO $$ BEGIN
   CREATE POLICY "parent_insert_feedback" ON public.feedback FOR INSERT
@@ -132,7 +169,7 @@ DO $$ BEGIN
       tenant_id = 'peskids'
       AND (is_owner() OR (author_type = 'parent' AND author_ref_id = auth.uid()))
     );
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+EXCEPTION WHEN duplicate_object THEN NULL; WHEN undefined_column THEN NULL; END $$;
 
 -- Anonymous feedback submission (landing page form)
 DO $$ BEGIN
@@ -143,6 +180,9 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 -- ============================================================================
 -- TABLE: followups
 -- ============================================================================
+
+ALTER TABLE IF EXISTS public.followups
+  ADD COLUMN IF NOT EXISTS assigned_to text;
 
 ALTER TABLE IF EXISTS public.followups ENABLE ROW LEVEL SECURITY;
 
@@ -218,7 +258,9 @@ EXCEPTION WHEN duplicate_object THEN NULL; WHEN undefined_table THEN NULL; END $
 
 CREATE INDEX IF NOT EXISTS idx_leads_tenant_id ON public.leads(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_leads_created_by ON public.leads(created_by) WHERE created_by IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_feedback_author_ref ON public.feedback(author_ref_id) WHERE author_ref_id IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_messages_tenant ON public.messages(tenant_slug) WHERE tenant_slug IS NOT NULL;
+DO $$ BEGIN
+  CREATE INDEX IF NOT EXISTS idx_feedback_author_ref ON public.feedback(author_ref_id) WHERE author_ref_id IS NOT NULL;
+EXCEPTION WHEN undefined_column THEN NULL; END $$;
+CREATE INDEX IF NOT EXISTS idx_messages_tenant ON public.messages(tenant_id) WHERE tenant_id IS NOT NULL;
 
 COMMIT;

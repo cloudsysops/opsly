@@ -1,0 +1,79 @@
+{
+  "version": "1.0.0",
+  "description": "Opsly pattern catalog — harness decision templates, tenant capability bundles, opsly module scaffolds",
+  "layout": {
+    "harness": "Multi-agent Sigma decision templates → MCP sigma:start_decision pattern_id",
+    "tenant": "Capability bundles → config/tenants/*.json pattern_ids + enrichTenantProfile",
+    "opsly": "Module scaffolds → lib/* paths, scripts, MCP consumers",
+    "upstream": "SigmaHQ YAML rules for harness auto_review context"
+  },
+  "integration": {
+    "module": "@intcloudsysops/pattern-catalog",
+    "path": "lib/pattern-catalog",
+    "npm": {
+      "patterns:validate": "scripts/install-patterns.sh",
+      "patterns:list": "scripts/list-patterns.sh",
+      "patterns:install": "scripts/install-patterns.sh --with-sigma"
+    },
+    "mcp": [
+      "patterns:list",
+      "patterns:get",
+      "patterns:validate",
+      "patterns:enrich_tenant"
+    ],
+    "sigmaHarness": {
+      "lib": "lib/sigma-harness",
+      "applyFn": "applyHarnessPattern",
+      "proposalField": "patternId",
+      "mcpStartDecisionField": "pattern_id"
+    },
+    "tenantProfile": {
+      "lib": "lib/tenant-profile",
+      "schema": "config/tenants/schema.tenant-config.json",
+      "enrichFn": "enrichTenantProfile",
+      "resolveFn": "resolveTenantCapabilities"
+    },
+    "consumers": [
+      "lib/sigma-harness",
+      "apps/mcp",
+      "lib/tenant-profile"
+    ],
+    "ci": [
+      "lib/pattern-catalog npm test",
+      "lib/sigma-harness npm test",
+      "npm run patterns:validate"
+    ]
+  },
+  "tenantBindings": {
+    "peskids": {
+      "stack_type": "incubator-app",
+      "pattern_ids": ["incubator-app", "crm-starter-stack"]
+    },
+    "panini-lab": {
+      "stack_type": "incubator-app",
+      "pattern_ids": ["incubator-app"]
+    }
+  },
+  "harness": [
+    "harness/tenant-deploy-gate.json",
+    "harness/integration-webhook.json",
+    "harness/modularity-change.json",
+    "harness/security-incident.json"
+  ],
+  "tenant": [
+    "tenant/incubator-app.json",
+    "tenant/crm-starter-stack.json",
+    "tenant/full-tenant-stack.json"
+  ],
+  "opsly": [
+    "opsly/lib-module-scaffold.json",
+    "opsly/openwa-channel.json"
+  ],
+  "upstream": {
+    "sigmaRules": {
+      "install": "npm run sigma:install",
+      "manifest": "config/sigma/manifest.json",
+      "notes": "SigmaHQ YAML rules vendored under vendor/sigma — context for harness auto_review"
+    }
+  }
+}

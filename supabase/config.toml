@@ -7,7 +7,7 @@ project_id = "jkwykpldnitavhmtuzmo"
 # Restore PostgREST exposure (config push must not drop platform).
 [api]
 enabled = true
-schemas = ["public", "graphql_public", "platform"]
+schemas = ["public", "graphql_public", "platform", "peskids"]
 
 [auth]
 enabled = true

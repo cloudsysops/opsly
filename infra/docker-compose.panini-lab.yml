@@ -4,8 +4,6 @@
 #
 # Networks: traefik-public (edge) + infra_internal (LLM gateway on platform compose).
 
-name: panini-lab
-
 services:
   panini-lab:
     image: ghcr.io/cloudsysops/intcloudsysops-panini-lab:${PANINI_IMAGE_TAG:-latest}

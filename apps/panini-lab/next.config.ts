@@ -2,7 +2,11 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
-  transpilePackages: ['@intcloudsysops/opsly-core', '@intcloudsysops/conversational-runtime'],
+  transpilePackages: [
+    '@intcloudsysops/opsly-core',
+    '@intcloudsysops/conversational-runtime',
+    '@intcloudsysops/openwa',
+  ],
   webpack: (config) => {
     config.resolve.extensionAlias = {
       '.js': ['.ts', '.tsx', '.js'],

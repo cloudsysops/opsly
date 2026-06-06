@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import WebSocket from 'ws';
 import crypto from 'crypto';
 
 const DEFAULT_VALIDATION_CHECKS = ['type-check', 'test', 'build'];
@@ -64,15 +65,10 @@ export class AgentTrainer {
       console.warn('[AgentTrainer] Supabase credentials not configured, patterns disabled');
       this.supabase = null;
     } else {
-      try {
-        this.supabase = createClient(url, key, {
-          auth: { persistSession: false },
-        });
-      } catch (err) {
-        // In Node.js 20 CI, realtime websocket bootstrap can throw at client creation time.
-        console.warn('[AgentTrainer] Supabase client unavailable, patterns disabled:', err);
-        this.supabase = null;
-      }
+      this.supabase = createClient(url, key, {
+        auth: { persistSession: false },
+        realtime: { transport: WebSocket as any },
+      });
     }
 
     this.startCleanupSchedule();

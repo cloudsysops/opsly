@@ -1,6 +1,11 @@
 // ─── AI Generation ───────────────────────────────────────────────────────────
 
 export type ContentTopic = 'opsly' | 'technology' | 'motivation';
+export type ContentPillar = 'prompts' | 'claude' | 'marketing';
+export type ContentSurface = 'youtube_shorts' | 'instagram_reels' | 'instagram_feed';
+export type VideoAspectRatio = '9:16' | '1:1' | '16:9';
+export type VideoRenderProvider = 'moneyprinterturbo';
+export type VideoRenderStatus = 'queued' | 'rendering' | 'completed' | 'failed';
 
 export interface AIGenerationParams {
   topic: ContentTopic;
@@ -79,6 +84,66 @@ export interface TenantContentProfile {
     hide_infrastructure: boolean;
     show_only_wins: boolean;
   };
+  content_presets?: TenantContentPreset[];
+  default_content_preset_slug?: string;
+}
+
+export interface TenantContentPreset {
+  slug: string;
+  label: string;
+  platforms: ContentSurface[];
+  pillars: ContentPillar[];
+  tone_of_voice: ToneOfVoice;
+  language: 'es' | 'en' | 'both';
+  visual_style: string;
+  aspect_ratio: VideoAspectRatio;
+  target_duration_sec: number;
+  approval_required: boolean;
+  render_provider: VideoRenderProvider;
+  notes?: string;
+}
+
+export interface VideoRenderAsset {
+  url: string;
+  thumbnail_url?: string;
+  subtitle_url?: string;
+  duration_sec?: number;
+  aspect_ratio?: VideoAspectRatio;
+}
+
+export interface VideoRenderManifest {
+  provider: VideoRenderProvider;
+  status: VideoRenderStatus;
+  tenant_slug: string;
+  request_id: string;
+  draft_id: string;
+  preset_slug: string;
+  submitted_at: string;
+  completed_at?: string;
+  job_id?: string;
+  output_key?: string;
+  asset?: VideoRenderAsset;
+  error?: string;
+}
+
+export interface VideoRenderRequest {
+  tenant_slug: string;
+  request_id: string;
+  draft_id: string;
+  preset: TenantContentPreset;
+  draft: ContentDraft;
+}
+
+export interface MoneyPrinterTurboRenderConfig {
+  base_url: string;
+  api_key?: string;
+  render_path?: string;
+  timeout_ms?: number;
+}
+
+export interface MoneyPrinterTurboRenderSubmission {
+  ok: true;
+  manifest: VideoRenderManifest;
 }
 
 export interface ContentDraft {

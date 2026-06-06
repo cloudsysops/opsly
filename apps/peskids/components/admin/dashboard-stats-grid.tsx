@@ -10,6 +10,8 @@ import {
   Users,
   CalendarClock,
   MessageSquare,
+  GraduationCap,
+  Wallet,
 } from 'lucide-react';
 import type { DashboardData } from '@/lib/types';
 import { StatCard } from '@/components/admin/stat-card';
@@ -105,6 +107,14 @@ function whatsappHref(phone: string): string | null {
   return `https://wa.me/${digits}`;
 }
 
+function formatCop(cents: number): string {
+  return new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    maximumFractionDigits: 0,
+  }).format(cents / 100);
+}
+
 interface DashboardStatsGridProps {
   data: DashboardData;
   search: string;
@@ -146,6 +156,44 @@ export function DashboardStatsGrid({ data, search }: DashboardStatsGridProps): R
 
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+      <StatCard
+        sectionId="classes"
+        title="Clases prueba hoy"
+        description="Sesiones programadas"
+        value={data.operations.classes_today}
+        icon={GraduationCap}
+        accent="teal"
+      >
+        <p className="text-sm text-pk-sub">
+          Inscripciones nuevas hoy:{' '}
+          <span className="font-semibold text-pk-ink">{data.operations.enrollments_today}</span>
+        </p>
+        {data.operations.attendance_rate_pct !== null ? (
+          <p className="mt-2 text-sm text-pk-sub">
+            Asistencia del mes:{' '}
+            <span className="font-semibold text-pk-ink">{data.operations.attendance_rate_pct}%</span>
+          </p>
+        ) : (
+          <p className="mt-2 text-sm text-pk-sub">Sin datos de asistencia este mes.</p>
+        )}
+      </StatCard>
+
+      <StatCard
+        sectionId="classes"
+        title="Ingresos del mes"
+        description="Pagos confirmados vía Stripe"
+        value={formatCop(data.operations.revenue_month_cents)}
+        icon={Wallet}
+        accent="green"
+      >
+        <p className="text-sm text-pk-sub">
+          Pendiente de cobro:{' '}
+          <span className="font-semibold text-pk-ink">
+            {formatCop(data.operations.pending_payments_cents)}
+          </span>
+        </p>
+      </StatCard>
+
       <StatCard
         sectionId="leads"
         title="Leads nuevos"

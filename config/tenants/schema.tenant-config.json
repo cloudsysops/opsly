@@ -27,6 +27,26 @@
     "stack_type": { "type": "string" },
     "brand_logo_path": { "type": "string" },
     "staff_login_path": { "type": "string" },
-    "invite_email_subject": { "type": "string" }
+    "invite_email_subject": { "type": "string" },
+    "pattern_ids": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Pattern catalog ids — see config/patterns/tenant/"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Explicit capability flags; merged with pattern_ids at runtime"
+    },
+    "modules": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Opsly lib modules; merged from pattern catalog"
+    },
+    "harness_patterns": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Default harness pattern ids for sigma:start_decision"
+    }
   }
 }

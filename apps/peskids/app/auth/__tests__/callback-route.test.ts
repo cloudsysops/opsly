@@ -27,6 +27,13 @@ describe('resolvePostAuthPath', () => {
         app_metadata: {},
       } as never)
     ).toBe('/familias/submissions')
+
+    expect(
+      resolvePostAuthPath(null, {
+        user_metadata: { role: 'parent', tenant_slug: 'peskids' },
+        app_metadata: {},
+      } as never)
+    ).toBe('/familias/submissions')
   })
 
   it('routes staff users by role when next is missing', () => {

@@ -1,0 +1,15 @@
+title: Test Suspicious PowerShell Execution
+id: test-powershell-exec
+status: test
+description: Detects encoded PowerShell used for lateral movement
+tags:
+  - attack.execution
+  - attack.t1059.001
+logsource:
+  product: windows
+  category: process_creation
+level: high
+detection:
+  selection:
+    Image|endswith: '\powershell.exe'
+  condition: selection

@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import { getServiceClient } from '@/lib/supabase';
-import { buildPeskidsReferralCode, PESKIDS_REFERRAL_DISCOUNT_CENTS } from '@/lib/peskids-referrals';
-import { buildPeskidsReferralLink, normalizeReferralCode } from '@/lib/peskids-referral-links';
+import { buildPeskidsReferralLink } from '@/lib/peskids-referral-links';
+import { buildPeskidsReferralCode } from '@/lib/peskids-referrals';
+import { postPeskidsCanonicalLead } from '@/lib/peskids-canonical-api';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 
 type LeadBody = {
@@ -14,7 +14,6 @@ type LeadBody = {
   referral_source?: string;
   referral_code?: string;
   referred_by_code?: string;
-  // Ley 1581 consent fields — stored in governance.consents (Phase 3)
   consent_treatment?: boolean;
   consent_marketing?: boolean;
   consent_policy_version?: string;
@@ -26,130 +25,55 @@ export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as LeadBody;
 
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
-      return errorJson(requestId, 'Database not configured', 500);
-    }
-
-    const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids';
-    const referredByCode = normalizeReferralCode(body.referred_by_code);
-
-    // Consent audit log — governance.consents table wired in Phase 3
     if (!body.consent_treatment) {
       return errorJson(requestId, 'Consent required', 400);
     }
+
     console.warn('[peskids][lead] consent', {
       treatment: body.consent_treatment,
       marketing: body.consent_marketing ?? false,
       policy_version: body.consent_policy_version,
+      request_id: requestId,
     });
 
-    const supabase = getServiceClient();
+    const canonical = await postPeskidsCanonicalLead(
+      {
+        name: body.name,
+        email: body.email,
+        phone: body.phone,
+        class_modality: body.class_modality,
+        neighborhood: body.neighborhood,
+        grade_interested: body.grade_interested,
+        referral_source: body.referral_source,
+      },
+      requestId
+    );
 
-    const leadPayload = {
-      tenant_id: tenantId,
-      name: body.name,
-      email: body.email,
-      phone: body.phone?.trim() ? body.phone.trim() : null,
-      class_modality: body.class_modality || null,
-      neighborhood: body.neighborhood || null,
-      grade_interested: body.grade_interested,
-      referral_source: body.referral_source?.trim() ? body.referral_source.trim() : null,
-      status: 'new' as const,
-    };
-
-    const leadPayloadWithReferrals = {
-      ...leadPayload,
-      referral_code: body.referral_code?.trim() ? body.referral_code.trim().toUpperCase() : null,
-      referred_by_code: referredByCode,
-      referral_discount_cents: 0,
-      referral_redemptions: 0,
-    };
-
-    let supportsReferralColumns = true;
-
-    let insertResult = await supabase
-      .from('leads')
-      .insert(leadPayloadWithReferrals as any)
-      .select();
-
-    if (
-      insertResult.error &&
-      /referral_(code|discount_cents|redemptions)|referred_by_code/i.test(
-        insertResult.error.message
-      )
-    ) {
-      supportsReferralColumns = false;
-
-      insertResult = await supabase
-        .from('leads')
-        .insert(leadPayload as any)
-        .select();
+    if (!canonical.ok) {
+      const status = canonical.status >= 400 && canonical.status < 600 ? canonical.status : 502;
+      return errorJson(requestId, canonical.error, status);
     }
 
-    const { data, error } = insertResult;
-
-    if (error) {
-      console.error('Lead insertion failed:', error.message, { request_id: requestId });
-      return errorJson(requestId, 'Failed to create lead', 400);
-    }
-
-    const lead = data?.[0];
-
-    let referralCode = supportsReferralColumns ? (lead?.referral_code ?? null) : null;
-    if (supportsReferralColumns && lead?.id && !referralCode) {
-      referralCode = buildPeskidsReferralCode({
+    const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids';
+    const referralCode =
+      body.referral_code?.trim().toUpperCase() ??
+      buildPeskidsReferralCode({
         tenantId,
-        leadId: lead.id,
+        leadId: canonical.leadId,
         email: body.email,
       });
-
-      const { error: updateError } = await supabase
-        .from('leads')
-        .update({ referral_code: referralCode })
-        .eq('id', lead.id);
-
-      if (updateError) {
-        console.warn('Failed to persist referral code:', updateError.message);
-      }
-    }
-
-    if (supportsReferralColumns && referredByCode) {
-      const { error: referrerLookupError, data: referrerRows } = await supabase
-        .from('leads')
-        .select('id, referral_discount_cents, referral_redemptions')
-        .eq('tenant_id', tenantId)
-        .eq('referral_code', referredByCode)
-        .limit(1);
-
-      if (!referrerLookupError && referrerRows?.[0]) {
-        const referrer = referrerRows[0];
-        const nextDiscount =
-          (referrer.referral_discount_cents ?? 0) + PESKIDS_REFERRAL_DISCOUNT_CENTS;
-        const nextRedemptions = (referrer.referral_redemptions ?? 0) + 1;
-        const { error: referrerUpdateError } = await supabase
-          .from('leads')
-          .update({
-            referral_discount_cents: nextDiscount,
-            referral_redemptions: nextRedemptions,
-          })
-          .eq('id', referrer.id);
-
-        if (referrerUpdateError) {
-          console.warn('Failed to update referrer credit:', referrerUpdateError.message);
-        }
-      }
-    }
-
-    const referralLink = referralCode ? buildPeskidsReferralLink(referralCode) : null;
+    const referralLink = buildPeskidsReferralLink(referralCode);
 
     return successJson(
       requestId,
       {
         ok: true,
-        id: lead?.id,
+        id: canonical.leadId,
+        lead_id: canonical.leadId,
+        tenant_slug: canonical.tenantSlug,
         referral_code: referralCode,
         referral_link: referralLink,
-        referral_discount_cents: supportsReferralColumns ? (lead?.referral_discount_cents ?? 0) : 0,
+        referral_discount_cents: 0,
         message: 'Lead created successfully',
       },
       201

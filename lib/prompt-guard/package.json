@@ -1,0 +1,19 @@
+{
+  "name": "@intcloudsysops/prompt-guard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Prompt injection detection, delimitation, and output guards for LLM chat surfaces",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "type-check": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.41",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.8"
+  }
+}

@@ -23,6 +23,7 @@
     "@intcloudsysops/conversational-runtime": "*",
     "@intcloudsysops/openwa": "*",
     "@intcloudsysops/opsly-core": "*",
+    "@intcloudsysops/prompt-guard": "*",
     "@capacitor/android": "^8.3.4",
     "@capacitor/app": "^8.1.0",
     "@capacitor/cli": "^8.3.4",
@@ -52,6 +53,7 @@
     "eslint": "^9.39.4",
     "eslint-config-next": "^15.5.18",
     "postcss": "^8.5.13",
+    "vitest": "^4.1.8",
     "tailwindcss": "^3.4.19",
     "tailwindcss-animate": "^1.0.7"
   }

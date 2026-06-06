@@ -1,0 +1,16 @@
+{
+  "id": "incubator-app",
+  "kind": "tenant",
+  "title": "Incubator app (single Next.js stack)",
+  "description": "Lightweight tenant app in Opsly monorepo — OpenWA + conversational runtime, no n8n/uptime by default.",
+  "stack_type": "incubator-app",
+  "capabilities": ["openwa", "sigma-harness", "conversational-runtime"],
+  "modules": ["@intcloudsysops/openwa", "@intcloudsysops/sigma-harness", "@intcloudsysops/conversational-runtime"],
+  "harness_patterns": ["integration-webhook", "tenant-deploy-gate"],
+  "env_prefixes": ["OPENWA", "TENANT"],
+  "scripts": ["scripts/setup-openwa-tenant.sh"],
+  "routes": {
+    "webhook": "app/api/webhooks/openwa/route.ts",
+    "setup": "app/api/setup/openwa/route.ts"
+  }
+}

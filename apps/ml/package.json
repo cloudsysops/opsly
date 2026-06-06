@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@intcloudsysops/llm-gateway": "^1.0.0",
+    "@intcloudsysops/prompt-guard": "*",
     "@supabase/supabase-js": "^2.106.0",
     "zod": "^3.25.76"
   },
@@ -38,6 +39,6 @@
     "@types/node": "^20.19.41",
     "tsx": "^4.22.3",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.8"
   }
 }

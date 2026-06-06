@@ -1,3 +1,5 @@
+import { guardActivePromptDocumentOrThrow } from '@intcloudsysops/prompt-guard';
+
 const GITHUB_API = 'https://api.github.com';
 const REPO = 'cloudsysops/opsly';
 const ACTIVE_PROMPT_PATH = 'docs/ACTIVE-PROMPT.md';
@@ -7,6 +9,7 @@ interface GithubContentResponse {
 }
 
 export async function writeActivePrompt(content: string): Promise<void> {
+  const safe = guardActivePromptDocumentOrThrow(content);
   const token = process.env.GITHUB_TOKEN?.trim() || process.env.GITHUB_TOKEN_N8N?.trim() || '';
   if (!token) {
     throw new Error('GITHUB_TOKEN or GITHUB_TOKEN_N8N is required');
@@ -29,7 +32,7 @@ export async function writeActivePrompt(content: string): Promise<void> {
     },
     body: JSON.stringify({
       message: `chore(prompt): task from OpenClaw ${new Date().toISOString()}`,
-      content: Buffer.from(content).toString('base64'),
+      content: Buffer.from(safe).toString('base64'),
       sha: current.sha,
     }),
   });

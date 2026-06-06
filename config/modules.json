@@ -209,7 +209,7 @@
       "depends": ["prompts", "observability", "evaluation", "errors", "workflow", "config", "security"]
     },
     "apps/api": {
-      "depends": ["prompts", "observability", "evaluation", "errors", "api", "security", "config", "services", "telemetry", "tenant-profile", "openwa"]
+      "depends": ["prompts", "observability", "evaluation", "errors", "api", "security", "config", "services", "telemetry", "tenant-profile", "openwa", "prompt-guard"]
     },
     "apps/gateway": {
       "depends": ["observability", "errors", "security", "config", "telemetry", "workflow"]

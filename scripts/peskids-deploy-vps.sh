@@ -30,6 +30,31 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
+# Fast-forward main; remove untracked files that would block merge (common on VPS).
+pull_main_ff_only() {
+  local pull_err
+  pull_err="$(mktemp)"
+  trap "rm -f '${pull_err}'" RETURN
+
+  if git pull --ff-only origin main 2>"$pull_err"; then
+    trap - RETURN
+    return 0
+  fi
+
+  if grep -q "would be overwritten by merge" "$pull_err"; then
+    echo "Removing untracked files blocking git pull..."
+    awk '/^\t/{ sub(/^\t/, ""); print }' "$pull_err" | while IFS= read -r path; do
+      [[ -n "$path" && -e "$path" ]] && rm -f "$path"
+    done
+    git pull --ff-only origin main
+    return 0
+  fi
+
+  cat "$pull_err" >&2
+  trap - RETURN
+  return 1
+}
+
 run_deploy_on_host() {
   local repo_path="$1"
   local image="$2"
@@ -37,7 +62,7 @@ run_deploy_on_host() {
   cd "$repo_path"
   git fetch origin main
   git checkout main
-  git pull --ff-only origin main
+  pull_main_ff_only
 
   echo "Pulling ${image}..."
   docker pull "$image"
@@ -52,11 +77,14 @@ run_deploy_on_host() {
   # shellcheck source=scripts/lib/peskids-docker-env-filter.sh
   source "${repo_path}/scripts/lib/peskids-docker-env-filter.sh"
   filter_peskids_docker_env "$ENV_FILE"
+  # shellcheck source=scripts/lib/peskids-traefik-labels.sh
+  source "${repo_path}/scripts/lib/peskids-traefik-labels.sh"
 
   docker run -d --name peskids --restart unless-stopped \
     --network traefik-public \
     -p 127.0.0.1:3004:3004 \
     --env-file "$ENV_FILE" \
+    "${PESKIDS_TRAEFIK_LABELS[@]}" \
     "$image"
 
   sleep 3
@@ -83,7 +111,22 @@ set -euo pipefail
 cd "$REPO_PATH"
 git fetch origin main
 git checkout main
-git pull --ff-only origin main
+
+pull_err="$(mktemp)"
+if ! git pull --ff-only origin main 2>"$pull_err"; then
+  if grep -q "would be overwritten by merge" "$pull_err"; then
+    echo "Removing untracked files blocking git pull..."
+    awk '/^\t/{ sub(/^\t/, ""); print }' "$pull_err" | while IFS= read -r path; do
+      [[ -n "$path" && -e "$path" ]] && rm -f "$path"
+    done
+    git pull --ff-only origin main
+  else
+    cat "$pull_err" >&2
+    rm -f "$pull_err"
+    exit 1
+  fi
+fi
+rm -f "$pull_err"
 
 echo "Pulling ${IMAGE}..."
 docker pull "$IMAGE"
@@ -96,11 +139,13 @@ trap 'rm -f "$ENV_FILE"' EXIT
 doppler secrets download --no-file --format docker --project ops-intcloudsysops --config prd >"$ENV_FILE"
 source "${REPO_PATH}/scripts/lib/peskids-docker-env-filter.sh"
 filter_peskids_docker_env "$ENV_FILE"
+source "${REPO_PATH}/scripts/lib/peskids-traefik-labels.sh"
 
 docker run -d --name peskids --restart unless-stopped \
   --network traefik-public \
   -p 127.0.0.1:3004:3004 \
   --env-file "$ENV_FILE" \
+  "${PESKIDS_TRAEFIK_LABELS[@]}" \
   "$IMAGE"
 
 sleep 3

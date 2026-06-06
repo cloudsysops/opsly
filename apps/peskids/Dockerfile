@@ -9,6 +9,8 @@ COPY package*.json ./
 COPY turbo.json ./
 
 COPY lib/conversational-runtime/package.json ./lib/conversational-runtime/
+COPY lib/prompt-guard/package.json ./lib/prompt-guard/
+COPY lib/openwa/package.json ./lib/openwa/
 COPY packages/opsly-core/package.json ./packages/opsly-core/
 COPY packages/types/package.json ./packages/types/
 COPY apps/peskids/package.json ./apps/peskids/
@@ -16,6 +18,8 @@ COPY apps/peskids/package.json ./apps/peskids/
 RUN npm ci --ignore-scripts
 
 COPY lib/conversational-runtime/ ./lib/conversational-runtime/
+COPY lib/prompt-guard/ ./lib/prompt-guard/
+COPY lib/openwa/ ./lib/openwa/
 COPY packages/opsly-core/ ./packages/opsly-core/
 COPY packages/types/ ./packages/types/
 COPY apps/peskids/ ./apps/peskids/

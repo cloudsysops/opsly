@@ -91,6 +91,9 @@ describe('family access', () => {
       expect.objectContaining({
         type: 'magiclink',
         email: 'family@example.com',
+        options: expect.objectContaining({
+          redirectTo: 'https://peskids.op-sly.com/auth/callback?next=%2Ffamilias%2Fsubmissions',
+        }),
       })
     )
   })

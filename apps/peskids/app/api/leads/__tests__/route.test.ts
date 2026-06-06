@@ -1,38 +1,32 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const getServiceClientMock = vi.fn()
-const buildReferralCodeMock = vi.fn()
-const buildReferralLinkMock = vi.fn()
-const normalizeReferralCodeMock = vi.fn((value: string | undefined) => value?.trim().toUpperCase() ?? null)
+const postCanonicalLeadMock = vi.fn();
+const buildReferralCodeMock = vi.fn();
+const buildReferralLinkMock = vi.fn();
 
-vi.mock('@/lib/supabase', () => ({
-  getServiceClient: getServiceClientMock,
-}))
+vi.mock('@/lib/peskids-canonical-api', () => ({
+  postPeskidsCanonicalLead: postCanonicalLeadMock,
+}));
 
 vi.mock('@/lib/peskids-referrals', () => ({
   buildPeskidsReferralCode: buildReferralCodeMock,
   PESKIDS_REFERRAL_DISCOUNT_CENTS: 1000,
-}))
+}));
 
 vi.mock('@/lib/peskids-referral-links', () => ({
   buildPeskidsReferralLink: buildReferralLinkMock,
-  normalizeReferralCode: normalizeReferralCodeMock,
-}))
+}));
 
 describe('POST /api/leads', () => {
   beforeEach(() => {
-    getServiceClientMock.mockReset()
-    buildReferralCodeMock.mockReset()
-    buildReferralLinkMock.mockReset()
-    normalizeReferralCodeMock.mockClear()
-    delete process.env.SUPABASE_SERVICE_ROLE_KEY
-    delete process.env.NEXT_PUBLIC_SUPABASE_URL
-  })
+    postCanonicalLeadMock.mockReset();
+    buildReferralCodeMock.mockReset();
+    buildReferralLinkMock.mockReset();
+    process.env.NEXT_PUBLIC_TENANT_ID = 'peskids';
+  });
 
-  it('rejects requests without consent before touching the database', async () => {
-    process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role'
-    process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://project.supabase.co'
-    const { POST } = await import('../route')
+  it('rejects requests without consent before touching the canonical API', async () => {
+    const { POST } = await import('../route');
 
     const response = await POST({
       headers: new Headers({ 'x-request-id': 'req-lead-400' }),
@@ -42,74 +36,28 @@ describe('POST /api/leads', () => {
         grade_interested: '3A',
         consent_treatment: false,
       }),
-    } as never)
+    } as never);
 
-    expect(response.status).toBe(400)
+    expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
       ok: false,
       error: 'Consent required',
       request_id: 'req-lead-400',
-    })
-    expect(getServiceClientMock).not.toHaveBeenCalled()
-  })
+    });
+    expect(postCanonicalLeadMock).not.toHaveBeenCalled();
+  });
 
-  it('returns 500 when the database env is missing', async () => {
-    const { POST } = await import('../route')
+  it('proxies lead creation to the Opsly canonical API', async () => {
+    postCanonicalLeadMock.mockResolvedValue({
+      ok: true,
+      leadId: 'lead-1',
+      tenantSlug: 'peskids',
+      createdAt: '2026-05-27T12:00:00.000Z',
+    });
+    buildReferralCodeMock.mockReturnValue('PK-CODE');
+    buildReferralLinkMock.mockReturnValue('https://peskids.op-sly.com/familias?ref=PK-CODE');
 
-    const response = await POST({
-      headers: new Headers({ 'x-request-id': 'req-lead-500' }),
-      json: async () => ({
-        name: 'Ana',
-        email: 'ana@example.com',
-        grade_interested: '3A',
-        consent_treatment: true,
-      }),
-    } as never)
-
-    expect(response.status).toBe(500)
-    await expect(response.json()).resolves.toEqual({
-      ok: false,
-      error: 'Database not configured',
-      request_id: 'req-lead-500',
-    })
-    expect(getServiceClientMock).not.toHaveBeenCalled()
-  })
-
-  it('creates a lead and normalizes the referral code when env is present', async () => {
-    process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role'
-    process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://project.supabase.co'
-    process.env.NEXT_PUBLIC_TENANT_ID = 'peskids'
-
-    const eqAfterUpdateMock = vi.fn(async () => ({ error: null }))
-    const updateAfterInsertMock = vi.fn(() => ({ eq: eqAfterUpdateMock }))
-    const selectLookupMock = vi.fn(() => ({
-      eq: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          limit: vi.fn(async () => ({ data: [], error: null })),
-        })),
-      })),
-    }))
-    const insertSelectMock = vi.fn(async () => ({
-      data: [{ id: 'lead-1', referral_code: null, referral_discount_cents: 0 }],
-      error: null,
-    }))
-    const insertMock = vi.fn(() => ({ select: insertSelectMock }))
-    const fromMock = vi.fn((table: string) => {
-      if (table !== 'leads') {
-        throw new Error(`Unexpected table ${table}`)
-      }
-      return {
-        insert: insertMock,
-        update: updateAfterInsertMock,
-        select: selectLookupMock,
-      }
-    })
-
-    getServiceClientMock.mockReturnValue({ from: fromMock })
-    buildReferralCodeMock.mockReturnValue('PK-CODE')
-    buildReferralLinkMock.mockReturnValue('https://peskids.op-sly.com/familias?ref=PK-CODE')
-
-    const { POST } = await import('../route')
+    const { POST } = await import('../route');
     const response = await POST({
       headers: new Headers({ 'x-request-id': 'req-lead-201' }),
       json: async () => ({
@@ -120,23 +68,59 @@ describe('POST /api/leads', () => {
         consent_treatment: true,
         referred_by_code: ' abc123 ',
       }),
-    } as never)
+    } as never);
 
-    expect(response.status).toBe(201)
+    expect(response.status).toBe(201);
     await expect(response.json()).resolves.toEqual({
       ok: true,
       id: 'lead-1',
+      lead_id: 'lead-1',
+      tenant_slug: 'peskids',
       referral_code: 'PK-CODE',
       referral_link: 'https://peskids.op-sly.com/familias?ref=PK-CODE',
       referral_discount_cents: 0,
       message: 'Lead created successfully',
       request_id: 'req-lead-201',
-    })
-    expect(normalizeReferralCodeMock).toHaveBeenCalledWith(' abc123 ')
+    });
+    expect(postCanonicalLeadMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'Ana',
+        email: 'ana@example.com',
+        phone: ' 3001234567 ',
+        grade_interested: '3A',
+      }),
+      'req-lead-201'
+    );
     expect(buildReferralCodeMock).toHaveBeenCalledWith({
       tenantId: 'peskids',
       leadId: 'lead-1',
       email: 'ana@example.com',
-    })
-  })
-})
+    });
+  });
+
+  it('returns upstream canonical API failures', async () => {
+    postCanonicalLeadMock.mockResolvedValue({
+      ok: false,
+      status: 502,
+      error: 'Lead service unavailable',
+    });
+
+    const { POST } = await import('../route');
+    const response = await POST({
+      headers: new Headers({ 'x-request-id': 'req-lead-502' }),
+      json: async () => ({
+        name: 'Ana',
+        email: 'ana@example.com',
+        grade_interested: 'K-5',
+        consent_treatment: true,
+      }),
+    } as never);
+
+    expect(response.status).toBe(502);
+    await expect(response.json()).resolves.toEqual({
+      ok: false,
+      error: 'Lead service unavailable',
+      request_id: 'req-lead-502',
+    });
+  });
+});
