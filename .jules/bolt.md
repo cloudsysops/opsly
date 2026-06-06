@@ -9,3 +9,7 @@
 ## 2026-05-28 - [Docker CLI Caching]
 **Learning:** Calling the Docker CLI (e.g., `docker ps`) from within a container via a mounted socket can be surprisingly slow (~1.1s latency). When these metrics are shown on a dashboard, it significantly impacts responsiveness. Caching the count and the container list in Redis for 60s provides a massive speed boost. Adding a fail-safe timeout to these CLI calls is also critical to prevent the API from hanging if the Docker daemon becomes unresponsive.
 **Action:** Always cache results of expensive CLI operations like Docker queries, especially when used in UI-facing API endpoints.
+
+## 2026-05-29 - [Prometheus Metrics Caching & Collision Prevention]
+**Learning:** Fetching system metrics often involves multiple parallel queries (e.g., 6 for CPU, RAM, Disk, Uptime). Caching the aggregated result in Redis for 60s provides a massive latency win. However, using a static cache key can cause collisions if the API supports multiple Prometheus backends.
+**Action:** Always incorporate the source URL or unique identifier into the cache key when caching external metrics to prevent data leakage between different monitoring targets.
