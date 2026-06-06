@@ -1,10 +1,22 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import {
-  demoTenantConfigs,
-} from '../../../packages/opsly-core/__tests__/fixtures/demo-tenants.js';
+  paniniLabTenantConfig,
+} from '../../../apps/panini-lab/config/tenant.config.js';
+import {
+  peskidsTenantConfig,
+} from '../../../apps/peskids/config/tenant.config.js';
+import {
+  smileTripCareTenantConfig,
+} from '../../../apps/smiletripcare/config/tenant.config.js';
 import { createConversationalRuntime } from '../src/runtime.js';
 import type { TranscriptionPort } from '../src/ports.js';
+
+const demoTenantConfigs = [
+  paniniLabTenantConfig,
+  peskidsTenantConfig,
+  smileTripCareTenantConfig,
+] as const;
 
 describe('ConversationalRuntime', () => {
   it('routes Panini text to UPDATE_COLLECTION', async () => {

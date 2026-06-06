@@ -21,6 +21,7 @@ export class AgentRuntime {
 
   async handle(request: IntentRequest): Promise<AgentRuntimeResult> {
     const requestId = newRequestId(request.requestId);
+    const normalizedRequest: IntentRequest = { ...request, requestId };
     const tenant = this.deps.registry.get(request.tenantSlug);
 
     if (!tenant) {
@@ -31,7 +32,7 @@ export class AgentRuntime {
       };
     }
 
-    const parsed = await this.deps.aiGateway.parseIntent(request, tenant);
+    const parsed = await this.deps.aiGateway.parseIntent(normalizedRequest, tenant);
     if (!parsed) {
       const rejected = this.deps.eventBuilder.build({
         tenantSlug: tenant.slug,
@@ -76,7 +77,8 @@ export class AgentRuntime {
     });
 
     const dispatchResult = await this.deps.dispatcher.dispatch(accepted, tenant);
-    const finalStatus = dispatchResult.dispatched ? 'dispatched' : 'accepted';
+    const finalStatus =
+      dispatchResult.dispatched ? 'dispatched' : tenant.mode === 'live' ? 'failed' : 'accepted';
     const finalEvent: OpslyEvent = { ...accepted, status: finalStatus };
 
     await this.deps.eventLog.append(finalEvent);

@@ -10,18 +10,18 @@ export class MockWorkflowDispatcher implements WorkflowDispatcher {
   async dispatch(event: OpslyEvent, tenant: TenantConfig): Promise<WorkflowDispatchResult> {
     this.calls.push(event);
     const definition = tenant.intents[event.intent];
+    if (!definition) {
+      return {
+        workflowRef: '',
+        dispatched: false,
+        detail: 'unknown-intent',
+      };
+    }
+
     return {
       workflowRef: definition.workflow.ref,
       dispatched: tenant.mode !== 'shadow',
       detail: tenant.mode === 'shadow' ? 'shadow-mode-no-op' : 'mock-dispatched',
     };
-  }
-}
-
-export class LoggingWorkflowDispatcher implements WorkflowDispatcher {
-  constructor(private readonly inner: WorkflowDispatcher) {}
-
-  async dispatch(event: OpslyEvent, tenant: TenantConfig): Promise<WorkflowDispatchResult> {
-    return this.inner.dispatch(event, tenant);
   }
 }

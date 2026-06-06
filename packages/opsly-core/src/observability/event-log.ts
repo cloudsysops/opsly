@@ -53,22 +53,21 @@ export class InMemoryEventLogStore implements EventLogStore {
   }
 }
 
-export interface SupabaseInsertResult {
+interface SupabaseResult<TData> {
+  data: TData | null;
   error: { message: string } | null;
 }
 
-export interface SupabaseSelectResult {
-  data: EventLogRow[] | null;
-  error: { message: string } | null;
-}
+type SupabaseInsertResult = PromiseLike<SupabaseResult<unknown>>;
+type SupabaseSelectResult = PromiseLike<SupabaseResult<EventLogRow[]>>;
 
 export interface SupabaseEventLogClient {
   from(table: string): {
-    insert(row: EventLogRow): Promise<SupabaseInsertResult>;
+    insert(row: EventLogRow): SupabaseInsertResult;
     select(columns: string): {
       eq(column: string, value: string): {
         order(column: string, options: { ascending: boolean }): {
-          limit(count: number): Promise<SupabaseSelectResult>;
+          limit(count: number): SupabaseSelectResult;
         };
       };
     };

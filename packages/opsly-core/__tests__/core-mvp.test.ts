@@ -1,16 +1,35 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import {
-  demoTenantConfigs,
-} from './fixtures/demo-tenants.js';
-import { createOpslyCore, createAiGateway, AiProviderNotConfiguredError } from '../src/index.js';
+  paniniLabTenantConfig,
+} from '../../../apps/panini-lab/config/tenant.config.js';
+import {
+  peskidsTenantConfig,
+} from '../../../apps/peskids/config/tenant.config.js';
+import {
+  smileTripCareTenantConfig,
+} from '../../../apps/smiletripcare/config/tenant.config.js';
+import {
+  createOpslyCore,
+  createAiGateway,
+  createGeminiGateway,
+  AiProviderNotConfiguredError,
+} from '../src/index.js';
+import { AgentRuntime } from '../src/agent-runtime/runtime.js';
+import { EventBuilder } from '../src/event-builder/builder.js';
 import type { TenantConfig } from '../src/types/index.js';
 import { InMemoryEventLogStore } from '../src/observability/event-log.js';
+import { createTenantRegistry } from '../src/tenant-config/registry.js';
+import { MockWorkflowDispatcher } from '../src/workflow-dispatcher/dispatcher.js';
 
-const demoTenants = demoTenantConfigs;
+const demoTenants = [
+  paniniLabTenantConfig,
+  peskidsTenantConfig,
+  smileTripCareTenantConfig,
+] as const;
 
 function createTestCore(eventLog = new InMemoryEventLogStore()) {
   return createOpslyCore({
@@ -126,6 +145,130 @@ describe('Opsly OS Core MVP', () => {
 
     expect(result.code).toBe('UNKNOWN_TENANT');
     expect(result.event).toBeNull();
+  });
+
+  it('marks live events as failed when dispatch does not complete', async () => {
+    const tenant: TenantConfig = {
+      slug: 'live-demo',
+      displayName: 'Live Demo',
+      mode: 'live',
+      allowedIntents: ['ESCALATE'],
+      intentKeywords: {
+        ESCALATE: ['escalate'],
+      },
+      intents: {
+        ESCALATE: {
+          name: 'ESCALATE',
+          description: 'Escalate a live event',
+          workflow: { kind: 'internal', ref: 'escalate-live' },
+        },
+      },
+    };
+    const eventLog = new InMemoryEventLogStore();
+    const runtime = new AgentRuntime({
+      registry: createTenantRegistry([tenant]),
+      aiGateway: createAiGateway({ provider: 'mock' }),
+      eventBuilder: new EventBuilder(),
+      dispatcher: {
+        dispatch: async () => ({
+          workflowRef: 'escalate-live',
+          dispatched: false,
+          detail: 'downstream-offline',
+        }),
+      },
+      eventLog,
+    });
+
+    const result = await runtime.handle({
+      tenantSlug: tenant.slug,
+      utterance: 'please escalate this',
+    });
+
+    expect(result.code).toBe('DISPATCH_FAILED');
+    expect(result.event?.status).toBe('failed');
+    await expect(eventLog.listByTenant(tenant.slug)).resolves.toEqual([
+      expect.objectContaining({ status: 'failed' }),
+    ]);
+  });
+
+  it('guards mock dispatches for unknown intents', async () => {
+    const dispatcher = new MockWorkflowDispatcher();
+
+    await expect(
+      dispatcher.dispatch(
+        {
+          id: 'evt_1',
+          requestId: 'req_1',
+          tenantSlug: 'demo',
+          intent: 'UNKNOWN_INTENT',
+          payload: {},
+          status: 'accepted',
+          createdAt: new Date().toISOString(),
+        },
+        {
+          slug: 'demo',
+          displayName: 'Demo',
+          mode: 'demo',
+          allowedIntents: [],
+          intents: {},
+        },
+      ),
+    ).resolves.toEqual({
+      workflowRef: '',
+      dispatched: false,
+      detail: 'unknown-intent',
+    });
+  });
+
+  it('sends Gemini API keys via header instead of query params', async () => {
+    const fetchImpl = vi.fn(async () =>
+      new Response(
+        JSON.stringify({
+          candidates: [
+            {
+              content: {
+                parts: [{ text: '{"intent":"UPDATE_COLLECTION","payload":{},"confidence":0.8}' }],
+              },
+            },
+          ],
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      ),
+    );
+    const gateway = createGeminiGateway({
+      apiKey: 'test-key',
+      fetchImpl,
+    });
+
+    await gateway.parseIntent(
+      {
+        tenantSlug: paniniLabTenantConfig.slug,
+        utterance: 'update collection album 2026',
+      },
+      paniniLabTenantConfig,
+    );
+
+    const firstCall = fetchImpl.mock.calls[0] as unknown as
+      | [string, RequestInit | undefined]
+      | undefined;
+
+    expect(firstCall).toBeDefined();
+
+    const [url, init] = firstCall!;
+
+    expect(url).toBe(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+    );
+    expect(init).toMatchObject({
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': 'test-key',
+      },
+    });
   });
 
   it('core source has no tenant-specific business hardcoding', () => {
