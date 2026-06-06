@@ -4,12 +4,9 @@ COPY package.json package-lock.json ./
 COPY packages/types/package.json ./packages/types/
 COPY lib/services/package.json ./lib/services/
 COPY lib/content-studio/package.json ./lib/content-studio/
-<<<<<<< HEAD
-COPY lib/prompt-guard/package.json ./lib/prompt-guard/
-=======
 COPY lib/pattern-catalog/package.json ./lib/pattern-catalog/
 COPY lib/sigma-harness/package.json ./lib/sigma-harness/
->>>>>>> origin/main
+COPY lib/prompt-guard/package.json ./lib/prompt-guard/
 COPY apps/mcp/package.json ./apps/mcp/
 COPY apps/llm-gateway/package.json ./apps/llm-gateway/
 COPY apps/notebooklm-agent/package.json ./apps/notebooklm-agent/
@@ -17,12 +14,9 @@ RUN npm ci --ignore-scripts \
   -w @intcloudsysops/types \
   -w @intcloudsysops/services \
   -w @intcloudsysops/content-studio \
-<<<<<<< HEAD
-  -w @intcloudsysops/prompt-guard \
-=======
   -w @intcloudsysops/pattern-catalog \
   -w @intcloudsysops/sigma-harness \
->>>>>>> origin/main
+  -w @intcloudsysops/prompt-guard \
   -w @intcloudsysops/llm-gateway \
   -w @intcloudsysops/notebooklm-agent \
   -w @intcloudsysops/mcp
@@ -62,12 +56,9 @@ COPY --from=builder /repo/package-lock.json ./package-lock.json
 COPY --from=builder /repo/node_modules ./node_modules
 COPY --from=builder /repo/apps/mcp ./apps/mcp
 COPY --from=builder /repo/lib/content-studio ./lib/content-studio
-<<<<<<< HEAD
-COPY --from=builder /repo/lib/prompt-guard ./lib/prompt-guard
-=======
 COPY --from=builder /repo/lib/pattern-catalog ./lib/pattern-catalog
 COPY --from=builder /repo/lib/sigma-harness ./lib/sigma-harness
->>>>>>> origin/main
+COPY --from=builder /repo/lib/prompt-guard ./lib/prompt-guard
 COPY --from=builder /repo/apps/llm-gateway ./apps/llm-gateway
 COPY --from=builder /repo/apps/notebooklm-agent ./apps/notebooklm-agent
 WORKDIR /app/apps/mcp
