@@ -72,7 +72,7 @@ Manual: Actions → **Deploy Peskids** → Run workflow.
 ```bash
 npm run peskids:cap:android              # raíz monorepo
 npm run peskids:cap:android:open         # abre Android Studio
-npm run cap:android:build                # desde apps/peskids
+npm run cap:build                        # desde apps/peskids (next build + cap sync)
 ```
 
 Script: `scripts/peskids-cap-android.sh` (`--dry-run`, `--sync-only`, `--variant release`).
