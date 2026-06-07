@@ -22,3 +22,8 @@
 **Vulnerability:** The `/api/social/publish` endpoint was exposed without any authentication or authorization checks. Anyone could trigger social media publishing by sending a POST request to this endpoint with valid content.
 **Learning:** Functional modules (like Social Publish) might be implemented without considering the centralized security helpers (`requireAdminAccess`) if they are developed as independent features or "autonomous agent" tools.
 **Prevention:** Audit all POST/PATCH/DELETE handlers in the API to ensure they explicitly call authorization helpers. Ensure that integration tests for these features actually test with and without valid authorization headers.
+
+## 2026-06-07 - [Missing Authorization in Knowledge Capture API]
+**Vulnerability:** The /api/knowledge/capture endpoint (GET and POST) was exposed without any authentication or authorization. It allowed anyone to append arbitrary content to the Obsidian vault inbox on the local filesystem or read the contents of today's inbox.
+**Learning:** Utilities that perform filesystem operations or sensitive data retrieval must be explicitly protected, even if they are intended for use by internal agents. Standard security wrappers like requireAdminAccess were overlooked during the initial implementation of this experimental feature.
+**Prevention:** Audit all Route Handlers that interact with the filesystem or internal documentation structures. Ensure that any new "agent-facing" APIs are integrated into the centralized authorization framework from day one.

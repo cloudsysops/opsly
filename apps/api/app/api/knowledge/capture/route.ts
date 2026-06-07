@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdminAccess } from '@/lib/auth';
 import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';
@@ -75,7 +76,10 @@ Captured insights from autonomous agents.
  *   tags: ["syra", "publishing", "optimization"]
  * }
  */
-export async function POST(req: NextRequest): Promise<NextResponse> {
+export async function POST(req: NextRequest): Promise<Response> {
+  const authError = await requireAdminAccess(req);
+  if (authError) return authError;
+
   try {
     const body = (await req.json()) as KnowledgeCapture;
 
@@ -114,7 +118,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
  *
  * Get today's captured insights.
  */
-export async function GET(): Promise<NextResponse> {
+export async function GET(req: NextRequest): Promise<Response> {
+  const authError = await requireAdminAccess(req);
+  if (authError) return authError;
+
   try {
     const today = new Date().toISOString().split('T')[0];
     const inboxFile = join(process.cwd(), 'docs', 'obsidian', 'inbox', `${today}.md`);
