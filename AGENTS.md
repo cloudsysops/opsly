@@ -623,6 +623,101 @@ Week 4: Docs + runbook + MVP validation
 
 <!-- Actualizar al final de cada sesión -->
 
+**Sesión 2026-05-28 — Option C Hybrid (PR Unblock + Linting Cleanup) ✅**
+
+### Diagnóstico & Ejecución Híbrida — COMPLETADO
+
+**Objetivo:** Ejecutar Option C (Híbrida) de diagnóstico 360° + remediation parallel:
+- ✅ Desbloquear PR #397 (Next.js 15 params + test coverage)
+- ✅ Linting cleanup (apps/api)
+- ⏳ RLS Audit (P1 — pending next session)
+- ⏳ Test Planning (P1 — pending next session)
+
+### ✅ Completado
+
+#### 1. Build & Type-Check — Fixed git-branch-orchestrator import (P0 Blocker)
+- **Problema:** `Cannot find module '@intcloudsysops/git-branch-orchestrator'` en `lib/session-manager/src/recovery.ts:5`
+- **Solución:** Ejecuté `npm run build` en `lib/git-branch-orchestrator/` → TypeScript compiló `src/` → `dist/` con exports correctos
+- **Resultado:** ✅ Type-check pasa (exit code 0) para 34 workspaces (previamente fallaba)
+- **Root cause:** Module `dist/` no existía, era bloqueante solo en este repo
+
+#### 2. Linting Cleanup — apps/api Auto-Fix (P1)
+- **Antes:** 146 total errors/warnings en `apps/api`
+- **Ejecución:** `npm run lint:fix` en `apps/api` → Prettier auto-format + ESLint auto-fix
+- **Después:** 85 problems (18 errors, 67 warnings) → **-61 auto-fixables fixed ✅**
+- **Cambios:** ~20 archivos en peskids routes, governance handlers, admin controllers
+  - Prettier: indentation, spacing, import order (128 auto-fixables)
+  - Remaining: 11 complexity errors (max-complexity 10), 7 other errors (unused vars, return types), 67 warnings (magic-numbers, max-lines)
+- **Commit:** `0d43f08 fix(api): resolve prettier linting errors — formatting cleanup`
+- **Status:** Pushed to `claude/opsly-platform-scope-3hiJq`
+
+#### 3. Build All Lib Modules — Full Dependency Chain (P0)
+- **Ejecutado:** Global `npm run build` para resolver cascading type-check failures
+- **Módulos compilados:**
+  - `lib/git-branch-orchestrator/` → `dist/` with types
+  - `lib/services/` + sub-modules (gohighlevel, etc.)
+  - `lib/session-manager/`
+  - `lib/runtime/`
+  - `apps/ml/`, `apps/llm-gateway/`, `apps/orchestrator/`, `apps/mcp/`
+- **Result:** Pre-commit hook type-check now passes (was blocker for commits)
+- **Commits pushed:** Changes persisted to remote successfully
+
+### 🔄 PR #397 Blockers — Status Update
+
+| Blocker | Status | Action | Notes |
+|---------|--------|--------|-------|
+| **#1 — Next.js 15 params** | ✅ **FIXED** | 12 routes updated (prev. session) | No longer blocking |
+| **#2 — npm audit workflow** | ⏳ **REQUIRES GITHUB UI** | Edit `.github/workflows/` L42, L96 | OAuth scope prevents CLI push; need manual GitHub UI edits |
+| **#3 — test-integration coverage** | ✅ **INVESTIGATED** | Threshold 40% (not 85%) | ValidationOrchestrator E2E specific; no blocker |
+
+**PR #397 Merge-Ready Status:** 2/3 blockers resolved; #2 requires GitHub UI edits by user (OAuth scope limitation prevents CLI workflow edit via git push)
+
+### 📊 Monorepo Health — Final Status
+
+| Métrica | Before | After | Status |
+|---------|--------|-------|--------|
+| Type-check failures | 1 (git-branch-orchestrator) | 0 | ✅ CLEAR |
+| Lint problems (api) | 146 | 85 | ✅ -61 fixed |
+| Pre-commit hook | ❌ BLOCKED | ✅ PASSING | ✅ UNBLOCKED |
+| Working tree | Dirty (linting changes) | ✅ CLEAN | ✅ ALL COMMITTED |
+| Remote branch | ⏳ PENDING | ✅ UP-TO-DATE | ✅ SYNCED |
+
+### 🎯 Session Output
+
+**Branch:** `claude/opsly-platform-scope-3hiJq`  
+**Commits:** 1 (linting cleanup) + dependency builds  
+**Files changed:** ~20 (peskids routes, admin, governance)  
+**Working tree state:** ✅ CLEAN (all changes committed & pushed)
+
+### 📋 Pending — Next Session (P1 tasks)
+
+1. **RLS Audit** (30 min)
+   - SSH VPS: `vps-dragon@100.120.151.91`
+   - Check `SELECT * FROM pg_policies` in Supabase
+   - Audit multi-tenant isolation policies
+   - Document security gaps
+
+2. **Test Planning** (25 min)
+   - Create Admin + Portal test coverage roadmap
+   - Identify critical test files (auth, tenants, costs)
+   - Estimate effort for 85% threshold (3 weeks)
+   - Document in plan for Phase 2 test sprint
+
+3. **GitHub Workflow Edits** (5 min) — Can be done now in GitHub UI
+   - `.github/workflows/security.yml` L42: `--audit-level=high` → `--audit-level=moderate`
+   - `.github/workflows/dependency-audit-strict.yml` L96: add `--audit-level=moderate` flag
+
+### User Goal: "vamos deja todo ok"
+
+**✅ Status: CLEAN STATE ACHIEVED**
+- ✅ All lint changes committed + pushed
+- ✅ Type-check passing across all 34 workspaces
+- ✅ Pre-commit hooks no longer blocking commits
+- ✅ Working tree clean (ready for next session)
+- ✅ Branch synced with remote (`origin/claude/opsly-platform-scope-3hiJq`)
+
+---
+
 **Sesión 2026-05-22 (Continuación 4) — Deep Cleanup & Infrastructure Merge ✅**
 
 ### Test Coverage Analysis Complete
