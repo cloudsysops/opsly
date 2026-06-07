@@ -4,6 +4,7 @@ import { jsonError, serverErrorLogged } from '../../../../lib/api-response';
 import { HTTP_STATUS } from '../../../../lib/constants';
 import { getServiceClient } from '../../../../lib/supabase';
 import { formatZodError } from '../../../../lib/validation';
+import { requireAdminAccess } from '../../../../lib/auth';
 
 const tenantHeaderSchema = z.string().uuid();
 
@@ -12,6 +13,11 @@ const createBodySchema = z.object({
 });
 
 export async function GET(request: Request): Promise<Response> {
+  const authError = await requireAdminAccess(request);
+  if (authError) {
+    return authError;
+  }
+
   const tenantHeader = request.headers.get('x-tenant-id');
   const tenantParsed = tenantHeaderSchema.safeParse(tenantHeader ?? '');
   if (!tenantParsed.success) {
@@ -34,6 +40,11 @@ export async function GET(request: Request): Promise<Response> {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  const authError = await requireAdminAccess(request);
+  if (authError) {
+    return authError;
+  }
+
   const tenantHeader = request.headers.get('x-tenant-id');
   const tenantParsed = tenantHeaderSchema.safeParse(tenantHeader ?? '');
   if (!tenantParsed.success) {

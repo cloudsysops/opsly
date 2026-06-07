@@ -22,3 +22,8 @@
 **Vulnerability:** The `/api/social/publish` endpoint was exposed without any authentication or authorization checks. Anyone could trigger social media publishing by sending a POST request to this endpoint with valid content.
 **Learning:** Functional modules (like Social Publish) might be implemented without considering the centralized security helpers (`requireAdminAccess`) if they are developed as independent features or "autonomous agent" tools.
 **Prevention:** Audit all POST/PATCH/DELETE handlers in the API to ensure they explicitly call authorization helpers. Ensure that integration tests for these features actually test with and without valid authorization headers.
+
+## 2026-06-05 - [Missing Authorization in API Keys Management API]
+**Vulnerability:** The `/api/v1/keys` endpoints (GET, POST, DELETE) were missing explicit authorization checks, allowing anyone with a valid UUID for `x-tenant-id` to list, create, or revoke API keys for that tenant.
+**Learning:** While the routes enforced tenant isolation via headers, they lacked the administrative guard `requireAdminAccess` which is mandatory for sensitive platform-level resources.
+**Prevention:** Ensure all endpoints under `app/api/v1/` that manage critical platform resources (like API keys) are guarded by `requireAdminAccess`. Add automated security tests for all new V1 management routes.

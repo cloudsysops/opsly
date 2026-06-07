@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { jsonError, serverErrorLogged } from '../../../../../lib/api-response';
 import { HTTP_STATUS } from '../../../../../lib/constants';
 import { getServiceClient } from '../../../../../lib/supabase';
+import { requireAdminAccess } from '../../../../../lib/auth';
 
 const idParamSchema = z.string().uuid();
 const tenantHeaderSchema = z.string().uuid();
@@ -10,6 +11,11 @@ export async function DELETE(
   request: Request,
   context: { params: Promise<{ id: string }> }
 ): Promise<Response> {
+  const authError = await requireAdminAccess(request);
+  if (authError) {
+    return authError;
+  }
+
   const tenantHeader = request.headers.get('x-tenant-id');
   const tenantParsed = tenantHeaderSchema.safeParse(tenantHeader ?? '');
   if (!tenantParsed.success) {
