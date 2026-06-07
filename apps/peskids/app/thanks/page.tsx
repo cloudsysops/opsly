@@ -6,13 +6,14 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ReferralLinkCard } from '@/components/referrals/referral-link-card'
 
-export default function ThanksPage({
+export default async function ThanksPage({
   searchParams,
 }: {
-  searchParams?: { referral_link?: string; referral_code?: string }
-}): React.ReactElement {
-  const referralLink = searchParams?.referral_link?.trim() || ''
-  const referralCode = searchParams?.referral_code?.trim() || ''
+  searchParams?: Promise<{ referral_link?: string; referral_code?: string }>
+}): Promise<React.ReactElement> {
+  const params = await searchParams
+  const referralLink = params?.referral_link?.trim() || ''
+  const referralCode = params?.referral_code?.trim() || ''
 
   return (
     <div className="flex min-h-screen flex-col bg-pk-bg">
