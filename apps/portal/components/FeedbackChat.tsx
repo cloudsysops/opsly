@@ -2,6 +2,9 @@
 
 import { getApiBaseUrl } from '@/lib/api';
 import { useEffect, useRef, useState } from 'react';
+import { Loader2, MessageCircle, Send, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -106,76 +109,27 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        style={{
-          position: 'fixed',
-          bottom: '24px',
-          right: '24px',
-          width: '56px',
-          height: '56px',
-          borderRadius: '50%',
-          background: '#6366f1',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '24px',
-          boxShadow: '0 4px 12px rgba(99,102,241,0.4)',
-          zIndex: 1000,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
+        className={cn(
+          'fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-ops-blue text-white shadow-lg shadow-ops-blue/40 transition-transform active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ops-green/80'
+        )}
         aria-label={open ? 'Cerrar feedback' : 'Abrir feedback'}
       >
-        {open ? '✕' : '💬'}
+        {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
       </button>
 
       {open ? (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: '92px',
-            right: '24px',
-            width: '360px',
-            height: '500px',
-            background: '#111',
-            border: '1px solid #333',
-            borderRadius: '16px',
-            display: 'flex',
-            flexDirection: 'column',
-            zIndex: 1000,
-            overflow: 'hidden',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
-          }}
-        >
-          <div
-            style={{
-              padding: '16px',
-              borderBottom: '1px solid #222',
-              background: '#0a0a0a',
-            }}
-          >
-            <div
-              style={{
-                fontWeight: 600,
-                color: '#fff',
-                fontSize: '14px',
-              }}
-            >
+        <div className="fixed bottom-24 right-6 z-50 flex h-[500px] w-[360px] flex-col overflow-hidden rounded-2xl border border-ops-border bg-ops-bg shadow-2xl shadow-black/50">
+          <div className="border-b border-ops-border/50 bg-ops-surface/50 p-4">
+            <div className="text-sm font-semibold text-neutral-100">
               💬 Feedback & Sugerencias
             </div>
-            <div style={{ fontSize: '12px', color: '#666', marginTop: '2px' }}>
-              Tu feedback mejora el producto
-            </div>
+            <div className="mt-0.5 text-xs text-ops-gray">Tu feedback mejora el producto</div>
           </div>
 
           <div
-            style={{
-              flex: 1,
-              overflowY: 'auto',
-              padding: '16px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-            }}
+            className="flex-1 overflow-y-auto p-4 flex flex-col gap-3"
+            aria-live="polite"
+            aria-atomic="false"
           >
             {messages.map((msg, i) => (
               <div
@@ -201,60 +155,32 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
               </div>
             ))}
             {loading ? (
-              <div
-                style={{
-                  alignSelf: 'flex-start',
-                  color: '#666',
-                  fontSize: '13px',
-                  padding: '8px',
-                }}
-              >
-                Analizando...
+              <div className="flex items-center gap-2 self-start p-2 text-sm text-ops-gray">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Analizando...</span>
               </div>
             ) : null}
             <div ref={messagesEndRef} />
           </div>
 
-          <div
-            style={{
-              padding: '12px',
-              borderTop: '1px solid #222',
-              display: 'flex',
-              gap: '8px',
-            }}
-          >
-            <input
+          <div className="flex gap-2 border-t border-ops-border/50 p-3">
+            <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-              placeholder="Escribe tu feedback..."
-              style={{
-                flex: 1,
-                background: '#1a1a1a',
-                border: '1px solid #333',
-                borderRadius: '8px',
-                padding: '8px 12px',
-                color: '#fff',
-                fontSize: '13px',
-                outline: 'none',
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') void sendMessage();
               }}
+              placeholder="Escribe tu feedback..."
+              className="h-9 text-xs"
             />
             <button
               type="button"
-              onClick={sendMessage}
+              onClick={() => void sendMessage()}
               disabled={loading || !input.trim()}
-              style={{
-                background: '#6366f1',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '8px 14px',
-                color: '#fff',
-                cursor: 'pointer',
-                fontSize: '16px',
-                opacity: loading || !input.trim() ? 0.5 : 1,
-              }}
+              className="flex h-9 items-center justify-center rounded-sm bg-ops-blue px-3 text-white transition-opacity disabled:opacity-50"
+              aria-label="Enviar"
             >
-              ↑
+              <Send className="h-4 w-4" />
             </button>
           </div>
         </div>
