@@ -21,3 +21,7 @@
 ## 2026-06-01 - [Multi-Tenant Policy Caching]
 **Learning:** Policy enforcement checks (like budget limits) are frequently called on critical write paths. Performing database aggregations and multi-table joins on every such call adds significant latency (~100ms) and DB load. Caching the finalized check result (e.g., `isOverBudget`) for 60s in Redis reduces latency to <5ms while maintaining sufficient accuracy for budget enforcement.
 **Action:** Implement short-term Redis caching for all multi-tenant policy enforcement results that involve expensive database aggregations.
+
+## 2026-05-29 - [BullMQ Queue Metric Caching]
+**Learning:** Sequential calls to multiple BullMQ queues to fetch job counts (waiting/active) can be slow due to multiple Redis roundtrips and object instantiation overhead. In an admin dashboard fetching metrics for 5+ queues, this adds significant latency. Caching the aggregated totals in Redis for 60s reduces the cost to a single O(1) cache lookup for most requests.
+**Action:** Aggregate and cache queue metrics in the API layer when showing them on high-traffic or high-latency dashboards.
