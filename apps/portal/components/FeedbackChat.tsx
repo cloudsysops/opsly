@@ -1,6 +1,7 @@
 'use client';
 
 import { getApiBaseUrl } from '@/lib/api';
+import { Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 interface Message {
@@ -176,6 +177,7 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
               flexDirection: 'column',
               gap: '12px',
             }}
+            aria-live="polite"
           >
             {messages.map((msg, i) => (
               <div
@@ -207,9 +209,13 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
                   color: '#666',
                   fontSize: '13px',
                   padding: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
                 }}
               >
-                Analizando...
+                <Loader2 className="h-3 w-3 animate-spin" />
+                <span>Analizando...</span>
               </div>
             ) : null}
             <div ref={messagesEndRef} />
@@ -228,6 +234,8 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
               placeholder="Escribe tu feedback..."
+              aria-label="Tu feedback"
+              disabled={loading}
               style={{
                 flex: 1,
                 background: '#1a1a1a',
@@ -243,6 +251,7 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
               type="button"
               onClick={sendMessage}
               disabled={loading || !input.trim()}
+              aria-label="Enviar feedback"
               style={{
                 background: '#6366f1',
                 border: 'none',
@@ -252,9 +261,12 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
                 cursor: 'pointer',
                 fontSize: '16px',
                 opacity: loading || !input.trim() ? 0.5 : 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              ↑
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : '↑'}
             </button>
           </div>
         </div>
