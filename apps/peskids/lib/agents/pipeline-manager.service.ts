@@ -4,6 +4,15 @@ import { supabaseServer } from '@/lib/supabase';
 import type { PipelineRule, PipelineStage } from '@/lib/agents/pipeline-rules';
 import { buildPipelineRules } from '@/lib/agents/pipeline-rules';
 
+function platformPeskidsLeads() {
+  const client = supabaseServer() as {
+    schema: (name: string) => {
+      from: (tableName: string) => ReturnType<ReturnType<typeof supabaseServer>['from']>;
+    };
+  };
+  return client.schema('platform').from('peskids_leads');
+}
+
 export interface StageAdvanceResult {
   advanced: boolean;
   from?: PipelineStage;
@@ -62,10 +71,7 @@ export class PipelineManagerService {
 
   /** Read current stage from platform.peskids_leads for a GHL contact id. */
   async getCurrentStage(ghlContactId: string): Promise<PipelineStage> {
-    const db = supabaseServer();
-    const { data } = await db
-      .schema('platform')
-      .from('peskids_leads')
+    const { data } = await platformPeskidsLeads()
       .select('stage')
       .eq('lead_id', ghlContactId)
       .eq('tenant_slug', this.tenantSlug)
@@ -82,16 +88,12 @@ export class PipelineManagerService {
     ghlContactId: string,
     newStage: PipelineStage
   ): Promise<void> {
-    const db = supabaseServer();
-
     const ghlStageId = PipelineManagerService.PESKIDS_TO_GHL_STAGE[newStage];
     if (!ghlStageId) {
       throw new Error(`No GHL stage ID mapped for ${newStage}`);
     }
 
-    await db
-      .schema('platform')
-      .from('peskids_leads')
+    await platformPeskidsLeads()
       .update({ stage: newStage, updated_at: new Date().toISOString() })
       .eq('lead_id', ghlContactId)
       .eq('tenant_slug', this.tenantSlug);
