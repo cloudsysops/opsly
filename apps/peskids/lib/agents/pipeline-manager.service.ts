@@ -33,8 +33,7 @@ export class PipelineManagerService {
     const db = supabaseServer();
     this.rules = buildPipelineRules({
       ghlService: this.ghlService,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      supabase: db as any,
+      supabase: db,
       tenantSlug: this.tenantSlug,
     });
   }
@@ -64,8 +63,7 @@ export class PipelineManagerService {
   /** Read current stage from platform.peskids_leads for a GHL contact id. */
   async getCurrentStage(ghlContactId: string): Promise<PipelineStage> {
     const db = supabaseServer();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data } = await (db as any)
+    const { data } = await db
       .schema('platform')
       .from('peskids_leads')
       .select('stage')
@@ -91,8 +89,7 @@ export class PipelineManagerService {
       throw new Error(`No GHL stage ID mapped for ${newStage}`);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (db as any)
+    await db
       .schema('platform')
       .from('peskids_leads')
       .update({ stage: newStage, updated_at: new Date().toISOString() })

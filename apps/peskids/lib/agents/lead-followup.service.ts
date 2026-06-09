@@ -176,7 +176,7 @@ export class LeadFollowupService {
     const staleLeads = await this.findStaleLeads(hoursThreshold);
 
     let followed = 0;
-    let escalated = 0;
+    const escalated = 0;
     let failed = 0;
 
     for (const contact of staleLeads) {

@@ -33,15 +33,12 @@ export class GhlSyncService {
 
     if (lead) return { type: 'lead', id: lead.id };
 
-    // students/parents tables may not have ghl_contact_id in DB types — cast safely
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const sResult = await (supabase as any).schema('public').from('students')
+    const sResult = await supabase.schema('public').from('students')
       .select('id').eq('ghl_contact_id', ghlContactId).limit(1).maybeSingle();
     const student = sResult.data as { id: string } | null;
     if (student) return { type: 'student', id: student.id };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const pResult = await (supabase as any).schema('public').from('parents')
+    const pResult = await supabase.schema('public').from('parents')
       .select('id').eq('ghl_contact_id', ghlContactId).limit(1).maybeSingle();
     const parent = pResult.data as { id: string } | null;
     if (parent) return { type: 'parent', id: parent.id };
@@ -81,14 +78,16 @@ export class GhlSyncService {
 
       if (error || !inserted) return false;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await supabase.schema('public').from('leads').update({ ghl_contact_id: ghlContactId } as any).eq('id', inserted.id);
+      await supabase
+        .schema('public')
+        .from('leads')
+        .update({ ghl_contact_id: ghlContactId })
+        .eq('id', inserted.id);
       return true;
     }
 
     if (local.type === 'lead') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const updates: any = { updated_at: new Date().toISOString() };
+      const updates: Record<string, string> = { updated_at: new Date().toISOString() };
       const name = [contact.firstName, contact.lastName].filter(Boolean).join(' ').trim();
       if (name) updates.name = name;
       if (contact.email?.trim()) updates.email = contact.email.trim();
@@ -99,13 +98,11 @@ export class GhlSyncService {
     }
 
     if (local.type === 'student') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const updates: any = { updated_at: new Date().toISOString() };
+      const updates: Record<string, string> = { updated_at: new Date().toISOString() };
       const name = [contact.firstName, contact.lastName].filter(Boolean).join(' ').trim();
       if (name) updates.name = name;
       if (contact.email?.trim()) updates.parent_email = contact.email.trim();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any).schema('public').from('students').update(updates).eq('id', local.id);
+      const { error } = await supabase.schema('public').from('students').update(updates).eq('id', local.id);
       if (error) return false;
       return true;
     }
@@ -131,8 +128,11 @@ export class GhlSyncService {
           (c: { email?: string }) => c.email?.toLowerCase() === lead.email.toLowerCase()
         );
         if (matching?.id) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const { error: ue } = await supabase.schema('public').from('leads').update({ ghl_contact_id: matching.id } as any).eq('id', lead.id);
+          const { error: ue } = await supabase
+            .schema('public')
+            .from('leads')
+            .update({ ghl_contact_id: matching.id })
+            .eq('id', lead.id);
           if (ue) { failed += 1; } else { synced += 1; }
         } else { failed += 1; }
       } catch { failed += 1; }
