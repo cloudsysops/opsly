@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { buildPeskidsReferralLink } from '@/lib/peskids-referral-links';
 import { buildPeskidsReferralCode } from '@/lib/peskids-referrals';
-import { postPeskidsCanonicalLead } from '@/lib/peskids-canonical-api';
+import { postPeskidsLeadWithGHL } from '@/lib/peskids-canonical-api';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 
 type LeadBody = {
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       request_id: requestId,
     });
 
-    const canonical = await postPeskidsCanonicalLead(
+    const canonical = await postPeskidsLeadWithGHL(
       {
         name: body.name,
         email: body.email,
@@ -75,6 +75,7 @@ export async function POST(request: NextRequest) {
         referral_link: referralLink,
         referral_discount_cents: 0,
         message: 'Lead created successfully',
+        ghl_contact_id: canonical.ghlContactId ?? null,
       },
       201
     );

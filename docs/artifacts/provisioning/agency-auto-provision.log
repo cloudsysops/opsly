@@ -1,0 +1,752 @@
+[2026-06-04T09:55:00Z] agency auto-provision start mode=watch interval=120s max=60
+[2026-06-04T09:55:00Z] attempt 1/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T09:55:01Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T09:57:01Z] attempt 2/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T09:57:02Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T09:59:02Z] attempt 3/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T09:59:03Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:01:03Z] attempt 4/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:01:04Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:03:04Z] attempt 5/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:03:05Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:05:05Z] attempt 6/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:05:05Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:07:06Z] attempt 7/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:07:06Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:09:06Z] attempt 8/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:09:07Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:11:07Z] attempt 9/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:11:07Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:13:07Z] attempt 10/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:13:08Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:15:08Z] attempt 11/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:15:09Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:17:09Z] attempt 12/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:17:10Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:19:10Z] attempt 13/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:19:10Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:21:10Z] attempt 14/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:21:11Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:23:11Z] attempt 15/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:23:12Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:25:12Z] attempt 16/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:25:12Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:27:12Z] attempt 17/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:27:13Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:29:13Z] attempt 18/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:29:13Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:31:13Z] attempt 19/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:31:14Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:33:14Z] attempt 20/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:33:15Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:35:15Z] attempt 21/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:35:15Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:37:15Z] attempt 22/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:37:16Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:39:16Z] attempt 23/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:39:17Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:41:17Z] attempt 24/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:41:17Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:43:17Z] attempt 25/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:43:18Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:45:18Z] attempt 26/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:45:18Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:47:18Z] attempt 27/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:47:19Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:49:19Z] attempt 28/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:49:20Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:51:20Z] attempt 29/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:51:20Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:53:20Z] attempt 30/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:53:21Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:55:21Z] attempt 31/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:55:22Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:57:22Z] attempt 32/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:57:23Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T10:59:23Z] attempt 33/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T10:59:23Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:01:23Z] attempt 34/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:01:24Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:03:24Z] attempt 35/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:03:25Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:05:25Z] attempt 36/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:05:25Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:07:25Z] attempt 37/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:07:26Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:09:26Z] attempt 38/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:09:27Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:11:27Z] attempt 39/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:11:27Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:13:27Z] attempt 40/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:13:28Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:15:28Z] attempt 41/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:15:29Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:17:29Z] attempt 42/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:17:29Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:19:29Z] attempt 43/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:19:30Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:21:30Z] attempt 44/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:21:31Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:23:31Z] attempt 45/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:23:31Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:25:32Z] attempt 46/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:25:32Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:27:32Z] attempt 47/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:27:33Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:29:33Z] attempt 48/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:29:33Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:31:33Z] attempt 49/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:31:34Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:33:34Z] attempt 50/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:33:35Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:35:35Z] attempt 51/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:35:36Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:37:36Z] attempt 52/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:37:37Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:39:37Z] attempt 53/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 401
+{"statusCode":401,"message":"The token is not authorized for this scope."}
+
+ghl-scope-smoke: FAIL — token in Doppler lacks provisioning scopes or is stale.
+  1. GHL → Settings → Private Integrations → open integration for this location
+  2. Confirm tags + custom fields scopes enabled
+  3. Regenerate Access Token → update Doppler GOHIGHLEVEL_API_KEY (config prd)
+  4. Re-run: ./scripts/ghl-scope-smoke.sh --tenant intcloudsysops
+  5. Then: ./scripts/ghl-provision-intcloudsysops.sh --execute
+[2026-06-04T11:39:38Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)
+[2026-06-04T11:41:38Z] attempt 54/60
+ghl-scope-smoke: tenant=intcloudsysops (Intcloudsysops (agency)) location=qD7Z9jt3owk0LMtKElow key_len=40
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/tags HTTP 200
+ghl-scope-smoke: GET /locations/qD7Z9jt3owk0LMtKElow/customFields HTTP 200
+ghl-scope-smoke: OK — provisioning scopes ready for Intcloudsysops (agency)
+[2026-06-04T11:41:39Z] scopes OK — running intcloudsysops provision --execute
+ghl-provision: You cannot create a Custom Field with the same name as an existing Standard Field. In this case, company_name will conflict with contact's contact.company_name field. Please input a different name.
+[2026-06-04T11:41:45Z] WARN — provision exited non-zero (see report in docs/artifacts/provisioning/)
+[2026-06-04T11:41:45Z] waiting 120s (update GOHIGHLEVEL_API_KEY in Doppler to continue)

@@ -2,8 +2,9 @@ import type { GoHighLevelLeadWebhook } from './ghl-contract';
 import { buildPeskidsAutomationPayload } from './ghl-contract';
 
 export const PESKIDS_N8N_LEAD_INTAKE_PATH = '/peskids-lead-intake';
+export const PESKIDS_N8N_SEND_APPROVED_PATH = '/peskids-send-approved';
 
-async function fetchWithRetry(
+export async function fetchWithRetry(
   url: string,
   options: RequestInit,
   maxRetries = 3

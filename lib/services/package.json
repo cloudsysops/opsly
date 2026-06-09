@@ -30,7 +30,10 @@
   "scripts": {
     "build": "tsc",
     "type-check": "tsc --noEmit",
-    "test": "echo 'No tests yet'"
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.8"
   },
   "keywords": ["services"]
 }

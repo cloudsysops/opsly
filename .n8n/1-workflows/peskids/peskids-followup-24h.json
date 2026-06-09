@@ -1,0 +1,131 @@
+{
+  "id": "peskids-followup-24h",
+  "name": "Peskids - Auto Follow-up 24h",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Every 1 Hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.OPSLY_API_URL }}/api/admin/peskids/peskids/followups/execute",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.PLATFORM_ADMIN_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "execute-followups",
+      "name": "Execute Follow-ups",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json['ok'] }}",
+              "operation": "equal",
+              "value2": "true"
+            }
+          ]
+        }
+      },
+      "id": "check-result",
+      "name": "Check Result",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1.2,
+      "position": [520, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json['processed'] }}",
+              "operation": "larger",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "id": "has-followups",
+      "name": "Has Follow-ups?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1.2,
+      "position": [780, 200]
+    },
+    {
+      "parameters": {
+        "content": "=🚨 **Peskids — Follow-ups 24h ejecutados**\n\n**Procesados:** {{ $json['processed'] }}\n**Saltados:** {{ $json['skipped'] }}\n**Fallidos:** {{ $json['failed'] }}\n\n_Ver dashboard: https://admin.op-sly.com/peskids/executive_"
+      },
+      "id": "discord-notify",
+      "name": "Discord Notification",
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 1,
+      "position": [1040, 150],
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "peskins-discord-webhook",
+          "name": "Peskids Discord Webhook"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "✅ Sin follow-ups pendientes."
+      },
+      "id": "no-followups",
+      "name": "No Follow-ups",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1040, 350]
+    }
+  ],
+  "connections": {
+    "schedule-trigger": {
+      "main": [[ { "node": "execute-followups", "type": "main", "index": 0 } ]]
+    },
+    "execute-followups": {
+      "main": [[ { "node": "check-result", "type": "main", "index": 0 } ]]
+    },
+    "check-result": {
+      "main": [
+        [ { "node": "has-followups", "type": "main", "index": 0 } ],
+        [ { "node": "no-followups", "type": "main", "index": 0 } ]
+      ]
+    },
+    "has-followups": {
+      "main": [
+        [ { "node": "discord-notify", "type": "main", "index": 0 } ],
+        [ { "node": "no-followups", "type": "main", "index": 0 } ]
+      ]
+    }
+  }
+}

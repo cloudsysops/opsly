@@ -8,6 +8,7 @@ import { ClassesPanel } from '@/components/admin/classes-panel';
 import { DashboardHeader } from '@/components/admin/dashboard-header';
 import { DashboardStatsGrid } from '@/components/admin/dashboard-stats-grid';
 import { DashboardActivityCards } from '@/components/admin/dashboard-activity-cards';
+import { AcademyOpsMap } from '@/components/admin/academy-ops-map';
 import { formatRelativeTime } from '@/lib/utils';
 
 interface DashboardViewProps {
@@ -136,6 +137,8 @@ export function DashboardView({
         onCopySync={() => void handleCopy(syncLabel)}
         messageSummary={messageSummary}
       />
+
+      <AcademyOpsMap data={data} />
 
       {!isSupportSurface ? (
         <>

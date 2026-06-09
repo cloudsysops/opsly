@@ -1,8 +1,8 @@
-import { supabaseServer, getRecentMessages } from '@/lib/supabase';
-import { isMissingExpandedFeedbackColumn } from '@/lib/utils/db-compat';
-import type { Database, DashboardData } from '@/lib/types';
-import { fetchOperationsMetrics } from '@/lib/services/operations-metrics.service';
-import { fetchDashboardLeads } from '@/lib/peskids-platform-dashboard';
+import { supabaseServer, getRecentMessages } from '../supabase';
+import { isMissingExpandedFeedbackColumn } from '../utils/db-compat';
+import type { Database, DashboardData } from '../types';
+import { fetchOperationsMetrics } from './operations-metrics.service';
+import { fetchDashboardLeads } from '../peskids-platform-dashboard';
 
 type Range = 'week' | 'month';
 type LeadSourceKey = 'instagram' | 'facebook' | 'website' | 'referral' | 'other';

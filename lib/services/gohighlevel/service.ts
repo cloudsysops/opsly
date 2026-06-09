@@ -8,6 +8,13 @@ import type {
   SendMessageRequest,
   ListContactsFilter,
   ListResponse,
+  Opportunity,
+  SearchOpportunitiesFilter,
+  Conversation,
+  ConversationMessage,
+  SearchConversationsFilter,
+  SendConversationMessageRequest,
+  SendConversationMessageResponse,
 } from './types.js';
 import { GoHighLevelClient } from './client.js';
 import { resolveGoHighLevelEnv, resolveGoHighLevelPeskidsEnv } from './env-config.js';
@@ -105,9 +112,62 @@ export class GoHighLevelService {
     return client.getAppointments(contactId);
   }
 
+  async searchConversations(
+    tenantId: string,
+    filter?: SearchConversationsFilter & { locationId?: string }
+  ): Promise<{ conversations: Conversation[]; total: number }> {
+    const client = this.getClient(tenantId);
+    return client.searchConversations(filter);
+  }
+
+  async getConversation(tenantId: string, conversationId: string): Promise<Conversation> {
+    const client = this.getClient(tenantId);
+    return client.getConversation(conversationId);
+  }
+
+  async getConversationMessages(
+    tenantId: string,
+    conversationId: string,
+    options?: { locationId?: string; limit?: number; page?: number }
+  ): Promise<ConversationMessage[]> {
+    const client = this.getClient(tenantId);
+    return client.getConversationMessages(conversationId, options);
+  }
+
+  async findConversationByContactId(tenantId: string, contactId: string): Promise<Conversation | null> {
+    const client = this.getClient(tenantId);
+    return client.findConversationByContactId(contactId);
+  }
+
+  async sendConversationMessage(
+    tenantId: string,
+    data: SendConversationMessageRequest
+  ): Promise<SendConversationMessageResponse> {
+    const client = this.getClient(tenantId);
+    return client.sendConversationMessage(data);
+  }
+
   async sendMessage(tenantId: string, data: SendMessageRequest): Promise<{ id: string; status: string }> {
     const client = this.getClient(tenantId);
     return client.sendMessage(data);
+  }
+
+  async searchOpportunities(
+    tenantId: string,
+    filter: SearchOpportunitiesFilter
+  ): Promise<{ opportunities: Opportunity[]; total: number }> {
+    const client = this.getClient(tenantId);
+    return client.searchOpportunities(filter);
+  }
+
+  /** Sync pipeline stage in GHL for the contact's primary opportunity. */
+  async updateOpportunityStage(
+    tenantId: string,
+    contactId: string,
+    pipelineStageId: string
+  ): Promise<void> {
+    const client = this.getClient(tenantId);
+    await client.updateOpportunityStageForContact(contactId, pipelineStageId);
   }
 }
 

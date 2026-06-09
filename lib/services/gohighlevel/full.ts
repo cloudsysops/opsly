@@ -16,5 +16,12 @@ export type {
   ListContactsFilter,
   GoHighLevelResponse,
   ListResponse,
+  Opportunity,
+  Conversation,
+  ConversationMessage,
+  SearchConversationsFilter,
+  SearchConversationsResponse,
+  SendConversationMessageRequest,
+  SendConversationMessageResponse,
 } from './types.js';
 export type { AIFollowupConfig, AIFollowupResult } from './workflows/ai-lead-followup.js';

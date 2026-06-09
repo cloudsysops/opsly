@@ -37,8 +37,27 @@ MCP / `getGoHighLevelService()` registran `tenantId: peskids` con el prefijo `GO
 **Scopes mínimos recomendados en la integración:**
 
 - `locations.readonly` (validación / descubrir location)
+- `locations/tags.readonly` + `locations/tags.write` (provision tags)
+- `locations/customFields.readonly` + `locations/customFields.write` (provision fields)
+- `forms.readonly` + `forms.write` (provision forms — opcional)
+- `opportunities.readonly` (validar pipelines)
+- `calendars.readonly` + `calendars.write` + `calendars/events.write` (Trial Class calendar + schedule)
 - `contacts.readonly` + `contacts.write` (MCP / sync CRM)
 - `conversations.write` solo si usarás envío desde Opsly (evitar auto-send sin approval; ver `WHATSAPP-CHANNEL.md`)
+
+**Provision API (tags, fields, calendars):**
+
+```bash
+./scripts/ghl-provision-peskids.sh              # dry-run (default)
+./scripts/ghl-provision-peskids.sh --execute    # apply after scopes OK
+npm run ghl-provision -- --manifest docs/examples/intake/peskids.json --tenant peskids --dry-run
+```
+
+Agencia Intcloudsysops: [`docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md`](../intcloudsysops/GOHIGHLEVEL-CONTRACT.md) — `./scripts/ghl-provision-intcloudsysops.sh`
+
+Reportes: `docs/artifacts/provisioning/provision-report-peskids.{json,md}`
+
+**Estado execute (2026-06-04):** `--execute` aplicó **11** recursos (tags, custom fields, calendarios Trial Class + Assessment). Quedan **5** `manual_required` (plantillas email/SMS y form en UI GHL).
 
 **Validación local (no imprime el token):**
 

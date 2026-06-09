@@ -1,0 +1,80 @@
+{
+  "completed": [
+    "Pipeline verified: Peskids Enrollment / stage New Lead",
+    "Tags applied to test contact",
+    "Custom fields set on create (child_name, child_age)",
+    "Contact entered pipeline Peskids Enrollment at New Lead"
+  ],
+  "pending": [
+    "Form submit E2E (manual UI)",
+    "Activate GHL workflow OR confirm n8n peskids-lead-intake wired"
+  ],
+  "blockers": [],
+  "apiActions": [
+    "Created test contact NrUuROsRKUe0u1GP8IgD",
+    "Added tags: lead-web",
+    "Created opportunity FfJtrG3xhyn8briiFvd1"
+  ],
+  "manualRequired": [
+    "Form \"Peskids Lead Capture\" — API list empty or IAM blocked; confirm in GHL UI + test submit",
+    "email_template: Peskids — Welcome Parent — verify in Marketing → Email Templates (UI)",
+    "email_template: Peskids — Trial Class Confirmation — verify in Marketing → Email Templates (UI)",
+    "sms_template: Peskids — Trial Reminder — verify in Conversations → Templates (UI)",
+    "Basic follow-up workflow — verify in Automation → Workflows can reference templates (UI); Opsly uses n8n for execution"
+  ],
+  "tagsFound": [
+    "active student",
+    "active-student",
+    "churned",
+    "enrolled",
+    "follow-up",
+    "high priority",
+    "lead-n8n",
+    "lead-web",
+    "renewal-due",
+    "trial completed",
+    "trial started",
+    "trial-booked",
+    "warm lead"
+  ],
+  "customFieldsFound": [
+    "interest_level",
+    "preferred_schedule",
+    "child_name",
+    "child_age"
+  ],
+  "pipelinesFound": [
+    "Academy Pipeline",
+    "Marketing Pipeline",
+    "Peskids Enrollment"
+  ],
+  "formsFound": [
+    "Form 2",
+    "Form 1",
+    "Form 0"
+  ],
+  "pipeline": {
+    "id": "bWKAQuLTQUjeGAvgf9fX",
+    "name": "Peskids Enrollment",
+    "stageId": "f4c7365b-efe8-4d33-9559-c7f06881f172",
+    "stageName": "New Lead"
+  },
+  "testContact": {
+    "id": "NrUuROsRKUe0u1GP8IgD",
+    "email": "opsly.verify+peskids@intcloudsysops.com",
+    "reused": false
+  },
+  "tagsOnContact": [
+    "lead-web"
+  ],
+  "customFieldsOnContact": [
+    {
+      "id": "Mfp5OHVE9ZeTUHDkcu7L",
+      "value": "Mateo Test"
+    },
+    {
+      "id": "eTwe7i69DeTghzGmaVBe",
+      "value": 8
+    }
+  ]
+}
