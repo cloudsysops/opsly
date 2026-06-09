@@ -9,6 +9,7 @@ import {
 import { capturePublishEvent, capturePublishError } from '../../../../lib/knowledge/syra-capture';
 import { getServiceClient } from '../../../../lib/supabase';
 import { HTTP_STATUS } from '../../../../lib/constants';
+import { requireAdminAccess } from '../../../../lib/auth';
 
 type PublishBody = {
   content_id: string;
@@ -101,6 +102,11 @@ function scheduleFailureKnowledgeCaptures(results: PublishResult[], contentId: s
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const authError = await requireAdminAccess(request);
+  if (authError) {
+    return authError as unknown as NextResponse;
+  }
+
   try {
     const body = (await request.json()) as PublishBody;
     const errResponse = validatePublishBody(body);
