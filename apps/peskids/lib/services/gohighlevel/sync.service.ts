@@ -1,4 +1,5 @@
 import { supabaseServer } from '@/lib/supabase';
+import type { Database } from '@/lib/types';
 import { resolveGoHighLevelPeskidsEnv, GoHighLevelClient } from '@intcloudsysops/services/gohighlevel';
 
 const TENANT_ID = process.env.PESKIDS_TENANT_ID || 'peskids-mvp';
@@ -88,15 +89,16 @@ export class GhlSyncService {
 
     if (local.type === 'lead') {
       const name = [contact.firstName, contact.lastName].filter(Boolean).join(' ').trim();
+      const updates: Database['public']['Tables']['leads']['Update'] = {};
+      if (name) updates.name = name;
+      if (contact.email?.trim()) updates.email = contact.email.trim();
+      if (contact.phone?.trim()) updates.phone = contact.phone.trim();
+      if (Object.keys(updates).length === 0) return true;
+
       const { error } = await supabase
         .schema('public')
         .from('leads')
-        .update({
-          updated_at: new Date().toISOString(),
-          ...(name ? { name } : {}),
-          ...(contact.email?.trim() ? { email: contact.email.trim() } : {}),
-          ...(contact.phone?.trim() ? { phone: contact.phone.trim() } : {}),
-        })
+        .update(updates)
         .eq('id', local.id);
       if (error) return false;
       return true;
@@ -104,14 +106,15 @@ export class GhlSyncService {
 
     if (local.type === 'student') {
       const name = [contact.firstName, contact.lastName].filter(Boolean).join(' ').trim();
+      const updates: Database['public']['Tables']['students']['Update'] = {};
+      if (name) updates.name = name;
+      if (contact.email?.trim()) updates.parent_email = contact.email.trim();
+      if (Object.keys(updates).length === 0) return true;
+
       const { error } = await supabase
         .schema('public')
         .from('students')
-        .update({
-          updated_at: new Date().toISOString(),
-          ...(name ? { name } : {}),
-          ...(contact.email?.trim() ? { parent_email: contact.email.trim() } : {}),
-        })
+        .update(updates)
         .eq('id', local.id);
       if (error) return false;
       return true;
