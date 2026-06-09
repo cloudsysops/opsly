@@ -87,22 +87,32 @@ export class GhlSyncService {
     }
 
     if (local.type === 'lead') {
-      const updates: Record<string, string> = { updated_at: new Date().toISOString() };
       const name = [contact.firstName, contact.lastName].filter(Boolean).join(' ').trim();
-      if (name) updates.name = name;
-      if (contact.email?.trim()) updates.email = contact.email.trim();
-      if (contact.phone?.trim()) updates.phone = contact.phone.trim();
-      const { error } = await supabase.schema('public').from('leads').update(updates).eq('id', local.id);
+      const { error } = await supabase
+        .schema('public')
+        .from('leads')
+        .update({
+          updated_at: new Date().toISOString(),
+          ...(name ? { name } : {}),
+          ...(contact.email?.trim() ? { email: contact.email.trim() } : {}),
+          ...(contact.phone?.trim() ? { phone: contact.phone.trim() } : {}),
+        })
+        .eq('id', local.id);
       if (error) return false;
       return true;
     }
 
     if (local.type === 'student') {
-      const updates: Record<string, string> = { updated_at: new Date().toISOString() };
       const name = [contact.firstName, contact.lastName].filter(Boolean).join(' ').trim();
-      if (name) updates.name = name;
-      if (contact.email?.trim()) updates.parent_email = contact.email.trim();
-      const { error } = await supabase.schema('public').from('students').update(updates).eq('id', local.id);
+      const { error } = await supabase
+        .schema('public')
+        .from('students')
+        .update({
+          updated_at: new Date().toISOString(),
+          ...(name ? { name } : {}),
+          ...(contact.email?.trim() ? { parent_email: contact.email.trim() } : {}),
+        })
+        .eq('id', local.id);
       if (error) return false;
       return true;
     }
