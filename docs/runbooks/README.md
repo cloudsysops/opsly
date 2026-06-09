@@ -27,6 +27,7 @@ Procedimientos accionables para operar, desplegar, diagnosticar y recuperar Opsl
 - `INCIDENT-AUTONOMOUS-AGENT.md`
 - `OPSLY-OPENCLAW-STARTUP.md`
 - `TENANT-BONUS-WORKFLOWS.md` — bonus CRM workflows por tenant, dry-run e instalacion segura
+- `VPS-CLEANUP-WEBHOOK.md` — clasificación y respuesta a alertas de limpieza en VPS
 - [`../tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md`](../tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md) — criterios prod por tenant (stub `TENANT-PRODUCTION-CHECKLIST.md` aquí)
 - [`../tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md`](../tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md) — cohortes y rollback (stub aquí)
 - [`../tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md`](../tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md) — triage onboarding API
