@@ -8,7 +8,7 @@ const CPU_QUERY = '100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 1
 const RAM_USED_QUERY = 'sum(node_memory_MemTotal_bytes) - sum(node_memory_MemAvailable_bytes)';
 const RAM_TOTAL_QUERY = 'sum(node_memory_MemTotal_bytes)';
 const DISK_USED_QUERY =
-  'sum(node_filesystem_size_bytes{mountpoint="/"}) - sum(node_filesystem_free_bytes{mountpoint="/"})';
+  'sum(node_filesystem_size_bytes{mountpoint="/"}) - sum(node_filesystem_free_bytes)';
 const DISK_TOTAL_QUERY = 'sum(node_filesystem_size_bytes{mountpoint="/"})';
 const UPTIME_QUERY = 'time() - node_boot_time_seconds';
 
@@ -57,7 +57,7 @@ export async function fetchHostMetricsFromPrometheus(
   base: string
 ): Promise<HostMetricsFromProm | null> {
   const cacheKey = `${CACHE_KEY_PREFIX}:${base}`;
-  // Bolt Optimization: check cache first to avoid 6 parallel Prometheus fetches (~100-500ms)
+  // Check cache first to avoid 6 parallel Prometheus fetches.
   const cached = await getCache<HostMetricsFromProm>(cacheKey);
   if (cached !== null) {
     return cached;
@@ -101,7 +101,7 @@ export async function fetchHostMetricsFromPrometheus(
     uptimeRaw
   );
 
-  // Background cache set to avoid blocking the response
+  // Background cache set to avoid blocking the response.
   void setCache(cacheKey, metrics, CACHE_TTL.SHORT).catch((err) => {
     logger.error(`[prometheus-cache] failed to set ${cacheKey}`, err);
   });

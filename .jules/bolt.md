@@ -21,3 +21,7 @@
 ## 2026-06-01 - [Multi-Tenant Policy Caching]
 **Learning:** Policy enforcement checks (like budget limits) are frequently called on critical write paths. Performing database aggregations and multi-table joins on every such call adds significant latency (~100ms) and DB load. Caching the finalized check result (e.g., `isOverBudget`) for 60s in Redis reduces latency to <5ms while maintaining sufficient accuracy for budget enforcement.
 **Action:** Implement short-term Redis caching for all multi-tenant policy enforcement results that involve expensive database aggregations.
+
+## 2026-06-05 - [Prometheus Metrics Caching]
+**Learning:** Prometheus host metrics retrieval (CPU, RAM, Disk, Uptime) involved 6 parallel network calls on every request. Caching the result in Redis with a short TTL (60s) significantly improves dashboard responsiveness and reduces network overhead. Using the non-blocking `void setCache(...)` pattern ensures that cache updates don't add latency to the current response.
+**Action:** Prefer caching aggregated infrastructure metrics in the API layer, especially when multiple external probes are required to build a single response.
