@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://opsly.local/schemas/vps-cleanup-webhook.schema.json",
+  "title": "Opsly VPS Cleanup Webhook",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["source", "alert_type", "severity", "vps", "service", "message", "timestamp"],
+  "properties": {
+    "source": {
+      "type": "string",
+      "enum": ["discord", "n8n", "monitor", "system"]
+    },
+    "alert_type": {
+      "type": "string",
+      "const": "vps_cleanup_request"
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["info", "warning", "critical"]
+    },
+    "vps": {
+      "type": "string",
+      "minLength": 1
+    },
+    "service": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tenant_slug": {
+      "type": ["string", "null"],
+      "pattern": "^[a-z0-9-]{3,64}$"
+    },
+    "message": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "requested_cleanup": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["logs", "images", "stopped_containers", "unused_networks", "volumes"]
+      },
+      "default": ["logs", "images", "stopped_containers", "unused_networks"]
+    },
+    "signals": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "disk_usage_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "orphan_images": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stopped_containers": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unused_networks": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "orphan_volumes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "runbook_ref": {
+      "type": ["string", "null"]
+    }
+  }
+}
