@@ -1,7 +1,11 @@
 'use client';
 
 import { getApiBaseUrl } from '@/lib/api';
+import { cn } from '@/lib/utils';
+import { Loader2, MessageSquare, Send, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -79,25 +83,16 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
 
   const getDecisionBadge = (type?: string) => {
     if (!type) return null;
-    const badges: Record<string, { label: string; color: string }> = {
-      auto_implement: { label: '⚡ Implementando automáticamente', color: '#22c55e' },
-      needs_approval: { label: '⏳ Esperando aprobación', color: '#eab308' },
-      scheduled: { label: '📅 Agendado', color: '#3b82f6' },
-      rejected: { label: '❌ No aplica', color: '#ef4444' },
+    const badges: Record<string, { label: string; colorClass: string }> = {
+      auto_implement: { label: '⚡ Implementando automáticamente', colorClass: 'text-ops-green' },
+      needs_approval: { label: '⏳ Esperando aprobación', colorClass: 'text-ops-yellow' },
+      scheduled: { label: '📅 Agendado', colorClass: 'text-ops-blue' },
+      rejected: { label: '❌ No aplica', colorClass: 'text-ops-red' },
     };
     const badge = badges[type];
     if (!badge) return null;
     return (
-      <span
-        style={{
-          fontSize: '11px',
-          color: badge.color,
-          display: 'block',
-          marginTop: '4px',
-        }}
-      >
-        {badge.label}
-      </span>
+      <span className={cn('block mt-1 text-[11px] font-medium', badge.colorClass)}>{badge.label}</span>
     );
   };
 
@@ -106,94 +101,50 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        style={{
-          position: 'fixed',
-          bottom: '24px',
-          right: '24px',
-          width: '56px',
-          height: '56px',
-          borderRadius: '50%',
-          background: '#6366f1',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '24px',
-          boxShadow: '0 4px 12px rgba(99,102,241,0.4)',
-          zIndex: 1000,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
+        className={cn(
+          'fixed bottom-6 right-6 w-14 h-14 rounded-full flex items-center justify-center transition-all duration-200 z-[1000] shadow-lg shadow-black/40 border border-ops-green/30 hover:border-ops-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ops-green/80',
+          open ? 'bg-ops-surface text-neutral-100' : 'bg-ops-green/10 text-ops-green hover:bg-ops-green/20'
+        )}
         aria-label={open ? 'Cerrar feedback' : 'Abrir feedback'}
       >
-        {open ? '✕' : '💬'}
+        {open ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6" />}
       </button>
 
       {open ? (
         <div
-          style={{
-            position: 'fixed',
-            bottom: '92px',
-            right: '24px',
-            width: '360px',
-            height: '500px',
-            background: '#111',
-            border: '1px solid #333',
-            borderRadius: '16px',
-            display: 'flex',
-            flexDirection: 'column',
-            zIndex: 1000,
-            overflow: 'hidden',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
-          }}
+          className={cn(
+            'fixed bottom-24 right-6 w-[360px] h-[500px] bg-ops-bg border border-ops-border rounded-lg flex flex-col z-[1000] overflow-hidden shadow-2xl shadow-black/60 transition-all animate-in fade-in slide-in-from-bottom-4 duration-300'
+          )}
         >
-          <div
-            style={{
-              padding: '16px',
-              borderBottom: '1px solid #222',
-              background: '#0a0a0a',
-            }}
-          >
-            <div
-              style={{
-                fontWeight: 600,
-                color: '#fff',
-                fontSize: '14px',
-              }}
-            >
-              💬 Feedback & Sugerencias
+          <div className="p-4 border-b border-ops-border bg-ops-surface/50">
+            <div className="font-semibold text-neutral-100 text-sm flex items-center gap-2">
+              <MessageSquare className="w-4 h-4 text-ops-green" />
+              Feedback & Sugerencias
             </div>
-            <div style={{ fontSize: '12px', color: '#666', marginTop: '2px' }}>
+            <div className="text-xs text-ops-gray mt-0.5">
               Tu feedback mejora el producto
             </div>
           </div>
 
           <div
-            style={{
-              flex: 1,
-              overflowY: 'auto',
-              padding: '16px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-            }}
+            className="flex-1 overflow-y-auto p-4 flex flex-col gap-3"
+            aria-live="polite"
           >
             {messages.map((msg, i) => (
               <div
                 key={i}
-                style={{
-                  alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                  maxWidth: '85%',
-                }}
+                className={cn(
+                  'max-w-[85%]',
+                  msg.role === 'user' ? 'self-end' : 'self-start'
+                )}
               >
                 <div
-                  style={{
-                    background: msg.role === 'user' ? '#6366f1' : '#1a1a1a',
-                    color: '#fff',
-                    padding: '10px 14px',
-                    borderRadius: msg.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                    fontSize: '13px',
-                    lineHeight: '1.5',
-                  }}
+                  className={cn(
+                    'p-3 text-sm leading-relaxed border',
+                    msg.role === 'user'
+                      ? 'bg-ops-green/10 border-ops-green/30 text-neutral-100 rounded-2xl rounded-tr-sm'
+                      : 'bg-ops-surface border-ops-border text-neutral-100 rounded-2xl rounded-tl-sm'
+                  )}
                 >
                   {msg.content}
                 </div>
@@ -201,61 +152,33 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
               </div>
             ))}
             {loading ? (
-              <div
-                style={{
-                  alignSelf: 'flex-start',
-                  color: '#666',
-                  fontSize: '13px',
-                  padding: '8px',
-                }}
-              >
+              <div className="self-start p-2 flex items-center gap-2 text-xs text-ops-gray italic">
+                <Loader2 className="w-3 h-3 animate-spin" />
                 Analizando...
               </div>
             ) : null}
             <div ref={messagesEndRef} />
           </div>
 
-          <div
-            style={{
-              padding: '12px',
-              borderTop: '1px solid #222',
-              display: 'flex',
-              gap: '8px',
-            }}
-          >
-            <input
+          <div className="p-3 border-t border-ops-border flex gap-2 bg-ops-surface/30">
+            <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
               placeholder="Escribe tu feedback..."
-              style={{
-                flex: 1,
-                background: '#1a1a1a',
-                border: '1px solid #333',
-                borderRadius: '8px',
-                padding: '8px 12px',
-                color: '#fff',
-                fontSize: '13px',
-                outline: 'none',
-              }}
+              className="flex-1 h-9 bg-ops-bg text-xs"
+              aria-label="Tu feedback"
             />
-            <button
-              type="button"
+            <Button
+              variant="primary"
+              size="sm"
               onClick={sendMessage}
               disabled={loading || !input.trim()}
-              style={{
-                background: '#6366f1',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '8px 14px',
-                color: '#fff',
-                cursor: 'pointer',
-                fontSize: '16px',
-                opacity: loading || !input.trim() ? 0.5 : 1,
-              }}
+              className="w-9 h-9 p-0 rounded-sm"
+              aria-label="Enviar feedback"
             >
-              ↑
-            </button>
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+            </Button>
           </div>
         </div>
       ) : null}
