@@ -35,13 +35,17 @@ cd /opt/opsly
 git fetch origin main
 git checkout main
 git pull --ff-only origin main
-cd apps/peskids
 doppler run --project ops-intcloudsysops --config prd -- bash -c '
   set -euo pipefail
+  SUPABASE_URL="${NEXT_PUBLIC_SUPABASE_URL:?missing NEXT_PUBLIC_SUPABASE_URL in Doppler}"
+  SUPABASE_ANON="${NEXT_PUBLIC_SUPABASE_ANON_KEY:?missing NEXT_PUBLIC_SUPABASE_ANON_KEY in Doppler}"
   WA="${NEXT_PUBLIC_PESKIDS_WHATSAPP_E164:?missing NEXT_PUBLIC_PESKIDS_WHATSAPP_E164 in Doppler}"
   WAD="${NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY:-+1 WhatsApp}"
   WAP="${NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL:-Hola Peskids}"
   docker build \
+    -f apps/peskids/Dockerfile \
+    --build-arg NEXT_PUBLIC_SUPABASE_URL="$SUPABASE_URL" \
+    --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY="$SUPABASE_ANON" \
     --build-arg NEXT_PUBLIC_PESKIDS_WHATSAPP_E164="$WA" \
     --build-arg NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY="$WAD" \
     --build-arg NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL="$WAP" \
@@ -55,15 +59,34 @@ trap 'rm -f "$ENV_FILE"' EXIT
 doppler secrets download --no-file --format docker --project ops-intcloudsysops --config prd >"$ENV_FILE"
 source /opt/opsly/scripts/lib/peskids-docker-env-filter.sh
 filter_peskids_docker_env "$ENV_FILE"
-source /opt/opsly/scripts/lib/peskids-traefik-labels.sh
 docker run -d --name peskids --restart unless-stopped \
   --network traefik-public \
   -p 127.0.0.1:3004:3004 \
   --env-file "$ENV_FILE" \
-  "${PESKIDS_TRAEFIK_LABELS[@]}" \
   ghcr.io/cloudsysops/peskids:latest
-sleep 3
-curl -sf http://127.0.0.1:3004/ >/dev/null && echo "ok   peskids local health"
+check_url() {
+  local label="$1"
+  local url="$2"
+  local needle="${3:-}"
+  local body
+  local attempt
+  for attempt in 1 2 3 4 5; do
+    if body="$(curl -fsSL --max-redirs 5 "$url" 2>/dev/null)"; then
+      if [[ -z "$needle" || "$body" == *"$needle"* ]]; then
+        echo "ok   ${label}"
+        return 0
+      fi
+    fi
+    echo "retry ${label} (${attempt}/5)"
+    sleep 5
+  done
+  echo "fail ${label}: ${url}" >&2
+  return 1
+}
+
+check_url "peskids local health" "http://127.0.0.1:3004/api/health" '"ok":true'
+check_url "peskids local admin login" "http://127.0.0.1:3004/admin/login"
+check_url "peskids local familias login" "http://127.0.0.1:3004/familias/login"
 REMOTE
 }
 

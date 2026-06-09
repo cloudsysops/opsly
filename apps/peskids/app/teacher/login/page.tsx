@@ -1,5 +1,4 @@
 import { Suspense } from 'react';
-import { getAuthPublicConfig } from '@/lib/auth-public-config';
 import { TeacherLogin } from './teacher-login';
 
 export const metadata = {
@@ -8,8 +7,6 @@ export const metadata = {
 };
 
 export default function TeacherLoginPage(): React.ReactElement {
-  const authConfig = getAuthPublicConfig();
-
   return (
     <Suspense
       fallback={
@@ -18,7 +15,7 @@ export default function TeacherLoginPage(): React.ReactElement {
         </div>
       }
     >
-      <TeacherLogin authConfig={authConfig} />
+      <TeacherLogin />
     </Suspense>
   );
 }
