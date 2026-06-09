@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 
 import {
   classifyHeartbeat,
@@ -6,62 +6,68 @@ import {
   requireHeartbeatRedis,
   type ServiceHeartbeatStatus,
 } from '../../../../lib/infra/heartbeat';
-import { runTrustedPortalDal } from '../../../../lib/portal-tenant-dal';
+import { requireAdminAccess } from '../../../../lib/auth';
 
 export const runtime = 'nodejs';
 
 const EXPECTED_SERVICES = ['api', 'orchestrator'] as const;
 
-export async function GET(request: Request): Promise<Response> {
-  const out = await runTrustedPortalDal(request, async (_session) => {
-    try {
-      const redis = await requireHeartbeatRedis();
-      const now = Date.now();
-      const seen = new Set<string>();
-      const services: ServiceHeartbeatStatus[] = [];
+/**
+ * Administrative endpoint to view the health status of infrastructure services.
+ * Protected with `requireAdminAccess` to prevent disclosure of internal information.
+ */
+export async function GET(request: NextRequest): Promise<Response> {
+  const authError = await requireAdminAccess(request);
+  if (authError) {
+    return authError;
+  }
 
-      for await (const keys of redis.scanIterator({
-        MATCH: 'heartbeat:*',
-        COUNT: 100,
-      })) {
-        for (const key of keys) {
-          if (typeof key !== 'string') {
-            continue;
-          }
-          const name = key.replace(/^heartbeat:/, '');
-          seen.add(name);
-          const [raw, ttl] = await Promise.all([redis.get(key), redis.ttl(key)]);
-          services.push(classifyHeartbeat(name, raw, ttl, now));
-        }
-      }
+  try {
+    const redis = await requireHeartbeatRedis();
+    const now = Date.now();
+    const seen = new Set<string>();
+    const services: ServiceHeartbeatStatus[] = [];
 
-      for (const expected of EXPECTED_SERVICES) {
-        if (seen.has(expected)) {
+    for await (const keys of redis.scanIterator({
+      MATCH: 'heartbeat:*',
+      COUNT: 100,
+    })) {
+      for (const key of keys) {
+        if (typeof key !== 'string') {
           continue;
         }
-        const key = heartbeatKey(expected);
+        const name = key.replace(/^heartbeat:/, '');
+        seen.add(name);
         const [raw, ttl] = await Promise.all([redis.get(key), redis.ttl(key)]);
-        services.push(classifyHeartbeat(expected, raw, ttl, now));
+        services.push(classifyHeartbeat(name, raw, ttl, now));
       }
-
-      const sortedServices = [...services].sort((a, b) => a.name.localeCompare(b.name));
-      return NextResponse.json(
-        {
-          services: sortedServices,
-          generated_at: new Date(now).toISOString(),
-        },
-        { status: 200 }
-      );
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return NextResponse.json(
-        {
-          error: 'SYSTEM_UNREACHABLE',
-          message: `infra status unavailable: ${message}`,
-        },
-        { status: 503 }
-      );
     }
-  });
-  return out;
+
+    for (const expected of EXPECTED_SERVICES) {
+      if (seen.has(expected)) {
+        continue;
+      }
+      const key = heartbeatKey(expected);
+      const [raw, ttl] = await Promise.all([redis.get(key), redis.ttl(key)]);
+      services.push(classifyHeartbeat(expected, raw, ttl, now));
+    }
+
+    const sortedServices = [...services].sort((a, b) => a.name.localeCompare(b.name));
+    return NextResponse.json(
+      {
+        services: sortedServices,
+        generated_at: new Date(now).toISOString(),
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return NextResponse.json(
+      {
+        error: 'SYSTEM_UNREACHABLE',
+        message: `infra status unavailable: ${message}`,
+      },
+      { status: 503 }
+    );
+  }
 }

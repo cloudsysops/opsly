@@ -22,3 +22,8 @@
 **Vulnerability:** The `/api/social/publish` endpoint was exposed without any authentication or authorization checks. Anyone could trigger social media publishing by sending a POST request to this endpoint with valid content.
 **Learning:** Functional modules (like Social Publish) might be implemented without considering the centralized security helpers (`requireAdminAccess`) if they are developed as independent features or "autonomous agent" tools.
 **Prevention:** Audit all POST/PATCH/DELETE handlers in the API to ensure they explicitly call authorization helpers. Ensure that integration tests for these features actually test with and without valid authorization headers.
+
+## 2026-06-09 - [Broad Authorization in Infrastructure Status API]
+**Vulnerability:** The `/api/infra/status` endpoint used `runTrustedPortalDal`, which allowed any authenticated portal user to view global service heartbeats and internal system health via Redis scanning—a potential information disclosure vulnerability.
+**Learning:** Using a broad security wrapper (`runTrustedPortalDal`) for system-wide status checks can lead to unauthorized information disclosure if the endpoint scans global resources rather than tenant-specific data.
+**Prevention:** Infrastructure and system-wide monitoring endpoints must use `requireAdminAccess` to ensure only authorized administrators can view global health data.
