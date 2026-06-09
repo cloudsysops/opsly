@@ -1,131 +1,138 @@
-'use client';
+'use client'
 
-import { Loader2, LogIn, ShieldCheck, Sparkles } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
-import { PeskidsLockup } from '@/components/brand/peskids-logo';
-import { Button } from '@/components/ui/button';
-import { buildRecoveryRedirectTo } from '@/lib/auth-recovery';
-import { isStaffUser } from '@/lib/staff-user';
-import type { AuthPublicConfig } from '@/lib/auth-public-config';
-import { authFetchErrorMessage, isAuthFetchError } from '@/lib/auth-login-messages';
-import { createClient } from '@/lib/supabase-browser';
-import { tenantRoleFromUserMetadata } from '@/lib/runtime/tenant-identity';
+import { Loader2, LogIn, ShieldCheck, Sparkles } from 'lucide-react'
+import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useMemo, useState } from 'react'
+import { PeskidsLockup } from '@/components/brand/peskids-logo'
+import { Button } from '@/components/ui/button'
+import { buildRecoveryRedirectTo } from '@/lib/auth-recovery'
+import { isStaffUser } from '@/lib/staff-user'
+import { createClient } from '@/lib/supabase-browser'
+import { tenantRoleFromUserMetadata } from '../../../../../lib/runtime/src/tenant-identity'
+
+function browserSupabaseConfigured(): boolean {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim()
+  )
+}
+
+function authFetchErrorMessage(): string {
+  return 'El acceso al panel no está configurado correctamente en este despliegue. Usa recuperación o avisa al equipo.'
+}
 
 function resolvePostLoginPath(role: string | undefined): string {
   if (role === 'teacher') {
-    return '/teacher/dashboard';
+    return '/teacher/dashboard'
   }
-  return '/admin';
+  return '/admin'
 }
 
-export function TeacherLogin({ authConfig }: { authConfig: AuthPublicConfig }): React.ReactElement {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const supabaseConfig = useMemo(
-    () => ({
-      supabaseUrl: authConfig.supabaseUrl,
-      supabaseAnonKey: authConfig.supabaseAnonKey,
-    }),
-    [authConfig.supabaseAnonKey, authConfig.supabaseUrl]
-  );
-  const next = useMemo(() => searchParams.get('next')?.trim() ?? '', [searchParams]);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [resetSent, setResetSent] = useState(false);
-  const [resetLoading, setResetLoading] = useState(false);
-  const destination = next.startsWith('/') ? next : '/teacher/dashboard';
+export function TeacherLogin(): React.ReactElement {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const next = useMemo(() => searchParams.get('next')?.trim() ?? '', [searchParams])
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [resetSent, setResetSent] = useState(false)
+  const [resetLoading, setResetLoading] = useState(false)
+  const destination = next.startsWith('/') ? next : '/teacher/dashboard'
 
   useEffect(() => {
-    const callbackError = searchParams.get('error');
+    const callbackError = searchParams.get('error')
     if (callbackError) {
-      setError(callbackError);
+      setError(callbackError)
     }
-  }, [searchParams]);
+  }, [searchParams])
 
   useEffect(() => {
-    if (!authConfig.configured) {
-      return;
-    }
-    const supabase = createClient(supabaseConfig);
+    const supabase = createClient()
     void supabase.auth.getSession().then(({ data }) => {
       if (data.session?.user) {
-        const role = tenantRoleFromUserMetadata(data.session.user);
-        router.replace(resolvePostLoginPath(role));
-        router.refresh();
+        const role = tenantRoleFromUserMetadata(data.session.user)
+        router.replace(resolvePostLoginPath(role))
+        router.refresh()
       }
-    });
-  }, [authConfig.configured, router, supabaseConfig]);
+    })
+  }, [router])
 
   async function onForgotPassword(): Promise<void> {
-    const trimmed = email.trim();
+    const trimmed = email.trim()
     if (!trimmed) {
-      setError('Escribe tu email arriba y vuelve a pulsar «¿Olvidaste tu contraseña?».');
-      return;
+      setError('Escribe tu email arriba y vuelve a pulsar «¿Olvidaste tu contraseña?».')
+      return
     }
-    if (!authConfig.configured) {
-      setError(authFetchErrorMessage());
-      return;
+    if (!browserSupabaseConfigured()) {
+      setError(authFetchErrorMessage())
+      return
     }
-    setResetLoading(true);
-    setError('');
-    setResetSent(false);
+    setResetLoading(true)
+    setError('')
+    setResetSent(false)
     try {
-      const supabase = createClient(supabaseConfig);
+      const supabase = createClient()
       const origin =
-        typeof window !== 'undefined' ? window.location.origin : 'https://peskids.op-sly.com';
+        typeof window !== 'undefined' ? window.location.origin : 'https://peskids.op-sly.com'
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(trimmed, {
         redirectTo: buildRecoveryRedirectTo(origin),
-      });
+      })
       if (resetError) {
-        setError(isAuthFetchError(resetError.message) ? authFetchErrorMessage() : resetError.message);
-        return;
+        setError(
+          resetError.message.toLowerCase().includes('fetch')
+            ? authFetchErrorMessage()
+            : resetError.message
+        )
+        return
       }
-      setResetSent(true);
+      setResetSent(true)
     } catch {
-      setError(authFetchErrorMessage());
+      setError(authFetchErrorMessage())
     } finally {
-      setResetLoading(false);
+      setResetLoading(false)
     }
   }
 
   async function handleSubmit(e: React.FormEvent): Promise<void> {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    setResetSent(false);
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    setResetSent(false)
 
     try {
-      if (!authConfig.configured) {
-        setError(authFetchErrorMessage());
-        return;
+      if (!browserSupabaseConfigured()) {
+        setError(authFetchErrorMessage())
+        return
       }
-      const supabase = createClient(supabaseConfig);
+      const supabase = createClient()
       const { data, error: signError } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
-      });
+      })
       if (signError) {
-        setError(isAuthFetchError(signError.message) ? authFetchErrorMessage() : signError.message);
-        return;
+        setError(
+          signError.message.toLowerCase().includes('fetch')
+            ? authFetchErrorMessage()
+            : signError.message
+        )
+        return
       }
-      const user = data.user;
+      const user = data.user
       if (!user || !isStaffUser(user)) {
-        await supabase.auth.signOut();
+        await supabase.auth.signOut()
         setError(
           'Esta cuenta no tiene acceso al panel Peskids. Solicita acceso al equipo de Peskids.'
-        );
-        return;
+        )
+        return
       }
-      router.push(destination);
-      router.refresh();
+      router.push(destination)
+      router.refresh()
     } catch {
-      setError(authFetchErrorMessage());
+      setError(authFetchErrorMessage())
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
@@ -146,7 +153,7 @@ export function TeacherLogin({ authConfig }: { authConfig: AuthPublicConfig }): 
               <div className="space-y-5">
                 <div className="inline-flex items-center gap-2 rounded-full border border-pk-primary/15 bg-white/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-pk-mutedText shadow-sm">
                   <Sparkles className="h-3.5 w-3.5 text-pk-primary" aria-hidden />
-                  Acceso profesores
+                  Panel profesores
                 </div>
 
                 <div className="max-w-xl space-y-4">
@@ -154,8 +161,8 @@ export function TeacherLogin({ authConfig }: { authConfig: AuthPublicConfig }): 
                     Entrar al panel de profesores
                   </h1>
                   <p className="max-w-lg text-base leading-7 text-pk-sub sm:text-lg">
-                    Acceso profesional para revisar clases, estudiantes y seguimientos. El panel
-                    administrativo sigue separado y cada rol entra por su ruta.
+                    Acceso profesional para revisar clases, estudiantes y seguimientos. El
+                    panel admin sigue separado y cada rol entra por su ruta.
                   </p>
                 </div>
               </div>
@@ -197,13 +204,13 @@ export function TeacherLogin({ authConfig }: { authConfig: AuthPublicConfig }): 
                   href="/admin/login"
                   className="rounded-full px-4 py-2 text-xs font-semibold text-pk-sub transition hover:bg-white hover:text-pk-ink"
                 >
-                  Panel administrativo
+                  Panel admin
                 </Link>
                 <Link
                   href="/teacher/login"
                   className="rounded-full bg-white px-4 py-2 text-xs font-semibold text-pk-ink shadow-sm transition hover:bg-pk-snow"
                 >
-                  Panel de profesores
+                  Panel profesores
                 </Link>
               </div>
 
@@ -212,8 +219,8 @@ export function TeacherLogin({ authConfig }: { authConfig: AuthPublicConfig }): 
                   Accede con tu cuenta
                 </h2>
                 <p className="text-sm leading-6 text-pk-sub sm:text-base">
-                  Si ya tienes una sesión activa, te llevamos directamente al panel correcto. Si
-                  olvidaste tu contraseña, puedes regenerarla desde aquí.
+                  Si ya tienes una sesión activa, te llevamos directamente al panel correcto.
+                  Si olvidaste tu contraseña, puedes regenerarla desde aquí.
                 </p>
               </div>
 
@@ -256,11 +263,7 @@ export function TeacherLogin({ authConfig }: { authConfig: AuthPublicConfig }): 
                   </p>
                 ) : null}
                 {error ? <p className="text-sm text-red-600">{error}</p> : null}
-                <Button
-                  type="submit"
-                  className="h-12 w-full rounded-full text-base"
-                  disabled={loading}
-                >
+                <Button type="submit" className="h-12 w-full rounded-full text-base" disabled={loading}>
                   {loading ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
@@ -283,5 +286,5 @@ export function TeacherLogin({ authConfig }: { authConfig: AuthPublicConfig }): 
         </div>
       </div>
     </main>
-  );
+  )
 }
