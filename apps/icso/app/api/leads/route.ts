@@ -84,9 +84,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json(response, { status: 201 });
   } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : 'Internal server error';
     console.error('[ICSO] Lead submission error:', error);
+    // TODO: Add Slack alert when shared alerting lib is available
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { error: errorMsg },
       { status: 500 }
     );
   }
