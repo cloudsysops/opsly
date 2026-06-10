@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-06-10T12:52:16.777Z",
+  "generated_at": "2026-06-10T13:14:49.931Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -14809,6 +14809,48 @@
       "size_bytes": 7786
     },
     {
+      "path": "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
+      "title": "OPSLY OPERATIONAL HARDENING",
+      "keywords": [
+        "100",
+        "alert",
+        "alerting",
+        "audit",
+        "building",
+        "closed",
+        "critical",
+        "current",
+        "delivery",
+        "design",
+        "detection",
+        "executive",
+        "failure",
+        "gaps",
+        "hardening",
+        "implementation",
+        "markdown",
+        "matrix",
+        "matters",
+        "methods",
+        "only",
+        "operational",
+        "opsly",
+        "points",
+        "priority",
+        "problem",
+        "score",
+        "sketch",
+        "solution",
+        "state",
+        "summary",
+        "this",
+        "today",
+        "why",
+        "yet"
+      ],
+      "size_bytes": 38435
+    },
+    {
       "path": "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
       "title": "Performance Bottleneck Analysis",
       "keywords": [
@@ -19103,6 +19145,49 @@
       "size_bytes": 324
     },
     {
+      "path": "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
+      "title": "CRITICAL RELIABILITY SPRINT",
+      "keywords": [
+        "alert",
+        "audit",
+        "built",
+        "collection",
+        "critical",
+        "dashboard",
+        "dead",
+        "design",
+        "enable",
+        "failure",
+        "failures",
+        "happen",
+        "implementation",
+        "journey",
+        "key",
+        "lead",
+        "letter",
+        "map",
+        "markdown",
+        "matrix",
+        "metrics",
+        "opsly",
+        "points",
+        "priority",
+        "progress",
+        "queries",
+        "queue",
+        "ready",
+        "reliability",
+        "schema",
+        "slack",
+        "specification",
+        "sprint",
+        "status",
+        "strategy",
+        "where"
+      ],
+      "size_bytes": 31628
+    },
+    {
       "path": "docs/operations/README.md",
       "title": "Carpeta `docs/operations/` (legado)",
       "keywords": [
@@ -20166,6 +20251,47 @@
         "website"
       ],
       "size_bytes": 3331
+    },
+    {
+      "path": "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
+      "title": "OPSLY RELIABILITY SPRINT (65 → 85)",
+      "keywords": [
+        "100",
+        "alert",
+        "alerting",
+        "analysis",
+        "audit",
+        "channels",
+        "critical",
+        "current",
+        "dashboard",
+        "design",
+        "failure",
+        "implementation",
+        "leads",
+        "lost",
+        "mapping",
+        "markdown",
+        "metrics",
+        "opsly",
+        "plan",
+        "points",
+        "priority",
+        "production",
+        "reliability",
+        "requirements",
+        "risk",
+        "routing",
+        "severity",
+        "situation",
+        "sprint",
+        "state",
+        "system",
+        "tiers",
+        "today",
+        "where"
+      ],
+      "size_bytes": 68192
     },
     {
       "path": "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
@@ -84381,12 +84507,14 @@
       "vendor/agency-agents/integrations/openclaw/executive-summary-generator/AGENTS.md",
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
       "docs/04-infrastructure/DOPPLER-CI-RUNBOOK.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
       "docs/03-agents/OPENCLAW-TEAM-PLAN.md",
       "docs/adr/ADR-021-predictive-bi-scalability.md",
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
-      "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md"
+      "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "105": [
       "docs/infrastructure/AGENT-BOOTSTRAP-SYSTEM.md"
@@ -87313,6 +87441,7 @@
       "docs/04-infrastructure/PRODUCTION-STATUS-2026-05-15.md",
       "docs/STRUCTURE-GUARDRAILS.md",
       "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
       "docs/audits/README.md",
       "docs/audits/DOCKER-OPTIMIZATION.md",
@@ -87392,6 +87521,7 @@
       "docs/02-tools/CURSOR-MCP-SETUP.md",
       "docs/02-tools/NOTEBOOKLM-INTEGRATION.md",
       "docs/operations/README.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/operations/COST-MONITORING-GUIDE.md",
       "docs/adr/ADR-044-core-first-tenant-slug-extraction.md",
       "docs/adr/ADR-021-predictive-bi-scalability.md",
@@ -87639,6 +87769,7 @@
       "docs/reports/ACG-STRATEGY-30-DAYS.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/AUTONOMY-PHASE1-E2E-EVIDENCE.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
@@ -89811,6 +89942,7 @@
       "docs/04-infrastructure/PRODUCTION-STATUS-2026-05-15.md",
       "docs/STRUCTURE-GUARDRAILS.md",
       "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
       "docs/audits/README.md",
       "docs/audits/DOCKER-OPTIMIZATION.md",
@@ -89890,6 +90022,7 @@
       "docs/02-tools/CURSOR-MCP-SETUP.md",
       "docs/02-tools/NOTEBOOKLM-INTEGRATION.md",
       "docs/operations/README.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/operations/COST-MONITORING-GUIDE.md",
       "docs/adr/ADR-044-core-first-tenant-slug-extraction.md",
       "docs/adr/ADR-021-predictive-bi-scalability.md",
@@ -90137,6 +90270,7 @@
       "docs/reports/ACG-STRATEGY-30-DAYS.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/AUTONOMY-PHASE1-E2E-EVIDENCE.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
@@ -91539,6 +91673,7 @@
       "docs/01-development/SCRIPTS-AUDIT-2026-04-24.md",
       "docs/04-infrastructure/SECURITY_AUDIT_REPORT.md",
       "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/DOCKER-OPTIMIZATION.md",
       "docs/audits/DATABASE-QUERY-AUDIT.md",
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
@@ -91546,8 +91681,10 @@
       "docs/audits/LINT-RULES-GUIDE.md",
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md",
       "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/AUDIT-EXEMPTIONS.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
       "docs/reports/audit-2026-04-07.md",
       "docs/reports/CYBER-NEO-OPSLY-2026-05-21.md",
@@ -93767,6 +93904,7 @@
       "docs/01-development/QA-REVIEW-COMPLETE.md",
       "docs/04-infrastructure/PRODUCTION-READINESS.md",
       "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
       "docs/audits/DOCKER-OPTIMIZATION.md",
       "docs/audits/DATABASE-QUERY-AUDIT.md",
@@ -93775,7 +93913,9 @@
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
       "docs/audits/LINT-RULES-GUIDE.md",
       "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/adr/ADR-029-mcp-orchestration.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       "docs/reports/session-summary-2026-05-21.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
@@ -96302,6 +96442,7 @@
       "docs/01-development/IMPLEMENTATION-IA-LAYER.md",
       "docs/01-development/COST-DASHBOARD-WIREFRAMES.md",
       "docs/06-multi-agent/PARALLEL-EXECUTION-ARCHITECTURE.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/DOCKER-OPTIMIZATION.md",
       "docs/03-agents/AGENT-TEAM-OVERVIEW.md",
       "docs/03-agents/SYRA-IMPLEMENTATION-GUIDE.md",
@@ -96309,6 +96450,7 @@
       "docs/03-agents/PARALLEL-AGENTS-ORCHESTRATION.md",
       "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
       "docs/03-agents/VALIDATION-AND-ITERATION-SYSTEM.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/adr/ADR-031-token-optimization-ollama-primary.md",
       "docs/adr/ADR-043-intelligent-content-generation-via-llm-gateway.md",
       "docs/adr/ADR-014-notebooklm-agent.md",
@@ -96319,6 +96461,7 @@
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/brain/skills/incremental-implementation.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
       "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
@@ -101299,6 +101442,7 @@
       "docs/01-development/SEMANA-1-INFORME.md",
       "docs/01-development/PHASE-5-2-3-4-COMPLETE-SPECS.md",
       "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/adr/ADR-004-supabase-schema-por-tenant.md",
       ".agents/skills/cyber-neo/SKILL.md",
       ".agents/skills/the-architect/references/templates/blueprint-template.md",
@@ -101617,6 +101761,7 @@
       "vendor/agency-agents/integrations/opencode/agents/product-manager.md",
       "vendor/agency-agents/integrations/openclaw/government-digital-presales-consultant/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/product-manager/AGENTS.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md"
     ],
     "gateway": [
@@ -104806,6 +104951,7 @@
       "docs/03-agents/AUTONOMOUS-EXECUTION-GUIDE.md",
       "docs/03-agents/AGENT-KNOWLEDGE-CAPTURE-GUIDE.md",
       "docs/02-tools/OBSIDIAN-README.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md",
       "docs/tenants/peskids/QUICK-START-PRODUCTION.md",
       "docs/testing/QA-TESTING-BRIEF.md",
@@ -105152,6 +105298,7 @@
       "docs/01-development/QA-REVIEW-COMPLETE.md",
       "docs/01-development/DEPLOYMENT-ARCHITECTURE.md",
       "docs/01-development/PHASE1-QUICK-START.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
       "docs/03-agents/VALIDATION-AND-ITERATION-SYSTEM.md",
       "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
@@ -105618,13 +105765,15 @@
       "docs/03-agents/SPRINT-CURSOR-PROMPTS.md",
       "docs/03-agents/AGENTS-ORCHESTRATION.md",
       "docs/03-agents/HERMES-SPRINT-PLAN.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/adr/ADR-019-prometheus-grafana-observability.md",
       "docs/adr/ADR-018-pgvector-embeddings-rag.md",
       "docs/tenants/peskids/SPRINT-02-RUN.md",
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/peskids/SPRINT-01.md",
-      "docs/tenants/peskids/WHATSAPP-CHANNEL.md"
+      "docs/tenants/peskids/WHATSAPP-CHANNEL.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "tecnica": [
       "packages/skills/user/opsly-architect-senior/SKILL.md",
@@ -106124,7 +106273,8 @@
       "vendor/agency-agents/integrations/openclaw/account-strategist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/unreal-technical-artist/AGENTS.md",
       "docs/03-agents/HERMES-SPRINT-PLAN.md",
-      "docs/tenants/peskids/BLUEPRINT-MAPPING.md"
+      "docs/tenants/peskids/BLUEPRINT-MAPPING.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "principio": [
       "packages/skills/user/opsly-autonomous/SKILL.md",
@@ -107159,6 +107309,7 @@
       "vendor/agency-agents/integrations/openclaw/threat-detection-engineer/AGENTS.md",
       "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
       "docs/database/SUPABASE-MIGRATION-AUDIT.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/DATABASE-QUERY-AUDIT.md",
       "docs/audits/TEST-COVERAGE-BASELINE.md",
       "docs/reports/REPOSITORY-BASELINE-2026-05-27.md",
@@ -108554,6 +108705,7 @@
       "docs/history/plans/SPRINT-ROADMAP.md",
       "docs/stubs/TENANT-PRODUCTION-HARDENING.md",
       "docs/04-infrastructure/TENANT-PRODUCTION-HARDENING.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md",
@@ -109908,6 +110060,8 @@
     "alert": [
       "packages/skills/user/opsly-google-cloud/SKILL.md",
       "infra/monitoring/README.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
       "docs/tenants/peskids/EVENT-CONTRACT.md",
       "docs/tenants/peskids/QUICK-START-PRODUCTION.md",
@@ -109916,7 +110070,8 @@
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
-      "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md"
+      "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "apis": [
       "packages/skills/user/opsly-google-cloud/SKILL.md",
@@ -112253,13 +112408,16 @@
       "docs/01-development/DESIGN-REFERENCES.md",
       "docs/01-development/COST-DASHBOARD-WIREFRAMES.md",
       "docs/06-multi-agent/PARALLEL-EXECUTION-ARCHITECTURE.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/03-agents/AUTONOMOUS-EXECUTION-GUIDE.md",
       "docs/02-tools/MCP-SERVERS.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/adr/ADR-043-intelligent-content-generation-via-llm-gateway.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
       "docs/tenants/peskids/design-pack/README.md",
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
       "docs/brain/skills/api-and-interface-design.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
       ".agents/skills/cyber-neo/references/owasp-top-10.md",
@@ -112413,11 +112571,13 @@
       "docs/00-architecture/ARCHITECTURE.md",
       "docs/01-development/OPSLY-AGENCY-DIVISION.md",
       "docs/01-development/STATE-OF-PLATFORM.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
       "docs/02-tools/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
       "docs/adr/ADR-028-agent-api-routing.md",
       "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
       "docs/tenants/peskids/GHL-CONSULTING-HANDOFF.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
       "docs/reports/session-summary-2026-05-21.md",
@@ -112878,6 +113038,7 @@
       "docs/brain/architecture/system-map.md",
       "docs/demo/hackathon-demo.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
       ".agents/skills/the-architect/references/templates/claude-md-template.md",
@@ -113329,6 +113490,7 @@
       "docs/runbooks/AUTONOMOUS-PROD-60D.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
       "docs/tenants/peskids/SALES-FUNNEL-VALIDATION.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md"
     ],
@@ -114816,6 +114978,7 @@
       "docs/runbooks/TROUBLESHOOTING-GUIDE.md",
       "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
       "docs/00-architecture/REPO-MAP.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/adr/ADR-043-supplement/README.md",
       "docs/tenants/peskids/GHL-WORKFLOWS.md",
       "docs/brain/architecture/system-map.md",
@@ -114964,7 +115127,8 @@
       "lib/observability/README.md",
       "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
       "docs/audits/DATABASE-QUERY-AUDIT.md",
-      "docs/02-tools/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md"
+      "docs/02-tools/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md"
     ],
     "renders": [
       "packages/skills/vendor/agent-skills/performance-optimization/SKILL.md"
@@ -115057,7 +115221,9 @@
       "vendor/agency-agents/integrations/openclaw/narrative-designer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/sales-engineer/AGENTS.md",
       "docs/03-agents/AGENTS-GUIDE.md",
-      "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md"
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
+      "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "atomic": [
       "packages/skills/vendor/agent-skills/git-workflow-and-versioning/SKILL.md"
@@ -115441,6 +115607,7 @@
       "vendor/agency-agents/integrations/openclaw/studio-producer/AGENTS.md",
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
       "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
       "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
       "docs/reports/ACG-STRATEGY-30-DAYS.md",
@@ -116712,6 +116879,7 @@
       "docs/03-agents/AGENT-SERVICES-DEPLOYMENT.md",
       "docs/02-tools/MCP-STATUS-ANALYSIS.md",
       "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/adr/ADR-035-openclaw-per-tenant.md",
       "docs/adr/ADR-041-local-services-phase-1-tenant-api.md",
       "docs/adr/ADR-042-local-services-phase-2-webhooks.md",
@@ -117036,6 +117204,7 @@
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
       "docs/testing/PHASE1-TEST-PLAN.md",
       "docs/reports/ACG-STRATEGY-30-DAYS.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/audit-2026-04-07.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       ".claude/1-agent-teams/orchestrator.md"
@@ -118968,6 +119137,7 @@
       "vendor/agency-agents/integrations/openclaw/product-manager/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/minimal-change-engineer/AGENTS.md",
       "docs/projects/PESKIDS-SCOPE.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/03-agents/QUICK-REFERENCE-HERMES-OPSLY.md",
       "docs/adr/ADR-014-notebooklm-agent.md",
       "docs/adr/ADR-028-agent-api-routing.md",
@@ -120307,6 +120477,9 @@
       "packages/skills/vendor/agent-skills/using-agent-skills/SKILL.md",
       "packages/skills/vendor/agent-skills/debugging-and-error-recovery/SKILL.md",
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md"
     ],
     "manage": [
@@ -121136,6 +121309,7 @@
     "failures": [
       "packages/skills/vendor/agent-skills/ci-cd-and-automation/SKILL.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/owasp-top-10.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       ".agents/skills/cyber-neo/references/owasp-top-10.md"
     ],
     "feeding": [
@@ -122638,6 +122812,7 @@
     ],
     "happen": [
       ".cursor/prompts/fix-organize-autonomous-system.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/reports/session-summary-2026-05-21.md"
     ],
     "issue": [
@@ -123771,7 +123946,8 @@
       "vendor/agency-agents/integrations/opencode/agents/executive-summary-generator.md",
       "vendor/agency-agents/integrations/opencode/agents/language-translator.md",
       "vendor/agency-agents/integrations/openclaw/executive-summary-generator/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/language-translator/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/language-translator/AGENTS.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "tree": [
       ".cursor/prompts/local-services-ops-admin.md",
@@ -123918,6 +124094,7 @@
       "vendor/agency-agents/integrations/openclaw/incident-response-commander/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/sales-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/studio-producer/AGENTS.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/n8n-workflows/crm/README.md",
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
@@ -123973,8 +124150,11 @@
       "docs/infrastructure/NOTEBOOKLM-BRAIN-SYNC.md",
       "docs/projects/PESKIDS-SCOPE.md",
       "docs/01-development/PHASE2-ROADMAP.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/03-agents/SYRA-OPENCLAW-INTEGRATION.md",
-      "docs/03-agents/MULTI-AGENT-ARCHITECTURE.md"
+      "docs/03-agents/MULTI-AGENT-ARCHITECTURE.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "price": [
       ".cursor/prompts/local-services-sales-closer.md",
@@ -124302,6 +124482,7 @@
       "docs/06-multi-agent/PARALLEL-EXECUTION-GUIDE.md",
       "docs/04-infrastructure/CLOUDFLARE-PROXY-ACTIVATION.md",
       "docs/04-infrastructure/DOMAIN-CUTOVER-OP-SLY.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/N8N-SETUP.md",
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
@@ -124321,6 +124502,7 @@
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/brain/dashboard.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/PRODUCTION-HEALTH.md",
       "docs/blueprints/opsly-operational-blueprint/MODULES.md",
       "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md",
@@ -124618,7 +124800,9 @@
       "docs/03-agents/OPENCLAW-OBSERVABILITY.md",
       "docs/03-agents/VALIDATION-AND-ITERATION-SYSTEM.md",
       "docs/02-tools/NOTION-MCP-SERVER.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       ".agents/skills/the-architect/references/templates/blueprint-template.md"
     ],
     "mitigations": [
@@ -124858,6 +125042,7 @@
       "docs/01-development/STATE-OF-PLATFORM.md",
       "docs/04-infrastructure/PRODUCTION-READINESS.md",
       "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
       "docs/audits/DATABASE-QUERY-AUDIT.md",
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
@@ -125085,6 +125270,7 @@
       "docs/04-infrastructure/PRODUCTION-READINESS.md",
       "docs/04-infrastructure/PRODUCTION-STATUS-2026-05-15.md",
       "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
       "docs/audits/DOCKER-OPTIMIZATION.md",
       "docs/audits/DATABASE-QUERY-AUDIT.md",
@@ -126803,12 +126989,15 @@
       "vendor/agency-agents/integrations/opencode/agents/ai-citation-strategist.md",
       "vendor/agency-agents/integrations/openclaw/ai-citation-strategist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/threat-detection-engineer/AGENTS.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
       "docs/audits/LINT-RULES-GUIDE.md",
       "docs/03-agents/AGENTS-GUIDE.md",
       "docs/03-agents/VALIDATION-AND-ITERATION-SYSTEM.md",
       "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/testing-patterns.md",
       ".agents/skills/the-architect/references/questions/phase-2-branches.md"
     ],
@@ -126816,6 +127005,7 @@
       ".archived/context-builder-v2/src/design/architecture.md",
       "apps/experimental/context-builder-v2-archive/src/design/architecture.md",
       "vendor/agency-agents/integrations/openclaw/agentic-identity-trust-architect/AGENTS.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
       "docs/03-agents/OPENCLAW-OBSERVABILITY.md",
       "docs/tenants/peskids/SALES-FUNNEL-VALIDATION.md",
@@ -126860,7 +127050,8 @@
       "docs/governance/DATA-CLASSIFICATION.md",
       "docs/governance/internal/VENDOR-MANAGEMENT-POLICY.md",
       "docs/governance/internal/ACCESS-CONTROL-POLICY.md",
-      "docs/adr/ADR-029-mcp-orchestration.md"
+      "docs/adr/ADR-029-mcp-orchestration.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "automations": [
       "scripts/README.md",
@@ -127500,6 +127691,7 @@
       "docs/00-architecture/ELEVENLABS-ADVANCED-INTEGRATION.md",
       "docs/06-multi-agent/PARALLEL-EXECUTION-ARCHITECTURE.md",
       "docs/04-infrastructure/VPS-ARCHITECTURE.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
       "docs/audits/LINT-RULES-GUIDE.md",
@@ -127512,6 +127704,7 @@
       "docs/tenants/peskids/GHL-CONSULTING-HANDOFF.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md"
@@ -127605,6 +127798,7 @@
       "docs/demo/hackathon-demo.md",
       "docs/testing/QA-TESTING-BRIEF.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       "docs/reports/SESSION-SUMMARY-2026-05-08.md",
       "docs/reports/CYBER-NEO-OPSLY-2026-05-21.md",
@@ -129103,6 +129297,7 @@
       "docs/infrastructure/NOTEBOOKLM-BRAIN-SYNC.md",
       "docs/governance/internal/INCIDENT-RESPONSE-POLICY.md",
       "docs/01-development/LOCAL-FIRST-ARCHITECTURE.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       ".agents/skills/cyber-neo/references/lang-javascript.md",
       ".agents/skills/cyber-neo/references/secrets-patterns.md",
       ".agents/skills/cyber-neo/references/lang-python.md",
@@ -129233,6 +129428,7 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/secrets-patterns.md",
       "lib/observability/GOVERNANCE.md",
       "docs/01-development/PHASE-4-OBSERVABILITY-BILLING.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
       ".agents/skills/cyber-neo/references/secrets-patterns.md"
     ],
@@ -130446,6 +130642,7 @@
       "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md",
       "docs/adr/ADR-043-supplement/DECISION-RATIONALE.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
@@ -130494,6 +130691,7 @@
       "vendor/agency-agents/integrations/openclaw/unity-editor-tool-developer/SOUL.md",
       "docs/infrastructure/NOTEBOOKLM-BRAIN-SYNC.md",
       "docs/runbooks/INCUBATION-PLATFORM-FOUNDATION.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
@@ -130747,6 +130945,7 @@
       "docs/obsidian/research/trading-pattern-radar.md",
       "docs/obsidian/research/security-pattern-radar.md",
       "docs/01-development/DEPLOYMENT-ARCHITECTURE.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
       "docs/adr/ADR-036-cli-consolidation-tools-cli-first.md",
       "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md",
@@ -131738,6 +131937,7 @@
       "vendor/agency-agents/integrations/openclaw/outbound-strategist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/livestream-commerce-coach/AGENTS.md",
       "docs/01-development/AGENT-SKILLS-INTEGRATION.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/03-agents/MULTI-AGENT-ARCHITECTURE.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/api-design-patterns.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/testing-patterns.md",
@@ -131818,6 +132018,8 @@
       "docs/obsidian/research/agent-pattern-matrix.md",
       "docs/01-development/ONBOARDING-READINESS.md",
       "docs/01-development/CLIENT-ONBOARDING-PLAYBOOK.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
       "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
@@ -132355,6 +132557,7 @@
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
       "docs/04-infrastructure/VPS-PROVISIONING-STANDARD.md",
       "docs/03-agents/SECURITY-AUTONOMOUS-EXECUTION-POLICY.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/auth-patterns.md"
     ],
     "roles": [
@@ -132983,6 +133186,7 @@
       "docs/01-development/QA-REVIEW-COMPLETE.md",
       "docs/01-development/MODULARITY-CONTRACT.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
@@ -133845,7 +134049,9 @@
       "vendor/agency-agents/integrations/kimi/devops-automator/system.md",
       "vendor/agency-agents/integrations/antigravity/agency-devops-automator/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/devops-automator.md",
-      "vendor/agency-agents/integrations/openclaw/devops-automator/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/devops-automator/AGENTS.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "alerts": [
       "lib/observability/GOVERNANCE.md",
@@ -138224,6 +138430,7 @@
       "docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md",
       "docs/00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md",
       "docs/04-infrastructure/PRODUCTION-STATUS-2026-05-15.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/COST-DEEP-DIVE.md",
       "docs/adr/ADR-044-core-first-tenant-slug-extraction.md",
       "docs/adr/ADR-045-tenant-analytics-batch-python-pandas-arrow.md",
@@ -138747,7 +138954,8 @@
       "vendor/agency-agents/integrations/openclaw/finance-tracker/AGENTS.md",
       "infra/monitoring/README.md",
       "docs/audits/LINT-RULES-GUIDE.md",
-      "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md"
+      "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md"
     ],
     "ensure": [
       "vendor/agency-agents/integrations/qwen/agents/analytics-reporter.md",
@@ -139849,6 +140057,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-agentic-identity-trust-architect/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/agentic-identity-trust-architect.md",
       "vendor/agency-agents/integrations/openclaw/agentic-identity-trust-architect/SOUL.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md"
     ],
     "delegation": [
@@ -141446,7 +141655,8 @@
       "vendor/agency-agents/integrations/openclaw/legal-client-intake/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/loan-officer-assistant/AGENTS.md",
       "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB683486-SEED419215-20180924-00000.md",
-      "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB1177123-SEED419213-20200602-00000.md"
+      "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB1177123-SEED419213-20200602-00000.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md"
     ],
     "readiness": [
       "vendor/agency-agents/integrations/qwen/agents/test-results-analyzer.md",
@@ -143358,7 +143568,9 @@
       "vendor/agency-agents/integrations/openclaw/unity-multiplayer-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/backend-architect/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/sre-site-reliability-engineer/IDENTITY.md",
-      "vendor/agency-agents/integrations/openclaw/sre-site-reliability-engineer/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/sre-site-reliability-engineer/AGENTS.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "spark": [
       "vendor/agency-agents/integrations/qwen/agents/data-engineer.md",
@@ -146874,7 +147086,8 @@
       "vendor/agency-agents/integrations/opencode/agents/feedback-synthesizer.md",
       "vendor/agency-agents/integrations/openclaw/feedback-synthesizer/AGENTS.md",
       "docs/generated/implementation-progress.auto.md",
-      "docs/history/plans/IMPLEMENTATION-STATUS.md"
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md"
     ],
     "processing": [
       "vendor/agency-agents/integrations/qwen/agents/feedback-synthesizer.md",
@@ -147199,7 +147412,8 @@
       "vendor/agency-agents/integrations/openclaw/incident-response-commander/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/blockchain-security-auditor/SOUL.md",
       "docs/runbooks/OPERATIONS-HANDBOOK.md",
-      "docs/adr/ADR-034-ci-hygiene.md"
+      "docs/adr/ADR-034-ci-hygiene.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "upgrade": [
       "vendor/agency-agents/integrations/qwen/agents/incident-response-commander.md",
@@ -147263,6 +147477,7 @@
       "vendor/agency-agents/integrations/opencode/agents/workflow-architect.md",
       "vendor/agency-agents/integrations/openclaw/reality-checker/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/workflow-architect/AGENTS.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/tenants/peskids/SALES-FUNNEL-VALIDATION.md"
     ],
     "journeys": [
@@ -147709,6 +147924,7 @@
       "vendor/agency-agents/integrations/openclaw/senior-project-manager/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/game-audio-engineer/AGENTS.md",
       "docs/01-development/AGENT-SKILLS-INTEGRATION.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/tenants/peskids/DASHBOARD-SPEC.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/peskids/SPRINT-01.md",
@@ -147781,7 +147997,8 @@
       "vendor/agency-agents/integrations/openclaw/legal-billing-time-tracking/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/jira-workflow-steward/AGENTS.md",
       "docs/runbooks/AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
-      "docs/01-development/AGENCY-DEVOPS-OS-OFFER.md"
+      "docs/01-development/AGENCY-DEVOPS-OS-OFFER.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md"
     ],
     "diverse": [
       "vendor/agency-agents/integrations/qwen/agents/jira-workflow-steward.md",
@@ -148401,7 +148618,8 @@
       "vendor/agency-agents/integrations/antigravity/agency-supply-chain-strategist/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/supply-chain-strategist.md",
       "vendor/agency-agents/integrations/openclaw/supply-chain-strategist/AGENTS.md",
-      "docs/adr/ADR-039-sales-channels-email-whatsapp.md"
+      "docs/adr/ADR-039-sales-channels-email-whatsapp.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "efficient": [
       "vendor/agency-agents/integrations/qwen/agents/supply-chain-strategist.md",
@@ -148872,7 +149090,8 @@
       "vendor/agency-agents/integrations/opencode/agents/ai-citation-strategist.md",
       "vendor/agency-agents/integrations/opencode/agents/sales-engineer.md",
       "vendor/agency-agents/integrations/openclaw/ai-citation-strategist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/sales-engineer/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/sales-engineer/AGENTS.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "scorecard": [
       "vendor/agency-agents/integrations/qwen/agents/ai-citation-strategist.md",
@@ -150917,6 +151136,7 @@
       "docs/adr/ADR-024-ollama-local-worker-primary.md",
       "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       ".agents/IMPLEMENTATION-CHECKLIST.md"
     ],
     "take": [
@@ -152212,6 +152432,7 @@
       "docs/obsidian/research/saas-pattern-radar.md",
       "docs/obsidian/research/trading-pattern-radar.md",
       "docs/obsidian/research/security-pattern-radar.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md"
     ],
     "much": [
@@ -153668,6 +153889,7 @@
       "docs/generated/implementation-progress.auto.md",
       "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
       "docs/06-multi-agent/PARALLEL-EXECUTION-ARCHITECTURE.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/testing/PHASE-2-TESTING.md"
     ],
     "remoto": [
@@ -154057,6 +154279,7 @@
       "docs/03-agents/PARALLEL-AGENTS-ORCHESTRATION.md",
       "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
       "docs/03-agents/AGENT-SERVICES-DEPLOYMENT.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       "docs/blueprints/opsly-operational-blueprint/MODULES.md",
@@ -154603,7 +154826,8 @@
       "docs/tenants/peskids/MVP-PLAN.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
-      "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md"
+      "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "makers": [
       "docs/history/consolidation/CONSOLIDATION-INDEX.md"
@@ -157422,7 +157646,8 @@
       "docs/01-development/CLIENT-ONBOARDING-PLAYBOOK.md"
     ],
     "yet": [
-      "docs/01-development/CLIENT-ONBOARDING-PLAYBOOK.md"
+      "docs/01-development/CLIENT-ONBOARDING-PLAYBOOK.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md"
     ],
     "bases": [
       "docs/01-development/SPRINT-PLANNING-SETUP.md",
@@ -159090,6 +159315,15 @@
       "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
       "docs/audits/DATABASE-QUERY-AUDIT.md"
     ],
+    "sketch": [
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md"
+    ],
+    "today": [
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
+      "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
+      "docs/security/SECURITY-POSTURE-AUDIT.md"
+    ],
     "validated": [
       "docs/audits/SALES-READINESS-HARDENING.md"
     ],
@@ -159315,7 +159549,8 @@
     ],
     "built": [
       "docs/03-agents/QUICK-REFERENCE-HERMES-OPSLY.md",
-      "docs/03-agents/AGENT-KNOWLEDGE-CAPTURE-GUIDE.md"
+      "docs/03-agents/AGENT-KNOWLEDGE-CAPTURE-GUIDE.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md"
     ],
     "solved": [
       "docs/03-agents/QUICK-REFERENCE-HERMES-OPSLY.md"
@@ -159704,10 +159939,6 @@
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/GHL-WORKFLOWS.md"
     ],
-    "today": [
-      "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
-      "docs/security/SECURITY-POSTURE-AUDIT.md"
-    ],
     "ahorra": [
       "docs/02-tools/TOKEN-SYSTEM-GUIDE.md"
     ],
@@ -159757,6 +159988,12 @@
     ],
     "servidores": [
       "docs/02-tools/CURSOR-MCP-SETUP.md"
+    ],
+    "dead": [
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md"
+    ],
+    "letter": [
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md"
     ],
     "044": [
       "docs/adr/ADR-044-core-first-tenant-slug-extraction.md"
@@ -162040,6 +162277,7 @@
     "docs/audits/DATABASE-QUERY-AUDIT.md",
     "docs/audits/DOCKER-OPTIMIZATION.md",
     "docs/audits/LINT-RULES-GUIDE.md",
+    "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
     "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
     "docs/audits/README.md",
     "docs/audits/SALES-READINESS-HARDENING.md",
@@ -162241,6 +162479,7 @@
     "docs/obsidian/templates/moc-research.md",
     "docs/obsidian/templates/source-note.md",
     "docs/operations/COST-MONITORING-GUIDE.md",
+    "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
     "docs/operations/README.md",
     "docs/ops/branch-protection-setup.md",
     "docs/ops/issue-bankruptcy-2026-05-03.md",
@@ -162277,6 +162516,7 @@
     "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
     "docs/reports/CYBER-NEO-OPSLY-2026-05-21.md",
     "docs/reports/ICSO-E2E-VALIDATION.md",
+    "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
     "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
     "docs/reports/PARALLEL-EXECUTION-STATUS.md",
     "docs/reports/PESKIDS-E2E-VALIDATION.md",
