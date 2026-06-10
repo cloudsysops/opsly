@@ -1,5 +1,5 @@
 {
-  "lastIndexed": "2026-06-10T12:45:17.370Z",
+  "lastIndexed": "2026-06-10T12:52:13.590Z",
   "totalFiles": 736,
   "vaultRoot": "docs",
   "files": [
@@ -320,6 +320,7 @@
     "audits/LINT-RULES-GUIDE.md",
     "audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
     "audits/README.md",
+    "audits/SALES-READINESS-HARDENING.md",
     "audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
     "audits/TEST-COVERAGE-BASELINE.md",
     "blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
@@ -627,7 +628,6 @@
     "runbooks/VPS-CLEANUP-WEBHOOK.md",
     "runbooks/VPS-DEPLOYMENT-2026-05-08.md",
     "runbooks/VPS-DISK-SECURITY-SCAN.md",
-    "SALES-READINESS-HARDENING.md",
     "security/SECURITY-POSTURE-AUDIT.md",
     "STRUCTURE-GUARDRAILS.md",
     "stubs/AGENTS.md",
