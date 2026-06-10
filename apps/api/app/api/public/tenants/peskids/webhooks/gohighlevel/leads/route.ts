@@ -11,6 +11,7 @@ import {
   buildPeskidsLeadPersistInputFromGoHighLevel,
   persistPeskidsLead,
 } from '../../../../../../../../lib/peskids/lead-ingest';
+import { createPipelineOpportunity } from '../../../../../../../../lib/peskids/opportunity';
 import { formatZodError } from '../../../../../../../../lib/validation';
 
 function constantTimeEqual(a: string, b: string): boolean {
@@ -57,6 +58,21 @@ export async function POST(request: NextRequest): Promise<Response> {
   );
   if (!result.ok) {
     return Response.json({ error: result.error, request_id: requestId }, { status: 500 });
+  }
+
+  // Create or link opportunity in GHL pipeline (blocks response; critical for lead routing)
+  if (result.created && result.row.ghl_contact_id && parsed.data.lead?.parent_name) {
+    const opportunityResult = await createPipelineOpportunity(
+      result.row.ghl_contact_id,
+      parsed.data.lead.parent_name
+    );
+    if (opportunityResult) {
+      console.log('[peskids] pipeline opportunity created:', {
+        contactId: result.row.ghl_contact_id,
+        opportunityId: opportunityResult.opportunityId,
+        leadId: result.row.lead_id,
+      });
+    }
   }
 
   // Fire-and-forget: automation dispatch must not block the HTTP response
