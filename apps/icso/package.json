@@ -10,6 +10,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@intcloudsysops/services": "*",
     "lucide-react": "^0.469.0",
     "next": "^15.5.18",
     "react": "^19.2.6",
