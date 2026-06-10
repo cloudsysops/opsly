@@ -22,10 +22,7 @@ import {
 import {
   recordLeadReceived,
   recordLeadPersisted,
-  recordLeadPersistLatency,
-  recordGhlContactCreated,
   recordGhlOpportunityCreated,
-  recordN8nDispatchLatency,
   recordSubabaseError,
   recordGhlApiError,
   recordN8nDispatchFailure,
