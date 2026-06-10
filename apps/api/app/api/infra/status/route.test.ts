@@ -1,12 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as heartbeatMod from '../../../../lib/infra/heartbeat';
-import * as portalDalMod from '../../../../lib/portal-tenant-dal';
-import type { TrustedPortalSession } from '../../../../lib/portal-trusted-identity';
+import * as authMod from '../../../../lib/auth';
 import { GET as infraStatusGet } from './route';
 
-vi.mock('../../../../lib/portal-tenant-dal', () => ({
-  runTrustedPortalDal: vi.fn(),
+vi.mock('../../../../lib/auth', () => ({
+  requireAdminAccess: vi.fn(),
 }));
 
 vi.mock('../../../../lib/infra/heartbeat', async (importOriginal) => {
@@ -23,7 +22,7 @@ describe('GET /api/infra/status', () => {
   });
 
   it('denies access without token (401)', async () => {
-    vi.mocked(portalDalMod.runTrustedPortalDal).mockResolvedValue(
+    vi.mocked(authMod.requireAdminAccess).mockResolvedValue(
       new Response(JSON.stringify({ error: 'unauthorized' }), {
         status: 401,
         headers: { 'content-type': 'application/json' },
@@ -38,9 +37,7 @@ describe('GET /api/infra/status', () => {
   });
 
   it('returns services with valid token/session', async () => {
-    vi.mocked(portalDalMod.runTrustedPortalDal).mockImplementation(async (_req, fn) => {
-      return fn({} as TrustedPortalSession);
-    });
+    vi.mocked(authMod.requireAdminAccess).mockResolvedValue(null);
 
     const redisMock = {
       async *scanIterator() {
