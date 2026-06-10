@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-06-10T12:52:13.590Z",
-  "totalFiles": 736,
+  "lastIndexed": "2026-06-10T13:14:48.182Z",
+  "totalFiles": 739,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -318,6 +318,7 @@
     "audits/DATABASE-QUERY-AUDIT.md",
     "audits/DOCKER-OPTIMIZATION.md",
     "audits/LINT-RULES-GUIDE.md",
+    "audits/OPSLY-OPERATIONAL-HARDENING.md",
     "audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
     "audits/README.md",
     "audits/SALES-READINESS-HARDENING.md",
@@ -519,6 +520,7 @@
     "obsidian/templates/moc-research.md",
     "obsidian/templates/source-note.md",
     "operations/COST-MONITORING-GUIDE.md",
+    "operations/CRITICAL-RELIABILITY-SPRINT.md",
     "operations/README.md",
     "ops/branch-protection-setup.md",
     "ops/issue-bankruptcy-2026-05-03.md",
@@ -555,6 +557,7 @@
     "reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
     "reports/CYBER-NEO-OPSLY-2026-05-21.md",
     "reports/ICSO-E2E-VALIDATION.md",
+    "reports/OPSLY-RELIABILITY-SPRINT.md",
     "reports/PARALLEL-EXECUTION-2026-04-29.md",
     "reports/PARALLEL-EXECUTION-STATUS.md",
     "reports/PESKIDS-E2E-VALIDATION.md",
