@@ -1,6 +1,7 @@
 {
   "name": "intcloudsysops",
   "private": true,
+  "packageManager": "npm@10.8.3",
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.7"
   },
