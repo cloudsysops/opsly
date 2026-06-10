@@ -1,4 +1,6 @@
 import { resolveGoHighLevelPeskidsEnv } from '@intcloudsysops/services/gohighlevel';
+import { alertGhlFailure } from '../alerting/slack-notifier';
+import { recordGhlContactCreated, recordGhlContactLatency, recordGhlApiError } from '../metrics/metrics-collector';
 
 const GHL_API_BASE = 'https://services.leadconnectorhq.com';
 const DEFAULT_NEW_LEAD_STAGE_ID = 'f4c7365b-efe8-4d33-9559-c7f06881f172';
@@ -45,11 +47,13 @@ async function searchOpportunity(contactId: string): Promise<Opportunity | null>
     });
 
     if (!response.ok) {
-      console.warn(
-        '[opportunity] search failed:',
-        response.status,
-        await response.text().catch(() => '')
-      );
+      const errorText = await response.text().catch(() => '');
+      console.warn('[opportunity] search failed:', response.status, errorText);
+      // Alert and record metric only for actual errors (not 404-like statuses)
+      if (response.status >= 500 || response.status === 429) {
+        await recordGhlApiError('peskids', response.status, 'searchOpportunity');
+        await alertGhlFailure('searchOpportunity', response.status, errorText, contactId);
+      }
       return null;
     }
 
@@ -62,6 +66,8 @@ async function searchOpportunity(contactId: string): Promise<Opportunity | null>
     return opportunities[0] || null;
   } catch (err) {
     console.warn('[opportunity] search error:', err);
+    await recordGhlApiError('peskids', 0, 'searchOpportunity');
+    await alertGhlFailure('searchOpportunity', undefined, err instanceof Error ? err.message : String(err), contactId);
     return null;
   }
 }
@@ -72,6 +78,7 @@ async function createOpportunity(contactId: string, parentName: string): Promise
     const pipelineId = getPeskidsPipelineId();
     if (!pipelineId) {
       console.warn('[opportunity] GOHIGHLEVEL_PESKIDS_PIPELINE_ID not set; cannot create opportunity');
+      await alertGhlFailure('createOpportunity', undefined, 'GOHIGHLEVEL_PESKIDS_PIPELINE_ID not set', contactId);
       return null;
     }
 
@@ -89,11 +96,10 @@ async function createOpportunity(contactId: string, parentName: string): Promise
     });
 
     if (!response.ok) {
-      console.warn(
-        '[opportunity] creation failed:',
-        response.status,
-        await response.text().catch(() => '')
-      );
+      const errorText = await response.text().catch(() => '');
+      console.warn('[opportunity] creation failed:', response.status, errorText);
+      await recordGhlApiError('peskids', response.status, 'createOpportunity');
+      await alertGhlFailure('createOpportunity', response.status, errorText, contactId);
       return null;
     }
 
@@ -105,6 +111,8 @@ async function createOpportunity(contactId: string, parentName: string): Promise
     return data.opportunity ?? data.data ?? null;
   } catch (err) {
     console.warn('[opportunity] creation error:', err);
+    await recordGhlApiError('peskids', 0, 'createOpportunity');
+    await alertGhlFailure('createOpportunity', undefined, err instanceof Error ? err.message : String(err), contactId);
     return null;
   }
 }

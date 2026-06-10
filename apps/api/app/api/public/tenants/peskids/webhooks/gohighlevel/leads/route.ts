@@ -13,6 +13,25 @@ import {
 } from '../../../../../../../../lib/peskids/lead-ingest';
 import { createPipelineOpportunity } from '../../../../../../../../lib/peskids/opportunity';
 import { formatZodError } from '../../../../../../../../lib/validation';
+import {
+  alertWebhookFailure,
+  alertSubabaseFailure,
+  alertGhlFailure,
+  alertN8nFailure,
+} from '../../../../../../../../lib/alerting/slack-notifier';
+import {
+  recordLeadReceived,
+  recordLeadPersisted,
+  recordLeadPersistLatency,
+  recordGhlContactCreated,
+  recordGhlOpportunityCreated,
+  recordN8nDispatchLatency,
+  recordSubabaseError,
+  recordGhlApiError,
+  recordN8nDispatchFailure,
+  recordWebhookValidationError,
+  createLatencyTimer,
+} from '../../../../../../../../lib/metrics/metrics-collector';
 
 function constantTimeEqual(a: string, b: string): boolean {
   const bufA = Buffer.from(a);
@@ -33,6 +52,7 @@ export async function POST(request: NextRequest): Promise<Response> {
   if (secret) {
     const header = request.headers.get('x-webhook-secret')?.trim() ?? '';
     if (!header || !constantTimeEqual(header, secret)) {
+      await alertWebhookFailure('auth', 'Invalid webhook secret');
       return jsonError('invalid webhook secret', HTTP_STATUS.UNAUTHORIZED);
     }
   } else {
@@ -47,39 +67,78 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   const parsed = goHighLevelLeadWebhookSchema.safeParse(parsedBody.body);
   if (!parsed.success) {
+    await recordWebhookValidationError('peskids');
+    await alertWebhookFailure('validation', formatZodError(parsed.error));
     return jsonError(
       `Invalid request body: ${formatZodError(parsed.error)}`,
       HTTP_STATUS.BAD_REQUEST
     );
   }
 
+  // Record: lead received
+  await recordLeadReceived('peskids', parsed.data.source);
+
+  // Persist lead to Supabase with latency tracking
+  const persistTimer = createLatencyTimer();
   const result = await persistPeskidsLead(
     buildPeskidsLeadPersistInputFromGoHighLevel(parsed.data)
   );
+
   if (!result.ok) {
+    await recordSubabaseError('peskids', 'persist');
+    await alertSubabaseFailure('persistPeskidsLead', result.error, {
+      leadId: parsed.data.lead_id,
+      tenantSlug: 'peskids',
+    });
     return Response.json({ error: result.error, request_id: requestId }, { status: 500 });
   }
 
+  await recordLeadPersisted('peskids', result.created);
+  await persistTimer.end('peskids', 'supabase.persist');
+
   // Create or link opportunity in GHL pipeline (blocks response; critical for lead routing)
   if (result.created && result.row.ghl_contact_id && parsed.data.lead?.parent_name) {
+    const oppTimer = createLatencyTimer();
     const opportunityResult = await createPipelineOpportunity(
       result.row.ghl_contact_id,
       parsed.data.lead.parent_name
     );
+
     if (opportunityResult) {
+      await recordGhlOpportunityCreated('peskids');
+      await oppTimer.end('peskids', 'gohighlevel.opportunity');
       console.log('[peskids] pipeline opportunity created:', {
         contactId: result.row.ghl_contact_id,
         opportunityId: opportunityResult.opportunityId,
         leadId: result.row.lead_id,
       });
+    } else {
+      // Opportunity creation failed but lead was created; log and alert but don't fail response
+      await recordGhlApiError('peskids', 0, 'createPipelineOpportunity');
+      await alertGhlFailure('createPipelineOpportunity', undefined, 'Opportunity creation returned null', parsed.data.lead_id);
     }
   }
 
   // Fire-and-forget: automation dispatch must not block the HTTP response
   if (result.created) {
-    dispatchPeskidsLeadAutomation(parsed.data).catch((err: unknown) => {
-      console.error('[peskids] automation dispatch failed:', err);
-    });
+    const n8nTimer = createLatencyTimer();
+    dispatchPeskidsLeadAutomation(parsed.data)
+      .then((dispatchResult) => {
+        if (dispatchResult.ok) {
+          void n8nTimer.end('peskids', 'n8n.dispatch');
+        } else {
+          void recordN8nDispatchFailure('peskids', dispatchResult.detail);
+          void alertN8nFailure('dispatchPeskidsLeadAutomation', dispatchResult.detail, parsed.data.lead_id);
+        }
+      })
+      .catch((err: unknown) => {
+        void recordN8nDispatchFailure('peskids', err instanceof Error ? err.message : String(err));
+        void alertN8nFailure(
+          'dispatchPeskidsLeadAutomation',
+          err instanceof Error ? err.message : String(err),
+          parsed.data.lead_id
+        );
+      });
   }
 
   const stage = result.row.stage ?? normalizePeskidsPipelineStage(parsed.data.pipeline_stage);
