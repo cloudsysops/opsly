@@ -24,7 +24,8 @@ infra/Untitled.canvas
 context/doppler-ready.json
 tools/agents/prompts/secrets-*.md
 
-# Cursor / entorno local
+# Cursor / entorno local (root and app-level)
+**/.cursor/
 .cursor/mcp.json
 .cursor/responses/
 .cursor/hooks/logs/
