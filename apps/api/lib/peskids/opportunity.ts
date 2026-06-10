@@ -1,6 +1,6 @@
 import { resolveGoHighLevelPeskidsEnv } from '@intcloudsysops/services/gohighlevel';
 import { alertGhlFailure } from '../alerting/slack-notifier';
-import { recordGhlContactCreated, recordGhlContactLatency, recordGhlApiError } from '../metrics/metrics-collector';
+import { recordGhlApiError } from '../metrics/metrics-collector';
 
 const GHL_API_BASE = 'https://services.leadconnectorhq.com';
 const DEFAULT_NEW_LEAD_STAGE_ID = 'f4c7365b-efe8-4d33-9559-c7f06881f172';
