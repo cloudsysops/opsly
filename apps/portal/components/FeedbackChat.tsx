@@ -2,6 +2,8 @@
 
 import { getApiBaseUrl } from '@/lib/api';
 import { useEffect, useRef, useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -106,6 +108,7 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
       <button
         type="button"
         onClick={() => setOpen(!open)}
+        className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ops-green/80 focus-visible:ring-offset-2 focus-visible:ring-offset-ops-bg"
         style={{
           position: 'fixed',
           bottom: '24px',
@@ -202,14 +205,19 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
             ))}
             {loading ? (
               <div
+                aria-live="polite"
                 style={{
                   alignSelf: 'flex-start',
                   color: '#666',
                   fontSize: '13px',
                   padding: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
                 }}
               >
-                Analizando...
+                <Loader2 className="h-3 w-3 animate-spin" />
+                <span>Analizando...</span>
               </div>
             ) : null}
             <div ref={messagesEndRef} />
@@ -221,23 +229,16 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
               borderTop: '1px solid #222',
               display: 'flex',
               gap: '8px',
+              alignItems: 'center',
             }}
           >
-            <input
+            <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
               placeholder="Escribe tu feedback..."
-              style={{
-                flex: 1,
-                background: '#1a1a1a',
-                border: '1px solid #333',
-                borderRadius: '8px',
-                padding: '8px 12px',
-                color: '#fff',
-                fontSize: '13px',
-                outline: 'none',
-              }}
+              aria-label="Escribe tu feedback"
+              className="h-9"
             />
             <button
               type="button"
