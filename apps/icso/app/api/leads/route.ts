@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { GoHighLevelClient, isGoHighLevelConfigured, resolveGoHighLevelEnv } from '@intcloudsysops/services/gohighlevel';
+import { findIcsoDiscoveryCalendar } from '@/lib/ghl-setup';
 
 export const runtime = 'nodejs';
 
@@ -7,6 +8,13 @@ interface IcsoLeadRequest {
   name: string;
   email: string;
   message: string;
+}
+
+interface IcsoLeadResponse {
+  success: boolean;
+  contactId: string;
+  message: string;
+  calendarBookingUrl?: string | null;
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -52,14 +60,29 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Log successful lead creation
     console.log(`[ICSO] Lead created: ${contact.id} (${email})`);
 
-    return NextResponse.json(
-      {
-        success: true,
-        contactId: contact.id,
-        message: 'Lead submitted successfully',
-      },
-      { status: 201 }
-    );
+    // Get calendar booking link if available
+    let calendarBookingUrl: string | null = null;
+    try {
+      const calendarId = await findIcsoDiscoveryCalendar();
+      if (calendarId) {
+        const locationId = ghlEnv.locationId;
+        // GHL calendar booking URL format: https://gohighlevel.com/calendar/{locationId}/{calendarId}
+        calendarBookingUrl = `https://app.gohighlevel.com/calendar/${locationId}/${calendarId}`;
+        console.log(`[ICSO] Calendar booking URL: ${calendarBookingUrl}`);
+      }
+    } catch (calendarError) {
+      console.warn('[ICSO] Failed to get calendar booking URL:', calendarError);
+      // Continue without calendar URL; it's not critical
+    }
+
+    const response: IcsoLeadResponse = {
+      success: true,
+      contactId: contact.id,
+      message: 'Lead submitted successfully',
+      calendarBookingUrl,
+    };
+
+    return NextResponse.json(response, { status: 201 });
   } catch (error) {
     console.error('[ICSO] Lead submission error:', error);
     return NextResponse.json(

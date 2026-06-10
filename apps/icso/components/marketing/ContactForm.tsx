@@ -3,6 +3,13 @@
 import { type FormEvent, useState, type ReactElement } from 'react';
 import { siteConfig } from '@/lib/site';
 
+interface LeadApiResponse {
+  success: boolean;
+  contactId: string;
+  message: string;
+  calendarBookingUrl?: string | null;
+}
+
 export function ContactForm(): ReactElement {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -10,6 +17,7 @@ export function ContactForm(): ReactElement {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [calendarBookingUrl, setCalendarBookingUrl] = useState<string | null>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -29,13 +37,16 @@ export function ContactForm(): ReactElement {
         throw new Error(error.error || 'Failed to submit form');
       }
 
+      const data = await response.json() as LeadApiResponse;
       setSubmitStatus('success');
+      setCalendarBookingUrl(data.calendarBookingUrl ?? null);
       setName('');
       setEmail('');
       setMessage('');
 
       setTimeout(() => {
         setSubmitStatus('idle');
+        setCalendarBookingUrl(null);
       }, 5000);
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'An error occurred');
@@ -93,8 +104,20 @@ export function ContactForm(): ReactElement {
         />
       </div>
       {submitStatus === 'success' && (
-        <div className="rounded-lg bg-green-900/20 p-4 text-sm text-green-300">
-          ✓ Thank you! We received your inquiry and will respond within one business day.
+        <div className="space-y-3 rounded-lg bg-green-900/20 p-4">
+          <div className="text-sm text-green-300">
+            ✓ Thank you! We received your inquiry and will respond within one business day.
+          </div>
+          {calendarBookingUrl && (
+            <a
+              href={calendarBookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block rounded bg-green-700/40 px-3 py-2 text-sm font-medium text-green-200 transition-colors hover:bg-green-700/60"
+            >
+              Schedule a Discovery Call →
+            </a>
+          )}
         </div>
       )}
       {submitStatus === 'error' && (
