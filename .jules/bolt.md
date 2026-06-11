@@ -13,3 +13,7 @@
 ## 2026-05-29 - [Prometheus Metrics Caching & Collision Prevention]
 **Learning:** Fetching system metrics often involves multiple parallel queries (e.g., 6 for CPU, RAM, Disk, Uptime). Caching the aggregated result in Redis for 60s provides a massive latency win. However, using a static cache key can cause collisions if the API supports multiple Prometheus backends.
 **Action:** Always incorporate the source URL or unique identifier into the cache key when caching external metrics to prevent data leakage between different monitoring targets.
+
+## 2026-05-30 - [Parallelizing and Caching BullMQ Queue Lookups]
+**Learning:** Sequential calls to BullMQ queue statistics (waiting/active counts) introduce unnecessary latency, especially when multiple queues are involved. Parallelizing these calls with `Promise.all` and caching the results in Redis with a short TTL (60s) significantly improves response times for admin dashboard endpoints.
+**Action:** Always parallelize multiple independent BullMQ or Redis operations and use short-term caching for aggregated statistics shown in the UI.
