@@ -65,12 +65,18 @@ async function gradeSubmissionsAndAudit(
   tenantSlug: string,
   submissionIds: string[],
   score: number,
-  feedback: string | undefined
+  feedback: string | undefined,
+  actorId: string
 ) {
   const db = supabase as unknown as PeskidsClient;
   const { data: rawUpdated, error: updateError } = await db
     .from('peskids.form_submissions')
-    .update({ score, feedback: feedback || null, status: 'graded', updated_at: new Date().toISOString() })
+    .update({
+      score,
+      feedback: feedback || null,
+      status: 'graded',
+      updated_at: new Date().toISOString(),
+    })
     .eq('tenant_slug', tenantSlug)
     .in('submission_id', submissionIds)
     .select('submission_id');
@@ -85,7 +91,7 @@ async function gradeSubmissionsAndAudit(
   try {
     await db.rpc('log_audit_event', {
       p_action: 'form_submissions_bulk_graded',
-      p_actor_id: 'teacher',
+      p_actor_id: actorId,
       p_tenant_slug: tenantSlug,
       p_resource_id: 'bulk',
       p_resource_type: 'form_submission',
@@ -109,38 +115,37 @@ export async function POST(
   { params }: { params: Promise<{ tenantSlug: string }> }
 ): Promise<Response> {
   const { tenantSlug } = await params;
-  try {
-    if (!tenantSlug) {
-      return jsonError('Missing tenant slug', HTTP_STATUS.BAD_REQUEST);
+  return runTrustedPortalDalForPathSlug(request, tenantSlug, async (session) => {
+    try {
+      const body = (await request.json()) as Partial<BulkGradeRequest>;
+
+      const validation = validateBulkGradeRequest(body);
+      if (!validation.valid) {
+        return validation.error;
+      }
+
+      const supabase = getServiceClient();
+
+      const result = await gradeSubmissionsAndAudit(
+        supabase,
+        tenantSlug,
+        validation.request.submissionIds,
+        validation.request.score,
+        validation.request.feedback,
+        session.user.id
+      );
+
+      if (!result.ok) {
+        return jsonError(result.error, HTTP_STATUS.INTERNAL_ERROR);
+      }
+
+      return jsonOk({
+        updated: result.updated.length,
+        submissionIds: result.updated.map((u) => u.submission_id),
+      });
+    } catch (error) {
+      console.error('Bulk grade error:', error);
+      return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
     }
-
-    const body = (await request.json()) as Partial<BulkGradeRequest>;
-
-    const validation = validateBulkGradeRequest(body);
-    if (!validation.valid) {
-      return validation.error;
-    }
-
-    const supabase = getServiceClient();
-
-    const result = await gradeSubmissionsAndAudit(
-      supabase,
-      tenantSlug,
-      validation.request.submissionIds,
-      validation.request.score,
-      validation.request.feedback
-    );
-
-    if (!result.ok) {
-      return jsonError(result.error, HTTP_STATUS.INTERNAL_ERROR);
-    }
-
-    return jsonOk({
-      updated: result.updated.length,
-      submissionIds: result.updated.map((u) => u.submission_id),
-    });
-  } catch (error) {
-    console.error('Bulk grade error:', error);
-    return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
-  }
+  });
 }
