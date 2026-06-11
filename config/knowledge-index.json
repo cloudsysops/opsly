@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-06-11T11:25:24.132Z",
+  "generated_at": "2026-06-11T11:51:25.705Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -3086,22 +3086,26 @@
         "2026",
         "aggregation",
         "bolt",
+        "bullmq",
         "caching",
         "cli",
         "collision",
         "docker",
         "external",
         "llm",
+        "lookups",
         "markdown",
         "metrics",
         "network",
         "opsly",
+        "parallelizing",
         "prevention",
         "probes",
         "prometheus",
+        "queue",
         "usage"
       ],
-      "size_bytes": 2401
+      "size_bytes": 2945
     },
     {
       "path": ".jules/palette.md",
@@ -20225,6 +20229,91 @@
         "summary"
       ],
       "size_bytes": 3358
+    },
+    {
+      "path": "docs/reports/E2E-TESTING-PLAN.md",
+      "title": "E2E Testing Plan — Reliability Sprint & GHL Integration",
+      "keywords": [
+        "account",
+        "across",
+        "alert",
+        "alerting",
+        "api",
+        "batch",
+        "batching",
+        "collection",
+        "complete",
+        "dashboard",
+        "dead",
+        "dispatch",
+        "dlq",
+        "e2e",
+        "failure",
+        "firing",
+        "flow",
+        "full",
+        "ghl",
+        "icso",
+        "instant",
+        "integration",
+        "lead",
+        "letter",
+        "markdown",
+        "metrics",
+        "min",
+        "n8n",
+        "opsly",
+        "peskids",
+        "plan",
+        "query",
+        "queue",
+        "recorded",
+        "reliability",
+        "resources",
+        "scopes",
+        "slack",
+        "sprint",
+        "system",
+        "testing",
+        "tests",
+        "tier",
+        "validation",
+        "webhook",
+        "website"
+      ],
+      "size_bytes": 23392
+    },
+    {
+      "path": "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
+      "title": "GoHighLevel Accounts Snapshot",
+      "keywords": [
+        "account",
+        "accounts",
+        "agency",
+        "api",
+        "auto",
+        "configuration",
+        "details",
+        "ghl",
+        "gohighlevel",
+        "intcloudsysops",
+        "integration",
+        "items",
+        "manual",
+        "markdown",
+        "opsly",
+        "peskids",
+        "points",
+        "provisioned",
+        "required",
+        "scopes",
+        "snapshot",
+        "status",
+        "sub",
+        "summary",
+        "tenant"
+      ],
+      "size_bytes": 11535
     },
     {
       "path": "docs/reports/ICSO-E2E-VALIDATION.md",
@@ -87780,6 +87869,7 @@
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/AUTONOMY-PHASE1-E2E-EVIDENCE.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
@@ -87791,6 +87881,7 @@
       "docs/reports/README.md",
       "docs/reports/audit-2026-04-07.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
@@ -90281,6 +90372,7 @@
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/AUTONOMY-PHASE1-E2E-EVIDENCE.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
@@ -90292,6 +90384,7 @@
       "docs/reports/README.md",
       "docs/reports/audit-2026-04-07.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
@@ -91147,6 +91240,19 @@
     "bolt": [
       ".jules/bolt.md"
     ],
+    "bullmq": [
+      ".jules/bolt.md",
+      "docs/00-architecture/ORCHESTRATOR.md",
+      "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
+      "docs/01-development/OPSLY-AGENCY-DIVISION.md",
+      "docs/01-development/.openclaw.md",
+      "docs/04-infrastructure/WORKER-TESTING.md",
+      "docs/04-infrastructure/WORKER-FLOWS.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md",
+      ".claude/1-agent-teams/orchestrator.md"
+    ],
     "caching": [
       ".jules/bolt.md",
       "lib/services/GOVERNANCE.md",
@@ -91281,6 +91387,9 @@
       "docs/brain/skills/opsly-llm.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       ".claude/3-slash-commands/ai-cost.md"
+    ],
+    "lookups": [
+      ".jules/bolt.md"
     ],
     "metrics": [
       ".jules/bolt.md",
@@ -91472,6 +91581,7 @@
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       ".agents/skills/the-architect/references/templates/blueprint-template.md"
     ],
     "network": [
@@ -91499,6 +91609,9 @@
       "vendor/agency-agents/integrations/openclaw/unreal-systems-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/unity-multiplayer-engineer/AGENTS.md",
       ".claude/1-agent-teams/security-agent.md"
+    ],
+    "parallelizing": [
+      ".jules/bolt.md"
     ],
     "prevention": [
       ".jules/bolt.md",
@@ -91529,6 +91642,28 @@
       "docs/04-infrastructure/MONITORING.md",
       "docs/03-agents/OPENCLAW-OBSERVABILITY.md",
       "docs/adr/ADR-019-prometheus-grafana-observability.md"
+    ],
+    "queue": [
+      ".jules/bolt.md",
+      "docs/orchestrator/REPAIR-QUEUE.md",
+      "docs/infrastructure/REDIS-QUEUE-GUIDE.md",
+      "docs/00-architecture/ORCHESTRATOR.md",
+      "docs/01-development/AGENT-PROMPT-QUEUE.md",
+      "docs/01-development/OPSLY-AGENCY-DIVISION.md",
+      "docs/04-infrastructure/MCP-ORCHESTRATOR-DEPLOYMENT.md",
+      "docs/04-infrastructure/REDIS-QUEUE-GUIDE.md",
+      "docs/04-infrastructure/OLLAMA-DEPLOYMENT.md",
+      "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
+      "docs/03-agents/LOCAL-AGENT-EXECUTION.md",
+      "docs/03-agents/PARALLEL-AGENTS-ORCHESTRATION.md",
+      "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
+      "docs/03-agents/AGENT-SERVICES-DEPLOYMENT.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
+      "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
+      "docs/reports/REVIEW-AGENT-ANALYSIS.md",
+      "docs/blueprints/opsly-operational-blueprint/MODULES.md",
+      ".claude/1-agent-teams/orchestrator.md"
     ],
     "usage": [
       ".jules/bolt.md",
@@ -91769,11 +91904,13 @@
       "docs/brain/skills/opsly-api.md",
       "docs/brain/skills/api-and-interface-design.md",
       "docs/testing/PHASE-2-TESTING.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
       "docs/reports/PRODUCTION-HEALTH.md",
@@ -93104,7 +93241,9 @@
       "docs/brain/tenants/peskids.md",
       "docs/demo/hackathon-demo.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
       "docs/reports/PRODUCTION-HEALTH.md",
@@ -94772,6 +94911,7 @@
       "docs/02-tools/OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
       "docs/02-tools/NOTEBOOKLM-SETUP.md",
       "docs/adr/ADR-025-notebooklm-knowledge-layer.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       ".claude/AGENTS-ENHANCEMENTS.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/state-management.md"
     ],
@@ -98755,6 +98895,7 @@
       "docs/testing/QA-TESTING-BRIEF.md",
       "docs/testing/PHASE-2-TESTING.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/testing-patterns.md"
     ],
@@ -99035,6 +99176,7 @@
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/blueprints/opsly-operational-blueprint/TEAM-FACING-EXPLANATION.md",
       "docs/blueprints/opsly-operational-blueprint/TENANT-INCUBATION.md",
       "docs/blueprints/opsly-operational-blueprint/MODULES.md",
@@ -102767,6 +102909,7 @@
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
       "docs/brain/skills/opsly-n8n-automation.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
       "docs/reports/PRODUCTION-HEALTH.md",
@@ -102794,7 +102937,9 @@
     ],
     "scopes": [
       "packages/skills/user/opsly-mcp/SKILL.md",
-      "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md"
+      "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md"
     ],
     "tool": [
       "packages/skills/user/opsly-mcp/SKILL.md",
@@ -102917,6 +103062,7 @@
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/testing/PHASE-2-TESTING.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
     ],
@@ -103528,6 +103674,8 @@
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
       "docs/brain/skills/README.md",
       "docs/testing/QA-TESTING-BRIEF.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       ".claude/AGENTS-ENHANCEMENTS.md",
       ".agents/skills/the-architect/references/CLAUDE.md",
@@ -106153,7 +106301,8 @@
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/peskids/SPRINT-01.md",
       "docs/tenants/peskids/WHATSAPP-CHANNEL.md",
-      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
+      "docs/reports/E2E-TESTING-PLAN.md"
     ],
     "tecnica": [
       "packages/skills/user/opsly-architect-senior/SKILL.md",
@@ -107055,6 +107204,7 @@
       "docs/testing/QA-TESTING-BRIEF.md",
       "docs/testing/PHASE-2-TESTING.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/VALIDATION-REPORT-2026-04-12.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
@@ -108358,6 +108508,7 @@
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/demo/hackathon-demo.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md"
     ],
     "vitest": [
@@ -110318,6 +110469,8 @@
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/04-infrastructure/GOOGLE-CLOUD-SETUP.md",
       "docs/04-infrastructure/DOPPLER-CI-RUNBOOK.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md"
     ],
     "alert": [
@@ -110334,7 +110487,8 @@
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
-      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
+      "docs/reports/E2E-TESTING-PLAN.md"
     ],
     "apis": [
       "packages/skills/user/opsly-google-cloud/SKILL.md",
@@ -113302,6 +113456,7 @@
       "docs/demo/hackathon-demo.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
       ".agents/skills/the-architect/references/templates/claude-md-template.md",
@@ -115065,6 +115220,7 @@
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/SESSION-SUMMARY-2026-05-08.md"
     ],
     "directory": [
@@ -117154,6 +117310,7 @@
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
@@ -117468,6 +117625,7 @@
       "docs/testing/PHASE1-TEST-PLAN.md",
       "docs/reports/ACG-STRATEGY-30-DAYS.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/audit-2026-04-07.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       ".claude/1-agent-teams/orchestrator.md"
@@ -119754,6 +119912,7 @@
       "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md",
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/SESSION-SUMMARY-2026-05-08.md"
     ],
     "top": [
@@ -120726,6 +120885,7 @@
       "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md"
     ],
     "manage": [
@@ -121427,6 +121587,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".agents/skills/cyber-neo/references/supply-chain.md",
       ".agents/UNIFIED-AGENT-ARCHITECTURE.md"
@@ -121547,6 +121708,7 @@
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/testing/QA-TESTING-BRIEF.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/AUTONOMY-PHASE1-E2E-EVIDENCE.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
@@ -121830,6 +121992,7 @@
       "docs/tenants/peskids/DOPPLER-SETUP.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/artifacts/provisioning/provision-report-intcloudsysops.md"
     ],
     "inventario": [
@@ -122218,6 +122381,7 @@
       "docs/adr/ADR-016-legalvial-multitenant-model.md",
       "docs/tenants/peskids/README.md",
       "docs/tenants/legalvial/LEGALVIAL-ARCHITECTURE-DECISION.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md"
     ],
     "texto": [
@@ -123050,6 +123214,7 @@
       "docs/tenants/peskids/EVENT-CONTRACT.md",
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
       "docs/testing/PHASE-2-TESTING.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
       ".agents/skills/the-architect/references/templates/claude-md-template.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/mobile-app.md",
@@ -124366,6 +124531,7 @@
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
@@ -124400,7 +124566,8 @@
       "docs/03-agents/SYRA-OPENCLAW-INTEGRATION.md",
       "docs/03-agents/MULTI-AGENT-ARCHITECTURE.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
-      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md"
     ],
     "price": [
       ".cursor/prompts/local-services-sales-closer.md",
@@ -124749,6 +124916,7 @@
       "docs/brain/dashboard.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PRODUCTION-HEALTH.md",
       "docs/blueprints/opsly-operational-blueprint/MODULES.md",
       "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md",
@@ -125349,6 +125517,7 @@
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
       "docs/reports/SESSION-SUMMARY-2026-05-08.md",
       "docs/reports/session-summary-2026-05-21.md",
@@ -127608,6 +127777,7 @@
       "docs/01-development/SEMANA-2-INFORME.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       ".agents/skills/cyber-neo/references/iac-docker.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/auth-patterns.md"
@@ -128625,6 +128795,7 @@
       "docs/03-agents/AGENTS-GUIDE.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md"
     ],
     "meta": [
@@ -128729,6 +128900,7 @@
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
@@ -129485,6 +129657,7 @@
       "docs/01-development/PHASE-4-OBSERVABILITY-BILLING.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       ".agents/skills/cyber-neo/references/secrets-patterns.md"
     ],
     "strings": [
@@ -131418,6 +131591,7 @@
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/mobile-app.md"
     ],
     "eas": [
@@ -131896,6 +132070,7 @@
       "vendor/agency-agents/integrations/openclaw/xr-immersive-developer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/technical-artist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/jira-workflow-steward/AGENTS.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/api-design-patterns.md"
     ],
     "block": [
@@ -132467,6 +132642,7 @@
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/database-patterns.md"
     ],
     "soft": [
@@ -133119,6 +133295,7 @@
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "docs/testing/PHASE1-TEST-PLAN.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       ".agents/IMPLEMENTATION-CHECKLIST.md"
     ],
     "minute": [
@@ -134098,7 +134275,8 @@
       "vendor/agency-agents/integrations/opencode/agents/devops-automator.md",
       "vendor/agency-agents/integrations/openclaw/devops-automator/AGENTS.md",
       "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
-      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
+      "docs/reports/E2E-TESTING-PLAN.md"
     ],
     "alerts": [
       "lib/observability/GOVERNANCE.md",
@@ -135484,6 +135662,7 @@
       "apps/icso/README.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
@@ -135532,7 +135711,8 @@
       "vendor/agency-agents/integrations/openclaw/mcp-builder/AGENTS.md",
       "docs/design/DESIGN_REFERENCES.md",
       "docs/02-tools/OBSIDIAN-IDE-SETUP.md",
-      "docs/tenants/peskids/TEMPLATE-STATUS.md"
+      "docs/tenants/peskids/TEMPLATE-STATUS.md",
+      "docs/reports/E2E-TESTING-PLAN.md"
     ],
     "transporte": [
       "apps/mcp/README.md",
@@ -141703,7 +141883,8 @@
       "vendor/agency-agents/integrations/openclaw/loan-officer-assistant/AGENTS.md",
       "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB683486-SEED419215-20180924-00000.md",
       "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB1177123-SEED419213-20200602-00000.md",
-      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md"
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
+      "docs/reports/E2E-TESTING-PLAN.md"
     ],
     "readiness": [
       "vendor/agency-agents/integrations/qwen/agents/test-results-analyzer.md",
@@ -143617,7 +143798,8 @@
       "vendor/agency-agents/integrations/openclaw/sre-site-reliability-engineer/IDENTITY.md",
       "vendor/agency-agents/integrations/openclaw/sre-site-reliability-engineer/AGENTS.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
-      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
+      "docs/reports/E2E-TESTING-PLAN.md"
     ],
     "spark": [
       "vendor/agency-agents/integrations/qwen/agents/data-engineer.md",
@@ -147722,6 +147904,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-carousel-growth-engine/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/carousel-growth-engine.md",
       "vendor/agency-agents/integrations/openclaw/carousel-growth-engine/AGENTS.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
       "docs/reports/PRODUCTION-HEALTH.md"
@@ -148387,6 +148570,7 @@
       "vendor/agency-agents/integrations/openclaw/accounts-payable-agent/AGENTS.md",
       "docs/governance/internal/EMPLOYEE-LIFECYCLE-POLICY.md",
       "docs/governance/internal/ACCESS-CONTROL-POLICY.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md"
     ],
     "autonomously": [
@@ -149587,7 +149771,8 @@
       "vendor/agency-agents/integrations/antigravity/agency-rapid-prototyper/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/rapid-prototyper.md",
       "vendor/agency-agents/integrations/openclaw/rapid-prototyper/AGENTS.md",
-      "docs/01-development/OBSERVABILITY.md"
+      "docs/01-development/OBSERVABILITY.md",
+      "docs/reports/E2E-TESTING-PLAN.md"
     ],
     "iteration": [
       "vendor/agency-agents/integrations/qwen/agents/rapid-prototyper.md",
@@ -149881,6 +150066,7 @@
       "docs/reports/VALIDATION-PACKAGE-README.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
       "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
       "docs/artifacts/provisioning/peskids-operator-report.md",
       ".claude/3-slash-commands/deploy.md"
@@ -151707,6 +151893,7 @@
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/artifacts/provisioning/provision-report-peskids.md",
       "docs/artifacts/provisioning/provision-report-intcloudsysops.md"
     ],
@@ -154059,7 +154246,8 @@
       "docs/ops/issue-bankruptcy-2026-05-03/epics-breakdown.md",
       "docs/governance/DATA-CLASSIFICATION.md",
       "docs/governance/SUB-PROCESSORS.md",
-      "docs/governance/internal/VENDOR-MANAGEMENT-POLICY.md"
+      "docs/governance/internal/VENDOR-MANAGEMENT-POLICY.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md"
     ],
     "suggested": [
       "docs/ops/issue-bankruptcy-2026-05-03/epics-breakdown.md",
@@ -154071,6 +154259,7 @@
       "docs/01-development/PHASE-5-ADVANCED-FEATURES.md",
       "docs/adr/ADR-021-predictive-bi-scalability.md",
       "docs/adr/ADR-045-tenant-analytics-batch-python-pandas-arrow.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md"
     ],
     "buckets": [
@@ -154289,26 +154478,6 @@
     ],
     "implemente": [
       "docs/orchestrator/REPAIR-QUEUE.md"
-    ],
-    "queue": [
-      "docs/orchestrator/REPAIR-QUEUE.md",
-      "docs/infrastructure/REDIS-QUEUE-GUIDE.md",
-      "docs/00-architecture/ORCHESTRATOR.md",
-      "docs/01-development/AGENT-PROMPT-QUEUE.md",
-      "docs/01-development/OPSLY-AGENCY-DIVISION.md",
-      "docs/04-infrastructure/MCP-ORCHESTRATOR-DEPLOYMENT.md",
-      "docs/04-infrastructure/REDIS-QUEUE-GUIDE.md",
-      "docs/04-infrastructure/OLLAMA-DEPLOYMENT.md",
-      "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
-      "docs/03-agents/LOCAL-AGENT-EXECUTION.md",
-      "docs/03-agents/PARALLEL-AGENTS-ORCHESTRATION.md",
-      "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
-      "docs/03-agents/AGENT-SERVICES-DEPLOYMENT.md",
-      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
-      "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
-      "docs/reports/REVIEW-AGENT-ANALYSIS.md",
-      "docs/blueprints/opsly-operational-blueprint/MODULES.md",
-      ".claude/1-agent-teams/orchestrator.md"
     ],
     "repair": [
       "docs/orchestrator/REPAIR-QUEUE.md"
@@ -157000,18 +157169,6 @@
       "docs/00-architecture/ORCHESTRATOR.md",
       "docs/01-development/PHASE-5-2-3-4-COMPLETE-SPECS.md"
     ],
-    "bullmq": [
-      "docs/00-architecture/ORCHESTRATOR.md",
-      "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
-      "docs/01-development/OPSLY-AGENCY-DIVISION.md",
-      "docs/01-development/.openclaw.md",
-      "docs/04-infrastructure/WORKER-TESTING.md",
-      "docs/04-infrastructure/WORKER-FLOWS.md",
-      "docs/adr/ADR-011-event-driven-orchestrator.md",
-      "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
-      "docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md",
-      ".claude/1-agent-teams/orchestrator.md"
-    ],
     "cola": [
       "docs/00-architecture/ORCHESTRATOR.md",
       "docs/01-development/AGENT-PROMPT-QUEUE.md",
@@ -157286,6 +157443,7 @@
       "docs/01-development/CLIENT-ONBOARDING-PLAYBOOK.md",
       "docs/tenants/peskids/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md"
     ],
     "override": [
@@ -157299,7 +157457,8 @@
     ],
     "dispatch": [
       "docs/01-development/N8N-SETUP.md",
-      "docs/demo/hackathon-demo.md"
+      "docs/demo/hackathon-demo.md",
+      "docs/reports/E2E-TESTING-PLAN.md"
     ],
     "menciones": [
       "docs/01-development/N8N-SETUP.md"
@@ -157644,8 +157803,10 @@
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
       "docs/artifacts/provisioning/provision-report-peskids.md",
@@ -160012,10 +160173,12 @@
       "docs/02-tools/CURSOR-MCP-SETUP.md"
     ],
     "dead": [
-      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md"
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
+      "docs/reports/E2E-TESTING-PLAN.md"
     ],
     "letter": [
-      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md"
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
+      "docs/reports/E2E-TESTING-PLAN.md"
     ],
     "044": [
       "docs/adr/ADR-044-core-first-tenant-slug-extraction.md"
@@ -161338,6 +161501,18 @@
     "happens": [
       "docs/reports/PARALLEL-EXECUTION-STATUS.md"
     ],
+    "batching": [
+      "docs/reports/E2E-TESTING-PLAN.md"
+    ],
+    "dlq": [
+      "docs/reports/E2E-TESTING-PLAN.md"
+    ],
+    "firing": [
+      "docs/reports/E2E-TESTING-PLAN.md"
+    ],
+    "recorded": [
+      "docs/reports/E2E-TESTING-PLAN.md"
+    ],
     "received": [
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
@@ -161411,6 +161586,9 @@
     ],
     "fill": [
       "docs/reports/ICSO-E2E-VALIDATION.md"
+    ],
+    "provisioned": [
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md"
     ],
     "governed": [
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md"
@@ -162537,6 +162715,8 @@
     "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
     "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
     "docs/reports/CYBER-NEO-OPSLY-2026-05-21.md",
+    "docs/reports/E2E-TESTING-PLAN.md",
+    "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
     "docs/reports/ICSO-E2E-VALIDATION.md",
     "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
     "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
