@@ -9,8 +9,7 @@ vi.mock('@/lib/portal-trusted-identity', () => ({
   }),
   tenantSlugMatchesSession: vi.fn().mockReturnValue(true),
   PORTAL_READ_ROLES: ['admin', 'teacher'],
-  PORTAL_WRITE_ROLES: ['admin', 'teacher'],
-  PORTAL_READ_ACCESS: { allowedRoles: ['admin', 'teacher'] }
+  PORTAL_WRITE_ROLES: ['admin', 'teacher']
 }));
 
 vi.mock('@/lib/supabase', () => ({
@@ -22,7 +21,7 @@ describe('GET /api/peskids/portal/[tenantSlug]/forms/[formId]/export authorizati
     vi.clearAllMocks();
   });
 
-  it('returns 401 when no session is present (runTrustedPortalDalForPathSlug fails)', async () => {
+  it('returns 401 when no session is present', async () => {
     const req = new NextRequest('http://localhost/api/peskids/portal/test-tenant/forms/form-1/export?format=csv');
     const params = Promise.resolve({ tenantSlug: 'test-tenant', formId: 'form-1' });
 
@@ -62,7 +61,7 @@ describe('GET /api/peskids/portal/[tenantSlug]/forms/[formId]/export authorizati
 
     expect(res.status).toBe(200);
 
-    // Verify audit log received the correct actorId
+    // Verify audit log received the correct actorId from session
     expect(mockRpc).toHaveBeenCalledWith('log_audit_event', expect.objectContaining({
       p_actor_id: 'test-user',
       p_tenant_slug: 'test-tenant',
