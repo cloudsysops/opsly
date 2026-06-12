@@ -11,3 +11,7 @@
 ## 2025-05-22 - Root Dependency Overrides for Monorepo Stability
 **Learning:** In a monorepo, inconsistent versions of foundational libraries like `undici` can break test environments (e.g., `jsdom` in Vitest).
 **Action:** Use root `package.json` overrides to align critical dependencies across all workspaces when version mismatches occur.
+
+## 2025-05-22 - Transient Feedback for Clipboard Actions
+**Learning:** Adding a "Copy" button with transient visual feedback (swapping the icon to `Check` and label to "Copiado" for 2 seconds) significantly improves user confidence that the action was successful without cluttering the UI with permanent notifications.
+**Action:** Use a 2-second feedback loop with `Check` and `Copy` icons for all clipboard-copy interactions.

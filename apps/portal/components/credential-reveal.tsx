@@ -2,7 +2,7 @@
 
 import type { ReactElement } from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { Check, Copy, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const REVEAL_SECONDS = 30;
@@ -14,6 +14,7 @@ type CredentialRevealProps = {
 export function CredentialReveal({ password }: CredentialRevealProps): ReactElement {
   const [visible, setVisible] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(0);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!visible || secondsLeft <= 0) {
@@ -45,6 +46,19 @@ export function CredentialReveal({ password }: CredentialRevealProps): ReactElem
     }
   }, [password, visible]);
 
+  const copyToClipboard = useCallback(async () => {
+    if (!password) {
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(password);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Error al copiar al portapapeles:', err);
+    }
+  }, [password]);
+
   if (!password) {
     return <span className="font-mono text-sm text-ops-gray">—</span>;
   }
@@ -69,6 +83,21 @@ export function CredentialReveal({ password }: CredentialRevealProps): ReactElem
           <Eye className="h-4 w-4 shrink-0" aria-hidden="true" />
         )}
         <span>{visible ? 'Ocultar' : 'Revelar'}</span>
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        onClick={() => void copyToClipboard()}
+        aria-label="Copiar contraseña"
+        title="Copiar"
+      >
+        {copied ? (
+          <Check className="h-4 w-4 shrink-0 text-ops-green" aria-hidden="true" />
+        ) : (
+          <Copy className="h-4 w-4 shrink-0" aria-hidden="true" />
+        )}
+        <span>{copied ? 'Copiado' : 'Copiar'}</span>
       </Button>
     </div>
   );
