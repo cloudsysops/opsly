@@ -1,4 +1,6 @@
+import { CACHE_TTL } from '../constants';
 import { logger } from '../logger';
+import { getCache, setCache } from '../redis-cache';
 import { BillingUsageRepository } from '../repositories/billing-usage-repository';
 import { getServiceClient } from '../supabase';
 import type { Json, PlanKey, TenantStatus } from '../supabase/types';
@@ -108,6 +110,13 @@ async function resolveCurrentSpendUsd(
  * El límite viene de `tenant_budgets.monthly_cap_usd` o del plan, con fallback {@link FREE_TIER_FALLBACK_MONTHLY_USD}.
  */
 export async function checkTenantBudget(tenantId: string): Promise<TenantBudgetCheckResult> {
+  // Bolt Optimization: check cache first to avoid repetitive DB queries and expensive aggregation.
+  const cacheKey = `budget:check:${tenantId}`;
+  const cached = await getCache<TenantBudgetCheckResult>(cacheKey);
+  if (cached !== null) {
+    return cached;
+  }
+
   const db = getServiceClient();
   const { data: tenant, error } = await db
     .schema('platform')
@@ -142,7 +151,7 @@ export async function checkTenantBudget(tenantId: string): Promise<TenantBudgetC
   const isOverBudget = currentSpend > limit;
   const budgetAutoSuspended = readBudgetAutoSuspended(metadata);
 
-  return {
+  const result: TenantBudgetCheckResult = {
     isOverBudget,
     currentSpend,
     limit,
@@ -151,6 +160,11 @@ export async function checkTenantBudget(tenantId: string): Promise<TenantBudgetC
     tenantStatus,
     budgetAutoSuspended,
   };
+
+  // Background cache set to avoid blocking the response
+  void setCache(cacheKey, result, CACHE_TTL.SHORT);
+
+  return result;
 }
 
 /** Umbrales de alerta UI (USD) — sin wallet prepago; ver ADR-017. */
