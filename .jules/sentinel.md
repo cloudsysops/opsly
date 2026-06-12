@@ -28,6 +28,11 @@
 **Learning:** Legacy or V1 API endpoints might be missed when applying system-wide security patterns if they use custom headers (`x-tenant-id`) instead of the standard JWT-based authorization used in the portal or the token/session-based authorization used in the admin panel.
 **Prevention:** Audit all `v1` and legacy endpoints for proper authorization. Ensure that endpoints that manage credentials or security-sensitive resources (like API keys) always call `requireAdminAccess`. Use shared test utilities to verify authorization across all API versions.
 
+## 2026-06-12 - [Missing Authorization in Peskids Export API]
+**Vulnerability:** The `GET /api/peskids/portal/[tenantSlug]/forms/[formId]/export` endpoint was publicly accessible without any authorization checks, risking unauthorized mass data extraction. Additionally, it used a hardcoded 'teacher' actor ID in audit logs.
+**Learning:** Rapidly developed functional routes under `peskids/portal/` were missing the standard `runTrustedPortalDalForPathSlug` security wrapper, and audit logging relied on static strings instead of session identity.
+**Prevention:** Always wrap portal-facing API routes with `runTrustedPortalDalForPathSlug` (or similar) and propagate `session.user.id` to all audit functions.
+
 ## 2026-06-16 - [Missing Authorization in Runtime API Endpoints]
 **Vulnerability:** Several administrative runtime endpoints (`/api/runtime/health`, `/api/runtime/nodes/status`, `/api/runtime/capabilities`, and `/api/runtime/stream`) were exposed without any authentication or authorization checks. They provided direct visibility into orchestrator node status and capabilities.
 **Learning:** Endpoints that act as pass-through proxies to internal services (like the orchestrator) are sometimes overlooked for security if the internal service itself is assumed to be "protected." However, the proxy endpoint in the public-facing API becomes the weak link if it doesn't enforce the same security perimeter.
