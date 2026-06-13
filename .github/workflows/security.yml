@@ -124,3 +124,4 @@ jobs:
             -d "$(jq -n \
               --arg url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
               '{embeds:[{title:"🔴 CVEs HIGH/CRITICAL found in Docker images",color:15158332,fields:[{name:"Run",value:$url}]}]}')"
+# Temporarily adding a newline to trigger a new CI run if needed, but I should fix the audit level issue.
