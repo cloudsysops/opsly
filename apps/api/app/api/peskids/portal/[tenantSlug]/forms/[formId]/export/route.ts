@@ -164,13 +164,14 @@ async function logExportAuditEvent(
   format: string,
   tenantSlug: string,
   formId: string,
-  count: number
+  count: number,
+  actorId: string
 ): Promise<void> {
   try {
     const db = supabase as unknown as PeskidsClient;
     await db.rpc('log_audit_event', {
       p_action: 'form_submissions_exported',
-      p_actor_id: 'teacher',
+      p_actor_id: actorId,
       p_tenant_slug: tenantSlug,
       p_resource_id: formId,
       p_resource_type: 'form',
@@ -186,51 +187,59 @@ export async function GET(
   { params }: { params: Promise<{ tenantSlug: string; formId: string }> }
 ): Promise<Response> {
   const { tenantSlug, formId } = await params;
-  const format = request.nextUrl.searchParams.get('format') ?? 'csv';
-  const supabase = getServiceClient();
-  try {
-    const validation = validateExportRequest(tenantSlug, formId, format);
-    if (!validation.valid) {
-      return validation.error;
-    }
+  return runTrustedPortalDalForPathSlug(
+    request,
+    tenantSlug,
+    async (session) => {
+      const format = request.nextUrl.searchParams.get('format') ?? 'csv';
+      const supabase = getServiceClient();
+      try {
+        const validation = validateExportRequest(tenantSlug, formId, format);
+        if (!validation.valid) {
+          return validation.error;
+        }
 
-    const formResult = await fetchFormForExport(supabase, formId as string, tenantSlug as string);
-    if (!formResult.ok) {
-      return new Response(formResult.error, { status: HTTP_STATUS.NOT_FOUND });
-    }
+        const formResult = await fetchFormForExport(supabase, formId as string, tenantSlug as string);
+        if (!formResult.ok) {
+          return new Response(formResult.error, { status: HTTP_STATUS.NOT_FOUND });
+        }
 
-    const submissionsResult = await fetchFormSubmissions(
-      supabase,
-      formId as string,
-      tenantSlug as string
-    );
-    if (!submissionsResult.ok) {
-      return new Response(submissionsResult.error, { status: HTTP_STATUS.INTERNAL_ERROR });
-    }
+        const submissionsResult = await fetchFormSubmissions(
+          supabase,
+          formId as string,
+          tenantSlug as string
+        );
+        if (!submissionsResult.ok) {
+          return new Response(submissionsResult.error, { status: HTTP_STATUS.INTERNAL_ERROR });
+        }
 
-    const exportContent = buildExportContent(
-      format as string,
-      submissionsResult.submissions,
-      formResult.form.title
-    );
+        const exportContent = buildExportContent(
+          format as string,
+          submissionsResult.submissions,
+          formResult.form.title
+        );
 
-    await logExportAuditEvent(
-      supabase,
-      format as string,
-      tenantSlug as string,
-      formId as string,
-      submissionsResult.submissions.length
-    );
+        await logExportAuditEvent(
+          supabase,
+          format as string,
+          tenantSlug as string,
+          formId as string,
+          submissionsResult.submissions.length,
+          session.user.id
+        );
 
-    return new Response(exportContent.content, {
-      status: HTTP_STATUS.OK,
-      headers: {
-        'Content-Type': exportContent.contentType,
-        'Content-Disposition': `attachment; filename="${exportContent.filename}"`,
-      },
-    });
-  } catch (error) {
-    console.error('Export error:', error);
-    return new Response('Internal server error', { status: HTTP_STATUS.INTERNAL_ERROR });
-  }
+        return new Response(exportContent.content, {
+          status: HTTP_STATUS.OK,
+          headers: {
+            'Content-Type': exportContent.contentType,
+            'Content-Disposition': `attachment; filename="${exportContent.filename}"`,
+          },
+        });
+      } catch (error) {
+        console.error('Export error:', error);
+        return new Response('Internal server error', { status: HTTP_STATUS.INTERNAL_ERROR });
+      }
+    },
+    PORTAL_READ_ACCESS
+  );
 }
