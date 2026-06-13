@@ -1,3 +1,5 @@
+import { CACHE_TTL } from '../constants';
+import { getCache, setCache } from '../redis-cache';
 import { getServiceClient } from '../supabase';
 import { PESKIDS_LOW_SATISFACTION_THRESHOLD, PESKIDS_TENANT_SLUG } from './constants';
 import type { PeskidsFeedbackBody, PeskidsLeadBody } from './schemas';
@@ -130,6 +132,12 @@ function getFirstQueryError(
 export async function peskidsFetchDashboardSummary(): Promise<
   { ok: true; summary: PeskidsDashboardSummary } | { ok: false; error: string }
 > {
+  const cacheKey = `peskids:dashboard_summary:${PESKIDS_TENANT_SLUG}`;
+  const cached = await getCache<PeskidsDashboardSummary>(cacheKey);
+  if (cached) {
+    return { ok: true, summary: cached };
+  }
+
   const client = getServiceClient();
   const since = weekStartIso();
 
@@ -182,15 +190,20 @@ export async function peskidsFetchDashboardSummary(): Promise<
     return { ok: false, error: errorMsg };
   }
 
+  const summary: PeskidsDashboardSummary = {
+    tenant_slug: PESKIDS_TENANT_SLUG,
+    new_leads_this_week: leadsWeek.count ?? 0,
+    recent_leads: (recentLeads.data ?? []) as PeskidsLeadRow[],
+    recent_feedback: (recentFeedback.data ?? []) as PeskidsFeedbackRow[],
+    feedback_action_required: actionCount.count ?? 0,
+    low_rating_alerts: (lowAlerts.data ?? []) as PeskidsFeedbackRow[],
+  };
+
+  // Cache the summary to optimize dashboard load times (reduces 5 parallel Supabase queries)
+  void setCache(cacheKey, summary, CACHE_TTL.SHORT);
+
   return {
     ok: true,
-    summary: {
-      tenant_slug: PESKIDS_TENANT_SLUG,
-      new_leads_this_week: leadsWeek.count ?? 0,
-      recent_leads: (recentLeads.data ?? []) as PeskidsLeadRow[],
-      recent_feedback: (recentFeedback.data ?? []) as PeskidsFeedbackRow[],
-      feedback_action_required: actionCount.count ?? 0,
-      low_rating_alerts: (lowAlerts.data ?? []) as PeskidsFeedbackRow[],
-    },
+    summary,
   };
 }
