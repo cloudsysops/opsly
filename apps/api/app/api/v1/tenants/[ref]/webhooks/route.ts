@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { z } from 'zod';
 import { jsonError, parseJsonBody, tryRoute } from '../../../../../../lib/api-response';
-import { requireAdminToken } from '../../../../../../lib/auth';
+import { requireAdminAccess } from '../../../../../../lib/auth';
 import { HTTP_STATUS, WEBHOOK_CRYPTO } from '../../../../../../lib/constants';
 import { createWebhook, listWebhooks } from '../../../../../../lib/repositories/webhook-repository';
 
@@ -25,7 +25,7 @@ type RouteParams = { params: Promise<{ ref: string }> };
 
 export async function GET(_req: Request, { params }: RouteParams): Promise<Response> {
   return tryRoute('GET /api/tenants/[ref]/webhooks', async () => {
-    const authErr = requireAdminToken(_req);
+    const authErr = await requireAdminAccess(_req);
     if (authErr) return authErr;
 
     const { ref: tenantSlug } = await params;
@@ -40,7 +40,7 @@ export async function GET(_req: Request, { params }: RouteParams): Promise<Respo
 
 export async function POST(req: Request, { params }: RouteParams): Promise<Response> {
   return tryRoute('POST /api/tenants/[ref]/webhooks', async () => {
-    const authErr = requireAdminToken(req);
+    const authErr = await requireAdminAccess(req);
     if (authErr) return authErr;
 
     const body = await parseJsonBody(req);

@@ -1,4 +1,4 @@
-import { requireAdminToken } from '../../../../lib/auth';
+import { requireAdminAccess } from '../../../../lib/auth';
 import { checkTenantBudget } from '../../../../lib/billing/budget-enforcer';
 import { HTTP_STATUS } from '../../../../lib/constants';
 import { executeBudgetEnforcement } from '../../../../lib/internal/budget-enforce-response';
@@ -15,7 +15,7 @@ import { logger } from '../../../../lib/logger';
  * Reactivación manual ops: usar `POST /api/tenants/:id/resume` (admin).
  */
 export async function POST(request: Request): Promise<Response> {
-  const auth = requireAdminToken(request);
+  const auth = await requireAdminAccess(request);
   if (auth) {
     return auth;
   }
