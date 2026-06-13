@@ -1,4 +1,4 @@
-import { requireAdminAccess } from '../../../../lib/auth';
+import { requireAdminToken } from '../../../../lib/auth';
 import { HTTP_STATUS } from '../../../../lib/constants';
 import {
   createHelpRequest,
@@ -26,7 +26,7 @@ function assignedToOrHuman(value: unknown): HelpAssignedTo {
 }
 
 export async function POST(request: Request): Promise<Response> {
-  const auth = await requireAdminAccess(request);
+  const auth = requireAdminToken(request);
   if (auth) {
     return auth;
   }
@@ -76,7 +76,7 @@ export async function POST(request: Request): Promise<Response> {
 }
 
 export async function GET(request: Request): Promise<Response> {
-  const auth = await requireAdminAccess(request);
+  const auth = requireAdminToken(request);
   if (auth) {
     return auth;
   }
@@ -85,7 +85,7 @@ export async function GET(request: Request): Promise<Response> {
 }
 
 export async function PATCH(request: Request): Promise<Response> {
-  const auth = await requireAdminAccess(request);
+  const auth = requireAdminToken(request);
   if (auth) {
     return auth;
   }

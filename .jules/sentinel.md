@@ -27,8 +27,3 @@
 **Vulnerability:** The `/api/v1/keys` endpoints (GET, POST, DELETE) were missing administrative authorization checks. Although they required a `x-tenant-id` header (a UUID), this was the only check performed. This allowed any user with a tenant UUID to manage that tenant's API keys.
 **Learning:** Legacy or V1 API endpoints might be missed when applying system-wide security patterns if they use custom headers (`x-tenant-id`) instead of the standard JWT-based authorization used in the portal or the token/session-based authorization used in the admin panel.
 **Prevention:** Audit all `v1` and legacy endpoints for proper authorization. Ensure that endpoints that manage credentials or security-sensitive resources (like API keys) always call `requireAdminAccess`. Use shared test utilities to verify authorization across all API versions.
-
-## 2025-05-15 - [Legacy Admin Auth Persistence]
-**Vulnerability:** 12 administrative and internal endpoints (n8n, help-requests, budget-enforcement, webhooks) were still using the legacy synchronous `requireAdminToken` helper. This limited authentication to static PLATFORM_ADMIN_TOKENs and blocked Supabase Super Admin sessions from accessing these tools.
-**Learning:** During the transition to asynchronous authorization helpers (`requireAdminAccess`), several "secondary" or internal functional modules were overlooked, leading to an inconsistent security posture across the API.
-**Prevention:** Standardize all administrative routes on `requireAdminAccess` and ensure they are properly `await`ed. Add a comprehensive auth migration test suite to track and verify that all sensitive endpoints have transitioned to the modern access check.
