@@ -3,7 +3,9 @@
   "private": true,
   "packageManager": "npm@10.8.3",
   "dependencies": {
-    "@reduxjs/toolkit": "^1.9.7"
+    "js-tiktoken": "^1.0.21",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
   },
   "workspaces": [
     "apps/*",
@@ -167,9 +169,9 @@
     "playwright": "^1.59.1",
     "prettier": "^3.8.3",
     "turbo": "^2.9.14",
+    "twilio": "^4.0.0",
     "typescript": "^5.9.3",
-    "yaml": "^2.9.0",
-    "twilio": "^4.0.0"
+    "yaml": "^2.9.0"
   },
   "config": {
     "commitizen": {
@@ -195,7 +197,9 @@
   "optionalDependencies": {
     "@rollup/rollup-darwin-arm64": "4.60.2",
     "@rollup/rollup-darwin-x64": "4.60.2",
-    "@rollup/rollup-linux-x64-gnu": "4.60.2"
+    "@rollup/rollup-linux-x64-gnu": "4.60.2",
+    "esbuild": "0.28.1",
+    "vitest": "4.1.8"
   },
   "overrides": {
     "rollup": "4.60.2",
@@ -234,10 +238,5 @@
       "@types/react": "19.2.14",
       "@types/react-dom": "19.2.3"
     }
-  },
-  "dependencies": {
-    "js-tiktoken": "^1.0.21",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6"
   }
 }
