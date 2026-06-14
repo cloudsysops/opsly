@@ -1,4 +1,6 @@
+import { CACHE_TTL } from '../constants';
 import { logger } from '../logger';
+import { getCache, setCache } from '../redis-cache';
 import { BillingUsageRepository } from '../repositories/billing-usage-repository';
 import { getServiceClient } from '../supabase';
 import type { Json, PlanKey, TenantStatus } from '../supabase/types';
@@ -106,8 +108,16 @@ async function resolveCurrentSpendUsd(
 /**
  * Evalúa gasto en `platform.billing_usage` (mes calendario UTC) frente al límite mensual.
  * El límite viene de `tenant_budgets.monthly_cap_usd` o del plan, con fallback {@link FREE_TIER_FALLBACK_MONTHLY_USD}.
+ *
+ * OPTIMIZATION: Caches result in Redis for 60s (CACHE_TTL.SHORT) to reduce DB load.
  */
 export async function checkTenantBudget(tenantId: string): Promise<TenantBudgetCheckResult> {
+  const cacheKey = `budget:check:${tenantId}`;
+  const cached = await getCache<TenantBudgetCheckResult>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   const db = getServiceClient();
   const { data: tenant, error } = await db
     .schema('platform')
@@ -142,7 +152,7 @@ export async function checkTenantBudget(tenantId: string): Promise<TenantBudgetC
   const isOverBudget = currentSpend > limit;
   const budgetAutoSuspended = readBudgetAutoSuspended(metadata);
 
-  return {
+  const result: TenantBudgetCheckResult = {
     isOverBudget,
     currentSpend,
     limit,
@@ -151,6 +161,11 @@ export async function checkTenantBudget(tenantId: string): Promise<TenantBudgetC
     tenantStatus,
     budgetAutoSuspended,
   };
+
+  // Background cache set
+  void setCache(cacheKey, result, CACHE_TTL.SHORT);
+
+  return result;
 }
 
 /** Umbrales de alerta UI (USD) — sin wallet prepago; ver ADR-017. */
