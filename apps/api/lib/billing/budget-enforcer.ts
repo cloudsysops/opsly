@@ -1,4 +1,5 @@
-import { CACHE_TTL, getCache, setCache } from '../redis-cache';
+import { CACHE_TTL } from '../constants';
+import { getCache, setCache } from '../redis-cache';
 import { logger } from '../logger';
 import { BillingUsageRepository } from '../repositories/billing-usage-repository';
 import { getServiceClient } from '../supabase';

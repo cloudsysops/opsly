@@ -12,10 +12,18 @@ const { mockGetCache, mockSetCache } = vi.hoisted(() => ({
 vi.mock('../../redis-cache', () => ({
   getCache: mockGetCache,
   setCache: mockSetCache,
-  CACHE_TTL: {
-    SHORT: 60,
-  },
 }));
+
+vi.mock('../../constants', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../constants')>();
+  return {
+    ...actual,
+    CACHE_TTL: {
+      ...actual.CACHE_TTL,
+      SHORT: 60,
+    },
+  };
+});
 
 vi.mock('../../supabase', () => ({
   getServiceClient: () => ({
