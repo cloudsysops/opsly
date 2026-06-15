@@ -27,3 +27,8 @@
 **Vulnerability:** The `/api/v1/keys` endpoints (GET, POST, DELETE) were missing administrative authorization checks. Although they required a `x-tenant-id` header (a UUID), this was the only check performed. This allowed any user with a tenant UUID to manage that tenant's API keys.
 **Learning:** Legacy or V1 API endpoints might be missed when applying system-wide security patterns if they use custom headers (`x-tenant-id`) instead of the standard JWT-based authorization used in the portal or the token/session-based authorization used in the admin panel.
 **Prevention:** Audit all `v1` and legacy endpoints for proper authorization. Ensure that endpoints that manage credentials or security-sensitive resources (like API keys) always call `requireAdminAccess`. Use shared test utilities to verify authorization across all API versions.
+
+## 2026-06-15 - [Missing Authorization in NotebookLM Tenant Routes]
+**Vulnerability:** Endpoints under `/api/v1/tenants/[ref]/notebooklm` and `/api/tenants/[slug]/notebooklm` were exposed without authentication. These routes used `getServiceClient()` (bypassing RLS) to fetch tenant configuration and trigger sync jobs.
+**Learning:** Functional modules like NotebookLM, which may be in early stages of development (Sprint 9 markers), often lack basic security wrappers when first implemented, especially when duplicated across different path structures (v1 vs top-level).
+**Prevention:** Always apply `requireAdminAccess` or a tenant-scoped DAL wrapper immediately upon route creation. Never assume a route is safe just because it is part of an ongoing sprint or "beta" feature.
