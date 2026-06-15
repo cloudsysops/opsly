@@ -2,9 +2,6 @@
   "name": "intcloudsysops",
   "private": true,
   "packageManager": "npm@10.8.3",
-  "dependencies": {
-    "@reduxjs/toolkit": "^1.9.7"
-  },
   "workspaces": [
     "apps/*",
     "apps/notebooklm-agent",
@@ -60,7 +57,7 @@
     "opsly:openclaw-cli": "bash scripts/openclaw-with-node22.sh",
     "test": "turbo run test",
     "test:unit": "npm run test --workspace=@intcloudsysops/api && npm run test --workspace=@intcloudsysops/portal && npm run test --workspace=@intcloudsysops/mcp && npm run test --workspace=@intcloudsysops/ml && npm run test --workspace=@intcloudsysops/llm-gateway -- --exclude __tests__/cache-namespace.test.ts",
-    "test:integration": "REDIS_URL=${REDIS_URL:-redis://127.0.0.1:6379} npm run test --workspace=@intcloudsysops/orchestrator && REDIS_URL=${REDIS_URL:-redis://127.0.0.1:6379} npm run test --workspace=@intcloudsysops/llm-gateway -- __tests__/cache-namespace.test.ts",
+    "test:integration": "REDIS_URL=redis://127.0.0.1:6379 npm run test --workspace=@intcloudsysops/orchestrator && REDIS_URL=redis://127.0.0.1:6379 npm run test --workspace=@intcloudsysops/llm-gateway -- __tests__/cache-namespace.test.ts",
     "test:coverage": "turbo run test -- --coverage",
     "test:e2e": "turbo run test:e2e",
     "dev:notion-mcp": "doppler run --project ops-intcloudsysops --config prd -- npm run dev --workspace=@intcloudsysops/notion-mcp",
@@ -140,6 +137,12 @@
     "patterns:validate": "bash scripts/install-patterns.sh",
     "patterns:list": "bash scripts/list-patterns.sh"
   },
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.9.7",
+    "js-tiktoken": "^1.0.21",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
+  },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
@@ -169,7 +172,9 @@
     "turbo": "^2.9.14",
     "typescript": "^5.9.3",
     "yaml": "^2.9.0",
-    "twilio": "^4.0.0"
+    "twilio": "^4.0.0",
+    "vitest": "4.1.9",
+    "@vitest/coverage-v8": "4.1.9"
   },
   "config": {
     "commitizen": {
@@ -234,10 +239,5 @@
       "@types/react": "19.2.14",
       "@types/react-dom": "19.2.3"
     }
-  },
-  "dependencies": {
-    "js-tiktoken": "^1.0.21",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6"
   }
 }
