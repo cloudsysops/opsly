@@ -2,14 +2,17 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { POST } from '../[tenantSlug]/submissions/bulk-grade/route';
 import { NextRequest } from 'next/server';
 
-vi.mock('@/lib/portal-trusted-identity', () => ({
-  resolveTrustedPortalSession: vi.fn().mockResolvedValue({
-    ok: false,
-    response: new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
-  }),
-  tenantSlugMatchesSession: vi.fn().mockReturnValue(true),
-  PORTAL_READ_ROLES: ['admin', 'teacher']
-}));
+vi.mock('@/lib/portal-trusted-identity', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/portal-trusted-identity')>();
+  return {
+    ...actual,
+    resolveTrustedPortalSession: vi.fn().mockResolvedValue({
+      ok: false,
+      response: new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 }),
+    }),
+    tenantSlugMatchesSession: vi.fn().mockReturnValue(true),
+  };
+});
 
 vi.mock('@/lib/supabase', () => ({
   getServiceClient: vi.fn(),

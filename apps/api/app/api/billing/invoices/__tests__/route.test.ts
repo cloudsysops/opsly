@@ -23,9 +23,14 @@ const {
   };
 });
 
-vi.mock('../../../../../lib/portal-trusted-identity', () => ({
-  resolveTrustedPortalSession: mockResolveTrustedPortalSession,
-}));
+vi.mock('../../../../../lib/portal-trusted-identity', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('../../../../../lib/portal-trusted-identity')>();
+  return {
+    ...actual,
+    resolveTrustedPortalSession: mockResolveTrustedPortalSession,
+  };
+});
 
 vi.mock('../../../../../lib/auth', () => ({
   requireAdminAccess: mockRequireAdminAccess,

@@ -4,9 +4,14 @@ import { POST } from '../route';
 import * as portalTrusted from '../../../../../../lib/portal-trusted-identity';
 import * as supabaseMod from '../../../../../../lib/supabase';
 
-vi.mock('../../../../../../lib/portal-trusted-identity', () => ({
-  resolveTrustedPortalSession: vi.fn(),
-}));
+vi.mock('../../../../../../lib/portal-trusted-identity', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('../../../../../../lib/portal-trusted-identity')>();
+  return {
+    ...actual,
+    resolveTrustedPortalSession: vi.fn(),
+  };
+});
 
 vi.mock('../../../../../../lib/supabase', () => ({
   getServiceClient: vi.fn(),

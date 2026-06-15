@@ -2,10 +2,15 @@ import { describe, expect, it, vi } from 'vitest';
 import { runLocalServicesTenantDal } from '../local-services-dal';
 import * as portalTrusted from '../portal-trusted-identity';
 
-vi.mock('../portal-trusted-identity', () => ({
-  resolveTrustedPortalSession: vi.fn(),
-  tenantSlugMatchesSession: vi.fn(),
-}));
+vi.mock('../portal-trusted-identity', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('../portal-trusted-identity')>();
+  return {
+    ...actual,
+    resolveTrustedPortalSession: vi.fn(),
+    tenantSlugMatchesSession: vi.fn(),
+  };
+});
 
 describe('runLocalServicesTenantDal', () => {
   it('returns 403 when path slug does not match session tenant', async () => {
