@@ -1,4 +1,6 @@
 import { createClient, type RedisClientType } from 'redis';
+import { CACHE_TTL } from './constants';
+import { getCache, getRedisClient, setCache } from './redis-cache';
 
 export const ORCHESTRATOR_INTERNAL_URL =
   process.env.ORCHESTRATOR_INTERNAL_URL ?? 'http://orchestrator:3011';
@@ -44,23 +46,13 @@ export type OpenClawMissionControlSnapshot = {
   generated_at: string;
 };
 
-function buildRedisClient(): RedisClient {
-  return createClient({
-    url: REDIS_URL,
-    password: process.env.REDIS_PASSWORD,
-  }) as RedisClient;
-}
-
 async function withRedis<T>(fn: (client: RedisClient) => Promise<T>): Promise<T> {
-  const client = buildRedisClient();
-  await client.connect();
-  try {
-    return await fn(client);
-  } finally {
-    if (client.isOpen) {
-      await client.disconnect();
-    }
+  const client = await getRedisClient();
+  if (!client) {
+    throw new Error('Redis client not available');
   }
+  // @ts-expect-error - compatibility between Redis client types
+  return await fn(client);
 }
 
 function parseNumber(raw: string | undefined): number | null {
@@ -144,7 +136,13 @@ const POLICY_VIOLATION_LIMIT = 20;
 const RUNNING_STATUSES = ['queued', 'running'] as const;
 
 export async function getOpenClawMissionControlSnapshot(): Promise<OpenClawMissionControlSnapshot> {
-  return withRedis(async (redis) => {
+  const cacheKey = 'admin:mission-control:openclaw:snapshot';
+  const cached = await getCache<OpenClawMissionControlSnapshot>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  const snapshot = await withRedis(async (redis) => {
     const requestIds = await redis.lRange(OPENCLAW_INTENT_RECENT_KEY, 0, INTENT_HISTORY_LIMIT - 1);
     const intents = (
       await Promise.all(
@@ -178,4 +176,7 @@ export async function getOpenClawMissionControlSnapshot(): Promise<OpenClawMissi
       generated_at: new Date().toISOString(),
     };
   });
+
+  void setCache(cacheKey, snapshot, CACHE_TTL.SHORT);
+  return snapshot;
 }
