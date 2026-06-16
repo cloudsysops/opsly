@@ -149,11 +149,15 @@ jobs:
           envs: GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR,PESKIDS_IMAGE,PESKIDS_DEPLOY_IN_PLACE
           script: |
             set -euo pipefail
+            cd /opt/opsly
+            git fetch origin main
+            git checkout main
+            git pull --ff-only origin main
             docker logout ghcr.io 2>/dev/null || true
             echo "$GITHUB_DEPLOY_TOKEN" | docker login ghcr.io -u "$GITHUB_DEPLOY_ACTOR" --password-stdin
             export PESKIDS_IMAGE
             export PESKIDS_DEPLOY_IN_PLACE=1
-            bash /opt/opsly/scripts/peskids-deploy-vps.sh
+            bash scripts/peskids-deploy-vps.sh
 
       - name: Health check (public)
         run: |
@@ -164,15 +168,15 @@ jobs:
             local needle="${3:-}"
             local body
             local attempt
-            for attempt in 1 2 3 4 5; do
+            for attempt in 1 2 3 4 5 6 7 8; do
               if body="$(curl -fsSL --max-redirs 5 "$url" 2>/dev/null)"; then
                 if [ -z "$needle" ] || printf '%s' "$body" | grep -q "$needle"; then
                   echo "✅ ${label} OK (intento $attempt)"
                   return 0
                 fi
               fi
-              echo "Intento $attempt/5 para ${label}..."
-              sleep 15
+              echo "Intento $attempt/8 para ${label}..."
+              sleep 10
             done
             echo "::error::${label} no respondió correctamente en ${url}"
             return 1
