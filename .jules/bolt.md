@@ -10,6 +10,6 @@
 **Learning:** Calling the Docker CLI (e.g., `docker ps`) from within a container via a mounted socket can be surprisingly slow (~1.1s latency). When these metrics are shown on a dashboard, it significantly impacts responsiveness. Caching the count and the container list in Redis for 60s provides a massive speed boost. Adding a fail-safe timeout to these CLI calls is also critical to prevent the API from hanging if the Docker daemon becomes unresponsive.
 **Action:** Always cache results of expensive CLI operations like Docker queries, especially when used in UI-facing API endpoints.
 
-## 2026-05-29 - [BullMQ Queue Metric Caching]
-**Learning:** Sequential calls to multiple BullMQ queues to fetch job counts (waiting/active) can be slow due to multiple Redis roundtrips and object instantiation overhead. In an admin dashboard fetching metrics for 5+ queues, this adds significant latency. Caching the aggregated totals in Redis for 60s reduces the cost to a single O(1) cache lookup for most requests.
-**Action:** Aggregate and cache queue metrics in the API layer when showing them on high-traffic or high-latency dashboards.
+## 2026-06-16 - [BullMQ Queue Metric Caching]
+**Learning:** Sequential job count checks across multiple BullMQ queues generate significant Redis roundtrip overhead (~12 roundtrips for 6 queues). Caching the aggregated metrics in Redis with a short TTL (60s) reduces this to a single O(1) lookup, improving admin dashboard responsiveness.
+**Action:** Prefer caching aggregated queue metrics in the API layer for performance-critical dashboards.

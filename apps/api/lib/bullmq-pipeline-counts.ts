@@ -27,7 +27,7 @@ async function pipelineTotalForQueue(name: string): Promise<number> {
 
 /**
  * Jobs en cola BullMQ (orquestador + equipos). Sin Redis devuelve null.
- * Cacheado en Redis (60s) para evitar ráfagas de roundtrips.
+ * Cacheado en Redis (60s) para mejorar el tiempo de respuesta del dashboard admin.
  */
 export async function getBullmqPipelineJobTotals(): Promise<{
   openclaw_total: number;
@@ -35,7 +35,6 @@ export async function getBullmqPipelineJobTotals(): Promise<{
   all_queues_total: number;
 } | null> {
   const cacheKey = 'metrics:bullmq:totals';
-
   try {
     const cached = await getCache<{
       openclaw_total: number;
