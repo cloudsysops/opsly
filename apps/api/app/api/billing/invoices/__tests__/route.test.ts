@@ -25,6 +25,8 @@ const {
 
 vi.mock('../../../../../lib/portal-trusted-identity', () => ({
   resolveTrustedPortalSession: mockResolveTrustedPortalSession,
+  PORTAL_READ_ROLES: ['owner', 'admin', 'operator', 'viewer'],
+  PORTAL_WRITE_ROLES: ['owner', 'admin', 'operator'],
 }));
 
 vi.mock('../../../../../lib/auth', () => ({

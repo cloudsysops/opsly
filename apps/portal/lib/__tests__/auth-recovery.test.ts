@@ -7,9 +7,9 @@ import {
 } from '../auth-recovery'
 
 describe('auth-recovery routing helpers', () => {
-  it('builds the recovery redirect path through the auth callback', () => {
+  it('builds the recovery redirect path under /auth/recovery', () => {
     expect(buildRecoveryRedirectTo('https://portal.op-sly.com/')).toBe(
-      'https://portal.op-sly.com/auth/callback?next=%2Fauth%2Frecovery'
+      'https://portal.op-sly.com/auth/recovery'
     )
   })
 

@@ -6,6 +6,8 @@ import * as supabaseMod from '../../../../../../lib/supabase';
 
 vi.mock('../../../../../../lib/portal-trusted-identity', () => ({
   resolveTrustedPortalSession: vi.fn(),
+  PORTAL_READ_ROLES: ['owner', 'admin', 'operator', 'viewer'],
+  PORTAL_WRITE_ROLES: ['owner', 'admin', 'operator'],
 }));
 
 vi.mock('../../../../../../lib/supabase', () => ({

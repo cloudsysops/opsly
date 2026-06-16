@@ -1,18 +1,19 @@
 {
   "completed": [
     "Pipeline verified: Peskids Enrollment / stage New Lead",
-    "Tags already present on test contact",
-    "Custom fields visible on existing contact (verify mapping in UI)"
+    "Tags applied to test contact",
+    "Custom fields set on create (child_name, child_age)",
+    "Contact entered pipeline Peskids Enrollment at New Lead"
   ],
   "pending": [
     "Form submit E2E (manual UI)",
     "Activate GHL workflow OR confirm n8n peskids-lead-intake wired"
   ],
-  "blockers": [
-    "Create opportunity failed HTTP 400: {\"statusCode\":400,\"message\":\"Can not create duplicate opportunity for the contact.\",\"meta\":{\"existingId\":\"FfJtrG3xhyn8briiFvd1\"},\"error\":\"Bad Request\",\"traceId\":\"5d5ac84b-c93d-4dce-9c96-b3df864c7b1d\"}"
-  ],
+  "blockers": [],
   "apiActions": [
-    "Reused existing test contact NrUuROsRKUe0u1GP8IgD (opsly.verify+peskids@intcloudsysops.com)"
+    "Created test contact NrUuROsRKUe0u1GP8IgD",
+    "Added tags: lead-web",
+    "Created opportunity FfJtrG3xhyn8briiFvd1"
   ],
   "manualRequired": [
     "Form \"Peskids Lead Capture\" — API list empty or IAM blocked; confirm in GHL UI + test submit",
@@ -40,8 +41,7 @@
     "interest_level",
     "preferred_schedule",
     "child_name",
-    "child_age",
-    "Message"
+    "child_age"
   ],
   "pipelinesFound": [
     "Academy Pipeline",
@@ -49,10 +49,6 @@
     "Peskids Enrollment"
   ],
   "formsFound": [
-    "Newsletter Subscriptions",
-    "Contact Us",
-    "Marketing Form - Claim Offer",
-    "Marketing Form - Claim Offer",
     "Form 2",
     "Form 1",
     "Form 0"
@@ -66,7 +62,7 @@
   "testContact": {
     "id": "NrUuROsRKUe0u1GP8IgD",
     "email": "opsly.verify+peskids@intcloudsysops.com",
-    "reused": true
+    "reused": false
   },
   "tagsOnContact": [
     "lead-web"

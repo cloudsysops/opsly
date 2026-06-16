@@ -25,3 +25,7 @@
 ## 2026-06-05 - [Prometheus Metrics Caching]
 **Learning:** Prometheus host metrics retrieval (CPU, RAM, Disk, Uptime) involved 6 parallel network calls on every request. Caching the result in Redis with a short TTL (60s) significantly improves dashboard responsiveness and reduces network overhead. Using the non-blocking `void setCache(...)` pattern ensures that cache updates don't add latency to the current response.
 **Action:** Prefer caching aggregated infrastructure metrics in the API layer, especially when multiple external probes are required to build a single response.
+
+## 2026-06-13 - [Caching Peskids Dashboard Summary]
+**Learning:** Dashboard summary endpoints that aggregate multiple parallel Supabase queries (e.g., 5 parallel calls for leads, feedback, and alerts) can be a significant bottleneck as data grows. Implementing Redis caching with a short TTL (60s) provides a massive performance boost by collapsing these multiple network round-trips into a single O(1) cache lookup. Using `void setCache(...)` ensures the write doesn't block the response.
+**Action:** Identify and cache aggregated dashboard summaries in the repository layer when they involve multiple independent database queries.

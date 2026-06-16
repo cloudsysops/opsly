@@ -3,14 +3,12 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { resolveLoginPath, resolvePostAuthPath } from '@/lib/auth-callback';
-import { appendRecoveryCallbackParam } from '@/lib/password-recovery-session';
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
   const next = requestUrl.searchParams.get('next');
-  const nextPath =
-    next && next.startsWith('/') && !next.startsWith('//') ? next : null;
+  const nextPath = next && next.startsWith('/') ? next : null;
   const errorLoginPath = resolveLoginPath(nextPath ?? '/admin');
 
   if (!code) {
@@ -46,9 +44,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     data: { user },
   } = await supabase.auth.getUser();
 
-  let redirectPath = user ? resolvePostAuthPath(nextPath, user) : errorLoginPath;
-  if (user && nextPath === '/auth/recovery') {
-    redirectPath = appendRecoveryCallbackParam('/auth/recovery');
-  }
+  const redirectPath = user ? resolvePostAuthPath(nextPath, user) : errorLoginPath;
   return NextResponse.redirect(new URL(redirectPath, requestUrl.origin));
 }

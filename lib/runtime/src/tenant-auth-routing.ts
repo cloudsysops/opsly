@@ -120,7 +120,7 @@ export function resolveRecoveryTargetFromMetadata(
 
 export function buildRecoveryRedirectTo(origin: string): string {
   const base = origin.replace(/\/$/, '')
-  return `${base}/auth/callback?next=${encodeURIComponent('/auth/recovery')}`
+  return `${base}/auth/recovery`
 }
 
 function inviteAuthParams(url: URL): URLSearchParams | null {
@@ -215,7 +215,7 @@ export function forwardRecoveryToOrigin(targetOrigin: string): void {
   const url = new URL(window.location.href)
   const base = targetOrigin.replace(/\/$/, '')
   if (url.searchParams.get('code')) {
-    const next = `${base}/auth/callback?code=${encodeURIComponent(url.searchParams.get('code') ?? '')}&next=${encodeURIComponent('/auth/recovery')}`
+    const next = `${base}/auth/recovery?code=${encodeURIComponent(url.searchParams.get('code') ?? '')}`
     window.location.replace(next)
     return
   }

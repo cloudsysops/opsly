@@ -25,7 +25,6 @@ RUN npm ci --ignore-scripts \
   -w @intcloudsysops/prompt-guard \
   -w @intcloudsysops/llm-gateway
 RUN npm run build -w @intcloudsysops/types && \
-    npm run build -w @intcloudsysops/prompt-guard && \
     npm run build -w @intcloudsysops/llm-gateway
 
 FROM node:20-alpine AS runner
@@ -36,7 +35,6 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/package-lock.json ./package-lock.json
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages/types ./packages/types
-COPY --from=builder /app/lib/prompt-guard ./lib/prompt-guard
 COPY --from=builder /app/apps/llm-gateway ./apps/llm-gateway
 
 WORKDIR /app/apps/llm-gateway
