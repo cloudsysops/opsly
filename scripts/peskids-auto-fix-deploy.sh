@@ -5,7 +5,7 @@
 set -euo pipefail
 
 VPS_HOST="vps-dragon@100.120.151.91"
-IMAGE="ghcr.io/cloudsysops/peskids:3052cba43192b6f76ceadc75c72f44710779497d"
+IMAGE="${PESKIDS_IMAGE:-ghcr.io/cloudsysops/peskids:latest}"
 REPO_PATH="/opt/opsly"
 
 echo "🔧 Automated Peskids VPS Deploy Fix"

@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-06-16T02:33:37.399Z",
-  "totalFiles": 744,
+  "lastIndexed": "2026-06-16T02:48:49.623Z",
+  "totalFiles": 745,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -633,6 +633,7 @@
     "runbooks/VPS-CLEANUP-WEBHOOK.md",
     "runbooks/VPS-DEPLOYMENT-2026-05-08.md",
     "runbooks/VPS-DISK-SECURITY-SCAN.md",
+    "security/NPM-AUDIT-EXEMPTIONS.md",
     "security/SECURITY-POSTURE-AUDIT.md",
     "STRUCTURE-GUARDRAILS.md",
     "stubs/AGENTS.md",

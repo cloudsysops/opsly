@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-06-16T02:33:43.118Z",
+  "generated_at": "2026-06-16T02:48:52.517Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -3158,12 +3158,13 @@
         "portal",
         "publish",
         "rate",
+        "runtime",
         "sentinel",
         "social",
         "spoofing",
         "vector"
       ],
-      "size_bytes": 4866
+      "size_bytes": 5825
     },
     {
       "path": ".n8n/1-workflows/peskids/README.md",
@@ -22538,6 +22539,40 @@
         "vulnerabilidades"
       ],
       "size_bytes": 4112
+    },
+    {
+      "path": "docs/security/NPM-AUDIT-EXEMPTIONS.md",
+      "title": "npm Audit Exemptions",
+      "keywords": [
+        "approval",
+        "audit",
+        "command",
+        "dependencies",
+        "dev",
+        "esbuild",
+        "exemptions",
+        "gate",
+        "handling",
+        "high",
+        "known",
+        "markdown",
+        "modules",
+        "next",
+        "node",
+        "npm",
+        "only",
+        "opsly",
+        "packages",
+        "policy",
+        "provisioning",
+        "severity",
+        "status",
+        "steps",
+        "tmp",
+        "vulnerabilities",
+        "with"
+      ],
+      "size_bytes": 2827
     },
     {
       "path": "docs/security/SECURITY-POSTURE-AUDIT.md",
@@ -88043,6 +88078,7 @@
       "docs/blueprints/opsly-operational-blueprint/EXTRACTION-PATTERN.md",
       "docs/blueprints/opsly-operational-blueprint/REFERENCE-ARCHITECTURE.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".claude/3-slash-commands/skill.md",
       ".claude/3-slash-commands/deploy.md",
@@ -90549,6 +90585,7 @@
       "docs/blueprints/opsly-operational-blueprint/EXTRACTION-PATTERN.md",
       "docs/blueprints/opsly-operational-blueprint/REFERENCE-ARCHITECTURE.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".claude/3-slash-commands/skill.md",
       ".claude/3-slash-commands/deploy.md",
@@ -90667,6 +90704,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".agents/skills/cyber-neo/references/web-security-patterns.md"
     ],
@@ -92195,6 +92233,7 @@
       "docs/reports/REPOSITORY-AUDIT-2026-05-27.md",
       "docs/reports/PRODUCTION-HEALTH.md",
       "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md"
     ],
     "authorization": [
@@ -93444,6 +93483,28 @@
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".claude/AGENTS-ENHANCEMENTS.md"
+    ],
+    "runtime": [
+      ".jules/sentinel.md",
+      "runtime/index.md",
+      ".cursor/goals/openclaw-agent-runtime-2026-05-14.md",
+      "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
+      "docs/design/OAR.md",
+      "docs/runbooks/KAFKA-AIRFLOW-BOOTSTRAP.md",
+      "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
+      "docs/00-architecture/conversational-runtime-roadmap.md",
+      "docs/00-architecture/opsly-agent-runtime.md",
+      "docs/00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md",
+      "docs/00-architecture/ARCHITECTURE.md",
+      "docs/01-development/LOCAL-FIRST-ARCHITECTURE.md",
+      "docs/01-development/LOCAL-RUNTIME-GUIDE.md",
+      "docs/04-infrastructure/PRODUCTION-STATUS-2026-05-15.md",
+      "docs/adr/ADR-029-infrastructure-layers-shared-vs-tenant.md",
+      "docs/tenants/peskids/CHATBOX-N8N.md",
+      "docs/tenants/production/TENANT-PRODUCTION-BASELINE.md",
+      "docs/brain/workflows/local-agents.md",
+      "docs/demo/hackathon-demo.md",
+      "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md"
     ],
     "sentinel": [
       ".jules/sentinel.md",
@@ -94938,27 +94999,6 @@
       "docs/brain/sessions/index.md",
       "docs/index.md",
       ".claude/CLAUDE.md"
-    ],
-    "runtime": [
-      "runtime/index.md",
-      ".cursor/goals/openclaw-agent-runtime-2026-05-14.md",
-      "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
-      "docs/design/OAR.md",
-      "docs/runbooks/KAFKA-AIRFLOW-BOOTSTRAP.md",
-      "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
-      "docs/00-architecture/conversational-runtime-roadmap.md",
-      "docs/00-architecture/opsly-agent-runtime.md",
-      "docs/00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md",
-      "docs/00-architecture/ARCHITECTURE.md",
-      "docs/01-development/LOCAL-FIRST-ARCHITECTURE.md",
-      "docs/01-development/LOCAL-RUNTIME-GUIDE.md",
-      "docs/04-infrastructure/PRODUCTION-STATUS-2026-05-15.md",
-      "docs/adr/ADR-029-infrastructure-layers-shared-vs-tenant.md",
-      "docs/tenants/peskids/CHATBOX-N8N.md",
-      "docs/tenants/production/TENANT-PRODUCTION-BASELINE.md",
-      "docs/brain/workflows/local-agents.md",
-      "docs/demo/hackathon-demo.md",
-      "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md"
     ],
     "chain": [
       "packages/skills/API.md",
@@ -97270,6 +97310,7 @@
       "docs/03-agents/SUPER-ORCHESTRATOR.md",
       "docs/adr/ADR-006-api-testing-vitest.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/cyber-neo/references/lang-javascript.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
     ],
@@ -97950,7 +97991,8 @@
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
-      "docs/artifacts/provisioning/peskids-operator-report.md"
+      "docs/artifacts/provisioning/peskids-operator-report.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
     ],
     "verification": [
       "packages/skills/user/opsly-simplify/SKILL.md",
@@ -103174,7 +103216,8 @@
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/blueprints/opsly-operational-blueprint/MODULES.md",
       "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md",
-      "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md"
+      "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
     ],
     "auto": [
       "packages/skills/user/opsly-feedback-ml/SKILL.md",
@@ -110484,6 +110527,7 @@
       "docs/testing/PHASE-2-TESTING.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/SESSION-SUMMARY-2026-05-08.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/database-patterns.md",
       ".agents/skills/the-architect/references/questions/phase-3-confirmation.md"
     ],
@@ -117479,6 +117523,7 @@
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       "docs/reports/session-summary-2026-05-21.md",
       "docs/reports/REAL-PROMPT-EXECUTION-SUCCESS.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/api-design-patterns.md"
     ],
     "write": [
@@ -119854,6 +119899,7 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/cwe-top-25.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/lang-python.md",
       "docs/tenants/peskids/QUICK-START-PRODUCTION.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/cyber-neo/references/cwe-top-25.md",
       ".agents/skills/cyber-neo/references/lang-python.md"
     ],
@@ -121928,7 +121974,8 @@
       "docs/01-development/LAYERS-SANDBOX-QA-PROD.md",
       "docs/03-agents/SPRINT-CURSOR-PROMPTS.md",
       "docs/adr/ADR-046-family-email-invite-access.md",
-      "docs/adr/ADR-023-approval-gate-phase1.md"
+      "docs/adr/ADR-023-approval-gate-phase1.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
     ],
     "pipeline": [
       "packages/skills/vendor/agent-skills/ci-cd-and-automation/SKILL.md",
@@ -122063,6 +122110,7 @@
       "docs/00-architecture/ARCHITECTURE.md",
       "docs/01-development/CODE-SNAPSHOTS.md",
       "docs/blueprints/opsly-operational-blueprint/COMMERCIAL-PACKAGES.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/cyber-neo/references/iac-docker.md"
     ],
     "paquetes": [
@@ -124475,6 +124523,7 @@
       "docs/reports/SESSION-SUMMARY-2026-05-08.md",
       "docs/reports/session-summary-2026-05-21.md",
       "docs/artifacts/provisioning/peskids-operator-report.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/cyber-neo/references/web-security-patterns.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/api-design-patterns.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/frontend-stacks.md",
@@ -125122,7 +125171,8 @@
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md",
       "docs/02-tools/NOTEBOOKLM-SETUP.md",
       "docs/adr/ADR-034-ci-hygiene.md",
-      "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md"
+      "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
     ],
     "experience": [
       ".cursor/prompts/local-services-mvp.md",
@@ -125514,6 +125564,7 @@
       "docs/tenants/peskids/BLUEPRINT-MAPPING.md",
       "docs/tenants/peskids/INVITATION-FLOW-VERIFICATION.md",
       "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/cyber-neo/references/error-handling-patterns.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/api-backend.md"
     ],
@@ -130619,6 +130670,7 @@
       "docs/06-multi-agent/PARALLEL-EXECUTION-ARCHITECTURE.md",
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md",
       "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/cyber-neo/references/report-template.md"
     ],
     "informational": [
@@ -130654,6 +130706,7 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/report-template.md",
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
       "docs/01-development/TECHNICAL-DEBT.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/cyber-neo/references/report-template.md"
     ],
     "approach": [
@@ -130775,6 +130828,7 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/supply-chain.md",
       "tools/agent-packs/vendor/the-architect/knowledge/stack-compatibility.md",
       "lib/voice-messaging/GOVERNANCE.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/cyber-neo/references/supply-chain.md",
       ".agents/skills/the-architect/references/knowledge/stack-compatibility.md"
     ],
@@ -131110,6 +131164,7 @@
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/cyber-neo/SKILL.md",
       ".agents/skills/the-architect/references/questions/phase-3-confirmation.md",
       ".agents/skills/the-architect/references/questions/phase-1-discovery.md"
@@ -134095,7 +134150,8 @@
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
       "docs/01-development/LIBRARY-MODULES.md",
       "docs/brain/modules/README.md",
-      "docs/blueprints/opsly-operational-blueprint/MODULES.md"
+      "docs/blueprints/opsly-operational-blueprint/MODULES.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
     ],
     "objectives": [
       "lib/evaluation/GOVERNANCE.md",
@@ -135847,7 +135903,8 @@
       "apps/icso/README.md",
       "docs/growth/AGENCY-PILOT-OUTREACH.md",
       "docs/runbooks/dev.md",
-      "docs/01-development/PHASE-2-DEPLOYMENT.md"
+      "docs/01-development/PHASE-2-DEPLOYMENT.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
     ],
     "icso": [
       "apps/icso/README.md",
@@ -147836,7 +147893,8 @@
       "vendor/agency-agents/integrations/openclaw/blockchain-security-auditor/SOUL.md",
       "docs/runbooks/OPERATIONS-HANDBOOK.md",
       "docs/adr/ADR-034-ci-hygiene.md",
-      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
     ],
     "upgrade": [
       "vendor/agency-agents/integrations/qwen/agents/incident-response-commander.md",
@@ -155518,7 +155576,8 @@
       "docs/04-infrastructure/VPS-PROVISIONING-STANDARD.md",
       "docs/artifacts/provisioning/provision-report-peskids.md",
       "docs/artifacts/provisioning/provision-report-intcloudsysops.md",
-      "docs/blueprints/opsly-operational-blueprint/CLIENT-INCUBATION-TEMPLATE.md"
+      "docs/blueprints/opsly-operational-blueprint/CLIENT-INCUBATION-TEMPLATE.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
     ],
     "canonicas": [
       "docs/design/AGENT-ORCHESTRATION-INDEX.md",
@@ -156511,7 +156570,8 @@
       "docs/04-infrastructure/WORKER-SERVICE-MAC2011.md",
       "docs/adr/ADR-025-notebooklm-knowledge-layer.md",
       "docs/tenants/peskids/AUDIT-EXEMPTIONS.md",
-      "docs/reports/CYBER-NEO-OPSLY-2026-05-21.md"
+      "docs/reports/CYBER-NEO-OPSLY-2026-05-21.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
     ],
     "still": [
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md"
@@ -161269,7 +161329,8 @@
       "docs/tenants/peskids/SPRINT-01.md"
     ],
     "exemptions": [
-      "docs/tenants/peskids/AUDIT-EXEMPTIONS.md"
+      "docs/tenants/peskids/AUDIT-EXEMPTIONS.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
     ],
     "manually": [
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md"
@@ -162108,6 +162169,12 @@
     ],
     "themes": [
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md"
+    ],
+    "esbuild": [
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
+    ],
+    "tmp": [
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
     ],
     "ddos": [
       "docs/security/SECURITY-POSTURE-AUDIT.md"
@@ -163049,6 +163116,7 @@
     "docs/runbooks/VPS-CLEANUP-WEBHOOK.md",
     "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
     "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
+    "docs/security/NPM-AUDIT-EXEMPTIONS.md",
     "docs/security/SECURITY-POSTURE-AUDIT.md",
     "docs/STRUCTURE-GUARDRAILS.md",
     "docs/stubs/AGENTS.md",
