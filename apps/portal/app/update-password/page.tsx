@@ -6,6 +6,10 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { PasswordInput } from '@/components/ui/input'
 import { isPortalTenantUser } from '@/lib/portal-access'
+import {
+  clearPasswordRecoveryActive,
+  hasPasswordRecoveryActive,
+} from '@/lib/password-recovery-session'
 import { createClient } from '@/lib/supabase'
 
 function UpdatePasswordForm(): ReactElement {
@@ -23,6 +27,11 @@ function UpdatePasswordForm(): ReactElement {
       setError(loginError)
     }
     const supabase = createClient()
+    if (!hasPasswordRecoveryActive()) {
+      setReady(false)
+      return
+    }
+
     void supabase.auth.getSession().then(({ data }) => {
       const session = data.session
       if (!session?.user) {
@@ -61,6 +70,7 @@ function UpdatePasswordForm(): ReactElement {
         setError(updateError.message)
         return
       }
+      clearPasswordRecoveryActive()
       router.push('/dashboard')
       router.refresh()
     } catch {
