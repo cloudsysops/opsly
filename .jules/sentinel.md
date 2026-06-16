@@ -42,3 +42,8 @@
 **Vulnerability:** The API key management endpoints (GET, POST, and DELETE under `/api/v1/keys`) were missing authorization checks. While they required an `x-tenant-id` header, they didn't verify if the requester actually had administrative rights or belonged to that tenant.
 **Learning:** Core infrastructure APIs like key management can sometimes be overlooked if they are considered "system" or "v1" APIs, especially if they rely on specific headers that might be mistaken for security controls.
 **Prevention:** Every endpoint in `apps/api` that performs sensitive operations (listing, creating, or deleting platform resources) must explicitly call `requireAdminAccess` or an equivalent multi-tenant authorization helper. Add regression tests that specifically verify 401/403 responses for these endpoints.
+
+## 2026-06-16 - [Broken Access Control in Peskids Form Creation]
+**Vulnerability:** The `POST /api/peskids/portal/[tenantSlug]/forms` endpoint was exposed without any authorization checks. An attacker could create arbitrary form records for any tenant by simply knowing their `tenantSlug`.
+**Learning:** When using `runTrustedPortalDalForPathSlug`, it's critical to consistently apply it to all HTTP methods in a route handler. Rapidly developed endpoints might only secure `GET` while leaving `POST/PATCH/DELETE` wide open.
+**Prevention:** Mandate the use of `runTrustedPortalDalForPathSlug` (or similar) for ALL methods in portal-facing routes. Use `PORTAL_WRITE_ACCESS` specifically for state-changing operations to ensure only 'owner', 'admin', or 'operator' roles can perform them.

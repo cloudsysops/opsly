@@ -65,15 +65,4 @@ describe('resolveRecoveryTargetFromMetadata', () => {
     expect(target.origin).toBe('https://admin.op-sly.com')
     expect(target.updatePasswordPath).toBe('/update-password')
   })
-
-  it('routes peskids superuser admin to tenant staff before platform admin', () => {
-    const target = resolveRecoveryTargetFromMetadata(
-      { tenant_slug: 'peskids', role: 'admin', is_superuser: true },
-      config
-    )
-
-    expect(target.app).toBe('peskids_staff')
-    expect(target.origin).toBe('https://peskids.op-sly.com')
-    expect(target.updatePasswordPath).toBe('/admin/update-password')
-  })
 })

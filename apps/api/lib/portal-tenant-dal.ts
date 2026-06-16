@@ -1,6 +1,7 @@
 import { HTTP_STATUS } from './constants';
 import {
   PORTAL_READ_ROLES,
+  PORTAL_WRITE_ROLES,
   resolveTrustedPortalSession,
   tenantSlugMatchesSession,
   type TrustedPortalSession,
@@ -10,6 +11,10 @@ import { runWithTenantContext } from './tenant-context';
 
 export const PORTAL_READ_ACCESS: TrustedPortalSessionOptions = {
   allowedRoles: PORTAL_READ_ROLES,
+};
+
+export const PORTAL_WRITE_ACCESS: TrustedPortalSessionOptions = {
+  allowedRoles: PORTAL_WRITE_ROLES,
 };
 
 /**
