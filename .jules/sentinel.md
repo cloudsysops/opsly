@@ -37,3 +37,8 @@
 **Vulnerability:** Several administrative runtime endpoints (`/api/runtime/health`, `/api/runtime/nodes/status`, `/api/runtime/capabilities`, and `/api/runtime/stream`) were exposed without any authentication or authorization checks. They provided direct visibility into orchestrator node status and capabilities.
 **Learning:** Endpoints that act as pass-through proxies to internal services (like the orchestrator) are sometimes overlooked for security if the internal service itself is assumed to be "protected." However, the proxy endpoint in the public-facing API becomes the weak link if it doesn't enforce the same security perimeter.
 **Prevention:** Always apply the `requireAdminAccessUnlessDemoRead` (or similar) authorization check to any endpoint that proxies data from internal services. When creating proxy routes, mandate a security review of the upstream service's sensitivity.
+
+## 2026-06-08 - [Missing Authorization in API Keys Management]
+**Vulnerability:** The API key management endpoints (GET, POST, and DELETE under `/api/v1/keys`) were missing authorization checks. While they required an `x-tenant-id` header, they didn't verify if the requester actually had administrative rights or belonged to that tenant.
+**Learning:** Core infrastructure APIs like key management can sometimes be overlooked if they are considered "system" or "v1" APIs, especially if they rely on specific headers that might be mistaken for security controls.
+**Prevention:** Every endpoint in `apps/api` that performs sensitive operations (listing, creating, or deleting platform resources) must explicitly call `requireAdminAccess` or an equivalent multi-tenant authorization helper. Add regression tests that specifically verify 401/403 responses for these endpoints.

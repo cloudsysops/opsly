@@ -6,10 +6,10 @@ export default defineConfig({
     environment: 'node',
     include: ['**/*.test.ts'],
     exclude: ['**/node_modules/**', '**/.next/**', '**/dist/**'],
-    passWithNoTests: false,
     alias: {
       '@': path.resolve(__dirname, '.'),
     },
+    passWithNoTests: false,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json-summary'],
