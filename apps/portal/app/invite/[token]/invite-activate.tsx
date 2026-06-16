@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Input, PasswordInput } from '@/components/ui/input';
 import {
   inviteActivationErrorMessage,
   validateInviteActivationForm,
@@ -123,30 +123,36 @@ export function InviteActivate() {
               {passkeyErr}
             </div>
           ) : null}
-          <div className="space-y-1">
-            <label htmlFor="pw" className="font-sans text-xs text-ops-gray">
+          <div>
+            <label
+              htmlFor="pw"
+              className="mb-1 block text-xs uppercase tracking-wide text-ops-gray"
+            >
               Nueva contraseña
             </label>
-            <Input
+            <PasswordInput
               id="pw"
-              type="password"
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="input-terminal-caret bg-ops-bg/80"
               required
               minLength={8}
             />
           </div>
-          <div className="space-y-1">
-            <label htmlFor="pw2" className="font-sans text-xs text-ops-gray">
+          <div>
+            <label
+              htmlFor="pw2"
+              className="mb-1 block text-xs uppercase tracking-wide text-ops-gray"
+            >
               Confirmar contraseña
             </label>
-            <Input
+            <PasswordInput
               id="pw2"
-              type="password"
               autoComplete="new-password"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
+              className="input-terminal-caret bg-ops-bg/80"
               required
               minLength={8}
             />
