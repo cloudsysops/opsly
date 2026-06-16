@@ -35,12 +35,14 @@ interface Opportunity {
 async function searchOpportunity(contactId: string): Promise<Opportunity | null> {
   try {
     const env = resolveGoHighLevelPeskidsEnv();
+    const pipelineId = getPeskidsPipelineId();
     const response = await fetch(`${GHL_API_BASE}/opportunities/search`, {
       method: 'POST',
       headers: getClientHeaders(),
       body: JSON.stringify({
         locationId: env.locationId,
         contactId,
+        ...(pipelineId && { pipelineId }),
         page: 1,
         limit: 1,
       }),
