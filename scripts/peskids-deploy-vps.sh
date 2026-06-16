@@ -30,14 +30,74 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
+# CI invokes the copy already on disk; git pull updates the file but not this process.
+# Re-exec once so health-check logic and needles always match main.
+if [[ "${PESKIDS_DEPLOY_IN_PLACE:-}" == "1" || "${PESKIDS_DEPLOY_IN_PLACE:-}" == "true" ]]; then
+  if [[ "${PESKIDS_DEPLOY_SCRIPT_REEXECED:-}" != "1" ]]; then
+    cd "$REPO_PATH"
+    git fetch origin main
+    git checkout main
+    git pull --ff-only origin main
+    export PESKIDS_DEPLOY_SCRIPT_REEXECED=1
+    export PESKIDS_DEPLOY_IN_PLACE=1
+    export PESKIDS_IMAGE="$IMAGE"
+    exec bash "$REPO_PATH/scripts/peskids-deploy-vps.sh" "$@"
+  fi
+fi
+
+wait_for_peskids_ready() {
+  local max_wait="${PESKIDS_HEALTH_WAIT_SECONDS:-90}"
+  local elapsed=0
+  local body
+
+  while (( elapsed < max_wait )); do
+    if body="$(curl -fsSL --max-time 5 http://127.0.0.1:3004/api/health 2>/dev/null)" \
+      && [[ "$body" == *'"status":"ok"'* ]]; then
+      echo "ok   peskids local health (${elapsed}s)"
+      return 0
+    fi
+    sleep 3
+    elapsed=$((elapsed + 3))
+    echo "waiting for peskids (${elapsed}s/${max_wait}s)..."
+  done
+
+  echo "fail peskids local health after ${max_wait}s" >&2
+  docker logs peskids --tail 40 2>&1 || true
+  return 1
+}
+
+check_url() {
+  local label="$1"
+  local url="$2"
+  local needle="${3:-}"
+  local body
+  local attempt
+
+  for attempt in 1 2 3 4 5; do
+    if body="$(curl -fsSL --max-redirs 5 --max-time 15 "$url" 2>/dev/null)"; then
+      if [[ -z "$needle" || "$body" == *"$needle"* ]]; then
+        echo "ok   ${label}"
+        return 0
+      fi
+    fi
+    echo "retry ${label} (${attempt}/5)"
+    sleep 6
+  done
+  echo "fail ${label}: ${url}" >&2
+  return 1
+}
+
 run_deploy_on_host() {
   local repo_path="$1"
   local image="$2"
   set -euo pipefail
   cd "$repo_path"
-  git fetch origin main
-  git checkout main
-  git pull --ff-only origin main
+
+  if [[ "${PESKIDS_DEPLOY_SCRIPT_REEXECED:-}" != "1" ]]; then
+    git fetch origin main
+    git checkout main
+    git pull --ff-only origin main
+  fi
 
   echo "Pulling ${image}..."
   docker pull "$image"
@@ -48,7 +108,6 @@ run_deploy_on_host() {
   ENV_FILE="$(mktemp)"
   trap 'rm -f "$ENV_FILE"' EXIT
   doppler secrets download --no-file --format docker --project ops-intcloudsysops --config prd >"$ENV_FILE"
-  # Strip platform-wide NEXT_PUBLIC_* that point at wrong API or Docker hostnames (browsers cannot use them).
   # shellcheck source=scripts/lib/peskids-docker-env-filter.sh
   source "${repo_path}/scripts/lib/peskids-docker-env-filter.sh"
   filter_peskids_docker_env "$ENV_FILE"
@@ -59,28 +118,7 @@ run_deploy_on_host() {
     --env-file "$ENV_FILE" \
     "$image"
 
-  check_url() {
-    local label="$1"
-    local url="$2"
-    local needle="${3:-}"
-    local body
-    local attempt
-    for attempt in 1 2 3 4 5 6 7 8 9 10; do
-      if body="$(curl -fsSL --max-redirs 5 "$url" 2>/dev/null)"; then
-        if [[ -z "$needle" || "$body" == *"$needle"* ]]; then
-          echo "ok   ${label}"
-          return 0
-        fi
-      fi
-      echo "retry ${label} (${attempt}/10)"
-      sleep 6
-    done
-    echo "fail ${label}: ${url}" >&2
-    return 1
-  }
-
-  sleep 8
-  check_url "peskids local health" "http://127.0.0.1:3004/api/health" '"status":"ok"'
+  wait_for_peskids_ready
   check_url "peskids local admin login" "http://127.0.0.1:3004/admin/login"
   check_url "peskids local familias login" "http://127.0.0.1:3004/familias/login"
 }
@@ -90,7 +128,6 @@ if [[ "$DRY_RUN" == true ]]; then
   exit 0
 fi
 
-# GitHub Actions lands on the VPS via ssh-action; nested ssh to self fails (publickey).
 if [[ "${PESKIDS_DEPLOY_IN_PLACE:-}" == "1" || "${PESKIDS_DEPLOY_IN_PLACE:-}" == "true" ]]; then
   echo "Deploy in place (already on VPS)"
   run_deploy_on_host "$REPO_PATH" "$IMAGE"
@@ -102,42 +139,9 @@ else
     "REPO_PATH=$(printf '%q' "$REPO_PATH") IMAGE=$(printf '%q' "$IMAGE") bash -s" \
     <<'REMOTE'
 set -euo pipefail
-cd "$REPO_PATH"
-git fetch origin main
-git checkout main
-git pull --ff-only origin main
-
-echo "Pulling ${IMAGE}..."
-docker pull "$IMAGE"
-
-docker stop peskids 2>/dev/null || true
-docker rm peskids 2>/dev/null || true
-
-ENV_FILE="$(mktemp)"
-trap 'rm -f "$ENV_FILE"' EXIT
-doppler secrets download --no-file --format docker --project ops-intcloudsysops --config prd >"$ENV_FILE"
-source "${REPO_PATH}/scripts/lib/peskids-docker-env-filter.sh"
-filter_peskids_docker_env "$ENV_FILE"
-
-docker run -d --name peskids --restart unless-stopped \
-  --network traefik-public \
-  -p 127.0.0.1:3004:3004 \
-  --env-file "$ENV_FILE" \
-  "$IMAGE"
-
-sleep 10
-for attempt in 1 2 3 4 5 6 7 8 9 10; do
-  if curl -sf http://127.0.0.1:3004/api/health | grep -q '"status":"ok"'; then
-    echo "ok   peskids local health"
-    break
-  fi
-  echo "retry peskids local health (${attempt}/10)"
-  sleep 6
-  if [[ "$attempt" -eq 10 ]]; then
-    echo "fail peskids local health" >&2
-    exit 1
-  fi
-done
+export PESKIDS_DEPLOY_IN_PLACE=1
+export PESKIDS_IMAGE="$IMAGE"
+bash "$REPO_PATH/scripts/peskids-deploy-vps.sh"
 REMOTE
 fi
 
