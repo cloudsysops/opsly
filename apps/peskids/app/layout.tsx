@@ -1,36 +1,11 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { Caveat_Brush, JetBrains_Mono, Nunito } from 'next/font/google';
 import { AuthSessionRedirect } from '@/components/auth/auth-session-redirect';
 import { PeskidsClientShell } from '@/components/chat/peskids-client-shell';
 import { CookieBanner } from '@/components/legal/cookie-banner';
 import { SwRegister } from '@/components/pwa/sw-register';
 import { NativePushRegister } from '@/components/pwa/native-push-register';
 import './globals.css';
-
-const fontNunito = Nunito({
-  subsets: ['latin'],
-  variable: '--font-nunito',
-  display: 'swap',
-  weight: ['400', '600', '700', '800', '900'],
-  preload: false,
-});
-
-const fontBrush = Caveat_Brush({
-  subsets: ['latin'],
-  variable: '--font-brush',
-  display: 'swap',
-  weight: '400',
-  preload: false,
-});
-
-const fontMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-  display: 'swap',
-  weight: ['500', '700'],
-  preload: false,
-});
 
 export const metadata: Metadata = {
   title: 'Peskids — Academia de natación · Medellín',
@@ -46,7 +21,7 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${fontNunito.variable} ${fontBrush.variable} ${fontMono.variable}`}>
+    <html lang="es">
       <body>
         <AuthSessionRedirect />
         <PeskidsClientShell>{children}</PeskidsClientShell>

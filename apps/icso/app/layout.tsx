@@ -1,4 +1,3 @@
-import { Poppins } from 'next/font/google';
 import type { Metadata } from 'next';
 import type { ReactElement, ReactNode } from 'react';
 import { SiteFooter } from '@/components/layout/SiteFooter';
@@ -6,13 +5,6 @@ import { SiteHeader } from '@/components/layout/SiteHeader';
 import { localBusinessJsonLd, organizationJsonLd } from '@/lib/structured-data';
 import { siteConfig } from '@/lib/site';
 import './globals.css';
-
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-poppins',
-  display: 'swap',
-});
 
 const siteUrl = siteConfig.url;
 
@@ -71,7 +63,7 @@ export default function RootLayout({
   const jsonLd = [organizationJsonLd(), localBusinessJsonLd()];
 
   return (
-    <html lang="en" className={poppins.variable}>
+    <html lang="en">
       <body className="min-h-screen font-sans">
         {jsonLd.map((data, index) => (
           <script
