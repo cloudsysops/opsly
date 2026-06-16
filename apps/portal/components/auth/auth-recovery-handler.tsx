@@ -38,6 +38,13 @@ export function AuthRecoveryHandler({
       router.replace(updatePasswordPath)
     }
 
+    const redirectToServerCallback = (authCode: string): void => {
+      const callbackUrl = new URL('/auth/callback', window.location.origin)
+      callbackUrl.searchParams.set('code', authCode)
+      callbackUrl.searchParams.set('next', '/auth/recovery')
+      window.location.replace(callbackUrl.toString())
+    }
+
     const url = new URL(window.location.href)
     const code = url.searchParams.get('code')
     const hash = url.hash.replace(/^#/, '')
@@ -74,22 +81,24 @@ export function AuthRecoveryHandler({
     })
 
     void (async () => {
+      const {
+        data: { session: existingSession },
+      } = await supabase.auth.getSession()
+
+      if (existingSession?.user) {
+        const meta = {
+          ...((existingSession.user.app_metadata ?? {}) as Record<string, unknown>),
+          ...((existingSession.user.user_metadata ?? {}) as Record<string, unknown>),
+        }
+        if (!routeAwayIfWrongApp(meta)) {
+          finishToUpdatePassword()
+        }
+        return
+      }
+
       if (code) {
-        const { data, error } = await supabase.auth.exchangeCodeForSession(code)
-        if (error) {
-          setMessage(error.message)
-          return
-        }
-        if (data.user) {
-          const meta = {
-            ...((data.user.app_metadata ?? {}) as Record<string, unknown>),
-            ...((data.user.user_metadata ?? {}) as Record<string, unknown>),
-          }
-          if (routeAwayIfWrongApp(meta)) {
-            return
-          }
-        }
-        finishToUpdatePassword()
+        setMessage('Preparando recuperacion segura…')
+        redirectToServerCallback(code)
         return
       }
 
