@@ -3,7 +3,10 @@ import {
   buildRecoveryRedirectTo,
   inviteActivationPathFromUrl,
   isInviteLink,
+  metadataForPeskidsStaffRecovery,
+  peskidsStaffRecoveryUpdatePath,
   recoveryTargetFromMetadata,
+  shouldCompleteRecoveryOnPeskids,
 } from '../auth-recovery';
 
 describe('recoveryTargetFromMetadata', () => {
@@ -40,6 +43,31 @@ describe('recoveryTargetFromMetadata', () => {
     });
     expect(target.app).toBe('platform_admin');
     expect(target.origin).toContain('admin');
+  });
+
+  it('keeps peskids superuser admin on peskids staff recovery', () => {
+    const target = recoveryTargetFromMetadata({
+      tenant_slug: 'peskids',
+      role: 'admin',
+      is_superuser: true,
+    });
+    expect(target.app).toBe('peskids_staff');
+    expect(target.origin).toContain('peskids');
+  });
+
+  it('completes ambiguous staff recovery on peskids instead of portal', () => {
+    expect(shouldCompleteRecoveryOnPeskids({ role: 'owner' })).toBe(true);
+    expect(shouldCompleteRecoveryOnPeskids({ tenant_slug: 'peskids', role: 'teacher' })).toBe(
+      true
+    );
+    expect(shouldCompleteRecoveryOnPeskids({ tenant_slug: 'smiletripcare', role: 'owner' })).toBe(
+      false
+    );
+  });
+
+  it('infers peskids tenant for staff update-password path', () => {
+    expect(peskidsStaffRecoveryUpdatePath({ role: 'teacher' })).toBe('/teacher/update-password');
+    expect(metadataForPeskidsStaffRecovery({ role: 'owner' }).tenant_slug).toBe('peskids');
   });
 
   it('detects invite links and keeps email/token in the activation path', () => {
