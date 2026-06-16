@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-06-11T11:25:17.000Z",
-  "totalFiles": 739,
+  "lastIndexed": "2026-06-16T19:02:55.020Z",
+  "totalFiles": 741,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -556,6 +556,8 @@
     "reports/ci-fix-workflow-audit-2026-05-21.md",
     "reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
     "reports/CYBER-NEO-OPSLY-2026-05-21.md",
+    "reports/E2E-TESTING-PLAN.md",
+    "reports/GHL-ACCOUNTS-SNAPSHOT.md",
     "reports/ICSO-E2E-VALIDATION.md",
     "reports/OPSLY-RELIABILITY-SPRINT.md",
     "reports/PARALLEL-EXECUTION-2026-04-29.md",
