@@ -3,6 +3,7 @@ import { SiteHeader } from '@/components/layout/site-header';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { LeadCaptureForm } from '@/components/forms';
 import { buildWhatsAppUrl } from '@/lib/contact-channels';
+import { PeskidsLogo } from '@/components/brand/peskids-logo';
 import { InstagramCTA } from './instagram-cta';
 
 export const metadata = {
@@ -29,6 +30,9 @@ export default function InstagramPage(): React.ReactElement {
         <div className="mx-auto max-w-2xl">
           {/* Hero Section */}
           <div className="mb-8 text-center">
+            <div className="flex justify-center mb-6">
+              <PeskidsLogo size={120} />
+            </div>
             <h1 className="text-3xl sm:text-4xl font-bold text-pk-ink mb-3">
               Clase de prueba gratuita de natación
             </h1>
