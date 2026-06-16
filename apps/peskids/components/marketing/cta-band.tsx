@@ -1,6 +1,5 @@
 import { PeskidsWave } from '@/components/brand/peskids-logo';
 import { WhatsAppLink } from '@/components/contact/whatsapp-link';
-import { Button } from '@/components/ui/button';
 
 export function CtaBand(): React.ReactElement {
   return (
@@ -17,25 +16,16 @@ export function CtaBand(): React.ReactElement {
               La primera clase es gratis.
             </h2>
             <p className="mt-4 text-lg text-white/85">
-              Trae a tu peque a probar el método. Sin compromiso. Reserva en menos de 2 minutos por
-              chat.
+              Trae a tu peque a probar el método. Sin compromiso. Escríbenos por WhatsApp y te
+              ayudamos a reservar la clase de prueba.
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <WhatsAppLink
               variant="onDark"
-              label="WhatsApp — respuesta rápida"
+              label="Reservar por WhatsApp"
               className="min-w-[200px]"
             />
-            <a href="#contacto">
-              <Button
-                variant="accent"
-                size="lg"
-                className="whitespace-nowrap border-2 border-white/30"
-              >
-                Ir al chat de reserva →
-              </Button>
-            </a>
           </div>
         </div>
       </div>

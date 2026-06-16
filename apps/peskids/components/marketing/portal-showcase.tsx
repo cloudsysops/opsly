@@ -8,7 +8,6 @@ import {
   Star,
   Bell,
   CheckCircle2,
-  ChevronRight,
   ClipboardList,
   ShieldCheck,
   Waves,
@@ -16,6 +15,7 @@ import {
   Link2,
 } from 'lucide-react'
 import { PeskidsLogo, PeskidsWave, StarBurst } from '@/components/brand/peskids-logo'
+import { PublicReservaWhatsAppLink } from '@/components/marketing/public-reserva-whatsapp-link'
 import { GrowthWidget } from '@/components/progress/growth-widget'
 import { Card, CardContent } from '@/components/ui/card'
 import { peskidsColorTokens } from '@/lib/tokens'
@@ -112,30 +112,18 @@ export function PortalShowcase(): React.ReactElement {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href="/#contacto"
+              <PublicReservaWhatsAppLink
                 className={cn(
                   'inline-flex h-12 items-center justify-center gap-2 rounded-full bg-pk-primary px-6 text-sm font-bold text-white shadow-md shadow-pk-primary/30 transition-all duration-150 hover:bg-pk-primary-dark active:scale-[0.99]'
                 )}
-              >
-                Reservar clase
-                <ChevronRight className="h-4 w-4" aria-hidden />
-              </Link>
+              />
               <Link
                 href="/familias/login"
                 className={cn(
                   'inline-flex h-12 items-center justify-center gap-2 rounded-full border border-pk-primary/20 bg-white px-6 text-sm font-bold text-pk-ink transition-all duration-150 hover:border-pk-primary/40 hover:bg-pk-snow'
                 )}
               >
-                Panel familias
-              </Link>
-              <Link
-                href="/admin"
-                className={cn(
-                  'inline-flex h-12 items-center justify-center gap-2 rounded-full border border-pk-border bg-pk-surface px-6 text-sm font-bold text-pk-ink transition-all duration-150 hover:border-pk-primary/40 hover:bg-pk-snow'
-                )}
-              >
-                Ver panel admin
+                Acceso por invitación
               </Link>
             </div>
 
@@ -306,14 +294,9 @@ export function PortalShowcase(): React.ReactElement {
                     href="/familias/login"
                     className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-pk-primary px-5 text-sm font-bold text-white transition hover:bg-pk-primary-dark"
                   >
-                    Panel familias
+                    Acceso por invitación
                   </Link>
-                  <Link
-                    href="/#contacto"
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-pk-border bg-white px-5 text-sm font-bold text-pk-ink transition hover:border-pk-primary/30 hover:bg-pk-snow"
-                  >
-                    Reservar clase
-                  </Link>
+                  <PublicReservaWhatsAppLink className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-pk-border bg-white px-5 text-sm font-bold text-pk-ink transition hover:border-pk-primary/30 hover:bg-pk-snow" />
                 </div>
               </div>
             </div>
@@ -339,18 +322,11 @@ export function PortalShowcase(): React.ReactElement {
             </div>
 
             <div className="flex flex-col justify-center gap-3 sm:flex-row lg:justify-end">
-              <Link
-                href="/#contacto"
+              <PublicReservaWhatsAppLink
+                variant="onDark"
+                label="Reservar por WhatsApp"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-pk-sun px-6 text-sm font-bold text-pk-ink transition hover:brightness-105"
-              >
-                Reservar demo
-              </Link>
-              <Link
-                href="/admin"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 text-sm font-bold text-white transition hover:bg-white/10"
-              >
-                Ver operación
-              </Link>
+              />
             </div>
           </div>
         </div>

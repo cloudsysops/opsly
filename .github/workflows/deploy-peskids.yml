@@ -178,7 +178,7 @@ jobs:
             return 1
           }
 
-          check_url "public health" "https://peskids.op-sly.com/api/health" '"ok":true'
+          check_url "public health" "https://peskids.op-sly.com/api/health" '"status":"ok"'
           check_url "admin login" "https://peskids.op-sly.com/admin/login"
           check_url "familias login" "https://peskids.op-sly.com/familias/login"
 

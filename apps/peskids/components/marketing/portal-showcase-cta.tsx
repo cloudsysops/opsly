@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Gift, BadgePercent, Link2 } from 'lucide-react';
+import { PublicReservaWhatsAppLink } from '@/components/marketing/public-reserva-whatsapp-link';
 import { peskidsColorTokens } from '@/lib/tokens';
 
 function MiniReferralStep({
@@ -89,14 +90,9 @@ function ReferralSection(): React.ReactElement {
                 href="/familias/login"
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-pk-primary px-5 text-sm font-bold text-white transition hover:bg-pk-primary-dark"
               >
-                Acceso familias
+                Acceso por invitación
               </Link>
-              <Link
-                href="/#contacto"
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-pk-border bg-white px-5 text-sm font-bold text-pk-ink transition hover:border-pk-primary/30 hover:bg-pk-snow"
-              >
-                Reservar clase
-              </Link>
+              <PublicReservaWhatsAppLink className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-pk-border bg-white px-5 text-sm font-bold text-pk-ink transition hover:border-pk-primary/30 hover:bg-pk-snow" />
             </div>
           </div>
         </div>
@@ -126,18 +122,11 @@ function FinalCTA(): React.ReactElement {
         </div>
 
         <div className="flex flex-col justify-center gap-3 sm:flex-row lg:justify-end">
-          <Link
-            href="/#contacto"
+          <PublicReservaWhatsAppLink
+            variant="onDark"
+            label="Reservar por WhatsApp"
             className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-pk-sun px-6 text-sm font-bold text-pk-ink transition hover:brightness-105"
-          >
-            Reservar demo
-          </Link>
-          <Link
-            href="/admin"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 text-sm font-bold text-white transition hover:bg-white/10"
-          >
-            Ver operación
-          </Link>
+          />
         </div>
       </div>
     </div>

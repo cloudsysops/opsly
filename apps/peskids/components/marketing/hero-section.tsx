@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, GraduationCap, ShieldCheck, Waves } from 'lucide-react'
+import { Mail, Waves } from 'lucide-react'
 import { PeskidsBrush, StarBurst, WiggleLine } from '@/components/brand/peskids-logo'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
 import { peskidsColorTokens } from '@/lib/tokens'
@@ -42,100 +42,32 @@ export function HeroSection(): React.ReactElement {
           <strong className="text-white">a domicilio</strong> en el área metropolitana.
         </p>
 
-        <div className="mt-8 grid gap-3 sm:grid-cols-3">
-          <Link
-            href="/familias/login"
-            className="group rounded-2xl border border-white/10 bg-white/10 px-4 py-4 text-left transition hover:border-white/25 hover:bg-white/15"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55">
-                  Panel familias
-                </p>
-                <p className="mt-1 text-sm font-semibold text-white">Entrar con Google</p>
-              </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/12 text-white">
-                <Waves className="h-5 w-5" aria-hidden />
-              </div>
-            </div>
-            <p className="mt-3 text-xs leading-5 text-white/65">
-              Acceso directo al panel de familias y sus reservas.
-            </p>
-            <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-pk-primary">
-              Ir al acceso
-              <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" aria-hidden />
-            </span>
-          </Link>
-
-          <Link
-            href="/teacher/login"
-            className="group rounded-2xl border border-white/10 bg-white/10 px-4 py-4 text-left transition hover:border-white/25 hover:bg-white/15"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55">
-                  Panel profesores
-                </p>
-                <p className="mt-1 text-sm font-semibold text-white">Panel de trabajo</p>
-              </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/12 text-white">
-                <GraduationCap className="h-5 w-5" aria-hidden />
-              </div>
-            </div>
-            <p className="mt-3 text-xs leading-5 text-white/65">
-              Clases, seguimientos y gestión operativa del día a día.
-            </p>
-            <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-pk-primary">
-              Ir al acceso
-              <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" aria-hidden />
-            </span>
-          </Link>
-
-          <Link
-            href="/admin/login"
-            className="group rounded-2xl border border-white/10 bg-white/10 px-4 py-4 text-left transition hover:border-white/25 hover:bg-white/15"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55">
-                  Panel admin
-                </p>
-                <p className="mt-1 text-sm font-semibold text-white">Panel admin</p>
-              </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/12 text-white">
-                <ShieldCheck className="h-5 w-5" aria-hidden />
-              </div>
-            </div>
-            <p className="mt-3 text-xs leading-5 text-white/65">
-              Leads, feedback, follow-up y configuración del equipo.
-            </p>
-            <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-pk-primary">
-              Ir al acceso
-              <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" aria-hidden />
-            </span>
-          </Link>
-        </div>
-
-        <WiggleLine width={120} color="rgba(76,184,176,0.95)" className="mt-4" />
+        <WiggleLine width={120} color="rgba(76,184,176,0.95)" className="mt-8" />
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-          <WhatsAppLink variant="hero" label="Escribir por WhatsApp" />
+          <WhatsAppLink variant="hero" label="Reservar por WhatsApp" />
           <Link
             href="#redes"
             className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/10 px-6 text-sm font-bold text-white transition hover:border-white/30 hover:bg-white/15"
           >
             <Waves className="h-5 w-5" aria-hidden />
-            Ver redes y clases
+            Ver clases en Instagram
           </Link>
         </div>
 
-        <p className="mt-3 text-sm text-white/60">
-          <Link href="/familias" className="font-semibold text-pk-primary hover:underline">
-            Panel familias
-          </Link>
-          {' · '}
-          Reserva y consultas por WhatsApp
+        <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/65">
+          Reservas y consultas por WhatsApp. El portal de familias es{' '}
+          <strong className="font-semibold text-white/85">solo por invitación</strong> cuando ya
+          tienes clase o reserva activa con nosotros.
         </p>
+
+        <Link
+          href="/familias/login"
+          className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white transition hover:border-white/25 hover:bg-white/10"
+        >
+          <Mail className="h-4 w-4 text-pk-primary" aria-hidden />
+          Ya tengo invitación — ingresar con mi correo
+        </Link>
 
         <div className="relative mt-10 flex flex-wrap gap-10">
           {stats.map((s) => (

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
+import { PublicReservaWhatsAppLink } from '@/components/marketing/public-reserva-whatsapp-link';
 import { cn } from '@/lib/utils';
 
 function MetricCard({
@@ -33,30 +33,18 @@ export function PortalShowcaseHero(): React.ReactElement {
       </p>
 
       <div className="mt-8 flex flex-wrap gap-3">
-        <Link
-          href="/#contacto"
+        <PublicReservaWhatsAppLink
           className={cn(
             'inline-flex h-12 items-center justify-center gap-2 rounded-full bg-pk-primary px-6 text-sm font-bold text-white shadow-md shadow-pk-primary/30 transition-all duration-150 hover:bg-pk-primary-dark active:scale-[0.99]'
           )}
-        >
-          Reservar clase
-          <ChevronRight className="h-4 w-4" aria-hidden />
-        </Link>
+        />
         <Link
           href="/familias/login"
           className={cn(
             'inline-flex h-12 items-center justify-center gap-2 rounded-full border border-pk-primary/20 bg-white px-6 text-sm font-bold text-pk-ink transition-all duration-150 hover:border-pk-primary/40 hover:bg-pk-snow'
           )}
         >
-          Acceso familias
-        </Link>
-        <Link
-          href="/admin"
-          className={cn(
-            'inline-flex h-12 items-center justify-center gap-2 rounded-full border border-pk-border bg-pk-surface px-6 text-sm font-bold text-pk-ink transition-all duration-150 hover:border-pk-primary/40 hover:bg-pk-snow'
-          )}
-        >
-          Ver panel admin
+          Acceso por invitación
         </Link>
       </div>
 

@@ -1,9 +1,9 @@
 import { Suspense } from 'react'
-import { FamilyGoogleLogin } from './family-google-login'
+import { FamilyEmailLogin } from './family-email-login'
 
 export const metadata = {
-  title: 'Peskids · Panel familias',
-  description: 'Acceso para familias de Peskids con Google.',
+  title: 'Peskids · Portal familias',
+  description: 'Acceso al portal de familias Peskids solo por invitación con el correo autorizado.',
 }
 
 export default function FamiliesLoginPage(): React.ReactElement {
@@ -15,7 +15,7 @@ export default function FamiliesLoginPage(): React.ReactElement {
         </div>
       }
     >
-      <FamilyGoogleLogin />
+      <FamilyEmailLogin />
     </Suspense>
   )
 }
