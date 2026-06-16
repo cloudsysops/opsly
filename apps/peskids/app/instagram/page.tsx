@@ -37,8 +37,8 @@ export default function InstagramPage(): React.ReactElement {
               Clase de prueba gratuita de natación
             </h1>
             <p className="text-lg text-pk-sub mb-6">
-              Déjanos tus datos o continúa directamente por WhatsApp. Seguiremos atendiéndote
-              como siempre.
+              Déjanos tus datos o continúa directamente por WhatsApp. Seguiremos atendiéndote como
+              siempre.
             </p>
 
             {/* CTA Buttons */}
