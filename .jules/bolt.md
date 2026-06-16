@@ -17,3 +17,7 @@
 ## 2026-05-30 - [Parallelizing and Caching BullMQ Queue Lookups]
 **Learning:** Sequential calls to BullMQ queue statistics (waiting/active counts) introduce unnecessary latency, especially when multiple queues are involved. Parallelizing these calls with `Promise.all` and caching the results in Redis with a short TTL (60s) significantly improves response times for admin dashboard endpoints.
 **Action:** Always parallelize multiple independent BullMQ or Redis operations and use short-term caching for aggregated statistics shown in the UI.
+
+## 2026-06-01 - [Multi-Tenant Policy Caching]
+**Learning:** Policy enforcement checks (like budget limits) are frequently called on critical write paths. Performing database aggregations and multi-table joins on every such call adds significant latency (~100ms) and DB load. Caching the finalized check result (e.g., `isOverBudget`) for 60s in Redis reduces latency to <5ms while maintaining sufficient accuracy for budget enforcement.
+**Action:** Implement short-term Redis caching for all multi-tenant policy enforcement results that involve expensive database aggregations.

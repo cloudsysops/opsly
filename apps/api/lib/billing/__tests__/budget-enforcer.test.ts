@@ -3,6 +3,28 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const mockFrom = vi.fn();
 const mockSchema = vi.fn(() => ({ from: mockFrom }));
 
+// Mocking getCache/setCache using vi.hoisted to ensure they are available for the module factory
+const { mockGetCache, mockSetCache } = vi.hoisted(() => ({
+  mockGetCache: vi.fn(),
+  mockSetCache: vi.fn(),
+}));
+
+vi.mock('../../redis-cache', () => ({
+  getCache: mockGetCache,
+  setCache: mockSetCache,
+}));
+
+vi.mock('../../constants', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../constants')>();
+  return {
+    ...actual,
+    CACHE_TTL: {
+      ...actual.CACHE_TTL,
+      SHORT: 60,
+    },
+  };
+});
+
 vi.mock('../../supabase', () => ({
   getServiceClient: () => ({
     schema: mockSchema,
@@ -26,6 +48,28 @@ describe('checkTenantBudget', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockSum.mockResolvedValue({ value: 10, error: null });
+    // Default to cache miss
+    mockGetCache.mockResolvedValue(null);
+  });
+
+  it('returns cached value if present and avoids DB calls', async () => {
+    const cachedResult = {
+      isOverBudget: false,
+      currentSpend: 50,
+      limit: 100,
+      enforcementSkipped: false,
+      tenantSlug: 'cached-tenant',
+      tenantStatus: 'active',
+      budgetAutoSuspended: false,
+    };
+    mockGetCache.mockResolvedValueOnce(cachedResult);
+
+    const result = await checkTenantBudget('tid-cache');
+
+    expect(result).toEqual(cachedResult);
+    expect(mockGetCache).toHaveBeenCalledWith('budget:check:tid-cache');
+    // Ensure no DB calls were made
+    expect(mockSchema).not.toHaveBeenCalled();
   });
 
   it('returns enforcementSkipped when slug is in BUDGET_ENFORCEMENT_BYPASS_SLUGS', async () => {
@@ -63,6 +107,8 @@ describe('checkTenantBudget', () => {
     expect(r.enforcementSkipped).toBe(true);
     expect(r.isOverBudget).toBe(false);
     expect(mockSum).toHaveBeenCalled();
+    // Verify cache update
+    expect(mockSetCache).toHaveBeenCalledWith('budget:check:tid-1', r, 60);
     delete process.env.BUDGET_ENFORCEMENT_BYPASS_SLUGS;
   });
 
@@ -107,6 +153,8 @@ describe('checkTenantBudget', () => {
     expect(r.currentSpend).toBe(10);
     expect(r.isOverBudget).toBe(true);
     expect(r.enforcementSkipped).toBe(false);
+    // Verify cache update
+    expect(mockSetCache).toHaveBeenCalledWith('budget:check:tid-2', r, 60);
   });
 
   it('treats missing billing_usage table as 0 spend (migration not applied)', async () => {
@@ -148,5 +196,7 @@ describe('checkTenantBudget', () => {
     const r = await checkTenantBudget('tid-3');
     expect(r.currentSpend).toBe(0);
     expect(r.isOverBudget).toBe(false);
+    // Verify cache update even on aggregation errors (assuming we want to cache the "safe" result)
+    expect(mockSetCache).toHaveBeenCalledWith('budget:check:tid-3', r, 60);
   });
 });
