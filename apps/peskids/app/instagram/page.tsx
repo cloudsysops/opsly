@@ -48,7 +48,7 @@ export default function InstagramPage(): React.ReactElement {
           {/* Lead Capture Form */}
           <div id="form-container" className="scroll-mt-8">
             <Suspense fallback={<div className="h-96" />}>
-              <LeadCaptureForm />
+              <LeadCaptureForm source="instagram-pilot" />
             </Suspense>
           </div>
         </div>
