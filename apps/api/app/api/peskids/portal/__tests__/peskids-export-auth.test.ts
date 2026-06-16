@@ -9,6 +9,7 @@ vi.mock('@/lib/portal-trusted-identity', () => ({
   }),
   tenantSlugMatchesSession: vi.fn().mockReturnValue(true),
   PORTAL_READ_ROLES: ['admin', 'teacher'],
+  PORTAL_WRITE_ROLES: ['admin', 'teacher'],
   PORTAL_READ_ACCESS: { allowedRoles: ['admin', 'teacher'] }
 }));
 
