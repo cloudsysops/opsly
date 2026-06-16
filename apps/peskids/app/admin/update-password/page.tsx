@@ -5,6 +5,10 @@ import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PeskidsLogo } from '@/components/brand/peskids-logo';
 import { Button } from '@/components/ui/button';
+import {
+  clearPasswordRecoveryActive,
+  hasPasswordRecoveryActive,
+} from '@/lib/password-recovery-session';
 import { isStaffUser } from '@/lib/staff-user';
 import { createClient } from '@/lib/supabase-browser';
 
@@ -23,6 +27,11 @@ function UpdatePasswordForm(): React.ReactElement {
       setError(loginError);
     }
     const supabase = createClient();
+    if (!hasPasswordRecoveryActive()) {
+      setReady(false);
+      return;
+    }
+
     void supabase.auth.getSession().then(({ data }) => {
       const session = data.session;
       if (!session?.user) {
@@ -61,6 +70,7 @@ function UpdatePasswordForm(): React.ReactElement {
         setError(updateError.message);
         return;
       }
+      clearPasswordRecoveryActive();
       router.push('/admin');
       router.refresh();
     } catch {
