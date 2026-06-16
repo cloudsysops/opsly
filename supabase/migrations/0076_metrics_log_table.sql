@@ -2,7 +2,7 @@
 -- Stores: lead volume, latency, error rates, system health
 
 CREATE TABLE IF NOT EXISTS platform.metrics_log (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   metric_name TEXT NOT NULL,
   metric_type TEXT NOT NULL CHECK (metric_type IN ('counter', 'histogram', 'gauge')),
   metric_value NUMERIC NOT NULL,
@@ -30,6 +30,3 @@ ALTER TABLE platform.metrics_log ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY metrics_log_read_all ON platform.metrics_log FOR SELECT
   USING (true);
-
--- Grant service_role full access for metrics flush
-GRANT SELECT, INSERT ON platform.metrics_log TO service_role;

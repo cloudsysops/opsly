@@ -15,6 +15,8 @@ vi.mock('../../../../../../../lib/portal-trusted-identity', async (importOrigina
     ...actual,
     resolveTrustedPortalSession: vi.fn(),
     tenantSlugMatchesSession: vi.fn(),
+    PORTAL_READ_ROLES: ['owner', 'admin', 'operator', 'viewer'],
+    PORTAL_WRITE_ROLES: ['owner', 'admin', 'operator'],
   };
 });
 

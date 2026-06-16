@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-06-16T02:48:52.517Z",
+  "generated_at": "2026-06-11T11:25:24.132Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -3086,26 +3086,22 @@
         "2026",
         "aggregation",
         "bolt",
-        "bullmq",
         "caching",
         "cli",
         "collision",
         "docker",
         "external",
         "llm",
-        "lookups",
         "markdown",
         "metrics",
         "network",
         "opsly",
-        "parallelizing",
         "prevention",
         "probes",
         "prometheus",
-        "queue",
         "usage"
       ],
-      "size_bytes": 2945
+      "size_bytes": 2401
     },
     {
       "path": ".jules/palette.md",
@@ -3158,13 +3154,12 @@
         "portal",
         "publish",
         "rate",
-        "runtime",
         "sentinel",
         "social",
         "spoofing",
         "vector"
       ],
-      "size_bytes": 5825
+      "size_bytes": 4866
     },
     {
       "path": ".n8n/1-workflows/peskids/README.md",
@@ -20232,91 +20227,6 @@
       "size_bytes": 3358
     },
     {
-      "path": "docs/reports/E2E-TESTING-PLAN.md",
-      "title": "E2E Testing Plan — Reliability Sprint & GHL Integration",
-      "keywords": [
-        "account",
-        "across",
-        "alert",
-        "alerting",
-        "api",
-        "batch",
-        "batching",
-        "collection",
-        "complete",
-        "dashboard",
-        "dead",
-        "dispatch",
-        "dlq",
-        "e2e",
-        "failure",
-        "firing",
-        "flow",
-        "full",
-        "ghl",
-        "icso",
-        "instant",
-        "integration",
-        "lead",
-        "letter",
-        "markdown",
-        "metrics",
-        "min",
-        "n8n",
-        "opsly",
-        "peskids",
-        "plan",
-        "query",
-        "queue",
-        "recorded",
-        "reliability",
-        "resources",
-        "scopes",
-        "slack",
-        "sprint",
-        "system",
-        "testing",
-        "tests",
-        "tier",
-        "validation",
-        "webhook",
-        "website"
-      ],
-      "size_bytes": 23392
-    },
-    {
-      "path": "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
-      "title": "GoHighLevel Accounts Snapshot",
-      "keywords": [
-        "account",
-        "accounts",
-        "agency",
-        "api",
-        "auto",
-        "configuration",
-        "details",
-        "ghl",
-        "gohighlevel",
-        "intcloudsysops",
-        "integration",
-        "items",
-        "manual",
-        "markdown",
-        "opsly",
-        "peskids",
-        "points",
-        "provisioned",
-        "required",
-        "scopes",
-        "snapshot",
-        "status",
-        "sub",
-        "summary",
-        "tenant"
-      ],
-      "size_bytes": 11535
-    },
-    {
       "path": "docs/reports/ICSO-E2E-VALIDATION.md",
       "title": "ICSO END-TO-END VALIDATION",
       "keywords": [
@@ -22541,40 +22451,6 @@
       "size_bytes": 4112
     },
     {
-      "path": "docs/security/NPM-AUDIT-EXEMPTIONS.md",
-      "title": "npm Audit Exemptions",
-      "keywords": [
-        "approval",
-        "audit",
-        "command",
-        "dependencies",
-        "dev",
-        "esbuild",
-        "exemptions",
-        "gate",
-        "handling",
-        "high",
-        "known",
-        "markdown",
-        "modules",
-        "next",
-        "node",
-        "npm",
-        "only",
-        "opsly",
-        "packages",
-        "policy",
-        "provisioning",
-        "severity",
-        "status",
-        "steps",
-        "tmp",
-        "vulnerabilities",
-        "with"
-      ],
-      "size_bytes": 2827
-    },
-    {
       "path": "docs/security/SECURITY-POSTURE-AUDIT.md",
       "title": "Security Posture Audit & Checklist",
       "keywords": [
@@ -23978,48 +23854,6 @@
       "size_bytes": 6198
     },
     {
-      "path": "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
-      "title": "PESKIDS DEPLOYMENT SUMMARY",
-      "keywords": [
-        "100",
-        "2026",
-        "admin",
-        "api",
-        "backend",
-        "blocking",
-        "capture",
-        "configuration",
-        "critical",
-        "dashboard",
-        "deployment",
-        "documentation",
-        "done",
-        "fix",
-        "ghl",
-        "infrastructure",
-        "integration",
-        "launch",
-        "lead",
-        "manual",
-        "markdown",
-        "min",
-        "must",
-        "opsly",
-        "partially",
-        "peskids",
-        "requires",
-        "scripts",
-        "situation",
-        "steps",
-        "summary",
-        "system",
-        "testing",
-        "today",
-        "what"
-      ],
-      "size_bytes": 8098
-    },
-    {
       "path": "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
       "title": "Peskids — design pack (Napkin / ZIP)",
       "keywords": [
@@ -24400,47 +24234,6 @@
       "size_bytes": 7055
     },
     {
-      "path": "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
-      "title": "PESKIDS — GO-LIVE CHECKLIST",
-      "keywords": [
-        "3pm",
-        "4pm",
-        "5pm",
-        "checklist",
-        "complete",
-        "completed",
-        "configuration",
-        "create",
-        "created",
-        "critical",
-        "deployment",
-        "email",
-        "engagement",
-        "fase",
-        "form",
-        "ghl",
-        "lead",
-        "live",
-        "markdown",
-        "min",
-        "opsly",
-        "order",
-        "path",
-        "peskids",
-        "scheduled",
-        "sms",
-        "templates",
-        "testing",
-        "today",
-        "trial",
-        "validation",
-        "vps",
-        "workflow",
-        "workflows"
-      ],
-      "size_bytes": 8476
-    },
-    {
       "path": "docs/tenants/peskids/GOHIGHLEVEL-CONTRACT.md",
       "title": "Peskids GoHighLevel Contract",
       "keywords": [
@@ -24762,48 +24555,6 @@
         "workflows"
       ],
       "size_bytes": 7903
-    },
-    {
-      "path": "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md",
-      "title": "PESKIDS — DAILY OPERATOR RUNBOOK",
-      "keywords": [
-        "00am",
-        "00pm",
-        "30am",
-        "asistencia",
-        "check",
-        "cierre",
-        "clase",
-        "clases",
-        "confirmaciones",
-        "confirmar",
-        "contactar",
-        "daily",
-        "dashboard",
-        "dia",
-        "diario",
-        "durante",
-        "fin",
-        "follow",
-        "inicio",
-        "leads",
-        "limpieza",
-        "manana",
-        "markdown",
-        "mediodia",
-        "min",
-        "nuevo",
-        "operator",
-        "opsly",
-        "padres",
-        "peskids",
-        "prueba",
-        "runbook",
-        "semanalmente",
-        "tarde",
-        "viernes"
-      ],
-      "size_bytes": 4958
     },
     {
       "path": "docs/tenants/peskids/OPS-RUNBOOK.md",
@@ -84770,7 +84521,6 @@
       "docs/03-agents/OPENCLAW-TEAM-PLAN.md",
       "docs/adr/ADR-021-predictive-bi-scalability.md",
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
@@ -85020,7 +84770,6 @@
       "docs/tenants/peskids/README.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
       "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
@@ -87872,7 +87621,6 @@
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/peskids/AUDIT-EXEMPTIONS.md",
       "docs/tenants/peskids/EXTRACTION-PLAN.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/SPRINT-01.md",
       "docs/tenants/peskids/design-pack/README.md",
       "docs/tenants/peskids/CLASSES-SYSTEM-SPEC.md",
@@ -87895,7 +87643,6 @@
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/ARCHITECTURE.md",
@@ -87908,7 +87655,6 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md",
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
@@ -88034,7 +87780,6 @@
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/AUTONOMY-PHASE1-E2E-EVIDENCE.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
@@ -88046,7 +87791,6 @@
       "docs/reports/README.md",
       "docs/reports/audit-2026-04-07.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
@@ -88078,7 +87822,6 @@
       "docs/blueprints/opsly-operational-blueprint/EXTRACTION-PATTERN.md",
       "docs/blueprints/opsly-operational-blueprint/REFERENCE-ARCHITECTURE.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".claude/3-slash-commands/skill.md",
       ".claude/3-slash-commands/deploy.md",
@@ -90379,7 +90122,6 @@
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/peskids/AUDIT-EXEMPTIONS.md",
       "docs/tenants/peskids/EXTRACTION-PLAN.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/SPRINT-01.md",
       "docs/tenants/peskids/design-pack/README.md",
       "docs/tenants/peskids/CLASSES-SYSTEM-SPEC.md",
@@ -90402,7 +90144,6 @@
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/ARCHITECTURE.md",
@@ -90415,7 +90156,6 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md",
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
@@ -90541,7 +90281,6 @@
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/AUTONOMY-PHASE1-E2E-EVIDENCE.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
@@ -90553,7 +90292,6 @@
       "docs/reports/README.md",
       "docs/reports/audit-2026-04-07.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
@@ -90585,7 +90323,6 @@
       "docs/blueprints/opsly-operational-blueprint/EXTRACTION-PATTERN.md",
       "docs/blueprints/opsly-operational-blueprint/REFERENCE-ARCHITECTURE.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".claude/3-slash-commands/skill.md",
       ".claude/3-slash-commands/deploy.md",
@@ -90704,7 +90441,6 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".agents/skills/cyber-neo/references/web-security-patterns.md"
     ],
@@ -91411,19 +91147,6 @@
     "bolt": [
       ".jules/bolt.md"
     ],
-    "bullmq": [
-      ".jules/bolt.md",
-      "docs/00-architecture/ORCHESTRATOR.md",
-      "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
-      "docs/01-development/OPSLY-AGENCY-DIVISION.md",
-      "docs/01-development/.openclaw.md",
-      "docs/04-infrastructure/WORKER-TESTING.md",
-      "docs/04-infrastructure/WORKER-FLOWS.md",
-      "docs/adr/ADR-011-event-driven-orchestrator.md",
-      "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
-      "docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md",
-      ".claude/1-agent-teams/orchestrator.md"
-    ],
     "caching": [
       ".jules/bolt.md",
       "lib/services/GOVERNANCE.md",
@@ -91558,9 +91281,6 @@
       "docs/brain/skills/opsly-llm.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       ".claude/3-slash-commands/ai-cost.md"
-    ],
-    "lookups": [
-      ".jules/bolt.md"
     ],
     "metrics": [
       ".jules/bolt.md",
@@ -91752,7 +91472,6 @@
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       ".agents/skills/the-architect/references/templates/blueprint-template.md"
     ],
     "network": [
@@ -91780,9 +91499,6 @@
       "vendor/agency-agents/integrations/openclaw/unreal-systems-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/unity-multiplayer-engineer/AGENTS.md",
       ".claude/1-agent-teams/security-agent.md"
-    ],
-    "parallelizing": [
-      ".jules/bolt.md"
     ],
     "prevention": [
       ".jules/bolt.md",
@@ -91813,28 +91529,6 @@
       "docs/04-infrastructure/MONITORING.md",
       "docs/03-agents/OPENCLAW-OBSERVABILITY.md",
       "docs/adr/ADR-019-prometheus-grafana-observability.md"
-    ],
-    "queue": [
-      ".jules/bolt.md",
-      "docs/orchestrator/REPAIR-QUEUE.md",
-      "docs/infrastructure/REDIS-QUEUE-GUIDE.md",
-      "docs/00-architecture/ORCHESTRATOR.md",
-      "docs/01-development/AGENT-PROMPT-QUEUE.md",
-      "docs/01-development/OPSLY-AGENCY-DIVISION.md",
-      "docs/04-infrastructure/MCP-ORCHESTRATOR-DEPLOYMENT.md",
-      "docs/04-infrastructure/REDIS-QUEUE-GUIDE.md",
-      "docs/04-infrastructure/OLLAMA-DEPLOYMENT.md",
-      "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
-      "docs/03-agents/LOCAL-AGENT-EXECUTION.md",
-      "docs/03-agents/PARALLEL-AGENTS-ORCHESTRATION.md",
-      "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
-      "docs/03-agents/AGENT-SERVICES-DEPLOYMENT.md",
-      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
-      "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
-      "docs/reports/REVIEW-AGENT-ANALYSIS.md",
-      "docs/blueprints/opsly-operational-blueprint/MODULES.md",
-      ".claude/1-agent-teams/orchestrator.md"
     ],
     "usage": [
       ".jules/bolt.md",
@@ -91934,7 +91628,6 @@
       "docs/tenants/peskids/DOPPLER-SETUP.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/brain/modules/admin.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/reports/PRODUCTION-HEALTH.md",
@@ -92064,7 +91757,6 @@
       "docs/tenants/peskids/OPS-RUNBOOK.md",
       "docs/tenants/peskids/WHATSAPP-CHANNEL.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/tenants/panini-lab/README.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
@@ -92077,13 +91769,11 @@
       "docs/brain/skills/opsly-api.md",
       "docs/brain/skills/api-and-interface-design.md",
       "docs/testing/PHASE-2-TESTING.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
       "docs/reports/PRODUCTION-HEALTH.md",
@@ -92233,7 +91923,6 @@
       "docs/reports/REPOSITORY-AUDIT-2026-05-27.md",
       "docs/reports/PRODUCTION-HEALTH.md",
       "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md"
     ],
     "authorization": [
@@ -93377,7 +93066,6 @@
       "docs/tenants/peskids/AUDIT-EXEMPTIONS.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/EXTRACTION-PLAN.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/SPRINT-01.md",
       "docs/tenants/peskids/design-pack/README.md",
       "docs/tenants/peskids/CLASSES-SYSTEM-SPEC.md",
@@ -93398,7 +93086,6 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/ARCHITECTURE.md",
@@ -93409,7 +93096,6 @@
       "docs/tenants/peskids/INSTAGRAM-FEED.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md",
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
@@ -93418,9 +93104,7 @@
       "docs/brain/tenants/peskids.md",
       "docs/demo/hackathon-demo.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
       "docs/reports/PRODUCTION-HEALTH.md",
@@ -93483,28 +93167,6 @@
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".claude/AGENTS-ENHANCEMENTS.md"
-    ],
-    "runtime": [
-      ".jules/sentinel.md",
-      "runtime/index.md",
-      ".cursor/goals/openclaw-agent-runtime-2026-05-14.md",
-      "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
-      "docs/design/OAR.md",
-      "docs/runbooks/KAFKA-AIRFLOW-BOOTSTRAP.md",
-      "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
-      "docs/00-architecture/conversational-runtime-roadmap.md",
-      "docs/00-architecture/opsly-agent-runtime.md",
-      "docs/00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md",
-      "docs/00-architecture/ARCHITECTURE.md",
-      "docs/01-development/LOCAL-FIRST-ARCHITECTURE.md",
-      "docs/01-development/LOCAL-RUNTIME-GUIDE.md",
-      "docs/04-infrastructure/PRODUCTION-STATUS-2026-05-15.md",
-      "docs/adr/ADR-029-infrastructure-layers-shared-vs-tenant.md",
-      "docs/tenants/peskids/CHATBOX-N8N.md",
-      "docs/tenants/production/TENANT-PRODUCTION-BASELINE.md",
-      "docs/brain/workflows/local-agents.md",
-      "docs/demo/hackathon-demo.md",
-      "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md"
     ],
     "sentinel": [
       ".jules/sentinel.md",
@@ -94492,8 +94154,6 @@
       "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/adr/ADR-029-mcp-orchestration.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       "docs/reports/session-summary-2026-05-21.md",
@@ -94762,7 +94422,6 @@
       "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/SPRINT-01.md",
       "docs/tenants/peskids/FORMS-SPEC.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-HANDOFF-FOR-VPS-EXECUTION.md",
@@ -95000,6 +94659,27 @@
       "docs/index.md",
       ".claude/CLAUDE.md"
     ],
+    "runtime": [
+      "runtime/index.md",
+      ".cursor/goals/openclaw-agent-runtime-2026-05-14.md",
+      "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
+      "docs/design/OAR.md",
+      "docs/runbooks/KAFKA-AIRFLOW-BOOTSTRAP.md",
+      "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
+      "docs/00-architecture/conversational-runtime-roadmap.md",
+      "docs/00-architecture/opsly-agent-runtime.md",
+      "docs/00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md",
+      "docs/00-architecture/ARCHITECTURE.md",
+      "docs/01-development/LOCAL-FIRST-ARCHITECTURE.md",
+      "docs/01-development/LOCAL-RUNTIME-GUIDE.md",
+      "docs/04-infrastructure/PRODUCTION-STATUS-2026-05-15.md",
+      "docs/adr/ADR-029-infrastructure-layers-shared-vs-tenant.md",
+      "docs/tenants/peskids/CHATBOX-N8N.md",
+      "docs/tenants/production/TENANT-PRODUCTION-BASELINE.md",
+      "docs/brain/workflows/local-agents.md",
+      "docs/demo/hackathon-demo.md",
+      "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md"
+    ],
     "chain": [
       "packages/skills/API.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/owasp-top-10.md",
@@ -95092,7 +94772,6 @@
       "docs/02-tools/OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
       "docs/02-tools/NOTEBOOKLM-SETUP.md",
       "docs/adr/ADR-025-notebooklm-knowledge-layer.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       ".claude/AGENTS-ENHANCEMENTS.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/state-management.md"
     ],
@@ -96795,7 +96474,6 @@
       "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
       "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/SPRINT-01.md",
       "docs/tenants/peskids/OPS-RUNBOOK.md",
       "docs/tenants/peskids/WHATSAPP-CHANNEL.md",
@@ -97310,7 +96988,6 @@
       "docs/03-agents/SUPER-ORCHESTRATOR.md",
       "docs/adr/ADR-006-api-testing-vitest.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/cyber-neo/references/lang-javascript.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
     ],
@@ -97984,15 +97661,13 @@
       "docs/tenants/peskids/QUICK-START-PRODUCTION.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/GHL-WORKFLOW-TEMPLATES.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/testing/PHASE1-TEST-PLAN.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
-      "docs/artifacts/provisioning/peskids-operator-report.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
+      "docs/artifacts/provisioning/peskids-operator-report.md"
     ],
     "verification": [
       "packages/skills/user/opsly-simplify/SKILL.md",
@@ -99067,11 +98742,9 @@
       "docs/02-tools/NOTEBOOKLM-INTEGRATION.md",
       "docs/adr/ADR-006-api-testing-vitest.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/GHL-WORKFLOWS.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
@@ -99082,7 +98755,6 @@
       "docs/testing/QA-TESTING-BRIEF.md",
       "docs/testing/PHASE-2-TESTING.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/testing-patterns.md"
     ],
@@ -99114,7 +98786,6 @@
       "docs/03-agents/AGENT-BRAIN-CONTRACT.md",
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md",
       "docs/tenants/peskids/DEMO-SCRIPT.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "docs/reports/AUTONOMY-PHASE1-E2E-EVIDENCE.md"
@@ -99364,7 +99035,6 @@
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/blueprints/opsly-operational-blueprint/TEAM-FACING-EXPLANATION.md",
       "docs/blueprints/opsly-operational-blueprint/TENANT-INCUBATION.md",
       "docs/blueprints/opsly-operational-blueprint/MODULES.md",
@@ -100524,7 +100194,6 @@
       "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
       "docs/adr/ADR-032-scripts-organization.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
     ],
     "stsforcehttps": [
@@ -100608,7 +100277,6 @@
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
       "docs/adr/ADR-020-orchestrator-worker-separation.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/OPS-RUNBOOK.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-HANDOFF-FOR-VPS-EXECUTION.md",
@@ -102706,7 +102374,6 @@
       "docs/04-infrastructure/REDIS-QUEUE-GUIDE.md",
       "docs/04-infrastructure/OLLAMA-DEPLOYMENT.md",
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
       "docs/demo/hackathon-demo.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
@@ -103100,7 +102767,6 @@
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
       "docs/brain/skills/opsly-n8n-automation.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
       "docs/reports/PRODUCTION-HEALTH.md",
@@ -103128,9 +102794,7 @@
     ],
     "scopes": [
       "packages/skills/user/opsly-mcp/SKILL.md",
-      "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md"
+      "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md"
     ],
     "tool": [
       "packages/skills/user/opsly-mcp/SKILL.md",
@@ -103216,8 +102880,7 @@
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/blueprints/opsly-operational-blueprint/MODULES.md",
       "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md",
-      "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
+      "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md"
     ],
     "auto": [
       "packages/skills/user/opsly-feedback-ml/SKILL.md",
@@ -103254,7 +102917,6 @@
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/testing/PHASE-2-TESTING.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
     ],
@@ -103859,7 +103521,6 @@
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
@@ -103867,8 +103528,6 @@
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
       "docs/brain/skills/README.md",
       "docs/testing/QA-TESTING-BRIEF.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       ".claude/AGENTS-ENHANCEMENTS.md",
       ".agents/skills/the-architect/references/CLAUDE.md",
@@ -104103,7 +103762,6 @@
       "docs/tenants/peskids/WORKFLOWS.md",
       "docs/tenants/peskids/CHATBOX-N8N.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/OPS-RUNBOOK.md",
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
       "docs/tenants/peskids/GHL-WORKFLOWS.md",
@@ -106136,7 +105794,6 @@
       "docs/tenants/peskids/GHL-CONSULTING-HANDOFF.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-HANDOFF-FOR-VPS-EXECUTION.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
@@ -106496,8 +106153,7 @@
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/peskids/SPRINT-01.md",
       "docs/tenants/peskids/WHATSAPP-CHANNEL.md",
-      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
-      "docs/reports/E2E-TESTING-PLAN.md"
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "tecnica": [
       "packages/skills/user/opsly-architect-senior/SKILL.md",
@@ -107389,7 +107045,6 @@
       "docs/tenants/peskids/SALES-FUNNEL-VALIDATION.md",
       "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/SPRINT-01.md",
       "docs/tenants/peskids/FORMS-SPEC.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
@@ -107400,7 +107055,6 @@
       "docs/testing/QA-TESTING-BRIEF.md",
       "docs/testing/PHASE-2-TESTING.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/VALIDATION-REPORT-2026-04-12.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
@@ -107885,7 +107539,6 @@
       "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md",
       "docs/tenants/peskids/QUICK-START-PRODUCTION.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/WHATSAPP-CHANNEL.md",
       "docs/tenants/peskids/GHL-WORKFLOWS.md",
       "docs/tenants/peskids/GHL-WORKFLOW-TEMPLATES.md",
@@ -108397,8 +108050,7 @@
       "docs/03-agents/AGENTS-AUTONOMOUS-RUNBOOK.md",
       "docs/03-agents/LOCAL-AGENT-EXECUTION.md",
       "docs/tenants/peskids/OWNER-RUNBOOK.md",
-      "docs/tenants/peskids/OPS-RUNBOOK.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
+      "docs/tenants/peskids/OPS-RUNBOOK.md"
     ],
     "service": [
       "packages/skills/user/opsly-quantum/templates/runbook.md",
@@ -108706,7 +108358,6 @@
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/demo/hackathon-demo.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md"
     ],
     "vitest": [
@@ -109484,7 +109135,6 @@
       "docs/01-development/SEMANA-6-INFORME.md",
       "docs/01-development/SEMANA-6-PLAN.md",
       "docs/adr/ADR-039-sales-channels-email-whatsapp.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/brain/skills/shipping-and-launch.md"
     ],
     "migration": [
@@ -110527,7 +110177,6 @@
       "docs/testing/PHASE-2-TESTING.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/SESSION-SUMMARY-2026-05-08.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/database-patterns.md",
       ".agents/skills/the-architect/references/questions/phase-3-confirmation.md"
     ],
@@ -110669,8 +110318,6 @@
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/04-infrastructure/GOOGLE-CLOUD-SETUP.md",
       "docs/04-infrastructure/DOPPLER-CI-RUNBOOK.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md"
     ],
     "alert": [
@@ -110687,8 +110334,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
-      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
-      "docs/reports/E2E-TESTING-PLAN.md"
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "apis": [
       "packages/skills/user/opsly-google-cloud/SKILL.md",
@@ -111036,7 +110682,6 @@
       "docs/adr/ADR-032-scripts-organization.md",
       "docs/adr/ADR-031-experimental-consolidation.md",
       "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       ".agents/skills/cyber-neo/references/cwe-top-25.md"
     ],
     "template": [
@@ -111428,7 +111073,6 @@
       "docs/governance/internal/INCIDENT-RESPONSE-POLICY.md",
       "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md",
       "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/GHL-WORKFLOW-TEMPLATES.md",
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
@@ -113653,13 +113297,11 @@
       "docs/02-tools/TOKEN-SYSTEM-GUIDE.md",
       "docs/tenants/peskids/INVITATION-FLOW-VERIFICATION.md",
       "docs/tenants/peskids/CLASSES-SYSTEM-SPEC.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
       "docs/brain/architecture/system-map.md",
       "docs/demo/hackathon-demo.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
       ".agents/skills/the-architect/references/templates/claude-md-template.md",
@@ -115419,12 +115061,10 @@
       "docs/adr/ADR-043-supplement/README.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-HANDOFF-FOR-VPS-EXECUTION.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/SESSION-SUMMARY-2026-05-08.md"
     ],
     "directory": [
@@ -115633,7 +115273,6 @@
       "vendor/agency-agents/integrations/openclaw/backend-architect/AGENTS.md",
       "docs/04-infrastructure/SECURITY_CHECKLIST.md",
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/testing/QA-TESTING-BRIEF.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/api-backend.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/deployment-patterns.md"
@@ -115710,7 +115349,6 @@
       "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
       "docs/01-development/QA-REVIEW-COMPLETE.md",
       "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
       "docs/testing/PHASE-2-TESTING.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
@@ -117435,7 +117073,6 @@
       "docs/adr/ADR-043-supplement/README.md",
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/brain/skills/documentation-and-adrs.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
@@ -117517,13 +117154,11 @@
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       "docs/reports/session-summary-2026-05-21.md",
       "docs/reports/REAL-PROMPT-EXECUTION-SUCCESS.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/api-design-patterns.md"
     ],
     "write": [
@@ -117736,7 +117371,6 @@
       "docs/03-agents/AGENT-STARTUP-PROMPT.md",
       "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/internal-tool.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/api-backend.md",
@@ -117834,7 +117468,6 @@
       "docs/testing/PHASE1-TEST-PLAN.md",
       "docs/reports/ACG-STRATEGY-30-DAYS.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/audit-2026-04-07.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       ".claude/1-agent-teams/orchestrator.md"
@@ -118903,7 +118536,6 @@
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md",
       "docs/blueprints/opsly-operational-blueprint/MODULES.md"
     ],
     "incrementally": [
@@ -119899,7 +119531,6 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/cwe-top-25.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/lang-python.md",
       "docs/tenants/peskids/QUICK-START-PRODUCTION.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/cyber-neo/references/cwe-top-25.md",
       ".agents/skills/cyber-neo/references/lang-python.md"
     ],
@@ -120045,8 +119676,7 @@
       "docs/runbooks/FIX-TYPECHECK-BLOCKER.md",
       "docs/01-development/CLIENT-ONBOARDING-PLAYBOOK.md",
       "docs/04-infrastructure/MCP-ORCHESTRATOR-DEPLOYMENT.md",
-      "docs/adr/ADR-028-agent-api-routing.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md"
+      "docs/adr/ADR-028-agent-api-routing.md"
     ],
     "scripting": [
       "packages/skills/vendor/agent-skills/security-and-hardening/SKILL.md",
@@ -120124,7 +119754,6 @@
       "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md",
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/SESSION-SUMMARY-2026-05-08.md"
     ],
     "top": [
@@ -121097,7 +120726,6 @@
       "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md"
     ],
     "manage": [
@@ -121557,7 +121185,6 @@
       "docs/adr/ADR-029-infrastructure-layers-shared-vs-tenant.md",
       "docs/tenants/peskids/QUICK-START-PRODUCTION.md",
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
@@ -121795,14 +121422,11 @@
       "docs/02-tools/MCP-SERVERS.md",
       "docs/02-tools/NOTEBOOKLM-INTEGRATION.md",
       "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".agents/skills/cyber-neo/references/supply-chain.md",
       ".agents/UNIFIED-AGENT-ARCHITECTURE.md"
@@ -121879,11 +121503,9 @@
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
       "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
       "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/onboarding-prompts/DEPLOYMENT-VALIDATION.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
@@ -121925,7 +121547,6 @@
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/testing/QA-TESTING-BRIEF.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/AUTONOMY-PHASE1-E2E-EVIDENCE.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
@@ -121974,8 +121595,7 @@
       "docs/01-development/LAYERS-SANDBOX-QA-PROD.md",
       "docs/03-agents/SPRINT-CURSOR-PROMPTS.md",
       "docs/adr/ADR-046-family-email-invite-access.md",
-      "docs/adr/ADR-023-approval-gate-phase1.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
+      "docs/adr/ADR-023-approval-gate-phase1.md"
     ],
     "pipeline": [
       "packages/skills/vendor/agent-skills/ci-cd-and-automation/SKILL.md",
@@ -122110,7 +121730,6 @@
       "docs/00-architecture/ARCHITECTURE.md",
       "docs/01-development/CODE-SNAPSHOTS.md",
       "docs/blueprints/opsly-operational-blueprint/COMMERCIAL-PACKAGES.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/cyber-neo/references/iac-docker.md"
     ],
     "paquetes": [
@@ -122211,7 +121830,6 @@
       "docs/tenants/peskids/DOPPLER-SETUP.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/artifacts/provisioning/provision-report-intcloudsysops.md"
     ],
     "inventario": [
@@ -122600,7 +122218,6 @@
       "docs/adr/ADR-016-legalvial-multitenant-model.md",
       "docs/tenants/peskids/README.md",
       "docs/tenants/legalvial/LEGALVIAL-ARCHITECTURE-DECISION.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md"
     ],
     "texto": [
@@ -123433,7 +123050,6 @@
       "docs/tenants/peskids/EVENT-CONTRACT.md",
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
       "docs/testing/PHASE-2-TESTING.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
       ".agents/skills/the-architect/references/templates/claude-md-template.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/mobile-app.md",
@@ -124238,7 +123854,6 @@
       "docs/04-infrastructure/DECEPTICON-WORKER.md",
       "docs/03-agents/AGENTS-GLOBAL-CONTEXT.md",
       "docs/02-tools/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md",
       ".claude/agents/hive-mind/worker-specialist.md"
     ],
     "pegar": [
@@ -124336,7 +123951,6 @@
       "docs/04-infrastructure/MACOS-LOCAL-AI-AUTOMATION.md",
       "docs/03-agents/AGENTS-GUIDE.md",
       "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/demo/hackathon-demo.md",
@@ -124523,7 +124137,6 @@
       "docs/reports/SESSION-SUMMARY-2026-05-08.md",
       "docs/reports/session-summary-2026-05-21.md",
       "docs/artifacts/provisioning/peskids-operator-report.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/cyber-neo/references/web-security-patterns.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/api-design-patterns.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/frontend-stacks.md",
@@ -124580,7 +124193,6 @@
       "vendor/agency-agents/integrations/opencode/agents/language-translator.md",
       "vendor/agency-agents/integrations/openclaw/executive-summary-generator/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/language-translator/AGENTS.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "tree": [
@@ -124677,7 +124289,6 @@
       "docs/adr/ADR-046-family-email-invite-access.md",
       "docs/tenants/peskids/SALES-FUNNEL-VALIDATION.md",
       "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
@@ -124741,7 +124352,6 @@
       "docs/tenants/peskids/QUICK-START-PRODUCTION.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/SPRINT-01.md",
       "docs/tenants/peskids/FORMS-SPEC.md",
       "docs/tenants/peskids/GHL-WORKFLOWS.md",
@@ -124751,13 +124361,11 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/DEMO-SCRIPT.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
@@ -124792,8 +124400,7 @@
       "docs/03-agents/SYRA-OPENCLAW-INTEGRATION.md",
       "docs/03-agents/MULTI-AGENT-ARCHITECTURE.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
-      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md"
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "price": [
       ".cursor/prompts/local-services-sales-closer.md",
@@ -125052,8 +124659,7 @@
       "docs/02-tools/NOTION-MCP-SERVER.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
-      "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
+      "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md"
     ],
     "dashboard": [
       ".cursor/prompts/local-services-mvp.md",
@@ -125135,17 +124741,14 @@
       "docs/tenants/peskids/DOPPLER-SETUP.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/DEMO-SCRIPT.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/brain/dashboard.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PRODUCTION-HEALTH.md",
       "docs/blueprints/opsly-operational-blueprint/MODULES.md",
       "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md",
@@ -125171,8 +124774,7 @@
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md",
       "docs/02-tools/NOTEBOOKLM-SETUP.md",
       "docs/adr/ADR-034-ci-hygiene.md",
-      "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
+      "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md"
     ],
     "experience": [
       ".cursor/prompts/local-services-mvp.md",
@@ -125442,7 +125044,6 @@
       "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-HANDOFF-FOR-VPS-EXECUTION.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       ".agents/IMPLEMENTATION-CHECKLIST.md"
     ],
     "executive": [
@@ -125564,7 +125165,6 @@
       "docs/tenants/peskids/BLUEPRINT-MAPPING.md",
       "docs/tenants/peskids/INVITATION-FLOW-VERIFICATION.md",
       "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/cyber-neo/references/error-handling-patterns.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/api-backend.md"
     ],
@@ -125742,7 +125342,6 @@
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
@@ -125750,7 +125349,6 @@
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
       "docs/reports/SESSION-SUMMARY-2026-05-08.md",
       "docs/reports/session-summary-2026-05-21.md",
@@ -127075,8 +126673,7 @@
     "inicio": [
       ".github/copilot-instructions.md",
       "docs/03-agents/AGENTS-GLOBAL-CONTEXT.md",
-      "docs/02-tools/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
+      "docs/02-tools/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md"
     ],
     "prs": [
       ".github/copilot-instructions.md",
@@ -128011,7 +127608,6 @@
       "docs/01-development/SEMANA-2-INFORME.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       ".agents/skills/cyber-neo/references/iac-docker.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/auth-patterns.md"
@@ -128030,7 +127626,6 @@
       "docs/03-agents/FIRST-OPENCLAW-AGENTS-MAC2011.md",
       "docs/n8n-workflows/crm/README.md",
       "docs/tenants/peskids/N8N-SETUP.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md",
       "docs/reports/ACG-STRATEGY-30-DAYS.md"
     ],
     "requiere": [
@@ -129002,7 +128597,6 @@
       "vendor/agency-agents/integrations/openclaw/game-audio-engineer/SOUL.md",
       "docs/01-development/QA-REVIEW-COMPLETE.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-HANDOFF-FOR-VPS-EXECUTION.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/blueprints/opsly-operational-blueprint/CLIENT-INCUBATION-TEMPLATE.md"
     ],
     "permissions": [
@@ -129031,7 +128625,6 @@
       "docs/03-agents/AGENTS-GUIDE.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md"
     ],
     "meta": [
@@ -129136,7 +128729,6 @@
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
@@ -129893,7 +129485,6 @@
       "docs/01-development/PHASE-4-OBSERVABILITY-BILLING.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       ".agents/skills/cyber-neo/references/secrets-patterns.md"
     ],
     "strings": [
@@ -130670,7 +130261,6 @@
       "docs/06-multi-agent/PARALLEL-EXECUTION-ARCHITECTURE.md",
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md",
       "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/cyber-neo/references/report-template.md"
     ],
     "informational": [
@@ -130706,7 +130296,6 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/report-template.md",
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
       "docs/01-development/TECHNICAL-DEBT.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/cyber-neo/references/report-template.md"
     ],
     "approach": [
@@ -130828,7 +130417,6 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/supply-chain.md",
       "tools/agent-packs/vendor/the-architect/knowledge/stack-compatibility.md",
       "lib/voice-messaging/GOVERNANCE.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/cyber-neo/references/supply-chain.md",
       ".agents/skills/the-architect/references/knowledge/stack-compatibility.md"
     ],
@@ -131164,7 +130752,6 @@
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md",
       ".agents/skills/cyber-neo/SKILL.md",
       ".agents/skills/the-architect/references/questions/phase-3-confirmation.md",
       ".agents/skills/the-architect/references/questions/phase-1-discovery.md"
@@ -131831,7 +131418,6 @@
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/mobile-app.md"
     ],
     "eas": [
@@ -132028,7 +131614,6 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
@@ -132311,7 +131896,6 @@
       "vendor/agency-agents/integrations/openclaw/xr-immersive-developer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/technical-artist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/jira-workflow-steward/AGENTS.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/api-design-patterns.md"
     ],
     "block": [
@@ -132883,7 +132467,6 @@
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/database-patterns.md"
     ],
     "soft": [
@@ -133530,16 +133113,12 @@
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
       "docs/tenants/peskids/QUICK-START-PRODUCTION.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md",
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "docs/testing/PHASE1-TEST-PLAN.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       ".agents/IMPLEMENTATION-CHECKLIST.md"
     ],
     "minute": [
@@ -134150,8 +133729,7 @@
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
       "docs/01-development/LIBRARY-MODULES.md",
       "docs/brain/modules/README.md",
-      "docs/blueprints/opsly-operational-blueprint/MODULES.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
+      "docs/blueprints/opsly-operational-blueprint/MODULES.md"
     ],
     "objectives": [
       "lib/evaluation/GOVERNANCE.md",
@@ -134520,8 +134098,7 @@
       "vendor/agency-agents/integrations/opencode/agents/devops-automator.md",
       "vendor/agency-agents/integrations/openclaw/devops-automator/AGENTS.md",
       "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
-      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
-      "docs/reports/E2E-TESTING-PLAN.md"
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "alerts": [
       "lib/observability/GOVERNANCE.md",
@@ -135010,7 +134587,6 @@
       "docs/tenants/peskids/QUICK-START-PRODUCTION.md",
       "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/SPRINT-01.md",
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-HANDOFF-FOR-VPS-EXECUTION.md",
@@ -135642,7 +135218,6 @@
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
       "docs/adr/ADR-023-approval-gate-phase1.md",
       "docs/tenants/peskids/README.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/DOPPLER-SETUP.md",
       "docs/tenants/peskids/WHATSAPP-CHANNEL.md",
       "docs/tenants/peskids/MVP-PLAN.md",
@@ -135903,14 +135478,12 @@
       "apps/icso/README.md",
       "docs/growth/AGENCY-PILOT-OUTREACH.md",
       "docs/runbooks/dev.md",
-      "docs/01-development/PHASE-2-DEPLOYMENT.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
+      "docs/01-development/PHASE-2-DEPLOYMENT.md"
     ],
     "icso": [
       "apps/icso/README.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
@@ -135959,8 +135532,7 @@
       "vendor/agency-agents/integrations/openclaw/mcp-builder/AGENTS.md",
       "docs/design/DESIGN_REFERENCES.md",
       "docs/02-tools/OBSIDIAN-IDE-SETUP.md",
-      "docs/tenants/peskids/TEMPLATE-STATUS.md",
-      "docs/reports/E2E-TESTING-PLAN.md"
+      "docs/tenants/peskids/TEMPLATE-STATUS.md"
     ],
     "transporte": [
       "apps/mcp/README.md",
@@ -139162,7 +138734,6 @@
       "vendor/agency-agents/integrations/openclaw/private-domain-operator/IDENTITY.md",
       "vendor/agency-agents/integrations/openclaw/private-domain-operator/AGENTS.md",
       "docs/runbooks/COMPUTER-CONTROL-OPERATOR-MODE.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md",
       "docs/artifacts/provisioning/peskids-operator-report.md"
     ],
     "comprehensive": [
@@ -142132,8 +141703,7 @@
       "vendor/agency-agents/integrations/openclaw/loan-officer-assistant/AGENTS.md",
       "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB683486-SEED419215-20180924-00000.md",
       "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB1177123-SEED419213-20200602-00000.md",
-      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
-      "docs/reports/E2E-TESTING-PLAN.md"
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md"
     ],
     "readiness": [
       "vendor/agency-agents/integrations/qwen/agents/test-results-analyzer.md",
@@ -144047,8 +143617,7 @@
       "vendor/agency-agents/integrations/openclaw/sre-site-reliability-engineer/IDENTITY.md",
       "vendor/agency-agents/integrations/openclaw/sre-site-reliability-engineer/AGENTS.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
-      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
-      "docs/reports/E2E-TESTING-PLAN.md"
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "spark": [
       "vendor/agency-agents/integrations/qwen/agents/data-engineer.md",
@@ -145528,7 +145097,6 @@
       "docs/04-infrastructure/PRODUCTION-STATUS-2026-05-15.md",
       "docs/tenants/peskids/SALES-FUNNEL-VALIDATION.md",
       "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md"
     ],
     "connect": [
@@ -145951,7 +145519,6 @@
       "vendor/agency-agents/integrations/openclaw/bilibili-content-strategist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/developer-advocate/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/outbound-strategist/AGENTS.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md"
     ],
     "evolving": [
@@ -147893,8 +147460,7 @@
       "vendor/agency-agents/integrations/openclaw/blockchain-security-auditor/SOUL.md",
       "docs/runbooks/OPERATIONS-HANDBOOK.md",
       "docs/adr/ADR-034-ci-hygiene.md",
-      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "upgrade": [
       "vendor/agency-agents/integrations/qwen/agents/incident-response-commander.md",
@@ -148156,7 +147722,6 @@
       "vendor/agency-agents/integrations/antigravity/agency-carousel-growth-engine/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/carousel-growth-engine.md",
       "vendor/agency-agents/integrations/openclaw/carousel-growth-engine/AGENTS.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
       "docs/reports/PRODUCTION-HEALTH.md"
@@ -148822,7 +148387,6 @@
       "vendor/agency-agents/integrations/openclaw/accounts-payable-agent/AGENTS.md",
       "docs/governance/internal/EMPLOYEE-LIFECYCLE-POLICY.md",
       "docs/governance/internal/ACCESS-CONTROL-POLICY.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md"
     ],
     "autonomously": [
@@ -150023,8 +149587,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-rapid-prototyper/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/rapid-prototyper.md",
       "vendor/agency-agents/integrations/openclaw/rapid-prototyper/AGENTS.md",
-      "docs/01-development/OBSERVABILITY.md",
-      "docs/reports/E2E-TESTING-PLAN.md"
+      "docs/01-development/OBSERVABILITY.md"
     ],
     "iteration": [
       "vendor/agency-agents/integrations/qwen/agents/rapid-prototyper.md",
@@ -150312,14 +149875,12 @@
       "docs/tenants/peskids/WHATSAPP-CHANNEL.md",
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-HANDOFF-FOR-VPS-EXECUTION.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
       "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
       "docs/artifacts/provisioning/peskids-operator-report.md",
       ".claude/3-slash-commands/deploy.md"
@@ -152146,7 +151707,6 @@
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/artifacts/provisioning/provision-report-peskids.md",
       "docs/artifacts/provisioning/provision-report-intcloudsysops.md"
     ],
@@ -154499,8 +154059,7 @@
       "docs/ops/issue-bankruptcy-2026-05-03/epics-breakdown.md",
       "docs/governance/DATA-CLASSIFICATION.md",
       "docs/governance/SUB-PROCESSORS.md",
-      "docs/governance/internal/VENDOR-MANAGEMENT-POLICY.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md"
+      "docs/governance/internal/VENDOR-MANAGEMENT-POLICY.md"
     ],
     "suggested": [
       "docs/ops/issue-bankruptcy-2026-05-03/epics-breakdown.md",
@@ -154512,7 +154071,6 @@
       "docs/01-development/PHASE-5-ADVANCED-FEATURES.md",
       "docs/adr/ADR-021-predictive-bi-scalability.md",
       "docs/adr/ADR-045-tenant-analytics-batch-python-pandas-arrow.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md"
     ],
     "buckets": [
@@ -154602,7 +154160,6 @@
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/EVENT-CONTRACT.md",
       "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/artifacts/provisioning/peskids-operator-report.md"
     ],
@@ -154733,6 +154290,26 @@
     "implemente": [
       "docs/orchestrator/REPAIR-QUEUE.md"
     ],
+    "queue": [
+      "docs/orchestrator/REPAIR-QUEUE.md",
+      "docs/infrastructure/REDIS-QUEUE-GUIDE.md",
+      "docs/00-architecture/ORCHESTRATOR.md",
+      "docs/01-development/AGENT-PROMPT-QUEUE.md",
+      "docs/01-development/OPSLY-AGENCY-DIVISION.md",
+      "docs/04-infrastructure/MCP-ORCHESTRATOR-DEPLOYMENT.md",
+      "docs/04-infrastructure/REDIS-QUEUE-GUIDE.md",
+      "docs/04-infrastructure/OLLAMA-DEPLOYMENT.md",
+      "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
+      "docs/03-agents/LOCAL-AGENT-EXECUTION.md",
+      "docs/03-agents/PARALLEL-AGENTS-ORCHESTRATION.md",
+      "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
+      "docs/03-agents/AGENT-SERVICES-DEPLOYMENT.md",
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
+      "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
+      "docs/reports/REVIEW-AGENT-ANALYSIS.md",
+      "docs/blueprints/opsly-operational-blueprint/MODULES.md",
+      ".claude/1-agent-teams/orchestrator.md"
+    ],
     "repair": [
       "docs/orchestrator/REPAIR-QUEUE.md"
     ],
@@ -154833,8 +154410,7 @@
     ],
     "dia": [
       "docs/emails/tenant-welcome-email.md",
-      "docs/01-development/LOCALRANK-TESTER-GUIDE.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
+      "docs/01-development/LOCALRANK-TESTER-GUIDE.md"
     ],
     "empezar": [
       "docs/emails/tenant-welcome-email.md",
@@ -155276,7 +154852,6 @@
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "makers": [
@@ -155576,8 +155151,7 @@
       "docs/04-infrastructure/VPS-PROVISIONING-STANDARD.md",
       "docs/artifacts/provisioning/provision-report-peskids.md",
       "docs/artifacts/provisioning/provision-report-intcloudsysops.md",
-      "docs/blueprints/opsly-operational-blueprint/CLIENT-INCUBATION-TEMPLATE.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
+      "docs/blueprints/opsly-operational-blueprint/CLIENT-INCUBATION-TEMPLATE.md"
     ],
     "canonicas": [
       "docs/design/AGENT-ORCHESTRATION-INDEX.md",
@@ -155946,8 +155520,7 @@
       "docs/obsidian/sources/archive/2026-04-21/vics-basement-26.md"
     ],
     "00am": [
-      "docs/obsidian/sources/archive/2026-04-21/SFGTV_20181210_150000_Government_Access_Programming.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
+      "docs/obsidian/sources/archive/2026-04-21/SFGTV_20181210_150000_Government_Access_Programming.md"
     ],
     "01am": [
       "docs/obsidian/sources/archive/2026-04-21/SFGTV_20181210_150000_Government_Access_Programming.md"
@@ -156570,8 +156143,7 @@
       "docs/04-infrastructure/WORKER-SERVICE-MAC2011.md",
       "docs/adr/ADR-025-notebooklm-knowledge-layer.md",
       "docs/tenants/peskids/AUDIT-EXEMPTIONS.md",
-      "docs/reports/CYBER-NEO-OPSLY-2026-05-21.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
+      "docs/reports/CYBER-NEO-OPSLY-2026-05-21.md"
     ],
     "still": [
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md"
@@ -156598,8 +156170,7 @@
       "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/01-development/GIT-WORKFLOW.md",
       "docs/01-development/OPS-CLEANUP-PROCEDURES.md",
-      "docs/01-development/DISK-USAGE-REPORT.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
+      "docs/01-development/DISK-USAGE-REPORT.md"
     ],
     "scan": [
       "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
@@ -156803,8 +156374,7 @@
       "docs/01-development/AUTO-PUSH-WATCHER.md"
     ],
     "confirmaciones": [
-      "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
+      "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md"
     ],
     "despliegue": [
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
@@ -156839,8 +156409,7 @@
       "docs/01-development/SPRINT-TRACKER.md",
       "docs/01-development/SPRINT-PLANNING-SETUP.md",
       "docs/01-development/LOCAL-MAC-IMPROVEMENT-PLAN.md",
-      "docs/03-agents/CURSOR-DAILY-CHECKLIST.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
+      "docs/03-agents/CURSOR-DAILY-CHECKLIST.md"
     ],
     "abrir": [
       "docs/runbooks/AUTONOMOUS-PRODUCTION-GO-LIVE-CHECKLIST.md",
@@ -157024,8 +156593,7 @@
     "durante": [
       "docs/runbooks/CORTEX-OBSERVATION-WINDOW.md",
       "docs/03-agents/CURSOR-DAILY-CHECKLIST.md",
-      "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
+      "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md"
     ],
     "hora": [
       "docs/runbooks/CORTEX-OBSERVATION-WINDOW.md"
@@ -157332,8 +156900,7 @@
       "docs/00-architecture/POLICY-AI-LOCAL-FIRST.md"
     ],
     "clase": [
-      "docs/00-architecture/REDIS_NAMESPACE_ISOLATION.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
+      "docs/00-architecture/REDIS_NAMESPACE_ISOLATION.md"
     ],
     "ctx": [
       "docs/00-architecture/REDIS_NAMESPACE_ISOLATION.md"
@@ -157432,6 +156999,18 @@
     "billy": [
       "docs/00-architecture/ORCHESTRATOR.md",
       "docs/01-development/PHASE-5-2-3-4-COMPLETE-SPECS.md"
+    ],
+    "bullmq": [
+      "docs/00-architecture/ORCHESTRATOR.md",
+      "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
+      "docs/01-development/OPSLY-AGENCY-DIVISION.md",
+      "docs/01-development/.openclaw.md",
+      "docs/04-infrastructure/WORKER-TESTING.md",
+      "docs/04-infrastructure/WORKER-FLOWS.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md",
+      ".claude/1-agent-teams/orchestrator.md"
     ],
     "cola": [
       "docs/00-architecture/ORCHESTRATOR.md",
@@ -157707,7 +157286,6 @@
       "docs/01-development/CLIENT-ONBOARDING-PLAYBOOK.md",
       "docs/tenants/peskids/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md"
     ],
     "override": [
@@ -157721,8 +157299,7 @@
     ],
     "dispatch": [
       "docs/01-development/N8N-SETUP.md",
-      "docs/demo/hackathon-demo.md",
-      "docs/reports/E2E-TESTING-PLAN.md"
+      "docs/demo/hackathon-demo.md"
     ],
     "menciones": [
       "docs/01-development/N8N-SETUP.md"
@@ -158060,19 +157637,15 @@
     "ghl": [
       "docs/01-development/CLIENT-ONBOARDING-PLAYBOOK.md",
       "docs/tenants/peskids/GHL-CONSULTING-HANDOFF.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/GHL-WORKFLOWS.md",
       "docs/tenants/peskids/GHL-WORKFLOW-TEMPLATES.md",
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
       "docs/artifacts/provisioning/provision-report-peskids.md",
@@ -158092,8 +157665,7 @@
     ],
     "partially": [
       "docs/01-development/CLIENT-ONBOARDING-PLAYBOOK.md",
-      "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md"
+      "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md"
     ],
     "repeatable": [
       "docs/01-development/CLIENT-ONBOARDING-PLAYBOOK.md"
@@ -159771,8 +159343,6 @@
     "today": [
       "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
-      "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md"
     ],
@@ -160058,8 +159628,7 @@
       "docs/03-agents/SPRINT-CURSOR-PROMPTS.md"
     ],
     "viernes": [
-      "docs/03-agents/SPRINT-CURSOR-PROMPTS.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
+      "docs/03-agents/SPRINT-CURSOR-PROMPTS.md"
     ],
     "binario": [
       "docs/03-agents/AGENTS-AUTONOMOUS-RUNBOOK.md"
@@ -160443,12 +160012,10 @@
       "docs/02-tools/CURSOR-MCP-SETUP.md"
     ],
     "dead": [
-      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
-      "docs/reports/E2E-TESTING-PLAN.md"
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md"
     ],
     "letter": [
-      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
-      "docs/reports/E2E-TESTING-PLAN.md"
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md"
     ],
     "044": [
       "docs/adr/ADR-044-core-first-tenant-slug-extraction.md"
@@ -161128,8 +160695,7 @@
     "clases": [
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
       "docs/tenants/peskids/README.md",
-      "docs/tenants/peskids/CLASSES-SYSTEM-SPEC.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
+      "docs/tenants/peskids/CLASSES-SYSTEM-SPEC.md"
     ],
     "classes": [
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
@@ -161183,7 +160749,6 @@
     "sms": [
       "docs/tenants/peskids/SALES-FUNNEL-VALIDATION.md",
       "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/GHL-WORKFLOWS.md",
       "docs/tenants/peskids/GHL-WORKFLOW-TEMPLATES.md",
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
@@ -161195,7 +160760,6 @@
     "trial": [
       "docs/tenants/peskids/SALES-FUNNEL-VALIDATION.md",
       "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/tenants/peskids/GHL-WORKFLOWS.md",
       "docs/tenants/peskids/GHL-WORKFLOW-TEMPLATES.md",
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
@@ -161258,7 +160822,6 @@
     "created": [
       "docs/tenants/peskids/EVENT-CONTRACT.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
       "docs/reports/session-summary-2026-05-21.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md"
     ],
@@ -161329,8 +160892,7 @@
       "docs/tenants/peskids/SPRINT-01.md"
     ],
     "exemptions": [
-      "docs/tenants/peskids/AUDIT-EXEMPTIONS.md",
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
+      "docs/tenants/peskids/AUDIT-EXEMPTIONS.md"
     ],
     "manually": [
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md"
@@ -161345,18 +160907,6 @@
     ],
     "salientes": [
       "docs/tenants/peskids/EXTRACTION-PLAN.md"
-    ],
-    "3pm": [
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md"
-    ],
-    "4pm": [
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md"
-    ],
-    "5pm": [
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md"
-    ],
-    "scheduled": [
-      "docs/tenants/peskids/GO-LIVE-CHECKLIST.md"
     ],
     "contratos": [
       "docs/tenants/peskids/CLASSES-SYSTEM-SPEC.md",
@@ -161421,8 +160971,7 @@
     ],
     "padres": [
       "docs/tenants/peskids/MVP-PLAN.md",
-      "docs/tenants/peskids/DEMO-SCRIPT.md",
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
+      "docs/tenants/peskids/DEMO-SCRIPT.md"
     ],
     "drag": [
       "docs/tenants/peskids/GHL-WORKFLOW-TEMPLATES.md"
@@ -161612,36 +161161,6 @@
     "appears": [
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md"
     ],
-    "00pm": [
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
-    ],
-    "30am": [
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
-    ],
-    "asistencia": [
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
-    ],
-    "confirmar": [
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
-    ],
-    "contactar": [
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
-    ],
-    "fin": [
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
-    ],
-    "manana": [
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
-    ],
-    "mediodia": [
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
-    ],
-    "semanalmente": [
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
-    ],
-    "tarde": [
-      "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md"
-    ],
     "anexo": [
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md"
     ],
@@ -161819,18 +161338,6 @@
     "happens": [
       "docs/reports/PARALLEL-EXECUTION-STATUS.md"
     ],
-    "batching": [
-      "docs/reports/E2E-TESTING-PLAN.md"
-    ],
-    "dlq": [
-      "docs/reports/E2E-TESTING-PLAN.md"
-    ],
-    "firing": [
-      "docs/reports/E2E-TESTING-PLAN.md"
-    ],
-    "recorded": [
-      "docs/reports/E2E-TESTING-PLAN.md"
-    ],
     "received": [
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
@@ -161904,9 +161411,6 @@
     ],
     "fill": [
       "docs/reports/ICSO-E2E-VALIDATION.md"
-    ],
-    "provisioned": [
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md"
     ],
     "governed": [
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md"
@@ -162169,12 +161673,6 @@
     ],
     "themes": [
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md"
-    ],
-    "esbuild": [
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
-    ],
-    "tmp": [
-      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
     ],
     "ddos": [
       "docs/security/SECURITY-POSTURE-AUDIT.md"
@@ -163039,8 +162537,6 @@
     "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
     "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
     "docs/reports/CYBER-NEO-OPSLY-2026-05-21.md",
-    "docs/reports/E2E-TESTING-PLAN.md",
-    "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
     "docs/reports/ICSO-E2E-VALIDATION.md",
     "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
     "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
@@ -163116,7 +162612,6 @@
     "docs/runbooks/VPS-CLEANUP-WEBHOOK.md",
     "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
     "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
-    "docs/security/NPM-AUDIT-EXEMPTIONS.md",
     "docs/security/SECURITY-POSTURE-AUDIT.md",
     "docs/STRUCTURE-GUARDRAILS.md",
     "docs/stubs/AGENTS.md",
@@ -163163,7 +162658,6 @@
     "docs/tenants/peskids/DEMO-SCRIPT.md",
     "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
     "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
-    "docs/tenants/peskids/DEPLOYMENT-SUMMARY-2026-06-15.md",
     "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
     "docs/tenants/peskids/design-pack/README.md",
     "docs/tenants/peskids/DOPPLER-SETUP.md",
@@ -163176,7 +162670,6 @@
     "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
     "docs/tenants/peskids/GHL-WORKFLOW-TEMPLATES.md",
     "docs/tenants/peskids/GHL-WORKFLOWS.md",
-    "docs/tenants/peskids/GO-LIVE-CHECKLIST.md",
     "docs/tenants/peskids/GOHIGHLEVEL-CONTRACT.md",
     "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md",
     "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
@@ -163186,7 +162679,6 @@
     "docs/tenants/peskids/MVP-PLAN.md",
     "docs/tenants/peskids/N8N-SETUP.md",
     "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
-    "docs/tenants/peskids/OPERATOR-DAILY-RUNBOOK.md",
     "docs/tenants/peskids/OPS-RUNBOOK.md",
     "docs/tenants/peskids/OPSLY-REUSE.md",
     "docs/tenants/peskids/OWNER-RUNBOOK.md",

@@ -227,7 +227,6 @@ export async function GET(
           submissionsResult.submissions.length,
           session.user.id
         );
-
         return new Response(exportContent.content, {
           status: HTTP_STATUS.OK,
           headers: {

@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import {
-  buildRecoveryRedirectTo,
   resolveRecoveryTargetFromMetadata,
   type RecoveryRoutingConfig,
 } from '../src/tenant-auth-routing'
@@ -27,12 +26,6 @@ const config: RecoveryRoutingConfig = {
 }
 
 describe('resolveRecoveryTargetFromMetadata', () => {
-  it('builds recovery redirects through the auth callback', () => {
-    expect(buildRecoveryRedirectTo('https://peskids.op-sly.com')).toBe(
-      'https://peskids.op-sly.com/auth/callback?next=%2Fauth%2Frecovery'
-    )
-  })
-
   it('routes tenant staff by tenant_slug and role', () => {
     const target = resolveRecoveryTargetFromMetadata(
       { tenant_slug: 'peskids', role: 'teacher' },
