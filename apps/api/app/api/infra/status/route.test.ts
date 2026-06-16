@@ -46,20 +46,22 @@ describe('GET /api/infra/status', () => {
       async *scanIterator() {
         yield 'heartbeat:api';
       },
-      get: vi.fn(async (key: string) => {
-        if (key === 'heartbeat:api') {
-          return JSON.stringify({
-            ts: Date.now() - 5_000,
-            metadata: { path: '/api/portal/me' },
-          });
-        }
-        if (key === 'heartbeat:orchestrator') {
-          return JSON.stringify({
-            ts: Date.now() - 12_000,
-            metadata: { uptime: '120' },
-          });
-        }
-        return null;
+      mGet: vi.fn(async (keys: string[]) => {
+        return keys.map((key) => {
+          if (key === 'heartbeat:api') {
+            return JSON.stringify({
+              ts: Date.now() - 5_000,
+              metadata: { path: '/api/portal/me' },
+            });
+          }
+          if (key === 'heartbeat:orchestrator') {
+            return JSON.stringify({
+              ts: Date.now() - 12_000,
+              metadata: { uptime: '120' },
+            });
+          }
+          return null;
+        });
       }),
       ttl: vi.fn(async (key: string) => {
         if (key === 'heartbeat:api') {

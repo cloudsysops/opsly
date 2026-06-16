@@ -17,32 +17,40 @@ export async function GET(request: Request): Promise<Response> {
     try {
       const redis = await requireHeartbeatRedis();
       const now = Date.now();
-      const seen = new Set<string>();
-      const services: ServiceHeartbeatStatus[] = [];
+      const keysToFetch = new Set<string>();
 
-      for await (const keys of redis.scanIterator({
+      // Bolt Optimization: Correctly handle scanIterator (yields strings)
+      // and collect all keys first to perform batched MGET.
+      for await (const key of redis.scanIterator({
         MATCH: 'heartbeat:*',
         COUNT: 100,
       })) {
-        for (const key of keys) {
-          if (typeof key !== 'string') {
-            continue;
-          }
-          const name = key.replace(/^heartbeat:/, '');
-          seen.add(name);
-          const [raw, ttl] = await Promise.all([redis.get(key), redis.ttl(key)]);
-          services.push(classifyHeartbeat(name, raw, ttl, now));
+        if (typeof key === 'string') {
+          keysToFetch.add(key);
         }
       }
 
+      // Ensure expected services are included
       for (const expected of EXPECTED_SERVICES) {
-        if (seen.has(expected)) {
-          continue;
-        }
-        const key = heartbeatKey(expected);
-        const [raw, ttl] = await Promise.all([redis.get(key), redis.ttl(key)]);
-        services.push(classifyHeartbeat(expected, raw, ttl, now));
+        keysToFetch.add(heartbeatKey(expected));
       }
+
+      const keysArray = Array.from(keysToFetch);
+      if (keysArray.length === 0) {
+        return NextResponse.json({ services: [], generated_at: new Date(now).toISOString() });
+      }
+
+      // Bolt Optimization: Batch GET calls using MGET (O(1) roundtrip)
+      // and parallelize TTL calls to minimize latency.
+      const [rawValues, ttls] = await Promise.all([
+        redis.mGet(keysArray),
+        Promise.all(keysArray.map((k) => redis.ttl(k))),
+      ]);
+
+      const services: ServiceHeartbeatStatus[] = keysArray.map((key, i) => {
+        const name = key.replace(/^heartbeat:/, '');
+        return classifyHeartbeat(name, rawValues[i], ttls[i], now);
+      });
 
       const sortedServices = [...services].sort((a, b) => a.name.localeCompare(b.name));
       return NextResponse.json(

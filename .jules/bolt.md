@@ -25,3 +25,7 @@
 ## 2026-06-05 - [Prometheus Metrics Caching]
 **Learning:** Prometheus host metrics retrieval (CPU, RAM, Disk, Uptime) involved 6 parallel network calls on every request. Caching the result in Redis with a short TTL (60s) significantly improves dashboard responsiveness and reduces network overhead. Using the non-blocking `void setCache(...)` pattern ensures that cache updates don't add latency to the current response.
 **Action:** Prefer caching aggregated infrastructure metrics in the API layer, especially when multiple external probes are required to build a single response.
+
+## 2026-06-08 - [Redis Scan & Batching Optimization]
+**Learning:** In `node-redis` (v4/v5), `scanIterator` yields keys individually as strings. Misunderstanding this can lead to character-by-character iteration if a nested `for...of` loop is used on the yielded string. Additionally, performing sequential `GET` and `TTL` calls inside a scan loop is a performance anti-pattern. Batching with `mGet` and parallelizing `TTL` calls with `Promise.all` reduces roundtrips from O(N) to O(1).
+**Action:** Always collect keys from iterators into an array first, then use `mGet` or `pipeline` for batch retrieval to minimize network latency.
