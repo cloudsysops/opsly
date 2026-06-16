@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  buildRecoveryRedirectTo,
   inviteActivationPathFromUrl,
   isInviteLink,
   recoveryTargetFromMetadata,
@@ -48,6 +49,12 @@ describe('recoveryTargetFromMetadata', () => {
     expect(isInviteLink(inviteUrl)).toBe(true);
     expect(inviteActivationPathFromUrl(inviteUrl, 'https://peskids.op-sly.com')).toBe(
       'https://peskids.op-sly.com/invite/tok_123?email=cboteros1%40gmail.com'
+    );
+  });
+
+  it('sends recovery emails through the auth callback before recovery page', () => {
+    expect(buildRecoveryRedirectTo('https://peskids.op-sly.com')).toBe(
+      'https://peskids.op-sly.com/auth/callback?next=%2Fauth%2Frecovery'
     );
   });
 });
