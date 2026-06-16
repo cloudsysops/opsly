@@ -85,18 +85,6 @@ export function resolveRecoveryTargetFromMetadata(
     config.platformAdmin.tenantSlugs ?? ['intcloudsysops']
   )
 
-  if (
-    isSuperuser &&
-    (role === 'admin' || tenantSlug === '' || platformAdminTenantSlugs.has(tenantSlug))
-  ) {
-    return {
-      app: 'platform_admin',
-      origin: config.platformAdmin.origin,
-      recoveryPath: '/auth/recovery',
-      updatePasswordPath: config.platformAdmin.updatePasswordPath,
-    }
-  }
-
   const tenantRule = config.tenantRules.find(
     (rule) => rule.tenantSlug === tenantSlug && rule.staffRoles.includes(role)
   )
@@ -107,6 +95,24 @@ export function resolveRecoveryTargetFromMetadata(
       origin: tenantRule.origin,
       recoveryPath: '/auth/recovery',
       updatePasswordPath: resolveUpdatePasswordPath(tenantRule, role),
+    }
+  }
+
+  if (platformAdminTenantSlugs.has(tenantSlug)) {
+    return {
+      app: 'platform_admin',
+      origin: config.platformAdmin.origin,
+      recoveryPath: '/auth/recovery',
+      updatePasswordPath: config.platformAdmin.updatePasswordPath,
+    }
+  }
+
+  if (isSuperuser && tenantSlug === '' && role === 'admin') {
+    return {
+      app: 'platform_admin',
+      origin: config.platformAdmin.origin,
+      recoveryPath: '/auth/recovery',
+      updatePasswordPath: config.platformAdmin.updatePasswordPath,
     }
   }
 

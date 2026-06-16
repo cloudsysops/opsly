@@ -8,7 +8,9 @@ import {
   currentPeskidsRecoveryTarget,
   forwardRecoveryToOrigin,
   metadataFromJwtAccessToken,
+  peskidsStaffRecoveryUpdatePath,
   recoveryTargetFromMetadata,
+  shouldCompleteRecoveryOnPeskids,
 } from '@/lib/auth-recovery';
 import {
   markPasswordRecoveryActive,
@@ -27,7 +29,7 @@ interface AuthRecoveryHandlerProps {
 
 /**
  * Completes Supabase recovery on /auth/recovery (not the public landing).
- * Forwards to portal/admin if the JWT belongs to another app.
+ * Forwards to portal/admin only when JWT metadata clearly belongs to another app.
  */
 export function AuthRecoveryHandler({
   updatePasswordPath = '/admin/update-password',
@@ -53,21 +55,29 @@ export function AuthRecoveryHandler({
     }
 
     function routeAwayIfWrongApp(meta: Record<string, unknown>): boolean {
-      const target = recoveryTargetFromMetadata(meta);
-      if (target.app !== 'peskids_staff') {
-        forwardRecoveryToOrigin(target.origin);
-        return true;
+      if (shouldCompleteRecoveryOnPeskids(meta)) {
+        return false;
       }
-      return false;
+
+      const target = recoveryTargetFromMetadata(meta);
+      if (target.app === 'peskids_staff') {
+        return false;
+      }
+
+      forwardRecoveryToOrigin(target.origin);
+      return true;
     }
 
-    function finishToUpdatePassword(): void {
+    function finishToUpdatePassword(meta: Record<string, unknown>): void {
       if (finishedRef.current) {
         return;
       }
       finishedRef.current = true;
       markPasswordRecoveryActive();
-      router.replace(updatePasswordPath);
+      const path = shouldCompleteRecoveryOnPeskids(meta)
+        ? peskidsStaffRecoveryUpdatePath(meta)
+        : updatePasswordPath;
+      router.replace(path);
     }
 
     function redirectToServerCallback(authCode: string): void {
@@ -100,7 +110,7 @@ export function AuthRecoveryHandler({
           ...((session.user.user_metadata ?? {}) as Record<string, unknown>),
         };
         if (!routeAwayIfWrongApp(meta)) {
-          finishToUpdatePassword();
+          finishToUpdatePassword(meta);
         }
       }
     });
@@ -116,7 +126,7 @@ export function AuthRecoveryHandler({
             ...((session.user.user_metadata ?? {}) as Record<string, unknown>),
           };
           if (!routeAwayIfWrongApp(meta)) {
-            finishToUpdatePassword();
+            finishToUpdatePassword(meta);
           }
           return;
         }
@@ -143,7 +153,7 @@ export function AuthRecoveryHandler({
             ...((session.user.user_metadata ?? {}) as Record<string, unknown>),
           };
           if (!routeAwayIfWrongApp(meta)) {
-            finishToUpdatePassword();
+            finishToUpdatePassword(meta);
           }
           return;
         }
