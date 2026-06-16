@@ -23,7 +23,7 @@ const initialForm = {
 // Version of the parental+treatment consent policy shown to the user
 const CONSENT_POLICY_VERSION = 'pk-parental-v1+pk-privacy-v1@1.0'
 
-export function LeadCaptureForm(): React.ReactElement {
+export function LeadCaptureForm({ source = 'web' }: { source?: string }): React.ReactElement {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
@@ -79,7 +79,7 @@ export function LeadCaptureForm(): React.ReactElement {
         full_name: formData.name,
         email: formData.email,
         phone: formData.phone || null,
-        source: 'web',
+        source,
         class_modality: formData.class_modality || null,
         neighborhood: formData.neighborhood || null,
         grade_interested: formData.grade_interested || null,
