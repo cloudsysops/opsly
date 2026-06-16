@@ -15,6 +15,7 @@ RUN npm ci --ignore-scripts
 
 RUN npm run build -w @intcloudsysops/types && \
     npm run build -w @intcloudsysops/content-studio && \
+    npm run build -w @intcloudsysops/prompt-guard && \
     npm run build -w @intcloudsysops/llm-gateway && \
     npm run build -w @intcloudsysops/ml && \
     npm run build -w @intcloudsysops/git-branch-orchestrator && \

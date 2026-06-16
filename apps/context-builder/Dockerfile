@@ -21,6 +21,7 @@ RUN npm ci --ignore-scripts \
   -w @intcloudsysops/context-builder
 # Build types first (required by context-builder), then other workspaces
 RUN npm run build -w @intcloudsysops/types && \
+    npm run build -w @intcloudsysops/prompt-guard && \
     npm run build -w @intcloudsysops/llm-gateway && \
     npm run build -w @intcloudsysops/context-builder
 
