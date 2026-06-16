@@ -65,21 +65,22 @@ run_deploy_on_host() {
     local needle="${3:-}"
     local body
     local attempt
-    for attempt in 1 2 3 4 5; do
+    for attempt in 1 2 3 4 5 6 7 8 9 10; do
       if body="$(curl -fsSL --max-redirs 5 "$url" 2>/dev/null)"; then
         if [[ -z "$needle" || "$body" == *"$needle"* ]]; then
           echo "ok   ${label}"
           return 0
         fi
       fi
-      echo "retry ${label} (${attempt}/5)"
-      sleep 5
+      echo "retry ${label} (${attempt}/10)"
+      sleep 6
     done
     echo "fail ${label}: ${url}" >&2
     return 1
   }
 
-  check_url "peskids local health" "http://127.0.0.1:3004/api/health" '"ok":true'
+  sleep 8
+  check_url "peskids local health" "http://127.0.0.1:3004/api/health" '"status":"ok"'
   check_url "peskids local admin login" "http://127.0.0.1:3004/admin/login"
   check_url "peskids local familias login" "http://127.0.0.1:3004/familias/login"
 }
@@ -124,8 +125,19 @@ docker run -d --name peskids --restart unless-stopped \
   --env-file "$ENV_FILE" \
   "$IMAGE"
 
-sleep 3
-curl -sf http://127.0.0.1:3004/ >/dev/null && echo "ok   peskids local health"
+sleep 10
+for attempt in 1 2 3 4 5 6 7 8 9 10; do
+  if curl -sf http://127.0.0.1:3004/api/health | grep -q '"status":"ok"'; then
+    echo "ok   peskids local health"
+    break
+  fi
+  echo "retry peskids local health (${attempt}/10)"
+  sleep 6
+  if [[ "$attempt" -eq 10 ]]; then
+    echo "fail peskids local health" >&2
+    exit 1
+  fi
+done
 REMOTE
 fi
 

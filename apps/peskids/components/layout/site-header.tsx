@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Instagram } from 'lucide-react'
 import { PeskidsLockup } from '@/components/brand/peskids-logo'
+import { WhatsAppLink } from '@/components/contact/whatsapp-link'
 import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
 
 interface SiteHeaderProps {
@@ -17,25 +18,18 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
         {variant === 'marketing' ? (
           <div className="flex items-center gap-2 sm:gap-4">
             <nav className="hidden items-center gap-6 text-sm font-semibold text-pk-sub md:flex">
-              <a href="#programa" className="hover:text-pk-primary">
-                Programa
+              <a href="#redes" className="hover:text-pk-primary">
+                Instagram
               </a>
-              <Link href="/familias" className="hover:text-pk-primary">
-                Panel familias
-              </Link>
-              <Link href="/teacher/login" className="hover:text-pk-primary">
-                Panel profesores
-              </Link>
-              <Link href="/admin/login" className="hover:text-pk-primary">
-                Panel admin
+              <Link href="/familias/login" className="hover:text-pk-primary">
+                Acceso invitados
               </Link>
             </nav>
-            <Link
-              href="/familias/login"
-              className="hidden h-10 items-center justify-center rounded-full border border-pk-border bg-white px-4 text-xs font-bold text-pk-ink transition hover:border-pk-primary/40 hover:bg-pk-snow sm:inline-flex"
-            >
-              Panel familias
-            </Link>
+            <WhatsAppLink
+              variant="button"
+              label="WhatsApp"
+              className="hidden h-10 px-4 text-xs sm:inline-flex"
+            />
             <Link
               href={PESKIDS_INSTAGRAM.profileUrl}
               target="_blank"
