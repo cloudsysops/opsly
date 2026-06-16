@@ -56,7 +56,8 @@ ENV NEXT_PUBLIC_FIREBASE_VAPID_KEY=$NEXT_PUBLIC_FIREBASE_VAPID_KEY
 ENV NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=$NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 
 WORKDIR /app
-RUN npm run build -w @intcloudsysops/services
+RUN npm run build -w @intcloudsysops/prompt-guard \
+ && npm run build -w @intcloudsysops/services
 
 WORKDIR /app/apps/peskids
 RUN mkdir -p public \
