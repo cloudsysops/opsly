@@ -1,7 +1,5 @@
 export const GOHIGHLEVEL_DEFAULT_API_URL = 'https://services.leadconnectorhq.com';
 export const GOHIGHLEVEL_DEFAULT_API_VERSION = '2021-07-28';
-/** Calendars API subset (create calendar + schedule). */
-export const GOHIGHLEVEL_CALENDAR_API_VERSION = '2021-04-15';
 export const GOHIGHLEVEL_LEGACY_API_URL = 'https://api.gohighlevel.com';
 
 export interface GoHighLevelEnvConfig {

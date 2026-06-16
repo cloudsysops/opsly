@@ -39,23 +39,17 @@ function StarRating({ value }: { value: number }): React.ReactElement {
 const leadStatusLabel: Record<DashboardData['new_leads'][number]['status'], string> = {
   new: 'Nuevo',
   contacted: 'Contactado',
-  trial: 'Clase de Prueba',
   enrolled: 'Matriculado',
-  active: 'Activo',
-  renewal: 'Renovación',
   archived: 'Archivado',
 };
 
 const leadStatusTone: Record<
   DashboardData['new_leads'][number]['status'],
-  'amber' | 'violet' | 'green' | 'teal' | 'neutral'
+  'amber' | 'violet' | 'green' | 'neutral'
 > = {
   new: 'amber',
   contacted: 'violet',
-  trial: 'teal',
   enrolled: 'green',
-  active: 'green',
-  renewal: 'teal',
   archived: 'neutral',
 };
 
@@ -85,10 +79,7 @@ const leadStatusFilterLabel: Record<'all' | DashboardData['new_leads'][number]['
     all: 'Todos',
     new: 'Nuevos',
     contacted: 'Contactados',
-    trial: 'Clase de Prueba',
     enrolled: 'Matriculados',
-    active: 'Activos',
-    renewal: 'Renovación',
     archived: 'Archivados',
   };
 

@@ -2,7 +2,6 @@ import { getServiceClient } from '@/lib/supabase';
 import type { PeskidsIntakeProfile } from '@/lib/peskids-intake';
 import { gradeInterestedLabel } from '@/lib/peskids-intake-messages';
 import { buildPeskidsReferralCode } from '@/lib/peskids-referrals';
-import { sendLeadToGHL } from '@/lib/gohighlevel-lead-sync';
 
 /** Registra lead en Supabase cuando el intake conversacional está completo. */
 export async function submitLeadFromIntake(
@@ -22,22 +21,7 @@ export async function submitLeadFromIntake(
     return { ok: false };
   }
 
-  let ghlContactId: string | null = null;
-
   try {
-    const ghlResult = await sendLeadToGHL({
-      parentName: profile.parentName,
-      email: profile.email,
-      phone: profile.phone,
-      childName: profile.childName,
-      childAge: profile.childAge,
-      gradeInterested: profile.gradeInterested,
-      source: profile.referralSource?.trim() || 'chat-intake',
-    });
-    if (ghlResult) {
-      ghlContactId = ghlResult.ghlContactId;
-    }
-
     const supabase = getServiceClient();
     const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids';
     const { data, error } = await supabase
@@ -56,7 +40,6 @@ export async function submitLeadFromIntake(
         referral_discount_cents: 0,
         referral_redemptions: 0,
         status: 'new',
-        ghl_contact_id: ghlContactId,
       })
       .select('id, referral_code');
 
@@ -94,7 +77,6 @@ export async function submitLeadFromIntake(
           neighborhood: profile.neighborhood,
           grade_interested: profile.gradeInterested,
           referral_source: profile.referralSource ?? 'chat-intake',
-          ghl_contact_id: ghlContactId,
         }),
         signal: AbortSignal.timeout(12_000),
       }).catch((err) => {
@@ -115,7 +97,6 @@ export async function submitLeadFromIntake(
         neighborhood: profile.neighborhood,
         grade_interested: profile.gradeInterested,
         referral_source: profile.referralSource ?? 'chat-intake',
-        ghl_contact_id: ghlContactId,
       }),
       signal: AbortSignal.timeout(8_000),
     }).catch((err) => {

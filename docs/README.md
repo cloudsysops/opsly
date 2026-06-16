@@ -80,7 +80,6 @@ Redirecciones cortas; el índice está en [`stubs/README.md`](stubs/README.md).
 | [`WORKER-FLOWS.md`](WORKER-FLOWS.md)                                                   | Quién corre TeamManager vs workers BullMQ                                  |
 | [`OPENCLAW-ARCHITECTURE.md`](OPENCLAW-ARCHITECTURE.md)                                 | MCP + Orchestrator + LLM Gateway + Context Builder                         |
 | [`INCUBATION-PLATFORM-CONTRACT.md`](00-architecture/INCUBATION-PLATFORM-CONTRACT.md)  | Tenant lifecycle, agent registry, Mission Control foundation               |
-| [`VPS-CLEANUP-WEBHOOK-CONTRACT.md`](00-architecture/VPS-CLEANUP-WEBHOOK-CONTRACT.md)    | Cleanup webhook contract, risk gates, safe cleanup scope                  |
 | [`design/OAR.md`](design/OAR.md)                                                       | Opsly Agentic Runtime (OAR): loops, MemoryInterface, AgentActionPort       |
 | [`adr/ADR-027-hybrid-compute-plane-k8s.md`](adr/ADR-027-hybrid-compute-plane-k8s.md)   | Control plane Compose vs compute plane K8s (futuro, criterios)             |
 | [`QUICKSTART-AGENTS.md`](QUICKSTART-AGENTS.md)                                         | Añadir tools MCP OpenClaw, tests, qué no duplicar                          |
@@ -178,7 +177,6 @@ Redirecciones cortas; el índice está en [`stubs/README.md`](stubs/README.md).
 | [`runbooks/incident.md`](runbooks/incident.md)                 | Respuesta a incidentes paso a paso                                      |
 | [`runbooks/managed.md`](runbooks/managed.md)                   | Runbook para tenants managed                                            |
 | [`runbooks/INCUBATION-PLATFORM-FOUNDATION.md`](runbooks/INCUBATION-PLATFORM-FOUNDATION.md) | Read-only foundation checks y provisioning skeleton                      |
-| [`runbooks/VPS-CLEANUP-WEBHOOK.md`](runbooks/VPS-CLEANUP-WEBHOOK.md)                       | Webhook cleanup de VPS, clasificación y aprobación                       |
 | [`INVITATIONS_RUNBOOK.md`](INVITATIONS_RUNBOOK.md)             | Flujo completo de invitaciones                                          |
 | [`TENANT-TESTING-PLAN.md`](TENANT-TESTING-PLAN.md)             | Checklist corto: URLs y pasos para tenants en staging                   |
 | [`TENANT-TESTING-GUIDE.md`](TENANT-TESTING-GUIDE.md)           | Guía ampliada de verificación n8n / Uptime / portal                     |

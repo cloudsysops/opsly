@@ -24,8 +24,7 @@ infra/Untitled.canvas
 context/doppler-ready.json
 tools/agents/prompts/secrets-*.md
 
-# Cursor / entorno local (root and app-level)
-**/.cursor/
+# Cursor / entorno local
 .cursor/mcp.json
 .cursor/responses/
 .cursor/hooks/logs/
@@ -170,13 +169,4 @@ logs/
 # Agent bootstrap state (generated per-agent, local to session)
 .agent-bootstrap-state/
 runtime/peskids.env
-
-# Peskids local secrets (Doppler only)
-apps/peskids/.secrets/
-config/peskids-firebase-admin.json
-
-# Agent scratch / MCP local
-runtime/tmp/
-.playwright-mcp/
-.superpowers/
 .superpowers/

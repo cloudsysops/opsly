@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import {
   CalendarClock,
   type LucideIcon,
-  LayoutGrid,
   GraduationCap,
   Home,
   Inbox,
@@ -39,7 +38,6 @@ interface NavItem {
 const navOps = [
   { icon: Home, label: 'Landing', href: '/' },
   { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },
-  { icon: LayoutGrid, label: 'Academia', href: '/admin#academy' },
   { icon: ShieldCheck, label: 'Equipo', href: '/admin#team' },
   { icon: GraduationCap, label: 'Clases', href: '/admin#classes' },
   { icon: Users, label: 'Leads', href: '/admin#leads' },
@@ -119,10 +117,6 @@ export function AdminShell({
 
     if (item.label === 'Dashboard') {
       return hash === '' || hash === '#dashboard';
-    }
-
-    if (item.label === 'Academia') {
-      return hash === '#academy';
     }
 
     if (item.label === 'Equipo') {

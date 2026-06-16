@@ -10,8 +10,6 @@ const TEAM_QUEUE_NAMES = [
   'team-infra-team',
 ] as const;
 
-const CACHE_KEY = 'bullmq:pipeline_totals';
-
 async function pipelineTotalForQueue(name: string): Promise<number> {
   const connection = getBullmqRedisConnection();
   if (!connection) {
@@ -27,41 +25,42 @@ async function pipelineTotalForQueue(name: string): Promise<number> {
   }
 }
 
-export type BullmqPipelineTotals = {
+/**
+ * Jobs en cola BullMQ (orquestador + equipos). Sin Redis devuelve null.
+ * Cacheado en Redis (60s) para evitar ráfagas de roundtrips.
+ */
+export async function getBullmqPipelineJobTotals(): Promise<{
   openclaw_total: number;
   teams_total: number;
   all_queues_total: number;
-};
+} | null> {
+  const cacheKey = 'metrics:bullmq:totals';
 
-/**
- * Jobs en cola BullMQ (orquestador + equipos). Sin Redis devuelve null.
- *
- * OPTIMIZATION:
- * 1. Caches aggregated totals in Redis for 60s (CACHE_TTL.SHORT).
- * 2. Fetches queue totals in parallel using Promise.all.
- */
-export async function getBullmqPipelineJobTotals(): Promise<BullmqPipelineTotals | null> {
   try {
-    const cached = await getCache<BullmqPipelineTotals>(CACHE_KEY);
+    const cached = await getCache<{
+      openclaw_total: number;
+      teams_total: number;
+      all_queues_total: number;
+    }>(cacheKey);
+
     if (cached) {
       return cached;
     }
 
-    const [openclaw, ...teamTotals] = await Promise.all([
-      pipelineTotalForQueue('openclaw'),
-      ...TEAM_QUEUE_NAMES.map((n) => pipelineTotalForQueue(n)),
-    ]);
-
+    const openclaw = await pipelineTotalForQueue('openclaw');
+    const teamTotals = await Promise.all(TEAM_QUEUE_NAMES.map((n) => pipelineTotalForQueue(n)));
     const teams_total = teamTotals.reduce((a, b) => a + b, 0);
-    const totals = {
+
+    const result = {
       openclaw_total: openclaw,
       teams_total,
       all_queues_total: openclaw + teams_total,
     };
 
-    void setCache(CACHE_KEY, totals, CACHE_TTL.SHORT);
+    // Actualización asíncrona de caché
+    void setCache(cacheKey, result, CACHE_TTL.SHORT);
 
-    return totals;
+    return result;
   } catch {
     return null;
   }

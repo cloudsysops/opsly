@@ -22,7 +22,6 @@
   "dependencies": {
     "@intcloudsysops/prompt-guard": "*",
     "@intcloudsysops/openwa": "*",
-    "@intcloudsysops/services": "*",
     "@capacitor/android": "^8.3.4",
     "@capacitor/app": "^8.1.0",
     "@capacitor/cli": "^8.3.4",

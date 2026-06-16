@@ -33,10 +33,6 @@ export type PeskidsLeadRecord = {
   source: string | null;
   stage: string | null;
   created_at: string;
-  ghl_contact_id?: string | null;
-  ghl_opportunity_id?: string | null;
-  ghl_pipeline_id?: string | null;
-  ghl_stage_id?: string | null;
 };
 
 function leadSelectList(): string {
@@ -48,10 +44,6 @@ function leadSelectList(): string {
     'stage',
     'created_at',
     'updated_at',
-    'ghl_contact_id',
-    'ghl_opportunity_id',
-    'ghl_pipeline_id',
-    'ghl_stage_id',
   ].join(', ');
 }
 
@@ -73,10 +65,6 @@ function buildLeadBaseRow(input: PeskidsLeadPersistInput): Record<string, unknow
     event_id: input.eventId,
     automation_ready: input.automationReady,
     referral_source: input.source === 'gohighlevel' ? 'GoHighLevel' : input.source,
-    ghl_contact_id: input.ghlContactId ?? null,
-    ghl_opportunity_id: input.ghlOpportunityId ?? null,
-    ghl_pipeline_id: input.ghlPipelineId ?? null,
-    ghl_stage_id: input.ghlStageId ?? null,
   };
 }
 

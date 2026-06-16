@@ -64,39 +64,6 @@ doppler run --project "$PROJECT" --config "$CONFIG" -- bash -c "
       echo \"validate-ghl-config: unexpected locations response (expected 200, got \${loc_code})\" >&2
       exit 1
     fi
-
-    tags_code=\$(curl -sS -o /dev/null -w '%{http_code}' \\
-      -H \"Authorization: Bearer \${key}\" \\
-      -H 'Accept: application/json' \\
-      -H \"Version: \${version}\" \\
-      \"\${base%/}/locations/\${loc}/tags\")
-    echo \"validate-ghl-config: GET /locations/\${loc}/tags HTTP \${tags_code}\"
-    if [[ \"\$tags_code\" == \"401\" || \"\$tags_code\" == \"403\" ]]; then
-      echo 'validate-ghl-config: tags denied — regenerate Private Integration token and update Doppler' >&2
-      echo \"  doppler secrets set ${KEY_VAR} --project ${PROJECT} --config ${CONFIG}\" >&2
-      if [[ \"\$tenant\" == \"peskids\" || \"\$tenant\" == \"intcloudsysops\" || \"\$tenant\" == \"agency\" ]]; then
-        exit 1
-      fi
-    elif [[ \"\$tags_code\" != \"200\" ]]; then
-      echo \"validate-ghl-config: unexpected tags response (got \${tags_code})\" >&2
-      exit 1
-    fi
-
-    custom_fields_code=\$(curl -sS -o /dev/null -w '%{http_code}' \\
-      -H \"Authorization: Bearer \${key}\" \\
-      -H 'Accept: application/json' \\
-      -H \"Version: \${version}\" \\
-      \"\${base%/}/locations/\${loc}/customFields\")
-    echo \"validate-ghl-config: GET /locations/\${loc}/customFields HTTP \${custom_fields_code}\"
-    if [[ \"\$custom_fields_code\" == \"401\" || \"\$custom_fields_code\" == \"403\" ]]; then
-      echo 'validate-ghl-config: custom fields denied — regenerate Private Integration token and update Doppler' >&2
-      if [[ \"\$tenant\" == \"peskids\" || \"\$tenant\" == \"intcloudsysops\" || \"\$tenant\" == \"agency\" ]]; then
-        exit 1
-      fi
-    elif [[ \"\$custom_fields_code\" != \"200\" ]]; then
-      echo \"validate-ghl-config: unexpected customFields response (got \${custom_fields_code})\" >&2
-      exit 1
-    fi
   fi
 
   if [[ -n \"\$loc\" ]]; then
@@ -107,7 +74,7 @@ doppler run --project "$PROJECT" --config "$CONFIG" -- bash -c "
       -H 'Content-Type: application/json' \\
       -H 'Version: 2023-02-21' \\
       \"\${base%/}/contacts/search\" \\
-      --data '{\"locationId\":\"'\"\${loc}\"'\",\"pageLimit\":1}')
+      --data '{\"locationId\":\"'\"\${loc}\"'\",\"page\":1,\"limit\":1}')
     echo \"validate-ghl-config: POST /contacts/search HTTP \${contacts_code}\"
     if [[ \"\$contacts_code\" == \"401\" || \"\$contacts_code\" == \"403\" ]]; then
       echo 'validate-ghl-config: contacts denied — likely missing contacts.readonly scope on Private Integration' >&2

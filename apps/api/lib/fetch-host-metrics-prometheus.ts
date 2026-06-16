@@ -1,9 +1,6 @@
-import { CACHE_TTL, HOST_METRICS } from './constants';
-import { logger } from './logger';
+import { HOST_METRICS } from './constants';
 import { aggregateInstantVector, promInstantQuery, type PromVectorResult } from './prometheus';
-import { getCache, setCache } from './redis-cache';
 
-const CACHE_KEY_PREFIX = 'metrics:host_prom';
 const CPU_QUERY = '100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)';
 const RAM_USED_QUERY = 'sum(node_memory_MemTotal_bytes) - sum(node_memory_MemAvailable_bytes)';
 const RAM_TOTAL_QUERY = 'sum(node_memory_MemTotal_bytes)';
@@ -56,13 +53,6 @@ function bundleFromScalars(
 export async function fetchHostMetricsFromPrometheus(
   base: string
 ): Promise<HostMetricsFromProm | null> {
-  const cacheKey = `${CACHE_KEY_PREFIX}:${base}`;
-  // Bolt Optimization: check cache first to avoid 6 parallel Prometheus fetches (~100-500ms)
-  const cached = await getCache<HostMetricsFromProm>(cacheKey);
-  if (cached !== null) {
-    return cached;
-  }
-
   const [cpuRes, ramUsedRes, ramTotalRes, diskUsedRes, diskTotalRes, uptimeRes] = await Promise.all(
     [
       promInstantQuery(base, CPU_QUERY),
@@ -92,7 +82,7 @@ export async function fetchHostMetricsFromPrometheus(
     return null;
   }
 
-  const metrics = bundleFromScalars(
+  return bundleFromScalars(
     cpuRaw,
     ramUsedBytes,
     ramTotalBytes,
@@ -100,11 +90,4 @@ export async function fetchHostMetricsFromPrometheus(
     diskTotalBytes,
     uptimeRaw
   );
-
-  // Background cache set to avoid blocking the response
-  void setCache(cacheKey, metrics, CACHE_TTL.SHORT).catch((err) => {
-    logger.error(`[prometheus-cache] failed to set ${cacheKey}`, err);
-  });
-
-  return metrics;
 }

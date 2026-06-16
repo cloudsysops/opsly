@@ -9,7 +9,6 @@ COPY package*.json ./
 COPY turbo.json ./
 
 COPY lib/conversational-runtime/package.json ./lib/conversational-runtime/
-COPY lib/services/package.json ./lib/services/
 COPY lib/prompt-guard/package.json ./lib/prompt-guard/
 COPY lib/openwa/package.json ./lib/openwa/
 COPY packages/opsly-core/package.json ./packages/opsly-core/
@@ -19,7 +18,6 @@ COPY apps/peskids/package.json ./apps/peskids/
 RUN npm ci --ignore-scripts
 
 COPY lib/conversational-runtime/ ./lib/conversational-runtime/
-COPY lib/services/ ./lib/services/
 COPY lib/prompt-guard/ ./lib/prompt-guard/
 COPY lib/openwa/ ./lib/openwa/
 COPY packages/opsly-core/ ./packages/opsly-core/
@@ -54,9 +52,6 @@ ENV NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=$NEXT_PUBLIC_FIREBASE_MESSAGING_SEN
 ENV NEXT_PUBLIC_FIREBASE_APP_ID=$NEXT_PUBLIC_FIREBASE_APP_ID
 ENV NEXT_PUBLIC_FIREBASE_VAPID_KEY=$NEXT_PUBLIC_FIREBASE_VAPID_KEY
 ENV NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=$NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
-
-WORKDIR /app
-RUN npm run build -w @intcloudsysops/services
 
 WORKDIR /app/apps/peskids
 RUN mkdir -p public \

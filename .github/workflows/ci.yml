@@ -42,8 +42,10 @@ jobs:
         run: |
           set -euo pipefail
           npm ci
+          # Build internal packages in dependency order
           (cd packages/types && npm run build)
           (cd lib/external-agent-registry && npm run build)
+          (cd lib/prompt-guard && npm run build)
           (cd apps/llm-gateway && npm run build)
           (cd apps/ml && npm run build)
           (cd apps/notebooklm-agent && npm run build)
@@ -130,6 +132,7 @@ jobs:
           # Build internal packages first (required for tests that import them)
           (cd packages/types && npm run build)
           (cd lib/external-agent-registry && npm run build)
+          (cd lib/prompt-guard && npm run build)
           (cd apps/llm-gateway && npm run build)
           (cd apps/ml && npm run build)
           (cd apps/notebooklm-agent && npm run build)
@@ -185,6 +188,7 @@ jobs:
           # Build ALL internal packages first (required for tests that import them)
           (cd packages/types && npm run build)
           (cd lib/external-agent-registry && npm run build)
+          (cd lib/prompt-guard && npm run build)
           (cd apps/llm-gateway && npm run build)
           (cd apps/ml && npm run build)
           (cd apps/notebooklm-agent && npm run build)
@@ -247,6 +251,7 @@ jobs:
           # Build internal packages first (lib/* before orchestrator)
           (cd packages/types && npm run build)
           (cd lib/external-agent-registry && npm run build)
+          (cd lib/prompt-guard && npm run build)
           (cd apps/llm-gateway && npm run build)
           (cd apps/ml && npm run build)
           (cd apps/notebooklm-agent && npm run build)

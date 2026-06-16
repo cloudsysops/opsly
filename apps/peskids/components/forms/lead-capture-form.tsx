@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import { useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useSearchParams } from 'next/navigation'
-import { Loader2, Send } from 'lucide-react'
-import { WhatsAppLink } from '@/components/contact/whatsapp-link'
-import { PESKIDS_CLASS_MODALITY_OPTIONS } from '@/lib/lead-modality'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
+import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { Loader2, Send } from 'lucide-react';
+import { WhatsAppLink } from '@/components/contact/whatsapp-link';
+import { PESKIDS_CLASS_MODALITY_OPTIONS } from '@/lib/lead-modality';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 
 const initialForm = {
   name: '',
@@ -18,30 +18,33 @@ const initialForm = {
   neighborhood: '',
   grade_interested: '',
   referral_source: '',
-}
+};
 
 // Version of the parental+treatment consent policy shown to the user
-const CONSENT_POLICY_VERSION = 'pk-parental-v1+pk-privacy-v1@1.0'
+const CONSENT_POLICY_VERSION = 'pk-parental-v1+pk-privacy-v1@1.0';
 
 export function LeadCaptureForm(): React.ReactElement {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [formData, setFormData] = useState(initialForm)
-  const [consentTreatment, setConsentTreatment] = useState(false)
-  const [consentMarketing, setConsentMarketing] = useState(false)
-  const referredByCode = useMemo(() => searchParams.get('ref')?.trim().toUpperCase() ?? '', [searchParams])
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [formData, setFormData] = useState(initialForm);
+  const [consentTreatment, setConsentTreatment] = useState(false);
+  const [consentMarketing, setConsentMarketing] = useState(false);
+  const referredByCode = useMemo(
+    () => searchParams.get('ref')?.trim().toUpperCase() ?? '',
+    [searchParams]
+  );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
     try {
       const apiPayload = {
@@ -56,24 +59,24 @@ export function LeadCaptureForm(): React.ReactElement {
         consent_treatment: consentTreatment,
         consent_marketing: consentMarketing,
         consent_policy_version: CONSENT_POLICY_VERSION,
-      }
+      };
 
       const apiResponse = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(apiPayload),
-      })
+      });
 
       if (!apiResponse.ok) {
-        const apiErrorText = await apiResponse.text()
-        console.error('Peskids lead API error:', apiResponse.status, apiErrorText)
-        throw new Error(`Lead API failed: ${apiResponse.status}`)
+        const apiErrorText = await apiResponse.text();
+        console.error('Peskids lead API error:', apiResponse.status, apiErrorText);
+        throw new Error(`Lead API failed: ${apiResponse.status}`);
       }
 
       const apiResult = (await apiResponse.json()) as {
-        referral_link?: string | null
-        referral_code?: string | null
-      }
+        referral_link?: string | null;
+        referral_code?: string | null;
+      };
 
       const webhookPayload = {
         full_name: formData.name,
@@ -86,32 +89,34 @@ export function LeadCaptureForm(): React.ReactElement {
         referral_source: formData.referral_source || null,
         referred_by_code: referredByCode || null,
         referral_code: apiResult.referral_code || null,
-      }
+      };
 
-      const webhookUrl = process.env.NEXT_PUBLIC_N8N_LEAD_WEBHOOK || 'https://peskids.op-sly.com/webhooks/lead-capture'
+      const webhookUrl =
+        process.env.NEXT_PUBLIC_N8N_LEAD_WEBHOOK ||
+        'https://n8n-peskids.op-sly.com/webhook/peskids-lead';
       void fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(webhookPayload),
       }).catch((err) => {
-        console.warn('N8N webhook mirror failed:', err)
-      })
+        console.warn('N8N webhook mirror failed:', err);
+      });
 
-      const thanksUrl = new URL('/thanks', window.location.origin)
+      const thanksUrl = new URL('/thanks', window.location.origin);
       if (apiResult.referral_link) {
-        thanksUrl.searchParams.set('referral_link', apiResult.referral_link)
+        thanksUrl.searchParams.set('referral_link', apiResult.referral_link);
       }
       if (apiResult.referral_code) {
-        thanksUrl.searchParams.set('referral_code', apiResult.referral_code)
+        thanksUrl.searchParams.set('referral_code', apiResult.referral_code);
       }
-      router.push(`${thanksUrl.pathname}${thanksUrl.search}`)
+      router.push(`${thanksUrl.pathname}${thanksUrl.search}`);
     } catch (err) {
-      setError('No pudimos enviar tu solicitud. Intenta de nuevo en un momento.')
-      console.error('Form submission error:', err)
+      setError('No pudimos enviar tu solicitud. Intenta de nuevo en un momento.');
+      console.error('Form submission error:', err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <Card
@@ -127,7 +132,11 @@ export function LeadCaptureForm(): React.ReactElement {
           Clases en nuestra sede de <strong className="text-pk-ink">Llanogrande</strong> o{' '}
           <strong className="text-pk-ink">a domicilio</strong> en el área metropolitana. Te
           contactamos en menos de 48 horas hábiles.{' '}
-          <WhatsAppLink variant="button" label="Prefiero WhatsApp" className="mt-2 w-full sm:w-auto" />
+          <WhatsAppLink
+            variant="button"
+            label="Prefiero WhatsApp"
+            className="mt-2 w-full sm:w-auto"
+          />
         </CardDescription>
         {referredByCode ? (
           <p className="mt-3 rounded-xl border border-pk-primary/20 bg-pk-primary/10 px-3 py-2 text-xs font-medium text-pk-primary">
@@ -232,7 +241,7 @@ export function LeadCaptureForm(): React.ReactElement {
 
           <div>
             <Label htmlFor="grade_interested" required>
-              Edad o etapa de interés
+              Edad o nivel de interés
             </Label>
             <select
               id="grade_interested"
@@ -260,9 +269,11 @@ export function LeadCaptureForm(): React.ReactElement {
               className="pk-select"
             >
               <option value="">Selecciona una opción</option>
+              <option value="Instagram">Instagram</option>
+              <option value="Facebook">Facebook</option>
+              <option value="Website">Website</option>
+              <option value="Referral">Referral / recomendación</option>
               <option value="Google">Google / búsqueda</option>
-              <option value="Friend">Recomendación</option>
-              <option value="Instagram">Instagram / redes</option>
               <option value="Other">Otro</option>
             </select>
           </div>
@@ -278,18 +289,26 @@ export function LeadCaptureForm(): React.ReactElement {
                 aria-required="true"
               />
               <span>
-                <strong>Autorización obligatoria:</strong> Soy padre, madre o tutor legal y
-                autorizo a Peskids para tratar los datos del menor y los míos propios conforme
-                a la{' '}
-                <a href="/privacy" target="_blank" rel="noopener" className="text-pk-primary hover:underline">
+                <strong>Autorización obligatoria:</strong> Soy padre, madre o tutor legal y autorizo
+                a Peskids para tratar los datos del menor y los míos propios conforme a la{' '}
+                <a
+                  href="/privacy"
+                  target="_blank"
+                  rel="noopener"
+                  className="text-pk-primary hover:underline"
+                >
                   Política de Privacidad
                 </a>{' '}
                 y el{' '}
-                <a href="/aviso-parental" target="_blank" rel="noopener" className="text-pk-primary hover:underline">
+                <a
+                  href="/aviso-parental"
+                  target="_blank"
+                  rel="noopener"
+                  className="text-pk-primary hover:underline"
+                >
                   Aviso Parental
                 </a>
-                . Los datos serán compartidos con{' '}
-                <strong>Jelou</strong> (mensajería) y nuestra{' '}
+                . Los datos serán compartidos con <strong>Jelou</strong> (mensajería) y nuestra{' '}
                 <strong>automatización interna</strong> para coordinar la clase de prueba.
               </span>
             </label>
@@ -302,8 +321,8 @@ export function LeadCaptureForm(): React.ReactElement {
               />
               <span>
                 <strong>Opcional:</strong> Acepto recibir comunicaciones sobre el programa
-                (novedades, torneos, promociones) por WhatsApp o correo electrónico. Puedo
-                cancelar en cualquier momento.
+                (novedades, torneos, promociones) por WhatsApp o correo electrónico. Puedo cancelar
+                en cualquier momento.
               </span>
             </label>
           </div>
@@ -333,5 +352,5 @@ export function LeadCaptureForm(): React.ReactElement {
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -2,23 +2,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const persistPeskidsLeadMock = vi.fn();
 const dispatchPeskidsLeadAutomationMock = vi.fn();
-const createPipelineOpportunityMock = vi.fn();
 
-const buildPeskidsLeadPersistInputFromGoHighLevelMock = vi.fn((payload) => {
-  const normalized = payload.pipeline_stage?.toString().toLowerCase().trim() ?? 'new lead';
-  let stage = 'New Lead';
-  if (normalized.includes('contacted')) stage = 'Contacted';
-  else if (normalized.includes('trial')) stage = 'Trial Class';
-  else if (normalized.includes('enrolled')) stage = 'Enrolled';
-  else if (normalized.includes('active')) stage = 'Active Student';
-  else if (normalized.includes('renewal')) stage = 'Renewal';
-  else if (normalized.includes('lost')) stage = 'Lost';
-
-  return {
+vi.mock('../../../../../../../../../lib/peskids/lead-ingest', () => ({
+  persistPeskidsLead: persistPeskidsLeadMock,
+  buildPeskidsLeadPersistInputFromGoHighLevel: vi.fn((payload) => ({
     tenantSlug: payload.tenant_slug,
     leadId: payload.lead_id,
     source: payload.source,
-    stage,
+    stage: 'New Lead',
     createdAt: payload.occurred_at,
     parentName: payload.lead.parent_name,
     phone: payload.lead.phone,
@@ -28,34 +19,20 @@ const buildPeskidsLeadPersistInputFromGoHighLevelMock = vi.fn((payload) => {
     interest: payload.lead.interest,
     eventId: payload.event_id,
     automationReady: true,
-    ghlContactId: payload.ghl?.contact_id ?? null,
-    ghlOpportunityId: payload.ghl?.opportunity_id ?? null,
-    ghlPipelineId: payload.ghl?.pipeline_id ?? null,
-    ghlStageId: payload.ghl?.stage_id ?? null,
-  };
-});
-
-vi.mock('../../../../../../../../../lib/peskids/lead-ingest', () => ({
-  persistPeskidsLead: persistPeskidsLeadMock,
-  buildPeskidsLeadPersistInputFromGoHighLevel: buildPeskidsLeadPersistInputFromGoHighLevelMock,
+  })),
 }));
 
 vi.mock('../../../../../../../../../lib/peskids/automation', () => ({
   dispatchPeskidsLeadAutomation: dispatchPeskidsLeadAutomationMock,
 }));
 
-vi.mock('../../../../../../../../lib/peskids/opportunity', () => ({
-  createPipelineOpportunity: createPipelineOpportunityMock,
-}));
-
 describe('POST /api/public/tenants/peskids/webhooks/gohighlevel/leads', () => {
   beforeEach(() => {
     persistPeskidsLeadMock.mockReset();
     dispatchPeskidsLeadAutomationMock.mockReset();
-    createPipelineOpportunityMock.mockReset();
   });
 
-  it('validates, persists, creates opportunity, and returns the canonical response', async () => {
+  it('validates, persists, and returns the canonical response', async () => {
     persistPeskidsLeadMock.mockResolvedValue({
       ok: true,
       created: true,
@@ -66,11 +43,7 @@ describe('POST /api/public/tenants/peskids/webhooks/gohighlevel/leads', () => {
         source: 'gohighlevel',
         stage: 'Trial Class',
         created_at: '2026-06-01T10:00:00.000Z',
-        ghl_contact_id: 'contact-ghl-1',
       },
-    });
-    createPipelineOpportunityMock.mockResolvedValue({
-      opportunityId: 'opp-ghl-1',
     });
     dispatchPeskidsLeadAutomationMock.mockResolvedValue({ ok: true, detail: 'queued in n8n' });
 
@@ -93,10 +66,6 @@ describe('POST /api/public/tenants/peskids/webhooks/gohighlevel/leads', () => {
           age: 8,
           interest: 'Trial class',
         },
-        ghl: {
-          contact_id: 'contact-ghl-1',
-        },
-        automation: { welcome_message: true, reminder: true, trial_class_invitation: true },
       }),
     } as never);
 
@@ -120,8 +89,6 @@ describe('POST /api/public/tenants/peskids/webhooks/gohighlevel/leads', () => {
     expect(dispatchPeskidsLeadAutomationMock).toHaveBeenCalledWith(
       expect.objectContaining({ lead_id: 'lead-1' })
     );
-    // Note: createPipelineOpportunity is called but may return null if GHL not configured
-    // The actual function is tested via integration tests with real GHL credentials
   });
 
   it('rejects requests with invalid webhook secret', async () => {
@@ -236,50 +203,5 @@ describe('POST /api/public/tenants/peskids/webhooks/gohighlevel/leads', () => {
 
     expect(response.status).toBe(400);
     expect(persistPeskidsLeadMock).not.toHaveBeenCalled();
-  });
-
-  it('skips opportunity creation when ghl_contact_id is missing', async () => {
-    persistPeskidsLeadMock.mockResolvedValue({
-      ok: true,
-      created: true,
-      row: {
-        id: 'row-2',
-        tenant_slug: 'peskids',
-        lead_id: 'lead-2',
-        source: 'gohighlevel',
-        stage: 'New Lead',
-        created_at: '2026-06-01T11:00:00.000Z',
-        ghl_contact_id: null,
-      },
-    });
-    dispatchPeskidsLeadAutomationMock.mockResolvedValue({ ok: true, detail: 'queued in n8n' });
-
-    const { POST } = await import('../route');
-    const response = await POST({
-      headers: new Headers({ 'x-request-id': 'req-ghl-5' }),
-      json: async () => ({
-        event_id: 'evt-2',
-        event_type: 'lead.created',
-        tenant_slug: 'peskids',
-        source: 'gohighlevel',
-        lead_id: 'lead-2',
-        pipeline_stage: 'New Lead',
-        occurred_at: '2026-06-01T11:00:00.000Z',
-        lead: {
-          parent_name: 'Juan Perez',
-          phone: '+573002224444',
-          email: 'juan@example.com',
-          child_name: 'Sofia',
-          age: 6,
-          interest: 'Trial class',
-        },
-        automation: { welcome_message: true, reminder: true, trial_class_invitation: true },
-      }),
-    } as never);
-
-    expect(response.status).toBe(201);
-    const body = await response.json();
-    expect(body.automation.dispatch).toBe(true);
-    expect(dispatchPeskidsLeadAutomationMock).toHaveBeenCalled();
   });
 });

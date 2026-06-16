@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { validateStaffSession } from '@/lib/staff-auth';
 import { enqueueApprovedReply } from '@/lib/n8n-send';
 import { supabaseServer } from '@/lib/supabase';
-import { errorJson, resolveRequestId, successJson } from '../../../../../lib/api-response';
+import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 
 export async function POST(req: NextRequest, context: { params: Promise<{ messageId: string }> }) {
   const requestId = resolveRequestId(req);
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest, context: { params: Promise<{ messag
         external_id: `reply-${messageId}-${Date.now()}`,
         direction: 'outbound',
         parent_message_id: messageId,
-        status: 'approved',
+        status: 'sent',
         ai_generated: false,
       })
       .select()
@@ -64,12 +64,6 @@ export async function POST(req: NextRequest, context: { params: Promise<{ messag
       await supabase
         .from('messages')
         .update({ status: 'sent' })
-        .eq('id', replyRecord.id)
-        .eq('tenant_id', tenantId);
-
-      await supabase
-        .from('messages')
-        .update({ status: 'approved' })
         .eq('id', messageId)
         .eq('tenant_id', tenantId);
     }

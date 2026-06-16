@@ -1,32 +1,32 @@
-'use client'
+'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, Download, Loader2, MessageSquare, Users } from 'lucide-react'
-import { useParams } from 'next/navigation'
-import { FeedbackComposer } from '@/components/feedback/feedback-composer'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { gradeInterestedLabel } from '@/lib/peskids-intake-messages'
-import { createClient } from '@/lib/supabase-browser'
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ArrowLeft, Download, Loader2, MessageSquare, Users } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { FeedbackComposer } from '@/components/feedback/feedback-composer';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { gradeInterestedLabel } from '@/lib/peskids-intake-messages';
+import { createClient } from '@/lib/supabase-browser';
 
 interface StudentSubmission {
-  submissionId: string
-  studentName: string
-  studentId: string
-  formTitle: string
-  submittedAt: string
-  parentEmail?: string | null
-  grade?: number
-  maxGrade: number
-  feedback?: string
-  status: 'reviewed' | 'pending' | 'needs_revision'
-  studentLevel?: string
-  progressPercent?: number
+  submissionId: string;
+  studentName: string;
+  studentId: string;
+  formTitle: string;
+  submittedAt: string;
+  parentEmail?: string | null;
+  grade?: number;
+  maxGrade: number;
+  feedback?: string;
+  status: 'reviewed' | 'pending' | 'needs_revision';
+  studentLevel?: string;
+  progressPercent?: number;
 }
 
 interface TeacherSubmissionsPayload {
-  submissions: StudentSubmission[]
+  submissions: StudentSubmission[];
 }
 
 function formatDateTime(dateString: string): string {
@@ -36,75 +36,75 @@ function formatDateTime(dateString: string): string {
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    })
+    });
   } catch {
-    return dateString
+    return dateString;
   }
 }
 
 function getStatusTone(status: StudentSubmission['status']): 'teal' | 'amber' | 'green' {
   switch (status) {
     case 'reviewed':
-      return 'green'
+      return 'green';
     case 'needs_revision':
-      return 'amber'
+      return 'amber';
     case 'pending':
     default:
-      return 'teal'
+      return 'teal';
   }
 }
 
 export default function TeacherSubmissionDetailPage(): React.ReactElement {
-  const [submissions, setSubmissions] = useState<StudentSubmission[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [staffUserId, setStaffUserId] = useState<string | null>(null)
-  const params = useParams<{ submissionId: string }>()
+  const [submissions, setSubmissions] = useState<StudentSubmission[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [staffUserId, setStaffUserId] = useState<string | null>(null);
+  const params = useParams<{ submissionId: string }>();
 
   const fetchSubmissions = useCallback(async (): Promise<void> => {
     try {
       const response = await fetch('/api/submissions/teacher', {
         credentials: 'include',
-      })
+      });
       if (!response.ok) {
-        throw new Error('Failed to fetch submissions')
+        throw new Error('Failed to fetch submissions');
       }
 
-      const payload = (await response.json()) as TeacherSubmissionsPayload
-      setSubmissions(payload.submissions || [])
-      setError('')
+      const payload = (await response.json()) as TeacherSubmissionsPayload;
+      setSubmissions(payload.submissions || []);
+      setError('');
     } catch (err) {
-      setError('No se pudo cargar la ficha de la entrega.')
-      console.error(err)
+      setError('No se pudo cargar la ficha de la entrega.');
+      console.error(err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    void fetchSubmissions()
-  }, [fetchSubmissions])
+    void fetchSubmissions();
+  }, [fetchSubmissions]);
 
   useEffect(() => {
-    const supabase = createClient()
+    const supabase = createClient();
     void (async () => {
-      const { data } = await supabase.auth.getSession()
-      const user = data.session?.user
+      const { data } = await supabase.auth.getSession();
+      const user = data.session?.user;
       if (user) {
-        setStaffUserId(user.id)
+        setStaffUserId(user.id);
       }
-    })()
-  }, [])
+    })();
+  }, []);
 
   const selectedSubmission = useMemo(
     () => submissions.find((submission) => submission.submissionId === params.submissionId) ?? null,
     [params.submissionId, submissions]
-  )
+  );
 
   const normalizedLevel = selectedSubmission?.studentLevel
     ? gradeInterestedLabel(selectedSubmission.studentLevel)
-    : 'No informado'
-  const progressPercent = selectedSubmission?.progressPercent ?? 0
+    : 'No informado';
+  const progressPercent = selectedSubmission?.progressPercent ?? 0;
 
   if (loading) {
     return (
@@ -112,7 +112,7 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
         <Loader2 className="h-10 w-10 animate-spin text-pk-primary" aria-hidden />
         <p className="text-sm text-pk-sub">Cargando ficha de entrega…</p>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -125,7 +125,7 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
           </Button>
         </div>
       </div>
-    )
+    );
   }
 
   if (!selectedSubmission) {
@@ -141,7 +141,7 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
           </Button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -162,7 +162,11 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Button type="button" variant="secondary" onClick={() => (window.location.href = '/teacher/submissions')}>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => (window.location.href = '/teacher/submissions')}
+              >
                 <ArrowLeft className="h-4 w-4" aria-hidden />
                 <span className="ml-1">Volver</span>
               </Button>
@@ -171,7 +175,17 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
                 variant="ghost"
                 onClick={() => {
                   const csv = [
-                    ['submissionId', 'studentName', 'studentId', 'formTitle', 'submittedAt', 'grade', 'maxGrade', 'status', 'feedback']
+                    [
+                      'submissionId',
+                      'studentName',
+                      'studentId',
+                      'formTitle',
+                      'submittedAt',
+                      'grade',
+                      'maxGrade',
+                      'status',
+                      'feedback',
+                    ]
                       .map((value) => `"${value}"`)
                       .join(','),
                     [
@@ -187,15 +201,15 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
                     ]
                       .map((value) => `"${String(value).split('"').join('""')}"`)
                       .join(','),
-                  ].join('\n')
+                  ].join('\n');
 
-                  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-                  const url = URL.createObjectURL(blob)
-                  const anchor = document.createElement('a')
-                  anchor.href = url
-                  anchor.download = `peskids-submission-${selectedSubmission.submissionId}.csv`
-                  anchor.click()
-                  URL.revokeObjectURL(url)
+                  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                  const url = URL.createObjectURL(blob);
+                  const anchor = document.createElement('a');
+                  anchor.href = url;
+                  anchor.download = `peskids-submission-${selectedSubmission.submissionId}.csv`;
+                  anchor.click();
+                  URL.revokeObjectURL(url);
                 }}
               >
                 <Download className="h-4 w-4" aria-hidden />
@@ -209,13 +223,17 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
           <Card>
             <CardContent className="pt-6">
               <p className="text-sm text-pk-mutedText">Estudiante</p>
-              <p className="mt-1 text-xl font-semibold text-pk-ink">{selectedSubmission.studentName}</p>
+              <p className="mt-1 text-xl font-semibold text-pk-ink">
+                {selectedSubmission.studentName}
+              </p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-6">
               <p className="text-sm text-pk-mutedText">Formulario</p>
-              <p className="mt-1 text-xl font-semibold text-pk-ink">{selectedSubmission.formTitle}</p>
+              <p className="mt-1 text-xl font-semibold text-pk-ink">
+                {selectedSubmission.formTitle}
+              </p>
             </CardContent>
           </Card>
           <Card>
@@ -230,7 +248,9 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
             <CardContent className="pt-6">
               <p className="text-sm text-pk-mutedText">Calificación</p>
               <p className="mt-1 text-2xl font-semibold text-pk-ink">
-                {selectedSubmission.grade !== undefined ? `${selectedSubmission.grade}/${selectedSubmission.maxGrade}` : '—'}
+                {selectedSubmission.grade !== undefined
+                  ? `${selectedSubmission.grade}/${selectedSubmission.maxGrade}`
+                  : '—'}
               </p>
             </CardContent>
           </Card>
@@ -241,7 +261,7 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Users className="h-4 w-4 text-pk-primary" aria-hidden />
-                Etapa del estudiante
+                Nivel del estudiante
               </CardTitle>
               <CardDescription>Dato de interés capturado en el intake.</CardDescription>
             </CardHeader>
@@ -250,7 +270,7 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
               <p className="text-sm text-pk-sub">
                 {selectedSubmission.studentLevel
                   ? 'Se usará para ubicar al alumno en el grupo correcto.'
-                  : 'Todavía no hay una etapa específica asociada a esta entrega.'}
+                  : 'Todavía no hay un nivel específico asociado a esta entrega.'}
               </p>
             </CardContent>
           </Card>
@@ -261,12 +281,15 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
                 <MessageSquare className="h-4 w-4 text-pk-primary" aria-hidden />
                 Feedback del profesor
               </CardTitle>
-              <CardDescription>Notas para devolver la entrega sin salir del flujo de clase.</CardDescription>
+              <CardDescription>
+                Notas para devolver la entrega sin salir del flujo de clase.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="rounded-2xl border border-pk-border bg-pk-muted/25 p-4">
                 <p className="text-sm text-pk-sub">
-                  {selectedSubmission.feedback || 'Todavía no se ha agregado feedback para esta entrega.'}
+                  {selectedSubmission.feedback ||
+                    'Todavía no se ha agregado feedback para esta entrega.'}
                 </p>
               </div>
             </CardContent>
@@ -283,7 +306,15 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
                 <p className="text-2xl font-semibold text-pk-ink">{progressPercent}%</p>
-                <Badge tone={selectedSubmission.status === 'reviewed' ? 'green' : selectedSubmission.status === 'needs_revision' ? 'amber' : 'teal'}>
+                <Badge
+                  tone={
+                    selectedSubmission.status === 'reviewed'
+                      ? 'green'
+                      : selectedSubmission.status === 'needs_revision'
+                        ? 'amber'
+                        : 'teal'
+                  }
+                >
                   {selectedSubmission.status}
                 </Badge>
               </div>
@@ -302,7 +333,8 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
               </p>
               <div className="pt-1 text-sm text-pk-sub">
                 <p>
-                  <span className="font-medium text-pk-ink">ID estudiante:</span> {selectedSubmission.studentId}
+                  <span className="font-medium text-pk-ink">ID estudiante:</span>{' '}
+                  {selectedSubmission.studentId}
                 </p>
                 <p className="mt-1">
                   <span className="font-medium text-pk-ink">Fecha de envío:</span>{' '}
@@ -336,5 +368,5 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
         />
       </div>
     </div>
-  )
+  );
 }
