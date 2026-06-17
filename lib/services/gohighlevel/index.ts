@@ -1,5 +1,9 @@
 export { GoHighLevelClient } from './client.js';
 export type { GoHighLevelClientOptions } from './client.js';
+export {
+  normalizeCustomFieldsForLeadConnector,
+} from './custom-fields.js';
+export type { GhlCustomFieldInput, GhlCustomFieldsInput } from './custom-fields.js';
 export { GoHighLevelService, getGoHighLevelService } from './service.js';
 export {
   GOHIGHLEVEL_DEFAULT_API_URL,
