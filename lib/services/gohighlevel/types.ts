@@ -1,3 +1,7 @@
+import type { GhlCustomFieldInput, GhlCustomFieldsInput } from './custom-fields.js';
+
+export type { GhlCustomFieldInput, GhlCustomFieldsInput };
+
 export interface Contact {
   id: string;
   name: string;
@@ -19,7 +23,7 @@ export interface CreateContactRequest {
   firstName?: string;
   lastName?: string;
   source?: string;
-  customFields?: Record<string, unknown>;
+  customFields?: GhlCustomFieldsInput;
 }
 
 export interface UpdateContactRequest {
@@ -29,7 +33,7 @@ export interface UpdateContactRequest {
   firstName?: string;
   lastName?: string;
   status?: string;
-  customFields?: Record<string, unknown>;
+  customFields?: GhlCustomFieldsInput;
 }
 
 export interface Task {

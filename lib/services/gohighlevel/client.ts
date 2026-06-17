@@ -1,3 +1,4 @@
+import { normalizeCustomFieldsForLeadConnector } from './custom-fields.js';
 import { GOHIGHLEVEL_CALENDAR_API_VERSION } from './env-config.js';
 import type {
   Contact,
@@ -198,6 +199,22 @@ export class GoHighLevelClient {
     return this.locationId;
   }
 
+  private normalizeContactWritePayload<T extends CreateContactRequest | UpdateContactRequest>(
+    data: T
+  ): T {
+    if (!this.usesLeadConnector || data.customFields === undefined) {
+      return data;
+    }
+
+    const customFields = normalizeCustomFieldsForLeadConnector(data.customFields);
+    if (customFields === undefined) {
+      const { customFields: _omit, ...rest } = data;
+      return rest as T;
+    }
+
+    return { ...data, customFields };
+  }
+
   async getContacts(filter?: ListContactsFilter): Promise<ListResponse<Contact>> {
     const params = new URLSearchParams();
     if (this.usesLeadConnector) {
@@ -254,9 +271,10 @@ export class GoHighLevelClient {
   }
 
   async createContact(data: CreateContactRequest): Promise<Contact> {
+    const normalized = this.normalizeContactWritePayload(data);
     const payload = this.usesLeadConnector
-      ? { ...data, locationId: this.requireLocationId() }
-      : data;
+      ? { ...normalized, locationId: this.requireLocationId() }
+      : normalized;
     const path = this.usesLeadConnector ? '/contacts/' : '/v1/contacts';
     const response = await this.request<{ data?: Contact; contact?: Contact }>('POST', path, payload);
     const contact = response.contact ?? response.data;
@@ -270,7 +288,8 @@ export class GoHighLevelClient {
     const path = this.usesLeadConnector
       ? `/contacts/${contactId}?locationId=${encodeURIComponent(this.requireLocationId())}`
       : `/v1/contacts/${contactId}`;
-    const response = await this.request<{ data?: Contact; contact?: Contact }>('PUT', path, data);
+    const payload = this.normalizeContactWritePayload(data);
+    const response = await this.request<{ data?: Contact; contact?: Contact }>('PUT', path, payload);
     const contact = response.contact ?? response.data;
     if (!contact) {
       throw new Error(`Failed to update contact ${contactId}`);
