@@ -4,15 +4,20 @@
 FROM node:20-alpine AS deps
 WORKDIR /repo
 COPY package.json package-lock.json ./
+COPY lib/services/package.json ./lib/services/
 COPY apps/icso/package.json ./apps/icso/
-RUN npm ci --ignore-scripts
+RUN npm ci --ignore-scripts \
+  -w @intcloudsysops/services \
+  -w @intcloudsysops/icso
 
 FROM node:20-alpine AS builder
 WORKDIR /repo
 COPY --from=deps /repo/node_modules ./node_modules
 COPY --from=deps /repo/package.json ./package.json
 COPY --from=deps /repo/package-lock.json ./package-lock.json
+COPY lib/services ./lib/services
 COPY apps/icso ./apps/icso
+RUN npm run build -w @intcloudsysops/services
 WORKDIR /repo/apps/icso
 ENV NEXT_TELEMETRY_DISABLED=1
 ARG NEXT_PUBLIC_SITE_URL=https://intcloudsysops.com
