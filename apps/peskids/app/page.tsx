@@ -4,6 +4,7 @@ import { SiteHeader } from '@/components/layout/site-header';
 import { InstagramFeedSection } from '@/components/marketing/instagram-feed-section';
 import { HeroSection } from '@/components/marketing/hero-section';
 import { LeadCaptureForm } from '@/components/forms';
+import { LevelsSection } from '@/components/marketing/levels-section';
 
 export const metadata = {
   title: 'Peskids — Academia de natación · Medellín',
@@ -27,11 +28,12 @@ export default function HomePage(): React.ReactElement {
             Déjanos tus datos y nuestro equipo se pondrá en contacto contigo pronto.
           </p>
           <Suspense fallback={<div className="h-96" />}>
-            <LeadCaptureForm source="web" />
+            <LeadCaptureForm />
           </Suspense>
         </div>
       </section>
 
+      <LevelsSection />
       <InstagramFeedSection />
       <SiteFooter />
     </div>
