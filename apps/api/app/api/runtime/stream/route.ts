@@ -10,45 +10,29 @@ function adminToken(): string {
 
 export async function GET(request: Request): Promise<Response> {
   const authError = await requireAdminAccessUnlessDemoRead(request);
-  if (authError) {
-    return authError;
-  }
+  if (authError) return authError;
 
   const token = adminToken();
   if (token.length === 0) {
-    return Response.json(
-      { error: 'Server misconfiguration: PLATFORM_ADMIN_TOKEN is not set' },
-      { status: 500 }
-    );
+    return Response.json({ error: 'PLATFORM_ADMIN_TOKEN not set' }, { status: 500 });
   }
 
   try {
     const upstream = await fetch(`${ORCHESTRATOR_INTERNAL_URL}/internal/runtime/stream`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'text/event-stream',
-      },
+      headers: { Authorization: `Bearer ${token}`, Accept: 'text/event-stream' },
       cache: 'no-store',
     });
 
     if (!upstream.ok || upstream.body === null) {
       const text = await upstream.text();
-      return new Response(text, {
-        status: upstream.status,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return new Response(text, { status: upstream.status, headers: { 'Content-Type': 'application/json' } });
     }
 
     return new Response(upstream.body, {
       status: 200,
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
-      },
+      headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive' },
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return Response.json({ error: `orchestrator unreachable: ${message}` }, { status: 503 });
+    return Response.json({ error: `orchestrator unreachable: ${error instanceof Error ? error.message : String(error)}` }, { status: 503 });
   }
 }

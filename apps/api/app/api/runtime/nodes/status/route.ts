@@ -5,8 +5,6 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request): Promise<Response> {
   const authError = await requireAdminAccessUnlessDemoRead(request);
-  if (authError) {
-    return authError;
-  }
+  if (authError) return authError;
   return proxyRuntimeOrchestrator('/internal/runtime/nodes/status');
 }

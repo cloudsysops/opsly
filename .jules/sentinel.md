@@ -44,6 +44,6 @@
 **Prevention:** Mandate the use of `runTrustedPortalDalForPathSlug` (or similar) for ALL methods in portal-facing routes. Use `PORTAL_WRITE_ACCESS` specifically for state-changing operations to ensure only 'owner', 'admin', or 'operator' roles can perform them.
 
 ## 2026-06-17 - [Missing Authorization in Runtime Proxy Endpoints]
-**Vulnerability:** Several administrative runtime endpoints (`/api/runtime/health`, `/api/runtime/nodes/status`, `/api/runtime/capabilities`, and `/api/runtime/stream`) were exposed without any authentication or authorization checks. They used a shared `proxyRuntimeOrchestrator` helper that handled upstream authentication to the internal orchestrator but didn't verify the inbound request's credentials.
-**Learning:** Endpoints that act as proxies or gateways to internal services are high-risk areas. If the proxy helper handles "outbound" security (identifying itself to the internal service) but not "inbound" security (identifying the user), it creates a direct bypass to the internal system.
-**Prevention:** Always apply authorization checks (like `requireAdminAccessUnlessDemoRead`) at the route handler level before calling any proxying or pass-through logic. Ensure that security helpers for proxying explicitly require a validated request context or session.
+**Vulnerability:** Several administrative runtime endpoints (/api/runtime/health, /api/runtime/nodes/status, /api/runtime/capabilities, and /api/runtime/stream) were exposed without authorization.
+**Learning:** Proxy endpoints handling outbound security but not inbound verification create a direct internal bypass.
+**Prevention:** Apply authorization checks at the route handler level before any proxying logic.
