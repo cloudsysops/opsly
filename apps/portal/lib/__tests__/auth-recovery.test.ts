@@ -7,10 +7,13 @@ import {
 } from '../auth-recovery'
 
 describe('auth-recovery routing helpers', () => {
-  it('builds the recovery redirect path under /auth/recovery', () => {
+  it('builds the recovery redirect path via auth callback with next', () => {
     expect(buildRecoveryRedirectTo('https://portal.op-sly.com/')).toBe(
-      'https://portal.op-sly.com/auth/recovery'
+      'https://portal.op-sly.com/auth/callback?next=%2Fadmin%2Fupdate-password'
     )
+    expect(
+      buildRecoveryRedirectTo('https://portal.op-sly.com', { next: '/teacher/update-password' })
+    ).toBe('https://portal.op-sly.com/auth/callback?next=%2Fteacher%2Fupdate-password')
   })
 
   it('detects recovery links from query and hash', () => {

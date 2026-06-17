@@ -77,7 +77,7 @@ export function TeacherLogin(): React.ReactElement {
       const origin =
         typeof window !== 'undefined' ? window.location.origin : 'https://peskids.op-sly.com'
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(trimmed, {
-        redirectTo: buildRecoveryRedirectTo(origin),
+        redirectTo: buildRecoveryRedirectTo(origin, { next: '/teacher/update-password' }),
       })
       if (resetError) {
         setError(

@@ -81,7 +81,7 @@ export function SupportLogin({ authConfig }: { authConfig: AuthPublicConfig }): 
       const origin =
         typeof window !== 'undefined' ? window.location.origin : 'https://peskids.op-sly.com'
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(trimmed, {
-        redirectTo: buildRecoveryRedirectTo(origin),
+        redirectTo: buildRecoveryRedirectTo(origin, { next: '/support/update-password' }),
       })
       if (resetError) {
         setError(isAuthFetchError(resetError.message) ? authFetchErrorMessage() : resetError.message)

@@ -1,5 +1,6 @@
 import { supabaseServer } from '@/lib/supabase';
 import { PESKIDS_APP_ORIGIN } from '@/lib/app-url';
+import { buildRecoveryRedirectTo } from '@/lib/auth-recovery';
 
 const TENANT_SLUG = 'peskids';
 const DEFAULT_OWNER_EMAIL = 'sierrasantiago90@gmail.com';
@@ -84,6 +85,15 @@ function isNonFatalEmailError(err: unknown): boolean {
 
 function getPeskidsSiteUrl(): string {
   return PESKIDS_APP_ORIGIN.replace(/\/$/, '');
+}
+
+function staffRecoveryRedirectTo(role: TeamRole): string {
+  const nextByRole: Partial<Record<TeamRole, string>> = {
+    teacher: '/teacher/update-password',
+    support: '/support/update-password',
+  };
+  const next = nextByRole[role] ?? '/admin/update-password';
+  return buildRecoveryRedirectTo(getPeskidsSiteUrl(), { next });
 }
 
 function getLogoUrl(): string {
@@ -407,7 +417,7 @@ async function createAuthLink(params: {
       data: userData,
       redirectTo:
         params.flow === 'recovery'
-          ? `${getPeskidsSiteUrl()}/auth/recovery`
+          ? staffRecoveryRedirectTo(params.role)
           : `${getPeskidsSiteUrl()}/invite`,
     },
   });
@@ -429,7 +439,7 @@ async function createAuthLink(params: {
   return {
     link:
       params.flow === 'recovery'
-        ? `${getPeskidsSiteUrl()}/auth/recovery?token=${encodeURIComponent(token)}`
+        ? actionLink
         : `${getPeskidsSiteUrl()}/invite/${encodeURIComponent(token)}?email=${encodeURIComponent(params.email)}`,
     token,
   };

@@ -6,6 +6,7 @@ import {
   inviteActivationPathFromUrl,
   isInviteLink,
   isRecoveryLink,
+  recoveryForwardPathFromUrl,
 } from '@/lib/auth-recovery'
 import {
   isLoginSurfacePath,
@@ -46,7 +47,9 @@ export function AuthSessionRedirect(): null {
       return
     }
 
-    window.location.replace(`/auth/recovery${url.search}${url.hash}`)
+    window.location.replace(
+      recoveryForwardPathFromUrl(url, { next: '/update-password' })
+    )
   }, [pathname])
 
   return null

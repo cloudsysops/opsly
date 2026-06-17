@@ -118,9 +118,34 @@ export function resolveRecoveryTargetFromMetadata(
   }
 }
 
-export function buildRecoveryRedirectTo(origin: string): string {
+export type RecoveryRedirectOptions = {
+  /** Post-exchange path, e.g. /admin/update-password */
+  next?: string
+}
+
+export function buildRecoveryRedirectTo(
+  origin: string,
+  options?: RecoveryRedirectOptions
+): string {
   const base = origin.replace(/\/$/, '')
-  return `${base}/auth/recovery`
+  const next = options?.next?.trim() || '/admin/update-password'
+  const normalizedNext = next.startsWith('/') ? next : `/${next}`
+  return `${base}/auth/callback?next=${encodeURIComponent(normalizedNext)}`
+}
+
+/** Client-side forward from landing/login: PKCE `code` must hit server callback, not client recovery. */
+export function recoveryForwardPathFromUrl(
+  url: URL,
+  options?: RecoveryRedirectOptions
+): string {
+  const code = url.searchParams.get('code')
+  if (code) {
+    const next = url.searchParams.get('next')?.trim() || options?.next?.trim() || '/admin/update-password'
+    const normalizedNext = next.startsWith('/') ? next : `/${next}`
+    const params = new URLSearchParams({ code, next: normalizedNext })
+    return `/auth/callback?${params.toString()}`
+  }
+  return `/auth/recovery${url.search}${url.hash}`
 }
 
 function inviteAuthParams(url: URL): URLSearchParams | null {
@@ -215,8 +240,13 @@ export function forwardRecoveryToOrigin(targetOrigin: string): void {
   const url = new URL(window.location.href)
   const base = targetOrigin.replace(/\/$/, '')
   if (url.searchParams.get('code')) {
-    const next = `${base}/auth/recovery?code=${encodeURIComponent(url.searchParams.get('code') ?? '')}`
-    window.location.replace(next)
+    const code = encodeURIComponent(url.searchParams.get('code') ?? '')
+    const next =
+      url.searchParams.get('next')?.trim() || '/admin/update-password'
+    const normalizedNext = next.startsWith('/') ? next : `/${next}`
+    window.location.replace(
+      `${base}/auth/callback?code=${code}&next=${encodeURIComponent(normalizedNext)}`
+    )
     return
   }
   if (url.hash) {
