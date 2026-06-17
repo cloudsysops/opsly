@@ -317,12 +317,12 @@ jobs:
           test -n "${{ secrets.PLATFORM_ADMIN_TOKEN }}"
           test -n "${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
           test -n "${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
-      - name: Run E2E invite script (smoke test)
+      - name: Run E2E invite script
         run: |
           export ADMIN_TOKEN="${{ secrets.PLATFORM_ADMIN_TOKEN }}"
           export OWNER_EMAIL="cboteros1@gmail.com"
           export TENANT_REF="intcloudsysops"
-          bash scripts/test-e2e-invite-flow.sh --dry-run
+          bash scripts/test-e2e-invite-flow.sh
 
       - name: Run Playwright E2E tests (portal with Supabase)
         run: |
