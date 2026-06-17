@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
-import { InstagramFeedSection } from '@/components/marketing/instagram-feed-section';
 import { HeroSection } from '@/components/marketing/hero-section';
 import { LeadCaptureForm } from '@/components/forms';
 import { LevelsSection } from '@/components/marketing/levels-section';
@@ -34,7 +33,6 @@ export default function HomePage(): React.ReactElement {
       </section>
 
       <LevelsSection />
-      <InstagramFeedSection />
       <SiteFooter />
     </div>
   );

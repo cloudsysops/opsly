@@ -16,29 +16,54 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
           <PeskidsLockup height={40} />
         </Link>
         {variant === 'marketing' ? (
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Desktop Navigation */}
             <nav className="hidden items-center gap-6 text-sm font-semibold text-pk-sub md:flex">
-              <a href="#redes" className="hover:text-pk-primary">
-                Instagram
-              </a>
               <Link href="/familias/login" className="hover:text-pk-primary">
-                Acceso invitados
+                Acceso
               </Link>
             </nav>
+
+            {/* Desktop WhatsApp Button */}
             <WhatsAppLink
               variant="button"
               label="WhatsApp"
               className="hidden h-10 px-4 text-xs sm:inline-flex"
             />
+
+            {/* Desktop Instagram Button */}
             <Link
               href={PESKIDS_INSTAGRAM.profileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-pk-primary px-4 text-xs font-bold text-white shadow-sm transition hover:bg-pk-primary/90 sm:hidden"
+              className="hidden h-10 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 px-4 text-xs font-bold text-white shadow-sm transition hover:from-pink-600 hover:via-purple-600 hover:to-blue-600 sm:inline-flex"
             >
               <Instagram className="h-4 w-4" aria-hidden />
-              Seguir
+              Instagram
             </Link>
+
+            {/* Mobile: WhatsApp + Instagram + Acceso */}
+            <div className="flex items-center gap-2 sm:hidden">
+              <WhatsAppLink
+                variant="button"
+                label="WhatsApp"
+                className="inline-flex h-10 px-3 text-xs"
+              />
+              <Link
+                href={PESKIDS_INSTAGRAM.profileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-10 items-center justify-center gap-1 rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 px-3 text-xs font-bold text-white shadow-sm transition"
+              >
+                <Instagram className="h-4 w-4" aria-hidden />
+              </Link>
+              <Link
+                href="/familias/login"
+                className="inline-flex h-10 items-center justify-center rounded-full border border-pk-primary px-3 text-xs font-bold text-pk-primary transition hover:bg-pk-primary/10"
+              >
+                Acceso
+              </Link>
+            </div>
           </div>
         ) : null}
       </div>
