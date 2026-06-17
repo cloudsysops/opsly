@@ -1,4 +1,12 @@
 import type { User } from '@supabase/supabase-js';
+import { recoveryTargetFromMetadata } from '@/lib/auth-recovery';
+
+export function userMetadataRecord(user: User): Record<string, unknown> {
+  return {
+    ...((user.app_metadata ?? {}) as Record<string, unknown>),
+    ...((user.user_metadata ?? {}) as Record<string, unknown>),
+  };
+}
 
 export function resolveLoginPath(nextPath: string): string {
   if (nextPath.startsWith('/familias')) return '/familias/login';
@@ -14,4 +22,11 @@ export function resolvePostAuthPath(next: string | null, user: User): string {
   if (role === 'teacher') return '/teacher/dashboard';
   if (role === 'support') return '/support/dashboard';
   return '/admin';
+}
+
+export function resolveRecoveryUpdatePath(user: User, nextPath: string | null): string {
+  if (nextPath?.includes('update-password')) {
+    return nextPath.startsWith('/') ? nextPath : `/${nextPath}`;
+  }
+  return recoveryTargetFromMetadata(userMetadataRecord(user)).updatePasswordPath;
 }

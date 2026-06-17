@@ -7,6 +7,7 @@ import {
   isInviteLink,
   isRecoveryLink,
   metadataFromJwtAccessToken,
+  recoveryForwardPathFromUrl,
   resolveRecoveryTargetFromMetadata,
   type RecoveryTarget,
   type RecoveryRoutingConfig,
@@ -49,6 +50,7 @@ export {
   isInviteLink,
   isRecoveryLink,
   metadataFromJwtAccessToken,
+  recoveryForwardPathFromUrl,
 }
 
 export function recoveryTargetFromMetadata(meta: Record<string, unknown>): RecoveryTarget {

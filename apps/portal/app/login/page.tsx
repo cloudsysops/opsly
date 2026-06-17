@@ -72,7 +72,7 @@ export default function LoginPage(): ReactElement {
       const origin =
         typeof window !== 'undefined' ? window.location.origin : 'https://portal.op-sly.com';
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(trimmed, {
-        redirectTo: buildRecoveryRedirectTo(origin),
+        redirectTo: buildRecoveryRedirectTo(origin, { next: '/update-password' }),
       });
       if (resetError) {
         setError(resetError.message);
