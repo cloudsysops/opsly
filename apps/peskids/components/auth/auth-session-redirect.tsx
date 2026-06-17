@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { inviteActivationPathFromUrl, isInviteLink, isRecoveryLink } from '@/lib/auth-recovery';
+import { recoveryForwardPathFromUrl } from '@/lib/runtime/tenant-auth-routing';
 import {
   isLoginSurfacePath,
   isRecoverySurfacePath,
@@ -17,7 +18,8 @@ const PESKIDS_AUTH_SURFACE = {
 } as const;
 
 /**
- * Recovery links that hit the public landing or admin login are forwarded to /auth/recovery.
+ * Recovery links that hit the public landing or admin login are forwarded to the server
+ * auth callback (PKCE `code`) or /auth/recovery (hash-only legacy links).
  */
 export function AuthSessionRedirect(): null {
   useEffect(() => {
@@ -42,8 +44,9 @@ export function AuthSessionRedirect(): null {
       return;
     }
 
-    const target = `/auth/recovery${url.search}${url.hash}`;
-    window.location.replace(target);
+    window.location.replace(
+      recoveryForwardPathFromUrl(url, { next: '/admin/update-password' })
+    );
   }, []);
 
   return null;

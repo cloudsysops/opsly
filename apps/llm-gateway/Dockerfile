@@ -25,6 +25,7 @@ RUN npm ci --ignore-scripts \
   -w @intcloudsysops/prompt-guard \
   -w @intcloudsysops/llm-gateway
 RUN npm run build -w @intcloudsysops/types && \
+    npm run build -w @intcloudsysops/prompt-guard && \
     npm run build -w @intcloudsysops/llm-gateway
 
 FROM node:20-alpine AS runner

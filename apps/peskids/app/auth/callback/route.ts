@@ -1,8 +1,8 @@
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { resolveLoginPath, resolvePostAuthPath } from '@/lib/auth-callback';
+import { exchangeAuthCodeOnServer } from '@/lib/auth-server-exchange';
+import { resolveLoginPath, resolvePostAuthPath, resolveRecoveryUpdatePath } from '@/lib/auth-callback';
+import { recoveryExchangeErrorMessage } from '@/lib/auth-recovery-messages';
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const requestUrl = new URL(request.url);
@@ -15,35 +15,20 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.redirect(new URL(errorLoginPath, requestUrl.origin));
   }
 
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options);
-          });
-        },
-      },
-    }
-  );
-
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
-
-  if (error) {
-    console.error('Auth callback error:', error.message);
-    return NextResponse.redirect(new URL(errorLoginPath, requestUrl.origin));
+  const result = await exchangeAuthCodeOnServer(code);
+  if (!result.ok) {
+    const message =
+      'message' in result.error
+        ? recoveryExchangeErrorMessage(result.error.message)
+        : 'auth_error';
+    console.error('Auth callback error:', message);
+    const loginWithError = new URL(errorLoginPath, requestUrl.origin);
+    loginWithError.searchParams.set('error', message);
+    return NextResponse.redirect(loginWithError);
   }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const redirectPath = user ? resolvePostAuthPath(nextPath, user) : errorLoginPath;
+  const redirectPath = nextPath?.includes('update-password')
+    ? resolveRecoveryUpdatePath(result.user, nextPath)
+    : resolvePostAuthPath(nextPath, result.user);
   return NextResponse.redirect(new URL(redirectPath, requestUrl.origin));
 }

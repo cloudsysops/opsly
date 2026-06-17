@@ -39,12 +39,11 @@ export function AuthRecoveryHandler({
     }
 
     const url = new URL(window.location.href)
-    const code = url.searchParams.get('code')
     const hash = url.hash.replace(/^#/, '')
 
     if (hash) {
       const hashParams = new URLSearchParams(hash)
-      if (hashParams.get('error') && !code) {
+      if (hashParams.get('error') && !url.searchParams.get('code')) {
         const hashErrorCode = hashParams.get('error_code') ?? ''
         const description =
           hashParams.get('error_description')?.replace(/\+/g, ' ') ?? hashParams.get('error')
@@ -74,25 +73,6 @@ export function AuthRecoveryHandler({
     })
 
     void (async () => {
-      if (code) {
-        const { data, error } = await supabase.auth.exchangeCodeForSession(code)
-        if (error) {
-          setMessage(error.message)
-          return
-        }
-        if (data.user) {
-          const meta = {
-            ...((data.user.app_metadata ?? {}) as Record<string, unknown>),
-            ...((data.user.user_metadata ?? {}) as Record<string, unknown>),
-          }
-          if (routeAwayIfWrongApp(meta)) {
-            return
-          }
-        }
-        finishToUpdatePassword()
-        return
-      }
-
       if (hash && (hash.includes('access_token') || hash.includes('type=recovery'))) {
         const {
           data: { session },

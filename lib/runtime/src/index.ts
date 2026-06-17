@@ -28,6 +28,7 @@ export {
   isInviteLink,
   isRecoveryLink,
   metadataFromJwtAccessToken,
+  recoveryForwardPathFromUrl,
   resolveRecoveryTargetFromMetadata,
   type RecoveryApp,
   type RecoveryRoutingConfig,
