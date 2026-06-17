@@ -18,7 +18,7 @@ export default function HomePage(): React.ReactElement {
       <SiteHeader />
       <HeroSection />
 
-      {/* Lead Capture Section */}
+      {/* Lead Capture Form Section - Consolidate from /instagram page */}
       <section className="bg-pk-surface/50 px-4 py-12 sm:px-8 lg:px-14">
         <div className="mx-auto max-w-2xl">
           <h2 className="text-2xl sm:text-3xl font-bold text-pk-ink mb-2 text-center">
