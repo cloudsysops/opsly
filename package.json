@@ -158,7 +158,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "fast-xml-builder": "1.2.0",
-    "hono": "4.12.26",
+    "hono": "4.12.23",
     "husky": "^9.1.7",
     "ip-address": "10.2.0",
     "js-yaml": "^4.1.1",
@@ -202,14 +202,14 @@
     "postcss": "8.5.13",
     "lodash": "^4.18.1",
     "minimist": "^1.2.8",
-    "tmp": "0.2.3",
+    "tmp": "0.2.6",
     "uuid": "^14.0.0",
     "fast-uri": "3.1.2",
     "fast-xml-builder": "1.2.0",
     "fast-xml-parser": {
       "fast-xml-builder": "1.2.0"
     },
-    "hono": "4.12.26",
+    "hono": "4.12.23",
     "ip-address": "10.2.0",
     "express-rate-limit": {
       "ip-address": "10.2.0"
