@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceClient } from '@/lib/supabase';
+import { requireAdminAccess } from '@/lib/auth';
 
 // Sprint 9: These functions will be implemented in @intcloudsysops/notebooklm-agent
 interface TenantNotebookConfig {
@@ -53,6 +54,11 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ ref: string }> }
 ): Promise<NextResponse> {
+  const authError = await requireAdminAccess(request);
+  if (authError) {
+    return authError as unknown as NextResponse;
+  }
+
   try {
     const { ref: slug } = await params;
     const supabase = getServiceClient();
@@ -112,6 +118,11 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ ref: string }> }
 ): Promise<NextResponse> {
+  const authError = await requireAdminAccess(request);
+  if (authError) {
+    return authError as unknown as NextResponse;
+  }
+
   try {
     const { ref: slug } = await params;
     const body = await request.json().catch(() => ({}));

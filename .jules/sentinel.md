@@ -42,3 +42,8 @@
 **Vulnerability:** The `POST /api/peskids/portal/[tenantSlug]/forms` endpoint was exposed without any authorization checks. An attacker could create arbitrary form records for any tenant by simply knowing their `tenantSlug`.
 **Learning:** When using `runTrustedPortalDalForPathSlug`, it's critical to consistently apply it to all HTTP methods in a route handler. Rapidly developed endpoints might only secure `GET` while leaving `POST/PATCH/DELETE` wide open.
 **Prevention:** Mandate the use of `runTrustedPortalDalForPathSlug` (or similar) for ALL methods in portal-facing routes. Use `PORTAL_WRITE_ACCESS` specifically for state-changing operations to ensure only 'owner', 'admin', or 'operator' roles can perform them.
+
+## 2026-06-18 - [Missing Authorization in NotebookLM Tenant Configuration]
+**Vulnerability:** The `/api/tenants/[slug]/notebooklm` and `/api/v1/tenants/[ref]/notebooklm` endpoints were exposed without any authentication or authorization checks. These routes provided access to sensitive AI configurations and source data for individual tenants.
+**Learning:** Even when following a `[slug]` pattern, if the route is not wrapped in `runTrustedPortalDal` or explicitly calls `requireAdminAccess`, it remains public. Tenant-specific AI assets are as sensitive as database records and require the same level of perimeter protection.
+**Prevention:** Conduct regular scans for route handlers in `apps/api` that do not import from `lib/auth` or `lib/portal-tenant-dal`. Mandate security tests that specifically verify 401/403 responses for all new tenant-facing functional areas.
