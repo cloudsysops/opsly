@@ -94,4 +94,11 @@ describe('auth recovery PKCE contract (regression guard)', () => {
     expect(source).toMatch(/exchangeAuthCodeOnServer/);
     expect(source).not.toMatch(/createClient\(/);
   });
+
+  it('persists Supabase session cookies on the auth callback redirect response', () => {
+    const source = readFileSync(resolve(repoRoot, 'app/auth/callback/route.ts'), 'utf8');
+    expect(source).toMatch(/pendingCookies/);
+    expect(source).toMatch(/response\.cookies\.set/);
+    expect(source).not.toMatch(/exchangeAuthCodeOnServer/);
+  });
 });
