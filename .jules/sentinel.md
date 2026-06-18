@@ -42,3 +42,8 @@
 **Vulnerability:** The `POST /api/peskids/portal/[tenantSlug]/forms` endpoint was exposed without any authorization checks. An attacker could create arbitrary form records for any tenant by simply knowing their `tenantSlug`.
 **Learning:** When using `runTrustedPortalDalForPathSlug`, it's critical to consistently apply it to all HTTP methods in a route handler. Rapidly developed endpoints might only secure `GET` while leaving `POST/PATCH/DELETE` wide open.
 **Prevention:** Mandate the use of `runTrustedPortalDalForPathSlug` (or similar) for ALL methods in portal-facing routes. Use `PORTAL_WRITE_ACCESS` specifically for state-changing operations to ensure only 'owner', 'admin', or 'operator' roles can perform them.
+
+## 2026-06-18 - [Missing Authorization in NotebookLM API]
+**Vulnerability:** The `/api/tenants/[slug]/notebooklm` and `/api/v1/tenants/[ref]/notebooklm` endpoints (both GET and POST) were exposed without any authentication or authorization checks. Anyone could read tenant notebook configurations and trigger synchronization jobs.
+**Learning:** New experimental features or "Sprint" items (like NotebookLM in Sprint 9) are often scaffolded without standard security wrappers, leading to authorization gaps in early implementations.
+**Prevention:** Always include `requireAdminAccess` or `runTrustedPortalDalForPathSlug` during the initial scaffolding of new API routes. Add automated security scans to detect routes missing authorization helpers.
