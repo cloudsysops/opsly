@@ -155,6 +155,12 @@ export function readPortalTenantSlugFromUser(user: {
 }
 
 export async function fetchPortalTenantRowBySlug(slug: string): Promise<PortalTenantLookup> {
+  const cacheKey = `tenant_by_slug:${slug}`;
+  const cached = await getCache<PortalTenantLookup>(cacheKey);
+  if (cached !== null) {
+    return cached;
+  }
+
   const { data: tenant, error } = await getServiceClient()
     .schema('platform')
     .from('tenants')
@@ -168,9 +174,18 @@ export async function fetchPortalTenantRowBySlug(slug: string): Promise<PortalTe
     return { ok: false, reason: 'db' };
   }
   if (!tenant) {
-    return { ok: false, reason: 'not_found' };
+    const result: PortalTenantLookup = { ok: false, reason: 'not_found' };
+    // Cache negative result to prevent hammering DB for missing tenants
+    void setCache(cacheKey, result, CACHE_TTL.SHORT);
+    return result;
   }
-  return { ok: true, row: tenant as PortalTenantRow };
+  const result: PortalTenantLookup = { ok: true, row: tenant as PortalTenantRow };
+
+  // Bolt Optimization: cache tenant metadata for 60s to reduce Supabase overhead
+  // on every authorized request.
+  void setCache(cacheKey, result, CACHE_TTL.SHORT);
+
+  return result;
 }
 
 export async function fetchPortalTenantMembership(params: {
