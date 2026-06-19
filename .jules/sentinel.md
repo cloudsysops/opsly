@@ -42,8 +42,3 @@
 **Vulnerability:** The `POST /api/peskids/portal/[tenantSlug]/forms` endpoint was exposed without any authorization checks. An attacker could create arbitrary form records for any tenant by simply knowing their `tenantSlug`.
 **Learning:** When using `runTrustedPortalDalForPathSlug`, it's critical to consistently apply it to all HTTP methods in a route handler. Rapidly developed endpoints might only secure `GET` while leaving `POST/PATCH/DELETE` wide open.
 **Prevention:** Mandate the use of `runTrustedPortalDalForPathSlug` (or similar) for ALL methods in portal-facing routes. Use `PORTAL_WRITE_ACCESS` specifically for state-changing operations to ensure only 'owner', 'admin', or 'operator' roles can perform them.
-
-## 2026-06-25 - [Missing Authorization in Governance APIs]
-**Vulnerability:** The `/api/governance/consent` and `/api/governance/dsar` endpoints were exposed without any authentication or rate limiting. These endpoints allow inserting records into the `governance` schema and triggering DSAR workflows.
-**Learning:** Governance or compliance endpoints that use the service role client (bypassing RLS) must be explicitly secured with internal secrets and rate limiting to prevent database spam and unauthorized data insertion.
-**Prevention:** Audit all endpoints that interact with sensitive schemas (like `governance` or `platform`) and ensure they implement mandatory secret-based authorization or role-based access control.

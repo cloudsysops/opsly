@@ -26,9 +26,7 @@ export async function GET(
   const { data, error } = await client
     .schema('governance')
     .from('dsar_requests')
-    .select(
-      'id, tenant_id, subject_email, request_type, status, created_at, sla_deadline, fulfilled_at'
-    )
+    .select('id, tenant_id, subject_email, request_type, status, created_at, sla_deadline, fulfilled_at')
     .eq('verification_token', token)
     .single();
 
@@ -36,7 +34,6 @@ export async function GET(
     return Response.json({ error: 'Request not found' }, { status: 404 });
   }
 
-  // Mark as verified if still in received state
   if (data.status === 'received') {
     await client
       .schema('governance')

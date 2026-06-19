@@ -9,11 +9,7 @@ const dsarSchema = z.object({
   request_type: z.enum(['access', 'rectify', 'delete', 'object', 'portability']),
 });
 
-// SLA in business days per jurisdiction: 15 (Ley 1581/Colombia), 45 calendar (CCPA/USA)
-const SLA_DAYS: Record<string, number> = {
-  peskids: 15,
-  default: 30,
-};
+const SLA_DAYS: Record<string, number> = { peskids: 15, default: 30 };
 
 function addBusinessDays(date: Date, days: number): Date {
   const result = new Date(date);
@@ -33,7 +29,6 @@ function generateToken(): string {
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
-  // Internal-only endpoint: requires service-role secret header
   const authHeader = request.headers.get('authorization');
   const expectedToken = process.env.GOVERNANCE_BREACH_SECRET;
   if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
@@ -60,10 +55,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   const parsed = dsarSchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json(
-      { error: 'Invalid payload', details: parsed.error.flatten() },
-      { status: 400 }
-    );
+    return Response.json({ error: 'Invalid payload', details: parsed.error.flatten() }, { status: 400 });
   }
 
   const { tenant_id, subject_email, request_type } = parsed.data;
@@ -75,13 +67,7 @@ export async function POST(request: NextRequest): Promise<Response> {
   const { data, error } = await client
     .schema('governance')
     .from('dsar_requests')
-    .insert({
-      tenant_id,
-      subject_email,
-      request_type,
-      sla_deadline,
-      verification_token,
-    })
+    .insert({ tenant_id, subject_email, request_type, sla_deadline, verification_token })
     .select('id, created_at, sla_deadline')
     .single();
 
@@ -89,18 +75,5 @@ export async function POST(request: NextRequest): Promise<Response> {
     console.error('[governance][dsar] insert error', error);
     return Response.json({ error: 'Failed to create DSAR request' }, { status: 500 });
   }
-
-  // TODO: send verification email via Resend with token link
-  // await sendDsarVerificationEmail({ subject_email, token: verification_token, tenant_id });
-
-  return Response.json(
-    {
-      ok: true,
-      request_id: data.id,
-      created_at: data.created_at,
-      sla_deadline: data.sla_deadline,
-      message: 'Request received. Check your email for a verification link.',
-    },
-    { status: 201 }
-  );
+  return Response.json({ ok: true, request_id: data.id, created_at: data.created_at, sla_deadline: data.sla_deadline, message: 'Request received. Check your email for a verification link.' }, { status: 201 });
 }

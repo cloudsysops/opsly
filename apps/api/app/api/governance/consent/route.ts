@@ -13,7 +13,6 @@ const consentSchema = z.object({
 });
 
 export async function POST(request: NextRequest): Promise<Response> {
-  // Internal-only endpoint: requires service-role secret header
   const authHeader = request.headers.get('authorization');
   const expectedToken = process.env.GOVERNANCE_BREACH_SECRET;
   if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
@@ -40,23 +39,15 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   const parsed = consentSchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json(
-      { error: 'Invalid payload', details: parsed.error.flatten() },
-      { status: 400 }
-    );
+    return Response.json({ error: 'Invalid payload', details: parsed.error.flatten() }, { status: 400 });
   }
 
   const user_agent = request.headers.get('user-agent') ?? null;
-
   const client = getServiceClient();
   const { data, error } = await client
     .schema('governance')
     .from('consents')
-    .insert({
-      ...parsed.data,
-      ip,
-      user_agent,
-    })
+    .insert({ ...parsed.data, ip: ip === 'unknown' ? null : ip, user_agent })
     .select('id, granted_at')
     .single();
 
@@ -64,9 +55,5 @@ export async function POST(request: NextRequest): Promise<Response> {
     console.error('[governance][consent] insert error', error);
     return Response.json({ error: 'Failed to record consent' }, { status: 500 });
   }
-
-  return Response.json(
-    { ok: true, consent_id: data.id, granted_at: data.granted_at },
-    { status: 201 }
-  );
+  return Response.json({ ok: true, consent_id: data.id, granted_at: data.granted_at }, { status: 201 });
 }
