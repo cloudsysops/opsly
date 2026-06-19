@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
 import { getServiceClient } from '../../../../lib/supabase';
 
 const consentSchema = z.object({
@@ -12,6 +13,24 @@ const consentSchema = z.object({
 });
 
 export async function POST(request: NextRequest): Promise<Response> {
+  // Internal-only endpoint: requires service-role secret header
+  const authHeader = request.headers.get('authorization');
+  const expectedToken = process.env.GOVERNANCE_BREACH_SECRET;
+  if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const ip =
+    request.headers.get('cf-connecting-ip') ??
+    request.headers.get('x-real-ip') ??
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    'unknown';
+
+  const ratelimit = await checkRateLimit(`governance:consent:${ip}`);
+  if (!ratelimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: 429 });
+  }
+
   let body: unknown;
   try {
     body = await request.json();
@@ -27,10 +46,6 @@ export async function POST(request: NextRequest): Promise<Response> {
     );
   }
 
-  const ip =
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-    request.headers.get('x-real-ip') ??
-    null;
   const user_agent = request.headers.get('user-agent') ?? null;
 
   const client = getServiceClient();

@@ -1,13 +1,25 @@
 import type { NextRequest } from 'next/server';
+import { checkRateLimit } from '../../../../../lib/rate-limiter';
 import { getServiceClient } from '../../../../../lib/supabase';
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ token: string }> }
 ): Promise<Response> {
   const { token } = await params;
   if (!token || token.length < 10) {
     return Response.json({ error: 'Invalid token' }, { status: 400 });
+  }
+
+  const ip =
+    request.headers.get('cf-connecting-ip') ??
+    request.headers.get('x-real-ip') ??
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    'unknown';
+
+  const ratelimit = await checkRateLimit(`governance:dsar-verify:${ip}`);
+  if (!ratelimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: 429 });
   }
 
   const client = getServiceClient();
