@@ -45,7 +45,13 @@ export function HeroSection(): React.ReactElement {
         <WiggleLine width={120} color="rgba(76,184,176,0.95)" className="mt-8" />
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-          <WhatsAppLink variant="hero" label="Reservar por WhatsApp" />
+          <Link
+            href="#reserva"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-pk-primary px-6 text-sm font-bold text-white shadow-md transition hover:bg-pk-primary/90"
+          >
+            Reservar clase gratuita
+          </Link>
+          <WhatsAppLink variant="hero" label="Hablar por WhatsApp" />
           <Link
             href="#redes"
             className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/10 px-6 text-sm font-bold text-white transition hover:border-white/30 hover:bg-white/15"
@@ -56,17 +62,15 @@ export function HeroSection(): React.ReactElement {
         </div>
 
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/65">
-          Reservas y consultas por WhatsApp. El portal de familias es{' '}
-          <strong className="font-semibold text-white/85">solo por invitación</strong> cuando ya
-          tienes clase o reserva activa con nosotros.
+          ¿Prefieres escribirnos directo? También puedes reservar por WhatsApp.
         </p>
 
         <Link
           href="/familias/login"
-          className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white transition hover:border-white/25 hover:bg-white/10"
+          className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#2DB7B0]/40 bg-[#004C63]/80 px-5 py-2.5 text-sm font-semibold text-white transition hover:border-[#2DB7B0]/60 hover:bg-[#004C63]"
         >
-          <Mail className="h-4 w-4 text-pk-primary" aria-hidden />
-          Ya tengo invitación — ingresar con mi correo
+          <Mail className="h-4 w-4 text-[#2DB7B0]" aria-hidden />
+          Acceso familias
         </Link>
 
         <div className="relative mt-10 flex flex-wrap gap-10">
