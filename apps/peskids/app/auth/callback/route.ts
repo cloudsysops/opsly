@@ -1,34 +1,102 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { exchangeAuthCodeOnServer } from '@/lib/auth-server-exchange';
-import { resolveLoginPath, resolvePostAuthPath, resolveRecoveryUpdatePath } from '@/lib/auth-callback';
+import { createServerClient, type SetAllCookies } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
+import {
+  resolveLoginPath,
+  resolvePostAuthPath,
+  resolveRecoveryUpdatePath,
+} from '@/lib/auth-callback';
 import { recoveryExchangeErrorMessage } from '@/lib/auth-recovery-messages';
 
+function getSupabaseConfig(): { url: string; anon: string } | null {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? '';
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ?? '';
+  if (!url || !anon) {
+    return null;
+  }
+  return { url, anon };
+}
+
+function redirectWithError(
+  requestUrl: URL,
+  loginPath: string,
+  message: string
+): NextResponse {
+  const loginWithError = new URL(loginPath, requestUrl.origin);
+  loginWithError.searchParams.set('error', message);
+  return NextResponse.redirect(loginWithError);
+}
+
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const requestUrl = new URL(request.url);
+  const requestUrl = request.nextUrl;
   const code = requestUrl.searchParams.get('code');
+  const tokenHash = requestUrl.searchParams.get('token_hash');
+  const otpType = requestUrl.searchParams.get('type');
   const next = requestUrl.searchParams.get('next');
   const nextPath = next && next.startsWith('/') ? next : null;
   const errorLoginPath = resolveLoginPath(nextPath ?? '/admin');
+
+  const config = getSupabaseConfig();
+  if (!config) {
+    return redirectWithError(requestUrl, errorLoginPath, 'auth_not_configured');
+  }
+
+  let pendingCookies: Parameters<SetAllCookies>[0] = [];
+  const supabase = createServerClient(config.url, config.anon, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet: Parameters<SetAllCookies>[0]) {
+        pendingCookies = cookiesToSet;
+      },
+    },
+  });
+
+  if (tokenHash && otpType === 'recovery') {
+    const { data, error } = await supabase.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: 'recovery',
+    });
+    if (error) {
+      const message = recoveryExchangeErrorMessage(error.message);
+      console.error('Auth callback verifyOtp error:', message);
+      return redirectWithError(requestUrl, errorLoginPath, message);
+    }
+    if (!data.user) {
+      return redirectWithError(requestUrl, errorLoginPath, 'missing_user');
+    }
+
+    const redirectPath = nextPath?.includes('update-password')
+      ? resolveRecoveryUpdatePath(data.user, nextPath)
+      : resolvePostAuthPath(nextPath, data.user);
+    const response = NextResponse.redirect(new URL(redirectPath, requestUrl.origin));
+    pendingCookies.forEach(({ name, value, options }) => {
+      response.cookies.set(name, value, options);
+    });
+    return response;
+  }
 
   if (!code) {
     return NextResponse.redirect(new URL(errorLoginPath, requestUrl.origin));
   }
 
-  const result = await exchangeAuthCodeOnServer(code);
-  if (!result.ok) {
-    const message =
-      'message' in result.error
-        ? recoveryExchangeErrorMessage(result.error.message)
-        : 'auth_error';
+  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+  if (error) {
+    const message = recoveryExchangeErrorMessage(error.message);
     console.error('Auth callback error:', message);
-    const loginWithError = new URL(errorLoginPath, requestUrl.origin);
-    loginWithError.searchParams.set('error', message);
-    return NextResponse.redirect(loginWithError);
+    return redirectWithError(requestUrl, errorLoginPath, message);
+  }
+  if (!data.user) {
+    return redirectWithError(requestUrl, errorLoginPath, 'missing_user');
   }
 
   const redirectPath = nextPath?.includes('update-password')
-    ? resolveRecoveryUpdatePath(result.user, nextPath)
-    : resolvePostAuthPath(nextPath, result.user);
-  return NextResponse.redirect(new URL(redirectPath, requestUrl.origin));
+    ? resolveRecoveryUpdatePath(data.user, nextPath)
+    : resolvePostAuthPath(nextPath, data.user);
+
+  const response = NextResponse.redirect(new URL(redirectPath, requestUrl.origin));
+  pendingCookies.forEach(({ name, value, options }) => {
+    response.cookies.set(name, value, options);
+  });
+  return response;
 }
