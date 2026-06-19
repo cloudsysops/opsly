@@ -1,7 +1,7 @@
 {
   "name": "intcloudsysops",
   "private": true,
-  "packageManager": "npm@10.8.3",
+  "packageManager": "npm@11.12.1",
   "dependencies": {
     "dompurify": "3.4.11",
     "js-tiktoken": "^1.0.21",
@@ -136,6 +136,7 @@
     "opsly:git-sync": "bash scripts/git-sync-repo.sh",
     "opsly:repos:status": "bash scripts/opsly-repo-align.sh --status",
     "opsly:repos:align": "bash scripts/opsly-repo-align.sh --local --vps --branch main --vps-reset",
+    "opsly:status": "bash scripts/opsly-status.sh",
     "postinstall": "cd lib/content-studio && npm run build 2>/dev/null || true",
     "prepare": "husky",
     "commit": "git-cz",

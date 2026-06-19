@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://opsly.local/schema/client-launch.schema.json",
+  "title": "Opsly Client Launch Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tenant_slug",
+    "business_name",
+    "industry",
+    "country",
+    "timezone",
+    "domain",
+    "whatsapp_number",
+    "primary_email",
+    "offer_type",
+    "lead_sources",
+    "ghl_location_id"
+  ],
+  "properties": {
+    "tenant_slug": {
+      "type": "string",
+      "minLength": 2,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "business_name": { "type": "string", "minLength": 1 },
+    "industry": { "type": "string", "minLength": 1 },
+    "country": { "type": "string", "minLength": 2 },
+    "timezone": { "type": "string", "minLength": 1 },
+    "domain": { "type": "string", "minLength": 1 },
+    "whatsapp_number": { "type": "string", "minLength": 1 },
+    "primary_email": { "type": "string", "format": "email" },
+    "offer_type": {
+      "type": "string",
+      "enum": ["free class", "quote", "appointment", "consultation", "other"]
+    },
+    "lead_sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "ghl_location_id": { "type": "string", "minLength": 1 },
+    "ghl_pipeline_id": { "type": "string", "minLength": 1 },
+    "brand_basic": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "logo": { "type": "string" },
+        "colors": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "tone": { "type": "string", "minLength": 1 }
+      }
+    },
+    "services": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "form_fields": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "cta_text": { "type": "string", "minLength": 1 },
+    "fallback_behavior": {
+      "type": "string",
+      "enum": ["whatsapp", "email", "manual_review", "notify_owner"]
+    },
+    "marketplace_enabled": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}
+
