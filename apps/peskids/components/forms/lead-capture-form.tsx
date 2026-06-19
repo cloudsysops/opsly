@@ -23,12 +23,28 @@ const initialForm = {
 // Version of the parental+treatment consent policy shown to the user
 const CONSENT_POLICY_VERSION = 'pk-parental-v1+pk-privacy-v1@1.0'
 
-export function LeadCaptureForm({ source = 'web' }: { source?: string }): React.ReactElement {
+type LeadCaptureFormProps = {
+  source?: string
+  campaign?: string
+  defaultReferralSource?: string
+  /** When true, omits card header (used inside PeskidsReservationLanding). */
+  embedded?: boolean
+}
+
+export function LeadCaptureForm({
+  source = 'web',
+  campaign,
+  defaultReferralSource = '',
+  embedded = false,
+}: LeadCaptureFormProps): React.ReactElement {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [formData, setFormData] = useState(initialForm)
+  const [formData, setFormData] = useState({
+    ...initialForm,
+    referral_source: defaultReferralSource,
+  })
   const [consentTreatment, setConsentTreatment] = useState(false)
   const [consentMarketing, setConsentMarketing] = useState(false)
   const referredByCode = useMemo(() => searchParams.get('ref')?.trim().toUpperCase() ?? '', [searchParams])
@@ -80,6 +96,7 @@ export function LeadCaptureForm({ source = 'web' }: { source?: string }): React.
         email: formData.email,
         phone: formData.phone || null,
         source,
+        campaign: campaign ?? null,
         class_modality: formData.class_modality || null,
         neighborhood: formData.neighborhood || null,
         grade_interested: formData.grade_interested || null,
@@ -115,27 +132,34 @@ export function LeadCaptureForm({ source = 'web' }: { source?: string }): React.
 
   return (
     <Card
-      id="contacto"
+      id={embedded ? undefined : 'contacto'}
       accent="teal"
       hover
       className="scroll-mt-28 overflow-hidden border-2 border-pk-primary/40 shadow-[0_20px_50px_rgba(45,183,176,0.22)] ring-2 ring-pk-primary/15"
     >
-      <CardHeader className="border-0 bg-gradient-to-br from-pk-primary/10 via-pk-bg to-pk-surface pb-2">
-        <p className="pk-eyebrow text-pk-primary">Reserva aquí</p>
-        <CardTitle className="text-2xl sm:text-3xl">Clase de prueba gratis</CardTitle>
-        <CardDescription>
-          Clases en nuestra sede de <strong className="text-pk-ink">Llanogrande</strong> o{' '}
-          <strong className="text-pk-ink">a domicilio</strong> en el área metropolitana. Te
-          contactamos en menos de 48 horas hábiles.{' '}
-          <WhatsAppLink variant="button" label="Prefiero WhatsApp" className="mt-2 w-full sm:w-auto" />
-        </CardDescription>
-        {referredByCode ? (
-          <p className="mt-3 rounded-xl border border-pk-primary/20 bg-pk-primary/10 px-3 py-2 text-xs font-medium text-pk-primary">
+      {embedded ? null : (
+        <CardHeader className="border-0 bg-gradient-to-br from-pk-primary/10 via-pk-bg to-pk-surface pb-2">
+          <p className="pk-eyebrow text-pk-primary">Reserva aquí</p>
+          <CardTitle className="text-2xl sm:text-3xl">Clase de prueba gratis</CardTitle>
+          <CardDescription>
+            Clases en nuestra sede de <strong className="text-pk-ink">Llanogrande</strong> o{' '}
+            <strong className="text-pk-ink">a domicilio</strong> en el área metropolitana. Te
+            contactamos en menos de 48 horas hábiles.{' '}
+            <WhatsAppLink variant="button" label="Prefiero WhatsApp" className="mt-2 w-full sm:w-auto" />
+          </CardDescription>
+          {referredByCode ? (
+            <p className="mt-3 rounded-xl border border-pk-primary/20 bg-pk-primary/10 px-3 py-2 text-xs font-medium text-pk-primary">
+              Código de recomendación activo: <span className="font-mono">{referredByCode}</span>
+            </p>
+          ) : null}
+        </CardHeader>
+      )}
+      <CardContent className={embedded ? 'pt-6' : undefined}>
+        {referredByCode && embedded ? (
+          <p className="mb-4 rounded-xl border border-pk-primary/20 bg-pk-primary/10 px-3 py-2 text-xs font-medium text-pk-primary">
             Código de recomendación activo: <span className="font-mono">{referredByCode}</span>
           </p>
         ) : null}
-      </CardHeader>
-      <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="name" required>

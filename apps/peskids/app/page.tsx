@@ -1,10 +1,10 @@
-import { Suspense } from 'react';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { InstagramFeedSection } from '@/components/marketing/instagram-feed-section';
 import { HeroSection } from '@/components/marketing/hero-section';
-import { LeadCaptureForm } from '@/components/forms';
 import { LevelsSection } from '@/components/marketing/levels-section';
+import { PeskidsReservationLanding } from '@/components/marketing/peskids-reservation-landing';
+import { PESKIDS_HOME_LANDING } from '@/lib/peskids-landing-config';
 
 export const metadata = {
   title: 'Peskids — Academia de natación · Medellín',
@@ -17,22 +17,11 @@ export default function HomePage(): React.ReactElement {
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
       <HeroSection />
-
-      {/* Lead Capture Section */}
-      <section className="bg-pk-surface/50 px-4 py-12 sm:px-8 lg:px-14">
-        <div className="mx-auto max-w-2xl">
-          <h2 className="text-2xl sm:text-3xl font-bold text-pk-ink mb-2 text-center">
-            Solicita tu clase de prueba
-          </h2>
-          <p className="text-center text-pk-sub mb-8">
-            Déjanos tus datos y nuestro equipo se pondrá en contacto contigo pronto.
-          </p>
-          <Suspense fallback={<div className="h-96" />}>
-            <LeadCaptureForm />
-          </Suspense>
-        </div>
-      </section>
-
+      <PeskidsReservationLanding
+        source={PESKIDS_HOME_LANDING.source}
+        campaign={PESKIDS_HOME_LANDING.campaign}
+        headingLevel="h2"
+      />
       <LevelsSection />
       <InstagramFeedSection />
       <SiteFooter />

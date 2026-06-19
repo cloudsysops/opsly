@@ -45,7 +45,13 @@ export function HeroSection(): React.ReactElement {
         <WiggleLine width={120} color="rgba(76,184,176,0.95)" className="mt-8" />
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-          <WhatsAppLink variant="hero" label="Reservar por WhatsApp" />
+          <Link
+            href="#reserva"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-pk-primary px-6 text-sm font-bold text-white shadow-md transition hover:bg-pk-primary/90"
+          >
+            Reservar clase gratuita
+          </Link>
+          <WhatsAppLink variant="hero" label="Hablar por WhatsApp" />
           <Link
             href="#redes"
             className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/10 px-6 text-sm font-bold text-white transition hover:border-white/30 hover:bg-white/15"
