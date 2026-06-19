@@ -6,6 +6,14 @@ import { useSearchParams } from 'next/navigation'
 import { Loader2, Send } from 'lucide-react'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
 import { PESKIDS_CLASS_MODALITY_OPTIONS } from '@/lib/lead-modality'
+import {
+  PESKIDS_CONSENT_MARKETING,
+  PESKIDS_FORM_CARD_DESCRIPTION,
+  PESKIDS_FORM_CARD_TITLE,
+  PESKIDS_RESERVATION_EYEBROW,
+  PESKIDS_RESERVATION_TITLE,
+  PESKIDS_WHATSAPP_CTA_LABEL,
+} from '@/lib/peskids-landing-copy'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -137,15 +145,22 @@ export function LeadCaptureForm({
       hover
       className="scroll-mt-28 overflow-hidden border-2 border-pk-primary/40 shadow-[0_20px_50px_rgba(45,183,176,0.22)] ring-2 ring-pk-primary/15"
     >
-      {embedded ? null : (
+      {embedded ? (
+        <CardHeader className="border-0 bg-gradient-to-br from-pk-primary/10 via-pk-bg to-pk-surface pb-2 pt-6">
+          <CardTitle className="text-2xl sm:text-3xl">{PESKIDS_FORM_CARD_TITLE}</CardTitle>
+          <CardDescription>{PESKIDS_FORM_CARD_DESCRIPTION}</CardDescription>
+        </CardHeader>
+      ) : (
         <CardHeader className="border-0 bg-gradient-to-br from-pk-primary/10 via-pk-bg to-pk-surface pb-2">
-          <p className="pk-eyebrow text-pk-primary">Reserva aquí</p>
-          <CardTitle className="text-2xl sm:text-3xl">Clase de prueba gratis</CardTitle>
+          <p className="pk-eyebrow text-pk-primary">{PESKIDS_RESERVATION_EYEBROW}</p>
+          <CardTitle className="text-2xl sm:text-3xl">{PESKIDS_RESERVATION_TITLE}</CardTitle>
           <CardDescription>
-            Clases en nuestra sede de <strong className="text-pk-ink">Llanogrande</strong> o{' '}
-            <strong className="text-pk-ink">a domicilio</strong> en el área metropolitana. Te
-            contactamos en menos de 48 horas hábiles.{' '}
-            <WhatsAppLink variant="button" label="Prefiero WhatsApp" className="mt-2 w-full sm:w-auto" />
+            {PESKIDS_FORM_CARD_DESCRIPTION}{' '}
+            <WhatsAppLink
+              variant="button"
+              label={PESKIDS_WHATSAPP_CTA_LABEL}
+              className="mt-2 w-full sm:w-auto"
+            />
           </CardDescription>
           {referredByCode ? (
             <p className="mt-3 rounded-xl border border-pk-primary/20 bg-pk-primary/10 px-3 py-2 text-xs font-medium text-pk-primary">
@@ -154,7 +169,7 @@ export function LeadCaptureForm({
           ) : null}
         </CardHeader>
       )}
-      <CardContent className={embedded ? 'pt-6' : undefined}>
+      <CardContent className={embedded ? 'pt-2' : undefined}>
         {referredByCode && embedded ? (
           <p className="mb-4 rounded-xl border border-pk-primary/20 bg-pk-primary/10 px-3 py-2 text-xs font-medium text-pk-primary">
             Código de recomendación activo: <span className="font-mono">{referredByCode}</span>
@@ -302,19 +317,13 @@ export function LeadCaptureForm({
                 aria-required="true"
               />
               <span>
-                <strong>Autorización obligatoria:</strong> Soy padre, madre o tutor legal y
-                autorizo a Peskids para tratar los datos del menor y los míos propios conforme
-                a la{' '}
+                Autorizo a Peskids para tratar mis datos personales y, cuando aplique, los del
+                menor bajo mi responsabilidad, con el fin de atender esta solicitud y coordinar la
+                clase de prueba, conforme a su{' '}
                 <a href="/privacy" target="_blank" rel="noopener" className="text-pk-primary hover:underline">
                   Política de Privacidad
-                </a>{' '}
-                y el{' '}
-                <a href="/aviso-parental" target="_blank" rel="noopener" className="text-pk-primary hover:underline">
-                  Aviso Parental
                 </a>
-                . Los datos serán compartidos con{' '}
-                <strong>Jelou</strong> (mensajería) y nuestra{' '}
-                <strong>automatización interna</strong> para coordinar la clase de prueba.
+                .
               </span>
             </label>
             <label className="flex cursor-pointer items-start gap-2.5">
@@ -324,11 +333,7 @@ export function LeadCaptureForm({
                 onChange={(e) => setConsentMarketing(e.target.checked)}
                 className="mt-0.5 h-4 w-4 shrink-0 rounded border-pk-border accent-pk-primary"
               />
-              <span>
-                <strong>Opcional:</strong> Acepto recibir comunicaciones sobre el programa
-                (novedades, torneos, promociones) por WhatsApp o correo electrónico. Puedo
-                cancelar en cualquier momento.
-              </span>
+              <span>{PESKIDS_CONSENT_MARKETING}</span>
             </label>
           </div>
 
@@ -350,7 +355,7 @@ export function LeadCaptureForm({
             ) : (
               <>
                 <Send className="h-4 w-4" aria-hidden />
-                Reservar prueba gratis →
+                Reservar clase gratuita →
               </>
             )}
           </Button>

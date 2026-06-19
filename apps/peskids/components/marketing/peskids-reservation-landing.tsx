@@ -3,6 +3,13 @@ import { PeskidsLogo } from '@/components/brand/peskids-logo';
 import { LeadCaptureForm } from '@/components/forms';
 import { buildWhatsAppUrl } from '@/lib/contact-channels';
 import { ReservationLandingCTA } from '@/components/marketing/reservation-landing-cta';
+import {
+  PESKIDS_INSTAGRAM_LANDING_INTRO,
+  PESKIDS_RESERVATION_BULLETS,
+  PESKIDS_RESERVATION_DESCRIPTION,
+  PESKIDS_RESERVATION_EYEBROW,
+  PESKIDS_RESERVATION_TITLE,
+} from '@/lib/peskids-landing-copy';
 
 export type PeskidsReservationLandingProps = {
   source: string;
@@ -13,12 +20,6 @@ export type PeskidsReservationLandingProps = {
   headingLevel?: 'h1' | 'h2';
 };
 
-const HOME_INTRO =
-  'Déjanos tus datos para coordinar tu primera clase en sede Llanogrande o a domicilio. Te contactamos en menos de 48 horas hábiles.';
-
-const INSTAGRAM_INTRO =
-  'Déjanos tus datos o continúa directamente por WhatsApp. Seguiremos atendiéndote como siempre.';
-
 export function PeskidsReservationLanding({
   source,
   campaign,
@@ -28,7 +29,7 @@ export function PeskidsReservationLanding({
   headingLevel = 'h2',
 }: PeskidsReservationLandingProps): React.ReactElement {
   const whatsappUrl = buildWhatsAppUrl();
-  const intro = showInstagramCopy ? INSTAGRAM_INTRO : HOME_INTRO;
+  const intro = showInstagramCopy ? PESKIDS_INSTAGRAM_LANDING_INTRO : PESKIDS_RESERVATION_DESCRIPTION;
   const HeadingTag = headingLevel;
 
   return (
@@ -44,14 +45,22 @@ export function PeskidsReservationLanding({
               <PeskidsLogo size={120} />
             </div>
           ) : null}
-          <p className="pk-eyebrow text-pk-primary">Reserva aquí</p>
+          <p className="pk-eyebrow text-pk-primary">{PESKIDS_RESERVATION_EYEBROW}</p>
           <HeadingTag
             id="peskids-reservation-heading"
             className="mb-3 text-3xl font-bold text-pk-ink sm:text-4xl"
           >
-            Clase de prueba gratuita de natación
+            {PESKIDS_RESERVATION_TITLE}
           </HeadingTag>
-          <p className="mb-6 text-lg text-pk-sub">{intro}</p>
+          <p className="mb-4 text-lg text-pk-sub">{intro}</p>
+          <ul className="mx-auto mb-6 max-w-md space-y-2 text-left text-sm text-pk-sub sm:text-center">
+            {PESKIDS_RESERVATION_BULLETS.map((bullet) => (
+              <li key={bullet} className="flex gap-2 sm:justify-center">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-pk-primary sm:mt-2" aria-hidden />
+                <span>{bullet}</span>
+              </li>
+            ))}
+          </ul>
           <ReservationLandingCTA whatsappUrl={whatsappUrl} />
         </div>
 

@@ -1,5 +1,7 @@
 'use client';
 
+import { PESKIDS_WHATSAPP_CTA_LABEL } from '@/lib/peskids-landing-copy';
+
 type ReservationLandingCTAProps = {
   whatsappUrl: string;
   formAnchorId?: string;
@@ -18,15 +20,15 @@ export function ReservationLandingCTA({
         className="rounded-lg bg-pk-primary px-6 py-3 font-semibold text-white transition-colors hover:bg-pk-primary/90"
         type="button"
       >
-        Reservar clase de prueba
+        Reservar clase gratuita
       </button>
       <a
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="rounded-lg border-2 border-pk-primary bg-white px-6 py-3 font-semibold text-pk-primary transition-colors hover:bg-pk-primary/5"
+        className="rounded-lg border-2 border-[#25D366] bg-[#25D366] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#20BD5A]"
       >
-        Hablar por WhatsApp
+        {PESKIDS_WHATSAPP_CTA_LABEL}
       </a>
     </div>
   );

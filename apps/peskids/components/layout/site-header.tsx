@@ -2,11 +2,15 @@ import Link from 'next/link'
 import { Instagram } from 'lucide-react'
 import { PeskidsLockup } from '@/components/brand/peskids-logo'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
+import { PESKIDS_WHATSAPP_CTA_LABEL } from '@/lib/peskids-landing-copy'
 import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
 
 interface SiteHeaderProps {
   variant?: 'marketing' | 'minimal'
 }
+
+const instagramButtonClass =
+  'inline-flex h-10 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] px-4 text-xs font-bold text-white shadow-sm transition hover:opacity-95'
 
 export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.ReactElement {
   return (
@@ -16,28 +20,29 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
           <PeskidsLockup height={40} />
         </Link>
         {variant === 'marketing' ? (
-          <div className="flex items-center gap-2 sm:gap-4">
-            <nav className="hidden items-center gap-6 text-sm font-semibold text-pk-sub md:flex">
-              <a href="#redes" className="hover:text-pk-primary">
-                Instagram
-              </a>
-              <Link href="/familias/login" className="hover:text-pk-primary">
-                Acceso invitados
+          <div className="flex items-center gap-2 sm:gap-3">
+            <nav className="hidden items-center gap-5 text-sm font-semibold md:flex">
+              <Link
+                href="/familias/login"
+                className="text-[#004C63] transition hover:text-[#2DB7B0]"
+              >
+                Acceso familias
               </Link>
             </nav>
             <WhatsAppLink
               variant="button"
-              label="WhatsApp"
+              label={PESKIDS_WHATSAPP_CTA_LABEL}
               className="hidden h-10 px-4 text-xs sm:inline-flex"
             />
             <Link
               href={PESKIDS_INSTAGRAM.profileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-pk-primary px-4 text-xs font-bold text-white shadow-sm transition hover:bg-pk-primary/90 sm:hidden"
+              className={instagramButtonClass}
+              aria-label="Ver perfil de Peskids en Instagram"
             >
-              <Instagram className="h-4 w-4" aria-hidden />
-              Seguir
+              <Instagram className="h-4 w-4 shrink-0 text-white" aria-hidden />
+              <span>Ver Instagram</span>
             </Link>
           </div>
         ) : null}

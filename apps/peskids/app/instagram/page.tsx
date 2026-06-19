@@ -4,13 +4,13 @@ import { PeskidsReservationLanding } from '@/components/marketing/peskids-reserv
 import { PESKIDS_INSTAGRAM_LANDING } from '@/lib/peskids-landing-config';
 
 export const metadata = {
-  title: 'Clase de prueba gratuita de natación | Peskids',
+  title: 'Clase de prueba gratis | Peskids',
   description:
-    'Reserva una clase de prueba gratis en Peskids. Academia de natación en Llanogrande (Rionegro) y a domicilio en el área metropolitana de Medellín.',
+    'Reserva una clase de prueba gratis en Peskids. Natación en Llanogrande o a domicilio en el área metropolitana de Medellín.',
   openGraph: {
-    title: 'Clase de prueba gratuita de natación',
+    title: 'Clase de prueba gratis',
     description:
-      'Déjanos tus datos o continúa directamente por WhatsApp. Seguiremos atendiéndote como siempre.',
+      'Déjanos tus datos y te contactaremos para coordinar la clase de prueba en sede Llanogrande o a domicilio.',
     url: 'https://peskids.op-sly.com/instagram',
     type: 'website',
   },
