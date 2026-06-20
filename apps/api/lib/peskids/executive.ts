@@ -1,6 +1,8 @@
 import { getServiceClient } from '../supabase';
 import { logger } from '../logger';
 import { PESKIDS_PIPELINE_STAGES, type PeskidsPipelineStage } from './ghl-contract';
+import { getCache, setCache } from '../redis-cache';
+import { CACHE_TTL } from '../constants';
 
 type PlatformLeadRow = {
   lead_id: string | null;
@@ -239,11 +241,21 @@ function countStages(rows: PlatformLeadRow[]): PeskidsExecutiveStageCount[] {
 export async function fetchPeskidsExecutiveSummary(
   tenantSlug: string
 ): Promise<PeskidsExecutiveSummary> {
-  const leadsResult = await fetchPlatformLeads(tenantSlug);
-  const activeStudents = await fetchActiveStudents(tenantSlug);
-  const revenue = await fetchRevenueMetrics(tenantSlug);
-  const lowFeedbackCount = await fetchFeedbackAlerts(tenantSlug);
-  const overdueFollowupsCount = await fetchPendingFollowups(tenantSlug);
+  const cacheKey = `peskids:executive_summary:${tenantSlug}`;
+
+  const cached = await getCache<PeskidsExecutiveSummary>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  const [leadsResult, activeStudents, revenue, lowFeedbackCount, overdueFollowupsCount] =
+    await Promise.all([
+      fetchPlatformLeads(tenantSlug),
+      fetchActiveStudents(tenantSlug),
+      fetchRevenueMetrics(tenantSlug),
+      fetchFeedbackAlerts(tenantSlug),
+      fetchPendingFollowups(tenantSlug),
+    ]);
 
   const monthStart = new Date();
   monthStart.setDate(1);
@@ -257,12 +269,14 @@ export async function fetchPeskidsExecutiveSummary(
     const stage = normalizeLeadStage(row);
     return stage === 'Enrolled' || stage === 'Active Student' || stage === 'Renewal';
   }).length;
-  const conversionRatePct =
-    newLeads > 0 ? Math.round((convertedLeads / newLeads) * 100) : null;
-  const leadSources = leadsResult.rows.reduce((acc, row) => {
-    acc[normalizeLeadSource(row.referral_source ?? row.source)] += 1;
-    return acc;
-  }, { ...EMPTY_LEAD_SOURCES });
+  const conversionRatePct = newLeads > 0 ? Math.round((convertedLeads / newLeads) * 100) : null;
+  const leadSources = leadsResult.rows.reduce(
+    (acc, row) => {
+      acc[normalizeLeadSource(row.referral_source ?? row.source)] += 1;
+      return acc;
+    },
+    { ...EMPTY_LEAD_SOURCES }
+  );
 
   const leadsWithoutContactCount = leadsResult.rows.filter((row) => {
     const stage = normalizeLeadStage(row);
@@ -301,7 +315,7 @@ export async function fetchPeskidsExecutiveSummary(
     },
   ].filter((item) => item.count > 0);
 
-  return {
+  const summary: PeskidsExecutiveSummary = {
     tenant_slug: tenantSlug,
     generated_at: new Date().toISOString(),
     metrics: {
@@ -317,4 +331,9 @@ export async function fetchPeskidsExecutiveSummary(
     lead_sources: leadSources,
     alerts,
   };
+
+  // Bolt Optimization: Cache summary to reduce database load and parallel latency.
+  void setCache(cacheKey, summary, CACHE_TTL.SHORT);
+
+  return summary;
 }
