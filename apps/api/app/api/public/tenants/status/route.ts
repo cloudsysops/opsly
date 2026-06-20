@@ -4,6 +4,7 @@ import { jsonError, serverErrorLogged, tryRoute } from '../../../../../lib/api-r
 import { HTTP_STATUS } from '../../../../../lib/constants';
 import { sanitizePublicPortalServices } from '../../../../../lib/portal-me';
 import { getServiceClient } from '../../../../../lib/supabase';
+import { extractIp } from '../../../../../lib/audit';
 import type { Json } from '../../../../../lib/supabase/types';
 import { formatZodError } from '../../../../../lib/validation';
 
@@ -41,26 +42,6 @@ async function getRedis(): Promise<RedisClient | null> {
   return redisConnect;
 }
 
-function clientIp(request: Request): string {
-  const cfIp = request.headers.get('cf-connecting-ip');
-  if (cfIp) {
-    return cfIp.trim();
-  }
-
-  const forwarded = request.headers.get('x-forwarded-for');
-  if (forwarded) {
-    const first = forwarded.split(',')[0]?.trim();
-    if (first) {
-      return first;
-    }
-  }
-  const realIp = request.headers.get('x-real-ip');
-  if (realIp) {
-    return realIp.trim();
-  }
-  return 'unknown';
-}
-
 export function GET(request: Request): Promise<Response> {
   return tryRoute('GET /api/public/tenants/status', async () => {
     const url = new URL(request.url);
@@ -69,7 +50,7 @@ export function GET(request: Request): Promise<Response> {
       return jsonError(formatZodError(parsed.error), HTTP_STATUS.BAD_REQUEST);
     }
 
-    const ip = clientIp(request);
+    const ip = extractIp(request);
     const key = `ratelimit:public-status:${ip}`;
     let count = 0;
 

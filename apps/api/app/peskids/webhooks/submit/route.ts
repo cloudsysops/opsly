@@ -3,6 +3,7 @@ import { createHmac } from 'crypto';
 import { jsonError, jsonOk } from '../../../../lib/api-response';
 import { HTTP_STATUS } from '../../../../lib/constants';
 import { getServiceClient } from '../../../../lib/supabase';
+import { extractIp } from '../../../../lib/audit';
 
 // peskids.* tables pending DB type codegen
 interface PeskidsQB {
@@ -211,9 +212,7 @@ async function storeWebhookEventAndUpdateConfig(
 export async function POST(request: NextRequest): Promise<Response> {
   try {
     const supabase = getServiceClient();
-    const ipAddress = (request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip'))
-      ?.split(',')[0]
-      ?.trim();
+    const ipAddress = extractIp(request);
 
     const signatureHeader = request.headers.get('x-opsly-signature') || '';
     const signatureResult = await validateSignatureHeader(supabase, signatureHeader, ipAddress);

@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { getServiceClient } from '../../../../lib/supabase';
+import { extractIp } from '../../../../lib/audit';
 
 const consentSchema = z.object({
   tenant_id: z.string().min(1),
@@ -27,10 +28,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     );
   }
 
-  const ip =
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-    request.headers.get('x-real-ip') ??
-    null;
+  const ip = extractIp(request);
   const user_agent = request.headers.get('user-agent') ?? null;
 
   const client = getServiceClient();
