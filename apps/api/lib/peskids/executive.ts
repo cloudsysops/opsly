@@ -1,8 +1,6 @@
 import { getServiceClient } from '../supabase';
 import { logger } from '../logger';
 import { PESKIDS_PIPELINE_STAGES, type PeskidsPipelineStage } from './ghl-contract';
-import { getCache, setCache } from '../redis-cache';
-import { CACHE_TTL } from '../constants';
 
 type PlatformLeadRow = {
   lead_id: string | null;
@@ -241,26 +239,11 @@ function countStages(rows: PlatformLeadRow[]): PeskidsExecutiveStageCount[] {
 export async function fetchPeskidsExecutiveSummary(
   tenantSlug: string
 ): Promise<PeskidsExecutiveSummary> {
-  const cacheKey = `peskids:executive_summary:${tenantSlug}`;
-
-  const cached = await getCache<PeskidsExecutiveSummary>(cacheKey);
-  if (cached) {
-    return cached;
-  }
-
-  const [
-    leadsResult,
-    activeStudents,
-    revenue,
-    lowFeedbackCount,
-    overdueFollowupsCount,
-  ] = await Promise.all([
-    fetchPlatformLeads(tenantSlug),
-    fetchActiveStudents(tenantSlug),
-    fetchRevenueMetrics(tenantSlug),
-    fetchFeedbackAlerts(tenantSlug),
-    fetchPendingFollowups(tenantSlug),
-  ]);
+  const leadsResult = await fetchPlatformLeads(tenantSlug);
+  const activeStudents = await fetchActiveStudents(tenantSlug);
+  const revenue = await fetchRevenueMetrics(tenantSlug);
+  const lowFeedbackCount = await fetchFeedbackAlerts(tenantSlug);
+  const overdueFollowupsCount = await fetchPendingFollowups(tenantSlug);
 
   const monthStart = new Date();
   monthStart.setDate(1);
@@ -318,7 +301,7 @@ export async function fetchPeskidsExecutiveSummary(
     },
   ].filter((item) => item.count > 0);
 
-  const summary: PeskidsExecutiveSummary = {
+  return {
     tenant_slug: tenantSlug,
     generated_at: new Date().toISOString(),
     metrics: {
@@ -334,9 +317,4 @@ export async function fetchPeskidsExecutiveSummary(
     lead_sources: leadSources,
     alerts,
   };
-
-  // Bolt Optimization: Cache summary to reduce database load and parallel latency.
-  void setCache(cacheKey, summary, CACHE_TTL.SHORT);
-
-  return summary;
 }
