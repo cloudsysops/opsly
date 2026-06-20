@@ -248,14 +248,19 @@ export async function fetchPeskidsExecutiveSummary(
     return cached;
   }
 
-  const [leadsResult, activeStudents, revenue, lowFeedbackCount, overdueFollowupsCount] =
-    await Promise.all([
-      fetchPlatformLeads(tenantSlug),
-      fetchActiveStudents(tenantSlug),
-      fetchRevenueMetrics(tenantSlug),
-      fetchFeedbackAlerts(tenantSlug),
-      fetchPendingFollowups(tenantSlug),
-    ]);
+  const [
+    leadsResult,
+    activeStudents,
+    revenue,
+    lowFeedbackCount,
+    overdueFollowupsCount,
+  ] = await Promise.all([
+    fetchPlatformLeads(tenantSlug),
+    fetchActiveStudents(tenantSlug),
+    fetchRevenueMetrics(tenantSlug),
+    fetchFeedbackAlerts(tenantSlug),
+    fetchPendingFollowups(tenantSlug),
+  ]);
 
   const monthStart = new Date();
   monthStart.setDate(1);
@@ -269,14 +274,12 @@ export async function fetchPeskidsExecutiveSummary(
     const stage = normalizeLeadStage(row);
     return stage === 'Enrolled' || stage === 'Active Student' || stage === 'Renewal';
   }).length;
-  const conversionRatePct = newLeads > 0 ? Math.round((convertedLeads / newLeads) * 100) : null;
-  const leadSources = leadsResult.rows.reduce(
-    (acc, row) => {
-      acc[normalizeLeadSource(row.referral_source ?? row.source)] += 1;
-      return acc;
-    },
-    { ...EMPTY_LEAD_SOURCES }
-  );
+  const conversionRatePct =
+    newLeads > 0 ? Math.round((convertedLeads / newLeads) * 100) : null;
+  const leadSources = leadsResult.rows.reduce((acc, row) => {
+    acc[normalizeLeadSource(row.referral_source ?? row.source)] += 1;
+    return acc;
+  }, { ...EMPTY_LEAD_SOURCES });
 
   const leadsWithoutContactCount = leadsResult.rows.filter((row) => {
     const stage = normalizeLeadStage(row);
