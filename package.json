@@ -3,7 +3,9 @@
   "private": true,
   "packageManager": "npm@10.8.3",
   "dependencies": {
-    "@reduxjs/toolkit": "^1.9.7"
+    "js-tiktoken": "^1.0.21",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
   },
   "workspaces": [
     "apps/*",
@@ -236,10 +238,5 @@
       "@types/react": "19.2.14",
       "@types/react-dom": "19.2.3"
     }
-  },
-  "dependencies": {
-    "js-tiktoken": "^1.0.21",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6"
   }
 }
