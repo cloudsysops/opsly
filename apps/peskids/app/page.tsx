@@ -1,8 +1,6 @@
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
-import { InstagramFeedSection } from '@/components/marketing/instagram-feed-section';
 import { HeroSection } from '@/components/marketing/hero-section';
-import { LevelsSection } from '@/components/marketing/levels-section';
 import { PeskidsReservationLanding } from '@/components/marketing/peskids-reservation-landing';
 import { PESKIDS_HOME_LANDING } from '@/lib/peskids-landing-config';
 
@@ -22,8 +20,6 @@ export default function HomePage(): React.ReactElement {
         campaign={PESKIDS_HOME_LANDING.campaign}
         headingLevel="h2"
       />
-      <LevelsSection />
-      <InstagramFeedSection />
       <SiteFooter />
     </div>
   );

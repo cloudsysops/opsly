@@ -16,9 +16,7 @@ export function SiteFooter(): React.ReactElement {
               Clases de natación para niños. Sede principal en Llanogrande, Rionegro.
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-8 text-sm sm:grid-cols-4 sm:gap-14">
-            <FooterCol title="Programa" items={['Etapas', 'Babyswim', 'Torneos', 'Vacacionales']} />
-            <FooterCol title="Información" items={['Sedes', 'Tarifas', 'Equipo', 'Preguntas']} />
+          <div className="grid grid-cols-1 gap-8 text-sm sm:grid-cols-2 sm:gap-14 lg:grid-cols-2">
             <FooterCol
               title="Contacto"
               items={[
@@ -48,14 +46,8 @@ export function SiteFooter(): React.ReactElement {
             />
           </div>
         </div>
-        <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-10 border-t border-white/10 pt-6 text-xs text-white/50">
           <span>© {new Date().getFullYear()} Peskids · #TeamPesk</span>
-          <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span>Más que natación, formamos para la vida.</span>
-            <Link href="/admin" className="text-white/35 hover:text-white/60">
-              Panel admin
-            </Link>
-          </span>
         </div>
       </div>
     </footer>

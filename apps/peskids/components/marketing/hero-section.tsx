@@ -1,14 +1,12 @@
 import Link from 'next/link'
-import { Mail, Waves } from 'lucide-react'
-import { PeskidsBrush, StarBurst, WiggleLine } from '@/components/brand/peskids-logo'
+import { Instagram } from 'lucide-react'
+import { PeskidsBrush, WiggleLine } from '@/components/brand/peskids-logo'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
+import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
 import { peskidsColorTokens } from '@/lib/tokens'
 
-const stats = [
-  { num: '14', label: 'años enseñando' },
-  { num: '2 800+', label: 'niños certificados' },
-  { num: '2', label: 'modalidades: sede y domicilio' },
-]
+const instagramButtonClass =
+  'inline-flex h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] px-6 text-sm font-bold text-white shadow-sm transition hover:opacity-95'
 
 export function HeroSection(): React.ReactElement {
   return (
@@ -53,35 +51,20 @@ export function HeroSection(): React.ReactElement {
           </Link>
           <WhatsAppLink variant="hero" label="Hablar por WhatsApp" />
           <Link
-            href="#redes"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/10 px-6 text-sm font-bold text-white transition hover:border-white/30 hover:bg-white/15"
+            href={PESKIDS_INSTAGRAM.profileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={instagramButtonClass}
+            aria-label="Ver perfil de Peskids en Instagram"
           >
-            <Waves className="h-5 w-5" aria-hidden />
-            Ver clases en Instagram
+            <Instagram className="h-5 w-5 shrink-0 text-white" aria-hidden />
+            Ver Instagram
           </Link>
         </div>
 
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/65">
           ¿Prefieres escribirnos directo? También puedes reservar por WhatsApp.
         </p>
-
-        <Link
-          href="/familias/login"
-          className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#2DB7B0]/40 bg-[#004C63]/80 px-5 py-2.5 text-sm font-semibold text-white transition hover:border-[#2DB7B0]/60 hover:bg-[#004C63]"
-        >
-          <Mail className="h-4 w-4 text-[#2DB7B0]" aria-hidden />
-          Acceso familias
-        </Link>
-
-        <div className="relative mt-10 flex flex-wrap gap-10">
-          {stats.map((s) => (
-            <div key={s.label}>
-              <p className="text-3xl font-bold tabular-nums tracking-tight text-white">{s.num}</p>
-              <p className="text-xs text-white/60">{s.label}</p>
-            </div>
-          ))}
-          <StarBurst size={24} className="pointer-events-none absolute -right-2 top-0 hidden sm:block" />
-        </div>
       </div>
     </section>
   )

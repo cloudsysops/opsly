@@ -271,7 +271,7 @@ export function LeadCaptureForm({
 
           <div>
             <Label htmlFor="grade_interested" required>
-              Edad o etapa de interés
+              Edad del niño(a)
             </Label>
             <select
               id="grade_interested"
@@ -282,9 +282,9 @@ export function LeadCaptureForm({
               className="pk-select"
             >
               <option value="">Selecciona un rango</option>
-              <option value="K-5">Babyswim / K–5</option>
-              <option value="6-8">6–8 (Peces · Delfines)</option>
-              <option value="9-12">9–12 (Tiburones · Olímpicos)</option>
+              <option value="K-5">3 meses – 5 años</option>
+              <option value="6-8">6–8 años</option>
+              <option value="9-12">9–12 años</option>
               <option value="Other">Otro / consulta general</option>
             </select>
           </div>
