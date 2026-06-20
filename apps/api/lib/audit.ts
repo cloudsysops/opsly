@@ -40,12 +40,12 @@ export async function logAuditEvent(event: AuditEventInput): Promise<void> {
   }
 }
 
-/** Extrae IP real del request respetando cabeceras de proxy. */
+/** Extrae IP real del request respetando cabeceras de proxy. Prioriza cf-connecting-ip. */
 export function extractIp(request: NextRequest): string {
   return (
-    request.headers.get('x-real-ip') ??
     request.headers.get('cf-connecting-ip') ??
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    request.headers.get('x-real-ip') ??
     'unknown'
   );
 }

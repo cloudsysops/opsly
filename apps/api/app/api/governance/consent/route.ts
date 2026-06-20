@@ -1,6 +1,8 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { getServiceClient } from '../../../../lib/supabase';
+import { checkIpRateLimit } from '../../../../lib/rate-limit-ip';
+import { HTTP_STATUS } from '../../../../lib/constants';
 
 const consentSchema = z.object({
   tenant_id: z.string().min(1),
@@ -12,6 +14,11 @@ const consentSchema = z.object({
 });
 
 export async function POST(request: NextRequest): Promise<Response> {
+  const rateLimit = await checkIpRateLimit(request, 'ratelimit:governance:consent');
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+
   let body: unknown;
   try {
     body = await request.json();

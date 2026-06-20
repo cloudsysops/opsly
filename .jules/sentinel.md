@@ -42,3 +42,8 @@
 **Vulnerability:** The `POST /api/peskids/portal/[tenantSlug]/forms` endpoint was exposed without any authorization checks. An attacker could create arbitrary form records for any tenant by simply knowing their `tenantSlug`.
 **Learning:** When using `runTrustedPortalDalForPathSlug`, it's critical to consistently apply it to all HTTP methods in a route handler. Rapidly developed endpoints might only secure `GET` while leaving `POST/PATCH/DELETE` wide open.
 **Prevention:** Mandate the use of `runTrustedPortalDalForPathSlug` (or similar) for ALL methods in portal-facing routes. Use `PORTAL_WRITE_ACCESS` specifically for state-changing operations to ensure only 'owner', 'admin', or 'operator' roles can perform them.
+
+## 2026-06-18 - [IP Spoofing in Rate Limiting and Audit Logs]
+**Vulnerability:** Rate limiting and audit logging logic prioritized `x-real-ip` or `x-forwarded-for` without verifying the proxy chain, making them vulnerable to IP spoofing if an attacker provides these headers.
+**Learning:** When behind a trusted proxy like Cloudflare, it is safer to prioritize verified headers like `cf-connecting-ip` to ensure the integrity of the client IP used for security-critical decisions.
+**Prevention:** Use the `extractClientIp` helper in `apps/api/lib/rate-limit-ip.ts` (or the updated `extractIp` in `lib/audit.ts`) which correctly prioritizes platform-verified headers. Apply IP-based rate limiting to all public-facing sensitive endpoints to mitigate database and email spam.

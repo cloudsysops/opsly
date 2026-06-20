@@ -1,10 +1,17 @@
 import type { NextRequest } from 'next/server';
 import { getServiceClient } from '../../../../../lib/supabase';
+import { checkIpRateLimit } from '../../../../../lib/rate-limit-ip';
+import { HTTP_STATUS } from '../../../../../lib/constants';
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ token: string }> }
 ): Promise<Response> {
+  const rateLimit = await checkIpRateLimit(request, 'ratelimit:governance:dsar-verify');
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+
   const { token } = await params;
   if (!token || token.length < 10) {
     return Response.json({ error: 'Invalid token' }, { status: 400 });
