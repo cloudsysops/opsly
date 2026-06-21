@@ -9,6 +9,8 @@ const {
   mockSchema,
   mockCheckTenantBudget,
   mockLoggerError,
+  mockGetCache,
+  mockSetCache,
 } = vi.hoisted(() => {
   const mockOrder = vi.fn();
   const mockLimit = vi.fn();
@@ -18,6 +20,8 @@ const {
   const mockSchema = vi.fn(() => ({ from: mockFrom }));
   const mockCheckTenantBudget = vi.fn();
   const mockLoggerError = vi.fn();
+  const mockGetCache = vi.fn();
+  const mockSetCache = vi.fn();
   return {
     mockOrder,
     mockLimit,
@@ -27,6 +31,8 @@ const {
     mockSchema,
     mockCheckTenantBudget,
     mockLoggerError,
+    mockGetCache,
+    mockSetCache,
   };
 });
 
@@ -50,6 +56,11 @@ vi.mock('../logger', () => ({
   },
 }));
 
+vi.mock('../redis-cache', () => ({
+  getCache: mockGetCache,
+  setCache: mockSetCache,
+}));
+
 import { fetchTenantBudgetOverview } from '../admin-costs-tenant-budgets';
 
 function mockTenantList(rows: Array<{ id: string; slug: string; name: string }>) {
@@ -64,6 +75,7 @@ function mockTenantList(rows: Array<{ id: string; slug: string; name: string }>)
 describe('fetchTenantBudgetOverview', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockGetCache.mockResolvedValue(null);
   });
 
   it('counts warning and critical tenants even when enforcement is skipped', async () => {
@@ -115,6 +127,46 @@ describe('fetchTenantBudgetOverview', () => {
         tenantSlug: 'ops',
         error: 'boom',
       })
+    );
+  });
+
+  it('returns cached results if available', async () => {
+    const cachedData = {
+      tenant_budgets: [],
+      llm_budget_summary: {
+        tenant_count: 5,
+        tenants_at_warning: 0,
+        tenants_at_critical: 0,
+        total_spend_usd: 100,
+      },
+    };
+    mockGetCache.mockResolvedValue(cachedData);
+
+    const payload = await fetchTenantBudgetOverview();
+
+    expect(payload).toEqual(cachedData);
+    expect(mockSchema).not.toHaveBeenCalled();
+  });
+
+  it('populates cache on cache miss', async () => {
+    mockTenantList([{ id: 't-1', slug: 'ops', name: 'Ops' }]);
+    mockCheckTenantBudget.mockResolvedValue({
+      currentSpend: 10,
+      limit: 100,
+      enforcementSkipped: false,
+    });
+
+    await fetchTenantBudgetOverview();
+
+    expect(mockGetCache).toHaveBeenCalledWith('admin:costs:tenant_budget_overview');
+    expect(mockSetCache).toHaveBeenCalledWith(
+      'admin:costs:tenant_budget_overview',
+      expect.objectContaining({
+        llm_budget_summary: expect.objectContaining({
+          tenant_count: 1,
+        }),
+      }),
+      60
     );
   });
 });

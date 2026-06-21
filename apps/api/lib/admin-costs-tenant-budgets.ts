@@ -8,8 +8,11 @@ import type { BudgetAlertLevel } from './billing/budget-thresholds';
 import { logger } from './logger';
 import { getServiceClient } from './supabase';
 import type { LlmBudgetSummary, TenantBudgetSnapshot } from './admin-costs-types';
+import { getCache, setCache } from './redis-cache';
+import { CACHE_TTL } from './constants';
 
 export const MAX_TENANTS_BUDGET_OVERVIEW = 40;
+const CACHE_KEY = 'admin:costs:tenant_budget_overview';
 
 type TenantRow = {
   id: unknown;
@@ -82,6 +85,14 @@ export async function fetchTenantBudgetOverview(): Promise<{
   tenant_budgets: TenantBudgetSnapshot[];
   llm_budget_summary: LlmBudgetSummary;
 }> {
+  const cached = await getCache<{
+    tenant_budgets: TenantBudgetSnapshot[];
+    llm_budget_summary: LlmBudgetSummary;
+  }>(CACHE_KEY);
+  if (cached) {
+    return cached;
+  }
+
   try {
     const db = getServiceClient();
     const { data: rows, error } = await db
@@ -109,10 +120,15 @@ export async function fetchTenantBudgetOverview(): Promise<{
       }
     }
 
-    return {
+    const result = {
       tenant_budgets: snapshots,
       llm_budget_summary: summarizeSnapshots(snapshots),
     };
+
+    // Bolt: Cache result for 60s to reduce parallel DB queries on dashboard load.
+    void setCache(CACHE_KEY, result, CACHE_TTL.SHORT);
+
+    return result;
   } catch (error) {
     logger.error(
       'admin costs payload build failed',

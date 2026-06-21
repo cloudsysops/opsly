@@ -29,3 +29,7 @@
 ## 2026-06-13 - [Caching Peskids Dashboard Summary]
 **Learning:** Dashboard summary endpoints that aggregate multiple parallel Supabase queries (e.g., 5 parallel calls for leads, feedback, and alerts) can be a significant bottleneck as data grows. Implementing Redis caching with a short TTL (60s) provides a massive performance boost by collapsing these multiple network round-trips into a single O(1) cache lookup. Using `void setCache(...)` ensures the write doesn't block the response.
 **Action:** Identify and cache aggregated dashboard summaries in the repository layer when they involve multiple independent database queries.
+
+## 2026-06-21 - [Caching Multi-Tenant Budget Summaries]
+**Learning:** Aggregating budget status for multiple tenants (e.g., 40 tenants) can trigger a high volume of parallel database queries, creating significant load on Supabase and increasing dashboard latency. Implementing a 60s Redis cache for the aggregated result collapses these calls into a single O(1) lookup.
+**Action:** Always cache aggregated multi-tenant summaries in the admin layer to protect database performance during concurrent dashboard access.
