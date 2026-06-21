@@ -172,7 +172,9 @@
     "typescript": "^5.9.3",
     "yaml": "^2.9.0",
     "twilio": "^4.0.0",
-    "tmp": "0.2.7"
+    "tmp": "0.2.7",
+    "vitest": "4.1.8",
+    "@vitest/coverage-v8": "4.1.8"
   },
   "config": {
     "commitizen": {
@@ -227,9 +229,9 @@
     "vitest": "4.1.8",
     "@vitest/coverage-v8": "4.1.8",
     "tar": "^7.5.15",
-    "undici": "^8.5.0",
+    "undici": "8.5.0",
     "mermaid": "^11.4.0",
-    "dompurify": "^3.4.11",
+    "dompurify": "3.4.11",
     "next": "15.5.18",
     "qs": "6.15.2",
     "@types/react": "^19.2.14",
