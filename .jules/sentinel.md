@@ -42,3 +42,8 @@
 **Vulnerability:** The `POST /api/peskids/portal/[tenantSlug]/forms` endpoint was exposed without any authorization checks. An attacker could create arbitrary form records for any tenant by simply knowing their `tenantSlug`.
 **Learning:** When using `runTrustedPortalDalForPathSlug`, it's critical to consistently apply it to all HTTP methods in a route handler. Rapidly developed endpoints might only secure `GET` while leaving `POST/PATCH/DELETE` wide open.
 **Prevention:** Mandate the use of `runTrustedPortalDalForPathSlug` (or similar) for ALL methods in portal-facing routes. Use `PORTAL_WRITE_ACCESS` specifically for state-changing operations to ensure only 'owner', 'admin', or 'operator' roles can perform them.
+
+## 2026-06-21 - [Missing Authorization in NotebookLM API]
+**Vulnerability:** The `/api/tenants/[slug]/notebooklm` and `/api/v1/tenants/[ref]/notebooklm` endpoints were exposed without any authentication or authorization checks. Anyone could read tenant-specific NotebookLM configurations or trigger re-synchronization jobs.
+**Learning:** New functional areas (NotebookLM) were implemented as Next.js 15 Route Handlers but missed the established security patterns (`requireAdminAccess`) used in other administrative routes.
+**Prevention:** Always apply `requireAdminAccess` or `requireAdminAccessUnlessDemoRead` to administrative or tenant-specific routes that are not intended for public access. Add comprehensive authorization tests for all new API routes.
