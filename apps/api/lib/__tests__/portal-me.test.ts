@@ -183,7 +183,11 @@ describe('portalUrlReachable', () => {
   it('sets cache on success', async () => {
     vi.mocked(fetch).mockResolvedValueOnce(new Response(null, { status: 200 }));
     await portalUrlReachable('https://new');
-    expect(redisCacheMod.setCache).toHaveBeenCalledWith('reachable:https://new', true, expect.any(Number));
+    expect(redisCacheMod.setCache).toHaveBeenCalledWith(
+      'reachable:https://new',
+      true,
+      expect.any(Number)
+    );
   });
 });
 
@@ -271,5 +275,57 @@ describe('fetchPortalTenantRowBySlug', () => {
     );
     const r = await fetchPortalTenantRowBySlug('x');
     expect(r).toEqual({ ok: false, reason: 'db' });
+  });
+
+  it('returns cached value if present', async () => {
+    const cachedResult = { ok: true, row: { id: 'cached-id', slug: 'acme' } };
+    vi.mocked(redisCacheMod.getCache).mockResolvedValueOnce(cachedResult);
+
+    const r = await fetchPortalTenantRowBySlug('acme');
+    expect(r).toEqual(cachedResult);
+    expect(supabaseMod.getServiceClient).not.toHaveBeenCalled();
+  });
+
+  it('sets cache on database success', async () => {
+    const row = { id: 'id-1', slug: 'new-tenant' };
+    const chain = {
+      schema: () => chain,
+      from: () => chain,
+      select: () => chain,
+      eq: () => chain,
+      is: () => chain,
+      maybeSingle: () => Promise.resolve({ data: row, error: null }),
+    };
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
+      chain as ReturnType<typeof supabaseMod.getServiceClient>
+    );
+
+    await fetchPortalTenantRowBySlug('new-tenant');
+    expect(redisCacheMod.setCache).toHaveBeenCalledWith(
+      'tenant_by_slug:new-tenant',
+      { ok: true, row },
+      expect.any(Number)
+    );
+  });
+
+  it('sets cache on negative result (not_found)', async () => {
+    const chain = {
+      schema: () => chain,
+      from: () => chain,
+      select: () => chain,
+      eq: () => chain,
+      is: () => chain,
+      maybeSingle: () => Promise.resolve({ data: null, error: null }),
+    };
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
+      chain as ReturnType<typeof supabaseMod.getServiceClient>
+    );
+
+    await fetchPortalTenantRowBySlug('missing-slug');
+    expect(redisCacheMod.setCache).toHaveBeenCalledWith(
+      'tenant_by_slug:missing-slug',
+      { ok: false, reason: 'not_found' },
+      expect.any(Number)
+    );
   });
 });
