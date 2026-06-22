@@ -198,7 +198,8 @@ export function hello(): string {
       const startTime = Date.now();
 
       // Simulate execution delay
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // Use 20ms to ensure we exceed the 10ms threshold even with timer jitter
+      await new Promise((resolve) => setTimeout(resolve, 20));
 
       const executionTime = Date.now() - startTime;
 
