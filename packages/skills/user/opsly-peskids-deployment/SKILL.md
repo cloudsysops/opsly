@@ -193,9 +193,9 @@ Post-deployment, agents should trigger:
 | File | Purpose |
 |------|---------|
 | `SKILL.md` | This document |
-| `apps/orchestrator/src/workers/peskids-deployment-worker.ts` | Worker implementation |
-| `scripts/peskids-orchestrator.sh` | Manual fallback script |
-| `docs/PESKIDS-GO-LIVE-STATUS.md` | Deployment status reference |
+| `worker.ts` | BullMQ worker implementation |
+| `scripts/peskids-orchestrator.sh` | Manual fallback script (root level) |
+| `docs/05-deployment-status/PESKIDS-GO-LIVE-STATUS.md` | Deployment status reference |
 
 ## Related Skills
 
