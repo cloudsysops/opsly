@@ -13,6 +13,7 @@ COPY turbo.json ./
 
 # Copy all workspace manifests so npm ci resolves the full dep tree
 COPY lib/conversational-runtime/package.json ./lib/conversational-runtime/
+COPY lib/openwa/package.json ./lib/openwa/
 COPY packages/opsly-core/package.json         ./packages/opsly-core/
 COPY packages/types/package.json              ./packages/types/
 COPY apps/panini-lab/package.json             ./apps/panini-lab/
@@ -22,6 +23,7 @@ RUN npm ci --ignore-scripts
 
 # Copy source — minimal set needed for panini-lab build
 COPY lib/conversational-runtime/ ./lib/conversational-runtime/
+COPY lib/openwa/                 ./lib/openwa/
 COPY packages/opsly-core/        ./packages/opsly-core/
 COPY packages/types/             ./packages/types/
 COPY apps/panini-lab/            ./apps/panini-lab/
