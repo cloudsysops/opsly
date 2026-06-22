@@ -1,3 +1,4 @@
+import { requireAdminAccessUnlessDemoRead } from '../../../../lib/auth';
 import { ORCHESTRATOR_INTERNAL_URL } from '../../../../lib/runtime-proxy';
 
 export const dynamic = 'force-dynamic';
@@ -7,7 +8,12 @@ function adminToken(): string {
   return process.env.PLATFORM_ADMIN_TOKEN?.trim() ?? '';
 }
 
-export async function GET(): Promise<Response> {
+export async function GET(request: Request): Promise<Response> {
+  const authError = await requireAdminAccessUnlessDemoRead(request);
+  if (authError) {
+    return authError;
+  }
+
   const token = adminToken();
   if (token.length === 0) {
     return Response.json(

@@ -42,3 +42,13 @@
 **Vulnerability:** The `POST /api/peskids/portal/[tenantSlug]/forms` endpoint was exposed without any authorization checks. An attacker could create arbitrary form records for any tenant by simply knowing their `tenantSlug`.
 **Learning:** When using `runTrustedPortalDalForPathSlug`, it's critical to consistently apply it to all HTTP methods in a route handler. Rapidly developed endpoints might only secure `GET` while leaving `POST/PATCH/DELETE` wide open.
 **Prevention:** Mandate the use of `runTrustedPortalDalForPathSlug` (or similar) for ALL methods in portal-facing routes. Use `PORTAL_WRITE_ACCESS` specifically for state-changing operations to ensure only 'owner', 'admin', or 'operator' roles can perform them.
+
+## 2026-06-18 - [Missing Authorization in NotebookLM Tenant Configuration]
+**Vulnerability:** The `/api/tenants/[slug]/notebooklm` and `/api/v1/tenants/[ref]/notebooklm` endpoints were exposed without any authentication or authorization checks. These routes provided access to sensitive AI configurations and source data for individual tenants.
+**Learning:** Even when following a `[slug]` pattern, if the route is not wrapped in `runTrustedPortalDal` or explicitly calls `requireAdminAccess`, it remains public. Tenant-specific AI assets are as sensitive as database records and require the same level of perimeter protection.
+**Prevention:** Conduct regular scans for route handlers in `apps/api` that do not import from `lib/auth` or `lib/portal-tenant-dal`. Mandate security tests that specifically verify 401/403 responses for all new tenant-facing functional areas.
+
+## 2026-06-18 - [Dependency Vulnerabilities in hono and tmp]
+**Vulnerability:** `npm audit` identified high-severity vulnerabilities in `hono` (Path traversal, etc. - GHSA-wwfh-h76j-fc44) and `tmp` (Path traversal - GHSA-7c78-jf6q-g5cm).
+**Learning:** Even if the project's direct dependencies are secure, transitive dependencies or overrides might bring in vulnerable versions. The CI environment enforces a strict audit that blocks PRs on moderate+ vulnerabilities in non-dev dependencies.
+**Prevention:** Regularly run `npm audit --audit-level=moderate --omit=dev` and update `overrides` in the root `package.json` to pin safe versions of problematic dependencies.
