@@ -40,14 +40,24 @@ export async function logAuditEvent(event: AuditEventInput): Promise<void> {
   }
 }
 
-/** Extrae IP real del request respetando cabeceras de proxy. */
-export function extractIp(request: NextRequest): string {
-  return (
-    request.headers.get('x-real-ip') ??
-    request.headers.get('cf-connecting-ip') ??
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-    'unknown'
-  );
+/**
+ * Extrae la IP real del cliente priorizando cabeceras verificadas de la plataforma (Cloudflare).
+ * Soporta tanto Request estándar como NextRequest.
+ */
+export function extractIp(request: Request | NextRequest): string {
+  const cfIp = request.headers.get('cf-connecting-ip');
+  if (cfIp) return cfIp.trim();
+
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    const first = forwarded.split(',')[0]?.trim();
+    if (first) return first;
+  }
+
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp) return realIp.trim();
+
+  return 'unknown';
 }
 
 /**
