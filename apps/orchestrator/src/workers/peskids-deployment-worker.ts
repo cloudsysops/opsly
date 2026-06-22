@@ -103,7 +103,9 @@ async function validateVps(
 
     // Opsly directory
     logger.info('Checking Opsly directory', { request_id: requestId });
-    const dirTest = await executeCommand(`ssh ${vpsUser}@${vpsHost} "test -d /opt/opsly && echo DIR_OK"`);
+    const dirTest = await executeCommand(
+      `ssh ${vpsUser}@${vpsHost} "test -d /opt/opsly && echo DIR_OK"`
+    );
     checks.directory = dirTest.includes('DIR_OK');
 
     // Services
@@ -113,8 +115,11 @@ async function validateVps(
     );
     checks.services = parseInt(servicesTest) > 3;
 
-    const allValid = Object.values(checks).every(v => v);
-    logger.info(`VPS validation ${allValid ? 'passed' : 'failed'}`, { checks, request_id: requestId });
+    const allValid = Object.values(checks).every((v) => v);
+    logger.info(`VPS validation ${allValid ? 'passed' : 'failed'}`, {
+      checks,
+      request_id: requestId,
+    });
 
     return {
       status: allValid ? 'valid' : 'invalid',
@@ -146,7 +151,9 @@ async function deployN8n(
 
     // 2. Pull latest code
     logger.info('Pulling latest code', { request_id: requestId });
-    await executeCommand(`ssh ${vpsUser}@${vpsHost} "cd /opt/opsly && git pull --ff-only origin main"`);
+    await executeCommand(
+      `ssh ${vpsUser}@${vpsHost} "cd /opt/opsly && git pull --ff-only origin main"`
+    );
 
     // 3. Deploy N8N container
     logger.info('Starting N8N container', { request_id: requestId });
@@ -155,7 +162,7 @@ async function deployN8n(
 
     // 4. Wait for N8N to be ready
     logger.info('Waiting for N8N to be ready', { request_id: requestId });
-    await new Promise(resolve => setTimeout(resolve, 15000)); // 15s startup time
+    await new Promise((resolve) => setTimeout(resolve, 15000)); // 15s startup time
 
     // 5. Create workflows (automated via N8N API)
     logger.info('Creating N8N workflows', { request_id: requestId });
@@ -332,11 +339,15 @@ async function runSmokeTests(requestId: string): Promise<boolean> {
     const landingOk = landing.includes('peskids');
 
     // Test N8N
-    const n8n = await executeCommand('curl -s -o /dev/null -w "%{http_code}" https://n8n-peskids.op-sly.com');
+    const n8n = await executeCommand(
+      'curl -s -o /dev/null -w "%{http_code}" https://n8n-peskids.op-sly.com'
+    );
     const n8nOk = n8n === '200';
 
     // Test Uptime
-    const uptime = await executeCommand('curl -s -o /dev/null -w "%{http_code}" https://uptime-peskids.op-sly.com');
+    const uptime = await executeCommand(
+      'curl -s -o /dev/null -w "%{http_code}" https://uptime-peskids.op-sly.com'
+    );
     const uptimeOk = uptime === '200';
 
     const allPassed = apiOk && landingOk && n8nOk && uptimeOk;
