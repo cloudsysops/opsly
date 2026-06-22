@@ -33,3 +33,7 @@
 ## 2026-06-18 - [Tenant Lookup Caching]
 **Learning:** Tenant metadata lookups (by slug) are performed on almost every authorized portal request and public booking interaction. Caching these lookups in Redis for 60s significantly reduces Supabase load and latency for the most frequent API paths. Implementing negative caching for 'not_found' results is also critical to prevent DB exhaustion from invalid slug probes.
 **Action:** Always cache tenant identity lookups that are part of the request authorization or routing path.
+
+## 2026-06-22 - [Dashboard Assembly Caching]
+**Learning:** Aggregated dashboards often mix highly optimized/cached data with minor uncached fetches (like simple counts or external status probes). These remaining synchronous calls become the new bottleneck and introduce latency variability.
+**Action:** Ensure ALL data sources in high-traffic aggregation endpoints (like admin overviews) are independently cached to guarantee consistent sub-100ms response times.

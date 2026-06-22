@@ -1,17 +1,24 @@
 import { getPlatformLlmUsage } from '@intcloudsysops/llm-gateway';
 import { requireAdminAccess } from '../../../../lib/auth';
 import { getBullmqQueueDetails } from '../../../../lib/bullmq-queue-details';
-import { DEMO_SYSTEM_METRICS_MOCK } from '../../../../lib/constants';
+import { CACHE_TTL, DEMO_SYSTEM_METRICS_MOCK } from '../../../../lib/constants';
 import { countRunningDockerContainers } from '../../../../lib/docker-running-count';
 import { fetchHostMetricsFromPrometheus } from '../../../../lib/fetch-host-metrics-prometheus';
 import { logger } from '../../../../lib/logger';
 import { getPrometheusBaseUrl } from '../../../../lib/prometheus';
+import { getCache, setCache } from '../../../../lib/redis-cache';
 import { getServiceClient } from '../../../../lib/supabase';
 
 export const dynamic = 'force-dynamic';
 const CACHE_SAVINGS_DECIMALS = 4;
 
 async function fetchActiveTenantCount(): Promise<number> {
+  const cacheKey = 'admin:overview:active_tenants';
+  const cached = await getCache<number>(cacheKey);
+  if (cached !== null) {
+    return cached;
+  }
+
   const { count, error } = await getServiceClient()
     .schema('platform')
     .from('tenants')
@@ -23,7 +30,11 @@ async function fetchActiveTenantCount(): Promise<number> {
     logger.error('admin overview active tenants', error);
     return 0;
   }
-  return count ?? 0;
+
+  const result = count ?? 0;
+  void setCache(cacheKey, result, CACHE_TTL.SHORT);
+
+  return result;
 }
 
 type Mac2011Shape = {
@@ -39,21 +50,35 @@ type Mac2011Shape = {
 
 async function tryFetchMac2011Status(): Promise<Mac2011Shape | null> {
   const url = process.env.MAC2011_STATUS_URL?.trim();
-  if (url && url.length > 0) {
-    try {
-      const res = await fetch(url, { cache: 'no-store' });
-      if (!res.ok) {
-        return null;
-      }
-      const data: unknown = await res.json();
-      return typeof data === 'object' && data !== null && !Array.isArray(data)
-        ? (data as Mac2011Shape)
-        : null;
-    } catch {
+  if (!url || url.length === 0) {
+    return null;
+  }
+
+  const cacheKey = 'admin:overview:mac2011_status';
+  const cached = await getCache<Mac2011Shape>(cacheKey);
+  if (cached !== null) {
+    return cached;
+  }
+
+  try {
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) {
       return null;
     }
+    const data: unknown = await res.json();
+    const result =
+      typeof data === 'object' && data !== null && !Array.isArray(data)
+        ? (data as Mac2011Shape)
+        : null;
+
+    if (result) {
+      void setCache(cacheKey, result, CACHE_TTL.SHORT);
+    }
+
+    return result;
+  } catch {
+    return null;
   }
-  return null;
 }
 
 function cacheHitRate(requests: number, cacheHits: number): number {
