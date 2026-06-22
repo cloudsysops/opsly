@@ -1,0 +1,32 @@
+
+> @intcloudsysops/portal@0.0.0 dev
+> next dev -p 3002
+
+   ▲ Next.js 15.5.18
+   - Local:        http://localhost:3002
+   - Network:      http://192.168.0.2:3002
+
+ ✓ Starting...
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+It looks like you're trying to use TypeScript but do not have the required package(s) installed.
+Installing dependencies
+
+If you are not trying to use TypeScript, please remove the tsconfig.json file from your package root (and any TypeScript files in your app and pages directories).
+
+
+Installing devDependencies (yarn):
+- @types/node@20.17.6
+
+error This project's package.json defines "packageManager": "yarn@npm@10.8.3". However the current global version of Yarn is 1.22.22.
+
+Presence of the "packageManager" field indicates that the project is meant to be used with Corepack, a tool included by default with all official Node.js distributions starting from 16.9 and 14.19.
+Corepack must currently be enabled by running corepack enable in your terminal. For more information, check out https://yarnpkg.com/corepack.
+Failed to install required TypeScript dependencies, please install them manually to continue:
+yarn add --exact --dev @types/node@20.17.6
+
+{ command: 'yarn add --exact --dev @types/node@20.17.6' }
+[?25h
