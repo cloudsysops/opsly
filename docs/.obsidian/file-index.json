@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-06-22T11:53:51.493Z",
-  "totalFiles": 741,
+  "lastIndexed": "2026-06-22T12:25:46.678Z",
+  "totalFiles": 749,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -310,6 +310,7 @@
     "adr/ADR-045-tenant-analytics-batch-python-pandas-arrow.md",
     "adr/ADR-046-family-email-invite-access.md",
     "adr/README.md",
+    "AGENTS-SESSION-HISTORY.md",
     "artifacts/provisioning/peskids-operator-report.md",
     "artifacts/provisioning/provision-report-intcloudsysops.md",
     "artifacts/provisioning/provision-report-peskids.md",
@@ -531,7 +532,11 @@
     "ops/SESSION-LOG-2026-05-03.md",
     "ops/workflows-audit.md",
     "ops/workflows-index.md",
+    "OPTIMIZATION-ROADMAP-2026-06.md",
     "orchestrator/REPAIR-QUEUE.md",
+    "PESKIDS-ADMIN-USER-VALIDATION.md",
+    "PESKIDS-AGENT-AUTONOMOUS-DEPLOYMENT.md",
+    "PESKIDS-GO-LIVE-STATUS.md",
     "plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
     "plans/AUTONOMY-COMPLETION-PLAN-2026-04-27.md",
     "plans/AUTONOMY-GO-NO-GO-WEEKLY.md",
@@ -583,6 +588,7 @@
     "research/research-ab67308d-4517-4243-9250-04a573d0224e.md",
     "research/research-c27de1ef-f267-43cc-a17e-71fd1f2ba8fb.md",
     "research/research-e7714857-87b5-463b-9e9a-fbc117bcb222.md",
+    "RUN-VALIDATION-LOCALLY.md",
     "runbooks/admin.md",
     "runbooks/AGENCY-DEVOPS-OS-DEMO.md",
     "runbooks/AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
@@ -743,6 +749,8 @@
     "testing/PHASE1-TEST-PLAN.md",
     "testing/PR-187-TESTING-GUIDE.md",
     "testing/QA-TESTING-BRIEF.md",
-    "testing/README.md"
+    "testing/README.md",
+    "VPS-VALIDATION-GUIDE.md",
+    "VPS-VALIDATION-OPTIONS.md"
   ]
 }
