@@ -1,16 +1,39 @@
 import { describe, expect, it } from 'vitest';
+import { PESKIDS_APP_ORIGIN } from '../app-url';
 import {
+  buildPeskidsRecoveryRedirectTo,
   inviteActivationPathFromUrl,
   isInviteLink,
   recoveryTargetFromMetadata,
+  resolveRecoveryRedirectUrl,
 } from '../auth-recovery';
 
 describe('recoveryTargetFromMetadata', () => {
+  it('builds recovery links against the peskids origin', () => {
+    const origin = PESKIDS_APP_ORIGIN.replace(/\/$/, '');
+    expect(buildPeskidsRecoveryRedirectTo()).toBe(
+      `${origin}/auth/callback?next=%2Fadmin%2Fupdate-password`
+    );
+  });
+
   it('routes peskids staff to peskids origin', () => {
     const target = recoveryTargetFromMetadata({ tenant_slug: 'peskids', role: 'admin' });
     expect(target.app).toBe('peskids_staff');
     expect(target.origin).toContain('peskids');
     expect(target.updatePasswordPath).toBe('/admin/update-password');
+  });
+
+  it('builds the final recovery redirect url by role', () => {
+    const origin = PESKIDS_APP_ORIGIN.replace(/\/$/, '');
+    expect(resolveRecoveryRedirectUrl({ tenant_slug: 'peskids', role: 'admin' })).toBe(
+      `${origin}/admin/update-password`
+    );
+    expect(resolveRecoveryRedirectUrl({ tenant_slug: 'peskids', role: 'support' })).toBe(
+      `${origin}/support/update-password`
+    );
+    expect(resolveRecoveryRedirectUrl({ tenant_slug: 'peskids', role: 'teacher' })).toBe(
+      `${origin}/teacher/update-password`
+    );
   });
 
   it('routes support recovery to the support update-password page', () => {
