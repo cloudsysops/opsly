@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import { PeskidsLockup } from '@/components/brand/peskids-logo'
 import { Button } from '@/components/ui/button'
-import { buildRecoveryRedirectTo } from '@/lib/auth-recovery'
 import { isStaffUser } from '@/lib/staff-user'
 import { createClient } from '@/lib/supabase-browser'
 import { tenantRoleFromUserMetadata } from '@/lib/runtime/tenant-identity'
@@ -65,26 +64,18 @@ export function TeacherLogin(): React.ReactElement {
       setError('Escribe tu email arriba y vuelve a pulsar «¿Olvidaste tu contraseña?».')
       return
     }
-    if (!browserSupabaseConfigured()) {
-      setError(authFetchErrorMessage())
-      return
-    }
     setResetLoading(true)
     setError('')
     setResetSent(false)
     try {
-      const supabase = createClient()
-      const origin =
-        typeof window !== 'undefined' ? window.location.origin : 'https://peskids.op-sly.com'
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(trimmed, {
-        redirectTo: buildRecoveryRedirectTo(origin, { next: '/teacher/update-password' }),
+      const response = await fetch('/api/auth/staff-recovery', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email: trimmed }),
       })
-      if (resetError) {
-        setError(
-          resetError.message.toLowerCase().includes('fetch')
-            ? authFetchErrorMessage()
-            : resetError.message
-        )
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as { error?: string } | null
+        setError(payload?.error || authFetchErrorMessage())
         return
       }
       setResetSent(true)

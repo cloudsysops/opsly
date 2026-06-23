@@ -9,6 +9,20 @@ function normalizeUrl(value: string): string {
   return value.replace(/\/$/, '');
 }
 
+/** Dev servers bound to 0.0.0.0 must use localhost in auth redirect URLs. */
+export function normalizeLocalDevOrigin(value: string): string {
+  try {
+    const parsed = new URL(value);
+    if (parsed.hostname === '0.0.0.0') {
+      parsed.hostname = 'localhost';
+      return normalizeUrl(parsed.toString());
+    }
+  } catch {
+    return normalizeUrl(value);
+  }
+  return normalizeUrl(value);
+}
+
 function isProductionRuntime(): boolean {
   const nodeEnv = process.env.NODE_ENV?.trim().toLowerCase();
   if (nodeEnv === 'production' || nodeEnv === 'test') {
@@ -29,7 +43,7 @@ export function resolveAppOrigin(config: AppUrlConfig): string {
     : `NEXT_PUBLIC_${config.envName}`;
   const explicit = process.env[config.envName]?.trim() ?? process.env[fallbackEnvName]?.trim();
   if (explicit && explicit.length > 0) {
-    return normalizeUrl(explicit);
+    return normalizeLocalDevOrigin(explicit);
   }
 
   if (!isProductionRuntime()) {
