@@ -3,7 +3,12 @@
   "private": true,
   "packageManager": "npm@10.8.3",
   "dependencies": {
-    "@reduxjs/toolkit": "^1.9.7"
+    "dompurify": "3.4.11",
+    "js-tiktoken": "^1.0.21",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "undici": "7.28.0",
+    "vitest": "4.1.9"
   },
   "workspaces": [
     "apps/*",
@@ -167,9 +172,9 @@
     "playwright": "^1.59.1",
     "prettier": "^3.8.3",
     "turbo": "^2.9.14",
+    "twilio": "^4.0.0",
     "typescript": "^5.9.3",
-    "yaml": "^2.9.0",
-    "twilio": "^4.0.0"
+    "yaml": "^2.9.0"
   },
   "config": {
     "commitizen": {
@@ -203,6 +208,8 @@
     "lodash": "^4.18.1",
     "minimist": "^1.2.8",
     "tmp": "0.2.7",
+    "dompurify": "3.4.11",
+    "esbuild": "0.28.1",
     "uuid": "^14.0.0",
     "fast-uri": "3.1.2",
     "fast-xml-builder": "1.2.0",
@@ -221,10 +228,10 @@
     "@next/eslint-plugin-next": "15.5.18",
     "@supabase/supabase-js": "^2.106.0",
     "@supabase/ssr": "^0.6.1",
-    "vitest": "4.1.8",
-    "@vitest/coverage-v8": "4.1.8",
+    "vitest": "4.1.9",
+    "@vitest/coverage-v8": "4.1.9",
     "tar": "^7.5.15",
-    "undici": "^7.25.0",
+    "undici": "7.28.0",
     "mermaid": "^11.4.0",
     "next": "15.5.18",
     "qs": "6.15.2",
@@ -234,10 +241,5 @@
       "@types/react": "19.2.14",
       "@types/react-dom": "19.2.3"
     }
-  },
-  "dependencies": {
-    "js-tiktoken": "^1.0.21",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6"
   }
 }
