@@ -33,6 +33,7 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const toggleButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -42,6 +43,17 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
+  }, [open]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && open) {
+        setOpen(false);
+        toggleButtonRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [open]);
 
   const sendMessage = async () => {
@@ -105,6 +117,7 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
   return (
     <>
       <Button
+        ref={toggleButtonRef}
         type="button"
         variant="primary"
         onClick={() => setOpen(!open)}
@@ -113,17 +126,27 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
           open && 'bg-ops-surface border-ops-border text-neutral-100 hover:bg-ops-border/40'
         )}
         aria-label={open ? 'Cerrar feedback' : 'Abrir feedback'}
+        aria-expanded={open}
+        aria-controls="feedback-chat-window"
       >
         {open ? <X className="h-6 w-6" /> : <MessageSquare className="h-6 w-6" />}
       </Button>
 
       {open ? (
-        <div className="fixed bottom-[92px] right-6 z-[1000] flex h-[500px] w-[360px] animate-in fade-in slide-in-from-bottom-2 flex-col overflow-hidden rounded-xl border border-ops-border bg-ops-bg shadow-2xl shadow-black/60 duration-200">
+        <div
+          id="feedback-chat-window"
+          role="dialog"
+          aria-labelledby="feedback-chat-title"
+          className="fixed bottom-[92px] right-6 z-[1000] flex h-[500px] w-[360px] animate-in fade-in slide-in-from-bottom-2 flex-col overflow-hidden rounded-xl border border-ops-border bg-ops-bg shadow-2xl shadow-black/60 duration-200"
+        >
           <div className="border-b border-ops-border bg-ops-surface px-4 py-3">
-            <div className="flex items-center gap-2 text-sm font-semibold text-neutral-100">
-              <MessageSquare className="h-4 w-4 text-ops-green" />
+            <h2
+              id="feedback-chat-title"
+              className="flex items-center gap-2 text-sm font-semibold text-neutral-100"
+            >
+              <MessageSquare className="h-4 w-4 text-ops-green" aria-hidden="true" />
               Feedback & Sugerencias
-            </div>
+            </h2>
             <div className="mt-0.5 text-xs text-ops-gray">Tu feedback mejora el producto</div>
           </div>
 
@@ -146,11 +169,8 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
               </div>
             ))}
             {loading ? (
-              <div
-                className="flex items-center gap-2 p-2 text-xs text-ops-gray animate-pulse"
-                aria-hidden="true"
-              >
-                <Loader2 className="h-3 w-3 animate-spin" />
+              <div className="flex items-center gap-2 p-2 text-xs text-ops-gray animate-pulse">
+                <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
                 <span>Analizando...</span>
               </div>
             ) : null}

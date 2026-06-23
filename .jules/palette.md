@@ -11,3 +11,7 @@
 ## 2025-05-22 - Root Dependency Overrides for Monorepo Stability
 **Learning:** In a monorepo, inconsistent versions of foundational libraries like `undici` can break test environments (e.g., `jsdom` in Vitest).
 **Action:** Use root `package.json` overrides to align critical dependencies across all workspaces when version mismatches occur.
+
+## 2026-06-23 - Focus Restoration in Floating Widgets
+**Learning:** Custom floating components (like a feedback chat) must implement keyboard dismissal (Escape key) and focus restoration to the trigger button to meet accessibility standards and prevent user disorientation.
+**Action:** Always implement a Focus Restoration pattern and Escape key listener for modal-like floating widgets.
