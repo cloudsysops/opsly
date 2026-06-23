@@ -1,4 +1,4 @@
-import { requireAdminToken } from '../../../../lib/auth';
+import { requireAdminAccess } from '../../../../lib/auth';
 import { buildDecisionPlan, n8nDecideBodySchema } from '../../../../lib/n8n-super-agent';
 
 function json200(body: Record<string, unknown>): Response {
@@ -6,7 +6,7 @@ function json200(body: Record<string, unknown>): Response {
 }
 
 export async function POST(request: Request): Promise<Response> {
-  const authError = requireAdminToken(request);
+  const authError = await requireAdminAccess(request);
   if (authError) {
     return authError;
   }
