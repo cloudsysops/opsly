@@ -304,21 +304,21 @@ export async function fetchPeskidsExecutiveSummary(
     const stage = normalizeLeadStage(row);
     return stage === 'Enrolled' || stage === 'Active Student' || stage === 'Renewal';
   }).length;
-
-  const leadSources = leadsResult.rows.reduce(
-    (acc, row) => {
-      acc[normalizeLeadSource(row.referral_source ?? row.source)] += 1;
-      return acc;
-    },
-    { ...EMPTY_LEAD_SOURCES }
-  );
+  const conversionRatePct =
+    newLeads > 0 ? Math.round((convertedLeads / newLeads) * 100) : null;
+  const leadSources = leadsResult.rows.reduce((acc, row) => {
+    acc[normalizeLeadSource(row.referral_source ?? row.source)] += 1;
+    return acc;
+  }, { ...EMPTY_LEAD_SOURCES });
 
   const leadsWithoutContactCount = leadsResult.rows.filter((row) => {
     const stage = normalizeLeadStage(row);
-    if (stage !== 'New Lead') return false;
-    const ageMs = Date.now() - new Date(row.created_at).getTime();
-    const oneDayMs = 24 * 60 * 60 * 1000;
-    return ageMs > oneDayMs;
+    if (stage !== 'New Lead') {
+      return false;
+    }
+    const createdAt = new Date(row.created_at).getTime();
+    const ageMs = Date.now() - createdAt;
+    return ageMs > 24 * 60 * 60 * 1000;
   }).length;
 
   const alerts = buildExecutiveAlerts({
@@ -345,6 +345,7 @@ export async function fetchPeskidsExecutiveSummary(
     alerts,
   };
 
+  // Bolt Optimization: background cache update to avoid blocking response.
   void setCache(cacheKey, summary, CACHE_TTL.SHORT).catch((err) => {
     logger.error(`[peskids-executive-cache] failed to set ${cacheKey}`, err);
   });

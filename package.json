@@ -3,6 +3,7 @@
   "private": true,
   "packageManager": "npm@10.8.3",
   "dependencies": {
+    "@vitest/coverage-v8": "4.1.9",
     "dompurify": "3.4.11",
     "js-tiktoken": "^1.0.21",
     "react": "^19.2.6",
@@ -209,7 +210,6 @@
     "minimist": "^1.2.8",
     "tmp": "0.2.7",
     "dompurify": "3.4.11",
-    "esbuild": "0.28.1",
     "uuid": "^14.0.0",
     "fast-uri": "3.1.2",
     "fast-xml-builder": "1.2.0",
