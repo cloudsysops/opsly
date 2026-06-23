@@ -5,6 +5,7 @@ import {
   resolvePostAuthPath,
   resolveRecoveryUpdatePath,
 } from '@/lib/auth-callback';
+import { getPeskidsPublicBaseUrl, isLocalhostLikeOrigin, isProductionRuntime } from '@/lib/app-url';
 import { recoveryExchangeErrorMessage } from '@/lib/auth-recovery-messages';
 import { normalizeRequestOrigin } from '@/lib/request-origin';
 
@@ -17,12 +18,20 @@ function getSupabaseConfig(): { url: string; anon: string } | null {
   return { url, anon };
 }
 
+function resolveCallbackOrigin(requestOrigin: string): string {
+  const normalized = normalizeRequestOrigin(requestOrigin);
+  if (isProductionRuntime() && isLocalhostLikeOrigin(normalized)) {
+    return getPeskidsPublicBaseUrl();
+  }
+  return normalized;
+}
+
 function redirectWithError(
   requestUrl: URL,
   loginPath: string,
   message: string
 ): NextResponse {
-  const origin = normalizeRequestOrigin(requestUrl.origin);
+  const origin = resolveCallbackOrigin(requestUrl.origin);
   const loginWithError = new URL(loginPath, origin);
   loginWithError.searchParams.set('error', message);
   return NextResponse.redirect(loginWithError);
@@ -36,7 +45,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const next = requestUrl.searchParams.get('next');
   const nextPath = next && next.startsWith('/') ? next : null;
   const errorLoginPath = resolveLoginPath(nextPath ?? '/admin');
-  const origin = normalizeRequestOrigin(requestUrl.origin);
+  const origin = resolveCallbackOrigin(requestUrl.origin);
 
   const config = getSupabaseConfig();
   if (!config) {

@@ -5,8 +5,27 @@ type AppUrlConfig = {
   prodFallback: string;
 };
 
+const PESKIDS_PRODUCTION_FALLBACK = 'https://peskids.op-sly.com';
+
 function normalizeUrl(value: string): string {
   return value.replace(/\/$/, '');
+}
+
+function hostnameFromUrl(value: string): string | null {
+  try {
+    return new URL(value).hostname;
+  } catch {
+    return null;
+  }
+}
+
+/** True when origin must not be used for public auth redirects in production. */
+export function isLocalhostLikeOrigin(value: string): boolean {
+  const hostname = hostnameFromUrl(value);
+  if (!hostname) {
+    return false;
+  }
+  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0';
 }
 
 /** Dev servers bound to 0.0.0.0 must use localhost in auth redirect URLs. */
@@ -23,7 +42,7 @@ export function normalizeLocalDevOrigin(value: string): string {
   return normalizeUrl(value);
 }
 
-function isProductionRuntime(): boolean {
+export function isProductionRuntime(): boolean {
   const nodeEnv = process.env.NODE_ENV?.trim().toLowerCase();
   if (nodeEnv === 'production' || nodeEnv === 'test') {
     return true;
@@ -37,25 +56,82 @@ function isProductionRuntime(): boolean {
   return false;
 }
 
+function resolveProductionFallback(config: AppUrlConfig): string {
+  const domain = process.env.PLATFORM_DOMAIN?.trim() ?? process.env.PLATFORM_BASE_DOMAIN?.trim();
+  if (domain && domain.length > 0) {
+    return normalizeUrl(`https://${config.prodSubdomain}.${domain}`);
+  }
+  return normalizeUrl(config.prodFallback);
+}
+
+function readExplicitOrigin(envNames: string[]): string | null {
+  for (const envName of envNames) {
+    const value = process.env[envName]?.trim();
+    if (!value) {
+      continue;
+    }
+    const normalized = normalizeLocalDevOrigin(value);
+    if (isProductionRuntime() && isLocalhostLikeOrigin(normalized)) {
+      continue;
+    }
+    return normalized;
+  }
+  return null;
+}
+
+/**
+ * Public base URL for Peskids auth emails and server-side redirects.
+ * Never returns localhost in production (Doppler/VPS misconfig safe).
+ */
+export function getPeskidsPublicBaseUrl(): string {
+  const explicit = readExplicitOrigin([
+    'PESKIDS_PUBLIC_URL',
+    'NEXT_PUBLIC_PESKIDS_SITE_URL',
+    'NEXT_PUBLIC_SITE_URL',
+    'NEXT_PUBLIC_APP_URL',
+    'PESKIDS_SITE_URL',
+    'SITE_URL',
+  ]);
+
+  if (explicit) {
+    return explicit;
+  }
+
+  const vercelUrl = process.env.VERCEL_URL?.trim();
+  if (vercelUrl) {
+    const vercelOrigin = normalizeUrl(
+      vercelUrl.startsWith('http') ? vercelUrl : `https://${vercelUrl}`
+    );
+    if (!isProductionRuntime() || !isLocalhostLikeOrigin(vercelOrigin)) {
+      return vercelOrigin;
+    }
+  }
+
+  if (isProductionRuntime()) {
+    return normalizeUrl(PESKIDS_PRODUCTION_FALLBACK);
+  }
+
+  return `http://localhost:3004`;
+}
+
 export function resolveAppOrigin(config: AppUrlConfig): string {
+  if (config.prodSubdomain === 'peskids') {
+    return getPeskidsPublicBaseUrl();
+  }
+
   const fallbackEnvName = config.envName.startsWith('NEXT_PUBLIC_')
     ? config.envName.replace(/^NEXT_PUBLIC_/, '')
     : `NEXT_PUBLIC_${config.envName}`;
-  const explicit = process.env[config.envName]?.trim() ?? process.env[fallbackEnvName]?.trim();
-  if (explicit && explicit.length > 0) {
-    return normalizeLocalDevOrigin(explicit);
+  const explicit = readExplicitOrigin([config.envName, fallbackEnvName]);
+  if (explicit) {
+    return explicit;
   }
 
   if (!isProductionRuntime()) {
     return `http://localhost:${config.localPort}`;
   }
 
-  const domain = process.env.PLATFORM_DOMAIN?.trim() ?? process.env.PLATFORM_BASE_DOMAIN?.trim();
-  if (domain && domain.length > 0) {
-    return `https://${config.prodSubdomain}.${domain}`;
-  }
-
-  return config.prodFallback;
+  return resolveProductionFallback(config);
 }
 
 export const PESKIDS_APP_ORIGIN = resolveAppOrigin({
