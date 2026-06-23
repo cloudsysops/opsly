@@ -1,5 +1,5 @@
 import { supabaseServer } from '@/lib/supabase';
-import { PESKIDS_APP_ORIGIN } from '@/lib/app-url';
+import { getPeskidsPublicBaseUrl } from '@/lib/app-url';
 
 const TENANT_SLUG = 'peskids';
 const DEFAULT_OWNER_EMAIL = 'sierrasantiago90@gmail.com';
@@ -91,7 +91,7 @@ function isNonFatalEmailError(err: unknown): boolean {
 }
 
 function getPeskidsSiteUrl(): string {
-  return PESKIDS_APP_ORIGIN.replace(/\/$/, '');
+  return getPeskidsPublicBaseUrl().replace(/\/$/, '');
 }
 
 function getLogoUrl(): string {
@@ -388,7 +388,7 @@ function buildInviteHtml(params: {
             </div>
           </td></tr>
           <tr><td style="padding:0 32px 28px 32px;">
-            <div style="border-top:1px solid #e2edf3;padding-top:18px;font-size:12px;line-height:1.6;color:#64748b;">Opsly · ${escapeHtml(TENANT_SLUG)} · ${escapeHtml(PESKIDS_APP_ORIGIN)}</div>
+            <div style="border-top:1px solid #e2edf3;padding-top:18px;font-size:12px;line-height:1.6;color:#64748b;">Opsly · ${escapeHtml(TENANT_SLUG)} · ${escapeHtml(getPeskidsSiteUrl())}</div>
           </td></tr>
         </table>
       </td></tr>

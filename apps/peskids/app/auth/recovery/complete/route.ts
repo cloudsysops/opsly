@@ -4,6 +4,11 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { resolveRecoveryRedirectUrl } from '@/lib/auth-recovery';
 import { recoveryExchangeErrorMessage } from '@/lib/auth-recovery-messages';
+import {
+  getPeskidsPublicBaseUrl,
+  isLocalhostLikeOrigin,
+  isProductionRuntime,
+} from '@/lib/app-url';
 import { normalizeRequestOrigin } from '@/lib/request-origin';
 
 function metadataFromUser(user: {
@@ -25,10 +30,18 @@ function metadataFromUser(user: {
   };
 }
 
+function resolveCallbackOrigin(requestOrigin: string): string {
+  const normalized = normalizeRequestOrigin(requestOrigin);
+  if (isProductionRuntime() && isLocalhostLikeOrigin(normalized)) {
+    return getPeskidsPublicBaseUrl();
+  }
+  return normalized;
+}
+
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
-  const origin = normalizeRequestOrigin(requestUrl.origin);
+  const origin = resolveCallbackOrigin(requestUrl.origin);
   const loginUrl = new URL('/admin/login', origin);
 
   if (!code) {
