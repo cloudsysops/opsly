@@ -15,6 +15,7 @@ import {
   RefreshCw,
   ShieldCheck,
   Users,
+  UsersRound,
 } from 'lucide-react';
 import { PeskidsLogo } from '@/components/brand/peskids-logo';
 import { Button } from '@/components/ui/button';
@@ -42,6 +43,7 @@ const navOps = [
   { icon: LayoutGrid, label: 'Academia', href: '/admin#academy' },
   { icon: ShieldCheck, label: 'Equipo', href: '/admin#team' },
   { icon: GraduationCap, label: 'Clases', href: '/admin#classes' },
+  { icon: UsersRound, label: 'Familias', href: '/admin#families' },
   { icon: Users, label: 'Leads', href: '/admin#leads' },
   { icon: MessageSquare, label: 'Feedback', href: '/admin#feedback' },
   { icon: CalendarClock, label: 'Follow-up', href: '/admin#follow-up' },
@@ -131,6 +133,10 @@ export function AdminShell({
 
     if (item.label === 'Clases') {
       return hash === '#classes';
+    }
+
+    if (item.label === 'Familias') {
+      return hash === '#families';
     }
 
     if (item.label === 'Leads') {
