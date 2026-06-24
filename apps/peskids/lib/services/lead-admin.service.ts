@@ -1,0 +1,166 @@
+import { supabaseServer } from '@/lib/supabase';
+import type { Database } from '@/lib/types';
+import {
+  isMissingPlatformPeskidsTable,
+  mapPlatformLeadRow,
+  type PlatformPeskidsLeadRow,
+} from '@/lib/peskids-platform-read';
+import type { DashboardData } from '@/lib/types';
+import type { AdminLeadStatus } from '@/lib/validation/lead-admin.schema';
+
+export type DashboardLead = DashboardData['new_leads'][number];
+
+export type UpdateLeadAdminInput = {
+  status?: AdminLeadStatus;
+  admin_notes?: string;
+};
+
+function platformFrom() {
+  const client = supabaseServer() as {
+    schema: (name: string) => {
+      from: (tableName: string) => ReturnType<ReturnType<typeof supabaseServer>['from']>;
+    };
+  };
+  return client.schema('platform').from('peskids_leads');
+}
+
+export function mapAdminStatusToPlatform(status: AdminLeadStatus): string {
+  switch (status) {
+    case 'new':
+      return 'new';
+    case 'contacted':
+      return 'contacted';
+    case 'trial':
+      return 'qualified';
+    case 'enrolled':
+      return 'converted';
+    case 'archived':
+      return 'lost';
+    default:
+      return 'new';
+  }
+}
+
+function mapLegacyLeadRow(row: {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  class_modality: DashboardLead['class_modality'];
+  neighborhood: string | null;
+  grade_interested: string;
+  status: DashboardLead['status'];
+  admin_notes: string | null;
+  referral_code: string | null;
+  referred_by_code: string | null;
+  referral_discount_cents: number;
+  referral_redemptions: number;
+  referral_source: string | null;
+}): DashboardLead {
+  return {
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    phone: row.phone,
+    class_modality: row.class_modality,
+    neighborhood: row.neighborhood,
+    grade_interested: row.grade_interested,
+    status: row.status,
+    admin_notes: row.admin_notes,
+    referral_code: row.referral_code,
+    referred_by_code: row.referred_by_code,
+    referral_discount_cents: row.referral_discount_cents,
+    referral_redemptions: row.referral_redemptions,
+    referral_source: row.referral_source,
+  };
+}
+
+async function updatePlatformLead(
+  leadId: string,
+  tenantSlug: string,
+  input: UpdateLeadAdminInput
+): Promise<DashboardLead | null> {
+  const patch: Record<string, string> = {
+    updated_at: new Date().toISOString(),
+  };
+
+  if (input.status !== undefined) {
+    patch.status = mapAdminStatusToPlatform(input.status);
+  }
+  if (input.admin_notes !== undefined) {
+    patch.admin_notes = input.admin_notes;
+  }
+
+  const { data, error } = await platformFrom()
+    .update(patch)
+    .eq('id', leadId)
+    .eq('tenant_slug', tenantSlug)
+    .select(
+      'id, full_name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_source, created_at'
+    )
+    .maybeSingle();
+
+  if (error) {
+    if (isMissingPlatformPeskidsTable(error)) {
+      return null;
+    }
+    throw error;
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  return mapPlatformLeadRow(data as PlatformPeskidsLeadRow);
+}
+
+async function updateLegacyLead(
+  leadId: string,
+  tenantSlug: string,
+  input: UpdateLeadAdminInput
+): Promise<DashboardLead | null> {
+  const supabase = supabaseServer();
+  const patch: Database['public']['Tables']['leads']['Update'] = {};
+
+  if (input.status !== undefined) {
+    patch.status = input.status;
+  }
+  if (input.admin_notes !== undefined) {
+    patch.admin_notes = input.admin_notes;
+  }
+
+  const { data, error } = await supabase
+    .from('leads')
+    .update(patch)
+    .eq('id', leadId)
+    .eq('tenant_id', tenantSlug)
+    .select(
+      'id, name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source'
+    )
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  return mapLegacyLeadRow(
+    data as Parameters<typeof mapLegacyLeadRow>[0]
+  );
+}
+
+export async function updateLeadForAdmin(
+  leadId: string,
+  tenantSlug: string,
+  input: UpdateLeadAdminInput
+): Promise<DashboardLead | null> {
+  const platformLead = await updatePlatformLead(leadId, tenantSlug, input);
+  if (platformLead) {
+    return platformLead;
+  }
+
+  return updateLegacyLead(leadId, tenantSlug, input);
+}

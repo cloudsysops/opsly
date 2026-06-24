@@ -18,7 +18,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 
 type AcademyOpsStatus = 'ready' | 'partial' | 'manual' | 'blocked';
-type AcademyOpsOwner = 'Opsly' | 'GHL' | 'n8n' | 'Manual';
+type AcademyOpsOwner = 'Panel' | 'CRM' | 'Automatización' | 'Manual';
 
 type AcademyDomain = {
   key:
@@ -77,18 +77,18 @@ function buildAcademyDomains(data: DashboardData): AcademyDomain[] {
   return [
     {
       key: 'leads',
-      label: 'Leads',
+      label: 'Interesados',
       status: 'ready',
-      owner: 'GHL',
-      summary: `${data.new_leads_count} leads nuevos y ${data.converted_leads_count} conversiones registradas.`,
-      nextAction: 'Mantener form, tags y pipeline sincronizados.',
+      owner: 'CRM',
+      summary: `${data.new_leads_count} interesados nuevos y ${data.converted_leads_count} conversiones registradas.`,
+      nextAction: 'Mantener formulario, etiquetas y embudo de admisiones al día.',
       icon: iconMap.leads,
     },
     {
       key: 'families',
       label: 'Familias',
       status: 'ready',
-      owner: 'Opsly',
+      owner: 'Panel',
       summary: 'Portal, mensajes y notas privadas ya operan como capa de seguimiento.',
       nextAction: 'Usar el inbox y el portal como único punto de verdad para cada familia.',
       icon: iconMap.families,
@@ -97,16 +97,16 @@ function buildAcademyDomains(data: DashboardData): AcademyDomain[] {
       key: 'teachers',
       label: 'Profesores',
       status: 'ready',
-      owner: 'Opsly',
+      owner: 'Panel',
       summary: `${data.operations.classes_today} clases hoy y panel docente listo para agenda semanal.`,
-      nextAction: 'Asignar profesor por clase y notificar cambios desde Opsly.',
+      nextAction: 'Asignar profesor por clase y notificar cambios desde el panel.',
       icon: iconMap.teachers,
     },
     {
       key: 'classes',
       label: 'Clases',
       status: 'ready',
-      owner: 'Opsly',
+      owner: 'Panel',
       summary: `${data.operations.enrollments_today} inscripciones hoy y calendario de clases activo.`,
       nextAction: 'Mantener cupos, grupos por edad y sesiones en el dashboard operativo.',
       icon: iconMap.classes,
@@ -115,44 +115,44 @@ function buildAcademyDomains(data: DashboardData): AcademyDomain[] {
       key: 'calendar',
       label: 'Calendario',
       status: 'partial',
-      owner: 'GHL',
-      summary: 'Calendarios GHL + programación propia. Útil para reservas y reprogramaciones.',
-      nextAction: 'Confirmar recordatorio 24h y reglas de no-show en el flujo de follow-up.',
+      owner: 'CRM',
+      summary: 'Calendarios externos y programación propia. Útil para reservas y reprogramaciones.',
+      nextAction: 'Confirmar recordatorio 24h y reglas de no-show en el flujo de seguimiento.',
       icon: iconMap.calendar,
     },
     {
       key: 'reservations',
       label: 'Reservas',
       status: 'ready',
-      owner: 'Opsly',
+      owner: 'Panel',
       summary: 'Clase de prueba, confirmación y rebooking ya viven en el flujo de admisiones.',
-      nextAction: 'Enviar reserva a pipeline y seguimiento automático tras cada booking.',
+      nextAction: 'Enviar reserva al embudo y seguimiento automático tras cada booking.',
       icon: iconMap.reservations,
     },
     {
       key: 'payments',
       label: 'Pagos',
       status: 'partial',
-      owner: 'Opsly',
+      owner: 'Panel',
       summary: `${data.operations.revenue_month_cents / 100} COP en ingresos del mes y pagos pendientes visibles.`,
-      nextAction: 'Cerrar la ruta de cobro y renovar suscripciones/facturación.',
+      nextAction: 'Cerrar la ruta de cobro y renovar suscripciones o facturación.',
       icon: iconMap.payments,
     },
     {
       key: 'automations',
       label: 'Automatizaciones',
       status: 'partial',
-      owner: 'n8n',
-      summary: 'Workflows críticos viven mejor fuera de GHL: draft → approve → send.',
-      nextAction: 'Mantener GHL como disparador y n8n como motor de envío.',
+      owner: 'Automatización',
+      summary: 'Secuencias críticas: borrador → aprobación → envío.',
+      nextAction: 'Mantener el CRM como disparador y las automatizaciones como motor de envío.',
       icon: iconMap.automations,
     },
     {
       key: 'reminders',
       label: 'Recordatorios',
       status: 'partial',
-      owner: 'n8n',
-      summary: `${data.pending_followups_count} seguimientos abiertos y recordatorios de familias/profesores por cerrar.`,
+      owner: 'Automatización',
+      summary: `${data.pending_followups_count} seguimientos abiertos y recordatorios de familias o profesores por cerrar.`,
       nextAction: 'Asegurar recordatorio 24h para familias y agenda diaria para profesores.',
       icon: iconMap.reminders,
     },
@@ -160,18 +160,18 @@ function buildAcademyDomains(data: DashboardData): AcademyDomain[] {
       key: 'notifications',
       label: 'Notificaciones',
       status: 'ready',
-      owner: 'Opsly',
+      owner: 'Panel',
       summary: 'Alertas internas, inbox y feedback privado ya están conectados al panel.',
-      nextAction: 'Usar notificaciones para leads calientes, cambios de clase y fallos de cobro.',
+      nextAction: 'Usar notificaciones para interesados calientes, cambios de clase y fallos de cobro.',
       icon: iconMap.notifications,
     },
     {
       key: 'dashboards',
-      label: 'Dashboards',
+      label: 'Resumen',
       status: 'ready',
-      owner: 'Opsly',
-      summary: 'Leads, conversiones, asistencia, revenue y feedback ya se ven en una sola vista.',
-      nextAction: 'Presentar esta vista como mapa operativo en la consultoría.',
+      owner: 'Panel',
+      summary: 'Interesados, conversiones, asistencia, ingresos y feedback en una sola vista.',
+      nextAction: 'Presentar esta vista como mapa operativo en la reunión con el cliente.',
       icon: iconMap.dashboards,
     },
   ];
@@ -194,14 +194,14 @@ export function AcademyOpsMap({ data }: AcademyOpsMapProps): React.ReactElement 
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-2xl">
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-pk-mutedText">
-            Peskids / Academy Ops Map
+            Peskids / Operación
           </p>
           <h3 className="mt-1 font-display text-2xl font-semibold tracking-tight text-pk-ink">
             Mapa operativo de la academia
           </h3>
           <p className="mt-2 text-sm leading-6 text-pk-sub">
-            Esta vista separa lo que vive en Opsly, GHL, n8n y lo manual. Sirve para mostrar la
-            operación completa sin prometer automatización donde GHL no la expone por API.
+            Vista de alto nivel para ver qué áreas están listas, en progreso o requieren trabajo
+            manual. Sirve para orientar la operación diaria sin entrar en detalle técnico.
           </p>
         </div>
 
@@ -245,7 +245,7 @@ export function AcademyOpsMap({ data }: AcademyOpsMapProps): React.ReactElement 
               <CardContent className="space-y-2">
                 <div className="flex flex-wrap gap-2 text-[11px] font-medium">
                   <span className="rounded-full border border-pk-border bg-pk-muted px-2.5 py-1 text-pk-sub">
-                    Dueño: {domain.owner}
+                    Área: {domain.owner}
                   </span>
                 </div>
                 <p className="text-sm text-pk-sub">{domain.nextAction}</p>
@@ -255,11 +255,14 @@ export function AcademyOpsMap({ data }: AcademyOpsMapProps): React.ReactElement 
         })}
       </div>
 
-      <div className="mt-5 rounded-2xl border border-dashed border-pk-border bg-pk-muted/40 p-4 text-sm text-pk-sub">
-        <span className="font-medium text-pk-ink">Regla operativa:</span> GHL opera el CRM y los
-        calendarios, Opsly decide y mide, n8n ejecuta secuencias y envíos, y lo manual queda solo
-        donde la API no da authoring confiable.
-      </div>
+      <details className="mt-5 rounded-2xl border border-dashed border-pk-border bg-pk-muted/40 p-4 text-sm text-pk-sub">
+        <summary className="cursor-pointer font-medium text-pk-ink">Vista avanzada (equipo técnico)</summary>
+        <p className="mt-3">
+          El CRM externo opera contactos y calendarios; el panel Peskids concentra decisiones y
+          métricas; las automatizaciones ejecutan secuencias y envíos. Lo manual queda solo donde no
+          hay integración confiable.
+        </p>
+      </details>
     </section>
   );
 }

@@ -1,8 +1,9 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Copy,
+  Loader2,
   Mail,
   Phone,
   Star,
@@ -14,6 +15,7 @@ import {
   Wallet,
 } from 'lucide-react';
 import type { DashboardData } from '@/lib/types';
+import { normalizeLeadSourceLabel } from '@/lib/admin/lead-source-label';
 import { StatCard } from '@/components/admin/stat-card';
 import { classModalityLabel } from '@/lib/lead-modality';
 import { buildPeskidsReferralLink } from '@/lib/peskids-referral-links';
@@ -60,7 +62,7 @@ const leadStatusTone: Record<
 };
 
 const followupTypeLabel: Record<DashboardData['followups'][number]['contact_type'], string> = {
-  lead: 'Lead',
+  lead: 'Interesado',
   student: 'Estudiante',
   parent: 'Familia',
 };
@@ -127,15 +129,60 @@ function formatCop(cents: number): string {
 interface DashboardStatsGridProps {
   data: DashboardData;
   search: string;
+  onRefresh?: () => void;
 }
 
-export function DashboardStatsGrid({ data, search }: DashboardStatsGridProps): React.ReactElement {
+type LeadRow = DashboardData['new_leads'][number];
+
+async function patchLead(
+  leadId: string,
+  body: { status?: LeadRow['status']; admin_notes?: string }
+): Promise<LeadRow> {
+  const response = await fetch(`/api/admin/leads/${leadId}`, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  const json = (await response.json()) as { ok?: boolean; lead?: LeadRow; error?: string };
+  if (!response.ok || !json.lead) {
+    throw new Error(json.error || 'No se pudo actualizar el interesado');
+  }
+
+  return json.lead;
+}
+
+function canMarkContacted(status: LeadRow['status']): boolean {
+  return !['contacted', 'enrolled', 'archived'].includes(status);
+}
+
+export function DashboardStatsGrid({
+  data,
+  search,
+  onRefresh,
+}: DashboardStatsGridProps): React.ReactElement {
   const [leadStatusFilter, setLeadStatusFilter] = useState<
     'all' | DashboardData['new_leads'][number]['status']
   >('all');
   const [followupStatusFilter, setFollowupStatusFilter] = useState<
     'all' | DashboardData['followups'][number]['status']
   >('all');
+  const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({});
+  const [leadFeedback, setLeadFeedback] = useState<Record<string, string>>({});
+  const [savingLeadId, setSavingLeadId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setNoteDrafts((current) => {
+      const next = { ...current };
+      for (const lead of data.new_leads) {
+        if (next[lead.id] === undefined) {
+          next[lead.id] = lead.admin_notes ?? '';
+        }
+      }
+      return next;
+    });
+  }, [data.new_leads]);
 
   const filteredLeads = data.new_leads.filter((l) => {
     const q = search.trim().toLowerCase();
@@ -162,6 +209,61 @@ export function DashboardStatsGrid({ data, search }: DashboardStatsGridProps): R
       window.prompt('Copia este texto', text);
     }
   }, []);
+
+  const handleMarkContacted = useCallback(
+    async (leadId: string) => {
+      setSavingLeadId(leadId);
+      setLeadFeedback((current) => {
+        const next = { ...current };
+        delete next[leadId];
+        return next;
+      });
+      try {
+        await patchLead(leadId, { status: 'contacted' });
+        setLeadFeedback((current) => ({
+          ...current,
+          [leadId]: 'Interesado marcado como contactado.',
+        }));
+        onRefresh?.();
+      } catch {
+        setLeadFeedback((current) => ({
+          ...current,
+          [leadId]: 'No se pudo actualizar el estado. Intenta de nuevo.',
+        }));
+      } finally {
+        setSavingLeadId(null);
+      }
+    },
+    [onRefresh]
+  );
+
+  const handleSaveNote = useCallback(
+    async (leadId: string) => {
+      const adminNotes = noteDrafts[leadId] ?? '';
+      setSavingLeadId(leadId);
+      setLeadFeedback((current) => {
+        const next = { ...current };
+        delete next[leadId];
+        return next;
+      });
+      try {
+        await patchLead(leadId, { admin_notes: adminNotes });
+        setLeadFeedback((current) => ({
+          ...current,
+          [leadId]: 'Nota guardada.',
+        }));
+        onRefresh?.();
+      } catch {
+        setLeadFeedback((current) => ({
+          ...current,
+          [leadId]: 'No se pudo guardar la nota. Intenta de nuevo.',
+        }));
+      } finally {
+        setSavingLeadId(null);
+      }
+    },
+    [noteDrafts, onRefresh]
+  );
 
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -205,7 +307,7 @@ export function DashboardStatsGrid({ data, search }: DashboardStatsGridProps): R
 
       <StatCard
         sectionId="leads"
-        title="Leads nuevos"
+        title="Interesados nuevos"
         description="Captados esta semana"
         value={data.new_leads_count}
         icon={UserPlus}
@@ -248,6 +350,7 @@ export function DashboardStatsGrid({ data, search }: DashboardStatsGridProps): R
                   </div>
 
                   <div className="mt-2 flex flex-wrap gap-1.5">
+                    <Badge tone="violet">{normalizeLeadSourceLabel(lead.referral_source)}</Badge>
                     <Badge tone="amber">{classModalityLabel(lead.class_modality)}</Badge>
                     <Badge tone="teal">{lead.grade_interested}</Badge>
                     {lead.referral_code ? (
@@ -284,6 +387,55 @@ export function DashboardStatsGrid({ data, search }: DashboardStatsGridProps): R
                       )}
                     </div>
                   ) : null}
+
+                  <div className="mt-3 space-y-2">
+                    <label className="block text-[11px] font-medium text-pk-sub" htmlFor={`note-${lead.id}`}>
+                      Nota rápida
+                    </label>
+                    <textarea
+                      id={`note-${lead.id}`}
+                      value={noteDrafts[lead.id] ?? lead.admin_notes ?? ''}
+                      onChange={(event) =>
+                        setNoteDrafts((current) => ({
+                          ...current,
+                          [lead.id]: event.target.value,
+                        }))
+                      }
+                      rows={2}
+                      className="w-full rounded-xl border border-pk-border bg-white/80 px-3 py-2 text-xs text-pk-ink"
+                      placeholder="Ej. Llamar mañana a las 10:00"
+                    />
+                    <div className="flex flex-wrap gap-2">
+                      {canMarkContacted(lead.status) ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="secondary"
+                          disabled={savingLeadId === lead.id}
+                          onClick={() => void handleMarkContacted(lead.id)}
+                        >
+                          {savingLeadId === lead.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                          ) : null}
+                          <span className={savingLeadId === lead.id ? 'ml-1' : undefined}>
+                            Marcar contactado
+                          </span>
+                        </Button>
+                      ) : null}
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        disabled={savingLeadId === lead.id}
+                        onClick={() => void handleSaveNote(lead.id)}
+                      >
+                        Guardar nota
+                      </Button>
+                    </div>
+                    {leadFeedback[lead.id] ? (
+                      <p className="text-xs text-pk-primary">{leadFeedback[lead.id]}</p>
+                    ) : null}
+                  </div>
 
                   <div className="mt-3 flex flex-wrap gap-2">
                     {lead.email ? (
@@ -327,7 +479,7 @@ export function DashboardStatsGrid({ data, search }: DashboardStatsGridProps): R
             })
           ) : (
             <p className="text-sm text-pk-sub">
-              {search ? 'Sin coincidencias para tu búsqueda.' : 'Sin leads nuevos esta semana.'}
+              {search ? 'Sin coincidencias para tu búsqueda.' : 'Sin interesados nuevos esta semana.'}
             </p>
           )}
         </ul>

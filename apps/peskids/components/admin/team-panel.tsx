@@ -20,7 +20,7 @@ type InviteState = {
 };
 
 const ROLE_LABEL: Record<TeamRole, string> = {
-  owner: 'Owner',
+  owner: 'Propietario',
   admin: 'Admin',
   support: 'Soporte',
   teacher: 'Profesor',
@@ -318,7 +318,7 @@ export function TeamPanel(): React.ReactElement {
           <CardHeader className="pb-3">
             <CardTitle className="text-lg">Miembros actuales</CardTitle>
             <CardDescription>
-              Owner, admin, soporte y profesores con su estado real en memberships.
+              Propietario, administrador, soporte y profesores con su estado real en memberships.
             </CardDescription>
           </CardHeader>
           <CardContent>
