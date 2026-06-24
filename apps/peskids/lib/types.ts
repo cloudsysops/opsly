@@ -284,8 +284,10 @@ export type Database = {
           grade: string;
           status: 'active' | 'inactive';
           parent_email: string | null;
+          parent_phone: string | null;
           family_user_id: string | null;
           enrollment_date: string;
+          notes: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -296,8 +298,10 @@ export type Database = {
           grade: string;
           status?: 'active' | 'inactive';
           parent_email?: string | null;
+          parent_phone?: string | null;
           family_user_id?: string | null;
           enrollment_date?: string;
+          notes?: string | null;
         };
         Update: Partial<Database['public']['Tables']['students']['Insert']>;
         Relationships: [];
