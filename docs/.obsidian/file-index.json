@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-06-23T12:27:31.221Z",
-  "totalFiles": 749,
+  "lastIndexed": "2026-06-24T18:08:37.031Z",
+  "totalFiles": 750,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -525,6 +525,7 @@
     "obsidian/templates/source-note.md",
     "operations/COST-MONITORING-GUIDE.md",
     "operations/CRITICAL-RELIABILITY-SPRINT.md",
+    "operations/MOBILE-OPS-DESDE-CELULAR.md",
     "operations/README.md",
     "operations/RUN-VALIDATION-LOCALLY.md",
     "operations/VPS-VALIDATION-GUIDE.md",

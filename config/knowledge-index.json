@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-06-23T12:27:36.381Z",
+  "generated_at": "2026-06-24T18:08:38.791Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -19373,6 +19373,48 @@
         "where"
       ],
       "size_bytes": 31628
+    },
+    {
+      "path": "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
+      "title": "Peskids Mobile Deployment — Desde Celular/Escritorio",
+      "keywords": [
+        "acceso",
+        "actions",
+        "celular",
+        "copy",
+        "deployment",
+        "desde",
+        "disparar",
+        "escritorio",
+        "git",
+        "github",
+        "log",
+        "markdown",
+        "minutos",
+        "mobile",
+        "monitoreo",
+        "objetivo",
+        "opcion",
+        "ops",
+        "opsly",
+        "option",
+        "paso",
+        "paste",
+        "peskids",
+        "post",
+        "real",
+        "recomendado",
+        "secrets",
+        "segundos",
+        "ssh",
+        "terminal",
+        "tiempo",
+        "tienes",
+        "validacion",
+        "vps",
+        "workflow"
+      ],
+      "size_bytes": 6516
     },
     {
       "path": "docs/operations/README.md",
@@ -88001,6 +88043,7 @@
       "docs/02-tools/NOTEBOOKLM-INTEGRATION.md",
       "docs/operations/RUN-VALIDATION-LOCALLY.md",
       "docs/operations/README.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/operations/VPS-VALIDATION-GUIDE.md",
       "docs/operations/VPS-VALIDATION-OPTIONS.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
@@ -90513,6 +90556,7 @@
       "docs/02-tools/NOTEBOOKLM-INTEGRATION.md",
       "docs/operations/RUN-VALIDATION-LOCALLY.md",
       "docs/operations/README.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/operations/VPS-VALIDATION-GUIDE.md",
       "docs/operations/VPS-VALIDATION-OPTIONS.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
@@ -92251,6 +92295,7 @@
       "docs/05-deployment-status/PESKIDS-GO-LIVE-STATUS.md",
       "docs/03-agents/AGENT-URL-VALIDATION.md",
       "docs/03-agents/AGENTS-GUIDE.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/operations/VPS-VALIDATION-GUIDE.md",
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
@@ -100108,6 +100153,7 @@
     ],
     "segundos": [
       "packages/skills/user/opsly-modularity/SKILL.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/tenants/peskids/DEMO-SCRIPT.md"
     ],
     "vivo": [
@@ -101344,6 +101390,7 @@
       "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/02-tools/N8N-MCP-INTEGRATION.md",
       "docs/operations/RUN-VALIDATION-LOCALLY.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/operations/VPS-VALIDATION-GUIDE.md",
       "docs/operations/VPS-VALIDATION-OPTIONS.md",
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
@@ -103184,6 +103231,7 @@
       "docs/02-tools/NOTION-MCP-SERVER.md",
       "docs/02-tools/GOOGLE-DRIVE-SYNC.md",
       "docs/02-tools/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/operations/VPS-VALIDATION-GUIDE.md",
       "docs/tenants/peskids/EXTRACTION-PLAN.md",
       "docs/tenants/peskids/CLASSES-SYSTEM-SPEC.md",
@@ -105560,6 +105608,7 @@
       "docs/02-tools/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
       "docs/02-tools/NOTEBOOKLM-SETUP.md",
       "docs/operations/RUN-VALIDATION-LOCALLY.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/tenants/peskids/N8N-SETUP.md",
       "docs/tenants/peskids/CLIENT-PITCH.md",
       "docs/blueprints/opsly-operational-blueprint/COMMERCIAL-PACKAGES.md",
@@ -106274,6 +106323,7 @@
       "docs/04-infrastructure/CICD-VPS.md",
       "docs/03-agents/COPILOT-CODING-AGENT.md",
       "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/operations/VPS-VALIDATION-OPTIONS.md",
       "docs/adr/ADR-034-ci-hygiene.md",
       "docs/adr/ADR-029-mcp-orchestration.md",
@@ -106920,6 +106970,7 @@
       "docs/03-agents/SYRA-IMPLEMENTATION-GUIDE.md",
       "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
       "docs/03-agents/AGENT-SERVICES-DEPLOYMENT.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
       "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
       "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md",
@@ -106953,6 +107004,7 @@
       "docs/ops/SESSION-LOG-2026-05-03.md",
       "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
       "docs/00-architecture/opsly-agent-runtime.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/demo/hackathon-demo.md",
       ".agents/skills/cyber-neo/references/logging-patterns.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
@@ -107411,6 +107463,7 @@
       "docs/03-agents/AGENT-URL-VALIDATION.md",
       "docs/02-tools/N8N-MCP-INTEGRATION.md",
       "docs/operations/RUN-VALIDATION-LOCALLY.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md",
       "docs/tenants/peskids/DOPPLER-SETUP.md",
       "docs/tenants/peskids/WHATSAPP-CHANNEL.md",
@@ -109040,6 +109093,7 @@
       "docs/03-agents/AGENT-TEAM-OVERVIEW.md",
       "docs/03-agents/CLAUDE-WORKFLOW-OPTIMIZATION.md",
       "docs/02-tools/MCP-SERVERS.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
       "docs/tenants/peskids/N8N-SETUP.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
@@ -109237,6 +109291,7 @@
       "docs/03-agents/AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
       "docs/02-tools/OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
       "docs/02-tools/OBSIDIAN-README.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/brain/skills/git-workflow-and-versioning.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
@@ -109357,6 +109412,7 @@
       "docs/03-agents/PARALLEL-AGENTS-ORCHESTRATION.md",
       "docs/03-agents/AGENT-SERVICES-DEPLOYMENT.md",
       "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/adr/ADR-021-predictive-bi-scalability.md",
       "docs/tenants/peskids/BLUEPRINT-MAPPING.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
@@ -111763,6 +111819,7 @@
       "docs/04-infrastructure/DECEPTICON-WORKER.md",
       "docs/03-agents/FIRST-OPENCLAW-AGENTS-MAC2011.md",
       "docs/02-tools/NOTEBOOKLM-SETUP.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/adr/ADR-037-opsly-local-services-multi-tenant.md",
       "docs/tenants/peskids/OPS-RUNBOOK.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
@@ -112304,6 +112361,7 @@
       "docs/03-agents/HERMES-SPRINT-PLAN.md",
       "docs/03-agents/VALIDATION-ITERATION-LOOP.md",
       "docs/operations/RUN-VALIDATION-LOCALLY.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/tenants/onboarding-prompts/DEPLOYMENT-VALIDATION.md"
@@ -122591,6 +122649,7 @@
       "docs/04-infrastructure/CICD-VPS.md",
       "docs/03-agents/COPILOT-CODING-AGENT.md",
       "docs/03-agents/SECURITY-AUTONOMOUS-EXECUTION-POLICY.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       "docs/reports/session-summary-2026-05-21.md",
       "docs/reports/CYBER-NEO-OPSLY-2026-05-21.md",
@@ -122999,6 +123058,7 @@
       "docs/01-development/OPS-CLEANUP-PROCEDURES.md",
       "docs/04-infrastructure/VERTEX-AI-SETUP.md",
       "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
       "docs/tenants/peskids/OPS-RUNBOOK.md",
       "docs/tenants/peskids/DOPPLER-SETUP.md",
@@ -124680,6 +124740,7 @@
       "docs/03-agents/SYRA-OPENCLAW-INTEGRATION.md",
       "docs/03-agents/AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
       "docs/02-tools/NOTEBOOKLM-SETUP.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/adr/ADR-025-notebooklm-knowledge-layer.md",
       "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
       "docs/tenants/peskids/N8N-SETUP.md",
@@ -130151,6 +130212,7 @@
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
       "docs/01-development/GITHUB-SETTINGS.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/adr/ADR-003-doppler-secrets.md",
       "docs/tenants/peskids/DOPPLER-SETUP.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
@@ -130187,6 +130249,7 @@
       "docs/03-agents/SSH-USERS-FOR-AGENTS.md",
       "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/operations/RUN-VALIDATION-LOCALLY.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/operations/VPS-VALIDATION-GUIDE.md",
       "docs/operations/VPS-VALIDATION-OPTIONS.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
@@ -130727,6 +130790,7 @@
       "docs/obsidian/research/trading-pattern-radar.md",
       "docs/obsidian/research/security-pattern-radar.md",
       "docs/04-infrastructure/SSH-COMMANDS-LOCALRANK.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       ".agents/skills/cyber-neo/references/iac-docker.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
@@ -131848,6 +131912,7 @@
       "docs/runbooks/FIX-TYPECHECK-BLOCKER.md",
       "docs/03-agents/QUICK-REFERENCE-HERMES-OPSLY.md",
       "docs/03-agents/AGENT-SERVICES-DEPLOYMENT.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/operations/VPS-VALIDATION-GUIDE.md",
       "docs/operations/VPS-VALIDATION-OPTIONS.md",
       "docs/adr/ADR-028-agent-api-routing.md",
@@ -132351,6 +132416,7 @@
       "vendor/agency-agents/integrations/opencode/agents/mobile-app-builder.md",
       "vendor/agency-agents/integrations/openclaw/mobile-app-builder/IDENTITY.md",
       "vendor/agency-agents/integrations/openclaw/mobile-app-builder/AGENTS.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/tenants/peskids/DASHBOARD-SPEC.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/mobile-app.md",
       ".agents/skills/the-architect/references/knowledge/stack-compatibility.md"
@@ -144505,7 +144571,8 @@
       "docs/01-development/MAKE-SETUP.md",
       "docs/04-infrastructure/WORKER-TESTING.md",
       "docs/03-agents/LOCAL-AGENT-EXECUTION.md",
-      "docs/02-tools/CURSOR-MCP-SETUP.md"
+      "docs/02-tools/CURSOR-MCP-SETUP.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md"
     ],
     "anthropologist": [
       "vendor/agency-agents/integrations/qwen/agents/anthropologist.md",
@@ -155283,6 +155350,7 @@
       "docs/04-infrastructure/CLOUDFLARE-PROXY-ACTIVATION.md",
       "docs/04-infrastructure/PLAN-OLLAMA-WORKER-2026-04-14.md",
       "docs/operations/RUN-VALIDATION-LOCALLY.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/tenants/peskids/README.md",
       "docs/tenants/peskids/OWNER-RUNBOOK.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
@@ -155332,6 +155400,7 @@
       "docs/emails/tenant-welcome-email.md",
       "docs/01-development/RETENTION-POLICY.md",
       "docs/04-infrastructure/MONITORING.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/adr/ADR-014-notebooklm-agent.md"
     ],
     "puedes": [
@@ -157393,6 +157462,7 @@
       "docs/01-development/CLIENTS-TO-INVITE.md",
       "docs/04-infrastructure/FAILOVER-GCP-ARCHITECTURE.md",
       "docs/operations/RUN-VALIDATION-LOCALLY.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/adr/ADR-021-predictive-bi-scalability.md",
       "docs/adr/ADR-039-sales-channels-email-whatsapp.md",
       "docs/adr/ADR-037-opsly-local-services-multi-tenant.md",
@@ -158447,7 +158517,8 @@
       "docs/03-agents/LOCAL-AGENT-EXECUTION.md"
     ],
     "disparar": [
-      "docs/01-development/AGENT-PROMPT-QUEUE.md"
+      "docs/01-development/AGENT-PROMPT-QUEUE.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md"
     ],
     "honestos": [
       "docs/01-development/AGENT-PROMPT-QUEUE.md"
@@ -160134,6 +160205,7 @@
     ],
     "tiempo": [
       "docs/04-infrastructure/INCIDENT-2026-04-11-DISCO-LLENO.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/adr/ADR-021-predictive-bi-scalability.md"
     ],
     "decepticon": [
@@ -160172,7 +160244,8 @@
       "docs/04-infrastructure/SSH-COMMANDS-LOCALRANK.md"
     ],
     "paste": [
-      "docs/04-infrastructure/SSH-COMMANDS-LOCALRANK.md"
+      "docs/04-infrastructure/SSH-COMMANDS-LOCALRANK.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md"
     ],
     "something": [
       "docs/04-infrastructure/SSH-COMMANDS-LOCALRANK.md"
@@ -160891,6 +160964,19 @@
     ],
     "helper": [
       "docs/operations/RUN-VALIDATION-LOCALLY.md"
+    ],
+    "celular": [
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md"
+    ],
+    "escritorio": [
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md"
+    ],
+    "minutos": [
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
+      "docs/tenants/peskids/DEMO-SCRIPT.md"
+    ],
+    "tienes": [
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md"
     ],
     "approaches": [
       "docs/operations/VPS-VALIDATION-OPTIONS.md"
@@ -161998,9 +162084,6 @@
       "docs/tenants/peskids/DEMO-SCRIPT.md"
     ],
     "minuto": [
-      "docs/tenants/peskids/DEMO-SCRIPT.md"
-    ],
-    "minutos": [
       "docs/tenants/peskids/DEMO-SCRIPT.md"
     ],
     "deltas": [
@@ -163399,6 +163482,7 @@
     "docs/obsidian/templates/source-note.md",
     "docs/operations/COST-MONITORING-GUIDE.md",
     "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
+    "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
     "docs/operations/README.md",
     "docs/operations/RUN-VALIDATION-LOCALLY.md",
     "docs/operations/VPS-VALIDATION-GUIDE.md",
