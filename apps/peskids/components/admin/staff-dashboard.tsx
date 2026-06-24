@@ -31,7 +31,7 @@ export function StaffDashboard({ surface }: StaffDashboardProps): React.ReactEle
         setLastUpdated(new Date())
         setError('')
       } catch (err) {
-        setError('No se pudo cargar el panel. Revisa la API y Supabase.')
+        setError('No se pudo cargar el panel. Intenta refrescar o vuelve a iniciar sesión.')
         console.error(err)
       } finally {
         setLoading(false)
