@@ -41,12 +41,12 @@ export async function logAuditEvent(event: AuditEventInput): Promise<void> {
 }
 
 /** Extrae IP real del request respetando cabeceras de proxy. */
-export function extractIp(request: NextRequest): string {
+export function extractIp(request: NextRequest | Request): string | null {
   return (
-    request.headers.get('x-real-ip') ??
     request.headers.get('cf-connecting-ip') ??
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-    'unknown'
+    request.headers.get('x-real-ip') ??
+    null
   );
 }
 
