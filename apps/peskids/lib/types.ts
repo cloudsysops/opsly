@@ -302,6 +302,7 @@ export type Database = {
           family_user_id?: string | null;
           enrollment_date?: string;
           notes?: string | null;
+          updated_at?: string;
         };
         Update: Partial<Database['public']['Tables']['students']['Insert']>;
         Relationships: [];
