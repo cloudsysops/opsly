@@ -7,7 +7,7 @@ export interface AuditEventInput {
   action: string;
   resource: string;
   status_code?: number;
-  ip?: string;
+  ip?: string | null;
   user_agent?: string;
   metadata?: Record<string, unknown>;
 }
