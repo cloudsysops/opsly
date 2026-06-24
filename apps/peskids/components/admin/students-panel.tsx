@@ -268,7 +268,12 @@ export function StudentsPanel(): React.ReactElement {
                         </a>
                       ) : null}
                       {whatsapp ? (
-                        <a href={whatsapp} target="_blank" rel="noreferrer" aria-label="Abrir WhatsApp">
+                        <a
+                          href={whatsapp}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label="Abrir WhatsApp"
+                        >
                           <Button type="button" variant="ghost" size="sm">
                             <MessageCircle className="h-4 w-4" aria-hidden />
                           </Button>

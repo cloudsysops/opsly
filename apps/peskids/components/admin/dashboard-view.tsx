@@ -5,6 +5,7 @@ import type { DashboardData } from '@/lib/types';
 import { AdminShell } from '@/components/admin/admin-shell';
 import { TeamPanel } from '@/components/admin/team-panel';
 import { ClassesPanel } from '@/components/admin/classes-panel';
+import { StudentsPanel } from '@/components/admin/students-panel';
 import { DashboardHeader } from '@/components/admin/dashboard-header';
 import { DashboardStatsGrid } from '@/components/admin/dashboard-stats-grid';
 import { DashboardActivityCards } from '@/components/admin/dashboard-activity-cards';
@@ -148,6 +149,10 @@ export function DashboardView({
 
           <div className="mb-5" data-admin-section="classes">
             <ClassesPanel />
+          </div>
+
+          <div className="mb-5">
+            <StudentsPanel />
           </div>
         </>
       ) : null}

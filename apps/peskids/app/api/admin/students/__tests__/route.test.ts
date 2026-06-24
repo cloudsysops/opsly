@@ -78,7 +78,11 @@ describe('POST /api/admin/students', () => {
   });
 
   it('rejects non-admin staff (support role)', async () => {
-    validateStaffSessionMock.mockResolvedValue({ ok: true, method: 'supabase', user: supportUser() });
+    validateStaffSessionMock.mockResolvedValue({
+      ok: true,
+      method: 'supabase',
+      user: supportUser(),
+    });
 
     const { POST } = await import('../route');
     const req = {
