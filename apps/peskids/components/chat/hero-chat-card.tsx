@@ -2,9 +2,10 @@
 
 import React from 'react';
 import { MessageCircle } from 'lucide-react';
+import Link from 'next/link';
 import { PeskidsChatPanel } from '@/components/chat/peskids-chat-panel';
-import { WhatsAppLink } from '@/components/contact/whatsapp-link';
 import { usePeskidsChatContext } from '@/components/chat/peskids-chat-provider';
+import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config';
 
 /** Hero: chat interactivo en lugar del formulario plano. Ancla #contacto para navegación. */
 export function HeroChatCard(): React.ReactElement {
@@ -23,8 +24,10 @@ export function HeroChatCard(): React.ReactElement {
       />
       <p className="mt-3 flex flex-wrap items-center gap-2 text-xs text-pk-mutedText">
         <MessageCircle className="h-3.5 w-3.5 text-pk-primary" aria-hidden />
-        <span>Respondemos en horario hábil. También puedes escribir por</span>
-        <WhatsAppLink variant="ghost" label="WhatsApp" className="text-xs" showIcon={false} />
+        <span>Para reservar clase de prueba, completa primero el</span>
+        <Link href={PESKIDS_RESERVATION_FORM_HREF} className="font-semibold text-pk-primary underline-offset-2 hover:underline">
+          formulario de reserva
+        </Link>
       </p>
     </div>
   );
