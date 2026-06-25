@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { createHmac } from 'crypto';
 import { jsonError, jsonOk } from '../../../../lib/api-response';
+import { extractIp } from '../../../../lib/audit';
 import { HTTP_STATUS } from '../../../../lib/constants';
 import { getServiceClient } from '../../../../lib/supabase';
 
@@ -9,9 +10,14 @@ interface PeskidsQB {
   insert(data: Record<string, unknown>): PeskidsQB;
   update(data: Record<string, unknown>): PeskidsQB;
   eq(col: string, val: unknown): PeskidsQB;
-  then<T>(r: (v: { data: unknown[] | null; error: unknown }) => T, j?: (e: unknown) => T): Promise<T>;
+  then<T>(
+    r: (v: { data: unknown[] | null; error: unknown }) => T,
+    j?: (e: unknown) => T
+  ): Promise<T>;
 }
-interface PeskidsClient { from(table: string): PeskidsQB; }
+interface PeskidsClient {
+  from(table: string): PeskidsQB;
+}
 
 interface WebhookPayload {
   form_id: string;
@@ -211,9 +217,7 @@ async function storeWebhookEventAndUpdateConfig(
 export async function POST(request: NextRequest): Promise<Response> {
   try {
     const supabase = getServiceClient();
-    const ipAddress = (request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip'))
-      ?.split(',')[0]
-      ?.trim();
+    const ipAddress = extractIp(request) ?? undefined;
 
     const signatureHeader = request.headers.get('x-opsly-signature') || '';
     const signatureResult = await validateSignatureHeader(supabase, signatureHeader, ipAddress);

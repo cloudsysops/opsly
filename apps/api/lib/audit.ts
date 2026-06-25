@@ -40,14 +40,27 @@ export async function logAuditEvent(event: AuditEventInput): Promise<void> {
   }
 }
 
-/** Extrae IP real del request respetando cabeceras de proxy. */
-export function extractIp(request: NextRequest): string {
-  return (
-    request.headers.get('x-real-ip') ??
-    request.headers.get('cf-connecting-ip') ??
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-    'unknown'
-  );
+/** Extract the real IP from the request, respecting proxy headers. */
+export function extractIp(request: Request | NextRequest): string | null {
+  const cfIp = request.headers.get('cf-connecting-ip');
+  if (cfIp) {
+    return cfIp.trim();
+  }
+
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    const first = forwarded.split(',')[0]?.trim();
+    if (first) {
+      return first;
+    }
+  }
+
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp) {
+    return realIp.trim();
+  }
+
+  return null;
 }
 
 /**
@@ -69,7 +82,7 @@ export function logAuditMutation(
     actor_email: actorEmail,
     action: method,
     resource: request.nextUrl.pathname,
-    ip: extractIp(request),
+    ip: extractIp(request) ?? undefined,
     user_agent: request.headers.get('user-agent') ?? undefined,
   });
 }
