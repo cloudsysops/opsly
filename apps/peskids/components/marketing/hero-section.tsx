@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Instagram } from 'lucide-react'
 import { PeskidsBrush, WiggleLine } from '@/components/brand/peskids-logo'
+import { GatedWhatsAppLink } from '@/components/marketing/gated-whatsapp-link'
 import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config'
 import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
 import { peskidsColorTokens } from '@/lib/tokens'
@@ -49,6 +50,7 @@ export function HeroSection(): React.ReactElement {
           >
             Reservar clase gratuita
           </Link>
+          <GatedWhatsAppLink variant="onDark" label="WhatsApp" />
           <Link
             href={PESKIDS_INSTAGRAM.profileUrl}
             target="_blank"

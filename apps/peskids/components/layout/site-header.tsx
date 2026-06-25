@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Instagram } from 'lucide-react'
 import { PeskidsLockup } from '@/components/brand/peskids-logo'
+import { GatedWhatsAppLink } from '@/components/marketing/gated-whatsapp-link'
 import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config'
 import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
 
@@ -28,6 +29,11 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
                 Acceso familias
               </Link>
             </nav>
+            <GatedWhatsAppLink
+              variant="pill"
+              label="WhatsApp"
+              className="hidden h-10 border-white/20 bg-white/10 text-white hover:border-white/30 hover:bg-white/15 sm:inline-flex"
+            />
             <Link
               href={PESKIDS_RESERVATION_FORM_HREF}
               className="hidden h-10 items-center justify-center rounded-full bg-pk-primary px-4 text-xs font-bold text-white shadow-sm transition hover:bg-pk-primary/90 sm:inline-flex"

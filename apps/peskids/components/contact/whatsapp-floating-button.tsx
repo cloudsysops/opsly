@@ -1,14 +1,10 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
-import { Send } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { WhatsAppIcon } from '@/components/contact/whatsapp-icon';
+import { openGatedWhatsAppOrForm } from '@/components/marketing/gated-whatsapp-link';
 import { PESKIDS_CONTACT } from '@/lib/contact-channels';
 import { isPeskidsPublicLandingPath } from '@/lib/marketing-routes';
-import {
-  PESKIDS_RESERVATION_FORM_ANCHOR,
-  PESKIDS_RESERVATION_FORM_HREF,
-} from '@/lib/peskids-landing-config';
 import { dispatchOpenPeskidsChat } from '@/lib/peskids-chat-session';
 import { peskidsColorTokens } from '@/lib/tokens';
 import { cn } from '@/lib/utils';
@@ -21,25 +17,9 @@ const fabClassName = cn(
   'animate-[pulse-soft_2.5s_ease-in-out_infinite]'
 );
 
-const fabStyle = {
-  backgroundColor: peskidsColorTokens.primary.teal,
-  boxShadow: `0 8px 32px ${peskidsColorTokens.primary.teal}8c`,
-  outlineColor: peskidsColorTokens.primary.teal,
-};
-
-function scrollToReservationForm(): void {
-  const target = document.getElementById(PESKIDS_RESERVATION_FORM_ANCHOR);
-  if (target) {
-    target.scrollIntoView({ behavior: 'smooth' });
-    return;
-  }
-  window.location.href = PESKIDS_RESERVATION_FORM_HREF;
-}
-
-/** FAB fijo — en landing pública lleva al formulario; en portales internos abre soporte. */
+/** FAB fijo — en landing pública WhatsApp con gate al formulario; en portales internos abre soporte. */
 export function WhatsAppFloatingButton(): React.ReactElement | null {
   const pathname = usePathname();
-  const router = useRouter();
 
   if (pathname?.startsWith('/admin')) {
     return null;
@@ -47,25 +27,24 @@ export function WhatsAppFloatingButton(): React.ReactElement | null {
 
   const publicLanding = isPeskidsPublicLandingPath(pathname);
   const isFamilyArea = pathname?.startsWith('/familias') ?? false;
+  const whatsappGreen = peskidsColorTokens.primary.whatsapp;
 
   if (publicLanding) {
     return (
       <button
         type="button"
-        onClick={(): void => {
-          if (pathname === '/' || pathname === '/instagram') {
-            scrollToReservationForm();
-            return;
-          }
-          router.push(PESKIDS_RESERVATION_FORM_HREF);
-        }}
+        onClick={(): void => openGatedWhatsAppOrForm(pathname)}
         className={fabClassName}
-        style={fabStyle}
-        aria-label="Ir al formulario de reserva de clase gratuita"
-        title="Reservar clase"
+        style={{
+          backgroundColor: whatsappGreen,
+          boxShadow: `0 8px 32px ${whatsappGreen}8c`,
+          outlineColor: whatsappGreen,
+        }}
+        aria-label={`WhatsApp Peskids: completa el formulario o continúa si ya lo enviaste (${PESKIDS_CONTACT.whatsapp.display})`}
+        title="WhatsApp Peskids"
       >
-        <Send className="h-6 w-6 shrink-0 sm:h-7 sm:w-7" aria-hidden />
-        <span className="pr-0.5 text-xs font-bold leading-none sm:text-base">Reservar</span>
+        <WhatsAppIcon className="h-7 w-7 shrink-0 sm:h-8 sm:w-8" />
+        <span className="pr-0.5 text-xs font-bold leading-none sm:text-base">WhatsApp</span>
       </button>
     );
   }
@@ -82,10 +61,9 @@ export function WhatsAppFloatingButton(): React.ReactElement | null {
       onClick={() => dispatchOpenPeskidsChat()}
       className={fabClassName}
       style={{
-        ...fabStyle,
-        backgroundColor: peskidsColorTokens.primary.whatsapp,
-        boxShadow: `0 8px 32px ${peskidsColorTokens.primary.whatsapp}8c`,
-        outlineColor: peskidsColorTokens.primary.whatsapp,
+        backgroundColor: whatsappGreen,
+        boxShadow: `0 8px 32px ${whatsappGreen}8c`,
+        outlineColor: whatsappGreen,
       }}
       aria-label={ariaLabel}
       title={title}
