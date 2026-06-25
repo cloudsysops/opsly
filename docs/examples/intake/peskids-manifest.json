@@ -1,0 +1,344 @@
+{
+  "customer": "Peskids",
+  "type": "Education (Trial-Based Enrollment Model)",
+  "location_id": "KJ5LawrOOe3hIerqtMRu",
+  "lead_sla_minutes": 2,
+  "revenue_model": "Monthly subscription ($99/student, 150+ active = $14,850/month MRR)",
+  "critical_automation": "Trial reminder (24h before) — <50% show rate without it = $1,500-2,500/month loss",
+  "pipeline": {
+    "name": "Peskids Enrollment",
+    "description": "Student enrollment and trial class management",
+    "stages": [
+      {
+        "name": "New Lead",
+        "position": 1,
+        "description": "Parent inquiry received"
+      },
+      {
+        "name": "Contacted",
+        "position": 2,
+        "description": "Initial contact made with parent"
+      },
+      {
+        "name": "Trial Scheduled",
+        "position": 3,
+        "description": "Trial class booked"
+      },
+      {
+        "name": "Trial Completed",
+        "position": 4,
+        "description": "Child attended trial class"
+      },
+      {
+        "name": "Enrolled",
+        "position": 5,
+        "description": "Parent completed enrollment & payment setup"
+      },
+      {
+        "name": "Active Student",
+        "position": 6,
+        "description": "Student in active classes"
+      }
+    ]
+  },
+  "form": {
+    "name": "Peskids Trial Registration",
+    "description": "Capture parent & child info for trial class",
+    "fields": [
+      {
+        "label": "Parent First Name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Parent Last Name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Parent Email",
+        "type": "email",
+        "required": true
+      },
+      {
+        "label": "Parent Phone",
+        "type": "phone",
+        "required": true
+      },
+      {
+        "label": "Child First Name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Child Age",
+        "type": "number",
+        "required": true,
+        "min": 3,
+        "max": 18
+      },
+      {
+        "label": "Interest Level",
+        "type": "dropdown",
+        "required": false,
+        "options": [
+          "Very interested",
+          "Somewhat interested",
+          "Just exploring"
+        ]
+      }
+    ],
+    "post_submission_redirect": "calendar_booking_link"
+  },
+  "calendars": [
+    {
+      "name": "Trial Class",
+      "duration_minutes": 45,
+      "timezone": "America/Bogota",
+      "working_hours": {
+        "start": "09:00",
+        "end": "18:00",
+        "days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
+      },
+      "description": "Trial swimming class slots"
+    },
+    {
+      "name": "Assessment",
+      "duration_minutes": 30,
+      "timezone": "America/Bogota",
+      "working_hours": {
+        "start": "08:00",
+        "end": "19:00",
+        "days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
+      },
+      "description": "Swimming level assessment"
+    }
+  ],
+  "tags_to_create": [
+    {
+      "name": "trial-class",
+      "description": "Trial class scheduled"
+    },
+    {
+      "name": "trial-reminded",
+      "description": "Trial reminder sent (24h before)"
+    },
+    {
+      "name": "trial-completed",
+      "description": "Child completed trial class"
+    },
+    {
+      "name": "no-show",
+      "description": "Missed trial class"
+    },
+    {
+      "name": "no-show-recovery",
+      "description": "No-show recovery message sent"
+    },
+    {
+      "name": "enrolled",
+      "description": "Child enrolled in program"
+    },
+    {
+      "name": "active-student",
+      "description": "Active student in classes"
+    },
+    {
+      "name": "renewal",
+      "description": "Subscription renewal needed"
+    },
+    {
+      "name": "churn-risk",
+      "description": "At risk of churning (30 days no attendance)"
+    }
+  ],
+  "custom_fields": [
+    {
+      "name": "child_name",
+      "type": "text",
+      "description": "Child's first name"
+    },
+    {
+      "name": "child_age",
+      "type": "number",
+      "description": "Child's age"
+    },
+    {
+      "name": "parent_phone",
+      "type": "phone",
+      "description": "Parent phone number"
+    },
+    {
+      "name": "interest_level",
+      "type": "single_select",
+      "description": "Initial interest level",
+      "options": [
+        "Very interested",
+        "Somewhat interested",
+        "Just exploring"
+      ]
+    },
+    {
+      "name": "trial_class_date",
+      "type": "date",
+      "description": "Scheduled trial class date"
+    },
+    {
+      "name": "swimming_level",
+      "type": "single_select",
+      "description": "Swimming level after assessment",
+      "options": [
+        "Beginner",
+        "Intermediate",
+        "Advanced"
+      ]
+    }
+  ],
+  "email_templates": [
+    {
+      "name": "Peskids — Welcome Parent",
+      "trigger": "Contact Created",
+      "subject": "¡Bienvenido a Peskids! Tu clase de prueba está aquí",
+      "preview_text": "Aprende a nadar, diviértete y crece →",
+      "content_type": "html",
+      "language": "es"
+    },
+    {
+      "name": "Peskids — Trial Confirmation",
+      "trigger": "Appointment Scheduled (Trial Class calendar)",
+      "subject": "Tu clase de prueba está confirmada",
+      "preview_text": "{{appointment.date}} a las {{appointment.time}} →",
+      "content_type": "html",
+      "language": "es"
+    }
+  ],
+  "sms_templates": [
+    {
+      "name": "Peskids — Trial Reminder",
+      "trigger": "Time-based (24h before)",
+      "content": "Hola {{contact.first_name}}, te recordamos tu clase de prueba mañana a las {{appointment.time}}. Lleva traje de baño y gorro. Confirma: {{confirmation_link}}"
+    }
+  ],
+  "workflows": [
+    {
+      "name": "Welcome Parent",
+      "trigger": "Contact Created",
+      "actions": [
+        {
+          "type": "delay",
+          "minutes": 2
+        },
+        {
+          "type": "send_email",
+          "template": "Peskids — Welcome Parent"
+        },
+        {
+          "type": "add_tag",
+          "tag": "lead-web"
+        }
+      ]
+    },
+    {
+      "name": "Trial Confirmation",
+      "trigger": "Appointment Scheduled (Trial Class calendar)",
+      "actions": [
+        {
+          "type": "delay",
+          "minutes": 1
+        },
+        {
+          "type": "send_email",
+          "template": "Peskids — Trial Confirmation"
+        },
+        {
+          "type": "update_stage",
+          "stage": "Trial Scheduled"
+        },
+        {
+          "type": "add_tag",
+          "tag": "trial-class"
+        }
+      ]
+    },
+    {
+      "name": "Trial Reminder (24h before)",
+      "trigger": "Time-based (24h before appointment)",
+      "actions": [
+        {
+          "type": "send_sms",
+          "template": "Peskids — Trial Reminder"
+        },
+        {
+          "type": "add_tag",
+          "tag": "trial-reminded"
+        }
+      ]
+    },
+    {
+      "name": "No-Show Recovery",
+      "trigger": "Appointment Status = No Show",
+      "actions": [
+        {
+          "type": "delay",
+          "minutes": 60
+        },
+        {
+          "type": "send_sms",
+          "content": "¡Nos perdimos en tu clase de prueba! ¿Hay algún problema? Podemos reagendar. Link: {{reschedule_link}}"
+        },
+        {
+          "type": "create_task",
+          "title": "Seguimiento: {{contact.name}}"
+        },
+        {
+          "type": "add_tag",
+          "tag": "no-show-recovery"
+        }
+      ]
+    }
+  ],
+  "readiness_checklist": [
+    {
+      "task": "Create Pipeline 'Peskids Enrollment' with 6 stages",
+      "owner": "Ops",
+      "time_estimate_minutes": 45,
+      "completed": false
+    },
+    {
+      "task": "Create/Verify Lead Form 'Peskids Trial Registration'",
+      "owner": "Ops",
+      "time_estimate_minutes": 30,
+      "completed": false
+    },
+    {
+      "task": "Create Email Templates (Welcome Parent, Confirmation)",
+      "owner": "Marketing",
+      "time_estimate_minutes": 20,
+      "completed": false
+    },
+    {
+      "task": "Create SMS Template (Trial Reminder)",
+      "owner": "Marketing",
+      "time_estimate_minutes": 10,
+      "completed": false
+    },
+    {
+      "task": "Configure GHL Workflows (4 total)",
+      "owner": "Ops",
+      "time_estimate_minutes": 60,
+      "completed": false
+    },
+    {
+      "task": "Test E2E: Form → Contact → Trial Confirmation Email",
+      "owner": "Dev",
+      "time_estimate_minutes": 30,
+      "completed": false
+    },
+    {
+      "task": "CRITICAL: Activate n8n Trial Reminder Workflow",
+      "owner": "Dev",
+      "time_estimate_minutes": 30,
+      "completed": false
+    }
+  ]
+}
