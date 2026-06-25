@@ -1,0 +1,266 @@
+{
+  "name": "Peskids — Trial Reminder (24h Before)",
+  "description": "CRITICAL: Send SMS reminder 24 hours before trial class appointment",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [50, 300],
+      "id": "start-node"
+    },
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        }
+      },
+      "name": "Trigger: Every Hour",
+      "type": "n8n-nodes-base.schedule",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "id": "trigger-schedule",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "resource": "contact",
+        "operation": "getAll",
+        "locationId": "KJ5LawrOOe3hIerqtMRu",
+        "options": {
+          "returnAll": false,
+          "limit": 100
+        }
+      },
+      "name": "Get Peskids Contacts",
+      "type": "n8n-nodes-base.gohighlevel",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "id": "get-contacts",
+      "credentials": {
+        "goHighLevelApi": "peskids_api"
+      }
+    },
+    {
+      "parameters": {
+        "resource": "contact",
+        "operation": "get",
+        "locationId": "KJ5LawrOOe3hIerqtMRu",
+        "contactId": "={{$node[\"Get Peskids Contacts\"].json.contacts[0].id}}"
+      },
+      "name": "Get Contact Details",
+      "type": "n8n-nodes-base.gohighlevel",
+      "typeVersion": 1,
+      "position": [650, 300],
+      "id": "get-contact-details",
+      "credentials": {
+        "goHighLevelApi": "peskids_api"
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Check if contact has appointment 24h from now\nconst now = new Date();\nconst tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);\nconst appointmentDate = new Date($input.all()[0].json.appointment.date);\n\nconst isWithin24h = \n  appointmentDate >= new Date(now.getTime() + 23 * 60 * 60 * 1000) &&\n  appointmentDate <= new Date(now.getTime() + 25 * 60 * 60 * 1000);\n\nreturn [{\n  ...($input.all()[0].json),\n  shouldSendReminder: isWithin24h,\n  daysUntilAppointment: (appointmentDate - now) / (1000 * 60 * 60 * 24)\n}];"
+      },
+      "name": "Check: Appointment 24h Away?",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [850, 300],
+      "id": "check-24h"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$node[\"Check: Appointment 24h Away?\"].json.shouldSendReminder}}",
+              "condition": "equal",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "If: Should Send?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1050, 300],
+      "id": "if-should-send"
+    },
+    {
+      "parameters": {
+        "resource": "sms",
+        "operation": "send",
+        "contactId": "={{$node[\"Get Contact Details\"].json.id}}",
+        "message": "Hola {{$node[\"Get Contact Details\"].json.firstName}}, te recordamos tu clase de prueba de {{$node[\"Get Contact Details\"].json.childName}} mañana a las {{$node[\"Get Contact Details\"].json.appointment.time}}. Lleva traje de baño y gorro. Confirma aquí: {{confirmationLink}}"
+      },
+      "name": "Send SMS: Trial Reminder",
+      "type": "n8n-nodes-base.gohighlevel",
+      "typeVersion": 1,
+      "position": [1250, 150],
+      "id": "send-sms",
+      "credentials": {
+        "goHighLevelApi": "peskids_api"
+      }
+    },
+    {
+      "parameters": {
+        "resource": "contact",
+        "operation": "update",
+        "locationId": "KJ5LawrOOe3hIerqtMRu",
+        "contactId": "={{$node[\"Get Contact Details\"].json.id}}",
+        "updateFields": {
+          "tags": "trial-reminded"
+        }
+      },
+      "name": "Add Tag: trial-reminded",
+      "type": "n8n-nodes-base.gohighlevel",
+      "typeVersion": 1,
+      "position": [1250, 300],
+      "id": "add-tag"
+    },
+    {
+      "parameters": {
+        "channel": "#ops-critical",
+        "text": "✓ SMS sent to {{$node[\"Get Contact Details\"].json.firstName}} — Trial class reminder for {{$node[\"Get Contact Details\"].json.childName}}"
+      },
+      "name": "Log: Slack Success",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [1450, 150],
+      "id": "log-slack-success",
+      "credentials": {
+        "slackApi": "ops_slack"
+      }
+    },
+    {
+      "parameters": {
+        "channel": "#ops-critical",
+        "text": "⚠️ Trial reminder NOT sent — Appointment not within 24h window"
+      },
+      "name": "Log: Slack Skipped",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [1450, 450],
+      "id": "log-slack-skipped",
+      "credentials": {
+        "slackApi": "ops_slack"
+      }
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Trigger: Every Hour",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger: Every Hour": {
+      "main": [
+        [
+          {
+            "node": "Get Peskids Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Peskids Contacts": {
+      "main": [
+        [
+          {
+            "node": "Get Contact Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contact Details": {
+      "main": [
+        [
+          {
+            "node": "Check: Appointment 24h Away?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check: Appointment 24h Away?": {
+      "main": [
+        [
+          {
+            "node": "If: Should Send?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If: Should Send?": {
+      "main": [
+        [
+          {
+            "node": "Send SMS: Trial Reminder",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log: Slack Skipped",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log: Slack Skipped",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send SMS: Trial Reminder": {
+      "main": [
+        [
+          {
+            "node": "Add Tag: trial-reminded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Tag: trial-reminded": {
+      "main": [
+        [
+          {
+            "node": "Log: Slack Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "errorWorkflow": "peskids-error-handler",
+    "saveManualExecutions": true,
+    "timezone": "America/Bogota"
+  },
+  "trigger": "schedule",
+  "active": true,
+  "sla_minutes": 5,
+  "success_metric": ">95% delivery, <5 min latency",
+  "notes": "CRITICAL WORKFLOW: Without this, trial show rate drops <50%. Test before go-live."
+}

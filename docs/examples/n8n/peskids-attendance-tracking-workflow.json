@@ -1,0 +1,264 @@
+{
+  "name": "Peskids — Attendance Tracking (Appointment Status Sync)",
+  "description": "CRITICAL: Track trial class attendance and trigger enrollment flow",
+  "trigger": "webhook",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Webhook: GHL Appointment Update",
+      "type": "n8n-nodes-base.webhookTrigger",
+      "typeVersion": 1,
+      "position": [50, 300],
+      "id": "webhook-trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse GHL webhook payload\nconst event = $input.all()[0].json;\nconst appointment = event.appointment;\nconst contact = event.contact;\n\nreturn [{\n  appointmentId: appointment.id,\n  appointmentStatus: appointment.status, // 'Completed' | 'No Show'\n  contactId: contact.id,\n  contactName: contact.firstName,\n  childName: contact.childName,\n  appointmentDate: appointment.date,\n  appointmentTime: appointment.time,\n  timestamp: new Date().toISOString()\n}];"
+      },
+      "name": "Parse GHL Webhook",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "id": "parse-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$node[\"Parse GHL Webhook\"].json.appointmentStatus}}",
+              "condition": "equals",
+              "value2": "Completed"
+            }
+          ]
+        }
+      },
+      "name": "If: Trial Completed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "id": "if-completed"
+    },
+    {
+      "parameters": {
+        "resource": "contact",
+        "operation": "update",
+        "locationId": "KJ5LawrOOe3hIerqtMRu",
+        "contactId": "={{$node[\"Parse GHL Webhook\"].json.contactId}}",
+        "updateFields": {
+          "stage": "Trial Completed",
+          "tags": ["trial-completed"],
+          "customFields": {
+            "trial_attended": "yes",
+            "trial_date": "={{$node[\"Parse GHL Webhook\"].json.appointmentDate}}"
+          }
+        }
+      },
+      "name": "Update Contact: Trial Completed",
+      "type": "n8n-nodes-base.gohighlevel",
+      "typeVersion": 1,
+      "position": [650, 150],
+      "id": "update-completed",
+      "credentials": {
+        "goHighLevelApi": "peskids_api"
+      }
+    },
+    {
+      "parameters": {
+        "resource": "contact",
+        "operation": "update",
+        "locationId": "KJ5LawrOOe3hIerqtMRu",
+        "contactId": "={{$node[\"Parse GHL Webhook\"].json.contactId}}",
+        "updateFields": {
+          "stage": "Contacted",
+          "tags": ["no-show"],
+          "customFields": {
+            "trial_attended": "no",
+            "no_show_date": "={{$node[\"Parse GHL Webhook\"].json.appointmentDate}}"
+          }
+        }
+      },
+      "name": "Update Contact: No Show",
+      "type": "n8n-nodes-base.gohighlevel",
+      "typeVersion": 1,
+      "position": [650, 450],
+      "id": "update-no-show",
+      "credentials": {
+        "goHighLevelApi": "peskids_api"
+      }
+    },
+    {
+      "parameters": {
+        "resource": "email",
+        "operation": "send",
+        "to": "={{$node[\"Parse GHL Webhook\"].json.contactEmail}}",
+        "templateId": "enrollment-offer",
+        "subject": "¡{{$node[\"Parse GHL Webhook\"].json.childName}} estuvo increíble! Ahora a inscribirse"
+      },
+      "name": "Send Email: Enrollment Offer",
+      "type": "n8n-nodes-base.gohighlevel",
+      "typeVersion": 1,
+      "position": [850, 150],
+      "id": "send-enrollment-offer",
+      "credentials": {
+        "goHighLevelApi": "peskids_api"
+      }
+    },
+    {
+      "parameters": {
+        "resource": "sms",
+        "operation": "send",
+        "contactId": "={{$node[\"Parse GHL Webhook\"].json.contactId}}",
+        "message": "¡Excelente! {{$node[\"Parse GHL Webhook\"].json.childName}} lo hizo genial hoy. Ahora a continuar su viaje en Peskids. Conoce nuestros planes: {{enrollmentLink}}"
+      },
+      "name": "Send SMS: Enrollment CTA",
+      "type": "n8n-nodes-base.gohighlevel",
+      "typeVersion": 1,
+      "position": [850, 300],
+      "id": "send-enrollment-sms",
+      "credentials": {
+        "goHighLevelApi": "peskids_api"
+      }
+    },
+    {
+      "parameters": {
+        "channel": "#ops-critical",
+        "text": "📊 Trial Attendance Updated:\n• {{$node[\"Parse GHL Webhook\"].json.childName}}\n• Status: {{$node[\"Parse GHL Webhook\"].json.appointmentStatus}}\n• Contact: {{$node[\"Parse GHL Webhook\"].json.contactName}}\n• Date: {{$node[\"Parse GHL Webhook\"].json.appointmentDate}} at {{$node[\"Parse GHL Webhook\"].json.appointmentTime}}"
+      },
+      "name": "Log: Slack Attendance",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [1050, 300],
+      "id": "log-slack",
+      "credentials": {
+        "slackApi": "ops_slack"
+      }
+    },
+    {
+      "parameters": {
+        "resource": "task",
+        "operation": "create",
+        "locationId": "KJ5LawrOOe3hIerqtMRu",
+        "contactId": "={{$node[\"Parse GHL Webhook\"].json.contactId}}",
+        "title": "Follow-up: {{$node[\"Parse GHL Webhook\"].json.childName}} — No Show on {{$node[\"Parse GHL Webhook\"].json.appointmentDate}}",
+        "description": "Trial class no-show. Send recovery SMS and offer reschedule.",
+        "dueDate": "={{new Date(new Date().getTime() + 24*60*60*1000).toISOString().split('T')[0]}}"
+      },
+      "name": "Create Task: No-Show Follow-up",
+      "type": "n8n-nodes-base.gohighlevel",
+      "typeVersion": 1,
+      "position": [850, 550],
+      "id": "create-task",
+      "credentials": {
+        "goHighLevelApi": "peskids_api"
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: GHL Appointment Update": {
+      "main": [
+        [
+          {
+            "node": "Parse GHL Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse GHL Webhook": {
+      "main": [
+        [
+          {
+            "node": "If: Trial Completed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If: Trial Completed?": {
+      "main": [
+        [
+          {
+            "node": "Update Contact: Trial Completed",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Enrollment Offer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Contact: No Show",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create Task: No-Show Follow-up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Contact: Trial Completed": {
+      "main": [
+        [
+          {
+            "node": "Send Email: Enrollment Offer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email: Enrollment Offer": {
+      "main": [
+        [
+          {
+            "node": "Send SMS: Enrollment CTA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send SMS: Enrollment CTA": {
+      "main": [
+        [
+          {
+            "node": "Log: Slack Attendance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Contact: No Show": {
+      "main": [
+        [
+          {
+            "node": "Log: Slack Attendance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "errorWorkflow": "peskids-error-handler",
+    "saveManualExecutions": true,
+    "timezone": "America/Bogota"
+  },
+  "trigger": "webhook",
+  "active": true,
+  "sla_minutes": 5,
+  "success_metric": "100% attendance sync, <5 min latency",
+  "webhook_url": "/api/public/tenants/peskids/webhooks/n8n/attendance",
+  "notes": "CRITICAL WORKFLOW: Blocks enrollment until attendance is tracked. Test with GHL appointment status changes."
+}
