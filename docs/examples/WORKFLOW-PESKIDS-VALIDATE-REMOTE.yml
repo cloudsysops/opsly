@@ -1,0 +1,87 @@
+# 📋 GitHub Actions Workflow — Peskids Remote Validation
+#
+# INSTRUCCIONES DE INSTALACIÓN:
+#
+# 1. En GitHub UI: https://github.com/cloudsysops/opsly
+# 2. Click "Actions" → "New Workflow"
+# 3. Copy-paste el contenido abajo (desde "name:" hasta final)
+# 4. Filename: peskids-validate-remote.yml
+# 5. Click "Commit changes"
+#
+# O desde terminal:
+#   mkdir -p .github/workflows
+#   cp docs/WORKFLOW-PESKIDS-VALIDATE-REMOTE.yml .github/workflows/peskids-validate-remote.yml
+#   git add .github/workflows/peskids-validate-remote.yml
+#   git commit -m "ci: add peskids remote validation workflow"
+#   git push
+#
+# ============================================================================
+
+name: Peskids Remote Validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Validation task to run'
+        required: true
+        default: 'validate-vps'
+        type: choice
+        options:
+          - validate-vps
+          - health-check
+          - deploy-vps
+          - smoke-test
+      environment:
+        description: 'Environment (prd or staging)'
+        required: true
+        default: 'prd'
+        type: choice
+        options:
+          - prd
+          - staging
+
+env:
+  VPS_HOST: ${{ secrets.VPS_HOST }}
+  VPS_USER: ${{ secrets.VPS_USER }}
+  API_URL: https://api.op-sly.com
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Peskids Validation
+        run: |
+          chmod +x scripts/peskids-orchestrator.sh
+
+          echo "=========================================="
+          echo "Peskids Remote Validation"
+          echo "Task: ${{ github.event.inputs.task }}"
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          echo "=========================================="
+          echo ""
+
+          # Execute orchestrator
+          bash scripts/peskids-orchestrator.sh --task "${{ github.event.inputs.task }}" --env "${{ github.event.inputs.environment }}"
+
+      - name: Upload Validation Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: peskids-validation-report
+          path: validation-report.txt
+          retention-days: 7
+
+      - name: Job Summary
+        if: always()
+        run: |
+          echo "## Peskids Validation Report" >> $GITHUB_STEP_SUMMARY
+          echo "**Task:** ${{ github.event.inputs.task }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ github.event.inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY

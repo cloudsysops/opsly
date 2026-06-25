@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import { Loader2, Send } from 'lucide-react'
@@ -50,6 +50,7 @@ export function LeadCaptureForm({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [redirectCountdown, setRedirectCountdown] = useState(5)
   const [formData, setFormData] = useState({
     ...initialForm,
     referral_source: defaultReferralSource,
@@ -57,6 +58,16 @@ export function LeadCaptureForm({
   const [consentTreatment, setConsentTreatment] = useState(false)
   const [consentMarketing, setConsentMarketing] = useState(false)
   const referredByCode = useMemo(() => searchParams.get('ref')?.trim().toUpperCase() ?? '', [searchParams])
+
+  useEffect(() => {
+    if (!submitted) return
+
+    const interval = setInterval(() => {
+      setRedirectCountdown((prev) => prev - 1)
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [submitted])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     const { name, value } = e.target
@@ -124,7 +135,6 @@ export function LeadCaptureForm({
       })
 
       setSubmitted(true)
-      setFormData({ ...initialForm, referral_source: defaultReferralSource })
       setConsentTreatment(false)
       setConsentMarketing(false)
 
@@ -136,8 +146,9 @@ export function LeadCaptureForm({
         thanksUrl.searchParams.set('referral_code', apiResult.referral_code)
       }
       window.setTimeout(() => {
+        setFormData({ ...initialForm, referral_source: defaultReferralSource })
         router.push(`${thanksUrl.pathname}${thanksUrl.search}`)
-      }, 4000)
+      }, 5000)
     } catch (err) {
       setError(
         'No pudimos enviar el formulario. Intenta de nuevo o escríbenos por WhatsApp.'
@@ -191,12 +202,23 @@ export function LeadCaptureForm({
             role="status"
           >
             <p className="font-semibold text-pk-primary">
-              Gracias. Recibimos tus datos y te contactaremos para coordinar la clase de prueba.
+              ¡Perfecto, {formData.name}! 🎉 Recibimos tu solicitud.
             </p>
             <p className="mt-2 text-pk-sub">
-              Si prefieres atención inmediata, también puedes escribirnos por WhatsApp.
+              Un asesor revisará tu información y te escribirá en menos de 48 h hábiles para coordinar la clase de prueba gratis.
             </p>
-            <WhatsAppLink variant="button" label={PESKIDS_WHATSAPP_CTA_LABEL} className="mt-3 w-full sm:w-auto" />
+            <p className="mt-3 font-medium text-pk-primary">
+              ¿Prefieres atención inmediata?
+            </p>
+            <WhatsAppLink
+              variant="button"
+              label="Continuar por WhatsApp →"
+              prefill={`Hola Peskids 👋 Soy ${formData.name}, acabo de completar el formulario de reserva y estoy listo/a para agendar la clase de prueba.`}
+              className="mt-3 w-full sm:w-auto"
+            />
+            <p className="mt-4 text-center text-xs text-pk-sub">
+              Redirigiendo a página de confirmación en {redirectCountdown} segundo{redirectCountdown !== 1 ? 's' : ''}…
+            </p>
           </div>
         ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
