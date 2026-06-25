@@ -11,3 +11,7 @@
 ## 2025-05-22 - Root Dependency Overrides for Monorepo Stability
 **Learning:** In a monorepo, inconsistent versions of foundational libraries like `undici` can break test environments (e.g., `jsdom` in Vitest).
 **Action:** Use root `package.json` overrides to align critical dependencies across all workspaces when version mismatches occur.
+
+## 2025-05-22 - Accessible Chat and Dialog Pattern
+**Learning:** Floating interactive components like feedback chats often lack proper keyboard navigation and ARIA state communication, making them invisible or unusable for assistive technology users.
+**Action:** Implement `Escape` key dismissal, use `aria-expanded`/`aria-controls` for toggles, and ensure dialogs have `role="dialog"` with `aria-labelledby` pointing to a semantic heading (e.g., `h2`).
