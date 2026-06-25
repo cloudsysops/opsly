@@ -4,7 +4,7 @@ import { triggerN8nMessagePipeline } from '@/lib/chat-assistant';
 import { storeDraftReply, storeInboundMessage, storeOutboundMessage } from '@/lib/message-store';
 import { emitEvent } from '@/lib/events';
 import { buildPeskidsIntakeTurn } from '@/lib/peskids-intake';
-import { submitLeadFromIntake } from '@/lib/peskids-lead-from-intake';
+import { peskidsAdmissionsChatFormRedirectPayload } from '@/lib/marketing-routes';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 
 export async function POST(req: NextRequest) {
@@ -19,6 +19,12 @@ export async function POST(req: NextRequest) {
     };
 
     const sessionId = body.session_id?.trim() ?? 'web-anonymous';
+    const mode = body.mode ?? 'admissions';
+
+    if (mode !== 'support') {
+      return successJson(requestId, peskidsAdmissionsChatFormRedirectPayload());
+    }
+
     const validated = validateChatUserMessage(body.message ?? '');
     if (!validated.ok) {
       if (validated.safeResponse) {
@@ -58,7 +64,7 @@ export async function POST(req: NextRequest) {
       senderName: body.sender_name,
       source: 'web',
       latestMessage: messageText,
-      mode: body.mode ?? 'admissions',
+      mode,
     });
 
     await storeOutboundMessage({
@@ -77,10 +83,6 @@ export async function POST(req: NextRequest) {
           status: 'pending',
         })
       : { draft: null };
-
-    if (body.mode !== 'support' && intake.stage === 'handoff') {
-      void submitLeadFromIntake(intake.profile);
-    }
 
     void triggerN8nMessagePipeline(message.id, messageText);
 
@@ -107,11 +109,9 @@ export async function POST(req: NextRequest) {
       quick_replies: intake.quickReplies,
       from_llm: false,
       disclaimer:
-        body.mode === 'support'
+        intake.stage === 'handoff'
           ? 'Tu caso quedó listo para el equipo de soporte. Si requiere reprogramación o cancelación, primero lo valida una persona del equipo.'
-          : intake.stage === 'handoff'
-            ? 'Gracias. Un asesor de Peskids revisará tu caso y te contactará para confirmar los siguientes pasos.'
-            : 'Te haré algunas preguntas cortas para completar tu solicitud.',
+          : 'Te haré algunas preguntas cortas para orientar tu caso de soporte.',
     });
   } catch (error) {
     console.error('Chat API error:', error, { request_id: requestId });

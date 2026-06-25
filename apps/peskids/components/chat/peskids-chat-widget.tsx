@@ -5,6 +5,7 @@ import { MessageCircle, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { PeskidsChatPanel } from '@/components/chat/peskids-chat-panel';
 import { usePeskidsChatContext } from '@/components/chat/peskids-chat-provider';
+import { isPeskidsPublicLandingPath } from '@/lib/marketing-routes';
 import { PESKIDS_CHAT_OPEN_EVENT } from '@/lib/peskids-chat-session';
 import { cn } from '@/lib/utils';
 
@@ -14,7 +15,7 @@ export function PeskidsChatWidget(): React.ReactElement | null {
   const chat = usePeskidsChatContext();
 
   const isAdmin = pathname?.startsWith('/admin') ?? false;
-  const isHome = pathname === '/';
+  const leadCaptureSurface = isPeskidsPublicLandingPath(pathname);
 
   useEffect(() => {
     const onOpen = (): void => setOpen(true);
@@ -22,7 +23,7 @@ export function PeskidsChatWidget(): React.ReactElement | null {
     return () => window.removeEventListener(PESKIDS_CHAT_OPEN_EVENT, onOpen);
   }, []);
 
-  if (isAdmin || isHome) return null;
+  if (isAdmin || leadCaptureSurface) return null;
 
   return (
     <>
@@ -46,8 +47,7 @@ export function PeskidsChatWidget(): React.ReactElement | null {
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          'fixed bottom-6 left-4 z-40 inline-flex h-11 w-11 items-center justify-center rounded-full border border-pk-border bg-pk-surface text-pk-teal shadow-md transition hover:bg-pk-muted sm:bottom-8',
-          isHome && 'lg:hidden'
+          'fixed bottom-6 left-4 z-40 inline-flex h-11 w-11 items-center justify-center rounded-full border border-pk-border bg-pk-surface text-pk-teal shadow-md transition hover:bg-pk-muted sm:bottom-8'
         )}
         aria-expanded={open}
         aria-label={open ? 'Cerrar chat' : 'Abrir chat Peskids'}

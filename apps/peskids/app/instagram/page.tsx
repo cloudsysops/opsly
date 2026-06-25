@@ -1,5 +1,6 @@
 import { SiteHeader } from '@/components/layout/site-header';
 import { SiteFooter } from '@/components/layout/site-footer';
+import { CtaBand } from '@/components/marketing/cta-band';
 import { PeskidsReservationLanding } from '@/components/marketing/peskids-reservation-landing';
 import { PESKIDS_INSTAGRAM_LANDING } from '@/lib/peskids-landing-config';
 
@@ -30,6 +31,7 @@ export default function InstagramPage(): React.ReactElement {
           headingLevel="h1"
         />
       </main>
+      <CtaBand />
       <SiteFooter />
     </div>
   );

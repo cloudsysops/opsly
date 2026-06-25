@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import { getOrCreateChatSessionId } from '@/lib/peskids-chat-session';
+import { PESKIDS_ADMISSIONS_CHAT_FORM_REPLY } from '@/lib/marketing-routes';
 import {
   peskidsIntakeWelcome,
   peskidsSupportWelcome,
@@ -92,7 +93,10 @@ export function usePeskidsChat(mode: PeskidsChatMode = 'admissions'): {
             ...prev,
             {
               role: 'assistant',
-              text: 'No pude responder ahora. Escríbenos por WhatsApp y te ayudamos enseguida.',
+              text:
+                mode === 'support'
+                  ? 'No pude responder ahora. Intenta de nuevo en unos minutos o escribe desde el portal de familias.'
+                  : PESKIDS_ADMISSIONS_CHAT_FORM_REPLY,
             },
           ]);
           return;
@@ -116,7 +120,10 @@ export function usePeskidsChat(mode: PeskidsChatMode = 'admissions'): {
           ...prev,
           {
             role: 'assistant',
-            text: 'Error de conexión. Intenta de nuevo o contáctanos por WhatsApp.',
+            text:
+              mode === 'support'
+                ? 'Error de conexión. Intenta de nuevo en unos minutos.'
+                : PESKIDS_ADMISSIONS_CHAT_FORM_REPLY,
           },
         ]);
       } finally {

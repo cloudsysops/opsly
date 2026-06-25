@@ -5,7 +5,7 @@ const buildReferralCodeMock = vi.fn();
 const buildReferralLinkMock = vi.fn();
 
 vi.mock('@/lib/peskids-canonical-api', () => ({
-  postPeskidsCanonicalLead: postCanonicalLeadMock,
+  postPeskidsLeadWithGHL: postCanonicalLeadMock,
 }));
 
 vi.mock('@/lib/peskids-referrals', () => ({
@@ -80,6 +80,7 @@ describe('POST /api/leads', () => {
       referral_link: 'https://peskids.op-sly.com/familias?ref=PK-CODE',
       referral_discount_cents: 0,
       message: 'Lead created successfully',
+      ghl_contact_id: null,
       request_id: 'req-lead-201',
     });
     expect(postCanonicalLeadMock).toHaveBeenCalledWith(
