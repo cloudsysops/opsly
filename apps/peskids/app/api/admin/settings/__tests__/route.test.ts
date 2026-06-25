@@ -71,7 +71,11 @@ describe('PATCH /api/admin/settings', () => {
   });
 
   it('rejects non-admin staff (support role)', async () => {
-    validateStaffSessionMock.mockResolvedValue({ ok: true, method: 'supabase', user: supportUser() });
+    validateStaffSessionMock.mockResolvedValue({
+      ok: true,
+      method: 'supabase',
+      user: supportUser(),
+    });
 
     const { PATCH } = await import('../route');
     const req = {

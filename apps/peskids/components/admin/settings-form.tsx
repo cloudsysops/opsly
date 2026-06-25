@@ -182,7 +182,10 @@ export function SettingsForm(): React.ReactElement {
               className="h-10 w-full rounded-lg border border-pk-border bg-white px-3 text-sm"
               value={form.default_modality}
               onChange={(e) =>
-                setForm({ ...form, default_modality: e.target.value as 'llanogrande' | 'domicilio' })
+                setForm({
+                  ...form,
+                  default_modality: e.target.value as 'llanogrande' | 'domicilio',
+                })
               }
             >
               <option value="llanogrande">Llanogrande</option>

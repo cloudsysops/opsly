@@ -93,10 +93,7 @@ export function AdminShell({
         const res = await fetch('/api/admin/messages', { credentials: 'include' });
         if (!res.ok) return;
         const data = (await res.json()) as ConversationsApiResponse;
-        const total = (data.conversations ?? []).reduce(
-          (sum, c) => sum + (c.unreadCount ?? 0),
-          0
-        );
+        const total = (data.conversations ?? []).reduce((sum, c) => sum + (c.unreadCount ?? 0), 0);
         setUnreadMessages(total);
       } catch {
         // silently ignore

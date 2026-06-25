@@ -96,9 +96,7 @@ export function ClassesPanel(): React.ReactElement {
         const teacherOptions = (teamJson.members ?? [])
           .filter(
             (member) =>
-              (member.role === 'teacher' ||
-                member.role === 'admin' ||
-                member.role === 'owner') &&
+              (member.role === 'teacher' || member.role === 'admin' || member.role === 'owner') &&
               Boolean(member.user_id)
           )
           .map((member) => ({
@@ -280,9 +278,7 @@ export function ClassesPanel(): React.ReactElement {
                   id="class-location"
                   className="h-10 w-full rounded-lg border border-pk-border bg-white px-3 text-sm"
                   value={form.location}
-                  onChange={(e) =>
-                    setForm({ ...form, location: e.target.value as SwimLocation })
-                  }
+                  onChange={(e) => setForm({ ...form, location: e.target.value as SwimLocation })}
                 >
                   <option value="llanogrande">Llanogrande</option>
                   <option value="domicilio">Domicilio</option>

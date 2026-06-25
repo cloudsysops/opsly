@@ -43,7 +43,8 @@ export async function updateTenantSettings(
   if (input.support_phone !== undefined) patch.support_phone = input.support_phone;
   if (input.default_modality !== undefined) patch.default_modality = input.default_modality;
   if (input.default_capacity !== undefined) patch.default_capacity = input.default_capacity;
-  if (input.default_price_cents !== undefined) patch.default_price_cents = input.default_price_cents;
+  if (input.default_price_cents !== undefined)
+    patch.default_price_cents = input.default_price_cents;
 
   const { data, error } = await supabaseServer()
     .from('tenant_settings')
