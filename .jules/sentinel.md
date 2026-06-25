@@ -52,3 +52,8 @@
 **Vulnerability:** `npm audit` identified high-severity vulnerabilities in `hono` (Path traversal, etc. - GHSA-wwfh-h76j-fc44) and `tmp` (Path traversal - GHSA-7c78-jf6q-g5cm).
 **Learning:** Even if the project's direct dependencies are secure, transitive dependencies or overrides might bring in vulnerable versions. The CI environment enforces a strict audit that blocks PRs on moderate+ vulnerabilities in non-dev dependencies.
 **Prevention:** Regularly run `npm audit --audit-level=moderate --omit=dev` and update `overrides` in the root `package.json` to pin safe versions of problematic dependencies.
+
+## 2026-06-24 - [Standardized IP Extraction for Security]
+**Vulnerability:** Diverse implementations of IP extraction logic across the API prioritized `x-forwarded-for` or `x-real-ip` without verifying the proxy chain, creating an IP spoofing vector for rate limiting and audit logging.
+**Learning:** Returning a placeholder string like 'unknown' for missing IPs can break database integrity for columns using `INET` or similar network address types. Centralized helpers must return `null` to signify a missing value while maintaining type safety for downstream systems.
+**Prevention:** Use the centralized `extractIp` helper from `lib/audit.ts` which is verified to prioritize Cloudflare (`cf-connecting-ip`) and safely parse proxy headers. Ensure security tests verify that spoofed headers are ignored when verified platform headers are present.
