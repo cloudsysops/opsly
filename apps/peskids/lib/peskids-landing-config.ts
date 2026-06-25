@@ -11,3 +11,7 @@ export const PESKIDS_INSTAGRAM_LANDING = {
 } as const;
 
 export const PESKIDS_RESERVATION_ANCHOR = 'reserva';
+
+/** Anchor id + href for the public lead capture form (form-before-WhatsApp policy). */
+export const PESKIDS_RESERVATION_FORM_ANCHOR = 'reserva-form';
+export const PESKIDS_RESERVATION_FORM_HREF = `/#${PESKIDS_RESERVATION_FORM_ANCHOR}`;

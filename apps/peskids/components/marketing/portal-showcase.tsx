@@ -324,7 +324,7 @@ export function PortalShowcase(): React.ReactElement {
             <div className="flex flex-col justify-center gap-3 sm:flex-row lg:justify-end">
               <PublicReservaWhatsAppLink
                 variant="onDark"
-                label="Reservar por WhatsApp"
+                label="Reservar clase gratuita"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-pk-sun px-6 text-sm font-bold text-pk-ink transition hover:brightness-105"
               />
             </div>

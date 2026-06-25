@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Instagram } from 'lucide-react'
 import { PeskidsBrush, WiggleLine } from '@/components/brand/peskids-logo'
-import { WhatsAppLink } from '@/components/contact/whatsapp-link'
+import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config'
 import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
 import { peskidsColorTokens } from '@/lib/tokens'
 
@@ -44,12 +44,11 @@ export function HeroSection(): React.ReactElement {
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
           <Link
-            href="#reserva"
+            href={PESKIDS_RESERVATION_FORM_HREF}
             className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-pk-primary px-6 text-sm font-bold text-white shadow-md transition hover:bg-pk-primary/90"
           >
             Reservar clase gratuita
           </Link>
-          <WhatsAppLink variant="hero" label="Hablar por WhatsApp" />
           <Link
             href={PESKIDS_INSTAGRAM.profileUrl}
             target="_blank"
@@ -63,7 +62,8 @@ export function HeroSection(): React.ReactElement {
         </div>
 
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/65">
-          ¿Prefieres escribirnos directo? También puedes reservar por WhatsApp.
+          Primero completa el formulario con tus datos; después podrás continuar por WhatsApp si lo
+          prefieres.
         </p>
       </div>
     </section>

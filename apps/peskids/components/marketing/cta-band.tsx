@@ -1,5 +1,6 @@
+import Link from 'next/link';
 import { PeskidsWave } from '@/components/brand/peskids-logo';
-import { WhatsAppLink } from '@/components/contact/whatsapp-link';
+import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config';
 
 export function CtaBand(): React.ReactElement {
   return (
@@ -16,16 +17,17 @@ export function CtaBand(): React.ReactElement {
               La primera clase es gratis.
             </h2>
             <p className="mt-4 text-lg text-white/85">
-              Trae a tu peque a probar el método. Sin compromiso. Escríbenos por WhatsApp y te
-              ayudamos a reservar la clase de prueba.
+              Completa el formulario con los datos del acudiente y te contactamos para coordinar la
+              clase de prueba.
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <WhatsAppLink
-              variant="onDark"
-              label="Reservar por WhatsApp"
-              className="min-w-[200px]"
-            />
+            <Link
+              href={PESKIDS_RESERVATION_FORM_HREF}
+              className="inline-flex h-12 min-w-[200px] items-center justify-center rounded-full bg-pk-primary px-6 text-sm font-bold text-white shadow-lg transition hover:bg-pk-primary/90"
+            >
+              Ir al formulario
+            </Link>
           </div>
         </div>
       </div>

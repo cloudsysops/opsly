@@ -150,9 +150,7 @@ export function LeadCaptureForm({
         router.push(`${thanksUrl.pathname}${thanksUrl.search}`)
       }, 5000)
     } catch (err) {
-      setError(
-        'No pudimos enviar el formulario. Intenta de nuevo o escríbenos por WhatsApp.'
-      )
+      setError('No pudimos enviar el formulario. Revisa los datos e intenta de nuevo.')
       console.error('Form submission error:', err)
     } finally {
       setLoading(false)
@@ -175,14 +173,7 @@ export function LeadCaptureForm({
         <CardHeader className="border-0 bg-gradient-to-br from-pk-primary/10 via-pk-bg to-pk-surface pb-2">
           <p className="pk-eyebrow text-pk-primary">{PESKIDS_RESERVATION_EYEBROW}</p>
           <CardTitle className="text-2xl sm:text-3xl">{PESKIDS_RESERVATION_TITLE}</CardTitle>
-          <CardDescription>
-            {PESKIDS_FORM_CARD_DESCRIPTION}{' '}
-            <WhatsAppLink
-              variant="button"
-              label={PESKIDS_WHATSAPP_CTA_LABEL}
-              className="mt-2 w-full sm:w-auto"
-            />
-          </CardDescription>
+          <CardDescription>{PESKIDS_FORM_CARD_DESCRIPTION}</CardDescription>
           {referredByCode ? (
             <p className="mt-3 rounded-xl border border-pk-primary/20 bg-pk-primary/10 px-3 py-2 text-xs font-medium text-pk-primary">
               Código de recomendación activo: <span className="font-mono">{referredByCode}</span>
@@ -208,11 +199,11 @@ export function LeadCaptureForm({
               Un asesor revisará tu información y te escribirá en menos de 48 h hábiles para coordinar la clase de prueba gratis.
             </p>
             <p className="mt-3 font-medium text-pk-primary">
-              ¿Prefieres atención inmediata?
+              Siguiente paso: continúa por WhatsApp con tu solicitud ya registrada.
             </p>
             <WhatsAppLink
               variant="button"
-              label="Continuar por WhatsApp →"
+              label={`${PESKIDS_WHATSAPP_CTA_LABEL} →`}
               prefill={`Hola Peskids 👋 Soy ${formData.name}, acabo de completar el formulario de reserva y estoy listo/a para agendar la clase de prueba.`}
               className="mt-3 w-full sm:w-auto"
             />
