@@ -1,0 +1,268 @@
+{
+  "customer": "Intcloudsysops/ICSO",
+  "type": "Agency + Website (Discovery Call Model)",
+  "location_id": "qD7Z9jt3owk0LMtKElow",
+  "lead_sla_minutes": 1,
+  "pipeline": {
+    "name": "Opsly Agency Sales",
+    "description": "Discovery call sales pipeline for Opsly agency services",
+    "stages": [
+      {
+        "name": "New Lead",
+        "position": 1,
+        "description": "Contact just created from website"
+      },
+      {
+        "name": "Contacted",
+        "position": 2,
+        "description": "Initial contact made"
+      },
+      {
+        "name": "Discovery Scheduled",
+        "position": 3,
+        "description": "Discovery call booked"
+      },
+      {
+        "name": "Proposal Sent",
+        "position": 4,
+        "description": "Proposal delivered"
+      },
+      {
+        "name": "Negotiation",
+        "position": 5,
+        "description": "In discussion with prospect"
+      },
+      {
+        "name": "Won",
+        "position": 6,
+        "description": "Contract signed"
+      },
+      {
+        "name": "Lost",
+        "position": 7,
+        "description": "Deal closed without conversion"
+      }
+    ]
+  },
+  "form": {
+    "name": "Opsly Agency Lead Capture",
+    "description": "Capture leads from agency website",
+    "fields": [
+      {
+        "label": "First Name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Last Name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Email",
+        "type": "email",
+        "required": true
+      },
+      {
+        "label": "Phone",
+        "type": "phone",
+        "required": true
+      },
+      {
+        "label": "Company",
+        "type": "text",
+        "required": false
+      },
+      {
+        "label": "Service Interest",
+        "type": "dropdown",
+        "required": false,
+        "options": [
+          "Cloud Infrastructure",
+          "DevOps Consulting",
+          "Security Audit",
+          "Performance Optimization",
+          "Other"
+        ]
+      }
+    ],
+    "post_submission_redirect": "calendar_booking_link"
+  },
+  "calendar": {
+    "name": "Discovery Call",
+    "duration_minutes": 30,
+    "timezone": "America/Bogota",
+    "working_hours": {
+      "start": "09:00",
+      "end": "17:00",
+      "days": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    }
+  },
+  "tags_to_create": [
+    {
+      "name": "lead-web",
+      "description": "Lead from website form"
+    },
+    {
+      "name": "discovery-scheduled",
+      "description": "Discovery call booked"
+    },
+    {
+      "name": "discovery-reminded",
+      "description": "Discovery reminder sent"
+    },
+    {
+      "name": "no-show",
+      "description": "Missed discovery call"
+    },
+    {
+      "name": "no-show-recovered",
+      "description": "Re-engagement after no-show"
+    },
+    {
+      "name": "proposal-sent",
+      "description": "Proposal delivered to prospect"
+    }
+  ],
+  "custom_fields": [
+    {
+      "name": "company_name",
+      "type": "text",
+      "description": "Company name"
+    },
+    {
+      "name": "service_interest",
+      "type": "single_select",
+      "description": "Primary service interest",
+      "options": [
+        "Cloud Infrastructure",
+        "DevOps Consulting",
+        "Security Audit",
+        "Performance Optimization",
+        "Other"
+      ]
+    },
+    {
+      "name": "discovery_call_date",
+      "type": "date",
+      "description": "Scheduled discovery call date"
+    }
+  ],
+  "email_templates": [
+    {
+      "name": "Opsly — Welcome Lead",
+      "trigger": "Contact Created",
+      "subject": "Welcome to Opsly! Here's what happens next",
+      "preview_text": "Discovery call scheduling inside →",
+      "content_type": "html"
+    },
+    {
+      "name": "Opsly — Discovery Confirmation",
+      "trigger": "Appointment Scheduled",
+      "subject": "Your discovery call with Opsly is confirmed",
+      "preview_text": "{{appointment.date}} at {{appointment.time}} →",
+      "content_type": "html"
+    }
+  ],
+  "sms_templates": [
+    {
+      "name": "Opsly — Discovery Reminder",
+      "trigger": "Time-based (24h before)",
+      "content": "Hi {{contact.first_name}}, reminder: your discovery call with Opsly is tomorrow at {{appointment.time}}. Reply YES to confirm."
+    }
+  ],
+  "workflows": [
+    {
+      "name": "Welcome Sequence",
+      "trigger": "Contact Created",
+      "actions": [
+        {
+          "type": "delay",
+          "minutes": 2
+        },
+        {
+          "type": "send_email",
+          "template": "Opsly — Welcome Lead"
+        },
+        {
+          "type": "add_tag",
+          "tag": "lead-web"
+        }
+      ]
+    },
+    {
+      "name": "Discovery Reminder",
+      "trigger": "Time-based (24h before appointment)",
+      "actions": [
+        {
+          "type": "send_sms",
+          "template": "Opsly — Discovery Reminder"
+        },
+        {
+          "type": "add_tag",
+          "tag": "discovery-reminded"
+        }
+      ]
+    },
+    {
+      "name": "No-Show Recovery",
+      "trigger": "Appointment Status = No Show",
+      "actions": [
+        {
+          "type": "delay",
+          "minutes": 60
+        },
+        {
+          "type": "send_sms",
+          "content": "Nos perdimos tu discovery call. ¿Podemos reagendar? Link: {{reschedule_link}}"
+        },
+        {
+          "type": "create_task",
+          "title": "Follow-up: {{contact.name}}"
+        },
+        {
+          "type": "add_tag",
+          "tag": "no-show-recovered"
+        }
+      ]
+    }
+  ],
+  "readiness_checklist": [
+    {
+      "task": "Create Pipeline 'Opsly Agency Sales' with 7 stages",
+      "owner": "Ops",
+      "time_estimate_minutes": 45,
+      "completed": false
+    },
+    {
+      "task": "Create Lead Form 'Opsly Agency Lead Capture'",
+      "owner": "Ops",
+      "time_estimate_minutes": 30,
+      "completed": false
+    },
+    {
+      "task": "Create Email Templates (Welcome, Confirmation)",
+      "owner": "Marketing",
+      "time_estimate_minutes": 20,
+      "completed": false
+    },
+    {
+      "task": "Create SMS Template (Discovery Reminder)",
+      "owner": "Marketing",
+      "time_estimate_minutes": 10,
+      "completed": false
+    },
+    {
+      "task": "Configure GHL Workflows (3 total)",
+      "owner": "Ops",
+      "time_estimate_minutes": 45,
+      "completed": false
+    },
+    {
+      "task": "Test E2E: Form → Contact → Email",
+      "owner": "Dev",
+      "time_estimate_minutes": 30,
+      "completed": false
+    }
+  ]
+}
