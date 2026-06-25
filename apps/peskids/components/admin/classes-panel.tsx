@@ -61,13 +61,19 @@ export function ClassesPanel(): React.ReactElement {
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState(emptyForm);
+  const [defaults, setDefaults] = useState({
+    location: 'llanogrande' as SwimLocation,
+    capacity: '8',
+    price_cents: '85000',
+  });
 
   const load = async (): Promise<void> => {
     setLoading(true);
     try {
-      const [classesRes, teamRes] = await Promise.all([
+      const [classesRes, teamRes, settingsRes] = await Promise.all([
         fetch('/api/admin/classes', { credentials: 'include' }),
         fetch('/api/admin/team', { credentials: 'include' }),
+        fetch('/api/admin/settings', { credentials: 'include' }),
       ]);
 
       const classesJson = (await classesRes.json()) as ClassesApiResponse;
@@ -90,9 +96,7 @@ export function ClassesPanel(): React.ReactElement {
         const teacherOptions = (teamJson.members ?? [])
           .filter(
             (member) =>
-              (member.role === 'teacher' ||
-                member.role === 'admin' ||
-                member.role === 'owner') &&
+              (member.role === 'teacher' || member.role === 'admin' || member.role === 'owner') &&
               Boolean(member.user_id)
           )
           .map((member) => ({
@@ -101,6 +105,23 @@ export function ClassesPanel(): React.ReactElement {
             role: member.role,
           }));
         setTeachers(teacherOptions);
+      }
+
+      if (settingsRes.ok) {
+        const settingsJson = (await settingsRes.json()) as {
+          settings?: {
+            default_modality?: SwimLocation;
+            default_capacity?: number;
+            default_price_cents?: number;
+          };
+        };
+        if (settingsJson.settings) {
+          setDefaults({
+            location: settingsJson.settings.default_modality ?? 'llanogrande',
+            capacity: String(settingsJson.settings.default_capacity ?? 8),
+            price_cents: String(settingsJson.settings.default_price_cents ?? 85000),
+          });
+        }
       }
 
       setError('');
@@ -175,7 +196,14 @@ export function ClassesPanel(): React.ReactElement {
               Programación operativa — profesor, piscina, cupos y precio.
             </CardDescription>
           </div>
-          <Button type="button" size="sm" onClick={() => setShowForm((v) => !v)}>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => {
+              setForm({ ...emptyForm, ...defaults });
+              setShowForm((v) => !v);
+            }}
+          >
             <Plus className="mr-1 h-4 w-4" aria-hidden />
             Nueva clase
           </Button>
@@ -250,9 +278,7 @@ export function ClassesPanel(): React.ReactElement {
                   id="class-location"
                   className="h-10 w-full rounded-lg border border-pk-border bg-white px-3 text-sm"
                   value={form.location}
-                  onChange={(e) =>
-                    setForm({ ...form, location: e.target.value as SwimLocation })
-                  }
+                  onChange={(e) => setForm({ ...form, location: e.target.value as SwimLocation })}
                 >
                   <option value="llanogrande">Llanogrande</option>
                   <option value="domicilio">Domicilio</option>
