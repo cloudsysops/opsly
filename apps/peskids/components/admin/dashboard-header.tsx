@@ -9,7 +9,7 @@ const leadSourceLabels: Record<keyof DashboardData['lead_sources'], string> = {
   instagram: 'Instagram',
   facebook: 'Facebook',
   website: 'Website',
-  referral: 'Referral',
+  referral: 'Referido',
   other: 'Otros',
 };
 
@@ -60,7 +60,7 @@ export function DashboardHeader({
             Peskids / Admin
           </p>
           <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight text-pk-ink sm:text-3xl">
-            Executive Peskids: leads, pruebas e inscripciones.
+            Panel Peskids: interesados, clases de prueba e inscripciones.
           </h2>
           <p className="mt-2 max-w-xl text-sm leading-6 text-pk-sub">
             Un panel para decidir rápido qué atender, qué cerrar y qué seguir hoy.
@@ -68,7 +68,7 @@ export function DashboardHeader({
 
           <div className="mt-5 flex flex-wrap gap-2 text-[11px] font-medium text-pk-sub">
             <span className="rounded-full border border-pk-border bg-pk-muted px-3 py-1">
-              Leads nuevos: {data.new_leads_count}
+              Interesados nuevos: {data.new_leads_count}
             </span>
             <span className="rounded-full border border-pk-border bg-pk-muted px-3 py-1">
               Clases prueba: {data.operations.enrollments_today}
@@ -122,7 +122,7 @@ export function DashboardHeader({
               </Button>
               <Button size="sm" variant="ghost" onClick={onCopySync}>
                 <Copy className="h-4 w-4" aria-hidden />
-                <span className="ml-1">Copiar última sync</span>
+                <span className="ml-1">Copiar resumen</span>
               </Button>
             </div>
           </div>
@@ -153,7 +153,7 @@ export function DashboardHeader({
                   Captación
                 </p>
                 <p className="mt-1 text-sm font-semibold text-pk-ink">
-                  {data.new_leads_count} leads
+                  {data.new_leads_count} interesados
                 </p>
               </div>
               <div className="rounded-xl bg-pk-muted px-3 py-2">
@@ -177,7 +177,7 @@ export function DashboardHeader({
         <div className="text-xs text-pk-sub">
           {messageSummary.supportPending + messageSummary.admissionsPending > 0
             ? 'Atiende soporte de familias primero, luego admisiones, seguimiento y captación.'
-            : 'La cola está limpia; revisa leads y seguimientos para mantener el ritmo.'}
+            : 'La cola está limpia; revisa interesados y seguimientos para mantener el ritmo.'}
         </div>
         <div className="flex flex-col gap-3 lg:items-end">
           <div className="flex flex-wrap gap-2">
@@ -194,12 +194,12 @@ export function DashboardHeader({
             ))}
           </div>
           <label className="w-full lg:max-w-xs">
-            <span className="sr-only">Buscar leads</span>
+            <span className="sr-only">Buscar interesados</span>
             <input
               type="search"
               value={search}
               onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Buscar leads…"
+              placeholder="Buscar interesados…"
               className="pk-input"
             />
           </label>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import { Loader2, Send } from 'lucide-react'
@@ -49,6 +49,8 @@ export function LeadCaptureForm({
   const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+  const [redirectCountdown, setRedirectCountdown] = useState(5)
   const [formData, setFormData] = useState({
     ...initialForm,
     referral_source: defaultReferralSource,
@@ -56,6 +58,16 @@ export function LeadCaptureForm({
   const [consentTreatment, setConsentTreatment] = useState(false)
   const [consentMarketing, setConsentMarketing] = useState(false)
   const referredByCode = useMemo(() => searchParams.get('ref')?.trim().toUpperCase() ?? '', [searchParams])
+
+  useEffect(() => {
+    if (!submitted) return
+
+    const interval = setInterval(() => {
+      setRedirectCountdown((prev) => prev - 1)
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [submitted])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     const { name, value } = e.target
@@ -119,8 +131,12 @@ export function LeadCaptureForm({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(webhookPayload),
       }).catch((err) => {
-        console.warn('N8N webhook mirror failed:', err)
+        console.warn('Lead webhook mirror failed:', err)
       })
+
+      setSubmitted(true)
+      setConsentTreatment(false)
+      setConsentMarketing(false)
 
       const thanksUrl = new URL('/thanks', window.location.origin)
       if (apiResult.referral_link) {
@@ -129,9 +145,14 @@ export function LeadCaptureForm({
       if (apiResult.referral_code) {
         thanksUrl.searchParams.set('referral_code', apiResult.referral_code)
       }
-      router.push(`${thanksUrl.pathname}${thanksUrl.search}`)
+      window.setTimeout(() => {
+        setFormData({ ...initialForm, referral_source: defaultReferralSource })
+        router.push(`${thanksUrl.pathname}${thanksUrl.search}`)
+      }, 5000)
     } catch (err) {
-      setError('No pudimos enviar tu solicitud. Intenta de nuevo en un momento.')
+      setError(
+        'No pudimos enviar el formulario. Intenta de nuevo o escríbenos por WhatsApp.'
+      )
       console.error('Form submission error:', err)
     } finally {
       setLoading(false)
@@ -175,6 +196,31 @@ export function LeadCaptureForm({
             Código de recomendación activo: <span className="font-mono">{referredByCode}</span>
           </p>
         ) : null}
+        {submitted ? (
+          <div
+            className="rounded-xl border border-pk-primary/30 bg-pk-primary/10 px-4 py-4 text-sm text-pk-ink"
+            role="status"
+          >
+            <p className="font-semibold text-pk-primary">
+              ¡Perfecto, {formData.name}! 🎉 Recibimos tu solicitud.
+            </p>
+            <p className="mt-2 text-pk-sub">
+              Un asesor revisará tu información y te escribirá en menos de 48 h hábiles para coordinar la clase de prueba gratis.
+            </p>
+            <p className="mt-3 font-medium text-pk-primary">
+              ¿Prefieres atención inmediata?
+            </p>
+            <WhatsAppLink
+              variant="button"
+              label="Continuar por WhatsApp →"
+              prefill={`Hola Peskids 👋 Soy ${formData.name}, acabo de completar el formulario de reserva y estoy listo/a para agendar la clase de prueba.`}
+              className="mt-3 w-full sm:w-auto"
+            />
+            <p className="mt-4 text-center text-xs text-pk-sub">
+              Redirigiendo a página de confirmación en {redirectCountdown} segundo{redirectCountdown !== 1 ? 's' : ''}…
+            </p>
+          </div>
+        ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="name" required>
@@ -360,6 +406,7 @@ export function LeadCaptureForm({
             )}
           </Button>
         </form>
+        )}
       </CardContent>
     </Card>
   )

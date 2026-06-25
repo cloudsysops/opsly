@@ -10,6 +10,7 @@ import { DashboardHeader } from '@/components/admin/dashboard-header';
 import { DashboardStatsGrid } from '@/components/admin/dashboard-stats-grid';
 import { DashboardActivityCards } from '@/components/admin/dashboard-activity-cards';
 import { AcademyOpsMap } from '@/components/admin/academy-ops-map';
+import { FamiliesStudentsExpectation } from '@/components/admin/families-students-expectation';
 import { formatRelativeTime } from '@/lib/utils';
 
 interface DashboardViewProps {
@@ -88,8 +89,8 @@ export function DashboardView({
 
     if (!isSupportSurface && data.new_leads_count > 0) {
       return {
-        title: 'Trabajar nuevos leads',
-        description: `${data.new_leads_count} lead(s) listos para contacto.`,
+        title: 'Trabajar nuevos interesados',
+        description: `${data.new_leads_count} interesado(s) listos para contacto.`,
         tone: 'teal' as const,
         anchor: 'leads',
       };
@@ -141,6 +142,8 @@ export function DashboardView({
 
       <AcademyOpsMap data={data} />
 
+      {!isSupportSurface ? <FamiliesStudentsExpectation activeStudentsCount={data.active_students_count} /> : null}
+
       {!isSupportSurface ? (
         <>
           <div className="mb-5">
@@ -158,7 +161,7 @@ export function DashboardView({
       ) : null}
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-        <DashboardStatsGrid data={data} search={search} />
+        <DashboardStatsGrid data={data} search={search} onRefresh={onRefresh} />
 
         <DashboardActivityCards data={data} />
       </div>

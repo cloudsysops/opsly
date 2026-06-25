@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   CalendarClock,
   type LucideIcon,
@@ -11,6 +11,7 @@ import {
   Home,
   Inbox,
   LayoutDashboard,
+  LogOut,
   MessageSquare,
   RefreshCw,
   ShieldCheck,
@@ -22,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { formatRelativeTime } from '@/lib/utils';
 import { NotificationBell } from '@/components/notifications/notification-bell';
+import { createClient } from '@/lib/supabase-browser';
 
 interface AdminShellProps {
   children: React.ReactNode;
@@ -45,6 +47,7 @@ const navOps = [
   { icon: GraduationCap, label: 'Clases', href: '/admin#classes' },
   { icon: UsersRound, label: 'Familias', href: '/admin#families' },
   { icon: Users, label: 'Leads', href: '/admin#leads' },
+  { icon: Users, label: 'Interesados', href: '/admin#leads' },
   { icon: MessageSquare, label: 'Feedback', href: '/admin#feedback' },
   { icon: CalendarClock, label: 'Follow-up', href: '/admin#follow-up' },
   { icon: Inbox, label: 'Mensajes', href: '/admin/messages' },
@@ -61,8 +64,11 @@ export function AdminShell({
   refreshing,
 }: AdminShellProps): React.ReactElement {
   const pathname = usePathname();
+  const router = useRouter();
   const [hash, setHash] = useState('');
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const [signingOut, setSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState('');
 
   useEffect(() => {
     const syncHash = (): void => {
@@ -103,6 +109,24 @@ export function AdminShell({
     };
   }, []);
 
+  const handleSignOut = async (): Promise<void> => {
+    setSigningOut(true);
+    setSignOutError('');
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        throw error;
+      }
+      router.push('/admin/login');
+      router.refresh();
+    } catch {
+      setSignOutError('No se pudo cerrar sesión. Intenta de nuevo.');
+    } finally {
+      setSigningOut(false);
+    }
+  };
+
   const isActive = (item: NavItem): boolean => {
     if (item.label === 'Landing') {
       return pathname === '/';
@@ -137,6 +161,7 @@ export function AdminShell({
     }
 
     if (item.label === 'Leads') {
+    if (item.label === 'Interesados') {
       return hash === '#leads';
     }
 
@@ -244,6 +269,17 @@ export function AdminShell({
               </Button>
             ) : null}
             <NotificationBell />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => void handleSignOut()}
+              disabled={signingOut}
+              title="Cerrar sesión"
+            >
+              <LogOut className="h-4 w-4" aria-hidden />
+              <span className="ml-1 hidden sm:inline">Cerrar sesión</span>
+            </Button>
             <Link href="/">
               <Button variant="ghost" size="sm">
                 <Home className="h-4 w-4" aria-hidden />
@@ -251,6 +287,12 @@ export function AdminShell({
             </Link>
           </div>
         </header>
+
+        {signOutError ? (
+          <p className="border-b border-red-100 bg-red-50 px-5 py-2 text-center text-xs text-red-800 sm:px-7">
+            {signOutError}
+          </p>
+        ) : null}
 
         <main className="flex-1 overflow-auto p-5 sm:p-6">{children}</main>
       </div>
