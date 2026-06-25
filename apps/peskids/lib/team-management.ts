@@ -1,6 +1,5 @@
 import { supabaseServer } from '@/lib/supabase';
-import { PESKIDS_APP_ORIGIN } from '@/lib/app-url';
-import { buildRecoveryRedirectTo } from '@/lib/auth-recovery';
+import { getPeskidsPublicBaseUrl } from '@/lib/app-url';
 
 const TENANT_SLUG = 'peskids';
 const DEFAULT_OWNER_EMAIL = 'sierrasantiago90@gmail.com';
@@ -38,6 +37,14 @@ export type TeamInviteResult = {
   emailDeliveryWarning?: string;
   warning?: string;
   member: TeamMemberSummary;
+};
+
+export type TeamRecoveryRequestResult = {
+  accepted: boolean;
+  matched: boolean;
+  emailDeliverySkipped?: boolean;
+  emailDeliveryWarning?: string;
+  warning?: string;
 };
 
 type TenantRow = {
@@ -84,16 +91,7 @@ function isNonFatalEmailError(err: unknown): boolean {
 }
 
 function getPeskidsSiteUrl(): string {
-  return PESKIDS_APP_ORIGIN.replace(/\/$/, '');
-}
-
-function staffRecoveryRedirectTo(role: TeamRole): string {
-  const nextByRole: Partial<Record<TeamRole, string>> = {
-    teacher: '/teacher/update-password',
-    support: '/support/update-password',
-  };
-  const next = nextByRole[role] ?? '/admin/update-password';
-  return buildRecoveryRedirectTo(getPeskidsSiteUrl(), { next });
+  return getPeskidsPublicBaseUrl().replace(/\/$/, '');
 }
 
 function getLogoUrl(): string {
@@ -390,7 +388,7 @@ function buildInviteHtml(params: {
             </div>
           </td></tr>
           <tr><td style="padding:0 32px 28px 32px;">
-            <div style="border-top:1px solid #e2edf3;padding-top:18px;font-size:12px;line-height:1.6;color:#64748b;">Opsly · ${escapeHtml(TENANT_SLUG)} · ${escapeHtml(PESKIDS_APP_ORIGIN)}</div>
+            <div style="border-top:1px solid #e2edf3;padding-top:18px;font-size:12px;line-height:1.6;color:#64748b;">Opsly · ${escapeHtml(TENANT_SLUG)} · ${escapeHtml(getPeskidsSiteUrl())}</div>
           </td></tr>
         </table>
       </td></tr>
@@ -403,13 +401,20 @@ async function createAuthLink(params: {
   name: string;
   role: TeamRole;
   flow: TeamInviteFlow;
-}): Promise<{ link: string; token: string }> {
+}): Promise<{ link: string; token: string; actionLink: string }> {
   const admin = supabaseServer();
   const userData: Record<string, string> = {
     full_name: params.name,
     tenant_slug: TENANT_SLUG,
     role: params.role,
   };
+  const recoveryNext =
+    params.role === 'teacher'
+      ? '/teacher/update-password'
+      : params.role === 'support'
+        ? '/support/update-password'
+        : '/admin/update-password';
+  const siteUrl = getPeskidsSiteUrl();
   const { data, error } = await (admin.auth.admin.generateLink as any)({
     type: params.flow,
     email: params.email,
@@ -417,8 +422,8 @@ async function createAuthLink(params: {
       data: userData,
       redirectTo:
         params.flow === 'recovery'
-          ? staffRecoveryRedirectTo(params.role)
-          : `${getPeskidsSiteUrl()}/invite`,
+          ? `${siteUrl}/auth/callback?next=${encodeURIComponent(recoveryNext)}`
+          : `${siteUrl}/invite`,
     },
   });
 
@@ -436,12 +441,18 @@ async function createAuthLink(params: {
     throw new Error('Could not parse invite token from action_link');
   }
 
+  const hashedToken =
+    typeof data.properties?.hashed_token === 'string' && data.properties.hashed_token.trim().length > 0
+      ? data.properties.hashed_token.trim()
+      : token;
+
   return {
     link:
       params.flow === 'recovery'
-        ? actionLink
-        : `${getPeskidsSiteUrl()}/invite/${encodeURIComponent(token)}?email=${encodeURIComponent(params.email)}`,
+        ? `${siteUrl}/auth/callback?token_hash=${encodeURIComponent(hashedToken)}&type=recovery&next=${encodeURIComponent(recoveryNext)}`
+        : `${siteUrl}/invite/${encodeURIComponent(token)}?email=${encodeURIComponent(params.email)}`,
     token,
+    actionLink,
   };
 }
 
@@ -527,6 +538,67 @@ export async function invitePeskidsTeamMember(params: {
       : {}),
     ...(sendResult.warning ? { warning: sendResult.warning } : {}),
     member,
+  };
+}
+
+export async function requestPeskidsStaffRecovery(email: string): Promise<TeamRecoveryRequestResult> {
+  const normalizedEmail = email.trim().toLowerCase();
+  if (!normalizedEmail) {
+    return { accepted: true, matched: false };
+  }
+
+  const team = await loadPeskidsTeam();
+  const member = team.members.find(
+    (item) =>
+      item.email.toLowerCase() === normalizedEmail &&
+      item.status !== 'disabled' &&
+      ['owner', 'admin', 'support', 'teacher'].includes(item.role)
+  );
+
+  if (!member) {
+    return { accepted: true, matched: false };
+  }
+
+  const displayName = member.display_name?.trim() || normalizedEmail.split('@')[0] || normalizedEmail;
+  const authLink = await createAuthLink({
+    email: member.email,
+    name: displayName,
+    role: member.role,
+    flow: 'recovery',
+  });
+
+  const loginUrl =
+    member.role === 'teacher'
+      ? `${getPeskidsSiteUrl()}/teacher/login`
+      : member.role === 'support'
+        ? `${getPeskidsSiteUrl()}/support/login`
+        : `${getPeskidsSiteUrl()}/admin/login`;
+
+  const html = buildInviteHtml({
+    displayName,
+    role: member.role,
+    link: authLink.link,
+    loginUrl,
+    brandName: team.tenant_name,
+    flow: 'recovery',
+  });
+
+  const sendResult = await sendTeamEmail({
+    to: member.email,
+    subject: 'Tu acceso de Peskids está listo',
+    html,
+  });
+
+  return {
+    accepted: true,
+    matched: true,
+    ...(sendResult.skipped
+      ? {
+          emailDeliverySkipped: true,
+          emailDeliveryWarning: sendResult.warning,
+        }
+      : {}),
+    ...(sendResult.warning ? { warning: sendResult.warning } : {}),
   };
 }
 

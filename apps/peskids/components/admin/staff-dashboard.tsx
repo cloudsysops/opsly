@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import type { DashboardData } from '@/lib/types'
 import { DashboardView } from '@/components/admin/dashboard-view'
@@ -13,6 +14,8 @@ interface StaffDashboardProps {
 }
 
 export function StaffDashboard({ surface }: StaffDashboardProps): React.ReactElement {
+  const router = useRouter()
+  const loginPath = surface === 'support' ? '/support/login' : '/admin/login'
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -25,20 +28,24 @@ export function StaffDashboard({ surface }: StaffDashboardProps): React.ReactEle
       if (isPoll) setRefreshing(true)
       try {
         const response = await fetch(`/api/dashboard?range=${range}`, { credentials: 'include' })
+        if (response.status === 401 || response.status === 403) {
+          router.replace(loginPath)
+          return
+        }
         if (!response.ok) throw new Error('Failed to fetch dashboard')
         const dashboardData: DashboardData = await response.json()
         setData(dashboardData)
         setLastUpdated(new Date())
         setError('')
       } catch (err) {
-        setError('No se pudo cargar el panel. Revisa la API y Supabase.')
+        setError('No se pudo cargar el panel. Intenta refrescar o vuelve a iniciar sesión.')
         console.error(err)
       } finally {
         setLoading(false)
         setRefreshing(false)
       }
     },
-    [range]
+    [range, router, loginPath]
   )
 
   useEffect(() => {

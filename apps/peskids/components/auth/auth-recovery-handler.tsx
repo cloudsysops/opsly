@@ -16,8 +16,8 @@ type Props = {
 };
 
 /**
- * Hash-based recovery only (legacy email links). PKCE `?code=` links are exchanged
- * server-side in `app/auth/recovery/page.tsx` and `app/auth/callback/route.ts`.
+ * Completes Supabase recovery on /auth/recovery (not the public landing).
+ * Forwards to portal/admin if the JWT belongs to another app.
  */
 export function AuthRecoveryHandler({
   updatePasswordPath = '/admin/update-password',
@@ -44,6 +44,7 @@ export function AuthRecoveryHandler({
     };
 
     const url = new URL(window.location.href);
+    const code = url.searchParams.get('code');
     const hash = url.hash.replace(/^#/, '');
 
     if (hash) {
@@ -67,6 +68,14 @@ export function AuthRecoveryHandler({
     });
 
     void (async () => {
+      if (code) {
+        setMessage('Validando enlace de recuperación…');
+        window.location.replace(
+          `/auth/recovery/complete?${new URLSearchParams({ code }).toString()}`
+        );
+        return;
+      }
+
       if (hash && (hash.includes('access_token') || hash.includes('type=recovery'))) {
         const {
           data: { session },

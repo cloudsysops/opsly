@@ -7,7 +7,6 @@ import {
   isInviteLink,
   isRecoveryLink,
   metadataFromJwtAccessToken,
-  recoveryForwardPathFromUrl,
   resolveRecoveryTargetFromMetadata,
   type RecoveryTarget,
   type RecoveryRoutingConfig,
@@ -48,7 +47,6 @@ export {
   isInviteLink,
   isRecoveryLink,
   metadataFromJwtAccessToken,
-  recoveryForwardPathFromUrl,
 };
 
 export function recoveryTargetFromMetadata(meta: Record<string, unknown>): RecoveryTarget {
@@ -57,4 +55,13 @@ export function recoveryTargetFromMetadata(meta: Record<string, unknown>): Recov
 
 export function currentPeskidsRecoveryTarget(): RecoveryTarget {
   return recoveryTargetFromMetadata({ tenant_slug: 'peskids', role: 'admin' });
+}
+
+export function buildPeskidsRecoveryRedirectTo(): string {
+  return buildRecoveryRedirectTo(PESKIDS_APP_ORIGIN);
+}
+
+export function resolveRecoveryRedirectUrl(meta: Record<string, unknown>): string {
+  const target = recoveryTargetFromMetadata(meta);
+  return `${target.origin.replace(/\/$/, '')}${target.updatePasswordPath}`;
 }

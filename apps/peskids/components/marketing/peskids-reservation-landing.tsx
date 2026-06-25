@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
 import { PeskidsLogo } from '@/components/brand/peskids-logo';
 import { LeadCaptureForm } from '@/components/forms';
-import { buildWhatsAppUrl } from '@/lib/contact-channels';
 import { ReservationLandingCTA } from '@/components/marketing/reservation-landing-cta';
+import { PESKIDS_RESERVATION_FORM_ANCHOR } from '@/lib/peskids-landing-config';
 import {
   PESKIDS_INSTAGRAM_LANDING_INTRO,
   PESKIDS_RESERVATION_BULLETS,
@@ -28,7 +28,6 @@ export function PeskidsReservationLanding({
   showLogo = false,
   headingLevel = 'h2',
 }: PeskidsReservationLandingProps): React.ReactElement {
-  const whatsappUrl = buildWhatsAppUrl();
   const intro = showInstagramCopy ? PESKIDS_INSTAGRAM_LANDING_INTRO : PESKIDS_RESERVATION_DESCRIPTION;
   const HeadingTag = headingLevel;
 
@@ -61,10 +60,10 @@ export function PeskidsReservationLanding({
               </li>
             ))}
           </ul>
-          <ReservationLandingCTA whatsappUrl={whatsappUrl} />
+          <ReservationLandingCTA />
         </div>
 
-        <div id="reserva-form" className="scroll-mt-8">
+        <div id={PESKIDS_RESERVATION_FORM_ANCHOR} className="scroll-mt-8">
           <Suspense fallback={<div className="h-96" />}>
             <LeadCaptureForm
               source={source}

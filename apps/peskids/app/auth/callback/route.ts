@@ -5,7 +5,9 @@ import {
   resolvePostAuthPath,
   resolveRecoveryUpdatePath,
 } from '@/lib/auth-callback';
+import { getPeskidsPublicBaseUrl, isLocalhostLikeOrigin, isProductionRuntime } from '@/lib/app-url';
 import { recoveryExchangeErrorMessage } from '@/lib/auth-recovery-messages';
+import { normalizeRequestOrigin } from '@/lib/request-origin';
 
 function getSupabaseConfig(): { url: string; anon: string } | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? '';
@@ -16,12 +18,21 @@ function getSupabaseConfig(): { url: string; anon: string } | null {
   return { url, anon };
 }
 
+function resolveCallbackOrigin(requestOrigin: string): string {
+  const normalized = normalizeRequestOrigin(requestOrigin);
+  if (isProductionRuntime() && isLocalhostLikeOrigin(normalized)) {
+    return getPeskidsPublicBaseUrl();
+  }
+  return normalized;
+}
+
 function redirectWithError(
   requestUrl: URL,
   loginPath: string,
   message: string
 ): NextResponse {
-  const loginWithError = new URL(loginPath, requestUrl.origin);
+  const origin = resolveCallbackOrigin(requestUrl.origin);
+  const loginWithError = new URL(loginPath, origin);
   loginWithError.searchParams.set('error', message);
   return NextResponse.redirect(loginWithError);
 }
@@ -34,6 +45,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const next = requestUrl.searchParams.get('next');
   const nextPath = next && next.startsWith('/') ? next : null;
   const errorLoginPath = resolveLoginPath(nextPath ?? '/admin');
+  const origin = resolveCallbackOrigin(requestUrl.origin);
 
   const config = getSupabaseConfig();
   if (!config) {
@@ -69,7 +81,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const redirectPath = nextPath?.includes('update-password')
       ? resolveRecoveryUpdatePath(data.user, nextPath)
       : resolvePostAuthPath(nextPath, data.user);
-    const response = NextResponse.redirect(new URL(redirectPath, requestUrl.origin));
+    const response = NextResponse.redirect(new URL(redirectPath, origin));
     pendingCookies.forEach(({ name, value, options }) => {
       response.cookies.set(name, value, options);
     });
@@ -77,7 +89,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   }
 
   if (!code) {
-    return NextResponse.redirect(new URL(errorLoginPath, requestUrl.origin));
+    return NextResponse.redirect(new URL(errorLoginPath, origin));
   }
 
   const { data, error } = await supabase.auth.exchangeCodeForSession(code);
@@ -94,7 +106,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     ? resolveRecoveryUpdatePath(data.user, nextPath)
     : resolvePostAuthPath(nextPath, data.user);
 
-  const response = NextResponse.redirect(new URL(redirectPath, requestUrl.origin));
+  const response = NextResponse.redirect(new URL(redirectPath, origin));
   pendingCookies.forEach(({ name, value, options }) => {
     response.cookies.set(name, value, options);
   });

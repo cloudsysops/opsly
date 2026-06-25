@@ -1,9 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { WhatsAppIcon } from '@/components/contact/whatsapp-icon';
-import { buildWhatsAppUrl, PESKIDS_CONTACT } from '@/lib/contact-channels';
+import { openGatedWhatsAppOrForm } from '@/components/marketing/gated-whatsapp-link';
+import { PESKIDS_CONTACT } from '@/lib/contact-channels';
 import { isPeskidsPublicLandingPath } from '@/lib/marketing-routes';
 import { dispatchOpenPeskidsChat } from '@/lib/peskids-chat-session';
 import { peskidsColorTokens } from '@/lib/tokens';
@@ -17,50 +17,54 @@ const fabClassName = cn(
   'animate-[pulse-soft_2.5s_ease-in-out_infinite]'
 );
 
-const fabStyle = {
-  backgroundColor: peskidsColorTokens.primary.whatsapp,
-  boxShadow: `0 8px 32px ${peskidsColorTokens.primary.whatsapp}8c`,
-  outlineColor: peskidsColorTokens.primary.whatsapp,
-};
-
-/** FAB fijo — en landing pública abre WhatsApp; en portales internos puede abrir chat de soporte. */
+/** FAB fijo — en landing pública WhatsApp con gate al formulario; en portales internos abre soporte. */
 export function WhatsAppFloatingButton(): React.ReactElement | null {
   const pathname = usePathname();
+
   if (pathname?.startsWith('/admin')) {
     return null;
   }
 
   const publicLanding = isPeskidsPublicLandingPath(pathname);
   const isFamilyArea = pathname?.startsWith('/familias') ?? false;
-  const label = publicLanding ? 'WhatsApp' : isFamilyArea ? 'Soporte' : 'WhatsApp';
-  const ariaLabel = publicLanding || !isFamilyArea
-    ? `Escribir por WhatsApp: ${PESKIDS_CONTACT.whatsapp.display}`
-    : `Abrir soporte de familias: ${PESKIDS_CONTACT.whatsapp.display}`;
-  const title = publicLanding || !isFamilyArea ? 'WhatsApp Peskids' : 'Soporte Peskids';
+  const whatsappGreen = peskidsColorTokens.primary.whatsapp;
 
   if (publicLanding) {
     return (
-      <Link
-        href={buildWhatsAppUrl()}
-        target="_blank"
-        rel="noopener noreferrer"
+      <button
+        type="button"
+        onClick={(): void => openGatedWhatsAppOrForm(pathname)}
         className={fabClassName}
-        style={fabStyle}
-        aria-label={ariaLabel}
-        title={title}
+        style={{
+          backgroundColor: whatsappGreen,
+          boxShadow: `0 8px 32px ${whatsappGreen}8c`,
+          outlineColor: whatsappGreen,
+        }}
+        aria-label={`WhatsApp Peskids: completa el formulario o continúa si ya lo enviaste (${PESKIDS_CONTACT.whatsapp.display})`}
+        title="WhatsApp Peskids"
       >
         <WhatsAppIcon className="h-7 w-7 shrink-0 sm:h-8 sm:w-8" />
-        <span className="pr-0.5 text-xs font-bold leading-none sm:text-base">{label}</span>
-      </Link>
+        <span className="pr-0.5 text-xs font-bold leading-none sm:text-base">WhatsApp</span>
+      </button>
     );
   }
+
+  const label = isFamilyArea ? 'Soporte' : 'WhatsApp';
+  const ariaLabel = isFamilyArea
+    ? `Abrir soporte de familias: ${PESKIDS_CONTACT.whatsapp.display}`
+    : `Escribir por WhatsApp: ${PESKIDS_CONTACT.whatsapp.display}`;
+  const title = isFamilyArea ? 'Soporte Peskids' : 'WhatsApp Peskids';
 
   return (
     <button
       type="button"
       onClick={() => dispatchOpenPeskidsChat()}
       className={fabClassName}
-      style={fabStyle}
+      style={{
+        backgroundColor: whatsappGreen,
+        boxShadow: `0 8px 32px ${whatsappGreen}8c`,
+        outlineColor: whatsappGreen,
+      }}
       aria-label={ariaLabel}
       title={title}
     >

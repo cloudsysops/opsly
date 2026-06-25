@@ -8,7 +8,6 @@ import { PeskidsLogo } from '@/components/brand/peskids-logo';
 import { Button } from '@/components/ui/button';
 import type { AuthPublicConfig } from '@/lib/auth-public-config';
 import { authFetchErrorMessage, isAuthFetchError } from '@/lib/auth-login-messages';
-import { buildRecoveryRedirectTo } from '@/lib/auth-recovery';
 import { isStaffUser } from '@/lib/staff-user';
 import { tenantRoleFromUserMetadata } from '@/lib/runtime/tenant-identity';
 import { createClient } from '@/lib/supabase-browser';
@@ -54,22 +53,18 @@ export function AdminLoginForm({ authConfig }: AdminLoginFormProps): React.React
       setError('Escribe tu email arriba y vuelve a pulsar «¿Olvidaste tu contraseña?».');
       return;
     }
-    if (!authConfig.configured) {
-      setError(authFetchErrorMessage());
-      return;
-    }
     setResetLoading(true);
     setError('');
     setResetSent(false);
     try {
-      const supabase = createClient(supabaseConfig);
-      const origin =
-        typeof window !== 'undefined' ? window.location.origin : 'https://peskids.op-sly.com';
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(trimmed, {
-        redirectTo: buildRecoveryRedirectTo(origin, { next: '/admin/update-password' }),
+      const response = await fetch('/api/auth/staff-recovery', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email: trimmed }),
       });
-      if (resetError) {
-        setError(isAuthFetchError(resetError.message) ? authFetchErrorMessage() : resetError.message);
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+        setError(payload?.error || authFetchErrorMessage());
         return;
       }
       setResetSent(true);

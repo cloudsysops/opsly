@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   CalendarClock,
   type LucideIcon,
@@ -11,16 +11,20 @@ import {
   Home,
   Inbox,
   LayoutDashboard,
+  LogOut,
   MessageSquare,
   RefreshCw,
   ShieldCheck,
   Users,
+  Settings,
+  Bell,
 } from 'lucide-react';
 import { PeskidsLogo } from '@/components/brand/peskids-logo';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { formatRelativeTime } from '@/lib/utils';
 import { NotificationBell } from '@/components/notifications/notification-bell';
+import { createClient } from '@/lib/supabase-browser';
 
 interface AdminShellProps {
   children: React.ReactNode;
@@ -42,10 +46,12 @@ const navOps = [
   { icon: LayoutGrid, label: 'Academia', href: '/admin#academy' },
   { icon: ShieldCheck, label: 'Equipo', href: '/admin#team' },
   { icon: GraduationCap, label: 'Clases', href: '/admin#classes' },
-  { icon: Users, label: 'Leads', href: '/admin#leads' },
+  { icon: Users, label: 'Interesados', href: '/admin#leads' },
   { icon: MessageSquare, label: 'Feedback', href: '/admin#feedback' },
   { icon: CalendarClock, label: 'Follow-up', href: '/admin#follow-up' },
   { icon: Inbox, label: 'Mensajes', href: '/admin/messages' },
+  { icon: Settings, label: 'Configuración', href: '/admin/settings' },
+  { icon: Bell, label: 'Notificaciones', href: '/settings/notifications' },
 ] satisfies NavItem[];
 
 interface ConversationsApiResponse {
@@ -59,8 +65,11 @@ export function AdminShell({
   refreshing,
 }: AdminShellProps): React.ReactElement {
   const pathname = usePathname();
+  const router = useRouter();
   const [hash, setHash] = useState('');
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const [signingOut, setSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState('');
 
   useEffect(() => {
     const syncHash = (): void => {
@@ -84,10 +93,7 @@ export function AdminShell({
         const res = await fetch('/api/admin/messages', { credentials: 'include' });
         if (!res.ok) return;
         const data = (await res.json()) as ConversationsApiResponse;
-        const total = (data.conversations ?? []).reduce(
-          (sum, c) => sum + (c.unreadCount ?? 0),
-          0
-        );
+        const total = (data.conversations ?? []).reduce((sum, c) => sum + (c.unreadCount ?? 0), 0);
         setUnreadMessages(total);
       } catch {
         // silently ignore
@@ -104,6 +110,43 @@ export function AdminShell({
     };
   }, []);
 
+  const [sedeLabel, setSedeLabel] = useState('Llanogrande');
+
+  useEffect(() => {
+    const fetchSettings = async (): Promise<void> => {
+      try {
+        const res = await fetch('/api/admin/settings', { credentials: 'include' });
+        if (!res.ok) return;
+        const data = (await res.json()) as { settings?: { sede_label?: string } };
+        if (data.settings?.sede_label) {
+          setSedeLabel(data.settings.sede_label);
+        }
+      } catch {
+        // keep default
+      }
+    };
+
+    void fetchSettings();
+  }, []);
+
+  const handleSignOut = async (): Promise<void> => {
+    setSigningOut(true);
+    setSignOutError('');
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        throw error;
+      }
+      router.push('/admin/login');
+      router.refresh();
+    } catch {
+      setSignOutError('No se pudo cerrar sesión. Intenta de nuevo.');
+    } finally {
+      setSigningOut(false);
+    }
+  };
+
   const isActive = (item: NavItem): boolean => {
     if (item.label === 'Landing') {
       return pathname === '/';
@@ -111,6 +154,14 @@ export function AdminShell({
 
     if (item.label === 'Mensajes') {
       return pathname.startsWith('/admin/messages');
+    }
+
+    if (item.label === 'Configuración') {
+      return pathname.startsWith('/admin/settings');
+    }
+
+    if (item.label === 'Notificaciones') {
+      return pathname.startsWith('/settings/notifications');
     }
 
     if (pathname !== '/admin') {
@@ -133,7 +184,7 @@ export function AdminShell({
       return hash === '#classes';
     }
 
-    if (item.label === 'Leads') {
+    if (item.label === 'Interesados') {
       return hash === '#leads';
     }
 
@@ -165,7 +216,7 @@ export function AdminShell({
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/45">
               Sede activa
             </p>
-            <p className="mt-1 text-sm font-medium text-white">Llanogrande</p>
+            <p className="mt-1 text-sm font-medium text-white">{sedeLabel}</p>
             <p className="text-xs text-white/55">Operación, soporte y seguimiento de familias.</p>
           </div>
         </div>
@@ -217,7 +268,7 @@ export function AdminShell({
                 Operación en vivo
               </span>
               <span className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-teal-700">
-                Llanogrande
+                {sedeLabel}
               </span>
             </div>
             <p className="mt-1 text-lg font-semibold tracking-tight text-pk-ink">
@@ -241,6 +292,17 @@ export function AdminShell({
               </Button>
             ) : null}
             <NotificationBell />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => void handleSignOut()}
+              disabled={signingOut}
+              title="Cerrar sesión"
+            >
+              <LogOut className="h-4 w-4" aria-hidden />
+              <span className="ml-1 hidden sm:inline">Cerrar sesión</span>
+            </Button>
             <Link href="/">
               <Button variant="ghost" size="sm">
                 <Home className="h-4 w-4" aria-hidden />
@@ -248,6 +310,12 @@ export function AdminShell({
             </Link>
           </div>
         </header>
+
+        {signOutError ? (
+          <p className="border-b border-red-100 bg-red-50 px-5 py-2 text-center text-xs text-red-800 sm:px-7">
+            {signOutError}
+          </p>
+        ) : null}
 
         <main className="flex-1 overflow-auto p-5 sm:p-6">{children}</main>
       </div>

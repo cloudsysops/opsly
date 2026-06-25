@@ -163,6 +163,9 @@ docs/.obsidian/plugins/recent-files-obsidian/data.json
 # Claude Code worktrees (local clones; never commit)
 .claude/worktrees/
 
+# Superpowers git worktrees (local clones; never commit)
+.worktrees/
+
 # Redis dump file
 dump.rdb
 logs/

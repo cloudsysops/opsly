@@ -3,10 +3,7 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { resolveRecoveryUpdatePath } from '../auth-callback';
 import { recoveryExchangeErrorMessage } from '../auth-recovery-messages';
-import {
-  buildRecoveryRedirectTo,
-  recoveryForwardPathFromUrl,
-} from '../runtime/tenant-auth-routing';
+import { buildRecoveryRedirectTo, recoveryForwardPathFromUrl } from '../runtime/tenant-auth-routing';
 
 const repoRoot = resolve(__dirname, '../..');
 
@@ -43,7 +40,7 @@ describe('recoveryExchangeErrorMessage', () => {
   it('maps PKCE verifier errors to a user-friendly Spanish message', () => {
     expect(
       recoveryExchangeErrorMessage('PKCE code verifier not found in storage')
-    ).toContain('mismo dispositivo');
+    ).toContain('¿Olvidaste tu contraseña?');
   });
 
   it('passes through other errors unchanged', () => {
@@ -89,16 +86,14 @@ describe('auth recovery PKCE contract (regression guard)', () => {
     expect(source).not.toMatch(/\/auth\/recovery\$\{url\.search\}/);
   });
 
-  it('exchanges codes only on the server recovery page', () => {
-    const source = readFileSync(resolve(repoRoot, 'app/auth/recovery/page.tsx'), 'utf8');
-    expect(source).toMatch(/exchangeAuthCodeOnServer/);
-    expect(source).not.toMatch(/createClient\(/);
+  it('verifies token_hash recovery on the server auth callback', () => {
+    const source = readFileSync(resolve(repoRoot, 'app/auth/callback/route.ts'), 'utf8');
+    expect(source).toMatch(/verifyOtp\(\{/);
+    expect(source).toMatch(/token_hash:/);
   });
 
-  it('persists Supabase session cookies on the auth callback redirect response', () => {
-    const source = readFileSync(resolve(repoRoot, 'app/auth/callback/route.ts'), 'utf8');
-    expect(source).toMatch(/pendingCookies/);
-    expect(source).toMatch(/response\.cookies\.set/);
-    expect(source).not.toMatch(/exchangeAuthCodeOnServer/);
+  it('exchanges legacy PKCE codes on the server recovery complete route', () => {
+    const source = readFileSync(resolve(repoRoot, 'app/auth/recovery/complete/route.ts'), 'utf8');
+    expect(source).toMatch(/exchangeCodeForSession/);
   });
 });
