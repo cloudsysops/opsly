@@ -1,11 +1,12 @@
 'use client';
 
 import { getApiBaseUrl } from '@/lib/api';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { Loader2, MessageSquare, Send, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/status-badge';
+import { Announcer } from '@/components/ui/accessibility';
 import { cn } from '@/lib/utils';
 
 interface Message {
@@ -31,17 +32,41 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [announcement, setAnnouncement] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 100);
+    } else {
+      triggerRef.current?.focus();
     }
+  }, [open]);
+
+  const toggleOpen = useCallback(() => {
+    setOpen((prev) => !prev);
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && open) {
+        setOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [open]);
 
   const sendMessage = async () => {
@@ -79,11 +104,13 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
           decision_type: data.decision_type ?? undefined,
         },
       ]);
+      setAnnouncement('Respuesta recibida');
     } catch {
       setMessages((prev) => [
         ...prev,
         { role: 'assistant', content: 'Error al enviar. Intenta de nuevo.' },
       ]);
+      setAnnouncement('Error al enviar feedback');
     } finally {
       setLoading(false);
     }
@@ -104,23 +131,35 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
 
   return (
     <>
+      <Announcer message={announcement} />
       <Button
+        ref={triggerRef}
         type="button"
         variant="primary"
-        onClick={() => setOpen(!open)}
+        onClick={toggleOpen}
         className={cn(
           'fixed bottom-6 right-6 z-[1000] h-14 w-14 rounded-full p-0 shadow-lg shadow-black/40 transition-transform active:scale-95',
           open && 'bg-ops-surface border-ops-border text-neutral-100 hover:bg-ops-border/40'
         )}
         aria-label={open ? 'Cerrar feedback' : 'Abrir feedback'}
+        aria-expanded={open}
+        aria-controls="feedback-chat-window"
       >
         {open ? <X className="h-6 w-6" /> : <MessageSquare className="h-6 w-6" />}
       </Button>
 
       {open ? (
-        <div className="fixed bottom-[92px] right-6 z-[1000] flex h-[500px] w-[360px] animate-in fade-in slide-in-from-bottom-2 flex-col overflow-hidden rounded-xl border border-ops-border bg-ops-bg shadow-2xl shadow-black/60 duration-200">
+        <div
+          id="feedback-chat-window"
+          role="dialog"
+          aria-labelledby="feedback-chat-header"
+          className="fixed bottom-[92px] right-6 z-[1000] flex h-[500px] w-[360px] animate-in fade-in slide-in-from-bottom-2 flex-col overflow-hidden rounded-xl border border-ops-border bg-ops-bg shadow-2xl shadow-black/60 duration-200"
+        >
           <div className="border-b border-ops-border bg-ops-surface px-4 py-3">
-            <div className="flex items-center gap-2 text-sm font-semibold text-neutral-100">
+            <div
+              id="feedback-chat-header"
+              className="flex items-center gap-2 text-sm font-semibold text-neutral-100"
+            >
               <MessageSquare className="h-4 w-4 text-ops-green" />
               Feedback & Sugerencias
             </div>
@@ -146,10 +185,7 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
               </div>
             ))}
             {loading ? (
-              <div
-                className="flex items-center gap-2 p-2 text-xs text-ops-gray animate-pulse"
-                aria-hidden="true"
-              >
+              <div className="flex items-center gap-2 p-2 text-xs text-ops-gray animate-pulse">
                 <Loader2 className="h-3 w-3 animate-spin" />
                 <span>Analizando...</span>
               </div>
