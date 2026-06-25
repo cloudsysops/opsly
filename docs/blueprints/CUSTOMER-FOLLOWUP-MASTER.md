@@ -15,20 +15,21 @@ purpose: "Central hub for GHL customer provisioning and followup status"
 
 | Customer | Type | Status | Readiness | Manual Items | Lead Volume | Next Step |
 |----------|------|--------|-----------|--------------|-------------|-----------|
-| **Intcloudsysops** | Agency | 🟡 Draft | 72% | 5 pending | 0 | Create pipeline + forms |
-| **Peskids** | Tenant | 🟡 Draft | 69% | 5 pending | 10+ weekly | Create pipeline + forms |
-| **ICSO** | Tenant | ✅ Live | 100% | 0 | 1-2 weekly | Enhance (templates, workflows) |
+| **Intcloudsysops/ICSO** | Agency + Website | 🟡 Draft | 72% | 5 pending | 1-2 weekly | Create pipeline + forms |
+| **Peskids** | Tenant (Education) | 🟡 Draft | 69% | 5 pending | 10+ weekly | Create pipeline + forms |
 | **Future Client** | Tenant | ⏳ Planned | — | — | — | Onboarding playbook ready |
 
 ---
 
-## Customer 1: Intcloudsysops (Agency)
+## Customer 1: Intcloudsysops / ICSO (Agency + Website)
 
 ### Overview
 
-**Role:** Commercial layer, lead aggregation, agency sales pipeline  
-**Location ID:** `qD7Z9jt3owk0LMtKElow`  
-**Lead Source:** ICSO website form (opsly.intcloudsysops.com)  
+**Role:** Commercial layer + Website lead capture (same GHL location)  
+**Location ID:** `qD7Z9jt3owk0LMtKElow` (shared)  
+**Lead Sources:** 
+- ICSO website form (opsly.intcloudsysops.com)  
+- Discovery call calendar booking  
 **Integration Type:** Private API (Doppler: `GOHIGHLEVEL_*`)
 
 ### Current State
@@ -73,7 +74,7 @@ purpose: "Central hub for GHL customer provisioning and followup status"
 
 ---
 
-## Customer 2: Peskids (Tenant)
+## Customer 2: Peskids (Tenant — Education)
 
 ### Overview
 
@@ -141,71 +142,6 @@ purpose: "Central hub for GHL customer provisioning and followup status"
 
 ---
 
-## Customer 3: ICSO (Tenant / Website)
-
-### Overview
-
-**Role:** Website lead capture, discovery call scheduling  
-**Location ID:** `qD7Z9jt3owk0LMtKElow` (shared with Agency)  
-**Lead Source:** opsly.intcloudsysops.com contact form  
-**Integration Type:** API (shared Agency API)
-
-### Current State
-
-✅ **Complete (1/1 + API):**
-- Contact form live on website
-- API integration: POST /api/leads → GoHighLevel
-- Auto-creates contact with "ICSO Website" source tag
-- Returns calendar booking URL
-- **Status: LIVE** (no manual items)
-
-### Readiness Score
-
-**Current:** 100% ✅  
-**No blockers — operational now**
-
-### Enhancement Opportunities
-
-1. **Email Templates** (NEW)
-   - Welcome email after form submission
-   - Discovery call confirmation
-   - Discovery reminder (24h before)
-
-2. **Workflows** (NEW)
-   - Auto-send welcome email
-   - Auto-send reminder SMS
-
-3. **Metrics Dashboard** (NEW)
-   - Leads per week
-   - Calendar booking rate
-   - Discovery calls scheduled
-   - Conversion to next stage
-
-4. **Follow-up Automation** (FUTURE)
-   - No-show recovery workflow
-   - Contract/proposal sending
-   - Nurture email series
-
-### Action Items
-
-- [ ] **Marketing:** Create 3 email templates (ICSO welcome, confirmation, reminder) (30 min)
-- [ ] **Ops:** Create GHL workflows to auto-send emails (45 min)
-- [ ] **Dev:** Build metrics dashboard (2 hours)
-- [ ] **Dev:** Integrate follow-up workflow (TBD)
-
-**Owner:** Operations Lead  
-**Target:** Next sprint (Phase 2 enhancements)
-
-### Success Metrics (Post-Launch)
-
-- ✅ Email delivery within 1 min
-- ✅ 50%+ calendar booking rate from form
-- ✅ Reminder SMS sent 24h before
-- ✅ Metrics visible in admin dashboard
-- ✅ <1% failure rate
-
----
-
 ## Future Client: Template & Onboarding
 
 ### Onboarding Playbook
@@ -254,21 +190,21 @@ doppler secrets set GOHIGHLEVEL_{NEW_SLUG}_API_KEY --project ops-intcloudsysops 
 
 ### Phase 1: Foundational (This Sprint) ✅
 
-| Item | Agency | Peskids | ICSO | Status |
-|------|--------|---------|------|--------|
-| Infrastructure | ✅ Done | ✅ Done | ✅ Done | Complete |
-| Lead Ingestion | ✅ Done | ✅ Done | ✅ Done | Complete |
-| GHL Integration | ✅ Done | ✅ Done | ✅ Done | Complete |
-| Manual UI (pipelines/forms) | ⏳ 4h | ⏳ 4h | ✅ Done | In Progress |
+| Item | Intcloudsysops/ICSO | Peskids | Status |
+|------|---------|------|--------|
+| Infrastructure | ✅ Done | ✅ Done | Complete |
+| Lead Ingestion | ✅ Done | ✅ Done | Complete |
+| GHL Integration | ✅ Done | ✅ Done | Complete |
+| Manual UI (pipelines/forms) | ⏳ 4h | ⏳ 4h | In Progress |
 
-### Phase 2: Automation (Next Sprint)
+### Phase 2: Automation & Enhancements (Next Sprint)
 
-| Item | Agency | Peskids | ICSO | Estimate |
-|------|--------|---------|------|----------|
-| Email Templates | ⏳ 20 min | ⏳ 20 min | ⏳ 20 min | 1 hour |
-| SMS Templates | ⏳ 10 min | ⏳ 10 min | ⏳ 10 min | 30 min |
-| GHL Workflows | ⏳ 60 min | ⏳ 60 min | ⏳ 45 min | 2.5 hours |
-| Metrics Dashboard | ❌ Not started | ❌ Not started | ⏳ 2 hours | 3 hours |
+| Item | Intcloudsysops/ICSO | Peskids | Estimate |
+|------|---------|------|----------|
+| Email Templates | ⏳ 20 min | ⏳ 20 min | 40 min |
+| SMS Templates | ⏳ 10 min | ⏳ 10 min | 20 min |
+| GHL Workflows | ⏳ 60 min | ⏳ 60 min | 2 hours |
+| Metrics Dashboard (Intcloudsysops/ICSO only) | ⏳ 2 hours | — | 2 hours |
 
 ### Phase 3: Advanced Features (TBD)
 
@@ -284,18 +220,18 @@ doppler secrets set GOHIGHLEVEL_{NEW_SLUG}_API_KEY --project ops-intcloudsysops 
 
 ### Week 1 (This Week) 🔥
 
-1. **Ops** — Create 3 pipelines (Agency, Peskids, ICSO if needed)
-   - Estimate: 2 hours
+1. **Ops** — Create 2 pipelines (Intcloudsysops/ICSO, Peskids)
+   - Estimate: 1.5 hours
    - Owner: Ops Lead
    - Blocker: None
 
-2. **Marketing** — Write 6 email + 3 SMS templates
-   - Estimate: 1.5 hours
+2. **Marketing** — Write 4 email + 2 SMS templates
+   - Estimate: 1 hour
    - Owner: Marketing
    - Blocker: Ops pipelines first
 
-3. **Dev** — E2E testing (all 3 customers)
-   - Estimate: 2 hours
+3. **Dev** — E2E testing (both customers)
+   - Estimate: 1.5 hours
    - Owner: Dev Lead
    - Blocker: Manual UI complete
 

@@ -85,9 +85,10 @@ Log file: logs/ghl-phase1-20260625_120000.log
 
 After running the orchestrator, complete the manual UI steps in GHL for each customer.
 
-### Customer 1: Intcloudsysops (Agency)
+### Customer 1: Intcloudsysops / ICSO (Agency + Website)
 
-**Time:** 2.5 hours
+**Time:** 2.5 hours  
+**Location:** `qD7Z9jt3owk0LMtKElow` (shared for both Agency and Website)
 
 **In GHL Console (https://app.gohighlevel.com):**
 
@@ -229,17 +230,6 @@ After running the orchestrator, complete the manual UI steps in GHL for each cus
 **Workflow 4: No-show Recovery**
 - **Trigger:** Appointment Status = No Show
 - **Actions:** Wait 1h → Send SMS → Create task
-
-### Customer 3: ICSO (Website)
-
-**Status:** ✅ **Already 100% complete**
-
-ICSO has:
-- ✅ Form live on website
-- ✅ Contact creation working
-- ✅ Calendar link returned
-
-**No Phase 1 work needed** — ready for Phase 2 enhancements.
 
 ---
 
