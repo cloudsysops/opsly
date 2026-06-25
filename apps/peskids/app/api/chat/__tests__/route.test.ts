@@ -5,7 +5,6 @@ const storeOutboundMessageMock = vi.fn()
 const storeDraftReplyMock = vi.fn()
 const emitEventMock = vi.fn()
 const buildPeskidsIntakeTurnMock = vi.fn()
-const submitLeadFromIntakeMock = vi.fn()
 const triggerN8nMessagePipelineMock = vi.fn()
 
 vi.mock('@/lib/message-store', () => ({
@@ -22,10 +21,6 @@ vi.mock('@/lib/peskids-intake', () => ({
   buildPeskidsIntakeTurn: buildPeskidsIntakeTurnMock,
 }))
 
-vi.mock('@/lib/peskids-lead-from-intake', () => ({
-  submitLeadFromIntake: submitLeadFromIntakeMock,
-}))
-
 vi.mock('@/lib/chat-assistant', () => ({
   triggerN8nMessagePipeline: triggerN8nMessagePipelineMock,
 }))
@@ -37,7 +32,6 @@ describe('POST /api/chat', () => {
     storeDraftReplyMock.mockReset()
     emitEventMock.mockReset()
     buildPeskidsIntakeTurnMock.mockReset()
-    submitLeadFromIntakeMock.mockReset()
     triggerN8nMessagePipelineMock.mockReset()
   })
 
@@ -46,7 +40,7 @@ describe('POST /api/chat', () => {
 
     const response = await POST({
       headers: new Headers({ 'x-request-id': 'req-chat-400' }),
-      json: async () => ({ message: ' ' }),
+      json: async () => ({ message: ' ', mode: 'support' }),
     } as never)
 
     expect(response.status).toBe(400)
@@ -57,7 +51,24 @@ describe('POST /api/chat', () => {
     })
   })
 
-  it('returns a request-scoped 201 payload for valid chat intake', async () => {
+  it('redirects admissions chat to the public lead form', async () => {
+    const { POST } = await import('../route')
+
+    const response = await POST({
+      headers: new Headers({ 'x-request-id': 'req-chat-form' }),
+      json: async () => ({ message: 'Hola, quiero clase' }),
+    } as never)
+
+    expect(response.status).toBe(200)
+    const body = await response.json()
+    expect(body.ok).toBe(true)
+    expect(body.stage).toBe('form_required')
+    expect(body.reply).toContain('formulario')
+    expect(storeInboundMessageMock).not.toHaveBeenCalled()
+    expect(buildPeskidsIntakeTurnMock).not.toHaveBeenCalled()
+  })
+
+  it('returns a request-scoped 201 payload for valid support chat intake', async () => {
     storeInboundMessageMock.mockResolvedValue({
       message: { id: 'msg-1', sender_contact: 'web:web-anonymous' },
       error: null,
@@ -77,7 +88,7 @@ describe('POST /api/chat', () => {
     const { POST } = await import('../route')
     const response = await POST({
       headers: new Headers({ 'x-request-id': 'req-chat-201' }),
-      json: async () => ({ message: 'Hola' }),
+      json: async () => ({ message: 'Hola', mode: 'support' }),
     } as never)
 
     expect(response.status).toBe(200)
@@ -93,7 +104,7 @@ describe('POST /api/chat', () => {
       input_mode: 'guided',
       quick_replies: ['Si', 'No'],
       from_llm: false,
-      disclaimer: 'Te haré algunas preguntas cortas para completar tu solicitud.',
+      disclaimer: 'Te haré algunas preguntas cortas para orientar tu caso de soporte.',
       request_id: 'req-chat-201',
     })
   })

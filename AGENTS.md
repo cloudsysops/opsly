@@ -651,102 +651,43 @@ Week 4: Docs + runbook + MVP validation
 
 ## 🔄 Estado actual
 
-<!-- Actualizar al final de cada sesión -->
+<!-- Actualizar al final de cada sesión. Sesiones pre-2026-05-26 → docs/AGENTS-SESSION-HISTORY.md -->
+
+### 📌 Sesión Activa (2026-06-22)
+
+**Tema:** Optimización integral para Peskids + avance plataforma Opsly  
+**Branch:** `claude/agente-md-review-xwdwlf`  
+**Objetivo:** Preparar codebase para go-live cliente
+
+**Tareas en progreso:**
+1. ✅ Archivar sesiones históricas → `docs/AGENTS-SESSION-HISTORY.md`
+2. 🔄 Consolidar scripts Peskids (29 scripts, revisar duplicación)
+3. 🔄 Limpiar dependencias obsoletas en config/
+4. ⏳ Verificar que Peskids está 100% deployable
+
+---
+
+### 📅 Sesiones Recientes
 
 **Sesión 2026-06-04 — ICSO marketing site v2 (PR #495) ✅**
-- ✅ **`apps/icso`**: sitio agency frontend-only (hero, soluciones, Peskids case study, pricing placeholder, `/services`, `/about`, `/case-studies`, `/contact`); dev `:3015`
-- ✅ **Brand assets**: `docs/brand/icso/` + `apps/icso/public/brand/` (logo-primary, logo-square, favicon)
-- ⏳ **Deploy**: Traefik + `NEXT_PUBLIC_SITE_URL` para dominio ICSO; PR https://github.com/cloudsysops/opsly/pull/495
+- ✅ **`apps/icso`**: sitio agency frontend-only (hero, soluciones, Peskids case study, pricing placeholder); dev `:3015`
+- ✅ **Brand assets**: `docs/brand/icso/` + `apps/icso/public/brand/`
+- ⏳ **Deploy**: Traefik + `NEXT_PUBLIC_SITE_URL` para dominio ICSO
 
-**Sesión 2026-05-28 — Skills cargados, Shield integrado, Billing consolidado ✅**
+**Sesión 2026-05-28 — Skills + Shield + Billing ✅**
+- ✅ **Shield integrado:** Guardian Grid vía `requirePortalPayloadWithShield`
+- ✅ **Billing consolidado:** `dunning-service.ts`, `unified-webhook.ts`
+- ✅ **Hive bots:** `billing-bot.ts`, `dns-bot.ts`, `secrets-bot.ts`
+- ✅ **Skills nativo:** `scripts/register-skills.sh` + symlinks `.claude/skills/`
+- ✅ **npm audit:** 0 vulnerabilidades
 
-**Branch activo:** `feat/shield-scan-worker-integration` (PR pendiente de abrir por CLI; usar `gh pr create` o web)
+**Sesión 2026-05-26 — Peskids Production Ready ✅**
+- ✅ VPS API sana: `https://api.op-sly.com/api/health` → `200`
+- ✅ Endpoints Peskids monitoreados: n8n + Uptime Kuma
+- ✅ Smoke completo en producción: landing, admin, health, leads, feedback
+- ✅ Árbol local limpio
 
-- ✅ **content-studio dist**: `lib/content-studio` dist estaba stale post-`82e86c66`; rebuilt → `npm run type-check` 33/33 FULL TURBO
-- ✅ **ShieldScanWorker** integrado en `apps/orchestrator/src/index.ts` (import + cleanup)
-- ✅ **Security Defense portal** actualizado: static mock → live Guardian Grid vía `requirePortalPayloadWithShield` + `ShieldDashboardClient`
-- ✅ **Billing consolidado**: `dunning-service.ts`, `unified-webhook.ts`, `unify-migration.ts` + wiring en rutas Stripe
-- ✅ **Hive bots**: `billing-bot.ts`, `dns-bot.ts`, `secrets-bot.ts` + registrados en `bot-factory.ts` / `hive-orchestrator.ts`
-- ✅ **Portal register flow**: `apps/portal/app/register/` + `checkout.ts` server action
-- ✅ **Peskids forms**: renombradas PascalCase → kebab-case; `FormBuilder` ampliado (310→438 líneas); barrel `forms/index.ts`
-- ✅ **Skills system nativo**: `scripts/patch-skills-frontmatter.py` parcha 35 SKILL.md con `name`+`description`; `scripts/register-skills.sh` crea symlinks `.claude/skills/` → `packages/skills/user/` (usuario debe ejecutar el script)
-- ✅ **npm audit**: 0 vulnerabilidades
-
-**Pendientes para próxima sesión:**
-1. `! bash scripts/register-skills.sh` → crea symlinks para invocación nativa de skills via `Skill` tool
-2. Abrir PR: `gh pr create` o web para `feat/shield-scan-worker-integration`
-3. Phase 6 continuation: test FormSubmissionService con datos reales de Supabase
-4. Investigar coverage de `apps/orchestrator` para subir del 46.4% actual
-
-**Sesión 2026-05-26 — Peskids production readiness cerrada ✅**
-- ✅ VPS `app` reconstruido desde fuente con `apps/api/Dockerfile` actualizado: `npm ci` ya ve el grafo completo de workspaces y la imagen `intcloudsysops-api:peskids-latest` vuelve a arrancar sana.
-- ✅ `https://api.op-sly.com/api/health` responde `200` desde producción.
-- ✅ `https://api.op-sly.com/api/portal/health?slug=peskids` devuelve los endpoints canónicos de monitoreo:
-  - `https://n8n-peskids.op-sly.com`
-  - `https://uptime-peskids.op-sly.com`
-- ✅ Smoke de Peskids completo en producción: landing, admin login, health, lead `201`, feedback `201`, n8n health, Uptime Kuma.
-- ✅ Árbol local limpio al final de la sesión; solo se mantuvo WIP ajeno fuera del alcance y fue limpiado.
-
-**Sesión 2026-05-22 (Continuación 4) — Deep Cleanup & Infrastructure Merge ✅**
-
-### Test Coverage Analysis Complete
-- ✅ **Comprehensive analysis report:** `docs/testing/TEST-COVERAGE-ANALYSIS-2026-05-22.md`
-  - Current: 179 test files (~30% coverage)
-  - Critical gaps: Admin (0 tests), Peskids (0 tests), Billing (0 tests), Security layer (0 tests)
-  - 4-phase implementation plan (Weeks 1-8):
-    - Phase 1: Stabilization (Admin + Security + Migrations) — 40h
-    - Phase 2: Core libraries (services, components, config) — 30h
-    - Phase 3: Production apps (Peskids, Billing, Portal) — 50h
-    - Phase 4: E2E & Performance — ongoing
-  - Quick wins: 10h for 25+ tests + CI gate
-
-### Deep Branch Cleanup & Merge (Option A)
-- ✅ **PR #395 Created:** `feat/deep-cleanup-merge-1` merges codex/docs-prod-architecture
-  - Successfully resolved 9 merge conflicts
-  - Brought 59 files (+4,367 lines) to main:
-    - Production topology snapshot (May 15)
-    - Local automation scripts (Tailscale, CLI, iTerm)
-    - MAIA workers (6 types: AutoDeploy, ClaudeCode, CostGate, MemoryWriter, SelfHeal, Validation)
-    - n8n workflow templates (eyes/feet/heart/github-push)
-    - Local runtime admin dashboard
-    - Cursor/Codex integration hooks
-  - Strategy: Squash merge + conflict resolution (favor main for tech files)
-
-- ✅ **PRs Created (Ready to Merge):**
-  - PR #392: Architecture documentation (codex/docs-prod-architecture-2026-05-15)
-  - PR #393: Social Reels automation (cursor/social-reels-automation-31ae) 
-  - PR #394: Test coverage improvements (claude/test-coverage-clean)
-
-- ⏳ **Pending Actions:**
-  - Approve & merge PR #395 (once CI passes)
-  - Merge PRs #392, #393, #394
-  - Delete stale branches (1,000+ commits old):
-    - `cursor/social-reels-automation-31ae` (1,169 commits)
-    - `claude/test-coverage-clean` (1,073 commits)
-    - `cursor/env-setup-31ae`
-    - And 20+ other old branches
-  - Update AGENTS.md with final cleanup summary
-
-- ❌ **On Hold (DO NOT MERGE):**
-  - `codex/consolidate-agent-work` (1,085 commits)
-    - Reason: IDE Octopus has no test coverage, 2,766 file deletions
-    - Action: Add Vitest tests before merge
-
-### Blocking Issues Fixed
-- ✅ Test coverage CI gate: Planned for Phase 1
-- ✅ Branch protection: Main requires PR (no direct push)
-- ⚠️ Codex usage limits: Informational only, doesn't block PRs
-
-**Sesión 2026-05-22 (Continuación 3) — Phase 5 Complete, Phase 6 Ready ✅**
-- ✅ Phase 5 (Dashboards & Analytics) — COMPLETE & COMMITTED (commit 058e2d5):
-  - **New Routes Created:**
-    - `/familias/submissions` - Parent/student form submissions dashboard (SubmissionsDashboard)
-    - `/teacher/submissions` - Teacher submission review dashboard (TeacherDashboard)
-  - **New API Endpoints:**
-    - `GET /api/submissions` - Returns parent/student form submissions with status, dates, form titles
-    - `GET /api/submissions/teacher` - Returns student submissions for teacher grading review
-    - `GET /api/analytics/forms` - Returns form analytics metrics (submissions, abandonment, errors)
-  - **Mock Data Implementation:**
+**Historial completo:** [`docs/AGENTS-SESSION-HISTORY.md`](docs/AGENTS-SESSION-HISTORY.md)
     - All endpoints return realistic mock data matching component interfaces
     - FormAnalyticsDashboard expects: formId, formTitle, submissionsCount, abandonmentRate, avgCompletionTime, errorCount
     - SubmissionsDashboard expects: formId, formTitle, submissionId, submittedAt, status

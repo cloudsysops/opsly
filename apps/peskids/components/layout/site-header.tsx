@@ -1,8 +1,7 @@
 import Link from 'next/link'
 import { Instagram } from 'lucide-react'
 import { PeskidsLockup } from '@/components/brand/peskids-logo'
-import { WhatsAppLink } from '@/components/contact/whatsapp-link'
-import { PESKIDS_WHATSAPP_CTA_LABEL } from '@/lib/peskids-landing-copy'
+import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config'
 import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
 
 interface SiteHeaderProps {
@@ -29,11 +28,12 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
                 Acceso familias
               </Link>
             </nav>
-            <WhatsAppLink
-              variant="button"
-              label={PESKIDS_WHATSAPP_CTA_LABEL}
-              className="hidden h-10 px-4 text-xs sm:inline-flex"
-            />
+            <Link
+              href={PESKIDS_RESERVATION_FORM_HREF}
+              className="hidden h-10 items-center justify-center rounded-full bg-pk-primary px-4 text-xs font-bold text-white shadow-sm transition hover:bg-pk-primary/90 sm:inline-flex"
+            >
+              Reservar clase
+            </Link>
             <Link
               href={PESKIDS_INSTAGRAM.profileUrl}
               target="_blank"

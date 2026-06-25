@@ -29,7 +29,7 @@ describe('peskids-landing-copy', () => {
     expect(PESKIDS_RESERVATION_BULLETS[2]).toContain('48 horas');
   });
 
-  it('uses WhatsApp CTA label requested for parents', () => {
-    expect(PESKIDS_WHATSAPP_CTA_LABEL).toBe('Prefiero WhatsApp');
+  it('uses WhatsApp CTA label after successful form submit', () => {
+    expect(PESKIDS_WHATSAPP_CTA_LABEL).toBe('Continuar por WhatsApp');
   });
 });
