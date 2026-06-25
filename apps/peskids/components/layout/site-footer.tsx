@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import { PeskidsLockup } from '@/components/brand/peskids-logo'
 import { PeskidsWave } from '@/components/brand/peskids-logo'
-import { PESKIDS_CONTACT, buildWhatsAppUrl } from '@/lib/contact-channels'
+import { PESKIDS_CONTACT } from '@/lib/contact-channels'
+import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config'
 import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
 
 export function SiteFooter(): React.ReactElement {
@@ -21,8 +22,8 @@ export function SiteFooter(): React.ReactElement {
               title="Contacto"
               items={[
                 {
-                  label: PESKIDS_CONTACT.whatsapp.display,
-                  href: buildWhatsAppUrl(),
+                  label: 'Reservar clase gratuita',
+                  href: PESKIDS_RESERVATION_FORM_HREF,
                 },
                 {
                   label: PESKIDS_CONTACT.email,
