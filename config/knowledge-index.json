@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-06-25T11:01:56.504Z",
+  "generated_at": "2026-06-25T14:09:38.306Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -3160,6 +3160,7 @@
         "dependency",
         "endpoints",
         "export",
+        "extraction",
         "form",
         "hardcoded",
         "hono",
@@ -3175,15 +3176,17 @@
         "publish",
         "rate",
         "runtime",
+        "security",
         "sentinel",
         "social",
         "spoofing",
+        "standardized",
         "tenant",
         "tmp",
         "vector",
         "vulnerabilities"
       ],
-      "size_bytes": 8863
+      "size_bytes": 10501
     },
     {
       "path": ".n8n/1-workflows/peskids/README.md",
@@ -23413,6 +23416,32 @@
         "wizard"
       ],
       "size_bytes": 11884
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
+      "title": "Peskids — configuración del tenant (sub-proyecto 3 de 4)",
+      "keywords": [
+        "2026",
+        "alcance",
+        "api",
+        "configuracion",
+        "datos",
+        "design",
+        "errores",
+        "este",
+        "manejo",
+        "markdown",
+        "modelo",
+        "opsly",
+        "peskids",
+        "proyecto",
+        "settings",
+        "siguiente",
+        "sub",
+        "tenant",
+        "testing"
+      ],
+      "size_bytes": 5040
     },
     {
       "path": "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
@@ -85222,6 +85251,7 @@
       "docs/superpowers/specs/2026-05-26-content-studio-ai-design.md",
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
       "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
       "docs/plans/AUTONOMY-COMPLETION-PLAN-2026-04-27.md",
       "docs/04-operations/COST-MONITORING-GUIDE.md",
@@ -85369,6 +85399,7 @@
       "SECURITY.md",
       ".cursor/prompts/legalvial-phase2b-automation.md",
       ".cursor/prompts/local-services-tech-builder.md",
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
       "docs/runbooks/AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
       "docs/01-development/REFACTOR-CHECKLIST.md",
       "docs/01-development/SETUP-SUDOERS-CLOUDSYSOPS.md",
@@ -87605,6 +87636,7 @@
       "docs/superpowers/specs/2026-05-26-content-studio-ai-design.md",
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
       "docs/plans/CLI-MIGRATION-CHECKLIST.md",
       "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
       "docs/plans/AUTONOMY-COMPLETION-PLAN-2026-04-27.md",
@@ -90115,6 +90147,7 @@
       "docs/superpowers/specs/2026-05-26-content-studio-ai-design.md",
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
       "docs/plans/CLI-MIGRATION-CHECKLIST.md",
       "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
       "docs/plans/AUTONOMY-COMPLETION-PLAN-2026-04-27.md",
@@ -91493,6 +91526,7 @@
     ],
     "security": [
       "SECURITY.md",
+      ".jules/sentinel.md",
       "packages/skills/user/opsly-agent-skills-bridge/SKILL.md",
       "packages/skills/vendor/agent-skills/code-review-and-quality/SKILL.md",
       "packages/skills/vendor/agent-skills/security-and-hardening/SKILL.md",
@@ -92283,6 +92317,7 @@
       "docs/superpowers/plans/2026-05-30-skills-obsidian-integration.md",
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
       "docs/infrastructure/PESKIDS-AGENT-AUTONOMOUS-DEPLOYMENT.md",
       "docs/infrastructure/OPTIMIZATION-ROADMAP-2026-06.md",
       "docs/projects/PESKIDS-SCOPE.md",
@@ -92589,6 +92624,7 @@
       "vendor/agency-agents/integrations/opencode/agents/identity-graph-operator.md",
       "vendor/agency-agents/integrations/openclaw/identity-graph-operator/SOUL.md",
       "infra/templates/n8n-workflows-template.md",
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
       "docs/ops/issue-bankruptcy-2026-05-03/epics-breakdown.md",
       "docs/emails/tenant-welcome-email.md",
       "docs/history/plans/SPRINT-ROADMAP.md",
@@ -92897,6 +92933,7 @@
       "vendor/agency-agents/integrations/openclaw/backend-architect/AGENTS.md",
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
       "docs/04-operations/COST-MONITORING-GUIDE.md",
       "docs/ops/branch-protection-setup.md",
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
@@ -93433,6 +93470,34 @@
       "infra/templates/n8n-workflows-template.md",
       "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
       "docs/tenants/peskids/DASHBOARD-SPEC.md"
+    ],
+    "extraction": [
+      ".jules/sentinel.md",
+      "apps/peskids/CLAUDE.md",
+      "vendor/agency-agents/integrations/qwen/agents/china-market-localization-strategist.md",
+      "vendor/agency-agents/integrations/qwen/agents/sales-data-extraction-agent.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/sales-data-extraction-agent/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/china-market-localization-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/sales-data-extraction-agent/system.md",
+      "vendor/agency-agents/integrations/kimi/china-market-localization-strategist/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-china-market-localization-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-sales-data-extraction-agent/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/china-market-localization-strategist.md",
+      "vendor/agency-agents/integrations/opencode/agents/sales-data-extraction-agent.md",
+      "vendor/agency-agents/integrations/openclaw/sales-data-extraction-agent/IDENTITY.md",
+      "vendor/agency-agents/integrations/openclaw/sales-data-extraction-agent/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/china-market-localization-strategist/AGENTS.md",
+      "docs/00-architecture/TENANT-INCUBATION-LIFECYCLE.md",
+      "docs/00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md",
+      "docs/01-development/MODULARITY-CONTRACT.md",
+      "docs/adr/ADR-044-core-first-tenant-slug-extraction.md",
+      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/tenants/peskids/EXTRACTION-PLAN.md",
+      "docs/tenants/peskids/MVP-BACKLOG.md",
+      "docs/blueprints/opsly-operational-blueprint/MODULES.md",
+      "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md",
+      "docs/blueprints/opsly-operational-blueprint/CLIENT-INCUBATION-TEMPLATE.md",
+      "docs/blueprints/opsly-operational-blueprint/EXTRACTION-PATTERN.md"
     ],
     "form": [
       ".jules/sentinel.md",
@@ -94587,6 +94652,15 @@
     ],
     "spoofing": [
       ".jules/sentinel.md"
+    ],
+    "standardized": [
+      ".jules/sentinel.md",
+      "vendor/agency-agents/integrations/qwen/agents/study-abroad-advisor.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/study-abroad-advisor/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/study-abroad-advisor/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-study-abroad-advisor/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/study-abroad-advisor.md",
+      "vendor/agency-agents/integrations/openclaw/study-abroad-advisor/AGENTS.md"
     ],
     "tmp": [
       ".jules/sentinel.md"
@@ -96707,6 +96781,7 @@
       "packages/skills/user/opsly-frontend/SKILL.md",
       "packages/skills/user/context-builder/SKILL.md",
       "packages/skills/user/opsly-google-cloud/SKILL.md",
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
       "docs/01-development/OPSLY-KNOWLEDGE-BASE.md",
       "docs/01-development/MAKE-SETUP.md"
     ],
@@ -99960,6 +100035,7 @@
       "vendor/agency-agents/integrations/openclaw/accessibility-auditor/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/tool-evaluator/AGENTS.md",
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
       "docs/database/SUPABASE-MIGRATION-AUDIT.md",
       "docs/.obsidian/PLUGINS-TO-INSTALL.md",
@@ -102617,6 +102693,7 @@
       "apps/ml/agents/classifier/README.md",
       "infra/templates/n8n-workflows-template.md",
       "docs/superpowers/specs/2026-05-31-collectx-platform-design.md",
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
       "docs/ops/workflows-index.md",
       "docs/legal/peskids/DPIA-2026.md",
       "docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md",
@@ -103758,6 +103835,7 @@
     "modelo": [
       "packages/skills/user/opsly-llm/SKILL.md",
       "docs/superpowers/specs/2026-05-31-collectx-platform-design.md",
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
       "docs/orchestrator/REPAIR-QUEUE.md",
       "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
@@ -105414,6 +105492,7 @@
       ".n8n/3-webhooks/github-webhook.md",
       ".n8n/3-webhooks/discord-webhook.md",
       ".n8n/README.md",
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
       "docs/ops/branch-protection-setup.md",
       "docs/ops/runbook-redis.md",
       "docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md",
@@ -107617,6 +107696,7 @@
       "apps/orchestrator/README.md",
       "OPSLY_CONTEXT.md",
       "infra/terraform/README.md",
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
       "docs/00-architecture/ORCHESTRATOR.md",
       "docs/01-development/PLANNING.md",
       "docs/01-development/IMPLEMENTATION-IA-LAYER.md",
@@ -111859,6 +111939,7 @@
     "proyecto": [
       "packages/skills/user/opsly-google-cloud/SKILL.md",
       ".github/README-github-templates.md",
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
       "docs/history/plans/MASTER-PLAN.md",
       "docs/01-development/FAQ.md",
       "docs/01-development/OPSLYQUANTUM-USAGE.md",
@@ -114097,6 +114178,7 @@
       "docs/superpowers/specs/2026-05-26-content-studio-ai-design.md",
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
       "docs/history/consolidation/CONSOLIDATION-EFFORT-BREAKDOWN.md",
       "docs/design/OAR.md",
       "docs/design/DESIGN_REFERENCES.md",
@@ -135904,33 +135986,6 @@
       "docs/operations/RUN-VALIDATION-LOCALLY.md",
       "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md"
     ],
-    "extraction": [
-      "apps/peskids/CLAUDE.md",
-      "vendor/agency-agents/integrations/qwen/agents/china-market-localization-strategist.md",
-      "vendor/agency-agents/integrations/qwen/agents/sales-data-extraction-agent.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/sales-data-extraction-agent/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/china-market-localization-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/sales-data-extraction-agent/system.md",
-      "vendor/agency-agents/integrations/kimi/china-market-localization-strategist/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-china-market-localization-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-sales-data-extraction-agent/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/china-market-localization-strategist.md",
-      "vendor/agency-agents/integrations/opencode/agents/sales-data-extraction-agent.md",
-      "vendor/agency-agents/integrations/openclaw/sales-data-extraction-agent/IDENTITY.md",
-      "vendor/agency-agents/integrations/openclaw/sales-data-extraction-agent/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/china-market-localization-strategist/AGENTS.md",
-      "docs/00-architecture/TENANT-INCUBATION-LIFECYCLE.md",
-      "docs/00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md",
-      "docs/01-development/MODULARITY-CONTRACT.md",
-      "docs/adr/ADR-044-core-first-tenant-slug-extraction.md",
-      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
-      "docs/tenants/peskids/EXTRACTION-PLAN.md",
-      "docs/tenants/peskids/MVP-BACKLOG.md",
-      "docs/blueprints/opsly-operational-blueprint/MODULES.md",
-      "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md",
-      "docs/blueprints/opsly-operational-blueprint/CLIENT-INCUBATION-TEMPLATE.md",
-      "docs/blueprints/opsly-operational-blueprint/EXTRACTION-PATTERN.md"
-    ],
     "future": [
       "apps/peskids/CLAUDE.md",
       "apps/orchestrator/src/meta/README.md",
@@ -136315,6 +136370,7 @@
     ],
     "siguiente": [
       "apps/web/blog/2026-04-26-opsly-para-agencias.md",
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
       "docs/runbooks/frontend-audit.md",
       "docs/03-agents/CLAUDE-WORKFLOW-OPTIMIZATION.md",
       "docs/tenants/peskids/SPRINT-02-RUN.md",
@@ -152764,14 +152820,6 @@
       "vendor/agency-agents/integrations/opencode/agents/study-abroad-advisor.md",
       "vendor/agency-agents/integrations/openclaw/study-abroad-advisor/AGENTS.md"
     ],
-    "standardized": [
-      "vendor/agency-agents/integrations/qwen/agents/study-abroad-advisor.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/study-abroad-advisor/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/study-abroad-advisor/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-study-abroad-advisor/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/study-abroad-advisor.md",
-      "vendor/agency-agents/integrations/openclaw/study-abroad-advisor/AGENTS.md"
-    ],
     "transparency": [
       "vendor/agency-agents/integrations/qwen/agents/study-abroad-advisor.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/study-abroad-advisor/SKILL.md",
@@ -154650,6 +154698,24 @@
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
       "docs/projects/PESKIDS-SCOPE.md"
     ],
+    "manejo": [
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md"
+    ],
+    "settings": [
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
+      "docs/01-development/GITHUB-SETTINGS.md",
+      "docs/tenants/peskids/DASHBOARD-SPEC.md",
+      "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md",
+      "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md"
+    ],
+    "sub": [
+      "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
+      "docs/ops/issue-bankruptcy-2026-05-03/epics-breakdown.md",
+      "docs/governance/DATA-CLASSIFICATION.md",
+      "docs/governance/SUB-PROCESSORS.md",
+      "docs/governance/internal/VENDOR-MANAGEMENT-POLICY.md",
+      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md"
+    ],
     "controlled": [
       "docs/plans/CLI-MIGRATION-CHECKLIST.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md"
@@ -154945,13 +155011,6 @@
     ],
     "epics": [
       "docs/ops/issue-bankruptcy-2026-05-03/epics-breakdown.md"
-    ],
-    "sub": [
-      "docs/ops/issue-bankruptcy-2026-05-03/epics-breakdown.md",
-      "docs/governance/DATA-CLASSIFICATION.md",
-      "docs/governance/SUB-PROCESSORS.md",
-      "docs/governance/internal/VENDOR-MANAGEMENT-POLICY.md",
-      "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md"
     ],
     "suggested": [
       "docs/ops/issue-bankruptcy-2026-05-03/epics-breakdown.md",
@@ -158330,12 +158389,6 @@
     "requeridos": [
       "docs/01-development/GITHUB-SETTINGS.md",
       "docs/02-tools/OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md"
-    ],
-    "settings": [
-      "docs/01-development/GITHUB-SETTINGS.md",
-      "docs/tenants/peskids/DASHBOARD-SPEC.md",
-      "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md",
-      "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md"
     ],
     "opt": [
       "docs/01-development/AUTO-PUSH-WATCHER.md",
@@ -163619,6 +163672,7 @@
     "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
     "docs/superpowers/specs/2026-05-30-skills-obsidian-integration-design.md",
     "docs/superpowers/specs/2026-05-31-collectx-platform-design.md",
+    "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
     "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
     "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
     "docs/tenants/legalvial/LEGALVIAL-ARCHITECTURE-DECISION.md",
