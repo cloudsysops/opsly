@@ -1,6 +1,10 @@
 import { getServiceClient } from '../supabase';
 import { logger } from '../logger';
 import { PESKIDS_PIPELINE_STAGES, type PeskidsPipelineStage } from './ghl-contract';
+import { getCache, setCache } from '../redis-cache';
+import { CACHE_TTL } from '../constants';
+
+const CACHE_KEY_PREFIX = 'peskids:executive_summary:';
 
 type PlatformLeadRow = {
   lead_id: string | null;
@@ -236,35 +240,94 @@ function countStages(rows: PlatformLeadRow[]): PeskidsExecutiveStageCount[] {
   }));
 }
 
-export async function fetchPeskidsExecutiveSummary(
-  tenantSlug: string
-): Promise<PeskidsExecutiveSummary> {
-  const leadsResult = await fetchPlatformLeads(tenantSlug);
-  const activeStudents = await fetchActiveStudents(tenantSlug);
-  const revenue = await fetchRevenueMetrics(tenantSlug);
-  const lowFeedbackCount = await fetchFeedbackAlerts(tenantSlug);
-  const overdueFollowupsCount = await fetchPendingFollowups(tenantSlug);
+function buildExecutiveAlerts(params: {
+  leadsWithoutContactCount: number;
+  pendingPaymentsCount: number;
+  overdueFollowupsCount: number;
+  lowFeedbackCount: number;
+}): ExecutiveAlert[] {
+  return [
+    {
+      key: 'leads_without_contact',
+      label: 'Leads sin contacto',
+      count: params.leadsWithoutContactCount,
+      detail: 'Leads en New Lead sin avance después de 24 horas.',
+    },
+    {
+      key: 'pending_payments',
+      label: 'Pagos pendientes',
+      count: params.pendingPaymentsCount,
+      detail: 'Cuentas por cobrar todavía abiertas.',
+    },
+    {
+      key: 'overdue_followups',
+      label: 'Follow-ups vencidos',
+      count: params.overdueFollowupsCount,
+      detail: 'Seguimientos pendientes con fecha vencida.',
+    },
+    {
+      key: 'low_feedback',
+      label: 'Feedback bajo',
+      count: params.lowFeedbackCount,
+      detail: 'Respuestas de familias con satisfacción menor a 3.',
+    },
+  ].filter((item) => item.count > 0);
+}
 
+function buildExecutiveMetrics(params: {
+  leads: PlatformLeadRow[];
+  activeStudents: number;
+  revenue: { revenue_cents: number; pending_payments_cents: number };
+  alertsCount: number;
+}): PeskidsExecutiveMetrics {
   const monthStart = new Date();
   monthStart.setDate(1);
   monthStart.setHours(0, 0, 0, 0);
+  const monthStartTime = monthStart.getTime();
 
-  const newLeads = leadsResult.rows.filter(
-    (row) => new Date(row.created_at).getTime() >= monthStart.getTime()
+  const newLeads = params.leads.filter(
+    (row) => new Date(row.created_at).getTime() >= monthStartTime
   ).length;
 
-  const convertedLeads = leadsResult.rows.filter((row) => {
+  const convertedLeads = params.leads.filter((row) => {
     const stage = normalizeLeadStage(row);
     return stage === 'Enrolled' || stage === 'Active Student' || stage === 'Renewal';
   }).length;
-  const conversionRatePct =
-    newLeads > 0 ? Math.round((convertedLeads / newLeads) * 100) : null;
-  const leadSources = leadsResult.rows.reduce((acc, row) => {
-    acc[normalizeLeadSource(row.referral_source ?? row.source)] += 1;
-    return acc;
-  }, { ...EMPTY_LEAD_SOURCES });
 
-  const leadsWithoutContactCount = leadsResult.rows.filter((row) => {
+  const conversionRatePct = newLeads > 0 ? Math.round((convertedLeads / newLeads) * 100) : null;
+
+  return {
+    new_leads: newLeads,
+    converted_leads: convertedLeads,
+    conversion_rate_pct: conversionRatePct,
+    active_students: params.activeStudents,
+    revenue_cents: params.revenue.revenue_cents,
+    pending_payments_cents: params.revenue.pending_payments_cents,
+    alerts: params.alertsCount,
+  };
+}
+
+function buildExecutiveSummary(params: {
+  tenantSlug: string;
+  leadsResult: { rows: PlatformLeadRow[] };
+  activeStudents: number;
+  revenue: {
+    revenue_cents: number;
+    pending_payments_cents: number;
+    pending_payments_count: number;
+  };
+  lowFeedbackCount: number;
+  overdueFollowupsCount: number;
+}): PeskidsExecutiveSummary {
+  const leadSources = params.leadsResult.rows.reduce(
+    (acc, row) => {
+      acc[normalizeLeadSource(row.referral_source ?? row.source)] += 1;
+      return acc;
+    },
+    { ...EMPTY_LEAD_SOURCES }
+  );
+
+  const leadsWithoutContactCount = params.leadsResult.rows.filter((row) => {
     const stage = normalizeLeadStage(row);
     if (stage !== 'New Lead') {
       return false;
@@ -274,47 +337,65 @@ export async function fetchPeskidsExecutiveSummary(
     return ageMs > 24 * 60 * 60 * 1000;
   }).length;
 
-  const alerts: ExecutiveAlert[] = [
-    {
-      key: 'leads_without_contact',
-      label: 'Leads sin contacto',
-      count: leadsWithoutContactCount,
-      detail: 'Leads en New Lead sin avance después de 24 horas.',
-    },
-    {
-      key: 'pending_payments',
-      label: 'Pagos pendientes',
-      count: revenue.pending_payments_count,
-      detail: 'Cuentas por cobrar todavía abiertas.',
-    },
-    {
-      key: 'overdue_followups',
-      label: 'Follow-ups vencidos',
-      count: overdueFollowupsCount,
-      detail: 'Seguimientos pendientes con fecha vencida.',
-    },
-    {
-      key: 'low_feedback',
-      label: 'Feedback bajo',
-      count: lowFeedbackCount,
-      detail: 'Respuestas de familias con satisfacción menor a 3.',
-    },
-  ].filter((item) => item.count > 0);
+  const alerts = buildExecutiveAlerts({
+    leadsWithoutContactCount,
+    pendingPaymentsCount: params.revenue.pending_payments_count,
+    overdueFollowupsCount: params.overdueFollowupsCount,
+    lowFeedbackCount: params.lowFeedbackCount,
+  });
+
+  const alertsCount = alerts.reduce((sum, item) => sum + item.count, 0);
 
   return {
-    tenant_slug: tenantSlug,
+    tenant_slug: params.tenantSlug,
     generated_at: new Date().toISOString(),
-    metrics: {
-      new_leads: newLeads,
-      converted_leads: convertedLeads,
-      conversion_rate_pct: conversionRatePct,
-      active_students: activeStudents,
-      revenue_cents: revenue.revenue_cents,
-      pending_payments_cents: revenue.pending_payments_cents,
-      alerts: alerts.reduce((sum, item) => sum + item.count, 0),
-    },
-    pipeline_stages: countStages(leadsResult.rows),
+    metrics: buildExecutiveMetrics({
+      leads: params.leadsResult.rows,
+      activeStudents: params.activeStudents,
+      revenue: params.revenue,
+      alertsCount,
+    }),
+    pipeline_stages: countStages(params.leadsResult.rows),
     lead_sources: leadSources,
     alerts,
   };
+}
+
+/**
+ * Agregado para el modelo de lectura ejecutivo de Peskids.
+ *
+ * BOLT OPTIMIZATION:
+ * 1. Parallelizes 5 sequential database fetches using Promise.all to reduce total latency.
+ * 2. Implements Redis caching (60s TTL) to minimize Supabase load for frequent dashboard reloads.
+ */
+export async function fetchPeskidsExecutiveSummary(
+  tenantSlug: string
+): Promise<PeskidsExecutiveSummary> {
+  const cacheKey = `${CACHE_KEY_PREFIX}${tenantSlug}`;
+  const cached = await getCache<PeskidsExecutiveSummary>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  const [leadsResult, activeStudents, revenue, lowFeedbackCount, overdueFollowupsCount] =
+    await Promise.all([
+      fetchPlatformLeads(tenantSlug),
+      fetchActiveStudents(tenantSlug),
+      fetchRevenueMetrics(tenantSlug),
+      fetchFeedbackAlerts(tenantSlug),
+      fetchPendingFollowups(tenantSlug),
+    ]);
+
+  const summary = buildExecutiveSummary({
+    tenantSlug,
+    leadsResult,
+    activeStudents,
+    revenue,
+    lowFeedbackCount,
+    overdueFollowupsCount,
+  });
+
+  void setCache(cacheKey, summary, CACHE_TTL.SHORT);
+
+  return summary;
 }
