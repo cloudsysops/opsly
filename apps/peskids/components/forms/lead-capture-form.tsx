@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import { Loader2, Send } from 'lucide-react'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
+import { buildPostLeadWhatsAppPrefill, writePeskidsLeadSession } from '@/lib/peskids-lead-session'
 import { PESKIDS_CLASS_MODALITY_OPTIONS } from '@/lib/lead-modality'
 import {
   PESKIDS_CONSENT_MARKETING,
@@ -134,6 +135,7 @@ export function LeadCaptureForm({
         console.warn('Lead webhook mirror failed:', err)
       })
 
+      writePeskidsLeadSession(formData.name)
       setSubmitted(true)
       setConsentTreatment(false)
       setConsentMarketing(false)
@@ -204,7 +206,7 @@ export function LeadCaptureForm({
             <WhatsAppLink
               variant="button"
               label={`${PESKIDS_WHATSAPP_CTA_LABEL} →`}
-              prefill={`Hola Peskids 👋 Soy ${formData.name}, acabo de completar el formulario de reserva y estoy listo/a para agendar la clase de prueba.`}
+              prefill={buildPostLeadWhatsAppPrefill(formData.name)}
               className="mt-3 w-full sm:w-auto"
             />
             <p className="mt-4 text-center text-xs text-pk-sub">

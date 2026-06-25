@@ -1,5 +1,6 @@
 'use client';
 
+import { GatedWhatsAppLink } from '@/components/marketing/gated-whatsapp-link';
 import { PESKIDS_RESERVATION_FORM_ANCHOR } from '@/lib/peskids-landing-config';
 
 type ReservationLandingCTAProps = {
@@ -10,7 +11,7 @@ export function ReservationLandingCTA({
   formAnchorId = PESKIDS_RESERVATION_FORM_ANCHOR,
 }: ReservationLandingCTAProps): React.ReactElement {
   return (
-    <div className="mb-8 flex justify-center">
+    <div className="mb-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
       <button
         onClick={(): void => {
           document.getElementById(formAnchorId)?.scrollIntoView({ behavior: 'smooth' });
@@ -20,6 +21,7 @@ export function ReservationLandingCTA({
       >
         Reservar clase gratuita
       </button>
+      <GatedWhatsAppLink variant="button" label="WhatsApp" />
     </div>
   );
 }

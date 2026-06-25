@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { PeskidsWave } from '@/components/brand/peskids-logo';
+import { GatedWhatsAppLink } from '@/components/marketing/gated-whatsapp-link';
 import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config';
 
 export function CtaBand(): React.ReactElement {
@@ -28,6 +29,7 @@ export function CtaBand(): React.ReactElement {
             >
               Ir al formulario
             </Link>
+            <GatedWhatsAppLink variant="onDark" label="WhatsApp" />
           </div>
         </div>
       </div>

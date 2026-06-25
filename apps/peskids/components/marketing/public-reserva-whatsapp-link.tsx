@@ -1,8 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import { GatedWhatsAppLink } from '@/components/marketing/gated-whatsapp-link';
 import {
   PESKIDS_PUBLIC_RESERVA_FORM_LABEL,
+  PESKIDS_PUBLIC_WHATSAPP_LABEL,
 } from '@/lib/marketing-routes';
 import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config';
 import { cn } from '@/lib/utils';
@@ -35,5 +37,17 @@ export function PublicReservaFormLink({
   );
 }
 
-/** @deprecated Use PublicReservaFormLink */
-export const PublicReservaWhatsAppLink = PublicReservaFormLink;
+/** WhatsApp visible en landing; abre chat solo tras completar el formulario de lead. */
+export function PublicReservaWhatsAppLink({
+  label = PESKIDS_PUBLIC_WHATSAPP_LABEL,
+  variant = 'button',
+  className,
+}: PublicReservaFormLinkProps): React.ReactElement {
+  return (
+    <GatedWhatsAppLink
+      variant={variant}
+      className={className}
+      label={label}
+    />
+  );
+}
