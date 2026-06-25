@@ -149,6 +149,9 @@ jobs:
               docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d traefik app admin portal
             cd ..
 
+            bash /opt/opsly/scripts/docker-prune-after-deploy.sh 2>/dev/null \
+              || { docker image prune -af || true; docker builder prune -af 2>/dev/null || true; }
+
             sleep 8
             for i in 1 2 3 4 5; do
               if curl -sf http://127.0.0.1:3005/dashboard >/dev/null 2>&1; then
