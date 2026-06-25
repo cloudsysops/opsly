@@ -46,7 +46,13 @@
         "locationId": "KJ5LawrOOe3hIerqtMRu",
         "contactId": "={{$node[\"Parse Enrollment Event\"].json.contactId}}",
         "updateFields": {
-          "stage": \"Active Student\",\n          \"tags\": [\"enrolled\", \"active-student\"],\n          \"customFields\": {\n            \"student_id\": \"={{$node[\"Create Student Profile in Supabase\"].json.studentId}}\",\n            \"enrollment_date\": \"={{$node[\"Parse Enrollment Event\"].json.enrollmentDate}}\"\n          }\n        }"
+          "stage": "Active Student",
+          "tags": ["enrolled", "active-student"],
+          "customFields": {
+            "student_id": "={{$node[\"Create Student Profile in Supabase\"].json.studentId}}",
+            "enrollment_date": "={{$node[\"Parse Enrollment Event\"].json.enrollmentDate}}"
+          }
+        }
       },
       "name": "Update Contact: Active Student",
       "type": "n8n-nodes-base.gohighlevel",
@@ -93,7 +99,13 @@
     {
       "parameters": {
         "resource": "appointment",
-        "operation": "create",\n        \"locationId\": \"KJ5LawrOOe3hIerqtMRu\",\n        \"contactId\": \"={{$node[\"Parse Enrollment Event\"].json.contactId}}\",\n        \"title\": \"Primera clase — {{$node[\"Parse Enrollment Event\"].json.childName}}\",\n        \"startDate\": \"={{new Date(new Date().getTime() + 7*24*60*60*1000).toISOString()}}\",\n        \"duration\": 45,\n        \"calendarId\": \"class-schedule\""
+        "operation": "create",
+        "locationId": "KJ5LawrOOe3hIerqtMRu",
+        "contactId": "={{$node[\"Parse Enrollment Event\"].json.contactId}}",
+        "title": "Primera clase — {{$node[\"Parse Enrollment Event\"].json.childName}}",
+        "startDate": "={{new Date(new Date().getTime() + 7*24*60*60*1000).toISOString()}}",
+        "duration": 45,
+        "calendarId": "class-schedule"
       },
       "name": "Create First Class Appointment",
       "type": "n8n-nodes-base.gohighlevel",
@@ -213,4 +225,14 @@
     }
   },
   "settings": {
-    "errorWorkflow": "peskids-error-handler",\n    "saveManualExecutions": true,\n    "timezone": "America/Bogota"\n  },\n  "trigger": "ghl_webhook",\n  "active": true,\n  "sla_minutes": 10,\n  "success_metric": "100% student creation, <10 min latency",\n  "webhook_url": "/api/public/tenants/peskids/webhooks/n8n/enrollment",\n  "notes": "CRITICAL WORKFLOW: Blocks MRR until student profile created. Creates payment subscription record in Supabase."\n}
+    "errorWorkflow": "peskids-error-handler",
+    "saveManualExecutions": true,
+    "timezone": "America/Bogota"
+  },
+  "trigger": "ghl_webhook",
+  "active": true,
+  "sla_minutes": 10,
+  "success_metric": "100% student creation, <10 min latency",
+  "webhook_url": "/api/public/tenants/peskids/webhooks/n8n/enrollment",
+  "notes": "CRITICAL WORKFLOW: Blocks MRR until student profile created. Creates payment subscription record in Supabase."
+}
