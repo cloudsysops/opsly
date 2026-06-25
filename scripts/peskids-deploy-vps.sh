@@ -121,6 +121,8 @@ run_deploy_on_host() {
   wait_for_peskids_ready
   check_url "peskids local admin login" "http://127.0.0.1:3004/admin/login"
   check_url "peskids local familias login" "http://127.0.0.1:3004/familias/login"
+
+  bash "${repo_path}/scripts/docker-prune-after-deploy.sh"
 }
 
 if [[ "$DRY_RUN" == true ]]; then
