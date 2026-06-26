@@ -1,6 +1,9 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { getServiceClient } from '../../../../lib/supabase';
+import { extractIp } from '../../../../lib/audit';
+import { checkRateLimit } from '../../../../lib/rate-limiter-memory';
+import { HTTP_STATUS } from '../../../../lib/constants';
 
 const dsarSchema = z.object({
   tenant_id: z.string().min(1),
@@ -32,6 +35,13 @@ function generateToken(): string {
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
+  // Sentinel: Rate limit based on IP to prevent spamming public endpoint
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `dsar:${ip}` : 'dsar:anonymous');
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+
   let body: unknown;
   try {
     body = await request.json();

@@ -62,3 +62,8 @@
 **Vulnerability:** Public endpoints (like Peskids form submissions) allowed users to provide a `userId` in the request body which was then used as the primary `actor_id` in audit logs. This allowed attackers to spoof actions as other users in the security history.
 **Learning:** For public or unauthenticated endpoints, never use client-provided identifiers as the primary actor in audit logs. These fields must be system-generated (e.g., using client IP) or fixed (e.g., 'anonymous').
 **Prevention:** Use `extractIp` to generate a verified actor identifier (e.g., `anonymous:${ip}`) for unauthenticated actions. Always treat client-provided identifiers as untrusted and relegate them to the `metadata` field of the audit event.
+
+## 2026-06-26 - [Missing Rate Limiting in Public Governance DSAR API]
+**Vulnerability:** The `/api/governance/dsar` endpoint was exposed without any rate limiting logic. This made the application vulnerable to spam and potential database exhaustion from automated Data Subject Access Requests.
+**Learning:** As new functional modules (like governance) are added, public endpoints might be overlooked if they aren't part of the primary "product" flows (like portal or admin). Security must be a first-class consideration for every new endpoint, especially public ones.
+**Prevention:** Always implement IP-based rate limiting for public endpoints that interact with the database. Use the established `checkRateLimit` utility and verify its behavior with unit tests.
