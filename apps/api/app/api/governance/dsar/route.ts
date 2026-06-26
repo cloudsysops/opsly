@@ -1,5 +1,8 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
+import { extractIp } from '../../../../lib/audit';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
+import { HTTP_STATUS } from '../../../../lib/constants';
 import { getServiceClient } from '../../../../lib/supabase';
 
 const dsarSchema = z.object({
@@ -32,6 +35,12 @@ function generateToken(): string {
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `dsar-request:${ip}` : 'dsar-request:anonymous');
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+
   let body: unknown;
   try {
     body = await request.json();
