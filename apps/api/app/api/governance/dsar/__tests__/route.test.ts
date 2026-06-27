@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { POST } from '../route';
 import { getServiceClient } from '@/lib/supabase';
-import { extractIp, logAuditEvent } from '@/lib/audit';
+import { logAuditEvent } from '@/lib/audit';
 import { checkRateLimit } from '@/lib/rate-limiter';
 
 vi.mock('@/lib/supabase', () => ({
