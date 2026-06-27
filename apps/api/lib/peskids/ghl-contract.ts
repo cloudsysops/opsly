@@ -125,7 +125,9 @@ export function leadStatusFromPipelineStage(
   }
 }
 
-export function buildPeskidsAutomationPayload(input: GoHighLevelLeadWebhook): Record<string, unknown> {
+export function buildPeskidsAutomationPayload(
+  input: GoHighLevelLeadWebhook
+): Record<string, unknown> {
   return {
     tenant_slug: input.tenant_slug,
     lead_id: input.lead_id,

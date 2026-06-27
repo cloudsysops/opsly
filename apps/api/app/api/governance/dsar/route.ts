@@ -1,6 +1,8 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { getServiceClient } from '../../../../lib/supabase';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
 
 const dsarSchema = z.object({
   tenant_id: z.string().min(1),
@@ -32,6 +34,12 @@ function generateToken(): string {
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `ip:${ip}` : 'dsar-anonymous');
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: 429 });
+  }
+
   let body: unknown;
   try {
     body = await request.json();
@@ -70,6 +78,19 @@ export async function POST(request: NextRequest): Promise<Response> {
     console.error('[governance][dsar] insert error', error);
     return Response.json({ error: 'Failed to create DSAR request' }, { status: 500 });
   }
+
+  void logAuditEvent({
+    tenant_slug: tenant_id,
+    action: 'dsar_request_created',
+    resource: `/api/governance/dsar/${data.id}`,
+    actor_email: subject_email,
+    ip,
+    user_agent: request.headers.get('user-agent') ?? undefined,
+    metadata: {
+      request_type,
+      sla_deadline,
+    },
+  });
 
   // TODO: send verification email via Resend with token link
   // await sendDsarVerificationEmail({ subject_email, token: verification_token, tenant_id });

@@ -108,7 +108,10 @@ export async function recordLeadPersisted(tenantSlug: string, created: boolean):
   });
 }
 
-export async function recordLeadPersistLatency(tenantSlug: string, latencyMs: number): Promise<void> {
+export async function recordLeadPersistLatency(
+  tenantSlug: string,
+  latencyMs: number
+): Promise<void> {
   return recordMetric({
     name: 'lead.persist.latency_ms',
     type: 'histogram',
@@ -128,7 +131,10 @@ export async function recordGhlContactCreated(tenantSlug: string): Promise<void>
   });
 }
 
-export async function recordGhlContactLatency(tenantSlug: string, latencyMs: number): Promise<void> {
+export async function recordGhlContactLatency(
+  tenantSlug: string,
+  latencyMs: number
+): Promise<void> {
   return recordMetric({
     name: 'ghl.contact.latency_ms',
     type: 'histogram',
@@ -148,7 +154,10 @@ export async function recordGhlOpportunityCreated(tenantSlug: string): Promise<v
   });
 }
 
-export async function recordGhlOpportunityLatency(tenantSlug: string, latencyMs: number): Promise<void> {
+export async function recordGhlOpportunityLatency(
+  tenantSlug: string,
+  latencyMs: number
+): Promise<void> {
   return recordMetric({
     name: 'ghl.opportunity.latency_ms',
     type: 'histogram',
@@ -158,7 +167,10 @@ export async function recordGhlOpportunityLatency(tenantSlug: string, latencyMs:
   });
 }
 
-export async function recordN8nDispatchLatency(tenantSlug: string, latencyMs: number): Promise<void> {
+export async function recordN8nDispatchLatency(
+  tenantSlug: string,
+  latencyMs: number
+): Promise<void> {
   return recordMetric({
     name: 'n8n.dispatch.latency_ms',
     type: 'histogram',
@@ -183,7 +195,11 @@ export async function recordSubabaseError(tenantSlug: string, operation: string)
   });
 }
 
-export async function recordGhlApiError(tenantSlug: string, statusCode: number, operation: string): Promise<void> {
+export async function recordGhlApiError(
+  tenantSlug: string,
+  statusCode: number,
+  operation: string
+): Promise<void> {
   return recordMetric({
     name: 'ghl.api.errors',
     type: 'counter',
