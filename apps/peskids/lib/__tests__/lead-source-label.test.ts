@@ -23,10 +23,10 @@ describe('normalizeLeadSourceLabel', () => {
     expect(normalizeLeadSourceLabel('Friend')).toBe('Referido');
   });
 
-  it('returns Sin origen for empty or unknown values', () => {
-    expect(normalizeLeadSourceLabel(null)).toBe('Sin origen');
-    expect(normalizeLeadSourceLabel('')).toBe('Sin origen');
-    expect(normalizeLeadSourceLabel('Other')).toBe('Sin origen');
+  it('returns Otro for empty or unknown values', () => {
+    expect(normalizeLeadSourceLabel(null)).toBe('Otro');
+    expect(normalizeLeadSourceLabel('')).toBe('Otro');
+    expect(normalizeLeadSourceLabel('Other')).toBe('Otro');
   });
 });
 

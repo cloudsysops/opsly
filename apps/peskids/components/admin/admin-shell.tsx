@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   CalendarClock,
-  type LucideIcon,
   LayoutGrid,
   GraduationCap,
   Home,
@@ -19,6 +18,7 @@ import {
   Settings,
   Bell,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { PeskidsLogo } from '@/components/brand/peskids-logo';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -133,9 +133,16 @@ export function AdminShell({
     setSigningOut(true);
     setSignOutError('');
     try {
+      const logoutResponse = await fetch('/api/admin/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (!logoutResponse.ok) {
+        throw new Error('logout_failed');
+      }
       const supabase = createClient();
       const { error } = await supabase.auth.signOut();
-      if (error) {
+      if (error && !error.message.toLowerCase().includes('session')) {
         throw error;
       }
       router.push('/admin/login');

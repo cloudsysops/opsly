@@ -20,6 +20,13 @@ import { Badge } from '@/components/ui/badge';
 type AcademyOpsStatus = 'ready' | 'partial' | 'manual' | 'blocked';
 type AcademyOpsOwner = 'Panel' | 'CRM' | 'Automatización' | 'Manual';
 
+const ownerDisplayLabel: Record<AcademyOpsOwner, string> = {
+  Panel: 'Administrador principal',
+  CRM: 'Admisiones',
+  Automatización: 'Automatización',
+  Manual: 'Manual',
+};
+
 type AcademyDomain = {
   key:
     | 'leads'
@@ -245,7 +252,7 @@ export function AcademyOpsMap({ data }: AcademyOpsMapProps): React.ReactElement 
               <CardContent className="space-y-2">
                 <div className="flex flex-wrap gap-2 text-[11px] font-medium">
                   <span className="rounded-full border border-pk-border bg-pk-muted px-2.5 py-1 text-pk-sub">
-                    Área: {domain.owner}
+                    Responsable: {ownerDisplayLabel[domain.owner]}
                   </span>
                 </div>
                 <p className="text-sm text-pk-sub">{domain.nextAction}</p>

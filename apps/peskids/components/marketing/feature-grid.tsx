@@ -10,8 +10,8 @@ const features = [
   },
   {
     icon: Inbox,
-    title: 'Leads centralizados',
-    description: 'Formulario web y webhooks de WhatsApp o Instagram en un solo panel.',
+    title: 'Interesados centralizados',
+    description: 'Formulario web y mensajes entrantes en un solo panel.',
     accent: 'green' as const,
   },
   {
@@ -22,8 +22,8 @@ const features = [
   },
   {
     icon: Shield,
-    title: 'Plataforma Opsly',
-    description: 'Multi-tenant seguro con n8n, monitoreo y secretos en Doppler.',
+    title: 'Operación centralizada',
+    description: 'Accesos, seguimiento y alertas del equipo en un mismo lugar.',
     accent: 'violet' as const,
   },
 ];
@@ -34,7 +34,7 @@ export function OpslyFeatureGrid(): React.ReactElement {
       <div className="mx-auto max-w-7xl px-4 sm:px-8 lg:px-14">
         <p className="pk-eyebrow">Panel operativo</p>
         <h2 className="mt-2 max-w-2xl text-2xl font-bold text-pk-ink sm:text-3xl">
-          Tu equipo ve leads, familias y mensajes sin salir de Peskids
+          Tu equipo ve interesados, familias y mensajes sin salir de Peskids
         </h2>
         <div className="mt-10 grid gap-5 sm:grid-cols-2">
           {features.map(({ icon: Icon, title, description, accent }) => (
