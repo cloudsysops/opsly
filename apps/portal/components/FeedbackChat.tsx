@@ -32,6 +32,7 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [announcement, setAnnouncement] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -97,11 +98,13 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
           decision_type: data.decision_type ?? undefined,
         },
       ]);
+      setAnnouncement('Respuesta recibida');
     } catch {
       setMessages((prev) => [
         ...prev,
         { role: 'assistant', content: 'Error al enviar. Intenta de nuevo.' },
       ]);
+      setAnnouncement('Error al enviar feedback');
     } finally {
       setLoading(false);
     }
@@ -122,6 +125,7 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
 
   return (
     <>
+      <Announcer message={announcement} />
       <Button
         ref={triggerRef}
         type="button"
