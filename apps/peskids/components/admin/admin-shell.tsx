@@ -4,20 +4,22 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
+  Bell,
   CalendarClock,
-  type LucideIcon,
-  LayoutGrid,
   GraduationCap,
   Home,
   Inbox,
   LayoutDashboard,
+  LayoutGrid,
   LogOut,
   MessageSquare,
   RefreshCw,
+  Settings,
   ShieldCheck,
   Users,
   UsersRound,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { PeskidsLogo } from '@/components/brand/peskids-logo';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -46,11 +48,12 @@ const navOps = [
   { icon: ShieldCheck, label: 'Equipo', href: '/admin#team' },
   { icon: GraduationCap, label: 'Clases', href: '/admin#classes' },
   { icon: UsersRound, label: 'Familias', href: '/admin#families' },
-  { icon: Users, label: 'Leads', href: '/admin#leads' },
   { icon: Users, label: 'Interesados', href: '/admin#leads' },
   { icon: MessageSquare, label: 'Feedback', href: '/admin#feedback' },
   { icon: CalendarClock, label: 'Follow-up', href: '/admin#follow-up' },
   { icon: Inbox, label: 'Mensajes', href: '/admin/messages' },
+  { icon: Settings, label: 'Configuración', href: '/admin/settings' },
+  { icon: Bell, label: 'Notificaciones', href: '/settings/notifications' },
 ] satisfies NavItem[];
 
 interface ConversationsApiResponse {
@@ -109,13 +112,39 @@ export function AdminShell({
     };
   }, []);
 
+  const [sedeLabel, setSedeLabel] = useState('Llanogrande');
+
+  useEffect(() => {
+    const fetchSettings = async (): Promise<void> => {
+      try {
+        const res = await fetch('/api/admin/settings', { credentials: 'include' });
+        if (!res.ok) return;
+        const data = (await res.json()) as { settings?: { sede_label?: string } };
+        if (data.settings?.sede_label) {
+          setSedeLabel(data.settings.sede_label);
+        }
+      } catch {
+        // keep default
+      }
+    };
+
+    void fetchSettings();
+  }, []);
+
   const handleSignOut = async (): Promise<void> => {
     setSigningOut(true);
     setSignOutError('');
     try {
+      const logoutResponse = await fetch('/api/admin/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (!logoutResponse.ok) {
+        throw new Error('logout_failed');
+      }
       const supabase = createClient();
       const { error } = await supabase.auth.signOut();
-      if (error) {
+      if (error && !error.message.toLowerCase().includes('session')) {
         throw error;
       }
       router.push('/admin/login');
@@ -134,6 +163,14 @@ export function AdminShell({
 
     if (item.label === 'Mensajes') {
       return pathname.startsWith('/admin/messages');
+    }
+
+    if (item.label === 'Configuración') {
+      return pathname.startsWith('/admin/settings');
+    }
+
+    if (item.label === 'Notificaciones') {
+      return pathname.startsWith('/settings/notifications');
     }
 
     if (pathname !== '/admin') {
@@ -160,7 +197,6 @@ export function AdminShell({
       return hash === '#families';
     }
 
-    if (item.label === 'Leads') {
     if (item.label === 'Interesados') {
       return hash === '#leads';
     }
@@ -193,7 +229,7 @@ export function AdminShell({
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/45">
               Sede activa
             </p>
-            <p className="mt-1 text-sm font-medium text-white">Llanogrande</p>
+            <p className="mt-1 text-sm font-medium text-white">{sedeLabel}</p>
             <p className="text-xs text-white/55">Operación, soporte y seguimiento de familias.</p>
           </div>
         </div>
@@ -245,7 +281,7 @@ export function AdminShell({
                 Operación en vivo
               </span>
               <span className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-teal-700">
-                Llanogrande
+                {sedeLabel}
               </span>
             </div>
             <p className="mt-1 text-lg font-semibold tracking-tight text-pk-ink">

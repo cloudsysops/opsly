@@ -162,7 +162,7 @@ export function SupportLogin({ authConfig }: { authConfig: AuthPublicConfig }): 
             <div className="mt-8 grid gap-3 sm:grid-cols-3">
               {[
                 'Email y contraseña',
-                'Sesión segura con Supabase',
+                'Acceso seguro por rol',
                 'Redirección automática al dashboard',
               ].map((item) => (
                 <div

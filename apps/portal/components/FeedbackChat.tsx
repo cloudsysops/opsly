@@ -6,6 +6,7 @@ import { Loader2, MessageSquare, Send, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/status-badge';
+import { Announcer } from '@/components/ui/accessibility';
 import { cn } from '@/lib/utils';
 
 interface Message {
@@ -33,6 +34,8 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -41,7 +44,22 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 100);
+    } else if (!isInitialMount.current) {
+      triggerRef.current?.focus();
     }
+  }, [open]);
+
+  useEffect(() => {
+    isInitialMount.current = false;
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [open]);
 
   const sendMessage = async () => {
@@ -105,6 +123,7 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
   return (
     <>
       <Button
+        ref={triggerRef}
         type="button"
         variant="primary"
         onClick={() => setOpen(!open)}
@@ -113,22 +132,34 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
           open && 'bg-ops-surface border-ops-border text-neutral-100 hover:bg-ops-border/40'
         )}
         aria-label={open ? 'Cerrar feedback' : 'Abrir feedback'}
+        aria-expanded={open}
+        aria-controls="feedback-chat-window"
+        title={open ? 'Cerrar feedback' : 'Abrir feedback'}
       >
         {open ? <X className="h-6 w-6" /> : <MessageSquare className="h-6 w-6" />}
       </Button>
 
       {open ? (
-        <div className="fixed bottom-[92px] right-6 z-[1000] flex h-[500px] w-[360px] animate-in fade-in slide-in-from-bottom-2 flex-col overflow-hidden rounded-xl border border-ops-border bg-ops-bg shadow-2xl shadow-black/60 duration-200">
+        <div
+          id="feedback-chat-window"
+          role="dialog"
+          aria-labelledby="feedback-chat-title"
+          className="fixed bottom-[92px] right-6 z-[1000] flex h-[500px] w-[360px] animate-in fade-in slide-in-from-bottom-2 flex-col overflow-hidden rounded-xl border border-ops-border bg-ops-bg shadow-2xl shadow-black/60 duration-200"
+        >
           <div className="border-b border-ops-border bg-ops-surface px-4 py-3">
-            <div className="flex items-center gap-2 text-sm font-semibold text-neutral-100">
+            <h2
+              id="feedback-chat-title"
+              className="flex items-center gap-2 text-sm font-semibold text-neutral-100"
+            >
               <MessageSquare className="h-4 w-4 text-ops-green" />
               Feedback & Sugerencias
-            </div>
+            </h2>
             <div className="mt-0.5 text-xs text-ops-gray">Tu feedback mejora el producto</div>
           </div>
 
           <div
             aria-live="polite"
+            aria-label="Mensajes de la conversación"
             className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 scrollbar-thin scrollbar-thumb-ops-border"
           >
             {messages.map((msg, i) => (
@@ -146,12 +177,10 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
               </div>
             ))}
             {loading ? (
-              <div
-                className="flex items-center gap-2 p-2 text-xs text-ops-gray animate-pulse"
-                aria-hidden="true"
-              >
-                <Loader2 className="h-3 w-3 animate-spin" />
+              <div className="flex items-center gap-2 p-2 text-xs text-ops-gray animate-pulse">
+                <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
                 <span>Analizando...</span>
+                <Announcer message="Analizando tu feedback..." />
               </div>
             ) : null}
             <div ref={messagesEndRef} />

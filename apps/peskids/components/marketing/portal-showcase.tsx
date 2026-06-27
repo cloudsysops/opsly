@@ -174,7 +174,7 @@ export function PortalShowcase(): React.ReactElement {
           <PreviewFrame
             eyebrow="Admin"
             title="Operación y alertas"
-            description="Leads, mensajes y seguimiento del equipo."
+            description="Interesados, mensajes y seguimiento del equipo."
             accent="coral"
           >
             <AdminPreview />
@@ -324,7 +324,7 @@ export function PortalShowcase(): React.ReactElement {
             <div className="flex flex-col justify-center gap-3 sm:flex-row lg:justify-end">
               <PublicReservaWhatsAppLink
                 variant="onDark"
-                label="Reservar por WhatsApp"
+                label="Reservar clase gratuita"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-pk-sun px-6 text-sm font-bold text-pk-ink transition hover:brightness-105"
               />
             </div>
@@ -834,7 +834,7 @@ function AdminPreview(): React.ReactElement {
       <div className="rounded-[1.5rem] border border-pk-border bg-white p-3">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-pk-mutedText">Leads nuevos</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-pk-mutedText">Interesados nuevos</p>
             <p className="mt-1 text-sm font-bold text-pk-ink">3 respuestas esta semana</p>
           </div>
           <ClipboardList className="h-4 w-4 text-pk-primary" aria-hidden />
@@ -852,7 +852,7 @@ function AdminPreview(): React.ReactElement {
                     lead.tone === 'coral' && 'bg-pk-accent/15 text-pk-accent'
                   )}
                 >
-                  Lead
+                  Interesado
                 </span>
               </div>
               <p className="mt-1 text-xs text-pk-mutedText">{lead.email}</p>

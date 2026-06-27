@@ -52,3 +52,18 @@
 **Vulnerability:** `npm audit` identified high-severity vulnerabilities in `hono` (Path traversal, etc. - GHSA-wwfh-h76j-fc44) and `tmp` (Path traversal - GHSA-7c78-jf6q-g5cm).
 **Learning:** Even if the project's direct dependencies are secure, transitive dependencies or overrides might bring in vulnerable versions. The CI environment enforces a strict audit that blocks PRs on moderate+ vulnerabilities in non-dev dependencies.
 **Prevention:** Regularly run `npm audit --audit-level=moderate --omit=dev` and update `overrides` in the root `package.json` to pin safe versions of problematic dependencies.
+
+## 2026-06-24 - [Standardized IP Extraction for Security]
+**Vulnerability:** Diverse implementations of IP extraction logic across the API prioritized `x-forwarded-for` or `x-real-ip` without verifying the proxy chain, creating an IP spoofing vector for rate limiting and audit logging.
+**Learning:** Returning a placeholder string like 'unknown' for missing IPs can break database integrity for columns using `INET` or similar network address types. Centralized helpers must return `null` to signify a missing value while maintaining type safety for downstream systems.
+**Prevention:** Use the centralized `extractIp` helper from `lib/audit.ts` which is verified to prioritize Cloudflare (`cf-connecting-ip`) and safely parse proxy headers. Ensure security tests verify that spoofed headers are ignored when verified platform headers are present.
+
+## 2026-06-25 - [Untrusted Actor IDs in Public Audit Logs]
+**Vulnerability:** Public endpoints (like Peskids form submissions) allowed users to provide a `userId` in the request body which was then used as the primary `actor_id` in audit logs. This allowed attackers to spoof actions as other users in the security history.
+**Learning:** For public or unauthenticated endpoints, never use client-provided identifiers as the primary actor in audit logs. These fields must be system-generated (e.g., using client IP) or fixed (e.g., 'anonymous').
+**Prevention:** Use `extractIp` to generate a verified actor identifier (e.g., `anonymous:${ip}`) for unauthenticated actions. Always treat client-provided identifiers as untrusted and relegate them to the `metadata` field of the audit event.
+
+## 2026-06-27 - [Missing Rate Limiting and Audit Logging in Governance API]
+**Vulnerability:** The `POST /api/governance/dsar` endpoint was exposed without rate limiting or audit logging. This allowed for potential mass-creation of DSAR requests (SLA-bound operations) and lacked a traceable history of these sensitive compliance actions.
+**Learning:** Newer compliance-focused modules (like Governance) might be overlooked during security audits if they are perceived as "internal" or "administrative" even when they expose public handlers.
+**Prevention:** Mandate rate limiting and audit logging for all public-facing mutation endpoints (`POST/PATCH/DELETE`). Extend CI security scans to verify that endpoints in `app/api/governance/` utilize the established `checkRateLimit` and `logAuditEvent` helpers.

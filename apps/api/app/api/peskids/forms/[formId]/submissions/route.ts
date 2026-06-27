@@ -4,6 +4,8 @@ import { HTTP_STATUS } from '@/lib/constants';
 import { triggerWebhooks } from '@/lib/peskids-webhook-trigger';
 import type { WebhookConfig, WebhookTriggerResult } from '@/lib/peskids-types';
 import { getServiceClient } from '@/lib/supabase';
+import { extractIp } from '@/lib/audit';
+import { checkRateLimit } from '@/lib/rate-limiter-memory';
 
 // peskids.* tables pending DB type codegen — loose client interface for schema-qualified access
 interface PeskidsQB {
@@ -133,21 +135,27 @@ async function logSubmissionAuditEvent(
   tenantSlug: string,
   userId: string | undefined,
   email: string | undefined,
-  webhookResults: WebhookTriggerResult | null
+  webhookResults: WebhookTriggerResult | null,
+  ip: string | null
 ): Promise<void> {
   try {
     const db = supabase as unknown as PeskidsClient;
+    // Security: Do not trust userId from body as primary actor_id
+    const actorId = ip ? `anonymous:${ip}` : 'anonymous';
+
     await db.rpc('log_audit_event', {
       p_action: 'form_submission_created',
-      p_actor_id: userId || 'anonymous',
+      p_actor_id: actorId,
       p_tenant_slug: tenantSlug,
       p_resource_id: submissionId,
       p_resource_type: 'form_submission',
       p_metadata: {
         form_id: formId,
         email,
+        untrusted_userId: userId,
         webhooks_triggered: webhookResults?.success || 0,
         webhooks_failed: webhookResults?.failed || 0,
+        ip,
       },
     });
   } catch (auditError) {
@@ -161,6 +169,14 @@ export async function POST(
 ): Promise<Response> {
   try {
     const { formId } = await params;
+
+    // Security: Rate limit based on IP to prevent spamming public endpoint
+    const ip = extractIp(request);
+    const rateLimit = await checkRateLimit(ip ? `ip:${ip}` : 'anonymous-submission');
+    if (!rateLimit.allowed) {
+      return jsonError('Too many requests', HTTP_STATUS.TOO_MANY_REQUESTS);
+    }
+
     const body = (await request.json()) as Partial<FormSubmissionPayload>;
 
     const validation = validateFormSubmissionRequest(formId, body);
@@ -205,7 +221,8 @@ export async function POST(
       form.tenant_slug,
       body.userId,
       body.email,
-      webhookResults
+      webhookResults,
+      ip
     );
 
     return jsonOk({

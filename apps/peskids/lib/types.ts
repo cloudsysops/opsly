@@ -307,6 +307,33 @@ export type Database = {
         Update: Partial<Database['public']['Tables']['students']['Insert']>;
         Relationships: [];
       };
+      tenant_settings: {
+        Row: {
+          tenant_id: string;
+          academy_name: string;
+          sede_label: string;
+          support_email: string | null;
+          support_phone: string | null;
+          default_modality: 'llanogrande' | 'domicilio';
+          default_capacity: number;
+          default_price_cents: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          tenant_id: string;
+          academy_name?: string;
+          sede_label?: string;
+          support_email?: string | null;
+          support_phone?: string | null;
+          default_modality?: 'llanogrande' | 'domicilio';
+          default_capacity?: number;
+          default_price_cents?: number;
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['tenant_settings']['Insert']>;
+        Relationships: [];
+      };
       feedback: {
         Row: {
           id: string;

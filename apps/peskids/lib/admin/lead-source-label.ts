@@ -1,8 +1,8 @@
-export type LeadSourceDisplay = 'Web' | 'Instagram' | 'WhatsApp' | 'Referido' | 'Sin origen';
+export type LeadSourceDisplay = 'Web' | 'Instagram' | 'WhatsApp' | 'Referido' | 'Otro';
 
 export function normalizeLeadSourceLabel(source: string | null | undefined): LeadSourceDisplay {
   if (!source?.trim()) {
-    return 'Sin origen';
+    return 'Otro';
   }
 
   const normalized = source.trim().toLowerCase();
@@ -32,8 +32,8 @@ export function normalizeLeadSourceLabel(source: string | null | undefined): Lea
   }
 
   if (normalized === 'other' || normalized === 'not sure' || normalized === 'otro') {
-    return 'Sin origen';
+    return 'Otro';
   }
 
-  return 'Sin origen';
+  return 'Otro';
 }
