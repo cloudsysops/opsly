@@ -47,7 +47,7 @@ describe('POST /api/leads', () => {
     expect(postCanonicalLeadMock).not.toHaveBeenCalled();
   });
 
-  it('proxies lead creation to the Opsly canonical API', async () => {
+  it('proxies lead creation to the canonical public API', async () => {
     postCanonicalLeadMock.mockResolvedValue({
       ok: true,
       leadId: 'lead-1',
@@ -79,7 +79,7 @@ describe('POST /api/leads', () => {
       referral_code: 'PK-CODE',
       referral_link: 'https://peskids.op-sly.com/familias?ref=PK-CODE',
       referral_discount_cents: 0,
-      message: 'Lead created successfully',
+      message: 'Interesado registrado correctamente',
       ghl_contact_id: null,
       request_id: 'req-lead-201',
     });

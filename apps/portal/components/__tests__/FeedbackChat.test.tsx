@@ -77,9 +77,16 @@ describe('FeedbackChat', () => {
 
   it('shows loading state when sending message', async () => {
     const mockFetch = vi.fn().mockImplementation(() =>
-      new Promise(resolve => setTimeout(() => resolve({
-        json: () => Promise.resolve({ conversation_id: '123', message: 'Respuesta' })
-      }), 100))
+      new Promise((resolve) =>
+        setTimeout(
+          () =>
+            resolve({
+              ok: true,
+              json: () => Promise.resolve({ conversation_id: '123', message: 'Respuesta' }),
+            }),
+          100
+        )
+      )
     );
     vi.stubGlobal('fetch', mockFetch);
 
@@ -97,6 +104,6 @@ describe('FeedbackChat', () => {
       fireEvent.click(sendButton);
     });
 
-    expect(screen.getByText(/analizando/i)).toBeInTheDocument();
+    expect(screen.getByText('Analizando...')).toBeInTheDocument();
   });
 });

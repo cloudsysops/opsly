@@ -33,3 +33,7 @@
 ## 2026-06-18 - [Tenant Lookup Caching]
 **Learning:** Tenant metadata lookups (by slug) are performed on almost every authorized portal request and public booking interaction. Caching these lookups in Redis for 60s significantly reduces Supabase load and latency for the most frequent API paths. Implementing negative caching for 'not_found' results is also critical to prevent DB exhaustion from invalid slug probes.
 **Action:** Always cache tenant identity lookups that are part of the request authorization or routing path.
+
+## 2026-06-26 - [Caching Admin Overview DB & Network Probes]
+**Learning:** The admin overview dashboardaggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
+**Action:** Always cache aggregated metrics and external probes in dashboard-facing API routes, and modularize parsing logic to maintain low cyclomatic complexity.

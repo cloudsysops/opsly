@@ -9,6 +9,8 @@ const {
   mockSchema,
   mockCheckTenantBudget,
   mockLoggerError,
+  mockGetCache,
+  mockSetCache,
 } = vi.hoisted(() => {
   const mockOrder = vi.fn();
   const mockLimit = vi.fn();
@@ -18,6 +20,8 @@ const {
   const mockSchema = vi.fn(() => ({ from: mockFrom }));
   const mockCheckTenantBudget = vi.fn();
   const mockLoggerError = vi.fn();
+  const mockGetCache = vi.fn();
+  const mockSetCache = vi.fn();
   return {
     mockOrder,
     mockLimit,
@@ -27,6 +31,8 @@ const {
     mockSchema,
     mockCheckTenantBudget,
     mockLoggerError,
+    mockGetCache,
+    mockSetCache,
   };
 });
 
@@ -50,6 +56,11 @@ vi.mock('../logger', () => ({
   },
 }));
 
+vi.mock('../redis-cache', () => ({
+  getCache: mockGetCache,
+  setCache: mockSetCache,
+}));
+
 import { fetchTenantBudgetOverview } from '../admin-costs-tenant-budgets';
 
 function mockTenantList(rows: Array<{ id: string; slug: string; name: string }>) {
@@ -64,6 +75,26 @@ function mockTenantList(rows: Array<{ id: string; slug: string; name: string }>)
 describe('fetchTenantBudgetOverview', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockGetCache.mockResolvedValue(null);
+  });
+
+  it('returns cached data if available', async () => {
+    const cachedData = {
+      tenant_budgets: [],
+      llm_budget_summary: {
+        tenant_count: 5,
+        tenants_at_warning: 0,
+        tenants_at_critical: 0,
+        total_spend_usd: 100,
+      },
+    };
+    mockGetCache.mockResolvedValue(cachedData);
+
+    const payload = await fetchTenantBudgetOverview();
+
+    expect(payload).toEqual(cachedData);
+    expect(mockGetCache).toHaveBeenCalledWith('admin:costs:tenant-budgets-overview');
+    expect(mockSchema).not.toHaveBeenCalled();
   });
 
   it('counts warning and critical tenants even when enforcement is skipped', async () => {
@@ -98,6 +129,11 @@ describe('fetchTenantBudgetOverview', () => {
       tenants_at_critical: 1,
       total_spend_usd: 175,
     });
+    expect(mockSetCache).toHaveBeenCalledWith(
+      'admin:costs:tenant-budgets-overview',
+      payload,
+      expect.any(Number)
+    );
   });
 
   it('logs and skips a tenant when budget lookup fails', async () => {

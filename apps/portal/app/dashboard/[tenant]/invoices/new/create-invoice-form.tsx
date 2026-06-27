@@ -2,7 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { getApiBaseUrl } from '@/lib/api';
 import { PORTAL_DEMO_COOKIE } from '@/lib/demo-tenant';
 
@@ -121,7 +123,10 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
   return (
     <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
       {error ? (
-        <div className="rounded border border-red-800 bg-red-900/20 px-3 py-2 text-sm text-red-400">
+        <div
+          role="alert"
+          className="rounded border border-red-800 bg-red-900/20 px-3 py-2 text-sm text-red-400"
+        >
           {error}
         </div>
       ) : null}
@@ -129,21 +134,25 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
       {/* Customer */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-1 block text-xs text-ops-gray">Email del cliente *</label>
-          <input
+          <label htmlFor="customerEmail" className="mb-1 block text-xs text-ops-gray">
+            Email del cliente *
+          </label>
+          <Input
+            id="customerEmail"
             type="email"
             required
-            className={inputClass}
             placeholder="cliente@empresa.com"
             value={customerEmail}
             onChange={(e) => setCustomerEmail(e.target.value)}
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs text-ops-gray">Nombre del cliente</label>
-          <input
+          <label htmlFor="customerName" className="mb-1 block text-xs text-ops-gray">
+            Nombre del cliente
+          </label>
+          <Input
+            id="customerName"
             type="text"
-            className={inputClass}
             placeholder="TechCorp S.A.S"
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
@@ -154,17 +163,22 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
       {/* Dates & currency */}
       <div className="grid gap-4 sm:grid-cols-3">
         <div>
-          <label className="mb-1 block text-xs text-ops-gray">Fecha vencimiento</label>
-          <input
+          <label htmlFor="dueDate" className="mb-1 block text-xs text-ops-gray">
+            Fecha vencimiento
+          </label>
+          <Input
+            id="dueDate"
             type="date"
-            className={inputClass}
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs text-ops-gray">Moneda</label>
+          <label htmlFor="currency" className="mb-1 block text-xs text-ops-gray">
+            Moneda
+          </label>
           <select
+            id="currency"
             className={inputClass}
             value={currency}
             onChange={(e) => setCurrency(e.target.value)}
@@ -174,13 +188,15 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-xs text-ops-gray">IVA (%)</label>
-          <input
+          <label htmlFor="taxRate" className="mb-1 block text-xs text-ops-gray">
+            IVA (%)
+          </label>
+          <Input
+            id="taxRate"
             type="number"
             min={0}
             max={100}
             step={0.01}
-            className={inputClass}
             value={taxRate}
             onChange={(e) => setTaxRate(Number(e.target.value))}
           />
@@ -192,7 +208,7 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
         <div className="mb-2 flex items-center justify-between">
           <label className="text-xs uppercase tracking-wider text-ops-gray">Items</label>
           <Button type="button" variant="ghost" size="sm" onClick={addLineItem}>
-            + Agregar item
+            <Plus className="mr-1 h-3 w-3" /> Agregar item
           </Button>
         </div>
         <div className="space-y-3">
@@ -201,46 +217,49 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
               key={idx}
               className="grid gap-2 rounded border border-ops-border/50 p-3 sm:grid-cols-[1fr_80px_120px_100px_40px]"
             >
-              <input
+              <Input
                 type="text"
                 required
-                className={inputClass}
                 placeholder="Descripción"
+                aria-label="Descripción del item"
                 value={li.description}
                 onChange={(e) => updateLineItem(idx, 'description', e.target.value)}
               />
-              <input
+              <Input
                 type="number"
                 min={1}
-                className={inputClass}
                 placeholder="Cant"
+                aria-label="Cantidad"
                 value={li.quantity}
                 onChange={(e) => updateLineItem(idx, 'quantity', Number(e.target.value))}
               />
-              <input
+              <Input
                 type="number"
                 min={0}
-                className={inputClass}
                 placeholder="Precio (centavos)"
+                aria-label="Precio unitario (centavos)"
                 value={li.unit_price_cents || ''}
                 onChange={(e) => updateLineItem(idx, 'unit_price_cents', Number(e.target.value))}
               />
-              <input
+              <Input
                 type="text"
-                className={inputClass}
                 placeholder="Categoría"
+                aria-label="Categoría"
                 value={li.category}
                 onChange={(e) => updateLineItem(idx, 'category', e.target.value)}
               />
               {lineItems.length > 1 ? (
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="sm"
                   onClick={() => removeLineItem(idx)}
-                  className="text-red-400 hover:text-red-300"
+                  className="text-red-400 hover:bg-red-950/30 hover:text-red-300"
+                  aria-label="Eliminar item"
                   title="Eliminar"
                 >
-                  ×
-                </button>
+                  <X className="h-4 w-4" />
+                </Button>
               ) : (
                 <div />
               )}
@@ -251,8 +270,11 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
 
       {/* Notes */}
       <div>
-        <label className="mb-1 block text-xs text-ops-gray">Notas</label>
+        <label htmlFor="notes" className="mb-1 block text-xs text-ops-gray">
+          Notas
+        </label>
         <textarea
+          id="notes"
           className={`${inputClass} h-20 resize-none`}
           placeholder="Notas adicionales..."
           value={notes}

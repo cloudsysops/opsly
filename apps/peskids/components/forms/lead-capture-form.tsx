@@ -81,6 +81,8 @@ export function LeadCaptureForm({
     setError('')
 
     try {
+      const normalizedOrigin = formData.referral_source || defaultReferralSource || source || 'web'
+
       const apiPayload = {
         name: formData.name,
         email: formData.email,
@@ -88,7 +90,7 @@ export function LeadCaptureForm({
         class_modality: formData.class_modality || null,
         neighborhood: formData.neighborhood || null,
         grade_interested: formData.grade_interested || null,
-        referral_source: formData.referral_source || null,
+        referral_source: normalizedOrigin,
         referred_by_code: referredByCode || null,
         consent_treatment: consentTreatment,
         consent_marketing: consentMarketing,
@@ -121,7 +123,7 @@ export function LeadCaptureForm({
         class_modality: formData.class_modality || null,
         neighborhood: formData.neighborhood || null,
         grade_interested: formData.grade_interested || null,
-        referral_source: formData.referral_source || null,
+        referral_source: normalizedOrigin,
         referred_by_code: referredByCode || null,
         referral_code: apiResult.referral_code || null,
       }
@@ -198,7 +200,7 @@ export function LeadCaptureForm({
               ¡Perfecto, {formData.name}! 🎉 Recibimos tu solicitud.
             </p>
             <p className="mt-2 text-pk-sub">
-              Un asesor revisará tu información y te escribirá en menos de 48 h hábiles para coordinar la clase de prueba gratis.
+              Tu solicitud quedó registrada correctamente. Un asesor revisará tu información y te escribirá en menos de 48 h hábiles para coordinar la clase de prueba gratis.
             </p>
             <p className="mt-3 font-medium text-pk-primary">
               Siguiente paso: continúa por WhatsApp con tu solicitud ya registrada.

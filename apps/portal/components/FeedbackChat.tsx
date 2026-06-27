@@ -1,7 +1,7 @@
 'use client';
 
 import { getApiBaseUrl } from '@/lib/api';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Loader2, MessageSquare, Send, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -43,27 +43,21 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
   }, [messages]);
 
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 100);
-    } else {
+    } else if (!isInitialMount.current) {
       triggerRef.current?.focus();
     }
   }, [open]);
 
-  const toggleOpen = useCallback(() => {
-    setOpen((prev) => !prev);
+  useEffect(() => {
+    isInitialMount.current = false;
   }, []);
 
   useEffect(() => {
+    if (!open) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && open) {
-        setOpen(false);
-      }
+      if (e.key === 'Escape') setOpen(false);
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -136,7 +130,7 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
         ref={triggerRef}
         type="button"
         variant="primary"
-        onClick={toggleOpen}
+        onClick={() => setOpen(!open)}
         className={cn(
           'fixed bottom-6 right-6 z-[1000] h-14 w-14 rounded-full p-0 shadow-lg shadow-black/40 transition-transform active:scale-95',
           open && 'bg-ops-surface border-ops-border text-neutral-100 hover:bg-ops-border/40'
@@ -144,6 +138,7 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
         aria-label={open ? 'Cerrar feedback' : 'Abrir feedback'}
         aria-expanded={open}
         aria-controls="feedback-chat-window"
+        title={open ? 'Cerrar feedback' : 'Abrir feedback'}
       >
         {open ? <X className="h-6 w-6" /> : <MessageSquare className="h-6 w-6" />}
       </Button>
@@ -152,22 +147,23 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
         <div
           id="feedback-chat-window"
           role="dialog"
-          aria-labelledby="feedback-chat-header"
+          aria-labelledby="feedback-chat-title"
           className="fixed bottom-[92px] right-6 z-[1000] flex h-[500px] w-[360px] animate-in fade-in slide-in-from-bottom-2 flex-col overflow-hidden rounded-xl border border-ops-border bg-ops-bg shadow-2xl shadow-black/60 duration-200"
         >
           <div className="border-b border-ops-border bg-ops-surface px-4 py-3">
-            <div
-              id="feedback-chat-header"
+            <h2
+              id="feedback-chat-title"
               className="flex items-center gap-2 text-sm font-semibold text-neutral-100"
             >
               <MessageSquare className="h-4 w-4 text-ops-green" />
               Feedback & Sugerencias
-            </div>
+            </h2>
             <div className="mt-0.5 text-xs text-ops-gray">Tu feedback mejora el producto</div>
           </div>
 
           <div
             aria-live="polite"
+            aria-label="Mensajes de la conversación"
             className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 scrollbar-thin scrollbar-thumb-ops-border"
           >
             {messages.map((msg, i) => (
@@ -186,8 +182,9 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
             ))}
             {loading ? (
               <div className="flex items-center gap-2 p-2 text-xs text-ops-gray animate-pulse">
-                <Loader2 className="h-3 w-3 animate-spin" />
+                <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
                 <span>Analizando...</span>
+                <Announcer message="Analizando tu feedback..." />
               </div>
             ) : null}
             <div ref={messagesEndRef} />

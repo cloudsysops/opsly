@@ -713,6 +713,9 @@ jobs:
             # Optional services: no bloquear deploy si falta imagen/tag.
             docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps --force-recreate mcp llm-gateway orchestrator hermes context-builder || true
 
+            bash /opt/opsly/scripts/docker-prune-after-deploy.sh 2>/dev/null \
+              || { docker image prune -af || true; docker builder prune -af 2>/dev/null || true; }
+
             if [ -z "${PLATFORM_DOMAIN:-}" ]; then
               echo "PLATFORM_DOMAIN no está definido" >&2
               exit 1

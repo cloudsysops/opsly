@@ -1,0 +1,238 @@
+{
+  "name": "Peskids — Enrollment Confirmation & Student Creation",
+  "description": "CRITICAL: Create student profile when parent completes enrollment",
+  "trigger": "ghl_webhook",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Webhook: Contact Stage Changed to Enrolled",
+      "type": "n8n-nodes-base.webhookTrigger",
+      "typeVersion": 1,
+      "position": [50, 300],
+      "id": "webhook-enrollment"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate enrollment stage change\nconst event = $input.all()[0].json;\n\nif (event.stage !== 'Enrolled') {\n  throw new Error('Not an enrollment event');\n}\n\nreturn [{\n  contactId: event.contact.id,\n  parentName: event.contact.firstName + ' ' + event.contact.lastName,\n  parentEmail: event.contact.email,\n  parentPhone: event.contact.phone,\n  childName: event.contact.childName,\n  childAge: event.contact.childAge,\n  swimLevel: event.contact.swimLevel || 'Beginner',\n  enrollmentDate: new Date().toISOString().split('T')[0],\n  timestamp: new Date().toISOString()\n}];"
+      },
+      "name": "Parse Enrollment Event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "id": "parse-enrollment"
+    },
+    {
+      "parameters": {
+        "resource": "http",
+        "operation": "request",
+        "method": "POST",
+        "url": "={{$env.PESKIDS_API_URL}}/api/v1/students",
+        "headers": {
+          "Authorization": "Bearer {{$env.PESKIDS_API_KEY}}",
+          "Content-Type": "application/json"
+        },
+        "body": "={\"json\": {\"parentId\": \"{{$node[\"Parse Enrollment Event\"].json.contactId}}\", \"parentName\": \"{{$node[\"Parse Enrollment Event\"].json.parentName}}\", \"parentEmail\": \"{{$node[\"Parse Enrollment Event\"].json.parentEmail}}\", \"parentPhone\": \"{{$node[\"Parse Enrollment Event\"].json.parentPhone}}\", \"childName\": \"{{$node[\"Parse Enrollment Event\"].json.childName}}\", \"childAge\": {{$node[\"Parse Enrollment Event\"].json.childAge}}, \"swimLevel\": \"{{$node[\"Parse Enrollment Event\"].json.swimLevel}}\", \"enrollmentDate\": \"{{$node[\"Parse Enrollment Event\"].json.enrollmentDate}}\"}}"
+      },
+      "name": "Create Student Profile in Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [450, 300],
+      "id": "create-student"
+    },
+    {
+      "parameters": {
+        "resource": "contact",
+        "operation": "update",
+        "locationId": "KJ5LawrOOe3hIerqtMRu",
+        "contactId": "={{$node[\"Parse Enrollment Event\"].json.contactId}}",
+        "updateFields": {
+          "stage": "Active Student",
+          "tags": ["enrolled", "active-student"],
+          "customFields": {
+            "student_id": "={{$node[\"Create Student Profile in Supabase\"].json.studentId}}",
+            "enrollment_date": "={{$node[\"Parse Enrollment Event\"].json.enrollmentDate}}"
+          }
+        }
+      },
+      "name": "Update Contact: Active Student",
+      "type": "n8n-nodes-base.gohighlevel",
+      "typeVersion": 1,
+      "position": [650, 300],
+      "id": "update-active-student",
+      "credentials": {
+        "goHighLevelApi": "peskids_api"
+      }
+    },
+    {
+      "parameters": {
+        "resource": "email",
+        "operation": "send",
+        "to": "={{$node[\"Parse Enrollment Event\"].json.parentEmail}}",
+        "templateId": "enrollment-welcome",
+        "subject": "¡Bienvenido {{$node[\"Parse Enrollment Event\"].json.childName}}! Tu viaje en Peskids comienza aquí"
+      },
+      "name": "Send Email: Enrollment Welcome",
+      "type": "n8n-nodes-base.gohighlevel",
+      "typeVersion": 1,
+      "position": [850, 150],
+      "id": "send-welcome-email",
+      "credentials": {
+        "goHighLevelApi": "peskids_api"
+      }
+    },
+    {
+      "parameters": {
+        "resource": "sms",
+        "operation": "send",
+        "contactId": "={{$node[\"Parse Enrollment Event\"].json.contactId}}",
+        "message": "¡Bienvenido {{$node[\"Parse Enrollment Event\"].json.childName}} a Peskids! Ya podés ver tu horario y perfil en la app. Descarga: {{appLink}}"
+      },
+      "name": "Send SMS: Welcome",
+      "type": "n8n-nodes-base.gohighlevel",
+      "typeVersion": 1,
+      "position": [850, 300],
+      "id": "send-welcome-sms",
+      "credentials": {
+        "goHighLevelApi": "peskids_api"
+      }
+    },
+    {
+      "parameters": {
+        "resource": "appointment",
+        "operation": "create",
+        "locationId": "KJ5LawrOOe3hIerqtMRu",
+        "contactId": "={{$node[\"Parse Enrollment Event\"].json.contactId}}",
+        "title": "Primera clase — {{$node[\"Parse Enrollment Event\"].json.childName}}",
+        "startDate": "={{new Date(new Date().getTime() + 7*24*60*60*1000).toISOString()}}",
+        "duration": 45,
+        "calendarId": "class-schedule"
+      },
+      "name": "Create First Class Appointment",
+      "type": "n8n-nodes-base.gohighlevel",
+      "typeVersion": 1,
+      "position": [850, 450],
+      "id": "create-first-class",
+      "credentials": {
+        "goHighLevelApi": "peskids_api"
+      }
+    },
+    {
+      "parameters": {
+        "channel": "#ops-critical",
+        "text": "🎉 New Enrollment!\n• Child: {{$node[\"Parse Enrollment Event\"].json.childName}} (age {{$node[\"Parse Enrollment Event\"].json.childAge}})\n• Parent: {{$node[\"Parse Enrollment Event\"].json.parentName}}\n• Level: {{$node[\"Parse Enrollment Event\"].json.swimLevel}}\n• Date: {{$node[\"Parse Enrollment Event\"].json.enrollmentDate}}\n• Student ID: {{$node[\"Create Student Profile in Supabase\"].json.studentId}}"
+      },
+      "name": "Log: Slack Enrollment",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [1050, 300],
+      "id": "log-slack-enrollment",
+      "credentials": {
+        "slackApi": "ops_slack"
+      }
+    },
+    {
+      "parameters": {
+        "channel": "#ops-critical",
+        "text": "❌ Enrollment Failed: {{$error.message}}\nContact: {{$node[\"Parse Enrollment Event\"].json.contactId}}"
+      },
+      "name": "Log: Error Handler",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [1050, 550],
+      "id": "log-error",
+      "credentials": {
+        "slackApi": "ops_slack"
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: Contact Stage Changed to Enrolled": {
+      "main": [
+        [
+          {
+            "node": "Parse Enrollment Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Enrollment Event": {
+      "main": [
+        [
+          {
+            "node": "Create Student Profile in Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Student Profile in Supabase": {
+      "main": [
+        [
+          {
+            "node": "Update Contact: Active Student",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Contact: Active Student": {
+      "main": [
+        [
+          {
+            "node": "Send Email: Enrollment Welcome",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email: Enrollment Welcome": {
+      "main": [
+        [
+          {
+            "node": "Send SMS: Welcome",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send SMS: Welcome": {
+      "main": [
+        [
+          {
+            "node": "Create First Class Appointment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create First Class Appointment": {
+      "main": [
+        [
+          {
+            "node": "Log: Slack Enrollment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "errorWorkflow": "peskids-error-handler",
+    "saveManualExecutions": true,
+    "timezone": "America/Bogota"
+  },
+  "trigger": "ghl_webhook",
+  "active": true,
+  "sla_minutes": 10,
+  "success_metric": "100% student creation, <10 min latency",
+  "webhook_url": "/api/public/tenants/peskids/webhooks/n8n/enrollment",
+  "notes": "CRITICAL WORKFLOW: Blocks MRR until student profile created. Creates payment subscription record in Supabase."
+}
