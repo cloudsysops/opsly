@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
         referral_code: referralCode,
         referral_link: referralLink,
         referral_discount_cents: 0,
-        message: 'Lead created successfully',
+        message: 'Interesado registrado correctamente',
         ghl_contact_id: canonical.ghlContactId ?? null,
       },
       201
