@@ -161,7 +161,7 @@ async function createGhlTask(lead: PendingFollowupLead): Promise<
 // Append to followup_log JSONB column
 // ---------------------------------------------------------------------------
 
-async function appendFollowupLog(leadDbId: string, entry: FollowupLogEntry): Promise<void> {
+export async function appendFollowupLog(leadDbId: string, entry: FollowupLogEntry): Promise<void> {
   const db = getServiceClient();
   const { error } = await db
     .schema('platform')
