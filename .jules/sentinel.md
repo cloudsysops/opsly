@@ -62,3 +62,8 @@
 **Vulnerability:** Public endpoints (like Peskids form submissions) allowed users to provide a `userId` in the request body which was then used as the primary `actor_id` in audit logs. This allowed attackers to spoof actions as other users in the security history.
 **Learning:** For public or unauthenticated endpoints, never use client-provided identifiers as the primary actor in audit logs. These fields must be system-generated (e.g., using client IP) or fixed (e.g., 'anonymous').
 **Prevention:** Use `extractIp` to generate a verified actor identifier (e.g., `anonymous:${ip}`) for unauthenticated actions. Always treat client-provided identifiers as untrusted and relegate them to the `metadata` field of the audit event.
+
+## 2026-06-27 - [Missing Rate Limiting and Audit Logging in Governance API]
+**Vulnerability:** The `POST /api/governance/dsar` endpoint was exposed without rate limiting or audit logging. This allowed for potential mass-creation of DSAR requests (SLA-bound operations) and lacked a traceable history of these sensitive compliance actions.
+**Learning:** Newer compliance-focused modules (like Governance) might be overlooked during security audits if they are perceived as "internal" or "administrative" even when they expose public handlers.
+**Prevention:** Mandate rate limiting and audit logging for all public-facing mutation endpoints (`POST/PATCH/DELETE`). Extend CI security scans to verify that endpoints in `app/api/governance/` utilize the established `checkRateLimit` and `logAuditEvent` helpers.
