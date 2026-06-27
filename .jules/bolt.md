@@ -33,3 +33,7 @@
 ## 2026-06-18 - [Tenant Lookup Caching]
 **Learning:** Tenant metadata lookups (by slug) are performed on almost every authorized portal request and public booking interaction. Caching these lookups in Redis for 60s significantly reduces Supabase load and latency for the most frequent API paths. Implementing negative caching for 'not_found' results is also critical to prevent DB exhaustion from invalid slug probes.
 **Action:** Always cache tenant identity lookups that are part of the request authorization or routing path.
+
+## 2026-06-25 - [Caching of Multi-Query Dashboard Summaries]
+**Learning:** Dashboard summaries that aggregate results from multiple independent Supabase queries (e.g., 5 parallel calls) are ideal candidates for Redis caching. Implementing a 60s TTL provides a massive performance boost by collapsing multiple network round-trips into a single O(1) cache lookup. Using the non-blocking `void setCache(...)` pattern ensures that cache updates do not add latency to the current response.
+**Action:** Always consider Redis caching for dashboard summary endpoints that involve parallel database queries.

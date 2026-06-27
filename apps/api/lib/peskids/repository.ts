@@ -1,6 +1,11 @@
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { getServiceClient } from '../supabase';
 import { PESKIDS_LOW_SATISFACTION_THRESHOLD, PESKIDS_TENANT_SLUG } from './constants';
 import type { PeskidsFeedbackBody, PeskidsLeadBody } from './schemas';
+import { getCache, setCache } from '../redis-cache';
+import { CACHE_TTL } from '../constants';
+
+const CACHE_KEY = 'peskids:dashboard_summary';
 
 export type PeskidsLeadRow = {
   id: string;
@@ -127,13 +132,55 @@ function getFirstQueryError(
   return null;
 }
 
+/**
+ * Dashboard summary data for Peskids.
+ *
+ * BOLT OPTIMIZATION:
+ * 1. Caches the result in Redis for 60s (CACHE_TTL.SHORT) to reduce Supabase load.
+ * 2. Already uses Promise.all to fetch data in parallel.
+ */
 export async function peskidsFetchDashboardSummary(): Promise<
   { ok: true; summary: PeskidsDashboardSummary } | { ok: false; error: string }
 > {
+  const cached = await getCache<PeskidsDashboardSummary>(CACHE_KEY);
+  if (cached) {
+    return { ok: true, summary: cached };
+  }
+
   const client = getServiceClient();
   const since = weekStartIso();
 
-  const [leadsWeek, recentLeads, recentFeedback, actionCount, lowAlerts] = await Promise.all([
+  const [leadsWeek, recentLeads, recentFeedback, actionCount, lowAlerts] =
+    await fetchPeskidsRawDashboardData(client, since);
+
+  const errorMsg = getFirstQueryError(leadsWeek, recentLeads, recentFeedback, actionCount);
+  if (errorMsg) {
+    return { ok: false, error: errorMsg };
+  }
+
+  const summary: PeskidsDashboardSummary = {
+    tenant_slug: PESKIDS_TENANT_SLUG,
+    new_leads_this_week: leadsWeek.count ?? 0,
+    recent_leads: (recentLeads.data ?? []) as PeskidsLeadRow[],
+    recent_feedback: (recentFeedback.data ?? []) as PeskidsFeedbackRow[],
+    feedback_action_required: actionCount.count ?? 0,
+    low_rating_alerts: (lowAlerts.data ?? []) as PeskidsFeedbackRow[],
+  };
+
+  void setCache(CACHE_KEY, summary, CACHE_TTL.SHORT);
+
+  return {
+    ok: true,
+    summary,
+  };
+}
+
+const RECENT_LEADS_LIMIT = 10;
+const RECENT_FEEDBACK_LIMIT = 10;
+const LOW_RATING_ALERTS_LIMIT = 5;
+
+async function fetchPeskidsRawDashboardData(client: SupabaseClient, since: string) {
+  return Promise.all([
     client
       .schema('platform')
       .from('peskids_leads')
@@ -148,7 +195,7 @@ export async function peskidsFetchDashboardSummary(): Promise<
       )
       .eq('tenant_slug', PESKIDS_TENANT_SLUG)
       .order('created_at', { ascending: false })
-      .limit(10),
+      .limit(RECENT_LEADS_LIMIT),
     client
       .schema('platform')
       .from('peskids_feedback')
@@ -157,7 +204,7 @@ export async function peskidsFetchDashboardSummary(): Promise<
       )
       .eq('tenant_slug', PESKIDS_TENANT_SLUG)
       .order('created_at', { ascending: false })
-      .limit(10),
+      .limit(RECENT_FEEDBACK_LIMIT),
     client
       .schema('platform')
       .from('peskids_feedback')
@@ -174,23 +221,6 @@ export async function peskidsFetchDashboardSummary(): Promise<
       .lt('satisfaction', PESKIDS_LOW_SATISFACTION_THRESHOLD)
       .eq('status', 'action_required')
       .order('created_at', { ascending: false })
-      .limit(5),
+      .limit(LOW_RATING_ALERTS_LIMIT),
   ]);
-
-  const errorMsg = getFirstQueryError(leadsWeek, recentLeads, recentFeedback, actionCount);
-  if (errorMsg) {
-    return { ok: false, error: errorMsg };
-  }
-
-  return {
-    ok: true,
-    summary: {
-      tenant_slug: PESKIDS_TENANT_SLUG,
-      new_leads_this_week: leadsWeek.count ?? 0,
-      recent_leads: (recentLeads.data ?? []) as PeskidsLeadRow[],
-      recent_feedback: (recentFeedback.data ?? []) as PeskidsFeedbackRow[],
-      feedback_action_required: actionCount.count ?? 0,
-      low_rating_alerts: (lowAlerts.data ?? []) as PeskidsFeedbackRow[],
-    },
-  };
 }
