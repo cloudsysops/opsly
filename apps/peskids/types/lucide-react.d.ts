@@ -77,6 +77,7 @@ declare module 'lucide-react' {
   export const UserPlus: LucideIcon;
   export const UserRoundSearch: LucideIcon;
   export const Users: LucideIcon;
+  export const UsersRound: LucideIcon;
   export const Volume2: LucideIcon;
   export const VolumeX: LucideIcon;
   export const Wallet: LucideIcon;
