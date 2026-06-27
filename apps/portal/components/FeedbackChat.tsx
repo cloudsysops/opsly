@@ -6,6 +6,7 @@ import { Loader2, MessageSquare, Send, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/status-badge';
+import { Announcer } from '@/components/ui/accessibility';
 import { cn } from '@/lib/utils';
 
 interface Message {
@@ -33,6 +34,8 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -41,8 +44,14 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 100);
+    } else if (!isInitialMount.current) {
+      triggerRef.current?.focus();
     }
   }, [open]);
+
+  useEffect(() => {
+    isInitialMount.current = false;
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -114,6 +123,7 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
   return (
     <>
       <Button
+        ref={triggerRef}
         type="button"
         variant="primary"
         onClick={() => setOpen(!open)}
@@ -149,6 +159,7 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
 
           <div
             aria-live="polite"
+            aria-label="Mensajes de la conversación"
             className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 scrollbar-thin scrollbar-thumb-ops-border"
           >
             {messages.map((msg, i) => (
@@ -169,6 +180,7 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
               <div className="flex items-center gap-2 p-2 text-xs text-ops-gray animate-pulse">
                 <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
                 <span>Analizando...</span>
+                <Announcer message="Analizando tu feedback..." />
               </div>
             ) : null}
             <div ref={messagesEndRef} />
