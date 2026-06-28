@@ -1,3 +1,5 @@
+import { CACHE_TTL } from './constants';
+import { getCache, setCache } from './redis-cache';
 import { getServiceClient } from './supabase';
 
 /** Alineado a `apps/web/lib/stripe/plans` price_usd (MRR orientativo). */
@@ -33,58 +35,35 @@ function validateQueryResults(results: Array<{ error?: unknown }>): void {
   }
 }
 
+function buildTenantStatusQueries(client: ReturnType<typeof getServiceClient>): unknown[] {
+  const q = () =>
+    client.schema('platform').from('tenants').select('*', { count: 'exact', head: true });
+  return [
+    q().is('deleted_at', null),
+    q().is('deleted_at', null).eq('status', 'active'),
+    q().is('deleted_at', null).eq('status', 'suspended'),
+    q().is('deleted_at', null).eq('is_demo', true),
+    q().is('deleted_at', null).eq('status', 'failed'),
+  ];
+}
+
+function buildTenantPlanQueries(client: ReturnType<typeof getServiceClient>): unknown[] {
+  const q = () =>
+    client.schema('platform').from('tenants').select('*', { count: 'exact', head: true });
+  return [
+    q().is('deleted_at', null).eq('plan', 'startup'),
+    q().is('deleted_at', null).eq('plan', 'business'),
+    q().is('deleted_at', null).eq('plan', 'enterprise'),
+  ];
+}
+
 function buildMetricsQueries(
   client: ReturnType<typeof getServiceClient>,
   since: string
 ): unknown[] {
   return [
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('status', 'active'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('status', 'suspended'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('is_demo', true),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('status', 'failed'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('plan', 'startup'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('plan', 'business'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('plan', 'enterprise'),
+    ...buildTenantStatusQueries(client),
+    ...buildTenantPlanQueries(client),
     client
       .schema('platform')
       .from('tenants')
@@ -166,9 +145,20 @@ function buildDashboardMetrics(results: unknown[]): WebDashboardMetricsJson {
 }
 
 export async function getWebDashboardMetricsJson(): Promise<WebDashboardMetricsJson> {
+  const cacheKey = 'metrics:web_dashboard_json';
+  const cached = await getCache<WebDashboardMetricsJson>(cacheKey);
+  if (cached !== null) {
+    return cached;
+  }
+
   const client = getServiceClient();
   const since = daysAgoIso(30);
   const results = await fetchMetricsData(client, since);
   validateQueryResults(results as Array<{ error?: unknown }>);
-  return buildDashboardMetrics(results);
+  const metrics = buildDashboardMetrics(results);
+
+  // Bolt Optimization: Cache the aggregated metrics for 60s
+  void setCache(cacheKey, metrics, CACHE_TTL.SHORT);
+
+  return metrics;
 }

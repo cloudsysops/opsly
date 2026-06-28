@@ -2,6 +2,8 @@ import type { NextRequest } from 'next/server';
 import { Queue } from 'bullmq';
 import { requireAdminAccess } from '../../../../lib/auth';
 import { getBullmqRedisConnection } from '../../../../lib/bullmq-redis';
+import { CACHE_TTL } from '../../../../lib/constants';
+import { getCache, setCache } from '../../../../lib/redis-cache';
 
 const TOTAL_PARALLEL_CAPACITY = 8;
 
@@ -51,9 +53,26 @@ async function getTeamCounts(name: string): Promise<{ waiting: number; active: n
   }
 }
 
+type TeamMetricsSnapshot = {
+  teams: Array<
+    (typeof TEAM_CONFIGS)[number] & {
+      waiting?: number;
+      active?: number;
+    }
+  >;
+  total_parallel_capacity: number;
+  timestamp: string;
+};
+
 export async function GET(req: NextRequest): Promise<Response> {
   const authError = await requireAdminAccess(req);
   if (authError) return authError;
+
+  const cacheKey = 'metrics:teams_queues_snapshot';
+  const cached = await getCache<TeamMetricsSnapshot>(cacheKey);
+  if (cached !== null) {
+    return Response.json(cached);
+  }
 
   const teams = await Promise.all(
     TEAM_CONFIGS.map(async (config) => {
@@ -67,9 +86,14 @@ export async function GET(req: NextRequest): Promise<Response> {
     })
   );
 
-  return Response.json({
+  const body: TeamMetricsSnapshot = {
     teams,
     total_parallel_capacity: TOTAL_PARALLEL_CAPACITY,
     timestamp: new Date().toISOString(),
-  });
+  };
+
+  // Bolt Optimization: Cache the queue snapshot for 60s
+  void setCache(cacheKey, body, CACHE_TTL.SHORT);
+
+  return Response.json(body);
 }

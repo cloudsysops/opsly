@@ -37,3 +37,11 @@
 ## 2026-06-26 - [Caching Admin Overview DB & Network Probes]
 **Learning:** The admin overview dashboardaggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
 **Action:** Always cache aggregated metrics and external probes in dashboard-facing API routes, and modularize parsing logic to maintain low cyclomatic complexity.
+
+## 2026-06-28 - [Mutable Supabase Query Builders]
+**Learning:** Supabase query builder instances are mutable. Reusing a 'base' builder for multiple queries (e.g., in a `Promise.all`) causes filters to accumulate across all queries, leading to incorrect results.
+**Action:** Always create a fresh query builder instance for each independent database query, ideally using a factory function (e.g., `const q = () => client.from(...)`).
+
+## 2026-06-28 - [Caching Aggregated Dashboard Metrics]
+**Learning:** Dashboard endpoints often aggregate data from multiple sources (Supabase counts, BullMQ queue stats) which can be slow and resource-intensive. Caching the final JSON response in Redis for a short duration (60s) significantly improves responsiveness for dashboard polling.
+**Action:** Implement short-term Redis caching for all aggregate metrics endpoints that involve multiple parallel database or queue lookups.
