@@ -67,3 +67,8 @@
 **Vulnerability:** The `POST /api/governance/dsar` endpoint was exposed without rate limiting or audit logging. This allowed for potential mass-creation of DSAR requests (SLA-bound operations) and lacked a traceable history of these sensitive compliance actions.
 **Learning:** Newer compliance-focused modules (like Governance) might be overlooked during security audits if they are perceived as "internal" or "administrative" even when they expose public handlers.
 **Prevention:** Mandate rate limiting and audit logging for all public-facing mutation endpoints (`POST/PATCH/DELETE`). Extend CI security scans to verify that endpoints in `app/api/governance/` utilize the established `checkRateLimit` and `logAuditEvent` helpers.
+
+## 2026-06-28 - [Incomplete Security Perimeter in Governance Consent API]
+**Vulnerability:** The `POST /api/governance/consent` endpoint lacked rate limiting and audit logging, mirroring a recently discovered vulnerability in the DSAR endpoint. This exposed the system to automated consent spamming and created a blind spot in compliance monitoring.
+**Learning:** Security gaps often cluster within specific modules. When a vulnerability is found in one endpoint of a new module (like Governance), it is highly probable that adjacent endpoints share the same architectural oversights.
+**Prevention:** When patching a security gap in a specific functional area, perform a "neighbor audit" of all endpoints in the same directory to ensure the fix is applied consistently across the entire sub-module.
