@@ -58,8 +58,8 @@ export async function postPublicPeskidsLead(request: NextRequest): Promise<Respo
     ip,
     user_agent: request.headers.get('user-agent') ?? undefined,
     metadata: {
-      lead_id: row.lead_id,
-      source: row.source,
+      lead_id: row.id,
+      referral_source: row.referral_source,
       event_type: 'lead.created',
     },
   });
