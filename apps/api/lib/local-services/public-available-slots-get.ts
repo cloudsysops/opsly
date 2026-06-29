@@ -1,5 +1,7 @@
 import type { NextRequest } from 'next/server';
+import { extractIp } from '../audit';
 import { HTTP_STATUS, LOCAL_SERVICES_PUBLIC } from '../constants';
+import { checkRateLimit } from '../rate-limiter';
 import { assertLocalServicesTenantPublic } from '../local-services-public';
 import { lsGetServiceByExternalKey } from '../repositories/local-services-repository';
 import { computeTechnicianSlots } from '../technician-available-slots';
@@ -41,6 +43,15 @@ export async function getPublicAvailableSlots(
   request: NextRequest,
   slug: string
 ): Promise<Response> {
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(
+    ip ? `ls-public-slots:${ip}` : 'ls-public-slots:anonymous'
+  );
+
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+
   const gate = await assertLocalServicesTenantPublic(slug);
   if (gate !== null) {
     return gate;

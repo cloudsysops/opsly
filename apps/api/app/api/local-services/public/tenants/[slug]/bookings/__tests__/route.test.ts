@@ -5,6 +5,14 @@ import * as repo from '../../../../../../../../lib/repositories/local-services-r
 import * as tenantMeta from '../../../../../../../../lib/tenant-metadata';
 import { technicianMetadataAsJson } from '../../../../../../../../lib/technician-tenant-profile';
 
+vi.mock('../../../../../../../../lib/audit', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../../../../../../../lib/audit')>();
+  return {
+    ...actual,
+    logAuditEvent: vi.fn(),
+  };
+});
+
 vi.mock('../../../../../../../../lib/portal-me', () => ({
   fetchPortalTenantRowBySlug: vi.fn(),
 }));

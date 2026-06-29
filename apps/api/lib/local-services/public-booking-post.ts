@@ -1,5 +1,7 @@
 import type { NextRequest } from 'next/server';
+import { extractIp, logAuditEvent } from '../audit';
 import { HTTP_STATUS } from '../constants';
+import { checkRateLimit } from '../rate-limiter';
 import { publicBookBodySchema } from '../local-services-booking-schema';
 import { assertLocalServicesTenantPublic } from '../local-services-public';
 import {
@@ -161,6 +163,15 @@ export async function postPublicLocalServicesBooking(
   request: NextRequest,
   slug: string
 ): Promise<Response> {
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(
+    ip ? `ls-public-booking:${ip}` : 'ls-public-booking:anonymous'
+  );
+
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+
   const gate = await assertLocalServicesTenantPublic(slug);
   if (gate !== null) {
     return gate;
@@ -176,5 +187,27 @@ export async function postPublicLocalServicesBooking(
     return ready;
   }
 
-  return persistPublicBooking(slug, ready);
+  const response = await persistPublicBooking(slug, ready);
+
+  if (response.status === HTTP_STATUS.CREATED) {
+    try {
+      const data = (await response.clone().json()) as { booking_id: string };
+      void logAuditEvent({
+        tenant_slug: slug,
+        action: 'CREATE',
+        resource: `ls:booking:${data.booking_id}`,
+        ip,
+        user_agent: request.headers.get('user-agent') ?? undefined,
+        metadata: {
+          booking_id: data.booking_id,
+          technician: ready.technician,
+          event_type: 'local_services.booking.created',
+        },
+      });
+    } catch (e) {
+      console.error('[public-booking-post] failed to log audit event', e);
+    }
+  }
+
+  return response;
 }
