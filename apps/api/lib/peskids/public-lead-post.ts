@@ -1,5 +1,7 @@
 import type { NextRequest } from 'next/server';
+import { extractIp, logAuditEvent } from '../audit';
 import { HTTP_STATUS } from '../constants';
+import { checkRateLimit } from '../rate-limiter';
 import { assertPeskidsTenantPublic } from './assert-tenant';
 import { PESKIDS_TENANT_SLUG } from './constants';
 import { peskidsInsertLead } from './repository';
@@ -17,6 +19,13 @@ async function readJsonBody(request: NextRequest): Promise<unknown | Response> {
  * POST público: captura lead Peskids (sin JWT). Approval-first: sin email auto al padre.
  */
 export async function postPublicPeskidsLead(request: NextRequest): Promise<Response> {
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `peskids-lead:${ip}` : 'peskids-lead:anonymous');
+
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+
   const gate = await assertPeskidsTenantPublic(PESKIDS_TENANT_SLUG);
   if (gate !== null) {
     return gate;
@@ -41,6 +50,20 @@ export async function postPublicPeskidsLead(request: NextRequest): Promise<Respo
   }
 
   const row = inserted.row;
+
+  void logAuditEvent({
+    tenant_slug: row.tenant_slug,
+    action: 'CREATE',
+    resource: `peskids:lead:${row.id}`,
+    ip,
+    user_agent: request.headers.get('user-agent') ?? undefined,
+    metadata: {
+      lead_id: row.id,
+      referral_source: row.referral_source,
+      event_type: 'lead.created',
+    },
+  });
+
   return Response.json(
     {
       ok: true,
