@@ -286,6 +286,7 @@ export type Database = {
           parent_email: string | null;
           parent_phone: string | null;
           family_user_id: string | null;
+          source_lead_id: string | null;
           enrollment_date: string;
           notes: string | null;
           created_at: string;
@@ -300,11 +301,42 @@ export type Database = {
           parent_email?: string | null;
           parent_phone?: string | null;
           family_user_id?: string | null;
+          source_lead_id?: string | null;
           enrollment_date?: string;
           notes?: string | null;
           updated_at?: string;
         };
         Update: Partial<Database['public']['Tables']['students']['Insert']>;
+        Relationships: [];
+      };
+      trial_classes: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          lead_id: string;
+          student_id: string | null;
+          scheduled_date: string;
+          scheduled_time: string;
+          modality: 'llanogrande' | 'domicilio';
+          teacher_name: string | null;
+          notes: string | null;
+          status: 'scheduled' | 'confirmed' | 'attended' | 'no_show' | 'cancelled';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          tenant_id: string;
+          lead_id: string;
+          student_id?: string | null;
+          scheduled_date: string;
+          scheduled_time: string;
+          modality: 'llanogrande' | 'domicilio';
+          teacher_name?: string | null;
+          notes?: string | null;
+          status?: 'scheduled' | 'confirmed' | 'attended' | 'no_show' | 'cancelled';
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['trial_classes']['Insert']>;
         Relationships: [];
       };
       tenant_settings: {

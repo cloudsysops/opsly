@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   Bell,
   CalendarClock,
+  ClipboardList,
   GraduationCap,
   Home,
   Inbox,
@@ -48,6 +49,7 @@ const navOps = [
   { icon: ShieldCheck, label: 'Equipo', href: '/admin#team' },
   { icon: GraduationCap, label: 'Clases', href: '/admin#classes' },
   { icon: UsersRound, label: 'Familias', href: '/admin#families' },
+  { icon: ClipboardList, label: 'Clases de prueba', href: '/admin#trial-classes' },
   { icon: Users, label: 'Interesados', href: '/admin#leads' },
   { icon: MessageSquare, label: 'Feedback', href: '/admin#feedback' },
   { icon: CalendarClock, label: 'Follow-up', href: '/admin#follow-up' },

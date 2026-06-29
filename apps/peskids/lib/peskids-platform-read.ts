@@ -42,8 +42,9 @@ export function mapPlatformLeadStatus(
 ): DashboardLead['status'] {
   switch (status) {
     case 'contacted':
-    case 'qualified':
       return 'contacted';
+    case 'qualified':
+      return 'trial';
     case 'converted':
       return 'enrolled';
     case 'lost':

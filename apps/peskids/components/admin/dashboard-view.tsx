@@ -11,6 +11,7 @@ import { DashboardStatsGrid } from '@/components/admin/dashboard-stats-grid';
 import { DashboardActivityCards } from '@/components/admin/dashboard-activity-cards';
 import { AcademyOpsMap } from '@/components/admin/academy-ops-map';
 import { FamiliesStudentsExpectation } from '@/components/admin/families-students-expectation';
+import { TrialClassesPanel } from '@/components/admin/trial-classes-panel';
 import { formatRelativeTime } from '@/lib/utils';
 
 interface DashboardViewProps {
@@ -156,6 +157,10 @@ export function DashboardView({
 
           <div className="mb-5">
             <StudentsPanel />
+          </div>
+
+          <div className="mb-5">
+            <TrialClassesPanel />
           </div>
         </>
       ) : null}

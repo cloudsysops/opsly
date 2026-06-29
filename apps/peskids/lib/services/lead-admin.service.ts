@@ -152,6 +152,68 @@ async function updateLegacyLead(
   );
 }
 
+async function fetchPlatformLead(
+  leadId: string,
+  tenantSlug: string
+): Promise<DashboardLead | null> {
+  const { data, error } = await platformFrom()
+    .select(
+      'id, full_name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_source, created_at'
+    )
+    .eq('id', leadId)
+    .eq('tenant_slug', tenantSlug)
+    .maybeSingle();
+
+  if (error) {
+    if (isMissingPlatformPeskidsTable(error)) {
+      return null;
+    }
+    throw error;
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  return mapPlatformLeadRow(data as PlatformPeskidsLeadRow);
+}
+
+async function fetchLegacyLead(
+  leadId: string,
+  tenantSlug: string
+): Promise<DashboardLead | null> {
+  const { data, error } = await supabaseServer()
+    .from('leads')
+    .select(
+      'id, name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source'
+    )
+    .eq('id', leadId)
+    .eq('tenant_id', tenantSlug)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  return mapLegacyLeadRow(data as Parameters<typeof mapLegacyLeadRow>[0]);
+}
+
+export async function getLeadForAdmin(
+  leadId: string,
+  tenantSlug: string
+): Promise<DashboardLead | null> {
+  const platformLead = await fetchPlatformLead(leadId, tenantSlug);
+  if (platformLead) {
+    return platformLead;
+  }
+
+  return fetchLegacyLead(leadId, tenantSlug);
+}
+
 export async function updateLeadForAdmin(
   leadId: string,
   tenantSlug: string,
