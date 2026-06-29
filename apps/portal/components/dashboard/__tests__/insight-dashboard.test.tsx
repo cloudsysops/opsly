@@ -23,21 +23,31 @@ describe('InsightDashboard', () => {
   const mockInsights = [
     {
       id: 'insight-1',
+      tenant_id: 'tenant-1',
       insight_type: 'churn_risk',
       title: 'Risk of Churn',
       summary: 'High risk detected',
+      payload: {},
       impact_score: 80,
       confidence: 0.9,
+      status: 'open',
       read_at: null,
+      actioned_at: null,
+      created_at: '2025-01-01T00:00:00Z',
     },
     {
       id: 'insight-2',
+      tenant_id: 'tenant-1',
       insight_type: 'unknown_type',
       title: 'Unknown Insight',
       summary: 'Summary here',
+      payload: {},
       impact_score: 50,
       confidence: 0.7,
+      status: 'open',
       read_at: '2025-01-01T00:00:00Z',
+      actioned_at: null,
+      created_at: '2025-01-01T00:00:00Z',
     },
   ];
 
