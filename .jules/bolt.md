@@ -37,3 +37,7 @@
 ## 2026-06-26 - [Caching Admin Overview DB & Network Probes]
 **Learning:** The admin overview dashboardaggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
 **Action:** Always cache aggregated metrics and external probes in dashboard-facing API routes, and modularize parsing logic to maintain low cyclomatic complexity.
+
+## 2026-06-27 - [Caching Web Dashboard Global Metrics]
+**Learning:** The web dashboard metrics endpoint performed 11 parallel Supabase queries on every request. Caching the final aggregated JSON in Redis for 60s significantly improves responsiveness and reduces database pressure. When functions like `buildMetricsQueries` exceed line limits (e.g., 50 lines) due to many similar queries, refactoring into specialized helpers (e.g., `buildTenantStatusQueries`) improves maintainability without impacting performance.
+**Action:** Implement short-term Redis caching for complex multi-query aggregations and maintain clean code by modularizing query builders.
