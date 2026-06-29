@@ -2,7 +2,7 @@
 -- Stores: lead volume, latency, error rates, system health
 
 CREATE TABLE IF NOT EXISTS platform.metrics_log (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   metric_name TEXT NOT NULL,
   metric_type TEXT NOT NULL CHECK (metric_type IN ('counter', 'histogram', 'gauge')),
   metric_value NUMERIC NOT NULL,
