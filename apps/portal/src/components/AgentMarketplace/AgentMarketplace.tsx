@@ -412,7 +412,7 @@ export const AgentMarketplace: React.FC = () => {
             {deployStatus === "idle" && (
               <>
                 <h2>Ready to deploy</h2>
-                <p>Your agent will be created and started immediately.</p>
+                <p>Your agent will be created and will begin initializing.</p>
                 <button
                   className="btn-primary btn-large"
                   onClick={() => {
