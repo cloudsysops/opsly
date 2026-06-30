@@ -109,7 +109,7 @@ export function InviteActivate() {
             Bienvenido a Opsly, {displayName}
           </p>
           <p className="mt-2 font-sans text-sm text-ops-gray">
-            Tu espacio de automatización está listo
+            Tu cuenta está siendo activada. Por favor confirma tu contraseña.
           </p>
         </div>
         <form onSubmit={onSubmit} className="space-y-4">

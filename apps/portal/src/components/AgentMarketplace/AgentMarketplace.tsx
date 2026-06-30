@@ -438,7 +438,7 @@ export const AgentMarketplace: React.FC = () => {
               <div className="success">
                 <div className="success-icon">✅</div>
                 <h2>Agent deployed successfully!</h2>
-                <p>Your agent is now live and ready to use</p>
+                <p>Your agent has been deployed and is initializing</p>
 
                 <div className="success-info">
                   <h3>Next Steps</h3>
