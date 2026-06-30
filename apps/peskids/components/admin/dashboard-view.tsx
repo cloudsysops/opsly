@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react';
 import {
   CalendarClock,
   Copy,
@@ -10,26 +10,26 @@ import {
   Star,
   UserPlus,
   Users,
-} from 'lucide-react'
-import type { DashboardData } from '@/lib/types'
-import { AdminShell } from '@/components/admin/admin-shell'
-import { MessageInboxPanel } from '@/components/admin/message-inbox-panel'
-import { StatCard } from '@/components/admin/stat-card'
-import { classModalityLabel } from '@/lib/lead-modality'
-import { buildPeskidsReferralLink } from '@/lib/peskids-referral-links'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { FeedbackComposer } from '@/components/feedback/feedback-composer'
-import { cn, formatRelativeTime } from '@/lib/utils'
+} from 'lucide-react';
+import type { DashboardData } from '@/lib/types';
+import { AdminShell } from '@/components/admin/admin-shell';
+import { MessageInboxPanel } from '@/components/admin/message-inbox-panel';
+import { StatCard } from '@/components/admin/stat-card';
+import { classModalityLabel } from '@/lib/lead-modality';
+import { buildPeskidsReferralLink } from '@/lib/peskids-referral-links';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { FeedbackComposer } from '@/components/feedback/feedback-composer';
+import { cn, formatRelativeTime } from '@/lib/utils';
 
 interface DashboardViewProps {
-  data: DashboardData
-  lastUpdated: Date
-  range: 'week' | 'month'
-  onRangeChange: (range: 'week' | 'month') => void
-  onRefresh: () => void
-  refreshing: boolean
+  data: DashboardData;
+  lastUpdated: Date;
+  range: 'week' | 'month';
+  onRangeChange: (range: 'week' | 'month') => void;
+  onRefresh: () => void;
+  refreshing: boolean;
 }
 
 function StarRating({ value }: { value: number }): React.ReactElement {
@@ -43,7 +43,7 @@ function StarRating({ value }: { value: number }): React.ReactElement {
         />
       ))}
     </span>
-  )
+  );
 }
 
 const leadStatusLabel: Record<DashboardData['new_leads'][number]['status'], string> = {
@@ -51,60 +51,70 @@ const leadStatusLabel: Record<DashboardData['new_leads'][number]['status'], stri
   contacted: 'Contactado',
   enrolled: 'Matriculado',
   archived: 'Archivado',
-}
+};
 
-const leadStatusTone: Record<DashboardData['new_leads'][number]['status'], 'amber' | 'violet' | 'green' | 'neutral'> = {
+const leadStatusTone: Record<
+  DashboardData['new_leads'][number]['status'],
+  'amber' | 'violet' | 'green' | 'neutral'
+> = {
   new: 'amber',
   contacted: 'violet',
   enrolled: 'green',
   archived: 'neutral',
-}
+};
 
 const followupTypeLabel: Record<DashboardData['followups'][number]['contact_type'], string> = {
   lead: 'Lead',
   student: 'Estudiante',
   parent: 'Familia',
-}
+};
 
 const followupStatusLabel: Record<DashboardData['followups'][number]['status'], string> = {
   pending: 'Pendiente',
   completed: 'Completado',
   cancelled: 'Cancelado',
-}
+};
 
-const followupStatusTone: Record<DashboardData['followups'][number]['status'], 'amber' | 'green' | 'neutral'> = {
+const followupStatusTone: Record<
+  DashboardData['followups'][number]['status'],
+  'amber' | 'green' | 'neutral'
+> = {
   pending: 'amber',
   completed: 'green',
   cancelled: 'neutral',
-}
+};
 
-const leadStatusFilterLabel: Record<'all' | DashboardData['new_leads'][number]['status'], string> = {
-  all: 'Todos',
-  new: 'Nuevos',
-  contacted: 'Contactados',
-  enrolled: 'Matriculados',
-  archived: 'Archivados',
-}
+const leadStatusFilterLabel: Record<'all' | DashboardData['new_leads'][number]['status'], string> =
+  {
+    all: 'Todos',
+    new: 'Nuevos',
+    contacted: 'Contactados',
+    enrolled: 'Matriculados',
+    archived: 'Archivados',
+  };
 
-const followupStatusFilterLabel: Record<'all' | DashboardData['followups'][number]['status'], string> = {
+const followupStatusFilterLabel: Record<
+  'all' | DashboardData['followups'][number]['status'],
+  string
+> = {
   all: 'Todos',
   pending: 'Pendientes',
   completed: 'Completados',
   cancelled: 'Cancelados',
-}
+};
 
 function toDigits(value: string): string {
-  return value.replace(/\D+/g, '')
+  return value.replace(/\D+/g, '');
 }
 
 function mailtoHref(email: string): string {
-  return `mailto:${encodeURIComponent(email)}`
+  return `mailto:${encodeURIComponent(email)}`;
 }
 
 function whatsappHref(phone: string): string | null {
-  const digits = toDigits(phone)
-  if (!digits) return null
-  return `https://wa.me/${digits}`
+  const digits = toDigits(phone);
+  if (!digits) return null;
+  return `https://wa.me/${digits}`;
 }
 
 export function DashboardView({
@@ -115,12 +125,16 @@ export function DashboardView({
   onRefresh,
   refreshing,
 }: DashboardViewProps): React.ReactElement {
-  const [search, setSearch] = useState('')
-  const [leadStatusFilter, setLeadStatusFilter] = useState<'all' | DashboardData['new_leads'][number]['status']>('all')
-  const [followupStatusFilter, setFollowupStatusFilter] = useState<'all' | DashboardData['followups'][number]['status']>('all')
+  const [search, setSearch] = useState('');
+  const [leadStatusFilter, setLeadStatusFilter] = useState<
+    'all' | DashboardData['new_leads'][number]['status']
+  >('all');
+  const [followupStatusFilter, setFollowupStatusFilter] = useState<
+    'all' | DashboardData['followups'][number]['status']
+  >('all');
 
   const filteredLeads = useMemo(() => {
-    const q = search.trim().toLowerCase()
+    const q = search.trim().toLowerCase();
     return data.new_leads.filter((l) => {
       const matchesSearch =
         !q ||
@@ -128,30 +142,30 @@ export function DashboardView({
         l.email.toLowerCase().includes(q) ||
         (l.phone?.toLowerCase().includes(q) ?? false) ||
         (l.neighborhood?.toLowerCase().includes(q) ?? false) ||
-        classModalityLabel(l.class_modality).toLowerCase().includes(q)
+        classModalityLabel(l.class_modality).toLowerCase().includes(q);
 
-      const matchesStatus = leadStatusFilter === 'all' || l.status === leadStatusFilter
-      return matchesSearch && matchesStatus
-    })
-  }, [data.new_leads, leadStatusFilter, search])
+      const matchesStatus = leadStatusFilter === 'all' || l.status === leadStatusFilter;
+      return matchesSearch && matchesStatus;
+    });
+  }, [data.new_leads, leadStatusFilter, search]);
 
   const filteredFollowups = useMemo(() => {
     return data.followups.filter((followup) => {
-      if (followupStatusFilter === 'all') return true
-      return followup.status === followupStatusFilter
-    })
-  }, [data.followups, followupStatusFilter])
+      if (followupStatusFilter === 'all') return true;
+      return followup.status === followupStatusFilter;
+    });
+  }, [data.followups, followupStatusFilter]);
 
   const messageSummary = useMemo(() => {
     return data.recent_messages.reduce(
       (acc, msg) => {
-        const status = msg.status ?? 'pending'
-        acc[status] = (acc[status] ?? 0) + 1
+        const status = msg.status ?? 'pending';
+        acc[status] = (acc[status] ?? 0) + 1;
         if (status === 'pending') {
-          if (msg.conversation_mode === 'support') acc.supportPending += 1
-          else acc.admissionsPending += 1
+          if (msg.conversation_mode === 'support') acc.supportPending += 1;
+          else acc.admissionsPending += 1;
         }
-        return acc
+        return acc;
       },
       {
         pending: 0,
@@ -160,11 +174,11 @@ export function DashboardView({
         supportPending: 0,
         admissionsPending: 0,
       } as Record<'pending' | 'approved' | 'sent', number> & {
-        supportPending: number
-        admissionsPending: number
+        supportPending: number;
+        admissionsPending: number;
       }
-    )
-  }, [data.recent_messages])
+    );
+  }, [data.recent_messages]);
 
   const nextAction = useMemo(() => {
     if (messageSummary.supportPending > 0) {
@@ -173,7 +187,7 @@ export function DashboardView({
         description: `${messageSummary.supportPending} caso(s) de soporte esperan revisión.`,
         tone: 'coral' as const,
         anchor: 'mensajes',
-      }
+      };
     }
 
     if (messageSummary.admissionsPending > 0) {
@@ -182,7 +196,7 @@ export function DashboardView({
         description: `${messageSummary.admissionsPending} conversación(es) esperan revisión.`,
         tone: 'amber' as const,
         anchor: 'mensajes',
-      }
+      };
     }
 
     if (data.pending_followups_count > 0) {
@@ -191,7 +205,7 @@ export function DashboardView({
         description: `${data.pending_followups_count} seguimiento(s) siguen en cola.`,
         tone: 'coral' as const,
         anchor: 'seguimientos',
-      }
+      };
     }
 
     if (data.new_leads_count > 0) {
@@ -200,7 +214,7 @@ export function DashboardView({
         description: `${data.new_leads_count} lead(s) esperando contacto.`,
         tone: 'teal' as const,
         anchor: 'leads',
-      }
+      };
     }
 
     return {
@@ -208,28 +222,28 @@ export function DashboardView({
       description: 'No hay acciones urgentes en este momento.',
       tone: 'green' as const,
       anchor: 'inicio',
-    }
+    };
   }, [
     data.new_leads_count,
     data.pending_followups_count,
     messageSummary.admissionsPending,
     messageSummary.supportPending,
-  ])
+  ]);
 
-  const syncLabel = useMemo(() => formatRelativeTime(lastUpdated), [lastUpdated])
+  const syncLabel = useMemo(() => formatRelativeTime(lastUpdated), [lastUpdated]);
 
   const handleCopy = useCallback(async (text: string) => {
     try {
-      await navigator.clipboard.writeText(text)
+      await navigator.clipboard.writeText(text);
     } catch {
-      window.prompt('Copia este texto', text)
+      window.prompt('Copia este texto', text);
     }
-  }, [])
+  }, []);
 
   const scrollToSection = useCallback((anchor: string) => {
-    const target = document.querySelector(`[data-admin-section=\"${anchor}\"]`)
-    target?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }, [])
+    const target = document.querySelector(`[data-admin-section="${anchor}"]`);
+    target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
 
   return (
     <AdminShell lastUpdated={lastUpdated} onRefresh={onRefresh} refreshing={refreshing}>
@@ -266,13 +280,15 @@ export function DashboardView({
           </div>
 
           <div className="grid gap-3 lg:min-w-[360px]">
-            <div className={cn(
-              'rounded-2xl border bg-white px-4 py-4 shadow-sm',
-              nextAction.tone === 'amber' && 'border-amber-100',
-              nextAction.tone === 'coral' && 'border-orange-100',
-              nextAction.tone === 'teal' && 'border-teal-100',
-              nextAction.tone === 'green' && 'border-emerald-100'
-            )}>
+            <div
+              className={cn(
+                'rounded-2xl border bg-white px-4 py-4 shadow-sm',
+                nextAction.tone === 'amber' && 'border-amber-100',
+                nextAction.tone === 'coral' && 'border-orange-100',
+                nextAction.tone === 'teal' && 'border-teal-100',
+                nextAction.tone === 'green' && 'border-emerald-100'
+              )}
+            >
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-pk-mutedText">
                 Siguiente acción
               </p>
@@ -297,25 +313,41 @@ export function DashboardView({
               </p>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <div className="rounded-xl bg-pk-muted px-3 py-2">
-                  <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">Atención</p>
+                  <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">
+                    Atención
+                  </p>
                   <p className="mt-1 text-sm font-semibold text-pk-ink">
                     {messageSummary.supportPending + messageSummary.admissionsPending} pendientes
                   </p>
                 </div>
                 <div className="rounded-xl bg-pk-muted px-3 py-2">
-                  <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">Seguimiento</p>
-                  <p className="mt-1 text-sm font-semibold text-pk-ink">{data.pending_followups_count} abiertos</p>
+                  <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">
+                    Seguimiento
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-pk-ink">
+                    {data.pending_followups_count} abiertos
+                  </p>
                 </div>
                 <div className="rounded-xl bg-pk-muted px-3 py-2">
-                  <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">Captación</p>
-                  <p className="mt-1 text-sm font-semibold text-pk-ink">{data.new_leads_count} leads</p>
+                  <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">
+                    Captación
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-pk-ink">
+                    {data.new_leads_count} leads
+                  </p>
                 </div>
                 <div className="rounded-xl bg-pk-muted px-3 py-2">
-                  <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">Soporte</p>
-                  <p className="mt-1 text-sm font-semibold text-pk-ink">{messageSummary.supportPending} casos</p>
+                  <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">
+                    Soporte
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-pk-ink">
+                    {messageSummary.supportPending} casos
+                  </p>
                 </div>
                 <div className="rounded-xl bg-pk-muted px-3 py-2">
-                  <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">Sincronía</p>
+                  <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">
+                    Sincronía
+                  </p>
                   <p className="mt-1 text-sm font-semibold text-pk-ink">{syncLabel}</p>
                 </div>
               </div>
@@ -382,99 +414,105 @@ export function DashboardView({
           <ul className="max-h-72 space-y-3 overflow-y-auto pr-1">
             {filteredLeads.length > 0 ? (
               filteredLeads.map((lead) => {
-                const referralCode = lead.referral_code
-                const phoneHref = lead.phone ? whatsappHref(lead.phone) : null
+                const referralCode = lead.referral_code;
+                const phoneHref = lead.phone ? whatsappHref(lead.phone) : null;
 
                 return (
-                <li
-                  key={lead.id}
-                  className="rounded-2xl border border-pk-border/80 bg-pk-muted/40 px-3 py-3"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="font-medium text-sm text-pk-ink">{lead.name}</p>
-                      <p className="text-xs text-pk-sub">{lead.email}</p>
-                      {lead.phone ? <p className="text-xs text-pk-sub">{lead.phone}</p> : null}
-                      {lead.neighborhood ? (
-                        <p className="text-xs text-pk-sub">Barrio: {lead.neighborhood}</p>
+                  <li
+                    key={lead.id}
+                    className="rounded-2xl border border-pk-border/80 bg-pk-muted/40 px-3 py-3"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm text-pk-ink">{lead.name}</p>
+                        <p className="text-xs text-pk-sub">{lead.email}</p>
+                        {lead.phone ? <p className="text-xs text-pk-sub">{lead.phone}</p> : null}
+                        {lead.neighborhood ? (
+                          <p className="text-xs text-pk-sub">Barrio: {lead.neighborhood}</p>
+                        ) : null}
+                      </div>
+                      <Badge tone={leadStatusTone[lead.status]}>
+                        {leadStatusLabel[lead.status]}
+                      </Badge>
+                    </div>
+
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      <Badge tone="amber">{classModalityLabel(lead.class_modality)}</Badge>
+                      <Badge tone="teal">{lead.grade_interested}</Badge>
+                      {lead.referral_code ? (
+                        <Badge tone="green">Ref {lead.referral_code}</Badge>
+                      ) : null}
+                      {lead.referred_by_code ? <Badge tone="violet">Recomendado</Badge> : null}
+                    </div>
+
+                    {lead.admin_notes ? (
+                      <p className="mt-2 rounded-xl border border-dashed border-pk-border bg-white/70 px-3 py-2 text-xs text-pk-sub">
+                        {lead.admin_notes}
+                      </p>
+                    ) : null}
+
+                    {lead.referral_code ? (
+                      <div className="mt-2 rounded-xl bg-white/75 px-3 py-2 text-[11px] text-pk-sub">
+                        <p className="font-semibold text-pk-ink">Link de recomendación</p>
+                        <p className="break-all font-mono text-[10px]">
+                          {buildPeskidsReferralLink(lead.referral_code)}
+                        </p>
+                        {lead.referral_redemptions > 0 ? (
+                          <p className="mt-1 text-[11px] text-pk-primary">
+                            Descuento acumulado: {lead.referral_redemptions} uso(s) ·{' '}
+                            {new Intl.NumberFormat('es-CO', {
+                              style: 'currency',
+                              currency: 'COP',
+                              maximumFractionDigits: 0,
+                            }).format((lead.referral_discount_cents ?? 0) / 100)}
+                          </p>
+                        ) : (
+                          <p className="mt-1 text-[11px] text-pk-sub">
+                            Sin redenciones todavía. Este es el link para compartir.
+                          </p>
+                        )}
+                      </div>
+                    ) : null}
+
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {lead.email ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="secondary"
+                          onClick={() =>
+                            window.open(mailtoHref(lead.email), '_blank', 'noopener,noreferrer')
+                          }
+                        >
+                          <Mail className="h-4 w-4" aria-hidden />
+                          <span className="ml-1">Correo</span>
+                        </Button>
+                      ) : null}
+                      {phoneHref ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => window.open(phoneHref, '_blank', 'noopener,noreferrer')}
+                        >
+                          <Phone className="h-4 w-4" aria-hidden />
+                          <span className="ml-1">WhatsApp</span>
+                        </Button>
+                      ) : null}
+                      {referralCode ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => void handleCopy(buildPeskidsReferralLink(referralCode))}
+                        >
+                          <Copy className="h-4 w-4" aria-hidden />
+                          <span className="ml-1">Copiar link</span>
+                        </Button>
                       ) : null}
                     </div>
-                    <Badge tone={leadStatusTone[lead.status]}>{leadStatusLabel[lead.status]}</Badge>
-                  </div>
-
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    <Badge tone="amber">{classModalityLabel(lead.class_modality)}</Badge>
-                    <Badge tone="teal">{lead.grade_interested}</Badge>
-                    {lead.referral_code ? <Badge tone="green">Ref {lead.referral_code}</Badge> : null}
-                    {lead.referred_by_code ? <Badge tone="violet">Recomendado</Badge> : null}
-                  </div>
-
-                  {lead.admin_notes ? (
-                    <p className="mt-2 rounded-xl border border-dashed border-pk-border bg-white/70 px-3 py-2 text-xs text-pk-sub">
-                      {lead.admin_notes}
-                    </p>
-                  ) : null}
-
-                  {lead.referral_code ? (
-                    <div className="mt-2 rounded-xl bg-white/75 px-3 py-2 text-[11px] text-pk-sub">
-                      <p className="font-semibold text-pk-ink">Link de recomendación</p>
-                      <p className="break-all font-mono text-[10px]">
-                        {buildPeskidsReferralLink(lead.referral_code)}
-                      </p>
-                      {lead.referral_redemptions > 0 ? (
-                        <p className="mt-1 text-[11px] text-pk-primary">
-                          Descuento acumulado: {lead.referral_redemptions} uso(s) ·{' '}
-                          {new Intl.NumberFormat('es-CO', {
-                            style: 'currency',
-                            currency: 'COP',
-                            maximumFractionDigits: 0,
-                          }).format((lead.referral_discount_cents ?? 0) / 100)}
-                        </p>
-                      ) : (
-                        <p className="mt-1 text-[11px] text-pk-sub">
-                          Sin redenciones todavía. Este es el link para compartir.
-                        </p>
-                      )}
-                    </div>
-                  ) : null}
-
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {lead.email ? (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => window.open(mailtoHref(lead.email), '_blank', 'noopener,noreferrer')}
-                      >
-                        <Mail className="h-4 w-4" aria-hidden />
-                        <span className="ml-1">Correo</span>
-                      </Button>
-                    ) : null}
-                    {phoneHref ? (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => window.open(phoneHref, '_blank', 'noopener,noreferrer')}
-                      >
-                        <Phone className="h-4 w-4" aria-hidden />
-                        <span className="ml-1">WhatsApp</span>
-                      </Button>
-                    ) : null}
-                    {referralCode ? (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => void handleCopy(buildPeskidsReferralLink(referralCode))}
-                      >
-                        <Copy className="h-4 w-4" aria-hidden />
-                        <span className="ml-1">Copiar link</span>
-                      </Button>
-                    ) : null}
-                  </div>
-                </li>
-                )
+                  </li>
+                );
               })
             ) : (
               <p className="text-sm text-pk-sub">
@@ -517,7 +555,10 @@ export function DashboardView({
           <ul className="max-h-52 space-y-3 overflow-y-auto">
             {data.recent_feedback.length > 0 ? (
               data.recent_feedback.map((fb) => (
-                <li key={fb.id} className="border-b border-pk-border/60 pb-3 last:border-0 last:pb-0">
+                <li
+                  key={fb.id}
+                  className="border-b border-pk-border/60 pb-3 last:border-0 last:pb-0"
+                >
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-sm font-medium text-pk-ink">{fb.child_name}</p>
                     <div className="flex items-center gap-2">
@@ -525,9 +566,19 @@ export function DashboardView({
                         {fb.visibility === 'private' ? 'Privado' : 'Público'}
                       </Badge>
                       <Badge
-                        tone={fb.author_type === 'teacher' ? 'violet' : fb.author_type === 'staff' ? 'teal' : 'amber'}
+                        tone={
+                          fb.author_type === 'teacher'
+                            ? 'violet'
+                            : fb.author_type === 'staff'
+                              ? 'teal'
+                              : 'amber'
+                        }
                       >
-                        {fb.author_type === 'teacher' ? 'Profesor' : fb.author_type === 'staff' ? 'Equipo' : 'Familia'}
+                        {fb.author_type === 'teacher'
+                          ? 'Profesor'
+                          : fb.author_type === 'staff'
+                            ? 'Equipo'
+                            : 'Familia'}
                       </Badge>
                       <StarRating value={fb.rating ?? fb.satisfaction} />
                     </div>
@@ -614,11 +665,12 @@ export function DashboardView({
                         {fu.type}
                       </span>
                       <p className="mt-1 text-[11px] text-pk-sub">
-                        {followupTypeLabel[fu.contact_type]} ·{' '}
-                        {followupStatusLabel[fu.status]}
+                        {followupTypeLabel[fu.contact_type]} · {followupStatusLabel[fu.status]}
                       </p>
                     </div>
-                    <Badge tone={followupStatusTone[fu.status]}>{followupStatusLabel[fu.status]}</Badge>
+                    <Badge tone={followupStatusTone[fu.status]}>
+                      {followupStatusLabel[fu.status]}
+                    </Badge>
                   </div>
                   <p className="mt-1 text-pk-sub">
                     Vence {new Date(fu.due_date).toLocaleDateString('es-CO')}
@@ -710,5 +762,5 @@ export function DashboardView({
         </Card>
       </div>
     </AdminShell>
-  )
+  );
 }
