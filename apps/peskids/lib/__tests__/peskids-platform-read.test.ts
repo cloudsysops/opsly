@@ -22,7 +22,7 @@ describe('peskids-platform-read', () => {
   it('maps platform lead statuses to dashboard statuses', () => {
     expect(mapPlatformLeadStatus('new')).toBe('new');
     expect(mapPlatformLeadStatus('contacted')).toBe('contacted');
-    expect(mapPlatformLeadStatus('qualified')).toBe('contacted');
+    expect(mapPlatformLeadStatus('qualified')).toBe('trial');
     expect(mapPlatformLeadStatus('converted')).toBe('enrolled');
     expect(mapPlatformLeadStatus('lost')).toBe('archived');
   });
