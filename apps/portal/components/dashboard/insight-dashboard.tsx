@@ -3,6 +3,8 @@
 import type { ReactElement } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { getApiBaseUrl } from '@/lib/api';
 import { createClient } from '@/lib/supabase/client';
 import { portalTenantInsightsUrl } from '@/lib/portal-api-paths';
@@ -22,7 +24,7 @@ function insightLabel(type: string): string {
 
 export function InsightDashboard({ tenantSlug, insights: initial }: Props): ReactElement {
   const [insights, setInsights] = useState(initial);
-  const [busyId, setBusyId] = useState<string | null>(null);
+  const [busyAction, setBusyAction] = useState<string | null>(null);
 
   const chartData = useMemo(() => {
     return insights.map((i) => ({
@@ -34,7 +36,7 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
 
   const patch = useCallback(
     async (insightId: string, action: 'read' | 'dismiss' | 'action') => {
-      setBusyId(insightId);
+      setBusyAction(`${insightId}:${action}`);
       try {
         const supabase = createClient();
         const {
@@ -66,7 +68,7 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
           );
         }
       } finally {
-        setBusyId(null);
+        setBusyAction(null);
       }
     },
     [tenantSlug]
@@ -125,22 +127,32 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  className="rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
-                  disabled={busyId === insight.id || insight.read_at !== null}
+                <Button
+                  variant="primary"
+                  size="sm"
+                  disabled={busyAction?.startsWith(`${insight.id}:`) || insight.read_at !== null}
                   onClick={() => void patch(insight.id, 'read')}
+                  className="h-7 px-2 text-xs"
+                  aria-busy={busyAction === `${insight.id}:read`}
                 >
-                  Marcar leído
-                </button>
-                <button
-                  type="button"
-                  className="rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
-                  disabled={busyId === insight.id}
+                  {busyAction === `${insight.id}:read` && (
+                    <Loader2 className="mr-1 h-3 w-3 animate-spin" aria-hidden="true" />
+                  )}
+                  {insight.read_at ? 'Leído' : 'Marcar leído'}
+                </Button>
+                <Button
+                  variant="default"
+                  size="sm"
+                  disabled={busyAction?.startsWith(`${insight.id}:`)}
                   onClick={() => void patch(insight.id, 'dismiss')}
+                  className="h-7 px-2 text-xs"
+                  aria-busy={busyAction === `${insight.id}:dismiss`}
                 >
+                  {busyAction === `${insight.id}:dismiss` && (
+                    <Loader2 className="mr-1 h-3 w-3 animate-spin" aria-hidden="true" />
+                  )}
                   Descartar
-                </button>
+                </Button>
               </div>
             </div>
           </li>
