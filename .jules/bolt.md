@@ -37,3 +37,7 @@
 ## 2026-06-26 - [Caching Admin Overview DB & Network Probes]
 **Learning:** The admin overview dashboardaggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
 **Action:** Always cache aggregated metrics and external probes in dashboard-facing API routes, and modularize parsing logic to maintain low cyclomatic complexity.
+
+## 2026-06-28 - [Negative Caching with Ambiguous Cache Utilities]
+**Learning:** When using cache utilities like `getCache` that return `null` for both a cache miss and a cached `null` value, negative caching (caching the absence of a result) requires wrapping the value in an object (e.g., `{ data: T | null }`). This distinguishes a "not found" result from a "never cached" state, preventing unnecessary database fallback for non-existent records.
+**Action:** Always use an object wrapper when implementing negative caching if the cache utility cannot natively distinguish between misses and null hits.
