@@ -250,7 +250,7 @@ export function PortalShowcase(): React.ReactElement {
                 <MiniReferralStep
                   icon={BadgePercent}
                   title="3. Se acredita"
-                  text="Tu saldo queda listo para aplicar."
+                  text="Tu saldo estará disponible después de procesar."
                 />
               </div>
             </div>
@@ -311,7 +311,7 @@ export function PortalShowcase(): React.ReactElement {
         >
           <div className="grid gap-6 px-6 py-8 sm:px-8 lg:grid-cols-[1.1fr_0.9fr] lg:px-10 lg:py-10">
             <div>
-              <p className="pk-eyebrow text-white/50">Portal listo</p>
+              <p className="pk-eyebrow text-white/50">Portal en operación</p>
               <h2 className="mt-2 max-w-2xl text-2xl font-bold tracking-tight sm:text-3xl">
                 Una base visual clara para familias y equipo.
               </h2>
