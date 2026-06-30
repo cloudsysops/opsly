@@ -32,7 +32,27 @@ export const updateClassSchema = z.object({
   price_cents: z.number().int().nonnegative().optional(),
   status: z.enum(['scheduled', 'cancelled', 'completed']).optional(),
   cancelled_reason: z.string().trim().max(500).optional(),
+  session_notes: z.string().trim().max(500).optional(),
 });
+
+export const teacherUpdateClassSchema = z
+  .object({
+    starts_at: z.string().datetime().optional(),
+    ends_at: z.string().datetime().optional(),
+    session_notes: z.string().trim().max(500).optional(),
+  })
+  .refine((data) => Object.values(data).some((value) => value !== undefined), {
+    message: 'At least one field is required',
+  })
+  .refine(
+    (data) => {
+      if (data.starts_at && data.ends_at) {
+        return new Date(data.ends_at).getTime() > new Date(data.starts_at).getTime();
+      }
+      return true;
+    },
+    { message: 'ends_at must be after starts_at', path: ['ends_at'] }
+  );
 
 export const createEnrollmentSchema = z.object({
   class_id: z.string().uuid(),

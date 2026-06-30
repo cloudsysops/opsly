@@ -1,19 +1,33 @@
 'use client';
 
+import { CalendarClock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { GrowthWidget } from '@/components/progress/growth-widget';
-import { TeacherCalendarShowcase } from './teacher-calendar-showcase';
-import type { TeacherDashboardCard } from './teacher-weekly-static-data';
+import type { DaySlot, TeacherDashboardCard } from './teacher-dashboard-types';
+
+function statusLabel(status: DaySlot['status']): string {
+  if (status === 'ongoing') return 'En curso';
+  if (status === 'done') return 'Hecha';
+  return 'Agenda';
+}
 
 interface TeacherWeeklyOverviewProps {
   responseCards: readonly TeacherDashboardCard[];
+  agendaPreview: readonly DaySlot[];
+  agendaSource: 'live' | 'empty';
+  progressPercent: number;
+  streakValue: string;
   onViewSubmissions: () => void;
   onRefreshAgenda: () => void;
 }
 
 export function TeacherWeeklyOverview({
   responseCards,
+  agendaPreview,
+  agendaSource,
+  progressPercent,
+  streakValue,
   onViewSubmissions,
   onRefreshAgenda,
 }: TeacherWeeklyOverviewProps): React.ReactElement {
@@ -61,7 +75,53 @@ export function TeacherWeeklyOverview({
           </div>
 
           <div className="relative">
-            <TeacherCalendarShowcase />
+            <div className="overflow-hidden rounded-[2rem] border border-pk-border bg-white shadow-hero">
+              <div className="flex items-center justify-between gap-4 border-b border-pk-border bg-pk-snow px-5 py-4">
+                <div>
+                  <p className="font-bold text-pk-ink">Agenda del profesor</p>
+                  <p className="text-xs text-pk-mutedText">
+                    {agendaSource === 'live'
+                      ? 'Lectura real de clases programadas'
+                      : 'Sin clases activas cargadas en este rango'}
+                  </p>
+                </div>
+                <div className="rounded-full border border-pk-border bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-pk-mutedText">
+                  {agendaSource === 'live' ? 'Live' : 'Pendiente'}
+                </div>
+              </div>
+
+              <div className="p-5">
+                {agendaPreview.length === 0 ? (
+                  <div className="rounded-2xl border border-dashed border-pk-border bg-pk-snow px-4 py-8 text-center text-sm text-pk-sub">
+                    No hay clases próximas visibles para este profesor.
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {agendaPreview.map((slot) => (
+                      <div
+                        key={`${slot.classId}-${slot.startsAt}`}
+                        className="rounded-2xl border border-pk-border bg-pk-snow px-4 py-3"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <CalendarClock className="h-4 w-4 text-pk-primary" aria-hidden />
+                              <p className="text-sm font-bold text-pk-ink">{slot.className}</p>
+                            </div>
+                            <p className="mt-1 text-xs text-pk-sub">
+                              {slot.day} · {slot.time} · {slot.students} estudiantes
+                            </p>
+                          </div>
+                          <Badge tone={slot.status === 'ongoing' ? 'amber' : 'teal'}>
+                            {statusLabel(slot.status)}
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -73,11 +133,11 @@ export function TeacherWeeklyOverview({
         mission="Guiar cada clase con orden, paciencia y seguimiento para que el grupo avance sin friccion."
         vision="Un aula donde cada alumno progresa con confianza y cada familia recibe claridad a tiempo."
         objectives={['Asistencia completa', 'Feedback enviado', 'Observaciones cerradas']}
-        achievements={['Clase impecable', '5 dias de racha', 'Familias al dia']}
+        achievements={['Agenda sincronizada', 'Entregas visibles', 'Familias con seguimiento']}
         streakLabel="Racha activa del profesor"
-        streakValue="12"
+        streakValue={streakValue}
         progressLabel="Avance semanal del aula"
-        progressPercent={78}
+        progressPercent={progressPercent}
         accent="violet"
         className="mt-6"
       />

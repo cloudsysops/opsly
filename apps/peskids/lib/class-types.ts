@@ -29,6 +29,7 @@ export interface PeskidsClass {
   currency: string;
   status: ClassStatus;
   cancelled_reason: string | null;
+  session_notes: string | null;
   series_id: string | null;
   created_by: string | null;
   created_at: string;
@@ -52,6 +53,24 @@ export interface PeskidsClassEnrollment {
 export interface ClassListItem extends PeskidsClass {
   enrolled_count: number;
   pool_name?: string;
+}
+
+export interface AgendaItem {
+  id: string;
+  class_id: string;
+  title: string;
+  starts_at: string;
+  ends_at: string;
+  location: SwimLocation;
+  status: ClassStatus;
+  pool_name?: string;
+  enrolled_count?: number;
+  capacity?: number;
+  student_id?: string;
+  student_name?: string;
+  enrollment_status?: EnrollmentStatus;
+  payment_status?: PaymentStatus;
+  attendance?: AttendanceStatus | null;
 }
 
 export interface OperationsMetrics {
