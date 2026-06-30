@@ -412,7 +412,7 @@ export const AgentMarketplace: React.FC = () => {
             {deployStatus === "idle" && (
               <>
                 <h2>Ready to deploy</h2>
-                <p>Your agent will be created and started immediately.</p>
+                <p>Your agent will be created and will begin initializing.</p>
                 <button
                   className="btn-primary btn-large"
                   onClick={() => {
@@ -438,7 +438,7 @@ export const AgentMarketplace: React.FC = () => {
               <div className="success">
                 <div className="success-icon">✅</div>
                 <h2>Agent deployed successfully!</h2>
-                <p>Your agent is now live and ready to use</p>
+                <p>Your agent has been deployed and is initializing</p>
 
                 <div className="success-info">
                   <h3>Next Steps</h3>

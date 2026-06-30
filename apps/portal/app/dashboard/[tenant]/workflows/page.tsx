@@ -66,8 +66,8 @@ export default async function WorkflowsMarketplacePage({
               Automatizaciones plug-and-run para tu tenant
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-neutral-400">
-              Packs listos para instalar en n8n. El CRM Starter Pack ya queda aplicado por defecto
-              en tenants activos y se importa inactivo para que puedas revisarlo antes de activar.
+              Packs disponibles para instalar en n8n. El CRM Starter Pack se importa desactivado
+              para que puedas revisar antes de activar en tu instancia.
             </p>
             {accessToken.length > 0 ? (
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
