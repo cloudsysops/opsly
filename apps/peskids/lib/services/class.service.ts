@@ -215,6 +215,7 @@ export async function updateClass(
   if (input.price_cents !== undefined) patch.price_cents = input.price_cents;
   if (input.status !== undefined) patch.status = input.status;
   if (input.cancelled_reason !== undefined) patch.cancelled_reason = input.cancelled_reason;
+  if (input.session_notes !== undefined) patch.session_notes = input.session_notes;
 
   const { data, error } = await peskidsClient()
     .from('classes')

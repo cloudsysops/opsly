@@ -136,6 +136,7 @@ export type Database = {
           currency: string;
           status: 'scheduled' | 'cancelled' | 'completed';
           cancelled_reason: string | null;
+          session_notes: string | null;
           series_id: string | null;
           created_by: string | null;
           created_at: string;
@@ -156,6 +157,7 @@ export type Database = {
           currency?: string;
           status?: 'scheduled' | 'cancelled' | 'completed';
           cancelled_reason?: string | null;
+          session_notes?: string | null;
           series_id?: string | null;
           created_by?: string | null;
           created_at?: string;
