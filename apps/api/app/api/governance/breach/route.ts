@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
 import { getServiceClient } from '../../../../lib/supabase';
 
 const breachSchema = z.object({
@@ -52,6 +53,19 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   // TODO: trigger Discord alert to #ops-alerts via observability
   // await alertDiscord({ title: `[BREACH] ${parsed.data.title}`, severity: parsed.data.severity });
+
+  void logAuditEvent({
+    tenant_slug: parsed.data.tenant_id,
+    action: 'CREATE',
+    resource: `breach:${data.id}`,
+    ip: extractIp(request),
+    user_agent: request.headers.get('user-agent') ?? undefined,
+    metadata: {
+      breach_id: data.id,
+      severity: parsed.data.severity,
+      title: parsed.data.title,
+    },
+  });
 
   return Response.json(
     { ok: true, breach_id: data.id, logged_at: data.created_at },
