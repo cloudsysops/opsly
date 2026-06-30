@@ -49,17 +49,23 @@ function StarRating({ value }: { value: number }): React.ReactElement {
 const leadStatusLabel: Record<DashboardData['new_leads'][number]['status'], string> = {
   new: 'Nuevo',
   contacted: 'Contactado',
+  trial: 'Prueba',
   enrolled: 'Matriculado',
+  active: 'Activo',
+  renewal: 'Renovación',
   archived: 'Archivado',
 };
 
 const leadStatusTone: Record<
   DashboardData['new_leads'][number]['status'],
-  'amber' | 'violet' | 'green' | 'neutral'
+  'amber' | 'violet' | 'green' | 'neutral' | 'teal' | 'coral'
 > = {
   new: 'amber',
   contacted: 'violet',
+  trial: 'teal',
   enrolled: 'green',
+  active: 'green',
+  renewal: 'coral',
   archived: 'neutral',
 };
 
@@ -89,7 +95,10 @@ const leadStatusFilterLabel: Record<'all' | DashboardData['new_leads'][number]['
     all: 'Todos',
     new: 'Nuevos',
     contacted: 'Contactados',
+    trial: 'Prueba',
     enrolled: 'Matriculados',
+    active: 'Activos',
+    renewal: 'Renovación',
     archived: 'Archivados',
   };
 
@@ -399,7 +408,18 @@ export function DashboardView({
           accent="teal"
         >
           <div className="mb-3 flex flex-wrap gap-2">
-            {(['all', 'new', 'contacted', 'enrolled', 'archived'] as const).map((status) => (
+            {(
+              [
+                'all',
+                'new',
+                'contacted',
+                'trial',
+                'enrolled',
+                'active',
+                'renewal',
+                'archived',
+              ] as const
+            ).map((status) => (
               <Button
                 key={status}
                 type="button"
