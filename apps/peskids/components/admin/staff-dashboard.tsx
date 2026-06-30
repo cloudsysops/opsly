@@ -82,7 +82,6 @@ export function StaffDashboard({ surface }: StaffDashboardProps): React.ReactEle
 
   return (
     <DashboardView
-      surface={surface}
       data={data}
       lastUpdated={lastUpdated}
       range={range}
