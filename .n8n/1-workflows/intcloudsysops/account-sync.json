@@ -1,0 +1,96 @@
+{
+  "id": "intcloudsysops-account-sync",
+  "name": "Intcloudsysops - Account Sync",
+  "active": true,
+  "description": "Webhook: when account created → normalize → insert to Supabase intcloudsysops_accounts",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "intcloudsysops-account",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "account-webhook",
+      "name": "Account Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json;\nreturn [{\n  json: {\n    tenant_slug: 'intcloudsysops',\n    name: body.name || body.account_name || 'Unknown Account',\n    account_type: body.account_type || body.type || 'prospect',\n    status: body.status || 'active',\n    billing_email: body.billing_email || body.email || null,\n    phone: body.phone || null,\n    industry: body.industry || null,\n    estimated_value: Number(body.estimated_value ?? 0) || 0,\n    owner_id: body.owner_id || null,\n    received_at: new Date().toISOString(),\n    raw_payload: body\n  }\n}];"
+      },
+      "id": "normalize-account",
+      "name": "Normalize Account",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/intcloudsysops_accounts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "Prefer", "value": "return=representation" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ tenant_slug: $json.tenant_slug, name: $json.name, account_type: $json.account_type, status: $json.status, billing_email: $json.billing_email, phone: $json.phone, industry: $json.industry, estimated_value: $json.estimated_value, owner_id: $json.owner_id }) }}"
+      },
+      "id": "insert-supabase",
+      "name": "Insert Account to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, workflow: 'intcloudsysops-account-sync', account_id: $json.id } }}",
+        "options": { "responseCode": 201 }
+      },
+      "id": "response",
+      "name": "Success Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [780, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: false, error: $error.message } }}",
+        "options": { "responseCode": 400 }
+      },
+      "id": "error-response",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [780, 100]
+    }
+  ],
+  "connections": {
+    "Account Webhook": {
+      "main": [[{ "node": "Normalize Account", "type": "main", "index": 0 }]]
+    },
+    "Normalize Account": {
+      "main": [[{ "node": "Insert Account to Supabase", "type": "main", "index": 0 }]]
+    },
+    "Insert Account to Supabase": {
+      "main": [[{ "node": "Success Response", "type": "main", "index": 0 }]]
+    },
+    "Insert Account to Supabase": {
+      "main": [[{ "node": "Error Response", "type": "error", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": ["crm", "intcloudsysops", "webhook"]
+}

@@ -77,7 +77,7 @@ function buildFamilyInviteHtml(params: {
             <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#0f766e;font-weight:700;">Acceso para familias</div>
             <div style="font-size:28px;line-height:1.1;font-weight:800;color:#0f172a;margin-top:8px;">Peskids</div>
             <div style="font-size:15px;line-height:1.75;color:#334155;margin-top:16px;">
-              Hola ${safeDisplayName}, tu acceso familiar ya está listo. Usa este enlace seguro para entrar al portal de familias y ver tus clases, mensajes y progreso.
+              Hola ${safeDisplayName}, tu acceso familiar está siendo configurado. Usa este enlace seguro para entrar al portal de familias y ver tus clases, mensajes y progreso.
             </div>
             <div style="height:26px;"></div>
             <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 auto;"><tr>

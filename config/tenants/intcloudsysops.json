@@ -1,0 +1,23 @@
+{
+  "tenant_name": "Intcloudsysops",
+  "tenant_slug": "intcloudsysops",
+  "schema_name": "intcloudsysops",
+  "platform_domain": "op-sly.com",
+  "public_url": "https://intcloudsysops.op-sly.com",
+  "internal_port": 3005,
+  "stack_type": "crm-platform",
+  "pattern_ids": ["crm-platform", "agency-ops-stack"],
+  "staff_login_path": "/admin/login",
+  "workflows_count": 3,
+  "pricing_per_unit": 0,
+  "currency": "USD",
+  "notes": "CloudOps CRM platform (agency). Phase 1 onboarding. Tenant direct, plan agency, owner team@intcloudsysops.com. CRM Starter Pack (3 workflows) for account sync, deal pipeline, followups. Phase 0 schema complete. n8n workflows in VPS container tenant_intcloudsysops.",
+  "gohighlevel": {
+    "location_id": "qD7Z9jt3owk0LMtKElow",
+    "location_name": "Intcloudsysops — CloudOps Management",
+    "private_integration_id": "placeholder_will_update_after_ghl_setup",
+    "settings_url": "https://app.gohighlevel.com/v2/location/qD7Z9jt3owk0LMtKElow/settings/private-integrations/",
+    "doppler_secrets_prefix": "GOHIGHLEVEL_INTCLOUDSYSOPS_",
+    "webhook_inbound_url": "https://api.op-sly.com/api/public/tenants/intcloudsysops/webhooks/gohighlevel/accounts"
+  }
+}

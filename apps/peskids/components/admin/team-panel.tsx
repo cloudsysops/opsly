@@ -250,7 +250,7 @@ export function TeamPanel(): React.ReactElement {
                 <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
                   <p className="font-semibold">
                     {inviteResult.flow === 'recovery'
-                      ? 'Enlace de recuperación listo'
+                      ? 'Enlace de recuperación generado'
                       : 'Invitación lista'}
                   </p>
                   <p className="mt-1 break-all">{inviteResult.link}</p>

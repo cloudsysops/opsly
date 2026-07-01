@@ -1,0 +1,102 @@
+{
+  "id": "intcloudsysops-deal-status-update",
+  "name": "Intcloudsysops - Deal Status Update",
+  "active": true,
+  "description": "Cron: daily digest of open deals (status tracking and stage transitions)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            { "type": "days", "value": 1 }
+          ]
+        }
+      },
+      "id": "schedule-cron",
+      "name": "Schedule Trigger (Daily 9:00 AM UTC)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/intcloudsysops_deals?status=eq.open&order=updated_at.desc",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        }
+      },
+      "id": "fetch-open-deals",
+      "name": "Fetch Open Deals",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const deals = $json.body ?? [];\nconst digest = {\n  tenant_slug: 'intcloudsysops',\n  timestamp: new Date().toISOString(),\n  deal_count: deals.length,\n  by_stage: {},\n  deals: deals.map(d => ({ id: d.id, name: d.name, account_id: d.account_id, stage: d.stage, value: d.value, owner_id: d.owner_id, close_date: d.close_date }))\n};\n\ndeals.forEach(d => {\n  if (!digest.by_stage[d.stage]) digest.by_stage[d.stage] = 0;\n  digest.by_stage[d.stage]++;\n});\n\nreturn [{ json: digest }];"
+      },
+      "id": "summarize-deals",
+      "name": "Summarize Open Deals",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [520, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/intcloudsysops_deal_digests",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "Prefer", "value": "return=representation" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ tenant_slug: $json.tenant_slug, digest_data: $json, generated_at: $json.timestamp }) }}"
+      },
+      "id": "store-digest",
+      "name": "Store Deal Digest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [780, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log summary for monitoring\nconsole.log(`Daily deal digest: ${$json.deal_count} deals in ${Object.keys($json.by_stage).length} stages`);\nreturn [$json];"
+      },
+      "id": "log-completion",
+      "name": "Log Completion",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1040, 0]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger (Daily 9:00 AM UTC)": {
+      "main": [[{ "node": "Fetch Open Deals", "type": "main", "index": 0 }]]
+    },
+    "Fetch Open Deals": {
+      "main": [[{ "node": "Summarize Open Deals", "type": "main", "index": 0 }]]
+    },
+    "Summarize Open Deals": {
+      "main": [[{ "node": "Store Deal Digest", "type": "main", "index": 0 }]]
+    },
+    "Store Deal Digest": {
+      "main": [[{ "node": "Log Completion", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": ["crm", "intcloudsysops", "cron"]
+}

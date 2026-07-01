@@ -9,7 +9,7 @@ export type PeskidsLeadSession = {
 
 export function buildPostLeadWhatsAppPrefill(name: string): string {
   const trimmed = name.trim();
-  return `Hola Peskids 👋 Soy ${trimmed}, acabo de completar el formulario de reserva y estoy listo/a para agendar la clase de prueba.`;
+  return `Hola Peskids 👋 Soy ${trimmed}, acabo de completar el formulario de reserva y estoy esperando poder agendar la clase de prueba.`;
 }
 
 export function parsePeskidsLeadSession(raw: string | null): PeskidsLeadSession | null {

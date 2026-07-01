@@ -367,7 +367,7 @@ function buildInviteHtml(params: {
             <div style="font-size:18px;line-height:1.6;color:#0f172a;font-weight:700;">Hola ${safeDisplayName},</div>
             <div style="height:12px;"></div>
             <div style="font-size:15px;line-height:1.75;color:#334155;">
-              Tu acceso para <strong>${safeBrandName}</strong> ya está listo. Pulsa el botón para ${params.flow === 'recovery' ? 'definir una contraseña nueva' : 'activar tu cuenta'} y entrar al panel correcto.
+              Tu acceso para <strong>${safeBrandName}</strong> está siendo configurado. Pulsa el botón para ${params.flow === 'recovery' ? 'definir una contraseña nueva' : 'activar tu cuenta'} y entrar al panel correcto.
             </div>
             <div style="height:26px;"></div>
             <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 auto;"><tr>
@@ -492,7 +492,7 @@ export async function invitePeskidsTeamMember(params: {
   const sendResult = await sendTeamEmail({
     to: params.email,
     subject:
-      flow === 'recovery' ? 'Tu acceso de Peskids está listo' : `Invitación para ${tenantName}`,
+      flow === 'recovery' ? 'Tu acceso de Peskids está siendo activado' : `Invitación para ${tenantName}`,
     html,
   });
 
@@ -585,7 +585,7 @@ export async function requestPeskidsStaffRecovery(email: string): Promise<TeamRe
 
   const sendResult = await sendTeamEmail({
     to: member.email,
-    subject: 'Tu acceso de Peskids está listo',
+    subject: 'Tu acceso de Peskids está siendo activado',
     html,
   });
 
