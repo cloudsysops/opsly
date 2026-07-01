@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-07-01T12:51:08.580Z",
+  "generated_at": "2026-07-01T13:22:13.630Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -3194,6 +3194,41 @@
         "vulnerabilities"
       ],
       "size_bytes": 12240
+    },
+    {
+      "path": ".n8n/1-workflows/intcloudsysops/README.md",
+      "title": "Intcloudsysops CRM Workflows",
+      "keywords": [
+        "account",
+        "compose",
+        "configuration",
+        "crm",
+        "cron",
+        "daily",
+        "deal",
+        "deployment",
+        "docker",
+        "followup",
+        "intcloudsysops",
+        "integration",
+        "local",
+        "markdown",
+        "opsly",
+        "overview",
+        "readme",
+        "reminder",
+        "schedules",
+        "status",
+        "sync",
+        "testing",
+        "troubleshooting",
+        "update",
+        "utc",
+        "vps",
+        "webhook",
+        "workflows"
+      ],
+      "size_bytes": 5424
     },
     {
       "path": ".n8n/1-workflows/peskids/README.md",
@@ -24159,6 +24194,139 @@
       "size_bytes": 13881
     },
     {
+      "path": "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
+      "title": "Intcloudsysops — Code Customization Checklist (Phase 2)",
+      "keywords": [
+        "accounts",
+        "api",
+        "build",
+        "checklist",
+        "code",
+        "component",
+        "components",
+        "contacts",
+        "core",
+        "customization",
+        "dashboard",
+        "deals",
+        "feedback",
+        "followups",
+        "index",
+        "intcloudsysops",
+        "level",
+        "markdown",
+        "next",
+        "opsly",
+        "page",
+        "phase",
+        "react",
+        "routes",
+        "webhooks",
+        "widgets"
+      ],
+      "size_bytes": 15122
+    },
+    {
+      "path": "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "title": "Intcloudsysops — Data Model (Phase 1 Draft)",
+      "keywords": [
+        "accounts",
+        "activity",
+        "auto",
+        "cleanup",
+        "contacts",
+        "core",
+        "data",
+        "deal",
+        "deals",
+        "digests",
+        "draft",
+        "entities",
+        "feedback",
+        "followups",
+        "future",
+        "generated",
+        "intcloudsysops",
+        "level",
+        "log",
+        "markdown",
+        "model",
+        "opsly",
+        "phase",
+        "principles",
+        "retention",
+        "rls",
+        "row",
+        "security",
+        "supporting"
+      ],
+      "size_bytes": 10570
+    },
+    {
+      "path": "docs/tenants/intcloudsysops/DEPLOYMENT.md",
+      "title": "Intcloudsysops — Deployment Guide (Phase 1)",
+      "keywords": [
+        "before",
+        "commit",
+        "current",
+        "deploy",
+        "deployment",
+        "dev",
+        "development",
+        "environment",
+        "gates",
+        "guide",
+        "installation",
+        "intcloudsysops",
+        "markdown",
+        "opsly",
+        "phase",
+        "prerequisites",
+        "production",
+        "quality",
+        "required",
+        "server",
+        "setup",
+        "staging",
+        "start",
+        "status",
+        "variables"
+      ],
+      "size_bytes": 14751
+    },
+    {
+      "path": "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
+      "title": "Intcloudsysops — Extraction Plan (Future)",
+      "keywords": [
+        "assets",
+        "auth",
+        "billing",
+        "branding",
+        "checklist",
+        "code",
+        "copy",
+        "criteria",
+        "database",
+        "extraction",
+        "future",
+        "intcloudsysops",
+        "markdown",
+        "migrates",
+        "objective",
+        "observability",
+        "opsly",
+        "optional",
+        "phases",
+        "plan",
+        "stays",
+        "tracking",
+        "unified",
+        "usage",
+        "what"
+      ],
+      "size_bytes": 12390
+    },
+    {
       "path": "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "title": "Intcloudsysops — GHL Manual UI Checklist (Agency)",
       "keywords": [
@@ -24229,6 +24397,45 @@
         "token"
       ],
       "size_bytes": 3365
+    },
+    {
+      "path": "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
+      "title": "Intcloudsysops — Phase 1 Completion Report",
+      "keywords": [
+        "completion",
+        "configuration",
+        "created",
+        "crm",
+        "data",
+        "deliverables",
+        "deployment",
+        "docs",
+        "documentation",
+        "doppler",
+        "endpoints",
+        "executive",
+        "extraction",
+        "features",
+        "files",
+        "intcloudsysops",
+        "integration",
+        "markdown",
+        "model",
+        "n8n",
+        "opsly",
+        "pack",
+        "phase",
+        "plan",
+        "report",
+        "starter",
+        "summary",
+        "tenant",
+        "tenants",
+        "webhook",
+        "workflow",
+        "workflows"
+      ],
+      "size_bytes": 16028
     },
     {
       "path": "docs/tenants/legalvial/LEGALVIAL-ARCHITECTURE-DECISION.md",
@@ -86787,6 +86994,7 @@
       ".n8n/README.md",
       ".n8n/2-context/AGENTS.md",
       ".n8n/1-workflows/peskids/README.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "AGENTS.md",
       "tools/agents/prompts/cursor-executor.md",
       "tools/agents/prompts/claude-architect.md",
@@ -88945,6 +89153,11 @@
       "docs/tenants/production/TENANT-PRODUCTION-HARDENING.md",
       "docs/tenants/production/TENANT-PRODUCTION-BASELINE.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
@@ -89314,6 +89527,7 @@
       ".n8n/README.md",
       ".n8n/2-context/AGENTS.md",
       ".n8n/1-workflows/peskids/README.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "AGENTS.md",
       "tools/agents/prompts/cursor-executor.md",
       "tools/agents/prompts/claude-architect.md",
@@ -91478,6 +91692,11 @@
       "docs/tenants/production/TENANT-PRODUCTION-HARDENING.md",
       "docs/tenants/production/TENANT-PRODUCTION-BASELINE.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
@@ -92419,6 +92638,7 @@
       "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
       "docs/brain/skills/security-and-hardening.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
@@ -92681,6 +92901,7 @@
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       "docs/brain/dashboard.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
@@ -92698,6 +92919,7 @@
       "packages/skills/user/opsly-simplify/SKILL.md",
       "packages/skills/user/opsly-infra/SKILL.md",
       "packages/skills/user/opsly-quantum/templates/runbook.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/iac-docker.md",
       "apps/experimental/ingestion-service-archive/README.md",
       "apps/notebooklm-agent/README.md",
@@ -93158,6 +93380,7 @@
       "packages/skills/vendor/agent-skills/doubt-driven-development/SKILL.md",
       "packages/skills/vendor/agent-skills/shipping-and-launch/SKILL.md",
       "packages/skills/vendor/agent-skills/ci-cd-and-automation/SKILL.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "tools/agent-packs/vendor/the-architect/templates/blueprint-template.md",
       "tools/productivity-starter/DEMO-WALKTHROUGH.md",
       "lib/voice-messaging/GOVERNANCE.md",
@@ -93552,6 +93775,7 @@
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
@@ -93683,6 +93907,7 @@
       "docs/tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md",
       "docs/tenants/production/TENANT-PRODUCTION-HARDENING.md",
       "docs/tenants/production/TENANT-PRODUCTION-BASELINE.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
       "docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md",
@@ -93744,6 +93969,7 @@
       "docs/01-development/DISK-USAGE-REPORT.md",
       "docs/06-multi-agent/PARALLEL-EXECUTION-GUIDE.md",
       "docs/03-agents/AGENT-STARTUP-PROMPT.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
       ".claude/CLAUDE.md",
       ".claude/1-agent-teams/billing-agent.md",
       ".agents/skills/the-architect/references/README.md"
@@ -93922,6 +94148,7 @@
       "docs/tenants/production/TENANT-PRODUCTION-HARDENING.md",
       "docs/tenants/production/TENANT-PRODUCTION-BASELINE.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
       "docs/brain/modules/api.md",
       "docs/brain/skills/opsly-api.md",
@@ -94119,6 +94346,7 @@
       ".cursor/prompts/local-services-automation.md",
       ".cursor/index.md",
       ".github/index.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/supply-chain.md",
       "lib/config/README.md",
       "lib/config/GOVERNANCE.md",
@@ -94185,6 +94413,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
@@ -94358,6 +94587,7 @@
       "docs/03-agents/SOCIAL-MEDIA-AGENT-SYRA.md",
       "docs/02-tools/NOTION-MCP-SERVER.md",
       "docs/operations/VPS-VALIDATION-OPTIONS.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/reports/PRODUCTION-HEALTH.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/api-design-patterns.md"
     ],
@@ -94409,6 +94639,8 @@
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/EXTRACTION-PLAN.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/blueprints/opsly-operational-blueprint/MODULES.md",
       "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md",
       "docs/blueprints/opsly-operational-blueprint/CLIENT-INCUBATION-TEMPLATE.md",
@@ -96775,6 +97007,8 @@
       "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/FORMS-SPEC.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
@@ -97023,6 +97257,7 @@
       "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
       "docs/adr/ADR-014-notebooklm-agent.md",
       "docs/adr/ADR-043-supplement/COMPLETE-INDEX.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       "docs/brain/sessions/index.md",
       "docs/index.md",
       ".claude/CLAUDE.md"
@@ -98846,6 +99081,8 @@
       "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
       "docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "docs/tenants/onboarding-prompts/INFRASTRUCTURE-SETUP.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
@@ -99004,6 +99241,8 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       "docs/brain/skills/code-simplification.md",
       "docs/brain/skills/code-review-and-quality.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
@@ -99022,6 +99261,7 @@
     "compose": [
       "packages/skills/user/opsly-simplify/SKILL.md",
       "packages/skills/user/opsly-infra/SKILL.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/iac-docker.md",
       "apps/experimental/ingestion-service-archive/README.md",
       "vendor/agency-agents/integrations/qwen/agents/mobile-app-builder.md",
@@ -99112,6 +99352,7 @@
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/deployment-patterns.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
@@ -99487,6 +99728,10 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/testing/PHASE1-TEST-PLAN.md",
       "docs/testing/PHASE-2-TESTING.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
@@ -100939,6 +101184,7 @@
       "packages/skills/vendor/agent-skills/spec-driven-development/SKILL.md",
       "packages/skills/vendor/agent-skills/browser-testing-with-devtools/SKILL.md",
       ".cursor/prompts/local-services-automation.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "tools/agent-packs/vendor/cyber-neo/CLAUDE.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/testing-patterns.md",
       "lib/services/README.md",
@@ -101110,6 +101356,7 @@
       "docs/adr/ADR-034-ci-hygiene.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/brain/workflows/shield.md",
       "docs/brain/workflows/billing.md",
       "docs/brain/workflows/local-agents.md",
@@ -101254,6 +101501,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-HANDOFF-FOR-VPS-EXECUTION.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/tenants/onboarding-prompts/DEPLOYMENT-VALIDATION.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
@@ -102383,6 +102631,7 @@
       "packages/skills/user/opsly-peskids-deployment/SKILL.md",
       "packages/skills/user/opsly-quantum/templates/runbook.md",
       "scripts/agent-training/README.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "apps/peskids/CLAUDE.md",
       "apps/experimental/ingestion-service-archive/README.md",
       "apps/intcloudsysops/CLAUDE.md",
@@ -102475,6 +102724,7 @@
       "tools/agent-packs/vendor/the-architect/questions/phase-2-branches.md",
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
       "docs/tenants/peskids/OPSLY-REUSE.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
       ".agents/skills/cyber-neo/references/auth-authz-patterns.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/api-backend.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/mobile-app.md",
@@ -103650,6 +103900,8 @@
       "docs/adr/ADR-044-core-first-tenant-slug-extraction.md",
       "docs/adr/ADR-045-tenant-analytics-batch-python-pandas-arrow.md",
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
       ".agents/skills/the-architect/references/questions/phase-1-discovery.md",
@@ -104773,6 +105025,7 @@
       "docs/04-infrastructure/CICD-VPS.md",
       "docs/04-infrastructure/PRODUCTION-READINESS.md",
       "docs/04-infrastructure/FAILOVER-RUNBOOK.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
       "docs/tenants/onboarding-prompts/INFRASTRUCTURE-SETUP.md",
@@ -104957,6 +105210,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
       "docs/brain/skills/opsly-n8n-automation.md",
@@ -105115,6 +105369,7 @@
       "docs/tenants/peskids/DATA-MODEL.md",
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
       "docs/testing/PHASE-2-TESTING.md",
       "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md",
@@ -105189,6 +105444,8 @@
       "docs/tenants/peskids/MVP-PLAN.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/tenants/peskids/DEMO-SCRIPT.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
       "docs/brain/skills/opsly-feedback-ml.md",
@@ -105309,7 +105566,8 @@
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
-      "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md"
+      "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md"
     ],
     "acciones": [
       "packages/skills/user/opsly-notebooklm/SKILL.md",
@@ -105489,6 +105747,7 @@
       "packages/skills/user/opsly-agent-skills-bridge/SKILL.md",
       "packages/skills/vendor/agent-skills/ci-cd-and-automation/SKILL.md",
       ".cursor/prompts/local-services-sales-closer.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "tools/agent-packs/vendor/the-architect/CLAUDE.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/styling-systems.md",
       "lib/components/README.md",
@@ -105705,6 +105964,7 @@
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
       "docs/brain/skills/README.md",
       "docs/testing/QA-TESTING-BRIEF.md",
@@ -105914,6 +106174,7 @@
       ".github/README-github-templates.md",
       ".n8n/README.md",
       ".n8n/1-workflows/peskids/README.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/cicd-security.md",
       "apps/peskids/CLAUDE.md",
       "apps/intcloudsysops/CLAUDE.md",
@@ -105963,6 +106224,7 @@
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
       "docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/brain/workflows/README.md",
@@ -107308,6 +107570,7 @@
       "docs/05-deployment-status/DEPLOYMENT-STATUS-2026-05-04.md",
       "docs/03-agents/QUICK-REFERENCE-HERMES-OPSLY.md",
       "docs/tenants/peskids/QUICK-START-PRODUCTION.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/reports/session-summary-2026-05-21.md",
       "docs/blueprints/README-PHASE1-EXECUTE.md",
       ".claude/AGENTS-ENHANCEMENTS.md",
@@ -107838,6 +108101,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-HANDOFF-FOR-VPS-EXECUTION.md",
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/testing/PHASE1-TEST-PLAN.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
@@ -108027,6 +108291,7 @@
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
       "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
@@ -108054,6 +108319,7 @@
       "packages/skills/vendor/agent-skills/ci-cd-and-automation/SKILL.md",
       ".archived/context-builder-v2/src/design/architecture.md",
       "scripts/README.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "tools/agent-packs/vendor/the-architect/knowledge/archetypes/mobile-app.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/deployment-patterns.md",
       "apps/peskids/README.md",
@@ -108090,6 +108356,8 @@
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/tenants/onboarding-prompts/DEPLOYMENT-VALIDATION.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
@@ -108118,6 +108386,7 @@
       "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
       "docs/00-architecture/opsly-agent-runtime.md",
       "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
       "docs/demo/hackathon-demo.md",
       ".agents/skills/cyber-neo/references/logging-patterns.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
@@ -108175,7 +108444,8 @@
       "docs/03-agents/AUTONOMOUS-ITERATION.md",
       "docs/02-tools/MCP-STATUS-ANALYSIS.md",
       "docs/adr/ADR-019-prometheus-grafana-observability.md",
-      "docs/adr/ADR-012-observability.md"
+      "docs/adr/ADR-012-observability.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md"
     ],
     "outcomes": [
       "packages/skills/user/opsly-peskids-deployment/SKILL.md",
@@ -108200,6 +108470,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
       "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md",
       "docs/tenants/peskids/GHL-WORKFLOWS.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/demo/hackathon-demo.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
@@ -110113,6 +110384,7 @@
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/brain/skills/git-workflow-and-versioning.md",
       "docs/brain/workflows/shield.md",
       "docs/brain/workflows/billing.md",
@@ -110715,6 +110987,7 @@
     "troubleshooting": [
       "packages/skills/user/opsly-quantum/templates/runbook.md",
       ".n8n/README.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "docs/runbooks/INCUBATION-PLATFORM-FOUNDATION.md",
       "docs/runbooks/VPS-CLEANUP-WEBHOOK.md",
       "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
@@ -110793,6 +111066,7 @@
       "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md",
       "docs/adr/ADR-017-worker-teams-billing-roadmap.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
       "docs/brain/skills/README.md",
       "docs/brain/skills/opsly-billing.md",
       "docs/brain/workflows/billing.md",
@@ -111072,6 +111346,7 @@
       "docs/01-development/COST-DASHBOARD-WIREFRAMES.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/frontend-stacks.md"
@@ -111165,7 +111440,8 @@
       "vendor/agency-agents/integrations/openclaw/frontend-developer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/mobile-app-builder/AGENTS.md",
       "docs/design/OAR.md",
-      "docs/01-development/PHASE-5-2-3-4-COMPLETE-SPECS.md"
+      "docs/01-development/PHASE-5-2-3-4-COMPLETE-SPECS.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md"
     ],
     "server": [
       "packages/skills/user/opsly-frontend/SKILL.md",
@@ -111211,6 +111487,7 @@
       "docs/02-tools/NOTION-MCP-SERVER.md",
       "docs/adr/ADR-009-openclaw-mcp-architecture.md",
       "docs/adr/ADR-029-mcp-orchestration.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/brain/modules/mcp.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/frontend-stacks.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/state-management.md"
@@ -111566,6 +111843,7 @@
       "docs/02-tools/MCP-SERVERS.md",
       "docs/adr/ADR-044-core-first-tenant-slug-extraction.md",
       "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/brain/skills/source-driven-development.md",
       "docs/brain/skills/test-driven-development.md",
       "docs/brain/skills/README.md",
@@ -112386,6 +112664,7 @@
       "docs/03-agents/AGENT-TEAM-OVERVIEW.md",
       "docs/02-tools/NOTION-MCP-SERVER.md",
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/brain/skills/code-review-and-quality.md",
       ".claude/agents/core/reviewer.md"
     ],
@@ -112698,6 +112977,7 @@
     ],
     "account": [
       "packages/skills/user/opsly-google-cloud/SKILL.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "vendor/agency-agents/integrations/qwen/agents/customer-service.md",
       "vendor/agency-agents/integrations/qwen/agents/bilibili-content-strategist.md",
       "vendor/agency-agents/integrations/qwen/agents/outbound-strategist.md",
@@ -112979,6 +113259,7 @@
       "scripts/agent-training/README.md",
       ".n8n/README.md",
       ".n8n/1-workflows/peskids/README.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "tools/usb-kit/README.md",
       "tools/agent-packs/README.md",
       "tools/agent-packs/vendor/cyber-neo/README.md",
@@ -117328,6 +117609,7 @@
       "docs/00-architecture/ARCHITECTURE.md",
       "docs/03-agents/AUTONOMOUS-EXECUTION-GUIDE.md",
       "docs/03-agents/SECURITY-AUTONOMOUS-EXECUTION-POLICY.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
       "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/testing-patterns.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/database-patterns.md"
@@ -117982,6 +118264,7 @@
       "docs/02-tools/NOTEBOOKLM-SETUP.md",
       "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
       "docs/adr/ADR-025-notebooklm-knowledge-layer.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
       "docs/reports/session-summary-2026-05-21.md",
       ".claude/2-context-management/CLAUDE.md",
@@ -119450,6 +119733,7 @@
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/brain/skills/documentation-and-adrs.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/SESSION-SUMMARY-2026-05-08.md",
@@ -119476,6 +119760,7 @@
     "status": [
       "packages/skills/vendor/agent-skills/documentation-and-adrs/SKILL.md",
       ".cursor/prompts/fix-organize-autonomous-system.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/api-design-patterns.md",
       "apps/peskids/DEPLOYMENT.md",
       "apps/intcloudsysops/DEPLOYMENT.md",
@@ -119533,6 +119818,7 @@
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
@@ -119849,6 +120135,8 @@
       "docs/tenants/peskids/MVP-PLAN.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
       "docs/testing/PHASE1-TEST-PLAN.md",
       "docs/reports/ACG-STRATEGY-30-DAYS.md",
@@ -120145,6 +120433,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/peskids/SPRINT-01.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
       "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
       "docs/reports/session-summary-2026-05-21.md",
@@ -121105,6 +121394,7 @@
       "docs/adr/ADR-036-cli-consolidation-tools-cli-first.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
       "docs/testing/PHASE1-TEST-PLAN.md",
       "docs/testing/QA-TESTING-BRIEF.md",
       "docs/reports/VALIDATION-PACKAGE-README.md"
@@ -121115,7 +121405,8 @@
     ],
     "objective": [
       "packages/skills/vendor/agent-skills/spec-driven-development/SKILL.md",
-      "docs/runbooks/COMPUTER-CONTROL-OPERATOR-MODE.md"
+      "docs/runbooks/COMPUTER-CONTROL-OPERATOR-MODE.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md"
     ],
     "specify": [
       "packages/skills/vendor/agent-skills/spec-driven-development/SKILL.md"
@@ -121636,6 +121927,8 @@
       "docs/06-multi-agent/PARALLEL-EXECUTION-ARCHITECTURE.md",
       "docs/04-infrastructure/SECURITY_AUDIT_REPORT.md",
       "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md"
     ],
@@ -122379,6 +122672,7 @@
       "docs/03-agents/VALIDATION-AND-ITERATION-SYSTEM.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
       "docs/tenants/peskids/DOPPLER-SETUP.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       "docs/testing/PHASE-2-TESTING.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
       ".agents/skills/cyber-neo/references/iac-docker.md",
@@ -122576,6 +122870,7 @@
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/testing/PHASE-2-TESTING.md",
@@ -122699,6 +122994,8 @@
       "docs/tenants/peskids/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/peskids/DATA-MODEL.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
       "docs/reports/SESSION-SUMMARY-2026-05-08.md",
       "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md",
@@ -123006,6 +123303,7 @@
       "lib/voice-messaging/README.md",
       "apps/task-orchestrator/README.md",
       "vendor/agency-agents/integrations/openclaw/technical-writer/AGENTS.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       ".agents/skills/the-architect/references/README.md"
     ],
     "issues": [
@@ -123806,6 +124104,7 @@
       "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
       "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
       "docs/brain/skills/README.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       "docs/reports/PRODUCTION-HEALTH.md",
@@ -124103,11 +124402,13 @@
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/reports/audit-2026-04-07.md"
     ],
     "intcloudsysops": [
       "config/doppler-audit-2026-04-07.md",
       "README.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "lib/components/README.md",
       "lib/evaluation/README.md",
       "lib/telemetry/README.md",
@@ -124139,6 +124440,11 @@
       "docs/examples/email-templates/INTCLOUDSYSOPS-EMAIL-TEMPLATES.md",
       "docs/tenants/peskids/DOPPLER-SETUP.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/artifacts/provisioning/provision-report-intcloudsysops.md",
@@ -125307,6 +125613,7 @@
       "vendor/agency-agents/integrations/openclaw/voice-ai-integration-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/sales-outreach/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/game-audio-engineer/AGENTS.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/testing/QA-TESTING-BRIEF.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
       "docs/blueprints/README-PHASE1-EXECUTE.md"
@@ -125733,6 +126040,7 @@
       ".cursor/prompts/local-services-mvp.md",
       ".cursor/prompts/test-local-cursor-phase1.md",
       ".codex/LOCAL-AUTOMATION.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "lib/prompt-guard/README.md",
       "apps/experimental/ingestion-service-archive/README.md",
       "infra/terraform/README.md",
@@ -125817,6 +126125,7 @@
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
       "docs/blueprints/N8N-AUTOMATION-GUARANTEES.md",
       ".agents/skills/the-architect/references/questions/phase-1-discovery.md"
     ],
@@ -125886,6 +126195,7 @@
     ],
     "reminder": [
       ".cursor/prompts/local-services-automation.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "docs/superpowers/specs/2026-06-25-icso-website-enhancement-design.md",
       "docs/examples/email-templates/INTCLOUDSYSOPS-EMAIL-TEMPLATES.md",
       "docs/examples/n8n/PESKIDS-N8N-DEPLOYMENT.md",
@@ -125979,6 +126289,7 @@
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/reports/VALIDATION-REPORT-2026-04-12.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
@@ -125998,6 +126309,7 @@
     "sync": [
       ".cursor/prompts/local-services-automation.md",
       ".cursor/prompts/task-orchestrator-completion.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "docs/superpowers/plans/2026-05-30-skills-obsidian-integration.md",
       "docs/superpowers/specs/2026-05-30-skills-obsidian-integration-design.md",
       "docs/infrastructure/AGENT-BOOTSTRAP-SYSTEM.md",
@@ -126425,6 +126737,7 @@
       ".cursor/prompts/task-orchestrator-completion.md",
       "docs/plans/AUTONOMY-COMPLETION-PLAN-2026-04-27.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md"
     ],
     "custom": [
@@ -126495,6 +126808,7 @@
       "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
       "docs/tenants/peskids/GHL-CONSULTING-HANDOFF.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
@@ -126616,6 +126930,7 @@
       "docs/01-development/TROUBLESHOOTING.md",
       "docs/adr/ADR-042-local-services-phase-2-webhooks.md",
       "docs/tenants/peskids/EXTRACTION-PLAN.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       "docs/blueprints/opsly-operational-blueprint/EXTRACTION-PATTERN.md"
     ],
     "closer": [
@@ -127024,6 +127339,7 @@
     ],
     "daily": [
       ".cursor/prompts/local-services-mvp.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "vendor/agency-agents/integrations/qwen/agents/roblox-experience-designer.md",
       "vendor/agency-agents/integrations/qwen/agents/legal-billing-time-tracking.md",
       "vendor/agency-agents/integrations/qwen/agents/studio-operations.md",
@@ -127413,6 +127729,7 @@
       "docs/tenants/peskids/GHL-CONSULTING-HANDOFF.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
       "docs/blueprints/CUSTOMER-ANALYSIS-ICSO-PESKIDS.md",
@@ -128464,6 +128781,7 @@
       "docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md",
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
       "docs/tenants/production/TENANT-PRODUCTION-BASELINE.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
       "docs/brain/tenants/README.md",
@@ -129391,6 +129709,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/tenants/onboarding-prompts/INFRASTRUCTURE-SETUP.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/testing/PHASE-2-TESTING.md",
@@ -129900,6 +130219,7 @@
       "docs/tenants/peskids/INVITATION-FLOW-VERIFICATION.md",
       "docs/tenants/peskids/GHL-CONSULTING-HANDOFF.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
@@ -129995,6 +130315,7 @@
       "docs/tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md",
       "docs/tenants/production/TENANT-PRODUCTION-HARDENING.md",
       "docs/tenants/production/TENANT-PRODUCTION-BASELINE.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
       "docs/demo/hackathon-demo.md",
       "docs/testing/QA-TESTING-BRIEF.md",
@@ -130861,6 +131182,7 @@
     "webhook": [
       ".n8n/3-webhooks/github-webhook.md",
       ".n8n/3-webhooks/discord-webhook.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "infra/monitoring/README.md",
       "docs/superpowers/plans/2026-05-31-collectx-sprint1.md",
       "docs/superpowers/specs/TEMPLATE-next-client-blueprint.md",
@@ -130883,6 +131205,7 @@
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
@@ -130926,12 +131249,14 @@
     ],
     "crm": [
       ".n8n/README.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "apps/peskids/CLAUDE.md",
       "apps/intcloudsysops/CLAUDE.md",
       "infra/templates/n8n-workflows-template.md",
       "docs/n8n-workflows/crm/README.md",
       "docs/tenants/peskids/OPS-RUNBOOK.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/brain/workflows/marketplace-crm.md",
       "docs/blueprints/opsly-operational-blueprint/MODULES.md"
     ],
@@ -130982,6 +131307,7 @@
       "docs/n8n-workflows/crm/README.md",
       "docs/tenants/peskids/design-pack/README.md",
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/blueprints/opsly-operational-blueprint/MODULES.md"
     ],
     "placeholders": [
@@ -130991,7 +131317,8 @@
     "starter": [
       ".n8n/README.md",
       "infra/templates/n8n-workflows-template.md",
-      "docs/n8n-workflows/crm/README.md"
+      "docs/n8n-workflows/crm/README.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md"
     ],
     "utiles": [
       ".n8n/README.md",
@@ -131063,6 +131390,7 @@
       "docs/tenants/peskids/DOPPLER-SETUP.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/reports/audit-2026-04-07.md",
       ".claude/2-context-management/CLAUDE.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/deployment-patterns.md",
@@ -131158,6 +131486,7 @@
     ],
     "followup": [
       ".n8n/1-workflows/peskids/README.md",
+      ".n8n/1-workflows/intcloudsysops/README.md",
       "docs/tenants/peskids/WORKFLOWS.md",
       "docs/tenants/peskids/EVENT-CONTRACT.md",
       "docs/blueprints/README-PHASE1-EXECUTE.md",
@@ -131208,6 +131537,73 @@
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
       "docs/reports/session-summary-2026-05-21.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/mobile-app.md"
+    ],
+    "cron": [
+      ".n8n/1-workflows/intcloudsysops/README.md",
+      "docs/01-development/OPS-CLEANUP-PROCEDURES.md",
+      "docs/04-infrastructure/RUNBOOK-AI-LOCAL-FIRST.md",
+      "docs/04-infrastructure/BILLING-FLUSH-VERCEL.md",
+      "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
+      ".agents/VPS-PRODUCTION-SETUP.md"
+    ],
+    "deal": [
+      ".n8n/1-workflows/intcloudsysops/README.md",
+      "vendor/agency-agents/integrations/qwen/agents/pipeline-analyst.md",
+      "vendor/agency-agents/integrations/qwen/agents/sales-coach.md",
+      "vendor/agency-agents/integrations/qwen/agents/deal-strategist.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/sales-coach/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/deal-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/pipeline-analyst/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/sales-coach/system.md",
+      "vendor/agency-agents/integrations/kimi/deal-strategist/system.md",
+      "vendor/agency-agents/integrations/kimi/pipeline-analyst/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-sales-coach/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-deal-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-pipeline-analyst/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/pipeline-analyst.md",
+      "vendor/agency-agents/integrations/opencode/agents/sales-coach.md",
+      "vendor/agency-agents/integrations/opencode/agents/deal-strategist.md",
+      "vendor/agency-agents/integrations/openclaw/sales-coach/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/deal-strategist/IDENTITY.md",
+      "vendor/agency-agents/integrations/openclaw/deal-strategist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/pipeline-analyst/AGENTS.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md"
+    ],
+    "schedules": [
+      ".n8n/1-workflows/intcloudsysops/README.md",
+      "vendor/agency-agents/integrations/qwen/agents/report-distribution-agent.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/report-distribution-agent/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/report-distribution-agent/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-report-distribution-agent/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/report-distribution-agent.md",
+      "vendor/agency-agents/integrations/openclaw/report-distribution-agent/AGENTS.md"
+    ],
+    "update": [
+      ".n8n/1-workflows/intcloudsysops/README.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/archetypes/mobile-app.md",
+      "vendor/agency-agents/integrations/qwen/agents/loan-officer-assistant.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/loan-officer-assistant/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/loan-officer-assistant/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-loan-officer-assistant/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/loan-officer-assistant.md",
+      "vendor/agency-agents/integrations/openclaw/loan-officer-assistant/AGENTS.md",
+      "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
+      "docs/governance/POLICY-REGISTRY.md",
+      "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
+      "docs/01-development/N8N-IMPORT-GUIDE.md",
+      "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
+      "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
+      "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
+      "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
+      "docs/tenants/peskids/TEMPLATE-STATUS.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
+      ".agents/skills/the-architect/references/knowledge/archetypes/mobile-app.md"
+    ],
+    "utc": [
+      ".n8n/1-workflows/intcloudsysops/README.md",
+      "docs/01-development/AGENT-PROMPT-QUEUE.md",
+      "docs/reports/AUTONOMY-PHASE1-E2E-EVIDENCE.md"
     ],
     "automaticos": [
       "AGENTS.md"
@@ -131767,6 +132163,7 @@
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md",
       "docs/adr/ADR-028-agent-api-routing.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       ".agents/skills/cyber-neo/references/auth-authz-patterns.md",
       ".agents/skills/the-architect/references/templates/blueprint-template.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/auth-patterns.md"
@@ -131874,6 +132271,7 @@
       "docs/tenants/peskids/FORMS-SPEC.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/DEMO-SCRIPT.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       ".agents/skills/cyber-neo/references/cwe-top-25.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/marketing-site.md"
     ],
@@ -132004,6 +132402,7 @@
       "docs/examples/email-templates/INTCLOUDSYSOPS-EMAIL-TEMPLATES.md",
       "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
       ".agents/skills/cyber-neo/references/iac-docker.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
     ],
@@ -132927,6 +133326,7 @@
       "vendor/agency-agents/integrations/openclaw/agents-orchestrator/AGENTS.md",
       "docs/governance/internal/INCIDENT-RESPONSE-POLICY.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       ".agents/skills/cyber-neo/SKILL.md"
     ],
@@ -133349,6 +133749,7 @@
       "vendor/agency-agents/integrations/opencode/agents/identity-graph-operator.md",
       "vendor/agency-agents/integrations/openclaw/identity-graph-operator/AGENTS.md",
       "docs/projects/PESKIDS-SCOPE.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
       ".agents/skills/the-architect/references/templates/blueprint-template.md"
     ],
     "relationships": [
@@ -133740,27 +134141,6 @@
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/mobile-app.md"
     ],
-    "update": [
-      "tools/agent-packs/vendor/the-architect/knowledge/archetypes/mobile-app.md",
-      "vendor/agency-agents/integrations/qwen/agents/loan-officer-assistant.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/loan-officer-assistant/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/loan-officer-assistant/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-loan-officer-assistant/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/loan-officer-assistant.md",
-      "vendor/agency-agents/integrations/openclaw/loan-officer-assistant/AGENTS.md",
-      "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
-      "docs/governance/POLICY-REGISTRY.md",
-      "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
-      "docs/01-development/N8N-IMPORT-GUIDE.md",
-      "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
-      "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
-      "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
-      "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
-      "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
-      "docs/tenants/peskids/TEMPLATE-STATUS.md",
-      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
-      ".agents/skills/the-architect/references/knowledge/archetypes/mobile-app.md"
-    ],
     "capture": [
       "tools/agent-packs/vendor/the-architect/knowledge/archetypes/marketing-site.md",
       "tools/agent-packs/vendor/the-architect/questions/phase-2-branches.md",
@@ -134015,6 +134395,7 @@
       "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
       "docs/tenants/peskids/EVENT-CONTRACT.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/content-platform.md"
     ],
     "rendering": [
@@ -134366,6 +134747,7 @@
       "docs/03-agents/VALIDATION-AND-ITERATION-SYSTEM.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/frontend-stacks.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/styling-systems.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/state-management.md"
@@ -134647,6 +135029,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/database-patterns.md"
@@ -135209,6 +135592,7 @@
       "vendor/agency-agents/integrations/openclaw/book-co-author/AGENTS.md",
       "docs/adr/ADR-028-agent-api-routing.md",
       "docs/tenants/peskids/SPRINT-01.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
       "docs/blueprints/opsly-operational-blueprint/MODULES.md"
     ],
     "edit": [
@@ -135556,7 +135940,8 @@
       "docs/01-development/OPS-CLEANUP-PROCEDURES.md",
       "docs/04-infrastructure/SSH-COMMANDS-LOCALRANK.md",
       "docs/audits/DOCKER-OPTIMIZATION.md",
-      "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md"
+      "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md"
     ],
     "close": [
       "tools/productivity-starter/demo-script.md",
@@ -135863,7 +136248,8 @@
       "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md",
       "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
       "docs/tenants/peskids/DASHBOARD-SPEC.md",
-      "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md"
+      "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md"
     ],
     "golden": [
       "lib/evaluation/README.md",
@@ -136192,6 +136578,7 @@
       "vendor/agency-agents/integrations/openclaw/video-optimization-specialist/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/livestream-commerce-coach/AGENTS.md",
       "docs/01-development/RETENTION-POLICY.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
       "docs/blueprints/N8N-AUTOMATION-GUARANTEES.md"
     ],
     "tracking": [
@@ -136224,6 +136611,7 @@
       "docs/03-agents/SYRA-OPENCLAW-INTEGRATION.md",
       "docs/03-agents/VALIDATION-AND-ITERATION-SYSTEM.md",
       "docs/adr/ADR-031-token-optimization-ollama-primary.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
       "docs/blueprints/N8N-AUTOMATION-GUARANTEES.md",
       "docs/blueprints/PHASE1-PHASE2-STATUS.md",
       ".claude/AGENTS-ENHANCEMENTS.md",
@@ -137180,7 +137568,9 @@
       "docs/adr/ADR-031-experimental-consolidation.md",
       "docs/tenants/peskids/DASHBOARD-SPEC.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
-      "docs/tenants/peskids/FUTURE-REPO-SEED.md"
+      "docs/tenants/peskids/FUTURE-REPO-SEED.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md"
     ],
     "getting": [
       "apps/peskids/CLAUDE.md",
@@ -137632,7 +138022,8 @@
       "vendor/agency-agents/integrations/antigravity/agency-app-store-optimizer/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/app-store-optimizer.md",
       "vendor/agency-agents/integrations/openclaw/app-store-optimizer/AGENTS.md",
-      "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md"
+      "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md"
     ],
     "brand": [
       "apps/icso/README.md",
@@ -137674,6 +138065,7 @@
       "docs/growth/AGENCY-PILOT-OUTREACH.md",
       "docs/runbooks/dev.md",
       "docs/01-development/PHASE-2-DEPLOYMENT.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/blueprints/CUSTOMERS-DEPLOY-NOW.md"
     ],
     "icso": [
@@ -146318,27 +146710,6 @@
       "vendor/agency-agents/integrations/openclaw/retail-customer-returns/IDENTITY.md",
       "vendor/agency-agents/integrations/openclaw/retail-customer-returns/AGENTS.md"
     ],
-    "deal": [
-      "vendor/agency-agents/integrations/qwen/agents/pipeline-analyst.md",
-      "vendor/agency-agents/integrations/qwen/agents/sales-coach.md",
-      "vendor/agency-agents/integrations/qwen/agents/deal-strategist.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/sales-coach/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/deal-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/pipeline-analyst/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/sales-coach/system.md",
-      "vendor/agency-agents/integrations/kimi/deal-strategist/system.md",
-      "vendor/agency-agents/integrations/kimi/pipeline-analyst/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-sales-coach/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-deal-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-pipeline-analyst/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/pipeline-analyst.md",
-      "vendor/agency-agents/integrations/opencode/agents/sales-coach.md",
-      "vendor/agency-agents/integrations/opencode/agents/deal-strategist.md",
-      "vendor/agency-agents/integrations/openclaw/sales-coach/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/deal-strategist/IDENTITY.md",
-      "vendor/agency-agents/integrations/openclaw/deal-strategist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/pipeline-analyst/AGENTS.md"
-    ],
     "diagnostic": [
       "vendor/agency-agents/integrations/qwen/agents/pipeline-analyst.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/pipeline-analyst/SKILL.md",
@@ -150081,14 +150452,6 @@
       "docs/reports/VALIDATION-REPORT-2026-04-12.md",
       "docs/reports/README.md"
     ],
-    "schedules": [
-      "vendor/agency-agents/integrations/qwen/agents/report-distribution-agent.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/report-distribution-agent/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/report-distribution-agent/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-report-distribution-agent/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/report-distribution-agent.md",
-      "vendor/agency-agents/integrations/openclaw/report-distribution-agent/AGENTS.md"
-    ],
     "persistence": [
       "vendor/agency-agents/integrations/qwen/agents/sales-data-extraction-agent.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/sales-data-extraction-agent/SKILL.md",
@@ -150550,6 +150913,8 @@
       "vendor/agency-agents/integrations/openclaw/accounts-payable-agent/AGENTS.md",
       "docs/governance/internal/EMPLOYEE-LIFECYCLE-POLICY.md",
       "docs/governance/internal/ACCESS-CONTROL-POLICY.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md"
     ],
@@ -152775,6 +153140,7 @@
       "docs/adr/ADR-029-mcp-orchestration.md",
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       ".claude/agents/opsly/billing.md"
     ],
     "maintenance": [
@@ -152835,7 +153201,9 @@
       "vendor/agency-agents/integrations/antigravity/agency-sales-engineer/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/sales-engineer.md",
       "vendor/agency-agents/integrations/openclaw/sales-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/pipeline-analyst/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/pipeline-analyst/AGENTS.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md"
     ],
     "demos": [
       "vendor/agency-agents/integrations/qwen/agents/sales-engineer.md",
@@ -154950,7 +155318,8 @@
       "vendor/agency-agents/integrations/openclaw/roblox-avatar-creator/AGENTS.md"
     ],
     "customization": [
-      "vendor/agency-agents/integrations/openclaw/roblox-avatar-creator/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/roblox-avatar-creator/AGENTS.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md"
     ],
     "humanoiddescription": [
       "vendor/agency-agents/integrations/openclaw/roblox-avatar-creator/AGENTS.md"
@@ -156293,7 +156662,8 @@
     ],
     "row": [
       "docs/database/DATABASE-OPERATIONS.md",
-      "docs/04-infrastructure/SECURITY_AUDIT_REPORT.md"
+      "docs/04-infrastructure/SECURITY_AUDIT_REPORT.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md"
     ],
     "stats": [
       "docs/database/DATABASE-OPERATIONS.md",
@@ -159915,10 +160285,6 @@
       "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
       "docs/02-tools/N8N-MCP-INTEGRATION.md"
     ],
-    "utc": [
-      "docs/01-development/AGENT-PROMPT-QUEUE.md",
-      "docs/reports/AUTONOMY-PHASE1-E2E-EVIDENCE.md"
-    ],
     "comprometer": [
       "docs/01-development/HEAVY-SERVICES-DECISION.md"
     ],
@@ -160778,13 +161144,6 @@
     ],
     "casi": [
       "docs/01-development/OPS-CLEANUP-PROCEDURES.md"
-    ],
-    "cron": [
-      "docs/01-development/OPS-CLEANUP-PROCEDURES.md",
-      "docs/04-infrastructure/RUNBOOK-AI-LOCAL-FIRST.md",
-      "docs/04-infrastructure/BILLING-FLUSH-VERCEL.md",
-      "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
-      ".agents/VPS-PRODUCTION-SETUP.md"
     ],
     "incluye": [
       "docs/01-development/OPS-CLEANUP-PROCEDURES.md",
@@ -161797,6 +162156,7 @@
     ],
     "unified": [
       "docs/03-agents/AUTONOMOUS-EXECUTION-GUIDE.md",
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
       ".agents/UNIFIED-AGENT-ARCHITECTURE.md"
     ],
     "avanzadas": [
@@ -163150,7 +163510,9 @@
       "docs/tenants/peskids/DATA-MODEL.md"
     ],
     "followups": [
-      "docs/tenants/peskids/DATA-MODEL.md"
+      "docs/tenants/peskids/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md"
     ],
     "normalizada": [
       "docs/tenants/peskids/DATA-MODEL.md"
@@ -163169,6 +163531,7 @@
     "created": [
       "docs/tenants/peskids/EVENT-CONTRACT.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/reports/session-summary-2026-05-21.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
       "docs/blueprints/README-PHASE1-EXECUTE.md"
@@ -163558,6 +163921,32 @@
       "docs/artifacts/provisioning/provision-report-peskids.md",
       "docs/artifacts/provisioning/provision-report-intcloudsysops.md"
     ],
+    "activity": [
+      "docs/tenants/intcloudsysops/DATA-MODEL.md"
+    ],
+    "contacts": [
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
+      "docs/testing/QA-TESTING-BRIEF.md"
+    ],
+    "digests": [
+      "docs/tenants/intcloudsysops/DATA-MODEL.md"
+    ],
+    "supporting": [
+      "docs/tenants/intcloudsysops/DATA-MODEL.md"
+    ],
+    "branding": [
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md"
+    ],
+    "migrates": [
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md"
+    ],
+    "stays": [
+      "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md"
+    ],
+    "widgets": [
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md"
+    ],
     "programa": [
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md"
     ],
@@ -163642,9 +164031,6 @@
     ],
     "detecting": [
       "docs/testing/PHASE1-TEST-PLAN.md"
-    ],
-    "contacts": [
-      "docs/testing/QA-TESTING-BRIEF.md"
     ],
     "iterations": [
       "docs/testing/PHASE-2-TESTING.md"
@@ -164324,6 +164710,7 @@
     ".jules/bolt.md",
     ".jules/palette.md",
     ".jules/sentinel.md",
+    ".n8n/1-workflows/intcloudsysops/README.md",
     ".n8n/1-workflows/peskids/README.md",
     ".n8n/2-context/AGENTS.md",
     ".n8n/3-webhooks/discord-webhook.md",
@@ -165033,8 +165420,13 @@
     "docs/superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
     "docs/superpowers/specs/2026-06-25-icso-website-enhancement-design.md",
     "docs/superpowers/specs/TEMPLATE-next-client-blueprint.md",
+    "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
+    "docs/tenants/intcloudsysops/DATA-MODEL.md",
+    "docs/tenants/intcloudsysops/DEPLOYMENT.md",
+    "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
     "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
     "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
+    "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
     "docs/tenants/legalvial/LEGALVIAL-ARCHITECTURE-DECISION.md",
     "docs/tenants/onboarding-prompts/DEPLOYMENT-VALIDATION.md",
     "docs/tenants/onboarding-prompts/INFRASTRUCTURE-SETUP.md",
