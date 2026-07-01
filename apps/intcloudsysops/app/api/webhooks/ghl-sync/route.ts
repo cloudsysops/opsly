@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createHmac } from 'crypto';
 import { z } from 'zod';
 import { syncAccountToGHL, syncContactToGHL, syncDealToGHL } from '@/lib/gohighlevel-sync';
+
+const verifyWebhookSignature = (body: string, signature: string | null): boolean => {
+  const secret = process.env.GOHIGHLEVEL_WEBHOOK_SECRET;
+  if (!secret || !signature) return false;
+
+  const expectedSignature = createHmac('sha256', secret)
+    .update(body)
+    .digest('hex');
+
+  return signature === expectedSignature;
+};
 
 const syncAccountSchema = z.object({
   type: z.literal('account'),
@@ -32,7 +44,7 @@ const syncDealSchema = z.object({
     title: z.string().min(1),
     accountId: z.string().uuid(),
     value: z.number().positive(),
-    stage: z.enum(['lead', 'qualified', 'proposal', 'negotiation', 'won', 'lost']),
+    stage: z.enum(['prospecting', 'qualification', 'proposal', 'negotiation', 'won', 'lost']),
     probability: z.number().min(0).max(100),
     closeDate: z.string().datetime().optional(),
     owner: z.string().min(1),
@@ -43,9 +55,19 @@ const syncPayloadSchema = z.union([syncAccountSchema, syncContactSchema, syncDea
 
 export async function POST(request: NextRequest) {
   const requestId = request.headers.get('x-request-id') || crypto.randomUUID();
+  const signature = request.headers.get('x-webhook-signature');
 
   try {
-    const body = await request.json();
+    const bodyText = await request.text();
+
+    if (!verifyWebhookSignature(bodyText, signature)) {
+      return NextResponse.json(
+        { ok: false, error: 'Invalid webhook signature', request_id: requestId },
+        { status: 401 },
+      );
+    }
+
+    const body = JSON.parse(bodyText);
     const payload = syncPayloadSchema.parse(body);
 
     let result;

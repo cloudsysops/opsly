@@ -33,9 +33,11 @@ export default function DashboardPage() {
         // Calculate won deals in current month for revenue
         const now = new Date();
         const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const monthlyWonDeals = dealsData.data?.filter((d: any) =>
-          d.stage === 'won' && new Date(d.close_date) >= currentMonth
-        ) || [];
+        const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        const monthlyWonDeals = dealsData.data?.filter((d: any) => {
+          const closeDate = new Date(d.close_date);
+          return d.stage === 'won' && closeDate >= currentMonth && closeDate < nextMonth;
+        }) || [];
         const monthlyRevenue = monthlyWonDeals.reduce((sum: number, d: any) => sum + (d.value || 0), 0);
 
         setDeals(dealsData.data || []);

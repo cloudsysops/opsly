@@ -1,8 +1,14 @@
 import {
   GoHighLevelClient,
-  resolveGoHighLevelPeskidsEnv,
 } from '@intcloudsysops/services/gohighlevel';
 import type { CreateContactRequest } from '@intcloudsysops/services/gohighlevel';
+
+const resolveGoHighLevelICSOEnv = () => ({
+  apiKey: process.env.GOHIGHLEVEL_API_KEY || '',
+  locationId: process.env.GOHIGHLEVEL_LOCATION_ID || '',
+  baseUrl: process.env.GOHIGHLEVEL_BASE_URL || 'https://services.leadconnectorhq.com',
+  apiVersion: process.env.GOHIGHLEVEL_API_VERSION || 'v1',
+});
 
 export interface AccountData {
   name: string;
@@ -26,7 +32,7 @@ export interface DealData {
   title: string;
   accountId: string;
   value: number;
-  stage: 'lead' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost';
+  stage: 'prospecting' | 'qualification' | 'proposal' | 'negotiation' | 'won' | 'lost';
   probability: number;
   closeDate?: string;
   owner: string;
@@ -36,7 +42,7 @@ export async function syncAccountToGHL(
   accountData: AccountData,
 ): Promise<{ ghlContactId: string } | null> {
   try {
-    const env = resolveGoHighLevelPeskidsEnv();
+    const env = resolveGoHighLevelICSOEnv();
     if (!env.apiKey) {
       console.warn('[ghl-sync-account] GHL not configured');
       return null;
@@ -81,7 +87,7 @@ export async function syncContactToGHL(
   contactData: ContactData,
 ): Promise<{ ghlContactId: string } | null> {
   try {
-    const env = resolveGoHighLevelPeskidsEnv();
+    const env = resolveGoHighLevelICSOEnv();
     if (!env.apiKey) {
       console.warn('[ghl-sync-contact] GHL not configured');
       return null;
@@ -124,7 +130,7 @@ export async function syncDealToGHL(
   dealData: DealData,
 ): Promise<{ ghlDealId: string } | null> {
   try {
-    const env = resolveGoHighLevelPeskidsEnv();
+    const env = resolveGoHighLevelICSOEnv();
     if (!env.apiKey) {
       console.warn('[ghl-sync-deal] GHL not configured');
       return null;
