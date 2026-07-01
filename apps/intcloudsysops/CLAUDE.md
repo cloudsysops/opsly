@@ -390,19 +390,19 @@ For now: **Build everything here in Opsly.** The extraction plan is a reference,
 
 | Question | Answer |
 |----------|--------|
-| Where is the app? | `apps/peskids/` |
+| Where is the app? | `apps/intcloudsysops/` |
 | Where is the schema? | Supabase shared project `jkwykpldnitavhmtuzmo` |
-| Where are CRM workflows? | VPS container `tenant_peskids` (n8n) |
-| Where are the docs? | `docs/tenants/peskids/` |
-| Where is tenant config? | `config/tenants/peskids.json` |
-| How do I deploy? | Script pending: `scripts/deploy-peskids-finish.sh` (Phase 2) |
-| Who owns peskids? | sierrasantiago90@gmail.com |
+| Where are CRM workflows? | VPS container `tenant_intcloudsysops` (n8n) |
+| Where are the docs? | `docs/tenants/intcloudsysops/` |
+| Where is tenant config? | `config/tenants/intcloudsysops.json` |
+| How do I deploy? | Script pending: `scripts/deploy-intcloudsysops-finish.sh` (Phase 2) |
+| Who owns intcloudsysops? | team@intcloudsysops.com |
 | Can I extract to standalone now? | No — Phase 0 incubation. See EXTRACTION-PLAN.md. |
-| What's the next task? | Sprint 01: complete wireframes + forms spec + demo (all 6 tasks are `todo`) |
+| What's the next task? | Sprint 01: complete schema + RLS + CRM sync + demo (all tasks are `todo`) |
 
 ---
 
-## Enlaces relacionados
+## Related Links
 
-- [[apps/peskids/README|peskids]]
-- [[README|Inicio]]
+- [[apps/intcloudsysops/README|intcloudsysops]]
+- [[README|Home]]
