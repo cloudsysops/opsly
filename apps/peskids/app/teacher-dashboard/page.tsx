@@ -4,6 +4,8 @@ import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tool
 import { Users, BookOpen, TrendingUp, Star } from 'lucide-react';
 
 export default function TeacherDashboard() {
+  // DEMO DATA ONLY - Route uses fabricated metrics
+  // TODO: Wire to live Peskids teacher data API when available
   const classStats = [
     { className: 'Python 101', students: 25, avgGrade: 8.5, attendance: 92 },
     { className: 'Web Dev', students: 18, avgGrade: 8.2, attendance: 94 },

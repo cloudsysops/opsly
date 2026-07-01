@@ -31,12 +31,14 @@ export default function DashboardPage() {
         const followups = await followupsRes.json();
 
         // Calculate won deals in current month for revenue
+        // Use date string comparison to avoid timezone parsing issues
         const now = new Date();
-        const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        const currentYear = now.getFullYear();
+        const currentMonthNum = now.getMonth() + 1;
+        const currentMonthStr = `${currentYear}-${String(currentMonthNum).padStart(2, '0')}`;
         const monthlyWonDeals = dealsData.data?.filter((d: any) => {
-          const closeDate = new Date(d.close_date);
-          return d.stage === 'won' && closeDate >= currentMonth && closeDate < nextMonth;
+          const closeDateStr = d.close_date?.substring(0, 7) || '';
+          return d.stage === 'won' && closeDateStr === currentMonthStr;
         }) || [];
         const monthlyRevenue = monthlyWonDeals.reduce((sum: number, d: any) => sum + (d.value || 0), 0);
 

@@ -7,7 +7,7 @@ const resolveGoHighLevelICSOEnv = () => ({
   apiKey: process.env.GOHIGHLEVEL_API_KEY || '',
   locationId: process.env.GOHIGHLEVEL_LOCATION_ID || '',
   baseUrl: process.env.GOHIGHLEVEL_BASE_URL || 'https://services.leadconnectorhq.com',
-  apiVersion: process.env.GOHIGHLEVEL_API_VERSION || 'v1',
+  apiVersion: process.env.GOHIGHLEVEL_API_VERSION || '2021-07-28',
 });
 
 export interface AccountData {
