@@ -1,0 +1,90 @@
+# Peskids — multi-stage monorepo build (context: repo root)
+#   docker build -f apps/peskids/Dockerfile .
+
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+COPY turbo.json ./
+
+COPY lib/conversational-runtime/package.json ./lib/conversational-runtime/
+COPY lib/services/package.json ./lib/services/
+COPY lib/prompt-guard/package.json ./lib/prompt-guard/
+COPY lib/openwa/package.json ./lib/openwa/
+COPY packages/opsly-core/package.json ./packages/opsly-core/
+COPY packages/types/package.json ./packages/types/
+COPY apps/peskids/package.json ./apps/peskids/
+
+RUN npm ci --ignore-scripts
+
+COPY lib/conversational-runtime/ ./lib/conversational-runtime/
+COPY lib/services/ ./lib/services/
+COPY lib/prompt-guard/ ./lib/prompt-guard/
+COPY lib/openwa/ ./lib/openwa/
+COPY packages/opsly-core/ ./packages/opsly-core/
+COPY packages/types/ ./packages/types/
+COPY apps/peskids/ ./apps/peskids/
+
+ARG NEXT_PUBLIC_SUPABASE_URL=
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=
+ARG NEXT_PUBLIC_PESKIDS_SITE_URL=
+ARG NEXT_PUBLIC_PESKIDS_WHATSAPP_E164=
+ARG NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY=
+ARG NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL=
+ARG NEXT_PUBLIC_N8N_LEAD_WEBHOOK=
+ARG NEXT_PUBLIC_FIREBASE_API_KEY=
+ARG NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+ARG NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+ARG NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+ARG NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+ARG NEXT_PUBLIC_FIREBASE_APP_ID=
+ARG NEXT_PUBLIC_FIREBASE_VAPID_KEY=
+ARG NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
+ENV NEXT_PUBLIC_PESKIDS_SITE_URL=$NEXT_PUBLIC_PESKIDS_SITE_URL
+ENV NEXT_PUBLIC_PESKIDS_WHATSAPP_E164=$NEXT_PUBLIC_PESKIDS_WHATSAPP_E164
+ENV NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY=$NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY
+ENV NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL=$NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL
+ENV NEXT_PUBLIC_N8N_LEAD_WEBHOOK=$NEXT_PUBLIC_N8N_LEAD_WEBHOOK
+ENV NEXT_PUBLIC_FIREBASE_API_KEY=$NEXT_PUBLIC_FIREBASE_API_KEY
+ENV NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=$NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+ENV NEXT_PUBLIC_FIREBASE_PROJECT_ID=$NEXT_PUBLIC_FIREBASE_PROJECT_ID
+ENV NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=$NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+ENV NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=$NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+ENV NEXT_PUBLIC_FIREBASE_APP_ID=$NEXT_PUBLIC_FIREBASE_APP_ID
+ENV NEXT_PUBLIC_FIREBASE_VAPID_KEY=$NEXT_PUBLIC_FIREBASE_VAPID_KEY
+ENV NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=$NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+
+WORKDIR /app
+RUN npm run build -w @intcloudsysops/prompt-guard \
+ && npm run build -w @intcloudsysops/services
+
+WORKDIR /app/apps/peskids
+RUN mkdir -p public \
+ && NEXT_TELEMETRY_DISABLED=1 npx next build --no-lint
+
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3004
+ENV HOSTNAME=0.0.0.0
+
+COPY --from=builder /app/apps/peskids/.next/standalone ./
+COPY --from=builder /app/apps/peskids/.next/static ./apps/peskids/.next/static
+COPY --from=builder /app/apps/peskids/public ./apps/peskids/public
+
+RUN addgroup --system --gid 1001 nodejs \
+ && adduser --system --uid 1001 nextjs
+USER nextjs
+
+EXPOSE 3004
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3004', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+
+CMD ["node", "apps/peskids/server.js"]

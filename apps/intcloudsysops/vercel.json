@@ -1,0 +1,16 @@
+{
+  "name": "peskids",
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "@next_public_supabase_url",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@next_public_supabase_anon_key",
+    "NEXT_PUBLIC_TENANT_ID": "peskids",
+    "NEXT_PUBLIC_OPSLY_EVENT_BUS_URL": "@next_public_opsly_event_bus_url",
+    "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_role_key",
+    "DASHBOARD_ADMIN_SECRET": "@dashboard_admin_secret",
+    "JELOU_WEBHOOK_SECRET": "@jelou_webhook_secret"
+  },
+  "public": true
+}
