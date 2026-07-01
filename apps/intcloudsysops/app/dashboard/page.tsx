@@ -87,10 +87,10 @@ export default function DashboardPage() {
 
   // Placeholder growth data (shown if no historical analytics)
   const accountGrowthData = [
-    { month: 'Ene', active: stats.totalAccounts * 0.3, prospects: stats.totalAccounts * 0.2 },
-    { month: 'Feb', active: stats.totalAccounts * 0.5, prospects: stats.totalAccounts * 0.25 },
-    { month: 'Mar', active: stats.totalAccounts * 0.7, prospects: stats.totalAccounts * 0.3 },
-    { month: 'Abr', active: stats.totalAccounts * 0.9, prospects: stats.totalAccounts * 0.35 },
+    { month: 'Ene', active: stats.totalAccounts * 0.3, prospects: stats.totalAccounts * 0.2, revenue: stats.monthlyRevenue * 0.2 },
+    { month: 'Feb', active: stats.totalAccounts * 0.5, prospects: stats.totalAccounts * 0.25, revenue: stats.monthlyRevenue * 0.4 },
+    { month: 'Mar', active: stats.totalAccounts * 0.7, prospects: stats.totalAccounts * 0.3, revenue: stats.monthlyRevenue * 0.7 },
+    { month: 'Abr', active: stats.totalAccounts * 0.9, prospects: stats.totalAccounts * 0.35, revenue: stats.monthlyRevenue },
   ];
 
   const revenueData = [
