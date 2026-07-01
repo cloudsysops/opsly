@@ -7,33 +7,10 @@ import { fetchHostMetricsFromPrometheus } from '../../../../lib/fetch-host-metri
 import { getCache, setCache } from '../../../../lib/redis-cache';
 import { logger } from '../../../../lib/logger';
 import { getPrometheusBaseUrl } from '../../../../lib/prometheus';
-import { getServiceClient } from '../../../../lib/supabase';
+import { fetchActiveTenantCount } from '../../../../lib/tenant-counts';
 
 export const dynamic = 'force-dynamic';
 const CACHE_SAVINGS_DECIMALS = 4;
-
-async function fetchActiveTenantCount(): Promise<number> {
-  const cacheKey = 'admin:overview:active_tenants';
-  const cached = await getCache<number>(cacheKey);
-  if (cached !== null) {
-    return cached;
-  }
-
-  const { count, error } = await getServiceClient()
-    .schema('platform')
-    .from('tenants')
-    .select('*', { count: 'exact', head: true })
-    .is('deleted_at', null)
-    .eq('status', 'active');
-
-  if (error) {
-    logger.error('admin overview active tenants', error);
-    return 0;
-  }
-  const result = count ?? 0;
-  void setCache(cacheKey, result, CACHE_TTL.SHORT);
-  return result;
-}
 
 type Mac2011Shape = {
   timestamp?: string;

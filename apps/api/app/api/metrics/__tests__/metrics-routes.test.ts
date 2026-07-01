@@ -6,6 +6,7 @@ import * as stripeMod from '../../../../lib/stripe';
 import * as promMod from '../../../../lib/fetch-host-metrics-prometheus';
 import * as dockerCountMod from '../../../../lib/docker-running-count';
 import * as prometheusUrlMod from '../../../../lib/prometheus';
+import * as tenantCountsMod from '../../../../lib/tenant-counts';
 
 vi.mock('../../../../lib/supabase', () => ({
   getServiceClient: vi.fn(),
@@ -25,6 +26,10 @@ vi.mock('../../../../lib/docker-running-count', () => ({
 
 vi.mock('../../../../lib/prometheus', () => ({
   getPrometheusBaseUrl: vi.fn(),
+}));
+
+vi.mock('../../../../lib/tenant-counts', () => ({
+  fetchActiveTenantCount: vi.fn(),
 }));
 
 const ADMIN = 'metrics-admin-token';
@@ -186,21 +191,7 @@ describe('GET /api/metrics/system', () => {
   it('returns mock-shaped body when prometheus returns null', async () => {
     vi.mocked(promMod.fetchHostMetricsFromPrometheus).mockResolvedValue(null);
     vi.mocked(dockerCountMod.countRunningDockerContainers).mockResolvedValue(7);
-    vi.mocked(supabaseMod.getServiceClient).mockReturnValue({
-      schema: () => ({
-        from: () => ({
-          select: () => ({
-            is: () => ({
-              eq: () =>
-                Promise.resolve({
-                  count: 4,
-                  error: null,
-                }),
-            }),
-          }),
-        }),
-      }),
-    } as ReturnType<typeof supabaseMod.getServiceClient>);
+    vi.mocked(tenantCountsMod.fetchActiveTenantCount).mockResolvedValue(4);
 
     const res = await getSystemMetrics(new Request('http://x/sys', { headers: adminHeaders() }));
     expect(res.status).toBe(200);
@@ -220,21 +211,7 @@ describe('GET /api/metrics/system', () => {
       uptime_seconds: 999,
     });
     vi.mocked(dockerCountMod.countRunningDockerContainers).mockResolvedValue(2);
-    vi.mocked(supabaseMod.getServiceClient).mockReturnValue({
-      schema: () => ({
-        from: () => ({
-          select: () => ({
-            is: () => ({
-              eq: () =>
-                Promise.resolve({
-                  count: 1,
-                  error: null,
-                }),
-            }),
-          }),
-        }),
-      }),
-    } as ReturnType<typeof supabaseMod.getServiceClient>);
+    vi.mocked(tenantCountsMod.fetchActiveTenantCount).mockResolvedValue(1);
 
     const res = await getSystemMetrics(new Request('http://x/sys', { headers: adminHeaders() }));
     expect(res.status).toBe(200);
@@ -248,21 +225,7 @@ describe('GET /api/metrics/system', () => {
   it('uses demo container count when docker count is null', async () => {
     vi.mocked(promMod.fetchHostMetricsFromPrometheus).mockResolvedValue(null);
     vi.mocked(dockerCountMod.countRunningDockerContainers).mockResolvedValue(null);
-    vi.mocked(supabaseMod.getServiceClient).mockReturnValue({
-      schema: () => ({
-        from: () => ({
-          select: () => ({
-            is: () => ({
-              eq: () =>
-                Promise.resolve({
-                  count: 0,
-                  error: null,
-                }),
-            }),
-          }),
-        }),
-      }),
-    } as ReturnType<typeof supabaseMod.getServiceClient>);
+    vi.mocked(tenantCountsMod.fetchActiveTenantCount).mockResolvedValue(0);
 
     const res = await getSystemMetrics(new Request('http://x/sys', { headers: adminHeaders() }));
     const body = (await res.json()) as Record<string, unknown>;

@@ -3,8 +3,7 @@ import { DEMO_SYSTEM_METRICS_MOCK } from '../../../../lib/constants';
 import { countRunningDockerContainers } from '../../../../lib/docker-running-count';
 import { fetchHostMetricsFromPrometheus } from '../../../../lib/fetch-host-metrics-prometheus';
 import { getPrometheusBaseUrl } from '../../../../lib/prometheus';
-import { getServiceClient } from '../../../../lib/supabase';
-import { logger } from '../../../../lib/logger';
+import { fetchActiveTenantCount } from '../../../../lib/tenant-counts';
 
 type SystemMetrics = {
   cpu_percent: number;
@@ -34,21 +33,6 @@ function buildMockResponse(activeTenants: number, containers: number | null): Sy
     containers_running: running,
     mock: true,
   };
-}
-
-async function fetchActiveTenantCount(): Promise<number> {
-  const { count, error } = await getServiceClient()
-    .schema('platform')
-    .from('tenants')
-    .select('*', { count: 'exact', head: true })
-    .is('deleted_at', null)
-    .eq('status', 'active');
-
-  if (error) {
-    logger.error('active tenants count', error);
-    return 0;
-  }
-  return count ?? 0;
 }
 
 export async function GET(request: Request): Promise<Response> {
