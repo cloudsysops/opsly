@@ -5,42 +5,45 @@ import { NextRequest, NextResponse } from 'next/server';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-const createFeedbackSchema = z.object({
-  account_id: z.string().uuid('Valid account ID required'),
-  rating: z.number().min(1).max(5),
-  category: z.enum(['product', 'support', 'billing', 'feature_request', 'bug_report', 'general']),
-  title: z.string().min(1, 'Feedback title required'),
-  notes: z.string().min(1, 'Feedback notes required'),
-  status: z.enum(['new', 'acknowledged', 'in_progress', 'resolved', 'closed']).default('new'),
-  submitted_by: z.string().min(1),
+const createFollowupSchema = z.object({
+  related_type: z.enum(['account', 'contact', 'deal', 'feedback']),
+  related_id: z.string().uuid('Valid related ID required'),
+  title: z.string().min(1, 'Followup title required'),
+  description: z.string().optional(),
+  due_at: z.string().datetime().optional(),
+  assigned_to: z.string().min(1, 'Assigned to required'),
+  priority: z.enum(['low', 'medium', 'high', 'urgent']).default('medium'),
+  status: z.enum(['pending', 'in_progress', 'completed', 'cancelled']).default('pending'),
   tags: z.array(z.string()).default([]),
 });
 
 export async function GET(request: NextRequest) {
   const tenantSlug = 'intcloudsysops';
   const requestId = request.headers.get('x-request-id') || crypto.randomUUID();
-  const accountId = request.nextUrl.searchParams.get('account_id');
+  const relatedType = request.nextUrl.searchParams.get('related_type');
+  const relatedId = request.nextUrl.searchParams.get('related_id');
   const status = request.nextUrl.searchParams.get('status');
 
   try {
     const supabase = createClient(supabaseUrl, supabaseKey);
     let query = supabase
-      .from('intcloudsysops_feedback')
+      .from('intcloudsysops_followups')
       .select('*')
       .eq('tenant_slug', tenantSlug);
 
-    if (accountId) query = query.eq('account_id', accountId);
+    if (relatedType) query = query.eq('related_type', relatedType);
+    if (relatedId) query = query.eq('related_id', relatedId);
     if (status) query = query.eq('status', status);
 
-    const { data, error } = await query.order('created_at', { ascending: false });
+    const { data, error } = await query.order('due_at', { ascending: true });
 
     if (error) throw error;
 
     return NextResponse.json({ ok: true, data }, { status: 200 });
   } catch (error) {
-    console.error(`[${requestId}] feedback GET failed`, error);
+    console.error(`[${requestId}] followups GET failed`, error);
     return NextResponse.json(
-      { ok: false, error: 'Failed to fetch feedback', request_id: requestId },
+      { ok: false, error: 'Failed to fetch followups', request_id: requestId },
       { status: 400 }
     );
   }
@@ -52,12 +55,12 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const validated = createFeedbackSchema.parse(body);
+    const validated = createFollowupSchema.parse(body);
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const { data, error } = await supabase
-      .from('intcloudsysops_feedback')
+      .from('intcloudsysops_followups')
       .insert([
         {
           ...validated,
@@ -77,9 +80,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    console.error(`[${requestId}] feedback POST failed`, error);
+    console.error(`[${requestId}] followups POST failed`, error);
     return NextResponse.json(
-      { ok: false, error: 'Failed to create feedback', request_id: requestId },
+      { ok: false, error: 'Failed to create followup', request_id: requestId },
       { status: 400 }
     );
   }
