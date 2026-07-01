@@ -1,0 +1,113 @@
+{
+  "id": "intcloudsysops-followup-reminder",
+  "name": "Intcloudsysops - Followup Reminder",
+  "active": true,
+  "description": "Cron: daily notification of due action items from followups table",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            { "type": "days", "value": 1 }
+          ]
+        }
+      },
+      "id": "schedule-daily",
+      "name": "Schedule Trigger (Daily 7:00 AM UTC)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/intcloudsysops_followups?status=eq.pending&due_at=lte.{{ new Date().toISOString().split('T')[0] }}&order=due_at.asc",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        }
+      },
+      "id": "fetch-due-followups",
+      "name": "Fetch Due Followups",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const followups = $json.body ?? [];\n\nif (followups.length === 0) {\n  return [{ json: { hasFollowups: false, message: 'No due followups today' } }];\n}\n\nconst byAssignee = {};\nfollowups.forEach(f => {\n  const assignee = f.assigned_to || 'unassigned';\n  if (!byAssignee[assignee]) byAssignee[assignee] = [];\n  byAssignee[assignee].push(f);\n});\n\nreturn [{\n  json: {\n    hasFollowups: true,\n    total_followups: followups.length,\n    by_assignee: byAssignee,\n    followups: followups.map(f => ({ id: f.id, title: f.title, related_type: f.related_type, due_at: f.due_at, priority: f.priority, assigned_to: f.assigned_to }))\n  }\n}];"
+      },
+      "id": "process-followups",
+      "name": "Process Followups",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [520, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "if (!$json.hasFollowups) return [];\n\n// Build email subject and body\nconst subject = `[Intcloudsysops] ${$json.total_followups} followup(s) due today`;\nconst html = `<h2>${subject}</h2>\n<p>You have <strong>${$json.total_followups}</strong> action item(s) due today.</p>\n<table border='1' cellpadding='10'>\n<tr><th>Title</th><th>Priority</th><th>Due Date</th><th>Type</th></tr>\n${$json.followups.map(f => `<tr><td>${f.title}</td><td>${f.priority || 'normal'}</td><td>${f.due_at}</td><td>${f.related_type}</td></tr>`).join('')}\n</table>\n<p>Log in to review and update status: <a href='https://intcloudsysops.op-sly.com'>Dashboard</a></p>`;\n\nreturn [{ json: { recipients: Object.keys($json.by_assignee), subject, html } }];"
+      },
+      "id": "format-email",
+      "name": "Format Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [780, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.NOTIFICATION_SERVICE_URL || 'https://api.op-sly.com/api/notifications/send' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $env.NOTIFICATION_SERVICE_TOKEN }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ tenant_slug: 'intcloudsysops', notification_type: 'followup_reminder', recipients: $json.recipients, subject: $json.subject, html_body: $json.html, priority: 'high' }) }}"
+      },
+      "id": "send-notification",
+      "name": "Send Notification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1040, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "console.log(`Followup reminders sent to ${$json.recipients?.length || 0} assignee(s)`);\nreturn [$json];"
+      },
+      "id": "log-sent",
+      "name": "Log Sent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1300, 0]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger (Daily 7:00 AM UTC)": {
+      "main": [[{ "node": "Fetch Due Followups", "type": "main", "index": 0 }]]
+    },
+    "Fetch Due Followups": {
+      "main": [[{ "node": "Process Followups", "type": "main", "index": 0 }]]
+    },
+    "Process Followups": {
+      "main": [[{ "node": "Format Email", "type": "main", "index": 0 }]]
+    },
+    "Format Email": {
+      "main": [[{ "node": "Send Notification", "type": "main", "index": 0 }]]
+    },
+    "Send Notification": {
+      "main": [[{ "node": "Log Sent", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": ["crm", "intcloudsysops", "cron"]
+}

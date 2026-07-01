@@ -285,7 +285,7 @@ export function PortalShowcase(): React.ReactElement {
                 <div className="mt-4 rounded-2xl border border-dashed border-pk-border bg-white/70 p-4">
                   <p className="text-xs font-semibold text-pk-ink">Cómo se ve en la plataforma</p>
                   <p className="mt-1 text-xs leading-relaxed text-pk-sub">
-                    Verás el crédito antes de que salga el cobro.
+                    Tu saldo está siendo procesado.
                   </p>
                 </div>
 
@@ -813,7 +813,7 @@ function SocialPreview(): React.ReactElement {
           </div>
           <div>
             <p className="text-sm font-bold text-pk-ink">Story y highlights</p>
-            <p className="text-xs text-pk-mutedText">Contenido listo para campañas y recordatorios.</p>
+            <p className="text-xs text-pk-mutedText">Contenido siendo preparado para campañas.</p>
           </div>
         </div>
       </div>

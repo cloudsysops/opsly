@@ -48,7 +48,7 @@ export function TeacherSubmissionsSection({
             Respuestas del aula
           </p>
           <h2 className="mt-1 font-display text-xl font-semibold tracking-tight text-pk-ink">
-            Entregas y feedback listos para revisar.
+            Entregas y feedback siendo procesados.
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-pk-sub">
             Esta capa muestra respuestas reales de estudiantes para revisar, calificar y devolver

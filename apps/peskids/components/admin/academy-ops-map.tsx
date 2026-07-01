@@ -105,7 +105,7 @@ function buildAcademyDomains(data: DashboardData): AcademyDomain[] {
       label: 'Profesores',
       status: 'ready',
       owner: 'Panel',
-      summary: `${data.operations.classes_today} clases hoy y panel docente listo para agenda semanal.`,
+      summary: `${data.operations.classes_today} clases hoy y panel docente siendo preparado.`,
       nextAction: 'Asignar profesor por clase y notificar cambios desde el panel.',
       icon: iconMap.teachers,
     },

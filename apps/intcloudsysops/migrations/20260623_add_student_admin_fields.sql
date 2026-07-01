@@ -1,0 +1,3 @@
+ALTER TABLE public.students
+  ADD COLUMN IF NOT EXISTS parent_phone TEXT,
+  ADD COLUMN IF NOT EXISTS notes TEXT;
