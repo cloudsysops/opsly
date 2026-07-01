@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-06-25T15:12:36.897Z",
-  "totalFiles": 765,
+  "lastIndexed": "2026-07-01T12:48:47.745Z",
+  "totalFiles": 767,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -653,6 +653,7 @@
     "runbooks/VPS-CLEANUP-WEBHOOK.md",
     "runbooks/VPS-DEPLOYMENT-2026-05-08.md",
     "runbooks/VPS-DISK-SECURITY-SCAN.md",
+    "security/NPM-AUDIT-EXEMPTIONS.md",
     "security/SECURITY-POSTURE-AUDIT.md",
     "STRUCTURE-GUARDRAILS.md",
     "stubs/AGENTS.md",
@@ -674,6 +675,7 @@
     "superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
     "superpowers/specs/2026-05-30-skills-obsidian-integration-design.md",
     "superpowers/specs/2026-05-31-collectx-platform-design.md",
+    "superpowers/specs/2026-06-23-peskids-admin-students-crud-design.md",
     "superpowers/specs/2026-06-24-peskids-tenant-settings-design.md",
     "superpowers/specs/2026-06-25-icso-website-enhancement-design.md",
     "superpowers/specs/TEMPLATE-next-client-blueprint.md",
