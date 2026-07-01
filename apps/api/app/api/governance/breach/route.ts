@@ -1,5 +1,8 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
+import { HTTP_STATUS } from '../../../../lib/constants';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
 import { getServiceClient } from '../../../../lib/supabase';
 
 const breachSchema = z.object({
@@ -15,6 +18,13 @@ const breachSchema = z.object({
 });
 
 export async function POST(request: NextRequest): Promise<Response> {
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `governance:breach:${ip}` : 'governance:breach:anonymous');
+
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+
   // Internal-only endpoint: requires service-role secret header
   const authHeader = request.headers.get('authorization');
   const expectedToken = process.env.GOVERNANCE_BREACH_SECRET;
@@ -49,6 +59,8 @@ export async function POST(request: NextRequest): Promise<Response> {
     console.error('[governance][breach] insert error', error);
     return Response.json({ error: 'Failed to log breach' }, { status: 500 });
   }
+
+  void logAuditEvent({ tenant_slug: parsed.data.tenant_id, action: 'CREATE', resource: `governance:breach:${data.id}`, ip, user_agent: request.headers.get('user-agent') ?? undefined, metadata: { title: parsed.data.title, severity: parsed.data.severity, discovered_at: parsed.data.discovered_at } });
 
   // TODO: trigger Discord alert to #ops-alerts via observability
   // await alertDiscord({ title: `[BREACH] ${parsed.data.title}`, severity: parsed.data.severity });
