@@ -42,7 +42,6 @@ const syncDealSchema = z.object({
 const syncPayloadSchema = z.union([syncAccountSchema, syncContactSchema, syncDealSchema]);
 
 export async function POST(request: NextRequest) {
-  const tenantSlug = 'intcloudsysops';
   const requestId = request.headers.get('x-request-id') || crypto.randomUUID();
 
   try {
