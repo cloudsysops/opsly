@@ -5,42 +5,36 @@ import { NextRequest, NextResponse } from 'next/server';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-const createFeedbackSchema = z.object({
-  account_id: z.string().uuid('Valid account ID required'),
-  rating: z.number().min(1).max(5),
-  category: z.enum(['product', 'support', 'billing', 'feature_request', 'bug_report', 'general']),
-  title: z.string().min(1, 'Feedback title required'),
-  notes: z.string().min(1, 'Feedback notes required'),
-  status: z.enum(['new', 'acknowledged', 'in_progress', 'resolved', 'closed']).default('new'),
-  submitted_by: z.string().min(1),
-  tags: z.array(z.string()).default([]),
+const createAccountSchema = z.object({
+  name: z.string().min(1, 'Account name required'),
+  account_type: z.enum(['prospect', 'customer', 'partner', 'vendor']),
+  status: z.enum(['active', 'inactive', 'archived']).default('active'),
+  billing_email: z.string().email().optional(),
+  website: z.string().url().optional(),
+  industry: z.string().optional(),
+  employee_count: z.number().int().positive().optional(),
 });
 
 export async function GET(request: NextRequest) {
   const tenantSlug = 'intcloudsysops';
   const requestId = request.headers.get('x-request-id') || crypto.randomUUID();
-  const accountId = request.nextUrl.searchParams.get('account_id');
-  const status = request.nextUrl.searchParams.get('status');
 
   try {
     const supabase = createClient(supabaseUrl, supabaseKey);
-    let query = supabase
-      .from('intcloudsysops_feedback')
+
+    const { data, error } = await supabase
+      .from('intcloudsysops_accounts')
       .select('*')
-      .eq('tenant_slug', tenantSlug);
-
-    if (accountId) query = query.eq('account_id', accountId);
-    if (status) query = query.eq('status', status);
-
-    const { data, error } = await query.order('created_at', { ascending: false });
+      .eq('tenant_slug', tenantSlug)
+      .order('created_at', { ascending: false });
 
     if (error) throw error;
 
     return NextResponse.json({ ok: true, data }, { status: 200 });
   } catch (error) {
-    console.error(`[${requestId}] feedback GET failed`, error);
+    console.error(`[${requestId}] accounts GET failed`, error);
     return NextResponse.json(
-      { ok: false, error: 'Failed to fetch feedback', request_id: requestId },
+      { ok: false, error: 'Failed to fetch accounts', request_id: requestId },
       { status: 400 }
     );
   }
@@ -52,12 +46,12 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const validated = createFeedbackSchema.parse(body);
+    const validated = createAccountSchema.parse(body);
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const { data, error } = await supabase
-      .from('intcloudsysops_feedback')
+      .from('intcloudsysops_accounts')
       .insert([
         {
           ...validated,
@@ -77,9 +71,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    console.error(`[${requestId}] feedback POST failed`, error);
+    console.error(`[${requestId}] accounts POST failed`, error);
     return NextResponse.json(
-      { ok: false, error: 'Failed to create feedback', request_id: requestId },
+      { ok: false, error: 'Failed to create account', request_id: requestId },
       { status: 400 }
     );
   }
