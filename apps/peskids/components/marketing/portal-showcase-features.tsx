@@ -449,7 +449,7 @@ function SocialPreview(): React.ReactElement {
           <div>
             <p className="text-sm font-bold text-pk-ink">Story y highlights</p>
             <p className="text-xs text-pk-mutedText">
-              Contenido listo para campañas y recordatorios.
+              Contenido siendo preparado.
             </p>
           </div>
         </div>
