@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-07-02T13:12:06.326Z",
+  "generated_at": "2026-07-02T13:29:09.977Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -16167,6 +16167,46 @@
         "what"
       ],
       "size_bytes": 12303
+    },
+    {
+      "path": "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
+      "title": "Twenty CRM Production Cutover Checklist — Peskids & ICSO",
+      "keywords": [
+        "app",
+        "checklist",
+        "code",
+        "crm",
+        "cutover",
+        "data",
+        "deploy",
+        "dev",
+        "disable",
+        "enable",
+        "hours",
+        "icso",
+        "infrastructure",
+        "integrity",
+        "markdown",
+        "min",
+        "minutes",
+        "monitor",
+        "opsly",
+        "peskids",
+        "phase",
+        "phases",
+        "pre",
+        "production",
+        "readiness",
+        "rollback",
+        "smoke",
+        "staging",
+        "step",
+        "test",
+        "testing",
+        "twenty",
+        "validate"
+      ],
+      "size_bytes": 11207
     },
     {
       "path": "docs/brain/agents/README.md",
@@ -89362,6 +89402,7 @@
       "docs/blueprints/PHASE1-PHASE2-STATUS.md",
       "docs/blueprints/CUSTOMER-FOLLOWUP-MASTER.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       "docs/blueprints/GO-LIVE-COMMAND.md",
       "docs/blueprints/PHASE1-IMPLEMENTATION-GUIDE.md",
       "docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md",
@@ -91902,6 +91943,7 @@
       "docs/blueprints/PHASE1-PHASE2-STATUS.md",
       "docs/blueprints/CUSTOMER-FOLLOWUP-MASTER.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       "docs/blueprints/GO-LIVE-COMMAND.md",
       "docs/blueprints/PHASE1-IMPLEMENTATION-GUIDE.md",
       "docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md",
@@ -93640,6 +93682,7 @@
       "docs/blueprints/CUSTOMER-ANALYSIS-ICSO-PESKIDS.md",
       "docs/blueprints/PHASE1-PHASE2-STATUS.md",
       "docs/blueprints/CUSTOMER-FOLLOWUP-MASTER.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       "docs/blueprints/GO-LIVE-COMMAND.md",
       "docs/blueprints/PHASE1-IMPLEMENTATION-GUIDE.md",
       "docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md"
@@ -97062,6 +97105,7 @@
       "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md",
       "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md",
       "docs/blueprints/opsly-operational-blueprint/REFERENCE-ARCHITECTURE.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       ".agents/skills/cyber-neo/references/owasp-top-10.md",
       ".agents/skills/cyber-neo/references/logging-patterns.md",
       ".agents/skills/the-architect/references/templates/claude-md-template.md",
@@ -99136,6 +99180,7 @@
       "docs/blueprints/opsly-operational-blueprint/TENANT-INCUBATION.md",
       "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md",
       "docs/blueprints/PHASE1-PHASE2-STATUS.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       "docs/blueprints/GO-LIVE-COMMAND.md",
       "docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
@@ -99296,6 +99341,7 @@
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       "docs/reports/SESSION-SUMMARY-2026-05-08.md",
       "docs/reports/session-summary-2026-05-21.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       ".claude/agents/core/reviewer.md",
       ".claude/README.md",
       ".claude/CLAUDE.md",
@@ -99787,6 +99833,7 @@
       "docs/blueprints/README-PHASE1-EXECUTE.md",
       "docs/blueprints/CUSTOMER-ANALYSIS-ICSO-PESKIDS.md",
       "docs/blueprints/PHASE1-PHASE2-STATUS.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       "docs/blueprints/GO-LIVE-COMMAND.md",
       "docs/blueprints/PHASE1-IMPLEMENTATION-GUIDE.md",
       "docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md",
@@ -101337,6 +101384,7 @@
       "docs/reports/E2E-TESTING-PLAN.md",
       "docs/blueprints/PHASE1-PHASE2-STATUS.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/testing-patterns.md"
     ],
     "anti": [
@@ -101557,6 +101605,7 @@
       "docs/reports/SESSION-SUMMARY-2026-05-08.md",
       "docs/blueprints/CUSTOMERS-DEPLOY-NOW.md",
       "docs/blueprints/PHASE1-PHASE2-STATUS.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       ".claude/3-slash-commands/deploy.md",
       ".claude/1-agent-teams/ops-agent.md"
     ],
@@ -105079,6 +105128,7 @@
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
       "docs/tenants/onboarding-prompts/INFRASTRUCTURE-SETUP.md",
       "docs/testing/QA-TESTING-BRIEF.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       ".claude/3-slash-commands/deploy.md"
     ],
     "tipicas": [
@@ -109210,6 +109260,7 @@
       "docs/reports/PRODUCTION-HEALTH.md",
       "docs/blueprints/CUSTOMERS-DEPLOY-NOW.md",
       "docs/blueprints/PHASE1-PHASE2-STATUS.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       ".claude/agents/core/tester.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/testing-patterns.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
@@ -114838,6 +114889,7 @@
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
       "docs/blueprints/CUSTOMERS-DEPLOY-NOW.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       "docs/blueprints/GO-LIVE-COMMAND.md",
       "docs/blueprints/PHASE1-IMPLEMENTATION-GUIDE.md",
       ".agents/skills/cyber-neo/SKILL.md",
@@ -117717,7 +117769,8 @@
       "vendor/agency-agents/integrations/openclaw/rapid-prototyper/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/ux-researcher/AGENTS.md",
       "docs/04-infrastructure/DOPPLER-CI-RUNBOOK.md",
-      "docs/reports/REPOSITORY-AUDIT-2026-05-27.md"
+      "docs/reports/REPOSITORY-AUDIT-2026-05-27.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md"
     ],
     "version": [
       "packages/skills/vendor/agent-skills/api-and-interface-design/SKILL.md",
@@ -123959,7 +124012,8 @@
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
       "docs/blueprints/README-PHASE1-EXECUTE.md",
-      "docs/blueprints/CUSTOMER-ANALYSIS-ICSO-PESKIDS.md"
+      "docs/blueprints/CUSTOMER-ANALYSIS-ICSO-PESKIDS.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md"
     ],
     "pre": [
       "packages/skills/vendor/agent-skills/shipping-and-launch/SKILL.md",
@@ -124029,6 +124083,7 @@
       "docs/testing/PHASE1-TEST-PLAN.md",
       "docs/reports/REPOSITORY-BASELINE-2026-05-27.md",
       "docs/reports/session-summary-2026-05-21.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       "docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md",
       ".claude/3-slash-commands/deploy.md"
     ],
@@ -126531,7 +126586,8 @@
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/panini-lab/README.md",
       "docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md",
-      "docs/postman/README.md"
+      "docs/postman/README.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md"
     ],
     "001": [
       ".cursor/prompts/pending/prompt-opsly-cursor-executor-001.md",
@@ -130388,6 +130444,7 @@
       "docs/reports/SESSION-SUMMARY-2026-05-08.md",
       "docs/reports/CYBER-NEO-OPSLY-2026-05-21.md",
       "docs/reports/PRODUCTION-HEALTH.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       ".agents/skills/cyber-neo/references/error-handling-patterns.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/deployment-patterns.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
@@ -131219,6 +131276,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/reports/PRODUCTION-HEALTH.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/mobile-app.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/deployment-patterns.md",
       ".agents/skills/the-architect/references/questions/phase-2-branches.md"
@@ -131323,7 +131381,8 @@
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/brain/workflows/marketplace-crm.md",
-      "docs/blueprints/opsly-operational-blueprint/MODULES.md"
+      "docs/blueprints/opsly-operational-blueprint/MODULES.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md"
     ],
     "cruzadas": [
       ".n8n/README.md",
@@ -132757,6 +132816,7 @@
       "vendor/agency-agents/integrations/openclaw/identity-graph-operator/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/experiment-tracker/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/voice-ai-integration-engineer/SOUL.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       ".agents/skills/cyber-neo/references/owasp-top-10.md"
     ],
     "mishandling": [
@@ -133396,6 +133456,7 @@
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       ".agents/skills/cyber-neo/SKILL.md"
     ],
     "reconnaissance": [
@@ -135734,6 +135795,7 @@
       "docs/reports/VALIDATION-PACKAGE-README.md",
       "docs/reports/E2E-TESTING-PLAN.md",
       "docs/blueprints/CUSTOMERS-DEPLOY-NOW.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       "docs/blueprints/GO-LIVE-COMMAND.md",
       "docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md",
       ".agents/IMPLEMENTATION-CHECKLIST.md"
@@ -135782,7 +135844,8 @@
       "docs/reports/SESSION-SUMMARY-2026-05-08.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
       "docs/blueprints/README-PHASE1-EXECUTE.md",
-      "docs/blueprints/PHASE1-PHASE2-STATUS.md"
+      "docs/blueprints/PHASE1-PHASE2-STATUS.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md"
     ],
     "opening": [
       "tools/productivity-starter/DEMO-WALKTHROUGH.md",
@@ -136933,7 +136996,8 @@
       "docs/tenants/peskids/EXTRACTION-PLAN.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-HANDOFF-FOR-VPS-EXECUTION.md",
-      "docs/tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md"
+      "docs/tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md"
     ],
     "considerations": [
       "lib/migrations/GOVERNANCE.md",
@@ -138134,7 +138198,8 @@
       "docs/runbooks/dev.md",
       "docs/01-development/PHASE-2-DEPLOYMENT.md",
       "docs/tenants/intcloudsysops/DEPLOYMENT.md",
-      "docs/blueprints/CUSTOMERS-DEPLOY-NOW.md"
+      "docs/blueprints/CUSTOMERS-DEPLOY-NOW.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md"
     ],
     "icso": [
       "apps/icso/README.md",
@@ -138151,6 +138216,7 @@
       "docs/blueprints/CUSTOMER-ANALYSIS-ICSO-PESKIDS.md",
       "docs/blueprints/PHASE1-PHASE2-STATUS.md",
       "docs/blueprints/CUSTOMER-FOLLOWUP-MASTER.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       "docs/blueprints/GO-LIVE-COMMAND.md",
       "docs/blueprints/PHASE1-IMPLEMENTATION-GUIDE.md",
       "docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md"
@@ -141616,7 +141682,8 @@
       "infra/monitoring/README.md",
       "docs/audits/LINT-RULES-GUIDE.md",
       "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
-      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md"
+      "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md"
     ],
     "ensure": [
       "vendor/agency-agents/integrations/qwen/agents/analytics-reporter.md",
@@ -144367,7 +144434,8 @@
       "docs/testing/QA-TESTING-BRIEF.md",
       "docs/blueprints/README-PHASE1-EXECUTE.md",
       "docs/blueprints/CUSTOMER-ANALYSIS-ICSO-PESKIDS.md",
-      "docs/blueprints/CUSTOMER-FOLLOWUP-MASTER.md"
+      "docs/blueprints/CUSTOMER-FOLLOWUP-MASTER.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md"
     ],
     "stakeholder": [
       "vendor/agency-agents/integrations/qwen/agents/test-results-analyzer.md",
@@ -146959,6 +147027,7 @@
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
       "docs/reports/SESSION-SUMMARY-2026-05-08.md",
       "docs/blueprints/PHASE1-PHASE2-STATUS.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       "docs/blueprints/GO-LIVE-COMMAND.md"
     ],
     "long": [
@@ -156476,7 +156545,8 @@
     "cutover": [
       "docs/plans/CLI-MIGRATION-CHECKLIST.md",
       "docs/ops/runbook-redis.md",
-      "docs/04-infrastructure/DOMAIN-CUTOVER-OP-SLY.md"
+      "docs/04-infrastructure/DOMAIN-CUTOVER-OP-SLY.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md"
     ],
     "healthy": [
       "docs/plans/CLI-MIGRATION-CHECKLIST.md"
@@ -156647,7 +156717,8 @@
       "docs/04-infrastructure/FAILOVER-RUNBOOK.md",
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
       "docs/testing/PHASE1-TEST-PLAN.md",
-      "docs/testing/PHASE-2-TESTING.md"
+      "docs/testing/PHASE-2-TESTING.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md"
     ],
     "operates": [
       "docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md"
@@ -163458,7 +163529,8 @@
       "docs/tenants/peskids/TWENTY-CRM.md"
     ],
     "twenty": [
-      "docs/tenants/peskids/TWENTY-CRM.md"
+      "docs/tenants/peskids/TWENTY-CRM.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md"
     ],
     "santiago": [
       "docs/tenants/peskids/INVITATION-FLOW-VERIFICATION.md"
@@ -164498,6 +164570,9 @@
     "themes": [
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md"
     ],
+    "disable": [
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md"
+    ],
     "gameplan": [
       "docs/blueprints/GO-LIVE-COMMAND.md"
     ],
@@ -165167,6 +165242,7 @@
     "docs/blueprints/PHASE1-IMPLEMENTATION-GUIDE.md",
     "docs/blueprints/PHASE1-PHASE2-STATUS.md",
     "docs/blueprints/README-PHASE1-EXECUTE.md",
+    "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
     "docs/brain/agents/README.md",
     "docs/brain/architecture/knowledge-graph.md",
     "docs/brain/architecture/README.md",

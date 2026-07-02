@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-07-02T13:12:00.021Z",
-  "totalFiles": 773,
+  "lastIndexed": "2026-07-02T13:29:08.746Z",
+  "totalFiles": 774,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -349,6 +349,7 @@
     "blueprints/PHASE1-IMPLEMENTATION-GUIDE.md",
     "blueprints/PHASE1-PHASE2-STATUS.md",
     "blueprints/README-PHASE1-EXECUTE.md",
+    "blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
     "brain/agents/README.md",
     "brain/architecture/knowledge-graph.md",
     "brain/architecture/README.md",
