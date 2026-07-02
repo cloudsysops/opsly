@@ -52,6 +52,9 @@ export async function peskidsInsertLead(
       grade_interested: body.grade_interested,
       referral_source: body.referral_source ?? null,
       status: 'new',
+      ghl_contact_id: body.ghl_contact_id ?? null,
+      twenty_person_id: body.twenty_person_id ?? null,
+      twenty_opportunity_id: body.twenty_opportunity_id ?? null,
     })
     .select(
       'id, tenant_slug, full_name, email, phone, class_modality, neighborhood, grade_interested, referral_source, status, admin_notes, created_at'

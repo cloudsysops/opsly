@@ -25,6 +25,16 @@
       "types": "./dist/gohighlevel/full.d.ts",
       "import": "./dist/gohighlevel/full.js",
       "default": "./dist/gohighlevel/full.js"
+    },
+    "./twenty": {
+      "types": "./dist/twenty/index.d.ts",
+      "import": "./dist/twenty/index.js",
+      "default": "./dist/twenty/index.js"
+    },
+    "./twenty/index.js": {
+      "types": "./dist/twenty/index.d.ts",
+      "import": "./dist/twenty/index.js",
+      "default": "./dist/twenty/index.js"
     }
   },
   "scripts": {

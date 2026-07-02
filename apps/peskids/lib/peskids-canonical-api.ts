@@ -1,5 +1,5 @@
 import { resolveAppOrigin } from '@/lib/app-url';
-import { sendLeadToGHL } from '@/lib/gohighlevel-lead-sync';
+import { syncLeadToCrm } from '@/lib/peskids-crm-sync';
 
 export const OPSLY_API_ORIGIN = resolveAppOrigin({
   envName: 'NEXT_PUBLIC_OPSLY_API_URL',
@@ -27,6 +27,8 @@ export type CanonicalLeadResult =
       tenantSlug: string;
       createdAt: string;
       ghlContactId?: string;
+      twentyPersonId?: string;
+      twentyOpportunityId?: string;
     }
   | {
       ok: false;
@@ -73,7 +75,11 @@ function normalizeReferralSource(
 
 export function buildCanonicalLeadPayload(
   body: PeskidsLeadCaptureBody,
-  ghlContactId?: string
+  crmIds?: {
+    ghlContactId?: string;
+    twentyPersonId?: string;
+    twentyOpportunityId?: string;
+  }
 ): Record<string, unknown> {
   return {
     tenant_slug: 'peskids',
@@ -84,14 +90,22 @@ export function buildCanonicalLeadPayload(
     neighborhood: body.neighborhood?.trim() || 'Por confirmar',
     grade_interested: normalizeGrade(body.grade_interested),
     referral_source: normalizeReferralSource(body.referral_source),
-    ...(ghlContactId ? { ghl_contact_id: ghlContactId } : {}),
+    ...(crmIds?.ghlContactId ? { ghl_contact_id: crmIds.ghlContactId } : {}),
+    ...(crmIds?.twentyPersonId ? { twenty_person_id: crmIds.twentyPersonId } : {}),
+    ...(crmIds?.twentyOpportunityId
+      ? { twenty_opportunity_id: crmIds.twentyOpportunityId }
+      : {}),
   };
 }
 
 export async function postPeskidsCanonicalLead(
   body: PeskidsLeadCaptureBody,
   requestId: string,
-  ghlContactId?: string
+  crmIds?: {
+    ghlContactId?: string;
+    twentyPersonId?: string;
+    twentyOpportunityId?: string;
+  }
 ): Promise<CanonicalLeadResult> {
   const url = `${OPSLY_API_ORIGIN}/api/public/tenants/peskids/leads`;
 
@@ -103,7 +117,7 @@ export async function postPeskidsCanonicalLead(
         'Content-Type': 'application/json',
         'x-request-id': requestId,
       },
-      body: JSON.stringify(buildCanonicalLeadPayload(body, ghlContactId)),
+      body: JSON.stringify(buildCanonicalLeadPayload(body, crmIds)),
       cache: 'no-store',
     });
   } catch (error) {
@@ -136,30 +150,46 @@ export async function postPeskidsCanonicalLead(
     leadId,
     tenantSlug: typeof payload.tenant_slug === 'string' ? payload.tenant_slug : 'peskids',
     createdAt: typeof payload.created_at === 'string' ? payload.created_at : new Date().toISOString(),
-    ghlContactId,
+    ghlContactId: crmIds?.ghlContactId,
+    twentyPersonId: crmIds?.twentyPersonId,
+    twentyOpportunityId: crmIds?.twentyOpportunityId,
   };
 }
 
-export async function postPeskidsLeadWithGHL(
+export async function postPeskidsLeadWithCRM(
   body: PeskidsLeadCaptureBody,
   requestId: string
 ): Promise<CanonicalLeadResult> {
-  let ghlContactId: string | undefined;
+  let crmIds: {
+    ghlContactId?: string;
+    twentyPersonId?: string;
+    twentyOpportunityId?: string;
+  } = {};
 
   try {
-    const ghlResult = await sendLeadToGHL({
+    const crmResult = await syncLeadToCrm({
       parentName: body.name,
       email: body.email,
       phone: body.phone,
       gradeInterested: body.grade_interested,
       source: body.referral_source || 'web',
     });
-    if (ghlResult) {
-      ghlContactId = ghlResult.ghlContactId;
-    }
+    crmIds = {
+      ghlContactId: crmResult.ghlContactId,
+      twentyPersonId: crmResult.twentyPersonId,
+      twentyOpportunityId: crmResult.twentyOpportunityId,
+    };
   } catch (err) {
-    console.warn('[peskids][lead] GHL sync failed, continuing with canonical:', err);
+    console.warn('[peskids][lead] CRM sync failed, continuing with canonical:', err);
   }
 
-  return postPeskidsCanonicalLead(body, requestId, ghlContactId);
+  return postPeskidsCanonicalLead(body, requestId, crmIds);
+}
+
+/** @deprecated Use postPeskidsLeadWithCRM — GHL now requires PESKIDS_GHL_ENABLED=true */
+export async function postPeskidsLeadWithGHL(
+  body: PeskidsLeadCaptureBody,
+  requestId: string
+): Promise<CanonicalLeadResult> {
+  return postPeskidsLeadWithCRM(body, requestId);
 }
