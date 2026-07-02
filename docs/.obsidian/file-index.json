@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-07-02T13:29:08.746Z",
-  "totalFiles": 774,
+  "lastIndexed": "2026-07-02T13:46:19.711Z",
+  "totalFiles": 776,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -345,6 +345,8 @@
     "blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md",
     "blueprints/opsly-operational-blueprint/TEAM-FACING-EXPLANATION.md",
     "blueprints/opsly-operational-blueprint/TENANT-INCUBATION.md",
+    "blueprints/PESKIDS-GHL-DISABLE-RUNBOOK.md",
+    "blueprints/PESKIDS-GHL-MIGRATION-STATUS.md",
     "blueprints/PHASE1-EXECUTION-CHECKLIST.md",
     "blueprints/PHASE1-IMPLEMENTATION-GUIDE.md",
     "blueprints/PHASE1-PHASE2-STATUS.md",

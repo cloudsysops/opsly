@@ -260,12 +260,26 @@ git push origin peskids-review && gh pr create --title "cleanup(peskids): EOL GH
 
 ---
 
-## Parallel: ICSO Cutover (Same Template)
+## Parallel: ICSO Cutover (BLOCKED — Requires Prior Migration)
 
-Repeat all 5 phases for ICSO using:
+⚠️ **Status: NOT YET READY for cutover**
+
+ICSO currently uses the **old GHL-first pattern** (no CRM abstraction layer).  
+Before ICSO can follow the same 5-phase cutover, it must be migrated to local-first + feature flags.
+
+**Prerequisites (must complete before ICSO cutover):**
+1. Migrate ICSO lead capture to use `intcloudsysops-crm-sync.ts` abstraction (pattern from Peskids)
+2. Add `INTCLOUDSYSOPS_TWENTY_ENABLED` + `INTCLOUDSYSOPS_GHL_ENABLED` feature flags to env-config.ts
+3. Update `apps/intcloudsysops/app/api/leads/route.ts` to call new abstraction (not `postPeskidsLeadWithGHL()`)
+4. Create ICSO smoke test script (separate from Peskids)
+5. Test locally: `INTCLOUDSYSOPS_TWENTY_ENABLED=true npm run dev` → POST `/api/leads` → verify response
+
+**After migration (then follow Peskids phases):**
 - Flag: `INTCLOUDSYSOPS_TWENTY_ENABLED` / `INTCLOUDSYSOPS_GHL_ENABLED`
-- Smoke script: (same as Peskids, but hits ICSO tenant)
+- Smoke script: Custom ICSO test (not shared with Peskids)
 - Approval: From ICSO owner (team@intcloudsysops.com)
+
+**See:** `docs/blueprints/ICSO-CRM-READINESS.md` for detailed migration plan
 
 ---
 
