@@ -1,4 +1,3 @@
-import type { GoHighLevelService } from '@intcloudsysops/services/gohighlevel';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/types';
 
@@ -30,26 +29,33 @@ export const LOCAL_STATUS_TO_PIPELINE_STAGE: Partial<Record<LocalLeadStatus, Pip
   renewal: 'Renewal',
 };
 
-export type LeadPipelineContext = {
-  leadId: string;
-  email: string;
-  phone: string | null;
-  ghlContactId: string | null;
-};
-
 export interface PipelineRule {
   currentStage: PipelineStage;
   nextStage: PipelineStage;
-  condition: (lead: LeadPipelineContext) => Promise<boolean>;
+  /** Evaluates using public.leads.id — never a GHL contact id. */
+  condition: (leadId: string) => Promise<boolean>;
   description: string;
-  source: 'messages' | 'trial_classes' | 'enrollments' | 'attendance' | 'ghl_calendar';
+  source: 'messages' | 'followups' | 'trial_classes' | 'enrollments' | 'attendance';
 }
 
 export interface RuleServices {
   supabase: SupabaseClient<Database>;
   tenantSlug: string;
-  /** Legacy opt-in — trial rule falls back only when local trial_classes has no row */
-  ghlService?: GoHighLevelService | null;
+}
+
+async function loadLeadChannels(
+  services: RuleServices,
+  leadId: string
+): Promise<{ email: string; phone: string | null } | null> {
+  const { data, error } = await services.supabase
+    .from('leads')
+    .select('email, phone')
+    .eq('id', leadId)
+    .eq('tenant_id', services.tenantSlug)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return { email: data.email, phone: data.phone };
 }
 
 async function leadStudentIds(
@@ -68,25 +74,54 @@ async function leadStudentIds(
 
 /**
  * New Lead → Contacted
- * Condition: lead has at least one inbound message (phone, email, or legacy GHL id).
+ * Local signals: inbound message (phone/email) or completed staff followup on the lead.
  */
-function hasResponded(services: RuleServices) {
-  return async (lead: LeadPipelineContext): Promise<boolean> => {
+function hasHumanContact(services: RuleServices) {
+  return async (leadId: string): Promise<boolean> => {
+    const channels = await loadLeadChannels(services, leadId);
     const filters = [
-      lead.phone ? `sender_contact.eq.${lead.phone}` : null,
-      lead.email ? `sender_contact.eq.${lead.email}` : null,
-      lead.ghlContactId ? `sender_contact.eq.${lead.ghlContactId}` : null,
-      lead.ghlContactId ? `sender_contact.ilike.%${lead.ghlContactId}%` : null,
+      channels?.phone ? `sender_contact.eq.${channels.phone}` : null,
+      channels?.email ? `sender_contact.eq.${channels.email}` : null,
     ].filter((value): value is string => Boolean(value));
 
-    if (filters.length === 0) return false;
+    if (filters.length > 0) {
+      const { count, error } = await services.supabase
+        .from('messages')
+        .select('id', { count: 'exact', head: true })
+        .eq('tenant_id', services.tenantSlug)
+        .eq('direction', 'inbound')
+        .or(filters.join(','));
 
-    const { count, error } = await services.supabase
-      .from('messages')
+      if (!error && (count ?? 0) > 0) {
+        return true;
+      }
+    }
+
+    const { count: followupCount, error: followupError } = await services.supabase
+      .from('followups')
       .select('id', { count: 'exact', head: true })
       .eq('tenant_id', services.tenantSlug)
-      .eq('direction', 'inbound')
-      .or(filters.join(','));
+      .eq('contact_id', leadId)
+      .eq('contact_type', 'lead')
+      .eq('status', 'completed');
+
+    if (followupError) return false;
+    return (followupCount ?? 0) > 0;
+  };
+}
+
+/**
+ * Contacted → Trial Class
+ * Local only: trial_classes for lead_id in scheduled | confirmed | attended.
+ */
+function hasTrialProgress(services: RuleServices) {
+  return async (leadId: string): Promise<boolean> => {
+    const { count, error } = await services.supabase
+      .from('trial_classes')
+      .select('id', { count: 'exact', head: true })
+      .eq('tenant_id', services.tenantSlug)
+      .eq('lead_id', leadId)
+      .in('status', ['scheduled', 'confirmed', 'attended']);
 
     if (error) return false;
     return (count ?? 0) > 0;
@@ -94,49 +129,12 @@ function hasResponded(services: RuleServices) {
 }
 
 /**
- * Contacted → Trial Class
- * Condition: scheduled trial in public.trial_classes (local first).
- */
-function hasTrialScheduled(services: RuleServices) {
-  return async (lead: LeadPipelineContext): Promise<boolean> => {
-    const { count, error } = await services.supabase
-      .from('trial_classes')
-      .select('id', { count: 'exact', head: true })
-      .eq('tenant_id', services.tenantSlug)
-      .eq('lead_id', lead.leadId)
-      .in('status', ['scheduled', 'confirmed']);
-
-    if (!error && (count ?? 0) > 0) {
-      return true;
-    }
-
-    if (!lead.ghlContactId || !services.ghlService) {
-      return false;
-    }
-
-    try {
-      const appointments = await services.ghlService.getAppointments(
-        services.tenantSlug,
-        lead.ghlContactId
-      );
-      return appointments.some(
-        (appointment) =>
-          appointment.title?.toLowerCase().includes('trial') ||
-          appointment.status === 'scheduled'
-      );
-    } catch {
-      return false;
-    }
-  };
-}
-
-/**
  * Trial Class → Enrolled
- * Condition: a student linked to the lead has a paid enrollment.
+ * Student linked via source_lead_id with paid enrollment.
  */
 function hasEnrolled(services: RuleServices) {
-  return async (lead: LeadPipelineContext): Promise<boolean> => {
-    const studentIds = await leadStudentIds(services, lead.leadId);
+  return async (leadId: string): Promise<boolean> => {
+    const studentIds = await leadStudentIds(services, leadId);
     if (studentIds.length === 0) return false;
 
     const { count, error } = await services.supabase
@@ -154,11 +152,11 @@ function hasEnrolled(services: RuleServices) {
 
 /**
  * Enrolled → Active Student
- * Condition: linked student attended at least one class.
+ * Linked student has attendance evidence in class_enrollments.
  */
 function hasAttendedFirstClass(services: RuleServices) {
-  return async (lead: LeadPipelineContext): Promise<boolean> => {
-    const studentIds = await leadStudentIds(services, lead.leadId);
+  return async (leadId: string): Promise<boolean> => {
+    const studentIds = await leadStudentIds(services, leadId);
     if (studentIds.length === 0) return false;
 
     const { count, error } = await services.supabase
@@ -174,34 +172,38 @@ function hasAttendedFirstClass(services: RuleServices) {
   };
 }
 
+/**
+ * Automatic rules stop at Active Student.
+ * Active Student → Renewal: TODO — no local renewal signal defined in repo yet.
+ */
 export function buildPipelineRules(services: RuleServices): PipelineRule[] {
   return [
     {
       currentStage: 'New Lead',
       nextStage: 'Contacted',
-      condition: hasResponded(services),
-      description: 'Lead responded to follow-up outreach',
+      condition: hasHumanContact(services),
+      description: 'Inbound message or completed staff followup on the lead',
       source: 'messages',
     },
     {
       currentStage: 'Contacted',
       nextStage: 'Trial Class',
-      condition: hasTrialScheduled(services),
-      description: 'Trial class booked in Peskids (local trial_classes)',
+      condition: hasTrialProgress(services),
+      description: 'Trial class booked or attended in public.trial_classes',
       source: 'trial_classes',
     },
     {
       currentStage: 'Trial Class',
       nextStage: 'Enrolled',
       condition: hasEnrolled(services),
-      description: 'Enrolled after trial — payment completed',
+      description: 'Paid enrollment for student linked to lead',
       source: 'enrollments',
     },
     {
       currentStage: 'Enrolled',
       nextStage: 'Active Student',
       condition: hasAttendedFirstClass(services),
-      description: 'First class attended',
+      description: 'First class attendance recorded locally',
       source: 'attendance',
     },
   ];

@@ -1,16 +1,23 @@
 import { describe, it, expect, vi } from 'vitest';
 import { buildPipelineRules } from '@/lib/agents/pipeline-rules';
-import type { LeadPipelineContext } from '@/lib/agents/pipeline-rules';
+
+const LEAD_ID = 'lead-uuid-1';
 
 function mockSupabaseForRules(overrides: {
+  email?: string;
+  phone?: string | null;
   messageCount?: number;
+  followupCompletedCount?: number;
   trialCount?: number;
   enrollmentCount?: number;
   attendanceCount?: number;
   studentIds?: string[];
 }) {
   const {
+    email = 'parent@example.com',
+    phone = '3001234567',
     messageCount = 0,
+    followupCompletedCount = 0,
     trialCount = 0,
     enrollmentCount = 0,
     attendanceCount = 0,
@@ -22,12 +29,39 @@ function mockSupabaseForRules(overrides: {
 
   return {
     from: vi.fn((table: string) => {
+      if (table === 'leads') {
+        return {
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                maybeSingle: vi.fn().mockResolvedValue({
+                  data: { email, phone },
+                  error: null,
+                }),
+              }),
+            }),
+          }),
+        };
+      }
       if (table === 'messages') {
         return {
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
               eq: vi.fn().mockReturnValue({
                 or: headCount(messageCount),
+              }),
+            }),
+          }),
+        };
+      }
+      if (table === 'followups') {
+        return {
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                eq: vi.fn().mockReturnValue({
+                  eq: headCount(followupCompletedCount),
+                }),
               }),
             }),
           }),
@@ -73,33 +107,48 @@ function mockSupabaseForRules(overrides: {
   };
 }
 
-const lead: LeadPipelineContext = {
-  leadId: 'lead-uuid-1',
-  email: 'parent@example.com',
-  phone: '3001234567',
-  ghlContactId: null,
-};
-
 describe('pipeline-rules (local)', () => {
   it('New Lead → Contacted when inbound message exists', async () => {
     const rules = buildPipelineRules({
       supabase: mockSupabaseForRules({ messageCount: 1 }) as never,
       tenantSlug: 'peskids',
     });
-    const rule = rules[0];
-    await expect(rule.condition(lead)).resolves.toBe(true);
+    await expect(rules[0].condition(LEAD_ID)).resolves.toBe(true);
   });
 
-  it('Contacted → Trial when trial_classes row exists', async () => {
+  it('New Lead → Contacted when completed followup exists', async () => {
+    const rules = buildPipelineRules({
+      supabase: mockSupabaseForRules({ followupCompletedCount: 1 }) as never,
+      tenantSlug: 'peskids',
+    });
+    await expect(rules[0].condition(LEAD_ID)).resolves.toBe(true);
+  });
+
+  it('New Lead → Contacted is false without local contact evidence', async () => {
+    const rules = buildPipelineRules({
+      supabase: mockSupabaseForRules({ messageCount: 0, followupCompletedCount: 0 }) as never,
+      tenantSlug: 'peskids',
+    });
+    await expect(rules[0].condition(LEAD_ID)).resolves.toBe(false);
+  });
+
+  it('Contacted → Trial Class from trial_classes', async () => {
     const rules = buildPipelineRules({
       supabase: mockSupabaseForRules({ trialCount: 1 }) as never,
       tenantSlug: 'peskids',
     });
-    const rule = rules[1];
-    await expect(rule.condition(lead)).resolves.toBe(true);
+    await expect(rules[1].condition(LEAD_ID)).resolves.toBe(true);
   });
 
-  it('Trial → Enrolled when linked student has paid enrollment', async () => {
+  it('Contacted → Trial Class is false without trial row', async () => {
+    const rules = buildPipelineRules({
+      supabase: mockSupabaseForRules({ trialCount: 0 }) as never,
+      tenantSlug: 'peskids',
+    });
+    await expect(rules[1].condition(LEAD_ID)).resolves.toBe(false);
+  });
+
+  it('Trial Class → Enrolled with paid enrollment on linked student', async () => {
     const rules = buildPipelineRules({
       supabase: mockSupabaseForRules({
         studentIds: ['student-1'],
@@ -107,11 +156,10 @@ describe('pipeline-rules (local)', () => {
       }) as never,
       tenantSlug: 'peskids',
     });
-    const rule = rules[2];
-    await expect(rule.condition(lead)).resolves.toBe(true);
+    await expect(rules[2].condition(LEAD_ID)).resolves.toBe(true);
   });
 
-  it('Enrolled → Active when attendance recorded', async () => {
+  it('Enrolled → Active Student with local attendance', async () => {
     const rules = buildPipelineRules({
       supabase: mockSupabaseForRules({
         studentIds: ['student-1'],
@@ -119,7 +167,15 @@ describe('pipeline-rules (local)', () => {
       }) as never,
       tenantSlug: 'peskids',
     });
-    const rule = rules[3];
-    await expect(rule.condition(lead)).resolves.toBe(true);
+    await expect(rules[3].condition(LEAD_ID)).resolves.toBe(true);
+  });
+
+  it('does not define Active Student → Renewal rule yet', () => {
+    const rules = buildPipelineRules({
+      supabase: mockSupabaseForRules({}) as never,
+      tenantSlug: 'peskids',
+    });
+    expect(rules).toHaveLength(4);
+    expect(rules.some((rule) => rule.nextStage === 'Renewal')).toBe(false);
   });
 });

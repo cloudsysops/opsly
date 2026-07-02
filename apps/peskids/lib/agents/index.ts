@@ -27,7 +27,6 @@ export {
   PIPELINE_STAGE_TO_LOCAL_STATUS,
 } from './pipeline-rules';
 export type {
-  LeadPipelineContext,
   LocalLeadStatus,
   PipelineRule,
   PipelineStage,
