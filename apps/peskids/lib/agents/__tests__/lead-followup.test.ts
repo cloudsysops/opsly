@@ -1,7 +1,15 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { LeadFollowupService } from '../lead-followup.service';
-import type { Contact, ListResponse } from '@intcloudsysops/services/gohighlevel';
+import type { FollowupLeadRecord, LeadFollowupStore } from '../lead-followup-store';
 import type { PeskidsGoHighLevelThreadClient } from '@/lib/gohighlevel-thread-client';
+
+function createMockStore(): LeadFollowupStore {
+  return {
+    findStaleLeads: vi.fn(),
+    findReengagementCandidates: vi.fn(),
+    createPendingFollowup: vi.fn(),
+  };
+}
 
 function createMockClient(): PeskidsGoHighLevelThreadClient {
   return {
@@ -17,105 +25,81 @@ function createMockClient(): PeskidsGoHighLevelThreadClient {
     getTasks: vi.fn(),
     getAppointments: vi.fn(),
     updateOpportunityStageForContact: vi.fn(),
+    addContactTags: vi.fn(),
   } as unknown as PeskidsGoHighLevelThreadClient;
 }
 
-function makeContact(overrides: Partial<Contact> & { id: string }): Contact {
+function makeLead(overrides: Partial<FollowupLeadRecord> & { id: string }): FollowupLeadRecord {
   return {
     id: overrides.id,
-    name: overrides.name ?? 'Test Contact',
-    email: overrides.email,
-    phone: overrides.phone,
-    firstName: overrides.firstName,
-    lastName: overrides.lastName,
-    source: overrides.source,
-    status: overrides.status ?? 'New Lead',
-    customFields: overrides.customFields,
-    createdAt: overrides.createdAt,
-    updatedAt: overrides.updatedAt,
+    tenant_id: overrides.tenant_id ?? 'peskids',
+    name: overrides.name ?? 'Test Lead',
+    email: overrides.email ?? 'lead@example.com',
+    phone: overrides.phone ?? null,
+    grade_interested: overrides.grade_interested ?? '3ro',
+    class_modality: overrides.class_modality ?? null,
+    neighborhood: overrides.neighborhood ?? null,
+    status: overrides.status ?? 'new',
+    ghl_contact_id: overrides.ghl_contact_id ?? null,
+    created_at:
+      overrides.created_at ?? new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
   };
 }
 
 describe('LeadFollowupService', () => {
+  let mockStore: LeadFollowupStore;
   let mockClient: PeskidsGoHighLevelThreadClient;
   let service: LeadFollowupService;
 
   beforeEach(() => {
+    mockStore = createMockStore();
     mockClient = createMockClient();
-    service = new LeadFollowupService(mockClient);
+    service = new LeadFollowupService({
+      store: mockStore,
+      ghlClient: mockClient,
+      tenantId: 'peskids',
+    });
   });
 
   describe('findStaleLeads', () => {
-    it('returns only contacts older than the threshold', async () => {
-      const now = Date.now();
-      const oldContact = makeContact({
-        id: 'c1',
-        name: 'Maria',
-        createdAt: new Date(now - 48 * 60 * 60 * 1000).toISOString(),
-      });
-      const recentContact = makeContact({
-        id: 'c2',
-        name: 'Juan',
-        createdAt: new Date(now - 2 * 60 * 60 * 1000).toISOString(),
-      });
-
-      const mockResponse: ListResponse<Contact> = {
-        data: [oldContact, recentContact],
-        total: 2,
-      };
-
-      vi.mocked(mockClient.getContacts).mockResolvedValue(mockResponse);
+    it('reads stale leads from the store, not GHL', async () => {
+      const staleLead = makeLead({ id: 'lead-1', name: 'Maria' });
+      vi.mocked(mockStore.findStaleLeads).mockResolvedValue([staleLead]);
 
       const stale = await service.findStaleLeads(24);
 
       expect(stale).toHaveLength(1);
-      expect(stale[0].id).toBe('c1');
+      expect(stale[0].id).toBe('lead-1');
+      expect(mockStore.findStaleLeads).toHaveBeenCalledWith(24, 'peskids');
+      expect(mockClient.getContacts).not.toHaveBeenCalled();
     });
 
-    it('returns empty when all leads are recent', async () => {
-      const now = Date.now();
-      const recent = makeContact({
-        id: 'c3',
-        createdAt: new Date(now - 1 * 60 * 60 * 1000).toISOString(),
-      });
-
-      vi.mocked(mockClient.getContacts).mockResolvedValue({
-        data: [recent],
-        total: 1,
-      });
-
-      const stale = await service.findStaleLeads(24);
-      expect(stale).toHaveLength(0);
-    });
-
-    it('filters contacts by New Lead status', async () => {
-      vi.mocked(mockClient.getContacts).mockResolvedValue({
-        data: [],
-        total: 0,
-      });
-
-      await service.findStaleLeads(24);
-
-      expect(mockClient.getContacts).toHaveBeenCalledWith(
-        expect.objectContaining({ status: 'New Lead' })
-      );
-    });
-
-    it('handles contacts without createdAt gracefully', async () => {
-      const noDate = makeContact({ id: 'c4', createdAt: undefined });
-
-      vi.mocked(mockClient.getContacts).mockResolvedValue({
-        data: [noDate],
-        total: 1,
-      });
+    it('returns empty when store has no stale leads', async () => {
+      vi.mocked(mockStore.findStaleLeads).mockResolvedValue([]);
 
       const stale = await service.findStaleLeads(24);
       expect(stale).toHaveLength(0);
     });
   });
 
+  describe('findReengagementCandidates', () => {
+    it('reads reengagement candidates from the store', async () => {
+      const lead = makeLead({ id: 'lead-2', status: 'contacted' });
+      vi.mocked(mockStore.findReengagementCandidates).mockResolvedValue([
+        { lead, daysSinceContact: 14 },
+      ]);
+
+      const candidates = await service.findReengagementCandidates(7, 30);
+
+      expect(candidates).toHaveLength(1);
+      expect(candidates[0].lead.id).toBe('lead-2');
+      expect(mockStore.findReengagementCandidates).toHaveBeenCalledWith(7, 30, 'peskids');
+      expect(mockClient.getContacts).not.toHaveBeenCalled();
+    });
+  });
+
   describe('escalateToHuman', () => {
-    it('creates a high-priority task with description', async () => {
+    it('creates a high-priority task with description when GHL client is available', async () => {
       vi.mocked(mockClient.createTask).mockResolvedValue({
         id: 'task-1',
         title: '',
@@ -123,44 +107,38 @@ describe('LeadFollowupService', () => {
         priority: 'high',
       });
 
-      await service.escalateToHuman('c1', 'No response after 48 hours');
+      await service.escalateToHuman('ghl-contact-1', 'No response after 48 hours');
 
       expect(mockClient.createTask).toHaveBeenCalledWith({
         title: 'Lead sin respuesta — seguimiento humano requerido',
         description: 'No response after 48 hours',
-        contactId: 'c1',
+        contactId: 'ghl-contact-1',
         priority: 'high',
       });
     });
   });
 
   describe('sendFollowup', () => {
-    it('returns true on successful send', async () => {
+    it('returns true on successful send via legacy GHL messaging channel', async () => {
       vi.mocked(mockClient.sendMessage).mockResolvedValue({
         id: 'msg-1',
         status: 'sent',
       });
 
-      const result = await service.sendFollowup(
-        'c1',
-        'Hola!',
-        'whatsapp'
-      );
+      const result = await service.sendFollowup('ghl-contact-1', 'Hola!', 'whatsapp');
 
       expect(result).toBe(true);
       expect(mockClient.sendMessage).toHaveBeenCalledWith({
-        contactId: 'c1',
+        contactId: 'ghl-contact-1',
         message: 'Hola!',
         channel: 'whatsapp',
       });
     });
 
     it('returns false when send fails', async () => {
-      vi.mocked(mockClient.sendMessage).mockRejectedValue(
-        new Error('API error')
-      );
+      vi.mocked(mockClient.sendMessage).mockRejectedValue(new Error('API error'));
 
-      const result = await service.sendFollowup('c1', 'Hola!', 'sms');
+      const result = await service.sendFollowup('ghl-contact-1', 'Hola!', 'sms');
       expect(result).toBe(false);
     });
 
@@ -170,13 +148,13 @@ describe('LeadFollowupService', () => {
         status: 'pending',
       });
 
-      const result = await service.sendFollowup('c1', 'Hola!', 'sms', {
+      const result = await service.sendFollowup('ghl-contact-1', 'Hola!', 'sms', {
         conversationId: 'conv-1',
       });
 
       expect(result).toBe(true);
       expect(mockClient.sendConversationMessage).toHaveBeenCalledWith({
-        contactId: 'c1',
+        contactId: 'ghl-contact-1',
         conversationId: 'conv-1',
         message: 'Hola!',
         channel: 'sms',
@@ -188,16 +166,13 @@ describe('LeadFollowupService', () => {
     it('builds fallback message when LLM Gateway is unreachable', async () => {
       const fetchStub = vi.fn().mockResolvedValue(new Response('', { status: 500 }));
       vi.stubGlobal('fetch', fetchStub);
-      const contact = makeContact({
-        id: 'c1',
+      const lead = makeLead({
+        id: 'lead-1',
         name: 'Maria Rodriguez',
-        customFields: { child_name: 'Mateo' },
+        grade_interested: 'Mateo',
       });
 
-      const message = await service.generateFollowupMessage(
-        contact,
-        'http://gateway:3010'
-      );
+      const message = await service.generateFollowupMessage(lead, 'http://gateway:3010');
 
       expect(message).toContain('Maria');
       expect(message).toContain('Mateo');
@@ -210,11 +185,8 @@ describe('LeadFollowupService', () => {
         new Response(JSON.stringify({ choices: [{ message: { content: '' } }] }))
       );
 
-      const contact = makeContact({ id: 'c1', name: 'Ana' });
-      const message = await service.generateFollowupMessage(
-        contact,
-        'http://gateway:3010'
-      );
+      const lead = makeLead({ id: 'lead-1', name: 'Ana' });
+      const message = await service.generateFollowupMessage(lead, 'http://gateway:3010');
 
       expect(message).toContain('Ana');
       mockFetch.mockRestore();
@@ -222,25 +194,18 @@ describe('LeadFollowupService', () => {
   });
 
   describe('executeFollowupCycle', () => {
-    it('processes stale leads and returns counts', async () => {
-      const now = Date.now();
-      const stale = makeContact({
-        id: 'c-stale',
+    it('sends followup via GHL when ghl_contact_id exists', async () => {
+      const stale = makeLead({
+        id: 'lead-stale',
         name: 'Pedro',
-        createdAt: new Date(now - 48 * 60 * 60 * 1000).toISOString(),
+        ghl_contact_id: 'ghl-contact-pedro',
       });
 
-      vi.mocked(mockClient.getContacts).mockResolvedValue({
-        data: [stale],
-        total: 1,
-      });
-
+      vi.mocked(mockStore.findStaleLeads).mockResolvedValue([stale]);
       vi.mocked(mockClient.findConversationByContactId).mockResolvedValue(null);
-
       vi.spyOn(service, 'generateFollowupMessage').mockResolvedValue(
         'Hola Pedro, ¿te gustaría agendar una clase de prueba?'
       );
-
       vi.mocked(mockClient.sendMessage).mockResolvedValue({
         id: 'msg-ok',
         status: 'sent',
@@ -258,31 +223,103 @@ describe('LeadFollowupService', () => {
       });
 
       expect(result.followed).toBe(1);
+      expect(result.escalated).toBe(0);
       expect(result.failed).toBe(0);
+      expect(mockStore.createPendingFollowup).not.toHaveBeenCalled();
+      expect(mockClient.sendMessage).toHaveBeenCalled();
     });
 
-    it('counts failures when send fails', async () => {
-      const now = Date.now();
-      const stale = makeContact({
-        id: 'c-fail',
+    it('queues manual followup when lead has no ghl_contact_id', async () => {
+      const stale = makeLead({
+        id: 'lead-manual',
+        name: 'Laura',
+        ghl_contact_id: null,
+      });
+
+      vi.mocked(mockStore.findStaleLeads).mockResolvedValue([stale]);
+      vi.mocked(mockStore.createPendingFollowup).mockResolvedValue({ id: 'followup-1' });
+      vi.spyOn(service, 'generateFollowupMessage').mockResolvedValue('Mensaje sugerido');
+
+      const result = await service.executeFollowupCycle();
+
+      expect(result.followed).toBe(0);
+      expect(result.escalated).toBe(1);
+      expect(result.failed).toBe(0);
+      expect(mockClient.sendMessage).not.toHaveBeenCalled();
+      expect(mockStore.createPendingFollowup).toHaveBeenCalledWith(
+        expect.objectContaining({
+          tenantId: 'peskids',
+          leadId: 'lead-manual',
+          notes: expect.stringContaining('Seguimiento manual requerido'),
+        })
+      );
+    });
+
+    it('queues manual followup and counts failure when GHL send fails', async () => {
+      const stale = makeLead({
+        id: 'lead-fail',
         name: 'Luis',
-        createdAt: new Date(now - 48 * 60 * 60 * 1000).toISOString(),
+        ghl_contact_id: 'ghl-contact-luis',
       });
 
-      vi.mocked(mockClient.getContacts).mockResolvedValue({
-        data: [stale],
-        total: 1,
-      });
-
+      vi.mocked(mockStore.findStaleLeads).mockResolvedValue([stale]);
       vi.mocked(mockClient.findConversationByContactId).mockResolvedValue(null);
-
+      vi.mocked(mockStore.createPendingFollowup).mockResolvedValue({ id: 'followup-2' });
       vi.spyOn(service, 'generateFollowupMessage').mockResolvedValue('Test message');
       vi.mocked(mockClient.sendMessage).mockRejectedValue(new Error('Send failed'));
 
       const result = await service.executeFollowupCycle();
 
       expect(result.followed).toBe(0);
+      expect(result.escalated).toBe(1);
       expect(result.failed).toBe(1);
+      expect(mockStore.createPendingFollowup).toHaveBeenCalled();
+    });
+  });
+
+  describe('sendReengagementSequence', () => {
+    it('queues manual followup when lead has no ghl_contact_id', async () => {
+      const lead = makeLead({
+        id: 'lead-reengage',
+        name: 'Sofia',
+        ghl_contact_id: null,
+        created_at: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+      });
+
+      vi.mocked(mockStore.createPendingFollowup).mockResolvedValue({ id: 'followup-3' });
+
+      const sent = await service.sendReengagementSequence(lead);
+
+      expect(sent).toBe(false);
+      expect(mockClient.sendMessage).not.toHaveBeenCalled();
+      expect(mockStore.createPendingFollowup).toHaveBeenCalledWith(
+        expect.objectContaining({
+          leadId: 'lead-reengage',
+          type: 'sms',
+          notes: expect.stringContaining('Seguimiento manual requerido'),
+        })
+      );
+    });
+
+    it('sends via GHL when ghl_contact_id exists', async () => {
+      const lead = makeLead({
+        id: 'lead-ghl',
+        name: 'Carlos',
+        ghl_contact_id: 'ghl-contact-carlos',
+        created_at: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+      });
+
+      vi.mocked(mockClient.sendMessage).mockResolvedValue({
+        id: 'msg-reengage',
+        status: 'sent',
+      });
+      vi.mocked(mockClient.addContactTags).mockResolvedValue(undefined);
+
+      const sent = await service.sendReengagementSequence(lead);
+
+      expect(sent).toBe(true);
+      expect(mockClient.sendMessage).toHaveBeenCalled();
+      expect(mockStore.createPendingFollowup).not.toHaveBeenCalled();
     });
   });
 });
