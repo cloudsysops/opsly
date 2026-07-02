@@ -1,40 +1,48 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-const mockCreateContact = vi.fn();
-const mockListCalendars = vi.fn();
+const syncLeadToCrmMock = vi.hoisted(() => vi.fn());
+const persistIcsoLeadMock = vi.hoisted(() => vi.fn());
+const resolveIcsoDiscoveryBookingUrlMock = vi.hoisted(() => vi.fn());
+const isIcsoSupabaseConfiguredMock = vi.hoisted(() => vi.fn());
 
-vi.mock('@intcloudsysops/services/gohighlevel', () => ({
-  isGoHighLevelConfigured: () => true,
-  resolveGoHighLevelEnv: () => ({
-    apiKey: 'test-key',
-    baseUrl: 'https://api.example.com',
-    locationId: 'test-location',
-    apiVersion: '2021-07-01',
-  }),
-  GoHighLevelClient: class {
-    constructor() {}
-    createContact = mockCreateContact;
-    listCalendars = mockListCalendars;
-  },
+vi.mock('@/lib/icso-crm-sync', () => ({
+  syncLeadToCrm: syncLeadToCrmMock,
 }));
 
-vi.mock('@/lib/ghl-setup', () => ({
-  findIcsoDiscoveryCalendar: vi.fn(async () => 'test-calendar-id'),
+vi.mock('@/lib/icso-lead-store', () => ({
+  persistIcsoLead: persistIcsoLeadMock,
+}));
+
+vi.mock('@/lib/icso-discovery-link', () => ({
+  resolveIcsoDiscoveryBookingUrl: resolveIcsoDiscoveryBookingUrlMock,
+}));
+
+vi.mock('@/lib/supabase-server', () => ({
+  isIcsoSupabaseConfigured: isIcsoSupabaseConfiguredMock,
 }));
 
 describe('POST /api/leads', () => {
   beforeEach(() => {
-    mockCreateContact.mockReset();
-    mockListCalendars.mockReset();
+    syncLeadToCrmMock.mockReset();
+    persistIcsoLeadMock.mockReset();
+    resolveIcsoDiscoveryBookingUrlMock.mockReset();
+    isIcsoSupabaseConfiguredMock.mockReset();
+    isIcsoSupabaseConfiguredMock.mockReturnValue(true);
   });
 
-  it('creates a contact and returns calendar booking URL', async () => {
-    mockCreateContact.mockResolvedValue({
-      id: 'contact-123',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
+  it('persists locally and returns Twenty ids (primary path)', async () => {
+    syncLeadToCrmMock.mockResolvedValue({
+      twentyPersonId: 'tw-person-1',
+      twentyOpportunityId: 'tw-opp-1',
     });
+    persistIcsoLeadMock.mockResolvedValue({
+      accountId: 'account-1',
+      contactId: 'contact-local-1',
+      dealId: 'deal-1',
+    });
+    resolveIcsoDiscoveryBookingUrlMock.mockResolvedValue(
+      'https://book.example.com/discovery'
+    );
 
     const { POST } = await import('../route');
     const request = {
@@ -50,73 +58,84 @@ describe('POST /api/leads', () => {
 
     expect(response.status).toBe(201);
     expect(data.success).toBe(true);
-    expect(data.contactId).toBe('contact-123');
-    expect(data.calendarBookingUrl).toBe(
-      'https://app.gohighlevel.com/calendar/test-location/test-calendar-id'
+    expect(data.contactId).toBe('contact-local-1');
+    expect(data.dealId).toBe('deal-1');
+    expect(data.twentyPersonId).toBe('tw-person-1');
+    expect(data.calendarBookingUrl).toBe('https://book.example.com/discovery');
+    expect(persistIcsoLeadMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        email: 'john@example.com',
+        twentyPersonId: 'tw-person-1',
+      })
     );
-    expect(mockCreateContact).toHaveBeenCalled();
   });
 
-  it('returns success without calendar URL if calendar not found', async () => {
-    mockCreateContact.mockResolvedValue({
-      id: 'contact-456',
-      firstName: 'Jane',
-      lastName: 'Smith',
-      email: 'jane@example.com',
+  it('includes legacy ghlContactId when sidecar returns it', async () => {
+    syncLeadToCrmMock.mockResolvedValue({
+      ghlContactId: 'ghl-contact-123',
     });
-
-    // Import and override the findIcsoDiscoveryCalendar mock
-    vi.resetModules();
-    vi.doMock('@/lib/ghl-setup', () => ({
-      findIcsoDiscoveryCalendar: vi.fn(async () => null),
-    }));
+    persistIcsoLeadMock.mockResolvedValue({
+      accountId: 'account-2',
+      contactId: 'contact-2',
+      dealId: 'deal-2',
+    });
+    resolveIcsoDiscoveryBookingUrlMock.mockResolvedValue(null);
 
     const { POST } = await import('../route');
-    const request = {
+    const response = await POST({
       json: async () => ({
         name: 'Jane Smith',
         email: 'jane@example.com',
         message: 'Need automation',
       }),
-    } as never;
-
-    const response = await POST(request);
+    } as never);
     const data = await response.json();
 
-    expect(response.status).toBe(201);
-    expect(data.success).toBe(true);
+    expect(data.ghlContactId).toBe('ghl-contact-123');
     expect(data.calendarBookingUrl).toBeNull();
   });
 
   it('rejects requests with missing fields', async () => {
     const { POST } = await import('../route');
-    const request = {
-      json: async () => ({
-        name: 'John Doe',
-        // missing email and message
-      }),
-    } as never;
+    const response = await POST({
+      json: async () => ({ name: 'John Doe' }),
+    } as never);
 
-    const response = await POST(request);
     expect(response.status).toBe(400);
-    expect(mockCreateContact).not.toHaveBeenCalled();
+    expect(syncLeadToCrmMock).not.toHaveBeenCalled();
   });
 
-  it('handles GHL errors gracefully', async () => {
-    mockCreateContact.mockRejectedValue(new Error('GHL API error'));
+  it('returns 503 when Supabase is not configured', async () => {
+    isIcsoSupabaseConfiguredMock.mockReturnValue(false);
 
     const { POST } = await import('../route');
-    const request = {
+    const response = await POST({
       json: async () => ({
         name: 'John Doe',
         email: 'john@example.com',
         message: 'Need help',
       }),
-    } as never;
+    } as never);
 
-    const response = await POST(request);
+    expect(response.status).toBe(503);
+    expect(persistIcsoLeadMock).not.toHaveBeenCalled();
+  });
+
+  it('handles persistence errors gracefully', async () => {
+    syncLeadToCrmMock.mockResolvedValue({});
+    persistIcsoLeadMock.mockRejectedValue(new Error('DB write failed'));
+
+    const { POST } = await import('../route');
+    const response = await POST({
+      json: async () => ({
+        name: 'John Doe',
+        email: 'john@example.com',
+        message: 'Need help',
+      }),
+    } as never);
+
     expect(response.status).toBe(500);
     const data = await response.json();
-    expect(data.error).toContain('GHL API error');
+    expect(data.error).toContain('DB write failed');
   });
 });

@@ -1,3 +1,9 @@
+/**
+ * LEGACY — GoHighLevel agency helpers for ICSO.
+ * Active only when INTCLOUDSYSOPS_GHL_ENABLED=true.
+ * @deprecated Primary CRM path is Twenty + Supabase (see docs/tenants/intcloudsysops/TWENTY-CRM.md).
+ */
+import { isIntcloudsysopsGhlEnabled } from '@intcloudsysops/services/twenty';
 import { GoHighLevelClient, resolveGoHighLevelEnv, isGoHighLevelConfigured } from '@intcloudsysops/services/gohighlevel';
 
 interface IcsoGhlStatus {
@@ -10,7 +16,7 @@ interface IcsoGhlStatus {
 
 export async function getIcsoGhlStatus(): Promise<IcsoGhlStatus> {
   const status: IcsoGhlStatus = {
-    configured: isGoHighLevelConfigured(),
+    configured: isGoHighLevelConfigured() && isIntcloudsysopsGhlEnabled(),
     locationId: '',
     pipelines: [],
     forms: [],
@@ -46,12 +52,18 @@ export async function getIcsoGhlStatus(): Promise<IcsoGhlStatus> {
 }
 
 export async function findIcsoSalesPipeline(): Promise<string | null> {
+  if (!isIntcloudsysopsGhlEnabled()) {
+    return null;
+  }
   const status = await getIcsoGhlStatus();
   const pipeline = status.pipelines.find((p) => p.name.includes('Opsly Agency Sales'));
   return pipeline?.id || null;
 }
 
 export async function findIcsoDiscoveryCalendar(): Promise<string | null> {
+  if (!isIntcloudsysopsGhlEnabled()) {
+    return null;
+  }
   const status = await getIcsoGhlStatus();
   const calendar = status.calendars.find((c) => c.name.includes('Discovery Call'));
   return calendar?.id || null;
