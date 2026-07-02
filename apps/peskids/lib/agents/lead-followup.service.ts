@@ -14,6 +14,11 @@ export interface ReengagementCandidate {
   daysSinceContact: number;
 }
 
+/**
+ * @deprecated Legacy GoHighLevel thread client service.
+ * Not used in active Twenty/Supabase paths. Kept for backward compatibility.
+ * Mark for removal in Phase 2 (post-30-day safety window).
+ */
 export class LeadFollowupService {
   constructor(private ghlClient: PeskidsGoHighLevelThreadClient) {}
 
