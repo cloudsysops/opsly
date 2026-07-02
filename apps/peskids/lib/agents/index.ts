@@ -19,3 +19,17 @@ export type {
   ScheduledTrialRecord,
   TrialSchedulingStore,
 } from './trial-scheduling-store';
+export { PipelineManagerService } from './pipeline-manager.service';
+export type { PipelineCycleResult, PipelineManagerDeps, StageAdvanceResult } from './pipeline-manager.service';
+export {
+  buildPipelineRules,
+  LOCAL_STATUS_TO_PIPELINE_STAGE,
+  PIPELINE_STAGE_TO_LOCAL_STATUS,
+} from './pipeline-rules';
+export type {
+  LeadPipelineContext,
+  LocalLeadStatus,
+  PipelineRule,
+  PipelineStage,
+  RuleServices,
+} from './pipeline-rules';
