@@ -1,3 +1,11 @@
+/**
+ * @deprecated Legacy GoHighLevel webhook handler.
+ * Kept for backward compatibility during 30-day safety window post-Twenty cutover.
+ * Disabled by default (PESKIDS_GHL_ENABLED=false).
+ * Mark for removal in Phase 2 cleanup (post-cutover + 30 days).
+ * See: docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
 import {
   verifyGhlWebhookSignature,
