@@ -55,12 +55,12 @@ function buildTenantStatusQueries(client: ReturnType<typeof getServiceClient>): 
 }
 
 function buildPlanQueries(client: ReturnType<typeof getServiceClient>): unknown[] {
-  const q = () => client.schema('platform').from('tenants').is('deleted_at', null);
+  const q = () => client.schema('platform').from('tenants');
   return [
-    q().select('*', { count: 'exact', head: true }).eq('plan', 'startup'),
-    q().select('*', { count: 'exact', head: true }).eq('plan', 'business'),
-    q().select('*', { count: 'exact', head: true }).eq('plan', 'enterprise'),
-    q().select('plan, is_demo').eq('status', 'active'),
+    q().select('*', { count: 'exact', head: true }).is('deleted_at', null).eq('plan', 'startup'),
+    q().select('*', { count: 'exact', head: true }).is('deleted_at', null).eq('plan', 'business'),
+    q().select('*', { count: 'exact', head: true }).is('deleted_at', null).eq('plan', 'enterprise'),
+    q().select('plan, is_demo').is('deleted_at', null).eq('status', 'active'),
   ];
 }
 
