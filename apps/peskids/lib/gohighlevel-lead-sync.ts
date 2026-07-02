@@ -1,3 +1,7 @@
+/**
+ * LEGACY (GHL compatibility): optional dual-write when PESKIDS_GHL_ENABLED=true.
+ * New leads use syncLeadToCrm() → Twenty; do not call from new code paths.
+ */
 import {
   GoHighLevelClient,
   resolveGoHighLevelPeskidsEnv,

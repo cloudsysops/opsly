@@ -1,3 +1,4 @@
+/** LEGACY (GHL webhook): bidirectional contact sync — retire after Twenty import stable. */
 import { supabaseServer } from '@/lib/supabase';
 import type { Database } from '@/lib/types';
 import { resolveGoHighLevelPeskidsEnv, GoHighLevelClient } from '@intcloudsysops/services/gohighlevel';

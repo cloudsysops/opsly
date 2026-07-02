@@ -43,14 +43,6 @@ flowchart LR
 
 ### 1. Secretos Doppler (`ops-intcloudsysops/prd`)
 
-Generar comandos con secretos aleatorios (revisar antes de pegar en Doppler):
-
-```bash
-./scripts/tenants/generate-twenty-secrets.sh
-```
-
-Manual alternativo:
-
 ```bash
 # URL pública (Traefik)
 doppler secrets set TWENTY_SERVER_URL="https://crm-peskids.op-sly.com" --project ops-intcloudsysops --config prd
@@ -154,7 +146,8 @@ Tests unitarios:
 
 ```bash
 npm run test --workspace=@intcloudsysops/services -- twenty
-npm run test --workspace=@intcloudsysops/peskids -- leads
+npm run test --workspace=peskids -- lead-followup
+npm run test --workspace=peskids -- trial-scheduler
 ```
 
 ## Enlaces

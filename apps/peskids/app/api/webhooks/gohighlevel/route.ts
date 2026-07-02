@@ -1,3 +1,8 @@
+/**
+ * LEGACY (GHL compatibility): inbound webhook for pipeline/contact sync only.
+ * Do not add new product flows here — use Twenty CRM + Supabase operational paths.
+ * See docs/tenants/peskids/TWENTY-CRM.md § Superficies GHL legacy.
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import {
   verifyGhlWebhookSignature,

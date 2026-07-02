@@ -1,3 +1,4 @@
+/** LEGACY (GHL webhook): contact.created / contact.updated handlers. */
 import { supabaseServer } from '@/lib/supabase';
 import { emitEvent } from '@/lib/events';
 import type { Database, Json } from '@/lib/types';

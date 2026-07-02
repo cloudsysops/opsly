@@ -8,6 +8,18 @@ tenant_slug: peskids
 > **Deprecado (2026-06-09):** Peskids migra a **Twenty CRM** (open source, self-hosted).  
 > Runbook activo: [`TWENTY-CRM.md`](TWENTY-CRM.md). GHL sidecar desactivado por defecto (`PESKIDS_GHL_ENABLED=false`).
 
+## Superficies GHL que siguen activas (solo compatibilidad)
+
+| Superficie | Propósito | Reemplazo objetivo |
+|------------|-----------|-------------------|
+| `POST /api/webhooks/gohighlevel` | Eventos pipeline/contacto entrantes | Twenty webhooks / sync manual post-import |
+| `lib/services/gohighlevel/*` | Handlers webhook + pipeline + sync | Twenty + `public.leads` |
+| `lib/gohighlevel-lead-sync.ts` | Dual-write contacto al crear lead | `syncLeadToCrm()` → Twenty |
+| `lib/gohighlevel-thread-client.ts` | SMS/WhatsApp/tasks con `ghl_contact_id` | WhatsApp/Jelou + `public.followups` |
+| `LeadFollowupService` / `TrialSchedulerService` | Mensajería opcional si hay `ghl_contact_id` | n8n + followups locales (ya operativo en repo) |
+
+**No añadir nuevos flujos que dependan de GHL.** Los agentes comerciales ya leen `public.leads` y escriben `public.followups` / `public.trial_classes` en Supabase.
+
 # Peskids GoHighLevel Contract
 
 Punto de entrada mínimo para el primer slice comercial:
