@@ -67,9 +67,6 @@ describe('getWebDashboardMetricsJson', () => {
       schema: vi.fn().mockReturnThis(),
       from: vi.fn().mockImplementation((table) => {
         if (table === 'tenants') {
-          // We need to return different results based on the query,
-          // but for this baseline, just returning success is enough to test flow.
-          // In a real test we might want to be more specific.
           return mockMrrQuery;
         }
         return mockQuery;
