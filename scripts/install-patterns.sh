@@ -44,7 +44,7 @@ cd "$REPO_ROOT"
 
 echo "==> Validating pattern catalog"
 node --import tsx <<'NODE'
-import { validatePatternIndex, listPatterns } from '@intcloudsysops/pattern-catalog';
+import { validatePatternIndex, listPatterns } from './lib/pattern-catalog/src/index.ts';
 
 const errors = validatePatternIndex();
 if (errors.length) {
