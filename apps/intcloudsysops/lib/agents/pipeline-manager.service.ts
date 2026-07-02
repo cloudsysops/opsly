@@ -31,6 +31,12 @@ export interface PipelineCycleResult {
   }>;
 }
 
+/**
+ * @deprecated Legacy GoHighLevel pipeline manager.
+ * Pipeline advancement now driven by Supabase peskids_leads stage column + local rules.
+ * GHL sync removed; use Twenty integration via peskids-crm-sync.ts.
+ * Mark for removal in Phase 2 (post-30-day safety window).
+ */
 export class PipelineManagerService {
   private ghlService: GoHighLevelService;
   private rules: PipelineRule[];
