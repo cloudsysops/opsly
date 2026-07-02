@@ -1,0 +1,17 @@
+{
+  "vertical_blueprint_id": "restaurante",
+  "industry": "restaurant",
+  "offer_type": "reservation",
+  "form_fields": ["name", "phone", "email", "party_size", "date", "notes"],
+  "cta_text": "Reserva tu mesa",
+  "landing_routes": ["/", "/menu"],
+  "crm_pipeline_name": "Reservas",
+  "brand_basic": {
+    "tone": "hospitality, concise"
+  },
+  "modules": ["lead-capture", "feedback-loop", "follow-up", "weekly-report"],
+  "smoke_tests": [
+    "POST reservation form → Supabase",
+    "Manager notification via n8n"
+  ]
+}

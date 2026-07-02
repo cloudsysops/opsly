@@ -1,0 +1,72 @@
+{
+  "vertical_blueprint_id": "swim-school",
+  "tenant_slug": "peskids",
+  "business_name": "Peskids",
+  "industry": "swim school",
+  "country": "CO",
+  "timezone": "America/Bogota",
+  "domain": "peskids.op-sly.com",
+  "primary_email": "hola@peskids.co",
+  "offer_type": "free_class",
+  "lead_sources": ["website", "instagram", "whatsapp"],
+  "crm_provider": "twenty",
+  "ghl_location_id": "KJ5LawrOOe3hIerqtMRu",
+  "crm_pipeline_name": "Peskids Enrollment",
+  "landing_routes": ["/", "/instagram"],
+  "brand_basic": {
+    "tone": "warm, parent-facing, clear"
+  },
+  "form_fields": [
+    "parent_name",
+    "phone",
+    "email",
+    "child_name",
+    "age",
+    "interest"
+  ],
+  "cta_text": "Reserva tu clase de prueba gratis",
+  "fallback_behavior": "If CRM sync is blocked, persist in Supabase and queue approval-first follow-up through n8n.",
+  "n8n_workflows": [
+    "lead-intake",
+    "welcome-message",
+    "reminder",
+    "trial-class-invitation",
+    "executive-sync"
+  ],
+  "supabase_records": [
+    "platform.tenants",
+    "platform.leads",
+    "platform.tenant_launches"
+  ],
+  "health_checks": [
+    "opsly:status -- --local-only",
+    "GET /api/admin/mission-control",
+    "GET /api/admin/mission-control/incubation?slug=peskids"
+  ],
+  "smoke_tests": [
+    "client launch plan renders from clients/peskids.launch.json",
+    "landing routes / and /instagram resolve",
+    "lead intake writes a Supabase row",
+    "n8n receives the launch webhook envelope"
+  ],
+  "manual_steps": [
+    "Confirm the CRM provider workspace and pipeline before toggling any outbound automation."
+  ],
+  "next_commands": [
+    "./scripts/provisioning/bootstrap-tenant.sh --launch clients/peskids.launch.json --dry-run",
+    "./scripts/tenants/bootstrap-twenty.sh --tenant peskids --dry-run",
+    "TWENTY_SMOKE_EXPECT_IDS=true ./scripts/tenants/twenty-crm-smoke.sh --tenant peskids",
+    "./scripts/tenants/bootstrap-wacrm.sh --slug peskids --dry-run",
+    "./scripts/peskids/wacrm-twenty-hybrid-smoke.sh --dry-run"
+  ],
+  "pattern_ids": ["incubator-app", "crm-starter-stack", "whatsapp-first-stack"],
+  "approval_boundary": "approval-first",
+  "extraction_ready": false,
+  "extraction_notes": "Peskids remains the incubation pilot; extraction is deferred until operational stabilization.",
+  "wacrm": {
+    "enabled": false,
+    "public_url": "https://wa-peskids.op-sly.com",
+    "sync_twenty": "notes-only",
+    "primary_whatsapp_provider": "none"
+  }
+}

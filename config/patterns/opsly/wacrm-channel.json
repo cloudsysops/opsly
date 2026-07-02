@@ -1,0 +1,27 @@
+{
+  "id": "wacrm-channel",
+  "kind": "opsly",
+  "title": "wacrm WhatsApp inbox (hybrid with Twenty)",
+  "description": "Optional Meta Cloud API inbox sidecar. Conversations in wacrm; pipeline in Twenty; ops data in Supabase via n8n.",
+  "module": "@intcloudsysops/wacrm-channel",
+  "lib_path": "lib/wacrm-channel",
+  "contract": "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md",
+  "env_template": "WACRM_{SLUG}_ENABLED",
+  "env_keys": [
+    "WACRM_{SLUG}_ENABLED",
+    "WACRM_{SLUG}_SERVER_URL",
+    "WACRM_{SLUG}_WEBHOOK_SECRET",
+    "WACRM_{SLUG}_SYNC_TWENTY"
+  ],
+  "scripts": [
+    "scripts/tenants/setup-wacrm-tenant.sh",
+    "scripts/tenants/doppler-configure-wacrm-prd.sh",
+    "scripts/tenants/bootstrap-wacrm.sh",
+    "scripts/tenants/wacrm-smoke.sh"
+  ],
+  "n8n_workflow": "docs/examples/n8n/wacrm-inbound-twenty-note.json",
+  "harness_pattern": "integration-webhook",
+  "requires": ["crm-starter-stack"],
+  "conflicts_with": ["jelou-primary", "openwa-primary"],
+  "twenty_sync_modes": ["none", "notes-only", "person-link"]
+}

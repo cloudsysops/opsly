@@ -1,0 +1,36 @@
+{
+  "vertical_blueprint_id": "whatsapp-first",
+  "industry": "whatsapp-led service business",
+  "offer_type": "discovery_chat",
+  "lead_sources": ["website", "whatsapp", "instagram", "referral"],
+  "form_fields": ["name", "phone", "email", "message"],
+  "cta_text": "Escríbenos por WhatsApp",
+  "landing_routes": ["/", "/contact"],
+  "crm_pipeline_name": "Sales Pipeline",
+  "pattern_ids": ["incubator-app", "crm-starter-stack", "whatsapp-first-stack"],
+  "modules": ["lead-capture", "feedback-loop", "follow-up", "crm-view"],
+  "n8n_workflows": [
+    "lead-capture",
+    "hot-lead-alert",
+    "follow-up-reminder",
+    "wacrm-inbound-twenty-note"
+  ],
+  "wacrm": {
+    "enabled": false,
+    "public_url": "https://wa-{tenant_slug}.op-sly.com",
+    "sync_twenty": "notes-only",
+    "primary_whatsapp_provider": "wacrm"
+  },
+  "smoke_tests": [
+    "twenty-crm-smoke for tenant",
+    "wacrm-smoke when WACRM_*_ENABLED=true",
+    "wacrm-twenty-hybrid-smoke combined"
+  ],
+  "next_commands": [
+    "./scripts/provisioning/bootstrap-tenant.sh --launch clients/{tenant_slug}.launch.json --dry-run",
+    "./scripts/tenants/bootstrap-wacrm.sh --slug {tenant_slug} --dry-run"
+  ],
+  "brand_basic": {
+    "tone": "conversational, responsive, trust-building"
+  }
+}

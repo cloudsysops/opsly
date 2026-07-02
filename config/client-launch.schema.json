@@ -1,0 +1,230 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Opsly Client Launch Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tenant_slug",
+    "business_name",
+    "industry",
+    "country",
+    "timezone",
+    "domain",
+    "primary_email",
+    "offer_type",
+    "lead_sources",
+    "brand_basic",
+    "form_fields",
+    "cta_text",
+    "fallback_behavior"
+  ],
+  "properties": {
+    "vertical_blueprint_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "config/vertical-blueprints/<id>.json"
+    },
+    "tenant_slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "business_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "industry": {
+      "type": "string",
+      "minLength": 1
+    },
+    "country": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1
+    },
+    "domain": {
+      "type": "string",
+      "minLength": 1
+    },
+    "whatsapp_number": {
+      "type": "string",
+      "minLength": 7
+    },
+    "primary_email": {
+      "type": "string",
+      "minLength": 3
+    },
+    "offer_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lead_sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "crm_provider": {
+      "type": "string",
+      "enum": ["gohighlevel", "twenty", "supabase-only", "manual"]
+    },
+    "ghl_location_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "crm_pipeline_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "crm_pipeline_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "landing_routes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "brand_basic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tone"],
+      "properties": {
+        "logo": {
+          "type": "string",
+          "minLength": 1
+        },
+        "colors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "tone": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "form_fields": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "cta_text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "fallback_behavior": {
+      "type": "string",
+      "minLength": 1
+    },
+    "n8n_workflows": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "supabase_records": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "health_checks": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "smoke_tests": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "manual_steps": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "risk_notes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "next_commands": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "approval_boundary": {
+      "type": "string",
+      "enum": ["approval-first", "workflow-first", "read-only"]
+    },
+    "extraction_ready": {
+      "type": "boolean"
+    },
+    "extraction_notes": {
+      "type": "string",
+      "minLength": 1
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "pattern_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "wacrm": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Optional wacrm inbox sidecar (default false)"
+        },
+        "public_url": {
+          "type": "string",
+          "minLength": 1,
+          "description": "e.g. https://wa-<slug>.op-sly.com"
+        },
+        "sync_twenty": {
+          "type": "string",
+          "enum": ["none", "notes-only", "person-link"]
+        },
+        "primary_whatsapp_provider": {
+          "type": "string",
+          "enum": ["wacrm", "jelou", "openwa", "meta-direct", "none"]
+        }
+      }
+    }
+  }
+}

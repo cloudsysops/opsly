@@ -16,11 +16,13 @@ Requires Doppler secrets in OPSLY env file:
   PLATFORM_DOMAIN, TWENTY_SERVER_URL, TWENTY_APP_SECRET,
   TWENTY_ENCRYPTION_KEY, TWENTY_PG_PASSWORD
 
+Full bootstrap: ./scripts/tenants/bootstrap-twenty.sh
+
 After deploy:
-  1. Open TWENTY_SERVER_URL and create admin workspace
+  1. Open TWENTY_SERVER_URL and create admin workspace (manual UI)
   2. Settings → API & Webhooks → create API key
-  3. Doppler: TWENTY_API_URL, TWENTY_API_KEY, PESKIDS_TWENTY_ENABLED=true
-  4. Doppler: PESKIDS_GHL_ENABLED=false (disable GoHighLevel sidecar)
+  3. echo "<key>" | ./scripts/tenants/twenty-apply-api-key.sh --tenant peskids
+  4. ./scripts/tenants/doppler-configure-twenty-prd.sh --tenant peskids
   5. Redeploy peskids + api apps
 EOF
 }

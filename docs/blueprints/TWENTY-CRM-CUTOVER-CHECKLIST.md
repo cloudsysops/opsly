@@ -30,7 +30,10 @@
 ### Infrastructure
 - [ ] **Twenty Docker stack** deployed on VPS
   ```bash
-  bash scripts/tenants/setup-twenty-peskids.sh --dry-run  # Verify
+  ./scripts/tenants/bootstrap-twenty.sh --dry-run
+  ./scripts/tenants/bootstrap-twenty.sh --execute-secrets --skip-compose  # Mac
+  # VPS: ./scripts/vps-bootstrap.sh && ./scripts/tenants/setup-twenty-peskids.sh
+  ./scripts/tenants/verify-twenty-stack.sh
   ```
   - Twenty server + worker + Postgres + Redis running
   - Traefik routing configured
@@ -92,10 +95,8 @@ docker push peskids:latest
 **Action:** Update Doppler flags  
 **Command:**
 ```bash
-doppler run --project ops-intcloudsysops --config prd -- bash -c '
-  doppler secrets set PESKIDS_TWENTY_ENABLED=true
-  doppler secrets set PESKIDS_GHL_ENABLED=false
-'
+./scripts/tenants/doppler-configure-twenty-prd.sh --tenant peskids
+# API key (if not done): echo "<key>" | ./scripts/tenants/twenty-apply-api-key.sh --tenant peskids
 ```
 
 **Verification:**
@@ -106,8 +107,8 @@ doppler run --project ops-intcloudsysops --config prd -- bash -c '
 **Action:** Test lead capture returns Twenty IDs  
 **Command:**
 ```bash
-TWENTY_SMOKE_EXPECT_IDS=true bash scripts/peskids/twenty-crm-smoke.sh \
-  --base-url https://peskids.op-sly.com
+TWENTY_SMOKE_EXPECT_IDS=true ./scripts/tenants/twenty-crm-smoke.sh \
+  --tenant peskids --base-url https://peskids.op-sly.com
 ```
 
 **Expected Output:**
@@ -262,21 +263,18 @@ git push origin peskids-review && gh pr create --title "cleanup(peskids): EOL GH
 
 ## Parallel: ICSO Cutover (BLOCKED — Requires Prior Migration)
 
-⚠️ **Status: NOT YET READY for cutover**
+⚠️ **Status: NOT YET READY for cutover** (marketing `apps/icso` still GHL-first on this branch)
 
-ICSO currently uses the **old GHL-first pattern** (no CRM abstraction layer).  
-Before ICSO can follow the same 5-phase cutover, it must be migrated to local-first + feature flags.
+**Prerequisites (code — merge `feat/icso-twenty-crm` or equivalent):**
+1. ICSO lead capture uses Twenty abstraction (pattern from Peskids `twenty-lead-sync`)
+2. `INTCLOUDSYSOPS_TWENTY_ENABLED` + `INTCLOUDSYSOPS_GHL_ENABLED` in `lib/services/twenty/env-config.ts`
+3. `apps/icso/app/api/leads/route.ts` calls CRM abstraction (not direct GHL)
+4. Smoke: `./scripts/tenants/twenty-crm-smoke.sh --tenant icso`
 
-**Prerequisites (must complete before ICSO cutover):**
-1. Migrate ICSO lead capture to use `intcloudsysops-crm-sync.ts` abstraction (pattern from Peskids)
-2. Add `INTCLOUDSYSOPS_TWENTY_ENABLED` + `INTCLOUDSYSOPS_GHL_ENABLED` feature flags to env-config.ts
-3. Update `apps/intcloudsysops/app/api/leads/route.ts` to call new abstraction (not `postPeskidsLeadWithGHL()`)
-4. Create ICSO smoke test script (separate from Peskids)
-5. Test locally: `INTCLOUDSYSOPS_TWENTY_ENABLED=true npm run dev` → POST `/api/leads` → verify response
-
-**After migration (then follow Peskids phases):**
-- Flag: `INTCLOUDSYSOPS_TWENTY_ENABLED` / `INTCLOUDSYSOPS_GHL_ENABLED`
-- Smoke script: Custom ICSO test (not shared with Peskids)
+**After code merge — repeat Peskids phases:**
+- Flags: `./scripts/tenants/doppler-configure-twenty-prd.sh --tenant icso`
+- GHL off: `./scripts/tenants/ghl-disable-legacy.sh --tenant icso`
+- Docs: `docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md`
 - Approval: From ICSO owner (team@intcloudsysops.com)
 
 **See:** `docs/blueprints/ICSO-CRM-READINESS.md` for detailed migration plan

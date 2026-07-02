@@ -46,11 +46,23 @@ if [[ -z "$tenant_slug" ]]; then
   exit 1
 fi
 
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+LAUNCH="${ROOT}/clients/${tenant_slug}.launch.json"
+VERTICAL="—"
+CRM="—"
+if [[ -f "$LAUNCH" ]] && command -v jq >/dev/null 2>&1; then
+  VERTICAL="$(jq -r '.vertical_blueprint_id // "—"' "$LAUNCH")"
+  CRM="$(jq -r '.crm_provider // "—"' "$LAUNCH")"
+fi
+
 if [[ "$json_output" == "true" ]]; then
   cat <<EOF
 {
   "tenant_slug": "${tenant_slug}",
   "target_stage": "${target_stage}",
+  "launch_contract": "clients/${tenant_slug}.launch.json",
+  "vertical_blueprint_id": "${VERTICAL}",
+  "crm_provider": "${CRM}",
   "extraction_ready": false,
   "steps": [
     {
@@ -93,8 +105,10 @@ Tenant provisioning skeleton
 ----------------------------
 tenant: ${tenant_slug}
 target stage: ${target_stage}
+launch: clients/${tenant_slug}.launch.json (vertical=${VERTICAL}, crm=${CRM})
 mode: dry-run
 
+0. Review launch contract + vertical blueprint under config/vertical-blueprints/
 1. Register tenant in canonical registry.
 2. Prepare template deployment (no production tenant changes).
 3. Bootstrap first workflow bundle and approval points.

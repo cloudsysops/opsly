@@ -1,0 +1,33 @@
+{
+  "vertical_blueprint_id": "_base",
+  "country": "CO",
+  "timezone": "America/Bogota",
+  "crm_provider": "twenty",
+  "lead_sources": ["website", "whatsapp"],
+  "approval_boundary": "approval-first",
+  "fallback_behavior": "Persist in Supabase first; sync CRM via n8n with approval-first outbound.",
+  "n8n_workflows": [
+    "lead-capture",
+    "hot-lead-alert",
+    "follow-up-reminder",
+    "daily-pipeline-digest"
+  ],
+  "supabase_records": [
+    "platform.tenants",
+    "platform.leads"
+  ],
+  "health_checks": [
+    "GET /api/health",
+    "GET /api/admin/mission-control/incubation?slug={tenant_slug}"
+  ],
+  "manual_steps": [
+    "Create Twenty workspace admin + API key (one-time per tenant CRM stack).",
+    "Confirm owner email and domain DNS before enabling outbound automation."
+  ],
+  "next_commands": [
+    "npm run client:plan -- --tenant-slug {tenant_slug}",
+    "./scripts/provisioning/bootstrap-tenant.sh --launch clients/{tenant_slug}.launch.json --dry-run"
+  ],
+  "extraction_ready": false,
+  "pattern_ids": ["incubator-app", "crm-starter-stack"]
+}

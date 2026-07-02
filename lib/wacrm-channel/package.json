@@ -1,0 +1,16 @@
+{
+  "name": "@intcloudsysops/wacrm-channel",
+  "version": "0.1.0",
+  "description": "wacrm sidecar env flags and tenant-scoped config (hybrid with Twenty)",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2",
+    "vitest": "^4.1.8"
+  }
+}

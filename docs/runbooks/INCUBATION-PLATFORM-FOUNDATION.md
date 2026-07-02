@@ -1,7 +1,7 @@
 ---
 status: draft
 owner: operations
-last_review: 2026-05-25
+last_review: 2026-07-02
 type: runbook
 tags:
   - opsly/runbook
@@ -14,6 +14,9 @@ Use this runbook to inspect the first read-only foundation of Opsly.
 ## Read-only checks
 
 ```bash
+npm run opsly:status -- --local-only
+npm run client:plan -- clients/peskids.launch.json
+
 curl -H "Authorization: Bearer <admin-token>" \
   http://127.0.0.1:3000/api/admin/mission-control | jq .
 
@@ -39,6 +42,7 @@ scripts/provisioning/tenant-bootstrap-skeleton.sh --tenant peskids --stage mvp_v
 - All endpoints are read-only.
 - No production tenant is modified.
 - The provisioning script prints a dry-run plan only.
+- `client:plan` prints a dry-run launch contract only.
 - Approval boundaries remain explicit.
 - The incubation view is a planning surface, not a mutating workflow.
 
@@ -47,7 +51,7 @@ scripts/provisioning/tenant-bootstrap-skeleton.sh --tenant peskids --stage mvp_v
 - If `/api/admin/mission-control` fails, check `REDIS_URL`,
   `ORCHESTRATOR_INTERNAL_URL`, and the LLM gateway base URL envs.
 - If `/api/admin/mission-control/incubation` fails, check that the tenant slug
-  exists in `config/opsly.config.json` or the `OPSLY_INCUBATION_DEFAULT_TENANT`
+  exists in `clients/*.launch.json` or the `OPSLY_INCUBATION_DEFAULT_TENANT`
   fallback.
 - If a tenant appears blocked, inspect the lifecycle stage and extraction readiness
   in `config/platform-foundation.json` plus the tenant source file under `config/tenants/`.

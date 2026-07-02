@@ -1,0 +1,27 @@
+{
+  "vertical_blueprint_id": "swim-school",
+  "industry": "swim school",
+  "offer_type": "free_class",
+  "form_fields": [
+    "parent_name",
+    "phone",
+    "email",
+    "child_name",
+    "age",
+    "interest"
+  ],
+  "cta_text": "Reserva tu clase de prueba gratis",
+  "landing_routes": ["/", "/instagram"],
+  "n8n_workflows": [
+    "lead-intake",
+    "welcome-message",
+    "reminder",
+    "trial-class-invitation",
+    "executive-sync"
+  ],
+  "crm_pipeline_name": "Enrollment",
+  "brand_basic": {
+    "tone": "warm, parent-facing, clear"
+  },
+  "modules": ["lead-capture", "feedback-loop", "follow-up", "parent-portal", "weekly-report"]
+}

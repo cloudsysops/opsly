@@ -1,0 +1,32 @@
+# Example only — wacrm runs as external sidecar per tenant (not in platform compose).
+# Copy to tenants/<slug>/docker-compose.wacrm.yml and adjust secrets via Doppler.
+#
+# Traefik labels: Host(`wa-${TENANT_SLUG}.${PLATFORM_DOMAIN}`)
+
+services:
+  wacrm:
+    image: ${WACRM_IMAGE:-ghcr.io/example/wacrm:latest}
+    container_name: wacrm_${TENANT_SLUG}
+    restart: unless-stopped
+    environment:
+      # Meta Cloud API — from client Meta Business (never commit)
+      WHATSAPP_TOKEN: ${WACRM_WHATSAPP_TOKEN}
+      WHATSAPP_PHONE_NUMBER_ID: ${WACRM_WHATSAPP_PHONE_NUMBER_ID}
+      WHATSAPP_VERIFY_TOKEN: ${WACRM_WHATSAPP_VERIFY_TOKEN}
+      # wacrm app DB (isolated from Opsly Supabase)
+      DATABASE_URL: ${WACRM_DATABASE_URL}
+      # Outbound webhook to n8n (signed)
+      WEBHOOK_URL: https://n8n-${TENANT_SLUG}.${PLATFORM_DOMAIN}/webhook/wacrm-inbound
+      WEBHOOK_SECRET: ${WACRM_WEBHOOK_SECRET}
+    networks:
+      - traefik-public
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.wacrm-${TENANT_SLUG}.rule=Host(`wa-${TENANT_SLUG}.${PLATFORM_DOMAIN}`)
+      - traefik.http.routers.wacrm-${TENANT_SLUG}.entrypoints=websecure
+      - traefik.http.routers.wacrm-${TENANT_SLUG}.tls=true
+      - traefik.http.services.wacrm-${TENANT_SLUG}.loadbalancer.server.port=3000
+
+networks:
+  traefik-public:
+    external: true

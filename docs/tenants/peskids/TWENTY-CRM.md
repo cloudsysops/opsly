@@ -43,14 +43,6 @@ flowchart LR
 
 ### 1. Secretos Doppler (`ops-intcloudsysops/prd`)
 
-Generar comandos con secretos aleatorios (revisar antes de pegar en Doppler):
-
-```bash
-./scripts/tenants/generate-twenty-secrets.sh
-```
-
-Manual alternativo:
-
 ```bash
 # URL pública (Traefik)
 doppler secrets set TWENTY_SERVER_URL="https://crm-peskids.op-sly.com" --project ops-intcloudsysops --config prd
@@ -142,12 +134,8 @@ Ver `.n8n/1-workflows/crm/` y `docs/n8n-workflows/crm/README.md`.
 ## Verificación
 
 ```bash
-# Lead capture (requiere form o curl con consent)
-curl -sfk -X POST "https://peskids.op-sly.com/api/leads" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Test Lead","email":"test@example.com","grade_interested":"K-5","consent_treatment":true}'
-
-# Respuesta incluye twenty_person_id cuando Twenty está configurado
+./scripts/tenants/verify-twenty-stack.sh --probe-api
+TWENTY_SMOKE_EXPECT_IDS=true ./scripts/tenants/twenty-crm-smoke.sh --tenant peskids
 ```
 
 Tests unitarios:
