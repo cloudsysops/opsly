@@ -1,3 +1,9 @@
+/**
+ * LEGACY (GHL compatibility): optional dual-write when PESKIDS_GHL_ENABLED=true.
+ * New leads use syncLeadToCrm() → Twenty; do not call from new code paths.
+ * @deprecated Use syncLeadToCrm() — GHL is opt-in legacy only.
+ */
+import { isPeskidsGhlEnabled } from '@intcloudsysops/services/twenty';
 import {
   GoHighLevelClient,
   resolveGoHighLevelPeskidsEnv,
@@ -18,6 +24,10 @@ export interface LeadData {
 export async function sendLeadToGHL(
   data: LeadData
 ): Promise<{ ghlContactId: string } | null> {
+  if (!isPeskidsGhlEnabled()) {
+    return null;
+  }
+
   try {
     const env = resolveGoHighLevelPeskidsEnv();
     if (!env.apiKey) {

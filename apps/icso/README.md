@@ -31,4 +31,13 @@ npm run type-check --workspace=@intcloudsysops/icso
 
 ## Scope
 
-Frontend-only marketing app. Does not include Opsly checkout, API routes, GHL, or tenant apps.
+Marketing site plus **lead intake API** (`POST /api/leads`).
+
+| Capa | Ruta / artefacto | Notas |
+|------|------------------|--------|
+| Operativa | Supabase `intcloudsysops_*` | Fuente de verdad (requiere service role en runtime) |
+| CRM | Twenty REST | Primario cuando `INTCLOUDSYSOPS_TWENTY_ENABLED` + credenciales |
+| Legacy | GoHighLevel agency | Solo si `INTCLOUDSYSOPS_GHL_ENABLED=true` (default **false**) |
+
+Runbook: [`docs/tenants/intcloudsysops/TWENTY-CRM.md`](../../docs/tenants/intcloudsysops/TWENTY-CRM.md).  
+No incluye Opsly checkout ni tenant apps de clientes.

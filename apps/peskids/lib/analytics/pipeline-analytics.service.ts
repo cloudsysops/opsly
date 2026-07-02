@@ -1,6 +1,7 @@
 import { getGoHighLevelService } from '@intcloudsysops/services/gohighlevel';
 import type { Opportunity } from '@intcloudsysops/services/gohighlevel';
 import { isGoHighLevelPeskidsConfigured } from '@intcloudsysops/services/gohighlevel';
+import { isPeskidsGhlEnabled } from '@intcloudsysops/services/twenty';
 import { supabaseServer } from '@/lib/supabase';
 
 export type PipelineStage =
@@ -85,10 +86,15 @@ function daysBetween(start: string, end: string): number {
 
 export class PipelineAnalyticsService {
   async getPipelineMetrics(): Promise<PipelineMetrics> {
-    const ghlConfigured = isGoHighLevelPeskidsConfigured();
+    const ghlConfigured =
+      isPeskidsGhlEnabled() && isGoHighLevelPeskidsConfigured();
 
     if (!ghlConfigured) {
-      return this.buildFallbackMetrics('GHL not configured for Peskids');
+      return this.buildFallbackMetrics(
+        isPeskidsGhlEnabled()
+          ? 'GHL not configured for Peskids'
+          : 'GHL legacy analytics disabled (PESKIDS_GHL_ENABLED=false)'
+      );
     }
 
     try {
@@ -130,7 +136,8 @@ export class PipelineAnalyticsService {
   }
 
   async getLeadSourceBreakdown(): Promise<Record<string, number>> {
-    const ghlConfigured = isGoHighLevelPeskidsConfigured();
+    const ghlConfigured =
+      isPeskidsGhlEnabled() && isGoHighLevelPeskidsConfigured();
     if (!ghlConfigured) return { web: 0, whatsapp: 0, referral: 0, event: 0, manual: 0, unknown: 0 };
 
     try {

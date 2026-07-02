@@ -1,3 +1,4 @@
+/** LEGACY (GHL webhook): HMAC verification for inbound GHL events. */
 import crypto from 'crypto';
 
 export function verifyGhlWebhookSignature(

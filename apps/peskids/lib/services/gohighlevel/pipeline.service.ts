@@ -1,3 +1,4 @@
+/** @deprecated LEGACY (GHL): maps GHL pipeline stages → public.leads.status. */
 import {
   resolveGoHighLevelPeskidsEnv,
 } from '@intcloudsysops/services/gohighlevel';

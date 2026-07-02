@@ -61,3 +61,47 @@ export function isPeskidsGhlEnabled(
 ): boolean {
   return parseBooleanFlag(env.PESKIDS_GHL_ENABLED, false);
 }
+
+export function resolveTwentyEnvForIntcloudsysops(
+  env: Record<string, string | undefined> = process.env as Record<string, string | undefined>
+): TwentyEnvConfig {
+  const apiKey =
+    env.TWENTY_INTCLOUDSYSOPS_API_KEY?.trim() ||
+    env.TWENTY_API_KEY?.trim() ||
+    '';
+  const baseUrl = (
+    env.TWENTY_INTCLOUDSYSOPS_API_URL?.trim() ||
+    env.TWENTY_API_URL?.trim() ||
+    ''
+  ).replace(/\/$/, '');
+  const configured = apiKey.length > 0 && baseUrl.length > 0;
+  const enabled =
+    configured &&
+    parseBooleanFlag(
+      env.INTCLOUDSYSOPS_TWENTY_ENABLED ?? env.TWENTY_ENABLED,
+      true
+    );
+
+  return {
+    apiKey,
+    baseUrl,
+    defaultOpportunityStage:
+      env.TWENTY_INTCLOUDSYSOPS_DEFAULT_OPPORTUNITY_STAGE?.trim() ||
+      env.TWENTY_DEFAULT_OPPORTUNITY_STAGE?.trim() ||
+      'NEW',
+    enabled,
+  };
+}
+
+export function isIntcloudsysopsTwentyConfigured(
+  env: Record<string, string | undefined> = process.env as Record<string, string | undefined>
+): boolean {
+  return resolveTwentyEnvForIntcloudsysops(env).enabled;
+}
+
+/** Explicit opt-in for legacy GoHighLevel sidecar (agency location). */
+export function isIntcloudsysopsGhlEnabled(
+  env: Record<string, string | undefined> = process.env as Record<string, string | undefined>
+): boolean {
+  return parseBooleanFlag(env.INTCLOUDSYSOPS_GHL_ENABLED, false);
+}

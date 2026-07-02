@@ -4,7 +4,22 @@ import {
   GOHIGHLEVEL_CALENDAR_API_VERSION,
 } from '../trial-scheduler.service';
 import type { GoHighLevelClient } from '@intcloudsysops/services/gohighlevel';
-import type { Mock } from 'vitest';
+import type { TrialSchedulingStore } from '../trial-scheduling-store';
+
+const LEAD_ID = '11111111-1111-4111-8111-111111111111';
+
+function createMockStore(): TrialSchedulingStore {
+  return {
+    findScheduledTrialForLead: vi.fn(),
+    countTrialsAtSlot: vi.fn(),
+    getDefaultCapacity: vi.fn(),
+    createLocalTrial: vi.fn(),
+    createPendingFollowup: vi.fn(),
+    listUpcomingTrials: vi.fn(),
+    findTrialById: vi.fn(),
+    getLeadContact: vi.fn(),
+  };
+}
 
 function createMockClient(): GoHighLevelClient {
   return {
@@ -21,32 +36,22 @@ function createMockClient(): GoHighLevelClient {
   } as unknown as GoHighLevelClient;
 }
 
-function mockSuccessResponse(data: unknown, status = 200): Response {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  });
-}
-
-function mockErrorResponse(status = 500, message = 'API error'): Response {
-  return new Response(JSON.stringify({ message }), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  });
-}
-
 describe('TrialSchedulerService', () => {
+  let mockStore: TrialSchedulingStore;
   let mockClient: GoHighLevelClient;
   let service: TrialSchedulerService;
-  let fetchSpy: Mock;
 
   beforeEach(() => {
+    mockStore = createMockStore();
     mockClient = createMockClient();
-    service = new TrialSchedulerService(mockClient, {
-      baseUrl: 'https://services.leadconnectorhq.com',
-      calendarApiVersion: GOHIGHLEVEL_CALENDAR_API_VERSION,
+    vi.mocked(mockStore.getDefaultCapacity).mockResolvedValue(4);
+    vi.mocked(mockStore.countTrialsAtSlot).mockResolvedValue(0);
+    service = new TrialSchedulerService({
+      store: mockStore,
+      ghlClient: mockClient,
+      tenantId: 'peskids',
+      ghlCalendarEnabled: false,
     });
-    fetchSpy = vi.spyOn(globalThis, 'fetch') as unknown as Mock;
   });
 
   afterEach(() => {
@@ -60,137 +65,61 @@ describe('TrialSchedulerService', () => {
   });
 
   describe('findAvailableSlots', () => {
-    it('returns slots from GHL Calendar API when available', async () => {
-      fetchSpy
-        .mockResolvedValueOnce(
-          mockSuccessResponse({
-            calendars: [
-              { id: 'cal-1', name: 'Trial Class' },
-              { id: 'cal-2', name: 'Assessment' },
-            ],
-          })
-        )
-        .mockResolvedValueOnce(
-          mockSuccessResponse({
-            freeSlots: [
-              { start: '2026-06-05T14:00:00Z', end: '2026-06-05T15:00:00Z' },
-              { start: '2026-06-06T10:00:00Z', end: '2026-06-06T11:00:00Z' },
-            ],
-          })
-        );
+    it('returns local weekday slots without calling GHL calendar', async () => {
+      const fetchSpy = vi.spyOn(globalThis, 'fetch');
 
       const slots = await service.findAvailableSlots();
 
-      expect(slots).toHaveLength(2);
-      expect(slots[0].start).toBe('2026-06-05T14:00:00Z');
-      expect(fetchSpy).toHaveBeenCalledTimes(2);
-    });
-
-    it('falls back to generated slots when Calendar API returns empty', async () => {
-      fetchSpy
-        .mockResolvedValueOnce(
-          mockSuccessResponse({ calendars: [{ id: 'cal-1', name: 'Trial Class' }] })
-        )
-        .mockResolvedValueOnce(mockSuccessResponse({ freeSlots: [] }));
-
-      const slots = await service.findAvailableSlots();
       expect(slots.length).toBeGreaterThanOrEqual(1);
       expect(slots.length).toBeLessThanOrEqual(5);
-    });
-
-    it('falls back to generated slots when Calendar API is unreachable', async () => {
-      fetchSpy.mockRejectedValue(new Error('Network error'));
-
-      const slots = await service.findAvailableSlots();
-      expect(slots.length).toBeGreaterThanOrEqual(1);
-      expect(slots.length).toBeLessThanOrEqual(5);
-    });
-
-    it('falls back to generated slots when no Trial Class calendar found', async () => {
-      fetchSpy.mockResolvedValueOnce(
-        mockSuccessResponse({ calendars: [{ id: 'cal-2', name: 'Assessment' }] })
-      );
-
-      const slots = await service.findAvailableSlots();
-      expect(slots.length).toBeGreaterThanOrEqual(1);
-    });
-
-    it('returns only weekday slots in generated fallback', async () => {
-      fetchSpy.mockRejectedValue(new Error('Network error'));
-
-      const slots = await service.findAvailableSlots();
+      expect(fetchSpy).not.toHaveBeenCalled();
       for (const slot of slots) {
         const day = new Date(slot.start).getDay();
-        expect(day).not.toBe(0); // not Sunday
-        expect(day).not.toBe(6); // not Saturday
+        expect(day).not.toBe(0);
+        expect(day).not.toBe(6);
       }
     });
 
-    it('returns at most 5 slots', async () => {
-      fetchSpy.mockRejectedValue(new Error('Network error'));
+    it('respects local capacity when filtering slots', async () => {
+      vi.mocked(mockStore.getDefaultCapacity).mockResolvedValue(1);
+      vi.mocked(mockStore.countTrialsAtSlot).mockResolvedValue(1);
 
       const slots = await service.findAvailableSlots();
-      expect(slots.length).toBeLessThanOrEqual(5);
-    });
-
-    it('returns generated slots when Calendar API returns 500', async () => {
-      fetchSpy
-        .mockResolvedValueOnce(
-          mockSuccessResponse({ calendars: [{ id: 'cal-1', name: 'Trial Class' }] })
-        )
-        .mockResolvedValueOnce(mockErrorResponse(500));
-
-      const slots = await service.findAvailableSlots();
-      expect(slots.length).toBeGreaterThanOrEqual(1);
+      expect(slots).toHaveLength(0);
+      expect(mockStore.countTrialsAtSlot).toHaveBeenCalled();
     });
   });
 
   describe('scheduleTrial', () => {
-    it('returns existing appointment without double-booking', async () => {
-      vi.mocked(mockClient.getAppointments).mockResolvedValue([
-        {
-          id: 'apt-existing',
-          title: 'Trial Class — Test',
-          startTime: '2026-06-10T14:00:00Z',
-          endTime: '2026-06-10T15:00:00Z',
-          contactId: 'contact-1',
-          status: 'scheduled',
-        },
-      ]);
-
-      const result = await service.scheduleTrial('contact-1', 'Maria');
-
-      expect(result.scheduled).toBe(true);
-      expect(result.appointmentId).toBe('apt-existing');
-      expect(result.message).toContain('Ya tienes');
-      expect(mockClient.sendMessage).not.toHaveBeenCalled();
-    });
-
-    it('schedules and confirms when no existing appointment', async () => {
-      vi.mocked(mockClient.getAppointments).mockResolvedValue([]);
-      vi.mocked(mockClient.getContact).mockResolvedValue({
-        id: 'contact-1',
-        name: 'Maria Rodriguez',
-        firstName: 'Maria',
+    it('returns existing local trial without double-booking', async () => {
+      vi.mocked(mockStore.findScheduledTrialForLead).mockResolvedValue({
+        id: 'trial-existing',
+        lead_id: LEAD_ID,
+        scheduled_date: '2026-06-10',
+        scheduled_time: '14:00:00',
+        status: 'scheduled',
       });
 
-      fetchSpy
-        .mockResolvedValueOnce(
-          mockSuccessResponse({ calendars: [{ id: 'cal-1', name: 'Trial Class' }] })
-        )
-        .mockResolvedValueOnce(
-          mockSuccessResponse({
-            freeSlots: [
-              { start: '2026-06-10T14:00:00Z', end: '2026-06-10T15:00:00Z' },
-            ],
-          })
-        )
-        .mockResolvedValueOnce(
-          mockSuccessResponse({
-            appointment: { id: 'apt-new' },
-          })
-        );
+      const result = await service.scheduleTrial({
+        leadId: LEAD_ID,
+        parentName: 'Maria',
+      });
 
+      expect(result.scheduled).toBe(true);
+      expect(result.appointmentId).toBe('trial-existing');
+      expect(result.message).toContain('Ya tienes');
+      expect(mockStore.createLocalTrial).not.toHaveBeenCalled();
+    });
+
+    it('creates local trial and confirms via GHL when crm contact id exists', async () => {
+      vi.mocked(mockStore.findScheduledTrialForLead).mockResolvedValue(null);
+      vi.mocked(mockStore.createLocalTrial).mockResolvedValue({
+        id: 'trial-new',
+        lead_id: LEAD_ID,
+        scheduled_date: '2026-06-10',
+        scheduled_time: '14:00:00',
+        status: 'scheduled',
+      });
       vi.mocked(mockClient.sendMessage).mockResolvedValue({
         id: 'msg-1',
         status: 'sent',
@@ -202,276 +131,126 @@ describe('TrialSchedulerService', () => {
         priority: 'high',
       });
 
-      const result = await service.scheduleTrial('contact-1', 'Maria');
+      const result = await service.scheduleTrial({
+        leadId: LEAD_ID,
+        parentName: 'Maria',
+        crmMessagingContactId: 'ghl-contact-1',
+      });
 
       expect(result.scheduled).toBe(true);
-      expect(result.appointmentId).toBe('apt-new');
-      expect(result.slot).toBeDefined();
+      expect(result.appointmentId).toBe('trial-new');
       expect(result.message).toContain('agendada');
-
-      // Confirmation sent
-      expect(mockClient.sendMessage).toHaveBeenCalledWith({
-        contactId: 'contact-1',
-        message: expect.stringContaining('Maria'),
-        channel: 'sms',
-      });
-
-      // Reminder task created
-      expect(mockClient.createTask).toHaveBeenCalledWith(
-        expect.objectContaining({
-          title: expect.stringContaining('Recordatorio'),
-          contactId: 'contact-1',
-          priority: 'high',
-        })
-      );
+      expect(mockStore.createLocalTrial).toHaveBeenCalled();
+      expect(mockClient.sendMessage).toHaveBeenCalled();
+      expect(mockClient.createTask).toHaveBeenCalled();
     });
 
-    it('respects preferredDay when filtering slots', async () => {
-      vi.mocked(mockClient.getAppointments).mockResolvedValue([]);
-      vi.mocked(mockClient.getContact).mockResolvedValue({
-        id: 'contact-1',
-        name: 'Pedro',
+    it('queues manual followup when no local slots are available', async () => {
+      vi.mocked(mockStore.findScheduledTrialForLead).mockResolvedValue(null);
+      vi.mocked(mockStore.getDefaultCapacity).mockResolvedValue(1);
+      vi.mocked(mockStore.countTrialsAtSlot).mockResolvedValue(99);
+      vi.mocked(mockStore.createPendingFollowup).mockResolvedValue({ id: 'followup-1' });
+
+      const result = await service.scheduleTrial({
+        leadId: LEAD_ID,
+        parentName: 'Ana',
       });
-
-      fetchSpy
-        .mockResolvedValueOnce(
-          mockSuccessResponse({ calendars: [{ id: 'cal-1', name: 'Trial Class' }] })
-        )
-        .mockResolvedValueOnce(
-          mockSuccessResponse({
-            freeSlots: [
-              { start: '2026-06-10T14:00:00Z', end: '2026-06-10T15:00:00Z' },
-              { start: '2026-06-11T10:00:00Z', end: '2026-06-11T11:00:00Z' },
-            ],
-          })
-        )
-        .mockResolvedValueOnce(
-          mockSuccessResponse({ appointment: { id: 'apt-3' } })
-        );
-
-      vi.mocked(mockClient.sendMessage).mockResolvedValue({
-        id: 'msg-ok',
-        status: 'sent',
-      });
-      vi.mocked(mockClient.createTask).mockResolvedValue({
-        id: 'task-2',
-        title: '',
-        status: 'open',
-        priority: 'high',
-      });
-
-      const result = await service.scheduleTrial(
-        'contact-1',
-        'Pedro',
-        '2026-06-11'
-      );
-
-      expect(result.scheduled).toBe(true);
-      expect(result.slot?.start).toContain('2026-06-11');
-    });
-
-    it('uses fallback slots when Calendar API has no calendars', async () => {
-      vi.mocked(mockClient.getAppointments).mockResolvedValue([]);
-
-      fetchSpy
-        .mockResolvedValueOnce(mockSuccessResponse({ calendars: [] }))
-        .mockResolvedValueOnce(
-          mockSuccessResponse({ appointment: { id: 'apt-fallback' } })
-        );
-
-      vi.mocked(mockClient.sendMessage).mockResolvedValue({
-        id: 'msg-fb',
-        status: 'sent',
-      });
-      vi.mocked(mockClient.createTask).mockResolvedValue({
-        id: 'task-fb',
-        title: '',
-        status: 'open',
-        priority: 'high',
-      });
-
-      const result = await service.scheduleTrial('contact-1', 'Ana');
-
-      expect(result.scheduled).toBe(true);
-      expect(result.slot).toBeDefined();
-      expect(result.message).toContain('agendada');
-    });
-
-    it('handles GHL API failure during appointment read gracefully', async () => {
-      vi.mocked(mockClient.getAppointments).mockRejectedValue(
-        new Error('GHL API unavailable')
-      );
-
-      const result = await service.scheduleTrial('contact-1', 'Luis');
 
       expect(result.scheduled).toBe(false);
-      expect(result.message).toContain('Error');
+      expect(result.manualSchedulingRequired).toBe(true);
+      expect(result.message).toContain('manual');
+      expect(mockStore.createPendingFollowup).toHaveBeenCalled();
+      expect(mockClient.sendMessage).not.toHaveBeenCalled();
     });
 
-    it('confirmation send failure is non-blocking', async () => {
-      vi.mocked(mockClient.getAppointments).mockResolvedValue([]);
-      vi.mocked(mockClient.getContact).mockResolvedValue({
-        id: 'contact-1',
-        name: 'Sofia',
+    it('books locally without GHL messaging when crm contact id is missing', async () => {
+      vi.mocked(mockStore.findScheduledTrialForLead).mockResolvedValue(null);
+      vi.mocked(mockStore.createLocalTrial).mockResolvedValue({
+        id: 'trial-local',
+        lead_id: LEAD_ID,
+        scheduled_date: '2026-06-12',
+        scheduled_time: '10:00:00',
+        status: 'scheduled',
       });
 
-      fetchSpy
-        .mockResolvedValueOnce(
-          mockSuccessResponse({ calendars: [{ id: 'cal-1', name: 'Trial Class' }] })
-        )
-        .mockResolvedValueOnce(
-          mockSuccessResponse({
-            freeSlots: [
-              { start: '2026-06-12T14:00:00Z', end: '2026-06-12T15:00:00Z' },
-            ],
-          })
-        )
-        .mockResolvedValueOnce(
-          mockSuccessResponse({ appointment: { id: 'apt-4' } })
-        );
-
-      vi.mocked(mockClient.sendMessage).mockRejectedValue(
-        new Error('Send failed')
-      );
-      vi.mocked(mockClient.createTask).mockResolvedValue({
-        id: 'task-3',
-        title: '',
-        status: 'open',
-        priority: 'high',
+      const result = await service.scheduleTrial({
+        leadId: LEAD_ID,
+        parentName: 'Sofia',
       });
-
-      const result = await service.scheduleTrial('contact-1', 'Sofia');
 
       expect(result.scheduled).toBe(true);
-      expect(result.appointmentId).toBe('apt-4');
-      expect(result.message).toContain('agendada');
+      expect(mockClient.sendMessage).not.toHaveBeenCalled();
+      expect(mockClient.createTask).not.toHaveBeenCalled();
     });
   });
 
   describe('sendReminder', () => {
-    it('sends reminder for a valid upcoming appointment', async () => {
-      const tomorrow = new Date(
-        Date.now() + 24 * 60 * 60 * 1000
-      ).toISOString();
-      vi.mocked(mockClient.getAppointments).mockResolvedValue([
-        {
-          id: 'apt-remind',
-          title: 'Trial Class',
-          startTime: tomorrow,
-          endTime: new Date(
-            Date.now() + 25 * 60 * 60 * 1000
-          ).toISOString(),
-          contactId: 'contact-1',
-          status: 'scheduled',
-        },
-      ]);
-      vi.mocked(mockClient.getContact).mockResolvedValue({
-        id: 'contact-1',
+    it('sends reminder via GHL when legacy contact id exists', async () => {
+      vi.mocked(mockStore.findTrialById).mockResolvedValue({
+        id: 'trial-remind',
+        lead_id: LEAD_ID,
+        scheduled_date: '2026-06-10',
+        scheduled_time: '14:00:00',
+        status: 'scheduled',
+      });
+      vi.mocked(mockStore.getLeadContact).mockResolvedValue({
         name: 'Carlos',
+        ghl_contact_id: 'ghl-contact-carlos',
       });
       vi.mocked(mockClient.sendMessage).mockResolvedValue({
         id: 'msg-remind',
         status: 'sent',
       });
 
-      const ok = await service.sendReminder('apt-remind');
+      const ok = await service.sendReminder('trial-remind');
 
       expect(ok).toBe(true);
-      expect(mockClient.sendMessage).toHaveBeenCalledWith(
-        expect.objectContaining({
-          contactId: 'contact-1',
-          channel: 'sms',
-        })
-      );
+      expect(mockClient.sendMessage).toHaveBeenCalled();
     });
 
-    it('returns false when appointment not found', async () => {
-      vi.mocked(mockClient.getAppointments).mockResolvedValue([]);
-      const ok = await service.sendReminder('apt-nonexistent');
-      expect(ok).toBe(false);
-    });
-
-    it('returns false when appointment has no contactId', async () => {
-      vi.mocked(mockClient.getAppointments).mockResolvedValue([
-        {
-          id: 'apt-no-contact',
-          title: 'Trial Class',
-          startTime: new Date().toISOString(),
-          endTime: new Date().toISOString(),
-          status: 'scheduled',
-        },
-      ]);
-      const ok = await service.sendReminder('apt-no-contact');
-      expect(ok).toBe(false);
-    });
-
-    it('returns false when sendMessage fails', async () => {
-      const tomorrow = new Date(
-        Date.now() + 24 * 60 * 60 * 1000
-      ).toISOString();
-      vi.mocked(mockClient.getAppointments).mockResolvedValue([
-        {
-          id: 'apt-fail',
-          title: 'Trial Class',
-          startTime: tomorrow,
-          endTime: new Date(
-            Date.now() + 25 * 60 * 60 * 1000
-          ).toISOString(),
-          contactId: 'contact-1',
-          status: 'scheduled',
-        },
-      ]);
-      vi.mocked(mockClient.getContact).mockResolvedValue({
-        id: 'contact-1',
-        name: 'Ana',
+    it('queues manual followup when lead has no ghl_contact_id', async () => {
+      vi.mocked(mockStore.findTrialById).mockResolvedValue({
+        id: 'trial-manual',
+        lead_id: LEAD_ID,
+        scheduled_date: '2026-06-10',
+        scheduled_time: '14:00:00',
+        status: 'scheduled',
       });
-      vi.mocked(mockClient.sendMessage).mockRejectedValue(
-        new Error('GHL down')
-      );
+      vi.mocked(mockStore.getLeadContact).mockResolvedValue({
+        name: 'Laura',
+        ghl_contact_id: null,
+      });
+      vi.mocked(mockStore.createPendingFollowup).mockResolvedValue({ id: 'followup-2' });
 
-      const ok = await service.sendReminder('apt-fail');
+      const ok = await service.sendReminder('trial-manual');
+
       expect(ok).toBe(false);
+      expect(mockStore.createPendingFollowup).toHaveBeenCalled();
+      expect(mockClient.sendMessage).not.toHaveBeenCalled();
     });
   });
 
   describe('executeReminderCycle', () => {
-    it('sends reminders for all upcoming trial appointments', async () => {
-      const now = new Date();
-      const in6h = new Date(now.getTime() + 6 * 60 * 60 * 1000).toISOString();
-      const in12h = new Date(
-        now.getTime() + 12 * 60 * 60 * 1000
-      ).toISOString();
-
-      vi.mocked(mockClient.getAppointments).mockResolvedValue([
+    it('processes upcoming local trials', async () => {
+      vi.mocked(mockStore.listUpcomingTrials).mockResolvedValue([
         {
-          id: 'apt-1',
-          title: 'Trial Class — Maria',
-          startTime: in6h,
-          endTime: new Date(
-            now.getTime() + 7 * 60 * 60 * 1000
-          ).toISOString(),
-          contactId: 'contact-1',
-          status: 'scheduled',
-        },
-        {
-          id: 'apt-2',
-          title: 'Trial Class — Pedro',
-          startTime: in12h,
-          endTime: new Date(
-            now.getTime() + 13 * 60 * 60 * 1000
-          ).toISOString(),
-          contactId: 'contact-2',
+          id: 'trial-1',
+          lead_id: LEAD_ID,
+          scheduled_date: '2026-06-10',
+          scheduled_time: '14:00:00',
           status: 'scheduled',
         },
       ]);
-
-      vi.mocked(mockClient.getContact).mockResolvedValueOnce({
-        id: 'contact-1',
-        name: 'Maria',
+      vi.mocked(mockStore.findTrialById).mockResolvedValue({
+        id: 'trial-1',
+        lead_id: LEAD_ID,
+        scheduled_date: '2026-06-10',
+        scheduled_time: '14:00:00',
+        status: 'scheduled',
       });
-      vi.mocked(mockClient.getContact).mockResolvedValueOnce({
-        id: 'contact-2',
-        name: 'Pedro',
+      vi.mocked(mockStore.getLeadContact).mockResolvedValue({
+        name: 'Maria',
+        ghl_contact_id: 'ghl-1',
       });
       vi.mocked(mockClient.sendMessage).mockResolvedValue({
         id: 'msg-ok',
@@ -480,40 +259,9 @@ describe('TrialSchedulerService', () => {
 
       const result = await service.executeReminderCycle();
 
-      expect(result.reminded).toBe(2);
+      expect(result.reminded).toBe(1);
       expect(result.failed).toBe(0);
-    });
-
-    it('skips appointments that are not trial classes', async () => {
-      const now = new Date();
-      const in6h = new Date(now.getTime() + 6 * 60 * 60 * 1000).toISOString();
-
-      vi.mocked(mockClient.getAppointments).mockResolvedValue([
-        {
-          id: 'apt-non-trial',
-          title: 'Assessment',
-          startTime: in6h,
-          endTime: new Date(
-            now.getTime() + 7 * 60 * 60 * 1000
-          ).toISOString(),
-          contactId: 'contact-1',
-          status: 'scheduled',
-        },
-      ]);
-
-      const result = await service.executeReminderCycle();
-      expect(result.reminded).toBe(0);
-      expect(result.failed).toBe(0);
-    });
-
-    it('handles total API failure gracefully', async () => {
-      vi.mocked(mockClient.getAppointments).mockRejectedValue(
-        new Error('GHL completely down')
-      );
-
-      const result = await service.executeReminderCycle();
-      expect(result.reminded).toBe(0);
-      expect(result.failed).toBe(1);
+      expect(mockClient.getAppointments).not.toHaveBeenCalled();
     });
   });
 });

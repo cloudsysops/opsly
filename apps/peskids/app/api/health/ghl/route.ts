@@ -1,8 +1,20 @@
+/** LEGACY (GHL health probe): only meaningful when PESKIDS_GHL_ENABLED=true. */
+import { isPeskidsGhlEnabled } from '@intcloudsysops/services/twenty';
 import { GoHighLevelClient } from '../../../../../../lib/services/gohighlevel/client.js';
 import { resolveGoHighLevelPeskidsEnv } from '../../../../../../lib/services/gohighlevel/env-config.js';
 import { GhlHealthService } from '@/lib/monitoring/ghl-health.service';
 
 export async function GET(): Promise<Response> {
+  if (!isPeskidsGhlEnabled()) {
+    return Response.json(
+      {
+        status: 'disabled',
+        message: 'GHL legacy health check disabled (PESKIDS_GHL_ENABLED=false)',
+      },
+      { status: 200 }
+    );
+  }
+
   const env = resolveGoHighLevelPeskidsEnv();
 
   if (!env.apiKey || !env.locationId) {

@@ -1,5 +1,11 @@
 import type { GoHighLevelClient } from '@intcloudsysops/services/gohighlevel';
 import { resolveGoHighLevelPeskidsEnv } from '@intcloudsysops/services/gohighlevel';
+import { isPeskidsGhlEnabled } from '@intcloudsysops/services/twenty';
+import {
+  createSupabaseTrialSchedulingStore,
+  slotPartsFromIso,
+  type TrialSchedulingStore,
+} from '@/lib/agents/trial-scheduling-store';
 
 export const GOHIGHLEVEL_CALENDAR_API_VERSION = '2021-04-15';
 
@@ -9,9 +15,24 @@ export interface TrialSchedulingResult {
   calendarId?: string;
   slot?: { start: string; end: string };
   message?: string;
+  manualSchedulingRequired?: boolean;
 }
 
-export interface TrialSchedulerConfig {
+export interface TrialScheduleInput {
+  leadId: string;
+  parentName: string;
+  preferredDay?: string;
+  modality?: 'llanogrande' | 'domicilio';
+  /** Legacy GHL contact id — optional messaging channel only */
+  crmMessagingContactId?: string | null;
+}
+
+export interface TrialSchedulerDeps {
+  store?: TrialSchedulingStore;
+  ghlClient?: GoHighLevelClient | null;
+  tenantId?: string;
+  /** Opt-in legacy GHL Calendar API fallback when local slots are empty */
+  ghlCalendarEnabled?: boolean;
   trialCalendarName?: string;
   baseUrl?: string;
   calendarApiVersion?: string;
@@ -28,27 +49,37 @@ interface GhlCalendar {
 }
 
 /**
- * Schedules trial classes via GHL Calendar API.
- * Falls back to manual scheduling (task + message) when the Calendar API
- * cannot create appointments directly.
+ * Schedules trial classes from Peskids/Supabase first.
+ * GHL Calendar API is an optional fallback; GHL messaging only when a legacy contact id exists.
  */
 export class TrialSchedulerService {
+  private readonly store: TrialSchedulingStore;
+  private readonly ghlClient: GoHighLevelClient | null;
+  private readonly tenantId: string;
+  private readonly ghlCalendarEnabled: boolean;
   private apiKey: string;
   private baseUrl: string;
   private locationId: string;
   private calendarApiVersion: string;
   private trialCalendarName: string;
 
-  constructor(
-    private ghlClient: GoHighLevelClient,
-    config?: TrialSchedulerConfig
-  ) {
+  constructor(deps: TrialSchedulerDeps = {}) {
+    this.store = deps.store ?? createSupabaseTrialSchedulingStore();
+    this.ghlClient = deps.ghlClient ?? null;
+    this.tenantId = deps.tenantId ?? process.env.NEXT_PUBLIC_TENANT_ID ?? 'peskids';
+    this.ghlCalendarEnabled =
+      deps.ghlCalendarEnabled ?? (isPeskidsGhlEnabled() && Boolean(this.ghlClient));
+
     const env = resolveGoHighLevelPeskidsEnv();
     this.apiKey = env.apiKey;
     this.locationId = env.locationId;
-    this.baseUrl = (config?.baseUrl ?? env.baseUrl ?? 'https://services.leadconnectorhq.com').replace(/\/$/, '');
-    this.calendarApiVersion = config?.calendarApiVersion ?? GOHIGHLEVEL_CALENDAR_API_VERSION;
-    this.trialCalendarName = config?.trialCalendarName ?? 'Trial Class';
+    this.baseUrl = (deps.baseUrl ?? env.baseUrl ?? 'https://services.leadconnectorhq.com').replace(
+      /\/$/,
+      ''
+    );
+    this.calendarApiVersion =
+      deps.calendarApiVersion ?? GOHIGHLEVEL_CALENDAR_API_VERSION;
+    this.trialCalendarName = deps.trialCalendarName ?? 'Trial Class';
   }
 
   private async ghlCalendarFetch<T>(
@@ -78,6 +109,10 @@ export class TrialSchedulerService {
   }
 
   private async resolveTrialCalendarId(): Promise<string | undefined> {
+    if (!this.ghlCalendarEnabled || !this.ghlClient) {
+      return undefined;
+    }
+
     try {
       const response = await this.ghlCalendarFetch<{
         calendars?: GhlCalendar[];
@@ -93,42 +128,7 @@ export class TrialSchedulerService {
     }
   }
 
-  /**
-   * Returns the next 5 available trial class slots.
-   * 1. Tries GHL Calendar API free-slots endpoint.
-   * 2. Falls back to generated weekday slots (9am-5pm, 1-hour).
-   */
-  async findAvailableSlots(
-    calendarId?: string
-  ): Promise<Array<{ start: string; end: string }>> {
-    const resolvedId = calendarId ?? (await this.resolveTrialCalendarId());
-    if (resolvedId) {
-      try {
-        const now = new Date();
-        const startDate = now.toISOString().split('T')[0];
-        const endDate = new Date(
-          now.getTime() + 14 * 24 * 60 * 60 * 1000
-        ).toISOString().split('T')[0];
-
-        const response = await this.ghlCalendarFetch<{
-          freeSlots?: GhlFreeSlot[];
-        }>(
-          'GET',
-          `/calendars/${resolvedId}/free-slots?locationId=${encodeURIComponent(this.locationId)}&startDate=${startDate}&endDate=${endDate}`
-        );
-
-        if (response.ok) {
-          const slots = response.json.freeSlots ?? [];
-          if (slots.length > 0) return slots.slice(0, 5);
-        }
-      } catch {
-        // fall through to generated slots
-      }
-    }
-    return this.generateFallbackSlots();
-  }
-
-  private generateFallbackSlots(): Array<{ start: string; end: string }> {
+  private generateLocalSlots(): Array<{ start: string; end: string }> {
     const slots: Array<{ start: string; end: string }> = [];
     const now = new Date();
     const cursor = new Date(now);
@@ -138,10 +138,10 @@ export class TrialSchedulerService {
     }
     cursor.setHours(9, 0, 0, 0);
 
-    while (slots.length < 5) {
+    while (slots.length < 14) {
       const day = cursor.getDay();
       if (day !== 0 && day !== 6) {
-        for (let hour = 9; hour < 17 && slots.length < 5; hour++) {
+        for (let hour = 9; hour < 17 && slots.length < 14; hour++) {
           const start = new Date(cursor);
           start.setHours(hour, 0, 0, 0);
           const end = new Date(cursor);
@@ -160,66 +160,140 @@ export class TrialSchedulerService {
     return slots;
   }
 
-  /**
-   * Schedule a trial class for a given GHL contact.
-   * 1. Finds available slot (respects preferredDay if given).
-   * 2. Books via GHL appointments endpoint if available,
-   *    otherwise updates opportunity stage and creates a task.
-   * 3. Sends confirmation via GHL conversations (SMS/WhatsApp).
-   * 4. Creates follow-up task.
-   *
-   * Idempotent: checks for existing trial appointments before booking.
-   */
-  async scheduleTrial(
-    ghlContactId: string,
-    parentName: string,
-    preferredDay?: string
-  ): Promise<TrialSchedulingResult> {
+  private async filterSlotsByLocalCapacity(
+    slots: Array<{ start: string; end: string }>
+  ): Promise<Array<{ start: string; end: string }>> {
+    const capacity = await this.store.getDefaultCapacity(this.tenantId);
+    const available: Array<{ start: string; end: string }> = [];
+
+    for (const slot of slots) {
+      const { scheduledDate, scheduledTime } = slotPartsFromIso(slot.start);
+      const booked = await this.store.countTrialsAtSlot(
+        this.tenantId,
+        scheduledDate,
+        scheduledTime
+      );
+      if (booked < capacity) {
+        available.push(slot);
+      }
+      if (available.length >= 5) break;
+    }
+
+    return available;
+  }
+
+  private async findGhlCalendarSlots(
+    calendarId?: string
+  ): Promise<Array<{ start: string; end: string }>> {
+    const resolvedId = calendarId ?? (await this.resolveTrialCalendarId());
+    if (!resolvedId) return [];
+
     try {
-      const existing = await this.findExistingTrialAppointment(ghlContactId);
+      const now = new Date();
+      const startDate = now.toISOString().split('T')[0];
+      const endDate = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0];
+
+      const response = await this.ghlCalendarFetch<{
+        freeSlots?: GhlFreeSlot[];
+      }>(
+        'GET',
+        `/calendars/${resolvedId}/free-slots?locationId=${encodeURIComponent(this.locationId)}&startDate=${startDate}&endDate=${endDate}`
+      );
+
+      if (response.ok) {
+        return (response.json.freeSlots ?? []).slice(0, 5);
+      }
+    } catch {
+      return [];
+    }
+
+    return [];
+  }
+
+  /**
+   * Returns the next available trial slots from local Supabase capacity first.
+   * GHL Calendar API is only consulted when enabled and local capacity yields no slots.
+   */
+  async findAvailableSlots(calendarId?: string): Promise<Array<{ start: string; end: string }>> {
+    const local = await this.filterSlotsByLocalCapacity(this.generateLocalSlots());
+    if (local.length > 0) {
+      return local;
+    }
+
+    if (this.ghlCalendarEnabled) {
+      const ghlSlots = await this.findGhlCalendarSlots(calendarId);
+      if (ghlSlots.length > 0) {
+        return ghlSlots;
+      }
+    }
+
+    return [];
+  }
+
+  async scheduleTrial(input: TrialScheduleInput): Promise<TrialSchedulingResult> {
+    try {
+      const existing = await this.store.findScheduledTrialForLead(input.leadId, this.tenantId);
       if (existing) {
         return {
           scheduled: true,
           appointmentId: existing.id,
-          message: `Ya tienes una clase de prueba agendada para ${parentName}.`,
+          message: `Ya tienes una clase de prueba agendada para ${input.parentName}.`,
         };
       }
 
       const slots = await this.findAvailableSlots();
-      const slot = preferredDay
-        ? slots.find((s) => s.start.startsWith(preferredDay)) ?? slots[0]
+      const slot = input.preferredDay
+        ? slots.find((s) => s.start.startsWith(input.preferredDay ?? '')) ?? slots[0]
         : slots[0];
 
       if (!slot) {
+        await this.store.createPendingFollowup({
+          tenantId: this.tenantId,
+          leadId: input.leadId,
+          type: 'call',
+          notes:
+            `Agendamiento manual de clase de prueba requerido para ${input.parentName}. ` +
+            'No hay cupos locales disponibles en los próximos días.',
+        });
+
         return {
           scheduled: false,
+          manualSchedulingRequired: true,
           message:
-            'No hay horarios disponibles para clase de prueba en este momento.',
+            'No hay horarios automáticos disponibles. El equipo debe contactar a la familia para agendar manualmente.',
         };
       }
 
-      const appointment = await this.tryCreateAppointment(
-        ghlContactId,
-        slot,
-        parentName
-      );
+      const { scheduledDate, scheduledTime } = slotPartsFromIso(slot.start);
+      const trial = await this.store.createLocalTrial({
+        tenantId: this.tenantId,
+        leadId: input.leadId,
+        scheduledDate,
+        scheduledTime,
+        modality: input.modality ?? 'llanogrande',
+        notes: 'Agendado automáticamente desde TrialSchedulerService',
+      });
 
       const displayDate = this.formatDisplayDate(slot.start);
       const displayTime = this.formatDisplayTime(slot.start);
+      const crmContactId = input.crmMessagingContactId?.trim() || null;
 
-      await this.sendConfirmation(ghlContactId, parentName, displayDate, displayTime);
-
-      await this.createReminderTask(
-        ghlContactId,
-        parentName,
-        displayDate,
-        displayTime,
-        slot.start
-      );
+      if (crmContactId && this.ghlClient) {
+        await this.sendConfirmation(crmContactId, input.parentName, displayDate, displayTime);
+        await this.createReminderTask(
+          crmContactId,
+          input.parentName,
+          displayDate,
+          displayTime,
+          slot.start
+        );
+      }
 
       return {
         scheduled: true,
-        appointmentId: appointment?.id,
+        appointmentId: trial.id,
         slot,
         message: `Clase de prueba agendada para ${displayDate} a las ${displayTime}.`,
       };
@@ -231,52 +305,14 @@ export class TrialSchedulerService {
     }
   }
 
-  private async findExistingTrialAppointment(
-    contactId: string
-  ): Promise<{ id: string } | undefined> {
-    const appointments = await this.ghlClient.getAppointments(contactId);
-    const trial = appointments.find(
-      (a) =>
-        a.title?.toLowerCase().includes('trial') && a.status === 'scheduled'
-    );
-    return trial ? { id: trial.id } : undefined;
-  }
-
-  private async tryCreateAppointment(
-    contactId: string,
-    slot: { start: string; end: string },
-    parentName: string
-  ): Promise<{ id?: string } | undefined> {
-    try {
-      const path = this.baseUrl.includes('leadconnectorhq.com')
-        ? '/appointments/'
-        : '/v1/appointments';
-      const response = await this.ghlCalendarFetch<{
-        appointment?: { id: string };
-        data?: { id: string };
-      }>('POST', path, {
-        locationId: this.locationId,
-        contactId,
-        title: `Clase de Prueba — ${parentName}`,
-        startTime: slot.start,
-        endTime: slot.end,
-        status: 'scheduled',
-      });
-      if (response.ok) {
-        return response.json.appointment ?? response.json.data;
-      }
-    } catch {
-      // fall through — schedule manually
-    }
-    return undefined;
-  }
-
   private async sendConfirmation(
     contactId: string,
     parentName: string,
     date: string,
     time: string
   ): Promise<void> {
+    if (!this.ghlClient) return;
+
     const message = `Hola ${parentName}! Tu clase de prueba en Peskids ha sido agendada para el ${date} a las ${time}. Te esperamos!`;
     try {
       await this.ghlClient.sendMessage({
@@ -296,9 +332,9 @@ export class TrialSchedulerService {
     time: string,
     startIso: string
   ): Promise<void> {
-    const reminderDate = new Date(
-      new Date(startIso).getTime() - 24 * 60 * 60 * 1000
-    ).toISOString();
+    if (!this.ghlClient) return;
+
+    const reminderDate = new Date(new Date(startIso).getTime() - 24 * 60 * 60 * 1000).toISOString();
 
     await this.ghlClient.createTask({
       title: 'Recordatorio clase de prueba — 24h antes',
@@ -309,23 +345,34 @@ export class TrialSchedulerService {
     });
   }
 
-  /** Send 24h reminder for a given appointment. */
-  async sendReminder(appointmentId: string): Promise<boolean> {
+  /** Send 24h reminder for a local trial class id. */
+  async sendReminder(trialClassId: string): Promise<boolean> {
     try {
-      const appointments = await this.ghlClient.getAppointments();
-      const appointment = appointments.find((a) => a.id === appointmentId);
+      const appointment = await this.store.findTrialById(trialClassId, this.tenantId);
       if (!appointment) return false;
-      if (!appointment.contactId) return false;
 
-      const contact = await this.ghlClient.getContact(appointment.contactId);
-      const parentName = contact.name || contact.firstName || 'familia';
-      const date = this.formatDisplayDate(appointment.startTime);
-      const time = this.formatDisplayTime(appointment.startTime);
+      const lead = await this.store.getLeadContact(appointment.lead_id, this.tenantId);
+      if (!lead) return false;
 
+      const parentName = lead.name || 'familia';
+      const startIso = `${appointment.scheduled_date}T${appointment.scheduled_time}`;
+      const date = this.formatDisplayDate(startIso);
+      const time = this.formatDisplayTime(startIso);
       const message = `Recordatorio Peskids: ${parentName}, tu clase de prueba es mañana ${date} a las ${time}. Te esperamos!`;
 
+      const crmContactId = lead.ghl_contact_id?.trim() || null;
+      if (!crmContactId || !this.ghlClient) {
+        await this.store.createPendingFollowup({
+          tenantId: this.tenantId,
+          leadId: appointment.lead_id,
+          type: 'sms',
+          notes: `Recordatorio manual requerido: ${message}`,
+        });
+        return false;
+      }
+
       await this.ghlClient.sendMessage({
-        contactId: appointment.contactId,
+        contactId: crmContactId,
         message,
         channel: 'sms',
       });
@@ -335,24 +382,14 @@ export class TrialSchedulerService {
     }
   }
 
-  /** Process all upcoming trial appointments and send reminders. */
+  /** Process upcoming local trial classes and send reminders when possible. */
   async executeReminderCycle(): Promise<{ reminded: number; failed: number }> {
     const result = { reminded: 0, failed: 0 };
     try {
-      const appointments = await this.ghlClient.getAppointments();
-      const now = new Date();
-      const tomorrow = new Date(
-        now.getTime() + 24 * 60 * 60 * 1000
-      );
+      const upcoming = await this.store.listUpcomingTrials(this.tenantId, 24);
 
-      const upcomingTrials = appointments.filter((a) => {
-        if (!a.title?.toLowerCase().includes('trial')) return false;
-        const start = new Date(a.startTime);
-        return start > now && start <= tomorrow && a.status === 'scheduled';
-      });
-
-      for (const appointment of upcomingTrials) {
-        const ok = await this.sendReminder(appointment.id);
+      for (const trial of upcoming) {
+        const ok = await this.sendReminder(trial.id);
         if (ok) result.reminded++;
         else result.failed++;
       }

@@ -1,7 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const mockSearchOpportunities = vi.fn();
-const mockGetContacts = vi.fn();
+const {
+  mockSearchOpportunities,
+  mockGetContacts,
+  isPeskidsGhlEnabledMock,
+} = vi.hoisted(() => ({
+  mockSearchOpportunities: vi.fn(),
+  mockGetContacts: vi.fn(),
+  isPeskidsGhlEnabledMock: vi.fn(() => true),
+}));
+
+vi.mock('@intcloudsysops/services/twenty', () => ({
+  isPeskidsGhlEnabled: isPeskidsGhlEnabledMock,
+}));
 
 vi.mock('@intcloudsysops/services/gohighlevel', () => ({
   getGoHighLevelService: () => ({
@@ -50,6 +61,7 @@ describe('PipelineAnalyticsService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    isPeskidsGhlEnabledMock.mockReturnValue(true);
     service = new PipelineAnalyticsService();
 
     mockFrom.mockReturnValue({ select: mockSelect });
@@ -58,6 +70,16 @@ describe('PipelineAnalyticsService', () => {
   });
 
   describe('getPipelineMetrics', () => {
+    it('returns fallback when GHL legacy flag is disabled', async () => {
+      isPeskidsGhlEnabledMock.mockReturnValue(false);
+
+      const result = await service.getPipelineMetrics();
+
+      expect(result.ghlConfigured).toBe(false);
+      expect(result.ghlError).toContain('PESKIDS_GHL_ENABLED=false');
+      expect(mockSearchOpportunities).not.toHaveBeenCalled();
+    });
+
     it('returns fallback when GHL returns empty opportunities', async () => {
       mockSearchOpportunities.mockResolvedValue({ opportunities: [], total: 0 });
 

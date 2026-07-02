@@ -1,6 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { GoHighLevelClient, isGoHighLevelConfigured, resolveGoHighLevelEnv } from '@intcloudsysops/services/gohighlevel';
-import { findIcsoDiscoveryCalendar } from '@/lib/ghl-setup';
+import { syncLeadToCrm } from '@/lib/icso-crm-sync';
+import { resolveIcsoDiscoveryBookingUrl } from '@/lib/icso-discovery-link';
+import { persistIcsoLead } from '@/lib/icso-lead-store';
+import { isIcsoSupabaseConfigured } from '@/lib/supabase-server';
 
 export const runtime = 'nodejs';
 
@@ -13,17 +15,21 @@ interface IcsoLeadRequest {
 interface IcsoLeadResponse {
   success: boolean;
   contactId: string;
+  accountId: string;
+  dealId: string;
   message: string;
   calendarBookingUrl?: string | null;
+  twentyPersonId?: string;
+  twentyOpportunityId?: string;
+  /** Legacy GHL id when INTCLOUDSYSOPS_GHL_ENABLED=true */
+  ghlContactId?: string;
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    // Parse the request body
-    const body = await request.json() as IcsoLeadRequest;
+    const body = (await request.json()) as IcsoLeadRequest;
     const { name, email, message } = body;
 
-    // Validate required fields
     if (!name || !email || !message) {
       return NextResponse.json(
         { error: 'Missing required fields: name, email, message' },
@@ -31,65 +37,56 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Check if GHL is configured
-    if (!isGoHighLevelConfigured()) {
+    if (!isIcsoSupabaseConfigured()) {
       return NextResponse.json(
-        { error: 'GoHighLevel is not configured' },
+        { error: 'Supabase is not configured for ICSO lead persistence' },
         { status: 503 }
       );
     }
 
-    const ghlEnv = resolveGoHighLevelEnv();
-    const client = new GoHighLevelClient(ghlEnv.apiKey, ghlEnv.baseUrl, {
-      locationId: ghlEnv.locationId,
-      apiVersion: ghlEnv.apiVersion,
-    });
-
-    // Create contact in GHL
-    const contact = await client.createContact({
-      firstName: name.split(' ')[0],
-      lastName: name.split(' ').slice(1).join(' '),
+    const crmResult = await syncLeadToCrm({
+      name,
       email,
+      message,
       source: 'ICSO Website',
-      customFields: {
-        'Message': message,
-        'Source_Form': 'ICSO Contact Form',
-      },
     });
 
-    // Log successful lead creation
-    console.log(`[ICSO] Lead created: ${contact.id} (${email})`);
+    const persisted = await persistIcsoLead({
+      name,
+      email,
+      message,
+      sourceForm: 'ICSO Contact Form',
+      ghlContactId: crmResult.ghlContactId,
+      twentyPersonId: crmResult.twentyPersonId,
+      twentyOpportunityId: crmResult.twentyOpportunityId,
+    });
 
-    // Get calendar booking link if available
-    let calendarBookingUrl: string | null = null;
-    try {
-      const calendarId = await findIcsoDiscoveryCalendar();
-      if (calendarId) {
-        const locationId = ghlEnv.locationId;
-        // GHL calendar booking URL format: https://gohighlevel.com/calendar/{locationId}/{calendarId}
-        calendarBookingUrl = `https://app.gohighlevel.com/calendar/${locationId}/${calendarId}`;
-        console.log(`[ICSO] Calendar booking URL: ${calendarBookingUrl}`);
-      }
-    } catch (calendarError) {
-      console.warn('[ICSO] Failed to get calendar booking URL:', calendarError);
-      // Continue without calendar URL; it's not critical
-    }
+    console.log(
+      `[ICSO] Lead persisted: contact=${persisted.contactId} deal=${persisted.dealId} (${email})`
+    );
+
+    const calendarBookingUrl = await resolveIcsoDiscoveryBookingUrl();
 
     const response: IcsoLeadResponse = {
       success: true,
-      contactId: contact.id,
+      contactId: persisted.contactId,
+      accountId: persisted.accountId,
+      dealId: persisted.dealId,
       message: 'Lead submitted successfully',
       calendarBookingUrl,
+      ...(crmResult.twentyPersonId
+        ? { twentyPersonId: crmResult.twentyPersonId }
+        : {}),
+      ...(crmResult.twentyOpportunityId
+        ? { twentyOpportunityId: crmResult.twentyOpportunityId }
+        : {}),
+      ...(crmResult.ghlContactId ? { ghlContactId: crmResult.ghlContactId } : {}),
     };
 
     return NextResponse.json(response, { status: 201 });
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : 'Internal server error';
     console.error('[ICSO] Lead submission error:', error);
-    // TODO: Add Slack alert when shared alerting lib is available
-    return NextResponse.json(
-      { error: errorMsg },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMsg }, { status: 500 });
   }
 }

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# ICSO GoHighLevel Status & Setup Verification
-# Checks if ICSO has the required GHL resources for lead capture
+# LEGACY — ICSO GoHighLevel status (agency location).
+# Operational lead capture uses Twenty + Supabase; see docs/tenants/intcloudsysops/TWENTY-CRM.md
+# Requires INTCLOUDSYSOPS_GHL_ENABLED=true for app-sidecar; this script only audits GHL API resources.
 
 set -e
 
@@ -72,18 +73,19 @@ echo "Querying GHL API..."
 npx tsx /tmp/check-ghl.ts 2>/dev/null || true
 
 echo -e "\n${BLUE}3. ICSO Configuration Summary${NC}"
-echo "Contact Form Endpoint: /api/leads (POST)"
-echo "Source Tag: 'lead-web' (auto-applied)"
-echo "Target Pipeline: Opsly Agency Sales → New Lead"
-echo "Discovery Calendar: Available for scheduling"
+echo "Contact Form Endpoint: /api/leads (POST) — Supabase + Twenty primary"
+echo "Legacy GHL sidecar: INTCLOUDSYSOPS_GHL_ENABLED (default false)"
+echo "Source Tag: 'lead-web' (legacy GHL provisioning docs)"
+echo "Target Pipeline: Opsly Agency Sales → New Lead (legacy)"
+echo "Discovery Calendar: NEXT_PUBLIC_ICSO_DISCOVERY_BOOKING_URL or legacy GHL calendar"
 
 echo -e "\n${BLUE}4. Testing Lead Creation${NC}"
-echo "To test: POST /api/leads with { name, email, message }"
+echo "To test: POST /api/leads with { name, email, message } (requires Supabase env)"
 echo "Example: curl -X POST http://localhost:3015/api/leads \\"
 echo "  -H 'Content-Type: application/json' \\"
 echo "  -d '{\"name\":\"Test User\",\"email\":\"test@example.com\",\"message\":\"Test lead\"}'"
 
-echo -e "\n${GREEN}✓ ICSO GHL integration is ready${NC}"
+echo -e "\n${GREEN}✓ ICSO GHL legacy audit complete (not required for Twenty primary path)${NC}"
 
 # Cleanup
 rm -f /tmp/check-ghl.ts
