@@ -37,3 +37,7 @@
 ## 2026-06-26 - [Caching Admin Overview DB & Network Probes]
 **Learning:** The admin overview dashboardaggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
 **Action:** Always cache aggregated metrics and external probes in dashboard-facing API routes, and modularize parsing logic to maintain low cyclomatic complexity.
+
+## 2026-07-02 - [Preventing Query Filter Pollution in Parallel Supabase Calls]
+**Learning:** In the Supabase JS client, query builder instances (e.g., `client.from('tenants').select(...)`) are mutable. When triggering multiple parallel queries for a dashboard (like 11 queries in `getWebDashboardMetricsJson`), using a shared base query object can lead to accidental filter accumulation across requests. Using a factory function (e.g., `const q = () => client.from(...)`) ensures each query starts from a clean state.
+**Action:** Always use factory functions to instantiate fresh Supabase query builders when performing multiple independent or parallel queries within the same scope.

@@ -1,4 +1,9 @@
+import { CACHE_TTL } from './constants';
+import { logger } from './logger';
+import { getCache, setCache } from './redis-cache';
 import { getServiceClient } from './supabase';
+
+const CACHE_KEY = 'metrics:web_dashboard_json';
 
 /** Alineado a `apps/web/lib/stripe/plans` price_usd (MRR orientativo). */
 const PLAN_MRR_USD: Record<string, number> = {
@@ -33,76 +38,53 @@ function validateQueryResults(results: Array<{ error?: unknown }>): void {
   }
 }
 
+function buildTenantStatusQueries(client: ReturnType<typeof getServiceClient>): unknown[] {
+  const q = () =>
+    client
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null);
+  return [
+    q(),
+    q().eq('status', 'active'),
+    q().eq('status', 'suspended'),
+    q().eq('is_demo', true),
+    q().eq('status', 'failed'),
+  ];
+}
+
+function buildPlanQueries(client: ReturnType<typeof getServiceClient>): unknown[] {
+  const q = () => client.schema('platform').from('tenants').is('deleted_at', null);
+  return [
+    q().select('*', { count: 'exact', head: true }).eq('plan', 'startup'),
+    q().select('*', { count: 'exact', head: true }).eq('plan', 'business'),
+    q().select('*', { count: 'exact', head: true }).eq('plan', 'enterprise'),
+    q().select('plan, is_demo').eq('status', 'active'),
+  ];
+}
+
+function buildConversionQueries(
+  client: ReturnType<typeof getServiceClient>,
+  since: string
+): unknown[] {
+  const q = () =>
+    client
+      .schema('platform')
+      .from('conversion_events')
+      .select('*', { count: 'exact', head: true })
+      .gte('created_at', since);
+  return [q().eq('event', 'onboard_started'), q().eq('event', 'onboard_completed')];
+}
+
 function buildMetricsQueries(
   client: ReturnType<typeof getServiceClient>,
   since: string
 ): unknown[] {
   return [
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('status', 'active'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('status', 'suspended'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('is_demo', true),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('status', 'failed'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('plan', 'startup'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('plan', 'business'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('plan', 'enterprise'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('plan, is_demo')
-      .is('deleted_at', null)
-      .eq('status', 'active'),
-    client
-      .schema('platform')
-      .from('conversion_events')
-      .select('*', { count: 'exact', head: true })
-      .eq('event', 'onboard_started')
-      .gte('created_at', since),
-    client
-      .schema('platform')
-      .from('conversion_events')
-      .select('*', { count: 'exact', head: true })
-      .eq('event', 'onboard_completed')
-      .gte('created_at', since),
+    ...buildTenantStatusQueries(client),
+    ...buildPlanQueries(client),
+    ...buildConversionQueries(client, since),
   ];
 }
 
@@ -165,10 +147,30 @@ function buildDashboardMetrics(results: unknown[]): WebDashboardMetricsJson {
   return { tenants, plans, mrr, conversion };
 }
 
+/**
+ * Agregado de métricas para el dashboard de administración.
+ *
+ * BOLT OPTIMIZATION:
+ * 1. Utilizes existing Promise.all parallelization for 11 independent database queries.
+ * 2. Implements Redis caching (60s TTL) to minimize Supabase load for frequent dashboard reloads.
+ * 3. Modularizes query building to maintain low cyclomatic complexity.
+ */
 export async function getWebDashboardMetricsJson(): Promise<WebDashboardMetricsJson> {
+  const cached = await getCache<WebDashboardMetricsJson>(CACHE_KEY);
+  if (cached !== null) {
+    return cached;
+  }
+
   const client = getServiceClient();
   const since = daysAgoIso(30);
   const results = await fetchMetricsData(client, since);
   validateQueryResults(results as Array<{ error?: unknown }>);
-  return buildDashboardMetrics(results);
+  const metrics = buildDashboardMetrics(results);
+
+  // Background cache set to avoid blocking the response.
+  void setCache(CACHE_KEY, metrics, CACHE_TTL.SHORT).catch((err) => {
+    logger.error(`[metrics-web-dashboard-cache] failed to set ${CACHE_KEY}`, err);
+  });
+
+  return metrics;
 }
