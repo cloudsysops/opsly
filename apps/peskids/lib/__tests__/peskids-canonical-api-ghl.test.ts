@@ -1,21 +1,25 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-const sendLeadToGHLMock = vi.hoisted(() => vi.fn());
+const syncLeadToCrmMock = vi.hoisted(() => vi.fn());
 
-vi.mock('@/lib/gohighlevel-lead-sync', () => ({
-  sendLeadToGHL: sendLeadToGHLMock,
+vi.mock('@/lib/peskids-crm-sync', () => ({
+  syncLeadToCrm: syncLeadToCrmMock,
 }));
 
-import { postPeskidsLeadWithGHL } from '@/lib/peskids-canonical-api';
+import { postPeskidsLeadWithCRM } from '@/lib/peskids-canonical-api';
 
-describe('postPeskidsLeadWithGHL', () => {
+describe('postPeskidsLeadWithCRM', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
     vi.clearAllMocks();
   });
 
-  it('forwards ghl_contact_id when GHL sync succeeds', async () => {
-    sendLeadToGHLMock.mockResolvedValue({ ghlContactId: 'ghl-123' });
+  it('forwards CRM ids when sync succeeds', async () => {
+    syncLeadToCrmMock.mockResolvedValue({
+      ghlContactId: 'ghl-123',
+      twentyPersonId: 'person-1',
+      twentyOpportunityId: 'opp-1',
+    });
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(
         JSON.stringify({
@@ -28,7 +32,7 @@ describe('postPeskidsLeadWithGHL', () => {
     );
     vi.stubGlobal('fetch', fetchMock);
 
-    const result = await postPeskidsLeadWithGHL(
+    const result = await postPeskidsLeadWithCRM(
       {
         name: 'Parent Test',
         email: 'parent@example.com',
@@ -39,14 +43,16 @@ describe('postPeskidsLeadWithGHL', () => {
     );
 
     expect(result.ok).toBe(true);
-    expect(sendLeadToGHLMock).toHaveBeenCalledOnce();
+    expect(syncLeadToCrmMock).toHaveBeenCalledOnce();
     expect(fetchMock).toHaveBeenCalledOnce();
     const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body)) as Record<string, unknown>;
     expect(body.ghl_contact_id).toBe('ghl-123');
+    expect(body.twenty_person_id).toBe('person-1');
+    expect(body.twenty_opportunity_id).toBe('opp-1');
   });
 
-  it('still creates canonical lead when GHL sync returns null', async () => {
-    sendLeadToGHLMock.mockResolvedValue(null);
+  it('still creates canonical lead when CRM sync returns empty', async () => {
+    syncLeadToCrmMock.mockResolvedValue({});
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(
         JSON.stringify({
@@ -59,7 +65,7 @@ describe('postPeskidsLeadWithGHL', () => {
     );
     vi.stubGlobal('fetch', fetchMock);
 
-    const result = await postPeskidsLeadWithGHL(
+    const result = await postPeskidsLeadWithCRM(
       {
         name: 'Parent Test',
         email: 'parent@example.com',
@@ -71,5 +77,6 @@ describe('postPeskidsLeadWithGHL', () => {
     expect(result.ok).toBe(true);
     const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body)) as Record<string, unknown>;
     expect(body.ghl_contact_id).toBeUndefined();
+    expect(body.twenty_person_id).toBeUndefined();
   });
 });

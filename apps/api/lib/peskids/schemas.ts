@@ -39,6 +39,9 @@ export const peskidsLeadBodySchema = z.object({
   neighborhood: neighborhoodField,
   grade_interested: z.enum(PESKIDS_GRADE_VALUES),
   referral_source: z.enum(PESKIDS_REFERRAL_SOURCES).optional(),
+  ghl_contact_id: z.string().trim().min(1).max(120).optional(),
+  twenty_person_id: z.string().trim().min(1).max(120).optional(),
+  twenty_opportunity_id: z.string().trim().min(1).max(120).optional(),
 });
 
 export const peskidsFeedbackBodySchema = z.object({

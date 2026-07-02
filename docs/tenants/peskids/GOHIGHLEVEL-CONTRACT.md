@@ -1,9 +1,12 @@
 ---
-status: draft
+status: deprecated
 owner: operations
-last_review: 2026-06-01
+last_review: 2026-06-09
 tenant_slug: peskids
 ---
+
+> **Deprecado (2026-06-09):** Peskids migra a **Twenty CRM** (open source, self-hosted).  
+> Runbook activo: [`TWENTY-CRM.md`](TWENTY-CRM.md). GHL sidecar desactivado por defecto (`PESKIDS_GHL_ENABLED=false`).
 
 # Peskids GoHighLevel Contract
 

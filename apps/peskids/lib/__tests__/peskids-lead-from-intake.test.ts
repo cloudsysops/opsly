@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const postPeskidsLeadWithGHLMock = vi.fn();
+const postPeskidsLeadWithCRMMock = vi.fn();
 
 vi.mock('@/lib/peskids-canonical-api', () => ({
-  postPeskidsLeadWithGHL: postPeskidsLeadWithGHLMock,
+  postPeskidsLeadWithCRM: postPeskidsLeadWithCRMMock,
 }));
 
 describe('submitLeadFromIntake', () => {
   beforeEach(() => {
-    postPeskidsLeadWithGHLMock.mockReset();
+    postPeskidsLeadWithCRMMock.mockReset();
   });
 
   it('returns false when required intake fields are missing', async () => {
@@ -20,11 +20,11 @@ describe('submitLeadFromIntake', () => {
         email: 'ana@example.com',
       })
     ).resolves.toEqual({ ok: false });
-    expect(postPeskidsLeadWithGHLMock).not.toHaveBeenCalled();
+    expect(postPeskidsLeadWithCRMMock).not.toHaveBeenCalled();
   });
 
   it('uses the canonical lead API for complete intake profiles', async () => {
-    postPeskidsLeadWithGHLMock.mockResolvedValue({
+    postPeskidsLeadWithCRMMock.mockResolvedValue({
       ok: true,
       leadId: 'lead-intake-1',
       tenantSlug: 'peskids',
@@ -43,7 +43,7 @@ describe('submitLeadFromIntake', () => {
     });
 
     expect(result).toEqual({ ok: true });
-    expect(postPeskidsLeadWithGHLMock).toHaveBeenCalledWith(
+    expect(postPeskidsLeadWithCRMMock).toHaveBeenCalledWith(
       {
         name: 'Ana Restrepo',
         email: 'ana@example.com',
@@ -58,7 +58,7 @@ describe('submitLeadFromIntake', () => {
   });
 
   it('returns false when canonical API rejects the lead', async () => {
-    postPeskidsLeadWithGHLMock.mockResolvedValue({
+    postPeskidsLeadWithCRMMock.mockResolvedValue({
       ok: false,
       status: 502,
       error: 'Lead service unavailable',
