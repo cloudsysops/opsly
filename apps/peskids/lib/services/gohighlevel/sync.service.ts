@@ -1,4 +1,5 @@
-/** LEGACY (GHL webhook): bidirectional contact sync — retire after Twenty import stable. */
+/** @deprecated LEGACY (GHL webhook): bidirectional contact sync — retire after Twenty import stable. */
+import { isPeskidsGhlEnabled } from '@intcloudsysops/services/twenty';
 import { supabaseServer } from '@/lib/supabase';
 import type { Database } from '@/lib/types';
 import { resolveGoHighLevelPeskidsEnv, GoHighLevelClient } from '@intcloudsysops/services/gohighlevel';
@@ -12,6 +13,9 @@ export interface GhlLocalEntity {
 
 export class GhlSyncService {
   private getClient(): GoHighLevelClient {
+    if (!isPeskidsGhlEnabled()) {
+      throw new Error('GHL legacy sync disabled (PESKIDS_GHL_ENABLED=false)');
+    }
     const env = resolveGoHighLevelPeskidsEnv();
     if (!env.apiKey) {
       throw new Error('GOHIGHLEVEL_PESKIDS_API_KEY not configured');

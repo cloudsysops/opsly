@@ -1,4 +1,4 @@
-/** LEGACY (GHL webhook): maps GHL pipeline stages → public.leads.status. */
+/** @deprecated LEGACY (GHL): maps GHL pipeline stages → public.leads.status. */
 import {
   resolveGoHighLevelPeskidsEnv,
 } from '@intcloudsysops/services/gohighlevel';

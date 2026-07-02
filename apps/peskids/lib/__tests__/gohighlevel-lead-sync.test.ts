@@ -1,9 +1,15 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-const { createContactMock, resolveEnvMock, GoHighLevelClientMock } = vi.hoisted(() => ({
-  createContactMock: vi.fn(),
-  resolveEnvMock: vi.fn(),
-  GoHighLevelClientMock: vi.fn(),
+const { createContactMock, resolveEnvMock, GoHighLevelClientMock, isPeskidsGhlEnabledMock } =
+  vi.hoisted(() => ({
+    createContactMock: vi.fn(),
+    resolveEnvMock: vi.fn(),
+    GoHighLevelClientMock: vi.fn(),
+    isPeskidsGhlEnabledMock: vi.fn(),
+  }));
+
+vi.mock('@intcloudsysops/services/twenty', () => ({
+  isPeskidsGhlEnabled: isPeskidsGhlEnabledMock,
 }));
 
 vi.mock('@intcloudsysops/services/gohighlevel', () => ({
@@ -16,6 +22,19 @@ import { sendLeadToGHL } from '../gohighlevel-lead-sync';
 describe('sendLeadToGHL', () => {
   afterEach(() => {
     vi.clearAllMocks();
+    isPeskidsGhlEnabledMock.mockReturnValue(true);
+  });
+
+  it('returns null when PESKIDS_GHL_ENABLED=false', async () => {
+    isPeskidsGhlEnabledMock.mockReturnValue(false);
+
+    const result = await sendLeadToGHL({
+      parentName: 'Parent Test',
+      email: 'parent@example.com',
+    });
+
+    expect(result).toBeNull();
+    expect(GoHighLevelClientMock).not.toHaveBeenCalled();
   });
 
   it('passes custom field map to createContact when grade is present', async () => {

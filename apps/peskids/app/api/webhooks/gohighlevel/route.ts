@@ -1,9 +1,11 @@
 /**
  * LEGACY (GHL compatibility): inbound webhook for pipeline/contact sync only.
  * Do not add new product flows here — use Twenty CRM + Supabase operational paths.
+ * Requires PESKIDS_GHL_ENABLED=true (opt-in rollback/import).
  * See docs/tenants/peskids/TWENTY-CRM.md § Superficies GHL legacy.
  */
 import { NextRequest, NextResponse } from 'next/server';
+import { isPeskidsGhlEnabled } from '@intcloudsysops/services/twenty';
 import {
   verifyGhlWebhookSignature,
   extractGhlEventType,
@@ -21,6 +23,15 @@ const GHL_WEBHOOK_SECRET =
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const requestId = request.headers.get('x-request-id') ?? crypto.randomUUID();
+
+  if (!isPeskidsGhlEnabled()) {
+    return NextResponse.json({
+      ok: true,
+      status: 'disabled',
+      message: 'GHL legacy webhook disabled (PESKIDS_GHL_ENABLED=false)',
+      request_id: requestId,
+    });
+  }
 
   try {
     const signature = request.headers.get('x-ghl-signature') ?? '';

@@ -8,18 +8,6 @@ tenant_slug: peskids
 > **Deprecado (2026-06-09):** Peskids migra a **Twenty CRM** (open source, self-hosted).  
 > Runbook activo: [`TWENTY-CRM.md`](TWENTY-CRM.md). GHL sidecar desactivado por defecto (`PESKIDS_GHL_ENABLED=false`).
 
-## Superficies GHL que siguen activas (solo compatibilidad)
-
-| Superficie | Propósito | Reemplazo objetivo |
-|------------|-----------|-------------------|
-| `POST /api/webhooks/gohighlevel` | Eventos pipeline/contacto entrantes | Twenty webhooks / sync manual post-import |
-| `lib/services/gohighlevel/*` | Handlers webhook + pipeline + sync | Twenty + `public.leads` |
-| `lib/gohighlevel-lead-sync.ts` | Dual-write contacto al crear lead | `syncLeadToCrm()` → Twenty |
-| `lib/gohighlevel-thread-client.ts` | SMS/WhatsApp/tasks con `ghl_contact_id` | WhatsApp/Jelou + `public.followups` |
-| `LeadFollowupService` / `TrialSchedulerService` | Mensajería opcional si hay `ghl_contact_id` | n8n + followups locales (ya operativo en repo) |
-
-**No añadir nuevos flujos que dependan de GHL.** Los agentes comerciales ya leen `public.leads` y escriben `public.followups` / `public.trial_classes` en Supabase.
-
 # Peskids GoHighLevel Contract
 
 Punto de entrada mínimo para el primer slice comercial:
@@ -83,9 +71,15 @@ Reportes: `docs/artifacts/provisioning/provision-report-peskids.{json,md}`
 
 Tras cambiar secretos en Doppler, refrescar API en VPS: `./scripts/vps-refresh-api-env.sh`
 
-## Webhook
+## Webhook (legacy)
 
-**Endpoint**
+**Endpoint app Peskids (self-hosted):**
+
+`POST /api/webhooks/gohighlevel`
+
+Requiere `PESKIDS_GHL_ENABLED=true`. Con el flag en `false` (default), responde `200` con `{ status: "disabled" }` sin procesar eventos.
+
+**Endpoint histórico Opsly API (documentación anterior):**
 
 `POST /api/public/tenants/peskids/webhooks/gohighlevel/leads`
 

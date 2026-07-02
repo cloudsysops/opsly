@@ -140,73 +140,15 @@ curl -sfk -X POST "https://peskids.op-sly.com/api/leads" \
   -d '{"name":"Test Lead","email":"test@example.com","grade_interested":"K-5","consent_treatment":true}'
 
 # Respuesta incluye twenty_person_id cuando Twenty está configurado
-
-# Smoke Twenty (no exige IDs salvo TWENTY_SMOKE_EXPECT_IDS=true)
-./scripts/peskids/twenty-crm-smoke.sh --base-url "https://peskids.op-sly.com"
 ```
 
 Tests unitarios:
 
 ```bash
-npm run test --workspace=@intcloudsysops/services -- twenty
-npm run test --workspace=peskids -- lead-followup trial-scheduler pipeline-manager pipeline-rules
+npm run test --workspace=peskids -- twenty
+npm run test --workspace=peskids -- leads pipeline gohighlevel
 npm run type-check --workspace=peskids
 ```
-
-## Checklist cutover — apagado GoHighLevel
-
-Ejecutar en orden tras merge de `feat/peskids-twenty-crm` y smoke verde en staging.
-
-### Pre-requisitos (repo + VPS)
-
-| # | Verificación | Comando / evidencia |
-|---|----------------|---------------------|
-| 1 | Migración `0082` aplicada en Supabase | `npx supabase db push --dry-run` → incluye `twenty_person_id` / `twenty_opportunity_id` |
-| 2 | Compose Twenty en repo | `infra/docker-compose.twenty.yml` |
-| 3 | Script instalación | `./scripts/tenants/setup-twenty-peskids.sh --dry-run` |
-| 4 | Secretos Twenty generados | `./scripts/tenants/generate-twenty-secrets.sh` (solo local; no commitear) |
-| 5 | Agentes locales (sin GHL operativo) | follow-up, trial scheduler y pipeline leen `public.leads` / `trial_classes` |
-
-### Doppler (`ops-intcloudsysops/prd`)
-
-| Variable | Valor cutover |
-|----------|----------------|
-| `TWENTY_API_URL` | `https://crm-peskids.op-sly.com` (o URL real) |
-| `TWENTY_API_KEY` | Bearer desde Twenty Settings |
-| `PESKIDS_TWENTY_ENABLED` | `true` |
-| `PESKIDS_GHL_ENABLED` | `false` |
-| `TWENTY_SERVER_URL` | Misma base que API pública Twenty |
-
-Opcional durante dual-write temporal: `PESKIDS_GHL_ENABLED=true` — **no** usar para nuevos flujos; solo import histórico.
-
-### Despliegue humano (VPS)
-
-1. `cd /opt/opsly && git pull --ff-only` (rama mergeada)
-2. `./scripts/vps-bootstrap.sh` — regenerar `.env`
-3. `./scripts/tenants/setup-twenty-peskids.sh`
-4. DNS `crm-peskids.op-sly.com` → proxy ON
-5. Twenty UI: workspace admin + API key + stages de oportunidad alineados a tabla pipeline arriba
-6. `docker compose … pull && up -d peskids app` (según runbook deploy)
-7. `./scripts/peskids/twenty-crm-smoke.sh`
-8. Crear lead de prueba → confirmar `twenty_person_id` en respuesta y fila en `platform.peskids_leads`
-
-### Apagado GHL (final)
-
-| # | Acción |
-|---|--------|
-| 1 | Export CSV contactos GHL (archivo fuera del repo) |
-| 2 | Import People en Twenty |
-| 3 | Desactivar webhooks GHL → `apps/peskids/app/api/webhooks/gohighlevel` (ver [`GOHIGHLEVEL-CONTRACT.md`](GOHIGHLEVEL-CONTRACT.md)) |
-| 4 | Confirmar `PESKIDS_GHL_ENABLED=false` en Doppler prd |
-| 5 | Redeploy Peskids; verificar que agentes no llaman `getContacts` / calendar GHL |
-| 6 | Cancelar suscripción GHL tras periodo de gracia |
-
-### Criterio de done (migración código)
-
-- Lead capture → Supabase + Twenty (GHL opcional legacy)
-- Follow-up, trial booking y pipeline avanzan con datos locales
-- GHL limitado a webhooks/sync legacy documentados
-- Este checklist completado en ops antes de cancelar GHL
 
 ## Enlaces
 

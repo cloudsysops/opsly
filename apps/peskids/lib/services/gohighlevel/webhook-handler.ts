@@ -1,4 +1,5 @@
-/** LEGACY (GHL webhook): contact.created / contact.updated handlers. */
+/** @deprecated LEGACY (GHL webhook): contact.created / contact.updated handlers. */
+import { isPeskidsGhlEnabled } from '@intcloudsysops/services/twenty';
 import { supabaseServer } from '@/lib/supabase';
 import { emitEvent } from '@/lib/events';
 import type { Database, Json } from '@/lib/types';
@@ -92,6 +93,8 @@ async function logWebhookReceipt(
 export async function handlePipelineStageUpdate(
   payload: PipelineEvent
 ): Promise<void> {
+  if (!isPeskidsGhlEnabled()) return;
+
   const contactId =
     coalesceId(payload, 'contact_id', 'contactId') ?? '';
   const stageName = coalesceStage(
@@ -176,6 +179,8 @@ export async function handlePipelineStageUpdate(
 export async function handleContactCreated(
   payload: ContactEvent
 ): Promise<void> {
+  if (!isPeskidsGhlEnabled()) return;
+
   const contactId =
     coalesceId(payload, 'contact_id', 'contactId') ?? '';
   if (!contactId) {
@@ -249,6 +254,8 @@ export async function handleContactCreated(
 export async function handleContactUpdated(
   payload: ContactEvent
 ): Promise<void> {
+  if (!isPeskidsGhlEnabled()) return;
+
   const contactId =
     coalesceId(payload, 'contact_id', 'contactId') ?? '';
   if (!contactId) {
