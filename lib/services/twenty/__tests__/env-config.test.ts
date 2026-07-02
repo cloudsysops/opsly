@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
+  isIntcloudsysopsGhlEnabled,
+  isIntcloudsysopsTwentyConfigured,
   isPeskidsGhlEnabled,
   isTwentyConfigured,
   resolveTwentyEnv,
+  resolveTwentyEnvForIntcloudsysops,
 } from '../env-config.js';
 
 describe('resolveTwentyEnv', () => {
@@ -47,5 +50,41 @@ describe('isPeskidsGhlEnabled', () => {
 
   it('requires explicit opt-in', () => {
     expect(isPeskidsGhlEnabled({ PESKIDS_GHL_ENABLED: 'true' })).toBe(true);
+  });
+});
+
+describe('resolveTwentyEnvForIntcloudsysops', () => {
+  it('prefers tenant-specific env vars', () => {
+    const config = resolveTwentyEnvForIntcloudsysops({
+      TWENTY_INTCLOUDSYSOPS_API_URL: 'https://crm-icso.op-sly.com',
+      TWENTY_INTCLOUDSYSOPS_API_KEY: 'icso-key',
+    });
+    expect(config.baseUrl).toBe('https://crm-icso.op-sly.com');
+    expect(config.apiKey).toBe('icso-key');
+    expect(isIntcloudsysopsTwentyConfigured({
+      TWENTY_INTCLOUDSYSOPS_API_URL: 'https://crm-icso.op-sly.com',
+      TWENTY_INTCLOUDSYSOPS_API_KEY: 'icso-key',
+    })).toBe(true);
+  });
+
+  it('respects INTCLOUDSYSOPS_TWENTY_ENABLED=false', () => {
+    expect(
+      isIntcloudsysopsTwentyConfigured({
+        TWENTY_API_URL: 'https://crm.op-sly.com',
+        TWENTY_API_KEY: 'key',
+        INTCLOUDSYSOPS_TWENTY_ENABLED: 'false',
+      })
+    ).toBe(false);
+  });
+});
+
+describe('isIntcloudsysopsGhlEnabled', () => {
+  it('defaults to false', () => {
+    expect(isIntcloudsysopsGhlEnabled({})).toBe(false);
+    expect(isIntcloudsysopsGhlEnabled({ GOHIGHLEVEL_API_KEY: 'pit-test' })).toBe(false);
+  });
+
+  it('requires explicit opt-in', () => {
+    expect(isIntcloudsysopsGhlEnabled({ INTCLOUDSYSOPS_GHL_ENABLED: 'true' })).toBe(true);
   });
 });
