@@ -36,6 +36,7 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/package-lock.json ./package-lock.json
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages/types ./packages/types
+COPY --from=builder /app/lib/prompt-guard ./lib/prompt-guard
 COPY --from=builder /app/apps/llm-gateway ./apps/llm-gateway
 
 WORKDIR /app/apps/llm-gateway
