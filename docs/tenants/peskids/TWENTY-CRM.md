@@ -134,12 +134,11 @@ Ver `.n8n/1-workflows/crm/` y `docs/n8n-workflows/crm/README.md`.
 ## Verificación
 
 ```bash
-# Lead capture (requiere form o curl con consent)
-curl -sfk -X POST "https://peskids.op-sly.com/api/leads" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Test Lead","email":"test@example.com","grade_interested":"K-5","consent_treatment":true}'
+# Lead capture smoke (no exige Twenty IDs hasta que CRM esté configurado)
+./scripts/peskids/twenty-crm-smoke.sh
 
-# Respuesta incluye twenty_person_id cuando Twenty está configurado
+# Con Twenty configurado en prod:
+TWENTY_SMOKE_EXPECT_IDS=true ./scripts/peskids/twenty-crm-smoke.sh
 ```
 
 Tests unitarios:
