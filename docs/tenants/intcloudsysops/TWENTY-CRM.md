@@ -63,6 +63,17 @@ doppler secrets set INTCLOUDSYSOPS_GHL_ENABLED="false" --project ops-intcloudsys
 - [ ] n8n follow-up workflow usa `intcloudsysops_followups` (no GHL tasks)
 - [ ] Cancelar suscripción GHL agencia tras ventana de observación
 
+## Scripts legacy (GHL agencia — no borrar hasta cutover)
+
+| Script | Uso |
+|--------|-----|
+| `./scripts/ghl-provision-intcloudsysops.sh` | Provision tags/forms/calendar en GHL |
+| `./scripts/icso-ghl-status.sh` | Auditoría recursos GHL (legacy) |
+| `./scripts/ghl-configure-pipelines.sh --customer icso` | Pipelines GHL |
+| `./scripts/ghl-scope-smoke.sh --tenant intcloudsysops` | Smoke token/scopes |
+
+Código app legacy: `apps/icso/lib/ghl-setup.ts`, `apps/icso/lib/gohighlevel-lead-sync.ts`.
+
 ## Referencias
 
 - Legacy GHL: [`GOHIGHLEVEL-CONTRACT.md`](GOHIGHLEVEL-CONTRACT.md)
