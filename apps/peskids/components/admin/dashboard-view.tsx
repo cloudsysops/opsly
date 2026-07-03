@@ -13,8 +13,10 @@ import {
 } from 'lucide-react'
 import type { DashboardData } from '@/lib/types'
 import { AdminShell } from '@/components/admin/admin-shell'
+import { FamiliesStudentsExpectation } from '@/components/admin/families-students-expectation'
 import { MessageInboxPanel } from '@/components/admin/message-inbox-panel'
 import { StatCard } from '@/components/admin/stat-card'
+import { StudentsPanel } from '@/components/admin/students-panel'
 import { classModalityLabel } from '@/lib/lead-modality'
 import { buildPeskidsReferralLink } from '@/lib/peskids-referral-links'
 import { Badge } from '@/components/ui/badge'
@@ -368,6 +370,9 @@ export function DashboardView({
           </div>
         </div>
       </section>
+
+      <FamiliesStudentsExpectation activeStudentsCount={data.active_students_count} />
+      <StudentsPanel />
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
         <StatCard
