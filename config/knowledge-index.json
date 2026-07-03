@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/Users/dragon/cboteros/proyectos/intcloudsysops",
-  "generated_at": "2026-07-02T23:01:53.524Z",
+  "generated_at": "2026-07-02T23:59:48.170Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -88772,7 +88772,7 @@
         "site",
         "vps"
       ],
-      "size_bytes": 849
+      "size_bytes": 1332
     },
     {
       "path": "apps/index.md",
@@ -110267,6 +110267,7 @@
       "keywords": [
         "agencia",
         "agency",
+        "apagado",
         "api",
         "auto",
         "checklist",
@@ -110274,6 +110275,7 @@
         "contract",
         "criterio",
         "doppler",
+        "ghl",
         "gohighlevel",
         "hecho",
         "intcloudsysops",
@@ -110283,6 +110285,7 @@
         "markdown",
         "mvp",
         "only",
+        "operativo",
         "opsly",
         "post",
         "prd",
@@ -110294,7 +110297,7 @@
         "stack",
         "token"
       ],
-      "size_bytes": 3365
+      "size_bytes": 4116
     },
     {
       "path": "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
@@ -110362,6 +110365,38 @@
         "twenty"
       ],
       "size_bytes": 2127
+    },
+    {
+      "path": "docs/tenants/intcloudsysops/TWENTY-CRM.md",
+      "title": "Intcloudsysops (ICSO) — Twenty CRM",
+      "keywords": [
+        "2026",
+        "agencia",
+        "apagado",
+        "arquitectura",
+        "borrar",
+        "checklist",
+        "crm",
+        "cutover",
+        "doppler",
+        "estado",
+        "ghl",
+        "hasta",
+        "icso",
+        "intcloudsysops",
+        "legacy",
+        "markdown",
+        "objetivo",
+        "ops",
+        "opsly",
+        "prd",
+        "referencias",
+        "repo",
+        "scripts",
+        "twenty",
+        "variables"
+      ],
+      "size_bytes": 3060
     },
     {
       "path": "docs/tenants/intcloudsysops/WACRM-OFFERING.md",
@@ -111604,6 +111639,7 @@
         "gohighlevel",
         "handoff",
         "integration",
+        "legacy",
         "markdown",
         "model",
         "opsly",
@@ -111616,7 +111652,7 @@
         "stages",
         "webhook"
       ],
-      "size_bytes": 4891
+      "size_bytes": 5161
     },
     {
       "path": "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md",
@@ -173633,6 +173669,7 @@
       "docs/04-infrastructure/INCIDENT-2026-04-11-DISCO-LLENO.md",
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
@@ -177322,6 +177359,7 @@
       "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md",
@@ -181969,6 +182007,7 @@
       "docs/runbooks/PRODUCTION-DEPLOY.md",
       "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
       "docs/qa/TESTER-CHECKLIST.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/onboarding-prompts/DEPLOYMENT-VALIDATION.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
       "docs/tenants/peskids/ARCHITECTURE.md",
@@ -182140,6 +182179,7 @@
       "docs/04-infrastructure/RUNBOOK-AI-LOCAL-FIRST.md",
       "docs/04-infrastructure/DECEPTICON-WORKER.md",
       "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
+      "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/peskids/OPS-RUNBOOK.md",
       "docs/01-development/HOSTS-PATHS.md",
       "docs/01-development/SPRINT-TRACKER.md",
@@ -182691,6 +182731,7 @@
       "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md",
@@ -193337,6 +193378,7 @@
       "docs/blueprints/GO-LIVE-COMMAND.md",
       "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
       "docs/04-infrastructure/VERTEX-AI-SETUP.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/peskids/OPS-RUNBOOK.md",
       "docs/tenants/peskids/DOPPLER-SETUP.md",
       "docs/tenants/peskids/TWENTY-CRM.md",
@@ -200918,6 +200960,7 @@
       "docs/qa/TESTER-CHECKLIST.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/onboarding-prompts/INFRASTRUCTURE-SETUP.md",
@@ -201239,6 +201282,7 @@
       "docs/04-infrastructure/DECEPTICON-WORKER.md",
       "docs/runbooks/frontend-audit.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/peskids/OPS-RUNBOOK.md",
       "docs/tenants/peskids/TENANT_PESKIDS.md",
       "docs/tenants/peskids/README.md",
@@ -201818,6 +201862,7 @@
       "docs/runbooks/SUBCLIENT-ONBOARDING-TEMPLATE.md",
       "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/legalvial/LEGALVIAL-ARCHITECTURE-DECISION.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
       "docs/tenants/peskids/CHATBOX-N8N.md",
@@ -217479,6 +217524,7 @@
       "docs/blueprints/PESKIDS-ICSO-CUTOVER-STATUS.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
       "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/peskids/OPS-RUNBOOK.md",
       "docs/tenants/peskids/TWENTY-CRM.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
@@ -225240,6 +225286,7 @@
       "docs/runbooks/PRODUCTION-DEPLOY.md",
       "docs/runbooks/IDE-OCTOPUS-AGENTS.md",
       "docs/tenants/intcloudsysops/DEPLOYMENT.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
       "docs/tenants/peskids/WORKFLOWS.md",
       "docs/tenants/peskids/CHATBOX-N8N.md",
@@ -225758,6 +225805,7 @@
       "docs/blueprints/GO-LIVE-COMMAND.md",
       "docs/04-infrastructure/WORKER-TESTING.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/00-architecture/REPO-MAP.md",
       "docs/01-development/PHASE2-ROADMAP.md",
@@ -248625,6 +248673,7 @@
       "docs/runbooks/CORTEX-OBSERVATION-WINDOW.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
       "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
@@ -248711,6 +248760,7 @@
       "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/peskids/DOPPLER-SETUP.md",
@@ -248858,6 +248908,7 @@
       "docs/04-infrastructure/VERTEX-AI-SETUP.md",
       "docs/04-infrastructure/OLLAMA-DEPLOYMENT.md",
       "docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/peskids/WHATSAPP-CHANNEL.md",
       "docs/tenants/peskids/DOPPLER-SETUP.md",
@@ -253219,6 +253270,7 @@
       "docs/runbooks/dev.md",
       "docs/runbooks/INCIDENT-AUTONOMOUS-AGENT.md",
       "docs/runbooks/SECRET-ROTATION-AFTER-EXPOSURE.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/peskids/WACRM-TWENTY-CUTOVER.md",
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md",
@@ -260297,6 +260349,7 @@
       "docs/04-infrastructure/SECURITY_CHECKLIST.md",
       "docs/04-infrastructure/FAILOVER-GCP-ARCHITECTURE.md",
       "docs/runbooks/PRODUCTION-DEPLOY.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/peskids/ARCHITECTURE.md",
       "docs/tenants/peskids/CLASSES-SYSTEM-SPEC.md",
       "docs/tenants/peskids/TWENTY-CRM.md",
@@ -262884,6 +262937,8 @@
       "docs/blueprints/PESKIDS-ICSO-CUTOVER-STATUS.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
+      "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/peskids/GHL-CONSULTING-HANDOFF.md",
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
@@ -275975,6 +276030,8 @@
       "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md",
       "docs/audits/LINT-RULES-GUIDE.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
+      "docs/tenants/peskids/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/production/TENANT-PRODUCTION-BASELINE.md",
       "docs/history/governance/openclaw-root-legacy.md",
       "docs/01-development/API-CORE-PORTFOLIO.md",
@@ -279169,6 +279226,7 @@
       "docs/tenants/intcloudsysops/WHATSAPP-FIRST-PACKAGE.md",
       "docs/tenants/intcloudsysops/WACRM-OFFERING.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/examples/email-templates/INTCLOUDSYSOPS-EMAIL-TEMPLATES.md",
       "docs/superpowers/specs/2026-06-25-icso-website-enhancement-design.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
@@ -279321,6 +279379,7 @@
       "docs/blueprints/PESKIDS-ICSO-CUTOVER-STATUS.md",
       "docs/tenants/intcloudsysops/WACRM-OFFERING.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/peskids/WACRM-TWENTY-CUTOVER.md",
       "docs/tenants/peskids/WACRM-CHANNEL.md",
       "docs/tenants/peskids/TWENTY-CRM.md"
@@ -281688,6 +281747,7 @@
       "docs/plans/CLI-MIGRATION-CHECKLIST.md",
       "docs/04-infrastructure/DOMAIN-CUTOVER-OP-SLY.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/peskids/WACRM-TWENTY-CUTOVER.md",
       "docs/ops/runbook-redis.md",
       ".worktrees/feat-peskids-tenant-settings/docs/plans/CLI-MIGRATION-CHECKLIST.md",
@@ -285709,6 +285769,7 @@
     ],
     "hasta": [
       "docs/04-infrastructure/DECEPTICON-WORKER.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       ".worktrees/feat-peskids-tenant-settings/docs/04-infrastructure/DECEPTICON-WORKER.md"
     ],
     "legal": [
@@ -288537,6 +288598,7 @@
     ],
     "agencia": [
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/01-development/OPSLY-AGENCY-DIVISION.md",
       ".worktrees/feat-peskids-tenant-settings/docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
@@ -288636,6 +288698,21 @@
     ],
     "supporting": [
       "docs/tenants/intcloudsysops/DATA-MODEL.md"
+    ],
+    "apagado": [
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
+      "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md"
+    ],
+    "borrar": [
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
+      "docs/01-development/GIT-WORKFLOW.md",
+      "docs/01-development/GITHUB-SETTINGS.md",
+      "docs/01-development/RETENTION-POLICY.md",
+      "docs/01-development/DISK-USAGE-REPORT.md",
+      ".worktrees/feat-peskids-tenant-settings/docs/01-development/GIT-WORKFLOW.md",
+      ".worktrees/feat-peskids-tenant-settings/docs/01-development/GITHUB-SETTINGS.md",
+      ".worktrees/feat-peskids-tenant-settings/docs/01-development/RETENTION-POLICY.md",
+      ".worktrees/feat-peskids-tenant-settings/docs/01-development/DISK-USAGE-REPORT.md"
     ],
     "assets": [
       "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
@@ -297169,16 +297246,6 @@
     "triada": [
       "docs/01-development/DOCUMENTATION-LIFECYCLE.md",
       ".worktrees/feat-peskids-tenant-settings/docs/01-development/DOCUMENTATION-LIFECYCLE.md"
-    ],
-    "borrar": [
-      "docs/01-development/GIT-WORKFLOW.md",
-      "docs/01-development/GITHUB-SETTINGS.md",
-      "docs/01-development/RETENTION-POLICY.md",
-      "docs/01-development/DISK-USAGE-REPORT.md",
-      ".worktrees/feat-peskids-tenant-settings/docs/01-development/GIT-WORKFLOW.md",
-      ".worktrees/feat-peskids-tenant-settings/docs/01-development/GITHUB-SETTINGS.md",
-      ".worktrees/feat-peskids-tenant-settings/docs/01-development/RETENTION-POLICY.md",
-      ".worktrees/feat-peskids-tenant-settings/docs/01-development/DISK-USAGE-REPORT.md"
     ],
     "espejos": [
       "docs/01-development/GIT-WORKFLOW.md",
@@ -324392,6 +324459,7 @@
     "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
     "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
     "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
+    "docs/tenants/intcloudsysops/TWENTY-CRM.md",
     "docs/tenants/intcloudsysops/WACRM-OFFERING.md",
     "docs/tenants/intcloudsysops/WHATSAPP-FIRST-PACKAGE.md",
     "docs/tenants/legalvial/LEGALVIAL-ARCHITECTURE-DECISION.md",

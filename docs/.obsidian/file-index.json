@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-07-02T23:01:37.982Z",
-  "totalFiles": 789,
+  "lastIndexed": "2026-07-02T23:59:40.242Z",
+  "totalFiles": 790,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -698,6 +698,7 @@
     "tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
     "tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
     "tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
+    "tenants/intcloudsysops/TWENTY-CRM.md",
     "tenants/intcloudsysops/WACRM-OFFERING.md",
     "tenants/intcloudsysops/WHATSAPP-FIRST-PACKAGE.md",
     "tenants/legalvial/LEGALVIAL-ARCHITECTURE-DECISION.md",
