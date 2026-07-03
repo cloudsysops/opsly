@@ -50,8 +50,9 @@ tags:
 ---
 
 ### ✅ Task 3: Parent Feedback Form Fields & Validation
-**Status:** Complete  
-**Deliverable:** `FORMS-SPEC.md` (Form 2 section)  
+**Status:** Complete (spec + Zod + composer wiring)  
+**Deliverable:** `FORMS-SPEC.md` (Form 2) + `parentFeedbackFormSchema`  
+**Code:** `isLowSatisfactionRating` (<3 alert), `feedback-composer-submission.ts`  
 **Fields defined:**
 - child_name (required, min 2, max 50)
 - satisfaction (required, 1-5 scale)

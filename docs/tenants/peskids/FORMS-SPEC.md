@@ -154,6 +154,12 @@ Peskids will follow up within 24 hours.
 
 ## Form 2: Parent Feedback Form
 
+**Implementation (code):**
+- Zod: `apps/peskids/lib/validation/feedback.schema.ts` → `parentFeedbackFormSchema`, `isLowSatisfactionRating`
+- UI: `apps/peskids/components/feedback/feedback-composer.tsx` + `feedback-composer-fields.tsx`
+- API: `POST /api/feedback` → `apps/peskids/app/api/feedback/route.ts`
+- Tests: `apps/peskids/lib/__tests__/feedback.schema.test.ts`
+
 **Where:** Dashboard (embedded tab) or emailed link  
 **Who:** Parents/guardians of enrolled children  
 **Goal:** Collect weekly feedback on program experience  
