@@ -9,17 +9,18 @@ tags:
 
 # Sprint 01 Status Report — MVP Foundation
 
-**Date:** May 21, 2026  
-**Status:** ✅ COMPLETE — All 6 tasks documented and ready for owner demo  
-**Target:** Owner approval by Friday, May 24, 2026
+**Date:** June 9, 2026 (Sprint 01 code + docs sync on branch `feat/peskids-sprint-01`)  
+**Status:** ✅ COMPLETE — All 6 tasks documented and wired to code; ready for owner demo  
+**Target:** Owner approval — demo con `localhost:3004` o producción `peskids.op-sly.com`
 
 ---
 
 ## Task Completion Checklist
 
 ### ✅ Task 1: Landing Page Wireframe
-**Status:** Complete  
-**Deliverable:** `landing-wireframe.html`  
+**Status:** Complete (wireframe + app alineada)  
+**Deliverable:** `landing-wireframe.html` + landing Next.js `app/page.tsx`  
+**Dev:** `http://localhost:3004/` — `LeadCaptureForm` con Zod (`leadCaptureFormSchema`)  
 **What it shows:**
 - Hero section: "Gestiona tu programa de afterschool sin perder ni un lead"
 - Lead form embedded above fold (5 required fields)
@@ -28,7 +29,7 @@ tags:
 - Mobile-responsive design
 - Bilingual-ready (Spanish primary)
 
-**How to test:** Open `landing-wireframe.html` in browser → responsive on desktop/mobile
+**How to test:** `npm run dev --workspace=peskids` → `http://localhost:3004/` **o** abrir `landing-wireframe.html` en browser
 
 ---
 
@@ -65,8 +66,9 @@ tags:
 ---
 
 ### ✅ Task 4: Dashboard Specification
-**Status:** Complete  
-**Deliverable:** `DASHBOARD-SPEC.md`  
+**Status:** Complete (spec + UI en admin)  
+**Deliverable:** `DASHBOARD-SPEC.md` + `dashboard-stats-grid.tsx`  
+**Code:** 5 cards Sprint 01 mapeadas en sección *Implemented alignment* del spec  
 **5 cards designed:**
 
 1. **New Leads This Week** — Count + recent list (name, email, phone, grade)
@@ -86,8 +88,8 @@ tags:
 ---
 
 ### ✅ Task 5: Event Contract for Opsly Integration
-**Status:** Complete  
-**Deliverable:** `EVENT-CONTRACT.md`  
+**Status:** Complete (spec + `lib/events.ts` + Zod)  
+**Deliverable:** `EVENT-CONTRACT.md` — sección *Code alignment*  
 **7 events documented with full payloads:**
 
 1. `lead.created` — New lead from form
@@ -112,7 +114,7 @@ tags:
 
 ### ✅ Task 6: Demo Script (Spanish + English)
 **Status:** Complete  
-**Deliverable:** `DEMO-SCRIPT.md`  
+**Deliverable:** `DEMO-SCRIPT.md` — sección *Local demo walkthrough (localhost:3004)*  
 
 **Script structure (10 minutes total):**
 
@@ -257,7 +259,7 @@ Once owner approves (expected: Friday, May 24), move to Phase 1:
 **Status:** ✅ Ready for owner demo call.  
 **Next step:** Schedule demo with owner for Week 1 end (May 24).  
 **Document prepared by:** Claude (AI Agent)  
-**Last updated:** May 21, 2026, 12:35 UTC
+**Last updated:** June 9, 2026
 
 ---
 
