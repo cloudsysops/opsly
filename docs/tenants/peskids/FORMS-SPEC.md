@@ -15,6 +15,12 @@ All forms are mobile-first, accessible (WCAG 2.1 AA), and validation-heavy (prev
 
 ## Form 1: Lead Interest Form
 
+**Implementation (code):**
+- Zod: `apps/peskids/lib/validation/lead.schema.ts` → `leadCaptureFormSchema`, `leadApiPostSchema`
+- UI: `apps/peskids/components/forms/lead-capture-form.tsx`
+- API: `POST /api/leads` → `apps/peskids/app/api/leads/route.ts`
+- Tests: `apps/peskids/lib/__tests__/lead.schema.test.ts`
+
 **Where:** Landing page (embedded, above fold)  
 **Who:** Potential parents interested in after-school program  
 **Goal:** Capture contact info so Peskids can follow up  

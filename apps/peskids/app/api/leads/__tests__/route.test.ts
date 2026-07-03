@@ -31,19 +31,22 @@ describe('POST /api/leads', () => {
     const response = await POST({
       headers: new Headers({ 'x-request-id': 'req-lead-400' }),
       json: async () => ({
-        name: 'Ana',
+        name: 'Ana López',
         email: 'ana@example.com',
-        grade_interested: '3A',
+        class_modality: 'llanogrande',
+        neighborhood: 'Llanogrande',
+        grade_interested: 'K-5',
         consent_treatment: false,
       }),
     } as never);
 
     expect(response.status).toBe(400);
-    await expect(response.json()).resolves.toEqual({
+    const body = await response.json();
+    expect(body).toMatchObject({
       ok: false,
-      error: 'Consent required',
       request_id: 'req-lead-400',
     });
+    expect(typeof body.error).toBe('string');
     expect(postCanonicalLeadMock).not.toHaveBeenCalled();
   });
 
@@ -61,10 +64,12 @@ describe('POST /api/leads', () => {
     const response = await POST({
       headers: new Headers({ 'x-request-id': 'req-lead-201' }),
       json: async () => ({
-        name: 'Ana',
+        name: 'Ana López',
         email: 'ana@example.com',
         phone: ' 3001234567 ',
-        grade_interested: '3A',
+        class_modality: 'llanogrande',
+        neighborhood: 'Llanogrande',
+        grade_interested: 'K-5',
         consent_treatment: true,
         referred_by_code: ' abc123 ',
       }),
@@ -87,10 +92,12 @@ describe('POST /api/leads', () => {
     });
     expect(postCanonicalLeadMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        name: 'Ana',
+        name: 'Ana López',
         email: 'ana@example.com',
-        phone: ' 3001234567 ',
-        grade_interested: '3A',
+        phone: '3001234567',
+        grade_interested: 'K-5',
+        class_modality: 'llanogrande',
+        neighborhood: 'Llanogrande',
       }),
       'req-lead-201'
     );
@@ -112,8 +119,10 @@ describe('POST /api/leads', () => {
     const response = await POST({
       headers: new Headers({ 'x-request-id': 'req-lead-502' }),
       json: async () => ({
-        name: 'Ana',
+        name: 'Ana López',
         email: 'ana@example.com',
+        class_modality: 'llanogrande',
+        neighborhood: 'Llanogrande',
         grade_interested: 'K-5',
         consent_treatment: true,
       }),

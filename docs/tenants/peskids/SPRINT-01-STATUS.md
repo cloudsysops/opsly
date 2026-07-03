@@ -33,8 +33,9 @@ tags:
 ---
 
 ### ✅ Task 2: Lead Capture Form Fields & Validation
-**Status:** Complete  
-**Deliverable:** `FORMS-SPEC.md` (Form 1 section)  
+**Status:** Complete (spec + Zod + API + UI)  
+**Deliverable:** `FORMS-SPEC.md` + `lib/validation/lead.schema.ts`  
+**Code:** `leadCaptureFormSchema`, `leadApiPostSchema`, `POST /api/leads` con Zod, formulario con validación cliente  
 **Fields defined:**
 - name (required, min 2, max 50)
 - email (required, valid email)

@@ -18,6 +18,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
+import { leadApiPostSchema, leadCaptureFormSchema } from '@/lib/validation/lead.schema'
+import { firstZodErrorMessage } from '@/lib/validation/zod-errors'
 
 const initialForm = {
   name: '',
@@ -81,21 +83,38 @@ export function LeadCaptureForm({
     setError('')
 
     try {
-      const normalizedOrigin = formData.referral_source || defaultReferralSource || source || 'web'
+      const referralSource =
+        formData.referral_source || defaultReferralSource || undefined
 
-      const apiPayload = {
+      const formParsed = leadCaptureFormSchema.safeParse({
         name: formData.name,
         email: formData.email,
-        phone: formData.phone || null,
-        class_modality: formData.class_modality || null,
-        neighborhood: formData.neighborhood || null,
-        grade_interested: formData.grade_interested || null,
-        referral_source: normalizedOrigin,
-        referred_by_code: referredByCode || null,
-        consent_treatment: consentTreatment,
+        phone: formData.phone,
+        class_modality: formData.class_modality,
+        neighborhood: formData.neighborhood,
+        grade_interested: formData.grade_interested,
+        referral_source: referralSource,
+        referred_by_code: referredByCode,
+      })
+
+      if (!formParsed.success) {
+        setError(firstZodErrorMessage(formParsed.error))
+        return
+      }
+
+      const apiParsed = leadApiPostSchema.safeParse({
+        ...formParsed.data,
+        consent_treatment: consentTreatment ? true : undefined,
         consent_marketing: consentMarketing,
         consent_policy_version: CONSENT_POLICY_VERSION,
+      })
+
+      if (!apiParsed.success) {
+        setError(firstZodErrorMessage(apiParsed.error))
+        return
       }
+
+      const apiPayload = apiParsed.data
 
       const apiResponse = await fetch('/api/leads', {
         method: 'POST',
@@ -115,16 +134,16 @@ export function LeadCaptureForm({
       }
 
       const webhookPayload = {
-        full_name: formData.name,
-        email: formData.email,
-        phone: formData.phone || null,
+        full_name: formParsed.data.name,
+        email: formParsed.data.email,
+        phone: formParsed.data.phone ?? null,
         source,
         campaign: campaign ?? null,
-        class_modality: formData.class_modality || null,
-        neighborhood: formData.neighborhood || null,
-        grade_interested: formData.grade_interested || null,
-        referral_source: normalizedOrigin,
-        referred_by_code: referredByCode || null,
+        class_modality: formParsed.data.class_modality,
+        neighborhood: formParsed.data.neighborhood,
+        grade_interested: formParsed.data.grade_interested,
+        referral_source: formParsed.data.referral_source ?? source,
+        referred_by_code: formParsed.data.referred_by_code ?? null,
         referral_code: apiResult.referral_code || null,
       }
 
