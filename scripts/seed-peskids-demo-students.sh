@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Seed demo families/students + tenant settings for Peskids admin dashboard (idempotent).
+# Seed demo dashboard data for Peskids (students, leads, follow-ups, settings). Idempotent.
 # Usage:
 #   doppler run --project ops-intcloudsysops --config prd -- ./scripts/seed-peskids-demo-students.sh [--dry-run]
 # Optional env:
@@ -32,6 +32,12 @@ REST_HEADERS=(
   -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}"
   -H "Content-Type: application/json"
   -H "Prefer: return=representation"
+)
+
+PLATFORM_HEADERS=(
+  "${REST_HEADERS[@]}"
+  -H "Accept-Profile: platform"
+  -H "Content-Profile: platform"
 )
 
 existing_students() {
@@ -141,44 +147,246 @@ insert_student_if_missing() {
   echo "Student created: $(jq -r '.[0].name + " · " + .[0].grade' /tmp/peskids-seed-student.json)"
 }
 
+seed_demo_students() {
+  local rows marked_count
+  rows="$(existing_students || echo '[]')"
+  if ! echo "$rows" | jq -e 'type == "array"' >/dev/null 2>&1; then
+    echo "Unexpected students response:" >&2
+    echo "$rows" >&2
+    return 1
+  fi
+
+  marked_count="$(echo "$rows" | jq --arg m "$SEED_MARKER" '[.[] | select((.notes // "") | contains($m))] | length')"
+  if [[ "$marked_count" -ge 3 ]]; then
+    echo "Demo students already present (${marked_count} with ${SEED_MARKER}):"
+    echo "$rows" | jq -r --arg m "$SEED_MARKER" '.[] | select((.notes // "") | contains($m)) | "- \(.name) · \(.grade) · \(.parent_email // "sin email")"'
+    return 0
+  fi
+
+  insert_student_if_missing \
+    "Mateo Restrepo" "Delfines" "familia.restrepo.demo@peskids.co" "+573001112233" \
+    "Matrícula demo reunión. ${SEED_MARKER}"
+
+  insert_student_if_missing \
+    "Sofía García" "Tiburones" "familia.garcia.demo@peskids.co" "+573002223344" \
+    "Matrícula demo reunión. ${SEED_MARKER}"
+
+  insert_student_if_missing \
+    "Valentina López" "Ballenas" "familia.lopez.demo@peskids.co" "+573003334455" \
+    "Matrícula demo reunión. ${SEED_MARKER}"
+}
+
+insert_platform_lead_if_missing() {
+  local name email phone grade status modality neighborhood notes
+  name="$1"
+  email="$2"
+  phone="$3"
+  grade="$4"
+  status="$5"
+  modality="$6"
+  neighborhood="$7"
+  notes="$8"
+
+  local existing
+  existing="$(curl -sS "${PLATFORM_HEADERS[@]}" \
+    "${SUPABASE_URL}/rest/v1/peskids_leads?tenant_slug=eq.${TENANT_ID}&email=eq.$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$email'''))")&select=id,full_name&limit=1")"
+
+  if echo "$existing" | jq -e '.[0].id' >/dev/null 2>&1; then
+    echo "Lead already exists: $(echo "$existing" | jq -r '.[0].full_name') (${email})" >&2
+    echo "$existing" | jq -r '.[0].id'
+    return 0
+  fi
+
+  local payload
+  payload="$(jq -n \
+    --arg tenant "$TENANT_ID" \
+    --arg name "$name" \
+    --arg email "$email" \
+    --arg phone "$phone" \
+    --arg grade "$grade" \
+    --arg status "$status" \
+    --arg modality "$modality" \
+    --arg neighborhood "$neighborhood" \
+    --arg notes "$notes" \
+    --arg source "instagram" \
+    '{
+      tenant_slug: $tenant,
+      full_name: $name,
+      email: $email,
+      phone: $phone,
+      grade_interested: $grade,
+      status: $status,
+      class_modality: $modality,
+      neighborhood: $neighborhood,
+      referral_source: $source,
+      admin_notes: $notes
+    }')"
+
+  if $DRY_RUN; then
+    echo "[dry-run] Would insert lead ${name}:" >&2
+    echo "$payload" | jq . >&2
+    echo "00000000-0000-0000-0000-000000000001"
+    return 0
+  fi
+
+  local body code
+  body="$(mktemp)"
+  code="$(curl -sS -o "$body" -w '%{http_code}' \
+    -X POST "${SUPABASE_URL}/rest/v1/peskids_leads" \
+    "${PLATFORM_HEADERS[@]}" \
+    -d "$payload")"
+
+  if [[ "$code" -ge 400 ]]; then
+    echo "Lead insert failed for ${name} (HTTP ${code}):" >&2
+    cat "$body" >&2 || true
+    rm -f "$body"
+    return 1
+  fi
+
+  echo "Lead created: $(jq -r '.[0].full_name + " · " + .[0].status' "$body")" >&2
+  jq -r '.[0].id' "$body"
+  rm -f "$body"
+}
+
+insert_followup_if_missing() {
+  local contact_id="$1"
+  local notes="$2"
+  local due_date
+  due_date="$(date -u +%Y-%m-%d 2>/dev/null || python3 -c 'from datetime import date; print(date.today().isoformat())')"
+
+  local existing
+  existing="$(curl -sS "${REST_HEADERS[@]}" \
+    "${SUPABASE_URL}/rest/v1/followups?tenant_id=eq.${TENANT_ID}&contact_id=eq.${contact_id}&select=id&limit=1")"
+
+  if echo "$existing" | jq -e '.[0].id' >/dev/null 2>&1; then
+    echo "Follow-up already exists for contact ${contact_id}"
+    return 0
+  fi
+
+  local payload
+  payload="$(jq -n \
+    --arg tenant "$TENANT_ID" \
+    --arg contact "$contact_id" \
+    --arg due "$due_date" \
+    --arg notes "$notes" \
+    '{
+      tenant_id: $tenant,
+      contact_id: $contact,
+      contact_type: "lead",
+      type: "call",
+      due_date: $due,
+      status: "pending",
+      notes: $notes
+    }')"
+
+  if $DRY_RUN; then
+    echo "[dry-run] Would insert follow-up for ${contact_id}:"
+    echo "$payload" | jq .
+    return 0
+  fi
+
+  local body code
+  body="$(mktemp)"
+  code="$(curl -sS -o "$body" -w '%{http_code}' \
+    -X POST "${SUPABASE_URL}/rest/v1/followups" \
+    "${REST_HEADERS[@]}" \
+    -d "$payload")"
+
+  if [[ "$code" -ge 400 ]]; then
+    echo "Follow-up insert failed (HTTP ${code}):" >&2
+    cat "$body" >&2 || true
+    rm -f "$body"
+    return 1
+  fi
+
+  echo "Follow-up created for lead ${contact_id}"
+  rm -f "$body"
+}
+
+insert_platform_feedback_if_missing() {
+  local child_name="$1"
+  local satisfaction="$2"
+  local suggestion="$3"
+
+  local existing
+  existing="$(curl -sS "${PLATFORM_HEADERS[@]}" \
+    "${SUPABASE_URL}/rest/v1/peskids_feedback?tenant_slug=eq.${TENANT_ID}&child_name=eq.$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$child_name'''))")&select=id&limit=1")"
+
+  if echo "$existing" | jq -e '.[0].id' >/dev/null 2>&1; then
+    echo "Feedback already exists for ${child_name}"
+    return 0
+  fi
+
+  local payload
+  payload="$(jq -n \
+    --arg tenant "$TENANT_ID" \
+    --arg child "$child_name" \
+    --argjson rating "$satisfaction" \
+    --arg suggestion "$suggestion" \
+    '{
+      tenant_slug: $tenant,
+      child_name: $child,
+      satisfaction: $rating,
+      suggestion: $suggestion,
+      status: "new"
+    }')"
+
+  if $DRY_RUN; then
+    echo "[dry-run] Would insert feedback for ${child_name}:"
+    echo "$payload" | jq .
+    return 0
+  fi
+
+  local body code
+  body="$(mktemp)"
+  code="$(curl -sS -o "$body" -w '%{http_code}' \
+    -X POST "${SUPABASE_URL}/rest/v1/peskids_feedback" \
+    "${PLATFORM_HEADERS[@]}" \
+    -d "$payload")"
+
+  if [[ "$code" -ge 400 ]]; then
+    echo "Feedback insert failed (HTTP ${code}):" >&2
+    cat "$body" >&2 || true
+    rm -f "$body"
+    return 0
+  fi
+
+  echo "Feedback created: ${child_name} (${satisfaction}/5)"
+  rm -f "$body"
+}
+
+seed_demo_leads_and_followups() {
+  echo "--- Leads (platform.peskids_leads) ---"
+  local lead1 lead2 lead3
+  lead1="$(insert_platform_lead_if_missing \
+    "Camila Mejía" "camila.mejia.demo@peskids.co" "+573014445566" "Delfines" "new" \
+    "llanogrande" "El Tesoro" "Interesada en sábados. ${SEED_MARKER}" | tail -n 1)"
+  lead2="$(insert_platform_lead_if_missing \
+    "Andrés Montoya" "andres.montoya.demo@peskids.co" "+573015556677" "Tiburones" "contacted" \
+    "domicilio" "Envigado" "Quiere clase en casa. ${SEED_MARKER}" | tail -n 1)"
+  lead3="$(insert_platform_lead_if_missing \
+    "Laura Henao" "laura.henao.demo@peskids.co" "+573016667788" "Ballenas" "qualified" \
+    "llanogrande" "Llanogrande" "Clase de prueba agendada. ${SEED_MARKER}" | tail -n 1)"
+
+  echo "--- Follow-ups ---"
+  for lid in "$lead1" "$lead2" "$lead3"; do
+    [[ -n "$lid" && "$lid" != "00000000-0000-0000-0000-000000000001" ]] || continue
+    insert_followup_if_missing "$lid" "Seguimiento demo reunión. ${SEED_MARKER}"
+  done
+
+  echo "--- Feedback ---"
+  insert_platform_feedback_if_missing "Mateo Restrepo" 5 "Excelente progreso en flotación. ${SEED_MARKER}"
+  insert_platform_feedback_if_missing "Sofía García" 4 "Muy contenta con el profesor. ${SEED_MARKER}"
+}
+
 echo "=== Peskids demo seed (tenant=${TENANT_ID}) ==="
 
 upsert_tenant_settings
 
-ROWS="$(existing_students || echo '[]')"
-if ! echo "$ROWS" | jq -e 'type == "array"' >/dev/null 2>&1; then
-  echo "Unexpected students response:" >&2
-  echo "$ROWS" >&2
-  exit 1
-fi
+echo "--- Students ---"
+seed_demo_students
 
-MARKED_COUNT="$(echo "$ROWS" | jq --arg m "$SEED_MARKER" '[.[] | select((.notes // "") | contains($m))] | length')"
-if [[ "$MARKED_COUNT" -ge 3 ]]; then
-  echo "Demo students already present (${MARKED_COUNT} with ${SEED_MARKER}):"
-  echo "$ROWS" | jq -r --arg m "$SEED_MARKER" '.[] | select((.notes // "") | contains($m)) | "- \(.name) · \(.grade) · \(.parent_email // "sin email")"'
-  exit 0
-fi
-
-insert_student_if_missing \
-  "Mateo Restrepo" \
-  "Delfines" \
-  "familia.restrepo.demo@peskids.co" \
-  "+573001112233" \
-  "Matrícula demo reunión. ${SEED_MARKER}"
-
-insert_student_if_missing \
-  "Sofía García" \
-  "Tiburones" \
-  "familia.garcia.demo@peskids.co" \
-  "+573002223344" \
-  "Matrícula demo reunión. ${SEED_MARKER}"
-
-insert_student_if_missing \
-  "Valentina López" \
-  "Ballenas" \
-  "familia.lopez.demo@peskids.co" \
-  "+573003334455" \
-  "Matrícula demo reunión. ${SEED_MARKER}"
+seed_demo_leads_and_followups
 
 echo "=== Done ==="
 existing_students | jq -r '.[] | "- \(.name) · \(.grade) (\(.parent_email // "sin email"))"'
