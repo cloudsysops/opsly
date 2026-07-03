@@ -1,0 +1,14 @@
+{
+  "vertical_blueprint_id": "ventas",
+  "industry": "b2b sales",
+  "offer_type": "discovery_call",
+  "form_fields": ["name", "email", "phone", "company", "role", "message"],
+  "cta_text": "Agenda una llamada de descubrimiento",
+  "landing_routes": ["/", "/services", "/contact"],
+  "crm_pipeline_name": "Pipeline comercial",
+  "brand_basic": {
+    "tone": "consultative, credible"
+  },
+  "modules": ["lead-capture", "feedback-loop", "follow-up", "crm-view", "weekly-report"],
+  "reference_tenant": "intcloudsysops"
+}

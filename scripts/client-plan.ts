@@ -217,9 +217,27 @@ function parseArgs(): { tenantSlug?: string; output?: string; dryRun: boolean } 
 
 function generatePlan(tenantSlug: string): LaunchPlan {
   const tenantConfig = path.join(process.cwd(), 'config', 'tenants', `${tenantSlug}.json`);
+  const launchPath = path.join(process.cwd(), 'clients', `${tenantSlug}.launch.json`);
   let tenantName = tenantSlug;
+  let crmProvider: 'gohighlevel' | 'twenty' | 'supabase-only' | 'manual' = 'twenty';
+  let verticalId: string | undefined;
 
-  if (fs.existsSync(tenantConfig)) {
+  if (fs.existsSync(launchPath)) {
+    try {
+      const launch = JSON.parse(fs.readFileSync(launchPath, 'utf-8')) as {
+        business_name?: string;
+        crm_provider?: typeof crmProvider;
+        vertical_blueprint_id?: string;
+      };
+      tenantName = launch.business_name || tenantName;
+      if (launch.crm_provider) {
+        crmProvider = launch.crm_provider;
+      }
+      verticalId = launch.vertical_blueprint_id;
+    } catch {
+      console.warn(`⚠️  Could not parse launch contract at ${launchPath}`);
+    }
+  } else if (fs.existsSync(tenantConfig)) {
     try {
       const config = JSON.parse(fs.readFileSync(tenantConfig, 'utf-8'));
       tenantName = config.tenant_name || tenantSlug;
@@ -228,26 +246,61 @@ function generatePlan(tenantSlug: string): LaunchPlan {
     }
   }
 
+  const steps = LAUNCH_STEPS.map((step) => ({ ...step, details: step.details ? [...step.details] : undefined }));
+
+  if (crmProvider === 'twenty') {
+    const crmStep = steps.find((s) => s.step === 3);
+    if (crmStep) {
+      crmStep.task = 'CRM Setup (Twenty)';
+      crmStep.gate = 'Twenty API key + pipeline ready';
+      crmStep.details = [
+        './scripts/tenants/bootstrap-twenty.sh --tenant <peskids|icso>',
+        'Manual: Twenty UI → API key → twenty-apply-api-key.sh',
+        './scripts/tenants/doppler-configure-twenty-prd.sh',
+        './scripts/tenants/ghl-disable-legacy.sh',
+      ];
+      crmStep.blockers = ['API key missing → twenty-apply-api-key.sh after UI signup'];
+    }
+    const smokeStep = steps.find((s) => s.step === 7);
+    if (smokeStep?.details) {
+      smokeStep.details = smokeStep.details.map((d) =>
+        d.includes('GHL') ? '✓ CRM sync: Twenty person/opportunity when TWENTY_SMOKE_EXPECT_IDS=true' : d
+      );
+    }
+  }
+
+  const successCriteria =
+    crmProvider === 'twenty'
+      ? [
+          '✓ Form submission creates lead in Supabase',
+          '✓ Lead syncs to Twenty when flags enabled',
+          '✓ GHL disabled via PESKIDS_GHL_ENABLED / INTCLOUDSYSOPS_GHL_ENABLED=false',
+          '✓ Admin can view submissions',
+          '✓ No errors in production logs',
+        ]
+      : [
+          '✓ Form submission creates lead in Supabase',
+          '✓ Lead syncs to GHL within 10 seconds',
+          '✓ Admin can view all submissions',
+          '✓ Client receives email notification',
+          '✓ No errors in production logs',
+        ];
+
   const plan: LaunchPlan = {
     tenant_name: tenantName,
     tenant_slug: tenantSlug,
     created_at: new Date().toISOString(),
     total_time: '30 minutes (operational), ~25 minutes (wall-clock)',
-    steps: LAUNCH_STEPS,
-    timeline: 'Steps 1-5 sequential (client + ops time), 6-9 parallelizable where possible',
-    success_criteria: [
-      '✓ Form submission creates lead in Supabase',
-      '✓ Lead syncs to GHL within 10 seconds',
-      '✓ Admin can view all submissions',
-      '✓ Client receives email notification',
-      '✓ No errors in production logs',
-    ],
+    steps,
+    timeline: verticalId
+      ? `Vertical blueprint: ${verticalId}. Steps 1-5 sequential, 6-9 parallelizable.`
+      : 'Steps 1-5 sequential (client + ops time), 6-9 parallelizable where possible',
+    success_criteria: successCriteria,
     next_steps: [
       'Review this plan with the ops team',
-      'Confirm resource availability for each step',
-      'Set launch date and time',
-      'Prepare deployment checklist',
-      'Brief team on blockers and recovery procedures',
+      `Launch contract: clients/${tenantSlug}.launch.json`,
+      './scripts/provisioning/bootstrap-tenant.sh --launch clients/' + tenantSlug + '.launch.json --dry-run',
+      'Set launch date and run cutover checklist if CRM migration',
     ],
   };
 
@@ -322,8 +375,8 @@ async function main() {
       console.log('\n' + formatted);
     }
 
-    console.log(`\n💡 To deploy this client, run:`);
-    console.log(`   npm run client:deploy -- --tenant-slug ${tenantSlug}`);
+    console.log(`\n💡 Bootstrap (dry-run first):`);
+    console.log(`   npm run client:bootstrap -- --launch clients/${tenantSlug}.launch.json`);
   } catch (error) {
     if (error instanceof Error) {
       console.error(`\n❌ Error: ${error.message}`);

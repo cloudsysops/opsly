@@ -1,0 +1,16 @@
+{
+  "vertical_blueprint_id": "hotel",
+  "industry": "hotel",
+  "offer_type": "booking_inquiry",
+  "form_fields": ["name", "phone", "email", "check_in", "check_out", "guests"],
+  "cta_text": "Consulta disponibilidad",
+  "landing_routes": ["/", "/rooms"],
+  "crm_pipeline_name": "Reservas",
+  "brand_basic": {
+    "tone": "professional, welcoming"
+  },
+  "modules": ["lead-capture", "feedback-loop", "follow-up", "weekly-report"],
+  "risk_notes": [
+    "No PMS integration in MVP — manual confirmation workflow only."
+  ]
+}

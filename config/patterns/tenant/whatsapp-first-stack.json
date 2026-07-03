@@ -1,0 +1,23 @@
+{
+  "id": "whatsapp-first-stack",
+  "kind": "tenant",
+  "title": "WhatsApp-first hybrid (wacrm + Twenty)",
+  "description": "Optional wacrm inbox sidecar with Twenty as sole CRM. Reusable for ICSO client onboarding and Peskids pilot.",
+  "capabilities": ["wacrm-inbox", "twenty-crm", "n8n-wacrm-sync"],
+  "modules": ["@intcloudsysops/wacrm-channel", "@intcloudsysops/services"],
+  "harness_patterns": ["integration-webhook"],
+  "opsly_pattern_refs": ["wacrm-channel"],
+  "depends_on": ["crm-starter-stack"],
+  "scripts": [
+    "scripts/tenants/bootstrap-wacrm.sh",
+    "scripts/tenants/doppler-configure-wacrm-prd.sh",
+    "scripts/tenants/wacrm-smoke.sh",
+    "scripts/tenants/setup-wacrm-tenant.sh"
+  ],
+  "docs": [
+    "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md",
+    "docs/tenants/intcloudsysops/WHATSAPP-FIRST-PACKAGE.md"
+  ],
+  "env_prefixes": ["WACRM", "TWENTY"],
+  "default_sync_twenty": "notes-only"
+}

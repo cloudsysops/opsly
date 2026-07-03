@@ -1,0 +1,33 @@
+{
+  "name": "Opsly — wacrm inbound → Supabase → Twenty note",
+  "description": "Hybrid sync: inbox in wacrm; pipeline in Twenty. Import into n8n_<tenant_slug>.",
+  "trigger": "wacrm_webhook",
+  "nodes": [
+    {
+      "name": "Webhook: wacrm message",
+      "type": "n8n-nodes-base.webhook",
+      "parameters": {
+        "path": "wacrm-inbound",
+        "httpMethod": "POST",
+        "responseMode": "onReceived"
+      },
+      "notes": "Verify X-Webhook-Signature with WACRM_{PREFIX}_WEBHOOK_SECRET"
+    },
+    {
+      "name": "Normalize event",
+      "type": "n8n-nodes-base.code",
+      "notes": "Map to { tenant_slug, phone, text, wa_thread_id, direction }"
+    },
+    {
+      "name": "Upsert platform.leads",
+      "type": "n8n-nodes-base.httpRequest",
+      "notes": "POST Opsly API or Supabase service role — source of truth for ops"
+    },
+    {
+      "name": "Twenty note (notes-only)",
+      "type": "n8n-nodes-base.httpRequest",
+      "notes": "If WACRM_*_SYNC_TWENTY=notes-only: POST Twenty GraphQL note on matched Person; do NOT move pipeline stage"
+    }
+  ],
+  "contract": "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md"
+}

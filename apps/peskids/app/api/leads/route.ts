@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { buildPeskidsReferralLink } from '@/lib/peskids-referral-links';
 import { buildPeskidsReferralCode } from '@/lib/peskids-referrals';
-import { postPeskidsLeadWithGHL } from '@/lib/peskids-canonical-api';
+import { postPeskidsLeadWithCRM } from '@/lib/peskids-canonical-api';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 
 type LeadBody = {
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       request_id: requestId,
     });
 
-    const canonical = await postPeskidsLeadWithGHL(
+    const canonical = await postPeskidsLeadWithCRM(
       {
         name: body.name,
         email: body.email,
@@ -76,6 +76,8 @@ export async function POST(request: NextRequest) {
         referral_discount_cents: 0,
         message: 'Interesado registrado correctamente',
         ghl_contact_id: canonical.ghlContactId ?? null,
+        twenty_person_id: canonical.twentyPersonId ?? null,
+        twenty_opportunity_id: canonical.twentyOpportunityId ?? null,
       },
       201
     );

@@ -1,0 +1,53 @@
+{
+  "version": "1.0.0",
+  "description": "Vertical launch blueprints — shared base + industry overrides for clients/*.launch.json",
+  "base": "_base.json",
+  "playbook_doc": "docs/blueprints/opsly-operational-blueprint/NICHE-PLAYBOOKS.md",
+  "verticals": [
+    {
+      "id": "swim-school",
+      "file": "swim-school.json",
+      "label": "Natación / escuela infantil",
+      "reference_tenant": "peskids",
+      "reference_launch": "clients/peskids.launch.json"
+    },
+    {
+      "id": "barberia",
+      "file": "barberia.json",
+      "label": "Barbería"
+    },
+    {
+      "id": "restaurante",
+      "file": "restaurante.json",
+      "label": "Restaurante"
+    },
+    {
+      "id": "hotel",
+      "file": "hotel.json",
+      "label": "Hotel / hospitality"
+    },
+    {
+      "id": "ventas",
+      "file": "ventas.json",
+      "label": "Ventas B2B / agencia"
+    },
+    {
+      "id": "marketplace",
+      "file": "marketplace.json",
+      "label": "Marketplace C2C"
+    },
+    {
+      "id": "whatsapp-first",
+      "file": "whatsapp-first.json",
+      "label": "WhatsApp-first (wacrm + Twenty)",
+      "reference_tenant": "intcloudsysops",
+      "reference_launch": "clients/intcloudsysops.launch.json",
+      "package_doc": "docs/tenants/intcloudsysops/WHATSAPP-FIRST-PACKAGE.md"
+    }
+  ],
+  "commands": {
+    "list": "jq -r '.verticals[] | \"\\(.id)\\t\\(.label)\"' config/vertical-blueprints/index.json",
+    "clone": "./scripts/provisioning/clone-vertical-launch.sh --vertical <id> --slug <slug> ...",
+    "bootstrap": "./scripts/provisioning/bootstrap-tenant.sh --launch clients/<slug>.launch.json"
+  }
+}

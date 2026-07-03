@@ -25,7 +25,9 @@ Plan operativo y técnico para **manejar WhatsApp** en Peskids sin romper **appr
 | **Jelou** | LATAM, menos fricción operativa, soporte regional | Medio–alto |
 | **GoHighLevel** | Solo si el owner **ya paga** GHL y no quiere otro stack | Alto — evitar si no es obligatorio |
 
-**Recomendación por defecto (Colombia/LATAM):** evaluar **Jelou** vs **Meta directo** con el owner; documentar la elección en este archivo antes de activar webhooks.
+**Recomendación por defecto (Colombia/LATAM):** evaluar **Jelou** vs **Meta directo** vs **wacrm sidecar + Twenty** (híbrido) con el owner; documentar la elección en este archivo antes de activar webhooks.
+
+**Ruta híbrida (Twenty ya es CRM):** ver `docs/tenants/peskids/WACRM-TWENTY-CUTOVER.md` — wacrm solo inbox; pipeline en Twenty; flags `WACRM_PESKIDS_*`.
 
 **Cuenta:** siempre a nombre del **cliente** (Meta Business + número). Opsly: acceso delegado revocable.
 

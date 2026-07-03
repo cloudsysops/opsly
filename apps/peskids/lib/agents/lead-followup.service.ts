@@ -1,5 +1,10 @@
-import type { Contact } from '@intcloudsysops/services/gohighlevel';
 import type { PeskidsGoHighLevelThreadClient } from '@/lib/gohighlevel-thread-client';
+import type {
+  FollowupLeadRecord,
+  LeadFollowupStore,
+  ReengagementLeadCandidate,
+} from '@/lib/agents/lead-followup-store';
+import { createSupabaseLeadFollowupStore } from '@/lib/agents/lead-followup-store';
 
 const DEFAULT_LLM_GATEWAY_URL = 'http://localhost:3010';
 
@@ -9,62 +14,54 @@ export interface LeadFollowupResult {
   failed: number;
 }
 
-export interface ReengagementCandidate {
-  contact: Contact;
-  daysSinceContact: number;
-}
+export type ReengagementCandidate = ReengagementLeadCandidate;
 
+export type LeadFollowupServiceDeps = {
+  store?: LeadFollowupStore;
+  ghlClient?: PeskidsGoHighLevelThreadClient | null;
+  tenantId?: string;
+};
+
+/**
+ * @deprecated Legacy GoHighLevel thread client service.
+ * Not used in active Twenty/Supabase paths. Kept for backward compatibility.
+ * Mark for removal in Phase 2 (post-30-day safety window).
+ */
 export class LeadFollowupService {
-  constructor(private ghlClient: PeskidsGoHighLevelThreadClient) {}
+  private readonly store: LeadFollowupStore;
+  private readonly ghlClient: PeskidsGoHighLevelThreadClient | null;
+  private readonly tenantId: string;
 
-  private extractConversationId(contact: Contact): string | null {
-    const customFields = contact.customFields ?? {};
-    const candidates = [
-      customFields.ghl_conversation_id,
-      customFields.conversation_id,
-      customFields.conversationId,
-    ];
-
-    for (const candidate of candidates) {
-      if (typeof candidate === 'string' && candidate.trim()) {
-        return candidate.trim();
-      }
-    }
-
-    return null;
+  constructor(deps: LeadFollowupServiceDeps = {}) {
+    this.store = deps.store ?? createSupabaseLeadFollowupStore();
+    this.ghlClient = deps.ghlClient ?? null;
+    this.tenantId = deps.tenantId ?? process.env.NEXT_PUBLIC_TENANT_ID ?? 'peskids';
   }
 
-  async resolveConversationId(contact: Contact): Promise<string | null> {
-    const fromFields = this.extractConversationId(contact);
-    if (fromFields) {
-      return fromFields;
+  /** Legacy GHL contact id used only as transient messaging channel. */
+  getCrmMessagingContactId(lead: FollowupLeadRecord): string | null {
+    return lead.ghl_contact_id?.trim() || null;
+  }
+
+  async resolveConversationId(crmContactId: string): Promise<string | null> {
+    if (!this.ghlClient) {
+      return null;
     }
 
     try {
-      const conversation = await this.ghlClient.findConversationByContactId(contact.id);
+      const conversation = await this.ghlClient.findConversationByContactId(crmContactId);
       return conversation?.id ?? null;
     } catch {
       return null;
     }
   }
 
-  async findStaleLeads(hoursThreshold = 24): Promise<Contact[]> {
-    const response = await this.ghlClient.getContacts({
-      status: 'New Lead',
-      limit: 100,
-    });
-
-    const cutoff = new Date(Date.now() - hoursThreshold * 60 * 60 * 1000);
-
-    return response.data.filter((contact) => {
-      if (!contact.createdAt) return false;
-      const created = new Date(contact.createdAt);
-      return created < cutoff;
-    });
+  async findStaleLeads(hoursThreshold = 24): Promise<FollowupLeadRecord[]> {
+    return this.store.findStaleLeads(hoursThreshold, this.tenantId);
   }
 
   async generateFollowupMessage(
-    contact: Contact,
+    lead: FollowupLeadRecord,
     llmGatewayUrl?: string
   ): Promise<string> {
     const baseUrl = (llmGatewayUrl ?? process.env.LLM_GATEWAY_URL ?? DEFAULT_LLM_GATEWAY_URL).replace(
@@ -72,15 +69,14 @@ export class LeadFollowupService {
       ''
     );
 
-    const leadName = contact.name || contact.firstName || contact.lastName || 'familia';
-    const modality = (contact.customFields?.modality as string) ?? null;
-    const childName = (contact.customFields?.child_name as string) ?? null;
-    const interest = (contact.customFields?.interest as string) ?? null;
+    const leadName = lead.name || 'familia';
+    const modality = lead.class_modality;
+    const interest = lead.grade_interested;
 
     const profileLines: string[] = [];
-    if (childName) profileLines.push(`- Hijo/a: ${childName}`);
     if (modality) profileLines.push(`- Modalidad de interés: ${modality}`);
-    if (interest) profileLines.push(`- Interés: ${interest}`);
+    if (interest) profileLines.push(`- Grado de interés: ${interest}`);
+    if (lead.neighborhood) profileLines.push(`- Barrio: ${lead.neighborhood}`);
 
     const systemPrompt =
       'Eres un asistente amable y profesional de Peskids, una escuela de natación y actividades extraescolares. ' +
@@ -111,8 +107,7 @@ export class LeadFollowupService {
     });
 
     if (!response.ok) {
-      const fallback = this.buildFallbackMessage(leadName, childName);
-      return fallback;
+      return this.buildFallbackMessage(leadName, interest);
     }
 
     const data = (await response.json()) as {
@@ -121,29 +116,33 @@ export class LeadFollowupService {
 
     const content = data.choices?.[0]?.message?.content?.trim();
     if (!content) {
-      return this.buildFallbackMessage(leadName, childName);
+      return this.buildFallbackMessage(leadName, interest);
     }
 
     return content;
   }
 
   async sendFollowup(
-    contactId: string,
+    crmContactId: string,
     message: string,
     channel: 'sms' | 'whatsapp',
     options?: { conversationId?: string; replyToMessageId?: string }
   ): Promise<boolean> {
+    if (!this.ghlClient) {
+      return false;
+    }
+
     try {
       const result = options?.conversationId
         ? await this.ghlClient.sendConversationMessage({
-            contactId,
+            contactId: crmContactId,
             conversationId: options.conversationId,
             replyToMessageId: options.replyToMessageId,
             message,
             channel,
           })
         : await this.ghlClient.sendMessage({
-            contactId,
+            contactId: crmContactId,
             message,
             channel,
           });
@@ -153,12 +152,32 @@ export class LeadFollowupService {
     }
   }
 
-  async escalateToHuman(contactId: string, reason: string): Promise<void> {
+  async escalateToHuman(crmContactId: string, reason: string): Promise<void> {
+    if (!this.ghlClient) {
+      return;
+    }
+
     await this.ghlClient.createTask({
       title: 'Lead sin respuesta — seguimiento humano requerido',
       description: reason,
-      contactId,
+      contactId: crmContactId,
       priority: 'high',
+    });
+  }
+
+  async queueManualFollowup(
+    lead: FollowupLeadRecord,
+    message: string,
+    channel: 'sms' | 'whatsapp' | 'call' | 'email' | 'in-person' = 'call'
+  ): Promise<void> {
+    await this.store.createPendingFollowup({
+      tenantId: lead.tenant_id,
+      leadId: lead.id,
+      type: channel === 'whatsapp' ? 'sms' : channel,
+      notes:
+        `Seguimiento manual requerido (${channel}). ` +
+        `Lead: ${lead.name} <${lead.email}>. ` +
+        `Borrador sugerido: ${message}`,
     });
   }
 
@@ -176,18 +195,28 @@ export class LeadFollowupService {
     const staleLeads = await this.findStaleLeads(hoursThreshold);
 
     let followed = 0;
-    const escalated = 0;
+    let escalated = 0;
     let failed = 0;
 
-    for (const contact of staleLeads) {
+    for (const lead of staleLeads) {
       try {
-        const message = await this.generateFollowupMessage(contact, llmGatewayUrl);
-        const conversationId = await this.resolveConversationId(contact);
-        const sent = await this.sendFollowup(contact.id, message, channel, {
+        const message = await this.generateFollowupMessage(lead, llmGatewayUrl);
+        const crmContactId = this.getCrmMessagingContactId(lead);
+
+        if (!crmContactId) {
+          await this.queueManualFollowup(lead, message, channel);
+          escalated++;
+          continue;
+        }
+
+        const conversationId = await this.resolveConversationId(crmContactId);
+        const sent = await this.sendFollowup(crmContactId, message, channel, {
           ...(conversationId ? { conversationId } : {}),
         });
 
         if (!sent) {
+          await this.queueManualFollowup(lead, message, channel);
+          escalated++;
           failed++;
           continue;
         }
@@ -195,8 +224,8 @@ export class LeadFollowupService {
         followed++;
 
         await this.escalateToHuman(
-          contact.id,
-          `Lead ${contact.name || contact.id} seguido automáticamente vía ${channel}. ` +
+          crmContactId,
+          `Lead ${lead.name} (${lead.id}) seguido automáticamente vía ${channel}. ` +
             'Si no responde en 48h, el equipo debe contactar manualmente.'
         );
       } catch {
@@ -211,76 +240,48 @@ export class LeadFollowupService {
     minDays = 7,
     maxDays = 30
   ): Promise<ReengagementCandidate[]> {
-    const now = Date.now();
-    const minCutoff = new Date(now - maxDays * 24 * 60 * 60 * 1000);
-    const maxCutoff = new Date(now - minDays * 24 * 60 * 60 * 1000);
-
-    const [newLeads, contacted] = await Promise.all([
-      this.ghlClient.getContacts({ status: 'New Lead', limit: 100 }),
-      this.ghlClient.getContacts({ status: 'Contacted', limit: 100 }),
-    ]);
-
-    const all = [...newLeads.data, ...contacted.data];
-    const seen = new Set<string>();
-    const unique: Contact[] = [];
-
-    for (const c of all) {
-      if (!seen.has(c.id)) {
-        seen.add(c.id);
-        unique.push(c);
-      }
-    }
-
-    return unique
-      .filter((contact) => {
-        if (!contact.createdAt) return false;
-        const created = new Date(contact.createdAt).getTime();
-        return created >= minCutoff.getTime() && created <= maxCutoff.getTime();
-      })
-      .map((contact) => ({
-        contact,
-        daysSinceContact: Math.floor(
-          (now - new Date(contact.createdAt!).getTime()) / (24 * 60 * 60 * 1000)
-        ),
-      }))
-      .sort((a, b) => b.daysSinceContact - a.daysSinceContact);
+    return this.store.findReengagementCandidates(minDays, maxDays, this.tenantId);
   }
 
-  async sendReengagementSequence(
-    contactId: string,
-    daysSinceContact: number
-  ): Promise<boolean> {
+  async sendReengagementSequence(lead: FollowupLeadRecord): Promise<boolean> {
     try {
-      const contact = await this.ghlClient.getContact(contactId);
-      const parentName = contact.name || contact.firstName || 'familia';
-      const childName = (contact.customFields?.child_name as string) ?? null;
+      const parentName = lead.name || 'familia';
+      const daysSinceContact = Math.floor(
+        (Date.now() - new Date(lead.created_at).getTime()) / (24 * 60 * 60 * 1000)
+      );
 
       let message: string;
-      let tag: string;
-
       if (daysSinceContact >= 30) {
-        message = this.buildFinalAttemptMessage(parentName, childName);
-        tag = 'reengaged_no_response';
+        message = this.buildFinalAttemptMessage(parentName, lead.grade_interested);
       } else if (daysSinceContact >= 10) {
-        message = this.buildReminderMessage(parentName, childName);
-        tag = 'reengagement_1';
+        message = this.buildReminderMessage(parentName, lead.grade_interested);
       } else {
-        message = this.buildReengagementMessage(parentName, childName);
-        tag = 'reengagement_1';
+        message = this.buildReengagementMessage(parentName, lead.grade_interested);
       }
 
-      const sent = await this.sendFollowup(contactId, message, 'sms');
-      if (sent) {
-        await this.ghlClient.addContactTags(contactId, [tag]);
+      const crmContactId = this.getCrmMessagingContactId(lead);
+      if (!crmContactId || !this.ghlClient) {
+        await this.queueManualFollowup(lead, message, 'sms');
+        return false;
       }
-      return sent;
+
+      const sent = await this.sendFollowup(crmContactId, message, 'sms');
+      if (sent) {
+        await this.ghlClient.addContactTags(crmContactId, [
+          daysSinceContact >= 30 ? 'reengaged_no_response' : 'reengagement_1',
+        ]);
+        return true;
+      }
+
+      await this.queueManualFollowup(lead, message, 'sms');
+      return false;
     } catch {
       return false;
     }
   }
 
-  private buildReengagementMessage(parentName: string, childName: string | null): string {
-    const child = childName ? ` de ${childName}` : '';
+  private buildReengagementMessage(parentName: string, gradeInterested: string | null): string {
+    const child = gradeInterested ? ` (${gradeInterested})` : '';
     return (
       `¡Hola ${parentName}! Soy de Peskids. Vimos que hace unos días preguntaste` +
       ` por nuestras clases de natación${child}. ¿Qué tal si agendamos una clase` +
@@ -288,8 +289,8 @@ export class LeadFollowupService {
     );
   }
 
-  private buildReminderMessage(parentName: string, childName: string | null): string {
-    const child = childName ? ` de ${childName}` : '';
+  private buildReminderMessage(parentName: string, gradeInterested: string | null): string {
+    const child = gradeInterested ? ` (${gradeInterested})` : '';
     return (
       `¡Hola ${parentName}! Queremos recordarte que tu clase de prueba gratuita` +
       ` en Peskids sigue disponible${child}. Tenemos horarios flexibles en` +
@@ -297,18 +298,18 @@ export class LeadFollowupService {
     );
   }
 
-  private buildFinalAttemptMessage(_parentName: string, childName: string | null): string {
-    const child = childName ? ` de ${childName}` : '';
+  private buildFinalAttemptMessage(parentName: string, gradeInterested: string | null): string {
+    const child = gradeInterested ? ` para ${gradeInterested}` : '';
     return (
-      `Último aviso${child}: tu invitación a clase de prueba gratuita en Peskids` +
-      ` vence pronto. No pierdas la oportunidad de que ${childName || 'tu hijo'}` +
-      ` aprenda a nadar. ¡Responde y te agendamos!`
+      `${parentName}, último aviso${child}: tu invitación a clase de prueba gratuita en Peskids` +
+      ` vence pronto. No pierdas la oportunidad de que tu hijo aprenda a nadar.` +
+      ` ¡Responde y te agendamos!`
     );
   }
 
-  private buildFallbackMessage(leadName: string, childName: string | null): string {
+  private buildFallbackMessage(leadName: string, gradeInterested: string | null): string {
     const name = leadName || 'familia';
-    const child = childName ? ` de ${childName}` : '';
+    const child = gradeInterested ? ` (${gradeInterested})` : '';
     return (
       `Hola ${name}, soy el equipo de Peskids. Queremos saber si tienes alguna pregunta sobre nuestras clases${child}. ` +
       '¿Te gustaría más información o agendar una prueba?'

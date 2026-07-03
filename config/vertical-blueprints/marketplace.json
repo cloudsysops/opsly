@@ -1,0 +1,18 @@
+{
+  "vertical_blueprint_id": "marketplace",
+  "industry": "marketplace",
+  "offer_type": "waitlist",
+  "form_fields": ["name", "email", "phone", "seller_or_buyer", "category"],
+  "cta_text": "Únete a la lista de espera",
+  "landing_routes": ["/"],
+  "crm_pipeline_name": "Onboarding sellers",
+  "brand_basic": {
+    "tone": "trust-first, transactional clarity"
+  },
+  "modules": ["lead-capture", "feedback-loop", "follow-up"],
+  "risk_notes": [
+    "Marketplace multi-tenant is Custom Platform scope — not Basic Setup.",
+    "See docs/superpowers/specs/2026-05-31-collectx-platform-design.md for product depth."
+  ],
+  "pattern_ids": ["incubator-app", "crm-starter-stack", "full-tenant-stack"]
+}

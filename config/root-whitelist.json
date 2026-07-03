@@ -78,7 +78,8 @@
     ".ruff_cache",
     ".n8n",
     ".jules",
-    "vendor"
+    "vendor",
+    "clients"
   ],
   "allowed_hidden_folders": [
     ".git",

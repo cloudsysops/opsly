@@ -1,0 +1,18 @@
+{
+  "vertical_blueprint_id": "barberia",
+  "industry": "barber shop",
+  "offer_type": "booking",
+  "form_fields": ["name", "phone", "email", "preferred_time", "service"],
+  "cta_text": "Reserva tu cita",
+  "landing_routes": ["/", "/instagram"],
+  "crm_pipeline_name": "Citas",
+  "brand_basic": {
+    "tone": "direct, local, friendly"
+  },
+  "modules": ["lead-capture", "feedback-loop", "follow-up", "weekly-report"],
+  "smoke_tests": [
+    "POST lead form → Supabase row",
+    "Twenty person created when TWENTY enabled",
+    "n8n follow-up reminder queued (approval-first)"
+  ]
+}

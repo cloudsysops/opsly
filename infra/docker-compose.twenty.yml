@@ -1,0 +1,116 @@
+# Twenty CRM — self-hosted open-source CRM for Peskids (replaces GoHighLevel).
+#
+# Deploy (VPS, after Doppler vars):
+#   cd /opt/opsly/infra
+#   docker compose --env-file /opt/opsly/.env -f docker-compose.twenty.yml up -d
+#
+# Required env (Doppler prd):
+#   TWENTY_SERVER_URL=https://crm-peskids.${PLATFORM_DOMAIN}
+#   TWENTY_APP_SECRET, TWENTY_ENCRYPTION_KEY (openssl rand -base64 32)
+#   TWENTY_PG_PASSWORD (strong password)
+#
+# After first boot: create workspace admin, then API key in Settings → API & Webhooks.
+# Set TWENTY_API_URL=${TWENTY_SERVER_URL} and TWENTY_API_KEY in Doppler for Peskids app.
+
+name: tenant_twenty_peskids
+
+services:
+  twenty-server:
+    image: twentycrm/twenty:${TWENTY_IMAGE_TAG:-latest}
+    container_name: twenty_peskids
+    restart: unless-stopped
+    volumes:
+      - twenty-peskids-data:/app/packages/twenty-server/.local-storage
+    environment:
+      NODE_PORT: 3000
+      PG_DATABASE_URL: postgres://twenty:${TWENTY_PG_PASSWORD}@twenty-db:5432/default
+      SERVER_URL: ${TWENTY_SERVER_URL}
+      REDIS_URL: redis://twenty-redis:6379
+      APP_SECRET: ${TWENTY_APP_SECRET}
+      ENCRYPTION_KEY: ${TWENTY_ENCRYPTION_KEY}
+      STORAGE_TYPE: local
+    depends_on:
+      twenty-db:
+        condition: service_healthy
+      twenty-redis:
+        condition: service_healthy
+    networks:
+      - traefik-public
+      - twenty-internal
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: traefik-public
+      traefik.http.routers.twenty-peskids.rule: Host(`crm-peskids.${PLATFORM_DOMAIN}`)
+      traefik.http.routers.twenty-peskids.entrypoints: websecure
+      traefik.http.routers.twenty-peskids.tls: 'true'
+      traefik.http.routers.twenty-peskids.tls.certresolver: letsencrypt
+      traefik.http.services.twenty-peskids.loadbalancer.server.port: '3000'
+    healthcheck:
+      test: ['CMD', 'curl', '--fail', 'http://localhost:3000/healthz']
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
+
+  twenty-worker:
+    image: twentycrm/twenty:${TWENTY_IMAGE_TAG:-latest}
+    container_name: twenty_peskids_worker
+    restart: unless-stopped
+    command: ['yarn', 'worker:prod']
+    volumes:
+      - twenty-peskids-data:/app/packages/twenty-server/.local-storage
+    environment:
+      PG_DATABASE_URL: postgres://twenty:${TWENTY_PG_PASSWORD}@twenty-db:5432/default
+      SERVER_URL: ${TWENTY_SERVER_URL}
+      REDIS_URL: redis://twenty-redis:6379
+      APP_SECRET: ${TWENTY_APP_SECRET}
+      ENCRYPTION_KEY: ${TWENTY_ENCRYPTION_KEY}
+      DISABLE_DB_MIGRATIONS: 'true'
+      DISABLE_CRON_JOBS_REGISTRATION: 'true'
+      STORAGE_TYPE: local
+    depends_on:
+      twenty-server:
+        condition: service_healthy
+    networks:
+      - twenty-internal
+
+  twenty-db:
+    image: postgres:16
+    container_name: twenty_peskids_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: default
+      POSTGRES_USER: twenty
+      POSTGRES_PASSWORD: ${TWENTY_PG_PASSWORD}
+    volumes:
+      - twenty-peskids-db:/var/lib/postgresql/data
+    networks:
+      - twenty-internal
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U twenty -d default']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  twenty-redis:
+    image: redis:7-alpine
+    container_name: twenty_peskids_redis
+    restart: unless-stopped
+    command: ['redis-server', '--maxmemory-policy', 'noeviction']
+    networks:
+      - twenty-internal
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+networks:
+  traefik-public:
+    external: true
+  twenty-internal:
+    driver: bridge
+
+volumes:
+  twenty-peskids-data:
+  twenty-peskids-db:

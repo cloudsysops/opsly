@@ -7,6 +7,8 @@ tenant_slug: intcloudsysops
 
 # Intcloudsysops — GoHighLevel Contract (Agency)
 
+> **Estado 2026-06-09:** GHL es **compatibilidad temporal** para ICSO. Camino principal: [`TWENTY-CRM.md`](TWENTY-CRM.md) (`INTCLOUDSYSOPS_GHL_ENABLED=false` por defecto). No usar GHL para nuevas integraciones de captura web.
+
 Capa comercial de **Intcloudsysops LLC** (agencia). Usa credenciales `GOHIGHLEVEL_*` — distintas de la subcuenta Peskids (`GOHIGHLEVEL_PESKIDS_*`).
 
 ## Private Integration (Doppler `prd`)
@@ -98,8 +100,20 @@ npm run ghl:agency-auto-provision
 
 ## UI-only (post-MVP)
 
-- Workflows GHL (Lead Intake, follow-ups)
+- Workflows GHL (Lead Intake, follow-ups) — **legacy**; reemplazar con n8n + Supabase
 - Plantillas email/SMS
 - Ajustes finos de formularios / automations
+
+## Apagado GHL (checklist operativo)
+
+Ver checklist completo en [`TWENTY-CRM.md`](TWENTY-CRM.md#checklist-de-apagado-ghl-icso).
+
+Scripts que siguen siendo legacy (no borrar hasta cero consumidores):
+
+- `./scripts/ghl-provision-intcloudsysops.sh`
+- `./scripts/icso-ghl-status.sh`
+- `./scripts/ghl-configure-pipelines.sh --customer icso`
+
+Código legacy en app: `apps/icso/lib/ghl-setup.ts`, `apps/icso/lib/gohighlevel-lead-sync.ts` (solo con `INTCLOUDSYSOPS_GHL_ENABLED=true`).
 
 Opsly CRM n8n pack: `docs/n8n-workflows/crm/README.md` (tenant `intcloudsysops` en VPS).

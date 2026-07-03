@@ -63,11 +63,13 @@
   "tenant": [
     "tenant/incubator-app.json",
     "tenant/crm-starter-stack.json",
-    "tenant/full-tenant-stack.json"
+    "tenant/full-tenant-stack.json",
+    "tenant/whatsapp-first-stack.json"
   ],
   "opsly": [
     "opsly/lib-module-scaffold.json",
-    "opsly/openwa-channel.json"
+    "opsly/openwa-channel.json",
+    "opsly/wacrm-channel.json"
   ],
   "upstream": {
     "sigmaRules": {

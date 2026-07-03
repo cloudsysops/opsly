@@ -1,3 +1,8 @@
+/**
+ * LEGACY (GHL compatibility): SMS/WhatsApp/task channel for leads with ghl_contact_id.
+ * Used by LeadFollowupService and TrialSchedulerService when legacy id exists.
+ * @deprecated Operational messaging should move to n8n/Jelou; GHL requires PESKIDS_GHL_ENABLED=true.
+ */
 import type {
   Conversation,
   ConversationMessage,

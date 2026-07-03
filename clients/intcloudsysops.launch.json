@@ -1,0 +1,61 @@
+{
+  "vertical_blueprint_id": "ventas",
+  "tenant_slug": "intcloudsysops",
+  "business_name": "IntCloud SysOps",
+  "industry": "b2b sales",
+  "country": "CO",
+  "timezone": "America/Bogota",
+  "domain": "intcloudsysops.op-sly.com",
+  "primary_email": "team@intcloudsysops.com",
+  "offer_type": "discovery_call",
+  "lead_sources": ["website", "linkedin", "referral"],
+  "crm_provider": "twenty",
+  "ghl_location_id": "qD7Z9jt3owk0LMtKElow",
+  "crm_pipeline_name": "Opsly Agency Sales",
+  "landing_routes": ["/", "/services", "/contact", "/case-studies"],
+  "brand_basic": {
+    "tone": "consultative, credible, agency"
+  },
+  "form_fields": ["name", "email", "phone", "company", "message"],
+  "cta_text": "Agenda una llamada de descubrimiento",
+  "fallback_behavior": "Persist lead in Supabase; sync Twenty when INTCLOUDSYSOPS_TWENTY_ENABLED; GHL only if legacy flag on.",
+  "n8n_workflows": [
+    "lead-capture",
+    "hot-lead-alert",
+    "follow-up-reminder",
+    "daily-pipeline-digest"
+  ],
+  "supabase_records": [
+    "platform.tenants",
+    "intcloudsysops_deals",
+    "intcloudsysops_accounts"
+  ],
+  "health_checks": [
+    "GET https://icso.op-sly.com",
+    "GET /api/admin/mission-control/incubation?slug=intcloudsysops"
+  ],
+  "smoke_tests": [
+    "POST apps/icso /api/leads → 200",
+    "Twenty person when feat/icso-twenty-crm merged + flags on"
+  ],
+  "manual_steps": [
+    "Merge feat/icso-twenty-crm before Twenty cutover for ICSO marketing leads.",
+    "Twenty workspace + API key for intcloudsysops prefix in Doppler."
+  ],
+  "next_commands": [
+    "./scripts/provisioning/bootstrap-tenant.sh --launch clients/intcloudsysops.launch.json --dry-run",
+    "./scripts/tenants/doppler-configure-twenty-prd.sh --tenant icso --dry-run",
+    "./scripts/tenants/twenty-crm-smoke.sh --tenant icso --dry-run"
+  ],
+  "approval_boundary": "approval-first",
+  "extraction_ready": false,
+  "extraction_notes": "ICSO = agency control plane + tenant admin; marketing at icso.op-sly.com, CRM tenant at intcloudsysops.op-sly.com.",
+  "modules": ["lead-capture", "feedback-loop", "follow-up", "crm-view", "weekly-report"],
+  "pattern_ids": ["crm-starter-stack", "agency-ops-stack", "whatsapp-first-stack"],
+  "wacrm": {
+    "enabled": false,
+    "public_url": "https://wa-intcloudsysops.op-sly.com",
+    "sync_twenty": "notes-only",
+    "primary_whatsapp_provider": "none"
+  }
+}

@@ -20,7 +20,11 @@
     "gohighlevel/types.ts",
     "gohighlevel/index.ts",
     "gohighlevel/full.ts",
-    "gohighlevel/workflows/ai-lead-followup.ts"
+    "gohighlevel/workflows/ai-lead-followup.ts",
+    "twenty/env-config.ts",
+    "twenty/client.ts",
+    "twenty/types.ts",
+    "twenty/index.ts"
   ],
   "exclude": ["dist", "node_modules"]
 }
