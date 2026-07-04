@@ -44,24 +44,59 @@ function validateQueryResults(results: Array<{ error?: unknown }>): void {
  * Performance: O(1) query builder instantiation.
  */
 function buildTenantStatusQueries(client: ReturnType<typeof getServiceClient>): unknown[] {
-  const q = (): unknown =>
-    client.schema('platform').from('tenants').select('*', { count: 'exact', head: true });
   return [
-    q().is('deleted_at', null),
-    q().is('deleted_at', null).eq('status', 'active'),
-    q().is('deleted_at', null).eq('status', 'suspended'),
-    q().is('deleted_at', null).eq('is_demo', true),
-    q().is('deleted_at', null).eq('status', 'failed'),
+    client
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null),
+    client
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('status', 'active'),
+    client
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('status', 'suspended'),
+    client
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('is_demo', true),
+    client
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('status', 'failed'),
   ];
 }
 
 function buildPlanQueries(client: ReturnType<typeof getServiceClient>): unknown[] {
-  const q = (): unknown =>
-    client.schema('platform').from('tenants').select('*', { count: 'exact', head: true });
   return [
-    q().is('deleted_at', null).eq('plan', 'startup'),
-    q().is('deleted_at', null).eq('plan', 'business'),
-    q().is('deleted_at', null).eq('plan', 'enterprise'),
+    client
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('plan', 'startup'),
+    client
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('plan', 'business'),
+    client
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('plan', 'enterprise'),
     client
       .schema('platform')
       .from('tenants')
@@ -75,13 +110,16 @@ function buildConversionQueries(
   client: ReturnType<typeof getServiceClient>,
   since: string
 ): unknown[] {
-  const q = (): unknown => client.schema('platform').from('conversion_events');
   return [
-    q()
+    client
+      .schema('platform')
+      .from('conversion_events')
       .select('*', { count: 'exact', head: true })
       .eq('event', 'onboard_started')
       .gte('created_at', since),
-    q()
+    client
+      .schema('platform')
+      .from('conversion_events')
       .select('*', { count: 'exact', head: true })
       .eq('event', 'onboard_completed')
       .gte('created_at', since),
