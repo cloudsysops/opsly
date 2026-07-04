@@ -1,6 +1,9 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { getServiceClient } from '../../../../lib/supabase';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
+import { HTTP_STATUS } from '../../../../lib/constants';
 
 const breachSchema = z.object({
   tenant_id: z.string().min(1),
@@ -15,10 +18,28 @@ const breachSchema = z.object({
 });
 
 export async function POST(request: NextRequest): Promise<Response> {
+  const ip = extractIp(request);
+
+  // Rate limiting before secret check to prevent brute-force/DoS
+  const rateLimit = await checkRateLimit(ip ? `gov-breach:${ip}` : 'gov-breach:anonymous');
+  if (!rateLimit.allowed) {
+    return Response.json(
+      { error: 'Too many requests' },
+      { status: HTTP_STATUS.TOO_MANY_REQUESTS }
+    );
+  }
+
   // Internal-only endpoint: requires service-role secret header
   const authHeader = request.headers.get('authorization');
   const expectedToken = process.env.GOVERNANCE_BREACH_SECRET;
   if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
+    void logAuditEvent({
+      action: 'UNAUTHORIZED_BREACH_LOG_ATTEMPT',
+      resource: '/api/governance/breach',
+      ip,
+      user_agent: request.headers.get('user-agent') ?? undefined,
+      status_code: 401,
+    });
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -49,6 +70,19 @@ export async function POST(request: NextRequest): Promise<Response> {
     console.error('[governance][breach] insert error', error);
     return Response.json({ error: 'Failed to log breach' }, { status: 500 });
   }
+
+  void logAuditEvent({
+    tenant_slug: parsed.data.tenant_id,
+    action: 'LOG_BREACH',
+    resource: `breach_log:${data.id}`,
+    ip,
+    user_agent: request.headers.get('user-agent') ?? undefined,
+    status_code: 201,
+    metadata: {
+      title: parsed.data.title,
+      severity: parsed.data.severity,
+    },
+  });
 
   // TODO: trigger Discord alert to #ops-alerts via observability
   // await alertDiscord({ title: `[BREACH] ${parsed.data.title}`, severity: parsed.data.severity });
