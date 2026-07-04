@@ -6,6 +6,7 @@ import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recha
 import { getApiBaseUrl } from '@/lib/api';
 import { createClient } from '@/lib/supabase/client';
 import { portalTenantInsightsUrl } from '@/lib/portal-api-paths';
+import { Button } from '@/components/ui/button';
 import type { PortalInsightItem } from '@/types';
 
 type Props = {
@@ -125,22 +126,23 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  className="rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
-                  disabled={busyId === insight.id || insight.read_at !== null}
+                <Button
+                  variant="primary"
+                  size="sm"
+                  loading={busyId === insight.id}
+                  disabled={insight.read_at !== null}
                   onClick={() => void patch(insight.id, 'read')}
                 >
                   Marcar leído
-                </button>
-                <button
-                  type="button"
-                  className="rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
-                  disabled={busyId === insight.id}
+                </Button>
+                <Button
+                  variant="default"
+                  size="sm"
+                  loading={busyId === insight.id}
                   onClick={() => void patch(insight.id, 'dismiss')}
                 >
                   Descartar
-                </button>
+                </Button>
               </div>
             </div>
           </li>
