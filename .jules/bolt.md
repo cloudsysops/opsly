@@ -37,3 +37,7 @@
 ## 2026-06-26 - [Caching Admin Overview DB & Network Probes]
 **Learning:** The admin overview dashboardaggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
 **Action:** Always cache aggregated metrics and external probes in dashboard-facing API routes, and modularize parsing logic to maintain low cyclomatic complexity.
+
+## 2026-07-04 - [Parallel Supabase Query Refactoring]
+**Learning:** Parallel Supabase queries using the same client instance can suffer from filter pollution if the query builders are reused. Refactoring these into modular helpers that return fresh query builders (using a factory function `q()`) ensures isolation and satisfies cyclomatic complexity limits. Adding Redis caching to such aggregated metrics provides a significant latency win (e.g., reducing 11 network roundtrips to 1 Redis lookup).
+**Action:** Use factory functions for query builders when executing multiple independent Supabase queries in parallel, and always implement short-term caching for these aggregations.
