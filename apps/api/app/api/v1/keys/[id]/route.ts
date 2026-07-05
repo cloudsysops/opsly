@@ -1,7 +1,9 @@
 import { z } from 'zod';
 import { jsonError, serverErrorLogged } from '../../../../../lib/api-response';
+import { extractIp, logAuditEvent } from '../../../../../lib/audit';
 import { requireAdminAccess } from '../../../../../lib/auth';
 import { HTTP_STATUS } from '../../../../../lib/constants';
+import { checkRateLimit } from '../../../../../lib/rate-limiter';
 import { getServiceClient } from '../../../../../lib/supabase';
 
 const idParamSchema = z.string().uuid();
@@ -20,6 +22,12 @@ export async function DELETE(
   const tenantParsed = tenantHeaderSchema.safeParse(tenantHeader ?? '');
   if (!tenantParsed.success) {
     return jsonError('Invalid or missing x-tenant-id header', HTTP_STATUS.BAD_REQUEST);
+  }
+
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `v1-keys-delete:${ip}` : 'v1-keys-delete:anonymous');
+  if (!rateLimit.allowed) {
+    return jsonError('Too many requests', HTTP_STATUS.TOO_MANY_REQUESTS);
   }
 
   const { id } = await context.params;
@@ -53,6 +61,19 @@ export async function DELETE(
   if (updateError) {
     return serverErrorLogged('DELETE v1/keys update:', updateError);
   }
+
+  // Audit logging for successful key revocation
+  void logAuditEvent({
+    action: 'REVOKE_KEY',
+    resource: `/api/v1/keys/${idParsed.data}`,
+    status_code: HTTP_STATUS.NO_CONTENT,
+    ip,
+    user_agent: request.headers.get('user-agent') ?? undefined,
+    metadata: {
+      tenant_id: tenantParsed.data,
+      key_id: idParsed.data,
+    },
+  });
 
   return new Response(null, { status: HTTP_STATUS.NO_CONTENT });
 }

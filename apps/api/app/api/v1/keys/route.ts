@@ -1,8 +1,10 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { z } from 'zod';
 import { jsonError, serverErrorLogged } from '../../../../lib/api-response';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
 import { requireAdminAccess } from '../../../../lib/auth';
 import { HTTP_STATUS } from '../../../../lib/constants';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
 import { getServiceClient } from '../../../../lib/supabase';
 import { formatZodError } from '../../../../lib/validation';
 
@@ -23,6 +25,15 @@ export async function GET(request: Request): Promise<Response> {
   if (!tenantParsed.success) {
     return jsonError('Invalid or missing x-tenant-id header', HTTP_STATUS.BAD_REQUEST);
   }
+
+  // Audit logging for key list access
+  void logAuditEvent({
+    action: 'LIST_KEYS',
+    resource: '/api/v1/keys',
+    ip: extractIp(request),
+    user_agent: request.headers.get('user-agent') ?? undefined,
+    metadata: { tenant_id: tenantParsed.data },
+  });
 
   const { data, error } = await getServiceClient()
     .schema('platform')
@@ -49,6 +60,12 @@ export async function POST(request: Request): Promise<Response> {
   const tenantParsed = tenantHeaderSchema.safeParse(tenantHeader ?? '');
   if (!tenantParsed.success) {
     return jsonError('Invalid or missing x-tenant-id header', HTTP_STATUS.BAD_REQUEST);
+  }
+
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `v1-keys-create:${ip}` : 'v1-keys-create:anonymous');
+  if (!rateLimit.allowed) {
+    return jsonError('Too many requests', HTTP_STATUS.TOO_MANY_REQUESTS);
   }
 
   let body: unknown = {};
@@ -86,6 +103,20 @@ export async function POST(request: Request): Promise<Response> {
   if (error || !data) {
     return serverErrorLogged('POST v1/keys:', error ?? new Error('insert failed'));
   }
+
+  // Audit logging for successful key creation
+  void logAuditEvent({
+    action: 'CREATE_KEY',
+    resource: '/api/v1/keys',
+    status_code: HTTP_STATUS.OK,
+    ip,
+    user_agent: request.headers.get('user-agent') ?? undefined,
+    metadata: {
+      tenant_id: tenantParsed.data,
+      key_id: data.id,
+      name: data.name,
+    },
+  });
 
   return Response.json({
     id: data.id,
