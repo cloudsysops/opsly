@@ -1,3 +1,5 @@
+import { CACHE_TTL } from './constants';
+import { getCache, setCache } from './redis-cache';
 import { getServiceClient } from './supabase';
 
 /** Alineado a `apps/web/lib/stripe/plans` price_usd (MRR orientativo). */
@@ -165,10 +167,22 @@ function buildDashboardMetrics(results: unknown[]): WebDashboardMetricsJson {
   return { tenants, plans, mrr, conversion };
 }
 
+const CACHE_KEY = 'metrics:web_dashboard_json';
+
 export async function getWebDashboardMetricsJson(): Promise<WebDashboardMetricsJson> {
+  const cached = await getCache<WebDashboardMetricsJson>(CACHE_KEY);
+  if (cached !== null) {
+    return cached;
+  }
+
   const client = getServiceClient();
   const since = daysAgoIso(30);
   const results = await fetchMetricsData(client, since);
   validateQueryResults(results as Array<{ error?: unknown }>);
-  return buildDashboardMetrics(results);
+  const metrics = buildDashboardMetrics(results);
+
+  // Bolt Optimization: cache aggregated metrics for 60s to reduce Supabase load.
+  void setCache(CACHE_KEY, metrics, CACHE_TTL.SHORT);
+
+  return metrics;
 }
