@@ -159,13 +159,21 @@ export function DashboardView({
   const messageSummary = useMemo(() => {
     return data.recent_messages.reduce(
       (acc, msg) => {
-        const status = msg.status ?? 'pending'
-        acc[status] = (acc[status] ?? 0) + 1
-        if (status === 'pending') {
-          if (msg.conversation_mode === 'support') acc.supportPending += 1
-          else acc.admissionsPending += 1
+        const rawStatus = msg.status ?? 'pending_approval';
+        const status =
+          rawStatus === 'pending_approval' || rawStatus === 'failed'
+            ? 'pending'
+            : rawStatus === 'skipped'
+              ? 'approved'
+              : rawStatus;
+        if (status === 'pending' || status === 'approved' || status === 'sent') {
+          acc[status] = (acc[status] ?? 0) + 1;
         }
-        return acc
+        if (rawStatus === 'pending' || rawStatus === 'pending_approval') {
+          if (msg.conversation_mode === 'support') acc.supportPending += 1;
+          else acc.admissionsPending += 1;
+        }
+        return acc;
       },
       {
         pending: 0,
@@ -174,11 +182,11 @@ export function DashboardView({
         supportPending: 0,
         admissionsPending: 0,
       } as Record<'pending' | 'approved' | 'sent', number> & {
-        supportPending: number
-        admissionsPending: number
+        supportPending: number;
+        admissionsPending: number;
       }
-    )
-  }, [data.recent_messages])
+    );
+  }, [data.recent_messages]);
 
   const nextAction = useMemo(() => {
     if (messageSummary.supportPending > 0) {

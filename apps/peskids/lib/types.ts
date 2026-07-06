@@ -447,7 +447,7 @@ export type Database = {
           external_id: string | null;
           direction: 'inbound' | 'draft' | 'outbound';
           parent_message_id: string | null;
-          status: 'pending' | 'approved' | 'sent' | null;
+          status: 'pending' | 'pending_approval' | 'approved' | 'sent' | 'failed' | 'skipped' | null;
           ai_generated: boolean;
           created_at: string;
           updated_at: string;
@@ -461,7 +461,7 @@ export type Database = {
           external_id?: string | null;
           direction?: 'inbound' | 'draft' | 'outbound';
           parent_message_id?: string | null;
-          status?: 'pending' | 'approved' | 'sent' | null;
+          status?: 'pending' | 'pending_approval' | 'approved' | 'sent' | 'failed' | 'skipped' | null;
           ai_generated?: boolean;
         };
         Update: Partial<Database['public']['Tables']['messages']['Insert']>;
