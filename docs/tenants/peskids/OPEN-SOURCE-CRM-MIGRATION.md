@@ -192,7 +192,7 @@ flowchart TB
 | Step | Objetivo | Estado repo |
 |------|----------|-------------|
 | **1 — GHL bridge visible** | `ghl_contact_id`, sync status, abrir contacto GHL | Adapters: `resolveCrmContactLinks()` · UI admin pendiente |
-| **2 — wacrm inbox** | Webhook `POST /api/webhooks/wacrm`, admin visibility, digest | ✅ Código · activar flags tras smoke |
+| **2 — wacrm inbox** | Webhook `POST /api/webhooks/wacrm`, admin visibility, digest | ✅ Desplegado prod · `PESKIDS_INBOX_PROVIDER=wacrm` · sidecar + `WACRM_PESKIDS_ENABLED` pendientes (2026-07-06) |
 | **2b — Chatwoot pilot** | Alternativa futura (no instalar ahora) | ❌ No instalado |
 | **3 — CRM OSS pilot** | Twenty pipeline + import QA leads | Código ✅ · VPS ❌ |
 | **4 — Cal.com pilot** | Booking clase prueba | ❌ |
