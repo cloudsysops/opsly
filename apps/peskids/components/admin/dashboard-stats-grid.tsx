@@ -406,12 +406,24 @@ export function DashboardStatsGrid({
       <StatCard
         sectionId="classes"
         title="Ingresos del mes"
-        description="Pagos confirmados vía Stripe"
+        description="Pagos confirmados (Stripe + Wompi)"
         value={formatCop(data.operations.revenue_month_cents)}
         icon={Wallet}
         accent="green"
       >
         <p className="text-sm text-pk-sub">
+          Stripe:{' '}
+          <span className="font-semibold text-pk-ink">
+            {formatCop(data.operations.revenue_month_by_provider.stripe_cents)}
+          </span>
+        </p>
+        <p className="mt-1 text-sm text-pk-sub">
+          Wompi (PSE/Nequi):{' '}
+          <span className="font-semibold text-pk-ink">
+            {formatCop(data.operations.revenue_month_by_provider.wompi_cents)}
+          </span>
+        </p>
+        <p className="mt-1 text-sm text-pk-sub">
           Pendiente de cobro:{' '}
           <span className="font-semibold text-pk-ink">
             {formatCop(data.operations.pending_payments_cents)}

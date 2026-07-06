@@ -518,6 +518,10 @@ export interface DashboardOperationsMetrics {
   enrollments_today: number;
   attendance_rate_pct: number | null;
   revenue_month_cents: number;
+  revenue_month_by_provider: {
+    stripe_cents: number;
+    wompi_cents: number;
+  };
   pending_payments_cents: number;
 }
 
