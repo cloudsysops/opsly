@@ -7,7 +7,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "wacrm-peskids-inbound",
-        "responseMode": "onReceived",
+        "responseMode": "lastNode",
         "options": {}
       },
       "id": "Webhook",
