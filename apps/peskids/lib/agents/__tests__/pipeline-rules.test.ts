@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { buildPipelineRules } from '@/lib/agents/pipeline-rules';
+import { buildPipelineRules, isWithinRenewalWindow } from '@/lib/agents/pipeline-rules';
 
 const LEAD_ID = 'lead-uuid-1';
 
@@ -11,6 +11,7 @@ function mockSupabaseForRules(overrides: {
   trialCount?: number;
   enrollmentCount?: number;
   attendanceCount?: number;
+  activeStudentCount?: number;
   studentIds?: string[];
 }) {
   const {
@@ -21,6 +22,7 @@ function mockSupabaseForRules(overrides: {
     trialCount = 0,
     enrollmentCount = 0,
     attendanceCount = 0,
+    activeStudentCount = 0,
     studentIds = [],
   } = overrides;
 
@@ -74,6 +76,9 @@ function mockSupabaseForRules(overrides: {
               eq: vi.fn().mockResolvedValue({
                 data: studentIds.map((id) => ({ id })),
                 error: null,
+              }),
+              in: vi.fn().mockReturnValue({
+                eq: headCount(activeStudentCount),
               }),
             }),
           }),
@@ -170,12 +175,62 @@ describe('pipeline-rules (local)', () => {
     await expect(rules[3].condition(LEAD_ID)).resolves.toBe(true);
   });
 
-  it('does not define Active Student → Renewal rule yet', () => {
-    const rules = buildPipelineRules({
-      supabase: mockSupabaseForRules({}) as never,
-      tenantSlug: 'peskids',
+  describe('isWithinRenewalWindow', () => {
+    it('is true within the window before month-end', () => {
+      expect(isWithinRenewalWindow(new Date(2026, 0, 28))).toBe(true); // Jan 31 is month-end, 3 days out
+      expect(isWithinRenewalWindow(new Date(2026, 0, 31))).toBe(true); // month-end itself
     });
-    expect(rules).toHaveLength(4);
-    expect(rules.some((rule) => rule.nextStage === 'Renewal')).toBe(false);
+
+    it('is false outside the window', () => {
+      expect(isWithinRenewalWindow(new Date(2026, 0, 1))).toBe(false);
+      expect(isWithinRenewalWindow(new Date(2026, 0, 20))).toBe(false);
+    });
+  });
+
+  it('Active Student → Renewal when within window and an active student is linked', async () => {
+    const withinWindow = new Date(2026, 0, 28); // 3 days before Jan 31 month-end
+    const rules = buildPipelineRules(
+      {
+        supabase: mockSupabaseForRules({
+          studentIds: ['student-1'],
+          activeStudentCount: 1,
+        }) as never,
+        tenantSlug: 'peskids',
+      },
+      withinWindow
+    );
+    expect(rules).toHaveLength(5);
+    expect(rules[4].nextStage).toBe('Renewal');
+    await expect(rules[4].condition(LEAD_ID)).resolves.toBe(true);
+  });
+
+  it('Active Student → Renewal is false outside the renewal window', async () => {
+    const outsideWindow = new Date(2026, 0, 10);
+    const rules = buildPipelineRules(
+      {
+        supabase: mockSupabaseForRules({
+          studentIds: ['student-1'],
+          activeStudentCount: 1,
+        }) as never,
+        tenantSlug: 'peskids',
+      },
+      outsideWindow
+    );
+    await expect(rules[4].condition(LEAD_ID)).resolves.toBe(false);
+  });
+
+  it('Active Student → Renewal is false without a linked active student', async () => {
+    const withinWindow = new Date(2026, 0, 28);
+    const rules = buildPipelineRules(
+      {
+        supabase: mockSupabaseForRules({
+          studentIds: ['student-1'],
+          activeStudentCount: 0,
+        }) as never,
+        tenantSlug: 'peskids',
+      },
+      withinWindow
+    );
+    await expect(rules[4].condition(LEAD_ID)).resolves.toBe(false);
   });
 });

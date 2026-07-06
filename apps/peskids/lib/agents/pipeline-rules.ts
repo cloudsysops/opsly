@@ -173,10 +173,49 @@ function hasAttendedFirstClass(services: RuleServices) {
 }
 
 /**
- * Automatic rules stop at Active Student.
- * Active Student → Renewal: TODO — no local renewal signal defined in repo yet.
+ * Active Student → Renewal
+ * No per-student billing cycle is tracked yet (class_enrollments/payments have
+ * no cycle-end date) — renewal is signaled for every linked active student
+ * within RENEWAL_WINDOW_DAYS of calendar month-end. Revisit once per-student
+ * billing cycles are tracked.
  */
-export function buildPipelineRules(services: RuleServices): PipelineRule[] {
+export const RENEWAL_WINDOW_DAYS = 7;
+
+export function isWithinRenewalWindow(referenceDate: Date): boolean {
+  const endOfMonth = new Date(
+    referenceDate.getFullYear(),
+    referenceDate.getMonth() + 1,
+    0
+  );
+  const daysUntilMonthEnd = Math.ceil(
+    (endOfMonth.getTime() - referenceDate.getTime()) / (24 * 60 * 60 * 1000)
+  );
+  return daysUntilMonthEnd >= 0 && daysUntilMonthEnd <= RENEWAL_WINDOW_DAYS;
+}
+
+function hasActiveStudentNearRenewal(services: RuleServices, now: Date) {
+  return async (leadId: string): Promise<boolean> => {
+    if (!isWithinRenewalWindow(now)) return false;
+
+    const studentIds = await leadStudentIds(services, leadId);
+    if (studentIds.length === 0) return false;
+
+    const { count, error } = await services.supabase
+      .from('students')
+      .select('id', { count: 'exact', head: true })
+      .eq('tenant_id', services.tenantSlug)
+      .in('id', studentIds)
+      .eq('status', 'active');
+
+    if (error) return false;
+    return (count ?? 0) > 0;
+  };
+}
+
+export function buildPipelineRules(
+  services: RuleServices,
+  now: Date = new Date()
+): PipelineRule[] {
   return [
     {
       currentStage: 'New Lead',
@@ -205,6 +244,13 @@ export function buildPipelineRules(services: RuleServices): PipelineRule[] {
       condition: hasAttendedFirstClass(services),
       description: 'First class attendance recorded locally',
       source: 'attendance',
+    },
+    {
+      currentStage: 'Active Student',
+      nextStage: 'Renewal',
+      condition: hasActiveStudentNearRenewal(services, now),
+      description: `Linked active student within ${RENEWAL_WINDOW_DAYS} days of calendar month-end (no per-student billing cycle tracked yet)`,
+      source: 'enrollments',
     },
   ];
 }
