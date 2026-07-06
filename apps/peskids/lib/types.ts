@@ -431,6 +431,7 @@ export type Database = {
           notes: string | null;
           created_at: string;
           updated_at: string;
+          twenty_task_id: string | null;
         };
         Insert: {
           tenant_id: string;
@@ -441,6 +442,7 @@ export type Database = {
           status?: 'pending' | 'completed' | 'cancelled';
           notes?: string | null;
           updated_at?: string;
+          twenty_task_id?: string | null;
         };
         Update: Partial<Database['public']['Tables']['followups']['Insert']>;
         Relationships: [];
@@ -588,11 +590,11 @@ export interface DashboardData {
   pending_followups_count: number;
   pending_followups: Pick<
     Database['public']['Tables']['followups']['Row'],
-    'id' | 'contact_id' | 'contact_type' | 'due_date' | 'type' | 'status' | 'notes'
+    'id' | 'contact_id' | 'contact_type' | 'due_date' | 'type' | 'status' | 'notes' | 'twenty_task_id'
   >[];
   followups: Pick<
     Database['public']['Tables']['followups']['Row'],
-    'id' | 'contact_id' | 'contact_type' | 'due_date' | 'type' | 'status' | 'notes'
+    'id' | 'contact_id' | 'contact_type' | 'due_date' | 'type' | 'status' | 'notes' | 'twenty_task_id'
   >[];
   recent_messages: Array<
     Pick<

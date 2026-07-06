@@ -104,7 +104,7 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
 
   const { data: followups, error: followupsError } = await supabase
     .from('followups')
-    .select('id, contact_id, contact_type, due_date, type, status, notes')
+    .select('id, contact_id, contact_type, due_date, type, status, notes, twenty_task_id')
     .eq('tenant_id', tenantId)
     .order('due_date', { ascending: true });
 

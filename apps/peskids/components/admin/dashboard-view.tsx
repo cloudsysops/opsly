@@ -14,6 +14,7 @@ import {
 import type { DashboardData } from '@/lib/types'
 import { AdminShell } from '@/components/admin/admin-shell'
 import { FamiliesStudentsExpectation } from '@/components/admin/families-students-expectation'
+import { IntegrationsStatusPanel } from '@/components/admin/integrations-status-panel'
 import { MessageInboxPanel } from '@/components/admin/message-inbox-panel'
 import { StatCard } from '@/components/admin/stat-card'
 import { StudentsPanel } from '@/components/admin/students-panel'
@@ -381,6 +382,7 @@ export function DashboardView({
 
       <FamiliesStudentsExpectation activeStudentsCount={data.active_students_count} />
       <StudentsPanel />
+      <IntegrationsStatusPanel />
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
         <StatCard
@@ -643,7 +645,12 @@ export function DashboardView({
                         {followupStatusLabel[fu.status]}
                       </p>
                     </div>
-                    <Badge tone={followupStatusTone[fu.status]}>{followupStatusLabel[fu.status]}</Badge>
+                    <div className="flex items-center gap-1.5">
+                      {fu.contact_type === 'lead' && fu.twenty_task_id ? (
+                        <Badge tone="teal">Twenty ✓</Badge>
+                      ) : null}
+                      <Badge tone={followupStatusTone[fu.status]}>{followupStatusLabel[fu.status]}</Badge>
+                    </div>
                   </div>
                   <p className="mt-1 text-pk-sub">
                     Vence {new Date(fu.due_date).toLocaleDateString('es-CO')}
