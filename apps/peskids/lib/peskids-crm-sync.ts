@@ -1,5 +1,10 @@
 import { isPeskidsGhlEnabled, isTwentyConfigured } from '@intcloudsysops/services/twenty';
 import { sendLeadToGHL } from '@/lib/gohighlevel-lead-sync';
+import {
+  resolvePeskidsIntegrationProviders,
+  shouldSyncLeadToGhl,
+  shouldSyncLeadToTwenty,
+} from '@/lib/integrations/peskids-provider-config';
 import { sendLeadToTwenty } from '@/lib/twenty-lead-sync';
 
 export type CrmLeadSyncInput = {
@@ -18,8 +23,16 @@ export type CrmLeadSyncResult = {
 
 export async function syncLeadToCrm(data: CrmLeadSyncInput): Promise<CrmLeadSyncResult> {
   const result: CrmLeadSyncResult = {};
+  const providers = resolvePeskidsIntegrationProviders();
+  const twentyConfigured = isTwentyConfigured();
+  const ghlEnabled = isPeskidsGhlEnabled();
 
-  if (isTwentyConfigured()) {
+  if (providers.crm === 'espocrm') {
+    console.warn('[peskids][crm] espocrm provider selected but adapter not implemented yet');
+    return result;
+  }
+
+  if (shouldSyncLeadToTwenty(providers, twentyConfigured)) {
     const twentyResult = await sendLeadToTwenty({
       parentName: data.parentName,
       email: data.email,
@@ -33,7 +46,7 @@ export async function syncLeadToCrm(data: CrmLeadSyncInput): Promise<CrmLeadSync
     }
   }
 
-  if (isPeskidsGhlEnabled()) {
+  if (shouldSyncLeadToGhl(providers, ghlEnabled)) {
     const ghlResult = await sendLeadToGHL({
       parentName: data.parentName,
       email: data.email,
