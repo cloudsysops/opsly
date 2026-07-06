@@ -1,0 +1,23 @@
+# Minimal public endpoint for wa-<slug>.<PLATFORM_DOMAIN> until upstream wacrm image is deployed.
+# Serves health for wacrm-smoke.sh and redirects humans to Peskids admin.
+services:
+  wacrm_health:
+    image: nginx:1.27-alpine
+    container_name: wacrm_${TENANT_SLUG}
+    restart: unless-stopped
+    volumes:
+      - ./wacrm-health-proxy.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - traefik-public
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.http.routers.wacrm-${TENANT_SLUG}.rule=Host(`wa-${TENANT_SLUG}.${PLATFORM_DOMAIN}`)
+      - traefik.http.routers.wacrm-${TENANT_SLUG}.entrypoints=websecure
+      - traefik.http.routers.wacrm-${TENANT_SLUG}.tls=true
+      - traefik.http.routers.wacrm-${TENANT_SLUG}.tls.certresolver=letsencrypt
+      - traefik.http.services.wacrm-${TENANT_SLUG}.loadbalancer.server.port=80
+
+networks:
+  traefik-public:
+    external: true

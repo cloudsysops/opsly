@@ -1,0 +1,63 @@
+{
+  "id": "peskids-daily-digest",
+  "name": "Peskids - Daily digest 8am",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "id": "Cron",
+      "name": "8am Bogota",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{$env.PESKIDS_APP_URL || 'https://peskids.op-sly.com'}}/api/admin/digest/daily",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.PESKIDS_DIGEST_CRON_SECRET }}"
+            }
+          ]
+        }
+      },
+      "id": "HttpDigest",
+      "name": "GET daily digest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [280, 0]
+    }
+  ],
+  "connections": {
+    "8am Bogota": {
+      "main": [
+        [
+          {
+            "node": "GET daily digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "timezone": "America/Bogota"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}
