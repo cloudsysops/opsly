@@ -4,11 +4,19 @@ import { createDefenseAuditBodySchema } from '../../../../lib/defense/validation
 import { DEFENSE_API, HTTP_STATUS } from '../../../../lib/constants';
 import { requireAdminAccess, requireAdminAccessUnlessDemoRead } from '../../../../lib/auth';
 import { getServiceClient } from '../../../../lib/supabase';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
 
 export async function GET(request: Request): Promise<Response> {
   const auth = await requireAdminAccessUnlessDemoRead(request);
   if (auth !== null) {
     return auth;
+  }
+
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `defense-audits-list:${ip}` : 'defense-audits-list:anon');
+  if (!rateLimit.allowed) {
+    return jsonError('Too many requests', HTTP_STATUS.TOO_MANY_REQUESTS);
   }
 
   const url = new URL(request.url);
@@ -39,6 +47,12 @@ export async function POST(request: Request): Promise<Response> {
     return auth;
   }
 
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `defense-audits-create:${ip}` : 'defense-audits-create:anon');
+  if (!rateLimit.allowed) {
+    return jsonError('Too many requests', HTTP_STATUS.TOO_MANY_REQUESTS);
+  }
+
   let raw: unknown;
   try {
     raw = await request.json();
@@ -54,5 +68,18 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
-  return executePostDefenseAudit(parsed.data);
+  const response = await executePostDefenseAudit(parsed.data);
+
+  if (response.status === HTTP_STATUS.OK || response.status === HTTP_STATUS.CREATED) {
+    void logAuditEvent({
+      tenant_slug: parsed.data.tenant_id,
+      action: 'CREATE_DEFENSE_AUDIT',
+      resource: `defense:audits`,
+      ip,
+      user_agent: request.headers.get('user-agent') ?? undefined,
+      metadata: { audit_type: parsed.data.audit_type, framework: parsed.data.framework },
+    });
+  }
+
+  return response;
 }

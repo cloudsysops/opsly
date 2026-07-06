@@ -2,6 +2,8 @@ import { jsonError } from '../../../../../lib/api-response';
 import { DEFENSE_API, HTTP_STATUS } from '../../../../../lib/constants';
 import { requireAdminAccessUnlessDemoRead } from '../../../../../lib/auth';
 import { getServiceClient } from '../../../../../lib/supabase';
+import { extractIp } from '../../../../../lib/audit';
+import { checkRateLimit } from '../../../../../lib/rate-limiter';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -11,6 +13,12 @@ export async function GET(request: Request, ctx: RouteParams): Promise<Response>
   const auth = await requireAdminAccessUnlessDemoRead(request);
   if (auth !== null) {
     return auth;
+  }
+
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `defense-audit-detail:${ip}` : 'defense-audit-detail:anon');
+  if (!rateLimit.allowed) {
+    return jsonError('Too many requests', HTTP_STATUS.TOO_MANY_REQUESTS);
   }
 
   const { id } = await ctx.params;

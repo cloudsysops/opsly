@@ -3,6 +3,8 @@ import { remediateVulnerabilityBodySchema } from '../../../../../../lib/defense/
 import { DEFENSE_API, HTTP_STATUS } from '../../../../../../lib/constants';
 import { requireAdminAccess } from '../../../../../../lib/auth';
 import { getServiceClient } from '../../../../../../lib/supabase';
+import { extractIp, logAuditEvent } from '../../../../../../lib/audit';
+import { checkRateLimit } from '../../../../../../lib/rate-limiter';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -12,6 +14,12 @@ export async function POST(request: Request, ctx: RouteParams): Promise<Response
   const auth = await requireAdminAccess(request);
   if (auth !== null) {
     return auth;
+  }
+
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `defense-vulnerability-remediate:${ip}` : 'defense-vulnerability-remediate:anon');
+  if (!rateLimit.allowed) {
+    return jsonError('Too many requests', HTTP_STATUS.TOO_MANY_REQUESTS);
   }
 
   const { id } = await ctx.params;
@@ -57,6 +65,15 @@ export async function POST(request: Request, ctx: RouteParams): Promise<Response
   if (!updated) {
     return jsonError('Vulnerability not found', HTTP_STATUS.NOT_FOUND);
   }
+
+  void logAuditEvent({
+    tenant_slug: updated.tenant_id,
+    action: 'REMEDIATE_VULNERABILITY',
+    resource: `defense:vulnerabilities:${id}`,
+    ip,
+    user_agent: request.headers.get('user-agent') ?? undefined,
+    metadata: { status: 'fixed' },
+  });
 
   return Response.json({
     success: true,
