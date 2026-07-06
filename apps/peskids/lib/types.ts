@@ -432,6 +432,7 @@ export type Database = {
           due_date: string;
           status?: 'pending' | 'completed' | 'cancelled';
           notes?: string | null;
+          updated_at?: string;
         };
         Update: Partial<Database['public']['Tables']['followups']['Insert']>;
         Relationships: [];
