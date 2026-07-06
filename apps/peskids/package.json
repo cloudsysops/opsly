@@ -29,6 +29,7 @@
     "@capacitor/push-notifications": "^8.1.1",
     "@intcloudsysops/openwa": "*",
     "@intcloudsysops/wacrm-channel": "*",
+    "@intcloudsysops/wompi-gateway": "*",
     "@intcloudsysops/prompt-guard": "*",
     "@intcloudsysops/services": "*",
     "@supabase/auth-helpers-nextjs": "^0.8.7",

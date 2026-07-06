@@ -29,5 +29,5 @@
     "./scripts/provisioning/bootstrap-tenant.sh --launch clients/{tenant_slug}.launch.json --dry-run"
   ],
   "extraction_ready": false,
-  "pattern_ids": ["incubator-app", "crm-starter-stack"]
+  "pattern_ids": ["incubator-app", "crm-starter-stack", "wompi-gateway"]
 }

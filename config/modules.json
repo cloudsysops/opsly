@@ -180,6 +180,22 @@
       "dependencies": ["opsly-core"],
       "mainFile": "lib/conversational-runtime/src/index.ts",
       "exports": ["createConversationalRuntime", "InputMessage", "AgentResponse"]
+    },
+    "wompi-gateway": {
+      "name": "@intcloudsysops/wompi-gateway",
+      "version": "0.1.0",
+      "path": "lib/wompi-gateway",
+      "owner": "platform",
+      "description": "Wompi (Colombia) payment gateway client and tenant-scoped env config — reusable across LatAm tenants alongside Stripe",
+      "status": "experimental",
+      "dependencies": [],
+      "mainFile": "lib/wompi-gateway/src/index.ts",
+      "exports": [
+        "WompiClient",
+        "verifyWompiWebhookSignature",
+        "resolveWompiForTenant",
+        "isWompiEnabledForTenant"
+      ]
     }
   },
   "consumers": {

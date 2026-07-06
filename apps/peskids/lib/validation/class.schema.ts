@@ -72,4 +72,5 @@ export const attendanceUpdateSchema = z.object({
 
 export const checkoutSchema = z.object({
   enrollment_id: z.string().uuid(),
+  provider: z.enum(['stripe', 'wompi']).optional().default('stripe'),
 });

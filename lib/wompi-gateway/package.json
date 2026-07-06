@@ -1,0 +1,16 @@
+{
+  "name": "@intcloudsysops/wompi-gateway",
+  "version": "0.1.0",
+  "description": "Wompi (Colombia) payment gateway client and tenant-scoped env config — reusable across LatAm tenants",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2",
+    "vitest": "^4.1.8"
+  }
+}

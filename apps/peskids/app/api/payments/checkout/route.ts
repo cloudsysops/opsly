@@ -3,6 +3,7 @@ import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { validateFamilyRequest } from '@/lib/family-auth';
 import { checkoutSchema } from '@/lib/validation/class.schema';
 import { createCheckoutForEnrollment } from '@/lib/services/payment.service';
+import { createWompiPaymentLinkForEnrollment } from '@/lib/services/wompi-payment.service';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,11 +27,17 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const checkout = await createCheckoutForEnrollment({
-      enrollmentId: parsed.data.enrollment_id,
-      familyUserId: auth.user.id,
-    });
-    return successJson(requestId, { ok: true, ...checkout });
+    const checkout =
+      parsed.data.provider === 'wompi'
+        ? await createWompiPaymentLinkForEnrollment({
+            enrollmentId: parsed.data.enrollment_id,
+            familyUserId: auth.user.id,
+          })
+        : await createCheckoutForEnrollment({
+            enrollmentId: parsed.data.enrollment_id,
+            familyUserId: auth.user.id,
+          });
+    return successJson(requestId, { ok: true, provider: parsed.data.provider, ...checkout });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Checkout failed';
     console.error('[POST /api/payments/checkout]', err, { request_id: requestId });
