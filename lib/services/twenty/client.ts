@@ -3,8 +3,13 @@ import type {
   TwentyApiEnvelope,
   TwentyCreateOpportunityRequest,
   TwentyCreatePersonRequest,
+  TwentyCreateTaskRequest,
+  TwentyCreateTaskTargetRequest,
   TwentyOpportunityRecord,
   TwentyPersonRecord,
+  TwentyTaskRecord,
+  TwentyTaskTargetRecord,
+  TwentyUpdateTaskRequest,
 } from './types.js';
 
 export interface TwentyClientOptions {
@@ -94,6 +99,43 @@ export class TwentyClient {
     );
     if (!payload.data?.id) {
       throw new Error('Twenty API returned opportunity without id');
+    }
+    return payload.data;
+  }
+
+  async createTask(body: TwentyCreateTaskRequest): Promise<TwentyTaskRecord> {
+    const payload = await this.request<TwentyTaskRecord>('POST', '/tasks', body);
+    if (!payload.data?.id) {
+      throw new Error('Twenty API returned task without id');
+    }
+    return payload.data;
+  }
+
+  async updateTask(
+    taskId: string,
+    body: TwentyUpdateTaskRequest
+  ): Promise<TwentyTaskRecord> {
+    const payload = await this.request<TwentyTaskRecord>(
+      'PATCH',
+      `/tasks/${taskId}`,
+      body
+    );
+    if (!payload.data?.id) {
+      throw new Error('Twenty API returned task without id');
+    }
+    return payload.data;
+  }
+
+  async createTaskTarget(
+    body: TwentyCreateTaskTargetRequest
+  ): Promise<TwentyTaskTargetRecord> {
+    const payload = await this.request<TwentyTaskTargetRecord>(
+      'POST',
+      '/taskTargets',
+      body
+    );
+    if (!payload.data?.id) {
+      throw new Error('Twenty API returned taskTarget without id');
     }
     return payload.data;
   }

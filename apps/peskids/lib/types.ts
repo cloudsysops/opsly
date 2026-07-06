@@ -431,6 +431,7 @@ export type Database = {
           notes: string | null;
           created_at: string;
           updated_at: string;
+          twenty_task_id: string | null;
         };
         Insert: {
           tenant_id: string;
@@ -441,6 +442,7 @@ export type Database = {
           status?: 'pending' | 'completed' | 'cancelled';
           notes?: string | null;
           updated_at?: string;
+          twenty_task_id?: string | null;
         };
         Update: Partial<Database['public']['Tables']['followups']['Insert']>;
         Relationships: [];

@@ -14,7 +14,13 @@ export type {
   TwentyApiEnvelope,
   TwentyCreateOpportunityRequest,
   TwentyCreatePersonRequest,
+  TwentyCreateTaskRequest,
+  TwentyCreateTaskTargetRequest,
   TwentyOpportunityRecord,
   TwentyPersonName,
   TwentyPersonRecord,
+  TwentyTaskRecord,
+  TwentyTaskStatus,
+  TwentyTaskTargetRecord,
+  TwentyUpdateTaskRequest,
 } from './types.js';
