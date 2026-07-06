@@ -1,0 +1,22 @@
+{
+  "id": "wompi-gateway",
+  "kind": "opsly",
+  "title": "Wompi (Colombia) payment gateway",
+  "description": "Colombian payment gateway (PSE, Nequi, tarjetas) via Wompi payment links, run alongside Stripe rather than replacing it. Any LatAm tenant can enable it per-tenant.",
+  "module": "@intcloudsysops/wompi-gateway",
+  "lib_path": "lib/wompi-gateway",
+  "contract": "docs/blueprints/WOMPI-PAYMENT-GATEWAY-CONTRACT.md",
+  "env_template": "WOMPI_{SLUG}_ENABLED",
+  "env_keys": [
+    "WOMPI_{SLUG}_ENABLED",
+    "WOMPI_{SLUG}_PRIVATE_KEY",
+    "WOMPI_{SLUG}_PUBLIC_KEY",
+    "WOMPI_{SLUG}_EVENTS_SECRET"
+  ],
+  "harness_pattern": "integration-webhook",
+  "requires": [],
+  "conflicts_with": [],
+  "coexists_with": ["stripe"],
+  "currency": "COP",
+  "country": "CO"
+}

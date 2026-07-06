@@ -69,7 +69,8 @@
   "opsly": [
     "opsly/lib-module-scaffold.json",
     "opsly/openwa-channel.json",
-    "opsly/wacrm-channel.json"
+    "opsly/wacrm-channel.json",
+    "opsly/wompi-gateway.json"
   ],
   "upstream": {
     "sigmaRules": {

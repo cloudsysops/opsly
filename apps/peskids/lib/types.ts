@@ -179,6 +179,8 @@ export type Database = {
           joined_at: string;
           cancelled_at: string | null;
           stripe_checkout_session_id: string | null;
+          payment_provider: 'stripe' | 'wompi';
+          wompi_transaction_id: string | null;
         };
         Insert: {
           id?: string;
@@ -192,6 +194,8 @@ export type Database = {
           joined_at?: string;
           cancelled_at?: string | null;
           stripe_checkout_session_id?: string | null;
+          payment_provider?: 'stripe' | 'wompi';
+          wompi_transaction_id?: string | null;
         };
         Update: Partial<Database['peskids']['Tables']['class_enrollments']['Insert']>;
         Relationships: [];
@@ -210,6 +214,8 @@ export type Database = {
           paid_at: string | null;
           metadata: Json;
           created_at: string;
+          provider: 'stripe' | 'wompi';
+          wompi_transaction_id: string | null;
         };
         Insert: {
           id?: string;
@@ -224,6 +230,8 @@ export type Database = {
           paid_at?: string | null;
           metadata?: Json;
           created_at?: string;
+          provider?: 'stripe' | 'wompi';
+          wompi_transaction_id?: string | null;
         };
         Update: Partial<Database['peskids']['Tables']['payments']['Insert']>;
         Relationships: [];
