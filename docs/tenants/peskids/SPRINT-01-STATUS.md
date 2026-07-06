@@ -9,9 +9,12 @@ tags:
 
 # Sprint 01 Status Report — MVP Foundation
 
-**Date:** June 9, 2026 (Sprint 01 code + docs sync on branch `feat/peskids-sprint-01`)  
-**Status:** ✅ COMPLETE — All 6 tasks documented and wired to code; ready for owner demo  
-**Target:** Owner approval — demo con `localhost:3004` o producción `peskids.op-sly.com`
+**Date:** July 5, 2026  
+**Status:** ✅ CLOSED — Merged to `main`, deployed to production, smoke verified  
+**Merge:** `ef04feee` — PR [#678](https://github.com/cloudsysops/opsly/pull/678)  
+**Deploy:** [Deploy Peskids run 28760394264](https://github.com/cloudsysops/opsly/actions/runs/28760394264) — success  
+**Prod smoke (2026-07-05):** `/api/health`, landing, `/admin/login`, `/familias/login`, `n8n-peskids` → OK  
+**Target:** Owner demo — use `https://peskids.op-sly.com` or local `:3004` per `DEMO-SCRIPT.md`
 
 ---
 
@@ -257,9 +260,10 @@ Once owner approves (expected: Friday, May 24), move to Phase 1:
 ---
 
 **Status:** ✅ Ready for owner demo call.  
-**Next step:** Schedule demo with owner for Week 1 end (May 24).  
+**Production:** Sprint 01 live on `main` @ `ef04feee` (July 5, 2026).  
+**Next step:** Owner walkthrough with Sierra; then Phase 2 Week 2 hardening (WhatsApp approval-first, digest).  
 **Document prepared by:** Claude (AI Agent)  
-**Last updated:** June 9, 2026
+**Last updated:** July 5, 2026
 
 ---
 
