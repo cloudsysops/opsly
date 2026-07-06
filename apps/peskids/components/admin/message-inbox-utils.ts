@@ -23,14 +23,20 @@ export const sourceTone: Record<string, 'green' | 'coral' | 'teal'> = {
 
 export const statusTone: Record<string, 'amber' | 'violet' | 'green' | 'neutral'> = {
   pending: 'amber',
+  pending_approval: 'amber',
   approved: 'violet',
   sent: 'green',
+  failed: 'neutral',
+  skipped: 'neutral',
 };
 
 export function statusLabel(status?: string | null): string {
   if (status === 'sent') return 'Enviado';
   if (status === 'approved') return 'Aprobado';
-  return 'Pendiente';
+  if (status === 'failed') return 'No enviado';
+  if (status === 'skipped') return 'Omitido';
+  if (status === 'pending_approval') return 'Pendiente de aprobación';
+  return 'Pendiente de aprobación';
 }
 
 export function conversationLabel(mode?: string): string {

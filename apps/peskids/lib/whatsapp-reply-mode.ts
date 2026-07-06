@@ -2,7 +2,7 @@ export type WhatsAppReplyMode = 'auto' | 'draft';
 
 function normalize(value: string | undefined | null): WhatsAppReplyMode {
   const raw = value?.trim().toLowerCase();
-  if (!raw) return 'auto';
+  if (!raw) return 'draft';
   if (['draft', 'manual', 'approval-first', 'false', '0', 'off'].includes(raw)) {
     return 'draft';
   }

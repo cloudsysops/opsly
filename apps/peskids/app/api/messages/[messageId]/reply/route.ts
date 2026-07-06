@@ -1,7 +1,9 @@
 import { NextRequest } from 'next/server';
 import { validateStaffSession } from '@/lib/staff-auth';
-import { enqueueApprovedReply } from '@/lib/n8n-send';
-import { supabaseServer } from '@/lib/supabase';
+import {
+  handleMessageReply,
+  parseMessageReplyAction,
+} from '@/lib/message-reply-handler';
 import { errorJson, resolveRequestId, successJson } from '../../../../../lib/api-response';
 
 export async function POST(req: NextRequest, context: { params: Promise<{ messageId: string }> }) {
@@ -13,93 +15,25 @@ export async function POST(req: NextRequest, context: { params: Promise<{ messag
     }
 
     const { messageId } = await context.params;
-    const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids';
-    const { replyText } = await req.json();
+    const tenantId = (process.env.NEXT_PUBLIC_TENANT_ID || 'peskids').trim().toLowerCase();
 
-    if (!replyText || replyText.trim().length === 0) {
-      return errorJson(requestId, 'Reply text cannot be empty', 400);
+    if (tenantId !== 'peskids') {
+      return errorJson(requestId, 'Forbidden', 403);
     }
 
-    const supabase = supabaseServer();
+    const body = (await req.json()) as { replyText?: unknown; action?: unknown };
+    const replyText = typeof body.replyText === 'string' ? body.replyText : '';
+    const action = parseMessageReplyAction(body.action);
 
-    // Get original message to know source + contact
-    const { data: originalMessage, error: fetchError } = await supabase
-      .from('messages')
-      .select('*')
-      .eq('id', messageId)
-      .eq('tenant_id', tenantId)
-      .single();
-
-    if (fetchError || !originalMessage) {
-      return errorJson(requestId, 'Message not found', 404);
-    }
-
-    const { data: replyRecord, error: insertError } = await supabase
-      .from('messages')
-      .insert({
-        tenant_id: tenantId,
-        source: originalMessage.source,
-        sender_name: 'Equipo Peskids',
-        sender_contact: 'owner',
-        message_text: replyText.trim(),
-        external_id: `reply-${messageId}-${Date.now()}`,
-        direction: 'outbound',
-        parent_message_id: messageId,
-        status: 'approved',
-        ai_generated: false,
-      })
-      .select()
-      .single();
-
-    if (insertError) throw insertError;
-
-    const sendResult = await enqueueApprovedReply({
+    const result = await handleMessageReply({
+      tenantId,
       messageId,
-      source: String(originalMessage.source),
-      sender_contact: String(originalMessage.sender_contact),
-      reply_text: replyText.trim(),
+      replyText,
+      action,
     });
 
-    if (sendResult.ok) {
-      await supabase
-        .from('messages')
-        .update({ status: 'sent' })
-        .eq('id', replyRecord.id)
-        .eq('tenant_id', tenantId);
-
-      await supabase
-        .from('messages')
-        .update({ status: 'approved' })
-        .eq('id', messageId)
-        .eq('tenant_id', tenantId);
-    }
-
-    const rawBus = process.env.OPSLY_EVENT_BUS_URL?.trim() ?? '';
-    const eventBus = rawBus
-      ? rawBus.endsWith('/events')
-        ? rawBus
-        : `${rawBus.replace(/\/$/, '')}/events`
-      : '';
-
-    try {
-      if (!eventBus || eventBus.includes('localhost') || eventBus.includes('127.0.0.1')) {
-        throw new Error('OPSLY_EVENT_BUS_URL not configured for production');
-      }
-      await fetch(eventBus, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          event_type: 'message.replied',
-          tenant_id: tenantId,
-          source: originalMessage.source,
-          sender_contact: originalMessage.sender_contact,
-          reply_text: replyText,
-          timestamp: new Date().toISOString(),
-        }),
-      });
-    } catch (error) {
-      console.warn('Failed to emit event:', error);
-      // Non-blocking: continue even if event bus fails
+    if (!result.ok) {
+      return errorJson(requestId, result.error, result.status);
     }
 
     return successJson(
@@ -107,13 +41,13 @@ export async function POST(req: NextRequest, context: { params: Promise<{ messag
       {
         ok: true,
         success: true,
-        replyRecord,
-        n8n: sendResult,
-        message: sendResult.ok
-          ? 'Respuesta registrada y encolada en n8n para envío.'
-          : 'Respuesta registrada. n8n no disponible — revisa N8N_WEBHOOK_BASE_URL.',
+        action: result.action,
+        status: result.status,
+        replyRecord: result.replyRecord,
+        n8n: result.n8n,
+        message: result.message,
       },
-      201
+      action === 'approve' || action === 'skip' ? 200 : 201
     );
   } catch (error) {
     console.error('Reply API error:', error, { request_id: requestId });

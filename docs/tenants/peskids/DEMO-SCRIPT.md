@@ -41,6 +41,21 @@ npm run dev --workspace=peskids
 
 ---
 
+## Week 2 — Mensajes y resumen diario
+
+| Paso | URL / acción | Qué mostrar |
+|------|----------------|-------------|
+| 1 | `http://localhost:3004/admin` → **Mensajes** | Panel **Mensajes** con contador *pendientes de aprobación* |
+| 2 | Abrir un hilo | Borrador sugerido; botones **Aprobar**, **Copiar mensaje**, **Marcar enviado**, **Aprobar y enviar** |
+| 3 | **Aprobar** | Guarda respuesta sin enviar automáticamente |
+| 4 | **Copiar mensaje** | Pegar en WhatsApp manual (approval-first) |
+| 5 | Resumen diario | `GET /api/admin/digest/daily` (staff o cron) — interesados, seguimientos, mensajes pendientes |
+| 6 | Prod smoke | `https://peskids.op-sly.com/api/admin/digest/daily` con secret cron (ver `DAILY-DIGEST-RUNBOOK.md`) |
+
+**Mensaje clave para el cliente:** «Nada sale por WhatsApp sin tu aprobación explícita. Cada mañana recibes un resumen de lo que requiere acción.»
+
+---
+
 ## SPANISH VERSION (VERSIÓN EN ESPAÑOL)
 
 ### Introducción (30 segundos)

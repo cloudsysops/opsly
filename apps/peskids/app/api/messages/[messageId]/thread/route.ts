@@ -42,7 +42,7 @@ export async function GET(_req: NextRequest, context: { params: Promise<{ messag
 
   return successJson(requestId, {
     inbound,
-    status: inbound.status ?? 'pending',
+    status: inbound.status ?? 'pending_approval',
     conversation_mode: detectConversationMode(inbound.sender_contact),
     suggested_reply: latestDraft?.message_text ?? null,
     draft_id: latestDraft?.id ?? null,
