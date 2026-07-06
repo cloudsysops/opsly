@@ -1,12 +1,15 @@
 import { supabaseServer } from '@/lib/supabase';
 import { fetchPlatformLeadsForDashboard } from '@/lib/peskids-platform-dashboard';
 import { isMissingPlatformPeskidsTable } from '@/lib/peskids-platform-read';
+import { countWacrmPendingReplies } from '@/lib/integrations/wacrm-inbox-status';
 
 export type DailyDigestLeadItem = {
   id: string;
   name: string;
   status: string;
   created_at: string;
+  email?: string;
+  referral_source?: string | null;
 };
 
 export type DailyDigestFollowupItem = {
@@ -25,6 +28,8 @@ export type DailyDigestMessageItem = {
   message_text: string;
   created_at: string;
   status: string | null;
+  external_id?: string | null;
+  direction?: string | null;
 };
 
 export type DailyDigestTrialClassItem = {
@@ -56,6 +61,11 @@ export type DailyDigestPayload = {
   messages: {
     pending_approval: number;
     pending_items: DailyDigestMessageItem[];
+    wacrm_pending_reply: number;
+  };
+  wacrm: {
+    pending_reply: number;
+    whatsapp_leads_today: number;
   };
   trial_classes: {
     scheduled_today: number;
@@ -90,14 +100,22 @@ function isPendingLeadStatus(status: string | null | undefined): boolean {
   return !['enrolled', 'archived', 'converted', 'closed', 'lost'].includes(normalized);
 }
 
+function isWhatsAppLead(item: DailyDigestLeadItem): boolean {
+  const email = item.email?.toLowerCase() ?? '';
+  const source = item.referral_source?.toLowerCase() ?? '';
+  return source.includes('whatsapp') || email.startsWith('wa+') || email.includes('@inbox.peskids.local');
+}
+
 function buildHighlightLines(payload: Omit<DailyDigestPayload, 'highlight_lines'>): string[] {
   const lines: string[] = [
     `Resumen diario Peskids — ${payload.generated_at.slice(0, 10)}`,
     `Interesados nuevos hoy: ${payload.leads.new_today}`,
     `Interesados pendientes: ${payload.leads.pending}`,
+    `Leads WhatsApp hoy: ${payload.wacrm.whatsapp_leads_today}`,
     `Clases de prueba hoy: ${payload.trial_classes.scheduled_today}`,
     `Seguimientos para hoy: ${payload.followups.due_today}`,
     `Mensajes pendientes de aprobación: ${payload.messages.pending_approval}`,
+    `Conversaciones wacrm sin responder: ${payload.wacrm.pending_reply}`,
   ];
 
   if (payload.messages.pending_approval > 0) {
@@ -119,7 +137,14 @@ export async function buildDailyDigest(referenceDate = new Date()): Promise<Dail
 
   const supabase = supabaseServer();
 
-  type LeadDigestRow = { id: string; name: string; status: string; created_at: string };
+  type LeadDigestRow = {
+    id: string;
+    name: string;
+    status: string;
+    created_at: string;
+    email?: string;
+    referral_source?: string | null;
+  };
 
   let leadRows: LeadDigestRow[] = [];
 
@@ -130,6 +155,8 @@ export async function buildDailyDigest(referenceDate = new Date()): Promise<Dail
       name: lead.full_name,
       status: lead.status,
       created_at: lead.created_at ?? periodStartISO,
+      email: lead.email,
+      referral_source: lead.referral_source,
     }));
   } else if (!isMissingPlatformPeskidsTable(platformLeads.error)) {
     throw platformLeads.error;
@@ -162,6 +189,8 @@ export async function buildDailyDigest(referenceDate = new Date()): Promise<Dail
       name: String(lead.name ?? 'Sin nombre'),
       status: String(lead.status ?? 'new'),
       created_at: String(lead.created_at),
+      email: lead.email,
+      referral_source: lead.referral_source ?? null,
     }));
 
   const pendingItems: DailyDigestLeadItem[] = leadRows
@@ -199,7 +228,9 @@ export async function buildDailyDigest(referenceDate = new Date()): Promise<Dail
 
   const { data: pendingMessages, error: messagesError } = await supabase
     .from('messages')
-    .select('id, sender_name, sender_contact, source, message_text, created_at, status')
+    .select(
+      'id, sender_name, sender_contact, source, message_text, created_at, status, external_id, direction'
+    )
     .eq('tenant_id', slug)
     .eq('direction', 'inbound')
     .or('status.is.null,status.eq.pending,status.eq.pending_approval')
@@ -210,6 +241,29 @@ export async function buildDailyDigest(referenceDate = new Date()): Promise<Dail
     throw messagesError;
   }
 
+  const { data: wacrmMessages, error: wacrmMessagesError } = await supabase
+    .from('messages')
+    .select('sender_contact, message_text, created_at, status, direction, external_id')
+    .eq('tenant_id', slug)
+    .like('external_id', 'wacrm:%')
+    .order('created_at', { ascending: false })
+    .limit(200);
+
+  if (wacrmMessagesError) {
+    throw wacrmMessagesError;
+  }
+
+  const wacrmPendingReply = countWacrmPendingReplies(
+    (wacrmMessages ?? []).map((row) => ({
+      sender_contact: String(row.sender_contact),
+      message_text: String(row.message_text),
+      created_at: String(row.created_at),
+      status: row.status,
+      direction: row.direction,
+      external_id: row.external_id,
+    }))
+  );
+
   const messageItems: DailyDigestMessageItem[] = (pendingMessages ?? []).map((row) => ({
     id: String(row.id),
     sender_name: row.sender_name ?? null,
@@ -218,7 +272,11 @@ export async function buildDailyDigest(referenceDate = new Date()): Promise<Dail
     message_text: String(row.message_text),
     created_at: String(row.created_at),
     status: row.status ?? 'pending_approval',
+    external_id: row.external_id ?? null,
+    direction: row.direction ?? null,
   }));
+
+  const whatsappLeadsToday = newTodayItems.filter(isWhatsAppLead).length;
 
   const { data: trialClasses, error: trialError } = await supabase
     .from('trial_classes')
@@ -261,6 +319,11 @@ export async function buildDailyDigest(referenceDate = new Date()): Promise<Dail
     messages: {
       pending_approval: messageItems.length,
       pending_items: messageItems,
+      wacrm_pending_reply: wacrmPendingReply,
+    },
+    wacrm: {
+      pending_reply: wacrmPendingReply,
+      whatsapp_leads_today: whatsappLeadsToday,
     },
     trial_classes: {
       scheduled_today: trialItems.length,
@@ -299,6 +362,11 @@ export function emptyDailyDigest(referenceDate = new Date()): DailyDigestPayload
     messages: {
       pending_approval: 0,
       pending_items: [],
+      wacrm_pending_reply: 0,
+    },
+    wacrm: {
+      pending_reply: 0,
+      whatsapp_leads_today: 0,
     },
     trial_classes: {
       scheduled_today: 0,

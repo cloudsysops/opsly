@@ -123,6 +123,62 @@ export async function storeOutboundMessage(params: {
   return { message: data as StoredMessage, error: null };
 }
 
+export async function findMessageByExternalId(
+  externalId: string
+): Promise<StoredMessage | null> {
+  const supabase = supabaseServer();
+  const { data, error } = await supabase
+    .from('messages')
+    .select(
+      'id, source, sender_name, sender_contact, message_text, created_at, direction, parent_message_id, ai_generated, status'
+    )
+    .eq('tenant_id', tenantId())
+    .eq('external_id', externalId)
+    .maybeSingle();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return data as StoredMessage;
+}
+
+export async function storeOutboundMessageWithExternalId(params: {
+  parentId: string;
+  source: MessageSource;
+  sender_contact: string;
+  replyText: string;
+  aiGenerated: boolean;
+  senderName?: string;
+  status?: 'pending' | 'approved' | 'sent' | null;
+  external_id: string;
+}): Promise<{ message: StoredMessage | null; error: string | null }> {
+  const supabase = supabaseServer();
+  const { data, error } = await supabase
+    .from('messages')
+    .insert({
+      tenant_id: tenantId(),
+      source: params.source,
+      sender_contact: params.sender_contact,
+      sender_name: params.senderName ?? 'Asistente Peskids',
+      message_text: params.replyText,
+      external_id: params.external_id,
+      direction: 'outbound',
+      parent_message_id: params.parentId,
+      status: params.status ?? 'sent',
+      ai_generated: params.aiGenerated,
+    })
+    .select(
+      'id, source, sender_name, sender_contact, message_text, created_at, direction, parent_message_id, ai_generated, status'
+    )
+    .single();
+
+  if (error) {
+    return { message: null, error: error.message };
+  }
+  return { message: data as StoredMessage, error: null };
+}
+
 export async function getMessageById(messageId: string): Promise<StoredMessage | null> {
   const supabase = supabaseServer();
   const { data, error } = await supabase

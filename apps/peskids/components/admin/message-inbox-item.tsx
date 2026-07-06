@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import {
   conversationLabel,
   getContactHref,
+  isWacrmInboxMessage,
   sourceTone,
   statusLabel,
   statusTone,
@@ -56,6 +57,7 @@ export function MessageInboxItem({
                   {conversationLabel(message.conversation_mode)}
                 </Badge>
                 <Badge tone={tone}>{message.source}</Badge>
+                {isWacrmInboxMessage(message) ? <Badge tone="green">wacrm</Badge> : null}
                 <Badge tone={statusTone[message.status ?? 'pending'] ?? 'neutral'}>
                   {statusLabel(message.status)}
                 </Badge>

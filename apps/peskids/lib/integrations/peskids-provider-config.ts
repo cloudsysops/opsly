@@ -88,6 +88,6 @@ export function shouldSyncLeadToGhl(
 /** Documented defaults when operators set flags explicitly (see OPEN-SOURCE-CRM-MIGRATION.md). */
 export const PESKIDS_PROVIDER_DEFAULTS = {
   crm: 'ghl',
-  inbox: 'ghl',
+  inbox: 'wacrm',
   booking: 'ghl',
 } as const;

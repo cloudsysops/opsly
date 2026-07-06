@@ -5,7 +5,6 @@ import {
   Copy,
   Loader2,
   Mail,
-  Phone,
   Star,
   UserPlus,
   Users,
@@ -24,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MessageInboxPanel } from '@/components/admin/message-inbox-panel';
+import { WacrmLeadInboxActions } from '@/components/admin/wacrm-lead-inbox-actions';
 import { cn } from '@/lib/utils';
 
 function StarRating({ value }: { value: number }): React.ReactElement {
@@ -106,18 +106,8 @@ const followupStatusFilterLabel: Record<
   cancelled: 'Cancelados',
 };
 
-function toDigits(value: string): string {
-  return value.replace(/\D+/g, '');
-}
-
 function mailtoHref(email: string): string {
   return `mailto:${encodeURIComponent(email)}`;
-}
-
-function whatsappHref(phone: string): string | null {
-  const digits = toDigits(phone);
-  if (!digits) return null;
-  return `https://wa.me/${digits}`;
 }
 
 function formatCop(cents: number): string {
@@ -454,8 +444,6 @@ export function DashboardStatsGrid({
           {filteredLeads.length > 0 ? (
             filteredLeads.map((lead) => {
               const referralCode = lead.referral_code;
-              const phoneHref = lead.phone ? whatsappHref(lead.phone) : null;
-
               return (
                 <li
                   key={lead.id}
@@ -713,6 +701,8 @@ export function DashboardStatsGrid({
                     ) : null}
                   </div>
 
+                  <WacrmLeadInboxActions phone={lead.phone} messages={data.recent_messages} />
+
                   <div className="mt-3 flex flex-wrap gap-2">
                     {lead.email ? (
                       <Button
@@ -725,17 +715,6 @@ export function DashboardStatsGrid({
                       >
                         <Mail className="h-4 w-4" aria-hidden />
                         <span className="ml-1">Correo</span>
-                      </Button>
-                    ) : null}
-                    {phoneHref ? (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => window.open(phoneHref, '_blank', 'noopener,noreferrer')}
-                      >
-                        <Phone className="h-4 w-4" aria-hidden />
-                        <span className="ml-1">WhatsApp</span>
                       </Button>
                     ) : null}
                     {referralCode ? (
