@@ -58,7 +58,24 @@ WhatsApp → wacrm sidecar → n8n (optional) → POST /api/webhooks/wacrm → S
 
 **Idempotency:** `external_message_id` is stored as `wacrm:<id>`. Duplicates return `200` with `duplicate: true`.
 
-## Manual smoke (staging or prod-safe)
+## Production activation (2026-07-06)
+
+| Step | Status |
+|------|--------|
+| PR [#684](https://github.com/cloudsysops/opsly/pull/684) merged | ✅ `60e2cc38` |
+| Dockerfile fix PR [#686](https://github.com/cloudsysops/opsly/pull/686) | ✅ `a77ea815` |
+| Deploy Peskids (`deploy-peskids.yml` run `28801490746`) | ✅ |
+| Pre-flag webhook smoke (`POST /api/webhooks/wacrm`) | ✅ 401 sin secret · 201 con secret · idempotencia OK |
+| Doppler `PESKIDS_INBOX_PROVIDER=wacrm` | ✅ en contenedor `peskids` |
+| Doppler `WACRM_PESKIDS_SERVER_URL` + `NEXT_PUBLIC_*` | ✅ |
+| Doppler `WACRM_PESKIDS_WEBHOOK_SECRET` | ✅ (no loguear) |
+| `WACRM_PESKIDS_ENABLED` | ⏸ `false` hasta sidecar `https://wa-peskids.op-sly.com` healthy |
+| n8n workflow `peskids-wacrm-inbound` | ⚠️ importado; publicar/activar + `WACRM_PESKIDS_WEBHOOK_SECRET` en env n8n |
+| Admin inbox UI (browser) | ⏳ pendiente sesión staff |
+| Digest API prod | ⏳ falta `PESKIDS_DIGEST_CRON_SECRET` o `CRON_SECRET` en Doppler |
+
+**Import n8n (VPS):** el JSON debe incluir `"id": "peskids-wacrm-inbound"`. Tras import, usar publish offline (ver `scripts/install-peskids-n8n-workflows.sh`).
+
 
 ```bash
 export WACRM_SECRET="$(doppler secrets get WACRM_PESKIDS_WEBHOOK_SECRET --plain --project ops-intcloudsysops --config prd)"
