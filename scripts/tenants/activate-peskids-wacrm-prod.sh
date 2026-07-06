@@ -43,13 +43,6 @@ run() {
 
 echo "=== activate wacrm prod (slug=${SLUG}) ==="
 
-# Avoid inheriting DRY_RUN from shell/CI on VPS
-unset DRY_RUN
-DRY_RUN=false
-for arg in "$@"; do
-  [[ "$arg" == "--dry-run" ]] && DRY_RUN=true
-done
-
 run chmod +x "${ROOT}/scripts/tenants/deploy-wacrm-health-proxy.sh"
 run chmod +x "${ROOT}/scripts/tenants/reconcile-peskids-n8n-wacrm-env.sh"
 
