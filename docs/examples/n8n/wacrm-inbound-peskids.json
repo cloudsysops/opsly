@@ -13,8 +13,9 @@
       "id": "Webhook",
       "name": "wacrm inbound",
       "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [0, 0]
+      "typeVersion": 1,
+      "position": [0, 0],
+      "webhookId": "c4e8f1a2-9b3d-4e7f-a1c2-8d5e6f7a8b9c"
     },
     {
       "parameters": {
