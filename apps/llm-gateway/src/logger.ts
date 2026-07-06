@@ -1,6 +1,6 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { getRedisClient } from './cache.js';
-import { platformSchema } from './supabase-helpers.js';
+import { platformSchema, supabaseRpc } from './supabase-helpers.js';
 import type { LLMRequest, UsageEvent } from './types.js';
 
 let supabaseClient: ReturnType<typeof createSupabaseClient> | null = null;
@@ -19,14 +19,6 @@ function getSupabaseClient(): ReturnType<typeof createSupabaseClient> | null {
   supabaseClient = createSupabaseClient(supabaseUrl, serviceRoleKey);
   return supabaseClient;
 }
-
-type UsageRow = {
-  tokens_input: number;
-  tokens_output: number;
-  cost_usd: number;
-  cache_hit: boolean;
-  model: string;
-};
 
 /** Combina fila de uso con atribución opcional del request (billing / analytics). */
 export function mergeUsageAttribution(req: LLMRequest, base: UsageEvent): UsageEvent {
@@ -54,17 +46,19 @@ export async function logUsage(event: UsageEvent): Promise<void> {
   }
 }
 
-export async function getTenantUsage(
-  tenantSlug: string,
-  period: 'today' | 'month' = 'today'
-): Promise<{
+type AggregatedUsage = {
   tokens_input: number;
   tokens_output: number;
   cost_usd: number;
   requests: number;
   cache_hits: number;
   top_model: string | null;
-}> {
+};
+
+export async function getTenantUsage(
+  tenantSlug: string,
+  period: 'today' | 'month' = 'today'
+): Promise<AggregatedUsage> {
   const cacheKey = `usage:tenant:${tenantSlug}:${period}`;
   try {
     const redis = await getRedisClient();
@@ -93,37 +87,19 @@ export async function getTenantUsage(
       ? new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
       : new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
-  const { data } = await platformSchema(supabase)
-    .from('usage_events')
-    .select('tokens_input,tokens_output,cost_usd,cache_hit,model')
-    .eq('tenant_slug', tenantSlug)
-    .gte('created_at', from);
+  // Bolt Optimization: Replace O(N) in-memory aggregation with efficient SQL-side RPC.
+  const { data } = await supabaseRpc<AggregatedUsage>(supabase, 'get_llm_usage_stats', {
+    p_tenant_slug: tenantSlug,
+    p_from_date: from,
+  });
 
-  const rows: UsageRow[] = (data || []) as UsageRow[];
-
-  // Compute the most-used model
-  const modelCount = new Map<string, number>();
-  for (const row of rows) {
-    if (row.model) {
-      modelCount.set(row.model, (modelCount.get(row.model) ?? 0) + 1);
-    }
-  }
-  let top_model: string | null = null;
-  let topCount = 0;
-  for (const [model, count] of modelCount) {
-    if (count > topCount) {
-      top_model = model;
-      topCount = count;
-    }
-  }
-
-  const result = {
-    tokens_input: rows.reduce((sum, row) => sum + row.tokens_input, 0),
-    tokens_output: rows.reduce((sum, row) => sum + row.tokens_output, 0),
-    cost_usd: rows.reduce((sum, row) => sum + row.cost_usd, 0),
-    requests: rows.length,
-    cache_hits: rows.filter((row) => row.cache_hit).length,
-    top_model,
+  const result: AggregatedUsage = data || {
+    tokens_input: 0,
+    tokens_output: 0,
+    cost_usd: 0,
+    requests: 0,
+    cache_hits: 0,
+    top_model: null,
   };
 
   try {
@@ -139,14 +115,9 @@ export async function getTenantUsage(
 /**
  * Agrega uso LLM de todos los tenants (`usage_events`) para el período.
  */
-export async function getPlatformLlmUsage(period: 'today' | 'month' = 'today'): Promise<{
-  tokens_input: number;
-  tokens_output: number;
-  cost_usd: number;
-  requests: number;
-  cache_hits: number;
-  top_model: string | null;
-}> {
+export async function getPlatformLlmUsage(
+  period: 'today' | 'month' = 'today'
+): Promise<AggregatedUsage> {
   const cacheKey = `usage:platform:${period}`;
   try {
     const redis = await getRedisClient();
@@ -175,35 +146,18 @@ export async function getPlatformLlmUsage(period: 'today' | 'month' = 'today'): 
       ? new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
       : new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
-  const { data } = await platformSchema(supabase)
-    .from('usage_events')
-    .select('tokens_input,tokens_output,cost_usd,cache_hit,model')
-    .gte('created_at', from);
+  // Bolt Optimization: Replace O(N) in-memory aggregation with efficient SQL-side RPC.
+  const { data } = await supabaseRpc<AggregatedUsage>(supabase, 'get_llm_usage_stats', {
+    p_from_date: from,
+  });
 
-  const rows: UsageRow[] = (data || []) as UsageRow[];
-
-  const modelCount = new Map<string, number>();
-  for (const row of rows) {
-    if (row.model) {
-      modelCount.set(row.model, (modelCount.get(row.model) ?? 0) + 1);
-    }
-  }
-  let top_model: string | null = null;
-  let topCount = 0;
-  for (const [model, count] of modelCount) {
-    if (count > topCount) {
-      top_model = model;
-      topCount = count;
-    }
-  }
-
-  const result = {
-    tokens_input: rows.reduce((sum, row) => sum + row.tokens_input, 0),
-    tokens_output: rows.reduce((sum, row) => sum + row.tokens_output, 0),
-    cost_usd: rows.reduce((sum, row) => sum + row.cost_usd, 0),
-    requests: rows.length,
-    cache_hits: rows.filter((row) => row.cache_hit).length,
-    top_model,
+  const result: AggregatedUsage = data || {
+    tokens_input: 0,
+    tokens_output: 0,
+    cost_usd: 0,
+    requests: 0,
+    cache_hits: 0,
+    top_model: null,
   };
 
   try {

@@ -37,3 +37,7 @@
 ## 2026-06-26 - [Caching Admin Overview DB & Network Probes]
 **Learning:** The admin overview dashboardaggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
 **Action:** Always cache aggregated metrics and external probes in dashboard-facing API routes, and modularize parsing logic to maintain low cyclomatic complexity.
+
+## 2026-07-06 - [SQL-Side Aggregation for usage metrics]
+**Learning:** Moving aggregation logic (SUM, COUNT, GROUP BY) from the application layer to a database RPC significantly reduces network overhead and memory pressure. In the LLM gateway, replacing O(N) in-memory processing of usage events with a single SQL summary call prevents tail latency spikes as the event log grows, complementing existing Redis caching.
+**Action:** Always prefer SQL-side aggregations for metrics and analytics instead of fetching raw rows and computing results in Node.js.
