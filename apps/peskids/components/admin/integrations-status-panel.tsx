@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Cable } from 'lucide-react';
+import { Link2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { IntegrationsStatus } from '@/lib/services/integrations-status.service';
@@ -48,7 +48,7 @@ export function IntegrationsStatusPanel(): React.ReactElement {
     <Card className="mb-8 border-pk-border bg-white shadow-card">
       <CardHeader className="flex flex-row items-center gap-3">
         <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-50 text-pk-primary">
-          <Cable className="h-4 w-4" aria-hidden />
+          <Link2 className="h-4 w-4" aria-hidden />
         </span>
         <div>
           <CardTitle className="text-base">Estado de integraciones</CardTitle>
