@@ -38,28 +38,54 @@ vi.mock('@/lib/supabase', () => ({
       if (table === 'messages') {
         return {
           select: vi.fn(() => ({
-            eq: vi.fn(() => ({
-              eq: vi.fn(() => ({
-                or: vi.fn(() => ({
-                  order: vi.fn(() => ({
-                    limit: vi.fn().mockResolvedValue({
-                      data: [
-                        {
-                          id: 'msg-1',
-                          sender_name: 'María',
-                          sender_contact: '300111',
-                          source: 'whatsapp',
-                          message_text: 'Hola',
-                          created_at: '2026-06-09T09:00:00.000Z',
-                          status: 'pending_approval',
-                        },
-                      ],
-                      error: null,
-                    }),
+            eq: vi.fn((column: string) => {
+              if (column === 'tenant_id') {
+                return {
+                  eq: vi.fn(() => ({
+                    or: vi.fn(() => ({
+                      order: vi.fn(() => ({
+                        limit: vi.fn().mockResolvedValue({
+                          data: [
+                            {
+                              id: 'msg-1',
+                              sender_name: 'María',
+                              sender_contact: '300111',
+                              source: 'whatsapp',
+                              message_text: 'Hola',
+                              created_at: '2026-06-09T09:00:00.000Z',
+                              status: 'pending_approval',
+                              external_id: 'wacrm:ext-1',
+                              direction: 'inbound',
+                            },
+                          ],
+                          error: null,
+                        }),
+                      })),
+                    })),
                   })),
-                })),
-              })),
-            })),
+                  like: vi.fn(() => ({
+                    order: vi.fn(() => ({
+                      limit: vi.fn().mockResolvedValue({
+                        data: [
+                          {
+                            sender_contact: '300111',
+                            message_text: 'Hola',
+                            created_at: '2026-06-09T09:00:00.000Z',
+                            status: 'pending_approval',
+                            direction: 'inbound',
+                            external_id: 'wacrm:ext-1',
+                          },
+                        ],
+                        error: null,
+                      }),
+                    })),
+                  })),
+                };
+              }
+              return {
+                eq: vi.fn(),
+              };
+            }),
           })),
         };
       }
@@ -114,6 +140,8 @@ describe('buildDailyDigest', () => {
     expect(digest.leads.new_today).toBeGreaterThanOrEqual(1);
     expect(digest.followups.due_today).toBeGreaterThanOrEqual(1);
     expect(digest.messages.pending_approval).toBeGreaterThanOrEqual(1);
+    expect(digest.wacrm.pending_reply).toBeGreaterThanOrEqual(1);
+    expect(digest.highlight_lines.some((line) => line.includes('wacrm'))).toBe(true);
     expect(digest.highlight_lines.length).toBeGreaterThan(0);
     expect(digest.highlight_lines[0]).toMatch(/Resumen diario Peskids/);
   });

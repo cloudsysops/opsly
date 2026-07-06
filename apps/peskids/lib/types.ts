@@ -596,6 +596,7 @@ export interface DashboardData {
       | 'created_at'
       | 'status'
       | 'direction'
+      | 'external_id'
     > & {
       conversation_mode: 'admissions' | 'support';
     }

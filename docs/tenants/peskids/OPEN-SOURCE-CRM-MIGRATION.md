@@ -1,7 +1,7 @@
 ---
 status: active
 owner: peskids
-last_review: 2026-07-05
+last_review: 2026-07-06
 tenant: peskids
 ---
 
@@ -11,7 +11,54 @@ Plan canónico para migrar de **GoHighLevel (GHL)** hacia un stack híbrido **Wh
 
 **Principios:** no reemplazar todo de una; GHL sigue como fallback; un solo write path por entidad; WhatsApp automático solo con aprobación humana; Peskids Admin no duplica CRM completo.
 
-**Estado del documento:** `MIGRATION_PLAN_READY` + adapters preparados (`ADAPTERS_READY_NO_RUNTIME_CHANGE`).
+**Estado del documento:** `GATE_1_RECOVERED` (2026-07-06) · adapters preparados (`ADAPTERS_READY_NO_RUNTIME_CHANGE`).
+
+---
+
+## Gate 1 — Migration recovery (2026-07-06 UTC)
+
+**Objetivo:** restaurar `POST /api/leads` → **201** en producción sin cambiar runtime provider flags.
+
+### Root cause
+
+- Error prod: `Could not find the 'ghl_contact_id' column of 'peskids_leads' in the schema cache`
+- Clasificación: **MISSING_COLUMN** en `platform.peskids_leads`
+- `0075` figuraba aplicada en `schema_migrations` pero el DDL GHL **no** estaba en la tabla (schema drift)
+
+### Migraciones platform (`supabase/migrations`)
+
+| Migration | Antes (prod) | Acción 2026-07-06 | Después |
+|-----------|--------------|-------------------|---------|
+| `0075` GHL tracking | Registrada, columnas ausentes | Reparado vía `0084` (mismo DDL idempotente) | `ghl_*` columnas OK |
+| `0079` trial classes | Aplicada (histórico) | — | Sin cambio |
+| `0080` session notes | Aplicada (histórico) | — | Sin cambio |
+| `0081` intcloudsysops schema | Pendiente | `supabase db push` | Aplicada |
+| `0082` Twenty CRM ids | Pendiente | `supabase db push` | `twenty_*` columnas OK |
+| `0083` intcloudsysops CRM ids | Pendiente | `supabase db push` | Aplicada |
+| `0084` repair GHL columns | N/A | `supabase db push` | Drift 0075 cerrado |
+
+### Migración tenant `005_message_approval_status.sql`
+
+- Vive en `apps/peskids/migrations/` (`public.messages` constraint)
+- **No** bloquea lead capture; sigue pendiente de verificación/aplicación explícita para estados `pending_approval` / `skipped`
+
+### Smoke producción (post-migración)
+
+| Check | Resultado |
+|-------|-----------|
+| `GET https://peskids.op-sly.com/` | **200** |
+| `GET https://api.op-sly.com/api/health` | **ok** |
+| `POST https://peskids.op-sly.com/api/leads` | **201** |
+| `POST https://api.op-sly.com/api/public/tenants/peskids/leads` | **201** |
+| Fila en `platform.peskids_leads` | **OK** (`opsly.verify+migration-gate-*@intcloudsysops.com`) |
+| `GET /api/admin/digest/daily` sin auth | **401** (esperado) |
+| Provider flags (`PESKIDS_*_PROVIDER`) | **unset** — runtime legacy sin Twenty/Chatwoot |
+
+### Próximo paso Gate 1 ops
+
+1. Commitear `0084_repair_peskids_ghl_tracking_fields.sql` en `main` para alinear repo ↔ prod
+2. Aplicar / verificar migración `005` en `public.messages` si aún falta
+3. Configurar `PESKIDS_DIGEST_CRON_SECRET` + cron n8n 8am (`DAILY-DIGEST-RUNBOOK.md`)
 
 ---
 
@@ -89,7 +136,7 @@ Instalador: `scripts/install-peskids-n8n-workflows.sh` · Guía: `N8N-WORKFLOWS-
 | Estado conversación | Labels + status |
 | Templates | Canned responses (manual/aprobados) |
 
-**Nota repo:** no hay código Chatwoot aún. Path alternativo ya documentado: **wacrm** (`lib/wacrm-channel/`, `WACRM-TWENTY-CUTOVER.md`). Decisión piloto: **Chatwoot** (prompt estratégico) vs **wacrm** (ya integrado) — ver matriz abajo.
+**Nota repo (2026-06-09):** **wacrm** es el inbox WhatsApp OSS oficial para Peskids (`POST /api/webhooks/wacrm`, `PESKIDS_INBOX_PROVIDER=wacrm`). Chatwoot queda como alternativa futura no desplegada. Ver `WACRM-RUNBOOK.md`.
 
 ### 6. Qué reemplazaría **Twenty / EspoCRM**
 
@@ -145,7 +192,8 @@ flowchart TB
 | Step | Objetivo | Estado repo |
 |------|----------|-------------|
 | **1 — GHL bridge visible** | `ghl_contact_id`, sync status, abrir contacto GHL | Adapters: `resolveCrmContactLinks()` · UI admin pendiente |
-| **2 — Chatwoot pilot** | Instalar Chatwoot VPS, inbox prueba, webhook → n8n | ❌ No instalado · wacrm code-ready |
+| **2 — wacrm inbox** | Webhook `POST /api/webhooks/wacrm`, admin visibility, digest | ✅ Código · activar flags tras smoke |
+| **2b — Chatwoot pilot** | Alternativa futura (no instalar ahora) | ❌ No instalado |
 | **3 — CRM OSS pilot** | Twenty pipeline + import QA leads | Código ✅ · VPS ❌ |
 | **4 — Cal.com pilot** | Booking clase prueba | ❌ |
 | **5 — Cutover controlado** | GHL fallback 1–2 semanas, apagar progresivo | Runbook: `PESKIDS-GHL-DISABLE-RUNBOOK.md` |
@@ -179,7 +227,7 @@ Documented defaults for **explicit cutover** (when unset, runtime stays **legacy
 | Variable | Valores | Default documentado | Runtime sin flag |
 |----------|---------|---------------------|------------------|
 | `PESKIDS_CRM_PROVIDER` | `ghl` \| `twenty` \| `espocrm` | `ghl` | `legacy` → Twenty if configured + GHL if `PESKIDS_GHL_ENABLED` |
-| `PESKIDS_INBOX_PROVIDER` | `ghl` \| `chatwoot` \| `wacrm` | `ghl` | `legacy` → inbound/jelou/openwa webhooks |
+| `PESKIDS_INBOX_PROVIDER` | `ghl` \| `chatwoot` \| `wacrm` | `wacrm` (recomendado explícito) | `legacy` → inbound/jelou/openwa webhooks |
 | `PESKIDS_BOOKING_PROVIDER` | `ghl` \| `calcom` | `ghl` | `legacy` → GHL calendar en trial scheduler |
 
 **Flags existentes (siguen activos):**

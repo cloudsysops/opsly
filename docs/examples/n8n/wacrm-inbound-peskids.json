@@ -1,0 +1,61 @@
+{
+  "name": "Peskids wacrm inbound → Opsly webhook",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "wacrm-peskids-inbound",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "Webhook",
+      "name": "wacrm inbound",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.PESKIDS_APP_URL || 'https://peskids.op-sly.com'}}/api/webhooks/wacrm",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-wacrm-webhook-secret",
+              "value": "={{$env.WACRM_PESKIDS_WEBHOOK_SECRET}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ tenant_slug: 'peskids', provider: 'wacrm', event_type: $json.event_type || 'inbound_message', external_conversation_id: $json.external_conversation_id, external_message_id: $json.external_message_id, phone: $json.phone, contact_name: $json.contact_name, body: $json.body, direction: $json.direction || 'inbound', timestamp: $json.timestamp || new Date().toISOString(), metadata: $json.metadata || {} }) }}"
+      },
+      "id": "HttpRequest",
+      "name": "POST Peskids wacrm webhook",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [280, 0]
+    }
+  ],
+  "connections": {
+    "wacrm inbound": {
+      "main": [
+        [
+          {
+            "node": "POST Peskids wacrm webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

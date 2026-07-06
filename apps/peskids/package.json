@@ -28,6 +28,7 @@
     "@capacitor/ios": "^8.3.4",
     "@capacitor/push-notifications": "^8.1.1",
     "@intcloudsysops/openwa": "*",
+    "@intcloudsysops/wacrm-channel": "*",
     "@intcloudsysops/prompt-guard": "*",
     "@intcloudsysops/services": "*",
     "@supabase/auth-helpers-nextjs": "^0.8.7",

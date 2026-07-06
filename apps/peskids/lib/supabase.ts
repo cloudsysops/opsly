@@ -54,7 +54,7 @@ export async function getRecentMessages(tenantId: string, limit: number = 10) {
   const client = supabaseServer();
   const { data, error } = await client
     .from('messages')
-    .select('id, source, sender_name, sender_contact, message_text, created_at, direction, status')
+    .select('id, source, sender_name, sender_contact, message_text, created_at, direction, status, external_id')
     .eq('tenant_id', tenantId)
     .or('direction.eq.inbound,direction.is.null')
     .order('created_at', { ascending: false })

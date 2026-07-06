@@ -23,13 +23,19 @@ describe('resolvePeskidsIntegrationProviders', () => {
   it('parses explicit provider values', () => {
     const providers = resolvePeskidsIntegrationProviders({
       PESKIDS_CRM_PROVIDER: 'twenty',
-      PESKIDS_INBOX_PROVIDER: 'chatwoot',
+      PESKIDS_INBOX_PROVIDER: 'wacrm',
       PESKIDS_BOOKING_PROVIDER: 'calcom',
     });
     expect(providers.crm).toBe('twenty');
-    expect(providers.inbox).toBe('chatwoot');
+    expect(providers.inbox).toBe('wacrm');
     expect(providers.booking).toBe('calcom');
     expect(providers.explicitFlags).toBe(true);
+  });
+
+  it('routes chatwoot pilot to placeholder webhook path', () => {
+    const hint = resolveInboxRoutingHint({ PESKIDS_INBOX_PROVIDER: 'chatwoot' });
+    expect(hint.provider).toBe('chatwoot');
+    expect(hint.webhookPath).toContain('chatwoot');
   });
 
   it('falls back to legacy on unknown provider token', () => {
@@ -97,16 +103,17 @@ describe('resolveInboxRoutingHint', () => {
     expect(hint.webhookPath).toBe('/api/webhooks/inbound');
   });
 
-  it('routes chatwoot pilot to placeholder webhook path', () => {
-    const hint = resolveInboxRoutingHint({ PESKIDS_INBOX_PROVIDER: 'chatwoot' });
-    expect(hint.provider).toBe('chatwoot');
-    expect(hint.webhookPath).toContain('chatwoot');
+  it('routes wacrm inbox to canonical webhook path', () => {
+    const hint = resolveInboxRoutingHint({ PESKIDS_INBOX_PROVIDER: 'wacrm' });
+    expect(hint.provider).toBe('wacrm');
+    expect(hint.webhookPath).toBe('/api/webhooks/wacrm');
   });
 });
 
 describe('buildIntegrationStatusSnapshot', () => {
   it('documents recommended defaults separately from runtime legacy', () => {
     expect(PESKIDS_PROVIDER_DEFAULTS.crm).toBe('ghl');
+    expect(PESKIDS_PROVIDER_DEFAULTS.inbox).toBe('wacrm');
     const snapshot = buildIntegrationStatusSnapshot({}, {});
     expect(snapshot.providers.crm).toBe('legacy');
   });

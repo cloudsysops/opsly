@@ -45,6 +45,12 @@ export function conversationLabel(mode?: string): string {
   return 'Canal';
 }
 
+export function isWacrmInboxMessage(message: {
+  external_id?: string | null;
+}): boolean {
+  return Boolean(message.external_id?.startsWith('wacrm:'));
+}
+
 function normalizeDigits(value: string): string {
   return value.replace(/\D+/g, '');
 }
