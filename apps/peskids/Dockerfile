@@ -12,6 +12,7 @@ COPY lib/conversational-runtime/package.json ./lib/conversational-runtime/
 COPY lib/services/package.json ./lib/services/
 COPY lib/prompt-guard/package.json ./lib/prompt-guard/
 COPY lib/openwa/package.json ./lib/openwa/
+COPY lib/wacrm-channel/package.json ./lib/wacrm-channel/
 COPY packages/opsly-core/package.json ./packages/opsly-core/
 COPY packages/types/package.json ./packages/types/
 COPY apps/peskids/package.json ./apps/peskids/
@@ -22,6 +23,7 @@ COPY lib/conversational-runtime/ ./lib/conversational-runtime/
 COPY lib/services/ ./lib/services/
 COPY lib/prompt-guard/ ./lib/prompt-guard/
 COPY lib/openwa/ ./lib/openwa/
+COPY lib/wacrm-channel/ ./lib/wacrm-channel/
 COPY packages/opsly-core/ ./packages/opsly-core/
 COPY packages/types/ ./packages/types/
 COPY apps/peskids/ ./apps/peskids/
