@@ -218,15 +218,16 @@ describe('PipelineManagerService', () => {
   });
 
   describe('buildPipelineRules', () => {
-    it('builds 4 local rules without GHL calendar dependency', async () => {
+    it('builds 5 local rules without GHL calendar dependency', async () => {
       const { buildPipelineRules } = await import('@/lib/agents/pipeline-rules');
       const rules = buildPipelineRules({
         supabase: {} as RuleServices['supabase'],
         tenantSlug: 'peskids',
       });
 
-      expect(rules).toHaveLength(4);
+      expect(rules).toHaveLength(5);
       expect(rules[1].source).toBe('trial_classes');
+      expect(rules[4].nextStage).toBe('Renewal');
     });
   });
 
