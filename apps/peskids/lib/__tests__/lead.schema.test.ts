@@ -1,5 +1,91 @@
 import { describe, expect, it } from 'vitest';
-import { gohighlevelLeadIntakeSchema } from '@/lib/validation/lead.schema';
+import {
+  gohighlevelLeadIntakeSchema,
+  leadApiPostSchema,
+  leadCaptureFormSchema,
+  toCreateLeadInput,
+} from '@/lib/validation/lead.schema';
+
+describe('leadCaptureFormSchema', () => {
+  const validForm = {
+    name: 'María García',
+    email: 'maria@peskids.co',
+    phone: '+57 300 123 4567',
+    class_modality: 'llanogrande' as const,
+    neighborhood: 'Llanogrande',
+    grade_interested: 'K-5' as const,
+    referral_source: 'Google' as const,
+    referred_by_code: 'PK-ABC123',
+  };
+
+  it('accepts a complete Sprint 01 lead form', () => {
+    const parsed = leadCaptureFormSchema.parse(validForm);
+    expect(parsed.name).toBe('María García');
+    expect(parsed.grade_interested).toBe('K-5');
+    expect(parsed.referred_by_code).toBe('PK-ABC123');
+  });
+
+  it('rejects names shorter than 2 characters', () => {
+    const result = leadCaptureFormSchema.safeParse({ ...validForm, name: 'A' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects invalid email', () => {
+    const result = leadCaptureFormSchema.safeParse({ ...validForm, email: 'not-an-email' });
+    expect(result.success).toBe(false);
+  });
+
+  it('allows empty optional phone', () => {
+    const parsed = leadCaptureFormSchema.parse({ ...validForm, phone: '' });
+    expect(parsed.phone).toBeUndefined();
+  });
+
+  it('requires grade_interested enum', () => {
+    const result = leadCaptureFormSchema.safeParse({ ...validForm, grade_interested: '3A' });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('leadApiPostSchema', () => {
+  it('requires consent_treatment true', () => {
+    const result = leadApiPostSchema.safeParse({
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      class_modality: 'domicilio',
+      neighborhood: 'Envigado',
+      grade_interested: '6-8',
+      consent_treatment: false,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts payload with consent', () => {
+    const parsed = leadApiPostSchema.parse({
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      class_modality: 'domicilio',
+      neighborhood: 'Envigado',
+      grade_interested: '6-8',
+      consent_treatment: true,
+      consent_marketing: false,
+    });
+    expect(parsed.consent_treatment).toBe(true);
+  });
+});
+
+describe('toCreateLeadInput', () => {
+  it('maps form name to full_name for services', () => {
+    const input = toCreateLeadInput({
+      name: 'Carlos Ruiz',
+      email: 'carlos@peskids.co',
+      class_modality: 'llanogrande',
+      neighborhood: 'Rionegro',
+      grade_interested: '9-12',
+    });
+    expect(input.full_name).toBe('Carlos Ruiz');
+    expect(input.source).toBe('web');
+  });
+});
 
 describe('gohighlevelLeadIntakeSchema', () => {
   it('validates the minimal parent/child intake fields', () => {

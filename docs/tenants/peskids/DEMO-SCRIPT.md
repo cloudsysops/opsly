@@ -16,6 +16,31 @@ tags:
 
 ---
 
+## Local demo walkthrough (`localhost:3004`)
+
+**Antes de la reunión:** desde la raíz del monorepo:
+
+```bash
+npm run dev --workspace=peskids
+# Abre http://localhost:3004
+```
+
+| Paso | URL | Qué mostrar |
+|------|-----|-------------|
+| 1 | `http://localhost:3004/` | Landing con hero + **LeadCaptureForm** (modalidad, barrio, grado) |
+| 2 | Enviar lead de prueba | Toast éxito; datos en Supabase `peskids.leads` |
+| 3 | `http://localhost:3004/admin/login` | Login owner (`sierrasantiago90@gmail.com`) |
+| 4 | `http://localhost:3004/admin` | Dashboard — 5 áreas: interesados, estudiantes, feedback, seguimientos, KPI operación |
+| 5 | `http://localhost:3004/familias` | Portal familias + **FeedbackComposer** (rating 1–5; alerta si &lt; 3) |
+
+**Wireframe estático (referencia visual Sprint 01):** abrir `docs/tenants/peskids/landing-wireframe.html` en el navegador si no hay dev server.
+
+**Seed demo (opcional):** `./scripts/seed-peskids-demo-students.sh` — estudiantes, leads, follow-ups y feedback de ejemplo.
+
+**[PENDIENTE-DECISIÓN]:** Copy final del hero y pricing en landing para producción.
+
+---
+
 ## SPANISH VERSION (VERSIÓN EN ESPAÑOL)
 
 ### Introducción (30 segundos)
@@ -215,6 +240,10 @@ Excelente. El primer paso es el Sprint 1. Perfeccionamos el diseño. Tú lo ves 
 ---
 
 ## ENGLISH VERSION (BACKUP)
+
+### Local demo (same as Spanish section)
+
+Use `http://localhost:3004` — landing → admin dashboard → `/familias` feedback. See table in *Local demo walkthrough* above.
 
 ### Introduction (30 seconds)
 

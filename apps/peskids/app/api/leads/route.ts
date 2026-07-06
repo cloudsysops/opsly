@@ -3,35 +3,25 @@ import { buildPeskidsReferralLink } from '@/lib/peskids-referral-links';
 import { buildPeskidsReferralCode } from '@/lib/peskids-referrals';
 import { postPeskidsLeadWithCRM } from '@/lib/peskids-canonical-api';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
-
-type LeadBody = {
-  name: string;
-  email: string;
-  phone?: string;
-  class_modality?: 'llanogrande' | 'domicilio';
-  neighborhood?: string;
-  grade_interested: string;
-  referral_source?: string;
-  referral_code?: string;
-  referred_by_code?: string;
-  consent_treatment?: boolean;
-  consent_marketing?: boolean;
-  consent_policy_version?: string;
-};
+import { leadApiPostSchema } from '@/lib/validation/lead.schema';
+import { firstZodErrorMessage } from '@/lib/validation/zod-errors';
 
 export async function POST(request: NextRequest) {
   const requestId = resolveRequestId(request);
 
   try {
-    const body = (await request.json()) as LeadBody;
+    const raw: unknown = await request.json();
+    const parsed = leadApiPostSchema.safeParse(raw);
 
-    if (!body.consent_treatment) {
-      return errorJson(requestId, 'Consent required', 400);
+    if (!parsed.success) {
+      return errorJson(requestId, firstZodErrorMessage(parsed.error), 400);
     }
+
+    const body = parsed.data;
 
     console.warn('[peskids][lead] consent', {
       treatment: body.consent_treatment,
-      marketing: body.consent_marketing ?? false,
+      marketing: body.consent_marketing,
       policy_version: body.consent_policy_version,
       request_id: requestId,
     });

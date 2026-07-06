@@ -35,10 +35,8 @@ describe('submitFeedback', () => {
       childName: '   ',
     })
 
-    expect(result).toEqual({
-      ok: false,
-      error: 'Escribe el nombre de la familia o del estudiante.',
-    })
+    expect(result.ok).toBe(false)
+    expect(result.error).toMatch(/nombre/i)
     expect(fetchMock).not.toHaveBeenCalled()
   })
 

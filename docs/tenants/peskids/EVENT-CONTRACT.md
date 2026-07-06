@@ -20,6 +20,35 @@ tags:
 
 ---
 
+## Code alignment (Sprint 01)
+
+**Emisor en repo:** `apps/peskids/lib/events.ts` (`emitEvent`, `emitLeadCreated`, `emitFeedbackCreated`)  
+**Envelope runtime:**
+
+```json
+{
+  "event_type": "lead.created",
+  "tenant_id": "peskids",
+  "created_at": "ISO8601",
+  "data": { },
+  "trace_id": "optional-request-id"
+}
+```
+
+**Validación de formularios (fuente de verdad campos):**
+
+| Evento | Schema Zod | Notas |
+|--------|------------|-------|
+| `lead.created` | `lib/validation/lead.schema.ts` → `leadApiPostSchema` | `grade_interested`: K-5 \| 6-8 \| 9-12 \| Other; `referral_source`: Google \| Friend \| Instagram \| Facebook \| Other \| Not sure; `class_modality`: llanogrande \| domicilio |
+| `feedback.created` | `lib/validation/feedback.schema.ts` → `parentFeedbackFormSchema` | `satisfaction` 1–5; `contact_me_back` → API `contact_wanted` |
+| `feedback.alert` | `isLowSatisfactionRating()` + `emitFeedbackCreated` | Se emite automáticamente si `rating < 3` |
+
+**Bus:** `OPSLY_EVENT_BUS_URL` (opcional). Sin URL configurada → log warning, no bloquea submit.
+
+**[PENDIENTE-DECISIÓN]:** Payload final para extracción Opsly (n8n webhook vs cola BullMQ) — ver `lib/n8n-submission-events.ts` para envíos paralelos.
+
+---
+
 ## Event: lead.created
 
 **Producer:** Lead capture form → API endpoint  

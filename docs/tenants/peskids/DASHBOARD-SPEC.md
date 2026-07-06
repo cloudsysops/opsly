@@ -318,6 +318,26 @@ CREATE INDEX idx_followups_status_due ON followups(status, due_date);
 
 ---
 
+## Implemented alignment (Sprint 01 — código en `apps/peskids`)
+
+**Ruta admin:** `http://localhost:3004/admin` (dev) · `https://peskids.op-sly.com/admin` (prod)  
+**Componentes:** `components/admin/dashboard-stats-grid.tsx` (KPI grid) + `components/admin/dashboard-view.tsx` (vista operativa)  
+**Datos:** `GET /api/admin/dashboard` vía `lib/services/dashboard.service.ts` — siempre filtra `tenant_slug = 'peskids'`.
+
+| Sprint 01 card (spec) | Implementación actual | `sectionId` | Campo API |
+|----------------------|------------------------|-------------|-----------|
+| 1. New Leads This Week | **Interesados nuevos** — lista filtrable por estado, búsqueda, badges modalidad/barrio | `leads` | `new_leads_count`, `new_leads[]` |
+| 2. Active Students | **Estudiantes activos** — desglose por grado | `students` | `active_students_count`, `students_by_grade` |
+| 3. Parent Feedback (Recent) | **Feedback reciente** — estrellas, autor (familia/prof/equipo), alerta visual si rating &lt; 3 | `feedback` | `recent_feedback[]` |
+| 4. Pending Follow-ups | **Seguimientos pendientes** — filtros pending/completed/cancelled | `follow-up` | `pending_followups_count`, `followups[]` |
+| 5. This Week's Trend | **KPI strip** — clases prueba hoy, inscripciones hoy, asistencia %, ingresos mes (Stripe) | `classes` | `operations.*` |
+
+**Extras MVP (fuera del mínimo Sprint 01, ya en UI):** notas privadas a familias (`notes`), mensajes (`mensajes`), ingresos del mes.
+
+**[PENDIENTE-DECISIÓN]:** ¿Mantener gráfico de tendencia 7 días como card dedicada o el strip operativo actual es suficiente para el demo con Sierra?
+
+---
+
 ## Enlaces relacionados
 
 - [[tenants/peskids/README|peskids]]
