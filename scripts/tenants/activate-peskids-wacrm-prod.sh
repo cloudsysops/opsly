@@ -43,6 +43,13 @@ run() {
 
 echo "=== activate wacrm prod (slug=${SLUG}) ==="
 
+# Avoid inheriting DRY_RUN from shell/CI on VPS
+unset DRY_RUN
+DRY_RUN=false
+for arg in "$@"; do
+  [[ "$arg" == "--dry-run" ]] && DRY_RUN=true
+done
+
 run chmod +x "${ROOT}/scripts/tenants/deploy-wacrm-health-proxy.sh"
 run chmod +x "${ROOT}/scripts/tenants/reconcile-peskids-n8n-wacrm-env.sh"
 
@@ -63,13 +70,16 @@ echo "[4/7] Doppler flags"
 if [[ "$DRY_RUN" == true ]]; then
   echo "[dry-run] doppler set PESKIDS_INBOX_PROVIDER=wacrm WACRM_PESKIDS_ENABLED=true URLs"
 else
-  doppler secrets set \
+  if doppler secrets set \
     PESKIDS_INBOX_PROVIDER=wacrm \
     WACRM_PESKIDS_ENABLED=true \
     WACRM_PESKIDS_SERVER_URL="https://wa-${SLUG}.op-sly.com" \
     NEXT_PUBLIC_WACRM_PESKIDS_SERVER_URL="https://wa-${SLUG}.op-sly.com" \
-    --project ops-intcloudsysops --config prd >/dev/null
-  echo "  set  PESKIDS_INBOX_PROVIDER=wacrm WACRM_PESKIDS_ENABLED=true"
+    --project ops-intcloudsysops --config prd >/dev/null 2>&1; then
+    echo "  set  PESKIDS_INBOX_PROVIDER=wacrm WACRM_PESKIDS_ENABLED=true"
+  else
+    echo "  WARN: Doppler write failed on this host — set flags from Mac with doppler CLI"
+  fi
 fi
 
 echo "[5/7] Redeploy Peskids"
