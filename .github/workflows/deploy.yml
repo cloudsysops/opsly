@@ -235,7 +235,78 @@ jobs:
           context: .
           file: apps/mcp/Dockerfile
           push: true
-          tags: ghcr.io/cloudsysops/intcloudsysops-mcp:latest
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-mcp:latest
+            ghcr.io/cloudsysops/intcloudsysops-mcp:${{ github.sha }}
+
+  verify-runtime-images:
+    needs:
+      - build-and-push
+      - build-mcp
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Pull runtime images by commit
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          for service in orchestrator hermes llm-gateway context-builder mcp; do
+            docker pull "ghcr.io/cloudsysops/intcloudsysops-${service}:${IMAGE_TAG}"
+          done
+
+      - name: Verify runtime module closure
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          verify_imports() {
+            local image="$1"
+            local workdir="$2"
+            shift 2
+            docker run --rm \
+              --entrypoint node \
+              --workdir "$workdir" \
+              "$image" \
+              --input-type=module \
+              -e 'for (const moduleName of process.argv.slice(1)) await import(moduleName)' \
+              "$@"
+          }
+
+          verify_imports \
+            "ghcr.io/cloudsysops/intcloudsysops-llm-gateway:${IMAGE_TAG}" \
+            /app/apps/llm-gateway \
+            redis @intcloudsysops/prompt-guard @intcloudsysops/types
+
+          verify_imports \
+            "ghcr.io/cloudsysops/intcloudsysops-context-builder:${IMAGE_TAG}" \
+            /app/apps/context-builder \
+            redis @intcloudsysops/llm-gateway @intcloudsysops/types
+
+          verify_imports \
+            "ghcr.io/cloudsysops/intcloudsysops-mcp:${IMAGE_TAG}" \
+            /app/apps/mcp \
+            redis @intcloudsysops/prompt-guard @intcloudsysops/services \
+            @intcloudsysops/pattern-catalog @intcloudsysops/sigma-harness
+
+          for service in orchestrator hermes; do
+            verify_imports \
+              "ghcr.io/cloudsysops/intcloudsysops-${service}:${IMAGE_TAG}" \
+              /app/apps/orchestrator \
+              redis @intcloudsysops/prompt-guard @intcloudsysops/content-studio \
+              @intcloudsysops/external-agent-registry \
+              @intcloudsysops/pattern-catalog @intcloudsysops/sigma-harness
+          done
 
   # --- Staging: imágenes etiqueta :staging (solo rama staging) ---
   build-and-push-staging:
@@ -603,8 +674,7 @@ jobs:
 
   deploy:
     needs:
-      - build-and-push
-      - build-mcp
+      - verify-runtime-images
     # Solo producción: imágenes GHCR + compose. En staging este job no corre (build-* están skipped).
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest

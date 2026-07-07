@@ -63,7 +63,10 @@ cd "$REPO_ROOT"
 export TENANT_SLUG CONFIG_PATH EXTRA_PATTERNS JSON_ONLY
 node --import tsx <<'NODE'
 import { readFileSync } from 'node:fs';
-import { enrichTenantProfile, suggestTenantPatternsForStack } from '@intcloudsysops/pattern-catalog';
+import {
+  enrichTenantProfile,
+  suggestTenantPatternsForStack,
+} from './lib/pattern-catalog/src/index.ts';
 
 const slug = process.env.TENANT_SLUG ?? '';
 const configPath = process.env.CONFIG_PATH ?? '';

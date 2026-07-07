@@ -431,6 +431,7 @@ export type Database = {
           notes: string | null;
           created_at: string;
           updated_at: string;
+          twenty_task_id: string | null;
         };
         Insert: {
           tenant_id: string;
@@ -441,6 +442,7 @@ export type Database = {
           status?: 'pending' | 'completed' | 'cancelled';
           notes?: string | null;
           updated_at?: string;
+          twenty_task_id?: string | null;
         };
         Update: Partial<Database['public']['Tables']['followups']['Insert']>;
         Relationships: [];
@@ -518,6 +520,10 @@ export interface DashboardOperationsMetrics {
   enrollments_today: number;
   attendance_rate_pct: number | null;
   revenue_month_cents: number;
+  revenue_month_by_provider: {
+    stripe_cents: number;
+    wompi_cents: number;
+  };
   pending_payments_cents: number;
 }
 

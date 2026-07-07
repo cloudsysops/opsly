@@ -11,6 +11,7 @@ import {
   Star,
   UserPlus,
   Users,
+  Wallet,
 } from 'lucide-react'
 import type { DashboardData } from '@/lib/types'
 import { AcademyOpsMap } from '@/components/admin/academy-ops-map'
@@ -89,6 +90,14 @@ function emptyTrialDraft(lead: LeadRow): TrialScheduleDraft {
     teacher_name: '',
     notes: '',
   }
+}
+
+function formatCop(cents: number): string {
+  return new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    maximumFractionDigits: 0,
+  }).format(cents / 100)
 }
 
 function StarRating({ value }: { value: number }): React.ReactElement {
@@ -1092,6 +1101,34 @@ export function DashboardView({
               <p className="text-sm text-pk-sub">No hay seguimientos para este filtro.</p>
             )}
           </ul>
+        </StatCard>
+
+        <StatCard
+          sectionId="ingresos"
+          title="Ingresos del mes"
+          description="Pagos confirmados (Stripe + Wompi)"
+          value={formatCop(data.operations.revenue_month_cents)}
+          icon={Wallet}
+          accent="green"
+        >
+          <p className="text-sm text-pk-sub">
+            Stripe:{' '}
+            <span className="font-semibold text-pk-ink">
+              {formatCop(data.operations.revenue_month_by_provider.stripe_cents)}
+            </span>
+          </p>
+          <p className="mt-1 text-sm text-pk-sub">
+            Wompi (PSE/Nequi):{' '}
+            <span className="font-semibold text-pk-ink">
+              {formatCop(data.operations.revenue_month_by_provider.wompi_cents)}
+            </span>
+          </p>
+          <p className="mt-1 text-sm text-pk-sub">
+            Pendiente de cobro:{' '}
+            <span className="font-semibold text-pk-ink">
+              {formatCop(data.operations.pending_payments_cents)}
+            </span>
+          </p>
         </StatCard>
 
         <StatCard
