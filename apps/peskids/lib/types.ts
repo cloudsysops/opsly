@@ -616,6 +616,15 @@ export interface DashboardData {
       conversation_mode: 'admissions' | 'support';
     }
   >;
+  /** Full inbound+outbound wacrm history (not tenant-wide capped at 10 like
+   * recent_messages) — feeds the per-lead wacrm inbox badge, which needs a
+   * contact's whole thread to tell "no conversation" apart from "pending"/"responded". */
+  wacrm_messages: Array<
+    Pick<
+      Database['public']['Tables']['messages']['Row'],
+      'sender_contact' | 'message_text' | 'created_at' | 'status' | 'direction' | 'external_id'
+    >
+  >;
   operations: DashboardOperationsMetrics;
 }
 

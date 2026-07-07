@@ -1,11 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const getRecentMessagesMock = vi.fn()
+const getWacrmMessagesMock = vi.fn()
 const supabaseServerMock = vi.fn()
 const fetchDashboardLeadsMock = vi.fn()
 
 vi.mock('../supabase', () => ({
   getRecentMessages: getRecentMessagesMock,
+  getWacrmMessages: getWacrmMessagesMock,
   supabaseServer: supabaseServerMock,
 }))
 
@@ -47,6 +49,8 @@ function createOrderQuery(result: { data: unknown; error: unknown }) {
 describe('fetchDashboardData', () => {
   beforeEach(() => {
     getRecentMessagesMock.mockReset()
+    getWacrmMessagesMock.mockReset()
+    getWacrmMessagesMock.mockResolvedValue([])
     supabaseServerMock.mockReset()
     fetchDashboardLeadsMock.mockReset()
     fetchOperationsMetricsMock.mockReset()
@@ -146,6 +150,16 @@ describe('fetchDashboardData', () => {
     getRecentMessagesMock.mockResolvedValue([
       { id: 'message-1', sender_contact: 'web:support:maria@example.com' },
     ])
+    getWacrmMessagesMock.mockResolvedValue([
+      {
+        sender_contact: '+573001112233',
+        message_text: 'Hola',
+        created_at: '2026-05-25T10:00:00Z',
+        status: null,
+        direction: 'inbound',
+        external_id: 'wacrm:123',
+      },
+    ])
 
     const { fetchDashboardData } = await import('../services/dashboard.service')
     const result = await fetchDashboardData('peskids', 'week')
@@ -167,6 +181,16 @@ describe('fetchDashboardData', () => {
     expect(result.pending_followups_count).toBe(1)
     expect(result.recent_messages).toEqual([
       { id: 'message-1', sender_contact: 'web:support:maria@example.com' },
+    ])
+    expect(result.wacrm_messages).toEqual([
+      {
+        sender_contact: '+573001112233',
+        message_text: 'Hola',
+        created_at: '2026-05-25T10:00:00Z',
+        status: null,
+        direction: 'inbound',
+        external_id: 'wacrm:123',
+      },
     ])
     expect(result.operations.classes_today).toBe(2)
     expect(result.operations.revenue_month_cents).toBe(17000000)

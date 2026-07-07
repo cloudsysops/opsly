@@ -913,7 +913,7 @@ export function DashboardView({
                     ) : null}
                   </div>
 
-                  <WacrmLeadInboxActions phone={lead.phone} messages={data.recent_messages} />
+                  <WacrmLeadInboxActions phone={lead.phone} messages={data.wacrm_messages} />
 
                   <div className="mt-3 flex flex-wrap gap-2">
                     {lead.email ? (

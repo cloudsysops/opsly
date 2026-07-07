@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-07-07T02:34:01.650Z",
+  "generated_at": "2026-07-07T15:06:46.253Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -25499,39 +25499,43 @@
     },
     {
       "path": "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
-      "title": "Peskids — checklist demo cliente (WhatsApp + panel)",
+      "title": "Peskids — Client Demo Checklist",
       "keywords": [
-        "2026",
-        "algo",
-        "antes",
-        "baileys",
+        "admin",
+        "alumno",
+        "captacion",
         "checklist",
+        "clase",
         "client",
-        "cliente",
+        "dashboard",
         "demo",
-        "doppler",
-        "enlaces",
-        "falla",
-        "guion",
-        "hay",
+        "diario",
+        "digest",
+        "estado",
+        "familia",
+        "family",
+        "follow",
+        "inbox",
+        "landing",
+        "leads",
         "markdown",
         "min",
-        "nombres",
+        "opcional",
         "opsly",
-        "panel",
-        "pantalla",
+        "pagos",
         "peskids",
-        "probar",
-        "produccion",
-        "referencias",
-        "relacionados",
-        "reunion",
-        "sin",
-        "solo",
-        "valores",
-        "whatsapp"
+        "portal",
+        "pre",
+        "prueba",
+        "setup",
+        "side",
+        "teacher",
+        "ups",
+        "wacrm",
+        "whatsapp",
+        "wompi"
       ],
-      "size_bytes": 5424
+      "size_bytes": 5954
     },
     {
       "path": "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
@@ -27708,6 +27712,60 @@
       "size_bytes": 8468
     },
     {
+      "path": "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
+      "title": "Peskids Sprint Final Status — Academy Production Completion",
+      "keywords": [
+        "005",
+        "20260706",
+        "academy",
+        "add",
+        "aplicar",
+        "approval",
+        "apps",
+        "checklist",
+        "commits",
+        "completion",
+        "dashboard",
+        "deploy",
+        "desde",
+        "executive",
+        "final",
+        "fuera",
+        "gate",
+        "instructions",
+        "listos",
+        "local",
+        "main",
+        "markdown",
+        "message",
+        "migrations",
+        "n8n",
+        "needs",
+        "opsly",
+        "payment",
+        "pendientes",
+        "peskids",
+        "plan",
+        "production",
+        "provider",
+        "rama",
+        "ready",
+        "results",
+        "risk",
+        "sandbox",
+        "secret",
+        "sprint",
+        "sql",
+        "status",
+        "summary",
+        "supabase",
+        "terminal",
+        "test",
+        "wompi"
+      ],
+      "size_bytes": 8392
+    },
+    {
       "path": "docs/tenants/peskids/TEMPLATE-STATUS.md",
       "title": "Peskids Email & SMS Template Status",
       "keywords": [
@@ -27881,6 +27939,7 @@
         "peskids",
         "prd",
         "production",
+        "recovery",
         "related",
         "rollback",
         "runbook",
@@ -27891,7 +27950,7 @@
         "webhook",
         "whatsapp"
       ],
-      "size_bytes": 5009
+      "size_bytes": 7247
     },
     {
       "path": "docs/tenants/peskids/WACRM-TWENTY-CUTOVER.md",
@@ -87123,7 +87182,6 @@
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
       "docs/tenants/peskids/WACRM-RUNBOOK.md",
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
       "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
@@ -87208,6 +87266,9 @@
     ],
     "20200602": [
       "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB1177123-SEED419213-20200602-00000.md"
+    ],
+    "20260706": [
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md"
     ],
     "1777827139": [
       ".cursor/responses/response-test-e2e-1777827139.md"
@@ -87676,7 +87737,6 @@
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/peskids/OPSLY-REUSE.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/ARCHITECTURE.md",
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
       "docs/tenants/peskids/INSTAGRAM-FEED.md",
@@ -89978,6 +90038,7 @@
       "docs/n8n-workflows/crm/README.md",
       "docs/n8n-workflows/CLOUDSYSOPS-TECHNICIAN-N8N.md",
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/N8N-SETUP.md",
@@ -92538,6 +92599,7 @@
       "docs/n8n-workflows/crm/README.md",
       "docs/n8n-workflows/CLOUDSYSOPS-TECHNICIAN-N8N.md",
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/N8N-SETUP.md",
@@ -93339,7 +93401,6 @@
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/peskids/OPSLY-REUSE.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/ARCHITECTURE.md",
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
       "docs/tenants/peskids/INSTAGRAM-FEED.md",
@@ -93688,6 +93749,7 @@
       "docs/tenants/peskids/PESKIDS-ADMIN-USER-VALIDATION.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/brain/modules/admin.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/reports/PRODUCTION-HEALTH.md",
@@ -93829,6 +93891,7 @@
       "docs/04-infrastructure/DOMAIN-CUTOVER-OP-SLY.md",
       "docs/05-deployment-status/PESKIDS-GO-LIVE-STATUS.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/N8N-SETUP.md",
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
@@ -93843,6 +93906,7 @@
       "docs/tenants/peskids/DAILY-DIGEST-RUNBOOK.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/DEMO-SCRIPT.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
@@ -94464,6 +94528,7 @@
       "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/operations/VPS-VALIDATION-GUIDE.md",
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/N8N-SETUP.md",
@@ -94731,6 +94796,7 @@
       "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
       "docs/adr/ADR-043-supplement/README.md",
       "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
       "docs/tenants/peskids/GHL-CONSULTING-HANDOFF.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
@@ -96708,6 +96774,7 @@
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/SPRINT-02-RUN.md",
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
@@ -99849,6 +99916,7 @@
       "docs/03-agents/AGENT-URL-VALIDATION.md",
       "docs/adr/ADR-029-mcp-orchestration.md",
       "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/SPRINT-02-RUN.md",
       "docs/tenants/peskids/TWENTY-CRM.md",
       "docs/tenants/peskids/WACRM-TWENTY-CUTOVER.md",
@@ -99915,6 +99983,7 @@
       "docs/adr/ADR-009-openclaw-mcp-architecture.md",
       "docs/adr/ADR-036-cli-consolidation-tools-cli-first.md",
       "docs/adr/ADR-031-experimental-consolidation.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
       "docs/tenants/production/TENANT-PRODUCTION-BASELINE.md",
@@ -100061,6 +100130,7 @@
       "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
       "docs/adr/ADR-043-supplement/README.md",
       "docs/adr/ADR-024-ollama-local-worker-primary.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/INVITATION-FLOW-VERIFICATION.md",
       "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
@@ -102522,6 +102592,7 @@
       "docs/03-agents/CLAUDE-WORKFLOW-OPTIMIZATION.md",
       "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
       "docs/03-agents/AGENT-SERVICES-DEPLOYMENT.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/SPRINT-02-RUN.md",
       "docs/tenants/peskids/QUICK-START-PRODUCTION.md",
       "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md",
@@ -103601,6 +103672,7 @@
       "docs/02-tools/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
       "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
       "docs/adr/ADR-024-ollama-local-worker-primary.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md"
     ],
@@ -105232,7 +105304,6 @@
       "docs/adr/ADR-043-facebook-page-organic-publishing-graph-api.md",
       "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
       "docs/tenants/panini-lab/README.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
@@ -106061,6 +106132,7 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/lang-python.md",
       "docs/01-development/SPRINTS_13_14.md",
       "docs/03-agents/HERMES-INTEGRATION.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/CLASSES-SYSTEM-SPEC.md",
       "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
@@ -106256,6 +106328,7 @@
       "docs/adr/ADR-042-local-services-phase-2-webhooks.md",
       "docs/n8n-workflows/CLOUDSYSOPS-TECHNICIAN-N8N.md",
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/N8N-SETUP.md",
       "docs/tenants/peskids/TWENTY-CRM.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
@@ -106394,6 +106467,7 @@
       "docs/adr/ADR-023-approval-gate-phase1.md",
       "docs/adr/ADR-029-mcp-orchestration.md",
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/BLUEPRINT-MAPPING.md",
       "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md",
       "docs/tenants/peskids/MVP-PLAN.md",
@@ -106565,6 +106639,7 @@
       "vendor/agency-agents/integrations/openclaw/corporate-training-designer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/real-estate-buyer-seller/AGENTS.md",
       "docs/01-development/NEXT-STEPS.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
       "docs/reports/session-summary-2026-05-21.md",
       "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
@@ -106608,7 +106683,6 @@
       "docs/tenants/peskids/WACRM-TWENTY-CUTOVER.md",
       "docs/tenants/peskids/OPS-RUNBOOK.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       ".claude/2-context-management/context-slicing.md"
     ],
     "migraciones": [
@@ -106708,6 +106782,7 @@
       "docs/02-tools/N8N-MCP-INTEGRATION.md",
       "docs/tenants/peskids/EXTRACTION-PLAN.md",
       "docs/tenants/peskids/WHATSAPP-CHANNEL.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
       "docs/blueprints/opsly-operational-blueprint/EXTRACTION-PATTERN.md",
@@ -107491,7 +107566,6 @@
       "docs/adr/ADR-008-terraform-digitalocean-plan.md",
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md",
       "docs/tenants/peskids/DATA-MODEL.md",
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
       "docs/postman/README.md"
@@ -107538,7 +107612,6 @@
       "docs/03-agents/CURSOR-DAILY-CHECKLIST.md",
       "docs/02-tools/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
       "docs/tenants/peskids/WHATSAPP-CHANNEL.md",
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/blueprints/opsly-operational-blueprint/TEAM-FACING-EXPLANATION.md",
       "docs/blueprints/WOMPI-PAYMENT-GATEWAY-CONTRACT.md",
       ".claude/2-context-management/CLAUDE.md"
@@ -110114,6 +110187,7 @@
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/adr/ADR-019-prometheus-grafana-observability.md",
       "docs/adr/ADR-018-pgvector-embeddings-rag.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/SPRINT-02-RUN.md",
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
       "docs/tenants/peskids/EVENT-CONTRACT.md",
@@ -110232,6 +110306,7 @@
       "docs/02-tools/CURSOR-MCP-SETUP.md",
       "docs/02-tools/NOTEBOOKLM-INTEGRATION.md",
       "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/INVITATION-FLOW-VERIFICATION.md",
       "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md",
       "docs/tenants/peskids/QUICK-START-PRODUCTION.md",
@@ -111634,6 +111709,7 @@
       "docs/tenants/peskids/OPS-RUNBOOK.md",
       "docs/tenants/peskids/PESKIDS-ADMIN-USER-VALIDATION.md",
       "docs/tenants/peskids/TENANT_PESKIDS.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
@@ -111881,7 +111957,6 @@
       "docs/adr/ADR-030-prepaid-token-wallet-roadmap.md",
       "docs/adr/ADR-024-ollama-local-worker-primary.md",
       "docs/tenants/peskids/WACRM-TWENTY-CUTOVER.md",
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md",
       "docs/tenants/production/TENANT-PRODUCTION-HARDENING.md",
@@ -112695,6 +112770,7 @@
       "docs/00-architecture/ELEVENLABS-ADVANCED-INTEGRATION.md",
       "docs/adr/ADR-039-sales-channels-email-whatsapp.md",
       "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
       ".agents/skills/cyber-neo/references/iac-docker.md"
     ],
@@ -114266,6 +114342,7 @@
       "docs/02-tools/NOTEBOOKLM-SETUP.md",
       "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
       "docs/adr/ADR-037-opsly-local-services-multi-tenant.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/TWENTY-CRM.md",
       "docs/tenants/peskids/OPS-RUNBOOK.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
@@ -114993,6 +115070,7 @@
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
       "docs/01-development/SPRINTS_13_14.md",
       "docs/03-agents/SYRA-IMPLEMENTATION-GUIDE.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md"
     ],
     "seed": [
@@ -117560,6 +117638,7 @@
       "docs/governance/SOC2-READINESS.md",
       "docs/runbooks/AUTONOMOUS-PROD-60D.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/SALES-FUNNEL-VALIDATION.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
@@ -119456,6 +119535,7 @@
       "docs/01-development/SEMANA-6-INFORME.md",
       "docs/01-development/QUICK-REFERENCE.md",
       "docs/05-deployment-status/DEPLOYMENT-STATUS-2026-05-04.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
       ".claude/README.md"
@@ -120996,6 +121076,7 @@
       "docs/adr/ADR-042-local-services-phase-2-webhooks.md",
       "docs/adr/ADR-028-agent-api-routing.md",
       "docs/adr/ADR-046-family-email-invite-access.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/INVITATION-FLOW-VERIFICATION.md",
       "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
       "docs/tenants/peskids/SPRINT-02-STATUS.md",
@@ -121319,6 +121400,7 @@
       "docs/adr/ADR-008-terraform-digitalocean-plan.md",
       "docs/adr/ADR-033-migrate-ia-legacy-to-gateway.md",
       "docs/adr/ADR-035-safe-autonomous-evolution-framework.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/INVITATION-FLOW-VERIFICATION.md",
       "docs/tenants/peskids/EXTRACTION-PLAN.md",
@@ -122415,6 +122497,7 @@
       "docs/tenants/peskids/MVP-PLAN.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/blueprints/opsly-operational-blueprint/MODULES.md",
       "docs/blueprints/README-PHASE1-EXECUTE.md"
@@ -123248,6 +123331,7 @@
       "packages/skills/vendor/agent-skills/idea-refine/SKILL.md",
       ".github/copilot-instructions.md",
       "docs/.obsidian/PLUGINS-TO-INSTALL.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
       "docs/tenants/peskids/GHL-WORKFLOWS.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md"
@@ -124838,6 +124922,7 @@
       "docs/tenants/peskids/BLUEPRINT-MAPPING.md",
       "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md",
       "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md",
+      "docs/tenants/peskids/WACRM-RUNBOOK.md",
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
       "docs/brain/skills/debugging-and-error-recovery.md",
@@ -125183,6 +125268,7 @@
       "docs/02-tools/SETUP-NOTION-MCP.md",
       "docs/operations/RUN-VALIDATION-LOCALLY.md",
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/testing/PHASE1-TEST-PLAN.md",
@@ -125417,6 +125503,7 @@
       "docs/03-agents/SPRINT-CURSOR-PROMPTS.md",
       "docs/adr/ADR-046-family-email-invite-access.md",
       "docs/adr/ADR-023-approval-gate-phase1.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md"
     ],
     "pipeline": [
@@ -125622,7 +125709,6 @@
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/peskids/DAILY-DIGEST-RUNBOOK.md",
       "docs/tenants/peskids/WACRM-RUNBOOK.md",
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/WACRM-CHANNEL.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
@@ -126869,6 +126955,7 @@
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
       "docs/04-infrastructure/DOMAIN-CUTOVER-OP-SLY.md",
       "docs/03-agents/AUTONOMOUS-ITERATION.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
       "docs/tenants/intcloudsysops/WACRM-OFFERING.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md"
@@ -127341,6 +127428,7 @@
       "docs/adr/ADR-037-opsly-local-services-multi-tenant.md",
       "docs/adr/ADR-042-local-services-phase-2-webhooks.md",
       "docs/adr/ADR-024-ollama-local-worker-primary.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/DEMO-SCRIPT.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/brain/modules/orchestrator.md",
@@ -128003,6 +128091,7 @@
       ".cursor/prompts/local-services-ops-admin.md",
       ".cursor/prompts/task-orchestrator-completion.md",
       "docs/plans/AUTONOMY-COMPLETION-PLAN-2026-04-27.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md"
@@ -129006,6 +129095,7 @@
       "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
       "docs/adr/ADR-043-supplement/README.md",
       "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/peskids/GHL-CONSULTING-HANDOFF.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
@@ -129983,7 +130073,6 @@
       "docs/04-infrastructure/VPS-SSH-WORKER-NODES.md",
       "docs/04-infrastructure/WORKER-SETUP-MAC2011.md",
       "docs/03-agents/QUICKSTART-AGENTS.md",
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
       "docs/postman/README.md"
     ],
@@ -130999,6 +131088,7 @@
       "docs/tenants/peskids/PESKIDS-ADMIN-USER-VALIDATION.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
@@ -131382,6 +131472,7 @@
       "docs/03-agents/FIRST-OPENCLAW-AGENTS-MAC2011.md",
       "docs/n8n-workflows/crm/README.md",
       "docs/tenants/peskids/N8N-SETUP.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/reports/ACG-STRATEGY-30-DAYS.md"
     ],
     "requiere": [
@@ -131401,6 +131492,7 @@
       "docs/research/research-9d271e20-1a44-44b5-a862-83299a4929b9.md",
       "docs/01-development/LAYERS-SANDBOX-QA-PROD.md",
       "docs/03-agents/SECURITY-AUTONOMOUS-EXECUTION-POLICY.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
       ".claude/README.md"
     ],
@@ -131605,6 +131697,7 @@
       "docs/03-agents/SYRA-IMPLEMENTATION-GUIDE.md",
       "docs/03-agents/AGENT-SERVICES-DEPLOYMENT.md",
       "docs/operations/VPS-VALIDATION-GUIDE.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
       "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
       "docs/tenants/peskids/QUICK-START-PRODUCTION.md",
@@ -132483,6 +132576,7 @@
       "docs/runbooks/SECRET-ROTATION-AFTER-EXPOSURE.md",
       "docs/01-development/GITHUB-SETTINGS.md",
       "docs/04-infrastructure/BILLING-FLUSH-VERCEL.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/reports/CYBER-NEO-OPSLY-2026-05-21.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".claude/1-agent-teams/security-agent.md",
@@ -134719,6 +134813,7 @@
       "docs/database/SUPABASE-MIGRATION-AUDIT.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
       "docs/05-deployment-status/DEPLOYMENT-STATUS-2026-05-04.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/SALES-FUNNEL-VALIDATION.md",
       "docs/testing/PHASE-2-TESTING.md",
       ".claude/AGENTS-ENHANCEMENTS.md",
@@ -135557,6 +135652,7 @@
       "docs/tenants/peskids/MVP-PLAN.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/DEMO-SCRIPT.md",
       "docs/tenants/peskids/INSTAGRAM-FEED.md",
       "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md",
@@ -136149,6 +136245,7 @@
       "lib/api/README.md",
       "vendor/agency-agents/integrations/openclaw/filament-optimization-specialist/AGENTS.md",
       "docs/01-development/ONBOARDING-READINESS.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/demo/hackathon-demo.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/frontend-stacks.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/state-management.md"
@@ -137005,6 +137102,7 @@
       "vendor/agency-agents/integrations/openclaw/korean-business-navigator/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/feishu-integration-developer/AGENTS.md",
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md",
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
       "docs/tenants/peskids/WACRM-RUNBOOK.md",
@@ -137171,6 +137269,7 @@
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
       "docs/05-deployment-status/PESKIDS-GO-LIVE-STATUS.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
@@ -139141,7 +139240,8 @@
       "docs/01-development/GITHUB-SETTINGS.md",
       "docs/adr/ADR-043-supplement/COMPLETE-INDEX.md",
       "docs/adr/ADR-043-supplement/README.md",
-      "docs/adr/ADR-043-supplement/DECISION-RATIONALE.md"
+      "docs/adr/ADR-043-supplement/DECISION-RATIONALE.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md"
     ],
     "exito": [
       "apps/admin/INVITATIONS_UI.md",
@@ -139214,8 +139314,7 @@
     ],
     "pantalla": [
       "apps/admin/INVITATIONS_UI.md",
-      "docs/04-infrastructure/WORKER-SETUP-MAC2011.md",
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md"
+      "docs/04-infrastructure/WORKER-SETUP-MAC2011.md"
     ],
     "validaciones": [
       "apps/admin/INVITATIONS_UI.md"
@@ -147640,7 +147739,8 @@
       "docs/04-infrastructure/WORKER-TESTING.md",
       "docs/03-agents/LOCAL-AGENT-EXECUTION.md",
       "docs/02-tools/CURSOR-MCP-SETUP.md",
-      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md"
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md"
     ],
     "anthropologist": [
       "vendor/agency-agents/integrations/qwen/agents/anthropologist.md",
@@ -151577,8 +151677,7 @@
       "vendor/agency-agents/integrations/openclaw/blender-add-on-engineer/AGENTS.md",
       "docs/04-infrastructure/WORKER-TEAM-BILLING.md",
       "docs/audits/TEST-COVERAGE-BASELINE.md",
-      "docs/tenants/peskids/OWNER-RUNBOOK.md",
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md"
+      "docs/tenants/peskids/OWNER-RUNBOOK.md"
     ],
     "practical": [
       "vendor/agency-agents/integrations/qwen/agents/blender-add-on-engineer.md",
@@ -152399,6 +152498,7 @@
       "docs/04-operations/COST-MONITORING-GUIDE.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
       "docs/audits/COST-DEEP-DIVE.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/blueprints/N8N-AUTOMATION-GUARANTEES.md",
       "docs/blueprints/WOMPI-PAYMENT-GATEWAY-CONTRACT.md"
@@ -157746,6 +157846,7 @@
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
       "docs/tenants/peskids/README.md",
       "docs/tenants/peskids/CLASSES-SYSTEM-SPEC.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/blueprints/WOMPI-PAYMENT-GATEWAY-CONTRACT.md"
     ],
     "predicciones": [
@@ -157814,6 +157915,7 @@
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/INVITATION-FLOW-VERIFICATION.md",
       "docs/tenants/peskids/EVENT-CONTRACT.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md"
     ],
     "tsx": [
@@ -158291,8 +158393,7 @@
     ],
     "hay": [
       "docs/ops/branch-protection-setup.md",
-      "docs/03-agents/AGENTS-AUTONOMOUS-RUNBOOK.md",
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md"
+      "docs/03-agents/AGENTS-AUTONOMOUS-RUNBOOK.md"
     ],
     "nombres": [
       "docs/ops/branch-protection-setup.md",
@@ -158301,8 +158402,7 @@
       "docs/01-development/AGENT-SERVICE-NAMING.md",
       "docs/04-infrastructure/TAILSCALE-NOMENCLATURA.md",
       "docs/03-agents/SSH-USERS-FOR-AGENTS.md",
-      "docs/tenants/peskids/WORKFLOWS.md",
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md"
+      "docs/tenants/peskids/WORKFLOWS.md"
     ],
     "protection": [
       "docs/ops/branch-protection-setup.md",
@@ -158322,6 +158422,7 @@
       "docs/01-development/GITHUB-SETTINGS.md",
       "docs/04-infrastructure/DOMAIN-CUTOVER-OP-SLY.md",
       "docs/04-infrastructure/SECURITY-MITIGATIONS-2026-04-09.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/SPRINT-02-RUN.md"
     ],
     "autenticacion": [
@@ -158595,7 +158696,6 @@
       "docs/03-agents/AGENT-URL-VALIDATION.md",
       "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
       "docs/tenants/peskids/CLIENT-PITCH.md",
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
       "docs/tenants/intcloudsysops/WHATSAPP-FIRST-PACKAGE.md",
       "docs/tenants/intcloudsysops/WACRM-OFFERING.md",
@@ -158750,7 +158850,8 @@
       "docs/blueprints/opsly-operational-blueprint/COMMERCIAL-PACKAGES.md"
     ],
     "listos": [
-      "docs/growth/REVENUE-EXECUTION-30D.md"
+      "docs/growth/REVENUE-EXECUTION-30D.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md"
     ],
     "semana": [
       "docs/growth/REVENUE-EXECUTION-30D.md",
@@ -159062,6 +159163,7 @@
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/blueprints/TWENTY-BOOTSTRAP-IRREDUCIBLE.md",
       "docs/blueprints/PESKIDS-GHL-MIGRATION-STATUS.md"
@@ -159613,6 +159715,7 @@
       "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
       "docs/01-development/GIT-WORKFLOW.md",
       "docs/01-development/WALLET-PREPAID-ROADMAP.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/ARCHITECTURE.md"
     ],
     "tema": [
@@ -159634,7 +159737,8 @@
       "docs/obsidian/TAXONOMY.md",
       "docs/obsidian/inbox/2026-05-22.md",
       "docs/obsidian/inbox/MOC.md",
-      "docs/tenants/peskids/WACRM-RUNBOOK.md"
+      "docs/tenants/peskids/WACRM-RUNBOOK.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md"
     ],
     "nodo": [
       "docs/obsidian/TAXONOMY.md",
@@ -160619,6 +160723,7 @@
       "docs/01-development/LOCAL-MAC-IMPROVEMENT-PLAN.md",
       "docs/03-agents/CURSOR-DAILY-CHECKLIST.md",
       "docs/tenants/peskids/DAILY-DIGEST-RUNBOOK.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/DEMO-SCRIPT.md"
     ],
     "abrir": [
@@ -161115,7 +161220,8 @@
     ],
     "clase": [
       "docs/00-architecture/REDIS_NAMESPACE_ISOLATION.md",
-      "docs/examples/email-templates/PESKIDS-EMAIL-TEMPLATES.md"
+      "docs/examples/email-templates/PESKIDS-EMAIL-TEMPLATES.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md"
     ],
     "ctx": [
       "docs/00-architecture/REDIS_NAMESPACE_ISOLATION.md"
@@ -161960,8 +162066,7 @@
     "falla": [
       "docs/01-development/FAQ.md",
       "docs/04-infrastructure/WORKER-SETUP-MAC2011.md",
-      "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md"
+      "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md"
     ],
     "caling": [
       "docs/01-development/PREDICTIVE-BI-SCALABILITY.md"
@@ -164672,6 +164777,7 @@
     ],
     "005": [
       "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md"
     ],
     "frente": [
@@ -164695,7 +164801,8 @@
     ],
     "family": [
       "docs/adr/ADR-046-family-email-invite-access.md",
-      "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md"
+      "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md"
     ],
     "canonicalization": [
       "docs/adr/ADR-033-docs-canonicalization.md"
@@ -164739,7 +164846,8 @@
       "docs/adr/ADR-023-approval-gate-phase1.md"
     ],
     "fuera": [
-      "docs/adr/ADR-023-approval-gate-phase1.md"
+      "docs/adr/ADR-023-approval-gate-phase1.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md"
     ],
     "036": [
       "docs/adr/ADR-036-cli-consolidation-tools-cli-first.md"
@@ -164869,6 +164977,19 @@
     "prohibido": [
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md"
     ],
+    "academy": [
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md"
+    ],
+    "rama": [
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
+      "docs/blueprints/TENANT-REPEAT-PLAYBOOK.md"
+    ],
+    "wompi": [
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
+      "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md",
+      "docs/blueprints/WOMPI-PAYMENT-GATEWAY-CONTRACT.md"
+    ],
     "200l": [
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
     ],
@@ -164905,7 +165026,6 @@
     ],
     "baileys": [
       "docs/tenants/peskids/N8N-SETUP.md",
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md"
     ],
     "freshness": [
@@ -165108,7 +165228,8 @@
     ],
     "ups": [
       "docs/tenants/peskids/DASHBOARD-SPEC.md",
-      "docs/tenants/peskids/OWNER-RUNBOOK.md"
+      "docs/tenants/peskids/OWNER-RUNBOOK.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md"
     ],
     "enrolled": [
       "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md"
@@ -165129,6 +165250,7 @@
     "wacrm": [
       "docs/tenants/peskids/WACRM-TWENTY-CUTOVER.md",
       "docs/tenants/peskids/WACRM-RUNBOOK.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/WACRM-CHANNEL.md",
       "docs/tenants/intcloudsysops/WACRM-OFFERING.md",
       "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md"
@@ -165316,6 +165438,7 @@
     "digest": [
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/tenants/peskids/DAILY-DIGEST-RUNBOOK.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md"
     ],
     "prerequisite": [
@@ -165395,16 +165518,13 @@
     "standalone": [
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md"
     ],
-    "algo": [
+    "alumno": [
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md"
     ],
-    "guion": [
+    "captacion": [
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md"
     ],
-    "reunion": [
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md"
-    ],
-    "valores": [
+    "familia": [
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md"
     ],
     "espanol": [
@@ -165950,10 +166070,6 @@
     "mercado": [
       "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md"
     ],
-    "wompi": [
-      "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md",
-      "docs/blueprints/WOMPI-PAYMENT-GATEWAY-CONTRACT.md"
-    ],
     "alineacion": [
       "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md"
     ],
@@ -166083,9 +166199,6 @@
       "docs/blueprints/TENANT-REPEAT-PLAYBOOK.md"
     ],
     "inevitables": [
-      "docs/blueprints/TENANT-REPEAT-PLAYBOOK.md"
-    ],
-    "rama": [
       "docs/blueprints/TENANT-REPEAT-PLAYBOOK.md"
     ],
     "vender": [
@@ -167212,6 +167325,7 @@
     "docs/tenants/peskids/SPRINT-02-RUN.md",
     "docs/tenants/peskids/SPRINT-02-STATUS.md",
     "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
+    "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
     "docs/tenants/peskids/TEMPLATE-STATUS.md",
     "docs/tenants/peskids/TENANT_PESKIDS.md",
     "docs/tenants/peskids/TWENTY-CRM.md",
