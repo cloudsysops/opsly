@@ -3,6 +3,10 @@ import type { Database } from '@/lib/types';
 import { getLeadForAdmin } from '@/lib/services/lead-admin.service';
 import { getStudentById } from '@/lib/services/student.service';
 import type { createFollowupSchema, patchFollowupSchema } from '@/lib/validation/followup.schema';
+import {
+  createTwentyTaskForLeadFollowup,
+  syncTwentyTaskStatus,
+} from '@/lib/twenty-followup-sync';
 import type { z } from 'zod';
 
 export type FollowupRow = Database['public']['Tables']['followups']['Row'];
@@ -82,6 +86,32 @@ export async function createFollowup(
     .single();
 
   if (error) throw error;
+
+  // Best-effort: staff work entirely from this CRUD, never opening Twenty.
+  // A lead-linked followup also gets a Twenty Task so the pipeline stays
+  // complete for reporting. Failure here must never block the local write.
+  if (input.contact_type === 'lead') {
+    const twentyTaskId = await createTwentyTaskForLeadFollowup({
+      leadId: input.contact_id,
+      type: input.type,
+      dueDate: input.due_date,
+      notes: input.notes ?? null,
+    });
+
+    if (twentyTaskId) {
+      const { data: updated } = await supabaseServer()
+        .from('followups')
+        .update({ twenty_task_id: twentyTaskId })
+        .eq('id', data.id)
+        .select('*')
+        .single();
+      if (updated) {
+        return withContactName(updated);
+      }
+      data.twenty_task_id = twentyTaskId;
+    }
+  }
+
   return withContactName(data);
 }
 
@@ -124,5 +154,10 @@ export async function updateFollowup(
     .single();
 
   if (error) throw error;
+
+  if (input.status !== undefined && existing.contact_type === 'lead' && existing.twenty_task_id) {
+    await syncTwentyTaskStatus(existing.twenty_task_id, input.status);
+  }
+
   return withContactName(data);
 }
