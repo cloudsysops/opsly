@@ -7,7 +7,8 @@ last_review: 2026-07-07
 # Peskids Sprint Final Status — Academy Production Completion
 
 > Estado: **ACADEMY_READY_WITH_EXTERNAL_WARNINGS**  
-> Fecha: 2026-07-07
+> Fecha: 2026-07-07 | Última actualización: 2026-07-07T09:05Z  
+> PR #702 merged + deployed ✅ | Digest live ✅ | Migration 005 pending manual apply
 
 ---
 
