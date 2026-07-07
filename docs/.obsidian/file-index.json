@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-07-07T02:34:00.113Z",
-  "totalFiles": 795,
+  "lastIndexed": "2026-07-07T15:06:42.153Z",
+  "totalFiles": 796,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -772,6 +772,7 @@
     "tenants/peskids/SPRINT-02-RUN.md",
     "tenants/peskids/SPRINT-02-STATUS.md",
     "tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
+    "tenants/peskids/SPRINT-FINAL-STATUS.md",
     "tenants/peskids/TEMPLATE-STATUS.md",
     "tenants/peskids/TENANT_PESKIDS.md",
     "tenants/peskids/TWENTY-CRM.md",
