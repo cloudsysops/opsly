@@ -11,11 +11,13 @@ const { resolveTwentyEnvMock, createTaskMock, updateTaskMock, createTaskTargetMo
 
 vi.mock('@intcloudsysops/services/twenty', () => ({
   resolveTwentyEnv: resolveTwentyEnvMock,
-  TwentyClient: vi.fn().mockImplementation(() => ({
+  TwentyClient: vi.fn(function TwentyClientMock() {
+    return {
     createTask: createTaskMock,
     updateTask: updateTaskMock,
     createTaskTarget: createTaskTargetMock,
-  })),
+    };
+  }),
 }));
 
 const { maybeSingleMock } = vi.hoisted(() => ({

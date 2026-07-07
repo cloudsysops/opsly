@@ -88,6 +88,7 @@ export function StaffDashboard({ surface }: StaffDashboardProps): React.ReactEle
       onRangeChange={setRange}
       onRefresh={() => void fetchDashboard(true)}
       refreshing={refreshing}
+      surface={surface}
     />
   )
 }
