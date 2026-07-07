@@ -63,8 +63,7 @@ ENV NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=$NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 
 WORKDIR /app
 RUN npm run build -w @intcloudsysops/prompt-guard \
- && npm run build -w @intcloudsysops/services \
- && npm run build -w @intcloudsysops/wompi-gateway
+ && npm run build -w @intcloudsysops/services
 
 WORKDIR /app/apps/peskids
 RUN mkdir -p public \
