@@ -13,6 +13,7 @@ COPY lib/services/package.json ./lib/services/
 COPY lib/prompt-guard/package.json ./lib/prompt-guard/
 COPY lib/openwa/package.json ./lib/openwa/
 COPY lib/wacrm-channel/package.json ./lib/wacrm-channel/
+COPY lib/wompi-gateway/package.json ./lib/wompi-gateway/
 COPY packages/opsly-core/package.json ./packages/opsly-core/
 COPY packages/types/package.json ./packages/types/
 COPY apps/peskids/package.json ./apps/peskids/
@@ -24,6 +25,7 @@ COPY lib/services/ ./lib/services/
 COPY lib/prompt-guard/ ./lib/prompt-guard/
 COPY lib/openwa/ ./lib/openwa/
 COPY lib/wacrm-channel/ ./lib/wacrm-channel/
+COPY lib/wompi-gateway/ ./lib/wompi-gateway/
 COPY packages/opsly-core/ ./packages/opsly-core/
 COPY packages/types/ ./packages/types/
 COPY apps/peskids/ ./apps/peskids/
@@ -61,7 +63,8 @@ ENV NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=$NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 
 WORKDIR /app
 RUN npm run build -w @intcloudsysops/prompt-guard \
- && npm run build -w @intcloudsysops/services
+ && npm run build -w @intcloudsysops/services \
+ && npm run build -w @intcloudsysops/wompi-gateway
 
 WORKDIR /app/apps/peskids
 RUN mkdir -p public \
