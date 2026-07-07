@@ -25,6 +25,7 @@ export async function fetchOperationsMetrics(): Promise<OperationsMetrics> {
     enrollments_today: 0,
     attendance_rate_pct: null,
     revenue_month_cents: 0,
+    revenue_month_by_provider: { stripe_cents: 0, wompi_cents: 0 },
     pending_payments_cents: 0,
   };
 
@@ -84,7 +85,7 @@ export async function fetchOperationsMetrics(): Promise<OperationsMetrics> {
 
     const { data: paidPayments, error: paidError } = await peskidsClient()
       .from('payments')
-      .select('amount_cents')
+      .select('amount_cents, provider')
       .eq('tenant_slug', tenantSlug())
       .eq('status', 'paid')
       .gte('paid_at', startOfMonth.toISOString());
@@ -96,6 +97,19 @@ export async function fetchOperationsMetrics(): Promise<OperationsMetrics> {
     const revenue_month_cents = (paidPayments ?? []).reduce(
       (sum, row) => sum + (row.amount_cents ?? 0),
       0
+    );
+
+    const revenue_month_by_provider = (paidPayments ?? []).reduce(
+      (acc, row) => {
+        const amount = row.amount_cents ?? 0;
+        if (row.provider === 'wompi') {
+          acc.wompi_cents += amount;
+        } else {
+          acc.stripe_cents += amount;
+        }
+        return acc;
+      },
+      { stripe_cents: 0, wompi_cents: 0 }
     );
 
     const { data: pendingPayments, error: pendingError } = await peskidsClient()
@@ -118,6 +132,7 @@ export async function fetchOperationsMetrics(): Promise<OperationsMetrics> {
       enrollments_today: enrollmentsToday ?? 0,
       attendance_rate_pct,
       revenue_month_cents,
+      revenue_month_by_provider,
       pending_payments_cents,
     };
   } catch {

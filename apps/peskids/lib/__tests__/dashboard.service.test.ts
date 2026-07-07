@@ -55,6 +55,7 @@ describe('fetchDashboardData', () => {
       enrollments_today: 1,
       attendance_rate_pct: 80,
       revenue_month_cents: 17000000,
+      revenue_month_by_provider: { stripe_cents: 15000000, wompi_cents: 2000000 },
       pending_payments_cents: 8500000,
     })
   })
