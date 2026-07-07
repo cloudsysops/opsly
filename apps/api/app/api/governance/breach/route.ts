@@ -1,5 +1,8 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
+import { HTTP_STATUS } from '../../../../lib/constants';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
 import { getServiceClient } from '../../../../lib/supabase';
 
 const breachSchema = z.object({
@@ -15,6 +18,13 @@ const breachSchema = z.object({
 });
 
 export async function POST(request: NextRequest): Promise<Response> {
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `breach:${ip}` : 'breach:anonymous');
+
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+
   // Internal-only endpoint: requires service-role secret header
   const authHeader = request.headers.get('authorization');
   const expectedToken = process.env.GOVERNANCE_BREACH_SECRET;
@@ -52,6 +62,19 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   // TODO: trigger Discord alert to #ops-alerts via observability
   // await alertDiscord({ title: `[BREACH] ${parsed.data.title}`, severity: parsed.data.severity });
+
+  void logAuditEvent({
+    tenant_slug: parsed.data.tenant_id,
+    action: 'log_breach',
+    resource: `breach:${data.id}`,
+    ip,
+    user_agent: request.headers.get('user-agent') ?? undefined,
+    metadata: {
+      title: parsed.data.title,
+      severity: parsed.data.severity,
+      affected_subject_count: parsed.data.affected_subject_count,
+    },
+  });
 
   return Response.json(
     { ok: true, breach_id: data.id, logged_at: data.created_at },
