@@ -131,7 +131,7 @@ Flow: wacrm event → HTTP POST to `/api/webhooks/wacrm` with secret header.
 
 ```bash
 cd /opt/opsly
-git pull --ff-only   # after merge of fix/peskids-wacrm-inbound-normalize
+git pull --ff-only   # includes PR #703 wacrm normalize fix
 ./scripts/install-peskids-n8n-workflows.sh --force
 ```
 

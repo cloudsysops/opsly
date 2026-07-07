@@ -4,213 +4,140 @@ owner: product/operations
 last_review: 2026-07-07
 ---
 
-# Peskids Sprint Final Status — Academy Production Completion
+# Peskids Sprint Final Status — Academy Production
 
-> Estado: **ACADEMY_PRODUCTION_READY**  
-> Fecha: 2026-07-07 | Última actualización: 2026-07-07T09:10Z  
-> PR #702 merged + deployed ✅ | Digest live ✅ | Migration 005 applied ✅ | wacrm n8n inbound ✅
-
----
-
-## Executive Summary
-
-Peskids está funcionando como sistema de academia real. El flujo completo
-lead → WhatsApp → follow-up → clase de prueba → alumno/familia → agenda → digest
-está implementado, probado y listo para cliente.
-
-**Bloqueadores externos resueltos (2026-07-07):**
-1. ~~Deploy pendiente~~ → PR #702 merged, image `f88a23d4` en VPS
-2. ~~Migration 005~~ → aplicada en Supabase (`messages_status_check` ampliado)
-3. ~~n8n `wacrm-peskids-inbound` 500~~ → fix Normalize payload (rama `fix/peskids-wacrm-inbound-normalize`, aplicado en VPS)
-
-**Pendiente operativo (no bloquea academy loop):**
-- Merge PR workflow fix a `main` para persistir JSON en git
-- Wompi sandbox (flag off por diseño)
-- Twenty CRM sync (fuera de alcance)
+> **Estado:** `ACADEMY_PRODUCTION_READY` · **wacrm:** `WACRM_INBOUND_READY`  
+> **Última verificación:** 2026-07-07T23:05Z  
+> **Imagen prod:** `f88a23d4`+ (main incluye #702, #703, #706)
 
 ---
 
-## Commits en rama (listos para PR a main)
+## Resumen ejecutivo
 
-| Commit | Descripción |
-|--------|-------------|
-| `4574eb64` | fix(peskids): add lib/wompi-gateway to Docker build context — **CRITICAL** |
-| `31b67a5e` | feat(peskids): add recommended_next_action to daily digest |
+El loop academia Peskids está **cerrado en producción**:
 
----
+lead → WhatsApp inbound (wacrm/n8n) → mensaje en Supabase → lead vinculado/creado → admin inbox → digest con pendientes.
 
-## Gate Results
-
-| Gate | Status | Notas |
-|------|--------|-------|
-| GATE 0 — Rama | ✅ | `feat/peskids-academy-prod-complete-loop` desde main HEAD `486f8c52` |
-| GATE 1 — Local Safety | ✅ | Type-check OK, Build OK, 66 tests OK |
-| GATE 2 — Migrations | 🟡 | 2 pendientes (additive, no bloqueantes) |
-| GATE 3 — Deploy | ⏳ | Bloqueado por red sandbox — PR listo para push |
-| GATE 4 — Core Flow | ✅ | Lead capture 201, auth 401/403, wacrm fail-closed |
-| GATE 5 — Digest/AI | ✅ | `recommended_next_action` implementado |
-| GATE 6 — n8n | 🟡 | READY_NEEDS_N8N_SECRET (ver DAILY-DIGEST-RUNBOOK.md) |
-| GATE 7 — Wompi | ✅ | WOMPI_READY_SANDBOX_ONLY |
-| GATE 8 — Demo Docs | ✅ | DEMO-SCRIPT.md actualizado |
-| GATE 9 — Final Smoke | ✅ | Prod baseline sano |
+| Hito | Estado |
+|------|--------|
+| PR #702 — Dockerfile wompi + digest `recommended_next_action` | ✅ merged + deployed |
+| PR #703 — wacrm Normalize payload (fix n8n 500) | ✅ merged |
+| PR #706 — badge wacrm con historial por contacto | ✅ merged |
+| Migración `005_message_approval_status.sql` | ✅ aplicada en Supabase |
+| n8n `wacrm-peskids-inbound` | ✅ HTTP 200 en prod |
+| Wompi | ⏸ inactivo por diseño (sandbox pendiente) |
+| Twenty CRM | ❌ fuera de alcance academy loop |
 
 ---
 
-## Checklist Gate 1 (Local)
+## Smoke producción (2026-07-07)
 
-- [x] `npm run type-check --workspace=peskids` → **OK** (tras symlink wompi-gateway)
-- [x] `npm run build --workspace=peskids` → **OK** (72 páginas, 0 errores)
-- [x] `npm run test` (pipeline + followups + submissions + digest + wompi) → **66/66 OK**
-- [x] Dockerfile fix (`lib/wompi-gateway` COPY lines) → **committed**
+| Check | Resultado |
+|-------|-----------|
+| `POST n8n …/webhook/wacrm-peskids-inbound` (payload QA) | ✅ **200** — `message_id`, `lead_id` |
+| `POST /api/webhooks/wacrm` sin secret | ✅ **401** fail-closed |
+| `GET /api/health` | ✅ ok |
+| Digest `recommended_next_action` | ✅ live (post #702) |
+| Auto-send WhatsApp en inbound | ✅ no — approval-first |
 
----
+Payload QA usado en smoke:
 
-## Migrations Pendientes (aplicar en Supabase dashboard)
-
-### 1. `apps/peskids/migrations/005_message_approval_status.sql`
-**Cuándo:** Antes del próximo deploy. Sin esto, `status='skipped'|'pending_approval'` en `public.messages` puede fallar.  
-**Riesgo:** ADDITIVE (DROP CONSTRAINT IF EXISTS + ADD CONSTRAINT con más valores).  
-**SQL:**
-```sql
-ALTER TABLE public.messages DROP CONSTRAINT IF EXISTS messages_status_check;
-ALTER TABLE public.messages
-  ADD CONSTRAINT messages_status_check
-  CHECK (
-    status IS NULL OR status IN (
-      'pending', 'pending_approval', 'approved', 'sent', 'failed', 'skipped'
-    )
-  );
+```json
+{
+  "tenant_slug": "peskids",
+  "provider": "wacrm",
+  "event_type": "inbound_message",
+  "external_conversation_id": "qa-conv-<ts>",
+  "external_message_id": "qa-msg-<ts>",
+  "phone": "+14014427099",
+  "contact_name": "QA WhatsApp Parent",
+  "body": "Hola, quiero información de clases de natación",
+  "direction": "inbound",
+  "timestamp": "<ISO>",
+  "metadata": { "source": "n8n-smoke" }
+}
 ```
 
-### 2. `apps/peskids/migrations/20260706_add_wompi_payment_provider.sql`
-**Cuándo:** Antes de habilitar Wompi en sandbox. No urgente (flag off por defecto).  
-**Riesgo:** ADDITIVE (ADD COLUMN IF NOT EXISTS con DEFAULT 'stripe').  
-**Archivo:** `apps/peskids/migrations/20260706_add_wompi_payment_provider.sql`
-
----
-
-## Deploy Instructions (desde terminal fuera de sandbox)
+Re-smoke rápido:
 
 ```bash
-# 1. Cambiar a la rama con el fix
-git checkout feat/peskids-academy-prod-complete-loop
-
-# 2. Push
-git push origin feat/peskids-academy-prod-complete-loop
-
-# 3. Crear PR
-gh pr create --base main \
-  --title "fix(peskids): Docker build fix + digest recommended_next_action" \
-  --body "$(cat <<'EOF'
-## Summary
-- Adds lib/wompi-gateway to Dockerfile COPY steps (CRITICAL: was causing Docker build failure)
-- Adds recommended_next_action to daily digest (deterministic, no external AI required)
-
-## Test plan
-- [x] type-check OK
-- [x] build OK  
-- [x] 66 tests passing
-- [ ] Deploy smoke after merge
-
-## Risk
-- Wompi stays inactive (flag off by default)
-- Stripe checkout untouched
-- Migrations: 2 additive-only pending (documented in SPRINT-FINAL-STATUS.md)
-EOF
-)"
-
-# 4. Merge → CI builds + deploys automáticamente
-# 5. O manual VPS:
-# ssh vps-dragon@100.120.151.91
-# cd /opt/opsly && git pull --ff-only origin main
-# bash scripts/peskids-rebuild-vps.sh
-
-# 6. Migrations post-deploy (Supabase dashboard → SQL Editor):
-#    Pegar contenido de apps/peskids/migrations/005_message_approval_status.sql
+curl -sS -w "\nHTTP:%{http_code}\n" -X POST \
+  "https://n8n-peskids.op-sly.com/webhook/wacrm-peskids-inbound" \
+  -H "Content-Type: application/json" \
+  -d '{"from":"+573001112233","body":"smoke wacrm inbound"}'
 ```
 
 ---
 
-## n8n Status (READY_NEEDS_N8N_SECRET)
+## wacrm inbound — causa y fix (cerrado)
 
-Workflows exportados listos en `.n8n/1-workflows/peskids/`:
-- `peskids-daily-digest.json` — digest 8am
-- `peskids-wacrm-inbound.json` — WhatsApp inbound
-- `peskids-lead-intake.json` — lead capture
-- `peskids-followup-24h.json` — recordatorio 24h
+**Root cause:** nodo n8n **Normalize payload** no mapeaba `from` → `phone` ni generaba `external_message_id` → Peskids `400` → n8n webhook `500`.
 
-Para activar:
+**Fix:** PR #703 — mapeo `phone|from|sender|wa_id`, `body|text|message`, `external_message_id` auto-generado. Workflow canónico: `.n8n/1-workflows/peskids/peskids-wacrm-inbound.json`.
+
+**Re-aplicar en VPS** (solo si n8n se desincroniza):
+
 ```bash
-# En VPS:
-bash scripts/install-peskids-n8n-workflows.sh
-# Luego en Doppler:
-# PESKIDS_DIGEST_CRON_SECRET=<secret>
-# PESKIDS_WHATSAPP_REPLY_MODE=approval-first
+cd /opt/opsly && git pull --ff-only
+./scripts/install-peskids-n8n-workflows.sh --force
 ```
-Ver `DAILY-DIGEST-RUNBOOK.md` para instrucciones completas.
+
+Detalle: `docs/tenants/peskids/WACRM-RUNBOOK.md` → sección *n8n inbound recovery*.
 
 ---
 
-## Production Smoke Baseline (2026-07-07, imagen pre-deploy)
+## Listo para cliente
 
-| Endpoint | Status | Notas |
-|----------|--------|-------|
-| `GET /` (landing) | ✅ 200 | Live |
-| `GET /admin/login` | ✅ 200 | Live |
-| `GET /familias/login` | ✅ 200 | Live |
-| `GET /teacher/login` | ✅ 200 | Live |
-| `GET /api/health` | ✅ `{status:ok, supabase:ok, redis:ok}` | Live |
-| `POST /api/leads` | ✅ 201 | Lead `81ffaf73` creado |
-| `POST /api/webhooks/wacrm` (no auth) | ✅ 401 | Fail-closed correcto |
-| `GET /api/admin/digest/daily` (no auth) | ✅ 401 | Auth requerida |
-| `GET /api/admin/messages` (no auth) | ✅ 401 | Auth requerida |
-| `GET /api/admin/followups` (no auth) | ⏳ 404 | Imagen vieja — OK tras deploy |
-| `POST /api/webhooks/wompi` | ⏳ 404 | Imagen vieja — OK tras deploy |
+1. Landing y captación de leads — `peskids.op-sly.com`
+2. Admin — leads, alumnos, follow-ups, mensajes, agenda, clases de prueba
+3. Inbox WhatsApp (wacrm) — approval-first, `/admin/messages`
+4. Follow-ups, trial classes, portal familias/docentes
+5. Digest diario con `recommended_next_action`
+6. Pipeline Active Student → Renewal
+7. n8n workflows exportados e importables en VPS
 
 ---
 
-## What Is Ready For Client
+## Backlog (no bloquea academy)
 
-1. ✅ **Landing y captación de leads** — `peskids.op-sly.com` live con formulario válido
-2. ✅ **Admin dashboard** — leads, alumnos, follow-ups, mensajes, agenda, clases de prueba
-3. ✅ **Inbox WhatsApp (wacrm)** — approval-first, inbox en `/admin/messages`
-4. ✅ **Follow-ups CRUD** — crear, editar, marcar completados (POST/PATCH/GET)
-5. ✅ **Trial classes** — agendar, cambiar estado, notas de sesión
-6. ✅ **Alumnos/familias** — portal `/familias`, clases, reservas, submissions
-7. ✅ **Teacher dashboard** — agenda semanal, asistencia, submissions/calificaciones
-8. ✅ **Digest diario** con `recommended_next_action` (sin LLM externo)
-9. ✅ **Pipeline Active Student → Renewal** — regla automática fin de mes
-10. ✅ **Wompi preparado** — módulo listo, inactivo hasta sandbox confirmado
-11. ✅ **n8n workflows exportados** — listos para importar en VPS
-
-## What Is Not Ready Yet
-
-1. ⏳ **Merge PR workflow fix** — rama `fix/peskids-wacrm-inbound-normalize` (JSON n8n ya aplicado en VPS vía `--force`)
-2. ⏳ **Wompi sandbox** — confirmar forma del evento `payment_link_id` antes de `_ENABLED=true`
-3. ⏳ **AcademyOpsMap wired** — componente `academy-ops-map.tsx` construido pero no montado en dashboard (backlog)
-4. ❌ **Billing mensual/suscripciones** — no implementado (backlog productivo)
-5. ❌ **AI copiloto** — `recommended_next_action` es determinístico; LLM real es backlog
-6. ❌ **Twenty CRM sync** — fuera de alcance academy loop
-
-### wacrm inbound recovery (2026-07-07)
-
-| Check | Result |
-|-------|--------|
-| n8n `wacrm-peskids-inbound` | HTTP 200 (legacy `from` + QA payload) |
-| Peskids `POST /api/webhooks/wacrm` | HTTP 201 directo con secret |
-| Message persisted | `public.messages` con `external_id` `wacrm:*` |
-| Lead linked/created | `lead_id` en respuesta webhook |
-| Digest pending | `recommended_next_action`: responder WhatsApp |
-| Auto-send | No — inbound solo persiste + notifica admin |
-
-**Root cause:** nodo **Normalize payload** no mapeaba `from` → `phone` ni generaba `external_message_id` → Peskids `400` → n8n `500`.
+| Item | Notas |
+|------|-------|
+| Wompi sandbox | Confirmar `payment_link_id` antes de `WOMPI_*_ENABLED=true` |
+| Migración wompi columns | `20260706_add_wompi_payment_provider.sql` — solo si se activa Wompi |
+| AcademyOpsMap en dashboard | Componente existe, no montado |
+| Billing mensual / suscripciones | Producto futuro |
+| AI copiloto real | Digest hoy es determinístico |
+| Twenty CRM sync | Gate separado |
 
 ---
 
-## Exact Next Action
+## Migraciones
 
-**Merge PR** `fix/peskids-wacrm-inbound-normalize` → `main` (workflow JSON ya en VPS; merge persiste en git).
+| Archivo | Estado |
+|---------|--------|
+| `005_message_approval_status.sql` | ✅ aplicada |
+| `20260706_add_wompi_payment_provider.sql` | ⏳ pendiente hasta activar Wompi |
 
 ---
 
-*Generado: 2026-07-07 por Claude Opus 4.8 — Academy Production Completion Loop*
+## PRs de cierre (referencia)
+
+- [#702](https://github.com/cloudsysops/opsly/pull/702) — wompi Dockerfile + digest
+- [#703](https://github.com/cloudsysops/opsly/pull/703) — wacrm normalize payload
+- [#706](https://github.com/cloudsysops/opsly/pull/706) — wacrm lead badge historial
+
+---
+
+## Siguiente acción
+
+**Operativa (VPS):** tras merge de #706, confirmar imagen Peskids desplegada y reimport n8n solo si el webhook deja de responder 200:
+
+```bash
+ssh vps-dragon@100.120.151.91 'cd /opt/opsly && git pull --ff-only && bash scripts/peskids-rebuild-vps.sh'
+```
+
+**Producto:** validar Wompi sandbox cuando el cliente quiera cobros en línea (sin activar flags hasta confirmar payload).
+
+---
+
+*Actualizado: 2026-07-07 — Academy + wacrm inbound loop cerrado*
