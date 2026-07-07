@@ -6,9 +6,9 @@ last_review: 2026-07-07
 
 # Peskids Sprint Final Status — Academy Production Completion
 
-> Estado: **ACADEMY_READY_WITH_EXTERNAL_WARNINGS**  
-> Fecha: 2026-07-07 | Última actualización: 2026-07-07T09:05Z  
-> PR #702 merged + deployed ✅ | Digest live ✅ | Migration 005 pending manual apply
+> Estado: **ACADEMY_PRODUCTION_READY**  
+> Fecha: 2026-07-07 | Última actualización: 2026-07-07T09:10Z  
+> PR #702 merged + deployed ✅ | Digest live ✅ | Migration 005 applied ✅ | wacrm n8n inbound ✅
 
 ---
 
@@ -18,10 +18,15 @@ Peskids está funcionando como sistema de academia real. El flujo completo
 lead → WhatsApp → follow-up → clase de prueba → alumno/familia → agenda → digest
 está implementado, probado y listo para cliente.
 
-**Bloqueadores externos (no código):**
-1. Deploy pendiente (push de branch `feat/peskids-academy-prod-complete-loop` desde terminal fuera de sandbox)
-2. 2 migraciones app-local pendientes de aplicar en Supabase dashboard
-3. n8n no alcanzable para verificación de workflows (no es bloqueante — runbook listo)
+**Bloqueadores externos resueltos (2026-07-07):**
+1. ~~Deploy pendiente~~ → PR #702 merged, image `f88a23d4` en VPS
+2. ~~Migration 005~~ → aplicada en Supabase (`messages_status_check` ampliado)
+3. ~~n8n `wacrm-peskids-inbound` 500~~ → fix Normalize payload (rama `fix/peskids-wacrm-inbound-normalize`, aplicado en VPS)
+
+**Pendiente operativo (no bloquea academy loop):**
+- Merge PR workflow fix a `main` para persistir JSON en git
+- Wompi sandbox (flag off por diseño)
+- Twenty CRM sync (fuera de alcance)
 
 ---
 

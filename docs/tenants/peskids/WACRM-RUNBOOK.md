@@ -113,11 +113,60 @@ Flow: wacrm event → HTTP POST to `/api/webhooks/wacrm` with secret header.
 
 | Symptom | Check |
 |---------|--------|
-| `401 Unauthorized` | `WACRM_PESKIDS_WEBHOOK_SECRET` in Doppler + correct header |
+| `401 Unauthorized` | `WACRM_PESKIDS_WEBHOOK_SECRET` in Doppler + correct header on n8n → Peskids |
 | `403 Tenant mismatch` | `tenant_slug` must be `peskids` |
+| n8n webhook `500` + `{"message":"Error in workflow"}` | **Normalize payload** node: legacy payloads used `from` not `phone`. Re-import workflow from `.n8n/1-workflows/peskids/peskids-wacrm-inbound.json` (fix 2026-07-07). Peskids returns `400` when `phone`/`body`/`external_message_id` missing → n8n surfaces as 500. |
+| `400 Invalid wacrm webhook payload` (direct Peskids) | Payload missing `phone`, `body`, or `external_message_id` for `inbound_message` |
 | Message missing in admin | `public.messages` RLS + tenant_id |
 | Lead not linked | Phone format; check `platform.peskids_leads.phone` |
 | No wacrm badge | `external_id` must start with `wacrm:` |
+
+### n8n inbound recovery (2026-07-07)
+
+**Root cause:** `Normalize payload` only read `body.phone` and `body.external_message_id`. Smoke/tests with `from` (no `phone`) produced an invalid POST body → Peskids `400` → n8n HTTP node error → webhook `500`.
+
+**Fix:** Normalize now maps `phone ← phone|from|sender|wa_id`, `body ← body|text|message`, generates `external_message_id` when absent, and fails fast with a clear error if still incomplete.
+
+**Re-apply on VPS:**
+
+```bash
+cd /opt/opsly
+git pull --ff-only   # after merge of fix/peskids-wacrm-inbound-normalize
+./scripts/install-peskids-n8n-workflows.sh --force
+```
+
+**Valid minimal payload (n8n webhook):**
+
+```json
+{
+  "event_type": "inbound_message",
+  "external_message_id": "msg-unique-id",
+  "phone": "+573001112233",
+  "body": "Hola, quiero información",
+  "direction": "inbound"
+}
+```
+
+Legacy alias accepted after fix: `"from": "+573001112233"` instead of `phone`.
+
+**Smoke (expect HTTP 200):**
+
+```bash
+curl -sS -w "\nHTTP:%{http_code}\n" -X POST \
+  "https://n8n-peskids.op-sly.com/webhook/wacrm-peskids-inbound" \
+  -H "Content-Type: application/json" \
+  -d '{"from":"+573001112233","body":"smoke wacrm inbound"}'
+```
+
+Verify Peskids direct (with secret from Doppler, never log):
+
+```bash
+export WACRM_SECRET="$(doppler secrets get WACRM_PESKIDS_WEBHOOK_SECRET --plain --project ops-intcloudsysops --config prd)"
+curl -sS -w "\nHTTP:%{http_code}\n" -X POST "https://peskids.op-sly.com/api/webhooks/wacrm" \
+  -H "Content-Type: application/json" \
+  -H "x-wacrm-webhook-secret: ${WACRM_SECRET}" \
+  -d '{"tenant_slug":"peskids","event_type":"inbound_message","external_message_id":"direct-smoke-'"$(date +%s)"'","phone":"+573001112233","body":"direct ok","direction":"inbound"}'
+```
 
 ## Rollback
 
