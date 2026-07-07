@@ -264,16 +264,11 @@ export default function RegisterPage() {
               variant="primary"
               size="lg"
               className="w-full"
-              disabled={loading}
+              loading={loading}
             >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                  Creando sesión...
-                </>
-              ) : (
-                `Suscribirse por ${PLANS.find((p) => p.id === selectedPlan)?.price}/mes`
-              )}
+              {loading
+                ? 'Creando sesión...'
+                : `Suscribirse por ${PLANS.find((p) => p.id === selectedPlan)?.price}/mes`}
             </Button>
           </div>
         </form>

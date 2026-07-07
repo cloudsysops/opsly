@@ -1,7 +1,7 @@
 'use client'
 
-import { Loader2 } from 'lucide-react'
 import { Suspense, useEffect, useState, type ReactElement } from 'react'
+import { Loader2 } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { PasswordInput } from '@/components/ui/input'
@@ -121,15 +121,14 @@ function UpdatePasswordForm(): ReactElement {
               {error}
             </p>
           ) : null}
-          <Button type="submit" variant="primary" className="w-full" disabled={loading || !ready}>
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                Guardando…
-              </>
-            ) : (
-              'Guardar y entrar'
-            )}
+          <Button
+            type="submit"
+            variant="primary"
+            className="w-full"
+            disabled={!ready}
+            loading={loading}
+          >
+            {loading ? 'Guardando…' : 'Guardar y entrar'}
           </Button>
         </form>
       </div>
