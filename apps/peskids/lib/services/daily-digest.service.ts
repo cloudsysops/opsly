@@ -73,6 +73,16 @@ export type DailyDigestPayload = {
   };
   /** Plain-language lines for email/WhatsApp digest (n8n-friendly). */
   highlight_lines: string[];
+  /**
+   * Deterministic prioritized next action for staff.
+   * Priority: 1. unanswered WA messages → 2. uncontacted leads →
+   *           3. trial classes today → 4. overdue followups → 5. idle (all clear)
+   */
+  recommended_next_action: {
+    priority: 1 | 2 | 3 | 4 | 5;
+    action: string;
+    detail: string;
+  };
 };
 
 const PENDING_LEAD_STATUSES = new Set(['new', 'contacted', 'trial', 'pending', 'nuevo']);
@@ -106,7 +116,53 @@ function isWhatsAppLead(item: DailyDigestLeadItem): boolean {
   return source.includes('whatsapp') || email.startsWith('wa+') || email.includes('@inbox.peskids.local');
 }
 
-function buildHighlightLines(payload: Omit<DailyDigestPayload, 'highlight_lines'>): string[] {
+function buildRecommendedNextAction(
+  payload: Omit<DailyDigestPayload, 'highlight_lines' | 'recommended_next_action'>
+): DailyDigestPayload['recommended_next_action'] {
+  // Priority 1: unanswered WhatsApp messages
+  if (payload.wacrm.pending_reply > 0) {
+    return {
+      priority: 1,
+      action: 'Responder mensajes WhatsApp',
+      detail: `${payload.wacrm.pending_reply} conversación(es) wacrm sin respuesta. Responder primero para no perder leads calientes.`,
+    };
+  }
+  // Priority 2: new uncontacted leads
+  if (payload.leads.pending > 0) {
+    return {
+      priority: 2,
+      action: 'Contactar leads pendientes',
+      detail: `${payload.leads.pending} interesado(s) sin contactar. Llama o envía WhatsApp para agendar clase de prueba.`,
+    };
+  }
+  // Priority 3: trial classes today
+  if (payload.trial_classes.scheduled_today > 0) {
+    return {
+      priority: 3,
+      action: 'Confirmar clases de prueba de hoy',
+      detail: `${payload.trial_classes.scheduled_today} clase(s) de prueba programadas hoy. Confirmar asistencia y preparar profesor.`,
+    };
+  }
+  // Priority 4: overdue followups
+  if (payload.followups.due_today > 0) {
+    return {
+      priority: 4,
+      action: 'Resolver seguimientos vencidos',
+      detail: `${payload.followups.due_today} seguimiento(s) para hoy. Revisar y marcar completados.`,
+    };
+  }
+  // Priority 5: all clear
+  return {
+    priority: 5,
+    action: 'Sin urgencias — revisar nuevos leads',
+    detail:
+      payload.leads.new_today > 0
+        ? `${payload.leads.new_today} nuevo(s) lead(s) hoy. Buen momento para revisar el pipeline.`
+        : 'Sin pendientes urgentes hoy. Revisa el calendario de la semana.',
+  };
+}
+
+function buildHighlightLines(payload: Omit<DailyDigestPayload, 'highlight_lines' | 'recommended_next_action'>): string[] {
   const lines: string[] = [
     `Resumen diario Peskids — ${payload.generated_at.slice(0, 10)}`,
     `Interesados nuevos hoy: ${payload.leads.new_today}`,
@@ -298,7 +354,7 @@ export async function buildDailyDigest(referenceDate = new Date()): Promise<Dail
     status: String(row.status),
   }));
 
-  const base: Omit<DailyDigestPayload, 'highlight_lines'> = {
+  const base: Omit<DailyDigestPayload, 'highlight_lines' | 'recommended_next_action'> = {
     tenant_slug: slug,
     generated_at: referenceDate.toISOString(),
     period: {
@@ -334,6 +390,7 @@ export async function buildDailyDigest(referenceDate = new Date()): Promise<Dail
   return {
     ...base,
     highlight_lines: buildHighlightLines(base),
+    recommended_next_action: buildRecommendedNextAction(base),
   };
 }
 
@@ -341,7 +398,7 @@ export function emptyDailyDigest(referenceDate = new Date()): DailyDigestPayload
   const slug = tenantSlug();
   const periodStart = startOfDay(referenceDate);
   const periodEnd = endOfDay(referenceDate);
-  const base: Omit<DailyDigestPayload, 'highlight_lines'> = {
+  const base: Omit<DailyDigestPayload, 'highlight_lines' | 'recommended_next_action'> = {
     tenant_slug: slug,
     generated_at: referenceDate.toISOString(),
     period: {
@@ -377,5 +434,6 @@ export function emptyDailyDigest(referenceDate = new Date()): DailyDigestPayload
   return {
     ...base,
     highlight_lines: buildHighlightLines(base),
+    recommended_next_action: buildRecommendedNextAction(base),
   };
 }
