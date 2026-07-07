@@ -185,27 +185,31 @@ Ver `DAILY-DIGEST-RUNBOOK.md` para instrucciones completas.
 
 ## What Is Not Ready Yet
 
-1. ⏳ **Deploy del fix Dockerfile** — rama lista, falta push+PR+merge
-2. ⏳ **Migraciones app-local** — 2 pending (005 messages, wompi columns)
-3. ⏳ **n8n activo en VPS** — workflows listos, falta `PESKIDS_DIGEST_CRON_SECRET` en Doppler
-4. ⏳ **wacrm sidecar VPS** — requiere `WACRM_PESKIDS_ENABLED=true` + sidecar deployed
-5. ⏳ **Wompi sandbox** — confirmar forma del evento `payment_link_id` antes de `_ENABLED=true`
-6. ⏳ **AcademyOpsMap wired** — componente `academy-ops-map.tsx` construido pero no montado en dashboard (backlog)
-7. ❌ **Billing mensual/suscripciones** — no implementado (backlog productivo)
-8. ❌ **AI copiloto** — `recommended_next_action` es determinístico; LLM real es backlog
+1. ⏳ **Merge PR workflow fix** — rama `fix/peskids-wacrm-inbound-normalize` (JSON n8n ya aplicado en VPS vía `--force`)
+2. ⏳ **Wompi sandbox** — confirmar forma del evento `payment_link_id` antes de `_ENABLED=true`
+3. ⏳ **AcademyOpsMap wired** — componente `academy-ops-map.tsx` construido pero no montado en dashboard (backlog)
+4. ❌ **Billing mensual/suscripciones** — no implementado (backlog productivo)
+5. ❌ **AI copiloto** — `recommended_next_action` es determinístico; LLM real es backlog
+6. ❌ **Twenty CRM sync** — fuera de alcance academy loop
+
+### wacrm inbound recovery (2026-07-07)
+
+| Check | Result |
+|-------|--------|
+| n8n `wacrm-peskids-inbound` | HTTP 200 (legacy `from` + QA payload) |
+| Peskids `POST /api/webhooks/wacrm` | HTTP 201 directo con secret |
+| Message persisted | `public.messages` con `external_id` `wacrm:*` |
+| Lead linked/created | `lead_id` en respuesta webhook |
+| Digest pending | `recommended_next_action`: responder WhatsApp |
+| Auto-send | No — inbound solo persiste + notifica admin |
+
+**Root cause:** nodo **Normalize payload** no mapeaba `from` → `phone` ni generaba `external_message_id` → Peskids `400` → n8n `500`.
 
 ---
 
 ## Exact Next Action
 
-**Ejecutar desde terminal (fuera de sandbox):**
-```bash
-git checkout feat/peskids-academy-prod-complete-loop
-git push origin feat/peskids-academy-prod-complete-loop
-gh pr create --base main --title "fix(peskids): wompi Dockerfile + digest recommended_next_action"
-# Merge → deploy automático
-# Post-deploy: aplicar 005_message_approval_status.sql en Supabase dashboard
-```
+**Merge PR** `fix/peskids-wacrm-inbound-normalize` → `main` (workflow JSON ya en VPS; merge persiste en git).
 
 ---
 
