@@ -39,6 +39,11 @@ interface DashboardViewProps {
   onRangeChange: (range: 'week' | 'month') => void
   onRefresh: () => void
   refreshing: boolean
+  /** Support-surface users hit the same endpoints minus the admin-only ones
+   * (trial scheduling, lead conversion) — gated by isAdminSurfaceUser
+   * server-side. Hide those specific controls for them instead of letting
+   * the click 403. */
+  surface?: 'admin' | 'support'
 }
 
 type LeadRow = DashboardData['new_leads'][number]
@@ -62,16 +67,23 @@ async function patchLead(
   return json.lead
 }
 
+const POST_ENROLLMENT_STATUSES: ReadonlyArray<LeadRow['status']> = [
+  'enrolled',
+  'active',
+  'renewal',
+  'archived',
+]
+
 function canMarkContacted(status: LeadRow['status']): boolean {
-  return !['contacted', 'enrolled', 'archived'].includes(status)
+  return status !== 'contacted' && !POST_ENROLLMENT_STATUSES.includes(status)
 }
 
 function canScheduleTrial(status: LeadRow['status']): boolean {
-  return !['enrolled', 'archived'].includes(status)
+  return !POST_ENROLLMENT_STATUSES.includes(status)
 }
 
 function canConvertToStudent(status: LeadRow['status']): boolean {
-  return status !== 'enrolled' && status !== 'archived'
+  return !POST_ENROLLMENT_STATUSES.includes(status)
 }
 
 type TrialScheduleDraft = {
@@ -194,11 +206,14 @@ export function DashboardView({
   onRangeChange,
   onRefresh,
   refreshing,
+  surface = 'admin',
 }: DashboardViewProps): React.ReactElement {
+  const isAdminSurface = surface === 'admin'
   const [search, setSearch] = useState('')
   const [leadStatusFilter, setLeadStatusFilter] = useState<'all' | DashboardData['new_leads'][number]['status']>('all')
   const [followupStatusFilter, setFollowupStatusFilter] = useState<'all' | DashboardData['followups'][number]['status']>('all')
   const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({})
+  const [dirtyNoteIds, setDirtyNoteIds] = useState<Set<string>>(new Set())
   const [leadFeedback, setLeadFeedback] = useState<Record<string, string>>({})
   const [savingLeadId, setSavingLeadId] = useState<string | null>(null)
   const [schedulingLeadId, setSchedulingLeadId] = useState<string | null>(null)
@@ -209,13 +224,15 @@ export function DashboardView({
     setNoteDrafts((current) => {
       const next = { ...current }
       for (const lead of data.new_leads) {
-        if (next[lead.id] === undefined) {
+        // Only sync from fresh data when the admin hasn't started editing —
+        // otherwise a poll/refresh mid-edit would overwrite what they're typing.
+        if (!dirtyNoteIds.has(lead.id)) {
           next[lead.id] = lead.admin_notes ?? ''
         }
       }
       return next
     })
-  }, [data.new_leads])
+  }, [data.new_leads, dirtyNoteIds])
 
   const filteredLeads = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -374,6 +391,11 @@ export function DashboardView({
           ...current,
           [leadId]: 'Nota guardada.',
         }))
+        setDirtyNoteIds((current) => {
+          const next = new Set(current)
+          next.delete(leadId)
+          return next
+        })
         onRefresh()
       } catch {
         setLeadFeedback((current) => ({
@@ -698,12 +720,13 @@ export function DashboardView({
                     <textarea
                       id={`note-${lead.id}`}
                       value={noteDrafts[lead.id] ?? lead.admin_notes ?? ''}
-                      onChange={(event) =>
+                      onChange={(event) => {
+                        setDirtyNoteIds((current) => new Set(current).add(lead.id))
                         setNoteDrafts((current) => ({
                           ...current,
                           [lead.id]: event.target.value,
                         }))
-                      }
+                      }}
                       rows={2}
                       className="w-full rounded-xl border border-pk-border bg-white/80 px-3 py-2 text-xs text-pk-ink"
                       placeholder="Ej. Llamar mañana a las 10:00"
@@ -734,7 +757,7 @@ export function DashboardView({
                       >
                         Guardar nota
                       </Button>
-                      {canScheduleTrial(lead.status) ? (
+                      {isAdminSurface && canScheduleTrial(lead.status) ? (
                         <Button
                           type="button"
                           size="sm"
@@ -751,7 +774,7 @@ export function DashboardView({
                           Agendar clase de prueba
                         </Button>
                       ) : null}
-                      {canConvertToStudent(lead.status) ? (
+                      {isAdminSurface && canConvertToStudent(lead.status) ? (
                         <Button
                           type="button"
                           size="sm"
