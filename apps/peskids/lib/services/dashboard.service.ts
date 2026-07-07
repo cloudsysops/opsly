@@ -1,4 +1,4 @@
-import { supabaseServer, getRecentMessages } from '../supabase';
+import { supabaseServer, getRecentMessages, getWacrmMessages } from '../supabase';
 import { isMissingExpandedFeedbackColumn } from '../utils/db-compat';
 import type { Database, DashboardData } from '../types';
 import { fetchOperationsMetrics } from './operations-metrics.service';
@@ -112,6 +112,7 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
 
   const pendingFollowups = (followups ?? []).filter((f) => f.status === 'pending');
   const recentMessages = await getRecentMessages(tenantId, 10);
+  const wacrmMessages = await getWacrmMessages(tenantId);
   const operations = await fetchOperationsMetrics();
   const convertedLeadsCount = (newLeads ?? []).filter((lead) => lead.status === 'enrolled').length;
   const conversionRatePct =
@@ -138,6 +139,7 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
     pending_followups: (pendingFollowups as DashboardData['pending_followups']) || [],
     followups: (followups as DashboardData['followups']) || [],
     recent_messages: (recentMessages as DashboardData['recent_messages']) || [],
+    wacrm_messages: wacrmMessages,
     operations,
   };
 }
