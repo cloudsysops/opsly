@@ -6,6 +6,7 @@ WORKDIR /repo
 COPY . .
 RUN npm ci --ignore-scripts \
   -w @intcloudsysops/types \
+  -w @intcloudsysops/pattern-catalog \
   -w @intcloudsysops/services \
   -w @intcloudsysops/prompt-guard \
   -w @intcloudsysops/llm-gateway \
@@ -19,6 +20,7 @@ WORKDIR /repo
 COPY --from=deps /repo ./
 RUN npm run build -w @intcloudsysops/types && \
     npm run build -w @intcloudsysops/runtime && \
+    npm run build -w @intcloudsysops/pattern-catalog && \
     npm run build -w @intcloudsysops/services && \
     npm run build -w @intcloudsysops/prompt-guard && \
     npm run build -w @intcloudsysops/llm-gateway && \
