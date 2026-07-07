@@ -58,7 +58,7 @@ fi
 npm run test --workspace=@intcloudsysops/sigma-harness
 
 node --import tsx <<NODE
-import { searchRules, loadRuleIndex } from '@intcloudsysops/sigma-harness';
+import { searchRules, loadRuleIndex } from './lib/sigma-harness/src/index.ts';
 
 const index = loadRuleIndex();
 if (index.length === 0) {

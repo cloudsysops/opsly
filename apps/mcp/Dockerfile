@@ -43,6 +43,8 @@ COPY apps/notebooklm-agent ./apps/notebooklm-agent
 RUN npm run build -w @intcloudsysops/types && \
     npm run build -w @intcloudsysops/services && \
     npm run build -w @intcloudsysops/content-studio && \
+    npm run build -w @intcloudsysops/pattern-catalog && \
+    npm run build -w @intcloudsysops/sigma-harness && \
     npm run build -w @intcloudsysops/prompt-guard && \
     npm run build -w @intcloudsysops/llm-gateway && \
     npm run build -w @intcloudsysops/notebooklm-agent && \
@@ -54,10 +56,13 @@ ENV NODE_ENV=production
 COPY --from=builder /repo/package.json ./package.json
 COPY --from=builder /repo/package-lock.json ./package-lock.json
 COPY --from=builder /repo/node_modules ./node_modules
+COPY --from=builder /repo/packages/types ./packages/types
 COPY --from=builder /repo/apps/mcp ./apps/mcp
+COPY --from=builder /repo/lib/services ./lib/services
 COPY --from=builder /repo/lib/content-studio ./lib/content-studio
 COPY --from=builder /repo/lib/pattern-catalog ./lib/pattern-catalog
 COPY --from=builder /repo/lib/sigma-harness ./lib/sigma-harness
+COPY --from=builder /repo/lib/prompt-guard ./lib/prompt-guard
 COPY --from=builder /repo/apps/llm-gateway ./apps/llm-gateway
 COPY --from=builder /repo/apps/notebooklm-agent ./apps/notebooklm-agent
 WORKDIR /app/apps/mcp

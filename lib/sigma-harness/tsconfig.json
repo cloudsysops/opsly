@@ -9,7 +9,7 @@
     "skipLibCheck": true,
     "noEmit": true,
     "rootDir": ".",
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals", "node"]
   },
   "include": ["src/**/*.ts", "__tests__/**/*.ts"]
 }
