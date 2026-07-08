@@ -6,9 +6,11 @@ last_review: 2026-07-07
 
 # Peskids Sprint Final Status — Academy Production
 
-> **Estado:** `ACADEMY_PRODUCTION_READY` · **wacrm:** `WACRM_INBOUND_READY`  
-> **Última verificación:** 2026-07-07T23:05Z  
-> **Imagen prod:** `f88a23d4`+ (main incluye #702, #703, #706)
+> **Estado:** `ACADEMY_PRODUCTION_READY` · **wacrm:** `WACRM_INBOUND_READY` · **n8n:** `13/17 activos`  
+> **Última verificación:** 2026-07-08T00:30Z  
+> **Imagen prod:** `ghcr.io/cloudsysops/peskids:latest` (post-#709, incluyendo #702 #703 #706)  
+> **Secrets Doppler:** ✅ CRON_SECRET, INBOUND_SECRET, WACRM_SECRET, TENANT_ID, INBOX_PROVIDER  
+> **Pendiente humano:** wacrm QR scan → https://wa-peskids.op-sly.com
 
 ---
 
