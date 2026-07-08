@@ -52,10 +52,26 @@ export const PROVIDERS = {
     healthKey: 'anthropic',
   },
   claude_sonnet: {
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
     kind: 'anthropic',
     cost_per_1k_input: 0.003,
     cost_per_1k_output: 0.015,
+    healthKey: 'anthropic',
+  },
+  /** Fable 5 — top-tier model for maximum reasoning, creativity, and complex tasks. */
+  claude_fable: {
+    model: 'claude-fable-5',
+    kind: 'anthropic',
+    cost_per_1k_input: 0.015,
+    cost_per_1k_output: 0.075,
+    healthKey: 'anthropic',
+  },
+  /** Opus 4.8 — high-capability model, fallback when Fable is unavailable. */
+  claude_opus: {
+    model: 'claude-opus-4-8',
+    kind: 'anthropic',
+    cost_per_1k_input: 0.015,
+    cost_per_1k_output: 0.075,
     healthKey: 'anthropic',
   },
   llama_local: {
@@ -154,7 +170,7 @@ export interface ProviderChainEntry {
   def: ProviderDefinition;
 }
 
-export type RoutingPreference = 'sonnet' | 'haiku' | 'cheap' | 'balanced' | 'code';
+export type RoutingPreference = 'sonnet' | 'haiku' | 'cheap' | 'balanced' | 'code' | 'fable' | 'opus';
 
 function deepseekChainEntry(): ProviderChainEntry | null {
   if (!process.env.DEEPSEEK_API_KEY?.trim()) {
@@ -198,6 +214,12 @@ export function getProvidersByPreference(preference: RoutingPreference): Provide
   const ds = deepseekChainEntry();
   const gq = groqChainEntry();
 
+  if (preference === 'fable') {
+    return [e('claude_fable'), e('claude_opus'), e('claude_sonnet')];
+  }
+  if (preference === 'opus') {
+    return [e('claude_opus'), e('claude_fable'), e('claude_sonnet')];
+  }
   if (preference === 'sonnet') {
     return [e('claude_sonnet'), e('gpt4o'), e('claude_haiku')];
   }
@@ -249,12 +271,14 @@ export function resolveRoutingPreference(
   explicitModel: string | undefined,
   complexityLevel: 1 | 2 | 3
 ): RoutingPreference {
-  if (explicitModel === 'sonnet') return 'sonnet';
+  if (explicitModel === 'fable' || explicitModel === 'claude-fable-5') return 'fable';
+  if (explicitModel === 'opus' || explicitModel === 'claude-opus-4-8') return 'opus';
+  if (explicitModel === 'sonnet' || explicitModel === 'claude-sonnet-4-6') return 'sonnet';
   if (explicitModel === 'haiku') return 'haiku';
   if (explicitModel === 'cheap' || explicitModel === 'llama') return 'cheap';
   if (explicitModel === 'balanced') return 'balanced';
   if (explicitModel === 'code') return 'code';
-  if (complexityLevel === 3) return 'sonnet';
+  if (complexityLevel === 3) return 'fable';
   if (complexityLevel === 2) return 'balanced';
   if (complexityLevel === 1) return 'cheap';
   return 'haiku';
