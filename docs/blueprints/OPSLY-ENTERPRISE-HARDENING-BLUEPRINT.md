@@ -165,7 +165,61 @@ Recommended next slice:
 4. Wire these into Mission Control as read-only status cards.
 5. Create issues for dependency remediation, not one giant upgrade.
 
-## 9. Non-Negotiables
+## 9. AI Security Hardening
+
+AI adds new attack surface. These controls are non-negotiable before enabling LLM features per tenant.
+
+### Prompt Injection Prevention
+
+```typescript
+// apps/api/app/llm/route.ts — always sanitize before forwarding to LLM Gateway
+function sanitizePromptInput(raw: string): string {
+  // Strip common injection patterns
+  return raw
+    .replace(/\[INST\]|\[\/INST\]|<\|system\|>/gi, '')
+    .replace(/ignore previous instructions|ignore all instructions/gi, '[FILTERED]')
+    .slice(0, 4000); // Hard cap per message
+}
+```
+
+### Tenant Isolation in LLM Calls
+
+- Every `llmCall()` must carry `tenant_slug` — never call LLM without it
+- Never include another tenant's data in a prompt (no cross-tenant context)
+- Cache keys must be scoped: `llm:${tenant_slug}:${hash(prompt)}`
+
+### Cost Guardrails
+
+```bash
+# Set per-tenant daily token budget in Doppler
+doppler secrets set PESKIDS_LLM_DAILY_BUDGET_USD=2.00
+doppler secrets set DEFAULT_LLM_DAILY_BUDGET_USD=1.00
+
+# Alert triggers at 80% budget consumption (Hermes monitors)
+```
+
+### Secrets in Prompts
+
+```
+FORBIDDEN in any prompt or LLM context:
+  - API keys or tokens
+  - Database connection strings
+  - Webhook secrets
+  - User passwords or PII beyond what's needed for the task
+
+If a prompt needs a secret value → pass it as a structured parameter, never inline.
+```
+
+### AI Audit Log
+
+All LLM calls log to `llm_audit_log` table:
+- `tenant_slug`, `request_id`, `model`, `tokens_in`, `tokens_out`, `cost_usd`
+- Retention: 90 days
+- Query: `SELECT * FROM llm_audit_log WHERE tenant_slug = 'peskids' ORDER BY created_at DESC LIMIT 100`
+
+---
+
+## 10. Non-Negotiables
 
 - No Vercel dependency for current Peskids production test.
 - No raw secrets in reports.

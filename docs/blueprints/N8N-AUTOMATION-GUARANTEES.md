@@ -410,6 +410,57 @@ Idempotency:
 
 ---
 
+## AI-Enhanced Workflows
+
+Workflows that call the LLM Gateway instead of sending raw text templates.
+
+### Pattern: Fable genera → n8n ejecuta → Haiku monitorea
+
+```
+[n8n trigger] → [Code node: classify intent → Haiku]
+              → [HTTP node: generate response → Sonnet/Fable]
+              → [HTTP node: POST to WhatsApp/email channel]
+              → [Supabase node: log result]
+```
+
+### Cuándo usar AI en n8n vs template fijo
+
+| Situación | Template fijo | LLM (Haiku/Sonnet) |
+|-----------|--------------|---------------------|
+| Recordatorio de cita (fecha/hora conocida) | ✅ | ❌ innecesario |
+| Respuesta a mensaje libre de WhatsApp | ❌ | ✅ Sonnet |
+| Clasificar intención del lead | ❌ | ✅ Haiku |
+| Digest diario con prioridades | ❌ | ✅ Sonnet |
+| Detección de churn (reglas) | ✅ código | ❌ |
+
+### Nodo HTTP estándar — LLM Gateway
+
+```json
+{
+  "method": "POST",
+  "url": "{{ $env.OPSLY_API_URL }}/api/llm/chat",
+  "authentication": "predefinedCredentialType",
+  "nodeCredentialType": "httpHeaderAuth",
+  "headers": {
+    "x-tenant-slug": "{{ $env.TENANT_SLUG }}",
+    "x-llm-model": "sonnet"
+  },
+  "body": {
+    "messages": [{ "role": "user", "content": "{{ $json.prompt }}" }],
+    "tenant_slug": "{{ $env.TENANT_SLUG }}",
+    "request_id": "={{ 'n8n-' + $runIndex + '-' + Date.now() }}"
+  }
+}
+```
+
+**Reglas de uso en n8n:**
+- Nunca pongas API keys en nodos HTTP — usa `$env.OPSLY_API_KEY` desde Doppler
+- Siempre incluye `request_id` para trazabilidad en logs
+- Limita re-intentos a 2 en workflows con LLM (los errores de LLM rara vez se resuelven solos)
+- Si el LLM falla, el workflow debe tener rama de fallback con template fijo
+
+---
+
 ## Implementation Roadmap
 
 ### Phase 1 (Go-Live)

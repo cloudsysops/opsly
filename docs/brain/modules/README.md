@@ -31,6 +31,7 @@ modulo debe enlazar rutas reales del repo, docs canonicas y dependencias.
 ## Producto vertical
 
 - [[brain/modules/local-services|Local Services]]
+- [[brain/modules/peskids|Peskids]] — vertical academia de natación (tenant de referencia)
 
 ## Librerias compartidas
 

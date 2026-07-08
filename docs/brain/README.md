@@ -14,7 +14,10 @@ workflows y decisiones.
 
 ## Entrada rapida
 
+- [[brain/INDEX|Índice Maestro]] — punto de entrada único para cualquier agente.
+- [[brain/AGENT-ONBOARDING|Agent Onboarding]] — arranque rápido para agentes nuevos.
 - [[brain/dashboard|Brain Dashboard]] — tablero ejecutivo del cerebro.
+- [[brain/AI-STRATEGY|AI Strategy]] — estrategia AI 2026 (Fable/Opus/Sonnet/Haiku).
 - [[brain/modules/README|Modules MOC]] — apps, paquetes y servicios del monorepo.
 - [[brain/agents/README|Agents MOC]] — Codex, Claude, Cursor, OpenCode, Hermes y workers.
 - [[brain/tenants/README|Tenants MOC]] — tenants y contexto comercial/operativo.

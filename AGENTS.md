@@ -361,6 +361,30 @@ node scripts/load-skills.js show opsly-api
 
 ---
 
+## Estrategia AI — Stack de Modelos 2026
+
+> Todo agente que tome decisiones sobre selección de modelo debe leer `docs/brain/AI-STRATEGY.md` primero.
+
+**Regla única:** Todo tráfico LLM pasa por `apps/llm-gateway` (OpenClaw). Zero bypass.
+
+| Alias | Modelo | Cuándo |
+|-------|--------|--------|
+| `fable` | `claude-fable-5` | Razonamiento profundo, onboarding tenant, análisis de documentos largos |
+| `opus` | `claude-opus-4-8` | Fallback de Fable, alta calidad |
+| `sonnet` | `claude-sonnet-4-6` | Producción general, inbox WhatsApp, digest |
+| `haiku` | `claude-haiku-4-5-20251001` | Clasificación, routing, alta frecuencia |
+
+**Patrón de 3 niveles:** Fable genera playbook (1 vez) → Sonnet ejecuta por interacción → Haiku clasifica a alta frecuencia.
+
+**Documentos clave:**
+- `docs/brain/AI-STRATEGY.md` — Stack completo, matriz de decisión, estrategia de costos
+- `docs/brain/TENANT-AI-PLAYBOOK.md` — Configuración AI por tenant y onboarding
+- `docs/brain/skills/fable5-manual.md` — Tips, secretos, extended thinking, batching
+- `docs/brain/skills/fable5-agent-instructions.md` — Instrucciones para Sonnet/Haiku/n8n
+- `docs/adr/ADR-047-fable5-model-strategy.md` — Decisión formal del stack
+
+---
+
 ## Fase 4 — Multi-agente Opsly (plan maestro de trabajo)
 
 **Ámbito:** orquestación y operación con **varios agentes** (Cursor, Claude, automatismos) sobre un **único contexto** (`AGENTS.md`, `VISION.md`, `config/opsly.config.json`), sin cambiar las decisiones fijas de infra (Compose, Traefik v3, Doppler, Supabase).

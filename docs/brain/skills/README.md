@@ -24,7 +24,9 @@ node scripts/sync-skills-to-brain.js
 | billing / Stripe | [[opsly-billing]], [[opsly-stripe-marketplace]] |
 | diagnóstico monorepo | [[opsly-quantum]], [[opsly-context]] |
 | crear/editar skill | [[opsly-skill-creator]] |
-| LLM Gateway | [[opsly-llm]] |
+| LLM Gateway | [[opsly-llm]], [[fable5-manual]] |
+| Fable 5 / AI top-tier | [[fable5-manual]], [[opsly-llm]] |
+| Instrucciones para agentes / automatizaciones | [[fable5-agent-instructions]], [[opsly-orchestrator]] |
 | orchestrator / BullMQ | [[opsly-orchestrator]] |
 | arquitectura / ADR | [[opsly-architect-senior]] |
 | seguridad | [[opsly-shield]] |
@@ -34,6 +36,8 @@ node scripts/sync-skills-to-brain.js
 ## Skills por categoría
 
 ### ai
+- [[fable5-manual]] — Manual completo Fable 5: tips, secretos, patrones de prompting, uso en Opsly
+- [[fable5-agent-instructions]] — Instrucciones destiladas de Fable 5 para Sonnet/Haiku/n8n/agentes
 - [[opsly-ai-sdk-vercel]] — Vercel AI SDK en portal/admin/web con regla OpenClaw: UI y streaming s
 - [[opsly-feedback-ml]] — Feedback loop, decisiones ML, auto-implement, aprobación humana. Flujo
 - [[opsly-llm]] — LLM Gateway: llmCall, proveedores, caché, routing. Cualquier llamada a
