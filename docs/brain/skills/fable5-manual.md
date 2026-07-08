@@ -17,6 +17,9 @@ triggers:
 cross_refs:
   - opsly-llm
   - llm-gateway
+  - fable5-agent-instructions
+  - brain/AI-STRATEGY
+  - ADR-047-fable5-model-strategy
 tags:
   - opsly/skill
   - opsly/ai
@@ -339,6 +342,171 @@ const model = canUseFable ? 'fable' : 'sonnet';
 
 ---
 
+## Extended Thinking — Activación y Control
+
+Fable 5 tiene un modo de razonamiento interno que puede activarse via la API de Anthropic. El LLM Gateway lo expone como parámetro opcional.
+
+### Cuándo activarlo
+
+| Caso | Extended Thinking | Por qué |
+|------|------------------|---------|
+| ADR / decisión arquitectónica | Sí (budget=8000) | Necesita razonar trade-offs profundos |
+| Auditoría de seguridad | Sí (budget=10000) | Debe construir y atacar al mismo tiempo |
+| Análisis de contrato | Sí (budget=6000) | Múltiples cláusulas interdependientes |
+| Respuesta a lead WhatsApp | No | Latencia importa; Fable ya es superior sin ET |
+| Digest diario | No | Sonnet es suficiente para este caso |
+| Clasificación simple | No | Usar Haiku sin thinking |
+
+### Activación en el gateway
+
+```ts
+const result = await llmCall({
+  model: 'fable',
+  tenant_slug: tenantSlug,
+  request_id: crypto.randomUUID(),
+  thinking: {
+    type: 'enabled',
+    budget_tokens: 8000,   // tokens reservados para el razonamiento interno
+  },
+  prompt: `
+    Analiza este ADR propuesto y evalúa si es la decisión correcta.
+    Considera todos los ángulos: técnicos, de costos, de riesgo operacional.
+    ${adrContent}
+  `,
+});
+```
+
+### Cuánto budget de thinking asignar
+
+```
+Decisiones de 2-3 opciones:           budget: 3000-4000
+Análisis de documento largo:          budget: 6000-8000
+Auditoría de seguridad compleja:      budget: 8000-12000
+Arquitectura de sistema completo:     budget: 10000-16000
+```
+
+**Nota:** Los tokens de thinking NO cuentan en el output cobrado, pero sí tienen un tope máximo. Si no ves diferencia, sube el budget.
+
+### Leer el razonamiento interno
+
+```ts
+// El gateway puede devolver el thinking si se configura
+const result = await llmCall({
+  model: 'fable',
+  thinking: { type: 'enabled', budget_tokens: 8000 },
+  return_thinking: true,  // útil para debugging / logging
+  prompt: '...',
+});
+
+console.log(result.thinking);  // el proceso interno de Fable
+console.log(result.text);      // la respuesta final
+```
+
+Loggear el `thinking` a Hermes ayuda a entender por qué Fable tomó una decisión.
+
+---
+
+## Batching — Máxima Eficiencia de Costos
+
+Para operaciones en volumen (análisis de muchos leads, digestos con múltiples tenants), el batching reduce costos y mejora throughput.
+
+### Patrón de batch con Promise.all
+
+```ts
+// ❌ NO: llamadas secuenciales
+for (const lead of leads) {
+  await classifyLead(lead);  // 500ms × 100 leads = 50s
+}
+
+// ✅ SÍ: paralelo con control de concurrencia
+import pLimit from 'p-limit';
+const limit = pLimit(5);  // máx 5 llamadas simultáneas a Fable
+
+const results = await Promise.all(
+  leads.map(lead =>
+    limit(() => llmCall({
+      model: 'fable',
+      tenant_slug: lead.tenant_slug,
+      request_id: `batch-${lead.id}-${Date.now()}`,
+      prompt: `Clasifica: ${JSON.stringify(lead)}`,
+    }))
+  )
+);
+// Resultado: ~3s en lugar de 50s para 100 leads
+```
+
+### Reglas de batching con Fable
+
+- **Concurrencia máxima recomendada:** 5 llamadas paralelas por tenant (evitar rate limits de Anthropic)
+- **Timeout por llamada:** 120s (Fable tarda más que Sonnet en thinking)
+- **Retry con backoff:** Si Fable falla por rate limit, espera 5s y reinten con Sonnet como fallback
+
+```ts
+async function batchWithFable<T>(
+  items: T[],
+  processor: (item: T) => Promise<string>,
+  options = { concurrency: 5, fallbackModel: 'sonnet' }
+) {
+  const limit = pLimit(options.concurrency);
+  return Promise.all(
+    items.map(item =>
+      limit(async () => {
+        try {
+          return await processor(item);
+        } catch (err) {
+          if (err.code === 'RATE_LIMIT') {
+            await sleep(5000);
+            return llmCall({ model: options.fallbackModel, ... });
+          }
+          throw err;
+        }
+      })
+    )
+  );
+}
+```
+
+### Cuándo batching es contraproducente
+
+- **Una sola tarea compleja:** Fable necesita todo su contexto en un mensaje, no varios paralelos.
+- **Orden importa:** Si el output de A alimenta a B, no se puede paralelizar.
+- **Thinking activado:** Extended thinking es secuencial internamente; el batching igual ayuda para múltiples ítems independientes.
+
+---
+
+## Temperatura y Parámetros de Sampling
+
+Fable responde diferente a estos parámetros vs. Sonnet/Haiku:
+
+### Tabla de configuración por caso de uso
+
+| Caso de uso | temperature | top_p | Comportamiento esperado |
+|-------------|-------------|-------|------------------------|
+| Análisis / decisiones | 0.0 - 0.2 | 0.95 | Determinístico, reproducible |
+| Generación de código | 0.0 - 0.1 | 0.95 | Exacto, predecible |
+| Respuestas a leads | 0.3 - 0.5 | 0.9 | Natural pero consistente |
+| Contenido creativo | 0.7 - 0.9 | 0.85 | Variado, creativo |
+| Brainstorming | 0.8 - 1.0 | 0.8 | Máxima diversidad |
+
+### En el gateway
+
+```ts
+const result = await llmCall({
+  model: 'fable',
+  tenant_slug: tenantSlug,
+  request_id: crypto.randomUUID(),
+  temperature: 0.1,     // análisis determinístico
+  max_tokens: 4096,     // Fable puede generar hasta 8192
+  prompt: '...',
+});
+```
+
+### Diferencia clave vs. Sonnet
+
+Fable con `temperature: 0` es **más determinístico** que Sonnet con `temperature: 0`. El razonamiento interno de Fable produce outputs más estables entre llamadas. Úsalo cuando necesites reproducibilidad (tests, auditorías, comparaciones A/B).
+
+---
+
 ## Qué NO hacer con Fable 5
 
 | Anti-patrón | Problema | Alternativa |
@@ -388,6 +556,15 @@ async function distillKnowledge(tenantSlug: string) {
 - `opsly-orchestrator` — BullMQ + Fable para decisiones de orquestación
 - `opsly-tenant` — Cómo configurar Fable por tenant
 - `brain/modules/llm-gateway` — Tabla completa de modelos y routing
+- `fable5-agent-instructions` — Instrucciones para Sonnet/Haiku/n8n sin Fable
+
+---
+
+## Estrategia AI
+
+- [[brain/AI-STRATEGY]] — Stack de modelos completo y matriz de decisión
+- [[brain/TENANT-AI-PLAYBOOK]] — Configuración AI por tenant
+- [[ADR-047-fable5-model-strategy]] — Decisión de Fable como top-tier
 
 ---
 
@@ -396,6 +573,8 @@ async function distillKnowledge(tenantSlug: string) {
 - [providers.ts](../../../apps/llm-gateway/src/providers.ts) — Configuración del gateway
 - [brain/modules/llm-gateway.md](../modules/llm-gateway.md) — Tabla de modelos
 - [opsly-llm.md](./opsly-llm.md) — Skill de LLM Gateway
+- [brain/AI-STRATEGY.md](../AI-STRATEGY.md) — Estrategia AI master
+- [brain/TENANT-AI-PLAYBOOK.md](../TENANT-AI-PLAYBOOK.md) — Playbook por tenant
 
 ---
 
