@@ -59,7 +59,7 @@ x-tenant-slug: peskids
 Complejidad 3 (automática) también resuelve a Fable 5.
 
 ## Cross-refs
-[[opsly-feedback-ml]] · [[opsly-quantum]] · [[brain/modules/llm-gateway]]
+[[opsly-feedback-ml]] · [[opsly-quantum]] · [[brain/modules/llm-gateway]] · [[fable5-manual]] · [[fable5-agent-instructions]]
 
 ## Links
 - [SKILL.md](../../../packages/skills/user/opsly-llm/SKILL.md)
