@@ -9,6 +9,13 @@ vi.mock('../../supabase', () => ({
   }),
 }));
 
+const mockGetCache = vi.fn();
+const mockSetCache = vi.fn();
+vi.mock('../../redis-cache', () => ({
+  getCache: (...args: any[]) => mockGetCache(...args),
+  setCache: (...args: any[]) => mockSetCache(...args),
+}));
+
 const mockSum = vi.fn();
 vi.mock('../../repositories/billing-usage-repository', () => ({
   BillingUsageRepository: class {
@@ -26,6 +33,67 @@ describe('checkTenantBudget', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockSum.mockResolvedValue({ value: 10, error: null });
+    mockGetCache.mockResolvedValue(null);
+    mockSetCache.mockResolvedValue(true);
+  });
+
+  it('uses cache if available', async () => {
+    const cachedResult = {
+      isOverBudget: false,
+      currentSpend: 50,
+      limit: 100,
+      enforcementSkipped: false,
+      tenantSlug: 'cached-tenant',
+      tenantStatus: 'active',
+      budgetAutoSuspended: false,
+    };
+    mockGetCache.mockResolvedValue(cachedResult);
+
+    const r = await checkTenantBudget('tid-cached');
+    expect(r).toEqual(cachedResult);
+    expect(mockGetCache).toHaveBeenCalledWith('billing:budget-check:tid-cached');
+    expect(mockFrom).not.toHaveBeenCalled();
+    expect(mockSum).not.toHaveBeenCalled();
+  });
+
+  it('populates cache on miss', async () => {
+    mockGetCache.mockResolvedValue(null);
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'tenants') {
+        return {
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+          is: vi.fn().mockReturnThis(),
+          maybeSingle: vi.fn().mockResolvedValue({
+            data: {
+              id: 'tid-miss',
+              slug: 'acme',
+              plan: 'starter',
+              status: 'active',
+              metadata: {},
+            },
+            error: null,
+          }),
+        };
+      }
+      if (table === 'tenant_budgets') {
+        return {
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+          maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+        };
+      }
+      return {};
+    });
+
+    const r = await checkTenantBudget('tid-miss');
+    expect(r.tenantSlug).toBe('acme');
+    expect(mockGetCache).toHaveBeenCalled();
+    expect(mockSetCache).toHaveBeenCalledWith(
+      'billing:budget-check:tid-miss',
+      expect.objectContaining({ tenantSlug: 'acme' }),
+      60
+    );
   });
 
   it('returns enforcementSkipped when slug is in BUDGET_ENFORCEMENT_BYPASS_SLUGS', async () => {

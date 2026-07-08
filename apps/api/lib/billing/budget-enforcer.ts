@@ -1,4 +1,6 @@
+import { CACHE_TTL } from '../constants';
 import { logger } from '../logger';
+import { getCache, setCache } from '../redis-cache';
 import { BillingUsageRepository } from '../repositories/billing-usage-repository';
 import { getServiceClient } from '../supabase';
 import type { Json, PlanKey, TenantStatus } from '../supabase/types';
@@ -9,6 +11,8 @@ import {
   FREE_TIER_FALLBACK_MONTHLY_USD,
   budgetEnforcementBypassSlugs,
 } from './budget-constants';
+
+const CACHE_KEY_PREFIX = 'billing:budget-check:';
 
 export type TenantBudgetCheckResult = {
   readonly isOverBudget: boolean;
@@ -108,6 +112,12 @@ async function resolveCurrentSpendUsd(
  * El límite viene de `tenant_budgets.monthly_cap_usd` o del plan, con fallback {@link FREE_TIER_FALLBACK_MONTHLY_USD}.
  */
 export async function checkTenantBudget(tenantId: string): Promise<TenantBudgetCheckResult> {
+  const cacheKey = `${CACHE_KEY_PREFIX}${tenantId}`;
+  const cached = await getCache<TenantBudgetCheckResult>(cacheKey);
+  if (cached !== null) {
+    return cached;
+  }
+
   const db = getServiceClient();
   const { data: tenant, error } = await db
     .schema('platform')
@@ -135,14 +145,18 @@ export async function checkTenantBudget(tenantId: string): Promise<TenantBudgetC
   const bypassByMeta = isBudgetEnforcementDisabledInMetadata(metadata);
   const enforcementSkipped = bypassBySlug || bypassByMeta;
 
-  const limit = await resolveMonthlyLimitUsd(slug, plan);
   const monthStart = startOfUtcMonthIso();
-  const currentSpend = await resolveCurrentSpendUsd(tenant.id as string, slug, monthStart);
+
+  // Bolt: Parallelize limit and spend resolution to reduce latency on cache miss.
+  const [limit, currentSpend] = await Promise.all([
+    resolveMonthlyLimitUsd(slug, plan),
+    resolveCurrentSpendUsd(tenant.id as string, slug, monthStart),
+  ]);
 
   const isOverBudget = currentSpend > limit;
   const budgetAutoSuspended = readBudgetAutoSuspended(metadata);
 
-  return {
+  const result: TenantBudgetCheckResult = {
     isOverBudget,
     currentSpend,
     limit,
@@ -151,6 +165,11 @@ export async function checkTenantBudget(tenantId: string): Promise<TenantBudgetC
     tenantStatus,
     budgetAutoSuspended,
   };
+
+  // Bolt: cache result for 60s (SHORT TTL) to avoid redundant DB/network calls.
+  void setCache(cacheKey, result, CACHE_TTL.SHORT);
+
+  return result;
 }
 
 /** Umbrales de alerta UI (USD) — sin wallet prepago; ver ADR-017. */
