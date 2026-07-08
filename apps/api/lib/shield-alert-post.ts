@@ -1,8 +1,10 @@
 import type { NextRequest } from 'next/server';
 import type { z } from 'zod';
+import { extractIp, logAuditEvent } from './audit';
 import { HTTP_STATUS } from './constants';
 import { logger } from './logger';
 import { resolveTrustedPortalSession } from './portal-trusted-identity';
+import { checkRateLimit } from './rate-limiter';
 import { resolveShieldDiscordWebhook, shieldAlertConfigBodySchema } from './shield-alert-config';
 import { meterShieldApiCall } from './shield-metering';
 import { getServiceClient } from './supabase';
@@ -60,6 +62,12 @@ async function upsertShieldRow(
 }
 
 export async function postShieldAlertConfig(request: NextRequest): Promise<Response> {
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `shield-alert-config:${ip}` : 'shield-alert-config:anonymous');
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+
   const parsed = await readParsedBody(request);
   if (parsed instanceof Response) {
     return parsed;
@@ -94,6 +102,20 @@ export async function postShieldAlertConfig(request: NextRequest): Promise<Respo
       { status: HTTP_STATUS.INTERNAL_ERROR }
     );
   }
+
+  void logAuditEvent({
+    tenant_slug: parsed.tenant_slug,
+    actor_email: trusted.session.user.email,
+    action: 'UPSERT_SHIELD_CONFIG',
+    resource: `shield_alert_config:${row.id}`,
+    status_code: HTTP_STATUS.OK,
+    ip,
+    user_agent: request.headers.get('user-agent') ?? undefined,
+    metadata: {
+      alert_type: parsed.alert_type,
+      enabled: row.enabled,
+    },
+  });
 
   const hdrId = request.headers.get('x-request-id')?.trim();
   void meterShieldApiCall({

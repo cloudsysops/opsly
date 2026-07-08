@@ -14,6 +14,10 @@ vi.mock('../../../../../../lib/supabase', () => ({
   getServiceClient: vi.fn(),
 }));
 
+vi.mock('../../../../../../lib/shield-metering', () => ({
+  meterShieldApiCall: vi.fn(),
+}));
+
 const tenantRow = {
   id: 't-1',
   slug: 'acme',
