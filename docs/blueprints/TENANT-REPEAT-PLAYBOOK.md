@@ -163,3 +163,42 @@ Copiar proceso: launch JSON → registry → Twenty → n8n CRM pack → smoke �
   --launch clients/peskids.launch.json \
   --execute-doppler --execute-ghl-off
 ```
+
+---
+
+## H. Herencia de conocimiento AI entre tenants
+
+Cuando el segundo tenant entra, **no regeneres el playbook desde cero**. Transfiere y adapta.
+
+```bash
+# 1. Exportar playbook del tenant fuente
+doppler run --project ops-intcloudsysops --config prd -- \
+  node scripts/llm-export-playbook.js --source=peskids --output=/tmp/peskids-playbook.json
+
+# 2. Adaptar para nuevo tenant (Fable 5 hace el diff + ajuste vertical)
+doppler run --project ops-intcloudsysops --config prd -- \
+  node scripts/llm-adapt-playbook.js \
+    --source=/tmp/peskids-playbook.json \
+    --tenant=new-tenant \
+    --vertical=barberia
+
+# 3. Verificar antes de guardar
+cat /tmp/new-tenant-playbook-draft.json | jq '.lead_classification_rubric'
+```
+
+**Qué se hereda automáticamente:**
+- Estructura de la rubric HOT/WARM/COLD (adaptar señales al vertical)
+- Formato del digest diario (personalizar secciones)
+- Golden rules de agentes (son universales)
+
+**Qué se genera nuevo por vertical:**
+- Terminología específica (natación vs barbería vs dental)
+- Plantillas de WhatsApp ajustadas al tono del negocio
+- Señales de churn adaptadas al ciclo de vida del cliente
+
+**Costo estimado por tenant:**
+- Primera vez (sin herencia): ~$0.30 Fable 5
+- Con herencia + adaptación: ~$0.10 (Fable solo ajusta, no genera de cero)
+- Ejecución diaria Sonnet/Haiku: ~$0.02/día por tenant activo
+
+Ver: `docs/blueprints/AI-TENANT-SETUP-BLUEPRINT.md` · `docs/brain/skills/fable5-agent-instructions.md`

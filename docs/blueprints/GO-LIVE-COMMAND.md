@@ -103,6 +103,31 @@ open docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md
 
 ---
 
+### Step 3b: LLM Gateway Smoke Test (5 min)
+
+Verify the LLM Gateway is reachable and routing is working before going live:
+
+```bash
+# Health check
+doppler run --project ops-intcloudsysops --config prd -- \
+  curl -s https://llm.op-sly.com/health | jq '.status'
+# Expected: "ok"
+
+# Routing test — Sonnet (production default)
+doppler run --project ops-intcloudsysops --config prd -- \
+  curl -s -X POST https://llm.op-sly.com/v1/chat \
+    -H "Content-Type: application/json" \
+    -H "x-tenant-slug: peskids" \
+    -H "x-llm-model: sonnet" \
+    -d '{"messages":[{"role":"user","content":"ping"}],"request_id":"go-live-smoke"}' \
+  | jq '.model'
+# Expected: "claude-sonnet-4-6"
+```
+
+**If LLM Gateway fails:** Non-blocking for core lead capture. Log the issue and continue. AI features degrade gracefully to template fallbacks.
+
+---
+
 ### Step 4: Run Validation Tests (30 min)
 
 After completing all manual setup:
