@@ -317,7 +317,10 @@ Ensure your implementation will pass all these checks in order.
    * Hash a prompt for pattern storage
    */
   private hashPrompt(prompt: string): string {
-    return crypto.createHash('sha256').update(prompt).digest('hex').substring(0, 16);
+    if (prompt === null || prompt === undefined) {
+      return 'empty';
+    }
+    return crypto.createHash('sha256').update(String(prompt)).digest('hex').substring(0, 16);
   }
 
   /**

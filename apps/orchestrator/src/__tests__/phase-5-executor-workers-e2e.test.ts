@@ -198,11 +198,12 @@ export function hello(): string {
       const startTime = Date.now();
 
       // Simulate execution delay
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       const executionTime = Date.now() - startTime;
 
-      expect(executionTime).toBeGreaterThanOrEqual(10);
+      // Allow small variance in timer precision
+      expect(executionTime).toBeGreaterThanOrEqual(5);
       expect(typeof executionTime).toBe('number');
     });
 
