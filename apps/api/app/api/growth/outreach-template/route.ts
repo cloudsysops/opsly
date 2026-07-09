@@ -1,6 +1,8 @@
 import { jsonError, tryRoute } from '../../../../lib/api-response';
 import { HTTP_STATUS } from '../../../../lib/constants';
 import { requireAdminAccess } from '../../../../lib/auth';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
 
 /**
  * Personalized outreach email template for agencias-digitales tier-1 targets.
@@ -35,6 +37,12 @@ interface OutreachEmailResponse {
  */
 export function GET(request: Request): Promise<Response> {
   return tryRoute('GET /api/growth/outreach-template', async () => {
+    const ip = extractIp(request);
+    const rateLimit = await checkRateLimit(ip ? `outreach-template:${ip}` : 'outreach-template:anon');
+    if (!rateLimit.allowed) {
+      return jsonError('Too many requests', HTTP_STATUS.TOO_MANY_REQUESTS);
+    }
+
     const authError = await requireAdminAccess(request);
     if (authError) return authError;
 
@@ -57,6 +65,18 @@ export function GET(request: Request): Promise<Response> {
       template_version: templateVersion,
     });
 
+    void logAuditEvent({
+      action: 'outreach_template_generate',
+      resource: 'growth:outreach-template',
+      ip,
+      user_agent: request.headers.get('user-agent') ?? undefined,
+      metadata: {
+        method: 'GET',
+        recipient_email: email,
+        template_version: templateVersion,
+      },
+    });
+
     return Response.json(result, { status: HTTP_STATUS.OK });
   });
 }
@@ -69,10 +89,21 @@ export function GET(request: Request): Promise<Response> {
  */
 export async function POST(request: Request): Promise<Response> {
   return tryRoute('POST /api/growth/outreach-template', async () => {
+    const ip = extractIp(request);
+    const rateLimit = await checkRateLimit(ip ? `outreach-template:${ip}` : 'outreach-template:anon');
+    if (!rateLimit.allowed) {
+      return jsonError('Too many requests', HTTP_STATUS.TOO_MANY_REQUESTS);
+    }
+
     const authError = await requireAdminAccess(request);
     if (authError) return authError;
 
-    const body = (await request.json()) as OutreachRequest;
+    let body: OutreachRequest;
+    try {
+      body = (await request.json()) as OutreachRequest;
+    } catch {
+      return jsonError('Invalid JSON', HTTP_STATUS.BAD_REQUEST);
+    }
 
     const { name, email, company, specialization, template_version } = body;
 
@@ -86,6 +117,18 @@ export async function POST(request: Request): Promise<Response> {
       company: company || 'your company',
       specialization: specialization || 'workflows',
       template_version: template_version || '1.0',
+    });
+
+    void logAuditEvent({
+      action: 'outreach_template_generate',
+      resource: 'growth:outreach-template',
+      ip,
+      user_agent: request.headers.get('user-agent') ?? undefined,
+      metadata: {
+        method: 'POST',
+        recipient_email: email,
+        template_version: template_version || '1.0',
+      },
     });
 
     return Response.json(result, { status: HTTP_STATUS.OK });
@@ -180,15 +223,31 @@ function buildHtmlBody(
 </html>`;
 }
 
+function escapeHtml(text: unknown): string {
+  if (typeof text !== 'string') {
+    return String(text ?? '');
+  }
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 function generateOutreachEmail(request: OutreachRequest): OutreachEmailResponse {
   const { name, email, company, specialization } = request;
   const template_version = request.template_version || '1.0';
+
+  const safeName = escapeHtml(name);
+  const safeCompany = escapeHtml(company);
+  const safeSpecialization = escapeHtml(specialization);
 
   const subject = `Hey ${name}, Opsly automates your ${specialization} workflows`;
   const platformDomain = process.env.PLATFORM_DOMAIN?.trim() || 'op-sly.com';
   const demoLink = `https://${platformDomain}/demo`;
   const body = buildPlainTextBody(name, company, specialization, demoLink);
-  const html = buildHtmlBody(name, company, specialization, demoLink);
+  const html = buildHtmlBody(safeName, safeCompany, safeSpecialization, demoLink);
 
   return {
     recipient: email,

@@ -63,6 +63,11 @@
 **Learning:** For public or unauthenticated endpoints, never use client-provided identifiers as the primary actor in audit logs. These fields must be system-generated (e.g., using client IP) or fixed (e.g., 'anonymous').
 **Prevention:** Use `extractIp` to generate a verified actor identifier (e.g., `anonymous:${ip}`) for unauthenticated actions. Always treat client-provided identifiers as untrusted and relegate them to the `metadata` field of the audit event.
 
+## 2026-06-26 - [XSS in Growth Outreach Templates]
+**Vulnerability:** The outreach email generation logic directly interpolated user-provided search parameters (`name`, `company`, `specialization`) into HTML strings without escaping. This allowed an attacker (or a malicious admin) to inject scripts into the generated HTML.
+**Learning:** Even internal or admin-only tools that generate "human-readable" content like emails can be vectors for XSS if that content is rendered in a browser or a web-based email client.
+**Prevention:** Always escape user-controlled variables before interpolating them into HTML templates. Use a dedicated helper like `escapeHtml` for any route that returns `text/html` or generates HTML payloads.
+
 ## 2026-06-27 - [Missing Rate Limiting and Audit Logging in Governance API]
 **Vulnerability:** The `POST /api/governance/dsar` endpoint was exposed without rate limiting or audit logging. This allowed for potential mass-creation of DSAR requests (SLA-bound operations) and lacked a traceable history of these sensitive compliance actions.
 **Learning:** Newer compliance-focused modules (like Governance) might be overlooked during security audits if they are perceived as "internal" or "administrative" even when they expose public handlers.
