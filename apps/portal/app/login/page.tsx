@@ -1,7 +1,6 @@
 'use client';
 
 import type { FormEvent, ReactElement } from 'react';
-import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -265,57 +264,38 @@ export default function LoginPage(): ReactElement {
               className="input-terminal-caret bg-ops-bg/80"
             />
             <div className="mt-2 flex justify-end">
-              <button
+              <Button
                 type="button"
-                className="text-sm text-ops-green underline-offset-4 hover:underline disabled:opacity-50"
-                disabled={resetLoading}
+                variant="link"
+                size="sm"
+                className="h-auto p-0"
+                loading={resetLoading}
                 onClick={() => void onForgotPassword()}
               >
                 {resetLoading ? 'Enviando enlace…' : '¿Olvidaste tu contraseña?'}
-              </button>
+              </Button>
             </div>
           </div>
-          <Button type="submit" variant="primary" className="w-full" disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                Entrando…
-              </>
-            ) : (
-              'Entrar'
-            )}
+          <Button type="submit" variant="primary" className="w-full" loading={loading}>
+            {loading ? 'Entrando…' : 'Entrar'}
           </Button>
           <Button
             type="button"
             variant="default"
             className="w-full"
             onClick={() => void onPasskeySignIn()}
-            disabled={passkeyLoading}
+            loading={passkeyLoading}
           >
-            {passkeyLoading ? (
-              <>
-                <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                Verificando huella…
-              </>
-            ) : (
-              'Entrar con huella o passkey'
-            )}
+            {passkeyLoading ? 'Verificando huella…' : 'Entrar con huella o passkey'}
           </Button>
           <Button
             type="button"
             variant="ghost"
             className="w-full"
             onClick={() => void onGoogleSignIn()}
-            disabled={googleLoading}
+            loading={googleLoading}
           >
-            {googleLoading ? (
-              <>
-                <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                Redirigiendo a Google…
-              </>
-            ) : (
-              'Entrar con Google'
-            )}
+            {googleLoading ? 'Redirigiendo a Google…' : 'Entrar con Google'}
           </Button>
         </form>
         <p className="mt-6 text-center text-sm">

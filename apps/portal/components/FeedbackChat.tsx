@@ -205,11 +205,12 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
               variant="primary"
               size="sm"
               onClick={sendMessage}
-              disabled={loading || !input.trim()}
+              loading={loading}
+              disabled={!input.trim()}
               className="h-9 w-9 shrink-0 p-0"
               aria-label="Enviar feedback"
             >
-              <Send className="h-4 w-4" />
+              {!loading && <Send className="h-4 w-4" />}
             </Button>
           </div>
         </div>
