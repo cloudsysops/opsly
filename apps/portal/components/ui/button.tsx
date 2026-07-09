@@ -43,6 +43,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           className={cn(buttonVariants({ variant, size, className }))}
           ref={ref}
           {...props}
+          // @ts-expect-error - Slot doesn't explicitly declare disabled/aria-busy but passes them to child
           disabled={props.disabled || loading}
           aria-busy={loading}
         >
