@@ -7,6 +7,8 @@ import {
   type HelpAssignedTo,
   type HelpBlockageType,
 } from '../../../../lib/help-request-store';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
 
 function isBlockageType(value: unknown): value is HelpBlockageType {
   return (
@@ -30,6 +32,13 @@ export async function POST(request: Request): Promise<Response> {
   if (auth) {
     return auth;
   }
+
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `help-request-create:${ip}` : 'help-request-create:anon');
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+
   let body: unknown;
   try {
     body = await request.json();
@@ -65,6 +74,16 @@ export async function POST(request: Request): Promise<Response> {
         : {},
     suggestedAction,
   });
+
+  void logAuditEvent({
+    tenant_slug: created.tenantSlug,
+    action: 'create_help_request',
+    resource: `help-request:${created.id}`,
+    ip,
+    user_agent: request.headers.get('user-agent') ?? undefined,
+    metadata: { jobId, jobName, blockageType: created.blockageType },
+  });
+
   return Response.json(
     {
       success: true,
@@ -89,6 +108,13 @@ export async function PATCH(request: Request): Promise<Response> {
   if (auth) {
     return auth;
   }
+
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `help-request-resolve:${ip}` : 'help-request-resolve:anon');
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+
   let body: unknown;
   try {
     body = await request.json();
@@ -110,6 +136,16 @@ export async function PATCH(request: Request): Promise<Response> {
     input.resolution,
     assignedToOrHuman(input.resolvedBy)
   );
+
+  void logAuditEvent({
+    tenant_slug: updated.tenantSlug,
+    action: 'resolve_help_request',
+    resource: `help-request:${updated.id}`,
+    ip,
+    user_agent: request.headers.get('user-agent') ?? undefined,
+    metadata: { resolution: input.resolution, resolvedBy: input.resolvedBy },
+  });
+
   return Response.json(
     { success: true, message: 'Solicitud resuelta', request: updated },
     { status: HTTP_STATUS.OK }
