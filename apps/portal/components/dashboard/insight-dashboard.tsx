@@ -2,6 +2,7 @@
 
 import type { ReactElement } from 'react';
 import { useCallback, useMemo, useState } from 'react';
+import { Loader2 } from 'lucide-react';
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { getApiBaseUrl } from '@/lib/api';
 import { createClient } from '@/lib/supabase/client';
@@ -127,18 +128,24 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
-                  className="rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
                   disabled={busyId === insight.id || insight.read_at !== null}
                   onClick={() => void patch(insight.id, 'read')}
                 >
+                  {busyId === insight.id && (
+                    <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
+                  )}
                   Marcar leído
                 </button>
                 <button
                   type="button"
-                  className="rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
                   disabled={busyId === insight.id}
                   onClick={() => void patch(insight.id, 'dismiss')}
                 >
+                  {busyId === insight.id && (
+                    <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
+                  )}
                   Descartar
                 </button>
               </div>

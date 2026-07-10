@@ -19,3 +19,7 @@
 ## 2026-05-27 - Ambiguous Labels in PasswordInput
 **Learning:** The `PasswordInput` component includes an eye icon button with an `aria-label` containing "contraseña". This can cause `get_by_label("Contraseña")` in Playwright or screen readers to match multiple elements, leading to ambiguity.
 **Action:** Always use exact matching or specific ARIA roles when targeting inputs with associated toggle buttons to ensure the primary input is correctly identified.
+
+## 2025-05-23 - Localized vs. Core UI Enhancements
+**Learning:** In highly constrained environments (e.g., < 50 lines per PR), modifying core UI components like `Button` can quickly exceed line limits and risk widespread regressions. Localizing micro-UX improvements (like loading spinners) within the specific feature component is more sustainable for incremental polish.
+**Action:** Prefer localized UI enhancements over global component modifications for micro-UX tasks to maintain PR focus and stay within line count boundaries.
