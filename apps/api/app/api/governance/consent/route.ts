@@ -1,6 +1,8 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { extractIp } from '../../../../lib/audit';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
+import { HTTP_STATUS } from '../../../../lib/constants';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
 import { getServiceClient } from '../../../../lib/supabase';
 
 const consentSchema = z.object({
@@ -12,7 +14,22 @@ const consentSchema = z.object({
   metadata: z.record(z.unknown()).optional(),
 });
 
+function validateConsentBody(
+  body: unknown
+): z.SafeParseReturnType<z.infer<typeof consentSchema>, z.infer<typeof consentSchema>> {
+  return consentSchema.safeParse(body);
+}
+
 export async function POST(request: NextRequest): Promise<Response> {
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(
+    ip ? `governance-consent:${ip}` : 'governance-consent:anonymous'
+  );
+
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+
   let body: unknown;
   try {
     body = await request.json();
@@ -20,7 +37,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     return Response.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const parsed = consentSchema.safeParse(body);
+  const parsed = validateConsentBody(body);
   if (!parsed.success) {
     return Response.json(
       { error: 'Invalid payload', details: parsed.error.flatten() },
@@ -28,18 +45,12 @@ export async function POST(request: NextRequest): Promise<Response> {
     );
   }
 
-  const ip = extractIp(request);
   const user_agent = request.headers.get('user-agent') ?? null;
-
   const client = getServiceClient();
   const { data, error } = await client
     .schema('governance')
     .from('consents')
-    .insert({
-      ...parsed.data,
-      ip,
-      user_agent,
-    })
+    .insert({ ...parsed.data, ip, user_agent })
     .select('id, granted_at')
     .single();
 
@@ -47,6 +58,19 @@ export async function POST(request: NextRequest): Promise<Response> {
     console.error('[governance][consent] insert error', error);
     return Response.json({ error: 'Failed to record consent' }, { status: 500 });
   }
+
+  void logAuditEvent({
+    tenant_slug: parsed.data.tenant_id,
+    action: 'CREATE',
+    resource: `governance:consent:${data.id}`,
+    ip,
+    user_agent: user_agent ?? undefined,
+    metadata: {
+      policy_id: parsed.data.policy_id,
+      policy_version: parsed.data.policy_version,
+      consent_type: parsed.data.consent_type,
+    },
+  });
 
   return Response.json(
     { ok: true, consent_id: data.id, granted_at: data.granted_at },

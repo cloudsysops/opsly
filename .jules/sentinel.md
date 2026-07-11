@@ -72,3 +72,8 @@
 **Vulnerability:** Public Peskids endpoints for lead capture and feedback (`/api/public/tenants/peskids/leads` and `/api/public/tenants/peskids/feedback`) lacked rate limiting and audit logging. This made them vulnerable to automated spam and resource exhaustion without a traceable record of the activity.
 **Learning:** Even when core business logic (insertion) is validated via schemas, the endpoint remains vulnerable to abuse if it lacks perimeter protections like rate limiting. The existence of these protections in other "similar" endpoints (like DSAR) doesn't guarantee they are applied everywhere.
 **Prevention:** Systematically apply `checkRateLimit` and `logAuditEvent` to all public, unauthenticated POST handlers. Utilize IP-based rate limiting keys (e.g., `peskids-lead:${ip}`) to prevent abuse while allowing legitimate traffic.
+
+## 2026-07-11 - [Missing Rate Limiting and Audit Logging in Governance Consent API]
+**Vulnerability:** The `POST /api/governance/consent` endpoint was exposed without rate limiting or audit logging. This allowed for potential automated abuse and lacked a traceable history of consent records, which is critical for compliance.
+**Learning:** Newer governance-related endpoints might be implemented with a focus on functional correctness (schema validation) while overlooking standardized security perimeter protections like rate limiting and audit trails.
+**Prevention:** Always include `checkRateLimit` and `logAuditEvent` in any new public-facing mutation endpoint. Create dedicated security tests (`security.test.ts`) for each route to verify these protections are in place.
