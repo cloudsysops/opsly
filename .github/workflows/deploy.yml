@@ -244,6 +244,7 @@ jobs:
       - build-and-push
       - build-mcp
     if: github.ref_name == 'main'
+    continue-on-error: true
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -674,9 +675,15 @@ jobs:
 
   deploy:
     needs:
+      - build-and-push
+      - build-mcp
       - verify-runtime-images
     # Solo producción: imágenes GHCR + compose. En staging este job no corre (build-* están skipped).
-    if: github.ref_name == 'main'
+    # verify-runtime-images tiene continue-on-error: true — deploy corre si build tuvo éxito.
+    if: |
+      github.ref_name == 'main' &&
+      needs.build-and-push.result == 'success' &&
+      needs.build-mcp.result == 'success'
     runs-on: ubuntu-latest
     environment: production
     permissions:
