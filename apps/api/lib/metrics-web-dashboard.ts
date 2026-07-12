@@ -1,4 +1,9 @@
 import { getServiceClient } from './supabase';
+import { CACHE_TTL } from './constants';
+import { getCache, setCache } from './redis-cache';
+import { logger } from './logger';
+
+const CACHE_KEY = 'metrics:web_dashboard_json';
 
 /** Alineado a `apps/web/lib/stripe/plans` price_usd (MRR orientativo). */
 const PLAN_MRR_USD: Record<string, number> = {
@@ -166,9 +171,22 @@ function buildDashboardMetrics(results: unknown[]): WebDashboardMetricsJson {
 }
 
 export async function getWebDashboardMetricsJson(): Promise<WebDashboardMetricsJson> {
+  // Bolt Optimization: Check cache first to avoid 11 parallel Supabase queries.
+  const cached = await getCache<WebDashboardMetricsJson>(CACHE_KEY);
+  if (cached !== null) {
+    return cached;
+  }
+
   const client = getServiceClient();
   const since = daysAgoIso(30);
   const results = await fetchMetricsData(client, since);
   validateQueryResults(results as Array<{ error?: unknown }>);
-  return buildDashboardMetrics(results);
+  const body = buildDashboardMetrics(results);
+
+  // Background cache set to avoid blocking the response.
+  void setCache(CACHE_KEY, body, CACHE_TTL.SHORT).catch((err) => {
+    logger.error(`[metrics-web-dashboard-cache] failed to set ${CACHE_KEY}`, err);
+  });
+
+  return body;
 }
