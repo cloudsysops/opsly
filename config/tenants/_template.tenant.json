@@ -2,9 +2,15 @@
   "tenant_name": "Example Tenant",
   "tenant_slug": "example-tenant",
   "schema_name": "example_tenant",
-  "platform_domain": "ops.example.com",
-  "workflows_count": 0,
+  "platform_domain": "op-sly.com",
+  "public_url": "https://example-tenant.op-sly.com",
+  "internal_port": 300X,
+  "stack_type": "incubator-app",
+  "owner_email": "owner@example-tenant.com",
+  "vertical": "academy",
+  "modules_enabled": ["twenty", "n8n", "uptime"],
+  "bundle": "starter",
   "pricing_per_unit": 0,
   "currency": "USD",
-  "notes": "Copia este archivo a `<slug>.json` y rellena valores reales."
+  "notes": "Copia este archivo a `<slug>.json` y rellena valores reales. Ver config/tenant-modules-catalog.json para módulos disponibles: twenty, wacrm, n8n, llm, uptime. Bundles: starter | growth | ai-first."
 }
