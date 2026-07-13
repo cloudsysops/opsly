@@ -151,7 +151,10 @@ export default function RegisterPage() {
         </div>
 
         {error && (
-          <div className="mx-auto mt-8 max-w-xl rounded border border-red-900/50 bg-red-950/30 p-4 text-sm text-red-400">
+          <div
+            role="alert"
+            className="mx-auto mt-8 max-w-xl rounded border border-red-900/50 bg-red-950/30 p-4 text-sm text-red-400"
+          >
             {error}
           </div>
         )}
@@ -164,6 +167,7 @@ export default function RegisterPage() {
                 <button
                   key={plan.id}
                   type="button"
+                  aria-pressed={isSelected}
                   onClick={() => setSelectedPlan(plan.id)}
                   className={`relative flex flex-col rounded-xl border p-6 text-left transition-all duration-200 ${
                     plan.highlighted
@@ -209,10 +213,7 @@ export default function RegisterPage() {
 
           <div className="mx-auto mt-10 max-w-xl space-y-5">
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-neutral-300"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-neutral-300">
                 Correo electrónico
               </label>
               <Input
@@ -226,17 +227,18 @@ export default function RegisterPage() {
                 }}
                 className={`mt-1.5 ${fieldErrors.email ? 'border-red-500' : ''}`}
                 autoComplete="email"
+                aria-invalid={!!fieldErrors.email}
+                aria-describedby={fieldErrors.email ? 'email-error' : undefined}
               />
               {fieldErrors.email && (
-                <p className="mt-1 text-xs text-red-400">{fieldErrors.email}</p>
+                <p id="email-error" className="mt-1 text-xs text-red-400">
+                  {fieldErrors.email}
+                </p>
               )}
             </div>
 
             <div>
-              <label
-                htmlFor="slug"
-                className="block text-sm font-medium text-neutral-300"
-              >
+              <label htmlFor="slug" className="block text-sm font-medium text-neutral-300">
                 Nombre del workspace
               </label>
               <Input
@@ -249,14 +251,19 @@ export default function RegisterPage() {
                   if (fieldErrors.slug) setFieldErrors((p) => ({ ...p, slug: '' }));
                 }}
                 className={`mt-1.5 ${fieldErrors.slug ? 'border-red-500' : ''}`}
+                aria-invalid={!!fieldErrors.slug}
+                aria-describedby={
+                  fieldErrors.slug ? 'slug-error slug-description' : 'slug-description'
+                }
               />
-              {fieldErrors.slug ? (
-                <p className="mt-1 text-xs text-red-400">{fieldErrors.slug}</p>
-              ) : (
-                <p className="mt-1 text-xs text-neutral-500">
-                  3-30 caracteres: solo letras minúsculas, números y guiones
+              {fieldErrors.slug && (
+                <p id="slug-error" className="mt-1 text-xs text-red-400">
+                  {fieldErrors.slug}
                 </p>
               )}
+              <p id="slug-description" className="mt-1 text-xs text-neutral-500">
+                3-30 caracteres: solo letras minúsculas, números y guiones
+              </p>
             </div>
 
             <Button

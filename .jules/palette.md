@@ -1,6 +1,6 @@
 ## 2026-05-26 - Accessible Form Pattern
-**Learning:** Standard HTML forms in the marketplace were missing explicit associations between labels and inputs, making them difficult for screen reader users to navigate.
-**Action:** Always use `htmlFor` on `<label>` and a matching `id` on form controls (`<input>`, `<textarea>`, `<select>`) to ensure the accessible name is correctly associated.
+**Learning:** Standard HTML forms in the marketplace were missing explicit associations between labels and inputs, and didn't communicate errors or descriptions effectively to screen readers.
+**Action:** Use `htmlFor` on `<label>` and a matching `id` on form controls. For error handling and helper text, use `aria-invalid` and `aria-describedby` to link the input with its specific error/description elements. Use `role="alert"` for prominent error messages.
 
 # Palette's Journal - Critical UX/Accessibility Learnings
 
