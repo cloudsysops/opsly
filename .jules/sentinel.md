@@ -72,3 +72,8 @@
 **Vulnerability:** Public Peskids endpoints for lead capture and feedback (`/api/public/tenants/peskids/leads` and `/api/public/tenants/peskids/feedback`) lacked rate limiting and audit logging. This made them vulnerable to automated spam and resource exhaustion without a traceable record of the activity.
 **Learning:** Even when core business logic (insertion) is validated via schemas, the endpoint remains vulnerable to abuse if it lacks perimeter protections like rate limiting. The existence of these protections in other "similar" endpoints (like DSAR) doesn't guarantee they are applied everywhere.
 **Prevention:** Systematically apply `checkRateLimit` and `logAuditEvent` to all public, unauthenticated POST handlers. Utilize IP-based rate limiting keys (e.g., `peskids-lead:${ip}`) to prevent abuse while allowing legitimate traffic.
+
+## 2026-07-04 - [Missing Security Controls in DSAR Status Check]
+**Vulnerability:** The `GET /api/governance/dsar/[token]` endpoint was publicly accessible without any rate limiting or audit logging. This exposed it to brute-force attacks on the 32-character hex verification tokens and lacked traceability for status-check actions on sensitive privacy requests.
+**Learning:** Security controls (rate limiting, auditing) applied to the initial resource creation (POST) are often missed for subsequent verification or status-check endpoints (GET/PATCH) that interact with the same sensitive PII.
+**Prevention:** Always extend perimeter protections to all endpoints in a sensitive workflow, not just the entry point. Co-locate security tests for all routes within a module to ensure consistent coverage.
