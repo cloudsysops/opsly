@@ -39,31 +39,31 @@ function buildTenantQueries(client: ReturnType<typeof getServiceClient>): unknow
     client
       .schema('platform')
       .from('tenants')
-      .is('deleted_at', null)
-      .select('*', { count: 'exact', head: true }),
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null),
     client
       .schema('platform')
       .from('tenants')
-      .is('deleted_at', null)
       .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
       .eq('status', 'active'),
     client
       .schema('platform')
       .from('tenants')
-      .is('deleted_at', null)
       .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
       .eq('status', 'suspended'),
     client
       .schema('platform')
       .from('tenants')
-      .is('deleted_at', null)
       .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
       .eq('is_demo', true),
     client
       .schema('platform')
       .from('tenants')
-      .is('deleted_at', null)
       .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
       .eq('status', 'failed'),
   ];
 }
@@ -73,26 +73,26 @@ function buildPlanQueries(client: ReturnType<typeof getServiceClient>): unknown[
     client
       .schema('platform')
       .from('tenants')
-      .is('deleted_at', null)
       .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
       .eq('plan', 'startup'),
     client
       .schema('platform')
       .from('tenants')
-      .is('deleted_at', null)
       .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
       .eq('plan', 'business'),
     client
       .schema('platform')
       .from('tenants')
-      .is('deleted_at', null)
       .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
       .eq('plan', 'enterprise'),
     client
       .schema('platform')
       .from('tenants')
-      .is('deleted_at', null)
       .select('plan, is_demo')
+      .is('deleted_at', null)
       .eq('status', 'active'),
   ];
 }
@@ -107,14 +107,14 @@ function buildMetricsQueries(
     client
       .schema('platform')
       .from('conversion_events')
-      .gte('created_at', since)
       .select('*', { count: 'exact', head: true })
+      .gte('created_at', since)
       .eq('event', 'onboard_started'),
     client
       .schema('platform')
       .from('conversion_events')
-      .gte('created_at', since)
       .select('*', { count: 'exact', head: true })
+      .gte('created_at', since)
       .eq('event', 'onboard_completed'),
   ];
 }
