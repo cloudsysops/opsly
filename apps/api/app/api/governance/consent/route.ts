@@ -1,6 +1,8 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { extractIp } from '../../../../lib/audit';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
+import { HTTP_STATUS } from '../../../../lib/constants';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
 import { getServiceClient } from '../../../../lib/supabase';
 
 const consentSchema = z.object({
@@ -12,34 +14,37 @@ const consentSchema = z.object({
   metadata: z.record(z.unknown()).optional(),
 });
 
-export async function POST(request: NextRequest): Promise<Response> {
-  let body: unknown;
+async function parseBody(req: NextRequest): Promise<Response | z.infer<typeof consentSchema>> {
   try {
-    body = await request.json();
+    const body = await req.json();
+    const parsed = consentSchema.safeParse(body);
+    if (!parsed.success) {
+      return Response.json(
+        { error: 'Invalid payload', details: parsed.error.flatten() },
+        { status: 400 }
+      );
+    }
+    return parsed.data;
   } catch {
     return Response.json({ error: 'Invalid JSON' }, { status: 400 });
   }
+}
 
-  const parsed = consentSchema.safeParse(body);
-  if (!parsed.success) {
-    return Response.json(
-      { error: 'Invalid payload', details: parsed.error.flatten() },
-      { status: 400 }
-    );
+export async function POST(request: NextRequest): Promise<Response> {
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `consent:${ip}` : 'consent:anonymous');
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
   }
 
-  const ip = extractIp(request);
-  const user_agent = request.headers.get('user-agent') ?? null;
+  const parsed = await parseBody(request);
+  if (parsed instanceof Response) return parsed;
 
   const client = getServiceClient();
   const { data, error } = await client
     .schema('governance')
     .from('consents')
-    .insert({
-      ...parsed.data,
-      ip,
-      user_agent,
-    })
+    .insert({ ...parsed, ip, user_agent: request.headers.get('user-agent') })
     .select('id, granted_at')
     .single();
 
@@ -47,6 +52,19 @@ export async function POST(request: NextRequest): Promise<Response> {
     console.error('[governance][consent] insert error', error);
     return Response.json({ error: 'Failed to record consent' }, { status: 500 });
   }
+
+  void logAuditEvent({
+    tenant_slug: parsed.tenant_id,
+    action: 'governance_consent_record',
+    resource: `consent:${data.id}`,
+    ip,
+    user_agent: request.headers.get('user-agent') ?? undefined,
+    metadata: {
+      policy_id: parsed.policy_id,
+      policy_version: parsed.policy_version,
+      consent_type: parsed.consent_type,
+    },
+  });
 
   return Response.json(
     { ok: true, consent_id: data.id, granted_at: data.granted_at },
