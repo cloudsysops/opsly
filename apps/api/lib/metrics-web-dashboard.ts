@@ -1,12 +1,13 @@
+import { CACHE_TTL } from './constants';
+import { getCache, setCache } from './redis-cache';
 import { getServiceClient } from './supabase';
+import { PLAN_MRR_USD } from './stripe/plans';
 
-/** Alineado a `apps/web/lib/stripe/plans` price_usd (MRR orientativo). */
-const PLAN_MRR_USD: Record<string, number> = {
-  startup: 49,
-  business: 149,
-  enterprise: 499,
-  demo: 0,
-};
+/** Cache key for web dashboard metrics. */
+const CACHE_KEY = 'metrics:web_dashboard_json';
+const CONVERSION_RATE_MULTIPLIER = 10000;
+const CONVERSION_RATE_DIVISOR = 100;
+const METRICS_DAYS_AGO = 30;
 
 function daysAgoIso(days: number): string {
   const d = new Date();
@@ -21,7 +22,7 @@ function calculateMrr(activePaidRes: unknown): number {
     if (row.is_demo || row.plan === 'demo' || !(row.plan in PLAN_MRR_USD)) {
       continue;
     }
-    mrr += PLAN_MRR_USD[row.plan] ?? 0;
+    mrr += PLAN_MRR_USD[row.plan as keyof typeof PLAN_MRR_USD] ?? 0;
   }
   return mrr;
 }
@@ -33,76 +34,88 @@ function validateQueryResults(results: Array<{ error?: unknown }>): void {
   }
 }
 
+function buildTenantQueries(client: ReturnType<typeof getServiceClient>): unknown[] {
+  return [
+    client
+      .schema('platform')
+      .from('tenants')
+      .is('deleted_at', null)
+      .select('*', { count: 'exact', head: true }),
+    client
+      .schema('platform')
+      .from('tenants')
+      .is('deleted_at', null)
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'active'),
+    client
+      .schema('platform')
+      .from('tenants')
+      .is('deleted_at', null)
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'suspended'),
+    client
+      .schema('platform')
+      .from('tenants')
+      .is('deleted_at', null)
+      .select('*', { count: 'exact', head: true })
+      .eq('is_demo', true),
+    client
+      .schema('platform')
+      .from('tenants')
+      .is('deleted_at', null)
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'failed'),
+  ];
+}
+
+function buildPlanQueries(client: ReturnType<typeof getServiceClient>): unknown[] {
+  return [
+    client
+      .schema('platform')
+      .from('tenants')
+      .is('deleted_at', null)
+      .select('*', { count: 'exact', head: true })
+      .eq('plan', 'startup'),
+    client
+      .schema('platform')
+      .from('tenants')
+      .is('deleted_at', null)
+      .select('*', { count: 'exact', head: true })
+      .eq('plan', 'business'),
+    client
+      .schema('platform')
+      .from('tenants')
+      .is('deleted_at', null)
+      .select('*', { count: 'exact', head: true })
+      .eq('plan', 'enterprise'),
+    client
+      .schema('platform')
+      .from('tenants')
+      .is('deleted_at', null)
+      .select('plan, is_demo')
+      .eq('status', 'active'),
+  ];
+}
+
 function buildMetricsQueries(
   client: ReturnType<typeof getServiceClient>,
   since: string
 ): unknown[] {
   return [
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('status', 'active'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('status', 'suspended'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('is_demo', true),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('status', 'failed'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('plan', 'startup'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('plan', 'business'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('plan', 'enterprise'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('plan, is_demo')
-      .is('deleted_at', null)
-      .eq('status', 'active'),
+    ...buildTenantQueries(client),
+    ...buildPlanQueries(client),
     client
       .schema('platform')
       .from('conversion_events')
+      .gte('created_at', since)
       .select('*', { count: 'exact', head: true })
-      .eq('event', 'onboard_started')
-      .gte('created_at', since),
+      .eq('event', 'onboard_started'),
     client
       .schema('platform')
       .from('conversion_events')
+      .gte('created_at', since)
       .select('*', { count: 'exact', head: true })
-      .eq('event', 'onboard_completed')
-      .gte('created_at', since),
+      .eq('event', 'onboard_completed'),
   ];
 }
 
@@ -152,7 +165,8 @@ function calculateConversionMetrics(
 ): WebDashboardMetricsJson['conversion'] {
   const started = startedRes.count ?? 0;
   const completed = completedRes.count ?? 0;
-  const rate = started > 0 ? Math.round((completed / started) * 10000) / 100 : 0;
+  const rawRate = started > 0 ? (completed / started) * CONVERSION_RATE_MULTIPLIER : 0;
+  const rate = Math.round(rawRate) / CONVERSION_RATE_DIVISOR;
   return { onboard_started: started, onboard_completed: completed, rate };
 }
 
@@ -165,10 +179,27 @@ function buildDashboardMetrics(results: unknown[]): WebDashboardMetricsJson {
   return { tenants, plans, mrr, conversion };
 }
 
+/**
+ * Fetches aggregated metrics for the web dashboard, cached for 60s.
+ * Reduces 11 redundant parallel Supabase queries on every request.
+ */
 export async function getWebDashboardMetricsJson(): Promise<WebDashboardMetricsJson> {
+  const cached = await getCache<WebDashboardMetricsJson>(CACHE_KEY);
+  if (cached) {
+    return cached;
+  }
+
   const client = getServiceClient();
-  const since = daysAgoIso(30);
+  const since = daysAgoIso(METRICS_DAYS_AGO);
   const results = await fetchMetricsData(client, since);
   validateQueryResults(results as Array<{ error?: unknown }>);
-  return buildDashboardMetrics(results);
+
+  const metrics = buildDashboardMetrics(results);
+
+  // Background update (non-blocking)
+  void setCache(CACHE_KEY, metrics, CACHE_TTL.SHORT).catch((err) => {
+    console.warn('[metrics-web-dashboard] cache set failed', err);
+  });
+
+  return metrics;
 }

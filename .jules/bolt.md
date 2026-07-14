@@ -37,3 +37,11 @@
 ## 2026-06-26 - [Caching Admin Overview DB & Network Probes]
 **Learning:** The admin overview dashboardaggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
 **Action:** Always cache aggregated metrics and external probes in dashboard-facing API routes, and modularize parsing logic to maintain low cyclomatic complexity.
+
+## 2026-07-03 - [Supabase Query Builder Mutability]
+**Learning:** The Supabase/Postgrest query builder () is mutable. Reusing a "base" query object (e.g., `const base = client.from('table')`) across multiple calls that add filters (e.g., `base.eq('a', 1)` and `base.eq('b', 2)`) results in filter accumulation. The second query will unexpectedly contain both filters.
+**Action:** Always start from a fresh client or table builder instance for each independent query to ensure data integrity, especially when parallelizing multiple queries.
+
+## 2026-07-03 - [Supabase Query Builder Mutability]
+**Learning:** The Supabase/Postgrest query builder (`supabase-js`) is mutable. Reusing a "base" query object (e.g., `const base = client.from('table')`) across multiple calls that add filters (e.g., `base.eq('a', 1)` and `base.eq('b', 2)`) results in filter accumulation. The second query will unexpectedly contain both filters.
+**Action:** Always start from a fresh client or table builder instance for each independent query to ensure data integrity, especially when parallelizing multiple queries.
