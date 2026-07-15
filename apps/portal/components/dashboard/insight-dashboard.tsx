@@ -3,9 +3,12 @@
 import type { ReactElement } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Check, Loader2, X } from 'lucide-react';
 import { getApiBaseUrl } from '@/lib/api';
 import { createClient } from '@/lib/supabase/client';
 import { portalTenantInsightsUrl } from '@/lib/portal-api-paths';
+import { Button } from '@/components/ui/button';
+import { Announcer } from '@/components/ui/accessibility';
 import type { PortalInsightItem } from '@/types';
 
 type Props = {
@@ -22,7 +25,8 @@ function insightLabel(type: string): string {
 
 export function InsightDashboard({ tenantSlug, insights: initial }: Props): ReactElement {
   const [insights, setInsights] = useState(initial);
-  const [busyId, setBusyId] = useState<string | null>(null);
+  const [busyAction, setBusyAction] = useState<string | null>(null);
+  const [announcement, setAnnouncement] = useState('');
 
   const chartData = useMemo(() => {
     return insights.map((i) => ({
@@ -34,13 +38,14 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
 
   const patch = useCallback(
     async (insightId: string, action: 'read' | 'dismiss' | 'action') => {
-      setBusyId(insightId);
+      setBusyAction(`${insightId}-${action}`);
       try {
         const supabase = createClient();
         const {
           data: { session },
         } = await supabase.auth.getSession();
         if (!session?.access_token) {
+          setAnnouncement('Error: No hay sesión activa');
           return;
         }
         const url = portalTenantInsightsUrl(getApiBaseUrl(), tenantSlug);
@@ -56,17 +61,23 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
           }),
         });
         if (!res.ok) {
+          setAnnouncement('Error al procesar la solicitud');
           return;
         }
         if (action === 'dismiss' || action === 'action') {
           setInsights((prev) => prev.filter((x) => x.id !== insightId));
+          setAnnouncement('Insight descartado correctamente');
         } else {
           setInsights((prev) =>
             prev.map((x) => (x.id === insightId ? { ...x, read_at: new Date().toISOString() } : x))
           );
+          setAnnouncement('Insight marcado como leído');
         }
+      } catch (err) {
+        setAnnouncement('Error de conexión');
+        console.error(err);
       } finally {
-        setBusyId(null);
+        setBusyAction(null);
       }
     },
     [tenantSlug]
@@ -86,6 +97,7 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
 
   return (
     <section className="space-y-4 rounded-lg border border-ops-border bg-ops-surface p-4">
+      <Announcer message={announcement} />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-semibold text-ops-gray">Inteligencia predictiva</h2>
         <p className="text-xs text-neutral-500">
@@ -125,22 +137,34 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  className="rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
-                  disabled={busyId === insight.id || insight.read_at !== null}
+                <Button
+                  variant="default"
+                  size="sm"
+                  disabled={busyAction?.startsWith(insight.id) || insight.read_at !== null}
                   onClick={() => void patch(insight.id, 'read')}
+                  aria-label="Marcar como leído"
                 >
+                  {busyAction === `${insight.id}-read` ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <Check className="h-3 w-3" />
+                  )}
                   Marcar leído
-                </button>
-                <button
-                  type="button"
-                  className="rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
-                  disabled={busyId === insight.id}
+                </Button>
+                <Button
+                  variant="default"
+                  size="sm"
+                  disabled={busyAction?.startsWith(insight.id)}
                   onClick={() => void patch(insight.id, 'dismiss')}
+                  aria-label="Descartar insight"
                 >
+                  {busyAction === `${insight.id}-dismiss` ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <X className="h-3 w-3" />
+                  )}
                   Descartar
-                </button>
+                </Button>
               </div>
             </div>
           </li>
