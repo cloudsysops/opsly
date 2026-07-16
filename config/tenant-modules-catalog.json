@@ -1,0 +1,151 @@
+{
+  "version": "1.0.0",
+  "description": "Opsly activatable module catalog — one entry per feature pack available to tenants",
+  "updated": "2026-07-12",
+  "modules": {
+    "twenty": {
+      "id": "twenty",
+      "name": "Twenty CRM",
+      "description": "Open-source CRM — contacts, leads, pipelines, tasks",
+      "category": "crm",
+      "tier": "starter",
+      "required_by": [],
+      "requires": [],
+      "docker_services": [
+        "${slug}_twenty",
+        "${slug}_twenty_worker",
+        "${slug}_twenty_db",
+        "${slug}_twenty_redis"
+      ],
+      "compose_file": "infra/docker-compose.twenty.yml",
+      "bootstrap_script": "scripts/tenants/bootstrap-twenty.sh --tenant ${slug}",
+      "smoke_script": "scripts/tenants/twenty-crm-smoke.sh --tenant ${slug}",
+      "doppler_secrets_prefix": "TWENTY_${SLUG}_",
+      "doppler_flag": "TWENTY_${SLUG}_ENABLED",
+      "traefik_domain": "crm-${slug}.op-sly.com",
+      "manual_steps": [
+        "Abrir crm-${slug}.op-sly.com → crear primer workspace admin",
+        "Settings → API & Webhooks → crear API key",
+        "echo $KEY | ./scripts/tenants/twenty-apply-api-key.sh --tenant ${slug}"
+      ],
+      "estimated_setup_minutes": 20,
+      "cost_level": "low"
+    },
+    "wacrm": {
+      "id": "wacrm",
+      "name": "WhatsApp CRM (wacrm)",
+      "description": "WhatsApp Business integration — inbound/outbound messages, lead capture, auto-routing",
+      "category": "messaging",
+      "tier": "growth",
+      "required_by": [],
+      "requires": ["twenty"],
+      "docker_services": ["wacrm_${slug}"],
+      "compose_file": "infra/docker-compose.platform.yml",
+      "bootstrap_script": "scripts/tenants/bootstrap-wacrm.sh --slug ${slug}",
+      "smoke_script": "scripts/tenants/wacrm-smoke.sh --slug ${slug}",
+      "doppler_secrets_prefix": "WACRM_${SLUG}_",
+      "doppler_flag": "WACRM_${SLUG}_ENABLED",
+      "traefik_domain": null,
+      "manual_steps": [
+        "Registrar número en Meta Business Manager",
+        "Copiar WACRM_${SLUG}_PHONE_NUMBER_ID y ACCESS_TOKEN a Doppler",
+        "Activar: doppler run -- bash -c 'WACRM_${SLUG}_ENABLED=true'"
+      ],
+      "estimated_setup_minutes": 45,
+      "cost_level": "medium"
+    },
+    "n8n": {
+      "id": "n8n",
+      "name": "n8n Automation",
+      "description": "Visual workflow automation — lead digests, follow-up sequences, CRM sync",
+      "category": "automation",
+      "tier": "starter",
+      "required_by": ["wacrm"],
+      "requires": [],
+      "docker_services": ["n8n_${slug}"],
+      "compose_file": "infra/docker-compose.platform.yml",
+      "bootstrap_script": null,
+      "smoke_script": null,
+      "doppler_secrets_prefix": "N8N_${SLUG}_",
+      "doppler_flag": null,
+      "traefik_domain": "n8n-${slug}.op-sly.com",
+      "workflow_templates": [
+        "n8n-templates/wacrm-inbound.json",
+        "n8n-templates/daily-digest.json",
+        "n8n-templates/lead-followup.json",
+        "n8n-templates/renewal-pipeline.json"
+      ],
+      "manual_steps": [
+        "Importar workflows desde n8n-templates/ en la UI de n8n",
+        "Configurar credenciales Supabase y wacrm en n8n"
+      ],
+      "estimated_setup_minutes": 30,
+      "cost_level": "low"
+    },
+    "llm": {
+      "id": "llm",
+      "name": "AI Stack (LLM Gateway)",
+      "description": "Acceso al LLM Gateway — lead scoring, digest con IA, respuestas sugeridas",
+      "category": "ai",
+      "tier": "growth",
+      "required_by": [],
+      "requires": [],
+      "docker_services": [],
+      "compose_file": null,
+      "bootstrap_script": null,
+      "smoke_script": null,
+      "doppler_secrets_prefix": "LLM_${SLUG}_",
+      "doppler_flag": "LLM_${SLUG}_ENABLED",
+      "traefik_domain": null,
+      "manual_steps": [
+        "Registrar tenant_slug en LLM Gateway tenant registry",
+        "Definir modelo preferido: fable|opus|sonnet|haiku",
+        "Activar: LLM_${SLUG}_ENABLED=true en Doppler"
+      ],
+      "estimated_setup_minutes": 10,
+      "cost_level": "variable"
+    },
+    "uptime": {
+      "id": "uptime",
+      "name": "Uptime Kuma Monitor",
+      "description": "Status page y alertas de disponibilidad para servicios del tenant",
+      "category": "monitoring",
+      "tier": "starter",
+      "required_by": [],
+      "requires": [],
+      "docker_services": ["uptime_${slug}"],
+      "compose_file": "infra/docker-compose.platform.yml",
+      "bootstrap_script": null,
+      "smoke_script": null,
+      "doppler_secrets_prefix": null,
+      "doppler_flag": null,
+      "traefik_domain": "status-${slug}.op-sly.com",
+      "manual_steps": [
+        "Configurar monitores en la UI de Uptime Kuma",
+        "Agregar URL del admin, portal y API del tenant"
+      ],
+      "estimated_setup_minutes": 10,
+      "cost_level": "low"
+    }
+  },
+  "bundles": {
+    "starter": {
+      "name": "Starter Pack",
+      "description": "CRM + automación básica — ideal para SMBs sin WhatsApp Business",
+      "modules": ["twenty", "n8n", "uptime"],
+      "estimated_setup_minutes": 60
+    },
+    "growth": {
+      "name": "Growth Pack",
+      "description": "CRM + WhatsApp + IA — el stack completo de Peskids como referencia",
+      "modules": ["twenty", "wacrm", "n8n", "llm", "uptime"],
+      "estimated_setup_minutes": 120
+    },
+    "ai-first": {
+      "name": "AI-First Pack",
+      "description": "Automatización con IA como centro — para tenants que priorizan inteligencia",
+      "modules": ["twenty", "n8n", "llm", "uptime"],
+      "estimated_setup_minutes": 75
+    }
+  }
+}

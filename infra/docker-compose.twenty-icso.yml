@@ -1,0 +1,133 @@
+# Twenty CRM — self-hosted stack for ICSO / IntCloud SysOps (separate from Peskids).
+#
+# Deploy (VPS, after Doppler vars):
+#   cd /opt/opsly
+#   ./scripts/tenants/setup-twenty-icso.sh
+#
+# Required env (Doppler prd):
+#   TWENTY_ICSO_SERVER_URL=https://crm-intcloudsysops.${PLATFORM_DOMAIN}
+#   TWENTY_ICSO_APP_SECRET, TWENTY_ICSO_ENCRYPTION_KEY (openssl rand -base64 32)
+#   TWENTY_ICSO_PG_PASSWORD (strong password)
+#
+# Bootstrap secrets:
+#   ./scripts/tenants/generate-twenty-secrets.sh --execute --tenant icso
+
+name: tenant_twenty_icso
+
+services:
+  twenty-server:
+    image: twentycrm/twenty:${TWENTY_IMAGE_TAG:-latest}
+    container_name: twenty_icso
+    restart: unless-stopped
+    volumes:
+      - twenty-icso-data:/app/packages/twenty-server/.local-storage
+    environment:
+      NODE_PORT: 3000
+      PG_DATABASE_URL: postgres://twenty:${TWENTY_ICSO_PG_PASSWORD}@twenty-icso-db:5432/default
+      SERVER_URL: ${TWENTY_ICSO_SERVER_URL}
+      REDIS_URL: redis://twenty-icso-redis:6379
+      APP_SECRET: ${TWENTY_ICSO_APP_SECRET}
+      ENCRYPTION_KEY: ${TWENTY_ICSO_ENCRYPTION_KEY}
+      STORAGE_TYPE: local
+      # Email / magic-link via Resend SMTP relay
+      EMAIL_DRIVER: smtp
+      EMAIL_SMTP_HOST: smtp.resend.com
+      EMAIL_SMTP_PORT: '587'
+      EMAIL_SMTP_USER: resend
+      EMAIL_SMTP_PASSWORD: ${RESEND_API_KEY}
+      EMAIL_FROM_ADDRESS: ${TWENTY_ICSO_EMAIL_FROM:-no-reply@op-sly.com}
+      EMAIL_FROM_NAME: ${TWENTY_ICSO_EMAIL_FROM_NAME:-IntCloud SysOps CRM}
+      EMAIL_SYSTEM_ADDRESS: ${TWENTY_ICSO_EMAIL_FROM:-no-reply@op-sly.com}
+    depends_on:
+      twenty-icso-db:
+        condition: service_healthy
+      twenty-icso-redis:
+        condition: service_healthy
+    networks:
+      - traefik-public
+      - twenty-icso-internal
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: traefik-public
+      traefik.http.routers.twenty-icso.rule: Host(`crm-intcloudsysops.${PLATFORM_DOMAIN}`)
+      traefik.http.routers.twenty-icso.entrypoints: websecure
+      traefik.http.routers.twenty-icso.tls: 'true'
+      traefik.http.routers.twenty-icso.tls.certresolver: letsencrypt
+      traefik.http.services.twenty-icso.loadbalancer.server.port: '3000'
+    healthcheck:
+      test: ['CMD', 'curl', '--fail', 'http://localhost:3000/healthz']
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
+
+  twenty-worker:
+    image: twentycrm/twenty:${TWENTY_IMAGE_TAG:-latest}
+    container_name: twenty_icso_worker
+    restart: unless-stopped
+    command: ['yarn', 'worker:prod']
+    volumes:
+      - twenty-icso-data:/app/packages/twenty-server/.local-storage
+    environment:
+      PG_DATABASE_URL: postgres://twenty:${TWENTY_ICSO_PG_PASSWORD}@twenty-icso-db:5432/default
+      SERVER_URL: ${TWENTY_ICSO_SERVER_URL}
+      REDIS_URL: redis://twenty-icso-redis:6379
+      APP_SECRET: ${TWENTY_ICSO_APP_SECRET}
+      ENCRYPTION_KEY: ${TWENTY_ICSO_ENCRYPTION_KEY}
+      DISABLE_DB_MIGRATIONS: 'true'
+      DISABLE_CRON_JOBS_REGISTRATION: 'true'
+      STORAGE_TYPE: local
+      EMAIL_DRIVER: smtp
+      EMAIL_SMTP_HOST: smtp.resend.com
+      EMAIL_SMTP_PORT: '587'
+      EMAIL_SMTP_USER: resend
+      EMAIL_SMTP_PASSWORD: ${RESEND_API_KEY}
+      EMAIL_FROM_ADDRESS: ${TWENTY_ICSO_EMAIL_FROM:-no-reply@op-sly.com}
+      EMAIL_FROM_NAME: ${TWENTY_ICSO_EMAIL_FROM_NAME:-IntCloud SysOps CRM}
+      EMAIL_SYSTEM_ADDRESS: ${TWENTY_ICSO_EMAIL_FROM:-no-reply@op-sly.com}
+    depends_on:
+      twenty-server:
+        condition: service_healthy
+    networks:
+      - twenty-icso-internal
+
+  twenty-icso-db:
+    image: postgres:16
+    container_name: twenty_icso_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: default
+      POSTGRES_USER: twenty
+      POSTGRES_PASSWORD: ${TWENTY_ICSO_PG_PASSWORD}
+    volumes:
+      - twenty-icso-db:/var/lib/postgresql/data
+    networks:
+      - twenty-icso-internal
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U twenty -d default']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  twenty-icso-redis:
+    image: redis:7-alpine
+    container_name: twenty_icso_redis
+    restart: unless-stopped
+    command: ['redis-server', '--maxmemory-policy', 'noeviction']
+    networks:
+      - twenty-icso-internal
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+networks:
+  traefik-public:
+    external: true
+  twenty-icso-internal:
+    driver: bridge
+
+volumes:
+  twenty-icso-data:
+  twenty-icso-db:
