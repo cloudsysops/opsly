@@ -19,3 +19,7 @@
 ## 2026-05-27 - Ambiguous Labels in PasswordInput
 **Learning:** The `PasswordInput` component includes an eye icon button with an `aria-label` containing "contraseña". This can cause `get_by_label("Contraseña")` in Playwright or screen readers to match multiple elements, leading to ambiguity.
 **Action:** Always use exact matching or specific ARIA roles when targeting inputs with associated toggle buttons to ensure the primary input is correctly identified.
+
+## 2026-05-28 - Granular Feedback for Dashboard Actions
+**Learning:** In dashboards with multiple items and actions (like `InsightDashboard`), using a single `busyId` state is insufficient when an item has multiple possible operations. Tracking the specific action (e.g., `${id}-${action}`) allows for precise loading feedback and prevents logical conflicts during simultaneous or rapid user interactions.
+**Action:** Use a composite `busyAction` state (insightId-action) to drive granular button disabling and loading spinners, and always provide immediate ARIA live region feedback via `Announcer` for async outcome confirmation.
