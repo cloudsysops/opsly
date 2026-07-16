@@ -135,6 +135,9 @@ jobs:
         with:
           authkey: ${{ env.TAILSCALE_AUTHKEY }}
           version: 1.94.2
+          # Tailscale's .sha256 endpoint currently returns the bare hash.
+          # The v2 action expects a checksum value and appends the local filename.
+          sha256sum: c6f99a5d774c7783b56902188d69e9756fc3dddfb08ac6be4cb2585f3fecdc32
 
       - name: Login GHCR on VPS and deploy Peskids
         uses: appleboy/ssh-action@v1.0.3
