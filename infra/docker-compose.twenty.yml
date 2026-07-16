@@ -29,6 +29,15 @@ services:
       APP_SECRET: ${TWENTY_APP_SECRET}
       ENCRYPTION_KEY: ${TWENTY_ENCRYPTION_KEY}
       STORAGE_TYPE: local
+      # Email / magic-link via Resend SMTP relay
+      EMAIL_DRIVER: smtp
+      EMAIL_SMTP_HOST: smtp.resend.com
+      EMAIL_SMTP_PORT: '587'
+      EMAIL_SMTP_USER: resend
+      EMAIL_SMTP_PASSWORD: ${RESEND_API_KEY}
+      EMAIL_FROM_ADDRESS: ${TWENTY_PESKIDS_EMAIL_FROM:-no-reply@op-sly.com}
+      EMAIL_FROM_NAME: ${TWENTY_PESKIDS_EMAIL_FROM_NAME:-Peskids CRM}
+      EMAIL_SYSTEM_ADDRESS: ${TWENTY_PESKIDS_EMAIL_FROM:-no-reply@op-sly.com}
     depends_on:
       twenty-db:
         condition: service_healthy
@@ -68,6 +77,14 @@ services:
       DISABLE_DB_MIGRATIONS: 'true'
       DISABLE_CRON_JOBS_REGISTRATION: 'true'
       STORAGE_TYPE: local
+      EMAIL_DRIVER: smtp
+      EMAIL_SMTP_HOST: smtp.resend.com
+      EMAIL_SMTP_PORT: '587'
+      EMAIL_SMTP_USER: resend
+      EMAIL_SMTP_PASSWORD: ${RESEND_API_KEY}
+      EMAIL_FROM_ADDRESS: ${TWENTY_PESKIDS_EMAIL_FROM:-no-reply@op-sly.com}
+      EMAIL_FROM_NAME: ${TWENTY_PESKIDS_EMAIL_FROM_NAME:-Peskids CRM}
+      EMAIL_SYSTEM_ADDRESS: ${TWENTY_PESKIDS_EMAIL_FROM:-no-reply@op-sly.com}
     depends_on:
       twenty-server:
         condition: service_healthy
