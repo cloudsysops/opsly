@@ -38,6 +38,60 @@ describe('TwentyClient', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
+  it('unwraps Twenty create operation envelopes', async () => {
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+      if (url.endsWith('/rest/people') && init?.method === 'POST') {
+        return new Response(
+          JSON.stringify({ data: { createPerson: { id: 'person-1' } } }),
+          { status: 201 }
+        );
+      }
+      if (url.endsWith('/rest/opportunities') && init?.method === 'POST') {
+        return new Response(
+          JSON.stringify({ data: { createOpportunity: { id: 'opp-1' } } }),
+          { status: 201 }
+        );
+      }
+      return new Response('not found', { status: 404 });
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const client = new TwentyClient('secret', 'https://crm.example.com');
+    await expect(
+      client.createPerson({
+        name: { firstName: 'Ana', lastName: 'García' },
+        emails: { primaryEmail: 'ana@example.com' },
+      })
+    ).resolves.toMatchObject({ id: 'person-1' });
+    await expect(
+      client.createOpportunity({ name: 'Peskids — Ana García' })
+    ).resolves.toMatchObject({ id: 'opp-1' });
+  });
+
+  it('throws Twenty API messages for validation errors', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify({
+              statusCode: 400,
+              messages: ['Provided phone number is invalid 3000000000'],
+            }),
+            { status: 400 }
+          )
+      )
+    );
+
+    const client = new TwentyClient('secret', 'https://crm.example.com');
+    await expect(
+      client.createPerson({
+        name: { firstName: 'Ana', lastName: 'García' },
+        emails: { primaryEmail: 'ana@example.com' },
+      })
+    ).rejects.toThrow('Provided phone number is invalid 3000000000');
+  });
+
   it('throws when person response lacks id', async () => {
     vi.stubGlobal(
       'fetch',

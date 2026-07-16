@@ -71,6 +71,7 @@ export class TwentyClient {
       if (!response.ok) {
         const message =
           payload.errors?.[0]?.message ??
+          payload.messages?.[0] ??
           `Twenty API ${method} ${path} failed (${response.status})`;
         throw new Error(message);
       }
@@ -81,12 +82,28 @@ export class TwentyClient {
     }
   }
 
+  private unwrapRecord<T extends { id?: string }>(
+    payload: TwentyApiEnvelope<T>,
+    operation: string,
+    label: string
+  ): T {
+    if (payload.data && 'id' in payload.data && payload.data.id) {
+      return payload.data as T;
+    }
+
+    if (payload.data && typeof payload.data === 'object') {
+      const nested = (payload.data as Record<string, T | undefined>)[operation];
+      if (nested?.id) {
+        return nested;
+      }
+    }
+
+    throw new Error(`Twenty API returned ${label} without id`);
+  }
+
   async createPerson(body: TwentyCreatePersonRequest): Promise<TwentyPersonRecord> {
     const payload = await this.request<TwentyPersonRecord>('POST', '/people', body);
-    if (!payload.data?.id) {
-      throw new Error('Twenty API returned person without id');
-    }
-    return payload.data;
+    return this.unwrapRecord(payload, 'createPerson', 'person');
   }
 
   async createOpportunity(
@@ -97,18 +114,12 @@ export class TwentyClient {
       '/opportunities',
       body
     );
-    if (!payload.data?.id) {
-      throw new Error('Twenty API returned opportunity without id');
-    }
-    return payload.data;
+    return this.unwrapRecord(payload, 'createOpportunity', 'opportunity');
   }
 
   async createTask(body: TwentyCreateTaskRequest): Promise<TwentyTaskRecord> {
     const payload = await this.request<TwentyTaskRecord>('POST', '/tasks', body);
-    if (!payload.data?.id) {
-      throw new Error('Twenty API returned task without id');
-    }
-    return payload.data;
+    return this.unwrapRecord(payload, 'createTask', 'task');
   }
 
   async updateTask(
@@ -120,10 +131,7 @@ export class TwentyClient {
       `/tasks/${taskId}`,
       body
     );
-    if (!payload.data?.id) {
-      throw new Error('Twenty API returned task without id');
-    }
-    return payload.data;
+    return this.unwrapRecord(payload, 'updateTask', 'task');
   }
 
   async createTaskTarget(
@@ -134,9 +142,6 @@ export class TwentyClient {
       '/taskTargets',
       body
     );
-    if (!payload.data?.id) {
-      throw new Error('Twenty API returned taskTarget without id');
-    }
-    return payload.data;
+    return this.unwrapRecord(payload, 'createTaskTarget', 'taskTarget');
   }
 }

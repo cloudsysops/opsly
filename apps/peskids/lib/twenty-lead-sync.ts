@@ -39,6 +39,37 @@ function buildOpportunityName(data: LeadData): string {
   return `Peskids — ${data.parentName.trim()}`;
 }
 
+function normalizeTwentyPhone(
+  phone?: string
+): { primaryPhoneNumber: string; primaryPhoneCallingCode?: string } | undefined {
+  const raw = phone?.trim();
+  if (!raw) {
+    return undefined;
+  }
+
+  const digits = raw.replace(/\D/g, '');
+  if (!digits) {
+    return undefined;
+  }
+
+  if (raw.startsWith('+')) {
+    return { primaryPhoneNumber: raw };
+  }
+
+  if (digits.length === 10 && digits.startsWith('3')) {
+    return {
+      primaryPhoneNumber: digits,
+      primaryPhoneCallingCode: '+57',
+    };
+  }
+
+  if (digits.length === 12 && digits.startsWith('57')) {
+    return { primaryPhoneNumber: `+${digits}` };
+  }
+
+  return undefined;
+}
+
 export async function sendLeadToTwenty(
   data: LeadData
 ): Promise<TwentyLeadSyncResult | null> {
@@ -51,13 +82,12 @@ export async function sendLeadToTwenty(
 
     const client = new TwentyClient(env.apiKey, env.baseUrl);
     const name = splitParentName(data.parentName);
+    const phone = normalizeTwentyPhone(data.phone);
 
     const person = await client.createPerson({
       name,
       emails: { primaryEmail: data.email.trim() },
-      ...(data.phone?.trim()
-        ? { phones: { primaryPhoneNumber: data.phone.trim() } }
-        : {}),
+      ...(phone ? { phones: phone } : {}),
       jobTitle: data.gradeInterested?.trim() || undefined,
     });
 
