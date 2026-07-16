@@ -73,6 +73,7 @@ export type TwentyTaskTargetRecord = {
 };
 
 export type TwentyApiEnvelope<T> = {
-  data?: T;
+  data?: T | Record<string, T | undefined>;
   errors?: Array<{ message?: string }>;
+  messages?: string[];
 };
