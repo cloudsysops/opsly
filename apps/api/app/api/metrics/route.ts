@@ -1,5 +1,7 @@
 import { serverErrorLogged } from '../../../lib/api-response';
 import { requireAdminAccessUnlessDemoRead } from '../../../lib/auth';
+import { CACHE_TTL } from '../../../lib/constants';
+import { getCache, setCache } from '../../../lib/redis-cache';
 import { computeMrr } from '../../../lib/stripe';
 import { getServiceClient } from '../../../lib/supabase';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -93,27 +95,28 @@ function firstMetricsError(rows: MetricRows): Error | null {
   return new Error(errors[0].message);
 }
 
-export async function GET(request: Request): Promise<Response> {
-  const authError = await requireAdminAccessUnlessDemoRead(request);
-  if (authError) {
-    return authError;
-  }
+type MetricsSummary = {
+  total_tenants: number;
+  active_tenants: number;
+  suspended_tenants: number;
+  mrr_usd: number;
+  tenants_by_plan: {
+    startup: number;
+    business: number;
+    enterprise: number;
+  };
+};
 
-  const client = getServiceClient();
+async function getMetricsBody(client: SupabaseClient): Promise<MetricsSummary> {
   const rows = await fetchTenantMetricRows(client);
   const err = firstMetricsError(rows);
   if (err) {
-    return serverErrorLogged('metrics:', err);
+    throw err;
   }
 
-  let mrr_usd = 0;
-  try {
-    mrr_usd = await computeMrr(client);
-  } catch (e) {
-    return serverErrorLogged('computeMrr:', e);
-  }
+  const mrr_usd = await computeMrr(client);
 
-  return Response.json({
+  return {
     total_tenants: rows.totalRes.count ?? 0,
     active_tenants: rows.activeRes.count ?? 0,
     suspended_tenants: rows.suspendedRes.count ?? 0,
@@ -123,5 +126,36 @@ export async function GET(request: Request): Promise<Response> {
       business: rows.businessRes.count ?? 0,
       enterprise: rows.enterpriseRes.count ?? 0,
     },
-  });
+  };
+}
+
+export async function GET(request: Request): Promise<Response> {
+  const authError = await requireAdminAccessUnlessDemoRead(request);
+  if (authError) {
+    return authError;
+  }
+
+  /**
+   * PERFORMANCE OPTIMIZATION: Cache aggregated metrics for 60s.
+   * This endpoint performs 7 parallel database queries (counts + MRR).
+   * Caching reduces DB load and significantly improves dashboard response times.
+   */
+  const cacheKey = 'metrics:main_summary';
+  const cached = await getCache<MetricsSummary>(cacheKey);
+  if (cached) {
+    return Response.json(cached);
+  }
+
+  try {
+    const client = getServiceClient();
+    const body = await getMetricsBody(client);
+
+    void setCache(cacheKey, body, CACHE_TTL.SHORT).catch((e) => {
+      console.error('[metrics] background cache set failed:', e);
+    });
+
+    return Response.json(body);
+  } catch (err) {
+    return serverErrorLogged('metrics:', err);
+  }
 }
