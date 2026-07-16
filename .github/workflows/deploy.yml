@@ -289,6 +289,13 @@ jobs:
             /app/apps/llm-gateway \
             redis @intcloudsysops/prompt-guard @intcloudsysops/types
 
+          docker run --rm \
+            --entrypoint node \
+            --workdir /app/apps/llm-gateway \
+            "ghcr.io/cloudsysops/intcloudsysops-llm-gateway:${IMAGE_TAG}" \
+            --input-type=module \
+            -e "const types = await import('@intcloudsysops/types'); if (!types.approvalDecisionSchema || !types.ContextPackSchema) throw new Error('missing named @intcloudsysops/types exports')"
+
           verify_imports \
             "ghcr.io/cloudsysops/intcloudsysops-context-builder:${IMAGE_TAG}" \
             /app/apps/context-builder \
