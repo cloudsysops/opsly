@@ -111,6 +111,51 @@ Cómo aplicar el blueprint por vertical. **Un nicho = un MVP acotado.**
 
 ---
 
+## Hotels
+
+| | |
+|-|-|
+| **Core problem** | Consultas por WhatsApp/email y reservas sin seguimiento claro. |
+| **First dashboard** | Leads de reserva, habitaciones o servicios consultados, pendientes de respuesta. |
+| **First workflow** | Consulta → lead → follow-up del equipo. |
+| **First feedback loop** | Encuesta corta post-estancia o post-servicio. |
+| **First automation** | Recordatorio de respuesta si el lead queda sin tocar. |
+| **Content opportunities** | Temporadas, paquetes, ofertas, reseñas. |
+
+**Evitar:** inventar motor de reservas completo en MVP.
+
+---
+
+## Sales teams / inbound ventas
+
+| | |
+|-|-|
+| **Core problem** | Leads entran pero no tienen pipeline ni seguimiento constante. |
+| **First dashboard** | Pipeline, tareas vencidas, leads fríos, conversiones. |
+| **First workflow** | Form / inbound lead → CRM → follow-up manual o n8n. |
+| **First feedback loop** | Lost/reason tracking semanal. |
+| **First automation** | Recordatorio de lead sin respuesta y reporte semanal. |
+| **Content opportunities** | Casos de éxito, pruebas sociales, scripts de venta. |
+
+**Evitar:** inventar un CRM paralelo cuando el flujo ya cabe en Twenty + Supabase.
+
+---
+
+## Marketplaces
+
+| | |
+|-|-|
+| **Core problem** | Onboarding de vendedores y soporte disperso. |
+| **First dashboard** | Sellers nuevos, tickets abiertos, listings pendientes. |
+| **First workflow** | Alta seller → revisión → activación. |
+| **First feedback loop** | Seguimiento de calidad por vendedor. |
+| **First automation** | Recordatorio si el alta queda incompleta. |
+| **Content opportunities** | Guías de publicación, contenido de categorías, promoción de top sellers. |
+
+**Evitar:** construir marketplace grande antes de validar oferta y operación.
+
+---
+
 ## Matriz de módulos por nicho
 
 | Módulo | Natación | Barber | Restaurant | BIM | Clínica | Agencia |

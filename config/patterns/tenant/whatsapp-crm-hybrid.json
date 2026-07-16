@@ -1,0 +1,16 @@
+{
+  "id": "whatsapp-crm-hybrid",
+  "kind": "tenant",
+  "title": "WhatsApp + CRM hybrid",
+  "description": "Optional tenant pattern for WhatsApp-first operations where conversations live in OpenWA/WACRM and CRM state lives in Twenty.",
+  "stack_type": "incubator-app",
+  "capabilities": ["openwa", "whatsapp", "twenty-crm", "crm-hybrid"],
+  "modules": ["@intcloudsysops/openwa", "@intcloudsysops/conversational-runtime", "@intcloudsysops/tenant-profile"],
+  "harness_patterns": ["integration-webhook", "tenant-deploy-gate"],
+  "env_prefixes": ["OPENWA", "TWENTY", "TENANT"],
+  "scripts": [
+    "scripts/setup-openwa-tenant.sh",
+    "scripts/install-crm-workflows.sh"
+  ],
+  "notes": "Use when WhatsApp is the primary conversation channel but Twenty remains the single CRM source of truth. No dual-source CRM."
+}

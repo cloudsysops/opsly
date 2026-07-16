@@ -74,6 +74,8 @@ Ejemplo reciente: [Peskids](../../tenants/peskids/README.md) — piloto incubado
 | [SECURITY-AND-TRUST.md](./SECURITY-AND-TRUST.md) | Confianza y datos |
 | [COMMERCIAL-PACKAGES.md](./COMMERCIAL-PACKAGES.md) | Paquetes comerciales |
 | [NICHE-PLAYBOOKS.md](./NICHE-PLAYBOOKS.md) | Aplicación por nicho |
+| [VERTICAL-BLUEPRINTS.md](./VERTICAL-BLUEPRINTS.md) | Mapa operativo por vertical |
+| [WHATSAPP-HYBRID.md](./WHATSAPP-HYBRID.md) | Contrato híbrido WhatsApp + Twenty |
 | [IMPLEMENTATION-CHECKLIST.md](./IMPLEMENTATION-CHECKLIST.md) | Checklist de implementación |
 | [CLIENT-FACING-EXPLANATION.md](./CLIENT-FACING-EXPLANATION.md) | Explicación al cliente (ES) |
 | [TEAM-FACING-EXPLANATION.md](./TEAM-FACING-EXPLANATION.md) | Explicación al equipo (ES) |
