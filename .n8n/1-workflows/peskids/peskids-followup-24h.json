@@ -23,13 +23,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.PESKIDS_APP_URL }}/api/admin/followups/execute",
+        "url": "={{ $env.PESKIDS_APP_URL || 'https://peskids.op-sly.com' }}/api/admin/followups/execute",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $env.PESKIDS_FOLLOWUP_CRON_SECRET }}"
+              "value": "=Bearer {{ $env.PESKIDS_FOLLOWUP_CRON_SECRET || $env.PESKIDS_DIGEST_CRON_SECRET }}"
             },
             {
               "name": "Content-Type",
@@ -48,11 +48,10 @@
     {
       "parameters": {
         "conditions": {
-          "string": [
+          "boolean": [
             {
-              "value1": "={{ $json['ok'] }}",
-              "operation": "equal",
-              "value2": "true"
+              "value1": "={{ Boolean($json.ok) }}",
+              "value2": true
             }
           ]
         }
@@ -68,7 +67,7 @@
         "conditions": {
           "number": [
             {
-              "value1": "={{ $json['executed'].length }}",
+              "value1": "={{ Array.isArray($json.executed) ? $json.executed.length : 0 }}",
               "operation": "larger",
               "value2": 0
             }
@@ -83,49 +82,61 @@
     },
     {
       "parameters": {
-        "content": "=🚨 **Peskids — Follow-ups 24h ejecutados**\n\n**Procesados:** {{ $json['executed'].length }}\n**Saltados:** {{ $json['skipped'].length }}\n**Fallidos:** {{ $json['failed'].length }}\n\n_Ver dashboard: https://admin.op-sly.com/peskids/executive_"
+        "method": "POST",
+        "url": "={{ $env.OPSLY_CRM_NOTIFY_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ content: `🚨 **Peskids — Follow-ups ejecutados**\\n\\n**Procesados:** ${(Array.isArray($json.executed) ? $json.executed.length : 0)}\\n**Saltados:** ${(Array.isArray($json.skipped) ? $json.skipped.length : 0)}\\n**Fallidos:** ${(Array.isArray($json.failed) ? $json.failed.length : 0)}\\n\\n_CRM: https://crm-peskids.op-sly.com_` }) }}",
+        "options": {}
       },
       "id": "discord-notify",
       "name": "Discord Notification",
-      "type": "n8n-nodes-base.discord",
-      "typeVersion": 1,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [1040, 150],
-      "credentials": {
-        "discordWebhookApi": {
-          "id": "peskins-discord-webhook",
-          "name": "Peskids Discord Webhook"
-        }
-      }
+      "continueOnFail": true
     },
     {
       "parameters": {
-        "content": "✅ Sin follow-ups pendientes."
+        "jsCode": "return [{ json: { skipped: true, reason: 'No follow-ups executed', checked_at: new Date().toISOString() } }];"
       },
       "id": "no-followups",
       "name": "No Follow-ups",
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [1040, 350]
     }
   ],
   "connections": {
-    "schedule-trigger": {
-      "main": [[ { "node": "execute-followups", "type": "main", "index": 0 } ]]
+    "Every 1 Hour": {
+      "main": [[{ "node": "Execute Follow-ups", "type": "main", "index": 0 }]]
     },
-    "execute-followups": {
-      "main": [[ { "node": "check-result", "type": "main", "index": 0 } ]]
+    "Execute Follow-ups": {
+      "main": [[{ "node": "Check Result", "type": "main", "index": 0 }]]
     },
-    "check-result": {
+    "Check Result": {
       "main": [
-        [ { "node": "has-followups", "type": "main", "index": 0 } ],
-        [ { "node": "no-followups", "type": "main", "index": 0 } ]
+        [{ "node": "Has Follow-ups?", "type": "main", "index": 0 }],
+        [{ "node": "No Follow-ups", "type": "main", "index": 0 }]
       ]
     },
-    "has-followups": {
+    "Has Follow-ups?": {
       "main": [
-        [ { "node": "discord-notify", "type": "main", "index": 0 } ],
-        [ { "node": "no-followups", "type": "main", "index": 0 } ]
+        [{ "node": "Discord Notification", "type": "main", "index": 0 }],
+        [{ "node": "No Follow-ups", "type": "main", "index": 0 }]
       ]
     }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "peskids"
   }
 }

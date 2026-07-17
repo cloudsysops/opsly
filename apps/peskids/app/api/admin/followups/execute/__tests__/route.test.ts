@@ -16,6 +16,7 @@ describe('POST /api/admin/followups/execute', () => {
     validateStaffRequestMock.mockReset();
     executeDueFollowupsMock.mockReset();
     delete process.env.PESKIDS_FOLLOWUP_CRON_SECRET;
+    delete process.env.PESKIDS_DIGEST_CRON_SECRET;
     delete process.env.CRON_SECRET;
   });
 
@@ -65,6 +66,22 @@ describe('POST /api/admin/followups/execute', () => {
       headers: new Headers({
         'x-cron-secret': 'shared-cron-secret',
         'x-request-id': 'req-followups-header',
+      }),
+    } as never);
+
+    expect(response.status).toBe(200);
+    expect(validateStaffRequestMock).not.toHaveBeenCalled();
+  });
+
+  it('accepts PESKIDS_DIGEST_CRON_SECRET as fallback cron auth', async () => {
+    process.env.PESKIDS_DIGEST_CRON_SECRET = 'digest-secret';
+    executeDueFollowupsMock.mockResolvedValue({ executed: [], skipped: [], failed: [] });
+
+    const { POST } = await import('../route');
+    const response = await POST({
+      headers: new Headers({
+        authorization: 'Bearer digest-secret',
+        'x-request-id': 'req-followups-digest',
       }),
     } as never);
 

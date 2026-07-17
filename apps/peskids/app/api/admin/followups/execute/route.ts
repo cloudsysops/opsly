@@ -5,16 +5,31 @@ import { executeDueFollowups } from '@/lib/services/followup-admin.service';
 
 export const dynamic = 'force-dynamic';
 
+function readCronSecrets(): string[] {
+  const candidates = [
+    process.env.PESKIDS_FOLLOWUP_CRON_SECRET,
+    process.env.PESKIDS_DIGEST_CRON_SECRET,
+    process.env.CRON_SECRET,
+  ];
+  const secrets: string[] = [];
+  for (const raw of candidates) {
+    const value = raw?.trim() ?? '';
+    if (value && !secrets.includes(value)) {
+      secrets.push(value);
+    }
+  }
+  return secrets;
+}
+
 function isCronAuthorized(req: NextRequest): boolean {
-  const secret =
-    process.env.PESKIDS_FOLLOWUP_CRON_SECRET?.trim() || process.env.CRON_SECRET?.trim() || '';
-  if (!secret) return false;
+  const secrets = readCronSecrets();
+  if (secrets.length === 0) return false;
 
   const authHeader = req.headers.get('authorization') ?? '';
   const bearer = authHeader.toLowerCase().startsWith('bearer ') ? authHeader.slice(7).trim() : '';
   const headerToken = req.headers.get('x-cron-secret')?.trim() ?? '';
 
-  return bearer === secret || headerToken === secret;
+  return secrets.includes(bearer) || secrets.includes(headerToken);
 }
 
 export async function POST(req: NextRequest) {
