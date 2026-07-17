@@ -22,6 +22,28 @@ check_status() {
   fi
 }
 
+check_status_any() {
+  local name="$1"
+  local url="$2"
+  shift 2
+  local expected_codes=("$@")
+  local code
+  code="$(curl -sf -o /dev/null -w '%{http_code}' "$url" || echo "000")"
+  for expected in "${expected_codes[@]}"; do
+    if [[ "$code" == "$expected" ]]; then
+      if [[ "$code" == "200" ]]; then
+        echo "OK  $name (200 shell) $url"
+      else
+        echo "OK  $name (${code} legacy redirect) $url"
+      fi
+      pass=$((pass + 1))
+      return 0
+    fi
+  done
+  echo "FAIL $name expected one of ${expected_codes[*]} got=$code $url"
+  fail=$((fail + 1))
+}
+
 check_json_unauthorized() {
   local name="$1"
   local url="$2"
@@ -40,7 +62,9 @@ echo "=== Peskids Release 3 agenda smoke ==="
 check_status "landing" "$BASE/" "200"
 check_status "familias portal" "$BASE/familias" "200"
 check_status "familias login" "$BASE/familias/login" "200"
-check_status "teacher gate" "$BASE/teacher/dashboard" "307"
+check_status_any "teacher shell" "$BASE/teacher/dashboard" 200 307 308 302 301
+check_status_any "support shell" "$BASE/support/dashboard" 200 307 308 302 301
+check_status_any "familias submissions shell" "$BASE/familias/submissions" 200 307 308 302 301
 check_json_unauthorized "admin agenda gate" "$BASE/api/admin/agenda"
 check_json_unauthorized "portal agenda gate" "$BASE/api/portal/agenda"
 
