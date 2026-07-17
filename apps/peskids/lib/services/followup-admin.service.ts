@@ -3,10 +3,8 @@ import type { Database } from '@/lib/types';
 import { getLeadForAdmin } from '@/lib/services/lead-admin.service';
 import { getStudentById } from '@/lib/services/student.service';
 import type { createFollowupSchema, patchFollowupSchema } from '@/lib/validation/followup.schema';
-import {
-  createTwentyTaskForLeadFollowup,
-  syncTwentyTaskStatus,
-} from '@/lib/twenty-followup-sync';
+import { createTwentyTaskForLeadFollowup, syncTwentyTaskStatus } from '@/lib/twenty-followup-sync';
+import { sendNotification } from '@/lib/notifications';
 import type { z } from 'zod';
 
 export type FollowupRow = Database['public']['Tables']['followups']['Row'];
@@ -39,6 +37,28 @@ async function withContactName(row: FollowupRow): Promise<FollowupWithContact> {
     ...row,
     contact_name: await resolveContactName(row.contact_id, row.contact_type),
   };
+}
+
+async function resolveContact(
+  contactId: string,
+  contactType: FollowupRow['contact_type']
+): Promise<{ name: string | null; email: string | null; phone: string | null } | null> {
+  if (contactType === 'lead') {
+    const lead = await getLeadForAdmin(contactId, tenantSlug());
+    if (!lead) return null;
+    return { name: lead.name ?? null, email: lead.email ?? null, phone: lead.phone ?? null };
+  }
+  if (contactType === 'student') {
+    const student = await getStudentById(contactId);
+    if (!student) return null;
+    return {
+      name: student.name ?? null,
+      email: student.parent_email ?? null,
+      phone: student.parent_phone ?? null,
+    };
+  }
+  // 'parent' contact type has no dedicated lookup yet — same gap as resolveContactName.
+  return null;
 }
 
 export async function listFollowups(input?: {
@@ -160,4 +180,79 @@ export async function updateFollowup(
   }
 
   return withContactName(data);
+}
+
+export interface ExecuteFollowupsResult {
+  executed: string[];
+  skipped: Array<{ id: string; reason: string }>;
+  failed: Array<{ id: string; error: string }>;
+}
+
+const FOLLOWUP_TYPE_LABEL: Record<FollowupRow['type'], string> = {
+  call: 'una llamada',
+  email: 'un correo',
+  sms: 'un mensaje',
+  'in-person': 'una visita presencial',
+};
+
+async function fetchDueFollowups(dueDate: string): Promise<FollowupRow[]> {
+  const { data, error } = await supabaseServer()
+    .from('followups')
+    .select('*')
+    .eq('tenant_id', tenantSlug())
+    .eq('status', 'pending')
+    .lte('due_date', dueDate)
+    .order('due_date', { ascending: true });
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+/**
+ * Notifies the contact for every followup due today or earlier, then marks it
+ * completed (which also syncs the linked Twenty task to DONE). Meant to be
+ * driven by an hourly n8n cron via POST /api/admin/followups/execute.
+ *
+ * Queries only due rows (rather than reusing listFollowups) and resolves each
+ * contact inside its own try/catch — listFollowups resolves contact_name for
+ * every row via a shared Promise.all, so one bad lookup would otherwise sink
+ * the entire batch instead of just that followup.
+ */
+export async function executeDueFollowups(): Promise<ExecuteFollowupsResult> {
+  const today = new Date().toISOString().slice(0, 10);
+  const due = await fetchDueFollowups(today);
+
+  const result: ExecuteFollowupsResult = { executed: [], skipped: [], failed: [] };
+
+  for (const followup of due) {
+    try {
+      const contact = await resolveContact(followup.contact_id, followup.contact_type);
+      if (!contact || (!contact.email && !contact.phone)) {
+        result.skipped.push({ id: followup.id, reason: 'no contact channel' });
+        continue;
+      }
+
+      await sendNotification({
+        type: 'followup_due',
+        recipientEmail: contact.email ?? undefined,
+        recipientPhone: contact.phone ?? undefined,
+        title: 'Seguimiento pendiente — Peskids',
+        body:
+          followup.notes?.trim() ||
+          `Tienes ${FOLLOWUP_TYPE_LABEL[followup.type]} de seguimiento pendiente con ${contact.name ?? 'un contacto'}.`,
+        metadata: { followup_id: followup.id, contact_type: followup.contact_type },
+        tenantSlug: tenantSlug(),
+      });
+
+      await updateFollowup(followup.id, { status: 'completed' });
+      result.executed.push(followup.id);
+    } catch (err) {
+      result.failed.push({
+        id: followup.id,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }
+
+  return result;
 }

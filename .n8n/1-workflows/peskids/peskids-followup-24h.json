@@ -1,7 +1,7 @@
 {
   "id": "peskids-followup-24h",
   "name": "Peskids - Auto Follow-up 24h",
-  "active": false,
+  "active": true,
   "nodes": [
     {
       "parameters": {
@@ -23,13 +23,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.OPSLY_API_URL }}/api/admin/peskids/peskids/followups/execute",
+        "url": "={{ $env.PESKIDS_APP_URL }}/api/admin/followups/execute",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $env.PLATFORM_ADMIN_TOKEN }}"
+              "value": "=Bearer {{ $env.PESKIDS_FOLLOWUP_CRON_SECRET }}"
             },
             {
               "name": "Content-Type",
@@ -68,7 +68,7 @@
         "conditions": {
           "number": [
             {
-              "value1": "={{ $json['processed'] }}",
+              "value1": "={{ $json['executed'].length }}",
               "operation": "larger",
               "value2": 0
             }
@@ -83,7 +83,7 @@
     },
     {
       "parameters": {
-        "content": "=🚨 **Peskids — Follow-ups 24h ejecutados**\n\n**Procesados:** {{ $json['processed'] }}\n**Saltados:** {{ $json['skipped'] }}\n**Fallidos:** {{ $json['failed'] }}\n\n_Ver dashboard: https://admin.op-sly.com/peskids/executive_"
+        "content": "=🚨 **Peskids — Follow-ups 24h ejecutados**\n\n**Procesados:** {{ $json['executed'].length }}\n**Saltados:** {{ $json['skipped'].length }}\n**Fallidos:** {{ $json['failed'].length }}\n\n_Ver dashboard: https://admin.op-sly.com/peskids/executive_"
       },
       "id": "discord-notify",
       "name": "Discord Notification",
