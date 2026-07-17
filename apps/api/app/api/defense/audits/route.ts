@@ -4,6 +4,8 @@ import { createDefenseAuditBodySchema } from '../../../../lib/defense/validation
 import { DEFENSE_API, HTTP_STATUS } from '../../../../lib/constants';
 import { requireAdminAccess, requireAdminAccessUnlessDemoRead } from '../../../../lib/auth';
 import { getServiceClient } from '../../../../lib/supabase';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
 
 export async function GET(request: Request): Promise<Response> {
   const auth = await requireAdminAccessUnlessDemoRead(request);
@@ -39,6 +41,12 @@ export async function POST(request: Request): Promise<Response> {
     return auth;
   }
 
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `defense-audits:${ip}` : 'defense-audits:anonymous');
+  if (!rateLimit.allowed) {
+    return jsonError('Too many requests', HTTP_STATUS.TOO_MANY_REQUESTS);
+  }
+
   let raw: unknown;
   try {
     raw = await request.json();
@@ -54,5 +62,29 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
-  return executePostDefenseAudit(parsed.data);
+  const response = await executePostDefenseAudit(parsed.data);
+  if (response.ok) {
+    const db = getServiceClient();
+    const { data: tenant } = await db
+      .schema('platform')
+      .from('tenants')
+      .select('slug')
+      .eq('id', parsed.data.tenant_id)
+      .maybeSingle();
+
+    void logAuditEvent({
+      tenant_slug: tenant?.slug ?? parsed.data.tenant_id,
+      action: 'defense_audit_schedule',
+      resource: 'defense:audits',
+      status_code: response.status,
+      ip,
+      user_agent: request.headers.get('user-agent') ?? undefined,
+      metadata: {
+        audit_type: parsed.data.audit_type,
+        framework: parsed.data.framework,
+      },
+    });
+  }
+
+  return response;
 }
