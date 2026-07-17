@@ -29,6 +29,8 @@ payload=$(cat <<JSON
   "name": "Twenty Smoke Test",
   "email": "${email}",
   "phone": "3000000000",
+  "class_modality": "llanogrande",
+  "neighborhood": "Llanogrande",
   "grade_interested": "K-5",
   "consent_treatment": true,
   "consent_marketing": false
