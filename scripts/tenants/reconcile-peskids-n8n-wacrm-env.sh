@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Add wacrm + digest env to n8n_peskids without printing secrets.
+# Add wacrm + digest + followup env to n8n_peskids without printing secrets.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -14,7 +14,8 @@ usage() {
 Usage: ./scripts/tenants/reconcile-peskids-n8n-wacrm-env.sh [--dry-run]
 
 Ensures n8n_peskids has:
-  PESKIDS_APP_URL, WACRM_PESKIDS_WEBHOOK_SECRET, PESKIDS_DIGEST_CRON_SECRET
+  PESKIDS_APP_URL, WACRM_PESKIDS_WEBHOOK_SECRET, PESKIDS_DIGEST_CRON_SECRET,
+  PESKIDS_FOLLOWUP_CRON_SECRET
 Values from Doppler; recreates container preserving existing compose settings.
 EOF
 }
@@ -46,6 +47,7 @@ PESKIDS_APP_URL="$(get_secret PESKIDS_APP_URL)"
 [[ -n "$PESKIDS_APP_URL" ]] || PESKIDS_APP_URL="https://peskids.op-sly.com"
 WACRM_SECRET="$(get_secret WACRM_PESKIDS_WEBHOOK_SECRET)"
 DIGEST_SECRET="$(get_secret PESKIDS_DIGEST_CRON_SECRET)"
+FOLLOWUP_SECRET="$(get_secret PESKIDS_FOLLOWUP_CRON_SECRET)"
 
 if [[ -z "$WACRM_SECRET" ]]; then
   echo "FAIL: WACRM_PESKIDS_WEBHOOK_SECRET missing in Doppler" >&2
@@ -63,17 +65,29 @@ if [[ -z "$DIGEST_SECRET" ]]; then
   fi
 fi
 
+if [[ -z "$FOLLOWUP_SECRET" ]]; then
+  FOLLOWUP_SECRET="$(openssl rand -hex 24)"
+  if [[ "$DRY_RUN" == true ]]; then
+    echo "plan set PESKIDS_FOLLOWUP_CRON_SECRET (generated)"
+  else
+    doppler secrets set "PESKIDS_FOLLOWUP_CRON_SECRET=${FOLLOWUP_SECRET}" \
+      --project "$DOPPLER_PROJECT" --config "$DOPPLER_CONFIG" >/dev/null
+    echo "set  PESKIDS_FOLLOWUP_CRON_SECRET (generated)"
+  fi
+fi
+
 # Build env file from running container + new keys
 ENV_FILE="$(mktemp)"
 trap 'rm -f "$ENV_FILE"' EXIT
 
 docker inspect "$CONTAINER" --format '{{range .Config.Env}}{{println .}}{{end}}' \
-  | grep -vE '^(PESKIDS_APP_URL|WACRM_PESKIDS_WEBHOOK_SECRET|PESKIDS_DIGEST_CRON_SECRET)=' >"$ENV_FILE" || true
+  | grep -vE '^(PESKIDS_APP_URL|WACRM_PESKIDS_WEBHOOK_SECRET|PESKIDS_DIGEST_CRON_SECRET|PESKIDS_FOLLOWUP_CRON_SECRET)=' >"$ENV_FILE" || true
 
 {
   echo "PESKIDS_APP_URL=${PESKIDS_APP_URL}"
   echo "WACRM_PESKIDS_WEBHOOK_SECRET=${WACRM_SECRET}"
   echo "PESKIDS_DIGEST_CRON_SECRET=${DIGEST_SECRET}"
+  echo "PESKIDS_FOLLOWUP_CRON_SECRET=${FOLLOWUP_SECRET}"
 } >>"$ENV_FILE"
 
 IMAGE="$(docker inspect "$CONTAINER" --format '{{.Config.Image}}')"
@@ -92,11 +106,11 @@ for (const [k,v] of Object.entries(o)) console.log(k+'='+v);
 ")
 
 if [[ "$DRY_RUN" == true ]]; then
-  echo "DRY RUN: would recreate $CONTAINER with wacrm+digest env"
+  echo "DRY RUN: would recreate $CONTAINER with wacrm+digest+followup env"
   exit 0
 fi
 
-echo "Recreating $CONTAINER with wacrm env..."
+echo "Recreating $CONTAINER with wacrm+digest+followup env..."
 docker stop "$CONTAINER" >/dev/null
 docker rm "$CONTAINER" >/dev/null
 
@@ -107,4 +121,4 @@ docker run -d --name "$CONTAINER" --restart unless-stopped \
   "${LABEL_ARGS[@]}" \
   "$IMAGE"
 
-echo "ok   $CONTAINER recreated (wacrm + digest env)"
+echo "ok   $CONTAINER recreated (wacrm + digest + followup env)"

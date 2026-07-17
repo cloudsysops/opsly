@@ -98,13 +98,17 @@ Schedule → Query Pending Followups (Supabase GET)
 **Supabase query:**
 ```
 GET /rest/v1/followups
-  ?tenant_slug=eq.peskids
+  ?tenant_id=eq.peskids
   &status=eq.pending
   &select=id,type,due_date,notes,contact_id,contact_type
   &order=due_date.asc
 ```
 
+**IF node (`Has Pending Followups?`):**
+- Use `{{ $input.all().length }} > 0` (item count). Do **not** use `Array.isArray($json)` — HTTP Request splits rows into items.
+
 **Digest logic (Code node):**
+- Start with `const list = $input.all().map((i) => i.json);`
 - Splits followups into three buckets: Vencidos (overdue), Hoy (due today), Próximos (future)
 - Discord embed colour is red when there are overdue items, blue otherwise
 - Digest text is capped at 3 900 chars in the Discord embed to stay within API limits
@@ -119,3 +123,29 @@ GET /rest/v1/followups
 **Notes:**
 - Both notification nodes have `continueOnFail: true`.
 - If the table does not yet exist, the HTTP Request node will return an error (caught by `continueOnFail`) and the IF node will receive an empty/error body — the workflow will take the `false` branch and stop silently.
+
+---
+
+## peskids-followup-24h
+
+**Trigger:** Schedule — every 1 hour
+
+**Node flow:**
+```
+Every 1 Hour → Execute Follow-ups (POST Peskids /api/admin/followups/execute)
+             → Check Result (ok === true)
+               true  → Has Follow-ups? (executed.length > 0)
+                         true  → Discord Notification
+                         false → No Follow-ups
+               false → No Follow-ups
+```
+
+**Auth:** `Authorization: Bearer` with `PESKIDS_FOLLOWUP_CRON_SECRET` (fallback `PESKIDS_DIGEST_CRON_SECRET`).
+
+**Does not call GoHighLevel.** Execution lives in Peskids app (`executeDueFollowups`) and syncs Twenty task status to DONE when a followup is completed.
+
+**Env vars required (n8n):**
+- `PESKIDS_APP_URL`
+- `PESKIDS_FOLLOWUP_CRON_SECRET` (or digest fallback)
+- `OPSLY_CRM_NOTIFY_WEBHOOK_URL`
+
