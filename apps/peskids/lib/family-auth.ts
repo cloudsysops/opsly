@@ -6,28 +6,9 @@ import {
   tenantSlugFromUserMetadata,
 } from '@/lib/runtime/tenant-identity';
 import { supabaseServer } from '@/lib/supabase';
+import { extractSupabaseAccessTokenFromCookies } from '@/lib/supabase-auth-cookie';
 
 const FAMILY_ROLES = new Set(['family', 'parent']);
-
-function extractAccessTokenFromCookies(
-  requestCookies: Array<{ name: string; value: string }>
-): string {
-  const authCookie = requestCookies.find(
-    (cookie) => cookie.name.startsWith('sb-') && cookie.name.endsWith('-auth-token')
-  );
-  if (!authCookie?.value) return '';
-
-  const raw = authCookie.value.trim();
-  const encoded = raw.startsWith('base64-') ? raw.slice('base64-'.length) : raw;
-
-  try {
-    const json = Buffer.from(encoded, 'base64').toString('utf8');
-    const parsed = JSON.parse(json) as { access_token?: string };
-    return typeof parsed.access_token === 'string' ? parsed.access_token.trim() : '';
-  } catch {
-    return '';
-  }
-}
 
 async function fetchSupabaseUser(token: string): Promise<User | null> {
   const supabaseUrl = process.env.SUPABASE_URL?.trim();
@@ -103,7 +84,7 @@ export async function validateFamilyRequest(
 ): Promise<{ ok: true; user: User } | { ok: false; status: number; error: string }> {
   const authHeader = req.headers.get('authorization') || '';
   const bearer = authHeader.toLowerCase().startsWith('bearer ') ? authHeader.slice(7).trim() : '';
-  const cookieAccessToken = extractAccessTokenFromCookies(req.cookies.getAll());
+  const cookieAccessToken = extractSupabaseAccessTokenFromCookies(req.cookies.getAll());
   const token = bearer || cookieAccessToken;
 
   if (!token) {
@@ -133,7 +114,7 @@ export async function validateFamilySession(): Promise<
   { ok: true; user: User } | { ok: false; status: number; error: string }
 > {
   const cookieStore = await cookies();
-  const authHeaderToken = extractAccessTokenFromCookies(
+  const authHeaderToken = extractSupabaseAccessTokenFromCookies(
     cookieStore.getAll().map((cookie) => ({ name: cookie.name, value: cookie.value }))
   );
 

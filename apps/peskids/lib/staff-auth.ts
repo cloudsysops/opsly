@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import type { User } from '@supabase/supabase-js';
 import { isStaffUser } from './staff-user';
+import { extractSupabaseAccessTokenFromCookies } from './supabase-auth-cookie';
 
 export { isStaffUser } from './staff-user';
 
@@ -19,7 +20,7 @@ export async function validateStaffRequest(req: NextRequest): Promise<StaffAuthR
     return { ok: true, method: 'secret' };
   }
 
-  const cookieAccessToken = extractAccessTokenFromCookies(req.cookies.getAll());
+  const cookieAccessToken = extractSupabaseAccessTokenFromCookies(req.cookies.getAll());
 
   if (!bearer && !cookieAccessToken) {
     return { ok: false, status: 401, error: 'Unauthorized' };
@@ -60,7 +61,7 @@ export async function validateStaffSession(): Promise<StaffAuthResult> {
     return { ok: false, status: 503, error: 'Staff auth not configured' };
   }
 
-  const cookieAccessToken = extractAccessTokenFromCookies(
+  const cookieAccessToken = extractSupabaseAccessTokenFromCookies(
     cookieStore.getAll().map((cookie) => ({ name: cookie.name, value: cookie.value }))
   );
 
@@ -81,26 +82,6 @@ export async function validateStaffSession(): Promise<StaffAuthResult> {
     return { ok: true, method: 'supabase', user };
   } catch {
     return { ok: false, status: 401, error: 'Unauthorized' };
-  }
-}
-
-function extractAccessTokenFromCookies(
-  requestCookies: Array<{ name: string; value: string }>
-): string {
-  const authCookie = requestCookies.find(
-    (cookie) => cookie.name.startsWith('sb-') && cookie.name.endsWith('-auth-token')
-  );
-  if (!authCookie?.value) return '';
-
-  const raw = authCookie.value.trim();
-  const encoded = raw.startsWith('base64-') ? raw.slice('base64-'.length) : raw;
-
-  try {
-    const json = Buffer.from(encoded, 'base64').toString('utf8');
-    const parsed = JSON.parse(json) as { access_token?: string };
-    return typeof parsed.access_token === 'string' ? parsed.access_token.trim() : '';
-  } catch {
-    return '';
   }
 }
 

@@ -31,6 +31,22 @@ function makeRequest(token: string) {
   } as never
 }
 
+function makeChunkedCookieRequest(token: string) {
+  const encoded = `base64-${Buffer.from(JSON.stringify({ access_token: token })).toString('base64')}`
+  const splitAt = Math.floor(encoded.length / 2)
+  return {
+    headers: new Headers(),
+    cookies: {
+      getAll() {
+        return [
+          { name: 'sb-project-auth-token.0', value: encoded.slice(0, splitAt) },
+          { name: 'sb-project-auth-token.1', value: encoded.slice(splitAt) },
+        ]
+      },
+    },
+  } as never
+}
+
 describe('family auth', () => {
   beforeEach(() => {
     fromMock.mockReset()
@@ -54,6 +70,26 @@ describe('family auth', () => {
 
     expect(result.ok).toBe(true)
     expect(fromMock).not.toHaveBeenCalled()
+  })
+
+  it('accepts a family session from chunked Supabase SSR cookies', async () => {
+    mockUser({
+      id: 'u1',
+      email: 'family@example.com',
+      user_metadata: { role: 'family', tenant_slug: 'peskids' },
+      app_metadata: {},
+    })
+
+    const { validateFamilyRequest } = await import('../family-auth')
+    const result = await validateFamilyRequest(makeChunkedCookieRequest('chunked-family-token'))
+
+    expect(result.ok).toBe(true)
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://project.supabase.co/auth/v1/user',
+      expect.objectContaining({
+        headers: expect.objectContaining({ authorization: 'Bearer chunked-family-token' }),
+      })
+    )
   })
 
   it('accepts a parent account mapped to a student email', async () => {
