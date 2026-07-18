@@ -7,6 +7,9 @@ import { getApiBaseUrl } from '@/lib/api';
 import { createClient } from '@/lib/supabase/client';
 import { portalTenantInsightsUrl } from '@/lib/portal-api-paths';
 import type { PortalInsightItem } from '@/types';
+import { Button } from '@/components/ui/button';
+import { Announcer } from '@/components/ui/accessibility';
+import { Loader2 } from 'lucide-react';
 
 type Props = {
   tenantSlug: string;
@@ -22,7 +25,8 @@ function insightLabel(type: string): string {
 
 export function InsightDashboard({ tenantSlug, insights: initial }: Props): ReactElement {
   const [insights, setInsights] = useState(initial);
-  const [busyId, setBusyId] = useState<string | null>(null);
+  const [busyAction, setBusyAction] = useState<string | null>(null);
+  const [announcement, setAnnouncement] = useState('');
 
   const chartData = useMemo(() => {
     return insights.map((i) => ({
@@ -34,8 +38,29 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
 
   const patch = useCallback(
     async (insightId: string, action: 'read' | 'dismiss' | 'action') => {
-      setBusyId(insightId);
+      setBusyAction(`${insightId}-${action}`);
       try {
+        const hasDemoSession =
+          typeof window !== 'undefined' &&
+          document.cookie.includes('opsly_portal_demo=1') &&
+          (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+        if (hasDemoSession) {
+          await new Promise((resolve) => setTimeout(resolve, 800));
+          if (action === 'dismiss' || action === 'action') {
+            setInsights((prev) => prev.filter((x) => x.id !== insightId));
+            setAnnouncement(
+              action === 'dismiss' ? 'Insight descartado correctamente' : 'Acción tomada en el insight'
+            );
+          } else {
+            setInsights((prev) =>
+              prev.map((x) => (x.id === insightId ? { ...x, read_at: new Date().toISOString() } : x))
+            );
+            setAnnouncement('Insight marcado como leído correctamente');
+          }
+          return;
+        }
+
         const supabase = createClient();
         const {
           data: { session },
@@ -56,17 +81,24 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
           }),
         });
         if (!res.ok) {
+          setAnnouncement('Error al procesar la solicitud');
           return;
         }
         if (action === 'dismiss' || action === 'action') {
           setInsights((prev) => prev.filter((x) => x.id !== insightId));
+          setAnnouncement(
+            action === 'dismiss' ? 'Insight descartado correctamente' : 'Acción tomada en el insight'
+          );
         } else {
           setInsights((prev) =>
             prev.map((x) => (x.id === insightId ? { ...x, read_at: new Date().toISOString() } : x))
           );
+          setAnnouncement('Insight marcado como leído correctamente');
         }
+      } catch {
+        setAnnouncement('Error al conectar con el servidor');
       } finally {
-        setBusyId(null);
+        setBusyAction(null);
       }
     },
     [tenantSlug]
@@ -75,6 +107,7 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
   if (insights.length === 0) {
     return (
       <section className="space-y-3 rounded-lg border border-ops-border bg-ops-surface p-4">
+        <Announcer message={announcement} />
         <h2 className="text-sm font-semibold text-ops-gray">Inteligencia predictiva</h2>
         <p className="text-sm text-neutral-400">
           Aún no hay insights. Tras registrar uso de IA, el job diario puede generar alertas de
@@ -86,6 +119,7 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
 
   return (
     <section className="space-y-4 rounded-lg border border-ops-border bg-ops-surface p-4">
+      <Announcer message={announcement} />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-semibold text-ops-gray">Inteligencia predictiva</h2>
         <p className="text-xs text-neutral-500">
@@ -125,22 +159,38 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <button
+                <Button
                   type="button"
-                  className="rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
-                  disabled={busyId === insight.id || insight.read_at !== null}
+                  variant="default"
+                  size="sm"
+                  disabled={busyAction?.startsWith(insight.id) || insight.read_at !== null}
                   onClick={() => void patch(insight.id, 'read')}
                 >
-                  Marcar leído
-                </button>
-                <button
+                  {busyAction === `${insight.id}-read` ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin" aria-hidden />
+                      Marcando leído…
+                    </>
+                  ) : (
+                    'Marcar leído'
+                  )}
+                </Button>
+                <Button
                   type="button"
-                  className="rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
-                  disabled={busyId === insight.id}
+                  variant="default"
+                  size="sm"
+                  disabled={busyAction?.startsWith(insight.id)}
                   onClick={() => void patch(insight.id, 'dismiss')}
                 >
-                  Descartar
-                </button>
+                  {busyAction === `${insight.id}-dismiss` ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin" aria-hidden />
+                      Descartando…
+                    </>
+                  ) : (
+                    'Descartar'
+                  )}
+                </Button>
               </div>
             </div>
           </li>
