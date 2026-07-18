@@ -27,7 +27,7 @@ export async function fetchPlatformLeadsForDashboard(
 > {
   const { data, error } = await platformFrom('peskids_leads')
     .select(
-      'id, full_name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_source, created_at'
+      'id, full_name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_source, created_at, twenty_person_id, twenty_opportunity_id'
     )
     .eq('tenant_slug', tenantSlug)
     .gte('created_at', periodStartISO)

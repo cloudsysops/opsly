@@ -4,6 +4,7 @@ const getRecentMessagesMock = vi.fn()
 const getWacrmMessagesMock = vi.fn()
 const supabaseServerMock = vi.fn()
 const fetchDashboardLeadsMock = vi.fn()
+const fetchDashboardIntegrationStatusMock = vi.fn()
 
 vi.mock('../supabase', () => ({
   getRecentMessages: getRecentMessagesMock,
@@ -19,6 +20,10 @@ const fetchOperationsMetricsMock = vi.fn()
 
 vi.mock('../services/operations-metrics.service', () => ({
   fetchOperationsMetrics: fetchOperationsMetricsMock,
+}))
+
+vi.mock('../services/integration-status.service', () => ({
+  fetchDashboardIntegrationStatus: fetchDashboardIntegrationStatusMock,
 }))
 
 function createFilterQuery(result: { data: unknown; error: unknown }) {
@@ -54,6 +59,41 @@ describe('fetchDashboardData', () => {
     supabaseServerMock.mockReset()
     fetchDashboardLeadsMock.mockReset()
     fetchOperationsMetricsMock.mockReset()
+    fetchDashboardIntegrationStatusMock.mockReset()
+    fetchDashboardIntegrationStatusMock.mockResolvedValue({
+      twenty: {
+        label: 'Twenty',
+        enabled: true,
+        status: 'ok',
+        detail: 'healthz 200',
+        url: 'https://crm-peskids.op-sly.com',
+        checked_at: '2026-07-18T12:00:00.000Z',
+      },
+      ghl: {
+        label: 'GHL',
+        enabled: false,
+        status: 'disabled',
+        detail: 'Legacy off (PESKIDS_GHL_ENABLED=false)',
+        url: null,
+        checked_at: '2026-07-18T12:00:00.000Z',
+      },
+      n8n: {
+        label: 'n8n',
+        enabled: true,
+        status: 'ok',
+        detail: 'healthz 200',
+        url: 'https://n8n-peskids.op-sly.com',
+        checked_at: '2026-07-18T12:00:00.000Z',
+      },
+      wacrm: {
+        label: 'WACRM',
+        enabled: true,
+        status: 'ok',
+        detail: 'healthz 200',
+        url: 'https://wa-peskids.op-sly.com',
+        checked_at: '2026-07-18T12:00:00.000Z',
+      },
+    })
     fetchOperationsMetricsMock.mockResolvedValue({
       classes_today: 2,
       enrollments_today: 1,
@@ -67,9 +107,9 @@ describe('fetchDashboardData', () => {
   it('returns dashboard aggregates using the expanded feedback schema', async () => {
     const studentsQuery = createOrderQuery({
       data: [
-        { id: 'student-1', grade: '3A', status: 'active' },
-        { id: 'student-2', grade: '3A', status: 'active' },
-        { id: 'student-3', grade: '4B', status: 'active' },
+        { id: 'student-1', grade: '3A', status: 'active', parent_email: 'maria@example.com' },
+        { id: 'student-2', grade: '3A', status: 'active', parent_email: 'maria@example.com' },
+        { id: 'student-3', grade: '4B', status: 'active', parent_email: 'jose@example.com' },
       ],
       error: null,
     })
@@ -96,8 +136,32 @@ describe('fetchDashboardData', () => {
     })
     const followupsQuery = createOrderQuery({
       data: [
-        { id: 'followup-1', status: 'pending', due_date: '2026-05-26T10:00:00Z' },
-        { id: 'followup-2', status: 'done', due_date: '2026-05-25T10:00:00Z' },
+        {
+          id: 'followup-1',
+          contact_id: 'lead-1',
+          contact_type: 'lead',
+          status: 'pending',
+          due_date: '2026-07-18T10:00:00Z',
+          type: 'call',
+          notes: 'Llamar',
+          created_at: '2026-07-18T09:00:00Z',
+        },
+        {
+          id: 'followup-2',
+          contact_id: 'lead-2',
+          contact_type: 'lead',
+          status: 'completed',
+          due_date: '2026-07-17T10:00:00Z',
+          type: 'email',
+          notes: 'Ya respondió',
+          created_at: '2026-07-17T11:00:00Z',
+        },
+      ],
+      error: null,
+    })
+    const trialClassesQuery = createOrderQuery({
+      data: [
+        { lead_id: 'lead-2', status: 'scheduled', created_at: '2026-07-18T13:00:00Z' },
       ],
       error: null,
     })
@@ -107,6 +171,7 @@ describe('fetchDashboardData', () => {
         if (table === 'students') return studentsQuery
         if (table === 'feedback') return feedbackQuery
         if (table === 'followups') return followupsQuery
+        if (table === 'trial_classes') return trialClassesQuery
         throw new Error(`Unexpected table ${table}`)
       }),
     })
@@ -128,6 +193,9 @@ describe('fetchDashboardData', () => {
           referred_by_code: null,
           referral_discount_cents: 0,
           referral_redemptions: 0,
+          created_at: '2026-07-18T08:00:00Z',
+          twenty_person_id: 'person-1',
+          twenty_opportunity_id: 'opp-1',
         },
         {
           id: 'lead-2',
@@ -144,6 +212,9 @@ describe('fetchDashboardData', () => {
           referred_by_code: null,
           referral_discount_cents: 0,
           referral_redemptions: 0,
+          created_at: '2026-07-17T08:00:00Z',
+          twenty_person_id: null,
+          twenty_opportunity_id: null,
         },
       ],
     })
@@ -175,10 +246,17 @@ describe('fetchDashboardData', () => {
       other: 0,
     })
     expect(result.active_students_count).toBe(3)
+    expect(result.families_active_count).toBe(2)
     expect(result.students_by_grade).toEqual({ '3A': 2, '4B': 1 })
     expect(result.recent_feedback).toHaveLength(1)
     expect(result.private_family_notes).toHaveLength(1)
     expect(result.pending_followups_count).toBe(1)
+    expect(result.new_leads[0].twenty_sync_status).toBe('synced')
+    expect(result.integration_status.twenty.status).toBe('ok')
+    expect(result.sales_analytics.trials_scheduled_count).toBe(1)
+    expect(result.sales_analytics.lead_status_counts.new).toBe(1)
+    expect(result.sales_analytics.lead_status_counts.enrolled).toBe(1)
+    expect(result.sales_analytics.source_breakdown.find((item) => item.key === 'instagram')?.count).toBe(1)
     expect(result.recent_messages).toEqual([
       { id: 'message-1', sender_contact: 'web:support:maria@example.com' },
     ])
@@ -207,6 +285,7 @@ describe('fetchDashboardData', () => {
       error: null,
     })
     const followupsQuery = createOrderQuery({ data: [], error: null })
+    const trialClassesQuery = createOrderQuery({ data: [], error: null })
 
     let feedbackCalls = 0
     supabaseServerMock.mockReturnValue({
@@ -217,6 +296,7 @@ describe('fetchDashboardData', () => {
           return feedbackCalls === 1 ? expandedFeedbackQuery : legacyFeedbackQuery
         }
         if (table === 'followups') return followupsQuery
+        if (table === 'trial_classes') return trialClassesQuery
         throw new Error(`Unexpected table ${table}`)
       }),
     })

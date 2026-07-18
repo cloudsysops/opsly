@@ -21,12 +21,21 @@ export async function GET(req: NextRequest) {
     const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids';
 
     const data = await fetchDashboardData(tenantId, range);
-    return NextResponse.json(data);
+    return NextResponse.json(data, {
+      headers: {
+        'Cache-Control': 'no-store, private, max-age=0, must-revalidate',
+      },
+    });
   } catch (error) {
     console.error('[dashboard] error:', error, { request_id: requestId });
     return NextResponse.json(
       { ok: false, error: 'Failed to fetch dashboard data', request_id: requestId },
-      { status: 500 }
+      {
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store, private, max-age=0, must-revalidate',
+        },
+      }
     );
   }
 }
