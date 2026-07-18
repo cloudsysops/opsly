@@ -1,7 +1,8 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState, type ComponentType } from 'react'
-import { CalendarClock, Gift, Loader2, MessageSquare, Star } from 'lucide-react'
+import Link from 'next/link'
+import { CalendarClock, Gift, Loader2, MessageSquare } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { SubmissionsDashboard } from '@/components/dashboards/submissions-dashboard'
 import { FeedbackComposer } from '@/components/feedback/feedback-composer'
@@ -10,6 +11,7 @@ import { MascotPathWidget } from '@/components/progress/mascot-path-widget'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { buildWhatsAppUrl } from '@/lib/contact-channels'
 import { createClient } from '@/lib/supabase-browser'
 
 interface FormSubmissionSummary {
@@ -19,6 +21,30 @@ interface FormSubmissionSummary {
   submittedAt: string
   status: 'completed' | 'pending' | 'reviewed'
   studentName?: string
+}
+
+interface FamilyEnrollment {
+  status: 'reserved' | 'confirmed' | 'cancelled' | 'no_show' | 'attended'
+  class_title?: string
+  starts_at?: string
+  ends_at?: string
+}
+
+const ENROLLMENT_STATUS_LABEL: Record<FamilyEnrollment['status'], string> = {
+  reserved: 'Reservada',
+  confirmed: 'Confirmada',
+  cancelled: 'Cancelada',
+  no_show: 'No asistió',
+  attended: 'Asistió',
+}
+
+function formatClassStart(startsAt: string): string {
+  const date = new Date(startsAt)
+  const isToday = date.toDateString() === new Date().toDateString()
+  const time = date.toLocaleTimeString('es-CO', { hour: 'numeric', minute: '2-digit' })
+  if (isToday) return `Hoy · ${time}`
+  const day = date.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' })
+  return `${day} · ${time}`
 }
 
 interface FamilyFeedbackNote {
@@ -44,6 +70,28 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
   const [familyEmail, setFamilyEmail] = useState<string | null>(null)
   const [familyUserId, setFamilyUserId] = useState<string | null>(null)
   const [familyNotes, setFamilyNotes] = useState<FamilyFeedbackNote[]>([])
+  const [nextClass, setNextClass] = useState<FamilyEnrollment | null>(null)
+
+  const fetchNextClass = useCallback(async (): Promise<void> => {
+    try {
+      const response = await fetch('/api/portal/enrollments', { credentials: 'include' })
+      if (!response.ok) throw new Error('Failed to fetch enrollments')
+      const data = (await response.json()) as { enrollments?: FamilyEnrollment[] }
+      const now = Date.now()
+      const upcoming = (data.enrollments ?? [])
+        .filter(
+          (enrollment) =>
+            enrollment.starts_at &&
+            new Date(enrollment.starts_at).getTime() > now &&
+            enrollment.status !== 'cancelled'
+        )
+        .sort((a, b) => new Date(a.starts_at!).getTime() - new Date(b.starts_at!).getTime())
+      setNextClass(upcoming[0] ?? null)
+    } catch (err) {
+      console.error(err)
+      setNextClass(null)
+    }
+  }, [])
 
   const fetchSubmissions = useCallback(async (): Promise<void> => {
     try {
@@ -99,6 +147,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
         setAuthChecked(true)
         void fetchSubmissions()
         void fetchFamilyNotes()
+        void fetchNextClass()
       } catch (err) {
         console.error(err)
         setError('No se pudo validar la sesión de familia.')
@@ -106,7 +155,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
         setLoading(false)
       }
     })()
-  }, [fetchFamilyNotes, fetchSubmissions, router])
+  }, [fetchFamilyNotes, fetchNextClass, fetchSubmissions, router])
 
   const handleViewSubmission = (submissionId: string): void => {
     router.push(`/familias/submissions/${submissionId}`)
@@ -184,32 +233,43 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
                     <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-pk-mutedText">
                       Próxima clase
                     </p>
-                    <p className="mt-1 text-2xl font-bold tracking-tight text-pk-ink">Hoy · 3:30 pm</p>
+                    <p className="mt-1 text-2xl font-bold tracking-tight text-pk-ink">
+                      {nextClass?.starts_at ? formatClassStart(nextClass.starts_at) : 'Sin próxima clase'}
+                    </p>
+                    {nextClass?.class_title && (
+                      <p className="mt-1 text-sm text-pk-sub">{nextClass.class_title}</p>
+                    )}
                   </div>
-                  <span className="rounded-full bg-pk-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-pk-primary">
-                    Confirmada
-                  </span>
+                  {nextClass ? (
+                    <span className="rounded-full bg-pk-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-pk-primary">
+                      {ENROLLMENT_STATUS_LABEL[nextClass.status]}
+                    </span>
+                  ) : null}
                 </div>
+                {!nextClass && (
+                  <p className="mt-2 text-sm text-pk-sub">
+                    Todavía no tienes una clase próxima agendada.
+                  </p>
+                )}
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                  <MiniFamilyAction icon={CalendarClock} label="Reservar" />
-                  <MiniFamilyAction icon={MessageSquare} label="Mensaje" />
-                  <MiniFamilyAction icon={Gift} label="Referidos" />
-                </div>
-
-                <div className="mt-5 rounded-2xl bg-pk-snow p-4">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-pk-mutedText">
-                    Estado de hoy
-                  </p>
-                  <div className="mt-3 flex items-center justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold text-pk-ink">Mateo · Delfines</p>
-                      <p className="text-xs text-pk-sub">Trabajo de respiración y brazada</p>
-                    </div>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-pk-primary shadow-sm">
-                      <Star className="h-5 w-5" aria-hidden />
-                    </div>
-                  </div>
+                  <MiniFamilyAction icon={CalendarClock} label="Reservar" href="/familias/reservas" />
+                  <MiniFamilyAction
+                    icon={MessageSquare}
+                    label="Mensaje"
+                    href={buildWhatsAppUrl({
+                      prefill: 'Hola Peskids, tengo una pregunta sobre la clase de mi hijo/a.',
+                    })}
+                    external
+                  />
+                  <MiniFamilyAction
+                    icon={Gift}
+                    label="Referidos"
+                    href={buildWhatsAppUrl({
+                      prefill: 'Hola Peskids, quiero referir a otra familia. ¿Cómo funciona?',
+                    })}
+                    external
+                  />
                 </div>
               </div>
 
@@ -408,14 +468,23 @@ function FamilyMetricCard({
 function MiniFamilyAction({
   icon: Icon,
   label,
+  href,
+  external = false,
 }: {
   icon: ComponentType<{ className?: string; 'aria-hidden'?: boolean }>
   label: string
+  href: string
+  external?: boolean
 }): React.ReactElement {
   return (
-    <div className="rounded-2xl border border-pk-border bg-pk-snow px-3 py-3 text-center">
+    <Link
+      href={href}
+      target={external ? '_blank' : undefined}
+      rel={external ? 'noopener noreferrer' : undefined}
+      className="block rounded-2xl border border-pk-border bg-pk-snow px-3 py-3 text-center transition hover:border-pk-primary/40 hover:bg-pk-primary/5"
+    >
       <Icon className="mx-auto h-4 w-4 text-pk-primary" aria-hidden />
       <p className="mt-2 text-[11px] font-semibold text-pk-ink">{label}</p>
-    </div>
+    </Link>
   )
 }
