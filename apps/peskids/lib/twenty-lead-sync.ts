@@ -16,7 +16,7 @@ export interface TwentyLeadSyncResult {
   twentyOpportunityId: string;
 }
 
-function splitParentName(fullName: string): { firstName: string; lastName: string } {
+export function splitParentName(fullName: string): { firstName: string; lastName: string } {
   const trimmed = fullName.trim();
   if (!trimmed) {
     return { firstName: 'Lead', lastName: 'Peskids' };
@@ -70,9 +70,7 @@ function normalizeTwentyPhone(
   return undefined;
 }
 
-export async function sendLeadToTwenty(
-  data: LeadData
-): Promise<TwentyLeadSyncResult | null> {
+export async function sendLeadToTwenty(data: LeadData): Promise<TwentyLeadSyncResult | null> {
   try {
     const env = resolveTwentyEnv();
     if (!env.enabled) {

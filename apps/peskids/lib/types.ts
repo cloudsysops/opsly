@@ -333,6 +333,8 @@ export type Database = {
           completed_at: string | null;
           created_at: string;
           updated_at: string;
+          twenty_person_id: string | null;
+          twenty_synced_at: string | null;
         };
         Insert: {
           id?: string;
@@ -350,6 +352,8 @@ export type Database = {
           completed_at?: string | null;
           created_at?: string;
           updated_at?: string;
+          twenty_person_id?: string | null;
+          twenty_synced_at?: string | null;
         };
         Update: Partial<Database['peskids']['Tables']['form_submissions']['Insert']>;
         Relationships: [
