@@ -22,10 +22,19 @@ function makeRequest(headers: Record<string, string> = {}, cookies: Record<strin
         return value ? { value } : undefined;
       },
       getAll() {
-        return [];
+        return Object.entries(cookies).map(([name, value]) => ({ name, value }));
       },
     },
   } as never;
+}
+
+function chunkedAuthCookies(accessToken: string): Record<string, string> {
+  const encoded = `base64-${Buffer.from(JSON.stringify({ access_token: accessToken })).toString('base64')}`;
+  const splitAt = Math.floor(encoded.length / 2);
+  return {
+    'sb-project-auth-token.0': encoded.slice(0, splitAt),
+    'sb-project-auth-token.1': encoded.slice(splitAt),
+  };
 }
 
 describe('validateStaffRequest', () => {
@@ -73,6 +82,31 @@ describe('validateStaffRequest', () => {
           authorization: 'Bearer user-jwt',
           apikey: 'service-role',
         }),
+      })
+    );
+  });
+
+  it('accepts a staff session from chunked Supabase SSR cookies', async () => {
+    vi.mocked(global.fetch).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        id: 'u1',
+        email: 'admin@peskids.com',
+        user_metadata: { role: 'admin', tenant_slug: 'peskids' },
+        app_metadata: {},
+      }),
+    } as never);
+    const { validateStaffRequest } = await import('../staff-auth');
+
+    const result = await validateStaffRequest(
+      makeRequest({}, chunkedAuthCookies('chunked-user-jwt'))
+    );
+
+    expect(result.ok).toBe(true);
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://project.supabase.co/auth/v1/user',
+      expect.objectContaining({
+        headers: expect.objectContaining({ authorization: 'Bearer chunked-user-jwt' }),
       })
     );
   });
