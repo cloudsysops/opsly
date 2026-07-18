@@ -8,3 +8,13 @@ export const createSubmissionSchema = z.object({
 });
 
 export type CreateSubmissionInput = z.infer<typeof createSubmissionSchema>;
+
+export const gradeSubmissionSchema = z.object({
+  score: z.coerce
+    .number()
+    .min(0, 'La calificación no puede ser negativa')
+    .max(100, 'La calificación máxima es 100'),
+  feedback: z.string().trim().min(1).max(2000).optional(),
+});
+
+export type GradeSubmissionInput = z.infer<typeof gradeSubmissionSchema>;
