@@ -1,36 +1,38 @@
-'use client'
+'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, Loader2, MessageSquare, Users } from 'lucide-react'
-import { useParams, useRouter } from 'next/navigation'
-import { FeedbackComposer } from '@/components/feedback/feedback-composer'
-import { SubmissionChatPanel } from '@/components/chat/submission-chat-panel'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { createClient } from '@/lib/supabase-browser'
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ArrowLeft, Loader2, MessageSquare, Users } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { FeedbackComposer } from '@/components/feedback/feedback-composer';
+import { SubmissionChatPanel } from '@/components/chat/submission-chat-panel';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { createClient } from '@/lib/supabase-browser';
 
 interface FormSubmissionSummary {
-  formId: string
-  formTitle: string
-  submissionId: string
-  submittedAt: string
-  status: 'completed' | 'pending' | 'reviewed'
-  studentName?: string
+  formId: string;
+  formTitle: string;
+  submissionId: string;
+  submittedAt: string;
+  status: 'completed' | 'pending' | 'reviewed';
+  studentName?: string;
+  grade?: number | null;
+  feedback?: string | null;
 }
 
 interface FamilyFeedbackNote {
-  id: string
-  child_name: string
-  suggestion: string | null
-  body: string | null
-  author_type: 'parent' | 'teacher' | 'staff'
-  visibility: 'public' | 'private'
-  audience: 'family' | 'teacher' | 'admin'
-  rating: number | null
-  status: string
-  created_at: string
-  parent_email: string | null
+  id: string;
+  child_name: string;
+  suggestion: string | null;
+  body: string | null;
+  author_type: 'parent' | 'teacher' | 'staff';
+  visibility: 'public' | 'private';
+  audience: 'family' | 'teacher' | 'admin';
+  rating: number | null;
+  status: string;
+  created_at: string;
+  parent_email: string | null;
 }
 
 function formatDateTime(dateString: string): string {
@@ -40,88 +42,89 @@ function formatDateTime(dateString: string): string {
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    })
+    });
   } catch {
-    return dateString
+    return dateString;
   }
 }
 
 export default function FamilySubmissionDetailPage(): React.ReactElement {
-  const router = useRouter()
-  const params = useParams<{ submissionId: string }>()
-  const submissionId = Array.isArray(params.submissionId) ? params.submissionId[0] : params.submissionId
+  const router = useRouter();
+  const params = useParams<{ submissionId: string }>();
+  const submissionId = Array.isArray(params.submissionId)
+    ? params.submissionId[0]
+    : params.submissionId;
 
-  const [submissions, setSubmissions] = useState<FormSubmissionSummary[]>([])
-  const [notes, setNotes] = useState<FamilyFeedbackNote[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [authChecked, setAuthChecked] = useState(false)
-  const [familyEmail, setFamilyEmail] = useState<string | null>(null)
-  const [familyUserId, setFamilyUserId] = useState<string | null>(null)
+  const [submissions, setSubmissions] = useState<FormSubmissionSummary[]>([]);
+  const [notes, setNotes] = useState<FamilyFeedbackNote[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [authChecked, setAuthChecked] = useState(false);
+  const [familyEmail, setFamilyEmail] = useState<string | null>(null);
+  const [familyUserId, setFamilyUserId] = useState<string | null>(null);
 
   const fetchData = useCallback(async (): Promise<void> => {
     try {
       const [submissionsResponse, notesResponse] = await Promise.all([
         fetch('/api/submissions', { credentials: 'include' }),
         fetch('/api/families/feedback', { credentials: 'include' }),
-      ])
+      ]);
 
-      if (!submissionsResponse.ok) throw new Error('Failed to fetch submissions')
-      const submissionsData = await submissionsResponse.json()
-      setSubmissions(submissionsData.submissions || [])
+      if (!submissionsResponse.ok) throw new Error('Failed to fetch submissions');
+      const submissionsData = await submissionsResponse.json();
+      setSubmissions(submissionsData.submissions || []);
 
       if (notesResponse.ok) {
-        const notesData = (await notesResponse.json()) as { feedback?: FamilyFeedbackNote[] }
-        setNotes(notesData.feedback || [])
+        const notesData = (await notesResponse.json()) as { feedback?: FamilyFeedbackNote[] };
+        setNotes(notesData.feedback || []);
       } else {
-        setNotes([])
+        setNotes([]);
       }
-      setError('')
+      setError('');
     } catch (err) {
-      setError('No se pudo cargar la ficha de la entrega. Intenta más tarde.')
-      console.error(err)
+      setError('No se pudo cargar la ficha de la entrega. Intenta más tarde.');
+      console.error(err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    const supabase = createClient()
+    const supabase = createClient();
     void (async () => {
       try {
-        const { data } = await supabase.auth.getSession()
+        const { data } = await supabase.auth.getSession();
         if (!data.session?.user) {
-          router.replace(`/familias/login?next=${encodeURIComponent(`/familias/submissions/${submissionId}`)}`)
-          return
+          router.replace(
+            `/familias/login?next=${encodeURIComponent(`/familias/submissions/${submissionId}`)}`
+          );
+          return;
         }
-        const user = data.session.user
-        setFamilyEmail(user.email ?? null)
-        setFamilyUserId(user.id)
-        setAuthChecked(true)
-        void fetchData()
+        const user = data.session.user;
+        setFamilyEmail(user.email ?? null);
+        setFamilyUserId(user.id);
+        setAuthChecked(true);
+        void fetchData();
       } catch (err) {
-        console.error(err)
-        setError('No se pudo validar la sesión de familia.')
-        setAuthChecked(true)
-        setLoading(false)
+        console.error(err);
+        setError('No se pudo validar la sesión de familia.');
+        setAuthChecked(true);
+        setLoading(false);
       }
-    })()
-  }, [fetchData, router, submissionId])
+    })();
+  }, [fetchData, router, submissionId]);
 
   const selectedSubmission = useMemo(
     () => submissions.find((submission) => submission.submissionId === submissionId) ?? null,
     [submissionId, submissions]
-  )
+  );
 
-  const publicNotes = useMemo(
-    () => notes.filter((note) => note.visibility !== 'private'),
-    [notes]
-  )
+  const publicNotes = useMemo(() => notes.filter((note) => note.visibility !== 'private'), [notes]);
 
   const privateNotes = useMemo(
     () => notes.filter((note) => note.visibility === 'private'),
     [notes]
-  )
+  );
 
   if (loading || !authChecked) {
     return (
@@ -129,7 +132,7 @@ export default function FamilySubmissionDetailPage(): React.ReactElement {
         <Loader2 className="h-10 w-10 animate-spin text-pk-primary" aria-hidden />
         <p className="text-sm text-pk-sub">Cargando ficha de la entrega…</p>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -142,7 +145,7 @@ export default function FamilySubmissionDetailPage(): React.ReactElement {
           </Button>
         </div>
       </div>
-    )
+    );
   }
 
   if (!selectedSubmission) {
@@ -158,7 +161,7 @@ export default function FamilySubmissionDetailPage(): React.ReactElement {
           </Button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -179,7 +182,11 @@ export default function FamilySubmissionDetailPage(): React.ReactElement {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Button type="button" variant="secondary" onClick={() => router.push('/familias/submissions')}>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => router.push('/familias/submissions')}
+              >
                 <ArrowLeft className="h-4 w-4" aria-hidden />
                 <span className="ml-1">Volver</span>
               </Button>
@@ -191,7 +198,16 @@ export default function FamilySubmissionDetailPage(): React.ReactElement {
           <Card>
             <CardContent className="pt-6">
               <p className="text-sm text-pk-mutedText">Estado</p>
-              <Badge tone={selectedSubmission.status === 'reviewed' ? 'green' : selectedSubmission.status === 'pending' ? 'amber' : 'teal'} className="mt-2">
+              <Badge
+                tone={
+                  selectedSubmission.status === 'reviewed'
+                    ? 'green'
+                    : selectedSubmission.status === 'pending'
+                      ? 'amber'
+                      : 'teal'
+                }
+                className="mt-2"
+              >
                 {selectedSubmission.status}
               </Badge>
             </CardContent>
@@ -199,13 +215,17 @@ export default function FamilySubmissionDetailPage(): React.ReactElement {
           <Card>
             <CardContent className="pt-6">
               <p className="text-sm text-pk-mutedText">Formulario</p>
-              <p className="mt-1 text-xl font-semibold text-pk-ink">{selectedSubmission.formTitle}</p>
+              <p className="mt-1 text-xl font-semibold text-pk-ink">
+                {selectedSubmission.formTitle}
+              </p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-6">
               <p className="text-sm text-pk-mutedText">Envío</p>
-              <p className="mt-1 text-xl font-semibold text-pk-ink">{formatDateTime(selectedSubmission.submittedAt)}</p>
+              <p className="mt-1 text-xl font-semibold text-pk-ink">
+                {formatDateTime(selectedSubmission.submittedAt)}
+              </p>
             </CardContent>
           </Card>
           <Card>
@@ -221,14 +241,18 @@ export default function FamilySubmissionDetailPage(): React.ReactElement {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Users className="h-4 w-4 text-pk-primary" aria-hidden />
-                Progreso
+                Calificación
               </CardTitle>
-              <CardDescription>Referencia del avance del grupo para esta entrega.</CardDescription>
+              <CardDescription>Nota registrada por el equipo docente.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-sm text-pk-sub">
-                El detalle del progreso lo revisa el equipo docente y se actualiza con el seguimiento de clase.
-              </p>
+              {typeof selectedSubmission.grade === 'number' ? (
+                <p className="text-2xl font-semibold text-pk-ink">{selectedSubmission.grade}/100</p>
+              ) : (
+                <p className="text-sm text-pk-sub">
+                  Todavía no hay calificación para esta entrega.
+                </p>
+              )}
             </CardContent>
           </Card>
 
@@ -243,9 +267,10 @@ export default function FamilySubmissionDetailPage(): React.ReactElement {
             <CardContent>
               <div className="rounded-2xl border border-pk-border bg-pk-muted/25 p-4">
                 <p className="text-sm text-pk-sub">
-                  {selectedSubmission.studentName
-                    ? `Esta entrega pertenece a ${selectedSubmission.studentName}.`
-                    : 'Esta entrega pertenece a tu peque.'}
+                  {selectedSubmission.feedback ||
+                    (selectedSubmission.studentName
+                      ? `Todavía no hay observaciones para la entrega de ${selectedSubmission.studentName}.`
+                      : 'Todavía no hay observaciones para esta entrega.')}
                 </p>
               </div>
             </CardContent>
@@ -275,7 +300,10 @@ export default function FamilySubmissionDetailPage(): React.ReactElement {
                   <div className="mt-4 space-y-3">
                     {publicNotes.length > 0 ? (
                       publicNotes.map((note) => (
-                        <div key={note.id} className="rounded-2xl border border-pk-border bg-white p-4">
+                        <div
+                          key={note.id}
+                          className="rounded-2xl border border-pk-border bg-white p-4"
+                        >
                           <div className="flex items-start justify-between gap-2">
                             <div>
                               <p className="text-sm font-semibold text-pk-ink">{note.child_name}</p>
@@ -306,14 +334,19 @@ export default function FamilySubmissionDetailPage(): React.ReactElement {
                       <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/70">
                         Notas del equipo
                       </p>
-                      <p className="text-sm text-white/75">{privateNotes.length} nota(s) privadas</p>
+                      <p className="text-sm text-white/75">
+                        {privateNotes.length} nota(s) privadas
+                      </p>
                     </div>
                     <Badge tone="violet">Privado</Badge>
                   </div>
                   <div className="mt-4 space-y-3">
                     {privateNotes.length > 0 ? (
                       privateNotes.map((note) => (
-                        <div key={note.id} className="rounded-2xl border border-white/10 bg-white/10 p-4">
+                        <div
+                          key={note.id}
+                          className="rounded-2xl border border-white/10 bg-white/10 p-4"
+                        >
                           <div className="flex items-start justify-between gap-2">
                             <div>
                               <p className="text-sm font-semibold text-white">{note.child_name}</p>
@@ -367,5 +400,5 @@ export default function FamilySubmissionDetailPage(): React.ReactElement {
         />
       </div>
     </div>
-  )
+  );
 }

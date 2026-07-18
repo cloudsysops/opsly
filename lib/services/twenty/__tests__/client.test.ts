@@ -163,4 +163,34 @@ describe('TwentyClient', () => {
       'Twenty API returned task without id'
     );
   });
+
+  it('finds an existing person by email', async () => {
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+      expect(init?.method ?? 'GET').toBe('GET');
+      expect(url).toContain('/rest/people');
+      expect(url).toContain(encodeURIComponent('ana@example.com'));
+      return new Response(JSON.stringify({ data: { people: [{ id: 'person-1' }] } }), {
+        status: 200,
+      });
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const client = new TwentyClient('secret', 'https://crm.example.com');
+    const person = await client.findPersonByEmail('ana@example.com');
+
+    expect(person?.id).toBe('person-1');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns null when no person matches the email', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify({ data: { people: [] } }), { status: 200 }))
+    );
+
+    const client = new TwentyClient('secret', 'https://crm.example.com');
+    const person = await client.findPersonByEmail('nobody@example.com');
+
+    expect(person).toBeNull();
+  });
 });

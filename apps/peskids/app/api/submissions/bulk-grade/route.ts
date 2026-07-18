@@ -1,7 +1,11 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { validateStaffRequest } from '@/lib/staff-auth';
+import { supabaseServer } from '@/lib/supabase';
+import type { Database } from '@/lib/types';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { fireSubmissionEvent } from '@/lib/n8n-submission-events';
+
+type FormSubmissionUpdate = Database['peskids']['Tables']['form_submissions']['Update'];
 
 interface BulkActionRequest {
   submissionIds: string[];
@@ -35,18 +39,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !serviceRole) {
-      return errorJson(requestId, 'Server configuration error', 500);
-    }
-
-    const { createClient } = await import('@supabase/supabase-js');
-    const supabase = createClient(supabaseUrl, serviceRole);
+    const supabase = supabaseServer().schema('peskids');
     const tenantSlug = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids';
 
-    const updatePayload: Record<string, unknown> = { updated_at: new Date().toISOString() };
+    const updatePayload: FormSubmissionUpdate = { updated_at: new Date().toISOString() };
 
     switch (body.action) {
       case 'mark_reviewed':
@@ -56,7 +52,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         updatePayload.feedback = body.feedback || 'Se enviaron observaciones generales.';
         break;
       case 'reassign':
-        updatePayload.status = 'pending';
+        // 'submitted' is the only pre-graded status in the CHECK constraint
+        // (peskids.form_submissions.status IN ('started','submitted','reviewed','graded'));
+        // 'pending' would violate it.
+        updatePayload.status = 'submitted';
         updatePayload.score = null;
         updatePayload.feedback = null;
         break;
@@ -100,9 +99,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       body.action,
       (updated ?? []).map((u: { submission_id: string }) => ({
         submission_id: u.submission_id,
-        feedback: body.action === 'send_observations'
-          ? (updatePayload.feedback as string | undefined)
-          : undefined,
+        feedback:
+          body.action === 'send_observations'
+            ? (updatePayload.feedback as string | undefined)
+            : undefined,
       })),
       auth.user?.id
     );

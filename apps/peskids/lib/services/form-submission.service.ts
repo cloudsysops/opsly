@@ -1,14 +1,68 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabaseServer } from '@/lib/supabase';
 
-function getSupabaseClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
+function peskidsClient() {
+  return supabaseServer().schema('peskids');
+}
 
-  if (!url || !serviceRole) {
-    return null;
-  }
+interface FormSubmissionFormData {
+  student_name?: string;
+  child_name?: string;
+  name?: string;
+  parent_email?: string;
+  family_email?: string;
+  email?: string;
+  guardian_email?: string;
+  grade_interested?: string;
+  gradeInterested?: string;
+  grade_or_level?: string;
+  level?: string;
+}
 
-  return createClient(url, serviceRole);
+interface ParentSubmissionRow {
+  submission_id: string;
+  completed_at: string | null;
+  status: 'started' | 'submitted' | 'reviewed' | 'graded';
+  score: number | null;
+  feedback: string | null;
+  form_data: FormSubmissionFormData | null;
+  form_id: string;
+  form: { title: string } | null;
+}
+
+interface TeacherSubmissionRow {
+  submission_id: string;
+  user_id: string | null;
+  form_data: FormSubmissionFormData | null;
+  score: number | null;
+  feedback: string | null;
+  status: 'started' | 'submitted' | 'reviewed' | 'graded';
+  completed_at: string | null;
+  form: { title: string } | null;
+}
+
+interface FormAnalyticsFormRow {
+  id: string;
+  title: string;
+}
+
+interface FormAnalyticsSubmissionRow {
+  form_id: string;
+  status: 'started' | 'submitted' | 'reviewed' | 'graded';
+  started_at: string | null;
+  completed_at: string | null;
+}
+
+function extractParentEmail(formData: FormSubmissionFormData | null): string {
+  return (
+    formData?.parent_email ||
+    formData?.family_email ||
+    formData?.email ||
+    formData?.guardian_email ||
+    ''
+  )
+    .toString()
+    .trim()
+    .toLowerCase();
 }
 
 export interface FormSubmissionSummary {
@@ -18,6 +72,8 @@ export interface FormSubmissionSummary {
   submittedAt: string;
   status: 'completed' | 'pending' | 'reviewed';
   studentName?: string;
+  grade?: number | null;
+  feedback?: string | null;
 }
 
 export interface StudentSubmission {
@@ -27,9 +83,9 @@ export interface StudentSubmission {
   formTitle: string;
   submittedAt: string;
   parentEmail?: string | null;
-  grade?: number;
+  grade?: number | null;
   maxGrade: number;
-  feedback?: string;
+  feedback?: string | null;
   status: 'reviewed' | 'pending' | 'needs_revision';
   studentLevel?: string;
   progressPercent?: number;
@@ -42,23 +98,21 @@ export class FormSubmissionService {
     const normalizedParentEmail = parentEmail?.trim().toLowerCase() ?? '';
     if (!normalizedParentEmail) return [];
 
-    const supabase = getSupabaseClient();
-    if (!supabase) return [];
-
-    const query = supabase
+    const query = peskidsClient()
       .from('form_submissions')
       .select(
         `
         submission_id,
         completed_at,
         status,
+        score,
+        feedback,
         form_data,
         form_id,
         form:form_id(title)
       `
       )
       .eq('tenant_slug', this.tenantSlug)
-      .eq('parent_email', normalizedParentEmail)
       .not('user_id', 'is', null)
       .order('completed_at', { ascending: false });
 
@@ -69,26 +123,33 @@ export class FormSubmissionService {
       return [];
     }
 
-    return (data || []).map((row: any) => ({
-      formId: row.form_id,
-      formTitle: row.form?.title || 'Untitled Form',
-      submissionId: row.submission_id,
-      submittedAt: row.completed_at || new Date().toISOString(),
-      status:
-        row.status === 'graded' ? 'reviewed' : row.status === 'submitted' ? 'completed' : 'pending',
-      studentName:
-        row.form_data?.student_name ||
-        row.form_data?.child_name ||
-        row.form_data?.name ||
-        undefined,
-    }));
+    const rows = (data || []) as unknown as ParentSubmissionRow[];
+
+    return rows
+      .filter((row) => extractParentEmail(row.form_data) === normalizedParentEmail)
+      .map((row) => ({
+        formId: row.form_id,
+        formTitle: row.form?.title || 'Untitled Form',
+        submissionId: row.submission_id,
+        submittedAt: row.completed_at || new Date().toISOString(),
+        status:
+          row.status === 'graded'
+            ? 'reviewed'
+            : row.status === 'submitted'
+              ? 'completed'
+              : 'pending',
+        studentName:
+          row.form_data?.student_name ||
+          row.form_data?.child_name ||
+          row.form_data?.name ||
+          undefined,
+        grade: row.score,
+        feedback: row.feedback,
+      }));
   }
 
   async getTeacherSubmissions(): Promise<StudentSubmission[]> {
-    const supabase = getSupabaseClient();
-    if (!supabase) return [];
-
-    const { data, error } = await supabase
+    const { data, error } = await peskidsClient()
       .from('form_submissions')
       .select(
         `
@@ -110,18 +171,15 @@ export class FormSubmissionService {
       return [];
     }
 
-    return (data || []).map((row: any) => ({
+    const rows = (data || []) as unknown as TeacherSubmissionRow[];
+
+    return rows.map((row) => ({
       submissionId: row.submission_id,
       studentName: row.form_data?.student_name || 'Unknown Student',
-      studentId: row.user_id || `std-${Math.random().toString(36).substr(2, 9)}`,
+      studentId: row.user_id || row.submission_id,
       formTitle: row.form?.title || 'Untitled Form',
       submittedAt: row.completed_at || new Date().toISOString(),
-      parentEmail:
-        row.form_data?.parent_email ||
-        row.form_data?.family_email ||
-        row.form_data?.email ||
-        row.form_data?.guardian_email ||
-        null,
+      parentEmail: extractParentEmail(row.form_data) || null,
       grade: row.score,
       maxGrade: 100,
       feedback: row.feedback,
@@ -158,10 +216,8 @@ export class FormSubmissionService {
       errorCount: number;
     }[]
   > {
-    const supabase = getSupabaseClient();
-    if (!supabase) return [];
-
-    const { data: forms, error: formsError } = await supabase
+    const client = peskidsClient();
+    const { data: forms, error: formsError } = await client
       .from('forms')
       .select('id, title')
       .eq('tenant_slug', this.tenantSlug);
@@ -171,7 +227,7 @@ export class FormSubmissionService {
       return [];
     }
 
-    const { data: submissions, error: submissionsError } = await supabase
+    const { data: submissions, error: submissionsError } = await client
       .from('form_submissions')
       .select('form_id, status, started_at, completed_at')
       .eq('tenant_slug', this.tenantSlug);
@@ -181,18 +237,21 @@ export class FormSubmissionService {
       return [];
     }
 
-    return (forms || []).map((form: any) => {
-      const formSubmissions = (submissions || []).filter((s: any) => s.form_id === form.id);
+    const formRows = (forms || []) as FormAnalyticsFormRow[];
+    const submissionRows = (submissions || []) as FormAnalyticsSubmissionRow[];
+
+    return formRows.map((form) => {
+      const formSubmissions = submissionRows.filter((s) => s.form_id === form.id);
       const completed = formSubmissions.filter(
-        (s: any) => s.status === 'submitted' || s.status === 'graded'
+        (s) => s.status === 'submitted' || s.status === 'graded'
       );
-      const started = formSubmissions.filter((s: any) => s.status === 'started');
+      const started = formSubmissions.filter((s) => s.status === 'started');
 
       const completionTimes = completed
-        .filter((s: any) => s.started_at && s.completed_at)
-        .map((s: any) => {
-          const start = new Date(s.started_at).getTime();
-          const end = new Date(s.completed_at).getTime();
+        .filter((s) => s.started_at && s.completed_at)
+        .map((s) => {
+          const start = new Date(s.started_at as string).getTime();
+          const end = new Date(s.completed_at as string).getTime();
           return (end - start) / 1000 / 60; // minutes
         });
 
