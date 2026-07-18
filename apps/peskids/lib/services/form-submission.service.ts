@@ -22,6 +22,8 @@ interface ParentSubmissionRow {
   submission_id: string;
   completed_at: string | null;
   status: 'started' | 'submitted' | 'reviewed' | 'graded';
+  score: number | null;
+  feedback: string | null;
   form_data: FormSubmissionFormData | null;
   form_id: string;
   form: { title: string } | null;
@@ -70,6 +72,8 @@ export interface FormSubmissionSummary {
   submittedAt: string;
   status: 'completed' | 'pending' | 'reviewed';
   studentName?: string;
+  grade?: number | null;
+  feedback?: string | null;
 }
 
 export interface StudentSubmission {
@@ -101,6 +105,8 @@ export class FormSubmissionService {
         submission_id,
         completed_at,
         status,
+        score,
+        feedback,
         form_data,
         form_id,
         form:form_id(title)
@@ -137,6 +143,8 @@ export class FormSubmissionService {
           row.form_data?.child_name ||
           row.form_data?.name ||
           undefined,
+        grade: row.score,
+        feedback: row.feedback,
       }));
   }
 

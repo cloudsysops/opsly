@@ -41,7 +41,9 @@ describe('FormSubmissionService', () => {
         {
           submission_id: 's1',
           completed_at: '2026-05-01T12:00:00Z',
-          status: 'submitted',
+          status: 'graded',
+          score: 90,
+          feedback: 'Muy bien',
           form_id: 'f1',
           form: { title: 'Natación 1' },
           form_data: {
@@ -61,6 +63,8 @@ describe('FormSubmissionService', () => {
     expect(submissions).toHaveLength(1);
     expect(submissions[0]?.submissionId).toBe('s1');
     expect(submissions[0]?.studentName).toBe('Mateo');
+    expect(submissions[0]?.grade).toBe(90);
+    expect(submissions[0]?.feedback).toBe('Muy bien');
   });
 
   it('returns no submissions when the family email is missing', async () => {
