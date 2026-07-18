@@ -164,7 +164,15 @@ export type Database = {
           updated_at?: string;
         };
         Update: Partial<Database['peskids']['Tables']['classes']['Insert']>;
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'classes_pool_id_fkey';
+            columns: ['pool_id'];
+            isOneToOne: false;
+            referencedRelation: 'pools';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       class_enrollments: {
         Row: {
@@ -198,7 +206,15 @@ export type Database = {
           wompi_transaction_id?: string | null;
         };
         Update: Partial<Database['peskids']['Tables']['class_enrollments']['Insert']>;
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'class_enrollments_class_id_fkey';
+            columns: ['class_id'];
+            isOneToOne: false;
+            referencedRelation: 'classes';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       payments: {
         Row: {
@@ -236,9 +252,133 @@ export type Database = {
         Update: Partial<Database['peskids']['Tables']['payments']['Insert']>;
         Relationships: [];
       };
+      forms: {
+        Row: {
+          id: string;
+          form_id: string;
+          tenant_slug: string;
+          title: string;
+          description: string | null;
+          status: 'active' | 'archived';
+          settings: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          form_id: string;
+          tenant_slug?: string;
+          title: string;
+          description?: string | null;
+          status?: 'active' | 'archived';
+          settings?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['forms']['Insert']>;
+        Relationships: [];
+      };
+      form_fields: {
+        Row: {
+          id: string;
+          form_id: string;
+          field_id: string;
+          field_type: string;
+          label: string;
+          placeholder: string | null;
+          required: boolean;
+          options: Json | null;
+          validation: Json | null;
+          order_index: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          form_id: string;
+          field_id: string;
+          field_type: string;
+          label: string;
+          placeholder?: string | null;
+          required?: boolean;
+          options?: Json | null;
+          validation?: Json | null;
+          order_index?: number;
+          created_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['form_fields']['Insert']>;
+        Relationships: [
+          {
+            foreignKeyName: 'form_fields_form_id_fkey';
+            columns: ['form_id'];
+            isOneToOne: false;
+            referencedRelation: 'forms';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      form_submissions: {
+        Row: {
+          id: string;
+          submission_id: string;
+          tenant_slug: string;
+          form_id: string;
+          user_id: string | null;
+          form_data: Json;
+          status: 'started' | 'submitted' | 'reviewed' | 'graded';
+          score: number | null;
+          feedback: string | null;
+          ip_address: string | null;
+          user_agent: string | null;
+          started_at: string;
+          completed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          submission_id: string;
+          tenant_slug?: string;
+          form_id: string;
+          user_id?: string | null;
+          form_data?: Json;
+          status?: 'started' | 'submitted' | 'reviewed' | 'graded';
+          score?: number | null;
+          feedback?: string | null;
+          ip_address?: string | null;
+          user_agent?: string | null;
+          started_at?: string;
+          completed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['form_submissions']['Insert']>;
+        Relationships: [
+          {
+            foreignKeyName: 'form_submissions_form_id_fkey';
+            columns: ['form_id'];
+            isOneToOne: false;
+            referencedRelation: 'forms';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      log_audit_event: {
+        Args: {
+          p_tenant_slug: string;
+          p_actor_id: string;
+          p_action: string;
+          p_resource_type: string;
+          p_resource_id: string;
+          p_metadata?: Json;
+          p_ip_address?: string;
+          p_user_agent?: string;
+        };
+        Returns: string;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };
@@ -458,7 +598,14 @@ export type Database = {
           external_id: string | null;
           direction: 'inbound' | 'draft' | 'outbound';
           parent_message_id: string | null;
-          status: 'pending' | 'pending_approval' | 'approved' | 'sent' | 'failed' | 'skipped' | null;
+          status:
+            | 'pending'
+            | 'pending_approval'
+            | 'approved'
+            | 'sent'
+            | 'failed'
+            | 'skipped'
+            | null;
           ai_generated: boolean;
           created_at: string;
           updated_at: string;
@@ -472,7 +619,14 @@ export type Database = {
           external_id?: string | null;
           direction?: 'inbound' | 'draft' | 'outbound';
           parent_message_id?: string | null;
-          status?: 'pending' | 'pending_approval' | 'approved' | 'sent' | 'failed' | 'skipped' | null;
+          status?:
+            | 'pending'
+            | 'pending_approval'
+            | 'approved'
+            | 'sent'
+            | 'failed'
+            | 'skipped'
+            | null;
           ai_generated?: boolean;
         };
         Update: Partial<Database['public']['Tables']['messages']['Insert']>;

@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { validateStaffRequest } from '@/lib/staff-auth';
+import { supabaseServer } from '@/lib/supabase';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 
 interface InputFormField {
@@ -24,15 +25,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       return errorJson(requestId, 'Form title is required', 400);
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !serviceRole) {
-      return errorJson(requestId, 'Server configuration error', 500);
-    }
-
-    const { createClient } = await import('@supabase/supabase-js');
-    const supabase = createClient(supabaseUrl, serviceRole);
+    const supabase = supabaseServer().schema('peskids');
     const tenantSlug = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids';
     const formId = crypto.randomUUID();
 
@@ -43,7 +36,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         tenant_slug: tenantSlug,
         title,
         description: description || '',
-        status: status || 'draft',
+        status: status || 'active',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
@@ -57,13 +50,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     if (fields && Array.isArray(fields) && fields.length > 0) {
       const fieldsData = fields.map((field: InputFormField, index: number) => ({
-        form_id: formId,
-        tenant_slug: tenantSlug,
+        form_id: form.id,
         field_id: crypto.randomUUID(),
         field_type: field.type || 'text',
         label: field.label || '',
         required: field.required || false,
-        order: index,
+        order_index: index,
         options: field.options || null,
         created_at: new Date().toISOString(),
       }));
@@ -93,7 +85,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       formId,
       title,
       description,
-      status,
+      status: form.status,
       createdAt: form.created_at,
     });
   } catch (error) {
