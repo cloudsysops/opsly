@@ -121,6 +121,9 @@ export function FamilyHomeClient(): React.ReactElement {
           <Link href="/familias/submissions">
             <Button variant="ghost">Ver progreso y entregas</Button>
           </Link>
+          <Link href="/familias/forms">
+            <Button variant="ghost">Completar formularios</Button>
+          </Link>
         </div>
       </section>
 
