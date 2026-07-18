@@ -18,8 +18,12 @@ import { AcademyOpsMap } from '@/components/admin/academy-ops-map'
 import { AdminShell } from '@/components/admin/admin-shell'
 import { FamiliesStudentsExpectation } from '@/components/admin/families-students-expectation'
 import { MessageInboxPanel } from '@/components/admin/message-inbox-panel'
+import { DashboardIntegrationStatus } from '@/components/admin/dashboard-integration-status'
+import { DashboardKpiStrip } from '@/components/admin/dashboard-kpi-strip'
+import { RecentLeadsPanel } from '@/components/admin/recent-leads-panel'
 import { StatCard } from '@/components/admin/stat-card'
 import { StudentsPanel } from '@/components/admin/students-panel'
+import { SalesAnalyticsPanel } from '@/components/admin/sales-analytics-panel'
 import { WacrmLeadInboxActions } from '@/components/admin/wacrm-lead-inbox-actions'
 import { normalizeLeadSourceLabel } from '@/lib/admin/lead-source-label'
 import { classModalityLabel, PESKIDS_CLASS_MODALITY_OPTIONS } from '@/lib/lead-modality'
@@ -560,6 +564,9 @@ export function DashboardView({
                 <Button size="sm" onClick={() => scrollToSection(nextAction.anchor)}>
                   Ir a la cola
                 </Button>
+                <Button size="sm" variant="secondary" onClick={() => scrollToSection('leads')}>
+                  Crear lead
+                </Button>
                 <Button size="sm" variant="ghost" onClick={() => void handleCopy(syncLabel)}>
                   <Copy className="h-4 w-4" aria-hidden />
                   <span className="ml-1">Copiar última sync</span>
@@ -632,6 +639,11 @@ export function DashboardView({
           </div>
         </div>
       </section>
+
+      <DashboardKpiStrip data={data} />
+      <RecentLeadsPanel data={data} />
+      <DashboardIntegrationStatus data={data} />
+      <SalesAnalyticsPanel data={data} />
 
       <FamiliesStudentsExpectation activeStudentsCount={data.active_students_count} />
       <StudentsPanel />

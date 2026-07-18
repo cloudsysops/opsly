@@ -527,6 +527,42 @@ export interface DashboardOperationsMetrics {
   pending_payments_cents: number;
 }
 
+export interface DashboardIntegrationStatusItem {
+  label: string;
+  enabled: boolean;
+  status: 'ok' | 'warning' | 'offline' | 'disabled';
+  detail: string;
+  url: string | null;
+  checked_at: string | null;
+}
+
+export interface DashboardIntegrationStatus {
+  twenty: DashboardIntegrationStatusItem;
+  ghl: DashboardIntegrationStatusItem;
+  n8n: DashboardIntegrationStatusItem;
+  wacrm: DashboardIntegrationStatusItem;
+}
+
+export interface DashboardSalesAnalytics {
+  leads_by_day: Array<{
+    date: string;
+    total: number;
+    synced_to_twenty: number;
+  }>;
+  lead_status_counts: Record<
+    'new' | 'contacted' | 'trial' | 'enrolled' | 'active' | 'renewal' | 'archived',
+    number
+  >;
+  source_breakdown: Array<{
+    key: 'instagram' | 'facebook' | 'website' | 'referral' | 'other';
+    label: string;
+    count: number;
+  }>;
+  avg_hours_to_first_followup: number | null;
+  avg_hours_to_trial: number | null;
+  trials_scheduled_count: number;
+}
+
 export interface DashboardData {
   new_leads_count: number;
   converted_leads_count: number;
@@ -554,11 +590,18 @@ export interface DashboardData {
       | 'referred_by_code'
       | 'referral_discount_cents'
       | 'referral_redemptions'
+      | 'created_at'
     > & {
       referral_source?: string | null;
+      twenty_person_id?: string | null;
+      twenty_opportunity_id?: string | null;
+      twenty_person_url?: string | null;
+      twenty_opportunity_url?: string | null;
+      twenty_sync_status?: 'synced' | 'warning' | 'pending';
     }
   >;
   active_students_count: number;
+  families_active_count: number;
   students_by_grade: Record<string, number>;
   recent_feedback: Pick<
     Database['public']['Tables']['feedback']['Row'],
@@ -626,6 +669,8 @@ export interface DashboardData {
     >
   >;
   operations: DashboardOperationsMetrics;
+  integration_status: DashboardIntegrationStatus;
+  sales_analytics: DashboardSalesAnalytics;
 }
 
 export interface PeskidsBiSnapshot {

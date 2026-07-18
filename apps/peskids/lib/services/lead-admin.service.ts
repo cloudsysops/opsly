@@ -56,6 +56,7 @@ function mapLegacyLeadRow(row: {
   referral_discount_cents: number;
   referral_redemptions: number;
   referral_source: string | null;
+  created_at?: string;
 }): DashboardLead {
   return {
     id: row.id,
@@ -72,6 +73,12 @@ function mapLegacyLeadRow(row: {
     referral_discount_cents: row.referral_discount_cents,
     referral_redemptions: row.referral_redemptions,
     referral_source: row.referral_source,
+    created_at: row.created_at ?? new Date().toISOString(),
+    twenty_person_id: null,
+    twenty_opportunity_id: null,
+    twenty_person_url: null,
+    twenty_opportunity_url: null,
+    twenty_sync_status: 'pending',
   };
 }
 
@@ -96,7 +103,7 @@ async function updatePlatformLead(
     .eq('id', leadId)
     .eq('tenant_slug', tenantSlug)
     .select(
-      'id, full_name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_source, created_at'
+      'id, full_name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_source, created_at, twenty_person_id, twenty_opportunity_id'
     )
     .maybeSingle();
 
@@ -158,7 +165,7 @@ async function fetchPlatformLead(
 ): Promise<DashboardLead | null> {
   const { data, error } = await platformFrom()
     .select(
-      'id, full_name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_source, created_at'
+      'id, full_name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_source, created_at, twenty_person_id, twenty_opportunity_id'
     )
     .eq('id', leadId)
     .eq('tenant_slug', tenantSlug)
@@ -185,7 +192,7 @@ async function fetchLegacyLead(
   const { data, error } = await supabaseServer()
     .from('leads')
     .select(
-      'id, name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source'
+      'id, name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source, created_at'
     )
     .eq('id', leadId)
     .eq('tenant_id', tenantSlug)

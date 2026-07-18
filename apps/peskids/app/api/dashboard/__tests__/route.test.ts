@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const validateStaffRequestMock = vi.fn()
 const fetchDashboardDataMock = vi.fn()
+const { GET } = await import('../route')
 
 vi.mock('@/lib/staff-auth', () => ({
   validateStaffRequest: validateStaffRequestMock,
@@ -24,7 +25,6 @@ describe('GET /api/dashboard', () => {
       status: 401,
       error: 'Unauthorized',
     })
-    const { GET } = await import('../route')
 
     const response = await GET({
       headers: new Headers({ 'x-request-id': 'req-123' }),
@@ -43,7 +43,6 @@ describe('GET /api/dashboard', () => {
   it('uses month range when requested and defaults tenant id to peskids', async () => {
     validateStaffRequestMock.mockResolvedValue({ ok: true, method: 'supabase', user: {} })
     fetchDashboardDataMock.mockResolvedValue({ ok: true, new_leads_count: 1 })
-    const { GET } = await import('../route')
 
     const response = await GET({
       headers: new Headers(),
@@ -52,13 +51,13 @@ describe('GET /api/dashboard', () => {
 
     expect(response.status).toBe(200)
     expect(fetchDashboardDataMock).toHaveBeenCalledWith('peskids', 'month')
+    expect(response.headers.get('cache-control')).toBe('no-store, private, max-age=0, must-revalidate')
     await expect(response.json()).resolves.toEqual({ ok: true, new_leads_count: 1 })
   })
 
   it('returns a request-scoped 500 payload when the service throws', async () => {
     validateStaffRequestMock.mockResolvedValue({ ok: true, method: 'secret' })
     fetchDashboardDataMock.mockRejectedValue(new Error('db down'))
-    const { GET } = await import('../route')
 
     const response = await GET({
       headers: new Headers({ 'x-request-id': 'req-500' }),
@@ -66,6 +65,7 @@ describe('GET /api/dashboard', () => {
     } as never)
 
     expect(response.status).toBe(500)
+    expect(response.headers.get('cache-control')).toBe('no-store, private, max-age=0, must-revalidate')
     await expect(response.json()).resolves.toEqual({
       ok: false,
       error: 'Failed to fetch dashboard data',
