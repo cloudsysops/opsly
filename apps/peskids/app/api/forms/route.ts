@@ -1,4 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
+import { validateFamilyRequest } from '@/lib/family-auth';
+import { listActiveFamilyForms } from '@/lib/services/family-form.service';
 import { validateStaffRequest } from '@/lib/staff-auth';
 import { supabaseServer } from '@/lib/supabase';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
@@ -8,6 +10,23 @@ interface InputFormField {
   label: string;
   required?: boolean;
   options?: { value: string; label: string }[];
+}
+
+export async function GET(req: NextRequest): Promise<NextResponse> {
+  const requestId = resolveRequestId(req);
+  const auth = await validateFamilyRequest(req);
+  if (!auth.ok) {
+    return errorJson(requestId, auth.error, auth.status);
+  }
+
+  try {
+    const tenantSlug = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids';
+    const forms = await listActiveFamilyForms(tenantSlug);
+    return successJson(requestId, { forms });
+  } catch (error) {
+    console.error('Form listing error:', error, { request_id: requestId });
+    return errorJson(requestId, 'Failed to load forms', 500);
+  }
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {

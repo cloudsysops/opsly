@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const validateStaffRequestMock = vi.fn();
+const validateFamilyRequestMock = vi.fn();
+const listActiveFamilyFormsMock = vi.fn();
 
 let lastFormsInsertPayload: Record<string, unknown> | undefined;
 let lastFieldsInsertPayload: unknown[] | undefined;
@@ -37,6 +39,14 @@ vi.mock('@/lib/staff-auth', () => ({
   validateStaffRequest: validateStaffRequestMock,
 }));
 
+vi.mock('@/lib/family-auth', () => ({
+  validateFamilyRequest: validateFamilyRequestMock,
+}));
+
+vi.mock('@/lib/services/family-form.service', () => ({
+  listActiveFamilyForms: listActiveFamilyFormsMock,
+}));
+
 vi.mock('@/lib/supabase', () => ({
   supabaseServer: supabaseServerMock,
 }));
@@ -60,6 +70,11 @@ describe('POST /api/forms', () => {
     lastFormsInsertPayload = undefined;
     lastFieldsInsertPayload = undefined;
     validateStaffRequestMock.mockResolvedValue({ ok: true, user: { id: 'staff-1' } });
+    validateFamilyRequestMock.mockReset().mockResolvedValue({
+      ok: true,
+      user: { id: 'family-1' },
+    });
+    listActiveFamilyFormsMock.mockReset().mockResolvedValue([]);
   });
 
   it('rejects unauthenticated requests', async () => {
@@ -102,5 +117,45 @@ describe('POST /api/forms', () => {
     const field = (lastFieldsInsertPayload as Record<string, unknown>[])[0];
     expect(field.order_index).toBe(0);
     expect(field.order).toBeUndefined();
+  });
+});
+
+describe('GET /api/forms', () => {
+  beforeEach(() => {
+    validateFamilyRequestMock.mockReset().mockResolvedValue({
+      ok: true,
+      user: { id: 'family-1' },
+    });
+    listActiveFamilyFormsMock.mockReset().mockResolvedValue([]);
+  });
+
+  it('rejects unauthenticated family requests', async () => {
+    validateFamilyRequestMock.mockResolvedValue({
+      ok: false,
+      status: 401,
+      error: 'Unauthorized',
+    });
+    const { GET } = await import('../route');
+
+    const response = await GET(buildRequest({}));
+
+    expect(response.status).toBe(401);
+    expect(listActiveFamilyFormsMock).not.toHaveBeenCalled();
+  });
+
+  it('returns active forms available to the family', async () => {
+    listActiveFamilyFormsMock.mockResolvedValue([
+      { id: 'public-form-1', title: 'Diagnóstico inicial' },
+    ]);
+    const { GET } = await import('../route');
+
+    const response = await GET(buildRequest({}));
+    const payload = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(listActiveFamilyFormsMock).toHaveBeenCalledWith('peskids');
+    expect(payload.forms).toEqual([
+      { id: 'public-form-1', title: 'Diagnóstico inicial' },
+    ]);
   });
 });
