@@ -19,9 +19,9 @@ interface StudentSubmission {
   formTitle: string;
   submittedAt: string;
   parentEmail?: string | null;
-  grade?: number;
+  grade?: number | null;
   maxGrade: number;
-  feedback?: string;
+  feedback?: string | null;
   status: 'reviewed' | 'pending' | 'needs_revision';
   studentLevel?: string;
   progressPercent?: number;
@@ -110,7 +110,9 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
 
   useEffect(() => {
     if (!selectedSubmission) return;
-    setScoreInput(selectedSubmission.grade !== undefined ? String(selectedSubmission.grade) : '');
+    setScoreInput(
+      typeof selectedSubmission.grade === 'number' ? String(selectedSubmission.grade) : ''
+    );
     setFeedbackInput(selectedSubmission.feedback ?? '');
   }, [selectedSubmission]);
 
@@ -306,7 +308,7 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
             <CardContent className="pt-6">
               <p className="text-sm text-pk-mutedText">Calificación</p>
               <p className="mt-1 text-2xl font-semibold text-pk-ink">
-                {selectedSubmission.grade !== undefined
+                {typeof selectedSubmission.grade === 'number'
                   ? `${selectedSubmission.grade}/${selectedSubmission.maxGrade}`
                   : '—'}
               </p>

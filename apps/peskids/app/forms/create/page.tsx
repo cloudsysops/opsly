@@ -13,51 +13,47 @@ export default function CreateFormPage(): React.ReactElement {
   const [error, setError] = useState('');
   const [createdId, setCreatedId] = useState<string | null>(null);
 
-  const handleSave = useCallback(
-    async (form: Form): Promise<void> => {
-      setSaving(true);
-      setError('');
+  const handleSave = useCallback(async (form: Form): Promise<void> => {
+    setSaving(true);
+    setError('');
 
-      try {
-        const fieldsForApi = form.fields.map((f) => ({
-          type: f.type,
-          label: f.label,
-          required: f.required,
-          options: f.options,
-        }));
+    try {
+      const fieldsForApi = form.fields.map((f) => ({
+        type: f.type,
+        label: f.label,
+        required: f.required,
+        options: f.options,
+      }));
 
-        const response = await fetch('/api/forms', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({
-            title: form.title,
-            description: form.description || '',
-            fields: fieldsForApi,
-            status: 'draft',
-          }),
-        });
+      const response = await fetch('/api/forms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          title: form.title,
+          description: form.description || '',
+          fields: fieldsForApi,
+        }),
+      });
 
-        const data = (await response.json()) as {
-          ok?: boolean;
-          error?: string;
-          formId?: string;
-        };
+      const data = (await response.json()) as {
+        ok?: boolean;
+        error?: string;
+        formId?: string;
+      };
 
-        if (!response.ok) {
-          throw new Error(data.error || 'Error al guardar la forma');
-        }
-
-        setCreatedId(data.formId ?? null);
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error al guardar la forma';
-        setError(message);
-      } finally {
-        setSaving(false);
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al guardar la forma');
       }
-    },
-    []
-  );
+
+      setCreatedId(data.formId ?? null);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error al guardar la forma';
+      setError(message);
+    } finally {
+      setSaving(false);
+    }
+  }, []);
 
   if (createdId) {
     return (
@@ -69,16 +65,10 @@ export default function CreateFormPage(): React.ReactElement {
             La forma se creó correctamente. Puedes compartir el enlace o seguir editándola.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Button
-              variant="primary"
-              onClick={() => router.push('/teacher/dashboard')}
-            >
+            <Button variant="primary" onClick={() => router.push('/teacher/dashboard')}>
               Ir al dashboard
             </Button>
-            <Button
-              variant="secondary"
-              onClick={() => setCreatedId(null)}
-            >
+            <Button variant="secondary" onClick={() => setCreatedId(null)}>
               Crear otra forma
             </Button>
           </div>
