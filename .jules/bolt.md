@@ -37,3 +37,7 @@
 ## 2026-06-26 - [Caching Admin Overview DB & Network Probes]
 **Learning:** The admin overview dashboardaggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
 **Action:** Always cache aggregated metrics and external probes in dashboard-facing API routes, and modularize parsing logic to maintain low cyclomatic complexity.
+
+## 2026-07-18 - [Supabase Query Builder Mocking in Parallel Operations]
+**Learning:** When mocking complex Supabase/Postgrest builder chains in Vitest tests, do not return a single shared builder instance. Since builder objects are mutable and retain state (e.g., filter/query flags), using the same shared instance across multiple parallel queries (e.g. inside `Promise.all`) leaks query conditions across tests and queries.
+**Action:** Always construct a nested mock client structure that instantiates a fresh chain/builder object on every distinct execution step to prevent test state leakage.
