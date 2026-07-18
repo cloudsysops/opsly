@@ -106,6 +106,24 @@ export class TwentyClient {
     return this.unwrapRecord(payload, 'createPerson', 'person');
   }
 
+  /**
+   * NEEDS LIVE VERIFICATION against a real Twenty instance — the filter
+   * query syntax (`filter=emails.primaryEmail[eq]:<value>`) matches Twenty's
+   * documented REST filtering convention but wasn't checked against a live
+   * API from here.
+   */
+  async findPersonByEmail(email: string): Promise<TwentyPersonRecord | null> {
+    const filter = `emails.primaryEmail[eq]:${encodeURIComponent(email)}`;
+    const payload = await this.request<{ people?: TwentyPersonRecord[] }>(
+      'GET',
+      `/people?filter=${filter}&limit=1`
+    );
+
+    const data = payload.data as { people?: TwentyPersonRecord[] } | undefined;
+    const people = data?.people ?? [];
+    return people[0] ?? null;
+  }
+
   async createOpportunity(
     body: TwentyCreateOpportunityRequest
   ): Promise<TwentyOpportunityRecord> {
