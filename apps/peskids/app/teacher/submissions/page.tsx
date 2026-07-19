@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Download, Loader2, MessageSquare, Sparkles, Users, ArrowRight } from 'lucide-react';
+import { RoleSwitcher } from '@/components/admin/role-switcher';
 import { TeacherDashboard } from '@/components/dashboards/teacher-dashboard';
 import { FeedbackComposer } from '@/components/feedback/feedback-composer';
 import { Button } from '@/components/ui/button';
@@ -273,6 +274,9 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
   return (
     <div className="min-h-screen bg-pk-bg p-4 sm:p-6">
       <div className="mx-auto max-w-7xl space-y-6">
+        <div className="flex items-center justify-end">
+          <RoleSwitcher />
+        </div>
         <section className="overflow-hidden rounded-3xl border border-pk-border bg-white p-5 shadow-card sm:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-2xl">

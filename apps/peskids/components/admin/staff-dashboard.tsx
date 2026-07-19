@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import type { DashboardData } from '@/lib/types'
 import { DashboardView } from '@/components/admin/dashboard-view'
+import { RoleSwitcher } from '@/components/admin/role-switcher'
 import { Button } from '@/components/ui/button'
 
 const POLL_MS = 5000
@@ -81,14 +82,19 @@ export function StaffDashboard({ surface }: StaffDashboardProps): React.ReactEle
   }
 
   return (
-    <DashboardView
-      data={data}
-      lastUpdated={lastUpdated}
-      range={range}
-      onRangeChange={setRange}
-      onRefresh={() => void fetchDashboard(true)}
-      refreshing={refreshing}
-      surface={surface}
-    />
+    <div className="min-h-screen bg-pk-bg">
+      <div className="flex items-center justify-end px-4 pt-3">
+        <RoleSwitcher />
+      </div>
+      <DashboardView
+        data={data}
+        lastUpdated={lastUpdated}
+        range={range}
+        onRangeChange={setRange}
+        onRefresh={() => void fetchDashboard(true)}
+        refreshing={refreshing}
+        surface={surface}
+      />
+    </div>
   )
 }
