@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-07-19T19:32:38.768Z",
-  "totalFiles": 814,
+  "lastIndexed": "2026-07-19T19:48:34.599Z",
+  "totalFiles": 815,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -625,6 +625,7 @@
     "reports/TONIGHT-MANUAL-TESTS.md",
     "reports/VALIDATION-PACKAGE-README.md",
     "reports/VALIDATION-REPORT-2026-04-12.md",
+    "reports/WHATSAPP-INTEGRATION-DELIVERY-REPORT.md",
     "research/research-1f448cd4-324e-44b8-994a-4e3e25dbcb64.md",
     "research/research-2fccc968-1f7e-4fd0-ba07-e3357de8f2cf.md",
     "research/research-778df65a-fe43-4962-9645-fc08dfa83ec4.md",

@@ -158,7 +158,7 @@ export class WhatsAppError extends Error {
 }
 
 export class WhatsAppSignatureError extends WhatsAppError {
-  constructor(provider: WhatsAppProvider) {
+  constructor(provider: WhatsAppProviderName) {
     super('SIGNATURE_INVALID', 'Webhook signature validation failed', provider);
     this.name = 'WhatsAppSignatureError';
   }
@@ -166,7 +166,7 @@ export class WhatsAppSignatureError extends WhatsAppError {
 
 export class WhatsAppProviderError extends WhatsAppError {
   constructor(
-    provider: WhatsAppProvider,
+    provider: WhatsAppProviderName,
     message: string,
     details?: Record<string, unknown>
   ) {

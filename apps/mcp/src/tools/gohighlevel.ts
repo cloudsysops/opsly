@@ -3,6 +3,16 @@ import { z } from 'zod';
 // import { getGoHighLevelService } from '@intcloudsysops/services/gohighlevel/index.js';
 import type { ToolDefinition, ToolContext } from '../types/index.js';
 
+const DEPRECATION_ERROR = {
+  success: false,
+  error: 'GoHighLevel integration has been removed. Please use WhatsApp integration instead.',
+};
+
+// Stub function to prevent TypeScript errors
+function getGoHighLevelService() {
+  throw new Error('GoHighLevel services are no longer available.');
+}
+
 // Input schemas
 const ListContactsInputSchema = z.object({
   tenantId: z.string().min(1),
@@ -72,161 +82,42 @@ export const listContactsTool: ToolDefinition<z.infer<typeof ListContactsInputSc
   description:
     'List GoHighLevel contacts/leads with optional filtering. Returns paginated list of contacts.',
   inputSchema: ListContactsInputSchema,
-  handler: async (input, _context?: ToolContext) => {
-    const service = getGoHighLevelService();
-    try {
-      const result = await service.getContacts(input.tenantId, {
-        status: input.status,
-        source: input.source,
-        search: input.search,
-        limit: input.limit,
-        offset: input.offset,
-      });
-      return {
-        success: true,
-        data: result.data,
-        total: result.total,
-        limit: result.limit,
-        offset: result.offset,
-      };
-    } catch (err) {
-      return {
-        success: false,
-        error: err instanceof Error ? err.message : String(err),
-      };
-    }
-  },
+  handler: async () => DEPRECATION_ERROR,
 };
 
 export const getContactTool: ToolDefinition<z.infer<typeof GetContactInputSchema>, unknown> = {
   name: 'gohighlevel:get_contact',
   description: 'Fetch a single GoHighLevel contact by ID with full details.',
   inputSchema: GetContactInputSchema,
-  handler: async (input, _context?: ToolContext) => {
-    const service = getGoHighLevelService();
-    try {
-      const contact = await service.getContact(input.tenantId, input.contactId);
-      return {
-        success: true,
-        data: contact,
-      };
-    } catch (err) {
-      return {
-        success: false,
-        error: err instanceof Error ? err.message : String(err),
-      };
-    }
-  },
+  handler: async () => DEPRECATION_ERROR,
 };
 
 export const createContactTool: ToolDefinition<z.infer<typeof CreateContactInputSchema>, unknown> = {
   name: 'gohighlevel:create_contact',
   description: 'Create a new contact in GoHighLevel CRM.',
   inputSchema: CreateContactInputSchema,
-  handler: async (input, _context?: ToolContext) => {
-    const service = getGoHighLevelService();
-    try {
-      const contact = await service.createContact(input.tenantId, {
-        name: input.name,
-        email: input.email,
-        phone: input.phone,
-        firstName: input.firstName,
-        lastName: input.lastName,
-        source: input.source,
-      });
-      return {
-        success: true,
-        data: contact,
-      };
-    } catch (err) {
-      return {
-        success: false,
-        error: err instanceof Error ? err.message : String(err),
-      };
-    }
-  },
+  handler: async () => DEPRECATION_ERROR,
 };
 
 export const updateContactTool: ToolDefinition<z.infer<typeof UpdateContactInputSchema>, unknown> = {
   name: 'gohighlevel:update_contact',
   description: 'Update an existing contact in GoHighLevel CRM.',
   inputSchema: UpdateContactInputSchema,
-  handler: async (input, _context?: ToolContext) => {
-    const service = getGoHighLevelService();
-    try {
-      const contact = await service.updateContact(input.tenantId, input.contactId, {
-        name: input.name,
-        email: input.email,
-        phone: input.phone,
-        firstName: input.firstName,
-        lastName: input.lastName,
-        status: input.status,
-      });
-      return {
-        success: true,
-        data: contact,
-      };
-    } catch (err) {
-      return {
-        success: false,
-        error: err instanceof Error ? err.message : String(err),
-      };
-    }
-  },
+  handler: async () => DEPRECATION_ERROR,
 };
 
 export const createTaskTool: ToolDefinition<z.infer<typeof CreateTaskInputSchema>, unknown> = {
   name: 'gohighlevel:create_task',
   description: 'Create a task/follow-up in GoHighLevel for a contact.',
   inputSchema: CreateTaskInputSchema,
-  handler: async (input, _context?: ToolContext) => {
-    const service = getGoHighLevelService();
-    try {
-      const task = await service.createTask(input.tenantId, {
-        title: input.title,
-        description: input.description,
-        dueDate: input.dueDate,
-        assignedTo: input.assignedTo,
-        priority: input.priority as 'low' | 'medium' | 'high',
-        contactId: input.contactId,
-      });
-      return {
-        success: true,
-        data: task,
-      };
-    } catch (err) {
-      return {
-        success: false,
-        error: err instanceof Error ? err.message : String(err),
-      };
-    }
-  },
+  handler: async () => DEPRECATION_ERROR,
 };
 
 export const updateTaskTool: ToolDefinition<z.infer<typeof UpdateTaskInputSchema>, unknown> = {
   name: 'gohighlevel:update_task',
   description: 'Update an existing task in GoHighLevel.',
   inputSchema: UpdateTaskInputSchema,
-  handler: async (input, _context?: ToolContext) => {
-    const service = getGoHighLevelService();
-    try {
-      const task = await service.updateTask(input.tenantId, input.taskId, {
-        title: input.title,
-        description: input.description,
-        dueDate: input.dueDate,
-        priority: input.priority as 'low' | 'medium' | 'high' | undefined,
-      });
-      return {
-        success: true,
-        data: task,
-      };
-    } catch (err) {
-      return {
-        success: false,
-        error: err instanceof Error ? err.message : String(err),
-      };
-    }
-  },
+  handler: async () => DEPRECATION_ERROR,
 };
 
 export const sendMessageTool: ToolDefinition<z.infer<typeof SendMessageInputSchema>, unknown> = {
@@ -234,26 +125,7 @@ export const sendMessageTool: ToolDefinition<z.infer<typeof SendMessageInputSche
   description:
     'Send a message to a contact via WhatsApp, SMS, or email through GoHighLevel.',
   inputSchema: SendMessageInputSchema,
-  handler: async (input, _context?: ToolContext) => {
-    const service = getGoHighLevelService();
-    try {
-      const result = await service.sendMessage(input.tenantId, {
-        contactId: input.contactId,
-        message: input.message,
-        channel: input.channel,
-        templateId: input.templateId,
-      });
-      return {
-        success: true,
-        data: result,
-      };
-    } catch (err) {
-      return {
-        success: false,
-        error: err instanceof Error ? err.message : String(err),
-      };
-    }
-  },
+  handler: async () => DEPRECATION_ERROR,
 };
 
 export const goHighLevelTools = [

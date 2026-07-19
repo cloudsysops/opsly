@@ -75,9 +75,9 @@ export abstract class BaseWhatsAppProvider implements WhatsAppProvider {
 export class WhatsAppProviderFactory {
   static createProvider(
     tenantId: string,
-    provider: ProviderType,
+    provider: WhatsAppProviderName,
     config: Record<string, unknown>
-  ): IWhatsAppProvider {
+  ): WhatsAppProvider {
     if (provider === 'wacrm') {
       return new WacrmWhatsAppProvider(tenantId, config);
     }
