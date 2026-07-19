@@ -1,17 +1,12 @@
 import { z } from 'zod';
 // NOTE: GoHighLevel services removed. This tool is deprecated and should be replaced with WhatsApp integration.
 // import { getGoHighLevelService } from '@intcloudsysops/services/gohighlevel/index.js';
-import type { ToolDefinition, ToolContext } from '../types/index.js';
+import type { ToolDefinition } from '../types/index.js';
 
 const DEPRECATION_ERROR = {
   success: false,
   error: 'GoHighLevel integration has been removed. Please use WhatsApp integration instead.',
 };
-
-// Stub function to prevent TypeScript errors
-function getGoHighLevelService() {
-  throw new Error('GoHighLevel services are no longer available.');
-}
 
 // Input schemas
 const ListContactsInputSchema = z.object({
