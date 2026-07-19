@@ -4,6 +4,7 @@
 
 import type { NextRequest } from 'next/server';
 import { HTTP_STATUS } from './constants';
+import { logger } from '../logger';
 
 export async function parseJsonBody(request: NextRequest): Promise<{
   ok: boolean;
@@ -24,26 +25,33 @@ export async function parseJsonBody(request: NextRequest): Promise<{
   }
 }
 
-export function jsonSuccess(data: unknown, statusCode = HTTP_STATUS.OK): Response {
+export function jsonSuccess(data: unknown, statusCode: number = HTTP_STATUS.OK): Response {
   return Response.json(data, { status: statusCode });
 }
 
-export function jsonError(message: string, statusCode = HTTP_STATUS.INTERNAL_SERVER_ERROR): Response {
+export function jsonError(message: string, statusCode: number = HTTP_STATUS.INTERNAL_ERROR): Response {
   return Response.json({ error: message }, { status: statusCode });
 }
 
-export function jsonOk(data: unknown, statusCode = HTTP_STATUS.OK): Response {
+export function jsonOk(data: unknown, statusCode: number = HTTP_STATUS.OK): Response {
   return Response.json({ ok: true, data }, { status: statusCode });
 }
 
-export function tryRoute<T>(handler: () => T | Promise<T>) {
+export function serverErrorLogged(context: string, error: unknown): Response {
+  const message = error instanceof Error ? error.message : String(error);
+  logger.error(context, { error: message, stack: error instanceof Error ? error.stack : undefined });
+  return Response.json({ error: message }, { status: HTTP_STATUS.INTERNAL_ERROR });
+}
+
+export function tryRoute<T>(context: string, handler: () => T | Promise<T>) {
   return async (request: NextRequest): Promise<Response> => {
     try {
       const result = await handler();
       return Response.json(result, { status: HTTP_STATUS.OK });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
-      return Response.json({ error: message }, { status: HTTP_STATUS.INTERNAL_SERVER_ERROR });
+      logger.error(context, { error: message, stack: err instanceof Error ? err.stack : undefined });
+      return Response.json({ error: message }, { status: HTTP_STATUS.INTERNAL_ERROR });
     }
   };
 }
