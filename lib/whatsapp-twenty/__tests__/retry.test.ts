@@ -2,7 +2,7 @@
  * WhatsApp Twenty CRM Retry Logic Tests
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 describe('WhatsApp Twenty CRM Retry Logic', () => {
   describe('Exponential Backoff Calculation', () => {

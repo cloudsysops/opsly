@@ -2,7 +2,7 @@
  * WhatsApp Approval Audit Tests
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 describe('WhatsApp Approval Audit', () => {
   describe('Audit Log Entry', () => {

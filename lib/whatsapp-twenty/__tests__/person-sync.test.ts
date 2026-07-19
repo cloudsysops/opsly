@@ -2,7 +2,7 @@
  * WhatsApp Twenty CRM Person Sync Tests
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 describe('WhatsApp Twenty CRM Person Sync', () => {
   describe('Phone Number Normalization', () => {
