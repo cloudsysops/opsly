@@ -8,8 +8,8 @@ import { jsonSuccess } from '../../../../../lib/api-response';
 import { HTTP_STATUS } from '../../../../../lib/constants';
 import { getWhatsAppHealth } from '../../../../../lib/observability/whatsapp-metrics';
 import { whatsappConfig } from '../../../../../lib/whatsapp';
-import { awsConfig, checkAWSHealth } from '../../../../../lib/cloud-providers/aws-config';
-import { gcpConfig, checkGCPHealth } from '../../../../../lib/cloud-providers/gcp-config';
+import { checkAWSHealth } from '../../../../../lib/cloud-providers/aws-config';
+import { checkGCPHealth } from '../../../../../lib/cloud-providers/gcp-config';
 
 export async function GET(request: NextRequest): Promise<Response> {
   const whatsappHealth = getWhatsAppHealth();

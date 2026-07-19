@@ -8,7 +8,7 @@
  */
 
 import type { NextRequest } from 'next/server';
-import { parseJsonBody, jsonError, jsonSuccess } from '../../../../../../../lib/api-response';
+import { parseJsonBody } from '../../../../../../../lib/api-response';
 import { HTTP_STATUS } from '../../../../../../../lib/constants';
 import { whatsappConfig, MetaCloudWhatsAppProvider, WhatsAppSignatureError } from '../../../../../../../lib/whatsapp';
 
@@ -22,23 +22,23 @@ export async function GET(request: NextRequest): Promise<Response> {
   const verifyToken = request.nextUrl.searchParams.get('hub.verify_token');
 
   if (mode !== 'subscribe') {
-    return jsonError('invalid hub.mode', HTTP_STATUS.BAD_REQUEST);
+    return Response.json({ error: 'invalid hub.mode' }, { status: HTTP_STATUS.BAD_REQUEST });
   }
 
   const metaConfig = whatsappConfig.getMetaConfig();
 
   if (!metaConfig.enabled) {
     console.warn('[Meta Webhook] Meta integration disabled');
-    return jsonError('meta integration disabled', HTTP_STATUS.FORBIDDEN);
+    return Response.json({ error: 'meta integration disabled' }, { status: HTTP_STATUS.FORBIDDEN });
   }
 
   if (verifyToken !== metaConfig.verifyToken) {
     console.warn('[Meta Webhook] Invalid verify token');
-    return jsonError('invalid verify token', HTTP_STATUS.FORBIDDEN);
+    return Response.json({ error: 'invalid verify token' }, { status: HTTP_STATUS.FORBIDDEN });
   }
 
   if (!challenge) {
-    return jsonError('missing hub.challenge', HTTP_STATUS.BAD_REQUEST);
+    return Response.json({ error: 'missing hub.challenge' }, { status: HTTP_STATUS.BAD_REQUEST });
   }
 
   console.log('[Meta Webhook] Challenge verified successfully');
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   if (!metaConfig.enabled) {
     console.warn('[Meta Webhook] Meta integration disabled');
-    return jsonError('meta integration disabled', HTTP_STATUS.FORBIDDEN);
+    return Response.json({ error: 'meta integration disabled' }, { status: HTTP_STATUS.FORBIDDEN });
   }
 
   // Parse request body
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     }
   } catch (err) {
     console.error('[Meta Webhook] Signature validation failed:', err);
-    return jsonError('invalid signature', HTTP_STATUS.UNAUTHORIZED);
+    return Response.json({ error: 'invalid signature' }, { status: HTTP_STATUS.UNAUTHORIZED });
   }
 
   // Parse canonical event
@@ -104,10 +104,10 @@ export async function POST(request: NextRequest): Promise<Response> {
       messageId: 'data' in event.data ? event.data.id : 'N/A',
     });
 
-    return jsonSuccess({ ok: true, event_type: event.event }, HTTP_STATUS.OK);
+    return Response.json({ ok: true, event_type: event.event }, { status: HTTP_STATUS.OK });
   } catch (err) {
     console.error('[Meta Webhook] Event processing failed:', err);
     // Always return 200 to prevent Meta retries of malformed events
-    return jsonSuccess({ ok: false, error: 'processing_error' }, HTTP_STATUS.OK);
+    return Response.json({ ok: false, error: 'processing_error' }, { status: HTTP_STATUS.OK });
   }
 }

@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-07-19T18:54:05.317Z",
+  "generated_at": "2026-07-19T19:17:34.153Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -15163,6 +15163,47 @@
       "size_bytes": 8628
     },
     {
+      "path": "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
+      "title": "PESKIDS + WhatsApp + WACRM Integration — Readiness Audit",
+      "keywords": [
+        "actual",
+        "actuales",
+        "api",
+        "audit",
+        "critico",
+        "crm",
+        "deuda",
+        "encontrado",
+        "entorno",
+        "estado",
+        "estructura",
+        "existentes",
+        "gohighlevel",
+        "integracion",
+        "integraciones",
+        "integration",
+        "markdown",
+        "n8n",
+        "obsoleta",
+        "opsly",
+        "peskids",
+        "principales",
+        "produccion",
+        "readiness",
+        "relacionadas",
+        "riesgo",
+        "riesgos",
+        "rutas",
+        "servicios",
+        "twenty",
+        "variables",
+        "vps",
+        "wacrm",
+        "whatsapp"
+      ],
+      "size_bytes": 25721
+    },
+    {
       "path": "docs/audits/README.md",
       "title": "Audits MOC",
       "keywords": [
@@ -29155,6 +29196,43 @@
         "workflow"
       ],
       "size_bytes": 5430
+    },
+    {
+      "path": "infra/n8n/workflows/peskids/README.md",
+      "title": "Peskids WhatsApp Workflows for n8n",
+      "keywords": [
+        "add",
+        "change",
+        "cli",
+        "conditional",
+        "crm",
+        "customization",
+        "environment",
+        "execution",
+        "failing",
+        "import",
+        "included",
+        "logic",
+        "markdown",
+        "messages",
+        "n8n",
+        "opsly",
+        "order",
+        "persisting",
+        "peskids",
+        "readme",
+        "required",
+        "sync",
+        "triggers",
+        "troubleshooting",
+        "twenty",
+        "variables",
+        "via",
+        "whatsapp",
+        "workflow",
+        "workflows"
+      ],
+      "size_bytes": 3327
     },
     {
       "path": "infra/templates/n8n-workflows-template.md",
@@ -90008,6 +90086,7 @@
       "infra/terraform/README.md",
       "infra/templates/n8n-workflows-template.md",
       "infra/index.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/superpowers/plans/2026-05-30-skills-obsidian-integration.md",
       "docs/superpowers/plans/2026-05-31-collectx-sprint1.md",
       "docs/superpowers/specs/TEMPLATE-next-client-blueprint.md",
@@ -90386,6 +90465,7 @@
       "docs/audits/TEST-COVERAGE-BASELINE.md",
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/audits/LINT-RULES-GUIDE.md",
       "docs/audits/COST-DEEP-DIVE.md",
       "docs/05-deployment-status/DEPLOYMENT-STATUS-2026-05-04.md",
@@ -92578,6 +92658,7 @@
       "infra/terraform/README.md",
       "infra/templates/n8n-workflows-template.md",
       "infra/index.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/superpowers/plans/2026-05-30-skills-obsidian-integration.md",
       "docs/superpowers/plans/2026-05-31-collectx-sprint1.md",
       "docs/superpowers/specs/TEMPLATE-next-client-blueprint.md",
@@ -92959,6 +93040,7 @@
       "docs/audits/TEST-COVERAGE-BASELINE.md",
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/audits/LINT-RULES-GUIDE.md",
       "docs/audits/COST-DEEP-DIVE.md",
       "docs/05-deployment-status/DEPLOYMENT-STATUS-2026-05-04.md",
@@ -94314,6 +94396,7 @@
       "scripts/README.md",
       "tools/cli/README.md",
       "lib/pattern-catalog/README.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/plans/CLI-MIGRATION-CHECKLIST.md",
       "docs/design/OAR.md",
       "docs/01-development/GITHUB-SETTINGS.md",
@@ -95030,6 +95113,7 @@
       "apps/peskids/DEPLOYMENT.md",
       "apps/intcloudsysops/README.md",
       "apps/intcloudsysops/DEPLOYMENT.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/superpowers/plans/2026-05-30-skills-obsidian-integration.md",
       "docs/superpowers/specs/2026-06-23-peskids-admin-students-crud-design.md",
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
@@ -95046,6 +95130,7 @@
       "docs/examples/email-templates/PESKIDS-EMAIL-TEMPLATES.md",
       "docs/examples/n8n/PESKIDS-N8N-DEPLOYMENT.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/05-deployment-status/PESKIDS-GO-LIVE-STATUS.md",
       "docs/03-agents/AGENT-URL-VALIDATION.md",
       "docs/03-agents/AGENTS-GUIDE.md",
@@ -95694,6 +95779,7 @@
       "docs/STRUCTURE-GUARDRAILS.md",
       "docs/audits/TEST-COVERAGE-BASELINE.md",
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/audits/COST-DEEP-DIVE.md",
       "docs/05-deployment-status/PESKIDS-GO-LIVE-STATUS.md",
       "docs/03-agents/SYRA-IMPLEMENTATION-GUIDE.md",
@@ -95877,6 +95963,7 @@
       "docs/audits/DATABASE-QUERY-AUDIT.md",
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/audits/LINT-RULES-GUIDE.md",
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md",
       "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
@@ -100966,6 +101053,7 @@
       "vendor/agency-agents/integrations/openclaw/image-prompt-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/geographer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/technical-artist/AGENTS.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/superpowers/specs/TEMPLATE-next-client-blueprint.md",
       "docs/infrastructure/NOTEBOOKLM-BRAIN-SYNC.md",
       "docs/governance/SOC2-READINESS.md",
@@ -101911,6 +101999,7 @@
       "docs/04-infrastructure/SECURITY_CHECKLIST.md",
       "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
       "docs/04-infrastructure/FAILOVER-RUNBOOK.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/03-agents/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
       "docs/03-agents/OPENCLAW-TEAM-PLAN.md",
       "docs/03-agents/AGENT-BRAIN-CONTRACT.md",
@@ -104358,6 +104447,7 @@
       "docs/04-infrastructure/PLAN-ORCHESTRATOR-WORKER.md",
       "docs/04-infrastructure/SSH-COMMANDS-LOCALRANK.md",
       "docs/04-infrastructure/VPS-PROVISIONING-STANDARD.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/05-deployment-status/DEPLOYMENT-STATUS-2026-05-04.md",
       "docs/03-agents/QUICK-REFERENCE-HERMES-OPSLY.md",
       "docs/03-agents/AGENT-URL-VALIDATION.md",
@@ -105591,6 +105681,7 @@
       "packages/skills/user/opsly-self-healing/SKILL.md",
       "docs/01-development/TECHNICAL-DEBT.md",
       "docs/qa/BACKLOG-IA-PROMPT.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       ".claude/2-context-management/CLAUDE.md"
     ],
     "datos": [
@@ -105864,6 +105955,7 @@
       "docs/01-development/FAQ.md",
       "docs/04-infrastructure/TENANT-PRODUCTION-BASELINE.md",
       "docs/STRUCTURE-GUARDRAILS.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/05-deployment-status/PESKIDS-GO-LIVE-STATUS.md",
       "docs/03-agents/AGENT-URL-VALIDATION.md",
       "docs/03-agents/CLAUDE-WORKFLOW-OPTIMIZATION.md",
@@ -105892,6 +105984,7 @@
       "docs/01-development/API-CORE-PORTFOLIO.md",
       "docs/04-infrastructure/SECURITY-MITIGATIONS-2026-04-09.md",
       "docs/04-infrastructure/DECEPTICON-WORKER.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/03-agents/AGENT-BRAIN-CONTRACT.md",
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
       "docs/brain/modules/api.md",
@@ -106155,6 +106248,7 @@
       "vendor/agency-agents/integrations/opencode/agents/incident-response-commander.md",
       "vendor/agency-agents/integrations/openclaw/incident-response-commander/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/automation-governance-architect/AGENTS.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/plans/AUTONOMY-GO-NO-GO-WEEKLY.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
       ".claude/1-agent-teams/security-agent.md",
@@ -106897,6 +106991,7 @@
       "vendor/agency-agents/integrations/opencode/agents/automation-governance-architect.md",
       "vendor/agency-agents/integrations/openclaw/automation-governance-architect/AGENTS.md",
       "infra/templates/n8n-workflows-template.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
       "docs/emails/tenant-welcome-email.md",
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
@@ -106910,6 +107005,7 @@
       "docs/01-development/GITHUB-TOKEN.md",
       "docs/01-development/N8N-IMPORT-GUIDE.md",
       "docs/examples/n8n/PESKIDS-N8N-DEPLOYMENT.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/05-deployment-status/PESKIDS-GO-LIVE-STATUS.md",
       "docs/03-agents/AGENT-URL-VALIDATION.md",
       "docs/03-agents/AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
@@ -107681,6 +107777,7 @@
       "docs/01-development/AGENT-SKILLS-INTEGRATION.md",
       "docs/01-development/SPRINTS_13_14.md",
       "docs/examples/n8n/PESKIDS-N8N-DEPLOYMENT.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/03-agents/QUICK-REFERENCE-HERMES-OPSLY.md",
       "docs/03-agents/SYRA-OPENCLAW-INTEGRATION.md",
       "docs/03-agents/MULTI-AGENT-ARCHITECTURE.md",
@@ -107947,6 +108044,7 @@
       "vendor/agency-agents/integrations/openclaw/workflow-architect/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/workflow-architect/AGENTS.md",
       "infra/templates/n8n-workflows-template.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/superpowers/specs/2026-06-25-icso-website-enhancement-design.md",
       "docs/ops/workflows-index.md",
       "docs/ops/workflows-audit.md",
@@ -108671,6 +108769,7 @@
       "docs/01-development/QUICK-REFERENCE.md",
       "docs/01-development/SCRIPTS-AUDIT-2026-04-24.md",
       "docs/04-infrastructure/WORKER-TESTING.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/02-tools/OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
       "docs/02-tools/KNOWLEDGE-SYSTEM.md",
       "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
@@ -109271,6 +109370,7 @@
       "vendor/agency-agents/integrations/openclaw/ai-data-remediation-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/experiment-tracker/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/unity-editor-tool-developer/SOUL.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
       "docs/growth/WEEK-1-AGENCIAS-OUTREACH.md",
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
@@ -110201,6 +110301,7 @@
       "vendor/agency-agents/integrations/openclaw/ai-data-remediation-engineer/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/livestream-commerce-coach/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/book-co-author/AGENTS.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/growth/WEEK-1-AGENCIAS-OUTREACH.md",
       "docs/adr/ADR-039-sales-channels-email-whatsapp.md",
       "docs/adr/ADR-040-technician-scaling-solo-to-assistant.md",
@@ -110657,7 +110758,8 @@
       "packages/skills/user/opsly-architect-senior/SKILL.md"
     ],
     "deuda": [
-      "packages/skills/user/opsly-architect-senior/SKILL.md"
+      "packages/skills/user/opsly-architect-senior/SKILL.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md"
     ],
     "dias": [
       "packages/skills/user/opsly-architect-senior/SKILL.md",
@@ -110744,7 +110846,8 @@
       ".n8n/2-context/AGENTS.md",
       "docs/runbooks/AUTONOMY-JOB-POLICY-MAP.md",
       "docs/runbooks/AUTONOMOUS-PRODUCTION-GO-LIVE-CHECKLIST.md",
-      "docs/01-development/DISK-USAGE-REPORT.md"
+      "docs/01-development/DISK-USAGE-REPORT.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md"
     ],
     "roadmap": [
       "packages/skills/user/opsly-architect-senior/SKILL.md",
@@ -112171,6 +112274,7 @@
       "vendor/agency-agents/integrations/openclaw/voice-ai-integration-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/sales-outreach/AGENTS.md",
       "infra/monitoring/README.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/superpowers/specs/2026-06-25-icso-website-enhancement-design.md",
       "docs/ops/branch-protection-setup.md",
       "docs/01-development/N8N-SETUP.md",
@@ -112319,6 +112423,7 @@
       "docs/04-infrastructure/WORKER-TEAM-BILLING.md",
       "docs/04-infrastructure/DECEPTICON-WORKER.md",
       "docs/04-infrastructure/FAILOVER-RUNBOOK.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/05-deployment-status/DEPLOYMENT-STATUS-2026-05-04.md",
       "docs/03-agents/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
       "docs/03-agents/OPENCLAW-TEAM-PLAN.md",
@@ -112838,6 +112943,7 @@
       "packages/skills/user/opsly-quantum/templates/runbook.md",
       ".n8n/README.md",
       ".n8n/1-workflows/intcloudsysops/README.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/runbooks/INCUBATION-PLATFORM-FOUNDATION.md",
       "docs/runbooks/VPS-CLEANUP-WEBHOOK.md",
       "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
@@ -113412,6 +113518,7 @@
       "vendor/agency-agents/integrations/openclaw/godot-gameplay-scripter/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/blender-add-on-engineer/IDENTITY.md",
       "vendor/agency-agents/integrations/openclaw/blender-add-on-engineer/AGENTS.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
       "docs/00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md",
       "docs/00-architecture/ELEVENLABS-ADVANCED-INTEGRATION.md",
@@ -115178,6 +115285,7 @@
       "vendor/agency-agents/integrations/openclaw/technical-writer/AGENTS.md",
       "infra/monitoring/README.md",
       "infra/terraform/README.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/superpowers/specs/2026-05-30-skills-obsidian-integration-design.md",
       "docs/plans/README.md",
       "docs/generated/README.md",
@@ -115575,6 +115683,7 @@
       "docs/01-development/SEMANA-3-INFORME.md",
       "docs/01-development/SEMANA-2-INFORME.md",
       "docs/04-infrastructure/DECEPTICON-WORKER.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/03-agents/SUPER-ORCHESTRATOR.md",
       "docs/03-agents/AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
       "docs/02-tools/MCP-STATUS-ANALYSIS.md",
@@ -117884,6 +117993,7 @@
       "vendor/agency-agents/integrations/openclaw/minimal-change-engineer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/jira-workflow-steward/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/workflow-optimizer/AGENTS.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/governance/SOC2-READINESS.md",
       "docs/governance/internal/CHANGE-MANAGEMENT-POLICY.md",
       "docs/blueprints/opsly-operational-blueprint/CLIENT-INCUBATION-TEMPLATE.md"
@@ -120210,6 +120320,7 @@
     "messages": [
       "packages/skills/vendor/agent-skills/git-workflow-and-versioning/SKILL.md",
       "vendor/agency-agents/integrations/openclaw/whimsy-injector/AGENTS.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/tenants/peskids/DATA-MODEL.md"
     ],
     "often": [
@@ -121967,6 +122078,7 @@
       "vendor/agency-agents/integrations/opencode/agents/customer-service.md",
       "vendor/agency-agents/integrations/openclaw/customer-service/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/filament-optimization-specialist/SOUL.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/audits/LINT-RULES-GUIDE.md",
       "docs/03-agents/AGENT-STARTUP-PROMPT.md",
       "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
@@ -124719,6 +124831,7 @@
     ],
     "failing": [
       "packages/skills/vendor/agent-skills/test-driven-development/SKILL.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/runbooks/OPERATIONS-HANDBOOK.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
       "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md"
@@ -126746,6 +126859,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-unity-editor-tool-developer/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/unity-editor-tool-developer.md",
       "vendor/agency-agents/integrations/openclaw/unity-editor-tool-developer/AGENTS.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/01-development/N8N-IMPORT-GUIDE.md",
       "docs/examples/n8n/PESKIDS-N8N-DEPLOYMENT.md",
       "docs/03-agents/AGENT-KNOWLEDGE-CAPTURE-GUIDE.md",
@@ -128322,6 +128436,7 @@
       ".cursor/prompts/local-services-automation.md",
       ".cursor/prompts/task-orchestrator-completion.md",
       ".n8n/1-workflows/intcloudsysops/README.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/superpowers/plans/2026-05-30-skills-obsidian-integration.md",
       "docs/superpowers/specs/2026-05-30-skills-obsidian-integration-design.md",
       "docs/infrastructure/AGENT-BOOTSTRAP-SYSTEM.md",
@@ -129314,7 +129429,9 @@
     ],
     "whatsapp": [
       ".cursor/prompts/local-services-sales-closer.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/01-development/MODULARITY-CONTRACT.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/adr/ADR-039-sales-channels-email-whatsapp.md",
       "docs/tenants/peskids/N8N-SETUP.md",
       "docs/tenants/peskids/WHATSAPP-CHANNEL.md",
@@ -133213,6 +133330,7 @@
       "docs/01-development/HEAVY-SERVICES-DECISION.md",
       "docs/01-development/OPSLY-KNOWLEDGE-BASE.md",
       "docs/01-development/LOCALRANK-TESTER-GUIDE.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
       "docs/brain/AGENT-ONBOARDING.md",
       "docs/reports/audit-2026-04-07.md",
@@ -133354,6 +133472,8 @@
       "apps/peskids/CLAUDE.md",
       "apps/intcloudsysops/CLAUDE.md",
       "infra/templates/n8n-workflows-template.md",
+      "infra/n8n/workflows/peskids/README.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/n8n-workflows/crm/README.md",
       "docs/tenants/peskids/TWENTY-CRM.md",
       "docs/tenants/peskids/OPS-RUNBOOK.md",
@@ -133389,6 +133509,7 @@
       "docs/00-architecture/LLM-GATEWAY.md",
       "docs/01-development/LANIDEA-OPENCLAW.md",
       "docs/01-development/N8N-IMPORT-GUIDE.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/03-agents/HERMES-SPRINT-PLAN.md",
       "docs/02-tools/NOTION-MCP-SERVER.md",
       "docs/02-tools/CURSOR-MCP-SETUP.md",
@@ -133467,6 +133588,7 @@
       "apps/experimental/ingestion-service-archive/README.md",
       "apps/intcloudsysops/DEPLOYMENT.md",
       "apps/mcp/README.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/superpowers/specs/TEMPLATE-next-client-blueprint.md",
       "docs/infrastructure/NOTEBOOKLM-BRAIN-SYNC.md",
       "docs/emails/tenant-welcome-email.md",
@@ -133494,6 +133616,7 @@
       "docs/04-infrastructure/OPENCLAW-CLI-VPS-META-ORCHESTRATOR.md",
       "docs/04-infrastructure/OLLAMA-DEPLOYMENT.md",
       "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/03-agents/AGENTS-AUTONOMOUS-RUNBOOK.md",
       "docs/03-agents/FIRST-OPENCLAW-AGENTS-MAC2011.md",
       "docs/03-agents/MULTI-AGENT-ARCHITECTURE.md",
@@ -133549,7 +133672,8 @@
     "actuales": [
       ".n8n/2-context/AGENTS.md",
       "docs/01-development/WALLET-PREPAID-ROADMAP.md",
-      "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md"
+      "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md"
     ],
     "actualizacion": [
       ".n8n/2-context/AGENTS.md",
@@ -137204,6 +137328,7 @@
       "vendor/agency-agents/integrations/openclaw/unity-shader-graph-artist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/automation-governance-architect/AGENTS.md",
       ".hermes/HERMES.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/plans/AUTONOMY-GO-NO-GO-WEEKLY.md",
       "docs/infrastructure/NOTEBOOKLM-BRAIN-SYNC.md",
       "docs/.obsidian/PLUGINS-TO-INSTALL.md",
@@ -140332,6 +140457,7 @@
       "apps/index.md",
       "docs/superpowers/specs/2026-05-31-collectx-platform-design.md",
       "docs/01-development/SEMANA-6-PLAN.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/tenants/peskids/OWNER-RUNBOOK.md",
       "docs/brain/modules/peskids.md"
     ],
@@ -146528,6 +146654,7 @@
       "docs/01-development/SEMANA-1-INFORME.md",
       "docs/04-infrastructure/PRODUCTION-READINESS.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/adr/ADR-036-cli-consolidation-tools-cli-first.md",
       "docs/tenants/peskids/SALES-FUNNEL-VALIDATION.md",
       "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md",
@@ -157458,6 +157585,7 @@
     ],
     "via": [
       "vendor/agency-agents/integrations/openclaw/roblox-experience-designer/AGENTS.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/runbooks/DEPLOY-GITHUB-ACTIONS.md",
       "docs/runbooks/admin.md",
@@ -157609,6 +157737,7 @@
     ],
     "customization": [
       "vendor/agency-agents/integrations/openclaw/roblox-avatar-creator/AGENTS.md",
+      "infra/n8n/workflows/peskids/README.md",
       "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md"
     ],
@@ -158230,6 +158359,37 @@
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
       "docs/reports/PRODUCTION-HEALTH.md"
     ],
+    "conditional": [
+      "infra/n8n/workflows/peskids/README.md"
+    ],
+    "included": [
+      "infra/n8n/workflows/peskids/README.md",
+      "docs/runbooks/TENANT-BONUS-WORKFLOWS.md",
+      "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
+      "docs/reports/VALIDATION-PACKAGE-README.md"
+    ],
+    "persisting": [
+      "infra/n8n/workflows/peskids/README.md"
+    ],
+    "twenty": [
+      "infra/n8n/workflows/peskids/README.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
+      "docs/tenants/peskids/TWENTY-CRM.md",
+      "docs/tenants/peskids/WACRM-TWENTY-CUTOVER.md",
+      "docs/tenants/peskids/WACRM-RUNBOOK.md",
+      "docs/tenants/peskids/WACRM-CHANNEL.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
+      "docs/tenants/intcloudsysops/WACRM-OFFERING.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
+      "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md",
+      "docs/blueprints/PESKIDS-ICSO-CUTOVER-STATUS.md",
+      "docs/blueprints/TENANT-REPEAT-PLAYBOOK.md",
+      "docs/blueprints/TWENTY-BOOTSTRAP-IRREDUCIBLE.md",
+      "docs/blueprints/PESKIDS-GHL-DISABLE-RUNBOOK.md",
+      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
+      "docs/blueprints/PESKIDS-GHL-MIGRATION-STATUS.md",
+      "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md"
+    ],
     "actualizar": [
       "docs/superpowers/plans/2026-05-30-skills-obsidian-integration.md",
       "docs/ops/runbook-redis.md",
@@ -158818,7 +158978,8 @@
     ],
     "relacionadas": [
       "docs/plans/README.md",
-      "docs/00-architecture/conversational-runtime-roadmap.md"
+      "docs/00-architecture/conversational-runtime-roadmap.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md"
     ],
     "tematicos": [
       "docs/plans/README.md"
@@ -160939,6 +161100,7 @@
     "riesgos": [
       "docs/legal/peskids/DPIA-2026.md",
       "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/adr/ADR-043-facebook-page-organic-publishing-graph-api.md",
       "docs/adr/ADR-014-notebooklm-agent.md",
       "docs/tenants/peskids/EXTRACTION-PLAN.md",
@@ -161127,11 +161289,6 @@
     ],
     "bonus": [
       "docs/runbooks/TENANT-BONUS-WORKFLOWS.md"
-    ],
-    "included": [
-      "docs/runbooks/TENANT-BONUS-WORKFLOWS.md",
-      "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
-      "docs/reports/VALIDATION-PACKAGE-README.md"
     ],
     "aplicaciones": [
       "docs/runbooks/PRODUCTION-SECURITY-BASELINE.md"
@@ -161833,6 +161990,7 @@
     ],
     "existentes": [
       "docs/00-architecture/OPSLYQUANTUM-SKILL-DESIGN.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       ".claude/agents/hive-mind/worker-specialist.md"
     ],
     "opslyquantum": [
@@ -162367,6 +162525,7 @@
     "gohighlevel": [
       "docs/01-development/ONBOARDING-READINESS.md",
       "docs/01-development/CLIENT-ONBOARDING-PLAYBOOK.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/tenants/peskids/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/peskids/TWENTY-CRM.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
@@ -162442,6 +162601,7 @@
     ],
     "integraciones": [
       "docs/01-development/AI-FRAMEWORKS.md",
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
       "docs/brain/modules/peskids.md"
     ],
@@ -164543,6 +164703,22 @@
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md"
     ],
+    "encontrado": [
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md"
+    ],
+    "obsoleta": [
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md"
+    ],
+    "wacrm": [
+      "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
+      "docs/tenants/peskids/WACRM-TWENTY-CUTOVER.md",
+      "docs/tenants/peskids/WACRM-RUNBOOK.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
+      "docs/tenants/peskids/WACRM-CHANNEL.md",
+      "docs/tenants/intcloudsysops/WACRM-OFFERING.md",
+      "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md"
+    ],
     "const": [
       "docs/audits/LINT-RULES-GUIDE.md"
     ],
@@ -165825,15 +166001,6 @@
       "docs/tenants/peskids/WACRM-RUNBOOK.md",
       "docs/blueprints/opsly-operational-blueprint/NICHE-PLAYBOOKS.md"
     ],
-    "wacrm": [
-      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
-      "docs/tenants/peskids/WACRM-TWENTY-CUTOVER.md",
-      "docs/tenants/peskids/WACRM-RUNBOOK.md",
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
-      "docs/tenants/peskids/WACRM-CHANNEL.md",
-      "docs/tenants/intcloudsysops/WACRM-OFFERING.md",
-      "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md"
-    ],
     "200l": [
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
     ],
@@ -165893,23 +166060,6 @@
     ],
     "reemplazo": [
       "docs/tenants/peskids/TWENTY-CRM.md"
-    ],
-    "twenty": [
-      "docs/tenants/peskids/TWENTY-CRM.md",
-      "docs/tenants/peskids/WACRM-TWENTY-CUTOVER.md",
-      "docs/tenants/peskids/WACRM-RUNBOOK.md",
-      "docs/tenants/peskids/WACRM-CHANNEL.md",
-      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
-      "docs/tenants/intcloudsysops/WACRM-OFFERING.md",
-      "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
-      "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md",
-      "docs/blueprints/PESKIDS-ICSO-CUTOVER-STATUS.md",
-      "docs/blueprints/TENANT-REPEAT-PLAYBOOK.md",
-      "docs/blueprints/TWENTY-BOOTSTRAP-IRREDUCIBLE.md",
-      "docs/blueprints/PESKIDS-GHL-DISABLE-RUNBOOK.md",
-      "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
-      "docs/blueprints/PESKIDS-GHL-MIGRATION-STATUS.md",
-      "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md"
     ],
     "santiago": [
       "docs/tenants/peskids/INVITATION-FLOW-VERIFICATION.md"
@@ -167858,6 +168008,7 @@
     "docs/audits/LINT-RULES-GUIDE.md",
     "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
     "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
+    "docs/audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
     "docs/audits/README.md",
     "docs/audits/SALES-READINESS-HARDENING.md",
     "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
@@ -168350,6 +168501,7 @@
     "docs/testing/README.md",
     "infra/index.md",
     "infra/monitoring/README.md",
+    "infra/n8n/workflows/peskids/README.md",
     "infra/templates/n8n-workflows-template.md",
     "infra/terraform/README.md",
     "lib/api/GOVERNANCE.md",

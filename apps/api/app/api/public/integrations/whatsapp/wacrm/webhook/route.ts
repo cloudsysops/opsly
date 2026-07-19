@@ -9,7 +9,7 @@
  */
 
 import type { NextRequest } from 'next/server';
-import { parseJsonBody, jsonError, jsonSuccess } from '../../../../../../../lib/api-response';
+import { parseJsonBody } from '../../../../../../../lib/api-response';
 import { HTTP_STATUS } from '../../../../../../../lib/constants';
 import { whatsappConfig, WacrmWhatsAppProvider, WhatsAppSignatureError } from '../../../../../../../lib/whatsapp';
 
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   if (!wacrmConfig.enabled) {
     console.warn('[WACRM Webhook] WACRM integration disabled');
-    return jsonError('wacrm integration disabled', HTTP_STATUS.FORBIDDEN);
+    return Response.json({ error: 'wacrm integration disabled' }, { status: HTTP_STATUS.FORBIDDEN });
   }
 
   // Parse request body
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     }
   } catch (err) {
     console.error('[WACRM Webhook] Signature validation failed:', err);
-    return jsonError('invalid signature', HTTP_STATUS.UNAUTHORIZED);
+    return Response.json({ error: 'invalid signature' }, { status: HTTP_STATUS.UNAUTHORIZED });
   }
 
   // Parse canonical event
@@ -68,10 +68,10 @@ export async function POST(request: NextRequest): Promise<Response> {
       messageId: 'data' in event.data ? event.data.id : 'N/A',
     });
 
-    return jsonSuccess({ ok: true, event_type: event.event }, HTTP_STATUS.OK);
+    return Response.json({ ok: true, event_type: event.event }, { status: HTTP_STATUS.OK });
   } catch (err) {
     console.error('[WACRM Webhook] Event processing failed:', err);
     // Always return 200 to prevent WACRM retries of malformed events
-    return jsonSuccess({ ok: false, error: 'processing_error' }, HTTP_STATUS.OK);
+    return Response.json({ ok: false, error: 'processing_error' }, { status: HTTP_STATUS.OK });
   }
 }

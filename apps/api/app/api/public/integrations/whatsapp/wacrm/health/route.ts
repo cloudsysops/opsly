@@ -4,7 +4,6 @@
  */
 
 import type { NextRequest } from 'next/server';
-import { jsonSuccess, jsonError } from '../../../../../../../lib/api-response';
 import { HTTP_STATUS } from '../../../../../../../lib/constants';
 import { whatsappConfig, WacrmWhatsAppProvider } from '../../../../../../../lib/whatsapp';
 
@@ -12,9 +11,9 @@ export async function GET(request: NextRequest): Promise<Response> {
   const wacrmConfig = whatsappConfig.getWacrmConfig();
 
   if (!wacrmConfig.enabled) {
-    return jsonSuccess(
+    return Response.json(
       { status: 'disabled', details: { reason: 'WACRM_ENABLED=false' } },
-      HTTP_STATUS.OK
+      { status: HTTP_STATUS.OK }
     );
   }
 
@@ -28,11 +27,11 @@ export async function GET(request: NextRequest): Promise<Response> {
     const health = await provider.healthCheck();
     const statusCode = health.status === 'healthy' ? HTTP_STATUS.OK : HTTP_STATUS.SERVICE_UNAVAILABLE;
 
-    return jsonSuccess({ status: health.status, details: health.details }, statusCode);
+    return Response.json({ status: health.status, details: health.details }, { status: statusCode });
   } catch (err) {
-    return jsonError(
-      `WACRM health check failed: ${err instanceof Error ? err.message : 'Unknown error'}`,
-      HTTP_STATUS.SERVICE_UNAVAILABLE
+    return Response.json(
+      { error: `WACRM health check failed: ${err instanceof Error ? err.message : 'Unknown error'}` },
+      { status: HTTP_STATUS.SERVICE_UNAVAILABLE }
     );
   }
 }

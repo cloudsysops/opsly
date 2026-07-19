@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-07-19T18:54:03.988Z",
-  "totalFiles": 809,
+  "lastIndexed": "2026-07-19T19:17:32.510Z",
+  "totalFiles": 810,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -322,6 +322,7 @@
     "audits/LINT-RULES-GUIDE.md",
     "audits/OPSLY-OPERATIONAL-HARDENING.md",
     "audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
+    "audits/PESKIDS-WHATSAPP-WACRM-READINESS.md",
     "audits/README.md",
     "audits/SALES-READINESS-HARDENING.md",
     "audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
