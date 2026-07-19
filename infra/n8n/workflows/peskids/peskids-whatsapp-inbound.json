@@ -1,0 +1,249 @@
+{
+  "name": "Peskids WhatsApp Inbound",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "peskids-whatsapp",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "resource": "query",
+        "query": "SELECT * FROM whatsapp_messages WHERE external_message_id = '{{$node[\"Webhook\"].json[\"data\"][\"external_message_id\"]}}' AND tenant_id = '{{$node[\"Webhook\"].json[\"tenant_id\"]}}' LIMIT 1",
+        "nodeCredentialType": "postgres"
+      },
+      "name": "Check Idempotence",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "postgres": "=peskids_supabase"
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "comparator": "equals",
+              "value1": "={{$node[\"Check Idempotence\"].json[\"length\"]}}",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "name": "Is New Message?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "resource": "query",
+        "query": "INSERT INTO whatsapp_messages (tenant_id, external_message_id, body, direction, status, provider, timestamp, raw_event_hash, created_at, updated_at) VALUES ('{{$node[\"Webhook\"].json[\"tenant_id\"]}}', '{{$node[\"Webhook\"].json[\"data\"][\"external_message_id\"]}}', '{{$node[\"Webhook\"].json[\"data\"][\"body\"]}}', 'inbound', 'received', 'wacrm', NOW(), '{{$node[\"Webhook\"].json[\"hash\"]}}', NOW(), NOW()) RETURNING *",
+        "nodeCredentialType": "postgres"
+      },
+      "name": "Persist Message",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [850, 300],
+      "credentials": {
+        "postgres": "=peskids_supabase"
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{$env[\"TWENTY_API_URL\"]}}/graphql",
+        "authentication": "genericCredentialType",
+        "genericCredentialType": "=twenty_api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env[\"TWENTY_API_KEY\"]}}"
+            }
+          ]
+        },
+        "method": "POST",
+        "contentType": "application/json",
+        "body": "{\"query\": \"query { people(filter: { phone: { ilike: \\\"%{{$node['Webhook'].json['data']['contact_phone'].replace(/\\\\D/g, '')}}%\\\" } }) { edges { node { id firstName lastName email } } } }\"}"
+      },
+      "name": "Lookup Contact in Twenty",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "comparator": "equals",
+              "value1": "={{$node[\"Lookup Contact in Twenty\"].json[\"data\"][\"people\"][\"edges\"][\"length\"]}}",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "name": "Person Exists in Twenty?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1250, 200]
+    },
+    {
+      "parameters": {
+        "url": "={{$env[\"TWENTY_API_URL\"]}}/graphql",
+        "authentication": "genericCredentialType",
+        "genericCredentialType": "=twenty_api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env[\"TWENTY_API_KEY\"]}}"
+            }
+          ]
+        },
+        "method": "POST",
+        "contentType": "application/json",
+        "body": "{\"query\": \"mutation { createPerson(input: { firstName: \\\"{{$node['Webhook'].json['data']['contact_name'] || 'Contact'}}}\\\", phone: \\\"{{$node['Webhook'].json['data']['contact_phone']}}\\\", email: null }) { id firstName phone } }\"}"
+      },
+      "name": "Create Person in Twenty",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1450, 150]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env[\"N8N_PESKIDS_WEBHOOK_URL\"]}}/lead-intake",
+        "authentication": "genericCredentialType",
+        "genericCredentialType": "=n8n_internal_auth",
+        "body": "{\n  \"leadId\": \"{{$node['Persist Message'].json['id']}}\",\n  \"tenantId\": \"{{$node['Webhook'].json['tenant_id']}}\",\n  \"phoneNumber\": \"{{$node['Webhook'].json['data']['contact_phone']}}\",\n  \"message\": \"{{$node['Webhook'].json['data']['body']}}\",\n  \"twentyPersonId\": \"{{$node['Lookup Contact in Twenty'].json['data']['people']['edges'][0]['node']['id'] || $node['Create Person in Twenty'].json['data']['createPerson']['id']}}\",\n  \"source\": \"whatsapp\",\n  \"timestamp\": \"{{$node['Webhook'].json['data']['timestamp']}}\"\n}"
+      },
+      "name": "Trigger Lead Intake Workflow",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1650, 200]
+    },
+    {
+      "parameters": {
+        "errorMessage": "Message already processed (idempotence)"
+      },
+      "name": "Skip Duplicate",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [850, 450]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Check Idempotence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Idempotence": {
+      "main": [
+        [
+          {
+            "node": "Is New Message?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is New Message?": {
+      "main": [
+        [
+          {
+            "node": "Persist Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Skip Duplicate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Persist Message": {
+      "main": [
+        [
+          {
+            "node": "Lookup Contact in Twenty",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup Contact in Twenty": {
+      "main": [
+        [
+          {
+            "node": "Person Exists in Twenty?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Person Exists in Twenty?": {
+      "main": [
+        [
+          {
+            "node": "Trigger Lead Intake Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Person in Twenty",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Person in Twenty": {
+      "main": [
+        [
+          {
+            "node": "Trigger Lead Intake Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1.0",
+  "meta": {
+    "instanceId": "peskids",
+    "description": "WhatsApp inbound message handler: persist to Supabase, check/create Twenty CRM person, trigger lead intake"
+  }
+}

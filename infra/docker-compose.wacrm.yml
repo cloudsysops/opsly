@@ -1,0 +1,149 @@
+version: '3.9'
+
+# WACRM Service for Peskids WhatsApp Integration
+# Deploy: docker-compose -f docker-compose.wacrm.yml up -d
+
+services:
+  wacrm:
+    image: wacrm/wacrm:latest
+    container_name: wacrm_peskids
+    restart: unless-stopped
+    environment:
+      # WACRM Core
+      NODE_ENV: production
+      NODE_PORT: 3000
+      DATABASE_URL: postgres://wacrm:${WACRM_DB_PASSWORD:-changeme}@wacrm-db:5432/wacrm
+      REDIS_URL: redis://wacrm-redis:6379
+
+      # Meta WhatsApp Integration
+      META_WEBHOOK_URL: https://wa-peskids.${PLATFORM_DOMAIN}/webhook
+      META_VERIFY_TOKEN: ${META_VERIFY_TOKEN:-}
+      META_APP_SECRET: ${META_APP_SECRET:-}
+      META_WABA_ID: ${META_WABA_ID:-}
+      META_PHONE_NUMBER_ID: ${META_PHONE_NUMBER_ID:-}
+      META_ACCESS_TOKEN: ${META_ACCESS_TOKEN:-}
+      META_API_VERSION: ${META_API_VERSION:-v21.0}
+
+      # WACRM-specific
+      WACRM_API_KEY: ${WACRM_API_KEY:-}
+      WACRM_WEBHOOK_SECRET: ${WACRM_WEBHOOK_SECRET:-}
+      WACRM_INSTANCE_NAME: peskids
+      WACRM_PERSISTENCE_PATH: /data/wacrm
+
+      # Logging
+      LOG_LEVEL: info
+      LOG_FORMAT: json
+
+      # Health checks
+      HEALTH_CHECK_INTERVAL: 30000
+
+    ports:
+      - '3000:3000' # Only exposed via Traefik, not directly
+    volumes:
+      - wacrm-data:/data/wacrm
+      - wacrm-logs:/var/log/wacrm
+    depends_on:
+      wacrm-db:
+        condition: service_healthy
+      wacrm-redis:
+        condition: service_healthy
+    networks:
+      - traefik-public
+      - wacrm-internal
+    healthcheck:
+      test: ['CMD', 'curl', '-sf', 'http://localhost:3000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      # Traefik configuration
+      traefik.enable: 'true'
+      traefik.docker.network: traefik-public
+      traefik.http.routers.wacrm-peskids.rule: Host(`wa-peskids.${PLATFORM_DOMAIN}`)
+      traefik.http.routers.wacrm-peskids.entrypoints: websecure
+      traefik.http.routers.wacrm-peskids.tls: 'true'
+      traefik.http.routers.wacrm-peskids.tls.certresolver: letsencrypt
+      traefik.http.services.wacrm-peskids.loadbalancer.server.port: '3000'
+      traefik.http.routers.wacrm-peskids.service: wacrm-peskids
+      # Security headers
+      traefik.http.routers.wacrm-peskids.middlewares: 'securityheaders@file'
+
+  wacrm-db:
+    image: postgres:16-alpine
+    container_name: wacrm-db_peskids
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: wacrm
+      POSTGRES_PASSWORD: ${WACRM_DB_PASSWORD:-changeme}
+      POSTGRES_DB: wacrm
+      POSTGRES_INITDB_ARGS: '-c shared_buffers=256MB -c max_connections=200'
+    volumes:
+      - wacrm-postgres-data:/var/lib/postgresql/data
+    ports:
+      - '5433:5432' # Non-standard port to avoid conflicts
+    networks:
+      - wacrm-internal
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U wacrm']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  wacrm-redis:
+    image: redis:7-alpine
+    container_name: wacrm-redis_peskids
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${WACRM_REDIS_PASSWORD:-changeme}
+    volumes:
+      - wacrm-redis-data:/data
+    ports:
+      - '6380:6379' # Non-standard port to avoid conflicts
+    networks:
+      - wacrm-internal
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  wacrm-data:
+    driver: local
+  wacrm-logs:
+    driver: local
+  wacrm-postgres-data:
+    driver: local
+  wacrm-redis-data:
+    driver: local
+
+networks:
+  traefik-public:
+    external: true
+  wacrm-internal:
+    driver: bridge
+
+# Environment variables required in Doppler:
+# WACRM_API_KEY=<generated-api-key>
+# WACRM_WEBHOOK_SECRET=<webhook-verification-secret>
+# WACRM_DB_PASSWORD=<strong-postgres-password>
+# WACRM_REDIS_PASSWORD=<strong-redis-password>
+# META_VERIFY_TOKEN=<meta-webhook-verify-token>
+# META_APP_SECRET=<meta-app-secret>
+# META_WABA_ID=<meta-waba-id>
+# META_PHONE_NUMBER_ID=<meta-phone-number-id>
+# META_ACCESS_TOKEN=<meta-access-token>
+# PLATFORM_DOMAIN=op-sly.com
+
+# Deploy commands:
+# 1. Load from Doppler:
+#    doppler run --project ops-intcloudsysops --config prd -- docker-compose -f infra/docker-compose.wacrm.yml pull
+#
+# 2. Start services:
+#    docker-compose -f infra/docker-compose.wacrm.yml up -d
+#
+# 3. Verify:
+#    curl -sf https://wa-peskids.op-sly.com/health
+#
+# 4. View logs:
+#    docker-compose -f infra/docker-compose.wacrm.yml logs -f wacrm

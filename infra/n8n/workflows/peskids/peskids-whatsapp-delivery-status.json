@@ -1,0 +1,63 @@
+{
+  "name": "Peskids WhatsApp Delivery Status",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "peskids-whatsapp-status",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Status Update Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "resource": "query",
+        "query": "INSERT INTO whatsapp_message_events (tenant_id, message_id, external_message_id, status, timestamp, recipient_id, error_code, error_message, created_at) SELECT tenant_id, id, external_message_id, '{{$node[\"Status Update Webhook\"].json[\"status\"]}}', NOW(), '{{$node[\"Status Update Webhook\"].json[\"recipient_id\"]}}', '{{$node[\"Status Update Webhook\"].json[\"error_code\"]}}', '{{$node[\"Status Update Webhook\"].json[\"error_message\"]}}', NOW() FROM whatsapp_messages WHERE external_message_id = '{{$node[\"Status Update Webhook\"].json[\"external_message_id\"]}}' AND tenant_id = 'peskids' RETURNING *",
+        "nodeCredentialType": "postgres"
+      },
+      "name": "Log Status Event",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "postgres": "=peskids_supabase"
+      }
+    },
+    {
+      "parameters": {
+        "resource": "query",
+        "query": "UPDATE whatsapp_messages SET status = '{{$node[\"Status Update Webhook\"].json[\"status\"]}}', updated_at = NOW() WHERE external_message_id = '{{$node[\"Status Update Webhook\"].json[\"external_message_id\"]}}' AND tenant_id = 'peskids' RETURNING *",
+        "nodeCredentialType": "postgres"
+      },
+      "name": "Update Message Status",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [650, 300],
+      "credentials": {
+        "postgres": "=peskids_supabase"
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "comparator": "equals",
+              "value1": "={{$node[\"Status Update Webhook\"].json[\"status\"]}}",
+              "value2": \"failed\"
+            }
+          ]
+        }
+      },
+      "name": "Is Failed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        \"url\": \"={{$env[\"SLACK_WEBHOOK_URL\"]}}\",\n        \"method\": \"POST\",\n        \"contentType\": \"application/json\",\n        \"body\": \"{ \\\"text\\\": \\\"WhatsApp Message Failed\\\", \\\"blocks\\\": [{ \\\"type\\\": \\\"section\\\", \\\"text\\\": { \\\"type\\\": \\\"mrkdwn\\\", \\\"text\\\": \\\"*Failed Delivery*\\\\nMessage: {{$node['Status Update Webhook'].json['external_message_id']}}\\\\nError: {{$node['Status Update Webhook'].json['error_message']}}\\\" } }] }\"\n      },\n      \"name\": \"Alert on Failure\",\n      \"type\": \"n8n-nodes-base.httpRequest\",\n      \"typeVersion\": 3,\n      \"position\": [1050, 300]\n    }\n  ],\n  \"connections\": {\n    \"Status Update Webhook\": {\n      \"main\": [\n        [\n          {\n            \"node\": \"Log Status Event\",\n            \"type\": \"main\",\n            \"index\": 0\n          }\n        ]\n      ]\n    },\n    \"Log Status Event\": {\n      \"main\": [\n        [\n          {\n            \"node\": \"Update Message Status\",\n            \"type\": \"main\",\n            \"index\": 0\n          }\n        ]\n      ]\n    },\n    \"Update Message Status\": {\n      \"main\": [\n        [\n          {\n            \"node\": \"Is Failed?\",\n            \"type\": \"main\",\n            \"index\": 0\n          }\n        ]\n      ]\n    },\n    \"Is Failed?\": {\n      \"main\": [\n        [\n          {\n            \"node\": \"Alert on Failure\",\n            \"type\": \"main\",\n            \"index\": 0\n          }\n        ],\n        []\n      ]\n    }\n  },\n  \"active\": false,\n  \"settings\": {\n    \"executionOrder\": \"v1\"\n  },\n  \"versionId\": \"1.0\",\n  \"meta\": {\n    \"instanceId\": \"peskids\",\n    \"description\": \"Track message status updates (sent, delivered, read, failed) from WACRM webhooks\"\n  }\n}
