@@ -1,0 +1,277 @@
+version: '3.9'
+
+# Complete Peskids Stack: Peskids + Twenty + WACRM + n8n + Opsly Services
+# Deploy: docker-compose -f docker-compose.peskids-complete.yml up -d
+
+services:
+  # === PESKIDS CORE ===
+  peskids:
+    image: ghcr.io/cloudsysops/intcloudsysops-peskids:latest
+    container_name: peskids_app
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_SUPABASE_URL: ${SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      NEXT_PUBLIC_PESKIDS_SITE_URL: https://peskids.${PLATFORM_DOMAIN}
+      NEXT_PUBLIC_ADMIN_URL: https://admin.${PLATFORM_DOMAIN}
+      NEXT_PUBLIC_PORTAL_URL: https://portal.${PLATFORM_DOMAIN}
+
+      # WhatsApp
+      PESKIDS_WHATSAPP_ENABLED: ${PESKIDS_WHATSAPP_ENABLED:-false}
+      PESKIDS_WHATSAPP_PROVIDER: ${PESKIDS_WHATSAPP_PROVIDER:-wacrm}
+      PESKIDS_WHATSAPP_SANDBOX: ${PESKIDS_WHATSAPP_SANDBOX:-true}
+      PESKIDS_WHATSAPP_APPROVAL_REQUIRED: ${PESKIDS_WHATSAPP_APPROVAL_REQUIRED:-true}
+
+      # n8n
+      NEXT_PUBLIC_N8N_LEAD_WEBHOOK: https://n8n-peskids.${PLATFORM_DOMAIN}/webhook/peskids-lead
+      N8N_WEBHOOK_BASE_URL: http://n8n-peskids:5678/webhook
+      N8N_PESKIDS_WEBHOOK_URL: ${N8N_PESKIDS_WEBHOOK_URL}
+
+      # Orchestrator
+      OPSLY_EVENT_BUS_URL: http://opsly_orchestrator:3011/events
+      OPSLY_ORCHESTRATOR_ENABLED: 'true'
+
+      # Meta & WACRM (will be empty if disabled)
+      META_WEBHOOK_ENABLED: ${META_WEBHOOK_ENABLED:-false}
+      META_APP_ID: ${META_APP_ID:-}
+      META_VERIFY_TOKEN: ${META_VERIFY_TOKEN:-}
+
+      WACRM_ENABLED: ${WACRM_ENABLED:-false}
+      WACRM_BASE_URL: ${WACRM_BASE_URL:-}
+
+    ports:
+      - '3004:3000'
+    depends_on:
+      - twenty_peskids
+      - n8n_peskids
+      - opsly_orchestrator
+    networks:
+      - traefik-public
+      - peskids-internal
+    healthcheck:
+      test: ['CMD', 'curl', '-sf', 'http://localhost:3000/api/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: traefik-public
+      traefik.http.routers.peskids.rule: Host(`peskids.${PLATFORM_DOMAIN}`)
+      traefik.http.routers.peskids.entrypoints: websecure
+      traefik.http.routers.peskids.tls: 'true'
+      traefik.http.routers.peskids.tls.certresolver: letsencrypt
+      traefik.http.services.peskids.loadbalancer.server.port: '3000'
+
+  # === TWENTY CRM ===
+  twenty_peskids:
+    image: twentycrm/twenty:${TWENTY_IMAGE_TAG:-latest}
+    container_name: twenty_peskids
+    restart: unless-stopped
+    environment:
+      NODE_PORT: 3000
+      PG_DATABASE_URL: postgres://twenty:${TWENTY_PG_PASSWORD}@twenty-db:5432/default
+      SERVER_URL: https://crm-peskids.${PLATFORM_DOMAIN}
+      REDIS_URL: redis://twenty-redis:6379
+      APP_SECRET: ${TWENTY_APP_SECRET}
+      ENCRYPTION_KEY: ${TWENTY_ENCRYPTION_KEY}
+      STORAGE_TYPE: local
+      EMAIL_DRIVER: smtp
+      EMAIL_SMTP_HOST: smtp.resend.com
+      EMAIL_SMTP_PORT: '587'
+      EMAIL_SMTP_USER: resend
+      EMAIL_SMTP_PASSWORD: ${RESEND_API_KEY}
+      EMAIL_FROM_ADDRESS: ${TWENTY_PESKIDS_EMAIL_FROM:-no-reply@op-sly.com}
+    volumes:
+      - twenty-peskids-data:/app/packages/twenty-server/.local-storage
+    depends_on:
+      twenty-db:
+        condition: service_healthy
+      twenty-redis:
+        condition: service_healthy
+    networks:
+      - traefik-public
+      - twenty-internal
+      - peskids-internal
+    healthcheck:
+      test: ['CMD', 'curl', '-sf', 'http://localhost:3000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: traefik-public
+      traefik.http.routers.twenty-peskids.rule: Host(`crm-peskids.${PLATFORM_DOMAIN}`)
+      traefik.http.routers.twenty-peskids.entrypoints: websecure
+      traefik.http.routers.twenty-peskids.tls: 'true'
+      traefik.http.services.twenty-peskids.loadbalancer.server.port: '3000'
+
+  twenty-db:
+    image: postgres:16-alpine
+    container_name: twenty-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: twenty
+      POSTGRES_PASSWORD: ${TWENTY_PG_PASSWORD}
+      POSTGRES_DB: default
+    volumes:
+      - twenty-db-data:/var/lib/postgresql/data
+    networks:
+      - twenty-internal
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U twenty']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  twenty-redis:
+    image: redis:7-alpine
+    container_name: twenty-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - twenty-redis-data:/data
+    networks:
+      - twenty-internal
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # === n8n ===
+  n8n_peskids:
+    image: n8nio/n8n:latest
+    container_name: n8n_peskids
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      N8N_PROTOCOL: https
+      N8N_HOST: n8n-peskids.${PLATFORM_DOMAIN}
+      N8N_PORT: 5678
+      N8N_WEBHOOK_TUNNEL_URL: https://n8n-peskids.${PLATFORM_DOMAIN}/
+      N8N_EDITOR_BASE_URL: https://n8n-peskids.${PLATFORM_DOMAIN}/
+      DATABASE_TYPE: postgres
+      DATABASE_URL: postgres://n8n:${N8N_DB_PASSWORD}@n8n-db:5432/n8n
+      REDIS_URL: redis://n8n-redis:6379
+      GENERIC_TIMEZONE: America/Argentina/Buenos_Aires
+      TZ: America/Argentina/Buenos_Aires
+    volumes:
+      - n8n-data:/home/node/.n8n
+    depends_on:
+      n8n-db:
+        condition: service_healthy
+      n8n-redis:
+        condition: service_healthy
+    networks:
+      - traefik-public
+      - n8n-internal
+      - peskids-internal
+    healthcheck:
+      test: ['CMD', 'curl', '-sf', 'http://localhost:5678/api/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: traefik-public
+      traefik.http.routers.n8n-peskids.rule: Host(`n8n-peskids.${PLATFORM_DOMAIN}`)
+      traefik.http.routers.n8n-peskids.entrypoints: websecure
+      traefik.http.routers.n8n-peskids.tls: 'true'
+      traefik.http.services.n8n-peskids.loadbalancer.server.port: '5678'
+
+  n8n-db:
+    image: postgres:16-alpine
+    container_name: n8n-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: n8n
+      POSTGRES_PASSWORD: ${N8N_DB_PASSWORD}
+      POSTGRES_DB: n8n
+    volumes:
+      - n8n-db-data:/var/lib/postgresql/data
+    networks:
+      - n8n-internal
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U n8n']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  n8n-redis:
+    image: redis:7-alpine
+    container_name: n8n-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - n8n-redis-data:/data
+    networks:
+      - n8n-internal
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # === OPSLY ORCHESTRATOR ===
+  opsly_orchestrator:
+    image: ghcr.io/cloudsysops/intcloudsysops-orchestrator:latest
+    container_name: opsly_orchestrator
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      REDIS_URL: redis://opsly-redis:6379
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+    depends_on:
+      - opsly-redis
+    networks:
+      - peskids-internal
+    healthcheck:
+      test: ['CMD', 'curl', '-sf', 'http://localhost:3011/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  opsly-redis:
+    image: redis:7-alpine
+    container_name: opsly-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${OPSLY_REDIS_PASSWORD}
+    volumes:
+      - opsly-redis-data:/data
+    networks:
+      - peskids-internal
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  twenty-peskids-data:
+  twenty-db-data:
+  twenty-redis-data:
+  n8n-data:
+  n8n-db-data:
+  n8n-redis-data:
+  opsly-redis-data:
+
+networks:
+  traefik-public:
+    external: true
+  peskids-internal:
+    driver: bridge
+  twenty-internal:
+    driver: bridge
+  n8n-internal:
+    driver: bridge
+
+# Environment variables required:
+# PLATFORM_DOMAIN=op-sly.com
+# SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY
+# TWENTY_PG_PASSWORD, TWENTY_APP_SECRET, TWENTY_ENCRYPTION_KEY, RESEND_API_KEY
+# N8N_DB_PASSWORD
+# OPSLY_REDIS_PASSWORD
+# PESKIDS_WHATSAPP_*, META_*, WACRM_*
