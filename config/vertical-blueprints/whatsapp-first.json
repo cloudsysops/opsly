@@ -1,5 +1,7 @@
 {
   "vertical_blueprint_id": "whatsapp-first",
+  "version": "1.0.0",
+  "status": "production-ready",
   "industry": "whatsapp-led service business",
   "offer_type": "discovery_chat",
   "lead_sources": ["website", "whatsapp", "instagram", "referral"],
@@ -8,29 +10,100 @@
   "landing_routes": ["/", "/contact"],
   "crm_pipeline_name": "Sales Pipeline",
   "pattern_ids": ["incubator-app", "crm-starter-stack", "whatsapp-first-stack"],
-  "modules": ["lead-capture", "feedback-loop", "follow-up", "crm-view"],
+  "modules": ["lead-capture", "feedback-loop", "follow-up", "crm-view", "whatsapp-integration"],
   "n8n_workflows": [
     "lead-capture",
     "hot-lead-alert",
     "follow-up-reminder",
-    "wacrm-inbound-twenty-note"
+    "peskids-whatsapp-inbound",
+    "peskids-whatsapp-approval-send",
+    "peskids-whatsapp-delivery-status"
   ],
-  "wacrm": {
-    "enabled": false,
-    "public_url": "https://wa-{tenant_slug}.op-sly.com",
-    "sync_twenty": "notes-only",
-    "primary_whatsapp_provider": "wacrm"
+  "integrations": [
+    {
+      "name": "whatsapp_meta",
+      "provider": "Meta Cloud API",
+      "status": "production",
+      "cost_model": "per-message",
+      "setup_complexity": "medium",
+      "manual_setup_steps": "See docs/integrations/PESKIDS-META-HUMAN-STEPS.md",
+      "enabled_by_default": true,
+      "environment_variables": [
+        "META_APP_ID",
+        "META_APP_SECRET",
+        "META_VERIFY_TOKEN",
+        "META_ACCESS_TOKEN",
+        "META_WABA_ID",
+        "META_PHONE_NUMBER_ID",
+        "META_WEBHOOK_ENABLED"
+      ]
+    },
+    {
+      "name": "whatsapp_wacrm",
+      "provider": "WACRM (Self-hosted)",
+      "status": "production",
+      "cost_model": "self-hosted",
+      "setup_complexity": "low",
+      "manual_setup_steps": "See docs/integrations/PESKIDS-WACRM-OPERATIONS.md",
+      "enabled_by_default": false,
+      "environment_variables": [
+        "WACRM_BASE_URL",
+        "WACRM_API_KEY",
+        "WACRM_WEBHOOK_SECRET",
+        "WACRM_ENABLED"
+      ],
+      "fallback_for": ["whatsapp_meta"]
+    }
+  ],
+  "whatsapp": {
+    "primary_provider": "meta",
+    "fallback_provider": "wacrm",
+    "approval_required": true,
+    "sandbox_mode": false,
+    "public_url_pattern": "https://peskids.op-sly.com/api/public/integrations/whatsapp/{provider}/webhook",
+    "admin_dashboard": "https://{tenant_domain}/admin/peskids/{slug}/integrations/whatsapp",
+    "sync_twenty": "full-person-and-opportunity",
+    "twenty_fields_synced": ["firstName", "lastName", "email", "phone", "linkedinUrl", "xUrl"]
   },
   "smoke_tests": [
     "twenty-crm-smoke for tenant",
-    "wacrm-smoke when WACRM_*_ENABLED=true",
-    "wacrm-twenty-hybrid-smoke combined"
+    "meta-webhook-smoke when META_WEBHOOK_ENABLED=true",
+    "wacrm-smoke when WACRM_ENABLED=true",
+    "whatsapp-approval-workflow-smoke complete flow",
+    "twenty-sync-smoke message sync to CRM",
+    "health-check /api/health/integrations passes"
+  ],
+  "validation_checklist": [
+    "Webhook receiving messages from provider",
+    "Messages persisting to Supabase whatsapp_messages table",
+    "Contacts syncing to Twenty CRM with full fields",
+    "Approval workflow functioning (draft → pending → approved → sent)",
+    "n8n workflows executing for inbound/outbound messages",
+    "Delivery status updates tracked and recorded",
+    "Audit trail complete in whatsapp_integration_audit_log"
+  ],
+  "deployment_steps": [
+    "1. Follow PESKIDS-META-HUMAN-STEPS.md (manual setup 30-45 min)",
+    "2. Set Doppler secrets for META_* and PESKIDS_WHATSAPP_*",
+    "3. Deploy via PESKIDS-WHATSAPP-CUTOVER.md (30 min deployment)",
+    "4. Run smoke tests to validate",
+    "5. Enable PESKIDS_WHATSAPP_ENABLED=true for users"
   ],
   "next_commands": [
-    "./scripts/provisioning/bootstrap-tenant.sh --launch clients/{tenant_slug}.launch.json --dry-run",
-    "./scripts/tenants/bootstrap-wacrm.sh --slug {tenant_slug} --dry-run"
+    "./scripts/provisioning/bootstrap-tenant.sh --launch clients/{tenant_slug}.launch.json --with-whatsapp",
+    "./scripts/whatsapp/smoke-whatsapp-stack.sh",
+    "npm run test --workspace=@intcloudsysops/api -- lib/whatsapp"
   ],
   "brand_basic": {
     "tone": "conversational, responsive, trust-building"
-  }
+  },
+  "future_enhancements": [
+    "Media message support (images, documents, videos)",
+    "WhatsApp Business template management UI",
+    "Conversation threading and search",
+    "Smart routing based on message content",
+    "Metrics dashboard for WhatsApp performance",
+    "Multi-language support for approval messages"
+  ],
+  "team_guide": "See docs/integrations/PESKIDS-META-HUMAN-STEPS.md for Cristian/Santi manual setup"
 }
