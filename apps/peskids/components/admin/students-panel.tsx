@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { formatAgeRange } from '@/lib/peskids-domain';
 
 interface StudentRow {
   id: string;
@@ -178,13 +179,13 @@ export function StudentsPanel(): React.ReactElement {
                 />
               </div>
               <div>
-                <Label htmlFor="student-grade">Grado</Label>
+                <Label htmlFor="student-grade">Edad / rango</Label>
                 <Input
                   id="student-grade"
                   required
                   value={form.grade}
                   onChange={(e) => setForm({ ...form, grade: e.target.value })}
-                  placeholder="3"
+                  placeholder="4 años o 6–8 años"
                 />
               </div>
               <div>
@@ -229,7 +230,7 @@ export function StudentsPanel(): React.ReactElement {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por nombre, grado o email del padre/madre…"
+            placeholder="Buscar por nombre, edad/rango o email del padre/madre…"
           />
 
           {loading ? (
@@ -252,7 +253,8 @@ export function StudentsPanel(): React.ReactElement {
                   >
                     <div>
                       <p className="font-medium text-pk-ink">
-                        {student.name} <span className="text-pk-sub">· grado {student.grade}</span>
+                        {student.name}{' '}
+                        <span className="text-pk-sub">· {formatAgeRange(student.grade)}</span>
                       </p>
                       <p className="text-xs text-pk-sub">{student.parent_email ?? 'Sin email'}</p>
                     </div>

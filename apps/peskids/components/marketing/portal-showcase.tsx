@@ -219,7 +219,7 @@ export function PortalShowcase(): React.ReactElement {
             achievements={['Primera clase completada', 'Burbujas', 'Flotación dorsal']}
             streakLabel="Racha familiar"
             streakValue="8"
-            progressLabel="Progreso hacia el siguiente nivel"
+            progressLabel="Progreso hacia el siguiente hito"
             progressPercent={62}
             accent="amber"
           />

@@ -107,9 +107,9 @@ describe('fetchDashboardData', () => {
   it('returns dashboard aggregates using the expanded feedback schema', async () => {
     const studentsQuery = createOrderQuery({
       data: [
-        { id: 'student-1', grade: '3A', status: 'active', parent_email: 'maria@example.com' },
-        { id: 'student-2', grade: '3A', status: 'active', parent_email: 'maria@example.com' },
-        { id: 'student-3', grade: '4B', status: 'active', parent_email: 'jose@example.com' },
+        { id: 'student-1', grade: '6-8', status: 'active', parent_email: 'maria@example.com' },
+        { id: 'student-2', grade: '6-8', status: 'active', parent_email: 'maria@example.com' },
+        { id: 'student-3', grade: '9-12', status: 'active', parent_email: 'jose@example.com' },
       ],
       error: null,
     })
@@ -247,7 +247,7 @@ describe('fetchDashboardData', () => {
     })
     expect(result.active_students_count).toBe(3)
     expect(result.families_active_count).toBe(2)
-    expect(result.students_by_grade).toEqual({ '3A': 2, '4B': 1 })
+    expect(result.students_by_grade).toEqual({ '6-8': 2, '9-12': 1 })
     expect(result.recent_feedback).toHaveLength(1)
     expect(result.private_family_notes).toHaveLength(1)
     expect(result.pending_followups_count).toBe(1)

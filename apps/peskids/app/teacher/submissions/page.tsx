@@ -409,7 +409,7 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl border border-pk-border bg-white p-4">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-pk-mutedText">
-                    Nivel
+                    Edad / rango
                   </p>
                   <p className="mt-1 text-sm font-medium text-pk-ink">{selectedLevel}</p>
                 </div>

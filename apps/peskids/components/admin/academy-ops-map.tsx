@@ -207,7 +207,7 @@ export function AcademyOpsMap({ data }: AcademyOpsMapProps): React.ReactElement 
             Mapa operativo de la academia
           </h3>
           <p className="mt-2 text-sm leading-6 text-pk-sub">
-            Vista de alto nivel para ver qué áreas están listas, en progreso o requieren trabajo
+            Vista general para ver qué áreas están listas, en progreso o requieren trabajo
             manual. Sirve para orientar la operación diaria sin entrar en detalle técnico.
           </p>
         </div>

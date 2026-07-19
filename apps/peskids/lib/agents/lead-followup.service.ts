@@ -5,6 +5,7 @@ import type {
   ReengagementLeadCandidate,
 } from '@/lib/agents/lead-followup-store';
 import { createSupabaseLeadFollowupStore } from '@/lib/agents/lead-followup-store';
+import { formatAgeRange } from '@/lib/peskids-domain';
 
 const DEFAULT_LLM_GATEWAY_URL = 'http://localhost:3010';
 
@@ -75,7 +76,7 @@ export class LeadFollowupService {
 
     const profileLines: string[] = [];
     if (modality) profileLines.push(`- Modalidad de interés: ${modality}`);
-    if (interest) profileLines.push(`- Grado de interés: ${interest}`);
+    if (interest) profileLines.push(`- Edad / rango de interés: ${formatAgeRange(interest)}`);
     if (lead.neighborhood) profileLines.push(`- Barrio: ${lead.neighborhood}`);
 
     const systemPrompt =

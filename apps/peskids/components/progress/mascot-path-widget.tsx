@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { BadgeCheck, ChevronRight, Sparkles } from 'lucide-react'
-import { SWIM_LEVELS } from '@/lib/brand'
+import { PROGRESS_MILESTONES } from '@/lib/brand'
 import { cn } from '@/lib/utils'
 
 type MascotOption = {
@@ -45,9 +45,9 @@ export function MascotPathWidget({
     [selectedMascotId]
   )
 
-  const currentLevel = useMemo(() => {
+  const currentMilestone = useMemo(() => {
     const index = mascotOptions.findIndex((option) => option.id === selectedMascot.id)
-    return Math.min(SWIM_LEVELS.length, Math.max(1, index + 2))
+    return Math.min(PROGRESS_MILESTONES.length, Math.max(1, index + 2))
   }, [selectedMascot.id])
 
   return (
@@ -62,7 +62,7 @@ export function MascotPathWidget({
             <p className="mt-1 text-sm text-pk-sub">{description}</p>
           </div>
           <div className="rounded-full bg-pk-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-pk-primary">
-            Etapa {currentLevel}
+            Hito actual
           </div>
         </div>
       </div>
@@ -90,12 +90,12 @@ export function MascotPathWidget({
               </p>
             </div>
             <div className="mt-3 space-y-2">
-              {SWIM_LEVELS.map((level) => {
-                const active = level.n <= currentLevel
-                const reached = level.n === currentLevel
+              {PROGRESS_MILESTONES.map((milestone) => {
+                const active = milestone.n <= currentMilestone
+                const reached = milestone.n === currentMilestone
                 return (
                   <div
-                    key={level.n}
+                    key={milestone.n}
                     className={cn(
                       'flex items-center gap-3 rounded-2xl border px-3 py-2',
                       active ? 'border-white/15 bg-white/10' : 'border-white/10 bg-white/5'
@@ -107,11 +107,11 @@ export function MascotPathWidget({
                         active ? 'bg-white/15' : 'bg-white/10'
                       )}
                     >
-                      {level.emoji}
+                      {milestone.emoji}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold">{level.name}</p>
-                      <p className="text-[11px] text-white/70">{level.desc}</p>
+                      <p className="text-sm font-semibold">{milestone.name}</p>
+                      <p className="text-[11px] text-white/70">{milestone.desc}</p>
                     </div>
                     {reached ? (
                       <span className="rounded-full bg-pk-sun px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-pk-ink">
@@ -180,17 +180,17 @@ export function MascotPathWidget({
             </p>
 
             <div className="mt-4 grid grid-cols-6 gap-2">
-              {SWIM_LEVELS.map((level) => {
-                const active = level.n <= currentLevel
+              {PROGRESS_MILESTONES.map((milestone) => {
+                const active = milestone.n <= currentMilestone
                 return (
                   <div
-                    key={level.n}
+                    key={milestone.n}
                     className={cn(
                       'flex aspect-square items-center justify-center rounded-2xl border text-xl',
                       active ? 'border-pk-primary bg-pk-primary/10' : 'border-pk-border bg-pk-snow'
                     )}
                   >
-                    {level.emoji}
+                    {milestone.emoji}
                   </div>
                 )
               })}

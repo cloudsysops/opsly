@@ -28,6 +28,7 @@ import { WacrmLeadInboxActions } from '@/components/admin/wacrm-lead-inbox-actio
 import { normalizeLeadSourceLabel } from '@/lib/admin/lead-source-label'
 import { classModalityLabel, PESKIDS_CLASS_MODALITY_OPTIONS } from '@/lib/lead-modality'
 import { buildPeskidsReferralLink } from '@/lib/peskids-referral-links'
+import { formatAgeRange } from '@/lib/peskids-domain'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -697,7 +698,7 @@ export function DashboardView({
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     <Badge tone="violet">{normalizeLeadSourceLabel(lead.referral_source)}</Badge>
                     <Badge tone="amber">{classModalityLabel(lead.class_modality)}</Badge>
-                    <Badge tone="teal">{lead.grade_interested}</Badge>
+                    <Badge tone="teal">{formatAgeRange(lead.grade_interested)}</Badge>
                     {lead.referral_code ? <Badge tone="green">Ref {lead.referral_code}</Badge> : null}
                     {lead.referred_by_code ? <Badge tone="violet">Recomendado</Badge> : null}
                   </div>
@@ -983,9 +984,9 @@ export function DashboardView({
         >
           <ul className="space-y-2">
             {Object.entries(data.students_by_grade).length > 0 ? (
-              Object.entries(data.students_by_grade).map(([grade, count]) => (
-                <li key={grade} className="flex justify-between text-sm">
-                  <span className="text-pk-sub">Grado {grade}</span>
+              Object.entries(data.students_by_grade).map(([ageRange, count]) => (
+                <li key={ageRange} className="flex justify-between text-sm">
+                  <span className="text-pk-sub">{formatAgeRange(ageRange)}</span>
                   <span className="font-semibold tabular-nums text-pk-ink">{count}</span>
                 </li>
               ))
