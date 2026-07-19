@@ -6,18 +6,22 @@ import type { NextRequest } from 'next/server';
 import { HTTP_STATUS } from './constants';
 import { logger } from '../logger';
 
-export async function parseJsonBody(request: NextRequest): Promise<{
-  ok: boolean;
-  body?: Record<string, unknown>;
-  response?: Response;
-}> {
+export async function parseJsonBody(
+  request: NextRequest
+): Promise<
+  | { ok: true; body: Record<string, unknown>; response?: never }
+  | { ok: false; body?: never; response: Response }
+> {
   try {
     const body = await request.json();
     return { ok: true, body };
   } catch (error) {
     return {
       ok: false,
-      response: Response.json({ error: 'Invalid JSON body' }, { status: HTTP_STATUS.BAD_REQUEST }),
+      response: Response.json(
+        { error: 'Invalid JSON body' },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      ),
     };
   }
 }
