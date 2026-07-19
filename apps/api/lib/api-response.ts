@@ -15,13 +15,10 @@ export async function parseJsonBody(
   try {
     const body = await request.json();
     return { ok: true, body };
-  } catch (error) {
+  } catch {
     return {
       ok: false,
-      response: Response.json(
-        { error: 'Invalid JSON body' },
-        { status: HTTP_STATUS.BAD_REQUEST }
-      ),
+      response: Response.json({ error: 'Invalid JSON body' }, { status: HTTP_STATUS.BAD_REQUEST }),
     };
   }
 }
