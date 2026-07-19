@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-07-19T19:17:32.510Z",
-  "totalFiles": 810,
+  "lastIndexed": "2026-07-19T19:32:38.768Z",
+  "totalFiles": 814,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -514,6 +514,10 @@
     "infrastructure/PESKIDS-AGENT-AUTONOMOUS-DEPLOYMENT.md",
     "infrastructure/README.md",
     "infrastructure/REDIS-QUEUE-GUIDE.md",
+    "integrations/PESKIDS-META-HUMAN-STEPS.md",
+    "integrations/PESKIDS-WACRM-OPERATIONS.md",
+    "integrations/PESKIDS-WHATSAPP-CUTOVER.md",
+    "integrations/README.md",
     "legal/peskids/DPIA-2026.md",
     "n8n-workflows/CLOUDSYSOPS-TECHNICIAN-N8N.md",
     "n8n-workflows/crm/README.md",
