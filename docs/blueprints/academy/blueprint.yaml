@@ -1,0 +1,23 @@
+apiVersion: opsly.io/v1alpha1
+kind: VerticalBlueprint
+metadata:
+  id: academy
+  displayName: Academy
+  status: draft
+  pilotTenant: peskids
+spec:
+  tenantSchema: ./tenant.schema.json
+  capabilities: ./capabilities.yaml
+  integrations: ./integrations.yaml
+  roles: ./roles.yaml
+  agentPolicy: ./agent-policy.yaml
+  controlPlane: existing-opsly
+  provisioning:
+    enabled: false
+    mode: contract-only
+  invariants:
+    - tenant-scoped
+    - twenty-primary-crm
+    - approval-first-outbound
+    - no-parallel-agent-framework
+    - no-production-mutation-from-blueprint
