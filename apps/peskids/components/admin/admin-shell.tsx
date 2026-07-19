@@ -73,8 +73,13 @@ const DASHBOARD_VIEWS = [
   },
   {
     label: 'Familias',
-    href: '/familias/submissions',
-    description: 'Progreso, feedback y formularios.',
+    description: 'Requiere cuenta demo de familia para no mezclar permisos.',
+    disabled: true,
+  },
+  {
+    label: 'Soporte',
+    href: '/support/dashboard',
+    description: 'Casos, mensajes y seguimientos.',
   },
 ] as const;
 
@@ -350,18 +355,31 @@ export function AdminShell({
                     <p className="border-b border-pk-border px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-pk-mutedText">
                       Cambiar de panel
                     </p>
-                    {DASHBOARD_VIEWS.map((view) => (
-                      <Link
-                        key={view.href}
-                        href={view.href}
-                        role="menuitem"
-                        onClick={() => setViewSwitcherOpen(false)}
-                        className="block px-4 py-3 text-sm hover:bg-pk-muted"
-                      >
-                        <p className="font-semibold text-pk-ink">{view.label}</p>
-                        <p className="text-xs text-pk-mutedText">{view.description}</p>
-                      </Link>
-                    ))}
+                    {DASHBOARD_VIEWS.map((view) =>
+                      'href' in view ? (
+                        <Link
+                          key={view.href}
+                          href={view.href}
+                          role="menuitem"
+                          onClick={() => setViewSwitcherOpen(false)}
+                          className="block px-4 py-3 text-sm hover:bg-pk-muted"
+                        >
+                          <p className="font-semibold text-pk-ink">{view.label}</p>
+                          <p className="text-xs text-pk-mutedText">{view.description}</p>
+                        </Link>
+                      ) : (
+                        <button
+                          key={view.label}
+                          type="button"
+                          role="menuitem"
+                          disabled
+                          className="block w-full cursor-not-allowed px-4 py-3 text-left text-sm opacity-60"
+                        >
+                          <p className="font-semibold text-pk-ink">{view.label}</p>
+                          <p className="text-xs text-pk-mutedText">{view.description}</p>
+                        </button>
+                      )
+                    )}
                   </div>
                 </>
               ) : null}
