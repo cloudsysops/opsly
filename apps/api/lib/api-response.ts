@@ -17,10 +17,7 @@ export async function parseJsonBody(request: NextRequest): Promise<{
   } catch (error) {
     return {
       ok: false,
-      response: Response.json(
-        { error: 'Invalid JSON body' },
-        { status: HTTP_STATUS.BAD_REQUEST }
-      ),
+      response: Response.json({ error: 'Invalid JSON body' }, { status: HTTP_STATUS.BAD_REQUEST }),
     };
   }
 }
@@ -29,7 +26,10 @@ export function jsonSuccess(data: unknown, statusCode: number = HTTP_STATUS.OK):
   return Response.json(data, { status: statusCode });
 }
 
-export function jsonError(message: string, statusCode: number = HTTP_STATUS.INTERNAL_ERROR): Response {
+export function jsonError(
+  message: string,
+  statusCode: number = HTTP_STATUS.INTERNAL_ERROR
+): Response {
   return Response.json({ error: message }, { status: statusCode });
 }
 
@@ -39,7 +39,10 @@ export function jsonOk(data: unknown, statusCode: number = HTTP_STATUS.OK): Resp
 
 export function serverErrorLogged(context: string, error: unknown): Response {
   const message = error instanceof Error ? error.message : String(error);
-  logger.error(context, { error: message, stack: error instanceof Error ? error.stack : undefined });
+  logger.error(context, {
+    error: message,
+    stack: error instanceof Error ? error.stack : undefined,
+  });
   return Response.json({ error: message }, { status: HTTP_STATUS.INTERNAL_ERROR });
 }
 
@@ -53,7 +56,10 @@ export function tryRoute<T>(
       return Response.json(result, { status: HTTP_STATUS.OK });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
-      logger.error(context, { error: message, stack: err instanceof Error ? err.stack : undefined });
+      logger.error(context, {
+        error: message,
+        stack: err instanceof Error ? err.stack : undefined,
+      });
       return Response.json({ error: message }, { status: HTTP_STATUS.INTERNAL_ERROR });
     }
   };
