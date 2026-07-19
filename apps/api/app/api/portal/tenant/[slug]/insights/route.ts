@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { HTTP_STATUS } from '../../../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { getInsightsForTenant } from '../../../../../../lib/insights/engine';
 import { applyInsightPatchAction } from '../../../../../../lib/insights/insight-patch-actions';
 import { runTrustedPortalDalForPathSlug } from '../../../../../../lib/portal-tenant-dal';

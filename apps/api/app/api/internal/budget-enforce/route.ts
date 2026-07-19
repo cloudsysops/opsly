@@ -1,6 +1,6 @@
 import { requireAdminToken } from '../../../../lib/auth';
 import { checkTenantBudget } from '../../../../lib/billing/budget-enforcer';
-import { HTTP_STATUS } from '../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { executeBudgetEnforcement } from '../../../../lib/internal/budget-enforce-response';
 import { parseTenantIdFromJsonBody } from '../../../../lib/internal/parse-tenant-id-body';
 import { logger } from '../../../../lib/logger';

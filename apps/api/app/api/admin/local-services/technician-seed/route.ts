@@ -3,9 +3,9 @@ import {
   parseJsonBody,
   serverErrorLogged,
   tryRoute,
-} from '../../../../../lib/api-response';
+} from '@/lib/api-response';
 import { requireAdminAccess } from '../../../../../lib/auth';
-import { HTTP_STATUS } from '../../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import type { Json } from '../../../../../lib/supabase/types';
 import { getServiceClient } from '../../../../../lib/supabase';
 import { seedTechnicianLocalServicesForSlug } from '../../../../../lib/technician-local-services-seed';

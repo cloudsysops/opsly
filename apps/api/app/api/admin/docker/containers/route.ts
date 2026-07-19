@@ -1,5 +1,5 @@
 import { requireAdminAccess } from '../../../../../lib/auth';
-import { DOCKER_PS_LIST_MAX } from '../../../../../lib/constants';
+import { DOCKER_PS_LIST_MAX } from '@intcloudsysops/constants';
 import { listDockerContainers } from '../../../../../lib/docker-ps-list';
 
 export const dynamic = 'force-dynamic';

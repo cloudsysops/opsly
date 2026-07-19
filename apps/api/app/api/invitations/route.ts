@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { jsonError, parseJsonBody } from '../../../lib/api-response';
+import { jsonError, parseJsonBody } from '@/lib/api-response';
 import { requireAdminAccess } from '../../../lib/auth';
-import { HTTP_STATUS } from '../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { executeAdminInvitation } from '../../../lib/invitation-admin-flow';
 import { formatZodError } from '../../../lib/validation';
 

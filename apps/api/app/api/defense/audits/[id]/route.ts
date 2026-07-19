@@ -1,5 +1,5 @@
-import { jsonError } from '../../../../../lib/api-response';
-import { DEFENSE_API, HTTP_STATUS } from '../../../../../lib/constants';
+import { jsonError } from '@/lib/api-response';
+import { DEFENSE_API, HTTP_STATUS } from '@intcloudsysops/constants';
 import { requireAdminAccessUnlessDemoRead } from '../../../../../lib/auth';
 import { getServiceClient } from '../../../../../lib/supabase';
 

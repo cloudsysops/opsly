@@ -1,6 +1,6 @@
-import { tryRoute } from '../../../../../../../lib/api-response';
+import { tryRoute } from '@/lib/api-response';
 import { requireAdminToken } from '../../../../../../../lib/auth';
-import { HTTP_STATUS } from '../../../../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { deleteWebhook } from '../../../../../../../lib/repositories/webhook-repository';
 
 type RouteParams = { params: Promise<{ ref: string; webhookId: string }> };

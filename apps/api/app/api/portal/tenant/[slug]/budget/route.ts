@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { HTTP_STATUS } from '../../../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { runTrustedPortalDalForPathSlug } from '../../../../../../lib/portal-tenant-dal';
 import { getServiceClient } from '../../../../../../lib/supabase';
 import { logger } from '../../../../../../lib/logger';

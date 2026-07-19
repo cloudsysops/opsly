@@ -1,6 +1,6 @@
-import { jsonError } from '../../../../../../lib/api-response';
+import { jsonError } from '@/lib/api-response';
 import { remediateVulnerabilityBodySchema } from '../../../../../../lib/defense/validation';
-import { DEFENSE_API, HTTP_STATUS } from '../../../../../../lib/constants';
+import { DEFENSE_API, HTTP_STATUS } from '@intcloudsysops/constants';
 import { requireAdminAccess } from '../../../../../../lib/auth';
 import { getServiceClient } from '../../../../../../lib/supabase';
 

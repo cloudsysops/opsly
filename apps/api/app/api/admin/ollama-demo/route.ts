@@ -7,7 +7,7 @@ import {
   parseTaskType,
   resolveTenantBySlug,
 } from '../../../../lib/admin-ollama-demo';
-import { HTTP_STATUS } from '../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 
 function requirePlatformAdminToken(): Response | string {
   const adminToken = process.env.PLATFORM_ADMIN_TOKEN?.trim() ?? '';

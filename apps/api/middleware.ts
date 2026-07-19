@@ -1,7 +1,7 @@
 // Middleware en la raíz del paquete (`apps/api/middleware.ts`). No existe `apps/api/src/middleware.ts` en este repo.
 import { NextResponse, type NextRequest } from 'next/server';
 import { pickCorsOrigin } from './lib/cors-origins';
-import { HTTP_STATUS } from './lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { checkRateLimit, type RateLimitResult } from './lib/rate-limiter-memory';
 
 const CORS_METHODS = 'GET,POST,PATCH,DELETE,OPTIONS';

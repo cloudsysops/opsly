@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { jsonError, jsonOk } from '@/lib/api-response';
-import { HTTP_STATUS } from '@/lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { getServiceClient } from '@/lib/supabase';
 
 interface FormField {

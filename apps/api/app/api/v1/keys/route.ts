@@ -1,8 +1,8 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { z } from 'zod';
-import { jsonError, serverErrorLogged } from '../../../../lib/api-response';
+import { jsonError, serverErrorLogged } from '@/lib/api-response';
 import { requireAdminAccess } from '../../../../lib/auth';
-import { HTTP_STATUS } from '../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { getServiceClient } from '../../../../lib/supabase';
 import { formatZodError } from '../../../../lib/validation';
 

@@ -9,9 +9,9 @@
  */
 
 import type { NextRequest } from 'next/server';
-import { parseJsonBody } from '../../../../../../../lib/api-response';
-import { HTTP_STATUS } from '../../../../../../../lib/constants';
-import { whatsappConfig, WacrmWhatsAppProvider, WhatsAppSignatureError } from '../../../../../../../lib/whatsapp';
+import { parseJsonBody } from '@/lib/api-response';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
+import { whatsappConfig, WacrmWhatsAppProvider, WhatsAppSignatureError } from '@intcloudsysops/whatsapp';
 
 /**
  * POST - WACRM Webhook Event Processing

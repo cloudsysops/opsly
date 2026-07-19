@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { requireAdminAccess } from '../../../../../../../../lib/auth';
-import { HTTP_STATUS } from '../../../../../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { PESKIDS_PIPELINE_STAGES } from '../../../../../../../../lib/peskids/ghl-contract';
 import { updateLeadStage } from '../../../../../../../../lib/peskids/sales-pipeline';
-import { parseJsonBody, jsonError } from '../../../../../../../../lib/api-response';
+import { parseJsonBody, jsonError } from '@/lib/api-response';
 import { formatZodError } from '../../../../../../../../lib/validation';
 
 const stageUpdateSchema = z.object({

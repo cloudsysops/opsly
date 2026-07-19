@@ -1,7 +1,7 @@
 import { timingSafeEqual } from 'node:crypto';
 import type { NextRequest } from 'next/server';
-import { parseJsonBody, jsonError } from '../../../../../../../../lib/api-response';
-import { HTTP_STATUS } from '../../../../../../../../lib/constants';
+import { parseJsonBody, jsonError } from '@/lib/api-response';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import {
   goHighLevelLeadWebhookSchema,
   normalizePeskidsPipelineStage,

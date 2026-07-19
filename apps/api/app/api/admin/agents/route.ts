@@ -1,5 +1,5 @@
 import { requireAdminAccess } from '../../../../lib/auth';
-import { HTTP_STATUS } from '../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { getPlatformAgentRegistry } from '../../../../lib/platform-foundation';
 
 export async function GET(request: Request): Promise<Response> {

@@ -1,4 +1,4 @@
-import { HTTP_STATUS } from '../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { respondPortalTenantHealth } from '../../../../lib/portal-health-json';
 
 const PORTAL_HEALTH_SLUG_MIN_LEN = 3;

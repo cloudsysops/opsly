@@ -1,8 +1,8 @@
 import { randomBytes } from 'node:crypto';
 import { z } from 'zod';
-import { jsonError, parseJsonBody, tryRoute } from '../../../../../../lib/api-response';
+import { jsonError, parseJsonBody, tryRoute } from '@/lib/api-response';
 import { requireAdminToken } from '../../../../../../lib/auth';
-import { HTTP_STATUS, WEBHOOK_CRYPTO } from '../../../../../../lib/constants';
+import { HTTP_STATUS, WEBHOOK_CRYPTO } from '@intcloudsysops/constants';
 import { createWebhook, listWebhooks } from '../../../../../../lib/repositories/webhook-repository';
 
 const ALLOWED_EVENTS = [

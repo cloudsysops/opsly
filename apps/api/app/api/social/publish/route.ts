@@ -8,7 +8,7 @@ import {
 } from '../../../../lib/social/adapters/publisher';
 import { capturePublishEvent, capturePublishError } from '../../../../lib/knowledge/syra-capture';
 import { getServiceClient } from '../../../../lib/supabase';
-import { HTTP_STATUS } from '../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { requireAdminAccess } from '../../../../lib/auth';
 
 type PublishBody = {

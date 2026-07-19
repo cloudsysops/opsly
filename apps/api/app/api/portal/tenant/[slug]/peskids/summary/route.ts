@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { runTrustedPortalDalForPathSlug } from '../../../../../../../lib/portal-tenant-dal';
 import { PESKIDS_TENANT_SLUG } from '../../../../../../../lib/peskids/constants';
 import { respondPeskidsPortalSummary } from '../../../../../../../lib/peskids/portal-summary';
-import { HTTP_STATUS } from '../../../../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 
 /**
  * GET /api/portal/tenant/{slug}/peskids/summary

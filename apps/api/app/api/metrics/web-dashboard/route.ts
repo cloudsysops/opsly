@@ -1,4 +1,4 @@
-import { serverErrorLogged, tryRoute } from '../../../../lib/api-response';
+import { serverErrorLogged, tryRoute } from '@/lib/api-response';
 import { requireAdminAccessUnlessDemoRead } from '../../../../lib/auth';
 import { getWebDashboardMetricsJson } from '../../../../lib/metrics-web-dashboard';
 

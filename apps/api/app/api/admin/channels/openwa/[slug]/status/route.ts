@@ -1,6 +1,6 @@
-import { jsonError, tryRoute } from '../../../../../../../lib/api-response';
+import { jsonError, tryRoute } from '@/lib/api-response';
 import { requireAdminAccess } from '../../../../../../../lib/auth';
-import { HTTP_STATUS } from '../../../../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { getConfigForTenant, getSession, isOpenWAEnabledForTenant } from '@intcloudsysops/openwa';
 
 type RouteParams = { params: Promise<{ slug: string }> };

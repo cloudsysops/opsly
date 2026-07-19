@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server';
-import { HTTP_STATUS } from '@/lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { runTrustedPortalDalForPathSlug, PORTAL_READ_ACCESS } from '@/lib/portal-tenant-dal';
 import { getServiceClient } from '@/lib/supabase';
 

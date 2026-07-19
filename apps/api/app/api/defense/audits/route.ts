@@ -1,7 +1,7 @@
-import { jsonError } from '../../../../lib/api-response';
+import { jsonError } from '@/lib/api-response';
 import { executePostDefenseAudit } from '../../../../lib/defense/post-defense-audit';
 import { createDefenseAuditBodySchema } from '../../../../lib/defense/validation';
-import { DEFENSE_API, HTTP_STATUS } from '../../../../lib/constants';
+import { DEFENSE_API, HTTP_STATUS } from '@intcloudsysops/constants';
 import { requireAdminAccess, requireAdminAccessUnlessDemoRead } from '../../../../lib/auth';
 import { getServiceClient } from '../../../../lib/supabase';
 

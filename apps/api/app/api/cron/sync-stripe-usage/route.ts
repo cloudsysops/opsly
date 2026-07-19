@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { syncAllTenantsUsage } from '../../../../lib/stripe/usage-sync';
-import { HTTP_STATUS } from '../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 
 function isAuthorized(request: Request): boolean {
   const secret = process.env.CRON_SECRET?.trim();

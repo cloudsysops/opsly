@@ -1,5 +1,5 @@
 import { requireAdminAccessUnlessDemoRead } from '../../../../lib/auth';
-import { DEMO_SYSTEM_METRICS_MOCK } from '../../../../lib/constants';
+import { DEMO_SYSTEM_METRICS_MOCK } from '@intcloudsysops/constants';
 import { countRunningDockerContainers } from '../../../../lib/docker-running-count';
 import { fetchHostMetricsFromPrometheus } from '../../../../lib/fetch-host-metrics-prometheus';
 import { getPrometheusBaseUrl } from '../../../../lib/prometheus';

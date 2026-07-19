@@ -1,6 +1,6 @@
-import { tryRoute } from '../../../../lib/api-response';
+import { tryRoute } from '@/lib/api-response';
 import { getBullmqPipelineJobTotals } from '../../../../lib/bullmq-pipeline-counts';
-import { HTTP_STATUS } from '../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { resolveSuperAdminSession } from '../../../../lib/super-admin-auth';
 import { getServiceClient } from '../../../../lib/supabase';
 

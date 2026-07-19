@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { createHmac } from 'crypto';
-import { jsonError, jsonOk } from '../../../../lib/api-response';
-import { HTTP_STATUS } from '../../../../lib/constants';
+import { jsonError, jsonOk } from '@/lib/api-response';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { getServiceClient } from '../../../../lib/supabase';
 
 // peskids.* tables pending DB type codegen

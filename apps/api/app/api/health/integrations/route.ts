@@ -4,12 +4,12 @@
  */
 
 import type { NextRequest } from 'next/server';
-import { jsonSuccess } from '../../../../../lib/api-response';
-import { HTTP_STATUS } from '../../../../../lib/constants';
-import { getWhatsAppHealth } from '../../../../../lib/observability/whatsapp-metrics';
-import { whatsappConfig } from '../../../../../lib/whatsapp';
-import { checkAWSHealth } from '../../../../../lib/cloud-providers/aws-config';
-import { checkGCPHealth } from '../../../../../lib/cloud-providers/gcp-config';
+import { jsonSuccess } from '@/lib/api-response';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
+import { getWhatsAppHealth } from '@intcloudsysops/observability/whatsapp-metrics';
+import { whatsappConfig } from '@intcloudsysops/whatsapp';
+import { checkAWSHealth } from '@intcloudsysops/cloud-providers/aws-config';
+import { checkGCPHealth } from '@intcloudsysops/cloud-providers/gcp-config';
 
 export async function GET(request: NextRequest): Promise<Response> {
   const whatsappHealth = getWhatsAppHealth();

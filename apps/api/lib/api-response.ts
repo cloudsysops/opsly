@@ -1,54 +1,49 @@
 /**
- * Respuestas JSON coherentes para Route Handlers (Next.js App Router).
- * Evita duplicar `{ error: string }` + status y centraliza logging de 500.
+ * API response utilities for Next.js route handlers
  */
 
+import type { NextRequest } from 'next/server';
 import { HTTP_STATUS } from './constants';
 
-export type ApiErrorBody = {
-  error: string;
-};
-
-export function jsonError(message: string, status: number): Response {
-  const body: ApiErrorBody = { error: message };
-  return Response.json(body, { status });
-}
-
-export function jsonOk(data: unknown, status: number = HTTP_STATUS.OK): Response {
-  return Response.json(data, { status });
-}
-
-export async function parseJsonBody(
-  request: Request
-): Promise<{ ok: true; body: unknown } | { ok: false; response: Response }> {
+export async function parseJsonBody(request: NextRequest): Promise<{
+  ok: boolean;
+  body?: Record<string, unknown>;
+  response?: Response;
+}> {
   try {
     const body = await request.json();
     return { ok: true, body };
-  } catch {
+  } catch (error) {
     return {
       ok: false,
-      response: jsonError('Invalid JSON body', HTTP_STATUS.BAD_REQUEST),
+      response: Response.json(
+        { error: 'Invalid JSON body' },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      ),
     };
   }
 }
 
-/** Registra `err` y devuelve 500 con mensaje genérico al cliente. */
-export function serverErrorLogged(context: string, err: unknown): Response {
-  console.error(context, err);
-  return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
+export function jsonSuccess(data: unknown, statusCode = HTTP_STATUS.OK): Response {
+  return Response.json(data, { status: statusCode });
 }
 
-/**
- * Ejecuta un handler async; ante excepción no capturada devuelve 500 logueado.
- * Útil cuando el cuerpo del método tiene varios `await` sin try/catch local.
- */
-export async function tryRoute(
-  context: string,
-  handler: () => Promise<Response>
-): Promise<Response> {
-  try {
-    return await handler();
-  } catch (err) {
-    return serverErrorLogged(context, err);
-  }
+export function jsonError(message: string, statusCode = HTTP_STATUS.INTERNAL_SERVER_ERROR): Response {
+  return Response.json({ error: message }, { status: statusCode });
+}
+
+export function jsonOk(data: unknown, statusCode = HTTP_STATUS.OK): Response {
+  return Response.json({ ok: true, data }, { status: statusCode });
+}
+
+export function tryRoute<T>(handler: () => T | Promise<T>) {
+  return async (request: NextRequest): Promise<Response> => {
+    try {
+      const result = await handler();
+      return Response.json(result, { status: HTTP_STATUS.OK });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      return Response.json({ error: message }, { status: HTTP_STATUS.INTERNAL_SERVER_ERROR });
+    }
+  };
 }

@@ -4,8 +4,8 @@
  */
 
 import type { NextRequest } from 'next/server';
-import { HTTP_STATUS } from '../../../../../../../lib/constants';
-import { whatsappConfig, WacrmWhatsAppProvider } from '../../../../../../../lib/whatsapp';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
+import { whatsappConfig, WacrmWhatsAppProvider } from '@intcloudsysops/whatsapp';
 
 export async function GET(request: NextRequest): Promise<Response> {
   const wacrmConfig = whatsappConfig.getWacrmConfig();

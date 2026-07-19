@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { jsonError, jsonOk } from '@/lib/api-response';
-import { HTTP_STATUS } from '@/lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { triggerWebhooks } from '@/lib/peskids-webhook-trigger';
 import type { WebhookConfig, WebhookTriggerResult } from '@/lib/peskids-types';
 import { getServiceClient } from '@/lib/supabase';

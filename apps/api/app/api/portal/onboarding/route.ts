@@ -1,4 +1,4 @@
-import { tryRoute } from '../../../../lib/api-response';
+import { tryRoute } from '@/lib/api-response';
 import { processPortalOnboardingPost } from '../../../../lib/portal-onboarding-handlers';
 
 /**

@@ -5,8 +5,8 @@
  */
 
 import type { NextRequest } from 'next/server';
-import { parseJsonBody, jsonError, jsonSuccess } from '../../../../../../../../../../../lib/api-response';
-import { HTTP_STATUS } from '../../../../../../../../../../../lib/constants';
+import { parseJsonBody, jsonError, jsonSuccess } from '@/lib/api-response';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { approveMessage, rejectMessage } from '../../../../../../../../../../../lib/whatsapp-approval';
 
 export async function POST(

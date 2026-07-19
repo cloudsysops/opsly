@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server';
-import { tryRoute } from '../../../../../../../../lib/api-response';
+import { tryRoute } from '@/lib/api-response';
 import { postTechnicianBookingComplete } from '../../../../../../../../lib/admin/technician-booking-complete';
 
 /**

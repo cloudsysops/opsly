@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { requireAdminAccess } from '../../../../lib/auth';
-import { HTTP_STATUS } from '../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 
 function errorMessage(err: unknown): string {
   return err instanceof Error ? err.message : String(err);

@@ -1,5 +1,5 @@
 import apiPkg from '../../../package.json';
-import { HTTP_STATUS } from '../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 
 const HEALTH_FETCH_MS = 2000;
 

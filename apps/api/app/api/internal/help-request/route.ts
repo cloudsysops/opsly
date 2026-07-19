@@ -1,5 +1,5 @@
 import { requireAdminToken } from '../../../../lib/auth';
-import { HTTP_STATUS } from '../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import {
   createHelpRequest,
   listPendingHelpRequests,

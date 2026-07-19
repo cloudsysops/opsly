@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { jsonError, parseJsonBody, serverErrorLogged } from '../../../../../lib/api-response';
+import { jsonError, parseJsonBody, serverErrorLogged } from '@/lib/api-response';
 import { requireAdminAccess, requireAdminAccessUnlessDemoRead } from '../../../../../lib/auth';
-import { HTTP_STATUS } from '../../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { getTenantStackStatus } from '../../../../../lib/docker';
 import { deleteTenant } from '../../../../../lib/orchestrator';
 import { getServiceClient } from '../../../../../lib/supabase';

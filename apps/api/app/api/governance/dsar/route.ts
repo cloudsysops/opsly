@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { extractIp, logAuditEvent } from '../../../../lib/audit';
-import { HTTP_STATUS } from '../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { checkRateLimit } from '../../../../lib/rate-limiter';
 import { getServiceClient } from '../../../../lib/supabase';
 

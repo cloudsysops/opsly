@@ -4,8 +4,8 @@
  */
 
 import type { NextRequest } from 'next/server';
-import { HTTP_STATUS } from '../../../../../../../lib/constants';
-import { whatsappConfig, MetaCloudWhatsAppProvider } from '../../../../../../../lib/whatsapp';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
+import { whatsappConfig, MetaCloudWhatsAppProvider } from '@intcloudsysops/whatsapp';
 
 export async function GET(request: NextRequest): Promise<Response> {
   const metaConfig = whatsappConfig.getMetaConfig();

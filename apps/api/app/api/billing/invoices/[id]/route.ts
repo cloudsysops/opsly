@@ -3,8 +3,8 @@ import {
   parseJsonBody,
   serverErrorLogged,
   tryRoute,
-} from '../../../../../lib/api-response';
-import { HTTP_STATUS } from '../../../../../lib/constants';
+} from '@/lib/api-response';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import type { InvoiceStatus } from '../../../../../lib/billing/invoice-types';
 import { UpdateInvoiceStatusSchema } from '../../../../../lib/billing/invoice-types';
 import { getInvoiceById, updateInvoiceStatus } from '../../../../../lib/billing/invoice-service';

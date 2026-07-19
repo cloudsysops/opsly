@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { opslyManagementFeeUsd } from '../../../../lib/cloud-providers/fees';
 import type { CloudProviderId, ProvisioningPlan } from '../../../../lib/cloud-providers/interface';
 import { getCloudProvider } from '../../../../lib/cloud-providers/registry';
-import { HTTP_STATUS } from '../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 
 const BodySchema = z.object({
   provider: z.enum(['aws', 'azure', 'gcp']),

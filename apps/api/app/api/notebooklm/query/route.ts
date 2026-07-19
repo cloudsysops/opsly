@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { requireAdminAccess } from '../../../../lib/auth';
-import { HTTP_STATUS } from '../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { queryNotebookLmForApi } from '../../../../lib/notebooklm-query';
 
 export const dynamic = 'force-dynamic';

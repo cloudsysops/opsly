@@ -4,8 +4,8 @@
  */
 
 import type { NextRequest } from 'next/server';
-import { jsonError, jsonSuccess } from '../../../../../../../../../lib/api-response';
-import { HTTP_STATUS } from '../../../../../../../../../lib/constants';
+import { jsonError, jsonSuccess } from '@/lib/api-response';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { listPendingApprovals } from '../../../../../../../../../lib/whatsapp-approval';
 
 export async function GET(

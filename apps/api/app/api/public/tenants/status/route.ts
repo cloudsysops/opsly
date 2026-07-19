@@ -1,8 +1,8 @@
 import { createClient } from 'redis';
 import { z } from 'zod';
-import { jsonError, serverErrorLogged, tryRoute } from '../../../../../lib/api-response';
+import { jsonError, serverErrorLogged, tryRoute } from '@/lib/api-response';
 import { extractIp } from '../../../../../lib/audit';
-import { HTTP_STATUS } from '../../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { sanitizePublicPortalServices } from '../../../../../lib/portal-me';
 import { getServiceClient } from '../../../../../lib/supabase';
 import type { Json } from '../../../../../lib/supabase/types';

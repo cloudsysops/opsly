@@ -1,4 +1,4 @@
-import { serverErrorLogged } from '../../../lib/api-response';
+import { serverErrorLogged } from '@/lib/api-response';
 import { requireAdminAccessUnlessDemoRead } from '../../../lib/auth';
 import { computeMrr } from '../../../lib/stripe';
 import { getServiceClient } from '../../../lib/supabase';

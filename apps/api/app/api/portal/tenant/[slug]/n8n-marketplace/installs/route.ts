@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { HTTP_STATUS } from '../../../../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import {
   activateN8nMarketplacePack,
   countN8nMarketplaceMeteringThisMonth,

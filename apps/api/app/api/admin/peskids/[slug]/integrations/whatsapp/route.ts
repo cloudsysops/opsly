@@ -4,9 +4,9 @@
  */
 
 import type { NextRequest } from 'next/server';
-import { jsonError, jsonSuccess } from '../../../../../../../../../lib/api-response';
-import { HTTP_STATUS } from '../../../../../../../../../lib/constants';
-import { whatsappConfig } from '../../../../../../../../../lib/whatsapp';
+import { jsonError, jsonSuccess } from '@/lib/api-response';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
+import { whatsappConfig } from '@intcloudsysops/whatsapp';
 
 export async function GET(
   request: NextRequest,

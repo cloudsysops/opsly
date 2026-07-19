@@ -3,7 +3,7 @@ import {
   ORCHESTRATOR_INTERNAL_URL,
   getOpenClawMissionControlSnapshot,
 } from '../../../../../../lib/admin-mission-control-openclaw';
-import { HTTP_STATUS } from '../../../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 
 function requirePlatformAdminToken(): string | null {
   const token = process.env.PLATFORM_ADMIN_TOKEN?.trim() ?? '';

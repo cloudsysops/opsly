@@ -1,7 +1,7 @@
 import { getPlatformLlmUsage } from '@intcloudsysops/llm-gateway';
 import { requireAdminAccess } from '../../../../lib/auth';
 import { getBullmqQueueDetails } from '../../../../lib/bullmq-queue-details';
-import { CACHE_TTL, DEMO_SYSTEM_METRICS_MOCK } from '../../../../lib/constants';
+import { CACHE_TTL, DEMO_SYSTEM_METRICS_MOCK } from '@intcloudsysops/constants';
 import { countRunningDockerContainers } from '../../../../lib/docker-running-count';
 import { fetchHostMetricsFromPrometheus } from '../../../../lib/fetch-host-metrics-prometheus';
 import { getCache, setCache } from '../../../../lib/redis-cache';

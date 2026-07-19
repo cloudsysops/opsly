@@ -1,6 +1,6 @@
-import { jsonError, parseJsonBody, serverErrorLogged, tryRoute } from '../../../lib/api-response';
+import { jsonError, parseJsonBody, serverErrorLogged, tryRoute } from '@/lib/api-response';
 import { requireAdminAccess, requireAdminAccessUnlessDemoRead } from '../../../lib/auth';
-import { HTTP_STATUS } from '../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { logger } from '../../../lib/logger';
 import { provisionTenant } from '../../../lib/orchestrator';
 import { getServiceClient } from '../../../lib/supabase';

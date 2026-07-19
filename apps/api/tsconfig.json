@@ -16,7 +16,14 @@
     "incremental": true,
     "plugins": [{ "name": "next" }],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@intcloudsysops/constants": ["../../lib/constants"],
+      "@intcloudsysops/whatsapp": ["../../lib/whatsapp"],
+      "@intcloudsysops/whatsapp/*": ["../../lib/whatsapp/*"],
+      "@intcloudsysops/cloud-providers": ["../../lib/cloud-providers"],
+      "@intcloudsysops/cloud-providers/*": ["../../lib/cloud-providers/*"],
+      "@intcloudsysops/observability": ["../../lib/observability"],
+      "@intcloudsysops/observability/*": ["../../lib/observability/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

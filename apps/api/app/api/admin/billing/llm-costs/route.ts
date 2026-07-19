@@ -5,7 +5,7 @@ import {
   type RawUsageAnalyticsRow,
 } from '../../../../../lib/admin-llm-cost-analytics';
 import { requireAdminAccess } from '../../../../../lib/auth';
-import { HTTP_STATUS } from '../../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { getServiceClient } from '../../../../../lib/supabase';
 
 export const dynamic = 'force-dynamic';

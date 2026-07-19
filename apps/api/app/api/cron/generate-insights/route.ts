@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { HTTP_STATUS } from '../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { generateInsightsForAllActiveTenants } from '../../../../lib/insights/engine';
 
 function isAuthorized(request: Request): boolean {

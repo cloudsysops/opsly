@@ -1,6 +1,6 @@
-import { jsonError } from '../../../../../lib/api-response';
+import { jsonError } from '@/lib/api-response';
 import { requireAdminAccess } from '../../../../../lib/auth';
-import { HTTP_STATUS } from '../../../../../lib/constants';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { logger } from '../../../../../lib/logger';
 import {
   META_PAGE_MESSAGE_MAX_LENGTH,

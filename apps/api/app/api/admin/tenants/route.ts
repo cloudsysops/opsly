@@ -1,5 +1,5 @@
-import { tryRoute } from '../../../../lib/api-response';
-import { HTTP_STATUS } from '../../../../lib/constants';
+import { tryRoute } from '@/lib/api-response';
+import { HTTP_STATUS } from '@intcloudsysops/constants';
 import { resolveSuperAdminSession } from '../../../../lib/super-admin-auth';
 import { getServiceClient } from '../../../../lib/supabase';
 import type { Json } from '../../../../lib/supabase/types';
