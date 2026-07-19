@@ -82,7 +82,7 @@ class WhatsAppConfigManager {
       // Don't fail startup if WhatsApp is disabled
       if (env.PESKIDS_WHATSAPP_ENABLED !== 'true' && env.META_WEBHOOK_ENABLED !== 'true' && env.WACRM_ENABLED !== 'true') {
         console.warn('[WhatsApp Config] Optional WhatsApp vars missing (WhatsApp disabled):\n', errorMessages);
-        return result.error.parse({
+        return fullSchema.parse({
           ...env,
           META_WEBHOOK_ENABLED: 'false',
           WACRM_ENABLED: 'false',

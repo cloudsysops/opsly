@@ -4,6 +4,13 @@ import type { PeskidsPipelineStage } from './ghl-contract';
 // NOTE: GoHighLevel services removed. This module is deprecated and should be replaced with WhatsApp integration.
 // import { getGoHighLevelService } from '@intcloudsysops/services/gohighlevel';
 
+// Stub function for deprecated GoHighLevel integration
+function getGoHighLevelService(): never {
+  throw new Error(
+    'GoHighLevel integration has been removed. Please use WhatsApp integration instead.'
+  );
+}
+
 /**
  * GHL "Peskids Enrollment" pipeline — real stage IDs.
  * Pipeline ID: bWKAQuLTQUjeGAvgf9fX (location: KJ5LawrOOe3hIerqtMRu)

@@ -6,6 +6,13 @@ import { recordGhlApiError } from '../metrics/metrics-collector';
 const GHL_API_BASE = 'https://services.leadconnectorhq.com';
 const DEFAULT_NEW_LEAD_STAGE_ID = 'f4c7365b-efe8-4d33-9559-c7f06881f172';
 
+// Stub function for deprecated GoHighLevel integration
+function resolveGoHighLevelPeskidsEnv(): { apiKey: string; apiVersion: string } {
+  throw new Error(
+    'GoHighLevel integration has been removed. Please use WhatsApp integration instead.'
+  );
+}
+
 function getNewLeadStageId(): string {
   return process.env.GOHIGHLEVEL_PESKIDS_NEW_LEAD_STAGE_ID || DEFAULT_NEW_LEAD_STAGE_ID;
 }
