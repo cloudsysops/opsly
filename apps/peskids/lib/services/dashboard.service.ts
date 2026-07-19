@@ -81,12 +81,12 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
 
   if (studentsError) throw studentsError;
 
-  const studentsByGrade: Record<string, number> = {};
+  const studentsByAgeRange: Record<string, number> = {};
   const typedStudents = students as Array<
     Pick<Database['public']['Tables']['students']['Row'], 'grade' | 'parent_email'>
   >;
   typedStudents?.forEach((s) => {
-    studentsByGrade[s.grade] = (studentsByGrade[s.grade] || 0) + 1;
+    studentsByAgeRange[s.grade] = (studentsByAgeRange[s.grade] || 0) + 1;
   });
   const familiesActiveCount = new Set(
     typedStudents
@@ -185,7 +185,8 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
     new_leads: (newLeads as unknown as DashboardData['new_leads']) || [],
     active_students_count: students?.length || 0,
     families_active_count: familiesActiveCount,
-    students_by_grade: studentsByGrade,
+    // Additive UI adapter: the response key remains stable until the legacy column is migrated.
+    students_by_grade: studentsByAgeRange,
     recent_feedback: (recentFeedback as unknown as DashboardData['recent_feedback']) || [],
     private_family_notes:
       (privateFamilyNotes as unknown as DashboardData['private_family_notes']) || [],

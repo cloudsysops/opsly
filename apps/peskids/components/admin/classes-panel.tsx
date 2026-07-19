@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { ClassListItem, PeskidsPool, SwimLocation } from '@/lib/class-types';
+import { classFormatLabel } from '@/lib/peskids-domain';
 
 interface TeamMemberOption {
   user_id: string;
@@ -48,7 +49,7 @@ const emptyForm = {
   date: '',
   start_time: '09:00',
   end_time: '10:00',
-  capacity: '8',
+  capacity: '4',
   price_cents: '85000',
 };
 
@@ -63,7 +64,7 @@ export function ClassesPanel(): React.ReactElement {
   const [form, setForm] = useState(emptyForm);
   const [defaults, setDefaults] = useState({
     location: 'llanogrande' as SwimLocation,
-    capacity: '8',
+    capacity: '4',
     price_cents: '85000',
   });
 
@@ -118,7 +119,9 @@ export function ClassesPanel(): React.ReactElement {
         if (settingsJson.settings) {
           setDefaults({
             location: settingsJson.settings.default_modality ?? 'llanogrande',
-            capacity: String(settingsJson.settings.default_capacity ?? 8),
+            capacity: [1, 3, 4].includes(settingsJson.settings.default_capacity ?? 4)
+              ? String(settingsJson.settings.default_capacity ?? 4)
+              : '4',
             price_cents: String(settingsJson.settings.default_price_cents ?? 85000),
           });
         }
@@ -315,15 +318,18 @@ export function ClassesPanel(): React.ReactElement {
                 />
               </div>
               <div>
-                <Label htmlFor="class-capacity">Cupos</Label>
-                <Input
+                <Label htmlFor="class-capacity">Formato de clase</Label>
+                <select
                   id="class-capacity"
-                  type="number"
-                  min={1}
                   required
+                  className="h-10 w-full rounded-lg border border-pk-border bg-white px-3 text-sm"
                   value={form.capacity}
                   onChange={(e) => setForm({ ...form, capacity: e.target.value })}
-                />
+                >
+                  <option value="1">Clase individual</option>
+                  <option value="3">Grupo pequeño · 3 niños</option>
+                  <option value="4">Grupo pequeño · 4 niños</option>
+                </select>
               </div>
               <div>
                 <Label htmlFor="class-price">Precio COP</Label>
@@ -366,6 +372,7 @@ export function ClassesPanel(): React.ReactElement {
                   <div>
                     <p className="font-medium text-pk-ink">{item.title}</p>
                     <p className="text-pk-sub">{formatClassTime(item.starts_at)}</p>
+                    <p className="text-xs text-pk-mutedText">{classFormatLabel(item.capacity)}</p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge tone={item.enrolled_count >= item.capacity ? 'amber' : 'teal'}>

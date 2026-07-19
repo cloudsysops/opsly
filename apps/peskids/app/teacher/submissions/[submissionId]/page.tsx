@@ -416,7 +416,7 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
               </div>
               <p className="text-sm text-pk-sub">
                 {progressPercent >= 90
-                  ? 'Muy cerca del cierre del nivel.'
+                  ? 'Muy cerca de completar este hito.'
                   : progressPercent >= 60
                     ? 'Va bien; sigue consolidando técnica.'
                     : 'Está en fase inicial y necesita más acompañamiento.'}

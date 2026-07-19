@@ -16,7 +16,7 @@ export const BRAND = {
   snow: peskidsColorTokens.neutral.lightBg,
 } as const;
 
-export type SwimLevel = {
+export type ProgressMilestone = {
   n: number;
   name: string;
   emoji: string;
@@ -25,7 +25,7 @@ export type SwimLevel = {
   dark?: boolean;
 };
 
-export const SWIM_LEVELS: SwimLevel[] = [
+export const PROGRESS_MILESTONES: ProgressMilestone[] = [
   {
     n: 1,
     name: 'Burbujas',

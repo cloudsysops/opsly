@@ -78,7 +78,7 @@ export const INSTAGRAM_FALLBACK_ITEMS: InstagramFeedItem[] = [
     fallback: {
       tone: 'teal',
       title: 'Torneos y vacacionales',
-      body: 'Niveles Olímpicos y Competencia para quienes quieren más.',
+      body: 'Entrenamiento olímpico y de competencia para quienes quieren más.',
       mediaLabel: 'Foto',
     },
   },
@@ -89,7 +89,7 @@ export const INSTAGRAM_FALLBACK_ITEMS: InstagramFeedItem[] = [
     fallback: {
       tone: 'deep',
       title: 'Detrás del método Peskids',
-      body: 'Seguridad, juego y técnica en cada nivel.',
+      body: 'Seguridad, juego y técnica en cada etapa.',
       mediaLabel: 'Video',
     },
   },

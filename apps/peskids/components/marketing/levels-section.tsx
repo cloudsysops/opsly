@@ -1,4 +1,4 @@
-import { SWIM_LEVELS } from '@/lib/brand'
+import { PROGRESS_MILESTONES } from '@/lib/brand'
 import { Card, CardContent } from '@/components/ui/card'
 
 export function LevelsSection(): React.ReactElement {
@@ -18,27 +18,27 @@ export function LevelsSection(): React.ReactElement {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {SWIM_LEVELS.map((level) => (
-            <Card key={level.n} hover className="overflow-hidden">
+          {PROGRESS_MILESTONES.map((milestone) => (
+            <Card key={milestone.n} hover className="overflow-hidden">
               <CardContent className="p-6">
                 <div className="flex items-center gap-3">
                   <span
                     className="flex h-14 w-14 items-center justify-center rounded-2xl text-2xl"
                     style={{
-                      background: level.color,
-                      color: level.dark ? '#A8DDE3' : '#ffffff',
+                      background: milestone.color,
+                      color: milestone.dark ? '#A8DDE3' : '#ffffff',
                     }}
                   >
-                    {level.emoji}
+                    {milestone.emoji}
                   </span>
                   <div>
                     <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-pk-mutedText">
-                      Etapa {level.n}
+                      Hito de progreso
                     </p>
-                    <p className="text-xl font-bold tracking-tight text-pk-ink">{level.name}</p>
+                    <p className="text-xl font-bold tracking-tight text-pk-ink">{milestone.name}</p>
                   </div>
                 </div>
-                <p className="mt-4 text-sm leading-relaxed text-pk-sub">{level.desc}</p>
+                <p className="mt-4 text-sm leading-relaxed text-pk-sub">{milestone.desc}</p>
               </CardContent>
             </Card>
           ))}

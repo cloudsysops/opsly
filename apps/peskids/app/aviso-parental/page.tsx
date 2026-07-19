@@ -40,7 +40,7 @@ export default function AvisoParentalPage(): React.ReactElement {
           relacionada con el menor para los siguientes fines:
         </p>
         <ul>
-          <li>Evaluar el nivel de natación y asignar al grupo o instructor adecuado.</li>
+          <li>Evaluar habilidades de natación y asignar el grupo o instructor adecuado.</li>
           <li>Coordinar horarios, sede (presencial o domicilio) y necesidades especiales.</li>
           <li>Llevar el seguimiento del progreso del estudiante.</li>
           <li>Comunicar novedades del programa al acudiente (notas, torneos, eventos).</li>
@@ -51,9 +51,9 @@ export default function AvisoParentalPage(): React.ReactElement {
       <section>
         <h2>3. ¿Qué datos del menor tratamos?</h2>
         <ul>
-          <li>Rango de edad o nivel de natación (en la solicitud inicial).</li>
+          <li>Edad o rango de edad (en la solicitud inicial).</li>
           <li>Nombre del menor (una vez iniciado el proceso de matrícula).</li>
-          <li>Información sobre su nivel y progreso en el programa.</li>
+          <li>Información sobre sus hitos y progreso en el programa.</li>
           <li>
             En caso de necesidades especiales: información relevante para la seguridad en el agua
             (con autorización adicional).

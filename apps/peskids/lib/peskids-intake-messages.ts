@@ -1,5 +1,6 @@
 import type { MessageSource } from '@/lib/message-store'
 import { classModalityLabel } from '@/lib/lead-modality'
+import { formatAgeRange } from '@/lib/peskids-domain'
 
 export type PeskidsIntakeStage = 'collecting' | 'handoff'
 export type PeskidsIntakeInputMode = 'text' | 'choice'
@@ -74,9 +75,9 @@ export function peskidsSupportWelcome(source: MessageSource): string {
 }
 
 const GRADE_LABELS: Record<string, string> = {
-  'K-5': 'Babyswim / K–5',
-  '6-8': '6–8 años (Peces · Delfines)',
-  '9-12': '9–12 años (Tiburones · Olímpicos)',
+  'K-5': '3 meses–5 años',
+  '6-8': '6–8 años',
+  '9-12': '9–12 años',
   Other: 'Otro / consulta general',
 }
 
@@ -235,12 +236,12 @@ export function questionSpecForField(
       }
     case 'gradeInterested':
       return {
-        prompt: '¿Qué edad o nivel tiene el niño o la niña?',
+        prompt: '¿Qué edad tiene el niño o la niña?',
         inputMode: 'choice',
         choices: [
-          { label: 'Babyswim / K–5 (desde 3 meses)', value: 'K-5' },
-          { label: '6–8 años (Peces · Delfines)', value: '6-8' },
-          { label: '9–12 años (Tiburones · Olímpicos)', value: '9-12' },
+          { label: '3 meses–5 años', value: 'K-5' },
+          { label: '6–8 años', value: '6-8' },
+          { label: '9–12 años', value: '9-12' },
           { label: 'Otro / consulta general', value: 'Other' },
         ],
       }
@@ -261,7 +262,7 @@ export function questionSpecForField(
 
 export function gradeInterestedLabel(value: string | undefined): string {
   if (!value) return 'No informado'
-  return GRADE_LABELS[value] ?? value
+  return GRADE_LABELS[value] ?? formatAgeRange(value)
 }
 
 export function handoffReplyToUser(profile: PeskidsIntakeProfile): string {
@@ -281,7 +282,7 @@ export function handoffReplyToUser(profile: PeskidsIntakeProfile): string {
     `• Preferencia de profe: ${profile.teacherPreference === 'woman' ? 'Mujer' : profile.teacherPreference === 'man' ? 'Hombre' : profile.teacherPreference === 'prefer_not_to_say' ? 'Prefiero no decir' : 'No importa'}\n` +
     `• Modalidad: ${classModalityLabel(profile.classModality)}\n` +
     `• Barrio/zona: ${profile.neighborhood ?? '—'}\n` +
-    `• Edad o nivel: ${gradeInterestedLabel(profile.gradeInterested)}\n` +
+    `• Edad / rango: ${gradeInterestedLabel(profile.gradeInterested)}\n` +
     `• Correo: ${profile.email ?? '—'}\n` +
     `• Teléfono: ${profile.phone ?? '—'}\n\n` +
     `Un asesor de Peskids revisará disponibilidad y te escribirá para confirmar día y hora. ` +
@@ -383,7 +384,7 @@ export function buildSupportHandoffDraft(params: {
     `Teléfono: ${profile.phone ?? 'No informado'}`,
     `Modalidad: ${classModalityLabel(profile.classModality)}`,
     `Barrio/zona: ${profile.neighborhood ?? 'No informado'}`,
-    `Edad o nivel: ${gradeInterestedLabel(profile.gradeInterested)}`,
+    `Edad / rango: ${gradeInterestedLabel(profile.gradeInterested)}`,
   ]
 
   if (profile.childName) lines.push(`Nombre del niño/a (opcional): ${profile.childName}`)
