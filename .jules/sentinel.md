@@ -1,3 +1,8 @@
+## 2026-07-19 - [Missing Rate Limiting and Audit Logging in Governance Consent API]
+**Vulnerability:** The public `POST /api/governance/consent` endpoint was exposed without rate limiting or audit logging. This could allow malicious automated actors to record a massive number of falsified user consent records (PII data) without any traceable audit trail or rate controls.
+**Learning:** Newer governance compliance endpoints (like consent) are often added during compliance-focused feature releases but may omit standard security perimeters (like `checkRateLimit` and `logAuditEvent`) unless explicitly standardized.
+**Prevention:** Systems recording compliance or user consent (sensitive PII actions) must always verify the request rate against client IP (`consent:${ip}`) and emit a `governance_consent_record` audit event immediately upon record generation.
+
 ## 2026-05-24 - [Missing Authorization in Peskids Portal API]
 **Vulnerability:** Multiple endpoints under `apps/api/app/api/peskids/portal/[tenantSlug]/` were exposed without any authentication or authorization checks. Anyone with the `tenantSlug` (which is often public or predictable) could read and modify tenant-specific data, including form definitions, submissions, and webhook configurations.
 **Learning:** New functional areas (like Peskids) were implemented using Next.js 15 Route Handlers but didn't consistently apply the established multi-tenant security patterns (`runTrustedPortalDalForPathSlug`) used in other parts of the `apps/api`. This likely happened during rapid MVP development where security wrappers were overlooked.
