@@ -19,3 +19,7 @@
 ## 2026-05-27 - Ambiguous Labels in PasswordInput
 **Learning:** The `PasswordInput` component includes an eye icon button with an `aria-label` containing "contraseña". This can cause `get_by_label("Contraseña")` in Playwright or screen readers to match multiple elements, leading to ambiguity.
 **Action:** Always use exact matching or specific ARIA roles when targeting inputs with associated toggle buttons to ensure the primary input is correctly identified.
+
+## 2026-05-28 - Granular Asynchronous Disabling & Screen-Reader Announcements
+**Learning:** Standard action-disabling logic on dynamic item lists often uses a broad ID state (e.g. `busyId`), disabling all action buttons on an item at once. Combining a granular `busyAction` format (`${id}-${action}`) with the standard `Announcer` component ensures that only the clicked button is locked during API requests, while screen readers receive polite auditory status updates on success/failure.
+**Action:** Always use the `${id}-${action}` format for granular disabling on multi-action lists, and couple it with `Announcer` to emit live region state updates.
