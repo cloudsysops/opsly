@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-07-16T02:11:41.673Z",
-  "totalFiles": 806,
+  "lastIndexed": "2026-07-19T18:54:03.988Z",
+  "totalFiles": 809,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -350,6 +350,8 @@
     "blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md",
     "blueprints/opsly-operational-blueprint/TEAM-FACING-EXPLANATION.md",
     "blueprints/opsly-operational-blueprint/TENANT-INCUBATION.md",
+    "blueprints/opsly-operational-blueprint/VERTICAL-BLUEPRINTS.md",
+    "blueprints/opsly-operational-blueprint/WHATSAPP-HYBRID.md",
     "blueprints/PESKIDS-GHL-DISABLE-RUNBOOK.md",
     "blueprints/PESKIDS-GHL-MIGRATION-STATUS.md",
     "blueprints/PESKIDS-ICSO-CUTOVER-STATUS.md",
@@ -605,6 +607,7 @@
     "reports/PARALLEL-EXECUTION-2026-04-29.md",
     "reports/PARALLEL-EXECUTION-STATUS.md",
     "reports/PESKIDS-E2E-VALIDATION.md",
+    "reports/PESKIDS-REUNION-CHECKLIST.md",
     "reports/PIPELINE-GAP-ANALYSIS.md",
     "reports/PRODUCTION-HEALTH.md",
     "reports/README.md",
