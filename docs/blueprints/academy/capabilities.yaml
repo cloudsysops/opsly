@@ -1,0 +1,38 @@
+apiVersion: opsly.io/v1alpha1
+kind: CapabilityCatalog
+metadata:
+  blueprint: academy
+spec:
+  capabilities:
+    - id: academy.people
+      status: existing-in-peskids
+      source: apps/peskids/lib/services/student.service.ts
+      extractionTarget: lib/academy-people
+    - id: academy.scheduling
+      status: existing-in-peskids
+      source: apps/peskids/lib/services/class.service.ts
+      extractionTarget: lib/academy-scheduling
+    - id: academy.enrollment
+      status: existing-in-peskids
+      source: apps/peskids/lib/services/enrollment.service.ts
+      extractionTarget: lib/academy-enrollment
+    - id: academy.engagement
+      status: existing-in-peskids
+      source: apps/peskids/lib/services/followup-admin.service.ts
+      extractionTarget: lib/academy-engagement
+    - id: academy.forms
+      status: existing-in-peskids
+      source: apps/peskids/lib/services/form-submission.service.ts
+      extractionTarget: lib/academy-forms
+    - id: academy.messaging
+      status: existing-in-peskids
+      source: apps/peskids/lib/message-store.ts
+      extractionTarget: lib/academy-messaging
+    - id: academy.payments
+      status: existing-in-peskids
+      source: apps/peskids/lib/services/payment.service.ts
+      extractionTarget: lib/academy-payments
+    - id: academy.dashboard
+      status: existing-in-peskids
+      source: apps/peskids/lib/services/dashboard.service.ts
+      extractionTarget: lib/academy-dashboard

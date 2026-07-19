@@ -1,0 +1,36 @@
+apiVersion: opsly.io/v1alpha1
+kind: IntegrationCatalog
+metadata:
+  blueprint: academy
+spec:
+  integrations:
+    - id: supabase
+      purpose: system-of-record
+      required: true
+      defaultEnabled: true
+      adapter: existing
+    - id: twenty
+      purpose: crm
+      required: true
+      defaultEnabled: true
+      adapter: lib/services/twenty
+    - id: n8n
+      purpose: workflow-automation
+      required: true
+      defaultEnabled: true
+      adapter: existing
+    - id: wacrm
+      purpose: whatsapp-inbox
+      required: false
+      defaultEnabled: false
+      adapter: lib/wacrm-channel
+      activationGate: manual-channel-registration
+    - id: wompi
+      purpose: payments
+      required: false
+      defaultEnabled: false
+      adapter: lib/wompi-gateway
+  forbiddenDefaults:
+    - legacy-crm-enabled
+    - outbound-without-approval
+    - secrets-in-contracts

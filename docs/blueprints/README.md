@@ -17,6 +17,7 @@ Documentos de referencia para lanzar y operar tenants en Opsly. Todos son "ready
 | **Nuevo tenant desde cero** | `TENANT-ONBOARDING-TEMPLATE.md` |
 | **Segundo+ tenant (acelerar)** | `TENANT-REPEAT-PLAYBOOK.md` |
 | **Configurar IA para cualquier tenant** | `AI-TENANT-SETUP-BLUEPRINT.md` ⭐ |
+| **Academia / escuela reproducible** | `academy/README.md` |
 | **Go-live (checklist ejecutivo)** | `GO-LIVE-COMMAND.md` |
 | **Hardening / enterprise security** | `OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md` |
 | **Automatizaciones n8n críticas** | `N8N-AUTOMATION-GUARANTEES.md` |
@@ -50,6 +51,12 @@ Documentos de referencia para lanzar y operar tenants en Opsly. Todos son "ready
 |---------|-----------|--------|
 | `OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md` | Security hardening + AI guardrails | 🟡 draft |
 | `WOMPI-PAYMENT-GATEWAY-CONTRACT.md` | Wompi integration contract | ✅ active |
+
+### Vertical contracts
+
+| Directorio | Propósito | Estado |
+|------------|-----------|--------|
+| `academy/` | Contratos mínimos Academy + baseline Executive Agent | 🟡 draft |
 
 ### Customer-Specific
 

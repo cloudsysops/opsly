@@ -1,0 +1,35 @@
+apiVersion: opsly.io/v1alpha1
+kind: RoleCatalog
+metadata:
+  blueprint: academy
+spec:
+  humanRoles:
+    - id: admin
+      tenantScope: self
+      permissions:
+        - academy.read
+        - academy.write
+        - academy.approve
+    - id: teacher
+      tenantScope: self
+      permissions:
+        - assigned-classes.read
+        - attendance.write
+        - submissions.grade
+    - id: family
+      tenantScope: self
+      permissions:
+        - own-students.read
+        - own-forms.submit
+        - own-messages.read
+  agentRoles:
+    - id: executive
+      runtime: openclaw
+      state: hermes
+      defaultMode: read-only
+      tenantScope: self
+      requiresHumanApprovalFor:
+        - outbound-message
+        - payment
+        - student-record-mutation
+        - cross-tenant-access

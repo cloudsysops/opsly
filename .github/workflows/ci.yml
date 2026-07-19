@@ -81,6 +81,12 @@ jobs:
       - name: OpenAPI subset (CI gate; duplica validate-context para fallo temprano en PR)
         run: npm run validate-openapi
 
+      - name: Academy Blueprint contracts
+        run: npm run validate:academy-blueprint
+
+      - name: GHL runtime no-regression guard
+        run: npm run guard:ghl-runtime
+
       - name: ESLint si existe config (paralelo)
         run: |
           set -euo pipefail

@@ -1,0 +1,42 @@
+apiVersion: opsly.io/v1alpha1
+kind: AgentPolicy
+metadata:
+  id: academy-executive
+  status: contract-only
+spec:
+  runtime:
+    orchestrator: existing-openclaw
+    state: existing-hermes
+    context: existing-context-builder
+    tools: existing-mcp
+    installNewFramework: false
+  identity:
+    requireTenantSlug: true
+    requireRequestId: true
+    denyCrossTenantByDefault: true
+  autonomy:
+    defaultMode: read-only
+    approvalRequired:
+      - external-message
+      - payment-operation
+      - enrollment-mutation
+      - student-or-family-mutation
+      - production-configuration
+    prohibited:
+      - direct-database-access
+      - direct-provider-secret-access
+      - bypass-llm-gateway
+      - bypass-mcp-scope
+      - enable-legacy-crm
+  audit:
+    requiredFields:
+      - tenant_slug
+      - request_id
+      - actor
+      - action
+      - risk
+      - approval
+      - result
+  rollout:
+    enabled: false
+    firstMode: shadow-read-only
