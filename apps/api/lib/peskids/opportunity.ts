@@ -1,4 +1,5 @@
-import { resolveGoHighLevelPeskidsEnv } from '@intcloudsysops/services/gohighlevel';
+// NOTE: GoHighLevel services removed. This module is deprecated and should be replaced with WhatsApp integration.
+// import { resolveGoHighLevelPeskidsEnv } from '@intcloudsysops/services/gohighlevel';
 import { alertGhlFailure } from '../alerting/slack-notifier';
 import { recordGhlApiError } from '../metrics/metrics-collector';
 

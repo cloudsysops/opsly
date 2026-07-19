@@ -4,7 +4,6 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { WacrmWhatsAppProvider, MetaCloudWhatsAppProvider } from '../provider';
-import { WhatsAppSignatureError } from '../types';
 
 describe('WhatsAppProvider', () => {
   describe('WacrmWhatsAppProvider', () => {

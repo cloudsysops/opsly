@@ -2,7 +2,7 @@
  * WhatsApp Approval Outbox Tests
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 describe('WhatsApp Approval Outbox', () => {
   describe('Message States', () => {

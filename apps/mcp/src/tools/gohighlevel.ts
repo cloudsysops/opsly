@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { getGoHighLevelService } from '@intcloudsysops/services/gohighlevel/index.js';
+// NOTE: GoHighLevel services removed. This tool is deprecated and should be replaced with WhatsApp integration.
+// import { getGoHighLevelService } from '@intcloudsysops/services/gohighlevel/index.js';
 import type { ToolDefinition, ToolContext } from '../types/index.js';
 
 // Input schemas

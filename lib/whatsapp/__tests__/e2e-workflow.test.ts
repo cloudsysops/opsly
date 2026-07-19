@@ -3,7 +3,7 @@
  * Simulates complete message flow from inbound to approval to sending
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import crypto from 'crypto';
 
 describe('WhatsApp E2E Workflows', () => {
@@ -33,6 +33,10 @@ describe('WhatsApp E2E Workflows', () => {
         .digest('hex');
 
       const webhookEvent = { payload, signature, provider: 'meta' as const };
+
+      expect(webhookEvent.provider).toBe('meta');
+      expect(webhookEvent.payload).toBeDefined();
+      expect(webhookEvent.signature).toBeDefined();
 
       // Step 2: Idempotence check
       const eventHash = crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
@@ -260,11 +264,6 @@ describe('WhatsApp E2E Workflows', () => {
       expect(conversation.status).toBe('active');
 
       // First inbound message
-      const msg1 = {
-        id: 'msg-1',
-        conversation_id: conversation.id,
-      };
-
       const conv1 = {
         ...conversation,
         message_count: 1,
@@ -272,10 +271,6 @@ describe('WhatsApp E2E Workflows', () => {
       };
 
       // Operator responds
-      const msg2 = {
-        id: 'msg-2',
-        conversation_id: conversation.id,
-      };
 
       const conv2 = {
         ...conv1,
@@ -339,14 +334,6 @@ describe('WhatsApp E2E Workflows', () => {
 
   describe('Error Recovery', () => {
     it('should recover from partial webhook processing failure', () => {
-      const payload = {
-        message: {
-          id: 'msg-123',
-          from: '5551234567',
-          text: { body: 'Hello' },
-        },
-      };
-
       const steps = [
         { name: 'persist_message', ok: true },
         { name: 'lookup_contact', ok: true },
@@ -371,6 +358,7 @@ describe('WhatsApp E2E Workflows', () => {
 
       const processingTime = 6000;
       const timedOut = processingTime > webhook.timeout_ms;
+      expect(timedOut).toBe(true);
 
       // Should return 200 to prevent Meta retry
       const response = {

@@ -2,7 +2,7 @@
  * WhatsApp Webhook Handling Tests
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { WacrmWhatsAppProvider, MetaCloudWhatsAppProvider } from '../provider';
 
 describe('WhatsApp Webhook Handling', () => {

@@ -4,18 +4,18 @@
  */
 
 import type {
-  WhatsAppProvider as IWhatsAppProvider,
+  WhatsAppProvider,
   CanonicalWhatsAppMessage,
   CanonicalWhatsAppStatus,
   CanonicalWhatsAppWebhookEvent,
-  WhatsAppProvider as ProviderType,
+  WhatsAppProviderName,
 } from './types';
 
-export abstract class BaseWhatsAppProvider implements IWhatsAppProvider {
+export abstract class BaseWhatsAppProvider implements WhatsAppProvider {
   protected tenantId: string;
-  protected provider: ProviderType;
+  protected provider: WhatsAppProviderName;
 
-  constructor(tenantId: string, provider: ProviderType) {
+  constructor(tenantId: string, provider: WhatsAppProviderName) {
     this.tenantId = tenantId;
     this.provider = provider;
   }

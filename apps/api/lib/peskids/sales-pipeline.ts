@@ -1,7 +1,8 @@
 import { getServiceClient } from '../supabase';
 import { logger } from '../logger';
 import type { PeskidsPipelineStage } from './ghl-contract';
-import { getGoHighLevelService } from '@intcloudsysops/services/gohighlevel';
+// NOTE: GoHighLevel services removed. This module is deprecated and should be replaced with WhatsApp integration.
+// import { getGoHighLevelService } from '@intcloudsysops/services/gohighlevel';
 
 /**
  * GHL "Peskids Enrollment" pipeline — real stage IDs.

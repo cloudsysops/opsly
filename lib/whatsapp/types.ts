@@ -6,7 +6,7 @@
 export type WhatsAppMessageDirection = 'inbound' | 'outbound';
 export type WhatsAppMessageType = 'text' | 'image' | 'document' | 'audio' | 'video' | 'template' | 'interactive';
 export type WhatsAppMessageStatus = 'sent' | 'delivered' | 'read' | 'failed' | 'pending' | 'rejected';
-export type WhatsAppProvider = 'wacrm' | 'meta' | 'openwa';
+export type WhatsAppProviderName = 'wacrm' | 'meta' | 'openwa';
 
 export interface CanonicalWhatsAppContact {
   id: string;
@@ -16,7 +16,7 @@ export interface CanonicalWhatsAppContact {
   displayName?: string;
   email?: string;
   isGroup: boolean;
-  provider: WhatsAppProvider;
+  provider: WhatsAppProviderName;
   lastMessageAt: Date;
   metadata?: Record<string, unknown>;
   createdAt: Date;
@@ -38,7 +38,7 @@ export interface CanonicalWhatsAppMessage {
   mediaUrl?: string;
   mediaType?: 'image' | 'document' | 'audio' | 'video';
   status: WhatsAppMessageStatus;
-  provider: WhatsAppProvider;
+  provider: WhatsAppProviderName;
   timestamp: Date;
   rawEventHash: string; // SHA256 of payload for idempotence
   metadata?: Record<string, unknown>;
@@ -56,7 +56,7 @@ export interface CanonicalWhatsAppConversation {
   lastMessageBody?: string;
   lastMessageAt: Date;
   messageCount: number;
-  provider: WhatsAppProvider;
+  provider: WhatsAppProviderName;
   status: 'active' | 'archived' | 'closed';
   metadata?: Record<string, unknown>;
   createdAt: Date;
@@ -87,7 +87,7 @@ export interface CanonicalWhatsAppTemplate {
   footerText?: string;
   buttons?: Array<{ type: string; text: string }>;
   status: 'APPROVED' | 'PENDING_REVIEW' | 'REJECTED' | 'PAUSED' | 'DISABLED';
-  provider: WhatsAppProvider;
+  provider: WhatsAppProviderName;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -95,7 +95,7 @@ export interface CanonicalWhatsAppTemplate {
 export interface CanonicalWhatsAppWebhookEvent {
   event: 'message.inbound' | 'message.outbound' | 'message.status' | 'template.status' | 'error';
   tenantId: string;
-  provider: WhatsAppProvider;
+  provider: WhatsAppProviderName;
   timestamp: Date;
   data: CanonicalWhatsAppMessage | CanonicalWhatsAppStatus | { error: string };
   rawPayload: Record<string, unknown>;
@@ -137,7 +137,7 @@ export interface WhatsAppWebhookRequest {
   event: WhatsAppWebhookEventType;
   timestamp: number;
   tenantId: string;
-  provider: WhatsAppProvider;
+  provider: WhatsAppProviderName;
   signature: string;
   payload: Record<string, unknown>;
 }
@@ -149,7 +149,7 @@ export class WhatsAppError extends Error {
   constructor(
     public code: string,
     public message: string,
-    public provider: WhatsAppProvider,
+    public provider: WhatsAppProviderName,
     public details?: Record<string, unknown>
   ) {
     super(message);
