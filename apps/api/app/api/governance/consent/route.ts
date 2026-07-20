@@ -1,6 +1,8 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { extractIp } from '../../../../lib/audit';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
+import { HTTP_STATUS } from '../../../../lib/constants';
 import { getServiceClient } from '../../../../lib/supabase';
 
 const consentSchema = z.object({
@@ -13,22 +15,28 @@ const consentSchema = z.object({
 });
 
 export async function POST(request: NextRequest): Promise<Response> {
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `consent:${ip}` : 'consent:anonymous');
+
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return Response.json({ error: 'Invalid JSON' }, { status: 400 });
+    return Response.json({ error: 'Invalid JSON' }, { status: HTTP_STATUS.BAD_REQUEST });
   }
 
   const parsed = consentSchema.safeParse(body);
   if (!parsed.success) {
     return Response.json(
       { error: 'Invalid payload', details: parsed.error.flatten() },
-      { status: 400 }
+      { status: HTTP_STATUS.BAD_REQUEST }
     );
   }
 
-  const ip = extractIp(request);
   const user_agent = request.headers.get('user-agent') ?? null;
 
   const client = getServiceClient();
@@ -45,11 +53,28 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   if (error) {
     console.error('[governance][consent] insert error', error);
-    return Response.json({ error: 'Failed to record consent' }, { status: 500 });
+    return Response.json(
+      { error: 'Failed to record consent' },
+      { status: HTTP_STATUS.INTERNAL_ERROR }
+    );
   }
+
+  void logAuditEvent({
+    tenant_slug: parsed.data.tenant_id,
+    action: 'governance_consent_record',
+    resource: `consent:${data.id}`,
+    ip,
+    user_agent: user_agent ?? undefined,
+    metadata: {
+      subject_email: parsed.data.subject_email,
+      policy_id: parsed.data.policy_id,
+      policy_version: parsed.data.policy_version,
+      consent_type: parsed.data.consent_type,
+    },
+  });
 
   return Response.json(
     { ok: true, consent_id: data.id, granted_at: data.granted_at },
-    { status: 201 }
+    { status: HTTP_STATUS.CREATED }
   );
 }
