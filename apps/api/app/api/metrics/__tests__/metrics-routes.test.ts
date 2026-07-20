@@ -6,6 +6,7 @@ import * as stripeMod from '../../../../lib/stripe';
 import * as promMod from '../../../../lib/fetch-host-metrics-prometheus';
 import * as dockerCountMod from '../../../../lib/docker-running-count';
 import * as prometheusUrlMod from '../../../../lib/prometheus';
+import * as redisCacheMod from '../../../../lib/redis-cache';
 
 vi.mock('../../../../lib/supabase', () => ({
   getServiceClient: vi.fn(),
@@ -25,6 +26,11 @@ vi.mock('../../../../lib/docker-running-count', () => ({
 
 vi.mock('../../../../lib/prometheus', () => ({
   getPrometheusBaseUrl: vi.fn(),
+}));
+
+vi.mock('../../../../lib/redis-cache', () => ({
+  getCache: vi.fn(),
+  setCache: vi.fn(),
 }));
 
 const ADMIN = 'metrics-admin-token';
@@ -94,6 +100,8 @@ describe('GET /api/metrics', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.PLATFORM_ADMIN_TOKEN = ADMIN;
+    vi.mocked(redisCacheMod.getCache).mockResolvedValue(null);
+    vi.mocked(redisCacheMod.setCache).mockResolvedValue(true);
   });
 
   afterAll(() => {
@@ -162,6 +170,79 @@ describe('GET /api/metrics', () => {
     expect(byPlan.startup).toBe(2);
     expect(byPlan.business).toBe(2);
     expect(byPlan.enterprise).toBe(1);
+  });
+
+  it('on a cache miss, it calls DB and computeMrr, sets cache, and returns data', async () => {
+    vi.mocked(redisCacheMod.getCache).mockResolvedValue(null);
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
+      mockTenantCountClient({
+        total: 10,
+        active: 7,
+        suspended: 1,
+        startup: 2,
+        business: 2,
+        enterprise: 1,
+      })
+    );
+    vi.mocked(stripeMod.computeMrr).mockResolvedValue(123.45);
+
+    const res = await getMetrics(new Request('http://x/metrics', { headers: adminHeaders() }));
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(body.total_tenants).toBe(10);
+    expect(body.mrr_usd).toBe(123.45);
+
+    expect(redisCacheMod.getCache).toHaveBeenCalledWith('metrics:main_summary');
+    expect(redisCacheMod.setCache).toHaveBeenCalledWith(
+      'metrics:main_summary',
+      expect.objectContaining({ total_tenants: 10, mrr_usd: 123.45 }),
+      60
+    );
+  });
+
+  it('on a cache hit, it returns cached data immediately and does not query database or Stripe', async () => {
+    const cachedData = {
+      total_tenants: 5,
+      active_tenants: 4,
+      suspended_tenants: 1,
+      mrr_usd: 500.0,
+      tenants_by_plan: {
+        startup: 2,
+        business: 1,
+        enterprise: 1,
+      },
+    };
+    vi.mocked(redisCacheMod.getCache).mockResolvedValue(cachedData);
+
+    const res = await getMetrics(new Request('http://x/metrics', { headers: adminHeaders() }));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body).toEqual(cachedData);
+
+    expect(redisCacheMod.getCache).toHaveBeenCalledWith('metrics:main_summary');
+    expect(stripeMod.computeMrr).not.toHaveBeenCalled();
+    expect(redisCacheMod.setCache).not.toHaveBeenCalled();
+  });
+
+  it('falls back gracefully to live database queries when Redis read throws an error', async () => {
+    vi.mocked(redisCacheMod.getCache).mockRejectedValue(new Error('Redis is down'));
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
+      mockTenantCountClient({
+        total: 10,
+        active: 7,
+        suspended: 1,
+        startup: 2,
+        business: 2,
+        enterprise: 1,
+      })
+    );
+    vi.mocked(stripeMod.computeMrr).mockResolvedValue(123.45);
+
+    const res = await getMetrics(new Request('http://x/metrics', { headers: adminHeaders() }));
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(body.total_tenants).toBe(10);
+    expect(body.mrr_usd).toBe(123.45);
   });
 });
 

@@ -1,8 +1,12 @@
 import { serverErrorLogged } from '../../../lib/api-response';
 import { requireAdminAccessUnlessDemoRead } from '../../../lib/auth';
+import { logger } from '../../../lib/logger';
+import { getCache, setCache } from '../../../lib/redis-cache';
 import { computeMrr } from '../../../lib/stripe';
 import { getServiceClient } from '../../../lib/supabase';
 import type { SupabaseClient } from '@supabase/supabase-js';
+
+const METRICS_CACHE_TTL_SECONDS = 60;
 
 type CountHeadResult = {
   count: number | null;
@@ -16,6 +20,18 @@ type MetricRows = {
   startupRes: CountHeadResult;
   businessRes: CountHeadResult;
   enterpriseRes: CountHeadResult;
+};
+
+type MetricsBody = {
+  total_tenants: number;
+  active_tenants: number;
+  suspended_tenants: number;
+  mrr_usd: number;
+  tenants_by_plan: {
+    startup: number;
+    business: number;
+    enterprise: number;
+  };
 };
 
 async function fetchTenantStatusCounts(
@@ -93,27 +109,15 @@ function firstMetricsError(rows: MetricRows): Error | null {
   return new Error(errors[0].message);
 }
 
-export async function GET(request: Request): Promise<Response> {
-  const authError = await requireAdminAccessUnlessDemoRead(request);
-  if (authError) {
-    return authError;
-  }
-
-  const client = getServiceClient();
+async function getMetricsBody(client: SupabaseClient): Promise<MetricsBody> {
   const rows = await fetchTenantMetricRows(client);
   const err = firstMetricsError(rows);
   if (err) {
-    return serverErrorLogged('metrics:', err);
+    throw err;
   }
 
-  let mrr_usd = 0;
-  try {
-    mrr_usd = await computeMrr(client);
-  } catch (e) {
-    return serverErrorLogged('computeMrr:', e);
-  }
-
-  return Response.json({
+  const mrr_usd = await computeMrr(client);
+  return {
     total_tenants: rows.totalRes.count ?? 0,
     active_tenants: rows.activeRes.count ?? 0,
     suspended_tenants: rows.suspendedRes.count ?? 0,
@@ -123,5 +127,41 @@ export async function GET(request: Request): Promise<Response> {
       business: rows.businessRes.count ?? 0,
       enterprise: rows.enterpriseRes.count ?? 0,
     },
-  });
+  };
+}
+
+export async function GET(request: Request): Promise<Response> {
+  const authError = await requireAdminAccessUnlessDemoRead(request);
+  if (authError) {
+    return authError;
+  }
+
+  const client = getServiceClient();
+  const cacheKey = 'metrics:main_summary';
+
+  try {
+    // Graceful cache retrieval: if Redis is down or fails, fallback to DB
+    let cached: MetricsBody | null = null;
+    try {
+      cached = await getCache<MetricsBody>(cacheKey);
+    } catch (e) {
+      logger.error('metrics cache read failed, falling back to database:', e as Error);
+    }
+
+    if (cached) {
+      return Response.json(cached);
+    }
+
+    const data = await getMetricsBody(client);
+
+    try {
+      await setCache(cacheKey, data, METRICS_CACHE_TTL_SECONDS);
+    } catch (e) {
+      logger.error('metrics cache write failed:', e as Error);
+    }
+
+    return Response.json(data);
+  } catch (err) {
+    return serverErrorLogged('metrics:', err);
+  }
 }
