@@ -103,6 +103,10 @@ function findRootWhitelistViolations(repoRoot, options = {}) {
 
   for (const entry of entries) {
     const name = entry.name;
+    // Git worktrees use a `.git` *file*; bare checkouts use a directory. Both are valid.
+    if (name === '.git') {
+      continue;
+    }
     if (skipGitIgnored && isGitIgnored(repoRoot, name)) {
       continue;
     }
