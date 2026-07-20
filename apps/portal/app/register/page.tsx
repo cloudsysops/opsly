@@ -56,8 +56,7 @@ function slugError(value: string): string | null {
   if (value.length < 3) return 'Debe tener al menos 3 caracteres';
   if (!/^[a-z0-9]/.test(value)) return 'Debe empezar con letra o número';
   if (!/[a-z0-9]$/.test(value)) return 'Debe terminar con letra o número';
-  if (!/^[a-z0-9-]+$/.test(value))
-    return 'Solo letras minúsculas, números y guiones';
+  if (!/^[a-z0-9-]+$/.test(value)) return 'Solo letras minúsculas, números y guiones';
   return null;
 }
 
@@ -100,11 +99,7 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const { url } = await createCheckoutSession(
-        email.trim(),
-        slug.trim(),
-        selectedPlan
-      );
+      const { url } = await createCheckoutSession(email.trim(), slug.trim(), selectedPlan);
       router.push(url);
     } catch (err: unknown) {
       const e = err as Record<string, unknown> | null;
@@ -124,10 +119,7 @@ export default function RegisterPage() {
     <main className="min-h-screen bg-[#0a0a0a] text-neutral-100">
       <nav className="sticky top-0 z-40 border-b border-[#202020] bg-[#0a0a0a]/90 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link
-            href="/"
-            className="font-mono text-lg font-semibold tracking-tight text-[#4ade80]"
-          >
+          <Link href="/" className="font-mono text-lg font-semibold tracking-tight text-[#4ade80]">
             Opsly
           </Link>
           <Button asChild variant="ghost">
@@ -138,20 +130,21 @@ export default function RegisterPage() {
 
       <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="font-mono text-xs uppercase tracking-[0.18em] text-[#4ade80]">
-            Registro
-          </p>
+          <p className="font-mono text-xs uppercase tracking-[0.18em] text-[#4ade80]">Registro</p>
           <h1 className="mt-4 text-3xl font-semibold leading-tight text-neutral-50 sm:text-4xl">
             Lanza tu infraestructura de automatización en minutos
           </h1>
           <p className="mt-3 text-sm leading-6 text-neutral-400">
-            Elige un plan, configura tu workspace y empieza a automatizar con n8n
-            administrado, monitoreo y backups incluidos.
+            Elige un plan, configura tu workspace y empieza a automatizar con n8n administrado,
+            monitoreo y backups incluidos.
           </p>
         </div>
 
         {error && (
-          <div className="mx-auto mt-8 max-w-xl rounded border border-red-900/50 bg-red-950/30 p-4 text-sm text-red-400">
+          <div
+            role="alert"
+            className="mx-auto mt-8 max-w-xl rounded border border-red-900/50 bg-red-950/30 p-4 text-sm text-red-400"
+          >
             {error}
           </div>
         )}
@@ -164,6 +157,7 @@ export default function RegisterPage() {
                 <button
                   key={plan.id}
                   type="button"
+                  aria-pressed={isSelected}
                   onClick={() => setSelectedPlan(plan.id)}
                   className={`relative flex flex-col rounded-xl border p-6 text-left transition-all duration-200 ${
                     plan.highlighted
@@ -181,18 +175,12 @@ export default function RegisterPage() {
                     </span>
                   )}
 
-                  <h3 className="text-xl font-semibold text-neutral-50">
-                    {plan.name}
-                  </h3>
+                  <h3 className="text-xl font-semibold text-neutral-50">{plan.name}</h3>
                   <div className="mt-3">
-                    <span className="text-3xl font-semibold text-neutral-50">
-                      {plan.price}
-                    </span>
+                    <span className="text-3xl font-semibold text-neutral-50">{plan.price}</span>
                     <span className="ml-1 text-sm text-neutral-500">/mes</span>
                   </div>
-                  <p className="mt-2 text-sm leading-5 text-neutral-500">
-                    {plan.description}
-                  </p>
+                  <p className="mt-2 text-sm leading-5 text-neutral-500">{plan.description}</p>
 
                   <ul className="mt-6 flex-1 space-y-2.5 text-sm text-neutral-300">
                     {plan.features.map((f) => (
@@ -209,10 +197,7 @@ export default function RegisterPage() {
 
           <div className="mx-auto mt-10 max-w-xl space-y-5">
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-neutral-300"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-neutral-300">
                 Correo electrónico
               </label>
               <Input
@@ -220,6 +205,8 @@ export default function RegisterPage() {
                 type="email"
                 placeholder="tucorreo@ejemplo.com"
                 value={email}
+                aria-invalid={fieldErrors.email ? 'true' : 'false'}
+                aria-describedby={fieldErrors.email ? 'email-error' : undefined}
                 onChange={(e) => {
                   setEmail(e.target.value);
                   if (fieldErrors.email) setFieldErrors((p) => ({ ...p, email: '' }));
@@ -228,15 +215,14 @@ export default function RegisterPage() {
                 autoComplete="email"
               />
               {fieldErrors.email && (
-                <p className="mt-1 text-xs text-red-400">{fieldErrors.email}</p>
+                <p id="email-error" className="mt-1 text-xs text-red-400">
+                  {fieldErrors.email}
+                </p>
               )}
             </div>
 
             <div>
-              <label
-                htmlFor="slug"
-                className="block text-sm font-medium text-neutral-300"
-              >
+              <label htmlFor="slug" className="block text-sm font-medium text-neutral-300">
                 Nombre del workspace
               </label>
               <Input
@@ -244,6 +230,8 @@ export default function RegisterPage() {
                 type="text"
                 placeholder="mi-empresa"
                 value={slug}
+                aria-invalid={fieldErrors.slug ? 'true' : 'false'}
+                aria-describedby={fieldErrors.slug ? 'slug-error' : 'slug-description'}
                 onChange={(e) => {
                   setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''));
                   if (fieldErrors.slug) setFieldErrors((p) => ({ ...p, slug: '' }));
@@ -251,21 +239,17 @@ export default function RegisterPage() {
                 className={`mt-1.5 ${fieldErrors.slug ? 'border-red-500' : ''}`}
               />
               {fieldErrors.slug ? (
-                <p className="mt-1 text-xs text-red-400">{fieldErrors.slug}</p>
+                <p id="slug-error" className="mt-1 text-xs text-red-400">
+                  {fieldErrors.slug}
+                </p>
               ) : (
-                <p className="mt-1 text-xs text-neutral-500">
+                <p id="slug-description" className="mt-1 text-xs text-neutral-500">
                   3-30 caracteres: solo letras minúsculas, números y guiones
                 </p>
               )}
             </div>
 
-            <Button
-              type="submit"
-              variant="primary"
-              size="lg"
-              className="w-full"
-              disabled={loading}
-            >
+            <Button type="submit" variant="primary" size="lg" className="w-full" disabled={loading}>
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
