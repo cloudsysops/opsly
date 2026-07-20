@@ -1,0 +1,23 @@
+{
+  "name": "@intcloudsysops/whatsapp",
+  "version": "0.1.0",
+  "description": "Provider-agnostic WhatsApp contracts (Meta-first; WACRM adapter). PR0: no runtime wiring.",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2",
+    "vitest": "^4.1.8"
+  },
+  "keywords": ["whatsapp", "meta", "wacrm", "contracts"]
+}
