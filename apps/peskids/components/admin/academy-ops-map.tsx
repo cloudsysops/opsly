@@ -61,9 +61,9 @@ const statusTone: Record<AcademyOpsStatus, 'green' | 'amber' | 'violet' | 'coral
 
 const statusLabel: Record<AcademyOpsStatus, string> = {
   ready: 'Listo',
-  partial: 'Parcial',
+  partial: 'En progreso',
   manual: 'Manual',
-  blocked: 'Bloqueado',
+  blocked: 'Pendiente',
 };
 
 const iconMap: Record<AcademyDomain['key'], typeof UserRoundSearch> = {
@@ -218,7 +218,7 @@ export function AcademyOpsMap({ data }: AcademyOpsMapProps): React.ReactElement 
             <p className="mt-1 font-semibold text-pk-ink">{totals.ready}</p>
           </div>
           <div className="rounded-2xl border border-pk-border bg-pk-muted px-3 py-2">
-            <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">Parcial</p>
+            <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">En progreso</p>
             <p className="mt-1 font-semibold text-pk-ink">{totals.partial}</p>
           </div>
           <div className="rounded-2xl border border-pk-border bg-pk-muted px-3 py-2">
@@ -226,7 +226,7 @@ export function AcademyOpsMap({ data }: AcademyOpsMapProps): React.ReactElement 
             <p className="mt-1 font-semibold text-pk-ink">{totals.manual}</p>
           </div>
           <div className="rounded-2xl border border-pk-border bg-pk-muted px-3 py-2">
-            <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">Bloqueado</p>
+            <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">Pendiente</p>
             <p className="mt-1 font-semibold text-pk-ink">{totals.blocked}</p>
           </div>
         </div>

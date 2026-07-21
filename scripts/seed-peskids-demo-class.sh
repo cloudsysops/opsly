@@ -2,8 +2,14 @@
 set -euo pipefail
 
 # Seed a demo scheduled class for Peskids operations MVP (idempotent).
+# BLOCKED unless PESKIDS_ALLOW_DEMO_SEED=1.
 # Requires pools (seed-peskids-pools.sh) and migration 010 grants applied.
-# Usage: doppler run --project ops-intcloudsysops --config prd -- ./scripts/seed-peskids-demo-class.sh [--dry-run]
+# Usage: PESKIDS_ALLOW_DEMO_SEED=1 doppler run --config stg -- ./scripts/seed-peskids-demo-class.sh [--dry-run]
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# shellcheck source=lib/peskids-demo-seed-guard.sh
+source "${ROOT}/scripts/lib/peskids-demo-seed-guard.sh"
+peskids_require_demo_seed_allow "./scripts/seed-peskids-demo-class.sh" || exit 1
 
 DRY_RUN=false
 if [[ "${1:-}" == "--dry-run" ]]; then

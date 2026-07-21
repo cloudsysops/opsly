@@ -16,7 +16,7 @@ export function HeroSection(): React.ReactElement {
       <div className="relative z-10 mx-auto max-w-4xl px-4 py-14 sm:px-8 lg:px-14 lg:py-20">
         <span className="pk-pill border-white/10 bg-white/10 text-white">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
-          Cupos abiertos · ciclo junio
+          Cupos abiertos · segundo semestre
         </span>
 
         <h1 className="mt-5 text-5xl font-bold leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-[5.2rem]">

@@ -1,11 +1,12 @@
 'use client';
 
-import { ArrowRight, ExternalLink, MessageSquare, Phone } from 'lucide-react';
+import { ExternalLink, MessageSquare, Phone } from 'lucide-react';
 import type { DashboardData } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatAgeRange } from '@/lib/peskids-domain';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { buildWhatsAppDeepLink } from '@/lib/integrations/wacrm-admin-links';
 import { formatRelativeTime } from '@/lib/utils';
 
 interface RecentLeadsPanelProps {
@@ -15,20 +16,26 @@ interface RecentLeadsPanelProps {
 const statusLabel: Record<DashboardData['new_leads'][number]['status'], string> = {
   new: 'Nuevo',
   contacted: 'Contactado',
-  trial: 'Trial',
+  trial: 'Clase de prueba',
   enrolled: 'Matriculado',
   active: 'Activo',
   renewal: 'Renovación',
   archived: 'Archivado',
 };
 
-const syncLabel: Record<NonNullable<DashboardData['new_leads'][number]['twenty_sync_status']>, string> = {
-  synced: 'Twenty OK',
+const syncLabel: Record<
+  NonNullable<DashboardData['new_leads'][number]['twenty_sync_status']>,
+  string
+> = {
+  synced: 'En CRM',
   warning: 'Sync parcial',
-  pending: 'Pendiente',
+  pending: 'Pendiente CRM',
 };
 
-const syncTone: Record<NonNullable<DashboardData['new_leads'][number]['twenty_sync_status']>, 'green' | 'amber' | 'neutral'> = {
+const syncTone: Record<
+  NonNullable<DashboardData['new_leads'][number]['twenty_sync_status']>,
+  'green' | 'amber' | 'neutral'
+> = {
   synced: 'green',
   warning: 'amber',
   pending: 'neutral',
@@ -54,21 +61,21 @@ export function RecentLeadsPanel({ data }: RecentLeadsPanelProps): React.ReactEl
     <section data-admin-section="recent-leads" className="mb-6">
       <Card accent="slate" className="border-pk-border">
         <CardHeader>
-          <CardTitle className="text-base">Leads recientes</CardTitle>
+          <CardTitle className="text-base">Interesados recientes</CardTitle>
           <CardDescription>
-            Estado pipeline, sync Twenty y acción sugerida para cada lead.
+            Embudo, sync a Twenty y acciones reales (WhatsApp / agenda).
           </CardDescription>
         </CardHeader>
         <CardContent>
           {recentLeads.length > 0 ? (
-            <div className="overflow-hidden rounded-2xl border border-pk-border">
-              <table className="w-full text-left">
+            <div className="overflow-x-auto rounded-2xl border border-pk-border">
+              <table className="w-full min-w-[640px] text-left">
                 <thead className="bg-pk-muted/60 text-[11px] uppercase tracking-[0.16em] text-pk-mutedText">
                   <tr>
-                    <th className="px-3 py-3 font-medium">Lead</th>
+                    <th className="px-3 py-3 font-medium">Interesado</th>
                     <th className="px-3 py-3 font-medium">Contacto</th>
                     <th className="px-3 py-3 font-medium">Estado</th>
-                    <th className="px-3 py-3 font-medium">Sync</th>
+                    <th className="px-3 py-3 font-medium">CRM</th>
                     <th className="px-3 py-3 font-medium">Fecha</th>
                     <th className="px-3 py-3 font-medium">Acciones</th>
                   </tr>
@@ -76,6 +83,7 @@ export function RecentLeadsPanel({ data }: RecentLeadsPanelProps): React.ReactEl
                 <tbody className="divide-y divide-pk-border bg-white">
                   {recentLeads.map((lead) => {
                     const twentyUrl = lead.twenty_person_url ?? lead.twenty_opportunity_url;
+                    const whatsappUrl = lead.phone ? buildWhatsAppDeepLink(lead.phone) : null;
                     return (
                       <tr key={lead.id} className="align-top">
                         <td className="px-3 py-3">
@@ -95,7 +103,15 @@ export function RecentLeadsPanel({ data }: RecentLeadsPanelProps): React.ReactEl
                           </div>
                         </td>
                         <td className="px-3 py-3">
-                          <Badge tone={lead.status === 'enrolled' || lead.status === 'active' ? 'green' : lead.status === 'trial' ? 'violet' : 'amber'}>
+                          <Badge
+                            tone={
+                              lead.status === 'enrolled' || lead.status === 'active'
+                                ? 'green'
+                                : lead.status === 'trial'
+                                  ? 'violet'
+                                  : 'amber'
+                            }
+                          >
                             {statusLabel[lead.status]}
                           </Badge>
                         </td>
@@ -109,34 +125,39 @@ export function RecentLeadsPanel({ data }: RecentLeadsPanelProps): React.ReactEl
                         </td>
                         <td className="px-3 py-3">
                           <div className="flex flex-wrap gap-2">
+                            {whatsappUrl ? (
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="secondary"
+                                onClick={() =>
+                                  window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
+                                }
+                              >
+                                <Phone className="h-4 w-4" aria-hidden />
+                                <span className="ml-1">WhatsApp</span>
+                              </Button>
+                            ) : null}
                             {twentyUrl ? (
                               <Button
                                 type="button"
                                 size="sm"
                                 variant="ghost"
-                                onClick={() => window.open(twentyUrl, '_blank', 'noopener,noreferrer')}
+                                onClick={() =>
+                                  window.open(twentyUrl, '_blank', 'noopener,noreferrer')
+                                }
                               >
                                 <ExternalLink className="h-4 w-4" aria-hidden />
                                 <span className="ml-1">Ver en Twenty</span>
                               </Button>
                             ) : null}
-                              <Button
-                              type="button"
-                              size="sm"
-                              variant="secondary"
-                              onClick={() => scrollToSection('seguimientos')}
-                            >
-                              <ArrowRight className="h-4 w-4" aria-hidden />
-                              <span className="ml-1">Enviar seguimiento</span>
-                            </Button>
                             <Button
                               type="button"
                               size="sm"
-                              variant="secondary"
+                              variant="ghost"
                               onClick={() => scrollToSection('leads')}
                             >
-                              <ArrowRight className="h-4 w-4" aria-hidden />
-                              <span className="ml-1">Agendar trial</span>
+                              <span>Agendar clase</span>
                             </Button>
                           </div>
                         </td>
@@ -148,8 +169,8 @@ export function RecentLeadsPanel({ data }: RecentLeadsPanelProps): React.ReactEl
             </div>
           ) : (
             <div className="rounded-2xl border border-dashed border-pk-border bg-pk-muted/30 p-4 text-sm text-pk-sub">
-              No hay leads recientes para mostrar. Cuando entren leads, aparecerán aquí con estado
-              de pipeline, sync Twenty y acceso directo a CRM.
+              Aún no hay interesados recientes. Cuando lleguen del formulario o de Instagram,
+              aparecerán aquí con estado, CRM y WhatsApp.
             </div>
           )}
         </CardContent>

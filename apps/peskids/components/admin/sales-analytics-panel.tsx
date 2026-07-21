@@ -11,7 +11,7 @@ interface SalesAnalyticsPanelProps {
 const stageLabels: Record<keyof DashboardData['sales_analytics']['lead_status_counts'], string> = {
   new: 'Nuevo',
   contacted: 'Contactado',
-  trial: 'Trial',
+  trial: 'Clase de prueba',
   enrolled: 'Matriculado',
   active: 'Activo',
   renewal: 'Renovación',
@@ -31,9 +31,10 @@ export function SalesAnalyticsPanel({ data }: SalesAnalyticsPanelProps): React.R
     <section data-admin-section="analytics" className="mb-6">
       <Card accent="slate" className="border-pk-border">
         <CardHeader>
-          <CardTitle className="text-base">Analítica de ventas</CardTitle>
+          <CardTitle className="text-base">Analítica de captación</CardTitle>
           <CardDescription>
-            Ritmo de captación, conversión por etapa y tiempo hasta seguimiento / trial.
+            Ritmo de interesados, conversión por etapa y tiempo hasta seguimiento / clase de
+            prueba.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
@@ -45,7 +46,7 @@ export function SalesAnalyticsPanel({ data }: SalesAnalyticsPanelProps): React.R
               <p className="mt-2 text-3xl font-semibold text-pk-ink">
                 {data.conversion_rate_pct === null ? '—' : `${data.conversion_rate_pct}%`}
               </p>
-              <p className="mt-1 text-xs text-pk-sub">Leads matriculados / leads del periodo.</p>
+              <p className="mt-1 text-xs text-pk-sub">Interesados matriculados / interesados del periodo.</p>
             </div>
             <div className="rounded-2xl border border-pk-border bg-pk-muted/40 p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-pk-mutedText">
@@ -56,27 +57,27 @@ export function SalesAnalyticsPanel({ data }: SalesAnalyticsPanelProps): React.R
                   ? '—'
                   : `${data.sales_analytics.avg_hours_to_first_followup} h`}
               </p>
-              <p className="mt-1 text-xs text-pk-sub">Promedio desde lead hasta primer follow-up.</p>
+              <p className="mt-1 text-xs text-pk-sub">Promedio desde interesado hasta primer seguimiento.</p>
             </div>
             <div className="rounded-2xl border border-pk-border bg-pk-muted/40 p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-pk-mutedText">
-                Tiempo a trial
+                Tiempo a clase de prueba
               </p>
               <p className="mt-2 text-3xl font-semibold text-pk-ink">
                 {data.sales_analytics.avg_hours_to_trial === null
                   ? '—'
                   : `${data.sales_analytics.avg_hours_to_trial} h`}
               </p>
-              <p className="mt-1 text-xs text-pk-sub">Promedio desde lead hasta clase de prueba.</p>
+              <p className="mt-1 text-xs text-pk-sub">Promedio desde interesado hasta clase de prueba.</p>
             </div>
             <div className="rounded-2xl border border-pk-border bg-pk-muted/40 p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-pk-mutedText">
-                Trials agendados
+                Clases de prueba
               </p>
               <p className="mt-2 text-3xl font-semibold text-pk-ink">
                 {data.sales_analytics.trials_scheduled_count}
               </p>
-              <p className="mt-1 text-xs text-pk-sub">Sesiones con estado scheduled/confirmed/attended.</p>
+              <p className="mt-1 text-xs text-pk-sub">Sesiones agendadas, confirmadas o asistidas.</p>
             </div>
           </div>
 

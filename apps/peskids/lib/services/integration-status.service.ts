@@ -101,17 +101,17 @@ export async function fetchDashboardIntegrationStatus(
           twentyHealth ? twentyHealth.detail : 'Sin health check',
           twentyHealth?.checked_at ?? checkedAt
         )
-      : disabledItem('Twenty', 'Disabled or missing TWENTY_API_URL / TWENTY_API_KEY', checkedAt),
+      : disabledItem('Twenty', 'CRM no configurado (falta TWENTY_API_URL / TWENTY_API_KEY)', checkedAt),
     ghl: ghlEnabled
       ? {
           label: 'GHL',
           enabled: true,
           status: 'warning',
-          detail: 'Legacy enabled but not used in current cutover',
+          detail: 'Legacy activo; no es la ruta actual de captación',
           url: null,
           checked_at: checkedAt,
         }
-      : disabledItem('GHL', 'Legacy off (PESKIDS_GHL_ENABLED=false)', checkedAt),
+      : disabledItem('GHL', 'Ruta legacy apagada', checkedAt),
     n8n: n8nBase
       ? enabledItem(
           'n8n',
@@ -120,7 +120,7 @@ export async function fetchDashboardIntegrationStatus(
           n8nHealth ? n8nHealth.detail : 'Sin health check',
           n8nHealth?.checked_at ?? checkedAt
         )
-      : disabledItem('n8n', 'Missing N8N_WEBHOOK_BASE_URL', checkedAt),
+      : disabledItem('n8n', 'Automatización no configurada (falta N8N_WEBHOOK_BASE_URL)', checkedAt),
     wacrm: wacrmBase
       ? enabledItem(
           'WACRM',
@@ -129,6 +129,6 @@ export async function fetchDashboardIntegrationStatus(
           wacrmHealth ? wacrmHealth.detail : 'Sin health check',
           wacrmHealth?.checked_at ?? checkedAt
         )
-      : disabledItem('WACRM', 'Missing WACRM_PESKIDS_SERVER_URL', checkedAt),
+      : disabledItem('WACRM', 'Canal WhatsApp Business aún no activado', checkedAt),
   };
 }

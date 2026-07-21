@@ -155,7 +155,7 @@ const leadStatusTone: Record<
 }
 
 const followupTypeLabel: Record<DashboardData['followups'][number]['contact_type'], string> = {
-  lead: 'Lead',
+  lead: 'Interesado',
   student: 'Estudiante',
   parent: 'Familia',
 }
@@ -324,8 +324,8 @@ export function DashboardView({
 
     if (data.new_leads_count > 0) {
       return {
-        title: 'Trabajar nuevos leads',
-        description: `${data.new_leads_count} lead(s) esperando contacto.`,
+        title: 'Trabajar nuevos interesados',
+        description: `${data.new_leads_count} interesado(s) esperando contacto.`,
         tone: 'teal' as const,
         anchor: 'leads',
       }
@@ -524,7 +524,7 @@ export function DashboardView({
               Peskids / Admin
             </p>
             <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight text-pk-ink sm:text-3xl">
-              Operación diaria de familias, leads y soporte.
+              Operación diaria de familias, interesados y soporte.
             </h2>
             <p className="mt-2 max-w-xl text-sm leading-6 text-pk-sub">
               Un panel para decidir rápido qué atender, qué cerrar y qué seguir hoy.
@@ -532,7 +532,7 @@ export function DashboardView({
 
             <div className="mt-5 flex flex-wrap gap-2 text-[11px] font-medium text-pk-sub">
               <span className="rounded-full border border-pk-border bg-pk-muted px-3 py-1">
-                Leads nuevos: {data.new_leads_count}
+                Interesados nuevos: {data.new_leads_count}
               </span>
               <span className="rounded-full border border-pk-border bg-pk-muted px-3 py-1">
                 Estudiantes activos: {data.active_students_count}
@@ -566,7 +566,14 @@ export function DashboardView({
                   Ir a la cola
                 </Button>
                 <Button size="sm" variant="secondary" onClick={() => scrollToSection('leads')}>
-                  Crear lead
+                  Ver interesados
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => window.open('/#reserva-form', '_blank', 'noopener,noreferrer')}
+                >
+                  Formulario público
                 </Button>
                 <Button size="sm" variant="ghost" onClick={() => void handleCopy(syncLabel)}>
                   <Copy className="h-4 w-4" aria-hidden />
@@ -592,7 +599,7 @@ export function DashboardView({
                 </div>
                 <div className="rounded-xl bg-pk-muted px-3 py-2">
                   <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">Captación</p>
-                  <p className="mt-1 text-sm font-semibold text-pk-ink">{data.new_leads_count} leads</p>
+                  <p className="mt-1 text-sm font-semibold text-pk-ink">{data.new_leads_count} interesados</p>
                 </div>
                 <div className="rounded-xl bg-pk-muted px-3 py-2">
                   <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">Soporte</p>
@@ -611,7 +618,7 @@ export function DashboardView({
           <div className="text-xs text-pk-sub">
             {messageSummary.supportPending + messageSummary.admissionsPending > 0
               ? 'Atiende soporte de familias primero, luego admisiones, seguimiento y captación.'
-              : 'La cola está limpia; revisa leads y seguimientos para mantener el ritmo.'}
+              : 'La cola está limpia; revisa interesados y seguimientos para mantener el ritmo.'}
           </div>
           <div className="flex flex-col gap-3 lg:items-end">
             <div className="flex flex-wrap gap-2">
@@ -628,12 +635,12 @@ export function DashboardView({
               ))}
             </div>
             <label className="w-full lg:max-w-xs">
-              <span className="sr-only">Buscar leads</span>
+              <span className="sr-only">Buscar interesados</span>
               <input
                 type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar leads…"
+                placeholder="Buscar interesados…"
                 className="pk-input"
               />
             </label>
@@ -968,7 +975,7 @@ export function DashboardView({
               })
             ) : (
               <p className="text-sm text-pk-sub">
-                {search ? 'Sin coincidencias para tu búsqueda.' : 'Sin leads nuevos esta semana.'}
+                {search ? 'Sin coincidencias para tu búsqueda.' : 'Sin interesados nuevos esta semana.'}
               </p>
             )}
           </ul>

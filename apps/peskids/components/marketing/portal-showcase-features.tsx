@@ -360,7 +360,7 @@ function OnboardingPreview(): React.ReactElement {
       </div>
 
       <div className="mt-4 space-y-3">
-        <FieldRow label="Nombre" value="Mateo Restrepo" />
+        <FieldRow label="Nombre" value="Lucas Mendoza" />
         <div className="grid grid-cols-2 gap-3">
           <FieldRow label="Edad" value="5 años" />
           <FieldRow label="Género" value="Niño" />
