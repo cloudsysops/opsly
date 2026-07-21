@@ -12,25 +12,25 @@ interface DashboardKpiStripProps {
 const kpiItems = [
   {
     key: 'newLeads',
-    label: 'Leads nuevos',
+    label: 'Interesados nuevos',
     accent: 'teal' as const,
     icon: BarChart3,
   },
   {
     key: 'twentySync',
-    label: 'Sync Twenty OK',
+    label: 'En CRM Twenty',
     accent: 'green' as const,
     icon: ShieldCheck,
   },
   {
     key: 'followups',
-    label: 'Follow-ups pendientes',
+    label: 'Seguimientos pendientes',
     accent: 'amber' as const,
     icon: Clock,
   },
   {
     key: 'trials',
-    label: 'Trials agendados',
+    label: 'Clases de prueba',
     accent: 'violet' as const,
     icon: BadgeCheck,
   },

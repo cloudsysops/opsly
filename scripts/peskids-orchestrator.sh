@@ -259,7 +259,13 @@ health_check() {
 # SEED DEMO — Database seeding
 ###############################################################################
 seed_demo() {
-  log_info "Seeding demo data..."
+  log_info "Seeding demo data (requires PESKIDS_ALLOW_DEMO_SEED=1)..."
+
+  # shellcheck source=lib/peskids-demo-seed-guard.sh
+  source "$SCRIPT_DIR/lib/peskids-demo-seed-guard.sh"
+  if ! peskids_require_demo_seed_allow "peskids-orchestrator seed-demo"; then
+    exit 1
+  fi
 
   log_info "Running seed scripts..."
   bash "$SCRIPT_DIR/seed-peskids-demo-class.sh" || log_warn "Demo class seed failed"

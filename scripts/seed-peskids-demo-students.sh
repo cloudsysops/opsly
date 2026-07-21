@@ -2,11 +2,17 @@
 set -euo pipefail
 
 # Seed demo dashboard data for Peskids (students, leads, follow-ups, settings). Idempotent.
+# BLOCKED on production unless PESKIDS_ALLOW_DEMO_SEED=1.
 # Usage:
-#   doppler run --project ops-intcloudsysops --config prd -- ./scripts/seed-peskids-demo-students.sh [--dry-run]
+#   PESKIDS_ALLOW_DEMO_SEED=1 doppler run --config stg -- ./scripts/seed-peskids-demo-students.sh [--dry-run]
 # Optional env:
 #   PESKIDS_ACADEMY_NAME (default: Peskids)
 #   PESKIDS_SEDE_LABEL (default: Llanogrande · Medellín)
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# shellcheck source=lib/peskids-demo-seed-guard.sh
+source "${ROOT}/scripts/lib/peskids-demo-seed-guard.sh"
+peskids_require_demo_seed_allow "./scripts/seed-peskids-demo-students.sh" || exit 1
 
 DRY_RUN=false
 if [[ "${1:-}" == "--dry-run" ]]; then

@@ -17,18 +17,38 @@ type WacrmLeadInboxActionsProps = {
   messages: WacrmMessageRow[];
 };
 
+/**
+ * WhatsApp actions for a lead. WACRM chrome only appears when there is a real
+ * WACRM conversation — avoids “apagado / sin conversación” noise in demos.
+ */
 export function WacrmLeadInboxActions({
   phone,
   messages,
 }: WacrmLeadInboxActionsProps): React.ReactElement | null {
   const snapshot = deriveWacrmLeadInboxSnapshot(phone, messages);
   const whatsappUrl = phone ? buildWhatsAppDeepLink(phone) : null;
-  const wacrmUrl = buildWacrmConversationUrl(null);
+  const wacrmUrl = snapshot.isWacrm ? buildWacrmConversationUrl(null) : null;
+
+  if (!snapshot.isWacrm) {
+    if (!whatsappUrl) return null;
+    return (
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          onClick={() => window.open(whatsappUrl, '_blank', 'noopener,noreferrer')}
+        >
+          Abrir WhatsApp
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-3 space-y-2">
       <div className="flex flex-wrap items-center gap-2">
-        {snapshot.isWacrm ? <Badge tone="green">wacrm</Badge> : null}
+        <Badge tone="green">WhatsApp canal</Badge>
         <Badge tone={snapshot.status === 'pending_reply' ? 'amber' : 'neutral'}>
           {snapshot.statusLabel}
         </Badge>
@@ -67,12 +87,10 @@ export function WacrmLeadInboxActions({
             <span className="ml-1">Abrir conversación</span>
           </Button>
         ) : null}
-        {snapshot.isWacrm ? (
-          <Button type="button" size="sm" variant="ghost" disabled>
-            <MessageSquare className="h-4 w-4" aria-hidden />
-            <span className="ml-1">Inbox wacrm</span>
-          </Button>
-        ) : null}
+        <Button type="button" size="sm" variant="ghost" disabled>
+          <MessageSquare className="h-4 w-4" aria-hidden />
+          <span className="ml-1">Inbox canal</span>
+        </Button>
       </div>
     </div>
   );

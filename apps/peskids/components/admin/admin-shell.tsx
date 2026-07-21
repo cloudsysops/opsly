@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   Users,
   UsersRound,
+  X,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { PeskidsLogo } from '@/components/brand/peskids-logo';
@@ -43,6 +44,13 @@ interface NavItem {
   badge?: number;
 }
 
+/** Hash → data-admin-section (aliases for legacy links). */
+const HASH_SECTION_ALIASES: Record<string, string> = {
+  'follow-up': 'seguimientos',
+  dashboard: 'inicio',
+  overview: 'inicio',
+};
+
 const navOps = [
   { icon: Home, label: 'Landing', href: '/' },
   { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },
@@ -53,12 +61,17 @@ const navOps = [
   { icon: ClipboardList, label: 'Clases de prueba', href: '/admin#trial-classes' },
   { icon: Users, label: 'Interesados', href: '/admin#leads' },
   { icon: MessageSquare, label: 'Feedback', href: '/admin#feedback' },
-  { icon: CalendarClock, label: 'Follow-up', href: '/admin#follow-up' },
+  { icon: CalendarClock, label: 'Seguimientos', href: '/admin#seguimientos' },
   { icon: Inbox, label: 'Mensajes', href: '/admin/messages' },
   { icon: Settings, label: 'Configuración', href: '/admin/settings' },
   { icon: Bell, label: 'Notificaciones', href: '/settings/notifications' },
 ] satisfies NavItem[];
 
+function resolveAdminSection(hashValue: string): string {
+  const raw = hashValue.replace(/^#/, '').trim();
+  if (!raw) return 'inicio';
+  return HASH_SECTION_ALIASES[raw] ?? raw;
+}
 interface ConversationsApiResponse {
   conversations?: Array<{ unreadCount: number }>;
 }
@@ -72,6 +85,7 @@ export function AdminShell({
   const pathname = usePathname();
   const router = useRouter();
   const [hash, setHash] = useState('');
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [signingOut, setSigningOut] = useState(false);
   const [signOutError, setSignOutError] = useState('');
@@ -91,6 +105,19 @@ export function AdminShell({
     };
   }, []);
 
+  useEffect(() => {
+    if (pathname !== '/admin' || !hash) return;
+    const section = resolveAdminSection(hash);
+    const timer = window.setTimeout(() => {
+      const target = document.querySelector(`[data-admin-section="${section}"]`);
+      target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+    return () => window.clearTimeout(timer);
+  }, [hash, pathname]);
+
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname, hash]);
   // Poll for unread message count every 30s
   useEffect(() => {
     const fetchUnread = async (): Promise<void> => {
@@ -208,12 +235,44 @@ export function AdminShell({
       return hash === '#feedback';
     }
 
-    if (item.label === 'Follow-up') {
-      return hash === '#follow-up';
+    if (item.label === 'Seguimientos') {
+      return hash === '#seguimientos' || hash === '#follow-up';
     }
 
     return false;
   };
+
+  const renderNavLinks = (onNavigate?: () => void): React.ReactElement => (
+    <>
+      <p className="px-3 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/45">
+        Panel
+      </p>
+      {navOps.map((item) => {
+        const showBadge = item.label === 'Mensajes' && unreadMessages > 0;
+        return (
+          <Link
+            key={item.label}
+            href={item.href}
+            onClick={onNavigate}
+            className={cn(
+              'mb-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition-colors',
+              isActive(item)
+                ? 'bg-white/12 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]'
+                : 'text-white/72 hover:bg-white/7 hover:text-white'
+            )}
+          >
+            <item.icon className="h-4 w-4 opacity-80" aria-hidden />
+            <span className="flex-1">{item.label}</span>
+            {showBadge ? (
+              <span className="rounded-full bg-rose-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                {unreadMessages > 99 ? '99+' : unreadMessages}
+              </span>
+            ) : null}
+          </Link>
+        );
+      })}
+    </>
+  );
 
   return (
     <div className="flex min-h-screen bg-pk-bg">
@@ -237,39 +296,62 @@ export function AdminShell({
           </div>
         </div>
 
-        <nav className="flex-1 px-3 py-4">
-          <p className="px-3 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/45">
-            Panel
-          </p>
-          {navOps.map((item) => {
-            const showBadge = item.label === 'Mensajes' && unreadMessages > 0;
-            return (
-              <Link
-                key={item.label}
-                href={item.href}
-                className={cn(
-                  'mb-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition-colors',
-                  isActive(item)
-                    ? 'bg-white/12 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]'
-                    : 'text-white/72 hover:bg-white/7 hover:text-white'
-                )}
-              >
-                <item.icon className="h-4 w-4 opacity-80" aria-hidden />
-                <span className="flex-1">{item.label}</span>
-                {showBadge ? (
-                  <span className="rounded-full bg-rose-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
-                    {unreadMessages > 99 ? '99+' : unreadMessages}
-                  </span>
-                ) : null}
-              </Link>
-            );
-          })}
-        </nav>
+        <nav className="flex-1 overflow-y-auto px-3 py-4">{renderNavLinks()}</nav>
       </aside>
+
+      {mobileNavOpen ? (
+        <div className="fixed inset-0 z-40 md:hidden">
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/45"
+            aria-label="Cerrar menú"
+            onClick={() => setMobileNavOpen(false)}
+          />
+          <aside className="absolute inset-y-0 left-0 flex w-[min(20rem,88vw)] flex-col bg-[#11253d] text-white shadow-xl">
+            <div className="flex items-center justify-between border-b border-white/10 px-4 py-4">
+              <div className="flex items-center gap-3">
+                <PeskidsLogo size={28} />
+                <div>
+                  <p className="text-sm font-semibold">Peskids</p>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/50">
+                    Admin
+                  </p>
+                </div>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/10"
+                onClick={() => setMobileNavOpen(false)}
+                aria-label="Cerrar navegación"
+              >
+                <X className="h-4 w-4" aria-hidden />
+              </Button>
+            </div>
+            <nav className="flex-1 overflow-y-auto px-3 py-4">
+              {renderNavLinks(() => setMobileNavOpen(false))}
+            </nav>
+          </aside>
+        </div>
+      ) : null}
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex min-h-16 items-center justify-between gap-4 border-b border-pk-border bg-pk-surface px-5 py-3 sm:px-7">
           <div className="flex items-center gap-3 md:hidden">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setMobileNavOpen(true)}
+              aria-label="Abrir menú"
+            >
+              <span className="flex h-4 w-4 flex-col justify-center gap-0.5" aria-hidden>
+                <span className="h-0.5 w-full rounded-full bg-current" />
+                <span className="h-0.5 w-full rounded-full bg-current" />
+                <span className="h-0.5 w-full rounded-full bg-current" />
+              </span>
+            </Button>
             <PeskidsLogo size={28} />
             <div>
               <p className="text-sm font-semibold text-pk-ink">Peskids</p>

@@ -6,8 +6,10 @@ status: ACADEMY_READY_WITH_EXTERNAL_WARNINGS
 
 # Peskids — Client Demo Checklist
 
-> **Stack activo:** wacrm · n8n · Supabase · Peskids Admin · Wompi (preparado)  
-> **URL prod:** https://peskids.op-sly.com
+> **Stack activo:** Twenty · n8n · Supabase · Peskids Admin · WhatsApp manual (wa.me)  
+> **URL prod:** https://peskids.op-sly.com  
+> **Guía reunión (21 jul 2026):** [`REUNION-2026-07-21.md`](./REUNION-2026-07-21.md)  
+> **Deploy UI polish:** PR [#779](https://github.com/cloudsysops/opsly/pull/779) — merge antes de la cita
 
 ---
 

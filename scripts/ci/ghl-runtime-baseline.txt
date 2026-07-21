@@ -54,7 +54,6 @@
 2 apps/peskids/lib/services/gohighlevel/referral.service.ts
 6 apps/peskids/lib/services/gohighlevel/sync.service.ts
 2 apps/peskids/lib/services/gohighlevel/webhook-handler.ts
-1 apps/peskids/lib/services/integration-status.service.ts
 2 apps/peskids/lib/validation/lead.schema.ts
 1 config/client-launch.schema.json
 3 config/tenants/intcloudsysops.json
