@@ -3,9 +3,11 @@
 import type { ReactElement } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Loader2 } from 'lucide-react';
 import { getApiBaseUrl } from '@/lib/api';
 import { createClient } from '@/lib/supabase/client';
 import { portalTenantInsightsUrl } from '@/lib/portal-api-paths';
+import { Announcer } from '@/components/ui/accessibility';
 import type { PortalInsightItem } from '@/types';
 
 type Props = {
@@ -22,7 +24,8 @@ function insightLabel(type: string): string {
 
 export function InsightDashboard({ tenantSlug, insights: initial }: Props): ReactElement {
   const [insights, setInsights] = useState(initial);
-  const [busyId, setBusyId] = useState<string | null>(null);
+  const [busyAction, setBusyAction] = useState<string | null>(null);
+  const [announcement, setAnnouncement] = useState('');
 
   const chartData = useMemo(() => {
     return insights.map((i) => ({
@@ -34,13 +37,19 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
 
   const patch = useCallback(
     async (insightId: string, action: 'read' | 'dismiss' | 'action') => {
-      setBusyId(insightId);
+      const actionKey = `${insightId}-${action}`;
+      setBusyAction(actionKey);
+
+      const actionLabelStr = action === 'read' ? 'marcar como leído' : 'descartar';
+      setAnnouncement(`Procesando solicitud para ${actionLabelStr}...`);
+
       try {
         const supabase = createClient();
         const {
           data: { session },
         } = await supabase.auth.getSession();
         if (!session?.access_token) {
+          setAnnouncement('Error: No se encontró sesión activa.');
           return;
         }
         const url = portalTenantInsightsUrl(getApiBaseUrl(), tenantSlug);
@@ -56,17 +65,22 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
           }),
         });
         if (!res.ok) {
+          setAnnouncement('Error al procesar la solicitud.');
           return;
         }
         if (action === 'dismiss' || action === 'action') {
           setInsights((prev) => prev.filter((x) => x.id !== insightId));
+          setAnnouncement(`Insight ${action === 'dismiss' ? 'descartado' : 'procesado'} correctamente.`);
         } else {
           setInsights((prev) =>
             prev.map((x) => (x.id === insightId ? { ...x, read_at: new Date().toISOString() } : x))
           );
+          setAnnouncement('Insight marcado como leído correctamente.');
         }
+      } catch {
+        setAnnouncement('Error de conexión.');
       } finally {
-        setBusyId(null);
+        setBusyAction(null);
       }
     },
     [tenantSlug]
@@ -127,18 +141,24 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
-                  className="rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
-                  disabled={busyId === insight.id || insight.read_at !== null}
+                  className="inline-flex items-center gap-1.5 rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
+                  disabled={busyAction?.startsWith(insight.id) || insight.read_at !== null}
                   onClick={() => void patch(insight.id, 'read')}
                 >
+                  {busyAction === `${insight.id}-read` ? (
+                    <Loader2 className="h-3 w-3 shrink-0 animate-spin" aria-hidden="true" />
+                  ) : null}
                   Marcar leído
                 </button>
                 <button
                   type="button"
-                  className="rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
-                  disabled={busyId === insight.id}
+                  className="inline-flex items-center gap-1.5 rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
+                  disabled={busyAction?.startsWith(insight.id)}
                   onClick={() => void patch(insight.id, 'dismiss')}
                 >
+                  {busyAction === `${insight.id}-dismiss` ? (
+                    <Loader2 className="h-3 w-3 shrink-0 animate-spin" aria-hidden="true" />
+                  ) : null}
                   Descartar
                 </button>
               </div>
@@ -146,6 +166,7 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
           </li>
         ))}
       </ul>
+      <Announcer message={announcement} />
     </section>
   );
 }
