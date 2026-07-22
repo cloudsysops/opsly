@@ -1,5 +1,31 @@
 import { OpslyEvent } from './types';
 
+/**
+ * Catalog of domain events for the "Peskids Pro 1.0" program
+ * (docs/tenants/peskids/PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md).
+ *
+ * `lead.created` and `feedback.created`/`feedback.alert` below are already
+ * emitted for real via `emitLeadCreated`/`emitFeedbackCreated`. The rest are
+ * declared here as the target vocabulary so later PRs (PR-PRO-1, 3, 4, 9)
+ * emit a name from this list instead of inventing ad-hoc strings — none of
+ * the not-yet-emitted names are wired to `emitEvent()` calls yet.
+ */
+export const PESKIDS_PRO_EVENT_NAMES = [
+  'lead.created',
+  'lead.contacted',
+  'lead.status_changed',
+  'lead.lost',
+  'followup.created',
+  'followup.completed',
+  'followup.overdue',
+  'trial.scheduled',
+  'trial.completed',
+  'trial.no_show',
+  'student.enrolled',
+] as const;
+
+export type PeskidsProEventName = (typeof PESKIDS_PRO_EVENT_NAMES)[number];
+
 function opslyEventBusUrl(): string | null {
   const raw =
     process.env.OPSLY_EVENT_BUS_URL?.trim() ||

@@ -56,7 +56,7 @@ jobs:
           (cd lib/voice-messaging && npm run build)
           (cd apps/context-builder && npm run build)
 
-      - name: TypeScript (api + admin + portal + mcp + orchestrator + ml + llm-gateway + context-builder)
+      - name: TypeScript (api + admin + portal + mcp + orchestrator + ml + llm-gateway + context-builder + peskids)
         run: |
           set -euo pipefail
           (cd apps/api && npx tsc --noEmit) & pid1=$!
@@ -67,6 +67,9 @@ jobs:
           (cd apps/ml && npx tsc --noEmit) & pid6=$!
           (cd apps/llm-gateway && npx tsc --noEmit) & pid7=$!
           (cd apps/context-builder && npx tsc --noEmit) & pid8=$!
+          # peskids has its own tsconfig.typecheck.json (excludes .next/types,
+          # which doesn't exist pre-build) — use its npm script, not a bare tsc.
+          (cd apps/peskids && npm run type-check) & pid9=$!
           status=0
           wait $pid1 || status=1
           wait $pid2 || status=1
@@ -76,6 +79,7 @@ jobs:
           wait $pid6 || status=1
           wait $pid7 || status=1
           wait $pid8 || status=1
+          wait $pid9 || status=1
           exit $status
 
       - name: OpenAPI subset (CI gate; duplica validate-context para fallo temprano en PR)
@@ -109,6 +113,10 @@ jobs:
           run_eslint apps/ml & pid6=$!
           run_eslint apps/llm-gateway & pid7=$!
           run_eslint apps/context-builder & pid8=$!
+          # apps/peskids has its own eslint.config.mjs (FlatCompat over its own
+          # .eslintrc.json) so this enforces peskids' real lint rules instead of
+          # silently inheriting the monorepo root's stricter flat config.
+          run_eslint apps/peskids & pid9=$!
           status=0
           wait $pid1 || status=1
           wait $pid2 || status=1
@@ -118,6 +126,7 @@ jobs:
           wait $pid6 || status=1
           wait $pid7 || status=1
           wait $pid8 || status=1
+          wait $pid9 || status=1
           exit $status
 
   test-unit:
@@ -130,7 +139,7 @@ jobs:
           node-version: '20'
           cache: npm
           cache-dependency-path: package-lock.json
-      - name: npm ci + unit tests (api/portal/mcp/ml/llm-gateway)
+      - name: npm ci + unit tests (api/portal/mcp/ml/llm-gateway/peskids)
         run: |
           set -euo pipefail
           npm ci
@@ -156,6 +165,7 @@ jobs:
           (cd apps/ml && npm test) & pid3=$!
           (cd lib/prompt-guard && npm test) & pid_pg=$!
           (cd apps/llm-gateway && npm test -- --exclude __tests__/cache-namespace.test.ts) & pid4=$!
+          (cd apps/peskids && npm test) & pid_peskids=$!
           status=0
           wait $pid_api || status=1
           wait $pid0 || status=1
@@ -163,6 +173,7 @@ jobs:
           wait $pid3 || status=1
           wait $pid_pg || status=1
           wait $pid4 || status=1
+          wait $pid_peskids || status=1
           exit $status
 
   test-integration:
