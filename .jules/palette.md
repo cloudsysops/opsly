@@ -2,6 +2,10 @@
 **Learning:** Standard HTML forms in the marketplace were missing explicit associations between labels and inputs, making them difficult for screen reader users to navigate.
 **Action:** Always use `htmlFor` on `<label>` and a matching `id` on form controls (`<input>`, `<textarea>`, `<select>`) to ensure the accessible name is correctly associated.
 
+## 2026-07-22 - Focus Visible Indicator on Custom Elements
+**Learning:** Standard `<select>` and `<textarea>` elements customized with border and background colors often lose their default focus outlines, making keyboard navigation hard to track without explicit focus indicators.
+**Action:** Always apply `focus-visible:ring-2 focus-visible:ring-ops-green/30` and `transition-all` alongside focus border changes to ensure accessible focus visibility.
+
 # Palette's Journal - Critical UX/Accessibility Learnings
 
 ## 2025-05-22 - Toggle Visibility for Sensitive Data
