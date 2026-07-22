@@ -60,7 +60,11 @@ describe('POST /api/governance/dsar security', () => {
     const mockInsert = vi.fn().mockReturnValue({
       select: vi.fn().mockReturnValue({
         single: vi.fn().mockResolvedValue({
-          data: { id: 'test-id', created_at: new Date().toISOString(), sla_deadline: new Date().toISOString() },
+          data: {
+            id: 'test-id',
+            created_at: new Date().toISOString(),
+            sla_deadline: new Date().toISOString(),
+          },
           error: null,
         }),
       }),
@@ -85,11 +89,13 @@ describe('POST /api/governance/dsar security', () => {
 
     const response = await POST(request);
     expect(response.status).toBe(201);
-    expect(audit.logAuditEvent).toHaveBeenCalledWith(expect.objectContaining({
-      tenant_slug: 'test-tenant',
-      action: 'CREATE',
-      resource: expect.stringContaining('dsar:'),
-    }));
+    expect(audit.logAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tenant_slug: 'test-tenant',
+        action: 'CREATE',
+        resource: expect.stringContaining('dsar:'),
+      })
+    );
   });
 });
 
@@ -109,7 +115,9 @@ describe('GET /api/governance/dsar/[token] security', () => {
       method: 'GET',
     });
 
-    const response = await GET(request, { params: Promise.resolve({ token: 'someverificationtoken' }) });
+    const response = await GET(request, {
+      params: Promise.resolve({ token: 'someverificationtoken' }),
+    });
     expect(response.status).toBe(429);
     const body = await response.json();
     expect(body.error).toBe('Too many requests');
@@ -156,19 +164,25 @@ describe('GET /api/governance/dsar/[token] security', () => {
       method: 'GET',
     });
 
-    const response = await GET(request, { params: Promise.resolve({ token: 'someverificationtoken' }) });
+    const response = await GET(request, {
+      params: Promise.resolve({ token: 'someverificationtoken' }),
+    });
     expect(response.status).toBe(200);
     const body = await response.json();
     expect(body.ok).toBe(true);
 
-    expect(mockUpdate).toHaveBeenCalledWith(expect.objectContaining({
-      status: 'verified',
-    }));
+    expect(mockUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 'verified',
+      })
+    );
 
-    expect(audit.logAuditEvent).toHaveBeenCalledWith(expect.objectContaining({
-      tenant_slug: 'test-tenant',
-      action: 'VERIFY',
-      resource: 'dsar:test-id',
-    }));
+    expect(audit.logAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tenant_slug: 'test-tenant',
+        action: 'VERIFY',
+        resource: 'dsar:test-id',
+      })
+    );
   });
 });
