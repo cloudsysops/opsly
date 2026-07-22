@@ -94,9 +94,15 @@ tags:
 ### CI/CD
 
 - **`apps/peskids` no estaba cubierto por los jobs `lint`/`test-unit` de
-  `.github/workflows/ci.yml`** — solo `build`. Este PR (PR-PRO-0) lo corrige agregando
-  `apps/peskids` a ambos jobs, reusando sus propios scripts (`npm run type-check` con
-  `tsconfig.typecheck.json`, `npm run lint`, `npm test`).
+  `.github/workflows/ci.yml`** — solo `build`. PR-PRO-0 agrega `npm run type-check` y
+  `npm test` para peskids, más `npx eslint .` real.
+- **Hallazgo:** ESLint 9+ resuelve flat config subiendo desde el cwd — sin un
+  `eslint.config.*` propio, `cd apps/peskids && npx eslint .` heredaba el flat config
+  **raíz** del monorepo (mucho más estricto que el `.eslintrc.json` propio de peskids),
+  exponiendo ~3826 errores preexistentes en archivos no tocados por este PR. Se agregó
+  `apps/peskids/eslint.config.mjs` (mismo patrón `FlatCompat` que usa la raíz, apuntando
+  al `.eslintrc.json` de peskids) — `npx eslint .` ahora reporta 0 errores, 16 warnings
+  preexistentes menores, igual que `next lint`.
 
 ### Migraciones
 
@@ -178,7 +184,7 @@ tags:
 
 ## 3. Arquitectura
 
-```
+```text
 Landing (apps/peskids)
   → POST /api/leads (Zod) → apps/api (insert real, platform.peskids_leads)
        → sendLeadToTwenty() (Person + Opportunity, best-effort)
@@ -245,7 +251,7 @@ lógica runtime nueva (criterio de PR-PRO-0: si se elimina, la app se comporta i
 
 Flujo objetivo (sin cambios respecto al pedido original):
 
-```
+```text
 Landing → interesado → alerta operativa → email de confirmación → seguimiento
   → contacto manual WhatsApp (wa.me) → clase de prueba → conversión a estudiante
   → actualización Twenty → métricas ejecutivas
@@ -260,7 +266,8 @@ wizard de matrícula.
 
 ## 6. Riesgos
 
-1. **CI no cubría peskids** (solo build) — corregido en este PR.
+1. **CI no cubría type-check/unit de peskids** — corregido en este PR (eslint completo
+   diferido a PRO-11 por deuda preexistente).
 2. **Triple schema** (`public`/`peskids`/`platform`) para un solo tenant — elegir schema con
    cuidado en cada migración nueva.
 3. **Doble fuente de estado de leads** (`public.leads` legado vs `platform.peskids_leads` real) —
@@ -282,7 +289,7 @@ wizard de matrícula.
 ## 7. Secuencia de PRs
 
 | PR | Alcance | Migraciones propuestas (sin crear aún) |
-|---|---|---|
+| --- | --- | --- |
 | **PR-PRO-0** (este) | Contratos canónicos + mappers + CI coverage peskids + este documento | Ninguna |
 | PR-PRO-1 | Hot-lead alert + digest flags + exports en `infra/n8n/workflows/peskids/` | Ninguna, o `notification_log` (idempotencia de alertas) |
 | PR-PRO-2 | Email de confirmación (Resend u otro ya adoptado) | Tabla de estado de email (pending/sent/failed) + idempotency key |

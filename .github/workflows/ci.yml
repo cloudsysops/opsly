@@ -113,6 +113,9 @@ jobs:
           run_eslint apps/ml & pid6=$!
           run_eslint apps/llm-gateway & pid7=$!
           run_eslint apps/context-builder & pid8=$!
+          # apps/peskids has its own eslint.config.mjs (FlatCompat over its own
+          # .eslintrc.json) so this enforces peskids' real lint rules instead of
+          # silently inheriting the monorepo root's stricter flat config.
           run_eslint apps/peskids & pid9=$!
           status=0
           wait $pid1 || status=1
