@@ -11,6 +11,8 @@ tags:
 
 **Purpose:** Define all events that Peskids emits to Opsly platform. Events are used for analytics, integrations, audit logs, and future automations.
 
+**Peskids Pro 1.0:** target event catalog (`PESKIDS_PRO_EVENT_NAMES`) lives in `apps/peskids/lib/events.ts`; program plan in [`PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md`](./PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md). Only `lead.created` / `feedback.*` are emitted today — remaining names are contractual until later PRs wire emitters.
+
 **Principles:**
 - Every user action → event
 - No PII in event body (except tenant context)
