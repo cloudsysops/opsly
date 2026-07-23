@@ -1,0 +1,52 @@
+{
+  "id": "peskids-lead-aging-scan",
+  "name": "Peskids - Lead aging scan (24h/48h)",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "hours", "hoursInterval": 1 }]
+        }
+      },
+      "id": "schedule",
+      "name": "Every 1 Hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.PESKIDS_APP_URL || 'https://peskids.op-sly.com' }}/api/admin/aging/run",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.PESKIDS_AGING_CRON_SECRET || $env.PESKIDS_DIGEST_CRON_SECRET || $env.CRON_SECRET }}"
+            },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "options": { "timeout": 60000 }
+      },
+      "id": "run-scan",
+      "name": "Run aging scan",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [280, 0]
+    }
+  ],
+  "connections": {
+    "Every 1 Hour": {
+      "main": [[{ "node": "Run aging scan", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "timezone": "America/Bogota"
+  },
+  "meta": {
+    "opsly_note": "PR-PRO-5. Keep active=false until PESKIDS_LEAD_REMINDER_24H_ENABLED / PESKIDS_LEAD_ESCALATION_48H_ENABLED approved in Doppler. Never auto-WhatsApps parents."
+  }
+}

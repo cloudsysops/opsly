@@ -2,6 +2,7 @@ import { supabaseServer } from '@/lib/supabase';
 import { fetchPlatformLeadsForDashboard } from '@/lib/peskids-platform-dashboard';
 import { isMissingPlatformPeskidsTable } from '@/lib/peskids-platform-read';
 import { countWacrmPendingReplies } from '@/lib/integrations/wacrm-inbox-status';
+import { leadAgingBadge } from '@/lib/lead-aging';
 
 export type DailyDigestLeadItem = {
   id: string;
@@ -163,10 +164,21 @@ function buildRecommendedNextAction(
 }
 
 function buildHighlightLines(payload: Omit<DailyDigestPayload, 'highlight_lines' | 'recommended_next_action'>): string[] {
+  const now = new Date(payload.generated_at);
+  let aging24 = 0;
+  let aging48 = 0;
+  for (const lead of payload.leads.pending_items) {
+    const badge = leadAgingBadge(lead.status, lead.created_at, now);
+    if (badge?.bucket === 'reminder_24h') aging24 += 1;
+    if (badge?.bucket === 'escalation_48h') aging48 += 1;
+  }
+
   const lines: string[] = [
     `Resumen diario Peskids — ${payload.generated_at.slice(0, 10)}`,
     `Interesados nuevos hoy: ${payload.leads.new_today}`,
     `Interesados pendientes: ${payload.leads.pending}`,
+    `Sin contacto +24h: ${aging24}`,
+    `Sin contacto +48h (escalar): ${aging48}`,
     `Leads WhatsApp hoy: ${payload.wacrm.whatsapp_leads_today}`,
     `Clases de prueba hoy: ${payload.trial_classes.scheduled_today}`,
     `Seguimientos para hoy: ${payload.followups.due_today}`,

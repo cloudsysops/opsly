@@ -7,6 +7,7 @@ Source of truth for **Peskids Pro 1.0** automation exports.
 | Hot lead (event webhook) | `peskids-hot-lead-alert-webhook.json` | `false` |
 | Daily digest + Discord gate | `peskids-daily-digest.json` | `false` |
 | Operational notify | `peskids-operational-notify.json` | `false` |
+| Lead aging scan 24h/48h | `peskids-lead-aging-scan.json` | `false` |
 
 Legacy / fuller catalog remains in `.n8n/1-workflows/peskids/` (including the older
 5-minute poll hot-lead that queried `public.leads`). Prefer these Pro exports for
@@ -26,6 +27,8 @@ Do **not** activate in production until Doppler flags are approved:
 - `PESKIDS_HOT_LEAD_ALERTS_ENABLED=true`
 - `PESKIDS_DAILY_DIGEST_ENABLED=true`
 - `PESKIDS_OPERATIONAL_NOTIFICATIONS_ENABLED=true`
+- `PESKIDS_LEAD_REMINDER_24H_ENABLED=true` / `PESKIDS_LEAD_ESCALATION_48H_ENABLED=true` (PR-PRO-5)
 
 Also requires `N8N_WEBHOOK_BASE_URL`, `OPSLY_CRM_NOTIFY_WEBHOOK_URL`, and
-`PESKIDS_DIGEST_CRON_SECRET` for digest cron.
+`PESKIDS_DIGEST_CRON_SECRET` (or `PESKIDS_AGING_CRON_SECRET`) for cron routes.
+Aging never auto-messages parents on WhatsApp.
