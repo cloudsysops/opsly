@@ -17,27 +17,27 @@ const kpiItems = [
     icon: BarChart3,
   },
   {
-    key: 'twentySync',
-    label: 'En CRM Twenty',
-    accent: 'green' as const,
+    key: 'uncontacted',
+    label: 'Sin contactar',
+    accent: 'amber' as const,
     icon: ShieldCheck,
   },
   {
-    key: 'followups',
-    label: 'Seguimientos pendientes',
+    key: 'overdue',
+    label: 'Seguimientos vencidos',
     accent: 'amber' as const,
     icon: Clock,
   },
   {
-    key: 'trials',
-    label: 'Clases de prueba',
+    key: 'trialsToday',
+    label: 'Trials hoy',
     accent: 'violet' as const,
     icon: BadgeCheck,
   },
   {
-    key: 'families',
-    label: 'Familias activas',
-    accent: 'slate' as const,
+    key: 'enrollments',
+    label: 'Matrículas del mes',
+    accent: 'green' as const,
     icon: Users,
   },
 ] as const;
@@ -50,24 +50,19 @@ function toneClass(accent: (typeof kpiItems)[number]['accent']): string {
       return 'border-amber-100 bg-amber-50 text-amber-800';
     case 'violet':
       return 'border-violet-100 bg-violet-50 text-violet-700';
-    case 'slate':
-      return 'border-slate-200 bg-slate-50 text-slate-700';
     default:
       return 'border-teal-100 bg-teal-50 text-pk-primary';
   }
 }
 
 export function DashboardKpiStrip({ data }: DashboardKpiStripProps): React.ReactElement {
-  const twentySyncedCount = data.new_leads.filter(
-    (lead) => lead.twenty_sync_status === 'synced'
-  ).length;
-
+  const exec = data.executive;
   const values = {
-    newLeads: data.new_leads_count,
-    twentySync: twentySyncedCount,
-    followups: data.pending_followups_count,
-    trials: data.sales_analytics.trials_scheduled_count,
-    families: data.families_active_count,
+    newLeads: exec.kpis.new_leads,
+    uncontacted: exec.kpis.uncontacted,
+    overdue: exec.kpis.overdue_followups,
+    trialsToday: exec.kpis.trials_today,
+    enrollments: exec.kpis.enrollments_this_month,
   } as const;
 
   return (
@@ -78,7 +73,12 @@ export function DashboardKpiStrip({ data }: DashboardKpiStripProps): React.React
           return (
             <Card key={item.key} accent="slate" hover className="border-pk-border">
               <CardContent className="flex items-center gap-3 p-4">
-                <span className={cn('flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border', toneClass(item.accent))}>
+                <span
+                  className={cn(
+                    'flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border',
+                    toneClass(item.accent)
+                  )}
+                >
                   <Icon className="h-5 w-5" aria-hidden />
                 </span>
                 <div className="min-w-0">
