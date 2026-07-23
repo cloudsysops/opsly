@@ -9,6 +9,7 @@ import type {
   TwentyPersonRecord,
   TwentyTaskRecord,
   TwentyTaskTargetRecord,
+  TwentyUpdateOpportunityRequest,
   TwentyUpdateTaskRequest,
 } from './types.js';
 
@@ -133,6 +134,22 @@ export class TwentyClient {
       body
     );
     return this.unwrapRecord(payload, 'createOpportunity', 'opportunity');
+  }
+
+  /**
+   * Patch opportunity fields (stage sync). NEEDS LIVE VERIFICATION against a
+   * real Twenty instance for stage enum values configured per workspace.
+   */
+  async updateOpportunity(
+    opportunityId: string,
+    body: TwentyUpdateOpportunityRequest
+  ): Promise<TwentyOpportunityRecord> {
+    const payload = await this.request<TwentyOpportunityRecord>(
+      'PATCH',
+      `/opportunities/${opportunityId}`,
+      body
+    );
+    return this.unwrapRecord(payload, 'updateOpportunity', 'opportunity');
   }
 
   async createTask(body: TwentyCreateTaskRequest): Promise<TwentyTaskRecord> {

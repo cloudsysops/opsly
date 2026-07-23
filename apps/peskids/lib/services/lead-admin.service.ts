@@ -7,6 +7,7 @@ import {
 } from '@/lib/peskids-platform-read';
 import type { DashboardData } from '@/lib/types';
 import type { AdminLeadStatus } from '@/lib/validation/lead-admin.schema';
+import { syncLeadStageToTwenty } from '@/lib/twenty-stage-sync';
 
 export type DashboardLead = DashboardData['new_leads'][number];
 
@@ -228,6 +229,20 @@ export async function updateLeadForAdmin(
 ): Promise<DashboardLead | null> {
   const platformLead = await updatePlatformLead(leadId, tenantSlug, input);
   if (platformLead) {
+    if (input.status !== undefined) {
+      // Never block admin status updates on Twenty outages.
+      void syncLeadStageToTwenty({
+        leadId,
+        tenantSlug,
+        adminStatus: input.status,
+        twentyOpportunityId: platformLead.twenty_opportunity_id,
+      }).catch((error: unknown) => {
+        console.warn('[lead-admin] twenty stage sync failed', {
+          lead_id: leadId,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      });
+    }
     return platformLead;
   }
 

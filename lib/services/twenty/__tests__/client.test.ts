@@ -193,4 +193,25 @@ describe('TwentyClient', () => {
 
     expect(person).toBeNull();
   });
+
+  it('patches opportunity stage via updateOpportunity', async () => {
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+      if (url.endsWith('/rest/opportunities/opp-1') && init?.method === 'PATCH') {
+        return new Response(
+          JSON.stringify({ data: { id: 'opp-1', stage: 'CONTACTED' } }),
+          { status: 200 }
+        );
+      }
+      return new Response('not found', { status: 404 });
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const client = new TwentyClient('secret', 'https://crm.example.com');
+    const updated = await client.updateOpportunity('opp-1', { stage: 'CONTACTED' });
+    expect(updated).toMatchObject({ id: 'opp-1', stage: 'CONTACTED' });
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://crm.example.com/rest/opportunities/opp-1',
+      expect.objectContaining({ method: 'PATCH' })
+    );
+  });
 });

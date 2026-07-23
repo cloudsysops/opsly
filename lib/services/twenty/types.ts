@@ -30,6 +30,11 @@ export type TwentyCreateOpportunityRequest = {
   };
 };
 
+export type TwentyUpdateOpportunityRequest = {
+  name?: string;
+  stage?: string;
+};
+
 export type TwentyOpportunityRecord = {
   id: string;
   name?: string;

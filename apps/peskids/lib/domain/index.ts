@@ -23,6 +23,7 @@ export type {
 
 export {
   adminLeadStatusToPro,
+  adminLeadStatusToTwentyStageSlug,
   followUpStatusLiveToPro,
   followUpTypeLiveToPro,
   normalizeLeadSource,

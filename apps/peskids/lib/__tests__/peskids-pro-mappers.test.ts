@@ -3,6 +3,7 @@ import { PESKIDS_PRO_EVENT_NAMES } from '@/lib/events';
 import type { LeadStatus } from '@/lib/domain/peskids-pro-contracts';
 import {
   adminLeadStatusToPro,
+  adminLeadStatusToTwentyStageSlug,
   followUpStatusLiveToPro,
   followUpTypeLiveToPro,
   normalizeLeadSource,
@@ -57,6 +58,13 @@ describe('peskids-pro mappers (PR-PRO-0 contracts)', () => {
     for (const status of ALL_PRO_LEAD_STATUSES) {
       expect(proLeadStatusToTwentyStageSlug(status)).toBe(expected[status]);
     }
+  });
+
+  it('maps admin statuses to Twenty stage slugs via Pro', () => {
+    expect(adminLeadStatusToTwentyStageSlug('contacted')).toBe('CONTACTED');
+    expect(adminLeadStatusToTwentyStageSlug('trial')).toBe('TRIAL_SCHEDULED');
+    expect(adminLeadStatusToTwentyStageSlug('enrolled')).toBe('ENROLLED');
+    expect(adminLeadStatusToTwentyStageSlug('archived')).toBe('LOST');
   });
 
   it('aliases trial attended ↔ completed without changing live DB values', () => {
