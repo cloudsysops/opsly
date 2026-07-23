@@ -290,8 +290,8 @@ wizard de matrícula.
 
 | PR | Alcance | Migraciones propuestas (sin crear aún) |
 | --- | --- | --- |
-| **PR-PRO-0** (este) | Contratos canónicos + mappers + CI coverage peskids + este documento | Ninguna |
-| PR-PRO-1 | Hot-lead alert + digest flags + exports en `infra/n8n/workflows/peskids/` | Ninguna, o `notification_log` (idempotencia de alertas) |
+| **PR-PRO-0** ✅ | Contratos canónicos + mappers + CI coverage peskids + este documento | Ninguna |
+| **PR-PRO-1** (este) | Hot-lead alert (event webhook) + digest Discord gate + exports en `infra/n8n/workflows/peskids/` | Ninguna (delivery log estructurado en stdout; tabla opcional diferida) |
 | PR-PRO-2 | Email de confirmación (Resend u otro ya adoptado) | Tabla de estado de email (pending/sent/failed) + idempotency key |
 | PR-PRO-3 | Embudo Peskids → Twenty (stage-sync real) | Columnas `twenty_sync_status`, `twenty_sync_error`, `twenty_synced_at` en `platform.peskids_leads` |
 | PR-PRO-4 | Seguimientos ↔ Twenty Tasks (observabilidad — ya 80% construido) | Columnas `sync_status`, `sync_error`, `retry_count` en `followups` |

@@ -3,7 +3,14 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SOURCE_DIR="$ROOT_DIR/.n8n/1-workflows/peskids"
+# Prefer Pro canonical exports; fall back to legacy .n8n catalog.
+if [[ -n "${PESKIDS_N8N_WORKFLOWS_DIR:-}" ]]; then
+  SOURCE_DIR="$ROOT_DIR/${PESKIDS_N8N_WORKFLOWS_DIR#/}"
+elif [[ -d "$ROOT_DIR/infra/n8n/workflows/peskids" ]]; then
+  SOURCE_DIR="$ROOT_DIR/infra/n8n/workflows/peskids"
+else
+  SOURCE_DIR="$ROOT_DIR/.n8n/1-workflows/peskids"
+fi
 CONTAINER="${N8N_CONTAINER:-n8n_peskids}"
 DRY_RUN=false
 FORCE=false
@@ -12,11 +19,15 @@ usage() {
   cat <<'EOF'
 Usage: ./scripts/install-peskids-n8n-workflows.sh [--dry-run] [--force] [--container n8n_peskids]
 
-Imports JSON workflows from .n8n/1-workflows/peskids/ into the tenant n8n Docker container
+Imports JSON workflows from infra/n8n/workflows/peskids/ (Pro) or
+.n8n/1-workflows/peskids/ (legacy fallback) into the tenant n8n Docker container
 and publishes them (production webhook URLs).
 
+Override source:
+  PESKIDS_N8N_WORKFLOWS_DIR=infra/n8n/workflows/peskids ./scripts/install-peskids-n8n-workflows.sh
+
 On VPS:
-  ssh vps-dragon@100.120.151.91 'cd /opt/opsly && ./scripts/install-peskids-n8n-workflows.sh'
+  ssh vps-dragon@100.120.151.91 'cd /opt/opsly && ./scripts/install-peskids-n8n-workflows.sh --dry-run'
 EOF
 }
 

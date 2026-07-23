@@ -1,0 +1,98 @@
+{
+  "id": "peskids-daily-digest",
+  "name": "Peskids - Daily digest 8am",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "id": "Cron",
+      "name": "8am Bogota",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{$env.PESKIDS_APP_URL || 'https://peskids.op-sly.com'}}/api/admin/digest/daily",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.PESKIDS_DIGEST_CRON_SECRET }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "HttpDigest",
+      "name": "GET daily digest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = $json.data || $json;\nif (!payload || payload.disabled === true) {\n  return [];\n}\nif (payload.digest_enabled !== true) {\n  return [];\n}\nconst lines = Array.isArray(payload.highlight_lines) ? payload.highlight_lines : [];\nconst content = [\n  `📋 Digest diario Peskids — ${payload.generated_at || new Date().toISOString()}`,\n  ...lines.slice(0, 12),\n  payload.recommended_next_action ? `➡️ ${payload.recommended_next_action}` : null\n].filter(Boolean).join('\\n');\nreturn [{ json: { content } }];"
+      },
+      "id": "GateAndFormat",
+      "name": "Gate digest_enabled + Format",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [520, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.OPSLY_CRM_NOTIFY_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ content: $json.content }) }}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "DiscordDigest",
+      "name": "Discord digest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [780, 0],
+      "continueOnFail": true
+    }
+  ],
+  "connections": {
+    "8am Bogota": {
+      "main": [[{ "node": "GET daily digest", "type": "main", "index": 0 }]]
+    },
+    "GET daily digest": {
+      "main": [[{ "node": "Gate digest_enabled + Format", "type": "main", "index": 0 }]]
+    },
+    "Gate digest_enabled + Format": {
+      "main": [[{ "node": "Discord digest", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "timezone": "America/Bogota"
+  },
+  "meta": {
+    "opsly_note": "PR-PRO-1. Keep active=false until PESKIDS_DAILY_DIGEST_ENABLED=true. Discord only when digest_enabled is true in API payload."
+  }
+}

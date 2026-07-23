@@ -1,6 +1,10 @@
 import { type NextRequest } from 'next/server';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { validateStaffRequest } from '@/lib/staff-auth';
+import {
+  isPeskidsDailyDigestEnabled,
+  isPeskidsOperationalNotificationsEnabled,
+} from '@/lib/peskids-pro-flags';
 import { buildDailyDigest } from '@/lib/services/daily-digest.service';
 
 function isCronAuthorized(req: NextRequest): boolean {
@@ -37,7 +41,14 @@ export async function GET(req: NextRequest) {
 
   try {
     const digest = await buildDailyDigest();
-    return successJson(requestId, digest);
+    // Flag metadata only — GET payload stays available when flags are off so
+    // existing cron/admin callers keep working. n8n Discord push reads these.
+    return successJson(requestId, {
+      ...digest,
+      digest_enabled: isPeskidsDailyDigestEnabled(),
+      operational_notifications_enabled: isPeskidsOperationalNotificationsEnabled(),
+      notify_channels: isPeskidsDailyDigestEnabled() ? ['discord'] : [],
+    });
   } catch (error) {
     console.error('[admin/digest/daily]', error, { request_id: requestId });
     return errorJson(requestId, 'Failed to build daily digest', 500);

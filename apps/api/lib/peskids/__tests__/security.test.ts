@@ -6,6 +6,8 @@ import * as rateLimiter from '../../rate-limiter';
 import * as audit from '../../audit';
 import * as assertTenant from '../assert-tenant';
 import * as repository from '../repository';
+import type { PeskidsFeedbackRow, PeskidsLeadRow } from '../repository';
+import * as hotLeadAlert from '../hot-lead-alert';
 
 vi.mock('../../rate-limiter', () => ({
   checkRateLimit: vi.fn(),
@@ -27,6 +29,15 @@ vi.mock('../assert-tenant', () => ({
 vi.mock('../repository', () => ({
   peskidsInsertLead: vi.fn(),
   peskidsInsertFeedback: vi.fn(),
+}));
+
+vi.mock('../hot-lead-alert', () => ({
+  dispatchPeskidsHotLeadAlert: vi.fn().mockResolvedValue({
+    ok: true,
+    status: 'skipped',
+    detail: 'mocked',
+    delivery_id: 'hot-lead:mocked',
+  }),
 }));
 
 describe('Peskids Public Endpoints Security', () => {
@@ -68,15 +79,23 @@ describe('Peskids Public Endpoints Security', () => {
         resetAt: new Date(),
       });
 
+      const leadRow: PeskidsLeadRow = {
+        id: 'row-id',
+        tenant_slug: 'peskids',
+        full_name: 'Maria Rodriguez',
+        email: 'maria@example.com',
+        phone: '+573001112233',
+        class_modality: 'llanogrande',
+        neighborhood: 'El Porvenir',
+        grade_interested: 'K-5',
+        referral_source: null,
+        status: 'new',
+        admin_notes: null,
+        created_at: new Date().toISOString(),
+      };
       vi.mocked(repository.peskidsInsertLead).mockResolvedValue({
         ok: true,
-        row: {
-          id: 'row-id',
-          tenant_slug: 'peskids',
-          lead_id: 'lead-id',
-          source: 'test',
-          created_at: new Date().toISOString(),
-        } as any,
+        row: leadRow,
       });
 
       const request = new NextRequest('http://localhost/api/public/peskids/leads', {
@@ -93,11 +112,60 @@ describe('Peskids Public Endpoints Security', () => {
 
       const response = await postPublicPeskidsLead(request);
       expect(response.status).toBe(201);
-      expect(audit.logAuditEvent).toHaveBeenCalledWith(expect.objectContaining({
+      expect(audit.logAuditEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          tenant_slug: 'peskids',
+          action: 'CREATE',
+          resource: 'peskids:lead:row-id',
+        })
+      );
+      expect(hotLeadAlert.dispatchPeskidsHotLeadAlert).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'row-id', tenant_slug: 'peskids' })
+      );
+    });
+
+    it('returns 201 even if the hot-lead alert dispatch rejects', async () => {
+      vi.mocked(rateLimiter.checkRateLimit).mockResolvedValue({
+        allowed: true,
+        remaining: 99,
+        resetAt: new Date(),
+      });
+      const leadRow2: PeskidsLeadRow = {
+        id: 'row-id-2',
         tenant_slug: 'peskids',
-        action: 'CREATE',
-        resource: 'peskids:lead:row-id',
-      }));
+        full_name: 'Maria Rodriguez',
+        email: 'maria@example.com',
+        phone: '+573001112233',
+        class_modality: 'llanogrande',
+        neighborhood: 'El Porvenir',
+        grade_interested: 'K-5',
+        referral_source: null,
+        status: 'new',
+        admin_notes: null,
+        created_at: new Date().toISOString(),
+      };
+      vi.mocked(repository.peskidsInsertLead).mockResolvedValue({
+        ok: true,
+        row: leadRow2,
+      });
+      vi.mocked(hotLeadAlert.dispatchPeskidsHotLeadAlert).mockRejectedValueOnce(
+        new Error('n8n unreachable')
+      );
+
+      const request = new NextRequest('http://localhost/api/public/peskids/leads', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: 'Maria Rodriguez',
+          email: 'maria@example.com',
+          phone: '+573001112233',
+          class_modality: 'llanogrande',
+          neighborhood: 'El Porvenir',
+          grade_interested: 'K-5',
+        }),
+      });
+
+      const response = await postPublicPeskidsLead(request);
+      expect(response.status).toBe(201);
     });
   });
 
@@ -128,14 +196,19 @@ describe('Peskids Public Endpoints Security', () => {
         resetAt: new Date(),
       });
 
+      const feedbackRow: PeskidsFeedbackRow = {
+        id: 'f-id',
+        tenant_slug: 'peskids',
+        child_name: 'Mateo',
+        satisfaction: 5,
+        suggestion: null,
+        contact_me_back: false,
+        status: 'new',
+        created_at: new Date().toISOString(),
+      };
       vi.mocked(repository.peskidsInsertFeedback).mockResolvedValue({
         ok: true,
-        row: {
-          id: 'f-id',
-          tenant_slug: 'peskids',
-          satisfaction: 5,
-          created_at: new Date().toISOString(),
-        } as any,
+        row: feedbackRow,
       });
 
       const request = new NextRequest('http://localhost/api/public/peskids/feedback', {
@@ -148,11 +221,13 @@ describe('Peskids Public Endpoints Security', () => {
 
       const response = await postPublicPeskidsFeedback(request);
       expect(response.status).toBe(201);
-      expect(audit.logAuditEvent).toHaveBeenCalledWith(expect.objectContaining({
-        tenant_slug: 'peskids',
-        action: 'CREATE',
-        resource: 'peskids:feedback:f-id',
-      }));
+      expect(audit.logAuditEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          tenant_slug: 'peskids',
+          action: 'CREATE',
+          resource: 'peskids:feedback:f-id',
+        })
+      );
     });
   });
 });
