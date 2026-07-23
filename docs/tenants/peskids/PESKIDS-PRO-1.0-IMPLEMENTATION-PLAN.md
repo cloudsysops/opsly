@@ -294,8 +294,8 @@ wizard de matrícula.
 | **PR-PRO-1** ✅ | Hot-lead alert (event webhook) + digest Discord gate + exports en `infra/n8n/workflows/peskids/` | Ninguna (delivery log estructurado en stdout; tabla opcional diferida) |
 | **PR-PRO-2** ✅ | Email de confirmación (Resend u otro ya adoptado) | Tabla `platform.peskids_lead_email_deliveries` (pending/sent/failed/skipped) + idempotency key |
 | **PR-PRO-3** ✅ | Embudo Peskids → Twenty (stage-sync real) | Columnas `twenty_sync_status`, `twenty_sync_error`, `twenty_synced_at` en `platform.peskids_leads` |
-| **PR-PRO-4** (este) | Seguimientos ↔ Twenty Tasks (observabilidad — ya 80% construido) | Columnas `sync_status`, `sync_error`, `retry_count` en `followups` |
-| PR-PRO-5 | Reglas 24h/48h sin contacto | Tabla ligera de idempotencia de alertas de aging |
+| **PR-PRO-4** ✅ | Seguimientos ↔ Twenty Tasks (observabilidad) | Columnas `sync_status`, `sync_error`, `retry_count` en `followups` |
+| **PR-PRO-5** (este) | Reglas 24h/48h sin contacto | Tabla `platform.peskids_aging_alert_deliveries` (idempotencia) |
 | PR-PRO-6 | Ficha 360° del interesado (`/admin/interesados/[id]`) | Ninguna |
 | PR-PRO-7 | Pipeline Kanban | Ninguna |
 | PR-PRO-8 | Dashboard ejecutivo (extiende `dashboard-view.tsx` existente) | Ninguna |
