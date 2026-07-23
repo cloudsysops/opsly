@@ -49,6 +49,7 @@ const HASH_SECTION_ALIASES: Record<string, string> = {
   'follow-up': 'seguimientos',
   dashboard: 'inicio',
   overview: 'inicio',
+  interesados: 'leads',
 };
 
 const navOps = [
@@ -228,7 +229,7 @@ export function AdminShell({
     }
 
     if (item.label === 'Interesados') {
-      return hash === '#leads';
+      return hash === '#leads' || hash === '#interesados' || pathname.startsWith('/admin/interesados');
     }
 
     if (item.label === 'Feedback') {

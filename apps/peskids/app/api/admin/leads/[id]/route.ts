@@ -4,10 +4,42 @@ import { validateStaffSession } from '@/lib/staff-auth';
 import { isOperationalStaffUser } from '@/lib/staff-user';
 import { patchLeadAdminSchema } from '@/lib/validation/lead-admin.schema';
 import { updateLeadForAdmin } from '@/lib/services/lead-admin.service';
+import { getLead360 } from '@/lib/services/lead-360.service';
 
 export const dynamic = 'force-dynamic';
 
 type RouteContext = { params: Promise<{ id: string }> };
+
+function tenantSlug(): string {
+  return (process.env.NEXT_PUBLIC_TENANT_ID || 'peskids').trim().toLowerCase();
+}
+
+export async function GET(req: NextRequest, context: RouteContext) {
+  const requestId = resolveRequestId(req);
+  const auth = await validateStaffSession();
+
+  if (!auth.ok) {
+    return errorJson(requestId, auth.error, auth.status);
+  }
+
+  if (auth.user && !isOperationalStaffUser(auth.user)) {
+    return errorJson(requestId, 'Forbidden', 403);
+  }
+
+  const { id } = await context.params;
+
+  try {
+    const payload = await getLead360(id, tenantSlug());
+    if (!payload) {
+      return errorJson(requestId, 'Not found', 404);
+    }
+
+    return successJson(requestId, { ok: true, ...payload });
+  } catch (err) {
+    console.error('[GET /api/admin/leads/[id]]', err, { request_id: requestId });
+    return errorJson(requestId, 'Failed to load lead', 500);
+  }
+}
 
 export async function PATCH(req: NextRequest, context: RouteContext) {
   const requestId = resolveRequestId(req);
@@ -22,7 +54,6 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
   }
 
   const { id } = await context.params;
-  const tenantSlug = (process.env.NEXT_PUBLIC_TENANT_ID || 'peskids').trim().toLowerCase();
 
   let body: unknown;
   try {
@@ -42,7 +73,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
   }
 
   try {
-    const lead = await updateLeadForAdmin(id, tenantSlug, parsed.data);
+    const lead = await updateLeadForAdmin(id, tenantSlug(), parsed.data);
     if (!lead) {
       return errorJson(requestId, 'Not found', 404);
     }
