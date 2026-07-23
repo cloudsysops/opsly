@@ -37,3 +37,9 @@ export function isPeskidsOperationalNotificationsEnabled(
 ): boolean {
   return parseBooleanFlag(env.PESKIDS_OPERATIONAL_NOTIFICATIONS_ENABLED, false);
 }
+
+export function isPeskidsLeadConfirmationEnabled(
+  env: NodeJS.ProcessEnv = process.env
+): boolean {
+  return parseBooleanFlag(env.PESKIDS_LEAD_CONFIRMATION_ENABLED, false);
+}

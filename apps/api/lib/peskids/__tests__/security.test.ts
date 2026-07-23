@@ -8,6 +8,7 @@ import * as assertTenant from '../assert-tenant';
 import * as repository from '../repository';
 import type { PeskidsFeedbackRow, PeskidsLeadRow } from '../repository';
 import * as hotLeadAlert from '../hot-lead-alert';
+import * as leadConfirmation from '../lead-confirmation-email';
 
 vi.mock('../../rate-limiter', () => ({
   checkRateLimit: vi.fn(),
@@ -37,6 +38,15 @@ vi.mock('../hot-lead-alert', () => ({
     status: 'skipped',
     detail: 'mocked',
     delivery_id: 'hot-lead:mocked',
+  }),
+}));
+
+vi.mock('../lead-confirmation-email', () => ({
+  dispatchPeskidsLeadConfirmationEmail: vi.fn().mockResolvedValue({
+    ok: true,
+    status: 'skipped',
+    detail: 'mocked',
+    idempotency_key: 'lead-confirmation:mocked',
   }),
 }));
 
@@ -122,6 +132,9 @@ describe('Peskids Public Endpoints Security', () => {
       expect(hotLeadAlert.dispatchPeskidsHotLeadAlert).toHaveBeenCalledWith(
         expect.objectContaining({ id: 'row-id', tenant_slug: 'peskids' })
       );
+      expect(leadConfirmation.dispatchPeskidsLeadConfirmationEmail).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'row-id', email: 'maria@example.com' })
+      );
     });
 
     it('returns 201 even if the hot-lead alert dispatch rejects', async () => {
@@ -150,6 +163,50 @@ describe('Peskids Public Endpoints Security', () => {
       });
       vi.mocked(hotLeadAlert.dispatchPeskidsHotLeadAlert).mockRejectedValueOnce(
         new Error('n8n unreachable')
+      );
+
+      const request = new NextRequest('http://localhost/api/public/peskids/leads', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: 'Maria Rodriguez',
+          email: 'maria@example.com',
+          phone: '+573001112233',
+          class_modality: 'llanogrande',
+          neighborhood: 'El Porvenir',
+          grade_interested: 'K-5',
+        }),
+      });
+
+      const response = await postPublicPeskidsLead(request);
+      expect(response.status).toBe(201);
+    });
+
+    it('returns 201 even if the confirmation email dispatch rejects', async () => {
+      vi.mocked(rateLimiter.checkRateLimit).mockResolvedValue({
+        allowed: true,
+        remaining: 99,
+        resetAt: new Date(),
+      });
+      const leadRow3: PeskidsLeadRow = {
+        id: 'row-id-3',
+        tenant_slug: 'peskids',
+        full_name: 'Maria Rodriguez',
+        email: 'maria@example.com',
+        phone: '+573001112233',
+        class_modality: 'llanogrande',
+        neighborhood: 'El Porvenir',
+        grade_interested: 'K-5',
+        referral_source: null,
+        status: 'new',
+        admin_notes: null,
+        created_at: new Date().toISOString(),
+      };
+      vi.mocked(repository.peskidsInsertLead).mockResolvedValue({
+        ok: true,
+        row: leadRow3,
+      });
+      vi.mocked(leadConfirmation.dispatchPeskidsLeadConfirmationEmail).mockRejectedValueOnce(
+        new Error('resend unreachable')
       );
 
       const request = new NextRequest('http://localhost/api/public/peskids/leads', {
