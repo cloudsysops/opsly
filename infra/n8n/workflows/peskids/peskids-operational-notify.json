@@ -1,0 +1,67 @@
+{
+  "id": "peskids-operational-notify",
+  "name": "Peskids - Operational notify",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "peskids-operational-notify",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Operational Notify Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "peskids-operational-notify"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body || $json;\nif (body.enabled === false) return [];\nconst content = body.content || body.message || JSON.stringify(body);\nreturn [{ json: { content: String(content).slice(0, 1800) } }];"
+      },
+      "id": "format",
+      "name": "Format",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.OPSLY_CRM_NOTIFY_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ content: $json.content }) }}",
+        "options": { "timeout": 10000 }
+      },
+      "id": "discord",
+      "name": "Discord",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 0],
+      "continueOnFail": true
+    }
+  ],
+  "connections": {
+    "Operational Notify Webhook": {
+      "main": [[{ "node": "Format", "type": "main", "index": 0 }]]
+    },
+    "Format": {
+      "main": [[{ "node": "Discord", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "timezone": "America/Bogota"
+  },
+  "meta": {
+    "opsly_note": "PR-PRO-1. Gated by PESKIDS_OPERATIONAL_NOTIFICATIONS_ENABLED at the caller. Keep active=false until authorized."
+  }
+}

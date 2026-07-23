@@ -4,6 +4,7 @@ import { HTTP_STATUS } from '../constants';
 import { checkRateLimit } from '../rate-limiter';
 import { assertPeskidsTenantPublic } from './assert-tenant';
 import { PESKIDS_TENANT_SLUG } from './constants';
+import { dispatchPeskidsHotLeadAlert } from './hot-lead-alert';
 import { peskidsInsertLead } from './repository';
 import { peskidsLeadBodySchema } from './schemas';
 
@@ -17,6 +18,7 @@ async function readJsonBody(request: NextRequest): Promise<unknown | Response> {
 
 /**
  * POST público: captura lead Peskids (sin JWT). Approval-first: sin email auto al padre.
+ * Hot-lead n8n alert is fire-and-forget and gated by PESKIDS_HOT_LEAD_ALERTS_ENABLED.
  */
 export async function postPublicPeskidsLead(request: NextRequest): Promise<Response> {
   const ip = extractIp(request);
@@ -62,6 +64,14 @@ export async function postPublicPeskidsLead(request: NextRequest): Promise<Respo
       referral_source: row.referral_source,
       event_type: 'lead.created',
     },
+  });
+
+  // Never block lead persistence on n8n/Discord/email outages.
+  void dispatchPeskidsHotLeadAlert(row).catch((error: unknown) => {
+    console.warn('[peskids] hot-lead alert dispatch failed', {
+      lead_id: row.id,
+      error: error instanceof Error ? error.message : String(error),
+    });
   });
 
   return Response.json(

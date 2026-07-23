@@ -1,0 +1,72 @@
+{
+  "id": "peskids-hot-lead-alert-webhook",
+  "name": "Peskids - Hot Lead Alert (webhook)",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "peskids-hot-lead-alert",
+        "responseMode": "onReceived",
+        "responseData": "firstEntryJson",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Hot Lead Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "peskids-hot-lead-alert"
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nif (!staticData.seen) staticData.seen = {};\nconst body = $json.body || $json;\nconst deliveryId = String(body.delivery_id || body.event_id || body.lead_id || '');\nif (!deliveryId) {\n  return [];\n}\nif (staticData.seen[deliveryId]) {\n  return [];\n}\nstaticData.seen[deliveryId] = Date.now();\nconst lead = body.lead || {};\nconst time = new Date(body.occurred_at || Date.now()).toLocaleString('es-CO', { timeZone: body.timezone || 'America/Bogota' });\nconst adminUrl = body.admin_url || 'https://peskids.op-sly.com/admin';\nreturn [{\n  json: {\n    delivery_id: deliveryId,\n    discord_message: {\n      embeds: [{\n        title: `🔥 Nuevo interesado Peskids: ${lead.parent_name || 'Sin nombre'}`,\n        color: 16711680,\n        fields: [\n          { name: '📧 Email', value: lead.email || 'N/A', inline: true },\n          { name: '📞 Teléfono', value: lead.phone || 'N/A', inline: true },\n          { name: '📍 Modalidad', value: lead.class_modality || 'N/A', inline: true },\n          { name: '🏘️ Barrio', value: lead.neighborhood || 'N/A', inline: true },\n          { name: '📚 Grado', value: lead.grade_interested || 'N/A', inline: true },\n          { name: '🔗 Fuente', value: lead.referral_source || 'web', inline: true },\n          { name: '🔗 Admin', value: adminUrl, inline: false }\n        ],\n        footer: { text: `⏰ ${time}` }\n      }]\n    }\n  }\n}];"
+      },
+      "id": "dedupe-format",
+      "name": "Dedupe + Format",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [280, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.OPSLY_CRM_NOTIFY_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.discord_message) }}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "discord-notify",
+      "name": "Discord Notification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [560, 0],
+      "continueOnFail": true
+    }
+  ],
+  "connections": {
+    "Hot Lead Webhook": {
+      "main": [[{ "node": "Dedupe + Format", "type": "main", "index": 0 }]]
+    },
+    "Dedupe + Format": {
+      "main": [[{ "node": "Discord Notification", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota"
+  },
+  "meta": {
+    "instanceId": "peskids",
+    "opsly_note": "PR-PRO-1 event-driven hot lead. Keep active=false until PESKIDS_HOT_LEAD_ALERTS_ENABLED=true in Doppler and webhook is imported."
+  }
+}
