@@ -111,7 +111,7 @@ function PipelineCard({
         </div>
         <Link
           href={`/admin/interesados/${lead.id}`}
-          className="shrink-0 text-pk-mutedText hover:text-pk-primary"
+          className="pk-focus inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl text-pk-mutedText hover:text-pk-primary"
           aria-label={`Ver ficha de ${lead.name}`}
         >
           <ExternalLink className="h-4 w-4" aria-hidden />
@@ -452,15 +452,15 @@ export function LeadPipelineKanban(): React.ReactElement {
       ) : null}
 
       {board ? (
-        <div className="overflow-x-auto pb-2">
+        <div className="snap-x snap-mandatory overflow-x-auto pb-2">
           <div className="flex min-w-max gap-4">
             {PIPELINE_COLUMN_ORDER.map((columnId) => (
               <section
                 key={columnId}
                 aria-label={PIPELINE_COLUMN_LABELS[columnId]}
-                className="flex w-[min(100vw-2rem,18rem)] shrink-0 flex-col rounded-2xl border border-pk-border bg-pk-muted/40"
+                className="flex w-[min(100vw-2rem,18rem)] shrink-0 snap-start flex-col rounded-2xl border border-pk-border bg-pk-muted/40"
               >
-                <header className="border-b border-pk-border px-3 py-3">
+                <header className="sticky top-0 z-10 border-b border-pk-border bg-pk-muted/95 px-3 py-3 backdrop-blur-sm">
                   <div className="flex items-center justify-between gap-2">
                     <h2 className="text-sm font-semibold text-pk-ink">
                       {PIPELINE_COLUMN_LABELS[columnId]}
