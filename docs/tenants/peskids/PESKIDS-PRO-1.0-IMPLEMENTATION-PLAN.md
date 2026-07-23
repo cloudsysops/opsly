@@ -288,11 +288,11 @@ wizard de matrícula.
 
 ## 7. Secuencia de PRs
 
-| PR | Alcance | Migraciones propuestas (sin crear aún) |
+| PR | Alcance | Migraciones |
 | --- | --- | --- |
 | **PR-PRO-0** ✅ | Contratos canónicos + mappers + CI coverage peskids + este documento | Ninguna |
-| **PR-PRO-1** (este) | Hot-lead alert (event webhook) + digest Discord gate + exports en `infra/n8n/workflows/peskids/` | Ninguna (delivery log estructurado en stdout; tabla opcional diferida) |
-| PR-PRO-2 | Email de confirmación (Resend u otro ya adoptado) | Tabla de estado de email (pending/sent/failed) + idempotency key |
+| **PR-PRO-1** ✅ | Hot-lead alert (event webhook) + digest Discord gate + exports en `infra/n8n/workflows/peskids/` | Ninguna (delivery log estructurado en stdout; tabla opcional diferida) |
+| **PR-PRO-2** (este) | Email de confirmación (Resend u otro ya adoptado) | Tabla `platform.peskids_lead_email_deliveries` (pending/sent/failed/skipped) + idempotency key |
 | PR-PRO-3 | Embudo Peskids → Twenty (stage-sync real) | Columnas `twenty_sync_status`, `twenty_sync_error`, `twenty_synced_at` en `platform.peskids_leads` |
 | PR-PRO-4 | Seguimientos ↔ Twenty Tasks (observabilidad — ya 80% construido) | Columnas `sync_status`, `sync_error`, `retry_count` en `followups` |
 | PR-PRO-5 | Reglas 24h/48h sin contacto | Tabla ligera de idempotencia de alertas de aging |
