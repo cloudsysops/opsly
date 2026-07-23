@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
+  BarChart3,
   Bell,
   CalendarClock,
   ClipboardList,
@@ -61,6 +62,7 @@ const navOps = [
   { icon: UsersRound, label: 'Familias', href: '/admin#families' },
   { icon: ClipboardList, label: 'Clases de prueba', href: '/admin#trial-classes' },
   { icon: Users, label: 'Interesados', href: '/admin#leads' },
+  { icon: BarChart3, label: 'Pipeline', href: '/admin/pipeline' },
   { icon: MessageSquare, label: 'Feedback', href: '/admin#feedback' },
   { icon: CalendarClock, label: 'Seguimientos', href: '/admin#seguimientos' },
   { icon: Inbox, label: 'Mensajes', href: '/admin/messages' },
@@ -200,8 +202,16 @@ export function AdminShell({
       return pathname.startsWith('/admin/settings');
     }
 
+    if (item.label === 'Pipeline') {
+      return pathname.startsWith('/admin/pipeline');
+    }
+
     if (item.label === 'Notificaciones') {
       return pathname.startsWith('/settings/notifications');
+    }
+
+    if (pathname.startsWith('/admin/interesados')) {
+      return item.label === 'Interesados';
     }
 
     if (pathname !== '/admin') {
