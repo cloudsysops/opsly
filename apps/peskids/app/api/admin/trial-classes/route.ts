@@ -32,7 +32,16 @@ export async function GET(req: NextRequest) {
   try {
     const leadId = req.nextUrl.searchParams.get('lead_id') ?? undefined;
     const status = parseStatus(req.nextUrl.searchParams.get('status'));
-    const trialClasses = await listTrialClasses({ lead_id: leadId, status });
+    const from = req.nextUrl.searchParams.get('from') ?? undefined;
+    const to = req.nextUrl.searchParams.get('to') ?? undefined;
+    const teacherName = req.nextUrl.searchParams.get('teacher_name') ?? undefined;
+    const trialClasses = await listTrialClasses({
+      lead_id: leadId,
+      status,
+      from,
+      to,
+      teacher_name: teacherName,
+    });
 
     return successJson(requestId, { ok: true, trial_classes: trialClasses });
   } catch (err) {

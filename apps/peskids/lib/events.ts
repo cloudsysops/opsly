@@ -7,8 +7,10 @@ import { OpslyEvent } from './types';
  * `lead.created` and `feedback.created`/`feedback.alert` below are already
  * emitted for real via `emitLeadCreated`/`emitFeedbackCreated`. The rest are
  * declared here as the target vocabulary so later PRs (PR-PRO-1, 3, 4, 9)
- * emit a name from this list instead of inventing ad-hoc strings — none of
- * the not-yet-emitted names are wired to `emitEvent()` calls yet.
+ * emit a name from this list instead of inventing ad-hoc strings. Runtime
+ * emitters: `emitLeadCreated` / `emitFeedbackCreated`, lead conversion
+ * (`student.enrolled`), and trial-class service (`trial.scheduled` /
+ * `trial.completed` / `trial.no_show`).
  */
 export const PESKIDS_PRO_EVENT_NAMES = [
   'lead.created',

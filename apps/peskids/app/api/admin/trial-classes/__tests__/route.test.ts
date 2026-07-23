@@ -67,7 +67,36 @@ describe('GET /api/admin/trial-classes', () => {
 
     expect(response.status).toBe(200);
     expect(json.trial_classes).toHaveLength(1);
-    expect(listTrialClassesMock).toHaveBeenCalledWith({ lead_id: undefined, status: 'scheduled' });
+    expect(listTrialClassesMock).toHaveBeenCalledWith({
+      lead_id: undefined,
+      status: 'scheduled',
+      from: undefined,
+      to: undefined,
+      teacher_name: undefined,
+    });
+  });
+
+  it('forwards date and teacher filters', async () => {
+    validateStaffSessionMock.mockResolvedValue({ ok: true, method: 'supabase', user: supportUser() });
+    listTrialClassesMock.mockResolvedValue([]);
+
+    const { GET } = await import('../route');
+    const req = {
+      headers: new Headers({ 'x-request-id': 'req-trial-get-filters' }),
+      nextUrl: new URL(
+        'http://localhost/api/admin/trial-classes?from=2026-07-20&to=2026-07-27&teacher_name=Maria'
+      ),
+    } as never;
+    const response = await GET(req);
+
+    expect(response.status).toBe(200);
+    expect(listTrialClassesMock).toHaveBeenCalledWith({
+      lead_id: undefined,
+      status: undefined,
+      from: '2026-07-20',
+      to: '2026-07-27',
+      teacher_name: 'Maria',
+    });
   });
 });
 
