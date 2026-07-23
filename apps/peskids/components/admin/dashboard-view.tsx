@@ -21,6 +21,7 @@ import { FamiliesStudentsExpectation } from '@/components/admin/families-student
 import { MessageInboxPanel } from '@/components/admin/message-inbox-panel'
 import { DashboardIntegrationStatus } from '@/components/admin/dashboard-integration-status'
 import { DashboardKpiStrip } from '@/components/admin/dashboard-kpi-strip'
+import { ExecutiveDashboardPanel } from '@/components/admin/executive-dashboard-panel'
 import { RecentLeadsPanel } from '@/components/admin/recent-leads-panel'
 import { StatCard } from '@/components/admin/stat-card'
 import { StudentsPanel } from '@/components/admin/students-panel'
@@ -649,6 +650,7 @@ export function DashboardView({
         </div>
       </section>
 
+      <ExecutiveDashboardPanel data={data} range={range} />
       <DashboardKpiStrip data={data} />
       <RecentLeadsPanel data={data} />
       <DashboardIntegrationStatus data={data} />

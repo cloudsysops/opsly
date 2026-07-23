@@ -727,6 +727,67 @@ export interface DashboardSalesAnalytics {
   trials_scheduled_count: number;
 }
 
+/** PR-PRO-8 — rule-based executive snapshot for the admin home. */
+export interface DashboardExecutiveSummary {
+  timezone: string;
+  as_of: string;
+  greeting: string;
+  summary_line: string;
+  kpis: {
+    new_leads: number;
+    uncontacted: number;
+    overdue_followups: number;
+    trials_today: number;
+    trials_this_week: number;
+    enrollments_this_month: number;
+    lead_to_trial_pct: number | null;
+    trial_to_enroll_pct: number | null;
+    avg_hours_to_first_contact: number | null;
+    best_source: {
+      key: string;
+      label: string;
+      conversion_pct: number;
+      sample_size: number;
+    } | null;
+  };
+  priority_tasks: Array<{
+    id: string;
+    priority: number;
+    title: string;
+    detail: string;
+    href: string;
+    tone: 'coral' | 'amber' | 'teal' | 'green';
+  }>;
+  agenda_today: Array<{
+    id: string;
+    kind: 'trial' | 'followup';
+    title: string;
+    time_label: string;
+    href: string;
+  }>;
+  funnel: Array<{
+    stage: string;
+    label: string;
+    count: number;
+  }>;
+  recent_activity: Array<{
+    id: string;
+    at: string;
+    label: string;
+    href?: string;
+  }>;
+  integration_issues: Array<{
+    label: string;
+    detail: string;
+    status: string;
+  }>;
+  recommended_actions: Array<{
+    title: string;
+    detail: string;
+    href: string;
+  }>;
+}
+
 export interface DashboardData {
   new_leads_count: number;
   converted_leads_count: number;
@@ -835,6 +896,7 @@ export interface DashboardData {
   operations: DashboardOperationsMetrics;
   integration_status: DashboardIntegrationStatus;
   sales_analytics: DashboardSalesAnalytics;
+  executive: DashboardExecutiveSummary;
 }
 
 export interface PeskidsBiSnapshot {

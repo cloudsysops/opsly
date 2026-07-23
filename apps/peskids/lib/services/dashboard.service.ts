@@ -5,6 +5,11 @@ import { fetchOperationsMetrics } from './operations-metrics.service';
 import { fetchDashboardLeads } from '../peskids-platform-dashboard';
 import { buildDashboardSalesAnalytics } from './sales-analytics.service';
 import { fetchDashboardIntegrationStatus } from './integration-status.service';
+import {
+  buildExecutiveDashboard,
+  calendarDateInTz,
+  startOfMonth,
+} from '../executive-dashboard';
 
 type Range = 'week' | 'month';
 type LeadSourceKey = 'instagram' | 'facebook' | 'website' | 'referral' | 'other';
@@ -77,7 +82,7 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
 
   const { data: students, error: studentsError } = await supabase
     .from('students')
-    .select('id, grade, status, parent_email')
+    .select('id, grade, status, parent_email, created_at, enrollment_date')
     .eq('tenant_id', tenantId)
     .eq('status', 'active');
 
@@ -85,7 +90,10 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
 
   const studentsByAgeRange: Record<string, number> = {};
   const typedStudents = students as Array<
-    Pick<Database['public']['Tables']['students']['Row'], 'grade' | 'parent_email'>
+    Pick<
+      Database['public']['Tables']['students']['Row'],
+      'grade' | 'parent_email' | 'created_at' | 'enrollment_date'
+    >
   >;
   typedStudents?.forEach((s) => {
     studentsByAgeRange[s.grade] = (studentsByAgeRange[s.grade] || 0) + 1;
@@ -95,6 +103,11 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
       .map((student) => student.parent_email?.trim().toLowerCase() ?? '')
       .filter((email) => email.length > 0)
   ).size;
+  const monthStart = startOfMonth(calendarDateInTz(today));
+  const enrollmentsThisMonth = typedStudents.filter((student) => {
+    const enrolledOn = (student.enrollment_date || student.created_at || '').slice(0, 10);
+    return Boolean(enrolledOn && enrolledOn >= monthStart);
+  }).length;
 
   let recentFeedback: DashboardData['recent_feedback'] | null = null;
   let privateFamilyNotes: DashboardData['private_family_notes'] | null = null;
@@ -147,9 +160,9 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
 
   const { data: trialClasses, error: trialClassesError } = await supabase
     .from('trial_classes')
-    .select('lead_id, created_at, status')
+    .select('id, lead_id, created_at, status, scheduled_date, scheduled_time')
     .eq('tenant_id', tenantId)
-    .order('created_at', { ascending: false });
+    .order('scheduled_date', { ascending: true });
 
   if (trialClassesError) throw trialClassesError;
 
@@ -170,21 +183,46 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
     { ...EMPTY_LEAD_SOURCES }
   );
 
+  const typedTrials = (trialClasses ?? []) as Array<{
+    id: string;
+    lead_id: string;
+    created_at?: string;
+    status: string;
+    scheduled_date: string;
+    scheduled_time: string | null;
+  }>;
+
   const salesAnalytics = buildDashboardSalesAnalytics({
     periodStartISO,
     leads: newLeads as DashboardData['new_leads'],
     followups: (followups ?? []) as Array<DashboardData['followups'][number] & { created_at?: string }>,
-    trialClasses: (trialClasses ?? []) as Array<{ lead_id: string; created_at?: string; status?: string }>,
+    trialClasses: typedTrials,
   });
 
   const integration_status = await fetchDashboardIntegrationStatus(process.env as Record<string, string | undefined>);
+
+  const recentMessagesTyped = (recentMessages as DashboardData['recent_messages']) || [];
+  const followupsTyped = (followups as DashboardData['followups']) || [];
+  const leadsTyped = (newLeads as unknown as DashboardData['new_leads']) || [];
+
+  const executive = buildExecutiveDashboard({
+    leads: leadsTyped,
+    followups: followupsTyped,
+    trials: typedTrials,
+    salesStatusCounts: salesAnalytics.lead_status_counts,
+    avgHoursToFirstFollowup: salesAnalytics.avg_hours_to_first_followup,
+    integrationStatus: integration_status,
+    enrollmentsThisMonth,
+    recentMessages: recentMessagesTyped,
+    now: today,
+  });
 
   return {
     new_leads_count: newLeads?.length || 0,
     converted_leads_count: convertedLeadsCount,
     conversion_rate_pct: conversionRatePct,
     lead_sources: leadSources,
-    new_leads: (newLeads as unknown as DashboardData['new_leads']) || [],
+    new_leads: leadsTyped,
     active_students_count: students?.length || 0,
     families_active_count: familiesActiveCount,
     // Additive UI adapter: the response key remains stable until the legacy column is migrated.
@@ -194,11 +232,12 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
       (privateFamilyNotes as unknown as DashboardData['private_family_notes']) || [],
     pending_followups_count: pendingFollowups?.length || 0,
     pending_followups: (pendingFollowups as DashboardData['pending_followups']) || [],
-    followups: (followups as DashboardData['followups']) || [],
-    recent_messages: (recentMessages as DashboardData['recent_messages']) || [],
+    followups: followupsTyped,
+    recent_messages: recentMessagesTyped,
     wacrm_messages: wacrmMessages,
     operations,
     integration_status,
     sales_analytics: salesAnalytics,
+    executive,
   };
 }

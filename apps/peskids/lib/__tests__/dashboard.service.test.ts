@@ -161,7 +161,14 @@ describe('fetchDashboardData', () => {
     })
     const trialClassesQuery = createOrderQuery({
       data: [
-        { lead_id: 'lead-2', status: 'scheduled', created_at: '2026-07-18T13:00:00Z' },
+        {
+          id: 'trial-1',
+          lead_id: 'lead-2',
+          status: 'scheduled',
+          created_at: '2026-07-18T13:00:00Z',
+          scheduled_date: '2026-07-18',
+          scheduled_time: '13:00:00',
+        },
       ],
       error: null,
     })
@@ -257,6 +264,9 @@ describe('fetchDashboardData', () => {
     expect(result.sales_analytics.lead_status_counts.new).toBe(1)
     expect(result.sales_analytics.lead_status_counts.enrolled).toBe(1)
     expect(result.sales_analytics.source_breakdown.find((item) => item.key === 'instagram')?.count).toBe(1)
+    expect(result.executive.kpis.new_leads).toBe(2)
+    expect(result.executive.greeting.length).toBeGreaterThan(0)
+    expect(result.executive.priority_tasks.length).toBeGreaterThan(0)
     expect(result.recent_messages).toEqual([
       { id: 'message-1', sender_contact: 'web:support:maria@example.com' },
     ])
