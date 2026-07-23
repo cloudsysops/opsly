@@ -40,7 +40,9 @@ function resolveTwentyBaseUrl(): string {
   ).replace(/\/$/, '');
 }
 
-function decorateLeadWithCrmUrls(lead: DashboardData['new_leads'][number]): DashboardData['new_leads'][number] {
+export function decorateLeadWithCrmUrls(
+  lead: DashboardData['new_leads'][number]
+): DashboardData['new_leads'][number] {
   const twentyBase = resolveTwentyBaseUrl();
   const hasPerson = Boolean(lead.twenty_person_id?.trim());
   const hasOpportunity = Boolean(lead.twenty_opportunity_id?.trim());

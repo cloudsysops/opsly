@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { ExternalLink, MessageSquare, Phone } from 'lucide-react';
 import type { DashboardData } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
@@ -87,7 +88,12 @@ export function RecentLeadsPanel({ data }: RecentLeadsPanelProps): React.ReactEl
                     return (
                       <tr key={lead.id} className="align-top">
                         <td className="px-3 py-3">
-                          <p className="font-medium text-pk-ink">{lead.name}</p>
+                          <Link
+                            href={`/admin/interesados/${lead.id}`}
+                            className="font-medium text-pk-ink hover:text-pk-primary hover:underline"
+                          >
+                            {lead.name}
+                          </Link>
                           <p className="text-xs text-pk-sub">
                             {formatAgeRange(lead.grade_interested)}
                           </p>

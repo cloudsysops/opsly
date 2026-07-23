@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   CalendarClock,
@@ -692,7 +693,12 @@ export function DashboardView({
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="font-medium text-sm text-pk-ink">{lead.name}</p>
+                      <Link
+                        href={`/admin/interesados/${lead.id}`}
+                        className="font-medium text-sm text-pk-ink hover:text-pk-primary hover:underline"
+                      >
+                        {lead.name}
+                      </Link>
                       <p className="text-xs text-pk-sub">{lead.email}</p>
                       {lead.phone ? <p className="text-xs text-pk-sub">{lead.phone}</p> : null}
                       {lead.neighborhood ? (
