@@ -1,5 +1,6 @@
 import { TwentyClient, resolveTwentyEnv, type TwentyTaskStatus } from '@intcloudsysops/services/twenty';
 import { supabaseServer } from '@/lib/supabase';
+import type { Database } from '@/lib/types';
 
 /**
  * One-way sync: staff work entirely from the Peskids followups CRUD, never
@@ -10,6 +11,8 @@ import { supabaseServer } from '@/lib/supabase';
  */
 
 export type FollowupSyncStatus = 'pending' | 'synced' | 'failed' | 'retrying' | 'skipped';
+
+type FollowupUpdate = Database['public']['Tables']['followups']['Update'];
 
 function platformClient() {
   const client = supabaseServer() as {
@@ -43,7 +46,7 @@ async function persistFollowupSyncState(input: {
   twentyTaskId?: string | null;
   incrementRetry?: boolean;
 }): Promise<void> {
-  const patch: Record<string, string | number | null> = {
+  const patch: FollowupUpdate = {
     sync_status: input.status,
     sync_error: input.error ?? null,
     updated_at: new Date().toISOString(),
