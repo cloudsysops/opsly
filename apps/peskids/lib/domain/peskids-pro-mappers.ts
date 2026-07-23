@@ -140,6 +140,13 @@ export function proLeadStatusToTwentyStageSlug(status: LeadStatus): TwentyOpport
   }
 }
 
+/** Admin UI status → Twenty opportunity stage slug (PR-PRO-3). */
+export function adminLeadStatusToTwentyStageSlug(
+  status: AdminLeadStatusLive
+): TwentyOpportunityStageSlug {
+  return proLeadStatusToTwentyStageSlug(adminLeadStatusToPro(status));
+}
+
 export function trialStatusLiveToPro(status: TrialStatusLive): TrialStatus {
   switch (status) {
     case 'scheduled':
