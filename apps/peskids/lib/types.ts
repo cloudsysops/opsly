@@ -576,6 +576,9 @@ export type Database = {
           created_at: string;
           updated_at: string;
           twenty_task_id: string | null;
+          sync_status: 'pending' | 'synced' | 'failed' | 'retrying' | 'skipped' | null;
+          sync_error: string | null;
+          retry_count: number;
         };
         Insert: {
           tenant_id: string;
@@ -587,6 +590,9 @@ export type Database = {
           notes?: string | null;
           updated_at?: string;
           twenty_task_id?: string | null;
+          sync_status?: 'pending' | 'synced' | 'failed' | 'retrying' | 'skipped' | null;
+          sync_error?: string | null;
+          retry_count?: number;
         };
         Update: Partial<Database['public']['Tables']['followups']['Insert']>;
         Relationships: [];

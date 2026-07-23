@@ -112,6 +112,7 @@ export async function createFollowup(
   // complete for reporting. Failure here must never block the local write.
   if (input.contact_type === 'lead') {
     const twentyTaskId = await createTwentyTaskForLeadFollowup({
+      followupId: data.id,
       leadId: input.contact_id,
       type: input.type,
       dueDate: input.due_date,
@@ -119,14 +120,9 @@ export async function createFollowup(
     });
 
     if (twentyTaskId) {
-      const { data: updated } = await supabaseServer()
-        .from('followups')
-        .update({ twenty_task_id: twentyTaskId })
-        .eq('id', data.id)
-        .select('*')
-        .single();
-      if (updated) {
-        return withContactName(updated);
+      const refreshed = await getFollowupById(data.id);
+      if (refreshed) {
+        return withContactName(refreshed);
       }
       data.twenty_task_id = twentyTaskId;
     }
@@ -176,7 +172,7 @@ export async function updateFollowup(
   if (error) throw error;
 
   if (input.status !== undefined && existing.contact_type === 'lead' && existing.twenty_task_id) {
-    await syncTwentyTaskStatus(existing.twenty_task_id, input.status);
+    await syncTwentyTaskStatus(followupId, existing.twenty_task_id, input.status);
   }
 
   return withContactName(data);
