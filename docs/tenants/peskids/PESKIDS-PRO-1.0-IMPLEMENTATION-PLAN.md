@@ -297,14 +297,16 @@ wizard de matrícula.
 | **PR-PRO-4** ✅ | Seguimientos ↔ Twenty Tasks (observabilidad) | Columnas `sync_status`, `sync_error`, `retry_count` en `followups` |
 | **PR-PRO-5** ✅ | Reglas 24h/48h sin contacto | Tabla `platform.peskids_aging_alert_deliveries` (idempotencia) |
 | **PR-PRO-6** ✅ | Ficha 360° del interesado (`/admin/interesados/[id]`) | Ninguna |
-| **PR-PRO-7** (este) | Pipeline Kanban (`/admin/pipeline`) | Ninguna |
-| PR-PRO-8 | Dashboard ejecutivo (extiende `dashboard-view.tsx` existente) | Ninguna |
-| PR-PRO-9 | Conversión a estudiante | Probablemente ninguna — `source_lead_id` ya vincula lead↔estudiante (migración `20260609`) |
-| PR-PRO-10 | Agenda y clases de prueba Pro | Ninguna, o índice para queries de calendario |
-| PR-PRO-11 | Pulido UX, mobile y accesibilidad (extiende design system `pk-*` existente) | Ninguna |
-| PR-PRO-12 | Observabilidad, runbooks y cierre | Posible `audit_log` genérico tenant-aware — punto de decisión de producto, no asumido |
+| **PR-PRO-7** ✅ | Pipeline Kanban (`/admin/pipeline`) | Ninguna |
+| **PR-PRO-8** ✅ | Dashboard ejecutivo (extiende `dashboard-view.tsx` existente) | Ninguna |
+| **PR-PRO-9** ✅ | Conversión a estudiante (`source_lead_id` + formulario Matricular) | Ninguna |
+| **PR-PRO-10** ✅ | Agenda y clases de prueba Pro | Ninguna |
+| **PR-PRO-11** ✅ | Pulido UX, mobile y accesibilidad (extiende design system `pk-*` existente) | Ninguna |
+| **PR-PRO-12** ✅ | Observabilidad, runbooks y cierre | Ninguna — `audit_log` genérico **diferido** (ver runbook) |
 
 Un PR = una sola capacidad coherente. No combinar salvo justificación explícita.
+
+**Cierre operativo:** [`PESKIDS-PRO-1.0-RUNBOOK.md`](./PESKIDS-PRO-1.0-RUNBOOK.md).
 
 ---
 
@@ -350,6 +352,7 @@ Un PR = una sola capacidad coherente. No combinar salvo justificación explícit
 - Diff n8n VPS ↔ `.n8n/1-workflows/peskids/` antes de PR-PRO-1; publicar en
   `infra/n8n/workflows/peskids/`.
 - Decidir si `audit_log` (PR-PRO-12) entra en este programa o se difiere.
+  **Decisión 2026-07-23:** diferido — ver [`PESKIDS-PRO-1.0-RUNBOOK.md`](./PESKIDS-PRO-1.0-RUNBOOK.md) §6.
 - Confirmar `PESKIDS_EMAIL_FROM` / reply-to y SLA (`PESKIDS_CONTACT_SLA_HOURS`, default 48)
   con Sierra antes de activar confirmación en prod.
 - Timezone operativo asumido: `America/Bogota` (confirmar).
