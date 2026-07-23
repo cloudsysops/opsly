@@ -89,6 +89,22 @@ const syncTone: Record<NonNullable<LeadRow['twenty_sync_status']>, 'green' | 'am
     pending: 'neutral',
   };
 
+const trialStatusLabel: Record<string, string> = {
+  scheduled: 'Programada',
+  confirmed: 'Confirmada',
+  attended: 'Asistió',
+  no_show: 'No asistió',
+  cancelled: 'Cancelada',
+};
+
+const trialNextStatuses: Record<string, string[]> = {
+  scheduled: ['confirmed', 'cancelled'],
+  confirmed: ['attended', 'no_show', 'cancelled'],
+  attended: [],
+  no_show: [],
+  cancelled: [],
+};
+
 function toAdminStatus(status: LeadRow['status']): AdminLeadStatus {
   if (adminStatusOptions.includes(status as AdminLeadStatus)) {
     return status as AdminLeadStatus;
@@ -284,6 +300,31 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
       setBusy(false);
     }
   }, [leadId, load, trialDraft]);
+
+  const handleUpdateTrialStatus = useCallback(
+    async (trialId: string, status: string) => {
+      setBusy(true);
+      setFeedback('');
+      try {
+        const response = await fetch(`/api/admin/trial-classes/${trialId}`, {
+          method: 'PATCH',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status }),
+        });
+        if (!response.ok) {
+          throw new Error(await readApiError(response, 'No se pudo actualizar la clase'));
+        }
+        setFeedback(`Clase marcada como ${trialStatusLabel[status] ?? status}.`);
+        await load();
+      } catch (err) {
+        setFeedback(err instanceof Error ? err.message : 'Error al actualizar clase');
+      } finally {
+        setBusy(false);
+      }
+    },
+    [load]
+  );
 
   if (loading) {
     return (
@@ -699,12 +740,35 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
                 {payload.trials.map((trial) => (
                   <div
                     key={trial.id}
-                    className="rounded-xl border border-pk-border/80 bg-white px-3 py-2 text-sm"
+                    className="space-y-2 rounded-xl border border-pk-border/80 bg-white px-3 py-2 text-sm"
                   >
-                    <p className="font-medium text-pk-ink">
-                      {trial.scheduled_date} {trial.scheduled_time?.slice(0, 5)}
-                    </p>
-                    <p className="text-xs text-pk-sub">{trial.status}</p>
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div>
+                        <p className="font-medium text-pk-ink">
+                          {trial.scheduled_date} {trial.scheduled_time?.slice(0, 5)}
+                        </p>
+                        <p className="text-xs text-pk-sub">
+                          {trialStatusLabel[trial.status] ?? trial.status}
+                          {trial.teacher_name ? ` · ${trial.teacher_name}` : ''}
+                        </p>
+                      </div>
+                    </div>
+                    {(trialNextStatuses[trial.status] ?? []).length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {(trialNextStatuses[trial.status] ?? []).map((status) => (
+                          <Button
+                            key={status}
+                            type="button"
+                            size="sm"
+                            variant="secondary"
+                            disabled={busy}
+                            onClick={() => void handleUpdateTrialStatus(trial.id, status)}
+                          >
+                            {trialStatusLabel[status] ?? status}
+                          </Button>
+                        ))}
+                      </div>
+                    ) : null}
                   </div>
                 ))}
               </CardContent>
