@@ -1,0 +1,24 @@
+import { describe, expect, it } from 'vitest';
+import { buildPeskidsProObservability } from '../observability/peskids-pro-health';
+
+describe('buildPeskidsProObservability', () => {
+  it('reports flags off and bus missing by default', () => {
+    const snapshot = buildPeskidsProObservability({});
+    expect(snapshot.event_bus_configured).toBe(false);
+    expect(snapshot.contact_sla_hours).toBe(48);
+    expect(snapshot.flags.hot_lead_alerts).toBe(false);
+    expect(snapshot.flags.daily_digest).toBe(false);
+  });
+
+  it('detects configured event bus and enabled flags without exposing values', () => {
+    const snapshot = buildPeskidsProObservability({
+      OPSLY_EVENT_BUS_URL: 'https://example.invalid/events',
+      PESKIDS_HOT_LEAD_ALERTS_ENABLED: 'true',
+      PESKIDS_CONTACT_SLA_HOURS: '24',
+    });
+    expect(snapshot.event_bus_configured).toBe(true);
+    expect(snapshot.contact_sla_hours).toBe(24);
+    expect(snapshot.flags.hot_lead_alerts).toBe(true);
+    expect(JSON.stringify(snapshot)).not.toContain('example.invalid');
+  });
+});

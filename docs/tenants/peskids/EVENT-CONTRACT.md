@@ -11,7 +11,13 @@ tags:
 
 **Purpose:** Define all events that Peskids emits to Opsly platform. Events are used for analytics, integrations, audit logs, and future automations.
 
-**Peskids Pro 1.0:** target event catalog (`PESKIDS_PRO_EVENT_NAMES`) lives in `apps/peskids/lib/events.ts`; program plan in [`PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md`](./PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md). Only `lead.created` / `feedback.*` are emitted today — remaining names are contractual until later PRs wire emitters.
+**Peskids Pro 1.0:** target event catalog (`PESKIDS_PRO_EVENT_NAMES`) lives in `apps/peskids/lib/events.ts`; program plan in [`PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md`](./PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md); ops closure in [`PESKIDS-PRO-1.0-RUNBOOK.md`](./PESKIDS-PRO-1.0-RUNBOOK.md).
+
+**Emitters wired in Pro 1.0 (además de `lead.created` / `feedback.*`):**
+- `trial.scheduled` / `trial.completed` / `trial.no_show` — `lib/services/trial-class.service.ts`
+- `student.enrolled` — `lib/services/lead-conversion.service.ts`
+
+Nombres contractuales aún no emitidos de forma uniforme: `lead.contacted`, `lead.status_changed`, `lead.lost`, `followup.*` (followups sincronizan Twenty con columnas `sync_*`; eventos de dominio followup quedan para una iteración posterior).
 
 **Principles:**
 - Every user action → event
