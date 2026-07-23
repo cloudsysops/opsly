@@ -9,7 +9,6 @@ import {
   Loader2,
   Mail,
   Phone,
-  UserPlus,
 } from 'lucide-react';
 import type { Lead360View as Lead360Payload } from '@/lib/services/lead-360.service';
 import type { DashboardData } from '@/lib/types';
@@ -23,6 +22,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn, formatRelativeTime } from '@/lib/utils';
+import { LeadEnrollForm } from '@/components/admin/lead-enroll-form'
 import type { AdminLeadStatus } from '@/lib/validation/lead-admin.schema';
 
 type LeadRow = DashboardData['new_leads'][number];
@@ -216,29 +216,6 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
     },
     [leadId, load]
   );
-
-  const handleConvert = useCallback(async () => {
-    if (!window.confirm('¿Convertir este interesado en alumno matriculado?')) {
-      return;
-    }
-    setBusy(true);
-    setFeedback('');
-    try {
-      const response = await fetch(`/api/admin/leads/${leadId}/convert`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-      if (!response.ok) {
-        throw new Error(await readApiError(response, 'No se pudo convertir'));
-      }
-      setFeedback('Interesado convertido en alumno.');
-      await load();
-    } catch (err) {
-      setFeedback(err instanceof Error ? err.message : 'Error al convertir');
-    } finally {
-      setBusy(false);
-    }
-  }, [leadId, load]);
 
   const handleCreateFollowup = useCallback(async () => {
     if (!followupDraft.due_date) {
@@ -449,10 +426,16 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
               <span>Correo</span>
             </a>
             {canConvert ? (
-              <Button type="button" size="sm" variant="secondary" disabled={busy} onClick={() => void handleConvert()}>
-                <UserPlus className="h-4 w-4" aria-hidden />
-                <span className="ml-1">Convertir a alumno</span>
-              </Button>
+              <div className="w-full basis-full">
+                <LeadEnrollForm
+                  lead={lead}
+                  leadId={leadId}
+                  busy={busy}
+                  onBusyChange={setBusy}
+                  onFeedback={setFeedback}
+                  onCompleted={load}
+                />
+              </div>
             ) : null}
             <Button
               type="button"
