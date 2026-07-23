@@ -3,10 +3,17 @@
   "private": true,
   "packageManager": "npm@10.8.3",
   "dependencies": {
-    "dompurify": "3.4.11",
+    "dompurify": "3.4.12",
     "js-tiktoken": "^1.0.21",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "sharp": "0.35.3",
+    "tar": "7.5.21",
+    "@hono/node-server": "2.0.11",
+    "protobufjs": "7.6.5",
+    "body-parser": "1.20.6",
+    "axios": "1.18.1",
+    "postcss": "8.5.13"
   },
   "workspaces": [
     "apps/*",
@@ -167,7 +174,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "fast-xml-builder": "1.2.0",
-    "hono": "4.12.26",
+    "hono": "4.12.31",
     "husky": "^9.1.7",
     "ip-address": "10.2.0",
     "js-yaml": "^4.1.1",
@@ -213,30 +220,28 @@
     "minimist": "^1.2.8",
     "tmp": "0.2.7",
     "uuid": "^14.0.0",
-    "fast-uri": "3.1.2",
+    "fast-uri": "3.1.4",
     "fast-xml-builder": "1.2.0",
     "fast-xml-parser": {
       "fast-xml-builder": "1.2.0"
     },
-    "hono": "4.12.26",
     "ip-address": "10.2.0",
     "express-rate-limit": {
       "ip-address": "10.2.0"
     },
     "@tootallnate/once": "^3.0.1",
     "langsmith": "0.7.1",
-    "glob": "10.5.0",
+    "glob": {
+      "brace-expansion": "2.1.2"
+    },
     "eslint-config-next": "15.5.18",
     "@next/eslint-plugin-next": "15.5.18",
     "@supabase/supabase-js": "^2.106.0",
     "@supabase/ssr": "^0.6.1",
     "vitest": "4.1.9",
     "@vitest/coverage-v8": "4.1.9",
-    "tar": "^7.5.15",
     "undici": "7.28.0",
-    "dompurify": "3.4.11",
     "mermaid": "^11.4.0",
-    "next": "15.5.18",
     "qs": "6.15.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -244,6 +249,37 @@
       "@types/react": "19.2.14",
       "@types/react-dom": "19.2.3"
     },
-    "websocket-driver": "^0.7.5"
+    "websocket-driver": "^0.7.5",
+    "@typescript-eslint/typescript-estree": {
+      "brace-expansion": "5.0.7"
+    },
+    "nodemon": {
+      "brace-expansion": "5.0.7"
+    },
+    "@eslint/eslintrc": {
+      "brace-expansion": "1.1.16"
+    },
+    "dompurify": "3.4.12",
+    "hono": "4.12.31",
+    "tar": "7.5.21",
+    "axios": "1.18.1",
+    "protobufjs": "7.6.5",
+    "@hono/node-server": "2.0.11",
+    "body-parser": "1.20.6",
+    "sharp": "0.35.3",
+    "next": {
+      "sharp": "0.35.3",
+      "postcss": "8.5.13"
+    },
+    "@modelcontextprotocol/sdk": {
+      "@hono/node-server": "2.0.11",
+      "body-parser": "2.3.0"
+    },
+    "@grpc/proto-loader": {
+      "protobufjs": "7.6.5"
+    },
+    "@capacitor/cli": {
+      "tar": "7.5.21"
+    }
   }
 }
