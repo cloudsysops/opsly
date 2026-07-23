@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   BarChart3,
@@ -92,6 +92,7 @@ export function AdminShell({
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [signingOut, setSigningOut] = useState(false);
   const [signOutError, setSignOutError] = useState('');
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const syncHash = (): void => {
@@ -121,6 +122,19 @@ export function AdminShell({
   useEffect(() => {
     setMobileNavOpen(false);
   }, [pathname, hash]);
+
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+    const onKeyDown = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') {
+        setMobileNavOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [mobileNavOpen]);
+
   // Poll for unread message count every 30s
   useEffect(() => {
     const fetchUnread = async (): Promise<void> => {
@@ -234,6 +248,10 @@ export function AdminShell({
       return hash === '#classes';
     }
 
+    if (item.label === 'Clases de prueba') {
+      return hash === '#trial-classes';
+    }
+
     if (item.label === 'Familias') {
       return hash === '#families';
     }
@@ -265,8 +283,9 @@ export function AdminShell({
             key={item.label}
             href={item.href}
             onClick={onNavigate}
+            aria-current={isActive(item) ? 'page' : undefined}
             className={cn(
-              'mb-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition-colors',
+              'pk-focus mb-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition-colors',
               isActive(item)
                 ? 'bg-white/12 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]'
                 : 'text-white/72 hover:bg-white/7 hover:text-white'
@@ -287,6 +306,12 @@ export function AdminShell({
 
   return (
     <div className="flex min-h-screen bg-pk-bg">
+      <a
+        href="#admin-main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-xl focus:bg-pk-surface focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-pk-ink focus:shadow-lg"
+      >
+        Saltar al contenido
+      </a>
       <aside className="hidden w-64 shrink-0 flex-col border-r border-white/8 bg-[#11253d] text-white md:flex">
         <div className="border-b border-white/10 px-5 py-5">
           <div className="flex items-center gap-3">
@@ -311,14 +336,23 @@ export function AdminShell({
       </aside>
 
       {mobileNavOpen ? (
-        <div className="fixed inset-0 z-40 md:hidden">
+        <div className="fixed inset-0 z-40 md:hidden" role="presentation">
           <button
             type="button"
             className="absolute inset-0 bg-black/45"
             aria-label="Cerrar menú"
-            onClick={() => setMobileNavOpen(false)}
+            onClick={() => {
+              setMobileNavOpen(false);
+              menuButtonRef.current?.focus();
+            }}
           />
-          <aside className="absolute inset-y-0 left-0 flex w-[min(20rem,88vw)] flex-col bg-[#11253d] text-white shadow-xl">
+          <aside
+            className="absolute inset-y-0 left-0 flex w-[min(20rem,88vw)] flex-col bg-[#11253d] text-white shadow-xl"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navegación admin"
+            id="admin-mobile-nav"
+          >
             <div className="flex items-center justify-between border-b border-white/10 px-4 py-4">
               <div className="flex items-center gap-3">
                 <PeskidsLogo size={28} />
@@ -333,14 +367,17 @@ export function AdminShell({
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="text-white hover:bg-white/10"
-                onClick={() => setMobileNavOpen(false)}
+                className="min-h-11 min-w-11 text-white hover:bg-white/10"
+                onClick={() => {
+                  setMobileNavOpen(false);
+                  menuButtonRef.current?.focus();
+                }}
                 aria-label="Cerrar navegación"
               >
                 <X className="h-4 w-4" aria-hidden />
               </Button>
             </div>
-            <nav className="flex-1 overflow-y-auto px-3 py-4">
+            <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Menú móvil">
               {renderNavLinks(() => setMobileNavOpen(false))}
             </nav>
           </aside>
@@ -348,14 +385,18 @@ export function AdminShell({
       ) : null}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex min-h-16 items-center justify-between gap-4 border-b border-pk-border bg-pk-surface px-5 py-3 sm:px-7">
+        <header className="sticky top-0 z-30 flex min-h-16 items-center justify-between gap-4 border-b border-pk-border bg-pk-surface/95 px-5 py-3 backdrop-blur-sm sm:px-7">
           <div className="flex items-center gap-3 md:hidden">
             <Button
+              ref={menuButtonRef}
               type="button"
               variant="secondary"
               size="sm"
+              className="min-h-11 min-w-11"
               onClick={() => setMobileNavOpen(true)}
               aria-label="Abrir menú"
+              aria-expanded={mobileNavOpen}
+              aria-controls="admin-mobile-nav"
             >
               <span className="flex h-4 w-4 flex-col justify-center gap-0.5" aria-hidden>
                 <span className="h-0.5 w-full rounded-full bg-current" />
@@ -396,7 +437,14 @@ export function AdminShell({
               </span>
             ) : null}
             {onRefresh ? (
-              <Button variant="secondary" size="sm" onClick={onRefresh} disabled={refreshing}>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="min-h-11 min-w-11"
+                onClick={onRefresh}
+                disabled={refreshing}
+                aria-label={refreshing ? 'Actualizando panel' : 'Actualizar panel'}
+              >
                 <RefreshCw className={cn('h-4 w-4', refreshing && 'animate-spin')} aria-hidden />
               </Button>
             ) : null}
@@ -406,15 +454,16 @@ export function AdminShell({
               type="button"
               variant="ghost"
               size="sm"
+              className="min-h-11"
               onClick={() => void handleSignOut()}
               disabled={signingOut}
-              title="Cerrar sesión"
+              aria-label="Cerrar sesión"
             >
               <LogOut className="h-4 w-4" aria-hidden />
               <span className="ml-1 hidden sm:inline">Cerrar sesión</span>
             </Button>
-            <Link href="/">
-              <Button variant="ghost" size="sm">
+            <Link href="/" className="pk-focus rounded-xl" aria-label="Ir a la landing">
+              <Button variant="ghost" size="sm" className="min-h-11 min-w-11" tabIndex={-1}>
                 <Home className="h-4 w-4" aria-hidden />
               </Button>
             </Link>
@@ -427,7 +476,9 @@ export function AdminShell({
           </p>
         ) : null}
 
-        <main className="flex-1 overflow-auto p-5 sm:p-6">{children}</main>
+        <main id="admin-main" className="flex-1 overflow-auto p-5 sm:p-6" tabIndex={-1}>
+          {children}
+        </main>
       </div>
     </div>
   );

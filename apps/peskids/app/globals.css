@@ -75,6 +75,11 @@
     font-weight: 600;
     color: #0d4c63;
   }
+
+  .pk-focus:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(45, 183, 176, 0.55);
+  }
 }
 
 @keyframes pulse-soft {
