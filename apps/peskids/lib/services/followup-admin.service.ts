@@ -5,6 +5,7 @@ import { getStudentById } from '@/lib/services/student.service';
 import type { createFollowupSchema, patchFollowupSchema } from '@/lib/validation/followup.schema';
 import { createTwentyTaskForLeadFollowup, syncTwentyTaskStatus } from '@/lib/twenty-followup-sync';
 import { sendNotification } from '@/lib/notifications';
+import { emitFollowupCompleted, emitFollowupCreated } from '@/lib/events';
 import type { z } from 'zod';
 
 export type FollowupRow = Database['public']['Tables']['followups']['Row'];
@@ -107,6 +108,19 @@ export async function createFollowup(
 
   if (error) throw error;
 
+  void emitFollowupCreated({
+    followupId: data.id,
+    contactId: data.contact_id,
+    contactType: data.contact_type,
+    type: data.type,
+    dueDate: data.due_date,
+  }).catch((err: unknown) => {
+    console.warn('[followup-admin] followup.created emit failed', {
+      followup_id: data.id,
+      error: err instanceof Error ? err.message : String(err),
+    });
+  });
+
   // Best-effort: staff work entirely from this CRUD, never opening Twenty.
   // A lead-linked followup also gets a Twenty Task so the pipeline stays
   // complete for reporting. Failure here must never block the local write.
@@ -173,6 +187,19 @@ export async function updateFollowup(
 
   if (input.status !== undefined && existing.contact_type === 'lead' && existing.twenty_task_id) {
     await syncTwentyTaskStatus(followupId, existing.twenty_task_id, input.status);
+  }
+
+  if (input.status === 'completed' && existing.status !== 'completed') {
+    void emitFollowupCompleted({
+      followupId: data.id,
+      contactId: data.contact_id,
+      contactType: data.contact_type,
+    }).catch((err: unknown) => {
+      console.warn('[followup-admin] followup.completed emit failed', {
+        followup_id: data.id,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    });
   }
 
   return withContactName(data);

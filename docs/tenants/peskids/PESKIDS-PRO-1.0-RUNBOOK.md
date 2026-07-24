@@ -18,6 +18,8 @@ tags:
 | Ruta / ancla | Capacidad |
 | --- | --- |
 | `/admin` | Dashboard ejecutivo, KPIs, interesados, digest context |
+| `/admin#team` | Equipo (invites / roles) |
+| `/admin#classes` | Clases y calendario operativo |
 | `/admin#trial-classes` | Agenda de clases de prueba (filtros fecha/profesor/estado) |
 | `/admin/interesados/[id]` | Ficha 360 + matricular + trials + seguimientos |
 | `/admin/pipeline` | Kanban comercial |
@@ -35,6 +37,7 @@ tags:
 | `PESKIDS_LEAD_ESCALATION_48H_ENABLED` | Aging 48h |
 | `PESKIDS_AUTO_CREATE_FOLLOWUP_ENABLED` | Auto-followup (si cableado) |
 | `PESKIDS_TRIAL_REMINDER_ENABLED` | Reminder trials (si cableado) |
+| `PESKIDS_LEAD_CONFIRMATION_ENABLED` | Email confirmación lead (API; default off) |
 | `PESKIDS_CONTACT_SLA_HOURS` | SLA horas (default `48`) |
 | `OPSLY_EVENT_BUS_URL` | Bus de eventos; si falta → warning, no bloquea writes |
 
@@ -48,7 +51,13 @@ Catálogo: `PESKIDS_PRO_EVENT_NAMES` en `apps/peskids/lib/events.ts`. Detalle: [
 
 | Evento | Emisor principal |
 | --- | --- |
-| `lead.created` | Captura pública / `emitLeadCreated` |
+| `lead.created` | Captura pública / API `public-lead-post` (+ `emitLeadCreated` helper) |
+| `lead.status_changed` | `updateLeadForAdmin` |
+| `lead.contacted` | `updateLeadForAdmin` → status `contacted` |
+| `lead.lost` | `updateLeadForAdmin` → status `archived` |
+| `followup.created` | `createFollowup` |
+| `followup.completed` | `updateFollowup` → `completed` |
+| `followup.overdue` | Aging scan (`processOverdueFollowups`) |
 | `feedback.created` / `feedback.alert` | Feedback público |
 | `trial.scheduled` | `createTrialClass` |
 | `trial.completed` | `updateTrialClass` → status `attended` |

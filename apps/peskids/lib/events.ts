@@ -8,9 +8,11 @@ import { OpslyEvent } from './types';
  * emitted for real via `emitLeadCreated`/`emitFeedbackCreated`. The rest are
  * declared here as the target vocabulary so later PRs (PR-PRO-1, 3, 4, 9)
  * emit a name from this list instead of inventing ad-hoc strings. Runtime
- * emitters: `emitLeadCreated` / `emitFeedbackCreated`, lead conversion
- * (`student.enrolled`), and trial-class service (`trial.scheduled` /
- * `trial.completed` / `trial.no_show`).
+ * emitters: `emitLeadCreated` / `emitFeedbackCreated`, lead-admin status
+ * (`lead.status_changed` / `lead.contacted` / `lead.lost`), followups
+ * (`followup.created` / `followup.completed` / `followup.overdue`), lead
+ * conversion (`student.enrolled`), and trial-class service
+ * (`trial.scheduled` / `trial.completed` / `trial.no_show`).
  */
 export const PESKIDS_PRO_EVENT_NAMES = [
   'lead.created',
@@ -104,6 +106,88 @@ export async function emitLeadCreated(
     referral_code: referralCode ?? null,
     referred_by_code: referredByCode ?? null,
     referral_link: referralLink ?? null,
+  });
+}
+
+/**
+ * Emits `lead.status_changed` plus specialty events when the admin pipeline
+ * moves a lead to contacted / archived (lost). Failures never throw — callers
+ * should fire-and-forget so CRM writes stay non-blocking.
+ */
+export async function emitLeadStatusTransition(params: {
+  leadId: string;
+  fromStatus: string | null | undefined;
+  toStatus: string;
+}): Promise<void> {
+  const from = params.fromStatus ?? null;
+  const to = params.toStatus;
+  if (from === to) {
+    return;
+  }
+
+  await emitEvent('lead.status_changed', {
+    lead_id: params.leadId,
+    from_status: from,
+    to_status: to,
+  });
+
+  if (to === 'contacted') {
+    await emitEvent('lead.contacted', {
+      lead_id: params.leadId,
+      from_status: from,
+    });
+  }
+
+  if (to === 'archived') {
+    await emitEvent('lead.lost', {
+      lead_id: params.leadId,
+      from_status: from,
+      reason: 'archived',
+    });
+  }
+}
+
+export async function emitFollowupCreated(params: {
+  followupId: string;
+  contactId: string;
+  contactType: string;
+  type: string;
+  dueDate: string;
+}): Promise<void> {
+  await emitEvent('followup.created', {
+    followup_id: params.followupId,
+    contact_id: params.contactId,
+    contact_type: params.contactType,
+    type: params.type,
+    due_date: params.dueDate,
+  });
+}
+
+export async function emitFollowupCompleted(params: {
+  followupId: string;
+  contactId: string;
+  contactType: string;
+}): Promise<void> {
+  await emitEvent('followup.completed', {
+    followup_id: params.followupId,
+    contact_id: params.contactId,
+    contact_type: params.contactType,
+  });
+}
+
+export async function emitFollowupOverdue(params: {
+  followupId: string;
+  contactId: string;
+  contactType: string;
+  dueDate: string;
+  type: string;
+}): Promise<void> {
+  await emitEvent('followup.overdue', {
+    followup_id: params.followupId,
+    contact_id: params.contactId,
+    contact_type: params.contactType,
+    due_date: params.dueDate,
+    type: params.type,
   });
 }
 

@@ -8,6 +8,7 @@ import {
 import type { DashboardData } from '@/lib/types';
 import type { AdminLeadStatus } from '@/lib/validation/lead-admin.schema';
 import { syncLeadStageToTwenty } from '@/lib/twenty-stage-sync';
+import { emitLeadStatusTransition } from '@/lib/events';
 
 export type DashboardLead = DashboardData['new_leads'][number];
 
@@ -227,24 +228,44 @@ export async function updateLeadForAdmin(
   tenantSlug: string,
   input: UpdateLeadAdminInput
 ): Promise<DashboardLead | null> {
+  const previous =
+    input.status !== undefined ? await getLeadForAdmin(leadId, tenantSlug) : null;
+  const fromStatus = previous?.status ?? null;
+
   const platformLead = await updatePlatformLead(leadId, tenantSlug, input);
-  if (platformLead) {
-    if (input.status !== undefined) {
-      // Never block admin status updates on Twenty outages.
-      void syncLeadStageToTwenty({
-        leadId,
-        tenantSlug,
-        adminStatus: input.status,
-        twentyOpportunityId: platformLead.twenty_opportunity_id,
-      }).catch((error: unknown) => {
-        console.warn('[lead-admin] twenty stage sync failed', {
-          lead_id: leadId,
-          error: error instanceof Error ? error.message : String(error),
-        });
-      });
-    }
-    return platformLead;
+  const updated = platformLead ?? (await updateLegacyLead(leadId, tenantSlug, input));
+
+  if (!updated) {
+    return null;
   }
 
-  return updateLegacyLead(leadId, tenantSlug, input);
+  if (platformLead && input.status !== undefined) {
+    // Never block admin status updates on Twenty outages.
+    void syncLeadStageToTwenty({
+      leadId,
+      tenantSlug,
+      adminStatus: input.status,
+      twentyOpportunityId: platformLead.twenty_opportunity_id,
+    }).catch((error: unknown) => {
+      console.warn('[lead-admin] twenty stage sync failed', {
+        lead_id: leadId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    });
+  }
+
+  if (input.status !== undefined) {
+    void emitLeadStatusTransition({
+      leadId,
+      fromStatus,
+      toStatus: input.status,
+    }).catch((error: unknown) => {
+      console.warn('[lead-admin] status event emit failed', {
+        lead_id: leadId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    });
+  }
+
+  return updated;
 }

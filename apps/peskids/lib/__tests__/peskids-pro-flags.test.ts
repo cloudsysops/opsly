@@ -4,6 +4,7 @@ import {
   isPeskidsAutoCreateFollowupEnabled,
   isPeskidsDailyDigestEnabled,
   isPeskidsHotLeadAlertsEnabled,
+  isPeskidsLeadConfirmationEnabled,
   isPeskidsLeadEscalation48hEnabled,
   isPeskidsLeadReminder24hEnabled,
   isPeskidsOperationalNotificationsEnabled,
@@ -19,6 +20,7 @@ describe('peskids Pro flags (app)', () => {
     delete process.env.PESKIDS_LEAD_ESCALATION_48H_ENABLED;
     delete process.env.PESKIDS_AUTO_CREATE_FOLLOWUP_ENABLED;
     delete process.env.PESKIDS_TRIAL_REMINDER_ENABLED;
+    delete process.env.PESKIDS_LEAD_CONFIRMATION_ENABLED;
     delete process.env.PESKIDS_CONTACT_SLA_HOURS;
   });
 
@@ -30,6 +32,12 @@ describe('peskids Pro flags (app)', () => {
     expect(isPeskidsLeadEscalation48hEnabled()).toBe(false);
     expect(isPeskidsAutoCreateFollowupEnabled()).toBe(false);
     expect(isPeskidsTrialReminderEnabled()).toBe(false);
+    expect(isPeskidsLeadConfirmationEnabled()).toBe(false);
     expect(getPeskidsContactSlaHours()).toBe(48);
+  });
+
+  it('reads lead confirmation when enabled', () => {
+    process.env.PESKIDS_LEAD_CONFIRMATION_ENABLED = 'yes';
+    expect(isPeskidsLeadConfirmationEnabled()).toBe(true);
   });
 });

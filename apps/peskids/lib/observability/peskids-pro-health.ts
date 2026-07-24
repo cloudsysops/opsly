@@ -5,8 +5,10 @@
 
 import {
   getPeskidsContactSlaHours,
+  isPeskidsAutoCreateFollowupEnabled,
   isPeskidsDailyDigestEnabled,
   isPeskidsHotLeadAlertsEnabled,
+  isPeskidsLeadConfirmationEnabled,
   isPeskidsLeadEscalation48hEnabled,
   isPeskidsLeadReminder24hEnabled,
   isPeskidsOperationalNotificationsEnabled,
@@ -23,6 +25,8 @@ export type PeskidsProObservabilitySnapshot = {
     lead_reminder_24h: boolean;
     lead_escalation_48h: boolean;
     trial_reminder: boolean;
+    auto_create_followup: boolean;
+    lead_confirmation: boolean;
   };
 };
 
@@ -46,6 +50,8 @@ export function buildPeskidsProObservability(
       lead_reminder_24h: isPeskidsLeadReminder24hEnabled(processEnv),
       lead_escalation_48h: isPeskidsLeadEscalation48hEnabled(processEnv),
       trial_reminder: isPeskidsTrialReminderEnabled(processEnv),
+      auto_create_followup: isPeskidsAutoCreateFollowupEnabled(processEnv),
+      lead_confirmation: isPeskidsLeadConfirmationEnabled(processEnv),
     },
   };
 }

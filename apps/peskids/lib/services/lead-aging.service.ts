@@ -14,6 +14,7 @@ import {
   isPeskidsTrialReminderEnabled,
 } from '@/lib/peskids-pro-flags';
 import { createFollowup } from '@/lib/services/followup-admin.service';
+import { emitFollowupOverdue } from '@/lib/events';
 
 export type AgingAlertKind =
   | 'lead_reminder_24h'
@@ -254,6 +255,18 @@ async function processOverdueFollowups(
       result.skipped += 1;
       continue;
     }
+    void emitFollowupOverdue({
+      followupId: row.id,
+      contactId: row.contact_id,
+      contactType: row.contact_type,
+      dueDate: row.due_date,
+      type: row.type,
+    }).catch((err: unknown) => {
+      console.warn('[lead-aging] followup.overdue emit failed', {
+        followup_id: row.id,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    });
     const content = `Peskids seguimiento vencido (${row.type}) due ${row.due_date} — ${adminInteresadosUrl()}`;
     const notified = await dispatchOperationalNotify(content);
     if (!notified.ok) {

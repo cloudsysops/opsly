@@ -14,10 +14,11 @@ tags:
 **Peskids Pro 1.0:** target event catalog (`PESKIDS_PRO_EVENT_NAMES`) lives in `apps/peskids/lib/events.ts`; program plan in [`PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md`](./PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md); ops closure in [`PESKIDS-PRO-1.0-RUNBOOK.md`](./PESKIDS-PRO-1.0-RUNBOOK.md).
 
 **Emitters wired in Pro 1.0 (además de `lead.created` / `feedback.*`):**
+- `lead.status_changed` / `lead.contacted` / `lead.lost` — `lib/services/lead-admin.service.ts`
+- `followup.created` / `followup.completed` — `lib/services/followup-admin.service.ts`
+- `followup.overdue` — `lib/services/lead-aging.service.ts`
 - `trial.scheduled` / `trial.completed` / `trial.no_show` — `lib/services/trial-class.service.ts`
 - `student.enrolled` — `lib/services/lead-conversion.service.ts`
-
-Nombres contractuales aún no emitidos de forma uniforme: `lead.contacted`, `lead.status_changed`, `lead.lost`, `followup.*` (followups sincronizan Twenty con columnas `sync_*`; eventos de dominio followup quedan para una iteración posterior).
 
 **Principles:**
 - Every user action → event
