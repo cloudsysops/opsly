@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { validateFamilyRequest } from '@/lib/family-auth';
 import { listFamilyStudents } from '@/lib/services/student.service';
+import { listBadgesForStudents } from '@/lib/services/badge.service';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,9 +15,10 @@ export async function GET(req: NextRequest) {
 
   try {
     const students = await listFamilyStudents(auth.user);
-    return successJson(requestId, { ok: true, students });
+    const badges = await listBadgesForStudents(students.map((s) => s.id));
+    return successJson(requestId, { ok: true, badges });
   } catch (err) {
-    console.error('[GET /api/portal/students]', err, { request_id: requestId });
-    return errorJson(requestId, 'Failed to list students', 500);
+    console.error('[GET /api/portal/badges]', err, { request_id: requestId });
+    return errorJson(requestId, 'Failed to list badges', 500);
   }
 }

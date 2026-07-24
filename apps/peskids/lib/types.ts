@@ -216,6 +216,38 @@ export type Database = {
           },
         ];
       };
+      student_badges: {
+        Row: {
+          id: string;
+          tenant_slug: string;
+          student_id: string;
+          label: string;
+          class_id: string | null;
+          awarded_by: string | null;
+          awarded_by_role: 'owner' | 'admin' | 'support' | 'teacher' | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_slug?: string;
+          student_id: string;
+          label: string;
+          class_id?: string | null;
+          awarded_by?: string | null;
+          awarded_by_role?: 'owner' | 'admin' | 'support' | 'teacher' | null;
+          created_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['student_badges']['Insert']>;
+        Relationships: [
+          {
+            foreignKeyName: 'student_badges_class_id_fkey';
+            columns: ['class_id'];
+            isOneToOne: false;
+            referencedRelation: 'classes';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       payments: {
         Row: {
           id: string;

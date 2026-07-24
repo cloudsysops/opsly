@@ -47,6 +47,12 @@ function formatClassStart(startsAt: string): string {
   return `${day} · ${time}`
 }
 
+interface FamilyBadge {
+  id: string
+  label: string
+  created_at: string
+}
+
 interface FamilyFeedbackNote {
   id: string
   child_name: string
@@ -71,6 +77,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
   const [familyUserId, setFamilyUserId] = useState<string | null>(null)
   const [familyNotes, setFamilyNotes] = useState<FamilyFeedbackNote[]>([])
   const [nextClass, setNextClass] = useState<FamilyEnrollment | null>(null)
+  const [badges, setBadges] = useState<FamilyBadge[]>([])
 
   const fetchNextClass = useCallback(async (): Promise<void> => {
     try {
@@ -120,6 +127,18 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
     }
   }, [])
 
+  const fetchBadges = useCallback(async (): Promise<void> => {
+    try {
+      const response = await fetch('/api/portal/badges', { credentials: 'include' })
+      if (!response.ok) throw new Error('Failed to fetch badges')
+      const data = (await response.json()) as { badges?: FamilyBadge[] }
+      setBadges(data.badges || [])
+    } catch (err) {
+      console.error(err)
+      setBadges([])
+    }
+  }, [])
+
   useEffect(() => {
     const supabase = createClient()
     void (async () => {
@@ -148,6 +167,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
         void fetchSubmissions()
         void fetchFamilyNotes()
         void fetchNextClass()
+        void fetchBadges()
       } catch (err) {
         console.error(err)
         setError('No se pudo validar la sesión de familia.')
@@ -155,7 +175,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
         setLoading(false)
       }
     })()
-  }, [fetchFamilyNotes, fetchNextClass, fetchSubmissions, router])
+  }, [fetchBadges, fetchFamilyNotes, fetchNextClass, fetchSubmissions, router])
 
   const handleViewSubmission = (submissionId: string): void => {
     router.push(`/familias/submissions/${submissionId}`)
@@ -294,7 +314,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
           mission="Acompañar al niño con constancia, confianza y claridad para que cada clase sume."
           vision="Un peque autónomo en el agua y una familia que entiende el camino sin fricción."
           objectives={['Asistencia', 'Confianza', 'Técnica']}
-          achievements={['Primera clase completada', 'Burbujas', 'Flotación dorsal']}
+          achievements={badges.map((badge) => badge.label)}
           streakLabel="Racha familiar"
           streakValue="8"
           progressLabel="Progreso hacia la siguiente etapa"
