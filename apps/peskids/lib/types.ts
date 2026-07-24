@@ -597,6 +597,36 @@ export type Database = {
         Update: Partial<Database['public']['Tables']['followups']['Insert']>;
         Relationships: [];
       };
+      staff_improvement_messages: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          role: 'staff' | 'assistant';
+          author_email: string | null;
+          body: string;
+          category: 'bug' | 'feature' | 'improvement' | 'security' | 'billing' | 'question' | 'other' | null;
+          priority: 'alta' | 'media' | 'baja' | null;
+          ai_summary: string | null;
+          twenty_task_id: string | null;
+          status: 'new' | 'analyzed' | 'task_created' | 'dismissed';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          tenant_id?: string;
+          role: 'staff' | 'assistant';
+          author_email?: string | null;
+          body: string;
+          category?: 'bug' | 'feature' | 'improvement' | 'security' | 'billing' | 'question' | 'other' | null;
+          priority?: 'alta' | 'media' | 'baja' | null;
+          ai_summary?: string | null;
+          twenty_task_id?: string | null;
+          status?: 'new' | 'analyzed' | 'task_created' | 'dismissed';
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['staff_improvement_messages']['Insert']>;
+        Relationships: [];
+      };
       messages: {
         Row: {
           id: string;
