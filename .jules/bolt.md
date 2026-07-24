@@ -37,3 +37,7 @@
 ## 2026-06-26 - [Caching Admin Overview DB & Network Probes]
 **Learning:** The admin overview dashboardaggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
 **Action:** Always cache aggregated metrics and external probes in dashboard-facing API routes, and modularize parsing logic to maintain low cyclomatic complexity.
+
+## 2026-07-24 - [Caching Web Dashboard Summary JSON]
+**Learning:** Dashboard summary calculations requiring multiple parallel queries to different Supabase tables (e.g., active tenants, plan distribution, conversion rates, and MRR) are costly. Applying a short-term Redis cache (60s) via `getCache` and asynchronous `setCache` non-blocking updates reduces database overhead and prevents synchronous fetch delays. In Vitest, mocking complex Postgrest builder chains using a nested, immutable, type-safe MockChain structure avoids mutable query state leaks under parallel `Promise.all` executions.
+**Action:** Always cache aggregated summary metrics shown on portal dashboards using Redis and provide type-safe, query-state-aware builder mocks in unit tests.

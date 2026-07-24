@@ -1,4 +1,6 @@
 import { getServiceClient } from './supabase';
+import { getCache, setCache } from './redis-cache';
+import { CACHE_TTL } from './constants';
 
 /** Alineado a `apps/web/lib/stripe/plans` price_usd (MRR orientativo). */
 const PLAN_MRR_USD: Record<string, number> = {
@@ -166,9 +168,15 @@ function buildDashboardMetrics(results: unknown[]): WebDashboardMetricsJson {
 }
 
 export async function getWebDashboardMetricsJson(): Promise<WebDashboardMetricsJson> {
+  const cached = await getCache<WebDashboardMetricsJson>('metrics:web_dashboard_json');
+  if (cached) {
+    return cached;
+  }
   const client = getServiceClient();
   const since = daysAgoIso(30);
   const results = await fetchMetricsData(client, since);
   validateQueryResults(results as Array<{ error?: unknown }>);
-  return buildDashboardMetrics(results);
+  const body = buildDashboardMetrics(results);
+  void setCache('metrics:web_dashboard_json', body, CACHE_TTL.SHORT);
+  return body;
 }
