@@ -151,17 +151,25 @@ export function FamilyClassesClient(): React.ReactElement {
           </select>
         </div>
       ) : (
-        <p className="text-sm text-amber-800">
-          No encontramos estudiantes vinculados a tu cuenta. Contacta a Peskids para activar el
-          acceso.
-        </p>
+        <Card>
+          <CardContent>
+            <p className="text-sm text-amber-800">
+              No encontramos estudiantes vinculados a tu cuenta. Contacta a Peskids para activar el
+              acceso.
+            </p>
+          </CardContent>
+        </Card>
       )}
 
       {error ? <p className="text-sm text-red-700">{error}</p> : null}
       {message ? <p className="text-sm text-green-800">{message}</p> : null}
 
       {classes.length === 0 ? (
-        <p className="text-sm text-pk-sub">No hay clases abiertas por ahora.</p>
+        <Card>
+          <CardContent>
+            <p className="text-sm text-pk-sub">No hay clases abiertas por ahora.</p>
+          </CardContent>
+        </Card>
       ) : (
         <ul className="space-y-3">
           {classes.map((item) => (
