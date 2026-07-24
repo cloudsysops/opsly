@@ -3,6 +3,7 @@ import {
   getPeskidsContactSlaHours,
   isPeskidsAutoCreateFollowupEnabled,
   isPeskidsDailyDigestEnabled,
+  isPeskidsFamilyAccessEmailEnabled,
   isPeskidsHotLeadAlertsEnabled,
   isPeskidsLeadConfirmationEnabled,
   isPeskidsLeadEscalation48hEnabled,
@@ -21,6 +22,7 @@ describe('peskids Pro flags (app)', () => {
     delete process.env.PESKIDS_AUTO_CREATE_FOLLOWUP_ENABLED;
     delete process.env.PESKIDS_TRIAL_REMINDER_ENABLED;
     delete process.env.PESKIDS_LEAD_CONFIRMATION_ENABLED;
+    delete process.env.PESKIDS_FAMILY_ACCESS_EMAIL_ENABLED;
     delete process.env.PESKIDS_CONTACT_SLA_HOURS;
   });
 
@@ -33,6 +35,7 @@ describe('peskids Pro flags (app)', () => {
     expect(isPeskidsAutoCreateFollowupEnabled()).toBe(false);
     expect(isPeskidsTrialReminderEnabled()).toBe(false);
     expect(isPeskidsLeadConfirmationEnabled()).toBe(false);
+    expect(isPeskidsFamilyAccessEmailEnabled()).toBe(false);
     expect(getPeskidsContactSlaHours()).toBe(48);
   });
 

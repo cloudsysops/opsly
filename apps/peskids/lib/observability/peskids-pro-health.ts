@@ -7,6 +7,7 @@ import {
   getPeskidsContactSlaHours,
   isPeskidsAutoCreateFollowupEnabled,
   isPeskidsDailyDigestEnabled,
+  isPeskidsFamilyAccessEmailEnabled,
   isPeskidsHotLeadAlertsEnabled,
   isPeskidsLeadConfirmationEnabled,
   isPeskidsLeadEscalation48hEnabled,
@@ -27,6 +28,7 @@ export type PeskidsProObservabilitySnapshot = {
     trial_reminder: boolean;
     auto_create_followup: boolean;
     lead_confirmation: boolean;
+    family_access_email: boolean;
   };
 };
 
@@ -52,6 +54,7 @@ export function buildPeskidsProObservability(
       trial_reminder: isPeskidsTrialReminderEnabled(processEnv),
       auto_create_followup: isPeskidsAutoCreateFollowupEnabled(processEnv),
       lead_confirmation: isPeskidsLeadConfirmationEnabled(processEnv),
+      family_access_email: isPeskidsFamilyAccessEmailEnabled(processEnv),
     },
   };
 }
