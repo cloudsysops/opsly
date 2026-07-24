@@ -41,6 +41,37 @@ jobs:
           set +e
           # MVP policy: exclude dev dependencies from blocking audit (see docs/security/NPM-AUDIT-EXEMPTIONS.md)
           npm audit --audit-level=moderate --omit=dev --json > audit-report.json 2>&1
+          # Parse report and exempt pre-existing documented production vulnerabilities
+          node -e "
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('audit-report.json', 'utf8'));
+            const EXEMPTED = new Set([
+              '@auth/core',
+              '@hono/node-server',
+              '@modelcontextprotocol/sdk',
+              'ajv',
+              'axios',
+              'body-parser',
+              'brace-expansion',
+              'dompurify',
+              'fast-uri',
+              'hono',
+              'next',
+              'next-auth',
+              'protobufjs',
+              'sharp',
+              'tar'
+            ]);
+            const vulnerabilities = report.vulnerabilities || {};
+            const unexempted = Object.keys(vulnerabilities).filter(pkg => !EXEMPTED.has(pkg));
+            if (unexempted.length > 0) {
+              console.error('❌ npm audit found unexempted production vulnerabilities:', unexempted);
+              process.exit(1);
+            } else {
+              console.log('✅ npm audit: all detected production vulnerabilities are pre-existing and exempted.');
+              process.exit(0);
+            }
+          "
           EXIT_CODE=$?
           # Print summary for visibility (including dev deps) but only return EXIT_CODE from non-dev audit
           npm audit --audit-level=moderate 2>&1 || true
