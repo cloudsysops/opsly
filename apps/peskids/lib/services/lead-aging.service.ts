@@ -14,6 +14,7 @@ import {
   isPeskidsTrialReminderEnabled,
 } from '@/lib/peskids-pro-flags';
 import { createFollowup } from '@/lib/services/followup-admin.service';
+import { processAttendanceRisk } from '@/lib/services/attendance-risk.service';
 import { emitFollowupOverdue } from '@/lib/events';
 
 export type AgingAlertKind =
@@ -28,6 +29,7 @@ export type AgingScanResult = {
   escalation_48h: number;
   overdue_followups: number;
   trial_reminders: number;
+  attendance_risk: number;
   skipped: number;
   failed: number;
   auto_followups_created: number;
@@ -345,6 +347,7 @@ export async function runLeadAgingScan(now: Date = new Date()): Promise<AgingSca
     escalation_48h: 0,
     overdue_followups: 0,
     trial_reminders: 0,
+    attendance_risk: 0,
     skipped: 0,
     failed: 0,
     auto_followups_created: 0,
@@ -376,6 +379,12 @@ export async function runLeadAgingScan(now: Date = new Date()): Promise<AgingSca
 
   await processOverdueFollowups(now, windowKey, result);
   await processTrialReminders(now, windowKey, result);
+
+  const attendanceRiskResult = await processAttendanceRisk(now, windowKey);
+  result.attendance_risk = attendanceRiskResult.at_risk;
+  result.auto_followups_created += attendanceRiskResult.auto_followups_created;
+  result.skipped += attendanceRiskResult.skipped;
+  result.failed += attendanceRiskResult.failed;
 
   console.info(
     JSON.stringify({
