@@ -1,12 +1,29 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { X } from 'lucide-react';
 
 const STORAGE_KEY = 'pk-cookie-consent';
 
+/**
+ * Routes that render AdminShell's fixed w-64 desktop sidebar (md:+). The
+ * banner's default bottom-left position sits on top of that sidebar's last
+ * nav items on these routes, so it shifts right of it here instead. The
+ * plain /admin dashboard (StaffDashboard) has no sidebar and keeps the
+ * default position.
+ */
+const ADMIN_SHELL_PATH_PREFIXES = [
+  '/admin/pipeline',
+  '/admin/settings',
+  '/admin/interesados',
+  '/admin/messages',
+];
+
 export function CookieBanner(): React.ReactElement | null {
+  const pathname = usePathname();
+  const hasAdminSidebar = ADMIN_SHELL_PATH_PREFIXES.some((prefix) => pathname?.startsWith(prefix));
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -39,12 +56,16 @@ export function CookieBanner(): React.ReactElement | null {
 
   if (!visible) return null;
 
+  const positionClassName = hasAdminSidebar
+    ? 'fixed bottom-3 left-3 right-3 z-50 mx-auto max-w-[calc(100vw-1.5rem)] rounded-xl border border-pk-border/80 bg-white/96 p-2.5 shadow-lg backdrop-blur sm:bottom-5 sm:left-5 sm:right-auto sm:max-w-lg sm:rounded-2xl sm:p-3 md:left-[17rem]'
+    : 'fixed bottom-3 left-3 right-3 z-50 mx-auto max-w-[calc(100vw-1.5rem)] rounded-xl border border-pk-border/80 bg-white/96 p-2.5 shadow-lg backdrop-blur sm:bottom-5 sm:left-5 sm:right-auto sm:max-w-lg sm:rounded-2xl sm:p-3';
+
   return (
     <div
       role="dialog"
       aria-label="Aviso de cookies"
       aria-live="polite"
-      className="fixed bottom-3 left-3 right-3 z-50 mx-auto max-w-[calc(100vw-1.5rem)] rounded-xl border border-pk-border/80 bg-white/96 p-2.5 shadow-lg backdrop-blur sm:bottom-5 sm:left-5 sm:right-auto sm:max-w-lg sm:rounded-2xl sm:p-3"
+      className={positionClassName}
     >
       <div className="flex items-start gap-2.5 sm:gap-3">
         <div className="flex-1">
