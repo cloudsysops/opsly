@@ -1,16 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import { POST } from '../route';
-import * as rateLimiter from '@/lib/rate-limiter';
-import * as audit from '@/lib/audit';
-import * as supabase from '@/lib/supabase';
+import * as rateLimiter from '../../../../../lib/rate-limiter';
+import * as audit from '../../../../../lib/audit';
+import * as supabase from '../../../../../lib/supabase';
 
-vi.mock('@/lib/rate-limiter', () => ({
+vi.mock('../../../../../lib/rate-limiter', () => ({
   checkRateLimit: vi.fn(),
 }));
 
-vi.mock('@/lib/audit', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/audit')>();
+vi.mock('../../../../../lib/audit', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../../../../lib/audit')>();
   return {
     ...actual,
     logAuditEvent: vi.fn(),
@@ -18,7 +18,7 @@ vi.mock('@/lib/audit', async (importOriginal) => {
   };
 });
 
-vi.mock('@/lib/supabase', () => ({
+vi.mock('../../../../../lib/supabase', () => ({
   getServiceClient: vi.fn(),
 }));
 
