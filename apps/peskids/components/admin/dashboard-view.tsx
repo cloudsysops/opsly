@@ -25,6 +25,8 @@ import { ExecutiveDashboardPanel } from '@/components/admin/executive-dashboard-
 import { RecentLeadsPanel } from '@/components/admin/recent-leads-panel'
 import { StatCard } from '@/components/admin/stat-card'
 import { StudentsPanel } from '@/components/admin/students-panel'
+import { TeamPanel } from '@/components/admin/team-panel'
+import { ClassesPanel } from '@/components/admin/classes-panel'
 import { TrialClassesPanel } from '@/components/admin/trial-classes-panel'
 import { SalesAnalyticsPanel } from '@/components/admin/sales-analytics-panel'
 import { WacrmLeadInboxActions } from '@/components/admin/wacrm-lead-inbox-actions'
@@ -659,6 +661,8 @@ export function DashboardView({
 
       <FamiliesStudentsExpectation activeStudentsCount={data.active_students_count} />
       <StudentsPanel />
+      <TeamPanel />
+      <ClassesPanel />
       <TrialClassesPanel />
       <AcademyOpsMap data={data} />
 

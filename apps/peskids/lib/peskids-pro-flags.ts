@@ -62,6 +62,13 @@ export function isPeskidsTrialReminderEnabled(
   return parseBooleanFlag(env.PESKIDS_TRIAL_REMINDER_ENABLED, false);
 }
 
+/** Mirror of API `PESKIDS_LEAD_CONFIRMATION_ENABLED` for health/runbook parity. */
+export function isPeskidsLeadConfirmationEnabled(
+  env: NodeJS.ProcessEnv = process.env
+): boolean {
+  return parseBooleanFlag(env.PESKIDS_LEAD_CONFIRMATION_ENABLED, false);
+}
+
 export function getPeskidsContactSlaHours(
   env: NodeJS.ProcessEnv = process.env
 ): number {

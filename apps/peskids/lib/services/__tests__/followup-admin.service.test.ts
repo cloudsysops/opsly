@@ -23,6 +23,11 @@ vi.mock('@/lib/twenty-followup-sync', () => ({
   syncTwentyTaskStatus: syncTwentyTaskStatusMock,
 }));
 
+vi.mock('@/lib/events', () => ({
+  emitFollowupCreated: vi.fn().mockResolvedValue(undefined),
+  emitFollowupCompleted: vi.fn().mockResolvedValue(undefined),
+}));
+
 interface FollowupFixture {
   id: string;
   tenant_id: string;
