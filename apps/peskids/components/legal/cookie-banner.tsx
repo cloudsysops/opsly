@@ -19,6 +19,7 @@ const ADMIN_SHELL_PATH_PREFIXES = [
   '/admin/settings',
   '/admin/interesados',
   '/admin/messages',
+  '/admin/chat',
 ];
 
 export function CookieBanner(): React.ReactElement | null {
