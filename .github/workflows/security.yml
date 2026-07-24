@@ -56,8 +56,10 @@ jobs:
               'dompurify',
               'fast-uri',
               'hono',
+              'mermaid',
               'next',
               'next-auth',
+              'postcss',
               'protobufjs',
               'sharp',
               'tar'
