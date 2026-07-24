@@ -9,6 +9,7 @@ import {
   isPeskidsLeadEscalation48hEnabled,
   isPeskidsLeadReminder24hEnabled,
   isPeskidsOperationalNotificationsEnabled,
+  isPeskidsRenewalReminderEnabled,
   isPeskidsTrialReminderEnabled,
 } from '@/lib/peskids-pro-flags';
 
@@ -24,6 +25,7 @@ describe('peskids Pro flags (app)', () => {
     delete process.env.PESKIDS_LEAD_CONFIRMATION_ENABLED;
     delete process.env.PESKIDS_FAMILY_ACCESS_EMAIL_ENABLED;
     delete process.env.PESKIDS_CONTACT_SLA_HOURS;
+    delete process.env.PESKIDS_RENEWAL_REMINDER_ENABLED;
   });
 
   it('defaults to false', () => {
@@ -36,11 +38,17 @@ describe('peskids Pro flags (app)', () => {
     expect(isPeskidsTrialReminderEnabled()).toBe(false);
     expect(isPeskidsLeadConfirmationEnabled()).toBe(false);
     expect(isPeskidsFamilyAccessEmailEnabled()).toBe(false);
+    expect(isPeskidsRenewalReminderEnabled()).toBe(false);
     expect(getPeskidsContactSlaHours()).toBe(48);
   });
 
   it('reads lead confirmation when enabled', () => {
     process.env.PESKIDS_LEAD_CONFIRMATION_ENABLED = 'yes';
     expect(isPeskidsLeadConfirmationEnabled()).toBe(true);
+  });
+
+  it('reads renewal reminder when enabled', () => {
+    process.env.PESKIDS_RENEWAL_REMINDER_ENABLED = 'true';
+    expect(isPeskidsRenewalReminderEnabled()).toBe(true);
   });
 });

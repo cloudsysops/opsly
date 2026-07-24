@@ -19,6 +19,7 @@ tags:
 - `followup.overdue` — `lib/services/lead-aging.service.ts`
 - `trial.scheduled` / `trial.completed` / `trial.no_show` — `lib/services/trial-class.service.ts`
 - `student.enrolled` — `lib/services/lead-conversion.service.ts`
+- `lead.renewal_due` — `lib/agents/pipeline-manager.service.ts` (gated by `PESKIDS_RENEWAL_REMINDER_ENABLED`, default off; fires when a lead advances to the Renewal pipeline stage)
 
 **Principles:**
 - Every user action → event

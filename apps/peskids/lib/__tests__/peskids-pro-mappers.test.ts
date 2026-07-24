@@ -96,6 +96,7 @@ describe('peskids-pro mappers (PR-PRO-0 contracts)', () => {
   it('exposes the Pro domain event catalog without wiring new emitters', () => {
     expect(PESKIDS_PRO_EVENT_NAMES).toContain('lead.created');
     expect(PESKIDS_PRO_EVENT_NAMES).toContain('student.enrolled');
-    expect(PESKIDS_PRO_EVENT_NAMES).toHaveLength(11);
+    expect(PESKIDS_PRO_EVENT_NAMES).toContain('lead.renewal_due');
+    expect(PESKIDS_PRO_EVENT_NAMES).toHaveLength(12);
   });
 });

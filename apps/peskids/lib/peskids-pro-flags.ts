@@ -87,3 +87,13 @@ export function getPeskidsContactSlaHours(
   const parsed = Number.parseInt(raw, 10);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : 48;
 }
+
+/**
+ * Auto-followup (+ Twenty Task, via createFollowup for contact_type: 'lead')
+ * when the commercial pipeline advances a lead to the Renewal stage.
+ */
+export function isPeskidsRenewalReminderEnabled(
+  env: NodeJS.ProcessEnv = process.env
+): boolean {
+  return parseBooleanFlag(env.PESKIDS_RENEWAL_REMINDER_ENABLED, false);
+}

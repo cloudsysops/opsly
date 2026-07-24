@@ -13,6 +13,7 @@ import {
   isPeskidsLeadEscalation48hEnabled,
   isPeskidsLeadReminder24hEnabled,
   isPeskidsOperationalNotificationsEnabled,
+  isPeskidsRenewalReminderEnabled,
   isPeskidsTrialReminderEnabled,
 } from '@/lib/peskids-pro-flags';
 
@@ -29,6 +30,7 @@ export type PeskidsProObservabilitySnapshot = {
     auto_create_followup: boolean;
     lead_confirmation: boolean;
     family_access_email: boolean;
+    renewal_reminder: boolean;
   };
 };
 
@@ -55,6 +57,7 @@ export function buildPeskidsProObservability(
       auto_create_followup: isPeskidsAutoCreateFollowupEnabled(processEnv),
       lead_confirmation: isPeskidsLeadConfirmationEnabled(processEnv),
       family_access_email: isPeskidsFamilyAccessEmailEnabled(processEnv),
+      renewal_reminder: isPeskidsRenewalReminderEnabled(processEnv),
     },
   };
 }
