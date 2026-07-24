@@ -1,5 +1,6 @@
 import { supabaseServer } from '@/lib/supabase'
 import { PESKIDS_APP_ORIGIN } from '@/lib/app-url'
+import { isPeskidsFamilyAccessEmailEnabled } from '@/lib/peskids-pro-flags'
 
 const TENANT_SLUG = 'peskids'
 const DEFAULT_FROM_EMAIL = 'Peskids <no-reply@peskids.op-sly.com>'
@@ -232,6 +233,17 @@ export async function requestFamilyAccessInvite(params: {
 
   if (!eligibility.eligible) {
     return { accepted: true, eligibility }
+  }
+
+  // Soft-launch gate: staff can enroll students without emailing families.
+  // Flip PESKIDS_FAMILY_ACCESS_EMAIL_ENABLED=true only after Peskids team authorizes.
+  if (!isPeskidsFamilyAccessEmailEnabled()) {
+    return {
+      accepted: true,
+      eligibility,
+      emailDeliverySkipped: true,
+      emailDeliveryWarning: 'PESKIDS_FAMILY_ACCESS_EMAIL_ENABLED=false',
+    }
   }
 
   const authLink = await createFamilyAccessLink({

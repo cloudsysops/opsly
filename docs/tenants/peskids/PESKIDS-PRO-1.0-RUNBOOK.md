@@ -38,12 +38,21 @@ tags:
 | `PESKIDS_AUTO_CREATE_FOLLOWUP_ENABLED` | Auto-followup (si cableado) |
 | `PESKIDS_TRIAL_REMINDER_ENABLED` | Reminder trials (si cableado) |
 | `PESKIDS_LEAD_CONFIRMATION_ENABLED` | Email confirmación lead (API; default off) |
+| `PESKIDS_FAMILY_ACCESS_EMAIL_ENABLED` | Email magic-link portal familias (default **off**) |
 | `PESKIDS_CONTACT_SLA_HOURS` | SLA horas (default `48`) |
 | `OPSLY_EVENT_BUS_URL` | Bus de eventos; si falta → warning, no bloquea writes |
 
 Helpers: `apps/peskids/lib/peskids-pro-flags.ts`.
 
 **Activación:** solo con aprobación humana. Flags off = comportamiento fail-closed.
+
+### Soft-launch (equipo Peskids primero)
+
+1. **Fase interna:** staff usa `/admin` para captar leads nuevos, matricular y cargar alumnos ya activos. **No** se envían correos a familias (`PESKIDS_FAMILY_ACCESS_EMAIL_ENABLED=false` + `PESKIDS_LEAD_CONFIRMATION_ENABLED=false`).
+2. **Prueba:** validar pipeline, ficha 360, trials, equipo/clases con datos reales.
+3. **Go-live familias:** cuando el equipo Peskids autorice explícitamente → activar `PESKIDS_FAMILY_ACCESS_EMAIL_ENABLED=true` en Doppler y redeploy/restart si hace falta.
+
+Invitaciones de **staff** (`/admin#team`) son independientes y siguen disponibles para el equipo operativo.
 
 ## 3. Eventos de dominio emitidos
 

@@ -69,6 +69,16 @@ export function isPeskidsLeadConfirmationEnabled(
   return parseBooleanFlag(env.PESKIDS_LEAD_CONFIRMATION_ENABLED, false);
 }
 
+/**
+ * Family portal magic-link emails (Resend). Default OFF so the Peskids team can
+ * load students/leads in admin without inviting families until they authorize go-live.
+ */
+export function isPeskidsFamilyAccessEmailEnabled(
+  env: NodeJS.ProcessEnv = process.env
+): boolean {
+  return parseBooleanFlag(env.PESKIDS_FAMILY_ACCESS_EMAIL_ENABLED, false);
+}
+
 export function getPeskidsContactSlaHours(
   env: NodeJS.ProcessEnv = process.env
 ): number {

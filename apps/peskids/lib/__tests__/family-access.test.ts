@@ -36,6 +36,7 @@ describe('family access', () => {
     process.env.RESEND_API_KEY = 'resend-key'
     process.env.RESEND_FROM_EMAIL = 'Peskids <no-reply@peskids.op-sly.com>'
     process.env.EMAIL_DELIVERY_MODE = 'skip'
+    process.env.PESKIDS_FAMILY_ACCESS_EMAIL_ENABLED = 'true'
   })
 
   it('issues a magic-link invite when the email belongs to a student family', async () => {
@@ -133,6 +134,47 @@ describe('family access', () => {
 
     expect(result.accepted).toBe(true)
     expect(result.eligibility.eligible).toBe(false)
+    expect(generateLinkMock).not.toHaveBeenCalled()
+  })
+
+  it('does not create magic links or email when family access email flag is off', async () => {
+    delete process.env.PESKIDS_FAMILY_ACCESS_EMAIL_ENABLED
+    fromMock.mockImplementation((table: string) => {
+      if (table === 'students') {
+        return {
+          select: () => ({
+            eq: () => ({
+              ilike: () => ({
+                limit: async () => ({ data: [{ id: 'student-1' }], error: null }),
+              }),
+            }),
+          }),
+        }
+      }
+
+      return {
+        select: () => ({
+          eq: () => ({
+            eq: () => ({
+              eq: () => ({
+                limit: async () => ({ data: [], error: null }),
+              }),
+            }),
+          }),
+        }),
+      }
+    })
+
+    const { requestFamilyAccessInvite } = await import('../family-access')
+    const result = await requestFamilyAccessInvite({
+      email: 'family@example.com',
+      name: 'Familia Sierra',
+    })
+
+    expect(result.accepted).toBe(true)
+    expect(result.eligibility.eligible).toBe(true)
+    expect(result.emailDeliverySkipped).toBe(true)
+    expect(result.emailDeliveryWarning).toContain('PESKIDS_FAMILY_ACCESS_EMAIL_ENABLED=false')
     expect(generateLinkMock).not.toHaveBeenCalled()
   })
 })
