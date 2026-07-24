@@ -2,10 +2,7 @@ import { NextRequest } from 'next/server';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { validateFamilyRequest } from '@/lib/family-auth';
 import { createEnrollmentSchema } from '@/lib/validation/class.schema';
-import {
-  ClassCapacityError,
-  EnrollmentNotAllowedError,
-} from '@/lib/class-types';
+import { EnrollmentNotAllowedError } from '@/lib/class-types';
 import {
   createEnrollment,
   listFamilyEnrollments,
@@ -69,6 +66,7 @@ export async function POST(req: NextRequest) {
           ok: true,
           enrollment_id: result.enrollment.id,
           payment_required: false,
+          waitlisted: result.waitlisted,
         },
         201
       );
@@ -105,7 +103,7 @@ export async function POST(req: NextRequest) {
       );
     }
   } catch (err) {
-    if (err instanceof ClassCapacityError || err instanceof EnrollmentNotAllowedError) {
+    if (err instanceof EnrollmentNotAllowedError) {
       return errorJson(requestId, err.message, 409);
     }
     console.error('[POST /api/portal/enrollments]', err, { request_id: requestId });

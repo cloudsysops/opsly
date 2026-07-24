@@ -1,6 +1,12 @@
 export type SwimLocation = 'llanogrande' | 'domicilio';
 export type ClassStatus = 'scheduled' | 'cancelled' | 'completed';
-export type EnrollmentStatus = 'reserved' | 'confirmed' | 'cancelled' | 'no_show' | 'attended';
+export type EnrollmentStatus =
+  | 'reserved'
+  | 'confirmed'
+  | 'cancelled'
+  | 'no_show'
+  | 'attended'
+  | 'waitlisted';
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 export type AttendanceStatus = 'present' | 'absent' | 'excused';
 

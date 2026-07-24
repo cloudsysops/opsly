@@ -19,12 +19,13 @@ function peskidsClient() {
   return supabaseServer().schema('peskids');
 }
 
+/** Counts seats actually taken — excludes cancelled and waitlisted (not holding a seat). */
 async function countActiveEnrollments(classId: string): Promise<number> {
   const { count, error } = await peskidsClient()
     .from('class_enrollments')
     .select('id', { count: 'exact', head: true })
     .eq('class_id', classId)
-    .not('status', 'eq', 'cancelled');
+    .in('status', ['reserved', 'confirmed', 'no_show', 'attended']);
 
   if (error) throw error;
   return count ?? 0;

@@ -181,7 +181,7 @@ export type Database = {
           class_id: string;
           student_id: string;
           family_user_id: string;
-          status: 'reserved' | 'confirmed' | 'cancelled' | 'no_show' | 'attended';
+          status: 'reserved' | 'confirmed' | 'cancelled' | 'no_show' | 'attended' | 'waitlisted';
           payment_status: 'pending' | 'paid' | 'failed' | 'refunded';
           attendance: 'present' | 'absent' | 'excused' | null;
           joined_at: string;
@@ -196,7 +196,7 @@ export type Database = {
           class_id: string;
           student_id: string;
           family_user_id: string;
-          status?: 'reserved' | 'confirmed' | 'cancelled' | 'no_show' | 'attended';
+          status?: 'reserved' | 'confirmed' | 'cancelled' | 'no_show' | 'attended' | 'waitlisted';
           payment_status?: 'pending' | 'paid' | 'failed' | 'refunded';
           attendance?: 'present' | 'absent' | 'excused' | null;
           joined_at?: string;

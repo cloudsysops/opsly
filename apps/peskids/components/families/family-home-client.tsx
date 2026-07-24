@@ -193,7 +193,12 @@ export function FamilyHomeClient(): React.ReactElement {
                   </p>
                 </div>
                 <div className="text-right text-sm text-pk-sub">
-                  <p>Estado: {item.enrollment_status ?? item.status}</p>
+                  <p>
+                    Estado:{' '}
+                    {(item.enrollment_status ?? item.status) === 'waitlisted'
+                      ? 'En lista de espera'
+                      : (item.enrollment_status ?? item.status)}
+                  </p>
                   <p>Pago: {item.payment_status ?? '—'}</p>
                 </div>
               </div>
