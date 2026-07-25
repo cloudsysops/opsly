@@ -1,7 +1,4 @@
-import {
-  listStoreProducts,
-  createProduct,
-} from '@/lib/services/store.service';
+import { listStoreProducts, createProduct } from '@/lib/services/store.service';
 import { adminAuth } from '@intcloudsysops/security';
 import { z } from 'zod';
 
@@ -17,7 +14,10 @@ const createProductSchema = z.object({
 
 const querySchema = z.object({
   category: z.string().optional(),
-  active: z.string().optional().transform((v) => (v === 'true' ? true : v === 'false' ? false : undefined)),
+  active: z
+    .string()
+    .optional()
+    .transform((v) => (v === 'true' ? true : v === 'false' ? false : undefined)),
 });
 
 export async function GET(req: Request) {

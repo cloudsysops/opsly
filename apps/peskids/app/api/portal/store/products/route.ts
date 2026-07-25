@@ -4,7 +4,10 @@ import { z } from 'zod';
 
 const querySchema = z.object({
   category: z.string().optional(),
-  active: z.string().optional().transform((v) => (v === 'true' ? true : v === 'false' ? false : undefined)),
+  active: z
+    .string()
+    .optional()
+    .transform((v) => (v === 'true' ? true : v === 'false' ? false : undefined)),
 });
 
 export async function GET(req: Request) {

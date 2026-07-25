@@ -12,9 +12,7 @@ export async function GET(req: NextRequest) {
     return errorJson(requestId, auth.error, auth.status);
   }
 
-  const from =
-    req.nextUrl.searchParams.get('from') ??
-    new Date().toISOString();
+  const from = req.nextUrl.searchParams.get('from') ?? new Date().toISOString();
   const to =
     req.nextUrl.searchParams.get('to') ??
     new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
