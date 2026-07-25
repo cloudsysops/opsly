@@ -4,7 +4,11 @@ import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { validateStaffSession } from '@/lib/staff-auth';
 import { createBadgeSchema } from '@/lib/validation/badge.schema';
 import { getStudentById } from '@/lib/services/student.service';
-import { createBadge, listBadgesForStudent, teacherTaughtStudent } from '@/lib/services/badge.service';
+import {
+  createBadge,
+  listBadgesForStudent,
+  teacherTaughtStudent,
+} from '@/lib/services/badge.service';
 
 export const dynamic = 'force-dynamic';
 

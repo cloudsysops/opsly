@@ -1,8 +1,4 @@
-import {
-  getProductById,
-  updateProduct,
-  deleteProduct,
-} from '@/lib/services/store.service';
+import { getProductById, updateProduct, deleteProduct } from '@/lib/services/store.service';
 import { adminAuth } from '@intcloudsysops/security';
 import { z } from 'zod';
 
@@ -15,10 +11,7 @@ const updateProductSchema = z.object({
   active: z.boolean().optional(),
 });
 
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: Request, { params }: { params: { id: string } }) {
   const requestId = req.headers.get('x-request-id') || crypto.randomUUID();
 
   try {
@@ -60,10 +53,7 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   const requestId = req.headers.get('x-request-id') || crypto.randomUUID();
 
   try {
@@ -127,10 +117,7 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
   const requestId = req.headers.get('x-request-id') || crypto.randomUUID();
 
   try {

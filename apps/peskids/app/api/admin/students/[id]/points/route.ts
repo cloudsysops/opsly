@@ -3,13 +3,13 @@ import { adminAuth } from '@intcloudsysops/security';
 import { z } from 'zod';
 
 const querySchema = z.object({
-  historyLimit: z.string().optional().transform((v) => (v ? parseInt(v, 10) : 50)),
+  historyLimit: z
+    .string()
+    .optional()
+    .transform((v) => (v ? parseInt(v, 10) : 50)),
 });
 
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: Request, { params }: { params: { id: string } }) {
   const requestId = req.headers.get('x-request-id') || crypto.randomUUID();
 
   try {

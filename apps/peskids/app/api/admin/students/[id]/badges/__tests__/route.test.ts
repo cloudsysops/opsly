@@ -93,7 +93,11 @@ describe('POST /api/admin/students/[id]/badges', () => {
     });
     getStudentByIdMock.mockResolvedValue({ id: 's1', name: 'Ana' });
     teacherTaughtStudentMock.mockResolvedValue(true);
-    createBadgeMock.mockResolvedValue({ id: 'badge-1', label: 'Burbujas', awarded_by_role: 'teacher' });
+    createBadgeMock.mockResolvedValue({
+      id: 'badge-1',
+      label: 'Burbujas',
+      awarded_by_role: 'teacher',
+    });
 
     const { POST } = await import('../route');
     const response = await POST(postReq({ label: 'Burbujas' }), context('s1') as never);
@@ -113,7 +117,11 @@ describe('POST /api/admin/students/[id]/badges', () => {
       user: staffUser('admin', 'admin-1'),
     });
     getStudentByIdMock.mockResolvedValue({ id: 's1', name: 'Ana' });
-    createBadgeMock.mockResolvedValue({ id: 'badge-1', label: 'Burbujas', awarded_by_role: 'admin' });
+    createBadgeMock.mockResolvedValue({
+      id: 'badge-1',
+      label: 'Burbujas',
+      awarded_by_role: 'admin',
+    });
 
     const { POST } = await import('../route');
     const response = await POST(postReq({ label: 'Burbujas' }), context('s1') as never);

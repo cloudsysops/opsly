@@ -3,10 +3,22 @@ import { adminAuth } from '@intcloudsysops/security';
 import { z } from 'zod';
 
 const querySchema = z.object({
-  minPoints: z.string().optional().transform((v) => (v ? parseInt(v, 10) : undefined)),
-  maxPoints: z.string().optional().transform((v) => (v ? parseInt(v, 10) : undefined)),
-  offset: z.string().optional().transform((v) => (v ? parseInt(v, 10) : 0)),
-  limit: z.string().optional().transform((v) => (v ? parseInt(v, 10) : 50)),
+  minPoints: z
+    .string()
+    .optional()
+    .transform((v) => (v ? parseInt(v, 10) : undefined)),
+  maxPoints: z
+    .string()
+    .optional()
+    .transform((v) => (v ? parseInt(v, 10) : undefined)),
+  offset: z
+    .string()
+    .optional()
+    .transform((v) => (v ? parseInt(v, 10) : 0)),
+  limit: z
+    .string()
+    .optional()
+    .transform((v) => (v ? parseInt(v, 10) : 50)),
 });
 
 export async function GET(req: Request) {
