@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-07-25T15:13:16.344Z",
+  "generated_at": "2026-07-25T15:40:02.654Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -10815,6 +10815,101 @@
         "worker"
       ],
       "size_bytes": 2715
+    },
+    {
+      "path": "docs/03-franchise/admin-dashboard.md",
+      "title": "Franchise Admin Dashboard",
+      "keywords": [
+        "499",
+        "999",
+        "admin",
+        "analytics",
+        "business",
+        "dashboard",
+        "detail",
+        "enterprise",
+        "features",
+        "flow",
+        "franchise",
+        "list",
+        "management",
+        "markdown",
+        "month",
+        "onboarding",
+        "opsly",
+        "overview",
+        "public",
+        "reports",
+        "screens",
+        "selection",
+        "selector",
+        "startup",
+        "tier",
+        "user",
+        "view",
+        "workflow"
+      ],
+      "size_bytes": 8412
+    },
+    {
+      "path": "docs/03-franchise/forms-system.md",
+      "title": "Franchise Forms System",
+      "keywords": [
+        "admin",
+        "api",
+        "architecture",
+        "assign",
+        "core",
+        "database",
+        "endpoints",
+        "families",
+        "form",
+        "forms",
+        "franchise",
+        "list",
+        "markdown",
+        "opsly",
+        "overview",
+        "policies",
+        "public",
+        "reference",
+        "rls",
+        "schema",
+        "send",
+        "system",
+        "tables"
+      ],
+      "size_bytes": 8904
+    },
+    {
+      "path": "docs/03-franchise/revenue-sharing.md",
+      "title": "Franchise Revenue Sharing System",
+      "keywords": [
+        "architecture",
+        "configuration",
+        "database",
+        "each",
+        "features",
+        "flow",
+        "franchise",
+        "guide",
+        "implementation",
+        "key",
+        "markdown",
+        "opsly",
+        "overview",
+        "payment",
+        "revenue",
+        "setup",
+        "share",
+        "sharing",
+        "stripe",
+        "system",
+        "tiers",
+        "webhook",
+        "wompi"
+      ],
+      "size_bytes": 10313
     },
     {
       "path": "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
@@ -87747,6 +87842,9 @@
       "docs/00-architecture/hooks-system.md",
       "docs/reports/REPOSITORY-BASELINE-2026-05-27.md"
     ],
+    "499": [
+      "docs/03-franchise/admin-dashboard.md"
+    ],
     "502": [
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/cwe-top-25.md",
       "docs/runbooks/TROUBLESHOOTING-GUIDE.md",
@@ -87788,6 +87886,9 @@
     "951": [
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
+    ],
+    "999": [
+      "docs/03-franchise/admin-dashboard.md"
     ],
     "1000": [
       "docs/audits/COST-DEEP-DIVE.md",
@@ -90962,6 +91063,9 @@
       "docs/brain/architecture/system-map.md",
       "docs/brain/architecture/knowledge-graph.md",
       "docs/brain/architecture/README.md",
+      "docs/03-franchise/admin-dashboard.md",
+      "docs/03-franchise/revenue-sharing.md",
+      "docs/03-franchise/forms-system.md",
       "docs/demo/hackathon-demo.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
@@ -93542,6 +93646,9 @@
       "docs/brain/architecture/system-map.md",
       "docs/brain/architecture/knowledge-graph.md",
       "docs/brain/architecture/README.md",
+      "docs/03-franchise/admin-dashboard.md",
+      "docs/03-franchise/revenue-sharing.md",
+      "docs/03-franchise/forms-system.md",
       "docs/demo/hackathon-demo.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
@@ -94517,6 +94624,8 @@
       "docs/brain/modules/peskids.md",
       "docs/brain/modules/admin.md",
       "docs/brain/skills/fable5-agent-instructions.md",
+      "docs/03-franchise/admin-dashboard.md",
+      "docs/03-franchise/forms-system.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/reports/PRODUCTION-HEALTH.md",
       "docs/blueprints/TWENTY-BOOTSTRAP-IRREDUCIBLE.md",
@@ -94681,6 +94790,7 @@
       "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       "docs/brain/modules/peskids.md",
       "docs/brain/dashboard.md",
+      "docs/03-franchise/admin-dashboard.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/E2E-TESTING-PLAN.md",
@@ -95255,6 +95365,9 @@
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
+      "docs/03-franchise/admin-dashboard.md",
+      "docs/03-franchise/revenue-sharing.md",
+      "docs/03-franchise/forms-system.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/testing/QA-TESTING-BRIEF.md",
@@ -95985,6 +96098,7 @@
       "docs/brain/modules/api.md",
       "docs/brain/skills/opsly-api.md",
       "docs/brain/skills/api-and-interface-design.md",
+      "docs/03-franchise/forms-system.md",
       "docs/testing/PHASE-2-TESTING.md",
       "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
@@ -96253,6 +96367,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
       "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
+      "docs/03-franchise/revenue-sharing.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/blueprints/TWENTY-BOOTSTRAP-IRREDUCIBLE.md",
@@ -96430,6 +96545,7 @@
       "docs/02-tools/NOTION-MCP-SERVER.md",
       "docs/operations/VPS-VALIDATION-OPTIONS.md",
       "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
+      "docs/03-franchise/forms-system.md",
       "docs/reports/PRODUCTION-HEALTH.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/api-design-patterns.md"
     ],
@@ -96507,6 +96623,7 @@
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
+      "docs/03-franchise/forms-system.md",
       "docs/reports/ICSO-E2E-VALIDATION.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
@@ -101195,6 +101312,7 @@
       "docs/03-agents/AGENTS-GUIDE.md",
       "docs/tenants/peskids/GHL-WORKFLOWS.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
+      "docs/03-franchise/revenue-sharing.md",
       "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/blueprints/GO-LIVE-COMMAND.md"
     ],
@@ -101350,6 +101468,7 @@
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/brain/skills/incremental-implementation.md",
+      "docs/03-franchise/revenue-sharing.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
       "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md",
@@ -105849,6 +105968,7 @@
       "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
       "docs/tenants/intcloudsysops/WHATSAPP-FIRST-PACKAGE.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
+      "docs/03-franchise/forms-system.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
       ".agents/skills/the-architect/references/questions/phase-1-discovery.md",
       ".agents/skills/the-architect/references/questions/phase-2-branches.md"
@@ -106104,6 +106224,7 @@
       "docs/01-development/OPSLY-AGENCY-DIVISION.md",
       "docs/03-agents/QUICK-REFERENCE-HERMES-OPSLY.md",
       "docs/03-agents/PARALLEL-AGENTS-ORCHESTRATION.md",
+      "docs/03-franchise/admin-dashboard.md",
       ".claude/1-agent-teams/security-agent.md",
       ".agents/skills/cyber-neo/references/error-handling-patterns.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/state-management.md",
@@ -106211,6 +106332,7 @@
       "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "docs/03-franchise/forms-system.md",
       "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
       ".agents/skills/cyber-neo/SKILL.md",
       ".agents/skills/the-architect/references/templates/blueprint-template.md",
@@ -106862,6 +106984,7 @@
       "docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/brain/AGENT-ONBOARDING.md",
       "docs/brain/TENANT-AI-PLAYBOOK.md",
+      "docs/03-franchise/admin-dashboard.md",
       "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
       ".claude/1-agent-teams/ops-agent.md",
       ".agents/README.md"
@@ -107587,7 +107710,8 @@
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
-      "docs/tenants/intcloudsysops/DATA-MODEL.md"
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/03-franchise/forms-system.md"
     ],
     "acciones": [
       "packages/skills/user/opsly-notebooklm/SKILL.md",
@@ -109864,6 +109988,7 @@
       "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md",
       "docs/tenants/peskids/TWENTY-CRM.md",
       "docs/tenants/peskids/QUICK-START-PRODUCTION.md",
+      "docs/03-franchise/revenue-sharing.md",
       "docs/testing/QA-TESTING-BRIEF.md",
       "docs/reports/PRODUCTION-HEALTH.md",
       "docs/blueprints/ICSO-CRM-READINESS.md",
@@ -110090,6 +110215,7 @@
       "docs/03-agents/QUICK-REFERENCE-HERMES-OPSLY.md",
       "docs/tenants/peskids/GHL-WORKFLOW-TEMPLATES.md",
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
+      "docs/03-franchise/forms-system.md",
       "docs/demo/hackathon-demo.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
@@ -112499,6 +112625,7 @@
       "docs/brain/workflows/billing.md",
       "docs/brain/workflows/local-agents.md",
       "docs/brain/workflows/openclaw.md",
+      "docs/03-franchise/admin-dashboard.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
       "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
       "docs/reports/session-summary-2026-05-21.md",
@@ -113296,6 +113423,7 @@
       "docs/04-infrastructure/DOPPLER-VARS.md",
       "docs/audits/COST-DEEP-DIVE.md",
       "docs/brain/skills/opsly-stripe-marketplace.md",
+      "docs/03-franchise/revenue-sharing.md",
       "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md",
       "docs/blueprints/WOMPI-PAYMENT-GATEWAY-CONTRACT.md",
       ".claude/1-agent-teams/billing-agent.md",
@@ -117106,6 +117234,7 @@
       "vendor/agency-agents/integrations/openclaw/tool-evaluator/AGENTS.md",
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
       "docs/tenants/peskids/PESKIDS-ADMIN-USER-VALIDATION.md",
+      "docs/03-franchise/admin-dashboard.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/blueprints/TWENTY-BOOTSTRAP-IRREDUCIBLE.md",
       ".agents/skills/cyber-neo/references/iac-docker.md",
@@ -117376,6 +117505,8 @@
       "docs/tenants/legalvial/LEGALVIAL-ARCHITECTURE-DECISION.md",
       "docs/brain/skills/README.md",
       "docs/brain/architecture/README.md",
+      "docs/03-franchise/revenue-sharing.md",
+      "docs/03-franchise/forms-system.md",
       "docs/demo/hackathon-demo.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
@@ -118131,6 +118262,8 @@
       "docs/brain/skills/fable5-manual.md",
       "docs/brain/skills/fable5-agent-instructions.md",
       "docs/brain/architecture/system-map.md",
+      "docs/03-franchise/revenue-sharing.md",
+      "docs/03-franchise/forms-system.md",
       "docs/demo/hackathon-demo.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
@@ -124698,6 +124831,7 @@
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md",
       "docs/adr/ADR-047-fable5-model-strategy.md",
       "docs/brain/TENANT-AI-PLAYBOOK.md",
+      "docs/03-franchise/admin-dashboard.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/SESSION-SUMMARY-2026-05-08.md"
@@ -125134,6 +125268,7 @@
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
       "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
+      "docs/03-franchise/revenue-sharing.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/testing/PHASE-2-TESTING.md",
       "docs/blueprints/README-PHASE1-EXECUTE.md",
@@ -126384,6 +126519,8 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
       "docs/brain/skills/README.md",
+      "docs/03-franchise/revenue-sharing.md",
+      "docs/03-franchise/forms-system.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       "docs/reports/PRODUCTION-HEALTH.md",
       "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md",
@@ -128002,6 +128139,8 @@
       "docs/operations/VPS-VALIDATION-OPTIONS.md",
       "docs/tenants/peskids/INVITATION-FLOW-VERIFICATION.md",
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
+      "docs/03-franchise/admin-dashboard.md",
+      "docs/03-franchise/revenue-sharing.md",
       "docs/testing/PHASE-2-TESTING.md",
       "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
@@ -129969,6 +130108,7 @@
       "docs/growth/REVENUE-EXECUTION-30D.md",
       "docs/01-development/ONBOARDING-READINESS.md",
       "docs/tenants/peskids/SALES-FUNNEL-VALIDATION.md",
+      "docs/03-franchise/revenue-sharing.md",
       "docs/blueprints/PHASE1-PHASE2-STATUS.md"
     ],
     "scale": [
@@ -131947,6 +132087,7 @@
       "docs/governance/internal/VENDOR-MANAGEMENT-POLICY.md",
       "docs/governance/internal/ACCESS-CONTROL-POLICY.md",
       "docs/adr/ADR-029-mcp-orchestration.md",
+      "docs/03-franchise/revenue-sharing.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md"
     ],
     "automations": [
@@ -132108,6 +132249,7 @@
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
       "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/tenants/onboarding-prompts/INFRASTRUCTURE-SETUP.md",
+      "docs/03-franchise/revenue-sharing.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/testing/PHASE-2-TESTING.md",
       "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
@@ -132748,6 +132890,7 @@
       "docs/03-agents/AGENT-STARTUP-PROMPT.md",
       "docs/02-tools/OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
       "docs/adr/ADR-025-notebooklm-knowledge-layer.md",
+      "docs/03-franchise/admin-dashboard.md",
       ".claude/CLAUDE.md"
     ],
     "sysops": [
@@ -133629,6 +133772,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
+      "docs/03-franchise/revenue-sharing.md",
       "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
@@ -136470,6 +136614,7 @@
       "tools/agent-packs/vendor/the-architect/knowledge/archetypes/internal-tool.md",
       "docs/database/DATABASE-OPERATIONS.md",
       "docs/database/SUPABASE-MIGRATION-AUDIT.md",
+      "docs/03-franchise/forms-system.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/internal-tool.md"
     ],
     "shape": [
@@ -137779,6 +137924,7 @@
       "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/history/plans/SPRINT-ROADMAP.md",
       "docs/01-development/LIBRARY-MODULES.md",
+      "docs/03-franchise/admin-dashboard.md",
       "docs/blueprints/opsly-operational-blueprint/README.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/deployment-patterns.md"
@@ -138105,7 +138251,8 @@
       "vendor/agency-agents/integrations/openclaw/studio-producer/AGENTS.md",
       "docs/governance/internal/EMPLOYEE-LIFECYCLE-POLICY.md",
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
-      "docs/01-development/LOCALRANK-TESTER-GUIDE.md"
+      "docs/01-development/LOCALRANK-TESTER-GUIDE.md",
+      "docs/03-franchise/admin-dashboard.md"
     ],
     "capability": [
       "tools/productivity-starter/DEMO-WALKTHROUGH.md",
@@ -138363,6 +138510,7 @@
       "docs/adr/ADR-046-family-email-invite-access.md",
       "docs/tenants/peskids/DATA-MODEL.md",
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
+      "docs/03-franchise/forms-system.md",
       "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md"
     ],
     "show": [
@@ -138583,6 +138731,7 @@
       "vendor/agency-agents/integrations/opencode/agents/bookkeeper-controller.md",
       "vendor/agency-agents/integrations/openclaw/bookkeeper-controller/AGENTS.md",
       "docs/audits/COST-DEEP-DIVE.md",
+      "docs/03-franchise/admin-dashboard.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md"
     ],
     "plain": [
@@ -138792,7 +138941,9 @@
       "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
       "docs/tenants/peskids/DASHBOARD-SPEC.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
-      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md"
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
+      "docs/03-franchise/admin-dashboard.md",
+      "docs/03-franchise/revenue-sharing.md"
     ],
     "golden": [
       "lib/evaluation/README.md",
@@ -139074,7 +139225,8 @@
       "docs/00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md",
       "docs/00-architecture/ARCHITECTURE.md",
       "docs/adr/ADR-045-tenant-analytics-batch-python-pandas-arrow.md",
-      "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md"
+      "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
+      "docs/03-franchise/admin-dashboard.md"
     ],
     "record": [
       "lib/telemetry/README.md",
@@ -139496,7 +139648,9 @@
       "vendor/agency-agents/integrations/openclaw/level-designer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/workflow-architect/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/senior-project-manager/AGENTS.md",
-      "docs/00-architecture/RENDERING-ENGINE.md"
+      "docs/00-architecture/RENDERING-ENGINE.md",
+      "docs/03-franchise/admin-dashboard.md",
+      "docs/03-franchise/forms-system.md"
     ],
     "metadata": [
       "lib/prompts/README.md",
@@ -147483,6 +147637,7 @@
       "vendor/agency-agents/integrations/openclaw/tool-evaluator/AGENTS.md",
       "docs/00-architecture/LLM-GATEWAY-WORKPLAN.md",
       "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
+      "docs/03-franchise/admin-dashboard.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md"
     ],
     "sequencing": [
@@ -151985,7 +152140,8 @@
       "vendor/agency-agents/integrations/kimi/roblox-experience-designer/system.md",
       "vendor/agency-agents/integrations/antigravity/agency-roblox-experience-designer/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/roblox-experience-designer.md",
-      "vendor/agency-agents/integrations/openclaw/roblox-experience-designer/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/roblox-experience-designer/AGENTS.md",
+      "docs/03-franchise/revenue-sharing.md"
     ],
     "assistant": [
       "vendor/agency-agents/integrations/qwen/agents/loan-officer-assistant.md",
@@ -152691,6 +152847,7 @@
       "docs/06-multi-agent/PARALLEL-EXECUTION-GUIDE.md",
       "docs/02-tools/KNOWLEDGE-SYSTEM.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/03-franchise/admin-dashboard.md",
       "docs/blueprints/opsly-operational-blueprint/MODULES.md"
     ],
     "blender": [
@@ -153050,6 +153207,7 @@
       "vendor/agency-agents/integrations/opencode/agents/report-distribution-agent.md",
       "vendor/agency-agents/integrations/openclaw/report-distribution-agent/AGENTS.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
+      "docs/03-franchise/admin-dashboard.md",
       "docs/reports/VALIDATION-REPORT-2026-04-12.md",
       "docs/reports/README.md"
     ],
@@ -153583,6 +153741,7 @@
       "docs/04-operations/COST-MONITORING-GUIDE.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
       "docs/audits/COST-DEEP-DIVE.md",
+      "docs/03-franchise/revenue-sharing.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/blueprints/N8N-AUTOMATION-GUARANTEES.md",
       "docs/blueprints/WOMPI-PAYMENT-GATEWAY-CONTRACT.md"
@@ -158648,7 +158807,8 @@
     ],
     "detail": [
       "docs/superpowers/plans/2026-05-31-collectx-sprint1.md",
-      "docs/superpowers/specs/2026-05-31-collectx-platform-design.md"
+      "docs/superpowers/specs/2026-05-31-collectx-platform-design.md",
+      "docs/03-franchise/admin-dashboard.md"
     ],
     "listingcard": [
       "docs/superpowers/plans/2026-05-31-collectx-sprint1.md"
@@ -159363,7 +159523,8 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
-      "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md"
+      "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
+      "docs/03-franchise/forms-system.md"
     ],
     "epic": [
       "docs/ops/issue-bankruptcy-2026-05-03/epics-breakdown.md",
@@ -159748,7 +159909,8 @@
     "forms": [
       "docs/projects/PESKIDS-SCOPE.md",
       "docs/tenants/peskids/FORMS-SPEC.md",
-      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md"
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
+      "docs/03-franchise/forms-system.md"
     ],
     "outcome": [
       "docs/projects/PESKIDS-SCOPE.md"
@@ -160682,6 +160844,7 @@
     "families": [
       "docs/obsidian/research/frontier-pattern-radar.md",
       "docs/adr/ADR-046-family-email-invite-access.md",
+      "docs/03-franchise/forms-system.md",
       ".agents/README.md"
     ],
     "frontier": [
@@ -164907,7 +165070,9 @@
     "public": [
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
-      "docs/brain/modules/web.md"
+      "docs/brain/modules/web.md",
+      "docs/03-franchise/admin-dashboard.md",
+      "docs/03-franchise/forms-system.md"
     ],
     "privilege": [
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md"
@@ -166796,6 +166961,7 @@
     ],
     "wompi": [
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
+      "docs/03-franchise/revenue-sharing.md",
       "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md",
       "docs/blueprints/WOMPI-PAYMENT-GATEWAY-CONTRACT.md"
     ],
@@ -167159,6 +167325,23 @@
     ],
     "orientacion": [
       "docs/brain/INDEX.md"
+    ],
+    "franchise": [
+      "docs/03-franchise/admin-dashboard.md",
+      "docs/03-franchise/revenue-sharing.md",
+      "docs/03-franchise/forms-system.md"
+    ],
+    "screens": [
+      "docs/03-franchise/admin-dashboard.md"
+    ],
+    "selector": [
+      "docs/03-franchise/admin-dashboard.md"
+    ],
+    "sharing": [
+      "docs/03-franchise/revenue-sharing.md"
+    ],
+    "assign": [
+      "docs/03-franchise/forms-system.md"
     ],
     "hackathon": [
       "docs/demo/hackathon-demo.md"
@@ -168171,6 +168354,9 @@
     "docs/03-agents/SYRA-OPENCLAW-INTEGRATION.md",
     "docs/03-agents/VALIDATION-AND-ITERATION-SYSTEM.md",
     "docs/03-agents/VALIDATION-ITERATION-LOOP.md",
+    "docs/03-franchise/admin-dashboard.md",
+    "docs/03-franchise/forms-system.md",
+    "docs/03-franchise/revenue-sharing.md",
     "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
     "docs/04-infrastructure/BILLING-FLUSH-VERCEL.md",
     "docs/04-infrastructure/CICD-VPS.md",
