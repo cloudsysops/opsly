@@ -1,11 +1,10 @@
 import { supabaseServer } from '@/lib/supabase';
 import type { Database } from '@/lib/types';
-import { earnPoints, redeemPoints, initializeStudentPoints } from './points.service';
+import { earnPoints, redeemPoints } from './points.service';
 
 export type ReferralLink = Database['peskids']['Tables']['referral_links']['Row'];
 
 const REFERRAL_DISCOUNT_PERCENT = 10; // 10% discount on purchases (legacy, may be removed)
-const REFERRAL_DISCOUNT_MULTIPLIER = 1 - REFERRAL_DISCOUNT_PERCENT / 100; // 0.9
 
 function tenantSlug(): string {
   return (process.env.NEXT_PUBLIC_TENANT_ID || 'peskids').trim().toLowerCase();
@@ -13,10 +12,6 @@ function tenantSlug(): string {
 
 function peskidsClient() {
   return supabaseServer().schema('peskids');
-}
-
-function publicClient() {
-  return supabaseServer().schema('public');
 }
 
 // ========================
