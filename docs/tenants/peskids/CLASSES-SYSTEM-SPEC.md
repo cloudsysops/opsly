@@ -92,7 +92,7 @@ Schema **`peskids`** (consistente con migraciones `007`–`008`). `tenant_slug` 
 | `swim_level` | `1` … `6` (mapeo UI: Tiburones, Delfines, …) |
 | `location_kind` | `llanogrande`, `domicilio` |
 | `class_status` | `scheduled`, `cancelled`, `completed` |
-| `enrollment_status` | `reserved`, `confirmed`, `cancelled`, `no_show`, `attended` |
+| `enrollment_status` | `reserved`, `confirmed`, `cancelled`, `no_show`, `attended`, `waitlisted` |
 | `payment_status` | `pending`, `paid`, `failed`, `refunded` |
 | `attendance_status` | `present`, `absent`, `excused` |
 
@@ -224,7 +224,7 @@ CREATE TABLE IF NOT EXISTS peskids.class_enrollments (
   student_id uuid NOT NULL REFERENCES public.students(id),
   family_user_id uuid NOT NULL,
   status text NOT NULL DEFAULT 'reserved'
-    CHECK (status IN ('reserved', 'confirmed', 'cancelled', 'no_show', 'attended')),
+    CHECK (status IN ('reserved', 'confirmed', 'cancelled', 'no_show', 'attended', 'waitlisted')),
   payment_status text NOT NULL DEFAULT 'pending'
     CHECK (payment_status IN ('pending', 'paid', 'failed', 'refunded')),
   attendance text CHECK (attendance IN ('present', 'absent', 'excused')),
