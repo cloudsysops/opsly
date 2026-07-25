@@ -79,13 +79,26 @@ export function isPeskidsFamilyAccessEmailEnabled(
   return parseBooleanFlag(env.PESKIDS_FAMILY_ACCESS_EMAIL_ENABLED, false);
 }
 
-export function getPeskidsContactSlaHours(
+/**
+ * Staff-only "improvement chat": owner/staff describe platform improvements
+ * they want and an AI classifies + summarizes each request, optionally
+ * creating a Twenty CRM task. Default OFF until the team is ready to use it.
+ */
+export function isPeskidsStaffImprovementChatEnabled(
   env: NodeJS.ProcessEnv = process.env
-): number {
-  const raw = env.PESKIDS_CONTACT_SLA_HOURS?.trim();
-  if (!raw) return 48;
-  const parsed = Number.parseInt(raw, 10);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : 48;
+): boolean {
+  return parseBooleanFlag(env.PESKIDS_STAFF_IMPROVEMENT_CHAT_ENABLED, false);
+}
+
+/**
+ * Sub-toggle: when the improvement chat is enabled, also auto-create a
+ * Twenty CRM task for actionable requests (bug/feature_request/improvement).
+ * Independent flag so the team can use the chat without touching Twenty yet.
+ */
+export function isPeskidsStaffImprovementChatTwentyTaskEnabled(
+  env: NodeJS.ProcessEnv = process.env
+): boolean {
+  return parseBooleanFlag(env.PESKIDS_STAFF_IMPROVEMENT_CHAT_TWENTY_TASK_ENABLED, false);
 }
 
 /**
@@ -96,4 +109,29 @@ export function isPeskidsRenewalReminderEnabled(
   env: NodeJS.ProcessEnv = process.env
 ): boolean {
   return parseBooleanFlag(env.PESKIDS_RENEWAL_REMINDER_ENABLED, false);
+}
+
+/** Auto-followup on consecutive class absences (retention risk). */
+export function isPeskidsAttendanceRiskAlertEnabled(
+  env: NodeJS.ProcessEnv = process.env
+): boolean {
+  return parseBooleanFlag(env.PESKIDS_ATTENDANCE_RISK_ALERT_ENABLED, false);
+}
+
+export function getPeskidsAttendanceRiskThreshold(
+  env: NodeJS.ProcessEnv = process.env
+): number {
+  const raw = env.PESKIDS_ATTENDANCE_RISK_THRESHOLD?.trim();
+  if (!raw) return 3;
+  const parsed = Number.parseInt(raw, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 3;
+}
+
+export function getPeskidsContactSlaHours(
+  env: NodeJS.ProcessEnv = process.env
+): number {
+  const raw = env.PESKIDS_CONTACT_SLA_HOURS?.trim();
+  if (!raw) return 48;
+  const parsed = Number.parseInt(raw, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 48;
 }

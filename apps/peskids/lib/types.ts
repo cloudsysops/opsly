@@ -181,7 +181,7 @@ export type Database = {
           class_id: string;
           student_id: string;
           family_user_id: string;
-          status: 'reserved' | 'confirmed' | 'cancelled' | 'no_show' | 'attended';
+          status: 'reserved' | 'confirmed' | 'cancelled' | 'no_show' | 'attended' | 'waitlisted';
           payment_status: 'pending' | 'paid' | 'failed' | 'refunded';
           attendance: 'present' | 'absent' | 'excused' | null;
           joined_at: string;
@@ -196,7 +196,7 @@ export type Database = {
           class_id: string;
           student_id: string;
           family_user_id: string;
-          status?: 'reserved' | 'confirmed' | 'cancelled' | 'no_show' | 'attended';
+          status?: 'reserved' | 'confirmed' | 'cancelled' | 'no_show' | 'attended' | 'waitlisted';
           payment_status?: 'pending' | 'paid' | 'failed' | 'refunded';
           attendance?: 'present' | 'absent' | 'excused' | null;
           joined_at?: string;
@@ -209,6 +209,38 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: 'class_enrollments_class_id_fkey';
+            columns: ['class_id'];
+            isOneToOne: false;
+            referencedRelation: 'classes';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      student_badges: {
+        Row: {
+          id: string;
+          tenant_slug: string;
+          student_id: string;
+          label: string;
+          class_id: string | null;
+          awarded_by: string | null;
+          awarded_by_role: 'owner' | 'admin' | 'support' | 'teacher' | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_slug?: string;
+          student_id: string;
+          label: string;
+          class_id?: string | null;
+          awarded_by?: string | null;
+          awarded_by_role?: 'owner' | 'admin' | 'support' | 'teacher' | null;
+          created_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['student_badges']['Insert']>;
+        Relationships: [
+          {
+            foreignKeyName: 'student_badges_class_id_fkey';
             columns: ['class_id'];
             isOneToOne: false;
             referencedRelation: 'classes';
@@ -595,6 +627,36 @@ export type Database = {
           retry_count?: number;
         };
         Update: Partial<Database['public']['Tables']['followups']['Insert']>;
+        Relationships: [];
+      };
+      staff_improvement_messages: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          role: 'staff' | 'assistant';
+          author_email: string | null;
+          body: string;
+          category: 'bug' | 'feature' | 'improvement' | 'security' | 'billing' | 'question' | 'other' | null;
+          priority: 'alta' | 'media' | 'baja' | null;
+          ai_summary: string | null;
+          twenty_task_id: string | null;
+          status: 'new' | 'analyzed' | 'task_created' | 'dismissed';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          tenant_id?: string;
+          role: 'staff' | 'assistant';
+          author_email?: string | null;
+          body: string;
+          category?: 'bug' | 'feature' | 'improvement' | 'security' | 'billing' | 'question' | 'other' | null;
+          priority?: 'alta' | 'media' | 'baja' | null;
+          ai_summary?: string | null;
+          twenty_task_id?: string | null;
+          status?: 'new' | 'analyzed' | 'task_created' | 'dismissed';
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['staff_improvement_messages']['Insert']>;
         Relationships: [];
       };
       messages: {

@@ -1,11 +1,7 @@
 import type { User } from '@supabase/supabase-js';
 import { supabaseServer } from '@/lib/supabase';
 import type { Database } from '@/lib/types';
-import {
-  ClassCapacityError,
-  EnrollmentNotAllowedError,
-  type PeskidsClassEnrollment,
-} from '@/lib/class-types';
+import { EnrollmentNotAllowedError, type PeskidsClassEnrollment } from '@/lib/class-types';
 import { getClassById } from '@/lib/services/class.service';
 
 const CANCEL_MIN_HOURS = 24;
@@ -137,19 +133,18 @@ export async function createEnrollment(input: {
 }): Promise<{
   enrollment: PeskidsClassEnrollment;
   payment_required: boolean;
+  waitlisted: boolean;
 }> {
   const classItem = await getClassById(input.classId);
   if (!classItem || classItem.status !== 'scheduled') {
     throw new EnrollmentNotAllowedError('Class not available');
   }
 
-  if (classItem.enrolled_count >= classItem.capacity) {
-    throw new ClassCapacityError();
-  }
-
   if (new Date(classItem.starts_at).getTime() <= Date.now()) {
     throw new EnrollmentNotAllowedError('Class already started');
   }
+
+  const waitlisted = classItem.enrolled_count >= classItem.capacity;
 
   const { data, error } = await peskidsClient()
     .from('class_enrollments')
@@ -158,7 +153,7 @@ export async function createEnrollment(input: {
       class_id: input.classId,
       student_id: input.studentId,
       family_user_id: input.familyUserId,
-      status: 'reserved',
+      status: waitlisted ? 'waitlisted' : 'reserved',
       payment_status: classItem.price_cents === 0 ? 'paid' : 'pending',
     })
     .select('*')
@@ -173,7 +168,7 @@ export async function createEnrollment(input: {
 
   const enrollment = data as PeskidsClassEnrollment;
 
-  if (classItem.price_cents === 0) {
+  if (!waitlisted && classItem.price_cents === 0) {
     await peskidsClient()
       .from('class_enrollments')
       .update({ status: 'confirmed' })
@@ -183,8 +178,43 @@ export async function createEnrollment(input: {
 
   return {
     enrollment,
-    payment_required: classItem.price_cents > 0,
+    payment_required: !waitlisted && classItem.price_cents > 0,
+    waitlisted,
   };
+}
+
+/**
+ * Promotes the earliest waitlisted enrollment (FIFO by joined_at) once a seat
+ * frees up. Mirrors createEnrollment's free-class auto-confirm: a waitlisted
+ * entry for a free class already has payment_status 'paid' at insert time, so
+ * it goes straight to 'confirmed' instead of 'reserved'. Best-effort — never
+ * throws, since the cancellation itself has already succeeded by the time
+ * this runs.
+ */
+async function promoteNextWaitlisted(classId: string): Promise<void> {
+  try {
+    const { data: next, error } = await peskidsClient()
+      .from('class_enrollments')
+      .select('id, payment_status')
+      .eq('class_id', classId)
+      .eq('status', 'waitlisted')
+      .order('joined_at', { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if (error || !next) return;
+
+    const row = next as { id: string; payment_status: PeskidsClassEnrollment['payment_status'] };
+    await peskidsClient()
+      .from('class_enrollments')
+      .update({ status: row.payment_status === 'paid' ? 'confirmed' : 'reserved' })
+      .eq('id', row.id);
+  } catch (err) {
+    console.warn('[enrollment] waitlist promotion failed', {
+      class_id: classId,
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
 }
 
 export async function cancelEnrollment(
@@ -207,8 +237,10 @@ export async function cancelEnrollment(
     classes: { starts_at: string } | null;
   };
 
+  // A waitlisted entry doesn't hold a seat, so the pre-class cancel window
+  // that protects against last-minute seat abandonment doesn't apply to it.
   const startsAt = row.classes?.starts_at;
-  if (startsAt) {
+  if (startsAt && row.status !== 'waitlisted') {
     const hoursUntil =
       (new Date(startsAt).getTime() - Date.now()) / (1000 * 60 * 60);
     if (hoursUntil < CANCEL_MIN_HOURS) {
@@ -217,6 +249,8 @@ export async function cancelEnrollment(
       );
     }
   }
+
+  const heldSeat = row.status === 'reserved' || row.status === 'confirmed';
 
   const { data: updated, error: updateError } = await peskidsClient()
     .from('class_enrollments')
@@ -229,6 +263,11 @@ export async function cancelEnrollment(
     .single();
 
   if (updateError) throw updateError;
+
+  if (heldSeat) {
+    await promoteNextWaitlisted(row.class_id);
+  }
+
   return updated as PeskidsClassEnrollment;
 }
 

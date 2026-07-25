@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   TeacherSubmissionsSection,
   type TeacherSubmissionsResponse,
@@ -18,6 +19,7 @@ interface AgendaApiResponse {
 }
 
 export function TeacherWeeklyDashboard(): React.ReactElement {
+  const router = useRouter();
   const [teacherData, setTeacherData] = useState<TeacherSubmissionsResponse | null>(null);
   const [isLoadingTeacherData, setIsLoadingTeacherData] = useState(true);
   const [teacherDataError, setTeacherDataError] = useState<string | null>(null);
@@ -124,8 +126,16 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
         setTeacherDataError(null);
 
         const response = await fetch('/api/submissions/teacher', {
+          credentials: 'include',
           signal: controller.signal,
         });
+
+        if (response.status === 401 || response.status === 403) {
+          if (!controller.signal.aborted) {
+            router.replace('/teacher/login');
+          }
+          return;
+        }
 
         if (!response.ok) {
           throw new Error(`Teacher submissions request failed with ${response.status}`);
@@ -152,7 +162,7 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
     void loadTeacherData();
 
     return () => controller.abort();
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     const controller = new AbortController();

@@ -129,15 +129,19 @@ export function GrowthWidget({
               </p>
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
-              {achievements.map((achievement) => (
-                <span
-                  key={achievement}
-                  className="inline-flex items-center gap-1 rounded-full border border-pk-border bg-white px-3 py-1 text-xs font-semibold text-pk-ink"
-                >
-                  <Sparkles className="h-3.5 w-3.5 text-pk-primary" aria-hidden />
-                  {achievement}
-                </span>
-              ))}
+              {achievements.length === 0 ? (
+                <p className="text-xs text-pk-sub">Aún no hay logros registrados.</p>
+              ) : (
+                achievements.map((achievement) => (
+                  <span
+                    key={achievement}
+                    className="inline-flex items-center gap-1 rounded-full border border-pk-border bg-white px-3 py-1 text-xs font-semibold text-pk-ink"
+                  >
+                    <Sparkles className="h-3.5 w-3.5 text-pk-primary" aria-hidden />
+                    {achievement}
+                  </span>
+                ))
+              )}
             </div>
           </div>
         </div>

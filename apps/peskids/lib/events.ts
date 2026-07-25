@@ -27,6 +27,7 @@ export const PESKIDS_PRO_EVENT_NAMES = [
   'trial.no_show',
   'student.enrolled',
   'lead.renewal_due',
+  'student.attendance_risk',
 ] as const;
 
 export type PeskidsProEventName = (typeof PESKIDS_PRO_EVENT_NAMES)[number];
@@ -198,6 +199,18 @@ export async function emitLeadRenewalDue(params: {
 }): Promise<void> {
   await emitEvent('lead.renewal_due', {
     lead_id: params.leadId,
+    followup_id: params.followupId,
+  });
+}
+
+export async function emitStudentAttendanceRisk(params: {
+  studentId: string;
+  consecutiveAbsences: number;
+  followupId: string | null;
+}): Promise<void> {
+  await emitEvent('student.attendance_risk', {
+    student_id: params.studentId,
+    consecutive_absences: params.consecutiveAbsences,
     followup_id: params.followupId,
   });
 }

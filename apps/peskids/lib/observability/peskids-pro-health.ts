@@ -4,7 +4,9 @@
  */
 
 import {
+  getPeskidsAttendanceRiskThreshold,
   getPeskidsContactSlaHours,
+  isPeskidsAttendanceRiskAlertEnabled,
   isPeskidsAutoCreateFollowupEnabled,
   isPeskidsDailyDigestEnabled,
   isPeskidsFamilyAccessEmailEnabled,
@@ -20,6 +22,7 @@ import {
 export type PeskidsProObservabilitySnapshot = {
   event_bus_configured: boolean;
   contact_sla_hours: number;
+  attendance_risk_threshold: number;
   flags: {
     hot_lead_alerts: boolean;
     daily_digest: boolean;
@@ -31,6 +34,7 @@ export type PeskidsProObservabilitySnapshot = {
     lead_confirmation: boolean;
     family_access_email: boolean;
     renewal_reminder: boolean;
+    attendance_risk_alert: boolean;
   };
 };
 
@@ -47,6 +51,7 @@ export function buildPeskidsProObservability(
   return {
     event_bus_configured: isEventBusConfigured(processEnv),
     contact_sla_hours: getPeskidsContactSlaHours(processEnv),
+    attendance_risk_threshold: getPeskidsAttendanceRiskThreshold(processEnv),
     flags: {
       hot_lead_alerts: isPeskidsHotLeadAlertsEnabled(processEnv),
       daily_digest: isPeskidsDailyDigestEnabled(processEnv),
@@ -58,6 +63,7 @@ export function buildPeskidsProObservability(
       lead_confirmation: isPeskidsLeadConfirmationEnabled(processEnv),
       family_access_email: isPeskidsFamilyAccessEmailEnabled(processEnv),
       renewal_reminder: isPeskidsRenewalReminderEnabled(processEnv),
+      attendance_risk_alert: isPeskidsAttendanceRiskAlertEnabled(processEnv),
     },
   };
 }

@@ -20,6 +20,7 @@ tags:
 - `trial.scheduled` / `trial.completed` / `trial.no_show` — `lib/services/trial-class.service.ts`
 - `student.enrolled` — `lib/services/lead-conversion.service.ts`
 - `lead.renewal_due` — `lib/agents/pipeline-manager.service.ts` (gated by `PESKIDS_RENEWAL_REMINDER_ENABLED`, default off; fires when a lead advances to the Renewal pipeline stage)
+- `student.attendance_risk` — `lib/services/attendance-risk.service.ts` (gated by `PESKIDS_ATTENDANCE_RISK_ALERT_ENABLED`, default off)
 
 **Principles:**
 - Every user action → event

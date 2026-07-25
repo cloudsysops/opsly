@@ -1,6 +1,8 @@
 import { describe, expect, it, afterEach } from 'vitest';
 import {
+  getPeskidsAttendanceRiskThreshold,
   getPeskidsContactSlaHours,
+  isPeskidsAttendanceRiskAlertEnabled,
   isPeskidsAutoCreateFollowupEnabled,
   isPeskidsDailyDigestEnabled,
   isPeskidsFamilyAccessEmailEnabled,
@@ -26,6 +28,8 @@ describe('peskids Pro flags (app)', () => {
     delete process.env.PESKIDS_FAMILY_ACCESS_EMAIL_ENABLED;
     delete process.env.PESKIDS_CONTACT_SLA_HOURS;
     delete process.env.PESKIDS_RENEWAL_REMINDER_ENABLED;
+    delete process.env.PESKIDS_ATTENDANCE_RISK_ALERT_ENABLED;
+    delete process.env.PESKIDS_ATTENDANCE_RISK_THRESHOLD;
   });
 
   it('defaults to false', () => {
@@ -39,7 +43,9 @@ describe('peskids Pro flags (app)', () => {
     expect(isPeskidsLeadConfirmationEnabled()).toBe(false);
     expect(isPeskidsFamilyAccessEmailEnabled()).toBe(false);
     expect(isPeskidsRenewalReminderEnabled()).toBe(false);
+    expect(isPeskidsAttendanceRiskAlertEnabled()).toBe(false);
     expect(getPeskidsContactSlaHours()).toBe(48);
+    expect(getPeskidsAttendanceRiskThreshold()).toBe(3);
   });
 
   it('reads lead confirmation when enabled', () => {
@@ -50,5 +56,12 @@ describe('peskids Pro flags (app)', () => {
   it('reads renewal reminder when enabled', () => {
     process.env.PESKIDS_RENEWAL_REMINDER_ENABLED = 'true';
     expect(isPeskidsRenewalReminderEnabled()).toBe(true);
+  });
+
+  it('reads attendance risk alert flag and threshold when set', () => {
+    process.env.PESKIDS_ATTENDANCE_RISK_ALERT_ENABLED = 'true';
+    process.env.PESKIDS_ATTENDANCE_RISK_THRESHOLD = '5';
+    expect(isPeskidsAttendanceRiskAlertEnabled()).toBe(true);
+    expect(getPeskidsAttendanceRiskThreshold()).toBe(5);
   });
 });

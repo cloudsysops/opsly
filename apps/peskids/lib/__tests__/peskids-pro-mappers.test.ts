@@ -97,6 +97,7 @@ describe('peskids-pro mappers (PR-PRO-0 contracts)', () => {
     expect(PESKIDS_PRO_EVENT_NAMES).toContain('lead.created');
     expect(PESKIDS_PRO_EVENT_NAMES).toContain('student.enrolled');
     expect(PESKIDS_PRO_EVENT_NAMES).toContain('lead.renewal_due');
-    expect(PESKIDS_PRO_EVENT_NAMES).toHaveLength(12);
+    expect(PESKIDS_PRO_EVENT_NAMES).toContain('student.attendance_risk');
+    expect(PESKIDS_PRO_EVENT_NAMES).toHaveLength(13);
   });
 });
