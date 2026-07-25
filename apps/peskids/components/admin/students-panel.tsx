@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Loader2, Mail, MessageCircle, Plus, UsersRound } from 'lucide-react';
+import { Loader2, Mail, MessageCircle, Plus, Trophy, UsersRound } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -52,6 +52,9 @@ export function StudentsPanel(): React.ReactElement {
   const [submitting, setSubmitting] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
+  const [badgingId, setBadgingId] = useState<string | null>(null);
+  const [badgeLabel, setBadgeLabel] = useState('');
+  const [awardingBadge, setAwardingBadge] = useState(false);
 
   const load = async (): Promise<void> => {
     setLoading(true);
@@ -141,6 +144,33 @@ export function StudentsPanel(): React.ReactElement {
       setError(err instanceof Error ? err.message : 'Error al actualizar alumno');
     } finally {
       setUpdatingId(null);
+    }
+  };
+
+  const awardBadge = async (studentId: string): Promise<void> => {
+    const label = badgeLabel.trim();
+    if (!label) return;
+    setAwardingBadge(true);
+    setError('');
+    try {
+      const res = await fetch(`/api/admin/students/${studentId}/badges`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ label }),
+      });
+
+      const json = (await res.json()) as { error?: string };
+      if (!res.ok) {
+        throw new Error(json.error || 'No se pudo registrar la insignia');
+      }
+
+      setBadgingId(null);
+      setBadgeLabel('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al registrar insignia');
+    } finally {
+      setAwardingBadge(false);
     }
   };
 
@@ -247,56 +277,85 @@ export function StudentsPanel(): React.ReactElement {
               {filtered.map((student) => {
                 const whatsapp = student.parent_phone ? whatsappHref(student.parent_phone) : null;
                 return (
-                  <li
-                    key={student.id}
-                    className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm"
-                  >
-                    <div>
-                      <p className="font-medium text-pk-ink">
-                        {student.name}{' '}
-                        <span className="text-pk-sub">· {formatAgeRange(student.grade)}</span>
-                      </p>
-                      <p className="text-xs text-pk-sub">{student.parent_email ?? 'Sin email'}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge tone={student.status === 'active' ? 'green' : 'neutral'}>
-                        {student.status === 'active' ? 'Activo' : 'Inactivo'}
-                      </Badge>
-                      {student.parent_email ? (
-                        <a href={mailtoHref(student.parent_email)} aria-label="Enviar email">
-                          <Button type="button" variant="ghost" size="sm">
-                            <Mail className="h-4 w-4" aria-hidden />
-                          </Button>
-                        </a>
-                      ) : null}
-                      {whatsapp ? (
-                        <a
-                          href={whatsapp}
-                          target="_blank"
-                          rel="noreferrer"
-                          aria-label="Abrir WhatsApp"
+                  <li key={student.id} className="px-4 py-3 text-sm">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <p className="font-medium text-pk-ink">
+                          {student.name}{' '}
+                          <span className="text-pk-sub">· {formatAgeRange(student.grade)}</span>
+                        </p>
+                        <p className="text-xs text-pk-sub">{student.parent_email ?? 'Sin email'}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge tone={student.status === 'active' ? 'green' : 'neutral'}>
+                          {student.status === 'active' ? 'Activo' : 'Inactivo'}
+                        </Badge>
+                        {student.parent_email ? (
+                          <a href={mailtoHref(student.parent_email)} aria-label="Enviar email">
+                            <Button type="button" variant="ghost" size="sm">
+                              <Mail className="h-4 w-4" aria-hidden />
+                            </Button>
+                          </a>
+                        ) : null}
+                        {whatsapp ? (
+                          <a
+                            href={whatsapp}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label="Abrir WhatsApp"
+                          >
+                            <Button type="button" variant="ghost" size="sm">
+                              <MessageCircle className="h-4 w-4" aria-hidden />
+                            </Button>
+                          </a>
+                        ) : null}
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          aria-label="Agregar insignia"
+                          onClick={() => {
+                            setBadgingId((current) => (current === student.id ? null : student.id));
+                            setBadgeLabel('');
+                          }}
                         >
-                          <Button type="button" variant="ghost" size="sm">
-                            <MessageCircle className="h-4 w-4" aria-hidden />
-                          </Button>
-                        </a>
-                      ) : null}
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="sm"
-                        disabled={updatingId === student.id}
-                        onClick={() => void toggleStatus(student)}
-                      >
-                        {updatingId === student.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : student.status === 'active' ? (
-                          'Dar de baja'
-                        ) : (
-                          'Reactivar'
-                        )}
-                      </Button>
+                          <Trophy className="h-4 w-4" aria-hidden />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          disabled={updatingId === student.id}
+                          onClick={() => void toggleStatus(student)}
+                        >
+                          {updatingId === student.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : student.status === 'active' ? (
+                            'Dar de baja'
+                          ) : (
+                            'Reactivar'
+                          )}
+                        </Button>
+                      </div>
                     </div>
+                    {badgingId === student.id ? (
+                      <div className="mt-2 flex items-center gap-2">
+                        <Input
+                          value={badgeLabel}
+                          onChange={(e) => setBadgeLabel(e.target.value)}
+                          placeholder="Ej. Burbujas, Flota solo…"
+                          className="max-w-xs"
+                        />
+                        <Button
+                          type="button"
+                          size="sm"
+                          disabled={awardingBadge || !badgeLabel.trim()}
+                          onClick={() => void awardBadge(student.id)}
+                        >
+                          {awardingBadge ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Guardar'}
+                        </Button>
+                      </div>
+                    ) : null}
                   </li>
                 );
               })}
