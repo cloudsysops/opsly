@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-07-25T15:40:02.654Z",
+  "generated_at": "2026-07-25T16:08:53.229Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -10852,6 +10852,77 @@
       "size_bytes": 8412
     },
     {
+      "path": "docs/03-franchise/crm-architecture-diagram.md",
+      "title": "Arquitectura CRM Multi-Tenant con Búsqueda Filtrada",
+      "keywords": [
+        "admin",
+        "aislamiento",
+        "architecture",
+        "arquitectura",
+        "buscar",
+        "busqueda",
+        "casos",
+        "contacto",
+        "contactos",
+        "crear",
+        "crecimiento",
+        "crm",
+        "datos",
+        "diagram",
+        "diagrama",
+        "escalabilidad",
+        "estimados",
+        "filtrada",
+        "flujo",
+        "franquicia",
+        "franquicias",
+        "markdown",
+        "mecanismos",
+        "multi",
+        "numeros",
+        "opsly",
+        "peskids",
+        "seguridad",
+        "tenant",
+        "uso",
+        "validacion"
+      ],
+      "size_bytes": 11840
+    },
+    {
+      "path": "docs/03-franchise/crm-multitenant.md",
+      "title": "CRM Multi-Tenant con Twenty",
+      "keywords": [
+        "acceso",
+        "admin",
+        "basico",
+        "busqueda",
+        "control",
+        "crm",
+        "datos",
+        "estructura",
+        "filtrada",
+        "flujo",
+        "franquicia",
+        "general",
+        "markdown",
+        "multi",
+        "multitenant",
+        "opsly",
+        "payload",
+        "sincronizacion",
+        "tenant",
+        "todos",
+        "twenty",
+        "ventajas",
+        "vision",
+        "vista",
+        "vistas",
+        "webhook"
+      ],
+      "size_bytes": 10330
+    },
+    {
       "path": "docs/03-franchise/forms-system.md",
       "title": "Franchise Forms System",
       "keywords": [
@@ -10880,6 +10951,97 @@
         "tables"
       ],
       "size_bytes": 8904
+    },
+    {
+      "path": "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
+      "title": "🚀 Checklist de Implementación - CRM Multi-Tenant & Franchise Dashboard",
+      "keywords": [
+        "api",
+        "check",
+        "checklist",
+        "codigo",
+        "com",
+        "configuracion",
+        "crear",
+        "critico",
+        "crm",
+        "custom",
+        "dashboard",
+        "descargar",
+        "doppler",
+        "endpoints",
+        "entorno",
+        "fase",
+        "field",
+        "filtradas",
+        "franchise",
+        "graphql",
+        "implementacion",
+        "implementation",
+        "key",
+        "lint",
+        "localmente",
+        "markdown",
+        "multi",
+        "obtener",
+        "opsly",
+        "paso",
+        "peskids",
+        "probar",
+        "requeridas",
+        "tenant",
+        "twenty",
+        "type",
+        "validar",
+        "variables",
+        "verificar",
+        "vistas"
+      ],
+      "size_bytes": 11791
+    },
+    {
+      "path": "docs/03-franchise/README-NEXT-AGENT.md",
+      "title": "🎯 Para el Próximo Agente: CRM Multi-Tenant & Franchise Dashboard",
+      "keywords": [
+        "agent",
+        "agente",
+        "aqui",
+        "archivos",
+        "codigo",
+        "comienza",
+        "completado",
+        "configura",
+        "criticos",
+        "crm",
+        "dashboard",
+        "documentacion",
+        "documentos",
+        "entorno",
+        "entrega",
+        "falta",
+        "faltantes",
+        "franchise",
+        "hora",
+        "horas",
+        "implementa",
+        "lee",
+        "list",
+        "markdown",
+        "min",
+        "multi",
+        "necesarias",
+        "next",
+        "opsly",
+        "paso",
+        "proximo",
+        "rapido",
+        "readme",
+        "tenant",
+        "todo",
+        "valida",
+        "variables"
+      ],
+      "size_bytes": 7872
     },
     {
       "path": "docs/03-franchise/revenue-sharing.md",
@@ -88133,7 +88295,8 @@
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/README.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
-      "docs/tenants/README.md"
+      "docs/tenants/README.md",
+      "docs/03-franchise/README-NEXT-AGENT.md"
     ],
     "enlaces": [
       "SECURITY.md",
@@ -91064,7 +91227,11 @@
       "docs/brain/architecture/knowledge-graph.md",
       "docs/brain/architecture/README.md",
       "docs/03-franchise/admin-dashboard.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       "docs/03-franchise/revenue-sharing.md",
+      "docs/03-franchise/crm-multitenant.md",
+      "docs/03-franchise/crm-architecture-diagram.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/03-franchise/forms-system.md",
       "docs/demo/hackathon-demo.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
@@ -93647,7 +93814,11 @@
       "docs/brain/architecture/knowledge-graph.md",
       "docs/brain/architecture/README.md",
       "docs/03-franchise/admin-dashboard.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       "docs/03-franchise/revenue-sharing.md",
+      "docs/03-franchise/crm-multitenant.md",
+      "docs/03-franchise/crm-architecture-diagram.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/03-franchise/forms-system.md",
       "docs/demo/hackathon-demo.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
@@ -94625,6 +94796,8 @@
       "docs/brain/modules/admin.md",
       "docs/brain/skills/fable5-agent-instructions.md",
       "docs/03-franchise/admin-dashboard.md",
+      "docs/03-franchise/crm-multitenant.md",
+      "docs/03-franchise/crm-architecture-diagram.md",
       "docs/03-franchise/forms-system.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/reports/PRODUCTION-HEALTH.md",
@@ -94791,6 +94964,8 @@
       "docs/brain/modules/peskids.md",
       "docs/brain/dashboard.md",
       "docs/03-franchise/admin-dashboard.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/E2E-TESTING-PLAN.md",
@@ -95213,6 +95388,10 @@
       "docs/tenants/peskids/BLUEPRINT-MAPPING.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/production/TENANT-PRODUCTION-HARDENING.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
+      "docs/03-franchise/crm-multitenant.md",
+      "docs/03-franchise/crm-architecture-diagram.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       ".claude/2-context-management/CLAUDE.md",
@@ -95493,6 +95672,8 @@
       "docs/brain/skills/fable5-agent-instructions.md",
       "docs/brain/tenants/peskids.md",
       "docs/brain/TENANT-AI-PLAYBOOK.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
+      "docs/03-franchise/crm-architecture-diagram.md",
       "docs/demo/hackathon-demo.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
       "docs/reports/E2E-TESTING-PLAN.md",
@@ -95851,6 +96032,10 @@
       "docs/brain/tenants/smiletripcare.md",
       "docs/brain/tenants/local-services.md",
       "docs/brain/TENANT-AI-PLAYBOOK.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
+      "docs/03-franchise/crm-multitenant.md",
+      "docs/03-franchise/crm-architecture-diagram.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/demo/hackathon-demo.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
@@ -96098,6 +96283,7 @@
       "docs/brain/modules/api.md",
       "docs/brain/skills/opsly-api.md",
       "docs/brain/skills/api-and-interface-design.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       "docs/03-franchise/forms-system.md",
       "docs/testing/PHASE-2-TESTING.md",
       "docs/reports/E2E-TESTING-PLAN.md",
@@ -96436,6 +96622,7 @@
       "docs/adr/ADR-020-orchestrator-worker-separation.md",
       "docs/brain/modules/README.md",
       "docs/brain/modules/api.md",
+      "docs/03-franchise/crm-multitenant.md",
       "docs/reports/PRODUCTION-HEALTH.md",
       "docs/blueprints/opsly-operational-blueprint/REFERENCE-ARCHITECTURE.md",
       "docs/blueprints/TENANT-REPEAT-PLAYBOOK.md",
@@ -96545,6 +96732,7 @@
       "docs/02-tools/NOTION-MCP-SERVER.md",
       "docs/operations/VPS-VALIDATION-OPTIONS.md",
       "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       "docs/03-franchise/forms-system.md",
       "docs/reports/PRODUCTION-HEALTH.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/api-design-patterns.md"
@@ -100669,6 +100857,8 @@
       "docs/tenants/peskids/TENANT_PESKIDS.md",
       "docs/brain/agents/README.md",
       "docs/brain/INDEX.md",
+      "docs/03-franchise/crm-multitenant.md",
+      "docs/03-franchise/crm-architecture-diagram.md",
       "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md",
       "docs/blueprints/opsly-operational-blueprint/TENANT-INCUBATION.md",
       "docs/blueprints/opsly-operational-blueprint/REFERENCE-ARCHITECTURE.md",
@@ -100717,6 +100907,7 @@
       "docs/tenants/peskids/OWNER-RUNBOOK.md",
       "docs/tenants/peskids/OPS-RUNBOOK.md",
       "docs/brain/skills/README.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/postman/README.md",
       "docs/blueprints/README.md",
       ".claude/README.md",
@@ -101086,6 +101277,7 @@
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "docs/tenants/onboarding-prompts/INFRASTRUCTURE-SETUP.md",
       "docs/brain/TENANT-AI-PLAYBOOK.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       "docs/reports/PESKIDS-REUNION-CHECKLIST.md",
       "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
@@ -101468,6 +101660,7 @@
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/brain/skills/incremental-implementation.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       "docs/03-franchise/revenue-sharing.md",
       "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
@@ -103102,6 +103295,7 @@
       "docs/brain/skills/opsly-agent-skills-bridge.md",
       "docs/brain/AGENT-ONBOARDING.md",
       "docs/brain/sessions/index.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/testing/PHASE1-TEST-PLAN.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
@@ -103153,6 +103347,7 @@
       "docs/tenants/peskids/CLIENT-PITCH.md",
       "docs/tenants/peskids/PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md",
       "docs/brain/AI-STRATEGY.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       "docs/blueprints/opsly-operational-blueprint/TEAM-FACING-EXPLANATION.md",
       ".claude/agents/consensus/byzantine.md",
       ".claude/agents/consensus/raft.md",
@@ -105978,6 +106173,7 @@
       "packages/skills/user/opsly-self-healing/SKILL.md",
       "docs/01-development/TECHNICAL-DEBT.md",
       "docs/qa/BACKLOG-IA-PROMPT.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       ".claude/2-context-management/CLAUDE.md"
     ],
     "datos": [
@@ -106012,6 +106208,8 @@
       "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
       "docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/tenants/onboarding-prompts/DEPLOYMENT-VALIDATION.md",
+      "docs/03-franchise/crm-multitenant.md",
+      "docs/03-franchise/crm-architecture-diagram.md",
       "docs/blueprints/opsly-operational-blueprint/CLIENT-FACING-EXPLANATION.md",
       "docs/blueprints/opsly-operational-blueprint/EXTRACTION-PATTERN.md",
       "docs/blueprints/opsly-operational-blueprint/REFERENCE-ARCHITECTURE.md",
@@ -106582,6 +106780,7 @@
       "docs/02-tools/TOKEN-SYSTEM-GUIDE.md",
       "docs/02-tools/N8N-MCP-INTEGRATION.md",
       "docs/adr/ADR-047-fable5-model-strategy.md",
+      "docs/03-franchise/crm-architecture-diagram.md",
       "docs/blueprints/opsly-operational-blueprint/WHATSAPP-HYBRID.md",
       ".claude/3-slash-commands/skill.md",
       ".claude/README.md"
@@ -106771,6 +106970,7 @@
       "docs/tenants/peskids/ARCHITECTURE.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
       "docs/tenants/onboarding-prompts/INFRASTRUCTURE-SETUP.md",
+      "docs/03-franchise/crm-architecture-diagram.md",
       ".claude/1-agent-teams/security-agent.md"
     ],
     "script": [
@@ -106915,6 +107115,7 @@
       "docs/tenants/peskids/PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       "docs/demo/hackathon-demo.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
@@ -107851,7 +108052,8 @@
       "docs/tenants/peskids/CLASSES-SYSTEM-SPEC.md",
       "docs/tenants/peskids/ARCHITECTURE.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM.md",
-      "docs/brain/modules/peskids.md"
+      "docs/brain/modules/peskids.md",
+      "docs/03-franchise/crm-architecture-diagram.md"
     ],
     "engine": [
       "packages/skills/user/opsly-orchestrator/SKILL.md",
@@ -108946,6 +109148,7 @@
       "docs/02-tools/KNOWLEDGE-SYSTEM.md",
       "docs/adr/ADR-003-doppler-secrets.md",
       "docs/brain/TENANT-AI-PLAYBOOK.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md",
       ".claude/README.md",
       ".claude/SYNC-GUIDE.md",
@@ -108991,13 +109194,16 @@
       "docs/03-agents/AGENTS-GLOBAL-CONTEXT.md",
       "docs/03-agents/CLAUDE-WORKFLOW-OPTIMIZATION.md",
       "docs/02-tools/GOOGLE-DRIVE-SYNC.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/blueprints/academy/README.md",
       ".claude/2-context-management/context-slicing.md",
       ".claude/SYNC-GUIDE.md"
     ],
     "busqueda": [
       "packages/skills/user/opsly-skill-creator/SKILL.md",
-      "docs/00-architecture/LLM-GATEWAY.md"
+      "docs/00-architecture/LLM-GATEWAY.md",
+      "docs/03-franchise/crm-multitenant.md",
+      "docs/03-franchise/crm-architecture-diagram.md"
     ],
     "capturar": [
       "packages/skills/user/opsly-skill-creator/SKILL.md"
@@ -109023,6 +109229,8 @@
       "docs/02-tools/NOTEBOOKLM-SETUP.md",
       "docs/tenants/peskids/N8N-SETUP.md",
       "docs/tenants/peskids/EXTRACTION-PLAN.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
+      "docs/03-franchise/crm-architecture-diagram.md",
       ".claude/3-slash-commands/tenant.md",
       ".agents/IMPLEMENTATION-CHECKLIST.md"
     ],
@@ -109083,6 +109291,7 @@
       "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
       "docs/adr/ADR-011-event-driven-orchestrator.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
+      "docs/03-franchise/crm-multitenant.md",
       ".claude/agents/README.md",
       ".claude/agents/swarm/mesh.md",
       ".claude/agents/swarm/hierarchical.md",
@@ -109127,6 +109336,8 @@
       "docs/tenants/peskids/N8N-SETUP.md",
       "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md",
       "docs/tenants/peskids/CLIENT-PITCH.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/blueprints/opsly-operational-blueprint/COMMERCIAL-PACKAGES.md",
       "docs/blueprints/opsly-operational-blueprint/EXTRACTION-PATTERN.md"
     ],
@@ -109988,6 +110199,7 @@
       "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md",
       "docs/tenants/peskids/TWENTY-CRM.md",
       "docs/tenants/peskids/QUICK-START-PRODUCTION.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       "docs/03-franchise/revenue-sharing.md",
       "docs/testing/QA-TESTING-BRIEF.md",
       "docs/reports/PRODUCTION-HEALTH.md",
@@ -111387,7 +111599,8 @@
       "packages/skills/user/opsly-architect-senior/SKILL.md",
       "docs/ops/runbook-redis.md",
       "docs/03-agents/CLAUDE-WORKFLOW-OPTIMIZATION.md",
-      "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md"
+      "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md"
     ],
     "verdad": [
       "packages/skills/user/opsly-architect-senior/SKILL.md",
@@ -113060,7 +113273,8 @@
       "packages/skills/user/opsly-quantum/templates/runbook.md",
       "docs/growth/AGENCY-PILOT-OUTREACH.md",
       "docs/runbooks/incident.md",
-      "docs/04-infrastructure/FAILOVER-RUNBOOK.md"
+      "docs/04-infrastructure/FAILOVER-RUNBOOK.md",
+      "docs/03-franchise/crm-architecture-diagram.md"
     ],
     "contenedor": [
       "packages/skills/user/opsly-quantum/templates/runbook.md",
@@ -113363,6 +113577,8 @@
       "docs/02-tools/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
       "docs/tenants/peskids/INSTAGRAM-FEED.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/blueprints/TENANT-REPEAT-PLAYBOOK.md",
       "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md",
       ".claude/2-context-management/CLAUDE.md"
@@ -115447,7 +115663,8 @@
     "obtener": [
       "packages/skills/user/opsly-google-cloud/SKILL.md",
       "docs/01-development/N8N-IMPORT-GUIDE.md",
-      "docs/03-agents/AGENT-URL-VALIDATION.md"
+      "docs/03-agents/AGENT-URL-VALIDATION.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md"
     ],
     "proyecto": [
       "packages/skills/user/opsly-google-cloud/SKILL.md",
@@ -115638,6 +115855,7 @@
       "docs/brain/workflows/README.md",
       "docs/brain/tenants/README.md",
       "docs/brain/architecture/README.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/testing/README.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
       "docs/reports/README.md",
@@ -115977,12 +116195,14 @@
       "docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/tenants/onboarding-prompts/DEPLOYMENT-VALIDATION.md",
       "docs/brain/AGENT-ONBOARDING.md",
+      "docs/03-franchise/crm-architecture-diagram.md",
       "docs/blueprints/academy/README.md"
     ],
     "basico": [
       "packages/skills/templates/template-test.md",
       "docs/runbooks/ONBOARDING-NEW-CLIENT.md",
-      "docs/01-development/LOCALRANK-TESTER-GUIDE.md"
+      "docs/01-development/LOCALRANK-TESTER-GUIDE.md",
+      "docs/03-franchise/crm-multitenant.md"
     ],
     "integracion": [
       "packages/skills/templates/template-test.md",
@@ -117506,6 +117726,7 @@
       "docs/brain/skills/README.md",
       "docs/brain/architecture/README.md",
       "docs/03-franchise/revenue-sharing.md",
+      "docs/03-franchise/crm-architecture-diagram.md",
       "docs/03-franchise/forms-system.md",
       "docs/demo/hackathon-demo.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
@@ -126828,6 +127049,7 @@
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       "docs/reports/audit-2026-04-07.md",
       "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md",
       "docs/blueprints/AI-TENANT-SETUP-BLUEPRINT.md",
@@ -128903,7 +129125,8 @@
       "docs/02-tools/OBSIDIAN-IDE-SETUP.md",
       "docs/02-tools/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
       "docs/02-tools/KNOWLEDGE-SYSTEM.md",
-      "docs/brain/AGENT-ONBOARDING.md"
+      "docs/brain/AGENT-ONBOARDING.md",
+      "docs/03-franchise/README-NEXT-AGENT.md"
     ],
     "daemon": [
       ".cursor/prompts/queue/008-smoke-screen-daemon.md",
@@ -129259,6 +129482,7 @@
       "docs/superpowers/specs/TEMPLATE-next-client-blueprint.md",
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md",
       "docs/blueprints/opsly-operational-blueprint/COMMERCIAL-PACKAGES.md"
     ],
@@ -129303,6 +129527,7 @@
       "docs/tenants/peskids/GHL-CONSULTING-HANDOFF.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
       "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
@@ -131220,6 +131445,7 @@
       "docs/04-infrastructure/WORKER-SETUP-MAC2011.md",
       "docs/03-agents/QUICKSTART-AGENTS.md",
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       "docs/postman/README.md"
     ],
     "pull": [
@@ -131761,6 +131987,7 @@
       "docs/03-agents/OPSLY-2-0-MULTI-AGENT-BLUEPRINT.md",
       "docs/02-tools/OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
       "docs/02-tools/KNOWLEDGE-SYSTEM.md",
+      "docs/03-franchise/crm-multitenant.md",
       ".agents/skills/the-architect/references/templates/blueprint-template.md",
       ".agents/skills/the-architect/references/questions/phase-1-discovery.md"
     ],
@@ -133773,6 +134000,7 @@
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
       "docs/03-franchise/revenue-sharing.md",
+      "docs/03-franchise/crm-multitenant.md",
       "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
@@ -133838,6 +134066,10 @@
       "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
       "docs/brain/workflows/marketplace-crm.md",
       "docs/brain/TENANT-AI-PLAYBOOK.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
+      "docs/03-franchise/crm-multitenant.md",
+      "docs/03-franchise/crm-architecture-diagram.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md",
       "docs/blueprints/opsly-operational-blueprint/MODULES.md",
@@ -133869,7 +134101,9 @@
       "docs/tenants/peskids/WORKFLOWS.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
       "docs/brain/modules/peskids.md",
-      "docs/brain/TENANT-AI-PLAYBOOK.md"
+      "docs/brain/TENANT-AI-PLAYBOOK.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
+      "docs/03-franchise/README-NEXT-AGENT.md"
     ],
     "importar": [
       ".n8n/README.md",
@@ -133993,6 +134227,8 @@
       "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       "docs/brain/modules/peskids.md",
       "docs/brain/TENANT-AI-PLAYBOOK.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/reports/audit-2026-04-07.md",
       ".claude/2-context-management/CLAUDE.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/deployment-patterns.md",
@@ -137366,6 +137602,7 @@
       "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
       "docs/adr/ADR-028-agent-api-routing.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       "docs/demo/hackathon-demo.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/api-design-patterns.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/testing-patterns.md",
@@ -138194,7 +138431,8 @@
       "docs/01-development/REFACTOR-CHECKLIST.md",
       "docs/01-development/AUTOMATION-PLAN.md",
       "docs/01-development/LANIDEA-OPENCLAW.md",
-      "docs/adr/ADR-024-ollama-local-worker-primary.md"
+      "docs/adr/ADR-024-ollama-local-worker-primary.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md"
     ],
     "business": [
       "tools/productivity-starter/DEMO-WALKTHROUGH.md",
@@ -138342,6 +138580,7 @@
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/testing/PHASE1-TEST-PLAN.md",
       "docs/reports/VALIDATION-PACKAGE-README.md",
       "docs/reports/E2E-TESTING-PLAN.md",
@@ -139650,6 +139889,7 @@
       "vendor/agency-agents/integrations/openclaw/senior-project-manager/AGENTS.md",
       "docs/00-architecture/RENDERING-ENGINE.md",
       "docs/03-franchise/admin-dashboard.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/03-franchise/forms-system.md"
     ],
     "metadata": [
@@ -139981,6 +140221,7 @@
       "docs/03-agents/AGENTS-GLOBAL-CONTEXT.md",
       "docs/02-tools/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
       "docs/adr/ADR-035-openclaw-per-tenant.md",
+      "docs/03-franchise/crm-multitenant.md",
       ".claude/3-slash-commands/ai-cost.md"
     ],
     "librerias": [
@@ -140509,6 +140750,7 @@
       "docs/tenants/peskids/CLIENT-PITCH.md",
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
       "docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       "docs/reports/ACG-STRATEGY-30-DAYS.md",
       "docs/reports/AUTONOMY-PHASE1-E2E-EVIDENCE.md",
       "docs/reports/audit-2026-04-07.md",
@@ -157829,7 +158071,8 @@
       "vendor/agency-agents/integrations/openclaw/unreal-world-builder/AGENTS.md"
     ],
     "field": [
-      "vendor/agency-agents/integrations/openclaw/seo-specialist/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/seo-specialist/AGENTS.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md"
     ],
     "link": [
       "vendor/agency-agents/integrations/openclaw/seo-specialist/AGENTS.md",
@@ -157886,6 +158129,7 @@
       "vendor/agency-agents/integrations/openclaw/level-designer/AGENTS.md",
       "docs/00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
       "docs/03-agents/OPSLY-2-0-MULTI-AGENT-BLUEPRINT.md",
+      "docs/03-franchise/crm-architecture-diagram.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
       ".agents/UNIFIED-AGENT-ARCHITECTURE.md"
     ],
@@ -158671,6 +158915,7 @@
     "todo": [
       "infra/terraform/README.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       ".agents/IMPLEMENTATION-CHECKLIST.md"
     ],
     "alertas": [
@@ -158689,7 +158934,8 @@
     "criticos": [
       "infra/templates/n8n-workflows-template.md",
       "docs/01-development/SEMANA-6-INFORME.md",
-      "docs/03-agents/AGENTS-GLOBAL-CONTEXT.md"
+      "docs/03-agents/AGENTS-GLOBAL-CONTEXT.md",
+      "docs/03-franchise/README-NEXT-AGENT.md"
     ],
     "interno": [
       "infra/templates/n8n-workflows-template.md"
@@ -158720,6 +158966,7 @@
       "docs/01-development/SESSION-GIT-SYNC.md",
       "docs/04-infrastructure/GCP-ACTIVATION-CHECKLIST.md",
       "docs/adr/ADR-025-notebooklm-knowledge-layer.md",
+      "docs/03-franchise/crm-multitenant.md",
       "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md",
       ".claude/SYNC-GUIDE.md"
     ],
@@ -159432,6 +159679,7 @@
       "docs/03-agents/README.md",
       "docs/03-agents/FIRST-OPENCLAW-AGENTS-MAC2011.md",
       "docs/02-tools/README.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/testing/README.md",
       "docs/reports/README.md"
     ],
@@ -159446,6 +159694,7 @@
       "docs/02-tools/README.md",
       "docs/brain/skills/fable5-manual.md",
       "docs/brain/AGENT-ONBOARDING.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/testing/README.md",
       "docs/blueprints/README.md"
     ],
@@ -159931,7 +160180,8 @@
       "docs/tenants/peskids/README.md",
       "docs/tenants/peskids/OWNER-RUNBOOK.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
-      "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md"
+      "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
+      "docs/03-franchise/crm-multitenant.md"
     ],
     "alternativos": [
       "docs/emails/tenant-welcome-email.md"
@@ -160043,7 +160293,8 @@
       "docs/growth/AGENCY-PILOT-OUTREACH.md",
       "docs/01-development/OPS-CLEANUP-PROCEDURES.md",
       "docs/01-development/LOCALRANK-TESTER-GUIDE.md",
-      "docs/tenants/peskids/REUNION-2026-07-21.md"
+      "docs/tenants/peskids/REUNION-2026-07-21.md",
+      "docs/03-franchise/crm-architecture-diagram.md"
     ],
     "criterio": [
       "docs/growth/AGENCY-PILOT-OUTREACH.md",
@@ -160183,6 +160434,7 @@
       "docs/02-tools/MCP-STATUS-ANALYSIS.md",
       "docs/tenants/peskids/SPRINT-02-RUN.md",
       "docs/tenants/peskids/README.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/blueprints/TENANT-REPEAT-PLAYBOOK.md",
       ".claude/SYNC-GUIDE.md"
     ],
@@ -160251,7 +160503,8 @@
       "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md",
       "docs/tenants/peskids/CLIENT-PITCH.md",
       "docs/tenants/peskids/TENANT_PESKIDS.md",
-      "docs/tenants/peskids/OPSLY-REUSE.md"
+      "docs/tenants/peskids/OPSLY-REUSE.md",
+      "docs/03-franchise/README-NEXT-AGENT.md"
     ],
     "romper": [
       "docs/history/plans/MASTER-PLAN.md",
@@ -161005,7 +161258,8 @@
     ],
     "buscar": [
       "docs/obsidian/TAXONOMY.md",
-      "docs/03-agents/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+      "docs/03-agents/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/03-franchise/crm-architecture-diagram.md"
     ],
     "carpetas": [
       "docs/obsidian/TAXONOMY.md",
@@ -161636,7 +161890,8 @@
       "docs/01-development/N8N-IMPORT-GUIDE.md",
       "docs/tenants/peskids/INVITATION-FLOW-VERIFICATION.md",
       "docs/tenants/peskids/WACRM-RUNBOOK.md",
-      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md"
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
+      "docs/03-franchise/crm-multitenant.md"
     ],
     "backed": [
       "docs/runbooks/BACKUP-RECOVERY.md"
@@ -161808,7 +162063,8 @@
     "aislamiento": [
       "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
       "docs/tenants/peskids/ARCHITECTURE.md",
-      "docs/tenants/production/TENANT-PRODUCTION-HARDENING.md"
+      "docs/tenants/production/TENANT-PRODUCTION-HARDENING.md",
+      "docs/03-franchise/crm-architecture-diagram.md"
     ],
     "dedicado": [
       "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
@@ -162209,7 +162465,8 @@
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md"
     ],
     "hora": [
-      "docs/runbooks/CORTEX-OBSERVATION-WINDOW.md"
+      "docs/runbooks/CORTEX-OBSERVATION-WINDOW.md",
+      "docs/03-franchise/README-NEXT-AGENT.md"
     ],
     "muestreo": [
       "docs/runbooks/CORTEX-OBSERVATION-WINDOW.md"
@@ -162268,6 +162525,7 @@
       "docs/tenants/peskids/PURGE-DEMO-DATA.md",
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       "docs/testing/PHASE1-TEST-PLAN.md",
       ".claude/3-slash-commands/tenant.md",
       ".claude/SYNC-GUIDE.md"
@@ -162466,7 +162724,8 @@
     ],
     "diagrama": [
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
-      "docs/tenants/peskids/WORKFLOWS.md"
+      "docs/tenants/peskids/WORKFLOWS.md",
+      "docs/03-franchise/crm-architecture-diagram.md"
     ],
     "edge": [
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
@@ -162475,7 +162734,8 @@
     "escalabilidad": [
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
       "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
-      "docs/adr/ADR-021-predictive-bi-scalability.md"
+      "docs/adr/ADR-021-predictive-bi-scalability.md",
+      "docs/03-franchise/crm-architecture-diagram.md"
     ],
     "general": [
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
@@ -162484,7 +162744,8 @@
       "docs/04-infrastructure/WORKER-TEAM-ARCHITECTURE.md",
       "docs/03-agents/SUPER-ORCHESTRATOR.md",
       "docs/02-tools/OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
-      "docs/02-tools/KNOWLEDGE-SYSTEM.md"
+      "docs/02-tools/KNOWLEDGE-SYSTEM.md",
+      "docs/03-franchise/crm-multitenant.md"
     ],
     "magnitud": [
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
@@ -163044,7 +163305,8 @@
       "docs/01-development/SEMANA-4-INFORME.md",
       "docs/01-development/HANDOFF.md",
       "docs/01-development/SEMANA-3-INFORME.md",
-      "docs/01-development/SEMANA-2-INFORME.md"
+      "docs/01-development/SEMANA-2-INFORME.md",
+      "docs/03-franchise/README-NEXT-AGENT.md"
     ],
     "informe": [
       "docs/01-development/SEMANA-6-INFORME.md",
@@ -163386,7 +163648,8 @@
       "docs/01-development/PREDICTIVE-BI-SCALABILITY.md"
     ],
     "estimados": [
-      "docs/01-development/PREDICTIVE-BI-SCALABILITY.md"
+      "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
+      "docs/03-franchise/crm-architecture-diagram.md"
     ],
     "estrategia": [
       "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
@@ -163420,7 +163683,8 @@
       "docs/01-development/TECHNICAL-DEBT.md",
       "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
       "docs/audits/LINT-RULES-GUIDE.md",
-      "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md"
+      "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md"
     ],
     "misalignment": [
       "docs/01-development/TECHNICAL-DEBT.md"
@@ -163709,7 +163973,8 @@
       "docs/04-infrastructure/SECURITY-MITIGATIONS-2026-04-09.md",
       "docs/tenants/peskids/N8N-SETUP.md",
       "docs/tenants/peskids/PESKIDS-ADMIN-USER-VALIDATION.md",
-      "docs/tenants/peskids/PHASE-2-CHECKLIST.md"
+      "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md"
     ],
     "frecuentes": [
       "docs/01-development/MAKE-SETUP.md",
@@ -164129,6 +164394,7 @@
     "vista": [
       "docs/01-development/OPS-CLEANUP-PROCEDURES.md",
       "docs/tenants/peskids/ARCHITECTURE.md",
+      "docs/03-franchise/crm-multitenant.md",
       "docs/blueprints/opsly-operational-blueprint/REFERENCE-ARCHITECTURE.md"
     ],
     "aproximado": [
@@ -164739,7 +165005,8 @@
       "docs/03-agents/LOCAL-AGENT-EXECUTION.md"
     ],
     "descargar": [
-      "docs/04-infrastructure/PLAN-OLLAMA-WORKER-2026-04-14.md"
+      "docs/04-infrastructure/PLAN-OLLAMA-WORKER-2026-04-14.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md"
     ],
     "finales": [
       "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md"
@@ -165617,7 +165884,8 @@
     ],
     "casos": [
       "docs/02-tools/NOTEBOOKLM-SETUP.md",
-      "docs/02-tools/KNOWLEDGE-SYSTEM.md"
+      "docs/02-tools/KNOWLEDGE-SYSTEM.md",
+      "docs/03-franchise/crm-architecture-diagram.md"
     ],
     "ejecutas": [
       "docs/02-tools/NOTEBOOKLM-SETUP.md"
@@ -165627,7 +165895,8 @@
       "docs/tenants/peskids/N8N-SETUP.md"
     ],
     "localmente": [
-      "docs/02-tools/NOTEBOOKLM-SETUP.md"
+      "docs/02-tools/NOTEBOOKLM-SETUP.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md"
     ],
     "nightly": [
       "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md"
@@ -166015,7 +166284,8 @@
       "docs/adr/ADR-016-legalvial-multitenant-model.md"
     ],
     "multitenant": [
-      "docs/adr/ADR-016-legalvial-multitenant-model.md"
+      "docs/adr/ADR-016-legalvial-multitenant-model.md",
+      "docs/03-franchise/crm-multitenant.md"
     ],
     "sustituir": [
       "docs/adr/ADR-016-legalvial-multitenant-model.md"
@@ -166445,6 +166715,8 @@
       "docs/tenants/intcloudsysops/TWENTY-CRM.md",
       "docs/tenants/intcloudsysops/WACRM-OFFERING.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
+      "docs/03-franchise/crm-multitenant.md",
       "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md",
       "docs/blueprints/PESKIDS-ICSO-CUTOVER-STATUS.md",
       "docs/blueprints/TENANT-REPEAT-PLAYBOOK.md",
@@ -167018,7 +167290,8 @@
     ],
     "crecimiento": [
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
-      "docs/brain/TENANT-AI-PLAYBOOK.md"
+      "docs/brain/TENANT-AI-PLAYBOOK.md",
+      "docs/03-franchise/crm-architecture-diagram.md"
     ],
     "deck": [
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md"
@@ -167328,7 +167601,9 @@
     ],
     "franchise": [
       "docs/03-franchise/admin-dashboard.md",
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       "docs/03-franchise/revenue-sharing.md",
+      "docs/03-franchise/README-NEXT-AGENT.md",
       "docs/03-franchise/forms-system.md"
     ],
     "screens": [
@@ -167337,8 +167612,65 @@
     "selector": [
       "docs/03-franchise/admin-dashboard.md"
     ],
+    "filtradas": [
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md"
+    ],
+    "graphql": [
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md"
+    ],
+    "vistas": [
+      "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
+      "docs/03-franchise/crm-multitenant.md"
+    ],
     "sharing": [
       "docs/03-franchise/revenue-sharing.md"
+    ],
+    "filtrada": [
+      "docs/03-franchise/crm-multitenant.md",
+      "docs/03-franchise/crm-architecture-diagram.md"
+    ],
+    "franquicia": [
+      "docs/03-franchise/crm-multitenant.md",
+      "docs/03-franchise/crm-architecture-diagram.md"
+    ],
+    "ventajas": [
+      "docs/03-franchise/crm-multitenant.md"
+    ],
+    "franquicias": [
+      "docs/03-franchise/crm-architecture-diagram.md"
+    ],
+    "mecanismos": [
+      "docs/03-franchise/crm-architecture-diagram.md"
+    ],
+    "numeros": [
+      "docs/03-franchise/crm-architecture-diagram.md"
+    ],
+    "comienza": [
+      "docs/03-franchise/README-NEXT-AGENT.md"
+    ],
+    "configura": [
+      "docs/03-franchise/README-NEXT-AGENT.md"
+    ],
+    "entrega": [
+      "docs/03-franchise/README-NEXT-AGENT.md"
+    ],
+    "faltantes": [
+      "docs/03-franchise/README-NEXT-AGENT.md"
+    ],
+    "horas": [
+      "docs/03-franchise/README-NEXT-AGENT.md"
+    ],
+    "implementa": [
+      "docs/03-franchise/README-NEXT-AGENT.md"
+    ],
+    "lee": [
+      "docs/03-franchise/README-NEXT-AGENT.md"
+    ],
+    "necesarias": [
+      "docs/03-franchise/README-NEXT-AGENT.md"
+    ],
+    "valida": [
+      "docs/03-franchise/README-NEXT-AGENT.md"
     ],
     "assign": [
       "docs/03-franchise/forms-system.md"
@@ -168355,7 +168687,11 @@
     "docs/03-agents/VALIDATION-AND-ITERATION-SYSTEM.md",
     "docs/03-agents/VALIDATION-ITERATION-LOOP.md",
     "docs/03-franchise/admin-dashboard.md",
+    "docs/03-franchise/crm-architecture-diagram.md",
+    "docs/03-franchise/crm-multitenant.md",
     "docs/03-franchise/forms-system.md",
+    "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
+    "docs/03-franchise/README-NEXT-AGENT.md",
     "docs/03-franchise/revenue-sharing.md",
     "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
     "docs/04-infrastructure/BILLING-FLUSH-VERCEL.md",

@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-07-25T15:40:00.312Z",
-  "totalFiles": 818,
+  "lastIndexed": "2026-07-25T16:08:50.669Z",
+  "totalFiles": 822,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -195,7 +195,11 @@
     "03-agents/VALIDATION-AND-ITERATION-SYSTEM.md",
     "03-agents/VALIDATION-ITERATION-LOOP.md",
     "03-franchise/admin-dashboard.md",
+    "03-franchise/crm-architecture-diagram.md",
+    "03-franchise/crm-multitenant.md",
     "03-franchise/forms-system.md",
+    "03-franchise/IMPLEMENTATION-CHECKLIST.md",
+    "03-franchise/README-NEXT-AGENT.md",
     "03-franchise/revenue-sharing.md",
     "04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
     "04-infrastructure/BILLING-FLUSH-VERCEL.md",
