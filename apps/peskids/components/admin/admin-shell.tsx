@@ -26,6 +26,10 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { PeskidsLogo } from '@/components/brand/peskids-logo';
 import { RoleSwitcher } from '@/components/admin/role-switcher';
+import {
+  dispatchOpenImprovementChat,
+  ImprovementChatPopup,
+} from '@/components/admin/improvement-chat-popup';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { formatRelativeTime } from '@/lib/utils';
@@ -67,7 +71,7 @@ const navOps = [
   { icon: MessageSquare, label: 'Feedback', href: '/admin#feedback' },
   { icon: CalendarClock, label: 'Seguimientos', href: '/admin#seguimientos' },
   { icon: Inbox, label: 'Mensajes', href: '/admin/messages' },
-  { icon: Sparkles, label: 'Mejoras', href: '/admin/chat' },
+  { icon: Sparkles, label: 'Mejoras', href: '#mejoras-chat' },
   { icon: Settings, label: 'Configuración', href: '/admin/settings' },
   { icon: Bell, label: 'Notificaciones', href: '/settings/notifications' },
 ] satisfies NavItem[];
@@ -219,7 +223,7 @@ export function AdminShell({
     }
 
     if (item.label === 'Mejoras') {
-      return pathname.startsWith('/admin/chat');
+      return false;
     }
 
     if (item.label === 'Pipeline') {
@@ -284,6 +288,27 @@ export function AdminShell({
       </p>
       {navOps.map((item) => {
         const showBadge = item.label === 'Mensajes' && unreadMessages > 0;
+
+        if (item.label === 'Mejoras') {
+          return (
+            <button
+              key={item.label}
+              type="button"
+              onClick={() => {
+                dispatchOpenImprovementChat();
+                onNavigate?.();
+              }}
+              className={cn(
+                'pk-focus mb-1 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold transition-colors',
+                'text-white/72 hover:bg-white/7 hover:text-white'
+              )}
+            >
+              <item.icon className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
+              <span className="flex-1">{item.label}</span>
+            </button>
+          );
+        }
+
         return (
           <Link
             key={item.label}
@@ -486,6 +511,7 @@ export function AdminShell({
           {children}
         </main>
       </div>
+      <ImprovementChatPopup />
     </div>
   );
 }
