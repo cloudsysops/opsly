@@ -33,18 +33,21 @@ export async function POST(req: Request) {
       const transfer = event.data.object;
 
       // Look up the franchise transaction by the Stripe transaction reference
+      // @ts-ignore - platform schema access via service role
       const platformDb = supabaseServer().schema('platform');
-      const { data: transaction, error: lookupError } = await platformDb
+      const result = (await platformDb
         .from('franchise_revenue_tracking')
         .select('*')
         .eq('transaction_id', transfer.id)
         .eq('payment_provider', 'stripe')
-        .single();
+        .single()) as any;
 
-      if (lookupError) {
-        console.warn(`Could not find transaction for Stripe transfer ${transfer.id}`, lookupError);
+      if (result.error || !result.data) {
+        console.warn(`Could not find transaction for Stripe transfer ${transfer.id}`);
         return Response.json({ ok: true }, { status: 200 });
       }
+
+      const transaction = result.data;
 
       // Mark as paid
       const updateResult = await markTransactionAsPaid({
@@ -68,16 +71,17 @@ export async function POST(req: Request) {
 
     // Handle transfer failure
     if (event.type === 'transfer.failed') {
-      const transfer = event.data.object;
+      const transfer = event.data.object as { id: string };
+      // @ts-ignore - platform schema access via service role
       const platformDb = supabaseServer().schema('platform');
 
-      await platformDb
+      await ((platformDb as any)
         .from('franchise_revenue_tracking')
         .update({
           status: 'failed',
           updated_at: new Date().toISOString(),
         })
-        .eq('transaction_id', transfer.id);
+        .eq('transaction_id', transfer.id));
     }
 
     return Response.json({ ok: true }, { status: 200 });

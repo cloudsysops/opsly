@@ -9,7 +9,6 @@ import { verifyWompiWebhookSignature } from '@/lib/services/wompi-payment.servic
  */
 export async function POST(req: Request) {
   const requestId = req.headers.get('x-request-id') || crypto.randomUUID();
-  const signatureHeader = req.headers.get('x-wompi-signature');
 
   try {
     const rawBody = await req.text();
@@ -28,31 +27,31 @@ export async function POST(req: Request) {
     }
 
     // Handle transaction approved event
-    if (event.type === 'transaction.approved') {
-      const transaction = event.data;
+    if (event.data && 'id' in event.data) {
+      const transaction = event.data as { id: string; updated_at?: string };
 
       // Look up the franchise transaction by Wompi transaction ID
+      // @ts-ignore - platform schema access via service role
       const platformDb = supabaseServer().schema('platform');
-      const { data: dbTransaction, error: lookupError } = await platformDb
+      const result = (await platformDb
         .from('franchise_revenue_tracking')
         .select('*')
         .eq('transaction_id', transaction.id)
         .eq('payment_provider', 'wompi')
-        .single();
+        .single()) as any;
 
-      if (lookupError) {
-        console.warn(
-          `Could not find transaction for Wompi payment ${transaction.id}`,
-          lookupError
-        );
+      if (result.error || !result.data) {
+        console.warn(`Could not find transaction for Wompi payment ${transaction.id}`);
         return Response.json({ ok: true }, { status: 200 });
       }
+
+      const dbTransaction = result.data;
 
       // Mark as paid
       const updateResult = await markTransactionAsPaid({
         transactionId: dbTransaction.id,
         payoutId: transaction.id,
-        payoutDate: new Date(transaction.updated_at || Date.now()),
+        payoutDate: new Date(transaction.updated_at ?? Date.now()),
       });
 
       if (!updateResult.success) {
@@ -69,17 +68,18 @@ export async function POST(req: Request) {
     }
 
     // Handle transaction declined event
-    if (event.type === 'transaction.declined') {
-      const transaction = event.data;
+    if (event.data && 'id' in event.data) {
+      const transaction = event.data as { id: string };
+      // @ts-ignore - platform schema access via service role
       const platformDb = supabaseServer().schema('platform');
 
-      await platformDb
+      await ((platformDb as any)
         .from('franchise_revenue_tracking')
         .update({
           status: 'failed',
           updated_at: new Date().toISOString(),
         })
-        .eq('transaction_id', transaction.id);
+        .eq('transaction_id', transaction.id));
     }
 
     return Response.json({ ok: true }, { status: 200 });

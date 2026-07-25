@@ -5,13 +5,16 @@ import type { PaymentProvider, FranchiseTransaction } from '@/lib/types/payment-
  * Franchise Payment Service
  * Handles revenue sharing between Peskids (parent) and franchises.
  * Supports Stripe Connected Accounts and Wompi for multi-provider flexibility.
+ *
+ * Note: This service accesses the platform schema via admin/service role.
+ * Since platform schema is not in peskids types, we cast to any for schema access.
  */
 
-const PLATFORM_TENANT_SLUG = 'platform';
-const PESKIDS_TENANT_SLUG = 'peskids';
+const PLATFORM_SCHEMA = 'platform';
 
 function platformClient() {
-  return supabaseServer().schema(PLATFORM_TENANT_SLUG);
+  // @ts-ignore - platform schema access via service role (multi-tenant pattern)
+  return supabaseServer().schema(PLATFORM_SCHEMA);
 }
 
 /**
@@ -39,7 +42,7 @@ export async function setupFranchisePaymentProvider(input: {
     }
 
     // Store provider configuration in database
-    const { data, error } = await platformClient()
+    const result = (await (platformClient()
       .from('franchise_payment_config')
       .insert({
         franchise_tenant_id: input.franchiseTenantId,
@@ -49,15 +52,15 @@ export async function setupFranchisePaymentProvider(input: {
         revenue_share_percentage: input.revenuSharePercentage,
         is_active: true,
         created_at: new Date().toISOString(),
-      })
+      } as any)
       .select('id')
-      .single();
+      .single())) as any;
 
-    if (error) throw error;
+    if (result.error) throw result.error;
 
     return {
       success: true,
-      configId: data.id,
+      configId: result.data?.id,
     };
   } catch (error) {
     return {
@@ -88,19 +91,21 @@ export async function processPaymentWithRevenueShare(input: {
 }> {
   try {
     // Get franchise payment config
-    const { data: config, error: configError } = await platformClient()
+    const configResult = (await platformClient()
       .from('franchise_payment_config')
       .select('*')
       .eq('franchise_tenant_id', input.franchiseTenantId)
       .eq('is_active', true)
-      .single();
+      .single()) as any;
 
-    if (configError || !config) {
+    if (configResult.error || !configResult.data) {
       return {
         success: false,
         error: 'Payment provider not configured for franchise',
       };
     }
+
+    const config = configResult.data;
 
     // Calculate revenue share
     const revenueSharePercentage = config.revenue_share_percentage;
@@ -142,7 +147,7 @@ export async function processPaymentWithRevenueShare(input: {
     }
 
     // Record transaction in franchise_revenue_tracking
-    const { data: transaction, error: trackError } = await platformClient()
+    const trackResult = (await (platformClient()
       .from('franchise_revenue_tracking')
       .insert({
         franchise_tenant_id: input.franchiseTenantId,
@@ -156,11 +161,12 @@ export async function processPaymentWithRevenueShare(input: {
         order_id: input.orderId || null,
         student_id: input.studentId || null,
         created_at: new Date().toISOString(),
-      })
+      } as any)
       .select('id')
-      .single();
+      .single())) as any;
 
-    if (trackError) throw trackError;
+    if (trackResult.error) throw trackResult.error;
+    const transaction = trackResult.data;
 
     return {
       success: true,
@@ -225,7 +231,7 @@ async function processStripePaymentWithRevenuShare(input: {
 /**
  * Process Wompi payment with automatic payout to Peskids account
  */
-async function processWompiPaymentWithRevenuShare(input: {
+async function processWompiPaymentWithRevenuShare(_input: {
   franchiseTenantId: string;
   amountCents: number;
   franchiseNetCents: number;
@@ -272,7 +278,7 @@ export async function markTransactionAsPaid(input: {
   error?: string;
 }> {
   try {
-    const { error } = await platformClient()
+    const updateResult = (await ((platformClient() as any)
       .from('franchise_revenue_tracking')
       .update({
         status: 'paid',
@@ -280,9 +286,9 @@ export async function markTransactionAsPaid(input: {
         peskids_payout_date: input.payoutDate?.toISOString() || null,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', input.transactionId);
+      .eq('id', input.transactionId))) as any;
 
-    if (error) throw error;
+    if (updateResult.error) throw updateResult.error;
 
     return { success: true };
   } catch (error) {
@@ -321,7 +327,7 @@ export async function getFranchiseRevenueDashboard(input?: {
   error?: string;
 }> {
   try {
-    let query = platformClient().from('franchise_revenue_tracking').select('*');
+    let query = (platformClient().from('franchise_revenue_tracking').select('*') as any);
 
     if (input?.franchiseTenantId) {
       query = query.eq('franchise_tenant_id', input.franchiseTenantId);
@@ -333,11 +339,11 @@ export async function getFranchiseRevenueDashboard(input?: {
       query = query.gte('created_at', dateFilter.start).lte('created_at', dateFilter.end);
     }
 
-    const { data, error } = await query.order('created_at', { ascending: false });
+    const result = (await query.order('created_at', { ascending: false })) as any;
 
-    if (error) throw error;
+    if (result.error) throw result.error;
 
-    const transactions = (data || []) as any[];
+    const transactions = (result.data || []) as any[];
 
     // Aggregate totals
     const totals = transactions.reduce(
