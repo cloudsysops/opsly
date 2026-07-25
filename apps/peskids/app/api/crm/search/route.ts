@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { searchCRMContacts, getFranchiseContacts } from '@/lib/services/crm-sync.service'
+import { searchCRMContacts } from '@/lib/services/crm-sync.service'
 
 const searchQuerySchema = z.object({
   q: z.string().optional(),
