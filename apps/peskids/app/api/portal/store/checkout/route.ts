@@ -1,6 +1,6 @@
 import { processStoreCheckout } from '@/lib/services/store-checkout.service';
 import { getCart, clearCart } from '@/lib/services/store.service';
-import { resolveTrustedPortalSession } from '@intcloudsysops/security';
+import { resolveTrustedPortalSession } from '@/lib/security-compat';
 import { z } from 'zod';
 
 const checkoutSchema = z.object({

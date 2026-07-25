@@ -1,5 +1,5 @@
 import { getAllStudentPoints } from '@/lib/services/points.service';
-import { adminAuth } from '@intcloudsysops/security';
+import { adminAuth } from '@/lib/security-compat';
 import { z } from 'zod';
 
 const querySchema = z.object({

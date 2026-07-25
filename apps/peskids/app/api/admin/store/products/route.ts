@@ -1,5 +1,5 @@
 import { listStoreProducts, createProduct } from '@/lib/services/store.service';
-import { adminAuth } from '@intcloudsysops/security';
+import { adminAuth } from '@/lib/security-compat';
 import { z } from 'zod';
 
 const createProductSchema = z.object({

@@ -1,5 +1,5 @@
 import { getStudentPoints, getPointsHistory } from '@/lib/services/points.service';
-import { resolveTrustedPortalSession } from '@intcloudsysops/security';
+import { resolveTrustedPortalSession } from '@/lib/security-compat';
 
 export async function GET(req: Request) {
   const requestId = req.headers.get('x-request-id') || crypto.randomUUID();

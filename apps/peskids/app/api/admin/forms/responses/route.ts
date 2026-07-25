@@ -1,5 +1,5 @@
 import { listPendingCRMSync } from '@/lib/services/form.service';
-import { adminAuth } from '@intcloudsysops/security';
+import { adminAuth } from '@/lib/security-compat';
 
 export async function GET(req: Request) {
   const requestId = req.headers.get('x-request-id') || crypto.randomUUID();

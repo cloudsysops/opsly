@@ -1,5 +1,5 @@
 import { listStoreProducts } from '@/lib/services/store.service';
-import { resolveTrustedPortalSession } from '@intcloudsysops/security';
+import { resolveTrustedPortalSession } from '@/lib/security-compat';
 import { z } from 'zod';
 
 const querySchema = z.object({
