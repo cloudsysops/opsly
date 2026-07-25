@@ -2,7 +2,7 @@ import { supabaseServer } from '@/lib/supabase';
 import { getPeskidsPublicBaseUrl } from '@/lib/app-url';
 
 const TENANT_SLUG = 'peskids';
-const DEFAULT_OWNER_EMAIL = 'sierrasantiago90@gmail.com';
+const DEFAULT_OWNER_EMAIL = 'peskidsnatacion@gmail.com';
 
 export type TeamRole = 'owner' | 'admin' | 'support' | 'teacher';
 export type TeamMemberStatus = 'invited' | 'active' | 'disabled';

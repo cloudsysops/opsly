@@ -65,6 +65,7 @@ jobs:
           E164: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_E164 }}
           DISPLAY: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY }}
           PREFILL: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL }}
+          CONTACT_EMAIL: ${{ secrets.NEXT_PUBLIC_PESKIDS_CONTACT_EMAIL }}
         run: |
           set -euo pipefail
           if [ -z "${E164:-}" ]; then
@@ -75,6 +76,7 @@ jobs:
           fi
           echo "display=${DISPLAY:-+57 300 000 0000}" >> "$GITHUB_OUTPUT"
           echo "prefill=${PREFILL:-Hola Peskids 👋 Quiero reservar una clase de prueba gratis.}" >> "$GITHUB_OUTPUT"
+          echo "contact_email=${CONTACT_EMAIL:-peskidsnatacion@gmail.com}" >> "$GITHUB_OUTPUT"
 
       - name: Build and push Peskids image
         uses: docker/build-push-action@v5
@@ -89,6 +91,7 @@ jobs:
             NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
             NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
             NEXT_PUBLIC_PESKIDS_SITE_URL=https://peskids.op-sly.com
+            NEXT_PUBLIC_PESKIDS_CONTACT_EMAIL=${{ steps.wa.outputs.contact_email }}
             NEXT_PUBLIC_PESKIDS_WHATSAPP_E164=${{ steps.wa.outputs.e164 }}
             NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY=${{ steps.wa.outputs.display }}
             NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL=${{ steps.wa.outputs.prefill }}
@@ -97,6 +100,7 @@ jobs:
         run: |
           echo "Image: ghcr.io/cloudsysops/peskids:${{ needs.gate.outputs.sha }}"
           echo "WhatsApp E164 (build-arg): ${{ steps.wa.outputs.e164 }}"
+          echo "Contact email (build-arg): ${{ steps.wa.outputs.contact_email }}"
 
   deploy-vps:
     needs: [gate, build-and-push]

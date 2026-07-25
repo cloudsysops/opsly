@@ -17,7 +17,7 @@ export function normalizeWhatsAppE164(raw: string | undefined): string {
 }
 
 export const PESKIDS_CONTACT = {
-  email: process.env.NEXT_PUBLIC_PESKIDS_CONTACT_EMAIL?.trim() || 'hola@peskids.co',
+  email: process.env.NEXT_PUBLIC_PESKIDS_CONTACT_EMAIL?.trim() || 'peskidsnatacion@gmail.com',
   whatsapp: {
     e164: normalizeWhatsAppE164(process.env.NEXT_PUBLIC_PESKIDS_WHATSAPP_E164),
     display: process.env.NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY?.trim() || DEFAULT_WHATSAPP_DISPLAY,
