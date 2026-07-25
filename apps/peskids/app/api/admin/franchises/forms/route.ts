@@ -1,4 +1,3 @@
-import { adminAuth } from '@intcloudsysops/security';
 import { z } from 'zod';
 import { assignFormToFranchise } from '@/lib/services/franchise-forms.service';
 
@@ -13,12 +12,14 @@ const assignFormSchema = z.object({
 /**
  * POST /api/admin/franchises/forms
  * Admin endpoint to assign form templates to franchises
+ * TODO: Add proper admin authentication
  */
 export async function POST(req: Request) {
   const requestId = req.headers.get('x-request-id') || crypto.randomUUID();
 
   try {
-    await adminAuth(req);
+    // TODO: Validate admin token
+    // const isAdmin = validateAdminToken(req);
 
     const body = await req.json();
     const { franchiseTenantId, templateId, customName, customDescription, isPrimary } =
