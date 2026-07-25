@@ -168,7 +168,7 @@ export async function sendFormToFamily(input: {
     if (error) throw error;
 
     // TODO: Actually send via email/SMS/WhatsApp provider
-    console.log(`Form delivery created: ${data.id} -> ${input.recipientEmail}`);
+    console.error(`Form delivery created: ${data.id} -> ${input.recipientEmail}`);
 
     return {
       success: true,
