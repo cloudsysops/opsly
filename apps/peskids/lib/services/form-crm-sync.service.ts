@@ -33,13 +33,11 @@ interface FormResponseData {
 
 function parseFormResponse(data: FormResponseData): GHLContact {
   // Extract common fields from form response
-  const fullName = (
-    data.full_name ||
+  const fullName = (data.full_name ||
     data.nombre_completo ||
     data.parent_name ||
     data.nombre_padre ||
-    'Nueva Familia'
-  ) as string;
+    'Nueva Familia') as string;
 
   const nameParts = fullName.split(' ');
   const firstName = nameParts[0];
@@ -47,11 +45,7 @@ function parseFormResponse(data: FormResponseData): GHLContact {
 
   const email = data.email as string | undefined;
   const phone = (data.phone || data.telefono) as string | undefined;
-  const childrenNames = (
-    data.children_names ||
-    data.nombres_hijos ||
-    ''
-  ) as string;
+  const childrenNames = (data.children_names || data.nombres_hijos || '') as string;
   const grades = (data.grade_levels || data.grados || '') as string;
 
   return {

@@ -1,8 +1,4 @@
-import {
-  submitFormResponse,
-  getFormDelivery,
-  getFormTemplate,
-} from '@/lib/services/form.service';
+import { submitFormResponse, getFormDelivery, getFormTemplate } from '@/lib/services/form.service';
 import { z } from 'zod';
 
 export async function POST(req: Request) {
@@ -48,10 +44,7 @@ export async function POST(req: Request) {
       deliveryId,
       templateId,
       responseData,
-      ipAddress:
-        req.headers.get('x-forwarded-for') ||
-        req.headers.get('x-real-ip') ||
-        undefined,
+      ipAddress: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || undefined,
     });
 
     return Response.json(
