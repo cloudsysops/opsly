@@ -29,6 +29,10 @@ export interface FranchiseInfo {
   createdAt: string;
 }
 
+export interface FranchiseNearby extends FranchiseInfo {
+  distanceKm: number;
+}
+
 /**
  * List all franchises (admin view)
  */
@@ -151,8 +155,8 @@ export async function getNearbyFranchises(input: {
           distanceKm: Math.round(distanceKm * 10) / 10,
         };
       })
-      .filter((f) => f.distanceKm <= radiusKm)
-      .sort((a, b) => a.distanceKm - b.distanceKm);
+      .filter((f: FranchiseNearby) => f.distanceKm <= radiusKm)
+      .sort((a: FranchiseNearby, b: FranchiseNearby) => a.distanceKm - b.distanceKm);
 
     return {
       success: true,
@@ -238,27 +242,26 @@ export async function updateFranchiseStatus(input: {
   error?: string;
 }> {
   try {
-    const updates: any = {
+    const updates: Record<string, string | undefined> = {
       approval_status: input.status,
       updated_at: new Date().toISOString(),
+      approval_date: input.status === 'approved' ? new Date().toISOString() : undefined,
+      activated_at: input.status === 'active' ? new Date().toISOString() : undefined,
+      admin_notes: input.notes,
     };
 
-    if (input.status === 'approved') {
-      updates.approval_date = new Date().toISOString();
-    }
+    // Remove undefined values
+    Object.keys(updates).forEach((key) => {
+      if (updates[key] === undefined) {
+        delete updates[key];
+      }
+    });
 
-    if (input.status === 'active') {
-      updates.activated_at = new Date().toISOString();
-    }
-
-    if (input.notes) {
-      updates.admin_notes = input.notes;
-    }
-
-    const result = (await (platformClient()
+    const result = await platformClient()
       .from('tenants')
-      .update(updates as any)
-      .eq('id', input.franchiseTenantId)) as any) as any;
+      // @ts-ignore - Supabase type mismatch for tenants table
+      .update(updates)
+      .eq('id', input.franchiseTenantId);
 
     if (result.error) throw result.error;
 
