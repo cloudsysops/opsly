@@ -63,7 +63,14 @@ function formatTime(iso: string): string {
   );
 }
 
-export function ImprovementChatPanel(): React.ReactElement {
+interface ImprovementChatPanelProps {
+  /** Hide the page-style header when embedded in the floating popup. */
+  compact?: boolean;
+}
+
+export function ImprovementChatPanel({
+  compact = false,
+}: ImprovementChatPanelProps): React.ReactElement {
   const [messages, setMessages] = useState<ImprovementMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
@@ -147,15 +154,21 @@ export function ImprovementChatPanel(): React.ReactElement {
 
   return (
     <div className="flex h-full flex-col">
-      <header className="flex items-center gap-2 border-b border-pk-border px-4 py-4">
-        <Sparkles className="h-5 w-5 shrink-0 text-pk-primary" aria-hidden />
-        <div>
-          <h1 className="text-base font-semibold text-pk-ink">Mejoras para la plataforma</h1>
-          <p className="text-xs text-pk-sub">
-            Cuéntanos qué mejorarías. La IA lo clasifica y, si aplica, crea una tarea en Twenty CRM.
-          </p>
-        </div>
-      </header>
+      {!compact ? (
+        <header className="flex items-center gap-2 border-b border-pk-border px-4 py-4">
+          <Sparkles className="h-5 w-5 shrink-0 text-pk-primary" aria-hidden />
+          <div>
+            <h1 className="text-base font-semibold text-pk-ink">Mejoras para la plataforma</h1>
+            <p className="text-xs text-pk-sub">
+              Cuéntanos qué mejorarías. La IA lo clasifica y, si aplica, crea una tarea en Twenty CRM.
+            </p>
+          </div>
+        </header>
+      ) : (
+        <p className="border-b border-pk-border px-4 py-2 text-xs text-pk-sub">
+          Describe el error o la mejora. Lo clasificamos y lo pasamos a ejecución.
+        </p>
+      )}
 
       <div className="flex-1 space-y-4 overflow-y-auto p-4">
         {loading ? (
@@ -165,7 +178,7 @@ export function ImprovementChatPanel(): React.ReactElement {
           </div>
         ) : messages.length === 0 ? (
           <p className="py-16 text-center text-sm text-pk-sub">
-            Aún no hay solicitudes. Escribe la primera mejora que te gustaría ver en Peskids.
+            Aún no hay solicitudes. Escribe la primera mejora o el error que viste.
           </p>
         ) : (
           messages.map((message) => (
