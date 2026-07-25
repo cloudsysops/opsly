@@ -164,7 +164,7 @@ export async function processStoreCheckout(input: {
   }
 
   // Create order
-  const db = supabaseServer().schema('peskids') as any;
+  const db = peskidsClient();
   const { data: orderData, error: orderError } = await db
     .from('store_orders')
     .insert({
@@ -393,16 +393,14 @@ async function trackReferralRedemption(
   refereContactId: string,
   discountAmount: number
 ): Promise<void> {
-  const { error } = await peskidsClient()
-    .from('referral_redemptions')
-    .insert({
-      tenant_slug: tenantSlug(),
-      referral_code: referralCode,
-      referee_contact_id: refereContactId,
-      reward: discountAmount,
-      status: 'completed',
-      completed_at: new Date().toISOString(),
-    });
+  const { error } = await peskidsClient().from('referral_redemptions').insert({
+    tenant_slug: tenantSlug(),
+    referral_code: referralCode,
+    referee_contact_id: refereContactId,
+    reward: discountAmount,
+    status: 'completed',
+    completed_at: new Date().toISOString(),
+  });
 
   if (error) {
     throw new Error(`Failed to track referral redemption: ${error.message}`);
@@ -412,7 +410,7 @@ async function trackReferralRedemption(
 /**
  * Get referral stats for a referrer
  */
-export async function getReferralRedemptionStats(referrerContactId: string): Promise<{
+export async function getReferralRedemptionStats(): Promise<{
   totalRedemptions: number;
   totalDiscountGiven: number;
   recentRedemptions: Array<{
@@ -433,7 +431,11 @@ export async function getReferralRedemptionStats(referrerContactId: string): Pro
     throw error;
   }
 
-  const redemptions = (data ?? []) as any[];
+  const redemptions = (data ?? []) as Array<{
+    referral_code: string;
+    reward: number;
+    completed_at: string;
+  }>;
 
   return {
     totalRedemptions: redemptions.length,
