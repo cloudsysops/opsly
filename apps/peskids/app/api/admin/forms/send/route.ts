@@ -55,7 +55,7 @@ export async function POST(req: Request) {
 
     // TODO: Integrate with email/SMS service to actually send
     // For now, just creating delivery records
-    console.log(`Created ${deliveries.length} form deliveries for sending`);
+    console.error(`Created ${deliveries.length} form deliveries for sending`);
 
     return Response.json(
       {

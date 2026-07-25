@@ -76,7 +76,7 @@ export async function syncFormResponseToCRM(
 
     // TODO: Implement actual GoHighLevel API call
     // This is a placeholder that simulates CRM sync
-    console.log('Syncing to CRM:', {
+    console.error('Syncing to CRM:', {
       responseId,
       contact,
     });
