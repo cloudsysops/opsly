@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS peskids.student_badges (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE INDEX IF NOT EXISTS idx_student_badges_student
-  ON peskids.student_badges (student_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_student_badges_tenant_student
+  ON peskids.student_badges (tenant_slug, student_id, created_at DESC);
 
 ALTER TABLE peskids.student_badges ENABLE ROW LEVEL SECURITY;
 
