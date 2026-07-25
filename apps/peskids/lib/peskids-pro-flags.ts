@@ -79,6 +79,28 @@ export function isPeskidsFamilyAccessEmailEnabled(
   return parseBooleanFlag(env.PESKIDS_FAMILY_ACCESS_EMAIL_ENABLED, false);
 }
 
+/**
+ * Staff-only "improvement chat": owner/staff describe platform improvements
+ * they want and an AI classifies + summarizes each request, optionally
+ * creating a Twenty CRM task. Default OFF until the team is ready to use it.
+ */
+export function isPeskidsStaffImprovementChatEnabled(
+  env: NodeJS.ProcessEnv = process.env
+): boolean {
+  return parseBooleanFlag(env.PESKIDS_STAFF_IMPROVEMENT_CHAT_ENABLED, false);
+}
+
+/**
+ * Sub-toggle: when the improvement chat is enabled, also auto-create a
+ * Twenty CRM task for actionable requests (bug/feature_request/improvement).
+ * Independent flag so the team can use the chat without touching Twenty yet.
+ */
+export function isPeskidsStaffImprovementChatTwentyTaskEnabled(
+  env: NodeJS.ProcessEnv = process.env
+): boolean {
+  return parseBooleanFlag(env.PESKIDS_STAFF_IMPROVEMENT_CHAT_TWENTY_TASK_ENABLED, false);
+}
+
 export function getPeskidsContactSlaHours(
   env: NodeJS.ProcessEnv = process.env
 ): number {

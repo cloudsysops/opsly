@@ -18,6 +18,7 @@ import {
   RefreshCw,
   Settings,
   ShieldCheck,
+  Sparkles,
   Users,
   UsersRound,
   X,
@@ -66,6 +67,7 @@ const navOps = [
   { icon: MessageSquare, label: 'Feedback', href: '/admin#feedback' },
   { icon: CalendarClock, label: 'Seguimientos', href: '/admin#seguimientos' },
   { icon: Inbox, label: 'Mensajes', href: '/admin/messages' },
+  { icon: Sparkles, label: 'Mejoras', href: '/admin/chat' },
   { icon: Settings, label: 'Configuración', href: '/admin/settings' },
   { icon: Bell, label: 'Notificaciones', href: '/settings/notifications' },
 ] satisfies NavItem[];
@@ -214,6 +216,10 @@ export function AdminShell({
 
     if (item.label === 'Configuración') {
       return pathname.startsWith('/admin/settings');
+    }
+
+    if (item.label === 'Mejoras') {
+      return pathname.startsWith('/admin/chat');
     }
 
     if (item.label === 'Pipeline') {
