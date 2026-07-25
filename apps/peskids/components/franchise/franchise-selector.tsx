@@ -132,7 +132,7 @@ export function FranchiseSelector({ onSelectFranchise, showMap = false }: Franch
             <p className="font-medium mb-2">Cómo habilitar la ubicación:</p>
             <ul className="list-disc list-inside space-y-1 text-xs">
               <li>Haz clic en el icono de candado en la barra de direcciones</li>
-              <li>Selecciona "Permitir" para permisos de ubicación</li>
+              <li>Selecciona &quot;Permitir&quot; para permisos de ubicación</li>
               <li>Recarga la página</li>
             </ul>
           </div>
