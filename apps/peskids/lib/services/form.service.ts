@@ -1,12 +1,9 @@
 import { supabaseServer } from '@/lib/supabase';
 import type { Database } from '@/lib/types';
 
-export type FormTemplate =
-  Database['peskids']['Tables']['form_templates']['Row'];
-export type FormDelivery =
-  Database['peskids']['Tables']['form_deliveries']['Row'];
-export type FormResponse =
-  Database['peskids']['Tables']['form_responses']['Row'];
+export type FormTemplate = Database['peskids']['Tables']['form_templates']['Row'];
+export type FormDelivery = Database['peskids']['Tables']['form_deliveries']['Row'];
+export type FormResponse = Database['peskids']['Tables']['form_responses']['Row'];
 
 function tenantSlug(): string {
   return (process.env.NEXT_PUBLIC_TENANT_ID || 'peskids').trim().toLowerCase();
@@ -49,9 +46,7 @@ export async function createFormTemplate(input: {
   return data as FormTemplate;
 }
 
-export async function getFormTemplate(
-  templateId: string
-): Promise<FormTemplate | null> {
+export async function getFormTemplate(templateId: string): Promise<FormTemplate | null> {
   const { data, error } = await peskidsClient()
     .from('form_templates')
     .select('*')
@@ -64,9 +59,7 @@ export async function getFormTemplate(
   return (data ?? null) as FormTemplate | null;
 }
 
-export async function listFormTemplates(
-  formType?: string
-): Promise<FormTemplate[]> {
+export async function listFormTemplates(formType?: string): Promise<FormTemplate[]> {
   let query = peskidsClient()
     .from('form_templates')
     .select('*')
@@ -160,9 +153,7 @@ export async function submitFormResponse(input: {
   return data as FormResponse;
 }
 
-export async function getFormResponse(
-  responseId: string
-): Promise<FormResponse | null> {
+export async function getFormResponse(responseId: string): Promise<FormResponse | null> {
   const { data, error } = await peskidsClient()
     .from('form_responses')
     .select('*')
@@ -215,9 +206,7 @@ export async function markCRMSynced(input: {
   return data as FormResponse;
 }
 
-export async function markCRMSyncFailed(
-  responseId: string
-): Promise<FormResponse> {
+export async function markCRMSyncFailed(responseId: string): Promise<FormResponse> {
   const { data, error } = await peskidsClient()
     .from('form_responses')
     .update({

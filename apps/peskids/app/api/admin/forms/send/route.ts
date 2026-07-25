@@ -22,8 +22,7 @@ export async function POST(req: Request) {
     await adminAuth(req);
 
     const body = await req.json();
-    const { templateId, recipients, deliveryMethod, expiresInDays } =
-      sendFormSchema.parse(body);
+    const { templateId, recipients, deliveryMethod, expiresInDays } = sendFormSchema.parse(body);
 
     // Verify template exists
     const templates = await listFormTemplates();
