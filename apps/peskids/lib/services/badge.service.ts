@@ -15,6 +15,7 @@ export async function listBadgesForStudent(studentId: string): Promise<StudentBa
   const { data, error } = await peskidsClient()
     .from('student_badges')
     .select('*')
+    .eq('tenant_slug', tenantSlug())
     .eq('student_id', studentId)
     .order('created_at', { ascending: false });
 
@@ -28,6 +29,7 @@ export async function listBadgesForStudents(studentIds: string[]): Promise<Stude
   const { data, error } = await peskidsClient()
     .from('student_badges')
     .select('*')
+    .eq('tenant_slug', tenantSlug())
     .in('student_id', studentIds)
     .order('created_at', { ascending: false });
 
@@ -68,6 +70,7 @@ export async function teacherTaughtStudent(teacherId: string, studentId: string)
   const { data, error } = await peskidsClient()
     .from('class_enrollments')
     .select('classes(professor_user_id)')
+    .eq('tenant_slug', tenantSlug())
     .eq('student_id', studentId);
 
   if (error || !data) return false;
