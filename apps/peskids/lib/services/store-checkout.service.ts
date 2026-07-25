@@ -1,9 +1,10 @@
 import { supabaseServer } from '@/lib/supabase';
 import type { Database } from '@/lib/types';
+import { earnPoints, redeemPoints, initializeStudentPoints } from './points.service';
 
 export type ReferralLink = Database['peskids']['Tables']['referral_links']['Row'];
 
-const REFERRAL_DISCOUNT_PERCENT = 10; // 10% discount on purchases
+const REFERRAL_DISCOUNT_PERCENT = 10; // 10% discount on purchases (legacy, may be removed)
 const REFERRAL_DISCOUNT_MULTIPLIER = 1 - REFERRAL_DISCOUNT_PERCENT / 100; // 0.9
 
 function tenantSlug(): string {
@@ -91,13 +92,14 @@ export function calculateDiscount(totalCents: number): {
 // ========================
 
 /**
- * Process store checkout with optional referral discount
+ * Process store checkout with optional referral discount and point earning/redemption
  */
 export async function processStoreCheckout(input: {
   studentId: string;
   cartItems: Array<{ productId: string; quantity: number; unitPriceCents: number }>;
   totalCents: number;
   referralCode?: string;
+  pointsToRedeem?: number;
   stripePaymentIntentId?: string;
   wompiTransactionId?: string;
 }): Promise<{
@@ -106,14 +108,20 @@ export async function processStoreCheckout(input: {
   totalCents: number;
   discountCents: number;
   finalAmountCents: number;
+  pointsEarned: number;
+  pointsRedeemed: number;
+  pointsDiscountCents: number;
   referralCodeUsed?: string;
   error?: string;
 }> {
   let discountCents = 0;
   let finalAmountCents = input.totalCents;
   let referralCodeUsed: string | undefined;
+  let pointsEarned = 0;
+  let pointsRedeemed = 0;
+  let pointsDiscountCents = 0;
 
-  // Validate referral code if provided
+  // Validate referral code if provided (legacy, may be removed)
   if (input.referralCode) {
     const validation = await validateReferralCode(input.referralCode);
 
@@ -123,6 +131,9 @@ export async function processStoreCheckout(input: {
         totalCents: input.totalCents,
         discountCents: 0,
         finalAmountCents: input.totalCents,
+        pointsEarned: 0,
+        pointsRedeemed: 0,
+        pointsDiscountCents: 0,
         error: validation.error || 'Invalid referral code',
       };
     }
@@ -138,7 +149,22 @@ export async function processStoreCheckout(input: {
       await trackReferralRedemption(input.referralCode, input.studentId, discountCents);
     } catch (err) {
       console.error('Failed to track referral redemption:', err);
-      // Don't fail checkout if tracking fails, just log it
+    }
+  }
+
+  // Handle point redemption if provided
+  if (input.pointsToRedeem && input.pointsToRedeem > 0) {
+    const redemption = await redeemPoints({
+      studentId: input.studentId,
+      pointsToRedeem: input.pointsToRedeem,
+      copAmount: finalAmountCents, // Apply points to already-discounted amount
+      description: 'Descuento en compra de tienda',
+    });
+
+    if (redemption.success) {
+      pointsRedeemed = redemption.pointsRedeemed;
+      pointsDiscountCents = redemption.discountCents;
+      finalAmountCents -= redemption.discountCents;
     }
   }
 
@@ -150,7 +176,7 @@ export async function processStoreCheckout(input: {
       tenant_slug: tenantSlug(),
       student_id: input.studentId,
       total_cents: input.totalCents,
-      discount_cents: discountCents,
+      discount_cents: discountCents + pointsDiscountCents,
       final_amount_cents: finalAmountCents,
       referral_code_used: referralCodeUsed || null,
       payment_status: 'completed',
@@ -167,12 +193,16 @@ export async function processStoreCheckout(input: {
       totalCents: input.totalCents,
       discountCents,
       finalAmountCents,
+      pointsEarned: 0,
+      pointsRedeemed: 0,
+      pointsDiscountCents: 0,
       error: 'Failed to create order',
     };
   }
 
-  // Create order items
   const orderId = orderData.id;
+
+  // Create order items
   if (input.cartItems.length > 0) {
     const { error: itemsError } = await db.from('store_order_items').insert(
       input.cartItems.map((item) => ({
@@ -185,94 +215,174 @@ export async function processStoreCheckout(input: {
 
     if (itemsError) {
       console.error('Failed to create order items:', itemsError);
-      // Order created but items failed - this is a partial failure
     }
+  }
+
+  // Earn points from this purchase (in COP: totalCents / 100)
+  const copAmount = input.totalCents / 100;
+  try {
+    const pointsResult = await earnPoints({
+      studentId: input.studentId,
+      copAmount,
+      description: 'Compra en tienda',
+      relatedOrderId: orderId,
+    });
+    pointsEarned = pointsResult.pointsEarned;
+  } catch (err) {
+    console.error('Failed to earn points:', err);
+    // Don't fail checkout if point earning fails
   }
 
   return {
     success: true,
     orderId,
     totalCents: input.totalCents,
-    discountCents,
+    discountCents: discountCents + pointsDiscountCents,
     finalAmountCents,
+    pointsEarned,
+    pointsRedeemed,
+    pointsDiscountCents,
     referralCodeUsed,
   };
 }
 
 /**
- * Apply referral discount to class enrollment payment
+ * Apply points for class enrollment payment
  */
-export async function applyReferralToEnrollmentPayment(input: {
-  enrollmentPaymentId: string;
-  referralCode: string;
+export async function applyPointsToEnrollmentPayment(input: {
+  studentId: string;
+  paymentId: string;
   totalCents: number;
+  pointsToRedeem?: number;
 }): Promise<{
   success: boolean;
-  discountCents: number;
+  pointsEarned: number;
+  pointsRedeemed: number;
+  pointsDiscountCents: number;
   finalAmountCents: number;
   error?: string;
 }> {
-  // Validate referral code
-  const validation = await validateReferralCode(input.referralCode);
+  let finalAmountCents = input.totalCents;
+  let pointsEarned = 0;
+  let pointsRedeemed = 0;
+  let pointsDiscountCents = 0;
 
-  if (!validation.isValid) {
-    return {
-      success: false,
-      discountCents: 0,
-      finalAmountCents: input.totalCents,
-      error: validation.error || 'Invalid referral code',
-    };
+  // Handle point redemption if provided
+  if (input.pointsToRedeem && input.pointsToRedeem > 0) {
+    const redemption = await redeemPoints({
+      studentId: input.studentId,
+      pointsToRedeem: input.pointsToRedeem,
+      copAmount: finalAmountCents,
+      description: 'Descuento en pago de clase individual',
+      relatedPaymentId: input.paymentId,
+    });
+
+    if (redemption.success) {
+      pointsRedeemed = redemption.pointsRedeemed;
+      pointsDiscountCents = redemption.discountCents;
+      finalAmountCents -= redemption.discountCents;
+    } else {
+      return {
+        success: false,
+        pointsEarned: 0,
+        pointsRedeemed: 0,
+        pointsDiscountCents: 0,
+        finalAmountCents: input.totalCents,
+        error: redemption.error,
+      };
+    }
   }
 
-  // Calculate discount
-  const { discountCents, finalAmountCents } = calculateDiscount(input.totalCents);
-
-  // Update payment record with referral discount info
-  // The actual payment update would be done by the enrollment service
-  // This just calculates and returns the discount
+  // Earn points from this payment
+  const copAmount = input.totalCents / 100;
+  try {
+    const pointsResult = await earnPoints({
+      studentId: input.studentId,
+      copAmount,
+      description: 'Pago de clase individual',
+      relatedPaymentId: input.paymentId,
+    });
+    pointsEarned = pointsResult.pointsEarned;
+  } catch (err) {
+    console.error('Failed to earn points:', err);
+  }
 
   return {
     success: true,
-    discountCents,
+    pointsEarned,
+    pointsRedeemed,
+    pointsDiscountCents,
     finalAmountCents,
   };
 }
 
 /**
- * Apply referral discount to monthly subscription
+ * Apply points for monthly subscription payment
  */
-export async function applyReferralToSubscription(input: {
+export async function applyPointsToSubscription(input: {
+  studentId: string;
   subscriptionId: string;
-  referralCode: string;
   monthlyPriceCents: number;
+  pointsToRedeem?: number;
 }): Promise<{
   success: boolean;
-  discountCents: number;
+  pointsEarned: number;
+  pointsRedeemed: number;
+  pointsDiscountCents: number;
   finalMonthlyCents: number;
   error?: string;
 }> {
-  // Validate referral code
-  const validation = await validateReferralCode(input.referralCode);
+  let finalMonthlyCents = input.monthlyPriceCents;
+  let pointsEarned = 0;
+  let pointsRedeemed = 0;
+  let pointsDiscountCents = 0;
 
-  if (!validation.isValid) {
-    return {
-      success: false,
-      discountCents: 0,
-      finalMonthlyCents: input.monthlyPriceCents,
-      error: validation.error || 'Invalid referral code',
-    };
+  // Handle point redemption if provided
+  if (input.pointsToRedeem && input.pointsToRedeem > 0) {
+    const redemption = await redeemPoints({
+      studentId: input.studentId,
+      pointsToRedeem: input.pointsToRedeem,
+      copAmount: finalMonthlyCents,
+      description: 'Descuento en pago de mensualidad',
+      relatedSubscriptionId: input.subscriptionId,
+    });
+
+    if (redemption.success) {
+      pointsRedeemed = redemption.pointsRedeemed;
+      pointsDiscountCents = redemption.discountCents;
+      finalMonthlyCents -= redemption.discountCents;
+    } else {
+      return {
+        success: false,
+        pointsEarned: 0,
+        pointsRedeemed: 0,
+        pointsDiscountCents: 0,
+        finalMonthlyCents: input.monthlyPriceCents,
+        error: redemption.error,
+      };
+    }
   }
 
-  // Calculate discount
-  const { discountCents, finalAmountCents } = calculateDiscount(input.monthlyPriceCents);
-
-  // Update subscription record with referral discount info
-  // The actual subscription update would be done by the subscription service
+  // Earn points from this payment
+  const copAmount = input.monthlyPriceCents / 100;
+  try {
+    const pointsResult = await earnPoints({
+      studentId: input.studentId,
+      copAmount,
+      description: 'Pago de mensualidad',
+      relatedSubscriptionId: input.subscriptionId,
+    });
+    pointsEarned = pointsResult.pointsEarned;
+  } catch (err) {
+    console.error('Failed to earn points:', err);
+  }
 
   return {
     success: true,
-    discountCents,
-    finalMonthlyCents: finalAmountCents,
+    pointsEarned,
+    pointsRedeemed,
+    pointsDiscountCents,
+    finalMonthlyCents,
   };
 }
 
