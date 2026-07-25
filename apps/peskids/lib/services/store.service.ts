@@ -22,10 +22,7 @@ export async function listStoreProducts(filters?: {
   category?: string;
   active?: boolean;
 }): Promise<StoreProduct[]> {
-  let query = peskidsClient()
-    .from('store_products')
-    .select('*')
-    .eq('tenant_slug', tenantSlug());
+  let query = peskidsClient().from('store_products').select('*').eq('tenant_slug', tenantSlug());
 
   if (filters?.category) {
     query = query.eq('category', filters.category);
@@ -81,14 +78,17 @@ export async function createProduct(input: {
   return data as StoreProduct;
 }
 
-export async function updateProduct(productId: string, input: Partial<{
-  title: string;
-  description: string;
-  price_cents: number;
-  image_url: string;
-  inventory_count: number;
-  active: boolean;
-}>): Promise<StoreProduct> {
+export async function updateProduct(
+  productId: string,
+  input: Partial<{
+    title: string;
+    description: string;
+    price_cents: number;
+    image_url: string;
+    inventory_count: number;
+    active: boolean;
+  }>
+): Promise<StoreProduct> {
   const { data, error } = await peskidsClient()
     .from('store_products')
     .update({
@@ -118,7 +118,11 @@ export async function deleteProduct(productId: string): Promise<void> {
 // SHOPPING CART
 // ========================
 
-export async function addToCart(studentId: string, productId: string, quantity: number = 1): Promise<StoreCartItem> {
+export async function addToCart(
+  studentId: string,
+  productId: string,
+  quantity: number = 1
+): Promise<StoreCartItem> {
   // Upsert: insert or update if already in cart
   const { data, error } = await peskidsClient()
     .from('store_cart_items')
@@ -138,7 +142,9 @@ export async function addToCart(studentId: string, productId: string, quantity: 
   return data as StoreCartItem;
 }
 
-export async function getCart(studentId: string): Promise<(StoreCartItem & { product: StoreProduct })[]> {
+export async function getCart(
+  studentId: string
+): Promise<(StoreCartItem & { product: StoreProduct })[]> {
   const { data, error } = await peskidsClient()
     .from('store_cart_items')
     .select('*, product:product_id(*)')
@@ -259,7 +265,10 @@ export async function listStudentOrders(studentId: string): Promise<StoreOrder[]
   return (data ?? []) as StoreOrder[];
 }
 
-export async function updateOrderStatus(orderId: string, status: 'pending' | 'completed' | 'failed' | 'refunded'): Promise<StoreOrder> {
+export async function updateOrderStatus(
+  orderId: string,
+  status: 'pending' | 'completed' | 'failed' | 'refunded'
+): Promise<StoreOrder> {
   const { data, error } = await peskidsClient()
     .from('store_orders')
     .update({

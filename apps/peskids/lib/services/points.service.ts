@@ -231,7 +231,7 @@ export async function redeemPoints(input: {
   const discountPercentPerTenPoints = DISCOUNT_PERCENT;
   const numTenPointBatches = input.pointsToRedeem / REDEEM_POINTS_FOR_DISCOUNT;
   const discountCents = Math.round(
-    input.copAmount * (discountPercentPerTenPoints * numTenPointBatches) / 100
+    (input.copAmount * (discountPercentPerTenPoints * numTenPointBatches)) / 100
   );
 
   // Add transaction log
@@ -301,7 +301,10 @@ export async function getStudentPoints(studentId: string): Promise<StudentPoints
   return (data ?? null) as StudentPoints | null;
 }
 
-export async function getPointsHistory(studentId: string, limit: number = 50): Promise<PointTransaction[]> {
+export async function getPointsHistory(
+  studentId: string,
+  limit: number = 50
+): Promise<PointTransaction[]> {
   const { data, error } = await peskidsClient()
     .from('point_transactions')
     .select('*')
