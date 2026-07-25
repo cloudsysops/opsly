@@ -19,6 +19,7 @@ tags:
 - `followup.overdue` — `lib/services/lead-aging.service.ts`
 - `trial.scheduled` / `trial.completed` / `trial.no_show` — `lib/services/trial-class.service.ts`
 - `student.enrolled` — `lib/services/lead-conversion.service.ts`
+- `student.attendance_risk` — `lib/services/attendance-risk.service.ts` (gated by `PESKIDS_ATTENDANCE_RISK_ALERT_ENABLED`, default off)
 
 **Principles:**
 - Every user action → event

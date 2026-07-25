@@ -11,6 +11,8 @@ describe('buildPeskidsProObservability', () => {
     expect(snapshot.flags.auto_create_followup).toBe(false);
     expect(snapshot.flags.lead_confirmation).toBe(false);
     expect(snapshot.flags.family_access_email).toBe(false);
+    expect(snapshot.flags.attendance_risk_alert).toBe(false);
+    expect(snapshot.attendance_risk_threshold).toBe(3);
   });
 
   it('detects configured event bus and enabled flags without exposing values', () => {
@@ -21,6 +23,8 @@ describe('buildPeskidsProObservability', () => {
       PESKIDS_LEAD_CONFIRMATION_ENABLED: 'true',
       PESKIDS_FAMILY_ACCESS_EMAIL_ENABLED: 'true',
       PESKIDS_CONTACT_SLA_HOURS: '24',
+      PESKIDS_ATTENDANCE_RISK_ALERT_ENABLED: 'true',
+      PESKIDS_ATTENDANCE_RISK_THRESHOLD: '4',
     });
     expect(snapshot.event_bus_configured).toBe(true);
     expect(snapshot.contact_sla_hours).toBe(24);
@@ -28,6 +32,8 @@ describe('buildPeskidsProObservability', () => {
     expect(snapshot.flags.auto_create_followup).toBe(true);
     expect(snapshot.flags.lead_confirmation).toBe(true);
     expect(snapshot.flags.family_access_email).toBe(true);
+    expect(snapshot.flags.attendance_risk_alert).toBe(true);
+    expect(snapshot.attendance_risk_threshold).toBe(4);
     expect(JSON.stringify(snapshot)).not.toContain('example.invalid');
   });
 });

@@ -83,6 +83,7 @@ describe('runLeadAgingScan', () => {
     const result = await runLeadAgingScan(new Date('2026-07-23T12:00:00.000Z'));
     expect(result.scanned_leads).toBe(0);
     expect(result.reminder_24h).toBe(0);
+    expect(result.attendance_risk).toBe(0);
     expect(fetch).not.toHaveBeenCalled();
   });
 

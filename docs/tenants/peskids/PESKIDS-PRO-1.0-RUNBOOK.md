@@ -40,6 +40,8 @@ tags:
 | `PESKIDS_LEAD_CONFIRMATION_ENABLED` | Email confirmación lead (API; default off) |
 | `PESKIDS_FAMILY_ACCESS_EMAIL_ENABLED` | Email magic-link portal familias (default **off**) |
 | `PESKIDS_CONTACT_SLA_HOURS` | SLA horas (default `48`) |
+| `PESKIDS_ATTENDANCE_RISK_ALERT_ENABLED` | Auto-followup por ausencias consecutivas (post Pro 1.0) |
+| `PESKIDS_ATTENDANCE_RISK_THRESHOLD` | Nº de ausencias consecutivas para alertar (default `3`) |
 | `OPSLY_EVENT_BUS_URL` | Bus de eventos; si falta → warning, no bloquea writes |
 
 Helpers: `apps/peskids/lib/peskids-pro-flags.ts`.
@@ -72,6 +74,7 @@ Catálogo: `PESKIDS_PRO_EVENT_NAMES` en `apps/peskids/lib/events.ts`. Detalle: [
 | `trial.completed` | `updateTrialClass` → status `attended` |
 | `trial.no_show` | `updateTrialClass` → status `no_show` |
 | `student.enrolled` | `convertLeadToStudent` |
+| `student.attendance_risk` | Aging scan (`processAttendanceRisk`, post Pro 1.0) — `N`+ ausencias consecutivas |
 
 Sin bus configurado el write path a Supabase **no** falla.
 
