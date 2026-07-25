@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Gift, BadgePercent, Link2 } from 'lucide-react';
 import { PublicReservaWhatsAppLink } from '@/components/marketing/public-reserva-whatsapp-link';
+import { PESKIDS_FORM_NAV_LABEL } from '@/lib/peskids-landing-copy';
 import { peskidsColorTokens } from '@/lib/tokens';
 
 function MiniReferralStep({
@@ -124,7 +125,7 @@ function FinalCTA(): React.ReactElement {
         <div className="flex flex-col justify-center gap-3 sm:flex-row lg:justify-end">
           <PublicReservaWhatsAppLink
             variant="onDark"
-            label="Reservar clase gratuita"
+            label={PESKIDS_FORM_NAV_LABEL}
             className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-pk-sun px-6 text-sm font-bold text-pk-ink transition hover:brightness-105"
           />
         </div>

@@ -34,7 +34,7 @@ export default async function ThanksPage({
             </span>
             <CardTitle className="text-2xl">¡Listo, recibimos tu solicitud!</CardTitle>
             <CardDescription className="text-base">
-              Te contactaremos pronto para agendar la clase de prueba gratis.
+              Te contactaremos pronto para orientarte sobre matrícula y clases en Peskids.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 pb-8">

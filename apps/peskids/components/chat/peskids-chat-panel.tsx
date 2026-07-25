@@ -56,14 +56,14 @@ export function PeskidsChatPanel({
                 ? 'Soporte de familias'
                 : 'Peskids · Soporte'
               : isInline
-                ? 'Reserva por chat'
+                ? 'Contacto por chat'
                 : 'Peskids'}
           </p>
           <p className="text-[11px] opacity-90">
             {isSupport
               ? 'Incidencias, seguimiento y ayuda operativa'
               : isInline
-                ? 'Clase de prueba gratis · te guiamos paso a paso'
+                ? 'Contacto · te guiamos al formulario'
                 : 'Asistente IA · orientativo, no reemplaza evaluación profesional'}
           </p>
         </div>

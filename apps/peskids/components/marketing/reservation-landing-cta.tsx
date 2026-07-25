@@ -2,6 +2,7 @@
 
 import { GatedWhatsAppLink } from '@/components/marketing/gated-whatsapp-link';
 import { PESKIDS_RESERVATION_FORM_ANCHOR } from '@/lib/peskids-landing-config';
+import { PESKIDS_FORM_SUBMIT_LABEL } from '@/lib/peskids-landing-copy';
 
 type ReservationLandingCTAProps = {
   formAnchorId?: string;
@@ -19,7 +20,7 @@ export function ReservationLandingCTA({
         className="rounded-lg bg-pk-primary px-6 py-3 font-semibold text-white transition-colors hover:bg-pk-primary/90"
         type="button"
       >
-        Reservar clase gratuita
+        {PESKIDS_FORM_SUBMIT_LABEL}
       </button>
       <GatedWhatsAppLink variant="button" label="WhatsApp" />
     </div>

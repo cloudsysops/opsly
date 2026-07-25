@@ -3,6 +3,7 @@ import { Instagram } from 'lucide-react'
 import { PeskidsBrush, WiggleLine } from '@/components/brand/peskids-logo'
 import { GatedWhatsAppLink } from '@/components/marketing/gated-whatsapp-link'
 import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config'
+import { PESKIDS_FORM_NAV_LABEL } from '@/lib/peskids-landing-copy'
 import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
 import { peskidsColorTokens } from '@/lib/tokens'
 
@@ -16,7 +17,7 @@ export function HeroSection(): React.ReactElement {
       <div className="relative z-10 mx-auto max-w-4xl px-4 py-14 sm:px-8 lg:px-14 lg:py-20">
         <span className="pk-pill border-white/10 bg-white/10 text-white">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
-          Cupos abiertos · segundo semestre
+          Cupos abiertos · ciclo junio
         </span>
 
         <h1 className="mt-5 text-5xl font-bold leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-[5.2rem]">
@@ -48,7 +49,7 @@ export function HeroSection(): React.ReactElement {
             href={PESKIDS_RESERVATION_FORM_HREF}
             className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-pk-primary px-6 text-sm font-bold text-white shadow-md transition hover:bg-pk-primary/90"
           >
-            Reservar clase gratuita
+            {PESKIDS_FORM_NAV_LABEL}
           </Link>
           <GatedWhatsAppLink variant="onDark" label="WhatsApp" />
           <Link
@@ -64,8 +65,8 @@ export function HeroSection(): React.ReactElement {
         </div>
 
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/65">
-          Primero completa el formulario con tus datos; después podrás continuar por WhatsApp si lo
-          prefieres.
+          Completa el formulario de matrícula con tus datos; el equipo de Peskids te contactará.
+          Después podrás continuar por WhatsApp si lo prefieres.
         </p>
       </div>
     </section>
