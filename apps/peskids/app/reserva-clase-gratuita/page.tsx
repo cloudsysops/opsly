@@ -2,11 +2,11 @@ import { redirect } from 'next/navigation';
 import { PESKIDS_RESERVATION_ANCHOR } from '@/lib/peskids-landing-config';
 
 export const metadata = {
-  title: 'Peskids · Reserva clase gratuita',
-  description: 'Reserva una clase de prueba gratis para Peskids.',
+  title: 'Peskids · Solicitud de contacto',
+  description: 'Completa el formulario de matrícula para que Peskids te contacte.',
 };
 
-/** Legacy URL → canonical home reservation anchor (Option A). */
+/** Legacy URL (clase gratis) → home form anchor. Soft-launch: no free-class offer. */
 export default function ReservaClaseGratisPage(): never {
   redirect(`/#${PESKIDS_RESERVATION_ANCHOR}`);
 }

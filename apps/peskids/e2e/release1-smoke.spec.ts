@@ -60,7 +60,7 @@ test.describe.serial('Peskids Release 1 smoke', () => {
       .getByRole('checkbox')
       .first()
       .check();
-    await page.getByRole('button', { name: /Reservar clase gratuita/i }).click();
+    await page.getByRole('button', { name: /Enviar solicitud de contacto/i }).click();
     await expect(page.getByText(/Tu solicitud quedó registrada correctamente/i)).toBeVisible();
 
     await login(page, request);

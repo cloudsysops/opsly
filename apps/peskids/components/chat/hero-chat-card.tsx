@@ -24,9 +24,9 @@ export function HeroChatCard(): React.ReactElement {
       />
       <p className="mt-3 flex flex-wrap items-center gap-2 text-xs text-pk-mutedText">
         <MessageCircle className="h-3.5 w-3.5 text-pk-primary" aria-hidden />
-        <span>Para reservar clase de prueba, completa primero el</span>
+        <span>Para que Peskids te contacte, completa primero el</span>
         <Link href={PESKIDS_RESERVATION_FORM_HREF} className="font-semibold text-pk-primary underline-offset-2 hover:underline">
-          formulario de reserva
+          formulario de matrícula
         </Link>
       </p>
     </div>

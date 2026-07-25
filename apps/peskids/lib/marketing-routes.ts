@@ -1,3 +1,4 @@
+import { PESKIDS_FORM_NAV_LABEL } from '@/lib/peskids-landing-copy';
 import {
   PESKIDS_RESERVATION_FORM_HREF,
   peskidsPublicLeadFormUrl,
@@ -26,8 +27,8 @@ export function isPeskidsPublicLandingPath(pathname: string | null | undefined):
   );
 }
 
-/** CTAs de reserva en páginas públicas → formulario en home. */
-export const PESKIDS_PUBLIC_RESERVA_FORM_LABEL = 'Reservar clase gratuita';
+/** CTAs públicos → formulario de contacto/matrícula en home (soft-launch: sin clase gratis). */
+export const PESKIDS_PUBLIC_RESERVA_FORM_LABEL = PESKIDS_FORM_NAV_LABEL;
 
 /** Etiqueta del botón WhatsApp en landing (gate: formulario primero). */
 export const PESKIDS_PUBLIC_WHATSAPP_LABEL = 'WhatsApp';
@@ -36,7 +37,7 @@ export const PESKIDS_PUBLIC_WHATSAPP_LABEL = 'WhatsApp';
 export const PESKIDS_PUBLIC_RESERVA_WHATSAPP_LABEL = PESKIDS_PUBLIC_WHATSAPP_LABEL;
 
 export const PESKIDS_ADMISSIONS_CHAT_FORM_REPLY =
-  'Para reservar tu clase gratuita, completa primero el formulario con tu nombre, correo y consentimiento. Después podrás continuar por WhatsApp si lo prefieres.';
+  'Para que Peskids te contacte, completa primero el formulario con tu nombre, correo y consentimiento. Después podrás continuar por WhatsApp si lo prefieres.';
 
 /** Payload when web chat tries admissions intake without the lead form. */
 export function peskidsAdmissionsChatFormRedirectPayload(): {
@@ -65,7 +66,7 @@ export function peskidsAdmissionsChatFormRedirectPayload(): {
     input_mode: 'text',
     quick_replies: [],
     from_llm: false,
-    disclaimer: 'La solicitud oficial de clase de prueba se registra solo con el formulario web.',
+    disclaimer: 'La solicitud oficial de contacto se registra solo con el formulario web.',
   };
 }
 

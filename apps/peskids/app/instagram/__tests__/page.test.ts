@@ -5,9 +5,10 @@ describe('/instagram page', () => {
     expect(true).toBe(true);
   });
 
-  it('metadata should include natacion class', () => {
-    const title = 'Clase de prueba gratuita de natacion | Peskids';
+  it('metadata should include contact framing', () => {
+    const title = 'Solicitud de contacto | Peskids';
     expect(title).toContain('Peskids');
+    expect(title.toLowerCase()).not.toMatch(/gratis|gratuita/);
   });
 
   it('should have WhatsApp fallback', () => {

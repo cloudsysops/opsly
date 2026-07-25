@@ -11,6 +11,8 @@ import {
   PESKIDS_CONSENT_MARKETING,
   PESKIDS_FORM_CARD_DESCRIPTION,
   PESKIDS_FORM_CARD_TITLE,
+  PESKIDS_FORM_SUBMIT_LABEL,
+  PESKIDS_FORM_SUCCESS_DETAIL,
   PESKIDS_RESERVATION_EYEBROW,
   PESKIDS_RESERVATION_TITLE,
   PESKIDS_WHATSAPP_CTA_LABEL,
@@ -218,9 +220,7 @@ export function LeadCaptureForm({
             <p className="font-semibold text-pk-primary">
               ¡Perfecto, {formData.name}! 🎉 Recibimos tu solicitud.
             </p>
-            <p className="mt-2 text-pk-sub">
-              Tu solicitud quedó registrada correctamente. Un asesor revisará tu información y te escribirá en menos de 48 h hábiles para coordinar la clase de prueba gratis.
-            </p>
+            <p className="mt-2 text-pk-sub">{PESKIDS_FORM_SUCCESS_DETAIL}</p>
             <p className="mt-3 font-medium text-pk-primary">
               Siguiente paso: continúa por WhatsApp con tu solicitud ya registrada.
             </p>
@@ -378,8 +378,8 @@ export function LeadCaptureForm({
               />
               <span>
                 Autorizo a Peskids para tratar mis datos personales y, cuando aplique, los del
-                menor bajo mi responsabilidad, con el fin de atender esta solicitud y coordinar la
-                clase de prueba, conforme a su{' '}
+                menor bajo mi responsabilidad, con el fin de atender esta solicitud de contacto y
+                matrícula, conforme a su{' '}
                 <a href="/privacy" target="_blank" rel="noopener" className="text-pk-primary hover:underline">
                   Política de Privacidad
                 </a>
@@ -415,7 +415,7 @@ export function LeadCaptureForm({
             ) : (
               <>
                 <Send className="h-4 w-4" aria-hidden />
-                Reservar clase gratuita →
+                {PESKIDS_FORM_SUBMIT_LABEL} →
               </>
             )}
           </Button>

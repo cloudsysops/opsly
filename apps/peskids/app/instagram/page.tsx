@@ -5,13 +5,13 @@ import { PeskidsReservationLanding } from '@/components/marketing/peskids-reserv
 import { PESKIDS_INSTAGRAM_LANDING } from '@/lib/peskids-landing-config';
 
 export const metadata = {
-  title: 'Clase de prueba gratis | Peskids',
+  title: 'Solicitud de contacto | Peskids',
   description:
-    'Reserva una clase de prueba gratis en Peskids. Natación en Llanogrande o a domicilio en el área metropolitana de Medellín.',
+    'Completa el formulario y el equipo de Peskids te contacta. Natación en Llanogrande o a domicilio en el área metropolitana de Medellín.',
   openGraph: {
-    title: 'Clase de prueba gratis',
+    title: 'Solicitud de contacto · Peskids',
     description:
-      'Déjanos tus datos y te contactaremos para coordinar la clase de prueba en sede Llanogrande o a domicilio.',
+      'Déjanos tus datos y te contactaremos para orientarte sobre matrícula y clases en sede Llanogrande o a domicilio.',
     url: 'https://peskids.op-sly.com/instagram',
     type: 'website',
   },
@@ -30,8 +30,8 @@ export default function InstagramPage(): React.ReactElement {
           showLogo
           headingLevel="h1"
         />
+        <CtaBand />
       </main>
-      <CtaBand />
       <SiteFooter />
     </div>
   );
