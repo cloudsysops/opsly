@@ -101,13 +101,14 @@ export function isPeskidsStaffImprovementChatTwentyTaskEnabled(
   return parseBooleanFlag(env.PESKIDS_STAFF_IMPROVEMENT_CHAT_TWENTY_TASK_ENABLED, false);
 }
 
-export function getPeskidsContactSlaHours(
+/**
+ * Auto-followup (+ Twenty Task, via createFollowup for contact_type: 'lead')
+ * when the commercial pipeline advances a lead to the Renewal stage.
+ */
+export function isPeskidsRenewalReminderEnabled(
   env: NodeJS.ProcessEnv = process.env
-): number {
-  const raw = env.PESKIDS_CONTACT_SLA_HOURS?.trim();
-  if (!raw) return 48;
-  const parsed = Number.parseInt(raw, 10);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : 48;
+): boolean {
+  return parseBooleanFlag(env.PESKIDS_RENEWAL_REMINDER_ENABLED, false);
 }
 
 /** Auto-followup on consecutive class absences (retention risk). */
@@ -124,4 +125,13 @@ export function getPeskidsAttendanceRiskThreshold(
   if (!raw) return 3;
   const parsed = Number.parseInt(raw, 10);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : 3;
+}
+
+export function getPeskidsContactSlaHours(
+  env: NodeJS.ProcessEnv = process.env
+): number {
+  const raw = env.PESKIDS_CONTACT_SLA_HOURS?.trim();
+  if (!raw) return 48;
+  const parsed = Number.parseInt(raw, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 48;
 }

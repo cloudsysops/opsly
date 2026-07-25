@@ -8,6 +8,9 @@ import {
   LOCAL_STATUS_TO_PIPELINE_STAGE,
   PIPELINE_STAGE_TO_LOCAL_STATUS,
 } from '@/lib/agents/pipeline-rules';
+import { isPeskidsRenewalReminderEnabled } from '@/lib/peskids-pro-flags';
+import { createFollowup } from '@/lib/services/followup-admin.service';
+import { emitLeadRenewalDue } from '@/lib/events';
 
 function platformPeskidsLeads() {
   const client = supabaseServer() as {
@@ -82,6 +85,38 @@ export class PipelineManagerService {
 
   private stageIndex(stage: string): number {
     return PipelineManagerService.PIPELINE_STAGES.indexOf(stage as PipelineStage);
+  }
+
+  /**
+   * Auto-followup (+ Twenty Task via createFollowup for contact_type: 'lead')
+   * the moment a lead enters the Renewal stage. Never blocks the stage
+   * advance itself — a CRM/notify failure here is logged, not thrown.
+   */
+  private async notifyRenewalDue(leadId: string): Promise<void> {
+    if (!isPeskidsRenewalReminderEnabled()) return;
+
+    try {
+      const due = new Date();
+      due.setDate(due.getDate() + 1);
+      const followup = await createFollowup({
+        contact_id: leadId,
+        contact_type: 'lead',
+        type: 'call',
+        due_date: due.toISOString().slice(0, 10),
+        notes: 'Auto: alumno activo cerca de renovación — confirmar continuidad',
+      });
+      void emitLeadRenewalDue({ leadId, followupId: followup.id }).catch((err: unknown) => {
+        console.warn('[pipeline-manager] lead.renewal_due emit failed', {
+          lead_id: leadId,
+          error: err instanceof Error ? err.message : String(err),
+        });
+      });
+    } catch (err) {
+      console.warn('[pipeline-manager] renewal followup failed', {
+        lead_id: leadId,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
   }
 
   /** Read commercial stage from public.leads.status (source of truth). */
@@ -174,6 +209,9 @@ export class PipelineManagerService {
         if (nextIdx <= currentIdx) continue;
 
         await this.advanceStage(leadId, rule.nextStage);
+        if (rule.nextStage === 'Renewal') {
+          await this.notifyRenewalDue(leadId);
+        }
         return { advanced: true, from: currentStage, to: rule.nextStage };
       } catch (err) {
         return {
