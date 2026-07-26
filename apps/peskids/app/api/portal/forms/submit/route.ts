@@ -1,10 +1,19 @@
 import { submitFormResponse, getFormDelivery, getFormTemplate } from '@/lib/services/form.service';
 import { z } from 'zod';
+import { apiRateLimiter } from '@/lib/middleware/rate-limit';
 
 export async function POST(req: Request) {
   const requestId = req.headers.get('x-request-id') || crypto.randomUUID();
 
   try {
+    const limit = apiRateLimiter(req);
+    if (!limit.allowed) {
+      return Response.json(
+        { error: 'Too many requests' },
+        { status: 429, headers: { 'Retry-After': String(limit.retryAfter) } }
+      );
+    }
+
     const body = await req.json();
     const { deliveryId, templateId, responseData } = z
       .object({

@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { getAllContactsForAdmin } from '@/lib/services/crm-sync.service'
+import { validateAdminJWT } from '@/lib/middleware/admin-auth'
 
 const adminSearchSchema = z.object({
   q: z.string().optional(),
@@ -19,7 +20,14 @@ export async function GET(req: Request) {
   const requestId = req.headers.get('x-request-id') || crypto.randomUUID()
 
   try {
-    // TODO: Validate admin auth
+    const auth = await validateAdminJWT(req)
+    if (!auth.isAdmin) {
+      return Response.json(
+        { error: 'Unauthorized - admin access required', request_id: requestId },
+        { status: 401 }
+      )
+    }
+
     const url = new URL(req.url)
     const params = adminSearchSchema.parse({
       q: url.searchParams.get('q'),

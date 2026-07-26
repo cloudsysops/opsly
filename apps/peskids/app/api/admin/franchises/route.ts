@@ -3,6 +3,7 @@ import {
   listFranchises,
   updateFranchiseStatus,
 } from '@/lib/services/franchise-management.service';
+import { validateAdminJWT } from '@/lib/middleware/admin-auth';
 
 const listQuerySchema = z.object({
   status: z.string().optional(),
@@ -26,7 +27,14 @@ export async function GET(req: Request) {
   const requestId = req.headers.get('x-request-id') || crypto.randomUUID();
 
   try {
-    // TODO: Validate admin auth
+    const auth = await validateAdminJWT(req);
+    if (!auth.isAdmin) {
+      return Response.json(
+        { error: 'Unauthorized - admin access required', request_id: requestId },
+        { status: 401 }
+      );
+    }
+
     const url = new URL(req.url);
     const params = listQuerySchema.parse({
       status: url.searchParams.get('status'),
@@ -94,7 +102,14 @@ export async function PATCH(req: Request) {
   const requestId = req.headers.get('x-request-id') || crypto.randomUUID();
 
   try {
-    // TODO: Validate admin auth
+    const auth = await validateAdminJWT(req);
+    if (!auth.isAdmin) {
+      return Response.json(
+        { error: 'Unauthorized - admin access required', request_id: requestId },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
     const { franchiseTenantId, status, notes } = updateStatusSchema.parse(body);
 

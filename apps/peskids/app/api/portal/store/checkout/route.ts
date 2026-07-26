@@ -2,6 +2,7 @@ import { processStoreCheckout } from '@/lib/services/store-checkout.service';
 import { getCart, clearCart } from '@/lib/services/store.service';
 import { resolveTrustedPortalSession } from '@intcloudsysops/security';
 import { z } from 'zod';
+import { apiRateLimiter } from '@/lib/middleware/rate-limit';
 
 const checkoutSchema = z.object({
   pointsToRedeem: z.number().int().min(0).optional(),
@@ -13,6 +14,14 @@ export async function POST(req: Request) {
   const requestId = req.headers.get('x-request-id') || crypto.randomUUID();
 
   try {
+    const limit = apiRateLimiter(req);
+    if (!limit.allowed) {
+      return Response.json(
+        { error: 'Too many requests' },
+        { status: 429, headers: { 'Retry-After': String(limit.retryAfter) } }
+      );
+    }
+
     const session = await resolveTrustedPortalSession(req);
     if (!session?.studentId) {
       return Response.json(

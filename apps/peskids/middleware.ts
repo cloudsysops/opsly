@@ -28,24 +28,32 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     LOGIN_PATHS.has(path) ||
     path === '/api/admin/login'
   ) {
-    return NextResponse.next()
+    const response = NextResponse.next()
+    addSecurityHeaders(response)
+    return response
   }
 
   if (!path.startsWith('/admin')) {
-    return NextResponse.next()
+    const response = NextResponse.next()
+    addSecurityHeaders(response)
+    return response
   }
 
   const adminSecret = process.env.DASHBOARD_ADMIN_SECRET?.trim() ?? ''
   const adminToken = req.cookies.get('admin-token')?.value?.trim() ?? ''
   if (adminSecret && adminToken === adminSecret) {
-    return NextResponse.next()
+    const response = NextResponse.next()
+    addSecurityHeaders(response)
+    return response
   }
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   if (!url || !anon) {
     const login = new URL('/admin/login', req.url)
-    return NextResponse.redirect(login)
+    const response = NextResponse.redirect(login)
+    addSecurityHeaders(response)
+    return response
   }
 
   let response = NextResponse.next({ request: req })
@@ -71,11 +79,33 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   } = await supabase.auth.getUser()
 
   if (user && isStaffUser(user)) {
+    addSecurityHeaders(response)
     return response
   }
 
   const login = new URL('/admin/login', req.url)
-  return NextResponse.redirect(login)
+  const loginResponse = NextResponse.redirect(login)
+  addSecurityHeaders(loginResponse)
+  return loginResponse
+}
+
+function addSecurityHeaders(response: NextResponse) {
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+  response.headers.set('X-Frame-Options', 'DENY')
+  response.headers.set('X-XSS-Protection', '1; mode=block')
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+
+  if (process.env.NODE_ENV === 'production') {
+    response.headers.set(
+      'Strict-Transport-Security',
+      'max-age=31536000; includeSubDomains; preload'
+    )
+  }
+
+  response.headers.set(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:"
+  )
 }
 
 export const config = {
