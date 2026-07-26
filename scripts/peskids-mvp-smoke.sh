@@ -3,10 +3,10 @@ set -euo pipefail
 
 # Smoke Peskids production readiness.
 # Usage:
-#   WEB_BASE=https://peskids.op-sly.com API_BASE=https://api.op-sly.com ./scripts/peskids-mvp-smoke.sh --dry-run
-#   WEB_BASE=https://peskids.op-sly.com API_BASE=https://api.op-sly.com ./scripts/peskids-mvp-smoke.sh
+#   WEB_BASE=https://www.peskids.com API_BASE=https://api.op-sly.com ./scripts/peskids-mvp-smoke.sh --dry-run
+#   WEB_BASE=https://www.peskids.com API_BASE=https://api.op-sly.com ./scripts/peskids-mvp-smoke.sh
 
-WEB_BASE="${WEB_BASE:-https://peskids.op-sly.com}"
+WEB_BASE="${WEB_BASE:-https://www.peskids.com}"
 API_BASE="${API_BASE:-https://api.op-sly.com}"
 PORTAL_HEALTH_SLUG="${PORTAL_HEALTH_SLUG:-peskids}"
 N8N_HEALTH_URL="${N8N_HEALTH_URL:-https://n8n-peskids.op-sly.com/healthz}"
@@ -19,7 +19,7 @@ usage() {
 Usage: scripts/peskids-mvp-smoke.sh [--dry-run]
 
 Env:
-  WEB_BASE   Public tenant URL (default https://peskids.op-sly.com)
+  WEB_BASE   Public tenant URL (default https://www.peskids.com)
   API_BASE   Base URL (default https://api.op-sly.com)
   PORTAL_HEALTH_SLUG  Tenant slug for portal monitoring (default peskids)
   N8N_HEALTH_URL      n8n health endpoint (default https://n8n-peskids.op-sly.com/healthz)

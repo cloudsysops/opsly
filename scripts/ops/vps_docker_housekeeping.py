@@ -47,7 +47,7 @@ CRITICAL_CONTAINER_PATTERNS = (
 )
 
 PUBLIC_SMOKE_URLS = (
-    "https://peskids.op-sly.com",
+    "https://www.peskids.com",
     "https://n8n-peskids.op-sly.com",
 )
 

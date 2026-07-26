@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Public smoke for Peskids go-live/demo readiness.
-# Default: validates public reservation route only.
+# Default: validates public app surfaces on the canonical customer domain.
 # Optional: set POST_LEAD=1 to submit a real lead payload to /api/leads.
 
 set -euo pipefail
 
-BASE_URL="${BASE_URL:-https://peskids.op-sly.com}"
+BASE_URL="${BASE_URL:-https://www.peskids.com}"
 POST_LEAD="${POST_LEAD:-0}"
 
 while [[ $# -gt 0 ]]; do
@@ -23,7 +23,7 @@ while [[ $# -gt 0 ]]; do
 Usage: scripts/peskids-public-go-live-smoke.sh [--base-url URL] [--post]
 
 Checks:
-  1. GET /reserva-clase-gratuita
+  1. GET /, /api/health, /admin/login, /teacher/login, /familias/login
   2. Optional POST /api/leads if --post is passed
 EOF
       exit 0
@@ -43,23 +43,28 @@ fi
 echo "🔍 Peskids public go-live smoke"
 echo "  Base URL: ${BASE_URL}"
 
-page_body="$(mktemp)"
-trap 'rm -f "${page_body}" "${lead_body:-}" "${lead_resp:-}"' EXIT
+lead_body=""
+lead_resp=""
+trap 'rm -f "${lead_body:-}" "${lead_resp:-}"' EXIT
 
-echo "✓ Test 1: GET /reserva-clase-gratuita"
-http_code="$(
-  curl -sk -o "${page_body}" -w "%{http_code}" "${BASE_URL}/reserva-clase-gratuita"
-)"
-if [[ "${http_code}" != "200" ]]; then
-  echo "❌ GET /reserva-clase-gratuita → HTTP ${http_code}" >&2
-  exit 1
-fi
-if ! grep -qi "Clase de prueba gratis" "${page_body}"; then
-  echo "❌ GET /reserva-clase-gratuita returned 200 but did not include the expected reservation copy" >&2
-  exit 1
-fi
+check_200() {
+  local label="$1"
+  local path="$2"
+  local code
+  code="$(curl --http1.1 -sk -o /dev/null -w "%{http_code}" "${BASE_URL}${path}")"
+  if [[ "${code}" != "200" ]]; then
+    echo "❌ ${label} ${path} → HTTP ${code}" >&2
+    exit 1
+  fi
+  echo "✓ ${label} ${path} is reachable"
+}
 
-echo "✓ Reservation page is public and reachable"
+echo "✓ Test 1: public app surfaces"
+check_200 "Landing" "/"
+check_200 "Health" "/api/health"
+check_200 "Admin login" "/admin/login"
+check_200 "Teacher login" "/teacher/login"
+check_200 "Families login" "/familias/login"
 
 if [[ "${POST_LEAD}" == "1" ]]; then
   echo "✓ Test 2: POST /api/leads (optional)"
@@ -67,12 +72,12 @@ if [[ "${POST_LEAD}" == "1" ]]; then
   lead_resp="$(mktemp)"
   cat >"${lead_body}" <<'JSON'
 {
-  "name": "Smoke Test GHL",
-  "email": "smoke-ghl@example.com",
+  "name": "Peskids Public Smoke",
+  "email": "peskids-public-smoke@example.com",
   "phone": "+573000000000",
   "class_modality": "llanogrande",
   "neighborhood": "Llanogrande",
-  "grade_interested": "K-5",
+  "grade_interested": "3-4 años",
   "referral_source": "Website",
   "consent_treatment": true,
   "consent_marketing": false,
@@ -80,7 +85,7 @@ if [[ "${POST_LEAD}" == "1" ]]; then
 }
 JSON
   lead_code="$(
-    curl -sk -o "${lead_resp}" -w "%{http_code}" \
+    curl --http1.1 -sk -o "${lead_resp}" -w "%{http_code}" \
       -X POST "${BASE_URL}/api/leads" \
       -H "Content-Type: application/json" \
       -d @"${lead_body}"

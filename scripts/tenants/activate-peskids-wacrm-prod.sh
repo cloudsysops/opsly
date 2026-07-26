@@ -102,12 +102,12 @@ if [[ "$DRY_RUN" != true ]]; then
       -d "{\"event_type\":\"inbound_message\",\"external_message_id\":\"${EXT}\",\"phone\":\"+573001112233\",\"contact_name\":\"Activate\",\"body\":\"wacrm n8n path\",\"direction\":\"inbound\"}")
     echo "n8n_webhook_http=${code}"
     test "$code" = "200" || test "$code" = "201"
-    digest_code=$(curl -sS -o /dev/null -w "%{http_code}" "https://peskids.op-sly.com/api/admin/digest/daily" \
+    digest_code=$(curl -sS -o /dev/null -w "%{http_code}" "https://www.peskids.com/api/admin/digest/daily" \
       -H "Authorization: Bearer ${PESKIDS_DIGEST_CRON_SECRET}")
     echo "digest_http=${digest_code}"
     test "$digest_code" = "200"
-    curl -sfS "https://peskids.op-sly.com/" >/dev/null
-    curl -sfS "https://peskids.op-sly.com/admin/login" >/dev/null
+    curl -sfS "https://www.peskids.com/" >/dev/null
+    curl -sfS "https://www.peskids.com/admin/login" >/dev/null
     echo "OK integration smoke"
   '
 fi

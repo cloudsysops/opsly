@@ -227,7 +227,7 @@ main() {
   else
     log "  Supabase password unchanged (use --sync-password to align)"
   fi
-  log "  Login Peskids: https://peskids.op-sly.com/admin/login (${EMAIL})"
+  log "  Login Peskids: https://www.peskids.com/admin/login (${EMAIL})"
   log "  n8n:           https://n8n-peskids.op-sly.com (${EMAIL})"
   log "  Uptime:        https://uptime-peskids.op-sly.com (user: ${UPTIME_USER})"
   log "  Password:      PESKIDS_ADMIN_PASSWORD in Doppler prd (n8n/Uptime; Supabase only if --sync-password)"

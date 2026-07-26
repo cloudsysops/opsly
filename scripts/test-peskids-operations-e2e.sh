@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Smoke test for Peskids operations endpoints (local or staging).
-# Usage: BASE_URL=https://peskids.op-sly.com ./scripts/test-peskids-operations-e2e.sh [--dry-run]
+# Usage: BASE_URL=https://www.peskids.com ./scripts/test-peskids-operations-e2e.sh [--dry-run]
 
 BASE_URL="${BASE_URL:-http://127.0.0.1:3004}"
 DRY_RUN=false

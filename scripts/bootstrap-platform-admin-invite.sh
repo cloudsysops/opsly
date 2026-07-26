@@ -252,7 +252,7 @@ function parseToken(actionLink) {
     || (process.env.PLATFORM_DOMAIN
       ? `https://admin.${process.env.PLATFORM_DOMAIN.trim()}`
       : 'https://admin.op-sly.com');
-  const peskidsAdminBase = (process.env.PESKIDS_SITE_URL || 'https://peskids.op-sly.com').replace(
+  const peskidsAdminBase = (process.env.PESKIDS_SITE_URL || 'https://www.peskids.com').replace(
     /\/$/,
     ''
   );
@@ -292,7 +292,7 @@ function parseToken(actionLink) {
   console.log('Acceso esperado tras activar contraseña:');
   console.log(`  admin:  ${platformAdminBase}/login  ← superuser / plataforma`);
   if (isSuperuser || tenantSlug === 'peskids') {
-    console.log('  peskids: https://peskids.op-sly.com/admin/login');
+    console.log('  peskids: https://www.peskids.com/admin/login');
   }
   console.log(`  portal (${tenantSlug}): https://portal.op-sly.com/login`);
 })().catch((e) => {

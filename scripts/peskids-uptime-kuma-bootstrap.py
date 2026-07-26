@@ -24,8 +24,8 @@ def main() -> None:
     status_title = env("UPTIME_STATUS_TITLE", "Peskids — Estado de servicios")
 
     monitors = [
-        ("Peskids landing", "https://peskids.op-sly.com/"),
-        ("Peskids admin login", "https://peskids.op-sly.com/admin/login"),
+        ("Peskids landing", "https://www.peskids.com/"),
+        ("Peskids admin login", "https://www.peskids.com/admin/login"),
         ("Opsly API health", "https://api.op-sly.com/api/health"),
         ("n8n Peskids", "https://n8n-peskids.op-sly.com/"),
     ]

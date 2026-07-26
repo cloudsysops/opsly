@@ -2,7 +2,7 @@
 # Release 3 smoke: shared agenda APIs + auth gates (public HTTP; optional session checks via env).
 set -euo pipefail
 
-BASE="${PESKIDS_BASE_URL:-https://peskids.op-sly.com}"
+BASE="${PESKIDS_BASE_URL:-https://www.peskids.com}"
 
 pass=0
 fail=0

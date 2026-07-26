@@ -2,7 +2,7 @@
 # Smoke: Peskids lead capture returns Twenty IDs when CRM is configured.
 set -euo pipefail
 
-BASE_URL="${PESKIDS_BASE_URL:-https://peskids.op-sly.com}"
+BASE_URL="${PESKIDS_BASE_URL:-https://www.peskids.com}"
 DRY_RUN=false
 
 usage() {
@@ -44,7 +44,7 @@ if [[ "${DRY_RUN}" == true ]]; then
   exit 0
 fi
 
-response="$(curl -sfk -X POST "${BASE_URL}/api/leads" \
+response="$(curl --http1.1 -sfk -X POST "${BASE_URL}/api/leads" \
   -H "Content-Type: application/json" \
   -H "x-request-id: twenty-smoke-$(date +%s)" \
   -d "${payload}")"

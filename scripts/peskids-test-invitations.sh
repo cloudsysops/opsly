@@ -9,7 +9,7 @@ echo "======================================"
 echo ""
 
 # Configuration
-PESKIDS_URL="${PESKIDS_URL:-https://peskids.op-sly.com}"
+PESKIDS_URL="${PESKIDS_URL:-https://www.peskids.com}"
 SANTIAGO_EMAIL="${SANTIAGO_EMAIL:-sierrasantiago90@gmail.com}"
 
 echo "📋 Configuration:"
@@ -70,7 +70,7 @@ cat << 'EOF'
     "email": "sierrasantiago90@gmail.com",
     "role": "admin",
     "token": "invitation_token",
-    "activation_url": "https://peskids.op-sly.com/invite/...",
+    "activation_url": "https://www.peskids.com/invite/...",
     "expires_at": "2026-06-05T..."
   }
 }

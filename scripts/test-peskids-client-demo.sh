@@ -8,7 +8,7 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 PROJECT="${DOPPLER_PROJECT:-ops-intcloudsysops}"
 CONFIG="${DOPPLER_CONFIG:-prd}"
-PESKIDS_BASE="${PESKIDS_BASE:-https://peskids.op-sly.com}"
+PESKIDS_BASE="${PESKIDS_BASE:-https://www.peskids.com}"
 API_BASE="${API_BASE:-https://api.op-sly.com}"
 DRY_RUN=false
 
@@ -17,7 +17,7 @@ usage() {
 Usage: ./scripts/test-peskids-client-demo.sh [--dry-run]
 
 Env:
-  PESKIDS_BASE   App URL (default https://peskids.op-sly.com)
+  PESKIDS_BASE   App URL (default https://www.peskids.com)
   API_BASE       Opsly API (default https://api.op-sly.com)
 
 Requires: doppler CLI + access to ops-intcloudsysops/prd

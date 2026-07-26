@@ -96,4 +96,4 @@ if [[ "$DRY_RUN" == true ]]; then
 fi
 
 ssh -o BatchMode=yes "$SSH_HOST" "bash -s" < <(remote_script)
-echo "Done. Verify wa.me: https://peskids.op-sly.com (FAB WhatsApp)"
+echo "Done. Verify wa.me: https://www.peskids.com (FAB WhatsApp)"

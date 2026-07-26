@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BASE="${PESKIDS_BASE_URL:-https://peskids.op-sly.com}"
+BASE="${PESKIDS_BASE_URL:-https://www.peskids.com}"
 API="${OPSLY_API_URL:-https://api.op-sly.com}"
 DEMO_LOGIN_SMOKE="${PESKIDS_DEMO_LOGIN_SMOKE:-${SCRIPT_DIR}/peskids/verify-peskids-demo-logins.sh}"
 

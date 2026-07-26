@@ -4,12 +4,12 @@ Status: `READY FOR SALES`
 
 ## URLs
 
-- App root: `https://peskids.op-sly.com`
-- Admin login: `https://peskids.op-sly.com/admin/login`
-- Teacher login: `https://peskids.op-sly.com/teacher/login`
-- Families login: `https://peskids.op-sly.com/familias/login`
-- Admin dashboard: `https://peskids.op-sly.com/admin`
-- Health: `https://peskids.op-sly.com/api/health`
+- App root: `https://www.peskids.com`
+- Admin login: `https://www.peskids.com/admin/login`
+- Teacher login: `https://www.peskids.com/teacher/login`
+- Families login: `https://www.peskids.com/familias/login`
+- Admin dashboard: `https://www.peskids.com/admin`
+- Health: `https://www.peskids.com/api/health`
 - Twenty health: `https://crm-peskids.op-sly.com/healthz`
 - n8n health: `https://n8n-peskids.op-sly.com/healthz`
 - WACRM health: `https://wa-peskids.op-sly.com/healthz`
@@ -25,13 +25,13 @@ Passwords are local-only temp files on this machine and are not part of the chec
 
 ## Demo Flow
 
-1. Open `https://peskids.op-sly.com/admin/login`.
+1. Open `https://www.peskids.com/admin/login`.
 2. Sign in with the admin demo account.
 3. Open the admin dashboard and show leads, students, classes, and follow-ups.
-4. Open `https://peskids.op-sly.com/teacher/login`.
+4. Open `https://www.peskids.com/teacher/login`.
 5. Sign in with the teacher demo account.
 6. Show the teacher dashboard and agenda view.
-7. Open `https://peskids.op-sly.com/familias/login`.
+7. Open `https://www.peskids.com/familias/login`.
 8. Sign in with the parent demo account.
 9. Show the family portal, submissions, and feedback surfaces.
 10. Submit a fresh lead through the public form and show the resulting Twenty person and opportunity IDs.
