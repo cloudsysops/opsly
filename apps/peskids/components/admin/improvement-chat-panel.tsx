@@ -158,16 +158,22 @@ export function ImprovementChatPanel({
         <header className="flex items-center gap-2 border-b border-pk-border px-4 py-4">
           <Sparkles className="h-5 w-5 shrink-0 text-pk-primary" aria-hidden />
           <div>
-            <h1 className="text-base font-semibold text-pk-ink">Mejoras para la plataforma</h1>
+            <h1 className="text-base font-semibold text-pk-ink">Canal directo con Opsly</h1>
             <p className="text-xs text-pk-sub">
-              Cuéntanos qué mejorarías. La IA lo clasifica y, si aplica, crea una tarea en Twenty CRM.
+              Usa este chat solo para pedirnos cambios, mejoras o reportar errores de la plataforma.
+              Nosotros lo leemos, lo priorizamos y lo ejecutamos.
             </p>
           </div>
         </header>
       ) : (
-        <p className="border-b border-pk-border px-4 py-2 text-xs text-pk-sub">
-          Describe el error o la mejora. Lo clasificamos y lo pasamos a ejecución.
-        </p>
+        <div className="space-y-1 border-b border-pk-border bg-teal-50/70 px-4 py-3">
+          <p className="text-sm font-semibold text-pk-ink">Este chat es para pedirnos cambios</p>
+          <p className="text-xs leading-relaxed text-pk-sub">
+            Escríbenos aquí las mejoras, errores o ajustes que necesiten en Peskids. El equipo de
+            Opsly lo recibe, lo clasifica y lo pone en ejecución. No es el inbox de familias ni
+            WhatsApp de padres.
+          </p>
+        </div>
       )}
 
       <div className="flex-1 space-y-4 overflow-y-auto p-4">
@@ -177,9 +183,13 @@ export function ImprovementChatPanel({
             Cargando…
           </div>
         ) : messages.length === 0 ? (
-          <p className="py-16 text-center text-sm text-pk-sub">
-            Aún no hay solicitudes. Escribe la primera mejora o el error que viste.
-          </p>
+          <div className="space-y-3 py-10 text-center">
+            <p className="text-sm font-medium text-pk-ink">Empieza cuando veas algo que cambiar</p>
+            <p className="mx-auto max-w-sm text-sm leading-relaxed text-pk-sub">
+              Ejemplo: “en Interesados no se ve el teléfono” o “queremos un filtro por sede”. Cada
+              mensaje nos llega para mapearlo y ejecutarlo.
+            </p>
+          </div>
         ) : (
           messages.map((message) => (
             <div
@@ -223,7 +233,7 @@ export function ImprovementChatPanel({
               }
             }}
             rows={2}
-            placeholder="Ej: sería genial poder mandar recordatorios de clase por WhatsApp…"
+            placeholder="Ej: necesitamos filtrar interesados por sede / el botón de WhatsApp no abre…"
             className="pk-input w-full resize-none text-sm"
             disabled={sending}
           />
@@ -233,7 +243,7 @@ export function ImprovementChatPanel({
             className="h-10 shrink-0"
             disabled={sending || draft.trim().length === 0}
             onClick={() => void handleSend()}
-            aria-label="Enviar mensaje"
+            aria-label="Enviar pedido de mejora a Opsly"
           >
             {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           </Button>
