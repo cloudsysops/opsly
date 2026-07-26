@@ -95,6 +95,8 @@ jobs:
             NEXT_PUBLIC_PESKIDS_WHATSAPP_E164=${{ steps.wa.outputs.e164 }}
             NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY=${{ steps.wa.outputs.display }}
             NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL=${{ steps.wa.outputs.prefill }}
+            PESKIDS_GIT_SHA=${{ needs.gate.outputs.sha }}
+            PESKIDS_IMAGE_TAG=ghcr.io/cloudsysops/peskids:${{ needs.gate.outputs.sha }}
 
       - name: Build summary
         run: |
