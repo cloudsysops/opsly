@@ -24,7 +24,7 @@ export default function PeskidsSetupPage() {
         <p>OPENWA_SESSION_ID=peskids</p>
         <p>OPENWA_WEBHOOK_SECRET=&lt;secreto-hmac&gt;</p>
         <p className="text-zinc-600 pt-1">
-          Webhook: https://peskids.op-sly.com/api/webhooks/openwa
+          Webhook: https://www.peskids.com/api/webhooks/openwa
         </p>
       </section>
     </main>

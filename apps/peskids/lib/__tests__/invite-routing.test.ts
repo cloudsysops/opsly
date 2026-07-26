@@ -8,14 +8,14 @@ describe('resolveInviteActivationRedirectPath', () => {
         tenant_slug: 'peskids',
         role: 'support',
       })
-    ).toBe('https://peskids.op-sly.com/support/dashboard')
+    ).toBe('https://www.peskids.com/support/dashboard')
 
     expect(
       resolveInviteActivationRedirectPath({
         tenant_slug: 'peskids',
         role: 'teacher',
       })
-    ).toBe('https://peskids.op-sly.com/teacher/dashboard')
+    ).toBe('https://www.peskids.com/teacher/dashboard')
   })
 
   it('routes admin and owner invite activations to the admin dashboard', () => {
@@ -24,13 +24,13 @@ describe('resolveInviteActivationRedirectPath', () => {
         tenant_slug: 'peskids',
         role: 'admin',
       })
-    ).toBe('https://peskids.op-sly.com/admin')
+    ).toBe('https://www.peskids.com/admin')
 
     expect(
       resolveInviteActivationRedirectPath({
         tenant_slug: 'peskids',
         role: 'owner',
       })
-    ).toBe('https://peskids.op-sly.com/admin')
+    ).toBe('https://www.peskids.com/admin')
   })
 })

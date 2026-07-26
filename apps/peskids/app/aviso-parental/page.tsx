@@ -36,7 +36,7 @@ export default function AvisoParentalPage(): React.ReactElement {
       <section>
         <h2>2. ¿Para qué tratamos los datos del menor?</h2>
         <p>
-          Al solicitar una clase de prueba o matricular a su hijo/a, recolectamos información
+          Al enviar una solicitud de contacto o matricular a su hijo/a, recolectamos información
           relacionada con el menor para los siguientes fines:
         </p>
         <ul>
@@ -128,7 +128,7 @@ export default function AvisoParentalPage(): React.ReactElement {
         <h2>7. ¿Cómo otorgo la autorización?</h2>
         <p>
           La autorización parental se otorga de manera electrónica al marcar la casilla de
-          consentimiento en el formulario de solicitud de clase de prueba. Esta acción queda
+          consentimiento en el formulario de contacto y matrícula. Esta acción queda
           registrada con fecha, hora e identificador de la versión de la política vigente,
           constituyendo prueba de la autorización conforme al artículo 12 del Decreto 1377 de 2013.
         </p>

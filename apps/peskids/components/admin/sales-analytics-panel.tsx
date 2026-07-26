@@ -11,7 +11,7 @@ interface SalesAnalyticsPanelProps {
 const stageLabels: Record<keyof DashboardData['sales_analytics']['lead_status_counts'], string> = {
   new: 'Nuevo',
   contacted: 'Contactado',
-  trial: 'Clase de prueba',
+  trial: 'En seguimiento',
   enrolled: 'Matriculado',
   active: 'Activo',
   renewal: 'Renovación',
@@ -33,8 +33,7 @@ export function SalesAnalyticsPanel({ data }: SalesAnalyticsPanelProps): React.R
         <CardHeader>
           <CardTitle className="text-base">Analítica de captación</CardTitle>
           <CardDescription>
-            Ritmo de interesados, conversión por etapa y tiempo hasta seguimiento / clase de
-            prueba.
+            Ritmo de interesados, conversión por etapa y tiempo hasta contacto / matrícula.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
@@ -61,23 +60,23 @@ export function SalesAnalyticsPanel({ data }: SalesAnalyticsPanelProps): React.R
             </div>
             <div className="rounded-2xl border border-pk-border bg-pk-muted/40 p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-pk-mutedText">
-                Tiempo a clase de prueba
+                Tiempo a contacto
               </p>
               <p className="mt-2 text-3xl font-semibold text-pk-ink">
                 {data.sales_analytics.avg_hours_to_trial === null
                   ? '—'
                   : `${data.sales_analytics.avg_hours_to_trial} h`}
               </p>
-              <p className="mt-1 text-xs text-pk-sub">Promedio desde interesado hasta clase de prueba.</p>
+              <p className="mt-1 text-xs text-pk-sub">Promedio desde interesado hasta primer contacto.</p>
             </div>
             <div className="rounded-2xl border border-pk-border bg-pk-muted/40 p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-pk-mutedText">
-                Clases de prueba
+                Matrículas
               </p>
               <p className="mt-2 text-3xl font-semibold text-pk-ink">
                 {data.sales_analytics.trials_scheduled_count}
               </p>
-              <p className="mt-1 text-xs text-pk-sub">Sesiones agendadas, confirmadas o asistidas.</p>
+              <p className="mt-1 text-xs text-pk-sub">Interesados convertidos a alumno activo.</p>
             </div>
           </div>
 

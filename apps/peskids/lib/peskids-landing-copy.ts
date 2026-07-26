@@ -1,9 +1,9 @@
 /**
  * Public landing copy — parent-facing, no internal/demo language.
  *
- * Soft-launch (2026-07): no “clase gratis” on the public site until Peskids
- * authorizes that offer after the stakeholder meeting. Restore trial-class
- * wording only with explicit human approval.
+ * Free/trial classes (“clase de prueba” / D2) are permanently discontinued.
+ * Do NOT restore trial-class wording without an explicit product decision and
+ * a new DB migration / pricing update. Contact/matrícula language is permanent.
  */
 
 export const PESKIDS_RESERVATION_EYEBROW = 'Solicitud de matrícula';

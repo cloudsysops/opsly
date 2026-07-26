@@ -76,7 +76,7 @@ export default function PrivacyPage(): React.ReactElement {
           </thead>
           <tbody>
             <tr>
-              <td>Contactar al acudiente para agendar la clase de prueba solicitada</td>
+              <td>Contactar al acudiente para gestionar la solicitud de contacto o matrícula</td>
               <td>Ejecución del contrato / Autorización</td>
             </tr>
             <tr>

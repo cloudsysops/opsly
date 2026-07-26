@@ -56,7 +56,7 @@ export function peskidsIntakeWelcome(source: MessageSource): string {
       : 'Por este chat en la web de Peskids'
   return (
     `¡Hola! Somos Peskids 🐠 Academia de natación en Llanogrande (Rionegro), área metropolitana de Medellín. ` +
-    `Clases para niños desde 3 meses hasta 15 años, en sede o a domicilio. La primera clase de prueba es gratis.\n\n` +
+    `Clases para niños desde 3 meses hasta 15 años, en sede o a domicilio. Te ayudamos a encontrar el plan de matrícula ideal.\n\n` +
     `${channel} te haré unas preguntas cortas (igual que el formulario de reserva). ` +
     `Cuando terminemos, un asesor humano revisará tu caso y te confirmará horario en menos de 48 h hábiles.`
   )
@@ -276,7 +276,7 @@ export function handoffReplyToUser(profile: PeskidsIntakeProfile): string {
         ? 'No'
         : '—'
   return (
-    `¡Perfecto, ${name}! Ya tengo todos los datos para tu solicitud de clase de prueba gratis 🎉\n\n` +
+    `¡Perfecto, ${name}! Ya tengo todos los datos para tu solicitud de matrícula 🎉\n\n` +
     `• Cómo nos conoció: ${profile.referralSource ?? '—'}\n` +
     `• Condición a tener en cuenta: ${conditionNote}\n` +
     `• Preferencia de profe: ${profile.teacherPreference === 'woman' ? 'Mujer' : profile.teacherPreference === 'man' ? 'Hombre' : profile.teacherPreference === 'prefer_not_to_say' ? 'Prefiero no decir' : 'No importa'}\n` +
@@ -397,7 +397,7 @@ export function buildSupportHandoffDraft(params: {
     '',
     `Mensajes en conversación: ${messageCount}`,
     '',
-    'Siguiente paso: confirmar cupo, proponer horario de clase de prueba y enviar respuesta final aprobada.',
+    'Siguiente paso: confirmar cupo, proponer horario de inicio y enviar respuesta final aprobada.',
     'No prometer precio ni horario exacto sin validar con el equipo.'
   )
 
@@ -406,7 +406,7 @@ export function buildSupportHandoffDraft(params: {
 
 /** Texto sugerido al abrir WhatsApp (wa.me prefill). */
 export const PESKIDS_WHATSAPP_INTAKE_PREFILL =
-  'Hola Peskids 👋 Quiero reservar una clase de prueba gratis. Puedo responder preguntas sobre la clase.'
+  'Hola Peskids 👋 Quiero conocer la academia y solicitar información sobre matrícula. Puedo responder preguntas.'
 
 export const PESKIDS_WHATSAPP_SUPPORT_PREFILL =
   'Hola Peskids 👋 Necesito soporte desde el portal de familias.\n\n1. Nombre del acudiente:\n2. Nombre del estudiante:\n3. ¿Qué necesitas resolver? (clase, horario, reprogramar clase, cancelar clase, pago, asistencia, feedback o acceso)\n4. ¿Qué pasó?\n5. ¿Cómo prefieres que te respondamos?'

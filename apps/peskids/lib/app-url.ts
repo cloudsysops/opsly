@@ -5,7 +5,7 @@ type AppUrlConfig = {
   prodFallback: string;
 };
 
-const PESKIDS_PRODUCTION_FALLBACK = 'https://peskids.op-sly.com';
+const PESKIDS_PRODUCTION_FALLBACK = 'https://www.peskids.com';
 
 function normalizeUrl(value: string): string {
   return value.replace(/\/$/, '');
@@ -138,7 +138,7 @@ export const PESKIDS_APP_ORIGIN = resolveAppOrigin({
   envName: 'NEXT_PUBLIC_PESKIDS_SITE_URL',
   localPort: 3004,
   prodSubdomain: 'peskids',
-  prodFallback: 'https://peskids.op-sly.com',
+  prodFallback: 'https://www.peskids.com',
 });
 
 export const PORTAL_APP_ORIGIN = resolveAppOrigin({

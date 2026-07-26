@@ -2,7 +2,7 @@ export function buildPeskidsReferralLink(code: string, baseUrl?: string | null):
   const origin = (
     baseUrl?.trim() ||
     process.env.NEXT_PUBLIC_PESKIDS_SITE_URL ||
-    'https://peskids.op-sly.com'
+    'https://www.peskids.com'
   ).replace(/\/$/, '');
   return `${origin}/familias?ref=${encodeURIComponent(code)}`;
 }

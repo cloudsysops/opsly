@@ -43,9 +43,9 @@ export function LegalPageLayout({
             {children}
           </div>
           <div className="mt-12 rounded-2xl border border-pk-border bg-pk-surface px-6 py-5 text-center sm:text-left">
-            <p className="text-sm font-semibold text-pk-ink">¿Quieres agendar una clase de prueba?</p>
+            <p className="text-sm font-semibold text-pk-ink">¿Quieres conocer Peskids?</p>
             <p className="mt-1 text-sm text-pk-sub">
-              Completa el formulario con tus datos; es el paso oficial para que el equipo te contacte.
+              Completa el formulario de contacto y matrícula; el equipo te responde en breve.
             </p>
             <Link
               href={PESKIDS_RESERVATION_FORM_HREF}

@@ -12,7 +12,7 @@ export const metadata = {
     title: 'Solicitud de contacto · Peskids',
     description:
       'Déjanos tus datos y te contactaremos para orientarte sobre matrícula y clases en sede Llanogrande o a domicilio.',
-    url: 'https://peskids.op-sly.com/instagram',
+    url: 'https://www.peskids.com/instagram',
     type: 'website',
   },
 };

@@ -6,7 +6,7 @@ const config: CapacitorConfig = {
   // Live app mode: loads from production URL, no static export needed.
   // Updates deploy automatically without App Store review.
   server: {
-    url: process.env.NEXT_PUBLIC_APP_URL || 'https://peskids.op-sly.com',
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://www.peskids.com',
     cleartext: false,
   },
   webDir: 'out',

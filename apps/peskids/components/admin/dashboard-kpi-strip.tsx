@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3, BadgeCheck, Clock, ShieldCheck, Users } from 'lucide-react';
+import { BarChart3, Clock, ShieldCheck, Users } from 'lucide-react';
 import type { DashboardData } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -29,12 +29,6 @@ const kpiItems = [
     icon: Clock,
   },
   {
-    key: 'trialsToday',
-    label: 'Trials hoy',
-    accent: 'violet' as const,
-    icon: BadgeCheck,
-  },
-  {
     key: 'enrollments',
     label: 'Matrículas del mes',
     accent: 'green' as const,
@@ -61,13 +55,12 @@ export function DashboardKpiStrip({ data }: DashboardKpiStripProps): React.React
     newLeads: exec.kpis.new_leads,
     uncontacted: exec.kpis.uncontacted,
     overdue: exec.kpis.overdue_followups,
-    trialsToday: exec.kpis.trials_today,
     enrollments: exec.kpis.enrollments_this_month,
   } as const;
 
   return (
     <section data-admin-section="overview" className="mb-6">
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
         {kpiItems.map((item) => {
           const Icon = item.icon;
           return (

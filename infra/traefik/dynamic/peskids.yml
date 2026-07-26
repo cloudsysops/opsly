@@ -1,8 +1,43 @@
 http:
+  middlewares:
+    peskids-to-www:
+      redirectRegex:
+        regex: "^https?://(?:peskids\\.com|peskids\\.op-sly\\.com)(.*)"
+        replacement: "https://www.peskids.com${1}"
+        permanent: true
+
   routers:
-    # Peskids main application router
-    peskids:
+    # Canonical public host
+    peskids-www:
+      rule: "Host(`www.peskids.com`)"
+      service: peskids
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: www.peskids.com
+            sans:
+              - peskids.com
+
+    # Apex → www
+    peskids-apex:
+      rule: "Host(`peskids.com`)"
+      middlewares:
+        - peskids-to-www
+      service: peskids
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: peskids.com
+
+    # Legacy Opsly host → www (transition)
+    peskids-legacy:
       rule: "Host(`peskids.op-sly.com`)"
+      middlewares:
+        - peskids-to-www
       service: peskids
       entryPoints:
         - websecure
@@ -11,7 +46,7 @@ http:
         domains:
           - main: peskids.op-sly.com
 
-    # n8n workflow automation router
+    # n8n workflow automation (stays on Opsly domain for now)
     n8n-peskids:
       rule: "Host(`n8n-peskids.op-sly.com`)"
       service: n8n-peskids
@@ -22,7 +57,7 @@ http:
         domains:
           - main: n8n-peskids.op-sly.com
 
-    # Uptime Kuma monitoring router
+    # Uptime Kuma monitoring (stays on Opsly domain for now)
     uptime-peskids:
       rule: "Host(`uptime-peskids.op-sly.com`)"
       service: uptime-peskids
@@ -34,19 +69,16 @@ http:
           - main: uptime-peskids.op-sly.com
 
   services:
-    # Peskids service backend definition
     peskids:
       loadBalancer:
         servers:
           - url: "http://peskids:3004"
 
-    # n8n service backend definition
     n8n-peskids:
       loadBalancer:
         servers:
           - url: "http://n8n_peskids:5678"
 
-    # Uptime Kuma service backend definition
     uptime-peskids:
       loadBalancer:
         servers:

@@ -18,7 +18,7 @@ export default function TermsPage(): React.ReactElement {
         <h2>1. Aceptación</h2>
         <p>
           Al usar el sitio web de Peskids (en adelante &quot;el Sitio&quot;) o al enviar el formulario
-          de solicitud de clase de prueba, usted acepta estos Términos y Condiciones. Si no
+          de contacto o solicitud de matrícula, usted acepta estos Términos y Condiciones. Si no
           está de acuerdo, no use el Sitio.
         </p>
       </section>
@@ -30,7 +30,7 @@ export default function TermsPage(): React.ReactElement {
           Colombia. A través del Sitio, los acudientes pueden:
         </p>
         <ul>
-          <li>Solicitar una clase de prueba gratuita.</li>
+          <li>Enviar una solicitud de contacto o matrícula.</li>
           <li>Obtener información sobre programas, etapas y tarifas.</li>
           <li>Interactuar con el asistente de IA para orientación general.</li>
           <li>Acceder al panel de seguimiento de estudiantes (acudientes con cuenta activa).</li>
