@@ -1,0 +1,14 @@
+id: classes
+status: reusable
+summary: Agenda, small groups, teachers assignment, attendance.
+capabilities:
+  - class_schedule
+  - trial_classes
+  - attendance
+  - teacher_assignment
+policies:
+  - franchise_id_when_available
+  - modality_llanogrande_or_domicilio_compat
+source_hints:
+  - apps/peskids/lib/services/class.service.ts
+  - docs/tenants/peskids/CLASSES-SYSTEM-SPEC.md

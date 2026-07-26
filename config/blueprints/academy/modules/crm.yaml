@@ -1,0 +1,21 @@
+id: crm
+status: reusable
+provider: twenty
+summary: Lead capture, pipeline, follow-ups; Supabase is SoT, Twenty is CRM UI/sync.
+capabilities:
+  - public_lead_intake
+  - lead_pipeline
+  - followups
+  - twenty_person_opportunity_sync
+source_of_truth:
+  - platform.peskids_leads / public.leads
+  - apps/api/lib/peskids/
+  - apps/peskids/lib/twenty-*.ts
+defaults:
+  ghl_runtime: disabled
+  legacy_crm: archived_off
+policies:
+  - supabase_writes_first
+  - twenty_sync_best_effort
+  - keep_name_as_primary_contact
+extract_when: second tenant needs same CRM cutover pattern

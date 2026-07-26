@@ -33,6 +33,15 @@ Ask the operator to complete **only** what applies; do not request Full Disk Acc
 
 Then: full quit (Cmd+Q) of affected apps, or `killall iTerm2`.
 
+### Codex shell ENOENT (`zsh`/`bash`/`sh` not found)
+
+Usually **PATH stripped** or login-shell clobber in ChatGPT Desktop — not missing binaries on disk (`/bin/zsh` exists).
+
+1. Ensure `~/.codex/config.toml` has `shell_environment_policy.inherit = "all"` and explicit `PATH` / `SHELL` (see `.codex/CODEX.md`).
+2. Set `[shell] default_login = false` when supported by the installed Codex build.
+3. Quit ChatGPT completely and reopen the **trusted** Opsly folder.
+4. Prefer worktrees under `intcloudsysops/.worktrees/*` created with `git worktree add`.
+
 Reference: `docs/04-infrastructure/MACOS-LOCAL-AI-AUTOMATION.md`.
 
 ---

@@ -1,0 +1,16 @@
+id: messaging
+status: optional
+providers:
+  - manual
+  - wacrm
+summary: WhatsApp / WACRM optional; approval-first outbound.
+defaults:
+  mode: manual_then_wacrm
+  outbound: approval_first
+  enabled: false_until_owner_authorizes
+policies:
+  - never_auto_send_without_approval
+  - do_not_touch_runtime_in_blueprint_prs
+source_hints:
+  - docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md
+  - apps/peskids/lib/integrations/wacrm-*.ts

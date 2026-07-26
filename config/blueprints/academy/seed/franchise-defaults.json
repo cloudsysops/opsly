@@ -1,0 +1,21 @@
+{
+  "tenant_slug": "peskids",
+  "franchises": [
+    {
+      "slug": "llanogrande-principal",
+      "type": "flagship",
+      "is_primary": true,
+      "display_name": "Sede Llanogrande",
+      "service_modes": ["llanogrande"],
+      "notes": "Franquicia/sede principal. Compatible con class_modality=llanogrande."
+    },
+    {
+      "slug": "domicilios-peskids",
+      "type": "mobile",
+      "is_primary": false,
+      "display_name": "Domicilios Peskids",
+      "service_modes": ["domicilio"],
+      "notes": "Operación propia mobile. Compatible con class_modality=domicilio."
+    }
+  ]
+}

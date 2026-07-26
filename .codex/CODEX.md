@@ -28,6 +28,27 @@ Codex works as an OpenClaw-aware executor and systems operator for Opsly.
    - `docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md`
    - `docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md`
 
+## Shell access (fix if `zsh`/`bash`/`sh` → ENOENT)
+
+If Codex reports `No such file or directory` for shells, fix **host** `~/.codex/config.toml`:
+
+```toml
+[shell]
+default_login = false
+
+[shell_environment_policy]
+inherit = "all"
+ignore_default_excludes = true
+
+[shell_environment_policy.set]
+PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+SHELL = "/bin/zsh"
+```
+
+Then fully quit ChatGPT/Codex Desktop (Cmd+Q) and reopen the Opsly project (trusted). Prefer opening the **repo root** or a healthy git worktree under `.worktrees/`, not a broken sandbox cwd.
+
+Also verify macOS Accessibility for ChatGPT/Codex if Desktop agent tools fail (see `.codex/LOCAL-AUTOMATION.md`).
+
 ## SysOps Rules
 
 - Use Doppler wrappers for commands that need secrets or production parity.

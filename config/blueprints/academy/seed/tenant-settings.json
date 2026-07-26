@@ -1,0 +1,27 @@
+{
+  "tenant": {
+    "slug": "peskids",
+    "business_type": "academy",
+    "owner_platform": "icso",
+    "canonical_domain": "https://www.peskids.com",
+    "locale": "es-CO",
+    "timezone": "America/Bogota"
+  },
+  "modules": {
+    "auth": true,
+    "crm": "twenty",
+    "franchises": true,
+    "classes": true,
+    "families": true,
+    "teachers": true,
+    "automation": "n8n",
+    "messaging": "manual_then_wacrm",
+    "payments": "disabled",
+    "analytics": true
+  },
+  "policies": {
+    "ghl_runtime": "disabled",
+    "whatsapp_outbound": "approval_first",
+    "payments_live": "disabled_by_default"
+  }
+}

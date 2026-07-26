@@ -1,0 +1,17 @@
+{
+  "id": "academy-lead-intake",
+  "name": "Academy Lead Intake",
+  "status": "contract-only",
+  "provider": "n8n",
+  "triggers": ["public_form_post", "webhook"],
+  "steps": [
+    "validate_payload",
+    "persist_supabase_lead",
+    "sync_twenty_person_opportunity",
+    "optional_hot_lead_alert"
+  ],
+  "policies": {
+    "ghl": "disabled",
+    "whatsapp_auto": false
+  }
+}

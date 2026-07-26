@@ -1,0 +1,12 @@
+id: payments
+status: optional
+provider: wompi
+summary: Payments off by default for Academy soft-launch.
+defaults:
+  enabled: false
+  live: false
+policies:
+  - payments_live_disabled_by_default
+  - owner_approval_before_live_keys
+source_hints:
+  - docs/blueprints/WOMPI-PAYMENT-GATEWAY-CONTRACT.md

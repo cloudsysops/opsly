@@ -1,0 +1,4 @@
+{
+  "note": "Demo users are seeded only in non-prod. Do not commit real passwords or tokens.",
+  "users": []
+}

@@ -1,0 +1,22 @@
+id: franchises
+status: reusable
+summary: Franchises and locations inside one tenant_slug — never one Opsly tenant per franchise.
+capabilities:
+  - franchise_registry
+  - franchise_locations
+  - staff_memberships
+  - lead_franchise_attribution
+tables:
+  - platform.peskids_franchises
+  - platform.peskids_franchise_locations
+  - platform.peskids_franchise_staff_memberships
+defaults:
+  primary_slug: llanogrande-principal
+  mobile_slug: domicilios-peskids
+policies:
+  - tenant_slug_remains_peskids
+  - franchise_id_nullable_until_backfill
+  - no_tenant_per_sede
+docs:
+  - docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md
+extract_when: module tables move to platform.franchises_* generic names

@@ -1,0 +1,22 @@
+id: auth
+status: reusable
+summary: Roles and surfaces for Academy tenants.
+surfaces:
+  - admin
+  - staff
+  - teacher
+  - family
+  - parent
+capabilities:
+  - email_password_login
+  - invite_activation
+  - password_recovery
+  - role_switch_preview
+source_of_truth:
+  - apps/peskids/lib/staff-auth.ts
+  - apps/peskids/lib/family-auth.ts
+  - lib/ (extract when second Academy tenant appears)
+policies:
+  - no_static_admin_tokens
+  - tenant_slug_scoped_sessions
+extract_when: second academy tenant needs same auth surfaces

@@ -62,6 +62,7 @@ Documentos de referencia para lanzar y operar tenants en Opsly. Todos son "ready
 
 | Archivo | Propósito | Estado |
 |---------|-----------|--------|
+| `academy/README.md` | ICSO platform + Peskids Academy blueprint | 🟡 draft |
 | `PESKIDS-GHL-DISABLE-RUNBOOK.md` | Desactivar GHL legacy en Peskids | ✅ active |
 | `ICSO-CRM-READINESS.md` | ICSO CRM readiness | ✅ active |
 

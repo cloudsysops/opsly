@@ -7,6 +7,19 @@ import YAML from 'yaml';
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(SCRIPT_DIR, '../..');
 const BLUEPRINT_DIR = path.join(ROOT, 'docs/blueprints/academy');
+const MACHINE_PACK_DIR = path.join(ROOT, 'config/blueprints/academy');
+const MODULE_FILES = [
+  'auth.yaml',
+  'crm.yaml',
+  'franchises.yaml',
+  'classes.yaml',
+  'families.yaml',
+  'teachers.yaml',
+  'automation.yaml',
+  'messaging.yaml',
+  'payments.yaml',
+  'analytics.yaml',
+];
 const YAML_FILES = [
   'blueprint.yaml',
   'capabilities.yaml',
@@ -100,4 +113,52 @@ for (const name of CONTRACT_FILES) {
   }
 }
 
-console.log(`validate-academy-blueprint: OK (${CONTRACT_FILES.length} contracts)`);
+const machineRequired = [
+  'blueprint.yaml',
+  'tenant.schema.json',
+  'README.md',
+  'seed/franchise-defaults.json',
+  'seed/tenant-settings.json',
+];
+for (const relative of machineRequired) {
+  const filePath = path.join(MACHINE_PACK_DIR, relative);
+  if (!fs.existsSync(filePath)) {
+    fail(`missing machine pack file config/blueprints/academy/${relative}`);
+  }
+}
+
+for (const moduleName of MODULE_FILES) {
+  const filePath = path.join(MACHINE_PACK_DIR, 'modules', moduleName);
+  if (!fs.existsSync(filePath)) {
+    fail(`missing module config/blueprints/academy/modules/${moduleName}`);
+  }
+  try {
+    const parsed = YAML.parse(fs.readFileSync(filePath, 'utf8'));
+    if (!parsed || typeof parsed !== 'object' || !parsed.id) {
+      fail(`module ${moduleName} must define id`);
+    }
+  } catch (error) {
+    fail(
+      `module ${moduleName} is not valid YAML: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+}
+
+const machineBlueprint = YAML.parse(
+  fs.readFileSync(path.join(MACHINE_PACK_DIR, 'blueprint.yaml'), 'utf8')
+);
+if (machineBlueprint?.metadata?.ownerPlatform !== 'icso') {
+  fail('config/blueprints/academy/blueprint.yaml must set metadata.ownerPlatform=icso');
+}
+if (machineBlueprint?.metadata?.pilotTenant !== 'peskids') {
+  fail('config/blueprints/academy/blueprint.yaml must set metadata.pilotTenant=peskids');
+}
+if (machineBlueprint?.spec?.defaults?.ghl_runtime !== 'disabled') {
+  fail('academy machine pack must keep ghl_runtime disabled');
+}
+
+console.log(
+  `validate-academy-blueprint: OK (${CONTRACT_FILES.length} docs contracts + ${MODULE_FILES.length} modules)`
+);
