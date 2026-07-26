@@ -40,6 +40,26 @@ describe('GET /api/submissions/teacher', () => {
     expect(getTeacherSubmissionsMock).not.toHaveBeenCalled()
   })
 
+  it('allows owner to fetch teacher submissions without role mutation', async () => {
+    validateStaffRequestMock.mockResolvedValue({
+      ok: true,
+      method: 'supabase',
+      user: {
+        user_metadata: { role: 'owner', tenant_slug: 'peskids' },
+        app_metadata: {},
+      },
+    })
+    getTeacherSubmissionsMock.mockResolvedValue([])
+    const { GET } = await import('../route')
+
+    const response = await GET({
+      headers: new Headers({ 'x-request-id': 'req-owner-teacher-200' }),
+    } as never)
+
+    expect(response.status).toBe(200)
+    expect(getTeacherSubmissionsMock).toHaveBeenCalled()
+  })
+
   it('allows teacher staff to fetch submissions', async () => {
     validateStaffRequestMock.mockResolvedValue({
       ok: true,

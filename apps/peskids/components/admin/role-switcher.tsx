@@ -19,6 +19,11 @@ const DASHBOARD_VIEWS = [
     href: '/support/dashboard',
     description: 'Casos, mensajes y seguimientos.',
   },
+  {
+    label: 'Familia (preview)',
+    href: '/admin/preview/family',
+    description: 'Vista de solo lectura. No entra a /familias ni cambia tu rol.',
+  },
 ] as const;
 
 export function RoleSwitcher(): React.ReactElement | null {

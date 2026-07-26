@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { validateStaffRequest } from '@/lib/staff-auth';
-import { tenantRoleFromUserMetadata } from '@/lib/runtime/tenant-identity';
+import { isTeacherSurfaceUser } from '@/lib/staff-user';
 import { createFormSubmissionService } from '@/lib/services/form-submission.service';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 
@@ -28,8 +28,8 @@ export async function GET(_req: NextRequest): Promise<NextResponse> {
     if (!auth.ok) {
       return errorJson(requestId, auth.error, auth.status);
     }
-    const role = auth.user ? tenantRoleFromUserMetadata(auth.user) : null;
-    if (auth.method !== 'secret' && role !== 'teacher' && role !== 'admin') {
+    // Owner/admin/teacher may inspect teacher data; never mutate auth role metadata.
+    if (auth.method !== 'secret' && auth.user && !isTeacherSurfaceUser(auth.user)) {
       return errorJson(requestId, 'Forbidden', 403);
     }
 
