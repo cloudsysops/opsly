@@ -35,6 +35,49 @@ export const createImprovementMessageSchema = z
 export type CreateImprovementMessageInput = z.infer<typeof createImprovementMessageSchema>;
 export type ImprovementAttachmentInput = z.infer<typeof attachmentSchema>;
 
+export const improvementClientStatusSchema = z.enum([
+  'recibido',
+  'priorizado',
+  'en_desarrollo',
+  'listo_para_probar',
+  'aprobado',
+  'publicado',
+  'backlog',
+  'cerrado',
+]);
+
+const optionalUrlSchema = z
+  .string()
+  .trim()
+  .url('Debe ser una URL válida')
+  .max(500)
+  .nullable()
+  .optional();
+
+export const updateImprovementRequestSchema = z
+  .object({
+    id: z.string().uuid(),
+    client_status: improvementClientStatusSchema.optional(),
+    github_issue_url: optionalUrlSchema,
+    github_pr_url: optionalUrlSchema,
+    preview_url: optionalUrlSchema,
+    production_url: optionalUrlSchema,
+    operator_notes: z.string().trim().max(1200).nullable().optional(),
+  })
+  .refine(
+    (value) =>
+      value.client_status !== undefined ||
+      value.github_issue_url !== undefined ||
+      value.github_pr_url !== undefined ||
+      value.preview_url !== undefined ||
+      value.production_url !== undefined ||
+      value.operator_notes !== undefined,
+    'Envía al menos un campo para actualizar'
+  );
+
+export type ImprovementClientStatus = z.infer<typeof improvementClientStatusSchema>;
+export type UpdateImprovementRequestInput = z.infer<typeof updateImprovementRequestSchema>;
+
 export const studentImportRowSchema = z.object({
   name: z.string().trim().min(2).max(120),
   grade: z.string().trim().min(1).max(40).default('Por confirmar'),

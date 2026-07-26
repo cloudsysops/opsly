@@ -641,6 +641,22 @@ export type Database = {
           ai_summary: string | null;
           twenty_task_id: string | null;
           status: 'new' | 'analyzed' | 'task_created' | 'dismissed';
+          client_status:
+            | 'recibido'
+            | 'priorizado'
+            | 'en_desarrollo'
+            | 'listo_para_probar'
+            | 'aprobado'
+            | 'publicado'
+            | 'backlog'
+            | 'cerrado';
+          github_issue_url: string | null;
+          github_pr_url: string | null;
+          preview_url: string | null;
+          production_url: string | null;
+          operator_notes: string | null;
+          ready_for_client_at: string | null;
+          published_at: string | null;
           attachments: Array<{
             name: string;
             mime_type: string;
@@ -661,6 +677,22 @@ export type Database = {
           ai_summary?: string | null;
           twenty_task_id?: string | null;
           status?: 'new' | 'analyzed' | 'task_created' | 'dismissed';
+          client_status?:
+            | 'recibido'
+            | 'priorizado'
+            | 'en_desarrollo'
+            | 'listo_para_probar'
+            | 'aprobado'
+            | 'publicado'
+            | 'backlog'
+            | 'cerrado';
+          github_issue_url?: string | null;
+          github_pr_url?: string | null;
+          preview_url?: string | null;
+          production_url?: string | null;
+          operator_notes?: string | null;
+          ready_for_client_at?: string | null;
+          published_at?: string | null;
           attachments?: Array<{
             name: string;
             mime_type: string;

@@ -9,9 +9,15 @@ import {
 import {
   isPeskidsStaffImprovementChatTwentyTaskEnabled,
 } from '@/lib/peskids-pro-flags';
+import type {
+  ImprovementClientStatus,
+  UpdateImprovementRequestInput,
+} from '@/lib/validation/improvement-chat.schema';
 
 export type ImprovementMessageRow =
   Database['public']['Tables']['staff_improvement_messages']['Row'];
+
+export type ImprovementRequestRow = ImprovementMessageRow & { role: 'staff' };
 
 function tenantId(): string {
   return (process.env.NEXT_PUBLIC_TENANT_ID || 'peskids').trim().toLowerCase();
@@ -26,6 +32,20 @@ export async function listImprovementMessages(): Promise<ImprovementMessageRow[]
 
   if (error) throw error;
   return data ?? [];
+}
+
+export async function listImprovementRequests(): Promise<ImprovementRequestRow[]> {
+  const { data, error } = await supabaseServer()
+    .from('staff_improvement_messages')
+    .select('*')
+    .eq('tenant_id', tenantId())
+    .eq('role', 'staff')
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return ((data ?? []) as ImprovementMessageRow[]).filter(
+    (row): row is ImprovementRequestRow => row.role === 'staff'
+  );
 }
 
 async function insertMessage(
@@ -55,6 +75,11 @@ const TASK_PRIORITY_DAYS: Record<ImprovementPriority, number> = {
   alta: 1,
   media: 3,
   baja: 7,
+};
+
+const STATUS_TIMESTAMP_FIELD: Partial<Record<ImprovementClientStatus, 'ready_for_client_at' | 'published_at'>> = {
+  listo_para_probar: 'ready_for_client_at',
+  publicado: 'published_at',
 };
 
 /** Best-effort — a Twenty failure never blocks the chat from responding. */
@@ -204,4 +229,38 @@ export async function createStaffMessageAndAnalyze(input: {
   });
 
   return { staffMessage: updatedStaffMessage, assistantMessage };
+}
+
+export async function updateImprovementRequest(
+  input: UpdateImprovementRequestInput
+): Promise<ImprovementRequestRow> {
+  const patch: Database['public']['Tables']['staff_improvement_messages']['Update'] = {
+    updated_at: new Date().toISOString(),
+  };
+
+  if (input.client_status !== undefined) {
+    patch.client_status = input.client_status;
+    const timestampField = STATUS_TIMESTAMP_FIELD[input.client_status];
+    if (timestampField) {
+      patch[timestampField] = new Date().toISOString();
+    }
+  }
+
+  if (input.github_issue_url !== undefined) patch.github_issue_url = input.github_issue_url;
+  if (input.github_pr_url !== undefined) patch.github_pr_url = input.github_pr_url;
+  if (input.preview_url !== undefined) patch.preview_url = input.preview_url;
+  if (input.production_url !== undefined) patch.production_url = input.production_url;
+  if (input.operator_notes !== undefined) patch.operator_notes = input.operator_notes;
+
+  const { data, error } = await supabaseServer()
+    .from('staff_improvement_messages')
+    .update(patch)
+    .eq('tenant_id', tenantId())
+    .eq('role', 'staff')
+    .eq('id', input.id)
+    .select('*')
+    .single();
+
+  if (error) throw error;
+  return data as ImprovementRequestRow;
 }

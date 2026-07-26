@@ -3,10 +3,15 @@ import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { validateStaffRequest } from '@/lib/staff-auth';
 import { isAdminSurfaceUser } from '@/lib/staff-user';
 import { isPeskidsStaffImprovementChatEnabled } from '@/lib/peskids-pro-flags';
-import { createImprovementMessageSchema } from '@/lib/validation/improvement-chat.schema';
+import {
+  createImprovementMessageSchema,
+  updateImprovementRequestSchema,
+} from '@/lib/validation/improvement-chat.schema';
 import {
   createStaffMessageAndAnalyze,
+  listImprovementRequests,
   listImprovementMessages,
+  updateImprovementRequest,
 } from '@/lib/services/improvement-chat.service';
 
 export const dynamic = 'force-dynamic';
@@ -39,11 +44,41 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const messages = await listImprovementMessages();
-    return successJson(requestId, { ok: true, messages });
+    const [messages, requests] = await Promise.all([
+      listImprovementMessages(),
+      listImprovementRequests(),
+    ]);
+    return successJson(requestId, { ok: true, messages, requests });
   } catch (err) {
     console.error('[GET /api/admin/improvement-chat]', err, { request_id: requestId });
     return errorJson(requestId, 'Failed to list improvement chat messages', 500);
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  const requestId = resolveRequestId(req);
+  const auth = await validateStaffRequest(req);
+  const gate = requireAdminSurface(auth);
+  if (!gate.ok) {
+    return errorJson(requestId, gate.error, gate.status);
+  }
+
+  if (!isPeskidsStaffImprovementChatEnabled()) {
+    return errorJson(requestId, 'Improvement chat is not enabled', 404);
+  }
+
+  try {
+    const json = await req.json();
+    const parsed = updateImprovementRequestSchema.safeParse(json);
+    if (!parsed.success) {
+      return errorJson(requestId, parsed.error.issues[0]?.message ?? 'Invalid input', 400);
+    }
+
+    const request = await updateImprovementRequest(parsed.data);
+    return successJson(requestId, { ok: true, request });
+  } catch (err) {
+    console.error('[PATCH /api/admin/improvement-chat]', err, { request_id: requestId });
+    return errorJson(requestId, 'Failed to update improvement request', 500);
   }
 }
 
