@@ -30,7 +30,7 @@ import { ClassesPanel } from '@/components/admin/classes-panel'
 import { SalesAnalyticsPanel } from '@/components/admin/sales-analytics-panel'
 import { WacrmLeadInboxActions } from '@/components/admin/wacrm-lead-inbox-actions'
 import { normalizeLeadSourceLabel } from '@/lib/admin/lead-source-label'
-import { classModalityLabel } from '@/lib/lead-modality'
+import { classModalityLabel, leadTypeLabel, serviceModeLabel } from '@/lib/lead-modality'
 import { buildPeskidsReferralLink } from '@/lib/peskids-referral-links'
 import { formatAgeRange } from '@/lib/peskids-domain'
 import { Badge } from '@/components/ui/badge'
@@ -196,6 +196,7 @@ export function DashboardView({
   const isAdminSurface = surface === 'admin'
   const [search, setSearch] = useState('')
   const [leadStatusFilter, setLeadStatusFilter] = useState<'all' | DashboardData['new_leads'][number]['status']>('all')
+  const [leadTypeFilter, setLeadTypeFilter] = useState<'all' | 'family' | 'teacher_applicant' | 'company'>('all')
   const [followupStatusFilter, setFollowupStatusFilter] = useState<'all' | DashboardData['followups'][number]['status']>('all')
   const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({})
   const [dirtyNoteIds, setDirtyNoteIds] = useState<Set<string>>(new Set())
@@ -226,12 +227,18 @@ export function DashboardView({
         l.email.toLowerCase().includes(q) ||
         (l.phone?.toLowerCase().includes(q) ?? false) ||
         (l.neighborhood?.toLowerCase().includes(q) ?? false) ||
-        classModalityLabel(l.class_modality).toLowerCase().includes(q)
+        (l.child_name?.toLowerCase().includes(q) ?? false) ||
+        (l.company_name?.toLowerCase().includes(q) ?? false) ||
+        leadTypeLabel(l.lead_type).toLowerCase().includes(q) ||
+        classModalityLabel(l.class_modality).toLowerCase().includes(q) ||
+        serviceModeLabel(l.service_mode).toLowerCase().includes(q)
 
       const matchesStatus = leadStatusFilter === 'all' || l.status === leadStatusFilter
-      return matchesSearch && matchesStatus
+      const matchesType =
+        leadTypeFilter === 'all' || (l.lead_type ?? 'family') === leadTypeFilter
+      return matchesSearch && matchesStatus && matchesType
     })
-  }, [data.new_leads, leadStatusFilter, search])
+  }, [data.new_leads, leadStatusFilter, leadTypeFilter, search])
 
   const filteredFollowups = useMemo(() => {
     return data.followups.filter((followup) => {
@@ -594,6 +601,19 @@ export function DashboardView({
           accent="teal"
         >
           <div className="mb-3 flex flex-wrap gap-2">
+            {(['all', 'family', 'teacher_applicant', 'company'] as const).map((type) => (
+              <Button
+                key={type}
+                type="button"
+                size="sm"
+                variant={leadTypeFilter === type ? 'secondary' : 'ghost'}
+                onClick={() => setLeadTypeFilter(type)}
+              >
+                {type === 'all' ? 'Todos los tipos' : leadTypeLabel(type)}
+              </Button>
+            ))}
+          </div>
+          <div className="mb-3 flex flex-wrap gap-2">
             {(['all', 'new', 'contacted', 'trial', 'enrolled', 'active', 'renewal', 'archived'] as const).map((status) => (
               <Button
                 key={status}
@@ -635,8 +655,13 @@ export function DashboardView({
                   </div>
 
                   <div className="mt-2 flex flex-wrap gap-1.5">
+                    <Badge tone="neutral">{leadTypeLabel(lead.lead_type)}</Badge>
                     <Badge tone="violet">{normalizeLeadSourceLabel(lead.referral_source)}</Badge>
-                    <Badge tone="amber">{classModalityLabel(lead.class_modality)}</Badge>
+                    <Badge tone="amber">
+                      {serviceModeLabel(lead.service_mode) !== '—'
+                        ? serviceModeLabel(lead.service_mode)
+                        : classModalityLabel(lead.class_modality)}
+                    </Badge>
                     <Badge tone="teal">{formatAgeRange(lead.grade_interested)}</Badge>
                     {lead.referral_code ? <Badge tone="green">Ref {lead.referral_code}</Badge> : null}
                     {lead.referred_by_code ? <Badge tone="violet">Recomendado</Badge> : null}

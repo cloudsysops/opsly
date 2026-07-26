@@ -7,7 +7,7 @@ import {
 } from '@/lib/validation/lead.schema';
 
 describe('leadCaptureFormSchema', () => {
-  const validForm = {
+  const legacyFamily = {
     name: 'María García',
     email: 'maria@peskids.co',
     phone: '+57 300 123 4567',
@@ -18,30 +18,115 @@ describe('leadCaptureFormSchema', () => {
     referred_by_code: 'PK-ABC123',
   };
 
-  it('accepts a complete Sprint 01 lead form', () => {
-    const parsed = leadCaptureFormSchema.parse(validForm);
-    expect(parsed.name).toBe('María García');
+  it('accepts legacy family payload without lead_type', () => {
+    const parsed = leadCaptureFormSchema.parse(legacyFamily);
+    expect(parsed.lead_type).toBe('family');
     expect(parsed.grade_interested).toBe('K-5');
     expect(parsed.referred_by_code).toBe('PK-ABC123');
   });
 
+  it('family llanogrande does not require manual neighborhood', () => {
+    const parsed = leadCaptureFormSchema.parse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '3001112233',
+      child_name: 'Mateo López',
+      birth_date: '2018-05-10',
+      document_number: '1234567890',
+      class_modality: 'llanogrande',
+      consent_treatment: true,
+    });
+    expect(parsed.neighborhood).toBe('Llanogrande');
+    expect(parsed.service_mode).toBe('llanogrande');
+    expect(parsed.child_name).toBe('Mateo López');
+  });
+
+  it('family domicilio requires neighborhood', () => {
+    const result = leadCaptureFormSchema.safeParse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      child_name: 'Mateo López',
+      birth_date: '2018-05-10',
+      document_number: '1234567890',
+      class_modality: 'domicilio',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('family domicilio keeps provided neighborhood', () => {
+    const parsed = leadCaptureFormSchema.parse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      child_name: 'Sofía',
+      birth_date: '2016-01-15',
+      document_number: '987654321',
+      class_modality: 'domicilio',
+      neighborhood: 'Envigado',
+    });
+    expect(parsed.neighborhood).toBe('Envigado');
+    expect(parsed.service_mode).toBe('domicilio');
+  });
+
+  it('teacher applicant saves document number in output', () => {
+    const parsed = leadCaptureFormSchema.parse({
+      lead_type: 'teacher_applicant',
+      name: 'Carlos Ruiz',
+      email: 'carlos@peskids.co',
+      phone: '3009998877',
+      document_number: '1122334455',
+      experience: '5 años enseñando natación a niños',
+      availability: 'Lunes a viernes tarde',
+      work_zones: 'Rionegro y Llanogrande',
+    });
+    expect(parsed.document_number).toBe('1122334455');
+    expect(parsed.metadata).toMatchObject({
+      experience: expect.stringContaining('natación'),
+      availability: 'Lunes a viernes tarde',
+    });
+  });
+
+  it('company saves NIT and institutional service_mode', () => {
+    const parsed = leadCaptureFormSchema.parse({
+      lead_type: 'company',
+      name: 'Laura Gómez',
+      email: 'laura@colegio.co',
+      phone: '3005556677',
+      company_name: 'Colegio Andes',
+      company_nit: '900123456-1',
+      contact_role: 'Coordinadora',
+      company_kind: 'colegio',
+      location: 'El Retiro',
+      approx_children: 40,
+      need: 'Clases de natación extracurriculares',
+    });
+    expect(parsed.lead_type).toBe('company');
+    expect(parsed.service_mode).toBe('institutional');
+    expect(parsed.name).toBe('Laura Gómez');
+    if (parsed.lead_type === 'company') {
+      expect(parsed.company_nit).toBe('900123456-1');
+    }
+  });
+
   it('rejects names shorter than 2 characters', () => {
-    const result = leadCaptureFormSchema.safeParse({ ...validForm, name: 'A' });
+    const result = leadCaptureFormSchema.safeParse({ ...legacyFamily, name: 'A' });
     expect(result.success).toBe(false);
   });
 
   it('rejects invalid email', () => {
-    const result = leadCaptureFormSchema.safeParse({ ...validForm, email: 'not-an-email' });
+    const result = leadCaptureFormSchema.safeParse({ ...legacyFamily, email: 'not-an-email' });
     expect(result.success).toBe(false);
   });
 
-  it('allows empty optional phone', () => {
-    const parsed = leadCaptureFormSchema.parse({ ...validForm, phone: '' });
+  it('allows empty optional phone on legacy family', () => {
+    const parsed = leadCaptureFormSchema.parse({ ...legacyFamily, phone: '' });
     expect(parsed.phone).toBeUndefined();
   });
 
-  it('requires grade_interested enum', () => {
-    const result = leadCaptureFormSchema.safeParse({ ...validForm, grade_interested: '3A' });
+  it('requires grade_interested enum on legacy family', () => {
+    const result = leadCaptureFormSchema.safeParse({ ...legacyFamily, grade_interested: '3A' });
     expect(result.success).toBe(false);
   });
 });
@@ -59,7 +144,7 @@ describe('leadApiPostSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('accepts payload with consent', () => {
+  it('accepts legacy payload with consent', () => {
     const parsed = leadApiPostSchema.parse({
       name: 'Ana López',
       email: 'ana@peskids.co',
@@ -70,6 +155,7 @@ describe('leadApiPostSchema', () => {
       consent_marketing: false,
     });
     expect(parsed.consent_treatment).toBe(true);
+    expect(parsed.lead_type).toBe('family');
   });
 });
 
@@ -81,6 +167,9 @@ describe('toCreateLeadInput', () => {
       class_modality: 'llanogrande',
       neighborhood: 'Rionegro',
       grade_interested: '9-12',
+      lead_type: 'family',
+      service_mode: 'llanogrande',
+      metadata: { intake_version: 'legacy-family-v1' },
     });
     expect(input.full_name).toBe('Carlos Ruiz');
     expect(input.source).toBe('web');

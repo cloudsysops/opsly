@@ -14,9 +14,18 @@ export type PeskidsLeadCaptureBody = {
   name: string;
   email: string;
   phone?: string;
+  lead_type?: 'family' | 'teacher_applicant' | 'company';
+  service_mode?: 'llanogrande' | 'domicilio' | 'institutional';
   class_modality?: 'llanogrande' | 'domicilio';
   neighborhood?: string;
   grade_interested: string;
+  child_name?: string;
+  birth_date?: string;
+  document_type?: string;
+  document_number?: string;
+  company_name?: string;
+  company_nit?: string;
+  metadata?: Record<string, unknown>;
   referral_source?: string;
 };
 
@@ -81,14 +90,32 @@ export function buildCanonicalLeadPayload(
     twentyOpportunityId?: string;
   }
 ): Record<string, unknown> {
+  const leadType = body.lead_type ?? 'family';
+  const classModality = body.class_modality ?? 'llanogrande';
   return {
     tenant_slug: 'peskids',
     name: body.name.trim(),
     email: body.email.trim(),
     phone: body.phone?.trim() ?? '',
-    class_modality: body.class_modality ?? 'llanogrande',
-    neighborhood: body.neighborhood?.trim() || 'Por confirmar',
+    lead_type: leadType,
+    service_mode:
+      body.service_mode ?? (leadType === 'company' ? 'institutional' : classModality),
+    class_modality: classModality,
+    neighborhood:
+      classModality === 'llanogrande' && leadType === 'family'
+        ? body.neighborhood?.trim() || 'Llanogrande'
+        : body.neighborhood?.trim() || 'Por confirmar',
     grade_interested: normalizeGrade(body.grade_interested),
+    ...(body.child_name ? { child_name: body.child_name.trim() } : {}),
+    ...(body.birth_date ? { birth_date: body.birth_date } : {}),
+    ...(body.document_type ? { document_type: body.document_type.trim() } : {}),
+    ...(body.document_number ? { document_number: body.document_number.trim() } : {}),
+    ...(body.company_name ? { company_name: body.company_name.trim() } : {}),
+    ...(body.company_nit ? { company_nit: body.company_nit.trim() } : {}),
+    metadata: {
+      intake_version: 'dynamic-intake-v1',
+      ...(body.metadata ?? {}),
+    },
     referral_source: normalizeReferralSource(body.referral_source),
     ...(crmIds?.ghlContactId ? { ghl_contact_id: crmIds.ghlContactId } : {}),
     ...(crmIds?.twentyPersonId ? { twenty_person_id: crmIds.twentyPersonId } : {}),

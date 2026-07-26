@@ -27,9 +27,12 @@ describe('peskids-canonical-api', () => {
       name: 'Ana',
       email: 'ana@example.com',
       phone: '300',
+      lead_type: 'family',
+      service_mode: 'llanogrande',
       class_modality: 'llanogrande',
-      neighborhood: 'Por confirmar',
+      neighborhood: 'Llanogrande',
       grade_interested: 'Other',
+      metadata: { intake_version: 'dynamic-intake-v1' },
       referral_source: 'Referral',
     });
   });
