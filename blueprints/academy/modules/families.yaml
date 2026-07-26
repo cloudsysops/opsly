@@ -1,0 +1,13 @@
+id: families
+status: reusable
+summary: Guardians/responsibles, students, family portal.
+capabilities:
+  - guardian_student_links
+  - family_portal
+  - family_feedback
+policies:
+  - guardian_is_primary_contact_for_crm_name
+  - child_data_separate_from_guardian
+source_hints:
+  - apps/peskids/lib/family-*.ts
+  - apps/peskids/app/(family)/

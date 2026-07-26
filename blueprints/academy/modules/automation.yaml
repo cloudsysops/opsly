@@ -1,0 +1,16 @@
+id: automation
+status: reusable
+provider: n8n
+summary: Workflows for digests, reminders, lead routing — per tenant container.
+capabilities:
+  - lead_intake_webhook
+  - daily_digest
+  - followup_reminders
+defaults:
+  container_project: tenant_<slug>
+policies:
+  - no_second_orchestrator
+  - secrets_via_doppler_only
+source_hints:
+  - .n8n/1-workflows/crm/
+  - scripts/install-crm-workflows.sh

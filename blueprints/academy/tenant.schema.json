@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://opsly.io/schemas/academy-tenant-instance.schema.json",
+  "title": "Opsly Academy Tenant Instance Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["tenant", "modules", "policies"],
+  "properties": {
+    "tenant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slug",
+        "business_type",
+        "owner_platform",
+        "canonical_domain",
+        "locale",
+        "timezone"
+      ],
+      "properties": {
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "business_type": { "const": "academy" },
+        "owner_platform": { "const": "icso" },
+        "canonical_domain": { "type": "string", "format": "uri" },
+        "locale": { "type": "string", "minLength": 2 },
+        "timezone": { "type": "string", "minLength": 1 },
+        "display_name": { "type": "string" }
+      }
+    },
+    "modules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "auth",
+        "crm",
+        "franchises",
+        "classes",
+        "families",
+        "teachers",
+        "automation",
+        "messaging",
+        "payments",
+        "analytics"
+      ],
+      "properties": {
+        "auth": { "type": "boolean" },
+        "crm": { "enum": ["twenty", false] },
+        "franchises": { "type": "boolean" },
+        "classes": { "type": "boolean" },
+        "families": { "type": "boolean" },
+        "teachers": { "type": "boolean" },
+        "automation": { "enum": ["n8n", false] },
+        "messaging": {
+          "enum": ["manual_then_wacrm", "wacrm", "disabled", false]
+        },
+        "payments": { "enum": ["disabled", "wompi", false] },
+        "analytics": { "type": "boolean" }
+      }
+    },
+    "franchises": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "primary": {
+          "type": "object",
+          "required": ["slug", "type"],
+          "properties": {
+            "slug": { "type": "string" },
+            "type": { "enum": ["flagship", "owned", "franchisee"] },
+            "is_primary": { "type": "boolean" }
+          }
+        },
+        "owned_mobile": {
+          "type": "object",
+          "required": ["slug", "type"],
+          "properties": {
+            "slug": { "type": "string" },
+            "type": { "enum": ["mobile", "owned"] }
+          }
+        }
+      }
+    },
+    "policies": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ghl_runtime", "whatsapp_outbound", "payments_live"],
+      "properties": {
+        "ghl_runtime": { "const": "disabled" },
+        "whatsapp_outbound": {
+          "enum": ["approval_first", "disabled"]
+        },
+        "payments_live": { "const": "disabled_by_default" }
+      }
+    }
+  }
+}

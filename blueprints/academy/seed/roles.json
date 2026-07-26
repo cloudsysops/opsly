@@ -1,0 +1,9 @@
+{
+  "tenant_slug": "peskids",
+  "roles": [
+    { "id": "owner", "surfaces": ["admin"] },
+    { "id": "staff", "surfaces": ["admin", "staff"] },
+    { "id": "teacher", "surfaces": ["teacher"] },
+    { "id": "family", "surfaces": ["family", "parent"] }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "id": "academy-followup-reminders",
+  "name": "Academy Follow-up Reminders",
+  "status": "contract-only",
+  "provider": "n8n",
+  "steps": ["list_due_followups", "create_reminder_tasks", "optional_staff_notify"]
+}

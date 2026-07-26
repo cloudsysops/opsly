@@ -1,0 +1,13 @@
+id: analytics
+status: reusable
+summary: Dashboard KPIs — leads, conversion, operation daily.
+capabilities:
+  - admin_dashboard
+  - lead_sources
+  - conversion_rate
+  - executive_kpis
+policies:
+  - franchise_filter_optional
+source_hints:
+  - apps/peskids/lib/services/dashboard.service.ts
+  - apps/peskids/components/admin/dashboard-view.tsx

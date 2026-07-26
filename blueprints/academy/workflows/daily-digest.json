@@ -1,0 +1,8 @@
+{
+  "id": "academy-daily-digest",
+  "name": "Academy Daily Digest",
+  "status": "contract-only",
+  "provider": "n8n",
+  "schedule": "0 8 * * * America/Bogota",
+  "steps": ["aggregate_leads_followups", "compose_digest", "notify_owner_channels"]
+}

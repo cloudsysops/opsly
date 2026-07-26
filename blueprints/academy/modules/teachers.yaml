@@ -1,0 +1,12 @@
+id: teachers
+status: reusable
+summary: Teachers, agenda, feedback, optional applicant intake.
+capabilities:
+  - teacher_dashboard
+  - teacher_feedback
+  - teacher_applicant_lead_type
+policies:
+  - franchise_membership_for_staff
+  - applicant_leads_do_not_auto_provision_users
+source_hints:
+  - apps/peskids/lib/services/teacher*.ts

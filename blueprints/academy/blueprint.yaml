@@ -1,0 +1,60 @@
+apiVersion: opsly.io/v1alpha1
+kind: VerticalBlueprint
+metadata:
+  id: academy
+  displayName: Academy
+  status: draft
+  # Peskids is the pilot/canonical Academy tenant — not the control plane.
+  pilotTenant: peskids
+  # ICSO / Opsly is the mother platform (tenants, modules, owners, domains, deploys).
+  ownerPlatform: icso
+spec:
+  tenantSchema: ./tenant.schema.json
+  modulesDir: ./modules
+  seedDir: ./seed
+  workflowsDir: ./workflows
+  smokeDir: ./smoke
+  docsContract: ../../docs/blueprints/academy
+  controlPlane: existing-opsly
+  provisioning:
+    enabled: false
+    mode: contract-only
+  defaults:
+    locale: es-CO
+    timezone: America/Bogota
+    crm: twenty
+    messaging: manual_then_wacrm
+    payments: disabled
+    ghl_runtime: disabled
+    whatsapp_outbound: approval_first
+  modules:
+    auth: true
+    crm: twenty
+    franchises: true
+    classes: true
+    families: true
+    teachers: true
+    automation: n8n
+    messaging: manual_then_wacrm
+    payments: disabled
+    analytics: true
+  franchises:
+    enabled: true
+    primary:
+      slug: llanogrande-principal
+      type: flagship
+      is_primary: true
+    owned_mobile:
+      slug: domicilios-peskids
+      type: mobile
+  invariants:
+    - icso-is-platform-not-customer-tenant
+    - peskids-is-pilot-academy-tenant
+    - reusable-modules-not-peskids-forks
+    - tenant-scoped
+    - twenty-primary-crm
+    - approval-first-outbound
+    - ghl-legacy-off
+    - payments-disabled-by-default
+    - no-parallel-control-plane
+    - no-tenant-per-franchise-yet
