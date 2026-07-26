@@ -74,6 +74,7 @@ export async function listClasses(input: {
   professorUserId?: string;
   poolId?: string;
   status?: string;
+  franchiseId?: string;
 }): Promise<ClassListItem[]> {
   let query = peskidsClient()
     .from('classes')
@@ -91,6 +92,9 @@ export async function listClasses(input: {
   }
   if (input.status) {
     query = query.eq('status', input.status as ClassStatus);
+  }
+  if (input.franchiseId) {
+    query = query.eq('franchise_id', input.franchiseId);
   }
 
   const { data, error } = await query;

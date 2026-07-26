@@ -12,6 +12,7 @@ export type PlatformPeskidsLeadRow = {
   admin_notes: string | null;
   referral_source?: string | null;
   created_at?: string;
+  franchise_id?: string | null;
   twenty_person_id?: string | null;
   twenty_opportunity_id?: string | null;
 };
@@ -73,6 +74,7 @@ export function mapPlatformLeadRow(row: PlatformPeskidsLeadRow): DashboardLead {
     referral_redemptions: 0,
     referral_source: row.referral_source ?? null,
     created_at: row.created_at ?? new Date().toISOString(),
+    franchise_id: row.franchise_id ?? null,
     twenty_person_id: row.twenty_person_id ?? null,
     twenty_opportunity_id: row.twenty_opportunity_id ?? null,
   };

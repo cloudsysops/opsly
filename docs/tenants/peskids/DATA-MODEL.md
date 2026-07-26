@@ -13,6 +13,7 @@ tenant_slug: peskids
 
 - IDs UUID o ULID en producto futuro.
 - `tenant_slug` fijo `peskids` en integraciones Opsly.
+- **Franquicias:** unidades dentro del tenant — ver [[FRANCHISES]]. No crear un tenant Opsly por franquicia.
 - Timestamps UTC; soft-delete opcional en entidades sensibles.
 - PII mínima; retención acordada con owner.
 

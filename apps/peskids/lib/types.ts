@@ -102,6 +102,7 @@ export type Database = {
         Row: {
           id: string;
           tenant_slug: string;
+          franchise_id: string | null;
           name: string;
           location: 'llanogrande' | 'domicilio';
           max_capacity: number;
@@ -111,6 +112,7 @@ export type Database = {
         Insert: {
           id?: string;
           tenant_slug?: string;
+          franchise_id?: string | null;
           name: string;
           location: 'llanogrande' | 'domicilio';
           max_capacity: number;
@@ -124,6 +126,7 @@ export type Database = {
         Row: {
           id: string;
           tenant_slug: string;
+          franchise_id: string | null;
           title: string;
           level: number;
           professor_user_id: string;
@@ -145,6 +148,7 @@ export type Database = {
         Insert: {
           id?: string;
           tenant_slug?: string;
+          franchise_id?: string | null;
           title: string;
           level: number;
           professor_user_id: string;
@@ -733,6 +737,7 @@ export type Database = {
           id: string;
           ghl_contact_id: string | null;
           tenant_id: string;
+          franchise_id: string | null;
           name: string;
           email: string;
           phone: string | null;
@@ -752,6 +757,7 @@ export type Database = {
         Insert: {
           ghl_contact_id?: string | null;
           tenant_id: string;
+          franchise_id?: string | null;
           name: string;
           email: string;
           phone?: string | null;
@@ -774,6 +780,7 @@ export type Database = {
           id: string;
           ghl_contact_id: string | null;
           tenant_id: string;
+          franchise_id: string | null;
           name: string;
           grade: string;
           status: 'active' | 'inactive';
@@ -789,6 +796,7 @@ export type Database = {
         Insert: {
           ghl_contact_id?: string | null;
           tenant_id: string;
+          franchise_id?: string | null;
           name: string;
           grade: string;
           status?: 'active' | 'inactive';
@@ -807,6 +815,7 @@ export type Database = {
         Row: {
           id: string;
           tenant_id: string;
+          franchise_id: string | null;
           lead_id: string;
           student_id: string | null;
           scheduled_date: string;
@@ -820,6 +829,7 @@ export type Database = {
         };
         Insert: {
           tenant_id: string;
+          franchise_id?: string | null;
           lead_id: string;
           student_id?: string | null;
           scheduled_date: string;
@@ -907,6 +917,7 @@ export type Database = {
         Row: {
           id: string;
           tenant_id: string;
+          franchise_id: string | null;
           contact_id: string;
           contact_type: 'lead' | 'student' | 'parent';
           type: 'call' | 'email' | 'sms' | 'in-person';
@@ -922,6 +933,7 @@ export type Database = {
         };
         Insert: {
           tenant_id: string;
+          franchise_id?: string | null;
           contact_id: string;
           contact_type: 'lead' | 'student' | 'parent';
           type: 'call' | 'email' | 'sms' | 'in-person';
@@ -985,6 +997,7 @@ export type Database = {
         Row: {
           id: string;
           tenant_id: string;
+          franchise_id: string | null;
           source: 'whatsapp' | 'instagram' | 'web';
           sender_name: string | null;
           sender_contact: string;
@@ -1006,6 +1019,7 @@ export type Database = {
         };
         Insert: {
           tenant_id: string;
+          franchise_id?: string | null;
           source: 'whatsapp' | 'instagram' | 'web';
           sender_name?: string | null;
           sender_contact: string;
@@ -1201,6 +1215,7 @@ export interface DashboardData {
       | 'referral_redemptions'
       | 'created_at'
     > & {
+      franchise_id?: string | null;
       referral_source?: string | null;
       twenty_person_id?: string | null;
       twenty_opportunity_id?: string | null;

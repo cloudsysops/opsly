@@ -13,6 +13,7 @@ export type AttendanceStatus = 'present' | 'absent' | 'excused';
 export interface PeskidsPool {
   id: string;
   tenant_slug: string;
+  franchise_id?: string | null;
   name: string;
   location: SwimLocation;
   max_capacity: number;
@@ -23,6 +24,7 @@ export interface PeskidsPool {
 export interface PeskidsClass {
   id: string;
   tenant_slug: string;
+  franchise_id?: string | null;
   title: string;
   level: number;
   professor_user_id: string;

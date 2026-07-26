@@ -20,18 +20,25 @@ function platformFrom(table: 'peskids_leads' | 'peskids_feedback') {
 
 export async function fetchPlatformLeadsForDashboard(
   tenantSlug: string,
-  periodStartISO: string
+  periodStartISO: string,
+  franchiseId?: string | null
 ): Promise<
   | { ok: true; rows: PlatformPeskidsLeadRow[] }
   | { ok: false; error: { message?: string } }
 > {
-  const { data, error } = await platformFrom('peskids_leads')
+  let query = platformFrom('peskids_leads')
     .select(
-      'id, full_name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_source, created_at, twenty_person_id, twenty_opportunity_id'
+      'id, full_name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_source, created_at, franchise_id, twenty_person_id, twenty_opportunity_id'
     )
     .eq('tenant_slug', tenantSlug)
     .gte('created_at', periodStartISO)
     .order('created_at', { ascending: false });
+
+  if (franchiseId) {
+    query = query.eq('franchise_id', franchiseId);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     return { ok: false, error };
@@ -62,9 +69,14 @@ export async function fetchPlatformFeedbackForDashboard(
 
 export async function fetchDashboardLeads(
   tenantSlug: string,
-  periodStartISO: string
+  periodStartISO: string,
+  franchiseId?: string | null
 ): Promise<{ rows: ReturnType<typeof mapPlatformLeadRow>[]; source: 'platform' | 'legacy' }> {
-  const platformResult = await fetchPlatformLeadsForDashboard(tenantSlug, periodStartISO);
+  const platformResult = await fetchPlatformLeadsForDashboard(
+    tenantSlug,
+    periodStartISO,
+    franchiseId
+  );
   if (platformResult.ok) {
     return {
       source: 'platform',
@@ -77,14 +89,20 @@ export async function fetchDashboardLeads(
   }
 
   const supabase = supabaseServer();
-  const { data, error } = await supabase
+  let query = supabase
     .from('leads')
     .select(
-      'id, name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source, created_at'
+      'id, name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source, created_at, franchise_id'
     )
     .eq('tenant_id', tenantSlug)
     .gte('created_at', periodStartISO)
     .order('created_at', { ascending: false });
+
+  if (franchiseId) {
+    query = query.eq('franchise_id', franchiseId);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     throw error;

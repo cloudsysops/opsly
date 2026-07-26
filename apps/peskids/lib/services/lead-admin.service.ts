@@ -59,6 +59,7 @@ function mapLegacyLeadRow(row: {
   referral_redemptions: number;
   referral_source: string | null;
   created_at?: string;
+  franchise_id?: string | null;
 }): DashboardLead {
   return {
     id: row.id,
@@ -76,6 +77,7 @@ function mapLegacyLeadRow(row: {
     referral_redemptions: row.referral_redemptions,
     referral_source: row.referral_source,
     created_at: row.created_at ?? new Date().toISOString(),
+    franchise_id: row.franchise_id ?? null,
     twenty_person_id: null,
     twenty_opportunity_id: null,
     twenty_person_url: null,
