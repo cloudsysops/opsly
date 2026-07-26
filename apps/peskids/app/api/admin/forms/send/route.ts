@@ -1,4 +1,4 @@
-import { sendForm, listFormTemplates, FormDelivery } from '@/lib/services/form.service';
+import { sendForm, listFormTemplates } from '@/lib/services/form.service';
 import { adminAuth } from '@/lib/security-compat';
 import { z } from 'zod';
 
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
         ok: true,
         data: {
           sentCount: deliveries.length,
-          deliveries: deliveries.map((d: FormDelivery) => ({
+          deliveries: deliveries.map((d) => ({
             id: d.id,
             recipient: d.recipient_email,
             status: d.delivery_status,

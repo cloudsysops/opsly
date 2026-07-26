@@ -1,4 +1,4 @@
-import { getStudentPoints, getPointsHistory, PointTransaction } from '@/lib/services/points.service';
+import { getStudentPoints, getPointsHistory } from '@/lib/services/points.service';
 import { adminAuth } from '@/lib/security-compat';
 import { z } from 'zod';
 
@@ -42,7 +42,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
           totalRedeemed: points.total_redeemed,
           createdAt: points.created_at,
           updatedAt: points.updated_at,
-          history: history.map((tx: PointTransaction) => ({
+          history: history.map((tx) => ({
             id: tx.id,
             type: tx.transaction_type,
             points: tx.points_amount,
