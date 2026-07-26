@@ -398,6 +398,290 @@ export type Database = {
           },
         ];
       };
+      form_templates: {
+        Row: {
+          id: string;
+          tenant_slug: string;
+          name: string;
+          description: string | null;
+          form_type: string;
+          fields: Json;
+          status: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_slug?: string;
+          name: string;
+          description?: string | null;
+          form_type: string;
+          fields: Json;
+          status?: string;
+          created_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['form_templates']['Insert']>;
+        Relationships: [];
+      };
+      form_deliveries: {
+        Row: {
+          id: string;
+          tenant_slug: string;
+          template_id: string;
+          recipient_email: string;
+          recipient_phone: string | null;
+          recipient_name: string;
+          delivery_method: 'email' | 'sms' | 'whatsapp';
+          delivery_status: string;
+          expires_at: string;
+          form_link: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_slug?: string;
+          template_id: string;
+          recipient_email: string;
+          recipient_phone?: string | null;
+          recipient_name: string;
+          delivery_method: 'email' | 'sms' | 'whatsapp';
+          delivery_status?: string;
+          expires_at: string;
+          form_link: string;
+          created_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['form_deliveries']['Insert']>;
+        Relationships: [];
+      };
+      form_responses: {
+        Row: {
+          id: string;
+          tenant_slug: string;
+          delivery_id: string;
+          template_id: string;
+          response_data: any;
+          ip_address: string | null;
+          crm_sync_status: string;
+          crm_contact_id: string | null;
+          crm_synced_at: string | null;
+          updated_at: string;
+          trial_class_scheduled_at: string | null;
+          submitted_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_slug?: string;
+          delivery_id: string;
+          template_id: string;
+          response_data: any;
+          ip_address?: string | null;
+          crm_sync_status?: string;
+          crm_contact_id?: string | null;
+          crm_synced_at?: string | null;
+          updated_at?: string;
+          trial_class_scheduled_at?: string | null;
+          submitted_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['form_responses']['Insert']>;
+        Relationships: [];
+      };
+      student_points: {
+        Row: {
+          id: string;
+          tenant_slug: string;
+          student_id: string;
+          current_balance: any;
+          total_earned: any;
+          total_redeemed: any;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_slug?: string;
+          student_id: string;
+          current_balance?: any;
+          total_earned?: any;
+          total_redeemed?: any;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['student_points']['Insert']>;
+        Relationships: [];
+      };
+      point_transactions: {
+        Row: {
+          id: string;
+          tenant_slug: string;
+          student_id: string;
+          transaction_type: 'earned' | 'redeemed';
+          points_amount: number;
+          description: string;
+          related_order_id: string | null;
+          related_subscription_id: string | null;
+          related_payment_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_slug?: string;
+          student_id: string;
+          transaction_type: 'earned' | 'redeemed';
+          points_amount: number;
+          description: string;
+          related_order_id?: string | null;
+          related_subscription_id?: string | null;
+          related_payment_id?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['point_transactions']['Insert']>;
+        Relationships: [];
+      };
+      referral_links: {
+        Row: {
+          id: string;
+          tenant_slug: string;
+          referrer_id: string;
+          code: string;
+          expires_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_slug?: string;
+          referrer_id: string;
+          code: string;
+          expires_at?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['referral_links']['Insert']>;
+        Relationships: [];
+      };
+      referral_redemptions: {
+        Row: {
+          id: string;
+          tenant_slug: string;
+          referral_code: string;
+          referee_contact_id: string;
+          reward: number;
+          status: string;
+          completed_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_slug?: string;
+          referral_code: string;
+          referee_contact_id: string;
+          reward: number;
+          status?: string;
+          completed_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['referral_redemptions']['Insert']>;
+        Relationships: [];
+      };
+      store_products: {
+        Row: {
+          id: string;
+          tenant_slug: string;
+          category: string;
+          title: string;
+          description: string | null;
+          price_cents: number;
+          image_url: string | null;
+          inventory_count: number;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_slug?: string;
+          category: string;
+          title: string;
+          description?: string | null;
+          price_cents: number;
+          image_url?: string | null;
+          inventory_count?: number;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['store_products']['Insert']>;
+        Relationships: [];
+      };
+      store_cart_items: {
+        Row: {
+          id: string;
+          tenant_slug: string;
+          student_id: string;
+          product_id: string;
+          quantity: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_slug?: string;
+          student_id: string;
+          product_id: string;
+          quantity?: number;
+          created_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['store_cart_items']['Insert']>;
+        Relationships: [];
+      };
+      store_orders: {
+        Row: {
+          id: string;
+          tenant_slug: string;
+          student_id: string;
+          total_cents: number;
+          discount_cents: number;
+          final_amount_cents: number;
+          referral_code_used: string | null;
+          payment_status: 'pending' | 'completed' | 'failed' | 'refunded';
+          stripe_payment_intent_id: string | null;
+          wompi_transaction_id: string | null;
+          completed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_slug?: string;
+          student_id: string;
+          total_cents: number;
+          discount_cents?: number;
+          final_amount_cents: number;
+          referral_code_used?: string | null;
+          payment_status?: 'pending' | 'completed' | 'failed' | 'refunded';
+          stripe_payment_intent_id?: string | null;
+          wompi_transaction_id?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['store_orders']['Insert']>;
+        Relationships: [];
+      };
+      store_order_items: {
+        Row: {
+          id: string;
+          order_id: string;
+          product_id: string;
+          quantity: number;
+          unit_price_cents: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          order_id: string;
+          product_id: string;
+          quantity: number;
+          unit_price_cents: number;
+          created_at?: string;
+        };
+        Update: Partial<Database['peskids']['Tables']['store_order_items']['Insert']>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -727,7 +1011,16 @@ export type Database = {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      increment: {
+        Args: {
+          table_name: string;
+          column_name: string;
+          amount: number;
+        };
+        Returns: number;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

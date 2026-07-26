@@ -1,4 +1,4 @@
-import { getStudentPoints, getPointsHistory } from '@/lib/services/points.service';
+import { getStudentPoints, getPointsHistory, PointTransaction } from '@/lib/services/points.service';
 import { resolveTrustedPortalSession } from '@/lib/security-compat';
 
 export async function GET(req: Request) {
@@ -28,7 +28,7 @@ export async function GET(req: Request) {
           currentBalance: points?.current_balance || 0,
           totalEarned: points?.total_earned || 0,
           totalRedeemed: points?.total_redeemed || 0,
-          history: history.map((tx) => ({
+          history: history.map((tx: PointTransaction) => ({
             id: tx.id,
             type: tx.transaction_type,
             points: tx.points_amount,
