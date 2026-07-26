@@ -1,5 +1,5 @@
 import { supabaseServer } from '@/lib/supabase';
-import type { Database } from '@/lib/types';
+import type { Database, Json } from '@/lib/types';
 
 export type FormTemplate = Database['peskids']['Tables']['form_templates']['Row'];
 export type FormDelivery = Database['peskids']['Tables']['form_deliveries']['Row'];
@@ -67,7 +67,10 @@ export async function listFormTemplates(formType?: string): Promise<FormTemplate
     .eq('status', 'active');
 
   if (formType) {
-    query = query.eq('form_type', formType);
+    query = query.eq(
+      'form_type',
+      formType as Database['peskids']['Tables']['form_templates']['Row']['form_type']
+    );
   }
 
   const { data, error } = await query.order('created_at', {
@@ -134,7 +137,7 @@ export async function getFormDelivery(deliveryId: string): Promise<FormDelivery 
 export async function submitFormResponse(input: {
   deliveryId: string;
   templateId: string;
-  responseData: Record<string, unknown>;
+  responseData: Json;
   ipAddress?: string;
 }): Promise<FormResponse> {
   const { data, error } = await peskidsClient()

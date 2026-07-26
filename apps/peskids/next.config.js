@@ -5,11 +5,6 @@ const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   outputFileTracingRoot: path.join(__dirname, '../..'),
-  // Soft-launch hotfix (PM meeting): points/store/forms landed with schema types
-  // behind migrations. Do not remove until Database types cover those tables.
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   transpilePackages: [
     '@intcloudsysops/opsly-core',
     '@intcloudsysops/conversational-runtime',

@@ -25,7 +25,10 @@ export async function listStoreProducts(filters?: {
   let query = peskidsClient().from('store_products').select('*').eq('tenant_slug', tenantSlug());
 
   if (filters?.category) {
-    query = query.eq('category', filters.category);
+    query = query.eq(
+      'category',
+      filters.category as Database['peskids']['Tables']['store_products']['Row']['category']
+    );
   }
 
   if (filters?.active !== undefined) {

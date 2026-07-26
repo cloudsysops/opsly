@@ -42,9 +42,7 @@ function toneClass(accent: (typeof kpiItems)[number]['accent']): string {
       return 'border-emerald-100 bg-emerald-50 text-emerald-700';
     case 'amber':
       return 'border-amber-100 bg-amber-50 text-amber-800';
-    case 'violet':
-      return 'border-violet-100 bg-violet-50 text-violet-700';
-    default:
+    case 'teal':
       return 'border-teal-100 bg-teal-50 text-pk-primary';
   }
 }
