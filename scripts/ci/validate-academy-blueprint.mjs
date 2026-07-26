@@ -7,7 +7,7 @@ import YAML from 'yaml';
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(SCRIPT_DIR, '../..');
 const BLUEPRINT_DIR = path.join(ROOT, 'docs/blueprints/academy');
-const MACHINE_PACK_DIR = path.join(ROOT, 'blueprints/academy');
+const MACHINE_PACK_DIR = path.join(ROOT, 'config/blueprints/academy');
 const MODULE_FILES = [
   'auth.yaml',
   'crm.yaml',
@@ -123,14 +123,14 @@ const machineRequired = [
 for (const relative of machineRequired) {
   const filePath = path.join(MACHINE_PACK_DIR, relative);
   if (!fs.existsSync(filePath)) {
-    fail(`missing machine pack file blueprints/academy/${relative}`);
+    fail(`missing machine pack file config/blueprints/academy/${relative}`);
   }
 }
 
 for (const moduleName of MODULE_FILES) {
   const filePath = path.join(MACHINE_PACK_DIR, 'modules', moduleName);
   if (!fs.existsSync(filePath)) {
-    fail(`missing module blueprints/academy/modules/${moduleName}`);
+    fail(`missing module config/blueprints/academy/modules/${moduleName}`);
   }
   try {
     const parsed = YAML.parse(fs.readFileSync(filePath, 'utf8'));
@@ -150,10 +150,10 @@ const machineBlueprint = YAML.parse(
   fs.readFileSync(path.join(MACHINE_PACK_DIR, 'blueprint.yaml'), 'utf8')
 );
 if (machineBlueprint?.metadata?.ownerPlatform !== 'icso') {
-  fail('blueprints/academy/blueprint.yaml must set metadata.ownerPlatform=icso');
+  fail('config/blueprints/academy/blueprint.yaml must set metadata.ownerPlatform=icso');
 }
 if (machineBlueprint?.metadata?.pilotTenant !== 'peskids') {
-  fail('blueprints/academy/blueprint.yaml must set metadata.pilotTenant=peskids');
+  fail('config/blueprints/academy/blueprint.yaml must set metadata.pilotTenant=peskids');
 }
 if (machineBlueprint?.spec?.defaults?.ghl_runtime !== 'disabled') {
   fail('academy machine pack must keep ghl_runtime disabled');

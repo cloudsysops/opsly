@@ -14,7 +14,7 @@ type: blueprint
 | **ICSO / Opsly** | Plataforma madre: tenants, módulos, owners/admins, dominios, secrets (Doppler), deploys, smokes, billing futuro, blueprints | No es un tenant “cliente” más |
 | **Peskids** | Tenant piloto/canónico del vertical **Academy** | No es el control plane; no se forkea para features reutilizables |
 
-Contrato machine-readable (módulos, seed, smokes): [`blueprints/academy/`](../../../blueprints/academy/).
+Contrato machine-readable (módulos, seed, smokes): [`config/blueprints/academy/`](../../../config/blueprints/academy/).
 
 Contratos legacy de este directorio (`blueprint.yaml`, `capabilities.yaml`, …) siguen válidos vía `npm run validate:academy-blueprint`.
 
@@ -33,11 +33,11 @@ Contratos legacy de este directorio (`blueprint.yaml`, `capabilities.yaml`, …)
 | `payments` | Wompi apagado por defecto |
 | `analytics` | dashboard, fuentes, conversión, operación diaria |
 
-Detalle YAML: `blueprints/academy/modules/*.yaml`.
+Detalle YAML: `config/blueprints/academy/modules/*.yaml`.
 
 ## Cómo crear el próximo tenant tipo academia
 
-1. Partir de `blueprints/academy/seed/tenant-settings.json`.
+1. Partir de `config/blueprints/academy/seed/tenant-settings.json`.
 2. Nuevo `tenant.slug`; `owner_platform: icso`; `business_type: academy`.
 3. Onboard con scripts Opsly existentes (`onboard-tenant.sh`, compose tenant).
 4. Activar módulos por contrato; **extraer** a `lib/` lo que Peskids ya resolvió si un segundo tenant lo necesita.
@@ -91,7 +91,7 @@ policies:
 
 ```bash
 npm run validate:academy-blueprint
-bash blueprints/academy/smoke/tenant-smoke.sh
+bash config/blueprints/academy/smoke/tenant-smoke.sh
 ```
 
 ## Archivos en este directorio
@@ -102,6 +102,6 @@ bash blueprints/academy/smoke/tenant-smoke.sh
 ## Próximos gaps
 
 1. Merge franchise model (#841) + dynamic intake (#842) y aplicar migraciones.
-2. Reconciliar `blueprints/academy/tenant.schema.json` con `config/tenants/schema.tenant-config.json`.
+2. Reconciliar `config/blueprints/academy/tenant.schema.json` con `config/tenants/schema.tenant-config.json`.
 3. Extraer módulos compartidos a `lib/` al segundo Academy tenant.
 4. Generador `--dry-run` de tenant desde blueprint (sin mutar prod).
