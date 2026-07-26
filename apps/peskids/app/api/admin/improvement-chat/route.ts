@@ -2,13 +2,18 @@ import { NextRequest } from 'next/server';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { validateStaffRequest } from '@/lib/staff-auth';
 import { isAdminSurfaceUser } from '@/lib/staff-user';
-import { isPeskidsStaffImprovementChatEnabled } from '@/lib/peskids-pro-flags';
+import {
+  isPeskidsStaffImprovementChatEnabled,
+  isPeskidsStaffImprovementChatGithubIssueEnabled,
+} from '@/lib/peskids-pro-flags';
 import {
   createImprovementMessageSchema,
   updateImprovementRequestSchema,
 } from '@/lib/validation/improvement-chat.schema';
+import { createGitHubIssueForImprovementRequest } from '@/lib/services/github-issues.service';
 import {
   createStaffMessageAndAnalyze,
+  getImprovementRequest,
   listImprovementRequests,
   listImprovementMessages,
   updateImprovementRequest,
@@ -74,7 +79,30 @@ export async function PATCH(req: NextRequest) {
       return errorJson(requestId, parsed.error.issues[0]?.message ?? 'Invalid input', 400);
     }
 
-    const request = await updateImprovementRequest(parsed.data);
+    let githubIssueUrl = parsed.data.github_issue_url;
+    let issueStatus: 'priorizado' | undefined;
+    if (parsed.data.create_github_issue) {
+      if (!isPeskidsStaffImprovementChatGithubIssueEnabled()) {
+        return errorJson(requestId, 'GitHub issue automation is not enabled', 400);
+      }
+
+      const existing = await getImprovementRequest(parsed.data.id);
+      if (existing.client_status === 'recibido') {
+        issueStatus = 'priorizado';
+      }
+      if (existing.github_issue_url) {
+        githubIssueUrl = existing.github_issue_url;
+      } else {
+        const issue = await createGitHubIssueForImprovementRequest(existing);
+        githubIssueUrl = issue.url;
+      }
+    }
+
+    const request = await updateImprovementRequest({
+      ...parsed.data,
+      github_issue_url: githubIssueUrl,
+      client_status: parsed.data.client_status ?? issueStatus,
+    });
     return successJson(requestId, { ok: true, request });
   } catch (err) {
     console.error('[PATCH /api/admin/improvement-chat]', err, { request_id: requestId });

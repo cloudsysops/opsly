@@ -48,6 +48,19 @@ export async function listImprovementRequests(): Promise<ImprovementRequestRow[]
   );
 }
 
+export async function getImprovementRequest(id: string): Promise<ImprovementRequestRow> {
+  const { data, error } = await supabaseServer()
+    .from('staff_improvement_messages')
+    .select('*')
+    .eq('tenant_id', tenantId())
+    .eq('role', 'staff')
+    .eq('id', id)
+    .single();
+
+  if (error) throw error;
+  return data as ImprovementRequestRow;
+}
+
 async function insertMessage(
   input: Database['public']['Tables']['staff_improvement_messages']['Insert']
 ): Promise<ImprovementMessageRow> {

@@ -28,6 +28,15 @@ describe('improvement chat tracking schema', () => {
     expect(parsed.success).toBe(true);
   });
 
+  it('allows explicit GitHub issue creation as an update action', () => {
+    const parsed = updateImprovementRequestSchema.safeParse({
+      id: '11111111-1111-4111-8111-111111111111',
+      create_github_issue: true,
+    });
+
+    expect(parsed.success).toBe(true);
+  });
+
   it('rejects empty updates and invalid URLs', () => {
     expect(
       updateImprovementRequestSchema.safeParse({

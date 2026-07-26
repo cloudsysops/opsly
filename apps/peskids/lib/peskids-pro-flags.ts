@@ -102,6 +102,17 @@ export function isPeskidsStaffImprovementChatTwentyTaskEnabled(
 }
 
 /**
+ * Sub-toggle: creates a GitHub issue from an improvement request when an
+ * admin explicitly clicks the action in `/admin/mejoras`. Default OFF because
+ * the token is privileged and GitHub issues may be public depending on repo.
+ */
+export function isPeskidsStaffImprovementChatGithubIssueEnabled(
+  env: NodeJS.ProcessEnv = process.env
+): boolean {
+  return parseBooleanFlag(env.PESKIDS_STAFF_IMPROVEMENT_CHAT_GITHUB_ISSUE_ENABLED, false);
+}
+
+/**
  * Auto-followup (+ Twenty Task, via createFollowup for contact_type: 'lead')
  * when the commercial pipeline advances a lead to the Renewal stage.
  */

@@ -63,6 +63,7 @@ export const updateImprovementRequestSchema = z
     preview_url: optionalUrlSchema,
     production_url: optionalUrlSchema,
     operator_notes: z.string().trim().max(1200).nullable().optional(),
+    create_github_issue: z.boolean().optional().default(false),
   })
   .refine(
     (value) =>
@@ -71,7 +72,8 @@ export const updateImprovementRequestSchema = z
       value.github_pr_url !== undefined ||
       value.preview_url !== undefined ||
       value.production_url !== undefined ||
-      value.operator_notes !== undefined,
+      value.operator_notes !== undefined ||
+      value.create_github_issue,
     'Envía al menos un campo para actualizar'
   );
 

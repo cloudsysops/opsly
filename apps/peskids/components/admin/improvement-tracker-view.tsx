@@ -250,6 +250,28 @@ export function ImprovementTrackerView(): React.ReactElement {
     }
   };
 
+  const handleCreateGitHubIssue = async (request: ImprovementRequest): Promise<void> => {
+    setSavingId(request.id);
+    setError('');
+    try {
+      const res = await fetch('/api/admin/improvement-chat', {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: request.id, create_github_issue: true }),
+      });
+      const json = (await res.json()) as { error?: string; request?: ImprovementRequest };
+      if (!res.ok) throw new Error(json.error ?? 'No se pudo crear el issue.');
+      if (json.request) {
+        setRequests((prev) => prev.map((item) => (item.id === json.request?.id ? json.request : item)));
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo crear el issue.');
+    } finally {
+      setSavingId(null);
+    }
+  };
+
   if (disabled) {
     return (
       <div className="rounded-2xl border border-pk-border bg-white p-8 text-center shadow-card">
@@ -380,6 +402,23 @@ export function ImprovementTrackerView(): React.ReactElement {
                           <LinkPill href={request.preview_url} label="Probar cambio" icon={CheckCircle2} />
                           <LinkPill href={request.production_url} label="Producción" />
                         </div>
+                        {!request.github_issue_url ? (
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            className="mt-3"
+                            disabled={savingId === request.id}
+                            onClick={() => void handleCreateGitHubIssue(request)}
+                          >
+                            {savingId === request.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <ExternalLink className="h-4 w-4" />
+                            )}
+                            Crear issue GitHub
+                          </Button>
+                        ) : null}
                       </div>
 
                       <div className="w-full shrink-0 space-y-2 rounded-2xl bg-pk-snow p-3 lg:w-64">
