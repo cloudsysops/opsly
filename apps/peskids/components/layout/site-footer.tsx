@@ -2,8 +2,6 @@ import Link from 'next/link'
 import { PeskidsLockup } from '@/components/brand/peskids-logo'
 import { PeskidsWave } from '@/components/brand/peskids-logo'
 import { PESKIDS_CONTACT } from '@/lib/contact-channels'
-import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config'
-import { PESKIDS_FORM_NAV_LABEL } from '@/lib/peskids-landing-copy'
 import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
 
 export function SiteFooter(): React.ReactElement {
@@ -22,10 +20,6 @@ export function SiteFooter(): React.ReactElement {
             <FooterCol
               title="Contacto"
               items={[
-                {
-                  label: PESKIDS_FORM_NAV_LABEL,
-                  href: PESKIDS_RESERVATION_FORM_HREF,
-                },
                 {
                   label: PESKIDS_CONTACT.email,
                   href: `mailto:${PESKIDS_CONTACT.email}`,
