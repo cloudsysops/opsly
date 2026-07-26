@@ -24,7 +24,7 @@ export function ReferralLinkCard({
   const [copied, setCopied] = useState(false);
   const shareText = useMemo(
     () =>
-      `Hola, te comparto mi link de Peskids para clase de prueba: ${referralLink}. Si te inscribes, también me ayudas a acumular descuento.`,
+      `Hola, te comparto mi link de Peskids para conocer la academia y solicitar matrícula: ${referralLink}. Si te inscribes, también me ayudas a acumular descuento.`,
     [referralLink]
   );
 

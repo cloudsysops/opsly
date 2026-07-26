@@ -21,6 +21,6 @@ export function peskidsPublicLeadFormUrl(): string {
   const base =
     process.env.NEXT_PUBLIC_PESKIDS_SITE_URL?.trim() ||
     process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
-    'https://peskids.op-sly.com';
+    'https://www.peskids.com';
   return `${base.replace(/\/$/, '')}${PESKIDS_RESERVATION_FORM_HREF}`;
 }

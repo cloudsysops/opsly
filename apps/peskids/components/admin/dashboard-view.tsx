@@ -27,18 +27,15 @@ import { StatCard } from '@/components/admin/stat-card'
 import { StudentsPanel } from '@/components/admin/students-panel'
 import { TeamPanel } from '@/components/admin/team-panel'
 import { ClassesPanel } from '@/components/admin/classes-panel'
-import { TrialClassesPanel } from '@/components/admin/trial-classes-panel'
 import { SalesAnalyticsPanel } from '@/components/admin/sales-analytics-panel'
 import { WacrmLeadInboxActions } from '@/components/admin/wacrm-lead-inbox-actions'
 import { normalizeLeadSourceLabel } from '@/lib/admin/lead-source-label'
-import { classModalityLabel, PESKIDS_CLASS_MODALITY_OPTIONS } from '@/lib/lead-modality'
+import { classModalityLabel } from '@/lib/lead-modality'
 import { buildPeskidsReferralLink } from '@/lib/peskids-referral-links'
 import { formatAgeRange } from '@/lib/peskids-domain'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { FeedbackComposer } from '@/components/feedback/feedback-composer'
 import { cn, formatRelativeTime } from '@/lib/utils'
 
@@ -88,30 +85,8 @@ function canMarkContacted(status: LeadRow['status']): boolean {
   return status !== 'contacted' && !POST_ENROLLMENT_STATUSES.includes(status)
 }
 
-function canScheduleTrial(status: LeadRow['status']): boolean {
-  return !POST_ENROLLMENT_STATUSES.includes(status)
-}
-
 function canConvertToStudent(status: LeadRow['status']): boolean {
   return !POST_ENROLLMENT_STATUSES.includes(status)
-}
-
-type TrialScheduleDraft = {
-  scheduled_date: string
-  scheduled_time: string
-  modality: (typeof PESKIDS_CLASS_MODALITY_OPTIONS)[number]['value']
-  teacher_name: string
-  notes: string
-}
-
-function emptyTrialDraft(lead: LeadRow): TrialScheduleDraft {
-  return {
-    scheduled_date: '',
-    scheduled_time: '',
-    modality: lead.class_modality ?? 'llanogrande',
-    teacher_name: '',
-    notes: '',
-  }
 }
 
 function formatCop(cents: number): string {
@@ -139,7 +114,7 @@ function StarRating({ value }: { value: number }): React.ReactElement {
 const leadStatusLabel: Record<DashboardData['new_leads'][number]['status'], string> = {
   new: 'Nuevo',
   contacted: 'Contactado',
-  trial: 'Clase de Prueba',
+  trial: 'En seguimiento',
   enrolled: 'Matriculado',
   active: 'Activo',
   renewal: 'Renovación',
@@ -181,7 +156,7 @@ const leadStatusFilterLabel: Record<'all' | DashboardData['new_leads'][number]['
   all: 'Todos',
   new: 'Nuevos',
   contacted: 'Contactados',
-  trial: 'Clase de Prueba',
+  trial: 'En seguimiento',
   enrolled: 'Matriculados',
   active: 'Activos',
   renewal: 'Renovación',
@@ -226,8 +201,6 @@ export function DashboardView({
   const [dirtyNoteIds, setDirtyNoteIds] = useState<Set<string>>(new Set())
   const [leadFeedback, setLeadFeedback] = useState<Record<string, string>>({})
   const [savingLeadId, setSavingLeadId] = useState<string | null>(null)
-  const [schedulingLeadId, setSchedulingLeadId] = useState<string | null>(null)
-  const [trialDrafts, setTrialDrafts] = useState<Record<string, TrialScheduleDraft>>({})
   const [convertingLeadId, setConvertingLeadId] = useState<string | null>(null)
 
   useEffect(() => {
@@ -458,60 +431,6 @@ export function DashboardView({
     [onRefresh]
   )
 
-  const handleScheduleTrial = useCallback(
-    async (lead: LeadRow) => {
-      const draft = trialDrafts[lead.id] ?? emptyTrialDraft(lead)
-      if (!draft.scheduled_date || !draft.scheduled_time) {
-        setLeadFeedback((current) => ({
-          ...current,
-          [lead.id]: 'Indica fecha y hora para la clase de prueba.',
-        }))
-        return
-      }
-
-      setSavingLeadId(lead.id)
-      setLeadFeedback((current) => {
-        const next = { ...current }
-        delete next[lead.id]
-        return next
-      })
-
-      try {
-        const response = await fetch('/api/admin/trial-classes', {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            lead_id: lead.id,
-            scheduled_date: draft.scheduled_date,
-            scheduled_time: draft.scheduled_time,
-            modality: draft.modality,
-            teacher_name: draft.teacher_name.trim() || undefined,
-            notes: draft.notes.trim() || undefined,
-          }),
-        })
-        const json = (await response.json()) as { ok?: boolean; error?: string }
-        if (!response.ok) {
-          throw new Error(json.error || 'No se pudo agendar la clase de prueba')
-        }
-        setSchedulingLeadId(null)
-        setLeadFeedback((current) => ({
-          ...current,
-          [lead.id]: 'Clase de prueba agendada.',
-        }))
-        onRefresh()
-      } catch {
-        setLeadFeedback((current) => ({
-          ...current,
-          [lead.id]: 'No se pudo agendar la clase. Intenta de nuevo.',
-        }))
-      } finally {
-        setSavingLeadId(null)
-      }
-    },
-    [onRefresh, trialDrafts]
-  )
-
   const scrollToSection = useCallback((anchor: string) => {
     const target = document.querySelector(`[data-admin-section=\"${anchor}\"]`)
     target?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -663,7 +582,6 @@ export function DashboardView({
       <StudentsPanel />
       <TeamPanel />
       <ClassesPanel />
-      <TrialClassesPanel />
       <AcademyOpsMap data={data} />
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -791,23 +709,6 @@ export function DashboardView({
                       >
                         Guardar nota
                       </Button>
-                      {isAdminSurface && canScheduleTrial(lead.status) ? (
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="secondary"
-                          disabled={savingLeadId === lead.id || convertingLeadId === lead.id}
-                          onClick={() => {
-                            setSchedulingLeadId((current) => (current === lead.id ? null : lead.id))
-                            setTrialDrafts((current) => ({
-                              ...current,
-                              [lead.id]: current[lead.id] ?? emptyTrialDraft(lead),
-                            }))
-                          }}
-                        >
-                          Agendar clase de prueba
-                        </Button>
-                      ) : null}
                       {isAdminSurface && canConvertToStudent(lead.status) ? (
                         <Button
                           type="button"
@@ -825,123 +726,6 @@ export function DashboardView({
                         </Button>
                       ) : null}
                     </div>
-                    {schedulingLeadId === lead.id ? (
-                      <div className="mt-2 grid gap-2 rounded-xl border border-pk-border bg-white/90 p-3 md:grid-cols-2">
-                        <div>
-                          <Label htmlFor={`trial-date-${lead.id}`}>Fecha</Label>
-                          <Input
-                            id={`trial-date-${lead.id}`}
-                            type="date"
-                            value={trialDrafts[lead.id]?.scheduled_date ?? ''}
-                            onChange={(event) =>
-                              setTrialDrafts((current) => ({
-                                ...current,
-                                [lead.id]: {
-                                  ...(current[lead.id] ?? emptyTrialDraft(lead)),
-                                  scheduled_date: event.target.value,
-                                },
-                              }))
-                            }
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor={`trial-time-${lead.id}`}>Hora</Label>
-                          <Input
-                            id={`trial-time-${lead.id}`}
-                            type="time"
-                            value={trialDrafts[lead.id]?.scheduled_time ?? ''}
-                            onChange={(event) =>
-                              setTrialDrafts((current) => ({
-                                ...current,
-                                [lead.id]: {
-                                  ...(current[lead.id] ?? emptyTrialDraft(lead)),
-                                  scheduled_time: event.target.value,
-                                },
-                              }))
-                            }
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor={`trial-modality-${lead.id}`}>Modalidad</Label>
-                          <select
-                            id={`trial-modality-${lead.id}`}
-                            className="flex h-10 w-full rounded-md border border-pk-border bg-white px-3 text-sm"
-                            value={trialDrafts[lead.id]?.modality ?? 'llanogrande'}
-                            onChange={(event) =>
-                              setTrialDrafts((current) => ({
-                                ...current,
-                                [lead.id]: {
-                                  ...(current[lead.id] ?? emptyTrialDraft(lead)),
-                                  modality: event.target.value as TrialScheduleDraft['modality'],
-                                },
-                              }))
-                            }
-                          >
-                            {PESKIDS_CLASS_MODALITY_OPTIONS.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {option.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div>
-                          <Label htmlFor={`trial-teacher-${lead.id}`}>Profesor (opcional)</Label>
-                          <Input
-                            id={`trial-teacher-${lead.id}`}
-                            value={trialDrafts[lead.id]?.teacher_name ?? ''}
-                            onChange={(event) =>
-                              setTrialDrafts((current) => ({
-                                ...current,
-                                [lead.id]: {
-                                  ...(current[lead.id] ?? emptyTrialDraft(lead)),
-                                  teacher_name: event.target.value,
-                                },
-                              }))
-                            }
-                            placeholder="Nombre del profesor"
-                          />
-                        </div>
-                        <div className="md:col-span-2">
-                          <Label htmlFor={`trial-notes-${lead.id}`}>Notas (opcional)</Label>
-                          <Input
-                            id={`trial-notes-${lead.id}`}
-                            value={trialDrafts[lead.id]?.notes ?? ''}
-                            onChange={(event) =>
-                              setTrialDrafts((current) => ({
-                                ...current,
-                                [lead.id]: {
-                                  ...(current[lead.id] ?? emptyTrialDraft(lead)),
-                                  notes: event.target.value,
-                                },
-                              }))
-                            }
-                            placeholder="Ej. Traer toalla y gorro"
-                          />
-                        </div>
-                        <div className="md:col-span-2 flex gap-2">
-                          <Button
-                            type="button"
-                            size="sm"
-                            disabled={savingLeadId === lead.id}
-                            onClick={() => void handleScheduleTrial(lead)}
-                          >
-                            {savingLeadId === lead.id ? (
-                              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                            ) : (
-                              'Confirmar agenda'
-                            )}
-                          </Button>
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => setSchedulingLeadId(null)}
-                          >
-                            Cancelar
-                          </Button>
-                        </div>
-                      </div>
-                    ) : null}
                     {leadFeedback[lead.id] ? (
                       <p className="text-xs text-pk-primary">{leadFeedback[lead.id]}</p>
                     ) : null}

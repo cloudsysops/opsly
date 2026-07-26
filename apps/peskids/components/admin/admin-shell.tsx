@@ -7,7 +7,6 @@ import {
   BarChart3,
   Bell,
   CalendarClock,
-  ClipboardList,
   GraduationCap,
   Home,
   Inbox,
@@ -65,7 +64,6 @@ const navOps = [
   { icon: ShieldCheck, label: 'Equipo', href: '/admin#team' },
   { icon: GraduationCap, label: 'Clases', href: '/admin#classes' },
   { icon: UsersRound, label: 'Familias', href: '/admin#families' },
-  { icon: ClipboardList, label: 'Clases de prueba', href: '/admin#trial-classes' },
   { icon: Users, label: 'Interesados', href: '/admin#leads' },
   { icon: BarChart3, label: 'Pipeline', href: '/admin/pipeline' },
   { icon: MessageSquare, label: 'Feedback', href: '/admin#feedback' },
@@ -256,10 +254,6 @@ export function AdminShell({
 
     if (item.label === 'Clases') {
       return hash === '#classes';
-    }
-
-    if (item.label === 'Clases de prueba') {
-      return hash === '#trial-classes';
     }
 
     if (item.label === 'Familias') {

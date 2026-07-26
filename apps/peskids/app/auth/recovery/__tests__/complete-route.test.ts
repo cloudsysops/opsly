@@ -51,12 +51,12 @@ describe('GET /auth/recovery/complete', () => {
 
   it('redirects to admin login when code is missing', async () => {
     const { GET } = await import('../complete/route')
-    const request = new NextRequest('https://peskids.op-sly.com/auth/recovery/complete')
+    const request = new NextRequest('https://www.peskids.com/auth/recovery/complete')
 
     const response = await GET(request)
 
     expect(response.status).toBe(307)
-    expect(response.headers.get('location')).toBe('https://peskids.op-sly.com/admin/login')
+    expect(response.headers.get('location')).toBe('https://www.peskids.com/admin/login')
     expect(mocks.createServerClientMock).not.toHaveBeenCalled()
   })
 
@@ -71,12 +71,12 @@ describe('GET /auth/recovery/complete', () => {
       },
     })
     mocks.resolveRecoveryRedirectUrlMock.mockReturnValue(
-      'https://peskids.op-sly.com/support/update-password'
+      'https://www.peskids.com/support/update-password'
     )
 
     const { GET } = await import('../complete/route')
     const request = new NextRequest(
-      'https://peskids.op-sly.com/auth/recovery/complete?code=recovery-code-123'
+      'https://www.peskids.com/auth/recovery/complete?code=recovery-code-123'
     )
 
     const response = await GET(request)
@@ -88,7 +88,7 @@ describe('GET /auth/recovery/complete', () => {
     })
     expect(response.status).toBe(307)
     expect(response.headers.get('location')).toBe(
-      'https://peskids.op-sly.com/support/update-password'
+      'https://www.peskids.com/support/update-password'
     )
   })
 })

@@ -13,7 +13,7 @@ import {
 import type { Lead360View as Lead360Payload } from '@/lib/services/lead-360.service';
 import type { DashboardData } from '@/lib/types';
 import { normalizeLeadSourceLabel } from '@/lib/admin/lead-source-label';
-import { classModalityLabel, PESKIDS_CLASS_MODALITY_OPTIONS } from '@/lib/lead-modality';
+import { classModalityLabel } from '@/lib/lead-modality';
 import { buildWhatsAppDeepLink } from '@/lib/integrations/wacrm-admin-links';
 import { formatAgeRange } from '@/lib/peskids-domain';
 import { Badge } from '@/components/ui/badge';
@@ -31,14 +31,6 @@ type Lead360ViewProps = {
   leadId: string;
 };
 
-type TrialDraft = {
-  scheduled_date: string;
-  scheduled_time: string;
-  modality: (typeof PESKIDS_CLASS_MODALITY_OPTIONS)[number]['value'];
-  teacher_name: string;
-  notes: string;
-};
-
 type FollowupDraft = {
   type: 'call' | 'email' | 'sms' | 'in-person';
   due_date: string;
@@ -48,7 +40,7 @@ type FollowupDraft = {
 const leadStatusLabel: Record<LeadRow['status'], string> = {
   new: 'Nuevo',
   contacted: 'Contactado',
-  trial: 'Clase de prueba',
+  trial: 'En seguimiento',
   enrolled: 'Matriculado',
   active: 'Activo',
   renewal: 'Renovación',
@@ -89,22 +81,6 @@ const syncTone: Record<NonNullable<LeadRow['twenty_sync_status']>, 'green' | 'am
     pending: 'neutral',
   };
 
-const trialStatusLabel: Record<string, string> = {
-  scheduled: 'Programada',
-  confirmed: 'Confirmada',
-  attended: 'Asistió',
-  no_show: 'No asistió',
-  cancelled: 'Cancelada',
-};
-
-const trialNextStatuses: Record<string, string[]> = {
-  scheduled: ['confirmed', 'cancelled'],
-  confirmed: ['attended', 'no_show', 'cancelled'],
-  attended: [],
-  no_show: [],
-  cancelled: [],
-};
-
 function toAdminStatus(status: LeadRow['status']): AdminLeadStatus {
   if (adminStatusOptions.includes(status as AdminLeadStatus)) {
     return status as AdminLeadStatus;
@@ -113,16 +89,6 @@ function toAdminStatus(status: LeadRow['status']): AdminLeadStatus {
     return 'enrolled';
   }
   return 'new';
-}
-
-function emptyTrialDraft(lead: LeadRow): TrialDraft {
-  return {
-    scheduled_date: '',
-    scheduled_time: '',
-    modality: lead.class_modality ?? 'llanogrande',
-    teacher_name: '',
-    notes: '',
-  };
 }
 
 function emptyFollowupDraft(): FollowupDraft {
@@ -160,15 +126,7 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
   const [busy, setBusy] = useState(false);
   const [statusDraft, setStatusDraft] = useState<AdminLeadStatus>('new');
   const [notesDraft, setNotesDraft] = useState('');
-  const [showTrialForm, setShowTrialForm] = useState(false);
   const [showFollowupForm, setShowFollowupForm] = useState(false);
-  const [trialDraft, setTrialDraft] = useState<TrialDraft>({
-    scheduled_date: '',
-    scheduled_time: '',
-    modality: 'llanogrande',
-    teacher_name: '',
-    notes: '',
-  });
   const [followupDraft, setFollowupDraft] = useState<FollowupDraft>(() => emptyFollowupDraft());
 
   const load = useCallback(async () => {
@@ -189,7 +147,6 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
       });
       setStatusDraft(toAdminStatus(json.lead.status));
       setNotesDraft(json.lead.admin_notes ?? '');
-      setTrialDraft(emptyTrialDraft(json.lead));
     } catch (err) {
       setPayload(null);
       setError(err instanceof Error ? err.message : 'Error al cargar');
@@ -266,65 +223,6 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
       setBusy(false);
     }
   }, [followupDraft, leadId, load]);
-
-  const handleScheduleTrial = useCallback(async () => {
-    if (!trialDraft.scheduled_date || !trialDraft.scheduled_time) {
-      setFeedback('Indica fecha y hora para la clase de prueba.');
-      return;
-    }
-    setBusy(true);
-    setFeedback('');
-    try {
-      const response = await fetch('/api/admin/trial-classes', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          lead_id: leadId,
-          scheduled_date: trialDraft.scheduled_date,
-          scheduled_time: trialDraft.scheduled_time,
-          modality: trialDraft.modality,
-          teacher_name: trialDraft.teacher_name.trim() || undefined,
-          notes: trialDraft.notes.trim() || undefined,
-        }),
-      });
-      if (!response.ok) {
-        throw new Error(await readApiError(response, 'No se pudo agendar la clase'));
-      }
-      setShowTrialForm(false);
-      setFeedback('Clase de prueba agendada.');
-      await load();
-    } catch (err) {
-      setFeedback(err instanceof Error ? err.message : 'Error al agendar clase');
-    } finally {
-      setBusy(false);
-    }
-  }, [leadId, load, trialDraft]);
-
-  const handleUpdateTrialStatus = useCallback(
-    async (trialId: string, status: string) => {
-      setBusy(true);
-      setFeedback('');
-      try {
-        const response = await fetch(`/api/admin/trial-classes/${trialId}`, {
-          method: 'PATCH',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status }),
-        });
-        if (!response.ok) {
-          throw new Error(await readApiError(response, 'No se pudo actualizar la clase'));
-        }
-        setFeedback(`Clase marcada como ${trialStatusLabel[status] ?? status}.`);
-        await load();
-      } catch (err) {
-        setFeedback(err instanceof Error ? err.message : 'Error al actualizar clase');
-      } finally {
-        setBusy(false);
-      }
-    },
-    [load]
-  );
 
   if (loading) {
     return (
@@ -488,15 +386,6 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
               <CalendarClock className="h-4 w-4" aria-hidden />
               <span className="ml-1">Nuevo seguimiento</span>
             </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              disabled={busy}
-              onClick={() => setShowTrialForm((value) => !value)}
-            >
-              <span>Agendar clase de prueba</span>
-            </Button>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
@@ -608,52 +497,6 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
             </div>
           ) : null}
 
-          {showTrialForm ? (
-            <div className="rounded-2xl border border-pk-border bg-pk-muted/30 p-4">
-              <p className="mb-3 text-sm font-medium text-pk-ink">Agendar clase de prueba</p>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <Label htmlFor="trial-date">Fecha</Label>
-                  <Input
-                    id="trial-date"
-                    type="date"
-                    value={trialDraft.scheduled_date}
-                    onChange={(event) =>
-                      setTrialDraft((current) => ({
-                        ...current,
-                        scheduled_date: event.target.value,
-                      }))
-                    }
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="trial-time">Hora</Label>
-                  <Input
-                    id="trial-time"
-                    type="time"
-                    value={trialDraft.scheduled_time}
-                    onChange={(event) =>
-                      setTrialDraft((current) => ({
-                        ...current,
-                        scheduled_time: event.target.value,
-                      }))
-                    }
-                  />
-                </div>
-              </div>
-              <Button
-                type="button"
-                size="sm"
-                variant="secondary"
-                className="mt-3"
-                disabled={busy}
-                onClick={() => void handleScheduleTrial()}
-              >
-                Confirmar clase de prueba
-              </Button>
-            </div>
-          ) : null}
-
           {feedback ? (
             <p
               className={cn(
@@ -683,7 +526,7 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
       <Card accent="slate" className="border-pk-border">
         <CardHeader>
           <CardTitle className="text-base">Línea de tiempo</CardTitle>
-          <CardDescription>Registro, seguimientos, clases de prueba y sync CRM.</CardDescription>
+          <CardDescription>Registro, seguimientos y sync CRM.</CardDescription>
         </CardHeader>
         <CardContent>
           {payload.timeline.length > 0 ? (
@@ -709,72 +552,25 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
         </CardContent>
       </Card>
 
-      {(payload.followups.length > 0 || payload.trials.length > 0) && (
-        <div className="grid gap-5 sm:grid-cols-2">
-          {payload.followups.length > 0 ? (
-            <Card accent="slate" className="border-pk-border">
-              <CardHeader>
-                <CardTitle className="text-base">Seguimientos</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {payload.followups.map((followup) => (
-                  <div
-                    key={followup.id}
-                    className="rounded-xl border border-pk-border/80 bg-white px-3 py-2 text-sm"
-                  >
-                    <p className="font-medium text-pk-ink">{followup.type}</p>
-                    <p className="text-xs text-pk-sub">
-                      {followup.due_date} · {followup.status}
-                    </p>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          ) : null}
-          {payload.trials.length > 0 ? (
-            <Card accent="slate" className="border-pk-border">
-              <CardHeader>
-                <CardTitle className="text-base">Clases de prueba</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {payload.trials.map((trial) => (
-                  <div
-                    key={trial.id}
-                    className="space-y-2 rounded-xl border border-pk-border/80 bg-white px-3 py-2 text-sm"
-                  >
-                    <div className="flex flex-wrap items-start justify-between gap-2">
-                      <div>
-                        <p className="font-medium text-pk-ink">
-                          {trial.scheduled_date} {trial.scheduled_time?.slice(0, 5)}
-                        </p>
-                        <p className="text-xs text-pk-sub">
-                          {trialStatusLabel[trial.status] ?? trial.status}
-                          {trial.teacher_name ? ` · ${trial.teacher_name}` : ''}
-                        </p>
-                      </div>
-                    </div>
-                    {(trialNextStatuses[trial.status] ?? []).length > 0 ? (
-                      <div className="flex flex-wrap gap-2">
-                        {(trialNextStatuses[trial.status] ?? []).map((status) => (
-                          <Button
-                            key={status}
-                            type="button"
-                            size="sm"
-                            variant="secondary"
-                            disabled={busy}
-                            onClick={() => void handleUpdateTrialStatus(trial.id, status)}
-                          >
-                            {trialStatusLabel[status] ?? status}
-                          </Button>
-                        ))}
-                      </div>
-                    ) : null}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          ) : null}
-        </div>
+      {payload.followups.length > 0 && (
+        <Card accent="slate" className="border-pk-border">
+          <CardHeader>
+            <CardTitle className="text-base">Seguimientos</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {payload.followups.map((followup) => (
+              <div
+                key={followup.id}
+                className="rounded-xl border border-pk-border/80 bg-white px-3 py-2 text-sm"
+              >
+                <p className="font-medium text-pk-ink">{followup.type}</p>
+                <p className="text-xs text-pk-sub">
+                  {followup.due_date} · {followup.status}
+                </p>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
       )}
     </div>
   );

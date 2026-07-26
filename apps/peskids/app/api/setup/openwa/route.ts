@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   if (!isOpenWAEnabled()) {
     return errorJson(requestId, 'OpenWA not configured', 503);
   }
-  const host = req.headers.get('host') ?? 'peskids.op-sly.com';
+  const host = req.headers.get('host') ?? 'www.peskids.com';
   const proto = req.headers.get('x-forwarded-proto') ?? 'https';
   try {
     const result = await openwaRegisterWebhook({ host, proto }, undefined, 'peskids');

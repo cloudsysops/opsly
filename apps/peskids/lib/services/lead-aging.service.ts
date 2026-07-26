@@ -63,7 +63,7 @@ function adminInteresadosUrl(): string {
   const base =
     process.env.PESKIDS_APP_URL?.trim().replace(/\/$/, '') ||
     process.env.NEXT_PUBLIC_PESKIDS_SITE_URL?.trim().replace(/\/$/, '') ||
-    'https://peskids.op-sly.com';
+    'https://www.peskids.com';
   return `${base}/admin#interesados`;
 }
 

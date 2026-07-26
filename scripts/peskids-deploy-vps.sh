@@ -147,4 +147,4 @@ bash "$REPO_PATH/scripts/peskids-deploy-vps.sh"
 REMOTE
 fi
 
-echo "Done. https://peskids.op-sly.com"
+echo "Done. https://www.peskids.com"

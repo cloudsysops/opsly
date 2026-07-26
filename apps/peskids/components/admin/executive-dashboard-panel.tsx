@@ -76,8 +76,6 @@ export function ExecutiveDashboardPanel({
               value={String(exec.kpis.overdue_followups)}
               highlight={exec.kpis.overdue_followups > 0}
             />
-            <Kpi label="Trials hoy" value={String(exec.kpis.trials_today)} />
-            <Kpi label="Trials semana" value={String(exec.kpis.trials_this_week)} />
             <Kpi label="Matrículas del mes" value={String(exec.kpis.enrollments_this_month)} />
             <Kpi label="Lead → trial" value={formatPct(exec.kpis.lead_to_trial_pct)} />
             <Kpi label="Trial → matrícula" value={formatPct(exec.kpis.trial_to_enroll_pct)} />

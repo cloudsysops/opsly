@@ -23,7 +23,7 @@ vi.mock('@/lib/supabase', () => ({
 }))
 
 vi.mock('@/lib/app-url', () => ({
-  PESKIDS_APP_ORIGIN: 'https://peskids.op-sly.com',
+  PESKIDS_APP_ORIGIN: 'https://www.peskids.com',
 }))
 
 describe('family access', () => {
@@ -93,7 +93,7 @@ describe('family access', () => {
         type: 'magiclink',
         email: 'family@example.com',
         options: expect.objectContaining({
-          redirectTo: 'https://peskids.op-sly.com/auth/callback?next=%2Ffamilias%2Fsubmissions',
+          redirectTo: 'https://www.peskids.com/auth/callback?next=%2Ffamilias%2Fsubmissions',
         }),
       })
     )

@@ -66,11 +66,11 @@ describe('recoveryTargetFromMetadata', () => {
 
   it('detects invite links and keeps email/token in the activation path', () => {
     const inviteUrl = new URL(
-      'https://peskids.op-sly.com/admin/login?type=invite&token=tok_123&email=cboteros1%40gmail.com'
+      'https://www.peskids.com/admin/login?type=invite&token=tok_123&email=cboteros1%40gmail.com'
     );
     expect(isInviteLink(inviteUrl)).toBe(true);
-    expect(inviteActivationPathFromUrl(inviteUrl, 'https://peskids.op-sly.com')).toBe(
-      'https://peskids.op-sly.com/invite/tok_123?email=cboteros1%40gmail.com'
+    expect(inviteActivationPathFromUrl(inviteUrl, 'https://www.peskids.com')).toBe(
+      'https://www.peskids.com/invite/tok_123?email=cboteros1%40gmail.com'
     );
   });
 });

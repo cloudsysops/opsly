@@ -149,7 +149,7 @@ export function LeadCaptureForm({
         referral_code: apiResult.referral_code || null,
       }
 
-      const webhookUrl = process.env.NEXT_PUBLIC_N8N_LEAD_WEBHOOK || 'https://peskids.op-sly.com/webhooks/lead-capture'
+      const webhookUrl = process.env.NEXT_PUBLIC_N8N_LEAD_WEBHOOK || 'https://www.peskids.com/webhooks/lead-capture'
       void fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

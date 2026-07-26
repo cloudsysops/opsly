@@ -94,7 +94,7 @@ export async function sendForm(input: {
     ? new Date(Date.now() + input.expiresInDays * 24 * 60 * 60 * 1000)
     : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // Default 30 days
 
-  const formLink = `${process.env.NEXT_PUBLIC_PESKIDS_URL || 'https://peskids.op-sly.com'}/familias/form/${input.templateId}?delivery_id=`;
+  const formLink = `${process.env.NEXT_PUBLIC_PESKIDS_URL || 'https://www.peskids.com'}/familias/form/${input.templateId}?delivery_id=`;
 
   const { data, error } = await peskidsClient()
     .from('form_deliveries')

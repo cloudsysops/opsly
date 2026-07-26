@@ -9,13 +9,13 @@ const repoRoot = resolve(__dirname, '../..');
 
 describe('buildRecoveryRedirectTo', () => {
   it('points reset emails at the server auth callback with next path', () => {
-    expect(buildRecoveryRedirectTo('https://peskids.op-sly.com')).toBe(
-      'https://peskids.op-sly.com/auth/callback?next=%2Fadmin%2Fupdate-password'
+    expect(buildRecoveryRedirectTo('https://www.peskids.com')).toBe(
+      'https://www.peskids.com/auth/callback?next=%2Fadmin%2Fupdate-password'
     );
     expect(
-      buildRecoveryRedirectTo('https://peskids.op-sly.com', { next: '/teacher/update-password' })
+      buildRecoveryRedirectTo('https://www.peskids.com', { next: '/teacher/update-password' })
     ).toBe(
-      'https://peskids.op-sly.com/auth/callback?next=%2Fteacher%2Fupdate-password'
+      'https://www.peskids.com/auth/callback?next=%2Fteacher%2Fupdate-password'
     );
   });
 });
@@ -23,7 +23,7 @@ describe('buildRecoveryRedirectTo', () => {
 describe('recoveryForwardPathFromUrl', () => {
   it('routes PKCE code links to the server callback', () => {
     const url = new URL(
-      'https://peskids.op-sly.com/admin/login?code=abc&next=%2Fteacher%2Fupdate-password'
+      'https://www.peskids.com/admin/login?code=abc&next=%2Fteacher%2Fupdate-password'
     );
     expect(recoveryForwardPathFromUrl(url)).toBe(
       '/auth/callback?code=abc&next=%2Fteacher%2Fupdate-password'
@@ -31,7 +31,7 @@ describe('recoveryForwardPathFromUrl', () => {
   });
 
   it('keeps hash-only recovery on /auth/recovery for legacy emails', () => {
-    const url = new URL('https://peskids.op-sly.com/#access_token=x&type=recovery');
+    const url = new URL('https://www.peskids.com/#access_token=x&type=recovery');
     expect(recoveryForwardPathFromUrl(url)).toBe('/auth/recovery#access_token=x&type=recovery');
   });
 });
