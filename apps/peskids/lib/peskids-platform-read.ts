@@ -5,9 +5,13 @@ export type PlatformPeskidsLeadRow = {
   full_name: string;
   email: string;
   phone: string | null;
+  lead_type?: string | null;
+  service_mode?: string | null;
   class_modality: string | null;
   neighborhood: string | null;
   grade_interested: string;
+  child_name?: string | null;
+  company_name?: string | null;
   status: string;
   admin_notes: string | null;
   referral_source?: string | null;
@@ -57,15 +61,44 @@ export function mapPlatformLeadStatus(
   }
 }
 
+function mapLeadType(value: string | null | undefined): NonNullable<DashboardLead['lead_type']> {
+  if (value === 'teacher_applicant' || value === 'company') {
+    return value;
+  }
+  return 'family';
+}
+
+function mapServiceMode(
+  value: string | null | undefined,
+  classModality: string | null,
+  leadType: NonNullable<DashboardLead['lead_type']>
+): DashboardLead['service_mode'] {
+  if (value === 'llanogrande' || value === 'domicilio' || value === 'institutional') {
+    return value;
+  }
+  if (leadType === 'company') {
+    return 'institutional';
+  }
+  if (classModality === 'llanogrande' || classModality === 'domicilio') {
+    return classModality;
+  }
+  return null;
+}
+
 export function mapPlatformLeadRow(row: PlatformPeskidsLeadRow): DashboardLead {
+  const leadType = mapLeadType(row.lead_type);
   return {
     id: row.id,
     name: row.full_name,
     email: row.email,
     phone: row.phone,
+    lead_type: leadType,
+    service_mode: mapServiceMode(row.service_mode, row.class_modality, leadType),
     class_modality: (row.class_modality as DashboardLead['class_modality']) ?? null,
     neighborhood: row.neighborhood,
     grade_interested: row.grade_interested,
+    child_name: row.child_name ?? null,
+    company_name: row.company_name ?? null,
     status: mapPlatformLeadStatus(row.status),
     admin_notes: row.admin_notes,
     referral_code: null,

@@ -28,7 +28,7 @@ export async function fetchPlatformLeadsForDashboard(
 > {
   let query = platformFrom('peskids_leads')
     .select(
-      'id, full_name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_source, created_at, franchise_id, twenty_person_id, twenty_opportunity_id'
+      'id, full_name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, company_name, status, admin_notes, referral_source, created_at, franchise_id, twenty_person_id, twenty_opportunity_id'
     )
     .eq('tenant_slug', tenantSlug)
     .gte('created_at', periodStartISO)
@@ -92,7 +92,7 @@ export async function fetchDashboardLeads(
   let query = supabase
     .from('leads')
     .select(
-      'id, name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source, created_at, franchise_id'
+      'id, name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, company_name, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source, created_at, franchise_id'
     )
     .eq('tenant_id', tenantSlug)
     .gte('created_at', periodStartISO)
@@ -108,9 +108,51 @@ export async function fetchDashboardLeads(
     throw error;
   }
 
+  type LegacyLeadRow = {
+    id: string;
+    name: string;
+    email: string;
+    phone: string | null;
+    lead_type?: string | null;
+    service_mode?: string | null;
+    class_modality: DashboardData['new_leads'][number]['class_modality'];
+    neighborhood: string | null;
+    grade_interested: string;
+    child_name?: string | null;
+    company_name?: string | null;
+    status: DashboardData['new_leads'][number]['status'];
+    admin_notes: string | null;
+    referral_code: string | null;
+    referred_by_code: string | null;
+    referral_discount_cents: number;
+    referral_redemptions: number;
+    referral_source: string | null;
+    created_at?: string;
+    franchise_id?: string | null;
+  };
+
   return {
     source: 'legacy',
-    rows: (data ?? []) as ReturnType<typeof mapPlatformLeadRow>[],
+    rows: ((data ?? []) as LegacyLeadRow[]).map((row) =>
+      mapPlatformLeadRow({
+        id: row.id,
+        full_name: row.name,
+        email: row.email,
+        phone: row.phone,
+        lead_type: row.lead_type,
+        service_mode: row.service_mode,
+        class_modality: row.class_modality,
+        neighborhood: row.neighborhood,
+        grade_interested: row.grade_interested,
+        child_name: row.child_name,
+        company_name: row.company_name,
+        status: row.status,
+        admin_notes: row.admin_notes,
+        referral_source: row.referral_source,
+        created_at: row.created_at,
+        franchise_id: row.franchise_id,
+      })
+    ),
   };
 }
 

@@ -251,7 +251,7 @@ export function groupLeadsIntoPipelineColumns(
 async function fetchAllPlatformLeads(tenantSlug: string): Promise<DashboardLead[] | null> {
   const { data, error } = await platformFrom()
     .select(
-      'id, full_name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_source, created_at, twenty_person_id, twenty_opportunity_id'
+      'id, full_name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, company_name, status, admin_notes, referral_source, created_at, twenty_person_id, twenty_opportunity_id'
     )
     .eq('tenant_slug', tenantSlug)
     .order('created_at', { ascending: false });
@@ -272,7 +272,7 @@ async function fetchAllLegacyLeads(tenantSlug: string): Promise<DashboardLead[]>
   const { data, error } = await supabaseServer()
     .from('leads')
     .select(
-      'id, name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source, created_at'
+      'id, name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, company_name, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source, created_at, franchise_id'
     )
     .eq('tenant_id', tenantSlug)
     .order('created_at', { ascending: false });
@@ -287,9 +287,13 @@ async function fetchAllLegacyLeads(tenantSlug: string): Promise<DashboardLead[]>
     | 'name'
     | 'email'
     | 'phone'
+    | 'lead_type'
+    | 'service_mode'
     | 'class_modality'
     | 'neighborhood'
     | 'grade_interested'
+    | 'child_name'
+    | 'company_name'
     | 'status'
     | 'admin_notes'
     | 'referral_code'
@@ -298,28 +302,33 @@ async function fetchAllLegacyLeads(tenantSlug: string): Promise<DashboardLead[]>
     | 'referral_redemptions'
     | 'referral_source'
     | 'created_at'
+    | 'franchise_id'
   >;
 
   return (data ?? []).map((row: LegacyLeadRow) =>
     decorateLeadWithCrmUrls({
-      id: row.id,
-      name: row.name,
-      email: row.email,
-      phone: row.phone,
-      class_modality: row.class_modality,
-      neighborhood: row.neighborhood,
-      grade_interested: row.grade_interested,
-      status: row.status,
-      admin_notes: row.admin_notes,
+      ...mapPlatformLeadRow({
+        id: row.id,
+        full_name: row.name,
+        email: row.email,
+        phone: row.phone,
+        lead_type: row.lead_type,
+        service_mode: row.service_mode,
+        class_modality: row.class_modality,
+        neighborhood: row.neighborhood,
+        grade_interested: row.grade_interested,
+        child_name: row.child_name,
+        company_name: row.company_name,
+        status: row.status,
+        admin_notes: row.admin_notes,
+        referral_source: row.referral_source,
+        created_at: row.created_at,
+        franchise_id: row.franchise_id,
+      }),
       referral_code: row.referral_code,
       referred_by_code: row.referred_by_code,
       referral_discount_cents: row.referral_discount_cents,
       referral_redemptions: row.referral_redemptions,
-      referral_source: row.referral_source,
-      created_at: row.created_at ?? new Date().toISOString(),
-      franchise_id: null,
-      twenty_person_id: null,
-      twenty_opportunity_id: null,
     })
   );
 }

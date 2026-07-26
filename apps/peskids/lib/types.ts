@@ -741,9 +741,18 @@ export type Database = {
           name: string;
           email: string;
           phone: string | null;
+          lead_type: 'family' | 'teacher_applicant' | 'company';
+          service_mode: 'llanogrande' | 'domicilio' | 'institutional' | null;
           class_modality: 'llanogrande' | 'domicilio' | null;
           neighborhood: string | null;
           grade_interested: string;
+          child_name: string | null;
+          birth_date: string | null;
+          document_type: string | null;
+          document_number: string | null;
+          company_name: string | null;
+          company_nit: string | null;
+          metadata: Record<string, unknown>;
           referral_source: string | null;
           referral_code: string | null;
           referred_by_code: string | null;
@@ -761,9 +770,18 @@ export type Database = {
           name: string;
           email: string;
           phone?: string | null;
+          lead_type?: 'family' | 'teacher_applicant' | 'company';
+          service_mode?: 'llanogrande' | 'domicilio' | 'institutional' | null;
           class_modality?: 'llanogrande' | 'domicilio' | null;
           neighborhood?: string | null;
           grade_interested: string;
+          child_name?: string | null;
+          birth_date?: string | null;
+          document_type?: string | null;
+          document_number?: string | null;
+          company_name?: string | null;
+          company_nit?: string | null;
+          metadata?: Record<string, unknown>;
           referral_source?: string | null;
           referral_code?: string | null;
           referred_by_code?: string | null;
@@ -1244,6 +1262,10 @@ export interface DashboardData {
       | 'created_at'
     > & {
       franchise_id?: string | null;
+      lead_type?: Database['public']['Tables']['leads']['Row']['lead_type'];
+      service_mode?: Database['public']['Tables']['leads']['Row']['service_mode'];
+      child_name?: string | null;
+      company_name?: string | null;
       referral_source?: string | null;
       twenty_person_id?: string | null;
       twenty_opportunity_id?: string | null;

@@ -6,6 +6,7 @@ import type { DashboardData } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatAgeRange } from '@/lib/peskids-domain';
+import { leadTypeLabel, serviceModeLabel, classModalityLabel } from '@/lib/lead-modality';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { buildWhatsAppDeepLink } from '@/lib/integrations/wacrm-admin-links';
 import { formatRelativeTime } from '@/lib/utils';
@@ -95,7 +96,11 @@ export function RecentLeadsPanel({ data }: RecentLeadsPanelProps): React.ReactEl
                             {lead.name}
                           </Link>
                           <p className="text-xs text-pk-sub">
-                            {formatAgeRange(lead.grade_interested)}
+                            {leadTypeLabel(lead.lead_type)} ·{' '}
+                            {serviceModeLabel(lead.service_mode) !== '—'
+                              ? serviceModeLabel(lead.service_mode)
+                              : classModalityLabel(lead.class_modality)}{' '}
+                            · {formatAgeRange(lead.grade_interested)}
                           </p>
                         </td>
                         <td className="px-3 py-3 text-sm text-pk-sub">

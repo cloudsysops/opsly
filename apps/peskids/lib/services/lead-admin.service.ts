@@ -48,9 +48,13 @@ function mapLegacyLeadRow(row: {
   name: string;
   email: string;
   phone: string | null;
+  lead_type?: string | null;
+  service_mode?: string | null;
   class_modality: DashboardLead['class_modality'];
   neighborhood: string | null;
   grade_interested: string;
+  child_name?: string | null;
+  company_name?: string | null;
   status: DashboardLead['status'];
   admin_notes: string | null;
   referral_code: string | null;
@@ -61,22 +65,29 @@ function mapLegacyLeadRow(row: {
   created_at?: string;
   franchise_id?: string | null;
 }): DashboardLead {
-  return {
+  const mapped = mapPlatformLeadRow({
     id: row.id,
-    name: row.name,
+    full_name: row.name,
     email: row.email,
     phone: row.phone,
+    lead_type: row.lead_type,
+    service_mode: row.service_mode,
     class_modality: row.class_modality,
     neighborhood: row.neighborhood,
     grade_interested: row.grade_interested,
+    child_name: row.child_name,
+    company_name: row.company_name,
     status: row.status,
     admin_notes: row.admin_notes,
+    referral_source: row.referral_source,
+    created_at: row.created_at,
+  });
+  return {
+    ...mapped,
     referral_code: row.referral_code,
     referred_by_code: row.referred_by_code,
     referral_discount_cents: row.referral_discount_cents,
     referral_redemptions: row.referral_redemptions,
-    referral_source: row.referral_source,
-    created_at: row.created_at ?? new Date().toISOString(),
     franchise_id: row.franchise_id ?? null,
     twenty_person_id: null,
     twenty_opportunity_id: null,
@@ -107,7 +118,7 @@ async function updatePlatformLead(
     .eq('id', leadId)
     .eq('tenant_slug', tenantSlug)
     .select(
-      'id, full_name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_source, created_at, twenty_person_id, twenty_opportunity_id'
+      'id, full_name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, company_name, status, admin_notes, referral_source, created_at, twenty_person_id, twenty_opportunity_id'
     )
     .maybeSingle();
 
@@ -146,7 +157,7 @@ async function updateLegacyLead(
     .eq('id', leadId)
     .eq('tenant_id', tenantSlug)
     .select(
-      'id, name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source'
+      'id, name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, company_name, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source'
     )
     .maybeSingle();
 
@@ -169,7 +180,7 @@ async function fetchPlatformLead(
 ): Promise<DashboardLead | null> {
   const { data, error } = await platformFrom()
     .select(
-      'id, full_name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_source, created_at, twenty_person_id, twenty_opportunity_id'
+      'id, full_name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, company_name, status, admin_notes, referral_source, created_at, twenty_person_id, twenty_opportunity_id'
     )
     .eq('id', leadId)
     .eq('tenant_slug', tenantSlug)
@@ -196,7 +207,7 @@ async function fetchLegacyLead(
   const { data, error } = await supabaseServer()
     .from('leads')
     .select(
-      'id, name, email, phone, class_modality, neighborhood, grade_interested, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source, created_at'
+      'id, name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, company_name, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source, created_at'
     )
     .eq('id', leadId)
     .eq('tenant_id', tenantSlug)
