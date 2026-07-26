@@ -112,7 +112,7 @@ export function GatedWhatsAppLink({
       style={style}
       onClick={(): void => navigateToPeskidsReservationForm(pathname)}
       aria-label={`Completa el formulario antes de escribir por WhatsApp al ${PESKIDS_CONTACT.whatsapp.display}`}
-      title="Primero completa el formulario de reserva"
+      title="Primero completa el formulario de matrícula"
     >
       {showIcon ? <WhatsAppIcon className={cn('shrink-0', iconSize)} /> : null}
       <span>{label}</span>
