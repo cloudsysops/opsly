@@ -64,7 +64,11 @@ export function decorateLeadWithCrmUrls(
   };
 }
 
-export async function fetchDashboardData(tenantId: string, range: Range): Promise<DashboardData> {
+export async function fetchDashboardData(
+  tenantId: string,
+  range: Range,
+  franchiseId?: string | null
+): Promise<DashboardData> {
   const supabase = supabaseServer();
 
   const today = new Date();
@@ -77,14 +81,18 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
   periodStart.setHours(0, 0, 0, 0);
   const periodStartISO = periodStart.toISOString();
 
-  const platformLeadsResult = await fetchDashboardLeads(tenantId, periodStartISO);
+  const platformLeadsResult = await fetchDashboardLeads(tenantId, periodStartISO, franchiseId);
   const newLeads = (platformLeadsResult.rows ?? []).map(decorateLeadWithCrmUrls);
 
-  const { data: students, error: studentsError } = await supabase
+  let studentsQuery = supabase
     .from('students')
-    .select('id, grade, status, parent_email, created_at, enrollment_date')
+    .select('id, grade, status, parent_email, created_at, enrollment_date, franchise_id')
     .eq('tenant_id', tenantId)
     .eq('status', 'active');
+  if (franchiseId) {
+    studentsQuery = studentsQuery.eq('franchise_id', franchiseId);
+  }
+  const { data: students, error: studentsError } = await studentsQuery;
 
   if (studentsError) throw studentsError;
 
@@ -150,19 +158,31 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
 
   if (feedbackError) throw feedbackError;
 
-  const { data: followups, error: followupsError } = await supabase
-    .from('followups')
-    .select('id, contact_id, contact_type, due_date, type, status, notes, created_at')
-    .eq('tenant_id', tenantId)
-    .order('due_date', { ascending: true });
+  const { data: followups, error: followupsError } = await (() => {
+    let q = supabase
+      .from('followups')
+      .select('id, contact_id, contact_type, due_date, type, status, notes, created_at, franchise_id')
+      .eq('tenant_id', tenantId)
+      .order('due_date', { ascending: true });
+    if (franchiseId) {
+      q = q.eq('franchise_id', franchiseId);
+    }
+    return q;
+  })();
 
   if (followupsError) throw followupsError;
 
-  const { data: trialClasses, error: trialClassesError } = await supabase
-    .from('trial_classes')
-    .select('id, lead_id, created_at, status, scheduled_date, scheduled_time')
-    .eq('tenant_id', tenantId)
-    .order('scheduled_date', { ascending: true });
+  const { data: trialClasses, error: trialClassesError } = await (() => {
+    let q = supabase
+      .from('trial_classes')
+      .select('id, lead_id, created_at, status, scheduled_date, scheduled_time, franchise_id')
+      .eq('tenant_id', tenantId)
+      .order('scheduled_date', { ascending: true });
+    if (franchiseId) {
+      q = q.eq('franchise_id', franchiseId);
+    }
+    return q;
+  })();
 
   if (trialClassesError) throw trialClassesError;
 

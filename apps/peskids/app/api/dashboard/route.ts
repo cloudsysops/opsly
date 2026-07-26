@@ -18,9 +18,10 @@ export async function GET(req: NextRequest) {
 
     const rangeParam = req.nextUrl.searchParams.get('range');
     const range = rangeParam === 'month' ? 'month' : 'week';
+    const franchiseId = req.nextUrl.searchParams.get('franchise_id')?.trim() || null;
     const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids';
 
-    const data = await fetchDashboardData(tenantId, range);
+    const data = await fetchDashboardData(tenantId, range, franchiseId);
     return NextResponse.json(data, {
       headers: {
         'Cache-Control': 'no-store, private, max-age=0, must-revalidate',

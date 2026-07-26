@@ -6,6 +6,7 @@ import { Loader2 } from 'lucide-react'
 import type { DashboardData } from '@/lib/types'
 import { DashboardView } from '@/components/admin/dashboard-view'
 import { RoleSwitcher } from '@/components/admin/role-switcher'
+import { FranchiseFilterSelect } from '@/components/admin/franchise-filter-select'
 import { Button } from '@/components/ui/button'
 
 const POLL_MS = 5000
@@ -23,12 +24,19 @@ export function StaffDashboard({ surface }: StaffDashboardProps): React.ReactEle
   const [error, setError] = useState('')
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
   const [range, setRange] = useState<'week' | 'month'>('week')
+  const [franchiseId, setFranchiseId] = useState('')
 
   const fetchDashboard = useCallback(
     async (isPoll = false): Promise<void> => {
       if (isPoll) setRefreshing(true)
       try {
-        const response = await fetch(`/api/dashboard?range=${range}`, { credentials: 'include' })
+        const params = new URLSearchParams({ range })
+        if (franchiseId) {
+          params.set('franchise_id', franchiseId)
+        }
+        const response = await fetch(`/api/dashboard?${params.toString()}`, {
+          credentials: 'include',
+        })
         if (response.status === 401 || response.status === 403) {
           router.replace(loginPath)
           return
@@ -46,7 +54,7 @@ export function StaffDashboard({ surface }: StaffDashboardProps): React.ReactEle
         setRefreshing(false)
       }
     },
-    [range, router, loginPath]
+    [range, franchiseId, router, loginPath]
   )
 
   useEffect(() => {
@@ -83,7 +91,12 @@ export function StaffDashboard({ surface }: StaffDashboardProps): React.ReactEle
 
   return (
     <div className="min-h-screen bg-pk-bg">
-      <div className="flex items-center justify-end px-4 pt-3">
+      <div className="flex flex-wrap items-end justify-end gap-3 px-4 pt-3">
+        <FranchiseFilterSelect
+          className="min-w-[220px]"
+          value={franchiseId}
+          onChange={setFranchiseId}
+        />
         <RoleSwitcher />
       </div>
       <DashboardView

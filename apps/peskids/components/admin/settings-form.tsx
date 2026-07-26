@@ -23,6 +23,75 @@ interface SettingsApiResponse {
   error?: string;
 }
 
+type FranchiseRow = {
+  id: string;
+  slug: string;
+  name: string;
+  type: string;
+  is_primary: boolean;
+  status: string;
+};
+
+function FranchiseSettingsCard(): React.ReactElement {
+  const [rows, setRows] = useState<FranchiseRow[]>([]);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async (): Promise<void> => {
+      try {
+        const res = await fetch('/api/admin/franchises', { credentials: 'include' });
+        const json = (await res.json()) as {
+          franchises?: FranchiseRow[];
+          error?: string;
+        };
+        if (!res.ok) throw new Error(json.error || 'No se pudieron cargar franquicias');
+        setRows(json.franchises ?? []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error');
+      } finally {
+        setLoading(false);
+      }
+    };
+    void load();
+  }, []);
+
+  const primary = rows.find((r) => r.is_primary);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Franquicias operativas</CardTitle>
+        <CardDescription>
+          Unidades dentro del tenant <strong>peskids</strong>. No son tenants Opsly separados.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-2 text-sm">
+        {loading ? (
+          <p className="text-pk-sub">Cargando…</p>
+        ) : error ? (
+          <p className="text-amber-700">{error}</p>
+        ) : (
+          <>
+            <p>
+              Franquicia activa / flagship:{' '}
+              <strong>{primary?.name ?? '—'}</strong>
+              {primary ? ` (${primary.slug})` : ''}
+            </p>
+            <ul className="list-inside list-disc text-pk-sub">
+              {rows.map((r) => (
+                <li key={r.id}>
+                  {r.name} · {r.type} · {r.status}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 export function SettingsForm(): React.ReactElement {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -130,16 +199,22 @@ export function SettingsForm(): React.ReactElement {
             />
           </div>
           <div>
-            <Label htmlFor="settings-sede-label">Sede</Label>
+            <Label htmlFor="settings-sede-label">Sede (etiqueta UI)</Label>
             <Input
               id="settings-sede-label"
               required
               value={form.sede_label}
               onChange={(e) => setForm({ ...form, sede_label: e.target.value })}
             />
+            <p className="mt-1 text-xs text-pk-sub">
+              Compatibilidad. El control operativo de sedes/franquicias vive en la capa{' '}
+              <code className="text-[11px]">franchises</code> (Llanogrande flagship + Domicilios).
+            </p>
           </div>
         </CardContent>
       </Card>
+
+      <FranchiseSettingsCard />
 
       <Card>
         <CardHeader>
