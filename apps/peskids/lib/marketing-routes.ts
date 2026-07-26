@@ -1,4 +1,3 @@
-import { PESKIDS_FORM_NAV_LABEL } from '@/lib/peskids-landing-copy';
 import {
   PESKIDS_RESERVATION_FORM_HREF,
   peskidsPublicLeadFormUrl,
@@ -28,7 +27,7 @@ export function isPeskidsPublicLandingPath(pathname: string | null | undefined):
 }
 
 /** CTAs públicos → formulario de contacto/matrícula en home (soft-launch: sin clase gratis). */
-export const PESKIDS_PUBLIC_RESERVA_FORM_LABEL = PESKIDS_FORM_NAV_LABEL;
+export const PESKIDS_PUBLIC_RESERVA_FORM_LABEL = 'Formulario de matrícula';
 
 /** Etiqueta del botón WhatsApp en landing (gate: formulario primero). */
 export const PESKIDS_PUBLIC_WHATSAPP_LABEL = 'WhatsApp';

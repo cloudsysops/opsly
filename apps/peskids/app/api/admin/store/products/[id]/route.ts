@@ -11,13 +11,16 @@ const updateProductSchema = z.object({
   active: z.boolean().optional(),
 });
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+type RouteContext = { params: Promise<{ id: string }> };
+
+export async function GET(req: Request, { params }: RouteContext) {
   const requestId = req.headers.get('x-request-id') || crypto.randomUUID();
 
   try {
     await adminAuth(req);
+    const { id } = await params;
 
-    const product = await getProductById(params.id);
+    const product = await getProductById(id);
 
     if (!product) {
       return Response.json(
@@ -53,11 +56,12 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: RouteContext) {
   const requestId = req.headers.get('x-request-id') || crypto.randomUUID();
 
   try {
     await adminAuth(req);
+    const { id } = await params;
 
     const body = await req.json();
     const updates = updateProductSchema.parse(body);
@@ -69,7 +73,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
       );
     }
 
-    const product = await updateProduct(params.id, {
+    const product = await updateProduct(id, {
       title: updates.title,
       description: updates.description,
       price_cents: updates.priceCents,
@@ -117,13 +121,14 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: RouteContext) {
   const requestId = req.headers.get('x-request-id') || crypto.randomUUID();
 
   try {
     await adminAuth(req);
+    const { id } = await params;
 
-    await deleteProduct(params.id);
+    await deleteProduct(id);
 
     return Response.json(
       { ok: true, data: { message: 'Product deleted' } },

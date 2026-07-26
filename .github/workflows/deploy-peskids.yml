@@ -70,13 +70,16 @@ jobs:
           set -euo pipefail
           if [ -z "${E164:-}" ]; then
             echo "::warning::NEXT_PUBLIC_PESKIDS_WHATSAPP_E164 missing; using placeholder (set GitHub secret from Doppler prd)"
-            echo "e164=573000000000" >> "$GITHUB_OUTPUT"
+            e164="573000000000"
           else
-            echo "e164=${E164}" >> "$GITHUB_OUTPUT"
+            e164="${E164}"
           fi
-          echo "display=${DISPLAY:-+57 300 000 0000}" >> "$GITHUB_OUTPUT"
-          echo "prefill=${PREFILL:-Hola Peskids 👋 Quiero reservar una clase de prueba gratis.}" >> "$GITHUB_OUTPUT"
-          echo "contact_email=${CONTACT_EMAIL:-peskidsnatacion@gmail.com}" >> "$GITHUB_OUTPUT"
+          {
+            echo "e164=${e164}"
+            echo "display=${DISPLAY:-+57 300 000 0000}"
+            echo "prefill=${PREFILL:-Hola Peskids 👋 Quiero reservar una clase de prueba gratis.}"
+            echo "contact_email=${CONTACT_EMAIL:-peskidsnatacion@gmail.com}"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Build and push Peskids image
         uses: docker/build-push-action@v5

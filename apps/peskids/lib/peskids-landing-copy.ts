@@ -22,13 +22,10 @@ export const PESKIDS_RESERVATION_BULLETS = [
 export const PESKIDS_FORM_CARD_TITLE = 'Formulario de matrícula';
 
 export const PESKIDS_FORM_CARD_DESCRIPTION =
-  'Completa el formulario y nuestro equipo se pondrá en contacto contigo para ayudarte con la mejor opción para tu hijo(a).';
+  'Completa el formulario y nuestro equipo te orientará sobre la mejor opción para tu hijo(a).';
 
 /** Primary CTA / submit label on public landings (home, Instagram, etc.). */
-export const PESKIDS_FORM_SUBMIT_LABEL = 'Enviar solicitud de contacto';
-
-/** Short nav / footer CTA → scroll to form. */
-export const PESKIDS_FORM_NAV_LABEL = 'Solicitar contacto';
+export const PESKIDS_FORM_SUBMIT_LABEL = 'Enviar formulario de matrícula';
 
 /** Post-form handoff only — not shown before lead capture. */
 export const PESKIDS_WHATSAPP_CTA_LABEL = 'Continuar por WhatsApp';
@@ -44,4 +41,4 @@ export const PESKIDS_CONSENT_MARKETING =
 
 /** Instagram entry — same offer, channel-specific intro only. */
 export const PESKIDS_INSTAGRAM_LANDING_INTRO =
-  'Solicita contacto desde Instagram. Completa el formulario y el equipo de Peskids te ayuda a conocer la academia (sede Llanogrande o a domicilio).';
+  'Completa el formulario desde Instagram y el equipo de Peskids te ayuda a conocer la academia (sede Llanogrande o a domicilio).';

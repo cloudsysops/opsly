@@ -57,7 +57,7 @@ export function peskidsIntakeWelcome(source: MessageSource): string {
   return (
     `¡Hola! Somos Peskids 🐠 Academia de natación en Llanogrande (Rionegro), área metropolitana de Medellín. ` +
     `Clases para niños desde 3 meses hasta 15 años, en sede o a domicilio. Te ayudamos a encontrar el plan de matrícula ideal.\n\n` +
-    `${channel} te haré unas preguntas cortas (igual que el formulario de reserva). ` +
+    `${channel} te haré unas preguntas cortas (igual que el formulario de matrícula). ` +
     `Cuando terminemos, un asesor humano revisará tu caso y te confirmará horario en menos de 48 h hábiles.`
   )
 }

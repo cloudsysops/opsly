@@ -1,8 +1,5 @@
-import Link from 'next/link';
 import { PeskidsWave } from '@/components/brand/peskids-logo';
 import { GatedWhatsAppLink } from '@/components/marketing/gated-whatsapp-link';
-import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config';
-import { PESKIDS_FORM_NAV_LABEL } from '@/lib/peskids-landing-copy';
 
 export function CtaBand(): React.ReactElement {
   return (
@@ -24,12 +21,6 @@ export function CtaBand(): React.ReactElement {
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Link
-              href={PESKIDS_RESERVATION_FORM_HREF}
-              className="inline-flex h-12 min-w-[200px] items-center justify-center rounded-full bg-pk-primary px-6 text-sm font-bold text-white shadow-lg transition hover:bg-pk-primary/90"
-            >
-              {PESKIDS_FORM_NAV_LABEL}
-            </Link>
             <GatedWhatsAppLink variant="onDark" label="WhatsApp" />
           </div>
         </div>
