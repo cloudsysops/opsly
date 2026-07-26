@@ -9,7 +9,7 @@ vi.mock('../src/workers/NotifyWorker.js', () => ({
 }));
 
 vi.mock('bullmq', () => ({
-  Worker: vi.fn().mockImplementation((_queue, handler) => ({
+  Worker: vi.fn().mockImplementation((_queue, handler, _opts) => ({
     _handler: handler,
   })),
 }));
