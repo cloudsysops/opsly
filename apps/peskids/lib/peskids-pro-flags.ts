@@ -87,7 +87,10 @@ export function isPeskidsFamilyAccessEmailEnabled(
 export function isPeskidsStaffImprovementChatEnabled(
   env: NodeJS.ProcessEnv = process.env
 ): boolean {
-  return parseBooleanFlag(env.PESKIDS_STAFF_IMPROVEMENT_CHAT_ENABLED, false);
+  return parseBooleanFlag(
+    env.OPSLY_IMPROVEMENT_TRACKER_ENABLED ?? env.PESKIDS_STAFF_IMPROVEMENT_CHAT_ENABLED,
+    false
+  );
 }
 
 /**
@@ -109,7 +112,11 @@ export function isPeskidsStaffImprovementChatTwentyTaskEnabled(
 export function isPeskidsStaffImprovementChatGithubIssueEnabled(
   env: NodeJS.ProcessEnv = process.env
 ): boolean {
-  return parseBooleanFlag(env.PESKIDS_STAFF_IMPROVEMENT_CHAT_GITHUB_ISSUE_ENABLED, false);
+  return parseBooleanFlag(
+    env.OPSLY_IMPROVEMENT_GITHUB_ISSUE_ENABLED ??
+      env.PESKIDS_STAFF_IMPROVEMENT_CHAT_GITHUB_ISSUE_ENABLED,
+    false
+  );
 }
 
 /**

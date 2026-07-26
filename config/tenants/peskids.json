@@ -7,7 +7,7 @@
   "internal_port": 3004,
   "stack_type": "incubator-app",
   "bundle": "growth",
-  "modules_enabled": ["twenty", "wacrm", "n8n", "llm", "uptime"],
+  "modules_enabled": ["twenty", "wacrm", "n8n", "llm", "opsly-improvement-tracker", "uptime"],
   "vertical": "sports-academy",
   "owner_email": "peskidsnatacion@gmail.com",
   "pattern_ids": ["incubator-app", "crm-starter-stack"],

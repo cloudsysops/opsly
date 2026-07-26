@@ -23,5 +23,12 @@
   "brand_basic": {
     "tone": "warm, parent-facing, clear"
   },
-  "modules": ["lead-capture", "feedback-loop", "follow-up", "parent-portal", "weekly-report"]
+  "modules": [
+    "lead-capture",
+    "feedback-loop",
+    "follow-up",
+    "parent-portal",
+    "weekly-report",
+    "opsly-improvement-tracker"
+  ]
 }

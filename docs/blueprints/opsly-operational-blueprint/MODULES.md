@@ -19,6 +19,7 @@ Módulos **reutilizables** entre nichos. Combinar 3–5 en un MVP; no implementa
 | Parent/Customer Dashboard | Medio | MVP+1 |
 | Content Workflow | Medio | Opcional |
 | Weekly Report | Bajo | Sí |
+| Opsly Improvement Tracker | Bajo | Sí |
 | AI Draft Assistant | Medio | Opcional (draft) |
 | Approval Queue | Bajo | Sí |
 | Tenant Extraction Pack | Bajo | Al extraer |
@@ -123,6 +124,30 @@ Módulos **reutilizables** entre nichos. Combinar 3–5 en un MVP; no implementa
 
 ---
 
+## Opsly Improvement Tracker
+
+| | |
+|-|-|
+| **Purpose** | Convertir mensajes del cliente en solicitudes trazables con estado visible, links de prueba/producción y Issue GitHub opcional. |
+| **Inputs** | Mensaje admin, captura/PDF adjunto, nota operativa |
+| **Outputs** | Registro `staff_improvement_messages`, estado cliente, links Issue/PR/preview/producción |
+| **Tools** | Admin tenant, Supabase, LLM Gateway, GitHub Issues opcional |
+| **Risk** | Bajo si no se copia PII al Issue |
+| **Manual** | Priorización real, aprobación de alcance, merge/deploy |
+| **Automate later** | Sincronizar estado desde PR/checks/deploy y notificar al cliente cuando esté listo para probar |
+
+Flags estándar:
+
+- `OPSLY_IMPROVEMENT_TRACKER_ENABLED`
+- `OPSLY_IMPROVEMENT_GITHUB_ISSUE_ENABLED`
+- `OPSLY_IMPROVEMENT_GITHUB_TOKEN`
+- `OPSLY_IMPROVEMENT_GITHUB_REPO`
+- `OPSLY_IMPROVEMENT_GITHUB_LABELS`
+
+Contrato: no copiar datos personales de clientes, niños, familias, profesores o staff a GitHub Issues. El Issue guarda resumen, ID interno y metadata; el detalle vive en el admin del tenant.
+
+---
+
 ## AI Draft Assistant
 
 | | |
@@ -172,7 +197,8 @@ Módulos **reutilizables** entre nichos. Combinar 3–5 en un MVP; no implementa
 3. Follow-up Workflow  
 4. Simple CRM View  
 5. Weekly Report  
-6. Approval Queue  
+6. Opsly Improvement Tracker
+7. Approval Queue
 
 Opcional: AI Draft Assistant (solo drafts).
 

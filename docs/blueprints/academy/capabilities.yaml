@@ -36,3 +36,8 @@ spec:
       status: existing-in-peskids
       source: apps/peskids/lib/services/dashboard.service.ts
       extractionTarget: lib/academy-dashboard
+    - id: opsly.improvement_tracker
+      status: existing-in-peskids
+      source: apps/peskids/app/admin/mejoras/page.tsx
+      extractionTarget: modules/opsly-improvement-tracker
+      notes: Tenant admin request intake, status board, optional GitHub issue creation, preview/production links.

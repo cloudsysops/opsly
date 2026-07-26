@@ -5,6 +5,7 @@ type GitHubIssueEnv = {
   token: string;
   repo: string;
   labels: string[];
+  tenantLabel: string;
 };
 
 type GitHubIssueResponse = {
@@ -20,9 +21,21 @@ export type CreatedGitHubIssue = {
 };
 
 function resolveGitHubIssueEnv(env: NodeJS.ProcessEnv = process.env): GitHubIssueEnv {
-  const token = env.PESKIDS_IMPROVEMENT_GITHUB_TOKEN?.trim() ?? '';
-  const repo = env.PESKIDS_IMPROVEMENT_GITHUB_REPO?.trim() || 'cloudsysops/opsly';
-  const labels = (env.PESKIDS_IMPROVEMENT_GITHUB_LABELS ?? 'tenant:peskids,client-request')
+  const tenantSlug = (env.NEXT_PUBLIC_TENANT_ID || 'peskids').trim().toLowerCase();
+  const tenantLabel = env.OPSLY_IMPROVEMENT_TENANT_LABEL?.trim() || 'Peskids';
+  const token =
+    env.OPSLY_IMPROVEMENT_GITHUB_TOKEN?.trim() ||
+    env.PESKIDS_IMPROVEMENT_GITHUB_TOKEN?.trim() ||
+    '';
+  const repo =
+    env.OPSLY_IMPROVEMENT_GITHUB_REPO?.trim() ||
+    env.PESKIDS_IMPROVEMENT_GITHUB_REPO?.trim() ||
+    'cloudsysops/opsly';
+  const labels = (
+    env.OPSLY_IMPROVEMENT_GITHUB_LABELS ??
+    env.PESKIDS_IMPROVEMENT_GITHUB_LABELS ??
+    `tenant:${tenantSlug},client-request,opsly-improvement`
+  )
     .split(',')
     .map((label) => label.trim())
     .filter(Boolean)
@@ -37,21 +50,23 @@ function resolveGitHubIssueEnv(env: NodeJS.ProcessEnv = process.env): GitHubIssu
     token,
     repo,
     labels,
+    tenantLabel,
   };
 }
 
-function titleForRequest(request: ImprovementRequestRow): string {
-  const summary = request.ai_summary?.trim() || request.body.trim().split('\n')[0] || 'Mejora Peskids';
-  return `[Peskids] ${summary}`.slice(0, 120);
+function titleForRequest(request: ImprovementRequestRow, tenantLabel: string): string {
+  const summary = request.ai_summary?.trim() || request.body.trim().split('\n')[0] || `Mejora ${tenantLabel}`;
+  return `[${tenantLabel}] ${summary}`.slice(0, 120);
 }
 
-function bodyForRequest(request: ImprovementRequestRow): string {
+function bodyForRequest(request: ImprovementRequestRow, tenantLabel: string): string {
   return [
-    '## Solicitud Peskids',
+    `## Solicitud ${tenantLabel}`,
     '',
-    'Solicitud creada desde el tablero interno de mejoras de Peskids.',
+    'Solicitud creada desde el modulo Opsly Improvement Tracker.',
     '',
     `- Request ID: \`${request.id}\``,
+    `- Tenant: \`${request.tenant_id}\``,
     `- Estado cliente: \`${request.client_status}\``,
     `- Categoria: \`${request.category ?? 'sin_clasificar'}\``,
     `- Prioridad: \`${request.priority ?? 'sin_prioridad'}\``,
@@ -63,7 +78,7 @@ function bodyForRequest(request: ImprovementRequestRow): string {
     '',
     '## Privacidad',
     '',
-    'No copiar datos personales de familias, alumnos o profesores en este issue. El detalle completo vive en Peskids admin.',
+    'No copiar datos personales de clientes, usuarios, familias, alumnos o staff en este issue. El detalle completo vive en el admin del tenant.',
   ].join('\n');
 }
 
@@ -88,7 +103,7 @@ export async function createGitHubIssueForImprovementRequest(
 ): Promise<CreatedGitHubIssue> {
   const env = resolveGitHubIssueEnv();
   if (!env.enabled) {
-    throw new Error('PESKIDS_IMPROVEMENT_GITHUB_TOKEN is required to create GitHub issues');
+    throw new Error('OPSLY_IMPROVEMENT_GITHUB_TOKEN is required to create GitHub issues');
   }
 
   const res = await fetch(`https://api.github.com/repos/${env.repo}/issues`, {
@@ -101,8 +116,8 @@ export async function createGitHubIssueForImprovementRequest(
       'X-GitHub-Api-Version': '2022-11-28',
     },
     body: JSON.stringify({
-      title: titleForRequest(request),
-      body: bodyForRequest(request),
+      title: titleForRequest(request, env.tenantLabel),
+      body: bodyForRequest(request, env.tenantLabel),
       labels: env.labels,
     }),
   });

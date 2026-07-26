@@ -39,9 +39,10 @@ describe('GitHub issue creation for improvement requests', () => {
   it('creates a sanitized GitHub issue with controlled labels', async () => {
     process.env = {
       ...OLD_ENV,
-      PESKIDS_IMPROVEMENT_GITHUB_TOKEN: 'test-token',
-      PESKIDS_IMPROVEMENT_GITHUB_REPO: 'cloudsysops/opsly',
-      PESKIDS_IMPROVEMENT_GITHUB_LABELS: 'tenant:peskids,client-request',
+      OPSLY_IMPROVEMENT_GITHUB_TOKEN: 'test-token',
+      OPSLY_IMPROVEMENT_GITHUB_REPO: 'cloudsysops/opsly',
+      OPSLY_IMPROVEMENT_GITHUB_LABELS: 'tenant:peskids,client-request',
+      OPSLY_IMPROVEMENT_TENANT_LABEL: 'Peskids',
     };
 
     const fetchMock = vi.fn().mockResolvedValue({
@@ -73,12 +74,13 @@ describe('GitHub issue creation for improvement requests', () => {
   it('fails closed when the GitHub token is missing', async () => {
     process.env = {
       ...OLD_ENV,
+      OPSLY_IMPROVEMENT_GITHUB_TOKEN: '',
       PESKIDS_IMPROVEMENT_GITHUB_TOKEN: '',
-      PESKIDS_IMPROVEMENT_GITHUB_REPO: 'cloudsysops/opsly',
+      OPSLY_IMPROVEMENT_GITHUB_REPO: 'cloudsysops/opsly',
     };
 
     await expect(createGitHubIssueForImprovementRequest(sampleRequest())).rejects.toThrow(
-      'PESKIDS_IMPROVEMENT_GITHUB_TOKEN is required'
+      'OPSLY_IMPROVEMENT_GITHUB_TOKEN is required'
     );
   });
 });

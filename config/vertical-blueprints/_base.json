@@ -4,6 +4,7 @@
   "timezone": "America/Bogota",
   "crm_provider": "twenty",
   "lead_sources": ["website", "whatsapp"],
+  "modules": ["lead-capture", "follow-up", "simple-crm-view", "opsly-improvement-tracker"],
   "approval_boundary": "approval-first",
   "fallback_behavior": "Persist in Supabase first; sync CRM via n8n with approval-first outbound.",
   "n8n_workflows": [

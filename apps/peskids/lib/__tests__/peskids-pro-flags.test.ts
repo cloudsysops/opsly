@@ -12,6 +12,8 @@ import {
   isPeskidsLeadReminder24hEnabled,
   isPeskidsOperationalNotificationsEnabled,
   isPeskidsRenewalReminderEnabled,
+  isPeskidsStaffImprovementChatEnabled,
+  isPeskidsStaffImprovementChatGithubIssueEnabled,
   isPeskidsTrialReminderEnabled,
 } from '@/lib/peskids-pro-flags';
 
@@ -30,6 +32,10 @@ describe('peskids Pro flags (app)', () => {
     delete process.env.PESKIDS_RENEWAL_REMINDER_ENABLED;
     delete process.env.PESKIDS_ATTENDANCE_RISK_ALERT_ENABLED;
     delete process.env.PESKIDS_ATTENDANCE_RISK_THRESHOLD;
+    delete process.env.PESKIDS_STAFF_IMPROVEMENT_CHAT_ENABLED;
+    delete process.env.PESKIDS_STAFF_IMPROVEMENT_CHAT_GITHUB_ISSUE_ENABLED;
+    delete process.env.OPSLY_IMPROVEMENT_TRACKER_ENABLED;
+    delete process.env.OPSLY_IMPROVEMENT_GITHUB_ISSUE_ENABLED;
   });
 
   it('defaults to false', () => {
@@ -44,6 +50,8 @@ describe('peskids Pro flags (app)', () => {
     expect(isPeskidsFamilyAccessEmailEnabled()).toBe(false);
     expect(isPeskidsRenewalReminderEnabled()).toBe(false);
     expect(isPeskidsAttendanceRiskAlertEnabled()).toBe(false);
+    expect(isPeskidsStaffImprovementChatEnabled()).toBe(false);
+    expect(isPeskidsStaffImprovementChatGithubIssueEnabled()).toBe(false);
     expect(getPeskidsContactSlaHours()).toBe(48);
     expect(getPeskidsAttendanceRiskThreshold()).toBe(3);
   });
@@ -63,5 +71,23 @@ describe('peskids Pro flags (app)', () => {
     process.env.PESKIDS_ATTENDANCE_RISK_THRESHOLD = '5';
     expect(isPeskidsAttendanceRiskAlertEnabled()).toBe(true);
     expect(getPeskidsAttendanceRiskThreshold()).toBe(5);
+  });
+
+  it('prefers generic Opsly improvement tracker flags over Peskids legacy flags', () => {
+    process.env.PESKIDS_STAFF_IMPROVEMENT_CHAT_ENABLED = 'false';
+    process.env.PESKIDS_STAFF_IMPROVEMENT_CHAT_GITHUB_ISSUE_ENABLED = 'false';
+    process.env.OPSLY_IMPROVEMENT_TRACKER_ENABLED = 'true';
+    process.env.OPSLY_IMPROVEMENT_GITHUB_ISSUE_ENABLED = 'true';
+
+    expect(isPeskidsStaffImprovementChatEnabled()).toBe(true);
+    expect(isPeskidsStaffImprovementChatGithubIssueEnabled()).toBe(true);
+  });
+
+  it('keeps Peskids improvement flags as backwards-compatible fallback', () => {
+    process.env.PESKIDS_STAFF_IMPROVEMENT_CHAT_ENABLED = 'true';
+    process.env.PESKIDS_STAFF_IMPROVEMENT_CHAT_GITHUB_ISSUE_ENABLED = 'true';
+
+    expect(isPeskidsStaffImprovementChatEnabled()).toBe(true);
+    expect(isPeskidsStaffImprovementChatGithubIssueEnabled()).toBe(true);
   });
 });

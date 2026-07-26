@@ -105,6 +105,32 @@
       "estimated_setup_minutes": 10,
       "cost_level": "variable"
     },
+    "opsly-improvement-tracker": {
+      "id": "opsly-improvement-tracker",
+      "name": "Opsly Improvement Tracker",
+      "description": "Cliente reporta mejoras desde el admin; Opsly clasifica, prioriza, crea Issues y publica estado/links de prueba.",
+      "category": "operations",
+      "tier": "starter",
+      "required_by": [],
+      "requires": ["llm"],
+      "docker_services": [],
+      "compose_file": null,
+      "bootstrap_script": null,
+      "smoke_script": null,
+      "doppler_secrets_prefix": "OPSLY_IMPROVEMENT_",
+      "doppler_flag": "OPSLY_IMPROVEMENT_TRACKER_ENABLED",
+      "traefik_domain": null,
+      "app_routes": ["/admin/mejoras"],
+      "database_tables": ["public.staff_improvement_messages"],
+      "optional_integrations": ["github-issues", "twenty-tasks"],
+      "manual_steps": [
+        "Activar OPSLY_IMPROVEMENT_TRACKER_ENABLED=true por tenant.",
+        "Para crear Issues: configurar OPSLY_IMPROVEMENT_GITHUB_TOKEN con permisos issues:write.",
+        "Activar OPSLY_IMPROVEMENT_GITHUB_ISSUE_ENABLED=true solo tras validar labels y repo."
+      ],
+      "estimated_setup_minutes": 15,
+      "cost_level": "low"
+    },
     "uptime": {
       "id": "uptime",
       "name": "Uptime Kuma Monitor",
@@ -132,19 +158,19 @@
     "starter": {
       "name": "Starter Pack",
       "description": "CRM + automación básica — ideal para SMBs sin WhatsApp Business",
-      "modules": ["twenty", "n8n", "uptime"],
+      "modules": ["twenty", "n8n", "opsly-improvement-tracker", "uptime"],
       "estimated_setup_minutes": 60
     },
     "growth": {
       "name": "Growth Pack",
       "description": "CRM + WhatsApp + IA — el stack completo de Peskids como referencia",
-      "modules": ["twenty", "wacrm", "n8n", "llm", "uptime"],
+      "modules": ["twenty", "wacrm", "n8n", "llm", "opsly-improvement-tracker", "uptime"],
       "estimated_setup_minutes": 120
     },
     "ai-first": {
       "name": "AI-First Pack",
       "description": "Automatización con IA como centro — para tenants que priorizan inteligencia",
-      "modules": ["twenty", "n8n", "llm", "uptime"],
+      "modules": ["twenty", "n8n", "llm", "opsly-improvement-tracker", "uptime"],
       "estimated_setup_minutes": 75
     }
   }
