@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-07-26T18:21:20.496Z",
-  "totalFiles": 829,
+  "lastIndexed": "2026-07-26T18:52:25.074Z",
+  "totalFiles": 830,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -692,6 +692,7 @@
     "security/AGENT-EXECUTION-PATH.md",
     "security/IMMEDIATE-ACTION-ITEMS.md",
     "security/NPM-AUDIT-EXEMPTIONS.md",
+    "security/PHASE-1-COMPLETION.md",
     "security/SECURITY-AUDIT.md",
     "security/SECURITY-POSTURE-AUDIT.md",
     "security/SECURITY-REMEDIATION-RUNBOOK.md",

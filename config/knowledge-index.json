@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-07-26T18:21:22.554Z",
+  "generated_at": "2026-07-26T18:52:30.909Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -25156,6 +25156,45 @@
         "vulnerabilities"
       ],
       "size_bytes": 580
+    },
+    {
+      "path": "docs/security/PHASE-1-COMPLETION.md",
+      "title": "✅ Phase 1: Production Security Hardening — COMPLETE",
+      "keywords": [
+        "admin",
+        "api",
+        "checking",
+        "checklist",
+        "complete",
+        "completed",
+        "completion",
+        "cors",
+        "crm",
+        "e2e",
+        "flow",
+        "functionality",
+        "hardening",
+        "headers",
+        "jwt",
+        "limiting",
+        "linting",
+        "markdown",
+        "middleware",
+        "next",
+        "opsly",
+        "phase",
+        "production",
+        "rate",
+        "security",
+        "step",
+        "tasks",
+        "tests",
+        "type",
+        "validation",
+        "verification",
+        "what"
+      ],
+      "size_bytes": 10147
     },
     {
       "path": "docs/security/SECURITY-AUDIT.md",
@@ -91721,6 +91760,7 @@
       "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md",
       "docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md",
       "docs/security/SESSION-SUMMARY.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/IMMEDIATE-ACTION-ITEMS.md",
       "docs/security/AGENT-EXECUTION-PATH.md",
       "docs/security/NPM-AUDIT-EXEMPTIONS.md",
@@ -94317,6 +94357,7 @@
       "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md",
       "docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md",
       "docs/security/SESSION-SUMMARY.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/IMMEDIATE-ACTION-ITEMS.md",
       "docs/security/AGENT-EXECUTION-PATH.md",
       "docs/security/NPM-AUDIT-EXEMPTIONS.md",
@@ -95110,6 +95151,7 @@
       "docs/blueprints/README.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
       "docs/security/SESSION-SUMMARY.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/IMMEDIATE-ACTION-ITEMS.md",
       "docs/security/AGENT-EXECUTION-PATH.md",
       "docs/security/SECURITY-REMEDIATION-RUNBOOK.md",
@@ -95228,6 +95270,7 @@
       "docs/reports/PRODUCTION-HEALTH.md",
       "docs/blueprints/TWENTY-BOOTSTRAP-IRREDUCIBLE.md",
       "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/IMMEDIATE-ACTION-ITEMS.md",
       ".claude/3-slash-commands/ai-cost.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/internal-tool.md"
@@ -96740,6 +96783,7 @@
       "docs/blueprints/TWENTY-BOOTSTRAP-IRREDUCIBLE.md",
       "docs/blueprints/PESKIDS-GHL-MIGRATION-STATUS.md",
       "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/IMMEDIATE-ACTION-ITEMS.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".agents/skills/the-architect/references/templates/blueprint-template.md",
@@ -98344,6 +98388,7 @@
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
       "docs/02-tools/MCP-STATUS-ANALYSIS.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/IMMEDIATE-ACTION-ITEMS.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".claude/AGENTS-ENHANCEMENTS.md"
@@ -101753,6 +101798,7 @@
       "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       "docs/blueprints/GO-LIVE-COMMAND.md",
       "docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/AGENT-EXECUTION-PATH.md",
       "docs/security/SECURITY-REMEDIATION-RUNBOOK.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
@@ -102426,6 +102472,7 @@
       "docs/blueprints/GO-LIVE-COMMAND.md",
       "docs/blueprints/PHASE1-IMPLEMENTATION-GUIDE.md",
       "docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/AGENT-EXECUTION-PATH.md",
       "docs/security/SECURITY-REMEDIATION-RUNBOOK.md",
       ".agents/skills/cyber-neo/SKILL.md",
@@ -102922,6 +102969,7 @@
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
       "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       ".agents/IMPLEMENTATION-CHECKLIST.md"
     ],
     "yaml": [
@@ -111220,6 +111268,7 @@
       "docs/blueprints/PHASE1-IMPLEMENTATION-GUIDE.md",
       "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md",
       "docs/security/SESSION-SUMMARY.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/IMMEDIATE-ACTION-ITEMS.md",
       ".agents/skills/cyber-neo/references/auth-authz-patterns.md",
       ".agents/skills/cyber-neo/references/logging-patterns.md",
@@ -112290,6 +112339,7 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/auth-authz-patterns.md",
       "lib/api/README.md",
       "lib/security/README.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/IMMEDIATE-ACTION-ITEMS.md",
       ".agents/skills/cyber-neo/references/auth-authz-patterns.md"
     ],
@@ -112917,6 +112967,7 @@
       "docs/blueprints/GO-LIVE-COMMAND.md",
       "docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md",
       "docs/security/SESSION-SUMMARY.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/IMMEDIATE-ACTION-ITEMS.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".claude/1-agent-teams/security-agent.md",
@@ -114233,7 +114284,8 @@
       "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/TONIGHT-MANUAL-TESTS.md",
       "docs/blueprints/README-PHASE1-EXECUTE.md",
-      "docs/blueprints/GO-LIVE-COMMAND.md"
+      "docs/blueprints/GO-LIVE-COMMAND.md",
+      "docs/security/PHASE-1-COMPLETION.md"
     ],
     "vitest": [
       "packages/skills/user/opsly-api/SKILL.md",
@@ -114988,6 +115040,7 @@
       "docs/brain/skills/security-and-hardening.md",
       "docs/reports/REPOSITORY-BASELINE-2026-05-27.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md"
     ],
     "ide": [
@@ -117863,6 +117916,7 @@
       "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       "docs/blueprints/GO-LIVE-COMMAND.md",
       "docs/blueprints/PHASE1-IMPLEMENTATION-GUIDE.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/IMMEDIATE-ACTION-ITEMS.md",
       "docs/security/SECURITY-REMEDIATION-RUNBOOK.md",
       ".agents/skills/cyber-neo/SKILL.md",
@@ -120820,7 +120874,8 @@
       "docs/reports/E2E-TESTING-PLAN.md",
       "docs/reports/SESSION-SUMMARY-2026-05-08.md",
       "docs/blueprints/CUSTOMER-ANALYSIS-ICSO-PESKIDS.md",
-      "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md"
+      "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md",
+      "docs/security/PHASE-1-COMPLETION.md"
     ],
     "directory": [
       "packages/skills/vendor/agent-skills/README.md",
@@ -123331,7 +123386,8 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-HANDOFF-FOR-VPS-EXECUTION.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
-      "docs/blueprints/CUSTOMER-FOLLOWUP-MASTER.md"
+      "docs/blueprints/CUSTOMER-FOLLOWUP-MASTER.md",
+      "docs/security/PHASE-1-COMPLETION.md"
     ],
     "title": [
       "packages/skills/vendor/agent-skills/planning-and-task-breakdown/SKILL.md",
@@ -127371,6 +127427,7 @@
       "docs/reports/ICSO-E2E-VALIDATION.md",
       "docs/blueprints/README-PHASE1-EXECUTE.md",
       "docs/blueprints/PHASE1-PHASE2-STATUS.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/testing-patterns.md"
     ],
     "failures": [
@@ -128955,6 +129012,7 @@
       "docs/blueprints/README-PHASE1-EXECUTE.md",
       "docs/blueprints/CUSTOMER-ANALYSIS-ICSO-PESKIDS.md",
       "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       ".agents/skills/the-architect/references/templates/claude-md-template.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/mobile-app.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/saas-webapp.md",
@@ -130051,7 +130109,8 @@
       "docs/plans/AUTONOMY-COMPLETION-PLAN-2026-04-27.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
-      "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md"
+      "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
+      "docs/security/PHASE-1-COMPLETION.md"
     ],
     "custom": [
       ".cursor/prompts/local-services-ops-admin.md",
@@ -130134,6 +130193,7 @@
       "docs/artifacts/provisioning/peskids-operator-report.md",
       "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md",
       "docs/security/SESSION-SUMMARY.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/AGENT-EXECUTION-PATH.md",
       "docs/security/SECURITY-REMEDIATION-RUNBOOK.md",
       "docs/security/SECURITY-AUDIT.md",
@@ -133717,6 +133777,7 @@
       "docs/reports/CYBER-NEO-OPSLY-2026-05-21.md",
       "docs/reports/PRODUCTION-HEALTH.md",
       "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       ".agents/skills/cyber-neo/references/error-handling-patterns.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/deployment-patterns.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
@@ -134694,6 +134755,7 @@
       "docs/blueprints/PESKIDS-GHL-MIGRATION-STATUS.md",
       "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md",
       "docs/security/SESSION-SUMMARY.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/IMMEDIATE-ACTION-ITEMS.md"
     ],
     "cruzadas": [
@@ -135585,6 +135647,7 @@
     ],
     "cors": [
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/web-security-patterns.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/IMMEDIATE-ACTION-ITEMS.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".agents/skills/cyber-neo/references/web-security-patterns.md"
@@ -135609,6 +135672,7 @@
     "headers": [
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/web-security-patterns.md",
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/IMMEDIATE-ACTION-ITEMS.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".agents/skills/cyber-neo/references/web-security-patterns.md"
@@ -135628,6 +135692,7 @@
     "jwt": [
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/auth-authz-patterns.md",
       "lib/security/README.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/IMMEDIATE-ACTION-ITEMS.md",
       ".agents/skills/cyber-neo/references/auth-authz-patterns.md"
     ],
@@ -138237,6 +138302,7 @@
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
       "docs/03-franchise/IMPLEMENTATION-CHECKLIST.md",
       "docs/demo/hackathon-demo.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/SECURITY-REMEDIATION-RUNBOOK.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/api-design-patterns.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/testing-patterns.md",
@@ -160617,7 +160683,8 @@
       "docs/tenants/peskids/EVENT-CONTRACT.md",
       "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
-      "docs/artifacts/provisioning/peskids-operator-report.md"
+      "docs/artifacts/provisioning/peskids-operator-report.md",
+      "docs/security/PHASE-1-COMPLETION.md"
     ],
     "projections": [
       "docs/ops/issue-bankruptcy-2026-05-03.md"
@@ -161302,6 +161369,7 @@
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
       "docs/02-tools/MCP-STATUS-ANALYSIS.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
+      "docs/security/PHASE-1-COMPLETION.md",
       "docs/security/IMMEDIATE-ACTION-ITEMS.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".claude/AGENTS-ENHANCEMENTS.md"
@@ -162717,7 +162785,8 @@
     ],
     "linting": [
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
-      "docs/01-development/SEMANA-4-INFORME.md"
+      "docs/01-development/SEMANA-4-INFORME.md",
+      "docs/security/PHASE-1-COMPLETION.md"
     ],
     "npm": [
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
@@ -167790,7 +167859,8 @@
       "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md"
     ],
     "functionality": [
-      "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md"
+      "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
+      "docs/security/PHASE-1-COMPLETION.md"
     ],
     "captura": [
       "docs/tenants/peskids/MVP-PLAN.md"
@@ -168924,6 +168994,9 @@
     "operators": [
       "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md"
     ],
+    "checking": [
+      "docs/security/PHASE-1-COMPLETION.md"
+    ],
     "esperar": [
       "docs/security/IMMEDIATE-ACTION-ITEMS.md"
     ],
@@ -169953,6 +170026,7 @@
     "docs/security/AGENT-EXECUTION-PATH.md",
     "docs/security/IMMEDIATE-ACTION-ITEMS.md",
     "docs/security/NPM-AUDIT-EXEMPTIONS.md",
+    "docs/security/PHASE-1-COMPLETION.md",
     "docs/security/SECURITY-AUDIT.md",
     "docs/security/SECURITY-POSTURE-AUDIT.md",
     "docs/security/SECURITY-REMEDIATION-RUNBOOK.md",
