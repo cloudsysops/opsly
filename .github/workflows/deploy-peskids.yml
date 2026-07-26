@@ -74,9 +74,11 @@ jobs:
           else
             echo "e164=${E164}" >> "$GITHUB_OUTPUT"
           fi
-          echo "display=${DISPLAY:-+57 300 000 0000}" >> "$GITHUB_OUTPUT"
-          echo "prefill=${PREFILL:-Hola Peskids 👋 Quiero reservar una clase de prueba gratis.}" >> "$GITHUB_OUTPUT"
-          echo "contact_email=${CONTACT_EMAIL:-peskidsnatacion@gmail.com}" >> "$GITHUB_OUTPUT"
+          {
+            echo "display=${DISPLAY:-+57 300 000 0000}"
+            echo "prefill=${PREFILL:-Hola Peskids 👋 Quiero reservar una clase de prueba gratis.}"
+            echo "contact_email=${CONTACT_EMAIL:-peskidsnatacion@gmail.com}"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Build and push Peskids image
         uses: docker/build-push-action@v5
