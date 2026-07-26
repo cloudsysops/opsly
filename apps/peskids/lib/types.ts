@@ -960,7 +960,17 @@ export type Database = {
           priority: 'alta' | 'media' | 'baja' | null;
           ai_summary: string | null;
           twenty_task_id: string | null;
-          status: 'new' | 'analyzed' | 'task_created' | 'dismissed';
+          /** Intake lifecycle + legacy task_created/dismissed. */
+          status:
+            | 'new'
+            | 'analyzed'
+            | 'task_created'
+            | 'triaged'
+            | 'approved'
+            | 'in_progress'
+            | 'shipped'
+            | 'rejected'
+            | 'dismissed';
           attachments: Array<{
             name: string;
             mime_type: string;
@@ -968,6 +978,11 @@ export type Database = {
             storage_path?: string | null;
             content_base64?: string | null;
           }>;
+          operator_notes: string | null;
+          linked_pr: string | null;
+          linked_issue: string | null;
+          /** Built on human approve — never auto-executed. */
+          agent_ticket: Record<string, unknown> | null;
           created_at: string;
           updated_at: string;
         };
@@ -980,7 +995,16 @@ export type Database = {
           priority?: 'alta' | 'media' | 'baja' | null;
           ai_summary?: string | null;
           twenty_task_id?: string | null;
-          status?: 'new' | 'analyzed' | 'task_created' | 'dismissed';
+          status?:
+            | 'new'
+            | 'analyzed'
+            | 'task_created'
+            | 'triaged'
+            | 'approved'
+            | 'in_progress'
+            | 'shipped'
+            | 'rejected'
+            | 'dismissed';
           attachments?: Array<{
             name: string;
             mime_type: string;
@@ -988,6 +1012,10 @@ export type Database = {
             storage_path?: string | null;
             content_base64?: string | null;
           }>;
+          operator_notes?: string | null;
+          linked_pr?: string | null;
+          linked_issue?: string | null;
+          agent_ticket?: Record<string, unknown> | null;
           updated_at?: string;
         };
         Update: Partial<Database['public']['Tables']['staff_improvement_messages']['Insert']>;
