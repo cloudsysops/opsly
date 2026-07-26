@@ -1214,8 +1214,8 @@ export interface DashboardData {
       | 'referral_discount_cents'
       | 'referral_redemptions'
       | 'created_at'
-      | 'franchise_id'
     > & {
+      franchise_id?: string | null;
       referral_source?: string | null;
       twenty_person_id?: string | null;
       twenty_opportunity_id?: string | null;

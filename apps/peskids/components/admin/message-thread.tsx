@@ -116,6 +116,7 @@ export function MessageThread({ contact }: MessageThreadProps): React.ReactEleme
     const optimistic: MessageRow = {
       id: tempId,
       tenant_id: 'peskids',
+      franchise_id: null,
       source: 'web',
       sender_name: 'Tú',
       sender_contact: 'staff:optimistic',

@@ -317,6 +317,7 @@ async function fetchAllLegacyLeads(tenantSlug: string): Promise<DashboardLead[]>
       referral_redemptions: row.referral_redemptions,
       referral_source: row.referral_source,
       created_at: row.created_at ?? new Date().toISOString(),
+      franchise_id: null,
       twenty_person_id: null,
       twenty_opportunity_id: null,
     })
