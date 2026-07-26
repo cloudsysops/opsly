@@ -9,11 +9,14 @@ const querySchema = z.object({
     .transform((v) => (v ? parseInt(v, 10) : 50)),
 });
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+type RouteContext = { params: Promise<{ id: string }> };
+
+export async function GET(req: Request, { params }: RouteContext) {
   const requestId = req.headers.get('x-request-id') || crypto.randomUUID();
 
   try {
     await adminAuth(req);
+    const { id } = await params;
 
     const searchParams = new URL(req.url).searchParams;
     const { historyLimit } = querySchema.parse({
@@ -21,8 +24,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     });
 
     const [points, history] = await Promise.all([
-      getStudentPoints(params.id),
-      getPointsHistory(params.id, historyLimit),
+      getStudentPoints(id),
+      getPointsHistory(id, historyLimit),
     ]);
 
     if (!points) {
