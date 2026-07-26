@@ -1,9 +1,6 @@
 import { markCRMSynced, markCRMSyncFailed, listPendingCRMSync } from './form.service';
 
-// GoHighLevel API integration
-// Syncs family form responses to CRM
-
-interface GHLContact {
+interface CRMContact {
   firstName: string;
   lastName?: string;
   email?: string;
@@ -31,7 +28,7 @@ interface FormResponseData {
   [key: string]: unknown;
 }
 
-function parseFormResponse(data: FormResponseData): GHLContact {
+function parseFormResponse(data: FormResponseData): CRMContact {
   // Extract common fields from form response
   const fullName = (data.full_name ||
     data.nombre_completo ||
@@ -74,7 +71,7 @@ export async function syncFormResponseToCRM(
     // Parse form response
     const contact = parseFormResponse(formResponseData);
 
-    // TODO: Implement actual GoHighLevel API call
+    // TODO: Implement actual CRM API call
     // This is a placeholder that simulates CRM sync
     console.error('Syncing to CRM:', {
       responseId,
@@ -82,7 +79,7 @@ export async function syncFormResponseToCRM(
     });
 
     // Simulate CRM contact creation
-    const contactId = `ghl_${responseId.substring(0, 8)}`;
+    const contactId = `crm_${responseId.substring(0, 8)}`;
 
     // Mark as synced
     await markCRMSynced({
