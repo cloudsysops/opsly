@@ -78,11 +78,11 @@ export function ImprovementChatPopup(): React.ReactElement | null {
             'transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]',
             'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pk-primary'
           )}
-          aria-label="Abrir chat de mejoras"
-          title="Reportar mejora o error"
+          aria-label="Abrir chat para pedir cambios a Opsly"
+          title="Pedir cambios o reportar errores a Opsly"
         >
           <Sparkles className="h-5 w-5 shrink-0 sm:h-6 sm:w-6" aria-hidden />
-          <span className="pr-0.5 text-xs font-bold leading-none sm:text-sm">Mejoras</span>
+          <span className="pr-0.5 text-xs font-bold leading-none sm:text-sm">Pedir cambios</span>
         </button>
       ) : null}
 
@@ -104,9 +104,12 @@ export function ImprovementChatPopup(): React.ReactElement | null {
             )}
           >
             <div className="flex items-center justify-between gap-2 border-b border-pk-border bg-pk-snow px-3 py-2.5">
-              <p id={titleId} className="text-sm font-semibold text-pk-ink">
-                Chat de mejoras
-              </p>
+              <div>
+                <p id={titleId} className="text-sm font-semibold text-pk-ink">
+                  Pedir cambios a Opsly
+                </p>
+                <p className="text-[11px] text-pk-sub">Mejoras, errores y ajustes de la plataforma</p>
+              </div>
               <button
                 type="button"
                 onClick={close}
