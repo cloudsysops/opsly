@@ -37,3 +37,7 @@
 ## 2026-06-26 - [Caching Admin Overview DB & Network Probes]
 **Learning:** The admin overview dashboardaggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
 **Action:** Always cache aggregated metrics and external probes in dashboard-facing API routes, and modularize parsing logic to maintain low cyclomatic complexity.
+
+## 2026-07-26 - [Caching of Platform Metrics Endpoint]
+**Learning:** The global platform metrics endpoint `/api/metrics` performs multiple database table counts and calls Stripe (e.g. `computeMrr`) on every request. This is a significant bottleneck under heavy concurrent access. Adding a short-TTL Redis cache (60s) for the aggregated response with a defensive fallback to live database queries eliminates redundant DB/Stripe round-trips entirely on cache hits, reducing the endpoint's latency to O(1) cache lookups.
+**Action:** Implement short-TTL cache lookups for resource-heavy metrics or counts aggregation endpoints, and always handle cache fetch/store errors gracefully to prevent API crashes during Redis downtime.
