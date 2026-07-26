@@ -18,7 +18,6 @@ import { PeskidsLogo, PeskidsWave, StarBurst } from '@/components/brand/peskids-
 import { PublicReservaWhatsAppLink } from '@/components/marketing/public-reserva-whatsapp-link'
 import { GrowthWidget } from '@/components/progress/growth-widget'
 import { Card, CardContent } from '@/components/ui/card'
-import { PESKIDS_FORM_NAV_LABEL } from '@/lib/peskids-landing-copy'
 import { peskidsColorTokens } from '@/lib/tokens'
 import { cn } from '@/lib/utils'
 
@@ -325,7 +324,6 @@ export function PortalShowcase(): React.ReactElement {
             <div className="flex flex-col justify-center gap-3 sm:flex-row lg:justify-end">
               <PublicReservaWhatsAppLink
                 variant="onDark"
-                label={PESKIDS_FORM_NAV_LABEL}
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-pk-sun px-6 text-sm font-bold text-pk-ink transition hover:brightness-105"
               />
             </div>

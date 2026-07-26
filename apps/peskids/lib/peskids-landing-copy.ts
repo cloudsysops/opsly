@@ -27,9 +27,6 @@ export const PESKIDS_FORM_CARD_DESCRIPTION =
 /** Primary CTA / submit label on public landings (home, Instagram, etc.). */
 export const PESKIDS_FORM_SUBMIT_LABEL = 'Enviar solicitud de contacto';
 
-/** Short nav / footer CTA → scroll to form. */
-export const PESKIDS_FORM_NAV_LABEL = 'Solicitar contacto';
-
 /** Post-form handoff only — not shown before lead capture. */
 export const PESKIDS_WHATSAPP_CTA_LABEL = 'Continuar por WhatsApp';
 
