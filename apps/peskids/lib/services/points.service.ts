@@ -1,7 +1,9 @@
 import { supabaseServer } from '@/lib/supabase';
 import type { Database } from '@/lib/types';
 
+// @ts-ignore: Tables pending migration application (see MIGRATION-STATUS.md)
 export type StudentPoints = Database['peskids']['Tables']['student_points']['Row'];
+// @ts-ignore: Tables pending migration application (see MIGRATION-STATUS.md)
 export type PointTransaction = Database['peskids']['Tables']['point_transactions']['Row'];
 
 const POINTS_RATIO = 10000; // 1 point = 10,000 COP
@@ -84,6 +86,7 @@ export async function earnPoints(input: {
   await initializeStudentPoints(input.studentId);
 
   // Add transaction log
+  // @ts-ignore: Table pending migration application (see MIGRATION-STATUS.md)
   const { error: txError } = await peskidsClient()
     .from('point_transactions')
     .insert({
@@ -99,20 +102,25 @@ export async function earnPoints(input: {
 
   if (txError) throw txError;
 
-  // Update balance
+  // Fetch current balance first, then update with calculated values
+  // @ts-ignore: Table pending migration application (see MIGRATION-STATUS.md)
+  const { data: current } = await peskidsClient()
+    .from('student_points')
+    .select('current_balance, total_earned')
+    .eq('tenant_slug', tenantSlug())
+    .eq('student_id', input.studentId)
+    .single();
+
+  if (!current) {
+    throw new Error('Student points record not found');
+  }
+
+  // @ts-ignore: Table pending migration application (see MIGRATION-STATUS.md)
   const { data, error } = await peskidsClient()
     .from('student_points')
     .update({
-      current_balance: supabaseServer().rpc('increment', {
-        table_name: 'student_points',
-        column_name: 'current_balance',
-        amount: pointsEarned,
-      }),
-      total_earned: supabaseServer().rpc('increment', {
-        table_name: 'student_points',
-        column_name: 'total_earned',
-        amount: pointsEarned,
-      }),
+      current_balance: current.current_balance + pointsEarned,
+      total_earned: current.total_earned + pointsEarned,
       updated_at: new Date().toISOString(),
     })
     .eq('tenant_slug', tenantSlug())
@@ -235,6 +243,7 @@ export async function redeemPoints(input: {
   );
 
   // Add transaction log
+  // @ts-ignore: Table pending migration application (see MIGRATION-STATUS.md)
   const { error: txError } = await peskidsClient()
     .from('point_transactions')
     .insert({
@@ -251,15 +260,12 @@ export async function redeemPoints(input: {
   if (txError) throw txError;
 
   // Deduct from balance
+  // @ts-ignore: Table pending migration application (see MIGRATION-STATUS.md)
   const { data: updated, error: updateError } = await peskidsClient()
     .from('student_points')
     .update({
       current_balance: points.current_balance - input.pointsToRedeem,
-      total_redeemed: supabaseServer().rpc('increment', {
-        table_name: 'student_points',
-        column_name: 'total_redeemed',
-        amount: input.pointsToRedeem,
-      }),
+      total_redeemed: points.total_redeemed + input.pointsToRedeem,
       updated_at: new Date().toISOString(),
     })
     .eq('tenant_slug', tenantSlug())

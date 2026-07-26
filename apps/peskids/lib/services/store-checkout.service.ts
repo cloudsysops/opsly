@@ -2,6 +2,7 @@ import { supabaseServer } from '@/lib/supabase';
 import type { Database } from '@/lib/types';
 import { earnPoints, redeemPoints } from './points.service';
 
+// @ts-ignore: Table pending migration application (see MIGRATION-STATUS.md)
 export type ReferralLink = Database['peskids']['Tables']['referral_links']['Row'];
 
 const REFERRAL_DISCOUNT_PERCENT = 10; // 10% discount on purchases (legacy, may be removed)
@@ -34,6 +35,7 @@ export async function validateReferralCode(referralCode: string): Promise<{
   }
 
   // Check if referral link exists and is valid
+  // @ts-ignore: Table pending migration application (see MIGRATION-STATUS.md)
   const { data: refLink, error: refError } = await peskidsClient()
     .from('referral_links')
     .select('id, referrer_id, expires_at')
@@ -165,6 +167,7 @@ export async function processStoreCheckout(input: {
 
   // Create order
   const db = peskidsClient();
+  // @ts-ignore: Table pending migration application (see MIGRATION-STATUS.md)
   const { data: orderData, error: orderError } = await db
     .from('store_orders')
     .insert({
@@ -199,6 +202,7 @@ export async function processStoreCheckout(input: {
 
   // Create order items
   if (input.cartItems.length > 0) {
+    // @ts-ignore: Table pending migration application (see MIGRATION-STATUS.md)
     const { error: itemsError } = await db.from('store_order_items').insert(
       input.cartItems.map((item) => ({
         order_id: orderId,
