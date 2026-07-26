@@ -86,18 +86,89 @@ async function createTwentyTaskForImprovement(input: {
   }
 }
 
+export type ImprovementAttachment = {
+  name: string;
+  mime_type: string;
+  size_bytes: number;
+  storage_path?: string | null;
+  content_base64?: string | null;
+};
+
+async function persistAttachments(
+  authorEmail: string | null,
+  attachments: ImprovementAttachment[]
+): Promise<ImprovementAttachment[]> {
+  if (attachments.length === 0) return [];
+
+  const admin = supabaseServer();
+  const saved: ImprovementAttachment[] = [];
+
+  for (const file of attachments) {
+    const safeName = file.name.replace(/[^\w.\-]+/g, '_').slice(0, 120);
+    const path = `${tenantId()}/${Date.now()}-${safeName}`;
+    try {
+      const binary = Buffer.from(file.content_base64 ?? '', 'base64');
+      const { error } = await admin.storage
+        .from('peskids-staff-uploads')
+        .upload(path, binary, { contentType: file.mime_type, upsert: false });
+      if (error) throw error;
+      saved.push({
+        name: file.name,
+        mime_type: file.mime_type,
+        size_bytes: file.size_bytes,
+        storage_path: path,
+        content_base64: null,
+      });
+    } catch (err) {
+      console.warn('[improvement-chat] storage upload failed; keeping inline payload', {
+        name: file.name,
+        authorEmail,
+        error: err instanceof Error ? err.message : String(err),
+      });
+      // Keep a truncated inline copy so Opsly still sees the sample if Storage bucket
+      // is not applied yet (migration pending).
+      saved.push({
+        name: file.name,
+        mime_type: file.mime_type,
+        size_bytes: file.size_bytes,
+        storage_path: null,
+        content_base64: (file.content_base64 ?? '').slice(0, 1_200_000) || null,
+      });
+    }
+  }
+
+  return saved;
+}
+
 export async function createStaffMessageAndAnalyze(input: {
   body: string;
   authorEmail: string | null;
+  attachments?: ImprovementAttachment[];
 }): Promise<{ staffMessage: ImprovementMessageRow; assistantMessage: ImprovementMessageRow }> {
+  const attachments = await persistAttachments(input.authorEmail, input.attachments ?? []);
+  const body =
+    input.body.trim().length >= 3
+      ? input.body.trim()
+      : attachments.length > 0
+        ? `Adjunto ${attachments.length} archivo(s) para revisión de Opsly (cambios / muestra de chat / base de datos).`
+        : input.body.trim();
+
   const staffMessage = await insertMessage({
     role: 'staff',
     author_email: input.authorEmail,
-    body: input.body,
+    body,
+    attachments,
     status: 'new',
   });
 
-  const analysis = await analyzeImprovementMessage(input.body);
+  const analysisPrompt =
+    attachments.length > 0
+      ? `${body}\n\n[El mensaje incluye ${attachments.length} adjunto(s): ${attachments
+          .map((a) => `${a.name} (${a.mime_type})`)
+          .join(', ')}. Pueden ser capturas de chat con familias, PDF o evidencias de cambios.]`
+      : body;
+
+  const analysis = await analyzeImprovementMessage(analysisPrompt);
 
   let twentyTaskId: string | null = null;
   if (analysis.actionable && isPeskidsStaffImprovementChatTwentyTaskEnabled()) {
@@ -105,7 +176,7 @@ export async function createStaffMessageAndAnalyze(input: {
       category: analysis.category,
       priority: analysis.priority,
       summary: analysis.summary,
-      body: input.body,
+      body: analysisPrompt,
     });
   }
 

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { DataImportDialog } from '@/components/admin/data-import-dialog';
 import { formatAgeRange } from '@/lib/peskids-domain';
 
 interface StudentRow {
@@ -183,12 +184,17 @@ export function StudentsPanel(): React.ReactElement {
               <UsersRound className="h-5 w-5 text-pk-primary" aria-hidden />
               Familias y alumnos
             </CardTitle>
-            <CardDescription>Alumnos matriculados y contacto del padre/madre.</CardDescription>
+            <CardDescription>
+              Alumnos matriculados y contacto del padre/madre. Puedes subir tu Excel/CSV.
+            </CardDescription>
           </div>
-          <Button type="button" size="sm" onClick={() => setShowForm((v) => !v)}>
-            <Plus className="mr-1 h-4 w-4" aria-hidden />
-            Agregar alumno
-          </Button>
+          <div className="flex flex-col items-end gap-2 sm:flex-row sm:items-start">
+            <DataImportDialog kind="students" onImported={() => void load()} />
+            <Button type="button" size="sm" onClick={() => setShowForm((v) => !v)}>
+              <Plus className="mr-1 h-4 w-4" aria-hidden />
+              Agregar alumno
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           {error ? <p className="text-sm text-red-700">{error}</p> : null}
