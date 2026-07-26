@@ -2,6 +2,8 @@
 export const PESKIDS_TENANT_SLUG = 'peskids' as const;
 
 export const PESKIDS_GRADE_VALUES = ['K-5', '6-8', '9-12', 'Other'] as const;
+export const PESKIDS_LEAD_TYPES = ['family', 'teacher_applicant', 'company'] as const;
+export const PESKIDS_SERVICE_MODES = ['llanogrande', 'domicilio', 'institutional'] as const;
 
 export const PESKIDS_REFERRAL_SOURCES = [
   'Facebook',

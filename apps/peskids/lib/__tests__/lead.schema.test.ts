@@ -44,6 +44,42 @@ describe('leadCaptureFormSchema', () => {
     const result = leadCaptureFormSchema.safeParse({ ...validForm, grade_interested: '3A' });
     expect(result.success).toBe(false);
   });
+
+  it('defaults Llanogrande leads without requiring a manual neighborhood', () => {
+    const parsed = leadCaptureFormSchema.parse({
+      ...validForm,
+      neighborhood: '',
+      class_modality: 'llanogrande',
+    });
+    expect(parsed.lead_type).toBe('family');
+    expect(parsed.service_mode).toBe('llanogrande');
+    expect(parsed.neighborhood).toBe('Llanogrande');
+  });
+
+  it('requires neighborhood for domicilio family leads', () => {
+    const result = leadCaptureFormSchema.safeParse({
+      ...validForm,
+      class_modality: 'domicilio',
+      neighborhood: '',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts company leads with NIT as institutional service mode', () => {
+    const parsed = leadCaptureFormSchema.parse({
+      name: 'Laura Perez',
+      email: 'laura@colegio.co',
+      phone: '+57 300 123 4567',
+      lead_type: 'company',
+      class_modality: 'llanogrande',
+      company_name: 'Colegio Llanogrande',
+      company_nit: '900123456-7',
+      consent_treatment: true,
+    });
+    expect(parsed.lead_type).toBe('company');
+    expect(parsed.service_mode).toBe('institutional');
+    expect(parsed.company_nit).toBe('900123456-7');
+  });
 });
 
 describe('leadApiPostSchema', () => {

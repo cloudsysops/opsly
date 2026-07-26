@@ -8,9 +8,17 @@ export type PeskidsLeadRow = {
   full_name: string;
   email: string;
   phone: string | null;
+  lead_type: string;
+  service_mode: string | null;
   class_modality: string | null;
   neighborhood: string | null;
   grade_interested: string;
+  child_name: string | null;
+  birth_date: string | null;
+  document_type: string | null;
+  document_number: string | null;
+  company_name: string | null;
+  company_nit: string | null;
   referral_source: string | null;
   status: string;
   admin_notes: string | null;
@@ -47,9 +55,21 @@ export async function peskidsInsertLead(
       full_name: body.name,
       email: body.email,
       phone: normalizePhone(body.phone),
+      lead_type: body.lead_type,
+      service_mode:
+        body.service_mode ?? (body.lead_type === 'company' ? 'institutional' : body.class_modality),
       class_modality: body.class_modality,
       neighborhood: body.neighborhood,
       grade_interested: body.grade_interested,
+      child_name: body.child_name ?? null,
+      birth_date: body.birth_date ?? null,
+      document_type: body.document_type ?? null,
+      document_number: body.document_number ?? null,
+      company_name: body.company_name ?? null,
+      company_nit: body.company_nit ?? null,
+      metadata: {
+        intake_version: 'franchise-intake-v1',
+      },
       referral_source: body.referral_source ?? null,
       status: 'new',
       ghl_contact_id: body.ghl_contact_id ?? null,
@@ -57,7 +77,7 @@ export async function peskidsInsertLead(
       twenty_opportunity_id: body.twenty_opportunity_id ?? null,
     })
     .select(
-      'id, tenant_slug, full_name, email, phone, class_modality, neighborhood, grade_interested, referral_source, status, admin_notes, created_at'
+      'id, tenant_slug, full_name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, birth_date, document_type, document_number, company_name, company_nit, referral_source, status, admin_notes, created_at'
     )
     .single();
 
@@ -147,7 +167,7 @@ export async function peskidsFetchDashboardSummary(): Promise<
       .schema('platform')
       .from('peskids_leads')
       .select(
-        'id, tenant_slug, full_name, email, phone, class_modality, neighborhood, grade_interested, referral_source, status, admin_notes, created_at'
+        'id, tenant_slug, full_name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, birth_date, document_type, document_number, company_name, company_nit, referral_source, status, admin_notes, created_at'
       )
       .eq('tenant_slug', PESKIDS_TENANT_SLUG)
       .order('created_at', { ascending: false })

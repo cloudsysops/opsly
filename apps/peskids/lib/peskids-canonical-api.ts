@@ -14,9 +14,17 @@ export type PeskidsLeadCaptureBody = {
   name: string;
   email: string;
   phone?: string;
+  lead_type?: 'family' | 'teacher_applicant' | 'company';
+  service_mode?: 'llanogrande' | 'domicilio' | 'institutional';
   class_modality?: 'llanogrande' | 'domicilio';
   neighborhood?: string;
   grade_interested: string;
+  child_name?: string;
+  birth_date?: string;
+  document_type?: string;
+  document_number?: string;
+  company_name?: string;
+  company_nit?: string;
   referral_source?: string;
 };
 
@@ -68,7 +76,16 @@ function normalizeReferralSource(
   if (['referral', 'friend', 'referido', 'recommendation', 'recomendation'].includes(normalized)) {
     return 'Referral';
   }
-  const allowed = ['Google', 'Friend', 'Facebook', 'Instagram', 'Website', 'Referral', 'Other', 'Not sure'] as const;
+  const allowed = [
+    'Google',
+    'Friend',
+    'Facebook',
+    'Instagram',
+    'Website',
+    'Referral',
+    'Other',
+    'Not sure',
+  ] as const;
   const match = allowed.find((item) => item.toLowerCase() === normalized);
   return match ?? 'Other';
 }
@@ -86,15 +103,23 @@ export function buildCanonicalLeadPayload(
     name: body.name.trim(),
     email: body.email.trim(),
     phone: body.phone?.trim() ?? '',
+    lead_type: body.lead_type ?? 'family',
+    service_mode:
+      body.service_mode ??
+      (body.lead_type === 'company' ? 'institutional' : (body.class_modality ?? 'llanogrande')),
     class_modality: body.class_modality ?? 'llanogrande',
     neighborhood: body.neighborhood?.trim() || 'Por confirmar',
     grade_interested: normalizeGrade(body.grade_interested),
+    ...(body.child_name ? { child_name: body.child_name.trim() } : {}),
+    ...(body.birth_date ? { birth_date: body.birth_date } : {}),
+    ...(body.document_type ? { document_type: body.document_type.trim() } : {}),
+    ...(body.document_number ? { document_number: body.document_number.trim() } : {}),
+    ...(body.company_name ? { company_name: body.company_name.trim() } : {}),
+    ...(body.company_nit ? { company_nit: body.company_nit.trim() } : {}),
     referral_source: normalizeReferralSource(body.referral_source),
     ...(crmIds?.ghlContactId ? { ghl_contact_id: crmIds.ghlContactId } : {}),
     ...(crmIds?.twentyPersonId ? { twenty_person_id: crmIds.twentyPersonId } : {}),
-    ...(crmIds?.twentyOpportunityId
-      ? { twenty_opportunity_id: crmIds.twentyOpportunityId }
-      : {}),
+    ...(crmIds?.twentyOpportunityId ? { twenty_opportunity_id: crmIds.twentyOpportunityId } : {}),
   };
 }
 
@@ -149,7 +174,8 @@ export async function postPeskidsCanonicalLead(
     ok: true,
     leadId,
     tenantSlug: typeof payload.tenant_slug === 'string' ? payload.tenant_slug : 'peskids',
-    createdAt: typeof payload.created_at === 'string' ? payload.created_at : new Date().toISOString(),
+    createdAt:
+      typeof payload.created_at === 'string' ? payload.created_at : new Date().toISOString(),
     ghlContactId: crmIds?.ghlContactId,
     twentyPersonId: crmIds?.twentyPersonId,
     twentyOpportunityId: crmIds?.twentyOpportunityId,

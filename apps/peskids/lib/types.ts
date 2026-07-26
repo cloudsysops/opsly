@@ -102,6 +102,7 @@ export type Database = {
         Row: {
           id: string;
           tenant_slug: string;
+          franchise_id: string | null;
           name: string;
           location: 'llanogrande' | 'domicilio';
           max_capacity: number;
@@ -111,6 +112,7 @@ export type Database = {
         Insert: {
           id?: string;
           tenant_slug?: string;
+          franchise_id?: string | null;
           name: string;
           location: 'llanogrande' | 'domicilio';
           max_capacity: number;
@@ -124,6 +126,7 @@ export type Database = {
         Row: {
           id: string;
           tenant_slug: string;
+          franchise_id: string | null;
           title: string;
           level: number;
           professor_user_id: string;
@@ -145,6 +148,7 @@ export type Database = {
         Insert: {
           id?: string;
           tenant_slug?: string;
+          franchise_id?: string | null;
           title: string;
           level: number;
           professor_user_id: string;
@@ -428,9 +432,19 @@ export type Database = {
           name: string;
           email: string;
           phone: string | null;
+          franchise_id: string | null;
+          lead_type: 'family' | 'teacher_applicant' | 'company';
+          service_mode: 'llanogrande' | 'domicilio' | 'institutional' | null;
           class_modality: 'llanogrande' | 'domicilio' | null;
           neighborhood: string | null;
           grade_interested: string;
+          child_name: string | null;
+          birth_date: string | null;
+          document_type: string | null;
+          document_number: string | null;
+          company_name: string | null;
+          company_nit: string | null;
+          metadata: Json;
           referral_source: string | null;
           referral_code: string | null;
           referred_by_code: string | null;
@@ -447,9 +461,19 @@ export type Database = {
           name: string;
           email: string;
           phone?: string | null;
+          franchise_id?: string | null;
+          lead_type?: 'family' | 'teacher_applicant' | 'company';
+          service_mode?: 'llanogrande' | 'domicilio' | 'institutional' | null;
           class_modality?: 'llanogrande' | 'domicilio' | null;
           neighborhood?: string | null;
           grade_interested: string;
+          child_name?: string | null;
+          birth_date?: string | null;
+          document_type?: string | null;
+          document_number?: string | null;
+          company_name?: string | null;
+          company_nit?: string | null;
+          metadata?: Json;
           referral_source?: string | null;
           referral_code?: string | null;
           referred_by_code?: string | null;
@@ -466,6 +490,7 @@ export type Database = {
           id: string;
           ghl_contact_id: string | null;
           tenant_id: string;
+          franchise_id: string | null;
           name: string;
           grade: string;
           status: 'active' | 'inactive';
@@ -481,6 +506,7 @@ export type Database = {
         Insert: {
           ghl_contact_id?: string | null;
           tenant_id: string;
+          franchise_id?: string | null;
           name: string;
           grade: string;
           status?: 'active' | 'inactive';
@@ -499,6 +525,7 @@ export type Database = {
         Row: {
           id: string;
           tenant_id: string;
+          franchise_id: string | null;
           lead_id: string;
           student_id: string | null;
           scheduled_date: string;
@@ -512,6 +539,7 @@ export type Database = {
         };
         Insert: {
           tenant_id: string;
+          franchise_id?: string | null;
           lead_id: string;
           student_id?: string | null;
           scheduled_date: string;
@@ -599,6 +627,7 @@ export type Database = {
         Row: {
           id: string;
           tenant_id: string;
+          franchise_id: string | null;
           contact_id: string;
           contact_type: 'lead' | 'student' | 'parent';
           type: 'call' | 'email' | 'sms' | 'in-person';
@@ -614,6 +643,7 @@ export type Database = {
         };
         Insert: {
           tenant_id: string;
+          franchise_id?: string | null;
           contact_id: string;
           contact_type: 'lead' | 'student' | 'parent';
           type: 'call' | 'email' | 'sms' | 'in-person';
@@ -636,7 +666,15 @@ export type Database = {
           role: 'staff' | 'assistant';
           author_email: string | null;
           body: string;
-          category: 'bug' | 'feature' | 'improvement' | 'security' | 'billing' | 'question' | 'other' | null;
+          category:
+            | 'bug'
+            | 'feature'
+            | 'improvement'
+            | 'security'
+            | 'billing'
+            | 'question'
+            | 'other'
+            | null;
           priority: 'alta' | 'media' | 'baja' | null;
           ai_summary: string | null;
           twenty_task_id: string | null;
@@ -649,7 +687,15 @@ export type Database = {
           role: 'staff' | 'assistant';
           author_email?: string | null;
           body: string;
-          category?: 'bug' | 'feature' | 'improvement' | 'security' | 'billing' | 'question' | 'other' | null;
+          category?:
+            | 'bug'
+            | 'feature'
+            | 'improvement'
+            | 'security'
+            | 'billing'
+            | 'question'
+            | 'other'
+            | null;
           priority?: 'alta' | 'media' | 'baja' | null;
           ai_summary?: string | null;
           twenty_task_id?: string | null;
