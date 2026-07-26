@@ -7,6 +7,7 @@ import {
   BarChart3,
   Bell,
   CalendarClock,
+  ClipboardList,
   GraduationCap,
   Home,
   Inbox,
@@ -70,6 +71,7 @@ const navOps = [
   { icon: CalendarClock, label: 'Seguimientos', href: '/admin#seguimientos' },
   { icon: Inbox, label: 'Mensajes', href: '/admin/messages' },
   { icon: Sparkles, label: 'Mejoras', href: '#mejoras-chat' },
+  { icon: ClipboardList, label: 'Pedidos Opsly', href: '/admin/change-requests' },
   { icon: Settings, label: 'Configuración', href: '/admin/settings' },
   { icon: Bell, label: 'Notificaciones', href: '/settings/notifications' },
 ] satisfies NavItem[];
@@ -222,6 +224,10 @@ export function AdminShell({
 
     if (item.label === 'Mejoras') {
       return false;
+    }
+
+    if (item.label === 'Pedidos Opsly') {
+      return pathname.startsWith('/admin/change-requests');
     }
 
     if (item.label === 'Pipeline') {

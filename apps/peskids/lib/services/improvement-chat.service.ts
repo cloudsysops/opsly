@@ -9,6 +9,15 @@ import {
 import {
   isPeskidsStaffImprovementChatTwentyTaskEnabled,
 } from '@/lib/peskids-pro-flags';
+import {
+  buildAgentTicket,
+  canApproveChangeRequest,
+  canTransitionChangeRequestStatus,
+  isChangeRequestStatus,
+  type AgentTicket,
+  type ChangeRequestStatus,
+} from '@/lib/change-request-ticket';
+import type { PatchChangeRequestInput } from '@/lib/validation/improvement-chat.schema';
 
 export type ImprovementMessageRow =
   Database['public']['Tables']['staff_improvement_messages']['Row'];
@@ -17,6 +26,42 @@ function tenantId(): string {
   return (process.env.NEXT_PUBLIC_TENANT_ID || 'peskids').trim().toLowerCase();
 }
 
+export type ListChangeRequestsFilters = {
+  status?: ChangeRequestStatus;
+  priority?: ImprovementPriority;
+  category?: ImprovementCategory;
+};
+
+/**
+ * Lists staff change requests (role=staff) with optional filters.
+ * Assistant chat rows are excluded from the intake queue.
+ */
+export async function listChangeRequests(
+  filters: ListChangeRequestsFilters = {}
+): Promise<ImprovementMessageRow[]> {
+  let query = supabaseServer()
+    .from('staff_improvement_messages')
+    .select('*')
+    .eq('tenant_id', tenantId())
+    .eq('role', 'staff')
+    .order('created_at', { ascending: false });
+
+  if (filters.status) {
+    query = query.eq('status', filters.status);
+  }
+  if (filters.priority) {
+    query = query.eq('priority', filters.priority);
+  }
+  if (filters.category) {
+    query = query.eq('category', filters.category);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data ?? [];
+}
+
+/** Full chat transcript (staff + assistant) for the floating chat UI. */
 export async function listImprovementMessages(): Promise<ImprovementMessageRow[]> {
   const { data, error } = await supabaseServer()
     .from('staff_improvement_messages')
@@ -140,6 +185,10 @@ async function persistAttachments(
   return saved;
 }
 
+/**
+ * Staff message → AI classify/summarize ONLY → optional Twenty task (best-effort).
+ * Does NOT execute code, WhatsApp, deploy, or any side-effect beyond DB + CRM task create.
+ */
 export async function createStaffMessageAndAnalyze(input: {
   body: string;
   authorEmail: string | null;
@@ -168,10 +217,12 @@ export async function createStaffMessageAndAnalyze(input: {
           .join(', ')}. Pueden ser capturas de chat con familias, PDF o evidencias de cambios.]`
       : body;
 
+  // AI analyze only — never execute the request.
   const analysis = await analyzeImprovementMessage(analysisPrompt);
 
   let twentyTaskId: string | null = null;
   if (analysis.actionable && isPeskidsStaffImprovementChatTwentyTaskEnabled()) {
+    // Best-effort CRM mirror; failure must not block chat reply.
     twentyTaskId = await createTwentyTaskForImprovement({
       category: analysis.category,
       priority: analysis.priority,
@@ -204,4 +255,115 @@ export async function createStaffMessageAndAnalyze(input: {
   });
 
   return { staffMessage: updatedStaffMessage, assistantMessage };
+}
+
+export type PatchChangeRequestResult =
+  | { ok: true; message: ImprovementMessageRow }
+  | { ok: false; error: 'not_found' | 'invalid_transition' | 'not_staff' };
+
+/**
+ * Operator PATCH: status / notes / PR / issue links only.
+ * Never triggers deploy, WhatsApp, or agent execution.
+ */
+export async function patchChangeRequest(
+  id: string,
+  input: PatchChangeRequestInput
+): Promise<PatchChangeRequestResult> {
+  const { data: existing, error: loadError } = await supabaseServer()
+    .from('staff_improvement_messages')
+    .select('*')
+    .eq('tenant_id', tenantId())
+    .eq('id', id)
+    .maybeSingle();
+
+  if (loadError) throw loadError;
+  if (!existing) return { ok: false, error: 'not_found' };
+  if (existing.role !== 'staff') return { ok: false, error: 'not_staff' };
+
+  if (input.status !== undefined) {
+    if (!isChangeRequestStatus(existing.status)) {
+      return { ok: false, error: 'invalid_transition' };
+    }
+    if (!canTransitionChangeRequestStatus(existing.status, input.status)) {
+      return { ok: false, error: 'invalid_transition' };
+    }
+  }
+
+  const updates: Database['public']['Tables']['staff_improvement_messages']['Update'] = {
+    updated_at: new Date().toISOString(),
+  };
+  if (input.status !== undefined) updates.status = input.status;
+  if (input.operator_notes !== undefined) updates.operator_notes = input.operator_notes;
+  if (input.linked_pr !== undefined) updates.linked_pr = input.linked_pr;
+  if (input.linked_issue !== undefined) updates.linked_issue = input.linked_issue;
+
+  const { data: updated, error: updateError } = await supabaseServer()
+    .from('staff_improvement_messages')
+    .update(updates)
+    .eq('id', id)
+    .eq('tenant_id', tenantId())
+    .select('*')
+    .single();
+
+  if (updateError) throw updateError;
+  return { ok: true, message: updated };
+}
+
+export type ApproveChangeRequestResult =
+  | { ok: true; message: ImprovementMessageRow; agentTicket: AgentTicket }
+  | { ok: false; error: 'not_found' | 'not_staff' | 'not_approvable' };
+
+/**
+ * Human approval: set status=approved and persist agent_ticket JSON.
+ * Does NOT execute the ticket — payload is for a later agent session only.
+ */
+export async function approveChangeRequest(
+  id: string,
+  options: { operatorNotes?: string | null } = {}
+): Promise<ApproveChangeRequestResult> {
+  const { data: existing, error: loadError } = await supabaseServer()
+    .from('staff_improvement_messages')
+    .select('*')
+    .eq('tenant_id', tenantId())
+    .eq('id', id)
+    .maybeSingle();
+
+  if (loadError) throw loadError;
+  if (!existing) return { ok: false, error: 'not_found' };
+  if (existing.role !== 'staff') return { ok: false, error: 'not_staff' };
+  if (!isChangeRequestStatus(existing.status) || !canApproveChangeRequest(existing.status)) {
+    return { ok: false, error: 'not_approvable' };
+  }
+
+  const operatorNotes =
+    options.operatorNotes !== undefined ? options.operatorNotes : existing.operator_notes;
+
+  const agentTicket = buildAgentTicket({
+    messageId: existing.id,
+    tenantId: existing.tenant_id,
+    requestedBy: existing.author_email,
+    category: existing.category,
+    priority: existing.priority,
+    summary: existing.ai_summary,
+    body: existing.body,
+    aiSummary: existing.ai_summary,
+    twentyTaskId: existing.twenty_task_id,
+    operatorNotes,
+  });
+
+  const { data: updated, error: updateError } = await supabaseServer()
+    .from('staff_improvement_messages')
+    .update({
+      status: 'approved',
+      operator_notes: operatorNotes,
+      agent_ticket: agentTicket as unknown as Record<string, unknown>,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .eq('tenant_id', tenantId())
+    .select('*')
+    .single();
+
+  if (updateError) throw updateError;
+  return { ok: true, message: updated, agentTicket };
 }

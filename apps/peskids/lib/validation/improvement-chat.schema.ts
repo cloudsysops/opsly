@@ -35,6 +35,60 @@ export const createImprovementMessageSchema = z
 export type CreateImprovementMessageInput = z.infer<typeof createImprovementMessageSchema>;
 export type ImprovementAttachmentInput = z.infer<typeof attachmentSchema>;
 
+const changeRequestStatusSchema = z.enum([
+  'new',
+  'analyzed',
+  'task_created',
+  'triaged',
+  'approved',
+  'in_progress',
+  'shipped',
+  'rejected',
+  'dismissed',
+]);
+
+const changeRequestCategorySchema = z.enum([
+  'bug',
+  'feature',
+  'improvement',
+  'security',
+  'billing',
+  'question',
+  'other',
+]);
+
+const changeRequestPrioritySchema = z.enum(['alta', 'media', 'baja']);
+
+/** Query filters for GET /api/admin/change-requests */
+export const listChangeRequestsQuerySchema = z.object({
+  status: changeRequestStatusSchema.optional(),
+  priority: changeRequestPrioritySchema.optional(),
+  category: changeRequestCategorySchema.optional(),
+});
+
+/**
+ * PATCH body for operator triage. Status changes never auto-execute work —
+ * they only update DB fields for human/agent handoff later.
+ */
+export const patchChangeRequestSchema = z
+  .object({
+    status: changeRequestStatusSchema.optional(),
+    operator_notes: z.string().trim().max(4000).nullable().optional(),
+    linked_pr: z.string().trim().max(500).nullable().optional(),
+    linked_issue: z.string().trim().max(500).nullable().optional(),
+  })
+  .refine(
+    (value) =>
+      value.status !== undefined ||
+      value.operator_notes !== undefined ||
+      value.linked_pr !== undefined ||
+      value.linked_issue !== undefined,
+    { message: 'Provide at least one field to update' }
+  );
+
+export type ListChangeRequestsQuery = z.infer<typeof listChangeRequestsQuerySchema>;
+export type PatchChangeRequestInput = z.infer<typeof patchChangeRequestSchema>;
+
 export const studentImportRowSchema = z.object({
   name: z.string().trim().min(2).max(120),
   grade: z.string().trim().min(1).max(40).default('Por confirmar'),
