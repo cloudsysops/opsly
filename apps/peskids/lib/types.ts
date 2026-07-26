@@ -641,6 +641,13 @@ export type Database = {
           ai_summary: string | null;
           twenty_task_id: string | null;
           status: 'new' | 'analyzed' | 'task_created' | 'dismissed';
+          attachments: Array<{
+            name: string;
+            mime_type: string;
+            size_bytes: number;
+            storage_path?: string | null;
+            content_base64?: string | null;
+          }>;
           created_at: string;
           updated_at: string;
         };
@@ -654,6 +661,13 @@ export type Database = {
           ai_summary?: string | null;
           twenty_task_id?: string | null;
           status?: 'new' | 'analyzed' | 'task_created' | 'dismissed';
+          attachments?: Array<{
+            name: string;
+            mime_type: string;
+            size_bytes: number;
+            storage_path?: string | null;
+            content_base64?: string | null;
+          }>;
           updated_at?: string;
         };
         Update: Partial<Database['public']['Tables']['staff_improvement_messages']['Insert']>;

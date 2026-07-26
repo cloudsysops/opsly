@@ -84,7 +84,7 @@ export async function createStudent(
       grade: input.grade,
       parent_email: input.parent_email ?? null,
       parent_phone: input.parent_phone ?? null,
-      enrollment_date: input.enrollment_date,
+      enrollment_date: input.enrollment_date ?? new Date().toISOString().slice(0, 10),
       notes: input.notes ?? null,
     })
     .select('*')

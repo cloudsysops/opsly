@@ -5,6 +5,7 @@ import { Copy, Loader2, Mail, UserPlus, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { DataImportDialog } from '@/components/admin/data-import-dialog';
 import type {
   TeamInviteResult,
   TeamMemberSummary,
@@ -195,11 +196,16 @@ export function TeamPanel(): React.ReactElement {
       <div className="mt-5 grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
         <Card className="border-pk-border shadow-sm">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Invitar miembro</CardTitle>
-            <CardDescription>
-              Genera acceso para profesores, admin o soporte. El correo saldrá con branding de
-              Peskids y fallback de enlace manual.
-            </CardDescription>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <CardTitle className="text-lg">Invitar miembro</CardTitle>
+                <CardDescription>
+                  Genera acceso para profesores, admin o soporte. También puedes subir un Excel/CSV
+                  del equipo.
+                </CardDescription>
+              </div>
+              <DataImportDialog kind="staff" onImported={() => void loadTeam(true)} />
+            </div>
           </CardHeader>
           <CardContent>
             <form onSubmit={(e) => void submitInvite(e)} className="space-y-4">

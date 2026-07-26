@@ -71,6 +71,7 @@ export async function POST(req: NextRequest) {
     const { staffMessage, assistantMessage } = await createStaffMessageAndAnalyze({
       body: parsed.data.body,
       authorEmail,
+      attachments: parsed.data.attachments,
     });
 
     return successJson(requestId, { ok: true, staffMessage, assistantMessage }, 201);

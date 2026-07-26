@@ -28,10 +28,10 @@
     "@capacitor/ios": "^8.3.4",
     "@capacitor/push-notifications": "^8.1.1",
     "@intcloudsysops/openwa": "*",
-    "@intcloudsysops/wacrm-channel": "*",
-    "@intcloudsysops/wompi-gateway": "*",
     "@intcloudsysops/prompt-guard": "*",
     "@intcloudsysops/services": "*",
+    "@intcloudsysops/wacrm-channel": "*",
+    "@intcloudsysops/wompi-gateway": "*",
     "@supabase/auth-helpers-nextjs": "^0.8.7",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.106.0",
@@ -44,6 +44,7 @@
     "tailwind-merge": "^2.6.0",
     "typescript": "^5.9.3",
     "web-push": "^3.6.7",
+    "xlsx": "^0.18.5",
     "zod": "^3.25.76"
   },
   "devDependencies": {
