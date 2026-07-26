@@ -2,6 +2,8 @@ import type { NextRequest } from 'next/server';
 import { jsonError, jsonOk } from '@/lib/api-response';
 import { HTTP_STATUS } from '@/lib/constants';
 import { getServiceClient } from '@/lib/supabase';
+import { extractIp } from '@/lib/audit';
+import { checkRateLimit } from '@/lib/rate-limiter-memory';
 
 interface FormField {
   id: string;
@@ -33,6 +35,68 @@ interface Form {
   updatedAt: string;
 }
 
+// peskids.* tables pending DB type codegen — loose client interface for schema-qualified access
+interface PeskidsQB {
+  select(cols?: string, opts?: Record<string, unknown>): PeskidsQB;
+  eq(col: string, val: unknown): PeskidsQB;
+  single(): Promise<{ data: unknown | null; error: unknown }>;
+}
+interface PeskidsClient {
+  from(table: string): PeskidsQB;
+  rpc(fn: string, params: Record<string, unknown>): Promise<{ data: unknown; error: unknown }>;
+}
+
+async function fetchFormAndFields(
+  supabase: ReturnType<typeof getServiceClient>,
+  formId: string
+) {
+  const { data: form, error: formError } = await supabase
+    .schema('peskids')
+    .from('forms')
+    .select('id, form_id, tenant_slug, title, description, status, created_at, updated_at')
+    .eq('form_id', formId)
+    .single();
+
+  if (formError || !form) {
+    return null;
+  }
+
+  const { data: fields, error: fieldsError } = await supabase
+    .schema('peskids')
+    .from('form_fields')
+    .select('field_id, field_type, label, required, options, order')
+    .eq('form_id', formId)
+    .order('order', { ascending: true });
+
+  if (fieldsError) {
+    console.error('Failed to fetch form fields:', fieldsError);
+  }
+
+  return { form, fields: fields || [] };
+}
+
+async function logFormRetrievalAuditEvent(
+  supabase: ReturnType<typeof getServiceClient>,
+  formId: string,
+  tenantSlug: string,
+  ip: string | null
+): Promise<void> {
+  try {
+    const db = supabase as unknown as PeskidsClient;
+    const actorId = ip ? `anonymous:${ip}` : 'anonymous';
+    await db.rpc('log_audit_event', {
+      p_action: 'form_retrieved',
+      p_actor_id: actorId,
+      p_tenant_slug: tenantSlug,
+      p_resource_id: formId,
+      p_resource_type: 'form',
+      p_metadata: { ip },
+    });
+  } catch (auditError) {
+    console.error('Failed to log form retrieval audit event:', auditError);
+  }
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ formId: string }> }
@@ -44,38 +108,30 @@ export async function GET(
       return jsonError('Missing form ID', HTTP_STATUS.BAD_REQUEST);
     }
 
+    // Security: Rate limit based on IP to prevent scraping and denial of service
+    const ip = extractIp(request);
+    const rateLimit = await checkRateLimit(ip ? `peskids-form-get:${ip}` : 'peskids-form-get:anonymous');
+    if (!rateLimit.allowed) {
+      return jsonError('Too many requests', HTTP_STATUS.TOO_MANY_REQUESTS);
+    }
+
     const supabase = getServiceClient();
+    const result = await fetchFormAndFields(supabase, formId);
 
-    // Get form
-    const { data: form, error: formError } = await supabase
-      .schema('peskids')
-      .from('forms')
-      .select('id, form_id, tenant_slug, title, description, status, created_at, updated_at')
-      .eq('form_id', formId)
-      .single();
-
-    if (formError || !form) {
+    if (!result) {
       return jsonError('Form not found', HTTP_STATUS.NOT_FOUND);
     }
 
-    // Get form fields
-    const { data: fields, error: fieldsError } = await supabase
-      .schema('peskids')
-      .from('form_fields')
-      .select('field_id, field_type, label, required, options, order')
-      .eq('form_id', formId)
-      .order('order', { ascending: true });
+    const { form, fields } = result;
 
-    if (fieldsError) {
-      console.error('Failed to fetch form fields:', fieldsError);
-      return jsonError('Failed to fetch form', HTTP_STATUS.INTERNAL_ERROR);
-    }
+    // Security: Log audit event for retrieving form
+    await logFormRetrievalAuditEvent(supabase, formId, form.tenant_slug, ip);
 
     const formData: Form = {
       id: form.id,
       title: form.title,
       description: form.description || '',
-      fields: (fields || []).map((field: DBFormField) => ({
+      fields: (fields as DBFormField[]).map((field: DBFormField) => ({
         id: field.field_id,
         type: field.field_type,
         label: field.label,
