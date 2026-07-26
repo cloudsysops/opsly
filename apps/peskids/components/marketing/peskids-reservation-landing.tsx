@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 import { PeskidsLogo } from '@/components/brand/peskids-logo';
 import { LeadCaptureForm } from '@/components/forms';
-import { ReservationLandingCTA } from '@/components/marketing/reservation-landing-cta';
 import { PESKIDS_RESERVATION_FORM_ANCHOR } from '@/lib/peskids-landing-config';
 import {
   PESKIDS_INSTAGRAM_LANDING_INTRO,
@@ -60,7 +59,6 @@ export function PeskidsReservationLanding({
               </li>
             ))}
           </ul>
-          <ReservationLandingCTA />
         </div>
 
         <div id={PESKIDS_RESERVATION_FORM_ANCHOR} className="scroll-mt-8">

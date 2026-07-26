@@ -2,8 +2,6 @@ import Link from 'next/link'
 import { Instagram } from 'lucide-react'
 import { PeskidsBrush, WiggleLine } from '@/components/brand/peskids-logo'
 import { GatedWhatsAppLink } from '@/components/marketing/gated-whatsapp-link'
-import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config'
-import { PESKIDS_FORM_NAV_LABEL } from '@/lib/peskids-landing-copy'
 import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
 import { peskidsColorTokens } from '@/lib/tokens'
 
@@ -45,12 +43,6 @@ export function HeroSection(): React.ReactElement {
         <WiggleLine width={120} color="rgba(76,184,176,0.95)" className="mt-8" />
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-          <Link
-            href={PESKIDS_RESERVATION_FORM_HREF}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-pk-primary px-6 text-sm font-bold text-white shadow-md transition hover:bg-pk-primary/90"
-          >
-            {PESKIDS_FORM_NAV_LABEL}
-          </Link>
           <GatedWhatsAppLink variant="onDark" label="WhatsApp" />
           <Link
             href={PESKIDS_INSTAGRAM.profileUrl}
@@ -65,8 +57,8 @@ export function HeroSection(): React.ReactElement {
         </div>
 
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/65">
-          Completa el formulario de matrícula con tus datos; el equipo de Peskids te contactará.
-          Después podrás continuar por WhatsApp si lo prefieres.
+          Escríbenos por WhatsApp o mira el día a día en Instagram. También puedes dejar tus
+          datos abajo para que el equipo de Peskids te contacte.
         </p>
       </div>
     </section>

@@ -2,8 +2,6 @@ import Link from 'next/link'
 import { Instagram } from 'lucide-react'
 import { PeskidsLockup } from '@/components/brand/peskids-logo'
 import { GatedWhatsAppLink } from '@/components/marketing/gated-whatsapp-link'
-import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config'
-import { PESKIDS_FORM_NAV_LABEL } from '@/lib/peskids-landing-copy'
 import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
 
 interface SiteHeaderProps {
@@ -24,10 +22,10 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
           <div className="flex items-center gap-2 sm:gap-3">
             <nav className="hidden items-center gap-5 text-sm font-semibold md:flex">
               <Link
-                href="/familias/login"
+                href="/admin/login"
                 className="text-[#004C63] transition hover:text-[#2DB7B0]"
               >
-                Acceso familias
+                Login
               </Link>
             </nav>
             <GatedWhatsAppLink
@@ -35,12 +33,6 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
               label="WhatsApp"
               className="hidden h-10 border-white/20 bg-white/10 text-white hover:border-white/30 hover:bg-white/15 sm:inline-flex"
             />
-            <Link
-              href={PESKIDS_RESERVATION_FORM_HREF}
-              className="hidden h-10 items-center justify-center rounded-full bg-pk-primary px-4 text-xs font-bold text-white shadow-sm transition hover:bg-pk-primary/90 sm:inline-flex"
-            >
-              {PESKIDS_FORM_NAV_LABEL}
-            </Link>
             <Link
               href={PESKIDS_INSTAGRAM.profileUrl}
               target="_blank"
@@ -50,6 +42,12 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
             >
               <Instagram className="h-4 w-4 shrink-0 text-white" aria-hidden />
               <span>Ver Instagram</span>
+            </Link>
+            <Link
+              href="/admin/login"
+              className="inline-flex h-10 items-center justify-center rounded-full border border-pk-primary/20 bg-white px-4 text-xs font-bold text-pk-ink shadow-sm transition hover:border-pk-primary/40 hover:bg-pk-snow md:hidden"
+            >
+              Login
             </Link>
           </div>
         ) : null}
