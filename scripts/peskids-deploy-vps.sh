@@ -116,11 +116,28 @@ run_deploy_on_host() {
     --network traefik-public \
     -p 127.0.0.1:3004:3004 \
     --env-file "$ENV_FILE" \
+    -e "PESKIDS_IMAGE=${image}" \
+    -e "PESKIDS_IMAGE_TAG=${image}" \
     "$image"
 
   wait_for_peskids_ready
   check_url "peskids local admin login" "http://127.0.0.1:3004/admin/login"
+  check_url "peskids local teacher login" "http://127.0.0.1:3004/teacher/login"
   check_url "peskids local familias login" "http://127.0.0.1:3004/familias/login"
+
+  # Public smoke (Cloudflare / Traefik). Soft-fail with Discord alert — do not hide local success.
+  if ! curl -fsSL --max-redirs 5 --max-time 20 "https://www.peskids.com/api/health" \
+    | grep -q '"status":"ok"'; then
+    echo "warn public health https://www.peskids.com/api/health" >&2
+    if [[ -x "${repo_path}/scripts/notify-discord.sh" ]]; then
+      "${repo_path}/scripts/notify-discord.sh" \
+        "🚨 Peskids public health FAIL" \
+        "Local container healthy but https://www.peskids.com/api/health did not return status=ok" \
+        "error" || true
+    fi
+  else
+    echo "ok   peskids public health"
+  fi
 
   bash "${repo_path}/scripts/docker-prune-after-deploy.sh"
 }
