@@ -99,20 +99,23 @@ export async function earnPoints(input: {
 
   if (txError) throw txError;
 
-  // Update balance
+  const { data: currentRow, error: currentError } = await peskidsClient()
+    .from('student_points')
+    .select('current_balance, total_earned')
+    .eq('tenant_slug', tenantSlug())
+    .eq('student_id', input.studentId)
+    .single();
+
+  if (currentError || !currentRow) {
+    throw currentError ?? new Error('Student points not found after earn');
+  }
+
+  const newBalance = currentRow.current_balance + pointsEarned;
   const { data, error } = await peskidsClient()
     .from('student_points')
     .update({
-      current_balance: supabaseServer().rpc('increment', {
-        table_name: 'student_points',
-        column_name: 'current_balance',
-        amount: pointsEarned,
-      }),
-      total_earned: supabaseServer().rpc('increment', {
-        table_name: 'student_points',
-        column_name: 'total_earned',
-        amount: pointsEarned,
-      }),
+      current_balance: newBalance,
+      total_earned: currentRow.total_earned + pointsEarned,
       updated_at: new Date().toISOString(),
     })
     .eq('tenant_slug', tenantSlug())
@@ -121,23 +124,15 @@ export async function earnPoints(input: {
     .single();
 
   if (error) {
-    // Fallback: fetch current balance
-    const { data: current } = await peskidsClient()
-      .from('student_points')
-      .select('current_balance')
-      .eq('tenant_slug', tenantSlug())
-      .eq('student_id', input.studentId)
-      .single();
-
     return {
       pointsEarned,
-      newBalance: current?.current_balance || 0,
+      newBalance: currentRow.current_balance,
     };
   }
 
   return {
     pointsEarned,
-    newBalance: data?.current_balance || 0,
+    newBalance: data?.current_balance || newBalance,
   };
 }
 
@@ -250,16 +245,19 @@ export async function redeemPoints(input: {
 
   if (txError) throw txError;
 
-  // Deduct from balance
+  const { data: fullPoints } = await peskidsClient()
+    .from('student_points')
+    .select('total_redeemed')
+    .eq('tenant_slug', tenantSlug())
+    .eq('student_id', input.studentId)
+    .single();
+
+  // Deduct from balance (read-modify-write; no RPC side-effects in update payload)
   const { data: updated, error: updateError } = await peskidsClient()
     .from('student_points')
     .update({
       current_balance: points.current_balance - input.pointsToRedeem,
-      total_redeemed: supabaseServer().rpc('increment', {
-        table_name: 'student_points',
-        column_name: 'total_redeemed',
-        amount: input.pointsToRedeem,
-      }),
+      total_redeemed: (fullPoints?.total_redeemed ?? 0) + input.pointsToRedeem,
       updated_at: new Date().toISOString(),
     })
     .eq('tenant_slug', tenantSlug())

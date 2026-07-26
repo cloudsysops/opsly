@@ -1,4 +1,5 @@
 import { submitFormResponse, getFormDelivery, getFormTemplate } from '@/lib/services/form.service';
+import type { Json } from '@/lib/types';
 import { z } from 'zod';
 
 export async function POST(req: Request) {
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
     const response = await submitFormResponse({
       deliveryId,
       templateId,
-      responseData,
+      responseData: responseData as Json,
       ipAddress: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || undefined,
     });
 
