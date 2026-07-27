@@ -14,6 +14,8 @@ import {
 import { requireAdminAccess } from '../auth';
 import { getServiceClient } from '../supabase';
 import { HTTP_STATUS } from '../constants';
+import { extractIp, logAuditEvent } from '../audit';
+import { checkRateLimit } from '../rate-limiter';
 
 const MIN_USER_MESSAGES_FOR_ANALYSIS = 2;
 const MIN_MESSAGE_LENGTH_FOR_ANALYSIS = 100;
@@ -66,6 +68,8 @@ type FeedbackPostFields = {
   message: string;
   session_id?: string;
   conversation_id?: string;
+  ip?: string | null;
+  user_agent?: string | null;
 };
 
 type DecisionType = 'auto_implement' | 'needs_approval' | 'rejected' | 'scheduled';
@@ -209,8 +213,10 @@ async function resolveAssistantBranch(
   return runClarifyBranch(historyResult.messages);
 }
 
-async function processFeedbackPost(fields: FeedbackPostFields): Promise<Response> {
-  const supabase = getServiceClient();
+async function verifyAndGetConversationId(
+  supabase: ReturnType<typeof getServiceClient>,
+  fields: FeedbackPostFields
+): Promise<string | Response> {
   if (fields.conversation_id) {
     const block = await verifyConversationBelongsToUser(supabase, fields.conversation_id, {
       tenant_slug: fields.tenant_slug,
@@ -220,7 +226,12 @@ async function processFeedbackPost(fields: FeedbackPostFields): Promise<Response
       return block;
     }
   }
-  const convId = await ensureConversationId(supabase, fields);
+  return ensureConversationId(supabase, fields);
+}
+
+async function processFeedbackPost(fields: FeedbackPostFields): Promise<Response> {
+  const supabase = getServiceClient();
+  const convId = await verifyAndGetConversationId(supabase, fields);
   if (convId instanceof Response) return convId;
 
   await insertUserMessage(supabase, convId, fields.message);
@@ -240,6 +251,20 @@ async function processFeedbackPost(fields: FeedbackPostFields): Promise<Response
       metadata: branch.decision ? { decision_type: branch.decision.decision_type } : {},
     });
 
+  void logAuditEvent({
+    tenant_slug: fields.tenant_slug,
+    actor_email: fields.user_email,
+    action: 'feedback_submit',
+    resource: `feedback:${convId}`,
+    ip: fields.ip,
+    user_agent: fields.user_agent ?? undefined,
+    metadata: {
+      conversation_id: convId,
+      decision_type: branch.decision?.decision_type ?? null,
+      criticality: branch.decision?.criticality ?? null,
+    },
+  });
+
   return Response.json({
     conversation_id: convId,
     message: branch.assistantResponse,
@@ -249,6 +274,12 @@ async function processFeedbackPost(fields: FeedbackPostFields): Promise<Response
 }
 
 export async function handleFeedbackPost(req: NextRequest): Promise<Response> {
+  const ip = extractIp(req);
+  const rateLimit = await checkRateLimit(ip ? `feedback:${ip}` : 'feedback:anonymous');
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+
   const trusted = await resolveTrustedFeedbackIdentity(req);
   if (!trusted.ok) {
     return trusted.response;
@@ -273,7 +304,12 @@ export async function handleFeedbackPost(req: NextRequest): Promise<Response> {
     return Response.json({ error: validated.error }, { status: validated.status });
   }
 
-  return processFeedbackPost({ ...fieldsOrErr, message: validated.message });
+  return processFeedbackPost({
+    ...fieldsOrErr,
+    message: validated.message,
+    ip,
+    user_agent: req.headers.get('user-agent'),
+  });
 }
 
 async function ensureConversationId(
@@ -379,9 +415,7 @@ async function runClarifyBranch(
     cache: false,
     system: SYSTEM_PROMPT,
     messages: messages.map((m) =>
-      m.role === 'user'
-        ? { role: 'user', content: wrapUntrustedUserText(m.content) }
-        : m
+      m.role === 'user' ? { role: 'user', content: wrapUntrustedUserText(m.content) } : m
     ),
   });
   return { assistantResponse: guardChatOutput(llmResponse.content) };

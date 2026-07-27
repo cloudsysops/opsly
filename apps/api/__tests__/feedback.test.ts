@@ -24,9 +24,24 @@ vi.mock('../lib/portal-feedback-auth', () => ({
   resolveTrustedFeedbackIdentity: vi.fn(),
 }));
 
+vi.mock('../lib/rate-limiter', () => ({
+  checkRateLimit: vi.fn(),
+}));
+
+vi.mock('../lib/audit', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../lib/audit')>();
+  return {
+    ...actual,
+    logAuditEvent: vi.fn(),
+    extractIp: vi.fn(),
+  };
+});
+
 import { llmCall } from '@intcloudsysops/llm-gateway';
 import { resolveTrustedFeedbackIdentity } from '../lib/portal-feedback-auth';
 import { analyzeFeedback, executeAutoImplement } from '@intcloudsysops/ml';
+import * as rateLimiter from '../lib/rate-limiter';
+import * as audit from '../lib/audit';
 
 function createNextRequest(url: string, init: RequestInit = {}): Request & { nextUrl: URL } {
   const request = new Request(url, init);
@@ -160,6 +175,12 @@ describe('/api/feedback', () => {
       ok: true,
       identity: { tenant_slug: 'acme', user_email: 'u@acme.com' },
     });
+    vi.mocked(rateLimiter.checkRateLimit).mockResolvedValue({
+      allowed: true,
+      remaining: 99,
+      resetAt: new Date(),
+    });
+    vi.mocked(audit.extractIp).mockReturnValue('127.0.0.1');
   });
 
   it('GET sin token → 401', async () => {
@@ -413,12 +434,75 @@ describe('/api/feedback', () => {
     expect(analyzeFeedback).toHaveBeenCalled();
     expect(executeAutoImplement).not.toHaveBeenCalled();
   });
+
+  it('POST devuelve 429 cuando el limite de tasa es excedido', async () => {
+    vi.mocked(rateLimiter.checkRateLimit).mockResolvedValue({
+      allowed: false,
+      remaining: 0,
+      resetAt: new Date(),
+    });
+
+    const res = await feedbackPost(
+      new Request('http://localhost/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tenant_slug: 'acme',
+          user_email: 'u@acme.com',
+          message: 'hola',
+        }),
+      })
+    );
+
+    expect(res.status).toBe(429);
+    const body = await res.json();
+    expect(body.error).toBe('Too many requests');
+  });
+
+  it('POST exitoso registra evento de auditoria feedback_submit', async () => {
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
+      supabaseMockNewConversationClarify() as never
+    );
+    vi.mocked(llmCall).mockResolvedValue({
+      content: '¿Puedes detallar un poco más?',
+      model_used: 'haiku',
+      tokens_input: 1,
+      tokens_output: 1,
+      cost_usd: 0,
+      cache_hit: false,
+      latency_ms: 1,
+    });
+
+    const res = await feedbackPost(
+      new Request('http://localhost/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tenant_slug: 'acme',
+          user_email: 'u@acme.com',
+          message: 'Hola, un comentario corto',
+        }),
+      })
+    );
+
+    expect(res.status).toBe(200);
+    expect(audit.logAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tenant_slug: 'acme',
+        actor_email: 'u@acme.com',
+        action: 'feedback_submit',
+        resource: expect.stringContaining('feedback:'),
+        ip: '127.0.0.1',
+      })
+    );
+  });
 });
 
 describe('/api/feedback/approve', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.PLATFORM_ADMIN_TOKEN = 'admin-secret-token';
+    vi.mocked(audit.extractIp).mockReturnValue('127.0.0.1');
   });
 
   it('sin token → 401', async () => {
@@ -432,7 +516,7 @@ describe('/api/feedback/approve', () => {
     expect(res.status).toBe(401);
   });
 
-  it('con token y approved llama executeAutoImplement', async () => {
+  it('con token y approved llama executeAutoImplement y registra evento de auditoria feedback_approve', async () => {
     const updateDec = vi.fn().mockReturnValue({ eq: async () => ({ error: null }) });
     const updateConv = vi.fn().mockReturnValue({ eq: async () => ({ error: null }) });
     const from = vi.fn((table: string) => {
@@ -477,5 +561,67 @@ describe('/api/feedback/approve', () => {
 
     expect(res.status).toBe(200);
     expect(executeAutoImplement).toHaveBeenCalledWith('dec-1', 'haz X', 'acme');
+    expect(audit.logAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tenant_slug: 'acme',
+        action: 'feedback_approve',
+        resource: 'feedback_decision:dec-1',
+        ip: '127.0.0.1',
+      })
+    );
+  });
+
+  it('con token y rejected registra evento de auditoria feedback_reject', async () => {
+    const updateDec = vi.fn().mockReturnValue({ eq: async () => ({ error: null }) });
+    const updateConv = vi.fn().mockReturnValue({ eq: async () => ({ error: null }) });
+    const from = vi.fn((table: string) => {
+      if (table === 'feedback_decisions') {
+        return {
+          select: () => ({
+            eq: () => ({
+              single: async () => ({
+                data: {
+                  id: 'dec-1',
+                  conversation_id: 'c1',
+                  implementation_prompt: 'haz X',
+                  feedback_conversations: { tenant_slug: 'acme' },
+                },
+                error: null,
+              }),
+            }),
+          }),
+          update: updateDec,
+        };
+      }
+      if (table === 'feedback_conversations') {
+        return { update: updateConv };
+      }
+      return {};
+    });
+
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue({
+      schema: () => ({ from }),
+    } as never);
+
+    const res = await approvePost(
+      new Request('http://localhost/api/feedback/approve', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': 'admin-secret-token',
+        },
+        body: JSON.stringify({ decision_id: 'dec-1', approved: false }),
+      })
+    );
+
+    expect(res.status).toBe(200);
+    expect(audit.logAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tenant_slug: 'acme',
+        action: 'feedback_reject',
+        resource: 'feedback_decision:dec-1',
+        ip: '127.0.0.1',
+      })
+    );
   });
 });
