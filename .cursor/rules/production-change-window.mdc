@@ -1,0 +1,32 @@
+---
+description: Ventana nocturna para merge/deploy de producción (Peskids operativo de día)
+alwaysApply: true
+---
+
+# Production change window — noche
+
+Peskids está **en operación diaria**. No interferir de día.
+
+## Obligatorio
+
+1. **Merge a `main`** que toque `apps/`, `infra/`, `supabase/`, scripts de deploy/VPS/peskids, o workflows `deploy*` → solo en **`America/Bogota` 22:00–06:00**.
+2. **Deploy** Peskids / VPS / GHCR prod → misma ventana.
+3. De día: abrir PR, dejar CI verde, **esperar a la noche** para merge (salvo excepciones).
+
+## Excepciones de día
+
+| Caso | Cómo |
+|------|------|
+| Solo docs / skills / reglas Cursor / markdown de gobernanza | Merge de día OK (sin label) |
+| Cambio mínimo que **no** afecta prod ni operación | Label GitHub **`safe-daytime`** + justificación en el PR |
+| Emergencia (outage / seguridad) | Label **`hotfix-prod`** + humano; deploy con `force_daytime` |
+
+## Qué no hacer de día
+
+- Merge + deploy de Peskids “para probar en prod”
+- Rebuild VPS / `peskids-deploy-vps.sh` / `peskids-rebuild-vps.sh` en horario laboral
+- Empujar carga Docker alta al VPS mientras Peskids atiende leads
+
+## Doc
+
+`docs/runbooks/PRODUCTION-CHANGE-WINDOW.md`
