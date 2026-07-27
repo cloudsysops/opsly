@@ -19,7 +19,3 @@
 ## 2026-05-27 - Ambiguous Labels in PasswordInput
 **Learning:** The `PasswordInput` component includes an eye icon button with an `aria-label` containing "contraseña". This can cause `get_by_label("Contraseña")` in Playwright or screen readers to match multiple elements, leading to ambiguity.
 **Action:** Always use exact matching or specific ARIA roles when targeting inputs with associated toggle buttons to ensure the primary input is correctly identified.
-
-## 2026-05-28 - Dynamic Dashboard Accessibility
-**Learning:** Asynchronous list mutations (such as marking predictive insights as read or discarding them) update the UI dynamically but silently, which leaves screen reader users unaware of state changes. Providing dynamic, descriptive live announcements via the `Announcer` component and descriptive action `aria-label`s makes these async interactions highly accessible.
-**Action:** Always pair interactive control list actions with `Announcer` updates and descriptive, unique aria-labels referencing the entity being acted upon.
