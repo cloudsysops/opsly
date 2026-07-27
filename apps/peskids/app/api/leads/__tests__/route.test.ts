@@ -81,6 +81,7 @@ describe('POST /api/leads', () => {
       id: 'lead-1',
       lead_id: 'lead-1',
       tenant_slug: 'peskids',
+      lead_type: 'family',
       referral_code: 'PK-CODE',
       referral_link: 'https://peskids.op-sly.com/familias?ref=PK-CODE',
       referral_discount_cents: 0,

@@ -60,7 +60,7 @@
 
 ## 2026-06-25 - [Untrusted Actor IDs in Public Audit Logs]
 **Vulnerability:** Public endpoints (like Peskids form submissions) allowed users to provide a `userId` in the request body which was then used as the primary `actor_id` in audit logs. This allowed attackers to spoof actions as other users in the security history.
-**Learning:** For public or unauthenticated endpoints, never use client-provided identifiers as the primary actor in audit logs. These fields must be system-generated (e.g., using client IP) or fixed (e.g., 'anonymous').
+**Learning:** For unauthenticated endpoints, never use client-provided identifiers as the primary actor in audit logs. These fields must be system-generated (e.g., using client IP) or fixed (e.g., 'anonymous').
 **Prevention:** Use `extractIp` to generate a verified actor identifier (e.g., `anonymous:${ip}`) for unauthenticated actions. Always treat client-provided identifiers as untrusted and relegate them to the `metadata` field of the audit event.
 
 ## 2026-06-27 - [Missing Rate Limiting and Audit Logging in Governance API]
@@ -72,3 +72,8 @@
 **Vulnerability:** Public Peskids endpoints for lead capture and feedback (`/api/public/tenants/peskids/leads` and `/api/public/tenants/peskids/feedback`) lacked rate limiting and audit logging. This made them vulnerable to automated spam and resource exhaustion without a traceable record of the activity.
 **Learning:** Even when core business logic (insertion) is validated via schemas, the endpoint remains vulnerable to abuse if it lacks perimeter protections like rate limiting. The existence of these protections in other "similar" endpoints (like DSAR) doesn't guarantee they are applied everywhere.
 **Prevention:** Systematically apply `checkRateLimit` and `logAuditEvent` to all public, unauthenticated POST handlers. Utilize IP-based rate limiting keys (e.g., `peskids-lead:${ip}`) to prevent abuse while allowing legitimate traffic.
+
+## 2026-07-27 - [Missing Rate Limiting and Audit Logging in Form Retrieval]
+**Vulnerability:** The public form definition retrieval endpoint `GET /api/peskids/forms/[formId]` was completely exposed without any client IP-based rate limiting or security audit logging, unlike its companion form submission route.
+**Learning:** Security controls like rate limiting and auditing applied to resource creation (POST) should consistently be extended to associated status check, retrieval, or verification endpoints (GET/PATCH) that interact with the same tenant assets or compliance data.
+**Prevention:** When designing public endpoints, systematically review all methods (GET/POST/etc) for rate limiting and trace/audit requirements. Co-locate dedicated security unit tests that explicitly assert IP-based key-limiting and auditing are applied to every method.
