@@ -72,6 +72,7 @@ Cada ítem ayuda a mantener calidad y seguridad del monorepo.
 - [ ] Si toqué `infra/terraform/`: revisé `terraform plan` (o equivalente) y lo enlazo o describo abajo
 - [ ] Rama actualizada con `main` (rebase o merge de `origin/main`) si el PR llevaba abierto varios días
 - [ ] Tras merge: borrar rama remota si GitHub no lo hace automático; ver `docs/01-development/GIT-WORKFLOW.md`
+- [ ] **Ventana prod:** si toca `apps/` / `infra/` / deploy / migraciones → merge/deploy en noche (`America/Bogota` 22:00–06:00), o label `safe-daytime` / `hotfix-prod` justificado ([runbook](../docs/runbooks/PRODUCTION-CHANGE-WINDOW.md))
 
 ## Cómo probar
 

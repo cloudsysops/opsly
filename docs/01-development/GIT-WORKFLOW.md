@@ -29,6 +29,7 @@ Objetivo: **una línea base (`main`) estable**, cambios integrados por **PR**, y
 3. **Push:** `git push -u origin <rama>` una vez el conjunto esté listo para revisión (no pushes parciales que dejen CI rojo a propósito).
 4. **PR:** abrir PR hacia `main`, descripción breve (qué / por qué / cómo validar). Marcar lista de verificación del template.
 5. **Merge:** cuando CI y revisión estén OK — squash o merge commit según política del equipo; lo importante es **historia legible** y **rama borrada** al cerrar.
+   - **Prod live (Peskids):** merges que tocan `apps/` / `infra/` / deploy / migraciones → preferir **noche** (`America/Bogota` 22:00–06:00). De día solo docs/gobernanza, o labels `safe-daytime` / `hotfix-prod`. Ver [`docs/runbooks/PRODUCTION-CHANGE-WINDOW.md`](../runbooks/PRODUCTION-CHANGE-WINDOW.md).
 6. **Limpieza local:** `git fetch origin --prune` y `git checkout main && git pull --ff-only`; borrar rama local `git branch -d <rama>` si ya está mergeada.
 
 Si varios agentes tocan el mismo tema, **una rama coordinada** o PRs encadenados (merge del primero y rebase del segundo sobre `main`), no muchas ramas divergentes sin merge.

@@ -100,6 +100,7 @@ Documento detallado: `docs/03-agents/AGENT-GUARDRAILS.md`. Resumen:
 ## Workflow — tarea completada
 
 - **Código, infra, tests, contratos API:** rama `feat/*` o `fix/*` → **Pull Request** a `main`. No `git push --force` a `main`. Ver `.cursor/rules/git-workflow.mdc` y `docs/01-development/GIT-WORKFLOW.md`.
+- **Peskids / prod live:** merge y deploy de impacto solo de **noche** (`America/Bogota` 22:00–06:00), salvo `safe-daytime` o `hotfix-prod`. Ver `.cursor/rules/production-change-window.mdc` y `docs/runbooks/PRODUCTION-CHANGE-WINDOW.md`.
 - **Zona roja o ámbar** (`docs/03-agents/AGENT-GUARDRAILS.md`): siempre **PR** y revisión humana antes de merge.
 - **Solo cierre documental** (p. ej. actualizar secciones 🔄 de `AGENTS.md` y espejos según el bloque «Al cerrar» de `AGENTS.md`): un commit claro; push a `main` solo si la política del repo lo permite (muchas veces también vía PR).
 
