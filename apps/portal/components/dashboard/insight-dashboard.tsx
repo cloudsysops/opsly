@@ -6,6 +6,7 @@ import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recha
 import { getApiBaseUrl } from '@/lib/api';
 import { createClient } from '@/lib/supabase/client';
 import { portalTenantInsightsUrl } from '@/lib/portal-api-paths';
+import { Announcer } from '@/components/ui/accessibility';
 import type { PortalInsightItem } from '@/types';
 
 type Props = {
@@ -22,7 +23,8 @@ function insightLabel(type: string): string {
 
 export function InsightDashboard({ tenantSlug, insights: initial }: Props): ReactElement {
   const [insights, setInsights] = useState(initial);
-  const [busyId, setBusyId] = useState<string | null>(null);
+  const [busyAction, setBusyAction] = useState<string | null>(null);
+  const [announcement, setAnnouncement] = useState('');
 
   const chartData = useMemo(() => {
     return insights.map((i) => ({
@@ -34,13 +36,14 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
 
   const patch = useCallback(
     async (insightId: string, action: 'read' | 'dismiss' | 'action') => {
-      setBusyId(insightId);
+      setBusyAction(`${insightId}-${action}`);
       try {
         const supabase = createClient();
         const {
           data: { session },
         } = await supabase.auth.getSession();
         if (!session?.access_token) {
+          setAnnouncement('Error de autenticación');
           return;
         }
         const url = portalTenantInsightsUrl(getApiBaseUrl(), tenantSlug);
@@ -56,17 +59,22 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
           }),
         });
         if (!res.ok) {
+          setAnnouncement('Error al procesar la solicitud');
           return;
         }
         if (action === 'dismiss' || action === 'action') {
           setInsights((prev) => prev.filter((x) => x.id !== insightId));
+          setAnnouncement('Insight descartado con éxito');
         } else {
           setInsights((prev) =>
             prev.map((x) => (x.id === insightId ? { ...x, read_at: new Date().toISOString() } : x))
           );
+          setAnnouncement('Insight marcado como leído con éxito');
         }
+      } catch {
+        setAnnouncement('Error al conectar con el servidor');
       } finally {
-        setBusyId(null);
+        setBusyAction(null);
       }
     },
     [tenantSlug]
@@ -75,6 +83,7 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
   if (insights.length === 0) {
     return (
       <section className="space-y-3 rounded-lg border border-ops-border bg-ops-surface p-4">
+        <Announcer message={announcement} />
         <h2 className="text-sm font-semibold text-ops-gray">Inteligencia predictiva</h2>
         <p className="text-sm text-neutral-400">
           Aún no hay insights. Tras registrar uso de IA, el job diario puede generar alertas de
@@ -86,6 +95,7 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
 
   return (
     <section className="space-y-4 rounded-lg border border-ops-border bg-ops-surface p-4">
+      <Announcer message={announcement} />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-semibold text-ops-gray">Inteligencia predictiva</h2>
         <p className="text-xs text-neutral-500">
@@ -128,16 +138,18 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
                 <button
                   type="button"
                   className="rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
-                  disabled={busyId === insight.id || insight.read_at !== null}
+                  disabled={busyAction?.startsWith(insight.id) || insight.read_at !== null}
                   onClick={() => void patch(insight.id, 'read')}
+                  aria-label={`Marcar "${insight.title}" como leído`}
                 >
                   Marcar leído
                 </button>
                 <button
                   type="button"
                   className="rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
-                  disabled={busyId === insight.id}
+                  disabled={busyAction?.startsWith(insight.id)}
                   onClick={() => void patch(insight.id, 'dismiss')}
+                  aria-label={`Descartar "${insight.title}"`}
                 >
                   Descartar
                 </button>
