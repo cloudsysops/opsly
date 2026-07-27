@@ -1,0 +1,12 @@
+[Unit]
+Description=Opsly disk alert every 10 minutes
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=10min
+AccuracySec=1min
+Persistent=true
+Unit=opsly-host-resource-alert.service
+
+[Install]
+WantedBy=timers.target

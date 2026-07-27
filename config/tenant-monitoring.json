@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "description": "Tenant monitoring targets for Opsly VPS + public URL smoke. Start with production clients.",
+  "defaults": {
+    "http_timeout_seconds": 15,
+    "disk_warn_pct": 80,
+    "disk_critical_pct": 90,
+    "ram_available_warn_mb": 512,
+    "ram_available_critical_mb": 256,
+    "swap_used_warn_pct": 80,
+    "container_must_be_running": true
+  },
+  "tenants": [
+    {
+      "slug": "peskids",
+      "priority": 1,
+      "production": true,
+      "containers": [
+        "peskids",
+        "n8n_peskids",
+        "uptime_peskids",
+        "twenty_peskids",
+        "twenty_peskids_db",
+        "twenty_peskids_redis",
+        "wacrm_peskids"
+      ],
+      "urls": [
+        {
+          "name": "landing",
+          "url": "https://peskids.op-sly.com/",
+          "expect_status": [200]
+        },
+        {
+          "name": "health",
+          "url": "https://peskids.op-sly.com/api/health",
+          "expect_status": [200],
+          "expect_body_contains": ["\"status\""]
+        },
+        {
+          "name": "admin_login",
+          "url": "https://peskids.op-sly.com/admin/login",
+          "expect_status": [200, 307, 308]
+        },
+        {
+          "name": "n8n",
+          "url": "https://n8n-peskids.op-sly.com/",
+          "expect_status": [200, 302]
+        },
+        {
+          "name": "uptime",
+          "url": "https://uptime-peskids.op-sly.com/",
+          "expect_status": [200, 302]
+        }
+      ]
+    }
+  ]
+}

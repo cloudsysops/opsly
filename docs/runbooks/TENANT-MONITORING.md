@@ -1,0 +1,70 @@
+---
+status: canon
+owner: operations
+last_review: 2026-07-27
+---
+
+# Tenant monitoring (Opsly) — Peskids first
+
+Smoke de URLs públicas + (en VPS) contenedores Docker y recursos host (disco/RAM/swap). Alertas Discord vía `scripts/notify-discord.sh`.
+
+## Config
+
+- `config/tenant-monitoring.json` — targets por `tenant_slug` (empezar por `peskids`).
+- Umbrales por defecto: disco 80/90%, RAM disponible 512/256 Mi, swap 80%.
+
+## Ejecución manual
+
+```bash
+# Solo URLs públicas (desde laptop o CI)
+./scripts/monitor-tenants.sh --slug peskids --no-discord
+
+# En VPS: URLs + contenedores + disco/RAM
+cd /opt/opsly
+./scripts/monitor-tenants.sh --local-host --slug peskids
+```
+
+Heartbeat OK opcional: `MONITOR_HEARTBEAT=1 ./scripts/monitor-tenants.sh …`
+
+## Instalar timers (VPS)
+
+### Opción A — systemd (requiere sudo)
+
+```bash
+cd /opt/opsly && git pull --ff-only
+sudo ./scripts/install-tenant-monitor-timer.sh
+# dry-run:
+sudo ./scripts/install-tenant-monitor-timer.sh --dry-run
+```
+
+| Unit | Cadencia | Qué hace |
+|------|----------|----------|
+| `opsly-tenant-monitor.timer` | 5 min | `monitor-tenants.sh --local-host` |
+| `opsly-host-resource-alert.timer` | 10 min | `disk-alert.sh` |
+
+### Opción B — crontab del usuario (sin sudo)
+
+```bash
+cd /opt/opsly
+./scripts/install-tenant-monitor-cron.sh
+```
+
+Logs: `/opt/opsly/runtime/logs/tenant-monitor.log` (y `tenant-monitor.cron.log` si usas cron).
+
+## Requisitos
+
+- `jq`, `curl`, `python3` en el host.
+- Discord: `DISCORD_WEBHOOK_URL` en `/opt/opsly/.env` (Doppler bootstrap).
+- Contenedores Peskids esperados: `peskids`, `n8n_peskids`, `uptime_peskids`.
+
+## Añadir otro tenant
+
+1. Entrada en `config/tenant-monitoring.json` (`slug`, `containers`, `urls`).
+2. Commit + deploy a `/opt/opsly`.
+3. Sin reiniciar timer: el próximo tick lee el JSON.
+
+## Relacionado
+
+- `docs/runbooks/PRODUCTION-CHANGE-WINDOW.md` — merges/deploys de noche.
+- `scripts/disk-alert.sh` — umbrales disco + housekeeping emergencia.
+- Uptime Kuma por tenant (UI) complementa este smoke de control plane.
