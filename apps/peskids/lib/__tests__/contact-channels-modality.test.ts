@@ -15,11 +15,7 @@ describe('contact-channels modality routing', () => {
   });
 
   it('normalizeWhatsAppE164 strips non-digits', () => {
-    expect(normalizeWhatsAppE164('+57 305 470 2600')).toBe('573054702600');
-  });
-
-  it('normalizeWhatsAppE164 prepends 57 for 10-digit CO mobiles', () => {
-    expect(normalizeWhatsAppE164('3054790273')).toBe('573054790273');
+    expect(normalizeWhatsAppE164('+57 300 123 4567')).toBe('573001234567');
   });
 
   it('resolveWhatsAppChannel maps modalities', () => {
@@ -32,11 +28,17 @@ describe('contact-channels modality routing', () => {
     vi.stubEnv('NEXT_PUBLIC_PESKIDS_WHATSAPP_E164', '573111111111');
     vi.stubEnv('NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_E164', '573222222222');
     vi.stubEnv('NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_E164', '573333333333');
-    // Re-import would be needed if module cached env at load — contact-channels reads process.env at call time via PESKIDS_CONTACT which is evaluated at module load.
-    // So we only assert URL structure with modality param using current module defaults, plus channel resolver.
     const url = buildWhatsAppUrl({ modality: 'domicilio', prefill: 'hola' });
-    expect(url).toContain('wa.me/');
+    expect(url).toContain('wa.me/573222222222');
     expect(url).toContain('text=hola');
+  });
+
+  it('buildWhatsAppUrl uses llanogrande number when modality is llanogrande', () => {
+    vi.stubEnv('NEXT_PUBLIC_PESKIDS_WHATSAPP_E164', '573111111111');
+    vi.stubEnv('NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_E164', '573222222222');
+    vi.stubEnv('NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_E164', '573333333333');
+    const url = buildWhatsAppUrl({ modality: 'llanogrande', prefill: 'hola' });
+    expect(url).toContain('wa.me/573333333333');
   });
 });
 

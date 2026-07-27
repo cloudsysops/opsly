@@ -66,6 +66,10 @@ jobs:
           DISPLAY: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY }}
           PREFILL: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL }}
           CONTACT_EMAIL: ${{ secrets.NEXT_PUBLIC_PESKIDS_CONTACT_EMAIL }}
+          LLANO_E164: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_E164 }}
+          LLANO_DISPLAY: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_DISPLAY }}
+          DOM_E164: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_E164 }}
+          DOM_DISPLAY: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_DISPLAY }}
         run: |
           set -euo pipefail
           if [ -z "${E164:-}" ]; then
@@ -77,8 +81,12 @@ jobs:
           {
             echo "e164=${e164}"
             echo "display=${DISPLAY:-+57 300 000 0000}"
-            echo "prefill=${PREFILL:-Hola Peskids 👋 Quiero reservar una clase de prueba gratis.}"
+            echo "prefill=${PREFILL:-Hola Peskids 👋 Quiero info de matrícula.}"
             echo "contact_email=${CONTACT_EMAIL:-peskidsnatacion@gmail.com}"
+            echo "llano_e164=${LLANO_E164:-${e164}}"
+            echo "llano_display=${LLANO_DISPLAY:-+57 305 470 2600}"
+            echo "dom_e164=${DOM_E164:-${e164}}"
+            echo "dom_display=${DOM_DISPLAY:-+57 305 479 0273}"
           } >> "$GITHUB_OUTPUT"
 
       - name: Build and push Peskids image
@@ -98,6 +106,10 @@ jobs:
             NEXT_PUBLIC_PESKIDS_WHATSAPP_E164=${{ steps.wa.outputs.e164 }}
             NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY=${{ steps.wa.outputs.display }}
             NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL=${{ steps.wa.outputs.prefill }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_E164=${{ steps.wa.outputs.llano_e164 }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_DISPLAY=${{ steps.wa.outputs.llano_display }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_E164=${{ steps.wa.outputs.dom_e164 }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_DISPLAY=${{ steps.wa.outputs.dom_display }}
             PESKIDS_GIT_SHA=${{ needs.gate.outputs.sha }}
             PESKIDS_IMAGE_TAG=ghcr.io/cloudsysops/peskids:${{ needs.gate.outputs.sha }}
 
