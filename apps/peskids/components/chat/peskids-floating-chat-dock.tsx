@@ -28,8 +28,11 @@ export function PeskidsFloatingChatDock({
         listRef={chat.listRef as RefObject<HTMLDivElement>}
         onInputChange={chat.setInput}
         onSend={() => void chat.sendMessage()}
-        onQuickReply={(reply) => void chat.sendMessage(reply.label)}
+        onQuickReply={(reply) => void chat.sendMessage(reply.value, reply.label)}
         onClose={onClose}
+        handoffWhatsAppUrl={chat.handoff?.whatsappUrl}
+        handoffWhatsAppLabel={chat.handoff?.whatsappLabel}
+        leadSaved={chat.handoff?.leadSaved}
         className="h-full"
       />
     </div>

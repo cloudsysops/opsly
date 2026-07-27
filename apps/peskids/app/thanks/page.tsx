@@ -2,14 +2,41 @@ import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
 import { PeskidsLockup } from '@/components/brand/peskids-logo';
 import { SiteFooter } from '@/components/layout/site-footer';
+import { WhatsAppLink } from '@/components/contact/whatsapp-link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ReferralLinkCard } from '@/components/referrals/referral-link-card';
+import { PESKIDS_WHATSAPP_CTA_LABEL } from '@/lib/peskids-landing-copy';
 
 type ThanksSearchParams = Promise<{
   referral_link?: string;
   referral_code?: string;
+  modality?: string;
 }>;
+
+function thanksCopy(modality: string | undefined): {
+  detail: string;
+  waLabel: string;
+} {
+  if (modality === 'domicilio') {
+    return {
+      detail:
+        'Tu solicitud quedó marcada para Domicilios. Continúa por WhatsApp con ese equipo — no hace falta volver a elegir.',
+      waLabel: 'WhatsApp Domicilios →',
+    };
+  }
+  if (modality === 'llanogrande') {
+    return {
+      detail:
+        'Tu solicitud quedó marcada para la sede Llanogrande. Continúa por WhatsApp con la sede — no hace falta volver a elegir.',
+      waLabel: 'WhatsApp Llanogrande →',
+    };
+  }
+  return {
+    detail: 'Te contactaremos pronto para orientarte sobre matrícula y clases en Peskids.',
+    waLabel: `${PESKIDS_WHATSAPP_CTA_LABEL} →`,
+  };
+}
 
 export default async function ThanksPage({
   searchParams,
@@ -19,6 +46,8 @@ export default async function ThanksPage({
   const resolvedSearchParams = (await searchParams) ?? {};
   const referralLink = resolvedSearchParams.referral_link?.trim() || '';
   const referralCode = resolvedSearchParams.referral_code?.trim() || '';
+  const modality = resolvedSearchParams.modality?.trim();
+  const copy = thanksCopy(modality);
 
   return (
     <div className="flex min-h-screen flex-col bg-pk-bg">
@@ -33,18 +62,23 @@ export default async function ThanksPage({
               <CheckCircle2 className="h-9 w-9" aria-hidden />
             </span>
             <CardTitle className="text-2xl">¡Listo, recibimos tu solicitud!</CardTitle>
-            <CardDescription className="text-base">
-              Te contactaremos pronto para orientarte sobre matrícula y clases en Peskids.
-            </CardDescription>
+            <CardDescription className="text-base">{copy.detail}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 pb-8">
             {referralLink && referralCode ? (
               <ReferralLinkCard referralLink={referralLink} referralCode={referralCode} />
             ) : null}
+            <WhatsAppLink
+              variant="hero"
+              className="w-full"
+              label={copy.waLabel}
+              modality={modality ?? null}
+            />
             <div className="rounded-xl border border-pk-border bg-pk-bg px-4 py-3 text-left text-sm text-pk-sub">
               <p className="font-semibold text-pk-ink">¿Qué sigue?</p>
               <p className="mt-1">
-                Revisa tu correo y WhatsApp. Nuestro equipo de Llanogrande confirma cupo y horario.
+                El botón de arriba abre el WhatsApp del equipo correcto. También puedes revisar tu
+                correo.
               </p>
             </div>
             <Link href="/">

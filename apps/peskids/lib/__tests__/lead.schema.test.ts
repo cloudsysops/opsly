@@ -47,6 +47,7 @@ describe('leadCaptureFormSchema', () => {
       lead_type: 'family',
       name: 'Ana López',
       email: 'ana@peskids.co',
+      phone: '3001112233',
       child_name: 'Mateo López',
       birth_date: '2018-05-10',
       document_number: '1234567890',
@@ -60,6 +61,7 @@ describe('leadCaptureFormSchema', () => {
       lead_type: 'family',
       name: 'Ana López',
       email: 'ana@peskids.co',
+      phone: '3001112233',
       child_name: 'Sofía',
       birth_date: '2016-01-15',
       document_number: '987654321',
@@ -68,6 +70,20 @@ describe('leadCaptureFormSchema', () => {
     });
     expect(parsed.neighborhood).toBe('Envigado');
     expect(parsed.service_mode).toBe('domicilio');
+  });
+
+  it('family requires phone', () => {
+    const result = leadCaptureFormSchema.safeParse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '',
+      child_name: 'Mateo López',
+      birth_date: '2018-05-10',
+      document_number: '1234567890',
+      class_modality: 'llanogrande',
+    });
+    expect(result.success).toBe(false);
   });
 
   it('teacher applicant saves document number in output', () => {
@@ -120,9 +136,9 @@ describe('leadCaptureFormSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('allows empty optional phone on legacy family', () => {
-    const parsed = leadCaptureFormSchema.parse({ ...legacyFamily, phone: '' });
-    expect(parsed.phone).toBeUndefined();
+  it('rejects empty phone on legacy family', () => {
+    const result = leadCaptureFormSchema.safeParse({ ...legacyFamily, phone: '' });
+    expect(result.success).toBe(false);
   });
 
   it('requires grade_interested enum on legacy family', () => {
@@ -148,6 +164,7 @@ describe('leadApiPostSchema', () => {
     const parsed = leadApiPostSchema.parse({
       name: 'Ana López',
       email: 'ana@peskids.co',
+      phone: '3001112233',
       class_modality: 'domicilio',
       neighborhood: 'Envigado',
       grade_interested: '6-8',
@@ -164,6 +181,7 @@ describe('toCreateLeadInput', () => {
     const input = toCreateLeadInput({
       name: 'Carlos Ruiz',
       email: 'carlos@peskids.co',
+      phone: '3001112233',
       class_modality: 'llanogrande',
       neighborhood: 'Rionegro',
       grade_interested: '9-12',

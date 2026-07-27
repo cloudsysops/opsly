@@ -3,7 +3,12 @@
 import { type MouseEvent } from 'react';
 import Link from 'next/link';
 import { WhatsAppIcon } from '@/components/contact/whatsapp-icon';
-import { buildWhatsAppUrl, PESKIDS_CONTACT } from '@/lib/contact-channels';
+import {
+  buildWhatsAppUrl,
+  getWhatsAppContact,
+  resolveWhatsAppChannel,
+  type PeskidsWhatsAppChannel,
+} from '@/lib/contact-channels';
 import { peskidsColorTokens } from '@/lib/tokens';
 import { cn } from '@/lib/utils';
 
@@ -15,6 +20,9 @@ interface WhatsAppLinkProps {
   prefill?: string;
   label?: string;
   showIcon?: boolean;
+  /** Prefer modality when the form already chose Llanogrande vs domicilio. */
+  modality?: string | null;
+  channel?: PeskidsWhatsAppChannel;
 }
 
 export function WhatsAppLink({
@@ -23,8 +31,12 @@ export function WhatsAppLink({
   prefill,
   label = 'WhatsApp',
   showIcon = true,
+  modality,
+  channel,
 }: WhatsAppLinkProps) {
-  const href = buildWhatsAppUrl({ prefill });
+  const resolvedChannel = channel ?? resolveWhatsAppChannel(modality);
+  const href = buildWhatsAppUrl({ prefill, channel: resolvedChannel });
+  const contact = getWhatsAppContact(resolvedChannel);
 
   const whatsappGreen = peskidsColorTokens.primary.whatsapp;
   const whatsappHover = peskidsColorTokens.status.success;
@@ -94,7 +106,7 @@ export function WhatsAppLink({
           e.currentTarget.style.backgroundColor = `${whatsappGreen}1a`;
         }
       }}
-      aria-label={`Escribir por WhatsApp al ${PESKIDS_CONTACT.whatsapp.display}`}
+      aria-label={`Escribir por WhatsApp al ${contact.display}`}
     >
       {showIcon ? (
         <WhatsAppIcon className={cn('shrink-0', variant === 'hero' ? 'h-6 w-6' : 'h-5 w-5')} />

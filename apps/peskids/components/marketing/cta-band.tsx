@@ -1,6 +1,7 @@
 import { PeskidsWave } from '@/components/brand/peskids-logo';
-import { GatedWhatsAppLink } from '@/components/marketing/gated-whatsapp-link';
+import { PESKIDS_CHAT_SECTION_ANCHOR } from '@/lib/peskids-landing-copy';
 
+/** Banda final: empuja al chat. WhatsApp solo en header + FAB. */
 export function CtaBand(): React.ReactElement {
   return (
     <section className="mx-4 mb-16 sm:mx-8 lg:mx-14">
@@ -16,13 +17,16 @@ export function CtaBand(): React.ReactElement {
               ¿Listo para conocer Peskids?
             </h2>
             <p className="mt-4 text-lg text-white/85">
-              Completa el formulario de matrícula con los datos del acudiente y te contactamos para
-              orientarte sobre clases en sede o a domicilio.
+              Abre el chat de matrícula, responde tocando las opciones y te pasamos al WhatsApp
+              correcto (Llanogrande o Domicilios).
             </p>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <GatedWhatsAppLink variant="onDark" label="WhatsApp" />
-          </div>
+          <a
+            href={`#${PESKIDS_CHAT_SECTION_ANCHOR}`}
+            className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-bold text-pk-deep shadow-md transition hover:bg-white/90"
+          >
+            Abrir chat de matrícula
+          </a>
         </div>
       </div>
     </section>

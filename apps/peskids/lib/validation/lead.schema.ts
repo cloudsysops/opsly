@@ -112,7 +112,7 @@ const familySchema = z
   .object({
     lead_type: z.literal('family'),
     name: personNameField, // acudiente
-    phone: phoneOptionalField,
+    phone: phoneRequiredField,
     child_name: personNameField,
     birth_date: birthDateField,
     document_type: z.string().trim().default('CC'),
@@ -231,7 +231,7 @@ const legacyFamilySchema = z
   .object({
     lead_type: z.undefined().optional(),
     name: personNameField,
-    phone: phoneOptionalField,
+    phone: phoneRequiredField,
     class_modality: z.enum(PESKIDS_CLASS_MODALITIES, {
       message: 'Selecciona una modalidad de clase',
     }),

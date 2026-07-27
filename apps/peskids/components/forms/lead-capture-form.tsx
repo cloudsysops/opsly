@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Loader2, Send } from 'lucide-react'
+import { ChevronLeft, Loader2, Send } from 'lucide-react'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
 import { buildPostLeadWhatsAppPrefill, writePeskidsLeadSession } from '@/lib/peskids-lead-session'
 import { ageYearsFromBirthDate } from '@/lib/lead-age'
@@ -22,12 +22,12 @@ import {
   PESKIDS_FORM_SUCCESS_DETAIL,
   PESKIDS_RESERVATION_EYEBROW,
   PESKIDS_RESERVATION_TITLE,
-  PESKIDS_WHATSAPP_CTA_LABEL,
 } from '@/lib/peskids-landing-copy'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { firstZodErrorMessage } from '@/lib/validation/zod-errors'
+import { cn } from '@/lib/utils'
 
 const CONSENT_POLICY_VERSION = 'pk-parental-v1+pk-privacy-v1@1.0'
 
@@ -40,8 +40,8 @@ const COMPANY_KIND_LABELS: Record<PeskidsCompanyKind, string> = {
 }
 
 const LEAD_TYPE_LABELS: Record<PeskidsLeadType, string> = {
-  family: 'Familia',
-  teacher_applicant: 'Profesor(a)',
+  family: 'Familia / matrícula',
+  teacher_applicant: 'Quiero ser profesor(a)',
   company: 'Empresa / institución',
 }
 
@@ -70,6 +70,19 @@ type FormState = {
   referral_source: string
 }
 
+type StepId =
+  | 'who'
+  | 'where'
+  | 'zone'
+  | 'child'
+  | 'guardian'
+  | 'teacher_profile'
+  | 'teacher_ops'
+  | 'company_org'
+  | 'company_need'
+  | 'contact'
+  | 'consent'
+
 const emptyForm = (referralSource = ''): FormState => ({
   lead_type: '',
   name: '',
@@ -95,6 +108,99 @@ const emptyForm = (referralSource = ''): FormState => ({
   referral_source: referralSource,
 })
 
+function stepsForLead(leadType: PeskidsLeadType | '', modality: FormState['class_modality']): StepId[] {
+  if (!leadType) return ['who']
+  if (leadType === 'family') {
+    const base: StepId[] = ['who', 'where']
+    if (modality === 'domicilio') base.push('zone')
+    return [...base, 'child', 'guardian', 'contact', 'consent']
+  }
+  if (leadType === 'teacher_applicant') {
+    return ['who', 'teacher_profile', 'teacher_ops', 'contact', 'consent']
+  }
+  return ['who', 'company_org', 'company_need', 'contact', 'consent']
+}
+
+function supportPrompt(step: StepId, form: FormState): string {
+  switch (step) {
+    case 'who':
+      return '¡Hola! Soy el asistente de Peskids. ¿Para quién es esta solicitud? Así te oriento con el equipo correcto.'
+    case 'where':
+      return 'Perfecto. ¿Prefieres clases en la sede Llanogrande o a domicilio? Al final te conecto directo con ese WhatsApp.'
+    case 'zone':
+      return 'Listo, equipo de Domicilios. ¿En qué barrio o zona necesitan las clases?'
+    case 'child':
+      return 'Cuéntame del alumno o alumna: nombre y fecha de nacimiento.'
+    case 'guardian':
+      return 'Ahora los datos del acudiente (como en una matrícula).'
+    case 'teacher_profile':
+      return 'Gracias por tu interés en enseñar con nosotros. Empieza con tu perfil básico.'
+    case 'teacher_ops':
+      return '¿Dónde y cuándo puedes trabajar? Así coordinamos con operaciones.'
+    case 'company_org':
+      return 'Hola — para instituciones armamos una propuesta a medida. Datos de la organización:'
+    case 'company_need':
+      return '¿Qué necesitan y cuántos niños aproximadamente?'
+    case 'contact':
+      return '¿A qué correo y WhatsApp te escribimos? El teléfono es obligatorio para contactarte rápido.'
+    case 'consent':
+      return form.class_modality === 'domicilio'
+        ? 'Último paso: autorizaciones. Luego te abro WhatsApp de Domicilios sin volver a elegir.'
+        : form.class_modality === 'llanogrande'
+          ? 'Último paso: autorizaciones. Luego te abro WhatsApp de Llanogrande sin volver a elegir.'
+          : 'Último paso: autorizaciones. Luego puedes continuar por WhatsApp con el equipo.'
+    default:
+      return 'Continuemos.'
+  }
+}
+
+function successWhatsAppLabel(modality: FormState['class_modality']): string {
+  if (modality === 'domicilio') return 'Continuar por WhatsApp Domicilios →'
+  if (modality === 'llanogrande') return 'Continuar por WhatsApp Llanogrande →'
+  return 'Continuar por WhatsApp →'
+}
+
+function ChoiceButton({
+  selected,
+  onClick,
+  children,
+}: {
+  selected: boolean
+  onClick: () => void
+  children: React.ReactNode
+}): React.ReactElement {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'w-full rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition',
+        selected
+          ? 'border-pk-primary bg-pk-primary/15 text-pk-ink ring-2 ring-pk-primary/30'
+          : 'border-pk-border bg-pk-surface text-pk-ink hover:border-pk-primary/50'
+      )}
+    >
+      {children}
+    </button>
+  )
+}
+
+function SupportBubble({ children }: { children: React.ReactNode }): React.ReactElement {
+  return (
+    <div className="mb-4 flex gap-3">
+      <div
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pk-primary text-xs font-bold text-white shadow-sm"
+        aria-hidden
+      >
+        Pk
+      </div>
+      <div className="rounded-2xl rounded-tl-md border border-pk-primary/20 bg-pk-bg px-4 py-3 text-sm leading-relaxed text-pk-ink shadow-sm">
+        {children}
+      </div>
+    </div>
+  )
+}
+
 type LeadCaptureFormProps = {
   source?: string
   campaign?: string
@@ -113,7 +219,8 @@ export function LeadCaptureForm({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [submitted, setSubmitted] = useState(false)
-  const [redirectCountdown, setRedirectCountdown] = useState(5)
+  const [redirectCountdown, setRedirectCountdown] = useState(12)
+  const [stepIndex, setStepIndex] = useState(0)
   const [formData, setFormData] = useState(() => emptyForm(defaultReferralSource))
   const [consentTreatment, setConsentTreatment] = useState(false)
   const [consentMarketing, setConsentMarketing] = useState(false)
@@ -121,6 +228,13 @@ export function LeadCaptureForm({
     () => searchParams.get('ref')?.trim().toUpperCase() ?? '',
     [searchParams]
   )
+
+  const steps = useMemo(
+    () => stepsForLead(formData.lead_type, formData.class_modality),
+    [formData.lead_type, formData.class_modality]
+  )
+  const step = steps[Math.min(stepIndex, steps.length - 1)] ?? 'who'
+  const progress = Math.round(((stepIndex + 1) / steps.length) * 100)
 
   const childAge = useMemo(
     () => (formData.birth_date ? ageYearsFromBirthDate(formData.birth_date) : null),
@@ -135,12 +249,88 @@ export function LeadCaptureForm({
     return () => clearInterval(interval)
   }, [submitted])
 
+  useEffect(() => {
+    setStepIndex((prev) => Math.min(prev, Math.max(steps.length - 1, 0)))
+  }, [steps.length])
+
   const setField = (name: keyof FormState, value: string): void => {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
+  const validateCurrentStep = (): string | null => {
+    switch (step) {
+      case 'who':
+        return formData.lead_type ? null : 'Elige una opción para continuar'
+      case 'where':
+        return formData.class_modality ? null : 'Elige sede o domicilio'
+      case 'zone':
+        return formData.neighborhood.trim().length >= 2
+          ? null
+          : 'Indica el barrio o zona'
+      case 'child':
+        if (formData.child_name.trim().length < 2) return 'Nombre del alumno incompleto'
+        if (!formData.birth_date) return 'Indica la fecha de nacimiento'
+        return null
+      case 'guardian':
+        if (formData.name.trim().length < 2) return 'Nombre del acudiente incompleto'
+        if (formData.document_number.trim().length < 4) return 'Cédula incompleta'
+        return null
+      case 'teacher_profile':
+        if (formData.name.trim().length < 2) return 'Nombre incompleto'
+        if (formData.document_number.trim().length < 4) return 'Cédula incompleta'
+        if (formData.experience.trim().length < 10) return 'Cuéntanos un poco más de tu experiencia'
+        return null
+      case 'teacher_ops':
+        if (formData.availability.trim().length < 3) return 'Indica tu disponibilidad'
+        if (formData.work_zones.trim().length < 3) return 'Indica zonas de trabajo'
+        return null
+      case 'company_org':
+        if (formData.company_name.trim().length < 2) return 'Nombre de la institución incompleto'
+        if (formData.company_nit.trim().length < 4) return 'NIT incompleto'
+        if (formData.name.trim().length < 2) return 'Contacto incompleto'
+        if (formData.contact_role.trim().length < 2) return 'Cargo incompleto'
+        if (!formData.company_kind) return 'Selecciona el tipo de institución'
+        return null
+      case 'company_need':
+        if (formData.location.trim().length < 2) return 'Ubicación incompleta'
+        if (!formData.approx_children || Number(formData.approx_children) < 1) {
+          return 'Indica cantidad aproximada de niños'
+        }
+        if (formData.need.trim().length < 5) return 'Describe la necesidad'
+        return null
+      case 'contact':
+        if (!formData.email.includes('@')) return 'Correo inválido'
+        if (formData.phone.trim().length < 7) return 'Teléfono obligatorio (mín. 7 dígitos)'
+        return null
+      case 'consent':
+        return consentTreatment ? null : 'Debes autorizar el tratamiento de datos'
+      default:
+        return null
+    }
+  }
+
+  const goNext = (): void => {
+    setError('')
+    const validationError = validateCurrentStep()
+    if (validationError) {
+      setError(validationError)
+      return
+    }
+    setStepIndex((prev) => Math.min(prev + 1, steps.length - 1))
+  }
+
+  const goBack = (): void => {
+    setError('')
+    setStepIndex((prev) => Math.max(prev - 1, 0))
+  }
+
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault()
+    if (step !== 'consent') {
+      goNext()
+      return
+    }
+
     setLoading(true)
     setError('')
 
@@ -239,7 +429,15 @@ export function LeadCaptureForm({
         console.warn('Lead webhook mirror failed:', err)
       })
 
-      writePeskidsLeadSession(formData.name)
+      const modality =
+        formData.class_modality === 'llanogrande' || formData.class_modality === 'domicilio'
+          ? formData.class_modality
+          : null
+
+      writePeskidsLeadSession(formData.name, {
+        class_modality: modality,
+        lead_type: leadType,
+      })
       setSubmitted(true)
       setConsentTreatment(false)
       setConsentMarketing(false)
@@ -247,10 +445,11 @@ export function LeadCaptureForm({
       const thanksUrl = new URL('/thanks', window.location.origin)
       if (apiResult.referral_link) thanksUrl.searchParams.set('referral_link', apiResult.referral_link)
       if (apiResult.referral_code) thanksUrl.searchParams.set('referral_code', apiResult.referral_code)
+      if (modality) thanksUrl.searchParams.set('modality', modality)
       window.setTimeout(() => {
         setFormData(emptyForm(defaultReferralSource))
         router.push(`${thanksUrl.pathname}${thanksUrl.search}`)
-      }, 5000)
+      }, 12000)
     } catch (err) {
       setError('No pudimos enviar el formulario. Revisa los datos e intenta de nuevo.')
       console.error('Form submission error:', err)
@@ -258,11 +457,6 @@ export function LeadCaptureForm({
       setLoading(false)
     }
   }
-
-  const showFamily = formData.lead_type === 'family'
-  const showTeacher = formData.lead_type === 'teacher_applicant'
-  const showCompany = formData.lead_type === 'company'
-  const showDomicilioZone = showFamily && formData.class_modality === 'domicilio'
 
   return (
     <Card
@@ -280,7 +474,9 @@ export function LeadCaptureForm({
         <CardHeader className="border-0 bg-gradient-to-br from-pk-primary/10 via-pk-bg to-pk-surface pb-2">
           <p className="pk-eyebrow text-pk-primary">{PESKIDS_RESERVATION_EYEBROW}</p>
           <CardTitle className="text-2xl sm:text-3xl">{PESKIDS_RESERVATION_TITLE}</CardTitle>
-          <CardDescription>{PESKIDS_FORM_CARD_DESCRIPTION}</CardDescription>
+          <CardDescription>
+            Conversación guiada — al final te conectamos al WhatsApp correcto según sede o domicilio.
+          </CardDescription>
           {referredByCode ? (
             <p className="mt-3 rounded-xl border border-pk-primary/20 bg-pk-primary/10 px-3 py-2 text-xs font-medium text-pk-primary">
               Código de recomendación activo: <span className="font-mono">{referredByCode}</span>
@@ -294,75 +490,105 @@ export function LeadCaptureForm({
             className="rounded-xl border border-pk-primary/30 bg-pk-primary/10 px-4 py-4 text-sm text-pk-ink"
             role="status"
           >
-            <p className="font-semibold text-pk-primary">
-              ¡Perfecto, {formData.name}! Recibimos tu solicitud.
-            </p>
+            <SupportBubble>
+              ¡Listo, {formData.name}! Ya quedó tu solicitud. Sigue por WhatsApp con el equipo que
+              elegiste — no tienes que volver a seleccionar sede o domicilio.
+            </SupportBubble>
             <p className="mt-2 text-pk-sub">{PESKIDS_FORM_SUCCESS_DETAIL}</p>
             <WhatsAppLink
-              variant="button"
-              label={`${PESKIDS_WHATSAPP_CTA_LABEL} →`}
-              prefill={buildPostLeadWhatsAppPrefill(formData.name)}
-              className="mt-3 w-full sm:w-auto"
+              variant="hero"
+              label={successWhatsAppLabel(formData.class_modality)}
+              modality={formData.class_modality || null}
+              prefill={buildPostLeadWhatsAppPrefill(formData.name, {
+                class_modality: formData.class_modality || null,
+                lead_type: formData.lead_type || null,
+              })}
+              className="mt-4 w-full"
             />
             <p className="mt-4 text-center text-xs text-pk-sub">
-              Redirigiendo en {redirectCountdown}s…
+              Si no abres WhatsApp, te llevamos a la página de gracias en {redirectCountdown}s…
             </p>
           </div>
         ) : (
           <form onSubmit={(ev) => void handleSubmit(ev)} className="space-y-4">
-            <div>
-              <Label htmlFor="lead_type" required>
-                ¿Para quién es la solicitud?
-              </Label>
-              <select
-                id="lead_type"
-                className="pk-select"
-                value={formData.lead_type}
-                required
-                onChange={(e) => setField('lead_type', e.target.value)}
-              >
-                <option value="">Selecciona una opción</option>
-                {PESKIDS_LEAD_TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {LEAD_TYPE_LABELS[t]}
-                  </option>
-                ))}
-              </select>
+            <div className="mb-1">
+              <div className="mb-2 flex items-center justify-between text-xs text-pk-sub">
+                <span>
+                  Paso {stepIndex + 1} de {steps.length}
+                </span>
+                <span>{progress}%</span>
+              </div>
+              <div className="h-1.5 overflow-hidden rounded-full bg-pk-border/60">
+                <div
+                  className="h-full rounded-full bg-pk-primary transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
             </div>
 
-            {showFamily ? (
-              <>
-                <div>
-                  <Label htmlFor="class_modality" required>
-                    ¿Dónde quieres el servicio?
-                  </Label>
-                  <select
-                    id="class_modality"
-                    className="pk-select"
-                    value={formData.class_modality}
-                    required
-                    onChange={(e) => setField('class_modality', e.target.value)}
+            <SupportBubble>{supportPrompt(step, formData)}</SupportBubble>
+
+            {step === 'who' ? (
+              <div className="space-y-2">
+                {PESKIDS_LEAD_TYPES.map((t) => (
+                  <ChoiceButton
+                    key={t}
+                    selected={formData.lead_type === t}
+                    onClick={() => {
+                      setField('lead_type', t)
+                      setError('')
+                      setStepIndex(0)
+                    }}
                   >
-                    <option value="">Selecciona</option>
-                    <option value="llanogrande">Sede Llanogrande</option>
-                    <option value="domicilio">Domicilio</option>
-                  </select>
-                </div>
-                {showDomicilioZone ? (
-                  <div>
-                    <Label htmlFor="neighborhood" required>
-                      Barrio, zona o dirección
-                    </Label>
-                    <input
-                      id="neighborhood"
-                      className="pk-input"
-                      value={formData.neighborhood}
-                      onChange={(e) => setField('neighborhood', e.target.value)}
-                      required
-                      placeholder="Ej. El Poblado, Envigado…"
-                    />
-                  </div>
-                ) : null}
+                    {LEAD_TYPE_LABELS[t]}
+                  </ChoiceButton>
+                ))}
+              </div>
+            ) : null}
+
+            {step === 'where' ? (
+              <div className="space-y-2">
+                <ChoiceButton
+                  selected={formData.class_modality === 'llanogrande'}
+                  onClick={() => {
+                    setField('class_modality', 'llanogrande')
+                    setField('neighborhood', '')
+                    setError('')
+                  }}
+                >
+                  Sede Llanogrande — te conecto al WhatsApp de la sede
+                </ChoiceButton>
+                <ChoiceButton
+                  selected={formData.class_modality === 'domicilio'}
+                  onClick={() => {
+                    setField('class_modality', 'domicilio')
+                    setError('')
+                  }}
+                >
+                  Domicilio — te conecto al WhatsApp de Domicilios
+                </ChoiceButton>
+              </div>
+            ) : null}
+
+            {step === 'zone' ? (
+              <div>
+                <Label htmlFor="neighborhood" required>
+                  Barrio, zona o dirección
+                </Label>
+                <input
+                  id="neighborhood"
+                  className="pk-input"
+                  value={formData.neighborhood}
+                  onChange={(e) => setField('neighborhood', e.target.value)}
+                  required
+                  placeholder="Ej. El Poblado, Envigado…"
+                  autoFocus
+                />
+              </div>
+            ) : null}
+
+            {step === 'child' ? (
+              <div className="space-y-3">
                 <div>
                   <Label htmlFor="child_name" required>
                     Nombre del alumno
@@ -374,11 +600,12 @@ export function LeadCaptureForm({
                     onChange={(e) => setField('child_name', e.target.value)}
                     required
                     minLength={2}
+                    autoFocus
                   />
                 </div>
                 <div>
                   <Label htmlFor="birth_date" required>
-                    Fecha de nacimiento del alumno
+                    Fecha de nacimiento
                   </Label>
                   <input
                     id="birth_date"
@@ -392,6 +619,11 @@ export function LeadCaptureForm({
                     <p className="mt-1 text-xs text-pk-sub">Edad calculada: {childAge} años</p>
                   ) : null}
                 </div>
+              </div>
+            ) : null}
+
+            {step === 'guardian' ? (
+              <div className="space-y-3">
                 <div>
                   <Label htmlFor="name" required>
                     Nombre del acudiente
@@ -403,6 +635,7 @@ export function LeadCaptureForm({
                     onChange={(e) => setField('name', e.target.value)}
                     required
                     autoComplete="name"
+                    autoFocus
                   />
                 </div>
                 <div>
@@ -417,11 +650,11 @@ export function LeadCaptureForm({
                     required
                   />
                 </div>
-              </>
+              </div>
             ) : null}
 
-            {showTeacher ? (
-              <>
+            {step === 'teacher_profile' ? (
+              <div className="space-y-3">
                 <div>
                   <Label htmlFor="name" required>
                     Nombre completo
@@ -432,6 +665,7 @@ export function LeadCaptureForm({
                     value={formData.name}
                     onChange={(e) => setField('name', e.target.value)}
                     required
+                    autoFocus
                   />
                 </div>
                 <div>
@@ -458,6 +692,11 @@ export function LeadCaptureForm({
                     required
                   />
                 </div>
+              </div>
+            ) : null}
+
+            {step === 'teacher_ops' ? (
+              <div className="space-y-3">
                 <div>
                   <Label htmlFor="availability" required>
                     Disponibilidad
@@ -469,6 +708,7 @@ export function LeadCaptureForm({
                     onChange={(e) => setField('availability', e.target.value)}
                     required
                     placeholder="Mañanas, fines de semana…"
+                    autoFocus
                   />
                 </div>
                 <div>
@@ -492,11 +732,11 @@ export function LeadCaptureForm({
                     onChange={(e) => setField('observations', e.target.value)}
                   />
                 </div>
-              </>
+              </div>
             ) : null}
 
-            {showCompany ? (
-              <>
+            {step === 'company_org' ? (
+              <div className="space-y-3">
                 <div>
                   <Label htmlFor="company_name" required>
                     Nombre empresa / institución
@@ -507,6 +747,7 @@ export function LeadCaptureForm({
                     value={formData.company_name}
                     onChange={(e) => setField('company_name', e.target.value)}
                     required
+                    autoFocus
                   />
                 </div>
                 <div>
@@ -564,6 +805,11 @@ export function LeadCaptureForm({
                     ))}
                   </select>
                 </div>
+              </div>
+            ) : null}
+
+            {step === 'company_need' ? (
+              <div className="space-y-3">
                 <div>
                   <Label htmlFor="location" required>
                     Ubicación
@@ -574,6 +820,7 @@ export function LeadCaptureForm({
                     value={formData.location}
                     onChange={(e) => setField('location', e.target.value)}
                     required
+                    autoFocus
                   />
                 </div>
                 <div>
@@ -602,11 +849,11 @@ export function LeadCaptureForm({
                     required
                   />
                 </div>
-              </>
+              </div>
             ) : null}
 
-            {formData.lead_type ? (
-              <>
+            {step === 'contact' ? (
+              <div className="space-y-3">
                 <div>
                   <Label htmlFor="email" required>
                     Correo electrónico
@@ -619,11 +866,12 @@ export function LeadCaptureForm({
                     onChange={(e) => setField('email', e.target.value)}
                     required
                     autoComplete="email"
+                    autoFocus
                   />
                 </div>
                 <div>
-                  <Label htmlFor="phone" required={showTeacher || showCompany}>
-                    Teléfono{showFamily ? ' (opcional)' : ''}
+                  <Label htmlFor="phone" required>
+                    Teléfono / WhatsApp
                   </Label>
                   <input
                     id="phone"
@@ -631,11 +879,16 @@ export function LeadCaptureForm({
                     className="pk-input"
                     value={formData.phone}
                     onChange={(e) => setField('phone', e.target.value)}
-                    required={showTeacher || showCompany}
+                    required
                     autoComplete="tel"
+                    placeholder="Ej. 300 123 4567"
                   />
                 </div>
+              </div>
+            ) : null}
 
+            {step === 'consent' ? (
+              <div className="space-y-3">
                 <label className="flex items-start gap-2 text-sm text-pk-ink">
                   <input
                     type="checkbox"
@@ -658,9 +911,18 @@ export function LeadCaptureForm({
                   />
                   <span>{PESKIDS_CONSENT_MARKETING}</span>
                 </label>
+              </div>
+            ) : null}
 
-                {error ? <p className="text-sm text-red-700">{error}</p> : null}
+            {error ? <p className="text-sm text-red-700">{error}</p> : null}
 
+            <div className="flex gap-2 pt-1">
+              {stepIndex > 0 ? (
+                <Button type="button" variant="secondary" onClick={goBack} className="shrink-0">
+                  <ChevronLeft className="mr-1 h-4 w-4" /> Atrás
+                </Button>
+              ) : null}
+              {step === 'consent' ? (
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? (
                     <>
@@ -672,8 +934,12 @@ export function LeadCaptureForm({
                     </>
                   )}
                 </Button>
-              </>
-            ) : null}
+              ) : (
+                <Button type="button" className="w-full" onClick={goNext}>
+                  Continuar
+                </Button>
+              )}
+            </div>
           </form>
         )}
       </CardContent>

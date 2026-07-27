@@ -31,7 +31,7 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
             <GatedWhatsAppLink
               variant="pill"
               label="WhatsApp"
-              className="hidden h-10 border-white/20 bg-white/10 text-white hover:border-white/30 hover:bg-white/15 sm:inline-flex"
+              className="inline-flex h-10"
             />
             <Link
               href={PESKIDS_INSTAGRAM.profileUrl}

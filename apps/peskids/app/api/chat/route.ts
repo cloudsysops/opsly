@@ -4,8 +4,41 @@ import { triggerN8nMessagePipeline } from '@/lib/chat-assistant';
 import { storeDraftReply, storeInboundMessage, storeOutboundMessage } from '@/lib/message-store';
 import { emitEvent } from '@/lib/events';
 import { buildPeskidsIntakeTurn } from '@/lib/peskids-intake';
-import { peskidsAdmissionsChatFormRedirectPayload } from '@/lib/marketing-routes';
+import { submitLeadFromIntake } from '@/lib/peskids-lead-from-intake';
+import { buildWhatsAppUrl } from '@/lib/contact-channels';
+import { buildPostLeadWhatsAppPrefill } from '@/lib/peskids-lead-session';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
+
+function buildHandoffWhatsApp(params: {
+  mode: 'admissions' | 'support';
+  parentName?: string;
+  classModality?: 'llanogrande' | 'domicilio' | null;
+  leadType?: 'family' | 'teacher_applicant' | 'company' | null;
+}): { url: string; label: string } | null {
+  if (params.mode !== 'admissions') return null;
+  const leadType = params.leadType ?? 'family';
+  const modality =
+    leadType === 'family' ? (params.classModality ?? null) : 'llanogrande';
+  const name = params.parentName?.trim() || 'familia';
+  const url = buildWhatsAppUrl({
+    modality,
+    prefill: buildPostLeadWhatsAppPrefill(name, {
+      class_modality: modality,
+      lead_type: leadType,
+    }),
+  });
+  const label =
+    leadType === 'teacher_applicant'
+      ? 'Continuar por WhatsApp (profesores)'
+      : leadType === 'company'
+        ? 'Continuar por WhatsApp (empresas)'
+        : modality === 'domicilio'
+          ? 'Continuar por WhatsApp Domicilios'
+          : modality === 'llanogrande'
+            ? 'Continuar por WhatsApp Llanogrande'
+            : 'Continuar por WhatsApp con un asesor';
+  return { url, label };
+}
 
 export async function POST(req: NextRequest) {
   const requestId = resolveRequestId(req);
@@ -20,10 +53,6 @@ export async function POST(req: NextRequest) {
 
     const sessionId = body.session_id?.trim() ?? 'web-anonymous';
     const mode = body.mode ?? 'admissions';
-
-    if (mode !== 'support') {
-      return successJson(requestId, peskidsAdmissionsChatFormRedirectPayload());
-    }
 
     const validated = validateChatUserMessage(body.message ?? '');
     if (!validated.ok) {
@@ -40,6 +69,8 @@ export async function POST(req: NextRequest) {
           input_mode: 'text',
           quick_replies: [],
           from_llm: false,
+          lead_saved: false,
+          whatsapp: null,
           disclaimer: 'Mensaje revisado por políticas de seguridad.',
         });
       }
@@ -67,6 +98,18 @@ export async function POST(req: NextRequest) {
       mode,
     });
 
+    let leadSaved = false;
+    if (mode === 'admissions' && intake.stage === 'handoff') {
+      const leadResult = await submitLeadFromIntake(intake.profile);
+      leadSaved = leadResult.ok;
+      if (!leadSaved) {
+        console.error('Chat admissions lead persist failed', {
+          request_id: requestId,
+          profile_keys: Object.keys(intake.profile),
+        });
+      }
+    }
+
     await storeOutboundMessage({
       parentId: message.id,
       source: 'web',
@@ -93,8 +136,31 @@ export async function POST(req: NextRequest) {
       intake_stage: intake.stage,
       intake_progress: intake.progress,
       intake_missing_field: intake.missingField,
+      lead_saved: leadSaved,
       timestamp: new Date().toISOString(),
     });
+
+    const whatsapp =
+      intake.stage === 'handoff'
+        ? buildHandoffWhatsApp({
+            mode,
+            parentName: intake.profile.parentName,
+            classModality: intake.profile.classModality ?? null,
+            leadType: intake.profile.applicantRole ?? 'family',
+          })
+        : null;
+
+    const admissionsDisclaimer =
+      intake.stage === 'handoff'
+        ? leadSaved
+          ? 'Tus datos ya quedaron en la plataforma Peskids. Un asesor humano te continúa por WhatsApp con el equipo correcto.'
+          : 'Completamos el chat; el equipo revisará tu caso. Si el registro automático falló, el asesor te pedirá confirmar datos.'
+        : 'Responde tocando las opciones del chat. Al final guardamos tu solicitud y te pasamos a WhatsApp humano.';
+
+    const supportDisclaimer =
+      intake.stage === 'handoff'
+        ? 'Tu caso quedó listo para el equipo de soporte. Si requiere reprogramación o cancelación, primero lo valida una persona del equipo.'
+        : 'Te haré algunas preguntas cortas para orientar tu caso de soporte.';
 
     return successJson(requestId, {
       ok: true,
@@ -108,10 +174,9 @@ export async function POST(req: NextRequest) {
       input_mode: intake.inputMode,
       quick_replies: intake.quickReplies,
       from_llm: false,
-      disclaimer:
-        intake.stage === 'handoff'
-          ? 'Tu caso quedó listo para el equipo de soporte. Si requiere reprogramación o cancelación, primero lo valida una persona del equipo.'
-          : 'Te haré algunas preguntas cortas para orientar tu caso de soporte.',
+      lead_saved: leadSaved,
+      whatsapp,
+      disclaimer: mode === 'support' ? supportDisclaimer : admissionsDisclaimer,
     });
   } catch (error) {
     console.error('Chat API error:', error, { request_id: requestId });

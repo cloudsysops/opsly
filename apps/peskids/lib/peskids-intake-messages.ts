@@ -13,7 +13,11 @@ export type PeskidsIntakeChoice = {
 
 type PeskidsClassModality = 'llanogrande' | 'domicilio'
 
+export type PeskidsApplicantRole = 'family' | 'teacher_applicant' | 'company'
+
 export type PeskidsIntakeProfile = {
+  /** Quién escribe: familia / profesor / empresa — primera pregunta del chat. */
+  applicantRole?: PeskidsApplicantRole
   parentName?: string
   email?: string
   phone?: string
@@ -27,6 +31,7 @@ export type PeskidsIntakeProfile = {
   referralSource?: string
   childName?: string
   childAge?: string
+  companyName?: string
   issueType?:
     | 'class'
     | 'schedule'
@@ -40,7 +45,15 @@ export type PeskidsIntakeProfile = {
   issueDetails?: string
   urgency?: 'today' | 'this_week' | 'when_possible'
   preferredContact?: 'chat' | 'whatsapp' | 'phone' | 'email'
+  /** Ley 1581 — solo 'yes' completa el intake de admisiones. */
+  consentTreatment?: 'yes' | 'no'
 }
+
+export const PESKIDS_APPLICANT_ROLE_CHOICES: PeskidsIntakeChoice[] = [
+  { label: 'Familia / matrícula', value: 'family' },
+  { label: 'Quiero ser profesor(a)', value: 'teacher_applicant' },
+  { label: 'Empresa o institución', value: 'company' },
+]
 
 export type PeskidsIntakeQuestionSpec = {
   prompt: string
@@ -55,10 +68,11 @@ export function peskidsIntakeWelcome(source: MessageSource): string {
       ? 'Por este chat de WhatsApp'
       : 'Por este chat en la web de Peskids'
   return (
-    `¡Hola! Somos Peskids 🐠 Academia de natación en Llanogrande (Rionegro), área metropolitana de Medellín. ` +
-    `Clases para niños desde 3 meses hasta 15 años, en sede o a domicilio. Te ayudamos a encontrar el plan de matrícula ideal.\n\n` +
-    `${channel} te haré unas preguntas cortas (igual que el formulario de matrícula). ` +
-    `Cuando terminemos, un asesor humano revisará tu caso y te confirmará horario en menos de 48 h hábiles.`
+    `¡Hola! Somos Peskids 🐠 Academia de natación en Llanogrande (Rionegro). ` +
+    `Clases para niños desde 3 meses hasta 15 años, en sede o a domicilio.\n\n` +
+    `${channel} responde tocando las opciones (como en WhatsApp). ` +
+    `Al terminar guardamos tus datos y te pasamos al chat humano correcto ` +
+    `(Llanogrande o Domicilios) sin que vuelvas a elegir.`
   )
 }
 
@@ -165,15 +179,32 @@ export function questionSpecForField(
   }
 
   switch (field) {
+    case 'applicantRole':
+      return {
+        prompt: '¿Para quién es esta solicitud? Toca una opción 👇',
+        inputMode: 'choice',
+        choices: PESKIDS_APPLICANT_ROLE_CHOICES,
+      }
     case 'parentName':
       return {
-        prompt: 'Para empezar, ¿cómo te llamas (nombre del acudiente)?',
+        prompt:
+          profile.applicantRole === 'teacher_applicant'
+            ? '¿Cómo te llamas?'
+            : profile.applicantRole === 'company'
+              ? '¿Cómo te llamas (persona de contacto)?'
+              : '¿Cómo te llamas (nombre del acudiente)?',
+        inputMode: 'text',
+        choices: null,
+      }
+    case 'companyName':
+      return {
+        prompt: '¿Cómo se llama la empresa o institución?',
         inputMode: 'text',
         choices: null,
       }
     case 'email':
       return {
-        prompt: `Gracias${profile.parentName ? `, ${profile.parentName}` : ''}. ¿Cuál es tu correo electrónico? Lo usamos para confirmar la clase de prueba.`,
+        prompt: `Gracias${profile.parentName ? `, ${profile.parentName}` : ''}. ¿Cuál es tu correo electrónico? Lo usamos para confirmar tu solicitud.`,
         inputMode: 'text',
         choices: null,
       }
@@ -247,9 +278,19 @@ export function questionSpecForField(
       }
     case 'phone':
       return {
-        prompt: '¿Cuál número de WhatsApp o celular prefieres para que te contactemos?',
+        prompt: '¿Cuál número de WhatsApp o celular prefieres para que te contactemos? (obligatorio)',
         inputMode: 'text',
         choices: null,
+      }
+    case 'consentTreatment':
+      return {
+        prompt:
+          'Para registrar tu solicitud necesitamos tu autorización del tratamiento de datos personales (política de privacidad Peskids). ¿Autorizas?',
+        inputMode: 'choice',
+        choices: [
+          { label: 'Sí, autorizo', value: 'yes' },
+          { label: 'No autorizo', value: 'no' },
+        ],
       }
     default:
       return {
@@ -267,6 +308,33 @@ export function gradeInterestedLabel(value: string | undefined): string {
 
 export function handoffReplyToUser(profile: PeskidsIntakeProfile): string {
   const name = profile.parentName ?? 'familia'
+  const modality = profile.classModality
+  const team =
+    modality === 'domicilio'
+      ? 'el equipo de Domicilios'
+      : modality === 'llanogrande'
+        ? 'el equipo de la sede Llanogrande'
+        : 'un asesor de Peskids'
+
+  if (profile.applicantRole === 'teacher_applicant') {
+    return (
+      `¡Gracias, ${name}! Ya registramos tu interés como profesor(a) 🐠\n\n` +
+      `• Correo: ${profile.email ?? '—'}\n` +
+      `• Teléfono: ${profile.phone ?? '—'}\n\n` +
+      `Siguiente paso: continúa por WhatsApp con el equipo. Te orientan sobre vacantes y proceso.`
+    )
+  }
+
+  if (profile.applicantRole === 'company') {
+    return (
+      `¡Gracias, ${name}! Ya registramos la solicitud institucional` +
+      `${profile.companyName ? ` de ${profile.companyName}` : ''} 🐠\n\n` +
+      `• Correo: ${profile.email ?? '—'}\n` +
+      `• Teléfono: ${profile.phone ?? '—'}\n\n` +
+      `Siguiente paso: continúa por WhatsApp con el equipo comercial.`
+    )
+  }
+
   const conditionNote =
     profile.specialCondition === 'yes'
       ? profile.specialConditionDetails
@@ -276,7 +344,7 @@ export function handoffReplyToUser(profile: PeskidsIntakeProfile): string {
         ? 'No'
         : '—'
   return (
-    `¡Perfecto, ${name}! Ya tengo todos los datos para tu solicitud de matrícula 🎉\n\n` +
+    `¡Perfecto, ${name}! Ya tengo todos los datos y los dejé listos en la plataforma para ${team} 🎉\n\n` +
     `• Cómo nos conoció: ${profile.referralSource ?? '—'}\n` +
     `• Condición a tener en cuenta: ${conditionNote}\n` +
     `• Preferencia de profe: ${profile.teacherPreference === 'woman' ? 'Mujer' : profile.teacherPreference === 'man' ? 'Hombre' : profile.teacherPreference === 'prefer_not_to_say' ? 'Prefiero no decir' : 'No importa'}\n` +
@@ -285,8 +353,7 @@ export function handoffReplyToUser(profile: PeskidsIntakeProfile): string {
     `• Edad / rango: ${gradeInterestedLabel(profile.gradeInterested)}\n` +
     `• Correo: ${profile.email ?? '—'}\n` +
     `• Teléfono: ${profile.phone ?? '—'}\n\n` +
-    `Un asesor de Peskids revisará disponibilidad y te escribirá para confirmar día y hora. ` +
-    `Si necesitas algo urgente, puedes volver a escribirnos aquí.`
+    `Siguiente paso: toca el botón verde de WhatsApp. ${team.charAt(0).toUpperCase()}${team.slice(1)} ya verá tu solicitud — no tienes que volver a elegir sede o domicilio.`
   )
 }
 

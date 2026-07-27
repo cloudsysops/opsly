@@ -8,7 +8,7 @@ import {
 describe('peskids-lead-session', () => {
   it('buildPostLeadWhatsAppPrefill includes the lead name', () => {
     expect(buildPostLeadWhatsAppPrefill('María García')).toContain('María García');
-    expect(buildPostLeadWhatsAppPrefill('María García')).toContain('formulario de matrícula');
+    expect(buildPostLeadWhatsAppPrefill('María García')).toContain('chat de matrícula');
   });
 
   it('parsePeskidsLeadSession accepts valid JSON', () => {
@@ -16,6 +16,8 @@ describe('peskids-lead-session', () => {
     expect(parsePeskidsLeadSession(raw)).toEqual({
       name: 'Ana López',
       capturedAt: '2026-06-09T12:00:00.000Z',
+      class_modality: null,
+      lead_type: null,
     });
   });
 

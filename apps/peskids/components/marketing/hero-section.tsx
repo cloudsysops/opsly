@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { Instagram } from 'lucide-react'
 import { PeskidsBrush, WiggleLine } from '@/components/brand/peskids-logo'
-import { GatedWhatsAppLink } from '@/components/marketing/gated-whatsapp-link'
 import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
+import { PESKIDS_CHAT_SECTION_ANCHOR } from '@/lib/peskids-landing-copy'
 import { peskidsColorTokens } from '@/lib/tokens'
 
 const instagramButtonClass =
@@ -43,7 +43,12 @@ export function HeroSection(): React.ReactElement {
         <WiggleLine width={120} color="rgba(76,184,176,0.95)" className="mt-8" />
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-          <GatedWhatsAppLink variant="onDark" label="WhatsApp" />
+          <Link
+            href={`#${PESKIDS_CHAT_SECTION_ANCHOR}`}
+            className="inline-flex h-12 items-center justify-center rounded-full bg-white px-6 text-sm font-bold text-pk-deep shadow-sm transition hover:bg-white/90"
+          >
+            Abrir chat de matrícula
+          </Link>
           <Link
             href={PESKIDS_INSTAGRAM.profileUrl}
             target="_blank"
@@ -57,8 +62,8 @@ export function HeroSection(): React.ReactElement {
         </div>
 
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/65">
-          Completa el formulario de matrícula con tus datos; el equipo de Peskids te contactará.
-          Después podrás continuar por WhatsApp si lo prefieres.
+          Responde en el chat. Al terminar, el botón de WhatsApp te lleva al equipo humano de
+          Llanogrande o Domicilios según lo que elijas.
         </p>
       </div>
     </section>

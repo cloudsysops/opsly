@@ -8,7 +8,7 @@ import { PESKIDS_HOME_LANDING } from '@/lib/peskids-landing-config';
 export const metadata = {
   title: 'Peskids — Academia de natación · Medellín',
   description:
-    'Natación para niños de 3 meses a 15 años. Sede Llanogrande. Aprenden, se divierten, son Peskids. Completa el formulario y el equipo te contacta.',
+    'Natación para niños de 3 meses a 15 años. Sede Llanogrande. Aprenden, se divierten, son Peskids. Abre el chat de matrícula y te conectamos por WhatsApp.',
 };
 
 export default function HomePage(): React.ReactElement {
