@@ -1,4 +1,10 @@
 import { getServiceClient } from './supabase';
+import { getCache, setCache } from './redis-cache';
+import { CACHE_TTL } from './constants';
+
+const CACHE_KEY = 'metrics:web_dashboard_json';
+const DAYS_AGO_FOR_CONVERSION = 30;
+const CONVERSION_RATE_SCALE = 10000;
 
 /** Alineado a `apps/web/lib/stripe/plans` price_usd (MRR orientativo). */
 const PLAN_MRR_USD: Record<string, number> = {
@@ -152,7 +158,7 @@ function calculateConversionMetrics(
 ): WebDashboardMetricsJson['conversion'] {
   const started = startedRes.count ?? 0;
   const completed = completedRes.count ?? 0;
-  const rate = started > 0 ? Math.round((completed / started) * 10000) / 100 : 0;
+  const rate = started > 0 ? Math.round((completed / started) * CONVERSION_RATE_SCALE) / 100 : 0;
   return { onboard_started: started, onboard_completed: completed, rate };
 }
 
@@ -166,9 +172,15 @@ function buildDashboardMetrics(results: unknown[]): WebDashboardMetricsJson {
 }
 
 export async function getWebDashboardMetricsJson(): Promise<WebDashboardMetricsJson> {
+  const cached = await getCache<WebDashboardMetricsJson>(CACHE_KEY);
+  if (cached !== null) {
+    return cached;
+  }
   const client = getServiceClient();
-  const since = daysAgoIso(30);
+  const since = daysAgoIso(DAYS_AGO_FOR_CONVERSION);
   const results = await fetchMetricsData(client, since);
   validateQueryResults(results as Array<{ error?: unknown }>);
-  return buildDashboardMetrics(results);
+  const metrics = buildDashboardMetrics(results);
+  void setCache(CACHE_KEY, metrics, CACHE_TTL.SHORT);
+  return metrics;
 }
