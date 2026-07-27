@@ -81,6 +81,7 @@ describe('POST /api/leads', () => {
       id: 'lead-1',
       lead_id: 'lead-1',
       tenant_slug: 'peskids',
+      lead_type: 'family',
       referral_code: 'PK-CODE',
       referral_link: 'https://peskids.op-sly.com/familias?ref=PK-CODE',
       referral_discount_cents: 0,
@@ -95,6 +96,7 @@ describe('POST /api/leads', () => {
         name: 'Ana López',
         email: 'ana@example.com',
         phone: '3001234567',
+        lead_type: 'family',
         grade_interested: 'K-5',
         class_modality: 'llanogrande',
         neighborhood: 'Llanogrande',
@@ -121,6 +123,7 @@ describe('POST /api/leads', () => {
       json: async () => ({
         name: 'Ana López',
         email: 'ana@example.com',
+        phone: '3001234567',
         class_modality: 'llanogrande',
         neighborhood: 'Llanogrande',
         grade_interested: 'K-5',

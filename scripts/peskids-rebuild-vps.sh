@@ -42,6 +42,10 @@ doppler run --project ops-intcloudsysops --config prd -- bash -c '
   WA="${NEXT_PUBLIC_PESKIDS_WHATSAPP_E164:?missing NEXT_PUBLIC_PESKIDS_WHATSAPP_E164 in Doppler}"
   WAD="${NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY:-+1 WhatsApp}"
   WAP="${NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL:-Hola Peskids}"
+  WA_LLANO="${NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_E164:-$WA}"
+  WAD_LLANO="${NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_DISPLAY:-+57 305 470 2600}"
+  WA_DOM="${NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_E164:-$WA}"
+  WAD_DOM="${NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_DISPLAY:-+57 305 479 0273}"
   docker build \
     -f apps/peskids/Dockerfile \
     --build-arg NEXT_PUBLIC_SUPABASE_URL="$SUPABASE_URL" \
@@ -49,6 +53,10 @@ doppler run --project ops-intcloudsysops --config prd -- bash -c '
     --build-arg NEXT_PUBLIC_PESKIDS_WHATSAPP_E164="$WA" \
     --build-arg NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY="$WAD" \
     --build-arg NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL="$WAP" \
+    --build-arg NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_E164="$WA_LLANO" \
+    --build-arg NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_DISPLAY="$WAD_LLANO" \
+    --build-arg NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_E164="$WA_DOM" \
+    --build-arg NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_DISPLAY="$WAD_DOM" \
     -t ghcr.io/cloudsysops/peskids:latest .
 '
 docker stop peskids 2>/dev/null || true

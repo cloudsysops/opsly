@@ -2,8 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import { getOrCreateChatSessionId } from '@/lib/peskids-chat-session';
-import { PESKIDS_ADMISSIONS_CHAT_FORM_REPLY } from '@/lib/marketing-routes';
 import {
+  writePeskidsLeadSession,
+  type PeskidsLeadSession,
+} from '@/lib/peskids-lead-session';
+import {
+  PESKIDS_APPLICANT_ROLE_CHOICES,
   peskidsIntakeWelcome,
   peskidsSupportWelcome,
   type PeskidsChatMode,
@@ -17,6 +21,10 @@ export type PeskidsChatMessage = {
   progress?: number;
   quickReplies?: PeskidsChatQuickReply[] | null;
   inputMode?: 'text' | 'choice';
+  whatsappUrl?: string | null;
+  whatsappLabel?: string | null;
+  leadSaved?: boolean;
+  classModality?: 'llanogrande' | 'domicilio' | null;
 };
 
 export type PeskidsChatQuickReply = {
@@ -34,7 +42,9 @@ function buildWelcome(mode: PeskidsChatMode): PeskidsChatMessage {
 
   return {
     role: 'assistant',
-    text: `${peskidsIntakeWelcome('web')}\n\nPara empezar, ¿cómo te llamas (nombre del acudiente)?`,
+    text: `${peskidsIntakeWelcome('web')}\n\n¿Para quién es esta solicitud? Toca una opción 👇`,
+    quickReplies: PESKIDS_APPLICANT_ROLE_CHOICES,
+    inputMode: 'choice',
   };
 }
 
@@ -44,12 +54,24 @@ export function usePeskidsChat(mode: PeskidsChatMode = 'admissions'): {
   input: string;
   setInput: (value: string) => void;
   sending: boolean;
-  sendMessage: (textOverride?: string) => Promise<void>;
+  sendMessage: (textOverride?: string, displayText?: string) => Promise<void>;
   listRef: RefObject<HTMLDivElement | null>;
+  handoff: {
+    whatsappUrl: string | null;
+    whatsappLabel: string | null;
+    leadSaved: boolean;
+    classModality: 'llanogrande' | 'domicilio' | null;
+  } | null;
 } {
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [messages, setMessages] = useState<PeskidsChatMessage[]>([buildWelcome(mode)]);
+  const [handoff, setHandoff] = useState<{
+    whatsappUrl: string | null;
+    whatsappLabel: string | null;
+    leadSaved: boolean;
+    classModality: 'llanogrande' | 'domicilio' | null;
+  } | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -59,12 +81,15 @@ export function usePeskidsChat(mode: PeskidsChatMode = 'admissions'): {
   }, [messages]);
 
   const sendMessage = useCallback(
-    async (textOverride?: string) => {
+    async (textOverride?: string, displayText?: string) => {
       const text = (textOverride ?? input).trim();
       if (!text || sending) return;
 
       if (!textOverride) setInput('');
-      setMessages((prev) => [...prev, { role: 'user', text }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: 'user', text: (displayText ?? text).trim() || text },
+      ]);
       setSending(true);
 
       try {
@@ -85,6 +110,13 @@ export function usePeskidsChat(mode: PeskidsChatMode = 'admissions'): {
           progress?: number;
           input_mode?: 'text' | 'choice';
           quick_replies?: PeskidsChatQuickReply[] | null;
+          lead_saved?: boolean;
+          whatsapp?: { url: string; label: string } | null;
+          profile?: {
+            parentName?: string;
+            classModality?: 'llanogrande' | 'domicilio';
+            applicantRole?: 'family' | 'teacher_applicant' | 'company';
+          } | null;
           error?: string;
         };
 
@@ -96,13 +128,15 @@ export function usePeskidsChat(mode: PeskidsChatMode = 'admissions'): {
               text:
                 mode === 'support'
                   ? 'No pude responder ahora. Intenta de nuevo en unos minutos o escribe desde el portal de familias.'
-                  : PESKIDS_ADMISSIONS_CHAT_FORM_REPLY,
+                  : 'No pude responder ahora. Intenta de nuevo en unos minutos.',
             },
           ]);
           return;
         }
 
         const suffix = data.disclaimer ? `\n\n_${data.disclaimer}_` : '';
+        const modality = data.profile?.classModality ?? null;
+        const leadType = data.profile?.applicantRole ?? (mode === 'admissions' ? 'family' : null);
         setMessages((prev) => [
           ...prev,
           {
@@ -113,8 +147,31 @@ export function usePeskidsChat(mode: PeskidsChatMode = 'admissions'): {
             progress: data.progress,
             quickReplies: data.quick_replies ?? null,
             inputMode: data.input_mode,
+            whatsappUrl: data.whatsapp?.url ?? null,
+            whatsappLabel: data.whatsapp?.label ?? null,
+            leadSaved: data.lead_saved,
+            classModality: modality,
           },
         ]);
+
+        if (data.stage === 'handoff' && data.profile?.parentName) {
+          const session: PeskidsLeadSession = {
+            name: data.profile.parentName,
+            capturedAt: new Date().toISOString(),
+            class_modality: modality,
+            lead_type: leadType,
+          };
+          writePeskidsLeadSession(session.name, {
+            class_modality: session.class_modality,
+            lead_type: session.lead_type,
+          });
+          setHandoff({
+            whatsappUrl: data.whatsapp?.url ?? null,
+            whatsappLabel: data.whatsapp?.label ?? null,
+            leadSaved: Boolean(data.lead_saved),
+            classModality: modality,
+          });
+        }
       } catch {
         setMessages((prev) => [
           ...prev,
@@ -123,7 +180,7 @@ export function usePeskidsChat(mode: PeskidsChatMode = 'admissions'): {
             text:
               mode === 'support'
                 ? 'Error de conexión. Intenta de nuevo en unos minutos.'
-                : PESKIDS_ADMISSIONS_CHAT_FORM_REPLY,
+                : 'Error de conexión. Intenta de nuevo en unos minutos.',
           },
         ]);
       } finally {
@@ -133,5 +190,5 @@ export function usePeskidsChat(mode: PeskidsChatMode = 'admissions'): {
     [input, mode, sending]
   );
 
-  return { mode, messages, input, setInput, sending, sendMessage, listRef };
+  return { mode, messages, input, setInput, sending, sendMessage, listRef, handoff };
 }

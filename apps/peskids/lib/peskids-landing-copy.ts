@@ -6,32 +6,32 @@
  * a new DB migration / pricing update. Contact/matrícula language is permanent.
  */
 
-export const PESKIDS_RESERVATION_EYEBROW = 'Solicitud de matrícula';
+export const PESKIDS_RESERVATION_EYEBROW = 'Chat de matrícula';
 
-export const PESKIDS_RESERVATION_TITLE = 'Déjanos tus datos y te contactamos';
+export const PESKIDS_RESERVATION_TITLE = 'Escríbenos como en WhatsApp';
 
 export const PESKIDS_RESERVATION_DESCRIPTION =
-  'Completa el formulario de matrícula. El equipo de Peskids te escribirá para conocer a tu hijo(a) y orientarte sobre clases en sede Llanogrande o a domicilio.';
+  'Responde unas preguntas en el chat. Guardamos tus datos en la plataforma y te pasamos al WhatsApp del equipo correcto (Llanogrande o Domicilios).';
 
 export const PESKIDS_RESERVATION_BULLETS = [
-  'Completa el formulario con los datos del acudiente y del niño(a).',
-  'Horarios y cupos sujetos a disponibilidad.',
-  'Te contactamos en menos de 48 horas hábiles; después podrás escribirnos por WhatsApp.',
+  'Elige en el chat: familia, profesor o empresa.',
+  'Si es familia, indica sede Llanogrande o domicilio.',
+  'Al final abres WhatsApp humano — sin volver a elegir.',
 ] as const;
 
-export const PESKIDS_FORM_CARD_TITLE = 'Formulario de matrícula';
+export const PESKIDS_FORM_CARD_TITLE = 'Formulario clásico (opcional)';
 
 export const PESKIDS_FORM_CARD_DESCRIPTION =
-  'Completa el formulario y nuestro equipo te orientará sobre la mejor opción para tu hijo(a).';
+  'Si prefieres no usar el chat, puedes completar este formulario.';
 
-/** Primary CTA / submit label on public landings (home, Instagram, etc.). */
-export const PESKIDS_FORM_SUBMIT_LABEL = 'Enviar formulario de matrícula';
+/** Primary CTA — opens / scrolls to admissions chat. */
+export const PESKIDS_FORM_SUBMIT_LABEL = 'Abrir chat de matrícula';
 
 /** Post-form handoff only — not shown before lead capture. */
 export const PESKIDS_WHATSAPP_CTA_LABEL = 'Continuar por WhatsApp';
 
 export const PESKIDS_FORM_SUCCESS_DETAIL =
-  'Tu solicitud quedó registrada correctamente. Un asesor de Peskids revisará tu información y te escribirá en menos de 48 h hábiles para contactarte.';
+  'Tu solicitud quedó registrada. Continúa por WhatsApp con el equipo de Llanogrande o Domicilios según lo que elegiste.';
 
 export const PESKIDS_CONSENT_TREATMENT =
   'Autorizo a Peskids para tratar mis datos personales y, cuando aplique, los del menor bajo mi responsabilidad, con el fin de atender esta solicitud de contacto y matrícula, conforme a su Política de Privacidad.';
@@ -41,4 +41,7 @@ export const PESKIDS_CONSENT_MARKETING =
 
 /** Instagram entry — same offer, channel-specific intro only. */
 export const PESKIDS_INSTAGRAM_LANDING_INTRO =
-  'Completa el formulario desde Instagram y el equipo de Peskids te ayuda a conocer la academia (sede Llanogrande o a domicilio).';
+  'Desde Instagram: usa el chat de matrícula. Al terminar te conectamos por WhatsApp con Llanogrande o Domicilios.';
+
+/** Anchor id for the interactive admissions chat on public landings. */
+export const PESKIDS_CHAT_SECTION_ANCHOR = 'contacto';
