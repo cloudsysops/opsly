@@ -80,6 +80,7 @@ describe('POST /api/leads', () => {
       ok: true,
       id: 'lead-1',
       lead_id: 'lead-1',
+      lead_type: 'family',
       tenant_slug: 'peskids',
       referral_code: 'PK-CODE',
       referral_link: 'https://peskids.op-sly.com/familias?ref=PK-CODE',

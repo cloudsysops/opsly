@@ -50,7 +50,7 @@ describe('GET /api/dashboard', () => {
     } as never)
 
     expect(response.status).toBe(200)
-    expect(fetchDashboardDataMock).toHaveBeenCalledWith('peskids', 'month')
+    expect(fetchDashboardDataMock).toHaveBeenCalledWith('peskids', 'month', null)
     expect(response.headers.get('cache-control')).toBe('no-store, private, max-age=0, must-revalidate')
     await expect(response.json()).resolves.toEqual({ ok: true, new_leads_count: 1 })
   })
