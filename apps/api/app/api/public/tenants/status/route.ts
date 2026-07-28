@@ -1,9 +1,9 @@
-import { createClient } from 'redis';
 import { z } from 'zod';
 import { jsonError, serverErrorLogged, tryRoute } from '../../../../../lib/api-response';
-import { extractIp } from '../../../../../lib/audit';
+import { extractIp, logAuditEvent } from '../../../../../lib/audit';
 import { HTTP_STATUS } from '../../../../../lib/constants';
 import { sanitizePublicPortalServices } from '../../../../../lib/portal-me';
+import { checkRateLimit } from '../../../../../lib/rate-limiter';
 import { getServiceClient } from '../../../../../lib/supabase';
 import type { Json } from '../../../../../lib/supabase/types';
 import { formatZodError } from '../../../../../lib/validation';
@@ -12,34 +12,36 @@ const querySchema = z.object({
   email: z.string().email(),
 });
 
-const RATE_WINDOW_SECONDS = 60;
-const RATE_MAX = 30;
+const MIN_LOCAL_LENGTH_FOR_FULL_MASK = 2;
 
-const RATE_LIMIT_LUA = `
-local current = redis.call('INCR', KEYS[1])
-if current == 1 then
-  redis.call('EXPIRE', KEYS[1], ARGV[1])
-end
-return current
-`;
-
-type RedisClient = ReturnType<typeof createClient>;
-
-let redisConnect: Promise<RedisClient> | null = null;
-
-async function getRedis(): Promise<RedisClient | null> {
-  const url = process.env.REDIS_URL?.trim();
-  if (!url) return null;
-
-  if (!redisConnect) {
-    redisConnect = (async (): Promise<RedisClient> => {
-      const c = createClient({ url });
-      c.on('error', () => {});
-      await c.connect();
-      return c;
-    })();
+function maskEmail(email: string): string {
+  const [local, domain] = email.split('@');
+  if (!local || !domain) return 'invalid_email';
+  if (local.length <= MIN_LOCAL_LENGTH_FOR_FULL_MASK) {
+    return `${local[0]}***@${domain}`;
   }
-  return redisConnect;
+  return `${local[0]}***${local[local.length - 1]}@${domain}`;
+}
+
+function auditStatusRetrieve(
+  action: 'RETRIEVE_STATUS' | 'RETRIEVE_STATUS_FAILED',
+  maskedEmail: string,
+  ip: string | null,
+  userAgent: string | undefined,
+  tenant?: { slug: string; status: string }
+): void {
+  void logAuditEvent({
+    tenant_slug: tenant?.slug,
+    action,
+    resource: tenant ? `public:tenant_status:${tenant.slug}` : 'public:tenant_status',
+    ip,
+    user_agent: userAgent,
+    metadata: {
+      email: maskedEmail,
+      found: !!tenant,
+      ...(tenant ? { status: tenant.status } : {}),
+    },
+  });
 }
 
 export function GET(request: Request): Promise<Response> {
@@ -51,23 +53,8 @@ export function GET(request: Request): Promise<Response> {
     }
 
     const ip = extractIp(request);
-    const key = `ratelimit:public-status:${ip}`;
-    let count = 0;
-
-    try {
-      const redis = await getRedis();
-      if (redis) {
-        const result = await redis.sendCommand(['EVAL', RATE_LIMIT_LUA, '1', key, String(RATE_WINDOW_SECONDS)]);
-        count = typeof result === 'number' ? result : Number(result);
-      } else {
-        // Sentinel: Fail-secure if Redis (the rate limit backend) is unavailable.
-        return jsonError('Service temporarily unavailable', HTTP_STATUS.SERVICE_UNAVAILABLE);
-      }
-    } catch (e) {
-      return serverErrorLogged('public status rate limit:', e);
-    }
-
-    if (count > RATE_MAX) {
+    const rateLimit = await checkRateLimit(ip ? `public-status:${ip}` : 'public-status:anonymous');
+    if (!rateLimit.allowed) {
       return jsonError('Too many requests', HTTP_STATUS.TOO_MANY_REQUESTS);
     }
 
@@ -85,9 +72,15 @@ export function GET(request: Request): Promise<Response> {
       return serverErrorLogged('public tenant status:', error);
     }
 
+    const maskedEmail = maskEmail(parsed.data.email);
+    const userAgent = request.headers.get('user-agent') ?? undefined;
+
     if (!tenant) {
+      auditStatusRetrieve('RETRIEVE_STATUS_FAILED', maskedEmail, ip, userAgent);
       return Response.json({ status: 'not_found' as const });
     }
+
+    auditStatusRetrieve('RETRIEVE_STATUS', maskedEmail, ip, userAgent, tenant);
 
     return Response.json({
       status: tenant.status,
