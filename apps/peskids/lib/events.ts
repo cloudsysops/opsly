@@ -69,13 +69,23 @@ export async function emitEvent(
     return;
   }
 
+  const busToken =
+    process.env.OPSLY_EVENT_BUS_TOKEN?.trim() ||
+    process.env.PLATFORM_ADMIN_TOKEN?.trim() ||
+    '';
+
   try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'X-Peskids-Event': 'true',
+    };
+    if (busToken) {
+      headers.Authorization = `Bearer ${busToken}`;
+    }
+
     const response = await fetch(busUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Peskids-Event': 'true',
-      },
+      headers,
       body: JSON.stringify(event),
     });
 

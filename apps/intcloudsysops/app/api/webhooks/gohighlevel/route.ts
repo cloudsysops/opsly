@@ -17,6 +17,21 @@ const GHL_WEBHOOK_SECRET =
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const requestId = request.headers.get('x-request-id') ?? crypto.randomUUID();
 
+  const ghlEnabled =
+    (process.env.PESKIDS_GHL_ENABLED ?? '').trim().toLowerCase() === 'true' ||
+    (process.env.INTCLOUDSYSOPS_GHL_ENABLED ?? '').trim().toLowerCase() === 'true';
+  if (!ghlEnabled) {
+    return NextResponse.json(
+      {
+        ok: false,
+        status: 'disabled',
+        message: 'GHL legacy webhook contained (GHL_ENABLED=false)',
+        request_id: requestId,
+      },
+      { status: 410 }
+    );
+  }
+
   try {
     const signature = request.headers.get('x-ghl-signature') ?? '';
     const rawBody = await request.text();

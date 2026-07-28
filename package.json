@@ -31,6 +31,7 @@
     "validate-structure": "node scripts/validate-structure.js",
     "validate:academy-blueprint": "node scripts/ci/validate-academy-blueprint.mjs",
     "guard:ghl-runtime": "bash scripts/ci/check-no-new-ghl-runtime.sh",
+    "guard:ghl-runtime:test": "bash scripts/ci/test-ghl-runtime-guard.sh",
     "validate:strict": "npm run validate-structure",
     "validate:strict:ci": "npm run validate-structure",
     "index-knowledge": "bash scripts/index-knowledge.sh",

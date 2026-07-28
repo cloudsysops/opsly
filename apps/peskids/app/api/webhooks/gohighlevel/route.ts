@@ -25,12 +25,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const requestId = request.headers.get('x-request-id') ?? crypto.randomUUID();
 
   if (!isPeskidsGhlEnabled()) {
-    return NextResponse.json({
-      ok: true,
-      status: 'disabled',
-      message: 'GHL legacy webhook disabled (PESKIDS_GHL_ENABLED=false)',
-      request_id: requestId,
-    });
+    return NextResponse.json(
+      {
+        ok: false,
+        status: 'disabled',
+        message: 'GHL legacy webhook retired for product flows (PESKIDS_GHL_ENABLED=false)',
+        request_id: requestId,
+      },
+      { status: 410 }
+    );
   }
 
   try {

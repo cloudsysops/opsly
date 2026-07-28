@@ -20,11 +20,19 @@ spec:
       defaultEnabled: true
       adapter: existing
     - id: wacrm
-      purpose: whatsapp-inbox
+      purpose: whatsapp-inbox-optional
       required: false
       defaultEnabled: false
       adapter: lib/wacrm-channel
       activationGate: manual-channel-registration
+    - id: meta_whatsapp
+      purpose: whatsapp-cloud-api-primary
+      required: false
+      defaultEnabled: false
+      adapter: lib/whatsapp-channel
+      activationGate: sandbox-then-human-go-no-go
+      webhook: /api/webhooks/meta/whatsapp
+      health: /api/health/whatsapp
     - id: wompi
       purpose: payments
       required: false
@@ -34,3 +42,4 @@ spec:
     - legacy-crm-enabled
     - outbound-without-approval
     - secrets-in-contracts
+    - enable-whatsapp-without-ready-state

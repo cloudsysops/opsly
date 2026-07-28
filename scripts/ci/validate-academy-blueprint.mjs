@@ -27,6 +27,8 @@ const YAML_FILES = [
   'roles.yaml',
   'agent-policy.yaml',
 ];
+/** Parsed for validity; may document disabled legacy flags (not in CONTRACT_FILES GHL ban). */
+const EXTRA_YAML_FILES = ['feature-flags.yaml', 'whatsapp-contracts.yaml'];
 const CONTRACT_FILES = [...YAML_FILES, 'tenant.schema.json'];
 
 function fail(message) {
@@ -51,6 +53,13 @@ function parseYaml(name) {
 }
 
 for (const name of YAML_FILES) {
+  const parsed = parseYaml(name);
+  if (!parsed || typeof parsed !== 'object') {
+    fail(`${name} must contain an object`);
+  }
+}
+
+for (const name of EXTRA_YAML_FILES) {
   const parsed = parseYaml(name);
   if (!parsed || typeof parsed !== 'object') {
     fail(`${name} must contain an object`);
@@ -160,5 +169,5 @@ if (machineBlueprint?.spec?.defaults?.ghl_runtime !== 'disabled') {
 }
 
 console.log(
-  `validate-academy-blueprint: OK (${CONTRACT_FILES.length} docs contracts + ${MODULE_FILES.length} modules)`
+  `validate-academy-blueprint: OK (${CONTRACT_FILES.length} docs contracts + ${EXTRA_YAML_FILES.length} extras + ${MODULE_FILES.length} modules)`
 );

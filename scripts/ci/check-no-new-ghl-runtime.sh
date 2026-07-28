@@ -29,6 +29,7 @@ collect_current() {
       ':!apps/experimental/**' \
       ':!scripts/ci/check-no-new-ghl-runtime.sh' \
       ':!scripts/ci/ghl-runtime-baseline.txt' \
+      ':!scripts/ci/test-ghl-runtime-guard.sh' \
       ':!scripts/ci/validate-academy-blueprint.mjs' \
       || true
   )"

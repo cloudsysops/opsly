@@ -10,8 +10,9 @@ export async function GET(): Promise<Response> {
       {
         status: 'disabled',
         message: 'GHL legacy health check disabled (PESKIDS_GHL_ENABLED=false)',
+        code: 'ghl_gone',
       },
-      { status: 200 }
+      { status: 410 }
     );
   }
 

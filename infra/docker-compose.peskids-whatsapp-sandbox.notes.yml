@@ -1,0 +1,20 @@
+# Optional compose overlay notes — Peskids WhatsApp sandbox
+#
+# Do NOT enable Meta flags or apply migrations via this file.
+# Use with platform compose on a shared Docker network so Peskids can reach:
+#   - opsly_orchestrator:3011  (POST /events)
+#   - opsly_llm_gateway:3010   (drafts only; no direct WhatsApp send)
+#
+# Example env (Doppler → container), all WhatsApp flags false:
+#   OPSLY_EVENT_BUS_URL=http://opsly_orchestrator:3011
+#   PESKIDS_WHATSAPP_ENABLED=false
+#   PESKIDS_WHATSAPP_INBOUND_META=false
+#   PESKIDS_WHATSAPP_OUTBOUND_ENABLED=false
+#   WACRM_PESKIDS_ENABLED=false
+#   PESKIDS_GHL_ENABLED=false
+#
+# Resource limits (when adding/updating the peskids service):
+#   deploy.resources.limits.cpus: "1.0"
+#   deploy.resources.limits.memory: 1G
+#
+# See docs/runbooks/PESKIDS-WHATSAPP-META-SANDBOX.md

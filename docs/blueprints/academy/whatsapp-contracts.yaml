@@ -1,0 +1,46 @@
+apiVersion: opsly.io/v1alpha1
+kind: WhatsAppChannelContract
+metadata:
+  blueprint: academy
+  tenant_pilot: peskids
+spec:
+  provider_primary: meta_cloud_api
+  provider_optional: wacrm
+  approval_first: true
+  sandbox_default: true
+
+  meta:
+    verify_token_env: META_WHATSAPP_VERIFY_TOKEN
+    app_secret_env: META_WHATSAPP_APP_SECRET
+    access_token_env: META_WHATSAPP_ACCESS_TOKEN
+    phone_number_id_env: META_WHATSAPP_PHONE_NUMBER_ID
+    waba_id_env: META_WHATSAPP_WABA_ID
+    api_version_env: META_API_VERSION
+    api_version_default: "v21.0"
+    signature_header: X-Hub-Signature-256
+    webhook_path: /api/webhooks/meta/whatsapp
+    challenge_query: hub.mode,hub.verify_token,hub.challenge
+
+  identity:
+    external_id: message-level Meta wamid / provider message id
+    external_conversation_id: thread/conversation id (wa_id + phone_number_id)
+
+  persistence:
+    system_of_record: supabase
+    messages_table: messages
+    outbox: whatsapp_outbound_outbox
+    idempotency_key: tenant_slug + external_id
+
+  sync_after_persist:
+    - twenty_crm_note_or_person_link
+    - n8n_internal_authenticated_only
+
+  forbidden:
+    - public_n8n_adding_trusted_secret_without_auth
+    - outbound_without_human_approval
+    - marking_sent_when_provider_disabled
+    - secrets_in_repo
+
+  smoke:
+    mode: fixture_only
+    script: scripts/peskids/whatsapp-meta-sandbox-smoke.sh

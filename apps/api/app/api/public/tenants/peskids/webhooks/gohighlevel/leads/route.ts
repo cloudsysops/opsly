@@ -45,6 +45,21 @@ function constantTimeEqual(a: string, b: string): boolean {
  * GHL -> Opsly bridge contract for lead capture, persistence, and minimal automation handoff.
  */
 export async function POST(request: NextRequest): Promise<Response> {
+  const ghlEnabled =
+    (process.env.PESKIDS_GHL_ENABLED ?? '').trim().toLowerCase() === 'true' ||
+    (process.env.PESKIDS_GHL_ENABLED ?? '').trim() === '1';
+  if (!ghlEnabled) {
+    return Response.json(
+      {
+        ok: false,
+        status: 'disabled',
+        message: 'GHL public webhook contained (PESKIDS_GHL_ENABLED=false)',
+        code: 'ghl_gone',
+      },
+      { status: 410 }
+    );
+  }
+
   const secret = process.env.PESKIDS_INBOUND_WEBHOOK_SECRET;
   if (secret) {
     const header = request.headers.get('x-webhook-secret')?.trim() ?? '';

@@ -1,6 +1,7 @@
 export { handleHealthCheck } from './health.js';
 export { handleOpenclawJobStatus, handleJobById, handleJobStatusAlias } from './jobs.js';
 export { handleEnqueueOllama, handleEnqueueWebhook, handleEnqueueSandbox, handleEnqueueJcode } from './queue.js';
+export { handleTenantEvents } from './events.js';
 export {
   handleHiveObjective,
   handleHiveObjectiveStatus,

@@ -66,6 +66,7 @@ import {
   handleGetVoiceMessage,
   handleSubmitTranscription,
   handleGetTranscriptions,
+  handleTenantEvents,
 } from './http/routes/index.js';
 
 const DEFAULT_PORT = 3011;
@@ -87,6 +88,10 @@ function buildRouter(): Router {
   const r = new Router();
 
   r.get('/health', handleHealthCheck);
+
+  // Authenticated tenant domain event bus (Peskids OPSLY_EVENT_BUS_URL …/events)
+  r.post('/events', handleTenantEvents);
+  r.post('/internal/events', handleTenantEvents);
 
   r.get('/internal/openclaw-job', handleOpenclawJobStatus);
 

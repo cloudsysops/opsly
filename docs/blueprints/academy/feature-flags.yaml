@@ -1,0 +1,32 @@
+apiVersion: opsly.io/v1alpha1
+kind: FeatureFlagCatalog
+metadata:
+  blueprint: academy
+  channel: whatsapp
+spec:
+  # Todos OFF por defecto. enabled requiere go/no-go humano.
+  flags:
+    - id: PESKIDS_WHATSAPP_ENABLED
+      default: false
+      description: Master switch recepción/envío WhatsApp (Meta o adaptador)
+      states_required_before_true: [ready]
+    - id: PESKIDS_WHATSAPP_INBOUND_META
+      default: false
+      description: Aceptar webhooks Meta Cloud API firmados
+    - id: PESKIDS_WHATSAPP_OUTBOUND_ENABLED
+      default: false
+      description: Permitir envío tras aprobación humana (nunca auto-send)
+    - id: WACRM_PESKIDS_ENABLED
+      default: false
+      description: Adaptador WACRM opcional (tenant peskids)
+    - id: WACRM_ENABLED
+      default: false
+      description: Flag global legacy; preferir WACRM_<SLUG>_ENABLED
+    - id: PESKIDS_GHL_ENABLED
+      default: false
+      description: Legacy GHL; rutas deben responder 410/disabled
+  lifecycle:
+    stub: code_or_proxy_without_transport
+    configured: env_present_flags_off
+    ready: sandbox_verified_auth_persist_approval
+    enabled: human_go_no_go_only
