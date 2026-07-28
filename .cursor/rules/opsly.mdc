@@ -93,6 +93,7 @@ Citar explícitamente qué fuente alimenta cada bloque del plan. **Excepción:**
 Documento detallado: `docs/03-agents/AGENT-GUARDRAILS.md`. Resumen:
 
 - **Sin tocar sin humano explícito:** migraciones Supabase aplicables a prod, workflows de deploy, compose/Traefik de plataforma, `config/root-whitelist.json`, secretos Doppler, `docs/ACTIVE-PROMPT.md` en hosts donde corre `cursor-prompt-monitor`, Stripe live, SSH/UFW/DNS de producción.
+- **Peskids live + CRM:** CRM canónico = **Twenty**. No reactivar GHL ni refactorizar leads/auth/Traefik/deploy productivo sin aprobación. Regla Cursor: `.cursor/rules/peskids-twenty-freeze.mdc`.
 - **Secretos:** nunca en código, commits, docs ni chat; solo Doppler; sin volcar `doppler secrets get` a logs.
 - **Portal/API nuevas:** Zero-Trust (`resolveTrustedPortalSession`, `tenantSlugMatchesSession`); OpenAPI si aplica al subset CI.
 - **Ramas:** preferir PR + review para rojo/ámbar; no `--force` a `main`.

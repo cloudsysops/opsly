@@ -1,0 +1,46 @@
+---
+description: Peskids prod + Twenty-only CRM — freeze architecture for agents
+alwaysApply: true
+---
+
+# Peskids production + CRM — agent freeze
+
+Peskids is **live**. Agents must not “improve” a working stack into a second CRM or a parallel control plane.
+
+## CRM (non-negotiable)
+
+- **Canonical CRM = Twenty** (`lib/services/twenty`, sync from Peskids leads/followups).
+- **GoHighLevel is retired for product.** Do not:
+  - set `PESKIDS_GHL_ENABLED=true` in docs, Doppler advice, compose, or code defaults
+  - add new GHL product flows, webhooks, or sync paths
+  - reintroduce GHL as “primary”, “sidecar for production”, or fallback when Twenty fails
+- Legacy GHL routes must stay **disabled / 410** unless a human explicitly asks for a one-off import/rollback and sets the flag themselves.
+- CI: `npm run guard:ghl-runtime` — new GHL references outside the reviewed baseline are forbidden.
+
+## Architecture freeze (working prod)
+
+Without **explicit human approval** in the same chat/PR, do **not** change:
+
+- Lead capture → Supabase SoT → Twenty best-effort sync
+- Auth/admin session model that is live today
+- Traefik/custom domain (`www.peskids.com`) routing
+- n8n CRM workflows that are already running for Peskids
+- Compose/deploy scripts that recreate or replace the live Peskids container of day
+- “Big bang” refactors of `apps/peskids` CRM, messaging, or billing while inventing a second provider
+
+## WhatsApp / Meta (sandbox)
+
+- Meta/WACRM work stays **flags OFF** until human go/no-go.
+- Do not cut over the production WhatsApp number or enable outbound from an agent session.
+
+## Allowed without asking
+
+- Docs/runbooks clarifying Twenty-only + GHL gone
+- Tests that assert GHL returns 410 when disabled
+- Sandbox-only code behind flags defaulting to `false`
+
+## Docs
+
+- `docs/tenants/peskids/TWENTY-CRM.md`
+- `docs/03-agents/AGENT-GUARDRAILS.md` (Peskids / CRM section)
+- `docs/runbooks/PRODUCTION-CHANGE-WINDOW.md`

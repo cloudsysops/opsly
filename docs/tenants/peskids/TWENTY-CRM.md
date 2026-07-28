@@ -1,30 +1,38 @@
 ---
 status: active
 owner: peskids
-last_review: 2026-06-09
+last_review: 2026-07-28
 tenant: peskids
 ---
 
-# Peskids — Twenty CRM (reemplazo de GoHighLevel)
+# Peskids — Twenty CRM (CRM canónico; GHL retirado)
 
 ## Objetivo
 
-Migrar el CRM comercial de **GoHighLevel (SaaS de pago)** a **Twenty CRM** (open source, self-hosted en el VPS Opsly), manteniendo:
+**CRM comercial = Twenty** (open source, self-hosted). GoHighLevel **no** es producto ni fallback.
 
-- Captura de leads en Supabase (`platform.peskids_leads`) como fuente operativa
+Mantener:
+
+- Captura de leads en Supabase como fuente operativa
 - Automatización vía **n8n CRM Starter Pack** + **Resend**
 - Operaciones (clases, familias, docentes) en la app Peskids
 
-## Estado en repo (2026-06-09)
+## Política agentes (2026-07-28)
+
+- No reactivar `PESKIDS_GHL_ENABLED`.
+- No añadir flujos GHL nuevos.
+- Rutas GHL legacy → **410** cuando el flag está off (default).
+- Ver `.cursor/rules/peskids-twenty-freeze.mdc` y `docs/03-agents/AGENT-GUARDRAILS.md`.
+
+## Estado en repo
 
 | Componente | Estado |
 |-----------|--------|
-| Cliente `@intcloudsysops/services/twenty` | Implementado en `lib/services/twenty/` |
-| Sync al crear lead (`POST /api/leads`) | `syncLeadToCrm()` → Twenty si está configurado |
-| GoHighLevel sidecar | **Desactivado por defecto** — requiere `PESKIDS_GHL_ENABLED=true` |
+| Cliente `@intcloudsysops/services/twenty` | Canónico — `lib/services/twenty/` |
+| Sync al crear lead | Twenty (best-effort; no bloquea Supabase) |
+| GoHighLevel | **Retirado de producto** — solo legacy opt-in humano; default off → 410 |
 | Migración DB | `0082_peskids_twenty_crm_ids.sql` (`twenty_person_id`, `twenty_opportunity_id`) |
 | Compose VPS | `infra/docker-compose.twenty.yml` |
-| Instancia prod | **Pendiente** — no hay contenedor Twenty en VPS (verificado 2026-06-09) |
 
 ## Arquitectura
 
@@ -57,6 +65,7 @@ doppler secrets set TWENTY_APP_SECRET="..." TWENTY_ENCRYPTION_KEY="..." TWENTY_P
 ```
 
 Regenerar `.env` en VPS (`./scripts/vps-bootstrap.sh`) y levantar:
+
 
 ```bash
 ./scripts/tenants/setup-twenty-peskids.sh

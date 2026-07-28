@@ -25,8 +25,21 @@ tags:
 | `docs/ACTIVE-PROMPT.md` en VPS si **no** confías en quien puede editarlo | `cursor-prompt-monitor` ejecuta líneas no comentadas = **RCE** (ver `AGENTS.md`). |
 | Billing real: Stripe **live**, precios, webhooks de cobro | Impacto legal y financiero directo. |
 | IPs públicas, SSH a VPS, UFW, Cloudflare DNS **en producción** | Superficie de ataque; la política Opsly es Tailscale para admin. |
+| **Reactivar GoHighLevel** (`PESKIDS_GHL_ENABLED=true`, nuevos flujos GHL, sync GHL como CRM) | Peskids usa **Twenty** como CRM canónico; GHL es legacy contenido (410). Un agente no debe reabrir SaaS de pago ni dual-write. |
+| **Refactor de arquitectura productiva Peskids** (leads→CRM, auth admin, Traefik `www.peskids.com`, compose/deploy del contenedor live, cutover WhatsApp) | Tenant en operación diaria; cambios solo con aprobación explícita + ventana nocturna. Ver `.cursor/rules/peskids-twenty-freeze.mdc`. |
 
 **Regla:** si la tarea cae en esta tabla → el agente **documenta el plan** y **para** hasta confirmación humana (o PR con review de owner/CODEOWNERS).
+
+### 1.1 Peskids + CRM — verdad operativa
+
+| Capacidad | Fuente de verdad | Prohibido para agentes |
+|-----------|------------------|------------------------|
+| CRM comercial | **Twenty** (`lib/services/twenty`, sync best-effort) | GHL como producto, fallback o “sidecar prod” |
+| Registro operativo leads | Supabase (`platform.peskids_leads` / flujos Peskids actuales) | Sustituir SoT sin ADR + humano |
+| GHL rutas legacy | Disabled / **HTTP 410** si flag off | Ampliar superficie GHL; default `true` |
+| WhatsApp Meta/WACRM | Flags **OFF** hasta go/no-go humano | Activar outbound o cutover del número principal |
+
+Gate CI: `npm run guard:ghl-runtime` (+ `npm run guard:ghl-runtime:test`).
 
 ## 2. Zona ámbar — solo con PR pequeño + checklist
 
@@ -73,12 +86,13 @@ En CI: `validate-structure` valida la raíz completa contra `config/root-whiteli
 | [AGENTS.md](../../AGENTS.md) | Estado operativo y bloqueantes |
 | [AGENTS-GUIDE.md](AGENTS-GUIDE.md) | Multi-agente en paralelo, límites por plan |
 | [.cursor/rules/opsly.mdc](../../.cursor/rules/opsly.mdc) | Reglas Cursor (always apply) |
+| [.cursor/rules/peskids-twenty-freeze.mdc](../../.cursor/rules/peskids-twenty-freeze.mdc) | Peskids live + Twenty-only; GHL no producto |
 | [.github/copilot-instructions.md](../../.github/copilot-instructions.md) | Copilot / patrones código |
 | [REPO-MAP.md](../REPO-MAP.md) | Dónde editar; whitelist |
 
 ---
 
-**Última revisión:** 2026-07-27 — ventana nocturna de cambios en producción (Peskids operativo); 2026-05-10 — política raíz `docs/` + allowlist.
+**Última revisión:** 2026-07-28 — Twenty-only CRM + freeze arquitectura Peskids prod; 2026-07-27 — ventana nocturna; 2026-05-10 — política raíz `docs/` + allowlist.
 
 ---
 
