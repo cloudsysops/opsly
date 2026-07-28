@@ -6,9 +6,15 @@ import * as stripeMod from '../../../../lib/stripe';
 import * as promMod from '../../../../lib/fetch-host-metrics-prometheus';
 import * as dockerCountMod from '../../../../lib/docker-running-count';
 import * as prometheusUrlMod from '../../../../lib/prometheus';
+import * as redisCacheMod from '../../../../lib/redis-cache';
 
 vi.mock('../../../../lib/supabase', () => ({
   getServiceClient: vi.fn(),
+}));
+
+vi.mock('../../../../lib/redis-cache', () => ({
+  getCache: vi.fn(),
+  setCache: vi.fn(),
 }));
 
 vi.mock('../../../../lib/stripe', () => ({
@@ -94,10 +100,60 @@ describe('GET /api/metrics', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.PLATFORM_ADMIN_TOKEN = ADMIN;
+    vi.mocked(redisCacheMod.getCache).mockResolvedValue(null);
+    vi.mocked(redisCacheMod.setCache).mockResolvedValue(true);
   });
 
   afterAll(() => {
     process.env.PLATFORM_ADMIN_TOKEN = orig;
+  });
+
+  it('returns cached JSON on cache hit and does not query DB/Stripe', async () => {
+    const cachedData = {
+      total_tenants: 42,
+      active_tenants: 40,
+      suspended_tenants: 2,
+      mrr_usd: 1999,
+      tenants_by_plan: {
+        startup: 30,
+        business: 8,
+        enterprise: 2,
+      },
+    };
+    vi.mocked(redisCacheMod.getCache).mockResolvedValue(cachedData);
+
+    const res = await getMetrics(new Request('http://x/metrics', { headers: adminHeaders() }));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body).toEqual(cachedData);
+
+    // Ensure database/Stripe query functions were NOT called
+    expect(supabaseMod.getServiceClient).not.toHaveBeenCalled();
+    expect(stripeMod.computeMrr).not.toHaveBeenCalled();
+  });
+
+  it('queries DB and sets cache on cache miss', async () => {
+    vi.mocked(redisCacheMod.getCache).mockResolvedValue(null);
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
+      mockTenantCountClient({
+        total: 10,
+        active: 7,
+        suspended: 1,
+        startup: 2,
+        business: 2,
+        enterprise: 1,
+      })
+    );
+    vi.mocked(stripeMod.computeMrr).mockResolvedValue(123.45);
+
+    const res = await getMetrics(new Request('http://x/metrics', { headers: adminHeaders() }));
+    expect(res.status).toBe(200);
+
+    expect(redisCacheMod.setCache).toHaveBeenCalledWith(
+      'metrics:main_summary',
+      expect.objectContaining({ total_tenants: 10, mrr_usd: 123.45 }),
+      60
+    );
   });
 
   it('returns 401 without admin token', async () => {
