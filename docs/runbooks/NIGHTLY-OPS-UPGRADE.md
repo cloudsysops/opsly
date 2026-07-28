@@ -11,13 +11,22 @@ Automatización nocturna (01:00 `America/Bogota`) para upgrades seguros en el VP
 ## Qué hace (`scripts/nightly-ops-upgrade.sh`)
 
 1. **Git sync** — `git pull --ff-only origin main` en `/opt/opsly`
-2. **Merge de PRs** — solo PRs abiertos con label **`night-merge`** y mergeables (CI verde)
+2. **Merge de PRs** — preferido vía GitHub Actions [Night merge](../../.github/workflows/night-merge.yml) (01:00 Bogota / 06:00 UTC). El VPS también intenta merge vía API si hay `GITHUB_TOKEN` con scope `repo`; si no, solo hace pull.
 3. **n8n upgrade** — a `N8N_TARGET_VERSION` (default **2.32.5**) tenant por tenant, con **rollback automático** si falla health
 4. **Housekeeping ligero** — prune de imágenes/cache Docker
 5. **Smoke** — API health, `www.peskids.com`, n8n peskids, contenedores críticos
 6. **Discord** — éxito o fallo
 
 Si el smoke falla → exit 1 + alerta Discord. Cada tenant n8n fallido queda en la versión anterior (rollback).
+
+## Orden nocturno recomendado
+
+| Hora (Bogota) | Quién | Qué |
+|---------------|-------|-----|
+| 01:00 | GitHub Actions `Night merge` | Squash-merge PRs `night-merge` |
+| 01:15 | VPS cron `nightly-ops-upgrade` | pull + n8n upgrade + smoke + rollback |
+| 02:30 | VPS cleanup cron | reset logs |
+| mañana | humano | solo si Discord ❌ o `pending-human-actions.txt` (apt/reboot) |
 
 ## Ventana
 

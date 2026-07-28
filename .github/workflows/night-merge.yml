@@ -1,0 +1,77 @@
+# Squash-merge open PRs labeled night-merge at 01:00 America/Bogota (06:00 UTC).
+# VPS nightly-ops then git pull + n8n upgrade + smoke (see docs/runbooks/NIGHTLY-OPS-UPGRADE.md).
+name: Night merge
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  night-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge night-merge PRs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const label = 'night-merge';
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 50,
+            });
+            const targets = pulls.filter((p) =>
+              p.labels.some((l) => l.name === label)
+            );
+            if (targets.length === 0) {
+              core.info('No open PRs with label night-merge');
+              return;
+            }
+            for (const pr of targets) {
+              core.info(`Considering PR #${pr.number}: ${pr.title}`);
+              try {
+                const { data: status } = await github.rest.pulls.checkIfMerged({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pr.number,
+                }).catch(() => ({ data: null }));
+              } catch (_) { /* not merged */ }
+
+              // Skip if not mergeable
+              const { data: detail } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+              });
+              if (detail.mergeable !== true) {
+                core.warning(`PR #${pr.number} not mergeable (${detail.mergeable_state})`);
+                continue;
+              }
+              try {
+                await github.rest.pulls.merge({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pr.number,
+                  merge_method: 'squash',
+                });
+                core.info(`Merged PR #${pr.number}`);
+                try {
+                  await github.rest.git.deleteRef({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    ref: `heads/${detail.head.ref}`,
+                  });
+                } catch (e) {
+                  core.info(`Branch delete skipped: ${e.message}`);
+                }
+              } catch (e) {
+                core.warning(`Failed to merge PR #${pr.number}: ${e.message}`);
+              }
+            }
