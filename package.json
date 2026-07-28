@@ -254,11 +254,6 @@
     },
     "@modelcontextprotocol/sdk": {
       "@hono/node-server": "2.0.12"
-    },
-    "@intcloudsysops/mcp": {
-      "@modelcontextprotocol/sdk": {
-        "@hono/node-server": "2.0.12"
-      }
     }
   }
 }
