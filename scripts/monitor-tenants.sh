@@ -336,7 +336,14 @@ main() {
   if (( WARN_COUNT > 0 )); then
     local summary fingerprint
     summary="$(printf '%s\n' "${ALERTS[@]}" | head -20)"
-    fingerprint="$(printf '%s\n' "${ALERTS[@]}" | sort | cksum | awk '{print $1}')"
+    # Normalize fluctuating numbers so RAM/swap jitter does not re-alert every tick.
+    fingerprint="$(
+      printf '%s\n' "${ALERTS[@]}" \
+        | sed -E 's/[0-9]+/N/g' \
+        | sort -u \
+        | cksum \
+        | awk '{print $1}'
+    )"
     if should_notify_warn "$fingerprint"; then
       notify "⚠️ Tenant monitor WARN" "warn=${WARN_COUNT} (repite máx. cada ${WARN_COOLDOWN_SEC}s)\n${summary}" "warning"
       log "discord warn sent fingerprint=${fingerprint}"
