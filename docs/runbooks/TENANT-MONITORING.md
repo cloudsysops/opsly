@@ -62,6 +62,10 @@ cd /opt/opsly
 
 Logs: `/opt/opsly/runtime/logs/tenant-monitor.log` (y `tenant-monitor.cron.log` si usas cron).
 
+Por defecto el monitor es **quiet** (solo start/done + WARN/FAIL). `MONITOR_VERBOSE=1` o `--verbose` imprime cada OK.
+WARN Discord se deduplica (`MONITOR_WARN_COOLDOWN_SEC`, default 6h) para no ocultar FAILs nuevos.
+Baseline limpia: `./scripts/reset-ops-logs.sh` (archiva y trunca). Logrotate: `infra/cron/logrotate-opsly-tenant-monitor.conf`.
+
 ## Requisitos
 
 - `jq`, `curl`, `python3` en el host.
