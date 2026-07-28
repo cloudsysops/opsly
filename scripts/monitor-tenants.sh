@@ -6,7 +6,8 @@
 #   ./scripts/monitor-tenants.sh [--dry-run] [--slug peskids] [--no-discord] [--local-host]
 #   ./scripts/monitor-tenants.sh --install-hint
 #
-# Exit: 0 all OK, 1 warnings/failures (alerts sent when Discord available)
+# Exit: 0 OK or WARN-only (Discord WARN deduped); 1 on FAIL/CRITICAL
+# Quiet by default — MONITOR_VERBOSE=1 for every OK line.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -28,11 +29,17 @@ ONLY_SLUG=""
 FAIL_COUNT=0
 WARN_COUNT=0
 ALERTS=()
+# Quiet by default: only start/done + WARN/FAIL. Set MONITOR_VERBOSE=1 for every OK line.
+VERBOSE="${MONITOR_VERBOSE:-0}"
+WARN_COOLDOWN_SEC="${MONITOR_WARN_COOLDOWN_SEC:-21600}"
+STATE_FILE="${LOG_DIR}/tenant-monitor.alert-state"
 
 usage() {
   cat <<EOF
-Usage: $0 [--dry-run] [--slug SLUG] [--no-discord] [--local-host]
+Usage: $0 [--dry-run] [--slug SLUG] [--no-discord] [--local-host] [--verbose]
   --local-host   Also check disk/RAM on this machine (for VPS cron)
+  --verbose      Log every OK check (default: only issues + summary)
+Env: MONITOR_VERBOSE=1  MONITOR_WARN_COOLDOWN_SEC=21600  MONITOR_HEARTBEAT=1
 EOF
 }
 
@@ -41,6 +48,7 @@ while [[ $# -gt 0 ]]; do
     --dry-run) DRY_RUN=true ;;
     --no-discord) SEND_DISCORD=false ;;
     --local-host) LOCAL_HOST=true ;;
+    --verbose) VERBOSE=1 ;;
     --slug) ONLY_SLUG="${2:-}"; shift ;;
     --install-hint)
       cat <<'HINT'
@@ -74,6 +82,12 @@ log() {
   echo "$line" >>"${LOG_FILE}" 2>/dev/null || true
 }
 
+log_verbose() {
+  if [[ "$VERBOSE" == "1" ]]; then
+    log "$@"
+  fi
+}
+
 add_alert() {
   local level="$1"
   local msg="$2"
@@ -101,6 +115,30 @@ notify() {
   fi
 }
 
+# Deduplicate WARN Discord spam so new FAILs stand out in ops channels.
+should_notify_warn() {
+  local fingerprint="$1"
+  local now last_fp last_ts
+  now="$(date +%s)"
+  last_fp=""
+  last_ts=0
+  if [[ -f "$STATE_FILE" ]]; then
+    # format: fingerprint|unix_ts
+    IFS='|' read -r last_fp last_ts <"$STATE_FILE" || true
+  fi
+  if [[ "$fingerprint" == "$last_fp" && -n "${last_ts:-}" && "$last_ts" =~ ^[0-9]+$ ]]; then
+    if (( now - last_ts < WARN_COOLDOWN_SEC )); then
+      return 1
+    fi
+  fi
+  printf '%s|%s\n' "$fingerprint" "$now" >"${STATE_FILE}.tmp" 2>/dev/null && mv "${STATE_FILE}.tmp" "$STATE_FILE" 2>/dev/null || true
+  return 0
+}
+
+clear_warn_state_on_ok() {
+  rm -f "$STATE_FILE" 2>/dev/null || true
+}
+
 if [[ ! -f "$CONFIG_PATH" ]]; then
   echo "Config not found: $CONFIG_PATH" >&2
   exit 2
@@ -114,7 +152,7 @@ RAM_CRIT_MB="$(jq -r '.defaults.ram_available_critical_mb // 256' "$CONFIG_PATH"
 SWAP_WARN_PCT="$(jq -r '.defaults.swap_used_warn_pct // 80' "$CONFIG_PATH")"
 
 check_host_resources() {
-  log "=== Host resources ==="
+  log_verbose "=== Host resources ==="
   local disk_pct avail_mb swap_used swap_total swap_pct
   disk_pct="$(df / | awk 'NR==2 {gsub(/%/,"",$5); print $5}')"
   read -r avail_mb swap_used swap_total < <(
@@ -132,7 +170,7 @@ print(avail, swap_u, swap_t)
 PY
   )
 
-  log "disk=${disk_pct}% ram_available_mb=${avail_mb} swap_used_mb=${swap_used}/${swap_total}"
+  log_verbose "disk=${disk_pct}% ram_available_mb=${avail_mb} swap_used_mb=${swap_used}/${swap_total}"
 
   if [[ "${disk_pct}" =~ ^[0-9]+$ ]]; then
     if (( disk_pct >= DISK_CRIT )); then
@@ -181,7 +219,7 @@ check_container() {
       return 1
       ;;
   esac
-  log "ok container ${name} (${status})"
+  log_verbose "ok container ${name} (${status})"
 }
 
 http_ok() {
@@ -236,12 +274,12 @@ http_ok() {
 
 check_tenant() {
   local slug="$1"
-  log "=== Tenant ${slug} ==="
+  log_verbose "=== Tenant ${slug} ==="
   local urls_count i
   local canonical
   canonical="$(jq -r --arg s "$slug" '.tenants[] | select(.slug==$s) | .canonical_domain // empty' "$CONFIG_PATH")"
   if [[ -n "$canonical" ]]; then
-    log "canonical_domain=${canonical}"
+    log_verbose "canonical_domain=${canonical}"
   fi
 
   local c
@@ -250,7 +288,7 @@ check_tenant() {
     if [[ "$LOCAL_HOST" == "true" ]]; then
       check_container "$c" || true
     else
-      log "skip container check (not --local-host): ${c}"
+      log_verbose "skip container check (not --local-host): ${c}"
     fi
   done < <(jq -r --arg s "$slug" '.tenants[] | select(.slug==$s) | .containers[]?' "$CONFIG_PATH")
 
@@ -264,7 +302,7 @@ check_tenant() {
     follow="$(jq -r --arg s "$slug" --argjson i "$i" '.tenants[] | select(.slug==$s) | .urls[$i].follow_redirects // true' "$CONFIG_PATH")"
     location_needle="$(jq -r --arg s "$slug" --argjson i "$i" '.tenants[] | select(.slug==$s) | .urls[$i].expect_header_location_contains // empty' "$CONFIG_PATH")"
     if result="$(http_ok "$url" "$expect" "$needle" "$follow" "$location_needle")"; then
-      log "ok ${slug}/${name} ${result} ${url}"
+      log_verbose "ok ${slug}/${name} ${result} ${url}"
     else
       add_alert "FAIL" "Tenant ${slug} URL ${name}: ${result} — ${url}"
     fi
@@ -287,18 +325,31 @@ main() {
     check_tenant "$slug"
   done < <(jq -r '.tenants[].slug' "$CONFIG_PATH")
 
-  if (( FAIL_COUNT > 0 || WARN_COUNT > 0 )); then
+  if (( FAIL_COUNT > 0 )); then
     local summary
     summary="$(printf '%s\n' "${ALERTS[@]}" | head -20)"
-    local dtype="warning"
-    (( FAIL_COUNT > 0 )) && dtype="error"
-    notify "🚨 Tenant monitor" "fail=${FAIL_COUNT} warn=${WARN_COUNT}\n${summary}" "$dtype"
-    log "done with issues fail=${FAIL_COUNT} warn=${WARN_COUNT}"
+    notify "🚨 Tenant monitor FAIL" "fail=${FAIL_COUNT} warn=${WARN_COUNT}\n${summary}" "error"
+    log "done FAIL fail=${FAIL_COUNT} warn=${WARN_COUNT}"
     exit 1
   fi
 
+  if (( WARN_COUNT > 0 )); then
+    local summary fingerprint
+    summary="$(printf '%s\n' "${ALERTS[@]}" | head -20)"
+    fingerprint="$(printf '%s\n' "${ALERTS[@]}" | sort | cksum | awk '{print $1}')"
+    if should_notify_warn "$fingerprint"; then
+      notify "⚠️ Tenant monitor WARN" "warn=${WARN_COUNT} (repite máx. cada ${WARN_COOLDOWN_SEC}s)\n${summary}" "warning"
+      log "discord warn sent fingerprint=${fingerprint}"
+    else
+      log "discord warn suppressed (cooldown) fingerprint=${fingerprint}"
+    fi
+    log "done WARN warn=${WARN_COUNT}"
+    # Exit 0 so cron stays quiet; WARNs already logged. New FAILs still exit 1.
+    exit 0
+  fi
+
+  clear_warn_state_on_ok
   log "done OK"
-  # Optional success heartbeat only when MONITOR_HEARTBEAT=1
   if [[ "${MONITOR_HEARTBEAT:-0}" == "1" ]]; then
     notify "✅ Tenant monitor OK" "Todos los checks pasaron ($(date -u +%H:%M) UTC)" "success"
   fi
