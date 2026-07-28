@@ -132,39 +132,67 @@ git_sync() {
 }
 
 # --- 2) merge PRs labeled night-merge ---
+merge_via_api() {
+  local n="$1"
+  local token="${GITHUB_TOKEN:-${GITHUB_TOKEN_N8N:-}}"
+  [[ -n "$token" ]] || return 1
+  curl -sf -X PUT \
+    -H "Authorization: Bearer ${token}" \
+    -H "Accept: application/vnd.github+json" \
+    -H "X-GitHub-Api-Version: 2022-11-28" \
+    "https://api.github.com/repos/cloudsysops/opsly/pulls/${n}/merge" \
+    -d '{"merge_method":"squash"}' >/dev/null
+}
+
 merge_night_prs() {
   if [[ "$SKIP_MERGE" == "true" ]]; then
     log "SKIP merge PRs"
     return 0
   fi
-  if ! command -v gh >/dev/null 2>&1; then
-    log "gh CLI not available — skip PR merges"
+  local token="${GITHUB_TOKEN:-${GITHUB_TOKEN_N8N:-}}"
+  if [[ -z "$token" ]]; then
+    log "No GITHUB_TOKEN — skip PR merges (git pull only)"
     return 0
   fi
   log "Looking for open PRs with label night-merge"
   local prs
-  prs="$(gh pr list --repo cloudsysops/opsly --label night-merge --state open --json number,title,mergeable,statusCheckRollup --jq '.[] | select(.mergeable=="MERGEABLE") | .number' 2>/dev/null || true)"
+  prs="$(curl -sf \
+    -H "Authorization: Bearer ${token}" \
+    -H "Accept: application/vnd.github+json" \
+    "https://api.github.com/repos/cloudsysops/opsly/pulls?state=open&per_page=50" \
+    | python3 -c '
+import json,sys
+data=json.load(sys.stdin)
+for pr in data:
+    labels={l.get("name","") for l in pr.get("labels",[])}
+    if "night-merge" in labels:
+        print(pr["number"])
+' 2>/dev/null || true)"
   if [[ -z "$prs" ]]; then
-    log "No mergeable night-merge PRs"
+    log "No open night-merge PRs"
     return 0
   fi
   local n
   for n in $prs; do
     log "Merging PR #${n}"
     if [[ "$DRY_RUN" == "true" ]]; then
-      log "DRY-RUN: gh pr merge ${n}"
+      log "DRY-RUN: merge PR #${n}"
       continue
     fi
-    if gh pr merge "$n" --repo cloudsysops/opsly --squash --auto --delete-branch 2>/dev/null \
-      || gh pr merge "$n" --repo cloudsysops/opsly --squash --delete-branch; then
-      log "Merged PR #${n}"
-      notify "✅ Night merge PR #${n}" "Squash-merged via nightly-ops" "success"
+    if command -v gh >/dev/null 2>&1; then
+      if gh pr merge "$n" --repo cloudsysops/opsly --squash --delete-branch; then
+        notify "✅ Night merge PR #${n}" "Squash-merged via nightly-ops" "success"
+        continue
+      fi
+    fi
+    if merge_via_api "$n"; then
+      log "Merged PR #${n} via API"
+      notify "✅ Night merge PR #${n}" "Squash-merged via API" "success"
     else
-      log "WARN: could not merge PR #${n} (CI or conflicts)"
+      log "WARN: could not merge PR #${n} (CI red, conflicts, or outside policy)"
       notify "⚠️ Night merge skipped PR #${n}" "Not mergeable — human review" "warning"
     fi
   done
-  # Re-pull after merges
   git_sync
 }
 
