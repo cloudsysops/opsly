@@ -13,6 +13,17 @@ Smoke de URLs públicas + (en VPS) contenedores Docker y recursos host (disco/RA
 - `config/tenant-monitoring.json` — targets por `tenant_slug` (empezar por `peskids`).
 - Umbrales por defecto: disco 80/90%, RAM disponible 512/256 Mi, swap 80%.
 
+### Peskids — dominio canónico
+
+| Prioridad | URL | Qué valida |
+|-----------|-----|------------|
+| 1 (canónico) | `https://www.peskids.com` | landing, `/api/health`, admin, familias |
+| 1 | `https://peskids.com` | apex landing + health (200 o redirect a www) |
+| 2 (legacy) | `https://peskids.op-sly.com` | redirect o 200 (transición) |
+| tools | `n8n-peskids.op-sly.com`, `uptime-peskids.op-sly.com` | CRM / Uptime Kuma |
+
+Detalle DNS/Traefik: `docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md`.
+
 ## Ejecución manual
 
 ```bash
