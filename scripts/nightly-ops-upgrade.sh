@@ -95,14 +95,22 @@ trap 'rm -f "$LOCK_FILE"' EXIT
 log "=== Nightly ops start (dry_run=${DRY_RUN}) bogota=${window_ts} ==="
 notify "🌙 Nightly ops started" "VPS maintenance + n8n ${N8N_TARGET}" "info"
 
-# Load env for Discord / domain
+# Load env for Discord / domain (safe under set -u: only KEY=VALUE lines)
 if [[ -f "${OPSLY_ROOT}/.env" ]]; then
   set -a
   # shellcheck disable=SC1091
-  . "${OPSLY_ROOT}/.env"
+  while IFS= read -r __line || [[ -n "${__line}" ]]; do
+    [[ -z "${__line}" || "${__line}" == \#* ]] && continue
+    [[ "${__line}" == *=* ]] || continue
+    # Skip malformed / binary-ish lines
+    key="${__line%%=*}"
+    [[ "${key}" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || continue
+    export "${__line?}" 2>/dev/null || true
+  done < "${OPSLY_ROOT}/.env"
   set +a
 fi
 PLATFORM_DOMAIN="${PLATFORM_DOMAIN:-op-sly.com}"
+unset __line key 2>/dev/null || true
 
 # --- 1) git sync ---
 git_sync() {

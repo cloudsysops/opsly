@@ -22,7 +22,8 @@ chmod +x "${REPO_ROOT}/scripts/nightly-ops-upgrade.sh" \
   "${REPO_ROOT}/scripts/upgrade-n8n-tenant.sh" 2>/dev/null || true
 
 # 01:00 America/Bogota every day (TZ set in crontab line)
-NIGHT_LINE="0 1 * * * TZ=America/Bogota cd ${REPO_ROOT} && set -a && [ -f .env ] && . ./.env; set +a; ./scripts/nightly-ops-upgrade.sh >>${LOG_DIR}/nightly-ops.cron.log 2>&1"
+# Script loads .env safely itself — do not source .env in crontab (breaks set -u)
+NIGHT_LINE="0 1 * * * TZ=America/Bogota cd ${REPO_ROOT} && ./scripts/nightly-ops-upgrade.sh >>${LOG_DIR}/nightly-ops.cron.log 2>&1"
 
 BLOCK=$(cat <<EOF
 ${MARKER_BEGIN}
