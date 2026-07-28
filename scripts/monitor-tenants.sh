@@ -188,11 +188,21 @@ http_ok() {
   local url="$1"
   local expect_csv="$2"
   local needle="${3:-}"
-  local code body tmp
+  local follow="${4:-true}"
+  local location_needle="${5:-}"
+  local code body location tmp curl_args=(-sS --max-time "$HTTP_TIMEOUT")
   tmp="$(mktemp)"
-  code="$(curl -sS -L --max-time "$HTTP_TIMEOUT" -o "$tmp" -w "%{http_code}" "$url" 2>/dev/null || echo "000")"
+
+  if [[ "$follow" == "true" ]]; then
+    curl_args+=(-L)
+  fi
+  # Capture final/status code + Location header (useful for apex → www redirects)
+  local headers
+  headers="$(mktemp)"
+  code="$(curl "${curl_args[@]}" -D "$headers" -o "$tmp" -w "%{http_code}" "$url" 2>/dev/null || echo "000")"
   body="$(cat "$tmp" 2>/dev/null || true)"
-  rm -f "$tmp"
+  location="$(awk 'BEGIN{IGNORECASE=1} /^Location:/ {sub(/\r$/,""); sub(/^Location:[[:space:]]*/,""); print; exit}' "$headers" 2>/dev/null || true)"
+  rm -f "$tmp" "$headers"
 
   local ok=false
   local exp
@@ -212,7 +222,15 @@ http_ok() {
     echo "HTTP ${code} missing body needle"
     return 1
   fi
-  echo "HTTP ${code}"
+  if [[ -n "$location_needle" && "$location" != *"$location_needle"* ]]; then
+    echo "HTTP ${code} Location missing '${location_needle}' (got: ${location:-none})"
+    return 1
+  fi
+  if [[ -n "$location" ]]; then
+    echo "HTTP ${code} → ${location}"
+  else
+    echo "HTTP ${code}"
+  fi
   return 0
 }
 
@@ -220,6 +238,11 @@ check_tenant() {
   local slug="$1"
   log "=== Tenant ${slug} ==="
   local urls_count i
+  local canonical
+  canonical="$(jq -r --arg s "$slug" '.tenants[] | select(.slug==$s) | .canonical_domain // empty' "$CONFIG_PATH")"
+  if [[ -n "$canonical" ]]; then
+    log "canonical_domain=${canonical}"
+  fi
 
   local c
   while IFS= read -r c; do
@@ -233,12 +256,14 @@ check_tenant() {
 
   urls_count="$(jq -r --arg s "$slug" '.tenants[] | select(.slug==$s) | .urls | length' "$CONFIG_PATH")"
   for ((i = 0; i < urls_count; i++)); do
-    local name url expect needle result
+    local name url expect needle result follow location_needle
     name="$(jq -r --arg s "$slug" --argjson i "$i" '.tenants[] | select(.slug==$s) | .urls[$i].name' "$CONFIG_PATH")"
     url="$(jq -r --arg s "$slug" --argjson i "$i" '.tenants[] | select(.slug==$s) | .urls[$i].url' "$CONFIG_PATH")"
     expect="$(jq -r --arg s "$slug" --argjson i "$i" '.tenants[] | select(.slug==$s) | .urls[$i].expect_status | join(" ")' "$CONFIG_PATH")"
     needle="$(jq -r --arg s "$slug" --argjson i "$i" '.tenants[] | select(.slug==$s) | .urls[$i].expect_body_contains[0] // empty' "$CONFIG_PATH")"
-    if result="$(http_ok "$url" "$expect" "$needle")"; then
+    follow="$(jq -r --arg s "$slug" --argjson i "$i" '.tenants[] | select(.slug==$s) | .urls[$i].follow_redirects // true' "$CONFIG_PATH")"
+    location_needle="$(jq -r --arg s "$slug" --argjson i "$i" '.tenants[] | select(.slug==$s) | .urls[$i].expect_header_location_contains // empty' "$CONFIG_PATH")"
+    if result="$(http_ok "$url" "$expect" "$needle" "$follow" "$location_needle")"; then
       log "ok ${slug}/${name} ${result} ${url}"
     else
       add_alert "FAIL" "Tenant ${slug} URL ${name}: ${result} — ${url}"

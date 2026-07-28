@@ -15,6 +15,7 @@
       "slug": "peskids",
       "priority": 1,
       "production": true,
+      "canonical_domain": "https://www.peskids.com",
       "containers": [
         "peskids",
         "n8n_peskids",
@@ -26,20 +27,43 @@
       ],
       "urls": [
         {
-          "name": "landing",
-          "url": "https://peskids.op-sly.com/",
+          "name": "www_landing",
+          "url": "https://www.peskids.com/",
           "expect_status": [200]
         },
         {
-          "name": "health",
-          "url": "https://peskids.op-sly.com/api/health",
+          "name": "www_health",
+          "url": "https://www.peskids.com/api/health",
           "expect_status": [200],
           "expect_body_contains": ["\"status\""]
         },
         {
-          "name": "admin_login",
-          "url": "https://peskids.op-sly.com/admin/login",
+          "name": "www_admin_login",
+          "url": "https://www.peskids.com/admin/login",
           "expect_status": [200, 307, 308]
+        },
+        {
+          "name": "www_familias_login",
+          "url": "https://www.peskids.com/familias/login",
+          "expect_status": [200, 307, 308]
+        },
+        {
+          "name": "apex_landing",
+          "url": "https://peskids.com/",
+          "follow_redirects": false,
+          "expect_status": [200, 301, 302, 307, 308]
+        },
+        {
+          "name": "apex_health",
+          "url": "https://peskids.com/api/health",
+          "expect_status": [200],
+          "expect_body_contains": ["\"status\""]
+        },
+        {
+          "name": "legacy_opsly_redirect",
+          "url": "https://peskids.op-sly.com/",
+          "follow_redirects": false,
+          "expect_status": [200, 301, 302, 307, 308]
         },
         {
           "name": "n8n",
