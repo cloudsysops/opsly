@@ -19,3 +19,7 @@
 ## 2026-05-27 - Ambiguous Labels in PasswordInput
 **Learning:** The `PasswordInput` component includes an eye icon button with an `aria-label` containing "contraseña". This can cause `get_by_label("Contraseña")` in Playwright or screen readers to match multiple elements, leading to ambiguity.
 **Action:** Always use exact matching or specific ARIA roles when targeting inputs with associated toggle buttons to ensure the primary input is correctly identified.
+
+## 2026-05-28 - Localized Copy States & Clipboard Visual Feedback
+**Learning:** Simple action buttons performing side effects like clipboard copy (e.g., in DeveloperActions) must provide rich, localized feedback inside the button itself rather than distant global messages. Without explicit individual status indicators and localized aria-labels, users and screen-readers face high visual/auditory cognitive load to confirm completion.
+**Action:** Replace general or distant success labels with localized component states, swapping default `Copy` icons for `Check` icons with `text-ops-green` highlights, and updating `aria-label`/`title` dynamically upon interaction.
