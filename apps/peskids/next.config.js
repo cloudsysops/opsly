@@ -6,6 +6,7 @@ const nextConfig = {
   output: 'standalone',
   outputFileTracingRoot: path.join(__dirname, '../..'),
   transpilePackages: [
+    '@intcloudsysops/capacity-alert',
     '@intcloudsysops/opsly-core',
     '@intcloudsysops/conversational-runtime',
     '@intcloudsysops/openwa',
