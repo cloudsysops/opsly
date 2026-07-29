@@ -34,6 +34,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { formatRelativeTime } from '@/lib/utils';
 import { NotificationBell } from '@/components/notifications/notification-bell';
+import { CapacityAlertBanner } from '@/components/admin/capacity-alert-banner';
 import { createClient } from '@/lib/supabase-browser';
 
 interface AdminShellProps {
@@ -506,6 +507,8 @@ export function AdminShell({
             {signOutError}
           </p>
         ) : null}
+
+        <CapacityAlertBanner />
 
         <main id="admin-main" className="flex-1 overflow-auto p-5 sm:p-6" tabIndex={-1}>
           {children}

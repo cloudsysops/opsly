@@ -67,3 +67,16 @@ Orden sugerido:
 - No subir a 16G “por si acaso” sin uso medido.
 - No quitar caps en Twenty sin el upgrade de droplet.
 - No merge/deploy de día que recree todos los n8n bajo carga.
+
+## Notificaciones (Peskids / Opsly / email / Cursor)
+
+Avisos claros multi-canal: [`CAPACITY-ALERT-NOTIFICATIONS.md`](./CAPACITY-ALERT-NOTIFICATIONS.md).
+
+```bash
+./scripts/ops/notify-capacity-alert.sh --dry-run --to "tu@email.com"
+# real:
+# doppler run --project ops-intcloudsysops --config prd -- \
+#   ./scripts/ops/notify-capacity-alert.sh --send --to "tu@email.com"
+```
+
+Fuente de copy: `lib/capacity-alert/alert.json`. Estado para agentes: `docs/ops/ACTIVE-CAPACITY-ALERT.md`.

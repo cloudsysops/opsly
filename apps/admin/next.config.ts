@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   // Monorepo root (avoids picking ~/package-lock.json when tracing)
   outputFileTracingRoot: path.join(__dirname, '../..'),
-  transpilePackages: ['@intcloudsysops/components'],
+  transpilePackages: ['@intcloudsysops/components', '@intcloudsysops/capacity-alert'],
 };
 
 export default nextConfig;
