@@ -40,9 +40,10 @@ jobs:
         run: |
           set +e
           # MVP policy: exclude dev dependencies from blocking audit (see docs/security/NPM-AUDIT-EXEMPTIONS.md)
-          npm audit --audit-level=moderate --omit=dev --json > audit-report.json 2>&1
+          npm audit --audit-level=moderate --omit=dev --json > audit-report.json
+          node scripts/ci/audit-filter.mjs
           EXIT_CODE=$?
-          # Print summary for visibility (including dev deps) but only return EXIT_CODE from non-dev audit
+          # Print summary for visibility (including dev deps) but only return EXIT_CODE from filtered non-dev audit
           npm audit --audit-level=moderate 2>&1 || true
           exit $EXIT_CODE
 

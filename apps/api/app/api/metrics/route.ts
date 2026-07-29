@@ -2,8 +2,6 @@ import { serverErrorLogged } from '../../../lib/api-response';
 import { requireAdminAccessUnlessDemoRead } from '../../../lib/auth';
 import { computeMrr } from '../../../lib/stripe';
 import { getServiceClient } from '../../../lib/supabase';
-import { getCache, setCache } from '../../../lib/redis-cache';
-import { CACHE_TTL } from '../../../lib/constants';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 type CountHeadResult = {
@@ -101,13 +99,6 @@ export async function GET(request: Request): Promise<Response> {
     return authError;
   }
 
-  // Bolt Optimization: check cache first to prevent redundant database/Stripe queries
-  const cacheKey = 'metrics:main_summary';
-  const cached = await getCache<Record<string, any>>(cacheKey);
-  if (cached !== null) {
-    return Response.json(cached);
-  }
-
   const client = getServiceClient();
   const rows = await fetchTenantMetricRows(client);
   const err = firstMetricsError(rows);
@@ -122,7 +113,7 @@ export async function GET(request: Request): Promise<Response> {
     return serverErrorLogged('computeMrr:', e);
   }
 
-  const body = {
+  return Response.json({
     total_tenants: rows.totalRes.count ?? 0,
     active_tenants: rows.activeRes.count ?? 0,
     suspended_tenants: rows.suspendedRes.count ?? 0,
@@ -132,10 +123,5 @@ export async function GET(request: Request): Promise<Response> {
       business: rows.businessRes.count ?? 0,
       enterprise: rows.enterpriseRes.count ?? 0,
     },
-  };
-
-  // Background set to avoid blocking responses, handles errors internally
-  void setCache(cacheKey, body, CACHE_TTL.SHORT);
-
-  return Response.json(body);
+  });
 }
