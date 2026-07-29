@@ -1,10 +1,16 @@
 # Rendered by orchestrator: replace {{PLACEHOLDERS}} then write docker-compose.yml per tenant.
 # Do not run this file directly.
+# Memory caps: docs/runbooks/VPS-MEMORY-CAPS.md
 
 services:
   n8n_{{SLUG}}:
     image: n8nio/n8n:latest
     container_name: n8n_{{SLUG}}
+    mem_limit: 384m
+    deploy:
+      resources:
+        limits:
+          memory: 384M
     ports:
       - "{{PORT_N8N}}:5678"
     environment:
@@ -19,6 +25,7 @@ services:
       OPSLY_CRM_NOTIFY_WEBHOOK_URL: ""
       N8N_TASK_RUNNERS_MAX_NUMBER: "2"
       DB_TYPE: sqlite
+      NODE_OPTIONS: "--max-old-space-size=288"
     volumes:
       - n8n_data_{{SLUG}}:/home/node/.n8n
     networks:
@@ -43,6 +50,11 @@ services:
   uptime-kuma_{{SLUG}}:
     image: louislam/uptime-kuma:1
     container_name: uptime_{{SLUG}}
+    mem_limit: 128m
+    deploy:
+      resources:
+        limits:
+          memory: 128M
     ports:
       - "{{PORT_UPTIME}}:3001"
     volumes:
@@ -69,6 +81,11 @@ services:
   context-builder_{{SLUG}}:
     image: ghcr.io/cloudsysops/intcloudsysops-context-builder:latest
     container_name: ctx_{{SLUG}}
+    mem_limit: 256m
+    deploy:
+      resources:
+        limits:
+          memory: 256M
     ports:
       - "{{PORT_CONTEXT_BUILDER}}:3012"
     environment:
@@ -91,6 +108,11 @@ services:
   mcp_{{SLUG}}:
     image: ghcr.io/cloudsysops/intcloudsysops-mcp:latest
     container_name: mcp_{{SLUG}}
+    mem_limit: 256m
+    deploy:
+      resources:
+        limits:
+          memory: 256M
     ports:
       - "{{PORT_MCP}}:3003"
     environment:
