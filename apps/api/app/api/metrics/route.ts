@@ -2,6 +2,8 @@ import { serverErrorLogged } from '../../../lib/api-response';
 import { requireAdminAccessUnlessDemoRead } from '../../../lib/auth';
 import { computeMrr } from '../../../lib/stripe';
 import { getServiceClient } from '../../../lib/supabase';
+import { getCache, setCache } from '../../../lib/redis-cache';
+import { CACHE_TTL } from '../../../lib/constants';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 type CountHeadResult = {
@@ -17,6 +19,20 @@ type MetricRows = {
   businessRes: CountHeadResult;
   enterpriseRes: CountHeadResult;
 };
+
+interface MetricsSummaryPayload {
+  total_tenants: number;
+  active_tenants: number;
+  suspended_tenants: number;
+  mrr_usd: number;
+  tenants_by_plan: {
+    startup: number;
+    business: number;
+    enterprise: number;
+  };
+}
+
+const CACHE_KEY = 'metrics:main_summary';
 
 async function fetchTenantStatusCounts(
   client: SupabaseClient
@@ -93,27 +109,19 @@ function firstMetricsError(rows: MetricRows): Error | null {
   return new Error(errors[0].message);
 }
 
-export async function GET(request: Request): Promise<Response> {
-  const authError = await requireAdminAccessUnlessDemoRead(request);
-  if (authError) {
-    return authError;
-  }
-
-  const client = getServiceClient();
+/**
+ * Fetches tenant counts and compute MRR, returning the combined payload.
+ */
+async function fetchAndBuildMetricsPayload(client: SupabaseClient): Promise<MetricsSummaryPayload> {
   const rows = await fetchTenantMetricRows(client);
   const err = firstMetricsError(rows);
   if (err) {
-    return serverErrorLogged('metrics:', err);
+    throw err;
   }
 
-  let mrr_usd = 0;
-  try {
-    mrr_usd = await computeMrr(client);
-  } catch (e) {
-    return serverErrorLogged('computeMrr:', e);
-  }
+  const mrr_usd = await computeMrr(client);
 
-  return Response.json({
+  return {
     total_tenants: rows.totalRes.count ?? 0,
     active_tenants: rows.activeRes.count ?? 0,
     suspended_tenants: rows.suspendedRes.count ?? 0,
@@ -123,5 +131,34 @@ export async function GET(request: Request): Promise<Response> {
       business: rows.businessRes.count ?? 0,
       enterprise: rows.enterpriseRes.count ?? 0,
     },
-  });
+  };
+}
+
+export async function GET(request: Request): Promise<Response> {
+  const authError = await requireAdminAccessUnlessDemoRead(request);
+  if (authError) {
+    return authError;
+  }
+
+  // Attempt to read from Redis cache
+  try {
+    const cached = await getCache<MetricsSummaryPayload>(CACHE_KEY);
+    if (cached !== null) {
+      return Response.json(cached);
+    }
+  } catch (e) {
+    console.error('metrics main summary cache retrieval failed', e);
+  }
+
+  try {
+    const client = getServiceClient();
+    const payload = await fetchAndBuildMetricsPayload(client);
+
+    // Cache response asynchronously (no blocking on response)
+    void setCache(CACHE_KEY, payload, CACHE_TTL.SHORT);
+
+    return Response.json(payload);
+  } catch (error) {
+    return serverErrorLogged('metrics:', error);
+  }
 }
