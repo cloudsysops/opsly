@@ -37,3 +37,7 @@
 ## 2026-06-26 - [Caching Admin Overview DB & Network Probes]
 **Learning:** The admin overview dashboardaggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
 **Action:** Always cache aggregated metrics and external probes in dashboard-facing API routes, and modularize parsing logic to maintain low cyclomatic complexity.
+
+## 2026-07-30 - [Caching and Decomposing Platform Metrics]
+**Learning:** The main platform metrics summary endpoint performs multiple parallel counts (total, active, suspended, and count by billing plans) and computes MRR on every request. Caching this in Redis with a short TTL (60s) avoids repeated heavy DB and Stripe operations. Decomposing the fetch/build logic into helper functions is crucial in apps/api to keep the cyclomatic complexity of GET routes below the ESLint limit of 10.
+**Action:** Always cache aggregated platform-wide summaries in the API layer, and decompose route handler bodies into smaller, single-responsibility helper functions to keep complexity low.
