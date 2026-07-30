@@ -31,7 +31,14 @@ npm run type-check --workspace=@intcloudsysops/icso
 
 ## Scope
 
-Marketing site plus **lead intake API** (`POST /api/leads`).
+Marketing site plus **lead intake API** (`POST /api/leads`) plus **commercial catalog**
+(`content/commercial-catalog.json` ↔ `config/commercial-catalog.json`):
+
+- Packages (Basic / Hybrid / Custom / Managed)
+- Reusable Opsly modules
+- Verticals ready to clone (`swim-school`, `whatsapp-first`, …)
+
+Sell flow: pick package or vertical on the site → contact form prefilled → CRM lead.
 
 | Capa | Ruta / artefacto | Notas |
 |------|------------------|--------|

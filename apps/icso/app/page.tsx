@@ -7,6 +7,7 @@ import { HowItWorks } from '@/components/marketing/HowItWorks';
 import { PricingCards } from '@/components/marketing/PricingCards';
 import { SolutionGrid } from '@/components/marketing/SolutionGrid';
 import { TechStackGrid } from '@/components/marketing/TechStackGrid';
+import { VerticalGrid } from '@/components/marketing/VerticalGrid';
 
 export default function HomePage(): ReactElement {
   return (
@@ -14,6 +15,7 @@ export default function HomePage(): ReactElement {
       <HeroSection />
       <FeatureCards title="Stop losing momentum to manual work" />
       <SolutionGrid />
+      <VerticalGrid />
       <HowItWorks />
       <CaseStudyCard />
       <TechStackGrid />
