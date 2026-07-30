@@ -20,7 +20,7 @@
 
 ## 2026-06-05 - [Missing Authorization in Social Publish API]
 **Vulnerability:** The `/api/social/publish` endpoint was exposed without any authentication or authorization checks. Anyone could trigger social media publishing by sending a POST request to this endpoint with valid content.
-**Learning:** Functional modules (like Social Publish) might be implemented without considering the centralized security helpers (`requireAdminAccess`) if they are developed as independent features or "autonomous agent" tools.
+**Learning:** Functional modules (like Social Publish) might be implemented without considering the central security helpers (`requireAdminAccess`) if they are developed as independent features or "autonomous agent" tools.
 **Prevention:** Audit all POST/PATCH/DELETE handlers in the API to ensure they explicitly call authorization helpers. Ensure that integration tests for these features actually test with and without valid authorization headers.
 
 ## 2026-06-06 - [Missing Authorization in API Keys endpoints]
@@ -72,3 +72,8 @@
 **Vulnerability:** Public Peskids endpoints for lead capture and feedback (`/api/public/tenants/peskids/leads` and `/api/public/tenants/peskids/feedback`) lacked rate limiting and audit logging. This made them vulnerable to automated spam and resource exhaustion without a traceable record of the activity.
 **Learning:** Even when core business logic (insertion) is validated via schemas, the endpoint remains vulnerable to abuse if it lacks perimeter protections like rate limiting. The existence of these protections in other "similar" endpoints (like DSAR) doesn't guarantee they are applied everywhere.
 **Prevention:** Systematically apply `checkRateLimit` and `logAuditEvent` to all public, unauthenticated POST handlers. Utilize IP-based rate limiting keys (e.g., `peskids-lead:${ip}`) to prevent abuse while allowing legitimate traffic.
+
+## 2026-07-30 - [Missing Rate Limiting and Audit Logging in Public Form Retrieval]
+**Vulnerability:** Public GET `/api/peskids/forms/[formId]` was completely exposed to automated scraping and brute-force harvesting of forms and form field configurations. It lacked any rate limiting or security audit logging, unlike its POST submission counterpart.
+**Learning:** Security controls like rate limiting and audit logging are often thoroughly applied to state-changing operations (POST/PATCH/DELETE) but overlooked on sensitive public query/read endpoints (GET), leaving them vulnerable to mass automated extraction.
+**Prevention:** Always extend core perimeter protections (such as client IP-based rate limiting via `checkRateLimit` and security audit logging via `log_audit_event`) to both write and read paths of public/unauthenticated data assets.

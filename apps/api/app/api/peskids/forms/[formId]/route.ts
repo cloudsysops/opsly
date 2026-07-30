@@ -2,6 +2,8 @@ import type { NextRequest } from 'next/server';
 import { jsonError, jsonOk } from '@/lib/api-response';
 import { HTTP_STATUS } from '@/lib/constants';
 import { getServiceClient } from '@/lib/supabase';
+import { extractIp } from '@/lib/audit';
+import { checkRateLimit } from '@/lib/rate-limiter-memory';
 
 interface FormField {
   id: string;
@@ -44,6 +46,13 @@ export async function GET(
       return jsonError('Missing form ID', HTTP_STATUS.BAD_REQUEST);
     }
 
+    // Security: Rate limit based on IP to prevent abuse/scraping
+    const ip = extractIp(request);
+    const rateLimit = await checkRateLimit(ip ? `peskids-form-get:${ip}` : 'peskids-form-get:anonymous');
+    if (!rateLimit.allowed) {
+      return jsonError('Too many requests', HTTP_STATUS.TOO_MANY_REQUESTS);
+    }
+
     const supabase = getServiceClient();
 
     // Get form
@@ -56,6 +65,22 @@ export async function GET(
 
     if (formError || !form) {
       return jsonError('Form not found', HTTP_STATUS.NOT_FOUND);
+    }
+
+    // Security: Log audit event for retrieving form definition
+    try {
+      const actorId = ip ? `anonymous:${ip}` : 'anonymous';
+      const db = supabase as any;
+      await db.rpc('log_audit_event', {
+        p_action: 'form_retrieved',
+        p_actor_id: actorId,
+        p_tenant_slug: form.tenant_slug,
+        p_resource_id: formId,
+        p_resource_type: 'form',
+        p_metadata: { ip },
+      });
+    } catch (auditError) {
+      console.error('Failed to log audit event:', auditError);
     }
 
     // Get form fields
