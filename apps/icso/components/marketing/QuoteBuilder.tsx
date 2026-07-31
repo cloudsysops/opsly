@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useMemo, useState, type ReactElement } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   buildDiscoveryMailto,
   buildPackageSow,
@@ -10,12 +11,15 @@ import {
 import { siteConfig } from '@/lib/site';
 
 export function QuoteBuilder(): ReactElement {
+  const searchParams = useSearchParams();
   const defaultPackage =
+    searchParams.get('package') ??
     commercialCatalog.packages.find((pkg) => pkg.highlighted)?.id ??
     commercialCatalog.packages[0]?.id ??
     '';
+  const defaultVertical = searchParams.get('vertical') ?? '';
   const [packageId, setPackageId] = useState(defaultPackage);
-  const [verticalId, setVerticalId] = useState('');
+  const [verticalId, setVerticalId] = useState(defaultVertical);
   const [copied, setCopied] = useState(false);
 
   const sow = useMemo(

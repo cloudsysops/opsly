@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import type { ReactElement } from 'react';
+import { Suspense, type ReactElement } from 'react';
 import { QuoteBuilder } from '@/components/marketing/QuoteBuilder';
 import { siteConfig } from '@/lib/site';
 
@@ -7,6 +7,12 @@ export const metadata: Metadata = {
   title: 'Build a quote',
   description: `One-page Opsly SOW builder from ${siteConfig.name} — packages, modules, and verticals.`,
 };
+
+function QuoteFallback(): ReactElement {
+  return (
+    <div className="mt-10 h-96 animate-pulse rounded-lg border border-icso-border bg-white/5" />
+  );
+}
 
 export default function QuotePage(): ReactElement {
   return (
@@ -20,7 +26,9 @@ export default function QuotePage(): ReactElement {
           Pick a package and optional vertical. Copy the brief for a call, email it, or continue to
           discovery — same Opsly catalog ICSO sells every time.
         </p>
-        <QuoteBuilder />
+        <Suspense fallback={<QuoteFallback />}>
+          <QuoteBuilder />
+        </Suspense>
       </div>
     </section>
   );
