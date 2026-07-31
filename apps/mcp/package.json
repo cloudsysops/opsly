@@ -12,13 +12,14 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.57.0",
+    "@hono/node-server": "^2.0.12",
     "@intcloudsysops/content-studio": "*",
     "@intcloudsysops/llm-gateway": "^1.0.0",
     "@intcloudsysops/notebooklm-agent": "^1.0.0",
     "@intcloudsysops/prompt-guard": "*",
-    "@intcloudsysops/sigma-harness": "*",
     "@intcloudsysops/services": "^1.0.0",
-    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@intcloudsysops/sigma-harness": "*",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "bullmq": "^5.76.10",
     "redis": "^5.0.0",
     "zod": "^3.25.76"
