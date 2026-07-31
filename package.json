@@ -30,6 +30,7 @@
     "validate-openapi": "node scripts/ci/validate-openapi.mjs",
     "validate-structure": "node scripts/validate-structure.js",
     "validate:academy-blueprint": "node scripts/ci/validate-academy-blueprint.mjs",
+    "blueprint:new-academy-tenant": "node scripts/blueprints/generate-academy-tenant.mjs",
     "guard:ghl-runtime": "bash scripts/ci/check-no-new-ghl-runtime.sh",
     "validate:strict": "npm run validate-structure",
     "validate:strict:ci": "npm run validate-structure",
