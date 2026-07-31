@@ -179,6 +179,7 @@ export function ContactForm(): ReactElement {
                 to: siteConfig.contactEmail,
                 packageId: selectedPackage || packageId,
                 verticalId,
+                moduleId,
               })}
               className="font-medium text-icso-cyan hover:underline"
             >

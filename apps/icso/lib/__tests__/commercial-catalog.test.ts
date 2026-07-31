@@ -5,11 +5,13 @@ import { describe, expect, it } from 'vitest';
 import {
   buildDiscoveryMailto,
   buildPackageInquiryMessage,
+  buildPackageSow,
   commercialCatalog,
   formatSetupPrice,
   getCatalogPackage,
   modulesForPackage,
   mvpModules,
+  packagesIncludingModule,
 } from '@/lib/commercial-catalog';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -61,5 +63,22 @@ describe('commercial catalog', () => {
     const message = buildPackageInquiryMessage('hybrid-opsly', 'swim-school');
     expect(message).toContain('hybrid-opsly');
     expect(message).toContain(commercialCatalog.sales_pitch_es);
+  });
+
+  it('builds one-page SOW text for Hybrid + swim-school', () => {
+    const sow = buildPackageSow('hybrid-opsly', 'swim-school');
+    expect(sow).not.toBeNull();
+    expect(sow!.plainText).toContain('Hybrid Opsly');
+    expect(sow!.plainText).toContain('Natación');
+    expect(sow!.modules.length).toBeGreaterThan(0);
+    expect(packagesIncludingModule('lead-capture').map((pkg) => pkg.id)).toEqual(
+      expect.arrayContaining(['hybrid-opsly', 'basic-setup'])
+    );
+  });
+
+  it('includes module focus in inquiry message', () => {
+    const message = buildPackageInquiryMessage(null, null, 'approval-queue');
+    expect(message).toContain('approval-queue');
+    expect(message).toContain('Approval Queue');
   });
 });
