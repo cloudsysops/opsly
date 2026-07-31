@@ -32,7 +32,7 @@ import {
   validateAcademyInstance,
   validateSlug,
   validateTenantConfig,
-} from './lib/academy-tenant-builder.mjs';
+} from '@intcloudsysops/academy-blueprint';
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(SCRIPT_DIR, '../..');
@@ -128,7 +128,7 @@ function main() {
   if (!args.ownerEmail) fail('--owner-email is required');
 
   const instancePath = path.join(INSTANCES_DIR, `${args.slug}.json`);
-  const tenantConfigPath = path.join(TENANTS_DIR, `${args.slug}.tenant.json`);
+  const tenantConfigPath = path.join(TENANTS_DIR, `${args.slug}.json`);
   if (!args.force && (fs.existsSync(instancePath) || fs.existsSync(tenantConfigPath))) {
     fail(`tenant "${args.slug}" already has generated files — pass --force to overwrite`);
   }

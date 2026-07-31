@@ -56,7 +56,7 @@ npm run blueprint:new-academy-tenant -- \
 ```
 
 This writes `config/blueprints/academy/instances/<slug>.json`,
-`config/tenants/<slug>.tenant.json`, and templated seed files under
+`config/tenants/<slug>.json`, and templated seed files under
 `config/tenants/<slug>/seed/`. It does **not** touch a live database,
 deploy anything, or enable `blueprint.yaml`'s `provisioning` flag (that
 stays `false` on purpose — see `scripts/ci/validate-academy-blueprint.mjs`).

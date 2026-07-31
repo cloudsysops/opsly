@@ -1,0 +1,16 @@
+{
+  "name": "@intcloudsysops/academy-blueprint",
+  "version": "0.1.0",
+  "description": "Pure builder/validator functions for the Academy vertical blueprint (config/blueprints/academy) — shared by scripts/blueprints/generate-academy-tenant.mjs and apps/tenant-onboarding-agent so onboarding logic isn't duplicated.",
+  "type": "module",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.mjs"
+    }
+  },
+  "scripts": {
+    "test": "node --test src/index.test.mjs"
+  }
+}

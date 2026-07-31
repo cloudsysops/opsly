@@ -1,0 +1,28 @@
+{
+  "name": "@intcloudsysops/tenant-onboarding-agent",
+  "version": "0.1.0",
+  "description": "HTTP preview service for Academy-vertical tenant onboarding — wraps scripts/blueprints/generate-academy-tenant.mjs's builder logic behind a Fastify API.",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc || true",
+    "start": "node dist/index.js",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run || true",
+    "lint": "eslint src/ || true"
+  },
+  "dependencies": {
+    "@intcloudsysops/academy-blueprint": "*",
+    "fastify": "^5.2.0",
+    "yaml": "^2.9.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.41",
+    "eslint": "^8.51.0",
+    "tsx": "^4.22.3",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.8"
+  }
+}
