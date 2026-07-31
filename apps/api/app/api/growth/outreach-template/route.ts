@@ -1,11 +1,24 @@
 import { jsonError, tryRoute } from '../../../../lib/api-response';
 import { HTTP_STATUS } from '../../../../lib/constants';
 import { requireAdminAccess } from '../../../../lib/auth';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
+
+const MIN_EMAIL_LOCAL_LENGTH = 2;
 
 /**
  * Personalized outreach email template for agencias-digitales tier-1 targets.
  * Generates subject and body based on contact specialization and company details.
  */
+
+function maskEmail(email: string): string {
+  const [local, domain] = email.split('@');
+  if (!local || !domain) return '***@***.***';
+  if (local.length <= MIN_EMAIL_LOCAL_LENGTH) {
+    return `${local[0] || '*'}***@${domain}`;
+  }
+  return `${local[0]}***${local[local.length - 1]}@${domain}`;
+}
 
 interface OutreachRequest {
   name: string;
@@ -27,6 +40,16 @@ interface OutreachEmailResponse {
   demo_link: string;
 }
 
+async function enforceRateLimit(ip: string | null): Promise<Response | null> {
+  const rateLimit = await checkRateLimit(
+    ip ? `growth-outreach:${ip}` : 'growth-outreach:anonymous'
+  );
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+  return null;
+}
+
 /**
  * GET /api/growth/outreach-template?name=X&email=Y&specialization=Z
  *
@@ -37,6 +60,10 @@ export function GET(request: Request): Promise<Response> {
   return tryRoute('GET /api/growth/outreach-template', async () => {
     const authError = await requireAdminAccess(request);
     if (authError) return authError;
+
+    const ip = extractIp(request);
+    const limitError = await enforceRateLimit(ip);
+    if (limitError) return limitError;
 
     const url = new URL(request.url);
     const name = url.searchParams.get('name');
@@ -57,6 +84,18 @@ export function GET(request: Request): Promise<Response> {
       template_version: templateVersion,
     });
 
+    void logAuditEvent({
+      action: 'outreach_template_generate',
+      resource: `outreach-template:${maskEmail(email)}`,
+      ip,
+      user_agent: request.headers.get('user-agent') ?? undefined,
+      metadata: {
+        recipient_masked: maskEmail(email),
+        specialization,
+        template_version: templateVersion,
+      },
+    });
+
     return Response.json(result, { status: HTTP_STATUS.OK });
   });
 }
@@ -72,6 +111,10 @@ export async function POST(request: Request): Promise<Response> {
     const authError = await requireAdminAccess(request);
     if (authError) return authError;
 
+    const ip = extractIp(request);
+    const limitError = await enforceRateLimit(ip);
+    if (limitError) return limitError;
+
     const body = (await request.json()) as OutreachRequest;
 
     const { name, email, company, specialization, template_version } = body;
@@ -80,12 +123,25 @@ export async function POST(request: Request): Promise<Response> {
       return jsonError('Missing required: name, email', HTTP_STATUS.BAD_REQUEST);
     }
 
+    const templateVersion = template_version || '1.0';
     const result = generateOutreachEmail({
       name,
       email,
       company: company || 'your company',
       specialization: specialization || 'workflows',
-      template_version: template_version || '1.0',
+      template_version: templateVersion,
+    });
+
+    void logAuditEvent({
+      action: 'outreach_template_generate',
+      resource: `outreach-template:${maskEmail(email)}`,
+      ip,
+      user_agent: request.headers.get('user-agent') ?? undefined,
+      metadata: {
+        recipient_masked: maskEmail(email),
+        specialization: specialization || 'workflows',
+        template_version: templateVersion,
+      },
     });
 
     return Response.json(result, { status: HTTP_STATUS.OK });
