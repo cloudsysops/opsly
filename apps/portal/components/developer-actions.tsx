@@ -11,6 +11,40 @@ type DeveloperActionsProps = {
   n8nPassword: string | null;
 };
 
+interface ActionItem {
+  type: 'url' | 'creds';
+  val: string;
+  normal: string;
+  done: string;
+  ariaN: string;
+  ariaD: string;
+}
+
+function buildItems(url: string | null, user: string | null, pass: string | null): ActionItem[] {
+  const list: ActionItem[] = [];
+  if (url) {
+    list.push({
+      type: 'url',
+      val: url,
+      normal: 'Copiar URL n8n',
+      done: 'URL copiada',
+      ariaN: 'Copiar URL de n8n al portapapeles',
+      ariaD: 'URL de n8n copiada',
+    });
+  }
+  if (user && pass) {
+    list.push({
+      type: 'creds',
+      val: `${user}:${pass}`,
+      normal: 'Copiar credenciales',
+      done: 'Credenciales copiadas',
+      ariaN: 'Copiar credenciales al portapapeles',
+      ariaD: 'Credenciales copiadas',
+    });
+  }
+  return list;
+}
+
 export function DeveloperActions({
   n8nUrl,
   n8nUser,
@@ -33,10 +67,7 @@ export function DeveloperActions({
     }
   }, []);
 
-  const items = [
-    n8nUrl && { type: 'url' as const, val: n8nUrl, normal: 'Copiar URL n8n', done: 'URL copiada', ariaN: 'Copiar URL de n8n al portapapeles', ariaD: 'URL de n8n copiada' },
-    n8nUser && n8nPassword && { type: 'creds' as const, val: `${n8nUser}:${n8nPassword}`, normal: 'Copiar credenciales', done: 'Credenciales copiadas', ariaN: 'Copiar credenciales al portapapeles', ariaD: 'Credenciales copiadas' }
-  ].filter((i): i is NonNullable<typeof i> => !!i);
+  const items = buildItems(n8nUrl, n8nUser, n8nPassword);
 
   return (
     <div className="flex flex-wrap gap-2">
