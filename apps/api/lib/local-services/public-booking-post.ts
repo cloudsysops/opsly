@@ -14,8 +14,6 @@ import {
 import type { Json } from '../supabase/types';
 import { fetchTenantMetadataBySlug } from '../tenant-metadata';
 import type { z } from 'zod';
-import { checkRateLimit } from '../rate-limiter';
-import { extractIp, logAuditEvent } from '../audit';
 
 type PublicBookBody = z.infer<typeof publicBookBodySchema>;
 
@@ -24,16 +22,6 @@ type PublicBookingReady = {
   serviceId: string | null;
   technician: boolean;
 };
-
-const EMAIL_MIN_LOCAL_LEN = 2;
-
-function maskEmail(email: string): string {
-  const [local, domain] = email.split('@');
-  if (!domain) return '***';
-  const prefix =
-    local.length > EMAIL_MIN_LOCAL_LEN ? local.slice(0, EMAIL_MIN_LOCAL_LEN) : local.slice(0, 1);
-  return `${prefix}***@${domain}`;
-}
 
 async function readJsonBody(request: NextRequest): Promise<unknown | Response> {
   try {
@@ -138,12 +126,9 @@ async function validatePublicBookingPayload(
   return { body: parsed.data, serviceId, technician };
 }
 
-function buildInsertParams(
-  slug: string,
-  ready: PublicBookingReady
-): Parameters<typeof lsInsertBookingForTenantSlug>[0] {
+async function persistPublicBooking(slug: string, ready: PublicBookingReady): Promise<Response> {
   const { body, serviceId, technician } = ready;
-  return {
+  const inserted = await lsInsertBookingForTenantSlug({
     tenantSlug: slug,
     customerName: body.customer_name,
     customerEmail: body.customer_email,
@@ -157,34 +142,11 @@ function buildInsertParams(
     longitude: body.longitude ?? null,
     estimatedTravelTimeMinutes: body.estimated_travel_time_minutes ?? null,
     equipmentNeeded: body.equipment_needed ?? null,
-  };
-}
-
-async function persistPublicBooking(
-  slug: string,
-  ready: PublicBookingReady,
-  ip: string | null,
-  userAgent: string | null
-): Promise<Response> {
-  const insertParams = buildInsertParams(slug, ready);
-  const inserted = await lsInsertBookingForTenantSlug(insertParams);
+  });
 
   if (!inserted.ok) {
     return Response.json({ error: inserted.error }, { status: HTTP_STATUS.INTERNAL_ERROR });
   }
-
-  void logAuditEvent({
-    tenant_slug: slug,
-    action: 'local_services_booking_create',
-    resource: `local-services:booking:${inserted.id}`,
-    ip,
-    user_agent: userAgent ?? undefined,
-    metadata: {
-      booking_id: inserted.id,
-      customer_email_masked: maskEmail(ready.body.customer_email),
-      event_type: 'local_services_booking.created',
-    },
-  });
 
   return Response.json(
     { ok: true, booking_id: inserted.id, tenant_slug: slug },
@@ -199,15 +161,6 @@ export async function postPublicLocalServicesBooking(
   request: NextRequest,
   slug: string
 ): Promise<Response> {
-  const ip = extractIp(request);
-  const rateLimit = await checkRateLimit(
-    ip ? `local-services-booking:${ip}` : 'local-services-booking:anonymous'
-  );
-
-  if (!rateLimit.allowed) {
-    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
-  }
-
   const gate = await assertLocalServicesTenantPublic(slug);
   if (gate !== null) {
     return gate;
@@ -223,5 +176,5 @@ export async function postPublicLocalServicesBooking(
     return ready;
   }
 
-  return persistPublicBooking(slug, ready, ip, request.headers.get('user-agent'));
+  return persistPublicBooking(slug, ready);
 }
