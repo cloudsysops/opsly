@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { ReactElement } from 'react';
 import { mvpModules } from '@/lib/commercial-catalog';
 
@@ -17,15 +18,20 @@ export function SolutionGrid(): ReactElement {
         </p>
         <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {modules.map((item) => (
-            <li
-              key={item.id}
-              className="icso-glass-card border-icso-primary/20 p-6 transition hover:border-icso-cyan/40"
-            >
-              <h3 className="text-lg font-semibold text-icso-text">{item.label}</h3>
-              <p className="mt-1 text-xs uppercase tracking-wide text-icso-cyan">
-                {item.label_es}
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-icso-muted">{item.summary}</p>
+            <li key={item.id}>
+              <Link
+                href={`/modules/${encodeURIComponent(item.id)}`}
+                className="icso-glass-card block h-full border-icso-primary/20 p-6 transition hover:border-icso-cyan/40"
+              >
+                <h3 className="text-lg font-semibold text-icso-text">{item.label}</h3>
+                <p className="mt-1 text-xs uppercase tracking-wide text-icso-cyan">
+                  {item.label_es}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-icso-muted">{item.summary}</p>
+                <span className="mt-4 inline-block text-xs font-medium text-icso-cyan">
+                  View module →
+                </span>
+              </Link>
             </li>
           ))}
         </ul>

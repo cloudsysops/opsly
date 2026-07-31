@@ -33,7 +33,7 @@ export default function ServicesPage(): ReactElement {
       <TechStackGrid />
       <CTASection
         title="Not sure which package fits?"
-        subtitle="Tell us where leads stall — we map modules to a one-page SOW."
+        subtitle="Build a one-page SOW from the catalog, then book discovery."
       />
     </>
   );

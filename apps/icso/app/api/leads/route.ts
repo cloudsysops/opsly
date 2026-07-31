@@ -12,6 +12,7 @@ interface IcsoLeadRequest {
   message: string;
   packageId?: string;
   verticalId?: string;
+  moduleId?: string;
 }
 
 interface IcsoLeadResponse {
@@ -30,7 +31,7 @@ interface IcsoLeadResponse {
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const body = (await request.json()) as IcsoLeadRequest;
-    const { name, email, message, packageId, verticalId } = body;
+    const { name, email, message, packageId, verticalId, moduleId } = body;
 
     if (!name || !email || !message) {
       return NextResponse.json(
@@ -43,6 +44,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       message.trim(),
       packageId ? `[package=${packageId}]` : '',
       verticalId ? `[vertical=${verticalId}]` : '',
+      moduleId ? `[module=${moduleId}]` : '',
     ]
       .filter(Boolean)
       .join('\n');
