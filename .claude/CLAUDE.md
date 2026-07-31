@@ -183,11 +183,13 @@ node scripts/load-agent-skills.js --list-all
 
 ---
 
-## LIB MODULES (18)
+## LIB MODULES (16)
 
 Full registry: `config/modules.json` · Governance: `lib/{module}/GOVERNANCE.md`
 
-Core: `prompts` · `observability` · `components` · `evaluation` · `content-studio` · `errors` · `services` · `config` · `security` · `api` · `workflow` · `telemetry` · `testing` · `migrations` · `runtime` · `session-manager` · `git-branch-orchestrator` · `external-agent-registry`
+Core: `prompts` · `observability` · `components` · `evaluation` · `errors` · `services` · `config` · `security` · `api` · `workflow` · `telemetry` · `testing` · `migrations` · `opsly-core` · `conversational-runtime` · `wompi-gateway`
+
+> **Drift note (2026-07-31):** `lib/content-studio`, `lib/runtime`, `lib/session-manager`, `lib/git-branch-orchestrator`, and `lib/external-agent-registry` exist on disk but aren't in `config/modules.json` yet — that file is governance-protected (see CANONICAL DOCS below), so registering them is a decision for the registry owner, not a doc-only fix. `opsly-core` is listed in the registry but has no `lib/opsly-core` directory yet — consumers importing `@intcloudsysops/opsly-core` (e.g. `apps/peskids/lib/peskids-shadow-runtime.ts`) currently fail to resolve it.
 
 New module only if: reusable by 2+ apps · >100 lines · stable API.
 
