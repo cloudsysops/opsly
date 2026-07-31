@@ -27,7 +27,7 @@
 **Action:** Prefer caching aggregated infrastructure metrics in the API layer, especially when multiple external probes are required to build a single response.
 
 ## 2026-06-13 - [Caching Peskids Dashboard Summary]
-**Learning:** Dashboard summary endpoints that aggregate multiple parallel Supabase queries (e.g., 5 parallel calls for leads, feedback, and alerts) can be a significant bottleneck as data grows. Implementing Redis caching with a short TTL (60s) provides a massive performance boost by collapsing these multiple network round-trips into a single O(1) cache lookup. Using `void setCache(...)` ensures the write doesn't block the response.
+**Learning:** Dashboard summary endpoints that aggregate multiple parallel Supabase queries (e.g., 5 parallel calls for leads, feedback, and alerts) can be a significant bottleneck as data growth occurs. Implementing Redis caching with a short TTL (60s) provides a massive performance boost by collapsing these multiple network round-trips into a single O(1) cache lookup. Using `void setCache(...)` ensures the write doesn't block the response.
 **Action:** Identify and cache aggregated dashboard summaries in the repository layer when they involve multiple independent database queries.
 
 ## 2026-06-18 - [Tenant Lookup Caching]
@@ -35,5 +35,9 @@
 **Action:** Always cache tenant identity lookups that are part of the request authorization or routing path.
 
 ## 2026-06-26 - [Caching Admin Overview DB & Network Probes]
-**Learning:** The admin overview dashboardaggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
+**Learning:** The admin overview dashboard aggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
 **Action:** Always cache aggregated metrics and external probes in dashboard-facing API routes, and modularize parsing logic to maintain low cyclomatic complexity.
+
+## 2026-07-31 - [Caching of Platform-Wide Overview Metrics]
+**Learning:** Platform-wide metrics retrieval endpoints that aggregate multiple database count queries and compute complex Stripe MRR calculations can cause high database CPU spikes and severe latency under concurrency. Short-term caching with Redis (TTL: 60s) completely eliminates database and API load. Keeping live data-fetching decoupled into a dedicated helper function keeps the main HTTP GET handler cyclomatic complexity below 10, complying with ESLint requirements.
+**Action:** Always decouple live calculations and queries from the controller's routing, audit, and caching boilerplate to maintain low cyclomatic complexity, and cache heavy platform-level aggregates with a short TTL.

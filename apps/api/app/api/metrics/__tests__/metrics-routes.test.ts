@@ -6,6 +6,7 @@ import * as stripeMod from '../../../../lib/stripe';
 import * as promMod from '../../../../lib/fetch-host-metrics-prometheus';
 import * as dockerCountMod from '../../../../lib/docker-running-count';
 import * as prometheusUrlMod from '../../../../lib/prometheus';
+import * as redisCacheMod from '../../../../lib/redis-cache';
 
 vi.mock('../../../../lib/supabase', () => ({
   getServiceClient: vi.fn(),
@@ -25,6 +26,11 @@ vi.mock('../../../../lib/docker-running-count', () => ({
 
 vi.mock('../../../../lib/prometheus', () => ({
   getPrometheusBaseUrl: vi.fn(),
+}));
+
+vi.mock('../../../../lib/redis-cache', () => ({
+  getCache: vi.fn(),
+  setCache: vi.fn(),
 }));
 
 const ADMIN = 'metrics-admin-token';
@@ -94,6 +100,8 @@ describe('GET /api/metrics', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.PLATFORM_ADMIN_TOKEN = ADMIN;
+    vi.mocked(redisCacheMod.getCache).mockResolvedValue(null);
+    vi.mocked(redisCacheMod.setCache).mockResolvedValue(true);
   });
 
   afterAll(() => {
@@ -162,6 +170,55 @@ describe('GET /api/metrics', () => {
     expect(byPlan.startup).toBe(2);
     expect(byPlan.business).toBe(2);
     expect(byPlan.enterprise).toBe(1);
+  });
+
+  it('returns cached payload immediately on Redis cache hit', async () => {
+    const cachedData = {
+      total_tenants: 15,
+      active_tenants: 10,
+      suspended_tenants: 2,
+      mrr_usd: 500,
+      tenants_by_plan: {
+        startup: 5,
+        business: 4,
+        enterprise: 1,
+      },
+    };
+    vi.mocked(redisCacheMod.getCache).mockResolvedValueOnce(cachedData);
+
+    const res = await getMetrics(new Request('http://x/metrics', { headers: adminHeaders() }));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body).toEqual(cachedData);
+
+    // Assert that database client and computeMrr were NOT called
+    expect(supabaseMod.getServiceClient).not.toHaveBeenCalled();
+    expect(stripeMod.computeMrr).not.toHaveBeenCalled();
+  });
+
+  it('falls back to database when Redis throws an error', async () => {
+    vi.mocked(redisCacheMod.getCache).mockRejectedValueOnce(new Error('Redis is down'));
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
+      mockTenantCountClient({
+        total: 10,
+        active: 7,
+        suspended: 1,
+        startup: 2,
+        business: 2,
+        enterprise: 1,
+      })
+    );
+    vi.mocked(stripeMod.computeMrr).mockResolvedValue(123.45);
+
+    const res = await getMetrics(new Request('http://x/metrics', { headers: adminHeaders() }));
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(body.total_tenants).toBe(10);
+    expect(body.mrr_usd).toBe(123.45);
+
+    // Assert database was queried and cache was set
+    expect(supabaseMod.getServiceClient).toHaveBeenCalled();
+    expect(redisCacheMod.setCache).toHaveBeenCalled();
   });
 });
 
