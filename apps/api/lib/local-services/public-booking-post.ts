@@ -138,23 +138,10 @@ async function validatePublicBookingPayload(
   return { body: parsed.data, serviceId, technician };
 }
 
-interface LsBookingParams {
-  tenantSlug: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-  serviceId: string | null;
-  scheduledAt: string | null;
-  notes?: string;
-  serviceLocation: string | null;
-  address: string | null;
-  latitude: number | null;
-  longitude: number | null;
-  estimatedTravelTimeMinutes: number | null;
-  equipmentNeeded: string | null;
-}
-
-function buildInsertParams(slug: string, ready: PublicBookingReady): LsBookingParams {
+function buildInsertParams(
+  slug: string,
+  ready: PublicBookingReady
+): Parameters<typeof lsInsertBookingForTenantSlug>[0] {
   const { body, serviceId, technician } = ready;
   return {
     tenantSlug: slug,
