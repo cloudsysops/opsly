@@ -89,3 +89,53 @@ export function modulesForPackage(pkg: CatalogPackage): CatalogModule[] {
 export function mvpModules(): CatalogModule[] {
   return commercialCatalog.modules.filter((mod) => mod.mvp_default);
 }
+
+export function getCatalogVertical(id: string): CatalogVertical | undefined {
+  return commercialCatalog.verticals.find((vertical) => vertical.id === id);
+}
+
+/** Prefill copy for contact form / mailto (Spanish sales brief). */
+export function buildPackageInquiryMessage(
+  packageId: string | null | undefined,
+  verticalId: string | null | undefined
+): string {
+  const parts: string[] = [];
+  const pkg = packageId ? getCatalogPackage(packageId) : undefined;
+  const vertical = verticalId ? getCatalogVertical(verticalId) : undefined;
+
+  if (pkg) {
+    parts.push(`Interested in package: ${pkg.name} (${pkg.id}).`);
+    parts.push(`Setup guidance: ${formatSetupPrice(pkg)} · ops ${formatOpsPrice(pkg)}.`);
+  }
+  if (vertical) {
+    parts.push(`Vertical: ${vertical.label} (${vertical.id}).`);
+  }
+  if (parts.length === 0) {
+    return '';
+  }
+  parts.push('');
+  parts.push(commercialCatalog.sales_pitch_es);
+  parts.push('');
+  parts.push('Context / bottleneck:');
+  return `${parts.join('\n')} `;
+}
+
+export function buildDiscoveryMailto(options: {
+  to: string;
+  packageId?: string | null;
+  verticalId?: string | null;
+}): string {
+  const pkg = options.packageId ? getCatalogPackage(options.packageId) : undefined;
+  const vertical = options.verticalId ? getCatalogVertical(options.verticalId) : undefined;
+  const subjectParts = ['ICSO discovery'];
+  if (pkg) {
+    subjectParts.push(pkg.name);
+  }
+  if (vertical) {
+    subjectParts.push(vertical.label);
+  }
+  const subject = subjectParts.join(' — ');
+  const body = buildPackageInquiryMessage(options.packageId, options.verticalId);
+  const params = new URLSearchParams({ subject, body });
+  return `mailto:${options.to}?${params.toString()}`;
+}

@@ -3,8 +3,9 @@
 import { type FormEvent, useState, type ReactElement } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
+  buildDiscoveryMailto,
+  buildPackageInquiryMessage,
   commercialCatalog,
-  getCatalogPackage,
 } from '@/lib/commercial-catalog';
 import { siteConfig } from '@/lib/site';
 
@@ -15,31 +16,11 @@ interface LeadApiResponse {
   calendarBookingUrl?: string | null;
 }
 
-function buildPrefillMessage(packageId: string | null, verticalId: string | null): string {
-  const parts: string[] = [];
-  const pkg = packageId ? getCatalogPackage(packageId) : undefined;
-  const vertical = verticalId
-    ? commercialCatalog.verticals.find((v) => v.id === verticalId)
-    : undefined;
-
-  if (pkg) {
-    parts.push(`Interested in package: ${pkg.name} (${pkg.id}).`);
-  }
-  if (vertical) {
-    parts.push(`Vertical: ${vertical.label} (${vertical.id}).`);
-  }
-  if (parts.length === 0) {
-    return '';
-  }
-  parts.push('Context / bottleneck:');
-  return `${parts.join('\n')} `;
-}
-
 export function ContactForm(): ReactElement {
   const searchParams = useSearchParams();
   const packageId = searchParams.get('package');
   const verticalId = searchParams.get('vertical');
-  const initialPrefill = buildPrefillMessage(packageId, verticalId);
+  const initialPrefill = buildPackageInquiryMessage(packageId, verticalId);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -194,10 +175,14 @@ export function ContactForm(): ReactElement {
           <p className="text-xs text-icso-muted">
             Prefer email?{' '}
             <a
-              href={`mailto:${siteConfig.contactEmail}`}
+              href={buildDiscoveryMailto({
+                to: siteConfig.contactEmail,
+                packageId: selectedPackage || packageId,
+                verticalId,
+              })}
               className="font-medium text-icso-cyan hover:underline"
             >
-              {siteConfig.contactEmail}
+              Prefill brief to {siteConfig.contactEmail}
             </a>
           </p>
         )}

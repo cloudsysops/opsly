@@ -2,11 +2,13 @@ import Link from 'next/link';
 import { Check } from 'lucide-react';
 import type { ReactElement } from 'react';
 import {
+  buildDiscoveryMailto,
   commercialCatalog,
   formatOpsPrice,
   formatSetupPrice,
   modulesForPackage,
 } from '@/lib/commercial-catalog';
+import { siteConfig } from '@/lib/site';
 
 export function PricingCards(): ReactElement {
   const packages = commercialCatalog.packages.filter((pkg) => pkg.id !== 'managed-ops');
@@ -62,14 +64,25 @@ export function PricingCards(): ReactElement {
                     {mods.map((m) => m.label).join(' · ')}
                   </p>
                 ) : null}
-                <Link
-                  href={`/contact?package=${encodeURIComponent(tier.id)}#discovery`}
-                  className={`mt-8 text-center ${
-                    tier.highlighted ? 'icso-btn-primary' : 'icso-btn-secondary'
-                  }`}
-                >
-                  Talk about {tier.name}
-                </Link>
+                <div className="mt-8 space-y-3">
+                  <Link
+                    href={`/contact?package=${encodeURIComponent(tier.id)}#discovery`}
+                    className={`block text-center ${
+                      tier.highlighted ? 'icso-btn-primary' : 'icso-btn-secondary'
+                    }`}
+                  >
+                    Talk about {tier.name}
+                  </Link>
+                  <a
+                    href={buildDiscoveryMailto({
+                      to: siteConfig.contactEmail,
+                      packageId: tier.id,
+                    })}
+                    className="block text-center text-xs font-medium text-icso-cyan hover:underline"
+                  >
+                    Email ready brief
+                  </a>
+                </div>
               </li>
             );
           })}

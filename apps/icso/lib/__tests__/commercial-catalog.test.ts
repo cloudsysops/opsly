@@ -3,6 +3,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
+  buildDiscoveryMailto,
+  buildPackageInquiryMessage,
   commercialCatalog,
   formatSetupPrice,
   getCatalogPackage,
@@ -44,5 +46,20 @@ describe('commercial catalog', () => {
     expect(liveOrReady.map((v) => v.id)).toEqual(
       expect.arrayContaining(['swim-school', 'whatsapp-first'])
     );
+  });
+
+  it('builds discovery mailto with package brief', () => {
+    const href = buildDiscoveryMailto({
+      to: 'hello@intcloudsysops.com',
+      packageId: 'hybrid-opsly',
+      verticalId: 'swim-school',
+    });
+    expect(href.startsWith('mailto:hello@intcloudsysops.com?')).toBe(true);
+    const decoded = decodeURIComponent(href.replace(/\+/g, ' '));
+    expect(decoded).toContain('Hybrid Opsly');
+    expect(decoded).toContain('Natación');
+    const message = buildPackageInquiryMessage('hybrid-opsly', 'swim-school');
+    expect(message).toContain('hybrid-opsly');
+    expect(message).toContain(commercialCatalog.sales_pitch_es);
   });
 });
