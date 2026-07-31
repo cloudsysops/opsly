@@ -20,7 +20,8 @@ export function ContactForm(): ReactElement {
   const searchParams = useSearchParams();
   const packageId = searchParams.get('package');
   const verticalId = searchParams.get('vertical');
-  const initialPrefill = buildPackageInquiryMessage(packageId, verticalId);
+  const moduleId = searchParams.get('module');
+  const initialPrefill = buildPackageInquiryMessage(packageId, verticalId, moduleId);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -47,6 +48,7 @@ export function ContactForm(): ReactElement {
           message,
           packageId: selectedPackage || undefined,
           verticalId: verticalId || undefined,
+          moduleId: moduleId || undefined,
         }),
       });
 
