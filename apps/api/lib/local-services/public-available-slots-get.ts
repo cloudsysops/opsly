@@ -5,6 +5,8 @@ import { lsGetServiceByExternalKey } from '../repositories/local-services-reposi
 import { computeTechnicianSlots } from '../technician-available-slots';
 import { isTechnicianTenantMetadata } from '../technician-tenant-profile';
 import { fetchTenantMetadataBySlug } from '../tenant-metadata';
+import { checkRateLimit } from '../rate-limiter';
+import { extractIp, logAuditEvent } from '../audit';
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -41,10 +43,17 @@ export async function getPublicAvailableSlots(
   request: NextRequest,
   slug: string
 ): Promise<Response> {
-  const gate = await assertLocalServicesTenantPublic(slug);
-  if (gate !== null) {
-    return gate;
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(
+    ip ? `local-services-slots:${ip}` : 'local-services-slots:anonymous'
+  );
+
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
   }
+
+  const gate = await assertLocalServicesTenantPublic(slug);
+  if (gate !== null) return gate;
 
   const metadata = await fetchTenantMetadataBySlug(slug);
   if (metadata === null || !isTechnicianTenantMetadata(metadata)) {
@@ -52,9 +61,7 @@ export async function getPublicAvailableSlots(
   }
 
   const parsed = parseDateAndServiceQuery(request);
-  if (parsed instanceof Response) {
-    return parsed;
-  }
+  if (parsed instanceof Response) return parsed;
 
   const { date, serviceExternalId } = parsed;
   const svc = await lsGetServiceByExternalKey({ tenantSlug: slug, externalKey: serviceExternalId });
@@ -63,15 +70,21 @@ export async function getPublicAvailableSlots(
   }
 
   const duration = svc.duration_minutes ?? LOCAL_SERVICES_PUBLIC.DEFAULT_SERVICE_DURATION_MINUTES;
-  const d = new Date(`${date}T12:00:00.000Z`);
-  const dayOfWeek = d.getUTCDay();
-
   const slots = await computeTechnicianSlots({
     tenantSlug: slug,
     dateOnly: date,
-    dayOfWeek,
+    dayOfWeek: new Date(`${date}T12:00:00.000Z`).getUTCDay(),
     slotStepMinutes: LOCAL_SERVICES_PUBLIC.SLOT_STEP_MINUTES,
     serviceDurationMinutes: duration,
+  });
+
+  void logAuditEvent({
+    tenant_slug: slug,
+    action: 'local_services_slots_retrieved',
+    resource: `local-services:slots:${slug}`,
+    ip,
+    user_agent: request.headers.get('user-agent') ?? undefined,
+    metadata: { date, service_external_id: serviceExternalId },
   });
 
   return Response.json({ date, service_external_id: serviceExternalId, slots });
