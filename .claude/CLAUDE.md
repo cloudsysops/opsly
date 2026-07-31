@@ -189,7 +189,9 @@ Full registry: `config/modules.json` · Governance: `lib/{module}/GOVERNANCE.md`
 
 Core: `prompts` · `observability` · `components` · `evaluation` · `errors` · `services` · `config` · `security` · `api` · `workflow` · `telemetry` · `testing` · `migrations` · `opsly-core` · `conversational-runtime` · `wompi-gateway`
 
-> **Drift note (2026-07-31):** `lib/content-studio`, `lib/runtime`, `lib/session-manager`, `lib/git-branch-orchestrator`, and `lib/external-agent-registry` exist on disk but aren't in `config/modules.json` yet — that file is governance-protected (see CANONICAL DOCS below), so registering them is a decision for the registry owner, not a doc-only fix. `opsly-core` is listed in the registry but has no `lib/opsly-core` directory yet — consumers importing `@intcloudsysops/opsly-core` (e.g. `apps/peskids/lib/peskids-shadow-runtime.ts`) currently fail to resolve it.
+> **Drift note (2026-07-31):** `lib/content-studio`, `lib/runtime`, `lib/session-manager`, `lib/git-branch-orchestrator`, and `lib/external-agent-registry` exist on disk but aren't in `config/modules.json` yet — that file is governance-protected (see CANONICAL DOCS below), so registering them is a decision for the registry owner, not a doc-only fix. `opsly-core` resolves fine (real workspace package, just under `packages/opsly-core` rather than `lib/opsly-core` — this section's "LIB MODULES" label is a slight misnomer for that one entry).
+>
+> **Correction (2026-07-31):** this note originally claimed `opsly-core` had no real directory and that consumers failed to resolve it — wrong. That was checked in a sandbox before `npm install` had populated `node_modules`; with dependencies installed, `packages/opsly-core` resolves cleanly (confirmed via `tsc --noEmit` in `apps/peskids`). Leaving this correction here rather than silently editing the claim out.
 
 New module only if: reusable by 2+ apps · >100 lines · stable API.
 
