@@ -12,6 +12,9 @@ Paquetes **simples** para PyMEs. Rangos orientativos; ajustar por mercado y scop
 
 ## Resumen
 
+Fuente machine-readable (ICSO + agentes): [`config/commercial-catalog.json`](../../../config/commercial-catalog.json).  
+Sitio público: paquetes/módulos/verticales en `apps/icso` (home + `/services`).
+
 | Paquete | Ideal para | Setup (único) | Ops mensual |
 |---------|------------|---------------|-------------|
 | Basic Setup | Negocio que empieza digital | Bajo | Opcional mínimo |

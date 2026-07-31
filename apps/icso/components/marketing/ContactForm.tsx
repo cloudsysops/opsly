@@ -1,6 +1,12 @@
 'use client';
 
 import { type FormEvent, useState, type ReactElement } from 'react';
+import { useSearchParams } from 'next/navigation';
+import {
+  buildDiscoveryMailto,
+  buildPackageInquiryMessage,
+  commercialCatalog,
+} from '@/lib/commercial-catalog';
 import { siteConfig } from '@/lib/site';
 
 interface LeadApiResponse {
@@ -11,9 +17,15 @@ interface LeadApiResponse {
 }
 
 export function ContactForm(): ReactElement {
+  const searchParams = useSearchParams();
+  const packageId = searchParams.get('package');
+  const verticalId = searchParams.get('vertical');
+  const initialPrefill = buildPackageInquiryMessage(packageId, verticalId);
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState(initialPrefill);
+  const [selectedPackage, setSelectedPackage] = useState(packageId ?? '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
@@ -29,20 +41,27 @@ export function ContactForm(): ReactElement {
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, message }),
+        body: JSON.stringify({
+          name,
+          email,
+          message,
+          packageId: selectedPackage || undefined,
+          verticalId: verticalId || undefined,
+        }),
       });
 
       if (!response.ok) {
-        const error = await response.json() as { error?: string };
+        const error = (await response.json()) as { error?: string };
         throw new Error(error.error || 'Failed to submit form');
       }
 
-      const data = await response.json() as LeadApiResponse;
+      const data = (await response.json()) as LeadApiResponse;
       setSubmitStatus('success');
       setCalendarBookingUrl(data.calendarBookingUrl ?? null);
       setName('');
       setEmail('');
       setMessage('');
+      setSelectedPackage('');
 
       setTimeout(() => {
         setSubmitStatus('idle');
@@ -87,6 +106,25 @@ export function ContactForm(): ReactElement {
           className="mt-2 w-full rounded-lg border border-icso-border bg-white/5 px-4 py-3 text-sm text-icso-text placeholder:text-icso-muted focus:border-icso-primary focus:outline-none focus:ring-1 focus:ring-icso-primary disabled:opacity-50"
           placeholder="you@company.com"
         />
+      </div>
+      <div>
+        <label htmlFor="package" className="block text-sm font-medium text-icso-text">
+          Package interest
+        </label>
+        <select
+          id="package"
+          disabled={isSubmitting}
+          value={selectedPackage}
+          onChange={(e) => setSelectedPackage(e.target.value)}
+          className="mt-2 w-full rounded-lg border border-icso-border bg-white/5 px-4 py-3 text-sm text-icso-text focus:border-icso-primary focus:outline-none focus:ring-1 focus:ring-icso-primary disabled:opacity-50"
+        >
+          <option value="">Not sure yet — recommend on discovery</option>
+          {commercialCatalog.packages.map((pkg) => (
+            <option key={pkg.id} value={pkg.id}>
+              {pkg.name} — {pkg.name_es}
+            </option>
+          ))}
+        </select>
       </div>
       <div>
         <label htmlFor="message" className="block text-sm font-medium text-icso-text">
@@ -137,10 +175,14 @@ export function ContactForm(): ReactElement {
           <p className="text-xs text-icso-muted">
             Prefer email?{' '}
             <a
-              href={`mailto:${siteConfig.contactEmail}`}
+              href={buildDiscoveryMailto({
+                to: siteConfig.contactEmail,
+                packageId: selectedPackage || packageId,
+                verticalId,
+              })}
               className="font-medium text-icso-cyan hover:underline"
             >
-              {siteConfig.contactEmail}
+              Prefill brief to {siteConfig.contactEmail}
             </a>
           </p>
         )}
