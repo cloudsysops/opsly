@@ -113,4 +113,29 @@ describe('runModuleProvisioning', () => {
       expect.objectContaining({ last_error: expect.stringContaining('Unknown module') })
     );
   });
+
+  it('resolves without throwing when upsertTenantModuleStatus itself rejects (never-throws contract)', async () => {
+    vi.mocked(catalogMod.getModuleDefinition).mockReturnValue({
+      id: 'uptime',
+      name: 'Uptime Kuma Monitor',
+      description: '',
+      category: 'monitoring',
+      tier: 'starter',
+      required_by: [],
+      requires: [],
+      bootstrap_script: null,
+      smoke_script: null,
+      manual_steps: [],
+      estimated_setup_minutes: 10,
+      cost_level: 'low',
+    });
+    // The very first upsert call (marking 'provisioning') rejects, simulating
+    // a real Supabase network error. This must not produce an unhandled
+    // promise rejection or cause runModuleProvisioning to reject.
+    vi.mocked(serviceMod.upsertTenantModuleStatus).mockRejectedValueOnce(
+      new Error('supabase network error')
+    );
+
+    await expect(runModuleProvisioning('peskids', 'uptime')).resolves.toBeUndefined();
+  });
 });
