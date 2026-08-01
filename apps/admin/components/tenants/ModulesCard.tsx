@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { activateTenantModule, markManualStepsDone } from '@/lib/api-client';
 import type { TenantModule } from '@/lib/types';
 import { useTenantModules } from '@/hooks/useTenantModules';
@@ -40,27 +40,41 @@ function ModuleRow({
 }) {
   const [busy, setBusy] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const busyRef = useRef(false);
 
   const missingRequires = mod.requires; // full dependency check happens server-side; this is UI-only fast feedback
   const canActivate = mod.status === 'not_installed' || mod.status === 'failed';
 
   async function handleActivate(): Promise<void> {
+    if (busyRef.current) return;
+    busyRef.current = true;
     setBusy(true);
+    setActionError(null);
     try {
       await activateTenantModule(slug, mod.id);
       onChanged();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'No se pudo activar el módulo');
     } finally {
+      busyRef.current = false;
       setBusy(false);
       setConfirming(false);
     }
   }
 
   async function handleMarkDone(): Promise<void> {
+    if (busyRef.current) return;
+    busyRef.current = true;
     setBusy(true);
+    setActionError(null);
     try {
       await markManualStepsDone(slug, mod.id);
       onChanged();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'No se pudo marcar como completado');
     } finally {
+      busyRef.current = false;
       setBusy(false);
     }
   }
@@ -77,6 +91,8 @@ function ModuleRow({
         {mod.status === 'failed' && mod.last_error && (
           <p className="font-mono text-xs text-ops-red">{mod.last_error.slice(0, 300)}</p>
         )}
+
+        {actionError && <p className="font-mono text-xs text-ops-red">{actionError}</p>}
 
         {mod.status === 'active_needs_manual_steps' && (
           <div className="space-y-1">
