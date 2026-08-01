@@ -12,6 +12,9 @@ const nextConfig = {
     '@intcloudsysops/openwa',
     '@intcloudsysops/prompt-guard',
     '@intcloudsysops/tenant-profile',
+    '@intcloudsysops/wacrm-channel',
+    '@intcloudsysops/whatsapp-channel',
+    '@intcloudsysops/wompi-gateway',
   ],
   webpack: (config) => {
     config.resolve.extensionAlias = {

@@ -2,7 +2,12 @@ import type { OutboxRecord, WhatsAppSendRequest, WhatsAppSendResult } from './ty
 import type { WhatsAppProvider } from './types.js';
 
 export type OutboxStore = {
+  getById(id: string): Promise<OutboxRecord | null>;
   getByIdempotencyKey(key: string): Promise<OutboxRecord | null>;
+  listByTenant(
+    tenantSlug: string,
+    options?: { status?: OutboxRecord['status']; limit?: number }
+  ): Promise<OutboxRecord[]>;
   insertPending(
     record: Omit<OutboxRecord, 'createdAt' | 'updatedAt'> & {
       createdAt?: string;
@@ -85,8 +90,19 @@ export async function dispatchApprovedOutbound(
 export function createMemoryOutboxStore(): OutboxStore {
   const map = new Map<string, OutboxRecord>();
   return {
+    async getById(id) {
+      return map.get(id) ?? null;
+    },
     async getByIdempotencyKey(key) {
       return map.get(key) ?? null;
+    },
+    async listByTenant(tenantSlug, options) {
+      const limit = options?.limit ?? 50;
+      return [...map.values()]
+        .filter((row) => row.tenantSlug === tenantSlug)
+        .filter((row) => (options?.status ? row.status === options.status : true))
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+        .slice(0, limit);
     },
     async insertPending(record) {
       const id = record.id ?? crypto.randomUUID();
@@ -103,6 +119,7 @@ export function createMemoryOutboxStore(): OutboxStore {
     async markApproved(id) {
       const row = map.get(id);
       if (!row) return null;
+      if (row.status === 'sent' || row.status === 'sending') return row;
       const next = { ...row, status: 'approved' as const, updatedAt: new Date().toISOString() };
       map.set(id, next);
       return next;

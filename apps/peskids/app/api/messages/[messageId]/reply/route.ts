@@ -45,6 +45,7 @@ export async function POST(req: NextRequest, context: { params: Promise<{ messag
         status: result.status,
         replyRecord: result.replyRecord,
         n8n: result.n8n,
+        meta: result.meta ?? null,
         message: result.message,
       },
       action === 'approve' || action === 'skip' ? 200 : 201

@@ -11,7 +11,8 @@ last_review: 2026-07-28
 - **Primary:** Meta Cloud API (`lib/whatsapp-channel` + `/api/webhooks/meta/whatsapp`)
 - **Optional:** WACRM adapter (existing `/api/webhooks/wacrm`) — OFF by default
 - **SoT:** Supabase `messages` + outbox `platform.whatsapp_outbound_outbox` (migration 0093 — apply only with human approval)
-- **Approvals:** `/admin/messages` (existing) + panel `/admin/integrations/whatsapp`
+- **Approvals:** `/admin/messages` composer (approve → outbox; send → Meta dispatch) + panel `/admin/integrations/whatsapp` (`GET/POST /api/admin/whatsapp/outbox`)
+- **Rule:** never mark `sent` when Meta outbound is skipped/disabled; n8n sync only after Meta success
 
 ## Flags (all default OFF)
 

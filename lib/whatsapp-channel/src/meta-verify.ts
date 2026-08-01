@@ -35,11 +35,15 @@ export async function verifyMetaSignature(
   if (!appSecret) return false;
   if (!signatureHeader) return false;
 
-  const normalized = signatureHeader.startsWith('sha256=')
-    ? signatureHeader.slice('sha256='.length)
-    : signatureHeader.includes('=')
-      ? (signatureHeader.split('=')[1] ?? '')
-      : signatureHeader;
+  const normalized = (() => {
+    if (signatureHeader.startsWith('sha256=')) {
+      return signatureHeader.slice('sha256='.length);
+    }
+    if (signatureHeader.includes('=')) {
+      return signatureHeader.split('=')[1] ?? '';
+    }
+    return signatureHeader;
+  })();
 
   const expected = await hmacSha256Hex(appSecret, rawBody);
   return timingSafeEqual(expected, normalized);

@@ -1,3 +1,4 @@
+2 .cursor/rules/peskids-twenty-freeze.mdc
 1 .n8n/1-workflows/peskids/README.md
 1 .n8n/1-workflows/peskids/peskids-lead-intake.json
 8 apps/api/app/api/public/tenants/peskids/webhooks/gohighlevel/leads/route.ts
@@ -57,6 +58,7 @@
 1 config/client-launch.schema.json
 3 config/tenants/intcloudsysops.json
 3 config/tenants/peskids.json
+1 infra/docker-compose.peskids-whatsapp-sandbox.notes.yml
 1 infra/docker-compose.twenty.yml
 10 lib/services/gohighlevel/client.ts
 10 lib/services/gohighlevel/env-config.ts

@@ -91,6 +91,9 @@ jobs:
       - name: GHL runtime no-regression guard
         run: npm run guard:ghl-runtime
 
+      - name: GHL runtime guard positive/negative tests
+        run: npm run guard:ghl-runtime:test
+
       - name: ESLint si existe config (paralelo)
         run: |
           set -euo pipefail

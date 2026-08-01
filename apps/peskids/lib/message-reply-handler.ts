@@ -1,6 +1,10 @@
 import { enqueueApprovedReply } from '@/lib/n8n-send';
 import { supabaseServer } from '@/lib/supabase';
 import type { Database } from '@/lib/types';
+import {
+  approveAndDispatchWhatsApp,
+  enqueueWhatsAppDraft,
+} from '@/lib/integrations/whatsapp-outbound';
 
 export type MessageReplyAction = 'approve' | 'send' | 'mark_sent' | 'skip';
 
@@ -14,6 +18,7 @@ export type MessageReplyResult =
       status: string;
       replyRecord: Record<string, unknown> | null;
       n8n: { ok: boolean; detail: string } | null;
+      meta?: { ok: boolean; skipped?: boolean; detail: string; outboxId?: string };
       message: string;
     }
   | { ok: false; status: number; error: string };
@@ -24,17 +29,28 @@ type OriginalMessage = {
   sender_contact: string;
 };
 
-function outboundStatusForAction(action: MessageReplyAction, n8nOk: boolean): MessageStatus {
+function isWhatsAppSource(source: string): boolean {
+  const n = source.trim().toLowerCase();
+  return n === 'whatsapp' || n.startsWith('whatsapp') || n === 'wacrm' || n.startsWith('wacrm');
+}
+
+function outboundStatusForAction(
+  action: MessageReplyAction,
+  deliveryOk: boolean
+): MessageStatus {
   if (action === 'skip') return 'skipped';
   if (action === 'mark_sent') return 'sent';
-  if (action === 'send') return n8nOk ? 'sent' : 'failed';
+  if (action === 'send') return deliveryOk ? 'sent' : 'failed';
   return 'approved';
 }
 
-function inboundStatusForAction(action: MessageReplyAction, n8nOk: boolean): MessageStatus {
+function inboundStatusForAction(
+  action: MessageReplyAction,
+  deliveryOk: boolean
+): MessageStatus {
   if (action === 'skip') return 'skipped';
-  if (action === 'mark_sent' || (action === 'send' && n8nOk)) return 'sent';
-  if (action === 'send' && !n8nOk) return 'pending_approval';
+  if (action === 'mark_sent' || (action === 'send' && deliveryOk)) return 'sent';
+  if (action === 'send' && !deliveryOk) return 'pending_approval';
   return 'approved';
 }
 
@@ -65,6 +81,7 @@ export async function handleMessageReply(input: {
   }
 
   const original = originalMessage as OriginalMessage;
+  const whatsapp = isWhatsAppSource(String(original.source));
 
   if (action === 'skip') {
     const { error: skipError } = await supabase
@@ -109,8 +126,60 @@ export async function handleMessageReply(input: {
   }
 
   let n8nResult: { ok: boolean; detail: string } | null = null;
+  let metaResult:
+    | { ok: boolean; skipped?: boolean; detail: string; outboxId?: string }
+    | undefined;
 
-  if (action === 'send') {
+  if (whatsapp && (action === 'approve' || action === 'send')) {
+    try {
+      if (action === 'approve') {
+        const outbox = await enqueueWhatsAppDraft({
+          tenantSlug: tenantId,
+          toPhone: String(original.sender_contact),
+          body: trimmed,
+          parentMessageId: messageId,
+        });
+        metaResult = {
+          ok: true,
+          detail: 'queued_pending_approval',
+          outboxId: outbox.id,
+        };
+      } else {
+        // action === 'send' — human approval; Meta is primary path (never mark sent if skipped)
+        const dispatched = await approveAndDispatchWhatsApp({
+          tenantSlug: tenantId,
+          toPhone: String(original.sender_contact),
+          body: trimmed,
+          parentMessageId: messageId,
+        });
+        const send = dispatched.send;
+        metaResult = {
+          ok: Boolean(send?.ok),
+          skipped: Boolean(send?.skipped),
+          detail:
+            send?.error ??
+            send?.reason ??
+            (send?.ok ? 'sent_via_meta' : 'meta_send_failed'),
+          outboxId: dispatched.outbox.id,
+        };
+
+        // n8n only after successful Meta send — sync/automation, not a second transport
+        if (send?.ok && !send.skipped) {
+          n8nResult = await enqueueApprovedReply({
+            messageId,
+            source: String(original.source),
+            sender_contact: String(original.sender_contact),
+            reply_text: trimmed,
+          });
+        }
+      }
+    } catch (err) {
+      metaResult = {
+        ok: false,
+        detail: err instanceof Error ? err.message : 'meta_outbox_error',
+      };
+    }
+  } else if (action === 'send') {
     n8nResult = await enqueueApprovedReply({
       messageId,
       source: String(original.source),
@@ -119,9 +188,17 @@ export async function handleMessageReply(input: {
     });
   }
 
-  const n8nOk = n8nResult?.ok ?? false;
-  const outboundStatus = outboundStatusForAction(action, n8nOk);
-  const inboundStatus = inboundStatusForAction(action, n8nOk);
+  const deliveryOk = whatsapp
+    ? Boolean(metaResult?.ok && !metaResult.skipped)
+    : Boolean(n8nResult?.ok);
+  const outboundStatus = outboundStatusForAction(
+    action,
+    action === 'send' ? deliveryOk : true
+  );
+  const inboundStatus = inboundStatusForAction(
+    action,
+    action === 'send' ? deliveryOk : true
+  );
 
   await supabase
     .from('messages')
@@ -136,10 +213,18 @@ export async function handleMessageReply(input: {
     .eq('tenant_id', tenantId);
 
   const messageByAction: Record<MessageReplyAction, string> = {
-    approve: 'Respuesta aprobada. Puedes copiarla y enviarla manualmente.',
-    send: n8nOk
-      ? 'Respuesta aprobada y encolada para envío.'
-      : 'Respuesta guardada. No se pudo encolar el envío — revisa la configuración.',
+    approve: whatsapp
+      ? 'Respuesta en cola de aprobación WhatsApp (outbox). Usa Enviar para despachar vía Meta.'
+      : 'Respuesta aprobada. Puedes copiarla y enviarla manualmente.',
+    send: whatsapp
+      ? metaResult?.ok && !metaResult.skipped
+        ? 'Respuesta aprobada y enviada por Meta Cloud.'
+        : metaResult?.skipped
+          ? 'Respuesta guardada en outbox. Meta outbound está desactivado o sin credenciales — no se marcó como enviado.'
+          : 'Respuesta guardada. Falló el envío Meta — revisa outbox / flags.'
+      : n8nResult?.ok
+        ? 'Respuesta aprobada y encolada para envío.'
+        : 'Respuesta guardada. No se pudo encolar el envío — revisa la configuración.',
     mark_sent: 'Mensaje marcado como enviado manualmente.',
     skip: 'Mensaje marcado como omitido.',
   };
@@ -150,6 +235,7 @@ export async function handleMessageReply(input: {
     status: inboundStatus,
     replyRecord: replyRecord as Record<string, unknown>,
     n8n: n8nResult,
+    meta: metaResult,
     message: messageByAction[action],
   };
 }

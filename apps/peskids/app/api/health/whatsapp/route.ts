@@ -19,12 +19,12 @@ export async function GET(): Promise<NextResponse> {
   const readiness = assessWhatsAppReadiness(meta);
   const wacrm = resolveWacrmForTenant(slug);
 
-  const wacrmState =
-    !wacrm || !wacrm.enabled
-      ? 'disabled'
-      : wacrm.serverUrl.includes('wacrm') || wacrm.serverUrl.length > 0
-        ? 'configured_optional'
-        : 'stub';
+  let wacrmState = 'stub';
+  if (!wacrm || !wacrm.enabled) {
+    wacrmState = 'disabled';
+  } else if (wacrm.serverUrl.includes('wacrm') || wacrm.serverUrl.length > 0) {
+    wacrmState = 'configured_optional';
+  }
 
   const httpStatus =
     readiness.lifecycle === 'stub' && meta.enabled ? 503 : 200;
