@@ -390,8 +390,12 @@ export type TenantModule = {
   manual_steps: string[];
   estimated_setup_minutes: number;
   cost_level: string;
+  /** false when the module still needs a manual bootstrap (no one-click activation). */
+  automatable: boolean;
   status: TenantModuleStatus;
   last_error: string | null;
+  /** ISO timestamp of the last status change (null when never activated). */
+  updated_at: string | null;
 };
 
 export type TenantModulesResponse = {

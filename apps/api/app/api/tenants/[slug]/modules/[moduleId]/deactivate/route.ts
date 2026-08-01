@@ -1,7 +1,10 @@
 import { jsonError, jsonOk, serverErrorLogged } from '../../../../../../../lib/api-response';
 import { requireAdminAccess } from '../../../../../../../lib/auth';
 import { HTTP_STATUS } from '../../../../../../../lib/constants';
-import { upsertTenantModuleStatus } from '../../../../../../../lib/services/tenant-modules.service';
+import {
+  resolveActiveTenantSlug,
+  upsertTenantModuleStatus,
+} from '../../../../../../../lib/services/tenant-modules.service';
 import { getModuleDefinition } from '../../../../../../../lib/tenant-modules/catalog';
 import {
   ModuleIdParamSchema,
@@ -34,7 +37,12 @@ export async function POST(
   }
 
   try {
-    await upsertTenantModuleStatus(slugParsed.data, moduleParsed.data, 'disabled');
+    const tenantSlug = await resolveActiveTenantSlug(slugParsed.data);
+    if (!tenantSlug) {
+      return jsonError('Tenant not found', HTTP_STATUS.NOT_FOUND);
+    }
+
+    await upsertTenantModuleStatus(tenantSlug, moduleParsed.data, 'disabled');
     return jsonOk({ status: 'disabled', manual_steps: mod.manual_steps });
   } catch (err) {
     return serverErrorLogged('POST deactivate tenant module:', err);

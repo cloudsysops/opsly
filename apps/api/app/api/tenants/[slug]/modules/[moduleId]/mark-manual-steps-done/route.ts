@@ -1,7 +1,11 @@
 import { jsonError, jsonOk, serverErrorLogged } from '../../../../../../../lib/api-response';
 import { requireAdminAccess } from '../../../../../../../lib/auth';
 import { HTTP_STATUS } from '../../../../../../../lib/constants';
-import { upsertTenantModuleStatus } from '../../../../../../../lib/services/tenant-modules.service';
+import {
+  resolveActiveTenantSlug,
+  upsertTenantModuleStatus,
+} from '../../../../../../../lib/services/tenant-modules.service';
+import { getModuleDefinition } from '../../../../../../../lib/tenant-modules/catalog';
 import {
   ModuleIdParamSchema,
   TenantRefParamSchema,
@@ -27,8 +31,18 @@ export async function POST(
     return jsonError(formatZodError(moduleParsed.error), HTTP_STATUS.BAD_REQUEST);
   }
 
+  const mod = getModuleDefinition(moduleParsed.data);
+  if (!mod) {
+    return jsonError('Unknown module id', HTTP_STATUS.NOT_FOUND);
+  }
+
   try {
-    await upsertTenantModuleStatus(slugParsed.data, moduleParsed.data, 'active');
+    const tenantSlug = await resolveActiveTenantSlug(slugParsed.data);
+    if (!tenantSlug) {
+      return jsonError('Tenant not found', HTTP_STATUS.NOT_FOUND);
+    }
+
+    await upsertTenantModuleStatus(tenantSlug, moduleParsed.data, 'active');
     return jsonOk({ status: 'active' });
   } catch (err) {
     return serverErrorLogged('POST mark-manual-steps-done:', err);
