@@ -20,7 +20,11 @@ function tailStderr(err: unknown): string {
   return message.slice(-2000);
 }
 
-async function runScript(script: string, tenantSlug: string, timeoutMinutes: number): Promise<void> {
+async function runScript(
+  script: string,
+  tenantSlug: string,
+  timeoutMinutes: number
+): Promise<void> {
   const { file, args } = parseScriptCommand(script, tenantSlug);
   await execa(file, args, {
     cwd: resolveOpslyRepoRoot(),

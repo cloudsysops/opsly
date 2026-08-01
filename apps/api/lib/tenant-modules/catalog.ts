@@ -44,10 +44,7 @@ export function loadModuleCatalog(): Record<string, ModuleDefinition> {
     return cached;
   }
   const repoRoot = resolveOpslyRepoRoot();
-  const raw = readFileSync(
-    join(repoRoot, 'config', 'tenant-modules-catalog.json'),
-    'utf8'
-  );
+  const raw = readFileSync(join(repoRoot, 'config', 'tenant-modules-catalog.json'), 'utf8');
   const parsed = JSON.parse(raw) as RawCatalog;
   const result: Record<string, ModuleDefinition> = {};
   for (const [id, mod] of Object.entries(parsed.modules)) {
