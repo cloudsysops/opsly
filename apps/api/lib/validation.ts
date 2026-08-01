@@ -41,6 +41,10 @@ export const TenantRefParamSchema = z.union([
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
 ]);
 
+export const ModuleIdParamSchema = z
+  .string()
+  .regex(/^[a-z0-9-]{1,50}$/, 'Invalid module id');
+
 export const UpdateTenantSchema = z
   .object({
     name: z.string().min(1).optional(),
