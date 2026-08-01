@@ -19,3 +19,7 @@
 ## 2026-05-27 - Ambiguous Labels in PasswordInput
 **Learning:** The `PasswordInput` component includes an eye icon button with an `aria-label` containing "contraseña". This can cause `get_by_label("Contraseña")` in Playwright or screen readers to match multiple elements, leading to ambiguity.
 **Action:** Always use exact matching or specific ARIA roles when targeting inputs with associated toggle buttons to ensure the primary input is correctly identified.
+
+## 2026-05-28 - Native Browser Validation Intercepting Custom React Validations
+**Learning:** When custom React form validation is implemented, native HTML5 browser-level constraints (e.g. `type="email"`) intercept the form's submit event if invalid. This prevents custom handlers from executing and setting appropriate accessibility state (such as `aria-invalid` or custom dynamic error descriptions) on the inputs.
+**Action:** When testing/verifying custom error state rendering, use empty fields or inputs that satisfy basic native browser validation constraints, or use the `noValidate` form attribute if complete custom control is desired.
