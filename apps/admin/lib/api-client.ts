@@ -379,7 +379,7 @@ export async function getTenantModules(slug: string): Promise<TenantModulesRespo
 export async function activateTenantModule(
   slug: string,
   moduleId: string
-): Promise<{ status: string; error?: string; missing_dependencies?: string[] }> {
+): Promise<{ status: string } | { error: string; missing_dependencies: string[] }> {
   return request(`/api/tenants/${slug}/modules/${moduleId}/activate`, { method: 'POST' });
 }
 
