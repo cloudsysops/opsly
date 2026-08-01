@@ -3,6 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ContainerStatusGrid } from '@/components/tenants/ContainerStatusGrid';
+import { ModulesCard } from '@/components/tenants/ModulesCard';
 import { PlanBadge } from '@/components/tenants/PlanBadge';
 import { TenantActions } from '@/components/tenants/TenantActions';
 import { TenantSurfaceLinks } from '@/components/tenants/TenantSurfaceLinks';
@@ -207,6 +208,8 @@ export default function TenantDetailPage() {
         <h2 className="mb-3 font-sans text-xs uppercase tracking-wide text-ops-gray">Containers</h2>
         <ContainerStatusGrid containers={containers} />
       </section>
+
+      <ModulesCard slug={tenant.slug} />
 
       <section>
         <h2 className="mb-3 font-sans text-xs uppercase tracking-wide text-ops-gray">
