@@ -29,6 +29,30 @@ function StatusBadge({ status }: { status: TenantModule['status'] }) {
   return <span className={`font-mono text-xs ${color}`}>{STATUS_LABEL[status]}</span>;
 }
 
+const STALE_BUFFER_MINUTES = 5;
+
+/**
+ * A `queued`/`provisioning` row whose `updated_at` is older than the bootstrap
+ * window (estimated_setup_minutes * 2 + buffer) was almost certainly abandoned
+ * by an API process that died mid-run. Mirrors the server-side precondition in
+ * apps/api/lib/tenant-modules/activation-guard.ts, which is the actual
+ * authority — this only decides whether to offer the retry button.
+ */
+function isStalledInProgress(mod: TenantModule): boolean {
+  if (mod.status !== 'queued' && mod.status !== 'provisioning') {
+    return false;
+  }
+  if (!mod.updated_at) {
+    return true;
+  }
+  const updatedAt = Date.parse(mod.updated_at);
+  if (Number.isNaN(updatedAt)) {
+    return true;
+  }
+  const windowMs = (mod.estimated_setup_minutes * 2 + STALE_BUFFER_MINUTES) * 60_000;
+  return Date.now() - updatedAt > windowMs;
+}
+
 function ModuleRow({
   slug,
   mod,
@@ -44,7 +68,10 @@ function ModuleRow({
   const busyRef = useRef(false);
 
   const missingRequires = mod.requires; // full dependency check happens server-side; this is UI-only fast feedback
-  const canActivate = mod.status === 'not_installed' || mod.status === 'failed';
+  const stalled = isStalledInProgress(mod);
+  const activatableStatus = mod.status === 'not_installed' || mod.status === 'failed' || stalled;
+  const canActivate = activatableStatus && mod.automatable;
+  const needsManualSetup = activatableStatus && !mod.automatable;
 
   async function handleActivate(): Promise<void> {
     if (busyRef.current) return;
@@ -52,7 +79,13 @@ function ModuleRow({
     setBusy(true);
     setActionError(null);
     try {
-      await activateTenantModule(slug, mod.id);
+      const result = await activateTenantModule(slug, mod.id);
+      if ('missing_dependencies' in result) {
+        setActionError(
+          `Faltan módulos requeridos: ${result.missing_dependencies.join(', ')}. Activá esos primero.`
+        );
+        return;
+      }
       onChanged();
     } catch (err) {
       setActionError(err instanceof Error ? err.message : 'No se pudo activar el módulo');
@@ -101,20 +134,39 @@ function ModuleRow({
                 <li key={step}>{step}</li>
               ))}
             </ul>
-            <Button size="sm" variant="default" disabled={busy} onClick={() => void handleMarkDone()}>
+            <Button
+              size="sm"
+              variant="default"
+              disabled={busy}
+              onClick={() => void handleMarkDone()}
+            >
               Marcar completado
             </Button>
           </div>
+        )}
+
+        {needsManualSetup && (
+          <p className="font-mono text-xs text-ops-yellow">
+            Requiere setup manual — ver scripts/tenants/bootstrap-{mod.id}.sh
+          </p>
+        )}
+
+        {stalled && (
+          <p className="font-mono text-xs text-ops-yellow">
+            Sin novedades desde hace rato — el proceso pudo haberse caído. Podés reintentar.
+          </p>
         )}
 
         {canActivate && !confirming && (
           <Button
             size="sm"
             disabled={busy}
-            title={missingRequires.length > 0 ? `Requiere: ${missingRequires.join(', ')}` : undefined}
+            title={
+              missingRequires.length > 0 ? `Requiere: ${missingRequires.join(', ')}` : undefined
+            }
             onClick={() => setConfirming(true)}
           >
-            {mod.status === 'failed' ? 'Reintentar' : 'Activar'}
+            {mod.status === 'failed' || stalled ? 'Reintentar' : 'Activar'}
           </Button>
         )}
 
@@ -133,7 +185,12 @@ function ModuleRow({
               <Button size="sm" disabled={busy} onClick={() => void handleActivate()}>
                 Confirmar
               </Button>
-              <Button size="sm" variant="ghost" disabled={busy} onClick={() => setConfirming(false)}>
+              <Button
+                size="sm"
+                variant="ghost"
+                disabled={busy}
+                onClick={() => setConfirming(false)}
+              >
                 Cancelar
               </Button>
             </div>
@@ -145,7 +202,18 @@ function ModuleRow({
 }
 
 export function ModulesCard({ slug }: { slug: string }) {
-  const { data, isLoading, mutate } = useTenantModules(slug);
+  const { data, error, isLoading, mutate } = useTenantModules(slug);
+
+  if (error) {
+    return (
+      <div>
+        <h2 className="mb-3 font-mono text-sm text-neutral-400">Módulos</h2>
+        <div className="rounded border border-ops-red/50 bg-ops-red/10 px-3 py-2 font-sans text-sm text-ops-red">
+          {error.message}
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading || !data) {
     return null;

@@ -98,6 +98,24 @@ function getErrorMessage(data: unknown): string {
   return 'Request failed';
 }
 
+/**
+ * Error thrown for non-2xx responses. Behaves exactly like the plain `Error`
+ * it replaces (`.message` is still `getErrorMessage(data)`), but also keeps the
+ * full parsed response body so callers that need structured error payloads
+ * (e.g. `{ missing_dependencies: [...] }`) can read them.
+ */
+export class ApiError extends Error {
+  readonly status: number;
+  readonly body: unknown;
+
+  constructor(message: string, status: number, body: unknown) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.body = body;
+  }
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const headers = await buildHeaders(init?.headers);
   const controller = new AbortController();
@@ -126,7 +144,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const data = await parseJson(res);
 
   if (!res.ok) {
-    throw new Error(getErrorMessage(data));
+    throw new ApiError(getErrorMessage(data), res.status, data);
   }
 
   return data as T;
@@ -376,11 +394,37 @@ export async function getTenantModules(slug: string): Promise<TenantModulesRespo
   return request<TenantModulesResponse>(`/api/tenants/${slug}/modules`);
 }
 
+function readMissingDependencies(body: unknown): string[] | null {
+  if (body === null || typeof body !== 'object' || !('missing_dependencies' in body)) {
+    return null;
+  }
+  const missing = (body as { missing_dependencies: unknown }).missing_dependencies;
+  if (Array.isArray(missing) && missing.every((item) => typeof item === 'string')) {
+    return missing as string[];
+  }
+  return null;
+}
+
 export async function activateTenantModule(
   slug: string,
   moduleId: string
 ): Promise<{ status: string } | { error: string; missing_dependencies: string[] }> {
-  return request(`/api/tenants/${slug}/modules/${moduleId}/activate`, { method: 'POST' });
+  try {
+    return await request<{ status: string }>(`/api/tenants/${slug}/modules/${moduleId}/activate`, {
+      method: 'POST',
+    });
+  } catch (err) {
+    // The 409 "missing dependencies" response is a structured, actionable
+    // result for the caller — surface it instead of collapsing it into a
+    // generic thrown error. Everything else still throws.
+    if (err instanceof ApiError) {
+      const missing = readMissingDependencies(err.body);
+      if (missing) {
+        return { error: err.message, missing_dependencies: missing };
+      }
+    }
+    throw err;
+  }
 }
 
 export async function markManualStepsDone(
@@ -597,7 +641,11 @@ export type CreateDefenseAuditPayload = {
 
 export async function createDefenseAudit(
   body: CreateDefenseAuditPayload
-): Promise<{ success: boolean; audit: DefenseAuditRow; orchestrator?: { queued: boolean; detail?: string } }> {
+): Promise<{
+  success: boolean;
+  audit: DefenseAuditRow;
+  orchestrator?: { queued: boolean; detail?: string };
+}> {
   return request(`/api/defense/audits`, {
     method: 'POST',
     body: JSON.stringify(body),
@@ -708,11 +756,14 @@ export async function stopAgentIdeTerminalSession(
   agentId: string,
   sessionId: string
 ): Promise<{ success: boolean; status: string }> {
-  return request(`/api/admin/agents/terminal/${encodeURIComponent(agentId)}/sessions/${encodeURIComponent(
-    sessionId
-  )}/stop`, {
-    method: 'POST',
-  });
+  return request(
+    `/api/admin/agents/terminal/${encodeURIComponent(agentId)}/sessions/${encodeURIComponent(
+      sessionId
+    )}/stop`,
+    {
+      method: 'POST',
+    }
+  );
 }
 
 export async function getAgentIdeMcpTools(): Promise<AgentIdeMcpCatalogResponse> {
