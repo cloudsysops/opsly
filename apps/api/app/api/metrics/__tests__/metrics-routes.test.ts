@@ -15,6 +15,11 @@ vi.mock('../../../../lib/stripe', () => ({
   computeMrr: vi.fn(),
 }));
 
+vi.mock('../../../../lib/redis-cache', () => ({
+  getCache: vi.fn(),
+  setCache: vi.fn(() => Promise.resolve(true)),
+}));
+
 vi.mock('../../../../lib/fetch-host-metrics-prometheus', () => ({
   fetchHostMetricsFromPrometheus: vi.fn(),
 }));
@@ -140,6 +145,9 @@ describe('GET /api/metrics', () => {
   });
 
   it('returns aggregated JSON on success', async () => {
+    const redisCache = await import('../../../../lib/redis-cache');
+    vi.mocked(redisCache.getCache).mockResolvedValue(null);
+
     vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
       mockTenantCountClient({
         total: 10,
@@ -162,6 +170,52 @@ describe('GET /api/metrics', () => {
     expect(byPlan.startup).toBe(2);
     expect(byPlan.business).toBe(2);
     expect(byPlan.enterprise).toBe(1);
+
+    expect(redisCache.setCache).toHaveBeenCalledWith('metrics:main_summary', body, 60);
+  });
+
+  it('returns cached data immediately on cache hit', async () => {
+    const redisCache = await import('../../../../lib/redis-cache');
+    const cachedData = {
+      total_tenants: 100,
+      active_tenants: 80,
+      suspended_tenants: 20,
+      mrr_usd: 999.99,
+      tenants_by_plan: {
+        startup: 50,
+        business: 30,
+        enterprise: 20,
+      },
+    };
+    vi.mocked(redisCache.getCache).mockResolvedValue(cachedData);
+
+    const res = await getMetrics(new Request('http://x/metrics', { headers: adminHeaders() }));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body).toEqual(cachedData);
+    expect(supabaseMod.getServiceClient).not.toHaveBeenCalled();
+  });
+
+  it('gracefully falls back to live query on cache lookup error', async () => {
+    const redisCache = await import('../../../../lib/redis-cache');
+    vi.mocked(redisCache.getCache).mockRejectedValue(new Error('Redis is down'));
+
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
+      mockTenantCountClient({
+        total: 10,
+        active: 7,
+        suspended: 1,
+        startup: 2,
+        business: 2,
+        enterprise: 1,
+      })
+    );
+    vi.mocked(stripeMod.computeMrr).mockResolvedValue(123.45);
+    const res = await getMetrics(new Request('http://x/metrics', { headers: adminHeaders() }));
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(body.total_tenants).toBe(10);
+    expect(body.mrr_usd).toBe(123.45);
   });
 });
 

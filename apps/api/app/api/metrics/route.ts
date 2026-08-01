@@ -1,8 +1,11 @@
 import { serverErrorLogged } from '../../../lib/api-response';
 import { requireAdminAccessUnlessDemoRead } from '../../../lib/auth';
+import { getCache, setCache } from '../../../lib/redis-cache';
 import { computeMrr } from '../../../lib/stripe';
 import { getServiceClient } from '../../../lib/supabase';
 import type { SupabaseClient } from '@supabase/supabase-js';
+
+const CACHE_TTL_SECONDS = 60;
 
 type CountHeadResult = {
   count: number | null;
@@ -93,27 +96,28 @@ function firstMetricsError(rows: MetricRows): Error | null {
   return new Error(errors[0].message);
 }
 
-export async function GET(request: Request): Promise<Response> {
-  const authError = await requireAdminAccessUnlessDemoRead(request);
-  if (authError) {
-    return authError;
-  }
+export type MetricsResult = {
+  total_tenants: number;
+  active_tenants: number;
+  suspended_tenants: number;
+  mrr_usd: number;
+  tenants_by_plan: {
+    startup: number;
+    business: number;
+    enterprise: number;
+  };
+};
 
-  const client = getServiceClient();
+export async function fetchAndBuildMetrics(client: SupabaseClient): Promise<MetricsResult> {
   const rows = await fetchTenantMetricRows(client);
   const err = firstMetricsError(rows);
   if (err) {
-    return serverErrorLogged('metrics:', err);
+    throw err;
   }
 
-  let mrr_usd = 0;
-  try {
-    mrr_usd = await computeMrr(client);
-  } catch (e) {
-    return serverErrorLogged('computeMrr:', e);
-  }
+  const mrr_usd = await computeMrr(client);
 
-  return Response.json({
+  return {
     total_tenants: rows.totalRes.count ?? 0,
     active_tenants: rows.activeRes.count ?? 0,
     suspended_tenants: rows.suspendedRes.count ?? 0,
@@ -123,5 +127,36 @@ export async function GET(request: Request): Promise<Response> {
       business: rows.businessRes.count ?? 0,
       enterprise: rows.enterpriseRes.count ?? 0,
     },
-  });
+  };
+}
+
+export async function GET(request: Request): Promise<Response> {
+  const authError = await requireAdminAccessUnlessDemoRead(request);
+  if (authError) {
+    return authError;
+  }
+
+  const cacheKey = 'metrics:main_summary';
+
+  try {
+    const cached = await getCache<MetricsResult>(cacheKey);
+    if (cached) {
+      return Response.json(cached);
+    }
+  } catch (e) {
+    // Fallback gracefully to live query on cache errors
+    console.warn('[metrics] cache lookup failed:', e);
+  }
+
+  const client = getServiceClient();
+  try {
+    const data = await fetchAndBuildMetrics(client);
+    // Non-blocking background cache update with safe catch block
+    void setCache(cacheKey, data, CACHE_TTL_SECONDS).catch((e: unknown) => {
+      console.error('[metrics] background setCache failed:', e);
+    });
+    return Response.json(data);
+  } catch (err: unknown) {
+    return serverErrorLogged('metrics:', err);
+  }
 }
