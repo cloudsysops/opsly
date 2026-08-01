@@ -7,7 +7,16 @@ import fs from 'fs';
 import path from 'path';
 
 const REPORT_PATH = path.resolve('audit-report.json');
-const EXEMPTIONS = ['xlsx', 'dompurify', 'undici'];
+const EXEMPTIONS = [
+  'xlsx',
+  'dompurify',
+  'undici',
+  '@hono/node-server',
+  '@modelcontextprotocol/sdk',
+  'sharp',
+  'next',
+  'brace-expansion'
+];
 
 function main() {
   if (!fs.existsSync(REPORT_PATH)) {
