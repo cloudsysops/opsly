@@ -15,6 +15,14 @@ export type TenantModuleView = ModuleDefinition & {
   last_error: string | null;
 };
 
+/**
+ * Statuses that can actually be persisted to `platform.tenant_modules.status`.
+ * Excludes `not_installed`, which is a synthetic default `listTenantModules`
+ * assigns when no DB row exists — the DB CHECK constraint
+ * (supabase/migrations/0093_tenant_modules.sql) never allows that value.
+ */
+export type PersistedTenantModuleStatus = Exclude<TenantModuleStatus, 'not_installed'>;
+
 type TenantModuleRow = {
   module_id: string;
   status: TenantModuleStatus;
@@ -71,7 +79,7 @@ export async function getMissingDependencies(
 export async function upsertTenantModuleStatus(
   tenantSlug: string,
   moduleId: string,
-  status: TenantModuleStatus,
+  status: PersistedTenantModuleStatus,
   extra?: { last_error?: string | null; activated_at?: string | null }
 ): Promise<void> {
   const { error } = await getServiceClient()

@@ -64,6 +64,13 @@ describe('getMissingDependencies', () => {
     const missing = await getMissingDependencies('peskids', 'wacrm');
     expect(missing).toEqual([]);
   });
+
+  it('short-circuits to an empty list for a module with no "requires", without querying Supabase', async () => {
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(mockSelectChain([]));
+    const missing = await getMissingDependencies('peskids', 'twenty');
+    expect(missing).toEqual([]);
+    expect(supabaseMod.getServiceClient).not.toHaveBeenCalled();
+  });
 });
 
 describe('upsertTenantModuleStatus', () => {
