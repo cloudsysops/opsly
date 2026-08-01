@@ -19,6 +19,7 @@ import type {
   DefenseAuditDetail,
   DefenseAuditRow,
   DefensePricingResponse,
+  TenantModulesResponse,
 } from './types';
 
 const REQUEST_TIMEOUT_MS = 2_000;
@@ -369,6 +370,26 @@ export async function suspendTenant(id: string): Promise<{ status: string }> {
 
 export async function resumeTenant(id: string): Promise<{ status: string }> {
   return request(`/api/tenants/${id}/resume`, { method: 'POST' });
+}
+
+export async function getTenantModules(slug: string): Promise<TenantModulesResponse> {
+  return request<TenantModulesResponse>(`/api/tenants/${slug}/modules`);
+}
+
+export async function activateTenantModule(
+  slug: string,
+  moduleId: string
+): Promise<{ status: string; error?: string; missing_dependencies?: string[] }> {
+  return request(`/api/tenants/${slug}/modules/${moduleId}/activate`, { method: 'POST' });
+}
+
+export async function markManualStepsDone(
+  slug: string,
+  moduleId: string
+): Promise<{ status: string }> {
+  return request(`/api/tenants/${slug}/modules/${moduleId}/mark-manual-steps-done`, {
+    method: 'POST',
+  });
 }
 
 export async function getMetrics(): Promise<MetricsResponse> {

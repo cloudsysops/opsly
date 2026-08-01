@@ -369,3 +369,31 @@ export type DefensePricingResponse = {
     }
   >;
 };
+
+export type TenantModuleStatus =
+  | 'not_installed'
+  | 'queued'
+  | 'provisioning'
+  | 'active'
+  | 'active_needs_manual_steps'
+  | 'failed'
+  | 'disabled';
+
+export type TenantModule = {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  tier: string;
+  required_by: string[];
+  requires: string[];
+  manual_steps: string[];
+  estimated_setup_minutes: number;
+  cost_level: string;
+  status: TenantModuleStatus;
+  last_error: string | null;
+};
+
+export type TenantModulesResponse = {
+  modules: TenantModule[];
+};
