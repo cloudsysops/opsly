@@ -88,7 +88,8 @@ function mapSkillsForAgent(agentName) {
       const aIdx = priorityOrder[a.priority] || 5;
       const bIdx = priorityOrder[b.priority] || 5;
       return aIdx - bIdx;
-    });
+    })
+    .slice(0, 3);
 
   return {
     agent_name: agentName,

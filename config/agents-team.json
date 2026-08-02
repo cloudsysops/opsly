@@ -6,6 +6,8 @@
   "shared_context": {
     "strategy": "brain-driven-optimization",
     "enabled": true,
+    "contract": "config/agent-context-contract.json",
+    "enforcement": "launcher-and-ci",
     "mcp_tools": [
       "brain:search",
       "brain:semantic-search",
@@ -13,12 +15,12 @@
       "brain:graph",
       "brain:get"
     ],
-    "token_savings_target": "60-70%",
+    "token_savings_target": "60-70% (measured, not assumed)",
     "onboarding_required": true,
     "auto_config_new_agents": true,
     "skills_to_inject": [
       "opsly-context",
-      "opsly-brain-researcher"
+      "opsly-bootstrap"
     ],
     "documentation": "https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md#brain-driven-context-token-optimization"
   },

@@ -31,7 +31,7 @@ skill_autoload() {
   # Buscar skills que coincidan
   local matches
   matches=$(node "$SKILL_ROOT/scripts/skill-finder.js" "$query" --autonomous 2>/dev/null | \
-            jq -r '.chain[]' 2>/dev/null)
+            jq -r '.chain[:3][]' 2>/dev/null)
 
   if [ -n "$matches" ]; then
     echo "📦 Chain: ${matches//$'\n'/ → }"

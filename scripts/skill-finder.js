@@ -139,10 +139,10 @@ export function suggestChain(query) {
 
   const chain = matches.map((s) => s.name);
 
-  // Context is always first for Opsly sessions.
-  if (!chain.includes('opsly-context')) {
-    chain.unshift('opsly-context');
-  }
+  // Context is always first for Opsly sessions, even after the cap is applied.
+  const withoutContext = chain.filter((name) => name !== 'opsly-context');
+  chain.length = 0;
+  chain.push('opsly-context', ...withoutContext);
 
   // Auto-inject brain-researcher if query looks like research
   const q = query.toLowerCase();
@@ -158,7 +158,8 @@ export function suggestChain(query) {
     chain.push('opsly-skill-creator');
   }
 
-  return chain;
+  // Contract limit: context + one domain/research skill + one verifier.
+  return [...new Set(chain)].slice(0, 3);
 }
 
 export function getSkillPath(name) {
@@ -218,7 +219,7 @@ function formatOutput(matches, query, autonomous = false) {
         action: adequacy.shouldCreateSkill ? 'create_or_extend_skill' : 'reuse_existing_skill',
         ...adequacy,
       },
-      skills: matches.slice(0, 5).map((s) => ({
+      skills: matches.slice(0, 3).map((s) => ({
         name: s.name,
         score: s.score,
         triggers: s.matchedTriggers,

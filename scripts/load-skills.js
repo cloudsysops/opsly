@@ -103,25 +103,21 @@ function listSkills(category = null) {
 
 function bootstrapSession() {
   const { skills } = loadAllSkills();
-
-  const critical = skills.filter((s) => s.priority === 'critical');
-  const high = skills.filter((s) => s.priority === 'high');
+  const requiredNames = ['opsly-context', 'opsly-bootstrap'];
+  const required = requiredNames
+    .map((name) => skills.find((skill) => skill.name === name))
+    .filter(Boolean);
 
   return {
     session: {
-      must_load: critical.map((s) => ({
+      must_load: required.map((s) => ({
         name: s.name,
-        reason: 'Priority critical para cualquier sesión',
+        reason: 'Contrato canónico: bootstrap mínimo para cualquier sesión',
       })),
-      recommended: high
-        .filter((s) => !critical.includes(s))
-        .map((s) => ({
-          name: s.name,
-          reason: 'Priority high para trabajo efectivo',
-        })),
+      recommended: [],
     },
-    auto_load: ['opsly-bootstrap', 'opsly-skill-creator'],
-    search_hint: "Usa 'search' con palabras clave para encontrar skills adicionales",
+    auto_load: requiredNames,
+    search_hint: "Selecciona como máximo un skill de dominio y uno de verificación según la tarea",
   };
 }
 

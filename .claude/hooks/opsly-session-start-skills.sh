@@ -52,11 +52,11 @@ if command -v jq >/dev/null 2>&1; then
     {
       status,
       query,
-      chain: (if (.chain | type) == "array" then .chain[0:12] else .chain end),
+      chain: (if (.chain | type) == "array" then .chain[0:3] else .chain end),
       primary,
       confidence,
       decision,
-      skills: (if (.skills | type) == "array" then .skills[0:8] else .skills end)
+      skills: (if (.skills | type) == "array" then .skills[0:3] else .skills end)
     }
   ' 2>/dev/null)" || true
 fi

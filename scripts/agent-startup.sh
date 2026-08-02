@@ -7,6 +7,12 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
+echo "0. Contrato común de agentes..."
+node scripts/agent-context-contract.mjs validate
+node scripts/agent-context-contract.mjs brief --agent "${AGENT_NAME:-unknown}" --task "${AGENT_TASK:-}" \
+  | sed -n '1,80p'
+echo ""
+
 echo "🤖 [Startup] Cargando contexto Opsly..."
 echo ""
 

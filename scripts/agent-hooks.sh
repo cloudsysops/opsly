@@ -152,6 +152,10 @@ EOF
 
 bootstrap() {
   log "agent bootstrap mode=${MODE}"
+  if [[ -f "$REPO_ROOT/scripts/agent-context-contract.mjs" ]]; then
+    (cd "$REPO_ROOT" && node scripts/agent-context-contract.mjs validate)
+    (cd "$REPO_ROOT" && node scripts/agent-context-contract.mjs brief --agent "${AGENT_NAME:-unknown}" --task "${AGENT_TASK:-}")
+  fi
   sync_skills_catalog
   sync_archive_if_enabled
   sync_notebooklm_if_enabled

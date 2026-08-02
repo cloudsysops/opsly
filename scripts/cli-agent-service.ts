@@ -6,6 +6,7 @@ import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { guardLlmTextPrompt } from '@intcloudsysops/prompt-guard';
+import { buildAgentBrief } from './agent-context-contract.mjs';
 
 type ExecuteRequest = {
   job_id?: string;
@@ -58,17 +59,19 @@ function defaultPortFor(name: string): string {
   return ports[name] || '5099';
 }
 
-function buildPrompt(body: ExecuteRequest): string {
+async function buildPrompt(body: ExecuteRequest): Promise<string> {
   const jobId = body.job_id || randomUUID();
   const role = body.agent_role || agent;
   const maxSteps = body.max_steps ?? 8;
   const content = body.prompt_content || body.prompt || '';
+  const brief = await buildAgentBrief({ agent, task: content });
 
   return [
     `You are Opsly local agent "${agent}" running as role "${role}".`,
     `Job ID: ${jobId}`,
     `Max steps: ${maxSteps}`,
     '',
+    brief.prompt,
     'Follow AGENTS.md and the repo guardrails. Return a concise execution report.',
     '',
     content,
@@ -390,7 +393,7 @@ app.post('/execute', async (req, res) => {
       return;
     }
 
-    const prompt = buildPrompt({ ...body, job_id: jobId, prompt_content: guarded.prompt });
+    const prompt = await buildPrompt({ ...body, job_id: jobId, prompt_content: guarded.prompt });
 
     if (dryRun) {
       res.json({

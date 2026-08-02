@@ -20,7 +20,9 @@
       "how does",
       "funcionamiento"
     ],
-    "onboarding_skills": ["opsly-context", "opsly-brain-researcher"]
+    "onboarding_skills": ["opsly-context", "opsly-bootstrap"],
+    "contract": "config/agent-context-contract.json",
+    "enforcement": "launcher-and-ci"
   },
   "services": {
     "local_cursor": {

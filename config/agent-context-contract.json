@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "status": "enforced",
+  "description": "Provider-neutral context and token contract for every Opsly agent.",
+  "defaults": {
+    "max_context_tokens": 12000,
+    "max_output_tokens": 1600,
+    "max_auto_loaded_skills": 3,
+    "max_research_iterations": 3,
+    "require_gateway": true,
+    "require_usage_metadata": true,
+    "require_request_id": true,
+    "require_tenant_slug_when_scoped": true
+  },
+  "bootstrap": {
+    "required_files": [
+      "AGENTS.md",
+      "VISION.md",
+      "docs/03-agents/AGENT-BRAIN-CONTRACT.md",
+      "docs/01-development/MODULARITY-CONTRACT.md"
+    ],
+    "required_skills": ["opsly-context", "opsly-bootstrap"],
+    "optional_files": ["config/knowledge-index.json", "config/github-module-graph.json"]
+  },
+  "skill_selection": {
+    "strategy": "task-directed",
+    "always": ["opsly-context"],
+    "triggers": {
+      "api": ["api", "ruta", "endpoint", "route", "hono", "next"],
+      "frontend": ["ui", "frontend", "react", "portal", "admin", "componente"],
+      "database": ["sql", "supabase", "migration", "rls", "base de datos"],
+      "infra": ["docker", "vps", "deploy", "infra", "compose", "ssh"],
+      "llm": ["llm", "modelo", "tokens", "gateway", "prompt", "ia"],
+      "orchestrator": ["bullmq", "job", "worker", "orchestrator", "cola"],
+      "security": ["seguridad", "security", "auth", "secreto", "rate limit"],
+      "qa": ["test", "prueba", "smoke", "auditoría", "audit", "verificar"]
+    },
+    "domain_skills": {
+      "api": "opsly-api",
+      "frontend": "opsly-frontend",
+      "database": "opsly-supabase",
+      "infra": "opsly-infra",
+      "llm": "opsly-llm",
+      "orchestrator": "opsly-orchestrator",
+      "security": "opsly-agent-verification",
+      "qa": "opsly-qa"
+    },
+    "verification_skill": "opsly-qa"
+  },
+  "requirements": {
+    "research": "Use brain:research only for documented/deep research queries; otherwise search locally.",
+    "routing": "All model traffic must pass through OpenClaw -> apps/llm-gateway.",
+    "metadata": ["agent", "provider", "model", "request_id", "tokens_input", "tokens_output", "cost_usd"],
+    "handoff": ["changed", "validated", "risks", "next_step"]
+  }
+}

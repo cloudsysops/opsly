@@ -36,8 +36,16 @@ echo "🚀 Agent Bootstrap Master"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Agent: $AGENT_NAME"
 if [ $DRY_RUN -eq 1 ]; then
-  echo "Mode: DRY RUN (no changes)"
+echo "Mode: DRY RUN (no changes)"
 fi
+echo ""
+
+# Contract gate: every launcher gets the same bounded context and routing rules.
+echo "📍 PHASE 0: Agent Context Contract"
+echo "─────────────────────────"
+node "$PROJECT_ROOT/scripts/agent-context-contract.mjs" validate
+node "$PROJECT_ROOT/scripts/agent-context-contract.mjs" brief --agent "$AGENT_NAME" --task "${AGENT_TASK:-}" \
+  | sed -n '1,80p'
 echo ""
 
 # Phase 1: Detect

@@ -62,10 +62,13 @@ tags: [opsly/claude-config]
 
 ## TOKEN OPTIMIZATION
 
-1. Need project context? → `brain:research` MCP tool (~300 tokens vs 5000)
-2. Need code search? → `grep`/`find` locally
-3. Need architecture? → AGENTS.md + VISION.md
-4. Last resort → ask user
+1. Run `npm run validate-agent-contract` before work.
+2. Generate a task brief: `npm run agent:brief -- --agent claude --task "..."`.
+3. Load only the skills returned by the brief; never autoload the full catalog.
+4. Need project context? → `brain:research` MCP tool (~300 tokens vs 5000).
+5. Need code search? → `rg` locally.
+6. Need architecture? → AGENTS.md + VISION.md.
+7. Last resort → ask user.
 
 ---
 

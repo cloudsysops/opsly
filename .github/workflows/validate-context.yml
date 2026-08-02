@@ -28,6 +28,12 @@ jobs:
       - name: Skills (manifest + SKILL.md)
         run: npm run validate-skills
 
+      - name: Agent context contract (bounded context + gateway requirements)
+        run: npm run validate-agent-contract
+
+      - name: Agent context contract tests
+        run: npm run test-agent-contract
+
       - name: Pattern catalog (index + files)
         run: npm run patterns:validate
 
