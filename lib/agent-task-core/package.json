@@ -1,8 +1,8 @@
 {
-  "name": "@intcloudsysops/external-agent-registry",
-  "version": "1.0.0",
+  "name": "@intcloudsysops/agent-task-core",
+  "version": "0.1.0",
   "private": true,
-  "description": "Canonical registry of external market agent binaries for Opsly orchestration",
+  "description": "Reusable AgentTaskEnvelopeV1 helpers, policy engine and Orchestrator client",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -14,11 +14,12 @@
     }
   },
   "scripts": {
-    "build": "tsc",
     "type-check": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build": "tsc"
   },
   "dependencies": {
+    "@intcloudsysops/external-agent-registry": "*",
     "@intcloudsysops/types": "*",
     "zod": "^3.25.76"
   },

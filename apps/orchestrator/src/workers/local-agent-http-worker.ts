@@ -30,6 +30,7 @@ import {
 import { getWorkerConcurrency, type WorkerConcurrencyKey } from '../worker-concurrency.js';
 import { createValidationOrchestrator } from '../lib/validation/validation-orchestrator.js';
 import { writeValidationGuard } from '../lib/validation/validation-utils.js';
+import { AgentTaskRuntime } from '../runtime/agent-task-runtime.js';
 
 interface LocalAgentPayload {
   prompt_content?: string;
@@ -39,6 +40,7 @@ interface LocalAgentPayload {
   job_id?: string;
   goal?: string;
   context?: Record<string, unknown>;
+  agent_task?: unknown;
 }
 
 interface LocalAgentResponse {
@@ -123,7 +125,8 @@ async function processLocalAgentJob(
   job_id: string,
   agent_role: string,
   registry: ReturnType<typeof getAgentServiceRegistry>,
-  max_steps: number = 5
+  max_steps: number = 5,
+  signal?: AbortSignal
 ): Promise<LocalAgentResponse> {
   const startTime = Date.now();
   const cursorDir = path.join(process.cwd(), '.cursor');
@@ -150,7 +153,7 @@ async function processLocalAgentJob(
         max_steps,
         job_id,
       }),
-      signal: AbortSignal.timeout(service.timeout_ms),
+      signal: signal ?? AbortSignal.timeout(service.timeout_ms),
     });
 
     if (!response.ok) {
@@ -271,14 +274,53 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
       logWorkerLifecycle('start', 'local-agents', job);
 
       try {
-        const result = await processLocalAgentJob(
-          jobType,
-          prompt_content,
-          job_id,
-          agent_role,
-          registry,
-          max_steps
-        );
+        const process = (signal?: AbortSignal) =>
+          processLocalAgentJob(jobType, prompt_content, job_id, agent_role, registry, max_steps, signal);
+        const result = payload.agent_task === undefined
+          ? await process()
+          : await (async () => {
+              const runtime = new AgentTaskRuntime({
+                onEvent: (event) =>
+                  logWorkerInfo('local-agents', event.type, {
+                    request_id: event.request_id,
+                    correlation_id: event.correlation_id,
+                    tenant_slug: event.tenant_slug,
+                    agent: event.agent,
+                    duration_ms: event.duration_ms,
+                    error_code: event.error_code,
+                  }),
+              });
+              const runtimeResult = await runtime.execute(
+                payload.agent_task,
+                {
+                  id: jobType,
+                  execute: async ({ signal }) => {
+                    const adapterResult = await process(signal);
+                    return {
+                      success: adapterResult.success,
+                      result: adapterResult,
+                      error_code: adapterResult.success ? undefined : 'ADAPTER_EXECUTION_FAILED',
+                    };
+                  },
+                }
+              );
+              if (runtimeResult.status === 'awaiting_approval') {
+                throw new UnrecoverableError('AgentTaskEnvelopeV1 requires approval before execution');
+              }
+              if (runtimeResult.status === 'timed_out') {
+                throw new Error('AgentTaskEnvelopeV1 execution timed out');
+              }
+              if (runtimeResult.status === 'cancelled') {
+                throw new UnrecoverableError('AgentTaskEnvelopeV1 execution cancelled');
+              }
+              if (runtimeResult.status === 'failed') {
+                throw new Error(runtimeResult.error_code ?? 'AgentTaskEnvelopeV1 execution failed');
+              }
+              const adapterResult = runtimeResult.result;
+              return typeof adapterResult === 'object' && adapterResult !== null
+                ? (adapterResult as LocalAgentResponse)
+                : { success: true, execution_time_ms: runtimeResult.duration_ms };
+            })();
 
         const elapsed = Date.now() - t0;
         logWorkerLifecycle('complete', 'local-agents', job, { duration_ms: elapsed });
