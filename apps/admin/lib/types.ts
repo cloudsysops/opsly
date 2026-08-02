@@ -401,3 +401,71 @@ export type TenantModule = {
 export type TenantModulesResponse = {
   modules: TenantModule[];
 };
+
+export type IcsoCatalogMoneyRange = {
+  min: number;
+  max: number;
+};
+
+export type IcsoCatalogModule = {
+  id: string;
+  label: string;
+  label_es: string;
+  mvp_default: boolean;
+  risk: 'low' | 'medium' | 'high';
+  summary: string;
+};
+
+export type IcsoCatalogPackage = {
+  id: string;
+  name: string;
+  name_es: string;
+  ideal_for: string;
+  setup_range_usd: IcsoCatalogMoneyRange | null;
+  ops_monthly_usd: IcsoCatalogMoneyRange | null;
+  highlighted: boolean;
+  module_ids: string[];
+  includes: string[];
+  excludes: string[];
+};
+
+export type IcsoCatalogVertical = {
+  id: string;
+  label: string;
+  reference_tenant: string | null;
+  status: 'live' | 'ready' | 'blueprint';
+  recommended_package_id: string;
+};
+
+export type IcsoCommercialCatalog = {
+  version: string;
+  updated: string;
+  owner: string;
+  currency: string;
+  disclaimer: string;
+  sales_pitch_es: string;
+  source_docs: string[];
+  modules: IcsoCatalogModule[];
+  packages: IcsoCatalogPackage[];
+  verticals: IcsoCatalogVertical[];
+  repeat_commands: Record<string, string>;
+};
+
+export type IcsoCatalogEditable = {
+  modules: IcsoCatalogModule[];
+  packages: IcsoCatalogPackage[];
+  verticals: IcsoCatalogVertical[];
+  disclaimer: string;
+  sales_pitch_es: string;
+  currency: string;
+};
+
+export type IcsoCatalogGetResponse = {
+  catalog: IcsoCommercialCatalog;
+  etag: string;
+};
+
+export type IcsoCatalogPutResponse = {
+  ok: true;
+  etag: string;
+};

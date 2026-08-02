@@ -31,6 +31,7 @@ const navSections = [
       { href: '/tenants', label: 'Tenants', icon: Server },
       { href: '/machines', label: 'Máquinas', icon: Boxes },
       { href: '/invitations', label: 'Invitaciones', icon: Mail },
+      { href: '/icso-catalog', label: 'ICSO Catalog', icon: LayoutGrid },
     ],
   },
   {

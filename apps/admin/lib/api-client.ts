@@ -20,6 +20,9 @@ import type {
   DefenseAuditRow,
   DefensePricingResponse,
   TenantModulesResponse,
+  IcsoCatalogGetResponse,
+  IcsoCatalogPutResponse,
+  IcsoCatalogEditable,
 } from './types';
 
 const REQUEST_TIMEOUT_MS = 2_000;
@@ -764,6 +767,20 @@ export async function stopAgentIdeTerminalSession(
       method: 'POST',
     }
   );
+}
+
+export async function getIcsoCatalog(): Promise<IcsoCatalogGetResponse> {
+  return request<IcsoCatalogGetResponse>('/api/icso/catalog');
+}
+
+export async function putIcsoCatalog(
+  catalog: IcsoCatalogEditable,
+  etag: string
+): Promise<IcsoCatalogPutResponse> {
+  return request<IcsoCatalogPutResponse>('/api/icso/catalog', {
+    method: 'PUT',
+    body: JSON.stringify({ catalog, etag }),
+  });
 }
 
 export async function getAgentIdeMcpTools(): Promise<AgentIdeMcpCatalogResponse> {
