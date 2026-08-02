@@ -1,5 +1,3 @@
-import catalogJson from '@/content/commercial-catalog.json';
-
 export type CatalogRisk = 'low' | 'medium' | 'high';
 
 export type VerticalStatus = 'live' | 'ready' | 'blueprint';
@@ -51,14 +49,18 @@ export interface CommercialCatalog {
   verticals: CatalogVertical[];
 }
 
-export const commercialCatalog = catalogJson as CommercialCatalog;
-
-export function getCatalogPackage(id: string): CatalogPackage | undefined {
-  return commercialCatalog.packages.find((pkg) => pkg.id === id);
+export function getCatalogPackage(
+  catalog: CommercialCatalog,
+  id: string
+): CatalogPackage | undefined {
+  return catalog.packages.find((pkg) => pkg.id === id);
 }
 
-export function getCatalogModule(id: string): CatalogModule | undefined {
-  return commercialCatalog.modules.find((mod) => mod.id === id);
+export function getCatalogModule(
+  catalog: CommercialCatalog,
+  id: string
+): CatalogModule | undefined {
+  return catalog.modules.find((mod) => mod.id === id);
 }
 
 export function formatUsdRange(range: CatalogMoneyRange | null): string {
@@ -80,22 +82,31 @@ export function formatOpsPrice(pkg: CatalogPackage): string {
   return formatted === 'Custom' ? 'Custom' : `${formatted}/mo`;
 }
 
-export function modulesForPackage(pkg: CatalogPackage): CatalogModule[] {
+export function modulesForPackage(
+  catalog: CommercialCatalog,
+  pkg: CatalogPackage
+): CatalogModule[] {
   return pkg.module_ids
-    .map((id) => getCatalogModule(id))
+    .map((id) => getCatalogModule(catalog, id))
     .filter((mod): mod is CatalogModule => mod !== undefined);
 }
 
-export function mvpModules(): CatalogModule[] {
-  return commercialCatalog.modules.filter((mod) => mod.mvp_default);
+export function mvpModules(catalog: CommercialCatalog): CatalogModule[] {
+  return catalog.modules.filter((mod) => mod.mvp_default);
 }
 
-export function getCatalogVertical(id: string): CatalogVertical | undefined {
-  return commercialCatalog.verticals.find((vertical) => vertical.id === id);
+export function getCatalogVertical(
+  catalog: CommercialCatalog,
+  id: string
+): CatalogVertical | undefined {
+  return catalog.verticals.find((vertical) => vertical.id === id);
 }
 
-export function packagesIncludingModule(moduleId: string): CatalogPackage[] {
-  return commercialCatalog.packages.filter((pkg) => pkg.module_ids.includes(moduleId));
+export function packagesIncludingModule(
+  catalog: CommercialCatalog,
+  moduleId: string
+): CatalogPackage[] {
+  return catalog.packages.filter((pkg) => pkg.module_ids.includes(moduleId));
 }
 
 export interface PackageSow {
@@ -115,17 +126,18 @@ export interface PackageSow {
 
 /** One-page SOW text for sales calls / copy-paste. */
 export function buildPackageSow(
+  catalog: CommercialCatalog,
   packageId: string,
   verticalId?: string | null
 ): PackageSow | null {
-  const pkg = getCatalogPackage(packageId);
+  const pkg = getCatalogPackage(catalog, packageId);
   if (!pkg) {
     return null;
   }
-  const vertical = verticalId ? getCatalogVertical(verticalId) : undefined;
-  const modules = modulesForPackage(pkg);
+  const vertical = verticalId ? getCatalogVertical(catalog, verticalId) : undefined;
+  const modules = modulesForPackage(catalog, pkg);
   const lines = [
-    `ICSO / Opsly — SOW orientativo`,
+    `ICSO (IntCloud SysOps) · Opsly OS — SOW orientativo`,
     `Paquete: ${pkg.name} (${pkg.name_es})`,
     vertical ? `Vertical: ${vertical.label}` : null,
     `Setup: ${formatSetupPrice(pkg)}`,
@@ -140,9 +152,9 @@ export function buildPackageSow(
     'No incluye:',
     ...pkg.excludes.map((item) => `- ${item}`),
     '',
-    commercialCatalog.sales_pitch_es,
+    catalog.sales_pitch_es,
     '',
-    commercialCatalog.disclaimer,
+    catalog.disclaimer,
   ].filter((line): line is string => line !== null);
 
   return {
@@ -155,22 +167,23 @@ export function buildPackageSow(
     modules,
     includes: pkg.includes,
     excludes: pkg.excludes,
-    pitch: commercialCatalog.sales_pitch_es,
-    disclaimer: commercialCatalog.disclaimer,
+    pitch: catalog.sales_pitch_es,
+    disclaimer: catalog.disclaimer,
     plainText: lines.join('\n'),
   };
 }
 
 /** Prefill copy for contact form / mailto (Spanish sales brief). */
 export function buildPackageInquiryMessage(
+  catalog: CommercialCatalog,
   packageId: string | null | undefined,
   verticalId: string | null | undefined,
   moduleId?: string | null
 ): string {
   const parts: string[] = [];
-  const pkg = packageId ? getCatalogPackage(packageId) : undefined;
-  const vertical = verticalId ? getCatalogVertical(verticalId) : undefined;
-  const mod = moduleId ? getCatalogModule(moduleId) : undefined;
+  const pkg = packageId ? getCatalogPackage(catalog, packageId) : undefined;
+  const vertical = verticalId ? getCatalogVertical(catalog, verticalId) : undefined;
+  const mod = moduleId ? getCatalogModule(catalog, moduleId) : undefined;
 
   if (pkg) {
     parts.push(`Interested in package: ${pkg.name} (${pkg.id}).`);
@@ -186,21 +199,26 @@ export function buildPackageInquiryMessage(
     return '';
   }
   parts.push('');
-  parts.push(commercialCatalog.sales_pitch_es);
+  parts.push(catalog.sales_pitch_es);
   parts.push('');
   parts.push('Context / bottleneck:');
   return `${parts.join('\n')} `;
 }
 
-export function buildDiscoveryMailto(options: {
-  to: string;
-  packageId?: string | null;
-  verticalId?: string | null;
-  moduleId?: string | null;
-}): string {
-  const pkg = options.packageId ? getCatalogPackage(options.packageId) : undefined;
-  const vertical = options.verticalId ? getCatalogVertical(options.verticalId) : undefined;
-  const mod = options.moduleId ? getCatalogModule(options.moduleId) : undefined;
+export function buildDiscoveryMailto(
+  catalog: CommercialCatalog,
+  options: {
+    to: string;
+    packageId?: string | null;
+    verticalId?: string | null;
+    moduleId?: string | null;
+  }
+): string {
+  const pkg = options.packageId ? getCatalogPackage(catalog, options.packageId) : undefined;
+  const vertical = options.verticalId
+    ? getCatalogVertical(catalog, options.verticalId)
+    : undefined;
+  const mod = options.moduleId ? getCatalogModule(catalog, options.moduleId) : undefined;
   const subjectParts = ['ICSO discovery'];
   if (pkg) {
     subjectParts.push(pkg.name);
@@ -213,6 +231,7 @@ export function buildDiscoveryMailto(options: {
   }
   const subject = subjectParts.join(' — ');
   const body = buildPackageInquiryMessage(
+    catalog,
     options.packageId,
     options.verticalId,
     options.moduleId

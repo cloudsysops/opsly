@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { ReactElement } from 'react';
-import { commercialCatalog, getCatalogPackage } from '@/lib/commercial-catalog';
+import { getCatalogPackage, type CommercialCatalog } from '@/lib/commercial-catalog';
 
 const statusLabel: Record<string, string> = {
   live: 'Live reference',
@@ -8,7 +8,7 @@ const statusLabel: Record<string, string> = {
   blueprint: 'Blueprint',
 };
 
-export function VerticalGrid(): ReactElement {
+export function VerticalGrid({ catalog }: { catalog: CommercialCatalog }): ReactElement {
   return (
     <section className="icso-section" id="verticals">
       <div className="icso-container">
@@ -21,8 +21,8 @@ export function VerticalGrid(): ReactElement {
           academy path; WhatsApp-first covers agency intake.
         </p>
         <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {commercialCatalog.verticals.map((vertical) => {
-            const pkg = getCatalogPackage(vertical.recommended_package_id);
+          {catalog.verticals.map((vertical) => {
+            const pkg = getCatalogPackage(catalog, vertical.recommended_package_id);
             return (
               <li
                 key={vertical.id}

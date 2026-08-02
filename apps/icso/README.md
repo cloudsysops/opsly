@@ -1,6 +1,8 @@
 # ICSO Marketing Site
 
-Public agency website for **IntCloud SysOps (ICSO)** — AI automation positioning.
+Public site for **IntCloud SysOps (ICSO)** — the AI agency. **Opsly** is ICSO's
+multi-tenant operating system (not a separate company): modules, tenants, CRM, and
+governed agents that ICSO sells and operates.
 
 ## Dev
 
@@ -29,10 +31,18 @@ npm run type-check --workspace=@intcloudsysops/icso
 - Traefik hosts: `ICSO_DOMAIN` (default `intcloudsysops.com`)
 - Doppler optional: `ICSO_APP_IMAGE`, `ICSO_DOMAIN`, `NEXT_PUBLIC_SITE_URL`
 
+## Env (server)
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `OPSLY_API_URL` | `http://127.0.0.1:3000` | Base URL of `apps/api` for live catalog (`GET /api/icso/catalog/public`) |
+
+In Compose, `icso` uses `OPSLY_API_URL=http://app:3000` so catalog edits from admin apply without rebuilding the ICSO image.
+
 ## Scope
 
 Marketing site plus **lead intake API** (`POST /api/leads`) plus **commercial catalog**
-(`content/commercial-catalog.json` ↔ `config/commercial-catalog.json`):
+(source of truth: `config/commercial-catalog.json`, edited via admin `/icso-catalog`):
 
 - Packages (Basic / Hybrid / Custom / Managed)
 - Reusable Opsly modules

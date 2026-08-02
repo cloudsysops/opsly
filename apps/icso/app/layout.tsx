@@ -18,17 +18,18 @@ export const metadata: Metadata = {
   keywords: [
     'AI automation',
     'CRM automation',
-    'GoHighLevel',
+    'Opsly',
     'workflow automation',
     'IntCloud SysOps',
     'ICSO',
+    'AI agency',
   ],
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: siteUrl,
     siteName: siteConfig.name,
-    title: `${siteConfig.shortName} — AI Automation for Growing Businesses`,
+    title: `${siteConfig.shortName} — AI agency · Opsly OS`,
     description: siteConfig.description,
     images: [
       {

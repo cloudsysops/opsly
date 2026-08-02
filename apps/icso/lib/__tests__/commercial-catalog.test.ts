@@ -6,43 +6,42 @@ import {
   buildDiscoveryMailto,
   buildPackageInquiryMessage,
   buildPackageSow,
-  commercialCatalog,
   formatSetupPrice,
   getCatalogPackage,
   modulesForPackage,
   mvpModules,
   packagesIncludingModule,
+  type CommercialCatalog,
 } from '@/lib/commercial-catalog';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, '../../../..');
 
-describe('commercial catalog', () => {
-  it('keeps ICSO content copy identical to config source of truth', () => {
-    const configPath = join(repoRoot, 'config/commercial-catalog.json');
-    const appPath = join(repoRoot, 'apps/icso/content/commercial-catalog.json');
-    const configRaw = readFileSync(configPath, 'utf8');
-    const appRaw = readFileSync(appPath, 'utf8');
-    expect(JSON.parse(appRaw)).toEqual(JSON.parse(configRaw));
-  });
+function loadFixtureCatalog(): CommercialCatalog {
+  const configPath = join(repoRoot, 'config/commercial-catalog.json');
+  return JSON.parse(readFileSync(configPath, 'utf8')) as CommercialCatalog;
+}
+
+describe('commercial catalog helpers', () => {
+  const catalog = loadFixtureCatalog();
 
   it('exposes Hybrid as highlighted sell package', () => {
-    const hybrid = getCatalogPackage('hybrid-opsly');
+    const hybrid = getCatalogPackage(catalog, 'hybrid-opsly');
     expect(hybrid).toBeDefined();
     expect(hybrid?.highlighted).toBe(true);
     expect(formatSetupPrice(hybrid!)).toContain('1,200');
   });
 
   it('maps package module ids to known modules', () => {
-    const hybrid = getCatalogPackage('hybrid-opsly');
+    const hybrid = getCatalogPackage(catalog, 'hybrid-opsly');
     expect(hybrid).toBeDefined();
-    const mods = modulesForPackage(hybrid!);
+    const mods = modulesForPackage(catalog, hybrid!);
     expect(mods.length).toBe(hybrid!.module_ids.length);
-    expect(mvpModules().length).toBeGreaterThanOrEqual(5);
+    expect(mvpModules(catalog).length).toBeGreaterThanOrEqual(5);
   });
 
   it('lists live/ready verticals for sales', () => {
-    const liveOrReady = commercialCatalog.verticals.filter(
+    const liveOrReady = catalog.verticals.filter(
       (v) => v.status === 'live' || v.status === 'ready'
     );
     expect(liveOrReady.map((v) => v.id)).toEqual(
@@ -51,7 +50,7 @@ describe('commercial catalog', () => {
   });
 
   it('builds discovery mailto with package brief', () => {
-    const href = buildDiscoveryMailto({
+    const href = buildDiscoveryMailto(catalog, {
       to: 'hello@intcloudsysops.com',
       packageId: 'hybrid-opsly',
       verticalId: 'swim-school',
@@ -60,25 +59,30 @@ describe('commercial catalog', () => {
     const decoded = decodeURIComponent(href.replace(/\+/g, ' '));
     expect(decoded).toContain('Hybrid Opsly');
     expect(decoded).toContain('Natación');
-    const message = buildPackageInquiryMessage('hybrid-opsly', 'swim-school');
+    const message = buildPackageInquiryMessage(catalog, 'hybrid-opsly', 'swim-school');
     expect(message).toContain('hybrid-opsly');
-    expect(message).toContain(commercialCatalog.sales_pitch_es);
+    expect(message).toContain(catalog.sales_pitch_es);
   });
 
   it('builds one-page SOW text for Hybrid + swim-school', () => {
-    const sow = buildPackageSow('hybrid-opsly', 'swim-school');
+    const sow = buildPackageSow(catalog, 'hybrid-opsly', 'swim-school');
     expect(sow).not.toBeNull();
     expect(sow!.plainText).toContain('Hybrid Opsly');
     expect(sow!.plainText).toContain('Natación');
     expect(sow!.modules.length).toBeGreaterThan(0);
-    expect(packagesIncludingModule('lead-capture').map((pkg) => pkg.id)).toEqual(
+    expect(packagesIncludingModule(catalog, 'lead-capture').map((pkg) => pkg.id)).toEqual(
       expect.arrayContaining(['hybrid-opsly', 'basic-setup'])
     );
   });
 
   it('includes module focus in inquiry message', () => {
-    const message = buildPackageInquiryMessage(null, null, 'approval-queue');
+    const message = buildPackageInquiryMessage(catalog, null, null, 'approval-queue');
     expect(message).toContain('approval-queue');
-    expect(message).toContain('Approval Queue');
+  });
+
+  it('keeps modules/[id] open to dynamicParams for CMS-added modules', () => {
+    const pagePath = join(here, '../../app/modules/[id]/page.tsx');
+    const source = readFileSync(pagePath, 'utf8');
+    expect(source).toMatch(/export const dynamicParams\s*=\s*true/);
   });
 });

@@ -1,20 +1,20 @@
 import Link from 'next/link';
 import type { ReactElement } from 'react';
-import { mvpModules } from '@/lib/commercial-catalog';
+import { mvpModules, type CommercialCatalog } from '@/lib/commercial-catalog';
 
-export function SolutionGrid(): ReactElement {
-  const modules = mvpModules();
+export function SolutionGrid({ catalog }: { catalog: CommercialCatalog }): ReactElement {
+  const modules = mvpModules(catalog);
 
   return (
     <section className="icso-section bg-icso-surface/30" id="solutions">
       <div className="icso-container">
-        <p className="icso-eyebrow">Reusable modules</p>
+        <p className="icso-eyebrow">Opsly modules · ICSO delivery</p>
         <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-          Build once in Opsly — activate per client
+          Build once on our OS — activate per client
         </h2>
         <p className="mt-4 max-w-2xl text-icso-muted">
-          MVP defaults every Hybrid deal ships with. Vertical branding and rules stay thin;
-          the control plane stays shared.
+          MVP defaults every Hybrid deal ships with. Vertical branding stays thin; Opsly
+          (ICSO&apos;s control plane) stays shared across tenants.
         </p>
         <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {modules.map((item) => (

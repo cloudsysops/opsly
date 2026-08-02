@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense, type ReactElement } from 'react';
 import { QuoteBuilder } from '@/components/marketing/QuoteBuilder';
+import { fetchCommercialCatalog } from '@/lib/fetch-commercial-catalog';
 import { siteConfig } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -14,7 +15,9 @@ function QuoteFallback(): ReactElement {
   );
 }
 
-export default function QuotePage(): ReactElement {
+export default async function QuotePage(): Promise<ReactElement> {
+  const catalog = await fetchCommercialCatalog();
+
   return (
     <section className="icso-section pt-12">
       <div className="icso-container">
@@ -23,11 +26,11 @@ export default function QuotePage(): ReactElement {
           Build a one-page SOW in seconds
         </h1>
         <p className="mt-6 max-w-2xl text-lg text-icso-muted">
-          Pick a package and optional vertical. Copy the brief for a call, email it, or continue to
-          discovery — same Opsly catalog ICSO sells every time.
+          Pick a package and optional vertical. Copy the brief for a call, email it, or continue
+          to discovery — the Opsly catalog that ICSO (same company) sells and runs every time.
         </p>
         <Suspense fallback={<QuoteFallback />}>
-          <QuoteBuilder />
+          <QuoteBuilder catalog={catalog} />
         </Suspense>
       </div>
     </section>

@@ -6,16 +6,16 @@ import { useSearchParams } from 'next/navigation';
 import {
   buildDiscoveryMailto,
   buildPackageSow,
-  commercialCatalog,
+  type CommercialCatalog,
 } from '@/lib/commercial-catalog';
 import { siteConfig } from '@/lib/site';
 
-export function QuoteBuilder(): ReactElement {
+export function QuoteBuilder({ catalog }: { catalog: CommercialCatalog }): ReactElement {
   const searchParams = useSearchParams();
   const defaultPackage =
     searchParams.get('package') ??
-    commercialCatalog.packages.find((pkg) => pkg.highlighted)?.id ??
-    commercialCatalog.packages[0]?.id ??
+    catalog.packages.find((pkg) => pkg.highlighted)?.id ??
+    catalog.packages[0]?.id ??
     '';
   const defaultVertical = searchParams.get('vertical') ?? '';
   const [packageId, setPackageId] = useState(defaultPackage);
@@ -23,8 +23,8 @@ export function QuoteBuilder(): ReactElement {
   const [copied, setCopied] = useState(false);
 
   const sow = useMemo(
-    () => (packageId ? buildPackageSow(packageId, verticalId || null) : null),
-    [packageId, verticalId]
+    () => (packageId ? buildPackageSow(catalog, packageId, verticalId || null) : null),
+    [catalog, packageId, verticalId]
   );
 
   async function handleCopy(): Promise<void> {
@@ -49,7 +49,7 @@ export function QuoteBuilder(): ReactElement {
             onChange={(event) => setPackageId(event.target.value)}
             className="mt-2 w-full rounded-lg border border-icso-border bg-white/5 px-4 py-3 text-sm text-icso-text focus:border-icso-primary focus:outline-none focus:ring-1 focus:ring-icso-primary"
           >
-            {commercialCatalog.packages.map((pkg) => (
+            {catalog.packages.map((pkg) => (
               <option key={pkg.id} value={pkg.id}>
                 {pkg.name}
               </option>
@@ -67,7 +67,7 @@ export function QuoteBuilder(): ReactElement {
             className="mt-2 w-full rounded-lg border border-icso-border bg-white/5 px-4 py-3 text-sm text-icso-text focus:border-icso-primary focus:outline-none focus:ring-1 focus:ring-icso-primary"
           >
             <option value="">General / not chosen yet</option>
-            {commercialCatalog.verticals.map((vertical) => (
+            {catalog.verticals.map((vertical) => (
               <option key={vertical.id} value={vertical.id}>
                 {vertical.label}
               </option>
@@ -81,7 +81,7 @@ export function QuoteBuilder(): ReactElement {
           {sow ? (
             <>
               <a
-                href={buildDiscoveryMailto({
+                href={buildDiscoveryMailto(catalog, {
                   to: siteConfig.contactEmail,
                   packageId,
                   verticalId: verticalId || null,

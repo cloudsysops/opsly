@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense, type ReactElement } from 'react';
 import { ContactForm } from '@/components/marketing/ContactForm';
 import { CTASection } from '@/components/marketing/CTASection';
+import { fetchCommercialCatalog } from '@/lib/fetch-commercial-catalog';
 import { siteConfig } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -15,7 +16,9 @@ function ContactFormFallback(): ReactElement {
   );
 }
 
-export default function ContactPage(): ReactElement {
+export default async function ContactPage(): Promise<ReactElement> {
+  const catalog = await fetchCommercialCatalog();
+
   return (
     <>
       <section className="icso-section pt-12" id="discovery">
@@ -27,7 +30,7 @@ export default function ContactPage(): ReactElement {
             business day. Pick a package if you already know the fit.
           </p>
           <Suspense fallback={<ContactFormFallback />}>
-            <ContactForm />
+            <ContactForm catalog={catalog} />
           </Suspense>
           <p className="mt-8 text-sm text-icso-muted">
             Prefer email directly?{' '}
@@ -40,10 +43,7 @@ export default function ContactPage(): ReactElement {
           </p>
         </div>
       </section>
-      <CTASection
-        title="Prefer a quick intro?"
-        subtitle="Share your site and main bottleneck — we will come prepared with options."
-      />
+      <CTASection />
     </>
   );
 }

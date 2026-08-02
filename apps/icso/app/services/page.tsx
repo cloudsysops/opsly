@@ -5,7 +5,7 @@ import { PricingCards } from '@/components/marketing/PricingCards';
 import { SolutionGrid } from '@/components/marketing/SolutionGrid';
 import { TechStackGrid } from '@/components/marketing/TechStackGrid';
 import { VerticalGrid } from '@/components/marketing/VerticalGrid';
-import { commercialCatalog } from '@/lib/commercial-catalog';
+import { fetchCommercialCatalog } from '@/lib/fetch-commercial-catalog';
 import { siteConfig } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -13,23 +13,23 @@ export const metadata: Metadata = {
   description: `Opsly modules and commercial packages from ${siteConfig.name}.`,
 };
 
-export default function ServicesPage(): ReactElement {
+export default async function ServicesPage(): Promise<ReactElement> {
+  const catalog = await fetchCommercialCatalog();
+
   return (
     <>
       <section className="icso-section pt-12">
         <div className="icso-container">
           <p className="icso-eyebrow">Services</p>
           <h1 className="mt-3 max-w-3xl text-4xl font-bold sm:text-5xl">
-            Modules you can sell — platform we operate
+            Opsly modules — operated by ICSO
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-icso-muted">
-            {commercialCatalog.sales_pitch_es}
-          </p>
+          <p className="mt-6 max-w-2xl text-lg text-icso-muted">{catalog.sales_pitch_es}</p>
         </div>
       </section>
-      <SolutionGrid />
-      <VerticalGrid />
-      <PricingCards />
+      <SolutionGrid catalog={catalog} />
+      <VerticalGrid catalog={catalog} />
+      <PricingCards catalog={catalog} />
       <TechStackGrid />
       <CTASection
         title="Not sure which package fits?"

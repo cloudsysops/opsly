@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import {
   buildDiscoveryMailto,
   buildPackageInquiryMessage,
-  commercialCatalog,
+  type CommercialCatalog,
 } from '@/lib/commercial-catalog';
 import { siteConfig } from '@/lib/site';
 
@@ -16,12 +16,12 @@ interface LeadApiResponse {
   calendarBookingUrl?: string | null;
 }
 
-export function ContactForm(): ReactElement {
+export function ContactForm({ catalog }: { catalog: CommercialCatalog }): ReactElement {
   const searchParams = useSearchParams();
   const packageId = searchParams.get('package');
   const verticalId = searchParams.get('vertical');
   const moduleId = searchParams.get('module');
-  const initialPrefill = buildPackageInquiryMessage(packageId, verticalId, moduleId);
+  const initialPrefill = buildPackageInquiryMessage(catalog, packageId, verticalId, moduleId);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -121,7 +121,7 @@ export function ContactForm(): ReactElement {
           className="mt-2 w-full rounded-lg border border-icso-border bg-white/5 px-4 py-3 text-sm text-icso-text focus:border-icso-primary focus:outline-none focus:ring-1 focus:ring-icso-primary disabled:opacity-50"
         >
           <option value="">Not sure yet — recommend on discovery</option>
-          {commercialCatalog.packages.map((pkg) => (
+          {catalog.packages.map((pkg) => (
             <option key={pkg.id} value={pkg.id}>
               {pkg.name} — {pkg.name_es}
             </option>
@@ -177,7 +177,7 @@ export function ContactForm(): ReactElement {
           <p className="text-xs text-icso-muted">
             Prefer email?{' '}
             <a
-              href={buildDiscoveryMailto({
+              href={buildDiscoveryMailto(catalog, {
                 to: siteConfig.contactEmail,
                 packageId: selectedPackage || packageId,
                 verticalId,

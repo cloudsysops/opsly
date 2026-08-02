@@ -5,13 +5,13 @@ export function TechStackGrid(): ReactElement {
   return (
     <section className="icso-section" id="technology">
       <div className="icso-container">
-        <p className="icso-eyebrow">Technology stack</p>
+        <p className="icso-eyebrow">Inside Opsly · run by ICSO</p>
         <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-          Enterprise-grade tools, agency delivery
+          One operating system, agency-operated
         </h2>
         <p className="mt-4 max-w-2xl text-icso-muted">
-          We implement and operate the platforms that power modern growth operations —
-          not experiments stitched together overnight.
+          Opsly is ICSO&apos;s OS. CRM, workflows, data, and AI agents are layers we own
+          and operate — not a mashup of unrelated vendors.
         </p>
         <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {techStackItems.map((item) => (

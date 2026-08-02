@@ -3,50 +3,63 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { ReactElement } from 'react';
 import {
-  commercialCatalog,
   formatOpsPrice,
   formatSetupPrice,
   getCatalogModule,
   packagesIncludingModule,
 } from '@/lib/commercial-catalog';
+import { fetchCommercialCatalog } from '@/lib/fetch-commercial-catalog';
 import { siteConfig } from '@/lib/site';
+
+export const dynamicParams = true;
 
 type ModulePageProps = {
   params: Promise<{ id: string }>;
 };
 
-export function generateStaticParams(): Array<{ id: string }> {
-  return commercialCatalog.modules.map((mod) => ({ id: mod.id }));
+export async function generateStaticParams(): Promise<Array<{ id: string }>> {
+  try {
+    const catalog = await fetchCommercialCatalog();
+    return catalog.modules.map((mod) => ({ id: mod.id }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: ModulePageProps): Promise<Metadata> {
   const { id } = await params;
-  const mod = getCatalogModule(id);
-  if (!mod) {
+  try {
+    const catalog = await fetchCommercialCatalog();
+    const mod = getCatalogModule(catalog, id);
+    if (!mod) {
+      return { title: 'Module' };
+    }
+    return {
+      title: `${mod.label} module`,
+      description: `${mod.summary} — Opsly module sold and delivered by ${siteConfig.name}.`,
+    };
+  } catch {
     return { title: 'Module' };
   }
-  return {
-    title: `${mod.label} module`,
-    description: `${mod.summary} — Opsly module sold and delivered by ${siteConfig.name}.`,
-  };
 }
 
 export default async function ModulePage({ params }: ModulePageProps): Promise<ReactElement> {
   const { id } = await params;
-  const mod = getCatalogModule(id);
+  const catalog = await fetchCommercialCatalog();
+  const mod = getCatalogModule(catalog, id);
   if (!mod) {
     notFound();
   }
 
-  const packages = packagesIncludingModule(mod.id);
-  const verticals = commercialCatalog.verticals.filter((vertical) =>
+  const packages = packagesIncludingModule(catalog, mod.id);
+  const verticals = catalog.verticals.filter((vertical) =>
     packages.some((pkg) => pkg.id === vertical.recommended_package_id)
   );
 
   return (
     <section className="icso-section pt-12">
       <div className="icso-container max-w-3xl">
-        <p className="icso-eyebrow">Opsly module</p>
+        <p className="icso-eyebrow">Opsly module · delivered by ICSO</p>
         <h1 className="mt-3 text-4xl font-bold sm:text-5xl">{mod.label}</h1>
         <p className="mt-2 text-sm uppercase tracking-wide text-icso-cyan">{mod.label_es}</p>
         <p className="mt-6 text-lg text-icso-muted">{mod.summary}</p>
@@ -57,14 +70,19 @@ export default async function ModulePage({ params }: ModulePageProps): Promise<R
           </div>
           <div className="icso-glass-card p-4">
             <dt className="text-xs uppercase tracking-wide text-icso-muted">MVP default</dt>
-            <dd className="mt-1 font-semibold">{mod.mvp_default ? 'Yes — Hybrid ships with it' : 'Add-on / scale'}</dd>
+            <dd className="mt-1 font-semibold">
+              {mod.mvp_default ? 'Yes — Hybrid ships with it' : 'Add-on / scale'}
+            </dd>
           </div>
         </dl>
 
         <h2 className="mt-12 text-xl font-bold">Packages that include this module</h2>
         <ul className="mt-4 space-y-3">
           {packages.map((pkg) => (
-            <li key={pkg.id} className="icso-glass-card flex flex-wrap items-center justify-between gap-3 p-4">
+            <li
+              key={pkg.id}
+              className="icso-glass-card flex flex-wrap items-center justify-between gap-3 p-4"
+            >
               <div>
                 <p className="font-semibold">{pkg.name}</p>
                 <p className="text-sm text-icso-muted">

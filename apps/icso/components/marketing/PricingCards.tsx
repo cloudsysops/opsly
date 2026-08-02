@@ -3,16 +3,16 @@ import { Check } from 'lucide-react';
 import type { ReactElement } from 'react';
 import {
   buildDiscoveryMailto,
-  commercialCatalog,
   formatOpsPrice,
   formatSetupPrice,
   modulesForPackage,
+  type CommercialCatalog,
 } from '@/lib/commercial-catalog';
 import { siteConfig } from '@/lib/site';
 
-export function PricingCards(): ReactElement {
-  const packages = commercialCatalog.packages.filter((pkg) => pkg.id !== 'managed-ops');
-  const managed = commercialCatalog.packages.find((pkg) => pkg.id === 'managed-ops');
+export function PricingCards({ catalog }: { catalog: CommercialCatalog }): ReactElement {
+  const packages = catalog.packages.filter((pkg) => pkg.id !== 'managed-ops');
+  const managed = catalog.packages.find((pkg) => pkg.id === 'managed-ops');
 
   return (
     <section className="icso-section bg-icso-surface/30" id="pricing">
@@ -22,12 +22,12 @@ export function PricingCards(): ReactElement {
           Modular packages, not custom chaos
         </h2>
         <p className="mt-4 max-w-2xl text-icso-muted">
-          Same Opsly modules for every client — compose by package, activate by vertical.
-          Ranges are USD guidance for LATAM; final SOW on discovery.
+          Same Opsly modules (ICSO&apos;s OS) for every client — compose by package, activate
+          by vertical. Ranges are USD guidance for LATAM; final SOW on discovery.
         </p>
         <ul className="mt-12 grid gap-8 lg:grid-cols-3">
           {packages.map((tier) => {
-            const mods = modulesForPackage(tier);
+            const mods = modulesForPackage(catalog, tier);
             return (
               <li
                 key={tier.id}
@@ -60,8 +60,7 @@ export function PricingCards(): ReactElement {
                 </ul>
                 {mods.length > 0 ? (
                   <p className="mt-4 text-xs text-icso-muted">
-                    Modules:{' '}
-                    {mods.map((m) => m.label).join(' · ')}
+                    Modules: {mods.map((m) => m.label).join(' · ')}
                   </p>
                 ) : null}
                 <div className="mt-8 space-y-3">
@@ -74,7 +73,7 @@ export function PricingCards(): ReactElement {
                     Talk about {tier.name}
                   </Link>
                   <a
-                    href={buildDiscoveryMailto({
+                    href={buildDiscoveryMailto(catalog, {
                       to: siteConfig.contactEmail,
                       packageId: tier.id,
                     })}
@@ -99,7 +98,7 @@ export function PricingCards(): ReactElement {
             — {formatOpsPrice(managed)}.
           </p>
         ) : null}
-        <p className="mt-4 text-center text-xs text-icso-muted">{commercialCatalog.disclaimer}</p>
+        <p className="mt-4 text-center text-xs text-icso-muted">{catalog.disclaimer}</p>
       </div>
     </section>
   );

@@ -36,14 +36,34 @@ export default function AboutPage(): ReactElement {
         <div className="icso-container">
           <p className="icso-eyebrow">{brandTagline}</p>
           <h1 className="mt-3 max-w-3xl text-4xl font-bold sm:text-5xl">
-            Professional agency. Proven stack.
+            One company. Agency + operating system.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-icso-muted">{siteConfig.mission}</p>
           <p className="mt-4 max-w-2xl text-icso-muted">
-            {siteConfig.name} ({siteConfig.shortName}) is an AI automation agency — not a
-            side project. We implement the same platforms enterprises use: CRM, workflows,
-            cloud, and governed AI — configured for your business.
+            {siteConfig.brandRelationship} When you hire {siteConfig.shortName}, you are
+            not buying a random SaaS and a separate consultancy — you get the team that
+            owns Opsly end to end: sell, implement, govern AI, and run day-to-day ops.
           </p>
+          <dl className="mt-10 grid gap-4 sm:grid-cols-2">
+            <div className="icso-glass-card p-5">
+              <dt className="text-xs font-semibold uppercase tracking-wide text-icso-cyan">
+                ICSO · IntCloud SysOps
+              </dt>
+              <dd className="mt-2 text-sm text-icso-muted">
+                The AI agency: discovery, delivery, sales, and continuous operation for
+                every client vertical.
+              </dd>
+            </div>
+            <div className="icso-glass-card p-5">
+              <dt className="text-xs font-semibold uppercase tracking-wide text-icso-cyan">
+                Opsly
+              </dt>
+              <dd className="mt-2 text-sm text-icso-muted">
+                Our multi-tenant OS inside ICSO: reusable modules, tenant stacks, CRM,
+                workflows, and governed agents — one control plane.
+              </dd>
+            </div>
+          </dl>
         </div>
       </section>
       <section className="icso-section bg-icso-surface/30">
@@ -61,7 +81,11 @@ export default function AboutPage(): ReactElement {
       </section>
       <section className="icso-section">
         <div className="icso-container">
-          <h2 className="text-2xl font-bold">Powered by</h2>
+          <h2 className="text-2xl font-bold">Stack inside Opsly</h2>
+          <p className="mt-3 max-w-2xl text-sm text-icso-muted">
+            Layers of the same ICSO platform — not an agency bolted onto someone else&apos;s
+            product.
+          </p>
           <ul className="mt-6 flex flex-wrap gap-3">
             {poweredByStack.map((name) => (
               <li

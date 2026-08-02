@@ -45,7 +45,7 @@ export function SiteFooter(): ReactElement {
         </div>
         <div className="mt-12 rounded-2xl border border-icso-border bg-icso-bg/80 p-6">
           <p className="text-center text-xs font-semibold uppercase tracking-widest text-icso-muted">
-            Powered by
+            ICSO · Opsly OS stack
           </p>
           <ul className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
             {poweredByStack.map((name) => (

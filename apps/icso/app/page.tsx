@@ -8,18 +8,21 @@ import { PricingCards } from '@/components/marketing/PricingCards';
 import { SolutionGrid } from '@/components/marketing/SolutionGrid';
 import { TechStackGrid } from '@/components/marketing/TechStackGrid';
 import { VerticalGrid } from '@/components/marketing/VerticalGrid';
+import { fetchCommercialCatalog } from '@/lib/fetch-commercial-catalog';
 
-export default function HomePage(): ReactElement {
+export default async function HomePage(): Promise<ReactElement> {
+  const catalog = await fetchCommercialCatalog();
+
   return (
     <>
       <HeroSection />
       <FeatureCards title="Stop losing momentum to manual work" />
-      <SolutionGrid />
-      <VerticalGrid />
+      <SolutionGrid catalog={catalog} />
+      <VerticalGrid catalog={catalog} />
       <HowItWorks />
       <CaseStudyCard />
       <TechStackGrid />
-      <PricingCards />
+      <PricingCards catalog={catalog} />
       <CTASection />
     </>
   );
