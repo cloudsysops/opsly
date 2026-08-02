@@ -9,7 +9,10 @@ tags:
 
 # LLM Gateway — Opsly (v2 Beast Mode)
 
-Punto único para llamadas a modelos desde `apps/ml`, `apps/context-builder` y cualquier workspace que importe `@intcloudsysops/llm-gateway`.
+Punto único para llamadas a modelos desde `apps/ml`, `apps/context-builder`,
+`lib/content-studio` y cualquier workspace que importe `@intcloudsysops/llm-gateway`.
+Los consumidores internos deben usar el gateway por defecto; un proveedor directo
+requiere una excepción explícita y temporal.
 
 ## Qué hace
 

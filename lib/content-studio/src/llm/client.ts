@@ -2,7 +2,7 @@
  * LLMClient — abstraction over Anthropic SDK and the internal LLM Gateway.
  *
  * Usage:
- *   const client = createLLMClient();     // auto-detects via env LLM_PROVIDER
+ *   const client = createLLMClient();     // uses the Docker gateway by default
  *   const text   = await client.complete(system, user);
  */
 
@@ -96,16 +96,22 @@ export class GatewayClient implements LLMClient {
 // ─── Factory ──────────────────────────────────────────────────────────────────
 
 /**
- * Auto-detects provider from env:
- *   LLM_PROVIDER=anthropic  → AnthropicDirectClient (needs ANTHROPIC_API_KEY)
- *   LLM_PROVIDER=gateway    → GatewayClient (needs LLM_GATEWAY_URL)
- *   (default)               → AnthropicDirectClient
+ * Provider selection:
+ *   LLM_PROVIDER=gateway           → GatewayClient (default)
+ *   LLM_PROVIDER=anthropic-direct  → AnthropicDirectClient only with
+ *                                    LLM_ALLOW_DIRECT_PROVIDER=true
  */
 export function createLLMClient(tenantSlug = 'opsly'): LLMClient {
-  const provider = process.env.LLM_PROVIDER ?? 'anthropic';
+  const provider = process.env.LLM_PROVIDER ?? 'gateway';
 
   if (provider === 'gateway') {
     return new GatewayClient(tenantSlug);
+  }
+
+  if (provider !== 'anthropic-direct' || process.env.LLM_ALLOW_DIRECT_PROVIDER !== 'true') {
+    throw new Error(
+      'Direct LLM providers are disabled; use the Docker gateway or set LLM_ALLOW_DIRECT_PROVIDER=true explicitly'
+    );
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY ?? '';

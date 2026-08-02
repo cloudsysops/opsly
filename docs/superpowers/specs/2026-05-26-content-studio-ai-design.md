@@ -64,7 +64,8 @@ class AnthropicDirectClient implements LLMClient  // uses @anthropic-ai/sdk
 class GatewayClient implements LLMClient           // HTTP POST llm-gateway:3010/v1/complete
 ```
 
-Service picks client based on env: `LLM_PROVIDER=anthropic|gateway`
+Service uses the gateway by default. A direct provider requires
+`LLM_PROVIDER=anthropic-direct` and `LLM_ALLOW_DIRECT_PROVIDER=true` explicitly.
 
 ---
 
@@ -93,7 +94,8 @@ Draft state is set to `ready_to_copy` (no approval queue).
   - `POST /generate/batch` → `{ ok: true, drafts: ContentDraft[] }` (up to 5)
 - **Auth:** `X-API-Key` header (env var `CONTENT_STUDIO_API_KEY`)
 - **Config via env:**
-  - `LLM_PROVIDER` = `anthropic` | `gateway`
+  - `LLM_PROVIDER` = `gateway` | `anthropic-direct`
+  - `LLM_ALLOW_DIRECT_PROVIDER=true` only for an approved temporary exception
   - `ANTHROPIC_API_KEY` (if provider = anthropic)
   - `LLM_GATEWAY_URL` (if provider = gateway, default: `http://llm-gateway:3010`)
   - `CONTENT_STUDIO_API_KEY`
