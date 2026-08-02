@@ -3,7 +3,8 @@
 ##############################################################################
 # GHL Pipeline & Form Configuration via API
 # Automates: Pipelines creation, Forms setup, Workflows prep
-# Usage: ./scripts/ghl-configure-pipelines.sh [--customer icso|peskids|all] [--dry-run]
+# Usage: ./scripts/ghl-configure-pipelines.sh [--customer peskids|all] [--dry-run]
+# ICSO agency GHL retired (Twenty CRM) — `icso` is a no-op warning.
 ##############################################################################
 
 set -e
@@ -48,9 +49,9 @@ main() {
     # Validate
     log_info "Validating GHL API access..."
 
-    if [[ "$CUSTOMER" == "all" ]] || [[ "$CUSTOMER" == "icso" ]]; then
-        log_info "---"
-        configure_intcloudsysops
+    if [[ "$CUSTOMER" == "icso" ]]; then
+        log_warn "ICSO agency GHL retired — use Twenty CRM (docs/tenants/intcloudsysops/TWENTY-CRM.md)"
+        return 0
     fi
 
     if [[ "$CUSTOMER" == "all" ]] || [[ "$CUSTOMER" == "peskids" ]]; then
@@ -62,68 +63,6 @@ main() {
     log_success "Configuration complete!"
     log_info "Next: Manual UI setup in GHL Console"
     log_info "Reference: docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md"
-}
-
-##############################################################################
-# Intcloudsysops Configuration
-##############################################################################
-
-configure_intcloudsysops() {
-    log_info "Configuring: Intcloudsysops/ICSO"
-
-    local location_id="qD7Z9jt3owk0LMtKElow"
-    local api_key="${GOHIGHLEVEL_INTCLOUDSYSOPS_API_KEY}"
-
-    if [[ -z "$api_key" ]]; then
-        log_warn "GOHIGHLEVEL_INTCLOUDSYSOPS_API_KEY not set, skipping ICSO"
-        return
-    fi
-
-    log_info "Location: $location_id"
-
-    # Verify API access
-    log_info "Testing API connection..."
-    local test_response=$(curl -s -X GET \
-        "https://api.gohighlevel.com/v1/opportunities/pipeline/" \
-        -H "Authorization: Bearer $api_key" \
-        -H "Content-Type: application/json" 2>/dev/null || echo "error")
-
-    if [[ "$test_response" == "error" ]]; then
-        log_warn "API connection failed (offline?), continuing with local validation"
-    else
-        log_success "API connection verified"
-    fi
-
-    # Load manifest
-    local manifest_file="$PROJECT_ROOT/docs/examples/intake/intcloudsysops-manifest.json"
-    if [[ ! -f "$manifest_file" ]]; then
-        log_error "Manifest not found: $manifest_file"
-        return
-    fi
-
-    log_info "Loaded manifest: $manifest_file"
-
-    # Extract pipeline config
-    local pipeline_name=$(jq -r '.pipeline.name' "$manifest_file")
-    log_info "Pipeline: $pipeline_name"
-
-    local stages=$(jq -r '.pipeline.stages[] | .name' "$manifest_file")
-    log_info "Stages:"
-    while IFS= read -r stage; do
-        log_info "  → $stage"
-    done <<< "$stages"
-
-    # Form config
-    local form_name=$(jq -r '.form.name' "$manifest_file")
-    log_info "Form: $form_name"
-
-    # Tags
-    log_info "Tags to verify:"
-    jq -r '.tags_to_create[] | .name' "$manifest_file" | while read -r tag; do
-        log_info "  → $tag"
-    done
-
-    log_success "Intcloudsysops configuration ready for manual setup"
 }
 
 ##############################################################################

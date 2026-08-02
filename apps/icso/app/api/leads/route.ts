@@ -24,8 +24,6 @@ interface IcsoLeadResponse {
   calendarBookingUrl?: string | null;
   twentyPersonId?: string;
   twentyOpportunityId?: string;
-  /** Legacy GHL id when INTCLOUDSYSOPS_GHL_ENABLED=true */
-  ghlContactId?: string;
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -68,7 +66,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       email,
       message: enrichedMessage,
       sourceForm: 'ICSO Contact Form',
-      ghlContactId: crmResult.ghlContactId,
       twentyPersonId: crmResult.twentyPersonId,
       twentyOpportunityId: crmResult.twentyOpportunityId,
     });
@@ -92,7 +89,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       ...(crmResult.twentyOpportunityId
         ? { twentyOpportunityId: crmResult.twentyOpportunityId }
         : {}),
-      ...(crmResult.ghlContactId ? { ghlContactId: crmResult.ghlContactId } : {}),
     };
 
     return NextResponse.json(response, { status: 201 });

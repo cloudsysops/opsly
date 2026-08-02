@@ -98,10 +98,3 @@ export function isIntcloudsysopsTwentyConfigured(
 ): boolean {
   return resolveTwentyEnvForIntcloudsysops(env).enabled;
 }
-
-/** Explicit opt-in for legacy GoHighLevel sidecar (agency location). */
-export function isIntcloudsysopsGhlEnabled(
-  env: Record<string, string | undefined> = process.env as Record<string, string | undefined>
-): boolean {
-  return parseBooleanFlag(env.INTCLOUDSYSOPS_GHL_ENABLED, false);
-}

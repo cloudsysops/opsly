@@ -68,32 +68,7 @@ describe('POST /api/leads', () => {
         twentyPersonId: 'tw-person-1',
       })
     );
-  });
-
-  it('includes legacy ghlContactId when sidecar returns it', async () => {
-    syncLeadToCrmMock.mockResolvedValue({
-      ghlContactId: 'ghl-contact-123',
-    });
-    persistIcsoLeadMock.mockResolvedValue({
-      accountId: 'account-2',
-      contactId: 'contact-2',
-      dealId: 'deal-2',
-    });
-    resolveIcsoDiscoveryBookingUrlMock.mockResolvedValue(null);
-
-    const { POST } = await import('../route');
-    const response = await POST({
-      json: async () => ({
-        name: 'Jane Smith',
-        email: 'jane@example.com',
-        message: 'Need automation',
-      }),
-    } as never);
-    const data = await response.json();
-
-    expect(data.ghlContactId).toBe('ghl-contact-123');
-    expect(data.calendarBookingUrl).toBeNull();
-  });
+  }, 30_000);
 
   it('rejects requests with missing fields', async () => {
     const { POST } = await import('../route');

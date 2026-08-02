@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  isIntcloudsysopsGhlEnabled,
   isIntcloudsysopsTwentyConfigured,
   isPeskidsGhlEnabled,
   isTwentyConfigured,
@@ -75,16 +74,5 @@ describe('resolveTwentyEnvForIntcloudsysops', () => {
         INTCLOUDSYSOPS_TWENTY_ENABLED: 'false',
       })
     ).toBe(false);
-  });
-});
-
-describe('isIntcloudsysopsGhlEnabled', () => {
-  it('defaults to false', () => {
-    expect(isIntcloudsysopsGhlEnabled({})).toBe(false);
-    expect(isIntcloudsysopsGhlEnabled({ GOHIGHLEVEL_API_KEY: 'pit-test' })).toBe(false);
-  });
-
-  it('requires explicit opt-in', () => {
-    expect(isIntcloudsysopsGhlEnabled({ INTCLOUDSYSOPS_GHL_ENABLED: 'true' })).toBe(true);
   });
 });

@@ -1,7 +1,7 @@
 ---
 status: active
 owner: intcloudsysops
-last_review: 2026-06-09
+last_review: 2026-08-02
 tenant: intcloudsysops
 ---
 
@@ -9,18 +9,18 @@ tenant: intcloudsysops
 
 ## Objetivo
 
-Migrar el intake comercial de **GoHighLevel (agencia)** a **Twenty CRM + Supabase + n8n**, sin afectar otros tenants (Peskids usa flags y credenciales distintas).
+Intake comercial de ICSO en **Twenty CRM + Supabase + n8n**. La suscripción GoHighLevel de agencia fue **cancelada**; no hay dual-write ni scripts de provision GHL para este tenant.
 
-## Estado en repo (2026-06-09)
+## Estado en repo (2026-08-02)
 
 | Componente | Estado |
 |-----------|--------|
-| Captura web `POST /api/leads` (apps/icso) | Twenty (opcional) + **Supabase obligatorio** + GHL sidecar con flag |
+| Captura web `POST /api/leads` (apps/icso) | **Supabase obligatorio** + Twenty cuando está configurado |
 | Tablas operativas | `intcloudsysops_accounts`, `intcloudsysops_contacts`, `intcloudsysops_deals`, `intcloudsysops_followups` |
 | Migración external ids | `0083_intcloudsysops_crm_external_ids.sql` |
 | Pipeline local | `intcloudsysops_deals.stage` + `IcsoPipelineService` |
 | Follow-up stale | `IcsoFollowupService` → `intcloudsysops_followups` |
-| GHL legacy | `INTCLOUDSYSOPS_GHL_ENABLED=false` por defecto |
+| GHL agency | **Retirado** (código sidecar + scripts borrados) |
 
 ## Arquitectura
 
@@ -29,7 +29,6 @@ flowchart LR
   Web[ICSO marketing form] --> Leads[POST /api/leads]
   Leads --> Twenty[Twenty REST API]
   Leads --> DB[(intcloudsysops_* tables)]
-  Leads -. optional .-> GHL[GHL agency sidecar]
   n8n[n8n workflows] --> DB
   n8n --> Resend[Email / reminders]
 ```
@@ -44,38 +43,21 @@ doppler secrets set \
   INTCLOUDSYSOPS_TWENTY_ENABLED="true" \
   --project ops-intcloudsysops --config prd
 
-# Supabase (fuente operativa — compartida plataforma)
-# NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (ya en prd)
-
-# Discovery booking (sin GHL)
+# Discovery booking
 doppler secrets set NEXT_PUBLIC_ICSO_DISCOVERY_BOOKING_URL="https://..." --project ops-intcloudsysops --config prd
-
-# Legacy GHL (solo transición)
-doppler secrets set INTCLOUDSYSOPS_GHL_ENABLED="false" --project ops-intcloudsysops --config prd
 ```
 
-## Checklist de apagado GHL (ICSO)
+Rotar/borrar secretos legacy `INTCLOUDSYSOPS_GHL_*` / agency API keys si aún existen en Doppler.
 
-- [ ] `INTCLOUDSYSOPS_GHL_ENABLED=false` en prd y redeploy ICSO
-- [ ] Smoke `POST /api/leads` → `contactId` UUID local (no GHL id)
-- [ ] Import histórico GHL → Twenty completado
+## Checklist post-cutover
+
+- [x] Código ICSO sin imports GHL
+- [ ] Smoke `POST /api/leads` → `contactId` UUID local + Twenty ids
 - [ ] `NEXT_PUBLIC_ICSO_DISCOVERY_BOOKING_URL` apunta a calendario Twenty/n8n
-- [ ] n8n follow-up workflow usa `intcloudsysops_followups` (no GHL tasks)
-- [ ] Cancelar suscripción GHL agencia tras ventana de observación
-
-## Scripts legacy (GHL agencia — no borrar hasta cutover)
-
-| Script | Uso |
-|--------|-----|
-| `./scripts/ghl-provision-intcloudsysops.sh` | Provision tags/forms/calendar en GHL |
-| `./scripts/icso-ghl-status.sh` | Auditoría recursos GHL (legacy) |
-| `./scripts/ghl-configure-pipelines.sh --customer icso` | Pipelines GHL |
-| `./scripts/ghl-scope-smoke.sh --tenant intcloudsysops` | Smoke token/scopes |
-
-Código app legacy: `apps/icso/lib/ghl-setup.ts`, `apps/icso/lib/gohighlevel-lead-sync.ts`.
+- [ ] n8n follow-up usa `intcloudsysops_followups`
+- [ ] Secretos GHL agencia eliminados de Doppler
 
 ## Referencias
 
-- Legacy GHL: [`GOHIGHLEVEL-CONTRACT.md`](GOHIGHLEVEL-CONTRACT.md)
-- Patrón Peskids: [`../peskids/TWENTY-CRM.md`](../peskids/TWENTY-CRM.md)
+- Patrón Peskids (GHL aún posible allí): [`../peskids/TWENTY-CRM.md`](../peskids/TWENTY-CRM.md)
 - Data model: [`DATA-MODEL.md`](DATA-MODEL.md)

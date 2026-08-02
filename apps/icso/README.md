@@ -54,7 +54,6 @@ Sell flow: pick package or vertical on the site → contact form prefilled → C
 |------|------------------|--------|
 | Operativa | Supabase `intcloudsysops_*` | Fuente de verdad (requiere service role en runtime) |
 | CRM | Twenty REST | Primario cuando `INTCLOUDSYSOPS_TWENTY_ENABLED` + credenciales |
-| Legacy | GoHighLevel agency | Solo si `INTCLOUDSYSOPS_GHL_ENABLED=true` (default **false**) |
 
 Runbook: [`docs/tenants/intcloudsysops/TWENTY-CRM.md`](../../docs/tenants/intcloudsysops/TWENTY-CRM.md).  
 No incluye Opsly checkout ni tenant apps de clientes.

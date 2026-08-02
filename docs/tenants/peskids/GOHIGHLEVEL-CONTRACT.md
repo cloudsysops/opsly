@@ -56,7 +56,7 @@ MCP / `getGoHighLevelService()` registran `tenantId: peskids` con el prefijo `GO
 npm run ghl-provision -- --manifest docs/examples/intake/peskids.json --tenant peskids --dry-run
 ```
 
-Agencia Intcloudsysops: [`docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md`](../intcloudsysops/GOHIGHLEVEL-CONTRACT.md) — `./scripts/ghl-provision-intcloudsysops.sh`
+Agencia Intcloudsysops: GHL **retirado** — CRM Twenty ([`../intcloudsysops/TWENTY-CRM.md`](../intcloudsysops/TWENTY-CRM.md)).
 
 Reportes: `docs/artifacts/provisioning/provision-report-peskids.{json,md}`
 
