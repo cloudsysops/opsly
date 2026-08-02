@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import {
   clearExternalAgentRegistryCache,
   loadExternalAgentRegistry,
+  routeAgentTask,
   routeExternalWorker,
 } from '../index.js';
 
@@ -40,5 +41,39 @@ describe('external-agent-registry', () => {
       explicitOpslyJobType: 'local_codex',
     });
     expect(resolved.workerId).toBe('codex-cli');
+  });
+
+  it('routes a versioned local task without an LLM', async () => {
+    const registry = await loadExternalAgentRegistry(REPO_ROOT);
+    const result = routeAgentTask(registry, {
+      schema_version: 'AgentTaskEnvelopeV1',
+      request_id: 'req-1',
+      correlation_id: 'corr-1',
+      tenant_slug: 'academy-demo',
+      task_type: 'code',
+      task: 'run a focused type-check',
+      selected_agent: 'opencode',
+      skills: ['opsly-context'],
+      constraints: {
+        open_source_only: true,
+        local_only: true,
+        browser_allowed: false,
+        network_allowed: false,
+        write_allowed: false,
+        file_scope: [],
+        max_tokens: 1600,
+      },
+      execution_mode: 'dry_run',
+      source: 'test',
+      actor: 'test',
+      created_at: new Date().toISOString(),
+      timeout_ms: 120000,
+      max_attempts: 2,
+      budget: { max_tokens: 1600 },
+      metadata: {},
+      fallback_agents: [],
+    });
+    expect(result.selected_agent).toBe('opencode');
+    expect(result.rationale_codes).toContain('CAPABILITY_MATCH');
   });
 });

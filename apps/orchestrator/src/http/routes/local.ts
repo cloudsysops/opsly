@@ -19,6 +19,7 @@ import {
 } from '../../lib/local-worker-utils.js';
 import { recordOpenClawIntentQueued } from '../../openclaw/runtime-events.js';
 import { jsonResponse, errorResponse } from '../router.js';
+import { agentTaskEnvelopeV1Schema } from '@intcloudsysops/types/agent-task';
 
 const MAX_RECENT_LOCAL_JOBS = 25;
 
@@ -166,6 +167,26 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
     typeof b.context === 'object' && b.context !== null ? (b.context as Record<string, unknown>) : {};
   const requestId = typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
 
+  const taskEnvelopeRaw = b.agent_task;
+  const taskEnvelopeResult =
+    taskEnvelopeRaw === undefined ? null : agentTaskEnvelopeV1Schema.safeParse(taskEnvelopeRaw);
+  if (taskEnvelopeResult && !taskEnvelopeResult.success) {
+    errorResponse(
+      ctx.res,
+      400,
+      `invalid AgentTaskEnvelopeV1: ${taskEnvelopeResult.error.issues[0]?.message ?? 'invalid envelope'}`
+    );
+    return;
+  }
+  const taskEnvelope = taskEnvelopeResult?.success ? taskEnvelopeResult.data : undefined;
+  if (
+    taskEnvelope &&
+    (taskEnvelope.tenant_slug !== tenantSlug || taskEnvelope.request_id !== requestId)
+  ) {
+    errorResponse(ctx.res, 400, 'AgentTaskEnvelopeV1 tenant_slug/request_id mismatch');
+    return;
+  }
+
   const agentKind = resolveLocalPromptAgentKind(b, promptForAgentResolve);
   const jobType = jobTypeForLocalAgent(agentKind);
 
@@ -177,6 +198,7 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
       max_steps: maxSteps,
       goal,
       context,
+      ...(taskEnvelope ? { agent_task: taskEnvelope } : {}),
       job_id: requestId,
     },
     tenant_slug: tenantSlug,

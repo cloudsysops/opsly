@@ -1,4 +1,6 @@
 export type {
+  AgentRouteReasonCode,
+  AgentTaskRoute,
   ExternalAgentRegistryFile,
   ExternalWorkerEntry,
   ExternalWorkerId,
@@ -27,3 +29,5 @@ export {
   routeExternalWorker,
   type RouteExternalWorkerInput,
 } from './routing.js';
+
+export { routeAgentTask } from './task-routing.js';

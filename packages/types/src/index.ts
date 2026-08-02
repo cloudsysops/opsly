@@ -3,3 +3,4 @@ export * from './context-pack.js';
 export * from './gcloud.js';
 export * from './notebooklm.js';
 export * from './hermes.js';
+export * from './agent-task.js';

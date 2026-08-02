@@ -181,6 +181,22 @@
       "mainFile": "lib/conversational-runtime/src/index.ts",
       "exports": ["createConversationalRuntime", "InputMessage", "AgentResponse"]
     },
+    "agent-task-core": {
+      "name": "@intcloudsysops/agent-task-core",
+      "version": "0.1.0",
+      "path": "lib/agent-task-core",
+      "owner": "platform",
+      "description": "Reusable AgentTaskEnvelopeV1 helpers, deterministic assign/route, policy and Orchestrator client",
+      "status": "experimental",
+      "dependencies": ["external-agent-registry"],
+      "mainFile": "lib/agent-task-core/src/index.ts",
+      "exports": [
+        "assignAgentTask",
+        "buildAgentTaskEnvelope",
+        "evaluateAgentTaskPolicy",
+        "OrchestratorAgentTaskClient"
+      ]
+    },
     "wompi-gateway": {
       "name": "@intcloudsysops/wompi-gateway",
       "version": "0.1.0",
