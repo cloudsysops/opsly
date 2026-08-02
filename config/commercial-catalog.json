@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updated": "2026-07-30",
+  "updated": "2026-08-01",
   "owner": "icso",
   "currency": "USD",
   "disclaimer": "Rangos orientativos LATAM. Setup y ops se confirman en discovery. Pass-through (dominio, APIs, WhatsApp) aparte. No prometemos resultados de ventas ni uptime de terceros.",
@@ -10,7 +10,7 @@
     "docs/blueprints/TENANT-REPEAT-PLAYBOOK.md",
     "config/vertical-blueprints/index.json"
   ],
-  "sales_pitch_es": "Opsly es la fábrica: módulos reutilizables + verticales listos. ICSO vende e implementa. Peskids prueba que un vertical (academia) ya opera en vivo.",
+  "sales_pitch_es": "IntCloud SysOps (ICSO) es la agencia de AI que opera todo. Opsly es nuestro sistema operativo multi-tenant: módulos reutilizables + verticales listos. Misma empresa — ICSO vende, implementa y opera Opsly. Peskids prueba que un vertical (academia) ya corre en vivo.",
   "modules": [
     {
       "id": "lead-capture",

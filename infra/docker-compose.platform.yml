@@ -326,6 +326,8 @@ services:
     environment:
       PORT: '3015'
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://intcloudsysops.com}
+      # Server-side fetch to apps/api commercial catalog (Compose service name `app`)
+      OPSLY_API_URL: ${OPSLY_API_URL:-http://app:3000}
     labels:
       - 'traefik.enable=true'
       - 'traefik.docker.network=traefik-public'
