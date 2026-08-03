@@ -24,7 +24,8 @@
     "twenty/env-config.ts",
     "twenty/client.ts",
     "twenty/types.ts",
-    "twenty/index.ts"
+    "twenty/index.ts",
+    "twenty/webhook-verify.ts"
   ],
   "exclude": ["dist", "node_modules"]
 }
