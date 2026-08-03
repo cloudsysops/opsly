@@ -23,10 +23,17 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ ok: false, error: 'Invalid signature' }, { status: 400 });
   }
 
-  const result = await handleTwentyWebhookEvent(verification.payload).catch((error: unknown) => {
+  try {
+    const result = await handleTwentyWebhookEvent(verification.payload);
+    return NextResponse.json({ ok: true, received: true, ...result });
+  } catch (error) {
+    // A thrown error is an unexpected failure (e.g. DB unreachable), not a
+    // recognized-but-ignored event — return 5xx so Twenty retries delivery
+    // instead of treating it as successfully received.
     console.warn('[twenty-webhook] handler threw', error);
-    return { handled: false, detail: error instanceof Error ? error.message : String(error) };
-  });
-
-  return NextResponse.json({ ok: true, received: true, ...result });
+    return NextResponse.json(
+      { ok: false, error: error instanceof Error ? error.message : String(error) },
+      { status: 500 }
+    );
+  }
 }

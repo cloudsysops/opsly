@@ -21,19 +21,31 @@
 import { randomBytes } from 'node:crypto';
 import process from 'node:process';
 
+function nextValue(argv, i, flag) {
+  const value = argv[i + 1];
+  if (value === undefined || value.startsWith('--')) {
+    console.error(`twenty-register-webhook: ${flag} requires a value`);
+    process.exit(1);
+  }
+  return value;
+}
+
 function parseArgs(argv) {
   const args = { tenant: 'peskids', operations: '*.opportunities,*.tasks', write: false };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     switch (arg) {
       case '--tenant':
-        args.tenant = argv[++i];
+        args.tenant = nextValue(argv, i, arg);
+        i += 1;
         break;
       case '--target-url':
-        args.targetUrl = argv[++i];
+        args.targetUrl = nextValue(argv, i, arg);
+        i += 1;
         break;
       case '--operations':
-        args.operations = argv[++i];
+        args.operations = nextValue(argv, i, arg);
+        i += 1;
         break;
       case '--write':
         args.write = true;

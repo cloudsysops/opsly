@@ -94,10 +94,30 @@ describe('POST /api/webhooks/twenty', () => {
     });
   });
 
-  it('does not 500 when the handler throws', async () => {
+  it('returns 500 when the handler throws, so Twenty retries delivery', async () => {
     resolveTwentyEnvMock.mockReturnValue({ enabled: true, webhookSecret: 'whsec' });
     verifyTwentyWebhookSignatureMock.mockReturnValue({ ok: true, payload: {} });
     handleTwentyWebhookEventMock.mockRejectedValue(new Error('db down'));
+    const { POST } = await import('../route');
+
+    const response = await POST(
+      fakeRequest('{}', {
+        'x-twenty-webhook-timestamp': '123',
+        'x-twenty-webhook-signature': 'good',
+      })
+    );
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toMatchObject({ ok: false, error: 'db down' });
+  });
+
+  it('returns 200 when the handler recognizes but intentionally ignores an event', async () => {
+    resolveTwentyEnvMock.mockReturnValue({ enabled: true, webhookSecret: 'whsec' });
+    verifyTwentyWebhookSignatureMock.mockReturnValue({ ok: true, payload: {} });
+    handleTwentyWebhookEventMock.mockResolvedValue({
+      handled: false,
+      detail: 'no handler for event type "note.created"',
+    });
     const { POST } = await import('../route');
 
     const response = await POST(
