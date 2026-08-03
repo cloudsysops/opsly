@@ -30,6 +30,13 @@ debe configurarse por tenant y revisarse antes de aceptar pacientes reales.
 - Eliminación, expiración y retención deben ser operaciones auditables.
 - La aceptación de una cotización no equivale a consentimiento clínico.
 
+## Estado real de almacenamiento documental hoy
+
+`grep` de `.storage.from(` en todo el repo encontró exactamente un bucket:
+`peskids-staff-uploads` (privado, sin versionado, sin expiración, sin
+clasificación). No hay nada más que migrar o romper — el Document Vault de
+PR-VENTURE-11 parte de cero, no de un sistema existente a generalizar.
+
 ## Scope del sandbox
 
 `medical-tourism-demo` tendrá pagos y comunicaciones externas desactivados,

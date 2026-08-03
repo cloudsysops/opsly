@@ -31,6 +31,21 @@ provisioning, CRM/adapters, automations, agents, billing, health y
 observability. Providers, service catalog, quotes, cases, documents y venture
 lifecycle todavía no son módulos comunes.
 
+**No asumir heredado:** `AgentTaskEnvelopeV1` y el pipeline
+`Router → Policies → Orchestrator → LLM Gateway` no existen en este repo, ni
+en código ni en documentación (verificado por `grep` exhaustivo — ver
+`docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md`). El LLM Gateway
+tampoco es universalmente forzado hoy: hay llamadas directas al SDK de
+Anthropic fuera de `apps/llm-gateway` en al menos 4 ubicaciones. Cualquier PR
+de este programa que dependa de estos contratos debe construirlos
+explícitamente, no asumirlos existentes.
+
+**No duplicar:** `packages/opsly-core` ya es un intento previo de "core"
+(tenancy + agent runtime + event builder + AI gateway) — es POC (providers
+mock/gemini/stub, CLI de demo) con un único consumidor real y ese consumidor
+es en sí mismo un app huérfano. El Core de este programa no debe extender
+`packages/opsly-core` ni reinventarlo en paralelo sin decisión explícita.
+
 ## Target de dry-run
 
 ```text

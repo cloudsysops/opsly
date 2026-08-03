@@ -80,5 +80,20 @@ catálogo operativo y no se exponen como entitlements funcionales.
 | `config/tenant-modules-catalog.json` | packs operativos | adapter `operational` |
 | `config/commercial-catalog.json`     | venta y paquetes | adapter `commercial`  |
 
+**Fuentes explícitamente NO proyectadas**: `packages/opsly-core` (concepto de
+tenant no relacionado — intent-classification, no negocio) y
+`config/opsly.config.json.tenants[]` (registro paralelo consumido solo por
+`apps/api/lib/platform-foundation.ts` para el read-model de Mission Control).
+Ver `docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md` para la evidencia.
+
 PR1 añadirá schema, adapter, conflictos, validación y fixtures. No añadirá
 providers, tablas de dominio ni runtime nuevo.
+
+## Entitlements: groundwork ya existente
+
+`platform.tenant_entitlements` + `lib/services/entitlements` (PR #882, no
+mergeado al momento de este documento) ya implementan `check/list/grant/
+revoke` sobre `module_id`, validado en runtime contra
+`config/commercial-catalog.json`. PR2 (entitlements) de este programa debe
+partir de ahí — extender o cerrar ese PR — en vez de reconstruir el mismo
+mecanismo desde cero.

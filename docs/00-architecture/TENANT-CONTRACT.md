@@ -6,6 +6,19 @@ last_review: 2026-08-02
 
 # Tenant Contract
 
+## Fuente de verdad vs. otras representaciones de "tenant"
+
+Este contrato describe la representación de negocio de un tenant. No es la
+única representación de "tenant" que existe hoy en el repo — hay al menos
+cinco (ver `docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md`, sección
+"Catálogos y duplicaciones"): `platform.tenants` (DB, real), `config/tenants/*.json`
+(infra onboarding), instancias de blueprint (`config/blueprints/academy/instances/*.json`),
+`config/opsly.config.json.tenants[]` (usado solo por el read-model de Mission
+Control), y `packages/opsly-core`'s `TenantConfig` (intent-classification, no
+relacionado). Este contrato no reemplaza ninguna a la fuerza en PR0 — define
+la forma que PR3/PR4 deben producir y validar, apoyada en `platform.tenants` +
+`platform.tenant_entitlements` (PR #882) como la fuente operativa real.
+
 ## Identidad mínima
 
 ```yaml

@@ -41,6 +41,13 @@ ausencia de secretos. Validadores verticales pueden imponer invariantes
 adicionales; por ejemplo, Academy puede requerir su adapter CRM, pero eso no
 debe convertirse en una regla global.
 
+**Groundwork ya existente para el generador**: `scripts/blueprints/generate-academy-tenant.mjs`
++ `lib/academy-blueprint` (PR #875, no mergeado al momento de este documento)
+ya implementan dry-run/`--write`, validación de contrato, y un checklist de
+pasos manuales restantes — pero solo para el blueprint Academy. PR4 (blueprint
+loader) debe generalizar ese generador para leer cualquier `blueprints/<id>/`,
+no reconstruirlo desde cero.
+
 ## Layout objetivo
 
 ```text

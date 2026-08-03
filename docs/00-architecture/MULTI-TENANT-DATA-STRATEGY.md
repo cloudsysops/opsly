@@ -16,7 +16,11 @@ tenant en este programa inicial.
 
 1. `tenant_id` no nullable en toda entidad funcional.
 2. Foreign key a la entidad tenant cuando el modelo lo permita.
-3. RLS explícito y tests positivos/negativos de aislamiento.
+3. RLS explícito y tests positivos/negativos de aislamiento. Hoy esto existe
+   solo de forma ad-hoc por feature (ej. `apps/peskids/app/api/admin/leads/[id]/__tests__/route.test.ts`),
+   no como un harness sistemático — cada PR de este programa que cree una
+   tabla nueva debe aportar sus propios tests de aislamiento, no asumir que
+   hay uno compartido que los cubre.
 4. Constraints de unicidad con `tenant_id` incluido.
 5. Índices que empiecen por `tenant_id` para consultas scoped.
 6. Repositorios que reciban contexto tenant, no solo un slug de UI.
