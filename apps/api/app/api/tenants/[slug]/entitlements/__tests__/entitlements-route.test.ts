@@ -58,6 +58,15 @@ describe('GET /api/tenants/[slug]/entitlements', () => {
     expect(res.status).toBe(404);
   });
 
+  it('returns 400 for a malformed slug instead of hitting the DB', async () => {
+    const req = new Request('http://local/api/tenants/Not_A_Slug!/entitlements', {
+      headers: authHeaders(),
+    });
+    const res = await GET(req, params('Not_A_Slug!'));
+    expect(res.status).toBe(400);
+    expect(entitlementsMod.listEntitlements).not.toHaveBeenCalled();
+  });
+
   it('returns the entitlement list on success', async () => {
     const rows = [{ id: 'e1', module_id: 'simple-crm', enabled: true }];
     vi.mocked(entitlementsMod.listEntitlements).mockResolvedValue(
@@ -82,6 +91,28 @@ describe('POST /api/tenants/[slug]/entitlements', () => {
     });
     const res = await POST(req, params('swim-cali'));
     expect(res.status).toBe(400);
+  });
+
+  it('returns 400 for a well-formed module_id that is not in the commercial catalog', async () => {
+    const req = new Request('http://local/api/tenants/swim-cali/entitlements', {
+      method: 'POST',
+      headers: { ...authHeaders(), 'content-type': 'application/json' },
+      body: JSON.stringify({ module_id: 'not-a-real-module' }),
+    });
+    const res = await POST(req, params('swim-cali'));
+    expect(res.status).toBe(400);
+    expect(entitlementsMod.grantEntitlement).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 for a malformed slug instead of hitting the DB', async () => {
+    const req = new Request('http://local/api/tenants/Not_A_Slug!/entitlements', {
+      method: 'POST',
+      headers: { ...authHeaders(), 'content-type': 'application/json' },
+      body: JSON.stringify({ module_id: 'simple-crm' }),
+    });
+    const res = await POST(req, params('Not_A_Slug!'));
+    expect(res.status).toBe(400);
+    expect(entitlementsMod.grantEntitlement).not.toHaveBeenCalled();
   });
 
   it('grants the entitlement and returns 201', async () => {
@@ -130,5 +161,25 @@ describe('DELETE /api/tenants/[slug]/entitlements/[moduleId]', () => {
     });
     const res = await DELETE(req, params('ghost-tenant', 'simple-crm'));
     expect(res.status).toBe(404);
+  });
+
+  it('returns 400 for a malformed slug instead of a silent no-op delete', async () => {
+    const req = new Request('http://local/api/tenants/Not_A_Slug!/entitlements/simple-crm', {
+      method: 'DELETE',
+      headers: authHeaders(),
+    });
+    const res = await DELETE(req, params('Not_A_Slug!', 'simple-crm'));
+    expect(res.status).toBe(400);
+    expect(entitlementsMod.revokeEntitlement).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 for a malformed moduleId instead of a silent no-op delete', async () => {
+    const req = new Request('http://local/api/tenants/swim-cali/entitlements/Not_Valid!', {
+      method: 'DELETE',
+      headers: authHeaders(),
+    });
+    const res = await DELETE(req, params('swim-cali', 'Not_Valid!'));
+    expect(res.status).toBe(400);
+    expect(entitlementsMod.revokeEntitlement).not.toHaveBeenCalled();
   });
 });

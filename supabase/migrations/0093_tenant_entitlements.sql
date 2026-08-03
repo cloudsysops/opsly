@@ -30,7 +30,9 @@ CREATE TABLE IF NOT EXISTS platform.tenant_entitlements (
 CREATE INDEX IF NOT EXISTS idx_tenant_entitlements_tenant_enabled
   ON platform.tenant_entitlements(tenant_id, enabled);
 
--- Reuses platform.set_updated_at(), defined in 0047_tenant_memberships_and_service_accounts.sql.
+-- Reuses platform.set_updated_at(), first defined in 0036_billing_invoices.sql
+-- (also re-declared in 0047_tenant_memberships_and_service_accounts.sql via
+-- CREATE OR REPLACE — same function either way).
 DROP TRIGGER IF EXISTS tenant_entitlements_updated_at ON platform.tenant_entitlements;
 CREATE TRIGGER tenant_entitlements_updated_at
   BEFORE UPDATE ON platform.tenant_entitlements

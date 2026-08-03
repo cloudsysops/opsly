@@ -7,8 +7,9 @@ import {
 import { jsonError, jsonOk, parseJsonBody, tryRoute } from '../../../../../lib/api-response';
 import { requireAdminAccess } from '../../../../../lib/auth';
 import { HTTP_STATUS } from '../../../../../lib/constants';
+import { getCommercialCatalogModuleIds } from '../../../../../lib/commercial-catalog';
 import { getServiceClient } from '../../../../../lib/supabase';
-import { formatZodError } from '../../../../../lib/validation';
+import { TenantSlugParamSchema, formatZodError } from '../../../../../lib/validation';
 
 const GrantEntitlementSchema = z.object({
   module_id: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'module_id must be lowercase kebab-case'),
@@ -25,10 +26,14 @@ export function GET(
     const authError = await requireAdminAccess(request);
     if (authError) return authError;
 
-    const { slug } = await context.params;
+    const { slug: rawSlug } = await context.params;
+    const slugParsed = TenantSlugParamSchema.safeParse(rawSlug);
+    if (!slugParsed.success) {
+      return jsonError(formatZodError(slugParsed.error), HTTP_STATUS.BAD_REQUEST);
+    }
 
     try {
-      const entitlements = await listEntitlements(getServiceClient(), slug);
+      const entitlements = await listEntitlements(getServiceClient(), slugParsed.data);
       return jsonOk({ data: entitlements });
     } catch (err) {
       if (err instanceof TenantNotFoundError) {
@@ -47,7 +52,11 @@ export function POST(
     const authError = await requireAdminAccess(request);
     if (authError) return authError;
 
-    const { slug } = await context.params;
+    const { slug: rawSlug } = await context.params;
+    const slugParsed = TenantSlugParamSchema.safeParse(rawSlug);
+    if (!slugParsed.success) {
+      return jsonError(formatZodError(slugParsed.error), HTTP_STATUS.BAD_REQUEST);
+    }
 
     const parsedBody = await parseJsonBody(request);
     if (!parsedBody.ok) return parsedBody.response;
@@ -57,8 +66,16 @@ export function POST(
       return jsonError(formatZodError(parsed.error), HTTP_STATUS.BAD_REQUEST);
     }
 
+    const knownModuleIds = getCommercialCatalogModuleIds();
+    if (!knownModuleIds.has(parsed.data.module_id)) {
+      return jsonError(
+        `Unknown module_id "${parsed.data.module_id}" — not in config/commercial-catalog.json`,
+        HTTP_STATUS.BAD_REQUEST
+      );
+    }
+
     try {
-      const entitlement = await grantEntitlement(getServiceClient(), slug, {
+      const entitlement = await grantEntitlement(getServiceClient(), slugParsed.data, {
         moduleId: parsed.data.module_id,
         source: parsed.data.source,
         grantedBy: parsed.data.granted_by,
