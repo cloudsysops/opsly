@@ -35,6 +35,16 @@
       "types": "./dist/twenty/index.d.ts",
       "import": "./dist/twenty/index.js",
       "default": "./dist/twenty/index.js"
+    },
+    "./twenty/webhook-verify": {
+      "types": "./dist/twenty/webhook-verify.d.ts",
+      "import": "./dist/twenty/webhook-verify.js",
+      "default": "./dist/twenty/webhook-verify.js"
+    },
+    "./twenty/webhook-verify.js": {
+      "types": "./dist/twenty/webhook-verify.d.ts",
+      "import": "./dist/twenty/webhook-verify.js",
+      "default": "./dist/twenty/webhook-verify.js"
     }
   },
   "scripts": {

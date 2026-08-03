@@ -10,8 +10,6 @@ export {
   resolveTwentyEnvForIntcloudsysops,
 } from './env-config.js';
 export type { TwentyEnvConfig } from './env-config.js';
-export { verifyTwentyWebhookSignature } from './webhook-verify.js';
-export type { TwentyWebhookVerification } from './webhook-verify.js';
 export type {
   TwentyApiEnvelope,
   TwentyCompanyRecord,

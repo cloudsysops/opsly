@@ -87,6 +87,32 @@ describe('verifyTwentyWebhookSignature', () => {
     expect(result.ok).toBe(false);
   });
 
+  it('accepts a timestamp expressed in UNIX seconds (unit auto-detection)', () => {
+    const nowMs = 1_700_000_000_000;
+    const timestampSeconds = String(Math.floor(nowMs / 1000));
+    const rawBody = JSON.stringify({ eventType: 'opportunity.updated' });
+    const signature = sign(timestampSeconds, rawBody);
+
+    const result = verifyTwentyWebhookSignature(rawBody, timestampSeconds, signature, SECRET, {
+      now: () => nowMs,
+    });
+
+    expect(result.ok).toBe(true);
+  });
+
+  it('trims whitespace around the timestamp header before parsing and signing', () => {
+    const now = 1_700_000_000_000;
+    const timestamp = String(now);
+    const rawBody = JSON.stringify({ eventType: 'opportunity.updated' });
+    const signature = sign(timestamp, rawBody);
+
+    const result = verifyTwentyWebhookSignature(rawBody, `  ${timestamp}  `, signature, SECRET, {
+      now: () => now,
+    });
+
+    expect(result.ok).toBe(true);
+  });
+
   it('rejects a body that is valid-looking but not JSON after a matching signature', () => {
     const now = 1_700_000_000_000;
     const timestamp = String(now);

@@ -52,8 +52,8 @@ async function main() {
     console.error('twenty-register-webhook: --target-url is required');
     process.exit(1);
   }
-  if (args.tenant !== 'peskids' && args.tenant !== 'intcloudsysops') {
-    console.error('twenty-register-webhook: --tenant must be "peskids" or "intcloudsysops"');
+  if (args.tenant !== 'peskids' && args.tenant !== 'icso') {
+    console.error('twenty-register-webhook: --tenant must be "peskids" or "icso"');
     process.exit(1);
   }
 

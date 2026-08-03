@@ -151,11 +151,14 @@ export async function handleTwentyWebhookEvent(
     return { handled: false, detail: 'unrecognized webhook payload shape' };
   }
 
-  const eventTypeLower = event.eventType.toLowerCase();
-  if (eventTypeLower.includes('opportunit')) {
+  // Match a whole dot-separated segment (e.g. "create.opportunities" or
+  // "opportunity.updated"), not a substring — avoids false positives like a
+  // hypothetical "taskTargets.updated" event matching on "task".
+  const segments = event.eventType.toLowerCase().split('.');
+  if (segments.some((segment) => segment === 'opportunity' || segment === 'opportunities')) {
     return handleOpportunityEvent(event.record);
   }
-  if (eventTypeLower.includes('task')) {
+  if (segments.some((segment) => segment === 'task' || segment === 'tasks')) {
     return handleTaskEvent(event.record);
   }
 

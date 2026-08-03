@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { resolveTwentyEnv, verifyTwentyWebhookSignature } from '@intcloudsysops/services/twenty';
+import { resolveTwentyEnv } from '@intcloudsysops/services/twenty';
+import { verifyTwentyWebhookSignature } from '@intcloudsysops/services/twenty/webhook-verify';
 import { handleTwentyWebhookEvent } from '@/lib/twenty-webhook-handler.service';
 
 export const dynamic = 'force-dynamic';

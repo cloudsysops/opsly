@@ -37,10 +37,15 @@ export function verifyTwentyWebhookSignature<T = unknown>(
     return { ok: false, reason: 'missing X-Twenty-Webhook-Signature header' };
   }
 
-  const timestampMs = Number(timestampHeader);
-  if (!Number.isFinite(timestampMs)) {
+  const timestampHeaderTrimmed = timestampHeader.trim();
+  const timestampRaw = Number(timestampHeaderTrimmed);
+  if (!Number.isFinite(timestampRaw)) {
     return { ok: false, reason: 'invalid timestamp header' };
   }
+  // Twenty's timestamp units aren't documented; accept either UNIX seconds or
+  // milliseconds by magnitude — 1e12 is ~2001 in ms, so anything below that
+  // can only be a seconds-based timestamp for any realistic delivery time.
+  const timestampMs = timestampRaw < 1e12 ? timestampRaw * 1000 : timestampRaw;
 
   const toleranceSeconds = options.toleranceSeconds ?? DEFAULT_TOLERANCE_SECONDS;
   const now = (options.now ?? Date.now)();
@@ -50,7 +55,7 @@ export function verifyTwentyWebhookSignature<T = unknown>(
   }
 
   const expected = createHmac('sha256', secret)
-    .update(`${timestampHeader}:${rawBody}`)
+    .update(`${timestampHeaderTrimmed}:${rawBody}`)
     .digest('hex');
 
   let isValid: boolean;

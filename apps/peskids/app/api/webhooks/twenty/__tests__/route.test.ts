@@ -6,6 +6,9 @@ const handleTwentyWebhookEventMock = vi.fn();
 
 vi.mock('@intcloudsysops/services/twenty', () => ({
   resolveTwentyEnv: (...args: unknown[]) => resolveTwentyEnvMock(...args),
+}));
+
+vi.mock('@intcloudsysops/services/twenty/webhook-verify', () => ({
   verifyTwentyWebhookSignature: (...args: unknown[]) => verifyTwentyWebhookSignatureMock(...args),
 }));
 
