@@ -75,7 +75,7 @@ construyendo sobre un contrato que no existe.
 | Automations/events (n8n)           | Catálogo n8n real. Event bus HTTP tenant-facing (`OPSLY_EVENT_BUS_URL`) sin receptor en el repo (ver "Event bus"); Redis pub/sub interno del orchestrator sí es real pero orchestrator-only                                                                                                                                                     | `REUSABLE_WITH_REFACTOR` para n8n; `PARTIAL`/dead-path para el event bus HTTP                 |
 | Agents/orchestration               | Orchestrator real (BullMQ, 30+ workers, 56 archivos de test), LLM Gateway real (routing/cache/budget) — **pero no universalmente forzado**: llamadas directas a Anthropic SDK en `apps/orchestrator/src/workers/ClaudeCodeWorker.ts`, `apps/mcp-rendering-server/src/index.ts`, `apps/mcp/src/tools/obsidian/mcp-tool.ts`, `packages/skills/user/opsly-brain-researcher/brain-researcher.ts` — contradice directamente la regla #9 de este programa.       | `REUSABLE_WITH_REFACTOR` con **riesgo activo de incumplimiento de regla #9**                  |
 | Health/observability/audit         | Cada app expone su propio `/health` sin contrato compartido. Bug encontrado: `apps/intcloudsysops/app/api/health/route.ts` hardcodea `service: 'peskids'`. `platform.audit_log` es real y compartido.                                                                                                                                           | `REUSABLE_WITH_REFACTOR` para audit; `MISSING` contrato común de health                       |
-| CI/CD                              | 33 workflows reales. `ci.yml` es el gate real en cada PR (type-check, tests, Playwright, Trivy, secret-scan). **Riesgo operativo real:** `deploy.yml` despliega automáticamente en cada push a `main`/`staging` (Docker build/push + compose deploy) — sin gate de aprobación humana entre merge y deploy. Las migraciones SQL NO se aplican automáticamente (el único `supabase db push` está en un job legacy deshabilitado que nunca se dispara). | `IMPLEMENTED` el gate de calidad; **riesgo real** el auto-deploy sin gate de aprobación         |
+| CI/CD                              | 30+ workflows reales en `.github/workflows/` (conteo puntual, no verificable de forma estable). `ci.yml` es el gate real en cada PR (type-check, tests, Playwright, Trivy, secret-scan). **Riesgo operativo a verificar:** `deploy.yml` se dispara automáticamente en cada push a `main`/`staging` y declara `environment: staging`/`environment: production` — si esos GitHub Environments no tienen reviewers/protección configurados en los settings del repo (algo que este audit no puede verificar desde el YAML), el deploy corre sin gate humano; si sí la tienen, el gate existe pero vive en configuración externa al código. Las migraciones SQL NO se aplican automáticamente (el único `supabase db push` está en un job legacy deshabilitado que nunca se dispara). | `IMPLEMENTED` el gate de calidad; **riesgo a verificar** si el auto-deploy tiene o no protección de environment |
 | Venture lifecycle/dashboard         | No existe modelo de venture ni experiments                                                                                                                                                                                                                                                                                                        | `MISSING`                                                                                    |
 
 Para el formato de estado solicitado por PR0, la equivalencia es:
@@ -195,11 +195,17 @@ packages/opsly-core
   y `apps/intcloudsysops/lib/events.ts` publican a un endpoint que no existe
   en el repo. Cualquier evento canónico nuevo de PR-VENTURE-12/13 necesita
   definir primero quién consume, no asumir que "el event bus ya funciona".
-- **Deploy automático en merge a `main`/`staging`** sin gate de aprobación
-  humana (`deploy.yml`) — tensión directa con la regla #16 ("No hacer merge
-  automático") del programa: cualquier PR-VENTURE que se mergee manualmente
-  disparará deploy real sin paso intermedio. Debe decidirse explícitamente
-  (label, environment gate, o mantener los PR-VENTURE tempranos fuera de las
+- **Deploy automático en push a `main`/`staging`** (`deploy.yml` se dispara en
+  cada push, sin trigger manual) — el archivo declara
+  `environment: staging`/`environment: production`, así que un gate humano
+  *puede* existir si esos GitHub Environments tienen reviewers configurados
+  en los settings del repo, pero eso no es verificable desde el YAML ni desde
+  este audit. Tensión potencial con la regla #16 ("No hacer merge automático")
+  del programa si esa protección no está activa: cualquier PR-VENTURE que se
+  mergee manualmente podría disparar deploy real sin paso intermedio. Debe
+  confirmarse el estado real de la protección del environment antes de
+  asumir cualquiera de los dos escenarios (label, environment gate, o
+  mantener los PR-VENTURE tempranos fuera de las
   rutas que dispara `deploy.yml`) antes de PR-VENTURE-14 en adelante.
 - Tests de `pattern-catalog` con fallos de resolución de fixtures reportados
   previamente (no re-verificado en esta sesión).
