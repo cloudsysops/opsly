@@ -26,7 +26,8 @@
       "manual_steps": [
         "Abrir crm-${slug}.op-sly.com → crear primer workspace admin",
         "Settings → API & Webhooks → crear API key",
-        "echo $KEY | ./scripts/tenants/twenty-apply-api-key.sh --tenant ${slug}"
+        "echo $KEY | ./scripts/tenants/twenty-apply-api-key.sh --tenant ${slug}",
+        "node scripts/tenants/twenty-register-webhook.mjs --tenant ${slug} --target-url https://<domain>/api/webhooks/twenty --write (reverse sync: opportunity/task changes made in Twenty flow back into Opsly)"
       ],
       "estimated_setup_minutes": 20,
       "cost_level": "low"

@@ -5,12 +5,11 @@ export interface TwentyEnvConfig {
   baseUrl: string;
   defaultOpportunityStage: string;
   enabled: boolean;
+  /** Secret for verifying inbound Twenty webhook deliveries (Twenty -> Opsly). */
+  webhookSecret: string;
 }
 
-function parseBooleanFlag(
-  value: string | undefined,
-  defaultWhenUnset: boolean
-): boolean {
+function parseBooleanFlag(value: string | undefined, defaultWhenUnset: boolean): boolean {
   if (value === undefined || value.trim() === '') {
     return defaultWhenUnset;
   }
@@ -28,15 +27,13 @@ export function resolveTwentyEnv(
   env: Record<string, string | undefined> = process.env as Record<string, string | undefined>
 ): TwentyEnvConfig {
   const apiKey = env.TWENTY_API_KEY?.trim() || env.TWENTY_PESKIDS_API_KEY?.trim() || '';
-  const baseUrl = (
-    env.TWENTY_API_URL?.trim() ||
-    env.TWENTY_PESKIDS_API_URL?.trim() ||
+  const baseUrl = (env.TWENTY_API_URL?.trim() || env.TWENTY_PESKIDS_API_URL?.trim() || '').replace(
+    /\/$/,
     ''
-  ).replace(/\/$/, '');
+  );
   const configured = apiKey.length > 0 && baseUrl.length > 0;
   const enabled =
-    configured &&
-    parseBooleanFlag(env.PESKIDS_TWENTY_ENABLED ?? env.TWENTY_ENABLED, true);
+    configured && parseBooleanFlag(env.PESKIDS_TWENTY_ENABLED ?? env.TWENTY_ENABLED, true);
 
   return {
     apiKey,
@@ -46,6 +43,8 @@ export function resolveTwentyEnv(
       env.TWENTY_PESKIDS_DEFAULT_OPPORTUNITY_STAGE?.trim() ||
       'NEW',
     enabled,
+    webhookSecret:
+      env.TWENTY_PESKIDS_WEBHOOK_SECRET?.trim() || env.TWENTY_WEBHOOK_SECRET?.trim() || '',
   };
 }
 
@@ -65,10 +64,7 @@ export function isPeskidsGhlEnabled(
 export function resolveTwentyEnvForIntcloudsysops(
   env: Record<string, string | undefined> = process.env as Record<string, string | undefined>
 ): TwentyEnvConfig {
-  const apiKey =
-    env.TWENTY_INTCLOUDSYSOPS_API_KEY?.trim() ||
-    env.TWENTY_API_KEY?.trim() ||
-    '';
+  const apiKey = env.TWENTY_INTCLOUDSYSOPS_API_KEY?.trim() || env.TWENTY_API_KEY?.trim() || '';
   const baseUrl = (
     env.TWENTY_INTCLOUDSYSOPS_API_URL?.trim() ||
     env.TWENTY_API_URL?.trim() ||
@@ -76,11 +72,7 @@ export function resolveTwentyEnvForIntcloudsysops(
   ).replace(/\/$/, '');
   const configured = apiKey.length > 0 && baseUrl.length > 0;
   const enabled =
-    configured &&
-    parseBooleanFlag(
-      env.INTCLOUDSYSOPS_TWENTY_ENABLED ?? env.TWENTY_ENABLED,
-      true
-    );
+    configured && parseBooleanFlag(env.INTCLOUDSYSOPS_TWENTY_ENABLED ?? env.TWENTY_ENABLED, true);
 
   return {
     apiKey,
@@ -90,6 +82,8 @@ export function resolveTwentyEnvForIntcloudsysops(
       env.TWENTY_DEFAULT_OPPORTUNITY_STAGE?.trim() ||
       'NEW',
     enabled,
+    webhookSecret:
+      env.TWENTY_INTCLOUDSYSOPS_WEBHOOK_SECRET?.trim() || env.TWENTY_WEBHOOK_SECRET?.trim() || '',
   };
 }
 

@@ -10,17 +10,31 @@ export {
   resolveTwentyEnvForIntcloudsysops,
 } from './env-config.js';
 export type { TwentyEnvConfig } from './env-config.js';
+export { verifyTwentyWebhookSignature } from './webhook-verify.js';
+export type { TwentyWebhookVerification } from './webhook-verify.js';
 export type {
   TwentyApiEnvelope,
+  TwentyCompanyRecord,
+  TwentyCreateCompanyRequest,
+  TwentyCreateNoteRequest,
+  TwentyCreateNoteTargetRequest,
   TwentyCreateOpportunityRequest,
   TwentyCreatePersonRequest,
   TwentyCreateTaskRequest,
   TwentyCreateTaskTargetRequest,
+  TwentyCreateWebhookRequest,
+  TwentyCustomRecord,
+  TwentyNoteRecord,
+  TwentyNoteTargetRecord,
   TwentyOpportunityRecord,
   TwentyPersonName,
   TwentyPersonRecord,
   TwentyTaskRecord,
   TwentyTaskStatus,
   TwentyTaskTargetRecord,
+  TwentyUpdateCompanyRequest,
+  TwentyUpdateOpportunityRequest,
   TwentyUpdateTaskRequest,
+  TwentyWebhookOperation,
+  TwentyWebhookRecord,
 } from './types.js';

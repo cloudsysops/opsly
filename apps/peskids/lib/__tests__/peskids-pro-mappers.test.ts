@@ -13,7 +13,10 @@ import {
   proLeadStatusToTwentyStageSlug,
   trialStatusLiveToPro,
   trialStatusProToLive,
+  twentyStageSlugToAdminLeadStatusLive,
+  twentyStageSlugToProLeadStatus,
 } from '@/lib/domain/peskids-pro-mappers';
+import type { TwentyOpportunityStageSlug } from '@/lib/domain/peskids-pro-mappers';
 
 const ALL_PRO_LEAD_STATUSES: LeadStatus[] = [
   'new',
@@ -65,6 +68,33 @@ describe('peskids-pro mappers (PR-PRO-0 contracts)', () => {
     expect(adminLeadStatusToTwentyStageSlug('trial')).toBe('TRIAL_SCHEDULED');
     expect(adminLeadStatusToTwentyStageSlug('enrolled')).toBe('ENROLLED');
     expect(adminLeadStatusToTwentyStageSlug('archived')).toBe('LOST');
+  });
+
+  it('round-trips every Twenty stage slug back to a Pro lead status', () => {
+    const stageToStatus: Record<TwentyOpportunityStageSlug, LeadStatus> = {
+      NEW: 'new',
+      CONTACTED: 'contacted',
+      TRIAL_SCHEDULED: 'trial_scheduled',
+      TRIAL_COMPLETED: 'trial_completed',
+      ENROLLED: 'enrolled',
+      LOST: 'lost',
+    };
+    for (const [stage, status] of Object.entries(stageToStatus) as Array<
+      [TwentyOpportunityStageSlug, LeadStatus]
+    >) {
+      expect(twentyStageSlugToProLeadStatus(stage)).toBe(status);
+      // Full round trip: Pro -> Twenty -> Pro should be lossless.
+      expect(twentyStageSlugToProLeadStatus(proLeadStatusToTwentyStageSlug(status))).toBe(status);
+    }
+  });
+
+  it('maps Twenty stage slugs to admin status for webhook reverse-sync, collapsing trial sub-stages', () => {
+    expect(twentyStageSlugToAdminLeadStatusLive('NEW')).toBe('new');
+    expect(twentyStageSlugToAdminLeadStatusLive('CONTACTED')).toBe('contacted');
+    expect(twentyStageSlugToAdminLeadStatusLive('TRIAL_SCHEDULED')).toBe('trial');
+    expect(twentyStageSlugToAdminLeadStatusLive('TRIAL_COMPLETED')).toBe('trial');
+    expect(twentyStageSlugToAdminLeadStatusLive('ENROLLED')).toBe('enrolled');
+    expect(twentyStageSlugToAdminLeadStatusLive('LOST')).toBe('archived');
   });
 
   it('aliases trial attended ↔ completed without changing live DB values', () => {

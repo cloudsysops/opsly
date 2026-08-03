@@ -82,3 +82,85 @@ export type TwentyApiEnvelope<T> = {
   errors?: Array<{ message?: string }>;
   messages?: string[];
 };
+
+export type TwentyCreateCompanyRequest = {
+  name: string;
+  domainName?: {
+    primaryLinkUrl: string;
+  };
+  address?: {
+    addressCity?: string;
+    addressCountry?: string;
+  };
+};
+
+export type TwentyUpdateCompanyRequest = Partial<TwentyCreateCompanyRequest>;
+
+export type TwentyCompanyRecord = {
+  id: string;
+  name?: string;
+};
+
+export type TwentyCreateNoteRequest = {
+  title: string;
+  body?: string;
+};
+
+export type TwentyNoteRecord = {
+  id: string;
+  title?: string;
+};
+
+/**
+ * Notes relate to Person/Company/Opportunity via a NoteTarget join object,
+ * the same pattern Twenty uses for TaskTarget. NEEDS LIVE VERIFICATION
+ * against a real Twenty instance — inferred from Task's documented pattern
+ * and Twenty's REST docs (Core API generates identical CRUD + relation
+ * conventions across built-in objects), not confirmed against a live API
+ * from here.
+ */
+export type TwentyCreateNoteTargetRequest = {
+  noteId: string;
+  personId?: string;
+  companyId?: string;
+  opportunityId?: string;
+};
+
+export type TwentyNoteTargetRecord = {
+  id: string;
+};
+
+/**
+ * Webhook operation strings, per Twenty's docs: "{action}.{objectPluralApiName}"
+ * (e.g. "create.companies"), with "*" as a wildcard for either half
+ * ("*.companies" = all actions on companies; "create.*" = all creates;
+ * "*" alone = everything). NEEDS LIVE VERIFICATION against a real Twenty
+ * instance — cross-referenced from Twenty's public docs/community sources,
+ * not confirmed against a live API from here.
+ */
+export type TwentyWebhookOperation = string;
+
+export type TwentyCreateWebhookRequest = {
+  targetUrl: string;
+  operations: TwentyWebhookOperation[];
+  description?: string;
+  secret?: string;
+};
+
+export type TwentyWebhookRecord = {
+  id: string;
+  targetUrl?: string;
+  operations?: TwentyWebhookOperation[];
+  description?: string;
+};
+
+/**
+ * Custom objects get REST endpoints named after their plural API name,
+ * identical in shape to built-in objects (Twenty's Core API auto-generates
+ * these per workspace schema) — so these generic record types intentionally
+ * don't assume any specific custom object's fields.
+ */
+export type TwentyCustomRecord = {
+  id: string;
+  [field: string]: unknown;
+};

@@ -15,7 +15,23 @@ describe('resolveTwentyEnv', () => {
       baseUrl: '',
       defaultOpportunityStage: 'NEW',
       enabled: false,
+      webhookSecret: '',
     });
+  });
+
+  it('resolves the webhook secret from tenant-specific then shared env vars', () => {
+    expect(resolveTwentyEnv({ TWENTY_PESKIDS_WEBHOOK_SECRET: 'peskids-whsec' }).webhookSecret).toBe(
+      'peskids-whsec'
+    );
+    expect(resolveTwentyEnv({ TWENTY_WEBHOOK_SECRET: 'shared-whsec' }).webhookSecret).toBe(
+      'shared-whsec'
+    );
+    expect(
+      resolveTwentyEnv({
+        TWENTY_PESKIDS_WEBHOOK_SECRET: 'peskids-whsec',
+        TWENTY_WEBHOOK_SECRET: 'shared-whsec',
+      }).webhookSecret
+    ).toBe('peskids-whsec');
   });
 
   it('enables Twenty when credentials are present', () => {
@@ -23,10 +39,12 @@ describe('resolveTwentyEnv', () => {
       TWENTY_API_URL: 'https://crm-peskids.op-sly.com',
       TWENTY_API_KEY: 'secret-key',
     });
-    expect(isTwentyConfigured({
-      TWENTY_API_URL: 'https://crm-peskids.op-sly.com',
-      TWENTY_API_KEY: 'secret-key',
-    })).toBe(true);
+    expect(
+      isTwentyConfigured({
+        TWENTY_API_URL: 'https://crm-peskids.op-sly.com',
+        TWENTY_API_KEY: 'secret-key',
+      })
+    ).toBe(true);
     expect(config.baseUrl).toBe('https://crm-peskids.op-sly.com');
     expect(config.defaultOpportunityStage).toBe('NEW');
   });
@@ -61,10 +79,17 @@ describe('resolveTwentyEnvForIntcloudsysops', () => {
     });
     expect(config.baseUrl).toBe('https://crm-icso.op-sly.com');
     expect(config.apiKey).toBe('icso-key');
-    expect(isIntcloudsysopsTwentyConfigured({
-      TWENTY_INTCLOUDSYSOPS_API_URL: 'https://crm-icso.op-sly.com',
-      TWENTY_INTCLOUDSYSOPS_API_KEY: 'icso-key',
-    })).toBe(true);
+    expect(config.webhookSecret).toBe('');
+    expect(
+      resolveTwentyEnvForIntcloudsysops({ TWENTY_INTCLOUDSYSOPS_WEBHOOK_SECRET: 'icso-whsec' })
+        .webhookSecret
+    ).toBe('icso-whsec');
+    expect(
+      isIntcloudsysopsTwentyConfigured({
+        TWENTY_INTCLOUDSYSOPS_API_URL: 'https://crm-icso.op-sly.com',
+        TWENTY_INTCLOUDSYSOPS_API_KEY: 'icso-key',
+      })
+    ).toBe(true);
   });
 
   it('respects INTCLOUDSYSOPS_TWENTY_ENABLED=false', () => {

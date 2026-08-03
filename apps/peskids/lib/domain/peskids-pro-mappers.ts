@@ -147,6 +147,41 @@ export function adminLeadStatusToTwentyStageSlug(
   return proLeadStatusToTwentyStageSlug(adminLeadStatusToPro(status));
 }
 
+/** Twenty opportunity stage slug → canonical lead status. Inverse of proLeadStatusToTwentyStageSlug. */
+export function twentyStageSlugToProLeadStatus(stage: TwentyOpportunityStageSlug): LeadStatus {
+  switch (stage) {
+    case 'NEW':
+      return 'new';
+    case 'CONTACTED':
+      return 'contacted';
+    case 'TRIAL_SCHEDULED':
+      return 'trial_scheduled';
+    case 'TRIAL_COMPLETED':
+      return 'trial_completed';
+    case 'ENROLLED':
+      return 'enrolled';
+    case 'LOST':
+      return 'lost';
+    default: {
+      const _exhaustive: never = stage;
+      return _exhaustive;
+    }
+  }
+}
+
+/**
+ * Twenty opportunity stage slug → live admin status (webhook reverse-sync).
+ * Reuses the existing proLeadStatusToAdmin — lossy in the trial direction
+ * (both trial sub-stages collapse to admin's single 'trial' status), which
+ * is correct since that's the same collapse adminLeadStatusToPro already
+ * does in the forward direction.
+ */
+export function twentyStageSlugToAdminLeadStatusLive(
+  stage: TwentyOpportunityStageSlug
+): AdminLeadStatusLive {
+  return proLeadStatusToAdmin(twentyStageSlugToProLeadStatus(stage));
+}
+
 export function trialStatusLiveToPro(status: TrialStatusLive): TrialStatus {
   switch (status) {
     case 'scheduled':

@@ -41,16 +41,14 @@ describe('TwentyClient', () => {
   it('unwraps Twenty create operation envelopes', async () => {
     const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
       if (url.endsWith('/rest/people') && init?.method === 'POST') {
-        return new Response(
-          JSON.stringify({ data: { createPerson: { id: 'person-1' } } }),
-          { status: 201 }
-        );
+        return new Response(JSON.stringify({ data: { createPerson: { id: 'person-1' } } }), {
+          status: 201,
+        });
       }
       if (url.endsWith('/rest/opportunities') && init?.method === 'POST') {
-        return new Response(
-          JSON.stringify({ data: { createOpportunity: { id: 'opp-1' } } }),
-          { status: 201 }
-        );
+        return new Response(JSON.stringify({ data: { createOpportunity: { id: 'opp-1' } } }), {
+          status: 201,
+        });
       }
       return new Response('not found', { status: 404 });
     });
@@ -63,9 +61,9 @@ describe('TwentyClient', () => {
         emails: { primaryEmail: 'ana@example.com' },
       })
     ).resolves.toMatchObject({ id: 'person-1' });
-    await expect(
-      client.createOpportunity({ name: 'Peskids — Ana García' })
-    ).resolves.toMatchObject({ id: 'opp-1' });
+    await expect(client.createOpportunity({ name: 'Peskids — Ana García' })).resolves.toMatchObject(
+      { id: 'opp-1' }
+    );
   });
 
   it('throws Twenty API messages for validation errors', async () => {
@@ -197,10 +195,9 @@ describe('TwentyClient', () => {
   it('patches opportunity stage via updateOpportunity', async () => {
     const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
       if (url.endsWith('/rest/opportunities/opp-1') && init?.method === 'PATCH') {
-        return new Response(
-          JSON.stringify({ data: { id: 'opp-1', stage: 'CONTACTED' } }),
-          { status: 200 }
-        );
+        return new Response(JSON.stringify({ data: { id: 'opp-1', stage: 'CONTACTED' } }), {
+          status: 200,
+        });
       }
       return new Response('not found', { status: 404 });
     });
@@ -213,5 +210,148 @@ describe('TwentyClient', () => {
       'https://crm.example.com/rest/opportunities/opp-1',
       expect.objectContaining({ method: 'PATCH' })
     );
+  });
+
+  it('creates a company and finds it by name', async () => {
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+      if (url.endsWith('/rest/companies') && init?.method === 'POST') {
+        return new Response(JSON.stringify({ data: { id: 'company-1', name: 'Peskids' } }), {
+          status: 201,
+        });
+      }
+      if (url.includes('/rest/companies?filter=')) {
+        expect(url).toContain(encodeURIComponent('Peskids'));
+        return new Response(JSON.stringify({ data: { companies: [{ id: 'company-1' }] } }), {
+          status: 200,
+        });
+      }
+      return new Response('not found', { status: 404 });
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const client = new TwentyClient('secret', 'https://crm.example.com');
+    const company = await client.createCompany({ name: 'Peskids' });
+    const found = await client.findCompanyByName('Peskids');
+
+    expect(company.id).toBe('company-1');
+    expect(found?.id).toBe('company-1');
+  });
+
+  it('updates a company', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init?: RequestInit) => {
+        if (url.endsWith('/rest/companies/company-1') && init?.method === 'PATCH') {
+          return new Response(JSON.stringify({ data: { id: 'company-1', name: 'New Name' } }), {
+            status: 200,
+          });
+        }
+        return new Response('not found', { status: 404 });
+      })
+    );
+
+    const client = new TwentyClient('secret', 'https://crm.example.com');
+    const updated = await client.updateCompany('company-1', { name: 'New Name' });
+    expect(updated.name).toBe('New Name');
+  });
+
+  it('returns null when no company matches the name', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify({ data: { companies: [] } }), { status: 200 }))
+    );
+
+    const client = new TwentyClient('secret', 'https://crm.example.com');
+    const company = await client.findCompanyByName('Nobody Inc');
+    expect(company).toBeNull();
+  });
+
+  it('creates a note and links it to a person via noteTarget', async () => {
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+      if (url.endsWith('/rest/notes') && init?.method === 'POST') {
+        return new Response(JSON.stringify({ data: { id: 'note-1', title: 'Follow-up' } }), {
+          status: 201,
+        });
+      }
+      if (url.endsWith('/rest/noteTargets') && init?.method === 'POST') {
+        return new Response(JSON.stringify({ data: { id: 'note-target-1' } }), {
+          status: 201,
+        });
+      }
+      return new Response('not found', { status: 404 });
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const client = new TwentyClient('secret', 'https://crm.example.com');
+    const note = await client.createNote({ title: 'Follow-up' });
+    const target = await client.createNoteTarget({ noteId: note.id, personId: 'person-1' });
+
+    expect(note.id).toBe('note-1');
+    expect(target.id).toBe('note-target-1');
+  });
+
+  it('creates, lists, and deletes a webhook subscription', async () => {
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+      if (url.endsWith('/rest/webhooks') && init?.method === 'POST') {
+        return new Response(
+          JSON.stringify({ data: { id: 'webhook-1', targetUrl: 'https://ex.com/hook' } }),
+          { status: 201 }
+        );
+      }
+      if (url.endsWith('/rest/webhooks') && (!init?.method || init.method === 'GET')) {
+        return new Response(JSON.stringify({ data: { webhooks: [{ id: 'webhook-1' }] } }), {
+          status: 200,
+        });
+      }
+      if (url.endsWith('/rest/webhooks/webhook-1') && init?.method === 'DELETE') {
+        return new Response(JSON.stringify({ data: { id: 'webhook-1' } }), { status: 200 });
+      }
+      return new Response('not found', { status: 404 });
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const client = new TwentyClient('secret', 'https://crm.example.com');
+    const created = await client.createWebhookSubscription({
+      targetUrl: 'https://ex.com/hook',
+      operations: ['*.opportunities'],
+      secret: 'whsec',
+    });
+    const listed = await client.listWebhookSubscriptions();
+    await client.deleteWebhookSubscription('webhook-1');
+
+    expect(created.id).toBe('webhook-1');
+    expect(listed).toHaveLength(1);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
+  it('creates, updates, and lists generic custom object records', async () => {
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+      if (url.endsWith('/rest/invoices') && init?.method === 'POST') {
+        return new Response(JSON.stringify({ data: { id: 'inv-1', amount: 100 } }), {
+          status: 201,
+        });
+      }
+      if (url.endsWith('/rest/invoices/inv-1') && init?.method === 'PATCH') {
+        return new Response(JSON.stringify({ data: { id: 'inv-1', amount: 200 } }), {
+          status: 200,
+        });
+      }
+      if (url.endsWith('/rest/invoices') && (!init?.method || init.method === 'GET')) {
+        return new Response(JSON.stringify({ data: { invoices: [{ id: 'inv-1' }] } }), {
+          status: 200,
+        });
+      }
+      return new Response('not found', { status: 404 });
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const client = new TwentyClient('secret', 'https://crm.example.com');
+    const created = await client.createCustomRecord('invoices', { amount: 100 });
+    const updated = await client.updateCustomRecord('invoices', 'inv-1', { amount: 200 });
+    const listed = await client.listCustomRecords('invoices');
+
+    expect(created.id).toBe('inv-1');
+    expect(updated.amount).toBe(200);
+    expect(listed).toHaveLength(1);
   });
 });
