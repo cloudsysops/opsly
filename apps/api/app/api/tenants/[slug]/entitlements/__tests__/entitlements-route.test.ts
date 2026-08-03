@@ -20,6 +20,12 @@ vi.mock('@intcloudsysops/services/entitlements', async () => {
   };
 });
 
+// Fixed module-id set rather than the real config/commercial-catalog.json —
+// an unrelated catalog edit shouldn't be able to break these route tests.
+vi.mock('../../../../../../lib/commercial-catalog', () => ({
+  getCommercialCatalogModuleIds: () => new Set(['simple-crm']),
+}));
+
 const ADMIN = 'test-admin-token-for-entitlements-route';
 
 function authHeaders(): HeadersInit {
