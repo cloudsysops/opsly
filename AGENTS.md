@@ -679,25 +679,70 @@ Week 4: Docs + runbook + MVP validation
 
 ### 📌 Sesión Activa (2026-08-04)
 
-**Tema:** Agent Execution Improvements — Incremento 1  
+**Tema:** Agent Execution Improvements + Agency Division  
 **Branch:** `claude/agent-execution-improvement-o02qo3`  
-**Objetivo:** Consolidar mejoras en ejecución confiable de agentes
+**Objetivo:** Foundation phase (Incremento 1-2) + Strategic revenue roadmap
 
 **Tareas completadas:**
+
+**INCREMENTO 1: Error Classification ✅**
 1. ✅ Diseño maestro (6 incrementos) → `docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md`
 2. ✅ Error Classifier module → `lib/orchestrator-error-classifier/`
    - ✅ 7 categorías de error (credits, rate_limit, timeout, config, provider, irrecuperable, unknown)
    - ✅ 4 estrategias de recuperación (auto_retry, operator_review, fail_fast, exponential_backoff)
    - ✅ 15+ reglas de clasificación por defecto
    - ✅ Tests completos + GOVERNANCE.md
-3. ✅ Commit + push a rama
+   - ✅ Integración con @intcloudsysops/errors
 
-**Próximas tareas:**
-- [ ] Incremento 2: Observabilidad estructurada (distributed tracing, worker metrics)
+**INCREMENTO 2: Observability ✅**
+3. ✅ Distributed tracing module → `lib/observability/distributed-tracing.ts`
+   - ✅ JobTrace tracking (traceId, spanId, correlationId)
+   - ✅ Lifecycle management (pending → running → success/failed)
+   - ✅ Header injection/extraction para propagación de contexto
+   - ✅ Trace history con límite de 10k eventos
+
+4. ✅ Worker stats collector → `apps/orchestrator/src/metrics/worker-stats.ts`
+   - ✅ Real-time job completion tracking
+   - ✅ Duration samples para p95/p99
+   - ✅ Error/retry rate calculations
+   - ✅ Redis-backed con TTL 1h
+
+5. ✅ Enhanced worker base class → `apps/orchestrator/src/workers/enhanced-worker-base.ts`
+   - ✅ Integración de error classification + distributed tracing
+   - ✅ Automatic stats recording
+   - ✅ Repair queue enqueuing para errores recuperables
+   - ✅ Exponential backoff implementation
+
+6. ✅ Health endpoints → `apps/orchestrator/src/routes/health.ts`
+   - ✅ `/health`: Overall status + worker metrics
+   - ✅ `/health/traces`: Trace history para debugging
+   - ✅ `/health/metrics`: Prometheus-format export
+
+**STRATEGIC PLAN ✅**
+7. ✅ 90-day roadmap → `docs/01-development/STRATEGY-Q3-2026.md`
+   - ✅ Positioning: "Scale operations with AI, not headcount"
+   - ✅ 3 new services: API Factory, Shield WL, Custom Dev
+   - ✅ Revenue projections: $3k-3.1k by Q3, $16.5k+ by end 2026
+   - ✅ Content calendar + community strategy
+   
+8. ✅ Agency Division specs → `docs/01-development/OPSLY-AGENCY-DIVISION.md`
+   - ✅ API Factory ($29-99/mo): Template marketplace for AI agents
+   - ✅ Shield White-Label ($199 + 30% rev-share): SOC-in-a-box
+   - ✅ Custom Development ($2k-5k): Done-for-you services
+   - ✅ OpenAPI specs + onboarding flows + implementation roadmap
+
+**Próximas tareas (Week 3-4):**
 - [ ] Incremento 3: Concurrency policy dinámico por plan
-- [ ] Incremento 4: Idempotency store + deduplicación
+- [ ] Incremento 4: Idempotency store + deduplicación  
 - [ ] Incremento 5: Circuit breaker pattern
 - [ ] Incremento 6: E2E tests + documentación final
+- [ ] API Factory MVP (OpenAPI spec + starter agents)
+- [ ] Publish first blog post ("Why Founders Fail at Automation")
+- [ ] Launch @OpslyAI Twitter account
+
+**CI Status:**
+- ⚠️ PR #885: npm audit (MODERATE+) — pre-existing vulnerabilities in transitive deps (@hono/node-server, brace-expansion, etc.). Not caused by agent-execution changes. Awaiting resolution of existing npm audit issues or exception decision.
+- ⚠️ validate-structure: Fails in CI despite passing locally. Likely cache/timing issue. Monitoring.
 
 ---
 
