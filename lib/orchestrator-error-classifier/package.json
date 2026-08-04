@@ -1,0 +1,19 @@
+{
+  "name": "@intcloudsysops/orchestrator-error-classifier",
+  "version": "1.0.0",
+  "description": "Error classification and repair strategy for Opsly orchestrator",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@intcloudsysops/errors": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.0"
+  }
+}
