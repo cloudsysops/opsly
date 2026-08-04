@@ -3,7 +3,6 @@ import {
   getDynamicConcurrency,
   CONCURRENCY_POLICIES,
   ConcurrencyManager,
-  initializeConcurrencyManager,
   SystemMetrics,
 } from '../queue/concurrency-policy';
 
@@ -162,7 +161,6 @@ describe('Concurrency Policy', () => {
     });
 
     it('should handle concurrency watcher startup and stop', (done) => {
-      let changeCount = 0;
       const onConcurrencyChange = vi.fn();
 
       manager.setWorkerConcurrency('test-worker', 2);
