@@ -677,17 +677,27 @@ Week 4: Docs + runbook + MVP validation
 
 <!-- Actualizar al final de cada sesión. Sesiones pre-2026-05-26 → docs/AGENTS-SESSION-HISTORY.md -->
 
-### 📌 Sesión Activa (2026-06-22)
+### 📌 Sesión Activa (2026-08-04)
 
-**Tema:** Optimización integral para Peskids + avance plataforma Opsly  
-**Branch:** `claude/agente-md-review-xwdwlf`  
-**Objetivo:** Preparar codebase para go-live cliente
+**Tema:** Agent Execution Improvements — Incremento 1  
+**Branch:** `claude/agent-execution-improvement-o02qo3`  
+**Objetivo:** Consolidar mejoras en ejecución confiable de agentes
 
-**Tareas en progreso:**
-1. ✅ Archivar sesiones históricas → `docs/AGENTS-SESSION-HISTORY.md`
-2. 🔄 Consolidar scripts Peskids (29 scripts, revisar duplicación)
-3. 🔄 Limpiar dependencias obsoletas en config/
-4. ⏳ Verificar que Peskids está 100% deployable
+**Tareas completadas:**
+1. ✅ Diseño maestro (6 incrementos) → `docs/design/AGENT-EXECUTION-IMPROVEMENTS.md`
+2. ✅ Error Classifier module → `lib/orchestrator-error-classifier/`
+   - ✅ 7 categorías de error (credits, rate_limit, timeout, config, provider, irrecuperable, unknown)
+   - ✅ 4 estrategias de recuperación (auto_retry, operator_review, fail_fast, exponential_backoff)
+   - ✅ 15+ reglas de clasificación por defecto
+   - ✅ Tests completos + GOVERNANCE.md
+3. ✅ Commit + push a rama
+
+**Próximas tareas:**
+- [ ] Incremento 2: Observabilidad estructurada (distributed tracing, worker metrics)
+- [ ] Incremento 3: Concurrency policy dinámico por plan
+- [ ] Incremento 4: Idempotency store + deduplicación
+- [ ] Incremento 5: Circuit breaker pattern
+- [ ] Incremento 6: E2E tests + documentación final
 
 ---
 
