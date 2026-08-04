@@ -159,6 +159,18 @@
       "mainFile": "lib/migrations/index.ts",
       "exports": ["MigrationRunner", "Migration"]
     },
+    "orchestrator-error-classifier": {
+      "name": "@intcloudsysops/orchestrator-error-classifier",
+      "version": "1.0.0",
+      "path": "lib/orchestrator-error-classifier",
+      "owner": "operations",
+      "description": "Error classification and repair strategy for orchestrator agent execution",
+      "status": "stable",
+      "dependencies": ["errors"],
+      "governance": "lib/orchestrator-error-classifier/GOVERNANCE.md",
+      "mainFile": "lib/orchestrator-error-classifier/src/index.ts",
+      "exports": ["ErrorClassifier", "getErrorClassifier", "classifyError", "ErrorCategory", "RepairStrategy", "ClassifiedError"]
+    },
     "opsly-core": {
       "name": "@intcloudsysops/opsly-core",
       "version": "0.1.0",
@@ -200,7 +212,7 @@
   },
   "consumers": {
     "apps/orchestrator": {
-      "depends": ["prompts", "observability", "evaluation", "errors", "workflow", "config", "security"]
+      "depends": ["prompts", "observability", "evaluation", "errors", "workflow", "config", "security", "orchestrator-error-classifier"]
     },
     "apps/api": {
       "depends": ["prompts", "observability", "evaluation", "errors", "api", "security", "config", "services", "telemetry", "prompt-guard"]
