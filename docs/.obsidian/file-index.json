@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-08-04T09:31:40.323Z",
-  "totalFiles": 830,
+  "lastIndexed": "2026-08-04T10:38:41.391Z",
+  "totalFiles": 832,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -52,6 +52,7 @@
     "01-development/AUTO-PUSH-WATCHER.md",
     "01-development/AUTO-SYNC-DOCS-SETUP.md",
     "01-development/AUTOMATION-PLAN.md",
+    "01-development/BUSINESS-OPPORTUNITIES.md",
     "01-development/CLIENT-ONBOARDING-PLAYBOOK.md",
     "01-development/CLIENT-TESTING-CHECKLIST.md",
     "01-development/CLIENTS-TO-INVITE.md",
@@ -111,6 +112,7 @@
     "01-development/RETENTION-POLICY.md",
     "01-development/ROADMAP.md",
     "01-development/RTK.md",
+    "01-development/SALESFLOW-GO-TO-MARKET.md",
     "01-development/SCRIPTS-AUDIT-2026-04-24.md",
     "01-development/SEMANA-1-INFORME.md",
     "01-development/SEMANA-2-INFORME.md",

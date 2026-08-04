@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-08-04T09:31:43.435Z",
+  "generated_at": "2026-08-04T10:38:45.375Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -5735,6 +5735,48 @@
       "size_bytes": 6270
     },
     {
+      "path": "docs/01-development/BUSINESS-OPPORTUNITIES.md",
+      "title": "OPSLY BUSINESS OPPORTUNITIES — Strategic Product Analysis",
+      "keywords": [
+        "agentes",
+        "analysis",
+        "blueprint",
+        "business",
+        "cloud",
+        "competitiva",
+        "componentes",
+        "dias",
+        "escalabilidad",
+        "integracion",
+        "markdown",
+        "mensual",
+        "mercado",
+        "modulos",
+        "mvp",
+        "necesarios",
+        "nuevos",
+        "operations",
+        "oportunidad",
+        "opportunities",
+        "opsly",
+        "paga",
+        "precio",
+        "problema",
+        "product",
+        "quien",
+        "reescribir",
+        "reutilizable",
+        "reutilizables",
+        "sales",
+        "salesflow",
+        "sin",
+        "strategic",
+        "tamano",
+        "ventaja"
+      ],
+      "size_bytes": 34486
+    },
+    {
       "path": "docs/01-development/CLIENT-ONBOARDING-PLAYBOOK.md",
       "title": "Opsly Client Onboarding Playbook — Repeatable Process",
       "keywords": [
@@ -7803,6 +7845,47 @@
         "worker"
       ],
       "size_bytes": 3213
+    },
+    {
+      "path": "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
+      "title": "SalesFlow — Go-to-Market & Launch Strategy",
+      "keywords": [
+        "50k",
+        "arr",
+        "beta",
+        "build",
+        "customer",
+        "customers",
+        "define",
+        "discovery",
+        "economics",
+        "feedback",
+        "fit",
+        "icp",
+        "ideal",
+        "iterate",
+        "launch",
+        "locked",
+        "markdown",
+        "market",
+        "messaging",
+        "mvp",
+        "opsly",
+        "phase",
+        "positioning",
+        "pricing",
+        "product",
+        "profile",
+        "salesflow",
+        "scope",
+        "signals",
+        "strategy",
+        "target",
+        "toward",
+        "validation",
+        "weeks"
+      ],
+      "size_bytes": 17386
     },
     {
       "path": "docs/01-development/SCRIPTS-AUDIT-2026-04-24.md",
@@ -91026,6 +91109,7 @@
       "docs/01-development/SCRIPTS-AUDIT-2026-04-24.md",
       "docs/01-development/GITHUB-TOKEN.md",
       "docs/01-development/N8N-IMPORT-GUIDE.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/01-development/.openclaw.md",
       "docs/01-development/CLIENTS-TO-INVITE.md",
       "docs/01-development/CODE-SNAPSHOTS.md",
@@ -91043,6 +91127,7 @@
       "docs/01-development/SEMANA-2-INFORME.md",
       "docs/01-development/PHASE1-QUICK-START.md",
       "docs/01-development/TOKEN-BILLING-SYSTEM.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/01-development/AGENT-SERVICE-NAMING.md",
       "docs/01-development/LOCALRANK-TESTER-GUIDE.md",
       "docs/01-development/LOCAL-RUNTIME-GUIDE.md",
@@ -93623,6 +93708,7 @@
       "docs/01-development/SCRIPTS-AUDIT-2026-04-24.md",
       "docs/01-development/GITHUB-TOKEN.md",
       "docs/01-development/N8N-IMPORT-GUIDE.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/01-development/.openclaw.md",
       "docs/01-development/CLIENTS-TO-INVITE.md",
       "docs/01-development/CODE-SNAPSHOTS.md",
@@ -93641,6 +93727,7 @@
       "docs/01-development/SEMANA-2-INFORME.md",
       "docs/01-development/PHASE1-QUICK-START.md",
       "docs/01-development/TOKEN-BILLING-SYSTEM.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/01-development/AGENT-SERVICE-NAMING.md",
       "docs/01-development/LOCALRANK-TESTER-GUIDE.md",
       "docs/01-development/LOCAL-RUNTIME-GUIDE.md",
@@ -101947,7 +102034,8 @@
     "opportunities": [
       "packages/skills/user/opsly-simplify/SKILL.md",
       "packages/skills/vendor/agent-skills/code-simplification/SKILL.md",
-      "vendor/agency-agents/integrations/openclaw/account-strategist/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/account-strategist/AGENTS.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md"
     ],
     "patterns": [
       "packages/skills/user/opsly-simplify/SKILL.md",
@@ -102140,6 +102228,7 @@
       "docs/01-development/PHASE-2-DEPLOYMENT.md",
       "docs/01-development/AGENT-SKILLS-INTEGRATION.md",
       "docs/01-development/STATE-OF-PLATFORM.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/01-development/COST-DASHBOARD-WIREFRAMES.md",
       "docs/01-development/PHASE1-QUICK-START.md",
       "docs/06-multi-agent/PARALLEL-EXECUTION-GUIDE.md",
@@ -107515,6 +107604,7 @@
       "docs/runbooks/AUTONOMOUS-OPERATIONS-DASHBOARD.md",
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
       "docs/01-development/STATE-OF-PLATFORM.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/operations/README.md",
       "docs/tenants/peskids/BLUEPRINT-MAPPING.md",
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
@@ -108013,6 +108103,7 @@
       "docs/01-development/ROADMAP.md",
       "docs/01-development/CLIENT-TESTING-CHECKLIST.md",
       "docs/01-development/SPRINTS_13_14.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/01-development/IMPLEMENTATION-IA-LAYER.md",
       "docs/01-development/LOCALRANK-TESTER-GUIDE.md",
       "docs/06-multi-agent/PARALLEL-EXECUTION-GUIDE.md",
@@ -108675,6 +108766,7 @@
       "packages/skills/user/opsly-orchestrator/SKILL.md",
       "docs/README.md",
       "docs/01-development/IMPLEMENTATION-IA-LAYER.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/03-agents/AGENT-BRAIN-CONTRACT.md"
     ],
     "oar": [
@@ -109016,6 +109108,7 @@
       "docs/01-development/N8N-IMPORT-GUIDE.md",
       "docs/01-development/IMPLEMENTATION-IA-LAYER.md",
       "docs/01-development/DISK-USAGE-REPORT.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/04-infrastructure/WORKER-SETUP-MAC2011.md",
       "docs/04-infrastructure/WORKER-SERVICE-MAC2011.md",
       "docs/03-agents/AGENT-BRAIN-CONTRACT.md",
@@ -111538,6 +111631,7 @@
     "dias": [
       "packages/skills/user/opsly-architect-senior/SKILL.md",
       "docs/01-development/SEMANA-6-INFORME.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/03-agents/OPENCLAW-TEAM-PLAN.md",
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
@@ -112476,7 +112570,8 @@
       "vendor/agency-agents/integrations/antigravity/agency-sre-site-reliability-engineer/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/sre-site-reliability-engineer.md",
       "vendor/agency-agents/integrations/openclaw/godot-gameplay-scripter/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/sre-site-reliability-engineer/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/sre-site-reliability-engineer/AGENTS.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md"
     ],
     "use": [
       "packages/skills/user/opsly-cost-forecaster/SKILL.md",
@@ -112616,6 +112711,7 @@
       "docs/01-development/LIBRARIES-INSTALLED.md",
       "docs/01-development/SEMANA-6-PLAN.md",
       "docs/01-development/SEMANA-3-INFORME.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/01-development/SEMANA-2-INFORME.md",
       "docs/06-multi-agent/PARALLEL-EXECUTION-GUIDE.md",
       "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
@@ -114132,6 +114228,7 @@
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
       "docs/01-development/AUTOMATION-PLAN.md",
       "docs/01-development/LOCAL-FIRST-ARCHITECTURE.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/04-infrastructure/WORKER-TEAM-BILLING.md",
       "docs/03-agents/SUPER-ORCHESTRATOR.md",
       "docs/03-agents/VALIDATION-ITERATION-LOOP.md",
@@ -114766,6 +114863,7 @@
       "docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md",
       "docs/01-development/SEMANA-6-INFORME.md",
       "docs/01-development/SEMANA-6-PLAN.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/adr/ADR-039-sales-channels-email-whatsapp.md",
       "docs/tenants/peskids/PESKIDS-PRO-1.0-RUNBOOK.md",
       "docs/brain/skills/shipping-and-launch.md",
@@ -115860,6 +115958,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-salesforce-architect/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/salesforce-architect.md",
       "vendor/agency-agents/integrations/openclaw/salesforce-architect/AGENTS.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/04-infrastructure/GOOGLE-CLOUD-SETUP.md",
       "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md",
       "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
@@ -116497,6 +116596,7 @@
       "docs/01-development/OPSLY-AGENCY-DIVISION.md",
       "docs/01-development/SEMANA-3-INFORME.md",
       "docs/01-development/SEMANA-2-INFORME.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/04-infrastructure/DECEPTICON-WORKER.md",
       "docs/03-agents/SUPER-ORCHESTRATOR.md",
       "docs/03-agents/AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
@@ -116564,6 +116664,7 @@
     "reutilizables": [
       "packages/skills/templates/README.md",
       "apps/admin/INVITATIONS_UI.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/blueprints/academy/README.md",
       "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md"
     ],
@@ -120240,6 +120341,7 @@
       "docs/governance/internal/ACCESS-CONTROL-POLICY.md",
       "docs/runbooks/AUTONOMOUS-PROD-60D.md",
       "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/03-agents/AGENTS-GUIDE.md",
       "docs/02-tools/MCP-STATUS-ANALYSIS.md",
       "docs/adr/ADR-035-safe-autonomous-evolution-framework.md",
@@ -120630,6 +120732,7 @@
       "vendor/agency-agents/integrations/openclaw/tool-evaluator/AGENTS.md",
       "docs/superpowers/specs/2026-06-25-icso-website-enhancement-design.md",
       "docs/infrastructure/AGENT-BOOTSTRAP-SYSTEM.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/examples/email-templates/INTCLOUDSYSOPS-EMAIL-TEMPLATES.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md",
@@ -121384,6 +121487,7 @@
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
       "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
       "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
       "docs/adr/ADR-047-fable5-model-strategy.md",
@@ -125569,6 +125673,7 @@
       "docs/01-development/PHASE2-ROADMAP.md",
       "docs/01-development/PHASE-2-DEPLOYMENT.md",
       "docs/01-development/AGENT-SKILLS-INTEGRATION.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
       "docs/03-agents/VALIDATION-AND-ITERATION-SYSTEM.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
@@ -127554,6 +127659,7 @@
       "docs/superpowers/specs/TEMPLATE-next-client-blueprint.md",
       "docs/00-architecture/BLUEPRINT-CONTRACT.md",
       "docs/01-development/PHASE-5-IMPLEMENTATION-BLUEPRINT.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/03-agents/AGENTS-GUIDE.md",
       "docs/03-agents/OPSLY-2-0-MULTI-AGENT-BLUEPRINT.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
@@ -130360,6 +130466,7 @@
       "vendor/agency-agents/integrations/openclaw/sales-outreach/AGENTS.md",
       "docs/design/AGENT-ORCHESTRATION-INDEX.md",
       "docs/obsidian/sources/archive/2026-04-21/jdo6safjptanvblfo772ajzohhy1vzo7f8u2svvc.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
       "docs/adr/ADR-039-sales-channels-email-whatsapp.md",
       "docs/tenants/peskids/SALES-FUNNEL-VALIDATION.md",
@@ -130491,6 +130598,7 @@
       "vendor/agency-agents/integrations/openclaw/cross-border-e-commerce-specialist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/workflow-architect/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/sales-outreach/AGENTS.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/blueprints/opsly-operational-blueprint/MODULES.md",
       "docs/blueprints/README-PHASE1-EXECUTE.md",
       "docs/blueprints/CUSTOMER-ANALYSIS-ICSO-PESKIDS.md",
@@ -130713,7 +130821,9 @@
       "apps/intcloudsysops/README.md",
       "docs/projects/PESKIDS-SCOPE.md",
       "docs/00-architecture/opsly-agent-runtime.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/01-development/COST-DASHBOARD-WIREFRAMES.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/adr/ADR-021-predictive-bi-scalability.md",
       "docs/adr/ADR-040-technician-scaling-solo-to-assistant.md",
       "docs/adr/ADR-023-approval-gate-phase1.md",
@@ -131892,6 +132002,7 @@
     "quien": [
       ".github/PULL_REQUEST_TEMPLATE.md",
       "docs/01-development/VISION.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/03-agents/COPILOT-CODING-AGENT.md"
     ],
     "resumen": [
@@ -131992,6 +132103,7 @@
       "docs/01-development/OPSLY-AGENCY-DIVISION.md",
       "docs/01-development/LANIDEA-OPENCLAW.md",
       "docs/01-development/QUICK-REFERENCE.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/01-development/AGENT-SERVICE-NAMING.md",
       "docs/STRUCTURE-GUARDRAILS.md",
       "docs/03-agents/OPENCLAW-TEAM-PLAN.md",
@@ -134354,6 +134466,7 @@
     "pricing": [
       "AGENCY_CONTEXT.md",
       "lib/telemetry/GOVERNANCE.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md"
     ],
     "servicios": [
@@ -136556,6 +136669,7 @@
       "vendor/agency-agents/integrations/openclaw/senior-project-manager/AGENTS.md",
       "docs/history/AGENTS-SESSION-HISTORY.md",
       "docs/00-architecture/ELEVENLABS-ADVANCED-INTEGRATION.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
       "docs/audits/COST-DEEP-DIVE.md",
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md",
@@ -136701,6 +136815,7 @@
       "vendor/agency-agents/integrations/openclaw/model-qa-specialist/AGENTS.md",
       "docs/history/consolidation/CONSOLIDATION-PLAN.md",
       "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/blueprints/ICSO-CRM-READINESS.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
       ".agents/skills/cyber-neo/SKILL.md",
@@ -138661,6 +138776,7 @@
     ],
     "fit": [
       "tools/agent-packs/vendor/the-architect/questions/phase-3-confirmation.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       ".agents/skills/the-architect/references/questions/phase-3-confirmation.md"
     ],
     "present": [
@@ -138865,6 +138981,7 @@
       "vendor/agency-agents/integrations/openclaw/studio-producer/AGENTS.md",
       "docs/governance/internal/EMPLOYEE-LIFECYCLE-POLICY.md",
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/01-development/LOCALRANK-TESTER-GUIDE.md"
     ],
     "capability": [
@@ -140098,6 +140215,7 @@
       "vendor/agency-agents/integrations/opencode/agents/book-co-author.md",
       "vendor/agency-agents/integrations/openclaw/book-co-author/AGENTS.md",
       "docs/01-development/AGENT-SKILLS-INTEGRATION.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/tenants/peskids/SPRINT-01.md"
     ],
     "practices": [
@@ -140504,6 +140622,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-unity-architect/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/unity-architect.md",
       "vendor/agency-agents/integrations/openclaw/unity-architect/AGENTS.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md"
     ],
     "transcriptionservice": [
@@ -144814,7 +144933,8 @@
       "vendor/agency-agents/integrations/openclaw/book-co-author/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/studio-producer/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/studio-producer/AGENTS.md",
-      "docs/01-development/DOCUMENTATION-GOVERNANCE.md"
+      "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md"
     ],
     "thinking": [
       "vendor/agency-agents/integrations/qwen/agents/brand-guardian.md",
@@ -148191,7 +148311,9 @@
       "vendor/agency-agents/integrations/openclaw/developer-advocate/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/agentic-search-optimizer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/ux-researcher/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/livestream-commerce-coach/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/livestream-commerce-coach/AGENTS.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md"
     ],
     "selection": [
       "vendor/agency-agents/integrations/qwen/agents/livestream-commerce-coach.md",
@@ -148419,7 +148541,8 @@
       "vendor/agency-agents/integrations/openclaw/cross-border-e-commerce-specialist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/french-consulting-market-navigator/IDENTITY.md",
       "vendor/agency-agents/integrations/openclaw/studio-producer/AGENTS.md",
-      "docs/01-development/OPSLY-AGENCY-DIVISION.md"
+      "docs/01-development/OPSLY-AGENCY-DIVISION.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md"
     ],
     "overseas": [
       "vendor/agency-agents/integrations/qwen/agents/cross-border-e-commerce-specialist.md",
@@ -149864,7 +149987,8 @@
       "vendor/agency-agents/integrations/opencode/agents/sales-outreach.md",
       "vendor/agency-agents/integrations/opencode/agents/outbound-strategist.md",
       "vendor/agency-agents/integrations/openclaw/outbound-strategist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/sales-outreach/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/sales-outreach/AGENTS.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md"
     ],
     "ideal": [
       "vendor/agency-agents/integrations/qwen/agents/sales-outreach.md",
@@ -149874,6 +149998,7 @@
       "vendor/agency-agents/integrations/opencode/agents/sales-outreach.md",
       "vendor/agency-agents/integrations/openclaw/sales-outreach/AGENTS.md",
       "docs/04-operations/COST-MONITORING-GUIDE.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/01-development/AGENCY-DEVOPS-OS-OFFER.md"
     ],
     "outreach": [
@@ -149909,6 +150034,7 @@
       "vendor/agency-agents/integrations/openclaw/study-abroad-advisor/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/sales-outreach/AGENTS.md",
       "docs/superpowers/specs/TEMPLATE-next-client-blueprint.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/03-agents/SOCIAL-MEDIA-AGENT-SYRA.md"
     ],
     "targeting": [
@@ -150306,6 +150432,7 @@
       "vendor/agency-agents/integrations/openclaw/game-designer/AGENTS.md",
       "docs/history/consolidation/CONSOLIDATION-SUMMARY.md",
       "docs/01-development/LOCAL-FIRST-ARCHITECTURE.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md"
     ],
     "character": [
@@ -150955,6 +151082,7 @@
       "vendor/agency-agents/integrations/openclaw/podcast-strategist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/french-consulting-market-navigator/AGENTS.md",
       "docs/runbooks/TENANT-BONUS-WORKFLOWS.md",
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
       "docs/tenants/peskids/GHL-CONSULTING-HANDOFF.md"
     ],
     "unique": [
@@ -159609,6 +159737,7 @@
       "docs/superpowers/specs/2026-05-30-skills-obsidian-integration-design.md",
       "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
       "docs/01-development/AGENCY-DEVOPS-OS-OFFER.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/adr/ADR-021-predictive-bi-scalability.md",
       "docs/adr/ADR-043-intelligent-content-generation-via-llm-gateway.md",
       "docs/tenants/peskids/DEMO-SCRIPT.md"
@@ -163191,6 +163320,7 @@
     "escalabilidad": [
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
       "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       "docs/adr/ADR-021-predictive-bi-scalability.md"
     ],
     "general": [
@@ -164739,6 +164869,40 @@
     "sha": [
       "docs/01-development/N8N-IMPORT-GUIDE.md"
     ],
+    "50k": [
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md"
+    ],
+    "arr": [
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md"
+    ],
+    "beta": [
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
+      "docs/01-development/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "customers": [
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
+      "docs/blueprints/README-PHASE1-EXECUTE.md",
+      "docs/blueprints/CUSTOMERS-DEPLOY-NOW.md",
+      "docs/blueprints/CUSTOMER-FOLLOWUP-MASTER.md"
+    ],
+    "economics": [
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
+      "docs/reports/PARALLEL-EXECUTION-2026-04-29.md"
+    ],
+    "iterate": [
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md"
+    ],
+    "locked": [
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
+      "docs/03-agents/MULTI-AGENT-ARCHITECTURE.md"
+    ],
+    "salesflow": [
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md"
+    ],
+    "toward": [
+      "docs/01-development/SALESFLOW-GO-TO-MARKET.md"
+    ],
     "leeme": [
       "docs/01-development/.openclaw.md"
     ],
@@ -164877,6 +165041,7 @@
     ],
     "tamano": [
       "docs/01-development/DISK-USAGE-REPORT.md",
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
       ".claude/agents/core/planner.md"
     ],
     "virtual": [
@@ -164961,6 +165126,45 @@
     "optimiza": [
       "docs/01-development/TOKEN-BILLING-SYSTEM.md"
     ],
+    "competitiva": [
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md"
+    ],
+    "mensual": [
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md"
+    ],
+    "mercado": [
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
+      "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md"
+    ],
+    "modulos": [
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md",
+      "docs/adr/ADR-022-di-pattern-testability.md",
+      "docs/tenants/peskids/OPSLY-REUSE.md",
+      "docs/brain/architecture/system-map.md",
+      "docs/blueprints/opsly-operational-blueprint/NICHE-PLAYBOOKS.md",
+      "docs/blueprints/academy/README.md"
+    ],
+    "necesarios": [
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md"
+    ],
+    "oportunidad": [
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md"
+    ],
+    "paga": [
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md"
+    ],
+    "precio": [
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md"
+    ],
+    "reescribir": [
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md"
+    ],
+    "reutilizable": [
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md"
+    ],
+    "ventaja": [
+      "docs/01-development/BUSINESS-OPPORTUNITIES.md"
+    ],
     "alias": [
       "docs/01-development/AGENT-SERVICE-NAMING.md"
     ],
@@ -164969,9 +165173,6 @@
     ],
     "externos": [
       "docs/01-development/AGENT-SERVICE-NAMING.md"
-    ],
-    "beta": [
-      "docs/01-development/LOCALRANK-TESTER-GUIDE.md"
     ],
     "bienvenido": [
       "docs/01-development/LOCALRANK-TESTER-GUIDE.md"
@@ -166182,9 +166383,6 @@
     "llamaindex": [
       "docs/03-agents/MULTI-AGENT-ARCHITECTURE.md"
     ],
-    "locked": [
-      "docs/03-agents/MULTI-AGENT-ARCHITECTURE.md"
-    ],
     "escenarios": [
       "docs/03-agents/AGENTS-ORCHESTRATION.md"
     ],
@@ -166770,13 +166968,6 @@
       "docs/adr/ADR-022-di-pattern-testability.md",
       "docs/adr/ADR-043-facebook-page-organic-publishing-graph-api.md",
       "docs/adr/ADR-047-fable5-model-strategy.md"
-    ],
-    "modulos": [
-      "docs/adr/ADR-022-di-pattern-testability.md",
-      "docs/tenants/peskids/OPSLY-REUSE.md",
-      "docs/brain/architecture/system-map.md",
-      "docs/blueprints/opsly-operational-blueprint/NICHE-PLAYBOOKS.md",
-      "docs/blueprints/academy/README.md"
     ],
     "singletons": [
       "docs/adr/ADR-022-di-pattern-testability.md"
@@ -168216,9 +168407,6 @@
     "activated": [
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md"
     ],
-    "economics": [
-      "docs/reports/PARALLEL-EXECUTION-2026-04-29.md"
-    ],
     "executed": [
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md"
     ],
@@ -168395,9 +168583,6 @@
     "hosted": [
       "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md"
     ],
-    "mercado": [
-      "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md"
-    ],
     "alineacion": [
       "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md"
     ],
@@ -168485,11 +168670,6 @@
     ],
     "fisico": [
       "docs/blueprints/opsly-operational-blueprint/REFERENCE-ARCHITECTURE.md"
-    ],
-    "customers": [
-      "docs/blueprints/README-PHASE1-EXECUTE.md",
-      "docs/blueprints/CUSTOMERS-DEPLOY-NOW.md",
-      "docs/blueprints/CUSTOMER-FOLLOWUP-MASTER.md"
     ],
     "anytime": [
       "docs/blueprints/PESKIDS-ICSO-CUTOVER-STATUS.md"
@@ -168941,6 +169121,7 @@
     "docs/01-development/AUTO-PUSH-WATCHER.md",
     "docs/01-development/AUTO-SYNC-DOCS-SETUP.md",
     "docs/01-development/AUTOMATION-PLAN.md",
+    "docs/01-development/BUSINESS-OPPORTUNITIES.md",
     "docs/01-development/CLIENT-ONBOARDING-PLAYBOOK.md",
     "docs/01-development/CLIENT-TESTING-CHECKLIST.md",
     "docs/01-development/CLIENTS-TO-INVITE.md",
@@ -169000,6 +169181,7 @@
     "docs/01-development/RETENTION-POLICY.md",
     "docs/01-development/ROADMAP.md",
     "docs/01-development/RTK.md",
+    "docs/01-development/SALESFLOW-GO-TO-MARKET.md",
     "docs/01-development/SCRIPTS-AUDIT-2026-04-24.md",
     "docs/01-development/SEMANA-1-INFORME.md",
     "docs/01-development/SEMANA-2-INFORME.md",
