@@ -1,357 +1,408 @@
 ---
 status: draft
-owner: product
-last_review: 2026-05-06
+owner: product + engineering
+created: 2026-08-04
+target_launch: end of week 4 (beta)
 ---
 
-# Opsly Agency Division — Visión y Arquitectura
+# Opsly Agency Division — Service Specifications
 
-> División de servicios y productos basada en agentes SwarmOps
-> Alineado con: `VISION.md`, `AGENTS.md`, `SWARM-OPS-ARCHITECTURE.md`
-
----
-
-## Índice
-
-1. [Qué es la Agency Division](#qué-es-la-agency-division)
-2. [Líneas de Servicio](#líneas-de-servicio)
-3. [Arquitectura Técnica](#arquitectura-técnica)
-4. [Go-to-Market](#go-to-market)
-5. [Revenue Model](#revenue-model)
-6. [ Roadmap](#roadmap)
+Three new revenue services launching parallel to agent execution improvements (Q3 2026).
 
 ---
 
-## Qué es la Agency Division
+## SERVICE 1: API Factory (Starter: $29/mo, Pro: $99/mo)
 
-Extensión de Opsly que transforma los agentes SwarmOps en **productos y servicios comercializables**:
+### Purpose
+
+**What:** Template marketplace + hosted infrastructure for founders to deploy specialized AI agents without code.
+
+**Positioning:** "Deploy an AI ops worker in 3 minutes — no engineering needed"
+
+**Why:** Founders don't want to build agents; they want results. Opsly handles infrastructure, scaling, and reliability.
+
+---
+
+### Service Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         OPSLY AGENCY DIVISION                               │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐            │
-│  │  🛒 AGENCIA DE  │  │  🤖 AGENCIA DE  │  │  🔐 API FACTORY │            │
-│  │    MARKETING   │  │     AGENTES     │  │    & SECURITY   │            │
-│  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘            │
-│           │                     │                     │                     │
-│           └─────────────────────┴─────────────────────┘                     │
-│                                 │                                           │
-│                    ┌────────────┴────────────┐                             │
-│                    │   AGENT MANAGEMENT      │                             │
-│                    │      PLATFORM            │                             │
-│                    │   (Dashboard + Billing)  │                             │
-│                    └─────────────────────────┘                             │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Líneas de Servicio
-
-### Línea 1: Agencia de Marketing como Servicio
-
-**Objetivo:** Agentes de marketing automatizado para clientes externos.
-
-| Servicio | Descripción | pricing |
-|----------|-------------|---------|
-| **Social Media Automation** | Posts, scheduling, analytics por plataforma | $99/mes |
-| **Content Generation** | Blog posts, emails, ads copy con AI | $149/mes |
-| **SEO Agent** | Keyword research, on-page optimization, reporting | $199/mes |
-| **Email Marketing** | Campaigns, sequences, A/B testing automation | $129/mes |
-| **Analytics Dashboard** | Multi-channel analytics con insights AI | $79/mes |
-
-**Agentes relacionados:**
-- `agent_social_media` ✅ existente
-- `agent_marketing` ✅ existente
-- `agent_creative` ✅ existente
-
----
-
-### Línea 2: Agencia de Agentes (Agent-as-a-Service)
-
-**Objetivo:** Vender enjambres de agentes como subscription.
-
-| Producto | Descripción | pricing |
-|----------|-------------|---------|
-| **Pentester Swarm** | Security scans recurrentes, vulnerability assessment | $299/mes |
-| **Revenue Swarm** | Trading automation + lead generation + sales | $499/mes |
-| **Enterprise Swarm** | Operations + HR + Finance automation | $399/mes |
-| **Custom Agent** | Agente especializado según necesidad | $199+/mes |
-
-**Agentes relacionados:**
-- `pentester_execute` ✅ existente
-- `revenue_execute` ✅ existente
-- `enterprise_execute` ✅ existente
-
----
-
-### Línea 3: API Factory + Seguridad
-
-**Objetivo:** Desarrollo autónomo de APIs seguras y monitoreadas.
-
-| Servicio | Descripción | pricing |
-|----------|-------------|---------|
-| **API Generator** | Genera API completa desde spec OpenAPI | $149/mes |
-| **API Security** | Rate limiting, auth, penetration testing | $199/mes |
-| **API Monitoring** | 24/7 health, latency, error tracking | $99/mes |
-| **API Documentation** | Auto-generates docs, postman collections | $79/mes |
-| **API Compliance** | GDPR, SOC2, ISO27001 audit trails | $249/mes |
-
-**Arquitectura:**
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                      API FACTORY PIPELINE                       │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  1. SPEC          2. GENERATE       3. SECURE       4. DEPLOY  │
-│  ┌─────────┐     ┌─────────┐     ┌─────────┐     ┌─────────┐│
-│  │ OpenAPI │────▶│  Code   │────▶│ Security│────▶│ Docker  ││
-│  │ Schema  │     │ Gen     │     │ Layer   │     │ + TLS   ││
-│  └─────────┘     └─────────┘     └─────────┘     └─────────┘│
-│                                               │               │
-│                                               ▼               │
-│                      ┌───────────────────────────────────────┐│
-│                      │      MONITORING 24/7                  ││
-│                      │  - Latency p50/p95/p99                ││
-│                      │  - Error rate by endpoint             ││
-│                      │  - Rate limit consumption             ││
-│                      │  - Security alerts (SQLi, XSS, etc)   ││
-│                      └───────────────────────────────────────┘│
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
+API Factory
+├── Agent Template Registry
+│   ├── Pre-built agents (6 starter)
+│   ├── Versioning + rollback
+│   └── Custom prompt injection
+├── Deployment & Hosting
+│   ├── Serverless execution (Temporal)
+│   ├── Auto-scaling per tier
+│   └── Cost metering per request
+├── API Gateway
+│   ├── Rate limiting per customer
+│   ├── Webhook triggers
+│   ├── Usage dashboard
+│   └── Billing integration (Stripe)
+└── Customer Onboarding
+    ├── Web UI (Portal)
+    ├── Quick-start templates
+    ├── API key management
+    └── 1:1 onboarding calls
 ```
 
 ---
 
-### Línea 4: Agent Management Platform
+### Included Agents (MVP)
 
-**Objetivo:** Dashboard centralizado para gestionar todos los agentes.
-
-| Feature | Descripción |
-|---------|-------------|
-| **Agent Registry** | Lista todos los agentes por tenant |
-| **Usage Metrics** | Executions, tokens, costo por agente |
-| **Health Status** | Uptime, errores, último heartbeat |
-| **Cost Allocation** | Costo por agente, tendencias, forecasting |
-| **Alerting** | Thresholds configurables por cliente |
-| **Billing Integration** | Calcula billing por uso real |
+| Agent | Purpose | Triggers | Cost Model |
+|-------|---------|----------|-----------|
+| **Content Writer** | Blog posts, email copy, social | Webhook, Schedule | Per request (~$0.02-0.05) |
+| **Support Classifier** | Ticket triage, sentiment analysis | Email, Slack, Webhook | Per classification (~$0.01) |
+| **Lead Scorer** | CRM lead qualification | Webhook, Scheduled batch | Per scoring (~$0.02) |
+| **Data Ingester** | CSV/API → database normalization | Scheduled, Manual upload | Per job (~$0.03-0.10) |
+| **Analytics Reporter** | Daily/weekly metrics digest | Schedule | Per report (~$0.05) |
+| **Slack Responder** | Auto-response bot (internal use) | Slack channel → Workflow | Per interaction (~$0.01) |
 
 ---
-
-## Arquitectura Técnica
-
-### Integración con Opsly Core
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                        OPSLY PLATFORM                                   │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                         │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                │
-│  │  MCP Server │───▶│ Orchestrator │───▶│ BullMQ      │                │
-│  │  (Tools)    │    │  (Workers)   │    │ (Queues)    │                │
-│  └─────────────┘    └─────────────┘    └──────┬──────┘                │
-│        │                     │                     │                   │
-│        │              ┌──────┴──────┐              │                   │
-│        │              │  Super      │              │                   │
-│        │              │  Orchestrator│◀─────────────┘                  │
-│        │              │  Bridge      │                                 │
-│        │              └──────┬──────┘                                 │
-│        │                     │                                        │
-│        ▼                     ▼                                        │
-│  ┌─────────────────────────────────────────┐                         │
-│  │         AGENCY DIVISION LAYER           │                         │
-│  │  ┌─────────┐ ┌─────────┐ ┌─────────┐    │                         │
-│  │  │ Marketing│ │Agents   │ │API      │    │                         │
-│  │  │ Swarm   │ │Swarm    │ │Factory  │    │                         │
-│  │  └─────────┘ └─────────┘ └─────────┘    │                         │
-│  └─────────────────────────────────────────┘                         │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
-```
-
-### BullMQ Queue Structure
-
-```typescript
-// Nueva estructura de colas para Agency Division
-const AGENCY_QUEUES = {
-  // Marketing
-  'marketing_campaign': { priority: 10, concurrency: 5 },
-  'social_media_post': { priority: 8, concurrency: 10 },
-  'content_generation': { priority: 5, concurrency: 3 },
-  
-  // Agents (Pentester, Revenue, Enterprise)
-  'pentester_scan': { priority: 9, concurrency: 2 },
-  'revenue_task': { priority: 7, concurrency: 5 },
-  'enterprise_task': { priority: 6, concurrency: 3 },
-  
-  // API Factory
-  'api_generate': { priority: 8, concurrency: 3 },
-  'api_security_scan': { priority: 9, concurrency: 2 },
-  'api_monitor': { priority: 5, concurrency: 10 },
-  
-  // Agent Management
-  'agent_health_check': { priority: 3, concurrency: 20 },
-  'usage_aggregation': { priority: 2, concurrency: 1 }
-};
-```
-
-### Redis State Keys
-
-```typescript
-// Keys para Agent Management
-const AGENCY_REDIS_KEYS = {
-  // Agentes por tenant
-  'agency:{tenant}:agents' → Hash of agent_id → metadata
-  
-  // Métricas por agente
-  'agency:{tenant}:metrics:{agent_id}:daily' → Sorted set by timestamp
-  
-  // Costos acumulados
-  'agency:{tenant}:costs:{month}' → Hash of agent_id → total_cost
-  
-  // API Factory
-  'api:{tenant}:apis' → Hash of api_id → spec + status
-  'api:{tenant}:health:{api_id}' → Latest health snapshot
-};
-```
-
----
-
-## Go-to-Market
-
-### Fase 1: MVP (Mes 1-2)
-
-**Objetivo:** Validar con 3-5 clientes piloto.
-
-| Step | Acción | Timeline |
-|------|--------|----------|
-| 1 | Dashboard Agent Management básico | Semana 1-2 |
-| 2 | Integrar agentes existentes (Marketing, Pentester) | Semana 3-4 |
-| 3 | API Factory básico (generate + monitor) | Semana 5-6 |
-| 4 | Onboard 3 clientes piloto | Semana 7-8 |
-
-### Fase 2: Producto (Mes 3-6)
-
-**Objetivo:** Product-market fit, escalar a 20 clientes.
-
-- Línea completa de Marketing como servicio
-- Revenue Swarm en modo simulación (probar antes de live)
-- API Factory con security suite completo
-- Billing automático por uso
-
-### Fase 3: Escala (Mes 7-12)
-
-**Objetivo:** 50+ clientes, revenue recurrente sostenible.
-
-- Agent Marketplace (clientes configuran sus propios agentes)
-- API Marketplace (templates de APIs)
-- Enterprise tier con SLA guarantees
-
----
-
-## Revenue Model
 
 ### Pricing Tiers
 
+#### Starter — $29/month
+- **Quota:** 10,000 requests/month (~330/day)
+- **Agents:** 1 deployed agent
+- **Features:**
+  - Pre-built agents only (no custom prompts)
+  - Webhook + schedule triggers
+  - Basic usage dashboard
+  - Email support (24h response)
+- **Target:** Solo founder, light automation
+- **Example use:** 1 content writer + manual trigger
+
+#### Pro — $99/month
+- **Quota:** 100,000 requests/month (~3,300/day)
+- **Agents:** 5 deployed agents
+- **Features:**
+  - Pre-built + custom prompt injection
+  - Webhook + schedule + API triggers
+  - Advanced dashboard + analytics
+  - Slack integration
+  - Priority email support (6h response)
+  - Usage alerts
+- **Target:** Early-stage startup, multiple workflows
+- **Example use:** Content writer + support classifier + lead scorer
+
+#### Enterprise — Custom
+- Unlimited requests
+- Unlimited agents
+- Custom agent development (add $2k-5k per agent)
+- White-label option
+- Dedicated Slack channel
+- Quarterly business review
+
+---
+
+### Onboarding Flow (UX)
+
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                        PRICING STRUCTURE                                │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                         │
-│  STARTER ($99/mo)                   PRO ($299/mo)                      │
-│  ─────────────────                 ──────────────                      │
-│  • 1 agente activo                 • 5 agentes activos                 │
-│  • 1,000 executions/mes           • 10,000 executions/mes             │
-│  • Basic monitoring               • Full monitoring                    │
-│  • Email support                   • Priority support                  │
-│                                    • API access                         │
-│                                                                         │
-│  BUSINESS ($599/mo)                ENTERPRISE (Custom)                  │
-│  ──────────────────               ───────────────                      │
-│  • 15 agentes activos             • Agentes ilimitados                 │
-│  • 50,000 executions/mes          • Executions ilimitados             │
-│  • All swarms included            • Custom agent development           │
-│  • Dedicated dashboard            • SLA guarantee (99.9%)              │
-│  • 24/7 support                   • Dedicated account manager          │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
+1. Sign up (email / OAuth)
+   ↓
+2. Select starter agent
+   ↓
+3. Configure (basic settings)
+   ├─ Webhook URL (optional)
+   ├─ Schedule (optional)
+   └─ Custom prompt injection (Pro only)
+   ↓
+4. Deploy (1 click)
+   ↓
+5. Test (webhook / schedule test)
+   ↓
+6. Monitor (usage dashboard)
+   ↓
+7. Upgrade (to Pro / add agents)
 ```
 
-### Revenue Breakdown Proyectado
-
-| Mes | Clientes | MRR | Líneas activas |
-|-----|----------|-----|----------------|
-| 1-2 | 3 | $297 | Pilot |
-| 3-4 | 10 | $2,990 | Marketing + Agents |
-| 5-6 | 25 | $14,950 | Full suite |
-| 7-12 | 50+ | $35,000+ | Scale |
+**Onboarding time goal:** < 3 minutes
 
 ---
 
-## Roadmap
+### API Specification (OpenAPI)
 
-### Q2 2026 (Inmediato)
+**Base URL:** `https://api.opsly.io/v1`
 
-- [ ] Agent Management Dashboard v1
-- [ ] MCP tools para API Factory (3 tools)
-- [ ] APIFactoryWorker en BullMQ
-- [ ] Integrar agentes existentes con billing
-- [ ] 3 clientes piloto
+#### Create Agent Deployment
 
-### Q3 2026
+```typescript
+POST /agents
+Content-Type: application/json
+Authorization: Bearer {api_key}
 
-- [ ] API Generator completo (OpenAPI → deploy)
-- [ ] Security suite (rate limiting, auth, scanning)
-- [ ] Marketplace de agentes
-- [ ] Auto-scaling por uso
+{
+  "name": "my-content-writer",
+  "agent_type": "content_writer",        // Enum: content_writer, support_classifier, etc.
+  "custom_prompt": "Write in Gen-Z voice", // Pro+ only, optional
+  "triggers": [
+    {
+      "type": "webhook",
+      "url": "https://example.com/webhook"
+    },
+    {
+      "type": "schedule",
+      "cron": "0 9 * * MON-FRI"
+    }
+  ],
+  "config": {
+    "output_format": "markdown",
+    "max_length": 2000
+  }
+}
 
-### Q4 2026
+Response:
+{
+  "id": "agent_abc123",
+  "status": "active",
+  "api_key": "ak_xyz789",
+  "webhook_secret": "whsec_...",
+  "created_at": "2026-08-04T10:00:00Z",
+  "usage_url": "https://dashboard.opsly.io/agents/agent_abc123"
+}
+```
 
-- [ ] Revenue Swarm en producción
-- [ ] Enterprise tier con SLA
-- [ ] Multi-tenant facturación avanzada
-- [ ] 50+ clientes activos
+#### Execute Agent
+
+```typescript
+POST /agents/{agent_id}/execute
+Content-Type: application/json
+Authorization: Bearer {api_key}
+
+{
+  "input": "Write a tweet about AI automation",
+  "context": {
+    "brand_voice": "professional",
+    "char_limit": 280
+  }
+}
+
+Response:
+{
+  "execution_id": "exec_xyz789",
+  "status": "completed",
+  "output": "Your tweet...",
+  "cost": 0.05,
+  "duration_ms": 2341,
+  "tokens_used": {
+    "input": 45,
+    "output": 120
+  },
+  "timestamp": "2026-08-04T10:05:00Z"
+}
+```
+
+#### Get Usage & Billing
+
+```typescript
+GET /usage?period=2026-08
+Authorization: Bearer {api_key}
+
+Response:
+{
+  "period": "2026-08",
+  "plan": "pro",
+  "quota": 100000,
+  "used": 45230,
+  "remaining": 54770,
+  "agents": [
+    {
+      "id": "agent_abc123",
+      "name": "content-writer",
+      "requests": 10234,
+      "cost": $10.23
+    }
+  ],
+  "total_cost": $45.23,
+  "billing_cycle_ends": "2026-09-04T00:00:00Z"
+}
+```
 
 ---
 
-## Métricas de Éxito
+### Implementation Roadmap
 
-| Métrica | Target Q2 | Target Q4 |
-|---------|-----------|-----------|
-| Clientes activos | 3 | 50 |
-| MRR | $300 | $35,000 |
-| Agents deployed | 50 | 500 |
-| API uptime | 99.5% | 99.9% |
-| Customer NPS | 40+ | 60+ |
+#### Week 3 (by Aug 11)
+- [ ] Design Portal pages for API Factory
+  - Agent marketplace
+  - Deployment form
+  - Usage dashboard
+- [ ] Define OpenAPI spec (finalize routes)
+- [ ] Create database schema (agent_deployments, executions)
+
+#### Week 4 (by Aug 18)
+- [ ] Build Portal UI (React components)
+- [ ] Implement API routes (create, execute, usage)
+- [ ] Integrate with billing (Stripe webhooks, metering)
+- [ ] Add webhook signing + security
+- [ ] Seed 6 starter agents (prompts + testing)
+
+#### Week 5 (by Aug 25)
+- [ ] Beta testing with 5 early customers
+- [ ] Documentation + quick-start guide
+- [ ] Email onboarding sequence
+- [ ] Performance testing (scale to 10k req/day)
 
 ---
 
-## Risks y Mitigaciones
+### Success Metrics (End of Q3)
 
-| Risk | Impacto | Mitigación |
-|------|---------|------------|
-| Dependencia de agentes Python | Alto | Migrar a TypeScript gradualmente |
-| Costos LLM se disparan | Medio | Budget caps por tenant, cache obligatorio |
-| Clientes no adoptan | Alto | Onboarding asistido, templates pre-configurados |
-| Security liability | Alto | Insurance, Terms of Service claros, opt-in para pentesting |
+**Adoption:**
+- [ ] 20+ active customers (Starter + Pro mix)
+- [ ] 50k+ total requests processed
+- [ ] 4.5+ star rating (NPS tracking)
+
+**Revenue:**
+- [ ] $600+ MRR (10 customers avg $60/mo)
+- [ ] Customer acquisition cost < $50 (via Twitter)
+- [ ] 80%+ month-over-month retention
+
+**Product:**
+- [ ] < 2s avg execution latency
+- [ ] 99.5%+ uptime
+- [ ] < 5 support tickets/day
 
 ---
 
-## Documentos Relacionados
+## SERVICE 2: Opsly Shield White-Label ($199/mo + 30% rev-share)
 
-- [VISION.md](../VISION.md) — Norte del producto
-- [AGENTS.md](../../AGENTS.md) — Estado operativo
-- [SWARM-OPS-ARCHITECTURE.md](../../SWARM-OPS-ARCHITECTURE.md) — Arquitectura de enjambres
-- [OAR.md](../../design/OAR.md) — Opsly Agentic Runtime
-- [ROADMAP.md](../ROADMAP.md) — Planificación por sprint
+### Purpose
+
+**What:** Resellable security operations platform (SOC-in-a-box) for IT consultants and agencies.
+
+**Positioning:** "Bundle Guardian Grid with your services — 70% margin per customer"
+
+**Why:** Consultants want recurring revenue; Opsly wants distribution. Win-win through white-labeling.
+
 ---
 
-## Enlaces relacionados
+### White-Label Features
 
-- [[01-development/README|01-development]]
-- [[brain/README|Brain Central]]
+- **Branding:** Custom domain, logo, CSS variables
+- **Guardian Grid:** 7 bots monitoring 24/7 (infrastructure, secrets, compliance)
+- **Dashboard:** Security score, findings, remediation status
+- **Auto-Remediation:** With human approval workflows
+- **Alerts:** Webhook + email to partner's customers
+- **Commission Tracking:** Partner dashboard showing customer metrics, payouts
+
+### Pricing Model
+
+**Partner:** $199/month (base + infrastructure)  
+**Per Customer:** Partner sets own pricing (suggested $299+/mo)  
+**Revenue Share:** Partner keeps 70%, Opsly gets 30%
+
+**Example economics:**
+- Partner onboards 5 customers @ $399/mo each
+- Partner revenue: $1,995 + (5 × $399 × 0.70) = $3,390/mo
+- Opsly revenue: 5 × $399 × 0.30 = $598/mo
+
+---
+
+### Implementation (Week 2-5)
+
+- [ ] Extract Shield into multi-tenant white-label module
+- [ ] Add partner branding layer (CSS, domain, emails)
+- [ ] Build partner commission dashboard
+- [ ] Create onboarding documentation for partners
+- [ ] Set up Stripe for commission tracking
+
+---
+
+## SERVICE 3: Custom Agent Development ($2k-5k per project)
+
+### Purpose
+
+**What:** Done-for-you AI agent development for founders' unique workflows.
+
+**Positioning:** "Your ops problem, solved by AI in 48 hours"
+
+**Why:** High-touch, high-margin service bridges founders' custom needs with Opsly's platform.
+
+---
+
+### Scope & Pricing
+
+**Small (1-2 weeks): $2k-3k**
+- Single agent, focused workflow
+- Examples: marketing workflow automation, customer data tagging
+- Includes: discovery call, 1 revision round, 30 days support
+
+**Medium (2-4 weeks): $3k-5k**
+- 2-3 agents, integration with customer's stack
+- Examples: end-to-end lead pipeline, content production + distribution
+- Includes: discovery, 2 revision rounds, 90 days support, training call
+
+**Large (4+ weeks): Custom**
+- Complex multi-agent systems, custom training data
+- Examples: full operations platform, industry-specific solutions
+- Includes: ongoing advisory, quarterly reviews
+
+---
+
+### Sales & GTM (Week 1-2)
+
+- **Target:** 50 founder communities (Twitter, Indie Hackers, Makerlog, founder Slack groups)
+- **Launch:** "Your ops problem, solved by AI in 48 hours" Twitter thread
+- **Case study:** Record 1-2 example projects, publish results
+- **Goal:** 2 projects booked by end of week 4
+
+---
+
+## GTM Integration
+
+All three services share:
+
+1. **Unified onboarding** via Portal (single account, multiple services)
+2. **Shared billing** (Stripe, usage metering, invoice)
+3. **Common dashboard** for usage, costs, support
+4. **Messaging:** "Scale operations with AI, not headcount"
+
+### Launch Sequence
+
+| Week | Milestone | Owner |
+|------|-----------|-------|
+| 1 | Error Classifier merge + Twitter account | Engineering + Marketing |
+| 2 | API Factory spec + Shield WL design | Product |
+| 3 | API Factory MVP + first blog post | Engineering + Marketing |
+| 4 | API Factory beta + custom dev case study | Product |
+| 5 | Product Hunt launch (Shield) | Marketing |
+| 6 | Twitter Spaces (Autonomous Ops) | Marketing + Community |
+| 8 | 20+ customers + 3-5 white-label partners | Sales |
+
+---
+
+## Success Metrics by End of Q3
+
+**API Factory:**
+- 20+ customers
+- 100k+ total API requests
+- $600+ MRR
+
+**Shield White-Label:**
+- 3-5 agency partners
+- 15-25 end-customer installations
+- $800-1.2k MRR
+
+**Custom Development:**
+- 2+ projects completed
+- $1k MRR (recurring support)
+
+**Combined:**
+- **$2.7k-3.1k MRR** (target: $5k by end 2026)
+- 20-30 founders actively using Opsly
+- 500+ Twitter followers (@OpslyAI)
+
+---
+
+*Related:*
+- `STRATEGY-Q3-2026.md` — Full 90-day roadmap
+- `docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md` — Technical foundation
+- `lib/orchestrator-error-classifier/README.md` — Incremento 1 deliverable
+
+---
+
+*Last updated: 2026-08-04*  
+*Next review: 2026-08-11*
