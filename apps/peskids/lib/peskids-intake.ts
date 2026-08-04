@@ -569,7 +569,18 @@ export async function buildPeskidsIntakeTurn(params: {
   );
 
   for (const message of priorInbound) {
+    const fieldAnsweredInTurn = firstMissingField(profile, mode);
     profile = mergeProfile(profile, profileFromText(message.message_text));
+    // Las respuestas de texto suelen ser cortas (por ejemplo, "Valeria") y
+    // no siempre contienen una frase que permita extraer el campo por regex.
+    // Reproducimos también la pregunta activa de cada turno para no perder
+    // esos valores al reconstruir el perfil desde el historial.
+    if (fieldAnsweredInTurn && !fieldIsCaptured(profile, fieldAnsweredInTurn)) {
+      profile = mergeProfile(
+        profile,
+        applyDirectAnswer(fieldAnsweredInTurn, message.message_text)
+      );
+    }
   }
 
   if (!profile.parentName && params.senderName && !isGenericName(params.senderName)) {
