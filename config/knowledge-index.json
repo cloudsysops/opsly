@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-08-04T07:33:57.331Z",
+  "generated_at": "2026-08-04T07:43:50.337Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -3427,7 +3427,7 @@
         "usar",
         "vivo"
       ],
-      "size_bytes": 272824
+      "size_bytes": 273404
     },
     {
       "path": "apps/admin/INVITATIONS_UI.md",
@@ -4145,6 +4145,34 @@
         "title"
       ],
       "size_bytes": 401
+    },
+    {
+      "path": "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
+      "title": "Agent Execution Improvements — Plan Maestro (2026-08)",
+      "keywords": [
+        "2026",
+        "agent",
+        "classification",
+        "concurrency",
+        "entregables",
+        "error",
+        "estructurada",
+        "execution",
+        "improvements",
+        "incremento",
+        "maestro",
+        "markdown",
+        "mejorada",
+        "observabilidad",
+        "opsly",
+        "optimization",
+        "plan",
+        "problema",
+        "queue",
+        "repair",
+        "solucion"
+      ],
+      "size_bytes": 18132
     },
     {
       "path": "docs/00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -8336,6 +8364,55 @@
         "system"
       ],
       "size_bytes": 13612
+    },
+    {
+      "path": "docs/01-development/STRATEGY-Q3-2026.md",
+      "title": "Strategic Plan Q3 2026 — Opsly as AI Operations Agency for Founders",
+      "keywords": [
+        "2026",
+        "agency",
+        "agent",
+        "api",
+        "brand",
+        "calendar",
+        "community",
+        "content",
+        "custom",
+        "days",
+        "development",
+        "division",
+        "execution",
+        "factory",
+        "foundation",
+        "founders",
+        "growth",
+        "gtm",
+        "improvements",
+        "incrementos",
+        "label",
+        "launch",
+        "markdown",
+        "messaging",
+        "operations",
+        "opsly",
+        "parallel",
+        "phase",
+        "pillars",
+        "plan",
+        "positioning",
+        "presence",
+        "revenue",
+        "roadmap",
+        "service",
+        "services",
+        "shield",
+        "strategic",
+        "strategy",
+        "weekly",
+        "weeks",
+        "white"
+      ],
+      "size_bytes": 10856
     },
     {
       "path": "docs/01-development/TECHNICAL-DEBT.md",
@@ -30384,6 +30461,70 @@
         "usage"
       ],
       "size_bytes": 2941
+    },
+    {
+      "path": "lib/orchestrator-error-classifier/GOVERNANCE.md",
+      "title": "Governance — `@intcloudsysops/orchestrator-error-classifier`",
+      "keywords": [
+        "adding",
+        "api",
+        "category",
+        "classifier",
+        "constraints",
+        "current",
+        "custom",
+        "error",
+        "governance",
+        "intcloudsysops",
+        "markdown",
+        "migration",
+        "opsly",
+        "orchestrator",
+        "overview",
+        "ownership",
+        "path",
+        "policy",
+        "requirements",
+        "reviews",
+        "rules",
+        "scope",
+        "stability",
+        "testing",
+        "versioning"
+      ],
+      "size_bytes": 4737
+    },
+    {
+      "path": "lib/orchestrator-error-classifier/README.md",
+      "title": "Orchestrator Error Classifier",
+      "keywords": [
+        "adding",
+        "basic",
+        "categories",
+        "classification",
+        "classifier",
+        "configuration",
+        "custom",
+        "default",
+        "error",
+        "handler",
+        "instance",
+        "integration",
+        "markdown",
+        "opsly",
+        "orchestrator",
+        "purpose",
+        "queue",
+        "readme",
+        "repair",
+        "rules",
+        "testing",
+        "usage",
+        "using",
+        "with",
+        "workers"
+      ],
+      "size_bytes": 5251
     },
     {
       "path": "lib/pattern-catalog/README.md",
@@ -88333,12 +88474,14 @@
       "docs/obsidian/inbox/2026-04-21.md",
       "docs/legal/peskids/DPIA-2026.md",
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
       "docs/00-architecture/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
       "docs/00-architecture/ORCHESTRATOR.md",
       "docs/00-architecture/ARCHITECTURE.md",
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
       "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
       "docs/01-development/TECHNICAL-DEBT.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/01-development/HANDOFF.md",
       "docs/01-development/AUTOMATION-PLAN.md",
       "docs/01-development/SCRIPTS-AUDIT-2026-04-24.md",
@@ -89219,6 +89362,8 @@
       "lib/services/GOVERNANCE.md",
       "lib/observability/README.md",
       "lib/observability/GOVERNANCE.md",
+      "lib/orchestrator-error-classifier/README.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "lib/api/README.md",
       "lib/api/GOVERNANCE.md",
       "lib/migrations/README.md",
@@ -90935,6 +91080,7 @@
       "docs/00-architecture/README.md",
       "docs/00-architecture/REDIS_NAMESPACE_ISOLATION.md",
       "docs/00-architecture/LLM-GATEWAY-WORKPLAN.md",
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
       "docs/00-architecture/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
       "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
       "docs/00-architecture/RENDERING-ENGINE.md",
@@ -90997,6 +91143,7 @@
       "docs/01-development/OBSERVABILITY.md",
       "docs/01-development/PHASE-5-2-3-4-COMPLETE-SPECS.md",
       "docs/01-development/OPSLY-KNOWLEDGE-BASE.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/01-development/MAKE-SETUP.md",
       "docs/01-development/HOSTS-PATHS.md",
       "docs/01-development/OPSLYQUANTUM-USAGE.md",
@@ -91811,6 +91958,8 @@
       "lib/services/GOVERNANCE.md",
       "lib/observability/README.md",
       "lib/observability/GOVERNANCE.md",
+      "lib/orchestrator-error-classifier/README.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "lib/api/README.md",
       "lib/api/GOVERNANCE.md",
       "lib/migrations/README.md",
@@ -93532,6 +93681,7 @@
       "docs/00-architecture/README.md",
       "docs/00-architecture/REDIS_NAMESPACE_ISOLATION.md",
       "docs/00-architecture/LLM-GATEWAY-WORKPLAN.md",
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
       "docs/00-architecture/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
       "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
       "docs/00-architecture/RENDERING-ENGINE.md",
@@ -93594,6 +93744,7 @@
       "docs/01-development/OBSERVABILITY.md",
       "docs/01-development/PHASE-5-2-3-4-COMPLETE-SPECS.md",
       "docs/01-development/OPSLY-KNOWLEDGE-BASE.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/01-development/MAKE-SETUP.md",
       "docs/01-development/HOSTS-PATHS.md",
       "docs/01-development/OPSLYQUANTUM-USAGE.md",
@@ -94224,6 +94375,7 @@
       "lib/components/GOVERNANCE.md",
       "lib/config/GOVERNANCE.md",
       "lib/observability/GOVERNANCE.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "lib/api/GOVERNANCE.md",
       "lib/prompts/README.md",
       "lib/prompts/GOVERNANCE.md",
@@ -95688,6 +95840,7 @@
       ".n8n/1-workflows/intcloudsysops/README.md",
       "tools/agent-packs/vendor/the-architect/templates/blueprint-template.md",
       "tools/productivity-starter/DEMO-WALKTHROUGH.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "lib/voice-messaging/GOVERNANCE.md",
       "apps/orchestrator/src/meta/README.md",
       "vendor/agency-agents/integrations/qwen/agents/executive-summary-generator.md",
@@ -95974,8 +96127,10 @@
     "queue": [
       ".jules/bolt.md",
       "packages/skills/user/opsly-peskids-deployment/SKILL.md",
+      "lib/orchestrator-error-classifier/README.md",
       "docs/orchestrator/REPAIR-QUEUE.md",
       "docs/infrastructure/REDIS-QUEUE-GUIDE.md",
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
       "docs/00-architecture/ORCHESTRATOR.md",
       "docs/01-development/AGENT-PROMPT-QUEUE.md",
       "docs/01-development/OPSLY-AGENCY-DIVISION.md",
@@ -96312,6 +96467,7 @@
       "lib/config/README.md",
       "lib/services/README.md",
       "lib/observability/README.md",
+      "lib/orchestrator-error-classifier/README.md",
       "lib/api/README.md",
       "lib/migrations/README.md",
       "lib/errors/README.md",
@@ -96405,6 +96561,7 @@
       "lib/config/README.md",
       "lib/services/README.md",
       "lib/observability/README.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "lib/api/README.md",
       "lib/api/GOVERNANCE.md",
       "lib/errors/README.md",
@@ -96463,6 +96620,7 @@
       "docs/01-development/PHASE-5-ADVANCED-FEATURES.md",
       "docs/01-development/OBSERVABILITY.md",
       "docs/01-development/PHASE-5-2-3-4-COMPLETE-SPECS.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/01-development/OPSLYQUANTUM-USAGE.md",
       "docs/01-development/PHASE-5-IMPLEMENTATION-BLUEPRINT.md",
       "docs/01-development/DEPLOYMENT-ARCHITECTURE.md",
@@ -96727,6 +96885,7 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/supply-chain.md",
       "lib/config/README.md",
       "lib/config/GOVERNANCE.md",
+      "lib/orchestrator-error-classifier/README.md",
       "vendor/agency-agents/integrations/qwen/agents/unreal-world-builder.md",
       "vendor/agency-agents/integrations/qwen/agents/devops-automator.md",
       "vendor/agency-agents/integrations/qwen/agents/private-domain-operator.md",
@@ -99588,7 +99747,8 @@
       ".agents/skills/cyber-neo/references/logging-patterns.md"
     ],
     "stability": [
-      ".jules/palette.md"
+      ".jules/palette.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md"
     ],
     "toggle": [
       ".jules/palette.md"
@@ -102134,6 +102294,7 @@
       "docs/01-development/NEXT-STEPS.md",
       "docs/01-development/PHASE-5-ADVANCED-FEATURES.md",
       "docs/01-development/PHASE-5-2-3-4-COMPLETE-SPECS.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/01-development/PHASE-5-IMPLEMENTATION-BLUEPRINT.md",
       "docs/01-development/PHASE2-ROADMAP.md",
       "docs/01-development/PHASE-4-OBSERVABILITY-BILLING.md",
@@ -102565,6 +102726,7 @@
       "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
       "docs/01-development/LIBRARY-MODULES.md",
       "docs/01-development/HEAVY-SERVICES-DECISION.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/01-development/PHASE-5-IMPLEMENTATION-BLUEPRINT.md",
       "docs/01-development/PHASE-2-DEPLOYMENT.md",
       "docs/01-development/STATE-OF-PLATFORM.md",
@@ -103487,6 +103649,7 @@
       "docs/runbooks/INCIDENT-AUTONOMOUS-AGENT.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
       "docs/runbooks/AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
       "docs/00-architecture/opsly-agent-runtime.md",
       "docs/00-architecture/OPSLY-CONTROL-PLANE.md",
       "docs/00-architecture/ELEVENLABS-ADVANCED-INTEGRATION.md",
@@ -103494,6 +103657,7 @@
       "docs/01-development/AGENT-PROMPT-QUEUE.md",
       "docs/01-development/TECHNICAL-DEBT.md",
       "docs/01-development/PHASE-5-2-3-4-COMPLETE-SPECS.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/01-development/PHASE2-ROADMAP.md",
       "docs/01-development/OPSLY-AGENCY-DIVISION.md",
       "docs/01-development/PHASE-2-DEPLOYMENT.md",
@@ -103663,6 +103827,8 @@
       "tools/agent-packs/vendor/cyber-neo/CLAUDE.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/testing-patterns.md",
       "lib/services/README.md",
+      "lib/orchestrator-error-classifier/README.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "lib/migrations/GOVERNANCE.md",
       "lib/testing/README.md",
       "lib/testing/GOVERNANCE.md",
@@ -107514,6 +107680,7 @@
       "docs/runbooks/OPERATIONS-HANDBOOK.md",
       "docs/runbooks/AUTONOMOUS-OPERATIONS-DASHBOARD.md",
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/01-development/STATE-OF-PLATFORM.md",
       "docs/operations/README.md",
       "docs/tenants/peskids/BLUEPRINT-MAPPING.md",
@@ -108357,6 +108524,7 @@
       "lib/telemetry/README.md",
       "lib/config/README.md",
       "lib/observability/README.md",
+      "lib/orchestrator-error-classifier/README.md",
       "lib/api/README.md",
       "lib/migrations/README.md",
       "lib/errors/README.md",
@@ -108691,6 +108859,8 @@
       "lib/telemetry/README.md",
       "lib/config/README.md",
       "lib/observability/README.md",
+      "lib/orchestrator-error-classifier/README.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "lib/errors/README.md",
       "lib/workflow/README.md",
       "apps/orchestrator/src/meta/README.md",
@@ -110148,8 +110318,10 @@
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/growth/REVENUE-EXECUTION-30D.md",
       "docs/history/consolidation/CONSOLIDATION-SUMMARY.md",
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
       "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
       "docs/00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/01-development/PHASE2-ROADMAP.md",
       "docs/01-development/LOCAL-FIRST-ARCHITECTURE.md",
       "docs/06-multi-agent/PARALLEL-EXECUTION-GUIDE.md",
@@ -111641,6 +111813,7 @@
       "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
       "docs/01-development/ROADMAP.md",
       "docs/01-development/SEMANA-4-INFORME.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/01-development/PHASE2-ROADMAP.md",
       "docs/01-development/WALLET-PREPAID-ROADMAP.md",
       "docs/04-infrastructure/WORKER-TEAM-ARCHITECTURE.md",
@@ -113703,6 +113876,7 @@
       "docs/runbooks/DEPLOYMENT-CHECKLIST.md",
       "docs/runbooks/TROUBLESHOOTING-GUIDE.md",
       "docs/01-development/SEMANA-5-INFORME.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/01-development/OPSLY-AGENCY-DIVISION.md",
       "docs/01-development/AGENT-SERVICE-NAMING.md",
       "docs/04-infrastructure/GOOGLE-CLOUD-SETUP.md",
@@ -114610,6 +114784,7 @@
       "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
       "docs/obsidian/sources/archive/2026-04-21/embeddedsoftware0000mass.md",
       "docs/01-development/README.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/01-development/AGENT-SKILLS-INTEGRATION.md",
       "docs/06-multi-agent/PARALLEL-EXECUTION-GUIDE.md",
       "docs/02-tools/MCP-SERVERS.md",
@@ -114765,6 +114940,7 @@
       "vendor/agency-agents/integrations/openclaw/product-manager/AGENTS.md",
       "docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md",
       "docs/01-development/SEMANA-6-INFORME.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/01-development/SEMANA-6-PLAN.md",
       "docs/adr/ADR-039-sales-channels-email-whatsapp.md",
       "docs/tenants/peskids/PESKIDS-PRO-1.0-RUNBOOK.md",
@@ -114777,6 +114953,7 @@
       "packages/skills/vendor/agent-skills/deprecation-and-migration/SKILL.md",
       ".archived/context-builder-v2/src/design/architecture.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/database-patterns.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "lib/migrations/README.md",
       "lib/migrations/GOVERNANCE.md",
       "lib/prompts/README.md",
@@ -114955,6 +115132,7 @@
       "vendor/agency-agents/integrations/openclaw/tool-evaluator/AGENTS.md",
       "docs/04-operations/COST-MONITORING-GUIDE.md",
       "docs/infrastructure/OPTIMIZATION-ROADMAP-2026-06.md",
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
       "docs/00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
       "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
       "docs/01-development/TECHNICAL-DEBT.md",
@@ -115597,6 +115775,7 @@
       ".cursor/prompts/local-services-automation.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/database-patterns.md",
       "tools/agent-packs/vendor/the-architect/questions/phase-3-confirmation.md",
+      "lib/orchestrator-error-classifier/README.md",
       "lib/workflow/README.md",
       "lib/security/README.md",
       "vendor/agency-agents/integrations/qwen/agents/historian.md",
@@ -116065,6 +116244,7 @@
       "lib/config/README.md",
       "lib/services/README.md",
       "lib/observability/README.md",
+      "lib/orchestrator-error-classifier/README.md",
       "lib/api/README.md",
       "lib/migrations/README.md",
       "lib/errors/README.md",
@@ -116198,6 +116378,7 @@
     "path": [
       "packages/skills/templates/template-api-route.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/cwe-top-25.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "vendor/agency-agents/integrations/openclaw/workflow-architect/SOUL.md",
       "docs/runbooks/OPERATIONS-HANDBOOK.md",
       "docs/01-development/QA-REVIEW-COMPLETE.md",
@@ -116665,6 +116846,8 @@
       ".cursor/prompts/task-orchestrator-completion.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/error-handling-patterns.md",
       "tools/agent-packs/vendor/the-architect/knowledge/archetypes/api-backend.md",
+      "lib/orchestrator-error-classifier/README.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "lib/api/README.md",
       "lib/api/GOVERNANCE.md",
       "lib/errors/README.md",
@@ -116677,6 +116860,7 @@
       "vendor/agency-agents/integrations/openclaw/whimsy-injector/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/accounts-payable-agent/SOUL.md",
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
       "docs/01-development/FAQ.md",
       "docs/04-infrastructure/RUNBOOK-AI-LOCAL-FIRST.md",
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
@@ -116800,6 +116984,7 @@
       "packages/skills/vendor/agent-skills/doubt-driven-development/SKILL.md",
       ".cursor/prompts/local-services-automation.md",
       "tools/agent-packs/vendor/the-architect/questions/phase-3-confirmation.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "vendor/agency-agents/integrations/qwen/agents/wechat-mini-program-developer.md",
       "vendor/agency-agents/integrations/qwen/agents/godot-multiplayer-engineer.md",
       "vendor/agency-agents/integrations/qwen/agents/unreal-systems-engineer.md",
@@ -119264,6 +119449,8 @@
       "lib/telemetry/GOVERNANCE.md",
       "lib/config/GOVERNANCE.md",
       "lib/services/GOVERNANCE.md",
+      "lib/orchestrator-error-classifier/README.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "lib/api/GOVERNANCE.md",
       "lib/migrations/GOVERNANCE.md",
       "lib/errors/GOVERNANCE.md",
@@ -120207,6 +120394,7 @@
       ".cursor/prompts/local-services-ops-admin.md",
       ".cursor/prompts/local-services-sales-closer.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/SKILL.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "apps/orchestrator/src/meta/README.md",
       "apps/icso/README.md",
       "vendor/agency-agents/integrations/qwen/agents/minimal-change-engineer.md",
@@ -121384,6 +121572,7 @@
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
       "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
       "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
       "docs/adr/ADR-047-fable5-model-strategy.md",
@@ -121411,6 +121600,7 @@
       "lib/config/GOVERNANCE.md",
       "lib/services/GOVERNANCE.md",
       "lib/observability/GOVERNANCE.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "lib/api/README.md",
       "lib/api/GOVERNANCE.md",
       "lib/migrations/GOVERNANCE.md",
@@ -122972,12 +123162,14 @@
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
       "docs/00-architecture/LLM-GATEWAY-WORKPLAN.md",
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
       "docs/00-architecture/ORCHESTRATOR.md",
       "docs/01-development/TEST_PLAN.md",
       "docs/01-development/TENANT-TESTING-PLAN.md",
       "docs/01-development/HEAVY-SERVICES-DECISION.md",
       "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
       "docs/01-development/FAQ.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/01-development/SEMANA-6-PLAN.md",
       "docs/01-development/AUTOMATION-PLAN.md",
       "docs/01-development/LOCAL-MAC-IMPROVEMENT-PLAN.md",
@@ -126175,6 +126367,7 @@
       "docs/infrastructure/NOTEBOOKLM-BRAIN-SYNC.md",
       "docs/.obsidian/templates/doc-template.md",
       "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/03-agents/QUICK-REFERENCE-HERMES-OPSLY.md",
       "docs/03-agents/SYRA-OPENCLAW-INTEGRATION.md",
       "docs/03-agents/SOCIAL-MEDIA-AGENT-SYRA.md",
@@ -126433,6 +126626,7 @@
       "packages/skills/vendor/agent-skills/using-agent-skills/SKILL.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/iac-docker.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/auth-patterns.md",
+      "lib/orchestrator-error-classifier/README.md",
       "vendor/agency-agents/integrations/qwen/agents/reality-checker.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/reality-checker/SKILL.md",
       "vendor/agency-agents/integrations/kimi/reality-checker/system.md",
@@ -126976,6 +127170,7 @@
     ],
     "basic": [
       "packages/skills/vendor/agent-skills/ci-cd-and-automation/SKILL.md",
+      "lib/orchestrator-error-classifier/README.md",
       "vendor/agency-agents/integrations/qwen/agents/douyin-strategist.md",
       "vendor/agency-agents/integrations/qwen/agents/senior-project-manager.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/douyin-strategist/SKILL.md",
@@ -127354,6 +127549,7 @@
       "lib/config/README.md",
       "lib/services/README.md",
       "lib/observability/README.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "lib/api/README.md",
       "lib/migrations/README.md",
       "lib/errors/README.md",
@@ -127805,6 +128001,7 @@
       ".cursor/prompts/parallel-task-1-executor.md",
       ".cursor/prompts/parallel-task-4-observability.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/SKILL.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/06-multi-agent/PARALLEL-EXECUTION-GUIDE.md",
       "docs/06-multi-agent/PARALLEL-EXECUTION-ARCHITECTURE.md",
       "docs/03-agents/AGENTS-GUIDE.md",
@@ -128976,6 +129173,7 @@
       "vendor/agency-agents/integrations/openclaw/wechat-official-account-manager/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/xiaohongshu-specialist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/french-consulting-market-navigator/AGENTS.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/03-agents/SOCIAL-MEDIA-AGENT-SYRA.md",
       "docs/tenants/peskids/SALES-FUNNEL-VALIDATION.md",
       "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md",
@@ -129935,6 +130133,8 @@
     ],
     "custom": [
       ".cursor/prompts/local-services-ops-admin.md",
+      "lib/orchestrator-error-classifier/README.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "lib/errors/README.md",
       "vendor/agency-agents/integrations/qwen/agents/cms-developer.md",
       "vendor/agency-agents/integrations/qwen/agents/unity-editor-tool-developer.md",
@@ -129958,6 +130158,7 @@
       "vendor/agency-agents/integrations/openclaw/unity-editor-tool-developer/AGENTS.md",
       "docs/superpowers/specs/TEMPLATE-next-client-blueprint.md",
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
       "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md",
@@ -130632,6 +130833,7 @@
       "vendor/agency-agents/integrations/openclaw/ux-architect/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/ux-architect/AGENTS.md",
       "docs/runbooks/INCUBATION-PLATFORM-FOUNDATION.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/adr/ADR-039-sales-channels-email-whatsapp.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
@@ -130759,6 +130961,7 @@
       "vendor/agency-agents/integrations/openclaw/fp-a-analyst/AGENTS.md",
       "docs/growth/REVENUE-EXECUTION-30D.md",
       "docs/01-development/ONBOARDING-READINESS.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/tenants/peskids/SALES-FUNNEL-VALIDATION.md",
       "docs/blueprints/PHASE1-PHASE2-STATUS.md"
     ],
@@ -132754,6 +132957,7 @@
     ],
     "categories": [
       "scripts/README.md",
+      "lib/orchestrator-error-classifier/README.md",
       "lib/testing/README.md",
       "vendor/agency-agents/integrations/qwen/agents/outbound-strategist.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/outbound-strategist/SKILL.md",
@@ -133382,6 +133586,7 @@
     "current": [
       ".codex/CODEX.md",
       "tools/agent-packs/README.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "apps/peskids/DEPLOYMENT.md",
       "apps/intcloudsysops/DEPLOYMENT.md",
       "vendor/agency-agents/integrations/qwen/agents/workflow-optimizer.md",
@@ -134325,6 +134530,7 @@
       "docs/growth/AGENCY-PILOT-OUTREACH.md",
       "docs/runbooks/AGENCY-DEVOPS-OS-DEMO.md",
       "docs/runbooks/AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/01-development/OPSLY-AGENCY-DIVISION.md",
       "docs/01-development/AGENCY-DEVOPS-OS-OFFER.md",
       "docs/03-agents/AGENTS-GUIDE.md",
@@ -137135,6 +137341,7 @@
       "tools/agent-packs/vendor/the-architect/knowledge/archetypes/saas-webapp.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/frontend-stacks.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/state-management.md",
+      "lib/orchestrator-error-classifier/README.md",
       "vendor/agency-agents/integrations/qwen/agents/evidence-collector.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/evidence-collector/SKILL.md",
       "vendor/agency-agents/integrations/kimi/evidence-collector/system.md",
@@ -138376,6 +138583,7 @@
     "requirements": [
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/auth-patterns.md",
       "lib/evaluation/GOVERNANCE.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "lib/testing/GOVERNANCE.md",
       "vendor/agency-agents/integrations/qwen/agents/lsp-index-engineer.md",
       "vendor/agency-agents/integrations/qwen/agents/macos-spatial-metal-engineer.md",
@@ -138702,6 +138910,7 @@
     ],
     "classification": [
       "tools/agent-packs/vendor/the-architect/questions/phase-1-discovery.md",
+      "lib/orchestrator-error-classifier/README.md",
       "vendor/agency-agents/integrations/qwen/agents/legal-document-review.md",
       "vendor/agency-agents/integrations/qwen/agents/sprint-prioritizer.md",
       "vendor/agency-agents/integrations/qwen/agents/incident-response-commander.md",
@@ -138736,6 +138945,7 @@
       "docs/governance/DATA-CLASSIFICATION.md",
       "docs/governance/internal/INCIDENT-RESPONSE-POLICY.md",
       "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
       "docs/00-architecture/ARCHITECTURE.md",
       "docs/01-development/SPRINTS_13_14.md",
       "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
@@ -139375,6 +139585,8 @@
       "lib/components/GOVERNANCE.md",
       "lib/evaluation/GOVERNANCE.md",
       "lib/observability/GOVERNANCE.md",
+      "lib/orchestrator-error-classifier/README.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "lib/prompts/README.md",
       "docs/governance/SUB-PROCESSORS.md",
       "docs/demo/hackathon-demo.md"
@@ -139403,6 +139615,7 @@
       "lib/config/GOVERNANCE.md",
       "lib/services/GOVERNANCE.md",
       "lib/observability/GOVERNANCE.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "lib/api/GOVERNANCE.md",
       "lib/migrations/GOVERNANCE.md",
       "lib/errors/GOVERNANCE.md",
@@ -139434,6 +139647,7 @@
       "lib/config/GOVERNANCE.md",
       "lib/services/GOVERNANCE.md",
       "lib/observability/GOVERNANCE.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
       "lib/api/GOVERNANCE.md",
       "lib/migrations/GOVERNANCE.md",
       "lib/errors/GOVERNANCE.md",
@@ -140004,6 +140218,75 @@
       "docs/database/SUPABASE-MIGRATION-AUDIT.md",
       "docs/01-development/TECHNICAL-DEBT.md"
     ],
+    "classifier": [
+      "lib/orchestrator-error-classifier/README.md",
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
+      "apps/ml/agents/classifier/README.md",
+      "docs/01-development/SPRINTS_13_14.md"
+    ],
+    "handler": [
+      "lib/orchestrator-error-classifier/README.md",
+      "docs/06-multi-agent/PARALLEL-EXECUTION-GUIDE.md"
+    ],
+    "instance": [
+      "lib/orchestrator-error-classifier/README.md"
+    ],
+    "purpose": [
+      "lib/orchestrator-error-classifier/README.md",
+      "vendor/agency-agents/integrations/qwen/agents/brand-guardian.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/brand-guardian/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/brand-guardian/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-brand-guardian/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/brand-guardian.md",
+      "vendor/agency-agents/integrations/openclaw/compliance-auditor/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/brand-guardian/AGENTS.md",
+      "docs/governance/internal/EMPLOYEE-LIFECYCLE-POLICY.md",
+      "docs/governance/internal/INCIDENT-RESPONSE-POLICY.md",
+      "docs/governance/internal/CHANGE-MANAGEMENT-POLICY.md",
+      "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
+      "docs/governance/internal/VENDOR-MANAGEMENT-POLICY.md",
+      "docs/governance/internal/ACCESS-CONTROL-POLICY.md",
+      "docs/obsidian/research/pattern-constellation.md",
+      "docs/00-architecture/VPS-CLEANUP-WEBHOOK-CONTRACT.md",
+      "docs/03-agents/SECURITY-AUTONOMOUS-EXECUTION-POLICY.md",
+      "docs/adr/ADR-043-supplement/COMPLETE-INDEX.md"
+    ],
+    "repair": [
+      "lib/orchestrator-error-classifier/README.md",
+      "docs/orchestrator/REPAIR-QUEUE.md",
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md"
+    ],
+    "workers": [
+      "lib/orchestrator-error-classifier/README.md",
+      "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
+      "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
+      "docs/00-architecture/ORCHESTRATOR.md",
+      "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
+      "docs/01-development/MAIA-WORKERS.md",
+      "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
+      "docs/01-development/ROADMAP.md",
+      "docs/04-infrastructure/WORKER-TEAM-ARCHITECTURE.md",
+      "docs/04-infrastructure/WORKER-TEAM-BILLING.md",
+      "docs/04-infrastructure/VPS-SSH-WORKER-NODES.md",
+      "docs/03-agents/FIRST-OPENCLAW-AGENTS-MAC2011.md",
+      "docs/adr/ADR-017-worker-teams-billing-roadmap.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md"
+    ],
+    "category": [
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
+      "docs/01-development/SPRINTS_13_14.md",
+      "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
+      "docs/adr/ADR-032-scripts-organization.md"
+    ],
+    "reviews": [
+      "lib/orchestrator-error-classifier/GOVERNANCE.md",
+      "vendor/agency-agents/integrations/qwen/agents/account-strategist.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/account-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/account-strategist/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-account-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/account-strategist.md",
+      "vendor/agency-agents/integrations/openclaw/account-strategist/AGENTS.md"
+    ],
     "format": [
       "lib/api/README.md",
       "lib/api/GOVERNANCE.md",
@@ -140504,6 +140787,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-unity-architect/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/unity-architect.md",
       "vendor/agency-agents/integrations/openclaw/unity-architect/AGENTS.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md"
     ],
     "transcriptionservice": [
@@ -141378,7 +141662,8 @@
       "vendor/agency-agents/integrations/openclaw/brand-guardian/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/whimsy-injector/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/cross-border-e-commerce-specialist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/xiaohongshu-specialist/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/xiaohongshu-specialist/AGENTS.md",
+      "docs/01-development/STRATEGY-Q3-2026.md"
     ],
     "dev": [
       "apps/icso/README.md",
@@ -141420,10 +141705,6 @@
       "docs/blueprints/PESKIDS-GHL-MIGRATION-STATUS.md",
       "docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md",
       "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md"
-    ],
-    "classifier": [
-      "apps/ml/agents/classifier/README.md",
-      "docs/01-development/SPRINTS_13_14.md"
     ],
     "inferencia": [
       "apps/ml/agents/classifier/README.md"
@@ -144743,25 +145024,6 @@
       "vendor/agency-agents/integrations/openclaw/brand-guardian/AGENTS.md",
       "docs/01-development/VISION.md"
     ],
-    "purpose": [
-      "vendor/agency-agents/integrations/qwen/agents/brand-guardian.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/brand-guardian/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/brand-guardian/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-brand-guardian/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/brand-guardian.md",
-      "vendor/agency-agents/integrations/openclaw/compliance-auditor/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/brand-guardian/AGENTS.md",
-      "docs/governance/internal/EMPLOYEE-LIFECYCLE-POLICY.md",
-      "docs/governance/internal/INCIDENT-RESPONSE-POLICY.md",
-      "docs/governance/internal/CHANGE-MANAGEMENT-POLICY.md",
-      "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
-      "docs/governance/internal/VENDOR-MANAGEMENT-POLICY.md",
-      "docs/governance/internal/ACCESS-CONTROL-POLICY.md",
-      "docs/obsidian/research/pattern-constellation.md",
-      "docs/00-architecture/VPS-CLEANUP-WEBHOOK-CONTRACT.md",
-      "docs/03-agents/SECURITY-AUTONOMOUS-EXECUTION-POLICY.md",
-      "docs/adr/ADR-043-supplement/COMPLETE-INDEX.md"
-    ],
     "strategic": [
       "vendor/agency-agents/integrations/qwen/agents/brand-guardian.md",
       "vendor/agency-agents/integrations/qwen/agents/analytics-reporter.md",
@@ -144814,7 +145076,8 @@
       "vendor/agency-agents/integrations/openclaw/book-co-author/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/studio-producer/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/studio-producer/AGENTS.md",
-      "docs/01-development/DOCUMENTATION-GOVERNANCE.md"
+      "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
+      "docs/01-development/STRATEGY-Q3-2026.md"
     ],
     "thinking": [
       "vendor/agency-agents/integrations/qwen/agents/brand-guardian.md",
@@ -148501,7 +148764,8 @@
       "vendor/agency-agents/integrations/openclaw/kuaishou-strategist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/developer-advocate/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/xiaohongshu-specialist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/private-domain-operator/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/private-domain-operator/AGENTS.md",
+      "docs/01-development/STRATEGY-Q3-2026.md"
     ],
     "curator": [
       "vendor/agency-agents/integrations/qwen/agents/instagram-curator.md",
@@ -149003,7 +149267,8 @@
       "vendor/agency-agents/integrations/kimi/china-market-localization-strategist/system.md",
       "vendor/agency-agents/integrations/antigravity/agency-china-market-localization-strategist/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/china-market-localization-strategist.md",
-      "vendor/agency-agents/integrations/openclaw/china-market-localization-strategist/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/china-market-localization-strategist/AGENTS.md",
+      "docs/01-development/STRATEGY-Q3-2026.md"
     ],
     "intelligence": [
       "vendor/agency-agents/integrations/qwen/agents/china-market-localization-strategist.md",
@@ -150305,6 +150570,7 @@
       "vendor/agency-agents/integrations/opencode/agents/game-designer.md",
       "vendor/agency-agents/integrations/openclaw/game-designer/AGENTS.md",
       "docs/history/consolidation/CONSOLIDATION-SUMMARY.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/01-development/LOCAL-FIRST-ARCHITECTURE.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md"
     ],
@@ -150385,7 +150651,8 @@
       "vendor/agency-agents/integrations/opencode/agents/narrative-designer.md",
       "vendor/agency-agents/integrations/opencode/agents/sre-site-reliability-engineer.md",
       "vendor/agency-agents/integrations/openclaw/narrative-designer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/sre-site-reliability-engineer/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/sre-site-reliability-engineer/AGENTS.md",
+      "docs/01-development/STRATEGY-Q3-2026.md"
     ],
     "reinforce": [
       "vendor/agency-agents/integrations/qwen/agents/narrative-designer.md",
@@ -150839,6 +151106,7 @@
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/obsidian/research/frontier-pattern-radar.md",
       "docs/runbooks/OPERATIONS-HANDBOOK.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md"
     ],
@@ -150955,6 +151223,7 @@
       "vendor/agency-agents/integrations/openclaw/podcast-strategist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/french-consulting-market-navigator/AGENTS.md",
       "docs/runbooks/TENANT-BONUS-WORKFLOWS.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/tenants/peskids/GHL-CONSULTING-HANDOFF.md"
     ],
     "unique": [
@@ -152900,14 +153169,6 @@
       "vendor/agency-agents/integrations/openclaw/korean-business-navigator/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/zhihu-strategist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/account-strategist/SOUL.md"
-    ],
-    "reviews": [
-      "vendor/agency-agents/integrations/qwen/agents/account-strategist.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/account-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/account-strategist/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-account-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/account-strategist.md",
-      "vendor/agency-agents/integrations/openclaw/account-strategist/AGENTS.md"
     ],
     "threading": [
       "vendor/agency-agents/integrations/qwen/agents/account-strategist.md",
@@ -155027,6 +155288,7 @@
       "docs/ops/issue-bankruptcy-2026-05-03/quick-wins.md",
       "docs/governance/internal/EMPLOYEE-LIFECYCLE-POLICY.md",
       "docs/runbooks/AUTONOMOUS-PROD-60D.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
@@ -156675,7 +156937,8 @@
       "vendor/agency-agents/integrations/kimi/model-qa-specialist/system.md",
       "vendor/agency-agents/integrations/antigravity/agency-model-qa-specialist/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/model-qa-specialist.md",
-      "vendor/agency-agents/integrations/openclaw/model-qa-specialist/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/model-qa-specialist/AGENTS.md",
+      "docs/01-development/STRATEGY-Q3-2026.md"
     ],
     "reconstruction": [
       "vendor/agency-agents/integrations/qwen/agents/model-qa-specialist.md",
@@ -158839,6 +159102,7 @@
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
       "docs/plans/AUTONOMY-GO-NO-GO-WEEKLY.md",
       "docs/runbooks/OPERATIONS-HANDBOOK.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/WORKFLOWS.md",
       "docs/tenants/peskids/EVENT-CONTRACT.md",
@@ -159607,6 +159871,7 @@
     ],
     "problema": [
       "docs/superpowers/specs/2026-05-30-skills-obsidian-integration-design.md",
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
       "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
       "docs/01-development/AGENCY-DEVOPS-OS-OFFER.md",
       "docs/adr/ADR-021-predictive-bi-scalability.md",
@@ -160199,6 +160464,7 @@
       "docs/orchestrator/REPAIR-QUEUE.md",
       "docs/design/AGENT-ORCHESTRATION-INDEX.md",
       "docs/00-architecture/OPSLYQUANTUM-SKILL-DESIGN.md",
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
       "docs/03-agents/AGENTS.md",
       "docs/brain/INDEX.md"
     ],
@@ -160371,9 +160637,6 @@
       "docs/orchestrator/REPAIR-QUEUE.md"
     ],
     "implemente": [
-      "docs/orchestrator/REPAIR-QUEUE.md"
-    ],
-    "repair": [
       "docs/orchestrator/REPAIR-QUEUE.md"
     ],
     "superficie": [
@@ -160990,7 +161253,8 @@
       "docs/tenants/peskids/TEMPLATE-STATUS.md"
     ],
     "incrementos": [
-      "docs/history/AGENTS-SESSION-HISTORY.md"
+      "docs/history/AGENTS-SESSION-HISTORY.md",
+      "docs/01-development/STRATEGY-Q3-2026.md"
     ],
     "sesiones": [
       "docs/history/AGENTS-SESSION-HISTORY.md",
@@ -163022,21 +163286,6 @@
     "repartida": [
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md"
     ],
-    "workers": [
-      "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
-      "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
-      "docs/00-architecture/ORCHESTRATOR.md",
-      "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
-      "docs/01-development/MAIA-WORKERS.md",
-      "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
-      "docs/01-development/ROADMAP.md",
-      "docs/04-infrastructure/WORKER-TEAM-ARCHITECTURE.md",
-      "docs/04-infrastructure/WORKER-TEAM-BILLING.md",
-      "docs/04-infrastructure/VPS-SSH-WORKER-NODES.md",
-      "docs/03-agents/FIRST-OPENCLAW-AGENTS-MAC2011.md",
-      "docs/adr/ADR-017-worker-teams-billing-roadmap.md",
-      "docs/adr/ADR-011-event-driven-orchestrator.md"
-    ],
     "capas": [
       "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
       "docs/01-development/LAYERS-SANDBOX-QA-PROD.md",
@@ -163269,6 +163518,7 @@
     ],
     "observabilidad": [
       "docs/00-architecture/LLM-GATEWAY-WORKPLAN.md",
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
       "docs/01-development/SEMANA-1-INFORME.md",
       "docs/01-development/OBSERVABILITY.md",
       "docs/adr/ADR-019-prometheus-grafana-observability.md",
@@ -163277,6 +163527,38 @@
     ],
     "workplan": [
       "docs/00-architecture/LLM-GATEWAY-WORKPLAN.md"
+    ],
+    "concurrency": [
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
+      "docs/00-architecture/ORCHESTRATOR.md",
+      "docs/adr/ADR-031-token-optimization-ollama-primary.md"
+    ],
+    "entregables": [
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
+      "docs/01-development/SPRINT-TRACKER.md"
+    ],
+    "estructurada": [
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md"
+    ],
+    "improvements": [
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
+      "docs/01-development/STRATEGY-Q3-2026.md"
+    ],
+    "incremento": [
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
+      "docs/tenants/peskids/OPSLY-REUSE.md",
+      "docs/brain/architecture/knowledge-graph.md"
+    ],
+    "mejorada": [
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
+      "docs/01-development/SEMANA-1-INFORME.md"
+    ],
+    "solucion": [
+      "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
+      "docs/01-development/AUTO-PUSH-WATCHER.md",
+      "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
+      "docs/02-tools/SETUP-NOTION-MCP.md",
+      "docs/tenants/peskids/DEMO-SCRIPT.md"
     ],
     "allsettled": [
       "docs/00-architecture/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
@@ -163361,10 +163643,6 @@
       "docs/03-agents/AGENTS-AUTONOMOUS-RUNBOOK.md",
       "docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md",
       ".claude/1-agent-teams/orchestrator.md"
-    ],
-    "concurrency": [
-      "docs/00-architecture/ORCHESTRATOR.md",
-      "docs/adr/ADR-031-token-optimization-ollama-primary.md"
     ],
     "dist": [
       "docs/00-architecture/ORCHESTRATOR.md"
@@ -163771,12 +164049,6 @@
       "docs/02-tools/SETUP-NOTION-MCP.md",
       "docs/tenants/peskids/CLIENT-PITCH.md"
     ],
-    "solucion": [
-      "docs/01-development/AUTO-PUSH-WATCHER.md",
-      "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
-      "docs/02-tools/SETUP-NOTION-MCP.md",
-      "docs/tenants/peskids/DEMO-SCRIPT.md"
-    ],
     "usarlo": [
       "docs/01-development/AUTO-PUSH-WATCHER.md",
       "docs/02-tools/GOOGLE-DRIVE-SYNC.md"
@@ -163908,9 +164180,6 @@
     "empiece": [
       "docs/01-development/SPRINT-TRACKER.md"
     ],
-    "entregables": [
-      "docs/01-development/SPRINT-TRACKER.md"
-    ],
     "externa": [
       "docs/01-development/SPRINT-TRACKER.md"
     ],
@@ -164038,9 +164307,6 @@
       "docs/01-development/SEMANA-4-INFORME.md",
       "docs/01-development/SEMANA-3-INFORME.md",
       "docs/01-development/SEMANA-2-INFORME.md"
-    ],
-    "mejorada": [
-      "docs/01-development/SEMANA-1-INFORME.md"
     ],
     "metering": [
       "docs/01-development/SEMANA-1-INFORME.md",
@@ -164252,6 +164518,7 @@
     ],
     "shield": [
       "docs/01-development/VISION.md",
+      "docs/01-development/STRATEGY-Q3-2026.md",
       "docs/brain/workflows/shield.md"
     ],
     "tematico": [
@@ -164421,6 +164688,27 @@
     "urlsraw": [
       "docs/01-development/OPSLY-KNOWLEDGE-BASE.md"
     ],
+    "division": [
+      "docs/01-development/STRATEGY-Q3-2026.md",
+      "docs/01-development/OPSLY-AGENCY-DIVISION.md",
+      "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md",
+      "docs/blueprints/TENANT-REPEAT-PLAYBOOK.md",
+      "docs/blueprints/WOMPI-PAYMENT-GATEWAY-CONTRACT.md"
+    ],
+    "factory": [
+      "docs/01-development/STRATEGY-Q3-2026.md",
+      "docs/01-development/OPSLY-AGENCY-DIVISION.md"
+    ],
+    "founders": [
+      "docs/01-development/STRATEGY-Q3-2026.md"
+    ],
+    "presence": [
+      "docs/01-development/STRATEGY-Q3-2026.md",
+      "docs/tenants/peskids/MVP-BACKLOG.md"
+    ],
+    "white": [
+      "docs/01-development/STRATEGY-Q3-2026.md"
+    ],
     "automatica": [
       "docs/01-development/MAKE-SETUP.md",
       "docs/01-development/OPS-CLEANUP-PROCEDURES.md"
@@ -164534,15 +164822,6 @@
       "docs/01-development/AUTOMATION-PLAN.md",
       "docs/blueprints/opsly-operational-blueprint/TEAM-FACING-EXPLANATION.md"
     ],
-    "division": [
-      "docs/01-development/OPSLY-AGENCY-DIVISION.md",
-      "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md",
-      "docs/blueprints/TENANT-REPEAT-PLAYBOOK.md",
-      "docs/blueprints/WOMPI-PAYMENT-GATEWAY-CONTRACT.md"
-    ],
-    "factory": [
-      "docs/01-development/OPSLY-AGENCY-DIVISION.md"
-    ],
     "lineas": [
       "docs/01-development/OPSLY-AGENCY-DIVISION.md",
       "docs/adr/ADR-035-openclaw-per-tenant.md"
@@ -164653,11 +164932,6 @@
     ],
     "0042": [
       "docs/01-development/SPRINTS_13_14.md"
-    ],
-    "category": [
-      "docs/01-development/SPRINTS_13_14.md",
-      "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
-      "docs/adr/ADR-032-scripts-organization.md"
     ],
     "enhanced": [
       "docs/01-development/SPRINTS_13_14.md",
@@ -165034,9 +165308,6 @@
     ],
     "transversales": [
       "docs/qa/TESTER-CHECKLIST.md"
-    ],
-    "handler": [
-      "docs/06-multi-agent/PARALLEL-EXECUTION-GUIDE.md"
     ],
     "pool": [
       "docs/06-multi-agent/PARALLEL-EXECUTION-GUIDE.md",
@@ -167605,10 +167876,6 @@
     "crezca": [
       "docs/tenants/peskids/OPSLY-REUSE.md"
     ],
-    "incremento": [
-      "docs/tenants/peskids/OPSLY-REUSE.md",
-      "docs/brain/architecture/knowledge-graph.md"
-    ],
     "portar": [
       "docs/tenants/peskids/OPSLY-REUSE.md"
     ],
@@ -167669,9 +167936,6 @@
     ],
     "bogota": [
       "docs/tenants/peskids/DAILY-DIGEST-RUNBOOK.md"
-    ],
-    "presence": [
-      "docs/tenants/peskids/MVP-BACKLOG.md"
     ],
     "coordinator": [
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
@@ -168892,6 +169156,7 @@
     "config/doppler-audit-2026-04-07.md",
     "docs/.obsidian/PLUGINS-TO-INSTALL.md",
     "docs/.obsidian/templates/doc-template.md",
+    "docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
     "docs/00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
     "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
     "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
@@ -169014,6 +169279,7 @@
     "docs/01-development/SPRINT-TRACKER.md",
     "docs/01-development/SPRINTS_13_14.md",
     "docs/01-development/STATE-OF-PLATFORM.md",
+    "docs/01-development/STRATEGY-Q3-2026.md",
     "docs/01-development/TECHNICAL-DEBT.md",
     "docs/01-development/TENANT-TESTING-GUIDE.md",
     "docs/01-development/TENANT-TESTING-PLAN.md",
@@ -169743,6 +170009,8 @@
     "lib/migrations/README.md",
     "lib/observability/GOVERNANCE.md",
     "lib/observability/README.md",
+    "lib/orchestrator-error-classifier/GOVERNANCE.md",
+    "lib/orchestrator-error-classifier/README.md",
     "lib/pattern-catalog/README.md",
     "lib/prompt-guard/README.md",
     "lib/prompts/GOVERNANCE.md",

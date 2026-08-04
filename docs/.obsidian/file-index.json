@@ -1,8 +1,9 @@
 {
-  "lastIndexed": "2026-08-04T07:33:53.536Z",
-  "totalFiles": 830,
+  "lastIndexed": "2026-08-04T07:43:47.928Z",
+  "totalFiles": 832,
   "vaultRoot": "docs",
   "files": [
+    "00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md",
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
     "00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
     "00-architecture/ARCHITECTURE-DISTRIBUTED.md",
@@ -125,6 +126,7 @@
     "01-development/SPRINT-TRACKER.md",
     "01-development/SPRINTS_13_14.md",
     "01-development/STATE-OF-PLATFORM.md",
+    "01-development/STRATEGY-Q3-2026.md",
     "01-development/TECHNICAL-DEBT.md",
     "01-development/TENANT-TESTING-GUIDE.md",
     "01-development/TENANT-TESTING-PLAN.md",
