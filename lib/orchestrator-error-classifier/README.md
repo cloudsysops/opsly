@@ -189,6 +189,6 @@ console.log(stats);
 
 ## Related
 
-- `docs/design/AGENT-EXECUTION-IMPROVEMENTS.md` — Implementation roadmap
+- `docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md` — Implementation roadmap
 - `docs/orchestrator/REPAIR-QUEUE.md` — Repair queue design
 - `docs/00-architecture/ORCHESTRATOR.md` — Orchestrator architecture

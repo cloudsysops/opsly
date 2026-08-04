@@ -684,7 +684,7 @@ Week 4: Docs + runbook + MVP validation
 **Objetivo:** Consolidar mejoras en ejecución confiable de agentes
 
 **Tareas completadas:**
-1. ✅ Diseño maestro (6 incrementos) → `docs/design/AGENT-EXECUTION-IMPROVEMENTS.md`
+1. ✅ Diseño maestro (6 incrementos) → `docs/00-architecture/AGENT-EXECUTION-IMPROVEMENTS.md`
 2. ✅ Error Classifier module → `lib/orchestrator-error-classifier/`
    - ✅ 7 categorías de error (credits, rate_limit, timeout, config, provider, irrecuperable, unknown)
    - ✅ 4 estrategias de recuperación (auto_retry, operator_review, fail_fast, exponential_backoff)
