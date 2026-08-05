@@ -21,6 +21,8 @@ import {
   PESKIDS_FORM_CARD_TITLE,
   PESKIDS_FORM_SUBMIT_LABEL,
   PESKIDS_FORM_SUCCESS_DETAIL,
+  PESKIDS_FORM_SUCCESS_TITLE,
+  PESKIDS_FORM_SUCCESS_RESPONSE_TIME,
   PESKIDS_RESERVATION_EYEBROW,
   PESKIDS_RESERVATION_TITLE,
 } from '@/lib/peskids-landing-copy'
@@ -129,7 +131,7 @@ function stepsForLead(leadType: PeskidsLeadType | '', modality: FormState['class
 function supportPrompt(step: StepId, form: FormState): string {
   switch (step) {
     case 'who':
-      return '¡Hola! Soy el asistente de Peskids. ¿Para quién estás solicitando información?'
+      return '👋 Hola. Bienvenido a Peskids.\nEn menos de un minuto encontraremos la mejor opción para tu hijo.'
     case 'where':
       return 'Perfecto. ¿Prefieres clases en la sede Llanogrande o a domicilio? Al final te conecto directo con ese WhatsApp.'
     case 'zone':
@@ -485,8 +487,6 @@ export function LeadCaptureForm({
       setConsentPhotosVideos(false)
 
       const thanksUrl = new URL('/thanks', window.location.origin)
-      if (apiResult.referral_link) thanksUrl.searchParams.set('referral_link', apiResult.referral_link)
-      if (apiResult.referral_code) thanksUrl.searchParams.set('referral_code', apiResult.referral_code)
       if (modality) thanksUrl.searchParams.set('modality', modality)
       window.setTimeout(() => {
         setFormData(emptyForm(defaultReferralSource))
@@ -516,35 +516,34 @@ export function LeadCaptureForm({
         <CardHeader className="border-0 bg-gradient-to-br from-pk-primary/10 via-pk-bg to-pk-surface pb-2">
           <p className="pk-eyebrow text-pk-primary">{PESKIDS_RESERVATION_EYEBROW}</p>
           <CardTitle className="text-2xl sm:text-3xl">{PESKIDS_RESERVATION_TITLE}</CardTitle>
-          <CardDescription>
-            Responde para guardar tus datos y ser direccionado a la línea de atención correspondiente.
-          </CardDescription>
-          {referredByCode ? (
-            <p className="mt-3 rounded-xl border border-pk-primary/20 bg-pk-primary/10 px-3 py-2 text-xs font-medium text-pk-primary">
-              Código de recomendación activo: <span className="font-mono">{referredByCode}</span>
-            </p>
-          ) : null}
         </CardHeader>
       )}
       <CardContent className={embedded ? 'pt-2' : undefined}>
         {submitted ? (
           <div
-            className="rounded-xl border border-pk-primary/30 bg-pk-primary/10 px-4 py-4 text-sm text-pk-ink"
+            className="rounded-xl border border-pk-primary/30 bg-pk-primary/10 px-4 py-6 text-sm text-pk-ink"
             role="status"
           >
-            <SupportBubble>Gracias, recibimos tu solicitud!</SupportBubble>
-            <p className="mt-4 text-pk-sub">{PESKIDS_FORM_SUCCESS_DETAIL}</p>
-            <WhatsAppLink
-              variant="hero"
-              label={successWhatsAppLabel(formData.class_modality, formData.lead_type || undefined)}
-              modality={formData.class_modality || null}
-              prefill={buildPostLeadWhatsAppPrefill(formData.name, {
-                class_modality: formData.class_modality || null,
-                lead_type: formData.lead_type || null,
-              })}
-              className="mt-4 w-full"
-            />
-            <p className="mt-4 text-center text-xs text-pk-sub">
+            <div className="space-y-4">
+              <div>
+                <p className="text-xl font-bold text-pk-ink">{PESKIDS_FORM_SUCCESS_TITLE}</p>
+                <p className="mt-2 text-pk-sub">{PESKIDS_FORM_SUCCESS_DETAIL}</p>
+              </div>
+              <WhatsAppLink
+                variant="hero"
+                label={successWhatsAppLabel(formData.class_modality, formData.lead_type || undefined)}
+                modality={formData.class_modality || null}
+                prefill={buildPostLeadWhatsAppPrefill(formData.name, {
+                  class_modality: formData.class_modality || null,
+                  lead_type: formData.lead_type || null,
+                })}
+                className="w-full"
+              />
+              <div className="rounded-lg bg-pk-surface/50 px-3 py-2 text-center text-xs text-pk-sub">
+                {PESKIDS_FORM_SUCCESS_RESPONSE_TIME}
+              </div>
+            </div>
+            <p className="mt-6 text-center text-xs text-pk-sub">
               Redirigiendo en {redirectCountdown}s…
             </p>
           </div>

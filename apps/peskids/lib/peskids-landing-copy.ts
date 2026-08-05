@@ -14,24 +14,28 @@ export const PESKIDS_RESERVATION_DESCRIPTION =
   'Academia de natación especializada en bebés y niños. Clases en nuestra sede Llanogrande o a domicilio en Medellín y el área metropolitana.';
 
 export const PESKIDS_RESERVATION_BULLETS = [
-  'Responde el chat para guardar tus datos',
-  'Te direccionamos a la línea de atención correspondiente',
-  'Continúa por WhatsApp directamente',
+  'Solo te tomará 1 minuto',
+  'Te conectaremos con el asesor de tu sede',
+  'Continúa por WhatsApp',
 ] as const;
 
-export const PESKIDS_FORM_CARD_TITLE = 'Formulario clásico (opcional)';
+export const PESKIDS_FORM_CARD_TITLE = 'Cuéntanos sobre tu familia';
 
 export const PESKIDS_FORM_CARD_DESCRIPTION =
-  'Si prefieres no usar el chat, puedes completar este formulario.';
+  'Estas preguntas nos ayudan a recomendar la mejor sede, modalidad y profesor para tu familia.';
 
 /** Primary CTA — opens / scrolls to admissions chat. */
-export const PESKIDS_FORM_SUBMIT_LABEL = 'Abrir chat de matrícula';
+export const PESKIDS_FORM_SUBMIT_LABEL = 'Hablar con un asesor';
 
 /** Post-form handoff only — not shown before lead capture. */
 export const PESKIDS_WHATSAPP_CTA_LABEL = 'Continuar por WhatsApp';
 
+export const PESKIDS_FORM_SUCCESS_TITLE = '🎉 ¡Ya casi terminamos!';
+
 export const PESKIDS_FORM_SUCCESS_DETAIL =
-  'Continúa por WhatsApp con la línea de atención correspondiente.';
+  'Tu información quedó registrada. Ahora continúa con uno de nuestros asesores.';
+
+export const PESKIDS_FORM_SUCCESS_RESPONSE_TIME = 'Tiempo promedio de respuesta: 5–10 minutos';
 
 export const PESKIDS_CONSENT_TREATMENT =
   'Autorizo a Peskids para tratar mis datos personales y, cuando aplique, los del menor bajo mi responsabilidad, con el fin de atender esta solicitud de contacto y matrícula, conforme a su Política de Privacidad.';
