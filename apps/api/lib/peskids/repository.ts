@@ -217,3 +217,21 @@ export async function peskidsFetchDashboardSummary(): Promise<
     },
   };
 }
+
+export async function peskidsUpdateLeadMetadata(
+  leadId: string,
+  metadata: Record<string, unknown>
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const client = getServiceClient();
+  const { error } = await client
+    .schema('platform')
+    .from('peskids_leads')
+    .update({ metadata })
+    .eq('id', leadId)
+    .eq('tenant_slug', PESKIDS_TENANT_SLUG);
+
+  if (error !== null) {
+    return { ok: false, error: error.message };
+  }
+  return { ok: true };
+}

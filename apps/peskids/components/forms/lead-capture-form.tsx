@@ -169,8 +169,8 @@ function supportPrompt(step: StepId, form: FormState): string {
 function successWhatsAppLabel(modality: FormState['class_modality'], leadType?: string): string {
   if (leadType === 'company') return 'Continuar por WhatsApp →'
   if (leadType === 'teacher_applicant') return 'Continuar por WhatsApp →'
-  if (modality === 'domicilio') return 'Continuar por WhatsApp Domicilios →'
-  if (modality === 'llanogrande') return 'Continuar por WhatsApp Llanogrande →'
+  if (modality === 'domicilio') return 'Continuar por WhatsApp — Domicilios'
+  if (modality === 'llanogrande') return 'Continuar por WhatsApp — Llanogrande'
   return 'Continuar por WhatsApp →'
 }
 

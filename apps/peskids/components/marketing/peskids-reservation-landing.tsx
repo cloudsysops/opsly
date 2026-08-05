@@ -71,7 +71,7 @@ export function PeskidsReservationLanding({
         <div id={PESKIDS_RESERVATION_FORM_ANCHOR} className="scroll-mt-8">
           <details className="rounded-2xl border border-pk-border bg-white px-4 py-3 shadow-sm">
             <summary className="cursor-pointer list-none text-center text-sm font-semibold text-pk-sub marker:content-none [&::-webkit-details-marker]:hidden">
-              ¿Prefieres el formulario clásico? Toca aquí
+              ¿Prefieres no usar el chat? Completa el formulario clásico.
             </summary>
             <div className="mt-4">
               <Suspense fallback={<div className="h-96" />}>

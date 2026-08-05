@@ -6,8 +6,9 @@ import { assertPeskidsTenantPublic } from './assert-tenant';
 import { PESKIDS_TENANT_SLUG } from './constants';
 import { dispatchPeskidsHotLeadAlert } from './hot-lead-alert';
 import { dispatchPeskidsLeadConfirmationEmail } from './lead-confirmation-email';
-import { peskidsInsertLead } from './repository';
+import { peskidsInsertLead, peskidsUpdateLeadMetadata } from './repository';
 import { peskidsLeadBodySchema } from './schemas';
+import { generateAdvisorBrief } from './advisor-brief-generator';
 
 async function readBody(request: NextRequest): Promise<unknown | Response> {
   const contentType = request.headers.get('content-type') || '';
@@ -113,6 +114,29 @@ export async function postPublicPeskidsLead(request: NextRequest): Promise<Respo
       error: error instanceof Error ? error.message : String(error),
     });
   });
+
+  // Generate AI advisor brief (Priority 6 - non-blocking)
+  void (async () => {
+    try {
+      const brief = await generateAdvisorBrief(row);
+      if (brief) {
+        await peskidsUpdateLeadMetadata(row.id, {
+          ...(row.metadata as Record<string, unknown>),
+          advisor_brief: brief,
+          brief_generated_at: new Date().toISOString(),
+        });
+        console.log('[peskids] advisor brief generated successfully', {
+          lead_id: row.id,
+          brief_length: brief.length,
+        });
+      }
+    } catch (error) {
+      console.warn('[peskids] advisor brief generation failed', {
+        lead_id: row.id,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  })();
 
   // Process file uploads if present (teacher_applicant with attachments)
   if (attachments && parsed.data.lead_type === 'teacher_applicant') {
