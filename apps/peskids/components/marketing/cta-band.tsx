@@ -1,5 +1,10 @@
 import { PeskidsWave } from '@/components/brand/peskids-logo';
 import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config';
+import {
+  PESKIDS_CTA_BAND_BUTTON,
+  PESKIDS_CTA_BAND_DESCRIPTION,
+  PESKIDS_CTA_BAND_TITLE,
+} from '@/lib/peskids-landing-copy';
 
 /** Banda final: empuja al formulario. WhatsApp solo en header + FAB. */
 export function CtaBand(): React.ReactElement {
@@ -14,17 +19,15 @@ export function CtaBand(): React.ReactElement {
         <div className="relative flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-xl">
             <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
-              ¿Tienes preguntas?
+              {PESKIDS_CTA_BAND_TITLE}
             </h2>
-            <p className="mt-4 text-lg text-white/85">
-              Completa el formulario y te conectaremos con el asesor adecuado para tu sede.
-            </p>
+            <p className="mt-4 text-lg text-white/85">{PESKIDS_CTA_BAND_DESCRIPTION}</p>
           </div>
           <a
             href={PESKIDS_RESERVATION_FORM_HREF}
             className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-bold text-pk-deep shadow-md transition hover:bg-white/90"
           >
-            Completar solicitud
+            {PESKIDS_CTA_BAND_BUTTON}
           </a>
         </div>
       </div>

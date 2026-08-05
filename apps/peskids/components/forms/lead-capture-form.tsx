@@ -21,6 +21,9 @@ import {
   PESKIDS_FORM_CARD_TITLE,
   PESKIDS_FORM_SUBMIT_LABEL,
   PESKIDS_FORM_SUCCESS_DETAIL,
+  PESKIDS_FORM_SUCCESS_DOMICILIO,
+  PESKIDS_FORM_SUCCESS_LLANOGRANDE,
+  PESKIDS_FORM_SUCCESS_NEXT,
   PESKIDS_FORM_SUCCESS_TITLE,
   PESKIDS_WHATSAPP_CTA_LABEL,
 } from '@/lib/peskids-landing-copy'
@@ -239,7 +242,15 @@ export function LeadCaptureForm({
         return
       }
 
-      const hasAttachments = leadType === 'teacher_applicant' && Object.keys(formData.attachments).length > 0
+      const teacherFileInputs =
+        leadType === 'teacher_applicant'
+          ? Array.from(
+              document.querySelectorAll<HTMLInputElement>(
+                'input[type="file"][data-peskids-attachment]'
+              )
+            ).filter((input) => input.files && input.files.length > 0)
+          : []
+      const hasAttachments = teacherFileInputs.length > 0
       let apiResponse: Response
 
       if (hasAttachments) {
@@ -249,15 +260,13 @@ export function LeadCaptureForm({
             formDataPayload.append(key, String(value))
           }
         })
-        document.querySelectorAll('input[type="file"][data-peskids-attachment]').forEach((input: Element) => {
-          const fileInput = input as HTMLInputElement
-          if (fileInput.files && fileInput.files.length > 0) {
-            const attachmentType = fileInput.getAttribute('data-peskids-attachment')
-            if (attachmentType) {
-              formDataPayload.append(`file_${attachmentType}`, fileInput.files[0])
-            }
+        for (const fileInput of teacherFileInputs) {
+          const attachmentType = fileInput.getAttribute('data-peskids-attachment')
+          const file = fileInput.files?.[0]
+          if (attachmentType && file) {
+            formDataPayload.append(`file_${attachmentType}`, file)
           }
-        })
+        }
 
         apiResponse = await fetch('/api/leads', {
           method: 'POST',
@@ -319,8 +328,14 @@ export function LeadCaptureForm({
 
   if (submitted) {
     const modality = formData.class_modality
-    const modalityLabel = modality === 'llanogrande' ? 'Llanogrande' : 'Domicilios'
-    const modalityText = modality === 'llanogrande' ? 'la sede Llanogrande' : 'clases a domicilio'
+    const isLlanogrande = modality === 'llanogrande'
+    const isDomicilio = modality === 'domicilio'
+    const modalityLabel = isLlanogrande ? 'Llanogrande' : isDomicilio ? 'Domicilios' : null
+    const successDetail = isLlanogrande
+      ? PESKIDS_FORM_SUCCESS_LLANOGRANDE
+      : isDomicilio
+        ? PESKIDS_FORM_SUCCESS_DOMICILIO
+        : PESKIDS_FORM_SUCCESS_DETAIL
 
     return (
       <div className="flex min-h-screen items-center justify-center bg-pk-snow p-4">
@@ -329,25 +344,25 @@ export function LeadCaptureForm({
             <CardTitle className="text-2xl text-pk-ink">{PESKIDS_FORM_SUCCESS_TITLE}</CardTitle>
           </CardHeader>
           <CardContent className="pt-6 space-y-6">
-            <p className="text-sm text-pk-ink">
-              {PESKIDS_FORM_SUCCESS_DETAIL} ({modalityText}).
-            </p>
+            <p className="text-sm text-pk-ink">{successDetail}</p>
             <WhatsAppLink
-              modality={modality as 'llanogrande' | 'domicilio' | undefined}
+              modality={isLlanogrande || isDomicilio ? modality : undefined}
               prefill={buildPostLeadWhatsAppPrefill(formData.name, {
-                class_modality: modality as 'llanogrande' | 'domicilio' | undefined,
+                class_modality: isLlanogrande || isDomicilio ? modality : undefined,
                 lead_type: formData.lead_type as PeskidsLeadType,
               })}
-              label={`${PESKIDS_WHATSAPP_CTA_LABEL} — ${modalityLabel}`}
+              label={
+                modalityLabel
+                  ? `${PESKIDS_WHATSAPP_CTA_LABEL} — ${modalityLabel}`
+                  : PESKIDS_WHATSAPP_CTA_LABEL
+              }
               variant="button"
               showIcon
               className="w-full"
             />
             <div className="border-t border-pk-border/30 pt-4">
               <h3 className="font-medium text-pk-ink mb-2">¿Qué sigue?</h3>
-              <p className="text-xs text-pk-mutedText">
-                Abre WhatsApp para continuar con atención personalizada.
-              </p>
+              <p className="text-xs text-pk-mutedText">{PESKIDS_FORM_SUCCESS_NEXT}</p>
             </div>
           </CardContent>
         </Card>
@@ -598,6 +613,35 @@ export function LeadCaptureForm({
                       rows={2}
                     />
                   </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label htmlFor="teacher_cv" className="text-sm font-medium text-pk-ink">
+                        Hoja de vida (PDF o DOC)
+                      </Label>
+                      <input
+                        id="teacher_cv"
+                        type="file"
+                        accept=".pdf,.doc,.docx,application/pdf"
+                        data-peskids-attachment="curriculum"
+                        className="mt-2 block w-full text-sm text-pk-ink file:mr-3 file:rounded-pk file:border-0 file:bg-pk-primary/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-pk-primary"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="teacher_swim_video" className="text-sm font-medium text-pk-ink">
+                        Video nadando (MP4 o similar)
+                      </Label>
+                      <input
+                        id="teacher_swim_video"
+                        type="file"
+                        accept="video/*,.mp4,.mov,.webm"
+                        data-peskids-attachment="swimming_video"
+                        className="mt-2 block w-full text-sm text-pk-ink file:mr-3 file:rounded-pk file:border-0 file:bg-pk-primary/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-pk-primary"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-pk-mutedText">
+                    Opcional por ahora: puedes adjuntar HV y un video donde se te vea nadando.
+                  </p>
                 </div>
               )}
 

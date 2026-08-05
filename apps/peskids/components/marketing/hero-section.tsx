@@ -15,7 +15,7 @@ export function HeroSection(): React.ReactElement {
       <div className="relative z-10 mx-auto max-w-4xl px-4 py-14 sm:px-8 lg:px-14 lg:py-20">
         <span className="pk-pill border-white/10 bg-white/10 text-white">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
-          Cupos abiertos · ciclo junio
+          Cupos abiertos
         </span>
 
         <h1 className="mt-5 text-5xl font-bold leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-[5.2rem]">
@@ -23,7 +23,7 @@ export function HeroSection(): React.ReactElement {
           <br />
           Se divierten.
           <br />
-          Son{' '}
+          Somos{' '}
           <PeskidsBrush color={peskidsColorTokens.primary.teal} size={56} tilt={-3} className="sm:text-[4.5rem]">
             Pes
           </PeskidsBrush>
@@ -34,10 +34,9 @@ export function HeroSection(): React.ReactElement {
         </h1>
 
         <p className="mt-6 max-w-lg text-lg leading-relaxed text-white/80">
-          Academia de natación para niños desde{' '}
-          <strong className="text-white">3 meses hasta 15 años</strong>. Clases en{' '}
-          <strong className="text-white">sede Llanogrande</strong> o{' '}
-          <strong className="text-white">a domicilio</strong> en el área metropolitana.
+          Academia de natación especializada en bebés y niños. Clases en nuestra sede{' '}
+          <strong className="text-white">Llanogrande</strong> o a domicilio en{' '}
+          <strong className="text-white">Medellín</strong> y el área metropolitana.
         </p>
 
         <WiggleLine width={120} color="rgba(76,184,176,0.95)" className="mt-8" />
@@ -62,8 +61,8 @@ export function HeroSection(): React.ReactElement {
         </div>
 
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/65">
-          Completa el formulario. Al terminar, el botón de WhatsApp te lleva al equipo humano de
-          Llanogrande o Domicilios según lo que elijas.
+          Completa el formulario. Al finalizar te direccionamos a la línea de atención
+          correspondiente: sede Llanogrande o domicilios.
         </p>
       </div>
     </section>
