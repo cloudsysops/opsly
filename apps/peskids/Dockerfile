@@ -12,6 +12,7 @@ COPY tsconfig.json ./
 COPY lib/conversational-runtime/package.json ./lib/conversational-runtime/
 COPY lib/services/package.json ./lib/services/
 COPY lib/prompt-guard/package.json ./lib/prompt-guard/
+COPY lib/capacity-alert/package.json ./lib/capacity-alert/
 COPY lib/openwa/package.json ./lib/openwa/
 COPY lib/wacrm-channel/package.json ./lib/wacrm-channel/
 COPY lib/wompi-gateway/package.json ./lib/wompi-gateway/
@@ -24,6 +25,7 @@ RUN npm ci --ignore-scripts
 COPY lib/conversational-runtime/ ./lib/conversational-runtime/
 COPY lib/services/ ./lib/services/
 COPY lib/prompt-guard/ ./lib/prompt-guard/
+COPY lib/capacity-alert/ ./lib/capacity-alert/
 COPY lib/openwa/ ./lib/openwa/
 COPY lib/wacrm-channel/ ./lib/wacrm-channel/
 COPY lib/wompi-gateway/ ./lib/wompi-gateway/
