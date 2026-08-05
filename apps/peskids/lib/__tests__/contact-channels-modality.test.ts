@@ -40,6 +40,17 @@ describe('contact-channels modality routing', () => {
     const url = buildWhatsAppUrl({ modality: 'llanogrande', prefill: 'hola' });
     expect(url).toContain('wa.me/573333333333');
   });
+
+  it('buildWhatsAppUrl keeps domicilio distinct when DOMICILIO env is unset', () => {
+    vi.stubEnv('NEXT_PUBLIC_PESKIDS_WHATSAPP_E164', '573054702600');
+    vi.stubEnv('NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_E164', '');
+    vi.stubEnv('NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_E164', '');
+    const domicilio = buildWhatsAppUrl({ modality: 'domicilio', prefill: 'hola' });
+    const sede = buildWhatsAppUrl({ modality: 'llanogrande', prefill: 'hola' });
+    expect(domicilio).toContain('wa.me/573054790273');
+    expect(sede).toContain('wa.me/573054702600');
+    expect(domicilio).not.toBe(sede);
+  });
 });
 
 describe('peskids-lead-session', () => {

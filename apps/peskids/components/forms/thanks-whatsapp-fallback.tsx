@@ -6,6 +6,7 @@ import {
   buildPostLeadWhatsAppPrefill,
   buildPostLeadWhatsAppPrefillFromSession,
   readPeskidsLeadSession,
+  type PeskidsLeadSession,
 } from '@/lib/peskids-lead-session';
 
 type ThanksWhatsAppFallbackProps = {
@@ -14,40 +15,63 @@ type ThanksWhatsAppFallbackProps = {
   leadId?: string | null;
 };
 
+function resolveModality(
+  modality: string | null | undefined,
+  session: PeskidsLeadSession | null
+): 'llanogrande' | 'domicilio' | null {
+  if (modality === 'llanogrande' || modality === 'domicilio') return modality;
+  if (session?.class_modality === 'llanogrande' || session?.class_modality === 'domicilio') {
+    return session.class_modality;
+  }
+  return null;
+}
+
+function buildThanksPrefill(
+  modality: string | null | undefined,
+  leadId: string | null | undefined,
+  session: PeskidsLeadSession | null
+): string {
+  const resolvedModality = resolveModality(modality, session);
+  const resolvedLeadId = leadId || session?.lead_id || null;
+
+  if (session?.name) {
+    return buildPostLeadWhatsAppPrefillFromSession({
+      ...session,
+      lead_id: resolvedLeadId,
+      class_modality: resolvedModality,
+    });
+  }
+
+  return buildPostLeadWhatsAppPrefill('familia', {
+    lead_id: resolvedLeadId,
+    class_modality: resolvedModality,
+  });
+}
+
 /**
  * When /thanks cannot load lead JSON, still prefill WhatsApp from sessionStorage
  * (written by the form) including lead_id when present.
+ * Always passes an explicit prefill — never the generic marketing intake text.
  */
 export function ThanksWhatsAppFallback({
   label,
   modality,
   leadId,
 }: ThanksWhatsAppFallbackProps): React.ReactElement {
-  const [prefill, setPrefill] = useState<string | null>(null);
+  const urlModality =
+    modality === 'llanogrande' || modality === 'domicilio' ? modality : null;
+
+  const [prefill, setPrefill] = useState(() =>
+    buildThanksPrefill(urlModality, leadId, null)
+  );
+  const [resolvedModality, setResolvedModality] = useState<'llanogrande' | 'domicilio' | null>(
+    urlModality
+  );
 
   useEffect(() => {
     const session = readPeskidsLeadSession();
-    if (session?.name) {
-      setPrefill(
-        buildPostLeadWhatsAppPrefillFromSession({
-          ...session,
-          lead_id: leadId || session.lead_id,
-          class_modality:
-            modality === 'llanogrande' || modality === 'domicilio'
-              ? modality
-              : session.class_modality,
-        })
-      );
-      return;
-    }
-    if (leadId) {
-      setPrefill(
-        buildPostLeadWhatsAppPrefill('familia', {
-          lead_id: leadId,
-          class_modality: modality,
-        })
-      );
-    }
+    setResolvedModality(resolveModality(modality, session));
+    setPrefill(buildThanksPrefill(modality, leadId, session));
   }, [leadId, modality]);
 
   return (
@@ -55,8 +79,8 @@ export function ThanksWhatsAppFallback({
       variant="hero"
       className="w-full"
       label={label}
-      modality={modality ?? null}
-      prefill={prefill ?? undefined}
+      modality={resolvedModality ?? urlModality}
+      prefill={prefill}
     />
   );
 }
