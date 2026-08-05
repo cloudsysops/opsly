@@ -477,8 +477,10 @@ export function LeadCaptureForm({
       setConsentMarketing(false)
       setConsentPhotosVideos(false)
 
+      const apiResult = await apiResponse.json() as { lead_id?: string; ok?: boolean }
       const thanksUrl = new URL('/thanks', window.location.origin)
       if (modality) thanksUrl.searchParams.set('modality', modality)
+      if (apiResult?.lead_id) thanksUrl.searchParams.set('lead_id', apiResult.lead_id)
       window.setTimeout(() => {
         setFormData(emptyForm(defaultReferralSource))
         router.push(`${thanksUrl.pathname}${thanksUrl.search}`)

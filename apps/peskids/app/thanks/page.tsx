@@ -12,6 +12,7 @@ type ThanksSearchParams = Promise<{
   referral_link?: string;
   referral_code?: string;
   modality?: string;
+  lead_id?: string;
 }>;
 
 function thanksCopy(modality: string | undefined): {
@@ -47,6 +48,7 @@ export default async function ThanksPage({
   const referralLink = resolvedSearchParams.referral_link?.trim() || '';
   const referralCode = resolvedSearchParams.referral_code?.trim() || '';
   const modality = resolvedSearchParams.modality?.trim();
+  const leadId = resolvedSearchParams.lead_id?.trim();
   const copy = thanksCopy(modality);
 
   return (
@@ -74,6 +76,17 @@ export default async function ThanksPage({
               label={copy.waLabel}
               modality={modality ?? null}
             />
+            {leadId ? (
+              <div className="rounded-xl border border-pk-primary/30 bg-pk-primary/10 px-4 py-3 text-left text-sm">
+                <p className="font-semibold text-pk-ink">📋 Ver tu solicitud en el panel:</p>
+                <Link
+                  href={`/admin/leads/${leadId}`}
+                  className="mt-2 inline-flex items-center gap-2 font-medium text-pk-primary hover:underline"
+                >
+                  Abrir en Peskids Admin →
+                </Link>
+              </div>
+            ) : null}
             <div className="rounded-xl border border-pk-border bg-pk-bg px-4 py-3 text-left text-sm text-pk-sub">
               <p className="font-semibold text-pk-ink">¿Qué sigue?</p>
               <p className="mt-1">
