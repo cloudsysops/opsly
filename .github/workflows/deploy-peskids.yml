@@ -5,11 +5,13 @@
 # Secrets (repository or production environment):
 #   VPS_USER, VPS_SSH_KEY, VPS_HOST or VPS_SSH_HOST
 #   TAILSCALE_AUTHKEY (recommended for SSH via tailnet)
+#   CF_DNS_API_TOKEN (post-deploy Cloudflare purge for www.peskids.com)
 #   NEXT_PUBLIC_PESKIDS_WHATSAPP_E164, NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY,
 #   NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL (baked at build; sync from Doppler prd)
 #
 # Manual: Actions → Deploy Peskids → Run workflow
 # Night window: America/Bogota 22:00–06:00 (docs/runbooks/PRODUCTION-CHANGE-WINDOW.md)
+# Post-deploy: CDN purge — docs/runbooks/PESKIDS-CDN-CACHE.md
 
 name: Deploy Peskids
 
@@ -228,6 +230,21 @@ jobs:
           check_url "public health" "https://www.peskids.com/api/health" '"status":"ok"'
           check_url "admin login" "https://www.peskids.com/admin/login"
           check_url "familias login" "https://www.peskids.com/familias/login"
+
+      - name: Post-deploy — purge Cloudflare CDN
+        # Ensures www.peskids.com serves the new build (not a stale CF/Next edge cache).
+        # Soft-fail: deploy already succeeded on VPS.
+        continue-on-error: true
+        env:
+          CF_DNS_API_TOKEN: ${{ secrets.CF_DNS_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          chmod +x scripts/ops/purge-peskids-cdn.sh
+          if [ -z "${CF_DNS_API_TOKEN:-}" ]; then
+            echo "::warning::CF_DNS_API_TOKEN secret missing — skip CDN purge (set GitHub secret from Doppler prd)"
+            exit 0
+          fi
+          ./scripts/ops/purge-peskids-cdn.sh --soft
 
       - name: Notify Discord on failure
         if: failure()

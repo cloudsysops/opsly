@@ -1,4 +1,4 @@
-import { isPeskidsGhlEnabled, isTwentyConfigured } from '@intcloudsysops/services/twenty';
+import { isPeskidsGhlEnabled, isTwentyConfigured } from '@intcloudsysops/services';
 import { sendLeadToGHL } from '@/lib/gohighlevel-lead-sync';
 import {
   resolvePeskidsIntegrationProviders,

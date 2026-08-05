@@ -50,8 +50,8 @@ export type PeskidsIntakeProfile = {
 }
 
 export const PESKIDS_APPLICANT_ROLE_CHOICES: PeskidsIntakeChoice[] = [
-  { label: 'Familia / información', value: 'family' },
-  { label: 'Profesor / candidato', value: 'teacher_applicant' },
+  { label: 'Familia', value: 'family' },
+  { label: 'Quiero ser profesor(a)', value: 'teacher_applicant' },
   { label: 'Empresa o institución', value: 'company' },
 ]
 
@@ -62,12 +62,17 @@ export type PeskidsIntakeQuestionSpec = {
 }
 
 /** Mensaje inicial del chatbox (web / WhatsApp automático). */
-export function peskidsIntakeWelcome(): string {
+export function peskidsIntakeWelcome(source: MessageSource): string {
+  const channel =
+    source === 'whatsapp'
+      ? 'Por este chat de WhatsApp'
+      : 'Por este chat en la web de Peskids'
   return (
-    `Chat de información\n\n` +
-    `Responde estas preguntas para guardar tus datos y direccionarte a la línea de atención correspondiente: ` +
-    `sede Llanogrande o clases a domicilio.\n\n` +
-    `Al finalizar, podrás continuar la conversación directamente por WhatsApp.`
+    `👋 Hola.\n\n` +
+    `Bienvenido a Peskids 🐠\n\n` +
+    `En menos de un minuto encontraremos la mejor opción para tu hijo.\n\n` +
+    `${channel} responde tocando las opciones (como en WhatsApp). ` +
+    `Al terminar te conectaremos con el asesor de tu sede sin que vuelvas a elegir.`
   )
 }
 

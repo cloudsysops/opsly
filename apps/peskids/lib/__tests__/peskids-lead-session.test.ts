@@ -8,7 +8,7 @@ import {
 describe('peskids-lead-session', () => {
   it('buildPostLeadWhatsAppPrefill includes the lead name', () => {
     expect(buildPostLeadWhatsAppPrefill('María García')).toContain('María García');
-    expect(buildPostLeadWhatsAppPrefill('María García')).toContain('chat de matrícula');
+    expect(buildPostLeadWhatsAppPrefill('María García')).toContain('formulario de solicitud');
   });
 
   it('parsePeskidsLeadSession accepts valid JSON', () => {

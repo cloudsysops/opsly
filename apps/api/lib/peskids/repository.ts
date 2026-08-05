@@ -22,7 +22,7 @@ export type PeskidsLeadRow = {
   referral_source: string | null;
   status: string;
   admin_notes: string | null;
-  metadata?: Record<string, unknown>;
+  metadata: Record<string, unknown> | null;
   created_at: string;
 };
 

@@ -1,6 +1,7 @@
 /**
- * Spreadsheet helpers for Peskids admin imports (CSV / Excel).
- * Pure mapping + CSV parse live here; Excel uses optional `xlsx` when present.
+ * Spreadsheet helpers for Peskids admin imports (CSV).
+ * CSV is intentionally parsed without a third-party workbook parser so
+ * untrusted uploads do not reach a vulnerable Excel parsing dependency.
  */
 
 export type SpreadsheetRow = Record<string, string>;
@@ -8,7 +9,7 @@ export type SpreadsheetRow = Record<string, string>;
 export type ParsedSpreadsheet = {
   headers: string[];
   rows: SpreadsheetRow[];
-  sourceFormat: 'csv' | 'xlsx' | 'xls';
+  sourceFormat: 'csv';
 };
 
 function normalizeHeader(raw: string): string {
@@ -104,42 +105,9 @@ export async function parseSpreadsheetFile(file: File): Promise<ParsedSpreadshee
     return parseCsvText(await file.text());
   }
 
-  if (name.endsWith('.xlsx') || name.endsWith('.xls')) {
-    const XLSX = await import('xlsx');
-    const buffer = await file.arrayBuffer();
-    const workbook = XLSX.read(buffer, { type: 'array' });
-    const sheetName = workbook.SheetNames[0];
-    if (!sheetName) {
-      return { headers: [], rows: [], sourceFormat: name.endsWith('.xls') ? 'xls' : 'xlsx' };
-    }
-    const sheet = workbook.Sheets[sheetName];
-    const matrix = XLSX.utils.sheet_to_json<string[]>(sheet, {
-      header: 1,
-      defval: '',
-      raw: false,
-    }) as string[][];
-    if (matrix.length === 0) {
-      return { headers: [], rows: [], sourceFormat: name.endsWith('.xls') ? 'xls' : 'xlsx' };
-    }
-    const headers = (matrix[0] ?? []).map((h) => String(h ?? '').trim());
-    const rows: SpreadsheetRow[] = [];
-    for (const cells of matrix.slice(1)) {
-      if (!cells || cells.every((c) => !String(c ?? '').trim())) continue;
-      const record: SpreadsheetRow = {};
-      headers.forEach((header, idx) => {
-        const key = header || `col_${idx + 1}`;
-        record[key] = String(cells[idx] ?? '').trim();
-      });
-      rows.push(record);
-    }
-    return {
-      headers,
-      rows,
-      sourceFormat: name.endsWith('.xls') ? 'xls' : 'xlsx',
-    };
-  }
-
-  throw new Error('Formato no soportado. Usa CSV o Excel (.xlsx / .xls). Los PDF se adjuntan en el chat de cambios.');
+  throw new Error(
+    'Formato no soportado. Exporta tu Excel como CSV UTF-8 antes de importarlo. Los PDF se adjuntan en el chat de cambios.'
+  );
 }
 
 function pickField(row: SpreadsheetRow, aliases: string[]): string | undefined {

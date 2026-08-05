@@ -155,7 +155,7 @@ export async function POST(req: NextRequest) {
         ? leadSaved
           ? 'Tus datos ya quedaron en la plataforma Peskids. Un asesor humano te continúa por WhatsApp con el equipo correcto.'
           : 'Completamos el chat; el equipo revisará tu caso. Si el registro automático falló, el asesor te pedirá confirmar datos.'
-        : 'Responde tocando las opciones del chat. Al final guardamos tu solicitud y te pasamos a WhatsApp humano.';
+        : 'Responde tocando las opciones del chat. Al final guardamos tu solicitud y te conectaremos a WhatsApp humano.';
 
     const supportDisclaimer =
       intake.stage === 'handoff'

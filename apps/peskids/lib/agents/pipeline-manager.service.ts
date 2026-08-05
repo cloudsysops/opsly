@@ -1,6 +1,6 @@
-import { getGoHighLevelService } from '@intcloudsysops/services/gohighlevel';
-import type { GoHighLevelService } from '@intcloudsysops/services/gohighlevel';
-import { isPeskidsGhlEnabled } from '@intcloudsysops/services/twenty';
+import { getGoHighLevelService } from '@intcloudsysops/services';
+import type { GoHighLevelService } from '@intcloudsysops/services';
+import { isPeskidsGhlEnabled } from '@intcloudsysops/services';
 import { supabaseServer } from '@/lib/supabase';
 import type { PipelineRule, PipelineStage } from '@/lib/agents/pipeline-rules';
 import {

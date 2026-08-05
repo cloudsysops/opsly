@@ -7,7 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ReferralLinkCard } from '@/components/referrals/referral-link-card';
 import { WhatsAppMessagePreview } from '@/components/forms';
-import { PESKIDS_WHATSAPP_CTA_LABEL } from '@/lib/peskids-landing-copy';
+import {
+  PESKIDS_FORM_SUCCESS_DETAIL,
+  PESKIDS_FORM_SUCCESS_DOMICILIO,
+  PESKIDS_FORM_SUCCESS_LLANOGRANDE,
+  PESKIDS_FORM_SUCCESS_NEXT,
+  PESKIDS_FORM_SUCCESS_TITLE,
+  PESKIDS_WHATSAPP_CTA_LABEL,
+} from '@/lib/peskids-landing-copy';
 
 type ThanksSearchParams = Promise<{
   referral_link?: string;
@@ -22,20 +29,18 @@ function thanksCopy(modality: string | undefined): {
 } {
   if (modality === 'domicilio') {
     return {
-      detail:
-        'Tu solicitud quedó marcada para Domicilios. Continúa por WhatsApp con ese equipo — no hace falta volver a elegir.',
+      detail: PESKIDS_FORM_SUCCESS_DOMICILIO,
       waLabel: 'WhatsApp Domicilios →',
     };
   }
   if (modality === 'llanogrande') {
     return {
-      detail:
-        'Tu solicitud quedó marcada para la sede Llanogrande. Continúa por WhatsApp con la sede — no hace falta volver a elegir.',
+      detail: PESKIDS_FORM_SUCCESS_LLANOGRANDE,
       waLabel: 'WhatsApp Llanogrande →',
     };
   }
   return {
-    detail: 'Te contactaremos pronto para orientarte sobre matrícula y clases en Peskids.',
+    detail: PESKIDS_FORM_SUCCESS_DETAIL,
     waLabel: `${PESKIDS_WHATSAPP_CTA_LABEL} →`,
   };
 }
@@ -98,7 +103,7 @@ export default async function ThanksPage({
             <span className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-teal-50 text-pk-primary">
               <CheckCircle2 className="h-9 w-9" aria-hidden />
             </span>
-            <CardTitle className="text-2xl">¡Listo, recibimos tu solicitud!</CardTitle>
+            <CardTitle className="text-2xl">{PESKIDS_FORM_SUCCESS_TITLE}</CardTitle>
             <CardDescription className="text-base">{copy.detail}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 pb-8">
@@ -143,8 +148,93 @@ export default async function ThanksPage({
               <p className="mt-1">
                 {leadData && leadId
                   ? 'Envía el mensaje de arriba al soporte de Peskids. El equipo abrirá el link para ver tus detalles y responderá pronto.'
+                  : PESKIDS_FORM_SUCCESS_NEXT}
+              </p>
+            </div>
+            <Link href="/">
+              <Button variant="primary" fullWidth>
+                Volver al inicio
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </main>
+      <SiteFooter />
+    </div>
+  );
+}
+
+  return (
+    <div className="flex min-h-screen flex-col bg-pk-bg">
+      <header className="border-b border-pk-border bg-pk-surface/90 px-6 py-4">
+        <PeskidsLockup height={36} />
+      </header>
+
+      <main className="flex flex-1 items-center justify-center px-4 py-16">
+        <Card className="w-full max-w-md text-center shadow-card-hover" accent="green">
+          <CardHeader className="items-center border-0 pb-0 pt-8">
+            <span className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-teal-50 text-pk-primary">
+              <CheckCircle2 className="h-9 w-9" aria-hidden />
+            </span>
+            <CardTitle className="text-2xl">{PESKIDS_FORM_SUCCESS_TITLE}</CardTitle>
+            <CardDescription className="text-base">{copy.detail}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6 pb-8">
+<<<<<<< HEAD
+            {referralLink && referralCode ? (
+              <ReferralLinkCard referralLink={referralLink} referralCode={referralCode} />
+            ) : null}
+            {leadData && leadId ? (
+              <WhatsAppMessagePreview
+                clientName={leadData.full_name}
+                clientEmail={leadData.email}
+                clientPhone={leadData.phone}
+                gradeInterested={leadData.grade_interested}
+                classModality={
+                  leadData.class_modality === 'llanogrande' ||
+                  leadData.class_modality === 'domicilio'
+                    ? leadData.class_modality
+                    : null
+                }
+                leadId={leadId}
+              />
+            ) : (
+              <WhatsAppLink
+                variant="hero"
+                className="w-full"
+                label={copy.waLabel}
+                modality={modality ?? null}
+              />
+            )}
+            {leadId ? (
+              <div className="rounded-xl border border-pk-primary/30 bg-pk-primary/10 px-4 py-3 text-left text-sm">
+                <p className="font-semibold text-pk-ink">📋 Ver tu solicitud en el panel:</p>
+                <Link
+                  href={`/admin/leads/${leadId}`}
+                  className="mt-2 inline-flex items-center gap-2 font-medium text-pk-primary hover:underline"
+                >
+                  Abrir en Peskids Admin →
+                </Link>
+              </div>
+            ) : null}
+            <div className="rounded-xl border border-pk-border bg-pk-bg px-4 py-3 text-left text-sm text-pk-sub">
+              <p className="font-semibold text-pk-ink">¿Qué sigue?</p>
+              <p className="mt-1">
+                {leadData && leadId
+                  ? 'Envía el mensaje de arriba al soporte de Peskids. El equipo abrirá el link para ver tus detalles y responderá pronto.'
                   : 'El botón de arriba abre el WhatsApp del equipo correcto. También puedes revisar tu correo.'}
               </p>
+=======
+            <WhatsAppLink
+              variant="hero"
+              className="w-full"
+              label={copy.waLabel}
+              modality={modality ?? null}
+            />
+            <div className="rounded-xl border border-pk-border bg-pk-bg px-4 py-3 text-left text-sm text-pk-sub">
+              <p className="font-semibold text-pk-ink">¿Qué sigue?</p>
+              <p className="mt-1">{PESKIDS_FORM_SUCCESS_NEXT}</p>
+>>>>>>> origin/main
             </div>
             <Link href="/">
               <Button variant="primary" fullWidth>

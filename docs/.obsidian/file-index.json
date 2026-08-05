@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-08-05T16:54:57.226Z",
-  "totalFiles": 831,
+  "lastIndexed": "2026-08-05T13:05:17.790Z",
+  "totalFiles": 833,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -674,6 +674,7 @@
     "runbooks/OPERATIONS-HANDBOOK.md",
     "runbooks/OPSLY-OPENCLAW-STARTUP.md",
     "runbooks/PANINI-LAB-GOLIVE.md",
+    "runbooks/PESKIDS-CDN-CACHE.md",
     "runbooks/PRODUCTION-CHANGE-WINDOW.md",
     "runbooks/PRODUCTION-DEPLOY.md",
     "runbooks/PRODUCTION-SECURITY-BASELINE.md",
@@ -754,6 +755,7 @@
     "tenants/peskids/DEMO-SCRIPT.md",
     "tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
     "tenants/peskids/DEPLOYMENT-2026-05-21.md",
+    "tenants/peskids/DEPLOYMENT-STRATEGY.md",
     "tenants/peskids/DESIGN-PACK-REFERENCE.md",
     "tenants/peskids/design-pack/README.md",
     "tenants/peskids/DOPPLER-SETUP.md",

@@ -503,7 +503,7 @@ export function AdminShell({
         </header>
 
         {signOutError ? (
-          <p className="border-b border-red-100 bg-red-50 px-5 py-2 text-center text-xs text-red-800 sm:px-7">
+          <p className="border-b border-red-100 bg-red-50/20 px-5 py-2 text-center text-xs text-red-800/80 sm:px-7">
             {signOutError}
           </p>
         ) : null}

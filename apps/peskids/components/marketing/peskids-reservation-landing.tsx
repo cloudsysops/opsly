@@ -69,7 +69,7 @@ export function PeskidsReservationLanding({
               source={source}
               campaign={campaign}
               defaultReferralSource={defaultReferralSource}
-              embedded={false}
+              embedded
             />
           </Suspense>
         </div>
