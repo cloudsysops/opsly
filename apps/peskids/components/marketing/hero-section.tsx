@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { Instagram } from 'lucide-react'
 import { PeskidsBrush, WiggleLine } from '@/components/brand/peskids-logo'
 import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
-import { PESKIDS_CHAT_SECTION_ANCHOR } from '@/lib/peskids-landing-copy'
+import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config'
 import { peskidsColorTokens } from '@/lib/tokens'
 
 const instagramButtonClass =
@@ -44,10 +44,10 @@ export function HeroSection(): React.ReactElement {
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
           <Link
-            href={`#${PESKIDS_CHAT_SECTION_ANCHOR}`}
+            href={PESKIDS_RESERVATION_FORM_HREF}
             className="inline-flex h-12 items-center justify-center rounded-full bg-white px-6 text-sm font-bold text-pk-deep shadow-sm transition hover:bg-white/90"
           >
-            Hablar con un asesor
+            Completar solicitud
           </Link>
           <Link
             href={PESKIDS_INSTAGRAM.profileUrl}
@@ -62,7 +62,7 @@ export function HeroSection(): React.ReactElement {
         </div>
 
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/65">
-          Responde en el chat. Al terminar, el botón de WhatsApp te lleva al equipo humano de
+          Completa el formulario. Al terminar, el botón de WhatsApp te lleva al equipo humano de
           Llanogrande o Domicilios según lo que elijas.
         </p>
       </div>

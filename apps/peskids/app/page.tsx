@@ -11,7 +11,7 @@ export const revalidate = 60;
 export const metadata = {
   title: 'Peskids — Academia de natación · Medellín',
   description:
-    'Natación para niños de 3 meses a 15 años. Sede Llanogrande. Aprenden, se divierten, son Peskids. Abre el chat de información y te conectamos por WhatsApp.',
+    'Natación para niños de 3 meses a 15 años. Sede Llanogrande. Aprenden, se divierten, son Peskids. Completa el formulario de solicitud y te conectamos por WhatsApp.',
 };
 
 export default function HomePage(): React.ReactElement {

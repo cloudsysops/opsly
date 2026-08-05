@@ -53,5 +53,5 @@ export const PESKIDS_CONSENT_PHOTOS_VIDEOS =
 export const PESKIDS_INSTAGRAM_LANDING_INTRO =
   'Desde Instagram: responde estas preguntas y te conectaremos con el asesor de tu sede.';
 
-/** Anchor id for the interactive admissions chat on public landings. */
-export const PESKIDS_CHAT_SECTION_ANCHOR = 'contacto';
+/** @deprecated Prefer PESKIDS_RESERVATION_FORM_ANCHOR — kept for older anchors. */
+export const PESKIDS_CHAT_SECTION_ANCHOR = 'reserva';
