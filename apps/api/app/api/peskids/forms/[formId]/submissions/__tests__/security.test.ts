@@ -47,7 +47,9 @@ describe('Peskids Form Submission Security', () => {
     (checkRateLimit as any).mockResolvedValue({ allowed: true });
 
     const mockRpc = vi.fn().mockResolvedValue({ error: null });
-    const mockSingle = vi.fn().mockResolvedValue({ data: { id: 'guid-1', tenant_slug: 't1' }, error: null });
+    const mockSingle = vi
+      .fn()
+      .mockResolvedValue({ data: { id: 'guid-1', tenant_slug: 't1' }, error: null });
     const mockFrom = vi.fn().mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
@@ -64,14 +66,14 @@ describe('Peskids Form Submission Security', () => {
       method: 'POST',
       body: JSON.stringify({
         submissionData: { field: 'value' },
-        userId: 'attacker-specified-id'
+        userId: 'attacker-specified-id',
       }),
     });
 
     await POST(req, { params: Promise.resolve({ formId: 'f1' }) });
 
     // Verify audit log call
-    const auditCall = mockRpc.mock.calls.find(call => call[0] === 'log_audit_event');
+    const auditCall = mockRpc.mock.calls.find((call) => call[0] === 'log_audit_event');
     expect(auditCall).toBeDefined();
     const payload = auditCall[1];
 
