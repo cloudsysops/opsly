@@ -362,6 +362,7 @@ export function LeadCaptureForm({
           birth_date: formData.birth_date,
           document_type: formData.document_type || 'CC',
           document_number: formData.document_number,
+          city: formData.city || undefined,
           class_modality: formData.class_modality,
           neighborhood:
             formData.class_modality === 'llanogrande' ? undefined : formData.neighborhood,
@@ -378,12 +379,11 @@ export function LeadCaptureForm({
       } else {
         Object.assign(rawPayload, {
           company_name: formData.company_name,
+          contact_role: formData.name,
           company_nit: formData.company_nit,
-          contact_role: formData.contact_role,
-          company_kind: formData.company_kind,
-          location: formData.location,
-          approx_children: formData.approx_children,
-          need: formData.need,
+          location: formData.company_name,
+          approx_children: 5,
+          need: 'Alianza con guardería - consultar disponibilidad',
         })
       }
 

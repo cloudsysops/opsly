@@ -117,7 +117,7 @@ const familySchema = z
     birth_date: birthDateField,
     document_type: z.string().trim().default('CC'),
     document_number: documentNumberField,
-    city: z.string().trim().min(2).max(80).optional(),
+    city: optionalText(80),
     class_modality: z.enum(PESKIDS_CLASS_MODALITIES, {
       message: 'Selecciona sede Llanogrande o domicilio',
     }),
@@ -148,6 +148,7 @@ const familySchema = z
       metadata: {
         intake_version: 'dynamic-intake-v1',
         child_age_years: age,
+        city: data.city ?? undefined,
       } as Record<string, unknown>,
     };
   });
