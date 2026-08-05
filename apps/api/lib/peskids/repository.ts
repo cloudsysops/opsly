@@ -22,6 +22,7 @@ export type PeskidsLeadRow = {
   referral_source: string | null;
   status: string;
   admin_notes: string | null;
+  metadata?: Record<string, unknown>;
   created_at: string;
 };
 
@@ -77,7 +78,7 @@ export async function peskidsInsertLead(
       twenty_opportunity_id: body.twenty_opportunity_id ?? null,
     })
     .select(
-      'id, tenant_slug, full_name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, birth_date, document_type, document_number, company_name, company_nit, referral_source, status, admin_notes, created_at'
+      'id, tenant_slug, full_name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, birth_date, document_type, document_number, company_name, company_nit, referral_source, status, admin_notes, metadata, created_at'
     )
     .single();
 

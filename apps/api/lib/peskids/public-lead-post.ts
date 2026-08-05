@@ -121,7 +121,7 @@ export async function postPublicPeskidsLead(request: NextRequest): Promise<Respo
       const brief = await generateAdvisorBrief(row);
       if (brief) {
         await peskidsUpdateLeadMetadata(row.id, {
-          ...(row.metadata as Record<string, unknown>),
+          ...(row.metadata ?? {}),
           advisor_brief: brief,
           brief_generated_at: new Date().toISOString(),
         });
@@ -140,7 +140,7 @@ export async function postPublicPeskidsLead(request: NextRequest): Promise<Respo
 
   // Process file uploads if present (teacher_applicant with attachments)
   if (attachments && parsed.data.lead_type === 'teacher_applicant') {
-    void uploadTeacherAttachments(row.id, attachments).catch((error: unknown) => {
+    void uploadTeacherAttachments(row.id, attachments as FormData).catch((error: unknown) => {
       console.warn('[peskids] teacher attachment upload failed', {
         lead_id: row.id,
         error: error instanceof Error ? error.message : String(error),

@@ -1,13 +1,11 @@
 import { Anthropic } from '@anthropic-ai/sdk';
-import type { Database } from '@intcloudsysops/supabase/types';
-
-type Lead = Database['public']['Tables']['leads']['Row'];
+import type { PeskidsLeadRow } from './repository';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-export async function generateAdvisorBrief(lead: Lead): Promise<string | null> {
+export async function generateAdvisorBrief(lead: PeskidsLeadRow): Promise<string | null> {
   try {
     const { metadata, lead_type, full_name, child_name, email, phone, neighborhood, referral_source } = lead;
     const childAge = metadata?.child_age_years || null;
