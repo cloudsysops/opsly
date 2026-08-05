@@ -14,12 +14,13 @@ interface PeskidsLead {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const requestId = resolveRequestId(request);
 
   try {
-    const leadId = params.id?.trim();
+    const { id } = await params;
+    const leadId = id?.trim();
     if (!leadId) {
       return errorJson(requestId, 'Lead ID is required', 400);
     }
