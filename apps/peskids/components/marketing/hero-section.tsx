@@ -47,7 +47,7 @@ export function HeroSection(): React.ReactElement {
             href={`#${PESKIDS_CHAT_SECTION_ANCHOR}`}
             className="inline-flex h-12 items-center justify-center rounded-full bg-white px-6 text-sm font-bold text-pk-deep shadow-sm transition hover:bg-white/90"
           >
-            Abrir chat de matrícula
+            Hablar con un asesor
           </Link>
           <Link
             href={PESKIDS_INSTAGRAM.profileUrl}

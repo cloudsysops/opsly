@@ -14,18 +14,17 @@ export function CtaBand(): React.ReactElement {
         <div className="relative flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-xl">
             <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
-              ¿Listo para conocer Peskids?
+              ¿Tienes preguntas?
             </h2>
             <p className="mt-4 text-lg text-white/85">
-              Abre el chat de matrícula, responde tocando las opciones y te pasamos al WhatsApp
-              correcto (Llanogrande o Domicilios).
+              Responde unas preguntas y te conectaremos con el asesor adecuado para tu sede.
             </p>
           </div>
           <a
             href={`#${PESKIDS_CHAT_SECTION_ANCHOR}`}
             className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-bold text-pk-deep shadow-md transition hover:bg-white/90"
           >
-            Abrir chat de matrícula
+            Abrir chat de información
           </a>
         </div>
       </div>

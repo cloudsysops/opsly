@@ -40,7 +40,7 @@ export function WhatsAppFloatingButton(): React.ReactElement | null {
           boxShadow: `0 8px 32px ${whatsappGreen}8c`,
           outlineColor: whatsappGreen,
         }}
-        aria-label={`WhatsApp Peskids: abre el chat de matrícula o continúa si ya lo completaste (${PESKIDS_CONTACT.whatsapp.display})`}
+        aria-label={`WhatsApp Peskids: abre el chat de información o continúa si ya lo completaste (${PESKIDS_CONTACT.whatsapp.display})`}
         title="Chat de matrícula → WhatsApp"
       >
         <WhatsAppIcon className="h-7 w-7 shrink-0 sm:h-8 sm:w-8" />

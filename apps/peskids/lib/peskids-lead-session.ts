@@ -28,7 +28,7 @@ export function buildPostLeadWhatsAppPrefill(
       : options?.lead_type === 'company'
         ? ' Completé el chat de empresa/institución.'
         : '';
-  return `Hola Peskids 👋 Soy ${trimmed}, acabo de completar el chat de matrícula en la web.${typeBit}${modalityBit} ¿Me pueden orientar?`;
+  return `Hola Peskids 👋 Soy ${trimmed}, acabo de completar el chat de información en la web.${typeBit}${modalityBit} ¿Me pueden orientar?`;
 }
 
 export function parsePeskidsLeadSession(raw: string | null): PeskidsLeadSession | null {

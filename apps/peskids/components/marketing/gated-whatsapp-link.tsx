@@ -81,7 +81,7 @@ function whatsappCtaLabel(session: PeskidsLeadSession, fallback: string): string
 
 /**
  * WhatsApp CTA en landing: solo abre wa.me si el lead ya completó chat/formulario.
- * Si no, abre el chat de matrícula (datos a plataforma primero).
+ * Si no, abre el chat de información (datos a plataforma primero).
  */
 export function GatedWhatsAppLink({
   variant = 'button',
@@ -121,8 +121,8 @@ export function GatedWhatsAppLink({
       className={cn(base, className)}
       style={style}
       onClick={(): void => dispatchOpenPeskidsChat()}
-      aria-label={`Abre el chat de matrícula antes de WhatsApp (${PESKIDS_CONTACT.whatsapp.display})`}
-      title="Primero completa el chat de matrícula"
+      aria-label={`Abre el chat de información antes de WhatsApp (${PESKIDS_CONTACT.whatsapp.display})`}
+      title="Primero completa el chat de información"
     >
       {showIcon ? <WhatsAppIcon className={cn('shrink-0', iconSize)} /> : null}
       <span>{label}</span>

@@ -8,13 +8,13 @@ import {
 const TENANT_SLUG = 'peskids';
 const FALLBACK_REPLY =
   '¡Hola! Somos Peskids, academia de natación en Llanogrande (Medellín). Ofrecemos clases en sede o a domicilio. ' +
-  'Para que te contactemos, abre el chat de matrícula en la página principal. Al terminar te conectamos por WhatsApp con el equipo correcto.';
+  'Para que te contactemos, abre el chat de información en la página principal. Al terminar te conectamos por WhatsApp con el equipo correcto.';
 
 const SYSTEM_CONTEXT = `Eres el asistente virtual de Peskids, academia de natación para niños de 3 meses a 15 años en Llanogrande, Medellín.
 Hay dos modalidades: clases en sede Llanogrande (Rionegro) y clases a domicilio en el área metropolitana.
 Responde en español (Colombia), tono cálido y breve (máximo 4 oraciones).
 No inventes precios ni horarios exactos. No ofrezcas ni prometas clase gratis o clase de prueba gratuita salvo que el visitante ya la tenga confirmada por el equipo.
-Si piden inscribirse o reservar, dirige siempre al chat de matrícula en la landing (no WhatsApp directo hasta completar el intake).
+Si piden inscribirse o reservar, dirige siempre al chat de información en la landing (no WhatsApp directo hasta completar el intake).
 Nunca prometas cupo sin confirmación humana. Si no sabes algo, di que un asesor dará seguimiento.`;
 
 function llmGatewayUrl(): string {

@@ -7,11 +7,11 @@ import { PESKIDS_INSTAGRAM_LANDING } from '@/lib/peskids-landing-config';
 export const metadata = {
   title: 'Solicitud de contacto | Peskids',
   description:
-    'Abre el chat de matrícula y el equipo de Peskids te contacta. Natación en Llanogrande o a domicilio en el área metropolitana de Medellín.',
+    'Abre el chat de información y el equipo de Peskids te contacta. Natación en Llanogrande o a domicilio en el área metropolitana de Medellín.',
   openGraph: {
     title: 'Solicitud de contacto · Peskids',
     description:
-      'Completa el chat de matrícula y te conectamos por WhatsApp para orientarte sobre clases en sede Llanogrande o a domicilio.',
+      'Completa el chat de información y te conectamos por WhatsApp para orientarte sobre clases en sede Llanogrande o a domicilio.',
     url: 'https://www.peskids.com/instagram',
     type: 'website',
   },

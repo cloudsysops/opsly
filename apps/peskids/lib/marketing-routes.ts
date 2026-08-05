@@ -26,7 +26,7 @@ export function isPeskidsPublicLandingPath(pathname: string | null | undefined):
   );
 }
 
-/** CTAs públicos → chat de matrícula primero; formulario clásico como alternativa. */
+/** CTAs públicos → chat de información primero; formulario clásico como alternativa. */
 export const PESKIDS_PUBLIC_RESERVA_FORM_LABEL = 'Hablar con el asistente';
 
 /** Etiqueta del botón WhatsApp en landing (gate: chat primero). */
@@ -36,7 +36,7 @@ export const PESKIDS_PUBLIC_WHATSAPP_LABEL = 'WhatsApp';
 export const PESKIDS_PUBLIC_RESERVA_WHATSAPP_LABEL = PESKIDS_PUBLIC_WHATSAPP_LABEL;
 
 export const PESKIDS_ADMISSIONS_CHAT_FORM_REPLY =
-  'Puedes completar tu solicitud por el chat de matrícula en la página (recomendado) o usar el formulario clásico. Al terminar te conectamos por WhatsApp con el equipo correcto.';
+  'Puedes completar tu solicitud por el chat de información en la página (recomendado) o usar el formulario clásico. Al terminar te conectamos por WhatsApp con el equipo correcto.';
 
 /** @deprecated Admissions chat now runs interactive intake; kept for older clients/tests. */
 export function peskidsAdmissionsChatFormRedirectPayload(): {
@@ -65,7 +65,7 @@ export function peskidsAdmissionsChatFormRedirectPayload(): {
     input_mode: 'text',
     quick_replies: [],
     from_llm: false,
-    disclaimer: 'El chat de matrícula guarda la solicitud en la plataforma antes del WhatsApp humano.',
+    disclaimer: 'El chat de información guarda la solicitud en la plataforma antes del WhatsApp humano.',
   };
 }
 
