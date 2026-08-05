@@ -7,7 +7,6 @@ import { WhatsAppLink } from '@/components/contact/whatsapp-link'
 import { buildPostLeadWhatsAppPrefill, writePeskidsLeadSession } from '@/lib/peskids-lead-session'
 import { ageYearsFromBirthDate } from '@/lib/lead-age'
 import {
-  PESKIDS_COMPANY_KINDS,
   PESKIDS_LEAD_TYPES,
   leadApiPostSchema,
   leadCaptureFormSchema,
@@ -33,14 +32,6 @@ import { firstZodErrorMessage } from '@/lib/validation/zod-errors'
 import { cn } from '@/lib/utils'
 
 const CONSENT_POLICY_VERSION = 'pk-parental-v1+pk-privacy-v1@1.0'
-
-const COMPANY_KIND_LABELS: Record<PeskidsCompanyKind, string> = {
-  guarderia: 'Guardería',
-  colegio: 'Colegio',
-  empresa: 'Empresa',
-  conjunto: 'Conjunto residencial',
-  otro: 'Otro',
-}
 
 const LEAD_TYPE_LABELS: Record<PeskidsLeadType, string> = {
   family: 'Clientes o alumnos',
@@ -268,7 +259,7 @@ export function LeadCaptureForm({
     setStepIndex((prev) => Math.min(prev, Math.max(steps.length - 1, 0)))
   }, [steps.length])
 
-  const setField = (name: keyof FormState, value: string): void => {
+  const setField = (name: keyof FormState, value: unknown): void => {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
@@ -455,11 +446,6 @@ export function LeadCaptureForm({
         const apiErrorText = await apiResponse.text()
         console.error('Peskids lead API error:', apiResponse.status, apiErrorText)
         throw new Error(`Lead API failed: ${apiResponse.status}`)
-      }
-
-      const apiResult = (await apiResponse.json()) as {
-        referral_link?: string | null
-        referral_code?: string | null
       }
 
       const webhookUrl =
