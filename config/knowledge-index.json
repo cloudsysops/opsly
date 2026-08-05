@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-08-05T01:58:16.082Z",
+  "generated_at": "2026-08-05T13:31:58.928Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -27583,6 +27583,36 @@
         "web"
       ],
       "size_bytes": 4372
+    },
+    {
+      "path": "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
+      "title": "Peskids n8n: AI Brief Generation Workflow",
+      "keywords": [
+        "api",
+        "brief",
+        "call",
+        "claude",
+        "configuration",
+        "expected",
+        "generation",
+        "markdown",
+        "n8n",
+        "notification",
+        "opsly",
+        "optional",
+        "outputs",
+        "peskids",
+        "roadmap",
+        "save",
+        "send",
+        "steps",
+        "supabase",
+        "testing",
+        "trigger",
+        "webhook",
+        "workflow"
+      ],
+      "size_bytes": 3647
     },
     {
       "path": "docs/tenants/peskids/N8N-SETUP.md",
@@ -91326,6 +91356,7 @@
       "docs/tenants/peskids/DEMO-SCRIPT.md",
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
       "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/FRANCHISES.md",
       "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
@@ -93924,6 +93955,7 @@
       "docs/tenants/peskids/DEMO-SCRIPT.md",
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
       "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/FRANCHISES.md",
       "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
@@ -95892,6 +95924,7 @@
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
       "docs/tenants/peskids/DEMO-SCRIPT.md",
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/FRANCHISES.md",
       "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
@@ -96511,6 +96544,7 @@
       "docs/tenants/peskids/WHATSAPP-CHANNEL.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/tenants/panini-lab/README.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
       "docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md",
@@ -96788,6 +96822,7 @@
       "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
       "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
@@ -101287,6 +101322,7 @@
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-HANDOFF-FOR-VPS-EXECUTION.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/brain/skills/opsly-supabase.md",
@@ -102644,6 +102680,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/PESKIDS-ADMIN-USER-VALIDATION.md",
       "docs/tenants/peskids/GHL-WORKFLOW-TEMPLATES.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/testing/PHASE1-TEST-PLAN.md",
@@ -103752,6 +103789,7 @@
       "docs/tenants/peskids/GHL-WORKFLOWS.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/tenants/SECOND-CLIENT-READINESS-ASSESSMENT.md",
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
@@ -107779,6 +107817,7 @@
       "docs/tenants/peskids/DAILY-DIGEST-RUNBOOK.md",
       "docs/tenants/peskids/WACRM-RUNBOOK.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
@@ -110275,6 +110314,7 @@
       "docs/03-agents/SOCIAL-MEDIA-AGENT-SYRA.md",
       "docs/adr/ADR-043-intelligent-content-generation-via-llm-gateway.md",
       "docs/adr/ADR-043-supplement/README.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/reports/SESSION-SUMMARY-2026-05-08.md",
       "docs/blueprints/TWENTY-BOOTSTRAP-IRREDUCIBLE.md",
@@ -111031,6 +111071,7 @@
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/runbooks/INCUBATION-PLATFORM-FOUNDATION.md",
       "docs/00-architecture/VPS-CLEANUP-WEBHOOK-CONTRACT.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
       "docs/testing/PHASE-2-TESTING.md"
     ],
@@ -111281,7 +111322,8 @@
       "docs/03-agents/SOCIAL-MEDIA-AGENT-SYRA.md",
       "docs/adr/ADR-025-notebooklm-knowledge-layer.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
-      "docs/tenants/peskids/GHL-WORKFLOWS.md"
+      "docs/tenants/peskids/GHL-WORKFLOWS.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md"
     ],
     "when": [
       "packages/skills/user/opsly-peskids-deployment/SKILL.md",
@@ -111651,6 +111693,7 @@
       "docs/audits/COST-DEEP-DIVE.md",
       "docs/adr/ADR-017-worker-teams-billing-roadmap.md",
       "docs/adr/ADR-030-prepaid-token-wallet-roadmap.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/tenants/panini-lab/README.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md"
     ],
@@ -113096,6 +113139,7 @@
       "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
@@ -114417,6 +114461,7 @@
       "docs/operations/RUN-VALIDATION-LOCALLY.md",
       "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
       "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md",
       ".claude/agents/README.md",
@@ -129276,6 +129321,7 @@
       "docs/adr/ADR-034-ci-hygiene.md",
       "docs/tenants/peskids/QUICK-START-PRODUCTION.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
@@ -134450,6 +134496,7 @@
       "docs/tenants/peskids/WACRM-RUNBOOK.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
@@ -139122,6 +139169,7 @@
       "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/adr/ADR-046-family-email-invite-access.md",
       "docs/tenants/peskids/DATA-MODEL.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
       "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md"
     ],
@@ -140391,6 +140439,7 @@
       "docs/adr/ADR-043-supplement/DECISION-RATIONALE.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/peskids/SPRINT-01.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
       "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
@@ -154173,6 +154222,7 @@
       "vendor/agency-agents/integrations/openclaw/book-co-author/AGENTS.md",
       "docs/superpowers/plans/2026-05-30-skills-obsidian-integration.md",
       "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/testing/QA-TESTING-BRIEF.md"
     ],
     "chapter": [
@@ -161321,7 +161371,8 @@
       "docs/governance/internal/INCIDENT-RESPONSE-POLICY.md",
       "docs/audits/COST-DEEP-DIVE.md",
       "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
-      "docs/tenants/peskids/FORMS-SPEC.md"
+      "docs/tenants/peskids/FORMS-SPEC.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md"
     ],
     "prohibited": [
       "docs/governance/internal/CHANGE-MANAGEMENT-POLICY.md"
@@ -161490,7 +161541,8 @@
       "docs/obsidian/research/frontier-pattern-radar.md"
     ],
     "save": [
-      "docs/obsidian/research/frontier-pattern-radar.md"
+      "docs/obsidian/research/frontier-pattern-radar.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md"
     ],
     "space": [
       "docs/obsidian/research/frontier-pattern-radar.md"
@@ -163342,7 +163394,8 @@
     ],
     "outputs": [
       "docs/00-architecture/RENDERING-ENGINE.md",
-      "docs/04-infrastructure/VPS-PROVISIONING-STANDARD.md"
+      "docs/04-infrastructure/VPS-PROVISIONING-STANDARD.md",
+      "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md"
     ],
     "agregar": [
       "docs/00-architecture/ORCHESTRATOR.md",
@@ -169664,6 +169717,7 @@
     "docs/tenants/peskids/INVITATION-FLOW-VERIFICATION.md",
     "docs/tenants/peskids/MVP-BACKLOG.md",
     "docs/tenants/peskids/MVP-PLAN.md",
+    "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
     "docs/tenants/peskids/N8N-SETUP.md",
     "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
     "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md",

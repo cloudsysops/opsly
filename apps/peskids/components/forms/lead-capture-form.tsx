@@ -518,7 +518,14 @@ export function LeadCaptureForm({
             <div className="space-y-4">
               <div>
                 <p className="text-xl font-bold text-pk-ink">{PESKIDS_FORM_SUCCESS_TITLE}</p>
-                <p className="mt-2 text-pk-sub">{PESKIDS_FORM_SUCCESS_DETAIL}</p>
+                <p className="mt-2 text-pk-sub whitespace-pre-line">
+                  {PESKIDS_FORM_SUCCESS_DETAIL.replace(
+                    '{modality}',
+                    formData.class_modality === 'llanogrande'
+                      ? 'la sede Llanogrande'
+                      : 'clases a domicilio'
+                  )}
+                </p>
               </div>
               <WhatsAppLink
                 variant="hero"

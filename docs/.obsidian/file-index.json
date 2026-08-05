@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-08-05T01:58:14.282Z",
-  "totalFiles": 830,
+  "lastIndexed": "2026-08-05T13:31:57.080Z",
+  "totalFiles": 831,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -775,6 +775,7 @@
     "tenants/peskids/INVITATION-FLOW-VERIFICATION.md",
     "tenants/peskids/MVP-BACKLOG.md",
     "tenants/peskids/MVP-PLAN.md",
+    "tenants/peskids/N8N-BRIEF-WORKFLOW.md",
     "tenants/peskids/N8N-SETUP.md",
     "tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
     "tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md",

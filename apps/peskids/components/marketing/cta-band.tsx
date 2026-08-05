@@ -17,15 +17,15 @@ export function CtaBand(): React.ReactElement {
               ¿Listo para conocer Peskids?
             </h2>
             <p className="mt-4 text-lg text-white/85">
-              Abre el chat de matrícula, responde tocando las opciones y te pasamos al WhatsApp
-              correcto (Llanogrande o Domicilios).
+              Abre el chat de información, responde tocando las opciones y continúa por WhatsApp
+              con el equipo correspondiente (Llanogrande o Domicilios).
             </p>
           </div>
           <a
             href={`#${PESKIDS_CHAT_SECTION_ANCHOR}`}
             className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-bold text-pk-deep shadow-md transition hover:bg-white/90"
           >
-            Abrir chat de matrícula
+            Abrir chat de información
           </a>
         </div>
       </div>

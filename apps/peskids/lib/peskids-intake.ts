@@ -621,7 +621,7 @@ export async function buildPeskidsIntakeTurn(params: {
       questionSpec?.prompt ??
       '¿Me compartes un poco más de información para completar tu solicitud?';
     reply = showWelcome
-      ? `${mode === 'support' ? peskidsSupportWelcome(params.source) : peskidsIntakeWelcome(params.source)}\n\n${question}`
+      ? `${mode === 'support' ? peskidsSupportWelcome(params.source) : peskidsIntakeWelcome()}\n\n${question}`
       : profile.consentTreatment === 'no' && missingField === 'consentTreatment'
         ? 'Entiendo. Sin tu autorización no podemos guardar la solicitud en la plataforma. Si quieres continuar, responde «Sí, autorizo».'
         : question;

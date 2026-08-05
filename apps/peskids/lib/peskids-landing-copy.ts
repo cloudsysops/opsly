@@ -6,7 +6,7 @@
  * a new DB migration / pricing update. Contact/matrícula language is permanent.
  */
 
-export const PESKIDS_RESERVATION_EYEBROW = 'Chat de información';
+export const PESKIDS_RESERVATION_EYEBROW = 'Cupos abiertos.';
 
 export const PESKIDS_RESERVATION_TITLE = 'Aprenden. Se divierten. Somos Peskids.';
 
@@ -25,17 +25,17 @@ export const PESKIDS_FORM_CARD_DESCRIPTION =
   'Estas preguntas nos ayudan a recomendar la mejor sede, modalidad y profesor para tu familia.';
 
 /** Primary CTA — opens / scrolls to admissions chat. */
-export const PESKIDS_FORM_SUBMIT_LABEL = 'Hablar con un asesor';
+export const PESKIDS_FORM_SUBMIT_LABEL = 'Abrir chat de información';
 
 /** Post-form handoff only — not shown before lead capture. */
 export const PESKIDS_WHATSAPP_CTA_LABEL = 'Continuar por WhatsApp';
 
-export const PESKIDS_FORM_SUCCESS_TITLE = '🎉 ¡Ya casi terminamos!';
+export const PESKIDS_FORM_SUCCESS_TITLE = '¡Gracias, recibimos tu solicitud!';
 
 export const PESKIDS_FORM_SUCCESS_DETAIL =
-  'Tu información quedó registrada. Ahora continúa con uno de nuestros asesores.';
+  'Tu solicitud fue registrada para {modality}.\nContinúa por WhatsApp con el equipo de atención correspondiente.';
 
-export const PESKIDS_FORM_SUCCESS_RESPONSE_TIME = 'Tiempo promedio de respuesta: 5–10 minutos';
+export const PESKIDS_FORM_SUCCESS_RESPONSE_TIME = '¿Qué sigue?\nAbre WhatsApp para continuar con atención personalizada.';
 
 export const PESKIDS_CONSENT_TREATMENT =
   'Autorizo a Peskids para tratar mis datos personales y, cuando aplique, los del menor bajo mi responsabilidad, con el fin de atender esta solicitud de contacto y matrícula, conforme a su Política de Privacidad.';
