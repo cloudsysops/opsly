@@ -44,7 +44,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@capacitor/cli": "^8.4.2",
+    "@capacitor/cli": "8.4.2",
     "@types/node": "^20.19.41",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

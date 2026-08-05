@@ -5,6 +5,7 @@
   "dependencies": {
     "dompurify": "3.4.12",
     "js-tiktoken": "^1.0.21",
+    "next": "15.5.22",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "sharp": "0.35.3"
@@ -214,6 +215,11 @@
     "minimist": "^1.2.8",
     "tmp": "0.2.7",
     "uuid": "^14.0.0",
+    "xcode": {
+      ".": "3.0.1",
+      "uuid": "11.1.1"
+    },
+    "brace-expansion": "1.1.18",
     "fast-uri": "3.1.5",
     "fast-xml-builder": "1.2.0",
     "fast-xml-parser": {
@@ -226,7 +232,10 @@
     },
     "@tootallnate/once": "^3.0.1",
     "langsmith": "0.7.1",
-    "glob": "10.5.0",
+    "glob": {
+      ".": "10.5.0",
+      "brace-expansion": "2.1.4"
+    },
     "eslint-config-next": "15.5.18",
     "@next/eslint-plugin-next": "15.5.18",
     "@supabase/supabase-js": "^2.106.0",
@@ -252,6 +261,12 @@
       "xcode": {
         "uuid": "11.1.1"
       }
+    },
+    "@typescript-eslint/typescript-estree": {
+      "brace-expansion": "5.0.9"
+    },
+    "nodemon": {
+      "brace-expansion": "5.0.9"
     },
     "sharp": "0.35.3",
     "next": {
