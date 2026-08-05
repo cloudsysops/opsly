@@ -10,27 +10,51 @@ tags:
 
 # Peskids — CDN / caché (Cloudflare + Next)
 
-## Síntoma
+## Objetivo
 
-`https://www.peskids.com` muestra UI o copy **viejo** tras un deploy.
+Tras **cada** deploy/redeploy, la web pública (`https://www.peskids.com`) debe reflejar la imagen nueva sin quedarse en HTML/assets viejos.
 
-## Capas (en orden)
+## Post-deploy automático (tarea fija)
+
+| Dónde | Qué corre |
+|-------|-----------|
+| `scripts/peskids-deploy-vps.sh` | Tras health local/público → `scripts/ops/purge-peskids-cdn.sh --soft` |
+| `.github/workflows/deploy-peskids.yml` | Job `deploy-vps` → step **Post-deploy — purge Cloudflare CDN** |
+
+`--soft`: si Cloudflare/API falla, el deploy **no** se marca fallido; queda warning en logs.
+
+### Secret requerido en GitHub Actions
+
+| Secret | Origen |
+|--------|--------|
+| `CF_DNS_API_TOKEN` | Doppler `ops-intcloudsysops` / `prd` (mismo token; permiso **Zone → Cache Purge** en `peskids.com`) |
+
+Sin el secret en GitHub, el step del workflow avisa y hace skip. El script en VPS puede usar Doppler en el host.
+
+```bash
+# One-time: sync token to Actions (stdin — no pegar en chat)
+doppler secrets get CF_DNS_API_TOKEN --project ops-intcloudsysops --config prd --plain \
+  | gh secret set CF_DNS_API_TOKEN --repo cloudsysops/opsly
+# Also production env if Deploy Peskids uses environment secrets:
+doppler secrets get CF_DNS_API_TOKEN --project ops-intcloudsysops --config prd --plain \
+  | gh secret set CF_DNS_API_TOKEN --repo cloudsysops/opsly --env production
+```
+
+## Capas si aún se ve “viejo”
 
 | Capa | Cómo se ve | Qué hacer |
 |------|------------|-----------|
-| 1. Cloudflare | Header `cf-cache-status: HIT` | Purgar zona `peskids.com` |
-| 2. Next prerender | `x-nextjs-cache: HIT` + `s-maxage=31536000` | Redeploy imagen GHCR (el HTML está en el build) |
-| 3. Browser | Solo en tu máquina | Hard refresh `Cmd+Shift+R` / ventana privada |
+| 1. Cloudflare | `cf-cache-status: HIT` | Purge (automático post-deploy; manual abajo) |
+| 2. Next prerender | `x-nextjs-cache` + `s-maxage` largo | Redeploy imagen; home usa `revalidate=60` + headers cortos |
+| 3. Browser | Solo en tu máquina | Hard refresh `Cmd+Shift+R` |
 | 4. Código antiguo | `/api/health` → `git_sha` viejo | Deploy Peskids de un SHA más nuevo |
-
-Comprobar origen real:
 
 ```bash
 curl -fsS https://www.peskids.com/api/health | jq '{git_sha,image_tag}'
 curl -fsSIL https://www.peskids.com/ | rg -i 'cf-cache|cache-control|x-nextjs'
 ```
 
-## Purge Cloudflare (rápido)
+## Purge manual
 
 ```bash
 ./scripts/ops/purge-peskids-cdn.sh --dry-run
@@ -38,19 +62,10 @@ doppler run --project ops-intcloudsysops --config prd -- \
   ./scripts/ops/purge-peskids-cdn.sh
 ```
 
-Requiere `CF_DNS_API_TOKEN` con **Cache Purge** en la zona `peskids.com`.
-
-## Tras deploy
-
-1. Confirmar `git_sha` en health = SHA desplegado.
-2. `./scripts/ops/purge-peskids-cdn.sh`
-3. Hard refresh.
-
-La home usa `revalidate` corto + headers HTML (`s-maxage` bajo) para no clavar un año de CDN en la landing.
-
 ## Relacionado
 
-- Deploy: `scripts/peskids-deploy-vps.sh`, `.github/workflows/deploy-peskids.yml`
+- Deploy VPS: `scripts/peskids-deploy-vps.sh`
+- CI: `.github/workflows/deploy-peskids.yml`
 - Dominio canónico: `https://www.peskids.com`
 
 ---
