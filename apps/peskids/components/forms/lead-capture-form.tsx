@@ -17,14 +17,12 @@ import {
 import {
   PESKIDS_CONSENT_MARKETING,
   PESKIDS_CONSENT_PHOTOS_VIDEOS,
+  PESKIDS_CONSENT_TREATMENT,
   PESKIDS_FORM_CARD_DESCRIPTION,
   PESKIDS_FORM_CARD_TITLE,
   PESKIDS_FORM_SUBMIT_LABEL,
   PESKIDS_FORM_SUCCESS_DETAIL,
   PESKIDS_FORM_SUCCESS_TITLE,
-  PESKIDS_FORM_SUCCESS_RESPONSE_TIME,
-  PESKIDS_RESERVATION_EYEBROW,
-  PESKIDS_RESERVATION_TITLE,
 } from '@/lib/peskids-landing-copy'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
