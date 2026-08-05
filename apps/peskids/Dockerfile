@@ -31,6 +31,7 @@ COPY lib/wacrm-channel/ ./lib/wacrm-channel/
 COPY lib/wompi-gateway/ ./lib/wompi-gateway/
 COPY packages/opsly-core/ ./packages/opsly-core/
 COPY packages/types/ ./packages/types/
+COPY scripts/peskids/unblock-admin-access.args.ts ./scripts/peskids/
 COPY apps/peskids/ ./apps/peskids/
 
 ARG NEXT_PUBLIC_SUPABASE_URL=
