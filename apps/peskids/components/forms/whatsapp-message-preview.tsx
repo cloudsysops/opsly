@@ -26,7 +26,8 @@ export function WhatsAppMessagePreview({
 }: WhatsAppMessagePreviewProps): React.ReactElement {
   const [copied, setCopied] = useState(false)
 
-  const adminLink = `https://peskids.op-sly.com/admin/leads/${leadId}`
+  const peskidsUrl = process.env.NEXT_PUBLIC_PESKIDS_URL || 'https://www.peskids.com'
+  const adminLink = `${peskidsUrl}/admin/leads/${leadId}`
 
   const message = `Hola, me interesa Peskids natación.
 
