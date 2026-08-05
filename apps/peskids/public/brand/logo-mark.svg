@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Peskids natacion">
+  <defs>
+    <clipPath id="pk-circle">
+      <circle cx="256" cy="256" r="256"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#pk-circle)">
+    <path fill="#235A7F" d="M0 0 H280 C220 80 200 160 256 256 C160 220 80 200 0 280 Z"/>
+    <path fill="#F47259" d="M512 0 V280 C432 220 352 200 256 256 C292 160 312 80 232 0 Z"/>
+    <path fill="#54BFB1" d="M0 512 V232 C80 292 160 312 256 256 C220 352 200 432 280 512 Z"/>
+    <path fill="#E9AF17" d="M512 512 H232 C292 432 312 352 256 256 C352 292 432 312 512 232 Z"/>
+    <circle cx="256" cy="256" r="168" fill="#54BFB1" opacity="0.22"/>
+  </g>
+  <circle cx="256" cy="256" r="248" fill="none" stroke="#FFFFFF" stroke-opacity="0.12" stroke-width="8"/>
+  <text
+    x="256"
+    y="250"
+    text-anchor="middle"
+    font-family="Nunito, Varela Round, Arial Rounded MT Bold, system-ui, sans-serif"
+    font-size="92"
+    font-weight="800"
+    fill="#FFFFFF"
+    letter-spacing="-1"
+  >Peskids</text>
+  <circle cx="168" cy="232" r="7" fill="#54BFB1"/>
+  <text
+    x="256"
+    y="298"
+    text-anchor="middle"
+    font-family="Nunito, system-ui, sans-serif"
+    font-size="28"
+    font-weight="600"
+    font-style="italic"
+    fill="#FFFFFF"
+    opacity="0.95"
+    letter-spacing="2"
+  >nataci&#243;n</text>
+</svg>
