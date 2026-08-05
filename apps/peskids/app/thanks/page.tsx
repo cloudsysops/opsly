@@ -6,6 +6,7 @@ import { WhatsAppLink } from '@/components/contact/whatsapp-link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ReferralLinkCard } from '@/components/referrals/referral-link-card';
+import { WhatsAppMessagePreview } from '@/components/forms';
 import { PESKIDS_WHATSAPP_CTA_LABEL } from '@/lib/peskids-landing-copy';
 
 type ThanksSearchParams = Promise<{
@@ -51,6 +52,40 @@ export default async function ThanksPage({
   const leadId = resolvedSearchParams.lead_id?.trim();
   const copy = thanksCopy(modality);
 
+  let leadData: {
+    full_name: string;
+    email: string;
+    phone: string;
+    grade_interested: string;
+    class_modality: string | null;
+  } | null = null;
+
+  if (leadId) {
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_PESKIDS_URL || 'http://localhost:3004';
+      const response = await fetch(`${baseUrl}/api/leads/${leadId}`, {
+        cache: 'no-store',
+      });
+      if (response.ok) {
+        const result = (await response.json()) as {
+          ok?: boolean;
+          data?: {
+            full_name: string;
+            email: string;
+            phone: string;
+            grade_interested: string;
+            class_modality: string | null;
+          };
+        };
+        if (result.ok && result.data) {
+          leadData = result.data;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch lead data:', error);
+    }
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-pk-bg">
       <header className="border-b border-pk-border bg-pk-surface/90 px-6 py-4">
@@ -70,12 +105,28 @@ export default async function ThanksPage({
             {referralLink && referralCode ? (
               <ReferralLinkCard referralLink={referralLink} referralCode={referralCode} />
             ) : null}
-            <WhatsAppLink
-              variant="hero"
-              className="w-full"
-              label={copy.waLabel}
-              modality={modality ?? null}
-            />
+            {leadData && leadId ? (
+              <WhatsAppMessagePreview
+                clientName={leadData.full_name}
+                clientEmail={leadData.email}
+                clientPhone={leadData.phone}
+                gradeInterested={leadData.grade_interested}
+                classModality={
+                  leadData.class_modality === 'llanogrande' ||
+                  leadData.class_modality === 'domicilio'
+                    ? leadData.class_modality
+                    : null
+                }
+                leadId={leadId}
+              />
+            ) : (
+              <WhatsAppLink
+                variant="hero"
+                className="w-full"
+                label={copy.waLabel}
+                modality={modality ?? null}
+              />
+            )}
             {leadId ? (
               <div className="rounded-xl border border-pk-primary/30 bg-pk-primary/10 px-4 py-3 text-left text-sm">
                 <p className="font-semibold text-pk-ink">📋 Ver tu solicitud en el panel:</p>
@@ -90,8 +141,9 @@ export default async function ThanksPage({
             <div className="rounded-xl border border-pk-border bg-pk-bg px-4 py-3 text-left text-sm text-pk-sub">
               <p className="font-semibold text-pk-ink">¿Qué sigue?</p>
               <p className="mt-1">
-                El botón de arriba abre el WhatsApp del equipo correcto. También puedes revisar tu
-                correo.
+                {leadData && leadId
+                  ? 'Envía el mensaje de arriba al soporte de Peskids. El equipo abrirá el link para ver tus detalles y responderá pronto.'
+                  : 'El botón de arriba abre el WhatsApp del equipo correcto. También puedes revisar tu correo.'}
               </p>
             </div>
             <Link href="/">
