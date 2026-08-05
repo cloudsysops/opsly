@@ -40,10 +40,9 @@ describe('peskids-landing-copy', () => {
   });
 
   it('includes required contact bullets', () => {
-    expect(PESKIDS_RESERVATION_BULLETS).toHaveLength(3);
-    expect(PESKIDS_RESERVATION_BULLETS[0]).toMatch(/familia|profesor|empresa/i);
-    expect(PESKIDS_RESERVATION_BULLETS[1]).toMatch(/Llanogrande|domicilio/i);
-    expect(PESKIDS_RESERVATION_BULLETS[2]).toMatch(/WhatsApp/i);
+    expect(PESKIDS_RESERVATION_BULLETS).toHaveLength(2);
+    expect(PESKIDS_RESERVATION_BULLETS[0]).toMatch(/chat/i);
+    expect(PESKIDS_RESERVATION_BULLETS[1]).toMatch(/instagram/i);
   });
 
   it('uses WhatsApp CTA label after successful form submit', () => {
