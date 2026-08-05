@@ -484,8 +484,7 @@ export function LeadCaptureForm({
           <p className="pk-eyebrow text-pk-primary">{PESKIDS_RESERVATION_EYEBROW}</p>
           <CardTitle className="text-2xl sm:text-3xl">{PESKIDS_RESERVATION_TITLE}</CardTitle>
           <CardDescription>
-            Responde estas preguntas del chat para guardar tus datos y direccionarte a la línea de
-            atención correspondiente: sede Llanogrande o domicilios. ¡Gracias!
+            Responde para guardar tus datos y ser direccionado a la línea de atención correspondiente.
           </CardDescription>
           {referredByCode ? (
             <p className="mt-3 rounded-xl border border-pk-primary/20 bg-pk-primary/10 px-3 py-2 text-xs font-medium text-pk-primary">
