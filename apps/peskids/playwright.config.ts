@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
 
 const baseURL = process.env.PESKIDS_SMOKE_BASE_URL?.trim() || 'http://127.0.0.1:3004';
 const useLocalServer = !process.env.PESKIDS_SMOKE_BASE_URL?.trim();
@@ -22,13 +22,4 @@ export default defineConfig({
         timeout: 120_000,
       }
     : undefined,
-  projects: [
-    {
-      name: 'chromium',
-      use: {
-        ...devices['chromium'],
-        executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-      },
-    },
-  ],
 });
