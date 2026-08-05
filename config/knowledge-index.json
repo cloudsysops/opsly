@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-08-05T02:23:29.099Z",
+  "generated_at": "2026-08-05T02:31:01.389Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -3968,6 +3968,42 @@
         "your"
       ],
       "size_bytes": 5109
+    },
+    {
+      "path": "apps/peskids/docs/BRAND-GUIDELINES.md",
+      "title": "🎨 Guía de Marca Peskids",
+      "keywords": [
+        "backgrounds",
+        "border",
+        "botones",
+        "brand",
+        "cards",
+        "colores",
+        "componente",
+        "correcto",
+        "evitar",
+        "genericos",
+        "guia",
+        "guidelines",
+        "identidad",
+        "implementacion",
+        "incorrecto",
+        "marca",
+        "markdown",
+        "oficiales",
+        "opsly",
+        "patron",
+        "peskids",
+        "radius",
+        "surfaces",
+        "tailwind",
+        "text",
+        "tipografia",
+        "tokens",
+        "uso",
+        "visual"
+      ],
+      "size_bytes": 5222
     },
     {
       "path": "apps/peskids/README.md",
@@ -89309,6 +89345,7 @@
       "apps/peskids/README.md",
       "apps/peskids/CLAUDE.md",
       "apps/peskids/DEPLOYMENT.md",
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
       "apps/admin/INVITATIONS_UI.md",
       "apps/orchestrator/src/meta/README.md",
       "apps/orchestrator/README.md",
@@ -91903,6 +91940,7 @@
       "apps/peskids/README.md",
       "apps/peskids/CLAUDE.md",
       "apps/peskids/DEPLOYMENT.md",
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
       "apps/admin/INVITATIONS_UI.md",
       "apps/orchestrator/src/meta/README.md",
       "apps/orchestrator/README.md",
@@ -95868,6 +95906,7 @@
       "apps/peskids/README.md",
       "apps/peskids/CLAUDE.md",
       "apps/peskids/DEPLOYMENT.md",
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
       "apps/intcloudsysops/README.md",
       "apps/intcloudsysops/DEPLOYMENT.md",
       "infra/n8n/workflows/peskids/README.md",
@@ -101247,6 +101286,7 @@
     "evitar": [
       "packages/skills/user/opsly-supabase-marketplace/SKILL.md",
       "scripts/agent-training/README.md",
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
       "docs/01-development/GIT-WORKFLOW.md",
       "docs/01-development/IMPLEMENTATION-IA-LAYER.md",
       "docs/tenants/intcloudsysops/WHATSAPP-FIRST-PACKAGE.md",
@@ -103648,6 +103688,7 @@
       "packages/skills/user/opsly-agent-teams/SKILL.md",
       "packages/skills/templates/template-api-route.md",
       "packages/skills/templates/template-mcp-tool.md",
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
       "docs/00-architecture/OPSLYQUANTUM-SKILL-DESIGN.md",
       "docs/00-architecture/POLICY-AI-LOCAL-FIRST.md",
       "docs/01-development/MAIA-WORKERS.md",
@@ -103696,6 +103737,7 @@
       "packages/skills/user/opsly-orchestrator/SKILL.md",
       "packages/skills/user/opsly-billing/SKILL.md",
       "packages/skills/user/opsly-frontend/SKILL.md",
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
       "docs/00-architecture/REDIS_NAMESPACE_ISOLATION.md",
       "docs/04-infrastructure/OPENCLAW-CLI-VPS-META-ORCHESTRATOR.md",
       "docs/03-agents/QUICKSTART-AGENTS.md",
@@ -107089,6 +107131,7 @@
       ".n8n/README.md",
       "tools/cli/README.md",
       "lib/prompt-guard/README.md",
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
       "apps/notebooklm-agent/README.md",
       "docs/obsidian/TAXONOMY.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
@@ -107706,7 +107749,8 @@
       ".agents/IMPLEMENTATION-CHECKLIST.md"
     ],
     "correcto": [
-      "packages/skills/user/opsly-llm/SKILL.md"
+      "packages/skills/user/opsly-llm/SKILL.md",
+      "apps/peskids/docs/BRAND-GUIDELINES.md"
     ],
     "modelo": [
       "packages/skills/user/opsly-llm/SKILL.md",
@@ -114214,6 +114258,7 @@
     "componente": [
       "packages/skills/user/opsly-frontend/SKILL.md",
       "packages/skills/templates/template-test.md",
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
       "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
       "docs/01-development/AUTO-SYNC-DOCS-SETUP.md"
     ],
@@ -122970,6 +123015,7 @@
     "guidelines": [
       "packages/skills/vendor/agent-skills/planning-and-task-breakdown/SKILL.md",
       "tools/agent-packs/vendor/cyber-neo/CLAUDE.md",
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
       "vendor/agency-agents/integrations/qwen/agents/seo-specialist.md",
       "vendor/agency-agents/integrations/qwen/agents/reddit-community-builder.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/seo-specialist/SKILL.md",
@@ -132462,6 +132508,7 @@
     ],
     "guia": [
       ".github/README-github-templates.md",
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
       "docs/00-architecture/DISTRIBUTED-ARCHITECTURE.md",
       "docs/01-development/TENANT-TESTING-GUIDE.md",
       "docs/01-development/HYBRID-OPSLY-ADMIN.md",
@@ -138334,6 +138381,7 @@
     ],
     "tailwind": [
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/styling-systems.md",
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/styling-systems.md"
     ],
     "appropriate": [
@@ -141178,6 +141226,189 @@
       "docs/adr/ADR-043-supplement/README.md",
       "docs/adr/ADR-043-supplement/DECISION-RATIONALE.md"
     ],
+    "backgrounds": [
+      "apps/peskids/docs/BRAND-GUIDELINES.md"
+    ],
+    "border": [
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
+      "vendor/agency-agents/integrations/qwen/agents/cross-border-e-commerce-specialist.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/cross-border-e-commerce-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/cross-border-e-commerce-specialist/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-cross-border-e-commerce-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/cross-border-e-commerce-specialist.md",
+      "vendor/agency-agents/integrations/openclaw/cross-border-e-commerce-specialist/IDENTITY.md",
+      "vendor/agency-agents/integrations/openclaw/cross-border-e-commerce-specialist/AGENTS.md"
+    ],
+    "botones": [
+      "apps/peskids/docs/BRAND-GUIDELINES.md"
+    ],
+    "brand": [
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
+      "apps/icso/README.md",
+      "vendor/agency-agents/integrations/qwen/agents/brand-guardian.md",
+      "vendor/agency-agents/integrations/qwen/agents/cross-border-e-commerce-specialist.md",
+      "vendor/agency-agents/integrations/qwen/agents/instagram-curator.md",
+      "vendor/agency-agents/integrations/qwen/agents/xiaohongshu-specialist.md",
+      "vendor/agency-agents/integrations/qwen/agents/whimsy-injector.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/instagram-curator/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/brand-guardian/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/whimsy-injector/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/cross-border-e-commerce-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/xiaohongshu-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/instagram-curator/system.md",
+      "vendor/agency-agents/integrations/kimi/brand-guardian/system.md",
+      "vendor/agency-agents/integrations/kimi/whimsy-injector/system.md",
+      "vendor/agency-agents/integrations/kimi/cross-border-e-commerce-specialist/system.md",
+      "vendor/agency-agents/integrations/kimi/xiaohongshu-specialist/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-instagram-curator/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-cross-border-e-commerce-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-brand-guardian/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-xiaohongshu-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-whimsy-injector/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/brand-guardian.md",
+      "vendor/agency-agents/integrations/opencode/agents/cross-border-e-commerce-specialist.md",
+      "vendor/agency-agents/integrations/opencode/agents/instagram-curator.md",
+      "vendor/agency-agents/integrations/opencode/agents/xiaohongshu-specialist.md",
+      "vendor/agency-agents/integrations/opencode/agents/whimsy-injector.md",
+      "vendor/agency-agents/integrations/openclaw/instagram-curator/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/brand-guardian/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/brand-guardian/IDENTITY.md",
+      "vendor/agency-agents/integrations/openclaw/brand-guardian/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/whimsy-injector/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/cross-border-e-commerce-specialist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/xiaohongshu-specialist/AGENTS.md"
+    ],
+    "cards": [
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
+      "vendor/agency-agents/integrations/qwen/agents/feishu-integration-developer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/feishu-integration-developer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/feishu-integration-developer/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-feishu-integration-developer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/feishu-integration-developer.md",
+      "vendor/agency-agents/integrations/openclaw/feishu-integration-developer/AGENTS.md",
+      "docs/01-development/COST-DASHBOARD-WIREFRAMES.md",
+      "docs/tenants/peskids/SPRINT-01.md"
+    ],
+    "colores": [
+      "apps/peskids/docs/BRAND-GUIDELINES.md"
+    ],
+    "genericos": [
+      "apps/peskids/docs/BRAND-GUIDELINES.md"
+    ],
+    "identidad": [
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
+      "docs/00-architecture/TENANT-CONTRACT.md",
+      "docs/01-development/HOSTS-PATHS.md",
+      "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
+      "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
+      "docs/tenants/production/TENANT-PRODUCTION-HARDENING.md"
+    ],
+    "incorrecto": [
+      "apps/peskids/docs/BRAND-GUIDELINES.md"
+    ],
+    "marca": [
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
+      "docs/tenants/peskids/INCUBATION-CHECKLIST.md"
+    ],
+    "oficiales": [
+      "apps/peskids/docs/BRAND-GUIDELINES.md"
+    ],
+    "radius": [
+      "apps/peskids/docs/BRAND-GUIDELINES.md"
+    ],
+    "surfaces": [
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
+      "docs/runbooks/CYBER-NEO-AND-ARCHITECT.md"
+    ],
+    "text": [
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
+      "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md"
+    ],
+    "tipografia": [
+      "apps/peskids/docs/BRAND-GUIDELINES.md"
+    ],
+    "tokens": [
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
+      "docs/01-development/RTK.md",
+      "docs/01-development/TOKEN-BILLING-SYSTEM.md",
+      "docs/02-tools/TOKEN-SYSTEM-GUIDE.md",
+      "docs/adr/ADR-030-prepaid-token-wallet-roadmap.md",
+      "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
+      ".claude/3-slash-commands/ai-cost.md"
+    ],
+    "visual": [
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
+      "vendor/agency-agents/integrations/qwen/agents/visual-storyteller.md",
+      "vendor/agency-agents/integrations/qwen/agents/image-prompt-engineer.md",
+      "vendor/agency-agents/integrations/qwen/agents/godot-shader-developer.md",
+      "vendor/agency-agents/integrations/qwen/agents/instagram-curator.md",
+      "vendor/agency-agents/integrations/qwen/agents/reality-checker.md",
+      "vendor/agency-agents/integrations/qwen/agents/technical-artist.md",
+      "vendor/agency-agents/integrations/qwen/agents/video-optimization-specialist.md",
+      "vendor/agency-agents/integrations/qwen/agents/unreal-technical-artist.md",
+      "vendor/agency-agents/integrations/qwen/agents/app-store-optimizer.md",
+      "vendor/agency-agents/integrations/qwen/agents/unity-shader-graph-artist.md",
+      "vendor/agency-agents/integrations/qwen/agents/evidence-collector.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/visual-storyteller/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/image-prompt-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/evidence-collector/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/unity-shader-graph-artist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/instagram-curator/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/app-store-optimizer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/reality-checker/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/technical-artist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/godot-shader-developer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-technical-artist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/video-optimization-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/visual-storyteller/system.md",
+      "vendor/agency-agents/integrations/kimi/image-prompt-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/evidence-collector/system.md",
+      "vendor/agency-agents/integrations/kimi/unity-shader-graph-artist/system.md",
+      "vendor/agency-agents/integrations/kimi/instagram-curator/system.md",
+      "vendor/agency-agents/integrations/kimi/app-store-optimizer/system.md",
+      "vendor/agency-agents/integrations/kimi/reality-checker/system.md",
+      "vendor/agency-agents/integrations/kimi/technical-artist/system.md",
+      "vendor/agency-agents/integrations/kimi/godot-shader-developer/system.md",
+      "vendor/agency-agents/integrations/kimi/unreal-technical-artist/system.md",
+      "vendor/agency-agents/integrations/kimi/video-optimization-specialist/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-technical-artist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-instagram-curator/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-unreal-technical-artist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-video-optimization-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-image-prompt-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-unity-shader-graph-artist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-visual-storyteller/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-app-store-optimizer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-reality-checker/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-evidence-collector/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-godot-shader-developer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/visual-storyteller.md",
+      "vendor/agency-agents/integrations/opencode/agents/image-prompt-engineer.md",
+      "vendor/agency-agents/integrations/opencode/agents/godot-shader-developer.md",
+      "vendor/agency-agents/integrations/opencode/agents/instagram-curator.md",
+      "vendor/agency-agents/integrations/opencode/agents/reality-checker.md",
+      "vendor/agency-agents/integrations/opencode/agents/technical-artist.md",
+      "vendor/agency-agents/integrations/opencode/agents/video-optimization-specialist.md",
+      "vendor/agency-agents/integrations/opencode/agents/unreal-technical-artist.md",
+      "vendor/agency-agents/integrations/opencode/agents/app-store-optimizer.md",
+      "vendor/agency-agents/integrations/opencode/agents/unity-shader-graph-artist.md",
+      "vendor/agency-agents/integrations/opencode/agents/evidence-collector.md",
+      "vendor/agency-agents/integrations/openclaw/visual-storyteller/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/visual-storyteller/IDENTITY.md",
+      "vendor/agency-agents/integrations/openclaw/visual-storyteller/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/image-prompt-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/evidence-collector/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/unity-shader-graph-artist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/instagram-curator/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/brand-guardian/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/app-store-optimizer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/reality-checker/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/technical-artist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/godot-shader-developer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/ui-designer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/unreal-technical-artist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/video-optimization-specialist/AGENTS.md"
+    ],
     "exito": [
       "apps/admin/INVITATIONS_UI.md",
       "docs/superpowers/plans/2026-05-30-skills-obsidian-integration.md",
@@ -141453,41 +141684,6 @@
       "vendor/agency-agents/integrations/openclaw/app-store-optimizer/AGENTS.md",
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
       "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md"
-    ],
-    "brand": [
-      "apps/icso/README.md",
-      "vendor/agency-agents/integrations/qwen/agents/brand-guardian.md",
-      "vendor/agency-agents/integrations/qwen/agents/cross-border-e-commerce-specialist.md",
-      "vendor/agency-agents/integrations/qwen/agents/instagram-curator.md",
-      "vendor/agency-agents/integrations/qwen/agents/xiaohongshu-specialist.md",
-      "vendor/agency-agents/integrations/qwen/agents/whimsy-injector.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/instagram-curator/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/brand-guardian/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/whimsy-injector/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/cross-border-e-commerce-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/xiaohongshu-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/instagram-curator/system.md",
-      "vendor/agency-agents/integrations/kimi/brand-guardian/system.md",
-      "vendor/agency-agents/integrations/kimi/whimsy-injector/system.md",
-      "vendor/agency-agents/integrations/kimi/cross-border-e-commerce-specialist/system.md",
-      "vendor/agency-agents/integrations/kimi/xiaohongshu-specialist/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-instagram-curator/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-cross-border-e-commerce-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-brand-guardian/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-xiaohongshu-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-whimsy-injector/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/brand-guardian.md",
-      "vendor/agency-agents/integrations/opencode/agents/cross-border-e-commerce-specialist.md",
-      "vendor/agency-agents/integrations/opencode/agents/instagram-curator.md",
-      "vendor/agency-agents/integrations/opencode/agents/xiaohongshu-specialist.md",
-      "vendor/agency-agents/integrations/opencode/agents/whimsy-injector.md",
-      "vendor/agency-agents/integrations/openclaw/instagram-curator/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/brand-guardian/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/brand-guardian/IDENTITY.md",
-      "vendor/agency-agents/integrations/openclaw/brand-guardian/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/whimsy-injector/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/cross-border-e-commerce-specialist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/xiaohongshu-specialist/AGENTS.md"
     ],
     "dev": [
       "apps/icso/README.md",
@@ -143633,78 +143829,6 @@
       "vendor/agency-agents/integrations/openclaw/visual-storyteller/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/level-designer/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/sales-engineer/AGENTS.md"
-    ],
-    "visual": [
-      "vendor/agency-agents/integrations/qwen/agents/visual-storyteller.md",
-      "vendor/agency-agents/integrations/qwen/agents/image-prompt-engineer.md",
-      "vendor/agency-agents/integrations/qwen/agents/godot-shader-developer.md",
-      "vendor/agency-agents/integrations/qwen/agents/instagram-curator.md",
-      "vendor/agency-agents/integrations/qwen/agents/reality-checker.md",
-      "vendor/agency-agents/integrations/qwen/agents/technical-artist.md",
-      "vendor/agency-agents/integrations/qwen/agents/video-optimization-specialist.md",
-      "vendor/agency-agents/integrations/qwen/agents/unreal-technical-artist.md",
-      "vendor/agency-agents/integrations/qwen/agents/app-store-optimizer.md",
-      "vendor/agency-agents/integrations/qwen/agents/unity-shader-graph-artist.md",
-      "vendor/agency-agents/integrations/qwen/agents/evidence-collector.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/visual-storyteller/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/image-prompt-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/evidence-collector/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/unity-shader-graph-artist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/instagram-curator/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/app-store-optimizer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/reality-checker/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/technical-artist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/godot-shader-developer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-technical-artist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/video-optimization-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/visual-storyteller/system.md",
-      "vendor/agency-agents/integrations/kimi/image-prompt-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/evidence-collector/system.md",
-      "vendor/agency-agents/integrations/kimi/unity-shader-graph-artist/system.md",
-      "vendor/agency-agents/integrations/kimi/instagram-curator/system.md",
-      "vendor/agency-agents/integrations/kimi/app-store-optimizer/system.md",
-      "vendor/agency-agents/integrations/kimi/reality-checker/system.md",
-      "vendor/agency-agents/integrations/kimi/technical-artist/system.md",
-      "vendor/agency-agents/integrations/kimi/godot-shader-developer/system.md",
-      "vendor/agency-agents/integrations/kimi/unreal-technical-artist/system.md",
-      "vendor/agency-agents/integrations/kimi/video-optimization-specialist/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-technical-artist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-instagram-curator/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-unreal-technical-artist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-video-optimization-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-image-prompt-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-unity-shader-graph-artist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-visual-storyteller/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-app-store-optimizer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-reality-checker/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-evidence-collector/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-godot-shader-developer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/visual-storyteller.md",
-      "vendor/agency-agents/integrations/opencode/agents/image-prompt-engineer.md",
-      "vendor/agency-agents/integrations/opencode/agents/godot-shader-developer.md",
-      "vendor/agency-agents/integrations/opencode/agents/instagram-curator.md",
-      "vendor/agency-agents/integrations/opencode/agents/reality-checker.md",
-      "vendor/agency-agents/integrations/opencode/agents/technical-artist.md",
-      "vendor/agency-agents/integrations/opencode/agents/video-optimization-specialist.md",
-      "vendor/agency-agents/integrations/opencode/agents/unreal-technical-artist.md",
-      "vendor/agency-agents/integrations/opencode/agents/app-store-optimizer.md",
-      "vendor/agency-agents/integrations/opencode/agents/unity-shader-graph-artist.md",
-      "vendor/agency-agents/integrations/opencode/agents/evidence-collector.md",
-      "vendor/agency-agents/integrations/openclaw/visual-storyteller/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/visual-storyteller/IDENTITY.md",
-      "vendor/agency-agents/integrations/openclaw/visual-storyteller/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/image-prompt-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/evidence-collector/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/unity-shader-graph-artist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/instagram-curator/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/brand-guardian/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/app-store-optimizer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/reality-checker/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/technical-artist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/godot-shader-developer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/ui-designer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/unreal-technical-artist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/video-optimization-specialist/AGENTS.md"
     ],
     "visualization": [
       "vendor/agency-agents/integrations/qwen/agents/visual-storyteller.md",
@@ -148436,15 +148560,6 @@
       "vendor/agency-agents/integrations/openclaw/cross-border-e-commerce-specialist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/healthcare-marketing-compliance-specialist/AGENTS.md"
     ],
-    "border": [
-      "vendor/agency-agents/integrations/qwen/agents/cross-border-e-commerce-specialist.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/cross-border-e-commerce-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/cross-border-e-commerce-specialist/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-cross-border-e-commerce-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/cross-border-e-commerce-specialist.md",
-      "vendor/agency-agents/integrations/openclaw/cross-border-e-commerce-specialist/IDENTITY.md",
-      "vendor/agency-agents/integrations/openclaw/cross-border-e-commerce-specialist/AGENTS.md"
-    ],
     "globalization": [
       "vendor/agency-agents/integrations/qwen/agents/cross-border-e-commerce-specialist.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/cross-border-e-commerce-specialist/SKILL.md",
@@ -149228,16 +149343,6 @@
       "docs/01-development/PHASE-4-OBSERVABILITY-BILLING.md",
       ".claude/agents/hive-mind/queen-coordinator.md",
       ".claude/agents/hive-mind/worker-specialist.md"
-    ],
-    "cards": [
-      "vendor/agency-agents/integrations/qwen/agents/feishu-integration-developer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/feishu-integration-developer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/feishu-integration-developer/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-feishu-integration-developer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/feishu-integration-developer.md",
-      "vendor/agency-agents/integrations/openclaw/feishu-integration-developer/AGENTS.md",
-      "docs/01-development/COST-DASHBOARD-WIREFRAMES.md",
-      "docs/tenants/peskids/SPRINT-01.md"
     ],
     "feishu": [
       "vendor/agency-agents/integrations/qwen/agents/feishu-integration-developer.md",
@@ -162670,9 +162775,6 @@
     "volcar": [
       "docs/runbooks/LLM-PLATFORM-RECOVERY.md"
     ],
-    "surfaces": [
-      "docs/runbooks/CYBER-NEO-AND-ARCHITECT.md"
-    ],
     "calidad": [
       "docs/runbooks/dev.md",
       "docs/01-development/SPRINT-TRACKER.md",
@@ -163689,13 +163791,6 @@
     "aprobado": [
       "docs/00-architecture/TENANT-CONTRACT.md"
     ],
-    "identidad": [
-      "docs/00-architecture/TENANT-CONTRACT.md",
-      "docs/01-development/HOSTS-PATHS.md",
-      "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
-      "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
-      "docs/tenants/production/TENANT-PRODUCTION-HARDENING.md"
-    ],
     "otras": [
       "docs/00-architecture/TENANT-CONTRACT.md",
       "docs/01-development/AGENT-PROMPT-QUEUE.md",
@@ -164399,14 +164494,6 @@
     ],
     "rust": [
       "docs/01-development/RTK.md"
-    ],
-    "tokens": [
-      "docs/01-development/RTK.md",
-      "docs/01-development/TOKEN-BILLING-SYSTEM.md",
-      "docs/02-tools/TOKEN-SYSTEM-GUIDE.md",
-      "docs/adr/ADR-030-prepaid-token-wallet-roadmap.md",
-      "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
-      ".claude/3-slash-commands/ai-cost.md"
     ],
     "centro": [
       "docs/01-development/HYBRID-OPSLY-ADMIN.md"
@@ -165627,9 +165714,6 @@
       "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md"
     ],
     "necesitamos": [
-      "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md"
-    ],
-    "text": [
       "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md"
     ],
     "usa": [
@@ -167264,9 +167348,6 @@
       "docs/blueprints/opsly-operational-blueprint/TENANT-INCUBATION.md",
       "docs/blueprints/opsly-operational-blueprint/README.md",
       "docs/blueprints/opsly-operational-blueprint/EXTRACTION-PATTERN.md"
-    ],
-    "marca": [
-      "docs/tenants/peskids/INCUBATION-CHECKLIST.md"
     ],
     "baileys": [
       "docs/tenants/peskids/N8N-SETUP.md",
@@ -169005,6 +169086,7 @@
     "apps/orchestrator/src/meta/README.md",
     "apps/peskids/CLAUDE.md",
     "apps/peskids/DEPLOYMENT.md",
+    "apps/peskids/docs/BRAND-GUIDELINES.md",
     "apps/peskids/README.md",
     "apps/task-orchestrator/README.md",
     "apps/web/blog/2026-04-26-opsly-para-agencias.md",
