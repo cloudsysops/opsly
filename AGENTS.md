@@ -677,21 +677,28 @@ Week 4: Docs + runbook + MVP validation
 
 <!-- Actualizar al final de cada sesión. Sesiones pre-2026-05-26 → docs/AGENTS-SESSION-HISTORY.md -->
 
-### 📌 Sesión Activa (2026-06-22)
+### 📌 Sesión Activa (2026-08-05)
 
-**Tema:** Optimización integral para Peskids + avance plataforma Opsly  
-**Branch:** `claude/agente-md-review-xwdwlf`  
-**Objetivo:** Preparar codebase para go-live cliente
+**Tema:** Peskids WhatsApp domicilio + mensaje + logo en producción  
+**Branch:** `main` (`55898242`)  
+**Objetivo:** Corregir handoff post-formulario y pedir revisión al cliente
 
-**Tareas en progreso:**
-1. ✅ Archivar sesiones históricas → `docs/AGENTS-SESSION-HISTORY.md`
-2. 🔄 Consolidar scripts Peskids (29 scripts, revisar duplicación)
-3. 🔄 Limpiar dependencias obsoletas en config/
-4. ⏳ Verificar que Peskids está 100% deployable
+**Hecho:**
+1. ✅ PR [#905](https://github.com/cloudsysops/opsly/pull/905) mergeado — domicilio → línea WA correcta; prefill con resumen + link lead; tipografía/logo
+2. ✅ Secrets GH `*_DOMICILIO_*` / `*_LLANOGRANDE_*` sincronizados desde Doppler
+3. ✅ Deploy Peskids (`force_daytime`) — health `git_sha=55898242…` en `https://www.peskids.com`
+4. ✅ Checklist cliente: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md)
+
+**Pendiente humano:** enviar checklist a Peskids (owner) para que validen en móvil.
 
 ---
 
 ### 📅 Sesiones Recientes
+
+**Sesión 2026-08-05 — WhatsApp domicilio + logo prod ✅**
+- ✅ Domicilio ya no cae al número de sede; mensaje deja el genérico de marketing
+- ✅ Logo/fonts (Nunito) en layout; lockup sin wordmark duplicado
+- ⏳ Revisión cliente con checklist `CLIENT-REVIEW-2026-08-05.md`
 
 **Sesión 2026-06-04 — ICSO marketing site v2 (PR #495) ✅**
 - ✅ **`apps/icso`**: sitio agency frontend-only (hero, soluciones, Peskids case study, pricing placeholder); dev `:3015`
@@ -1583,14 +1590,9 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 ## 🔄 Próximo paso inmediato
 
-**Sigma agent harness (2026-05-30):** [PR #457](https://github.com/cloudsysops/opsly/pull/457) — merge cuando apruebes; post-merge en VPS:
+**Peskids (2026-08-05) — revisión cliente:** cambios de WhatsApp + logo **ya en prod**. Enviar a Peskids el checklist [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md) (formulario domicilio vs Llanogrande + mensaje + header). Health: `https://www.peskids.com/api/health` → `55898242…`.
 
-```bash
-cd /opt/opsly && git pull --ff-only
-npm run sigma:install
-# redeploy orchestrator + MCP (compose pull/up según runbook deploy)
-npm run sigma:smoke   # opcional en VPS tras install
-```
+**Capacidad VPS:** alerta memoria **activa** (~4 GiB) — evitar deploys pesados de día salvo `hotfix-prod` / `safe-daytime`. Runbook: `docs/runbooks/VPS-MEMORY-CAPS.md`.
 
 **Status PRs Cleanup (2026-05-22 — SESSION FINAL):**
 
