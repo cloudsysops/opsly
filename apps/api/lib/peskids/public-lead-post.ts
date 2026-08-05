@@ -68,12 +68,14 @@ export async function postPublicPeskidsLead(request: NextRequest): Promise<Respo
   }
 
   // Extract attachments before validation (not part of schema)
-  const rawRecord = raw !== null && typeof raw === 'object' ? (raw as Record<string, unknown>) : null;
+  const rawRecord =
+    raw !== null && typeof raw === 'object' ? (raw as Record<string, unknown>) : null;
   const attachmentsCandidate = rawRecord?._attachments;
   const attachments = attachmentsCandidate instanceof FormData ? attachmentsCandidate : null;
-  const cleanedRaw = attachments && rawRecord
-    ? Object.fromEntries(Object.entries(rawRecord).filter(([k]) => k !== '_attachments'))
-    : raw;
+  const cleanedRaw =
+    attachments && rawRecord
+      ? Object.fromEntries(Object.entries(rawRecord).filter(([k]) => k !== '_attachments'))
+      : raw;
 
   const parsed = peskidsLeadBodySchema.safeParse(cleanedRaw);
   if (!parsed.success) {
