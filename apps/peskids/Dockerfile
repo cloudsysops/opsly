@@ -7,6 +7,7 @@ WORKDIR /app
 
 COPY package*.json ./
 COPY turbo.json ./
+COPY tsconfig.json ./
 
 COPY lib/conversational-runtime/package.json ./lib/conversational-runtime/
 COPY lib/services/package.json ./lib/services/
