@@ -1,6 +1,5 @@
 import { Suspense } from 'react';
 import { PeskidsLogo } from '@/components/brand/peskids-logo';
-import { HeroChatCard } from '@/components/chat/hero-chat-card';
 import { LeadCaptureForm } from '@/components/forms';
 import { ReservationLandingCTA } from '@/components/marketing/reservation-landing-cta';
 import { PESKIDS_RESERVATION_FORM_ANCHOR } from '@/lib/peskids-landing-config';
@@ -64,26 +63,15 @@ export function PeskidsReservationLanding({
           <ReservationLandingCTA />
         </div>
 
-        <div className="mb-10">
-          <HeroChatCard />
-        </div>
-
         <div id={PESKIDS_RESERVATION_FORM_ANCHOR} className="scroll-mt-8">
-          <details className="rounded-2xl border border-pk-border bg-white px-4 py-3 shadow-sm">
-            <summary className="cursor-pointer list-none text-center text-sm font-semibold text-pk-sub marker:content-none [&::-webkit-details-marker]:hidden">
-              ¿Prefieres no usar el chat? Completa el formulario clásico.
-            </summary>
-            <div className="mt-4">
-              <Suspense fallback={<div className="h-96" />}>
-                <LeadCaptureForm
-                  source={source}
-                  campaign={campaign}
-                  defaultReferralSource={defaultReferralSource}
-                  embedded
-                />
-              </Suspense>
-            </div>
-          </details>
+          <Suspense fallback={<div className="h-96" />}>
+            <LeadCaptureForm
+              source={source}
+              campaign={campaign}
+              defaultReferralSource={defaultReferralSource}
+              embedded={false}
+            />
+          </Suspense>
         </div>
       </div>
     </section>
