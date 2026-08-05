@@ -1,7 +1,7 @@
 import { PeskidsWave } from '@/components/brand/peskids-logo';
-import { PESKIDS_CHAT_SECTION_ANCHOR } from '@/lib/peskids-landing-copy';
+import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config';
 
-/** Banda final: empuja al chat. WhatsApp solo en header + FAB. */
+/** Banda final: empuja al formulario. WhatsApp solo en header + FAB. */
 export function CtaBand(): React.ReactElement {
   return (
     <section className="mx-4 mb-16 sm:mx-8 lg:mx-14">
@@ -17,14 +17,14 @@ export function CtaBand(): React.ReactElement {
               ¿Tienes preguntas?
             </h2>
             <p className="mt-4 text-lg text-white/85">
-              Responde unas preguntas y te conectaremos con el asesor adecuado para tu sede.
+              Completa el formulario y te conectaremos con el asesor adecuado para tu sede.
             </p>
           </div>
           <a
-            href={`#${PESKIDS_CHAT_SECTION_ANCHOR}`}
+            href={PESKIDS_RESERVATION_FORM_HREF}
             className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-bold text-pk-deep shadow-md transition hover:bg-white/90"
           >
-            Abrir chat de información
+            Completar solicitud
           </a>
         </div>
       </div>

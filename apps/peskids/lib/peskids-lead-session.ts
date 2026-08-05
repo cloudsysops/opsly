@@ -24,11 +24,11 @@ export function buildPostLeadWhatsAppPrefill(
   const modalityBit = modality ? ` Quiero orientación ${modality}.` : '';
   const typeBit =
     options?.lead_type === 'teacher_applicant'
-      ? ' Completé el chat de profesor(a).'
+      ? ' Completé el formulario de profesor(a).'
       : options?.lead_type === 'company'
-        ? ' Completé el chat de empresa/institución.'
+        ? ' Completé el formulario de empresa/institución.'
         : '';
-  return `Hola Peskids 👋 Soy ${trimmed}, acabo de completar el chat de información en la web.${typeBit}${modalityBit} ¿Me pueden orientar?`;
+  return `Hola Peskids 👋 Soy ${trimmed}, acabo de completar el formulario de solicitud en la web.${typeBit}${modalityBit} ¿Me pueden orientar?`;
 }
 
 export function parsePeskidsLeadSession(raw: string | null): PeskidsLeadSession | null {
