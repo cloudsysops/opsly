@@ -499,11 +499,8 @@ export function LeadCaptureForm({
             className="rounded-xl border border-pk-primary/30 bg-pk-primary/10 px-4 py-4 text-sm text-pk-ink"
             role="status"
           >
-            <SupportBubble>
-              ¡Listo, {formData.name}! Ya quedó tu solicitud. Sigue por WhatsApp con el equipo que
-              elegiste — no tienes que volver a seleccionar sede o domicilio.
-            </SupportBubble>
-            <p className="mt-2 text-pk-sub">{PESKIDS_FORM_SUCCESS_DETAIL}</p>
+            <SupportBubble>Gracias, recibimos tu solicitud!</SupportBubble>
+            <p className="mt-4 text-pk-sub">{PESKIDS_FORM_SUCCESS_DETAIL}</p>
             <WhatsAppLink
               variant="hero"
               label={successWhatsAppLabel(formData.class_modality, formData.lead_type || undefined)}
@@ -515,7 +512,7 @@ export function LeadCaptureForm({
               className="mt-4 w-full"
             />
             <p className="mt-4 text-center text-xs text-pk-sub">
-              Si no abres WhatsApp, te llevamos a la página de gracias en {redirectCountdown}s…
+              Redirigiendo en {redirectCountdown}s…
             </p>
           </div>
         ) : (

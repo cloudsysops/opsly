@@ -31,7 +31,7 @@ export const PESKIDS_FORM_SUBMIT_LABEL = 'Abrir chat de matrícula';
 export const PESKIDS_WHATSAPP_CTA_LABEL = 'Continuar por WhatsApp';
 
 export const PESKIDS_FORM_SUCCESS_DETAIL =
-  'Tu solicitud quedó guardada. El botón de abajo abre el WhatsApp del equipo correcto — no hace falta volver a elegir.';
+  'Continúa por WhatsApp con la línea de atención correspondiente.';
 
 export const PESKIDS_CONSENT_TREATMENT =
   'Autorizo a Peskids para tratar mis datos personales y, cuando aplique, los del menor bajo mi responsabilidad, con el fin de atender esta solicitud de contacto y matrícula, conforme a su Política de Privacidad.';
