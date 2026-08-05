@@ -40,9 +40,9 @@ const COMPANY_KIND_LABELS: Record<PeskidsCompanyKind, string> = {
 }
 
 const LEAD_TYPE_LABELS: Record<PeskidsLeadType, string> = {
-  family: 'Familia / matrícula',
-  teacher_applicant: 'Quiero ser profesor(a)',
-  company: 'Empresa / institución',
+  family: 'Clientes o alumnos',
+  teacher_applicant: 'Trabaja con nosotros',
+  company: 'Alianzas con guarderías',
 }
 
 type FormState = {
@@ -52,6 +52,7 @@ type FormState = {
   phone: string
   class_modality: '' | 'llanogrande' | 'domicilio'
   neighborhood: string
+  city: string
   child_name: string
   birth_date: string
   document_type: string
@@ -60,6 +61,7 @@ type FormState = {
   availability: string
   work_zones: string
   observations: string
+  attachments: Record<string, string>
   company_name: string
   company_nit: string
   contact_role: string
@@ -90,6 +92,7 @@ const emptyForm = (referralSource = ''): FormState => ({
   phone: '',
   class_modality: '',
   neighborhood: '',
+  city: '',
   child_name: '',
   birth_date: '',
   document_type: 'CC',
@@ -98,6 +101,7 @@ const emptyForm = (referralSource = ''): FormState => ({
   availability: '',
   work_zones: '',
   observations: '',
+  attachments: {},
   company_name: '',
   company_nit: '',
   contact_role: '',
@@ -124,7 +128,7 @@ function stepsForLead(leadType: PeskidsLeadType | '', modality: FormState['class
 function supportPrompt(step: StepId, form: FormState): string {
   switch (step) {
     case 'who':
-      return '¡Hola! Soy el asistente de Peskids. ¿Para quién es esta solicitud? Así te oriento con el equipo correcto.'
+      return '¡Hola! Soy el asistente de Peskids. ¿En qué te podemos ayudar?'
     case 'where':
       return 'Perfecto. ¿Prefieres clases en la sede Llanogrande o a domicilio? Al final te conecto directo con ese WhatsApp.'
     case 'zone':
@@ -132,29 +136,33 @@ function supportPrompt(step: StepId, form: FormState): string {
     case 'child':
       return 'Cuéntame del alumno o alumna: nombre y fecha de nacimiento.'
     case 'guardian':
-      return 'Ahora los datos del acudiente (como en una matrícula).'
+      return 'Perfecto. Ahora los datos del acudiente (como en una matrícula).'
     case 'teacher_profile':
-      return 'Gracias por tu interés en enseñar con nosotros. Empieza con tu perfil básico.'
+      return 'Gracias por tu interés en trabajar con nosotros. Empieza con tu información básica.'
     case 'teacher_ops':
-      return '¿Dónde y cuándo puedes trabajar? Así coordinamos con operaciones.'
+      return 'Perfecto. Ahora cuéntame tu disponibilidad y zonas donde puedes trabajar.'
     case 'company_org':
-      return 'Hola — para instituciones armamos una propuesta a medida. Datos de la organización:'
+      return 'Excelente. Cuéntame los datos de tu guardería.'
     case 'company_need':
-      return '¿Qué necesitan y cuántos niños aproximadamente?'
+      return '¿Cuentas con piscina en tus instalaciones? ¿Cuál es tu número de contacto?'
     case 'contact':
       return '¿A qué correo y WhatsApp te escribimos? El teléfono es obligatorio para contactarte rápido.'
     case 'consent':
-      return form.class_modality === 'domicilio'
-        ? 'Último paso: autorizaciones. Luego te abro WhatsApp de Domicilios sin volver a elegir.'
-        : form.class_modality === 'llanogrande'
-          ? 'Último paso: autorizaciones. Luego te abro WhatsApp de Llanogrande sin volver a elegir.'
-          : 'Último paso: autorizaciones. Luego puedes continuar por WhatsApp con el equipo.'
+      return form.lead_type === 'company'
+        ? 'Último paso: autoriza el tratamiento de datos. Luego continuarás por WhatsApp.'
+        : form.class_modality === 'domicilio'
+          ? 'Último paso: autorizaciones. Luego te abro WhatsApp de Domicilios.'
+          : form.class_modality === 'llanogrande'
+            ? 'Último paso: autorizaciones. Luego te abro WhatsApp de Llanogrande.'
+            : 'Último paso: autorizaciones. Luego puedes continuar por WhatsApp.'
     default:
       return 'Continuemos.'
   }
 }
 
-function successWhatsAppLabel(modality: FormState['class_modality']): string {
+function successWhatsAppLabel(modality: FormState['class_modality'], leadType?: string): string {
+  if (leadType === 'company') return 'Continuar por WhatsApp →'
+  if (leadType === 'teacher_applicant') return 'Continuar por WhatsApp →'
   if (modality === 'domicilio') return 'Continuar por WhatsApp Domicilios →'
   if (modality === 'llanogrande') return 'Continuar por WhatsApp Llanogrande →'
   return 'Continuar por WhatsApp →'
@@ -274,6 +282,7 @@ export function LeadCaptureForm({
       case 'guardian':
         if (formData.name.trim().length < 2) return 'Nombre del acudiente incompleto'
         if (formData.document_number.trim().length < 4) return 'Cédula incompleta'
+        if (formData.city.trim().length < 2) return 'Ciudad de residencia obligatoria'
         return null
       case 'teacher_profile':
         if (formData.name.trim().length < 2) return 'Nombre incompleto'
@@ -497,7 +506,7 @@ export function LeadCaptureForm({
             <p className="mt-2 text-pk-sub">{PESKIDS_FORM_SUCCESS_DETAIL}</p>
             <WhatsAppLink
               variant="hero"
-              label={successWhatsAppLabel(formData.class_modality)}
+              label={successWhatsAppLabel(formData.class_modality, formData.lead_type || undefined)}
               modality={formData.class_modality || null}
               prefill={buildPostLeadWhatsAppPrefill(formData.name, {
                 class_modality: formData.class_modality || null,
@@ -639,8 +648,25 @@ export function LeadCaptureForm({
                   />
                 </div>
                 <div>
+                  <Label htmlFor="document_type" required>
+                    Tipo de documento
+                  </Label>
+                  <select
+                    id="document_type"
+                    className="pk-select"
+                    value={formData.document_type}
+                    onChange={(e) => setField('document_type', e.target.value)}
+                    required
+                  >
+                    <option value="CC">Cédula de Ciudadanía</option>
+                    <option value="TI">Tarjeta de Identidad</option>
+                    <option value="CE">Cédula de Extranjería</option>
+                    <option value="PA">Pasaporte</option>
+                  </select>
+                </div>
+                <div>
                   <Label htmlFor="document_number" required>
-                    Cédula del acudiente
+                    Número de documento de identidad
                   </Label>
                   <input
                     id="document_number"
@@ -648,6 +674,20 @@ export function LeadCaptureForm({
                     value={formData.document_number}
                     onChange={(e) => setField('document_number', e.target.value)}
                     required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="city" required>
+                    Ciudad de residencia
+                  </Label>
+                  <input
+                    id="city"
+                    className="pk-input"
+                    value={formData.city}
+                    onChange={(e) => setField('city', e.target.value)}
+                    required
+                    placeholder="Ej. Medellín, Bogotá…"
+                    autoComplete="address-level2"
                   />
                 </div>
               </div>
@@ -669,8 +709,25 @@ export function LeadCaptureForm({
                   />
                 </div>
                 <div>
+                  <Label htmlFor="document_type" required>
+                    Tipo de documento
+                  </Label>
+                  <select
+                    id="document_type"
+                    className="pk-select"
+                    value={formData.document_type}
+                    onChange={(e) => setField('document_type', e.target.value)}
+                    required
+                  >
+                    <option value="CC">Cédula de Ciudadanía</option>
+                    <option value="TI">Tarjeta de Identidad</option>
+                    <option value="CE">Cédula de Extranjería</option>
+                    <option value="PA">Pasaporte</option>
+                  </select>
+                </div>
+                <div>
                   <Label htmlFor="document_number" required>
-                    Cédula
+                    Número de documento
                   </Label>
                   <input
                     id="document_number"
@@ -682,7 +739,7 @@ export function LeadCaptureForm({
                 </div>
                 <div>
                   <Label htmlFor="experience" required>
-                    Experiencia
+                    Cuéntanos un poco de tu experiencia
                   </Label>
                   <textarea
                     id="experience"
@@ -690,6 +747,7 @@ export function LeadCaptureForm({
                     value={formData.experience}
                     onChange={(e) => setField('experience', e.target.value)}
                     required
+                    placeholder="Años de experiencia, especialidades, certificaciones…"
                   />
                 </div>
               </div>
@@ -699,7 +757,7 @@ export function LeadCaptureForm({
               <div className="space-y-3">
                 <div>
                   <Label htmlFor="availability" required>
-                    Disponibilidad
+                    ¿Cuándo puedes trabajar?
                   </Label>
                   <input
                     id="availability"
@@ -707,13 +765,13 @@ export function LeadCaptureForm({
                     value={formData.availability}
                     onChange={(e) => setField('availability', e.target.value)}
                     required
-                    placeholder="Mañanas, fines de semana…"
+                    placeholder="Mañanas, tardes, fines de semana…"
                     autoFocus
                   />
                 </div>
                 <div>
                   <Label htmlFor="work_zones" required>
-                    Zonas donde puedes trabajar
+                    ¿En dónde puedes trabajar?
                   </Label>
                   <input
                     id="work_zones"
@@ -721,15 +779,81 @@ export function LeadCaptureForm({
                     value={formData.work_zones}
                     onChange={(e) => setField('work_zones', e.target.value)}
                     required
+                    placeholder="Zonas o barrios donde puedes desplazarte…"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="observations">Observaciones</Label>
+                  <Label htmlFor="curriculum">
+                    Adjuntar hoja de vida con foto
+                  </Label>
+                  <input
+                    id="curriculum"
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    className="pk-input"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) {
+                        setField('attachments', { ...formData.attachments, curriculum: file.name })
+                      }
+                    }}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="cedula_copy">
+                    Adjuntar copia de la cédula
+                  </Label>
+                  <input
+                    id="cedula_copy"
+                    type="file"
+                    accept="image/*,.pdf"
+                    className="pk-input"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) {
+                        setField('attachments', { ...formData.attachments, cedula_copy: file.name })
+                      }
+                    }}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="swimming_video">
+                    Adjuntar video nadando los 4 estilos
+                  </Label>
+                  <input
+                    id="swimming_video"
+                    type="file"
+                    accept="video/*"
+                    className="pk-input"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) {
+                        setField('attachments', { ...formData.attachments, swimming_video: file.name })
+                      }
+                    }}
+                  />
+                </div>
+                <div className="rounded-lg border border-pk-border bg-pk-bg p-3 text-sm text-pk-sub">
+                  <p className="font-semibold text-pk-ink">Requisitos:</p>
+                  <ul className="mt-2 space-y-1">
+                    <li>✓ Curso de Salvamento</li>
+                    <li>✓ Tarjeta Profesional</li>
+                  </ul>
+                </div>
+                <div className="rounded-lg border border-pk-primary/20 bg-pk-primary/5 p-3 text-sm text-pk-sub">
+                  <p className="font-semibold text-pk-ink">Plus:</p>
+                  <ul className="mt-2 space-y-1">
+                    <li>✨ ¿Eres o fuiste nadador?</li>
+                  </ul>
+                </div>
+                <div>
+                  <Label htmlFor="observations">Observaciones adicionales</Label>
                   <textarea
                     id="observations"
                     className="pk-input min-h-[72px]"
                     value={formData.observations}
                     onChange={(e) => setField('observations', e.target.value)}
+                    placeholder="Menciónalo aquí si tienes experiencia en competencias o especializaciones…"
                   />
                 </div>
               </div>
@@ -737,9 +861,14 @@ export function LeadCaptureForm({
 
             {step === 'company_org' ? (
               <div className="space-y-3">
+                <div className="rounded-lg border border-pk-primary/20 bg-pk-primary/5 p-3 text-sm">
+                  <p className="text-pk-ink">
+                    Este espacio está destinado para guarderías que cuenten con piscina y quieran que Peskids preste servicio en sus instalaciones a alumnos de 2 a 5 años.
+                  </p>
+                </div>
                 <div>
                   <Label htmlFor="company_name" required>
-                    Nombre empresa / institución
+                    Nombre de la guardería
                   </Label>
                   <input
                     id="company_name"
@@ -748,23 +877,12 @@ export function LeadCaptureForm({
                     onChange={(e) => setField('company_name', e.target.value)}
                     required
                     autoFocus
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="company_nit" required>
-                    NIT
-                  </Label>
-                  <input
-                    id="company_nit"
-                    className="pk-input"
-                    value={formData.company_nit}
-                    onChange={(e) => setField('company_nit', e.target.value)}
-                    required
+                    placeholder="Ej. Guardería Pequeños Pasos"
                   />
                 </div>
                 <div>
                   <Label htmlFor="name" required>
-                    Contacto responsable
+                    Nombre de la persona encargada
                   </Label>
                   <input
                     id="name"
@@ -772,81 +890,31 @@ export function LeadCaptureForm({
                     value={formData.name}
                     onChange={(e) => setField('name', e.target.value)}
                     required
+                    placeholder="Nombre completo"
                   />
-                </div>
-                <div>
-                  <Label htmlFor="contact_role" required>
-                    Cargo
-                  </Label>
-                  <input
-                    id="contact_role"
-                    className="pk-input"
-                    value={formData.contact_role}
-                    onChange={(e) => setField('contact_role', e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="company_kind" required>
-                    Tipo
-                  </Label>
-                  <select
-                    id="company_kind"
-                    className="pk-select"
-                    value={formData.company_kind}
-                    required
-                    onChange={(e) => setField('company_kind', e.target.value)}
-                  >
-                    <option value="">Selecciona</option>
-                    {PESKIDS_COMPANY_KINDS.map((k) => (
-                      <option key={k} value={k}>
-                        {COMPANY_KIND_LABELS[k]}
-                      </option>
-                    ))}
-                  </select>
                 </div>
               </div>
             ) : null}
 
             {step === 'company_need' ? (
               <div className="space-y-3">
+                <div className="rounded-lg border border-pk-border bg-pk-bg p-3 text-sm text-pk-sub">
+                  <p className="font-semibold text-pk-ink">¿Cuentas con piscina en tus instalaciones?</p>
+                  <p className="mt-1">Peskids presta servicio en guarderías con piscina para niños de 2 a 5 años.</p>
+                </div>
                 <div>
-                  <Label htmlFor="location" required>
-                    Ubicación
+                  <Label htmlFor="phone" required>
+                    Número de contacto
                   </Label>
                   <input
-                    id="location"
+                    id="phone"
+                    type="tel"
                     className="pk-input"
-                    value={formData.location}
-                    onChange={(e) => setField('location', e.target.value)}
+                    value={formData.phone}
+                    onChange={(e) => setField('phone', e.target.value)}
                     required
                     autoFocus
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="approx_children" required>
-                    Cantidad aproximada de niños
-                  </Label>
-                  <input
-                    id="approx_children"
-                    type="number"
-                    min={1}
-                    className="pk-input"
-                    value={formData.approx_children}
-                    onChange={(e) => setField('approx_children', e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="need" required>
-                    Necesidad
-                  </Label>
-                  <textarea
-                    id="need"
-                    className="pk-input min-h-[88px]"
-                    value={formData.need}
-                    onChange={(e) => setField('need', e.target.value)}
-                    required
+                    placeholder="Ej. 300 123 4567"
                   />
                 </div>
               </div>

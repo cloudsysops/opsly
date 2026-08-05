@@ -117,6 +117,7 @@ const familySchema = z
     birth_date: birthDateField,
     document_type: z.string().trim().default('CC'),
     document_number: documentNumberField,
+    city: z.string().trim().min(2).max(80).optional(),
     class_modality: z.enum(PESKIDS_CLASS_MODALITIES, {
       message: 'Selecciona sede Llanogrande o domicilio',
     }),

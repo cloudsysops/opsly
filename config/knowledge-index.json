@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-07-25T13:19:44.466Z",
+  "generated_at": "2026-08-05T01:07:06.120Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -2261,14 +2261,18 @@
       "path": ".codex/CODEX.md",
       "title": "Codex in Opsly",
       "keywords": [
+        "access",
         "agent",
         "baseline",
+        "bash",
         "brain",
         "codex",
         "context",
         "current",
         "enlaces",
+        "enoent",
         "execution",
+        "fix",
         "installed",
         "markdown",
         "opsly",
@@ -2277,18 +2281,24 @@
         "relacionados",
         "rule",
         "rules",
+        "shell",
         "startup",
-        "sysops"
+        "sysops",
+        "zsh"
       ],
-      "size_bytes": 2925
+      "size_bytes": 3624
     },
     {
       "path": ".codex/LOCAL-AUTOMATION.md",
       "title": "Local Automation Guardrails",
       "keywords": [
         "automation",
+        "bash",
         "checklist",
+        "codex",
         "enlaces",
+        "enoent",
+        "found",
         "grant",
         "guardrails",
         "human",
@@ -2298,9 +2308,11 @@
         "opsly",
         "permissions",
         "relacionados",
-        "when"
+        "shell",
+        "when",
+        "zsh"
       ],
-      "size_bytes": 1640
+      "size_bytes": 2194
     },
     {
       "path": ".cursor/goals/openclaw-agent-runtime-2026-05-14.md",
@@ -3023,7 +3035,7 @@
         "terraform",
         "tipo"
       ],
-      "size_bytes": 3258
+      "size_bytes": 3501
     },
     {
       "path": ".github/README-github-templates.md",
@@ -3577,6 +3589,16 @@
       "size_bytes": 569
     },
     {
+      "path": "apps/icso/content/README.md",
+      "title": "README",
+      "keywords": [
+        "markdown",
+        "opsly",
+        "readme"
+      ],
+      "size_bytes": 233
+    },
+    {
       "path": "apps/icso/README.md",
       "title": "ICSO Marketing Site",
       "keywords": [
@@ -3594,7 +3616,7 @@
         "site",
         "vps"
       ],
-      "size_bytes": 1332
+      "size_bytes": 1662
     },
     {
       "path": "apps/index.md",
@@ -4030,6 +4052,26 @@
       "size_bytes": 1148
     },
     {
+      "path": "config/blueprints/academy/README.md",
+      "title": "Academy Blueprint (machine pack)",
+      "keywords": [
+        "academy",
+        "blueprint",
+        "defaults",
+        "layout",
+        "machine",
+        "markdown",
+        "next",
+        "opsly",
+        "pack",
+        "readme",
+        "safe",
+        "tenant",
+        "validate"
+      ],
+      "size_bytes": 1069
+    },
+    {
       "path": "config/doppler-audit-2026-04-07.md",
       "title": "Auditoría Doppler — `ops-intcloudsysops` / `prd` (2026-04-07)",
       "keywords": [
@@ -4303,6 +4345,25 @@
       "size_bytes": 10433
     },
     {
+      "path": "docs/00-architecture/BLUEPRINT-CONTRACT.md",
+      "title": "Blueprint Contract",
+      "keywords": [
+        "blueprint",
+        "contract",
+        "forma",
+        "layout",
+        "loader",
+        "logica",
+        "markdown",
+        "objetivo",
+        "opsly",
+        "override",
+        "proposito",
+        "tenant"
+      ],
+      "size_bytes": 1974
+    },
+    {
       "path": "docs/00-architecture/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
       "title": "🔍 Code Review: Cursor Orchestrator Work - 2026-04-09",
       "keywords": [
@@ -4465,6 +4526,28 @@
         "relacionados"
       ],
       "size_bytes": 2438
+    },
+    {
+      "path": "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
+      "title": "Data Classification and Retention",
+      "keywords": [
+        "almacenamiento",
+        "clasificacion",
+        "classification",
+        "data",
+        "documental",
+        "estado",
+        "hoy",
+        "inicial",
+        "markdown",
+        "opsly",
+        "real",
+        "reglas",
+        "retention",
+        "sandbox",
+        "scope"
+      ],
+      "size_bytes": 2277
     },
     {
       "path": "docs/00-architecture/DISTRIBUTED-ARCHITECTURE.md",
@@ -4693,6 +4776,52 @@
       "size_bytes": 7562
     },
     {
+      "path": "docs/00-architecture/MODULE-REGISTRY.md",
+      "title": "Canonical Module Registry",
+      "keywords": [
+        "canonical",
+        "contrato",
+        "entitlements",
+        "estados",
+        "existente",
+        "groundwork",
+        "inicial",
+        "mapeo",
+        "markdown",
+        "module",
+        "opsly",
+        "proposito",
+        "propuesto",
+        "registry",
+        "reglas",
+        "validacion"
+      ],
+      "size_bytes": 3227
+    },
+    {
+      "path": "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
+      "title": "Multi-Tenant Data Strategy",
+      "keywords": [
+        "arquitectura",
+        "data",
+        "decision",
+        "esta",
+        "excepcion",
+        "existente",
+        "fase",
+        "futura",
+        "markdown",
+        "multi",
+        "obligatorios",
+        "opsly",
+        "relacion",
+        "requisitos",
+        "strategy",
+        "tenant"
+      ],
+      "size_bytes": 1864
+    },
+    {
       "path": "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
       "title": "OpenClaw — Arquitectura de orquestación (Opsly)",
       "keywords": [
@@ -4788,6 +4917,27 @@
         "tenant"
       ],
       "size_bytes": 1673
+    },
+    {
+      "path": "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
+      "title": "Opsly Venture Studio",
+      "keywords": [
+        "actual",
+        "capas",
+        "dry",
+        "estado",
+        "markdown",
+        "modelo",
+        "objetivos",
+        "opsly",
+        "primer",
+        "run",
+        "sandbox",
+        "studio",
+        "target",
+        "venture"
+      ],
+      "size_bytes": 3106
     },
     {
       "path": "docs/00-architecture/OPSLYQUANTUM-SKILL-DESIGN.md",
@@ -5115,6 +5265,28 @@
         "visualization"
       ],
       "size_bytes": 3221
+    },
+    {
+      "path": "docs/00-architecture/TENANT-CONTRACT.md",
+      "title": "Tenant Contract",
+      "keywords": [
+        "aprobado",
+        "contract",
+        "datos",
+        "entitlements",
+        "estados",
+        "fuente",
+        "identidad",
+        "markdown",
+        "minima",
+        "modelo",
+        "opsly",
+        "otras",
+        "representaciones",
+        "tenant",
+        "verdad"
+      ],
+      "size_bytes": 2280
     },
     {
       "path": "docs/00-architecture/TENANT-INCUBATION-LIFECYCLE.md",
@@ -5989,7 +6161,7 @@
         "viejas",
         "workflow"
       ],
-      "size_bytes": 7431
+      "size_bytes": 7740
     },
     {
       "path": "docs/01-development/GITHUB-SETTINGS.md",
@@ -9222,7 +9394,7 @@
         "usar",
         "zona"
       ],
-      "size_bytes": 4812
+      "size_bytes": 5136
     },
     {
       "path": "docs/03-agents/AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
@@ -15121,6 +15293,48 @@
       "size_bytes": 38435
     },
     {
+      "path": "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
+      "title": "Opsly Venture Studio — auditoría de fundación",
+      "keywords": [
+        "ajustada",
+        "audit",
+        "auditoria",
+        "brief",
+        "canonicas",
+        "catalogos",
+        "clasificacion",
+        "consumidores",
+        "correccion",
+        "decisiones",
+        "dependencias",
+        "duplicaciones",
+        "esta",
+        "estado",
+        "evidencia",
+        "foundation",
+        "fuera",
+        "fundacion",
+        "hardcodes",
+        "iniciado",
+        "markdown",
+        "mergeado",
+        "migraciones",
+        "opsly",
+        "original",
+        "potenciales",
+        "pr0",
+        "progreso",
+        "riesgos",
+        "secuencia",
+        "sesion",
+        "studio",
+        "supuestos",
+        "venture",
+        "veredicto"
+      ],
+      "size_bytes": 32612
+    },
+    {
       "path": "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
       "title": "Performance Bottleneck Analysis",
       "keywords": [
@@ -15349,20 +15563,38 @@
     },
     {
       "path": "docs/blueprints/academy/README.md",
-      "title": "Academy Blueprint",
+      "title": "Academy Blueprint — ICSO platform + Peskids pilot",
       "keywords": [
+        "academia",
         "academy",
+        "apagado",
         "archivos",
         "blueprint",
-        "estado",
-        "integracion",
+        "crear",
+        "defecto",
+        "directorio",
+        "esta",
+        "este",
+        "gaps",
+        "icso",
+        "manual",
         "markdown",
+        "modulos",
         "opsly",
-        "proxima",
+        "peskids",
+        "pilot",
+        "platform",
+        "proximo",
+        "proximos",
+        "queda",
         "readme",
+        "reutilizables",
+        "roles",
+        "tenant",
+        "tipo",
         "validacion"
       ],
-      "size_bytes": 1218
+      "size_bytes": 3680
     },
     {
       "path": "docs/blueprints/AI-TENANT-SETUP-BLUEPRINT.md",
@@ -15898,7 +16130,7 @@
         "siguiente",
         "suscripciones"
       ],
-      "size_bytes": 4082
+      "size_bytes": 4286
     },
     {
       "path": "docs/blueprints/opsly-operational-blueprint/EXTRACTION-PATTERN.md",
@@ -16676,7 +16908,7 @@
         "tenant",
         "vertical"
       ],
-      "size_bytes": 3448
+      "size_bytes": 3529
     },
     {
       "path": "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
@@ -21275,6 +21507,28 @@
       "size_bytes": 7584
     },
     {
+      "path": "docs/ops/ACTIVE-CAPACITY-ALERT.md",
+      "title": "ACTIVE CAPACITY ALERT",
+      "keywords": [
+        "acciones",
+        "active",
+        "agente",
+        "alert",
+        "capacity",
+        "cursor",
+        "debe",
+        "desactivar",
+        "hacer",
+        "humanas",
+        "markdown",
+        "opsly",
+        "pendientes",
+        "resumen",
+        "status"
+      ],
+      "size_bytes": 1389
+    },
+    {
       "path": "docs/ops/branch-protection-setup.md",
       "title": "Branch protection — `main` (manual, owner del repo)",
       "keywords": [
@@ -23451,6 +23705,32 @@
       "size_bytes": 6561
     },
     {
+      "path": "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
+      "title": "Capacity alert — notificaciones (Peskids + Opsly + email + Cursor)",
+      "keywords": [
+        "activar",
+        "admin",
+        "agente",
+        "alert",
+        "canales",
+        "capacity",
+        "cursor",
+        "discord",
+        "email",
+        "fuente",
+        "markdown",
+        "notificaciones",
+        "notifications",
+        "objetivo",
+        "opsly",
+        "peskids",
+        "relacionado",
+        "resolver",
+        "unica"
+      ],
+      "size_bytes": 1911
+    },
+    {
       "path": "docs/runbooks/COMPUTER-CONTROL-OPERATOR-MODE.md",
       "title": "Opsly Operator Mode",
       "keywords": [
@@ -24235,6 +24515,37 @@
       "size_bytes": 5690
     },
     {
+      "path": "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
+      "title": "Ventana de cambios en producción (noche)",
+      "keywords": [
+        "agentes",
+        "cambios",
+        "change",
+        "comandos",
+        "cursor",
+        "dia",
+        "enforce",
+        "estos",
+        "github",
+        "hotfix",
+        "impacto",
+        "labels",
+        "markdown",
+        "noche",
+        "nocturna",
+        "opsly",
+        "paths",
+        "produccion",
+        "production",
+        "regla",
+        "seguros",
+        "solo",
+        "ventana",
+        "window"
+      ],
+      "size_bytes": 2392
+    },
+    {
       "path": "docs/runbooks/PRODUCTION-DEPLOY.md",
       "title": "Runbook de Despliegue a Producción",
       "keywords": [
@@ -24439,6 +24750,38 @@
       "size_bytes": 342
     },
     {
+      "path": "docs/runbooks/TENANT-MONITORING.md",
+      "title": "Tenant monitoring (Opsly) — Peskids first",
+      "keywords": [
+        "anadir",
+        "canonico",
+        "config",
+        "crontab",
+        "dominio",
+        "ejecucion",
+        "first",
+        "instalar",
+        "manual",
+        "markdown",
+        "monitoring",
+        "opcion",
+        "opsly",
+        "otro",
+        "peskids",
+        "relacionado",
+        "requiere",
+        "requisitos",
+        "sin",
+        "sudo",
+        "systemd",
+        "tenant",
+        "timers",
+        "usuario",
+        "vps"
+      ],
+      "size_bytes": 2884
+    },
+    {
       "path": "docs/runbooks/TENANT-ONBOARDING-TRIAGE.md",
       "title": "Triage — onboarding de tenants (API + orquestador)",
       "keywords": [
@@ -24619,6 +24962,36 @@
         "vulnerabilidades"
       ],
       "size_bytes": 4112
+    },
+    {
+      "path": "docs/runbooks/VPS-MEMORY-CAPS.md",
+      "title": "VPS memory caps — bridge hasta upgrade Peskids",
+      "keywords": [
+        "apply",
+        "bridge",
+        "capacidad",
+        "caps",
+        "comercial",
+        "compose",
+        "contexto",
+        "cursor",
+        "docker",
+        "email",
+        "hacer",
+        "hasta",
+        "live",
+        "markdown",
+        "memory",
+        "mensaje",
+        "noche",
+        "notificaciones",
+        "opsly",
+        "peskids",
+        "update",
+        "upgrade",
+        "vps"
+      ],
+      "size_bytes": 3149
     },
     {
       "path": "docs/security/NPM-AUDIT-EXEMPTIONS.md",
@@ -26258,6 +26631,36 @@
       "size_bytes": 3407
     },
     {
+      "path": "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
+      "title": "Peskids — dominio propio (`www.peskids.com`)",
+      "keywords": [
+        "app",
+        "auth",
+        "canonico",
+        "checklist",
+        "cloudflare",
+        "com",
+        "custom",
+        "dns",
+        "domain",
+        "dominio",
+        "doppler",
+        "enlaces",
+        "manual",
+        "markdown",
+        "opsly",
+        "peskids",
+        "propio",
+        "relacionados",
+        "smoke",
+        "supabase",
+        "traefik",
+        "www",
+        "zona"
+      ],
+      "size_bytes": 2311
+    },
+    {
       "path": "docs/tenants/peskids/DAILY-DIGEST-RUNBOOK.md",
       "title": "Peskids — Resumen diario (digest 8am)",
       "keywords": [
@@ -26367,7 +26770,7 @@
         "students",
         "teachers"
       ],
-      "size_bytes": 5206
+      "size_bytes": 5317
     },
     {
       "path": "docs/tenants/peskids/DEMO-SCRIPT.md",
@@ -26713,6 +27116,64 @@
         "validation"
       ],
       "size_bytes": 10104
+    },
+    {
+      "path": "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
+      "title": "Peskids — Franchise operating model",
+      "keywords": [
+        "codigo",
+        "columna",
+        "cuando",
+        "debe",
+        "diaria",
+        "exista",
+        "franchise",
+        "franquicias",
+        "hacer",
+        "iniciales",
+        "llevar",
+        "markdown",
+        "model",
+        "operacion",
+        "operating",
+        "opsly",
+        "peskids",
+        "principio",
+        "prs",
+        "relacion",
+        "sedes"
+      ],
+      "size_bytes": 1878
+    },
+    {
+      "path": "docs/tenants/peskids/FRANCHISES.md",
+      "title": "Peskids — modelo de franquicias (dentro del tenant)",
+      "keywords": [
+        "831",
+        "actual",
+        "backfill",
+        "capas",
+        "dentro",
+        "enlaces",
+        "fase",
+        "franchises",
+        "franquicias",
+        "iniciales",
+        "intake",
+        "markdown",
+        "migracion",
+        "minima",
+        "modelo",
+        "negociable",
+        "opsly",
+        "permisos",
+        "peskids",
+        "regla",
+        "relacion",
+        "tenant",
+        "unidades"
+      ],
+      "size_bytes": 2534
     },
     {
       "path": "docs/tenants/peskids/FUTURE-REPO-SEED.md",
@@ -29521,6 +29982,22 @@
         "versioning"
       ],
       "size_bytes": 4016
+    },
+    {
+      "path": "lib/capacity-alert/README.md",
+      "title": "@intcloudsysops/capacity-alert",
+      "keywords": [
+        "activar",
+        "alert",
+        "canales",
+        "capacity",
+        "desactivar",
+        "intcloudsysops",
+        "markdown",
+        "opsly",
+        "readme"
+      ],
+      "size_bytes": 693
     },
     {
       "path": "lib/components/GOVERNANCE.md",
@@ -87777,6 +88254,9 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/cwe-top-25.md",
       ".agents/skills/cyber-neo/references/cwe-top-25.md"
     ],
+    "831": [
+      "docs/tenants/peskids/FRANCHISES.md"
+    ],
     "862": [
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/cwe-top-25.md",
       ".agents/skills/cyber-neo/references/cwe-top-25.md"
@@ -88459,6 +88939,8 @@
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/tenants/peskids/ARCHITECTURE.md",
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
+      "docs/tenants/peskids/FRANCHISES.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/tenants/peskids/INSTAGRAM-FEED.md",
       "docs/tenants/README.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
@@ -88628,6 +89110,7 @@
       "packages/skills/vendor/agent-skills/ci-cd-and-automation/SKILL.md",
       "packages/index.md",
       "config/doppler-audit-2026-04-07.md",
+      "config/blueprints/academy/README.md",
       ".cursor/goals/openclaw-agent-runtime-2026-05-14.md",
       ".cursor/prompts/parallel-task-2-architect.md",
       ".cursor/prompts/legalvial-phase2b-automation.md",
@@ -88751,6 +89234,7 @@
       "lib/voice-messaging/README.md",
       "lib/voice-messaging/GOVERNANCE.md",
       "lib/index.md",
+      "lib/capacity-alert/README.md",
       "lib/prompt-guard/README.md",
       "lib/pattern-catalog/README.md",
       "lib/security/README.md",
@@ -88774,6 +89258,7 @@
       "apps/intcloudsysops/CLAUDE.md",
       "apps/intcloudsysops/DEPLOYMENT.md",
       "apps/icso/README.md",
+      "apps/icso/content/README.md",
       "apps/ml/agents/classifier/README.md",
       "apps/index.md",
       "apps/mcp/README.md",
@@ -90275,6 +90760,7 @@
       "docs/ops/workflows-audit.md",
       "docs/ops/runbook-redis.md",
       "docs/ops/SESSION-LOG-2026-05-03.md",
+      "docs/ops/ACTIVE-CAPACITY-ALERT.md",
       "docs/orchestrator/REPAIR-QUEUE.md",
       "docs/infrastructure/AGENT-BOOTSTRAP-SYSTEM.md",
       "docs/infrastructure/PESKIDS-AGENT-AUTONOMOUS-DEPLOYMENT.md",
@@ -90380,6 +90866,7 @@
       "docs/runbooks/e2e-hybrid-write.md",
       "docs/runbooks/OPERATIONS-HANDBOOK.md",
       "docs/runbooks/LOCAL-SERVICES-GO-LIVE.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
       "docs/runbooks/INCUBATION-PLATFORM-FOUNDATION.md",
       "docs/runbooks/incident.md",
       "docs/runbooks/AUTONOMY-JOB-POLICY-MAP.md",
@@ -90411,6 +90898,7 @@
       "docs/runbooks/DEPLOYMENT-CHECKLIST.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
       "docs/runbooks/frontend-audit.md",
+      "docs/runbooks/TENANT-MONITORING.md",
       "docs/runbooks/admin.md",
       "docs/runbooks/AUTONOMOUS-PRODUCTION-GO-LIVE-CHECKLIST.md",
       "docs/runbooks/SECRET-ROTATION-AFTER-EXPOSURE.md",
@@ -90420,6 +90908,8 @@
       "docs/runbooks/AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
       "docs/runbooks/ONBOARDING-NEW-CLIENT.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
       "docs/runbooks/OPSLY-OPENCLAW-STARTUP.md",
       "docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md",
       "docs/runbooks/TENANT-PRODUCTION-ROLLOUT.md",
@@ -90432,17 +90922,21 @@
       "docs/00-architecture/VPS-CLEANUP-WEBHOOK-CONTRACT.md",
       "docs/00-architecture/COST-DASHBOARD.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
+      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
       "docs/00-architecture/OPSLYQUANTUM-SKILL-DESIGN.md",
+      "docs/00-architecture/BLUEPRINT-CONTRACT.md",
       "docs/00-architecture/conversational-runtime-roadmap.md",
       "docs/00-architecture/DISTRIBUTED-ARCHITECTURE.md",
       "docs/00-architecture/LLM-GATEWAY.md",
       "docs/00-architecture/PROVISIONING-SYSTEM.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
       "docs/00-architecture/POLICY-AI-LOCAL-FIRST.md",
+      "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
       "docs/00-architecture/README.md",
       "docs/00-architecture/REDIS_NAMESPACE_ISOLATION.md",
       "docs/00-architecture/LLM-GATEWAY-WORKPLAN.md",
       "docs/00-architecture/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+      "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
       "docs/00-architecture/RENDERING-ENGINE.md",
       "docs/00-architecture/ORCHESTRATOR.md",
       "docs/00-architecture/hooks-system.md",
@@ -90455,6 +90949,8 @@
       "docs/00-architecture/ELEVENLABS-ADVANCED-INTEGRATION.md",
       "docs/00-architecture/INCUBATION-PLATFORM-CONTRACT.md",
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
+      "docs/00-architecture/MODULE-REGISTRY.md",
+      "docs/00-architecture/TENANT-CONTRACT.md",
       "docs/00-architecture/REPO-MAP.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
       "docs/01-development/ADMIN-ECOSYSTEM.md",
@@ -90615,6 +91111,7 @@
       "docs/audits/README.md",
       "docs/audits/DOCKER-OPTIMIZATION.md",
       "docs/audits/DATABASE-QUERY-AUDIT.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/audits/TEST-COVERAGE-BASELINE.md",
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
@@ -90761,6 +91258,7 @@
       "docs/n8n-workflows/CLOUDSYSOPS-TECHNICIAN-N8N.md",
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md",
       "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/N8N-SETUP.md",
@@ -90829,6 +91327,8 @@
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
       "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/FRANCHISES.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/tenants/peskids/INSTAGRAM-FEED.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
@@ -91202,6 +91702,7 @@
       "packages/skills/vendor/agent-skills/ci-cd-and-automation/SKILL.md",
       "packages/index.md",
       "config/doppler-audit-2026-04-07.md",
+      "config/blueprints/academy/README.md",
       ".cursor/goals/openclaw-agent-runtime-2026-05-14.md",
       ".cursor/prompts/parallel-task-2-architect.md",
       ".cursor/prompts/legalvial-phase2b-automation.md",
@@ -91325,6 +91826,7 @@
       "lib/voice-messaging/README.md",
       "lib/voice-messaging/GOVERNANCE.md",
       "lib/index.md",
+      "lib/capacity-alert/README.md",
       "lib/prompt-guard/README.md",
       "lib/pattern-catalog/README.md",
       "lib/security/README.md",
@@ -91348,6 +91850,7 @@
       "apps/intcloudsysops/CLAUDE.md",
       "apps/intcloudsysops/DEPLOYMENT.md",
       "apps/icso/README.md",
+      "apps/icso/content/README.md",
       "apps/ml/agents/classifier/README.md",
       "apps/index.md",
       "apps/mcp/README.md",
@@ -92852,6 +93355,7 @@
       "docs/ops/workflows-audit.md",
       "docs/ops/runbook-redis.md",
       "docs/ops/SESSION-LOG-2026-05-03.md",
+      "docs/ops/ACTIVE-CAPACITY-ALERT.md",
       "docs/orchestrator/REPAIR-QUEUE.md",
       "docs/infrastructure/AGENT-BOOTSTRAP-SYSTEM.md",
       "docs/infrastructure/PESKIDS-AGENT-AUTONOMOUS-DEPLOYMENT.md",
@@ -92959,6 +93463,7 @@
       "docs/runbooks/e2e-hybrid-write.md",
       "docs/runbooks/OPERATIONS-HANDBOOK.md",
       "docs/runbooks/LOCAL-SERVICES-GO-LIVE.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
       "docs/runbooks/INCUBATION-PLATFORM-FOUNDATION.md",
       "docs/runbooks/incident.md",
       "docs/runbooks/AUTONOMY-JOB-POLICY-MAP.md",
@@ -92990,6 +93495,7 @@
       "docs/runbooks/DEPLOYMENT-CHECKLIST.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
       "docs/runbooks/frontend-audit.md",
+      "docs/runbooks/TENANT-MONITORING.md",
       "docs/runbooks/admin.md",
       "docs/runbooks/AUTONOMOUS-PRODUCTION-GO-LIVE-CHECKLIST.md",
       "docs/runbooks/SECRET-ROTATION-AFTER-EXPOSURE.md",
@@ -92999,6 +93505,8 @@
       "docs/runbooks/AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
       "docs/runbooks/ONBOARDING-NEW-CLIENT.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
       "docs/runbooks/OPSLY-OPENCLAW-STARTUP.md",
       "docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md",
       "docs/runbooks/TENANT-PRODUCTION-ROLLOUT.md",
@@ -93011,17 +93519,21 @@
       "docs/00-architecture/VPS-CLEANUP-WEBHOOK-CONTRACT.md",
       "docs/00-architecture/COST-DASHBOARD.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
+      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
       "docs/00-architecture/OPSLYQUANTUM-SKILL-DESIGN.md",
+      "docs/00-architecture/BLUEPRINT-CONTRACT.md",
       "docs/00-architecture/conversational-runtime-roadmap.md",
       "docs/00-architecture/DISTRIBUTED-ARCHITECTURE.md",
       "docs/00-architecture/LLM-GATEWAY.md",
       "docs/00-architecture/PROVISIONING-SYSTEM.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
       "docs/00-architecture/POLICY-AI-LOCAL-FIRST.md",
+      "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
       "docs/00-architecture/README.md",
       "docs/00-architecture/REDIS_NAMESPACE_ISOLATION.md",
       "docs/00-architecture/LLM-GATEWAY-WORKPLAN.md",
       "docs/00-architecture/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+      "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
       "docs/00-architecture/RENDERING-ENGINE.md",
       "docs/00-architecture/ORCHESTRATOR.md",
       "docs/00-architecture/hooks-system.md",
@@ -93034,6 +93546,8 @@
       "docs/00-architecture/ELEVENLABS-ADVANCED-INTEGRATION.md",
       "docs/00-architecture/INCUBATION-PLATFORM-CONTRACT.md",
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
+      "docs/00-architecture/MODULE-REGISTRY.md",
+      "docs/00-architecture/TENANT-CONTRACT.md",
       "docs/00-architecture/REPO-MAP.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
       "docs/01-development/ADMIN-ECOSYSTEM.md",
@@ -93195,6 +93709,7 @@
       "docs/audits/README.md",
       "docs/audits/DOCKER-OPTIMIZATION.md",
       "docs/audits/DATABASE-QUERY-AUDIT.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/audits/TEST-COVERAGE-BASELINE.md",
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
@@ -93341,6 +93856,7 @@
       "docs/n8n-workflows/CLOUDSYSOPS-TECHNICIAN-N8N.md",
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md",
       "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/N8N-SETUP.md",
@@ -93409,6 +93925,8 @@
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
       "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/FRANCHISES.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/tenants/peskids/INSTAGRAM-FEED.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
@@ -94162,6 +94680,7 @@
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/tenants/peskids/ARCHITECTURE.md",
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/tenants/peskids/INSTAGRAM-FEED.md",
       "docs/tenants/README.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
@@ -94466,6 +94985,7 @@
       "docs/projects/PESKIDS-SCOPE.md",
       "docs/runbooks/frontend-audit.md",
       "docs/runbooks/admin.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
       "docs/00-architecture/COST-DASHBOARD.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
       "docs/01-development/ADMIN-ECOSYSTEM.md",
@@ -94702,6 +95222,7 @@
       "apps/experimental/ingestion-service-archive/README.md",
       "apps/notebooklm-agent/README.md",
       "docs/superpowers/specs/2026-05-26-content-studio-ai-design.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
       "docs/runbooks/ONBOARDING-NEW-CLIENT.md",
       "docs/00-architecture/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
       "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
@@ -95074,6 +95595,7 @@
       "docs/runbooks/AUTONOMOUS-PRODUCTION-GO-LIVE-CHECKLIST.md",
       "docs/00-architecture/TENANT-INCUBATION-LIFECYCLE.md",
       "docs/00-architecture/PROVISIONING-SYSTEM.md",
+      "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
       "docs/00-architecture/ELEVENLABS-ADVANCED-INTEGRATION.md",
       "docs/01-development/NEXT-STEPS.md",
       "docs/01-development/PHASE-5-ADVANCED-FEATURES.md",
@@ -95292,6 +95814,9 @@
       "docs/governance/SUB-PROCESSORS.md",
       "docs/obsidian/inbox/2026-05-22.md",
       "docs/legal/peskids/DPIA-2026.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
+      "docs/runbooks/TENANT-MONITORING.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
       "docs/examples/email-templates/PESKIDS-EMAIL-TEMPLATES.md",
       "docs/examples/n8n/PESKIDS-N8N-DEPLOYMENT.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
@@ -95302,6 +95827,7 @@
       "docs/operations/VPS-VALIDATION-GUIDE.md",
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md",
       "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/N8N-SETUP.md",
@@ -95367,6 +95893,8 @@
       "docs/tenants/peskids/DEMO-SCRIPT.md",
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/FRANCHISES.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/tenants/peskids/INSTAGRAM-FEED.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
@@ -95406,6 +95934,7 @@
       "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       "docs/blueprints/GO-LIVE-COMMAND.md",
       "docs/blueprints/PHASE1-IMPLEMENTATION-GUIDE.md",
+      "docs/blueprints/academy/README.md",
       "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md",
       "docs/blueprints/PESKIDS-GHL-MIGRATION-STATUS.md",
       "docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md",
@@ -95617,6 +96146,7 @@
       "packages/skills/user/opsly-modularity/SKILL.md",
       "packages/skills/user/opsly-peskids/SKILL.md",
       "packages/skills/user/opsly-tenant/SKILL.md",
+      "config/blueprints/academy/README.md",
       ".cursor/prompts/local-services-tech-builder.md",
       ".cursor/prompts/tenants/local-services/piloto-automatizaciones.md",
       "scripts/README.md",
@@ -95652,6 +96182,7 @@
       "docs/runbooks/managed.md",
       "docs/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
       "docs/runbooks/TENANT-ONBOARDING-TRIAGE.md",
+      "docs/runbooks/TENANT-MONITORING.md",
       "docs/runbooks/admin.md",
       "docs/runbooks/AUTONOMOUS-PRODUCTION-GO-LIVE-CHECKLIST.md",
       "docs/runbooks/TENANT-INVITATIONS-SYSTEM.md",
@@ -95660,13 +96191,16 @@
       "docs/runbooks/AUTONOMOUS-OPERATIONS-DASHBOARD.md",
       "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
       "docs/00-architecture/TENANT-INCUBATION-LIFECYCLE.md",
+      "docs/00-architecture/BLUEPRINT-CONTRACT.md",
       "docs/00-architecture/POLICY-AI-LOCAL-FIRST.md",
       "docs/00-architecture/LLM-GATEWAY-WORKPLAN.md",
+      "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
       "docs/00-architecture/opsly-agent-runtime.md",
       "docs/00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md",
       "docs/00-architecture/OPSLY-CONTROL-PLANE.md",
       "docs/00-architecture/ARCHITECTURE.md",
       "docs/00-architecture/INCUBATION-PLATFORM-CONTRACT.md",
+      "docs/00-architecture/TENANT-CONTRACT.md",
       "docs/01-development/TEST_PLAN.md",
       "docs/01-development/TENANT-TESTING-GUIDE.md",
       "docs/01-development/TENANT-TESTING-PLAN.md",
@@ -95717,6 +96251,7 @@
       "docs/tenants/peskids/TENANT_PESKIDS.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/FRANCHISES.md",
       "docs/tenants/panini-lab/README.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
       "docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md",
@@ -95758,6 +96293,7 @@
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
       "docs/blueprints/PHASE1-IMPLEMENTATION-GUIDE.md",
       "docs/blueprints/WOMPI-PAYMENT-GATEWAY-CONTRACT.md",
+      "docs/blueprints/academy/README.md",
       "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md",
       "docs/blueprints/PESKIDS-GHL-MIGRATION-STATUS.md",
       ".claude/3-slash-commands/ai-cost.md",
@@ -95810,6 +96346,7 @@
       "packages/skills/user/opsly-peskids-deployment/SKILL.md",
       "packages/skills/user/opsly-google-cloud/SKILL.md",
       "packages/skills/vendor/agent-skills/security-and-hardening/SKILL.md",
+      ".codex/CODEX.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/owasp-top-10.md",
       "apps/peskids/CLAUDE.md",
       "apps/intcloudsysops/CLAUDE.md",
@@ -96130,6 +96667,7 @@
       "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/audits/DOCKER-OPTIMIZATION.md",
       "docs/audits/DATABASE-QUERY-AUDIT.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
       "docs/audits/LINT-RULES-GUIDE.md",
@@ -98835,6 +99373,8 @@
       "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB1177123-SEED419213-20200602-00000.md",
       "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
+      "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
+      "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
       "docs/00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
       "docs/00-architecture/INCUBATION-PLATFORM-CONTRACT.md",
       "docs/03-agents/SYRA-IMPLEMENTATION-GUIDE.md",
@@ -98882,7 +99422,8 @@
     "labels": [
       ".jules/palette.md",
       "vendor/agency-agents/integrations/openclaw/filament-optimization-specialist/AGENTS.md",
-      "docs/ops/issue-bankruptcy-2026-05-03/issues-triage.md"
+      "docs/ops/issue-bankruptcy-2026-05-03/issues-triage.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md"
     ],
     "learnings": [
       ".jules/palette.md",
@@ -99531,6 +100072,7 @@
       "docs/03-agents/AGENTS-AUTONOMOUS-RUNBOOK.md",
       "docs/03-agents/CLAUDE-WORKFLOW-OPTIMIZATION.md",
       "docs/02-tools/GOOGLE-DRIVE-SYNC.md",
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
       "docs/tenants/peskids/OPSLY-REUSE.md",
       "docs/brain/skills/opsly-peskids.md",
       "docs/brain/AGENT-ONBOARDING.md",
@@ -99715,6 +100257,7 @@
       "docs/00-architecture/VPS-CLEANUP-WEBHOOK-CONTRACT.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
       "docs/00-architecture/POLICY-AI-LOCAL-FIRST.md",
+      "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
       "docs/01-development/HEAVY-SERVICES-DECISION.md",
       "docs/01-development/SPRINTS_13_14.md",
       "docs/01-development/MODULARITY-CONTRACT.md",
@@ -99855,6 +100398,8 @@
       "docs/history/plans/MASTER-PLAN.md",
       "docs/README.md",
       "docs/runbooks/KAFKA-AIRFLOW-BOOTSTRAP.md",
+      "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
+      "docs/00-architecture/MODULE-REGISTRY.md",
       "docs/01-development/OPSLY-KNOWLEDGE-BASE.md",
       "docs/01-development/GIT-WORKFLOW.md",
       "docs/01-development/.openclaw.md",
@@ -100403,13 +100948,16 @@
     "hacer": [
       "packages/skills/user/opsly-distributed-tracing/SKILL.md",
       ".github/copilot-instructions.md",
+      "docs/ops/ACTIVE-CAPACITY-ALERT.md",
       "docs/emails/tenant-welcome-email.md",
       "docs/obsidian/research/README.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
       "docs/01-development/OPSLY-KNOWLEDGE-BASE.md",
       "docs/03-agents/COPILOT-CODING-AGENT.md",
       "docs/03-agents/QUICKSTART-AGENTS.md",
       "docs/adr/ADR-010-llm-gateway.md",
       "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
       "docs/brain/skills/fable5-agent-instructions.md",
       "docs/brain/AGENT-ONBOARDING.md",
       "docs/blueprints/opsly-operational-blueprint/WHATSAPP-HYBRID.md",
@@ -100496,7 +101044,8 @@
       "packages/skills/user/opsly-qa/SKILL.md",
       "docs/history/plans/MASTER-PLAN.md",
       "docs/04-infrastructure/PLAN-OLLAMA-WORKER-2026-04-14.md",
-      "docs/03-agents/AGENTS-GLOBAL-CONTEXT.md"
+      "docs/03-agents/AGENTS-GLOBAL-CONTEXT.md",
+      "docs/blueprints/academy/README.md"
     ],
     "flujo": [
       "packages/skills/user/opsly-qa/SKILL.md",
@@ -100739,6 +101288,7 @@
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-HANDOFF-FOR-VPS-EXECUTION.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/brain/skills/opsly-supabase.md",
       "docs/brain/skills/opsly-supabase-marketplace.md",
       "docs/reports/PESKIDS-E2E-VALIDATION.md",
@@ -100958,6 +101508,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
@@ -101163,6 +101714,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-mobile-app-builder/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/mobile-app-builder.md",
       "vendor/agency-agents/integrations/openclaw/mobile-app-builder/AGENTS.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
       "docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md",
       "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
       "docs/01-development/ADMIN-ECOSYSTEM.md",
@@ -101840,6 +102392,7 @@
       "docs/blueprints/opsly-operational-blueprint/COMMERCIAL-PACKAGES.md",
       "docs/blueprints/opsly-operational-blueprint/REFERENCE-ARCHITECTURE.md",
       "docs/blueprints/TWENTY-BOOTSTRAP-IRREDUCIBLE.md",
+      "docs/blueprints/academy/README.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/content-platform.md"
     ],
     "resource": [
@@ -102166,6 +102719,7 @@
       "docs/history/plans/MASTER-PLAN.md",
       "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/obsidian/research/agent-pattern-matrix.md",
+      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
       "docs/01-development/LOCAL-FIRST-ARCHITECTURE.md",
       "docs/01-development/N8N-IMPORT-GUIDE.md",
@@ -102186,6 +102740,7 @@
       "docs/tenants/peskids/PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/ARCHITECTURE.md",
       "docs/tenants/peskids/DEMO-SCRIPT.md",
+      "docs/tenants/peskids/FRANCHISES.md",
       "docs/brain/workflows/local-agents.md"
     ],
     "agent": [
@@ -103389,6 +103944,8 @@
       "packages/skills/user/opsly-infra/SKILL.md",
       "packages/skills/user/opsly-bash/SKILL.md",
       "packages/skills/templates/template-bash-script.md",
+      ".codex/CODEX.md",
+      ".codex/LOCAL-AUTOMATION.md",
       "docs/brain/skills/opsly-bash.md"
     ],
     "deploy": [
@@ -104475,6 +105032,7 @@
       "vendor/agency-agents/integrations/openclaw/voice-ai-integration-engineer/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/sales-outreach/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/game-audio-engineer/SOUL.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
       "docs/adr/ADR-031-token-optimization-ollama-primary.md"
     ],
     "middlewares": [
@@ -104564,6 +105122,7 @@
       "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
       "docs/adr/ADR-002-traefik-sobre-nginx.md",
       "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/reports/PRODUCTION-HEALTH.md"
     ],
     "vps": [
@@ -104581,6 +105140,7 @@
       "docs/ops/runbook-redis.md",
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
       "docs/runbooks/e2e-hybrid-write.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
       "docs/runbooks/VPS-CLEANUP-WEBHOOK.md",
       "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
@@ -104588,6 +105148,7 @@
       "docs/runbooks/DEPLOY-GITHUB-ACTIONS.md",
       "docs/runbooks/FIX-TYPECHECK-BLOCKER.md",
       "docs/runbooks/DEPLOYMENT-CHECKLIST.md",
+      "docs/runbooks/TENANT-MONITORING.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
       "docs/runbooks/OPSLY-OPENCLAW-STARTUP.md",
       "docs/runbooks/CORTEX-OBSERVATION-WINDOW.md",
@@ -104666,6 +105227,7 @@
       "tools/agent-packs/vendor/the-architect/questions/phase-2-branches.md",
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
       "docs/tenants/peskids/OPSLY-REUSE.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/tenants/intcloudsysops/EXTRACTION-PLAN.md",
       ".agents/skills/cyber-neo/references/auth-authz-patterns.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/api-backend.md",
@@ -104707,6 +105269,7 @@
       "README.md",
       "AGENTS.md",
       "docs/superpowers/specs/2026-05-31-collectx-platform-design.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
       "docs/01-development/HEAVY-SERVICES-DECISION.md",
       "docs/01-development/RTK.md",
       "docs/04-infrastructure/WORKER-TEAM-ARCHITECTURE.md",
@@ -105875,6 +106438,7 @@
       "docs/legal/peskids/DPIA-2026.md",
       "docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
+      "docs/00-architecture/TENANT-CONTRACT.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
       "docs/01-development/SPRINT-PLANNING-SETUP.md",
       "docs/01-development/RETENTION-POLICY.md",
@@ -106127,6 +106691,7 @@
       "docs/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
       "docs/runbooks/admin.md",
       "docs/runbooks/AUTONOMOUS-PRODUCTION-GO-LIVE-CHECKLIST.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
       "docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md",
       "docs/runbooks/TENANT-PRODUCTION-ROLLOUT.md",
       "docs/runbooks/CORTEX-OBSERVATION-WINDOW.md",
@@ -106304,6 +106869,7 @@
       "docs/ops/issue-bankruptcy-2026-05-03/quick-wins.md",
       "docs/history/governance/openclaw-root-legacy.md",
       "docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md",
+      "docs/runbooks/TENANT-MONITORING.md",
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
       "docs/01-development/LIBRARY-MODULES.md",
       "docs/01-development/CLIENT-ONBOARDING-PLAYBOOK.md",
@@ -106489,8 +107055,10 @@
       "docs/runbooks/AGENCY-DEVOPS-OS-DEMO.md",
       "docs/runbooks/KAFKA-AIRFLOW-BOOTSTRAP.md",
       "docs/runbooks/AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
       "docs/runbooks/PRODUCTION-DEPLOY.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
+      "docs/00-architecture/BLUEPRINT-CONTRACT.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
       "docs/01-development/N8N-SETUP.md",
@@ -107068,7 +107636,9 @@
       "docs/orchestrator/REPAIR-QUEUE.md",
       "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
+      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
       "docs/00-architecture/ORCHESTRATOR.md",
+      "docs/00-architecture/TENANT-CONTRACT.md",
       "docs/01-development/SESSION-GIT-SYNC.md",
       "docs/04-infrastructure/WORKER-TEAM-BILLING.md",
       "docs/04-infrastructure/PLAN-OLLAMA-WORKER-2026-04-14.md",
@@ -107078,6 +107648,7 @@
       "docs/tenants/peskids/DATA-MODEL.md",
       "docs/tenants/peskids/README.md",
       "docs/tenants/peskids/CLASSES-SYSTEM-SPEC.md",
+      "docs/tenants/peskids/FRANCHISES.md",
       "docs/brain/AI-STRATEGY.md",
       "docs/brain/TENANT-AI-PLAYBOOK.md",
       "docs/reports/ACG-STRATEGY-30-DAYS.md",
@@ -107393,6 +107964,7 @@
       "docs/superpowers/specs/2026-06-25-icso-website-enhancement-design.md",
       "docs/runbooks/AUTONOMY-JOB-POLICY-MAP.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
       "docs/adr/ADR-031-token-optimization-ollama-primary.md"
     ],
     "continua": [
@@ -107537,6 +108109,7 @@
       ".github/PULL_REQUEST_TEMPLATE.md",
       "apps/admin/INVITATIONS_UI.md",
       "docs/history/plans/MASTER-PLAN.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
       "docs/01-development/GIT-WORKFLOW.md",
       "docs/01-development/GITHUB-TOKEN.md",
       "docs/01-development/OPS-CLEANUP-PROCEDURES.md",
@@ -107561,6 +108134,7 @@
       "docs/generated/implementation-progress.auto.md",
       "docs/history/plans/IMPLEMENTATION-STATUS.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md",
       "docs/tenants/peskids/PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md"
@@ -107591,6 +108165,7 @@
     ],
     "acciones": [
       "packages/skills/user/opsly-notebooklm/SKILL.md",
+      "docs/ops/ACTIVE-CAPACITY-ALERT.md",
       "docs/tenants/peskids/OWNER-RUNBOOK.md",
       ".claude/1-agent-teams/security-agent.md",
       ".claude/1-agent-teams/ops-agent.md",
@@ -107701,6 +108276,7 @@
       "docs/00-architecture/conversational-runtime-roadmap.md",
       "docs/00-architecture/DISTRIBUTED-ARCHITECTURE.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
+      "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
       "docs/00-architecture/ORCHESTRATOR.md",
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
@@ -108366,6 +108942,7 @@
       "docs/obsidian/research/agent-pattern-matrix.md",
       "docs/obsidian/templates/evergreen-claim.md",
       "docs/01-development/AGENCY-DEVOPS-OS-OFFER.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/tenants/onboarding-prompts/DEPLOYMENT-VALIDATION.md",
       "docs/brain/workflows/local-agents.md",
       "docs/reports/AUTONOMY-PHASE1-E2E-EVIDENCE.md"
@@ -108389,9 +108966,11 @@
     "minima": [
       "packages/skills/user/opsly-agent-verification/SKILL.md",
       "docs/runbooks/AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
+      "docs/00-architecture/TENANT-CONTRACT.md",
       "docs/01-development/AGENT-PROMPT-QUEUE.md",
       "docs/04-infrastructure/MAC-ADMIN-ORCHESTRATOR-WORKER.md",
       "docs/03-agents/AGENTS-AUTONOMOUS-RUNBOOK.md",
+      "docs/tenants/peskids/FRANCHISES.md",
       "docs/reports/ACG-STRATEGY-30-DAYS.md"
     ],
     "prohibidas": [
@@ -108401,6 +108980,7 @@
       "packages/skills/user/opsly-agent-verification/SKILL.md",
       "docs/ops/workflows-index.md",
       "docs/orchestrator/REPAIR-QUEUE.md",
+      "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
       "docs/01-development/AGENT-PROMPT-QUEUE.md",
       "docs/01-development/RTK.md",
@@ -108411,8 +108991,10 @@
       "docs/03-agents/VALIDATION-ITERATION-LOOP.md",
       "docs/02-tools/N8N-MCP-INTEGRATION.md",
       "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
       "docs/tenants/peskids/README.md",
-      "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md"
+      "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
+      "docs/tenants/peskids/FRANCHISES.md"
     ],
     "sin": [
       "packages/skills/user/opsly-agent-verification/SKILL.md",
@@ -108425,6 +109007,7 @@
       "docs/obsidian/index.md",
       "docs/runbooks/LLM-PLATFORM-RECOVERY.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
+      "docs/runbooks/TENANT-MONITORING.md",
       "docs/01-development/AGENT-PROMPT-QUEUE.md",
       "docs/01-development/HEAVY-SERVICES-DECISION.md",
       "docs/01-development/SPRINT-PLANNING-SETUP.md",
@@ -108633,6 +109216,7 @@
       "docs/obsidian/inbox/2026-05-22.md",
       "docs/README.md",
       "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/03-agents/HERMES-LOCAL-AGENTS-STACK.md",
       "docs/03-agents/AGENTS-GLOBAL-CONTEXT.md",
       "docs/02-tools/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
@@ -108663,6 +109247,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-codebase-onboarding-engineer/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/codebase-onboarding-engineer.md",
       "vendor/agency-agents/integrations/openclaw/codebase-onboarding-engineer/AGENTS.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
       "docs/01-development/HOSTS-PATHS.md",
       ".agents/skills/cyber-neo/SKILL.md"
     ],
@@ -108899,6 +109484,7 @@
       "docs/02-tools/NOTEBOOKLM-SETUP.md",
       "docs/tenants/peskids/N8N-SETUP.md",
       "docs/tenants/peskids/EXTRACTION-PLAN.md",
+      "docs/blueprints/academy/README.md",
       ".claude/3-slash-commands/tenant.md",
       ".agents/IMPLEMENTATION-CHECKLIST.md"
     ],
@@ -109047,11 +109633,13 @@
       "docs/obsidian/sources/MOC.md",
       "docs/obsidian/index.md",
       "docs/obsidian/inbox/MOC.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
       "docs/00-architecture/conversational-runtime-roadmap.md",
       "docs/01-development/OPENCLAW-TERMINOLOGY.md",
       "docs/01-development/GIT-WORKFLOW.md",
       "docs/01-development/MODULARITY-CONTRACT.md",
       "docs/01-development/AGENT-SERVICE-NAMING.md",
+      "docs/tenants/peskids/FRANCHISES.md",
       "docs/brain/modules/context-builder.md",
       "docs/blueprints/opsly-operational-blueprint/WHATSAPP-HYBRID.md",
       "docs/blueprints/opsly-operational-blueprint/VERTICAL-BLUEPRINTS.md",
@@ -109458,6 +110046,7 @@
       "packages/skills/user/opsly-discord/SKILL.md",
       ".n8n/3-webhooks/discord-webhook.md",
       "infra/monitoring/README.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
       "docs/01-development/N8N-SETUP.md",
       "docs/01-development/SPRINT-PLANNING-SETUP.md",
       "docs/01-development/SEMANA-5-INFORME.md",
@@ -109711,6 +110300,7 @@
       "docs/ops/workflows-audit.md",
       "docs/runbooks/DEPLOY-GITHUB-ACTIONS.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
       "docs/01-development/ADMIN-ECOSYSTEM.md",
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
       "docs/01-development/N8N-SETUP.md",
@@ -110969,7 +111559,8 @@
       "docs/03-agents/HERMES-LOCAL-AGENTS-STACK.md",
       "docs/tenants/peskids/TENANT_PESKIDS.md",
       "docs/tenants/peskids/DEMO-SCRIPT.md",
-      "docs/brain/skills/fable5-agent-instructions.md"
+      "docs/brain/skills/fable5-agent-instructions.md",
+      "docs/blueprints/academy/README.md"
     ],
     "frecuente": [
       "packages/skills/user/opsly-architect-senior/SKILL.md"
@@ -111268,6 +111859,7 @@
       "packages/skills/user/opsly-bootstrap/SKILL.md",
       ".cursor/prompts/local-services-tech-builder.md",
       "scripts/agent-training/README.md",
+      "docs/00-architecture/TENANT-CONTRACT.md",
       "docs/00-architecture/REPO-MAP.md",
       "docs/01-development/DESIGN-REFERENCES.md",
       "docs/01-development/AUTO-SYNC-DOCS-SETUP.md",
@@ -111301,6 +111893,7 @@
       "docs/01-development/DEPLOYMENT-ARCHITECTURE.md",
       "docs/04-infrastructure/CLOUDFLARE-PROXY-ACTIVATION.md",
       "docs/tenants/peskids/TWENTY-CRM.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md"
     ],
     "domain": [
@@ -111329,6 +111922,7 @@
       "docs/01-development/TROUBLESHOOTING.md",
       "docs/04-infrastructure/DOMAIN-CUTOVER-OP-SLY.md",
       "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md"
     ],
     "healing": [
@@ -111465,6 +112059,7 @@
       "docs/plans/README.md",
       "docs/obsidian/templates/source-note.md",
       "docs/obsidian/sources/opsly-agent-pattern-sources.md",
+      "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
       "docs/01-development/FAQ.md",
       "docs/01-development/OPSLYQUANTUM-USAGE.md",
       "docs/01-development/LOCALRANK-TESTER-GUIDE.md",
@@ -111472,11 +112067,13 @@
       "docs/04-infrastructure/DOPPLER-CI-RUNBOOK.md",
       "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
       "docs/04-infrastructure/SECURITY-MITIGATIONS-2026-04-09.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/05-deployment-status/PESKIDS-GO-LIVE-STATUS.md",
       "docs/02-tools/MCP-STATUS-ANALYSIS.md",
       "docs/tenants/peskids/CLIENT-PITCH.md",
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
-      "docs/tenants/testing/TENANT-TESTING-GUIDE.md"
+      "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
+      "docs/blueprints/academy/README.md"
     ],
     "fuente": [
       "packages/skills/user/opsly-ai-sdk-vercel/SKILL.md",
@@ -111485,6 +112082,8 @@
       "scripts/agent-training/README.md",
       "docs/obsidian/templates/source-note.md",
       "docs/obsidian/sources/opsly-agent-pattern-sources.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
+      "docs/00-architecture/TENANT-CONTRACT.md",
       "docs/01-development/DESIGN-REFERENCES.md",
       "docs/01-development/KNOWLEDGE-BRAIN-SYSTEM.md",
       "docs/01-development/AUTO-SYNC-DOCS-SETUP.md",
@@ -111526,6 +112125,7 @@
     ],
     "unica": [
       "packages/skills/user/opsly-ai-sdk-vercel/SKILL.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
       "docs/tenants/peskids/WHATSAPP-CHANNEL.md"
     ],
     "vercel": [
@@ -111545,7 +112145,9 @@
     ],
     "activar": [
       "packages/skills/user/opsly-autonomous/SKILL.md",
+      "lib/capacity-alert/README.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
       "docs/04-infrastructure/CLOUDFLARE-PROXY-ACTIVATION.md",
       "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md",
       "docs/03-agents/HERMES-LOCAL-AGENTS-STACK.md",
@@ -111587,6 +112189,7 @@
       "docs/growth/AGENCY-PILOT-OUTREACH.md",
       "docs/design/OAR.md",
       "docs/runbooks/AGENCY-DEVOPS-OS-DEMO.md",
+      "docs/runbooks/TENANT-MONITORING.md",
       "docs/runbooks/AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
       "docs/01-development/AGENT-PROMPT-QUEUE.md",
       "docs/reports/REAL-PROMPT-EXECUTION-SUCCESS.md"
@@ -111638,6 +112241,7 @@
       "docs/04-infrastructure/VPS-SSH-WORKER-NODES.md",
       "docs/03-agents/AGENTS.md",
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md",
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
       "docs/blueprints/AI-TENANT-SETUP-BLUEPRINT.md",
       "docs/blueprints/opsly-operational-blueprint/EXTRACTION-PATTERN.md"
     ],
@@ -111690,7 +112294,8 @@
       "docs/runbooks/AUTONOMY-JOB-POLICY-MAP.md",
       "docs/brain/AI-STRATEGY.md",
       "docs/brain/TENANT-AI-PLAYBOOK.md",
-      "docs/blueprints/AI-TENANT-SETUP-BLUEPRINT.md"
+      "docs/blueprints/AI-TENANT-SETUP-BLUEPRINT.md",
+      "docs/blueprints/academy/README.md"
     ],
     "cases": [
       "packages/skills/user/opsly-cost-forecaster/SKILL.md",
@@ -112590,7 +113195,9 @@
       "docs/README.md",
       "docs/runbooks/frontend-audit.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
+      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
       "docs/00-architecture/DISTRIBUTED-ARCHITECTURE.md",
+      "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
       "docs/01-development/MAIA-WORKERS.md",
       "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
@@ -112607,6 +113214,7 @@
       "docs/04-infrastructure/WORKER-TEAM-BILLING.md",
       "docs/04-infrastructure/DECEPTICON-WORKER.md",
       "docs/04-infrastructure/FAILOVER-RUNBOOK.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/05-deployment-status/DEPLOYMENT-STATUS-2026-05-04.md",
       "docs/03-agents/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
       "docs/03-agents/OPENCLAW-TEAM-PLAN.md",
@@ -112648,8 +113256,7 @@
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
       "docs/brain/architecture/knowledge-graph.md",
       "docs/blueprints/opsly-operational-blueprint/README.md",
-      "docs/blueprints/TENANT-REPEAT-PLAYBOOK.md",
-      "docs/blueprints/academy/README.md"
+      "docs/blueprints/TENANT-REPEAT-PLAYBOOK.md"
     ],
     "gaps": [
       "packages/skills/user/opsly-bootstrap/SKILL.md",
@@ -112662,7 +113269,8 @@
       "docs/audits/TEST-COVERAGE-BASELINE.md",
       "docs/reports/REPOSITORY-BASELINE-2026-05-27.md",
       "docs/reports/audit-2026-04-07.md",
-      "docs/reports/PIPELINE-GAP-ANALYSIS.md"
+      "docs/reports/PIPELINE-GAP-ANALYSIS.md",
+      "docs/blueprints/academy/README.md"
     ],
     "git": [
       "packages/skills/user/opsly-bootstrap/SKILL.md",
@@ -112744,7 +113352,8 @@
     "mapeo": [
       "packages/skills/user/opsly-quantum/SKILL.md",
       "docs/obsidian/research/agent-pattern-matrix.md",
-      "docs/runbooks/AUTONOMY-JOB-POLICY-MAP.md"
+      "docs/runbooks/AUTONOMY-JOB-POLICY-MAP.md",
+      "docs/00-architecture/MODULE-REGISTRY.md"
     ],
     "quantum": [
       "packages/skills/user/opsly-quantum/SKILL.md",
@@ -112812,6 +113421,7 @@
       "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
       "docs/04-operations/COST-MONITORING-GUIDE.md",
       "docs/growth/WEEK-1-AGENCIAS-OUTREACH.md",
+      "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
       "docs/00-architecture/ELEVENLABS-ADVANCED-INTEGRATION.md",
       "docs/01-development/SPRINT-TRACKER.md",
       "docs/01-development/PHASE1-QUICK-START.md",
@@ -113234,6 +113844,7 @@
       "docs/04-infrastructure/DECEPTICON-WORKER.md",
       "docs/03-agents/AGENTS-GLOBAL-CONTEXT.md",
       "docs/02-tools/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
       "docs/tenants/peskids/INSTAGRAM-FEED.md",
       "docs/blueprints/TENANT-REPEAT-PLAYBOOK.md",
@@ -113244,6 +113855,7 @@
       "packages/skills/user/opsly-billing/SKILL.md",
       "docs/orchestrator/REPAIR-QUEUE.md",
       "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
+      "docs/00-architecture/MODULE-REGISTRY.md",
       "docs/04-infrastructure/WORKER-TEAM-ARCHITECTURE.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/EXTRACTION-PLAN.md",
@@ -113371,6 +113983,7 @@
     ],
     "notifications": [
       "packages/skills/user/opsly-discord/SKILL.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
       "docs/01-development/SEMANA-5-INFORME.md",
       "docs/01-development/LIBRARIES-INSTALLED.md",
       "docs/01-development/SEMANA-6-PLAN.md"
@@ -113765,6 +114378,7 @@
       "vendor/agency-agents/integrations/openclaw/ux-architect/AGENTS.md",
       "docs/superpowers/plans/2026-05-31-collectx-sprint1.md",
       "docs/design/OAR.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
       "docs/01-development/AGENT-SKILLS-INTEGRATION.md",
       "docs/03-agents/LOCAL-AGENT-EXECUTION.md",
       "docs/brain/skills/opsly-agent-skills-bridge.md",
@@ -115206,7 +115820,10 @@
     ],
     "alert": [
       "packages/skills/user/opsly-google-cloud/SKILL.md",
+      "lib/capacity-alert/README.md",
       "infra/monitoring/README.md",
+      "docs/ops/ACTIVE-CAPACITY-ALERT.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
       "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
@@ -115373,9 +115990,13 @@
       "tools/agents/prompts/cursor-executor.md",
       "lib/prompt-guard/README.md",
       "docs/generated/AGENTS-ASSIGNMENTS.md",
+      "docs/ops/ACTIVE-CAPACITY-ALERT.md",
       "docs/history/consolidation/CONSOLIDATION-PLAN.md",
       "docs/history/consolidation/CONSOLIDATION-EFFORT-BREAKDOWN.md",
       "docs/runbooks/LOCAL-SERVICES-GO-LIVE.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
       "docs/00-architecture/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
       "docs/01-development/N8N-SETUP.md",
       "docs/01-development/MAIA-WORKERS.md",
@@ -115423,6 +116044,7 @@
       "packages/skills/README.md",
       "packages/skills/templates/README.md",
       "packages/skills/vendor/agent-skills/README.md",
+      "config/blueprints/academy/README.md",
       ".cursor/prompts/README.md",
       ".github/README-github-templates.md",
       "README.md",
@@ -115450,6 +116072,7 @@
       "lib/workflow/README.md",
       "lib/testing/README.md",
       "lib/voice-messaging/README.md",
+      "lib/capacity-alert/README.md",
       "lib/prompt-guard/README.md",
       "lib/pattern-catalog/README.md",
       "lib/security/README.md",
@@ -115462,6 +116085,7 @@
       "apps/notebooklm-agent/README.md",
       "apps/intcloudsysops/README.md",
       "apps/icso/README.md",
+      "apps/icso/content/README.md",
       "apps/ml/agents/classifier/README.md",
       "apps/mcp/README.md",
       "apps/task-orchestrator/README.md",
@@ -115830,6 +116454,7 @@
       "docs/runbooks/AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
       "docs/00-architecture/REDIS_NAMESPACE_ISOLATION.md",
       "docs/00-architecture/hooks-system.md",
+      "docs/00-architecture/MODULE-REGISTRY.md",
       "docs/01-development/ROADMAP.md",
       "docs/01-development/SEMANA-4-INFORME.md",
       "docs/01-development/VISION.md",
@@ -115882,8 +116507,7 @@
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md",
-      "docs/tenants/peskids/FUTURE-REPO-SEED.md",
-      "docs/blueprints/academy/README.md"
+      "docs/tenants/peskids/FUTURE-REPO-SEED.md"
     ],
     "mocks": [
       "packages/skills/templates/template-test.md"
@@ -115940,6 +116564,7 @@
     "reutilizables": [
       "packages/skills/templates/README.md",
       "apps/admin/INVITATIONS_UI.md",
+      "docs/blueprints/academy/README.md",
       "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md"
     ],
     "templates": [
@@ -116005,13 +116630,15 @@
     "anadir": [
       "packages/skills/templates/template-migration.md",
       "docs/history/plans/MASTER-PLAN.md",
+      "docs/runbooks/TENANT-MONITORING.md",
       "docs/01-development/AUTO-SYNC-DOCS-SETUP.md",
       "docs/04-infrastructure/CLOUDFLARE-PROXY-ACTIVATION.md",
       "docs/03-agents/QUICKSTART-AGENTS.md",
       "docs/adr/README.md"
     ],
     "columna": [
-      "packages/skills/templates/template-migration.md"
+      "packages/skills/templates/template-migration.md",
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md"
     ],
     "foreign": [
       "packages/skills/templates/template-migration.md"
@@ -116066,6 +116693,7 @@
     "dry": [
       "packages/skills/templates/template-bash-script.md",
       "docs/growth/WEEK-1-AGENCIAS-OUTREACH.md",
+      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
       "docs/01-development/N8N-IMPORT-GUIDE.md",
       "docs/03-agents/CLAUDE-WORKFLOW-OPTIMIZATION.md",
       "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md"
@@ -116115,6 +116743,7 @@
       "vendor/agency-agents/integrations/openclaw/book-co-author/AGENTS.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
       "docs/growth/WEEK-1-AGENCIAS-OUTREACH.md",
+      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
       "docs/01-development/AUTO-SYNC-DOCS-SETUP.md",
       "docs/01-development/N8N-IMPORT-GUIDE.md",
       "docs/01-development/PHASE1-QUICK-START.md",
@@ -117725,6 +118354,7 @@
     ],
     "layout": [
       "packages/skills/vendor/agent-skills/frontend-ui-engineering/SKILL.md",
+      "config/blueprints/academy/README.md",
       "tools/agent-packs/vendor/the-architect/knowledge/archetypes/internal-tool.md",
       "lib/pattern-catalog/README.md",
       "vendor/agency-agents/integrations/qwen/agents/ux-architect.md",
@@ -117746,6 +118376,7 @@
       "vendor/agency-agents/integrations/openclaw/level-designer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/ux-architect/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/macos-spatial-metal-engineer/AGENTS.md",
+      "docs/00-architecture/BLUEPRINT-CONTRACT.md",
       "docs/00-architecture/opsly-agent-runtime.md",
       "docs/04-infrastructure/OLLAMA-DEPLOYMENT.md",
       "docs/02-tools/NOTION-MCP-SERVER.md",
@@ -118187,6 +118818,7 @@
       "vendor/agency-agents/integrations/openclaw/workflow-optimizer/AGENTS.md",
       "docs/governance/SOC2-READINESS.md",
       "docs/governance/internal/CHANGE-MANAGEMENT-POLICY.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
       "docs/blueprints/opsly-operational-blueprint/CLIENT-INCUBATION-TEMPLATE.md"
     ],
     "correctness": [
@@ -118285,8 +118917,10 @@
       "vendor/agency-agents/integrations/openclaw/tool-evaluator/AGENTS.md",
       "docs/00-architecture/TENANT-INCUBATION-LIFECYCLE.md",
       "docs/00-architecture/VPS-CLEANUP-WEBHOOK-CONTRACT.md",
+      "docs/00-architecture/BLUEPRINT-CONTRACT.md",
       "docs/00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md",
       "docs/00-architecture/INCUBATION-PLATFORM-CONTRACT.md",
+      "docs/00-architecture/TENANT-CONTRACT.md",
       "docs/01-development/MODULARITY-CONTRACT.md",
       "docs/03-agents/AGENT-BRAIN-CONTRACT.md",
       "docs/tenants/peskids/GOHIGHLEVEL-CONTRACT.md",
@@ -118492,6 +119126,7 @@
       "vendor/agency-agents/integrations/openclaw/book-co-author/AGENTS.md",
       "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
       "docs/runbooks/CYBER-NEO-AND-ARCHITECT.md",
+      "docs/runbooks/TENANT-MONITORING.md",
       "docs/00-architecture/POLICY-AI-LOCAL-FIRST.md",
       "docs/00-architecture/CONTEXT-BUILDER.md",
       "docs/01-development/PHASE-5-2-3-4-COMPLETE-SPECS.md",
@@ -119604,6 +120239,7 @@
       "docs/governance/internal/EMPLOYEE-LIFECYCLE-POLICY.md",
       "docs/governance/internal/ACCESS-CONTROL-POLICY.md",
       "docs/runbooks/AUTONOMOUS-PROD-60D.md",
+      "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
       "docs/03-agents/AGENTS-GUIDE.md",
       "docs/02-tools/MCP-STATUS-ANALYSIS.md",
       "docs/adr/ADR-035-safe-autonomous-evolution-framework.md",
@@ -119835,6 +120471,7 @@
     "validate": [
       "packages/skills/vendor/agent-skills/api-and-interface-design/SKILL.md",
       "packages/skills/vendor/agent-skills/idea-refine/SKILL.md",
+      "config/blueprints/academy/README.md",
       ".cursor/prompts/fix-organize-autonomous-system.md",
       "lib/evaluation/README.md",
       "lib/prompts/README.md",
@@ -120184,6 +120821,7 @@
       "packages/skills/vendor/agent-skills/performance-optimization/SKILL.md",
       "packages/skills/vendor/agent-skills/debugging-and-error-recovery/SKILL.md",
       ".cursor/prompts/fix-organize-autonomous-system.md",
+      ".codex/CODEX.md",
       "vendor/agency-agents/integrations/qwen/agents/minimal-change-engineer.md",
       "vendor/agency-agents/integrations/qwen/agents/ai-data-remediation-engineer.md",
       "vendor/agency-agents/integrations/qwen/agents/ai-citation-strategist.md",
@@ -120744,6 +121382,7 @@
       "vendor/agency-agents/integrations/openclaw/tool-evaluator/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/studio-producer/AGENTS.md",
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
+      "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
       "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
@@ -122009,6 +122648,7 @@
       "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
       "docs/generated/sprint-status.auto.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md",
+      "docs/ops/ACTIVE-CAPACITY-ALERT.md",
       "docs/infrastructure/NOTEBOOKLM-BRAIN-SYNC.md",
       "docs/history/plans/IMPLEMENTATION-STATUS.md",
       "docs/history/plans/MASTER-PLAN-STATUS.md",
@@ -122591,6 +123231,7 @@
       "vendor/agency-agents/integrations/opencode/agents/filament-optimization-specialist.md",
       "vendor/agency-agents/integrations/openclaw/filament-optimization-specialist/SOUL.md",
       "infra/terraform/README.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
       "docs/03-agents/SYRA-IMPLEMENTATION-GUIDE.md",
       "docs/adr/ADR-008-terraform-digitalocean-plan.md",
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
@@ -125253,6 +125894,7 @@
       "docs/adr/ADR-029-mcp-orchestration.md",
       "docs/adr/ADR-047-fable5-model-strategy.md",
       "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
       "docs/tenants/peskids/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/peskids/DATA-MODEL.md",
@@ -125681,6 +126323,7 @@
     ],
     "enforce": [
       "packages/skills/vendor/agent-skills/using-agent-skills/SKILL.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
       "docs/audits/LINT-RULES-GUIDE.md"
     ],
     "failure": [
@@ -125740,6 +126383,7 @@
       "docs/00-architecture/OPSLY-CONTROL-PLANE.md",
       "docs/00-architecture/INCUBATION-PLATFORM-CONTRACT.md",
       "docs/04-infrastructure/MACOS-LOCAL-AI-AUTOMATION.md",
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
       "docs/demo/hackathon-demo.md"
     ],
     "push": [
@@ -126632,6 +127276,7 @@
       "docs/01-development/SCRIPTS-AUDIT-2026-04-24.md",
       "docs/04-infrastructure/SECURITY_AUDIT_REPORT.md",
       "docs/04-infrastructure/SECURITY-MITIGATIONS-2026-04-09.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md",
       "docs/tenants/peskids/PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md"
     ],
@@ -126687,6 +127332,7 @@
       "docs/tenants/peskids/DAILY-DIGEST-RUNBOOK.md",
       "docs/tenants/peskids/WACRM-RUNBOOK.md",
       "docs/tenants/peskids/WACRM-CHANNEL.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM.md",
@@ -126716,6 +127362,7 @@
       "lib/testing/README.md",
       "lib/voice-messaging/README.md",
       "lib/index.md",
+      "lib/capacity-alert/README.md",
       "lib/prompt-guard/README.md",
       "lib/pattern-catalog/README.md",
       "lib/security/README.md",
@@ -126857,7 +127504,8 @@
       "docs/01-development/PERFORMANCE_BASELINE.md",
       "docs/05-deployment-status/DEPLOYMENT-STATUS-2026-05-04.md",
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
-      "docs/reports/REAL-PROMPT-EXECUTION-SUCCESS.md"
+      "docs/reports/REAL-PROMPT-EXECUTION-SUCCESS.md",
+      "docs/blueprints/academy/README.md"
     ],
     "rotacion": [
       "config/doppler-audit-2026-04-07.md",
@@ -126865,6 +127513,189 @@
       "docs/runbooks/SECRET-ROTATION-AFTER-EXPOSURE.md",
       "docs/04-infrastructure/WORKER-SERVICE-MAC2011.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md"
+    ],
+    "academy": [
+      "config/blueprints/academy/README.md",
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
+      "docs/blueprints/academy/README.md",
+      "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md"
+    ],
+    "blueprint": [
+      "config/blueprints/academy/README.md",
+      "tools/agent-packs/vendor/the-architect/README.md",
+      "tools/agent-packs/vendor/the-architect/templates/blueprint-template.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/skills-registry.md",
+      "vendor/agency-agents/integrations/qwen/agents/bilibili-content-strategist.md",
+      "vendor/agency-agents/integrations/qwen/agents/private-domain-operator.md",
+      "vendor/agency-agents/integrations/qwen/agents/kuaishou-strategist.md",
+      "vendor/agency-agents/integrations/qwen/agents/unreal-systems-engineer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/bilibili-content-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/kuaishou-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-systems-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/private-domain-operator/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/bilibili-content-strategist/system.md",
+      "vendor/agency-agents/integrations/kimi/kuaishou-strategist/system.md",
+      "vendor/agency-agents/integrations/kimi/unreal-systems-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/private-domain-operator/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-kuaishou-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-private-domain-operator/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-bilibili-content-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-unreal-systems-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/bilibili-content-strategist.md",
+      "vendor/agency-agents/integrations/opencode/agents/private-domain-operator.md",
+      "vendor/agency-agents/integrations/opencode/agents/kuaishou-strategist.md",
+      "vendor/agency-agents/integrations/opencode/agents/unreal-systems-engineer.md",
+      "vendor/agency-agents/integrations/openclaw/proposal-strategist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/bilibili-content-strategist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/kuaishou-strategist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/unreal-systems-engineer/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/unreal-systems-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/private-domain-operator/AGENTS.md",
+      "docs/superpowers/specs/TEMPLATE-next-client-blueprint.md",
+      "docs/00-architecture/BLUEPRINT-CONTRACT.md",
+      "docs/01-development/PHASE-5-IMPLEMENTATION-BLUEPRINT.md",
+      "docs/03-agents/AGENTS-GUIDE.md",
+      "docs/03-agents/OPSLY-2-0-MULTI-AGENT-BLUEPRINT.md",
+      "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
+      "docs/tenants/peskids/BLUEPRINT-MAPPING.md",
+      "docs/tenants/peskids/GHL-CONSULTING-HANDOFF.md",
+      "docs/tenants/peskids/TENANT_PESKIDS.md",
+      "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
+      "docs/blueprints/AI-TENANT-SETUP-BLUEPRINT.md",
+      "docs/blueprints/opsly-operational-blueprint/TEAM-FACING-EXPLANATION.md",
+      "docs/blueprints/opsly-operational-blueprint/TENANT-INCUBATION.md",
+      "docs/blueprints/opsly-operational-blueprint/WHATSAPP-HYBRID.md",
+      "docs/blueprints/opsly-operational-blueprint/MODULES.md",
+      "docs/blueprints/opsly-operational-blueprint/VERTICAL-BLUEPRINTS.md",
+      "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md",
+      "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md",
+      "docs/blueprints/opsly-operational-blueprint/CLIENT-INCUBATION-TEMPLATE.md",
+      "docs/blueprints/opsly-operational-blueprint/README.md",
+      "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md",
+      "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md",
+      "docs/blueprints/opsly-operational-blueprint/NICHE-PLAYBOOKS.md",
+      "docs/blueprints/opsly-operational-blueprint/COMMERCIAL-PACKAGES.md",
+      "docs/blueprints/opsly-operational-blueprint/EXTRACTION-PATTERN.md",
+      "docs/blueprints/opsly-operational-blueprint/REFERENCE-ARCHITECTURE.md",
+      "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
+      "docs/blueprints/academy/README.md",
+      "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md",
+      "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md",
+      ".agents/skills/the-architect/references/README.md",
+      ".agents/skills/the-architect/references/templates/blueprint-template.md",
+      ".agents/skills/the-architect/references/knowledge/skills-registry.md"
+    ],
+    "defaults": [
+      "config/blueprints/academy/README.md",
+      "docs/plans/AUTONOMY-GO-NO-GO-WEEKLY.md",
+      "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
+      "docs/00-architecture/ORCHESTRATOR.md"
+    ],
+    "machine": [
+      "config/blueprints/academy/README.md",
+      "vendor/agency-agents/integrations/qwen/agents/ai-engineer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/ai-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/ai-engineer/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-ai-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/ai-engineer.md",
+      "vendor/agency-agents/integrations/openclaw/ai-engineer/AGENTS.md",
+      "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
+      "docs/01-development/PHASE-2-DEPLOYMENT.md",
+      "docs/operations/RUN-VALIDATION-LOCALLY.md",
+      ".agents/UNIFIED-AGENT-ARCHITECTURE.md"
+    ],
+    "next": [
+      "config/blueprints/academy/README.md",
+      ".cursor/prompts/local-services-ops-admin.md",
+      ".cursor/responses/response-test-e2e-1777827139.md",
+      "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/web-security-patterns.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/api-design-patterns.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/frontend-stacks.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/styling-systems.md",
+      "vendor/agency-agents/integrations/qwen/agents/book-co-author.md",
+      "vendor/agency-agents/integrations/qwen/agents/discovery-coach.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/discovery-coach/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/book-co-author/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/discovery-coach/system.md",
+      "vendor/agency-agents/integrations/kimi/book-co-author/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-discovery-coach/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-book-co-author/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/book-co-author.md",
+      "vendor/agency-agents/integrations/opencode/agents/discovery-coach.md",
+      "vendor/agency-agents/integrations/openclaw/executive-summary-generator/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/discovery-coach/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/book-co-author/AGENTS.md",
+      "docs/superpowers/specs/TEMPLATE-next-client-blueprint.md",
+      "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
+      "docs/generated/implementation-progress.auto.md",
+      "docs/04-operations/COST-MONITORING-GUIDE.md",
+      "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "docs/runbooks/FIX-TYPECHECK-BLOCKER.md",
+      "docs/00-architecture/VPS-CLEANUP-WEBHOOK-CONTRACT.md",
+      "docs/01-development/NEXT-STEPS.md",
+      "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
+      "docs/01-development/TECHNICAL-DEBT.md",
+      "docs/01-development/PERFORMANCE_BASELINE.md",
+      "docs/04-infrastructure/PRODUCTION-STATUS-2026-05-15.md",
+      "docs/adr/ADR-028-agent-api-routing.md",
+      "docs/adr/ADR-031-experimental-consolidation.md",
+      "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
+      "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
+      "docs/tenants/peskids/SPRINT-02-STATUS.md",
+      "docs/tenants/peskids/GHL-CONSULTING-HANDOFF.md",
+      "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
+      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
+      "docs/reports/PARALLEL-EXECUTION-STATUS.md",
+      "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
+      "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
+      "docs/reports/SESSION-SUMMARY-2026-05-08.md",
+      "docs/reports/session-summary-2026-05-21.md",
+      "docs/artifacts/provisioning/peskids-operator-report.md",
+      "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md",
+      ".agents/skills/cyber-neo/references/web-security-patterns.md",
+      ".agents/skills/the-architect/references/knowledge/building-blocks/api-design-patterns.md",
+      ".agents/skills/the-architect/references/knowledge/building-blocks/frontend-stacks.md",
+      ".agents/skills/the-architect/references/knowledge/building-blocks/styling-systems.md"
+    ],
+    "pack": [
+      "config/blueprints/academy/README.md",
+      ".n8n/README.md",
+      "vendor/agency-agents/integrations/qwen/agents/ai-citation-strategist.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/ai-citation-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/ai-citation-strategist/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-ai-citation-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/ai-citation-strategist.md",
+      "vendor/agency-agents/integrations/openclaw/ai-citation-strategist/AGENTS.md",
+      "infra/templates/n8n-workflows-template.md",
+      "docs/runbooks/TENANT-BONUS-WORKFLOWS.md",
+      "docs/n8n-workflows/crm/README.md",
+      "docs/tenants/peskids/TWENTY-CRM.md",
+      "docs/tenants/peskids/design-pack/README.md",
+      "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
+      "docs/blueprints/opsly-operational-blueprint/MODULES.md"
+    ],
+    "safe": [
+      "config/blueprints/academy/README.md",
+      "tools/productivity-starter/offer.md",
+      "vendor/agency-agents/integrations/qwen/agents/roblox-systems-scripter.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/roblox-systems-scripter/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/roblox-systems-scripter/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-roblox-systems-scripter/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/roblox-systems-scripter.md",
+      "vendor/agency-agents/integrations/openclaw/roblox-systems-scripter/AGENTS.md",
+      "docs/runbooks/VPS-CLEANUP-WEBHOOK.md",
+      "docs/runbooks/TENANT-BONUS-WORKFLOWS.md",
+      "docs/runbooks/CYBER-NEO-AND-ARCHITECT.md",
+      "docs/00-architecture/VPS-CLEANUP-WEBHOOK-CONTRACT.md",
+      "docs/00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md",
+      "docs/01-development/MODULARITY-CONTRACT.md",
+      "docs/03-agents/SECURITY-AUTONOMOUS-EXECUTION-POLICY.md",
+      "docs/adr/ADR-035-safe-autonomous-evolution-framework.md",
+      "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
+      "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
+      "docs/blueprints/BRANCH-CLEANUP-AUDIT.md"
     ],
     "asignaciones": [
       ".cursor/goals/openclaw-agent-runtime-2026-05-14.md"
@@ -126891,6 +127722,7 @@
     ],
     "hoy": [
       ".cursor/goals/openclaw-agent-runtime-2026-05-14.md",
+      "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
       "docs/04-infrastructure/WORKER-TEAM-ARCHITECTURE.md",
       "docs/04-infrastructure/WORKER-TEAM-BILLING.md",
       "docs/05-deployment-status/PESKIDS-GO-LIVE-STATUS.md",
@@ -128058,6 +128890,7 @@
       "vendor/agency-agents/integrations/openclaw/cms-developer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/roblox-systems-scripter/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/roblox-systems-scripter/AGENTS.md",
+      "docs/00-architecture/MODULE-REGISTRY.md",
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
       "docs/01-development/SPRINTS_13_14.md"
     ],
@@ -128742,9 +129575,11 @@
     "agente": [
       ".cursor/prompts/queue/008-smoke-screen-daemon.md",
       "AGENTS.md",
+      "docs/ops/ACTIVE-CAPACITY-ALERT.md",
       "docs/obsidian/inbox/2026-05-22.md",
       "docs/runbooks/AGENCY-DEVOPS-OS-DEMO.md",
       "docs/runbooks/INCIDENT-AUTONOMOUS-AGENT.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
       "docs/01-development/N8N-SETUP.md",
       "docs/01-development/DOCUMENTATION-LIFECYCLE.md",
@@ -128806,6 +129641,7 @@
       "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/peskids/DAILY-DIGEST-RUNBOOK.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/tenants/panini-lab/README.md",
       "docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md",
       "docs/postman/README.md",
@@ -128851,6 +129687,7 @@
     ],
     "mensaje": [
       ".cursor/prompts/local-services-tech-builder.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
       "docs/runbooks/AGENCY-DEVOPS-OS-DEMO.md",
       "docs/blueprints/opsly-operational-blueprint/TEAM-FACING-EXPLANATION.md"
     ],
@@ -128905,6 +129742,7 @@
       "AGENTS.md",
       "docs/history/AGENTS-SESSION-HISTORY.md",
       "docs/01-development/GIT-WORKFLOW.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/03-agents/CLAUDE-WORKFLOW-OPTIMIZATION.md",
       "docs/03-agents/AGENTS.md",
       "docs/02-tools/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
@@ -128967,6 +129805,7 @@
       "vendor/agency-agents/integrations/openclaw/china-e-commerce-operator/AGENTS.md",
       "docs/infrastructure/OPTIMIZATION-ROADMAP-2026-06.md",
       "docs/runbooks/LOCAL-SERVICES-GO-LIVE.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
       "docs/runbooks/AUTONOMOUS-PRODUCTION-GO-LIVE-CHECKLIST.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
       "docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md",
@@ -129120,61 +129959,9 @@
       "docs/superpowers/specs/TEMPLATE-next-client-blueprint.md",
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md",
       "docs/blueprints/opsly-operational-blueprint/COMMERCIAL-PACKAGES.md"
-    ],
-    "next": [
-      ".cursor/prompts/local-services-ops-admin.md",
-      ".cursor/responses/response-test-e2e-1777827139.md",
-      "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/web-security-patterns.md",
-      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/api-design-patterns.md",
-      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/frontend-stacks.md",
-      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/styling-systems.md",
-      "vendor/agency-agents/integrations/qwen/agents/book-co-author.md",
-      "vendor/agency-agents/integrations/qwen/agents/discovery-coach.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/discovery-coach/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/book-co-author/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/discovery-coach/system.md",
-      "vendor/agency-agents/integrations/kimi/book-co-author/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-discovery-coach/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-book-co-author/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/book-co-author.md",
-      "vendor/agency-agents/integrations/opencode/agents/discovery-coach.md",
-      "vendor/agency-agents/integrations/openclaw/executive-summary-generator/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/discovery-coach/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/book-co-author/AGENTS.md",
-      "docs/superpowers/specs/TEMPLATE-next-client-blueprint.md",
-      "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
-      "docs/generated/implementation-progress.auto.md",
-      "docs/04-operations/COST-MONITORING-GUIDE.md",
-      "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
-      "docs/history/plans/IMPLEMENTATION-STATUS.md",
-      "docs/runbooks/FIX-TYPECHECK-BLOCKER.md",
-      "docs/00-architecture/VPS-CLEANUP-WEBHOOK-CONTRACT.md",
-      "docs/01-development/NEXT-STEPS.md",
-      "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
-      "docs/01-development/TECHNICAL-DEBT.md",
-      "docs/01-development/PERFORMANCE_BASELINE.md",
-      "docs/04-infrastructure/PRODUCTION-STATUS-2026-05-15.md",
-      "docs/adr/ADR-028-agent-api-routing.md",
-      "docs/adr/ADR-031-experimental-consolidation.md",
-      "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
-      "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
-      "docs/tenants/peskids/SPRINT-02-STATUS.md",
-      "docs/tenants/peskids/GHL-CONSULTING-HANDOFF.md",
-      "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
-      "docs/tenants/intcloudsysops/CODE-CUSTOMIZATION-CHECKLIST.md",
-      "docs/reports/PARALLEL-EXECUTION-STATUS.md",
-      "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
-      "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
-      "docs/reports/SESSION-SUMMARY-2026-05-08.md",
-      "docs/reports/session-summary-2026-05-21.md",
-      "docs/artifacts/provisioning/peskids-operator-report.md",
-      "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md",
-      ".agents/skills/cyber-neo/references/web-security-patterns.md",
-      ".agents/skills/the-architect/references/knowledge/building-blocks/api-design-patterns.md",
-      ".agents/skills/the-architect/references/knowledge/building-blocks/frontend-stacks.md",
-      ".agents/skills/the-architect/references/knowledge/building-blocks/styling-systems.md"
     ],
     "nnn": [
       ".cursor/prompts/local-services-ops-admin.md"
@@ -129322,7 +130109,9 @@
       "docs/growth/WEEK-1-AGENCIAS-OUTREACH.md",
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/growth/AGENCY-PILOT-OUTREACH.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
       "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
       "docs/01-development/SEMANA-6-PLAN.md",
       "docs/01-development/CLIENTS-TO-INVITE.md",
       "docs/examples/email-templates/PESKIDS-EMAIL-TEMPLATES.md",
@@ -129843,6 +130632,7 @@
       "vendor/agency-agents/integrations/openclaw/ux-architect/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/ux-architect/AGENTS.md",
       "docs/runbooks/INCUBATION-PLATFORM-FOUNDATION.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/adr/ADR-039-sales-channels-email-whatsapp.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/peskids/SPRINT-01.md",
@@ -129904,6 +130694,7 @@
       "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
       "docs/04-operations/COST-MONITORING-GUIDE.md",
       "docs/governance/SOC2-READINESS.md",
+      "docs/runbooks/TENANT-MONITORING.md",
       "docs/01-development/COST-DASHBOARD-WIREFRAMES.md",
       "docs/04-infrastructure/MONITORING.md",
       "docs/04-infrastructure/REDIS-QUEUE-GUIDE.md",
@@ -131051,6 +131842,7 @@
     "impacto": [
       ".github/PULL_REQUEST_TEMPLATE.md",
       "docs/legal/peskids/DPIA-2026.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
       "docs/01-development/SEMANA-1-INFORME.md",
       "docs/01-development/SEMANA-5-INFORME.md",
       "docs/01-development/SEMANA-4-INFORME.md",
@@ -131106,6 +131898,7 @@
       ".github/PULL_REQUEST_TEMPLATE.md",
       "tools/usb-kit/README.md",
       "docs/generated/sprint-status.auto.md",
+      "docs/ops/ACTIVE-CAPACITY-ALERT.md",
       "docs/history/plans/SPRINT-TRACKING.md",
       "docs/history/plans/MASTER-PLAN.md",
       "docs/00-architecture/DISTRIBUTED-ARCHITECTURE.md",
@@ -131189,6 +131982,7 @@
       "docs/design/AGENT-ORCHESTRATION-INDEX.md",
       "docs/obsidian/index.md",
       "docs/runbooks/IDE-OCTOPUS-AGENTS.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
       "docs/01-development/AGENT-PROMPT-QUEUE.md",
       "docs/01-development/HEAVY-SERVICES-DECISION.md",
       "docs/01-development/OPSLY-KNOWLEDGE-BASE.md",
@@ -131530,7 +132324,8 @@
       ".github/copilot-instructions.md",
       "docs/01-development/GIT-WORKFLOW.md",
       "docs/adr/ADR-034-ci-hygiene.md",
-      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md"
+      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md"
     ],
     "resumido": [
       ".github/copilot-instructions.md"
@@ -131645,6 +132440,7 @@
       "docs/00-architecture/opsly-agent-runtime.md",
       "docs/00-architecture/REPO-MAP.md",
       "docs/04-infrastructure/WORKER-TEAM-BILLING.md",
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
       "docs/tenants/peskids/WORKFLOWS.md",
       "docs/tenants/peskids/README.md",
@@ -132493,6 +133289,7 @@
     ],
     "requiere": [
       "scripts/agent-training/README.md",
+      "docs/runbooks/TENANT-MONITORING.md",
       "docs/04-infrastructure/WORKER-SETUP-MAC2011.md",
       "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md"
     ],
@@ -132507,6 +133304,8 @@
       "docs/research/research-ab67308d-4517-4243-9250-04a573d0224e.md",
       "docs/research/research-c27de1ef-f267-43cc-a17e-71fd1f2ba8fb.md",
       "docs/research/research-9d271e20-1a44-44b5-a862-83299a4929b9.md",
+      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
+      "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
       "docs/01-development/LAYERS-SANDBOX-QA-PROD.md",
       "docs/03-agents/SECURITY-AUTONOMOUS-EXECUTION-POLICY.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
@@ -132575,6 +133374,7 @@
     ],
     "codex": [
       ".codex/CODEX.md",
+      ".codex/LOCAL-AUTOMATION.md",
       "docs/04-infrastructure/DOPPLER-VARS.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md"
@@ -132635,6 +133435,10 @@
       "docs/blueprints/ICSO-CRM-READINESS.md",
       "docs/blueprints/CUSTOMER-FOLLOWUP-MASTER.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md"
+    ],
+    "enoent": [
+      ".codex/CODEX.md",
+      ".codex/LOCAL-AUTOMATION.md"
     ],
     "installed": [
       ".codex/CODEX.md",
@@ -132701,6 +133505,7 @@
       "docs/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
       "docs/runbooks/DEPLOYMENT-CHECKLIST.md",
       "docs/runbooks/AUTONOMOUS-PRODUCTION-GO-LIVE-CHECKLIST.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
       "docs/runbooks/TENANT-PRODUCTION-ROLLOUT.md",
       "docs/runbooks/PRODUCTION-DEPLOY.md",
       "docs/00-architecture/ARCHITECTURE.md",
@@ -132740,6 +133545,12 @@
       ".agents/skills/the-architect/references/knowledge/building-blocks/deployment-patterns.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
     ],
+    "shell": [
+      ".codex/CODEX.md",
+      ".codex/LOCAL-AUTOMATION.md",
+      "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
+      "docs/adr/ADR-029-mcp-orchestration.md"
+    ],
     "startup": [
       ".codex/CODEX.md",
       "lib/migrations/README.md",
@@ -132752,6 +133563,19 @@
     ],
     "sysops": [
       ".codex/CODEX.md"
+    ],
+    "zsh": [
+      ".codex/CODEX.md",
+      ".codex/LOCAL-AUTOMATION.md"
+    ],
+    "found": [
+      ".codex/LOCAL-AUTOMATION.md",
+      "vendor/agency-agents/integrations/openclaw/accessibility-auditor/AGENTS.md",
+      "docs/database/SUPABASE-MIGRATION-AUDIT.md",
+      "docs/04-infrastructure/WORKER-TESTING.md",
+      "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
+      "docs/reports/session-summary-2026-05-21.md",
+      "docs/security/SECURITY-POSTURE-AUDIT.md"
     ],
     "grant": [
       ".codex/LOCAL-AUTOMATION.md"
@@ -133569,6 +134393,7 @@
       "docs/00-architecture/ARCHITECTURE.md",
       "docs/tenants/peskids/TWENTY-CRM.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/reports/PRODUCTION-HEALTH.md",
@@ -133647,6 +134472,7 @@
       "docs/design/OAR.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
       "docs/runbooks/ONBOARDING-NEW-CLIENT.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
       "docs/00-architecture/conversational-runtime-roadmap.md",
       "docs/00-architecture/DISTRIBUTED-ARCHITECTURE.md",
       "docs/00-architecture/REPO-MAP.md",
@@ -133736,29 +134562,14 @@
     ],
     "inicial": [
       ".n8n/README.md",
+      "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
+      "docs/00-architecture/MODULE-REGISTRY.md",
       "docs/01-development/AGENCY-DEVOPS-OS-OFFER.md",
       "docs/adr/ADR-024-ollama-local-worker-primary.md",
       "docs/brain/dashboard.md",
       "docs/brain/TENANT-AI-PLAYBOOK.md",
       "docs/reports/ACG-STRATEGY-30-DAYS.md",
       ".claude/README.md"
-    ],
-    "pack": [
-      ".n8n/README.md",
-      "vendor/agency-agents/integrations/qwen/agents/ai-citation-strategist.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/ai-citation-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/ai-citation-strategist/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-ai-citation-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/ai-citation-strategist.md",
-      "vendor/agency-agents/integrations/openclaw/ai-citation-strategist/AGENTS.md",
-      "infra/templates/n8n-workflows-template.md",
-      "docs/runbooks/TENANT-BONUS-WORKFLOWS.md",
-      "docs/n8n-workflows/crm/README.md",
-      "docs/tenants/peskids/TWENTY-CRM.md",
-      "docs/tenants/peskids/design-pack/README.md",
-      "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
-      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
-      "docs/blueprints/opsly-operational-blueprint/MODULES.md"
     ],
     "placeholders": [
       ".n8n/README.md",
@@ -133863,6 +134674,7 @@
       "vendor/agency-agents/integrations/opencode/agents/incident-response-commander.md",
       "vendor/agency-agents/integrations/openclaw/incident-response-commander/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/real-estate-buyer-seller/AGENTS.md",
+      "docs/ops/ACTIVE-CAPACITY-ALERT.md",
       "docs/00-architecture/ARCHITECTURE.md",
       "docs/01-development/N8N-IMPORT-GUIDE.md",
       "docs/01-development/ACTIVE-PROMPT.md",
@@ -133984,6 +134796,7 @@
       "vendor/agency-agents/integrations/openclaw/loan-officer-assistant/AGENTS.md",
       "docs/runbooks/AGENCY-DEVOPS-OS-DEMO.md",
       "docs/runbooks/AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
+      "docs/tenants/peskids/FRANCHISES.md",
       "docs/blueprints/N8N-AUTOMATION-GUARANTEES.md"
     ],
     "pending": [
@@ -134057,6 +134870,7 @@
       "vendor/agency-agents/integrations/openclaw/loan-officer-assistant/AGENTS.md",
       "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
       "docs/governance/POLICY-REGISTRY.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
       "docs/01-development/N8N-IMPORT-GUIDE.md",
       "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
@@ -134235,6 +135049,7 @@
     ],
     "instalar": [
       "tools/usb-kit/README.md",
+      "docs/runbooks/TENANT-MONITORING.md",
       "docs/04-infrastructure/WORKER-SERVICE-MAC2011.md",
       "docs/02-tools/SETUP-NOTION-MCP.md",
       "docs/02-tools/NOTEBOOKLM-SETUP.md",
@@ -134265,9 +135080,11 @@
       "infra/terraform/README.md",
       "docs/runbooks/dev.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
+      "docs/runbooks/TENANT-MONITORING.md",
       "docs/runbooks/ONBOARDING-NEW-CLIENT.md",
       "docs/runbooks/CORTEX-OBSERVATION-WINDOW.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
+      "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
       "docs/01-development/OPS-CLEANUP-PROCEDURES.md",
       "docs/01-development/LOCAL-RUNTIME-GUIDE.md",
       "docs/04-infrastructure/DOMAIN-CUTOVER-OP-SLY.md",
@@ -134357,6 +135174,7 @@
     ],
     "usuario": [
       "tools/usb-kit/README.md",
+      "docs/runbooks/TENANT-MONITORING.md",
       "docs/01-development/RTK.md",
       "docs/04-infrastructure/GOOGLE-CLOUD-SETUP.md",
       "docs/03-agents/AGENT-URL-VALIDATION.md",
@@ -135882,6 +136700,7 @@
       "vendor/agency-agents/integrations/opencode/agents/model-qa-specialist.md",
       "vendor/agency-agents/integrations/openclaw/model-qa-specialist/AGENTS.md",
       "docs/history/consolidation/CONSOLIDATION-PLAN.md",
+      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
       "docs/blueprints/ICSO-CRM-READINESS.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
       ".agents/skills/cyber-neo/SKILL.md",
@@ -136089,69 +136908,6 @@
     "xxx": [
       "tools/agent-packs/vendor/cyber-neo/CLAUDE.md"
     ],
-    "blueprint": [
-      "tools/agent-packs/vendor/the-architect/README.md",
-      "tools/agent-packs/vendor/the-architect/templates/blueprint-template.md",
-      "tools/agent-packs/vendor/the-architect/knowledge/skills-registry.md",
-      "vendor/agency-agents/integrations/qwen/agents/bilibili-content-strategist.md",
-      "vendor/agency-agents/integrations/qwen/agents/private-domain-operator.md",
-      "vendor/agency-agents/integrations/qwen/agents/kuaishou-strategist.md",
-      "vendor/agency-agents/integrations/qwen/agents/unreal-systems-engineer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/bilibili-content-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/kuaishou-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-systems-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/private-domain-operator/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/bilibili-content-strategist/system.md",
-      "vendor/agency-agents/integrations/kimi/kuaishou-strategist/system.md",
-      "vendor/agency-agents/integrations/kimi/unreal-systems-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/private-domain-operator/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-kuaishou-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-private-domain-operator/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-bilibili-content-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-unreal-systems-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/bilibili-content-strategist.md",
-      "vendor/agency-agents/integrations/opencode/agents/private-domain-operator.md",
-      "vendor/agency-agents/integrations/opencode/agents/kuaishou-strategist.md",
-      "vendor/agency-agents/integrations/opencode/agents/unreal-systems-engineer.md",
-      "vendor/agency-agents/integrations/openclaw/proposal-strategist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/bilibili-content-strategist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/kuaishou-strategist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/unreal-systems-engineer/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/unreal-systems-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/private-domain-operator/AGENTS.md",
-      "docs/superpowers/specs/TEMPLATE-next-client-blueprint.md",
-      "docs/01-development/PHASE-5-IMPLEMENTATION-BLUEPRINT.md",
-      "docs/03-agents/AGENTS-GUIDE.md",
-      "docs/03-agents/OPSLY-2-0-MULTI-AGENT-BLUEPRINT.md",
-      "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
-      "docs/tenants/peskids/BLUEPRINT-MAPPING.md",
-      "docs/tenants/peskids/GHL-CONSULTING-HANDOFF.md",
-      "docs/tenants/peskids/TENANT_PESKIDS.md",
-      "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
-      "docs/blueprints/AI-TENANT-SETUP-BLUEPRINT.md",
-      "docs/blueprints/opsly-operational-blueprint/TEAM-FACING-EXPLANATION.md",
-      "docs/blueprints/opsly-operational-blueprint/TENANT-INCUBATION.md",
-      "docs/blueprints/opsly-operational-blueprint/WHATSAPP-HYBRID.md",
-      "docs/blueprints/opsly-operational-blueprint/MODULES.md",
-      "docs/blueprints/opsly-operational-blueprint/VERTICAL-BLUEPRINTS.md",
-      "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md",
-      "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md",
-      "docs/blueprints/opsly-operational-blueprint/CLIENT-INCUBATION-TEMPLATE.md",
-      "docs/blueprints/opsly-operational-blueprint/README.md",
-      "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md",
-      "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md",
-      "docs/blueprints/opsly-operational-blueprint/NICHE-PLAYBOOKS.md",
-      "docs/blueprints/opsly-operational-blueprint/COMMERCIAL-PACKAGES.md",
-      "docs/blueprints/opsly-operational-blueprint/EXTRACTION-PATTERN.md",
-      "docs/blueprints/opsly-operational-blueprint/REFERENCE-ARCHITECTURE.md",
-      "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
-      "docs/blueprints/academy/README.md",
-      "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md",
-      "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md",
-      ".agents/skills/the-architect/references/README.md",
-      ".agents/skills/the-architect/references/templates/blueprint-template.md",
-      ".agents/skills/the-architect/references/knowledge/skills-registry.md"
-    ],
     "deep": [
       "tools/agent-packs/vendor/the-architect/README.md",
       "tools/agent-packs/vendor/the-architect/CLAUDE.md",
@@ -136305,6 +137061,7 @@
       "docs/history/consolidation/CONSOLIDATION-EFFORT-BREAKDOWN.md",
       "docs/governance/POLICY-REGISTRY.md",
       "docs/governance/SUB-PROCESSORS.md",
+      "docs/00-architecture/MODULE-REGISTRY.md",
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
       "docs/03-agents/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
       "docs/03-agents/PARALLEL-AGENTS-ORCHESTRATION.md",
@@ -137724,6 +138481,7 @@
       "docs/tenants/peskids/PESKIDS-ADMIN-USER-VALIDATION.md",
       "docs/tenants/peskids/PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md",
       "docs/blueprints/opsly-operational-blueprint/TEAM-FACING-EXPLANATION.md",
+      "docs/blueprints/academy/README.md",
       ".claude/agents/hive-mind/queen-coordinator.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/auth-patterns.md"
     ],
@@ -137766,6 +138524,7 @@
       "docs/04-infrastructure/SECURITY-MITIGATIONS-2026-04-09.md",
       "docs/04-infrastructure/VPS-PROVISIONING-STANDARD.md",
       "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/deployment-patterns.md"
     ],
     "enterprise": [
@@ -137976,6 +138735,7 @@
       "vendor/agency-agents/integrations/openclaw/french-consulting-market-navigator/AGENTS.md",
       "docs/governance/DATA-CLASSIFICATION.md",
       "docs/governance/internal/INCIDENT-RESPONSE-POLICY.md",
+      "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
       "docs/00-architecture/ARCHITECTURE.md",
       "docs/01-development/SPRINTS_13_14.md",
       "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
@@ -138591,26 +139351,6 @@
     "roi": [
       "tools/productivity-starter/offer.md"
     ],
-    "safe": [
-      "tools/productivity-starter/offer.md",
-      "vendor/agency-agents/integrations/qwen/agents/roblox-systems-scripter.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/roblox-systems-scripter/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/roblox-systems-scripter/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-roblox-systems-scripter/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/roblox-systems-scripter.md",
-      "vendor/agency-agents/integrations/openclaw/roblox-systems-scripter/AGENTS.md",
-      "docs/runbooks/VPS-CLEANUP-WEBHOOK.md",
-      "docs/runbooks/TENANT-BONUS-WORKFLOWS.md",
-      "docs/runbooks/CYBER-NEO-AND-ARCHITECT.md",
-      "docs/00-architecture/VPS-CLEANUP-WEBHOOK-CONTRACT.md",
-      "docs/00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md",
-      "docs/01-development/MODULARITY-CONTRACT.md",
-      "docs/03-agents/SECURITY-AUTONOMOUS-EXECUTION-POLICY.md",
-      "docs/adr/ADR-035-safe-autonomous-evolution-framework.md",
-      "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
-      "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
-      "docs/blueprints/BRANCH-CLEANUP-AUDIT.md"
-    ],
     "stay": [
       "tools/productivity-starter/offer.md"
     ],
@@ -139120,6 +139860,7 @@
       "vendor/agency-agents/integrations/openclaw/retail-customer-returns/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/video-optimization-specialist/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/livestream-commerce-coach/AGENTS.md",
+      "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
       "docs/01-development/RETENTION-POLICY.md",
       "docs/tenants/intcloudsysops/DATA-MODEL.md",
       "docs/blueprints/N8N-AUTOMATION-GUARANTEES.md"
@@ -139317,7 +140058,8 @@
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md"
     ],
     "backfill": [
-      "lib/migrations/README.md"
+      "lib/migrations/README.md",
+      "docs/tenants/peskids/FRANCHISES.md"
     ],
     "best": [
       "lib/migrations/README.md",
@@ -139834,6 +140576,26 @@
       "docs/01-development/LIBRARIES-INSTALLED.md",
       "docs/brain/modules/README.md"
     ],
+    "canales": [
+      "lib/capacity-alert/README.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
+      "docs/tenants/peskids/INCUBATION-CHECKLIST.md"
+    ],
+    "capacity": [
+      "lib/capacity-alert/README.md",
+      "vendor/agency-agents/integrations/qwen/agents/performance-benchmarker.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/performance-benchmarker/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/performance-benchmarker/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-performance-benchmarker/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/performance-benchmarker.md",
+      "vendor/agency-agents/integrations/openclaw/performance-benchmarker/AGENTS.md",
+      "docs/ops/ACTIVE-CAPACITY-ALERT.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md"
+    ],
+    "desactivar": [
+      "lib/capacity-alert/README.md",
+      "docs/ops/ACTIVE-CAPACITY-ALERT.md"
+    ],
     "adversarial": [
       "lib/prompt-guard/README.md",
       "vendor/agency-agents/integrations/qwen/agents/security-engineer.md",
@@ -140329,6 +141091,7 @@
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
       "docs/00-architecture/LLM-GATEWAY.md",
       "docs/00-architecture/LLM-GATEWAY-WORKPLAN.md",
+      "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
       "docs/00-architecture/ORCHESTRATOR.md",
       "docs/01-development/SEMANA-1-INFORME.md",
       "docs/01-development/ROADMAP.md",
@@ -140353,6 +141116,7 @@
       "docs/tenants/peskids/WHATSAPP-CHANNEL.md",
       "docs/tenants/peskids/MVP-PLAN.md",
       "docs/tenants/peskids/CLIENT-PITCH.md",
+      "docs/tenants/peskids/FRANCHISES.md",
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
       "docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/reports/ACG-STRATEGY-30-DAYS.md",
@@ -140559,6 +141323,7 @@
     ],
     "systemd": [
       "apps/experimental/ingestion-service-archive/README.md",
+      "docs/runbooks/TENANT-MONITORING.md",
       "docs/01-development/OPS-CLEANUP-PROCEDURES.md",
       "docs/01-development/SESSION-GIT-SYNC.md",
       "docs/04-infrastructure/WORKER-SETUP-MAC2011.md",
@@ -140651,6 +141416,7 @@
       "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
       "docs/blueprints/GO-LIVE-COMMAND.md",
       "docs/blueprints/PHASE1-IMPLEMENTATION-GUIDE.md",
+      "docs/blueprints/academy/README.md",
       "docs/blueprints/PESKIDS-GHL-MIGRATION-STATUS.md",
       "docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md",
       "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md"
@@ -143761,6 +144527,7 @@
       "infra/n8n/workflows/peskids/README.md",
       "docs/00-architecture/VPS-CLEANUP-WEBHOOK-CONTRACT.md",
       "docs/00-architecture/INCUBATION-PLATFORM-CONTRACT.md",
+      "docs/00-architecture/MODULE-REGISTRY.md",
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md"
     ],
     "coordinate": [
@@ -152599,7 +153366,8 @@
       "vendor/agency-agents/integrations/openclaw/blockchain-security-auditor/AGENTS.md",
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/history/plans/MASTER-PLAN-STATUS.md",
-      "docs/history/plans/SPRINT-ROADMAP.md"
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md"
     ],
     "scalable": [
       "vendor/agency-agents/integrations/qwen/agents/backend-architect.md",
@@ -153404,6 +154172,7 @@
       "vendor/agency-agents/integrations/openclaw/unreal-technical-artist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/book-co-author/AGENTS.md",
       "docs/superpowers/plans/2026-05-30-skills-obsidian-integration.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/testing/QA-TESTING-BRIEF.md"
     ],
     "chapter": [
@@ -154993,6 +155762,7 @@
       "docs/.obsidian/PLUGINS-TO-INSTALL.md",
       "docs/runbooks/e2e-hybrid-write.md",
       "docs/runbooks/DEPLOY-GITHUB-ACTIONS.md",
+      "docs/runbooks/TENANT-MONITORING.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
       "docs/runbooks/PRODUCTION-DEPLOY.md",
       "docs/00-architecture/PROVISIONING-SYSTEM.md",
@@ -155025,6 +155795,7 @@
       "docs/tenants/peskids/PRODUCTION-READINESS-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-HANDOFF-FOR-VPS-EXECUTION.md",
       "docs/tenants/peskids/DAILY-DIGEST-RUNBOOK.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
       "docs/tenants/intcloudsysops/GHL-AGENCY-MANUAL-UI-CHECKLIST.md",
@@ -155043,6 +155814,7 @@
       "docs/blueprints/PHASE1-PHASE2-STATUS.md",
       "docs/blueprints/GO-LIVE-COMMAND.md",
       "docs/blueprints/PHASE1-IMPLEMENTATION-GUIDE.md",
+      "docs/blueprints/academy/README.md",
       "docs/blueprints/PESKIDS-GHL-MIGRATION-STATUS.md",
       ".claude/3-slash-commands/deploy.md"
     ],
@@ -156632,19 +157404,9 @@
       "vendor/agency-agents/integrations/openclaw/studio-producer/IDENTITY.md",
       "vendor/agency-agents/integrations/openclaw/studio-producer/AGENTS.md",
       "docs/superpowers/specs/2026-05-26-content-studio-ai-design.md",
-      "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md"
-    ],
-    "machine": [
-      "vendor/agency-agents/integrations/qwen/agents/ai-engineer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/ai-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/ai-engineer/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-ai-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/ai-engineer.md",
-      "vendor/agency-agents/integrations/openclaw/ai-engineer/AGENTS.md",
-      "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
-      "docs/01-development/PHASE-2-DEPLOYMENT.md",
-      "docs/operations/RUN-VALIDATION-LOCALLY.md",
-      ".agents/UNIFIED-AGENT-ARCHITECTURE.md"
+      "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
+      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
     ],
     "authorship": [
       "vendor/agency-agents/integrations/qwen/agents/unity-shader-graph-artist.md",
@@ -157109,14 +157871,6 @@
       "vendor/agency-agents/integrations/antigravity/agency-performance-benchmarker/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/performance-benchmarker.md",
       "vendor/agency-agents/integrations/openclaw/performance-benchmarker/IDENTITY.md",
-      "vendor/agency-agents/integrations/openclaw/performance-benchmarker/AGENTS.md"
-    ],
-    "capacity": [
-      "vendor/agency-agents/integrations/qwen/agents/performance-benchmarker.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/performance-benchmarker/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/performance-benchmarker/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-performance-benchmarker/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/performance-benchmarker.md",
       "vendor/agency-agents/integrations/openclaw/performance-benchmarker/AGENTS.md"
     ],
     "diligence": [
@@ -158330,14 +159084,6 @@
     "ufe0f": [
       "vendor/agency-agents/integrations/openclaw/workflow-architect/IDENTITY.md"
     ],
-    "found": [
-      "vendor/agency-agents/integrations/openclaw/accessibility-auditor/AGENTS.md",
-      "docs/database/SUPABASE-MIGRATION-AUDIT.md",
-      "docs/04-infrastructure/WORKER-TESTING.md",
-      "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
-      "docs/reports/session-summary-2026-05-21.md",
-      "docs/security/SECURITY-POSTURE-AUDIT.md"
-    ],
     "arguments": [
       "vendor/agency-agents/integrations/openclaw/investment-researcher/AGENTS.md"
     ],
@@ -158479,12 +159225,15 @@
       "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md"
     ],
     "directorio": [
-      "infra/terraform/README.md"
+      "infra/terraform/README.md",
+      "docs/blueprints/academy/README.md"
     ],
     "existente": [
       "infra/terraform/README.md",
       "docs/00-architecture/conversational-runtime-roadmap.md",
+      "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
       "docs/00-architecture/opsly-agent-runtime.md",
+      "docs/00-architecture/MODULE-REGISTRY.md",
       "docs/01-development/SEMANA-4-INFORME.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md"
@@ -158937,6 +159686,8 @@
     ],
     "notificaciones": [
       "docs/superpowers/specs/2026-05-31-collectx-platform-design.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
       "docs/00-architecture/COST-DASHBOARD.md"
     ],
     "pagos": [
@@ -159180,11 +159931,6 @@
       "docs/plans/AUTONOMY-GO-NO-GO-WEEKLY.md",
       "docs/01-development/ONBOARDING-READINESS.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md"
-    ],
-    "defaults": [
-      "docs/plans/AUTONOMY-GO-NO-GO-WEEKLY.md",
-      "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
-      "docs/00-architecture/ORCHESTRATOR.md"
     ],
     "burndown": [
       "docs/generated/sprint-status.auto.md",
@@ -159565,7 +160311,8 @@
       "docs/03-agents/AGENT-URL-VALIDATION.md"
     ],
     "supuestos": [
-      "docs/ops/runbook-redis.md"
+      "docs/ops/runbook-redis.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
     ],
     "todavia": [
       "docs/ops/runbook-redis.md"
@@ -159585,6 +160332,26 @@
       "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/tenants/peskids/SPRINT-02-RUN.md",
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md"
+    ],
+    "debe": [
+      "docs/ops/ACTIVE-CAPACITY-ALERT.md",
+      "docs/qa/BACKLOG-IA-PROMPT.md",
+      "docs/03-agents/COPILOT-CODING-AGENT.md",
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md"
+    ],
+    "humanas": [
+      "docs/ops/ACTIVE-CAPACITY-ALERT.md"
+    ],
+    "pendientes": [
+      "docs/ops/ACTIVE-CAPACITY-ALERT.md",
+      "docs/obsidian/templates/moc-research.md",
+      "docs/obsidian/inbox/2026-05-22.md",
+      "docs/runbooks/frontend-audit.md",
+      "docs/01-development/MAIA-WORKERS.md",
+      "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
+      "docs/01-development/GIT-WORKFLOW.md",
+      "docs/01-development/WALLET-PREPAID-ROADMAP.md",
+      "docs/tenants/peskids/ARCHITECTURE.md"
     ],
     "conceptual": [
       "docs/orchestrator/REPAIR-QUEUE.md"
@@ -159712,6 +160479,7 @@
     "objetivos": [
       "docs/infrastructure/OPTIMIZATION-ROADMAP-2026-06.md",
       "docs/growth/AGENCY-PILOT-OUTREACH.md",
+      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
       "docs/01-development/VISION.md",
       "docs/adr/ADR-009-openclaw-mcp-architecture.md"
     ],
@@ -159724,7 +160492,8 @@
       "docs/history/plans/MASTER-PLAN.md",
       "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/01-development/SEMANA-6-INFORME.md",
-      "docs/01-development/AUTOMATION-PLAN.md"
+      "docs/01-development/AUTOMATION-PLAN.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
     ],
     "propuesta": [
       "docs/infrastructure/OPTIMIZATION-ROADMAP-2026-06.md",
@@ -159808,6 +160577,7 @@
     ],
     "dia": [
       "docs/emails/tenant-welcome-email.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
       "docs/01-development/LOCALRANK-TESTER-GUIDE.md"
     ],
     "empezar": [
@@ -159917,7 +160687,8 @@
       "docs/01-development/AGENCY-DEVOPS-OS-OFFER.md",
       "docs/04-infrastructure/SECURITY-MITIGATIONS-2026-04-09.md",
       "docs/blueprints/opsly-operational-blueprint/TENANT-INCUBATION.md",
-      "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md"
+      "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md",
+      "docs/blueprints/academy/README.md"
     ],
     "primera": [
       "docs/growth/AGENCY-PILOT-OUTREACH.md",
@@ -159929,6 +160700,7 @@
     "secuencia": [
       "docs/growth/AGENCY-PILOT-OUTREACH.md",
       "docs/04-infrastructure/WORKER-FLOWS.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/tenants/peskids/WACRM-TWENTY-CUTOVER.md",
       "docs/blueprints/TENANT-REPEAT-PLAYBOOK.md"
     ],
@@ -159952,6 +160724,7 @@
     "comercial": [
       "docs/growth/REVENUE-EXECUTION-30D.md",
       "docs/runbooks/LOCAL-SERVICES-GO-LIVE.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
       "docs/reports/ACG-STRATEGY-30-DAYS.md",
       "docs/blueprints/opsly-operational-blueprint/COMMERCIAL-PACKAGES.md"
@@ -160089,7 +160862,8 @@
       "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md",
       "docs/tenants/peskids/CLIENT-PITCH.md",
       "docs/tenants/peskids/TENANT_PESKIDS.md",
-      "docs/tenants/peskids/OPSLY-REUSE.md"
+      "docs/tenants/peskids/OPSLY-REUSE.md",
+      "docs/blueprints/academy/README.md"
     ],
     "romper": [
       "docs/history/plans/MASTER-PLAN.md",
@@ -160104,7 +160878,8 @@
     ],
     "caps": [
       "docs/history/plans/MASTER-PLAN-STATUS.md",
-      "docs/history/plans/SPRINT-ROADMAP.md"
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/runbooks/VPS-MEMORY-CAPS.md"
     ],
     "cve": [
       "docs/history/plans/MASTER-PLAN-STATUS.md",
@@ -160247,6 +161022,7 @@
     ],
     "loader": [
       "docs/history/consolidation/CONSOLIDATION-EFFORT-BREAKDOWN.md",
+      "docs/00-architecture/BLUEPRINT-CONTRACT.md",
       "docs/00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md"
     ],
     "total": [
@@ -160585,6 +161361,7 @@
     ],
     "canonicas": [
       "docs/design/AGENT-ORCHESTRATION-INDEX.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/03-agents/AGENT-BRAIN-CONTRACT.md"
     ],
     "cashflow": [
@@ -160673,9 +161450,11 @@
     ],
     "dominio": [
       "docs/obsidian/research/frontier-pattern-radar.md",
+      "docs/runbooks/TENANT-MONITORING.md",
       "docs/01-development/SEMANA-6-PLAN.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/PESKIDS-PRO-1.0-RUNBOOK.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/brain/TENANT-AI-PLAYBOOK.md",
       "docs/blueprints/opsly-operational-blueprint/EXTRACTION-PATTERN.md"
     ],
@@ -160826,16 +161605,6 @@
     ],
     "conexiones": [
       "docs/obsidian/templates/moc-research.md"
-    ],
-    "pendientes": [
-      "docs/obsidian/templates/moc-research.md",
-      "docs/obsidian/inbox/2026-05-22.md",
-      "docs/runbooks/frontend-audit.md",
-      "docs/01-development/MAIA-WORKERS.md",
-      "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
-      "docs/01-development/GIT-WORKFLOW.md",
-      "docs/01-development/WALLET-PREPAID-ROADMAP.md",
-      "docs/tenants/peskids/ARCHITECTURE.md"
     ],
     "tema": [
       "docs/obsidian/templates/moc-research.md"
@@ -161235,7 +162004,8 @@
       "docs/legal/peskids/DPIA-2026.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
       "docs/brain/TENANT-AI-PLAYBOOK.md",
-      "docs/blueprints/AI-TENANT-SETUP-BLUEPRINT.md"
+      "docs/blueprints/AI-TENANT-SETUP-BLUEPRINT.md",
+      "docs/blueprints/academy/README.md"
     ],
     "controles": [
       "docs/legal/peskids/DPIA-2026.md"
@@ -161300,6 +162070,7 @@
     "riesgos": [
       "docs/legal/peskids/DPIA-2026.md",
       "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/adr/ADR-043-facebook-page-organic-publishing-graph-api.md",
       "docs/adr/ADR-014-notebooklm-agent.md",
       "docs/tenants/peskids/EXTRACTION-PLAN.md",
@@ -161402,12 +162173,29 @@
       "docs/runbooks/OPERATIONS-HANDBOOK.md",
       "docs/audits/COST-DEEP-DIVE.md"
     ],
+    "capacidad": [
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
+      "docs/adr/ADR-024-ollama-local-worker-primary.md"
+    ],
+    "hasta": [
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
+      "docs/04-infrastructure/DECEPTICON-WORKER.md",
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md"
+    ],
+    "noche": [
+      "docs/runbooks/VPS-MEMORY-CAPS.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
+      "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/04-infrastructure/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
     "skeleton": [
       "docs/runbooks/INCUBATION-PLATFORM-FOUNDATION.md"
     ],
     "clasificacion": [
       "docs/runbooks/incident.md",
       "docs/runbooks/INCIDENT-AUTONOMOUS-AGENT.md",
+      "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/brain/skills/fable5-agent-instructions.md"
     ],
     "comunicacion": [
@@ -161640,6 +162428,7 @@
     ],
     "ventana": [
       "docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md",
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
       "docs/runbooks/CORTEX-OBSERVATION-WINDOW.md"
     ],
     "aislamiento": [
@@ -161839,6 +162628,57 @@
     "iteracion": [
       "docs/runbooks/frontend-audit.md"
     ],
+    "canonico": [
+      "docs/runbooks/TENANT-MONITORING.md",
+      "docs/01-development/MAKE-SETUP.md",
+      "docs/01-development/MODULARITY-CONTRACT.md",
+      "docs/01-development/API-CORE-PORTFOLIO.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
+      "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md",
+      "docs/blueprints/WOMPI-PAYMENT-GATEWAY-CONTRACT.md"
+    ],
+    "crontab": [
+      "docs/runbooks/TENANT-MONITORING.md"
+    ],
+    "opcion": [
+      "docs/runbooks/TENANT-MONITORING.md",
+      "docs/runbooks/PANINI-LAB-GOLIVE.md",
+      "docs/01-development/CLIENTS-TO-INVITE.md",
+      "docs/04-infrastructure/FAILOVER-GCP-ARCHITECTURE.md",
+      "docs/operations/RUN-VALIDATION-LOCALLY.md",
+      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
+      "docs/adr/ADR-021-predictive-bi-scalability.md",
+      "docs/adr/ADR-039-sales-channels-email-whatsapp.md",
+      "docs/adr/ADR-037-opsly-local-services-multi-tenant.md",
+      "docs/adr/ADR-040-technician-scaling-solo-to-assistant.md",
+      "docs/adr/ADR-043-intelligent-content-generation-via-llm-gateway.md",
+      "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
+      "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
+      "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
+      "docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md",
+      ".claude/3-slash-commands/deploy.md"
+    ],
+    "otro": [
+      "docs/runbooks/TENANT-MONITORING.md",
+      "docs/00-architecture/LLM-GATEWAY.md"
+    ],
+    "relacionado": [
+      "docs/runbooks/TENANT-MONITORING.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
+      "docs/01-development/DOCUMENTATION-LIFECYCLE.md",
+      "docs/01-development/DESIGN-REFERENCES.md",
+      "docs/adr/ADR-015-hermes-orchestrator-architecture.md",
+      "docs/tenants/peskids/WACRM-CHANNEL.md",
+      "docs/brain/modules/peskids.md"
+    ],
+    "sudo": [
+      "docs/runbooks/TENANT-MONITORING.md",
+      "docs/04-infrastructure/WORKER-SETUP-MAC2011.md",
+      "docs/04-infrastructure/WORKER-SERVICE-MAC2011.md"
+    ],
+    "timers": [
+      "docs/runbooks/TENANT-MONITORING.md"
+    ],
     "administracion": [
       "docs/runbooks/admin.md"
     ],
@@ -161868,6 +162708,7 @@
     ],
     "obligatorios": [
       "docs/runbooks/AUTONOMOUS-PRODUCTION-GO-LIVE-CHECKLIST.md",
+      "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
       "docs/01-development/GITHUB-SETTINGS.md",
       "docs/01-development/N8N-IMPORT-GUIDE.md",
       "docs/01-development/MODULARITY-CONTRACT.md",
@@ -161942,23 +162783,6 @@
       "docs/tenants/panini-lab/README.md",
       "docs/demo/hackathon-demo.md"
     ],
-    "opcion": [
-      "docs/runbooks/PANINI-LAB-GOLIVE.md",
-      "docs/01-development/CLIENTS-TO-INVITE.md",
-      "docs/04-infrastructure/FAILOVER-GCP-ARCHITECTURE.md",
-      "docs/operations/RUN-VALIDATION-LOCALLY.md",
-      "docs/operations/MOBILE-OPS-DESDE-CELULAR.md",
-      "docs/adr/ADR-021-predictive-bi-scalability.md",
-      "docs/adr/ADR-039-sales-channels-email-whatsapp.md",
-      "docs/adr/ADR-037-opsly-local-services-multi-tenant.md",
-      "docs/adr/ADR-040-technician-scaling-solo-to-assistant.md",
-      "docs/adr/ADR-043-intelligent-content-generation-via-llm-gateway.md",
-      "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
-      "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
-      "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
-      "docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md",
-      ".claude/3-slash-commands/deploy.md"
-    ],
     "panini": [
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
       "docs/tenants/panini-lab/README.md",
@@ -161973,7 +162797,8 @@
     ],
     "zona": [
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
-      "docs/03-agents/AGENT-GUARDRAILS.md"
+      "docs/03-agents/AGENT-GUARDRAILS.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md"
     ],
     "exactos": [
       "docs/runbooks/ONBOARDING-NEW-CLIENT.md"
@@ -161996,6 +162821,26 @@
     "puerto": [
       "docs/runbooks/ONBOARDING-NEW-CLIENT.md",
       "docs/04-infrastructure/DOPPLER-VARS.md"
+    ],
+    "resolver": [
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md"
+    ],
+    "estos": [
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
+      "docs/01-development/RETENTION-POLICY.md"
+    ],
+    "hotfix": [
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md"
+    ],
+    "nocturna": [
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md"
+    ],
+    "seguros": [
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md"
+    ],
+    "window": [
+      "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
+      "docs/runbooks/CORTEX-OBSERVATION-WINDOW.md"
     ],
     "conocimiento": [
       "docs/runbooks/OPSLY-OPENCLAW-STARTUP.md",
@@ -162055,9 +162900,6 @@
       "docs/runbooks/CORTEX-OBSERVATION-WINDOW.md"
     ],
     "observation": [
-      "docs/runbooks/CORTEX-OBSERVATION-WINDOW.md"
-    ],
-    "window": [
       "docs/runbooks/CORTEX-OBSERVATION-WINDOW.md"
     ],
     "autonomos": [
@@ -162195,6 +163037,26 @@
       "docs/adr/ADR-017-worker-teams-billing-roadmap.md",
       "docs/adr/ADR-011-event-driven-orchestrator.md"
     ],
+    "capas": [
+      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
+      "docs/01-development/LAYERS-SANDBOX-QA-PROD.md",
+      "docs/01-development/RETENTION-POLICY.md",
+      "docs/01-development/MODULARITY-CONTRACT.md",
+      "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/02-tools/OBSIDIAN-RESEARCH-BRAIN.md",
+      "docs/adr/ADR-029-infrastructure-layers-shared-vs-tenant.md",
+      "docs/tenants/peskids/FRANCHISES.md",
+      "docs/blueprints/opsly-operational-blueprint/REFERENCE-ARCHITECTURE.md"
+    ],
+    "primer": [
+      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
+      "docs/tenants/peskids/README.md",
+      "docs/brain/README.md"
+    ],
+    "venture": [
+      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
+    ],
     "existentes": [
       "docs/00-architecture/OPSLYQUANTUM-SKILL-DESIGN.md",
       ".claude/agents/hive-mind/worker-specialist.md"
@@ -162204,6 +163066,25 @@
       "docs/01-development/OPSLYQUANTUM-USAGE.md",
       "docs/04-infrastructure/FAILOVER-GCP-ARCHITECTURE.md",
       "docs/04-infrastructure/GCP-ACTIVATION-CHECKLIST.md"
+    ],
+    "forma": [
+      "docs/00-architecture/BLUEPRINT-CONTRACT.md"
+    ],
+    "logica": [
+      "docs/00-architecture/BLUEPRINT-CONTRACT.md"
+    ],
+    "override": [
+      "docs/00-architecture/BLUEPRINT-CONTRACT.md",
+      "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
+      "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
+      "docs/blueprints/PESKIDS-GHL-MIGRATION-STATUS.md"
+    ],
+    "proposito": [
+      "docs/00-architecture/BLUEPRINT-CONTRACT.md",
+      "docs/00-architecture/hooks-system.md",
+      "docs/00-architecture/MODULE-REGISTRY.md",
+      "docs/tenants/peskids/FUTURE-REPO-SEED.md",
+      ".claude/agents/README.md"
     ],
     "adapters": [
       "docs/00-architecture/conversational-runtime-roadmap.md"
@@ -162255,6 +163136,7 @@
       "docs/tenants/peskids/CLASSES-SYSTEM-SPEC.md",
       "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md",
       "docs/tenants/peskids/DAILY-DIGEST-RUNBOOK.md",
+      "docs/tenants/peskids/FRANCHISES.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md"
     ],
@@ -162290,9 +163172,6 @@
       "docs/00-architecture/LLM-GATEWAY.md",
       "docs/04-infrastructure/DOPPLER-VARS.md",
       "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md"
-    ],
-    "otro": [
-      "docs/00-architecture/LLM-GATEWAY.md"
     ],
     "proveedores": [
       "docs/00-architecture/LLM-GATEWAY.md",
@@ -162354,6 +163233,14 @@
     ],
     "perfiles": [
       "docs/00-architecture/POLICY-AI-LOCAL-FIRST.md"
+    ],
+    "almacenamiento": [
+      "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md"
+    ],
+    "documental": [
+      "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
+      "docs/01-development/DOCUMENTATION-LIFECYCLE.md",
+      "docs/03-agents/AGENT-BRAIN-CONTRACT.md"
     ],
     "clase": [
       "docs/00-architecture/REDIS_NAMESPACE_ISOLATION.md",
@@ -162444,6 +163331,15 @@
     "replace": [
       "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md"
     ],
+    "excepcion": [
+      "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
+      "docs/tenants/peskids/WHATSAPP-CHANNEL.md"
+    ],
+    "futura": [
+      "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
+      "docs/adr/ADR-021-predictive-bi-scalability.md",
+      "docs/adr/ADR-027-hybrid-compute-plane-k8s.md"
+    ],
     "outputs": [
       "docs/00-architecture/RENDERING-ENGINE.md",
       "docs/04-infrastructure/VPS-PROVISIONING-STANDARD.md"
@@ -162479,7 +163375,9 @@
       ".claude/AGENTS-ENHANCEMENTS.md"
     ],
     "estados": [
-      "docs/00-architecture/ORCHESTRATOR.md"
+      "docs/00-architecture/ORCHESTRATOR.md",
+      "docs/00-architecture/MODULE-REGISTRY.md",
+      "docs/00-architecture/TENANT-CONTRACT.md"
     ],
     "lili": [
       "docs/00-architecture/ORCHESTRATOR.md",
@@ -162505,11 +163403,6 @@
     ],
     "integridad": [
       "docs/00-architecture/hooks-system.md"
-    ],
-    "proposito": [
-      "docs/00-architecture/hooks-system.md",
-      "docs/tenants/peskids/FUTURE-REPO-SEED.md",
-      ".claude/agents/README.md"
     ],
     "protegidas": [
       "docs/00-architecture/hooks-system.md"
@@ -162664,6 +163557,37 @@
     "remotos": [
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md"
     ],
+    "entitlements": [
+      "docs/00-architecture/MODULE-REGISTRY.md",
+      "docs/00-architecture/TENANT-CONTRACT.md"
+    ],
+    "groundwork": [
+      "docs/00-architecture/MODULE-REGISTRY.md"
+    ],
+    "propuesto": [
+      "docs/00-architecture/MODULE-REGISTRY.md",
+      "docs/adr/ADR-018-pgvector-embeddings-rag.md",
+      "docs/reports/ACG-STRATEGY-30-DAYS.md"
+    ],
+    "aprobado": [
+      "docs/00-architecture/TENANT-CONTRACT.md"
+    ],
+    "identidad": [
+      "docs/00-architecture/TENANT-CONTRACT.md",
+      "docs/01-development/HOSTS-PATHS.md",
+      "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
+      "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
+      "docs/tenants/production/TENANT-PRODUCTION-HARDENING.md"
+    ],
+    "otras": [
+      "docs/00-architecture/TENANT-CONTRACT.md",
+      "docs/01-development/AGENT-PROMPT-QUEUE.md",
+      "docs/03-agents/AGENT-GUARDRAILS.md",
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md"
+    ],
+    "representaciones": [
+      "docs/00-architecture/TENANT-CONTRACT.md"
+    ],
     "largo": [
       "docs/00-architecture/REPO-MAP.md",
       "docs/brain/skills/fable5-manual.md"
@@ -162738,11 +163662,6 @@
       "docs/reports/GHL-ACCOUNTS-SNAPSHOT.md",
       "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md"
     ],
-    "override": [
-      "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
-      "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
-      "docs/blueprints/PESKIDS-GHL-MIGRATION-STATUS.md"
-    ],
     "automatizado": [
       "docs/01-development/N8N-SETUP.md",
       "docs/01-development/LOCAL-MAC-IMPROVEMENT-PLAN.md",
@@ -162796,6 +163715,7 @@
     "dependencias": [
       "docs/01-development/AI-FRAMEWORKS.md",
       "docs/04-infrastructure/SECURITY_CHECKLIST.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/brain/modules/README.md"
     ],
     "dify": [
@@ -162834,7 +163754,8 @@
       "docs/01-development/SETUP-SUDOERS-CLOUDSYSOPS.md",
       "docs/04-infrastructure/VERTEX-AI-SETUP.md",
       "docs/tenants/peskids/PESKIDS-ADMIN-USER-VALIDATION.md",
-      "docs/tenants/peskids/PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md"
+      "docs/tenants/peskids/PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/FRANCHISES.md"
     ],
     "requeridos": [
       "docs/01-development/GITHUB-SETTINGS.md",
@@ -162913,15 +163834,6 @@
       "docs/04-infrastructure/FAILOVER-GCP-ARCHITECTURE.md",
       "docs/04-infrastructure/FAILOVER-RUNBOOK.md"
     ],
-    "capas": [
-      "docs/01-development/LAYERS-SANDBOX-QA-PROD.md",
-      "docs/01-development/RETENTION-POLICY.md",
-      "docs/01-development/MODULARITY-CONTRACT.md",
-      "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
-      "docs/02-tools/OBSIDIAN-RESEARCH-BRAIN.md",
-      "docs/adr/ADR-029-infrastructure-layers-shared-vs-tenant.md",
-      "docs/blueprints/opsly-operational-blueprint/REFERENCE-ARCHITECTURE.md"
-    ],
     "definicion": [
       "docs/01-development/LAYERS-SANDBOX-QA-PROD.md",
       "docs/01-development/PLANNING.md",
@@ -162937,10 +163849,6 @@
       ".claude/agents/neural/sona-learning.md",
       ".claude/agents/hive-mind/worker-specialist.md"
     ],
-    "documental": [
-      "docs/01-development/DOCUMENTATION-LIFECYCLE.md",
-      "docs/03-agents/AGENT-BRAIN-CONTRACT.md"
-    ],
     "graphyfi": [
       "docs/01-development/DOCUMENTATION-LIFECYCLE.md",
       "docs/03-agents/AGENT-BRAIN-CONTRACT.md",
@@ -162951,13 +163859,6 @@
     ],
     "habituales": [
       "docs/01-development/DOCUMENTATION-LIFECYCLE.md"
-    ],
-    "relacionado": [
-      "docs/01-development/DOCUMENTATION-LIFECYCLE.md",
-      "docs/01-development/DESIGN-REFERENCES.md",
-      "docs/adr/ADR-015-hermes-orchestrator-architecture.md",
-      "docs/tenants/peskids/WACRM-CHANNEL.md",
-      "docs/brain/modules/peskids.md"
     ],
     "revisar": [
       "docs/01-development/DOCUMENTATION-LIFECYCLE.md"
@@ -163039,11 +163940,6 @@
     ],
     "iso": [
       "docs/01-development/AGENT-PROMPT-QUEUE.md"
-    ],
-    "otras": [
-      "docs/01-development/AGENT-PROMPT-QUEUE.md",
-      "docs/03-agents/AGENT-GUARDRAILS.md",
-      "docs/adr/ADR-005-traefik-v3-1-docker-api.md"
     ],
     "peligro": [
       "docs/01-development/AGENT-PROMPT-QUEUE.md"
@@ -163465,9 +164361,6 @@
       "docs/01-development/DISK-USAGE-REPORT.md",
       "docs/04-infrastructure/SECURITY_CHECKLIST.md"
     ],
-    "estos": [
-      "docs/01-development/RETENTION-POLICY.md"
-    ],
     "excepciones": [
       "docs/01-development/RETENTION-POLICY.md",
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md"
@@ -163532,13 +164425,6 @@
       "docs/01-development/MAKE-SETUP.md",
       "docs/01-development/OPS-CLEANUP-PROCEDURES.md"
     ],
-    "canonico": [
-      "docs/01-development/MAKE-SETUP.md",
-      "docs/01-development/MODULARITY-CONTRACT.md",
-      "docs/01-development/API-CORE-PORTFOLIO.md",
-      "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md",
-      "docs/blueprints/WOMPI-PAYMENT-GATEWAY-CONTRACT.md"
-    ],
     "com": [
       "docs/01-development/MAKE-SETUP.md",
       "docs/04-infrastructure/DOMAIN-CUTOVER-OP-SLY.md",
@@ -163546,6 +164432,7 @@
       "docs/04-infrastructure/SECURITY-MITIGATIONS-2026-04-09.md",
       "docs/tenants/peskids/N8N-SETUP.md",
       "docs/tenants/peskids/PESKIDS-ADMIN-USER-VALIDATION.md",
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md"
     ],
     "frecuentes": [
@@ -163571,12 +164458,6 @@
       "docs/01-development/HOSTS-PATHS.md",
       "docs/01-development/SESSION-GIT-SYNC.md",
       "docs/tenants/onboarding-prompts/DEPLOYMENT-VALIDATION.md"
-    ],
-    "identidad": [
-      "docs/01-development/HOSTS-PATHS.md",
-      "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
-      "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
-      "docs/tenants/production/TENANT-PRODUCTION-HARDENING.md"
     ],
     "dialogo": [
       "docs/01-development/OPSLYQUANTUM-USAGE.md"
@@ -164122,10 +165003,6 @@
     "breve": [
       "docs/qa/BACKLOG-IA-PROMPT.md"
     ],
-    "debe": [
-      "docs/qa/BACKLOG-IA-PROMPT.md",
-      "docs/03-agents/COPILOT-CODING-AGENT.md"
-    ],
     "dod": [
       "docs/qa/BACKLOG-IA-PROMPT.md"
     ],
@@ -164596,10 +165473,6 @@
       "docs/adr/ADR-035-openclaw-per-tenant.md",
       "docs/blueprints/opsly-operational-blueprint/EXTRACTION-PATTERN.md"
     ],
-    "noche": [
-      "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
-      "docs/04-infrastructure/SECURITY-MITIGATIONS-2026-04-09.md"
-    ],
     "portales": [
       "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md"
     ],
@@ -164685,10 +165558,6 @@
       "docs/04-infrastructure/WORKER-SETUP-MAC2011.md",
       "docs/blueprints/TENANT-REPEAT-PLAYBOOK.md"
     ],
-    "sudo": [
-      "docs/04-infrastructure/WORKER-SETUP-MAC2011.md",
-      "docs/04-infrastructure/WORKER-SERVICE-MAC2011.md"
-    ],
     "trabajando": [
       "docs/04-infrastructure/WORKER-SETUP-MAC2011.md"
     ],
@@ -164731,10 +165600,6 @@
       "docs/03-agents/AGENTS.md",
       "docs/tenants/peskids/PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md"
     ],
-    "hasta": [
-      "docs/04-infrastructure/DECEPTICON-WORKER.md",
-      "docs/tenants/intcloudsysops/TWENTY-CRM.md"
-    ],
     "planos": [
       "docs/04-infrastructure/DECEPTICON-WORKER.md"
     ],
@@ -164765,7 +165630,8 @@
       "docs/04-infrastructure/SSH-COMMANDS-LOCALRANK.md"
     ],
     "exista": [
-      "docs/04-infrastructure/FAILOVER-RUNBOOK.md"
+      "docs/04-infrastructure/FAILOVER-RUNBOOK.md",
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md"
     ],
     "operador": [
       "docs/04-infrastructure/FAILOVER-RUNBOOK.md"
@@ -164884,6 +165750,51 @@
     ],
     "select": [
       "docs/audits/DATABASE-QUERY-AUDIT.md"
+    ],
+    "ajustada": [
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
+    ],
+    "catalogos": [
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
+    ],
+    "consumidores": [
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
+      "docs/brain/modules/llm-gateway.md"
+    ],
+    "correccion": [
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
+    ],
+    "duplicaciones": [
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
+    ],
+    "fuera": [
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
+      "docs/adr/ADR-023-approval-gate-phase1.md"
+    ],
+    "fundacion": [
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
+    ],
+    "hardcodes": [
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
+    ],
+    "iniciado": [
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
+    ],
+    "mergeado": [
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
+    ],
+    "original": [
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
+    ],
+    "potenciales": [
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
+    ],
+    "pr0": [
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
+    ],
+    "veredicto": [
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
+      "docs/reports/REPOSITORY-BASELINE-2026-05-27.md"
     ],
     "moderate": [
       "docs/audits/TEST-COVERAGE-BASELINE.md",
@@ -165316,7 +166227,8 @@
       "docs/03-agents/PARALLEL-AGENTS-ORCHESTRATION.md"
     ],
     "negociable": [
-      "docs/03-agents/AGENTS.md"
+      "docs/03-agents/AGENTS.md",
+      "docs/tenants/peskids/FRANCHISES.md"
     ],
     "nos": [
       "docs/03-agents/AGENTS.md"
@@ -165344,10 +166256,6 @@
       "docs/adr/ADR-029-mcp-orchestration.md"
     ],
     "sandboxed": [
-      "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
-      "docs/adr/ADR-029-mcp-orchestration.md"
-    ],
-    "shell": [
       "docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md",
       "docs/adr/ADR-029-mcp-orchestration.md"
     ],
@@ -165611,10 +166519,6 @@
     "factores": [
       "docs/adr/ADR-021-predictive-bi-scalability.md"
     ],
-    "futura": [
-      "docs/adr/ADR-021-predictive-bi-scalability.md",
-      "docs/adr/ADR-027-hybrid-compute-plane-k8s.md"
-    ],
     "materialized": [
       "docs/adr/ADR-021-predictive-bi-scalability.md"
     ],
@@ -165871,7 +166775,8 @@
       "docs/adr/ADR-022-di-pattern-testability.md",
       "docs/tenants/peskids/OPSLY-REUSE.md",
       "docs/brain/architecture/system-map.md",
-      "docs/blueprints/opsly-operational-blueprint/NICHE-PLAYBOOKS.md"
+      "docs/blueprints/opsly-operational-blueprint/NICHE-PLAYBOOKS.md",
+      "docs/blueprints/academy/README.md"
     ],
     "singletons": [
       "docs/adr/ADR-022-di-pattern-testability.md"
@@ -166013,17 +166918,10 @@
     "018": [
       "docs/adr/ADR-018-pgvector-embeddings-rag.md"
     ],
-    "propuesto": [
-      "docs/adr/ADR-018-pgvector-embeddings-rag.md",
-      "docs/reports/ACG-STRATEGY-30-DAYS.md"
-    ],
     "020": [
       "docs/adr/ADR-020-orchestrator-worker-separation.md"
     ],
     "023": [
-      "docs/adr/ADR-023-approval-gate-phase1.md"
-    ],
-    "fuera": [
       "docs/adr/ADR-023-approval-gate-phase1.md"
     ],
     "036": [
@@ -166148,9 +167046,6 @@
       "docs/adr/ADR-002-traefik-sobre-nginx.md",
       "docs/reports/PRODUCTION-HEALTH.md"
     ],
-    "capacidad": [
-      "docs/adr/ADR-024-ollama-local-worker-primary.md"
-    ],
     "stub": [
       "docs/n8n-workflows/CLOUDSYSOPS-TECHNICIAN-N8N.md"
     ],
@@ -166176,11 +167071,6 @@
     ],
     "prohibido": [
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md"
-    ],
-    "academy": [
-      "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
-      "docs/blueprints/academy/README.md",
-      "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md"
     ],
     "accion": [
       "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
@@ -166210,6 +167100,26 @@
       "docs/tenants/intcloudsysops/WACRM-OFFERING.md",
       "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md"
     ],
+    "diaria": [
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md"
+    ],
+    "franchise": [
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md"
+    ],
+    "franquicias": [
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
+      "docs/tenants/peskids/FRANCHISES.md"
+    ],
+    "iniciales": [
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
+      "docs/tenants/peskids/FRANCHISES.md"
+    ],
+    "llevar": [
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md"
+    ],
+    "sedes": [
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md"
+    ],
     "200l": [
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
     ],
@@ -166228,9 +167138,6 @@
     "zod": [
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md"
-    ],
-    "canales": [
-      "docs/tenants/peskids/INCUBATION-CHECKLIST.md"
     ],
     "extraccion": [
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
@@ -166509,10 +167416,6 @@
       "docs/tenants/peskids/ARCHITECTURE.md",
       "docs/tenants/panini-lab/README.md"
     ],
-    "primer": [
-      "docs/tenants/peskids/README.md",
-      "docs/brain/README.md"
-    ],
     "redeploy": [
       "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md"
     ],
@@ -166600,9 +167503,6 @@
       "docs/tenants/panini-lab/README.md"
     ],
     "documentado": [
-      "docs/tenants/peskids/WHATSAPP-CHANNEL.md"
-    ],
-    "excepcion": [
       "docs/tenants/peskids/WHATSAPP-CHANNEL.md"
     ],
     "usamos": [
@@ -166832,6 +167732,21 @@
     "ordered": [
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md"
     ],
+    "dentro": [
+      "docs/tenants/peskids/FRANCHISES.md"
+    ],
+    "franchises": [
+      "docs/tenants/peskids/FRANCHISES.md"
+    ],
+    "unidades": [
+      "docs/tenants/peskids/FRANCHISES.md"
+    ],
+    "propio": [
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md"
+    ],
+    "www": [
+      "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md"
+    ],
     "fotos": [
       "docs/tenants/peskids/INSTAGRAM-FEED.md"
     ],
@@ -166912,7 +167827,8 @@
     ],
     "apagado": [
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md",
-      "docs/tenants/intcloudsysops/TWENTY-CRM.md"
+      "docs/tenants/intcloudsysops/TWENTY-CRM.md",
+      "docs/blueprints/academy/README.md"
     ],
     "consultoria": [
       "docs/tenants/intcloudsysops/GOHIGHLEVEL-CONTRACT.md"
@@ -167012,9 +167928,6 @@
     ],
     "compartidas": [
       "docs/brain/modules/README.md"
-    ],
-    "consumidores": [
-      "docs/brain/modules/llm-gateway.md"
     ],
     "autocritique": [
       "docs/brain/skills/fable5-manual.md"
@@ -167277,9 +168190,6 @@
       "docs/reports/REPOSITORY-BASELINE-2026-05-27.md"
     ],
     "symlinks": [
-      "docs/reports/REPOSITORY-BASELINE-2026-05-27.md"
-    ],
-    "veredicto": [
       "docs/reports/REPOSITORY-BASELINE-2026-05-27.md"
     ],
     "verificados": [
@@ -167642,7 +168552,7 @@
     "pasarela": [
       "docs/blueprints/WOMPI-PAYMENT-GATEWAY-CONTRACT.md"
     ],
-    "proxima": [
+    "queda": [
       "docs/blueprints/academy/README.md"
     ],
     "confirmada": [
@@ -167961,6 +168871,7 @@
     "apps/experimental/ingestion-service-archive/ARCHIVE.md",
     "apps/experimental/ingestion-service-archive/README.md",
     "apps/experimental/mission-control-archive/ARCHIVE.md",
+    "apps/icso/content/README.md",
     "apps/icso/README.md",
     "apps/index.md",
     "apps/intcloudsysops/CLAUDE.md",
@@ -167977,6 +168888,7 @@
     "apps/peskids/README.md",
     "apps/task-orchestrator/README.md",
     "apps/web/blog/2026-04-26-opsly-para-agencias.md",
+    "config/blueprints/academy/README.md",
     "config/doppler-audit-2026-04-07.md",
     "docs/.obsidian/PLUGINS-TO-INSTALL.md",
     "docs/.obsidian/templates/doc-template.md",
@@ -167985,20 +168897,25 @@
     "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
     "docs/00-architecture/ARCHITECTURE.md",
     "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
+    "docs/00-architecture/BLUEPRINT-CONTRACT.md",
     "docs/00-architecture/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
     "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
     "docs/00-architecture/CONTEXT-BUILDER.md",
     "docs/00-architecture/conversational-runtime-roadmap.md",
     "docs/00-architecture/COST-DASHBOARD.md",
+    "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
     "docs/00-architecture/DISTRIBUTED-ARCHITECTURE.md",
     "docs/00-architecture/ELEVENLABS-ADVANCED-INTEGRATION.md",
     "docs/00-architecture/hooks-system.md",
     "docs/00-architecture/INCUBATION-PLATFORM-CONTRACT.md",
     "docs/00-architecture/LLM-GATEWAY-WORKPLAN.md",
     "docs/00-architecture/LLM-GATEWAY.md",
+    "docs/00-architecture/MODULE-REGISTRY.md",
+    "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
     "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
     "docs/00-architecture/opsly-agent-runtime.md",
     "docs/00-architecture/OPSLY-CONTROL-PLANE.md",
+    "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
     "docs/00-architecture/OPSLYQUANTUM-SKILL-DESIGN.md",
     "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
     "docs/00-architecture/ORCHESTRATOR.md",
@@ -168009,6 +168926,7 @@
     "docs/00-architecture/RENDERING-ENGINE.md",
     "docs/00-architecture/REPO-MAP.md",
     "docs/00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md",
+    "docs/00-architecture/TENANT-CONTRACT.md",
     "docs/00-architecture/TENANT-INCUBATION-LIFECYCLE.md",
     "docs/00-architecture/VPS-CLEANUP-WEBHOOK-CONTRACT.md",
     "docs/01-development/.openclaw.md",
@@ -168298,6 +169216,7 @@
     "docs/audits/DOCKER-OPTIMIZATION.md",
     "docs/audits/LINT-RULES-GUIDE.md",
     "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
+    "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
     "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
     "docs/audits/README.md",
     "docs/audits/SALES-READINESS-HARDENING.md",
@@ -168545,6 +169464,7 @@
     "docs/operations/RUN-VALIDATION-LOCALLY.md",
     "docs/operations/VPS-VALIDATION-GUIDE.md",
     "docs/operations/VPS-VALIDATION-OPTIONS.md",
+    "docs/ops/ACTIVE-CAPACITY-ALERT.md",
     "docs/ops/branch-protection-setup.md",
     "docs/ops/issue-bankruptcy-2026-05-03.md",
     "docs/ops/issue-bankruptcy-2026-05-03/epics-breakdown.md",
@@ -168615,6 +169535,7 @@
     "docs/runbooks/AUTONOMOUS-PRODUCTION-GO-LIVE-CHECKLIST.md",
     "docs/runbooks/AUTONOMY-JOB-POLICY-MAP.md",
     "docs/runbooks/BACKUP-RECOVERY.md",
+    "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
     "docs/runbooks/COMPUTER-CONTROL-OPERATOR-MODE.md",
     "docs/runbooks/CORTEX-OBSERVATION-WINDOW.md",
     "docs/runbooks/CYBER-NEO-AND-ARCHITECT.md",
@@ -168642,6 +169563,7 @@
     "docs/runbooks/OPERATIONS-HANDBOOK.md",
     "docs/runbooks/OPSLY-OPENCLAW-STARTUP.md",
     "docs/runbooks/PANINI-LAB-GOLIVE.md",
+    "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
     "docs/runbooks/PRODUCTION-DEPLOY.md",
     "docs/runbooks/PRODUCTION-SECURITY-BASELINE.md",
     "docs/runbooks/README.md",
@@ -168650,6 +169572,7 @@
     "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
     "docs/runbooks/TENANT-BONUS-WORKFLOWS.md",
     "docs/runbooks/TENANT-INVITATIONS-SYSTEM.md",
+    "docs/runbooks/TENANT-MONITORING.md",
     "docs/runbooks/TENANT-ONBOARDING-TRIAGE.md",
     "docs/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
     "docs/runbooks/TENANT-PRODUCTION-ROLLOUT.md",
@@ -168657,6 +169580,7 @@
     "docs/runbooks/VPS-CLEANUP-WEBHOOK.md",
     "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
     "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
+    "docs/runbooks/VPS-MEMORY-CAPS.md",
     "docs/security/NPM-AUDIT-EXEMPTIONS.md",
     "docs/security/SECURITY-POSTURE-AUDIT.md",
     "docs/STRUCTURE-GUARDRAILS.md",
@@ -168712,6 +169636,7 @@
     "docs/tenants/peskids/CLIENT-PITCH.md",
     "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
     "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
+    "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
     "docs/tenants/peskids/DAILY-DIGEST-RUNBOOK.md",
     "docs/tenants/peskids/DASHBOARD-SPEC.md",
     "docs/tenants/peskids/DATA-MODEL.md",
@@ -168725,6 +169650,8 @@
     "docs/tenants/peskids/EVENT-CONTRACT.md",
     "docs/tenants/peskids/EXTRACTION-PLAN.md",
     "docs/tenants/peskids/FORMS-SPEC.md",
+    "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
+    "docs/tenants/peskids/FRANCHISES.md",
     "docs/tenants/peskids/FUTURE-REPO-SEED.md",
     "docs/tenants/peskids/GHL-CONSULTING-HANDOFF.md",
     "docs/tenants/peskids/GHL-REENGAGEMENT-REFERRALS.md",
@@ -168802,6 +169729,7 @@
     "infra/terraform/README.md",
     "lib/api/GOVERNANCE.md",
     "lib/api/README.md",
+    "lib/capacity-alert/README.md",
     "lib/components/GOVERNANCE.md",
     "lib/components/README.md",
     "lib/config/GOVERNANCE.md",
