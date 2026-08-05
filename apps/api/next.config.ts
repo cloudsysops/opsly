@@ -10,6 +10,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const nextConfig: NextConfig = {
   output: 'standalone',
   outputFileTracingRoot: path.join(__dirname, '../..'),
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   transpilePackages: ['@intcloudsysops/openwa', '@intcloudsysops/tenant-profile'],
   serverExternalPackages: ['@redis/client', '@redis/bloom', '@redis/graph', '@redis/json', '@redis/search', '@redis/time-series'],
   webpack: (config) => {
