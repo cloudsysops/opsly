@@ -12,6 +12,8 @@ tenant_slug: peskids
 > Contexto compacto para agentes: [`TENANT_PESKIDS.md`](./TENANT_PESKIDS.md); úsalo junto con [`../../OPSLY_CONTEXT.md`](../../OPSLY_CONTEXT.md) y [`../../blueprints/academy.md`](../../blueprints/academy.md) cuando la sesión sea Peskids.
 >
 > **Programa activo:** [`PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md`](./PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md) — baseline, PRs PRO-0…12, exclusiones Meta/WACRM.
+>
+> **Revisión cliente (2026-08-05):** [`CLIENT-REVIEW-2026-08-05.md`](./CLIENT-REVIEW-2026-08-05.md) — WhatsApp domicilio + mensaje + logo **en prod** (`www.peskids.com`); checklist para el equipo Peskids.
 
 Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**). Opsly actúa como **incubadora y plano de control**: stack n8n + monitoreo, CRM base y futura capa de datos/producto. El objetivo a medio plazo es **extraer** un producto independiente (`peskids-platform`) sin romper Opsly ni depender permanentemente del runtime de orquestación de Opsly.
 
