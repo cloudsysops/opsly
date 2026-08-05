@@ -5,8 +5,10 @@
   "dependencies": {
     "dompurify": "3.4.12",
     "js-tiktoken": "^1.0.21",
+    "next": "16.3.0",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "sharp": "0.35.3"
   },
   "workspaces": [
     "apps/*",
@@ -167,9 +169,9 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "fast-xml-builder": "1.2.0",
-    "hono": "4.12.32",
+    "hono": "4.13.0",
     "husky": "^9.1.7",
-    "ip-address": "10.2.0",
+    "ip-address": "10.4.0",
     "js-yaml": "^4.1.1",
     "lint-staged": "^15.5.2",
     "nodemon": "^3.1.14",
@@ -213,15 +215,16 @@
     "minimist": "^1.2.8",
     "tmp": "0.2.7",
     "uuid": "^14.0.0",
-    "fast-uri": "3.1.4",
+    "brace-expansion": "5.0.9",
+    "fast-uri": "3.1.5",
     "fast-xml-builder": "1.2.0",
     "fast-xml-parser": {
       "fast-xml-builder": "1.2.0"
     },
-    "hono": "4.12.32",
-    "ip-address": "10.2.0",
+    "hono": "4.13.0",
+    "ip-address": "10.4.0",
     "express-rate-limit": {
-      "ip-address": "10.2.0"
+      "ip-address": "10.4.0"
     },
     "@tootallnate/once": "^3.0.1",
     "langsmith": "0.7.1",
@@ -233,10 +236,10 @@
     "vitest": "4.1.9",
     "@vitest/coverage-v8": "4.1.9",
     "tar": "^7.5.15",
-    "undici": "7.28.0",
+    "undici": "7.29.0",
     "dompurify": "3.4.12",
     "mermaid": "^11.4.0",
-    "next": "15.5.18",
+    "next": "16.3.0",
     "qs": "6.15.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -247,6 +250,12 @@
     "websocket-driver": "^0.7.5",
     "@auth/core": "0.41.3",
     "@hono/node-server": "2.0.12",
+    "@capacitor/cli": {
+      "brace-expansion": "5.0.9",
+      "xcode": {
+        "uuid": "11.1.1"
+      }
+    },
     "sharp": "0.35.3",
     "next": {
       "postcss": "8.5.23",
