@@ -2,29 +2,27 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { peskidsColorTokens } from '@/lib/tokens';
 
+/** Public brand mark — see docs/brand/peskids/BRAND.md */
+export const PESKIDS_LOGO_MARK_SRC = '/brand/logo-mark.svg';
+export const PESKIDS_LOGO_PNG_SRC = '/brand/logo-official.png';
+
 interface PeskidsLogoProps {
   size?: number;
   className?: string;
 }
 
-/** Official Peskids logo from brand identity */
+/** Logo circular oficial (4 colores + wordmark). */
 export function PeskidsLogo({ size = 96, className }: PeskidsLogoProps): React.ReactElement {
   return (
-    <div
-      className={cn('relative inline-block shrink-0', className)}
-      style={{
-        width: size * 1.15,
-        height: size,
-      }}
-    >
-      <Image
-        src="/peskids-logo.svg"
-        alt="Peskids"
-        fill
-        priority
-        className="object-contain"
-      />
-    </div>
+    <Image
+      src={PESKIDS_LOGO_PNG_SRC}
+      alt="Peskids natación"
+      width={size}
+      height={size}
+      className={cn('shrink-0 rounded-full object-cover', className)}
+      style={{ width: size, height: size }}
+      priority={size >= 64}
+    />
   );
 }
 

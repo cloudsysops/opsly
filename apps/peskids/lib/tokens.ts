@@ -1,8 +1,8 @@
 // Peskids Design System Tokens
-// Consolidates all Peskids-specific colors and design values
+// Canon: docs/brand/peskids/BRAND.md (+ logopeskids.ai master)
 
 export const peskidsColorTokens = {
-  // Primary brand colors (from official Peskids logo)
+  // Primary brand colors (sampled from official logo kit)
   primary: {
     whatsapp: '#25D366', // WhatsApp green
     teal: '#54BFB1', // Official teal from brand logo
