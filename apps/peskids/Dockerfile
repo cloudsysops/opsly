@@ -81,7 +81,7 @@ RUN npm run build -w @intcloudsysops/prompt-guard \
 
 WORKDIR /app/apps/peskids
 RUN mkdir -p public \
- && NEXT_TELEMETRY_DISABLED=1 npx next build --webpack --no-lint
+ && NEXT_TELEMETRY_DISABLED=1 npx next build --webpack
 
 FROM node:20-alpine AS runner
 
