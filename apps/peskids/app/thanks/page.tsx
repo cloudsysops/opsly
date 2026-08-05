@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
+import { headers } from 'next/headers';
 import { PeskidsLockup } from '@/components/brand/peskids-logo';
 import { SiteFooter } from '@/components/layout/site-footer';
-import { WhatsAppLink } from '@/components/contact/whatsapp-link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ReferralLinkCard } from '@/components/referrals/referral-link-card';
 import { WhatsAppMessagePreview } from '@/components/forms';
+import { ThanksWhatsAppFallback } from '@/components/forms/thanks-whatsapp-fallback';
 import {
   PESKIDS_FORM_SUCCESS_DETAIL,
   PESKIDS_FORM_SUCCESS_DOMICILIO,
@@ -15,6 +16,23 @@ import {
   PESKIDS_FORM_SUCCESS_TITLE,
   PESKIDS_WHATSAPP_CTA_LABEL,
 } from '@/lib/peskids-landing-copy';
+import { peskidsPublicSiteBaseUrl } from '@/lib/peskids-lead-session';
+
+async function resolveThanksFetchBase(): Promise<string> {
+  const configured = peskidsPublicSiteBaseUrl();
+  if (configured && !/localhost|127\.0\.0\.1/i.test(configured)) {
+    return configured;
+  }
+  try {
+    const h = await headers();
+    const host = h.get('x-forwarded-host') || h.get('host');
+    const proto = h.get('x-forwarded-proto') || 'https';
+    if (host) return `${proto}://${host}`.replace(/\/$/, '');
+  } catch {
+    // headers() unavailable outside request
+  }
+  return configured || 'https://www.peskids.com';
+}
 
 type ThanksSearchParams = Promise<{
   referral_link?: string;
@@ -63,11 +81,14 @@ export default async function ThanksPage({
     phone: string;
     grade_interested: string;
     class_modality: string | null;
+    child_name?: string | null;
+    neighborhood?: string | null;
+    lead_type?: string | null;
   } | null = null;
 
   if (leadId) {
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_PESKIDS_URL || 'http://localhost:3004';
+      const baseUrl = await resolveThanksFetchBase();
       const response = await fetch(`${baseUrl}/api/leads/${leadId}`, {
         cache: 'no-store',
       });
@@ -80,6 +101,9 @@ export default async function ThanksPage({
             phone: string;
             grade_interested: string;
             class_modality: string | null;
+            child_name?: string | null;
+            neighborhood?: string | null;
+            lead_type?: string | null;
           };
         };
         if (result.ok && result.data) {
@@ -123,20 +147,22 @@ export default async function ThanksPage({
                     : null
                 }
                 leadId={leadId}
+                leadType={leadData.lead_type}
+                childName={leadData.child_name}
+                neighborhood={leadData.neighborhood}
               />
             ) : (
-              <WhatsAppLink
-                variant="hero"
-                className="w-full"
+              <ThanksWhatsAppFallback
                 label={copy.waLabel}
                 modality={modality ?? null}
+                leadId={leadId ?? null}
               />
             )}
             {leadId ? (
               <div className="rounded-xl border border-pk-primary/30 bg-pk-primary/10 px-4 py-3 text-left text-sm">
                 <p className="font-semibold text-pk-ink">📋 Ver tu solicitud en el panel:</p>
                 <Link
-                  href={`/admin/leads/${leadId}`}
+                  href={`/admin/interesados/${leadId}`}
                   className="mt-2 inline-flex items-center gap-2 font-medium text-pk-primary hover:underline"
                 >
                   Abrir en Peskids Admin →
@@ -146,8 +172,8 @@ export default async function ThanksPage({
             <div className="rounded-xl border border-pk-border bg-pk-bg px-4 py-3 text-left text-sm text-pk-sub">
               <p className="font-semibold text-pk-ink">¿Qué sigue?</p>
               <p className="mt-1">
-                {leadData && leadId
-                  ? 'Envía el mensaje de arriba al soporte de Peskids. El equipo abrirá el link para ver tus detalles y responderá pronto.'
+                {leadId
+                  ? 'Envía el mensaje de WhatsApp al soporte de Peskids. El equipo abrirá el link del lead para validar tu solicitud y responderá pronto.'
                   : PESKIDS_FORM_SUCCESS_NEXT}
               </p>
             </div>

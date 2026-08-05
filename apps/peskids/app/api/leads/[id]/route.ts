@@ -43,11 +43,14 @@ export async function GET(
       ok: true,
       data: {
         id: lead.id,
-        full_name: lead.full_name,
+        full_name: lead.full_name || String(lead.name ?? ''),
         email: lead.email,
         phone: lead.phone,
         grade_interested: lead.grade_interested,
         class_modality: lead.class_modality,
+        child_name: typeof lead.child_name === 'string' ? lead.child_name : null,
+        neighborhood: typeof lead.neighborhood === 'string' ? lead.neighborhood : null,
+        lead_type: typeof lead.lead_type === 'string' ? lead.lead_type : null,
       },
     });
   } catch (error) {
