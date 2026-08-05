@@ -327,6 +327,7 @@ export function LeadCaptureForm({
   if (submitted) {
     const modality = formData.class_modality
     const modalityLabel = modality === 'llanogrande' ? 'Llanogrande' : 'Domicilios'
+    const modalityText = modality === 'llanogrande' ? 'la sede Llanogrande' : 'clases a domicilio'
 
     return (
       <div className="flex min-h-screen items-center justify-center bg-pk-snow p-4">
@@ -334,11 +335,11 @@ export function LeadCaptureForm({
           <CardHeader className="bg-pk-bg">
             <CardTitle className="text-2xl text-pk-ink">¡Gracias, recibimos tu solicitud!</CardTitle>
           </CardHeader>
-          <CardContent className="pt-6">
-            <p className="mb-6 text-sm text-pk-ink">
-              Tu solicitud fue registrada para {modality === 'llanogrande' ? 'la sede Llanogrande' : 'clases a domicilio'}.
+          <CardContent className="pt-6 space-y-6">
+            <p className="text-sm text-pk-ink">
+              Tu solicitud fue registrada para {modalityText}.
             </p>
-            <p className="mb-6 text-sm text-pk-ink">
+            <p className="text-sm text-pk-ink">
               Continúa por WhatsApp con el equipo de atención correspondiente.
             </p>
             <WhatsAppLink
@@ -351,6 +352,12 @@ export function LeadCaptureForm({
             >
               Continuar por WhatsApp — {modalityLabel}
             </WhatsAppLink>
+            <div className="border-t border-pk-border/30 pt-4">
+              <h3 className="font-medium text-pk-ink mb-2">¿Qué sigue?</h3>
+              <p className="text-xs text-pk-mutedText">
+                Abre WhatsApp para continuar con atención personalizada.
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>
