@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { peskidsColorTokens } from '@/lib/tokens';
 
@@ -6,36 +7,23 @@ interface PeskidsLogoProps {
   className?: string;
 }
 
-/** Logo circular pinwheel (4 colores) + wordmark brush */
+/** Official Peskids logo from brand identity */
 export function PeskidsLogo({ size = 96, className }: PeskidsLogoProps): React.ReactElement {
   return (
     <div
-      className={cn('relative inline-block shrink-0 overflow-hidden rounded-full', className)}
+      className={cn('relative inline-block shrink-0', className)}
       style={{
-        width: size,
+        width: size * 1.9,
         height: size,
-        background: `conic-gradient(from -45deg, ${peskidsColorTokens.primary.teal} 0deg 90deg, ${peskidsColorTokens.secondary.yellow} 90deg 180deg, ${peskidsColorTokens.primary.blue} 180deg 270deg, ${peskidsColorTokens.secondary.orange} 270deg 360deg)`,
       }}
-      aria-hidden
     >
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-        <span
-          className="font-brush leading-none"
-          style={{
-            fontSize: size * 0.34,
-            transform: `rotate(-3deg) translateY(${size * 0.015}px)`,
-            textShadow: `0 ${size * 0.012}px ${size * 0.025}px rgba(0,0,0,0.18)`,
-          }}
-        >
-          Peskids
-        </span>
-        <span
-          className="font-sans font-semibold italic opacity-95"
-          style={{ fontSize: size * 0.11, letterSpacing: '0.04em', marginTop: size * 0.008 }}
-        >
-          natación
-        </span>
-      </div>
+      <Image
+        src="/peskids-logo-official.png"
+        alt="Peskids"
+        fill
+        priority
+        className="object-contain"
+      />
     </div>
   );
 }
