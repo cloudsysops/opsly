@@ -1,5 +1,7 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "rootDir": "../../",
     "target": "ES2021",
     "useDefineForClassFields": true,
     "lib": [
@@ -23,6 +25,12 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@intcloudsysops/services": [
+        "../../lib/services"
+      ],
+      "@intcloudsysops/services/*": [
+        "../../lib/services/*"
       ]
     },
     "allowJs": true,

@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
 import { buildPostLeadWhatsAppPrefill, writePeskidsLeadSession } from '@/lib/peskids-lead-session'
-import { ageYearsFromBirthDate } from '@/lib/lead-age'
 import {
   PESKIDS_COMPANY_KINDS,
   PESKIDS_LEAD_TYPES,
@@ -21,8 +20,6 @@ import {
   PESKIDS_FORM_CARD_DESCRIPTION,
   PESKIDS_FORM_CARD_TITLE,
   PESKIDS_FORM_SUBMIT_LABEL,
-  PESKIDS_FORM_SUCCESS_DETAIL,
-  PESKIDS_FORM_SUCCESS_TITLE,
 } from '@/lib/peskids-landing-copy'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -128,10 +125,6 @@ export function LeadCaptureForm({
     [searchParams]
   )
 
-  const childAge = useMemo(
-    () => (formData.birth_date ? ageYearsFromBirthDate(formData.birth_date) : null),
-    [formData.birth_date]
-  )
 
   const setField = (name: keyof FormState, value: string): void => {
     setFormData((prev) => ({ ...prev, [name]: value }))
@@ -346,10 +339,11 @@ export function LeadCaptureForm({
                 class_modality: modality as 'llanogrande' | 'domicilio' | undefined,
                 lead_type: formData.lead_type as PeskidsLeadType,
               })}
+              label={`Continuar por WhatsApp — ${modalityLabel}`}
+              variant="button"
+              showIcon
               className="w-full"
-            >
-              Continuar por WhatsApp — {modalityLabel}
-            </WhatsAppLink>
+            />
             <div className="border-t border-pk-border/30 pt-4">
               <h3 className="font-medium text-pk-ink mb-2">¿Qué sigue?</h3>
               <p className="text-xs text-pk-mutedText">

@@ -183,10 +183,9 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
   }, []);
 
   useEffect(() => {
-    if (bulkNotification) {
-      const timer = setTimeout(clearBulkNotification, 4000);
-      return () => clearTimeout(timer);
-    }
+    if (!bulkNotification) return;
+    const timer = setTimeout(clearBulkNotification, 4000);
+    return () => clearTimeout(timer);
   }, [bulkNotification, clearBulkNotification]);
 
   const handleBulkMarkReviewed = useCallback(async (ids: string[]): Promise<void> => {
