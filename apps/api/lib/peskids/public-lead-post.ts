@@ -143,7 +143,6 @@ export async function postPublicPeskidsLead(request: NextRequest): Promise<Respo
 async function uploadTeacherAttachments(leadId: string, formData: FormData): Promise<void> {
   try {
     const attachmentTypes = ['curriculum', 'cedula_copy', 'swimming_video'];
-    const uploadedUrls: Record<string, string> = {};
 
     for (const type of attachmentTypes) {
       const fileKey = `file_${type}`;
@@ -160,14 +159,10 @@ async function uploadTeacherAttachments(leadId: string, formData: FormData): Pro
         file_type: file.type,
       });
 
-      // TODO: Implement Supabase Storage upload
-      // uploadedUrls[type] = await uploadToSupabaseStorage(leadId, type, file);
+      // TODO: Implement Supabase Storage upload and update lead metadata
+      // const uploadedUrl = await uploadToSupabaseStorage(leadId, type, file);
+      // await updateLeadAttachmentUrls(leadId, type, uploadedUrl);
     }
-
-    // TODO: Update lead metadata with uploaded file URLs if any
-    // if (Object.keys(uploadedUrls).length > 0) {
-    //   await updateLeadAttachmentUrls(leadId, uploadedUrls);
-    // }
   } catch (error) {
     console.error('[peskids] Failed to process teacher attachments', {
       lead_id: leadId,
