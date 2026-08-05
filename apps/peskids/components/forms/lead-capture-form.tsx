@@ -128,7 +128,7 @@ function stepsForLead(leadType: PeskidsLeadType | '', modality: FormState['class
 function supportPrompt(step: StepId, form: FormState): string {
   switch (step) {
     case 'who':
-      return '¡Hola! Soy el asistente de Peskids. ¿En qué te podemos ayudar?'
+      return '¡Hola! Soy el asistente de Peskids. ¿Para quién estás solicitando información?'
     case 'where':
       return 'Perfecto. ¿Prefieres clases en la sede Llanogrande o a domicilio? Al final te conecto directo con ese WhatsApp.'
     case 'zone':
