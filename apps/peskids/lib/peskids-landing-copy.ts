@@ -39,6 +39,9 @@ export const PESKIDS_CONSENT_TREATMENT =
 export const PESKIDS_CONSENT_MARKETING =
   'Acepto recibir información sobre programas, novedades y promociones de Peskids por WhatsApp o correo electrónico. Puedo cancelar esta autorización en cualquier momento.';
 
+export const PESKIDS_CONSENT_PHOTOS_VIDEOS =
+  'Autorizo a Peskids para usar fotos y videos de mis clases en sus redes sociales (Instagram, Facebook, TikTok) con fines promocionales. Entiendo que estas imágenes serán de carácter educativo y profesional.';
+
 /** Instagram entry — same offer, channel-specific intro only. */
 export const PESKIDS_INSTAGRAM_LANDING_INTRO =
   'Desde Instagram: responde el chat para guardar tus datos y te direccionamos a la línea de atención correspondiente.';

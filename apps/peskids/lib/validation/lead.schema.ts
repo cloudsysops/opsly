@@ -275,6 +275,7 @@ const consentSchema = z.object({
     message: 'Debes autorizar el tratamiento de datos',
   }),
   consent_marketing: z.boolean().optional().default(false),
+  consent_photos_videos: z.boolean().optional().default(false),
   consent_policy_version: z.string().min(1).optional(),
   referral_code: z.string().trim().optional(),
   source: z.string().trim().optional(),

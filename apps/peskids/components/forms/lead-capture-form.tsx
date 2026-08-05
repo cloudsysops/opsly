@@ -16,6 +16,7 @@ import {
 } from '@/lib/validation/lead.schema'
 import {
   PESKIDS_CONSENT_MARKETING,
+  PESKIDS_CONSENT_PHOTOS_VIDEOS,
   PESKIDS_FORM_CARD_DESCRIPTION,
   PESKIDS_FORM_CARD_TITLE,
   PESKIDS_FORM_SUBMIT_LABEL,
@@ -232,6 +233,7 @@ export function LeadCaptureForm({
   const [formData, setFormData] = useState(() => emptyForm(defaultReferralSource))
   const [consentTreatment, setConsentTreatment] = useState(false)
   const [consentMarketing, setConsentMarketing] = useState(false)
+  const [consentPhotosVideos, setConsentPhotosVideos] = useState(false)
   const referredByCode = useMemo(
     () => searchParams.get('ref')?.trim().toUpperCase() ?? '',
     [searchParams]
@@ -397,6 +399,7 @@ export function LeadCaptureForm({
         ...rawPayload,
         consent_treatment: consentTreatment ? true : undefined,
         consent_marketing: consentMarketing,
+        consent_photos_videos: consentPhotosVideos,
         consent_policy_version: CONSENT_POLICY_VERSION,
         source,
         campaign,
@@ -406,11 +409,40 @@ export function LeadCaptureForm({
         return
       }
 
-      const apiResponse = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(apiParsed.data),
-      })
+      // Para profesores con archivos, usar FormData
+      const hasAttachments = leadType === 'teacher_applicant' && Object.keys(formData.attachments).length > 0
+      let apiResponse: Response
+
+      if (hasAttachments) {
+        const formDataPayload = new FormData()
+        // Agregar datos de texto
+        Object.entries(apiParsed.data).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && typeof value !== 'object') {
+            formDataPayload.append(key, String(value))
+          }
+        })
+        // Agregar archivos desde inputs
+        document.querySelectorAll('input[type="file"][data-peskids-attachment]').forEach((input: Element) => {
+          const fileInput = input as HTMLInputElement
+          if (fileInput.files && fileInput.files.length > 0) {
+            const attachmentType = fileInput.getAttribute('data-peskids-attachment')
+            if (attachmentType) {
+              formDataPayload.append(`file_${attachmentType}`, fileInput.files[0])
+            }
+          }
+        })
+
+        apiResponse = await fetch('/api/leads', {
+          method: 'POST',
+          body: formDataPayload,
+        })
+      } else {
+        apiResponse = await fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(apiParsed.data),
+        })
+      }
 
       if (!apiResponse.ok) {
         const apiErrorText = await apiResponse.text()
@@ -450,6 +482,7 @@ export function LeadCaptureForm({
       setSubmitted(true)
       setConsentTreatment(false)
       setConsentMarketing(false)
+      setConsentPhotosVideos(false)
 
       const thanksUrl = new URL('/thanks', window.location.origin)
       if (apiResult.referral_link) thanksUrl.searchParams.set('referral_link', apiResult.referral_link)
@@ -788,6 +821,7 @@ export function LeadCaptureForm({
                     type="file"
                     accept=".pdf,.doc,.docx"
                     className="pk-input"
+                    data-peskids-attachment="curriculum"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
@@ -805,6 +839,7 @@ export function LeadCaptureForm({
                     type="file"
                     accept="image/*,.pdf"
                     className="pk-input"
+                    data-peskids-attachment="cedula_copy"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
@@ -822,6 +857,7 @@ export function LeadCaptureForm({
                     type="file"
                     accept="video/*"
                     className="pk-input"
+                    data-peskids-attachment="swimming_video"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
@@ -976,6 +1012,17 @@ export function LeadCaptureForm({
                   />
                   <span>{PESKIDS_CONSENT_MARKETING}</span>
                 </label>
+                {formData.lead_type === 'teacher_applicant' ? (
+                  <label className="flex items-start gap-2 text-sm text-pk-sub">
+                    <input
+                      type="checkbox"
+                      className="mt-1"
+                      checked={consentPhotosVideos}
+                      onChange={(e) => setConsentPhotosVideos(e.target.checked)}
+                    />
+                    <span>{PESKIDS_CONSENT_PHOTOS_VIDEOS}</span>
+                  </label>
+                ) : null}
               </div>
             ) : null}
 
