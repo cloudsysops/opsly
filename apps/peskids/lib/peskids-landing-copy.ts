@@ -14,9 +14,9 @@ export const PESKIDS_RESERVATION_DESCRIPTION =
   'Academia de natación especializada en bebés y niños. Clases en nuestra sede Llanogrande o a domicilio en Medellín y el área metropolitana.';
 
 export const PESKIDS_RESERVATION_BULLETS = [
-  'Solo te tomará 1 minuto',
-  'Te conectaremos con el asesor de tu sede',
-  'Continúa por WhatsApp',
+  'Eres familia, profesor o empresa — responde el chat',
+  'Elegimos Llanogrande o domicilio según tus necesidades',
+  'Continúa por WhatsApp con tu equipo de atención',
 ] as const;
 
 export const PESKIDS_FORM_CARD_TITLE = 'Cuéntanos sobre tu familia';
