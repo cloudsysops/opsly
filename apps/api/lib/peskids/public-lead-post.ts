@@ -9,7 +9,34 @@ import { dispatchPeskidsLeadConfirmationEmail } from './lead-confirmation-email'
 import { peskidsInsertLead } from './repository';
 import { peskidsLeadBodySchema } from './schemas';
 
-async function readJsonBody(request: NextRequest): Promise<unknown | Response> {
+async function readBody(request: NextRequest): Promise<unknown | Response> {
+  const contentType = request.headers.get('content-type') || '';
+
+  // Handle FormData (multipart/form-data)
+  if (contentType.includes('multipart/form-data')) {
+    try {
+      const formData = await request.formData();
+      const data: Record<string, unknown> = {};
+
+      // Extract text fields
+      for (const [key, value] of formData.entries()) {
+        if (value instanceof File) {
+          // Skip files for now - we'll process them separately
+          continue;
+        }
+        data[key] = value;
+      }
+
+      // Store file references for later processing
+      data._attachments = formData;
+
+      return data;
+    } catch {
+      return Response.json({ error: 'Invalid form data' }, { status: HTTP_STATUS.BAD_REQUEST });
+    }
+  }
+
+  // Handle JSON (default)
   try {
     return await request.json();
   } catch {
@@ -34,12 +61,18 @@ export async function postPublicPeskidsLead(request: NextRequest): Promise<Respo
     return gate;
   }
 
-  const raw = await readJsonBody(request);
+  const raw = await readBody(request);
   if (raw instanceof Response) {
     return raw;
   }
 
-  const parsed = peskidsLeadBodySchema.safeParse(raw);
+  // Extract attachments before validation (not part of schema)
+  const attachments = raw instanceof Object && '_attachments' in raw ? (raw as Record<string, unknown>)._attachments : null;
+  const cleanedRaw = attachments ? Object.fromEntries(
+    Object.entries(raw as Record<string, unknown>).filter(([k]) => k !== '_attachments')
+  ) : raw;
+
+  const parsed = peskidsLeadBodySchema.safeParse(cleanedRaw);
   if (!parsed.success) {
     return Response.json(
       { error: 'Invalid request body', details: parsed.error.flatten() },
@@ -81,6 +114,16 @@ export async function postPublicPeskidsLead(request: NextRequest): Promise<Respo
     });
   });
 
+  // Process file uploads if present (teacher_applicant with attachments)
+  if (attachments && parsed.data.lead_type === 'teacher_applicant') {
+    void uploadTeacherAttachments(row.id, attachments).catch((error: unknown) => {
+      console.warn('[peskids] teacher attachment upload failed', {
+        lead_id: row.id,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    });
+  }
+
   return Response.json(
     {
       ok: true,
@@ -91,4 +134,45 @@ export async function postPublicPeskidsLead(request: NextRequest): Promise<Respo
     },
     { status: HTTP_STATUS.CREATED }
   );
+}
+
+/**
+ * Upload teacher attachments (CV, ID copy, swimming video) to Supabase Storage.
+ * Non-blocking operation - failures don't prevent lead creation.
+ */
+async function uploadTeacherAttachments(leadId: string, formData: FormData): Promise<void> {
+  try {
+    const attachmentTypes = ['curriculum', 'cedula_copy', 'swimming_video'];
+    const uploadedUrls: Record<string, string> = {};
+
+    for (const type of attachmentTypes) {
+      const fileKey = `file_${type}`;
+      const file = formData.get(fileKey) as File | null;
+
+      if (!file) continue;
+
+      // Note: Actual Supabase upload logic would go here
+      // For now, we log that we received the file
+      console.log(`[peskids] teacher attachment received: ${type}`, {
+        lead_id: leadId,
+        file_name: file.name,
+        file_size: file.size,
+        file_type: file.type,
+      });
+
+      // TODO: Implement Supabase Storage upload
+      // uploadedUrls[type] = await uploadToSupabaseStorage(leadId, type, file);
+    }
+
+    // TODO: Update lead metadata with uploaded file URLs if any
+    // if (Object.keys(uploadedUrls).length > 0) {
+    //   await updateLeadAttachmentUrls(leadId, uploadedUrls);
+    // }
+  } catch (error) {
+    console.error('[peskids] Failed to process teacher attachments', {
+      lead_id: leadId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    // Non-blocking - don't re-throw
+  }
 }
