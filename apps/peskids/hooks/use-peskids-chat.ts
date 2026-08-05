@@ -42,7 +42,7 @@ function buildWelcome(mode: PeskidsChatMode): PeskidsChatMessage {
 
   return {
     role: 'assistant',
-    text: `${peskidsIntakeWelcome()}\n\n¿Para quién es esta solicitud? Toca una opción 👇`,
+    text: `${peskidsIntakeWelcome('web')}\n\n¿Para quién es esta solicitud? Toca una opción 👇`,
     quickReplies: PESKIDS_APPLICANT_ROLE_CHOICES,
     inputMode: 'choice',
   };
