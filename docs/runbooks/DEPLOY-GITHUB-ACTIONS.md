@@ -20,7 +20,7 @@ El runner de GitHub **no está en tu tailnet**. Si el VPS solo acepta SSH desde 
 1. En [Tailscale admin](https://login.tailscale.com/admin/settings/keys): crear **auth key** reusable + ephemeral. El tag (si aplica) puede ir **en la clave** y en la ACL; el workflow **no** fuerza `tag:github-actions` — evita fallos si tu red no declara ese tag. Si tu instalación exige pasar tags al `tailscale up` del action, añade el input en el workflow o usa una clave pre-etiquetada según la doc de Tailscale.
 2. En la política ACL de Tailscale, permitir que el nodo del runner (una vez unido) llegue al nodo del VPS (por tag, usuario o `autogroup:member` según tu modelo).
 3. En GitHub → **Settings → Secrets and variables → Actions** (entornos `production` / `staging` si aplica):
-   - `TAILSCALE_AUTHKEY`: la clave del paso 1.
+   - `TAILSCALE_AUTHKEY`: la clave del paso 1. Rotación y avisos de caducidad: [`SECRETS-KEY-MANAGEMENT.md`](SECRETS-KEY-MANAGEMENT.md).
    - `VPS_HOST`: dirección alcanzable **después** del join (típicamente IP Tailscale del VPS, p. ej. `100.120.151.91`, o nombre MagicDNS si está habilitado).
    - Opcional: `VPS_SSH_HOST`: si lo defines, `appleboy/ssh-action` usa **solo** este valor como host SSH; si no, usa `VPS_HOST`. Útil si quieres separar “host para health/DNS” de “host para SSH”.
    - `VPS_USER`, `VPS_SSH_KEY`: sin cambios.

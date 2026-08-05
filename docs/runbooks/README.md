@@ -28,6 +28,8 @@ Procedimientos accionables para operar, desplegar, diagnosticar y recuperar Opsl
 - `OPSLY-OPENCLAW-STARTUP.md`
 - `TENANT-BONUS-WORKFLOWS.md` — bonus CRM workflows por tenant, dry-run e instalacion segura
 - `VPS-CLEANUP-WEBHOOK.md` — clasificación y respuesta a alertas de limpieza en VPS
+- [`SECRETS-KEY-MANAGEMENT.md`](SECRETS-KEY-MANAGEMENT.md) — inventario de keys, rotación y avisos Discord (caducidad)
+- [`SECRET-ROTATION-AFTER-EXPOSURE.md`](SECRET-ROTATION-AFTER-EXPOSURE.md) — rotar tras filtración en chat/logs
 - [`../tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md`](../tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md) — criterios prod por tenant (stub `TENANT-PRODUCTION-CHECKLIST.md` aquí)
 - [`../tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md`](../tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md) — cohortes y rollback (stub aquí)
 - [`../tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md`](../tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md) — triage onboarding API
