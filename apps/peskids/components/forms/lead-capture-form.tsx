@@ -1012,17 +1012,15 @@ export function LeadCaptureForm({
                   />
                   <span>{PESKIDS_CONSENT_MARKETING}</span>
                 </label>
-                {formData.lead_type === 'teacher_applicant' ? (
-                  <label className="flex items-start gap-2 text-sm text-pk-sub">
-                    <input
-                      type="checkbox"
-                      className="mt-1"
-                      checked={consentPhotosVideos}
-                      onChange={(e) => setConsentPhotosVideos(e.target.checked)}
-                    />
-                    <span>{PESKIDS_CONSENT_PHOTOS_VIDEOS}</span>
-                  </label>
-                ) : null}
+                <label className="flex items-start gap-2 text-sm text-pk-sub">
+                  <input
+                    type="checkbox"
+                    className="mt-1"
+                    checked={consentPhotosVideos}
+                    onChange={(e) => setConsentPhotosVideos(e.target.checked)}
+                  />
+                  <span>{PESKIDS_CONSENT_PHOTOS_VIDEOS}</span>
+                </label>
               </div>
             ) : null}
 
