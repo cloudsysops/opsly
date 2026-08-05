@@ -2,17 +2,18 @@
 // Consolidates all Peskids-specific colors and design values
 
 export const peskidsColorTokens = {
-  // Primary brand colors
+  // Primary brand colors (from official Peskids logo)
   primary: {
     whatsapp: '#25D366', // WhatsApp green
-    teal: '#2DB7B0', // Teal accent
-    blue: '#0D4C63', // Deep blue
+    teal: '#54BFB1', // Official teal from brand logo
+    blue: '#235A7F', // Official blue from brand logo
   },
 
-  // Secondary colors
+  // Secondary colors (from official Peskids logo)
   secondary: {
-    orange: '#FF5A1F', // Orange accent
-    yellow: '#FFC20E', // Yellow accent
+    orange: '#F47259', // Official salmon/orange from brand
+    coral: '#F0382B', // Official coral red from brand
+    yellow: '#E9AF17', // Official yellow from brand logo
     lightTeal: '#A8DDE3', // Light teal
     lightYellow: '#FFE38A', // Light yellow
   },

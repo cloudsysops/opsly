@@ -5,6 +5,8 @@ import { SiteFooter } from '@/components/layout/site-footer';
 import { WhatsAppLink } from '@/components/contact/whatsapp-link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ReferralLinkCard } from '@/components/referrals/referral-link-card';
+import { WhatsAppMessagePreview } from '@/components/forms';
 import {
   PESKIDS_FORM_SUCCESS_DETAIL,
   PESKIDS_FORM_SUCCESS_DOMICILIO,
@@ -15,7 +17,10 @@ import {
 } from '@/lib/peskids-landing-copy';
 
 type ThanksSearchParams = Promise<{
+  referral_link?: string;
+  referral_code?: string;
   modality?: string;
+  lead_id?: string;
 }>;
 
 function thanksCopy(modality: string | undefined): {
@@ -46,8 +51,45 @@ export default async function ThanksPage({
   searchParams?: ThanksSearchParams;
 }): Promise<React.ReactElement> {
   const resolvedSearchParams = (await searchParams) ?? {};
+  const referralLink = resolvedSearchParams.referral_link?.trim() || '';
+  const referralCode = resolvedSearchParams.referral_code?.trim() || '';
   const modality = resolvedSearchParams.modality?.trim();
+  const leadId = resolvedSearchParams.lead_id?.trim();
   const copy = thanksCopy(modality);
+
+  let leadData: {
+    full_name: string;
+    email: string;
+    phone: string;
+    grade_interested: string;
+    class_modality: string | null;
+  } | null = null;
+
+  if (leadId) {
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_PESKIDS_URL || 'http://localhost:3004';
+      const response = await fetch(`${baseUrl}/api/leads/${leadId}`, {
+        cache: 'no-store',
+      });
+      if (response.ok) {
+        const result = (await response.json()) as {
+          ok?: boolean;
+          data?: {
+            full_name: string;
+            email: string;
+            phone: string;
+            grade_interested: string;
+            class_modality: string | null;
+          };
+        };
+        if (result.ok && result.data) {
+          leadData = result.data;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch lead data:', error);
+    }
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-pk-bg">
@@ -65,15 +107,49 @@ export default async function ThanksPage({
             <CardDescription className="text-base">{copy.detail}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 pb-8">
-            <WhatsAppLink
-              variant="hero"
-              className="w-full"
-              label={copy.waLabel}
-              modality={modality ?? null}
-            />
+            {referralLink && referralCode ? (
+              <ReferralLinkCard referralLink={referralLink} referralCode={referralCode} />
+            ) : null}
+            {leadData && leadId ? (
+              <WhatsAppMessagePreview
+                clientName={leadData.full_name}
+                clientEmail={leadData.email}
+                clientPhone={leadData.phone}
+                gradeInterested={leadData.grade_interested}
+                classModality={
+                  leadData.class_modality === 'llanogrande' ||
+                  leadData.class_modality === 'domicilio'
+                    ? leadData.class_modality
+                    : null
+                }
+                leadId={leadId}
+              />
+            ) : (
+              <WhatsAppLink
+                variant="hero"
+                className="w-full"
+                label={copy.waLabel}
+                modality={modality ?? null}
+              />
+            )}
+            {leadId ? (
+              <div className="rounded-xl border border-pk-primary/30 bg-pk-primary/10 px-4 py-3 text-left text-sm">
+                <p className="font-semibold text-pk-ink">📋 Ver tu solicitud en el panel:</p>
+                <Link
+                  href={`/admin/leads/${leadId}`}
+                  className="mt-2 inline-flex items-center gap-2 font-medium text-pk-primary hover:underline"
+                >
+                  Abrir en Peskids Admin →
+                </Link>
+              </div>
+            ) : null}
             <div className="rounded-xl border border-pk-border bg-pk-bg px-4 py-3 text-left text-sm text-pk-sub">
               <p className="font-semibold text-pk-ink">¿Qué sigue?</p>
-              <p className="mt-1">{PESKIDS_FORM_SUCCESS_NEXT}</p>
+              <p className="mt-1">
+                {leadData && leadId
+                  ? 'Envía el mensaje de arriba al soporte de Peskids. El equipo abrirá el link para ver tus detalles y responderá pronto.'
+                  : PESKIDS_FORM_SUCCESS_NEXT}
+              </p>
             </div>
             <Link href="/">
               <Button variant="primary" fullWidth>
