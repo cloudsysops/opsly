@@ -5,6 +5,9 @@ import { HeroSection } from '@/components/marketing/hero-section';
 import { PeskidsReservationLanding } from '@/components/marketing/peskids-reservation-landing';
 import { PESKIDS_HOME_LANDING } from '@/lib/peskids-landing-config';
 
+/** Avoid year-long CDN/HTML stickiness after deploys (see docs/runbooks/PESKIDS-CDN-CACHE.md). */
+export const revalidate = 60;
+
 export const metadata = {
   title: 'Peskids — Academia de natación · Medellín',
   description:
