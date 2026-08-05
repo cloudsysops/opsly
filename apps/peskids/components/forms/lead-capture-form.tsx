@@ -86,6 +86,7 @@ type StepId =
   | 'company_org'
   | 'company_need'
   | 'contact'
+  | 'review'
   | 'consent'
 
 const emptyForm = (referralSource = ''): FormState => ({
@@ -120,12 +121,12 @@ function stepsForLead(leadType: PeskidsLeadType | '', modality: FormState['class
   if (leadType === 'family') {
     const base: StepId[] = ['who', 'where']
     if (modality === 'domicilio') base.push('zone')
-    return [...base, 'child', 'guardian', 'contact', 'consent']
+    return [...base, 'child', 'guardian', 'contact', 'review', 'consent']
   }
   if (leadType === 'teacher_applicant') {
-    return ['who', 'teacher_profile', 'teacher_ops', 'contact', 'consent']
+    return ['who', 'teacher_profile', 'teacher_ops', 'contact', 'review', 'consent']
   }
-  return ['who', 'company_org', 'company_need', 'contact', 'consent']
+  return ['who', 'company_org', 'company_need', 'contact', 'review', 'consent']
 }
 
 function supportPrompt(step: StepId, form: FormState): string {
@@ -150,6 +151,8 @@ function supportPrompt(step: StepId, form: FormState): string {
       return '¿Cuentas con piscina en tus instalaciones? ¿Cuál es tu número de contacto?'
     case 'contact':
       return '¿A qué correo y WhatsApp te escribimos? El teléfono es obligatorio para contactarte rápido.'
+    case 'review':
+      return 'Perfecto. Verifica que todo esté correcto antes de continuar.'
     case 'consent':
       return form.lead_type === 'company'
         ? 'Último paso: autoriza el tratamiento de datos. Luego continuarás por WhatsApp.'
@@ -314,6 +317,8 @@ export function LeadCaptureForm({
       case 'contact':
         if (!formData.email.includes('@')) return 'Correo inválido'
         if (formData.phone.trim().length < 7) return 'Teléfono obligatorio (mín. 7 dígitos)'
+        return null
+      case 'review':
         return null
       case 'consent':
         return consentTreatment ? null : 'Debes autorizar el tratamiento de datos'
@@ -552,7 +557,11 @@ export function LeadCaptureForm({
             <div className="mb-1">
               <div className="mb-2 flex items-center justify-between text-xs text-pk-sub">
                 <span>
-                  Paso {stepIndex + 1} de {steps.length}
+                  {steps.length - stepIndex - 1 === 1
+                    ? 'Solo falta 1 pregunta'
+                    : steps.length - stepIndex - 1 > 1
+                      ? `Solo faltan ${steps.length - stepIndex - 1} preguntas`
+                      : 'Último paso'}
                 </span>
                 <span>{progress}%</span>
               </div>
@@ -984,6 +993,52 @@ export function LeadCaptureForm({
                     placeholder="Ej. 300 123 4567"
                   />
                 </div>
+              </div>
+            ) : null}
+
+            {step === 'review' ? (
+              <div className="space-y-3 rounded-lg border border-pk-primary/20 bg-pk-primary/5 p-4">
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-pk-sub">Nombre</span>
+                    <span className="font-medium text-pk-ink">✓ {formData.name}</span>
+                  </div>
+                  {formData.child_name ? (
+                    <div className="flex items-center justify-between">
+                      <span className="text-pk-sub">Alumno</span>
+                      <span className="font-medium text-pk-ink">✓ {formData.child_name}</span>
+                    </div>
+                  ) : null}
+                  {formData.birth_date && childAge ? (
+                    <div className="flex items-center justify-between">
+                      <span className="text-pk-sub">Edad</span>
+                      <span className="font-medium text-pk-ink">✓ {childAge} años</span>
+                    </div>
+                  ) : null}
+                  {formData.class_modality ? (
+                    <div className="flex items-center justify-between">
+                      <span className="text-pk-sub">Sede</span>
+                      <span className="font-medium text-pk-ink">
+                        ✓ {formData.class_modality === 'llanogrande' ? 'Llanogrande' : 'Domicilio'}
+                      </span>
+                    </div>
+                  ) : null}
+                  {formData.neighborhood ? (
+                    <div className="flex items-center justify-between">
+                      <span className="text-pk-sub">Barrio</span>
+                      <span className="font-medium text-pk-ink">✓ {formData.neighborhood}</span>
+                    </div>
+                  ) : null}
+                  <div className="flex items-center justify-between">
+                    <span className="text-pk-sub">Teléfono</span>
+                    <span className="font-medium text-pk-ink">✓ {formData.phone}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-pk-sub">Correo</span>
+                    <span className="font-medium text-pk-ink">✓ {formData.email}</span>
+                  </div>
+                </div>
+                <p className="text-xs text-pk-sub">Todo correcto</p>
               </div>
             ) : null}
 
