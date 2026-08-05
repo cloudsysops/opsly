@@ -6,16 +6,25 @@
 
 import { PESKIDS_WHATSAPP_INTAKE_PREFILL } from '@/lib/peskids-intake-messages';
 
-const DEFAULT_WHATSAPP_E164 = '573000000000';
-const DEFAULT_WHATSAPP_DISPLAY = '+57 300 000 0000';
+/** Public catalog numbers (also in apps/peskids/.env.example) — not secrets. */
+const DEFAULT_WHATSAPP_E164 = '573054702600';
+const DEFAULT_WHATSAPP_DISPLAY = '+57 305 470 2600';
+/** Domicilios line — must NOT fall back to sede when env/build-args are missing. */
+const DEFAULT_DOMICILIO_E164 = '573054790273';
+const DEFAULT_DOMICILIO_DISPLAY = '+57 305 479 0273';
+const DEFAULT_LLANOGRANDE_E164 = DEFAULT_WHATSAPP_E164;
+const DEFAULT_LLANOGRANDE_DISPLAY = DEFAULT_WHATSAPP_DISPLAY;
 
 export type PeskidsWhatsAppChannel = 'default' | 'llanogrande' | 'domicilio';
 
 /** Solo dígitos E.164 sin + (ej. 573001234567). */
-export function normalizeWhatsAppE164(raw: string | undefined): string {
-  if (!raw?.trim()) return DEFAULT_WHATSAPP_E164;
+export function normalizeWhatsAppE164(
+  raw: string | undefined,
+  fallback: string = DEFAULT_WHATSAPP_E164
+): string {
+  if (!raw?.trim()) return fallback;
   const digits = raw.replace(/\D/g, '');
-  if (digits.length < 10) return DEFAULT_WHATSAPP_E164;
+  if (digits.length < 10) return fallback;
   return digits;
 }
 
@@ -25,7 +34,7 @@ function envWhatsApp(
   fallbackE164: string,
   fallbackDisplay: string
 ): { e164: string; display: string } {
-  const e164 = normalizeWhatsAppE164(process.env[e164Key] || fallbackE164);
+  const e164 = normalizeWhatsAppE164(process.env[e164Key] || fallbackE164, fallbackE164);
   const display = process.env[displayKey]?.trim() || fallbackDisplay;
   return { e164, display };
 }
@@ -41,22 +50,20 @@ function resolveDefaultChannel(): { e164: string; display: string } {
 }
 
 function resolveLlanograndeChannel(): { e164: string; display: string } {
-  const fallback = resolveDefaultChannel();
   return envWhatsApp(
     'NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_E164',
     'NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_DISPLAY',
-    fallback.e164,
-    fallback.display
+    DEFAULT_LLANOGRANDE_E164,
+    DEFAULT_LLANOGRANDE_DISPLAY
   );
 }
 
 function resolveDomicilioChannel(): { e164: string; display: string } {
-  const fallback = resolveDefaultChannel();
   return envWhatsApp(
     'NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_E164',
     'NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_DISPLAY',
-    fallback.e164,
-    fallback.display
+    DEFAULT_DOMICILIO_E164,
+    DEFAULT_DOMICILIO_DISPLAY
   );
 }
 

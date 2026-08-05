@@ -4,7 +4,11 @@ import { useState, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
-import { buildPostLeadWhatsAppPrefill, writePeskidsLeadSession } from '@/lib/peskids-lead-session'
+import {
+  buildPostLeadWhatsAppPrefill,
+  writePeskidsLeadSession,
+  type PostLeadWhatsAppPrefillOptions,
+} from '@/lib/peskids-lead-session'
 import {
   PESKIDS_COMPANY_KINDS,
   PESKIDS_LEAD_TYPES,
@@ -118,6 +122,10 @@ export function LeadCaptureForm({
 }: LeadCaptureFormProps): React.ReactElement {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [submittedLeadId, setSubmittedLeadId] = useState<string | null>(null)
+  const [submittedPrefill, setSubmittedPrefill] = useState<PostLeadWhatsAppPrefillOptions | null>(
+    null
+  )
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [submitted, setSubmitted] = useState(false)
@@ -286,6 +294,14 @@ export function LeadCaptureForm({
         throw new Error(`Lead API failed: ${apiResponse.status}`)
       }
 
+      const apiBody = (await apiResponse.json()) as {
+        lead_id?: string
+        id?: string
+        referral_link?: string
+        referral_code?: string
+      }
+      const leadId = (apiBody.lead_id ?? apiBody.id)?.trim() || ''
+
       void fetch(
         process.env.NEXT_PUBLIC_N8N_LEAD_WEBHOOK || 'https://www.peskids.com/webhooks/lead-capture',
         {
@@ -294,6 +310,7 @@ export function LeadCaptureForm({
           body: JSON.stringify({
             ...formParsed.data,
             full_name: formParsed.data.name,
+            lead_id: leadId || undefined,
             source,
             campaign: campaign ?? null,
           }),
@@ -307,14 +324,39 @@ export function LeadCaptureForm({
           ? formData.class_modality
           : null
 
-      writePeskidsLeadSession(formData.name, {
+      const parsedFamily = formParsed.data as {
+        child_name?: string
+        neighborhood?: string
+        grade_interested?: string
+        company_name?: string
+      }
+
+      const waPrefillOptions = {
         class_modality: modality,
         lead_type: leadType,
-      })
+        lead_id: leadId || null,
+        email: formParsed.data.email,
+        phone: formParsed.data.phone,
+        child_name: parsedFamily.child_name ?? null,
+        neighborhood: parsedFamily.neighborhood ?? null,
+        grade_interested: parsedFamily.grade_interested ?? null,
+        company_name: parsedFamily.company_name ?? null,
+      }
+
+      writePeskidsLeadSession(formData.name, waPrefillOptions)
+      setSubmittedLeadId(leadId || null)
+      setSubmittedPrefill(waPrefillOptions)
       setSubmitted(true)
 
       const thanksUrl = new URL('/thanks', window.location.origin)
       if (modality) thanksUrl.searchParams.set('modality', modality)
+      if (leadId) thanksUrl.searchParams.set('lead_id', leadId)
+      if (apiBody.referral_link) {
+        thanksUrl.searchParams.set('referral_link', apiBody.referral_link)
+      }
+      if (apiBody.referral_code) {
+        thanksUrl.searchParams.set('referral_code', apiBody.referral_code)
+      }
       window.setTimeout(() => {
         setFormData(emptyForm(defaultReferralSource))
         router.push(`${thanksUrl.pathname}${thanksUrl.search}`)
@@ -348,8 +390,10 @@ export function LeadCaptureForm({
             <WhatsAppLink
               modality={isLlanogrande || isDomicilio ? modality : undefined}
               prefill={buildPostLeadWhatsAppPrefill(formData.name, {
+                ...(submittedPrefill ?? {}),
                 class_modality: isLlanogrande || isDomicilio ? modality : undefined,
                 lead_type: formData.lead_type as PeskidsLeadType,
+                lead_id: submittedLeadId ?? submittedPrefill?.lead_id,
               })}
               label={
                 modalityLabel

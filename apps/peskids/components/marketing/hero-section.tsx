@@ -1,9 +1,8 @@
 import Link from 'next/link'
 import { Instagram } from 'lucide-react'
-import { PeskidsBrush, WiggleLine } from '@/components/brand/peskids-logo'
+import { WiggleLine } from '@/components/brand/peskids-logo'
 import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
 import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config'
-import { peskidsColorTokens } from '@/lib/tokens'
 
 const instagramButtonClass =
   'inline-flex h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] px-6 text-sm font-bold text-white shadow-sm transition hover:opacity-95'
@@ -18,18 +17,14 @@ export function HeroSection(): React.ReactElement {
           Cupos abiertos
         </span>
 
-        <h1 className="mt-5 text-5xl font-bold leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-[5.2rem]">
+        <h1 className="mt-5 text-5xl font-extrabold leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-[5.2rem]">
           Aprenden.
           <br />
           Se divierten.
           <br />
           Somos{' '}
-          <PeskidsBrush color={peskidsColorTokens.primary.teal} size={56} tilt={-3} className="sm:text-[4.5rem]">
-            Pes
-          </PeskidsBrush>
-          <PeskidsBrush color={peskidsColorTokens.secondary.orange} size={56} tilt={-3} className="sm:text-[4.5rem]">
-            kids
-          </PeskidsBrush>
+          <span className="text-[#2DB7B0]">Pes</span>
+          <span className="text-[#FF5A1F]">kids</span>
           <span className="text-white">.</span>
         </h1>
 
