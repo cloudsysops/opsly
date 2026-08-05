@@ -252,7 +252,15 @@
     "@types/react-dom": "^19.2.3",
     "peskids": {
       "@types/react": "19.2.14",
-      "@types/react-dom": "19.2.3"
+      "@types/react-dom": "19.2.3",
+      "glob": {
+        "brace-expansion": "5.0.9"
+      }
+    },
+    "@intcloudsysops/cloudops-portal": {
+      "glob": {
+        "brace-expansion": "5.0.9"
+      }
     },
     "websocket-driver": "^0.7.5",
     "@auth/core": "0.41.3",
