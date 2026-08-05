@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-08-05T13:05:19.345Z",
+  "generated_at": "2026-08-05T17:01:32.718Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -4035,6 +4035,78 @@
         "updates"
       ],
       "size_bytes": 4826
+    },
+    {
+      "path": "apps/peskids/test-results/release2-classic-form-qa-R-4c00a--007-success-screen-content-chromium/error-context.md",
+      "title": "Instructions",
+      "keywords": [
+        "context",
+        "error",
+        "instructions",
+        "markdown",
+        "opsly"
+      ],
+      "size_bytes": 1338
+    },
+    {
+      "path": "apps/peskids/test-results/release2-classic-form-qa-R-6793d--008-cupos-abiertos-visible-chromium/error-context.md",
+      "title": "Instructions",
+      "keywords": [
+        "context",
+        "error",
+        "instructions",
+        "markdown",
+        "opsly"
+      ],
+      "size_bytes": 1341
+    },
+    {
+      "path": "apps/peskids/test-results/release2-classic-form-qa-R-8392d-dation-004-email-validation-chromium/error-context.md",
+      "title": "Instructions",
+      "keywords": [
+        "context",
+        "error",
+        "instructions",
+        "markdown",
+        "opsly"
+      ],
+      "size_bytes": 1333
+    },
+    {
+      "path": "apps/peskids/test-results/release2-classic-form-qa-R-b1637-re-001-herocard-not-visible-chromium/error-context.md",
+      "title": "Instructions",
+      "keywords": [
+        "context",
+        "error",
+        "instructions",
+        "markdown",
+        "opsly"
+      ],
+      "size_bytes": 1335
+    },
+    {
+      "path": "apps/peskids/test-results/release2-classic-form-qa-R-e92aa-017-all-form-fields-present-chromium/error-context.md",
+      "title": "Instructions",
+      "keywords": [
+        "context",
+        "error",
+        "instructions",
+        "markdown",
+        "opsly"
+      ],
+      "size_bytes": 1344
+    },
+    {
+      "path": "apps/peskids/test-results/release2-classic-form-qa-R-f0fd0-ealth-013-no-console-errors-chromium/error-context.md",
+      "title": "Instructions",
+      "keywords": [
+        "context",
+        "error",
+        "instructions",
+        "markdown",
+        "opsly"
+      ],
+      "size_bytes": 1329
     },
     {
       "path": "apps/task-orchestrator/README.md",
@@ -89379,6 +89451,12 @@
       "apps/peskids/CLAUDE.md",
       "apps/peskids/DEPLOYMENT.md",
       "apps/peskids/docs/BRAND-GUIDELINES.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-4c00a--007-success-screen-content-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-f0fd0-ealth-013-no-console-errors-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-6793d--008-cupos-abiertos-visible-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-8392d-dation-004-email-validation-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-b1637-re-001-herocard-not-visible-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-e92aa-017-all-form-fields-present-chromium/error-context.md",
       "apps/admin/INVITATIONS_UI.md",
       "apps/orchestrator/src/meta/README.md",
       "apps/orchestrator/README.md",
@@ -91975,6 +92053,12 @@
       "apps/peskids/CLAUDE.md",
       "apps/peskids/DEPLOYMENT.md",
       "apps/peskids/docs/BRAND-GUIDELINES.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-4c00a--007-success-screen-content-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-f0fd0-ealth-013-no-console-errors-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-6793d--008-cupos-abiertos-visible-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-8392d-dation-004-email-validation-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-b1637-re-001-herocard-not-visible-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-e92aa-017-all-form-fields-present-chromium/error-context.md",
       "apps/admin/INVITATIONS_UI.md",
       "apps/orchestrator/src/meta/README.md",
       "apps/orchestrator/README.md",
@@ -109291,6 +109375,12 @@
       "AGENTS.md",
       "tools/productivity-starter/DEMO-WALKTHROUGH.md",
       "lib/workflow/README.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-4c00a--007-success-screen-content-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-f0fd0-ealth-013-no-console-errors-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-6793d--008-cupos-abiertos-visible-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-8392d-dation-004-email-validation-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-b1637-re-001-herocard-not-visible-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-e92aa-017-all-form-fields-present-chromium/error-context.md",
       "apps/experimental/context-builder-v2-archive/src/design/architecture.md",
       "apps/experimental/context-builder-v2-archive/README.md",
       "vendor/agency-agents/integrations/qwen/agents/salesforce-architect.md",
@@ -116850,6 +116940,12 @@
       "lib/api/GOVERNANCE.md",
       "lib/errors/README.md",
       "lib/errors/GOVERNANCE.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-4c00a--007-success-screen-content-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-f0fd0-ealth-013-no-console-errors-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-6793d--008-cupos-abiertos-visible-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-8392d-dation-004-email-validation-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-b1637-re-001-herocard-not-visible-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-e92aa-017-all-form-fields-present-chromium/error-context.md",
       "vendor/agency-agents/integrations/qwen/agents/accounts-payable-agent.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/accounts-payable-agent/SKILL.md",
       "vendor/agency-agents/integrations/kimi/accounts-payable-agent/system.md",
@@ -125125,6 +125221,12 @@
     "instructions": [
       "packages/skills/vendor/agent-skills/idea-refine/SKILL.md",
       ".github/copilot-instructions.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-4c00a--007-success-screen-content-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-f0fd0-ealth-013-no-console-errors-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-6793d--008-cupos-abiertos-visible-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-8392d-dation-004-email-validation-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-b1637-re-001-herocard-not-visible-chromium/error-context.md",
+      "apps/peskids/test-results/release2-classic-form-qa-R-e92aa-017-all-form-fields-present-chromium/error-context.md",
       "docs/.obsidian/PLUGINS-TO-INSTALL.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
       "docs/tenants/peskids/GHL-WORKFLOWS.md",
@@ -169153,6 +169255,12 @@
     "apps/peskids/DEPLOYMENT.md",
     "apps/peskids/docs/BRAND-GUIDELINES.md",
     "apps/peskids/README.md",
+    "apps/peskids/test-results/release2-classic-form-qa-R-4c00a--007-success-screen-content-chromium/error-context.md",
+    "apps/peskids/test-results/release2-classic-form-qa-R-6793d--008-cupos-abiertos-visible-chromium/error-context.md",
+    "apps/peskids/test-results/release2-classic-form-qa-R-8392d-dation-004-email-validation-chromium/error-context.md",
+    "apps/peskids/test-results/release2-classic-form-qa-R-b1637-re-001-herocard-not-visible-chromium/error-context.md",
+    "apps/peskids/test-results/release2-classic-form-qa-R-e92aa-017-all-form-fields-present-chromium/error-context.md",
+    "apps/peskids/test-results/release2-classic-form-qa-R-f0fd0-ealth-013-no-console-errors-chromium/error-context.md",
     "apps/task-orchestrator/README.md",
     "apps/web/blog/2026-04-26-opsly-para-agencias.md",
     "config/blueprints/academy/README.md",
