@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-08-05T13:01:03.266Z",
-  "totalFiles": 832,
+  "lastIndexed": "2026-08-05T13:05:17.790Z",
+  "totalFiles": 833,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -674,6 +674,7 @@
     "runbooks/OPERATIONS-HANDBOOK.md",
     "runbooks/OPSLY-OPENCLAW-STARTUP.md",
     "runbooks/PANINI-LAB-GOLIVE.md",
+    "runbooks/PESKIDS-CDN-CACHE.md",
     "runbooks/PRODUCTION-CHANGE-WINDOW.md",
     "runbooks/PRODUCTION-DEPLOY.md",
     "runbooks/PRODUCTION-SECURITY-BASELINE.md",

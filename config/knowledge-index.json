@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-08-05T13:01:08.807Z",
+  "generated_at": "2026-08-05T13:05:19.345Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -24550,6 +24550,38 @@
       "size_bytes": 5690
     },
     {
+      "path": "docs/runbooks/PESKIDS-CDN-CACHE.md",
+      "title": "Peskids — CDN / caché (Cloudflare + Next)",
+      "keywords": [
+        "actions",
+        "aun",
+        "automatico",
+        "cache",
+        "capas",
+        "cdn",
+        "cloudflare",
+        "deploy",
+        "enlaces",
+        "fija",
+        "github",
+        "manual",
+        "markdown",
+        "next",
+        "objetivo",
+        "opsly",
+        "peskids",
+        "post",
+        "purge",
+        "relacionado",
+        "relacionados",
+        "requerido",
+        "secret",
+        "tarea",
+        "viejo"
+      ],
+      "size_bytes": 2597
+    },
+    {
       "path": "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
       "title": "Ventana de cambios en producción (noche)",
       "keywords": [
@@ -24653,7 +24685,7 @@
         "relacionados",
         "runbooks"
       ],
-      "size_bytes": 1385
+      "size_bytes": 1486
     },
     {
       "path": "docs/runbooks/SECRET-ROTATION-AFTER-EXPOSURE.md",
@@ -88813,6 +88845,7 @@
       "docs/runbooks/IDE-OCTOPUS-AGENTS.md",
       "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md",
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md",
       "docs/runbooks/README.md",
       "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
@@ -90984,6 +91017,7 @@
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
       "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md",
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md",
       "docs/runbooks/README.md",
       "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
@@ -93584,6 +93618,7 @@
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
       "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md",
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md",
       "docs/runbooks/README.md",
       "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
@@ -94561,6 +94596,7 @@
       "docs/runbooks/IDE-OCTOPUS-AGENTS.md",
       "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md",
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md",
       "docs/runbooks/README.md",
       "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
@@ -95924,6 +95960,7 @@
       "docs/obsidian/inbox/2026-05-22.md",
       "docs/legal/peskids/DPIA-2026.md",
       "docs/runbooks/VPS-MEMORY-CAPS.md",
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/TENANT-MONITORING.md",
       "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
       "docs/examples/email-templates/PESKIDS-EMAIL-TEMPLATES.md",
@@ -104080,6 +104117,7 @@
       "docs/README.md",
       "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/DEPLOY-GITHUB-ACTIONS.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
@@ -107175,6 +107213,7 @@
       "docs/design/OAR.md",
       "docs/obsidian/TAXONOMY.md",
       "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
       "docs/runbooks/AGENCY-DEVOPS-OS-DEMO.md",
       "docs/runbooks/KAFKA-AIRFLOW-BOOTSTRAP.md",
@@ -107737,6 +107776,7 @@
     "cache": [
       "packages/skills/user/opsly-llm/SKILL.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/iac-docker.md",
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/00-architecture/LLM-GATEWAY-WORKPLAN.md",
       "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
       "docs/01-development/TECHNICAL-DEBT.md",
@@ -110426,6 +110466,7 @@
       "docs/ops/issue-bankruptcy-2026-05-03/quick-wins.md",
       "docs/ops/workflows-index.md",
       "docs/ops/workflows-audit.md",
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/DEPLOY-GITHUB-ACTIONS.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
       "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
@@ -112415,6 +112456,7 @@
     ],
     "tarea": [
       "packages/skills/user/opsly-autonomous/SKILL.md",
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/01-development/SEMANA-6-PLAN.md",
       "docs/qa/BACKLOG-IA-PROMPT.md",
       "docs/03-agents/AGENTS-GLOBAL-CONTEXT.md",
@@ -127095,6 +127137,7 @@
       "docs/obsidian/sources/archive/2026-04-21/jhyx0v1z9vu6lvvqnqog10m8tv1eewytitmmsofa.md",
       "docs/obsidian/sources/archive/2026-04-21/ecatma-Planning_and_Zoning_Board_Meeting_9_16_24.md",
       "docs/obsidian/sources/archive/2026-04-21/lrhenfvaovhaled7lamamtt7zpt70uxo5ysjftoj.md",
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/DEPLOY-GITHUB-ACTIONS.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
       "docs/00-architecture/VPS-CLEANUP-WEBHOOK-CONTRACT.md",
@@ -127778,6 +127821,7 @@
       "docs/04-operations/COST-MONITORING-GUIDE.md",
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/FIX-TYPECHECK-BLOCKER.md",
       "docs/00-architecture/VPS-CLEANUP-WEBHOOK-CONTRACT.md",
       "docs/01-development/NEXT-STEPS.md",
@@ -127963,6 +128007,7 @@
     ],
     "automatico": [
       ".cursor/prompts/legalvial-phase2b-automation.md",
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
       "docs/runbooks/PRODUCTION-DEPLOY.md",
       "docs/04-infrastructure/RUNBOOK-AI-LOCAL-FIRST.md",
@@ -129464,6 +129509,7 @@
       "docs/runbooks/e2e-hybrid-write.md",
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
       "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md",
       "docs/runbooks/DEPLOY-GITHUB-ACTIONS.md",
       "docs/runbooks/MIGRATION-CHECKLIST.md",
@@ -134569,6 +134615,7 @@
       ".n8n/3-webhooks/github-webhook.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/secrets-patterns.md",
       "lib/security/README.md",
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/SECRET-ROTATION-AFTER-EXPOSURE.md",
       "docs/01-development/GITHUB-SETTINGS.md",
       "docs/04-infrastructure/BILLING-FLUSH-VERCEL.md",
@@ -138670,6 +138717,7 @@
     "cloudflare": [
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/deployment-patterns.md",
       "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
       "docs/04-infrastructure/CLOUDFLARE-PROXY-ACTIVATION.md",
       "docs/04-infrastructure/DOMAIN-CUTOVER-OP-SLY.md",
@@ -155976,6 +156024,7 @@
       "docs/infrastructure/PESKIDS-AGENT-AUTONOMOUS-DEPLOYMENT.md",
       "docs/.obsidian/PLUGINS-TO-INSTALL.md",
       "docs/runbooks/e2e-hybrid-write.md",
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/DEPLOY-GITHUB-ACTIONS.md",
       "docs/runbooks/TENANT-MONITORING.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
@@ -162644,6 +162693,50 @@
       "docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md",
       "docs/tenants/onboarding-prompts/DEPLOYMENT-VALIDATION.md"
     ],
+    "aun": [
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
+      "docs/04-infrastructure/VPS-SSH-WORKER-NODES.md",
+      "docs/04-infrastructure/PLAN-ORCHESTRATOR-WORKER.md",
+      "docs/02-tools/TOKEN-SYSTEM-GUIDE.md"
+    ],
+    "capas": [
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
+      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
+      "docs/01-development/LAYERS-SANDBOX-QA-PROD.md",
+      "docs/01-development/RETENTION-POLICY.md",
+      "docs/01-development/MODULARITY-CONTRACT.md",
+      "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/02-tools/OBSIDIAN-RESEARCH-BRAIN.md",
+      "docs/adr/ADR-029-infrastructure-layers-shared-vs-tenant.md",
+      "docs/tenants/peskids/FRANCHISES.md",
+      "docs/blueprints/opsly-operational-blueprint/REFERENCE-ARCHITECTURE.md"
+    ],
+    "cdn": [
+      "docs/runbooks/PESKIDS-CDN-CACHE.md"
+    ],
+    "fija": [
+      "docs/runbooks/PESKIDS-CDN-CACHE.md"
+    ],
+    "purge": [
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
+      "docs/tenants/peskids/PURGE-DEMO-DATA.md"
+    ],
+    "relacionado": [
+      "docs/runbooks/PESKIDS-CDN-CACHE.md",
+      "docs/runbooks/TENANT-MONITORING.md",
+      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
+      "docs/01-development/DOCUMENTATION-LIFECYCLE.md",
+      "docs/01-development/DESIGN-REFERENCES.md",
+      "docs/adr/ADR-015-hermes-orchestrator-architecture.md",
+      "docs/tenants/peskids/WACRM-CHANNEL.md",
+      "docs/brain/modules/peskids.md"
+    ],
+    "requerido": [
+      "docs/runbooks/PESKIDS-CDN-CACHE.md"
+    ],
+    "viejo": [
+      "docs/runbooks/PESKIDS-CDN-CACHE.md"
+    ],
     "softlaunch": [
       "docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md"
     ],
@@ -162879,15 +162972,6 @@
     "otro": [
       "docs/runbooks/TENANT-MONITORING.md",
       "docs/00-architecture/LLM-GATEWAY.md"
-    ],
-    "relacionado": [
-      "docs/runbooks/TENANT-MONITORING.md",
-      "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
-      "docs/01-development/DOCUMENTATION-LIFECYCLE.md",
-      "docs/01-development/DESIGN-REFERENCES.md",
-      "docs/adr/ADR-015-hermes-orchestrator-architecture.md",
-      "docs/tenants/peskids/WACRM-CHANNEL.md",
-      "docs/brain/modules/peskids.md"
     ],
     "sudo": [
       "docs/runbooks/TENANT-MONITORING.md",
@@ -163254,17 +163338,6 @@
       "docs/03-agents/FIRST-OPENCLAW-AGENTS-MAC2011.md",
       "docs/adr/ADR-017-worker-teams-billing-roadmap.md",
       "docs/adr/ADR-011-event-driven-orchestrator.md"
-    ],
-    "capas": [
-      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
-      "docs/01-development/LAYERS-SANDBOX-QA-PROD.md",
-      "docs/01-development/RETENTION-POLICY.md",
-      "docs/01-development/MODULARITY-CONTRACT.md",
-      "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
-      "docs/02-tools/OBSIDIAN-RESEARCH-BRAIN.md",
-      "docs/adr/ADR-029-infrastructure-layers-shared-vs-tenant.md",
-      "docs/tenants/peskids/FRANCHISES.md",
-      "docs/blueprints/opsly-operational-blueprint/REFERENCE-ARCHITECTURE.md"
     ],
     "primer": [
       "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
@@ -165586,11 +165659,6 @@
     "flush": [
       "docs/04-infrastructure/BILLING-FLUSH-VERCEL.md"
     ],
-    "aun": [
-      "docs/04-infrastructure/VPS-SSH-WORKER-NODES.md",
-      "docs/04-infrastructure/PLAN-ORCHESTRATOR-WORKER.md",
-      "docs/02-tools/TOKEN-SYSTEM-GUIDE.md"
-    ],
     "desplegada": [
       "docs/04-infrastructure/VPS-SSH-WORKER-NODES.md"
     ],
@@ -167597,9 +167665,6 @@
       "docs/tenants/peskids/PURGE-DEMO-DATA.md"
     ],
     "limpiar": [
-      "docs/tenants/peskids/PURGE-DEMO-DATA.md"
-    ],
-    "purge": [
       "docs/tenants/peskids/PURGE-DEMO-DATA.md"
     ],
     "seeds": [
@@ -169765,6 +169830,7 @@
     "docs/runbooks/OPERATIONS-HANDBOOK.md",
     "docs/runbooks/OPSLY-OPENCLAW-STARTUP.md",
     "docs/runbooks/PANINI-LAB-GOLIVE.md",
+    "docs/runbooks/PESKIDS-CDN-CACHE.md",
     "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
     "docs/runbooks/PRODUCTION-DEPLOY.md",
     "docs/runbooks/PRODUCTION-SECURITY-BASELINE.md",

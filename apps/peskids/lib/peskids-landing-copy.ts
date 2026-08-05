@@ -22,7 +22,10 @@ export const PESKIDS_RESERVATION_BULLETS = [
 export const PESKIDS_FORM_CARD_TITLE = 'Formulario de solicitud';
 
 export const PESKIDS_FORM_CARD_DESCRIPTION =
-  'Responde estas preguntas para guardar tus datos y direccionarte a la línea de atención correspondiente: sede Llanogrande o clases a domicilio. Al finalizar, podrás continuar la conversación directamente por WhatsApp.';
+  'Estas preguntas nos ayudan a recomendar la mejor sede, modalidad y profesor para tu familia.\n\nSolo te tomará 1 minuto.';
+
+export const PESKIDS_FORM_QUESTIONS_CONTEXT =
+  'Estas preguntas nos ayudan a recomendar la mejor sede, modalidad y profesor para tu familia.';
 
 /** Primary CTA — submits form. */
 export const PESKIDS_FORM_SUBMIT_LABEL = 'Enviar solicitud';
@@ -30,15 +33,15 @@ export const PESKIDS_FORM_SUBMIT_LABEL = 'Enviar solicitud';
 /** Post-form handoff only — not shown before lead capture. */
 export const PESKIDS_WHATSAPP_CTA_LABEL = 'Continuar por WhatsApp';
 
-export const PESKIDS_FORM_SUCCESS_TITLE = '¡Gracias, recibimos tu solicitud!';
+export const PESKIDS_FORM_SUCCESS_TITLE = '🎉 ¡Ya casi terminamos!';
 
 export const PESKIDS_FORM_SUCCESS_DETAIL =
-  'Tu solicitud fue registrada. Continúa por WhatsApp con el equipo de atención correspondiente.';
+  'Tu información quedó registrada.\n\nAhora continúa con uno de nuestros asesores.';
 
-export const PESKIDS_FORM_SUCCESS_RESPONSE_TIME = '¿Qué sigue?\nAbre WhatsApp para continuar con atención personalizada.';
+export const PESKIDS_FORM_SUCCESS_RESPONSE_TIME = 'Tiempo promedio de respuesta: 5–10 minutos';
 
 export const PESKIDS_CONSENT_TREATMENT =
-  'Autorizo a Peskids para tratar mis datos personales y, cuando aplique, los del menor bajo mi responsabilidad, con el fin de atender esta solicitud de contacto y matrícula, conforme a su Política de Privacidad.';
+  'Autorizo a Peskids para tratar mis datos personales y, cuando aplique, los del menor bajo mi responsabilidad, con el fin de atender esta solicitud de información y contacto, conforme a su Política de Privacidad.';
 
 export const PESKIDS_CONSENT_MARKETING =
   'Acepto recibir información sobre programas, novedades y promociones de Peskids por WhatsApp o correo electrónico. Puedo cancelar esta autorización en cualquier momento.';
@@ -48,7 +51,7 @@ export const PESKIDS_CONSENT_PHOTOS_VIDEOS =
 
 /** Instagram entry — same offer, channel-specific intro only. */
 export const PESKIDS_INSTAGRAM_LANDING_INTRO =
-  'Desde Instagram: responde el chat para guardar tus datos y te direccionamos a la línea de atención correspondiente.';
+  'Desde Instagram: responde estas preguntas y te conectaremos con el asesor de tu sede.';
 
 /** Anchor id for the interactive admissions chat on public landings. */
 export const PESKIDS_CHAT_SECTION_ANCHOR = 'contacto';
