@@ -13,12 +13,12 @@ export function PeskidsLogo({ size = 96, className }: PeskidsLogoProps): React.R
     <div
       className={cn('relative inline-block shrink-0', className)}
       style={{
-        width: size * 1.9,
+        width: size * 1.15,
         height: size,
       }}
     >
       <Image
-        src="/peskids-logo-official.png"
+        src="/peskids-logo.svg"
         alt="Peskids"
         fill
         priority
