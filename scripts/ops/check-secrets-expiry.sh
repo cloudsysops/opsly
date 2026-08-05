@@ -71,8 +71,16 @@ for item in data.get("secrets", []):
     created = parse_d(item.get("created_on"))
     last_rev = parse_d(item.get("last_reviewed_on"))
     review_every = item.get("review_every_days")
+    cadence = item.get("renewal_cadence_days")
     impact = item.get("impact_if_expired") or ""
     runbook = item.get("rotation_runbook") or "docs/runbooks/SECRETS-KEY-MANAGEMENT.md"
+    account_label = item.get("account_label") or item.get("provider") or ""
+    account_login = item.get("account_login") or ""
+    renew_url = item.get("renew_url") or ""
+
+    # If expires_on missing but created_on + cadence exist, derive expiry.
+    if expires is None and created is not None and isinstance(cadence, int) and cadence > 0:
+        expires = created + timedelta(days=int(cadence))
 
     due_date = None
     kind = None
@@ -97,6 +105,10 @@ for item in data.get("secrets", []):
         "days": delta,
         "impact": impact,
         "runbook": runbook,
+        "account_label": account_label,
+        "account_login": account_login,
+        "renew_url": renew_url,
+        "renewal_cadence_days": cadence,
     }
     if delta < 0:
         expired.append(payload)
@@ -125,18 +137,31 @@ fi
 MESSAGE="$(
   python3 - <<PY
 import json
+
+def fmt(item, prefix):
+    cadence = item.get("renewal_cadence_days")
+    cadence_s = f"cada {cadence}d" if cadence else "ver inventario"
+    account = item.get("account_label") or "?"
+    login = item.get("account_login") or "?"
+    url = item.get("renew_url") or item.get("runbook") or ""
+    return (
+        f"{prefix} {item['name']} · due {item['due']} ({item['days']}d) · cadencia {cadence_s}\\n"
+        f"  Abrir cuenta: {account}\\n"
+        f"  Login: {login}\\n"
+        f"  Renovar en: {url}\\n"
+        f"  Impacto: {item.get('impact','')} · {item.get('runbook','')}"
+    )
+
 d = json.load(open("$TMP_JSON"))
 lines = []
 for e in d.get("expired", []):
-    lines.append(
-        f"EXPIRED {e['name']} ({e['kind']}) due {e['due']} ({e['days']}d) — {e.get('impact','')} → {e.get('runbook','')}"
-    )
+    lines.append(fmt(e, "EXPIRED"))
 for a in d.get("alerts", []):
     label = "EXPIRES" if a["kind"] == "expires" else "REVIEW"
-    lines.append(
-        f"{label} {a['name']} in {a['days']}d (warn≤{a['warn_hit']}d) due {a['due']} — {a.get('impact','')} → {a.get('runbook','')}"
-    )
-print("\n".join(lines))
+    warn = a.get("warn_hit")
+    prefix = f"{label} (warn≤{warn}d)" if warn is not None else label
+    lines.append(fmt(a, prefix))
+print("\n\n".join(lines))
 PY
 )"
 

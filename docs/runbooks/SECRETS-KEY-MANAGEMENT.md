@@ -16,12 +16,23 @@ Objetivo: saber **dónde vive cada key operativa**, **cómo rotarla sin pegar va
 
 | Artefacto | Rol |
 |-----------|-----|
-| [`config/secrets-lifecycle.json`](../../config/secrets-lifecycle.json) | Inventario: nombre, stores, `expires_on` / `review_every_days`, `warn_days` |
+| [`config/secrets-lifecycle.json`](../../config/secrets-lifecycle.json) | Inventario: nombre, stores, **cuenta/login**, URL de renovación, cadencia, `expires_on` / `warn_days` |
 | Este runbook | Procedimiento de rotación por key |
 | [`SECRET-ROTATION-AFTER-EXPOSURE.md`](SECRET-ROTATION-AFTER-EXPOSURE.md) | Incidente: key filtrada en chat/logs |
 | [`DEPLOY-GITHUB-ACTIONS.md`](DEPLOY-GITHUB-ACTIONS.md) | Tailscale + SSH en Actions |
 
-**Nunca** guardar el valor del secreto en git, issues, Discord ni este JSON. Solo metadatos (fechas, impacto, runbook).
+**Nunca** guardar el valor del secreto en git, issues, Discord ni este JSON. Solo metadatos (fechas, cuenta, impacto, runbook).
+
+### Campos de cuenta (obligatorios en cada entrada)
+
+| Campo | Ejemplo Tailscale |
+|-------|-------------------|
+| `account_label` | `Tailscale · tailnet Opsly` |
+| `account_login` | `cboteros (opsly-admin) — misma cuenta que administra el tailnet` |
+| `renew_url` | `https://login.tailscale.com/admin/settings/keys` |
+| `renewal_cadence_days` | `90` (Tailscale auth keys: renovar cada **90 días**) |
+
+El aviso Discord incluye **Abrir cuenta / Login / Renovar en** para no adivinar qué consola abrir.
 
 ## Avisos anticipados
 
@@ -66,9 +77,11 @@ Si la key se pegó en chat: tratar como exposición → [`SECRET-ROTATION-AFTER-
 
 ### Tailscale authkey {#tailscale-authkey}
 
+**Cadencia:** cada **90 días** (`renewal_cadence_days: 90`).  
+**Cuenta:** la del admin del tailnet Opsly (`account_login` en el inventario — hoy: **cboteros / opsly-admin**).  
 **Stores:** GitHub Actions secret `TAILSCALE_AUTHKEY` (repo **y** environment `production`).
 
-1. [Tailscale Admin → Keys](https://login.tailscale.com/admin/settings/keys): crear auth key (reusable + ephemeral recomendado para GHA). Anotar fecha de expiración de la UI.
+1. Entra con esa cuenta a [Tailscale Admin → Keys](https://login.tailscale.com/admin/settings/keys): crear auth key (reusable + ephemeral recomendado para GHA). Caducidad UI ≈ 90 días; anotar `expires_on`.
 2. Repo:
    ```bash
    printf '%s' 'tskey-…' | gh secret set TAILSCALE_AUTHKEY --repo cloudsysops/opsly
@@ -120,10 +133,11 @@ Ver [`SECRET-ROTATION-AFTER-EXPOSURE.md`](SECRET-ROTATION-AFTER-EXPOSURE.md) y d
 ## Checklist al onboardear una key nueva
 
 - [ ] Entrada en `config/secrets-lifecycle.json` (id, stores, impacto, `warn_days`)
-- [ ] `expires_on` **o** `review_every_days` + `last_reviewed_on`
+- [ ] `account_label` + `account_login` + `renew_url` + `renewal_cadence_days`
+- [ ] `expires_on` **o** `created_on` + cadencia **o** `review_every_days` + `last_reviewed_on`
 - [ ] Runbook section o enlace
 - [ ] Stores duplicados documentados (repo vs `production` vs Doppler vs VPS)
-- [ ] `--dry-run` del checker pasa / lista el aviso esperado cerca de la fecha
+- [ ] `--dry-run` del checker pasa / lista el aviso esperado cerca de la fecha (incluye cuenta)
 
 ## Relacionado
 
