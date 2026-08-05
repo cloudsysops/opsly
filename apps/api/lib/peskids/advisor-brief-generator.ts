@@ -1,17 +1,29 @@
 import { Anthropic } from '@anthropic-ai/sdk';
-import type { Database } from '@intcloudsysops/supabase/types';
-
-type Lead = Database['public']['Tables']['leads']['Row'];
+import type { PeskidsLeadRow } from './repository';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-export async function generateAdvisorBrief(lead: Lead): Promise<string | null> {
+function metadataString(metadata: Record<string, unknown> | null, key: string): string | null {
+  if (metadata === null) {
+    return null;
+  }
+  const value = metadata[key];
+  if (typeof value === 'string' && value.length > 0) {
+    return value;
+  }
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return String(value);
+  }
+  return null;
+}
+
+export async function generateAdvisorBrief(lead: PeskidsLeadRow): Promise<string | null> {
   try {
     const { metadata, lead_type, full_name, child_name, email, phone, neighborhood, referral_source } = lead;
-    const childAge = metadata?.child_age_years || null;
-    const city = metadata?.city || null;
+    const childAge = metadataString(metadata, 'child_age_years');
+    const city = metadataString(metadata, 'city');
 
     const prompt = `Eres un asistente especializado en educación y natación infantil. Analiza estos datos de un cliente potencial y genera un BRIEF contextuado para el asesor de Peskids.
 

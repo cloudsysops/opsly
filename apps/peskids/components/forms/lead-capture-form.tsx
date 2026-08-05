@@ -20,6 +20,9 @@ import {
   PESKIDS_FORM_CARD_DESCRIPTION,
   PESKIDS_FORM_CARD_TITLE,
   PESKIDS_FORM_SUBMIT_LABEL,
+  PESKIDS_FORM_SUCCESS_DETAIL,
+  PESKIDS_FORM_SUCCESS_TITLE,
+  PESKIDS_WHATSAPP_CTA_LABEL,
 } from '@/lib/peskids-landing-copy'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -124,7 +127,6 @@ export function LeadCaptureForm({
     () => searchParams.get('ref')?.trim().toUpperCase() ?? '',
     [searchParams]
   )
-
 
   const setField = (name: keyof FormState, value: string): void => {
     setFormData((prev) => ({ ...prev, [name]: value }))
@@ -324,14 +326,11 @@ export function LeadCaptureForm({
       <div className="flex min-h-screen items-center justify-center bg-pk-snow p-4">
         <Card className="w-full max-w-md border-pk-border/50 shadow-card">
           <CardHeader className="bg-pk-bg">
-            <CardTitle className="text-2xl text-pk-ink">¡Gracias, recibimos tu solicitud!</CardTitle>
+            <CardTitle className="text-2xl text-pk-ink">{PESKIDS_FORM_SUCCESS_TITLE}</CardTitle>
           </CardHeader>
           <CardContent className="pt-6 space-y-6">
             <p className="text-sm text-pk-ink">
-              Tu solicitud fue registrada para {modalityText}.
-            </p>
-            <p className="text-sm text-pk-ink">
-              Continúa por WhatsApp con el equipo de atención correspondiente.
+              {PESKIDS_FORM_SUCCESS_DETAIL} ({modalityText}).
             </p>
             <WhatsAppLink
               modality={modality as 'llanogrande' | 'domicilio' | undefined}
@@ -339,7 +338,7 @@ export function LeadCaptureForm({
                 class_modality: modality as 'llanogrande' | 'domicilio' | undefined,
                 lead_type: formData.lead_type as PeskidsLeadType,
               })}
-              label={`Continuar por WhatsApp — ${modalityLabel}`}
+              label={`${PESKIDS_WHATSAPP_CTA_LABEL} — ${modalityLabel}`}
               variant="button"
               showIcon
               className="w-full"
