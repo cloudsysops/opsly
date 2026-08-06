@@ -1,6 +1,6 @@
 'use client'
 
-import { Copy, Send } from 'lucide-react'
+import { Copy, Mail, Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PESKIDS_CONTACT } from '@/lib/contact-channels'
 import { useState } from 'react'
@@ -64,6 +64,7 @@ function buildSummaryLines({
 export function WhatsAppMessagePreview(props: WhatsAppMessagePreviewProps): React.ReactElement {
   const { clientName, clientEmail, clientPhone, leadType, classModality, leadId, onCopied } = props
   const [copied, setCopied] = useState(false)
+  const sendByEmail = leadType === 'teacher_applicant' || leadType === 'company'
 
   const peskidsUrl = process.env.NEXT_PUBLIC_PESKIDS_URL || 'https://www.peskids.com'
   const adminLink = `${peskidsUrl}/admin/leads/${leadId}`
@@ -77,9 +78,9 @@ ${buildSummaryLines(props)}
 📋 Ver mi solicitud: ${adminLink}`
 
   const whatsappNumber =
-    leadType === 'family' && classModality === 'domicilio'
+    classModality === 'domicilio'
       ? PESKIDS_CONTACT.whatsapp.domicilio.e164
-      : leadType === 'family' && classModality === 'llanogrande'
+      : classModality === 'llanogrande'
         ? PESKIDS_CONTACT.whatsapp.llanogrande.e164
         : PESKIDS_CONTACT.whatsapp.e164
 
@@ -100,11 +101,21 @@ ${buildSummaryLines(props)}
     window.open(whatsappUrl, '_blank')
   }
 
+  const handleEmail = () => {
+    const subject = encodeURIComponent(
+      leadType === 'teacher_applicant'
+        ? `Nueva solicitud de profesor: ${clientName}`
+        : `Nueva alianza empresarial: ${clientName}`
+    )
+    const body = encodeURIComponent(message)
+    window.location.href = `mailto:${PESKIDS_CONTACT.email}?subject=${subject}&body=${body}`
+  }
+
   return (
     <div className="space-y-4">
       <div className="rounded-xl border border-pk-primary/20 bg-pk-primary/5 p-4">
         <p className="text-xs font-semibold uppercase tracking-wider text-pk-primary/70 mb-3">
-          📱 Mensaje para enviar a soporte:
+          {sendByEmail ? '📧 Mensaje para enviar a soporte:' : '📱 Mensaje para enviar a soporte:'}
         </p>
         <div className="bg-white rounded-lg p-4 text-sm text-pk-ink font-mono whitespace-pre-wrap break-words max-h-64 overflow-y-auto border border-pk-border">
           {message}
@@ -120,14 +131,25 @@ ${buildSummaryLines(props)}
           <Copy className="h-4 w-4" />
           {copied ? 'Copiado!' : 'Copiar'}
         </Button>
-        <Button
-          onClick={handleWhatsApp}
-          variant="primary"
-          className="gap-2"
-        >
-          <Send className="h-4 w-4" />
-          Enviar por WhatsApp
-        </Button>
+        {sendByEmail ? (
+          <Button
+            onClick={handleEmail}
+            variant="primary"
+            className="gap-2"
+          >
+            <Mail className="h-4 w-4" />
+            Enviar por Email
+          </Button>
+        ) : (
+          <Button
+            onClick={handleWhatsApp}
+            variant="primary"
+            className="gap-2"
+          >
+            <Send className="h-4 w-4" />
+            Enviar por WhatsApp
+          </Button>
+        )}
       </div>
 
       <div className="rounded-lg bg-pk-surface/50 px-3 py-2 text-center text-xs text-pk-sub">
