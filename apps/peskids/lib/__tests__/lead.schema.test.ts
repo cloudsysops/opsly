@@ -210,6 +210,7 @@ describe('toCreateLeadInput', () => {
       grade_interested: '9-12',
       lead_type: 'family',
       service_mode: 'llanogrande',
+      city: undefined,
       metadata: { intake_version: 'legacy-family-v1' },
     });
     expect(input.full_name).toBe('Carlos Ruiz');

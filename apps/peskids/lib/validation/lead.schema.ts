@@ -264,6 +264,7 @@ const legacyFamilySchema = z
     ...data,
     lead_type: 'family' as const,
     service_mode: data.class_modality as PeskidsServiceMode,
+    city: undefined as string | undefined,
     neighborhood:
       data.class_modality === 'llanogrande'
         ? data.neighborhood?.trim() || 'Llanogrande'
