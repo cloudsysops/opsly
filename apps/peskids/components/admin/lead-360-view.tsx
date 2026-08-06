@@ -23,6 +23,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn, formatRelativeTime } from '@/lib/utils';
 import { LeadEnrollForm } from '@/components/admin/lead-enroll-form'
+import { LeadQuickActions } from '@/components/admin/lead-quick-actions'
 import type { AdminLeadStatus } from '@/lib/validation/lead-admin.schema';
 
 type LeadRow = DashboardData['new_leads'][number];
@@ -330,9 +331,19 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
         )}
       </section>
 
+      {/* Quick Actions Panel */}
+      <LeadQuickActions
+        leadId={leadId}
+        currentStatus={lead.status}
+        busy={busy}
+        onBusyChange={setBusy}
+        onFeedback={setFeedback}
+        onCompleted={load}
+      />
+
       <Card accent="slate" className="border-pk-border">
         <CardHeader>
-          <CardTitle className="text-base">Acciones rápidas</CardTitle>
+          <CardTitle className="text-base">Acciones adicionales</CardTitle>
           <CardDescription>Contacto manual y actualización operativa.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
