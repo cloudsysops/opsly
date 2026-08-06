@@ -5,7 +5,6 @@ import { SiteFooter } from '@/components/layout/site-footer';
 import { WhatsAppLink } from '@/components/contact/whatsapp-link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ReferralLinkCard } from '@/components/referrals/referral-link-card';
 import { WhatsAppMessagePreview } from '@/components/forms';
 import {
   PESKIDS_FORM_SUCCESS_DETAIL,
@@ -17,8 +16,6 @@ import {
 } from '@/lib/peskids-landing-copy';
 
 type ThanksSearchParams = Promise<{
-  referral_link?: string;
-  referral_code?: string;
   modality?: string;
   lead_id?: string;
 }>;
@@ -51,8 +48,6 @@ export default async function ThanksPage({
   searchParams?: ThanksSearchParams;
 }): Promise<React.ReactElement> {
   const resolvedSearchParams = (await searchParams) ?? {};
-  const referralLink = resolvedSearchParams.referral_link?.trim() || '';
-  const referralCode = resolvedSearchParams.referral_code?.trim() || '';
   const modality = resolvedSearchParams.modality?.trim();
   const leadId = resolvedSearchParams.lead_id?.trim();
   const copy = thanksCopy(modality);
@@ -107,9 +102,6 @@ export default async function ThanksPage({
             <CardDescription className="text-base">{copy.detail}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 pb-8">
-            {referralLink && referralCode ? (
-              <ReferralLinkCard referralLink={referralLink} referralCode={referralCode} />
-            ) : null}
             {leadData && leadId ? (
               <WhatsAppMessagePreview
                 clientName={leadData.full_name}
