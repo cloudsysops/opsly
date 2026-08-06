@@ -39,7 +39,10 @@ describe('leadCaptureFormSchema', () => {
     });
     expect(parsed.neighborhood).toBe('Llanogrande');
     expect(parsed.service_mode).toBe('llanogrande');
-    expect(parsed.city).toBeUndefined();
+    expect(parsed.lead_type).toBe('family');
+    if (parsed.lead_type === 'family') {
+      expect(parsed.city).toBeUndefined();
+    }
     expect(parsed.child_name).toBe('Mateo López');
   });
 
@@ -83,10 +86,13 @@ describe('leadCaptureFormSchema', () => {
       city: 'Medellín',
       neighborhood: 'Envigado',
     });
-    expect(parsed.city).toBe('Medellín');
     expect(parsed.neighborhood).toBe('Envigado');
     expect(parsed.service_mode).toBe('domicilio');
-    expect(parsed.metadata).toMatchObject({ city: 'Medellín' });
+    expect(parsed.lead_type).toBe('family');
+    if (parsed.lead_type === 'family') {
+      expect(parsed.city).toBe('Medellín');
+      expect(parsed.metadata).toMatchObject({ city: 'Medellín' });
+    }
   });
 
   it('family requires phone', () => {
