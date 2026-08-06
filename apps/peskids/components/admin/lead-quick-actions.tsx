@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2, Check, Clock, X } from 'lucide-react';
+import { Loader2, Check, Clock, X, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -38,8 +38,16 @@ export function LeadQuickActions({
   const [holdMonth, setHoldMonth] = useState('');
 
   const canQuickAction = !['enrolled', 'active', 'renewal', 'archived'].includes(currentStatus);
+  const canEnroll = currentStatus === 'trial';
 
-  const handleQuickAction = async (action: 'mark_attended' | 'hold' | 'cancel') => {
+  const actionFeedbackLabel: Record<'mark_attended' | 'mark_enrolled' | 'hold' | 'cancel', string> = {
+    mark_attended: 'Atendido',
+    mark_enrolled: 'Matriculado',
+    hold: 'Puesto en espera',
+    cancel: 'Cancelado',
+  };
+
+  const handleQuickAction = async (action: 'mark_attended' | 'mark_enrolled' | 'hold' | 'cancel') => {
     onBusyChange(true);
     onFeedback('');
 
@@ -51,6 +59,8 @@ export function LeadQuickActions({
         body.scheduled_date = scheduledDate;
         body.scheduled_time = scheduledTime;
         body.reason = 'marked_attended_from_panel';
+      } else if (action === 'mark_enrolled') {
+        body.reason = 'marked_enrolled_from_panel';
       } else if (action === 'hold') {
         body.hold_until_month = holdMonth || 'próximo mes';
       }
@@ -68,7 +78,7 @@ export function LeadQuickActions({
       }
 
       setModalOpen('closed');
-      onFeedback(`✅ ${action === 'mark_attended' ? 'Atendido' : action === 'hold' ? 'Puesto en espera' : 'Cancelado'}`);
+      onFeedback(`✅ ${actionFeedbackLabel[action]}`);
       onCompleted();
     } catch (error) {
       onFeedback(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -88,16 +98,29 @@ export function LeadQuickActions({
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-3">
-              <Button
-                size="lg"
-                variant="primary"
-                disabled={busy}
-                onClick={() => setModalOpen('mark_attended')}
-                className="gap-2 flex-1 min-w-max"
-              >
-                <Check className="h-5 w-5" />
-                Marcar Atendido
-              </Button>
+              {canEnroll ? (
+                <Button
+                  size="lg"
+                  variant="primary"
+                  disabled={busy}
+                  onClick={() => void handleQuickAction('mark_enrolled')}
+                  className="gap-2 flex-1 min-w-max"
+                >
+                  {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : <GraduationCap className="h-5 w-5" />}
+                  Matricular
+                </Button>
+              ) : (
+                <Button
+                  size="lg"
+                  variant="primary"
+                  disabled={busy}
+                  onClick={() => setModalOpen('mark_attended')}
+                  className="gap-2 flex-1 min-w-max"
+                >
+                  <Check className="h-5 w-5" />
+                  Marcar Atendido
+                </Button>
+              )}
               <Button
                 size="lg"
                 variant="secondary"

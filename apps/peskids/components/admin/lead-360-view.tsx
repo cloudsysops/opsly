@@ -24,6 +24,7 @@ import { Label } from '@/components/ui/label';
 import { cn, formatRelativeTime } from '@/lib/utils';
 import { LeadEnrollForm } from '@/components/admin/lead-enroll-form'
 import { LeadQuickActions } from '@/components/admin/lead-quick-actions'
+import { SupportReplyTemplates } from '@/components/admin/support-reply-templates'
 import type { AdminLeadStatus } from '@/lib/validation/lead-admin.schema';
 
 type LeadRow = DashboardData['new_leads'][number];
@@ -339,6 +340,21 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
         onBusyChange={setBusy}
         onFeedback={setFeedback}
         onCompleted={load}
+      />
+
+      <SupportReplyTemplates
+        leadName={lead.name}
+        leadType={lead.lead_type}
+        status={lead.status}
+        latestTrial={
+          payload?.trials.length
+            ? {
+                teacherName: payload.trials[payload.trials.length - 1].teacher_name,
+                scheduledDate: payload.trials[payload.trials.length - 1].scheduled_date,
+                scheduledTime: payload.trials[payload.trials.length - 1].scheduled_time,
+              }
+            : null
+        }
       />
 
       <Card accent="slate" className="border-pk-border">

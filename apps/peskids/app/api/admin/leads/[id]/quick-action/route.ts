@@ -9,6 +9,13 @@ export const dynamic = 'force-dynamic';
 
 type RouteContext = { params: Promise<{ id: string }> };
 
+function quickActionMessage(action: string): string {
+  if (action === 'mark_attended') return 'marked as attended';
+  if (action === 'mark_enrolled') return 'marked as enrolled';
+  if (action === 'hold') return 'put on hold';
+  return 'cancelled';
+}
+
 export async function POST(request: NextRequest, context: RouteContext) {
   const requestId = resolveRequestId(request);
   const auth = await validateStaffSession();
@@ -54,7 +61,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       ok: true,
       action: parsed.data.action,
       leadId,
-      message: `Lead ${parsed.data.action === 'mark_attended' ? 'marked as attended' : parsed.data.action === 'hold' ? 'put on hold' : 'cancelled'}`,
+      message: `Lead ${quickActionMessage(parsed.data.action)}`,
       trial_class_id: result.trialClassId,
     });
   } catch (error) {

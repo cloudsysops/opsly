@@ -4,7 +4,7 @@ import { createTrialClass } from '@/lib/services/trial-class.service';
 
 type QuickActionInput = {
   leadId: string;
-  action: 'mark_attended' | 'hold' | 'cancel';
+  action: 'mark_attended' | 'mark_enrolled' | 'hold' | 'cancel';
   teacherName?: string;
   scheduledDate?: string;
   scheduledTime?: string;
@@ -118,6 +118,23 @@ export async function postPeskidsLeadQuickAction(
         newStatus: 'contacted',
         action: 'status_change',
         metadata: { reason: input.reason || 'marked_attended' },
+      });
+
+      return { ok: true };
+    }
+
+    if (input.action === 'mark_enrolled') {
+      const updated = await updateLeadForAdmin(input.leadId, slug, { status: 'enrolled' });
+      if (!updated) {
+        return { ok: false, error: 'Failed to update lead', status: 400 };
+      }
+
+      await recordAudit({
+        leadId: input.leadId,
+        oldStatus,
+        newStatus: 'enrolled',
+        action: 'status_change',
+        metadata: { reason: input.reason || 'marked_enrolled' },
       });
 
       return { ok: true };
