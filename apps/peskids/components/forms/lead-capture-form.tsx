@@ -154,6 +154,14 @@ export function LeadCaptureForm({
       if (formData.experience.trim().length < 10) return 'Describe tu experiencia en natación'
       if (!formData.availability.trim()) return 'Indica tu disponibilidad'
       if (!formData.work_zones.trim()) return 'Indica zonas donde puedes trabajar'
+      const cvInput = document.getElementById('teacher_cv') as HTMLInputElement | null
+      if (!cvInput?.files || cvInput.files.length === 0) {
+        return 'Adjunta tu hoja de vida (PDF o DOC)'
+      }
+      const videoInput = document.getElementById('teacher_swim_video') as HTMLInputElement | null
+      if (!videoInput?.files || videoInput.files.length === 0) {
+        return 'Adjunta un video nadando los 4 estilos de natación'
+      }
     } else if (formData.lead_type === 'company') {
       if (!formData.company_name.trim()) return 'Nombre de la institución requerido'
       if (formData.company_nit.trim().length < 4) return 'NIT requerido'
@@ -632,31 +640,34 @@ export function LeadCaptureForm({
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
                       <Label htmlFor="teacher_cv" className="text-sm font-medium text-pk-ink">
-                        Hoja de vida (PDF o DOC)
+                        Hoja de vida (PDF o DOC) *
                       </Label>
                       <input
                         id="teacher_cv"
                         type="file"
                         accept=".pdf,.doc,.docx,application/pdf"
                         data-peskids-attachment="curriculum"
+                        required
                         className="mt-2 block w-full text-sm text-pk-ink file:mr-3 file:rounded-pk file:border-0 file:bg-pk-primary/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-pk-primary"
                       />
                     </div>
                     <div>
                       <Label htmlFor="teacher_swim_video" className="text-sm font-medium text-pk-ink">
-                        Video nadando (MP4 o similar)
+                        Video nadando los 4 estilos (MP4 o similar) *
                       </Label>
                       <input
                         id="teacher_swim_video"
                         type="file"
                         accept="video/*,.mp4,.mov,.webm"
                         data-peskids-attachment="swimming_video"
+                        required
                         className="mt-2 block w-full text-sm text-pk-ink file:mr-3 file:rounded-pk file:border-0 file:bg-pk-primary/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-pk-primary"
                       />
                     </div>
                   </div>
                   <p className="text-xs text-pk-mutedText">
-                    Opcional por ahora: puedes adjuntar HV y un video donde se te vea nadando.
+                    Adjunta tu hoja de vida y un video nadando los 4 estilos de natación (libre,
+                    espalda, pecho y mariposa).
                   </p>
                 </div>
               )}
