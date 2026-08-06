@@ -153,9 +153,11 @@ export function LeadCaptureForm({
       if (!formData.class_modality) return 'Selecciona sede o domicilio'
       if (!formData.child_name.trim()) return 'Nombre del alumno requerido'
       if (!formData.birth_date) return 'Fecha de nacimiento del alumno requerida'
-      if (!formData.city.trim()) return 'Ciudad requerida'
-      if (formData.class_modality === 'domicilio' && !formData.neighborhood.trim()) {
-        return 'Barrio requerido para domicilios'
+      // Sede Llanogrande: no pedir ciudad ni barrio (barrio se fija en schema).
+      // Domicilio: ciudad + barrio obligatorios.
+      if (formData.class_modality === 'domicilio') {
+        if (!formData.city.trim()) return 'Ciudad requerida para domicilios'
+        if (!formData.neighborhood.trim()) return 'Barrio requerido para domicilios'
       }
     } else if (formData.lead_type === 'teacher_applicant') {
       if (formData.document_number.trim().length < 4) return 'Cédula requerida'
@@ -205,7 +207,8 @@ export function LeadCaptureForm({
           birth_date: formData.birth_date,
           document_type: formData.document_type || 'CC',
           document_number: formData.document_number || undefined,
-          city: formData.city || undefined,
+          city:
+            formData.class_modality === 'domicilio' ? formData.city || undefined : undefined,
           class_modality: formData.class_modality,
           neighborhood:
             formData.class_modality === 'llanogrande' ? undefined : formData.neighborhood,
@@ -461,7 +464,14 @@ export function LeadCaptureForm({
                           name="class_modality"
                           value="llanogrande"
                           checked={formData.class_modality === 'llanogrande'}
-                          onChange={(e) => setField('class_modality', e.target.value)}
+                          onChange={(e) => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              class_modality: e.target.value as FormState['class_modality'],
+                              city: '',
+                              neighborhood: '',
+                            }))
+                          }}
                           className="h-4 w-4"
                         />
                         <span className="text-sm text-pk-ink">Sede Llanogrande</span>
@@ -472,7 +482,9 @@ export function LeadCaptureForm({
                           name="class_modality"
                           value="domicilio"
                           checked={formData.class_modality === 'domicilio'}
-                          onChange={(e) => setField('class_modality', e.target.value)}
+                          onChange={(e) =>
+                            setField('class_modality', e.target.value)
+                          }
                           className="h-4 w-4"
                         />
                         <span className="text-sm text-pk-ink">Clases a domicilio</span>
@@ -526,49 +538,50 @@ export function LeadCaptureForm({
                           placeholder="Nombre"
                         />
                       </div>
-                      <div className="grid gap-4 md:grid-cols-2">
-                        <div>
-                          <Label htmlFor="document_number" className="text-sm font-medium text-pk-ink">
-                            Cédula
-                          </Label>
-                          <input
-                            id="document_number"
-                            type="text"
-                            value={formData.document_number}
-                            onChange={(e) => setField('document_number', e.target.value)}
-                            className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
-                            placeholder="Cédula"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="city" className="text-sm font-medium text-pk-ink">
-                            Ciudad *
-                          </Label>
-                          <input
-                            id="city"
-                            type="text"
-                            value={formData.city}
-                            onChange={(e) => setField('city', e.target.value)}
-                            className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
-                            placeholder="Ciudad"
-                          />
-                        </div>
+                      <div>
+                        <Label htmlFor="document_number" className="text-sm font-medium text-pk-ink">
+                          Cédula
+                        </Label>
+                        <input
+                          id="document_number"
+                          type="text"
+                          value={formData.document_number}
+                          onChange={(e) => setField('document_number', e.target.value)}
+                          className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                          placeholder="Cédula"
+                        />
                       </div>
-                      {formData.class_modality === 'domicilio' && (
-                        <div>
-                          <Label htmlFor="neighborhood" className="text-sm font-medium text-pk-ink">
-                            Barrio o zona *
-                          </Label>
-                          <input
-                            id="neighborhood"
-                            type="text"
-                            value={formData.neighborhood}
-                            onChange={(e) => setField('neighborhood', e.target.value)}
-                            className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
-                            placeholder="Barrio o zona"
-                          />
+                      {formData.class_modality === 'domicilio' ? (
+                        <div className="grid gap-4 md:grid-cols-2">
+                          <div>
+                            <Label htmlFor="city" className="text-sm font-medium text-pk-ink">
+                              Ciudad *
+                            </Label>
+                            <input
+                              id="city"
+                              type="text"
+                              value={formData.city}
+                              onChange={(e) => setField('city', e.target.value)}
+                              className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                              placeholder="Ciudad"
+                              autoComplete="address-level2"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="neighborhood" className="text-sm font-medium text-pk-ink">
+                              Barrio o zona *
+                            </Label>
+                            <input
+                              id="neighborhood"
+                              type="text"
+                              value={formData.neighborhood}
+                              onChange={(e) => setField('neighborhood', e.target.value)}
+                              className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                              placeholder="Barrio o zona"
+                            />
+                          </div>
                         </div>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 </>
