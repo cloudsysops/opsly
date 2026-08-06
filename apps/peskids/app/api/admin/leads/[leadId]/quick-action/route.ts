@@ -1,6 +1,10 @@
 import { NextRequest } from 'next/server';
 import { resolveRequestId, successJson, errorJson } from '@/lib/api-response';
+import { validateStaffSession } from '@/lib/staff-auth';
+import { isOperationalStaffUser } from '@/lib/staff-user';
 import { postPeskidsLeadQuickAction } from '@/lib/services/lead-quick-action.service';
+
+export const dynamic = 'force-dynamic';
 
 type QuickActionBody = {
   action: 'mark_attended' | 'hold' | 'cancel';
@@ -11,16 +15,21 @@ type QuickActionBody = {
   reason?: string;
 };
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { leadId?: string } }
-) {
-  const requestId = resolveRequestId(request);
-  const leadId = params.leadId;
+type RouteContext = { params: Promise<{ leadId: string }> };
 
-  if (!leadId) {
-    return errorJson(requestId, 'Missing leadId', 400);
+export async function POST(request: NextRequest, context: RouteContext) {
+  const requestId = resolveRequestId(request);
+  const auth = await validateStaffSession();
+
+  if (!auth.ok) {
+    return errorJson(requestId, auth.error, auth.status);
   }
+
+  if (auth.user && !isOperationalStaffUser(auth.user)) {
+    return errorJson(requestId, 'Forbidden', 403);
+  }
+
+  const { leadId } = await context.params;
 
   try {
     const body = (await request.json()) as QuickActionBody;
@@ -48,7 +57,6 @@ export async function POST(
       action: body.action,
       leadId,
       message: `Lead ${body.action === 'mark_attended' ? 'marked as attended' : body.action === 'hold' ? 'put on hold' : 'cancelled'}`,
-      student_id: result.studentId,
       trial_class_id: result.trialClassId,
     });
   } catch (error) {
