@@ -721,18 +721,33 @@ export function LeadCaptureForm({
                       </select>
                     </div>
                   </div>
-                  <div>
-                    <Label htmlFor="contact_role" className="text-sm font-medium text-pk-ink">
-                      Tu cargo
-                    </Label>
-                    <input
-                      id="contact_role"
-                      type="text"
-                      value={formData.contact_role}
-                      onChange={(e) => setField('contact_role', e.target.value)}
-                      className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
-                      placeholder="Director, Coordinador, etc."
-                    />
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label htmlFor="company_contact_name" className="text-sm font-medium text-pk-ink">
+                        Nombre de contacto *
+                      </Label>
+                      <input
+                        id="company_contact_name"
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => setField('name', e.target.value)}
+                        className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                        placeholder="Nombre completo"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="contact_role" className="text-sm font-medium text-pk-ink">
+                        Tu cargo
+                      </Label>
+                      <input
+                        id="contact_role"
+                        type="text"
+                        value={formData.contact_role}
+                        onChange={(e) => setField('contact_role', e.target.value)}
+                        className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                        placeholder="Director, Coordinador, etc."
+                      />
+                    </div>
                   </div>
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>

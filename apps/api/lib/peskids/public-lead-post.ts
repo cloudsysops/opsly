@@ -7,6 +7,7 @@ import { assertPeskidsTenantPublic } from './assert-tenant';
 import { PESKIDS_TEACHER_ATTACHMENTS_BUCKET, PESKIDS_TENANT_SLUG } from './constants';
 import { dispatchPeskidsHotLeadAlert } from './hot-lead-alert';
 import { dispatchPeskidsLeadConfirmationEmail } from './lead-confirmation-email';
+import { dispatchPeskidsStaffLeadNotification } from './staff-notification-email';
 import { peskidsInsertLead, peskidsUpdateLeadMetadata } from './repository';
 import { peskidsLeadBodySchema } from './schemas';
 import { generateAdvisorBrief } from './advisor-brief-generator';
@@ -125,6 +126,12 @@ export async function postPublicPeskidsLead(request: NextRequest): Promise<Respo
   });
   void dispatchPeskidsLeadConfirmationEmail(row).catch((error: unknown) => {
     console.warn('[peskids] lead confirmation email failed', {
+      lead_id: row.id,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  });
+  void dispatchPeskidsStaffLeadNotification(row).catch((error: unknown) => {
+    console.warn('[peskids] staff lead notification failed', {
       lead_id: row.id,
       error: error instanceof Error ? error.message : String(error),
     });
