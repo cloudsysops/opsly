@@ -7,7 +7,7 @@ import { postPeskidsLeadQuickAction } from '@/lib/services/lead-quick-action.ser
 
 export const dynamic = 'force-dynamic';
 
-type RouteContext = { params: Promise<{ leadId: string }> };
+type RouteContext = { params: Promise<{ id: string }> };
 
 export async function POST(request: NextRequest, context: RouteContext) {
   const requestId = resolveRequestId(request);
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     return errorJson(requestId, 'Forbidden', 403);
   }
 
-  const { leadId } = await context.params;
+  const { id: leadId } = await context.params;
 
   let body: unknown;
   try {
