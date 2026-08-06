@@ -20,7 +20,7 @@
     font-family="Nunito, Varela Round, Arial Rounded MT Bold, system-ui, sans-serif"
     font-size="92"
     font-weight="800"
-    fill="#FFFFFF"
+    fill="#0A0A0A"
     letter-spacing="-1"
   >Peskids</text>
   <circle cx="168" cy="232" r="7" fill="#54BFB1"/>
@@ -32,8 +32,8 @@
     font-size="28"
     font-weight="600"
     font-style="italic"
-    fill="#FFFFFF"
-    opacity="0.95"
+    fill="#0A0A0A"
+    opacity="0.92"
     letter-spacing="2"
   >nataci&#243;n</text>
 </svg>
