@@ -6,10 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import type { DashboardData } from '@/lib/types';
+
+type LeadRow = DashboardData['new_leads'][number];
 
 type LeadQuickActionsProps = {
   leadId: string;
-  currentStatus: string;
+  currentStatus: LeadRow['status'];
   busy: boolean;
   onBusyChange: (busy: boolean) => void;
   onFeedback: (message: string) => void;
@@ -34,7 +37,7 @@ export function LeadQuickActions({
   const [scheduledTime, setScheduledTime] = useState('14:00');
   const [holdMonth, setHoldMonth] = useState('');
 
-  const canQuickAction = !['enrolled', 'archived'].includes(currentStatus);
+  const canQuickAction = !['enrolled', 'active', 'renewal', 'archived'].includes(currentStatus);
 
   const handleQuickAction = async (action: 'mark_attended' | 'hold' | 'cancel') => {
     onBusyChange(true);
