@@ -12,6 +12,19 @@ interface PeskidsLead {
   [key: string]: unknown;
 }
 
+// Leads live in the shared api app's 'platform' schema (platform.peskids_leads),
+// not in this app's own 'public' schema — same escape hatch as
+// lib/services/lead-admin.service.ts's platformFrom(), since that schema's
+// tables aren't in this app's generated Database types.
+function platformLeadsFrom() {
+  const client = supabaseServer() as unknown as {
+    schema: (name: string) => {
+      from: (tableName: string) => ReturnType<ReturnType<typeof supabaseServer>['from']>;
+    };
+  };
+  return client.schema('platform').from('peskids_leads');
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -25,9 +38,7 @@ export async function GET(
       return errorJson(requestId, 'Lead ID is required', 400);
     }
 
-    const supabase = supabaseServer();
-    const { data, error } = await supabase
-      .from('peskids_leads')
+    const { data, error } = await platformLeadsFrom()
       .select('*')
       .eq('id', leadId)
       .eq('tenant_slug', 'peskids')
