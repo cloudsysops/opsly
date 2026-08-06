@@ -67,7 +67,7 @@ export function WhatsAppMessagePreview(props: WhatsAppMessagePreviewProps): Reac
   const sendByEmail = leadType === 'teacher_applicant' || leadType === 'company'
 
   const peskidsUrl = process.env.NEXT_PUBLIC_PESKIDS_URL || 'https://www.peskids.com'
-  const adminLink = `${peskidsUrl}/admin/leads/${leadId}`
+  const adminLink = `${peskidsUrl}/admin/interesados/${leadId}`
 
   const message = `Hola Peskids, mi nombre es ${clientName}.
 

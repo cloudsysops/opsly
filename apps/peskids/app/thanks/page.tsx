@@ -144,7 +144,7 @@ export default async function ThanksPage({
               <div className="rounded-xl border border-pk-primary/30 bg-pk-primary/10 px-4 py-3 text-left text-sm">
                 <p className="font-semibold text-pk-ink">📋 Ver tu solicitud en el panel:</p>
                 <Link
-                  href={`/admin/leads/${leadId}`}
+                  href={`/admin/interesados/${leadId}`}
                   className="mt-2 inline-flex items-center gap-2 font-medium text-pk-primary hover:underline"
                 >
                   Abrir en Peskids Admin →
