@@ -28,7 +28,8 @@ export async function GET(
 
         // Get webhook configs for this form
         const { data: configs, error: configError } = await supabase
-          .schema('peskids').from('webhook_configs')
+          .schema('peskids')
+          .from('webhook_configs')
           .select(
             'id, form_id, tenant_slug, webhook_url, is_active, failure_count, last_triggered_at, created_at, updated_at'
           )
@@ -83,7 +84,8 @@ export async function POST(
 
       // Verify form exists and belongs to tenant
       const { data: form, error: formError } = await supabase
-        .schema('peskids').from('forms')
+        .schema('peskids')
+        .from('forms')
         .select('id, form_id')
         .eq('form_id', formId)
         .eq('tenant_slug', tenantSlug)
@@ -98,7 +100,8 @@ export async function POST(
 
       // Create webhook config
       const { data: config, error: createError } = await supabase
-        .schema('peskids').from('webhook_configs')
+        .schema('peskids')
+        .from('webhook_configs')
         .insert({
           form_id: formId,
           tenant_slug: tenantSlug,
@@ -172,7 +175,8 @@ export async function DELETE(
 
       // Delete webhook config
       const { error: deleteError } = await supabase
-        .schema('peskids').from('webhook_configs')
+        .schema('peskids')
+        .from('webhook_configs')
         .delete()
         .eq('id', webhookId)
         .eq('tenant_slug', tenantSlug)

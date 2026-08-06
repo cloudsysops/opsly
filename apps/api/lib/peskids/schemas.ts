@@ -84,11 +84,10 @@ export const peskidsLeadBodySchema = z
     ...data,
     neighborhood:
       data.class_modality === 'llanogrande' && data.lead_type === 'family'
-        ? data.neighborhood ?? 'Llanogrande'
-        : data.neighborhood ?? 'Por confirmar',
+        ? (data.neighborhood ?? 'Llanogrande')
+        : (data.neighborhood ?? 'Por confirmar'),
     service_mode:
-      data.service_mode ??
-      (data.lead_type === 'company' ? 'institutional' : data.class_modality),
+      data.service_mode ?? (data.lead_type === 'company' ? 'institutional' : data.class_modality),
   }));
 
 export const peskidsFeedbackBodySchema = z.object({
