@@ -286,6 +286,18 @@ export function LeadCaptureForm({
         throw new Error(`Lead API failed: ${apiResponse.status}`)
       }
 
+      const apiResponseData = (await apiResponse.json()) as {
+        ok?: boolean
+        data?: {
+          lead_id?: string
+          referral_link?: string
+          referral_code?: string
+        }
+      }
+      const leadId = apiResponseData.data?.lead_id
+      const referralLink = apiResponseData.data?.referral_link
+      const referralCode = apiResponseData.data?.referral_code
+
       void fetch(
         process.env.NEXT_PUBLIC_N8N_LEAD_WEBHOOK || 'https://www.peskids.com/webhooks/lead-capture',
         {
@@ -296,6 +308,7 @@ export function LeadCaptureForm({
             full_name: formParsed.data.name,
             source,
             campaign: campaign ?? null,
+            lead_id: leadId,
           }),
         }
       ).catch((err) => {
@@ -314,6 +327,9 @@ export function LeadCaptureForm({
       setSubmitted(true)
 
       const thanksUrl = new URL('/thanks', window.location.origin)
+      if (leadId) thanksUrl.searchParams.set('lead_id', leadId)
+      if (referralLink) thanksUrl.searchParams.set('referral_link', referralLink)
+      if (referralCode) thanksUrl.searchParams.set('referral_code', referralCode)
       if (modality) thanksUrl.searchParams.set('modality', modality)
       window.setTimeout(() => {
         setFormData(emptyForm(defaultReferralSource))
