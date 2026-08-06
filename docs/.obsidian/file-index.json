@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-08-06T23:10:40.310Z",
-  "totalFiles": 833,
+  "lastIndexed": "2026-08-06T23:35:37.953Z",
+  "totalFiles": 835,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -475,6 +475,7 @@
     "brain/workflows/openclaw.md",
     "brain/workflows/README.md",
     "brain/workflows/shield.md",
+    "brand/peskids/BRAND.md",
     "database/DATABASE-OPERATIONS.md",
     "database/SUPABASE-MIGRATION-AUDIT.md",
     "demo/hackathon-demo.md",
@@ -747,6 +748,7 @@
     "tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
     "tenants/peskids/CLIENT-PITCH.md",
     "tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
+    "tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
     "tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
     "tenants/peskids/CUSTOM-DOMAIN-WWW.md",
     "tenants/peskids/DAILY-DIGEST-RUNBOOK.md",
