@@ -5,6 +5,11 @@ const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   outputFileTracingRoot: path.join(__dirname, '../..'),
+  // Sibling apps build in parallel via Turbo; their .next dirs (incl. transient
+  // cache lock files) must never be traced as dependencies of this app's routes.
+  outputFileTracingExcludes: {
+    '*': ['../*/.next/**'],
+  },
   transpilePackages: [
     '@intcloudsysops/capacity-alert',
     '@intcloudsysops/opsly-core',
