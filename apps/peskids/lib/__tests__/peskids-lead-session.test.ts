@@ -1,14 +1,36 @@
 import { describe, expect, it } from 'vitest';
 import {
+  buildAdminLeadValidationUrl,
   buildPostLeadWhatsAppPrefill,
   parsePeskidsLeadSession,
   PESKIDS_LEAD_SESSION_KEY,
 } from '@/lib/peskids-lead-session';
 
 describe('peskids-lead-session', () => {
-  it('buildPostLeadWhatsAppPrefill includes the lead name', () => {
-    expect(buildPostLeadWhatsAppPrefill('María García')).toContain('María García');
-    expect(buildPostLeadWhatsAppPrefill('María García')).toContain('formulario de solicitud');
+  it('buildPostLeadWhatsAppPrefill includes the lead name and form summary', () => {
+    const text = buildPostLeadWhatsAppPrefill('María García', {
+      lead_type: 'family',
+      class_modality: 'llanogrande',
+      email: 'maria@example.com',
+      phone: '3001234567',
+      child_name: 'Sofía',
+      grade_interested: 'K-5',
+      lead_id: 'lead-abc',
+      siteBaseUrl: 'https://www.peskids.com',
+    });
+    expect(text).toContain('María García');
+    expect(text).toContain('Hola Peskids, mi nombre es');
+    expect(text).toContain('maria@example.com');
+    expect(text).toContain('3001234567');
+    expect(text).toContain('Sofía');
+    expect(text).toContain('Sede Llanogrande');
+    expect(text).toContain('https://www.peskids.com/admin/interesados/lead-abc');
+  });
+
+  it('buildAdminLeadValidationUrl uses interesados path', () => {
+    expect(buildAdminLeadValidationUrl('uuid-1', 'https://www.peskids.com')).toBe(
+      'https://www.peskids.com/admin/interesados/uuid-1'
+    );
   });
 
   it('parsePeskidsLeadSession accepts valid JSON', () => {
@@ -18,6 +40,19 @@ describe('peskids-lead-session', () => {
       capturedAt: '2026-06-09T12:00:00.000Z',
       class_modality: null,
       lead_type: null,
+      lead_id: null,
+      email: null,
+      phone: null,
+      child_name: null,
+      neighborhood: null,
+      grade_interested: null,
+      company_name: null,
+      company_nit: null,
+      contact_role: null,
+      need: null,
+      experience: null,
+      availability: null,
+      work_zones: null,
     });
   });
 

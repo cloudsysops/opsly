@@ -13,6 +13,8 @@ interface PeskidsLead {
   company_name: string | null;
   company_nit: string | null;
   metadata: Record<string, unknown> | null;
+  child_name: string | null;
+  neighborhood: string | null;
   [key: string]: unknown;
 }
 
@@ -58,7 +60,7 @@ export async function GET(
       ok: true,
       data: {
         id: lead.id,
-        full_name: lead.full_name,
+        full_name: lead.full_name || String(lead.name ?? ''),
         email: lead.email,
         phone: lead.phone,
         lead_type: lead.lead_type,
@@ -67,6 +69,8 @@ export async function GET(
         company_name: lead.company_name,
         company_nit: lead.company_nit,
         metadata: lead.metadata,
+        child_name: typeof lead.child_name === 'string' ? lead.child_name : null,
+        neighborhood: typeof lead.neighborhood === 'string' ? lead.neighborhood : null,
       },
     });
   } catch (error) {

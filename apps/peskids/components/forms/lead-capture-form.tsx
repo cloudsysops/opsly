@@ -4,7 +4,11 @@ import { useState, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
-import { buildPostLeadWhatsAppPrefill, writePeskidsLeadSession } from '@/lib/peskids-lead-session'
+import {
+  buildPostLeadWhatsAppPrefill,
+  writePeskidsLeadSession,
+  type PostLeadWhatsAppPrefillOptions,
+} from '@/lib/peskids-lead-session'
 import {
   PESKIDS_COMPANY_KINDS,
   PESKIDS_LEAD_TYPES,
@@ -118,6 +122,10 @@ export function LeadCaptureForm({
 }: LeadCaptureFormProps): React.ReactElement {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [submittedLeadId, setSubmittedLeadId] = useState<string | null>(null)
+  const [submittedPrefill, setSubmittedPrefill] = useState<PostLeadWhatsAppPrefillOptions | null>(
+    null
+  )
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [submitted, setSubmitted] = useState(false)
@@ -145,9 +153,11 @@ export function LeadCaptureForm({
       if (!formData.class_modality) return 'Selecciona sede o domicilio'
       if (!formData.child_name.trim()) return 'Nombre del alumno requerido'
       if (!formData.birth_date) return 'Fecha de nacimiento del alumno requerida'
-      if (!formData.city.trim()) return 'Ciudad requerida'
-      if (formData.class_modality === 'domicilio' && !formData.neighborhood.trim()) {
-        return 'Barrio requerido para domicilios'
+      // Sede Llanogrande: no pedir ciudad ni barrio (barrio se fija en schema).
+      // Domicilio: ciudad + barrio obligatorios.
+      if (formData.class_modality === 'domicilio') {
+        if (!formData.city.trim()) return 'Ciudad requerida para domicilios'
+        if (!formData.neighborhood.trim()) return 'Barrio requerido para domicilios'
       }
     } else if (formData.lead_type === 'teacher_applicant') {
       if (formData.document_number.trim().length < 4) return 'Cédula requerida'
@@ -205,7 +215,8 @@ export function LeadCaptureForm({
           birth_date: formData.birth_date,
           document_type: formData.document_type || 'CC',
           document_number: formData.document_number || undefined,
-          city: formData.city || undefined,
+          city:
+            formData.class_modality === 'domicilio' ? formData.city || undefined : undefined,
           class_modality: formData.class_modality,
           neighborhood:
             formData.class_modality === 'llanogrande' ? undefined : formData.neighborhood,
@@ -294,13 +305,13 @@ export function LeadCaptureForm({
         throw new Error(`Lead API failed: ${apiResponse.status}`)
       }
 
-      const apiResponseData = (await apiResponse.json()) as {
+      const apiBody = (await apiResponse.json()) as {
         ok?: boolean
-        data?: {
-          lead_id?: string
-        }
+        data?: { lead_id?: string }
+        lead_id?: string
+        id?: string
       }
-      const leadId = apiResponseData.data?.lead_id
+      const leadId = (apiBody.data?.lead_id ?? apiBody.lead_id ?? apiBody.id)?.trim() || ''
 
       void fetch(
         process.env.NEXT_PUBLIC_N8N_LEAD_WEBHOOK || 'https://www.peskids.com/webhooks/lead-capture',
@@ -310,9 +321,9 @@ export function LeadCaptureForm({
           body: JSON.stringify({
             ...formParsed.data,
             full_name: formParsed.data.name,
+            lead_id: leadId || undefined,
             source,
             campaign: campaign ?? null,
-            lead_id: leadId,
           }),
         }
       ).catch((err) => {
@@ -324,10 +335,34 @@ export function LeadCaptureForm({
           ? formData.class_modality
           : null
 
-      writePeskidsLeadSession(formData.name, {
+      const parsedFamily = formParsed.data as {
+        child_name?: string
+        neighborhood?: string
+        grade_interested?: string
+        company_name?: string
+      }
+
+      const waPrefillOptions = {
         class_modality: modality,
         lead_type: leadType,
-      })
+        lead_id: leadId || null,
+        email: formParsed.data.email,
+        phone: formParsed.data.phone,
+        child_name: parsedFamily.child_name ?? null,
+        neighborhood: parsedFamily.neighborhood ?? null,
+        grade_interested: parsedFamily.grade_interested ?? null,
+        company_name: parsedFamily.company_name ?? null,
+        company_nit: leadType === 'company' ? formData.company_nit || null : null,
+        contact_role: leadType === 'company' ? formData.contact_role || formData.name : null,
+        need: leadType === 'company' ? formData.need || null : null,
+        experience: leadType === 'teacher_applicant' ? formData.experience || null : null,
+        availability: leadType === 'teacher_applicant' ? formData.availability || null : null,
+        work_zones: leadType === 'teacher_applicant' ? formData.work_zones || null : null,
+      }
+
+      writePeskidsLeadSession(formData.name, waPrefillOptions)
+      setSubmittedLeadId(leadId || null)
+      setSubmittedPrefill(waPrefillOptions)
       setSubmitted(true)
 
       const thanksUrl = new URL('/thanks', window.location.origin)
@@ -366,8 +401,10 @@ export function LeadCaptureForm({
             <WhatsAppLink
               modality={isLlanogrande || isDomicilio ? modality : undefined}
               prefill={buildPostLeadWhatsAppPrefill(formData.name, {
+                ...(submittedPrefill ?? {}),
                 class_modality: isLlanogrande || isDomicilio ? modality : undefined,
                 lead_type: formData.lead_type as PeskidsLeadType,
+                lead_id: submittedLeadId ?? submittedPrefill?.lead_id,
               })}
               label={
                 modalityLabel
@@ -435,7 +472,14 @@ export function LeadCaptureForm({
                           name="class_modality"
                           value="llanogrande"
                           checked={formData.class_modality === 'llanogrande'}
-                          onChange={(e) => setField('class_modality', e.target.value)}
+                          onChange={(e) => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              class_modality: e.target.value as FormState['class_modality'],
+                              city: '',
+                              neighborhood: '',
+                            }))
+                          }}
                           className="h-4 w-4"
                         />
                         <span className="text-sm text-pk-ink">Sede Llanogrande</span>
@@ -446,7 +490,9 @@ export function LeadCaptureForm({
                           name="class_modality"
                           value="domicilio"
                           checked={formData.class_modality === 'domicilio'}
-                          onChange={(e) => setField('class_modality', e.target.value)}
+                          onChange={(e) =>
+                            setField('class_modality', e.target.value)
+                          }
                           className="h-4 w-4"
                         />
                         <span className="text-sm text-pk-ink">Clases a domicilio</span>
@@ -500,49 +546,50 @@ export function LeadCaptureForm({
                           placeholder="Nombre"
                         />
                       </div>
-                      <div className="grid gap-4 md:grid-cols-2">
-                        <div>
-                          <Label htmlFor="document_number" className="text-sm font-medium text-pk-ink">
-                            Cédula
-                          </Label>
-                          <input
-                            id="document_number"
-                            type="text"
-                            value={formData.document_number}
-                            onChange={(e) => setField('document_number', e.target.value)}
-                            className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
-                            placeholder="Cédula"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="city" className="text-sm font-medium text-pk-ink">
-                            Ciudad *
-                          </Label>
-                          <input
-                            id="city"
-                            type="text"
-                            value={formData.city}
-                            onChange={(e) => setField('city', e.target.value)}
-                            className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
-                            placeholder="Ciudad"
-                          />
-                        </div>
+                      <div>
+                        <Label htmlFor="document_number" className="text-sm font-medium text-pk-ink">
+                          Cédula
+                        </Label>
+                        <input
+                          id="document_number"
+                          type="text"
+                          value={formData.document_number}
+                          onChange={(e) => setField('document_number', e.target.value)}
+                          className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                          placeholder="Cédula"
+                        />
                       </div>
-                      {formData.class_modality === 'domicilio' && (
-                        <div>
-                          <Label htmlFor="neighborhood" className="text-sm font-medium text-pk-ink">
-                            Barrio o zona *
-                          </Label>
-                          <input
-                            id="neighborhood"
-                            type="text"
-                            value={formData.neighborhood}
-                            onChange={(e) => setField('neighborhood', e.target.value)}
-                            className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
-                            placeholder="Barrio o zona"
-                          />
+                      {formData.class_modality === 'domicilio' ? (
+                        <div className="grid gap-4 md:grid-cols-2">
+                          <div>
+                            <Label htmlFor="city" className="text-sm font-medium text-pk-ink">
+                              Ciudad *
+                            </Label>
+                            <input
+                              id="city"
+                              type="text"
+                              value={formData.city}
+                              onChange={(e) => setField('city', e.target.value)}
+                              className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                              placeholder="Ciudad"
+                              autoComplete="address-level2"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="neighborhood" className="text-sm font-medium text-pk-ink">
+                              Barrio o zona *
+                            </Label>
+                            <input
+                              id="neighborhood"
+                              type="text"
+                              value={formData.neighborhood}
+                              onChange={(e) => setField('neighborhood', e.target.value)}
+                              className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                              placeholder="Barrio o zona"
+                            />
+                          </div>
                         </div>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 </>

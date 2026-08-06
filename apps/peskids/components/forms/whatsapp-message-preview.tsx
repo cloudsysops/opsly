@@ -3,6 +3,10 @@
 import { Copy, Mail, Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PESKIDS_CONTACT } from '@/lib/contact-channels'
+import {
+  buildAdminLeadValidationUrl,
+  buildPostLeadWhatsAppPrefill,
+} from '@/lib/peskids-lead-session'
 import { useState } from 'react'
 
 type PeskidsLeadType = 'family' | 'teacher_applicant' | 'company'
@@ -14,6 +18,8 @@ interface WhatsAppMessagePreviewProps {
   leadType: PeskidsLeadType
   gradeInterested: string
   classModality: 'llanogrande' | 'domicilio' | null
+  childName?: string | null
+  neighborhood?: string | null
   companyName: string | null
   companyNit: string | null
   metadata: Record<string, unknown> | null
@@ -26,56 +32,44 @@ function metadataString(metadata: Record<string, unknown> | null, key: string): 
   return typeof value === 'string' && value.trim().length > 0 ? value : null
 }
 
-function buildSummaryLines({
-  leadType,
-  gradeInterested,
-  classModality,
-  companyName,
-  companyNit,
-  metadata,
-}: WhatsAppMessagePreviewProps): string {
-  if (leadType === 'teacher_applicant') {
-    const experience = metadataString(metadata, 'experience')
-    const availability = metadataString(metadata, 'availability')
-    const workZones = metadataString(metadata, 'work_zones')
-    const lines = ['🏊 Interesado en trabajar como profesor']
-    if (experience) lines.push(`💼 Experiencia: ${experience}`)
-    if (availability) lines.push(`🕒 Disponibilidad: ${availability}`)
-    if (workZones) lines.push(`📍 Zonas: ${workZones}`)
-    return lines.join('\n')
-  }
-
-  if (leadType === 'company') {
-    const contactRole = metadataString(metadata, 'contact_role')
-    const need = metadataString(metadata, 'need')
-    const lines = [`🏢 Institución: ${companyName ?? 'No indicada'}`]
-    if (companyNit) lines.push(`🧾 NIT: ${companyNit}`)
-    if (contactRole) lines.push(`👔 Cargo: ${contactRole}`)
-    if (need) lines.push(`📝 Necesidad: ${need}`)
-    return lines.join('\n')
-  }
-
-  return [
-    `👧 Grado interesado: ${gradeInterested}`,
-    `🏊 Modalidad: ${classModality === 'llanogrande' ? 'Sede Llanogrande' : 'Clases a domicilio'}`,
-  ].join('\n')
-}
-
 export function WhatsAppMessagePreview(props: WhatsAppMessagePreviewProps): React.ReactElement {
-  const { clientName, clientEmail, clientPhone, leadType, classModality, leadId, onCopied } = props
+  const {
+    clientName,
+    clientEmail,
+    clientPhone,
+    leadType,
+    gradeInterested,
+    classModality,
+    childName,
+    neighborhood,
+    companyName,
+    companyNit,
+    metadata,
+    leadId,
+    onCopied,
+  } = props
   const [copied, setCopied] = useState(false)
   const sendByEmail = leadType === 'teacher_applicant' || leadType === 'company'
 
-  const peskidsUrl = process.env.NEXT_PUBLIC_PESKIDS_URL || 'https://www.peskids.com'
-  const adminLink = `${peskidsUrl}/admin/interesados/${leadId}`
+  const message = buildPostLeadWhatsAppPrefill(clientName, {
+    lead_type: leadType,
+    class_modality: classModality,
+    lead_id: leadId,
+    email: clientEmail,
+    phone: clientPhone,
+    grade_interested: gradeInterested,
+    child_name: childName,
+    neighborhood: neighborhood,
+    company_name: companyName,
+    company_nit: companyNit,
+    contact_role: metadataString(metadata, 'contact_role'),
+    need: metadataString(metadata, 'need'),
+    experience: metadataString(metadata, 'experience'),
+    availability: metadataString(metadata, 'availability'),
+    work_zones: metadataString(metadata, 'work_zones'),
+  })
 
-  const message = `Hola Peskids, mi nombre es ${clientName}.
-
-📧 Email: ${clientEmail}
-📞 Teléfono: ${clientPhone}
-${buildSummaryLines(props)}
-
-📋 Ver mi solicitud: ${adminLink}`
+  const adminLink = buildAdminLeadValidationUrl(leadId)
 
   const whatsappNumber =
     classModality === 'domicilio'
@@ -123,29 +117,17 @@ ${buildSummaryLines(props)}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <Button
-          onClick={handleCopy}
-          variant="secondary"
-          className="gap-2"
-        >
+        <Button onClick={handleCopy} variant="secondary" className="gap-2">
           <Copy className="h-4 w-4" />
           {copied ? 'Copiado!' : 'Copiar'}
         </Button>
         {sendByEmail ? (
-          <Button
-            onClick={handleEmail}
-            variant="primary"
-            className="gap-2"
-          >
+          <Button onClick={handleEmail} variant="primary" className="gap-2">
             <Mail className="h-4 w-4" />
             Enviar por Email
           </Button>
         ) : (
-          <Button
-            onClick={handleWhatsApp}
-            variant="primary"
-            className="gap-2"
-          >
+          <Button onClick={handleWhatsApp} variant="primary" className="gap-2">
             <Send className="h-4 w-4" />
             Enviar por WhatsApp
           </Button>
@@ -153,7 +135,8 @@ ${buildSummaryLines(props)}
       </div>
 
       <div className="rounded-lg bg-pk-surface/50 px-3 py-2 text-center text-xs text-pk-sub">
-        ✨ El soporte recibirá tu información completa + link para ver todos tus detalles
+        Soporte recibirá el resumen + link del lead:{' '}
+        <span className="break-all font-medium text-pk-ink">{adminLink}</span>
       </div>
     </div>
   )

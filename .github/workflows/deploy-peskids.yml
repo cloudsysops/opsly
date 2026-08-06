@@ -103,10 +103,14 @@ jobs:
             echo "display=${DISPLAY:-+57 300 000 0000}"
             echo "prefill=${PREFILL:-Hola Peskids 👋 Quiero info de matrícula.}"
             echo "contact_email=${CONTACT_EMAIL:-peskidsnatacion@gmail.com}"
+            # Never collapse domicilio → sede when GH secrets are missing.
             echo "llano_e164=${LLANO_E164:-${e164}}"
             echo "llano_display=${LLANO_DISPLAY:-+57 305 470 2600}"
-            echo "dom_e164=${DOM_E164:-${e164}}"
+            echo "dom_e164=${DOM_E164:-573054790273}"
             echo "dom_display=${DOM_DISPLAY:-+57 305 479 0273}"
+            if [ -z "${DOM_E164:-}" ]; then
+              echo "::warning::NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_E164 missing; using catalog domicilio default (sync from Doppler prd)"
+            fi
           } >> "$GITHUB_OUTPUT"
 
       - name: Build and push Peskids image
@@ -172,13 +176,10 @@ jobs:
 
       - name: Connect Tailscale for SSH
         if: env.TAILSCALE_AUTHKEY != ''
-        uses: tailscale/github-action@v2
+        uses: ./.github/actions/tailscale-connect
         with:
           authkey: ${{ env.TAILSCALE_AUTHKEY }}
-          version: 1.94.2
-          # Tailscale's .sha256 endpoint currently returns the bare hash.
-          # The v2 action expects a checksum value and appends the local filename.
-          sha256sum: c6f99a5d774c7783b56902188d69e9756fc3dddfb08ac6be4cb2585f3fecdc32
+          ping_host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST || '100.120.151.91' }}
 
       - name: Login GHCR on VPS and deploy Peskids
         uses: appleboy/ssh-action@v1.0.3

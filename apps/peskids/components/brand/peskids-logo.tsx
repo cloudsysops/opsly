@@ -2,69 +2,80 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { peskidsColorTokens } from '@/lib/tokens';
 
+/** Public brand mark — see docs/brand/peskids/BRAND.md */
+export const PESKIDS_LOGO_MARK_SRC = '/brand/logo-mark.svg';
+export const PESKIDS_LOGO_PNG_SRC = '/brand/logo-official.png';
+
 interface PeskidsLogoProps {
   size?: number;
   className?: string;
 }
 
-/** Official Peskids logo from brand identity */
+/** Logo circular oficial (4 colores + wordmark interno). */
 export function PeskidsLogo({ size = 96, className }: PeskidsLogoProps): React.ReactElement {
   return (
-    <div
-      className={cn('relative inline-block shrink-0', className)}
-      style={{
-        width: size * 1.15,
-        height: size,
-      }}
-    >
-      <Image
-        src="/peskids-logo.svg"
-        alt="Peskids"
-        fill
-        priority
-        className="object-contain"
-      />
-    </div>
+    <Image
+      src={PESKIDS_LOGO_PNG_SRC}
+      alt="Peskids natación"
+      width={size}
+      height={size}
+      className={cn('shrink-0 rounded-full object-contain', className)}
+      style={{ width: size, height: size }}
+      priority={size >= 64}
+    />
   );
 }
 
 interface PeskidsLockupProps {
   height?: number;
   color?: string;
-  tag?: string;
+  /** Optional external label; official PNG already includes “Peskids / natación”. */
+  tag?: string | null;
+  /**
+   * Extra wordmark beside the circle. Default false — the official mark already
+   * contains “Peskids”; duplicating it with Caveat Brush looked broken when fonts
+   * failed to load and read as double branding when they did.
+   */
+  showWordmark?: boolean;
   className?: string;
 }
 
 export function PeskidsLockup({
   height = 48,
   color = peskidsColorTokens.primary.blue,
-  tag = 'NATACIÓN · MEDELLÍN',
+  tag = null,
+  showWordmark = false,
   className,
 }: PeskidsLockupProps): React.ReactElement {
+  const showText = showWordmark || Boolean(tag);
+
   return (
-    <div className={cn('flex items-center', className)} style={{ gap: height * 0.3 }}>
+    <div className={cn('flex items-center', className)} style={{ gap: height * 0.28 }}>
       <PeskidsLogo size={height} />
-      <div className="flex flex-col leading-none">
-        <span
-          className="font-brush inline-block origin-left"
-          style={{
-            fontSize: height * 0.78,
-            color,
-            transform: 'rotate(-2deg)',
-            lineHeight: 0.9,
-          }}
-        >
-          Peskids
-        </span>
-        {tag ? (
-          <span
-            className="mt-1 font-sans font-bold uppercase opacity-55"
-            style={{ fontSize: height * 0.18, letterSpacing: '0.22em', color }}
-          >
-            {tag}
-          </span>
-        ) : null}
-      </div>
+      {showText ? (
+        <div className="flex flex-col leading-none">
+          {showWordmark ? (
+            <span
+              className="font-sans font-extrabold tracking-tight"
+              style={{
+                fontSize: height * 0.52,
+                color,
+                lineHeight: 0.95,
+              }}
+            >
+              Peskids
+            </span>
+          ) : null}
+          {tag ? (
+            <span
+              className="mt-1 font-sans font-bold uppercase opacity-55"
+              style={{ fontSize: height * 0.18, letterSpacing: '0.22em', color }}
+            >
+              {tag}
+            </span>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }

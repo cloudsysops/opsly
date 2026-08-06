@@ -126,29 +126,40 @@ const familySchema = z
     ...sharedContactFields,
   })
   .superRefine((data, ctx) => {
-    if (data.class_modality === 'domicilio' && !data.neighborhood) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['neighborhood'],
-        message: 'Indica el barrio o zona para clases a domicilio',
-      });
+    if (data.class_modality === 'domicilio') {
+      if (!data.city) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['city'],
+          message: 'Indica la ciudad para clases a domicilio',
+        });
+      }
+      if (!data.neighborhood) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['neighborhood'],
+          message: 'Indica el barrio o zona para clases a domicilio',
+        });
+      }
     }
   })
   .transform((data) => {
     const age = ageYearsFromBirthDate(data.birth_date);
     const grade = data.grade_interested ?? gradeFromAgeYears(age);
+    const isDomicilio = data.class_modality === 'domicilio';
+    const city = isDomicilio ? data.city : undefined;
     return {
       ...data,
       lead_type: 'family' as const,
       service_mode: data.class_modality as PeskidsServiceMode,
-      neighborhood:
-        data.class_modality === 'llanogrande' ? 'Llanogrande' : data.neighborhood!,
+      city,
+      neighborhood: isDomicilio ? data.neighborhood! : 'Llanogrande',
       grade_interested: grade,
       child_age_years: age,
       metadata: {
         intake_version: 'dynamic-intake-v1',
         child_age_years: age,
-        city: data.city ?? undefined,
+        ...(city ? { city } : {}),
       } as Record<string, unknown>,
     };
   });
@@ -253,6 +264,7 @@ const legacyFamilySchema = z
     ...data,
     lead_type: 'family' as const,
     service_mode: data.class_modality as PeskidsServiceMode,
+    city: undefined as string | undefined,
     neighborhood:
       data.class_modality === 'llanogrande'
         ? data.neighborhood?.trim() || 'Llanogrande'

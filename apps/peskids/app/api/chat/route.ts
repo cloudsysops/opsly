@@ -14,6 +14,13 @@ function buildHandoffWhatsApp(params: {
   parentName?: string;
   classModality?: 'llanogrande' | 'domicilio' | null;
   leadType?: 'family' | 'teacher_applicant' | 'company' | null;
+  leadId?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  childName?: string | null;
+  neighborhood?: string | null;
+  gradeInterested?: string | null;
+  companyName?: string | null;
 }): { url: string; label: string } | null {
   if (params.mode !== 'admissions') return null;
   const leadType = params.leadType ?? 'family';
@@ -25,6 +32,13 @@ function buildHandoffWhatsApp(params: {
     prefill: buildPostLeadWhatsAppPrefill(name, {
       class_modality: modality,
       lead_type: leadType,
+      lead_id: params.leadId,
+      email: params.email,
+      phone: params.phone,
+      child_name: params.childName,
+      neighborhood: params.neighborhood,
+      grade_interested: params.gradeInterested,
+      company_name: params.companyName,
     }),
   });
   const label =
@@ -99,9 +113,11 @@ export async function POST(req: NextRequest) {
     });
 
     let leadSaved = false;
+    let leadId: string | null = null;
     if (mode === 'admissions' && intake.stage === 'handoff') {
       const leadResult = await submitLeadFromIntake(intake.profile);
       leadSaved = leadResult.ok;
+      leadId = leadResult.leadId ?? null;
       if (!leadSaved) {
         console.error('Chat admissions lead persist failed', {
           request_id: requestId,
@@ -147,6 +163,13 @@ export async function POST(req: NextRequest) {
             parentName: intake.profile.parentName,
             classModality: intake.profile.classModality ?? null,
             leadType: intake.profile.applicantRole ?? 'family',
+            leadId,
+            email: intake.profile.email,
+            phone: intake.profile.phone,
+            childName: intake.profile.childName,
+            neighborhood: intake.profile.neighborhood,
+            gradeInterested: intake.profile.gradeInterested,
+            companyName: intake.profile.companyName,
           })
         : null;
 

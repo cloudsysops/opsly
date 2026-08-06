@@ -5,7 +5,7 @@ import { WhatsAppLink } from '@/components/contact/whatsapp-link';
 import { WhatsAppIcon } from '@/components/contact/whatsapp-icon';
 import { buildWhatsAppUrl, getWhatsAppContact, PESKIDS_CONTACT } from '@/lib/contact-channels';
 import {
-  buildPostLeadWhatsAppPrefill,
+  buildPostLeadWhatsAppPrefillFromSession,
   readPeskidsLeadSession,
   type PeskidsLeadSession,
 } from '@/lib/peskids-lead-session';
@@ -104,10 +104,7 @@ export function GatedWhatsAppLink({
         label={whatsappCtaLabel(session, label)}
         showIcon={showIcon}
         modality={session.class_modality}
-        prefill={buildPostLeadWhatsAppPrefill(session.name, {
-          class_modality: session.class_modality,
-          lead_type: session.lead_type,
-        })}
+        prefill={buildPostLeadWhatsAppPrefillFromSession(session)}
       />
     );
   }
@@ -137,10 +134,7 @@ export function openGatedWhatsAppOrForm(pathname: string | null): void {
   if (session?.name) {
     const url = buildWhatsAppUrl({
       modality: session.class_modality,
-      prefill: buildPostLeadWhatsAppPrefill(session.name, {
-        class_modality: session.class_modality,
-        lead_type: session.lead_type,
-      }),
+      prefill: buildPostLeadWhatsAppPrefillFromSession(session),
     });
     window.open(url, '_blank', 'noopener,noreferrer');
     return;

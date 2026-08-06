@@ -25,7 +25,7 @@ describe('leadCaptureFormSchema', () => {
     expect(parsed.referred_by_code).toBe('PK-ABC123');
   });
 
-  it('family llanogrande does not require manual neighborhood', () => {
+  it('family llanogrande does not require city or neighborhood', () => {
     const parsed = leadCaptureFormSchema.parse({
       lead_type: 'family',
       name: 'Ana López',
@@ -39,11 +39,15 @@ describe('leadCaptureFormSchema', () => {
     });
     expect(parsed.neighborhood).toBe('Llanogrande');
     expect(parsed.service_mode).toBe('llanogrande');
+    expect(parsed.lead_type).toBe('family');
+    if (parsed.lead_type === 'family') {
+      expect(parsed.city).toBeUndefined();
+    }
     expect(parsed.child_name).toBe('Mateo López');
   });
 
-  it('family domicilio requires neighborhood', () => {
-    const result = leadCaptureFormSchema.safeParse({
+  it('family domicilio requires city and neighborhood', () => {
+    const missingBoth = leadCaptureFormSchema.safeParse({
       lead_type: 'family',
       name: 'Ana López',
       email: 'ana@peskids.co',
@@ -53,10 +57,23 @@ describe('leadCaptureFormSchema', () => {
       document_number: '1234567890',
       class_modality: 'domicilio',
     });
-    expect(result.success).toBe(false);
+    expect(missingBoth.success).toBe(false);
+
+    const missingCity = leadCaptureFormSchema.safeParse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '3001112233',
+      child_name: 'Mateo López',
+      birth_date: '2018-05-10',
+      document_number: '1234567890',
+      class_modality: 'domicilio',
+      neighborhood: 'El Poblado',
+    });
+    expect(missingCity.success).toBe(false);
   });
 
-  it('family domicilio keeps provided neighborhood', () => {
+  it('family domicilio keeps provided city and neighborhood', () => {
     const parsed = leadCaptureFormSchema.parse({
       lead_type: 'family',
       name: 'Ana López',
@@ -66,10 +83,16 @@ describe('leadCaptureFormSchema', () => {
       birth_date: '2016-01-15',
       document_number: '987654321',
       class_modality: 'domicilio',
+      city: 'Medellín',
       neighborhood: 'Envigado',
     });
     expect(parsed.neighborhood).toBe('Envigado');
     expect(parsed.service_mode).toBe('domicilio');
+    expect(parsed.lead_type).toBe('family');
+    if (parsed.lead_type === 'family') {
+      expect(parsed.city).toBe('Medellín');
+      expect(parsed.metadata).toMatchObject({ city: 'Medellín' });
+    }
   });
 
   it('family requires phone', () => {
@@ -187,6 +210,7 @@ describe('toCreateLeadInput', () => {
       grade_interested: '9-12',
       lead_type: 'family',
       service_mode: 'llanogrande',
+      city: undefined,
       metadata: { intake_version: 'legacy-family-v1' },
     });
     expect(input.full_name).toBe('Carlos Ruiz');
