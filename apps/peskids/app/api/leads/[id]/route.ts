@@ -7,8 +7,12 @@ interface PeskidsLead {
   full_name: string;
   email: string;
   phone: string;
+  lead_type: string;
   grade_interested: string;
   class_modality: string | null;
+  company_name: string | null;
+  company_nit: string | null;
+  metadata: Record<string, unknown> | null;
   [key: string]: unknown;
 }
 
@@ -57,8 +61,12 @@ export async function GET(
         full_name: lead.full_name,
         email: lead.email,
         phone: lead.phone,
+        lead_type: lead.lead_type,
         grade_interested: lead.grade_interested,
         class_modality: lead.class_modality,
+        company_name: lead.company_name,
+        company_nit: lead.company_nit,
+        metadata: lead.metadata,
       },
     });
   } catch (error) {

@@ -5,44 +5,81 @@ import { Button } from '@/components/ui/button'
 import { PESKIDS_CONTACT } from '@/lib/contact-channels'
 import { useState } from 'react'
 
+type PeskidsLeadType = 'family' | 'teacher_applicant' | 'company'
+
 interface WhatsAppMessagePreviewProps {
   clientName: string
   clientEmail: string
   clientPhone: string
+  leadType: PeskidsLeadType
   gradeInterested: string
   classModality: 'llanogrande' | 'domicilio' | null
+  companyName: string | null
+  companyNit: string | null
+  metadata: Record<string, unknown> | null
   leadId: string
   onCopied?: () => void
 }
 
-export function WhatsAppMessagePreview({
-  clientName,
-  clientEmail,
-  clientPhone,
+function metadataString(metadata: Record<string, unknown> | null, key: string): string | null {
+  const value = metadata?.[key]
+  return typeof value === 'string' && value.trim().length > 0 ? value : null
+}
+
+function buildSummaryLines({
+  leadType,
   gradeInterested,
   classModality,
-  leadId,
-  onCopied,
-}: WhatsAppMessagePreviewProps): React.ReactElement {
+  companyName,
+  companyNit,
+  metadata,
+}: WhatsAppMessagePreviewProps): string {
+  if (leadType === 'teacher_applicant') {
+    const experience = metadataString(metadata, 'experience')
+    const availability = metadataString(metadata, 'availability')
+    const workZones = metadataString(metadata, 'work_zones')
+    const lines = ['🏊 Interesado en trabajar como profesor']
+    if (experience) lines.push(`💼 Experiencia: ${experience}`)
+    if (availability) lines.push(`🕒 Disponibilidad: ${availability}`)
+    if (workZones) lines.push(`📍 Zonas: ${workZones}`)
+    return lines.join('\n')
+  }
+
+  if (leadType === 'company') {
+    const contactRole = metadataString(metadata, 'contact_role')
+    const need = metadataString(metadata, 'need')
+    const lines = [`🏢 Institución: ${companyName ?? 'No indicada'}`]
+    if (companyNit) lines.push(`🧾 NIT: ${companyNit}`)
+    if (contactRole) lines.push(`👔 Cargo: ${contactRole}`)
+    if (need) lines.push(`📝 Necesidad: ${need}`)
+    return lines.join('\n')
+  }
+
+  return [
+    `👧 Grado interesado: ${gradeInterested}`,
+    `🏊 Modalidad: ${classModality === 'llanogrande' ? 'Sede Llanogrande' : 'Clases a domicilio'}`,
+  ].join('\n')
+}
+
+export function WhatsAppMessagePreview(props: WhatsAppMessagePreviewProps): React.ReactElement {
+  const { clientName, clientEmail, clientPhone, leadType, classModality, leadId, onCopied } = props
   const [copied, setCopied] = useState(false)
 
   const peskidsUrl = process.env.NEXT_PUBLIC_PESKIDS_URL || 'https://www.peskids.com'
   const adminLink = `${peskidsUrl}/admin/leads/${leadId}`
 
-  const message = `Hola, me interesa Peskids natación.
+  const message = `Hola Peskids, mi nombre es ${clientName}.
 
-👤 Nombre: ${clientName}
 📧 Email: ${clientEmail}
 📞 Teléfono: ${clientPhone}
-👧 Grado interesado: ${gradeInterested}
-🏊 Modalidad: ${classModality === 'llanogrande' ? 'Sede Llanogrande' : 'Clases a domicilio'}
+${buildSummaryLines(props)}
 
-📋 Ver detalles: ${adminLink}`
+📋 Ver mi solicitud: ${adminLink}`
 
   const whatsappNumber =
-    classModality === 'domicilio'
+    leadType === 'family' && classModality === 'domicilio'
       ? PESKIDS_CONTACT.whatsapp.domicilio.e164
-      : classModality === 'llanogrande'
+      : leadType === 'family' && classModality === 'llanogrande'
         ? PESKIDS_CONTACT.whatsapp.llanogrande.e164
         : PESKIDS_CONTACT.whatsapp.e164
 

@@ -56,8 +56,12 @@ export default async function ThanksPage({
     full_name: string;
     email: string;
     phone: string;
+    lead_type: string;
     grade_interested: string;
     class_modality: string | null;
+    company_name: string | null;
+    company_nit: string | null;
+    metadata: Record<string, unknown> | null;
   } | null = null;
 
   if (leadId) {
@@ -73,8 +77,12 @@ export default async function ThanksPage({
             full_name: string;
             email: string;
             phone: string;
+            lead_type: string;
             grade_interested: string;
             class_modality: string | null;
+            company_name: string | null;
+            company_nit: string | null;
+            metadata: Record<string, unknown> | null;
           };
         };
         if (result.ok && result.data) {
@@ -107,6 +115,11 @@ export default async function ThanksPage({
                 clientName={leadData.full_name}
                 clientEmail={leadData.email}
                 clientPhone={leadData.phone}
+                leadType={
+                  leadData.lead_type === 'teacher_applicant' || leadData.lead_type === 'company'
+                    ? leadData.lead_type
+                    : 'family'
+                }
                 gradeInterested={leadData.grade_interested}
                 classModality={
                   leadData.class_modality === 'llanogrande' ||
@@ -114,6 +127,9 @@ export default async function ThanksPage({
                     ? leadData.class_modality
                     : null
                 }
+                companyName={leadData.company_name}
+                companyNit={leadData.company_nit}
+                metadata={leadData.metadata}
                 leadId={leadId}
               />
             ) : (
