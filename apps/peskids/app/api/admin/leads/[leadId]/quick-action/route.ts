@@ -2,18 +2,10 @@ import { NextRequest } from 'next/server';
 import { resolveRequestId, successJson, errorJson } from '@/lib/api-response';
 import { validateStaffSession } from '@/lib/staff-auth';
 import { isOperationalStaffUser } from '@/lib/staff-user';
+import { leadQuickActionSchema } from '@/lib/validation/lead-quick-action.schema';
 import { postPeskidsLeadQuickAction } from '@/lib/services/lead-quick-action.service';
 
 export const dynamic = 'force-dynamic';
-
-type QuickActionBody = {
-  action: 'mark_attended' | 'hold' | 'cancel';
-  teacher_name?: string;
-  scheduled_date?: string;
-  scheduled_time?: string;
-  hold_until_month?: string;
-  reason?: string;
-};
 
 type RouteContext = { params: Promise<{ leadId: string }> };
 
@@ -31,21 +23,27 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
   const { leadId } = await context.params;
 
+  let body: unknown;
   try {
-    const body = (await request.json()) as QuickActionBody;
+    body = await request.json();
+  } catch {
+    return errorJson(requestId, 'Invalid JSON body', 400);
+  }
 
-    if (!body.action) {
-      return errorJson(requestId, 'Missing action field', 400);
-    }
+  const parsed = leadQuickActionSchema.safeParse(body);
+  if (!parsed.success) {
+    return errorJson(requestId, 'Invalid payload', 400);
+  }
 
+  try {
     const result = await postPeskidsLeadQuickAction({
       leadId,
-      action: body.action,
-      teacherName: body.teacher_name,
-      scheduledDate: body.scheduled_date,
-      scheduledTime: body.scheduled_time,
-      holdUntilMonth: body.hold_until_month,
-      reason: body.reason,
+      action: parsed.data.action,
+      teacherName: parsed.data.teacher_name,
+      scheduledDate: parsed.data.scheduled_date,
+      scheduledTime: parsed.data.scheduled_time,
+      holdUntilMonth: parsed.data.hold_until_month,
+      reason: parsed.data.reason,
     });
 
     if (!result.ok) {
@@ -54,9 +52,9 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
     return successJson(requestId, {
       ok: true,
-      action: body.action,
+      action: parsed.data.action,
       leadId,
-      message: `Lead ${body.action === 'mark_attended' ? 'marked as attended' : body.action === 'hold' ? 'put on hold' : 'cancelled'}`,
+      message: `Lead ${parsed.data.action === 'mark_attended' ? 'marked as attended' : parsed.data.action === 'hold' ? 'put on hold' : 'cancelled'}`,
       trial_class_id: result.trialClassId,
     });
   } catch (error) {
