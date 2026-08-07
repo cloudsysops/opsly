@@ -5,11 +5,9 @@ const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   outputFileTracingRoot: path.join(__dirname, '../..'),
-  // Sibling apps build in parallel via Turbo; their .next dirs (incl. transient
-  // cache lock files) must never be traced as dependencies of this app's routes.
-  outputFileTracingExcludes: {
-    '*': ['../*/.next/**'],
-  },
+  // Do NOT set outputFileTracingExcludes for sibling ../*/.next — that broke
+  // GHCR standalone (missing webpack-runtime.js) on deploy 4d5f466d. Peskids
+  // builds alone in its Dockerfile, so the Turbo parallel-trace race does not apply.
   transpilePackages: [
     '@intcloudsysops/capacity-alert',
     '@intcloudsysops/opsly-core',
