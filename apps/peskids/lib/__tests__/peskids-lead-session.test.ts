@@ -19,8 +19,7 @@ describe('peskids-lead-session', () => {
       siteBaseUrl: 'https://www.peskids.com',
     });
     expect(text).toContain('María García');
-    expect(text).toContain('formulario de solicitud');
-    expect(text).toContain('Resumen de mi solicitud');
+    expect(text).toContain('Hola Peskids, mi nombre es');
     expect(text).toContain('maria@example.com');
     expect(text).toContain('3001234567');
     expect(text).toContain('Sofía');
@@ -48,6 +47,12 @@ describe('peskids-lead-session', () => {
       neighborhood: null,
       grade_interested: null,
       company_name: null,
+      company_nit: null,
+      contact_role: null,
+      need: null,
+      experience: null,
+      availability: null,
+      work_zones: null,
     });
   });
 

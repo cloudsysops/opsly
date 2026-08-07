@@ -22,7 +22,7 @@ export const PESKIDS_RESERVATION_BULLETS = [
 export const PESKIDS_FORM_CARD_TITLE = 'Formulario de solicitud';
 
 export const PESKIDS_FORM_CARD_DESCRIPTION =
-  'Responde estas preguntas para guardar tus datos y direccionarte a la línea de atención correspondiente: sede Llanogrande o domicilios.\n\nSolo te tomará 1 minuto.';
+  'Nuestro formulario está destinado a familias interesadas en ingresar a sus hijos o familiares a nuestras clases, profesores interesados en trabajar con nosotros o empresas interesadas en crear alianzas.\n\nSolo te tomará 1 minuto.';
 
 export const PESKIDS_FORM_QUESTIONS_CONTEXT =
   'Responde estas preguntas para guardar tus datos y direccionarte a la línea de atención correspondiente.';

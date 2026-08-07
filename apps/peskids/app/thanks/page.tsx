@@ -5,7 +5,6 @@ import { PeskidsLockup } from '@/components/brand/peskids-logo';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ReferralLinkCard } from '@/components/referrals/referral-link-card';
 import { WhatsAppMessagePreview } from '@/components/forms';
 import { ThanksWhatsAppFallback } from '@/components/forms/thanks-whatsapp-fallback';
 import {
@@ -35,8 +34,6 @@ async function resolveThanksFetchBase(): Promise<string> {
 }
 
 type ThanksSearchParams = Promise<{
-  referral_link?: string;
-  referral_code?: string;
   modality?: string;
   lead_id?: string;
 }>;
@@ -69,8 +66,6 @@ export default async function ThanksPage({
   searchParams?: ThanksSearchParams;
 }): Promise<React.ReactElement> {
   const resolvedSearchParams = (await searchParams) ?? {};
-  const referralLink = resolvedSearchParams.referral_link?.trim() || '';
-  const referralCode = resolvedSearchParams.referral_code?.trim() || '';
   const modality = resolvedSearchParams.modality?.trim();
   const leadId = resolvedSearchParams.lead_id?.trim();
   const copy = thanksCopy(modality);
@@ -79,11 +74,14 @@ export default async function ThanksPage({
     full_name: string;
     email: string;
     phone: string;
+    lead_type: string;
     grade_interested: string;
     class_modality: string | null;
-    child_name?: string | null;
-    neighborhood?: string | null;
-    lead_type?: string | null;
+    company_name: string | null;
+    company_nit: string | null;
+    metadata: Record<string, unknown> | null;
+    child_name: string | null;
+    neighborhood: string | null;
   } | null = null;
 
   if (leadId) {
@@ -99,11 +97,14 @@ export default async function ThanksPage({
             full_name: string;
             email: string;
             phone: string;
+            lead_type: string;
             grade_interested: string;
             class_modality: string | null;
-            child_name?: string | null;
-            neighborhood?: string | null;
-            lead_type?: string | null;
+            company_name: string | null;
+            company_nit: string | null;
+            metadata: Record<string, unknown> | null;
+            child_name: string | null;
+            neighborhood: string | null;
           };
         };
         if (result.ok && result.data) {
@@ -114,6 +115,11 @@ export default async function ThanksPage({
       console.error('Failed to fetch lead data:', error);
     }
   }
+
+  const leadType =
+    leadData?.lead_type === 'teacher_applicant' || leadData?.lead_type === 'company'
+      ? leadData.lead_type
+      : 'family';
 
   return (
     <div className="flex min-h-screen flex-col bg-pk-bg">
@@ -131,14 +137,12 @@ export default async function ThanksPage({
             <CardDescription className="text-base">{copy.detail}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 pb-8">
-            {referralLink && referralCode ? (
-              <ReferralLinkCard referralLink={referralLink} referralCode={referralCode} />
-            ) : null}
             {leadData && leadId ? (
               <WhatsAppMessagePreview
                 clientName={leadData.full_name}
                 clientEmail={leadData.email}
                 clientPhone={leadData.phone}
+                leadType={leadType}
                 gradeInterested={leadData.grade_interested}
                 classModality={
                   leadData.class_modality === 'llanogrande' ||
@@ -146,10 +150,12 @@ export default async function ThanksPage({
                     ? leadData.class_modality
                     : null
                 }
-                leadId={leadId}
-                leadType={leadData.lead_type}
                 childName={leadData.child_name}
                 neighborhood={leadData.neighborhood}
+                companyName={leadData.company_name}
+                companyNit={leadData.company_nit}
+                metadata={leadData.metadata}
+                leadId={leadId}
               />
             ) : (
               <ThanksWhatsAppFallback
@@ -172,8 +178,8 @@ export default async function ThanksPage({
             <div className="rounded-xl border border-pk-border bg-pk-bg px-4 py-3 text-left text-sm text-pk-sub">
               <p className="font-semibold text-pk-ink">¿Qué sigue?</p>
               <p className="mt-1">
-                {leadId
-                  ? 'Envía el mensaje de WhatsApp al soporte de Peskids. El equipo abrirá el link del lead para validar tu solicitud y responderá pronto.'
+                {leadData && leadId
+                  ? `Envía el mensaje de arriba al soporte de Peskids por ${leadType === 'family' ? 'WhatsApp' : 'email'}. El equipo abrirá el link para validar tu solicitud y responderá pronto.`
                   : PESKIDS_FORM_SUCCESS_NEXT}
               </p>
             </div>

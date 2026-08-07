@@ -1,6 +1,6 @@
 'use client'
 
-import { Copy, Send } from 'lucide-react'
+import { Copy, Mail, Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PESKIDS_CONTACT } from '@/lib/contact-channels'
 import {
@@ -9,34 +9,47 @@ import {
 } from '@/lib/peskids-lead-session'
 import { useState } from 'react'
 
+type PeskidsLeadType = 'family' | 'teacher_applicant' | 'company'
+
 interface WhatsAppMessagePreviewProps {
   clientName: string
   clientEmail: string
   clientPhone: string
+  leadType: PeskidsLeadType
   gradeInterested: string
   classModality: 'llanogrande' | 'domicilio' | null
-  leadId: string
-  leadType?: string | null
   childName?: string | null
   neighborhood?: string | null
-  companyName?: string | null
+  companyName: string | null
+  companyNit: string | null
+  metadata: Record<string, unknown> | null
+  leadId: string
   onCopied?: () => void
 }
 
-export function WhatsAppMessagePreview({
-  clientName,
-  clientEmail,
-  clientPhone,
-  gradeInterested,
-  classModality,
-  leadId,
-  leadType = 'family',
-  childName,
-  neighborhood,
-  companyName,
-  onCopied,
-}: WhatsAppMessagePreviewProps): React.ReactElement {
+function metadataString(metadata: Record<string, unknown> | null, key: string): string | null {
+  const value = metadata?.[key]
+  return typeof value === 'string' && value.trim().length > 0 ? value : null
+}
+
+export function WhatsAppMessagePreview(props: WhatsAppMessagePreviewProps): React.ReactElement {
+  const {
+    clientName,
+    clientEmail,
+    clientPhone,
+    leadType,
+    gradeInterested,
+    classModality,
+    childName,
+    neighborhood,
+    companyName,
+    companyNit,
+    metadata,
+    leadId,
+    onCopied,
+  } = props
   const [copied, setCopied] = useState(false)
+  const sendByEmail = leadType === 'teacher_applicant' || leadType === 'company'
 
   const message = buildPostLeadWhatsAppPrefill(clientName, {
     lead_type: leadType,
@@ -48,6 +61,12 @@ export function WhatsAppMessagePreview({
     child_name: childName,
     neighborhood: neighborhood,
     company_name: companyName,
+    company_nit: companyNit,
+    contact_role: metadataString(metadata, 'contact_role'),
+    need: metadataString(metadata, 'need'),
+    experience: metadataString(metadata, 'experience'),
+    availability: metadataString(metadata, 'availability'),
+    work_zones: metadataString(metadata, 'work_zones'),
   })
 
   const adminLink = buildAdminLeadValidationUrl(leadId)
@@ -76,11 +95,21 @@ export function WhatsAppMessagePreview({
     window.open(whatsappUrl, '_blank')
   }
 
+  const handleEmail = () => {
+    const subject = encodeURIComponent(
+      leadType === 'teacher_applicant'
+        ? `Nueva solicitud de profesor: ${clientName}`
+        : `Nueva alianza empresarial: ${clientName}`
+    )
+    const body = encodeURIComponent(message)
+    window.location.href = `mailto:${PESKIDS_CONTACT.email}?subject=${subject}&body=${body}`
+  }
+
   return (
     <div className="space-y-4">
       <div className="rounded-xl border border-pk-primary/20 bg-pk-primary/5 p-4">
         <p className="text-xs font-semibold uppercase tracking-wider text-pk-primary/70 mb-3">
-          Mensaje para enviar a soporte:
+          {sendByEmail ? '📧 Mensaje para enviar a soporte:' : '📱 Mensaje para enviar a soporte:'}
         </p>
         <div className="bg-white rounded-lg p-4 text-sm text-pk-ink font-mono whitespace-pre-wrap break-words max-h-64 overflow-y-auto border border-pk-border">
           {message}
@@ -92,10 +121,17 @@ export function WhatsAppMessagePreview({
           <Copy className="h-4 w-4" />
           {copied ? 'Copiado!' : 'Copiar'}
         </Button>
-        <Button onClick={handleWhatsApp} variant="primary" className="gap-2">
-          <Send className="h-4 w-4" />
-          Enviar por WhatsApp
-        </Button>
+        {sendByEmail ? (
+          <Button onClick={handleEmail} variant="primary" className="gap-2">
+            <Mail className="h-4 w-4" />
+            Enviar por Email
+          </Button>
+        ) : (
+          <Button onClick={handleWhatsApp} variant="primary" className="gap-2">
+            <Send className="h-4 w-4" />
+            Enviar por WhatsApp
+          </Button>
+        )}
       </div>
 
       <div className="rounded-lg bg-pk-surface/50 px-3 py-2 text-center text-xs text-pk-sub">

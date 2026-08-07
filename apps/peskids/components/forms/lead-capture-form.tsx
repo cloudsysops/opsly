@@ -164,6 +164,14 @@ export function LeadCaptureForm({
       if (formData.experience.trim().length < 10) return 'Describe tu experiencia en natación'
       if (!formData.availability.trim()) return 'Indica tu disponibilidad'
       if (!formData.work_zones.trim()) return 'Indica zonas donde puedes trabajar'
+      const cvInput = document.getElementById('teacher_cv') as HTMLInputElement | null
+      if (!cvInput?.files || cvInput.files.length === 0) {
+        return 'Adjunta tu hoja de vida (PDF o DOC)'
+      }
+      const videoInput = document.getElementById('teacher_swim_video') as HTMLInputElement | null
+      if (!videoInput?.files || videoInput.files.length === 0) {
+        return 'Adjunta un video nadando los 4 estilos de natación'
+      }
     } else if (formData.lead_type === 'company') {
       if (!formData.company_name.trim()) return 'Nombre de la institución requerido'
       if (formData.company_nit.trim().length < 4) return 'NIT requerido'
@@ -298,12 +306,12 @@ export function LeadCaptureForm({
       }
 
       const apiBody = (await apiResponse.json()) as {
+        ok?: boolean
+        data?: { lead_id?: string }
         lead_id?: string
         id?: string
-        referral_link?: string
-        referral_code?: string
       }
-      const leadId = (apiBody.lead_id ?? apiBody.id)?.trim() || ''
+      const leadId = (apiBody.data?.lead_id ?? apiBody.lead_id ?? apiBody.id)?.trim() || ''
 
       void fetch(
         process.env.NEXT_PUBLIC_N8N_LEAD_WEBHOOK || 'https://www.peskids.com/webhooks/lead-capture',
@@ -344,6 +352,12 @@ export function LeadCaptureForm({
         neighborhood: parsedFamily.neighborhood ?? null,
         grade_interested: parsedFamily.grade_interested ?? null,
         company_name: parsedFamily.company_name ?? null,
+        company_nit: leadType === 'company' ? formData.company_nit || null : null,
+        contact_role: leadType === 'company' ? formData.contact_role || formData.name : null,
+        need: leadType === 'company' ? formData.need || null : null,
+        experience: leadType === 'teacher_applicant' ? formData.experience || null : null,
+        availability: leadType === 'teacher_applicant' ? formData.availability || null : null,
+        work_zones: leadType === 'teacher_applicant' ? formData.work_zones || null : null,
       }
 
       writePeskidsLeadSession(formData.name, waPrefillOptions)
@@ -352,14 +366,8 @@ export function LeadCaptureForm({
       setSubmitted(true)
 
       const thanksUrl = new URL('/thanks', window.location.origin)
-      if (modality) thanksUrl.searchParams.set('modality', modality)
       if (leadId) thanksUrl.searchParams.set('lead_id', leadId)
-      if (apiBody.referral_link) {
-        thanksUrl.searchParams.set('referral_link', apiBody.referral_link)
-      }
-      if (apiBody.referral_code) {
-        thanksUrl.searchParams.set('referral_code', apiBody.referral_code)
-      }
+      if (modality) thanksUrl.searchParams.set('modality', modality)
       window.setTimeout(() => {
         setFormData(emptyForm(defaultReferralSource))
         router.push(`${thanksUrl.pathname}${thanksUrl.search}`)
@@ -673,31 +681,34 @@ export function LeadCaptureForm({
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
                       <Label htmlFor="teacher_cv" className="text-sm font-medium text-pk-ink">
-                        Hoja de vida (PDF o DOC)
+                        Hoja de vida (PDF o DOC) *
                       </Label>
                       <input
                         id="teacher_cv"
                         type="file"
                         accept=".pdf,.doc,.docx,application/pdf"
                         data-peskids-attachment="curriculum"
+                        required
                         className="mt-2 block w-full text-sm text-pk-ink file:mr-3 file:rounded-pk file:border-0 file:bg-pk-primary/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-pk-primary"
                       />
                     </div>
                     <div>
                       <Label htmlFor="teacher_swim_video" className="text-sm font-medium text-pk-ink">
-                        Video nadando (MP4 o similar)
+                        Video nadando los 4 estilos (MP4 o similar) *
                       </Label>
                       <input
                         id="teacher_swim_video"
                         type="file"
                         accept="video/*,.mp4,.mov,.webm"
                         data-peskids-attachment="swimming_video"
+                        required
                         className="mt-2 block w-full text-sm text-pk-ink file:mr-3 file:rounded-pk file:border-0 file:bg-pk-primary/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-pk-primary"
                       />
                     </div>
                   </div>
                   <p className="text-xs text-pk-mutedText">
-                    Opcional por ahora: puedes adjuntar HV y un video donde se te vea nadando.
+                    Adjunta tu hoja de vida y un video nadando los 4 estilos de natación (libre,
+                    espalda, pecho y mariposa).
                   </p>
                 </div>
               )}
@@ -751,18 +762,33 @@ export function LeadCaptureForm({
                       </select>
                     </div>
                   </div>
-                  <div>
-                    <Label htmlFor="contact_role" className="text-sm font-medium text-pk-ink">
-                      Tu cargo
-                    </Label>
-                    <input
-                      id="contact_role"
-                      type="text"
-                      value={formData.contact_role}
-                      onChange={(e) => setField('contact_role', e.target.value)}
-                      className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
-                      placeholder="Director, Coordinador, etc."
-                    />
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label htmlFor="company_contact_name" className="text-sm font-medium text-pk-ink">
+                        Nombre de contacto *
+                      </Label>
+                      <input
+                        id="company_contact_name"
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => setField('name', e.target.value)}
+                        className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                        placeholder="Nombre completo"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="contact_role" className="text-sm font-medium text-pk-ink">
+                        Tu cargo
+                      </Label>
+                      <input
+                        id="contact_role"
+                        type="text"
+                        value={formData.contact_role}
+                        onChange={(e) => setField('contact_role', e.target.value)}
+                        className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                        placeholder="Director, Coordinador, etc."
+                      />
+                    </div>
                   </div>
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>

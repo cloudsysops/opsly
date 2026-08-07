@@ -15,6 +15,12 @@ export type PeskidsLeadSession = {
   neighborhood?: string | null;
   grade_interested?: string | null;
   company_name?: string | null;
+  company_nit?: string | null;
+  contact_role?: string | null;
+  need?: string | null;
+  experience?: string | null;
+  availability?: string | null;
+  work_zones?: string | null;
 };
 
 export type PostLeadWhatsAppPrefillOptions = {
@@ -27,14 +33,14 @@ export type PostLeadWhatsAppPrefillOptions = {
   neighborhood?: string | null;
   grade_interested?: string | null;
   company_name?: string | null;
+  company_nit?: string | null;
+  contact_role?: string | null;
+  need?: string | null;
+  experience?: string | null;
+  availability?: string | null;
+  work_zones?: string | null;
   /** Override public site base (tests). Defaults to production peskids.com. */
   siteBaseUrl?: string | null;
-};
-
-const LEAD_TYPE_LABELS: Record<string, string> = {
-  family: 'Familia / Alumno',
-  teacher_applicant: 'Profesor(a)',
-  company: 'Empresa / institución',
 };
 
 function trimOrNull(value: string | null | undefined): string | null {
@@ -71,8 +77,50 @@ function modalityLabel(modality: string | null | undefined): string | null {
   return null;
 }
 
+function teacherApplicantSummaryLines(options?: PostLeadWhatsAppPrefillOptions): string[] {
+  const experience = trimOrNull(options?.experience);
+  const availability = trimOrNull(options?.availability);
+  const workZones = trimOrNull(options?.work_zones);
+  const lines = ['🏊 Interesado en trabajar como profesor'];
+  if (experience) lines.push(`💼 Experiencia: ${experience}`);
+  if (availability) lines.push(`🕒 Disponibilidad: ${availability}`);
+  if (workZones) lines.push(`📍 Zonas: ${workZones}`);
+  return lines;
+}
+
+function companySummaryLines(options?: PostLeadWhatsAppPrefillOptions): string[] {
+  const companyName = trimOrNull(options?.company_name);
+  const companyNit = trimOrNull(options?.company_nit);
+  const contactRole = trimOrNull(options?.contact_role);
+  const need = trimOrNull(options?.need);
+  const lines = [`🏢 Institución: ${companyName ?? 'No indicada'}`];
+  if (companyNit) lines.push(`🧾 NIT: ${companyNit}`);
+  if (contactRole) lines.push(`👔 Cargo: ${contactRole}`);
+  if (need) lines.push(`📝 Necesidad: ${need}`);
+  return lines;
+}
+
+function familySummaryLines(options?: PostLeadWhatsAppPrefillOptions): string[] {
+  const modality = modalityLabel(options?.class_modality);
+  const grade = trimOrNull(options?.grade_interested);
+  const childName = trimOrNull(options?.child_name);
+  const neighborhood = trimOrNull(options?.neighborhood);
+  const lines: string[] = [];
+  if (grade) lines.push(`👧 Grado interesado: ${grade}`);
+  if (modality) lines.push(`🏊 Modalidad: ${modality}`);
+  if (childName) lines.push(`👶 Niño/a: ${childName}`);
+  if (neighborhood) lines.push(`📍 Barrio / zona: ${neighborhood}`);
+  return lines;
+}
+
+function summaryLines(leadType: string | null, options?: PostLeadWhatsAppPrefillOptions): string[] {
+  if (leadType === 'teacher_applicant') return teacherApplicantSummaryLines(options);
+  if (leadType === 'company') return companySummaryLines(options);
+  return familySummaryLines(options);
+}
+
 /**
- * Prefill text the client sends to Peskids support on WhatsApp after the form.
+ * Prefill text the client sends to Peskids support on WhatsApp/email after the form.
  * Includes a short form summary and the admin lead link when `lead_id` is known.
  */
 export function buildPostLeadWhatsAppPrefill(
@@ -81,44 +129,21 @@ export function buildPostLeadWhatsAppPrefill(
 ): string {
   const trimmed = name.trim() || 'familia';
   const leadType = trimOrNull(options?.lead_type);
-  const modality = modalityLabel(options?.class_modality);
   const email = trimOrNull(options?.email);
   const phone = trimOrNull(options?.phone);
-  const childName = trimOrNull(options?.child_name);
-  const neighborhood = trimOrNull(options?.neighborhood);
-  const grade = trimOrNull(options?.grade_interested);
-  const companyName = trimOrNull(options?.company_name);
   const leadId = trimOrNull(options?.lead_id);
 
-  const lines: string[] = [
-    `Hola Peskids 👋 Soy ${trimmed}, acabo de completar el formulario de solicitud en la web.`,
-    '',
-    '📋 Resumen de mi solicitud:',
-  ];
+  const lines: string[] = [`Hola Peskids, mi nombre es ${trimmed}.`, ''];
 
-  if (leadType) {
-    lines.push(`• Tipo: ${LEAD_TYPE_LABELS[leadType] ?? leadType}`);
-  }
-  if (email) lines.push(`• Email: ${email}`);
-  if (phone) lines.push(`• Teléfono: ${phone}`);
-  if (modality) lines.push(`• Modalidad: ${modality}`);
-  if (neighborhood) lines.push(`• Barrio / zona: ${neighborhood}`);
-  if (childName) lines.push(`• Niño/a: ${childName}`);
-  if (grade) lines.push(`• Grado / nivel: ${grade}`);
-  if (companyName) lines.push(`• Empresa / institución: ${companyName}`);
-
-  if (leadType === 'teacher_applicant' && !companyName) {
-    lines.push('• Completé el formulario de profesor(a).');
-  }
+  if (email) lines.push(`📧 Email: ${email}`);
+  if (phone) lines.push(`📞 Teléfono: ${phone}`);
+  lines.push(...summaryLines(leadType, options));
 
   if (leadId) {
     lines.push('');
-    lines.push(`🔗 Lead para soporte (validar en panel):`);
-    lines.push(buildAdminLeadValidationUrl(leadId, options?.siteBaseUrl));
+    lines.push(`📋 Ver mi solicitud: ${buildAdminLeadValidationUrl(leadId, options?.siteBaseUrl)}`);
   }
 
-  lines.push('');
-  lines.push('¿Me pueden orientar?');
   return lines.join('\n');
 }
 
@@ -153,6 +178,12 @@ export function parsePeskidsLeadSession(raw: string | null): PeskidsLeadSession 
       grade_interested:
         typeof session.grade_interested === 'string' ? session.grade_interested : null,
       company_name: typeof session.company_name === 'string' ? session.company_name : null,
+      company_nit: typeof session.company_nit === 'string' ? session.company_nit : null,
+      contact_role: typeof session.contact_role === 'string' ? session.contact_role : null,
+      need: typeof session.need === 'string' ? session.need : null,
+      experience: typeof session.experience === 'string' ? session.experience : null,
+      availability: typeof session.availability === 'string' ? session.availability : null,
+      work_zones: typeof session.work_zones === 'string' ? session.work_zones : null,
     };
   } catch {
     return null;
@@ -189,6 +220,12 @@ export function writePeskidsLeadSession(
     neighborhood: trimOrNull(options?.neighborhood),
     grade_interested: trimOrNull(options?.grade_interested),
     company_name: trimOrNull(options?.company_name),
+    company_nit: trimOrNull(options?.company_nit),
+    contact_role: trimOrNull(options?.contact_role),
+    need: trimOrNull(options?.need),
+    experience: trimOrNull(options?.experience),
+    availability: trimOrNull(options?.availability),
+    work_zones: trimOrNull(options?.work_zones),
   };
   window.sessionStorage.setItem(PESKIDS_LEAD_SESSION_KEY, JSON.stringify(payload));
 }
@@ -205,5 +242,11 @@ export function buildPostLeadWhatsAppPrefillFromSession(session: PeskidsLeadSess
     neighborhood: session.neighborhood,
     grade_interested: session.grade_interested,
     company_name: session.company_name,
+    company_nit: session.company_nit,
+    contact_role: session.contact_role,
+    need: session.need,
+    experience: session.experience,
+    availability: session.availability,
+    work_zones: session.work_zones,
   });
 }

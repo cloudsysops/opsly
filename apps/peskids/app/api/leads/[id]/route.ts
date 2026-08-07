@@ -7,9 +7,28 @@ interface PeskidsLead {
   full_name: string;
   email: string;
   phone: string;
+  lead_type: string;
   grade_interested: string;
   class_modality: string | null;
+  company_name: string | null;
+  company_nit: string | null;
+  metadata: Record<string, unknown> | null;
+  child_name: string | null;
+  neighborhood: string | null;
   [key: string]: unknown;
+}
+
+// Leads live in the shared api app's 'platform' schema (platform.peskids_leads),
+// not in this app's own 'public' schema — same escape hatch as
+// lib/services/lead-admin.service.ts's platformFrom(), since that schema's
+// tables aren't in this app's generated Database types.
+function platformLeadsFrom() {
+  const client = supabaseServer() as unknown as {
+    schema: (name: string) => {
+      from: (tableName: string) => ReturnType<ReturnType<typeof supabaseServer>['from']>;
+    };
+  };
+  return client.schema('platform').from('peskids_leads');
 }
 
 export async function GET(
@@ -25,9 +44,7 @@ export async function GET(
       return errorJson(requestId, 'Lead ID is required', 400);
     }
 
-    const supabase = supabaseServer();
-    const { data, error } = await supabase
-      .from('peskids_leads')
+    const { data, error } = await platformLeadsFrom()
       .select('*')
       .eq('id', leadId)
       .eq('tenant_slug', 'peskids')
@@ -46,11 +63,14 @@ export async function GET(
         full_name: lead.full_name || String(lead.name ?? ''),
         email: lead.email,
         phone: lead.phone,
+        lead_type: lead.lead_type,
         grade_interested: lead.grade_interested,
         class_modality: lead.class_modality,
+        company_name: lead.company_name,
+        company_nit: lead.company_nit,
+        metadata: lead.metadata,
         child_name: typeof lead.child_name === 'string' ? lead.child_name : null,
         neighborhood: typeof lead.neighborhood === 'string' ? lead.neighborhood : null,
-        lead_type: typeof lead.lead_type === 'string' ? lead.lead_type : null,
       },
     });
   } catch (error) {

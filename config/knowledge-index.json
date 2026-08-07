@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-08-05T17:01:32.718Z",
+  "generated_at": "2026-08-06T23:35:51.006Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -3427,7 +3427,7 @@
         "usar",
         "vivo"
       ],
-      "size_bytes": 272824
+      "size_bytes": 277753
     },
     {
       "path": "apps/admin/INVITATIONS_UI.md",
@@ -18824,6 +18824,31 @@
       "size_bytes": 641
     },
     {
+      "path": "docs/brand/peskids/BRAND.md",
+      "title": "Peskids brand kit",
+      "keywords": [
+        "apps",
+        "archivos",
+        "board",
+        "brand",
+        "componentes",
+        "historica",
+        "kit",
+        "lib",
+        "markdown",
+        "nota",
+        "opsly",
+        "paleta",
+        "peskids",
+        "produccion",
+        "referencia",
+        "sobre",
+        "tipografia",
+        "tokens"
+      ],
+      "size_bytes": 1804
+    },
+    {
       "path": "docs/database/DATABASE-OPERATIONS.md",
       "title": "Database Schema & Operations Guide",
       "keywords": [
@@ -23916,6 +23941,7 @@
       "title": "Deploy desde GitHub Actions → VPS",
       "keywords": [
         "actions",
+        "admin",
         "api",
         "configuracion",
         "deploy",
@@ -23925,14 +23951,17 @@
         "github",
         "habitual",
         "imagen",
+        "lleno",
         "manual",
         "markdown",
+        "offline",
         "opsly",
         "post",
         "rapido",
         "recomendada",
         "relacionados",
         "rollback",
+        "runner",
         "sintoma",
         "ssh",
         "tailscale",
@@ -23942,7 +23971,7 @@
         "via",
         "vps"
       ],
-      "size_bytes": 2849
+      "size_bytes": 3256
     },
     {
       "path": "docs/runbooks/DEPLOYMENT-CHECKLIST.md",
@@ -26743,6 +26772,28 @@
       "size_bytes": 4140
     },
     {
+      "path": "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
+      "title": "Peskids — revisión cliente (2026-08-05)",
+      "keywords": [
+        "2026",
+        "algo",
+        "checklist",
+        "client",
+        "cliente",
+        "corrigio",
+        "falla",
+        "internas",
+        "markdown",
+        "min",
+        "opsly",
+        "peskids",
+        "referencias",
+        "review",
+        "revision"
+      ],
+      "size_bytes": 1896
+    },
+    {
       "path": "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
       "title": "Cloudflare ↔ Traefik Routing Notes",
       "keywords": [
@@ -28749,7 +28800,7 @@
         "tenant",
         "tenants"
       ],
-      "size_bytes": 7484
+      "size_bytes": 7694
     },
     {
       "path": "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
@@ -32709,14 +32760,14 @@
         "devtools",
         "execution",
         "installation",
-        "issues",
+        "isolation",
         "javascript",
         "markdown",
         "markers",
         "mcp",
-        "network",
         "opsly",
         "overview",
+        "profile",
         "security",
         "setting",
         "skill",
@@ -32729,7 +32780,7 @@
         "with",
         "workflow"
       ],
-      "size_bytes": 12559
+      "size_bytes": 14539
     },
     {
       "path": "packages/skills/vendor/agent-skills/ci-cd-and-automation/SKILL.md",
@@ -32777,7 +32828,6 @@
         "axis",
         "change",
         "code",
-        "context",
         "correctness",
         "descriptions",
         "five",
@@ -32788,17 +32838,17 @@
         "process",
         "quality",
         "readability",
+        "remedies",
         "review",
         "security",
         "simplicity",
         "sizing",
         "skill",
-        "step",
-        "understand",
+        "structural",
         "use",
         "when"
       ],
-      "size_bytes": 14285
+      "size_bytes": 20543
     },
     {
       "path": "packages/skills/vendor/agent-skills/code-simplification/SKILL.md",
@@ -32911,7 +32961,7 @@
         "verify",
         "when"
       ],
-      "size_bytes": 10604
+      "size_bytes": 10837
     },
     {
       "path": "packages/skills/vendor/agent-skills/deprecation-and-migration/SKILL.md",
@@ -32950,7 +33000,7 @@
         "use",
         "when"
       ],
-      "size_bytes": 9000
+      "size_bytes": 12516
     },
     {
       "path": "packages/skills/vendor/agent-skills/documentation-and-adrs/SKILL.md",
@@ -32962,23 +33012,26 @@
         "architecture",
         "considered",
         "context",
+        "convention",
         "date",
         "decision",
         "documentation",
+        "existing",
+        "first",
         "markdown",
+        "match",
         "mongodb",
         "opsly",
         "overview",
         "records",
         "skill",
-        "sqlite",
         "status",
         "template",
         "use",
         "when",
         "write"
       ],
-      "size_bytes": 8734
+      "size_bytes": 9782
     },
     {
       "path": "packages/skills/vendor/agent-skills/doubt-driven-development/SKILL.md",
@@ -33058,7 +33111,7 @@
         "wcag",
         "when"
       ],
-      "size_bytes": 10639
+      "size_bytes": 10705
     },
     {
       "path": "packages/skills/vendor/agent-skills/git-workflow-and-versioning/SKILL.md",
@@ -33099,7 +33152,7 @@
         "workflow",
         "your"
       ],
-      "size_bytes": 10530
+      "size_bytes": 14000
     },
     {
       "path": "packages/skills/vendor/agent-skills/idea-refine/SKILL.md",
@@ -33133,7 +33186,7 @@
         "validate",
         "works"
       ],
-      "size_bytes": 8121
+      "size_bytes": 8111
     },
     {
       "path": "packages/skills/vendor/agent-skills/incremental-implementation/SKILL.md",
@@ -33167,7 +33220,7 @@
         "vertical",
         "when"
       ],
-      "size_bytes": 8993
+      "size_bytes": 9501
     },
     {
       "path": "packages/skills/vendor/agent-skills/interview-me/SKILL.md",
@@ -33214,6 +33267,44 @@
       "size_bytes": 14359
     },
     {
+      "path": "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
+      "title": "Observability and Instrumentation",
+      "keywords": [
+        "alerting",
+        "before",
+        "common",
+        "define",
+        "distributed",
+        "each",
+        "flags",
+        "instrumentation",
+        "instrumenting",
+        "itself",
+        "logging",
+        "markdown",
+        "metrics",
+        "observability",
+        "opsly",
+        "overview",
+        "pick",
+        "process",
+        "question",
+        "rationalizations",
+        "red",
+        "right",
+        "signal",
+        "skill",
+        "structured",
+        "telemetry",
+        "tracing",
+        "use",
+        "verify",
+        "when",
+        "working"
+      ],
+      "size_bytes": 11047
+    },
+    {
       "path": "packages/skills/vendor/agent-skills/performance-optimization/SKILL.md",
       "title": "Performance Optimization",
       "keywords": [
@@ -33253,7 +33344,7 @@
         "where",
         "workflow"
       ],
-      "size_bytes": 11593
+      "size_bytes": 15139
     },
     {
       "path": "packages/skills/vendor/agent-skills/planning-and-task-breakdown/SKILL.md",
@@ -33264,8 +33355,8 @@
         "checkpoint",
         "dependency",
         "descriptive",
-        "document",
         "enter",
+        "files",
         "graph",
         "guidelines",
         "identify",
@@ -33273,6 +33364,7 @@
         "mode",
         "opsly",
         "order",
+        "output",
         "overview",
         "plan",
         "planning",
@@ -33284,14 +33376,13 @@
         "step",
         "task",
         "tasks",
-        "template",
         "title",
         "use",
         "vertically",
         "when",
         "write"
       ],
-      "size_bytes": 7011
+      "size_bytes": 7653
     },
     {
       "path": "packages/skills/vendor/agent-skills/README.md",
@@ -33341,13 +33432,15 @@
         "human",
         "injection",
         "markdown",
-        "misconfiguration",
+        "model",
         "never",
         "nosql",
         "opsly",
         "overview",
         "owasp",
+        "patterns",
         "prevention",
+        "process",
         "requires",
         "scripting",
         "security",
@@ -33355,6 +33448,7 @@
         "skill",
         "sql",
         "system",
+        "threat",
         "three",
         "tier",
         "top",
@@ -33362,7 +33456,7 @@
         "when",
         "xss"
       ],
-      "size_bytes": 11301
+      "size_bytes": 20511
     },
     {
       "path": "packages/skills/vendor/agent-skills/shipping-and-launch/SKILL.md",
@@ -33392,7 +33486,7 @@
         "use",
         "when"
       ],
-      "size_bytes": 9912
+      "size_bytes": 10113
     },
     {
       "path": "packages/skills/vendor/agent-skills/source-driven-development/SKILL.md",
@@ -33461,7 +33555,7 @@
         "when",
         "workflow"
       ],
-      "size_bytes": 7784
+      "size_bytes": 8527
     },
     {
       "path": "packages/skills/vendor/agent-skills/test-driven-development/SKILL.md",
@@ -33472,13 +33566,14 @@
         "cycle",
         "decision",
         "development",
+        "discover",
         "driven",
         "failing",
+        "first",
         "fixes",
         "good",
         "green",
         "guide",
-        "interactions",
         "make",
         "markdown",
         "model",
@@ -33493,7 +33588,7 @@
         "resource",
         "sizes",
         "skill",
-        "state",
+        "stack",
         "step",
         "tdd",
         "test",
@@ -33503,7 +33598,7 @@
         "write",
         "writing"
       ],
-      "size_bytes": 14976
+      "size_bytes": 16477
     },
     {
       "path": "packages/skills/vendor/agent-skills/using-agent-skills/SKILL.md",
@@ -33544,7 +33639,7 @@
         "warranted",
         "when"
       ],
-      "size_bytes": 9124
+      "size_bytes": 10337
     },
     {
       "path": "README.md",
@@ -88587,6 +88682,7 @@
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
       "docs/tenants/peskids/PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/WACRM-RUNBOOK.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
       "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
@@ -89295,6 +89391,7 @@
       "packages/skills/vendor/agent-skills/frontend-ui-engineering/SKILL.md",
       "packages/skills/vendor/agent-skills/code-review-and-quality/SKILL.md",
       "packages/skills/vendor/agent-skills/incremental-implementation/SKILL.md",
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
       "packages/skills/vendor/agent-skills/api-and-interface-design/SKILL.md",
       "packages/skills/vendor/agent-skills/README.md",
       "packages/skills/vendor/agent-skills/performance-optimization/SKILL.md",
@@ -91016,6 +91113,7 @@
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
       "docs/governance/internal/VENDOR-MANAGEMENT-POLICY.md",
       "docs/governance/internal/ACCESS-CONTROL-POLICY.md",
+      "docs/brand/peskids/BRAND.md",
       "docs/design/OAR.md",
       "docs/design/DESIGN_REFERENCES.md",
       "docs/obsidian/research/frontier-pattern-radar.md",
@@ -91535,6 +91633,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/WACRM-CHANNEL.md",
       "docs/tenants/peskids/ARCHITECTURE.md",
@@ -91897,6 +91996,7 @@
       "packages/skills/vendor/agent-skills/frontend-ui-engineering/SKILL.md",
       "packages/skills/vendor/agent-skills/code-review-and-quality/SKILL.md",
       "packages/skills/vendor/agent-skills/incremental-implementation/SKILL.md",
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
       "packages/skills/vendor/agent-skills/api-and-interface-design/SKILL.md",
       "packages/skills/vendor/agent-skills/README.md",
       "packages/skills/vendor/agent-skills/performance-optimization/SKILL.md",
@@ -93622,6 +93722,7 @@
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
       "docs/governance/internal/VENDOR-MANAGEMENT-POLICY.md",
       "docs/governance/internal/ACCESS-CONTROL-POLICY.md",
+      "docs/brand/peskids/BRAND.md",
       "docs/design/AGENT-ORCHESTRATION-INDEX.md",
       "docs/design/OAR.md",
       "docs/design/DESIGN_REFERENCES.md",
@@ -94143,6 +94244,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/WACRM-CHANNEL.md",
       "docs/tenants/peskids/ARCHITECTURE.md",
@@ -95211,6 +95313,7 @@
       "apps/admin/INVITATIONS_UI.md",
       "docs/superpowers/specs/2026-06-23-peskids-admin-students-crud-design.md",
       "docs/projects/PESKIDS-SCOPE.md",
+      "docs/runbooks/DEPLOY-GITHUB-ACTIONS.md",
       "docs/runbooks/frontend-audit.md",
       "docs/runbooks/admin.md",
       "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
@@ -95553,6 +95656,7 @@
     ],
     "metrics": [
       ".jules/bolt.md",
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
       ".cursor/prompts/local-services-mvp.md",
       ".cursor/prompts/parallel-task-4-observability.md",
       "tools/agent-packs/vendor/the-architect/templates/blueprint-template.md",
@@ -95863,7 +95967,6 @@
     ],
     "network": [
       ".jules/bolt.md",
-      "packages/skills/vendor/agent-skills/browser-testing-with-devtools/SKILL.md",
       "vendor/agency-agents/integrations/qwen/agents/zk-steward.md",
       "vendor/agency-agents/integrations/qwen/agents/unreal-multiplayer-architect.md",
       "vendor/agency-agents/integrations/qwen/agents/unreal-systems-engineer.md",
@@ -95895,6 +95998,7 @@
       "packages/skills/vendor/agent-skills/frontend-ui-engineering/SKILL.md",
       "packages/skills/vendor/agent-skills/code-review-and-quality/SKILL.md",
       "packages/skills/vendor/agent-skills/incremental-implementation/SKILL.md",
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
       "packages/skills/vendor/agent-skills/api-and-interface-design/SKILL.md",
       "packages/skills/vendor/agent-skills/performance-optimization/SKILL.md",
       "packages/skills/vendor/agent-skills/git-workflow-and-versioning/SKILL.md",
@@ -96041,6 +96145,7 @@
       "docs/governance/DATA-CLASSIFICATION.md",
       "docs/governance/POLICY-REGISTRY.md",
       "docs/governance/SUB-PROCESSORS.md",
+      "docs/brand/peskids/BRAND.md",
       "docs/obsidian/inbox/2026-05-22.md",
       "docs/legal/peskids/DPIA-2026.md",
       "docs/runbooks/VPS-MEMORY-CAPS.md",
@@ -96117,6 +96222,7 @@
       "docs/tenants/peskids/WACRM-RUNBOOK.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/WACRM-CHANNEL.md",
       "docs/tenants/peskids/ARCHITECTURE.md",
@@ -100702,6 +100808,7 @@
       "packages/skills/vendor/agent-skills/frontend-ui-engineering/SKILL.md",
       "packages/skills/vendor/agent-skills/code-review-and-quality/SKILL.md",
       "packages/skills/vendor/agent-skills/incremental-implementation/SKILL.md",
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
       "packages/skills/vendor/agent-skills/api-and-interface-design/SKILL.md",
       "packages/skills/vendor/agent-skills/README.md",
       "packages/skills/vendor/agent-skills/performance-optimization/SKILL.md",
@@ -101166,6 +101273,7 @@
     ],
     "distributed": [
       "packages/skills/user/opsly-distributed-tracing/SKILL.md",
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
       "docs/00-architecture/DISTRIBUTED-ARCHITECTURE.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
@@ -101243,6 +101351,7 @@
     ],
     "tracing": [
       "packages/skills/user/opsly-distributed-tracing/SKILL.md",
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
       "lib/observability/README.md",
       "docs/brain/skills/opsly-distributed-tracing.md"
     ],
@@ -101560,6 +101669,7 @@
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
       "docs/plans/CLI-MIGRATION-CHECKLIST.md",
       "docs/history/consolidation/CONSOLIDATION-PLAN.md",
+      "docs/brand/peskids/BRAND.md",
       "docs/design/AGENT-ORCHESTRATION-INDEX.md",
       "docs/01-development/MAIA-WORKERS.md",
       "docs/01-development/PHASE2-ROADMAP.md",
@@ -101742,6 +101852,7 @@
       "docs/tenants/peskids/REUNION-2026-07-21.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/TEMPLATE-STATUS.md",
       "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
@@ -101973,6 +102084,7 @@
     "each": [
       "packages/skills/user/opsly-simplify/SKILL.md",
       "packages/skills/vendor/agent-skills/interview-me/SKILL.md",
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
       "vendor/agency-agents/integrations/qwen/agents/narrative-designer.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/narrative-designer/SKILL.md",
       "vendor/agency-agents/integrations/kimi/narrative-designer/system.md",
@@ -102195,6 +102307,7 @@
       "packages/skills/vendor/agent-skills/performance-optimization/SKILL.md",
       "packages/skills/vendor/agent-skills/source-driven-development/SKILL.md",
       "packages/skills/vendor/agent-skills/context-engineering/SKILL.md",
+      "packages/skills/vendor/agent-skills/security-and-hardening/SKILL.md",
       "packages/skills/vendor/agent-skills/debugging-and-error-recovery/SKILL.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/lang-javascript.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/secrets-patterns.md",
@@ -102761,6 +102874,7 @@
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md",
       "docs/tenants/peskids/README.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
       "docs/brain/skills/code-review-and-quality.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
@@ -104120,6 +104234,7 @@
       "docs/superpowers/specs/2026-05-26-content-studio-ai-design.md",
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
       "docs/history/consolidation/CONSOLIDATION-PLAN.md",
+      "docs/brand/peskids/BRAND.md",
       "docs/01-development/PHASE2-ROADMAP.md",
       "docs/01-development/SPRINTS_13_14.md",
       "docs/01-development/CODE-SNAPSHOTS.md",
@@ -106927,6 +107042,7 @@
     "produccion": [
       "packages/skills/user/opsly-peskids/SKILL.md",
       "infra/terraform/README.md",
+      "docs/brand/peskids/BRAND.md",
       "docs/stubs/TENANT-PRODUCTION-CHECKLIST.md",
       "docs/stubs/TENANT-PRODUCTION-BASELINE.md",
       "docs/stubs/TENANT-PRODUCTION-ROLLOUT.md",
@@ -107143,6 +107259,7 @@
       "packages/skills/templates/template-api-route.md",
       "packages/skills/templates/template-mcp-tool.md",
       "packages/skills/vendor/agent-skills/interview-me/SKILL.md",
+      "packages/skills/vendor/agent-skills/planning-and-task-breakdown/SKILL.md",
       "packages/skills/vendor/agent-skills/context-engineering/SKILL.md",
       "packages/skills/vendor/agent-skills/idea-refine/SKILL.md",
       ".archived/context-builder-v2/src/design/architecture.md",
@@ -109361,7 +109478,6 @@
     "context": [
       "packages/skills/user/opsly-context/SKILL.md",
       "packages/skills/user/context-builder/SKILL.md",
-      "packages/skills/vendor/agent-skills/code-review-and-quality/SKILL.md",
       "packages/skills/vendor/agent-skills/documentation-and-adrs/SKILL.md",
       "packages/skills/vendor/agent-skills/context-engineering/SKILL.md",
       "packages/skills/vendor/agent-skills/doubt-driven-development/SKILL.md",
@@ -109530,6 +109646,7 @@
       "packages/skills/vendor/agent-skills/source-driven-development/SKILL.md",
       "packages/skills/vendor/agent-skills/spec-driven-development/SKILL.md",
       "packages/skills/vendor/agent-skills/context-engineering/SKILL.md",
+      "packages/skills/vendor/agent-skills/test-driven-development/SKILL.md",
       ".github/copilot-instructions.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/error-handling-patterns.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/SKILL.md",
@@ -109699,6 +109816,7 @@
       "infra/terraform/README.md",
       "docs/superpowers/specs/2026-05-30-skills-obsidian-integration-design.md",
       "docs/generated/README.md",
+      "docs/brand/peskids/BRAND.md",
       "docs/obsidian/index.md",
       "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
@@ -110451,6 +110569,7 @@
     ],
     "files": [
       "packages/skills/user/opsly-n8n-automation/SKILL.md",
+      "packages/skills/vendor/agent-skills/planning-and-task-breakdown/SKILL.md",
       "packages/skills/vendor/agent-skills/context-engineering/SKILL.md",
       ".cursor/prompts/local-services-automation.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/SKILL.md",
@@ -111345,6 +111464,7 @@
     ],
     "observability": [
       "packages/skills/user/opsly-peskids-deployment/SKILL.md",
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
       ".cursor/prompts/parallel-task-4-observability.md",
       "lib/observability/README.md",
       "lib/observability/GOVERNANCE.md",
@@ -111553,6 +111673,7 @@
       "packages/skills/vendor/agent-skills/frontend-ui-engineering/SKILL.md",
       "packages/skills/vendor/agent-skills/code-review-and-quality/SKILL.md",
       "packages/skills/vendor/agent-skills/incremental-implementation/SKILL.md",
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
       "packages/skills/vendor/agent-skills/api-and-interface-design/SKILL.md",
       "packages/skills/vendor/agent-skills/performance-optimization/SKILL.md",
       "packages/skills/vendor/agent-skills/git-workflow-and-versioning/SKILL.md",
@@ -111673,6 +111794,7 @@
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md",
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
       "docs/tenants/peskids/PURGE-DEMO-DATA.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
       ".claude/agents/core/reviewer.md"
     ],
     "skeptic": [
@@ -112461,6 +112583,7 @@
     ],
     "logging": [
       "packages/skills/user/opsly-autonomous/SKILL.md",
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/owasp-top-10.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/logging-patterns.md",
       "lib/observability/README.md",
@@ -112750,6 +112873,7 @@
       "packages/skills/vendor/agent-skills/frontend-ui-engineering/SKILL.md",
       "packages/skills/vendor/agent-skills/code-review-and-quality/SKILL.md",
       "packages/skills/vendor/agent-skills/incremental-implementation/SKILL.md",
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
       "packages/skills/vendor/agent-skills/api-and-interface-design/SKILL.md",
       "packages/skills/vendor/agent-skills/performance-optimization/SKILL.md",
       "packages/skills/vendor/agent-skills/git-workflow-and-versioning/SKILL.md",
@@ -113772,6 +113896,7 @@
       "docs/adr/ADR-030-prepaid-token-wallet-roadmap.md",
       "docs/adr/ADR-024-ollama-local-worker-primary.md",
       "docs/tenants/peskids/WACRM-TWENTY-CUTOVER.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md",
       "docs/tenants/production/TENANT-PRODUCTION-HARDENING.md",
@@ -114325,6 +114450,7 @@
       "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
       "docs/tenants/peskids/CLIENT-PITCH.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
       "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
@@ -114398,6 +114524,7 @@
       "packages/skills/user/opsly-frontend/SKILL.md",
       "packages/skills/README.md",
       "apps/admin/INVITATIONS_UI.md",
+      "docs/brand/peskids/BRAND.md",
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
       "docs/01-development/AUTOMATION-PLAN.md",
@@ -116486,7 +116613,6 @@
       "packages/skills/templates/template-mcp-tool.md",
       "packages/skills/templates/template-bash-script.md",
       "packages/skills/vendor/agent-skills/documentation-and-adrs/SKILL.md",
-      "packages/skills/vendor/agent-skills/planning-and-task-breakdown/SKILL.md",
       ".cursor/prompts/local-services-ops-admin.md",
       ".github/PULL_REQUEST_TEMPLATE.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/report-template.md",
@@ -117258,10 +117384,12 @@
     "process": [
       "packages/skills/vendor/agent-skills/interview-me/SKILL.md",
       "packages/skills/vendor/agent-skills/code-review-and-quality/SKILL.md",
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
       "packages/skills/vendor/agent-skills/planning-and-task-breakdown/SKILL.md",
       "packages/skills/vendor/agent-skills/source-driven-development/SKILL.md",
       "packages/skills/vendor/agent-skills/code-simplification/SKILL.md",
       "packages/skills/vendor/agent-skills/idea-refine/SKILL.md",
+      "packages/skills/vendor/agent-skills/security-and-hardening/SKILL.md",
       "packages/skills/vendor/agent-skills/deprecation-and-migration/SKILL.md",
       "packages/skills/vendor/agent-skills/doubt-driven-development/SKILL.md",
       "lib/components/GOVERNANCE.md",
@@ -117682,6 +117810,7 @@
     ],
     "question": [
       "packages/skills/vendor/agent-skills/interview-me/SKILL.md",
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
       "vendor/agency-agents/integrations/qwen/agents/zhihu-strategist.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/zhihu-strategist/SKILL.md",
       "vendor/agency-agents/integrations/kimi/zhihu-strategist/system.md",
@@ -117709,7 +117838,6 @@
     ],
     "step": [
       "packages/skills/vendor/agent-skills/interview-me/SKILL.md",
-      "packages/skills/vendor/agent-skills/code-review-and-quality/SKILL.md",
       "packages/skills/vendor/agent-skills/performance-optimization/SKILL.md",
       "packages/skills/vendor/agent-skills/planning-and-task-breakdown/SKILL.md",
       "packages/skills/vendor/agent-skills/source-driven-development/SKILL.md",
@@ -118667,7 +118795,6 @@
     ],
     "state": [
       "packages/skills/vendor/agent-skills/frontend-ui-engineering/SKILL.md",
-      "packages/skills/vendor/agent-skills/test-driven-development/SKILL.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/state-management.md",
       "vendor/agency-agents/integrations/qwen/agents/workflow-optimizer.md",
       "vendor/agency-agents/integrations/qwen/agents/game-audio-engineer.md",
@@ -119120,6 +119247,9 @@
       "vendor/agency-agents/integrations/opencode/agents/level-designer.md",
       "vendor/agency-agents/integrations/openclaw/level-designer/SOUL.md"
     ],
+    "remedies": [
+      "packages/skills/vendor/agent-skills/code-review-and-quality/SKILL.md"
+    ],
     "simplicity": [
       "packages/skills/vendor/agent-skills/code-review-and-quality/SKILL.md",
       "packages/skills/vendor/agent-skills/incremental-implementation/SKILL.md",
@@ -119129,24 +119259,35 @@
       "packages/skills/vendor/agent-skills/code-review-and-quality/SKILL.md",
       "packages/skills/vendor/agent-skills/planning-and-task-breakdown/SKILL.md"
     ],
-    "understand": [
+    "structural": [
       "packages/skills/vendor/agent-skills/code-review-and-quality/SKILL.md",
-      "packages/skills/vendor/agent-skills/code-simplification/SKILL.md",
-      "packages/skills/vendor/agent-skills/idea-refine/SKILL.md",
-      "vendor/agency-agents/integrations/qwen/agents/ux-researcher.md",
-      "vendor/agency-agents/integrations/qwen/agents/language-translator.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/ux-researcher/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/language-translator/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/ux-researcher/system.md",
-      "vendor/agency-agents/integrations/kimi/language-translator/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-language-translator/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-ux-researcher/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/ux-researcher.md",
-      "vendor/agency-agents/integrations/opencode/agents/language-translator.md",
-      "vendor/agency-agents/integrations/openclaw/healthcare-customer-service/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/customer-service/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/ux-researcher/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/language-translator/AGENTS.md"
+      "vendor/agency-agents/integrations/qwen/agents/filament-optimization-specialist.md",
+      "vendor/agency-agents/integrations/qwen/agents/legal-document-review.md",
+      "vendor/agency-agents/integrations/qwen/agents/civil-engineer.md",
+      "vendor/agency-agents/integrations/qwen/agents/email-intelligence-engineer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/email-intelligence-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/legal-document-review/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/civil-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/filament-optimization-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/email-intelligence-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/legal-document-review/system.md",
+      "vendor/agency-agents/integrations/kimi/civil-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/filament-optimization-specialist/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-email-intelligence-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-legal-document-review/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-filament-optimization-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-civil-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/filament-optimization-specialist.md",
+      "vendor/agency-agents/integrations/opencode/agents/legal-document-review.md",
+      "vendor/agency-agents/integrations/opencode/agents/civil-engineer.md",
+      "vendor/agency-agents/integrations/opencode/agents/email-intelligence-engineer.md",
+      "vendor/agency-agents/integrations/openclaw/email-intelligence-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/legal-document-review/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/civil-engineer/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/civil-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/filament-optimization-specialist/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/filament-optimization-specialist/AGENTS.md",
+      "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md"
     ],
     "compilable": [
       "packages/skills/vendor/agent-skills/incremental-implementation/SKILL.md"
@@ -119221,7 +119362,9 @@
     "first": [
       "packages/skills/vendor/agent-skills/incremental-implementation/SKILL.md",
       "packages/skills/vendor/agent-skills/api-and-interface-design/SKILL.md",
+      "packages/skills/vendor/agent-skills/documentation-and-adrs/SKILL.md",
       "packages/skills/vendor/agent-skills/security-and-hardening/SKILL.md",
+      "packages/skills/vendor/agent-skills/test-driven-development/SKILL.md",
       ".archived/context-builder-v2/src/design/architecture.md",
       "tools/agent-packs/vendor/the-architect/knowledge/archetypes/marketing-site.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/styling-systems.md",
@@ -120544,6 +120687,321 @@
       "docs/blueprints/README.md",
       "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md"
     ],
+    "alerting": [
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
+      "lib/observability/GOVERNANCE.md",
+      "vendor/agency-agents/integrations/qwen/agents/devops-automator.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/devops-automator/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/devops-automator/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-devops-automator/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/devops-automator.md",
+      "vendor/agency-agents/integrations/openclaw/devops-automator/AGENTS.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
+      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
+      "docs/reports/E2E-TESTING-PLAN.md"
+    ],
+    "before": [
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
+      "packages/skills/vendor/agent-skills/code-simplification/SKILL.md",
+      "tools/productivity-starter/DEMO-WALKTHROUGH.md",
+      "tools/productivity-starter/README.md",
+      "tools/productivity-starter/demo-script.md",
+      "vendor/agency-agents/integrations/qwen/agents/seo-specialist.md",
+      "vendor/agency-agents/integrations/qwen/agents/minimal-change-engineer.md",
+      "vendor/agency-agents/integrations/qwen/agents/sprint-prioritizer.md",
+      "vendor/agency-agents/integrations/qwen/agents/ai-data-remediation-engineer.md",
+      "vendor/agency-agents/integrations/qwen/agents/git-workflow-master.md",
+      "vendor/agency-agents/integrations/qwen/agents/codebase-onboarding-engineer.md",
+      "vendor/agency-agents/integrations/qwen/agents/sales-engineer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/sprint-prioritizer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/seo-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/codebase-onboarding-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/sales-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/git-workflow-master/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/minimal-change-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/ai-data-remediation-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/sprint-prioritizer/system.md",
+      "vendor/agency-agents/integrations/kimi/seo-specialist/system.md",
+      "vendor/agency-agents/integrations/kimi/codebase-onboarding-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/sales-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/git-workflow-master/system.md",
+      "vendor/agency-agents/integrations/kimi/minimal-change-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/ai-data-remediation-engineer/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-seo-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-codebase-onboarding-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-sprint-prioritizer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-minimal-change-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-git-workflow-master/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-sales-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-ai-data-remediation-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/seo-specialist.md",
+      "vendor/agency-agents/integrations/opencode/agents/minimal-change-engineer.md",
+      "vendor/agency-agents/integrations/opencode/agents/sprint-prioritizer.md",
+      "vendor/agency-agents/integrations/opencode/agents/ai-data-remediation-engineer.md",
+      "vendor/agency-agents/integrations/opencode/agents/git-workflow-master.md",
+      "vendor/agency-agents/integrations/opencode/agents/codebase-onboarding-engineer.md",
+      "vendor/agency-agents/integrations/opencode/agents/sales-engineer.md",
+      "vendor/agency-agents/integrations/openclaw/sprint-prioritizer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/seo-specialist/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/codebase-onboarding-engineer/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/sales-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/git-workflow-master/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/kuaishou-strategist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/minimal-change-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/ai-data-remediation-engineer/SOUL.md",
+      "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
+      "docs/examples/email-templates/INTCLOUDSYSOPS-EMAIL-TEMPLATES.md",
+      "docs/examples/n8n/PESKIDS-N8N-DEPLOYMENT.md",
+      "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
+      "docs/tenants/peskids/DEPLOYMENT-STRATEGY.md",
+      "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
+      "docs/tenants/peskids/SPRINT-01-STATUS.md",
+      "docs/tenants/peskids/SPRINT-01.md",
+      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
+      "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
+      "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
+      "docs/reports/session-summary-2026-05-21.md",
+      "docs/blueprints/BRANCH-CLEANUP-AUDIT.md",
+      "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
+      "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md",
+      "docs/blueprints/TWENTY-BOOTSTRAP-IRREDUCIBLE.md",
+      "docs/blueprints/PHASE1-PHASE2-STATUS.md"
+    ],
+    "common": [
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
+      "packages/skills/vendor/agent-skills/performance-optimization/SKILL.md",
+      "packages/skills/vendor/agent-skills/source-driven-development/SKILL.md",
+      "packages/skills/vendor/agent-skills/doubt-driven-development/SKILL.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/archetypes/internal-tool.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/archetypes/api-backend.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/archetypes/mobile-app.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/archetypes/marketing-site.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/archetypes/content-platform.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/archetypes/saas-webapp.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/database-patterns.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/auth-patterns.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/deployment-patterns.md",
+      "tools/productivity-starter/demo-script.md",
+      "docs/governance/SOC2-READINESS.md",
+      "docs/runbooks/OPERATIONS-HANDBOOK.md",
+      "docs/04-infrastructure/REDIS-QUEUE-GUIDE.md",
+      "docs/03-agents/AGENT-TEAM-OVERVIEW.md",
+      "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
+      ".agents/skills/the-architect/references/knowledge/archetypes/internal-tool.md",
+      ".agents/skills/the-architect/references/knowledge/archetypes/api-backend.md",
+      ".agents/skills/the-architect/references/knowledge/archetypes/mobile-app.md",
+      ".agents/skills/the-architect/references/knowledge/archetypes/marketing-site.md",
+      ".agents/skills/the-architect/references/knowledge/archetypes/content-platform.md",
+      ".agents/skills/the-architect/references/knowledge/archetypes/saas-webapp.md",
+      ".agents/skills/the-architect/references/knowledge/building-blocks/database-patterns.md",
+      ".agents/skills/the-architect/references/knowledge/building-blocks/auth-patterns.md",
+      ".agents/skills/the-architect/references/knowledge/building-blocks/deployment-patterns.md"
+    ],
+    "define": [
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
+      "lib/migrations/README.md",
+      "lib/testing/README.md",
+      "vendor/agency-agents/integrations/qwen/agents/book-co-author.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/book-co-author/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/book-co-author/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-book-co-author/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/book-co-author.md",
+      "vendor/agency-agents/integrations/openclaw/book-co-author/AGENTS.md",
+      "docs/01-development/AGENT-SKILLS-INTEGRATION.md",
+      "docs/tenants/peskids/SPRINT-01.md"
+    ],
+    "flags": [
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
+      "packages/skills/vendor/agent-skills/source-driven-development/SKILL.md",
+      "packages/skills/vendor/agent-skills/doubt-driven-development/SKILL.md",
+      "packages/skills/vendor/agent-skills/ci-cd-and-automation/SKILL.md",
+      "lib/config/README.md",
+      "docs/tenants/peskids/WACRM-TWENTY-CUTOVER.md",
+      "docs/tenants/peskids/PESKIDS-PRO-1.0-RUNBOOK.md",
+      "docs/tenants/intcloudsysops/WHATSAPP-FIRST-PACKAGE.md",
+      "docs/tenants/intcloudsysops/WACRM-OFFERING.md",
+      "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md",
+      "docs/blueprints/AI-TENANT-SETUP-BLUEPRINT.md",
+      "docs/blueprints/WOMPI-PAYMENT-GATEWAY-CONTRACT.md"
+    ],
+    "instrumentation": [
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md"
+    ],
+    "instrumenting": [
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md"
+    ],
+    "itself": [
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md"
+    ],
+    "pick": [
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
+      "vendor/agency-agents/integrations/openclaw/douyin-strategist/AGENTS.md",
+      "docs/03-agents/PARALLEL-AGENTS-ORCHESTRATION.md"
+    ],
+    "rationalizations": [
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
+      "packages/skills/vendor/agent-skills/source-driven-development/SKILL.md",
+      "packages/skills/vendor/agent-skills/doubt-driven-development/SKILL.md"
+    ],
+    "red": [
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
+      "packages/skills/vendor/agent-skills/source-driven-development/SKILL.md",
+      "packages/skills/vendor/agent-skills/test-driven-development/SKILL.md",
+      "packages/skills/vendor/agent-skills/doubt-driven-development/SKILL.md",
+      "vendor/agency-agents/integrations/qwen/agents/private-domain-operator.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/private-domain-operator/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/private-domain-operator/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-private-domain-operator/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/private-domain-operator.md",
+      "vendor/agency-agents/integrations/openclaw/short-video-editing-coach/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/weibo-strategist/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/cross-border-e-commerce-specialist/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/podcast-strategist/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/private-domain-operator/SOUL.md",
+      "docs/runbooks/PRODUCTION-SECURITY-BASELINE.md",
+      "docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md",
+      "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
+      "docs/04-infrastructure/MAC-ADMIN-ORCHESTRATOR-WORKER.md",
+      "docs/04-infrastructure/SECURITY_CHECKLIST.md",
+      "docs/tenants/peskids/OPS-RUNBOOK.md",
+      "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
+      "docs/tenants/production/TENANT-PRODUCTION-HARDENING.md"
+    ],
+    "right": [
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
+      "vendor/agency-agents/integrations/qwen/agents/compliance-auditor.md",
+      "vendor/agency-agents/integrations/qwen/agents/chief-of-staff.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/compliance-auditor/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/chief-of-staff/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/compliance-auditor/system.md",
+      "vendor/agency-agents/integrations/kimi/chief-of-staff/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-compliance-auditor/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-chief-of-staff/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/compliance-auditor.md",
+      "vendor/agency-agents/integrations/opencode/agents/chief-of-staff.md",
+      "vendor/agency-agents/integrations/openclaw/compliance-auditor/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/chief-of-staff/SOUL.md",
+      "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md"
+    ],
+    "signal": [
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
+      "vendor/agency-agents/integrations/qwen/agents/filament-optimization-specialist.md",
+      "vendor/agency-agents/integrations/qwen/agents/china-market-localization-strategist.md",
+      "vendor/agency-agents/integrations/qwen/agents/outbound-strategist.md",
+      "vendor/agency-agents/integrations/qwen/agents/account-strategist.md",
+      "vendor/agency-agents/integrations/qwen/agents/godot-gameplay-scripter.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/account-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/godot-gameplay-scripter/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/china-market-localization-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/outbound-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/filament-optimization-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/account-strategist/system.md",
+      "vendor/agency-agents/integrations/kimi/godot-gameplay-scripter/system.md",
+      "vendor/agency-agents/integrations/kimi/china-market-localization-strategist/system.md",
+      "vendor/agency-agents/integrations/kimi/outbound-strategist/system.md",
+      "vendor/agency-agents/integrations/kimi/filament-optimization-specialist/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-china-market-localization-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-filament-optimization-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-outbound-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-godot-gameplay-scripter/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-account-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/filament-optimization-specialist.md",
+      "vendor/agency-agents/integrations/opencode/agents/china-market-localization-strategist.md",
+      "vendor/agency-agents/integrations/opencode/agents/outbound-strategist.md",
+      "vendor/agency-agents/integrations/opencode/agents/account-strategist.md",
+      "vendor/agency-agents/integrations/opencode/agents/godot-gameplay-scripter.md",
+      "vendor/agency-agents/integrations/openclaw/account-strategist/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/godot-gameplay-scripter/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/godot-gameplay-scripter/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/china-market-localization-strategist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/outbound-strategist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/filament-optimization-specialist/SOUL.md"
+    ],
+    "structured": [
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
+      "vendor/agency-agents/integrations/qwen/agents/sales-coach.md",
+      "vendor/agency-agents/integrations/qwen/agents/incident-response-commander.md",
+      "vendor/agency-agents/integrations/qwen/agents/voice-ai-integration-engineer.md",
+      "vendor/agency-agents/integrations/qwen/agents/recruitment-specialist.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/incident-response-commander/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/sales-coach/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/recruitment-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/voice-ai-integration-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/incident-response-commander/system.md",
+      "vendor/agency-agents/integrations/kimi/sales-coach/system.md",
+      "vendor/agency-agents/integrations/kimi/recruitment-specialist/system.md",
+      "vendor/agency-agents/integrations/kimi/voice-ai-integration-engineer/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-sales-coach/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-voice-ai-integration-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-incident-response-commander/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-recruitment-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/sales-coach.md",
+      "vendor/agency-agents/integrations/opencode/agents/incident-response-commander.md",
+      "vendor/agency-agents/integrations/opencode/agents/voice-ai-integration-engineer.md",
+      "vendor/agency-agents/integrations/opencode/agents/recruitment-specialist.md",
+      "vendor/agency-agents/integrations/openclaw/incident-response-commander/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/seo-specialist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/sales-coach/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/recruitment-specialist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/voice-ai-integration-engineer/AGENTS.md"
+    ],
+    "telemetry": [
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
+      "lib/telemetry/README.md",
+      "lib/telemetry/GOVERNANCE.md",
+      "apps/orchestrator/src/meta/README.md"
+    ],
+    "verify": [
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
+      "packages/skills/vendor/agent-skills/using-agent-skills/SKILL.md",
+      "packages/skills/vendor/agent-skills/debugging-and-error-recovery/SKILL.md",
+      "tools/agent-packs/vendor/cyber-neo/README.md",
+      "lib/security/README.md",
+      "apps/peskids/DEPLOYMENT.md",
+      "apps/intcloudsysops/DEPLOYMENT.md",
+      "vendor/agency-agents/integrations/openclaw/workflow-architect/SOUL.md",
+      "docs/growth/WEEK-1-AGENCIAS-OUTREACH.md",
+      "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
+      "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
+      "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
+      "docs/01-development/PHASE-2-DEPLOYMENT.md",
+      "docs/01-development/AGENT-SKILLS-INTEGRATION.md",
+      "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
+      "docs/04-infrastructure/MCP-ORCHESTRATOR-DEPLOYMENT.md",
+      "docs/05-deployment-status/DEPLOYMENT-STATUS-2026-05-04.md",
+      "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/operations/RUN-VALIDATION-LOCALLY.md",
+      "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
+      "docs/tenants/peskids/PESKIDS-ADMIN-USER-VALIDATION.md",
+      "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
+      "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
+      "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
+      "docs/demo/hackathon-demo.md",
+      "docs/testing/PR-187-TESTING-GUIDE.md",
+      "docs/testing/PHASE-2-TESTING.md",
+      "docs/reports/PESKIDS-E2E-VALIDATION.md",
+      "docs/reports/ICSO-E2E-VALIDATION.md",
+      "docs/blueprints/BRANCH-CLEANUP-AUDIT.md",
+      "docs/blueprints/PESKIDS-GHL-DISABLE-RUNBOOK.md",
+      "docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md",
+      "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md",
+      ".agents/UNIFIED-AGENT-ARCHITECTURE.md",
+      ".agents/VPS-PRODUCTION-SETUP.md"
+    ],
+    "working": [
+      "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
+      "vendor/agency-agents/integrations/qwen/agents/rapid-prototyper.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/rapid-prototyper/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/rapid-prototyper/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-rapid-prototyper/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/rapid-prototyper.md",
+      "vendor/agency-agents/integrations/openclaw/agentic-identity-trust-architect/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/rapid-prototyper/AGENTS.md",
+      "docs/01-development/QA-REVIEW-COMPLETE.md",
+      "docs/audits/SALES-READINESS-HARDENING.md",
+      "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md"
+    ],
     "addition": [
       "packages/skills/vendor/agent-skills/api-and-interface-design/SKILL.md"
     ],
@@ -121061,35 +121519,6 @@
       "packages/skills/vendor/agent-skills/performance-optimization/SKILL.md",
       "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md"
-    ],
-    "common": [
-      "packages/skills/vendor/agent-skills/performance-optimization/SKILL.md",
-      "packages/skills/vendor/agent-skills/source-driven-development/SKILL.md",
-      "packages/skills/vendor/agent-skills/doubt-driven-development/SKILL.md",
-      "tools/agent-packs/vendor/the-architect/knowledge/archetypes/internal-tool.md",
-      "tools/agent-packs/vendor/the-architect/knowledge/archetypes/api-backend.md",
-      "tools/agent-packs/vendor/the-architect/knowledge/archetypes/mobile-app.md",
-      "tools/agent-packs/vendor/the-architect/knowledge/archetypes/marketing-site.md",
-      "tools/agent-packs/vendor/the-architect/knowledge/archetypes/content-platform.md",
-      "tools/agent-packs/vendor/the-architect/knowledge/archetypes/saas-webapp.md",
-      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/database-patterns.md",
-      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/auth-patterns.md",
-      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/deployment-patterns.md",
-      "tools/productivity-starter/demo-script.md",
-      "docs/governance/SOC2-READINESS.md",
-      "docs/runbooks/OPERATIONS-HANDBOOK.md",
-      "docs/04-infrastructure/REDIS-QUEUE-GUIDE.md",
-      "docs/03-agents/AGENT-TEAM-OVERVIEW.md",
-      "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
-      ".agents/skills/the-architect/references/knowledge/archetypes/internal-tool.md",
-      ".agents/skills/the-architect/references/knowledge/archetypes/api-backend.md",
-      ".agents/skills/the-architect/references/knowledge/archetypes/mobile-app.md",
-      ".agents/skills/the-architect/references/knowledge/archetypes/marketing-site.md",
-      ".agents/skills/the-architect/references/knowledge/archetypes/content-platform.md",
-      ".agents/skills/the-architect/references/knowledge/archetypes/saas-webapp.md",
-      ".agents/skills/the-architect/references/knowledge/building-blocks/database-patterns.md",
-      ".agents/skills/the-architect/references/knowledge/building-blocks/auth-patterns.md",
-      ".agents/skills/the-architect/references/knowledge/building-blocks/deployment-patterns.md"
     ],
     "fetching": [
       "packages/skills/vendor/agent-skills/performance-optimization/SKILL.md",
@@ -122780,6 +123209,18 @@
       "docs/03-agents/AGENT-PROMPTS-REFERENCE.md",
       "docs/adr/ADR-046-family-email-invite-access.md"
     ],
+    "convention": [
+      "packages/skills/vendor/agent-skills/documentation-and-adrs/SKILL.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/frontend-stacks.md",
+      "lib/migrations/GOVERNANCE.md",
+      "vendor/agency-agents/integrations/qwen/agents/game-audio-engineer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/game-audio-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/game-audio-engineer/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-game-audio-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/game-audio-engineer.md",
+      "vendor/agency-agents/integrations/openclaw/game-audio-engineer/AGENTS.md",
+      ".agents/skills/the-architect/references/knowledge/building-blocks/frontend-stacks.md"
+    ],
     "date": [
       "packages/skills/vendor/agent-skills/documentation-and-adrs/SKILL.md",
       "vendor/agency-agents/integrations/qwen/agents/salesforce-architect.md",
@@ -122883,6 +123324,20 @@
       "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/blueprints/README-PHASE1-EXECUTE.md"
     ],
+    "existing": [
+      "packages/skills/vendor/agent-skills/documentation-and-adrs/SKILL.md",
+      "vendor/agency-agents/integrations/qwen/agents/autonomous-optimization-architect.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/autonomous-optimization-architect/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/autonomous-optimization-architect/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-autonomous-optimization-architect/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/autonomous-optimization-architect.md",
+      "vendor/agency-agents/integrations/openclaw/autonomous-optimization-architect/AGENTS.md",
+      "docs/01-development/PHASE2-ROADMAP.md"
+    ],
+    "match": [
+      "packages/skills/vendor/agent-skills/documentation-and-adrs/SKILL.md",
+      "docs/adr/ADR-028-agent-api-routing.md"
+    ],
     "mongodb": [
       "packages/skills/vendor/agent-skills/documentation-and-adrs/SKILL.md"
     ],
@@ -122896,9 +123351,6 @@
       "vendor/agency-agents/integrations/openclaw/identity-graph-operator/AGENTS.md",
       "docs/governance/internal/CHANGE-MANAGEMENT-POLICY.md",
       "docs/adr/README.md"
-    ],
-    "sqlite": [
-      "packages/skills/vendor/agent-skills/documentation-and-adrs/SKILL.md"
     ],
     "status": [
       "packages/skills/vendor/agent-skills/documentation-and-adrs/SKILL.md",
@@ -123020,87 +123472,6 @@
       "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
       "docs/01-development/SEMANA-3-INFORME.md",
       "docs/01-development/SEMANA-2-INFORME.md"
-    ],
-    "document": [
-      "packages/skills/vendor/agent-skills/planning-and-task-breakdown/SKILL.md",
-      "packages/skills/vendor/agent-skills/deprecation-and-migration/SKILL.md",
-      "vendor/agency-agents/integrations/qwen/agents/legal-document-review.md",
-      "vendor/agency-agents/integrations/qwen/agents/document-generator.md",
-      "vendor/agency-agents/integrations/qwen/agents/security-engineer.md",
-      "vendor/agency-agents/integrations/qwen/agents/game-designer.md",
-      "vendor/agency-agents/integrations/qwen/agents/government-digital-presales-consultant.md",
-      "vendor/agency-agents/integrations/qwen/agents/roblox-experience-designer.md",
-      "vendor/agency-agents/integrations/qwen/agents/loan-officer-assistant.md",
-      "vendor/agency-agents/integrations/qwen/agents/experiment-tracker.md",
-      "vendor/agency-agents/integrations/qwen/agents/level-designer.md",
-      "vendor/agency-agents/integrations/qwen/agents/product-manager.md",
-      "vendor/agency-agents/integrations/qwen/agents/chief-of-staff.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/level-designer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/legal-document-review/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/government-digital-presales-consultant/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/roblox-experience-designer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/product-manager/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/chief-of-staff/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/game-designer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/security-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/document-generator/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/loan-officer-assistant/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/experiment-tracker/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/level-designer/system.md",
-      "vendor/agency-agents/integrations/kimi/legal-document-review/system.md",
-      "vendor/agency-agents/integrations/kimi/government-digital-presales-consultant/system.md",
-      "vendor/agency-agents/integrations/kimi/roblox-experience-designer/system.md",
-      "vendor/agency-agents/integrations/kimi/product-manager/system.md",
-      "vendor/agency-agents/integrations/kimi/chief-of-staff/system.md",
-      "vendor/agency-agents/integrations/kimi/game-designer/system.md",
-      "vendor/agency-agents/integrations/kimi/security-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/document-generator/system.md",
-      "vendor/agency-agents/integrations/kimi/loan-officer-assistant/system.md",
-      "vendor/agency-agents/integrations/kimi/experiment-tracker/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-game-designer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-document-generator/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-legal-document-review/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-chief-of-staff/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-government-digital-presales-consultant/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-product-manager/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-security-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-loan-officer-assistant/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-roblox-experience-designer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-experiment-tracker/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-level-designer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/legal-document-review.md",
-      "vendor/agency-agents/integrations/opencode/agents/document-generator.md",
-      "vendor/agency-agents/integrations/opencode/agents/security-engineer.md",
-      "vendor/agency-agents/integrations/opencode/agents/game-designer.md",
-      "vendor/agency-agents/integrations/opencode/agents/government-digital-presales-consultant.md",
-      "vendor/agency-agents/integrations/opencode/agents/roblox-experience-designer.md",
-      "vendor/agency-agents/integrations/opencode/agents/loan-officer-assistant.md",
-      "vendor/agency-agents/integrations/opencode/agents/experiment-tracker.md",
-      "vendor/agency-agents/integrations/opencode/agents/level-designer.md",
-      "vendor/agency-agents/integrations/opencode/agents/product-manager.md",
-      "vendor/agency-agents/integrations/opencode/agents/chief-of-staff.md",
-      "vendor/agency-agents/integrations/openclaw/incident-response-commander/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/level-designer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/legal-document-review/IDENTITY.md",
-      "vendor/agency-agents/integrations/openclaw/legal-document-review/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/government-digital-presales-consultant/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/roblox-experience-designer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/product-manager/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/chief-of-staff/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/chief-of-staff/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/game-designer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/security-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/document-generator/IDENTITY.md",
-      "vendor/agency-agents/integrations/openclaw/document-generator/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/loan-officer-assistant/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/experiment-tracker/AGENTS.md",
-      "docs/projects/PESKIDS-SCOPE.md",
-      "docs/history/consolidation/CONSOLIDATION-INDEX.md",
-      "docs/adr/ADR-043-supplement/COMPLETE-INDEX.md",
-      "docs/adr/ADR-043-supplement/README.md",
-      "docs/tenants/peskids/TEMPLATE-STATUS.md",
-      "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
-      "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md"
     ],
     "enter": [
       "packages/skills/vendor/agent-skills/planning-and-task-breakdown/SKILL.md",
@@ -123390,19 +123761,6 @@
       "docs/00-architecture/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
       "docs/01-development/QA-REVIEW-COMPLETE.md"
     ],
-    "flags": [
-      "packages/skills/vendor/agent-skills/source-driven-development/SKILL.md",
-      "packages/skills/vendor/agent-skills/doubt-driven-development/SKILL.md",
-      "packages/skills/vendor/agent-skills/ci-cd-and-automation/SKILL.md",
-      "lib/config/README.md",
-      "docs/tenants/peskids/WACRM-TWENTY-CUTOVER.md",
-      "docs/tenants/peskids/PESKIDS-PRO-1.0-RUNBOOK.md",
-      "docs/tenants/intcloudsysops/WHATSAPP-FIRST-PACKAGE.md",
-      "docs/tenants/intcloudsysops/WACRM-OFFERING.md",
-      "docs/blueprints/WACRM-TWENTY-HYBRID-CONTRACT.md",
-      "docs/blueprints/AI-TENANT-SETUP-BLUEPRINT.md",
-      "docs/blueprints/WOMPI-PAYMENT-GATEWAY-CONTRACT.md"
-    ],
     "following": [
       "packages/skills/vendor/agent-skills/source-driven-development/SKILL.md"
     ],
@@ -123421,33 +123779,6 @@
       "vendor/agency-agents/integrations/openclaw/wechat-official-account-manager/IDENTITY.md",
       "vendor/agency-agents/integrations/openclaw/wechat-official-account-manager/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/jira-workflow-steward/AGENTS.md"
-    ],
-    "rationalizations": [
-      "packages/skills/vendor/agent-skills/source-driven-development/SKILL.md",
-      "packages/skills/vendor/agent-skills/doubt-driven-development/SKILL.md"
-    ],
-    "red": [
-      "packages/skills/vendor/agent-skills/source-driven-development/SKILL.md",
-      "packages/skills/vendor/agent-skills/test-driven-development/SKILL.md",
-      "packages/skills/vendor/agent-skills/doubt-driven-development/SKILL.md",
-      "vendor/agency-agents/integrations/qwen/agents/private-domain-operator.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/private-domain-operator/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/private-domain-operator/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-private-domain-operator/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/private-domain-operator.md",
-      "vendor/agency-agents/integrations/openclaw/short-video-editing-coach/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/weibo-strategist/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/cross-border-e-commerce-specialist/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/podcast-strategist/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/private-domain-operator/SOUL.md",
-      "docs/runbooks/PRODUCTION-SECURITY-BASELINE.md",
-      "docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md",
-      "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
-      "docs/04-infrastructure/MAC-ADMIN-ORCHESTRATOR-WORKER.md",
-      "docs/04-infrastructure/SECURITY_CHECKLIST.md",
-      "docs/tenants/peskids/OPS-RUNBOOK.md",
-      "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
-      "docs/tenants/production/TENANT-PRODUCTION-HARDENING.md"
     ],
     "source": [
       "packages/skills/vendor/agent-skills/source-driven-development/SKILL.md",
@@ -123542,72 +123873,6 @@
       "vendor/agency-agents/integrations/openclaw/whimsy-injector/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/game-designer/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/game-designer/AGENTS.md"
-    ],
-    "before": [
-      "packages/skills/vendor/agent-skills/code-simplification/SKILL.md",
-      "tools/productivity-starter/DEMO-WALKTHROUGH.md",
-      "tools/productivity-starter/README.md",
-      "tools/productivity-starter/demo-script.md",
-      "vendor/agency-agents/integrations/qwen/agents/seo-specialist.md",
-      "vendor/agency-agents/integrations/qwen/agents/minimal-change-engineer.md",
-      "vendor/agency-agents/integrations/qwen/agents/sprint-prioritizer.md",
-      "vendor/agency-agents/integrations/qwen/agents/ai-data-remediation-engineer.md",
-      "vendor/agency-agents/integrations/qwen/agents/git-workflow-master.md",
-      "vendor/agency-agents/integrations/qwen/agents/codebase-onboarding-engineer.md",
-      "vendor/agency-agents/integrations/qwen/agents/sales-engineer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/sprint-prioritizer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/seo-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/codebase-onboarding-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/sales-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/git-workflow-master/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/minimal-change-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/ai-data-remediation-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/sprint-prioritizer/system.md",
-      "vendor/agency-agents/integrations/kimi/seo-specialist/system.md",
-      "vendor/agency-agents/integrations/kimi/codebase-onboarding-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/sales-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/git-workflow-master/system.md",
-      "vendor/agency-agents/integrations/kimi/minimal-change-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/ai-data-remediation-engineer/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-seo-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-codebase-onboarding-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-sprint-prioritizer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-minimal-change-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-git-workflow-master/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-sales-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-ai-data-remediation-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/seo-specialist.md",
-      "vendor/agency-agents/integrations/opencode/agents/minimal-change-engineer.md",
-      "vendor/agency-agents/integrations/opencode/agents/sprint-prioritizer.md",
-      "vendor/agency-agents/integrations/opencode/agents/ai-data-remediation-engineer.md",
-      "vendor/agency-agents/integrations/opencode/agents/git-workflow-master.md",
-      "vendor/agency-agents/integrations/opencode/agents/codebase-onboarding-engineer.md",
-      "vendor/agency-agents/integrations/opencode/agents/sales-engineer.md",
-      "vendor/agency-agents/integrations/openclaw/sprint-prioritizer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/seo-specialist/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/codebase-onboarding-engineer/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/sales-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/git-workflow-master/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/kuaishou-strategist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/minimal-change-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/ai-data-remediation-engineer/SOUL.md",
-      "docs/04-operations/VALIDATION-ORCHESTRATOR-DEPLOYMENT.md",
-      "docs/examples/email-templates/INTCLOUDSYSOPS-EMAIL-TEMPLATES.md",
-      "docs/examples/n8n/PESKIDS-N8N-DEPLOYMENT.md",
-      "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
-      "docs/tenants/peskids/DEPLOYMENT-STRATEGY.md",
-      "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
-      "docs/tenants/peskids/SPRINT-01-STATUS.md",
-      "docs/tenants/peskids/SPRINT-01.md",
-      "docs/tenants/intcloudsysops/DEPLOYMENT.md",
-      "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
-      "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
-      "docs/reports/session-summary-2026-05-21.md",
-      "docs/blueprints/BRANCH-CLEANUP-AUDIT.md",
-      "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
-      "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md",
-      "docs/blueprints/TWENTY-BOOTSTRAP-IRREDUCIBLE.md",
-      "docs/blueprints/PHASE1-PHASE2-STATUS.md"
     ],
     "behavior": [
       "packages/skills/vendor/agent-skills/code-simplification/SKILL.md",
@@ -124535,6 +124800,24 @@
     ],
     "touching": [
       "packages/skills/vendor/agent-skills/code-simplification/SKILL.md"
+    ],
+    "understand": [
+      "packages/skills/vendor/agent-skills/code-simplification/SKILL.md",
+      "packages/skills/vendor/agent-skills/idea-refine/SKILL.md",
+      "vendor/agency-agents/integrations/qwen/agents/ux-researcher.md",
+      "vendor/agency-agents/integrations/qwen/agents/language-translator.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/ux-researcher/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/language-translator/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/ux-researcher/system.md",
+      "vendor/agency-agents/integrations/kimi/language-translator/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-language-translator/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-ux-researcher/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/ux-researcher.md",
+      "vendor/agency-agents/integrations/opencode/agents/language-translator.md",
+      "vendor/agency-agents/integrations/openclaw/healthcare-customer-service/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/customer-service/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/ux-researcher/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/language-translator/AGENTS.md"
     ],
     "criteria": [
       "packages/skills/vendor/agent-skills/spec-driven-development/SKILL.md",
@@ -125528,10 +125811,112 @@
       ".agents/skills/cyber-neo/references/lang-python.md",
       ".agents/skills/cyber-neo/references/cicd-security.md"
     ],
-    "misconfiguration": [
+    "model": [
       "packages/skills/vendor/agent-skills/security-and-hardening/SKILL.md",
-      "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/owasp-top-10.md",
-      ".agents/skills/cyber-neo/references/owasp-top-10.md"
+      "packages/skills/vendor/agent-skills/test-driven-development/SKILL.md",
+      "packages/skills/vendor/agent-skills/doubt-driven-development/SKILL.md",
+      "tools/agent-packs/vendor/the-architect/templates/blueprint-template.md",
+      "tools/agent-packs/vendor/the-architect/questions/phase-2-branches.md",
+      "apps/peskids/CLAUDE.md",
+      "apps/intcloudsysops/CLAUDE.md",
+      "vendor/agency-agents/integrations/qwen/agents/security-engineer.md",
+      "vendor/agency-agents/integrations/qwen/agents/financial-analyst.md",
+      "vendor/agency-agents/integrations/qwen/agents/salesforce-architect.md",
+      "vendor/agency-agents/integrations/qwen/agents/outbound-strategist.md",
+      "vendor/agency-agents/integrations/qwen/agents/sprint-prioritizer.md",
+      "vendor/agency-agents/integrations/qwen/agents/supply-chain-strategist.md",
+      "vendor/agency-agents/integrations/qwen/agents/unreal-multiplayer-architect.md",
+      "vendor/agency-agents/integrations/qwen/agents/godot-multiplayer-engineer.md",
+      "vendor/agency-agents/integrations/qwen/agents/model-qa-specialist.md",
+      "vendor/agency-agents/integrations/qwen/agents/roblox-systems-scripter.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/godot-multiplayer-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/sprint-prioritizer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/roblox-systems-scripter/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/supply-chain-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/salesforce-architect/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-multiplayer-architect/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/model-qa-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/outbound-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/security-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/financial-analyst/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/godot-multiplayer-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/sprint-prioritizer/system.md",
+      "vendor/agency-agents/integrations/kimi/roblox-systems-scripter/system.md",
+      "vendor/agency-agents/integrations/kimi/supply-chain-strategist/system.md",
+      "vendor/agency-agents/integrations/kimi/salesforce-architect/system.md",
+      "vendor/agency-agents/integrations/kimi/unreal-multiplayer-architect/system.md",
+      "vendor/agency-agents/integrations/kimi/model-qa-specialist/system.md",
+      "vendor/agency-agents/integrations/kimi/outbound-strategist/system.md",
+      "vendor/agency-agents/integrations/kimi/security-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/financial-analyst/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-model-qa-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-supply-chain-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-salesforce-architect/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-security-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-financial-analyst/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-outbound-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-sprint-prioritizer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-roblox-systems-scripter/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-godot-multiplayer-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-unreal-multiplayer-architect/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/security-engineer.md",
+      "vendor/agency-agents/integrations/opencode/agents/financial-analyst.md",
+      "vendor/agency-agents/integrations/opencode/agents/salesforce-architect.md",
+      "vendor/agency-agents/integrations/opencode/agents/outbound-strategist.md",
+      "vendor/agency-agents/integrations/opencode/agents/sprint-prioritizer.md",
+      "vendor/agency-agents/integrations/opencode/agents/supply-chain-strategist.md",
+      "vendor/agency-agents/integrations/opencode/agents/unreal-multiplayer-architect.md",
+      "vendor/agency-agents/integrations/opencode/agents/godot-multiplayer-engineer.md",
+      "vendor/agency-agents/integrations/opencode/agents/model-qa-specialist.md",
+      "vendor/agency-agents/integrations/opencode/agents/roblox-systems-scripter.md",
+      "vendor/agency-agents/integrations/openclaw/agentic-identity-trust-architect/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/godot-multiplayer-engineer/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/sprint-prioritizer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/roblox-systems-scripter/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/supply-chain-strategist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/salesforce-architect/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/unreal-multiplayer-architect/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/model-qa-specialist/IDENTITY.md",
+      "vendor/agency-agents/integrations/openclaw/model-qa-specialist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/pipeline-analyst/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/outbound-strategist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/security-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/financial-analyst/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/ai-engineer/AGENTS.md",
+      "docs/04-operations/COST-MONITORING-GUIDE.md",
+      "docs/projects/PESKIDS-SCOPE.md",
+      "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
+      "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
+      "docs/00-architecture/OPSLY-CONTROL-PLANE.md",
+      "docs/00-architecture/INCUBATION-PLATFORM-CONTRACT.md",
+      "docs/01-development/NEXT-STEPS.md",
+      "docs/01-development/SEMANA-5-INFORME.md",
+      "docs/01-development/PHASE-5-ADVANCED-FEATURES.md",
+      "docs/01-development/PHASE-5-IMPLEMENTATION-BLUEPRINT.md",
+      "docs/04-infrastructure/MACOS-LOCAL-AI-AUTOMATION.md",
+      "docs/03-agents/QUICK-REFERENCE-HERMES-OPSLY.md",
+      "docs/adr/ADR-040-technician-scaling-solo-to-assistant.md",
+      "docs/adr/ADR-016-legalvial-multitenant-model.md",
+      "docs/adr/ADR-029-mcp-orchestration.md",
+      "docs/adr/ADR-047-fable5-model-strategy.md",
+      "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
+      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
+      "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
+      "docs/tenants/peskids/GOHIGHLEVEL-CONTRACT.md",
+      "docs/tenants/peskids/DATA-MODEL.md",
+      "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
+      "docs/tenants/intcloudsysops/DATA-MODEL.md",
+      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
+      "docs/brain/TENANT-AI-PLAYBOOK.md",
+      "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
+      "docs/reports/SESSION-SUMMARY-2026-05-08.md",
+      "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md",
+      "docs/blueprints/N8N-AUTOMATION-GUARANTEES.md",
+      "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
+      ".claude/AGENTS-ENHANCEMENTS.md",
+      ".agents/skills/the-architect/references/templates/blueprint-template.md",
+      ".agents/skills/the-architect/references/questions/phase-2-branches.md",
+      ".agents/IMPLEMENTATION-CHECKLIST.md"
     ],
     "nosql": [
       "packages/skills/vendor/agent-skills/security-and-hardening/SKILL.md",
@@ -125580,6 +125965,24 @@
       ".agents/skills/cyber-neo/references/lang-python.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/marketing-site.md",
       ".agents/skills/the-architect/references/questions/phase-2-branches.md"
+    ],
+    "threat": [
+      "packages/skills/vendor/agent-skills/security-and-hardening/SKILL.md",
+      "vendor/agency-agents/integrations/qwen/agents/threat-detection-engineer.md",
+      "vendor/agency-agents/integrations/qwen/agents/security-engineer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/security-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/threat-detection-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/security-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/threat-detection-engineer/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-threat-detection-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-security-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/threat-detection-engineer.md",
+      "vendor/agency-agents/integrations/opencode/agents/security-engineer.md",
+      "vendor/agency-agents/integrations/openclaw/security-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/solidity-smart-contract-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/threat-detection-engineer/IDENTITY.md",
+      "vendor/agency-agents/integrations/openclaw/threat-detection-engineer/AGENTS.md",
+      "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md"
     ],
     "three": [
       "packages/skills/vendor/agent-skills/security-and-hardening/SKILL.md",
@@ -125877,6 +126280,86 @@
     "compulsory": [
       "packages/skills/vendor/agent-skills/deprecation-and-migration/SKILL.md"
     ],
+    "document": [
+      "packages/skills/vendor/agent-skills/deprecation-and-migration/SKILL.md",
+      "vendor/agency-agents/integrations/qwen/agents/legal-document-review.md",
+      "vendor/agency-agents/integrations/qwen/agents/document-generator.md",
+      "vendor/agency-agents/integrations/qwen/agents/security-engineer.md",
+      "vendor/agency-agents/integrations/qwen/agents/game-designer.md",
+      "vendor/agency-agents/integrations/qwen/agents/government-digital-presales-consultant.md",
+      "vendor/agency-agents/integrations/qwen/agents/roblox-experience-designer.md",
+      "vendor/agency-agents/integrations/qwen/agents/loan-officer-assistant.md",
+      "vendor/agency-agents/integrations/qwen/agents/experiment-tracker.md",
+      "vendor/agency-agents/integrations/qwen/agents/level-designer.md",
+      "vendor/agency-agents/integrations/qwen/agents/product-manager.md",
+      "vendor/agency-agents/integrations/qwen/agents/chief-of-staff.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/level-designer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/legal-document-review/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/government-digital-presales-consultant/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/roblox-experience-designer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/product-manager/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/chief-of-staff/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/game-designer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/security-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/document-generator/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/loan-officer-assistant/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/experiment-tracker/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/level-designer/system.md",
+      "vendor/agency-agents/integrations/kimi/legal-document-review/system.md",
+      "vendor/agency-agents/integrations/kimi/government-digital-presales-consultant/system.md",
+      "vendor/agency-agents/integrations/kimi/roblox-experience-designer/system.md",
+      "vendor/agency-agents/integrations/kimi/product-manager/system.md",
+      "vendor/agency-agents/integrations/kimi/chief-of-staff/system.md",
+      "vendor/agency-agents/integrations/kimi/game-designer/system.md",
+      "vendor/agency-agents/integrations/kimi/security-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/document-generator/system.md",
+      "vendor/agency-agents/integrations/kimi/loan-officer-assistant/system.md",
+      "vendor/agency-agents/integrations/kimi/experiment-tracker/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-game-designer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-document-generator/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-legal-document-review/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-chief-of-staff/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-government-digital-presales-consultant/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-product-manager/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-security-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-loan-officer-assistant/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-roblox-experience-designer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-experiment-tracker/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-level-designer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/legal-document-review.md",
+      "vendor/agency-agents/integrations/opencode/agents/document-generator.md",
+      "vendor/agency-agents/integrations/opencode/agents/security-engineer.md",
+      "vendor/agency-agents/integrations/opencode/agents/game-designer.md",
+      "vendor/agency-agents/integrations/opencode/agents/government-digital-presales-consultant.md",
+      "vendor/agency-agents/integrations/opencode/agents/roblox-experience-designer.md",
+      "vendor/agency-agents/integrations/opencode/agents/loan-officer-assistant.md",
+      "vendor/agency-agents/integrations/opencode/agents/experiment-tracker.md",
+      "vendor/agency-agents/integrations/opencode/agents/level-designer.md",
+      "vendor/agency-agents/integrations/opencode/agents/product-manager.md",
+      "vendor/agency-agents/integrations/opencode/agents/chief-of-staff.md",
+      "vendor/agency-agents/integrations/openclaw/incident-response-commander/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/level-designer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/legal-document-review/IDENTITY.md",
+      "vendor/agency-agents/integrations/openclaw/legal-document-review/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/government-digital-presales-consultant/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/roblox-experience-designer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/product-manager/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/chief-of-staff/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/chief-of-staff/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/game-designer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/security-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/document-generator/IDENTITY.md",
+      "vendor/agency-agents/integrations/openclaw/document-generator/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/loan-officer-assistant/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/experiment-tracker/AGENTS.md",
+      "docs/projects/PESKIDS-SCOPE.md",
+      "docs/history/consolidation/CONSOLIDATION-INDEX.md",
+      "docs/adr/ADR-043-supplement/COMPLETE-INDEX.md",
+      "docs/adr/ADR-043-supplement/README.md",
+      "docs/tenants/peskids/TEMPLATE-STATUS.md",
+      "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
+      "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md"
+    ],
     "hard": [
       "packages/skills/vendor/agent-skills/deprecation-and-migration/SKILL.md",
       "tools/agent-packs/vendor/the-architect/questions/phase-3-confirmation.md",
@@ -125953,6 +126436,15 @@
       "docs/adr/ADR-044-core-first-tenant-slug-extraction.md",
       "docs/adr/ADR-028-agent-api-routing.md",
       "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md"
+    ],
+    "discover": [
+      "packages/skills/vendor/agent-skills/test-driven-development/SKILL.md",
+      "vendor/agency-agents/integrations/qwen/agents/workflow-architect.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/workflow-architect/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/workflow-architect/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-workflow-architect/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/workflow-architect.md",
+      "vendor/agency-agents/integrations/openclaw/workflow-architect/AGENTS.md"
     ],
     "failing": [
       "packages/skills/vendor/agent-skills/test-driven-development/SKILL.md",
@@ -126072,17 +126564,6 @@
       ".claude/CLAUDE.md",
       ".claude/SYNC-GUIDE.md"
     ],
-    "interactions": [
-      "packages/skills/vendor/agent-skills/test-driven-development/SKILL.md",
-      "vendor/agency-agents/integrations/qwen/agents/feishu-integration-developer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/feishu-integration-developer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/feishu-integration-developer/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-feishu-integration-developer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/feishu-integration-developer.md",
-      "vendor/agency-agents/integrations/openclaw/feishu-integration-developer/AGENTS.md",
-      "docs/01-development/PHASE-4-OBSERVABILITY-BILLING.md",
-      "docs/03-agents/AGENT-TEAM-OVERVIEW.md"
-    ],
     "make": [
       "packages/skills/vendor/agent-skills/test-driven-development/SKILL.md",
       "vendor/agency-agents/integrations/qwen/agents/jira-workflow-steward.md",
@@ -126095,112 +126576,6 @@
       "docs/01-development/MAKE-SETUP.md",
       "docs/tenants/peskids/N8N-SETUP.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md"
-    ],
-    "model": [
-      "packages/skills/vendor/agent-skills/test-driven-development/SKILL.md",
-      "packages/skills/vendor/agent-skills/doubt-driven-development/SKILL.md",
-      "tools/agent-packs/vendor/the-architect/templates/blueprint-template.md",
-      "tools/agent-packs/vendor/the-architect/questions/phase-2-branches.md",
-      "apps/peskids/CLAUDE.md",
-      "apps/intcloudsysops/CLAUDE.md",
-      "vendor/agency-agents/integrations/qwen/agents/security-engineer.md",
-      "vendor/agency-agents/integrations/qwen/agents/financial-analyst.md",
-      "vendor/agency-agents/integrations/qwen/agents/salesforce-architect.md",
-      "vendor/agency-agents/integrations/qwen/agents/outbound-strategist.md",
-      "vendor/agency-agents/integrations/qwen/agents/sprint-prioritizer.md",
-      "vendor/agency-agents/integrations/qwen/agents/supply-chain-strategist.md",
-      "vendor/agency-agents/integrations/qwen/agents/unreal-multiplayer-architect.md",
-      "vendor/agency-agents/integrations/qwen/agents/godot-multiplayer-engineer.md",
-      "vendor/agency-agents/integrations/qwen/agents/model-qa-specialist.md",
-      "vendor/agency-agents/integrations/qwen/agents/roblox-systems-scripter.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/godot-multiplayer-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/sprint-prioritizer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/roblox-systems-scripter/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/supply-chain-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/salesforce-architect/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-multiplayer-architect/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/model-qa-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/outbound-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/security-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/financial-analyst/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/godot-multiplayer-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/sprint-prioritizer/system.md",
-      "vendor/agency-agents/integrations/kimi/roblox-systems-scripter/system.md",
-      "vendor/agency-agents/integrations/kimi/supply-chain-strategist/system.md",
-      "vendor/agency-agents/integrations/kimi/salesforce-architect/system.md",
-      "vendor/agency-agents/integrations/kimi/unreal-multiplayer-architect/system.md",
-      "vendor/agency-agents/integrations/kimi/model-qa-specialist/system.md",
-      "vendor/agency-agents/integrations/kimi/outbound-strategist/system.md",
-      "vendor/agency-agents/integrations/kimi/security-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/financial-analyst/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-model-qa-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-supply-chain-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-salesforce-architect/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-security-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-financial-analyst/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-outbound-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-sprint-prioritizer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-roblox-systems-scripter/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-godot-multiplayer-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-unreal-multiplayer-architect/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/security-engineer.md",
-      "vendor/agency-agents/integrations/opencode/agents/financial-analyst.md",
-      "vendor/agency-agents/integrations/opencode/agents/salesforce-architect.md",
-      "vendor/agency-agents/integrations/opencode/agents/outbound-strategist.md",
-      "vendor/agency-agents/integrations/opencode/agents/sprint-prioritizer.md",
-      "vendor/agency-agents/integrations/opencode/agents/supply-chain-strategist.md",
-      "vendor/agency-agents/integrations/opencode/agents/unreal-multiplayer-architect.md",
-      "vendor/agency-agents/integrations/opencode/agents/godot-multiplayer-engineer.md",
-      "vendor/agency-agents/integrations/opencode/agents/model-qa-specialist.md",
-      "vendor/agency-agents/integrations/opencode/agents/roblox-systems-scripter.md",
-      "vendor/agency-agents/integrations/openclaw/agentic-identity-trust-architect/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/godot-multiplayer-engineer/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/sprint-prioritizer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/roblox-systems-scripter/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/supply-chain-strategist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/salesforce-architect/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/unreal-multiplayer-architect/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/model-qa-specialist/IDENTITY.md",
-      "vendor/agency-agents/integrations/openclaw/model-qa-specialist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/pipeline-analyst/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/outbound-strategist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/security-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/financial-analyst/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/ai-engineer/AGENTS.md",
-      "docs/04-operations/COST-MONITORING-GUIDE.md",
-      "docs/projects/PESKIDS-SCOPE.md",
-      "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
-      "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
-      "docs/00-architecture/OPSLY-CONTROL-PLANE.md",
-      "docs/00-architecture/INCUBATION-PLATFORM-CONTRACT.md",
-      "docs/01-development/NEXT-STEPS.md",
-      "docs/01-development/SEMANA-5-INFORME.md",
-      "docs/01-development/PHASE-5-ADVANCED-FEATURES.md",
-      "docs/01-development/PHASE-5-IMPLEMENTATION-BLUEPRINT.md",
-      "docs/04-infrastructure/MACOS-LOCAL-AI-AUTOMATION.md",
-      "docs/03-agents/QUICK-REFERENCE-HERMES-OPSLY.md",
-      "docs/adr/ADR-040-technician-scaling-solo-to-assistant.md",
-      "docs/adr/ADR-016-legalvial-multitenant-model.md",
-      "docs/adr/ADR-029-mcp-orchestration.md",
-      "docs/adr/ADR-047-fable5-model-strategy.md",
-      "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
-      "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
-      "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
-      "docs/tenants/peskids/GOHIGHLEVEL-CONTRACT.md",
-      "docs/tenants/peskids/DATA-MODEL.md",
-      "docs/tenants/SECOND-CLIENT-ONBOARDING-PLAYBOOK.md",
-      "docs/tenants/intcloudsysops/DATA-MODEL.md",
-      "docs/tenants/intcloudsysops/PHASE-1-COMPLETION-REPORT.md",
-      "docs/brain/TENANT-AI-PLAYBOOK.md",
-      "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
-      "docs/reports/SESSION-SUMMARY-2026-05-08.md",
-      "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md",
-      "docs/blueprints/N8N-AUTOMATION-GUARANTEES.md",
-      "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
-      ".claude/AGENTS-ENHANCEMENTS.md",
-      ".agents/skills/the-architect/references/templates/blueprint-template.md",
-      ".agents/skills/the-architect/references/questions/phase-2-branches.md",
-      ".agents/IMPLEMENTATION-CHECKLIST.md"
     ],
     "pass": [
       "packages/skills/vendor/agent-skills/test-driven-development/SKILL.md",
@@ -126501,39 +126876,26 @@
       "docs/tenants/intcloudsysops/DEPLOYMENT.md",
       ".agents/skills/the-architect/references/README.md"
     ],
-    "issues": [
+    "isolation": [
       "packages/skills/vendor/agent-skills/browser-testing-with-devtools/SKILL.md",
+      ".cursor/prompts/task-orchestrator-completion.md",
+      ".archived/context-builder-v2/src/design/architecture.md",
       "lib/voice-messaging/GOVERNANCE.md",
-      "vendor/agency-agents/integrations/qwen/agents/tax-strategist.md",
-      "vendor/agency-agents/integrations/qwen/agents/evidence-collector.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/evidence-collector/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/tax-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/evidence-collector/system.md",
-      "vendor/agency-agents/integrations/kimi/tax-strategist/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-tax-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-evidence-collector/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/tax-strategist.md",
-      "vendor/agency-agents/integrations/opencode/agents/evidence-collector.md",
-      "vendor/agency-agents/integrations/openclaw/evidence-collector/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/tax-strategist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/accessibility-auditor/AGENTS.md",
-      "docs/database/SUPABASE-MIGRATION-AUDIT.md",
-      "docs/ops/issue-bankruptcy-2026-05-03/epics-breakdown.md",
-      "docs/ops/issue-bankruptcy-2026-05-03/issues-triage.md",
-      "docs/ops/issue-bankruptcy-2026-05-03/quick-wins.md",
-      "docs/history/AGENTS-SESSION-HISTORY.md",
-      "docs/obsidian/sources/archive/2026-04-21/franchisingconte0000unse.md",
-      "docs/runbooks/OPERATIONS-HANDBOOK.md",
-      "docs/00-architecture/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
-      "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
-      "docs/01-development/SPRINT-PLANNING-SETUP.md",
-      "docs/01-development/QA-REVIEW-COMPLETE.md",
-      "docs/04-infrastructure/REDIS-QUEUE-GUIDE.md",
-      "docs/audits/DATABASE-QUERY-AUDIT.md",
-      "docs/audits/CODE-REVIEW-API-ROUTES.md",
-      "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
-      "docs/reports/session-summary-2026-05-21.md",
-      "docs/security/SECURITY-POSTURE-AUDIT.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md",
+      "vendor/agency-agents/integrations/qwen/agents/identity-graph-operator.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/identity-graph-operator/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/identity-graph-operator/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-identity-graph-operator/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/identity-graph-operator.md",
+      "vendor/agency-agents/integrations/openclaw/identity-graph-operator/SOUL.md",
+      "docs/00-architecture/REDIS_NAMESPACE_ISOLATION.md",
+      "docs/01-development/TEST_PLAN.md",
+      "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
+      "docs/04-infrastructure/PRODUCTION-READINESS.md",
+      "docs/tenants/peskids/BLUEPRINT-MAPPING.md",
+      "docs/testing/PR-187-TESTING-GUIDE.md",
+      "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
+      ".claude/AGENTS-ENHANCEMENTS.md"
     ],
     "javascript": [
       "packages/skills/vendor/agent-skills/browser-testing-with-devtools/SKILL.md",
@@ -126544,6 +126906,29 @@
     ],
     "markers": [
       "packages/skills/vendor/agent-skills/browser-testing-with-devtools/SKILL.md"
+    ],
+    "profile": [
+      "packages/skills/vendor/agent-skills/browser-testing-with-devtools/SKILL.md",
+      "vendor/agency-agents/integrations/qwen/agents/sales-outreach.md",
+      "vendor/agency-agents/integrations/qwen/agents/psychologist.md",
+      "vendor/agency-agents/integrations/qwen/agents/study-abroad-advisor.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/psychologist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/study-abroad-advisor/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/sales-outreach/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/psychologist/system.md",
+      "vendor/agency-agents/integrations/kimi/study-abroad-advisor/system.md",
+      "vendor/agency-agents/integrations/kimi/sales-outreach/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-psychologist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-study-abroad-advisor/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-sales-outreach/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/sales-outreach.md",
+      "vendor/agency-agents/integrations/opencode/agents/psychologist.md",
+      "vendor/agency-agents/integrations/opencode/agents/study-abroad-advisor.md",
+      "vendor/agency-agents/integrations/openclaw/psychologist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/study-abroad-advisor/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/sales-outreach/AGENTS.md",
+      "docs/superpowers/specs/TEMPLATE-next-client-blueprint.md",
+      "docs/03-agents/SOCIAL-MEDIA-AGENT-SYRA.md"
     ],
     "setting": [
       "packages/skills/vendor/agent-skills/browser-testing-with-devtools/SKILL.md",
@@ -126734,43 +127119,6 @@
       "docs/brain/skills/using-agent-skills.md",
       ".agents/skills/cyber-neo/references/iac-docker.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/auth-patterns.md"
-    ],
-    "verify": [
-      "packages/skills/vendor/agent-skills/using-agent-skills/SKILL.md",
-      "packages/skills/vendor/agent-skills/debugging-and-error-recovery/SKILL.md",
-      "tools/agent-packs/vendor/cyber-neo/README.md",
-      "lib/security/README.md",
-      "apps/peskids/DEPLOYMENT.md",
-      "apps/intcloudsysops/DEPLOYMENT.md",
-      "vendor/agency-agents/integrations/openclaw/workflow-architect/SOUL.md",
-      "docs/growth/WEEK-1-AGENCIAS-OUTREACH.md",
-      "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
-      "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
-      "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
-      "docs/01-development/PHASE-2-DEPLOYMENT.md",
-      "docs/01-development/AGENT-SKILLS-INTEGRATION.md",
-      "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
-      "docs/04-infrastructure/MCP-ORCHESTRATOR-DEPLOYMENT.md",
-      "docs/05-deployment-status/DEPLOYMENT-STATUS-2026-05-04.md",
-      "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
-      "docs/operations/RUN-VALIDATION-LOCALLY.md",
-      "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
-      "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
-      "docs/tenants/peskids/PESKIDS-ADMIN-USER-VALIDATION.md",
-      "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
-      "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
-      "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
-      "docs/demo/hackathon-demo.md",
-      "docs/testing/PR-187-TESTING-GUIDE.md",
-      "docs/testing/PHASE-2-TESTING.md",
-      "docs/reports/PESKIDS-E2E-VALIDATION.md",
-      "docs/reports/ICSO-E2E-VALIDATION.md",
-      "docs/blueprints/BRANCH-CLEANUP-AUDIT.md",
-      "docs/blueprints/PESKIDS-GHL-DISABLE-RUNBOOK.md",
-      "docs/blueprints/PHASE1-EXECUTION-CHECKLIST.md",
-      "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md",
-      ".agents/UNIFIED-AGENT-ARCHITECTURE.md",
-      ".agents/VPS-PRODUCTION-SETUP.md"
     ],
     "warranted": [
       "packages/skills/vendor/agent-skills/using-agent-skills/SKILL.md"
@@ -130013,6 +130361,7 @@
     "referencia": [
       ".cursor/prompts/local-services-tech-builder.md",
       "tools/usb-kit/README.md",
+      "docs/brand/peskids/BRAND.md",
       "docs/design/OAR.md",
       "docs/runbooks/LOCAL-SERVICES-GO-LIVE.md",
       "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
@@ -131256,26 +131605,6 @@
     ],
     "heartbeat": [
       ".cursor/prompts/task-orchestrator-completion.md"
-    ],
-    "isolation": [
-      ".cursor/prompts/task-orchestrator-completion.md",
-      ".archived/context-builder-v2/src/design/architecture.md",
-      "lib/voice-messaging/GOVERNANCE.md",
-      "apps/experimental/context-builder-v2-archive/src/design/architecture.md",
-      "vendor/agency-agents/integrations/qwen/agents/identity-graph-operator.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/identity-graph-operator/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/identity-graph-operator/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-identity-graph-operator/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/identity-graph-operator.md",
-      "vendor/agency-agents/integrations/openclaw/identity-graph-operator/SOUL.md",
-      "docs/00-architecture/REDIS_NAMESPACE_ISOLATION.md",
-      "docs/01-development/TEST_PLAN.md",
-      "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
-      "docs/04-infrastructure/PRODUCTION-READINESS.md",
-      "docs/tenants/peskids/BLUEPRINT-MAPPING.md",
-      "docs/testing/PR-187-TESTING-GUIDE.md",
-      "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md",
-      ".claude/AGENTS-ENHANCEMENTS.md"
     ],
     "redis": [
       ".cursor/prompts/task-orchestrator-completion.md",
@@ -135357,7 +135686,8 @@
       "docs/n8n-workflows/crm/README.md"
     ],
     "kit": [
-      "tools/usb-kit/README.md"
+      "tools/usb-kit/README.md",
+      "docs/brand/peskids/BRAND.md"
     ],
     "portatil": [
       "tools/usb-kit/README.md"
@@ -136297,6 +136627,10 @@
       "vendor/agency-agents/integrations/openclaw/experiment-tracker/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/voice-ai-integration-engineer/SOUL.md",
       "docs/blueprints/TWENTY-CRM-CUTOVER-CHECKLIST.md",
+      ".agents/skills/cyber-neo/references/owasp-top-10.md"
+    ],
+    "misconfiguration": [
+      "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/owasp-top-10.md",
       ".agents/skills/cyber-neo/references/owasp-top-10.md"
     ],
     "mishandling": [
@@ -137626,6 +137960,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-supply-chain-strategist/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/supply-chain-strategist.md",
       "vendor/agency-agents/integrations/openclaw/supply-chain-strategist/AGENTS.md",
+      "docs/runbooks/DEPLOY-GITHUB-ACTIONS.md",
       "docs/04-infrastructure/RUNBOOK-AI-LOCAL-FIRST.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/mobile-app.md"
     ],
@@ -138331,17 +138666,6 @@
       ".agents/skills/the-architect/references/knowledge/building-blocks/frontend-stacks.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/styling-systems.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/state-management.md"
-    ],
-    "convention": [
-      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/frontend-stacks.md",
-      "lib/migrations/GOVERNANCE.md",
-      "vendor/agency-agents/integrations/qwen/agents/game-audio-engineer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/game-audio-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/game-audio-engineer/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-game-audio-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/game-audio-engineer.md",
-      "vendor/agency-agents/integrations/openclaw/game-audio-engineer/AGENTS.md",
-      ".agents/skills/the-architect/references/knowledge/building-blocks/frontend-stacks.md"
     ],
     "isr": [
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/frontend-stacks.md",
@@ -139254,6 +139578,7 @@
       "docs/tenants/peskids/QUICK-START-PRODUCTION.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/REUNION-2026-07-21.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
       "docs/tenants/peskids/PRODUCTION-HANDOFF-MASTER.md",
@@ -140138,11 +140463,6 @@
       "vendor/agency-agents/integrations/openclaw/salesforce-architect/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/software-architect/AGENTS.md"
     ],
-    "telemetry": [
-      "lib/telemetry/README.md",
-      "lib/telemetry/GOVERNANCE.md",
-      "apps/orchestrator/src/meta/README.md"
-    ],
     "retention": [
       "lib/telemetry/GOVERNANCE.md",
       "vendor/agency-agents/integrations/qwen/agents/customer-service.md",
@@ -140251,18 +140571,6 @@
       "docs/tenants/peskids/MVP-PLAN.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md"
-    ],
-    "alerting": [
-      "lib/observability/GOVERNANCE.md",
-      "vendor/agency-agents/integrations/qwen/agents/devops-automator.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/devops-automator/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/devops-automator/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-devops-automator/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/devops-automator.md",
-      "vendor/agency-agents/integrations/openclaw/devops-automator/AGENTS.md",
-      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
-      "docs/reports/OPSLY-RELIABILITY-SPRINT.md",
-      "docs/reports/E2E-TESTING-PLAN.md"
     ],
     "alerts": [
       "lib/observability/GOVERNANCE.md",
@@ -140392,18 +140700,6 @@
     "column": [
       "lib/migrations/README.md",
       "vendor/agency-agents/integrations/openclaw/zhihu-strategist/AGENTS.md"
-    ],
-    "define": [
-      "lib/migrations/README.md",
-      "lib/testing/README.md",
-      "vendor/agency-agents/integrations/qwen/agents/book-co-author.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/book-co-author/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/book-co-author/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-book-co-author/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/book-co-author.md",
-      "vendor/agency-agents/integrations/openclaw/book-co-author/AGENTS.md",
-      "docs/01-development/AGENT-SKILLS-INTEGRATION.md",
-      "docs/tenants/peskids/SPRINT-01.md"
     ],
     "practices": [
       "lib/migrations/README.md",
@@ -140856,6 +141152,39 @@
     "breaking": [
       "lib/voice-messaging/GOVERNANCE.md",
       "docs/history/consolidation/CONSOLIDATION-SUMMARY.md"
+    ],
+    "issues": [
+      "lib/voice-messaging/GOVERNANCE.md",
+      "vendor/agency-agents/integrations/qwen/agents/tax-strategist.md",
+      "vendor/agency-agents/integrations/qwen/agents/evidence-collector.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/evidence-collector/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/tax-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/evidence-collector/system.md",
+      "vendor/agency-agents/integrations/kimi/tax-strategist/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-tax-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-evidence-collector/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/tax-strategist.md",
+      "vendor/agency-agents/integrations/opencode/agents/evidence-collector.md",
+      "vendor/agency-agents/integrations/openclaw/evidence-collector/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/tax-strategist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/accessibility-auditor/AGENTS.md",
+      "docs/database/SUPABASE-MIGRATION-AUDIT.md",
+      "docs/ops/issue-bankruptcy-2026-05-03/epics-breakdown.md",
+      "docs/ops/issue-bankruptcy-2026-05-03/issues-triage.md",
+      "docs/ops/issue-bankruptcy-2026-05-03/quick-wins.md",
+      "docs/history/AGENTS-SESSION-HISTORY.md",
+      "docs/obsidian/sources/archive/2026-04-21/franchisingconte0000unse.md",
+      "docs/runbooks/OPERATIONS-HANDBOOK.md",
+      "docs/00-architecture/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+      "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/01-development/SPRINT-PLANNING-SETUP.md",
+      "docs/01-development/QA-REVIEW-COMPLETE.md",
+      "docs/04-infrastructure/REDIS-QUEUE-GUIDE.md",
+      "docs/audits/DATABASE-QUERY-AUDIT.md",
+      "docs/audits/CODE-REVIEW-API-ROUTES.md",
+      "docs/tenants/peskids/EMAIL-SMS-TEMPLATE-VALIDATION.md",
+      "docs/reports/session-summary-2026-05-21.md",
+      "docs/security/SECURITY-POSTURE-AUDIT.md"
     ],
     "maintainers": [
       "lib/voice-messaging/GOVERNANCE.md"
@@ -141426,7 +141755,8 @@
       "vendor/agency-agents/integrations/openclaw/brand-guardian/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/whimsy-injector/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/cross-border-e-commerce-specialist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/xiaohongshu-specialist/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/xiaohongshu-specialist/AGENTS.md",
+      "docs/brand/peskids/BRAND.md"
     ],
     "cards": [
       "apps/peskids/docs/BRAND-GUIDELINES.md",
@@ -141475,10 +141805,12 @@
       "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md"
     ],
     "tipografia": [
-      "apps/peskids/docs/BRAND-GUIDELINES.md"
+      "apps/peskids/docs/BRAND-GUIDELINES.md",
+      "docs/brand/peskids/BRAND.md"
     ],
     "tokens": [
       "apps/peskids/docs/BRAND-GUIDELINES.md",
+      "docs/brand/peskids/BRAND.md",
       "docs/01-development/RTK.md",
       "docs/01-development/TOKEN-BILLING-SYSTEM.md",
       "docs/02-tools/TOKEN-SYSTEM-GUIDE.md",
@@ -144850,23 +145182,6 @@
       "vendor/agency-agents/integrations/opencode/agents/threat-detection-engineer.md",
       "vendor/agency-agents/integrations/openclaw/threat-detection-engineer/SOUL.md"
     ],
-    "threat": [
-      "vendor/agency-agents/integrations/qwen/agents/threat-detection-engineer.md",
-      "vendor/agency-agents/integrations/qwen/agents/security-engineer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/security-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/threat-detection-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/security-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/threat-detection-engineer/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-threat-detection-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-security-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/threat-detection-engineer.md",
-      "vendor/agency-agents/integrations/opencode/agents/security-engineer.md",
-      "vendor/agency-agents/integrations/openclaw/security-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/solidity-smart-contract-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/threat-detection-engineer/IDENTITY.md",
-      "vendor/agency-agents/integrations/openclaw/threat-detection-engineer/AGENTS.md",
-      "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md"
-    ],
     "threats": [
       "vendor/agency-agents/integrations/qwen/agents/threat-detection-engineer.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/threat-detection-engineer/SKILL.md",
@@ -146953,68 +147268,6 @@
       "vendor/agency-agents/integrations/opencode/agents/filament-optimization-specialist.md",
       "vendor/agency-agents/integrations/openclaw/filament-optimization-specialist/SOUL.md"
     ],
-    "signal": [
-      "vendor/agency-agents/integrations/qwen/agents/filament-optimization-specialist.md",
-      "vendor/agency-agents/integrations/qwen/agents/china-market-localization-strategist.md",
-      "vendor/agency-agents/integrations/qwen/agents/outbound-strategist.md",
-      "vendor/agency-agents/integrations/qwen/agents/account-strategist.md",
-      "vendor/agency-agents/integrations/qwen/agents/godot-gameplay-scripter.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/account-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/godot-gameplay-scripter/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/china-market-localization-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/outbound-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/filament-optimization-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/account-strategist/system.md",
-      "vendor/agency-agents/integrations/kimi/godot-gameplay-scripter/system.md",
-      "vendor/agency-agents/integrations/kimi/china-market-localization-strategist/system.md",
-      "vendor/agency-agents/integrations/kimi/outbound-strategist/system.md",
-      "vendor/agency-agents/integrations/kimi/filament-optimization-specialist/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-china-market-localization-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-filament-optimization-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-outbound-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-godot-gameplay-scripter/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-account-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/filament-optimization-specialist.md",
-      "vendor/agency-agents/integrations/opencode/agents/china-market-localization-strategist.md",
-      "vendor/agency-agents/integrations/opencode/agents/outbound-strategist.md",
-      "vendor/agency-agents/integrations/opencode/agents/account-strategist.md",
-      "vendor/agency-agents/integrations/opencode/agents/godot-gameplay-scripter.md",
-      "vendor/agency-agents/integrations/openclaw/account-strategist/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/godot-gameplay-scripter/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/godot-gameplay-scripter/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/china-market-localization-strategist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/outbound-strategist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/filament-optimization-specialist/SOUL.md"
-    ],
-    "structural": [
-      "vendor/agency-agents/integrations/qwen/agents/filament-optimization-specialist.md",
-      "vendor/agency-agents/integrations/qwen/agents/legal-document-review.md",
-      "vendor/agency-agents/integrations/qwen/agents/civil-engineer.md",
-      "vendor/agency-agents/integrations/qwen/agents/email-intelligence-engineer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/email-intelligence-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/legal-document-review/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/civil-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/filament-optimization-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/email-intelligence-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/legal-document-review/system.md",
-      "vendor/agency-agents/integrations/kimi/civil-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/filament-optimization-specialist/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-email-intelligence-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-legal-document-review/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-filament-optimization-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-civil-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/filament-optimization-specialist.md",
-      "vendor/agency-agents/integrations/opencode/agents/legal-document-review.md",
-      "vendor/agency-agents/integrations/opencode/agents/civil-engineer.md",
-      "vendor/agency-agents/integrations/opencode/agents/email-intelligence-engineer.md",
-      "vendor/agency-agents/integrations/openclaw/email-intelligence-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/legal-document-review/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/civil-engineer/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/civil-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/filament-optimization-specialist/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/filament-optimization-specialist/AGENTS.md",
-      "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md"
-    ],
     "upgrades": [
       "vendor/agency-agents/integrations/qwen/agents/filament-optimization-specialist.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/filament-optimization-specialist/SKILL.md",
@@ -147747,15 +148000,6 @@
       "vendor/agency-agents/integrations/antigravity/agency-autonomous-optimization-architect/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/autonomous-optimization-architect.md",
       "vendor/agency-agents/integrations/openclaw/autonomous-optimization-architect/AGENTS.md"
-    ],
-    "existing": [
-      "vendor/agency-agents/integrations/qwen/agents/autonomous-optimization-architect.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/autonomous-optimization-architect/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/autonomous-optimization-architect/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-autonomous-optimization-architect/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/autonomous-optimization-architect.md",
-      "vendor/agency-agents/integrations/openclaw/autonomous-optimization-architect/AGENTS.md",
-      "docs/01-development/PHASE2-ROADMAP.md"
     ],
     "guardrail": [
       "vendor/agency-agents/integrations/qwen/agents/autonomous-optimization-architect.md",
@@ -149503,6 +149747,16 @@
       "vendor/agency-agents/integrations/openclaw/feishu-integration-developer/IDENTITY.md",
       "vendor/agency-agents/integrations/openclaw/feishu-integration-developer/AGENTS.md"
     ],
+    "interactions": [
+      "vendor/agency-agents/integrations/qwen/agents/feishu-integration-developer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/feishu-integration-developer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/feishu-integration-developer/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-feishu-integration-developer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/feishu-integration-developer.md",
+      "vendor/agency-agents/integrations/openclaw/feishu-integration-developer/AGENTS.md",
+      "docs/01-development/PHASE-4-OBSERVABILITY-BILLING.md",
+      "docs/03-agents/AGENT-TEAM-OVERVIEW.md"
+    ],
     "mini": [
       "vendor/agency-agents/integrations/qwen/agents/feishu-integration-developer.md",
       "vendor/agency-agents/integrations/qwen/agents/private-domain-operator.md",
@@ -150252,28 +150506,6 @@
       "docs/growth/AGENCY-PILOT-OUTREACH.md",
       "docs/runbooks/OPERATIONS-HANDBOOK.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md"
-    ],
-    "profile": [
-      "vendor/agency-agents/integrations/qwen/agents/sales-outreach.md",
-      "vendor/agency-agents/integrations/qwen/agents/psychologist.md",
-      "vendor/agency-agents/integrations/qwen/agents/study-abroad-advisor.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/psychologist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/study-abroad-advisor/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/sales-outreach/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/psychologist/system.md",
-      "vendor/agency-agents/integrations/kimi/study-abroad-advisor/system.md",
-      "vendor/agency-agents/integrations/kimi/sales-outreach/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-psychologist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-study-abroad-advisor/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-sales-outreach/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/sales-outreach.md",
-      "vendor/agency-agents/integrations/opencode/agents/psychologist.md",
-      "vendor/agency-agents/integrations/opencode/agents/study-abroad-advisor.md",
-      "vendor/agency-agents/integrations/openclaw/psychologist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/study-abroad-advisor/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/sales-outreach/AGENTS.md",
-      "docs/superpowers/specs/TEMPLATE-next-client-blueprint.md",
-      "docs/03-agents/SOCIAL-MEDIA-AGENT-SYRA.md"
     ],
     "targeting": [
       "vendor/agency-agents/integrations/qwen/agents/sales-outreach.md",
@@ -151666,33 +151898,6 @@
       "vendor/agency-agents/integrations/opencode/agents/sales-coach.md",
       "vendor/agency-agents/integrations/openclaw/sales-coach/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/sales-coach/AGENTS.md"
-    ],
-    "structured": [
-      "vendor/agency-agents/integrations/qwen/agents/sales-coach.md",
-      "vendor/agency-agents/integrations/qwen/agents/incident-response-commander.md",
-      "vendor/agency-agents/integrations/qwen/agents/voice-ai-integration-engineer.md",
-      "vendor/agency-agents/integrations/qwen/agents/recruitment-specialist.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/incident-response-commander/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/sales-coach/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/recruitment-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/voice-ai-integration-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/incident-response-commander/system.md",
-      "vendor/agency-agents/integrations/kimi/sales-coach/system.md",
-      "vendor/agency-agents/integrations/kimi/recruitment-specialist/system.md",
-      "vendor/agency-agents/integrations/kimi/voice-ai-integration-engineer/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-sales-coach/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-voice-ai-integration-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-incident-response-commander/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-recruitment-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/sales-coach.md",
-      "vendor/agency-agents/integrations/opencode/agents/incident-response-commander.md",
-      "vendor/agency-agents/integrations/opencode/agents/voice-ai-integration-engineer.md",
-      "vendor/agency-agents/integrations/opencode/agents/recruitment-specialist.md",
-      "vendor/agency-agents/integrations/openclaw/incident-response-commander/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/seo-specialist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/sales-coach/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/recruitment-specialist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/voice-ai-integration-engineer/AGENTS.md"
     ],
     "through": [
       "vendor/agency-agents/integrations/qwen/agents/sales-coach.md",
@@ -153757,14 +153962,6 @@
       "vendor/agency-agents/integrations/opencode/agents/workflow-architect.md",
       "vendor/agency-agents/integrations/openclaw/workflow-architect/AGENTS.md"
     ],
-    "discover": [
-      "vendor/agency-agents/integrations/qwen/agents/workflow-architect.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/workflow-architect/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/workflow-architect/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-workflow-architect/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/workflow-architect.md",
-      "vendor/agency-agents/integrations/openclaw/workflow-architect/AGENTS.md"
-    ],
     "facing": [
       "vendor/agency-agents/integrations/qwen/agents/workflow-architect.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/workflow-architect/SKILL.md",
@@ -154420,21 +154617,6 @@
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md",
       "docs/blueprints/ICSO-CRM-READINESS.md"
-    ],
-    "right": [
-      "vendor/agency-agents/integrations/qwen/agents/compliance-auditor.md",
-      "vendor/agency-agents/integrations/qwen/agents/chief-of-staff.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/compliance-auditor/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/chief-of-staff/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/compliance-auditor/system.md",
-      "vendor/agency-agents/integrations/kimi/chief-of-staff/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-compliance-auditor/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-chief-of-staff/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/compliance-auditor.md",
-      "vendor/agency-agents/integrations/opencode/agents/chief-of-staff.md",
-      "vendor/agency-agents/integrations/openclaw/compliance-auditor/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/chief-of-staff/SOUL.md",
-      "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md"
     ],
     "substance": [
       "vendor/agency-agents/integrations/qwen/agents/compliance-auditor.md",
@@ -155905,18 +156087,6 @@
       "vendor/agency-agents/integrations/opencode/agents/rapid-prototyper.md",
       "vendor/agency-agents/integrations/openclaw/rapid-prototyper/IDENTITY.md",
       "vendor/agency-agents/integrations/openclaw/rapid-prototyper/AGENTS.md"
-    ],
-    "working": [
-      "vendor/agency-agents/integrations/qwen/agents/rapid-prototyper.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/rapid-prototyper/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/rapid-prototyper/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-rapid-prototyper/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/rapid-prototyper.md",
-      "vendor/agency-agents/integrations/openclaw/agentic-identity-trust-architect/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/rapid-prototyper/AGENTS.md",
-      "docs/01-development/QA-REVIEW-COMPLETE.md",
-      "docs/audits/SALES-READINESS-HARDENING.md",
-      "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md"
     ],
     "android": [
       "vendor/agency-agents/integrations/qwen/agents/mobile-app-builder.md",
@@ -158868,10 +159038,6 @@
     "room": [
       "vendor/agency-agents/integrations/openclaw/level-designer/AGENTS.md"
     ],
-    "pick": [
-      "vendor/agency-agents/integrations/openclaw/douyin-strategist/AGENTS.md",
-      "docs/03-agents/PARALLEL-AGENTS-ORCHESTRATION.md"
-    ],
     "shooting": [
       "vendor/agency-agents/integrations/openclaw/douyin-strategist/AGENTS.md"
     ],
@@ -159971,6 +160137,7 @@
     "nota": [
       "docs/superpowers/specs/2026-05-30-skills-obsidian-integration-design.md",
       "docs/ops/runbook-redis.md",
+      "docs/brand/peskids/BRAND.md",
       "docs/04-infrastructure/FAILOVER-GCP-ARCHITECTURE.md"
     ],
     "problema": [
@@ -160935,6 +161102,7 @@
       "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
       "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/CLIENT-PITCH.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
       "docs/tenants/intcloudsysops/WHATSAPP-FIRST-PACKAGE.md",
       "docs/tenants/intcloudsysops/WACRM-OFFERING.md",
@@ -161729,6 +161897,23 @@
       "docs/blueprints/README-PHASE1-EXECUTE.md",
       "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md"
     ],
+    "board": [
+      "docs/brand/peskids/BRAND.md",
+      "docs/obsidian/sources/archive/2026-04-21/ecatma-Planning_and_Zoning_Board_Meeting_9_16_24.md"
+    ],
+    "historica": [
+      "docs/brand/peskids/BRAND.md"
+    ],
+    "paleta": [
+      "docs/brand/peskids/BRAND.md"
+    ],
+    "sobre": [
+      "docs/brand/peskids/BRAND.md",
+      "docs/04-infrastructure/FAILOVER-GCP-ARCHITECTURE.md",
+      "docs/adr/ADR-022-di-pattern-testability.md",
+      "docs/adr/ADR-002-traefik-sobre-nginx.md",
+      "docs/blueprints/opsly-operational-blueprint/TEAM-FACING-EXPLANATION.md"
+    ],
     "canonicas": [
       "docs/design/AGENT-ORCHESTRATION-INDEX.md",
       "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
@@ -162311,13 +162496,11 @@
     ],
     "runner": [
       "docs/obsidian/sources/archive/2026-04-21/jhyx0v1z9vu6lvvqnqog10m8tv1eewytitmmsofa.md",
+      "docs/runbooks/DEPLOY-GITHUB-ACTIONS.md",
       "docs/operations/VPS-VALIDATION-OPTIONS.md"
     ],
     "wants": [
       "docs/obsidian/sources/archive/2026-04-21/jhyx0v1z9vu6lvvqnqog10m8tv1eewytitmmsofa.md"
-    ],
-    "board": [
-      "docs/obsidian/sources/archive/2026-04-21/ecatma-Planning_and_Zoning_Board_Meeting_9_16_24.md"
     ],
     "zoning": [
       "docs/obsidian/sources/archive/2026-04-21/ecatma-Planning_and_Zoning_Board_Meeting_9_16_24.md"
@@ -162892,6 +163075,11 @@
       "docs/01-development/DISK-USAGE-REPORT.md",
       "docs/04-infrastructure/PLAN-ORCHESTRATOR-WORKER.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md"
+    ],
+    "lleno": [
+      "docs/runbooks/DEPLOY-GITHUB-ACTIONS.md",
+      "docs/01-development/OPS-CLEANUP-PROCEDURES.md",
+      "docs/04-infrastructure/INCIDENT-2026-04-11-DISCO-LLENO.md"
     ],
     "sintoma": [
       "docs/runbooks/DEPLOY-GITHUB-ACTIONS.md",
@@ -164500,7 +164688,8 @@
       "docs/01-development/FAQ.md",
       "docs/04-infrastructure/WORKER-SETUP-MAC2011.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
-      "docs/tenants/peskids/REUNION-2026-07-21.md"
+      "docs/tenants/peskids/REUNION-2026-07-21.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md"
     ],
     "caling": [
       "docs/01-development/PREDICTIVE-BI-SCALABILITY.md"
@@ -165212,10 +165401,6 @@
     "limpia": [
       "docs/01-development/OPS-CLEANUP-PROCEDURES.md"
     ],
-    "lleno": [
-      "docs/01-development/OPS-CLEANUP-PROCEDURES.md",
-      "docs/04-infrastructure/INCIDENT-2026-04-11-DISCO-LLENO.md"
-    ],
     "procedimientos": [
       "docs/01-development/OPS-CLEANUP-PROCEDURES.md",
       "docs/index.md"
@@ -165670,12 +165855,6 @@
     ],
     "secundario": [
       "docs/04-infrastructure/FAILOVER-GCP-ARCHITECTURE.md"
-    ],
-    "sobre": [
-      "docs/04-infrastructure/FAILOVER-GCP-ARCHITECTURE.md",
-      "docs/adr/ADR-022-di-pattern-testability.md",
-      "docs/adr/ADR-002-traefik-sobre-nginx.md",
-      "docs/blueprints/opsly-operational-blueprint/TEAM-FACING-EXPLANATION.md"
     ],
     "tablas": [
       "docs/04-infrastructure/FAILOVER-GCP-ARCHITECTURE.md",
@@ -167209,9 +167388,6 @@
     "exclude": [
       "docs/adr/ADR-028-agent-api-routing.md"
     ],
-    "match": [
-      "docs/adr/ADR-028-agent-api-routing.md"
-    ],
     "move": [
       "docs/adr/ADR-028-agent-api-routing.md",
       "docs/reports/REPOSITORY-AUDIT-2026-05-27.md"
@@ -167984,7 +168160,8 @@
       "docs/tenants/peskids/OPSLY-REUSE.md"
     ],
     "algo": [
-      "docs/tenants/peskids/REUNION-2026-07-21.md"
+      "docs/tenants/peskids/REUNION-2026-07-21.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md"
     ],
     "captacion": [
       "docs/tenants/peskids/REUNION-2026-07-21.md",
@@ -168053,6 +168230,12 @@
     ],
     "standalone": [
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md"
+    ],
+    "corrigio": [
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md"
+    ],
+    "internas": [
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md"
     ],
     "alumno": [
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
@@ -169739,6 +169922,7 @@
     "docs/brain/workflows/openclaw.md",
     "docs/brain/workflows/README.md",
     "docs/brain/workflows/shield.md",
+    "docs/brand/peskids/BRAND.md",
     "docs/database/DATABASE-OPERATIONS.md",
     "docs/database/SUPABASE-MIGRATION-AUDIT.md",
     "docs/demo/hackathon-demo.md",
@@ -170011,6 +170195,7 @@
     "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
     "docs/tenants/peskids/CLIENT-PITCH.md",
     "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
+    "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
     "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
     "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
     "docs/tenants/peskids/DAILY-DIGEST-RUNBOOK.md",
@@ -170206,6 +170391,7 @@
     "packages/skills/vendor/agent-skills/idea-refine/SKILL.md",
     "packages/skills/vendor/agent-skills/incremental-implementation/SKILL.md",
     "packages/skills/vendor/agent-skills/interview-me/SKILL.md",
+    "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
     "packages/skills/vendor/agent-skills/performance-optimization/SKILL.md",
     "packages/skills/vendor/agent-skills/planning-and-task-breakdown/SKILL.md",
     "packages/skills/vendor/agent-skills/README.md",
