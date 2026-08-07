@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+set -e
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT" || exit 1
+
+if [ -x "$ROOT/.githooks/post-merge" ]; then
+  exec "$ROOT/.githooks/post-merge" "$@"
+fi
+
+echo "husky post-merge: .githooks/post-merge no encontrado o sin permisos" >&2
+exit 1

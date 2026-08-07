@@ -1,0 +1,20 @@
+[Unit]
+Description=Opsly git-pull watcher — despierta al agente local cuando hay commits nuevos en origin
+Documentation=file:///home/opslyquantum/opsly/docs/01-development/GIT-PULL-WATCHER.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=opslyquantum
+Group=opslyquantum
+WorkingDirectory=/home/opslyquantum/opsly
+Environment=REPO_ROOT=/home/opslyquantum/opsly
+Environment=POLL_SEC=60
+Environment=WATCH_BRANCH=main
+ExecStart=/bin/bash /home/opslyquantum/opsly/scripts/git-pull-watcher.sh
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
