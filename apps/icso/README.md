@@ -29,6 +29,17 @@ npm run type-check --workspace=@intcloudsysops/icso
 - Traefik hosts: `ICSO_DOMAIN` (default `intcloudsysops.com`)
 - Doppler optional: `ICSO_APP_IMAGE`, `ICSO_DOMAIN`, `NEXT_PUBLIC_SITE_URL`
 
+## Mission Control (agency)
+
+Staff panel: **`/mission-control`**
+
+- Module kit: `@intcloudsysops/mission-control-kit`
+- Profile: `config/mission-control/profiles/icso.json`
+- Gate: `ICSO_MC_ACCESS_TOKEN` (optional in local)
+- Docs: `docs/runbooks/ICSO-MISSION-CONTROL.md`
+
+Not Opsly Moon. Not Peskids. Replicable for client tenants via `createTenantMissionControlProfile`.
+
 ## Scope
 
 Marketing site plus **lead intake API** (`POST /api/leads`) plus **commercial catalog**
