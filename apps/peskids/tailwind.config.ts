@@ -3,19 +3,25 @@ import tailwindcssAnimate from 'tailwindcss-animate';
 import { peskidsColorTokens } from './lib/tokens';
 
 const config: Config = {
+  darkMode: 'class',
   content: ['./app/**/*.{js,ts,jsx,tsx,mdx}', './components/**/*.{js,ts,jsx,tsx,mdx}'],
   theme: {
     extend: {
       colors: {
         pk: {
-          bg: peskidsColorTokens.neutral.lightBorder,
-          surface: peskidsColorTokens.neutral.white,
-          muted: peskidsColorTokens.neutral.lightGray,
+          // bg/surface/muted/border/ink/sub/mutedText resolve to CSS vars
+          // (see app/globals.css :root and .dark) so every existing usage
+          // of bg-pk-*, text-pk-*, border-pk-* gets dark-mode support for
+          // free once an ancestor has the `dark` class. Colors that don't
+          // vary by theme (brand accents) stay as static tokens.
+          bg: 'var(--pk-bg)',
+          surface: 'var(--pk-surface)',
+          muted: 'var(--pk-muted)',
           snow: peskidsColorTokens.neutral.lightBg,
-          border: peskidsColorTokens.neutral.mediumGray,
-          ink: peskidsColorTokens.primary.blue,
-          sub: peskidsColorTokens.neutral.darkBg,
-          mutedText: peskidsColorTokens.neutral.darkGray,
+          border: 'var(--pk-border)',
+          ink: 'var(--pk-ink)',
+          sub: 'var(--pk-sub)',
+          mutedText: 'var(--pk-muted-text)',
           primary: peskidsColorTokens.primary.teal,
           'primary-dark': peskidsColorTokens.dark.darkBlue,
           deep: peskidsColorTokens.primary.blue,

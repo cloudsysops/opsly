@@ -2,6 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+/* pk-* semantic tokens as CSS vars. Scoped via .dark class (see
+   components/admin/theme-toggle.tsx — applied to AdminShell's root, not
+   html/body, so the public site stays light regardless of admin theme). */
+@layer base {
+  :root {
+    --pk-bg: #e6f6fb;
+    --pk-surface: #ffffff;
+    --pk-muted: #f2f4f7;
+    --pk-border: #e4ecf0;
+    --pk-ink: #235a7f;
+    --pk-sub: #3d6679;
+    --pk-muted-text: #7d96a4;
+  }
+
+  .dark {
+    --pk-bg: #0b1626;
+    --pk-surface: #14273d;
+    --pk-muted: #1b3049;
+    --pk-border: #2a4562;
+    --pk-ink: #f1f5f9;
+    --pk-sub: #c7d4e2;
+    --pk-muted-text: #8ba0b6;
+  }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;

@@ -69,8 +69,8 @@ export function MissionControlDashboard(): React.ReactElement {
   if (error || !data) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-pk-bg p-4">
-        <div className="max-w-md rounded-2xl border border-red-200 bg-red-50 p-6 text-center shadow-card">
-          <p className="text-sm text-red-800">{error || 'Sin datos'}</p>
+        <div className="max-w-md rounded-2xl border border-red-200 bg-red-50 p-6 text-center shadow-card dark:border-red-400/30 dark:bg-red-400/10">
+          <p className="text-sm text-red-800 dark:text-red-300">{error || 'Sin datos'}</p>
           <Button className="mt-4" onClick={() => void fetchDashboard()}>
             Reintentar
           </Button>
@@ -94,7 +94,7 @@ export function MissionControlDashboard(): React.ReactElement {
       <MissionControlKpiStrip data={data} />
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1fr_320px]">
-        <section className="min-w-0 rounded-3xl border border-pk-border bg-white p-4 shadow-sm sm:p-5">
+        <section className="min-w-0 rounded-3xl border border-pk-border bg-pk-surface p-4 shadow-sm sm:p-5">
           <MissionControlPipelineBoard />
         </section>
         <aside className="min-w-0">

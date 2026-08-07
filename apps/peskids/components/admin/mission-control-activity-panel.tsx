@@ -73,7 +73,7 @@ export function MissionControlActivityPanel({
               <Link
                 key={item.id}
                 href={item.href}
-                className="pk-focus flex items-center justify-between gap-2 rounded-xl border border-pk-border/70 bg-white px-3 py-2 text-sm hover:bg-pk-muted"
+                className="pk-focus flex items-center justify-between gap-2 rounded-xl border border-pk-border/70 bg-pk-surface px-3 py-2 text-sm hover:bg-pk-muted"
               >
                 <span className="min-w-0 truncate text-pk-ink">{item.title}</span>
                 <span className="shrink-0 font-mono text-[11px] text-pk-mutedText">

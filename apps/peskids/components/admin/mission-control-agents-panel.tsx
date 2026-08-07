@@ -54,7 +54,7 @@ export function MissionControlAgentsPanel(): React.ReactElement {
           {AUTOMATIONS.map((item) => (
             <div
               key={item.id}
-              className="flex items-center justify-between gap-2 rounded-xl border border-pk-border/70 bg-white px-3 py-2 text-sm"
+              className="flex items-center justify-between gap-2 rounded-xl border border-pk-border/70 bg-pk-surface px-3 py-2 text-sm"
             >
               <span className="min-w-0 truncate text-pk-ink">{item.label}</span>
               <Badge tone={STATUS_TONE[item.status]}>{STATUS_LABEL[item.status]}</Badge>
@@ -73,13 +73,13 @@ export function MissionControlAgentsPanel(): React.ReactElement {
             return (
               <div
                 key={agent.id}
-                className="rounded-2xl border border-pk-border/70 bg-white p-3 text-center"
+                className="rounded-2xl border border-pk-border/70 bg-pk-surface p-3 text-center"
               >
-                <span className="mx-auto flex h-10 w-10 items-center justify-center rounded-2xl bg-teal-50 text-pk-primary">
+                <span className="mx-auto flex h-10 w-10 items-center justify-center rounded-2xl bg-teal-50 text-pk-primary dark:bg-teal-400/10 dark:text-teal-300">
                   <Icon className="h-5 w-5" aria-hidden />
                 </span>
                 <p className="mt-2 text-sm font-semibold text-pk-ink">{agent.label}</p>
-                <p className="mt-0.5 flex items-center justify-center gap-1 text-[11px] text-emerald-700">
+                <p className="mt-0.5 flex items-center justify-center gap-1 text-[11px] text-emerald-700 dark:text-emerald-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
                   Disponible
                 </p>

@@ -39,6 +39,16 @@ export const peskidsColorTokens = {
     darkestBlue: '#1B607E',
     darkBlue: '#128C7E',
     brown: '#8B6A00',
+    // Full dark-mode surface palette (mirrors the light neutral.* roles below).
+    // Matches the navy tone already used for the always-dark admin sidebar
+    // (#11253d) so light/dark toggle feels like one system, not two.
+    bg: '#0b1626',
+    surface: '#14273d',
+    muted: '#1b3049',
+    border: '#2a4562',
+    ink: '#f1f5f9',
+    sub: '#c7d4e2',
+    mutedText: '#8ba0b6',
   },
 } as const;
 

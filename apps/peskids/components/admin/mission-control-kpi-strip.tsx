@@ -10,10 +10,10 @@ interface MissionControlKpiStripProps {
 }
 
 const toneClass: Record<'teal' | 'amber' | 'coral' | 'violet', string> = {
-  teal: 'border-teal-100 bg-teal-50 text-pk-primary',
-  amber: 'border-amber-100 bg-amber-50 text-amber-800',
-  coral: 'border-rose-100 bg-rose-50 text-rose-700',
-  violet: 'border-violet-100 bg-violet-50 text-violet-700',
+  teal: 'border-teal-100 bg-teal-50 text-pk-primary dark:border-teal-400/20 dark:bg-teal-400/10 dark:text-teal-300',
+  amber: 'border-amber-100 bg-amber-50 text-amber-800 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-300',
+  coral: 'border-rose-100 bg-rose-50 text-rose-700 dark:border-rose-400/20 dark:bg-rose-400/10 dark:text-rose-300',
+  violet: 'border-violet-100 bg-violet-50 text-violet-700 dark:border-violet-400/20 dark:bg-violet-400/10 dark:text-violet-300',
 };
 
 export function MissionControlKpiStrip({ data }: MissionControlKpiStripProps): React.ReactElement {

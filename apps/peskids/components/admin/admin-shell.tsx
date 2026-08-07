@@ -27,6 +27,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { PeskidsLogo } from '@/components/brand/peskids-logo';
 import { RoleSwitcher } from '@/components/admin/role-switcher';
+import { ThemeToggle, type AdminTheme } from '@/components/admin/theme-toggle';
 import {
   dispatchOpenImprovementChat,
   ImprovementChatPopup,
@@ -101,7 +102,28 @@ export function AdminShell({
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [signingOut, setSigningOut] = useState(false);
   const [signOutError, setSignOutError] = useState('');
+  const [theme, setTheme] = useState<AdminTheme>('light');
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Scoped to the admin panel only (dark class lives on this component's
+  // root div, not html/body) — the public Peskids site is unaffected
+  // regardless of what an admin picks here.
+  const THEME_STORAGE_KEY = 'peskids-admin-theme';
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+    if (stored === 'dark' || stored === 'light') {
+      setTheme(stored);
+    }
+  }, []);
+
+  const toggleTheme = (): void => {
+    setTheme((current) => {
+      const next = current === 'dark' ? 'light' : 'dark';
+      window.localStorage.setItem(THEME_STORAGE_KEY, next);
+      return next;
+    });
+  };
 
   useEffect(() => {
     const syncHash = (): void => {
@@ -343,7 +365,7 @@ export function AdminShell({
   );
 
   return (
-    <div className="flex h-dvh max-h-dvh overflow-hidden bg-pk-bg">
+    <div className={cn('flex h-dvh max-h-dvh overflow-hidden bg-pk-bg', theme === 'dark' && 'dark')}>
       <a
         href="#admin-main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-xl focus:bg-pk-surface focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-pk-ink focus:shadow-lg"
@@ -455,7 +477,7 @@ export function AdminShell({
               <span className="rounded-full border border-pk-border bg-pk-muted px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-pk-mutedText">
                 Operación en vivo
               </span>
-              <span className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-teal-700">
+              <span className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-teal-700 dark:border-teal-400/20 dark:bg-teal-400/10 dark:text-teal-300">
                 {sedeLabel}
               </span>
             </div>
@@ -486,6 +508,7 @@ export function AdminShell({
                 <RefreshCw className={cn('h-4 w-4', refreshing && 'animate-spin')} aria-hidden />
               </Button>
             ) : null}
+            <ThemeToggle theme={theme} onToggle={toggleTheme} />
             <RoleSwitcher />
             <NotificationBell />
             <Button
