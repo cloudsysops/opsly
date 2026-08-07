@@ -6,42 +6,68 @@
  * a new DB migration / pricing update. Contact/matrícula language is permanent.
  */
 
-export const PESKIDS_RESERVATION_EYEBROW = 'Chat de matrícula';
+export const PESKIDS_RESERVATION_EYEBROW = 'Cupos abiertos.';
 
-export const PESKIDS_RESERVATION_TITLE = 'Escríbenos como en WhatsApp';
+export const PESKIDS_RESERVATION_TITLE = 'Aprenden. Se divierten. Somos Peskids.';
 
 export const PESKIDS_RESERVATION_DESCRIPTION =
-  'Responde unas preguntas en el chat. Guardamos tus datos en la plataforma y te pasamos al WhatsApp del equipo correcto (Llanogrande o Domicilios).';
+  'Academia de natación especializada en bebés y niños. Clases en nuestra sede Llanogrande o a domicilio en Medellín y el área metropolitana.';
 
 export const PESKIDS_RESERVATION_BULLETS = [
-  'Elige en el chat: familia, profesor o empresa.',
-  'Si es familia, indica sede Llanogrande o domicilio.',
-  'Al final abres WhatsApp humano — sin volver a elegir.',
+  'Familia, profesor o empresa',
+  'Sede Llanogrande o domicilio',
+  'Atención por WhatsApp',
 ] as const;
 
-export const PESKIDS_FORM_CARD_TITLE = 'Formulario clásico (opcional)';
+export const PESKIDS_FORM_CARD_TITLE = 'Formulario de solicitud';
 
 export const PESKIDS_FORM_CARD_DESCRIPTION =
-  'Si prefieres no usar el chat, puedes completar este formulario.';
+  'Nuestro formulario está destinado a familias interesadas en ingresar a sus hijos o familiares a nuestras clases, profesores interesados en trabajar con nosotros o empresas interesadas en crear alianzas.\n\nSolo te tomará 1 minuto.';
 
-/** Primary CTA — opens / scrolls to admissions chat. */
-export const PESKIDS_FORM_SUBMIT_LABEL = 'Abrir chat de matrícula';
+export const PESKIDS_FORM_QUESTIONS_CONTEXT =
+  'Responde estas preguntas para guardar tus datos y direccionarte a la línea de atención correspondiente.';
+
+/** Primary CTA — submits form. */
+export const PESKIDS_FORM_SUBMIT_LABEL = 'Enviar solicitud';
 
 /** Post-form handoff only — not shown before lead capture. */
 export const PESKIDS_WHATSAPP_CTA_LABEL = 'Continuar por WhatsApp';
 
+export const PESKIDS_FORM_SUCCESS_TITLE = '¡Gracias, recibimos tu solicitud!';
+
 export const PESKIDS_FORM_SUCCESS_DETAIL =
-  'Tu solicitud quedó registrada. Continúa por WhatsApp con el equipo de Llanogrande o Domicilios según lo que elegiste.';
+  'Continúa por WhatsApp con la línea de atención correspondiente.';
+
+export const PESKIDS_FORM_SUCCESS_LLANOGRANDE =
+  'Continúa por WhatsApp con la línea de la sede Llanogrande.';
+
+export const PESKIDS_FORM_SUCCESS_DOMICILIO =
+  'Continúa por WhatsApp con la línea de Domicilios.';
+
+export const PESKIDS_FORM_SUCCESS_NEXT =
+  'El botón de arriba abre WhatsApp con el equipo correcto. Te direccionamos según la modalidad que elegiste.';
+
+export const PESKIDS_FORM_SUCCESS_RESPONSE_TIME = 'Tiempo promedio de respuesta: 5–10 minutos';
+
+export const PESKIDS_CTA_BAND_TITLE = '¿Listo para conocer Peskids?';
+
+export const PESKIDS_CTA_BAND_DESCRIPTION =
+  'Responde las preguntas del formulario para direccionarte a la línea de atención correspondiente.';
+
+export const PESKIDS_CTA_BAND_BUTTON = 'Abrir formulario';
+
+/** Instagram entry — same offer, channel-specific intro only. */
+export const PESKIDS_INSTAGRAM_LANDING_INTRO =
+  'Desde Instagram: responde estas preguntas y te direccionamos con el asesor de tu sede.';
 
 export const PESKIDS_CONSENT_TREATMENT =
-  'Autorizo a Peskids para tratar mis datos personales y, cuando aplique, los del menor bajo mi responsabilidad, con el fin de atender esta solicitud de contacto y matrícula, conforme a su Política de Privacidad.';
+  'Autorizo a Peskids para tratar mis datos personales y, cuando aplique, los del menor bajo mi responsabilidad, con el fin de atender esta solicitud de información y contacto, conforme a su Política de Privacidad.';
 
 export const PESKIDS_CONSENT_MARKETING =
   'Acepto recibir información sobre programas, novedades y promociones de Peskids por WhatsApp o correo electrónico. Puedo cancelar esta autorización en cualquier momento.';
 
-/** Instagram entry — same offer, channel-specific intro only. */
-export const PESKIDS_INSTAGRAM_LANDING_INTRO =
-  'Desde Instagram: usa el chat de matrícula. Al terminar te conectamos por WhatsApp con Llanogrande o Domicilios.';
+export const PESKIDS_CONSENT_PHOTOS_VIDEOS =
+  'Autorizo a Peskids para usar fotos y videos de mis clases en sus redes sociales (Instagram, Facebook, TikTok) con fines promocionales. Entiendo que estas imágenes serán de carácter educativo y profesional.';
 
-/** Anchor id for the interactive admissions chat on public landings. */
-export const PESKIDS_CHAT_SECTION_ANCHOR = 'contacto';
+/** @deprecated Prefer PESKIDS_RESERVATION_FORM_ANCHOR — kept for older anchors. */
+export const PESKIDS_CHAT_SECTION_ANCHOR = 'reserva';

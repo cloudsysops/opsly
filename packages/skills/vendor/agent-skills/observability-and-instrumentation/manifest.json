@@ -1,0 +1,13 @@
+{
+  "name": "observability-and-instrumentation",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Instruments code so production behavior is visible and diagnosable. Use when adding logging, metrics, tracing, or alerting. Use when shipping any feature that runs in production and you need evidence it works. Use when production issues are",
+  "inputSchema": {
+    "type": "object",
+    "additionalProperties": true
+  },
+  "outputSchema": {
+    "type": "object"
+  }
+}

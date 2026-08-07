@@ -30,7 +30,7 @@ describe('peskidsAdmissionsChatFormRedirectPayload', () => {
   it('keeps legacy form payload for older clients', () => {
     const payload = peskidsAdmissionsChatFormRedirectPayload();
     expect(payload.stage).toBe('form_required');
-    expect(payload.reply).toContain('chat');
+    expect(payload.reply).toContain('formulario');
     expect(payload.reply).toContain('/#reserva-form');
   });
 });

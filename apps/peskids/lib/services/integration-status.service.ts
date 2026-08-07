@@ -1,7 +1,7 @@
 import {
   isPeskidsGhlEnabled,
   resolveTwentyEnv,
-} from '@intcloudsysops/services/twenty';
+} from '@intcloudsysops/services';
 import { resolveWacrmServerUrl } from '@/lib/integrations/wacrm-admin-links';
 import type { DashboardIntegrationStatus } from '../types';
 

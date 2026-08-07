@@ -1,7 +1,7 @@
 ---
 status: draft
 owner: operations
-last_review: 2026-05-24
+last_review: 2026-08-05
 type: runbook
 tags:
   - opsly/runbook
@@ -11,21 +11,39 @@ tags:
 
 Objetivo: que el job **Deploy** (`.github/workflows/deploy.yml`) llegue al VPS por SSH, ejecute `docker compose pull/up` y pase el health check HTTPS.
 
+Los workflows usan la composite **`.github/actions/tailscale-connect`** (`tailscale/github-action@v4`): hostname `opsly-gha-<run_id>`, ping al VPS y logout al terminar el job.
+
 ## Síntoma habitual: `dial tcp …:22: i/o timeout`
 
 El runner de GitHub **no está en tu tailnet**. Si el VPS solo acepta SSH desde Tailscale (UFW) o `VPS_HOST` apunta a una IP **100.x** sin join previo, la conexión TCP a `:22` hace timeout.
 
+## Síntoma: admin Tailscale lleno de `github-runner*` offline
+
+La auth key de CI **no es ephemeral**. Cada deploy deja un nodo muerto en la lista.
+
+**Arreglo (humano, 2 min):**
+
+1. [Tailscale → Settings → Keys](https://login.tailscale.com/admin/settings/keys): crear auth key **Reusable + Ephemeral** (y tag en la clave/ACL si tu política lo exige).
+2. GitHub → Secrets → actualizar `TAILSCALE_AUTHKEY` con la clave nueva; revocar la anterior.
+3. Limpiar basura actual:
+   - Manual: [Machines](https://login.tailscale.com/admin/machines) → borrar `github-runner*` offline.
+   - O con API: `TAILSCALE_API_KEY=… ./scripts/ops/cleanup-tailscale-github-runners.sh` (dry-run) y luego `--execute`.
+
+Con clave ephemeral, los nodos `opsly-gha-*` desaparecen solos tras el logout del action.
+
+**Mejor aún (recomendado Tailscale):** OAuth client con `auth_keys` + `tag:ci` y pasar `oauth-client-id` / `oauth-secret` / `tags` al action (ver [docs oficiales](https://tailscale.com/docs/integrations/github/github-action)). Hoy el repo sigue con `TAILSCALE_AUTHKEY` por compatibilidad.
+
 ## Configuración recomendada (SSH vía Tailscale)
 
-1. En [Tailscale admin](https://login.tailscale.com/admin/settings/keys): crear **auth key** reusable + ephemeral. El tag (si aplica) puede ir **en la clave** y en la ACL; el workflow **no** fuerza `tag:github-actions` — evita fallos si tu red no declara ese tag. Si tu instalación exige pasar tags al `tailscale up` del action, añade el input en el workflow o usa una clave pre-etiquetada según la doc de Tailscale.
-2. En la política ACL de Tailscale, permitir que el nodo del runner (una vez unido) llegue al nodo del VPS (por tag, usuario o `autogroup:member` según tu modelo).
-3. En GitHub → **Settings → Secrets and variables → Actions** (entornos `production` / `staging` si aplica):
-   - `TAILSCALE_AUTHKEY`: la clave del paso 1.
-   - `VPS_HOST`: dirección alcanzable **después** del join (típicamente IP Tailscale del VPS, p. ej. `100.120.151.91`, o nombre MagicDNS si está habilitado).
-   - Opcional: `VPS_SSH_HOST`: si lo defines, `appleboy/ssh-action` usa **solo** este valor como host SSH; si no, usa `VPS_HOST`. Útil si quieres separar “host para health/DNS” de “host para SSH”.
-   - `VPS_USER`, `VPS_SSH_KEY`: sin cambios.
+1. Auth key **reusable + ephemeral** (paso de arriba).
+2. ACL: permitir que el runner llegue al VPS (`vps-dragon` / `100.120.151.91`).
+3. GitHub secrets (`production` / `staging` si aplica):
+   - `TAILSCALE_AUTHKEY`
+   - `VPS_HOST` (IP Tailscale del VPS, p. ej. `100.120.151.91`, o MagicDNS)
+   - Opcional `VPS_SSH_HOST` (solo SSH; si no, usa `VPS_HOST`)
+   - `VPS_USER`, `VPS_SSH_KEY`
 
-El workflow ejecuta `tailscale/github-action@v2` **solo** cuando `TAILSCALE_AUTHKEY` no está vacío; si no usas Tailscale en CI, deja el secreto vacío y abre SSH al runner (menos recomendado). El paso SSH usa **timeout de conexión 2m** (antes 30s) para redes lentas.
+El paso Tailscale corre **solo** si `TAILSCALE_AUTHKEY` no está vacío. SSH usa **timeout 2m**.
 
 ## Rollback rápido de imagen API
 
@@ -54,3 +72,5 @@ Sustituye `PLATFORM_DOMAIN` por el dominio base (mismo valor que en Doppler / se
 
 - [[runbooks/README|runbooks]]
 - [[brain/README|Brain Central]]
+- `scripts/ops/cleanup-tailscale-github-runners.sh`
+- `.github/actions/tailscale-connect/`

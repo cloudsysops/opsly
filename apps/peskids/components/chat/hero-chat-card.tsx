@@ -29,7 +29,7 @@ export function HeroChatCard(): React.ReactElement {
       />
       <p className="mt-3 flex flex-wrap items-center gap-2 text-xs text-pk-mutedText">
         <MessageCircle className="h-3.5 w-3.5 text-pk-primary" aria-hidden />
-        <span>Preferimos el chat: guardamos tus datos y te pasamos al WhatsApp correcto.</span>
+        <span>Preferimos el chat: guardamos tus datos y te conectaremos al WhatsApp correcto.</span>
         <Link
           href={PESKIDS_RESERVATION_FORM_HREF}
           className="font-semibold text-pk-primary underline-offset-2 hover:underline"

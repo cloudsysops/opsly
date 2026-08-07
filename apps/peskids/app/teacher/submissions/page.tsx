@@ -183,10 +183,9 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
   }, []);
 
   useEffect(() => {
-    if (bulkNotification) {
-      const timer = setTimeout(clearBulkNotification, 4000);
-      return () => clearTimeout(timer);
-    }
+    if (!bulkNotification) return;
+    const timer = setTimeout(clearBulkNotification, 4000);
+    return () => clearTimeout(timer);
   }, [bulkNotification, clearBulkNotification]);
 
   const handleBulkMarkReviewed = useCallback(async (ids: string[]): Promise<void> => {
@@ -261,8 +260,8 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-pk-bg p-4">
-        <div className="max-w-md rounded-2xl border border-red-200 bg-red-50 p-6 text-center shadow-card">
-          <p className="text-sm text-red-800">{error}</p>
+        <div className="max-w-md rounded-2xl border border-red-200/50 bg-red-50/20 p-6 text-center shadow-card">
+          <p className="text-sm text-red-800/80">{error}</p>
           <Button className="mt-4" onClick={() => void fetchSubmissions()}>
             Reintentar
           </Button>
@@ -335,7 +334,7 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
                   <p className="text-sm text-pk-mutedText">Estudiantes</p>
                   <p className="mt-1 text-3xl font-bold text-pk-ink">{stats.uniqueStudents}</p>
                 </div>
-                <div className="rounded-lg bg-blue-50 p-3 text-pk-primary">
+                <div className="rounded-lg bg-pk-bg p-3 text-pk-primary">
                   <Users className="h-6 w-6" aria-hidden />
                 </div>
               </div>
@@ -383,7 +382,7 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
         </div>
 
         {selectedSubmission ? (
-          <Card id="submission-preview" className="border-pk-primary/20 bg-blue-50/40">
+          <Card id="submission-preview" className="border-pk-primary/20 bg-pk-bg/40">
             <CardHeader>
               <CardTitle className="text-base">Entrega seleccionada</CardTitle>
               <CardDescription>
@@ -460,7 +459,7 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
             className={`rounded-2xl border p-4 text-sm ${
               bulkNotification.type === 'success'
                 ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-                : 'border-red-200 bg-red-50 text-red-800'
+                : 'border-red-200/50 bg-red-50/20 text-red-800/80'
             }`}
           >
             {bulkNotification.message}

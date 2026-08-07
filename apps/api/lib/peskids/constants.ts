@@ -49,3 +49,6 @@ export const PESKIDS_MESSAGE_STATUSES = [
 
 /** Ratings at or below this value set feedback status to action_required. */
 export const PESKIDS_LOW_SATISFACTION_THRESHOLD = 3;
+
+/** Private Storage bucket for teacher-applicant CV / swim-video uploads (service_role only). */
+export const PESKIDS_TEACHER_ATTACHMENTS_BUCKET = 'peskids-teacher-applications' as const;

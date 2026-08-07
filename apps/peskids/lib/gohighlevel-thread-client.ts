@@ -19,7 +19,7 @@ import type {
   SendConversationMessageRequest,
   SendConversationMessageResponse,
   SendMessageRequest,
-} from '@intcloudsysops/services/gohighlevel';
+} from '@intcloudsysops/services';
 
 export interface PeskidsGoHighLevelThreadClient {
   getContacts(filter?: ListContactsFilter): Promise<ListResponse<Contact>>;

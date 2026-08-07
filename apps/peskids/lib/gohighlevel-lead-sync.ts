@@ -3,12 +3,12 @@
  * New leads use syncLeadToCrm() → Twenty; do not call from new code paths.
  * @deprecated Use syncLeadToCrm() — GHL is opt-in legacy only.
  */
-import { isPeskidsGhlEnabled } from '@intcloudsysops/services/twenty';
 import {
+  isPeskidsGhlEnabled,
   GoHighLevelClient,
   resolveGoHighLevelPeskidsEnv,
-} from '@intcloudsysops/services/gohighlevel';
-import type { CreateContactRequest } from '@intcloudsysops/services/gohighlevel';
+} from '@intcloudsysops/services';
+import type { CreateContactRequest } from '@intcloudsysops/services';
 
 export interface LeadData {
   parentName: string;

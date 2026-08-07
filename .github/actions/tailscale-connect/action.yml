@@ -1,0 +1,26 @@
+# Connect GitHub Actions runners to the Opsly tailnet for SSH deploy.
+# Prefer a reusable + ephemeral auth key (or OAuth client) so nodes vanish after the job.
+# See docs/runbooks/DEPLOY-GITHUB-ACTIONS.md
+name: Connect Tailscale
+description: Join the Opsly Tailscale network from a GitHub Actions runner
+inputs:
+  authkey:
+    description: Tailscale auth key (reusable + ephemeral recommended)
+    required: true
+  ping_host:
+    description: Tailscale IP or MagicDNS name to ping after join (VPS)
+    required: false
+    default: "100.120.151.91"
+runs:
+  using: composite
+  steps:
+    - name: Connect Tailscale
+      uses: tailscale/github-action@v4
+      with:
+        authkey: ${{ inputs.authkey }}
+        # Unique per run; logout post-step removes ephemeral nodes when the key is ephemeral.
+        hostname: opsly-gha-${{ github.run_id }}
+        ping: ${{ inputs.ping_host }}
+        version: latest
+        timeout: 2m
+        retry: "5"
