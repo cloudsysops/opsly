@@ -7,13 +7,12 @@
 #   ./scripts/ops/edge-watchdog.sh --dry-run
 #
 # Env:
-#   OPSLY_ROOT          default /opt/opsly
-#   EDGE_COMPOSE_FILE   default infra/docker-compose.platform.yml
-#   EDGE_ENV_FILE       default $OPSLY_ROOT/.env
-#   PESKIDS_CONTAINER   default peskids
-#   NOTIFY=1            Discord via scripts/notify-discord.sh (loads DISCORD_* from .env)
-#   MIN_MEM_MB          soft reclaim threshold (default 450)
-#   COOLDOWN_SEC        min seconds between restarts of same target (default 120)
+#   OPSLY_ROOT / EDGE_COMPOSE_FILE / EDGE_ENV_FILE / PESKIDS_CONTAINER
+#   NOTIFY=1                 Discord (loads DISCORD_WEBHOOK_URL from .env line only)
+#   MIN_MEM_MB=350           soft reclaim threshold
+#   COOLDOWN_SEC=120         restart cooldown per target
+#   MEM_NOTIFY_COOLDOWN=21600  Discord for low-mem at most every 6h
+#   PUBLIC_FAIL_BEFORE_BOUNCE=2  consecutive public fails before Traefik bounce
 #
 set -euo pipefail
 
@@ -23,7 +22,7 @@ for arg in "$@"; do
     --dry-run) DRY_RUN=true ;;
     --once) ;;
     -h|--help)
-      sed -n '2,22p' "$0"
+      sed -n '2,20p' "$0"
       exit 0
       ;;
   esac
@@ -34,29 +33,37 @@ COMPOSE_FILE="${EDGE_COMPOSE_FILE:-infra/docker-compose.platform.yml}"
 ENV_FILE="${EDGE_ENV_FILE:-${OPSLY_ROOT}/.env}"
 PESKIDS_CONTAINER="${PESKIDS_CONTAINER:-peskids}"
 NOTIFY="${NOTIFY:-0}"
-MIN_MEM_MB="${MIN_MEM_MB:-450}"
+MIN_MEM_MB="${MIN_MEM_MB:-350}"
 COOLDOWN_SEC="${COOLDOWN_SEC:-120}"
+MEM_NOTIFY_COOLDOWN="${MEM_NOTIFY_COOLDOWN:-21600}"
+PUBLIC_FAIL_BEFORE_BOUNCE="${PUBLIC_FAIL_BEFORE_BOUNCE:-2}"
 STATE_DIR="${OPSLY_ROOT}/runtime/edge-watchdog"
-mkdir -p "$STATE_DIR" "${OPSLY_ROOT}/runtime/logs"
+LOG_DIR="${OPSLY_ROOT}/runtime/logs"
+mkdir -p "$STATE_DIR" "$LOG_DIR"
 
-# Load only Discord webhook for cron notifications (never source full .env — values break bash)
-if [[ -z "${DISCORD_WEBHOOK_URL:-}" && -f "$ENV_FILE" ]]; then
-  DISCORD_WEBHOOK_URL="$(
-    grep -E '^DISCORD_WEBHOOK_URL=' "$ENV_FILE" 2>/dev/null \
-      | head -1 \
-      | cut -d= -f2- \
-      | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//"
-  )" || true
-  export DISCORD_WEBHOOK_URL
+# Single-flight (cron overlap)
+LOCK_FILE="${STATE_DIR}/watchdog.lock"
+if command -v flock >/dev/null 2>&1; then
+  exec 9>"$LOCK_FILE"
+  if ! flock -n 9; then
+    echo "[edge-watchdog] another run in progress — exit"
+    exit 0
+  fi
 fi
+
+load_discord_webhook() {
+  local key="$1"
+  grep -E "^${key}=" "$ENV_FILE" 2>/dev/null \
+    | head -1 \
+    | cut -d= -f2- \
+    | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//" || true
+}
+
 if [[ -z "${DISCORD_WEBHOOK_URL:-}" && -f "$ENV_FILE" ]]; then
-  # fallback common alias
-  DISCORD_WEBHOOK_URL="$(
-    grep -E '^DISCORD_WEBHOOK=' "$ENV_FILE" 2>/dev/null \
-      | head -1 \
-      | cut -d= -f2- \
-      | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//"
-  )" || true
+  DISCORD_WEBHOOK_URL="$(load_discord_webhook DISCORD_WEBHOOK_URL)"
+  if [[ -z "$DISCORD_WEBHOOK_URL" ]]; then
+    DISCORD_WEBHOOK_URL="$(load_discord_webhook DISCORD_WEBHOOK)"
+  fi
   export DISCORD_WEBHOOK_URL
 fi
 
@@ -79,38 +86,18 @@ notify() {
   fi
 }
 
-container_running() {
-  local name="$1"
-  docker ps --format '{{.Names}}' | grep -qx "$name"
-}
-
-container_exists() {
-  local name="$1"
-  docker ps -a --format '{{.Names}}' | grep -qx "$name"
-}
-
-port_open() {
-  local port="$1"
-  ss -tln 2>/dev/null | grep -qE ":${port}\\s" || return 1
-}
-
-http_ok() {
-  local url="$1"
-  local code
-  code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 8 "$url" 2>/dev/null || echo 000)"
-  [[ "$code" =~ ^(200|301|302|307|308)$ ]]
-}
-
+# Cooldown with custom seconds
 cooldown_ok() {
   local key="$1"
+  local window="${2:-$COOLDOWN_SEC}"
   local stamp_file="${STATE_DIR}/${key}.ts"
   local now
   now="$(date +%s)"
   if [[ -f "$stamp_file" ]]; then
     local last
     last="$(cat "$stamp_file" 2>/dev/null || echo 0)"
-    if (( now - last < COOLDOWN_SEC )); then
-      log "cooldown skip: ${key} (${COOLDOWN_SEC}s)"
+    if [[ "$last" =~ ^[0-9]+$ ]] && (( now - last < window )); then
+      log "cooldown skip: ${key} (${window}s)"
       return 1
     fi
   fi
@@ -118,6 +105,24 @@ cooldown_ok() {
     echo "$now" >"$stamp_file"
   fi
   return 0
+}
+
+container_running() {
+  docker ps --format '{{.Names}}' | grep -qx "$1"
+}
+
+container_exists() {
+  docker ps -a --format '{{.Names}}' | grep -qx "$1"
+}
+
+port_open() {
+  ss -tln 2>/dev/null | grep -qE ":${1}\\s" || return 1
+}
+
+http_ok() {
+  local code
+  code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 8 "$1" 2>/dev/null || echo 000)"
+  [[ "$code" =~ ^(200|301|302|307|308)$ ]]
 }
 
 ensure_started() {
@@ -151,17 +156,18 @@ mem_available_mb() {
 }
 
 ACTIONS=0
-
 cd "$OPSLY_ROOT"
-
-# --- Soft reclaim under memory pressure (no image pulls/prunes) ---
 AVAIL_MB="$(mem_available_mb)"
+
+# --- Soft reclaim (silent unless first alert in MEM_NOTIFY_COOLDOWN) ---
 if [[ "$AVAIL_MB" =~ ^[0-9]+$ ]] && (( AVAIL_MB < MIN_MEM_MB )); then
-  log "low memory (${AVAIL_MB}Mi available < ${MIN_MEM_MB}Mi) — prune exited containers only"
-  notify "⚠️ VPS low memory" "${AVAIL_MB}Mi available — docker container prune" "warning"
+  log "low memory (${AVAIL_MB}Mi available < ${MIN_MEM_MB}Mi) — prune exited containers"
+  if cooldown_ok "mem-notify" "$MEM_NOTIFY_COOLDOWN"; then
+    notify "⚠️ VPS low memory" "${AVAIL_MB}Mi available — soft prune (watchdog)" "warning"
+  fi
   if cooldown_ok "mem-prune"; then
-    run docker container prune -f || true
-    ACTIONS=$((ACTIONS + 1))
+    run docker container prune -f >/dev/null 2>&1 || true
+    # do NOT increment ACTIONS — avoids Discord "recovered" spam for 0B reclaim
   fi
 fi
 
@@ -176,7 +182,7 @@ if ! container_running traefik || ! port_open 80 || ! port_open 443; then
   fi
 fi
 
-# --- Platform apps (API/admin/portal) ---
+# --- Platform apps ---
 NEED_PLATFORM=false
 for c in infra-app-1 opsly_admin opsly_portal; do
   if ! container_running "$c"; then
@@ -192,16 +198,12 @@ if [[ "$NEED_PLATFORM" == "true" ]] && cooldown_ok "platform-edge"; then
   sleep 5
 fi
 
-# --- Control-plane deps (local start only) ---
 ensure_started "infra-redis-1" "Redis"
 ensure_started "opsly_orchestrator" "Orchestrator"
-
-# --- Peskids stack ---
 ensure_started "$PESKIDS_CONTAINER" "Peskids"
 ensure_started "n8n_peskids" "n8n Peskids"
 ensure_started "uptime_peskids" "Uptime Peskids"
 
-# --- Local + public probes ---
 PESKIDS_OK=false
 API_OK=false
 PUBLIC_PESKIDS_OK=false
@@ -221,9 +223,9 @@ if http_ok "http://127.0.0.1:3000/api/health" || \
   API_OK=true
 fi
 
-# Public (Cloudflare) — detects 521 even when container is "healthy"
 if http_ok "https://www.peskids.com/api/health"; then
   PUBLIC_PESKIDS_OK=true
+  echo 0 >"${STATE_DIR}/public-peskids-fails.count" 2>/dev/null || true
 fi
 
 if [[ "$PESKIDS_OK" != "true" ]] && container_running "$PESKIDS_CONTAINER" && cooldown_ok "restart-peskids"; then
@@ -233,22 +235,46 @@ if [[ "$PESKIDS_OK" != "true" ]] && container_running "$PESKIDS_CONTAINER" && co
   ACTIONS=$((ACTIONS + 1))
 fi
 
-if [[ "$PUBLIC_PESKIDS_OK" != "true" ]] && [[ "$PESKIDS_OK" == "true" ]] && container_running traefik && cooldown_ok "restart-traefik-public"; then
-  log "Public Peskids health fail but local OK — bounce Traefik (CF 521 class)"
-  notify "🚨 Public 521?" "www.peskids.com health fail; local OK — restarting Traefik" "error"
-  run docker restart traefik
-  ACTIONS=$((ACTIONS + 1))
-  sleep 4
+# Public CF 521 class — require N consecutive fails before bouncing Traefik
+if [[ "$PUBLIC_PESKIDS_OK" != "true" ]] && [[ "$PESKIDS_OK" == "true" ]] && container_running traefik; then
+  fails=0
+  if [[ -f "${STATE_DIR}/public-peskids-fails.count" ]]; then
+    fails="$(cat "${STATE_DIR}/public-peskids-fails.count" 2>/dev/null || echo 0)"
+  fi
+  fails=$((fails + 1))
+  echo "$fails" >"${STATE_DIR}/public-peskids-fails.count"
+  log "public Peskids health fail streak=${fails}/${PUBLIC_FAIL_BEFORE_BOUNCE}"
+  if (( fails >= PUBLIC_FAIL_BEFORE_BOUNCE )) && cooldown_ok "restart-traefik-public"; then
+    log "Public Peskids health fail but local OK — bounce Traefik (CF 521 class)"
+    notify "🚨 Public 521?" "www.peskids.com health fail x${fails}; local OK — restarting Traefik" "error"
+    run docker restart traefik
+    ACTIONS=$((ACTIONS + 1))
+    echo 0 >"${STATE_DIR}/public-peskids-fails.count"
+    sleep 4
+  fi
 fi
 
 if [[ "$API_OK" != "true" ]] && container_running infra-app-1 && cooldown_ok "restart-app"; then
   log "API unhealthy — restart app containers"
   notify "⚠️ API unhealthy" "Restarting platform app containers" "warning"
   run docker restart infra-app-1
-  if container_running infra-app-2 || container_exists infra-app-2; then
+  if container_exists infra-app-2; then
     run docker restart infra-app-2 2>/dev/null || true
   fi
   ACTIONS=$((ACTIONS + 1))
+fi
+
+# Status snapshot for external monitors
+STATUS_FILE="${STATE_DIR}/last-status.json"
+if [[ "$DRY_RUN" != "true" ]]; then
+  printf '{"ts":"%s","mem_mb":%s,"actions":%s,"peskids_ok":%s,"api_ok":%s,"public_ok":%s}\n' \
+    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+    "${AVAIL_MB}" \
+    "${ACTIONS}" \
+    "$([[ "$PESKIDS_OK" == "true" ]] && echo true || echo false)" \
+    "$([[ "$API_OK" == "true" ]] && echo true || echo false)" \
+    "$([[ "$PUBLIC_PESKIDS_OK" == "true" ]] && echo true || echo false)" \
+    >"$STATUS_FILE" 2>/dev/null || true
 fi
 
 if [[ "$ACTIONS" -eq 0 ]]; then

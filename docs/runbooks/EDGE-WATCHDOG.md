@@ -29,17 +29,26 @@ tags:
 
 ## Script canónico
 
-`scripts/ops/edge-watchdog.sh` — corre **en el VPS**.
+`scripts/ops/edge-watchdog.sh` — corre **en el VPS** (flock, cooldown, status JSON).
+
+Instalar / refrescar cron (idempotente, sin sudo):
+
+```bash
+./scripts/ops/install-edge-watchdog.sh
+```
 
 Unidades: `infra/systemd/opsly-edge-watchdog.{service,timer}` (preferido con sudo).
 
-**Fallback activo hoy:** crontab `vps-dragon` cada 2 min con `NOTIFY=1`.
+**Capas automáticas:**
+1. Cron VPS cada 2 min (`NOTIFY=1`, Discord solo en recovers reales; low-mem ≤1 alerta/6h)
+2. HealthWorker (orchestrator) → `self-heal` / `edge-recover` tras 3 fallos
+3. Probe externo Mac (`edge-external-probe.sh` + LaunchAgent cada 3 min)
+4. n8n Eyes workflow (opcional)
 
-Probe externo (Mac / worker online):
+Probe externo:
 
 ```bash
 ./scripts/ops/edge-external-probe.sh
-# LaunchAgent opcional cada 3 min si el Mac está encendido
 ```
 
 ## Recuperación manual (solo si el auto falla)

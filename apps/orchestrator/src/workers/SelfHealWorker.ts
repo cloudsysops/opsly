@@ -1,4 +1,5 @@
 import { Job, Worker } from 'bullmq';
+import { existsSync } from 'fs';
 import { logWorkerLifecycle } from '../observability/worker-log.js';
 import { notifyDiscord } from './NotifyWorker.js';
 import { orchestratorQueue } from '../queue.js';
@@ -14,6 +15,23 @@ const VPS_SSH = process.env.VPS_TAILSCALE_HOST ?? 'vps-dragon@100.120.151.91';
 const OPSLY_ROOT = process.env.VPS_OPSLY_ROOT ?? '/opt/opsly';
 const EDGE_COMPOSE = `${OPSLY_ROOT}/infra/docker-compose.platform.yml`;
 const EDGE_ENV = `${OPSLY_ROOT}/.env`;
+const EDGE_WATCHDOG = `${OPSLY_ROOT}/scripts/ops/edge-watchdog.sh`;
+
+async function runLocal(cmd: string): Promise<{ ok: boolean; output: string }> {
+  const { exec } = await import('child_process');
+  const { promisify } = await import('util');
+  const execAsync = promisify(exec);
+  try {
+    const { stdout, stderr } = await execAsync(cmd, {
+      timeout: 120_000,
+      maxBuffer: 2 * 1024 * 1024,
+    });
+    return { ok: true, output: `${stdout}${stderr}` };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { ok: false, output: msg };
+  }
+}
 
 async function runSSH(cmd: string): Promise<{ ok: boolean; output: string }> {
   const { execFile } = await import('child_process');
@@ -33,6 +51,15 @@ async function runSSH(cmd: string): Promise<{ ok: boolean; output: string }> {
     const msg = err instanceof Error ? err.message : String(err);
     return { ok: false, output: msg };
   }
+}
+
+/** Prefer local exec when running on the VPS (orchestrator container with docker.sock / host scripts). */
+async function runOnVps(cmd: string): Promise<{ ok: boolean; output: string }> {
+  if (existsSync(EDGE_WATCHDOG) || existsSync(OPSLY_ROOT)) {
+    const local = await runLocal(cmd);
+    if (local.ok) return local;
+  }
+  return runSSH(cmd);
 }
 
 function edgeRecoverCmd(service: string): string {
@@ -70,29 +97,28 @@ export function startSelfHealWorker(connection: object): Worker {
 
       switch (action) {
         case 'restart':
-          result = await runSSH(edgeRecoverCmd(service));
+          result = await runOnVps(edgeRecoverCmd(service));
           break;
 
         case 'edge-recover':
-          result = await runSSH(
+          result = await runOnVps(
             `cd ${OPSLY_ROOT} && NOTIFY=1 ./scripts/ops/edge-watchdog.sh 2>&1 | tail -30`
           );
           break;
 
         case 'refresh-env':
-          result = await runSSH(
+          result = await runOnVps(
             `cd ${OPSLY_ROOT} && ./scripts/vps-refresh-api-env.sh 2>&1 | tail -10`
           );
           break;
 
         case 'full-restart':
           if (service === 'edge' || service === 'traefik' || service === 'peskids') {
-            result = await runSSH(
+            result = await runOnVps(
               `cd ${OPSLY_ROOT} && NOTIFY=1 ./scripts/ops/edge-watchdog.sh 2>&1 | tail -30`
             );
             break;
           }
-          // Para full-restart genérico, encolamos diagnóstico a Cursor en lugar de actuar directo
           await orchestratorQueue.add('cursor', {
             payload: {
               task: `Diagnóstico y recovery: ${service} en ${tenant_slug}`,
