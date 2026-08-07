@@ -8,6 +8,7 @@ import {
   Bell,
   CalendarClock,
   ClipboardList,
+  Compass,
   GraduationCap,
   Home,
   Inbox,
@@ -61,6 +62,7 @@ const HASH_SECTION_ALIASES: Record<string, string> = {
 
 const navOps = [
   { icon: Home, label: 'Landing', href: '/' },
+  { icon: Compass, label: 'Mission Control', href: '/admin/mission-control' },
   { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },
   { icon: LayoutGrid, label: 'Academia', href: '/admin#academy' },
   { icon: ShieldCheck, label: 'Equipo', href: '/admin#team' },
@@ -233,6 +235,10 @@ export function AdminShell({
 
     if (item.label === 'Pipeline') {
       return pathname.startsWith('/admin/pipeline');
+    }
+
+    if (item.label === 'Mission Control') {
+      return pathname.startsWith('/admin/mission-control');
     }
 
     if (item.label === 'Notificaciones') {
