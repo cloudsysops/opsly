@@ -25,9 +25,11 @@ establecido en "Flujo de sesión (humano + Cursor)").
 
 ## Cuándo usarlo
 
-- Tu máquina local (`opsly-admin`) o un worker (`opsly-worker` / PC-gamer)
-  donde quieres que el repo se mantenga al día automáticamente y te avises
-  cuando llega una tarea nueva en `AGENTS.md`.
+- Tu máquina local (`opsly-admin`), el VPS (`vps-dragon`), un worker
+  (`opsly-worker` / PC-gamer), o **cualquier máquina nueva que se sume al
+  sistema** — el instalador es el mismo en las tres plataformas, solo
+  cambia la bandera (ver "Instalación" abajo). No hace falta escribir una
+  unidad nueva por host: la unidad `user` es genérica (`%h`).
 
 ## Cuándo no usarlo
 
@@ -59,19 +61,46 @@ launchctl unload ~/Library/LaunchAgents/com.opsly.git-pull-watcher.plist
 rm ~/Library/LaunchAgents/com.opsly.git-pull-watcher.plist
 ```
 
-### Linux (`opsly-worker` / PC-gamer)
+### Linux — VPS (`vps-dragon`, system, requiere sudo)
 
 ```bash
-sudo cp infra/systemd/opsly-git-pull-watcher.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable --now opsly-git-pull-watcher.service
+cd /opt/opsly
+sudo ./scripts/install-git-pull-watcher.sh
 ```
 
-Ajusta `User=` y las rutas en la unidad si tu usuario/ruta difieren de
-`opslyquantum:/home/opslyquantum/opsly` (ver
-[`WORKER-SETUP-MAC2011.md`](../04-infrastructure/WORKER-SETUP-MAC2011.md)).
+Instala `infra/systemd/opsly-git-pull-watcher.service` (fijo a
+`vps-dragon:/opt/opsly`) como unidad **system**.
 
 Logs: `journalctl -u opsly-git-pull-watcher.service -f`
+
+### Linux — `opsly-worker` / PC-gamer / **cualquier máquina futura** (user, sin sudo)
+
+Un solo comando sirve para el worker actual y para cualquier máquina que se
+sume después al sistema — no hay que tocar código ni crear una unidad nueva
+por host:
+
+```bash
+# En la máquina nueva, con el repo ya clonado en ~/opsly:
+cd ~/opsly
+./scripts/install-git-pull-watcher.sh --user
+```
+
+Instala `infra/systemd/opsly-git-pull-watcher.user.service` como unidad
+**user** de systemd. Esa unidad usa el especificador `%h` (home del usuario
+que la corre) en vez de una ruta fija, así que **no necesita editarse por
+máquina**: funciona igual en `opsly-worker`, en PC-gamer, o en la próxima
+máquina que se agregue, siempre que el repo esté en `~/opsly` (mismo
+supuesto que ya usa `docs/04-infrastructure/WORKER-SETUP-MAC2011.md`). Si el
+clon está en otra ruta, edita `WorkingDirectory`/`ExecStart` en
+`~/.config/systemd/user/opsly-git-pull-watcher.service` tras instalar.
+
+Para que arranque tras reboot sin sesión interactiva (una vez):
+
+```bash
+sudo loginctl enable-linger "$(whoami)"
+```
+
+Logs: `journalctl --user -u opsly-git-pull-watcher.service -f`
 
 ### Manual (cualquier SO, foreground)
 
@@ -119,8 +148,9 @@ chmod +x scripts/git-pull-watcher.sh
 - `scripts/git-pull-watcher.sh`
 - `scripts/git-sync-repo.sh` (primitiva de pull reutilizada)
 - `.githooks/post-merge` (hook de "despertar", delega en `git-session-brief.sh`)
-- `infra/launchd/com.opsly.git-pull-watcher.plist`
-- `infra/systemd/opsly-git-pull-watcher.service`
+- `infra/launchd/com.opsly.git-pull-watcher.plist` (macOS, cualquier Mac)
+- `infra/systemd/opsly-git-pull-watcher.service` (Linux system — VPS)
+- `infra/systemd/opsly-git-pull-watcher.user.service` (Linux user, portable vía `%h` — worker/PC-gamer/futuras máquinas)
 - [`AUTO-PUSH-WATCHER.md`](AUTO-PUSH-WATCHER.md) (mecanismo inverso)
 
 ---

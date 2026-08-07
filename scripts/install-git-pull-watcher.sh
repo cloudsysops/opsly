@@ -1,17 +1,39 @@
 #!/usr/bin/env bash
-# Instala el git-pull-watcher en la máquina local (opsly-admin / opsly-worker).
-# macOS: LaunchAgent en ~/Library/LaunchAgents (invoca --once cada StartInterval).
-# Linux: muestra instrucciones para systemd (infra/systemd/opsly-git-pull-watcher.service).
+# Instala el git-pull-watcher en la máquina local.
 #
-# Uso: ./scripts/install-git-pull-watcher.sh [--dry-run]
+# macOS (cualquier Mac, opsly-admin u otra futura):
+#   ./scripts/install-git-pull-watcher.sh
+#   → LaunchAgent en ~/Library/LaunchAgents (invoca --once cada 60s)
+#
+# Linux — VPS (system, /opt/opsly, requiere sudo):
+#   sudo ./scripts/install-git-pull-watcher.sh
+#
+# Linux — worker / PC-gamer / cualquier máquina futura (user, sin sudo,
+# requiere el repo clonado en ~/opsly):
+#   ./scripts/install-git-pull-watcher.sh --user
+#
+# Uso: ./scripts/install-git-pull-watcher.sh [--user] [--dry-run]
 set -euo pipefail
 
-DRY_RUN=false
-if [[ "${1:-}" == "--dry-run" ]]; then
-  DRY_RUN=true
-fi
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/common.sh
+source "${SCRIPT_DIR}/lib/common.sh"
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+MODE="system"
+DRY_RUN=false
+for arg in "$@"; do
+  case "$arg" in
+    --user) MODE="user" ;;
+    --dry-run) DRY_RUN=true ;;
+    -h | --help)
+      grep '^#' "$0" | head -14
+      exit 0
+      ;;
+    *) die "Opción desconocida: $arg (usa --user y/o --dry-run)" ;;
+  esac
+done
 
 run() {
   if [[ "${DRY_RUN}" == true ]]; then
@@ -21,9 +43,7 @@ run() {
   fi
 }
 
-echo "🔧 Opsly — instalación git-pull-watcher"
-echo "   Repo: ${REPO_ROOT}"
-echo ""
+log_info "Opsly — instalación git-pull-watcher (repo: ${REPO_ROOT})"
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
   LAUNCH_AGENTS="${HOME}/Library/LaunchAgents"
@@ -36,35 +56,55 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
   sed "s|__OPSLY_ROOT__|${REPO_ROOT}|g" "${REPO_ROOT}/infra/launchd/${PLIST}" >"/tmp/${PLIST}"
   run cp "/tmp/${PLIST}" "${LAUNCH_AGENTS}/${PLIST}"
 
-  echo "Cargando LaunchAgent…"
   if [[ "${DRY_RUN}" != true ]]; then
     launchctl unload "${LAUNCH_AGENTS}/${PLIST}" 2>/dev/null || true
     launchctl load -w "${LAUNCH_AGENTS}/${PLIST}"
   fi
 
-  echo ""
-  echo "✅ macOS: LaunchAgent instalado (chequea origin/main cada 60s)."
-  echo "   Logs: ${LOG_DIR}/launchd-git-pull-watcher.{out,err}"
-  echo "   Rama vigilada: la que esté activa en ${REPO_ROOT} al momento del pull"
-  echo "     (--once usa la rama actual del checkout, no está fijada a 'main')."
-  echo "   Desinstalar: launchctl unload ${LAUNCH_AGENTS}/${PLIST} && rm ${LAUNCH_AGENTS}/${PLIST}"
-  echo ""
-  echo "⚠️  Requiere working tree limpio para hacer pull; si tienes cambios sin"
-  echo "   commitear, el watcher avisa por log y NO toca nada (ver runtime/logs/)."
-
-elif [[ "$(uname -s)" == "Linux" ]]; then
-  echo "Linux detectado (esperado en opsly-worker / PC-gamer)."
-  echo ""
-  echo "Instalación systemd (requiere sudo):"
-  echo "  sudo cp ${REPO_ROOT}/infra/systemd/opsly-git-pull-watcher.service /etc/systemd/system/"
-  echo "  sudo systemctl daemon-reload"
-  echo "  sudo systemctl enable --now opsly-git-pull-watcher.service"
-  echo ""
-  echo "Ajusta antes de instalar si tu usuario/ruta difieren de opslyquantum:/home/opslyquantum/opsly"
-  echo "  (ver docs/04-infrastructure/WORKER-SETUP-MAC2011.md para el usuario Linux recomendado)."
-  echo ""
-  echo "Logs: journalctl -u opsly-git-pull-watcher.service -f"
-
-else
-  echo "SO no reconocido ($(uname -s)); instala manualmente con scripts/git-pull-watcher.sh"
+  log_ok "macOS: LaunchAgent instalado (chequea la rama activa cada 60s)."
+  log_info "Logs: ${LOG_DIR}/launchd-git-pull-watcher.{out,err}"
+  log_info "Desinstalar: launchctl unload ${LAUNCH_AGENTS}/${PLIST} && rm ${LAUNCH_AGENTS}/${PLIST}"
+  exit 0
 fi
+
+if [[ "$(uname -s)" != "Linux" ]]; then
+  die "SO no reconocido ($(uname -s)); instala manualmente con scripts/git-pull-watcher.sh"
+fi
+
+require_cmd systemctl
+chmod +x "${REPO_ROOT}/scripts/git-pull-watcher.sh" "${REPO_ROOT}/scripts/git-sync-repo.sh" 2>/dev/null || true
+
+if [[ "${MODE}" == "user" ]]; then
+  # Worker / PC-gamer / cualquier máquina futura: requiere ~/opsly (systemd
+  # user usa %h en la unidad; ver infra/systemd/opsly-git-pull-watcher.user.service).
+  [[ "${REPO_ROOT}" == "${HOME}/opsly" ]] || log_warn "Repo en ${REPO_ROOT}, no en \$HOME/opsly — edita WorkingDirectory/%h en la unidad tras copiarla."
+
+  run mkdir -p "${HOME}/.config/systemd/user"
+  run cp "${REPO_ROOT}/infra/systemd/opsly-git-pull-watcher.user.service" \
+    "${HOME}/.config/systemd/user/opsly-git-pull-watcher.service"
+
+  if [[ "${DRY_RUN}" != true ]]; then
+    systemctl --user daemon-reload
+    systemctl --user enable --now opsly-git-pull-watcher.service
+  fi
+
+  log_ok "Linux (user): opsly-git-pull-watcher activo vía systemd --user."
+  log_info "Logs: journalctl --user -u opsly-git-pull-watcher.service -f"
+  log_info "Para que arranque tras reboot sin login interactivo: sudo loginctl enable-linger \"\$(whoami)\""
+  exit 0
+fi
+
+# MODE=system: VPS, /opt/opsly, requiere sudo
+if [[ "$(id -u)" -ne 0 ]]; then
+  die "Modo system (VPS): ejecutar con sudo, o usa --user en workers sin sudo" 1
+fi
+[[ -d /opt/opsly/scripts ]] || die "No existe /opt/opsly/scripts (¿estás en el VPS con el repo ya clonado?)" 1
+
+run cp "${REPO_ROOT}/infra/systemd/opsly-git-pull-watcher.service" /etc/systemd/system/opsly-git-pull-watcher.service
+if [[ "${DRY_RUN}" != true ]]; then
+  systemctl daemon-reload
+  systemctl enable --now opsly-git-pull-watcher.service
+fi
+
+log_ok "Linux (system/VPS): opsly-git-pull-watcher activo."
+log_info "Logs: journalctl -u opsly-git-pull-watcher.service -f"
