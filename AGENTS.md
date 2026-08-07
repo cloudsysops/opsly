@@ -414,6 +414,28 @@ node scripts/load-skills.js show opsly-api
 | Agency Division (nuevo 2026-05-06)            | `docs/01-development/OPSLY-AGENCY-DIVISION.md` — API Factory, Agent Management, Security API, Autonomous Revenue                                 |
 | Panini Lab (incubator demo)                   | `apps/panini-lab` — colección conversacional de stickers; prod `https://panini.op-sly.com`; runbook `docs/runbooks/PANINI-LAB-GOLIVE.md`         |
 
+### 🔄 Tarea pendiente (2026-08-07) — PC-gamer como `opsly-worker`
+
+**Pedido:** poder asignar tareas entre **PC-gamer**, **VPS** y **la Mac principal** según necesidad ("qué máquina hace qué").
+
+**No duplicar — esto ya es el modelo de 3 roles existente:**
+
+| Rol pedido       | Rol ya definido en el repo                                                            |
+| ---------------- | --------------------------------------------------------------------------------------- |
+| Mi máquina local | **`opsly-admin`** (Mac principal, Cursor, repo) — `docs/04-infrastructure/TAILSCALE-NOMENCLATURA.md` |
+| PC-gamer         | **`opsly-worker`** (asunción a confirmar: PC-gamer sustituye al hardware "Mac 2011" descrito en `docs/04-infrastructure/WORKER-SETUP-MAC2011.md`; el doc ya es agnóstico de hardware — solo importa el nombre Tailscale `opsly-worker`) |
+| VPS              | **`vps-dragon`** — ya operativo, sin cambios                                            |
+
+**Para Cursor (ejecutar en la Mac principal, con acceso real a Tailscale):**
+
+1. Confirmar con el usuario si PC-gamer toma el nombre Tailscale `opsly-worker` (reemplazando al worker anterior) o si necesita un nombre nuevo — **no renombrar en Tailscale sin confirmar** (ver `docs/04-infrastructure/TAILSCALE-NOMENCLATURA.md`, sección "Renombrar en Tailscale").
+2. Seguir `docs/04-infrastructure/WORKER-SETUP-MAC2011.md` fases 1–8 en PC-gamer (Tailscale/SSH → prerequisitos → clonar repo → orchestrator como worker plane → tmux/systemd opcional → Remote SSH).
+3. Verificar conectividad: `ssh opsly-admin`, `ssh opsly-worker`, `ssh vps-dragon` (ya operativo) desde la Mac principal.
+4. Selección de worker por tarea: **ya existe** en `lib/runtime/worker-selector.ts` (`WorkerType`, incluye `'worker-mac2011'` con env `OPSLY_WORKER_MAC2011_URL`) y `lib/runtime/orchestrator-integration.ts` (`processOrchestratorJob`, con tracking de uso/presupuesto en `lib/runtime/usage-tracker.ts`, PR #926). **No crear un selector nuevo** — solo definir `OPSLY_WORKER_MAC2011_URL` (o renombrar la variable/tipo si PC-gamer merece su propio identificador; discutir antes de tocar el tipo `WorkerType`, que es código compartido).
+5. Rellenar el checklist al final de `WORKER-SETUP-MAC2011.md` y actualizar esta sección con el resultado.
+
+**No tocar sin confirmación explícita:** scripts/servicios con nombre `mac2011` (`scripts/mac2011-*.sh`, `infra/systemd/opsly-mac2011-*`, `infra/launchd/com.opsly.mac2011.*`, rutas `apps/admin/app/monitoring/mac2011`, `apps/api/app/api/monitoring/mac2011`) — renombrarlos es un cambio de infra con impacto en monitoreo/systemd, fuera de alcance de esta tarea salvo que se pida explícitamente.
+
 ## 🚀 Peskids (Tenant Project, Phase 2 Implementation Ready)
 
 **Status:** ✅ Phase 1 MVP COMPLETE (production-ready); Phase 2 Week 1 code ready, awaiting SSH access for N8N deployment  
