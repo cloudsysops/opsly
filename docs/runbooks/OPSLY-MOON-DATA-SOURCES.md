@@ -1,28 +1,41 @@
 ---
 status: canon
-owner: operations
+owner: platform
 last_review: 2026-08-07
 type: runbook
 tags:
   - opsly/moon
+  - opsly/data-sources
 ---
 
-# Opsly Moon — Data sources (runbook)
+# Opsly Moon — Runbook fuentes de datos
 
-Espejo operativo de `docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md`.
+Complemento operativo de `docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md`.
 
-| Superficie | Fuente | Label |
-| --- | --- | --- |
-| Clientes | `GET /api/tenants` + `config/tenants/*` | REAL |
-| Health host | `GET /api/metrics/system` | REAL si `mock!==true` else ESTIMADO |
-| Teams / queue | `GET /api/metrics/teams` | REAL (agregado) |
-| Costs | `GET /api/admin/costs` | ESTIMADO |
-| Usage tenant | `GET /api/metrics/tenant/:slug` | REAL |
-| MRR | — | PROYECTADO omitido |
-| Agents | `config/agent-*.json`, `external-agent-registry.json` | REAL (config) |
-| Modules | `config/modules.json` | REAL (registry) |
-| Blueprints | `config/vertical-blueprints` | REAL (config) |
-| Ventures | `config/ventures.json` si existe | REAL o empty |
-| Approvals | `GET /api/approval-decisions` | REAL |
+## Checklist antes de añadir un KPI
 
-**Prohibido:** clientes mock de demos visuales, MRR inventado, heartbeats falsos, PII Peskids.
+1. ¿Existe API/config real?
+2. ¿Etiqueta REAL / ESTIMADO / PROYECTADO?
+3. ¿Puede omitirse en empty-state en lugar de mock?
+4. ¿Filtra PII / owner_email / leads?
+5. ¿Documentado en DATA-SOURCES arquitectura?
+
+## Fuentes rápidas
+
+| UI | Fuente |
+| --- | --- |
+| Clients | `GET /api/tenants` + `config/tenants/*.json` |
+| Usage | `GET /api/metrics`, `GET /api/metrics/tenant/:slug` |
+| Costs | `GET /api/admin/costs` (ESTIMADO) |
+| Teams/queue | `GET /api/metrics/teams` |
+| Approvals | `GET /api/approval-decisions` (admin proxy) |
+| Fleet | `config/agent-*.json`, `external-agent-registry.json` |
+| Modules | `config/modules.json` |
+| Blueprints | `config/vertical-blueprints`, `config/blueprints/academy` |
+| Ventures | solo `config/ventures.json` |
+| MRR | **omitido** |
+
+## Enlaces
+
+- [[../00-architecture/OPSLY-MOON-DATA-SOURCES]]
+- [[OPSLY-MOON-OPERATIONS]]

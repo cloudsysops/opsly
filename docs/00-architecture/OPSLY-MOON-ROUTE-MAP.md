@@ -9,134 +9,72 @@ tags:
   - opsly/admin
 ---
 
-# Opsly Moon — Mapa de rutas (legacy → aliases)
+# Opsly Moon — Mapa de rutas (legacy ↔ `/moon`)
 
-**PR-MOON-0.** Decisión: evolucionar `apps/admin`. Conservar rutas legacy. Introducir `/moon/*` como **aliases graduales** (mismos layouts y datos). Redirects canónicos = PR posterior tras validar bookmarks.
+**PR-MOON-0 / night-shift.** `apps/admin` es canónico. Legacy permanece. `/moon/*` son aliases reales (no redirects 301 masivos aún).
 
 ## Principios
 
 1. No big-bang de URLs.
-2. Legacy permanece funcional en MOON-1/2.
-3. Alias `/moon` no implica app nueva.
-4. Panel tenant (Peskids) **fuera** de este mapa (`apps/peskids` `/admin/*`).
+2. Legacy funcional (`/dashboard`, `/tenants`, `/costs`, …).
+3. `/moon` no implica `apps/moon`.
+4. Panel tenant Peskids **fuera** de este mapa.
 
-## Rutas legacy actuales (`apps/admin`)
+## Aliases Moon (**IMPLEMENTED**)
 
-| Ruta legacy | Madurez | Rol en Moon |
+| Alias Moon | Legacy / fuente | Madurez |
 | --- | --- | --- |
-| `/` → dashboard | PARTIAL | Home plataforma |
-| `/dashboard` | PARTIAL | Home |
-| `/tenants` | PARTIAL | Cartera clientes |
-| `/tenants/[slug]` | PARTIAL | Detalle cliente |
-| `/tenants/[slug]/graph` | PARTIAL | Vista grafo |
-| `/v1`, `/v1/[tenantRef]` | PARTIAL | Superficie v1 / compat |
-| `/invitations` | IMPLEMENTED | Onboarding |
-| `/machines` | PARTIAL | Infra / hosts |
-| `/costs` | PARTIAL | Usage/costos (etiqueta ESTIMADO) |
-| `/metrics/llm`, `/metrics/ollama` | PARTIAL | Uso modelos |
-| `/feedback` | IMPLEMENTED | Soporte plataforma |
-| `/agents`, `/agents-team` | PARTIAL | Fleet / config |
-| `/mission-control` | PARTIAL | MC parcial |
-| `/mission-control/office` | PARTIAL | Office canvas |
-| `/mission-control/foundation` | PARTIAL | Foundation snapshot |
-| `/mission-control/incubation` | PARTIAL | Incubation |
-| `/mission-control/local-runtime` | PARTIAL | Local agents |
-| `/mission-control/chat` | PARTIAL | Chat experimental |
-| `/openclaw/ide`, `/openclaw-governance` | PARTIAL | OpenClaw |
-| `/approval-decisions` | PARTIAL | Approvals |
-| `/settings` | IMPLEMENTED | Sistema |
-| `/api-surface`, `/insights`, `/notebooklm`, … | PARTIAL | Observabilidad / tools |
-| `/defense-platform`, `/icso-catalog`, … | PARTIAL | Productos satélite |
+| `/` → `/moon` | root redirect | IMPLEMENTED |
+| `/moon` | Home Control Center (datos APIs) | IMPLEMENTED |
+| `/moon/clients` | cartera; legacy `/tenants` | IMPLEMENTED |
+| `/moon/clients/[slug]` | detalle tabs; legacy `/tenants/[slug]` | PARTIAL |
+| `/moon/agents` | registries; legacy `/agents` | IMPLEMENTED |
+| `/moon/tasks` | teams metrics read-model | PARTIAL |
+| `/moon/queue` | resumen cola | PARTIAL |
+| `/moon/approvals` | `/api/approval-decisions`; legacy `/approval-decisions` | PARTIAL |
+| `/moon/automations` | config tenants + n8n catalog | PARTIAL |
+| `/moon/integrations` | catálogo proveedores | PARTIAL |
+| `/moon/deployments` | doc-only empty + runbooks | PARTIAL |
+| `/moon/health` | system metrics + unknown services | PARTIAL |
+| `/moon/usage` | `/api/metrics`; legacy `/metrics/llm` | IMPLEMENTED |
+| `/moon/costs` | `/api/admin/costs`; legacy `/costs` | IMPLEMENTED |
+| `/moon/billing` | empty-state (sin MRR) | IMPLEMENTED |
+| `/moon/blueprints` | vertical-blueprints + academy | IMPLEMENTED |
+| `/moon/modules` | `config/modules.json` | IMPLEMENTED |
+| `/moon/ventures` | `config/ventures.json` only | IMPLEMENTED |
+| `/moon/command` | dry-run command router | IMPLEMENTED |
+| `/moon/reports` | índice enlaces métricas | IMPLEMENTED |
+| `/moon/support` | redirect `/feedback` | IMPLEMENTED |
+| `/moon/settings` | redirect `/settings` | IMPLEMENTED |
 
-**Fuera de Moon (otro track):** cualquier ruta bajo el tenant app Peskids (`/admin`, `/admin/pipeline`, `/admin/interesados/...`).
+## Legacy relevantes (siguen vivos)
 
-## Aliases Moon propuestos (graduales)
+`/dashboard`, `/tenants`, `/tenants/[slug]`, `/invitations`, `/machines`, `/costs`, `/metrics/llm`, `/feedback`, `/agents`, `/mission-control*`, `/approval-decisions`, `/settings`, `/api-surface`, …
 
-| Alias Moon (PROPOSED) | Apunta inicialmente a | Notas |
-| --- | --- | --- |
-| `/moon` | `/dashboard` (mismo layout rebrand) | Home Control Center |
-| `/moon/clients` | `/tenants` | |
-| `/moon/clients/[tenantSlug]` | `/tenants/[slug]` | Tabs Moon en PRs posteriores |
-| `/moon/agents` | `/agents` o consolidado agents-team | Solo registros reales |
-| `/moon/approvals` | `/approval-decisions` | |
-| `/moon/usage` | `/metrics/llm` (+ costs usage) | |
-| `/moon/billing` | `/costs` | Sin MRR; etiquetas ESTIMADO |
-| `/moon/health` | overview / machines / monitoring | Componer en MOON-9 |
-| `/moon/deployments` | PROPOSED | Sin UI completa hoy |
-| `/moon/automations` | PROPOSED | Inventario n8n |
-| `/moon/integrations` | PROPOSED | |
-| `/moon/blueprints` | PROPOSED | `config/vertical-blueprints` |
-| `/moon/modules` | PROPOSED | Read-only hasta #881/#882 |
-| `/moon/ventures` | PROPOSED | Venture Studio |
-| `/moon/tasks`, `/moon/queue` | PROPOSED | Mapear BullMQ; **no** Envelope |
-| `/moon/support` | `/feedback` (+ futuras colas) | |
-| `/moon/settings` | `/settings` | |
+## Bloqueados
 
-Mission Control parcial (`/mission-control*`) puede vivir como sección “Agentes / Runtime” bajo Moon nav hasta absorber UX; **no** promover `apps/mission-control` como app.
-
-## Rutas Moon del brief vs realidad
-
-| Brief | Estado |
+| Capacidad | Estado |
 | --- | --- |
-| `/moon` … lista completa | PROPOSED aliases |
-| Tasks vía AgentTaskEnvelopeV1 | **BLOCKED** — contrato no implementado |
-| Deploy desde UI | BLOCKED sin permissions + approval + rollback |
-| MRR en Home | **Omitido** |
+| AgentTaskEnvelopeV1 store | BLOCKED — no implementado |
+| Deploy / mute queue desde UI | BLOCKED — sin contrato approval-first |
+| MRR en home/billing | BLOCKED — omitido |
 
-## Navegación objetivo (MOON-1)
+## Tracks
 
-Agrupación UX (sin romper deep links):
-
-```text
-PLATAFORMA
-  Inicio (/moon → /dashboard)
-  Clientes (/moon/clients → /tenants)
-  Playbooks/Blueprints (PROPOSED)
-  Agentes
-  Automatizaciones (PROPOSED)
-  Integraciones (PROPOSED)
-  Despliegues (PROPOSED)
-
-ANÁLISIS
-  Reportes / métricas LLM
-  Costos / uso
-
-SISTEMA
-  Approvals
-  Settings
-  Health
-```
-
-Items ocultos por rol (PROPOSED roles: Owner, Operator, Tenant Support, Sales, Finance, Read-only).
-
-## Separación de tracks (rutas)
-
-| Track | App | Prefijo típico |
+| Track | App | Prefijo |
 | --- | --- | --- |
-| B — Opsly Moon | `apps/admin` | `/dashboard`, `/tenants`, `/moon/*` |
-| A — Peskids MC | `apps/peskids` | `/admin`, `/admin/interesados/*` |
+| B — Opsly Moon | `apps/admin` | `/moon/*`, legacy admin |
+| A — Peskids MC | `apps/peskids` | `/admin/*` |
 
-Prohibido: importar componentes de embudo Peskids en Moon; prohibido embeber Kanban de leads en `apps/admin`.
+## Apps
 
-## Plan de migración URL (post MOON-1)
-
-1. **MOON-1:** shell + nav; aliases opcionales sin deprecar legacy.
-2. Validar bookmarks, enlaces Discord/docs, RoleSwitcher externos.
-3. PR de redirects 301/308 legacy→canónico **solo** tras OK humano.
-4. Actualizar docs/runbooks que citen URLs admin.
-
-## Apps no-ruta
-
-| Path repo | Estado respecto a Moon |
+| Path | Estado |
 | --- | --- |
-| `apps/admin` | **Control plane canónico** |
-| `apps/mission-control` | DEPRECATED/experimental — no segundo Moon |
+| `apps/admin` | Control plane canónico |
+| `apps/mission-control` | DEPRECATED experimental |
 | `apps/moon` | **No crear** |
-| `apps/peskids` | Tenant panel — Track A |
 
 ## Enlaces
 
 - [[OPSLY-MOON-AUDIT]]
 - [[OPSLY-MOON-DATA-SOURCES]]
-- [[../adr/ADR-031-experimental-consolidation]]
-- [[../runbooks/VPS-MEMORY-CAPS]]

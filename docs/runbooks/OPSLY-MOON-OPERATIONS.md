@@ -1,43 +1,49 @@
 ---
 status: canon
-owner: operations
+owner: platform
 last_review: 2026-08-07
 type: runbook
 tags:
   - opsly/moon
+  - opsly/operations
 ---
 
-# Opsly Moon — Operations
+# Opsly Moon — Operaciones
 
-## Arranque local (sin VPS)
+## Alcance
+
+Operar el control plane `apps/admin` (/moon) sin tocar el panel Peskids ni desplegar desde la UI Moon.
+
+## Capacidad VPS
+
+Antes de cualquier build/deploy: leer `docs/ops/ACTIVE-CAPACITY-ALERT.md` y `docs/runbooks/VPS-MEMORY-CAPS.md`.  
+Si alerta **active**: no builds pesados concurrentes; no deploy Moon de día; smoke secuencial.
+
+## Validación local (secuencial)
 
 ```bash
-cd apps/admin
-npm run type-check
-# opcional: npm run dev -p 3001  (no en paralelo con otros builds pesados)
-```
-
-Abrir `http://localhost:3001/moon`.
-
-## Validación mínima
-
-```bash
-npx tsx --test apps/admin/lib/moon/__tests__/moon-unit.test.ts
+npm run test:moon --workspace=@intcloudsysops/admin
 npm run type-check --workspace=@intcloudsysops/admin
 npm run validate-structure
 ```
 
+No levantar suites paralelas grandes en el mismo host que el VPS bajo presión.
+
 ## Fuentes
 
-Ver `docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md` y este espejo runbook.
+Ver `docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md` y este runbook hermano `OPSLY-MOON-DATA-SOURCES.md`.
 
-## Capacidad VPS
+## Incidentes típicos
 
-Si `docs/ops/ACTIVE-CAPACITY-ALERT.md` está `active`: no deploy pesado, no builds Docker paralelos, validar en secuencia.
+| Síntoma | Acción |
+| --- | --- |
+| Home sin tenants | Verificar API `/api/tenants` + sesión admin; no rellenar mocks |
+| Costs vacíos | `/api/admin/costs` + Doppler; etiqueta ESTIMADO |
+| Command “sin efecto” | Esperado dry-run — solo navegación |
+| Badge “Producción” en staging | Revisar `NEXT_PUBLIC_ENV` en build |
 
-## Incidentes UI
+## Enlaces
 
-1. Fallo API tenants → empty/error state (no mocks en prod).
-2. Costs → etiquetar ESTIMADO.
-3. Approvals vacíos → empty profesional.
-4. Command Center → solo deep-links; no LLM sin auth humana.
+- [[../00-architecture/OPSLY-MOON]]
+- [[OPSLY-MOON-ROLLBACK]]
+- [[VPS-MEMORY-CAPS]]
