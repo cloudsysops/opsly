@@ -2,19 +2,32 @@
 
 This file documents pre-existing security vulnerabilities that are known but currently blocked by monorepo constraints or awaiting upstream fixes.
 
-## Exempted Vulnerabilities
+**Current status:** `npm audit --audit-level=moderate` (with or without `--omit=dev`) reports **0 vulnerabilities** as of 2026-08-07. No active exemptions.
 
-### dompurify (moderate)
-- **ID:** GHSA-cmwh-pvxp-8882
-- **Reason:** Introduced via `mermaid` dependency. Upgrading causes lockfile churn and version conflicts in the current environment.
-- **Status:** Acknowledged.
+## Resolved
 
-### mermaid (moderate)
+### mermaid (moderate) — resolved 2026-08-07
 - **ID:** GHSA-c4c3-pg64-4m4v, GHSA-6x64-9x62-f2gx, GHSA-3rrr-jr9j-h3q3, GHSA-2v8p-3f2j-5mp7, GHSA-rhh3-jpg6-66xh
-- **Reason:** `mermaid` is version-pinned (11.x) for diagram rendering in `apps/admin` and other consumers; neither `npm audit fix` nor `npm audit fix --force` moves the resolved version. Fixing requires a manual major-version upgrade and revalidating every diagram-rendering surface — out of scope for an unrelated feature PR.
-- **Status:** Acknowledged. `npm audit` does not currently consult this file — the `npm audit (moderate+)` CI check will stay red until mermaid is upgraded or a maintainer merges with an override.
+- **Vulnerable range:** `>=11.0.0-alpha.1 <11.16.1`
+- **Fix:** a non-alpha patched release (`11.16.1`) became available upstream after this exemption was written. Bumped the root `overrides.mermaid` and the two direct `"mermaid"` dependency declarations (`package.json`, `apps/admin/package.json`) from `^11.4.0` to `^11.16.1`, then regenerated `package-lock.json` with `npm install`. No `apps/admin` type-check regressions.
+- **Previous reason (no longer applies):** "no hay versión no-alpha con fix disponible" — was true when this doc was written; is not true anymore. Re-check `npm view mermaid versions` before re-adding an exemption for this package.
 
-### undici (high)
+### dompurify (moderate) — resolved 2026-08-07
+- **ID:** GHSA-cmwh-pvxp-8882
+- **Reason it's resolved:** was introduced transitively via `mermaid`; resolving mermaid to `11.16.1` (see above) also cleared this one. `dompurify` stays pinned at `3.4.12` via `overrides` and is no longer flagged by `npm audit`.
+
+### undici (high) — resolved (date unknown, confirmed clean 2026-08-07)
 - **ID:** GHSA-vmh5-mc38-953g, GHSA-pr7r-676h-xcf6, etc.
-- **Reason:** Core dependency for `jsdom` used in testing.
-- **Status:** Acknowledged.
+- **Status:** `overrides.undici` is pinned at `7.29.0`; `npm audit` no longer flags it. Left the override in place (harmless, keeps `jsdom`'s transitive `undici` pinned to a known-good version).
+
+## How to re-check
+
+```bash
+npm audit --audit-level=moderate --omit=dev   # exact command the CI gate runs
+npm audit --audit-level=moderate               # includes dev deps, for visibility
+```
+
+If either reports vulnerabilities again, check `npm view <pkg> versions` for a newer
+patched release before assuming a version bump is impossible — the `mermaid` entry
+above was exempted for months based on a "no fix available" assumption that stopped
+being true once upstream shipped `11.16.1`.
