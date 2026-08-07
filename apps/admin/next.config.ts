@@ -8,11 +8,8 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   // Monorepo root (avoids picking ~/package-lock.json when tracing)
   outputFileTracingRoot: path.join(__dirname, '../..'),
-  // Sibling apps build in parallel via Turbo; their .next dirs (incl. transient
-  // cache lock files) must never be traced as dependencies of this app's routes.
-  outputFileTracingExcludes: {
-    '*': ['../*/.next/**'],
-  },
+  // Do NOT set outputFileTracingExcludes for sibling ../*/.next — same failure
+  // mode as Peskids #918 (missing webpack-runtime.js in GHCR standalone).
   transpilePackages: ['@intcloudsysops/components', '@intcloudsysops/capacity-alert'],
 };
 
