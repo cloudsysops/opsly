@@ -54,7 +54,7 @@ describe('contact-channels modality routing', () => {
 });
 
 describe('peskids-lead-session', () => {
-  it('buildPostLeadWhatsAppPrefill includes modality and support lead link', () => {
+  it('buildPostLeadWhatsAppPrefill includes modality and lead reference', () => {
     const text = buildPostLeadWhatsAppPrefill('Ana', {
       class_modality: 'domicilio',
       lead_type: 'family',
@@ -65,7 +65,8 @@ describe('peskids-lead-session', () => {
     expect(text).toContain('Ana');
     expect(text).toContain('Clases a domicilio');
     expect(text).toContain('3009998877');
-    expect(text).toContain('/admin/interesados/lead-9');
+    expect(text).toContain('Referencia de solicitud: lead-9');
+    expect(text).not.toContain('/admin/interesados/');
   });
 
   it('parsePeskidsLeadSession keeps class_modality and lead_id', () => {

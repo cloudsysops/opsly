@@ -3,10 +3,7 @@
 import { Copy, Mail, Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PESKIDS_CONTACT } from '@/lib/contact-channels'
-import {
-  buildAdminLeadValidationUrl,
-  buildPostLeadWhatsAppPrefill,
-} from '@/lib/peskids-lead-session'
+import { buildPostLeadWhatsAppPrefill } from '@/lib/peskids-lead-session'
 import { useState } from 'react'
 
 type PeskidsLeadType = 'family' | 'teacher_applicant' | 'company'
@@ -69,8 +66,6 @@ export function WhatsAppMessagePreview(props: WhatsAppMessagePreviewProps): Reac
     work_zones: metadataString(metadata, 'work_zones'),
   })
 
-  const adminLink = buildAdminLeadValidationUrl(leadId)
-
   const whatsappNumber =
     classModality === 'domicilio'
       ? PESKIDS_CONTACT.whatsapp.domicilio.e164
@@ -132,11 +127,6 @@ export function WhatsAppMessagePreview(props: WhatsAppMessagePreviewProps): Reac
             Enviar por WhatsApp
           </Button>
         )}
-      </div>
-
-      <div className="rounded-lg bg-pk-surface/50 px-3 py-2 text-center text-xs text-pk-sub">
-        Soporte recibirá el resumen + link del lead:{' '}
-        <span className="break-all font-medium text-pk-ink">{adminLink}</span>
       </div>
     </div>
   )

@@ -13,16 +13,19 @@ export const PESKIDS_RESERVATION_TITLE = 'Aprenden. Se divierten. Somos Peskids.
 export const PESKIDS_RESERVATION_DESCRIPTION =
   'Academia de natación especializada en bebés y niños. Clases en nuestra sede Llanogrande o a domicilio en Medellín y el área metropolitana.';
 
+/** Who the form is for — below the title, distinct from hero handoff copy. */
+export const PESKIDS_RESERVATION_AUDIENCE =
+  'Nuestro formulario está destinado a familias interesadas en ingresar a sus hijos o familiares a nuestras clases, profesores interesados en trabajar con nosotros o empresas interesadas en crear alianzas.';
+
+/** @deprecated Prefer PESKIDS_RESERVATION_AUDIENCE — kept for older imports/tests. */
 export const PESKIDS_RESERVATION_BULLETS = [
-  'Familia, profesor o empresa',
-  'Sede Llanogrande o domicilio',
-  'Atención por WhatsApp',
+  PESKIDS_RESERVATION_AUDIENCE,
 ] as const;
 
 export const PESKIDS_FORM_CARD_TITLE = 'Formulario de solicitud';
 
 export const PESKIDS_FORM_CARD_DESCRIPTION =
-  'Nuestro formulario está destinado a familias interesadas en ingresar a sus hijos o familiares a nuestras clases, profesores interesados en trabajar con nosotros o empresas interesadas en crear alianzas.\n\nSolo te tomará 1 minuto.';
+  'Solo te tomará 1 minuto. Al finalizar te direccionamos a la línea de atención correspondiente.';
 
 export const PESKIDS_FORM_QUESTIONS_CONTEXT =
   'Responde estas preguntas para guardar tus datos y direccionarte a la línea de atención correspondiente.';
@@ -36,16 +39,16 @@ export const PESKIDS_WHATSAPP_CTA_LABEL = 'Continuar por WhatsApp';
 export const PESKIDS_FORM_SUCCESS_TITLE = '¡Gracias, recibimos tu solicitud!';
 
 export const PESKIDS_FORM_SUCCESS_DETAIL =
-  'Continúa por WhatsApp con la línea de atención correspondiente.';
+  'Copia el mensaje o envíalo por WhatsApp al equipo de soporte.';
 
 export const PESKIDS_FORM_SUCCESS_LLANOGRANDE =
-  'Continúa por WhatsApp con la línea de la sede Llanogrande.';
+  'Copia el mensaje o envíalo por WhatsApp a la línea de la sede Llanogrande.';
 
 export const PESKIDS_FORM_SUCCESS_DOMICILIO =
-  'Continúa por WhatsApp con la línea de Domicilios.';
+  'Copia el mensaje o envíalo por WhatsApp a la línea de Domicilios.';
 
 export const PESKIDS_FORM_SUCCESS_NEXT =
-  'El botón de arriba abre WhatsApp con el equipo correcto. Te direccionamos según la modalidad que elegiste.';
+  'Envía este mensaje por WhatsApp al equipo de soporte para ser atendido. El equipo validará tu solicitud.';
 
 export const PESKIDS_FORM_SUCCESS_RESPONSE_TIME = 'Tiempo promedio de respuesta: 5–10 minutos';
 
