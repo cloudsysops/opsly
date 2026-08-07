@@ -22,6 +22,49 @@ last_review: 2026-05-26
 
 **Shadow deployment Super Agent (nuevo):** [`docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md`](docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md), diseño `context-builder-v2` en `apps/context-builder-v2/src/design/architecture.md`, script `scripts/rollback-super-agent.sh`, overlay `infra/docker-compose.super-agent.yml`.
 
+## 🚨 INCIDENTE ACTIVO (2026-08-07, ~13:05 UTC) — peskids.com caído (Cloudflare 521)
+
+**Estado:** sin confirmar resolución. Detectado por el usuario vía captura de pantalla móvil. Claude (sesión remota, sin Tailscale/SSH) no pudo diagnosticar directamente ni verificar recuperación — **requiere Cursor con acceso real al VPS**.
+
+**Síntoma:** `https://peskids.com` → Cloudflare error **521 "Web server is down"**. Cloudflare (edge) funciona; el origen (`vps-dragon`, 100.120.151.91) no responde conexión — **no es un bug de app** (eso daría 502/504), es infra: VPS caído, disco lleno, o Docker/Traefik parados.
+
+**Contexto:** el último deploy de `deploy-peskids.yml` en `main` (run `31151789004`, 2026-08-07 05:48 UTC) fue `success` — el incidente empezó *después* de un deploy sano, así que probablemente no es una regresión de código sino degradación de infra (ver precedente idéntico abajo).
+
+**Primero, ejecutar el runbook general:** [`docs/runbooks/incident.md`](docs/runbooks/incident.md) — orden de diagnóstico: Edge (`curl /api/health`) → VPS (Traefik/Redis/app en `infra/docker-compose.platform.yml`) → Datos (Supabase) → CI (último deploy, ya revisado arriba).
+
+**Pasos concretos (en el VPS, `ssh vps-dragon`):**
+
+```bash
+# 1. ¿Vivo el host? ¿Disco lleno?
+uptime
+df -h /
+
+# 2. ¿Corriendo Docker/Traefik/la app?
+docker ps --format "{{.Names}}\t{{.Status}}"
+
+# 3. Causa más probable — YA PASÓ ANTES, ver docs/04-infrastructure/INCIDENT-2026-04-11-DISCO-LLENO.md
+#    (disco al 98-99% mató contenedores). Si df -h / muestra uso >90%:
+sudo /opt/opsly/scripts/vps-cleanup-robust.sh --dry-run
+sudo /opt/opsly/scripts/vps-cleanup-robust.sh
+
+# 4. Si el disco está bien, reiniciar el stack:
+cd /opt/opsly
+docker compose -f infra/docker-compose.platform.yml ps
+docker compose -f infra/docker-compose.platform.yml up -d
+docker compose -f infra/docker-compose.platform.yml logs --tail=50 traefik
+
+# 5. Verificar recuperación
+curl -sf https://api.op-sly.com/api/health
+curl -sf https://peskids.com
+```
+
+**Al resolver:**
+1. Confirmar `curl -sf https://peskids.com` responde y borrar este bloque de `AGENTS.md`.
+2. Si la causa fue disco lleno de nuevo, revisar que el cron/timer de limpieza siga instalado en el VPS (`docs/OPS-CLEANUP-PROCEDURES.md`, `scripts/install-vps-cleanup.sh`) — el incidente de abril ya identificó esto como gap ("Alertas y cron deben quedar instalados en el servidor, no solo en el repo").
+3. Si la causa fue otra (no disco), documentar aquí mismo con un nuevo `docs/04-infrastructure/INCIDENT-YYYY-MM-DD-<slug>.md` siguiendo el formato del incidente de abril, y enlazarlo en `docs/runbooks/incident.md` si aplica.
+
+---
+
 ## ⚠️ Control de costos
 
 **Regla:** cualquier servicio con costo mensual recurrente requiere **aprobación explícita** del responsable antes de activarse en proveedor (DO, GCP, Cloudflare de pago, etc.). El dashboard de admin es **registro orientativo**; la facturación real está en cada panel de proveedor.
