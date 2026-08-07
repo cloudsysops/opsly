@@ -24,7 +24,8 @@ describe('peskids-lead-session', () => {
     expect(text).toContain('3001234567');
     expect(text).toContain('Sofía');
     expect(text).toContain('Sede Llanogrande');
-    expect(text).toContain('https://www.peskids.com/admin/interesados/lead-abc');
+    expect(text).toContain('Referencia de solicitud: lead-abc');
+    expect(text).not.toContain('/admin/interesados/');
   });
 
   it('buildAdminLeadValidationUrl uses interesados path', () => {

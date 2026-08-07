@@ -121,7 +121,7 @@ function summaryLines(leadType: string | null, options?: PostLeadWhatsAppPrefill
 
 /**
  * Prefill text the client sends to Peskids support on WhatsApp/email after the form.
- * Includes a short form summary and the admin lead link when `lead_id` is known.
+ * Includes a short form summary and a lead reference (no public admin deep-link).
  */
 export function buildPostLeadWhatsAppPrefill(
   name: string,
@@ -141,7 +141,7 @@ export function buildPostLeadWhatsAppPrefill(
 
   if (leadId) {
     lines.push('');
-    lines.push(`📋 Ver mi solicitud: ${buildAdminLeadValidationUrl(leadId, options?.siteBaseUrl)}`);
+    lines.push(`📋 Referencia de solicitud: ${leadId}`);
   }
 
   return lines.join('\n');

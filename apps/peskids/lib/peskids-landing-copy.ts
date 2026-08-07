@@ -39,16 +39,16 @@ export const PESKIDS_WHATSAPP_CTA_LABEL = 'Continuar por WhatsApp';
 export const PESKIDS_FORM_SUCCESS_TITLE = '¡Gracias, recibimos tu solicitud!';
 
 export const PESKIDS_FORM_SUCCESS_DETAIL =
-  'Continúa por WhatsApp con la línea de atención correspondiente.';
+  'Copia el mensaje o envíalo por WhatsApp al equipo de soporte.';
 
 export const PESKIDS_FORM_SUCCESS_LLANOGRANDE =
-  'Continúa por WhatsApp con la línea de la sede Llanogrande.';
+  'Copia el mensaje o envíalo por WhatsApp a la línea de la sede Llanogrande.';
 
 export const PESKIDS_FORM_SUCCESS_DOMICILIO =
-  'Continúa por WhatsApp con la línea de Domicilios.';
+  'Copia el mensaje o envíalo por WhatsApp a la línea de Domicilios.';
 
 export const PESKIDS_FORM_SUCCESS_NEXT =
-  'El botón de arriba abre WhatsApp con el equipo correcto. Te direccionamos según la modalidad que elegiste.';
+  'Envía este mensaje por WhatsApp al equipo de soporte para ser atendido. El equipo validará tu solicitud.';
 
 export const PESKIDS_FORM_SUCCESS_RESPONSE_TIME = 'Tiempo promedio de respuesta: 5–10 minutos';
 

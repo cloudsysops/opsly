@@ -5,6 +5,7 @@ import {
   PESKIDS_FORM_CARD_DESCRIPTION,
   PESKIDS_FORM_CARD_TITLE,
   PESKIDS_FORM_SUBMIT_LABEL,
+  PESKIDS_FORM_SUCCESS_NEXT,
   PESKIDS_RESERVATION_AUDIENCE,
   PESKIDS_RESERVATION_EYEBROW,
   PESKIDS_RESERVATION_TITLE,
@@ -53,5 +54,11 @@ describe('peskids-landing-copy', () => {
 
   it('uses WhatsApp CTA label after successful form submit', () => {
     expect(PESKIDS_WHATSAPP_CTA_LABEL).toBe('Continuar por WhatsApp');
+  });
+
+  it('tells the client to send the message so support can validate', () => {
+    expect(PESKIDS_FORM_SUCCESS_NEXT).toMatch(/WhatsApp/i);
+    expect(PESKIDS_FORM_SUCCESS_NEXT).toMatch(/validar/i);
+    expect(PESKIDS_FORM_SUCCESS_NEXT.toLowerCase()).not.toMatch(/admin/);
   });
 });

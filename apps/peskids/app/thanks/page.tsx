@@ -164,22 +164,11 @@ export default async function ThanksPage({
                 leadId={leadId ?? null}
               />
             )}
-            {leadId ? (
-              <div className="rounded-xl border border-pk-primary/30 bg-pk-primary/10 px-4 py-3 text-left text-sm">
-                <p className="font-semibold text-pk-ink">📋 Ver tu solicitud en el panel:</p>
-                <Link
-                  href={`/admin/interesados/${leadId}`}
-                  className="mt-2 inline-flex items-center gap-2 font-medium text-pk-primary hover:underline"
-                >
-                  Abrir en Peskids Admin →
-                </Link>
-              </div>
-            ) : null}
             <div className="rounded-xl border border-pk-border bg-pk-bg px-4 py-3 text-left text-sm text-pk-sub">
               <p className="font-semibold text-pk-ink">¿Qué sigue?</p>
               <p className="mt-1">
-                {leadData && leadId
-                  ? `Envía el mensaje de arriba al soporte de Peskids por ${leadType === 'family' ? 'WhatsApp' : 'email'}. El equipo abrirá el link para validar tu solicitud y responderá pronto.`
+                {leadData && leadId && leadType !== 'family'
+                  ? 'Envía este mensaje por email al equipo de soporte para ser atendido. El equipo validará tu solicitud.'
                   : PESKIDS_FORM_SUCCESS_NEXT}
               </p>
             </div>
