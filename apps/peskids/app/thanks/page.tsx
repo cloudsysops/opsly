@@ -1,17 +1,41 @@
 import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
+import { headers } from 'next/headers';
 import { PeskidsLockup } from '@/components/brand/peskids-logo';
 import { SiteFooter } from '@/components/layout/site-footer';
-import { WhatsAppLink } from '@/components/contact/whatsapp-link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ReferralLinkCard } from '@/components/referrals/referral-link-card';
-import { PESKIDS_WHATSAPP_CTA_LABEL } from '@/lib/peskids-landing-copy';
+import { WhatsAppMessagePreview } from '@/components/forms';
+import { ThanksWhatsAppFallback } from '@/components/forms/thanks-whatsapp-fallback';
+import {
+  PESKIDS_FORM_SUCCESS_DETAIL,
+  PESKIDS_FORM_SUCCESS_DOMICILIO,
+  PESKIDS_FORM_SUCCESS_LLANOGRANDE,
+  PESKIDS_FORM_SUCCESS_NEXT,
+  PESKIDS_FORM_SUCCESS_TITLE,
+  PESKIDS_WHATSAPP_CTA_LABEL,
+} from '@/lib/peskids-landing-copy';
+import { peskidsPublicSiteBaseUrl } from '@/lib/peskids-lead-session';
+
+async function resolveThanksFetchBase(): Promise<string> {
+  const configured = peskidsPublicSiteBaseUrl();
+  if (configured && !/localhost|127\.0\.0\.1/i.test(configured)) {
+    return configured;
+  }
+  try {
+    const h = await headers();
+    const host = h.get('x-forwarded-host') || h.get('host');
+    const proto = h.get('x-forwarded-proto') || 'https';
+    if (host) return `${proto}://${host}`.replace(/\/$/, '');
+  } catch {
+    // headers() unavailable outside request
+  }
+  return configured || 'https://www.peskids.com';
+}
 
 type ThanksSearchParams = Promise<{
-  referral_link?: string;
-  referral_code?: string;
   modality?: string;
+  lead_id?: string;
 }>;
 
 function thanksCopy(modality: string | undefined): {
@@ -20,20 +44,18 @@ function thanksCopy(modality: string | undefined): {
 } {
   if (modality === 'domicilio') {
     return {
-      detail:
-        'Tu solicitud quedó marcada para Domicilios. Continúa por WhatsApp con ese equipo — no hace falta volver a elegir.',
+      detail: PESKIDS_FORM_SUCCESS_DOMICILIO,
       waLabel: 'WhatsApp Domicilios →',
     };
   }
   if (modality === 'llanogrande') {
     return {
-      detail:
-        'Tu solicitud quedó marcada para la sede Llanogrande. Continúa por WhatsApp con la sede — no hace falta volver a elegir.',
+      detail: PESKIDS_FORM_SUCCESS_LLANOGRANDE,
       waLabel: 'WhatsApp Llanogrande →',
     };
   }
   return {
-    detail: 'Te contactaremos pronto para orientarte sobre matrícula y clases en Peskids.',
+    detail: PESKIDS_FORM_SUCCESS_DETAIL,
     waLabel: `${PESKIDS_WHATSAPP_CTA_LABEL} →`,
   };
 }
@@ -44,10 +66,60 @@ export default async function ThanksPage({
   searchParams?: ThanksSearchParams;
 }): Promise<React.ReactElement> {
   const resolvedSearchParams = (await searchParams) ?? {};
-  const referralLink = resolvedSearchParams.referral_link?.trim() || '';
-  const referralCode = resolvedSearchParams.referral_code?.trim() || '';
   const modality = resolvedSearchParams.modality?.trim();
+  const leadId = resolvedSearchParams.lead_id?.trim();
   const copy = thanksCopy(modality);
+
+  let leadData: {
+    full_name: string;
+    email: string;
+    phone: string;
+    lead_type: string;
+    grade_interested: string;
+    class_modality: string | null;
+    company_name: string | null;
+    company_nit: string | null;
+    metadata: Record<string, unknown> | null;
+    child_name: string | null;
+    neighborhood: string | null;
+  } | null = null;
+
+  if (leadId) {
+    try {
+      const baseUrl = await resolveThanksFetchBase();
+      const response = await fetch(`${baseUrl}/api/leads/${leadId}`, {
+        cache: 'no-store',
+      });
+      if (response.ok) {
+        const result = (await response.json()) as {
+          ok?: boolean;
+          data?: {
+            full_name: string;
+            email: string;
+            phone: string;
+            lead_type: string;
+            grade_interested: string;
+            class_modality: string | null;
+            company_name: string | null;
+            company_nit: string | null;
+            metadata: Record<string, unknown> | null;
+            child_name: string | null;
+            neighborhood: string | null;
+          };
+        };
+        if (result.ok && result.data) {
+          leadData = result.data;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch lead data:', error);
+    }
+  }
+
+  const leadType =
+    leadData?.lead_type === 'teacher_applicant' || leadData?.lead_type === 'company'
+      ? leadData.lead_type
+      : 'family';
 
   return (
     <div className="flex min-h-screen flex-col bg-pk-bg">
@@ -61,24 +133,54 @@ export default async function ThanksPage({
             <span className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-teal-50 text-pk-primary">
               <CheckCircle2 className="h-9 w-9" aria-hidden />
             </span>
-            <CardTitle className="text-2xl">¡Listo, recibimos tu solicitud!</CardTitle>
+            <CardTitle className="text-2xl">{PESKIDS_FORM_SUCCESS_TITLE}</CardTitle>
             <CardDescription className="text-base">{copy.detail}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 pb-8">
-            {referralLink && referralCode ? (
-              <ReferralLinkCard referralLink={referralLink} referralCode={referralCode} />
+            {leadData && leadId ? (
+              <WhatsAppMessagePreview
+                clientName={leadData.full_name}
+                clientEmail={leadData.email}
+                clientPhone={leadData.phone}
+                leadType={leadType}
+                gradeInterested={leadData.grade_interested}
+                classModality={
+                  leadData.class_modality === 'llanogrande' ||
+                  leadData.class_modality === 'domicilio'
+                    ? leadData.class_modality
+                    : null
+                }
+                childName={leadData.child_name}
+                neighborhood={leadData.neighborhood}
+                companyName={leadData.company_name}
+                companyNit={leadData.company_nit}
+                metadata={leadData.metadata}
+                leadId={leadId}
+              />
+            ) : (
+              <ThanksWhatsAppFallback
+                label={copy.waLabel}
+                modality={modality ?? null}
+                leadId={leadId ?? null}
+              />
+            )}
+            {leadId ? (
+              <div className="rounded-xl border border-pk-primary/30 bg-pk-primary/10 px-4 py-3 text-left text-sm">
+                <p className="font-semibold text-pk-ink">📋 Ver tu solicitud en el panel:</p>
+                <Link
+                  href={`/admin/interesados/${leadId}`}
+                  className="mt-2 inline-flex items-center gap-2 font-medium text-pk-primary hover:underline"
+                >
+                  Abrir en Peskids Admin →
+                </Link>
+              </div>
             ) : null}
-            <WhatsAppLink
-              variant="hero"
-              className="w-full"
-              label={copy.waLabel}
-              modality={modality ?? null}
-            />
             <div className="rounded-xl border border-pk-border bg-pk-bg px-4 py-3 text-left text-sm text-pk-sub">
               <p className="font-semibold text-pk-ink">¿Qué sigue?</p>
               <p className="mt-1">
-                El botón de arriba abre el WhatsApp del equipo correcto. También puedes revisar tu
-                correo.
+                {leadData && leadId
+                  ? `Envía el mensaje de arriba al soporte de Peskids por ${leadType === 'family' ? 'WhatsApp' : 'email'}. El equipo abrirá el link para validar tu solicitud y responderá pronto.`
+                  : PESKIDS_FORM_SUCCESS_NEXT}
               </p>
             </div>
             <Link href="/">

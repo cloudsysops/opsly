@@ -12,15 +12,16 @@ const updateFollowupSchema = z.object({
   due_at: z.string().datetime().optional(),
 });
 
-export async function GET(_request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const tenantSlug = 'intcloudsysops';
   try {
+    const { id } = await params;
     const supabase = createClient(supabaseUrl, supabaseKey);
     const { data, error } = await supabase
       .from('intcloudsysops_followups')
       .select('*')
       .eq('tenant_slug', tenantSlug)
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
     if (error) throw error;
     return NextResponse.json({ ok: true, data });
@@ -29,9 +30,10 @@ export async function GET(_request: NextRequest, { params }: { params: { id: str
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const tenantSlug = 'intcloudsysops';
   try {
+    const { id } = await params;
     const body = await request.json();
     const validated = updateFollowupSchema.parse(body);
     const supabase = createClient(supabaseUrl, supabaseKey);
@@ -39,7 +41,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       .from('intcloudsysops_followups')
       .update(validated)
       .eq('tenant_slug', tenantSlug)
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single();
     if (error) throw error;
@@ -49,15 +51,16 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function DELETE(_request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const tenantSlug = 'intcloudsysops';
   try {
+    const { id } = await params;
     const supabase = createClient(supabaseUrl, supabaseKey);
     await supabase
       .from('intcloudsysops_followups')
       .delete()
       .eq('tenant_slug', tenantSlug)
-      .eq('id', params.id);
+      .eq('id', id);
     return NextResponse.json({ ok: true }, { status: 204 });
   } catch (error) {
     return NextResponse.json({ ok: false, error: 'Delete failed' }, { status: 400 });

@@ -6,11 +6,56 @@ import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { leadApiPostSchema } from '@/lib/validation/lead.schema';
 import { firstZodErrorMessage } from '@/lib/validation/zod-errors';
 
+// FormData only carries strings/Files; the client serializes these booleans with String(value).
+const BOOLEAN_FIELDS = new Set([
+  'consent_treatment',
+  'consent_marketing',
+  'consent_photos_videos',
+]);
+
+function coerceMultipartValue(key: string, value: string): unknown {
+  return BOOLEAN_FIELDS.has(key) ? value === 'true' : value;
+}
+
+/** Reads JSON or multipart/form-data bodies; multipart is used when teacher-applicant files are attached. */
+async function readLeadRequestBody(
+  request: NextRequest
+): Promise<{ raw: unknown; attachments: FormData | null } | { error: string }> {
+  const contentType = request.headers.get('content-type') || '';
+
+  if (contentType.includes('multipart/form-data')) {
+    let formData: FormData;
+    try {
+      formData = await request.formData();
+    } catch {
+      return { error: 'Invalid form data' };
+    }
+    const raw: Record<string, unknown> = {};
+    for (const [key, value] of formData.entries()) {
+      if (value instanceof File) continue;
+      raw[key] = coerceMultipartValue(key, value);
+    }
+    return { raw, attachments: formData };
+  }
+
+  try {
+    const raw: unknown = await request.json();
+    return { raw, attachments: null };
+  } catch {
+    return { error: 'Invalid JSON body' };
+  }
+}
+
 export async function POST(request: NextRequest) {
   const requestId = resolveRequestId(request);
 
   try {
-    const raw: unknown = await request.json();
+    const bodyResult = await readLeadRequestBody(request);
+    if ('error' in bodyResult) {
+      return errorJson(requestId, bodyResult.error, 400);
+    }
+    const { raw, attachments } = bodyResult;
+
     const parsed = leadApiPostSchema.safeParse(raw);
 
     if (!parsed.success) {
@@ -46,7 +91,8 @@ export async function POST(request: NextRequest) {
         metadata: body.metadata,
         referral_source: body.referral_source,
       },
-      requestId
+      requestId,
+      attachments
     );
 
     if (!canonical.ok) {

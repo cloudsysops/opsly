@@ -1,7 +1,7 @@
-import { getGoHighLevelService } from '@intcloudsysops/services/gohighlevel';
-import type { Opportunity } from '@intcloudsysops/services/gohighlevel';
-import { isGoHighLevelPeskidsConfigured } from '@intcloudsysops/services/gohighlevel';
-import { isPeskidsGhlEnabled } from '@intcloudsysops/services/twenty';
+import { getGoHighLevelService } from '@intcloudsysops/services';
+import type { Opportunity } from '@intcloudsysops/services';
+import { isGoHighLevelPeskidsConfigured } from '@intcloudsysops/services';
+import { isPeskidsGhlEnabled } from '@intcloudsysops/services';
 import { supabaseServer } from '@/lib/supabase';
 
 export type PipelineStage =

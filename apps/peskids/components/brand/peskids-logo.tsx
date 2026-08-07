@@ -1,82 +1,81 @@
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { peskidsColorTokens } from '@/lib/tokens';
+
+/** Public brand mark — see docs/brand/peskids/BRAND.md */
+export const PESKIDS_LOGO_MARK_SRC = '/brand/logo-mark.svg';
+export const PESKIDS_LOGO_PNG_SRC = '/brand/logo-official.png';
 
 interface PeskidsLogoProps {
   size?: number;
   className?: string;
 }
 
-/** Logo circular pinwheel (4 colores) + wordmark brush */
+/** Logo circular oficial (4 colores + wordmark interno). */
 export function PeskidsLogo({ size = 96, className }: PeskidsLogoProps): React.ReactElement {
   return (
-    <div
-      className={cn('relative inline-block shrink-0 overflow-hidden rounded-full', className)}
-      style={{
-        width: size,
-        height: size,
-        background: `conic-gradient(from -45deg, ${peskidsColorTokens.primary.teal} 0deg 90deg, ${peskidsColorTokens.secondary.yellow} 90deg 180deg, ${peskidsColorTokens.primary.blue} 180deg 270deg, ${peskidsColorTokens.secondary.orange} 270deg 360deg)`,
-      }}
-      aria-hidden
-    >
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-        <span
-          className="font-brush leading-none"
-          style={{
-            fontSize: size * 0.34,
-            transform: `rotate(-3deg) translateY(${size * 0.015}px)`,
-            textShadow: `0 ${size * 0.012}px ${size * 0.025}px rgba(0,0,0,0.18)`,
-          }}
-        >
-          Peskids
-        </span>
-        <span
-          className="font-sans font-semibold italic opacity-95"
-          style={{ fontSize: size * 0.11, letterSpacing: '0.04em', marginTop: size * 0.008 }}
-        >
-          natación
-        </span>
-      </div>
-    </div>
+    <Image
+      src={PESKIDS_LOGO_PNG_SRC}
+      alt="Peskids natación"
+      width={size}
+      height={size}
+      className={cn('shrink-0 rounded-full object-contain', className)}
+      style={{ width: size, height: size }}
+      priority={size >= 64}
+    />
   );
 }
 
 interface PeskidsLockupProps {
   height?: number;
   color?: string;
-  tag?: string;
+  /** Optional external label; official PNG already includes “Peskids / natación”. */
+  tag?: string | null;
+  /**
+   * Extra wordmark beside the circle. Default false — the official mark already
+   * contains “Peskids”; duplicating it with Caveat Brush looked broken when fonts
+   * failed to load and read as double branding when they did.
+   */
+  showWordmark?: boolean;
   className?: string;
 }
 
 export function PeskidsLockup({
   height = 48,
   color = peskidsColorTokens.primary.blue,
-  tag = 'NATACIÓN · MEDELLÍN',
+  tag = null,
+  showWordmark = false,
   className,
 }: PeskidsLockupProps): React.ReactElement {
+  const showText = showWordmark || Boolean(tag);
+
   return (
-    <div className={cn('flex items-center', className)} style={{ gap: height * 0.3 }}>
+    <div className={cn('flex items-center', className)} style={{ gap: height * 0.28 }}>
       <PeskidsLogo size={height} />
-      <div className="flex flex-col leading-none">
-        <span
-          className="font-brush inline-block origin-left"
-          style={{
-            fontSize: height * 0.78,
-            color,
-            transform: 'rotate(-2deg)',
-            lineHeight: 0.9,
-          }}
-        >
-          Peskids
-        </span>
-        {tag ? (
-          <span
-            className="mt-1 font-sans font-bold uppercase opacity-55"
-            style={{ fontSize: height * 0.18, letterSpacing: '0.22em', color }}
-          >
-            {tag}
-          </span>
-        ) : null}
-      </div>
+      {showText ? (
+        <div className="flex flex-col leading-none">
+          {showWordmark ? (
+            <span
+              className="font-sans font-extrabold tracking-tight"
+              style={{
+                fontSize: height * 0.52,
+                color,
+                lineHeight: 0.95,
+              }}
+            >
+              Peskids
+            </span>
+          ) : null}
+          {tag ? (
+            <span
+              className="mt-1 font-sans font-bold uppercase opacity-55"
+              style={{ fontSize: height * 0.18, letterSpacing: '0.22em', color }}
+            >
+              {tag}
+            </span>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }
