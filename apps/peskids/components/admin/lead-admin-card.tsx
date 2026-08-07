@@ -7,7 +7,7 @@ import {
   Mail,
   MessageSquare,
   Phone,
-  User,
+  Users,
 } from 'lucide-react';
 import type { DashboardData } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
@@ -74,7 +74,7 @@ export function AdminLeadCard({
             {lead.name}
           </Link>
           <p className="flex items-center gap-1.5 text-xs text-pk-sub">
-            <User className="h-3.5 w-3.5 shrink-0" aria-hidden />
+            <Users className="h-3.5 w-3.5 shrink-0" aria-hidden />
             <span className="truncate">{leadTypeLabel(lead.lead_type)}</span>
           </p>
         </div>
