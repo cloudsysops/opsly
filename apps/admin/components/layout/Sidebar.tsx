@@ -76,7 +76,9 @@ export function Sidebar() {
         >
           Opsly
         </Link>
-        <div className="relative mt-1 text-[10px] uppercase tracking-[0.24em] text-ops-magenta">Admin</div>
+        <div className="relative mt-1 text-[10px] uppercase tracking-[0.24em] text-ops-magenta">
+          Admin
+        </div>
       </div>
       <nav className="flex flex-1 flex-col gap-0.5 p-2">
         {navSections.map((section) => (
@@ -99,7 +101,10 @@ export function Sidebar() {
                   )}
                 >
                   <Icon
-                    className={cn('h-4 w-4 shrink-0', active ? 'animate-neon-flicker text-ops-cyan' : '')}
+                    className={cn(
+                      'h-4 w-4 shrink-0',
+                      active ? 'animate-neon-flicker text-ops-cyan' : ''
+                    )}
                   />
                   {label}
                 </Link>

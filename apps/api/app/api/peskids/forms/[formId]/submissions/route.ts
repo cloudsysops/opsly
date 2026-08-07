@@ -14,7 +14,10 @@ interface PeskidsQB {
   eq(col: string, val: unknown): PeskidsQB;
   order(col: string, opts?: unknown): PeskidsQB;
   single(): Promise<{ data: unknown | null; error: unknown }>;
-  then<T>(r: (v: { data: unknown[] | null; error: unknown }) => T, j?: (e: unknown) => T): Promise<T>;
+  then<T>(
+    r: (v: { data: unknown[] | null; error: unknown }) => T,
+    j?: (e: unknown) => T
+  ): Promise<T>;
 }
 interface PeskidsClient {
   from(table: string): PeskidsQB;
@@ -55,7 +58,11 @@ async function fetchFormByFormId(
   formId: string
 ): Promise<FormData | Response> {
   const db = supabase as unknown as PeskidsClient;
-  const { data: rawForm, error: formError } = await db.from('peskids.forms').select('id, form_id, tenant_slug').eq('form_id', formId).single();
+  const { data: rawForm, error: formError } = await db
+    .from('peskids.forms')
+    .select('id, form_id, tenant_slug')
+    .eq('form_id', formId)
+    .single();
 
   if (formError || !rawForm) {
     return jsonError('Form not found', HTTP_STATUS.NOT_FOUND);
@@ -107,7 +114,12 @@ async function triggerSubmissionWebhooks(
 ): Promise<WebhookTriggerResult | null> {
   try {
     const db = supabase as unknown as PeskidsClient;
-    const { data: rawWebhooks } = await db.from('peskids.webhook_configs').select('id, webhook_url, secret, is_active, failure_count').eq('form_id', formId).eq('tenant_slug', tenantSlug).eq('is_active', true);
+    const { data: rawWebhooks } = await db
+      .from('peskids.webhook_configs')
+      .select('id, webhook_url, secret, is_active, failure_count')
+      .eq('form_id', formId)
+      .eq('tenant_slug', tenantSlug)
+      .eq('is_active', true);
     const webhooks = rawWebhooks as unknown[] | null;
 
     if (!webhooks || webhooks.length === 0) {

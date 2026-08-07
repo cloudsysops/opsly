@@ -67,18 +67,33 @@ async function searchOpportunity(contactId: string): Promise<Opportunity | null>
   } catch (err) {
     console.warn('[opportunity] search error:', err);
     await recordGhlApiError('peskids', 0, 'searchOpportunity');
-    await alertGhlFailure('searchOpportunity', undefined, err instanceof Error ? err.message : String(err), contactId);
+    await alertGhlFailure(
+      'searchOpportunity',
+      undefined,
+      err instanceof Error ? err.message : String(err),
+      contactId
+    );
     return null;
   }
 }
 
-async function createOpportunity(contactId: string, parentName: string): Promise<Opportunity | null> {
+async function createOpportunity(
+  contactId: string,
+  parentName: string
+): Promise<Opportunity | null> {
   try {
     const env = resolveGoHighLevelPeskidsEnv();
     const pipelineId = getPeskidsPipelineId();
     if (!pipelineId) {
-      console.warn('[opportunity] GOHIGHLEVEL_PESKIDS_PIPELINE_ID not set; cannot create opportunity');
-      await alertGhlFailure('createOpportunity', undefined, 'GOHIGHLEVEL_PESKIDS_PIPELINE_ID not set', contactId);
+      console.warn(
+        '[opportunity] GOHIGHLEVEL_PESKIDS_PIPELINE_ID not set; cannot create opportunity'
+      );
+      await alertGhlFailure(
+        'createOpportunity',
+        undefined,
+        'GOHIGHLEVEL_PESKIDS_PIPELINE_ID not set',
+        contactId
+      );
       return null;
     }
 
@@ -112,7 +127,12 @@ async function createOpportunity(contactId: string, parentName: string): Promise
   } catch (err) {
     console.warn('[opportunity] creation error:', err);
     await recordGhlApiError('peskids', 0, 'createOpportunity');
-    await alertGhlFailure('createOpportunity', undefined, err instanceof Error ? err.message : String(err), contactId);
+    await alertGhlFailure(
+      'createOpportunity',
+      undefined,
+      err instanceof Error ? err.message : String(err),
+      contactId
+    );
     return null;
   }
 }
