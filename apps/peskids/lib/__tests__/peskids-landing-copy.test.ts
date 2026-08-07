@@ -2,9 +2,10 @@ import { describe, expect, it } from 'vitest';
 import {
   PESKIDS_CONSENT_MARKETING,
   PESKIDS_CONSENT_TREATMENT,
+  PESKIDS_FORM_CARD_DESCRIPTION,
   PESKIDS_FORM_CARD_TITLE,
   PESKIDS_FORM_SUBMIT_LABEL,
-  PESKIDS_RESERVATION_BULLETS,
+  PESKIDS_RESERVATION_AUDIENCE,
   PESKIDS_RESERVATION_EYEBROW,
   PESKIDS_RESERVATION_TITLE,
   PESKIDS_WHATSAPP_CTA_LABEL,
@@ -15,12 +16,13 @@ describe('peskids-landing-copy', () => {
     const combined = [
       PESKIDS_RESERVATION_EYEBROW,
       PESKIDS_RESERVATION_TITLE,
+      PESKIDS_RESERVATION_AUDIENCE,
       PESKIDS_FORM_CARD_TITLE,
+      PESKIDS_FORM_CARD_DESCRIPTION,
       PESKIDS_FORM_SUBMIT_LABEL,
       PESKIDS_CONSENT_TREATMENT,
       PESKIDS_CONSENT_MARKETING,
       PESKIDS_WHATSAPP_CTA_LABEL,
-      ...PESKIDS_RESERVATION_BULLETS,
     ].join(' ');
 
     expect(combined.toLowerCase()).not.toMatch(/jelou|demo|consultor|dashboard|admin flow/);
@@ -29,9 +31,9 @@ describe('peskids-landing-copy', () => {
   it('does not promise free trial class during soft-launch', () => {
     const combined = [
       PESKIDS_RESERVATION_TITLE,
+      PESKIDS_RESERVATION_AUDIENCE,
       PESKIDS_FORM_CARD_TITLE,
       PESKIDS_FORM_SUBMIT_LABEL,
-      ...PESKIDS_RESERVATION_BULLETS,
     ]
       .join(' ')
       .toLowerCase();
@@ -39,11 +41,14 @@ describe('peskids-landing-copy', () => {
     expect(combined).not.toMatch(/gratis|gratuita|clase de prueba/);
   });
 
-  it('includes required contact bullets', () => {
-    expect(PESKIDS_RESERVATION_BULLETS).toHaveLength(3);
-    expect(PESKIDS_RESERVATION_BULLETS[0]).toMatch(/familia|profesor|empresa/i);
-    expect(PESKIDS_RESERVATION_BULLETS[1]).toMatch(/Llanogrande|domicilio/i);
-    expect(PESKIDS_RESERVATION_BULLETS[2]).toMatch(/WhatsApp/i);
+  it('explains form audience without repeating hero handoff bullets', () => {
+    expect(PESKIDS_RESERVATION_AUDIENCE).toMatch(/familias/i);
+    expect(PESKIDS_RESERVATION_AUDIENCE).toMatch(/profesores/i);
+    expect(PESKIDS_RESERVATION_AUDIENCE).toMatch(/empresas/i);
+    expect(PESKIDS_FORM_CARD_DESCRIPTION).toMatch(/1 minuto/i);
+    expect(PESKIDS_FORM_CARD_DESCRIPTION.toLowerCase()).not.toMatch(
+      /familias interesadas en ingresar/,
+    );
   });
 
   it('uses WhatsApp CTA label after successful form submit', () => {

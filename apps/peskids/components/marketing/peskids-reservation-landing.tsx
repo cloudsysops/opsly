@@ -5,7 +5,7 @@ import { ReservationLandingCTA } from '@/components/marketing/reservation-landin
 import { PESKIDS_RESERVATION_FORM_ANCHOR } from '@/lib/peskids-landing-config';
 import {
   PESKIDS_INSTAGRAM_LANDING_INTRO,
-  PESKIDS_RESERVATION_BULLETS,
+  PESKIDS_RESERVATION_AUDIENCE,
   PESKIDS_RESERVATION_DESCRIPTION,
   PESKIDS_RESERVATION_EYEBROW,
   PESKIDS_RESERVATION_TITLE,
@@ -52,14 +52,9 @@ export function PeskidsReservationLanding({
             {PESKIDS_RESERVATION_TITLE}
           </HeadingTag>
           <p className="mb-4 text-lg text-pk-sub">{intro}</p>
-          <ul className="mx-auto mb-6 max-w-md space-y-2 text-left text-sm text-pk-sub sm:text-center">
-            {PESKIDS_RESERVATION_BULLETS.map((bullet) => (
-              <li key={bullet} className="flex gap-2 sm:justify-center">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-pk-primary sm:mt-2" aria-hidden />
-                <span>{bullet}</span>
-              </li>
-            ))}
-          </ul>
+          <p className="mx-auto mb-6 max-w-xl text-left text-sm leading-relaxed text-pk-sub sm:text-center">
+            {PESKIDS_RESERVATION_AUDIENCE}
+          </p>
           <ReservationLandingCTA />
         </div>
 
