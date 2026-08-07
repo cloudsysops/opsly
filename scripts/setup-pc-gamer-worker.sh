@@ -20,6 +20,7 @@ ENSURE_OLLAMA=false
 ENSURE_WORKER=false
 STOP_LEGACY=false
 PULL_MODEL=false
+INSTALL_PULL_WATCHER=false
 
 for arg in "$@"; do
   case "$arg" in
@@ -28,8 +29,9 @@ for arg in "$@"; do
     --ensure-worker) ENSURE_WORKER=true ;;
     --stop-legacy) STOP_LEGACY=true ;;
     --pull-model) PULL_MODEL=true ;;
+    --install-pull-watcher) INSTALL_PULL_WATCHER=true ;;
     -h|--help)
-      sed -n '2,20p' "$0"
+      sed -n '2,22p' "$0"
       exit 0
       ;;
     *)
@@ -120,9 +122,24 @@ if [[ "$ENSURE_WORKER" == "true" ]]; then
   run docker compose "${COMPOSE_WORKERS[@]}" --env-file "$ENV_WORKER" --env-file infra/opslyquantum.env up -d ollama worker-openclaw
 fi
 
+if [[ "$INSTALL_PULL_WATCHER" == "true" ]]; then
+  echo "[pc-gamer] Installing git-pull-watcher (user systemd / LaunchAgent)…"
+  if [[ "$DRY_RUN" == "true" ]]; then
+    run ./scripts/install-git-pull-watcher.sh --user --dry-run || \
+      run ./scripts/install-git-pull-watcher.sh --dry-run
+  else
+    if [[ "$(uname -s)" == "Linux" ]]; then
+      ./scripts/install-git-pull-watcher.sh --user
+    else
+      ./scripts/install-git-pull-watcher.sh
+    fi
+  fi
+fi
+
 echo "[pc-gamer] Status:"
 run docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' | head -20 || true
 
 echo "[pc-gamer] Done."
 echo "  Roles: VPS=control plane | this host=worker+GPU | Mac=opsly-admin IDE"
 echo "  Docs: docs/04-infrastructure/PC-GAMER-WORKER.md"
+echo "  Auto-pull: docs/01-development/GIT-PULL-WATCHER.md"

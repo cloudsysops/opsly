@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [[ -z "$ROOT" ]]; then
+  exit 0
+fi
+
+cd "$ROOT"
+
+SQUASH_FLAG="${1:-0}"
+
+echo "🔀 Pull/merge completado"
+if [[ "${SQUASH_FLAG}" == "1" ]]; then
+  echo "   event: squash merge"
+else
+  echo "   event: merge (incluye git pull)"
+fi
+
+if [[ -x "$ROOT/scripts/git-session-brief.sh" ]]; then
+  bash "$ROOT/scripts/git-session-brief.sh"
+else
+  echo "⚠️  session brief no disponible"
+fi
+
+echo "💡 Si hay una tarea nueva para este agente, revisa AGENTS.md."

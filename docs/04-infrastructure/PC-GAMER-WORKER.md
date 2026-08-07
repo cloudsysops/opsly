@@ -69,8 +69,13 @@ sudo mkdir -p /etc/systemd/system/ollama.service.d
 printf '%s\n' '[Service]' 'Environment=OLLAMA_HOST=0.0.0.0:11434' 'Environment=OLLAMA_ORIGINS=*' \
   | sudo tee /etc/systemd/system/ollama.service.d/override.conf
 sudo systemctl daemon-reload && sudo systemctl restart ollama
+
+# 6) Auto-pull cuando Claude/Cursor empujen a la rama
+./scripts/setup-pc-gamer-worker.sh --install-pull-watcher
+# o: ./scripts/install-git-pull-watcher.sh --user
 ```
 
+En la **Mac** (opsly-admin): `./scripts/install-git-pull-watcher.sh` (LaunchAgent cada 60s). Doc: `docs/01-development/GIT-PULL-WATCHER.md`.
 ## Verificar
 
 ```bash
