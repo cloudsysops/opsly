@@ -1,19 +1,4 @@
 {
   "description": "GHSA advisory IDs exempted from the npm audit (moderate+) CI gate (.github/workflows/security.yml). Each entry requires a reason and is reviewed in the PR that adds it — do not add entries just to silence an unreviewed failure. A new advisory for an already-listed package is NOT auto-exempted; its ID must be added explicitly.",
-  "exemptions": [
-    {
-      "advisory": "GHSA-4r6h-8v6p-xvw6",
-      "package": "xlsx",
-      "severity": "high",
-      "reason": "Prototype Pollution when parsing crafted XLSX files. SheetJS stopped publishing patched builds to npm (moved to cdn.sheetjs.com); no npm-registry fix exists. Usage is confined to apps/peskids/lib/import/spreadsheet.ts, dynamically imported client-side only, parsing files the tenant's own authenticated admin uploads in their browser — not exposed to untrusted/public input or server-side execution.",
-      "added": "2026-08-04"
-    },
-    {
-      "advisory": "GHSA-5pgg-2g8v-p4x9",
-      "package": "xlsx",
-      "severity": "high",
-      "reason": "ReDoS when parsing crafted XLSX files. Same fix/exposure situation as GHSA-4r6h-8v6p-xvw6 above (no npm fix; client-side only, admin-uploaded files).",
-      "added": "2026-08-04"
-    }
-  ]
+  "exemptions": []
 }

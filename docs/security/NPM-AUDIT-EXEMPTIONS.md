@@ -16,22 +16,18 @@ explicitly.
 
 ## Currently exempted
 
-### xlsx (high) — GHSA-4r6h-8v6p-xvw6, GHSA-5pgg-2g8v-p4x9
-- **Reason:** Prototype Pollution + ReDoS when parsing crafted XLSX files.
-  SheetJS stopped publishing patched builds to npm (moved to
-  cdn.sheetjs.com); no npm-registry fix exists.
-- **Exposure:** Confined to `apps/peskids/lib/import/spreadsheet.ts`,
-  dynamically imported client-side only, parsing files the tenant's own
-  authenticated admin uploads in their browser — not exposed to
-  untrusted/public input or server-side execution.
-- **Status:** Acknowledged. Revisit if SheetJS resumes npm publishing, or
-  replace with a maintained alternative (e.g. `exceljs`) if usage grows
-  beyond this single admin-import path.
+None. The exemption list is empty — `npm audit --audit-level=moderate
+--omit=dev` currently reports 0 vulnerabilities without needing any.
 
 ## Previously exempted, now resolved (no longer needed)
 
-`dompurify` (GHSA-cmwh-pvxp-8882) and `undici` were previously listed here
-as acknowledged risks. Both were resolved via `package.json` `overrides`
-version bumps and no longer appear in `npm audit` — removed from the
-exemption list since an exemption for an already-fixed advisory is dead
-weight, not a real gate.
+- `dompurify` (GHSA-cmwh-pvxp-8882) and `undici` — resolved via
+  `package.json` `overrides` version bumps.
+- `xlsx` (GHSA-4r6h-8v6p-xvw6, GHSA-5pgg-2g8v-p4x9) — SheetJS stopped
+  publishing patched builds to npm, so this was exempted rather than fixed.
+  Made moot by PR #888, which removed the `xlsx` dependency from
+  `apps/peskids` entirely (Excel import replaced with CSV-only, explicitly
+  to avoid the vulnerable parser on untrusted uploads).
+
+All three removed from the exemption list — an exemption for an
+already-fixed or already-removed advisory is dead weight, not a real gate.
