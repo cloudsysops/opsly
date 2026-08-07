@@ -19,6 +19,7 @@ Punto de entrada compacto del vault. Política de carpetas:
 - Opsly Moon (control plane): [`00-architecture/OPSLY-MOON.md`](00-architecture/OPSLY-MOON.md), [`00-architecture/OPSLY-MOON-AUDIT.md`](00-architecture/OPSLY-MOON-AUDIT.md), [`00-architecture/OPSLY-MOON-DATA-SOURCES.md`](00-architecture/OPSLY-MOON-DATA-SOURCES.md), [`00-architecture/OPSLY-MOON-ROUTE-MAP.md`](00-architecture/OPSLY-MOON-ROUTE-MAP.md) · runbooks [`runbooks/OPSLY-MOON-OPERATIONS.md`](runbooks/OPSLY-MOON-OPERATIONS.md)
 - Stubs de compatibilidad: [`stubs/README.md`](stubs/README.md)
 - Repo (fuera del vault): [`AGENTS.md`](../AGENTS.md), [`VISION.md`](../VISION.md), [`ROADMAP.md`](../ROADMAP.md)
+- Mission Control Kit (agency ICSO + tenants): [`00-architecture/MISSION-CONTROL-KIT.md`](00-architecture/MISSION-CONTROL-KIT.md), rollout [`runbooks/MISSION-CONTROL-TENANT-ROLLOUT.md`](runbooks/MISSION-CONTROL-TENANT-ROLLOUT.md), ICSO [`runbooks/ICSO-MISSION-CONTROL.md`](runbooks/ICSO-MISSION-CONTROL.md)
 
 ## Pilares numerados (gobierno docs)
 
