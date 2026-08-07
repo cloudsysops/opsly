@@ -677,21 +677,25 @@ Week 4: Docs + runbook + MVP validation
 
 <!-- Actualizar al final de cada sesión. Sesiones pre-2026-05-26 → docs/AGENTS-SESSION-HISTORY.md -->
 
-### 📌 Sesión Activa (2026-08-05)
+### 📌 Sesión Activa (2026-08-06)
 
-**Tema:** Peskids WhatsApp domicilio + mensaje + logo en producción  
-**Branch:** `main` (`55898242`)  
-**Objetivo:** Corregir handoff post-formulario y pedir revisión al cliente
+**Tema:** Peskids Claude lote en prod + higiene ramas + rescate ICSO (#881)  
+**Branch:** `main` (`883fe892`) — Peskids healthy  
+**Objetivo:** plataforma usable (Peskids) + camino ICSO/modules listo para merge
 
 **Hecho:**
-1. ✅ PR [#905](https://github.com/cloudsysops/opsly/pull/905) mergeado — domicilio → línea WA correcta; prefill con resumen + link lead; tipografía/logo
-2. ✅ Secrets GH `*_DOMICILIO_*` / `*_LLANOGRANDE_*` sincronizados desde Doppler
-3. ✅ Deploy Peskids (`force_daytime`) — health `git_sha=55898242…` en `https://www.peskids.com`
-4. ✅ Checklist cliente: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md)
+1. ✅ Lote Claude Peskids en prod (`883fe892`) — quick-actions, Matricular, templates, CV/video, email staff, ciudad/domicilio, logo, sidebar
+2. ✅ Hotfix standalone `webpack-runtime` (#918) tras outage breve; rollback + redeploy OK
+3. ✅ Migraciones Supabase 0093–0095 aplicadas; audit FK sin FK a `public.leads`
+4. ✅ Higiene: cerrados auto-fix #915/#912/#909/#890; borradas ramas Claude/Peskids ya mergeadas; cerrados Bolt metrics duplicados
+5. ✅ PR [#881](https://github.com/cloudsysops/opsly/pull/881) reconciliada con `main` + `0096_tenant_modules.sql` (MERGEABLE)
 
-**Pendiente humano:** enviar checklist a Peskids (owner) para que validen en móvil.
+**Pendiente:**
+- CI verde + merge nocturno #881 (ICSO catalog CMS + tenant module activation)
+- Revisión cliente: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md)
+- Security: rebase #886 npm audit; sentinel forms #867
+- Archivar o rebasear #885/#887 (Claude) sin duplicar #881
 
----
 
 ### 📅 Sesiones Recientes
 
@@ -1590,9 +1594,13 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 ## 🔄 Próximo paso inmediato
 
-**Peskids (2026-08-05) — revisión cliente:** cambios de WhatsApp + logo **ya en prod**. Enviar a Peskids el checklist [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md) (formulario domicilio vs Llanogrande + mensaje + header). Health: `https://www.peskids.com/api/health` → `55898242…`.
+**Peskids:** prod `883fe892` — enviar checklist [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md). Health: `https://www.peskids.com/api/health`.
 
-**Capacidad VPS:** alerta memoria **activa** (~4 GiB) — evitar deploys pesados de día salvo `hotfix-prod` / `safe-daytime`. Runbook: `docs/runbooks/VPS-MEMORY-CAPS.md`.
+**Plataforma (valor ICSO):** merge nocturno [#881](https://github.com/cloudsysops/opsly/pull/881) tras CI verde — catalog CMS + `tenant_modules` (0096). No redeploy Peskids salvo hotfix.
+
+**Capacidad VPS:** alerta memoria **activa** (~4 GiB) — `docs/runbooks/VPS-MEMORY-CAPS.md`.
+
+
 
 **Status PRs Cleanup (2026-05-22 — SESSION FINAL):**
 
