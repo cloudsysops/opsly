@@ -1,0 +1,29 @@
+# Override de GPU (NVIDIA) para el servicio ollama del stack opslyquantum.
+# Solo aplicar en hosts con GPU NVIDIA real (p. ej. PC-gamer) — NO fusionar
+# en docker-compose.opslyquantum.yml, para no romper el arranque de Ollama
+# en máquinas sin GPU (Mac, VPS, futuros workers CPU-only).
+#
+# Requiere en el host: driver NVIDIA + NVIDIA Container Toolkit instalados
+# (`nvidia-smi` debe funcionar fuera de Docker antes de probar esto).
+#   https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+#
+# Uso (desde la raíz del repo, en el host con GPU):
+#   docker compose \
+#     -f infra/docker-compose.opslyquantum.yml \
+#     -f infra/docker-compose.opslyquantum.gpu.yml \
+#     --env-file infra/opslyquantum.env \
+#     up -d ollama
+#
+# Verificar que Ollama ve la GPU:
+#   docker exec opslyquantum-ollama nvidia-smi
+#   docker exec opslyquantum-ollama ollama ps   # tras correr un modelo, columna PROCESSOR debe decir "100% GPU"
+
+services:
+  ollama:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
