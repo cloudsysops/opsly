@@ -1,6 +1,6 @@
 /**
  * Pure unit tests for Moon helpers (no network, no secrets).
- * Run: npx tsx --test apps/admin/lib/moon/__tests__/moon-unit.test.ts
+ * Run: npm run test:moon --workspace=@intcloudsysops/admin
  */
 
 import assert from 'node:assert/strict';
@@ -12,6 +12,7 @@ import {
 import { healthFromTenantStatus, sanitizeTenantForMoonCard } from '../tenant-card';
 import { isMoonNavActive, MOON_NAV_SECTIONS } from '../nav';
 import { mapTeamMetricsToMoonTasks, summarizeQueueFromTeams } from '../queue-mapper';
+import { matchMoonCommands, MOON_COMMAND_SUGGESTIONS } from '../command-router';
 import type { TeamMetrics } from '../../types';
 
 describe('moon data labels', () => {
@@ -64,6 +65,8 @@ describe('moon nav', () => {
     assert.equal(hrefs.includes('interesados'), false);
     assert.equal(hrefs.includes('pipeline'), false);
     assert.ok(hrefs.includes('/moon/clients'));
+    assert.ok(hrefs.includes('/moon/reports'));
+    assert.ok(hrefs.includes('/moon/command'));
   });
 });
 
@@ -87,5 +90,22 @@ describe('queue mapper', () => {
     const summary = summarizeQueueFromTeams(teams);
     assert.equal(summary.waiting, 1);
     assert.equal(summary.confidence, 'REAL');
+  });
+});
+
+describe('command router dry-run', () => {
+  it('returns catalog when query empty', () => {
+    assert.equal(matchMoonCommands('').length, MOON_COMMAND_SUGGESTIONS.length);
+  });
+
+  it('matches health keywords', () => {
+    const hits = matchMoonCommands('ram vps');
+    assert.ok(hits.some((h) => h.href === '/moon/health'));
+  });
+
+  it('never routes to peskids pipeline', () => {
+    const hrefs = matchMoonCommands('leads pipeline').map((h) => h.href).join(' ');
+    assert.equal(hrefs.includes('interesados'), false);
+    assert.equal(hrefs.includes('peskids'), false);
   });
 });

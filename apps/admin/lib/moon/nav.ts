@@ -45,7 +45,7 @@ export const MOON_NAV_SECTIONS: MoonNavSection[] = [
       { href: '/moon/usage', label: 'Usage', legacyHref: '/metrics/llm' },
       { href: '/moon/costs', label: 'Costos', legacyHref: '/costs' },
       { href: '/moon/billing', label: 'Billing' },
-      { href: '/api-surface', label: 'Reportes API' },
+      { href: '/moon/reports', label: 'Reportes', legacyHref: '/api-surface' },
     ],
   },
   {
@@ -54,6 +54,7 @@ export const MOON_NAV_SECTIONS: MoonNavSection[] = [
       { href: '/moon/support', label: 'Soporte', legacyHref: '/feedback' },
       { href: '/invitations', label: 'Invitaciones' },
       { href: '/mission-control', label: 'Runtime MC' },
+      { href: '/moon/command', label: 'Command' },
       { href: '/moon/settings', label: 'Settings', legacyHref: '/settings' },
     ],
   },

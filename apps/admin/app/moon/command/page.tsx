@@ -9,28 +9,12 @@ import {
   MoonPageHeader,
   MoonSkeleton,
 } from '@/components/moon/primitives';
+import { matchMoonCommands } from '@/lib/moon/command-router';
 
 function CommandBody(): React.ReactElement {
   const search = useSearchParams();
   const q = (search.get('q') ?? '').trim();
-
-  const suggestions = [
-    { href: '/moon/clients', label: 'Listar clientes' },
-    { href: '/moon/health', label: 'Inspeccionar health / VPS' },
-    { href: '/moon/tasks', label: 'Resumir tasks / cola' },
-    { href: '/moon/agents', label: 'Revisar agent fleet' },
-    { href: '/moon/usage', label: 'Comparar usage (sin MRR)' },
-    { href: '/moon/approvals', label: 'Approvals pendientes' },
-    { href: '/moon/deployments', label: 'Deployments (doc only)' },
-  ];
-
-  const matched = q
-    ? suggestions.filter(
-        (s) =>
-          s.label.toLowerCase().includes(q.toLowerCase()) ||
-          s.href.includes(q.toLowerCase())
-      )
-    : suggestions;
+  const matched = matchMoonCommands(q);
 
   return (
     <div className="space-y-6">
@@ -43,14 +27,15 @@ function CommandBody(): React.ReactElement {
           Consulta: <span className="font-mono text-violet-200">{q || '(vacía)'}</span>
         </p>
         <p className="text-xs text-slate-500">
-          Flujo futuro: Command → policy → router → orchestrator → LLM Gateway → resultado
-          sanitizado. Esta versión solo enruta a vistas Moon existentes.
+          Flujo actual: Command → match local → navegación Moon. Flujo futuro con policy:
+          Command → policy → router → orchestrator → LLM Gateway → resultado sanitizado (sin
+          AgentTaskEnvelope inventado).
         </p>
       </MoonCard>
       {matched.length === 0 ? (
         <MoonEmptyState
           title="Sin coincidencias"
-          description="Prueba: clientes degradados, health, tasks, agents, usage, approvals."
+          description="Prueba: clientes, health, tasks, agents, usage, approvals, reportes."
         />
       ) : (
         <ul className="space-y-2">
@@ -58,7 +43,7 @@ function CommandBody(): React.ReactElement {
             <li key={s.href}>
               <Link
                 href={s.href}
-                className="block rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm hover:border-violet-400/30 hover:bg-violet-500/10"
+                className="block rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm hover:border-violet-400/30 hover:bg-violet-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/50"
               >
                 {s.label}
                 <span className="ml-2 font-mono text-[10px] text-slate-500">{s.href}</span>

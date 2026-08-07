@@ -262,3 +262,34 @@ export async function loadConfiguredVentures(): Promise<MoonVentureStub[]> {
     return [];
   }
 }
+
+export type MoonAcademyBlueprintSummary = {
+  id: string;
+  label: string;
+  path: string;
+  modules_listed: number;
+  has_readme: boolean;
+};
+
+/**
+ * Index academy blueprint pack without inventing product ventures.
+ */
+export async function loadAcademyBlueprintSummary(): Promise<MoonAcademyBlueprintSummary | null> {
+  const root = resolveRepoRoot();
+  const dir = join(root, 'config', 'blueprints', 'academy');
+  if (!existsSync(dir)) return null;
+  const modulesDir = join(dir, 'modules');
+  let modulesListed = 0;
+  if (existsSync(modulesDir)) {
+    const { readdir } = await import('node:fs/promises');
+    const files = await readdir(modulesDir);
+    modulesListed = files.filter((f) => f.endsWith('.yaml') || f.endsWith('.yml')).length;
+  }
+  return {
+    id: 'academy',
+    label: 'Academy vertical blueprint',
+    path: 'config/blueprints/academy',
+    modules_listed: modulesListed,
+    has_readme: existsSync(join(dir, 'README.md')),
+  };
+}
