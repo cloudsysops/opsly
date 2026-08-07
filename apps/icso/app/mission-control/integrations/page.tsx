@@ -13,11 +13,7 @@ const INTEGRATIONS = [
     label: 'Twenty CRM',
     check: (): boolean => process.env.INTCLOUDSYSOPS_TWENTY_ENABLED === 'true',
   },
-  {
-    id: 'ghl',
-    label: 'GoHighLevel (legacy)',
-    check: (): boolean => process.env.INTCLOUDSYSOPS_GHL_ENABLED === 'true',
-  },
+  // Legacy CRM env status stays outside this page (GHL runtime guard — no new refs).
   {
     id: 'mc-token',
     label: 'MC access token',
