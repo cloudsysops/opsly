@@ -14,10 +14,7 @@ export async function GET(
 
   const { callId } = await context.params;
 
-  return proxyRuntimeOrchestrator(
-    `/internal/voice/transcriptions/${callId}`,
-    {
-      method: 'GET',
-    }
-  );
+  return proxyRuntimeOrchestrator(`/internal/voice/transcriptions/${callId}`, {
+    method: 'GET',
+  });
 }
