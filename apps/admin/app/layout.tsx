@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import { AuthSessionRedirect } from '@/components/auth/auth-session-redirect';
-import { AppChrome } from '@/components/layout/AppChrome';
+import { MoonShell } from '@/components/moon/moon-shell';
 import { Providers } from '@/components/providers';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Opsly — Admin',
-  description: 'Opsly platform admin',
+  title: 'Opsly Moon',
+  description: 'Opsly Moon — control plane multi-tenant IntCloudSysOps',
 };
 
 export default function RootLayout({
@@ -19,7 +19,7 @@ export default function RootLayout({
       <body className="min-h-screen font-sans antialiased">
         <Providers>
           <AuthSessionRedirect />
-          <AppChrome>{children}</AppChrome>
+          <MoonShell>{children}</MoonShell>
         </Providers>
       </body>
     </html>
