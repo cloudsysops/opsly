@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import {
-  Clock3,
+  Clock,
   ExternalLink,
   Mail,
   MessageSquare,
   Phone,
-  UserRound,
+  User,
 } from 'lucide-react';
 import type { DashboardData } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
@@ -74,7 +74,7 @@ export function AdminLeadCard({
             {lead.name}
           </Link>
           <p className="flex items-center gap-1.5 text-xs text-pk-sub">
-            <UserRound className="h-3.5 w-3.5 shrink-0" aria-hidden />
+            <User className="h-3.5 w-3.5 shrink-0" aria-hidden />
             <span className="truncate">{leadTypeLabel(lead.lead_type)}</span>
           </p>
         </div>
@@ -91,7 +91,7 @@ export function AdminLeadCard({
           <span className="break-all">{lead.email || 'Sin correo'}</span>
         </p>
         <p className="flex items-center gap-1.5 text-xs text-pk-mutedText">
-          <Clock3 className="h-3.5 w-3.5 shrink-0" aria-hidden />
+          <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden />
           Registrado {createdLabel}
         </p>
       </div>
