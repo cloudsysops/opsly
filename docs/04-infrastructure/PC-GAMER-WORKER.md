@@ -7,94 +7,135 @@ tags:
   - opsly/infrastructure
   - opsly/worker
   - opsly/gpu
+  - opsly/security
 ---
 
-# PC-gamer — worker plane (Docker + Tailscale)
+# PC-gamer — worker efímero (best-effort)
 
-Máquina de **trabajo / GPU** para ampliar capacidad sin tocar el control plane del VPS.
+Máquina **prestada / reemplazable** de cómputo GPU para Opsly.  
+**No es control plane. No es necesaria para que producción funcione.**
 
-## Roles (no mezclar)
-
-| Host | Tailscale | Rol |
-|------|-----------|-----|
-| VPS | `vps-dragon` `100.120.151.91` | **Siempre ON** — Traefik, API, admin/Moon, portal, Redis BullMQ, Peskids |
-| PC-gamer | `pc-gamer` `100.74.88.103` | **Best-effort** — Ollama GPU + workers BullMQ |
-| Mac | `opsly-quantum` / opsly-admin | IDE Cursor, Doppler, git |
-
-Conector entre hosts: **Tailscale + Redis/BullMQ del VPS + LLM Gateway**. No Docker Swarm entre máquinas (prohibido sin ADR).
-
-Nombre Tailscale: mantener **`pc-gamer`** (no renombrar a `opsly-worker` sin OK humano — ese nombre aún apunta al Mac 2011 offline). SSH: `Host pc-gamer` → user `devops` → luego `wsl -d Ubuntu`.
-
-## Stack en WSL2 (estado 2026-08-07)
+## Topología
 
 ```text
-ollama.service (systemd)     ← nativo; CUDA RTX 5070 Ti; modelo llama3.2
-opsly-worker-openclaw        ← BullMQ worker-enabled → REDIS_URL VPS (:3011 /health)
-Docker                       ← listo; demos nginx/portainer/redis legacy eliminados
+Mac (opsly-admin / Cursor)
+        │  Tailscale SSH only
+        ▼
+PC-gamer (Windows + WSL Ubuntu) ── worker BullMQ + Ollama GPU
+        │  REDIS_URL / LLM_GATEWAY_URL por Tailscale
+        ▼
+VPS vps-dragon (100.120.151.91) ── control plane siempre ON
+        Traefik · API · Redis BullMQ · Peskids · queue-only orchestrator
 ```
 
-Ollama nativo ya detecta la GPU (no hace falta contenedor para inferencia). Compose GPU queda para quien prefiera Ollama en Docker tras `scripts/install-nvidia-ctk-wsl.sh`.
+| Host | Rol | Si se apaga |
+|------|-----|-------------|
+| VPS | Control plane | Outage (único SPOF aceptado) |
+| PC-gamer | Worker efímero | Jobs GPU esperan o caen a cloud; **Peskids sigue** |
+| Mac | IDE / Doppler | Sin impacto runtime |
 
-Archivos:
+Conector: **Tailscale + Redis VPS + LLM Gateway**. Sin Swarm. Sin segundo orchestrator.
 
-- `infra/docker-compose.opslyquantum.yml` — Ollama base (Docker opcional)
-- `infra/docker-compose.opslyquantum.gpu.yml` — `gpus: all`
-- `infra/docker-compose.pc-gamer-workers.yml` — workers en Docker (alt. a nativo)
-- `infra/pc-gamer.env.example` → `.env.worker` (gitignored)
-- `scripts/setup-pc-gamer-worker.sh`
-- `scripts/install-nvidia-ctk-wsl.sh`
+## Reglas no negociables
 
-## Bootstrap (en WSL Ubuntu del gamer)
+1. **No** SSH a Internet; **no** abrir puerto 22 en el router.
+2. Preferir **Tailscale** (`Host pc-gamer` → user `devops` → `wsl -d Ubuntu`).
+3. **No** almacenar en el PC: Doppler master/service tokens, AWS/GCP admin, `SUPABASE_SERVICE_ROLE_KEY` de prod, secretos de clientes, claves SSH productivas, GitHub PAT amplios, `PLATFORM_ADMIN_TOKEN`, Stripe live.
+4. Credenciales de **mínimo privilegio**: solo `REDIS_URL` (password de cola) + URLs Tailscale del gateway.
+5. El nodo **puede desaparecer** sin romper Opsly (fail-open prod).
+6. **No** desplegar producción desde este PC.
+7. **No** acceso directo a bases productivas (ni service role).
+8. **No** PII de clientes persistente en disco del gamer.
+9. **No** bypass del LLM Gateway (jobs `ollama` → `LLM_GATEWAY_URL` → providers).
+10. **No** crear otro control plane / orchestrator / Redis de prod en el gamer.
+11. **No** encolar trabajo delicado si el nodo está offline (`check-pc-gamer-online.sh`).
+
+Validación local de `.env.worker`:
 
 ```bash
-# 1) Repo (público)
+./scripts/ops/assert-ephemeral-worker-env.sh
+```
+
+## Qué sí corre aquí (valor)
+
+| Carga | Notas |
+|-------|--------|
+| Inferencia GPU (Ollama) | Best-effort; heartbeat + allowlist `ollama` |
+| Entrenador / eval de agentes | Lotes offline: traces → critique → sandbox; no decide tráfico cliente |
+| Builds / tests pesados | Opcional; no CI de merge a `main` de prod |
+| Shadow A/B local vs cloud | Métricas; sin cutover automático |
+
+## Qué no corre aquí
+
+- Peskids leads / WhatsApp / edge Traefik
+- Deploy GHCR / `peskids-deploy-vps`
+- Self-heal / auto-deploy / cost-gate mutando prod
+- Notify Discord operativo crítico como único canal
+
+## Bootstrap (WSL Ubuntu)
+
+```bash
 git clone --branch feat/pc-gamer-worker-plane --single-branch \
   https://github.com/cloudsysops/opsly.git ~/opsly
 cd ~/opsly
 
-# 2) Secrets (desde Mac con Doppler; no pegar en chat)
 cp infra/pc-gamer.env.example .env.worker
-# REDIS_URL desde: doppler secrets get REDIS_URL --project ops-intcloudsysops --config prd --plain
+# Rellenar REDIS_URL=redis://default:<pass>@100.120.151.91:6379/0 desde Doppler (Mac)
+./scripts/ops/assert-ephemeral-worker-env.sh
 
-# 3) Limpiar demos + deps + worker nativo
 ./scripts/setup-pc-gamer-worker.sh --stop-legacy
 npx turbo run build --filter=@intcloudsysops/orchestrator...
-./scripts/start-worker.sh   # o systemctl --user enable --now opsly-worker-openclaw
+./scripts/start-worker.sh
+# o: systemctl --user enable --now opsly-worker-openclaw
 
-# 4) Ollama: ya instalado como systemd; pull modelo si falta
 ollama pull llama3.2
+# Opcional Tailscale bind (sudo):
+# OLLAMA_HOST=0.0.0.0:11434 override systemd — ver sección Ollama abajo
 
-# 5) Exponer Ollama a Tailscale (sudo una vez)
+# Heartbeat cada minuto (user cron)
+crontab -l 2>/dev/null | grep -q pc-gamer-heartbeat || \
+  (crontab -l 2>/dev/null; echo '* * * * * cd ~/opsly && ./scripts/ops/pc-gamer-heartbeat.sh >/dev/null 2>&1') | crontab -
+```
+
+Variables clave en `.env.worker`:
+
+- `OPSLY_EPHEMERAL_WORKER=true` — rechaza rol control/full
+- `OPSLY_WORKER_ALLOWLIST=ollama` — no compite por jobs ajenos
+- `LLM_GATEWAY_URL=http://100.120.151.91:3010`
+
+## Enviar trabajo solo si está disponible
+
+Desde Mac / VPS (antes de encolar GPU o trainer):
+
+```bash
+./scripts/ops/check-pc-gamer-online.sh && echo "encolar ollama" || echo "diferir / cloud"
+./scripts/ops/check-pc-gamer-online.sh --json
+```
+
+Criterio: `/health` del worker **o** heartbeat Redis fresco. Si ambos fallan → **no** mandar trabajo delicado.
+
+VPS orchestrator debe permanecer en **`queue-only` / `control`** (ADR-020) para no robar la cola.
+
+## Verificar
+
+```bash
+curl -sf http://127.0.0.1:3011/health   # role=worker mode=worker-enabled
+curl -sf http://127.0.0.1:11434/api/tags
+# Mac:
+curl -sf --max-time 5 "http://100.74.88.103:3011/health"
+./scripts/ops/check-pc-gamer-online.sh
+```
+
+Doppler `prd` (humano, opcional): `OLLAMA_URL=http://100.74.88.103:11434` solo con Ollama en `0.0.0.0`. Si gamer off → gateway fallback cloud.
+
+## Ollama en Tailscale (sudo una vez)
+
+```bash
 sudo mkdir -p /etc/systemd/system/ollama.service.d
 printf '%s\n' '[Service]' 'Environment=OLLAMA_HOST=0.0.0.0:11434' 'Environment=OLLAMA_ORIGINS=*' \
   | sudo tee /etc/systemd/system/ollama.service.d/override.conf
 sudo systemctl daemon-reload && sudo systemctl restart ollama
-
-# 6) Auto-pull cuando Claude/Cursor empujen a la rama
-./scripts/setup-pc-gamer-worker.sh --install-pull-watcher
-# o: ./scripts/install-git-pull-watcher.sh --user
 ```
-
-En la **Mac** (opsly-admin): `./scripts/install-git-pull-watcher.sh` (LaunchAgent cada 60s). Doc: `docs/01-development/GIT-PULL-WATCHER.md`.
-## Verificar
-
-```bash
-# GPU (nativo)
-journalctl -u ollama -n 20 --no-pager   # debe mencionar RTX / CUDA
-
-# APIs locales
-curl -sf http://127.0.0.1:11434/api/tags
-curl -sf http://127.0.0.1:3011/health
-
-# Desde Mac por Tailscale
-curl -sf --max-time 5 "http://100.74.88.103:3011/health"
-curl -sf --max-time 5 "http://100.74.88.103:11434/api/tags"   # tras paso 5
-
-# Worker logs
-tail -f ~/opsly/runtime/logs/worker-openclaw.log
-```
-
-Doppler `prd` (humano): `OLLAMA_URL=http://100.74.88.103:11434` cuando el gamer esté online (ADR-024). Si el gamer se apaga, el gateway hace fallback cloud — VPS sigue vivo.
 
 ## .wslconfig (Windows)
 
@@ -104,32 +145,25 @@ memory=16GB
 processors=8
 swap=4GB
 localhostForwarding=true
-# Expone puertos WSL en la IP Tailscale de Windows (recomendado PC-gamer)
 networkingMode=mirrored
 ```
 
-(Ajustar a 12GB si juegas a la vez.)
+## Archivos
 
-## Multi-trabajador
-
-| Servicio | Qué hace |
-|----------|----------|
-| `worker-openclaw` | Jobs BullMQ (ollama, n8n, notify, …) contra Redis VPS |
-| `worker-openclaw-replica` (`--profile split`) | Segunda réplica; bajar concurrencia antes de activar |
-| Ollama | Inferencia local GPU; jobs `ollama` / routing `cheap` |
-
-Cursor IDE: Remote-SSH → `pc-gamer` → WSL Ubuntu (`~/opsly`). Ya existe `.cursor-server` en el home WSL.
-
-## Seguridad
-
-- No exponer 11434 / workers a Internet; solo Tailscale.
-- No Redis BullMQ local “de prod”.
-- Secrets solo Doppler → `.env.worker`.
-- Parar nginx/portainer legacy que publican 80/443 en WSL.
+| Path | Uso |
+|------|-----|
+| `infra/pc-gamer.env.example` | Plantilla mínima privilegio |
+| `scripts/setup-pc-gamer-worker.sh` | Bootstrap Docker/legacy |
+| `scripts/ops/pc-gamer-heartbeat.sh` | TTL heartbeat Redis |
+| `scripts/ops/check-pc-gamer-online.sh` | Gate antes de encolar |
+| `scripts/ops/assert-ephemeral-worker-env.sh` | Anti secretos maestros |
+| `OPSLY_WORKER_ALLOWLIST` | Filtra workers en `apps/orchestrator` |
 
 ## Relacionado
 
+- ADR-020 control ↔ worker plane
 - ADR-024 Ollama worker
-- `docs/04-infrastructure/WORKER-SETUP-MAC2011.md` (mismo patrón, otro hardware)
+- `docs/04-infrastructure/WORKER-SETUP-MAC2011.md`
 - `docs/04-infrastructure/TAILSCALE-NOMENCLATURA.md`
-- `docs/runbooks/VPS-MEMORY-CAPS.md` — VPS saturado → offload aquí
+- `docs/runbooks/VPS-MEMORY-CAPS.md`
+- `docs/runbooks/PRODUCTION-CHANGE-WINDOW.md`

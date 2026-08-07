@@ -7,6 +7,7 @@
 #   ./scripts/setup-pc-gamer-worker.sh --ensure-ollama
 #   ./scripts/setup-pc-gamer-worker.sh --ensure-ollama --ensure-worker
 #   ./scripts/setup-pc-gamer-worker.sh --stop-legacy
+#   ./scripts/setup-pc-gamer-worker.sh --assert-env
 #
 # Env:
 #   OPSLY_ROOT          default: ~/opsly or current repo
@@ -21,6 +22,7 @@ ENSURE_WORKER=false
 STOP_LEGACY=false
 PULL_MODEL=false
 INSTALL_PULL_WATCHER=false
+ASSERT_ENV=false
 
 for arg in "$@"; do
   case "$arg" in
@@ -30,8 +32,9 @@ for arg in "$@"; do
     --stop-legacy) STOP_LEGACY=true ;;
     --pull-model) PULL_MODEL=true ;;
     --install-pull-watcher) INSTALL_PULL_WATCHER=true ;;
+    --assert-env) ASSERT_ENV=true ;;
     -h|--help)
-      sed -n '2,22p' "$0"
+      sed -n '2,24p' "$0"
       exit 0
       ;;
     *)
@@ -85,7 +88,18 @@ if [[ ! -f "$ENV_WORKER" ]]; then
   if [[ -f infra/pc-gamer.env.example ]]; then
     echo "[pc-gamer] Missing .env.worker — copy example:"
     echo "  cp infra/pc-gamer.env.example .env.worker"
-    echo "  # set REDIS_URL from Doppler prd"
+    echo "  # set REDIS_URL from Doppler prd (redis://default:…@100.120.151.91:6379/0)"
+  fi
+fi
+
+if [[ "$ASSERT_ENV" == "true" || "$ENSURE_WORKER" == "true" ]]; then
+  if [[ -f "$ENV_WORKER" ]]; then
+    echo "[pc-gamer] Asserting ephemeral env (no master secrets)…"
+    if [[ "$DRY_RUN" == "true" ]]; then
+      echo "[dry-run] ./scripts/ops/assert-ephemeral-worker-env.sh --env-file $ENV_WORKER"
+    else
+      ./scripts/ops/assert-ephemeral-worker-env.sh --env-file "$ENV_WORKER"
+    fi
   fi
 fi
 

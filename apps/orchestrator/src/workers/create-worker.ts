@@ -1,8 +1,11 @@
-import { Job, Worker, type WorkerOptions } from 'bullmq';
+import { DelayedError, Job, Worker, type WorkerOptions } from 'bullmq';
 import { logWorkerLifecycle, type WorkerName } from '../observability/worker-log.js';
 import { getWorkerConcurrency, type WorkerConcurrencyKey } from '../worker-concurrency.js';
 
 export type { WorkerName };
+
+/** Re-queue delay when a named worker briefly holds another job's work. */
+const WRONG_WORKER_REQUEUE_MS = 50;
 
 export interface CreateWorkerOpts {
   queueName?: string;
@@ -29,9 +32,13 @@ export function createWorker(opts: CreateWorkerOpts): Worker {
 
   const worker = new Worker(
     queueName,
-    async (job: Job) => {
+    async (job: Job, token?: string) => {
+      // Shared `openclaw` queue: many Workers compete for every job. A bare
+      // `return` marks the job completed with null (silent no-op). Re-queue so
+      // the Worker whose `jobName` matches can process it.
       if (jobName && job.name !== jobName) {
-        return;
+        await job.moveToDelayed(Date.now() + WRONG_WORKER_REQUEUE_MS, token);
+        throw new DelayedError();
       }
       const t0 = Date.now();
       logWorkerLifecycle('start', workerName, job);
