@@ -11,6 +11,8 @@
 #   OLLAMA_BASE_URL   default http://127.0.0.1:11434
 #   OLLAMA_COMPOSE_FILE  default infra/docker-compose.opslyquantum.yml
 #   OPSLYQUANTUM_ENV     default infra/opslyquantum.env (opcional si existe)
+#   OLLAMA_GPU=1         añade infra/docker-compose.opslyquantum.gpu.yml
+#                        (passthrough NVIDIA; solo hosts con GPU + toolkit)
 #
 set -euo pipefail
 
@@ -22,6 +24,8 @@ COMPOSE_REL="${OLLAMA_COMPOSE_FILE:-infra/docker-compose.opslyquantum.yml}"
 COMPOSE_ABS="${ROOT}/${COMPOSE_REL}"
 ENV_REL="${OPSLYQUANTUM_ENV:-infra/opslyquantum.env}"
 ENV_ABS="${ROOT}/${ENV_REL}"
+GPU_COMPOSE_ABS="${ROOT}/infra/docker-compose.opslyquantum.gpu.yml"
+OLLAMA_GPU="${OLLAMA_GPU:-0}"
 
 DRY_RUN=false
 DO_ENSURE=false
@@ -40,6 +44,13 @@ check_ollama() {
 
 compose_up_ollama() {
   local -a cmd=(docker compose -f "$COMPOSE_ABS")
+  if [[ "$OLLAMA_GPU" == "1" ]]; then
+    if [[ ! -f "$GPU_COMPOSE_ABS" ]]; then
+      echo "[ensure-ollama-local] OLLAMA_GPU=1 pero no existe ${GPU_COMPOSE_ABS}" >&2
+      return 1
+    fi
+    cmd+=(-f "$GPU_COMPOSE_ABS")
+  fi
   if [[ -f "$ENV_ABS" ]]; then
     cmd+=(--env-file "$ENV_ABS")
   fi
