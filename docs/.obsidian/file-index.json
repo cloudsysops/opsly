@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-08-06T23:35:37.953Z",
-  "totalFiles": 835,
+  "lastIndexed": "2026-08-07T03:33:21.833Z",
+  "totalFiles": 836,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -749,6 +749,7 @@
     "tenants/peskids/CLIENT-PITCH.md",
     "tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
     "tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
+    "tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
     "tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
     "tenants/peskids/CUSTOM-DOMAIN-WWW.md",
     "tenants/peskids/DAILY-DIGEST-RUNBOOK.md",

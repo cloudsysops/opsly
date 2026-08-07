@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-08-06T23:35:51.006Z",
+  "generated_at": "2026-08-07T03:33:25.971Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -3427,7 +3427,7 @@
         "usar",
         "vivo"
       ],
-      "size_bytes": 277753
+      "size_bytes": 278103
     },
     {
       "path": "apps/admin/INVITATIONS_UI.md",
@@ -25171,13 +25171,14 @@
         "exemptions",
         "high",
         "markdown",
+        "mermaid",
         "moderate",
         "npm",
         "opsly",
         "undici",
         "vulnerabilities"
       ],
-      "size_bytes": 580
+      "size_bytes": 1247
     },
     {
       "path": "docs/security/SECURITY-POSTURE-AUDIT.md",
@@ -26792,6 +26793,33 @@
         "revision"
       ],
       "size_bytes": 1896
+    },
+    {
+      "path": "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
+      "title": "Peskids — revisión cliente (lote Claude + UX)",
+      "keywords": [
+        "2026",
+        "admin",
+        "algo",
+        "claude",
+        "client",
+        "cliente",
+        "empresa",
+        "falla",
+        "familia",
+        "formularios",
+        "hay",
+        "landing",
+        "lote",
+        "markdown",
+        "opsly",
+        "peskids",
+        "probar",
+        "profesor",
+        "review",
+        "revision"
+      ],
+      "size_bytes": 1289
     },
     {
       "path": "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
@@ -88672,6 +88700,7 @@
       "docs/adr/ADR-024-ollama-local-worker-primary.md",
       "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
       "docs/tenants/peskids/TWENTY-CRM.md",
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
@@ -91573,6 +91602,7 @@
       "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/N8N-SETUP.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
@@ -94184,6 +94214,7 @@
       "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/N8N-SETUP.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
@@ -95351,6 +95382,7 @@
       "docs/03-agents/AGENT-SERVICES-DEPLOYMENT.md",
       "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
       "docs/tenants/peskids/INVITATION-FLOW-VERIFICATION.md",
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
@@ -96164,6 +96196,7 @@
       "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/N8N-SETUP.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
@@ -102873,6 +102906,7 @@
       "docs/04-infrastructure/SECURITY-MITIGATIONS-2026-04-09.md",
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/README.md",
       "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
@@ -111792,6 +111826,7 @@
       "docs/runbooks/AGENCY-DEVOPS-OS-DEMO.md",
       "docs/01-development/SEMANA-1-INFORME.md",
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
       "docs/tenants/peskids/PURGE-DEMO-DATA.md",
       "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
@@ -114447,6 +114482,7 @@
       "docs/04-infrastructure/TAILSCALE-NOMENCLATURA.md",
       "docs/04-infrastructure/OLLAMA-DEPLOYMENT.md",
       "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
       "docs/tenants/peskids/CLIENT-PITCH.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
@@ -114814,6 +114850,7 @@
       "docs/operations/RUN-VALIDATION-LOCALLY.md",
       "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
       "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md",
@@ -132497,6 +132534,7 @@
       "docs/04-infrastructure/VPS-SSH-WORKER-NODES.md",
       "docs/04-infrastructure/WORKER-SETUP-MAC2011.md",
       "docs/03-agents/QUICKSTART-AGENTS.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
       "docs/postman/README.md"
     ],
@@ -138095,6 +138133,7 @@
       "docs/history/plans/SPRINT-ROADMAP.md",
       "docs/05-deployment-status/PESKIDS-GO-LIVE-STATUS.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
@@ -160773,7 +160812,8 @@
     ],
     "hay": [
       "docs/ops/branch-protection-setup.md",
-      "docs/03-agents/AGENTS-AUTONOMOUS-RUNBOOK.md"
+      "docs/03-agents/AGENTS-AUTONOMOUS-RUNBOOK.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md"
     ],
     "nombres": [
       "docs/ops/branch-protection-setup.md",
@@ -161101,6 +161141,7 @@
       "docs/03-agents/AGENT-URL-VALIDATION.md",
       "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
       "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/CLIENT-PITCH.md",
       "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
@@ -164180,7 +164221,8 @@
       "docs/02-tools/MCP-STATUS-ANALYSIS.md"
     ],
     "mermaid": [
-      "docs/00-architecture/BILLING-USD-DIAGRAMS.md"
+      "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
     ],
     "pago": [
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
@@ -164687,6 +164729,7 @@
     "falla": [
       "docs/01-development/FAQ.md",
       "docs/04-infrastructure/WORKER-SETUP-MAC2011.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/peskids/REUNION-2026-07-21.md",
       "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md"
@@ -167686,6 +167729,29 @@
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md"
     ],
+    "algo": [
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
+      "docs/tenants/peskids/REUNION-2026-07-21.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md"
+    ],
+    "empresa": [
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md"
+    ],
+    "familia": [
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
+      "docs/brain/modules/peskids.md"
+    ],
+    "formularios": [
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
+      "docs/tenants/peskids/SPRINT-02-RUN.md"
+    ],
+    "lote": [
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md"
+    ],
+    "profesor": [
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md"
+    ],
     "extraccion": [
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/SPRINT-02-RUN.md",
@@ -167702,9 +167768,6 @@
     "freshness": [
       "docs/tenants/peskids/BLUEPRINT-MAPPING.md",
       "docs/tenants/peskids/DASHBOARD-SPEC.md"
-    ],
-    "formularios": [
-      "docs/tenants/peskids/SPRINT-02-RUN.md"
     ],
     "implemento": [
       "docs/tenants/peskids/SPRINT-02-RUN.md"
@@ -168159,10 +168222,6 @@
     "reuse": [
       "docs/tenants/peskids/OPSLY-REUSE.md"
     ],
-    "algo": [
-      "docs/tenants/peskids/REUNION-2026-07-21.md",
-      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md"
-    ],
     "captacion": [
       "docs/tenants/peskids/REUNION-2026-07-21.md",
       "docs/tenants/peskids/PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md",
@@ -168238,10 +168297,6 @@
       "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md"
     ],
     "alumno": [
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
-      "docs/brain/modules/peskids.md"
-    ],
-    "familia": [
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/brain/modules/peskids.md"
     ],
@@ -170196,6 +170251,7 @@
     "docs/tenants/peskids/CLIENT-PITCH.md",
     "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
     "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
+    "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
     "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
     "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
     "docs/tenants/peskids/DAILY-DIGEST-RUNBOOK.md",
