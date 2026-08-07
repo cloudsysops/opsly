@@ -6,12 +6,14 @@ import { orchestratorQueue } from '../queue.js';
 export interface SelfHealPayload {
   tenant_slug: string;
   service: string;
-  action: 'restart' | 'refresh-env' | 'full-restart';
+  action: 'restart' | 'refresh-env' | 'full-restart' | 'edge-recover';
   reason: string;
 }
 
 const VPS_SSH = process.env.VPS_TAILSCALE_HOST ?? 'vps-dragon@100.120.151.91';
 const OPSLY_ROOT = process.env.VPS_OPSLY_ROOT ?? '/opt/opsly';
+const EDGE_COMPOSE = `${OPSLY_ROOT}/infra/docker-compose.platform.yml`;
+const EDGE_ENV = `${OPSLY_ROOT}/.env`;
 
 async function runSSH(cmd: string): Promise<{ ok: boolean; output: string }> {
   const { execFile } = await import('child_process');
@@ -31,6 +33,20 @@ async function runSSH(cmd: string): Promise<{ ok: boolean; output: string }> {
     const msg = err instanceof Error ? err.message : String(err);
     return { ok: false, output: msg };
   }
+}
+
+function edgeRecoverCmd(service: string): string {
+  const compose = `docker compose --env-file ${EDGE_ENV} -f ${EDGE_COMPOSE}`;
+  if (service === 'traefik') {
+    return `cd ${OPSLY_ROOT}/infra && ${compose} up -d --no-deps traefik 2>&1 | tail -15`;
+  }
+  if (service === 'edge' || service === 'platform-edge') {
+    return `cd ${OPSLY_ROOT}/infra && ${compose} up -d --no-deps traefik app admin portal 2>&1 | tail -20`;
+  }
+  if (service === 'peskids') {
+    return `docker start peskids 2>&1 || docker restart peskids 2>&1 | tail -10`;
+  }
+  return `docker restart ${service} 2>&1 | tail -5`;
 }
 
 export function startSelfHealWorker(connection: object): Worker {
@@ -54,7 +70,13 @@ export function startSelfHealWorker(connection: object): Worker {
 
       switch (action) {
         case 'restart':
-          result = await runSSH(`docker restart ${service} 2>&1 | tail -5`);
+          result = await runSSH(edgeRecoverCmd(service));
+          break;
+
+        case 'edge-recover':
+          result = await runSSH(
+            `cd ${OPSLY_ROOT} && NOTIFY=1 ./scripts/ops/edge-watchdog.sh 2>&1 | tail -30`
+          );
           break;
 
         case 'refresh-env':
@@ -64,7 +86,13 @@ export function startSelfHealWorker(connection: object): Worker {
           break;
 
         case 'full-restart':
-          // Para full-restart, encolamos diagnóstico a Cursor en lugar de actuar directo
+          if (service === 'edge' || service === 'traefik' || service === 'peskids') {
+            result = await runSSH(
+              `cd ${OPSLY_ROOT} && NOTIFY=1 ./scripts/ops/edge-watchdog.sh 2>&1 | tail -30`
+            );
+            break;
+          }
+          // Para full-restart genérico, encolamos diagnóstico a Cursor en lugar de actuar directo
           await orchestratorQueue.add('cursor', {
             payload: {
               task: `Diagnóstico y recovery: ${service} en ${tenant_slug}`,
