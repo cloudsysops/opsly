@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-08-06T23:35:51.006Z",
+  "generated_at": "2026-08-07T00:15:45.069Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -25171,13 +25171,14 @@
         "exemptions",
         "high",
         "markdown",
+        "mermaid",
         "moderate",
         "npm",
         "opsly",
         "undici",
         "vulnerabilities"
       ],
-      "size_bytes": 580
+      "size_bytes": 1247
     },
     {
       "path": "docs/security/SECURITY-POSTURE-AUDIT.md",
@@ -164180,7 +164181,8 @@
       "docs/02-tools/MCP-STATUS-ANALYSIS.md"
     ],
     "mermaid": [
-      "docs/00-architecture/BILLING-USD-DIAGRAMS.md"
+      "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
     ],
     "pago": [
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
