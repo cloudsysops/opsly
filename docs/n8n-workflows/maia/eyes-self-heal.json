@@ -1,45 +1,59 @@
 {
-  "name": "Opsly Eyes — Self-Heal Production",
-  "description": "Detecta fallos de health check y dispara SelfHealWorker via orchestrator",
+  "name": "Opsly Eyes — Self-Heal Edge / Peskids",
+  "description": "Detecta Cloudflare 521 / health fail y dispara SelfHealWorker (edge-recover) + fallback local",
   "nodes": [
     {
-      "name": "Schedule: cada 5 minutos",
+      "name": "Schedule: cada 3 minutos",
       "type": "n8n-nodes-base.scheduleTrigger",
       "parameters": {
-        "rule": { "interval": [{ "field": "minutes", "minutesInterval": 5 }] }
+        "rule": { "interval": [{ "field": "minutes", "minutesInterval": 3 }] }
       }
     },
     {
-      "name": "GET health API",
+      "name": "GET health Peskids",
       "type": "n8n-nodes-base.httpRequest",
       "parameters": {
-        "url": "https://api.ops.smiletripcare.com/api/health",
+        "url": "https://www.peskids.com/api/health",
         "method": "GET",
         "timeout": 10000,
         "continueOnFail": true
       }
     },
     {
-      "name": "Filter: API caída",
+      "name": "GET health API",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "https://api.op-sly.com/api/health",
+        "method": "GET",
+        "timeout": 10000,
+        "continueOnFail": true
+      }
+    },
+    {
+      "name": "Filter: edge caído",
       "type": "n8n-nodes-base.if",
       "parameters": {
         "conditions": {
-          "boolean": [{ "value1": "={{ $json.error !== undefined || $json.status !== 'ok' }}", "value2": true }]
+          "boolean": [
+            {
+              "value1": "={{ $json.status !== 'ok' }}",
+              "value2": true
+            }
+          ]
         }
       }
     },
     {
-      "name": "POST orchestrator: self-heal",
+      "name": "POST orchestrator: edge-recover",
       "type": "n8n-nodes-base.httpRequest",
       "parameters": {
-        "url": "http://localhost:3000/api/maia/self-heal",
+        "url": "http://opsly_orchestrator:3011/api/maia/self-heal",
         "method": "POST",
-        "jsonBody": true,
-        "body": {
-          "tenant_slug": "platform",
-          "service": "app",
-          "action": "restart",
-          "reason": "health_check_failed_n8n"
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ tenant_slug: 'peskids', service: 'edge', action: 'edge-recover', reason: 'n8n_eyes_health_fail' }) }}",
+        "options": {
+          "timeout": 15000
         }
       }
     }
