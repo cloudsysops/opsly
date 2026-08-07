@@ -5,6 +5,7 @@
 
 import { selectWorker, selectWorkerWithFallback, WorkerType } from './worker-selector';
 import { executeLocalAgent, executeWithRetry } from './local-executor';
+import { sharedUsageTracker } from './usage-tracker';
 
 export interface OrchestratorJobRequest {
   jobId: string;
@@ -69,7 +70,7 @@ export async function processOrchestratorJob(
       };
     }
 
-    return {
+    const jobResult: OrchestratorJobResult = {
       jobId: request.jobId,
       success: executionResult.success,
       output: executionResult.output,
@@ -78,14 +79,39 @@ export async function processOrchestratorJob(
       executionTime: Date.now() - startTime,
       tokensUsed: executionResult.tokens,
     };
+
+    await recordJobUsage(jobResult, worker.costPerToken);
+    return jobResult;
   } catch (error: any) {
-    return {
+    const jobResult: OrchestratorJobResult = {
       jobId: request.jobId,
       success: false,
       error: error.message || 'Unknown error',
       workerType: 'remote',
       executionTime: Date.now() - startTime,
     };
+
+    await recordJobUsage(jobResult);
+    return jobResult;
+  }
+}
+
+/**
+ * Registra el resultado del job en el usage-tracker compartido.
+ * No bloquea ni altera el resultado devuelto al orchestrator.
+ */
+async function recordJobUsage(result: OrchestratorJobResult, costPerToken = 0): Promise<void> {
+  try {
+    await sharedUsageTracker.record({
+      workerType: result.workerType,
+      jobId: result.jobId,
+      tokensUsed: result.tokensUsed || 0,
+      costUsd: (result.tokensUsed || 0) * costPerToken,
+      executionTimeMs: result.executionTime,
+      success: result.success,
+    });
+  } catch (err) {
+    console.warn('[Local-First] Failed to record usage:', err);
   }
 }
 
@@ -119,11 +145,20 @@ export async function getLocalFirstStatus() {
       diskOk: health.diskOk,
       ollamaOk: health.ollamaOk,
     },
+    budget: sharedUsageTracker.getBudgetStatus(),
   };
+}
+
+/**
+ * Historial reciente de ejecuciones (para dashboards)
+ */
+export function getRecentUsage(limit = 50) {
+  return sharedUsageTracker.getRecentRecords(limit);
 }
 
 export default {
   processOrchestratorJob,
   handleInternalLocalFirstRequest,
   getLocalFirstStatus,
+  getRecentUsage,
 };

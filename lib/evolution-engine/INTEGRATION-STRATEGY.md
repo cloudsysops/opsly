@@ -2,6 +2,11 @@
 
 **Principio:** Evolucionar lo existente, NO crear sistemas nuevos
 
+> **Estado:** Estrategia aprobada y ejecutada. Ver
+> [`reports/2026-08-07-orchestrator-visibility.md`](./reports/2026-08-07-orchestrator-visibility.md)
+> para el detalle de qué se integró, qué se rechazó y los checks de
+> verificación aplicados.
+
 ---
 
 ## Situación Actual
