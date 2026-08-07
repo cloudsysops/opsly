@@ -5,26 +5,39 @@
 
 import { EventEmitter } from 'events';
 import type { Agent, Task, TaskResult, AgentMetrics } from '../types';
+import { AgentRegistry } from './agent-registry';
 
 export class MultiAgentOrchestrator extends EventEmitter {
   private agents: Map<string, Agent> = new Map();
   private taskQueue: Task[] = [];
   private executingTasks: Map<string, Task> = new Map();
   private metrics: Map<string, AgentMetrics> = new Map();
+  private registry: AgentRegistry;
 
   constructor(private config: {
     maxConcurrentTasks?: number;
     tokenLimit?: number;
     enableTokenOptimization?: boolean;
     logLevel?: 'debug' | 'info' | 'warn' | 'error';
+    useRegistry?: boolean;
   } = {}) {
     super();
     this.config = {
       maxConcurrentTasks: 10,
       enableTokenOptimization: true,
       logLevel: 'info',
+      useRegistry: true,
       ...config,
     };
+
+    this.registry = new AgentRegistry();
+
+    // Auto-register agents from registry if enabled
+    if (this.config.useRegistry) {
+      this.registry.getEnabledAgents().forEach(agent => {
+        this.registerAgent(agent.id, agent);
+      });
+    }
   }
 
   /**
@@ -268,7 +281,15 @@ export class MultiAgentOrchestrator extends EventEmitter {
       executingTasks: this.executingTasks.size,
       queuedTasks: this.taskQueue.length,
       aggregated: this.getAggregatedMetrics(),
+      registry: this.registry.getStatus(),
     };
+  }
+
+  /**
+   * Obtiene el registry de agentes
+   */
+  getRegistry(): AgentRegistry {
+    return this.registry;
   }
 
   /**
