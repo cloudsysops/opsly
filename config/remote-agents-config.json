@@ -1,0 +1,218 @@
+{
+  "version": "1.0",
+  "system": "Remote Agent Executor for Peskids Level-Up",
+  "created_at": "2026-08-07T12:00:00Z",
+  "description": "Configuration for automated remote agents to execute Peskids tasks",
+
+  "agents": {
+    "peskids_executor": {
+      "enabled": true,
+      "type": "ccr_remote_session",
+      "name": "Peskids Executor Agent",
+      "description": "Ejecuta tareas de Peskids Level-Up automáticamente",
+
+      "environment": {
+        "repo": "cloudsysops/opsly",
+        "branch": "claude/peskids-cursor-avance-1ortri",
+        "access": "read_write_commit_push"
+      },
+
+      "capabilities": {
+        "git_operations": true,
+        "file_editing": true,
+        "npm_commands": true,
+        "type_checking": true,
+        "pr_creation": true,
+        "commit_signing": false
+      },
+
+      "restrictions": {
+        "only_edit_these_dirs": [
+          "apps/peskids/components/",
+          "apps/peskids/app/",
+          "apps/peskids/lib/"
+        ],
+        "protected_paths": [
+          "apps/peskids/CLAUDE.md",
+          "CLAUDE.md",
+          "package.json",
+          ".env",
+          ".env.local",
+          ".env.example"
+        ],
+        "max_execution_time_minutes": 30,
+        "max_files_to_edit": 10,
+        "require_pr_draft_mode": true,
+        "no_direct_merge": true
+      },
+
+      "validation": {
+        "must_pass": [
+          "npm run type-check",
+          "npm run build"
+        ],
+        "should_pass": [
+          "npm run lint"
+        ]
+      },
+
+      "commits": {
+        "format": "feat(peskids): [TASK-ID] description",
+        "require_sign_off": false,
+        "max_files_per_commit": 5
+      },
+
+      "notifications": {
+        "on_start": true,
+        "on_progress": true,
+        "on_complete": true,
+        "on_error": true,
+        "channels": ["email", "push"],
+        "notify_user": "cboteros1@gmail.com"
+      },
+
+      "schedule": {
+        "auto_trigger": "on_push_to_cursor_auto_work_json",
+        "manual_trigger": "bash scripts/fire-remote-agent.sh <TASK-ID>",
+        "concurrent_agents": 1,
+        "queue_mode": "sequential"
+      }
+    }
+  },
+
+  "triggers": {
+    "peskids_level_up_executor": {
+      "enabled": true,
+      "name": "Peskids Level-Up Auto-Executor",
+      "description": "Se dispara cuando se pushea un nuevo .cursor-auto-work.json",
+
+      "activation": {
+        "on_file_change": ".cursor-auto-work.json",
+        "on_git_push": "claude/peskids-cursor-avance-1ortri",
+        "conditions": [
+          "file:cursor_auto_work_json:exists",
+          "field:auto_execute:is_true",
+          "field:remote_agent:enabled:is_true"
+        ]
+      },
+
+      "action": {
+        "type": "create_and_fire_ccr_session",
+        "agent_type": "peskids_executor",
+        "inherit_config_from": ".cursor-auto-work.json",
+        "parameters": {
+          "task_id": "$.task.id",
+          "description": "$.task.description",
+          "files_to_edit": "$.files_to_edit",
+          "checklist": "$.checklist"
+        }
+      },
+
+      "retry": {
+        "enabled": true,
+        "max_attempts": 2,
+        "delay_seconds": 300
+      }
+    }
+  },
+
+  "commands": {
+    "fire_agent_manual": {
+      "command": "bash scripts/fire-remote-agent.sh",
+      "usage": "bash scripts/fire-remote-agent.sh PESKIDS-1.1 'Description'",
+      "description": "Dispara manualmente un agente remoto para una tarea"
+    },
+
+    "monitor_agent": {
+      "command": "bash scripts/monitor-remote-agent.sh",
+      "usage": "bash scripts/monitor-remote-agent.sh <SESSION-ID>",
+      "description": "Monitorea el progreso de un agente remoto"
+    },
+
+    "list_agents": {
+      "command": "bash scripts/list-remote-agents.sh",
+      "usage": "bash scripts/list-remote-agents.sh",
+      "description": "Lista todos los agentes remotos activos"
+    }
+  },
+
+  "workflow": {
+    "phase_1_kpis_and_header": {
+      "tasks": [
+        "PESKIDS-1.1",
+        "PESKIDS-1.2",
+        "PESKIDS-1.3",
+        "PESKIDS-1.4"
+      ],
+      "parallel": false,
+      "sequential": true,
+      "total_time_hours": 8
+    },
+
+    "phase_2_kanban": {
+      "tasks": [
+        "PESKIDS-2.1",
+        "PESKIDS-2.2",
+        "PESKIDS-2.3"
+      ],
+      "parallel": false,
+      "sequential": true,
+      "total_time_hours": 6
+    },
+
+    "phases_3_to_5": {
+      "tasks": [
+        "PESKIDS-3.1",
+        "PESKIDS-3.2",
+        "PESKIDS-3.3",
+        "PESKIDS-4.1",
+        "PESKIDS-4.2",
+        "PESKIDS-4.3",
+        "PESKIDS-5.1",
+        "PESKIDS-5.2"
+      ],
+      "parallel": true,
+      "sequential": false,
+      "total_time_hours": 15
+    }
+  },
+
+  "opencode_integration": {
+    "enabled": true,
+    "description": "Alternativa open-source para CCR",
+    "tool": "opencode",
+    "fallback_mode": true,
+    "command": "opencode exec --repo cloudsysops/opsly --branch claude/peskids-cursor-avance-1ortri",
+    "docs": "https://github.com/opencodeco/opencode"
+  },
+
+  "github_integration": {
+    "create_pr": true,
+    "pr_mode": "draft",
+    "auto_merge": false,
+    "required_checks": [
+      "type-check",
+      "build"
+    ],
+    "add_labels": ["remote-agent", "peskids-level-up"],
+    "add_assignee": "cboteros1@gmail.com"
+  },
+
+  "monitoring": {
+    "enabled": true,
+    "log_level": "info",
+    "log_file": "logs/remote-agents.log",
+    "metrics": {
+      "track_execution_time": true,
+      "track_success_rate": true,
+      "track_errors": true
+    }
+  },
+
+  "safety": {
+    "sandboxed": true,
+    "requires_approval": false,
+    "audit_log": true,
+    "rollback_on_error": true
+  }
+}
