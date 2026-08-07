@@ -260,7 +260,10 @@ export function AdminShell({
     }
 
     if (item.label === 'Mission Control') {
-      return pathname.startsWith('/admin/mission-control');
+      return (
+        pathname.startsWith('/admin/mission-control') ||
+        pathname.startsWith('/support/mission-control')
+      );
     }
 
     if (item.label === 'Notificaciones') {

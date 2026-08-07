@@ -37,7 +37,7 @@ export function TeacherWeeklyOverview({
         <div className="grid gap-10 px-5 py-6 sm:px-8 sm:py-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:px-10 lg:py-10">
           <div className="relative z-10">
             <div className="flex flex-wrap items-center gap-2">
-              <p className="pk-eyebrow">Peskids · Profesores</p>
+              <p className="pk-eyebrow">Peskids · Mission Control · Profesores</p>
               <Badge tone="violet">Sierra · profesor principal</Badge>
             </div>
             <h1 className="mt-4 max-w-2xl text-3xl font-bold tracking-tight text-pk-ink sm:text-4xl lg:text-[3.9rem]">

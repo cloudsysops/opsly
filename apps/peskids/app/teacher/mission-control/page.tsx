@@ -4,11 +4,10 @@ import { MissionControlChrome } from '@/components/mission-control/mission-contr
 
 export const metadata = {
   title: 'Peskids · Mission Control · Profesores',
-  description:
-    'Mission Control docente: agenda del día, entregas, asistencia y seguimiento de familias.',
+  description: 'Alias Mission Control del panel docente.',
 };
 
-export default function TeacherDashboardPage(): React.ReactElement {
+export default function TeacherMissionControlPage(): React.ReactElement {
   return (
     <main className="min-h-screen bg-pk-bg p-4 sm:p-6">
       <div className="mx-auto max-w-7xl">

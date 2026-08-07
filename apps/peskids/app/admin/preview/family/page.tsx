@@ -16,10 +16,12 @@ export default function AdminFamilyPreviewPage(): React.ReactElement {
       <div className="mx-auto flex max-w-4xl flex-col gap-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-pk-mutedText">
-              Vista previa
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-pk-mutedText">
+              Vista previa · Mission Control Familias
             </p>
-            <h1 className="mt-1 text-2xl font-bold text-pk-ink">Familia (solo lectura)</h1>
+            <h1 className="mt-1 font-display text-2xl font-semibold text-pk-ink">
+              Familia (solo lectura)
+            </h1>
             <p className="mt-1 max-w-2xl text-sm text-pk-sub">
               Simula lo que ve una familia sin cambiar tu rol ni entrar a{' '}
               <code className="rounded bg-white px-1">/familias/submissions</code>. No se muta{' '}
@@ -65,13 +67,13 @@ export default function AdminFamilyPreviewPage(): React.ReactElement {
             </ul>
             <div className="flex flex-wrap gap-2 pt-2">
               <Link
-                href="/admin"
+                href="/admin/mission-control"
                 className="inline-flex h-9 items-center justify-center rounded-lg border border-pk-border bg-pk-surface px-4 text-xs font-bold text-pk-ink hover:bg-pk-snow"
               >
-                Volver a Admin
+                Volver a Mission Control
               </Link>
               <Link
-                href="/teacher/dashboard"
+                href="/teacher/mission-control"
                 className="inline-flex h-9 items-center justify-center rounded-lg px-4 text-xs font-bold text-pk-sub hover:bg-pk-muted hover:text-pk-ink"
               >
                 Ver panel Profesor

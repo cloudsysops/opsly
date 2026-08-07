@@ -2,10 +2,10 @@ import { MissionControlDashboard } from '@/components/admin/mission-control-dash
 
 export const metadata = {
   title: 'Peskids · Mission Control · Soporte',
-  description:
-    'Mission Control de soporte: pipeline, agenda, actividad y seguimientos operativos.',
+  description: 'Vista Mission Control para el equipo de soporte de Peskids.',
 };
 
-export default function SupportDashboardPage(): React.ReactElement {
+/** Alias of /support/dashboard — same Mission Control surface. */
+export default function SupportMissionControlPage(): React.ReactElement {
   return <MissionControlDashboard surface="support" />;
 }

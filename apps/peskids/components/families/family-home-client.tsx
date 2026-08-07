@@ -103,13 +103,16 @@ export function FamilyHomeClient(): React.ReactElement {
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
-      <section className="rounded-[2rem] border border-pk-border bg-white p-6 shadow-card sm:p-8">
-        <p className="pk-eyebrow">Portal familias</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-pk-ink">
+      <section className="rounded-[2rem] border border-pk-border bg-white p-6 shadow-card sm:p-8 dark:bg-pk-surface">
+        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-pk-mutedText">
+          Peskids / Mission Control · Familias
+        </p>
+        <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-pk-ink">
           Tu agenda, tus reservas y el seguimiento de tus hijos en un solo lugar.
         </h1>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-pk-sub">
-          Esta portada usa datos reales de clases, alumnos vinculados y reservas.
+          Mission Control familiar: clases próximas, alumnos vinculados y pagos pendientes con datos
+          reales.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link href="/familias/clases">

@@ -5,34 +5,48 @@ import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import type { DashboardData } from '@/lib/types';
 import { AdminShell } from '@/components/admin/admin-shell';
+import { MissionControlChrome } from '@/components/mission-control/mission-control-chrome';
 import { MissionControlKpiStrip } from '@/components/admin/mission-control-kpi-strip';
 import { MissionControlPipelineBoard } from '@/components/admin/mission-control-pipeline-board';
 import { MissionControlActivityPanel } from '@/components/admin/mission-control-activity-panel';
 import { MissionControlAgentsPanel } from '@/components/admin/mission-control-agents-panel';
 import { MissionControlPerformance } from '@/components/admin/mission-control-performance';
 import { Button } from '@/components/ui/button';
+import { RoleSwitcher } from '@/components/admin/role-switcher';
+import { FranchiseFilterSelect } from '@/components/admin/franchise-filter-select';
 
 const POLL_MS = 5000;
 
-/** Same fetch/poll/auth-redirect pattern as staff-dashboard.tsx — reuses
- * the existing /api/dashboard endpoint (data.executive already has
- * everything this view needs: kpis, agenda_today, recent_activity, funnel).
- * No new backend routes. */
-export function MissionControlDashboard(): React.ReactElement {
+export type StaffMissionControlSurface = 'admin' | 'support';
+
+interface MissionControlDashboardProps {
+  surface?: StaffMissionControlSurface;
+}
+
+/** Ops Mission Control for admin + support (same data, role-aware login/chrome). */
+export function MissionControlDashboard({
+  surface = 'admin',
+}: MissionControlDashboardProps): React.ReactElement {
   const router = useRouter();
+  const loginPath = surface === 'support' ? '/support/login' : '/admin/login';
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [franchiseId, setFranchiseId] = useState('');
 
   const fetchDashboard = useCallback(
     async (isPoll = false): Promise<void> => {
       if (isPoll) setRefreshing(true);
       try {
-        const response = await fetch('/api/dashboard?range=week', { credentials: 'include' });
+        const params = new URLSearchParams({ range: 'week' });
+        if (franchiseId) params.set('franchise_id', franchiseId);
+        const response = await fetch(`/api/dashboard?${params.toString()}`, {
+          credentials: 'include',
+        });
         if (response.status === 401 || response.status === 403) {
-          router.replace('/admin/login');
+          router.replace(loginPath);
           return;
         }
         if (!response.ok) throw new Error('Failed to fetch dashboard');
@@ -48,7 +62,7 @@ export function MissionControlDashboard(): React.ReactElement {
         setRefreshing(false);
       }
     },
-    [router]
+    [router, loginPath, franchiseId]
   );
 
   useEffect(() => {
@@ -61,7 +75,11 @@ export function MissionControlDashboard(): React.ReactElement {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-pk-bg">
         <Loader2 className="h-10 w-10 animate-spin text-pk-primary" aria-hidden />
-        <p className="text-sm text-pk-sub">Cargando Mission Control…</p>
+        <p className="text-sm text-pk-sub">
+          {surface === 'support'
+            ? 'Cargando Mission Control de soporte…'
+            : 'Cargando Mission Control…'}
+        </p>
       </div>
     );
   }
@@ -79,18 +97,24 @@ export function MissionControlDashboard(): React.ReactElement {
     );
   }
 
-  return (
-    <AdminShell lastUpdated={lastUpdated} onRefresh={() => void fetchDashboard(true)} refreshing={refreshing}>
-      <div className="mb-6">
-        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-pk-mutedText">
-          Peskids / Mission Control
-        </p>
-        <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight text-pk-ink sm:text-3xl">
-          {data.executive.greeting}. Aquí está lo que requiere atención hoy.
-        </h1>
-        <p className="mt-1 text-sm text-pk-sub">{data.executive.summary_line}</p>
-      </div>
-
+  const body = (
+    <MissionControlChrome
+      audience={surface}
+      title={`${data.executive.greeting}. Aquí está lo que requiere atención hoy.`}
+      summary={data.executive.summary_line}
+      actions={
+        surface === 'support' ? (
+          <>
+            <FranchiseFilterSelect
+              className="min-w-[200px]"
+              value={franchiseId}
+              onChange={setFranchiseId}
+            />
+            <RoleSwitcher />
+          </>
+        ) : undefined
+      }
+    >
       <MissionControlKpiStrip data={data} />
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1fr_320px]">
@@ -104,8 +128,51 @@ export function MissionControlDashboard(): React.ReactElement {
 
       <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-[1fr_320px]">
         <MissionControlPerformance data={data} />
-        <MissionControlAgentsPanel />
+        {surface === 'admin' ? <MissionControlAgentsPanel /> : (
+          <section className="rounded-3xl border border-pk-border bg-pk-surface p-5 shadow-sm">
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-pk-mutedText">
+              Accesos rápidos
+            </p>
+            <ul className="mt-3 space-y-2 text-sm text-pk-ink">
+              <li>
+                <a className="text-pk-primary underline-offset-2 hover:underline" href="/admin/messages">
+                  Mensajes
+                </a>
+              </li>
+              <li>
+                <a className="text-pk-primary underline-offset-2 hover:underline" href="/admin/pipeline">
+                  Pipeline completo
+                </a>
+              </li>
+              <li>
+                <a className="text-pk-primary underline-offset-2 hover:underline" href="/admin">
+                  Dashboard clásico
+                </a>
+              </li>
+            </ul>
+          </section>
+        )}
       </div>
+    </MissionControlChrome>
+  );
+
+  if (surface === 'support') {
+    return (
+      <div className="min-h-screen bg-pk-bg px-4 py-6 sm:px-6">
+        <div className="mx-auto max-w-7xl">{body}</div>
+        {lastUpdated ? (
+          <p className="mx-auto mt-4 max-w-7xl text-xs text-pk-mutedText">
+            Actualizado {lastUpdated.toLocaleTimeString('es-CO')}
+            {refreshing ? ' · refrescando…' : ''}
+          </p>
+        ) : null}
+      </div>
+    );
+  }
+
+  return (
+    <AdminShell lastUpdated={lastUpdated} onRefresh={() => void fetchDashboard(true)} refreshing={refreshing}>
+      {body}
     </AdminShell>
   );
 }

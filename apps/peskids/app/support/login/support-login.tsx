@@ -14,12 +14,12 @@ import { tenantRoleFromUserMetadata } from '@/lib/runtime/tenant-identity'
 
 function resolvePostLoginPath(role: string | undefined): string {
   if (role === 'teacher') {
-    return '/teacher/dashboard'
+    return '/teacher/mission-control'
   }
   if (role === 'support') {
-    return '/support/dashboard'
+    return '/support/mission-control'
   }
-  return '/admin'
+  return '/admin/mission-control'
 }
 
 export function SupportLogin({ authConfig }: { authConfig: AuthPublicConfig }): React.ReactElement {

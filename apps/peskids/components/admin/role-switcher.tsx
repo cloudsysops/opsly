@@ -8,21 +8,30 @@ import { createClient } from '@/lib/supabase-browser';
 import { isOperationalStaffUser } from '@/lib/staff-user';
 
 const DASHBOARD_VIEWS = [
-  { label: 'Admin', href: '/admin', description: 'Operación diaria, interesados y familias.' },
   {
-    label: 'Profesores',
-    href: '/teacher/dashboard',
+    label: 'Admin · Mission Control',
+    href: '/admin/mission-control',
+    description: 'Operación diaria, pipeline y agentes.',
+  },
+  {
+    label: 'Profesores · Mission Control',
+    href: '/teacher/mission-control',
     description: 'Agenda, entregas y calificación.',
   },
   {
-    label: 'Soporte',
-    href: '/support/dashboard',
+    label: 'Soporte · Mission Control',
+    href: '/support/mission-control',
     description: 'Casos, mensajes y seguimientos.',
   },
   {
     label: 'Familia (preview)',
     href: '/admin/preview/family',
     description: 'Vista de solo lectura. No entra a /familias ni cambia tu rol.',
+  },
+  {
+    label: 'Dashboard clásico (admin)',
+    href: '/admin',
+    description: 'Panel operativo anterior.',
   },
 ] as const;
 

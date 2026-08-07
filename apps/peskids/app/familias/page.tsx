@@ -3,9 +3,9 @@ import { SiteHeader } from '@/components/layout/site-header'
 import { FamilyHomeClient } from '@/components/families/family-home-client'
 
 export const metadata = {
-  title: 'Peskids · Panel familias',
+  title: 'Peskids · Mission Control · Familias',
   description:
-    'Vista del portal de familias de Peskids: reservas, progreso, mensajes, onboarding y operación.',
+    'Mission Control del portal de familias: reservas, progreso, mensajes y operación diaria.',
 }
 
 export default function FamiliesPage(): React.ReactElement {

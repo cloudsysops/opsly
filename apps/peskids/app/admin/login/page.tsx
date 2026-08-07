@@ -23,9 +23,12 @@ function authFetchErrorMessage(): string {
 
 function resolvePostLoginPath(role: string | undefined): string {
   if (role === 'teacher') {
-    return '/teacher/dashboard'
+    return '/teacher/mission-control'
   }
-  return '/admin'
+  if (role === 'support') {
+    return '/support/mission-control'
+  }
+  return '/admin/mission-control'
 }
 
 function AdminLoginForm(): React.ReactElement {
