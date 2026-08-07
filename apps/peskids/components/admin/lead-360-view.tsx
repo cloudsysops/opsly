@@ -557,14 +557,17 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
         </CardHeader>
         <CardContent>
           {payload.timeline.length > 0 ? (
-            <ol className="space-y-3">
+            <ol className="relative space-y-0 border-l-2 border-pk-primary/25 pl-5">
               {payload.timeline.map((entry, index) => (
                 <li
                   key={`${entry.kind}-${entry.at}-${index}`}
-                  className="flex gap-3 rounded-2xl border border-pk-border/80 bg-pk-muted/30 px-3 py-3"
+                  className="relative pb-4 last:pb-0"
                 >
-                  <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-pk-primary" aria-hidden />
-                  <div className="min-w-0">
+                  <span
+                    className="absolute -left-[1.4rem] top-1.5 h-3 w-3 rounded-full border-2 border-pk-primary bg-white"
+                    aria-hidden
+                  />
+                  <div className="rounded-2xl border border-pk-border/80 bg-pk-muted/30 px-3 py-3">
                     <p className="text-sm font-medium text-pk-ink">{entry.label}</p>
                     <p className="text-xs text-pk-sub">
                       {formatRelativeTime(new Date(entry.at))}

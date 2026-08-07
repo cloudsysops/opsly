@@ -8,7 +8,6 @@ import {
   Loader2,
   Mail,
   MessageSquare,
-  Phone,
   Star,
   UserPlus,
   Users,
@@ -23,13 +22,13 @@ import { DashboardIntegrationStatus } from '@/components/admin/dashboard-integra
 import { DashboardKpiStrip } from '@/components/admin/dashboard-kpi-strip'
 import { ExecutiveDashboardPanel } from '@/components/admin/executive-dashboard-panel'
 import { RecentLeadsPanel } from '@/components/admin/recent-leads-panel'
+import { AdminLeadCard } from '@/components/admin/lead-admin-card'
 import { StatCard } from '@/components/admin/stat-card'
 import { StudentsPanel } from '@/components/admin/students-panel'
 import { TeamPanel } from '@/components/admin/team-panel'
 import { ClassesPanel } from '@/components/admin/classes-panel'
 import { SalesAnalyticsPanel } from '@/components/admin/sales-analytics-panel'
 import { WacrmLeadInboxActions } from '@/components/admin/wacrm-lead-inbox-actions'
-import { normalizeLeadSourceLabel } from '@/lib/admin/lead-source-label'
 import { classModalityLabel, leadTypeLabel, serviceModeLabel } from '@/lib/lead-modality'
 import { buildPeskidsReferralLink } from '@/lib/peskids-referral-links'
 import { formatAgeRange } from '@/lib/peskids-domain'
@@ -111,29 +110,6 @@ function StarRating({ value }: { value: number }): React.ReactElement {
   )
 }
 
-const leadStatusLabel: Record<DashboardData['new_leads'][number]['status'], string> = {
-  new: 'Nuevo',
-  contacted: 'Contactado',
-  trial: 'En seguimiento',
-  enrolled: 'Matriculado',
-  active: 'Activo',
-  renewal: 'Renovación',
-  archived: 'Archivado',
-}
-
-const leadStatusTone: Record<
-  DashboardData['new_leads'][number]['status'],
-  'amber' | 'violet' | 'green' | 'teal' | 'neutral'
-> = {
-  new: 'amber',
-  contacted: 'violet',
-  trial: 'teal',
-  enrolled: 'green',
-  active: 'green',
-  renewal: 'teal',
-  archived: 'neutral',
-}
-
 const followupTypeLabel: Record<DashboardData['followups'][number]['contact_type'], string> = {
   lead: 'Interesado',
   student: 'Estudiante',
@@ -168,20 +144,6 @@ const followupStatusFilterLabel: Record<'all' | DashboardData['followups'][numbe
   pending: 'Pendientes',
   completed: 'Completados',
   cancelled: 'Cancelados',
-}
-
-function toDigits(value: string): string {
-  return value.replace(/\D+/g, '')
-}
-
-function mailtoHref(email: string): string {
-  return `mailto:${encodeURIComponent(email)}`
-}
-
-function whatsappHref(phone: string): string | null {
-  const digits = toDigits(phone)
-  if (!digits) return null
-  return `https://wa.me/${digits}`
 }
 
 export function DashboardView({
@@ -582,6 +544,171 @@ export function DashboardView({
       <ExecutiveDashboardPanel data={data} range={range} />
       <DashboardKpiStrip data={data} />
       <RecentLeadsPanel data={data} />
+
+      <section
+        data-admin-section="leads"
+        id="leads"
+        className="mb-6 rounded-3xl border border-pk-border bg-white p-4 shadow-sm sm:p-5"
+      >
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-pk-mutedText">
+              Embudo operativo
+            </p>
+            <h2 className="font-display text-xl font-semibold text-pk-ink">
+              Interesados · {data.new_leads_count}
+            </h2>
+            <p className="text-sm text-pk-sub">
+              Una carta por lead: estado, datos y línea de tiempo. Filtra y actúa sin perder contexto.
+            </p>
+          </div>
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-teal-50 text-pk-primary">
+            <UserPlus className="h-5 w-5" aria-hidden />
+          </div>
+        </div>
+
+        <div className="mb-3 flex flex-wrap gap-2">
+          {(['all', 'family', 'teacher_applicant', 'company'] as const).map((type) => (
+            <Button
+              key={type}
+              type="button"
+              size="sm"
+              variant={leadTypeFilter === type ? 'secondary' : 'ghost'}
+              onClick={() => setLeadTypeFilter(type)}
+            >
+              {type === 'all' ? 'Todos los tipos' : leadTypeLabel(type)}
+            </Button>
+          ))}
+        </div>
+        <div className="mb-4 flex flex-wrap gap-2">
+          {(
+            ['all', 'new', 'contacted', 'trial', 'enrolled', 'active', 'renewal', 'archived'] as const
+          ).map((status) => (
+            <Button
+              key={status}
+              type="button"
+              size="sm"
+              variant={leadStatusFilter === status ? 'secondary' : 'ghost'}
+              onClick={() => setLeadStatusFilter(status)}
+            >
+              {leadStatusFilterLabel[status]}
+            </Button>
+          ))}
+        </div>
+
+        {filteredLeads.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {filteredLeads.map((lead) => {
+              const referralCode = lead.referral_code
+              return (
+                <AdminLeadCard
+                  key={lead.id}
+                  lead={lead}
+                  compactPipeline
+                  footer={
+                    <div className="space-y-3">
+                      {referralCode ? (
+                        <div className="rounded-xl bg-pk-muted/40 px-3 py-2 text-[11px] text-pk-sub">
+                          <p className="font-semibold text-pk-ink">Link de recomendación</p>
+                          <p className="break-all font-mono text-[10px]">
+                            {buildPeskidsReferralLink(referralCode)}
+                          </p>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            className="mt-1"
+                            onClick={() => void handleCopy(buildPeskidsReferralLink(referralCode))}
+                          >
+                            <Copy className="h-4 w-4" aria-hidden />
+                            <span className="ml-1">Copiar link</span>
+                          </Button>
+                        </div>
+                      ) : null}
+
+                      <div className="space-y-2">
+                        <label
+                          className="block text-[11px] font-medium text-pk-sub"
+                          htmlFor={`note-${lead.id}`}
+                        >
+                          Nota rápida
+                        </label>
+                        <textarea
+                          id={`note-${lead.id}`}
+                          value={noteDrafts[lead.id] ?? lead.admin_notes ?? ''}
+                          onChange={(event) => {
+                            setDirtyNoteIds((current) => new Set(current).add(lead.id))
+                            setNoteDrafts((current) => ({
+                              ...current,
+                              [lead.id]: event.target.value,
+                            }))
+                          }}
+                          rows={2}
+                          className="w-full rounded-xl border border-pk-border bg-white px-3 py-2 text-xs text-pk-ink"
+                          placeholder="Ej. Llamar mañana a las 10:00"
+                        />
+                        <div className="flex flex-wrap gap-2">
+                          {canMarkContacted(lead.status) ? (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="secondary"
+                              disabled={savingLeadId === lead.id}
+                              onClick={() => void handleMarkContacted(lead.id)}
+                            >
+                              {savingLeadId === lead.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                              ) : null}
+                              <span className={savingLeadId === lead.id ? 'ml-1' : undefined}>
+                                Marcar contactado
+                              </span>
+                            </Button>
+                          ) : null}
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            disabled={savingLeadId === lead.id}
+                            onClick={() => void handleSaveNote(lead.id)}
+                          >
+                            Guardar nota
+                          </Button>
+                          {isAdminSurface && canConvertToStudent(lead.status) ? (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="secondary"
+                              disabled={savingLeadId === lead.id || convertingLeadId === lead.id}
+                              onClick={() => void handleConvertLead(lead.id)}
+                            >
+                              {convertingLeadId === lead.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                              ) : null}
+                              <span className={convertingLeadId === lead.id ? 'ml-1' : undefined}>
+                                Convertir a alumno
+                              </span>
+                            </Button>
+                          ) : null}
+                        </div>
+                        {leadFeedback[lead.id] ? (
+                          <p className="text-xs text-pk-primary">{leadFeedback[lead.id]}</p>
+                        ) : null}
+                      </div>
+
+                      <WacrmLeadInboxActions phone={lead.phone} messages={data.wacrm_messages} />
+                    </div>
+                  }
+                />
+              )
+            })}
+          </div>
+        ) : (
+          <p className="rounded-2xl border border-dashed border-pk-border bg-pk-muted/30 p-4 text-sm text-pk-sub">
+            {search ? 'Sin coincidencias para tu búsqueda.' : 'Sin interesados nuevos en este periodo.'}
+          </p>
+        )}
+      </section>
+
       <DashboardIntegrationStatus data={data} />
       <SalesAnalyticsPanel data={data} />
 
@@ -592,218 +719,6 @@ export function DashboardView({
       <AcademyOpsMap data={data} />
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-        <StatCard
-          sectionId="leads"
-          title="Leads nuevos"
-          description={range === 'week' ? 'Captados esta semana' : 'Captados este mes'}
-          value={data.new_leads_count}
-          icon={UserPlus}
-          accent="teal"
-        >
-          <div className="mb-3 flex flex-wrap gap-2">
-            {(['all', 'family', 'teacher_applicant', 'company'] as const).map((type) => (
-              <Button
-                key={type}
-                type="button"
-                size="sm"
-                variant={leadTypeFilter === type ? 'secondary' : 'ghost'}
-                onClick={() => setLeadTypeFilter(type)}
-              >
-                {type === 'all' ? 'Todos los tipos' : leadTypeLabel(type)}
-              </Button>
-            ))}
-          </div>
-          <div className="mb-3 flex flex-wrap gap-2">
-            {(['all', 'new', 'contacted', 'trial', 'enrolled', 'active', 'renewal', 'archived'] as const).map((status) => (
-              <Button
-                key={status}
-                type="button"
-                size="sm"
-                variant={leadStatusFilter === status ? 'secondary' : 'ghost'}
-                onClick={() => setLeadStatusFilter(status)}
-              >
-                {leadStatusFilterLabel[status]}
-              </Button>
-            ))}
-          </div>
-          <ul className="max-h-72 space-y-3 overflow-y-auto pr-1">
-            {filteredLeads.length > 0 ? (
-              filteredLeads.map((lead) => {
-                const referralCode = lead.referral_code
-                const phoneHref = lead.phone ? whatsappHref(lead.phone) : null
-
-                return (
-                <li
-                  key={lead.id}
-                  className="rounded-2xl border border-pk-border/80 bg-pk-muted/40 px-3 py-3"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <Link
-                        href={`/admin/interesados/${lead.id}`}
-                        className="font-medium text-sm text-pk-ink hover:text-pk-primary hover:underline"
-                      >
-                        {lead.name}
-                      </Link>
-                      <p className="text-xs text-pk-sub">{lead.email}</p>
-                      {lead.phone ? <p className="text-xs text-pk-sub">{lead.phone}</p> : null}
-                      {lead.neighborhood ? (
-                        <p className="text-xs text-pk-sub">Barrio: {lead.neighborhood}</p>
-                      ) : null}
-                    </div>
-                    <Badge tone={leadStatusTone[lead.status]}>{leadStatusLabel[lead.status]}</Badge>
-                  </div>
-
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    <Badge tone="neutral">{leadTypeLabel(lead.lead_type)}</Badge>
-                    <Badge tone="violet">{normalizeLeadSourceLabel(lead.referral_source)}</Badge>
-                    <Badge tone="amber">
-                      {serviceModeLabel(lead.service_mode) !== '—'
-                        ? serviceModeLabel(lead.service_mode)
-                        : classModalityLabel(lead.class_modality)}
-                    </Badge>
-                    <Badge tone="teal">{formatAgeRange(lead.grade_interested)}</Badge>
-                    {lead.referral_code ? <Badge tone="green">Ref {lead.referral_code}</Badge> : null}
-                    {lead.referred_by_code ? <Badge tone="violet">Recomendado</Badge> : null}
-                  </div>
-
-                  {lead.referral_code ? (
-                    <div className="mt-2 rounded-xl bg-white/75 px-3 py-2 text-[11px] text-pk-sub">
-                      <p className="font-semibold text-pk-ink">Link de recomendación</p>
-                      <p className="break-all font-mono text-[10px]">
-                        {buildPeskidsReferralLink(lead.referral_code)}
-                      </p>
-                      {lead.referral_redemptions > 0 ? (
-                        <p className="mt-1 text-[11px] text-pk-primary">
-                          Descuento acumulado: {lead.referral_redemptions} uso(s) ·{' '}
-                          {new Intl.NumberFormat('es-CO', {
-                            style: 'currency',
-                            currency: 'COP',
-                            maximumFractionDigits: 0,
-                          }).format((lead.referral_discount_cents ?? 0) / 100)}
-                        </p>
-                      ) : (
-                        <p className="mt-1 text-[11px] text-pk-sub">
-                          Sin redenciones todavía. Este es el link para compartir.
-                        </p>
-                      )}
-                    </div>
-                  ) : null}
-
-                  <div className="mt-3 space-y-2">
-                    <label className="block text-[11px] font-medium text-pk-sub" htmlFor={`note-${lead.id}`}>
-                      Nota rápida
-                    </label>
-                    <textarea
-                      id={`note-${lead.id}`}
-                      value={noteDrafts[lead.id] ?? lead.admin_notes ?? ''}
-                      onChange={(event) => {
-                        setDirtyNoteIds((current) => new Set(current).add(lead.id))
-                        setNoteDrafts((current) => ({
-                          ...current,
-                          [lead.id]: event.target.value,
-                        }))
-                      }}
-                      rows={2}
-                      className="w-full rounded-xl border border-pk-border bg-white/80 px-3 py-2 text-xs text-pk-ink"
-                      placeholder="Ej. Llamar mañana a las 10:00"
-                    />
-                    <div className="flex flex-wrap gap-2">
-                      {canMarkContacted(lead.status) ? (
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="secondary"
-                          disabled={savingLeadId === lead.id}
-                          onClick={() => void handleMarkContacted(lead.id)}
-                        >
-                          {savingLeadId === lead.id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                          ) : null}
-                          <span className={savingLeadId === lead.id ? 'ml-1' : undefined}>
-                            Marcar contactado
-                          </span>
-                        </Button>
-                      ) : null}
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="ghost"
-                        disabled={savingLeadId === lead.id}
-                        onClick={() => void handleSaveNote(lead.id)}
-                      >
-                        Guardar nota
-                      </Button>
-                      {isAdminSurface && canConvertToStudent(lead.status) ? (
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="secondary"
-                          disabled={savingLeadId === lead.id || convertingLeadId === lead.id}
-                          onClick={() => void handleConvertLead(lead.id)}
-                        >
-                          {convertingLeadId === lead.id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                          ) : null}
-                          <span className={convertingLeadId === lead.id ? 'ml-1' : undefined}>
-                            Convertir a alumno
-                          </span>
-                        </Button>
-                      ) : null}
-                    </div>
-                    {leadFeedback[lead.id] ? (
-                      <p className="text-xs text-pk-primary">{leadFeedback[lead.id]}</p>
-                    ) : null}
-                  </div>
-
-                  <WacrmLeadInboxActions phone={lead.phone} messages={data.wacrm_messages} />
-
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {lead.email ? (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => window.open(mailtoHref(lead.email), '_blank', 'noopener,noreferrer')}
-                      >
-                        <Mail className="h-4 w-4" aria-hidden />
-                        <span className="ml-1">Correo</span>
-                      </Button>
-                    ) : null}
-                    {phoneHref ? (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => window.open(phoneHref, '_blank', 'noopener,noreferrer')}
-                      >
-                        <Phone className="h-4 w-4" aria-hidden />
-                        <span className="ml-1">WhatsApp</span>
-                      </Button>
-                    ) : null}
-                    {referralCode ? (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => void handleCopy(buildPeskidsReferralLink(referralCode))}
-                      >
-                        <Copy className="h-4 w-4" aria-hidden />
-                        <span className="ml-1">Copiar link</span>
-                      </Button>
-                    ) : null}
-                  </div>
-                </li>
-                )
-              })
-            ) : (
-              <p className="text-sm text-pk-sub">
-                {search ? 'Sin coincidencias para tu búsqueda.' : 'Sin interesados nuevos esta semana.'}
-              </p>
-            )}
-          </ul>
-        </StatCard>
-
         <StatCard
           sectionId="students"
           title="Estudiantes activos"
