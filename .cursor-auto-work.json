@@ -1,0 +1,40 @@
+{
+  "version": "1.0",
+  "trigger_id": "peskids-level-up-001",
+  "created_at": "2026-08-07T12:00:00Z",
+  "status": "pending",
+  "task": {
+    "id": "PESKIDS-1.1",
+    "title": "Renovar admin shell header",
+    "description": "Mejorar components/admin/admin-shell.tsx con búsqueda, notificaciones, avatar y botón Admin",
+    "priority": "HIGH",
+    "estimated_hours": 2.5,
+    "phase": 1
+  },
+  "auto_commands": [
+    "git checkout claude/peskids-cursor-avance-1ortri",
+    "git pull origin claude/peskids-cursor-avance-1ortri",
+    "npm run type-check"
+  ],
+  "files_to_edit": [
+    "apps/peskids/components/admin/admin-shell.tsx"
+  ],
+  "reference_docs": [
+    "apps/peskids/docs/CURSOR-QUICK-START.md",
+    "apps/peskids/docs/PESKIDS-LEVEL-UP-PLAN.md"
+  ],
+  "git_branch": "claude/peskids-cursor-avance-1ortri",
+  "auto_execute": {
+    "enabled": true,
+    "on_event": "post-checkout",
+    "script": "bash .cursor-auto-work.sh"
+  },
+  "checklist": [
+    "Agregar input de búsqueda global",
+    "Agregar bell icon con contador",
+    "Agregar botón Admin dropdown",
+    "Agregar avatar del usuario",
+    "Ejecutar npm run type-check",
+    "Commit con git add -A && git commit"
+  ]
+}
