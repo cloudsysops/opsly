@@ -26,9 +26,7 @@ function CommandBody(): React.ReactElement {
 
   const matched = q
     ? suggestions.filter(
-        (s) =>
-          s.label.toLowerCase().includes(q.toLowerCase()) ||
-          s.href.includes(q.toLowerCase())
+        (s) => s.label.toLowerCase().includes(q.toLowerCase()) || s.href.includes(q.toLowerCase())
       )
     : suggestions;
 

@@ -125,12 +125,14 @@ describe('updateLeadStage', () => {
     });
 
     expect(fetchQuery.maybeSingle).toHaveBeenCalledTimes(1);
-    expect(fromQuery.update).toHaveBeenCalledWith(
-      expect.objectContaining({ stage: 'Contacted' })
-    );
+    expect(fromQuery.update).toHaveBeenCalledWith(expect.objectContaining({ stage: 'Contacted' }));
     expect(fromQuery.update).toHaveBeenCalledTimes(1);
     // Real GHL stage ID for "Contacted" in the Peskids Enrollment pipeline
-    expect(updateOpportunityStageMock).toHaveBeenCalledWith('peskids', 'ghl-lead-1', '75742c84-9063-4539-b755-b09bfdeb6346');
+    expect(updateOpportunityStageMock).toHaveBeenCalledWith(
+      'peskids',
+      'ghl-lead-1',
+      '75742c84-9063-4539-b755-b09bfdeb6346'
+    );
   });
 
   it('updates stage locally but allows GHL to fail gracefully', async () => {
