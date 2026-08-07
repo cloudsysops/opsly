@@ -1,6 +1,5 @@
--- Lead status audit trail for full traceability.
--- lead_id is NOT FK'd to public.leads: live leads live in platform.peskids_leads
--- (legacy rows may still exist in public.leads). App enforces tenant + existence.
+-- Canonical mirror of apps/peskids/migrations/20260806_lead_status_audit.sql
+-- lead_id is NOT FK'd to public.leads: live leads live in platform.peskids_leads.
 
 CREATE TABLE IF NOT EXISTS public.lead_status_audit (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -8,13 +7,12 @@ CREATE TABLE IF NOT EXISTS public.lead_status_audit (
   lead_id UUID NOT NULL,
   old_status TEXT,
   new_status TEXT NOT NULL,
-  changed_by TEXT, -- email or system
+  changed_by TEXT,
   action TEXT NOT NULL CHECK (action IN ('status_change', 'note_update', 'teacher_assign', 'hold', 'convert', 'cancel')),
-  metadata JSONB, -- teacher_id, scheduled_date, scheduled_time, reason, etc.
+  metadata JSONB,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Drop draft FK if an earlier apply pointed at public.leads only.
 ALTER TABLE public.lead_status_audit
   DROP CONSTRAINT IF EXISTS lead_status_audit_lead_id_fkey;
 
