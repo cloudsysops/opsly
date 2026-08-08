@@ -1,25 +1,41 @@
 ---
 status: canonical
 owner: operations
-last_review: 2026-05-24
+last_review: 2026-08-08
 type: config
 tags: [opsly/claude-config]
 ---
 
 # CLAUDE.md — Opsly Codebase Guide
 
-**Version:** 2.2 | **Project:** cloudsysops/opsly | **Model role:** Architect/Reviewer
+**Version:** 2.3 | **Project:** cloudsysops/opsly | **Model role:** Architect/Reviewer | **Updated:** 2026-08-08
 
 ---
 
 ## SESSION STARTUP
 
-1. Read (in order): [AGENTS.md](https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md) → [VISION.md](https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md)
-2. `bash scripts/git-session-brief.sh` para ver **rama + tema + áreas tocadas**; al cambiar de rama, el hook `post-checkout` lo repite automáticamente
-3. `git status && git log --oneline -3`
-4. `bash .claude/hooks/opsly-session-start-skills.sh` o `node scripts/skill-finder.js "your task" --autonomous`
+1. **Read context** (in order): 
+   - [AGENTS.md](https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md) — operational state, next steps, blockers by session
+   - [VISION.md](https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md) — product direction, north star
+   
+2. **Check git state:**
+   ```bash
+   git status && git log --oneline -3
+   bash scripts/git-session-brief.sh  # rama + tema + áreas tocadas
+   ```
 
-**Abort if:** Doppler secrets missing · AGENTS.md >7 days stale · VPS/Redis unreachable
+3. **Load skills for your task:**
+   ```bash
+   node scripts/skill-finder.js "your task description" --autonomous
+   ```
+
+4. **Verify critical dependencies:**
+   - Doppler secrets accessible: `doppler run -- echo "OK"`
+   - AGENTS.md last review <7 days old
+   - VPS reachable (if needed): `npm run opsly:tailscale:ping`
+   - Redis working (for orchestrator jobs): `redis-cli ping`
+
+**Abort session if:** Doppler unavailable · AGENTS.md stale (>7 days) · VPS unreachable (prod tasks)
 
 ---
 
@@ -183,44 +199,84 @@ node scripts/load-agent-skills.js --list-all
 
 ---
 
-## LIB MODULES (18)
+## LIB MODULES (30)
 
-Full registry: `config/modules.json` · Governance: `lib/{module}/GOVERNANCE.md`
+**Full registry:** `config/modules.json` · **Governance:** `lib/{module}/GOVERNANCE.md`
 
-Core: `prompts` · `observability` · `components` · `evaluation` · `content-studio` · `errors` · `services` · `config` · `security` · `api` · `workflow` · `telemetry` · `testing` · `migrations` · `runtime` · `session-manager` · `git-branch-orchestrator` · `external-agent-registry`
+**Core (stable):** 
+- `prompts` · `observability` · `components` · `evaluation` · `errors` · `services` · `config` · `security` · `api` · `workflow` · `telemetry` · `testing` · `migrations` · `runtime`
+- `session-manager` · `git-branch-orchestrator` · `external-agent-registry` · `content-studio` · `pattern-catalog` · `prompt-guard`
+- `capacity-alert` · `sigma-harness` · `voice-messaging` · `mission-control-kit` (multi-tenant MC contracts)
 
-New module only if: reusable by 2+ apps · >100 lines · stable API.
+**Experimental/Domain-specific:**
+- `conversational-runtime` (channel layer over opsly-core)
+- `wompi-gateway` (Colombia payments, LatAm variant of Stripe)
+- `openwa` · `whatsapp` · `wacrm-channel` (WhatsApp integrations)
+- `tenant-profile` (profile aggregation)
+
+**Criteria for new module:** reusable by 2+ apps · stable API · <governance>
+**Breaking changes:** require ADR
 
 ---
 
-## APPS (27)
+## APPS (31)
 
-Core production: `api:3000` · `admin:3001` · `portal:3002` · `mcp:3003` · `orchestrator:3011` · `llm-gateway:3010` · `context-builder:3012` · `peskids` · `billing-service` · `billing-dashboard` · `rendering-engine` · `tenant-onboarding-agent` · `tenant-invitations` · `slack-bot` · `web` · `mcp-gateway` · `notion-mcp` · `task-orchestrator` · `agent-manager`
+**Core production platform:**
+- **API Layer:** `api:3000` (core GraphQL/REST) · `llm-gateway:3010` (LLM routing)
+- **Control Plane:** `admin:3001` (Opsly Moon admin) · `portal:3002` (tenant portal) · `orchestrator:3011` (OAR/BullMQ jobs)
+- **Infrastructure:** `context-builder:3012` (multi-tenant context) · `mcp:3003` (tool registry)
+- **Core services:** `billing-service` · `billing-dashboard` · `rendering-engine` · `slack-bot` · `task-orchestrator`
+- **Multi-tenant agents:** `tenant-onboarding-agent` · `tenant-invitations` · `agent-manager` · `notion-mcp`
 
-Experimental: `agents` · `notebooklm-agent` · `ml` · `airflow` · `mcp-rendering-server` · `context-builder-v2` (staging) · `local-services` (active dev) · `experimental`
+**Production tenants:**
+- `peskids` (learning platform) · `intcloudsysops` (internal platform) · `icso` (ICSO agency) · `smiletripcare` (healthcare)
+- `panini-lab` (partner) · `notebooklm-agent` (Google NotebookLM adapter)
 
-Full detail: `ls apps/` or see `docs/02-architecture/`
+**Developer/Experimental:**
+- `local-services` (Docker dev services) · `ml` (ML experiments) · `agents` (agent testing)
+- `mcp-rendering-server` · `task-orchestrator` · `airflow` (workflow scheduling)
+- `experimental` · `web` (legacy/archive)
+
+**Full listing & detail:** `ls apps/` or `docs/02-architecture/APPS-REGISTRY.md`
 
 ---
 
 ## GIT PROTOCOL (mandatory for all agents)
 
+**For all changes:** follow `docs/01-development/GIT-WORKFLOW.md` (read it once per session).
+
+**Standard flow:**
 ```bash
+# 1. Sync & create branch
+git fetch origin && git checkout main && git pull --ff-only
+git checkout -b feat/<short-topic> 
+
+# 2. Make changes, test
+npm run type-check && npm run test
+
+# 3. Commit & push
 git add -A
-git commit -m "feat(scope): description"
-git push origin <branch-name>
-# After push:
-gh pr create --draft --base main --head <branch-name>
+git commit -m "feat(scope): clear description"
+git push -u origin <branch-name>
+
+# 4. Open PR (required)
+# After push: create PR (draft OK) toward main
 ```
 
-Commit format: `feat|fix|docs|refactor|test|chore(scope): description`
+**Commit format:** `feat|fix|docs|refactor|test|chore(scope): description` (Conventional Commits)
+
+**Production merge windows:** 
+- **Peskids prod changes** → nighttime only (`America/Bogota` 22:00–06:00) 
+- **Safe tags:** `safe-daytime` / `hotfix-prod` for exceptions
+- See: `docs/runbooks/PRODUCTION-CHANGE-WINDOW.md`
 
 ## BRANCH / THEME DISCIPLINE
 
-- Una sesión = una rama = un tema.
-- Si el worktree toca más de un tema grande, dividir antes de editar.
-- Si estás en `main` con cambios locales, crear rama primero.
-- Si la rama no representa el tema, renombrar o recrear la rama antes de seguir.
+- **One session = one branch = one theme.** If worktree mixes multiple major areas, split before editing.
+- **Temporary agent branches** (`cursor/*`, `claude/*`) are auto-cleanup — PR or close + delete when done.
+- **Never** accumulate weeks of work in one agent branch without integrating.
+- **If branch no longer matches theme:** create new branch or worktree before continuing.
+- **Allowed root .md files:** `AGENTS.md`, `README.md`, `ROADMAP.md`, `VISION.md`, `SECURITY.md`, `CONTRIBUTING.md` (see `config/root-whitelist.json`)
 
 ---
 
