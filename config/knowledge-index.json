@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-08-06T23:35:51.006Z",
+  "generated_at": "2026-08-08T15:15:23.369Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -2173,7 +2173,7 @@
         "token",
         "usage"
       ],
-      "size_bytes": 10034
+      "size_bytes": 12282
     },
     {
       "path": ".claude/README.md",
@@ -3427,7 +3427,7 @@
         "usar",
         "vivo"
       ],
-      "size_bytes": 277753
+      "size_bytes": 278103
     },
     {
       "path": "apps/admin/INVITATIONS_UI.md",
@@ -3602,21 +3602,24 @@
       "path": "apps/icso/README.md",
       "title": "ICSO Marketing Site",
       "keywords": [
+        "agency",
         "assets",
         "brand",
         "build",
+        "control",
         "deploy",
         "dev",
         "icso",
         "markdown",
         "marketing",
+        "mission",
         "opsly",
         "readme",
         "scope",
         "site",
         "vps"
       ],
-      "size_bytes": 1662
+      "size_bytes": 2036
     },
     {
       "path": "apps/index.md",
@@ -4883,6 +4886,28 @@
       "size_bytes": 7562
     },
     {
+      "path": "docs/00-architecture/MISSION-CONTROL-KIT.md",
+      "title": "Mission Control Kit",
+      "keywords": [
+        "922",
+        "cliente",
+        "confundir",
+        "control",
+        "controls",
+        "icso",
+        "kit",
+        "markdown",
+        "mission",
+        "moon",
+        "nuevo",
+        "opsly",
+        "relacion",
+        "replicar",
+        "tres"
+      ],
+      "size_bytes": 2053
+    },
+    {
       "path": "docs/00-architecture/MODULE-REGISTRY.md",
       "title": "Canonical Module Registry",
       "keywords": [
@@ -5024,6 +5049,137 @@
         "tenant"
       ],
       "size_bytes": 1673
+    },
+    {
+      "path": "docs/00-architecture/OPSLY-MOON-AUDIT.md",
+      "title": "Opsly Moon — Auditoría del control plane (PR-MOON-0)",
+      "keywords": [
+        "2026",
+        "abiertos",
+        "actual",
+        "admin",
+        "ajustada",
+        "apps",
+        "aprobadas",
+        "audit",
+        "auditoria",
+        "canonicas",
+        "config",
+        "contratos",
+        "control",
+        "decisiones",
+        "duplicar",
+        "enlaces",
+        "estado",
+        "hace",
+        "hacia",
+        "inventario",
+        "leyenda",
+        "madurez",
+        "markdown",
+        "memoria",
+        "moon",
+        "opsly",
+        "panel",
+        "plane",
+        "prs",
+        "registries",
+        "relacionados",
+        "restriccion",
+        "riesgos",
+        "secuencia",
+        "separacion",
+        "tenant",
+        "tenants",
+        "vps"
+      ],
+      "size_bytes": 7447
+    },
+    {
+      "path": "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
+      "title": "Opsly Moon — Fuentes de datos y etiquetado",
+      "keywords": [
+        "agentes",
+        "billing",
+        "blueprints",
+        "cartera",
+        "clientes",
+        "colas",
+        "costos",
+        "data",
+        "datos",
+        "enlaces",
+        "etiquetado",
+        "etiquetas",
+        "explicitamente",
+        "falta",
+        "fuente",
+        "fuentes",
+        "health",
+        "home",
+        "integraciones",
+        "markdown",
+        "modulos",
+        "moon",
+        "obligatorias",
+        "omitidos",
+        "opsly",
+        "peskids",
+        "plataforma",
+        "relacion",
+        "resumen",
+        "sources",
+        "track",
+        "uso"
+      ],
+      "size_bytes": 6315
+    },
+    {
+      "path": "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
+      "title": "Opsly Moon — Mapa de rutas (legacy → aliases)",
+      "keywords": [
+        "actuales",
+        "admin",
+        "aliases",
+        "apps",
+        "brief",
+        "enlaces",
+        "graduales",
+        "legacy",
+        "map",
+        "mapa",
+        "markdown",
+        "migracion",
+        "moon",
+        "navegacion",
+        "objetivo",
+        "opsly",
+        "plan",
+        "post",
+        "principios",
+        "propuestos",
+        "realidad",
+        "route",
+        "ruta",
+        "rutas",
+        "separacion",
+        "tracks",
+        "url"
+      ],
+      "size_bytes": 5252
+    },
+    {
+      "path": "docs/00-architecture/OPSLY-MOON.md",
+      "title": "Opsly Moon",
+      "keywords": [
+        "documentacion",
+        "entrada",
+        "markdown",
+        "moon",
+        "opsly",
+        "principios"
+      ],
+      "size_bytes": 1752
     },
     {
       "path": "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
@@ -5245,7 +5401,7 @@
         "readme",
         "relacionados"
       ],
-      "size_bytes": 1486
+      "size_bytes": 1884
     },
     {
       "path": "docs/00-architecture/REDIS_NAMESPACE_ISOLATION.md",
@@ -20204,7 +20360,7 @@
         "vault",
         "wiki"
       ],
-      "size_bytes": 5025
+      "size_bytes": 5768
     },
     {
       "path": "docs/infrastructure/AGENT-BOOTSTRAP-SYSTEM.md",
@@ -24168,6 +24324,24 @@
       "size_bytes": 10696
     },
     {
+      "path": "docs/runbooks/ICSO-MISSION-CONTROL.md",
+      "title": "ICSO Mission Control — Operations",
+      "keywords": [
+        "control",
+        "datos",
+        "gate",
+        "icso",
+        "markdown",
+        "mission",
+        "operations",
+        "opsly",
+        "rollback",
+        "separacion",
+        "url"
+      ],
+      "size_bytes": 878
+    },
+    {
       "path": "docs/runbooks/IDE-OCTOPUS-AGENTS.md",
       "title": "IDE Octopus para Agentes",
       "keywords": [
@@ -24498,6 +24672,23 @@
       "size_bytes": 1264
     },
     {
+      "path": "docs/runbooks/MISSION-CONTROL-TENANT-ROLLOUT.md",
+      "title": "Mission Control — Tenant rollout",
+      "keywords": [
+        "anti",
+        "checklist",
+        "control",
+        "markdown",
+        "mission",
+        "opsly",
+        "patrones",
+        "rollout",
+        "tenant",
+        "validacion"
+      ],
+      "size_bytes": 1261
+    },
+    {
       "path": "docs/runbooks/ONBOARDING-NEW-CLIENT.md",
       "title": "Runbook — Onboarding de Nuevo Cliente (Opsly)",
       "keywords": [
@@ -24576,6 +24767,70 @@
         "weekly"
       ],
       "size_bytes": 10775
+    },
+    {
+      "path": "docs/runbooks/OPSLY-MOON-DATA-SOURCES.md",
+      "title": "Opsly Moon — Data sources (runbook)",
+      "keywords": [
+        "data",
+        "markdown",
+        "moon",
+        "opsly",
+        "runbook",
+        "sources"
+      ],
+      "size_bytes": 1022
+    },
+    {
+      "path": "docs/runbooks/OPSLY-MOON-OPERATIONS.md",
+      "title": "Opsly Moon — Operations",
+      "keywords": [
+        "arranque",
+        "capacidad",
+        "fuentes",
+        "incidentes",
+        "local",
+        "markdown",
+        "minima",
+        "moon",
+        "operations",
+        "opsly",
+        "sin",
+        "validacion",
+        "vps"
+      ],
+      "size_bytes": 949
+    },
+    {
+      "path": "docs/runbooks/OPSLY-MOON-PERMISSIONS.md",
+      "title": "Opsly Moon — Permissions",
+      "keywords": [
+        "auditoria",
+        "auth",
+        "isolation",
+        "markdown",
+        "moon",
+        "opsly",
+        "permissions",
+        "principios",
+        "tenant"
+      ],
+      "size_bytes": 919
+    },
+    {
+      "path": "docs/runbooks/OPSLY-MOON-ROLLBACK.md",
+      "title": "Opsly Moon — Rollback",
+      "keywords": [
+        "codigo",
+        "datos",
+        "deploy",
+        "feature",
+        "markdown",
+        "moon",
+        "opsly",
+        "rollback"
+      ],
+      "size_bytes": 844
     },
     {
       "path": "docs/runbooks/OPSLY-OPENCLAW-STARTUP.md",
@@ -25171,13 +25426,14 @@
         "exemptions",
         "high",
         "markdown",
+        "mermaid",
         "moderate",
         "npm",
         "opsly",
         "undici",
         "vulnerabilities"
       ],
-      "size_bytes": 580
+      "size_bytes": 1247
     },
     {
       "path": "docs/security/SECURITY-POSTURE-AUDIT.md",
@@ -26792,6 +27048,33 @@
         "revision"
       ],
       "size_bytes": 1896
+    },
+    {
+      "path": "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
+      "title": "Peskids — revisión cliente (lote Claude + UX)",
+      "keywords": [
+        "2026",
+        "admin",
+        "algo",
+        "claude",
+        "client",
+        "cliente",
+        "empresa",
+        "falla",
+        "familia",
+        "formularios",
+        "hay",
+        "landing",
+        "lote",
+        "markdown",
+        "opsly",
+        "peskids",
+        "probar",
+        "profesor",
+        "review",
+        "revision"
+      ],
+      "size_bytes": 1289
     },
     {
       "path": "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
@@ -30582,6 +30865,42 @@
         "version"
       ],
       "size_bytes": 4532
+    },
+    {
+      "path": "lib/mission-control-kit/GOVERNANCE.md",
+      "title": "Mission Control Kit — Governance",
+      "keywords": [
+        "control",
+        "governance",
+        "kit",
+        "markdown",
+        "mission",
+        "opsly",
+        "review",
+        "rules",
+        "scope"
+      ],
+      "size_bytes": 920
+    },
+    {
+      "path": "lib/mission-control-kit/README.md",
+      "title": "@intcloudsysops/mission-control-kit",
+      "keywords": [
+        "control",
+        "install",
+        "intcloudsysops",
+        "kit",
+        "markdown",
+        "mission",
+        "opsly",
+        "quick",
+        "readme",
+        "start",
+        "this",
+        "what",
+        "workspace"
+      ],
+      "size_bytes": 968
     },
     {
       "path": "lib/observability/GOVERNANCE.md",
@@ -88562,6 +88881,9 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/cwe-top-25.md",
       ".agents/skills/cyber-neo/references/cwe-top-25.md"
     ],
+    "922": [
+      "docs/00-architecture/MISSION-CONTROL-KIT.md"
+    ],
     "943": [
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/lang-javascript.md",
       ".agents/skills/cyber-neo/references/lang-javascript.md"
@@ -88638,6 +88960,7 @@
       "docs/00-architecture/ORCHESTRATOR.md",
       "docs/00-architecture/ARCHITECTURE.md",
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
       "docs/01-development/TECHNICAL-DEBT.md",
       "docs/01-development/HANDOFF.md",
@@ -88672,6 +88995,7 @@
       "docs/adr/ADR-024-ollama-local-worker-primary.md",
       "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
       "docs/tenants/peskids/TWENTY-CRM.md",
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
@@ -88804,6 +89128,7 @@
       "packages/skills/user/opsly-ai-sdk-vercel/SKILL.md",
       "README.md",
       "apps/notion-mcp/README.md",
+      "docs/00-architecture/OPSLY-MOON.md",
       "docs/01-development/ADMIN-ECOSYSTEM.md",
       "docs/01-development/DOCUMENTATION-LIFECYCLE.md",
       "docs/01-development/AUTO-SYNC-DOCS-SETUP.md",
@@ -89045,6 +89370,7 @@
       "docs/00-architecture/OPSLYQUANTUM-SKILL-DESIGN.md",
       "docs/00-architecture/LLM-GATEWAY.md",
       "docs/00-architecture/PROVISIONING-SYSTEM.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/00-architecture/POLICY-AI-LOCAL-FIRST.md",
       "docs/00-architecture/README.md",
       "docs/00-architecture/OPSLY-CONTROL-PLANE.md",
@@ -89053,6 +89379,8 @@
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
       "docs/00-architecture/REPO-MAP.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/N8N-SETUP.md",
       "docs/01-development/MAIA-WORKERS.md",
       "docs/01-development/AI-FRAMEWORKS.md",
@@ -89521,6 +89849,8 @@
       "lib/config/GOVERNANCE.md",
       "lib/services/README.md",
       "lib/services/GOVERNANCE.md",
+      "lib/mission-control-kit/README.md",
+      "lib/mission-control-kit/GOVERNANCE.md",
       "lib/observability/README.md",
       "lib/observability/GOVERNANCE.md",
       "lib/api/README.md",
@@ -91190,9 +91520,13 @@
       "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
       "docs/runbooks/AUTONOMOUS-PROD-60D.md",
       "docs/runbooks/IDE-OCTOPUS-AGENTS.md",
+      "docs/runbooks/OPSLY-MOON-PERMISSIONS.md",
+      "docs/runbooks/MISSION-CONTROL-TENANT-ROLLOUT.md",
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
       "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md",
+      "docs/runbooks/ICSO-MISSION-CONTROL.md",
+      "docs/runbooks/OPSLY-MOON-DATA-SOURCES.md",
       "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md",
       "docs/runbooks/README.md",
@@ -91207,6 +91541,7 @@
       "docs/runbooks/CYBER-NEO-AND-ARCHITECT.md",
       "docs/runbooks/dev.md",
       "docs/runbooks/FIX-TYPECHECK-BLOCKER.md",
+      "docs/runbooks/OPSLY-MOON-ROLLBACK.md",
       "docs/runbooks/TENANT-ONBOARDING-TRIAGE.md",
       "docs/runbooks/DEPLOYMENT-CHECKLIST.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
@@ -91220,6 +91555,7 @@
       "docs/runbooks/KAFKA-AIRFLOW-BOOTSTRAP.md",
       "docs/runbooks/AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
+      "docs/runbooks/OPSLY-MOON-OPERATIONS.md",
       "docs/runbooks/ONBOARDING-NEW-CLIENT.md",
       "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
       "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
@@ -91241,7 +91577,9 @@
       "docs/00-architecture/conversational-runtime-roadmap.md",
       "docs/00-architecture/DISTRIBUTED-ARCHITECTURE.md",
       "docs/00-architecture/LLM-GATEWAY.md",
+      "docs/00-architecture/OPSLY-MOON.md",
       "docs/00-architecture/PROVISIONING-SYSTEM.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
       "docs/00-architecture/POLICY-AI-LOCAL-FIRST.md",
       "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
@@ -91255,6 +91593,7 @@
       "docs/00-architecture/hooks-system.md",
       "docs/00-architecture/opsly-agent-runtime.md",
       "docs/00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md",
+      "docs/00-architecture/MISSION-CONTROL-KIT.md",
       "docs/00-architecture/OPSLY-CONTROL-PLANE.md",
       "docs/00-architecture/CONTEXT-BUILDER.md",
       "docs/00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -91266,6 +91605,8 @@
       "docs/00-architecture/TENANT-CONTRACT.md",
       "docs/00-architecture/REPO-MAP.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/ADMIN-ECOSYSTEM.md",
       "docs/01-development/ONBOARDING-READINESS.md",
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
@@ -91573,6 +91914,7 @@
       "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/N8N-SETUP.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
@@ -92126,6 +92468,8 @@
       "lib/config/GOVERNANCE.md",
       "lib/services/README.md",
       "lib/services/GOVERNANCE.md",
+      "lib/mission-control-kit/README.md",
+      "lib/mission-control-kit/GOVERNANCE.md",
       "lib/observability/README.md",
       "lib/observability/GOVERNANCE.md",
       "lib/api/README.md",
@@ -93800,9 +94144,13 @@
       "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
       "docs/runbooks/AUTONOMOUS-PROD-60D.md",
       "docs/runbooks/IDE-OCTOPUS-AGENTS.md",
+      "docs/runbooks/OPSLY-MOON-PERMISSIONS.md",
+      "docs/runbooks/MISSION-CONTROL-TENANT-ROLLOUT.md",
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
       "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md",
+      "docs/runbooks/ICSO-MISSION-CONTROL.md",
+      "docs/runbooks/OPSLY-MOON-DATA-SOURCES.md",
       "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md",
       "docs/runbooks/README.md",
@@ -93817,6 +94165,7 @@
       "docs/runbooks/CYBER-NEO-AND-ARCHITECT.md",
       "docs/runbooks/dev.md",
       "docs/runbooks/FIX-TYPECHECK-BLOCKER.md",
+      "docs/runbooks/OPSLY-MOON-ROLLBACK.md",
       "docs/runbooks/TENANT-ONBOARDING-TRIAGE.md",
       "docs/runbooks/DEPLOYMENT-CHECKLIST.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
@@ -93830,6 +94179,7 @@
       "docs/runbooks/KAFKA-AIRFLOW-BOOTSTRAP.md",
       "docs/runbooks/AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
+      "docs/runbooks/OPSLY-MOON-OPERATIONS.md",
       "docs/runbooks/ONBOARDING-NEW-CLIENT.md",
       "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
       "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
@@ -93851,7 +94201,9 @@
       "docs/00-architecture/conversational-runtime-roadmap.md",
       "docs/00-architecture/DISTRIBUTED-ARCHITECTURE.md",
       "docs/00-architecture/LLM-GATEWAY.md",
+      "docs/00-architecture/OPSLY-MOON.md",
       "docs/00-architecture/PROVISIONING-SYSTEM.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
       "docs/00-architecture/POLICY-AI-LOCAL-FIRST.md",
       "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
@@ -93865,6 +94217,7 @@
       "docs/00-architecture/hooks-system.md",
       "docs/00-architecture/opsly-agent-runtime.md",
       "docs/00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md",
+      "docs/00-architecture/MISSION-CONTROL-KIT.md",
       "docs/00-architecture/OPSLY-CONTROL-PLANE.md",
       "docs/00-architecture/CONTEXT-BUILDER.md",
       "docs/00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -93876,6 +94229,8 @@
       "docs/00-architecture/TENANT-CONTRACT.md",
       "docs/00-architecture/REPO-MAP.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/ADMIN-ECOSYSTEM.md",
       "docs/01-development/ONBOARDING-READINESS.md",
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
@@ -94184,6 +94539,7 @@
       "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/N8N-SETUP.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
@@ -94822,6 +95178,7 @@
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
       "docs/00-architecture/REPO-MAP.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/N8N-SETUP.md",
       "docs/01-development/MAIA-WORKERS.md",
       "docs/01-development/AI-FRAMEWORKS.md",
@@ -95319,6 +95676,8 @@
       "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
       "docs/00-architecture/COST-DASHBOARD.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/ADMIN-ECOSYSTEM.md",
       "docs/01-development/TEST_PLAN.md",
       "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
@@ -95351,6 +95710,7 @@
       "docs/03-agents/AGENT-SERVICES-DEPLOYMENT.md",
       "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
       "docs/tenants/peskids/INVITATION-FLOW-VERIFICATION.md",
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
@@ -96152,6 +96512,7 @@
       "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/TENANT-MONITORING.md",
       "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/examples/email-templates/PESKIDS-EMAIL-TEMPLATES.md",
       "docs/examples/n8n/PESKIDS-N8N-DEPLOYMENT.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
@@ -96164,6 +96525,7 @@
       "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
       "docs/tenants/peskids/FRANCHISE-OPERATING-MODEL.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/N8N-SETUP.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
@@ -96516,6 +96878,8 @@
       "docs/runbooks/SUBCLIENT-ONBOARDING-TEMPLATE.md",
       "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
       "docs/runbooks/AUTONOMOUS-PROD-60D.md",
+      "docs/runbooks/OPSLY-MOON-PERMISSIONS.md",
+      "docs/runbooks/MISSION-CONTROL-TENANT-ROLLOUT.md",
       "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
       "docs/runbooks/managed.md",
       "docs/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
@@ -96539,6 +96903,7 @@
       "docs/00-architecture/ARCHITECTURE.md",
       "docs/00-architecture/INCUBATION-PLATFORM-CONTRACT.md",
       "docs/00-architecture/TENANT-CONTRACT.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/TEST_PLAN.md",
       "docs/01-development/TENANT-TESTING-GUIDE.md",
       "docs/01-development/TENANT-TESTING-PLAN.md",
@@ -97000,6 +97365,7 @@
       "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/history/plans/SPRINT-ROADMAP.md",
       "docs/runbooks/frontend-audit.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/SCRIPTS-AUDIT-2026-04-24.md",
       "docs/04-infrastructure/SECURITY_AUDIT_REPORT.md",
       "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
@@ -97148,7 +97514,10 @@
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/auth-patterns.md",
       "tools/productivity-starter/demo-script.md",
       "tools/productivity-starter/offer.md",
+      "lib/mission-control-kit/README.md",
+      "lib/mission-control-kit/GOVERNANCE.md",
       "apps/experimental/mission-control-archive/ARCHIVE.md",
+      "apps/icso/README.md",
       "vendor/agency-agents/integrations/qwen/agents/private-domain-operator.md",
       "vendor/agency-agents/integrations/qwen/agents/solidity-smart-contract-engineer.md",
       "vendor/agency-agents/integrations/qwen/agents/supply-chain-strategist.md",
@@ -97185,11 +97554,15 @@
       "docs/governance/SOC2-READINESS.md",
       "docs/governance/internal/ACCESS-CONTROL-POLICY.md",
       "docs/design/DESIGN_REFERENCES.md",
+      "docs/runbooks/MISSION-CONTROL-TENANT-ROLLOUT.md",
+      "docs/runbooks/ICSO-MISSION-CONTROL.md",
       "docs/runbooks/COMPUTER-CONTROL-OPERATOR-MODE.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
+      "docs/00-architecture/MISSION-CONTROL-KIT.md",
       "docs/00-architecture/OPSLY-CONTROL-PLANE.md",
       "docs/00-architecture/ELEVENLABS-ADVANCED-INTEGRATION.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/LANIDEA-OPENCLAW.md",
       "docs/01-development/MODULARITY-CONTRACT.md",
       "docs/04-infrastructure/PLAN-OLLAMA-WORKER-2026-04-14.md",
@@ -97433,7 +97806,10 @@
     ],
     "mission": [
       ".jules/sentinel.md",
+      "lib/mission-control-kit/README.md",
+      "lib/mission-control-kit/GOVERNANCE.md",
       "apps/experimental/mission-control-archive/ARCHIVE.md",
+      "apps/icso/README.md",
       "vendor/agency-agents/integrations/qwen/agents/visual-storyteller.md",
       "vendor/agency-agents/integrations/qwen/agents/seo-specialist.md",
       "vendor/agency-agents/integrations/qwen/agents/xr-cockpit-interaction-specialist.md",
@@ -98385,6 +98761,9 @@
       "vendor/agency-agents/integrations/openclaw/game-audio-engineer/AGENTS.md",
       "docs/plans/AUTONOMY-COMPLETION-PLAN-2026-04-27.md",
       "docs/design/DESIGN_REFERENCES.md",
+      "docs/runbooks/MISSION-CONTROL-TENANT-ROLLOUT.md",
+      "docs/runbooks/ICSO-MISSION-CONTROL.md",
+      "docs/00-architecture/MISSION-CONTROL-KIT.md",
       "docs/01-development/LANIDEA-OPENCLAW.md"
     ],
     "notebooklm": [
@@ -99711,7 +100090,9 @@
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
       "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB683486-SEED419215-20180924-00000.md",
       "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB1177123-SEED419213-20200602-00000.md",
+      "docs/runbooks/OPSLY-MOON-DATA-SOURCES.md",
       "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
       "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
       "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
@@ -101313,6 +101694,7 @@
       "packages/skills/templates/template-test.md",
       "scripts/agent-training/README.md",
       "docs/obsidian/research/agent-pattern-matrix.md",
+      "docs/runbooks/MISSION-CONTROL-TENANT-ROLLOUT.md",
       "docs/01-development/MODULARITY-CONTRACT.md",
       "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md",
       ".claude/agents/neural/sona-learning.md",
@@ -101533,6 +101915,7 @@
       "docs/runbooks/AUTONOMY-JOB-POLICY-MAP.md",
       "docs/00-architecture/conversational-runtime-roadmap.md",
       "docs/00-architecture/REPO-MAP.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
       "docs/01-development/ADMIN-ECOSYSTEM.md",
       "docs/01-development/IMPLEMENTATION-IA-LAYER.md",
       "docs/03-agents/AGENTS.md",
@@ -101578,11 +101961,14 @@
       "packages/skills/templates/template-bash-script.md",
       ".github/copilot-instructions.md",
       "docs/orchestrator/REPAIR-QUEUE.md",
+      "docs/runbooks/OPSLY-MOON-PERMISSIONS.md",
       "docs/runbooks/SECRET-ROTATION-AFTER-EXPOSURE.md",
       "docs/runbooks/AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
       "docs/runbooks/OPSLY-OPENCLAW-STARTUP.md",
       "docs/00-architecture/TENANT-INCUBATION-LIFECYCLE.md",
       "docs/00-architecture/OPSLYQUANTUM-SKILL-DESIGN.md",
+      "docs/00-architecture/OPSLY-MOON.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
       "docs/01-development/SPRINT-PLANNING-SETUP.md",
       "docs/04-infrastructure/MAC-ADMIN-ORCHESTRATOR-WORKER.md",
       "docs/02-tools/OBSIDIAN-RESEARCH-BRAIN.md",
@@ -101671,6 +102057,8 @@
       "docs/history/consolidation/CONSOLIDATION-PLAN.md",
       "docs/brand/peskids/BRAND.md",
       "docs/design/AGENT-ORCHESTRATION-INDEX.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/MAIA-WORKERS.md",
       "docs/01-development/PHASE2-ROADMAP.md",
       "docs/01-development/QUICK-REFERENCE.md",
@@ -101782,6 +102170,7 @@
       "docs/growth/PRODUCTION-DEPLOYMENT-ROADMAP.md",
       "docs/stubs/TENANT-PRODUCTION-CHECKLIST.md",
       "docs/runbooks/LOCAL-SERVICES-GO-LIVE.md",
+      "docs/runbooks/MISSION-CONTROL-TENANT-ROLLOUT.md",
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
       "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/runbooks/MIGRATION-CHECKLIST.md",
@@ -102781,6 +103170,7 @@
       "lib/telemetry/GOVERNANCE.md",
       "lib/config/GOVERNANCE.md",
       "lib/services/GOVERNANCE.md",
+      "lib/mission-control-kit/GOVERNANCE.md",
       "lib/observability/GOVERNANCE.md",
       "lib/api/GOVERNANCE.md",
       "lib/migrations/GOVERNANCE.md",
@@ -102873,6 +103263,7 @@
       "docs/04-infrastructure/SECURITY-MITIGATIONS-2026-04-09.md",
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
       "docs/03-agents/HERMES-AUTONOMOUS-WORK-PLAN.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/README.md",
       "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM-MIGRATION.md",
@@ -103074,6 +103465,7 @@
       "docs/obsidian/research/agent-pattern-matrix.md",
       "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/LOCAL-FIRST-ARCHITECTURE.md",
       "docs/01-development/N8N-IMPORT-GUIDE.md",
       "docs/04-infrastructure/SECURITY_CHECKLIST.md",
@@ -104139,6 +104531,7 @@
       "vendor/agency-agents/integrations/opencode/agents/unity-architect.md",
       "vendor/agency-agents/integrations/openclaw/unity-architect/SOUL.md",
       "docs/obsidian/index.md",
+      "docs/runbooks/MISSION-CONTROL-TENANT-ROLLOUT.md",
       "docs/01-development/MODULARITY-CONTRACT.md",
       "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md"
     ],
@@ -104318,6 +104711,7 @@
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
       "docs/runbooks/PESKIDS-CDN-CACHE.md",
       "docs/runbooks/DEPLOY-GITHUB-ACTIONS.md",
+      "docs/runbooks/OPSLY-MOON-ROLLBACK.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
       "docs/runbooks/PRODUCTION-DEPLOY.md",
@@ -105510,6 +105904,7 @@
       "docs/runbooks/DEPLOYMENT-CHECKLIST.md",
       "docs/runbooks/TENANT-MONITORING.md",
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
+      "docs/runbooks/OPSLY-MOON-OPERATIONS.md",
       "docs/runbooks/OPSLY-OPENCLAW-STARTUP.md",
       "docs/runbooks/CORTEX-OBSERVATION-WINDOW.md",
       "docs/runbooks/PRODUCTION-DEPLOY.md",
@@ -105518,6 +105913,7 @@
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
       "docs/00-architecture/DISTRIBUTED-ARCHITECTURE.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/ADMIN-ECOSYSTEM.md",
       "docs/01-development/AUTO-PUSH-WATCHER.md",
       "docs/01-development/HEAVY-SERVICES-DECISION.md",
@@ -105585,6 +105981,7 @@
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/auth-patterns.md",
       "tools/agent-packs/vendor/the-architect/knowledge/stack-compatibility.md",
       "tools/agent-packs/vendor/the-architect/questions/phase-2-branches.md",
+      "docs/runbooks/OPSLY-MOON-PERMISSIONS.md",
       "docs/audits/CODE-REVIEW-API-ROUTES.md",
       "docs/tenants/peskids/OPSLY-REUSE.md",
       "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
@@ -106796,7 +107193,10 @@
       "docs/superpowers/specs/2026-06-25-icso-website-enhancement-design.md",
       "docs/ops/workflows-index.md",
       "docs/legal/peskids/DPIA-2026.md",
+      "docs/runbooks/ICSO-MISSION-CONTROL.md",
+      "docs/runbooks/OPSLY-MOON-ROLLBACK.md",
       "docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
       "docs/00-architecture/TENANT-CONTRACT.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
@@ -107082,6 +107482,7 @@
       "packages/skills/user/opsly-ai-sdk-vercel/SKILL.md",
       "docs/design/AGENT-ORCHESTRATION-INDEX.md",
       "docs/00-architecture/hooks-system.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
       "docs/01-development/AGENT-PROMPT-QUEUE.md",
       "docs/01-development/TROUBLESHOOTING.md",
       "docs/01-development/MODULARITY-CONTRACT.md",
@@ -107231,6 +107632,7 @@
       "docs/history/governance/openclaw-root-legacy.md",
       "docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md",
       "docs/runbooks/TENANT-MONITORING.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
       "docs/01-development/LIBRARY-MODULES.md",
       "docs/01-development/CLIENT-ONBOARDING-PLAYBOOK.md",
@@ -107375,6 +107777,7 @@
       "docs/obsidian/TAXONOMY.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
       "docs/00-architecture/LLM-GATEWAY.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
       "docs/01-development/HYBRID-OPSLY-ADMIN.md",
       "docs/01-development/MAKE-SETUP.md",
@@ -107425,6 +107828,7 @@
       "docs/00-architecture/BLUEPRINT-CONTRACT.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
       "docs/01-development/N8N-SETUP.md",
       "docs/01-development/SEMANA-1-INFORME.md",
       "docs/01-development/SEMANA-5-INFORME.md",
@@ -107876,6 +108280,8 @@
       "docs/database/DATABASE-OPERATIONS.md",
       "docs/governance/SOC2-READINESS.md",
       "docs/runbooks/OPERATIONS-HANDBOOK.md",
+      "docs/runbooks/ICSO-MISSION-CONTROL.md",
+      "docs/runbooks/OPSLY-MOON-OPERATIONS.md",
       "docs/runbooks/AUTONOMOUS-OPERATIONS-DASHBOARD.md",
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
       "docs/01-development/STATE-OF-PLATFORM.md",
@@ -109333,6 +109739,7 @@
     "minima": [
       "packages/skills/user/opsly-agent-verification/SKILL.md",
       "docs/runbooks/AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
+      "docs/runbooks/OPSLY-MOON-OPERATIONS.md",
       "docs/00-architecture/TENANT-CONTRACT.md",
       "docs/01-development/AGENT-PROMPT-QUEUE.md",
       "docs/04-infrastructure/MAC-ADMIN-ORCHESTRATOR-WORKER.md",
@@ -109347,7 +109754,9 @@
       "packages/skills/user/opsly-agent-verification/SKILL.md",
       "docs/ops/workflows-index.md",
       "docs/orchestrator/REPAIR-QUEUE.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
+      "docs/00-architecture/MISSION-CONTROL-KIT.md",
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
       "docs/01-development/AGENT-PROMPT-QUEUE.md",
       "docs/01-development/RTK.md",
@@ -109375,6 +109784,7 @@
       "docs/runbooks/LLM-PLATFORM-RECOVERY.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
       "docs/runbooks/TENANT-MONITORING.md",
+      "docs/runbooks/OPSLY-MOON-OPERATIONS.md",
       "docs/01-development/AGENT-PROMPT-QUEUE.md",
       "docs/01-development/HEAVY-SERVICES-DECISION.md",
       "docs/01-development/SPRINT-PLANNING-SETUP.md",
@@ -109454,6 +109864,7 @@
       "docs/runbooks/IDE-OCTOPUS-AGENTS.md",
       "docs/runbooks/dev.md",
       "docs/runbooks/KAFKA-AIRFLOW-BOOTSTRAP.md",
+      "docs/runbooks/OPSLY-MOON-OPERATIONS.md",
       "docs/runbooks/OPSLY-OPENCLAW-STARTUP.md",
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
       "docs/00-architecture/DISTRIBUTED-ARCHITECTURE.md",
@@ -109587,6 +109998,7 @@
       "docs/plans/README.md",
       "docs/obsidian/inbox/2026-05-22.md",
       "docs/README.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
       "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/03-agents/HERMES-LOCAL-AGENTS-STACK.md",
@@ -109788,6 +110200,7 @@
     "entrada": [
       "packages/skills/user/opsly-jcode/SKILL.md",
       "docs/obsidian/research/README.md",
+      "docs/00-architecture/OPSLY-MOON.md",
       "docs/01-development/AGENT-SERVICE-NAMING.md",
       "docs/qa/BACKLOG-IA-PROMPT.md",
       "docs/brain/README.md"
@@ -110964,6 +111377,7 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/owasp-top-10.md",
       "tools/agent-packs/vendor/the-architect/README.md",
       "tools/productivity-starter/README.md",
+      "lib/mission-control-kit/README.md",
       "lib/voice-messaging/README.md",
       "apps/peskids/README.md",
       "apps/peskids/CLAUDE.md",
@@ -111092,6 +111506,7 @@
       "scripts/README.md",
       "tools/agent-packs/vendor/the-architect/README.md",
       "tools/productivity-starter/README.md",
+      "lib/mission-control-kit/README.md",
       "lib/voice-messaging/README.md",
       "apps/peskids/README.md",
       "apps/intcloudsysops/README.md",
@@ -111172,6 +111587,7 @@
       "lib/telemetry/GOVERNANCE.md",
       "lib/config/GOVERNANCE.md",
       "lib/services/GOVERNANCE.md",
+      "lib/mission-control-kit/README.md",
       "lib/api/GOVERNANCE.md",
       "lib/errors/GOVERNANCE.md",
       "lib/prompts/GOVERNANCE.md",
@@ -111241,6 +111657,7 @@
       "tools/agent-packs/vendor/the-architect/questions/phase-3-confirmation.md",
       "tools/productivity-starter/README.md",
       "tools/productivity-starter/offer.md",
+      "lib/mission-control-kit/README.md",
       "vendor/agency-agents/integrations/qwen/agents/xr-cockpit-interaction-specialist.md",
       "vendor/agency-agents/integrations/qwen/agents/filament-optimization-specialist.md",
       "vendor/agency-agents/integrations/qwen/agents/korean-business-navigator.md",
@@ -111792,6 +112209,7 @@
       "docs/runbooks/AGENCY-DEVOPS-OS-DEMO.md",
       "docs/01-development/SEMANA-1-INFORME.md",
       "docs/tenants/peskids/AI-APPROVAL-POLICY.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md",
       "docs/tenants/peskids/PURGE-DEMO-DATA.md",
       "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
@@ -111955,6 +112373,8 @@
       "packages/skills/user/opsly-bootstrap/SKILL.md",
       "docs/obsidian/templates/moc-research.md",
       "docs/obsidian/sources/MOC.md",
+      "docs/runbooks/OPSLY-MOON-OPERATIONS.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/00-architecture/REPO-MAP.md",
       "docs/01-development/KNOWLEDGE-BRAIN-SYSTEM.md",
       "docs/02-tools/OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
@@ -112371,6 +112791,7 @@
       "docs/history/plans/SPRINT-ROADMAP.md",
       "docs/runbooks/OPERATIONS-HANDBOOK.md",
       "docs/runbooks/DEPLOYMENT-CHECKLIST.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/00-architecture/LLM-GATEWAY-WORKPLAN.md",
       "docs/01-development/ADMIN-ECOSYSTEM.md",
       "docs/01-development/PHASE-5-ADVANCED-FEATURES.md",
@@ -112470,6 +112891,7 @@
       "docs/obsidian/templates/source-note.md",
       "docs/obsidian/sources/opsly-agent-pattern-sources.md",
       "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/00-architecture/TENANT-CONTRACT.md",
       "docs/01-development/DESIGN-REFERENCES.md",
       "docs/01-development/KNOWLEDGE-BRAIN-SYSTEM.md",
@@ -113592,6 +114014,7 @@
       "docs/00-architecture/DISTRIBUTED-ARCHITECTURE.md",
       "docs/00-architecture/DATA-CLASSIFICATION-AND-RETENTION.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/MAIA-WORKERS.md",
       "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
       "docs/01-development/FAQ.md",
@@ -113726,6 +114149,7 @@
       "packages/skills/user/opsly-quantum/SKILL.md",
       "apps/orchestrator/README.md",
       "docs/00-architecture/LLM-GATEWAY.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/03-agents/HERMES-LOCAL-AGENTS-STACK.md",
       "docs/03-agents/COPILOT-CODING-AGENT.md",
       "docs/03-agents/AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
@@ -113972,6 +114396,7 @@
       "docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md",
       "docs/runbooks/admin.md",
       "docs/runbooks/OPSLY-OPENCLAW-STARTUP.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/01-development/ADMIN-ECOSYSTEM.md",
       "docs/01-development/RTK.md",
       "docs/01-development/MAKE-SETUP.md",
@@ -114008,6 +114433,7 @@
       "docs/runbooks/BACKUP-RECOVERY.md",
       "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
       "docs/runbooks/AUTONOMOUS-PROD-60D.md",
+      "docs/runbooks/OPSLY-MOON-DATA-SOURCES.md",
       "docs/runbooks/AGENCY-DEVOPS-OS-DEMO.md",
       "docs/runbooks/managed.md",
       "docs/runbooks/INCIDENT-AUTONOMOUS-AGENT.md",
@@ -114202,6 +114628,7 @@
       "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/history/plans/SPRINT-ROADMAP.md",
       "docs/README.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
       "docs/01-development/ONBOARDING-READINESS.md",
       "docs/01-development/TEST_PLAN.md",
@@ -114225,6 +114652,7 @@
     ],
     "codigo": [
       "packages/skills/user/opsly-billing/SKILL.md",
+      "docs/runbooks/OPSLY-MOON-ROLLBACK.md",
       "docs/00-architecture/COST-DASHBOARD.md",
       "docs/00-architecture/REPO-MAP.md",
       "docs/01-development/AI-FRAMEWORKS.md",
@@ -114320,6 +114748,7 @@
       "vendor/agency-agents/integrations/openclaw/healthcare-customer-service/AGENTS.md",
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
       "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
       "docs/01-development/TECHNICAL-DEBT.md",
       "docs/01-development/AGENT-SKILLS-INTEGRATION.md",
       "docs/01-development/PERFORMANCE_BASELINE.md",
@@ -114332,7 +114761,8 @@
     "ruta": [
       "packages/skills/user/opsly-api/SKILL.md",
       "packages/skills/templates/template-api-route.md",
-      "docs/design/AGENT-ORCHESTRATION-INDEX.md"
+      "docs/design/AGENT-ORCHESTRATION-INDEX.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md"
     ],
     "tests": [
       "packages/skills/user/opsly-api/SKILL.md",
@@ -114447,6 +114877,7 @@
       "docs/04-infrastructure/TAILSCALE-NOMENCLATURA.md",
       "docs/04-infrastructure/OLLAMA-DEPLOYMENT.md",
       "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
       "docs/tenants/peskids/CLIENT-PITCH.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
@@ -114814,6 +115245,7 @@
       "docs/operations/RUN-VALIDATION-LOCALLY.md",
       "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
       "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md",
@@ -116462,6 +116894,7 @@
       "lib/telemetry/README.md",
       "lib/config/README.md",
       "lib/services/README.md",
+      "lib/mission-control-kit/README.md",
       "lib/observability/README.md",
       "lib/api/README.md",
       "lib/migrations/README.md",
@@ -116828,6 +117261,8 @@
       "docs/obsidian/sources/trading-pattern-sources.md",
       "docs/obsidian/sources/security-pattern-sources.md",
       "docs/obsidian/sources/opsly-agent-pattern-sources.md",
+      "docs/runbooks/ICSO-MISSION-CONTROL.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
       "docs/01-development/SPRINT-PLANNING-SETUP.md",
       "docs/01-development/AUTO-SYNC-DOCS-SETUP.md",
       "docs/01-development/N8N-IMPORT-GUIDE.md",
@@ -116846,9 +117281,11 @@
       "packages/skills/templates/template-bash-script.md",
       ".n8n/3-webhooks/github-webhook.md",
       ".n8n/3-webhooks/discord-webhook.md",
+      "docs/runbooks/MISSION-CONTROL-TENANT-ROLLOUT.md",
       "docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md",
       "docs/runbooks/KAFKA-AIRFLOW-BOOTSTRAP.md",
       "docs/runbooks/AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
+      "docs/runbooks/OPSLY-MOON-OPERATIONS.md",
       "docs/00-architecture/REDIS_NAMESPACE_ISOLATION.md",
       "docs/00-architecture/hooks-system.md",
       "docs/00-architecture/MODULE-REGISTRY.md",
@@ -119686,6 +120123,7 @@
       "lib/telemetry/GOVERNANCE.md",
       "lib/config/GOVERNANCE.md",
       "lib/services/GOVERNANCE.md",
+      "lib/mission-control-kit/GOVERNANCE.md",
       "lib/api/GOVERNANCE.md",
       "lib/migrations/GOVERNANCE.md",
       "lib/errors/GOVERNANCE.md",
@@ -120628,6 +121066,7 @@
       ".cursor/prompts/local-services-ops-admin.md",
       ".cursor/prompts/local-services-sales-closer.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/SKILL.md",
+      "lib/mission-control-kit/GOVERNANCE.md",
       "apps/orchestrator/src/meta/README.md",
       "apps/icso/README.md",
       "vendor/agency-agents/integrations/qwen/agents/minimal-change-engineer.md",
@@ -121441,6 +121880,7 @@
       "vendor/agency-agents/integrations/openclaw/rapid-prototyper/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/rapid-prototyper/AGENTS.md",
       "docs/projects/PESKIDS-SCOPE.md",
+      "docs/runbooks/OPSLY-MOON-ROLLBACK.md",
       "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
       "docs/04-infrastructure/PRODUCTION-READINESS.md",
       "docs/03-agents/AGENT-TEAM-OVERVIEW.md",
@@ -121476,6 +121916,7 @@
       "docs/runbooks/TROUBLESHOOTING-GUIDE.md",
       "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
       "docs/00-architecture/REPO-MAP.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
       "docs/adr/ADR-043-supplement/README.md",
       "docs/tenants/peskids/GHL-WORKFLOWS.md",
@@ -123626,6 +124067,7 @@
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
       "docs/00-architecture/LLM-GATEWAY-WORKPLAN.md",
       "docs/00-architecture/ORCHESTRATOR.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
       "docs/01-development/TEST_PLAN.md",
       "docs/01-development/TENANT-TESTING-PLAN.md",
       "docs/01-development/HEAVY-SERVICES-DECISION.md",
@@ -123831,7 +124273,9 @@
       "docs/obsidian/sources/trading-pattern-sources.md",
       "docs/obsidian/sources/security-pattern-sources.md",
       "docs/obsidian/sources/opsly-agent-pattern-sources.md",
+      "docs/runbooks/OPSLY-MOON-DATA-SOURCES.md",
       "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/00-architecture/INCUBATION-PLATFORM-CONTRACT.md",
       "docs/audits/TEST-COVERAGE-BASELINE.md"
     ],
@@ -126888,6 +127332,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-identity-graph-operator/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/identity-graph-operator.md",
       "vendor/agency-agents/integrations/openclaw/identity-graph-operator/SOUL.md",
+      "docs/runbooks/OPSLY-MOON-PERMISSIONS.md",
       "docs/00-architecture/REDIS_NAMESPACE_ISOLATION.md",
       "docs/01-development/TEST_PLAN.md",
       "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
@@ -127540,6 +127985,7 @@
       "lib/config/GOVERNANCE.md",
       "docs/stubs/TENANT-PRODUCTION-ROLLOUT.md",
       "docs/runbooks/TENANT-BONUS-WORKFLOWS.md",
+      "docs/runbooks/MISSION-CONTROL-TENANT-ROLLOUT.md",
       "docs/runbooks/TENANT-PRODUCTION-ROLLOUT.md",
       "docs/00-architecture/ELEVENLABS-ADVANCED-INTEGRATION.md",
       "docs/adr/ADR-035-safe-autonomous-evolution-framework.md",
@@ -127757,6 +128203,7 @@
       "docs/generated/implementation-progress.auto.md",
       "docs/history/plans/SPRINT-TRACKING.md",
       "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "docs/runbooks/ICSO-MISSION-CONTROL.md",
       "docs/01-development/LAYERS-SANDBOX-QA-PROD.md",
       "docs/03-agents/SPRINT-CURSOR-PROMPTS.md",
       "docs/adr/ADR-046-family-email-invite-access.md",
@@ -127911,7 +128358,9 @@
     "auditoria": [
       "config/doppler-audit-2026-04-07.md",
       "docs/ops/workflows-audit.md",
+      "docs/runbooks/OPSLY-MOON-PERMISSIONS.md",
       "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/GIT-WORKFLOW.md",
       "docs/01-development/SCRIPTS-AUDIT-2026-04-24.md",
       "docs/04-infrastructure/SECURITY_AUDIT_REPORT.md",
@@ -127993,6 +128442,7 @@
       "lib/telemetry/README.md",
       "lib/config/README.md",
       "lib/services/README.md",
+      "lib/mission-control-kit/README.md",
       "lib/observability/README.md",
       "lib/api/README.md",
       "lib/migrations/README.md",
@@ -128042,6 +128492,7 @@
     "inventario": [
       "config/doppler-audit-2026-04-07.md",
       "docs/stubs/TENANT-PRODUCTION-BASELINE.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/HOSTS-PATHS.md",
       "docs/01-development/SCRIPTS-AUDIT-2026-04-24.md",
       "docs/04-infrastructure/TENANT-PRODUCTION-BASELINE.md",
@@ -129848,6 +130299,7 @@
       "docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md",
       "docs/runbooks/dev.md",
       "docs/runbooks/KAFKA-AIRFLOW-BOOTSTRAP.md",
+      "docs/runbooks/OPSLY-MOON-OPERATIONS.md",
       "docs/runbooks/OPSLY-OPENCLAW-STARTUP.md",
       "docs/runbooks/PRODUCTION-DEPLOY.md",
       "docs/00-architecture/POLICY-AI-LOCAL-FIRST.md",
@@ -129967,6 +130419,7 @@
       "docs/runbooks/AUTONOMOUS-PRODUCTION-GO-LIVE-CHECKLIST.md",
       "docs/runbooks/ONBOARDING-NEW-CLIENT.md",
       "docs/00-architecture/RENDERING-ENGINE.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
       "docs/01-development/TECHNICAL-DEBT.md",
       "docs/01-development/MAKE-SETUP.md",
       "docs/01-development/SPRINTS_13_14.md",
@@ -130344,6 +130797,7 @@
       ".github/README-github-templates.md",
       "docs/runbooks/ONBOARDING-NEW-CLIENT.md",
       "docs/00-architecture/ORCHESTRATOR.md",
+      "docs/00-architecture/MISSION-CONTROL-KIT.md",
       "docs/00-architecture/CONTEXT-BUILDER.md",
       "docs/01-development/VISION.md",
       "docs/01-development/AUTO-SYNC-DOCS-SETUP.md",
@@ -132497,6 +132951,7 @@
       "docs/04-infrastructure/VPS-SSH-WORKER-NODES.md",
       "docs/04-infrastructure/WORKER-SETUP-MAC2011.md",
       "docs/03-agents/QUICKSTART-AGENTS.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
       "docs/postman/README.md"
     ],
@@ -132529,6 +132984,7 @@
       "docs/history/plans/MASTER-PLAN.md",
       "docs/00-architecture/DISTRIBUTED-ARCHITECTURE.md",
       "docs/00-architecture/LLM-GATEWAY.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/01-development/SPRINT-TRACKER.md",
       "docs/01-development/HYBRID-OPSLY-ADMIN.md",
       "docs/01-development/KNOWLEDGE-BRAIN-SYSTEM.md",
@@ -132565,6 +133021,7 @@
       "docs/runbooks/dev.md",
       "docs/runbooks/TENANT-ONBOARDING-TRIAGE.md",
       "docs/00-architecture/POLICY-AI-LOCAL-FIRST.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/ADMIN-ECOSYSTEM.md",
       "docs/01-development/TENANT-TESTING-GUIDE.md",
       "docs/01-development/TENANT-TESTING-PLAN.md",
@@ -132609,6 +133066,7 @@
       "docs/obsidian/index.md",
       "docs/runbooks/IDE-OCTOPUS-AGENTS.md",
       "docs/runbooks/PRODUCTION-CHANGE-WINDOW.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/01-development/AGENT-PROMPT-QUEUE.md",
       "docs/01-development/HEAVY-SERVICES-DECISION.md",
       "docs/01-development/OPSLY-KNOWLEDGE-BASE.md",
@@ -132948,6 +133406,7 @@
     ],
     "prs": [
       ".github/copilot-instructions.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/GIT-WORKFLOW.md",
       "docs/adr/ADR-034-ci-hygiene.md",
       "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
@@ -134935,6 +135394,7 @@
       ".codex/LOCAL-AUTOMATION.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/cicd-security.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/auth-patterns.md",
+      "docs/runbooks/OPSLY-MOON-PERMISSIONS.md",
       "docs/04-infrastructure/MACOS-LOCAL-AI-AUTOMATION.md",
       "docs/tenants/peskids/PESKIDS-ADMIN-USER-VALIDATION.md",
       "docs/blueprints/opsly-operational-blueprint/SECURITY-AND-TRUST.md",
@@ -134943,6 +135403,7 @@
     ],
     "agency": [
       "AGENCY_CONTEXT.md",
+      "apps/icso/README.md",
       "vendor/agency-agents/integrations/qwen/agents/accounts-payable-agent.md",
       "vendor/agency-agents/integrations/aider/CONVENTIONS.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/accounts-payable-agent/SKILL.md",
@@ -135319,6 +135780,7 @@
     ],
     "actuales": [
       ".n8n/2-context/AGENTS.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
       "docs/01-development/WALLET-PREPAID-ROADMAP.md",
       "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md"
     ],
@@ -135525,6 +135987,7 @@
     "costos": [
       "AGENTS.md",
       "docs/00-architecture/COST-DASHBOARD.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
       "docs/01-development/PREDICTIVE-BI-SCALABILITY.md",
       "docs/01-development/IMPLEMENTATION-IA-LAYER.md",
@@ -135687,7 +136150,10 @@
     ],
     "kit": [
       "tools/usb-kit/README.md",
-      "docs/brand/peskids/BRAND.md"
+      "lib/mission-control-kit/README.md",
+      "lib/mission-control-kit/GOVERNANCE.md",
+      "docs/brand/peskids/BRAND.md",
+      "docs/00-architecture/MISSION-CONTROL-KIT.md"
     ],
     "portatil": [
       "tools/usb-kit/README.md"
@@ -138095,6 +138561,7 @@
       "docs/history/plans/SPRINT-ROADMAP.md",
       "docs/05-deployment-status/PESKIDS-GO-LIVE-STATUS.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
@@ -138748,6 +139215,7 @@
     ],
     "install": [
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/styling-systems.md",
+      "lib/mission-control-kit/README.md",
       "infra/n8n/workflows/peskids/README.md",
       "docs/.obsidian/PLUGINS-TO-INSTALL.md",
       "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
@@ -140032,6 +140500,7 @@
       "lib/telemetry/GOVERNANCE.md",
       "lib/config/GOVERNANCE.md",
       "lib/services/GOVERNANCE.md",
+      "lib/mission-control-kit/GOVERNANCE.md",
       "lib/observability/GOVERNANCE.md",
       "lib/api/GOVERNANCE.md",
       "lib/migrations/GOVERNANCE.md",
@@ -140563,6 +141032,13 @@
       "docs/reports/REPOSITORY-BASELINE-2026-05-27.md",
       "docs/reports/REPOSITORY-AUDIT-2026-05-27.md"
     ],
+    "workspace": [
+      "lib/mission-control-kit/README.md",
+      "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
+      "docs/04-infrastructure/MACOS-LOCAL-AI-AUTOMATION.md",
+      "docs/audits/TEST-COVERAGE-BASELINE.md",
+      "docs/02-tools/SETUP-NOTION-MCP.md"
+    ],
     "dashboards": [
       "lib/observability/README.md",
       "docs/01-development/PHASE-4-OBSERVABILITY-BILLING.md",
@@ -140742,9 +141218,11 @@
       "docs/runbooks/incident.md",
       "docs/runbooks/AUTONOMOUS-PROD-60D.md",
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
+      "docs/runbooks/ICSO-MISSION-CONTROL.md",
       "docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md",
       "docs/runbooks/DEPLOY-GITHUB-ACTIONS.md",
       "docs/runbooks/MIGRATION-CHECKLIST.md",
+      "docs/runbooks/OPSLY-MOON-ROLLBACK.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
       "docs/runbooks/CORTEX-OBSERVATION-WINDOW.md",
       "docs/01-development/SETUP-SUDOERS-CLOUDSYSOPS.md",
@@ -142139,6 +142617,7 @@
     ],
     "colas": [
       "apps/experimental/ingestion-service-archive/README.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/01-development/.openclaw.md",
       "docs/brain/modules/orchestrator.md",
       ".claude/agents/opsly/orchestrator.md"
@@ -142179,6 +142658,8 @@
     "icso": [
       "apps/icso/README.md",
       "docs/superpowers/specs/2026-06-25-icso-website-enhancement-design.md",
+      "docs/runbooks/ICSO-MISSION-CONTROL.md",
+      "docs/00-architecture/MISSION-CONTROL-KIT.md",
       "docs/examples/email-templates/INTCLOUDSYSOPS-EMAIL-TEMPLATES.md",
       "docs/audits/SALES-READINESS-HARDENING.md",
       "docs/tenants/intcloudsysops/TWENTY-CRM.md",
@@ -148639,7 +149120,8 @@
       "vendor/agency-agents/integrations/openclaw/compliance-auditor/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/blockchain-security-auditor/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/bookkeeper-controller/AGENTS.md",
-      "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md"
+      "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
+      "docs/00-architecture/MISSION-CONTROL-KIT.md"
     ],
     "allocation": [
       "vendor/agency-agents/integrations/qwen/agents/livestream-commerce-coach.md",
@@ -154086,6 +154568,7 @@
       "vendor/agency-agents/integrations/antigravity/agency-blender-add-on-engineer/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/blender-add-on-engineer.md",
       "vendor/agency-agents/integrations/openclaw/blender-add-on-engineer/AGENTS.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/04-infrastructure/WORKER-TEAM-BILLING.md",
       "docs/audits/TEST-COVERAGE-BASELINE.md",
       "docs/tenants/peskids/OWNER-RUNBOOK.md"
@@ -154718,6 +155201,7 @@
       "vendor/agency-agents/integrations/openclaw/unreal-technical-artist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/book-co-author/AGENTS.md",
       "docs/superpowers/plans/2026-05-30-skills-obsidian-integration.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
       "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/tenants/peskids/N8N-BRIEF-WORKFLOW.md",
       "docs/testing/QA-TESTING-BRIEF.md"
@@ -159225,7 +159709,8 @@
     ],
     "track": [
       "vendor/agency-agents/integrations/openclaw/china-market-localization-strategist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/workflow-architect/SOUL.md"
+      "vendor/agency-agents/integrations/openclaw/workflow-architect/SOUL.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md"
     ],
     "effect": [
       "vendor/agency-agents/integrations/openclaw/technical-artist/AGENTS.md",
@@ -159829,6 +160314,7 @@
     "leyenda": [
       "infra/templates/n8n-workflows-template.md",
       "docs/ops/workflows-index.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/tenants/peskids/SPRINT-BACKLOG-OPERATIONS-2026.md"
     ],
     "logico": [
@@ -160773,7 +161259,8 @@
     ],
     "hay": [
       "docs/ops/branch-protection-setup.md",
-      "docs/03-agents/AGENTS-AUTONOMOUS-RUNBOOK.md"
+      "docs/03-agents/AGENTS-AUTONOMOUS-RUNBOOK.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md"
     ],
     "nombres": [
       "docs/ops/branch-protection-setup.md",
@@ -161090,6 +161577,7 @@
       "docs/emails/tenant-welcome-email.md",
       "docs/runbooks/managed.md",
       "docs/runbooks/ONBOARDING-NEW-CLIENT.md",
+      "docs/00-architecture/MISSION-CONTROL-KIT.md",
       "docs/01-development/ADMIN-ECOSYSTEM.md",
       "docs/01-development/SEMANA-6-INFORME.md",
       "docs/01-development/ROADMAP.md",
@@ -161101,6 +161589,7 @@
       "docs/03-agents/AGENT-URL-VALIDATION.md",
       "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md",
       "docs/tenants/peskids/SPRINT-FINAL-STATUS.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/CLIENT-PITCH.md",
       "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
       "docs/tenants/peskids/CLIENT-DECK-OPERATIONS-2026-05.md",
@@ -161236,6 +161725,7 @@
     ],
     "secuencia": [
       "docs/growth/AGENCY-PILOT-OUTREACH.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/04-infrastructure/WORKER-FLOWS.md",
       "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/tenants/peskids/WACRM-TWENTY-CUTOVER.md",
@@ -161310,6 +161800,7 @@
     "duplicar": [
       "docs/history/plans/MASTER-PLAN.md",
       "docs/00-architecture/REPO-MAP.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/SPRINT-PLANNING-SETUP.md",
       "docs/03-agents/QUICKSTART-AGENTS.md",
       "docs/03-agents/AGENTS.md",
@@ -161327,6 +161818,7 @@
     ],
     "falta": [
       "docs/history/plans/MASTER-PLAN.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
       "docs/04-infrastructure/DOPPLER-CI-RUNBOOK.md",
       "docs/02-tools/MCP-STATUS-ANALYSIS.md",
       "docs/tenants/peskids/SPRINT-02-RUN.md",
@@ -161492,6 +161984,7 @@
     ],
     "legacy": [
       "docs/history/governance/openclaw-root-legacy.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
       "docs/01-development/API-CORE-PORTFOLIO.md",
       "docs/audits/LINT-RULES-GUIDE.md",
       "docs/adr/ADR-033-migrate-ia-legacy-to-gateway.md",
@@ -161916,6 +162409,7 @@
     ],
     "canonicas": [
       "docs/design/AGENT-ORCHESTRATION-INDEX.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/03-agents/AGENT-BRAIN-CONTRACT.md"
     ],
@@ -161968,6 +162462,7 @@
     ],
     "tres": [
       "docs/design/AGENT-ORCHESTRATION-INDEX.md",
+      "docs/00-architecture/MISSION-CONTROL-KIT.md",
       "docs/01-development/MODULARITY-CONTRACT.md"
     ],
     "alineadas": [
@@ -161978,7 +162473,8 @@
       "docs/index.md"
     ],
     "madurez": [
-      "docs/design/OAR.md"
+      "docs/design/OAR.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md"
     ],
     "swarmops": [
       "docs/design/OAR.md",
@@ -162087,7 +162583,8 @@
       "docs/obsidian/sources/trading-pattern-sources.md"
     ],
     "abiertos": [
-      "docs/obsidian/research/MOC.md"
+      "docs/obsidian/research/MOC.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md"
     ],
     "activas": [
       "docs/obsidian/research/MOC.md",
@@ -162624,6 +163121,7 @@
     ],
     "riesgos": [
       "docs/legal/peskids/DPIA-2026.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
       "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md",
       "docs/adr/ADR-043-facebook-page-organic-publishing-graph-api.md",
@@ -162730,6 +163228,7 @@
     ],
     "capacidad": [
       "docs/runbooks/VPS-MEMORY-CAPS.md",
+      "docs/runbooks/OPSLY-MOON-OPERATIONS.md",
       "docs/adr/ADR-024-ollama-local-worker-primary.md"
     ],
     "hasta": [
@@ -162772,6 +163271,7 @@
     ],
     "incidentes": [
       "docs/runbooks/incident.md",
+      "docs/runbooks/OPSLY-MOON-OPERATIONS.md",
       "docs/runbooks/AUTONOMOUS-OPERATIONS-DASHBOARD.md"
     ],
     "arriba": [
@@ -162860,7 +163360,8 @@
       "docs/runbooks/SUBCLIENT-ONBOARDING-TEMPLATE.md"
     ],
     "obligatorias": [
-      "docs/runbooks/SUBCLIENT-ONBOARDING-TEMPLATE.md"
+      "docs/runbooks/SUBCLIENT-ONBOARDING-TEMPLATE.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md"
     ],
     "operativos": [
       "docs/runbooks/SUBCLIENT-ONBOARDING-TEMPLATE.md",
@@ -162894,12 +163395,6 @@
     "responding": [
       "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md"
     ],
-    "workspace": [
-      "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
-      "docs/04-infrastructure/MACOS-LOCAL-AI-AUTOMATION.md",
-      "docs/audits/TEST-COVERAGE-BASELINE.md",
-      "docs/02-tools/SETUP-NOTION-MCP.md"
-    ],
     "60d": [
       "docs/runbooks/AUTONOMOUS-PROD-60D.md"
     ],
@@ -162913,6 +163408,17 @@
       "docs/runbooks/IDE-OCTOPUS-AGENTS.md",
       "docs/04-infrastructure/FAILOVER-GCP-ARCHITECTURE.md",
       "docs/adr/ADR-028-tenant-onboarding-pattern.md"
+    ],
+    "moon": [
+      "docs/runbooks/OPSLY-MOON-PERMISSIONS.md",
+      "docs/runbooks/OPSLY-MOON-DATA-SOURCES.md",
+      "docs/runbooks/OPSLY-MOON-ROLLBACK.md",
+      "docs/runbooks/OPSLY-MOON-OPERATIONS.md",
+      "docs/00-architecture/OPSLY-MOON.md",
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
+      "docs/00-architecture/MISSION-CONTROL-KIT.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md"
     ],
     "linting": [
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
@@ -162977,6 +163483,15 @@
     "registro": [
       "docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md",
       "docs/tenants/onboarding-prompts/DEPLOYMENT-VALIDATION.md"
+    ],
+    "separacion": [
+      "docs/runbooks/ICSO-MISSION-CONTROL.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
+      "docs/04-infrastructure/SECURITY_CHECKLIST.md",
+      "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/04-infrastructure/OPENCLAW-CLI-VPS-META-ORCHESTRATOR.md",
+      "docs/adr/ADR-020-orchestrator-worker-separation.md"
     ],
     "aun": [
       "docs/runbooks/PESKIDS-CDN-CACHE.md",
@@ -163706,6 +164221,7 @@
     ],
     "migracion": [
       "docs/00-architecture/DISTRIBUTED-ARCHITECTURE.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
       "docs/01-development/HEAVY-SERVICES-DECISION.md",
       "docs/03-agents/HERMES-INTEGRATION.md",
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
@@ -163761,6 +164277,52 @@
     "sesgo": [
       "docs/00-architecture/LLM-GATEWAY.md"
     ],
+    "blueprints": [
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
+      "docs/blueprints/opsly-operational-blueprint/VERTICAL-BLUEPRINTS.md",
+      "docs/blueprints/opsly-operational-blueprint/README.md",
+      "docs/blueprints/README.md"
+    ],
+    "cartera": [
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md"
+    ],
+    "clientes": [
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
+      "docs/01-development/VISION.md",
+      "docs/01-development/CLIENT-TESTING-CHECKLIST.md",
+      "docs/01-development/CLIENTS-TO-INVITE.md",
+      "docs/03-agents/SUPERAGENTS-BOOTSTRAP.md"
+    ],
+    "etiquetado": [
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md"
+    ],
+    "etiquetas": [
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md"
+    ],
+    "explicitamente": [
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md"
+    ],
+    "home": [
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md"
+    ],
+    "integraciones": [
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
+      "docs/01-development/AI-FRAMEWORKS.md",
+      "docs/tenants/peskids/REUNION-2026-07-21.md",
+      "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
+      "docs/brain/modules/peskids.md"
+    ],
+    "modulos": [
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
+      "docs/adr/ADR-022-di-pattern-testability.md",
+      "docs/tenants/peskids/OPSLY-REUSE.md",
+      "docs/brain/architecture/system-map.md",
+      "docs/blueprints/opsly-operational-blueprint/NICHE-PLAYBOOKS.md",
+      "docs/blueprints/academy/README.md"
+    ],
+    "omitidos": [
+      "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md"
+    ],
     "diagrama": [
       "docs/00-architecture/ARCHITECTURE-DISTRIBUTED-FINAL.md",
       "docs/tenants/peskids/WORKFLOWS.md"
@@ -163792,6 +164354,7 @@
       "docs/00-architecture/ORCHESTRATOR.md",
       "docs/00-architecture/OPSLY-CONTROL-PLANE.md",
       "docs/00-architecture/ARCHITECTURE.md",
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
       "docs/01-development/MODULARITY-CONTRACT.md",
       "docs/04-infrastructure/PLAN-OLLAMA-WORKER-2026-04-14.md",
       "docs/04-infrastructure/WORKER-SETUP-MAC2011.md",
@@ -164013,6 +164576,14 @@
       "docs/adr/ADR-036-cli-consolidation-tools-cli-first.md",
       "docs/tenants/peskids/WACRM-RUNBOOK.md"
     ],
+    "confundir": [
+      "docs/00-architecture/MISSION-CONTROL-KIT.md",
+      "docs/01-development/GITHUB-TOKEN.md",
+      "docs/03-agents/SSH-USERS-FOR-AGENTS.md"
+    ],
+    "replicar": [
+      "docs/00-architecture/MISSION-CONTROL-KIT.md"
+    ],
     "estilo": [
       "docs/00-architecture/CONTEXT-BUILDER.md"
     ],
@@ -164131,7 +164702,8 @@
       "docs/03-agents/HERMES-INTEGRATION.md"
     ],
     "propuestos": [
-      "docs/00-architecture/OPENCLAW-ARCHITECTURE.md"
+      "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md"
     ],
     "reduccion": [
       "docs/00-architecture/OPENCLAW-ARCHITECTURE.md"
@@ -164180,7 +164752,8 @@
       "docs/02-tools/MCP-STATUS-ANALYSIS.md"
     ],
     "mermaid": [
-      "docs/00-architecture/BILLING-USD-DIAGRAMS.md"
+      "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
+      "docs/security/NPM-AUDIT-EXEMPTIONS.md"
     ],
     "pago": [
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
@@ -164209,6 +164782,54 @@
     ],
     "zonas": [
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md"
+    ],
+    "aliases": [
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md"
+    ],
+    "graduales": [
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md"
+    ],
+    "navegacion": [
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md"
+    ],
+    "realidad": [
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md"
+    ],
+    "tracks": [
+      "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
+      "docs/blueprints/CUSTOMERS-DEPLOY-NOW.md"
+    ],
+    "ajustada": [
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
+    ],
+    "aprobadas": [
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md"
+    ],
+    "contratos": [
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
+      "docs/tenants/peskids/CLASSES-SYSTEM-SPEC.md",
+      "docs/brain/modules/api.md",
+      "docs/brain/modules/llm-gateway.md",
+      "docs/brain/agents/README.md",
+      "docs/index.md",
+      "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md"
+    ],
+    "hacia": [
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
+      "docs/04-infrastructure/VPS-SSH-WORKER-NODES.md",
+      "docs/04-infrastructure/FAILOVER-RUNBOOK.md"
+    ],
+    "memoria": [
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md",
+      "docs/04-infrastructure/WORKER-TEAM-BILLING.md",
+      "docs/03-agents/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md"
+    ],
+    "registries": [
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md"
+    ],
+    "restriccion": [
+      "docs/00-architecture/OPSLY-MOON-AUDIT.md"
     ],
     "administrador": [
       "docs/01-development/ADMIN-ECOSYSTEM.md",
@@ -164298,12 +164919,6 @@
     ],
     "inicializacion": [
       "docs/01-development/AI-FRAMEWORKS.md"
-    ],
-    "integraciones": [
-      "docs/01-development/AI-FRAMEWORKS.md",
-      "docs/tenants/peskids/REUNION-2026-07-21.md",
-      "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
-      "docs/brain/modules/peskids.md"
     ],
     "relevantes": [
       "docs/01-development/AI-FRAMEWORKS.md",
@@ -164687,6 +165302,7 @@
     "falla": [
       "docs/01-development/FAQ.md",
       "docs/04-infrastructure/WORKER-SETUP-MAC2011.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/peskids/REUNION-2026-07-21.md",
       "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md"
@@ -164783,12 +165399,6 @@
     "proximas": [
       "docs/01-development/SEMANA-4-INFORME.md",
       "docs/tenants/testing/TENANT-TESTING-PLAN.md"
-    ],
-    "clientes": [
-      "docs/01-development/VISION.md",
-      "docs/01-development/CLIENT-TESTING-CHECKLIST.md",
-      "docs/01-development/CLIENTS-TO-INVITE.md",
-      "docs/03-agents/SUPERAGENTS-BOOTSTRAP.md"
     ],
     "defensiva": [
       "docs/01-development/VISION.md"
@@ -165279,10 +165889,6 @@
     ],
     "utils": [
       "docs/01-development/SCRIPTS-AUDIT-2026-04-24.md"
-    ],
-    "confundir": [
-      "docs/01-development/GITHUB-TOKEN.md",
-      "docs/03-agents/SSH-USERS-FOR-AGENTS.md"
     ],
     "pat": [
       "docs/01-development/GITHUB-TOKEN.md"
@@ -165792,10 +166398,6 @@
     "ilustrativa": [
       "docs/04-infrastructure/WORKER-TEAM-BILLING.md"
     ],
-    "memoria": [
-      "docs/04-infrastructure/WORKER-TEAM-BILLING.md",
-      "docs/03-agents/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md"
-    ],
     "antiguo": [
       "docs/04-infrastructure/MONITORING.md",
       "docs/04-infrastructure/CICD-VPS.md"
@@ -165947,10 +166549,6 @@
       "docs/04-infrastructure/VPS-SSH-WORKER-NODES.md",
       "docs/03-agents/HERMES-SPRINT-PLAN.md"
     ],
-    "hacia": [
-      "docs/04-infrastructure/VPS-SSH-WORKER-NODES.md",
-      "docs/04-infrastructure/FAILOVER-RUNBOOK.md"
-    ],
     "nodes": [
       "docs/04-infrastructure/VPS-SSH-WORKER-NODES.md"
     ],
@@ -165975,12 +166573,6 @@
     "founder": [
       "docs/04-infrastructure/SECURITY_CHECKLIST.md",
       "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md"
-    ],
-    "separacion": [
-      "docs/04-infrastructure/SECURITY_CHECKLIST.md",
-      "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
-      "docs/04-infrastructure/OPENCLAW-CLI-VPS-META-ORCHESTRATOR.md",
-      "docs/adr/ADR-020-orchestrator-worker-separation.md"
     ],
     "tenancy": [
       "docs/04-infrastructure/SECURITY_CHECKLIST.md",
@@ -166300,9 +166892,6 @@
     ],
     "select": [
       "docs/audits/DATABASE-QUERY-AUDIT.md"
-    ],
-    "ajustada": [
-      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
     ],
     "catalogos": [
       "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
@@ -167321,13 +167910,6 @@
       "docs/adr/ADR-043-facebook-page-organic-publishing-graph-api.md",
       "docs/adr/ADR-047-fable5-model-strategy.md"
     ],
-    "modulos": [
-      "docs/adr/ADR-022-di-pattern-testability.md",
-      "docs/tenants/peskids/OPSLY-REUSE.md",
-      "docs/brain/architecture/system-map.md",
-      "docs/blueprints/opsly-operational-blueprint/NICHE-PLAYBOOKS.md",
-      "docs/blueprints/academy/README.md"
-    ],
     "singletons": [
       "docs/adr/ADR-022-di-pattern-testability.md"
     ],
@@ -167686,6 +168268,29 @@
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md"
     ],
+    "algo": [
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
+      "docs/tenants/peskids/REUNION-2026-07-21.md",
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md"
+    ],
+    "empresa": [
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md"
+    ],
+    "familia": [
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
+      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
+      "docs/brain/modules/peskids.md"
+    ],
+    "formularios": [
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
+      "docs/tenants/peskids/SPRINT-02-RUN.md"
+    ],
+    "lote": [
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md"
+    ],
+    "profesor": [
+      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md"
+    ],
     "extraccion": [
       "docs/tenants/peskids/INCUBATION-CHECKLIST.md",
       "docs/tenants/peskids/SPRINT-02-RUN.md",
@@ -167702,9 +168307,6 @@
     "freshness": [
       "docs/tenants/peskids/BLUEPRINT-MAPPING.md",
       "docs/tenants/peskids/DASHBOARD-SPEC.md"
-    ],
-    "formularios": [
-      "docs/tenants/peskids/SPRINT-02-RUN.md"
     ],
     "implemento": [
       "docs/tenants/peskids/SPRINT-02-RUN.md"
@@ -168003,14 +168605,6 @@
     "salientes": [
       "docs/tenants/peskids/EXTRACTION-PLAN.md"
     ],
-    "contratos": [
-      "docs/tenants/peskids/CLASSES-SYSTEM-SPEC.md",
-      "docs/brain/modules/api.md",
-      "docs/brain/modules/llm-gateway.md",
-      "docs/brain/agents/README.md",
-      "docs/index.md",
-      "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md"
-    ],
     "enumeraciones": [
       "docs/tenants/peskids/CLASSES-SYSTEM-SPEC.md"
     ],
@@ -168159,10 +168753,6 @@
     "reuse": [
       "docs/tenants/peskids/OPSLY-REUSE.md"
     ],
-    "algo": [
-      "docs/tenants/peskids/REUNION-2026-07-21.md",
-      "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md"
-    ],
     "captacion": [
       "docs/tenants/peskids/REUNION-2026-07-21.md",
       "docs/tenants/peskids/PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md",
@@ -168238,10 +168828,6 @@
       "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md"
     ],
     "alumno": [
-      "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
-      "docs/brain/modules/peskids.md"
-    ],
-    "familia": [
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
       "docs/brain/modules/peskids.md"
     ],
@@ -168905,11 +169491,6 @@
     "pyme": [
       "docs/blueprints/opsly-operational-blueprint/MODULES.md"
     ],
-    "blueprints": [
-      "docs/blueprints/opsly-operational-blueprint/VERTICAL-BLUEPRINTS.md",
-      "docs/blueprints/opsly-operational-blueprint/README.md",
-      "docs/blueprints/README.md"
-    ],
     "assists": [
       "docs/blueprints/opsly-operational-blueprint/PRINCIPLES.md"
     ],
@@ -169063,9 +169644,6 @@
       "docs/blueprints/CUSTOMERS-DEPLOY-NOW.md"
     ],
     "mid": [
-      "docs/blueprints/CUSTOMERS-DEPLOY-NOW.md"
-    ],
-    "tracks": [
       "docs/blueprints/CUSTOMERS-DEPLOY-NOW.md"
     ],
     "administrar": [
@@ -169468,11 +170046,16 @@
     "docs/00-architecture/INCUBATION-PLATFORM-CONTRACT.md",
     "docs/00-architecture/LLM-GATEWAY-WORKPLAN.md",
     "docs/00-architecture/LLM-GATEWAY.md",
+    "docs/00-architecture/MISSION-CONTROL-KIT.md",
     "docs/00-architecture/MODULE-REGISTRY.md",
     "docs/00-architecture/MULTI-TENANT-DATA-STRATEGY.md",
     "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
     "docs/00-architecture/opsly-agent-runtime.md",
     "docs/00-architecture/OPSLY-CONTROL-PLANE.md",
+    "docs/00-architecture/OPSLY-MOON-AUDIT.md",
+    "docs/00-architecture/OPSLY-MOON-DATA-SOURCES.md",
+    "docs/00-architecture/OPSLY-MOON-ROUTE-MAP.md",
+    "docs/00-architecture/OPSLY-MOON.md",
     "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
     "docs/00-architecture/OPSLYQUANTUM-SKILL-DESIGN.md",
     "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
@@ -170105,6 +170688,7 @@
     "docs/runbooks/FIX-TYPECHECK-BLOCKER.md",
     "docs/runbooks/frontend-audit.md",
     "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
+    "docs/runbooks/ICSO-MISSION-CONTROL.md",
     "docs/runbooks/IDE-OCTOPUS-AGENTS.md",
     "docs/runbooks/INCIDENT-AUTONOMOUS-AGENT.md",
     "docs/runbooks/incident.md",
@@ -170118,8 +170702,13 @@
     "docs/runbooks/LOCAL-SERVICES-GO-LIVE.md",
     "docs/runbooks/managed.md",
     "docs/runbooks/MIGRATION-CHECKLIST.md",
+    "docs/runbooks/MISSION-CONTROL-TENANT-ROLLOUT.md",
     "docs/runbooks/ONBOARDING-NEW-CLIENT.md",
     "docs/runbooks/OPERATIONS-HANDBOOK.md",
+    "docs/runbooks/OPSLY-MOON-DATA-SOURCES.md",
+    "docs/runbooks/OPSLY-MOON-OPERATIONS.md",
+    "docs/runbooks/OPSLY-MOON-PERMISSIONS.md",
+    "docs/runbooks/OPSLY-MOON-ROLLBACK.md",
     "docs/runbooks/OPSLY-OPENCLAW-STARTUP.md",
     "docs/runbooks/PANINI-LAB-GOLIVE.md",
     "docs/runbooks/PESKIDS-CDN-CACHE.md",
@@ -170196,6 +170785,7 @@
     "docs/tenants/peskids/CLIENT-PITCH.md",
     "docs/tenants/peskids/CLIENT-PRODUCTION-SUMMARY.md",
     "docs/tenants/peskids/CLIENT-REVIEW-2026-08-05.md",
+    "docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md",
     "docs/tenants/peskids/CLOUDFLARE-TRAEFIK-NOTES.md",
     "docs/tenants/peskids/CUSTOM-DOMAIN-WWW.md",
     "docs/tenants/peskids/DAILY-DIGEST-RUNBOOK.md",
@@ -170304,6 +170894,8 @@
     "lib/index.md",
     "lib/migrations/GOVERNANCE.md",
     "lib/migrations/README.md",
+    "lib/mission-control-kit/GOVERNANCE.md",
+    "lib/mission-control-kit/README.md",
     "lib/observability/GOVERNANCE.md",
     "lib/observability/README.md",
     "lib/pattern-catalog/README.md",
