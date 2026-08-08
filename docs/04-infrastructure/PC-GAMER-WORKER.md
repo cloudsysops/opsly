@@ -99,9 +99,11 @@ crontab -l 2>/dev/null | grep -q pc-gamer-heartbeat || \
 
 Variables clave en `.env.worker`:
 
-- `OPSLY_EPHEMERAL_WORKER=true` — rechaza rol control/full
+- `OPSLY_EPHEMERAL_WORKER=true` — rechaza rol control/full; **también activa Ollama directo** (`OLLAMA_URL`) sin pasar por el Gateway del VPS
 - `OPSLY_WORKER_ALLOWLIST=ollama` — no compite por jobs ajenos
-- `LLM_GATEWAY_URL=http://100.120.151.91:3010`
+- `OLLAMA_URL=http://127.0.0.1:11434` — inferencia local (margen $0)
+- `LLM_GATEWAY_URL=http://100.120.151.91:3010` — opcional / metering; no requerido para jobs `ollama` en modo efímero
+- `OPSLY_OLLAMA_DIRECT=true` — fuerza ruta directa aunque no sea efímero
 
 ## Enviar trabajo solo si está disponible
 
@@ -126,27 +128,51 @@ curl -sf --max-time 5 "http://100.74.88.103:3011/health"
 ./scripts/ops/check-pc-gamer-online.sh
 ```
 
-Doppler `prd` (humano, opcional): `OLLAMA_URL=http://100.74.88.103:11434` solo con Ollama en `0.0.0.0`. Si gamer off → gateway fallback cloud.
+Doppler `prd` (humano, opcional): `OLLAMA_URL` en el **Gateway VPS** solo si Ollama del gamer es alcanzable por Tailscale. Por defecto el money path **no** depende de eso: el worker efímero llama `OLLAMA_URL` local directo.
 
-## Ollama en Tailscale (sudo una vez)
+## Ollama en WSL (NAT, no mirrored)
 
-```bash
-sudo mkdir -p /etc/systemd/system/ollama.service.d
-printf '%s\n' '[Service]' 'Environment=OLLAMA_HOST=0.0.0.0:11434' 'Environment=OLLAMA_ORIGINS=*' \
-  | sudo tee /etc/systemd/system/ollama.service.d/override.conf
-sudo systemctl daemon-reload && sudo systemctl restart ollama
-```
+**Crítico:** `networkingMode=mirrored` en `.wslconfig` rompe el loopback TCP dentro de WSL. Ollama arranca el runner en `127.0.0.1:<port>` y el padre **no puede hablarle** → load cuelga hasta timeout.
 
-## .wslconfig (Windows)
+Usar NAT (default):
 
 ```ini
 [wsl2]
 memory=16GB
 processors=8
 swap=4GB
-localhostForwarding=true
-networkingMode=mirrored
 ```
+
+Luego `wsl --shutdown` desde Windows y reiniciar Ubuntu. Verificar:
+
+```bash
+# debe imprimir OK en <1s
+python3 -c "import socket; s=socket.socket(); s.bind(('127.0.0.1',19999)); s.listen(1)" &
+sleep 0.2; python3 -c "import socket; print(socket.create_connection(('127.0.0.1',19999),3))"
+curl -sf http://127.0.0.1:11434/api/tags
+```
+
+Bind local (worker en la misma WSL):
+
+```bash
+sudo mkdir -p /etc/systemd/system/ollama.service.d
+printf '%s\n' '[Service]' 'Environment=OLLAMA_HOST=127.0.0.1:11434' 'Environment=OLLAMA_ORIGINS=*' \
+  | sudo tee /etc/systemd/system/ollama.service.d/override.conf
+sudo systemctl daemon-reload && sudo systemctl restart ollama
+```
+
+Exponer Ollama al Gateway VPS por Tailscale es **opcional** (portproxy Windows↔WSL frágil bajo NAT). Preferir jobs BullMQ + worker local.
+
+## .wslconfig (Windows) — canónico
+
+```ini
+[wsl2]
+memory=16GB
+processors=8
+swap=4GB
+```
+
+**No** usar `networkingMode=mirrored` mientras Ollama corra en WSL.
 
 ## Archivos
 

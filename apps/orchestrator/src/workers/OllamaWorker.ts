@@ -10,11 +10,32 @@ import {
 } from '../observability/worker-log.js';
 
 const DEFAULT_GATEWAY = 'http://127.0.0.1:3010';
+const DEFAULT_OLLAMA = 'http://127.0.0.1:11434';
 
 function gatewayBaseUrl(): string {
   const raw =
     process.env.LLM_GATEWAY_URL ?? process.env.ORCHESTRATOR_LLM_GATEWAY_URL ?? DEFAULT_GATEWAY;
   return raw.replace(/\/$/, '');
+}
+
+function ollamaBaseUrl(): string {
+  return (process.env.OLLAMA_URL ?? DEFAULT_OLLAMA).replace(/\/$/, '');
+}
+
+/**
+ * Nodos efímeros (pc-gamer): el Gateway del VPS no alcanza Ollama local.
+ * `OPSLY_OLLAMA_DIRECT=true` fuerza la ruta; con `OPSLY_EPHEMERAL_WORKER=true`
+ * + `OLLAMA_URL` también se usa directo (margen $0 en GPU/CPU local).
+ */
+export function shouldUseDirectOllama(
+  env: NodeJS.ProcessEnv = process.env
+): boolean {
+  if (env.OPSLY_OLLAMA_DIRECT === 'true') {
+    return true;
+  }
+  const ephemeral = env.OPSLY_EPHEMERAL_WORKER === 'true';
+  const hasUrl = (env.OLLAMA_URL ?? '').trim().length > 0;
+  return ephemeral && hasUrl;
 }
 
 type TextGatewayResponse = {
@@ -26,6 +47,74 @@ type TextGatewayResponse = {
     cost_usd?: number;
   };
 };
+
+type OllamaGenerateJson = {
+  response?: string;
+  model?: string;
+  prompt_eval_count?: number;
+  eval_count?: number;
+};
+
+async function callOllamaDirect(prompt: string): Promise<TextGatewayResponse> {
+  const model = (process.env.OLLAMA_MODEL ?? 'llama3.2').trim() || 'llama3.2';
+  const url = `${ollamaBaseUrl()}/api/generate`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model,
+      prompt,
+      stream: false,
+      options: { temperature: 0 },
+    }),
+    signal: AbortSignal.timeout(180_000),
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`ollama direct HTTP ${res.status}: ${errText.slice(0, 200)}`);
+  }
+  const json = (await res.json()) as OllamaGenerateJson;
+  const content = typeof json.response === 'string' ? json.response : '';
+  if (content.trim().length === 0) {
+    throw new Error('ollama direct: empty response');
+  }
+  return {
+    content,
+    llm: {
+      model_used: json.model ?? model,
+      tokens_input: Math.max(0, json.prompt_eval_count ?? 0),
+      tokens_output: Math.max(0, json.eval_count ?? 0),
+      cost_usd: 0,
+    },
+  };
+}
+
+async function callOllamaViaGateway(args: {
+  tenantSlug: string;
+  plan: OrchestratorJob['plan'];
+  requestId: string | undefined;
+  taskType: string;
+  prompt: string;
+}): Promise<TextGatewayResponse> {
+  const url = `${gatewayBaseUrl()}/v1/text`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      tenant_slug: args.tenantSlug,
+      tenant_plan: args.plan,
+      request_id: args.requestId,
+      task_type: args.taskType,
+      prompt: args.prompt,
+    }),
+    signal: AbortSignal.timeout(120_000),
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`ollama gateway HTTP ${res.status}: ${errText.slice(0, 200)}`);
+  }
+  return (await res.json()) as TextGatewayResponse;
+}
 
 async function handleAutoCommit(ctx: {
   persona: string;
@@ -183,9 +272,11 @@ async function runWatcherHealth(ctx: {
     if (!supabaseKey) return;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const redisUrl =
-      process.env.REDIS_URL ??
-      'redis://:fc115c2bc751bf11da99b9f2768ed55d896c79efcaeff777@redis:6379/0';
+    const redisUrl = process.env.REDIS_URL?.trim();
+    if (!redisUrl) {
+      logWorkerWarn('ollama', 'REDIS_URL not set; skipping watcher queue metrics');
+      return;
+    }
     const { createClient: createRedis } = await import('redis');
     const redis = createRedis({ url: redisUrl.replace(/^redis:\/\/:/, 'redis://') });
     await redis.connect();
@@ -278,32 +369,24 @@ async function processOllamaJob(job: Job) {
       ? payload.task_type
       : 'summarize';
 
-  const url = `${gatewayBaseUrl()}/v1/text`;
   const t0 = Date.now();
-  let res: Response;
-  try {
-    res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        tenant_slug: tenantSlug,
-        tenant_plan: data.plan,
-        request_id: data.request_id,
-        task_type: taskType,
-        prompt,
-      }),
-      signal: AbortSignal.timeout(120_000),
+  const direct = shouldUseDirectOllama();
+  if (direct) {
+    logWorkerInfo('ollama', 'using direct OLLAMA_URL (ephemeral/local)', {
+      ollama_url_host: new URL(ollamaBaseUrl()).host,
     });
-  } catch (err) {
-    throw err;
   }
 
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`ollama gateway HTTP ${res.status}: ${errText.slice(0, 200)}`);
-  }
+  const json = direct
+    ? await callOllamaDirect(prompt)
+    : await callOllamaViaGateway({
+        tenantSlug,
+        plan: data.plan,
+        requestId: data.request_id,
+        taskType,
+        prompt,
+      });
 
-  const json = (await res.json()) as TextGatewayResponse;
   const tokensIn = Math.max(0, json.llm?.tokens_input ?? 0);
   const tokensOut = Math.max(0, json.llm?.tokens_output ?? 0);
   meterPlannerLlmFireAndForget(tenantSlug, data.tenant_id, {
@@ -333,6 +416,7 @@ async function processOllamaJob(job: Job) {
     cost_usd: json.llm?.cost_usd ?? 0,
     model_used: json.llm?.model_used ?? 'unknown',
     auto_commit: autoCommit,
+    direct_ollama: direct,
   };
 }
 

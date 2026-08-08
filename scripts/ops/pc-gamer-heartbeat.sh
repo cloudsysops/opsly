@@ -51,17 +51,20 @@ if [[ -z "${REDIS_URL:-}" ]]; then
   exit 1
 fi
 
-if command -v redis-cli >/dev/null 2>&1; then
-  # Prefer ACL user form if URL has empty user — redis-cli -u empty-user can WRONGPASS
-  redis-cli -u "$REDIS_URL" SET "$KEY" "$PAYLOAD" EX "$TTL" >/dev/null
-else
-  export KEY TTL PAYLOAD
+# Prefer ioredis (same client as BullMQ). redis-cli -u often WRONGPASS with empty ACL user.
+export KEY TTL PAYLOAD
+if node -e "require('ioredis')" >/dev/null 2>&1; then
   node --input-type=module -e "
     import IORedis from 'ioredis';
     const r = new IORedis(process.env.REDIS_URL, { maxRetriesPerRequest: 1, connectTimeout: 5000 });
     await r.set(process.env.KEY, process.env.PAYLOAD, 'EX', Number(process.env.TTL));
     await r.quit();
   "
+elif command -v redis-cli >/dev/null 2>&1; then
+  redis-cli -u "$REDIS_URL" SET "$KEY" "$PAYLOAD" EX "$TTL" >/dev/null
+else
+  echo "[heartbeat] ERROR: need ioredis (npm) or redis-cli" >&2
+  exit 1
 fi
 
 echo "[heartbeat] ok key=$KEY ttl=${TTL}s"
