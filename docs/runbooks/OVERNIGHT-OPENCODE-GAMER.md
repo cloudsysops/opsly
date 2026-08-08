@@ -38,6 +38,8 @@ Bridge OpenCode :5004 (WSL host) → worktree ~/opsly-overnight
 | Worker | Gamer Docker | `REDIS_URL` + `OPSLY_CLI_AGENT_TOKEN` (local) |
 | OpenCode CLI | Gamer WSL host | Sin Doppler master / Stripe / Supabase service role |
 
+`enqueue-overnight-opencode.sh` respeta el **calendario Mauro** (`config/pc-gamer-schedule.json`): en ventana `gaming`/`light` bloquea OpenCode salvo `--force`. Detalle: [`PC-GAMER-MAURO-SCHEDULE.md`](./PC-GAMER-MAURO-SCHEDULE.md).
+
 ## Una vez en el gamer (WSL)
 
 ```bash

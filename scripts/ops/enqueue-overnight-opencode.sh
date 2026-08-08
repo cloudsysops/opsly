@@ -8,8 +8,11 @@
 #   ./scripts/ops/enqueue-overnight-opencode.sh --file .cursor/prompts/queue/task.md
 #   ./scripts/ops/enqueue-overnight-opencode.sh --prompt "Add unit tests for X; do not touch apps/peskids"
 #   ./scripts/ops/enqueue-overnight-opencode.sh --queue-dir .cursor/prompts/queue
+#   ./scripts/ops/enqueue-overnight-opencode.sh --force   # ignora calendario Mauro
 #   doppler run --project ops-intcloudsysops --config prd -- \
 #     ./scripts/ops/enqueue-overnight-opencode.sh --prompt "…"
+#
+# Respeta config/pc-gamer-schedule.json (gaming → bloquea OpenCode).
 #
 set -euo pipefail
 
@@ -21,7 +24,9 @@ AGENT="${OPSLY_OVERNIGHT_AGENT:-opencode}"
 TENANT="${OPSLY_OVERNIGHT_TENANT:-local}"
 ORCH_URL="${ORCHESTRATOR_URL:-http://100.120.151.91:3011}"
 REQUIRE_ONLINE=true
+REQUIRE_SCHEDULE=true
 MAX_STEPS="${OPSLY_OVERNIGHT_MAX_STEPS:-12}"
+TASK_CLASS="${OPSLY_OVERNIGHT_TASK_CLASS:-opencode}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -50,8 +55,16 @@ while [[ $# -gt 0 ]]; do
       REQUIRE_ONLINE=false
       shift
       ;;
+    --force)
+      REQUIRE_SCHEDULE=false
+      shift
+      ;;
+    --task-class)
+      TASK_CLASS="${2:-}"
+      shift 2
+      ;;
     -h|--help)
-      sed -n '2,18p' "$0"
+      sed -n '2,20p' "$0"
       exit 0
       ;;
     *)
@@ -64,6 +77,20 @@ done
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 cd "$ROOT"
+
+if [[ "$REQUIRE_SCHEDULE" == "true" ]]; then
+  if [[ "$DRY_RUN" == "true" ]]; then
+    echo "[dry-run] ./scripts/ops/pc-gamer-schedule.sh --allow ${TASK_CLASS}"
+    ./scripts/ops/pc-gamer-schedule.sh --allow "$TASK_CLASS" || true
+  else
+    if ! ./scripts/ops/pc-gamer-schedule.sh --allow "$TASK_CLASS"; then
+      echo "[enqueue] BLOCKED by Mauro schedule (mode≠heavy for class=${TASK_CLASS})." >&2
+      echo "[enqueue] Wait for heavy window, set PC_GAMER_MODE_OVERRIDE=heavy, or pass --force." >&2
+      ./scripts/ops/pc-gamer-schedule.sh --json || true
+      exit 2
+    fi
+  fi
+fi
 
 if [[ "$REQUIRE_ONLINE" == "true" ]]; then
   if [[ "$DRY_RUN" == "true" ]]; then

@@ -203,6 +203,9 @@ swap=4GB
 | `scripts/ops/check-pc-gamer-online.sh` | Gate antes de encolar |
 | `scripts/ops/assert-ephemeral-worker-env.sh` | Anti secretos maestros |
 | `OPSLY_WORKER_ALLOWLIST` | Filtra workers en `apps/orchestrator` |
+| `scripts/ops/pc-gamer-schedule.sh` | Modo gaming/light/heavy según Mauro |
+| `config/pc-gamer-schedule.json` | Calendario semanal (DRAFT) |
+| `docs/runbooks/PC-GAMER-MAURO-SCHEDULE.md` | Cómo ajustar horas con el dueño |
 | `docs/runbooks/OVERNIGHT-OPENCODE-GAMER.md` | Runbook crecimiento overnight |
 
 ## Relacionado
@@ -215,3 +218,4 @@ swap=4GB
 - `docs/runbooks/VPS-MEMORY-CAPS.md`
 - `docs/runbooks/PRODUCTION-CHANGE-WINDOW.md`
 - `docs/runbooks/OVERNIGHT-OPENCODE-GAMER.md`
+- `docs/runbooks/PC-GAMER-MAURO-SCHEDULE.md`
