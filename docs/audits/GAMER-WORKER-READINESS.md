@@ -31,7 +31,7 @@ Control plane VPS permanece `queue-only`. Peskids no depende de este nodo.
 | Heartbeat cron + Redis | OK (ioredis) |
 | VPS orchestrator | `role=control` `mode=queue-only` |
 | Job smoke vía Gateway VPS | **FAIL 503** `free-always` / local provider (esperado: VPS no ve Ollama gamer) |
-| Job smoke vía **direct OLLAMA** | Requiere deploy de `shouldUseDirectOllama` en gamer |
+| Job smoke vía **direct OLLAMA** | **PASS** job `1771` → `content_preview=SMOKE_GAMER_OK`, `direct_ollama=true`, `cost_usd=0` (~4s) |
 
 ## Gaps (no bloquean margen local)
 
