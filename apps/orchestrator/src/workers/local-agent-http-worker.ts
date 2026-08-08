@@ -141,9 +141,14 @@ async function processLocalAgentJob(
     }
 
     logWorkerInfo('local-agents', `${agent}: invoking ${serviceUrl}/execute`);
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    const bridgeToken = process.env.OPSLY_CLI_AGENT_TOKEN?.trim();
+    if (bridgeToken) {
+      headers.Authorization = `Bearer ${bridgeToken}`;
+    }
     const response = await fetch(`${serviceUrl.replace(/\/+$/, '')}/execute`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({
         prompt_content,
         agent_role,

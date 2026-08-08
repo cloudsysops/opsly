@@ -46,7 +46,7 @@ Conector: **Tailscale + Redis VPS + LLM Gateway**. Sin Swarm. Sin segundo orches
 6. **No** desplegar producción desde este PC.
 7. **No** acceso directo a bases productivas (ni service role).
 8. **No** PII de clientes persistente en disco del gamer.
-9. **No** bypass del LLM Gateway (jobs `ollama` → `LLM_GATEWAY_URL` → providers).
+9. Jobs LLM de plataforma pasan por Gateway; **excepción documentada:** worker efímero con `OPSLY_OLLAMA_DIRECT` / `OLLAMA_URL` local ($0). OpenCode overnight usa CLI local, no el Gateway.
 10. **No** crear otro control plane / orchestrator / Redis de prod en el gamer.
 11. **No** encolar trabajo delicado si el nodo está offline (`check-pc-gamer-online.sh`).
 
@@ -64,6 +64,7 @@ Validación local de `.env.worker`:
 | Entrenador / eval de agentes | Lotes offline: traces → critique → sandbox; no decide tráfico cliente |
 | Builds / tests pesados | Opcional; no CI de merge a `main` de prod |
 | Shadow A/B local vs cloud | Métricas; sin cutover automático |
+| **Overnight OpenCode** | Bridge `:5004` + cola `local-agents`; worktree `~/opsly-overnight` — [`OVERNIGHT-OPENCODE-GAMER.md`](../runbooks/OVERNIGHT-OPENCODE-GAMER.md) |
 
 ## Qué no corre aquí
 
@@ -71,6 +72,7 @@ Validación local de `.env.worker`:
 - Deploy GHCR / `peskids-deploy-vps`
 - Self-heal / auto-deploy / cost-gate mutando prod
 - Notify Discord operativo crítico como único canal
+- `PLATFORM_ADMIN_TOKEN` / Doppler master (encolar solo desde Mac)
 
 ## Bootstrap canónico — Docker plane (recomendado)
 
@@ -83,6 +85,8 @@ cd ~/opsly
 git pull --ff-only origin feat/pc-gamer-worker-plane
 # .env.worker ya con REDIS_URL (Doppler)
 ./scripts/ops/pc-gamer-docker-plane.sh --up --pull-model --install-autostart
+# Overnight OpenCode (opcional):
+./scripts/ops/pc-gamer-opencode-plane.sh --up --install-autostart
 sudo loginctl enable-linger devops   # una vez
 ```
 
@@ -92,9 +96,13 @@ sudo loginctl enable-linger devops   # una vez
 ./scripts/ops/check-pc-gamer-online.sh --json
 # si ssh=true pero online=false, o tras boot:
 ./scripts/ops/pc-gamer-reconnect.sh --wait 600 --pull-model
+# + agentes overnight:
+./scripts/ops/pc-gamer-reconnect.sh --wait 600 --pull-model --with-opencode
+doppler run --project ops-intcloudsysops --config prd -- \
+  ./scripts/ops/enqueue-overnight-opencode.sh --prompt "…"
 ```
 
-Autostart: user systemd `opsly-pc-gamer-docker.service` + timer heartbeat.  
+Autostart: user systemd `opsly-pc-gamer-docker.service` + timer heartbeat (+ `opsly-opencode-bridge` si overnight).  
 Fallback nativo (sin Docker): `systemctl --user enable --now opsly-worker-openclaw` + Ollama apt — ver histórico; **preferir Docker**.
 
 ```bash
@@ -105,7 +113,8 @@ Fallback nativo (sin Docker): `systemctl --user enable --now opsly-worker-opencl
 Variables clave en `.env.worker`:
 
 - `OPSLY_EPHEMERAL_WORKER=true` — rechaza rol control/full; **también activa Ollama directo** (`OLLAMA_URL`) sin pasar por el Gateway del VPS
-- `OPSLY_WORKER_ALLOWLIST=ollama` — no compite por jobs ajenos
+- `OPSLY_WORKER_ALLOWLIST=ollama` — GPU only; overnight: `ollama,local-agents` (vía `pc-gamer-opencode-plane.sh`)
+- `OPSLY_OPENCODE_AGENT_URL=http://127.0.0.1:5004` + `OPSLY_CLI_AGENT_TOKEN` — bridge OpenCode (no admin token)
 - `OLLAMA_URL=http://127.0.0.1:11434` — inferencia local (margen $0)
 - `LLM_GATEWAY_URL=http://100.120.151.91:3010` — opcional / metering; no requerido para jobs `ollama` en modo efímero
 - `OPSLY_OLLAMA_DIRECT=true` — fuerza ruta directa aunque no sea efímero
@@ -186,18 +195,23 @@ swap=4GB
 | `infra/pc-gamer.env.example` | Plantilla mínima privilegio |
 | `infra/docker-compose.pc-gamer-workers.yml` | Worker BullMQ (host network) |
 | `scripts/ops/pc-gamer-docker-plane.sh` | Up/down + autostart Docker |
-| `scripts/ops/pc-gamer-reconnect.sh` | Mac → SSH → levantar plano |
+| `scripts/ops/pc-gamer-opencode-plane.sh` | Bridge OpenCode + allowlist overnight |
+| `scripts/ops/enqueue-overnight-opencode.sh` | Mac → encolar `local_opencode` |
+| `scripts/ops/pc-gamer-reconnect.sh` | Mac → SSH → levantar plano (+ `--with-opencode`) |
 | `scripts/setup-pc-gamer-worker.sh` | Bootstrap (delega a docker plane) |
 | `scripts/ops/pc-gamer-heartbeat.sh` | TTL heartbeat Redis |
 | `scripts/ops/check-pc-gamer-online.sh` | Gate antes de encolar |
 | `scripts/ops/assert-ephemeral-worker-env.sh` | Anti secretos maestros |
 | `OPSLY_WORKER_ALLOWLIST` | Filtra workers en `apps/orchestrator` |
+| `docs/runbooks/OVERNIGHT-OPENCODE-GAMER.md` | Runbook crecimiento overnight |
 
 ## Relacionado
 
 - ADR-020 control ↔ worker plane
 - ADR-024 Ollama worker
+- `docs/03-agents/LOCAL-AGENT-EXECUTION.md`
 - `docs/04-infrastructure/WORKER-SETUP-MAC2011.md`
 - `docs/04-infrastructure/TAILSCALE-NOMENCLATURA.md`
 - `docs/runbooks/VPS-MEMORY-CAPS.md`
 - `docs/runbooks/PRODUCTION-CHANGE-WINDOW.md`
+- `docs/runbooks/OVERNIGHT-OPENCODE-GAMER.md`

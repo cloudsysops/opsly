@@ -39,7 +39,7 @@ Opsly's **Local Agent Execution System** enables autonomous execution of tasks o
 6. **Smoke `curl`** — ver sección *Submit a Prompt* más abajo; cabecera `Authorization: Bearer …` obligatoria. Para jobs con riesgo autonomía puede hacer falta `x-autonomy-approved: true`.
 7. **Pre-push / Rollup (Mac)** — si husky falla por `@rollup/rollup-darwin-x64`, reinstalar dependencias (`rm -rf node_modules && npm ci`) o usar `git push --no-verify` solo cuando proceda; CI sigue siendo la verdad.
 
-**Nota VPS:** en `queue-only` el control plane **encola** pero no ejecuta jobs locales; hace falta un **nodo worker** (p. ej. Mac + Tailscale) con el mismo `REDIS_URL`.
+**Nota VPS:** en `queue-only` el control plane **encola** pero no ejecuta jobs locales; hace falta un **nodo worker** (p. ej. Mac + Tailscale **o PC-gamer overnight**) con el mismo `REDIS_URL`. Runbook gamer: [`docs/runbooks/OVERNIGHT-OPENCODE-GAMER.md`](../runbooks/OVERNIGHT-OPENCODE-GAMER.md).
 
 ### Seguridad del bridge CLI
 

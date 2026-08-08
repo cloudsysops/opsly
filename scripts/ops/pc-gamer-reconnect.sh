@@ -7,6 +7,7 @@
 #   ./scripts/ops/pc-gamer-reconnect.sh
 #   ./scripts/ops/pc-gamer-reconnect.sh --wait 600
 #   ./scripts/ops/pc-gamer-reconnect.sh --use-host-ollama
+#   ./scripts/ops/pc-gamer-reconnect.sh --with-opencode
 #
 set -euo pipefail
 
@@ -14,6 +15,7 @@ DRY_RUN=false
 WAIT_SEC=0
 USE_HOST_OLLAMA=false
 PULL_MODEL=false
+WITH_OPENCODE=false
 SSH_HOST="${PC_GAMER_SSH_HOST:-pc-gamer}"
 REMOTE_ROOT="${PC_GAMER_OPSLY_ROOT:-/home/devops/opsly}"
 BRANCH="${PC_GAMER_BRANCH:-feat/pc-gamer-worker-plane}"
@@ -29,8 +31,9 @@ for arg in "$@"; do
       ;;
     --use-host-ollama) USE_HOST_OLLAMA=true ;;
     --pull-model) PULL_MODEL=true ;;
+    --with-opencode) WITH_OPENCODE=true ;;
     -h|--help)
-      sed -n '2,16p' "$0"
+      sed -n '2,18p' "$0"
       exit 0
       ;;
   esac
@@ -84,12 +87,24 @@ remote_bash() {
 }
 
 echo "[reconnect] host=$SSH_HOST branch=$BRANCH"
-wait_ssh
 
 PLANE_ARGS=(--up --install-autostart)
 [[ "$PULL_MODEL" == "true" ]] && PLANE_ARGS+=(--pull-model)
 [[ "$USE_HOST_OLLAMA" == "true" ]] && PLANE_ARGS+=(--use-host-ollama)
 PLANE_ARGS_STR="${PLANE_ARGS[*]}"
+
+if [[ "$DRY_RUN" == "true" ]]; then
+  echo "[dry-run] skip SSH wait / remote plane"
+  echo "[dry-run] would: git pull ${BRANCH}; docker-plane ${PLANE_ARGS_STR}; with_opencode=${WITH_OPENCODE}"
+  if [[ "$WITH_OPENCODE" == "true" ]]; then
+    echo "[dry-run] would: pc-gamer-opencode-plane.sh --up --install-autostart"
+  fi
+  echo "[dry-run] ./scripts/ops/check-pc-gamer-online.sh --json"
+  echo "[reconnect] done (dry-run)"
+  exit 0
+fi
+
+wait_ssh
 
 remote_bash "$(cat <<EOF
 set -euo pipefail
@@ -105,7 +120,7 @@ git fetch origin ${BRANCH}
 git checkout ${BRANCH} 2>/dev/null || git checkout -B ${BRANCH} origin/${BRANCH}
 git pull --ff-only origin ${BRANCH}
 ./scripts/ops/assert-ephemeral-worker-env.sh --env-file .env.worker
-chmod +x scripts/ops/pc-gamer-docker-plane.sh scripts/ops/pc-gamer-heartbeat.sh scripts/ops/check-pc-gamer-online.sh
+chmod +x scripts/ops/pc-gamer-docker-plane.sh scripts/ops/pc-gamer-heartbeat.sh scripts/ops/check-pc-gamer-online.sh scripts/ops/pc-gamer-opencode-plane.sh
 ./scripts/ops/pc-gamer-docker-plane.sh ${PLANE_ARGS_STR}
 ./scripts/ops/pc-gamer-heartbeat.sh || true
 ./scripts/ops/pc-gamer-docker-plane.sh --status
@@ -114,6 +129,20 @@ loginctl enable-linger devops 2>/dev/null || true
 EOF
 )"
 
+if [[ "$WITH_OPENCODE" == "true" ]]; then
+  echo "[reconnect] starting OpenCode overnight plane…"
+  remote_bash "$(cat <<EOF
+set -euo pipefail
+sudo -u devops bash -lc '
+set -euo pipefail
+cd ${REMOTE_ROOT}
+./scripts/ops/pc-gamer-opencode-plane.sh --up --install-autostart
+./scripts/ops/pc-gamer-opencode-plane.sh --status
+'
+EOF
+)"
+fi
+
 echo "[reconnect] local check-online:"
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "[dry-run] ./scripts/ops/check-pc-gamer-online.sh --json"
@@ -121,4 +150,4 @@ else
   ./scripts/ops/check-pc-gamer-online.sh --json || true
 fi
 
-echo "[reconnect] done — enqueue ollama only if online=true"
+echo "[reconnect] done — enqueue ollama/OpenCode only if online=true"
