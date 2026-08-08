@@ -35,7 +35,7 @@ if [[ -f .env.worker ]]; then
   set +a
 fi
 
-WORKER_ID="${WORKER_ID:-pc-gamer}"
+WORKER_ID="${WORKER_ID:-pc-gamer-openclaw-01}"
 TTL="${OPSLY_WORKER_HEARTBEAT_TTL_SEC:-180}"
 KEY="opsly:worker:heartbeat:${WORKER_ID}"
 PAYLOAD="$(printf '{"worker_id":"%s","role":"ephemeral","ts":"%s","host":"%s"}' \

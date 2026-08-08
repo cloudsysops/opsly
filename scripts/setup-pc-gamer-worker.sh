@@ -124,16 +124,15 @@ if [[ "$ENSURE_OLLAMA" == "true" ]]; then
 fi
 
 if [[ "$ENSURE_WORKER" == "true" ]]; then
-  if [[ ! -f "$ENV_WORKER" ]]; then
-    echo "[pc-gamer] ERROR: .env.worker required for --ensure-worker" >&2
-    exit 1
+  echo "[pc-gamer] Delegating to Docker plane (canonical)…"
+  FLAGS=(--up)
+  [[ "$PULL_MODEL" == "true" ]] && FLAGS+=(--pull-model)
+  if [[ "$DRY_RUN" == "true" ]]; then
+    run ./scripts/ops/pc-gamer-docker-plane.sh --dry-run "${FLAGS[@]}"
+  else
+    chmod +x scripts/ops/pc-gamer-docker-plane.sh
+    ./scripts/ops/pc-gamer-docker-plane.sh "${FLAGS[@]}"
   fi
-  if ! grep -qE '^REDIS_URL=.+' "$ENV_WORKER" || grep -q 'CHANGE_ME' "$ENV_WORKER"; then
-    echo "[pc-gamer] ERROR: set a real REDIS_URL in .env.worker (Doppler prd)" >&2
-    exit 1
-  fi
-  echo "[pc-gamer] Starting worker-openclaw + ollama…"
-  run docker compose "${COMPOSE_WORKERS[@]}" --env-file "$ENV_WORKER" --env-file infra/opslyquantum.env up -d ollama worker-openclaw
 fi
 
 if [[ "$INSTALL_PULL_WATCHER" == "true" ]]; then

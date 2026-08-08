@@ -72,29 +72,34 @@ Validación local de `.env.worker`:
 - Self-heal / auto-deploy / cost-gate mutando prod
 - Notify Discord operativo crítico como único canal
 
-## Bootstrap (WSL Ubuntu)
+## Bootstrap canónico — Docker plane (recomendado)
+
+Cuando el PC está **encendido + Tailscale**, el plano durable es Docker (Ollama + worker). Si está apagado, Peskids sigue; solo se difiere trabajo GPU.
+
+**Desde el gamer (WSL):**
 
 ```bash
-git clone --branch feat/pc-gamer-worker-plane --single-branch \
-  https://github.com/cloudsysops/opsly.git ~/opsly
 cd ~/opsly
+git pull --ff-only origin feat/pc-gamer-worker-plane
+# .env.worker ya con REDIS_URL (Doppler)
+./scripts/ops/pc-gamer-docker-plane.sh --up --pull-model --install-autostart
+sudo loginctl enable-linger devops   # una vez
+```
 
-cp infra/pc-gamer.env.example .env.worker
-# Rellenar REDIS_URL=redis://default:<pass>@100.120.151.91:6379/0 desde Doppler (Mac)
-./scripts/ops/assert-ephemeral-worker-env.sh
+**Desde Mac cuando vuelve online:**
 
-./scripts/setup-pc-gamer-worker.sh --stop-legacy
-npx turbo run build --filter=@intcloudsysops/orchestrator...
-./scripts/start-worker.sh
-# o: systemctl --user enable --now opsly-worker-openclaw
+```bash
+./scripts/ops/check-pc-gamer-online.sh --json
+# si ssh=true pero online=false, o tras boot:
+./scripts/ops/pc-gamer-reconnect.sh --wait 600 --pull-model
+```
 
-ollama pull llama3.2
-# Opcional Tailscale bind (sudo):
-# OLLAMA_HOST=0.0.0.0:11434 override systemd — ver sección Ollama abajo
+Autostart: user systemd `opsly-pc-gamer-docker.service` + timer heartbeat.  
+Fallback nativo (sin Docker): `systemctl --user enable --now opsly-worker-openclaw` + Ollama apt — ver histórico; **preferir Docker**.
 
-# Heartbeat cada minuto (user cron)
-crontab -l 2>/dev/null | grep -q pc-gamer-heartbeat || \
-  (crontab -l 2>/dev/null; echo '* * * * * cd ~/opsly && ./scripts/ops/pc-gamer-heartbeat.sh >/dev/null 2>&1') | crontab -
+```bash
+# Legacy one-liner (sigue válido)
+./scripts/setup-pc-gamer-worker.sh --stop-legacy --ensure-ollama --ensure-worker --pull-model
 ```
 
 Variables clave en `.env.worker`:
@@ -179,7 +184,10 @@ swap=4GB
 | Path | Uso |
 |------|-----|
 | `infra/pc-gamer.env.example` | Plantilla mínima privilegio |
-| `scripts/setup-pc-gamer-worker.sh` | Bootstrap Docker/legacy |
+| `infra/docker-compose.pc-gamer-workers.yml` | Worker BullMQ (host network) |
+| `scripts/ops/pc-gamer-docker-plane.sh` | Up/down + autostart Docker |
+| `scripts/ops/pc-gamer-reconnect.sh` | Mac → SSH → levantar plano |
+| `scripts/setup-pc-gamer-worker.sh` | Bootstrap (delega a docker plane) |
 | `scripts/ops/pc-gamer-heartbeat.sh` | TTL heartbeat Redis |
 | `scripts/ops/check-pc-gamer-online.sh` | Gate antes de encolar |
 | `scripts/ops/assert-ephemeral-worker-env.sh` | Anti secretos maestros |

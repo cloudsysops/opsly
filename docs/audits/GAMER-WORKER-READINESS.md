@@ -43,7 +43,15 @@ Control plane VPS permanece `queue-only`. Peskids no depende de este nodo.
 
 | Antes | Ahora |
 |-------|--------|
-| READY_TO_CONFIGURE | READY_FOR_OLLAMA_JOBS |
+| READY_TO_CONFIGURE | READY_FOR_OLLAMA_JOBS (nativo verificado) |
+| — | Docker plane listo en repo; aplicar con `pc-gamer-reconnect.sh` al encender |
+
+## Cuando el gamer está apagado
+
+1. `./scripts/ops/check-pc-gamer-online.sh --json` → `online=false`
+2. **No** encolar jobs `ollama` delicados
+3. Al volver: `./scripts/ops/pc-gamer-reconnect.sh --wait 600 --pull-model`
+
 
 ## Relacionado
 
