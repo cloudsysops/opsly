@@ -6,8 +6,9 @@
   "description": "TypeScript wrapper + Python client for notebooklm-py (NotebookLM unofficial API)",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
+      "require": "./dist/index.js",
       "default": "./dist/index.js"
     }
   },
@@ -18,5 +19,7 @@
   "devDependencies": {
     "@types/node": "^20.19.41",
     "typescript": "^5.9.3"
-  }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts"
 }
