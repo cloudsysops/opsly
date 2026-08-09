@@ -1,5 +1,6 @@
 import { getServiceClient } from '../supabase';
 import { PESKIDS_LOW_SATISFACTION_THRESHOLD, PESKIDS_TENANT_SLUG } from './constants';
+import { encryptPeskidsPiiField } from './pii-crypto';
 import type { PeskidsFeedbackBody, PeskidsLeadBody } from './schemas';
 
 export type PeskidsLeadRow = {
@@ -47,6 +48,16 @@ function normalizePhone(phone: string | undefined): string | null {
 export async function peskidsInsertLead(
   body: PeskidsLeadBody
 ): Promise<{ ok: true; row: PeskidsLeadRow } | { ok: false; error: string }> {
+  let documentNumber: string | null;
+  let companyNit: string | null;
+  try {
+    documentNumber = encryptPeskidsPiiField(body.document_number);
+    companyNit = encryptPeskidsPiiField(body.company_nit);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'PII encryption failed';
+    return { ok: false, error: message };
+  }
+
   const client = getServiceClient();
   const { data, error } = await client
     .schema('platform')
@@ -64,9 +75,9 @@ export async function peskidsInsertLead(
       child_name: body.child_name ?? null,
       birth_date: body.birth_date ?? null,
       document_type: body.document_type ?? null,
-      document_number: body.document_number ?? null,
+      document_number: documentNumber,
       company_name: body.company_name ?? null,
-      company_nit: body.company_nit ?? null,
+      company_nit: companyNit,
       metadata: {
         intake_version: 'dynamic-intake-v1',
         ...(body.metadata ?? {}),

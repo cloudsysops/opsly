@@ -60,8 +60,9 @@ checks_green() {
   fi
 
   local failing pending
-  failing="$(jq -r '[.statusCheckRollup[]? | select(.conclusion=="FAILURE") | .name] | join(",")' <<<"${rollup}")"
-  pending="$(jq -r '[.statusCheckRollup[]? | select(.conclusion==null or .conclusion=="" or .status=="IN_PROGRESS" or .status=="QUEUED") | .name] | length' <<<"${rollup}")"
+  # Daytime CI may fail production-change-window; at 01:00 we are inside the window to merge.
+  failing="$(jq -r '[.statusCheckRollup[]? | select(.conclusion=="FAILURE") | select(.name != "production-change-window") | .name] | join(",")' <<<"${rollup}")"
+  pending="$(jq -r '[.statusCheckRollup[]? | select(.conclusion==null or .conclusion=="" or .status=="IN_PROGRESS" or .status=="QUEUED") | select(.name != "production-change-window") | .name] | length' <<<"${rollup}")"
   if [[ -n "${failing}" && "${failing}" != "" ]]; then
     warn "PR #${pr} failing checks: ${failing}"
     return 1

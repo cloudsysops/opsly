@@ -7,7 +7,8 @@
  *   node scripts/ci/check-production-change-window.mjs --check-now
  *   node scripts/ci/check-production-change-window.mjs --paths apps/peskids/x.ts docs/a.md
  *   node scripts/ci/check-production-change-window.mjs --mode deploy [--force]
- *   FORCE_DAYTIME=1 | HOTFIX_PROD=1 | SAFE_DAYTIME=1 (env overrides for CI)
+ *   FORCE_DAYTIME=1 | HOTFIX_PROD=1 | SAFE_DAYTIME=1 | NIGHT_MERGE=1 (env overrides for CI)
+ *   NIGHT_MERGE=1 only relaxes PR checks (queue for 01:00 bot); never deploy.
  */
 'use strict';
 
@@ -139,6 +140,7 @@ function main() {
   const args = parseArgs(process.argv.slice(2));
   const night = isNightWindow();
   const { stamp } = bogotaParts();
+  const nightMergeQueued = truthy(process.env.NIGHT_MERGE);
   const force =
     args.force ||
     truthy(process.env.FORCE_DAYTIME) ||
@@ -186,9 +188,14 @@ function main() {
     process.exit(0);
   }
 
-  if (night || force) {
+  if (night || force || nightMergeQueued) {
+    const tag = nightMergeQueued && !night && !force
+      ? ' [night-merge queue — merge deferred to 01:00 Bogotá]'
+      : force && !night
+        ? ' [label/force]'
+        : '';
     console.log(
-      `ok production-impact PR (${stamp})${force && !night ? ' [label/force]' : ''} impact=${prod.length || unsafe.length}`
+      `ok production-impact PR (${stamp})${tag} impact=${prod.length || unsafe.length}`
     );
     process.exit(0);
   }
@@ -199,9 +206,10 @@ function main() {
       `   Zona: ${TIME_ZONE} | Ventana permitida: ${WINDOW_START_HOUR}:00–${WINDOW_END_HOUR}:00 | Ahora: ${stamp}`,
       `   Paths de impacto (muestra): ${(prod.length ? prod : unsafe).slice(0, 12).join(', ')}`,
       `   Opciones:`,
-      `   1) Esperar a la noche y mergear entonces`,
-      `   2) Label safe-daytime si el cambio NO afecta prod/ops`,
-      `   3) Label hotfix-prod solo para emergencia`,
+      `   1) Label night-merge (CI verde de día; merge automático a la 01:00 Bogotá)`,
+      `   2) Esperar a la noche y mergear entonces`,
+      `   3) Label safe-daytime si el cambio NO afecta prod/ops`,
+      `   4) Label hotfix-prod solo para emergencia`,
       `   Doc: docs/runbooks/PRODUCTION-CHANGE-WINDOW.md`,
     ].join('\n')
   );

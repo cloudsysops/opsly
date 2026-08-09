@@ -37,6 +37,8 @@ Make.com (plataforma + hook Peskids): [`MAKE-SETUP.md`](../../01-development/MAK
 | `TENANT_PESKIDS_MAKE_WEBHOOK_URL` | Hook `opsly-peskids-ingress` (automatización Make en paralelo a n8n) |
 | `DASHBOARD_ADMIN_SECRET` | Generado (`openssl rand -hex 32`) |
 | `JELOU_WEBHOOK_SECRET` | Generado; configurar el mismo valor en Jelou al activar webhooks |
+| `PESKIDS_INBOUND_WEBHOOK_SECRET` | **Obligatorio** — GHL/inbound fail-closed sin él (503) |
+| `ENCRYPTION_SECRET` | **Obligatorio** — exactamente 32 caracteres; cifra cédula/NIT en `platform.peskids_leads` |
 | `NEXT_PUBLIC_JELOU_*` | `placeholder` hasta tener IDs reales de Jelou |
 | `NEXT_PUBLIC_FIREBASE_*` | Firebase web + FCM — ver [[FIREBASE-FCM-SETUP|FIREBASE-FCM-SETUP]] |
 

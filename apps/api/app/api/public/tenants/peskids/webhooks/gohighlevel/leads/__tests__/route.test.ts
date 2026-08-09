@@ -53,6 +53,18 @@ describe('POST /api/public/tenants/peskids/webhooks/gohighlevel/leads', () => {
     persistPeskidsLeadMock.mockReset();
     dispatchPeskidsLeadAutomationMock.mockReset();
     createPipelineOpportunityMock.mockReset();
+    process.env.PESKIDS_INBOUND_WEBHOOK_SECRET = 's3cret';
+  });
+
+  it('returns 503 when webhook secret is not configured', async () => {
+    delete process.env.PESKIDS_INBOUND_WEBHOOK_SECRET;
+    const { POST } = await import('../route');
+    const response = await POST({
+      headers: new Headers({ 'x-request-id': 'req-ghl-no-secret' }),
+      json: async () => ({}),
+    } as never);
+    expect(response.status).toBe(503);
+    expect(persistPeskidsLeadMock).not.toHaveBeenCalled();
   });
 
   it('validates, persists, creates opportunity, and returns the canonical response', async () => {
@@ -76,7 +88,10 @@ describe('POST /api/public/tenants/peskids/webhooks/gohighlevel/leads', () => {
 
     const { POST } = await import('../route');
     const response = await POST({
-      headers: new Headers({ 'x-request-id': 'req-ghl-1' }),
+      headers: new Headers({
+        'x-request-id': 'req-ghl-1',
+        'x-webhook-secret': 's3cret',
+      }),
       json: async () => ({
         event_id: 'evt-1',
         event_type: 'lead.created',
@@ -185,7 +200,10 @@ describe('POST /api/public/tenants/peskids/webhooks/gohighlevel/leads', () => {
 
     const { POST } = await import('../route');
     const response = await POST({
-      headers: new Headers({ 'x-request-id': 'req-ghl-4' }),
+      headers: new Headers({
+        'x-request-id': 'req-ghl-4',
+        'x-webhook-secret': 's3cret',
+      }),
       json: async () => ({
         event_id: 'evt-1',
         event_type: 'lead.created',
@@ -214,7 +232,10 @@ describe('POST /api/public/tenants/peskids/webhooks/gohighlevel/leads', () => {
   it('rejects invalid webhook payloads', async () => {
     const { POST } = await import('../route');
     const response = await POST({
-      headers: new Headers({ 'x-request-id': 'req-ghl-2' }),
+      headers: new Headers({
+        'x-request-id': 'req-ghl-2',
+        'x-webhook-secret': 's3cret',
+      }),
       json: async () => ({
         event_id: 'evt-1',
         event_type: 'lead.created',
@@ -256,7 +277,10 @@ describe('POST /api/public/tenants/peskids/webhooks/gohighlevel/leads', () => {
 
     const { POST } = await import('../route');
     const response = await POST({
-      headers: new Headers({ 'x-request-id': 'req-ghl-5' }),
+      headers: new Headers({
+        'x-request-id': 'req-ghl-5',
+        'x-webhook-secret': 's3cret',
+      }),
       json: async () => ({
         event_id: 'evt-2',
         event_type: 'lead.created',

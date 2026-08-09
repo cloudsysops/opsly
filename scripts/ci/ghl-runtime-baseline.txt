@@ -1,6 +1,6 @@
 1 .n8n/1-workflows/peskids/README.md
 1 .n8n/1-workflows/peskids/peskids-lead-intake.json
-5 apps/api/app/api/public/tenants/peskids/webhooks/gohighlevel/leads/route.ts
+4 apps/api/app/api/public/tenants/peskids/webhooks/gohighlevel/leads/route.ts
 1 apps/api/lib/alerting/slack-notifier.ts
 6 apps/api/lib/metrics/metrics-collector.ts
 2 apps/api/lib/peskids/automation.ts

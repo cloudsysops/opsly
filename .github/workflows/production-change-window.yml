@@ -58,11 +58,18 @@ jobs:
           else
             echo "safe=false" >> "$GITHUB_OUTPUT"
           fi
+          # Queued for automatic night merge — CI must go green by day without merging.
+          if echo "$labels" | grep -qi '"night-merge"'; then
+            echo "night_merge=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "night_merge=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Enforce night window for prod-impact PRs
         env:
           HOTFIX_PROD: ${{ steps.labels.outputs.hotfix == 'true' && '1' || '0' }}
           SAFE_DAYTIME: ${{ steps.labels.outputs.safe == 'true' && '1' || '0' }}
+          NIGHT_MERGE: ${{ steps.labels.outputs.night_merge == 'true' && '1' || '0' }}
           CHANGED_PATHS: ${{ steps.paths.outputs.list }}
         shell: bash
         run: |
