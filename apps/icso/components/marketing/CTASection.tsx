@@ -20,8 +20,8 @@ export function CTASection({
           />
           <h2 className="relative text-3xl font-bold sm:text-4xl">{title}</h2>
           <p className="relative mx-auto mt-4 max-w-xl text-icso-muted">{subtitle}</p>
-          <Link href="/contact#discovery" className="icso-btn-primary relative mt-8">
-            Book a discovery call
+          <Link href="/quote" className="icso-btn-primary relative mt-8">
+            Build a one-page SOW
           </Link>
         </div>
       </div>

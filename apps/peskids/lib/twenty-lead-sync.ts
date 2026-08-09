@@ -1,4 +1,4 @@
-import { TwentyClient, resolveTwentyEnv } from '@intcloudsysops/services/twenty';
+import { TwentyClient, resolveTwentyEnv } from '@intcloudsysops/services';
 
 export interface LeadData {
   parentName: string;

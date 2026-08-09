@@ -1,7 +1,7 @@
 /** @deprecated LEGACY (GHL): maps GHL pipeline stages → public.leads.status. */
 import {
   resolveGoHighLevelPeskidsEnv,
-} from '@intcloudsysops/services/gohighlevel';
+} from '@intcloudsysops/services';
 
 const GHL_API_BASE = 'https://services.leadconnectorhq.com';
 const NEW_LEAD_STAGE_ID = 'f4c7365b-efe8-4d33-9559-c7f06881f172';

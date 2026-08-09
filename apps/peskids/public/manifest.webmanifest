@@ -5,9 +5,10 @@
   "start_url": "/familias",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#6366f1",
+  "theme_color": "#54BFB1",
   "orientation": "portrait-primary",
   "icons": [
+    { "src": "/brand/logo-official.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" },
     { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable any" },
     { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable any" }
   ]

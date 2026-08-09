@@ -11,6 +11,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@intcloudsysops/mission-control-kit": "*",
     "@intcloudsysops/services": "*",
     "@supabase/supabase-js": "^2.49.1",
     "lucide-react": "^0.469.0",

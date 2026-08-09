@@ -84,7 +84,7 @@ export async function POST(req: Request) {
         },
         { status: 201, headers: { 'content-type': 'application/json' } }
       );
-    } else if (action === 'remove') {
+    } else {
       await removeFromCart(session.studentId, productId);
       return Response.json(
         { ok: true, data: { message: 'Product removed from cart' } },

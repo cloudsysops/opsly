@@ -5,7 +5,7 @@ const useLocalServer = !process.env.PESKIDS_SMOKE_BASE_URL?.trim();
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: /release1-smoke\.spec\.ts/,
+  testMatch: /release[12]-(smoke|classic-form-qa)\.spec\.ts/,
   timeout: 90_000,
   expect: {
     timeout: 15_000,
