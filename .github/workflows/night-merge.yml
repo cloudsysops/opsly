@@ -1,0 +1,69 @@
+# Squash-merge PRs labeled `night-merge` during America/Bogota night window,
+# wait for Deploy, smoke-test public health, rollback main if verify fails.
+#
+# Enqueue: add label `night-merge` to a green PR. You can sleep — this runs at 01:00 Bogota.
+# Docs: docs/runbooks/NIGHT-MERGE.md
+name: Night merge
+
+on:
+  schedule:
+    # 01:00 America/Bogota = 06:00 UTC (no DST)
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Skip night-window gate (emergency / test)"
+        type: boolean
+        required: false
+        default: false
+      dry_run:
+        description: "List/validate only; do not merge"
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+  actions: read
+
+concurrency:
+  group: night-merge-main
+  cancel-in-progress: false
+
+jobs:
+  night-merge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Night merge + verify (+ rollback on failure)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PLATFORM_DOMAIN: ${{ secrets.PLATFORM_DOMAIN }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          NIGHT_MERGE_FORCE: ${{ inputs.force == true && '1' || '0' }}
+          DRY_RUN: ${{ inputs.dry_run == true && '1' || '0' }}
+          # Allow bot to merge despite review rules when nightly automation is trusted
+          NIGHT_MERGE_ADMIN: "1"
+          DEPLOY_WAIT_SECONDS: "1500"
+        run: |
+          set -euo pipefail
+          chmod +x scripts/ci/night-merge-and-verify.sh
+          # schedule always forces window check; workflow_dispatch may set force
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            export NIGHT_MERGE_FORCE=0
+          fi
+          ./scripts/ci/night-merge-and-verify.sh

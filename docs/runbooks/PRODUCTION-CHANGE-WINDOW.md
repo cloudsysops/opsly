@@ -43,12 +43,19 @@ Si el PR mezcla docs + `apps/peskids` → se trata como impacto prod.
 
 | Label | Uso |
 |-------|-----|
+| `night-merge` | Cola de **merge automático nocturno** (01:00 Bogotá): CI verde → squash-merge → Deploy → smoke → rollback si falla. Ver [`NIGHT-MERGE.md`](NIGHT-MERGE.md) |
 | `safe-daytime` | Humano certifica: no afecta prod/ops; merge de día OK |
 | `hotfix-prod` | Emergencia; merge/deploy de día OK |
 
+## Merge mientras duermes
+
+1. De día: PR listo + CI verde + label **`night-merge`**.
+2. A la 01:00 corre [`.github/workflows/night-merge.yml`](../../.github/workflows/night-merge.yml).
+3. Si el Deploy o el smoke fallan, el job intenta **rollback** de `main` y avisa por Discord.
+
 ## Agentes / Cursor
 
-No mergear ni desplegar Peskids/runtime de día. Abrir PR, dejar listo, merge en ventana nocturna. Ver `.cursor/rules/production-change-window.mdc`.
+No mergear ni desplegar Peskids/runtime de día. Abrir PR, dejar listo, añadir **`night-merge`** (o merge en ventana nocturna). Ver `.cursor/rules/production-change-window.mdc`.
 
 ## Comandos
 
