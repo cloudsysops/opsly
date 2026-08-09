@@ -19,9 +19,12 @@ echo "==> OpenAPI contract"
 npm run validate-openapi
 
 echo "==> Build internal packages (required before tsc / vitest)"
+(cd packages/types && npm run build)
 (cd lib/prompt-guard && npm run build)
 (cd apps/ml && npm run build)
 (cd lib/services && npm run build)
+(cd lib/external-agent-registry && npm run build)
+(cd lib/agent-task-core && npm run build)
 (cd lib/git-branch-orchestrator && npm run build)
 (cd lib/session-manager && npm run build)
 (cd lib/runtime && npm run build)
