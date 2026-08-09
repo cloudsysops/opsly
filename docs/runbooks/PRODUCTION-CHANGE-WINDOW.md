@@ -43,7 +43,7 @@ Si el PR mezcla docs + `apps/peskids` → se trata como impacto prod.
 
 | Label | Uso |
 |-------|-----|
-| `night-merge` | Cola de **merge automático nocturno** (01:00 Bogotá): CI verde → squash-merge → Deploy → smoke → rollback si falla. Ver [`NIGHT-MERGE.md`](NIGHT-MERGE.md) |
+| `night-merge` | Cola de **merge automático nocturno** (01:00 Bogotá): CI verde de día (este label **pasa** el gate `production-change-window` sin autorizar merge diurno) → squash-merge → Deploy → smoke → rollback si falla. Ver [`NIGHT-MERGE.md`](NIGHT-MERGE.md) |
 | `safe-daytime` | Humano certifica: no afecta prod/ops; merge de día OK |
 | `hotfix-prod` | Emergencia; merge/deploy de día OK |
 
