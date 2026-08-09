@@ -1,6 +1,6 @@
-import type { GoHighLevelClient } from '@intcloudsysops/services/gohighlevel';
-import { resolveGoHighLevelPeskidsEnv } from '@intcloudsysops/services/gohighlevel';
-import { isPeskidsGhlEnabled } from '@intcloudsysops/services/twenty';
+import type { GoHighLevelClient } from '@intcloudsysops/services';
+import { resolveGoHighLevelPeskidsEnv } from '@intcloudsysops/services';
+import { isPeskidsGhlEnabled } from '@intcloudsysops/services';
 import {
   createSupabaseTrialSchedulingStore,
   slotPartsFromIso,

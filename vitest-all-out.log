@@ -1,0 +1,802 @@
+
+> @intcloudsysops/api@0.0.0 test
+> vitest run
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.8 [39m[90m/app/apps/api[39m
+
+[90mstderr[2m | app/api/v1/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mGET /api/tenants[2m > [22m[2mreturns 500 when list query errors
+[22m[39mList tenants: { message: [32m'db'[39m }
+
+[90mstderr[2m | app/api/v1/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 202 and provisions tenant
+[22m[39m{"timestamp":"2026-08-09T14:31:11.339Z","level":"INFO","message":"tenant.route.create.request","context":{"slug":"newco","owner_email":"owner@newco.com","plan":"startup"}}
+
+[90mstderr[2m | app/api/v1/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 202 and provisions tenant
+[22m[39m{"timestamp":"2026-08-09T14:31:11.341Z","level":"INFO","message":"tenant.route.create.accepted","context":{"tenant_id":"550e8400-e29b-41d4-a716-446655440001","slug":"newco"}}
+
+[90mstderr[2m | app/api/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mGET /api/tenants[2m > [22m[2mreturns 500 when list query errors
+[22m[39mList tenants: { message: [32m'db'[39m }
+
+[90mstderr[2m | app/api/v1/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 500 when tenant post-check is missing
+[22m[39m{"timestamp":"2026-08-09T14:31:11.343Z","level":"INFO","message":"tenant.route.create.request","context":{"slug":"ghost","owner_email":"owner@ghost.com","plan":"startup"}}
+
+[90mstderr[2m | app/api/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 202 and provisions tenant
+[22m[39m{"timestamp":"2026-08-09T14:31:11.351Z","level":"INFO","message":"tenant.route.create.request","context":{"slug":"newco","owner_email":"owner@newco.com","plan":"startup"}}
+
+[90mstderr[2m | app/api/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 202 and provisions tenant
+[22m[39m{"timestamp":"2026-08-09T14:31:11.352Z","level":"INFO","message":"tenant.route.create.accepted","context":{"tenant_id":"550e8400-e29b-41d4-a716-446655440001","slug":"newco"}}
+
+[90mstderr[2m | app/api/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 500 when tenant post-check is missing
+[22m[39m{"timestamp":"2026-08-09T14:31:11.355Z","level":"INFO","message":"tenant.route.create.request","context":{"slug":"ghost","owner_email":"owner@ghost.com","plan":"startup"}}
+
+ [32m✓[39m lib/peskids/__tests__/executive.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 574[2mms[22m[39m
+     [33m[2m✓[22m[39m aggregates the first six executive metrics [33m 572[2mms[22m[39m
+[90mstderr[2m | app/api/v1/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 500 when tenant post-check is missing
+[22m[39m{"timestamp":"2026-08-09T14:31:11.947Z","level":"ERROR","message":"tenant.route.post_check_not_found","context":{"tenant_id":"550e8400-e29b-41d4-a716-446655440001","attempts":5}}
+
+[90mstderr[2m | app/api/v1/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 500 when tenant post-check is missing
+[22m[39mPOST /tenants: Error: Tenant post-check failed: tenant 550e8400-e29b-41d4-a716-446655440001 not found
+    at assertTenantPersisted [90m(/app/apps/api/[39mapp/api/v1/tenants/route.ts:62:9[90m)[39m
+    at Module.POST [90m(/app/apps/api/[39mapp/api/v1/tenants/route.ts:138:5[90m)[39m
+    at [90m/app/apps/api/[39mapp/api/v1/tenants/__tests__/tenants-route.test.ts:191:17
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:1903:20
+
+[90mstderr[2m | app/api/v1/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 500 when tenant post-check finds soft-deleted row
+[22m[39m{"timestamp":"2026-08-09T14:31:11.955Z","level":"INFO","message":"tenant.route.create.request","context":{"slug":"deletedco","owner_email":"owner@deletedco.com","plan":"startup"}}
+
+[90mstderr[2m | app/api/v1/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 500 when tenant post-check finds soft-deleted row
+[22m[39mPOST /tenants: Error: Tenant post-check failed: tenant 550e8400-e29b-41d4-a716-446655440002 is soft-deleted
+    at assertTenantPersisted [90m(/app/apps/api/[39mapp/api/v1/tenants/route.ts:52:13[90m)[39m
+    at Module.POST [90m(/app/apps/api/[39mapp/api/v1/tenants/route.ts:138:5[90m)[39m
+    at [90m/app/apps/api/[39mapp/api/v1/tenants/__tests__/tenants-route.test.ts:217:17
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:1903:20
+
+[90mstderr[2m | app/api/v1/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 409 on unique violation
+[22m[39m{"timestamp":"2026-08-09T14:31:11.957Z","level":"INFO","message":"tenant.route.create.request","context":{"slug":"dup","owner_email":"o@a.com","plan":"demo"}}
+
+[90mstderr[2m | app/api/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 500 when tenant post-check is missing
+[22m[39m{"timestamp":"2026-08-09T14:31:11.958Z","level":"ERROR","message":"tenant.route.post_check_not_found","context":{"tenant_id":"550e8400-e29b-41d4-a716-446655440001","attempts":5}}
+
+[90mstderr[2m | app/api/v1/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 500 on unexpected provision error
+[22m[39m{"timestamp":"2026-08-09T14:31:11.959Z","level":"INFO","message":"tenant.route.create.request","context":{"slug":"okslug","owner_email":"o@a.com","plan":"demo"}}
+
+[90mstderr[2m | app/api/v1/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 500 on unexpected provision error
+[22m[39mPOST /tenants: Error: disk full
+    at [90m/app/apps/api/[39mapp/api/v1/tenants/__tests__/tenants-route.test.ts:250:66
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:302:11
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:1903:26
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2326:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2323:10)
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2305:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2272:10)
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2955:64
+
+ [32m✓[39m app/api/v1/tenants/__tests__/tenants-route.test.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 698[2mms[22m[39m
+     [33m[2m✓[22m[39m returns 500 when tenant post-check is missing [33m 611[2mms[22m[39m
+[90mstderr[2m | app/api/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 500 when tenant post-check is missing
+[22m[39mPOST /tenants: Error: Tenant post-check failed: tenant 550e8400-e29b-41d4-a716-446655440001 not found
+    at assertTenantPersisted [90m(/app/apps/api/[39mapp/api/tenants/route.ts:57:9[90m)[39m
+    at Module.POST [90m(/app/apps/api/[39mapp/api/tenants/route.ts:133:5[90m)[39m
+    at [90m/app/apps/api/[39mapp/api/tenants/__tests__/tenants-route.test.ts:191:17
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:1903:20
+
+[90mstderr[2m | app/api/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 500 when tenant post-check finds soft-deleted row
+[22m[39m{"timestamp":"2026-08-09T14:31:11.967Z","level":"INFO","message":"tenant.route.create.request","context":{"slug":"deletedco","owner_email":"owner@deletedco.com","plan":"startup"}}
+
+[90mstderr[2m | app/api/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 500 when tenant post-check finds soft-deleted row
+[22m[39mPOST /tenants: Error: Tenant post-check failed: tenant 550e8400-e29b-41d4-a716-446655440002 is soft-deleted
+    at assertTenantPersisted [90m(/app/apps/api/[39mapp/api/tenants/route.ts:47:13[90m)[39m
+    at Module.POST [90m(/app/apps/api/[39mapp/api/tenants/route.ts:133:5[90m)[39m
+    at [90m/app/apps/api/[39mapp/api/tenants/__tests__/tenants-route.test.ts:217:17
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:1903:20
+
+[90mstderr[2m | app/api/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 409 on unique violation
+[22m[39m{"timestamp":"2026-08-09T14:31:11.969Z","level":"INFO","message":"tenant.route.create.request","context":{"slug":"dup","owner_email":"o@a.com","plan":"demo"}}
+
+[90mstderr[2m | app/api/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 500 on unexpected provision error
+[22m[39m{"timestamp":"2026-08-09T14:31:11.970Z","level":"INFO","message":"tenant.route.create.request","context":{"slug":"okslug","owner_email":"o@a.com","plan":"demo"}}
+
+[90mstderr[2m | app/api/tenants/__tests__/tenants-route.test.ts[2m > [22m[2mPOST /api/tenants[2m > [22m[2mreturns 500 on unexpected provision error
+[22m[39mPOST /tenants: Error: disk full
+    at [90m/app/apps/api/[39mapp/api/tenants/__tests__/tenants-route.test.ts:250:66
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:302:11
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:1903:26
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2326:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2323:10)
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2305:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2272:10)
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2955:64
+
+ [32m✓[39m app/api/tenants/__tests__/tenants-route.test.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 700[2mms[22m[39m
+     [33m[2m✓[22m[39m returns 500 when tenant post-check is missing [33m 611[2mms[22m[39m
+[90mstderr[2m | app/api/public/tenants/peskids/webhooks/gohighlevel/leads/__tests__/route.test.ts[2m > [22m[2mPOST /api/public/tenants/peskids/webhooks/gohighlevel/leads[2m > [22m[2mvalidates, persists, creates opportunity, and returns the canonical response
+[22m[39m[peskids/gohighlevel] PESKIDS_INBOUND_WEBHOOK_SECRET not set — webhook is unauthenticated
+
+[90mstderr[2m | app/api/public/tenants/peskids/webhooks/gohighlevel/leads/__tests__/route.test.ts[2m > [22m[2mPOST /api/public/tenants/peskids/webhooks/gohighlevel/leads[2m > [22m[2mvalidates, persists, creates opportunity, and returns the canonical response
+[22m[39m[opportunity] GHL Peskids not configured
+
+[90mstderr[2m | app/api/public/tenants/peskids/webhooks/gohighlevel/leads/__tests__/route.test.ts[2m > [22m[2mPOST /api/public/tenants/peskids/webhooks/gohighlevel/leads[2m > [22m[2mvalidates, persists, creates opportunity, and returns the canonical response
+[22m[39m[slack-alerter] SLACK_ALERT_WEBHOOK_URL not set; alert not sent {
+  severity: [32m'critical'[39m,
+  service: [32m'peskids'[39m,
+  component: [32m'gohighlevel'[39m,
+  error: [32m'Opportunity creation returned null'[39m
+}
+
+[90mstderr[2m | app/api/public/tenants/peskids/webhooks/gohighlevel/leads/__tests__/route.test.ts[2m > [22m[2mPOST /api/public/tenants/peskids/webhooks/gohighlevel/leads[2m > [22m[2mrejects requests with invalid webhook secret
+[22m[39m[slack-alerter] SLACK_ALERT_WEBHOOK_URL not set; alert not sent {
+  severity: [32m'critical'[39m,
+  service: [32m'peskids'[39m,
+  component: [32m'webhook-receiver'[39m,
+  error: [32m'Invalid webhook secret'[39m
+}
+
+[90mstderr[2m | app/api/public/tenants/peskids/webhooks/gohighlevel/leads/__tests__/route.test.ts[2m > [22m[2mPOST /api/public/tenants/peskids/webhooks/gohighlevel/leads[2m > [22m[2mreturns dispatch=false for duplicate leads
+[22m[39m[peskids/gohighlevel] PESKIDS_INBOUND_WEBHOOK_SECRET not set — webhook is unauthenticated
+
+[90mstderr[2m | app/api/public/tenants/peskids/webhooks/gohighlevel/leads/__tests__/route.test.ts[2m > [22m[2mPOST /api/public/tenants/peskids/webhooks/gohighlevel/leads[2m > [22m[2mrejects invalid webhook payloads
+[22m[39m[peskids/gohighlevel] PESKIDS_INBOUND_WEBHOOK_SECRET not set — webhook is unauthenticated
+
+[90mstderr[2m | app/api/public/tenants/peskids/webhooks/gohighlevel/leads/__tests__/route.test.ts[2m > [22m[2mPOST /api/public/tenants/peskids/webhooks/gohighlevel/leads[2m > [22m[2mrejects invalid webhook payloads
+[22m[39m[slack-alerter] SLACK_ALERT_WEBHOOK_URL not set; alert not sent {
+  severity: [32m'critical'[39m,
+  service: [32m'peskids'[39m,
+  component: [32m'webhook-receiver'[39m,
+  error: [32m'occurred_at: Invalid datetime'[39m
+}
+
+[90mstderr[2m | app/api/public/tenants/peskids/webhooks/gohighlevel/leads/__tests__/route.test.ts[2m > [22m[2mPOST /api/public/tenants/peskids/webhooks/gohighlevel/leads[2m > [22m[2mskips opportunity creation when ghl_contact_id is missing
+[22m[39m[peskids/gohighlevel] PESKIDS_INBOUND_WEBHOOK_SECRET not set — webhook is unauthenticated
+
+ [32m✓[39m app/api/public/tenants/peskids/webhooks/gohighlevel/leads/__tests__/route.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 356[2mms[22m[39m
+     [33m[2m✓[22m[39m validates, persists, creates opportunity, and returns the canonical response [33m 345[2mms[22m[39m
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcheckout.session.completed[2m > [22m[2mprovisions tenant when metadata is valid
+[22m[39m{"timestamp":"2026-08-09T14:31:12.411Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcheckout.session.completed[2m > [22m[2mskips provision when tenant_slug is missing
+[22m[39m{"timestamp":"2026-08-09T14:31:12.420Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcheckout.session.completed[2m > [22m[2mskips provision when tenant_slug is missing
+[22m[39m{"timestamp":"2026-08-09T14:31:12.421Z","level":"ERROR","message":"checkout.session.completed missing metadata","context":{"email":"a@b.com","planRaw":"startup"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcheckout.session.completed[2m > [22m[2mskips provision when email is missing
+[22m[39m{"timestamp":"2026-08-09T14:31:12.422Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcheckout.session.completed[2m > [22m[2mskips provision when email is missing
+[22m[39m{"timestamp":"2026-08-09T14:31:12.422Z","level":"ERROR","message":"checkout.session.completed missing metadata","context":{"slug":"s","planRaw":"startup"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcheckout.session.completed[2m > [22m[2mskips provision when plan is missing
+[22m[39m{"timestamp":"2026-08-09T14:31:12.424Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcheckout.session.completed[2m > [22m[2mskips provision when plan is missing
+[22m[39m{"timestamp":"2026-08-09T14:31:12.424Z","level":"ERROR","message":"checkout.session.completed missing metadata","context":{"slug":"s","email":"a@b.com"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcheckout.session.completed[2m > [22m[2mskips provision when plan is invalid
+[22m[39m{"timestamp":"2026-08-09T14:31:12.425Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcheckout.session.completed[2m > [22m[2mskips provision when plan is invalid
+[22m[39m{"timestamp":"2026-08-09T14:31:12.426Z","level":"ERROR","message":"checkout.session.completed invalid plan","context":{"plan":"not-a-plan"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcheckout.session.completed[2m > [22m[2maccepts all valid plan types
+[22m[39m{"timestamp":"2026-08-09T14:31:12.428Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+ [32m✓[39m app/api/admin/tenants/registry/__tests__/route.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 48[2mms[22m[39m
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcheckout.session.completed[2m > [22m[2mpasses undefined stripe_customer_id when customer is null
+[22m[39m{"timestamp":"2026-08-09T14:31:12.434Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcheckout.session.completed[2m > [22m[2maccepts expanded customer object
+[22m[39m{"timestamp":"2026-08-09T14:31:12.435Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcheckout.session.completed[2m > [22m[2mpasses undefined stripe_customer_id when customer is a deleted customer
+[22m[39m{"timestamp":"2026-08-09T14:31:12.436Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcustomer.subscription.updated[2m > [22m[2mupserts legacy and billing subscriptions from metadata tenant_id
+[22m[39m{"timestamp":"2026-08-09T14:31:12.438Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcustomer.subscription.updated[2m > [22m[2mresolves tenant via stripe_customer_id when metadata has no tenant_id
+[22m[39m{"timestamp":"2026-08-09T14:31:12.441Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcustomer.subscription.updated[2m > [22m[2mhandles duplicate legacy subscription insert gracefully (23505)
+[22m[39m{"timestamp":"2026-08-09T14:31:12.443Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcustomer.subscription.updated[2m > [22m[2mskips processing when tenant cannot be resolved
+[22m[39m{"timestamp":"2026-08-09T14:31:12.446Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcustomer.subscription.updated[2m > [22m[2mskips processing when tenant cannot be resolved
+[22m[39m{"timestamp":"2026-08-09T14:31:12.447Z","level":"ERROR","message":"customer.subscription.updated could not resolve tenant_id"}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcustomer.subscription.updated[2m > [22m[2mresumes tenant from suspended when status is active
+[22m[39m{"timestamp":"2026-08-09T14:31:12.447Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | app/api/tenants/[slug]/__tests__/tenant-id-route.test.ts[2m > [22m[2mGET /api/tenants/:id[2m > [22m[2mreturns 500 on db error
+[22m[39mGET tenant: { message: [32m'e'[39m }
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2mcustomer.subscription.deleted[2m > [22m[2mmarks billing subscription as cancelled
+[22m[39m{"timestamp":"2026-08-09T14:31:12.453Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.paid[2m > [22m[2mupdates billing subscription status and upserts invoice
+[22m[39m{"timestamp":"2026-08-09T14:31:12.455Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.paid[2m > [22m[2mdoes nothing when tenant cannot be resolved
+[22m[39m{"timestamp":"2026-08-09T14:31:12.458Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.payment_succeeded[2m > [22m[2mroutes to same handler as invoice.paid (handleInvoicePaid)
+[22m[39m{"timestamp":"2026-08-09T14:31:12.459Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.payment_failed[2m > [22m[2mrecords a payment failure in dunning service
+[22m[39m{"timestamp":"2026-08-09T14:31:12.461Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.payment_failed[2m > [22m[2mrecords a payment failure in dunning service
+[22m[39m{"timestamp":"2026-08-09T14:31:12.463Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.payment_failed[2m > [22m[2msuspends tenant after 5 payment failures
+[22m[39m{"timestamp":"2026-08-09T14:31:12.463Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.payment_failed[2m > [22m[2msuspends tenant after 5 payment failures
+[22m[39m{"timestamp":"2026-08-09T14:31:12.464Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.payment_failed[2m > [22m[2msuspends tenant after 5 payment failures
+[22m[39m{"timestamp":"2026-08-09T14:31:12.465Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":3,"level":"escalated"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.payment_failed[2m > [22m[2msuspends tenant after 5 payment failures
+[22m[39m{"timestamp":"2026-08-09T14:31:12.467Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":5,"level":"suspended"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.payment_failed[2m > [22m[2msuspends tenant after 5 payment failures
+[22m[39m{"timestamp":"2026-08-09T14:31:12.468Z","level":"INFO","message":"dunning.suspended","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":5}}
+
+ [32m✓[39m app/api/tenants/[slug]/__tests__/tenant-id-route.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 65[2mms[22m[39m
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.payment_failed[2m > [22m[2mdoes not suspend before 5 failures
+[22m[39m{"timestamp":"2026-08-09T14:31:12.469Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.payment_failed[2m > [22m[2mdoes not suspend before 5 failures
+[22m[39m{"timestamp":"2026-08-09T14:31:12.470Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.payment_failed[2m > [22m[2mdoes not suspend before 5 failures
+[22m[39m{"timestamp":"2026-08-09T14:31:12.472Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":3,"level":"escalated"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.payment_failed[2m > [22m[2mnotifies Discord on payment failure
+[22m[39m{"timestamp":"2026-08-09T14:31:12.473Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.payment_failed[2m > [22m[2mnotifies Discord on payment failure
+[22m[39m{"timestamp":"2026-08-09T14:31:12.474Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.payment_failed[2m > [22m[2mdoes nothing when invoice has no customer
+[22m[39m{"timestamp":"2026-08-09T14:31:12.481Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.payment_failed[2m > [22m[2mdoes nothing when invoice has no customer
+[22m[39m{"timestamp":"2026-08-09T14:31:12.481Z","level":"ERROR","message":"invoice.payment_failed missing customer"}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.payment_failed[2m > [22m[2mdoes nothing when tenant is not found
+[22m[39m{"timestamp":"2026-08-09T14:31:12.482Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2minvoice.payment_failed[2m > [22m[2mdoes nothing when tenant is not found
+[22m[39m{"timestamp":"2026-08-09T14:31:12.482Z","level":"ERROR","message":"invoice.payment_failed tenant not found","context":{"customerId":"cus_1"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mdispatchStripeEvent[2m > [22m[2munknown event type[2m > [22m[2msilently ignores unregistered event types
+[22m[39m{"timestamp":"2026-08-09T14:31:12.484Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mhandleStripeWebhookPost[2m > [22m[2mreturns 200 after successful dispatch
+[22m[39m{"timestamp":"2026-08-09T14:31:12.518Z","level":"ERROR","message":"stripe webhook dispatch error","error":{"name":"TypeError","message":"(0 , __vite_ssr_import_3__.getServiceClient)(...).schema(...).from(...).select is not a function","stack":"TypeError: (0 , __vite_ssr_import_3__.getServiceClient)(...).schema(...).from(...).select is not a function\n    at resolveTenantByCustomerId (/app/apps/api/lib/stripe/unified-webhook.ts:44:6)\n    at handleInvoicePaid (/app/apps/api/lib/stripe/unified-webhook.ts:380:24)\n    at dispatchStripeEvent (/app/apps/api/lib/stripe/unified-webhook.ts:485:13)\n    at Module.handleStripeWebhookPost (/app/apps/api/lib/stripe/unified-webhook.ts:525:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at /app/apps/api/lib/stripe/__tests__/unified-webhook.test.ts:579:17\n    at file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mhandleStripeWebhookPost[2m > [22m[2mreturns 500 when webhook secret is not configured
+[22m[39m{"timestamp":"2026-08-09T14:31:12.531Z","level":"ERROR","message":"stripe webhook endpoint secret not configured"}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mhandleStripeWebhookPost[2m > [22m[2mreturns 400 when signature verification fails
+[22m[39m{"timestamp":"2026-08-09T14:31:12.534Z","level":"ERROR","message":"stripe webhook signature verification failed"}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mhandleStripeWebhookPost[2m > [22m[2mreturns 500 when request body cannot be read
+[22m[39m{"timestamp":"2026-08-09T14:31:12.535Z","level":"ERROR","message":"stripe webhook failed to read body","error":{"name":"Error","message":"stream error","stack":"Error: stream error\n    at Object.text (/app/apps/api/lib/stripe/__tests__/unified-webhook.test.ts:621:34)\n    at Module.handleStripeWebhookPost (/app/apps/api/lib/stripe/unified-webhook.ts:505:29)\n    at /app/apps/api/lib/stripe/__tests__/unified-webhook.test.ts:624:23\n    at file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20\n    at new Promise (<anonymous>)"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mhandleStripeWebhookPost[2m > [22m[2mreturns 500 with processing_failed when checkout session dispatch throws
+[22m[39m{"timestamp":"2026-08-09T14:31:12.544Z","level":"ERROR","message":"stripe webhook dispatch error","error":{"name":"TypeError","message":"Cannot use 'in' operator to search for 'deleted' in undefined","stack":"TypeError: Cannot use 'in' operator to search for 'deleted' in undefined\n    at getStripeCustomerId (/app/apps/api/lib/stripe/unified-webhook.ts:26:7)\n    at handleCheckoutSessionCompleted (/app/apps/api/lib/stripe/unified-webhook.ts:292:22)\n    at dispatchStripeEvent (/app/apps/api/lib/stripe/unified-webhook.ts:472:13)\n    at Module.handleStripeWebhookPost (/app/apps/api/lib/stripe/unified-webhook.ts:525:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at /app/apps/api/lib/stripe/__tests__/unified-webhook.test.ts:665:17\n    at file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"}}
+
+[90mstderr[2m | lib/stripe/__tests__/unified-webhook.test.ts[2m > [22m[2mhandleStripeWebhookPost[2m > [22m[2mnon-checkout errors do not return processing_failed (fallback to 200)
+[22m[39m{"timestamp":"2026-08-09T14:31:12.546Z","level":"ERROR","message":"stripe webhook dispatch error","error":{"name":"TypeError","message":"(0 , __vite_ssr_import_3__.getServiceClient)(...).schema(...).from(...).select is not a function","stack":"TypeError: (0 , __vite_ssr_import_3__.getServiceClient)(...).schema(...).from(...).select is not a function\n    at resolveTenantByCustomerId (/app/apps/api/lib/stripe/unified-webhook.ts:44:6)\n    at handleInvoicePaid (/app/apps/api/lib/stripe/unified-webhook.ts:380:24)\n    at dispatchStripeEvent (/app/apps/api/lib/stripe/unified-webhook.ts:485:13)\n    at Module.handleStripeWebhookPost (/app/apps/api/lib/stripe/unified-webhook.ts:525:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at /app/apps/api/lib/stripe/__tests__/unified-webhook.test.ts:691:17\n    at file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"}}
+
+ [32m✓[39m lib/stripe/__tests__/unified-webhook.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 143[2mms[22m[39m
+[90mstderr[2m | lib/peskids/__tests__/followup.test.ts[2m > [22m[2mpeskids followup service[2m > [22m[2mgetPendingFollowups[2m > [22m[2mthrows on query error
+[22m[39m{"timestamp":"2026-06-03T12:00:00.000Z","level":"ERROR","message":"peskids.followup.query_error","context":{"tenantSlug":"peskids","error":"DB error"}}
+
+[90mstderr[2m | lib/peskids/__tests__/followup.test.ts[2m > [22m[2mpeskids followup service[2m > [22m[2mexecutePendingFollowups[2m > [22m[2mcreates GHL tasks for pending leads and marks followup_sent
+[22m[39m{"timestamp":"2026-06-03T12:00:00.000Z","level":"INFO","message":"peskids.followup.execute_complete","context":{"tenantSlug":"peskids","processed":1,"failed":0,"skipped":0}}
+
+[90mstderr[2m | lib/peskids/__tests__/followup.test.ts[2m > [22m[2mpeskids followup service[2m > [22m[2mexecutePendingFollowups[2m > [22m[2mskips leads without lead_id and marks as skipped
+[22m[39m{"timestamp":"2026-06-03T12:00:00.000Z","level":"INFO","message":"peskids.followup.execute_complete","context":{"tenantSlug":"peskids","processed":0,"failed":0,"skipped":1}}
+
+[90mstderr[2m | lib/peskids/__tests__/followup.test.ts[2m > [22m[2mpeskids followup service[2m > [22m[2mexecutePendingFollowups[2m > [22m[2mreports GHL API failures without marking followup_sent
+[22m[39m{"timestamp":"2026-06-03T12:00:00.000Z","level":"WARN","message":"peskids.followup.task_failed","context":{"lead_id":"lead-fail","error":"GHL API returned 500: Internal Server Error"}}
+{"timestamp":"2026-06-03T12:00:00.000Z","level":"INFO","message":"peskids.followup.execute_complete","context":{"tenantSlug":"peskids","processed":0,"failed":1,"skipped":0}}
+
+ [32m✓[39m lib/peskids/__tests__/followup.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 88[2mms[22m[39m
+ [32m✓[39m app/api/admin/peskids/[slug]/executive/__tests__/route.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 75[2mms[22m[39m
+[90mstderr[2m | app/api/__tests__/invitations-stripe-routes.test.ts[2m > [22m[2mPOST /api/webhooks/stripe[2m > [22m[2mreturns 500 when webhook secrets are missing
+[22m[39m{"timestamp":"2026-08-09T14:31:12.888Z","level":"ERROR","message":"stripe webhook endpoint secret not configured"}
+
+[90mstderr[2m | app/api/__tests__/invitations-stripe-routes.test.ts[2m > [22m[2mPOST /api/webhooks/stripe[2m > [22m[2mreturns 400 when signature verification fails
+[22m[39m{"timestamp":"2026-08-09T14:31:12.891Z","level":"ERROR","message":"stripe webhook signature verification failed"}
+
+[90mstderr[2m | app/api/__tests__/invitations-stripe-routes.test.ts[2m > [22m[2mPOST /api/webhooks/stripe[2m > [22m[2mreturns 500 when request.text() rejects
+[22m[39m{"timestamp":"2026-08-09T14:31:12.894Z","level":"ERROR","message":"stripe webhook failed to read body","error":{"name":"Error","message":"read failed","stack":"Error: read failed\n    at Object.text (/app/apps/api/app/api/__tests__/invitations-stripe-routes.test.ts:177:34)\n    at handleStripeWebhookPost (/app/apps/api/lib/stripe/unified-webhook.ts:505:29)\n    at Module.POST (/app/apps/api/app/api/webhooks/stripe/route.ts:4:10)\n    at /app/apps/api/app/api/__tests__/invitations-stripe-routes.test.ts:179:23\n    at file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20"}}
+
+[90mstderr[2m | app/api/__tests__/invitations-stripe-routes.test.ts[2m > [22m[2mPOST /api/webhooks/stripe[2m > [22m[2mcheckout.session.completed with invalid plan skips provision
+[22m[39m{"timestamp":"2026-08-09T14:31:12.909Z","level":"ERROR","message":"checkout.session.completed invalid plan","context":{"plan":"not-a-plan"}}
+
+[90mstderr[2m | app/api/__tests__/invitations-stripe-routes.test.ts[2m > [22m[2mPOST /api/webhooks/stripe[2m > [22m[2mcheckout.session.completed with missing metadata skips provision
+[22m[39m{"timestamp":"2026-08-09T14:31:12.911Z","level":"ERROR","message":"checkout.session.completed missing metadata","context":{}}
+
+[90mstderr[2m | app/api/__tests__/invitations-stripe-routes.test.ts[2m > [22m[2mPOST /api/webhooks/stripe[2m > [22m[2mcustomer.subscription.updated persists when tenant_id in metadata
+[22m[39m{"timestamp":"2026-08-09T14:31:12.913Z","level":"ERROR","message":"stripe webhook dispatch error","error":{"name":"TypeError","message":"db.schema(...).from(...).select is not a function","stack":"TypeError: db.schema(...).from(...).select is not a function\n    at upsertBillingSubscription (/app/apps/api/lib/stripe/unified-webhook.ts:157:6)\n    at handleSubscriptionUpdated (/app/apps/api/lib/stripe/unified-webhook.ts:320:9)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at dispatchStripeEvent (/app/apps/api/lib/stripe/unified-webhook.ts:476:7)\n    at handleStripeWebhookPost (/app/apps/api/lib/stripe/unified-webhook.ts:525:5)\n    at /app/apps/api/app/api/__tests__/invitations-stripe-routes.test.ts:286:17\n    at file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"}}
+
+[90mstderr[2m | app/api/__tests__/invitations-stripe-routes.test.ts[2m > [22m[2mPOST /api/webhooks/stripe[2m > [22m[2minvoice.payment_failed suspends tenant when row found
+[22m[39m{"timestamp":"2026-08-09T14:31:12.916Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme"}}
+
+ [32m✓[39m app/api/__tests__/invitations-stripe-routes.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 76[2mms[22m[39m
+ [32m✓[39m lib/__tests__/super-admin-auth.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 108[2mms[22m[39m
+[90mstderr[2m | app/api/v1/tenants/[ref]/__tests__/tenant-id-route.test.ts[2m > [22m[2mGET /api/tenants/:id[2m > [22m[2mreturns 500 on db error
+[22m[39mGET tenant: { message: [32m'e'[39m }
+
+ [32m✓[39m app/api/v1/tenants/[ref]/__tests__/tenant-id-route.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 102[2mms[22m[39m
+[90mstderr[2m | app/api/admin/audit/__tests__/route.test.ts[2m > [22m[2mGET /api/admin/audit[2m > [22m[2mreturns 500 when Supabase returns error
+[22m[39m[audit GET] Supabase error: connection failed
+
+ [32m✓[39m app/api/admin/audit/__tests__/route.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 66[2mms[22m[39m
+[90mstderr[2m | app/api/metrics/__tests__/metrics-routes.test.ts[2m > [22m[2mGET /api/metrics[2m > [22m[2mreturns 500 when a tenant count query errors
+[22m[39mmetrics: Error: db down
+    at firstMetricsError [90m(/app/apps/api/[39mapp/api/metrics/route.ts:93:10[90m)[39m
+    at Module.GET [90m(/app/apps/api/[39mapp/api/metrics/route.ts:104:15[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at [90m/app/apps/api/[39mapp/api/metrics/__tests__/metrics-routes.test.ts:122:17
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:1903:20
+
+[90mstderr[2m | app/api/metrics/__tests__/metrics-routes.test.ts[2m > [22m[2mGET /api/metrics[2m > [22m[2mreturns 500 when computeMrr throws
+[22m[39mcomputeMrr: Error: stripe
+    at [90m/app/apps/api/[39mapp/api/metrics/__tests__/metrics-routes.test.ts:137:55
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:302:11
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:1903:26
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2326:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2323:10)
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2305:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2272:10)
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2955:64
+
+[90mstderr[2m | app/api/portal/__tests__/portal-routes.test.ts[2m > [22m[2mPOST /api/portal/mode[2m > [22m[2mreturns 500 when Supabase admin update fails
+[22m[39m{"timestamp":"2026-08-09T14:31:13.736Z","level":"ERROR","message":"portal mode update","context":{"message":"admin api down"}}
+
+ [32m✓[39m app/api/metrics/__tests__/metrics-routes.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 68[2mms[22m[39m
+ [32m✓[39m app/api/portal/__tests__/portal-routes.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 86[2mms[22m[39m
+ [32m✓[39m app/api/health/__tests__/health-route.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 55[2mms[22m[39m
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2mtracks failure count from 1st to 5th failure
+[22m[39m{"timestamp":"2026-08-09T14:31:14.025Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+{"timestamp":"2026-08-09T14:31:14.026Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2mtracks failure count from 1st to 5th failure
+[22m[39m{"timestamp":"2026-08-09T14:31:14.027Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2mtracks failure count from 1st to 5th failure
+[22m[39m{"timestamp":"2026-08-09T14:31:14.029Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":3,"level":"escalated"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2mtracks failure count from 1st to 5th failure
+[22m[39m{"timestamp":"2026-08-09T14:31:14.029Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":5,"level":"suspended"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2mtracks failure count from 1st to 5th failure
+[22m[39m{"timestamp":"2026-08-09T14:31:14.029Z","level":"INFO","message":"dunning.suspended","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":5}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2msends Discord alert on 1st failure
+[22m[39m{"timestamp":"2026-08-09T14:31:14.034Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+{"timestamp":"2026-08-09T14:31:14.034Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2msends Discord alert on 1st failure
+[22m[39m{"timestamp":"2026-08-09T14:31:14.035Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2msends Discord escalation alert on 3rd failure
+[22m[39m{"timestamp":"2026-08-09T14:31:14.037Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+{"timestamp":"2026-08-09T14:31:14.037Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2msends Discord escalation alert on 3rd failure
+[22m[39m{"timestamp":"2026-08-09T14:31:14.038Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2msends Discord escalation alert on 3rd failure
+[22m[39m{"timestamp":"2026-08-09T14:31:14.038Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":3,"level":"escalated"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2msuspends tenant and sends suspended notification on 5th failure
+[22m[39m{"timestamp":"2026-08-09T14:31:14.039Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+{"timestamp":"2026-08-09T14:31:14.040Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2msuspends tenant and sends suspended notification on 5th failure
+[22m[39m{"timestamp":"2026-08-09T14:31:14.040Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2msuspends tenant and sends suspended notification on 5th failure
+[22m[39m{"timestamp":"2026-08-09T14:31:14.041Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":3,"level":"escalated"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2msuspends tenant and sends suspended notification on 5th failure
+[22m[39m{"timestamp":"2026-08-09T14:31:14.041Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":5,"level":"suspended"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2msuspends tenant and sends suspended notification on 5th failure
+[22m[39m{"timestamp":"2026-08-09T14:31:14.041Z","level":"INFO","message":"dunning.suspended","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":5}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2mdoes not send duplicate level notifications on non-escalation failures
+[22m[39m{"timestamp":"2026-08-09T14:31:14.044Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+{"timestamp":"2026-08-09T14:31:14.044Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2mdoes not send duplicate level notifications on non-escalation failures
+[22m[39m{"timestamp":"2026-08-09T14:31:14.044Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2msends 4 notifications total for 5 failures (1, 3, 5-level, 5-suspend)
+[22m[39m{"timestamp":"2026-08-09T14:31:14.044Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+{"timestamp":"2026-08-09T14:31:14.044Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2msends 4 notifications total for 5 failures (1, 3, 5-level, 5-suspend)
+[22m[39m{"timestamp":"2026-08-09T14:31:14.045Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2msends 4 notifications total for 5 failures (1, 3, 5-level, 5-suspend)
+[22m[39m{"timestamp":"2026-08-09T14:31:14.045Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":3,"level":"escalated"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2msends 4 notifications total for 5 failures (1, 3, 5-level, 5-suspend)
+[22m[39m{"timestamp":"2026-08-09T14:31:14.045Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":5,"level":"suspended"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2msends 4 notifications total for 5 failures (1, 3, 5-level, 5-suspend)
+[22m[39m{"timestamp":"2026-08-09T14:31:14.045Z","level":"INFO","message":"dunning.suspended","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":5}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2mdoes not send Discord when webhook URL is not configured
+[22m[39m{"timestamp":"2026-08-09T14:31:14.046Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+{"timestamp":"2026-08-09T14:31:14.046Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2mdoes not send Discord when webhook URL is not configured
+[22m[39m{"timestamp":"2026-08-09T14:31:14.049Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2mdoes not send Discord when webhook URL is not configured
+[22m[39m{"timestamp":"2026-08-09T14:31:14.050Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2mdoes not send Discord when webhook URL is not configured
+[22m[39m{"timestamp":"2026-08-09T14:31:14.050Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":3,"level":"escalated"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2mdoes not send Discord when webhook URL is not configured
+[22m[39m{"timestamp":"2026-08-09T14:31:14.051Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":5,"level":"suspended"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2mdoes not send Discord when webhook URL is not configured
+[22m[39m{"timestamp":"2026-08-09T14:31:14.051Z","level":"INFO","message":"dunning.suspended","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":5}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2mhandles Discord fetch error gracefully without crashing
+[22m[39m{"timestamp":"2026-08-09T14:31:14.052Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+{"timestamp":"2026-08-09T14:31:14.052Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mrecordPaymentFailure[2m > [22m[2mhandles Discord fetch error gracefully without crashing
+[22m[39m{"timestamp":"2026-08-09T14:31:14.053Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetDunningStatus[2m > [22m[2mreturns none level when no failures recorded
+[22m[39m{"timestamp":"2026-08-09T14:31:14.055Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+{"timestamp":"2026-08-09T14:31:14.055Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetDunningStatus[2m > [22m[2mreturns warning level after 1 failure
+[22m[39m{"timestamp":"2026-08-09T14:31:14.056Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+{"timestamp":"2026-08-09T14:31:14.056Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetDunningStatus[2m > [22m[2mreturns warning level after 1 failure
+[22m[39m{"timestamp":"2026-08-09T14:31:14.057Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetDunningStatus[2m > [22m[2mreturns escalated level after 3 failures
+[22m[39m{"timestamp":"2026-08-09T14:31:14.058Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+{"timestamp":"2026-08-09T14:31:14.058Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetDunningStatus[2m > [22m[2mreturns escalated level after 3 failures
+[22m[39m{"timestamp":"2026-08-09T14:31:14.058Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetDunningStatus[2m > [22m[2mreturns escalated level after 3 failures
+[22m[39m{"timestamp":"2026-08-09T14:31:14.059Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":3,"level":"escalated"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetDunningStatus[2m > [22m[2mreturns suspended level after 5 failures
+[22m[39m{"timestamp":"2026-08-09T14:31:14.061Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+{"timestamp":"2026-08-09T14:31:14.061Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetDunningStatus[2m > [22m[2mreturns suspended level after 5 failures
+[22m[39m{"timestamp":"2026-08-09T14:31:14.061Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetDunningStatus[2m > [22m[2mreturns suspended level after 5 failures
+[22m[39m{"timestamp":"2026-08-09T14:31:14.062Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":3,"level":"escalated"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetDunningStatus[2m > [22m[2mreturns suspended level after 5 failures
+[22m[39m{"timestamp":"2026-08-09T14:31:14.065Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":5,"level":"suspended"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetDunningStatus[2m > [22m[2mreturns suspended level after 5 failures
+[22m[39m{"timestamp":"2026-08-09T14:31:14.066Z","level":"INFO","message":"dunning.suspended","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":5}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mclearFailures[2m > [22m[2mresets failure count on payment success
+[22m[39m{"timestamp":"2026-08-09T14:31:14.068Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+{"timestamp":"2026-08-09T14:31:14.068Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mclearFailures[2m > [22m[2mresets failure count on payment success
+[22m[39m{"timestamp":"2026-08-09T14:31:14.069Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mclearFailures[2m > [22m[2mresets failure count on payment success
+[22m[39m{"timestamp":"2026-08-09T14:31:14.069Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mclearFailures[2m > [22m[2mallows retracking after cleared failures
+[22m[39m{"timestamp":"2026-08-09T14:31:14.070Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+{"timestamp":"2026-08-09T14:31:14.070Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mclearFailures[2m > [22m[2mallows retracking after cleared failures
+[22m[39m{"timestamp":"2026-08-09T14:31:14.070Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mclearFailures[2m > [22m[2mallows retracking after cleared failures
+[22m[39m{"timestamp":"2026-08-09T14:31:14.070Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":3,"level":"escalated"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mclearFailures[2m > [22m[2mallows retracking after cleared failures
+[22m[39m{"timestamp":"2026-08-09T14:31:14.070Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mclearFailures[2m > [22m[2mallows retracking after cleared failures
+[22m[39m{"timestamp":"2026-08-09T14:31:14.070Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetStatsForAdmin[2m > [22m[2mreturns zero stats when no tenants tracked
+[22m[39m{"timestamp":"2026-08-09T14:31:14.071Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+{"timestamp":"2026-08-09T14:31:14.071Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetStatsForAdmin[2m > [22m[2mcounts escalated and suspended tenants correctly
+[22m[39m{"timestamp":"2026-08-09T14:31:14.072Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+{"timestamp":"2026-08-09T14:31:14.072Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetStatsForAdmin[2m > [22m[2mcounts escalated and suspended tenants correctly
+[22m[39m{"timestamp":"2026-08-09T14:31:14.072Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetStatsForAdmin[2m > [22m[2mcounts escalated and suspended tenants correctly
+[22m[39m{"timestamp":"2026-08-09T14:31:14.072Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp","failureCount":3,"level":"escalated"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetStatsForAdmin[2m > [22m[2mcounts escalated and suspended tenants correctly
+[22m[39m{"timestamp":"2026-08-09T14:31:14.072Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa","slug":"other-corp"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetStatsForAdmin[2m > [22m[2mcounts escalated and suspended tenants correctly
+[22m[39m{"timestamp":"2026-08-09T14:31:14.072Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa","slug":"other-corp","failureCount":3,"level":"escalated"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetStatsForAdmin[2m > [22m[2mcounts escalated and suspended tenants correctly
+[22m[39m{"timestamp":"2026-08-09T14:31:14.072Z","level":"INFO","message":"dunning.notification","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa","slug":"other-corp","failureCount":5,"level":"suspended"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetStatsForAdmin[2m > [22m[2mcounts escalated and suspended tenants correctly
+[22m[39m{"timestamp":"2026-08-09T14:31:14.072Z","level":"INFO","message":"dunning.suspended","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa","slug":"other-corp","failureCount":5}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetStatsForAdmin[2m > [22m[2mexcludes warning-only tenants from escalated count
+[22m[39m{"timestamp":"2026-08-09T14:31:14.073Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099"}}
+{"timestamp":"2026-08-09T14:31:14.073Z","level":"INFO","message":"dunning.cleared","context":{"tenantId":"660e8400-e29b-41d4-a716-4466554400aa"}}
+
+[90mstderr[2m | lib/billing/__tests__/dunning-service.test.ts[2m > [22m[2mDunningService[2m > [22m[2mgetStatsForAdmin[2m > [22m[2mexcludes warning-only tenants from escalated count
+[22m[39m{"timestamp":"2026-08-09T14:31:14.073Z","level":"INFO","message":"dunning.first_failure","context":{"tenantId":"550e8400-e29b-41d4-a716-446655440099","slug":"acme-corp"}}
+
+ [32m✓[39m lib/billing/__tests__/dunning-service.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+ [32m✓[39m app/api/webhooks/stripe/__tests__/route.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 69[2mms[22m[39m
+ [32m✓[39m app/api/billing/invoices/__tests__/route.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+[90mstderr[2m | lib/__tests__/portal-me.test.ts[2m > [22m[2mfetchPortalTenantRowBySlug[2m > [22m[2mreturns db when Supabase error
+[22m[39mportal tenant lookup: { message: [32m'db'[39m }
+
+ [32m✓[39m lib/__tests__/portal-me.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+ [32m✓[39m lib/__tests__/auth-admin-access.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 54[2mms[22m[39m
+ [32m✓[39m __tests__/feedback.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 68[2mms[22m[39m
+ [32m✓[39m app/api/local-services/public/tenants/[slug]/bookings/__tests__/route.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+ [32m✓[39m lib/peskids/__tests__/lead-ingest.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 52[2mms[22m[39m
+[90mstderr[2m | __tests__/social-gateway-integration.test.ts[2m > [22m[2mGateway Integration - Unit Tests (callGatewayForContent)[2m > [22m[2mBatch content type generation[2m > [22m[2mshould continue on partial failure in batch
+[22m[39mFailed to generate content for linkedin: Error: LinkedIn gen failed
+    at [90m/app/apps/api/[39m__tests__/social-gateway-integration.test.ts:347:32
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:302:11
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:1903:26
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2326:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2323:10)
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2305:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2272:10)
+    at file:///app/node_modules/[4m@vitest/runner[24m/dist/chunk-artifact.js:2955:64
+
+ [32m✓[39m __tests__/social-gateway-integration.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+[90mstderr[2m | app/api/v1/tenants/[ref]/__tests__/suspend-resume-route.test.ts[2m > [22m[2mPOST /api/tenants/:id/suspend[2m > [22m[2mreturns 500 on fetch error
+[22m[39m{"timestamp":"2026-08-09T14:31:15.365Z","level":"ERROR","message":"suspend fetch","context":{"message":"e"}}
+
+ [32m✓[39m app/api/v1/tenants/[ref]/__tests__/suspend-resume-route.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+ [32m✓[39m app/api/peskids/forms/[formId]/__tests__/security.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m app/api/backup/__tests__/route.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 54[2mms[22m[39m
+ [32m✓[39m app/api/admin/docker/containers/__tests__/route.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+ [32m✓[39m app/api/admin/overview/__tests__/route.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+[90mstderr[2m | app/api/tenants/[slug]/__tests__/suspend-resume-route.test.ts[2m > [22m[2mPOST /api/tenants/:id/suspend[2m > [22m[2mreturns 500 on fetch error
+[22m[39m{"timestamp":"2026-08-09T14:31:16.170Z","level":"ERROR","message":"suspend fetch","context":{"message":"e"}}
+
+ [32m✓[39m app/api/checkout/session/__tests__/route.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m app/api/tenants/[slug]/__tests__/suspend-resume-route.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 65[2mms[22m[39m
+ [32m✓[39m app/api/admin/metrics/__tests__/route.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+[90mstderr[2m | app/api/invitations/__tests__/invitation-admin-flow.test.ts[2m > [22m[2mexecuteAdminInvitation[2m > [22m[2mreturns 500 when sendPortalInvitationForTenant rejects
+[22m[39msendPortalInvitationForTenant failed [REDACTED]
+
+[90mstderr[2m | lib/peskids/__tests__/automation.test.ts[2m > [22m[2mpeskids automation dispatch[2m > [22m[2mreturns graceful failure when N8N_WEBHOOK_BASE_URL is missing
+[22m[39m[slack-alerter] SLACK_ALERT_WEBHOOK_URL not set; alert not sent {
+  severity: [32m'critical'[39m,
+  service: [32m'peskids'[39m,
+  component: [32m'n8n'[39m,
+  error: [32m'N8N_WEBHOOK_BASE_URL not configured'[39m
+}
+
+[90mstderr[2m | app/api/invitations/__tests__/invitation-admin-flow.test.ts[2m > [22m[2mexecuteAdminInvitation[2m > [22m[2mreturns 500 when Supabase returns query error
+[22m[39minvitations tenant lookup failed { code: [32m'PGRST116'[39m }
+
+ [32m✓[39m app/api/invitations/__tests__/invitation-admin-flow.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 69[2mms[22m[39m
+ [32m✓[39m lib/peskids/__tests__/automation.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 66[2mms[22m[39m
+[90mstderr[2m | app/api/admin/facebook/page-post/__tests__/route.test.ts[2m > [22m[2m/api/admin/facebook/page-post[2m > [22m[2mPOST dry_run succeeds without Meta env
+[22m[39m{"timestamp":"2026-08-09T14:31:16.720Z","level":"INFO","message":"meta_page_feed publish ok","context":{"dry_run":true,"post_id_len":0}}
+
+ [32m✓[39m app/api/admin/facebook/page-post/__tests__/route.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32m✓[39m app/api/admin/mission-control/vps-cleanup/__tests__/route.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+ [32m✓[39m app/api/admin/mission-control/__tests__/security-auth.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 53[2mms[22m[39m
+ [32m✓[39m app/api/admin/tenants/__tests__/route.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 53[2mms[22m[39m
+ [32m✓[39m app/api/health/lightweight/__tests__/lightweight-route.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+[90mstdout[2m | lib/peskids/__tests__/hot-lead-alert.test.ts[2m > [22m[2mdispatchPeskidsHotLeadAlert[2m > [22m[2mskips when hot-lead flag is off (default)
+[22m[39m{"component":"peskids.hot_lead_alert","lead_id":"lead-hot-1","delivery_id":"hot-lead:lead-hot-1","status":"skipped","ok":true,"detail":"PESKIDS_HOT_LEAD_ALERTS_ENABLED=false"}
+
+ [32m✓[39m lib/local-automation/audit-log.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 27[2mms[22m[39m
+[90mstdout[2m | lib/peskids/__tests__/hot-lead-alert.test.ts[2m > [22m[2mdispatchPeskidsHotLeadAlert[2m > [22m[2mposts once to n8n when flag is enabled
+[22m[39m{"component":"peskids.hot_lead_alert","lead_id":"lead-hot-1","delivery_id":"hot-lead:lead-hot-1","status":"sent","ok":true,"detail":"queued in n8n"}
+
+[90mstdout[2m | lib/peskids/__tests__/hot-lead-alert.test.ts[2m > [22m[2mdispatchPeskidsHotLeadAlert[2m > [22m[2mreturns failed when n8n base URL is missing and flag is on
+[22m[39m{"component":"peskids.hot_lead_alert","lead_id":"lead-hot-1","delivery_id":"hot-lead:lead-hot-1","status":"failed","ok":false,"detail":"N8N_WEBHOOK_BASE_URL not configured"}
+
+[90mstderr[2m | lib/peskids/__tests__/hot-lead-alert.test.ts[2m > [22m[2mdispatchPeskidsHotLeadAlert[2m > [22m[2mreturns failed when n8n base URL is missing and flag is on
+[22m[39m[slack-alerter] SLACK_ALERT_WEBHOOK_URL not set; alert not sent {
+  severity: [32m'critical'[39m,
+  service: [32m'peskids'[39m,
+  component: [32m'n8n'[39m,
+  error: [32m'N8N_WEBHOOK_BASE_URL not configured'[39m
+}
+
+ [32m✓[39m lib/peskids/__tests__/hot-lead-alert.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32m✓[39m app/api/admin/agents/__tests__/route.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 49[2mms[22m[39m
+ [32m✓[39m app/api/admin/mission-control/incubation/__tests__/route.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 53[2mms[22m[39m
+ [32m✓[39m lib/__tests__/incubation-machine.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+[90mstdout[2m | lib/peskids/__tests__/security.test.ts[2m > [22m[2mPeskids Public Endpoints Security[2m > [22m[2mpostPublicPeskidsLead[2m > [22m[2mlogs an audit event on successful lead creation
+[22m[39m{"component":"peskids.staff_lead_notification_email","lead_id":"row-id","idempotency_key":"staff-lead-notification:row-id","status":"skipped","ok":true,"detail":"lead_type 'undefined' does not require staff notification"}
+
+[90mstderr[2m | lib/peskids/__tests__/security.test.ts[2m > [22m[2mPeskids Public Endpoints Security[2m > [22m[2mpostPublicPeskidsLead[2m > [22m[2mlogs an audit event on successful lead creation
+[22m[39m[peskids] Failed to generate advisor brief {
+  lead_id: [32m'row-id'[39m,
+  error: [32m"Cannot read properties of undefined (reading 'child_age_years')"[39m
+}
+
+[90mstdout[2m | lib/peskids/__tests__/security.test.ts[2m > [22m[2mPeskids Public Endpoints Security[2m > [22m[2mpostPublicPeskidsLead[2m > [22m[2mreturns 201 even if the hot-lead alert dispatch rejects
+[22m[39m{"component":"peskids.staff_lead_notification_email","lead_id":"row-id-2","idempotency_key":"staff-lead-notification:row-id-2","status":"skipped","ok":true,"detail":"lead_type 'undefined' does not require staff notification"}
+
+[90mstderr[2m | lib/peskids/__tests__/security.test.ts[2m > [22m[2mPeskids Public Endpoints Security[2m > [22m[2mpostPublicPeskidsLead[2m > [22m[2mreturns 201 even if the hot-lead alert dispatch rejects
+[22m[39m[peskids] Failed to generate advisor brief {
+  lead_id: [32m'row-id-2'[39m,
+  error: [32m"Cannot read properties of undefined (reading 'child_age_years')"[39m
+}
+[peskids] hot-lead alert dispatch failed { lead_id: [32m'row-id-2'[39m, error: [32m'n8n unreachable'[39m }
+
+[90mstdout[2m | lib/peskids/__tests__/security.test.ts[2m > [22m[2mPeskids Public Endpoints Security[2m > [22m[2mpostPublicPeskidsLead[2m > [22m[2mreturns 201 even if the confirmation email dispatch rejects
+[22m[39m{"component":"peskids.staff_lead_notification_email","lead_id":"row-id-3","idempotency_key":"staff-lead-notification:row-id-3","status":"skipped","ok":true,"detail":"lead_type 'undefined' does not require staff notification"}
+
+[90mstderr[2m | lib/peskids/__tests__/security.test.ts[2m > [22m[2mPeskids Public Endpoints Security[2m > [22m[2mpostPublicPeskidsLead[2m > [22m[2mreturns 201 even if the confirmation email dispatch rejects
+[22m[39m[peskids] Failed to generate advisor brief {
+  lead_id: [32m'row-id-3'[39m,
+  error: [32m"Cannot read properties of undefined (reading 'child_age_years')"[39m
+}
+[peskids] lead confirmation email failed { lead_id: [32m'row-id-3'[39m, error: [32m'resend unreachable'[39m }
+
+ [32m✓[39m lib/peskids/__tests__/security.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m lib/__tests__/local-services-dal.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 63[2mms[22m[39m
+ [32m✓[39m app/api/v1/keys/__tests__/api-keys-auth.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m __tests__/middleware.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+[90mstderr[2m | lib/__tests__/admin-ollama-demo.test.ts[2m > [22m[2mcheckBudgetForOllamaDemo[2m > [22m[2mreturns null when billing_usage table is missing (Supabase schema cache)
+[22m[39m{"timestamp":"2026-08-09T14:31:18.696Z","level":"WARN","message":"admin ollama-demo: billing_usage unavailable; skipping budget check","context":{"tenant_slug":"acme"}}
+
+[90mstderr[2m | lib/__tests__/admin-ollama-demo.test.ts[2m > [22m[2mcheckBudgetForOllamaDemo[2m > [22m[2mreturns 500 for other budget errors
+[22m[39m{"timestamp":"2026-08-09T14:31:18.699Z","level":"ERROR","message":"admin ollama-demo budget check","error":{"name":"Error","message":"database offline","stack":"Error: database offline\n    at /app/apps/api/lib/__tests__/admin-ollama-demo.test.ts:26:45\n    at file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:2272:10)\n    at file:///app/node_modules/@vitest/runner/dist/chunk-artifact.js:2955:64"}}
+
+ [32m✓[39m lib/__tests__/admin-ollama-demo.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+[90mstderr[2m | lib/peskids/__tests__/sales-pipeline.test.ts[2m > [22m[2mupdateLeadStage[2m > [22m[2mupdates stage and syncs to GHL when lead has ghl lead_id
+[22m[39m{"timestamp":"2026-08-09T14:31:18.752Z","level":"INFO","message":"peskids.sales-pipeline.ghl_sync_ok","context":{"tenantSlug":"peskids","leadId":"lead-1","ghlLeadId":"ghl-lead-1","ghlStageId":"75742c84-9063-4539-b755-b09bfdeb6346","stage":"Contacted"}}
+
+[90mstderr[2m | lib/peskids/__tests__/sales-pipeline.test.ts[2m > [22m[2mupdateLeadStage[2m > [22m[2mupdates stage locally but allows GHL to fail gracefully
+[22m[39m{"timestamp":"2026-08-09T14:31:18.759Z","level":"WARN","message":"peskids.sales-pipeline.ghl_sync_failed","context":{"tenantSlug":"peskids","leadId":"lead-1","ghlLeadId":"ghl-lead-1","stage":"Enrolled","error":"GHL API timeout"}}
+
+[90mstderr[2m | lib/peskids/__tests__/sales-pipeline.test.ts[2m > [22m[2mupdateLeadStage[2m > [22m[2msyncs Active Student to GHL using real stage ID
+[22m[39m{"timestamp":"2026-08-09T14:31:18.761Z","level":"INFO","message":"peskids.sales-pipeline.ghl_sync_ok","context":{"tenantSlug":"peskids","leadId":"lead-2","ghlLeadId":"ghl-lead-2","ghlStageId":"c9b615f7-b4da-416c-a3b1-28be6da1d063","stage":"Active Student"}}
+
+[90mstderr[2m | lib/peskids/__tests__/sales-pipeline.test.ts[2m > [22m[2mupdateLeadStage[2m > [22m[2mreturns error when database update fails
+[22m[39m{"timestamp":"2026-08-09T14:31:18.766Z","level":"ERROR","message":"peskids.sales-pipeline.update_error","context":{"tenantSlug":"peskids","leadId":"lead-1","stage":"Contacted","error":"update failed"}}
+
+ [32m✓[39m lib/peskids/__tests__/sales-pipeline.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+[90mstderr[2m | lib/billing/__tests__/metering-middleware.test.ts[2m > [22m[2mwithMetering[2m > [22m[2magenda medición en microtask si 200
+[22m[39m{"timestamp":"2026-08-09T14:31:18.981Z","level":"INFO","message":"Metering event","context":{"type":"billing_metering","tenant_id":"tenant-a","metric_type":"ai_tokens","quantity":42,"operation":"analyze","kind":"token","persist_line":false}}
+
+ [32m✓[39m lib/billing/__tests__/metering-middleware.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m app/api/admin/mission-control/__tests__/route.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 51[2mms[22m[39m
+ [32m✓[39m lib/__tests__/portal-trusted-identity.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m lib/__tests__/agent-ide-console.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m lib/__tests__/portal-feedback-auth.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+ [32m✓[39m app/api/portal/tenant/[slug]/budget/__tests__/route.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m app/api/infra/status/route.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m app/api/portal/tenant/[slug]/n8n-marketplace/installs/route.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m app/api/peskids/portal/__tests__/peskids-bulk-grade-auth.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m app/api/admin/costs/__tests__/route.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m lib/__tests__/portal-invitations.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m app/api/portal/tenant/[slug]/subscription/upgrade/__tests__/route.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m app/api/knowledge/capture/__tests__/knowledge-capture-auth.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32m✓[39m app/api/v1/tenants/[ref]/notebooklm/__tests__/notebooklm-auth.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m app/api/provisioning/quote/__tests__/route.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32m✓[39m app/api/governance/dsar/__tests__/security.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m app/api/local/services/__tests__/route.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m app/api/shield/alerts/config/__tests__/route.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+[90mstderr[2m | lib/__tests__/rate-limiter.test.ts[2m > [22m[2mcheckRateLimit[2m > [22m[2mbloquea en fallback memoria cuando supera el límite
+[22m[39m[rate-limiter] REDIS_URL not set
+
+ [32m✓[39m lib/__tests__/rate-limiter.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m app/api/cron/sync-stripe-usage/__tests__/route.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m app/api/peskids/forms/[formId]/submissions/__tests__/security.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m app/api/peskids/portal/__tests__/peskids-export-auth.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m lib/__tests__/validation.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+[90mstderr[2m | app/api/admin/mission-control/orchestrator/__tests__/route.test.ts[2m > [22m[2mGET /api/admin/mission-control/orchestrator[2m > [22m[2mreturns 200 when authorized
+[22m[39m[mission-control/orchestrator] Error: Error: REDIS_URL is not configured
+    at createRedis [90m(/app/apps/api/[39mapp/api/admin/mission-control/orchestrator/route.ts:63:11[90m)[39m
+    at Module.GET [90m(/app/apps/api/[39mapp/api/admin/mission-control/orchestrator/route.ts:116:25[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at [90m/app/apps/api/[39mapp/api/admin/mission-control/orchestrator/__tests__/route.test.ts:34:17
+
+ [32m✓[39m app/api/admin/mission-control/orchestrator/__tests__/route.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m lib/__tests__/billing-meter-pricing.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m app/api/social/__tests__/social-publish-auth.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+[90mstdout[2m | lib/peskids/__tests__/lead-confirmation-email.test.ts[2m > [22m[2mdispatchPeskidsLeadConfirmationEmail[2m > [22m[2mskips when confirmation flag is off (default)
+[22m[39m{"component":"peskids.lead_confirmation_email","lead_id":"lead-confirm-1","idempotency_key":"lead-confirmation:lead-confirm-1","status":"skipped","ok":true,"detail":"PESKIDS_LEAD_CONFIRMATION_ENABLED=false"}
+
+[90mstdout[2m | lib/peskids/__tests__/lead-confirmation-email.test.ts[2m > [22m[2mdispatchPeskidsLeadConfirmationEmail[2m > [22m[2msends once and marks delivery sent when flag is on
+[22m[39m{"component":"peskids.lead_confirmation_email","lead_id":"lead-confirm-1","idempotency_key":"lead-confirmation:lead-confirm-1","status":"sent","ok":true,"detail":"confirmation email sent"}
+
+[90mstdout[2m | lib/peskids/__tests__/lead-confirmation-email.test.ts[2m > [22m[2mdispatchPeskidsLeadConfirmationEmail[2m > [22m[2midempotently skips when delivery already sent
+[22m[39m{"component":"peskids.lead_confirmation_email","lead_id":"lead-confirm-1","idempotency_key":"lead-confirmation:lead-confirm-1","status":"already_sent","ok":true,"detail":"idempotent skip"}
+
+[90mstdout[2m | lib/peskids/__tests__/lead-confirmation-email.test.ts[2m > [22m[2mdispatchPeskidsLeadConfirmationEmail[2m > [22m[2mmarks failed when Resend throws and does not rethrow
+[22m[39m{"component":"peskids.lead_confirmation_email","lead_id":"lead-confirm-1","idempotency_key":"lead-confirmation:lead-confirm-1","status":"failed","ok":false,"detail":"resend down"}
+
+ [32m✓[39m lib/peskids/__tests__/lead-confirmation-email.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m app/api/metrics/teams/__tests__/teams-route.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+[90mstderr[2m | lib/stripe/__tests__/usage-sync.test.ts[2m > [22m[2msyncAllTenantsUsage[2m > [22m[2mcollects errors without throwing
+[22m[39m{"timestamp":"2026-08-09T14:31:23.689Z","level":"ERROR","message":"usage-sync retrieve subscription","context":{"slug":"bad-tenant","error":{}}}
+
+ [32m✓[39m lib/stripe/__tests__/usage-sync.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m lib/__tests__/meta-page-feed.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m lib/__tests__/platform-foundation.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m lib/__tests__/docker-ps-list.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m app/api/runtime/__tests__/runtime-auth.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m lib/__tests__/orchestrator.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m app/api/peskids/portal/__tests__/peskids-forms-auth.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m lib/__tests__/admin-costs-tenant-budgets.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m app/api/admin/mission-control/teams/__tests__/route.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m lib/__tests__/audit-ip.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32m✓[39m lib/__tests__/portal-billing-summary.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m lib/peskids/__tests__/schemas-dynamic-intake.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+[90mstderr[2m | lib/billing/__tests__/budget-enforcer.test.ts[2m > [22m[2mcheckTenantBudget[2m > [22m[2mtreats missing billing_usage table as 0 spend (migration not applied)
+[22m[39m{"timestamp":"2026-08-09T14:31:25.094Z","level":"WARN","message":"checkTenantBudget: billing_usage unavailable; assuming 0 spend","context":{"tenantSlug":"acme","message":"Could not find the table 'platform.billing_usage' in the schema cache"}}
+
+ [32m✓[39m lib/billing/__tests__/budget-enforcer.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m lib/__tests__/peskids-schemas.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m lib/__tests__/redis-cache.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m lib/__tests__/shield-alert-config.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m lib/peskids/__tests__/ghl-contract.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m lib/__tests__/fetch-host-metrics-prometheus-cache.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m lib/__tests__/bullmq-queue-details.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m lib/__tests__/vps-cleanup-webhook.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m lib/__tests__/local-services-webhook-signature.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m lib/__tests__/admin-llm-cost-analytics.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m lib/billing/__tests__/flush-billing-usage.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m lib/billing/__tests__/calculate-savings.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m lib/insights/__tests__/heuristics.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m lib/__tests__/tenant-context.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m lib/__tests__/shield-score.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m lib/peskids/__tests__/feature-flags.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m lib/__tests__/tenant-bootstrapper.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m lib/__tests__/shield-metering.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m lib/email/__tests__/delivery-mode.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m lib/__tests__/n8n-marketplace-plan.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m lib/billing/__tests__/budget-thresholds.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m112 passed[39m[22m[90m (112)[39m
+[2m      Tests [22m [1m[32m639 passed[39m[22m[90m (639)[39m
+[2m   Start at [22m 14:31:10
+[2m   Duration [22m 16.26s[2m (transform 5.93s, setup 0ms, import 18.96s, tests 6.22s, environment 18ms)[22m

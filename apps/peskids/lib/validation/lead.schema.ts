@@ -117,6 +117,7 @@ const familySchema = z
     birth_date: birthDateField,
     document_type: z.string().trim().default('CC'),
     document_number: documentNumberField,
+    city: optionalText(80),
     class_modality: z.enum(PESKIDS_CLASS_MODALITIES, {
       message: 'Selecciona sede Llanogrande o domicilio',
     }),
@@ -125,28 +126,40 @@ const familySchema = z
     ...sharedContactFields,
   })
   .superRefine((data, ctx) => {
-    if (data.class_modality === 'domicilio' && !data.neighborhood) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['neighborhood'],
-        message: 'Indica el barrio o zona para clases a domicilio',
-      });
+    if (data.class_modality === 'domicilio') {
+      if (!data.city) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['city'],
+          message: 'Indica la ciudad para clases a domicilio',
+        });
+      }
+      if (!data.neighborhood) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['neighborhood'],
+          message: 'Indica el barrio o zona para clases a domicilio',
+        });
+      }
     }
   })
   .transform((data) => {
     const age = ageYearsFromBirthDate(data.birth_date);
     const grade = data.grade_interested ?? gradeFromAgeYears(age);
+    const isDomicilio = data.class_modality === 'domicilio';
+    const city = isDomicilio ? data.city : undefined;
     return {
       ...data,
       lead_type: 'family' as const,
       service_mode: data.class_modality as PeskidsServiceMode,
-      neighborhood:
-        data.class_modality === 'llanogrande' ? 'Llanogrande' : data.neighborhood!,
+      city,
+      neighborhood: isDomicilio ? data.neighborhood! : 'Llanogrande',
       grade_interested: grade,
       child_age_years: age,
       metadata: {
         intake_version: 'dynamic-intake-v1',
         child_age_years: age,
+        ...(city ? { city } : {}),
       } as Record<string, unknown>,
     };
   });
@@ -251,6 +264,7 @@ const legacyFamilySchema = z
     ...data,
     lead_type: 'family' as const,
     service_mode: data.class_modality as PeskidsServiceMode,
+    city: undefined as string | undefined,
     neighborhood:
       data.class_modality === 'llanogrande'
         ? data.neighborhood?.trim() || 'Llanogrande'
@@ -273,6 +287,7 @@ const consentSchema = z.object({
     message: 'Debes autorizar el tratamiento de datos',
   }),
   consent_marketing: z.boolean().optional().default(false),
+  consent_photos_videos: z.boolean().optional().default(false),
   consent_policy_version: z.string().min(1).optional(),
   referral_code: z.string().trim().optional(),
   source: z.string().trim().optional(),

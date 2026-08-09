@@ -41,6 +41,7 @@ export async function insertPendingLeadEmailDelivery(input: {
   lead_id: string;
   idempotency_key: string;
   to_email: string;
+  email_type?: string;
 }): Promise<LeadEmailDeliveryRow> {
   const client = getServiceClient();
   const { data, error } = await client
@@ -49,7 +50,7 @@ export async function insertPendingLeadEmailDelivery(input: {
     .insert({
       tenant_slug: input.tenant_slug,
       lead_id: input.lead_id,
-      email_type: 'lead_confirmation',
+      email_type: input.email_type ?? 'lead_confirmation',
       idempotency_key: input.idempotency_key,
       status: 'pending',
       to_email: input.to_email,

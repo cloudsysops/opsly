@@ -301,7 +301,7 @@ export function FormSubmission({
 
       {error && (
         <div
-          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+          className="rounded-lg border border-red-200/50 bg-red-50/20 px-4 py-3 text-sm text-red-800/80"
           role="alert"
         >
           <div className="flex items-center gap-2">

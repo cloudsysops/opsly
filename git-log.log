@@ -1,0 +1,105 @@
+commit 896bc38fbc50626bf1256a9f4407c89acdee24e0
+Author: Mistic <cboteros1@gmail.com>
+Date:   Sun Aug 9 09:24:55 2026 -0400
+
+    docs(claude-md): fix LIB MODULES drift vs config/modules.json (#876)
+
+    * docs(claude-md): fix LIB MODULES drift vs config/modules.json
+
+    .claude/CLAUDE.md's "LIB MODULES (18)" list no longer matched the
+    governance-protected config/modules.json registry (16 entries):
+    content-studio/runtime/session-manager/git-branch-orchestrator/
+    external-agent-registry are real lib/ directories missing from the
+    registry, and opsly-core is registered but has no lib/opsly-core
+    directory (breaks apps/peskids/lib/peskids-shadow-runtime.ts's import).
+
+    Fixes the doc to mirror the registry as it exists today, since
+    config/modules.json itself is protected and registering the missing
+    modules needs an explicit decision from its owner, not a doc-only PR.
+
+    Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_01TM2ZqdbVmDRRFRRFzo6mMU
+
+    * docs(claude-md): correct opsly-core claim in the modules drift note
+
+    The previous commit on this PR claimed opsly-core had no real
+    directory and that consumers failed to resolve it. Wrong — it's a
+    real workspace package at packages/opsly-core (not lib/opsly-core,
+    hence it looking "missing" under the LIB MODULES framing), and it
+    resolves cleanly once node_modules is actually installed. The earlier
+    check ran in a sandbox before npm install had populated node_modules,
+    so the resolution failure was a sandbox artifact, not a real bug.
+
+    Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_01TM2ZqdbVmDRRFRRFzo6mMU
+
+    ---------
+
+    Co-authored-by: Claude <noreply@anthropic.com>
+
+commit 4b96f8eada54bd2b17526ea51bba673f8ac9d1ea
+Author: Mistic <cboteros1@gmail.com>
+Date:   Sun Aug 9 09:18:54 2026 -0400
+
+    fix(security): resolve npm audit vulnerabilities (MODERATE + HIGH) (#938)
+
+    * fix(security): resolve npm audit vulnerabilities (MODERATE + HIGH)
+
+    - Updated dompurify from 3.4.12 to 3.4.13 (fixes XSS vulnerability GHSA-55q2-fjhq-7xh7)
+    - Updated nanoid from 3.3.16 to 3.3.18 (fixes DoS vulnerability GHSA-2v37-7h3g-55p8)
+    - Updated mermaid from 11.4.0 to 11.16.1 (addresses prototype pollution, CSS injection, DoS issues)
+    - Added nanoid override to ensure minimum version >=3.3.17
+
+    Changes applied to:
+    - Root package.json dependencies and overrides
+    - apps/admin/package.json (mermaid dependency)
+
+    Verification:
+    - npm audit: found 0 vulnerabilities ✓
+    - npm run type-check: all 65 tasks successful ✓
+    - No functional changes to code ✓
+
+    Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_017Dnc76BXwNCTQmJSX5t2gp
+
+    * fix(docker): hoist mermaid to root dependencies for admin build
+
+    Mermaid is imported by admin graph pages and required during Docker build.
+    Add to root dependencies (not just overrides) to ensure proper hoisting
+    to /repo/node_modules where the Dockerfile builder stage copies from.
+
+    ---------
+
+    Co-authored-by: Claude <noreply@anthropic.com>
+
+commit 3daf5054dad21de09a3001d7b1209d3a3cabb955
+Author: Mistic <cboteros1@gmail.com>
+Date:   Fri Aug 7 01:37:04 2026 -0400
+
+    fix(icso): resolve .js→.ts for mission-control-kit (#931)
+
+    Next webpack in Docker could not resolve kit ESM .js imports to .ts sources.
+
+    Co-authored-by: Cursor <cursoragent@cursor.com>
+
+commit e62ecaa6a4fbf04c74dbbb89aed76d07a944f7ce
+Author: Mistic <cboteros1@gmail.com>
+Date:   Fri Aug 7 01:16:03 2026 -0400
+
+    fix(icso): include mission-control-kit in Docker build (#930)
+
+    ICSO Dockerfile omitted the workspace package, so GHCR builds failed
+    after MC kit merge and blocked the rest of platform deploy.
+
+    Co-authored-by: Cursor <cursoragent@cursor.com>
+
+commit 66cb3abc2b83a4cc34419d748c6b534bccde9173
+Author: Mistic <cboteros1@gmail.com>
+Date:   Fri Aug 7 00:50:59 2026 -0400
+
+    fix(platform): restore standalone tracing (webpack-runtime) (#927)
+
+    Remove outputFileTracingExcludes from api/admin/portal/icso — same GHCR
+    standalone breakage as Peskids #918 (missing webpack-runtime.js).
+
+    Co-authored-by: Cursor <cursoragent@cursor.com>

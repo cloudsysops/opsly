@@ -11,7 +11,7 @@ export function SiteFooter(): React.ReactElement {
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-8 lg:px-14">
         <div className="flex flex-col gap-10 lg:flex-row lg:justify-between">
           <div>
-            <PeskidsLockup height={44} color="#fff" tag="LLANOGRANDE · MEDELLÍN" />
+            <PeskidsLockup height={56} />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/70">
               Clases de natación para niños. Sede principal en Llanogrande, Rionegro.
             </p>

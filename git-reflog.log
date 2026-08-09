@@ -1,0 +1,4 @@
+896bc38 HEAD@{0}: rebase (finish): returning to refs/heads/jules-15380347638927301602-e1539559
+896bc38 HEAD@{1}: rebase (start): checkout origin/main
+b9bfe59 HEAD@{2}: checkout: moving from main to jules-15380347638927301602-e1539559
+b9bfe59 HEAD@{3}: clone: from https://github.com/cloudsysops/opsly

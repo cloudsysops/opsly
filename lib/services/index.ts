@@ -14,8 +14,12 @@ export abstract class BaseRepository<T> implements Repository<T> {
   abstract delete(id: string, tenantId: string): Promise<void>;
 
   // Multi-tenant check helper
-  protected async checkTenantAccess(tenantId: string, userId: string): Promise<boolean> {
+  protected async checkTenantAccess(_tenantId: string, _userId: string): Promise<boolean> {
     // Verify user belongs to tenant
     return true; // Implement real check
   }
 }
+
+// Re-export third-party service clients
+export * from './twenty/index.js';
+export * from './gohighlevel/index.js';

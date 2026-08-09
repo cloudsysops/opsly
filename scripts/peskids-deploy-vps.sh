@@ -139,6 +139,24 @@ run_deploy_on_host() {
     echo "ok   peskids public health"
   fi
 
+  # Post-deploy task: purge Cloudflare so www.peskids.com reflects the new image.
+  # Soft-fail — deploy succeeded locally even if CF API is down.
+  if [[ -x "${repo_path}/scripts/ops/purge-peskids-cdn.sh" ]]; then
+    echo "Post-deploy: Cloudflare CDN purge..."
+    if ! (
+      cd "${repo_path}"
+      if [[ -z "${CF_DNS_API_TOKEN:-}" ]] && command -v doppler >/dev/null 2>&1; then
+        CF_DNS_API_TOKEN="$(doppler secrets get CF_DNS_API_TOKEN --project ops-intcloudsysops --config prd --plain 2>/dev/null || true)"
+        export CF_DNS_API_TOKEN
+      fi
+      bash "${repo_path}/scripts/ops/purge-peskids-cdn.sh" --soft
+    ); then
+      echo "warn CDN purge hook returned non-zero (ignored)" >&2
+    fi
+  else
+    echo "warn missing scripts/ops/purge-peskids-cdn.sh — skip CDN purge" >&2
+  fi
+
   bash "${repo_path}/scripts/docker-prune-after-deploy.sh"
 }
 

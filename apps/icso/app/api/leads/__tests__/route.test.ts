@@ -105,6 +105,39 @@ describe('POST /api/leads', () => {
     expect(syncLeadToCrmMock).not.toHaveBeenCalled();
   });
 
+  it('tags package, vertical, and module on enriched message', async () => {
+    syncLeadToCrmMock.mockResolvedValue({});
+    persistIcsoLeadMock.mockResolvedValue({
+      accountId: 'account-3',
+      contactId: 'contact-3',
+      dealId: 'deal-3',
+    });
+    resolveIcsoDiscoveryBookingUrlMock.mockResolvedValue(null);
+
+    const { POST } = await import('../route');
+    await POST({
+      json: async () => ({
+        name: 'Lead',
+        email: 'lead@example.com',
+        message: 'Need CRM',
+        packageId: 'hybrid-opsly',
+        verticalId: 'swim-school',
+        moduleId: 'lead-capture',
+      }),
+    } as never);
+
+    expect(syncLeadToCrmMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.stringContaining('[module=lead-capture]'),
+      })
+    );
+    expect(persistIcsoLeadMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.stringMatching(/\[package=hybrid-opsly\][\s\S]*\[vertical=swim-school\]/),
+      })
+    );
+  });
+
   it('returns 503 when Supabase is not configured', async () => {
     isIcsoSupabaseConfiguredMock.mockReturnValue(false);
 

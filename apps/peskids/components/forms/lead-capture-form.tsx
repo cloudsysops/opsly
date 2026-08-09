@@ -1,11 +1,14 @@
 'use client'
 
-import { useMemo, useState, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ChevronLeft, Loader2, Send } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
-import { buildPostLeadWhatsAppPrefill, writePeskidsLeadSession } from '@/lib/peskids-lead-session'
-import { ageYearsFromBirthDate } from '@/lib/lead-age'
+import {
+  buildPostLeadWhatsAppPrefill,
+  writePeskidsLeadSession,
+  type PostLeadWhatsAppPrefillOptions,
+} from '@/lib/peskids-lead-session'
 import {
   PESKIDS_COMPANY_KINDS,
   PESKIDS_LEAD_TYPES,
@@ -16,12 +19,17 @@ import {
 } from '@/lib/validation/lead.schema'
 import {
   PESKIDS_CONSENT_MARKETING,
+  PESKIDS_CONSENT_PHOTOS_VIDEOS,
+  PESKIDS_CONSENT_TREATMENT,
   PESKIDS_FORM_CARD_DESCRIPTION,
   PESKIDS_FORM_CARD_TITLE,
   PESKIDS_FORM_SUBMIT_LABEL,
   PESKIDS_FORM_SUCCESS_DETAIL,
-  PESKIDS_RESERVATION_EYEBROW,
-  PESKIDS_RESERVATION_TITLE,
+  PESKIDS_FORM_SUCCESS_DOMICILIO,
+  PESKIDS_FORM_SUCCESS_LLANOGRANDE,
+  PESKIDS_FORM_SUCCESS_NEXT,
+  PESKIDS_FORM_SUCCESS_TITLE,
+  PESKIDS_WHATSAPP_CTA_LABEL,
 } from '@/lib/peskids-landing-copy'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -31,18 +39,18 @@ import { cn } from '@/lib/utils'
 
 const CONSENT_POLICY_VERSION = 'pk-parental-v1+pk-privacy-v1@1.0'
 
+const LEAD_TYPE_LABELS: Record<PeskidsLeadType, string> = {
+  family: 'Familia / Alumno',
+  teacher_applicant: 'Profesor',
+  company: 'Empresa o institución',
+}
+
 const COMPANY_KIND_LABELS: Record<PeskidsCompanyKind, string> = {
   guarderia: 'Guardería',
   colegio: 'Colegio',
   empresa: 'Empresa',
   conjunto: 'Conjunto residencial',
   otro: 'Otro',
-}
-
-const LEAD_TYPE_LABELS: Record<PeskidsLeadType, string> = {
-  family: 'Familia / matrícula',
-  teacher_applicant: 'Quiero ser profesor(a)',
-  company: 'Empresa / institución',
 }
 
 type FormState = {
@@ -52,6 +60,7 @@ type FormState = {
   phone: string
   class_modality: '' | 'llanogrande' | 'domicilio'
   neighborhood: string
+  city: string
   child_name: string
   birth_date: string
   document_type: string
@@ -60,6 +69,7 @@ type FormState = {
   availability: string
   work_zones: string
   observations: string
+  attachments: Record<string, string>
   company_name: string
   company_nit: string
   contact_role: string
@@ -70,18 +80,12 @@ type FormState = {
   referral_source: string
 }
 
-type StepId =
-  | 'who'
-  | 'where'
-  | 'zone'
-  | 'child'
-  | 'guardian'
-  | 'teacher_profile'
-  | 'teacher_ops'
-  | 'company_org'
-  | 'company_need'
-  | 'contact'
-  | 'consent'
+type LeadCaptureFormProps = {
+  source?: string
+  campaign?: string
+  defaultReferralSource?: string
+  embedded?: boolean
+}
 
 const emptyForm = (referralSource = ''): FormState => ({
   lead_type: '',
@@ -90,6 +94,7 @@ const emptyForm = (referralSource = ''): FormState => ({
   phone: '',
   class_modality: '',
   neighborhood: '',
+  city: '',
   child_name: '',
   birth_date: '',
   document_type: 'CC',
@@ -98,6 +103,7 @@ const emptyForm = (referralSource = ''): FormState => ({
   availability: '',
   work_zones: '',
   observations: '',
+  attachments: {},
   company_name: '',
   company_nit: '',
   contact_role: '',
@@ -108,106 +114,6 @@ const emptyForm = (referralSource = ''): FormState => ({
   referral_source: referralSource,
 })
 
-function stepsForLead(leadType: PeskidsLeadType | '', modality: FormState['class_modality']): StepId[] {
-  if (!leadType) return ['who']
-  if (leadType === 'family') {
-    const base: StepId[] = ['who', 'where']
-    if (modality === 'domicilio') base.push('zone')
-    return [...base, 'child', 'guardian', 'contact', 'consent']
-  }
-  if (leadType === 'teacher_applicant') {
-    return ['who', 'teacher_profile', 'teacher_ops', 'contact', 'consent']
-  }
-  return ['who', 'company_org', 'company_need', 'contact', 'consent']
-}
-
-function supportPrompt(step: StepId, form: FormState): string {
-  switch (step) {
-    case 'who':
-      return '¡Hola! Soy el asistente de Peskids. ¿Para quién es esta solicitud? Así te oriento con el equipo correcto.'
-    case 'where':
-      return 'Perfecto. ¿Prefieres clases en la sede Llanogrande o a domicilio? Al final te conecto directo con ese WhatsApp.'
-    case 'zone':
-      return 'Listo, equipo de Domicilios. ¿En qué barrio o zona necesitan las clases?'
-    case 'child':
-      return 'Cuéntame del alumno o alumna: nombre y fecha de nacimiento.'
-    case 'guardian':
-      return 'Ahora los datos del acudiente (como en una matrícula).'
-    case 'teacher_profile':
-      return 'Gracias por tu interés en enseñar con nosotros. Empieza con tu perfil básico.'
-    case 'teacher_ops':
-      return '¿Dónde y cuándo puedes trabajar? Así coordinamos con operaciones.'
-    case 'company_org':
-      return 'Hola — para instituciones armamos una propuesta a medida. Datos de la organización:'
-    case 'company_need':
-      return '¿Qué necesitan y cuántos niños aproximadamente?'
-    case 'contact':
-      return '¿A qué correo y WhatsApp te escribimos? El teléfono es obligatorio para contactarte rápido.'
-    case 'consent':
-      return form.class_modality === 'domicilio'
-        ? 'Último paso: autorizaciones. Luego te abro WhatsApp de Domicilios sin volver a elegir.'
-        : form.class_modality === 'llanogrande'
-          ? 'Último paso: autorizaciones. Luego te abro WhatsApp de Llanogrande sin volver a elegir.'
-          : 'Último paso: autorizaciones. Luego puedes continuar por WhatsApp con el equipo.'
-    default:
-      return 'Continuemos.'
-  }
-}
-
-function successWhatsAppLabel(modality: FormState['class_modality']): string {
-  if (modality === 'domicilio') return 'Continuar por WhatsApp Domicilios →'
-  if (modality === 'llanogrande') return 'Continuar por WhatsApp Llanogrande →'
-  return 'Continuar por WhatsApp →'
-}
-
-function ChoiceButton({
-  selected,
-  onClick,
-  children,
-}: {
-  selected: boolean
-  onClick: () => void
-  children: React.ReactNode
-}): React.ReactElement {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        'w-full rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition',
-        selected
-          ? 'border-pk-primary bg-pk-primary/15 text-pk-ink ring-2 ring-pk-primary/30'
-          : 'border-pk-border bg-pk-surface text-pk-ink hover:border-pk-primary/50'
-      )}
-    >
-      {children}
-    </button>
-  )
-}
-
-function SupportBubble({ children }: { children: React.ReactNode }): React.ReactElement {
-  return (
-    <div className="mb-4 flex gap-3">
-      <div
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pk-primary text-xs font-bold text-white shadow-sm"
-        aria-hidden
-      >
-        Pk
-      </div>
-      <div className="rounded-2xl rounded-tl-md border border-pk-primary/20 bg-pk-bg px-4 py-3 text-sm leading-relaxed text-pk-ink shadow-sm">
-        {children}
-      </div>
-    </div>
-  )
-}
-
-type LeadCaptureFormProps = {
-  source?: string
-  campaign?: string
-  defaultReferralSource?: string
-  embedded?: boolean
-}
-
 export function LeadCaptureForm({
   source = 'web',
   campaign,
@@ -216,123 +122,79 @@ export function LeadCaptureForm({
 }: LeadCaptureFormProps): React.ReactElement {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [submittedLeadId, setSubmittedLeadId] = useState<string | null>(null)
+  const [submittedPrefill, setSubmittedPrefill] = useState<PostLeadWhatsAppPrefillOptions | null>(
+    null
+  )
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [submitted, setSubmitted] = useState(false)
-  const [redirectCountdown, setRedirectCountdown] = useState(12)
-  const [stepIndex, setStepIndex] = useState(0)
   const [formData, setFormData] = useState(() => emptyForm(defaultReferralSource))
   const [consentTreatment, setConsentTreatment] = useState(false)
   const [consentMarketing, setConsentMarketing] = useState(false)
+  const [consentPhotosVideos, setConsentPhotosVideos] = useState(false)
+
   const referredByCode = useMemo(
     () => searchParams.get('ref')?.trim().toUpperCase() ?? '',
     [searchParams]
   )
 
-  const steps = useMemo(
-    () => stepsForLead(formData.lead_type, formData.class_modality),
-    [formData.lead_type, formData.class_modality]
-  )
-  const step = steps[Math.min(stepIndex, steps.length - 1)] ?? 'who'
-  const progress = Math.round(((stepIndex + 1) / steps.length) * 100)
-
-  const childAge = useMemo(
-    () => (formData.birth_date ? ageYearsFromBirthDate(formData.birth_date) : null),
-    [formData.birth_date]
-  )
-
-  useEffect(() => {
-    if (!submitted) return
-    const interval = setInterval(() => {
-      setRedirectCountdown((prev) => prev - 1)
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [submitted])
-
-  useEffect(() => {
-    setStepIndex((prev) => Math.min(prev, Math.max(steps.length - 1, 0)))
-  }, [steps.length])
-
   const setField = (name: keyof FormState, value: string): void => {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const validateCurrentStep = (): string | null => {
-    switch (step) {
-      case 'who':
-        return formData.lead_type ? null : 'Elige una opción para continuar'
-      case 'where':
-        return formData.class_modality ? null : 'Elige sede o domicilio'
-      case 'zone':
-        return formData.neighborhood.trim().length >= 2
-          ? null
-          : 'Indica el barrio o zona'
-      case 'child':
-        if (formData.child_name.trim().length < 2) return 'Nombre del alumno incompleto'
-        if (!formData.birth_date) return 'Indica la fecha de nacimiento'
-        return null
-      case 'guardian':
-        if (formData.name.trim().length < 2) return 'Nombre del acudiente incompleto'
-        if (formData.document_number.trim().length < 4) return 'Cédula incompleta'
-        return null
-      case 'teacher_profile':
-        if (formData.name.trim().length < 2) return 'Nombre incompleto'
-        if (formData.document_number.trim().length < 4) return 'Cédula incompleta'
-        if (formData.experience.trim().length < 10) return 'Cuéntanos un poco más de tu experiencia'
-        return null
-      case 'teacher_ops':
-        if (formData.availability.trim().length < 3) return 'Indica tu disponibilidad'
-        if (formData.work_zones.trim().length < 3) return 'Indica zonas de trabajo'
-        return null
-      case 'company_org':
-        if (formData.company_name.trim().length < 2) return 'Nombre de la institución incompleto'
-        if (formData.company_nit.trim().length < 4) return 'NIT incompleto'
-        if (formData.name.trim().length < 2) return 'Contacto incompleto'
-        if (formData.contact_role.trim().length < 2) return 'Cargo incompleto'
-        if (!formData.company_kind) return 'Selecciona el tipo de institución'
-        return null
-      case 'company_need':
-        if (formData.location.trim().length < 2) return 'Ubicación incompleta'
-        if (!formData.approx_children || Number(formData.approx_children) < 1) {
-          return 'Indica cantidad aproximada de niños'
-        }
-        if (formData.need.trim().length < 5) return 'Describe la necesidad'
-        return null
-      case 'contact':
-        if (!formData.email.includes('@')) return 'Correo inválido'
-        if (formData.phone.trim().length < 7) return 'Teléfono obligatorio (mín. 7 dígitos)'
-        return null
-      case 'consent':
-        return consentTreatment ? null : 'Debes autorizar el tratamiento de datos'
-      default:
-        return null
-    }
-  }
+  const validateForm = (): string | null => {
+    if (!formData.lead_type) return 'Selecciona qué tipo de información necesitas'
+    if (!formData.email.includes('@')) return 'Correo válido requerido'
+    if (formData.phone.trim().length < 7) return 'Teléfono requerido (mín. 7 dígitos)'
+    if (formData.name.trim().length < 2) return 'Nombre requerido'
 
-  const goNext = (): void => {
-    setError('')
-    const validationError = validateCurrentStep()
-    if (validationError) {
-      setError(validationError)
-      return
+    if (formData.lead_type === 'family') {
+      if (!formData.class_modality) return 'Selecciona sede o domicilio'
+      if (!formData.child_name.trim()) return 'Nombre del alumno requerido'
+      if (!formData.birth_date) return 'Fecha de nacimiento del alumno requerida'
+      // Sede Llanogrande: no pedir ciudad ni barrio (barrio se fija en schema).
+      // Domicilio: ciudad + barrio obligatorios.
+      if (formData.class_modality === 'domicilio') {
+        if (!formData.city.trim()) return 'Ciudad requerida para domicilios'
+        if (!formData.neighborhood.trim()) return 'Barrio requerido para domicilios'
+      }
+    } else if (formData.lead_type === 'teacher_applicant') {
+      if (formData.document_number.trim().length < 4) return 'Cédula requerida'
+      if (formData.experience.trim().length < 10) return 'Describe tu experiencia en natación'
+      if (!formData.availability.trim()) return 'Indica tu disponibilidad'
+      if (!formData.work_zones.trim()) return 'Indica zonas donde puedes trabajar'
+      const cvInput = document.getElementById('teacher_cv') as HTMLInputElement | null
+      if (!cvInput?.files || cvInput.files.length === 0) {
+        return 'Adjunta tu hoja de vida (PDF o DOC)'
+      }
+      const videoInput = document.getElementById('teacher_swim_video') as HTMLInputElement | null
+      if (!videoInput?.files || videoInput.files.length === 0) {
+        return 'Adjunta un video nadando los 4 estilos de natación'
+      }
+    } else if (formData.lead_type === 'company') {
+      if (!formData.company_name.trim()) return 'Nombre de la institución requerido'
+      if (formData.company_nit.trim().length < 4) return 'NIT requerido'
+      if (!formData.company_kind) return 'Tipo de institución requerido'
+      if (!formData.location.trim()) return 'Ubicación requerida'
+      if (!formData.approx_children) return 'Aproximado de niños requerido'
+      if (formData.need.trim().length < 5) return 'Describe tu necesidad'
     }
-    setStepIndex((prev) => Math.min(prev + 1, steps.length - 1))
-  }
 
-  const goBack = (): void => {
-    setError('')
-    setStepIndex((prev) => Math.max(prev - 1, 0))
+    return null
   }
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault()
-    if (step !== 'consent') {
-      goNext()
+    setError('')
+
+    const validationError = validateForm()
+    if (validationError) {
+      setError(validationError)
       return
     }
 
     setLoading(true)
-    setError('')
 
     try {
       const referralSource = formData.referral_source || defaultReferralSource || undefined
@@ -352,7 +214,9 @@ export function LeadCaptureForm({
           child_name: formData.child_name,
           birth_date: formData.birth_date,
           document_type: formData.document_type || 'CC',
-          document_number: formData.document_number,
+          document_number: formData.document_number || undefined,
+          city:
+            formData.class_modality === 'domicilio' ? formData.city || undefined : undefined,
           class_modality: formData.class_modality,
           neighborhood:
             formData.class_modality === 'llanogrande' ? undefined : formData.neighborhood,
@@ -369,11 +233,10 @@ export function LeadCaptureForm({
       } else {
         Object.assign(rawPayload, {
           company_name: formData.company_name,
+          contact_role: formData.contact_role || formData.name,
           company_nit: formData.company_nit,
-          contact_role: formData.contact_role,
-          company_kind: formData.company_kind,
           location: formData.location,
-          approx_children: formData.approx_children,
+          approx_children: formData.approx_children ? parseInt(formData.approx_children, 10) : 5,
           need: formData.need,
         })
       }
@@ -388,6 +251,7 @@ export function LeadCaptureForm({
         ...rawPayload,
         consent_treatment: consentTreatment ? true : undefined,
         consent_marketing: consentMarketing,
+        consent_photos_videos: consentPhotosVideos,
         consent_policy_version: CONSENT_POLICY_VERSION,
         source,
         campaign,
@@ -397,11 +261,43 @@ export function LeadCaptureForm({
         return
       }
 
-      const apiResponse = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(apiParsed.data),
-      })
+      const teacherFileInputs =
+        leadType === 'teacher_applicant'
+          ? Array.from(
+              document.querySelectorAll<HTMLInputElement>(
+                'input[type="file"][data-peskids-attachment]'
+              )
+            ).filter((input) => input.files && input.files.length > 0)
+          : []
+      const hasAttachments = teacherFileInputs.length > 0
+      let apiResponse: Response
+
+      if (hasAttachments) {
+        const formDataPayload = new FormData()
+        Object.entries(apiParsed.data).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && typeof value !== 'object') {
+            formDataPayload.append(key, String(value))
+          }
+        })
+        for (const fileInput of teacherFileInputs) {
+          const attachmentType = fileInput.getAttribute('data-peskids-attachment')
+          const file = fileInput.files?.[0]
+          if (attachmentType && file) {
+            formDataPayload.append(`file_${attachmentType}`, file)
+          }
+        }
+
+        apiResponse = await fetch('/api/leads', {
+          method: 'POST',
+          body: formDataPayload,
+        })
+      } else {
+        apiResponse = await fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(apiParsed.data),
+        })
+      }
 
       if (!apiResponse.ok) {
         const apiErrorText = await apiResponse.text()
@@ -409,23 +305,28 @@ export function LeadCaptureForm({
         throw new Error(`Lead API failed: ${apiResponse.status}`)
       }
 
-      const apiResult = (await apiResponse.json()) as {
-        referral_link?: string | null
-        referral_code?: string | null
+      const apiBody = (await apiResponse.json()) as {
+        ok?: boolean
+        data?: { lead_id?: string }
+        lead_id?: string
+        id?: string
       }
+      const leadId = (apiBody.data?.lead_id ?? apiBody.lead_id ?? apiBody.id)?.trim() || ''
 
-      const webhookUrl =
-        process.env.NEXT_PUBLIC_N8N_LEAD_WEBHOOK || 'https://www.peskids.com/webhooks/lead-capture'
-      void fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formParsed.data,
-          full_name: formParsed.data.name,
-          source,
-          campaign: campaign ?? null,
-        }),
-      }).catch((err) => {
+      void fetch(
+        process.env.NEXT_PUBLIC_N8N_LEAD_WEBHOOK || 'https://www.peskids.com/webhooks/lead-capture',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...formParsed.data,
+            full_name: formParsed.data.name,
+            lead_id: leadId || undefined,
+            source,
+            campaign: campaign ?? null,
+          }),
+        }
+      ).catch((err) => {
         console.warn('Lead webhook mirror failed:', err)
       })
 
@@ -434,515 +335,596 @@ export function LeadCaptureForm({
           ? formData.class_modality
           : null
 
-      writePeskidsLeadSession(formData.name, {
+      const parsedFamily = formParsed.data as {
+        child_name?: string
+        neighborhood?: string
+        grade_interested?: string
+        company_name?: string
+      }
+
+      const waPrefillOptions = {
         class_modality: modality,
         lead_type: leadType,
-      })
+        lead_id: leadId || null,
+        email: formParsed.data.email,
+        phone: formParsed.data.phone,
+        child_name: parsedFamily.child_name ?? null,
+        neighborhood: parsedFamily.neighborhood ?? null,
+        grade_interested: parsedFamily.grade_interested ?? null,
+        company_name: parsedFamily.company_name ?? null,
+        company_nit: leadType === 'company' ? formData.company_nit || null : null,
+        contact_role: leadType === 'company' ? formData.contact_role || formData.name : null,
+        need: leadType === 'company' ? formData.need || null : null,
+        experience: leadType === 'teacher_applicant' ? formData.experience || null : null,
+        availability: leadType === 'teacher_applicant' ? formData.availability || null : null,
+        work_zones: leadType === 'teacher_applicant' ? formData.work_zones || null : null,
+      }
+
+      writePeskidsLeadSession(formData.name, waPrefillOptions)
+      setSubmittedLeadId(leadId || null)
+      setSubmittedPrefill(waPrefillOptions)
       setSubmitted(true)
-      setConsentTreatment(false)
-      setConsentMarketing(false)
 
       const thanksUrl = new URL('/thanks', window.location.origin)
-      if (apiResult.referral_link) thanksUrl.searchParams.set('referral_link', apiResult.referral_link)
-      if (apiResult.referral_code) thanksUrl.searchParams.set('referral_code', apiResult.referral_code)
+      if (leadId) thanksUrl.searchParams.set('lead_id', leadId)
       if (modality) thanksUrl.searchParams.set('modality', modality)
       window.setTimeout(() => {
         setFormData(emptyForm(defaultReferralSource))
         router.push(`${thanksUrl.pathname}${thanksUrl.search}`)
-      }, 12000)
+      }, 3000)
     } catch (err) {
-      setError('No pudimos enviar el formulario. Revisa los datos e intenta de nuevo.')
       console.error('Form submission error:', err)
-    } finally {
+      setError('Error al procesar tu solicitud. Por favor intenta de nuevo.')
       setLoading(false)
     }
   }
 
-  return (
-    <Card
-      id={embedded ? undefined : 'contacto'}
-      accent="teal"
-      hover
-      className="scroll-mt-28 overflow-hidden border-2 border-pk-primary/40 shadow-[0_20px_50px_rgba(45,183,176,0.22)] ring-2 ring-pk-primary/15"
-    >
-      {embedded ? (
-        <CardHeader className="border-0 bg-gradient-to-br from-pk-primary/10 via-pk-bg to-pk-surface pb-2 pt-6">
-          <CardTitle className="text-2xl sm:text-3xl">{PESKIDS_FORM_CARD_TITLE}</CardTitle>
-          <CardDescription>{PESKIDS_FORM_CARD_DESCRIPTION}</CardDescription>
-        </CardHeader>
-      ) : (
-        <CardHeader className="border-0 bg-gradient-to-br from-pk-primary/10 via-pk-bg to-pk-surface pb-2">
-          <p className="pk-eyebrow text-pk-primary">{PESKIDS_RESERVATION_EYEBROW}</p>
-          <CardTitle className="text-2xl sm:text-3xl">{PESKIDS_RESERVATION_TITLE}</CardTitle>
-          <CardDescription>
-            Conversación guiada — al final te conectamos al WhatsApp correcto según sede o domicilio.
-          </CardDescription>
-          {referredByCode ? (
-            <p className="mt-3 rounded-xl border border-pk-primary/20 bg-pk-primary/10 px-3 py-2 text-xs font-medium text-pk-primary">
-              Código de recomendación activo: <span className="font-mono">{referredByCode}</span>
-            </p>
-          ) : null}
-        </CardHeader>
-      )}
-      <CardContent className={embedded ? 'pt-2' : undefined}>
-        {submitted ? (
-          <div
-            className="rounded-xl border border-pk-primary/30 bg-pk-primary/10 px-4 py-4 text-sm text-pk-ink"
-            role="status"
-          >
-            <SupportBubble>
-              ¡Listo, {formData.name}! Ya quedó tu solicitud. Sigue por WhatsApp con el equipo que
-              elegiste — no tienes que volver a seleccionar sede o domicilio.
-            </SupportBubble>
-            <p className="mt-2 text-pk-sub">{PESKIDS_FORM_SUCCESS_DETAIL}</p>
+  if (submitted) {
+    const modality = formData.class_modality
+    const isLlanogrande = modality === 'llanogrande'
+    const isDomicilio = modality === 'domicilio'
+    const modalityLabel = isLlanogrande ? 'Llanogrande' : isDomicilio ? 'Domicilios' : null
+    const successDetail = isLlanogrande
+      ? PESKIDS_FORM_SUCCESS_LLANOGRANDE
+      : isDomicilio
+        ? PESKIDS_FORM_SUCCESS_DOMICILIO
+        : PESKIDS_FORM_SUCCESS_DETAIL
+
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-pk-snow p-4">
+        <Card className="w-full max-w-md border-pk-border/50 shadow-card">
+          <CardHeader className="bg-pk-bg">
+            <CardTitle className="text-2xl text-pk-ink">{PESKIDS_FORM_SUCCESS_TITLE}</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6 space-y-6">
+            <p className="text-sm text-pk-ink">{successDetail}</p>
             <WhatsAppLink
-              variant="hero"
-              label={successWhatsAppLabel(formData.class_modality)}
-              modality={formData.class_modality || null}
+              modality={isLlanogrande || isDomicilio ? modality : undefined}
               prefill={buildPostLeadWhatsAppPrefill(formData.name, {
-                class_modality: formData.class_modality || null,
-                lead_type: formData.lead_type || null,
+                ...(submittedPrefill ?? {}),
+                class_modality: isLlanogrande || isDomicilio ? modality : undefined,
+                lead_type: formData.lead_type as PeskidsLeadType,
+                lead_id: submittedLeadId ?? submittedPrefill?.lead_id,
               })}
-              className="mt-4 w-full"
+              label={
+                modalityLabel
+                  ? `${PESKIDS_WHATSAPP_CTA_LABEL} — ${modalityLabel}`
+                  : PESKIDS_WHATSAPP_CTA_LABEL
+              }
+              variant="button"
+              showIcon
+              className="w-full"
             />
-            <p className="mt-4 text-center text-xs text-pk-sub">
-              Si no abres WhatsApp, te llevamos a la página de gracias en {redirectCountdown}s…
-            </p>
-          </div>
-        ) : (
-          <form onSubmit={(ev) => void handleSubmit(ev)} className="space-y-4">
-            <div className="mb-1">
-              <div className="mb-2 flex items-center justify-between text-xs text-pk-sub">
-                <span>
-                  Paso {stepIndex + 1} de {steps.length}
-                </span>
-                <span>{progress}%</span>
-              </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-pk-border/60">
-                <div
-                  className="h-full rounded-full bg-pk-primary transition-all duration-300"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
+            <div className="border-t border-pk-border/30 pt-4">
+              <h3 className="font-medium text-pk-ink mb-2">¿Qué sigue?</h3>
+              <p className="text-xs text-pk-mutedText">{PESKIDS_FORM_SUCCESS_NEXT}</p>
             </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
-            <SupportBubble>{supportPrompt(step, formData)}</SupportBubble>
-
-            {step === 'who' ? (
-              <div className="space-y-2">
-                {PESKIDS_LEAD_TYPES.map((t) => (
-                  <ChoiceButton
-                    key={t}
-                    selected={formData.lead_type === t}
-                    onClick={() => {
-                      setField('lead_type', t)
-                      setError('')
-                      setStepIndex(0)
-                    }}
-                  >
-                    {LEAD_TYPE_LABELS[t]}
-                  </ChoiceButton>
-                ))}
-              </div>
-            ) : null}
-
-            {step === 'where' ? (
-              <div className="space-y-2">
-                <ChoiceButton
-                  selected={formData.class_modality === 'llanogrande'}
-                  onClick={() => {
-                    setField('class_modality', 'llanogrande')
-                    setField('neighborhood', '')
-                    setError('')
-                  }}
-                >
-                  Sede Llanogrande — te conecto al WhatsApp de la sede
-                </ChoiceButton>
-                <ChoiceButton
-                  selected={formData.class_modality === 'domicilio'}
-                  onClick={() => {
-                    setField('class_modality', 'domicilio')
-                    setError('')
-                  }}
-                >
-                  Domicilio — te conecto al WhatsApp de Domicilios
-                </ChoiceButton>
-              </div>
-            ) : null}
-
-            {step === 'zone' ? (
+  return (
+    <div className={cn('w-full', embedded ? '' : 'min-h-screen bg-pk-snow py-12')}>
+      <div className={cn('mx-auto', embedded ? 'max-w-full' : 'max-w-2xl px-4')}>
+        <Card className="border-pk-border/50 shadow-card">
+          <CardHeader className="bg-pk-bg">
+            <CardTitle className="text-xl text-pk-ink">{PESKIDS_FORM_CARD_TITLE}</CardTitle>
+            <CardDescription className="text-pk-mutedText">{PESKIDS_FORM_CARD_DESCRIPTION}</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-8">
+            <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
+              {/* Lead Type Selection */}
               <div>
-                <Label htmlFor="neighborhood" required>
-                  Barrio, zona o dirección
+                <Label className="mb-3 block text-sm font-medium text-pk-ink">
+                  ¿Para quién estás solicitando información? *
                 </Label>
-                <input
-                  id="neighborhood"
-                  className="pk-input"
-                  value={formData.neighborhood}
-                  onChange={(e) => setField('neighborhood', e.target.value)}
-                  required
-                  placeholder="Ej. El Poblado, Envigado…"
-                  autoFocus
-                />
-              </div>
-            ) : null}
-
-            {step === 'child' ? (
-              <div className="space-y-3">
-                <div>
-                  <Label htmlFor="child_name" required>
-                    Nombre del alumno
-                  </Label>
-                  <input
-                    id="child_name"
-                    className="pk-input"
-                    value={formData.child_name}
-                    onChange={(e) => setField('child_name', e.target.value)}
-                    required
-                    minLength={2}
-                    autoFocus
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="birth_date" required>
-                    Fecha de nacimiento
-                  </Label>
-                  <input
-                    id="birth_date"
-                    type="date"
-                    className="pk-input"
-                    value={formData.birth_date}
-                    onChange={(e) => setField('birth_date', e.target.value)}
-                    required
-                  />
-                  {childAge !== null ? (
-                    <p className="mt-1 text-xs text-pk-sub">Edad calculada: {childAge} años</p>
-                  ) : null}
+                <div className="space-y-2">
+                  {PESKIDS_LEAD_TYPES.map((type) => (
+                    <label key={type} className="flex items-center gap-3">
+                      <input
+                        type="radio"
+                        name="lead_type"
+                        value={type}
+                        checked={formData.lead_type === type}
+                        onChange={(e) => setField('lead_type', e.target.value)}
+                        className="h-4 w-4"
+                      />
+                      <span className="text-sm text-pk-ink">{LEAD_TYPE_LABELS[type]}</span>
+                    </label>
+                  ))}
                 </div>
               </div>
-            ) : null}
 
-            {step === 'guardian' ? (
-              <div className="space-y-3">
-                <div>
-                  <Label htmlFor="name" required>
-                    Nombre del acudiente
-                  </Label>
-                  <input
-                    id="name"
-                    className="pk-input"
-                    value={formData.name}
-                    onChange={(e) => setField('name', e.target.value)}
-                    required
-                    autoComplete="name"
-                    autoFocus
-                  />
+              {/* Family-specific fields */}
+              {formData.lead_type === 'family' && (
+                <>
+                  {/* Class Modality */}
+                  <div>
+                    <Label className="mb-3 block text-sm font-medium text-pk-ink">
+                      ¿Prefieres Llanogrande o domicilio? *
+                    </Label>
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-3">
+                        <input
+                          type="radio"
+                          name="class_modality"
+                          value="llanogrande"
+                          checked={formData.class_modality === 'llanogrande'}
+                          onChange={(e) => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              class_modality: e.target.value as FormState['class_modality'],
+                              city: '',
+                              neighborhood: '',
+                            }))
+                          }}
+                          className="h-4 w-4"
+                        />
+                        <span className="text-sm text-pk-ink">Sede Llanogrande</span>
+                      </label>
+                      <label className="flex items-center gap-3">
+                        <input
+                          type="radio"
+                          name="class_modality"
+                          value="domicilio"
+                          checked={formData.class_modality === 'domicilio'}
+                          onChange={(e) =>
+                            setField('class_modality', e.target.value)
+                          }
+                          className="h-4 w-4"
+                        />
+                        <span className="text-sm text-pk-ink">Clases a domicilio</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Child Info */}
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label htmlFor="child_name" className="text-sm font-medium text-pk-ink">
+                        Nombre del alumno *
+                      </Label>
+                      <input
+                        id="child_name"
+                        type="text"
+                        value={formData.child_name}
+                        onChange={(e) => setField('child_name', e.target.value)}
+                        className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                        placeholder="Nombre completo"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="birth_date" className="text-sm font-medium text-pk-ink">
+                        Fecha de nacimiento *
+                      </Label>
+                      <input
+                        id="birth_date"
+                        type="date"
+                        value={formData.birth_date}
+                        onChange={(e) => setField('birth_date', e.target.value)}
+                        className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink focus:border-pk-primary focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Guardian Info */}
+                  <div>
+                    <h3 className="mb-4 font-medium text-pk-ink">Datos del acudiente</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="guardian_name" className="text-sm font-medium text-pk-ink">
+                          Nombre completo *
+                        </Label>
+                        <input
+                          id="guardian_name"
+                          type="text"
+                          value={formData.name}
+                          onChange={(e) => setField('name', e.target.value)}
+                          className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                          placeholder="Nombre"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="document_number" className="text-sm font-medium text-pk-ink">
+                          Cédula
+                        </Label>
+                        <input
+                          id="document_number"
+                          type="text"
+                          value={formData.document_number}
+                          onChange={(e) => setField('document_number', e.target.value)}
+                          className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                          placeholder="Cédula"
+                        />
+                      </div>
+                      {formData.class_modality === 'domicilio' ? (
+                        <div className="grid gap-4 md:grid-cols-2">
+                          <div>
+                            <Label htmlFor="city" className="text-sm font-medium text-pk-ink">
+                              Ciudad *
+                            </Label>
+                            <input
+                              id="city"
+                              type="text"
+                              value={formData.city}
+                              onChange={(e) => setField('city', e.target.value)}
+                              className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                              placeholder="Ciudad"
+                              autoComplete="address-level2"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="neighborhood" className="text-sm font-medium text-pk-ink">
+                              Barrio o zona *
+                            </Label>
+                            <input
+                              id="neighborhood"
+                              type="text"
+                              value={formData.neighborhood}
+                              onChange={(e) => setField('neighborhood', e.target.value)}
+                              className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                              placeholder="Barrio o zona"
+                            />
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Teacher fields */}
+              {formData.lead_type === 'teacher_applicant' && (
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="teacher_name" className="text-sm font-medium text-pk-ink">
+                      Nombre completo *
+                    </Label>
+                    <input
+                      id="teacher_name"
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setField('name', e.target.value)}
+                      className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                      placeholder="Nombre"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="teacher_doc" className="text-sm font-medium text-pk-ink">
+                      Cédula *
+                    </Label>
+                    <input
+                      id="teacher_doc"
+                      type="text"
+                      value={formData.document_number}
+                      onChange={(e) => setField('document_number', e.target.value)}
+                      className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                      placeholder="Cédula"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="experience" className="text-sm font-medium text-pk-ink">
+                      Experiencia en natación *
+                    </Label>
+                    <textarea
+                      id="experience"
+                      value={formData.experience}
+                      onChange={(e) => setField('experience', e.target.value)}
+                      className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                      placeholder="Cuéntanos tu experiencia"
+                      rows={3}
+                    />
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label htmlFor="availability" className="text-sm font-medium text-pk-ink">
+                        Disponibilidad *
+                      </Label>
+                      <input
+                        id="availability"
+                        type="text"
+                        value={formData.availability}
+                        onChange={(e) => setField('availability', e.target.value)}
+                        className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                        placeholder="Ej: L-V 5-7pm"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="work_zones" className="text-sm font-medium text-pk-ink">
+                        Zonas de trabajo *
+                      </Label>
+                      <input
+                        id="work_zones"
+                        type="text"
+                        value={formData.work_zones}
+                        onChange={(e) => setField('work_zones', e.target.value)}
+                        className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                        placeholder="Zonas donde puedes trabajar"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="observations" className="text-sm font-medium text-pk-ink">
+                      Observaciones
+                    </Label>
+                    <textarea
+                      id="observations"
+                      value={formData.observations}
+                      onChange={(e) => setField('observations', e.target.value)}
+                      className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                      placeholder="Información adicional (opcional)"
+                      rows={2}
+                    />
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label htmlFor="teacher_cv" className="text-sm font-medium text-pk-ink">
+                        Hoja de vida (PDF o DOC) *
+                      </Label>
+                      <input
+                        id="teacher_cv"
+                        type="file"
+                        accept=".pdf,.doc,.docx,application/pdf"
+                        data-peskids-attachment="curriculum"
+                        required
+                        className="mt-2 block w-full text-sm text-pk-ink file:mr-3 file:rounded-pk file:border-0 file:bg-pk-primary/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-pk-primary"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="teacher_swim_video" className="text-sm font-medium text-pk-ink">
+                        Video nadando los 4 estilos (MP4 o similar) *
+                      </Label>
+                      <input
+                        id="teacher_swim_video"
+                        type="file"
+                        accept="video/*,.mp4,.mov,.webm"
+                        data-peskids-attachment="swimming_video"
+                        required
+                        className="mt-2 block w-full text-sm text-pk-ink file:mr-3 file:rounded-pk file:border-0 file:bg-pk-primary/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-pk-primary"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-pk-mutedText">
+                    Adjunta tu hoja de vida y un video nadando los 4 estilos de natación (libre,
+                    espalda, pecho y mariposa).
+                  </p>
                 </div>
-                <div>
-                  <Label htmlFor="document_number" required>
-                    Cédula del acudiente
-                  </Label>
-                  <input
-                    id="document_number"
-                    className="pk-input"
-                    value={formData.document_number}
-                    onChange={(e) => setField('document_number', e.target.value)}
-                    required
-                  />
+              )}
+
+              {/* Company fields */}
+              {formData.lead_type === 'company' && (
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="company_name" className="text-sm font-medium text-pk-ink">
+                      Nombre de la institución *
+                    </Label>
+                    <input
+                      id="company_name"
+                      type="text"
+                      value={formData.company_name}
+                      onChange={(e) => setField('company_name', e.target.value)}
+                      className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                      placeholder="Nombre"
+                    />
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label htmlFor="company_nit" className="text-sm font-medium text-pk-ink">
+                        NIT *
+                      </Label>
+                      <input
+                        id="company_nit"
+                        type="text"
+                        value={formData.company_nit}
+                        onChange={(e) => setField('company_nit', e.target.value)}
+                        className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                        placeholder="NIT"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="company_kind" className="text-sm font-medium text-pk-ink">
+                        Tipo de institución *
+                      </Label>
+                      <select
+                        id="company_kind"
+                        value={formData.company_kind}
+                        onChange={(e) => setField('company_kind', e.target.value)}
+                        className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink focus:border-pk-primary focus:outline-none"
+                      >
+                        <option value="">Selecciona...</option>
+                        {PESKIDS_COMPANY_KINDS.map((kind) => (
+                          <option key={kind} value={kind}>
+                            {COMPANY_KIND_LABELS[kind]}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label htmlFor="company_contact_name" className="text-sm font-medium text-pk-ink">
+                        Nombre de contacto *
+                      </Label>
+                      <input
+                        id="company_contact_name"
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => setField('name', e.target.value)}
+                        className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                        placeholder="Nombre completo"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="contact_role" className="text-sm font-medium text-pk-ink">
+                        Tu cargo
+                      </Label>
+                      <input
+                        id="contact_role"
+                        type="text"
+                        value={formData.contact_role}
+                        onChange={(e) => setField('contact_role', e.target.value)}
+                        className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                        placeholder="Director, Coordinador, etc."
+                      />
+                    </div>
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label htmlFor="location" className="text-sm font-medium text-pk-ink">
+                        Ubicación *
+                      </Label>
+                      <input
+                        id="location"
+                        type="text"
+                        value={formData.location}
+                        onChange={(e) => setField('location', e.target.value)}
+                        className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                        placeholder="Ubicación"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="approx_children" className="text-sm font-medium text-pk-ink">
+                        Aprox. de niños *
+                      </Label>
+                      <input
+                        id="approx_children"
+                        type="number"
+                        min="1"
+                        value={formData.approx_children}
+                        onChange={(e) => setField('approx_children', e.target.value)}
+                        className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                        placeholder="20"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="need" className="text-sm font-medium text-pk-ink">
+                      ¿Qué necesitas? *
+                    </Label>
+                    <textarea
+                      id="need"
+                      value={formData.need}
+                      onChange={(e) => setField('need', e.target.value)}
+                      className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                      placeholder="Cuéntanos tu necesidad"
+                      rows={3}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Contact info - shown for all */}
+              <div className="border-t border-pk-border/30 pt-6">
+                <h3 className="mb-4 font-medium text-pk-ink">Datos de contacto</h3>
+                <div className="space-y-4">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label htmlFor="email" className="text-sm font-medium text-pk-ink">
+                        Correo electrónico *
+                      </Label>
+                      <input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setField('email', e.target.value)}
+                        className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                        placeholder="tu@correo.com"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="phone" className="text-sm font-medium text-pk-ink">
+                        Teléfono *
+                      </Label>
+                      <input
+                        id="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => setField('phone', e.target.value)}
+                        className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
+                        placeholder="Teléfono"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-            ) : null}
 
-            {step === 'teacher_profile' ? (
-              <div className="space-y-3">
-                <div>
-                  <Label htmlFor="name" required>
-                    Nombre completo
-                  </Label>
-                  <input
-                    id="name"
-                    className="pk-input"
-                    value={formData.name}
-                    onChange={(e) => setField('name', e.target.value)}
-                    required
-                    autoFocus
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="document_number" required>
-                    Cédula
-                  </Label>
-                  <input
-                    id="document_number"
-                    className="pk-input"
-                    value={formData.document_number}
-                    onChange={(e) => setField('document_number', e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="experience" required>
-                    Experiencia
-                  </Label>
-                  <textarea
-                    id="experience"
-                    className="pk-input min-h-[88px]"
-                    value={formData.experience}
-                    onChange={(e) => setField('experience', e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-            ) : null}
-
-            {step === 'teacher_ops' ? (
-              <div className="space-y-3">
-                <div>
-                  <Label htmlFor="availability" required>
-                    Disponibilidad
-                  </Label>
-                  <input
-                    id="availability"
-                    className="pk-input"
-                    value={formData.availability}
-                    onChange={(e) => setField('availability', e.target.value)}
-                    required
-                    placeholder="Mañanas, fines de semana…"
-                    autoFocus
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="work_zones" required>
-                    Zonas donde puedes trabajar
-                  </Label>
-                  <input
-                    id="work_zones"
-                    className="pk-input"
-                    value={formData.work_zones}
-                    onChange={(e) => setField('work_zones', e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="observations">Observaciones</Label>
-                  <textarea
-                    id="observations"
-                    className="pk-input min-h-[72px]"
-                    value={formData.observations}
-                    onChange={(e) => setField('observations', e.target.value)}
-                  />
-                </div>
-              </div>
-            ) : null}
-
-            {step === 'company_org' ? (
-              <div className="space-y-3">
-                <div>
-                  <Label htmlFor="company_name" required>
-                    Nombre empresa / institución
-                  </Label>
-                  <input
-                    id="company_name"
-                    className="pk-input"
-                    value={formData.company_name}
-                    onChange={(e) => setField('company_name', e.target.value)}
-                    required
-                    autoFocus
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="company_nit" required>
-                    NIT
-                  </Label>
-                  <input
-                    id="company_nit"
-                    className="pk-input"
-                    value={formData.company_nit}
-                    onChange={(e) => setField('company_nit', e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="name" required>
-                    Contacto responsable
-                  </Label>
-                  <input
-                    id="name"
-                    className="pk-input"
-                    value={formData.name}
-                    onChange={(e) => setField('name', e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="contact_role" required>
-                    Cargo
-                  </Label>
-                  <input
-                    id="contact_role"
-                    className="pk-input"
-                    value={formData.contact_role}
-                    onChange={(e) => setField('contact_role', e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="company_kind" required>
-                    Tipo
-                  </Label>
-                  <select
-                    id="company_kind"
-                    className="pk-select"
-                    value={formData.company_kind}
-                    required
-                    onChange={(e) => setField('company_kind', e.target.value)}
-                  >
-                    <option value="">Selecciona</option>
-                    {PESKIDS_COMPANY_KINDS.map((k) => (
-                      <option key={k} value={k}>
-                        {COMPANY_KIND_LABELS[k]}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            ) : null}
-
-            {step === 'company_need' ? (
-              <div className="space-y-3">
-                <div>
-                  <Label htmlFor="location" required>
-                    Ubicación
-                  </Label>
-                  <input
-                    id="location"
-                    className="pk-input"
-                    value={formData.location}
-                    onChange={(e) => setField('location', e.target.value)}
-                    required
-                    autoFocus
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="approx_children" required>
-                    Cantidad aproximada de niños
-                  </Label>
-                  <input
-                    id="approx_children"
-                    type="number"
-                    min={1}
-                    className="pk-input"
-                    value={formData.approx_children}
-                    onChange={(e) => setField('approx_children', e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="need" required>
-                    Necesidad
-                  </Label>
-                  <textarea
-                    id="need"
-                    className="pk-input min-h-[88px]"
-                    value={formData.need}
-                    onChange={(e) => setField('need', e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-            ) : null}
-
-            {step === 'contact' ? (
-              <div className="space-y-3">
-                <div>
-                  <Label htmlFor="email" required>
-                    Correo electrónico
-                  </Label>
-                  <input
-                    id="email"
-                    type="email"
-                    className="pk-input"
-                    value={formData.email}
-                    onChange={(e) => setField('email', e.target.value)}
-                    required
-                    autoComplete="email"
-                    autoFocus
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="phone" required>
-                    Teléfono / WhatsApp
-                  </Label>
-                  <input
-                    id="phone"
-                    type="tel"
-                    className="pk-input"
-                    value={formData.phone}
-                    onChange={(e) => setField('phone', e.target.value)}
-                    required
-                    autoComplete="tel"
-                    placeholder="Ej. 300 123 4567"
-                  />
-                </div>
-              </div>
-            ) : null}
-
-            {step === 'consent' ? (
-              <div className="space-y-3">
-                <label className="flex items-start gap-2 text-sm text-pk-ink">
+              {/* Consent */}
+              <div className="border-t border-pk-border/30 pt-6 space-y-4">
+                <label className="flex gap-3">
                   <input
                     type="checkbox"
-                    className="mt-1"
                     checked={consentTreatment}
                     onChange={(e) => setConsentTreatment(e.target.checked)}
-                    required
+                    className="mt-1 h-4 w-4"
                   />
-                  <span>
-                    Autorizo el tratamiento de datos personales según la política de privacidad de
-                    Peskids.
-                  </span>
+                  <span className="text-xs text-pk-mutedText">{PESKIDS_CONSENT_TREATMENT}</span>
                 </label>
-                <label className="flex items-start gap-2 text-sm text-pk-sub">
+                <label className="flex gap-3">
                   <input
                     type="checkbox"
-                    className="mt-1"
                     checked={consentMarketing}
                     onChange={(e) => setConsentMarketing(e.target.checked)}
+                    className="mt-1 h-4 w-4"
                   />
-                  <span>{PESKIDS_CONSENT_MARKETING}</span>
+                  <span className="text-xs text-pk-mutedText">{PESKIDS_CONSENT_MARKETING}</span>
+                </label>
+                <label className="flex gap-3">
+                  <input
+                    type="checkbox"
+                    checked={consentPhotosVideos}
+                    onChange={(e) => setConsentPhotosVideos(e.target.checked)}
+                    className="mt-1 h-4 w-4"
+                  />
+                  <span className="text-xs text-pk-mutedText">{PESKIDS_CONSENT_PHOTOS_VIDEOS}</span>
                 </label>
               </div>
-            ) : null}
 
-            {error ? <p className="text-sm text-red-700">{error}</p> : null}
-
-            <div className="flex gap-2 pt-1">
-              {stepIndex > 0 ? (
-                <Button type="button" variant="secondary" onClick={goBack} className="shrink-0">
-                  <ChevronLeft className="mr-1 h-4 w-4" /> Atrás
-                </Button>
-              ) : null}
-              {step === 'consent' ? (
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enviando…
-                    </>
-                  ) : (
-                    <>
-                      <Send className="mr-2 h-4 w-4" /> {PESKIDS_FORM_SUBMIT_LABEL}
-                    </>
-                  )}
-                </Button>
-              ) : (
-                <Button type="button" className="w-full" onClick={goNext}>
-                  Continuar
-                </Button>
+              {error && (
+                <div className="rounded-pk border border-red-200/50 bg-red-50/20 p-3 text-sm text-red-700/80">
+                  {error}
+                </div>
               )}
-            </div>
-          </form>
-        )}
-      </CardContent>
-    </Card>
+
+              <Button
+                type="submit"
+                disabled={loading || !consentTreatment}
+                className="w-full bg-pk-primary text-white hover:opacity-90"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Enviando...
+                  </>
+                ) : (
+                  PESKIDS_FORM_SUBMIT_LABEL
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   )
 }
