@@ -37,15 +37,7 @@ function StatusTone(status: string): 'emerald' | 'amber' | 'rose' | 'slate' {
   return 'amber';
 }
 
-function StatCard({
-  label,
-  value,
-  hint,
-}: {
-  label: string;
-  value: string | number;
-  hint: string;
-}) {
+function StatCard({ label, value, hint }: { label: string; value: string | number; hint: string }) {
   return (
     <div className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-4">
       <p className="text-[11px] uppercase tracking-[0.24em] text-zinc-500">{label}</p>
@@ -73,7 +65,9 @@ export default function MissionControlFoundationPage() {
         <header className="flex flex-wrap items-start justify-between gap-4 border-b border-zinc-800 pb-5">
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-cyan-400">Incubation Platform</p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight">Mission Control Foundation</h1>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+              Mission Control Foundation
+            </h1>
             <p className="mt-2 max-w-3xl text-sm text-zinc-400">
               Read-only operating truth for the incubation platform: tenants, agents, approvals,
               extraction readiness, and core service health.
@@ -166,14 +160,19 @@ export default function MissionControlFoundationPage() {
                   </div>
                   <div className="text-zinc-300">{tenant.lifecycle_label}</div>
                   <div>
-                    <SignalPill label={tenant.operational_status} tone={StatusTone(tenant.operational_status)} />
+                    <SignalPill
+                      label={tenant.operational_status}
+                      tone={StatusTone(tenant.operational_status)}
+                    />
                   </div>
                   <div>
                     <SignalPill
                       label={tenant.extraction_ready ? 'ready' : 'blocked'}
                       tone={tenant.extraction_ready ? 'emerald' : 'rose'}
                     />
-                    <div className="mt-1 text-xs text-zinc-500">{tenant.extraction_reason ?? '—'}</div>
+                    <div className="mt-1 text-xs text-zinc-500">
+                      {tenant.extraction_reason ?? '—'}
+                    </div>
                   </div>
                   <div className="text-xs text-zinc-500">
                     <div>workflows {tenant.workflows_count}</div>
@@ -191,19 +190,31 @@ export default function MissionControlFoundationPage() {
               <div className="mt-3 space-y-3 text-sm">
                 <div className="flex items-center justify-between gap-3 rounded-xl border border-zinc-800/70 px-3 py-2">
                   <span className="text-zinc-400">Backups</span>
-                  <SignalPill label={data?.backups.status ?? 'unknown'} tone={StatusTone(data?.backups.status ?? 'unknown')} />
+                  <SignalPill
+                    label={data?.backups.status ?? 'unknown'}
+                    tone={StatusTone(data?.backups.status ?? 'unknown')}
+                  />
                 </div>
                 <div className="flex items-center justify-between gap-3 rounded-xl border border-zinc-800/70 px-3 py-2">
                   <span className="text-zinc-400">SSL</span>
-                  <SignalPill label={data?.ssl.status ?? 'unknown'} tone={StatusTone(data?.ssl.status ?? 'unknown')} />
+                  <SignalPill
+                    label={data?.ssl.status ?? 'unknown'}
+                    tone={StatusTone(data?.ssl.status ?? 'unknown')}
+                  />
                 </div>
                 <div className="flex items-center justify-between gap-3 rounded-xl border border-zinc-800/70 px-3 py-2">
                   <span className="text-zinc-400">Workflows</span>
-                  <SignalPill label={data?.workflows.status ?? 'unknown'} tone={StatusTone(data?.workflows.status ?? 'unknown')} />
+                  <SignalPill
+                    label={data?.workflows.status ?? 'unknown'}
+                    tone={StatusTone(data?.workflows.status ?? 'unknown')}
+                  />
                 </div>
                 <div className="flex items-center justify-between gap-3 rounded-xl border border-zinc-800/70 px-3 py-2">
                   <span className="text-zinc-400">Uptime</span>
-                  <SignalPill label={data?.uptime.status ?? 'unknown'} tone={StatusTone(data?.uptime.status ?? 'unknown')} />
+                  <SignalPill
+                    label={data?.uptime.status ?? 'unknown'}
+                    tone={StatusTone(data?.uptime.status ?? 'unknown')}
+                  />
                 </div>
               </div>
             </div>
@@ -246,13 +257,14 @@ export default function MissionControlFoundationPage() {
                 Read-only service posture for platform and AI dependencies.
               </p>
             </div>
-            <p className="text-xs text-zinc-500">
-              generated {data?.generated_at ?? '—'}
-            </p>
+            <p className="text-xs text-zinc-500">generated {data?.generated_at ?? '—'}</p>
           </div>
           <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             {services.map((service) => (
-              <div key={service.name} className="rounded-xl border border-zinc-800/70 bg-zinc-900/50 p-3">
+              <div
+                key={service.name}
+                className="rounded-xl border border-zinc-800/70 bg-zinc-900/50 p-3"
+              >
                 <div className="flex items-center justify-between gap-2">
                   <div className="text-sm font-medium text-zinc-100">{service.name}</div>
                   <SignalPill label={service.status} tone={StatusTone(service.status)} />

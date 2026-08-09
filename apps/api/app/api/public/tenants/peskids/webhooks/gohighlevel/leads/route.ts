@@ -53,7 +53,9 @@ export async function POST(request: NextRequest): Promise<Response> {
       return jsonError('invalid webhook secret', HTTP_STATUS.UNAUTHORIZED);
     }
   } else {
-    console.warn('[peskids/gohighlevel] PESKIDS_INBOUND_WEBHOOK_SECRET not set — webhook is unauthenticated');
+    console.warn(
+      '[peskids/gohighlevel] PESKIDS_INBOUND_WEBHOOK_SECRET not set — webhook is unauthenticated'
+    );
   }
 
   const requestId = request.headers.get('x-request-id')?.trim() || globalThis.crypto.randomUUID();
@@ -77,9 +79,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   // Persist lead to Supabase with latency tracking
   const persistTimer = createLatencyTimer();
-  const result = await persistPeskidsLead(
-    buildPeskidsLeadPersistInputFromGoHighLevel(parsed.data)
-  );
+  const result = await persistPeskidsLead(buildPeskidsLeadPersistInputFromGoHighLevel(parsed.data));
 
   if (!result.ok) {
     await recordSubabaseError('peskids', 'persist');
@@ -112,7 +112,12 @@ export async function POST(request: NextRequest): Promise<Response> {
     } else {
       // Opportunity creation failed but lead was created; log and alert but don't fail response
       await recordGhlApiError('peskids', 0, 'createPipelineOpportunity');
-      await alertGhlFailure('createPipelineOpportunity', undefined, 'Opportunity creation returned null', parsed.data.lead_id);
+      await alertGhlFailure(
+        'createPipelineOpportunity',
+        undefined,
+        'Opportunity creation returned null',
+        parsed.data.lead_id
+      );
     }
   }
 
@@ -125,7 +130,11 @@ export async function POST(request: NextRequest): Promise<Response> {
           void n8nTimer.end('peskids', 'n8n.dispatch');
         } else {
           void recordN8nDispatchFailure('peskids', dispatchResult.detail);
-          void alertN8nFailure('dispatchPeskidsLeadAutomation', dispatchResult.detail, parsed.data.lead_id);
+          void alertN8nFailure(
+            'dispatchPeskidsLeadAutomation',
+            dispatchResult.detail,
+            parsed.data.lead_id
+          );
         }
       })
       .catch((err: unknown) => {
