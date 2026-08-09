@@ -45,15 +45,18 @@ function constantTimeEqual(a: string, b: string): boolean {
  * GHL -> Opsly bridge contract for lead capture, persistence, and minimal automation handoff.
  */
 export async function POST(request: NextRequest): Promise<Response> {
-  const secret = process.env.PESKIDS_INBOUND_WEBHOOK_SECRET;
-  if (secret) {
-    const header = request.headers.get('x-webhook-secret')?.trim() ?? '';
-    if (!header || !constantTimeEqual(header, secret)) {
-      await alertWebhookFailure('auth', 'Invalid webhook secret');
-      return jsonError('invalid webhook secret', HTTP_STATUS.UNAUTHORIZED);
-    }
-  } else {
-    console.warn('[peskids/gohighlevel] PESKIDS_INBOUND_WEBHOOK_SECRET not set — webhook is unauthenticated');
+  const secret = process.env.PESKIDS_INBOUND_WEBHOOK_SECRET?.trim();
+  if (!secret) {
+    await alertWebhookFailure('auth', 'PESKIDS_INBOUND_WEBHOOK_SECRET not configured');
+    return jsonError(
+      'webhook authentication not configured',
+      HTTP_STATUS.SERVICE_UNAVAILABLE
+    );
+  }
+  const header = request.headers.get('x-webhook-secret')?.trim() ?? '';
+  if (!header || !constantTimeEqual(header, secret)) {
+    await alertWebhookFailure('auth', 'Invalid webhook secret');
+    return jsonError('invalid webhook secret', HTTP_STATUS.UNAUTHORIZED);
   }
 
   const requestId = request.headers.get('x-request-id')?.trim() || globalThis.crypto.randomUUID();

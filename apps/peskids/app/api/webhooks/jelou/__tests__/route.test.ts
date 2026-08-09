@@ -21,6 +21,25 @@ describe('POST /api/webhooks/jelou', () => {
     parseJelouWebhookMock.mockReset()
     handleLeadSubmissionMock.mockReset()
     handleFeedbackSubmissionMock.mockReset()
+    process.env.JELOU_WEBHOOK_SECRET = 'jelou-test-secret'
+  })
+
+  it('returns 503 when JELOU_WEBHOOK_SECRET is missing', async () => {
+    delete process.env.JELOU_WEBHOOK_SECRET
+    const { POST } = await import('../route')
+
+    const response = await POST({
+      headers: new Headers({ 'x-request-id': 'req-no-secret' }),
+      text: async () => '{}',
+    } as never)
+
+    expect(response.status).toBe(503)
+    await expect(response.json()).resolves.toEqual({
+      ok: false,
+      error: 'Webhook not configured',
+      request_id: 'req-no-secret',
+    })
+    expect(verifyJelouSignatureMock).not.toHaveBeenCalled()
   })
 
   it('rejects invalid signatures with request_id', async () => {

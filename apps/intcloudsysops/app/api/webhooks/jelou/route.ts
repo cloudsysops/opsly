@@ -2,16 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyJelouSignature, parseJelouWebhook } from '@/lib/jelou';
 import { handleLeadSubmission, handleFeedbackSubmission } from '@/lib/services/jelou.service';
 
-const JELOU_WEBHOOK_SECRET = process.env.JELOU_WEBHOOK_SECRET || 'dev-secret';
-
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const requestId = request.headers.get('x-request-id') ?? crypto.randomUUID();
+
+  const jelouSecret = process.env.JELOU_WEBHOOK_SECRET?.trim();
+  if (!jelouSecret) {
+    console.error('[jelou] JELOU_WEBHOOK_SECRET not configured — rejecting request');
+    return NextResponse.json(
+      { ok: false, error: 'Webhook not configured', request_id: requestId },
+      { status: 503 }
+    );
+  }
 
   try {
     const signature = request.headers.get('x-jelou-signature') || '';
     const body = await request.text();
 
-    if (!verifyJelouSignature(body, signature, JELOU_WEBHOOK_SECRET)) {
+    if (!verifyJelouSignature(body, signature, jelouSecret)) {
       console.warn('[jelou] invalid signature');
       return NextResponse.json(
         { ok: false, error: 'Invalid signature', request_id: requestId },

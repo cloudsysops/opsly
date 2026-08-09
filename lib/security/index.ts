@@ -102,7 +102,13 @@ export function decryptSecret(encrypted: string): string {
 
 export function redactPII(text: string): string {
   return text
-    .replace(/[\w\.-]+@[\w\.-]+\.\w+/g, '[EMAIL]')
+    .replace(/[\w.-]+@[\w.-]+\.\w+/g, '[EMAIL]')
     .replace(/\b\d{3}-\d{2}-\d{4}\b/g, '[SSN]')
-    .replace(/\b\d{16}\b/g, '[CARD]');
+    .replace(/\b\d{16}\b/g, '[CARD]')
+    // Colombia NIT (before generic digit runs)
+    .replace(/\b\d{3}\.?\d{3}\.?\d{3}-?\d\b/g, '[NIT]')
+    // Colombia mobile (+57 optional)
+    .replace(/(?:\+?57[\s-]?)?3\d{2}[\s-]?\d{3}[\s-]?\d{4}\b/g, '[PHONE]')
+    // Cédula / long numeric IDs (6–10 digits)
+    .replace(/\b\d{6,10}\b/g, '[DOC]');
 }

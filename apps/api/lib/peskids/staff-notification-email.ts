@@ -4,6 +4,7 @@ import {
   insertPendingLeadEmailDelivery,
   updateLeadEmailDeliveryStatus,
 } from './lead-confirmation-repository';
+import { maskPeskidsDocument } from './pii-crypto';
 import type { PeskidsLeadRow } from './repository';
 
 const STAFF_NOTIFICATION_LEAD_TYPES = new Set(['teacher_applicant', 'company']);
@@ -39,7 +40,7 @@ function buildTeacherApplicantHtml(row: PeskidsLeadRow): string {
     <div style="font-family:system-ui,-apple-system,sans-serif;line-height:1.6;color:#111">
       <h2>Nueva solicitud: Trabaja con nosotros</h2>
       <p><strong>Nombre:</strong> ${escapeHtml(row.full_name)}</p>
-      <p><strong>Cédula:</strong> ${escapeHtml(row.document_number ?? 'No indicada')}</p>
+      <p><strong>Cédula:</strong> ${escapeHtml(maskPeskidsDocument(row.document_number))}</p>
       <p><strong>Correo:</strong> ${escapeHtml(row.email)}</p>
       <p><strong>Teléfono:</strong> ${escapeHtml(row.phone ?? 'No indicado')}</p>
       ${experience ? `<p><strong>Experiencia:</strong> ${escapeHtml(experience)}</p>` : ''}
@@ -63,7 +64,7 @@ function buildCompanyHtml(row: PeskidsLeadRow): string {
     <div style="font-family:system-ui,-apple-system,sans-serif;line-height:1.6;color:#111">
       <h2>Nueva solicitud: Alianza institucional</h2>
       <p><strong>Institución:</strong> ${escapeHtml(row.company_name ?? 'No indicada')}</p>
-      <p><strong>NIT:</strong> ${escapeHtml(row.company_nit ?? 'No indicado')}</p>
+      <p><strong>NIT:</strong> ${escapeHtml(maskPeskidsDocument(row.company_nit, 'No indicado'))}</p>
       <p><strong>Nombre de contacto:</strong> ${escapeHtml(row.full_name)}</p>
       ${contactRole ? `<p><strong>Cargo:</strong> ${escapeHtml(contactRole)}</p>` : ''}
       <p><strong>Correo:</strong> ${escapeHtml(row.email)}</p>
