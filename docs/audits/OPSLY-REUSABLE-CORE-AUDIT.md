@@ -30,7 +30,7 @@ tsx scripts/assign-agent-task.ts --tenant academy-demo → envelope V1
 
 ## No hecho (siguientes PRs, sin big-bang)
 
-1. Obligar LLM Gateway en **todos** los bridges CLI (inventario + gate incremental).
+1. ~~Inventario bridges vs Gateway~~ → `docs/audits/AGENT-BRIDGES-GATEWAY-INVENTORY.md` (G1). Pendiente G2–G5 (sin forzar IDE CLIs).
 2. Clasificar árbol `skills/` global / platform / tenant.
 3. Persistencia larga del envelope (solo si ADR-048 lo exige más adelante).
 4. Deploy / merge a `main` (ventana nocturna; capacity alert activo).
