@@ -166,7 +166,7 @@ describe('peskids followup service', () => {
                 if (!('callCount' in schemaMock)) {
                   (schemaMock as unknown as Record<string, number>).callCount = 0;
                 }
-                const count = ((schemaMock as unknown as Record<string, number>).callCount ?? 0);
+                const count = (schemaMock as unknown as Record<string, number>).callCount ?? 0;
                 (schemaMock as unknown as Record<string, number>).callCount = count + 1;
                 if (count === 0) return leadsQuery;
                 if (count === 1) {

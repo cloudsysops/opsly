@@ -42,7 +42,10 @@ export default function MoonHealthPage(): React.ReactElement {
         title="Health"
         subtitle="Señales reales donde existan. Resto = unknown hasta probe."
         actions={
-          <Link href="/machines" className="rounded-lg border border-white/15 px-2.5 py-1.5 text-xs">
+          <Link
+            href="/machines"
+            className="rounded-lg border border-white/15 px-2.5 py-1.5 text-xs"
+          >
             Legacy machines
           </Link>
         }
