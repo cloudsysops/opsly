@@ -50,10 +50,10 @@ jobs:
 
       - name: Connect Tailscale for SSH
         if: env.TAILSCALE_AUTHKEY != ''
-        uses: tailscale/github-action@v2
+        uses: ./.github/actions/tailscale-connect
         with:
           authkey: ${{ env.TAILSCALE_AUTHKEY }}
-          version: 1.94.2
+          ping_host: ${{ inputs.vps_host || secrets.VPS_SSH_HOST || secrets.VPS_HOST || '100.120.151.91' }}
 
       - name: Import Peskids n8n workflows on VPS
         uses: appleboy/ssh-action@v1.0.3

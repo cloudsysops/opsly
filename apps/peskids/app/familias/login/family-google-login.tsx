@@ -144,7 +144,7 @@ export function FamilyGoogleLogin(): React.ReactElement {
               </div>
 
               {error ? (
-                <p className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <p className="mt-5 rounded-2xl border border-red-200/50 bg-red-50/20 px-4 py-3 text-sm text-red-700/80">
                   {error}
                 </p>
               ) : null}

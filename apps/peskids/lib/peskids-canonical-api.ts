@@ -125,6 +125,27 @@ export function buildCanonicalLeadPayload(
   };
 }
 
+/** Attachment field names the client submits as `file_<name>` in multipart requests. */
+const TEACHER_ATTACHMENT_FIELDS = ['curriculum', 'swimming_video'] as const;
+
+function buildCanonicalLeadFormData(
+  payload: Record<string, unknown>,
+  attachments: FormData
+): FormData {
+  const formData = new FormData();
+  for (const [key, value] of Object.entries(payload)) {
+    if (value === undefined || value === null) continue;
+    formData.append(key, typeof value === 'object' ? JSON.stringify(value) : String(value));
+  }
+  for (const field of TEACHER_ATTACHMENT_FIELDS) {
+    const file = attachments.get(`file_${field}`);
+    if (file instanceof File && file.size > 0) {
+      formData.append(`file_${field}`, file);
+    }
+  }
+  return formData;
+}
+
 export async function postPeskidsCanonicalLead(
   body: PeskidsLeadCaptureBody,
   requestId: string,
@@ -132,21 +153,37 @@ export async function postPeskidsCanonicalLead(
     ghlContactId?: string;
     twentyPersonId?: string;
     twentyOpportunityId?: string;
-  }
+  },
+  attachments?: FormData | null
 ): Promise<CanonicalLeadResult> {
   const url = `${OPSLY_API_ORIGIN}/api/public/tenants/peskids/leads`;
+  const outgoingPayload = buildCanonicalLeadPayload(body, crmIds);
+  const hasAttachments =
+    attachments !== null &&
+    attachments !== undefined &&
+    TEACHER_ATTACHMENT_FIELDS.some((field) => {
+      const file = attachments.get(`file_${field}`);
+      return file instanceof File && file.size > 0;
+    });
 
   let response: Response;
   try {
-    response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-request-id': requestId,
-      },
-      body: JSON.stringify(buildCanonicalLeadPayload(body, crmIds)),
-      cache: 'no-store',
-    });
+    response = hasAttachments
+      ? await fetch(url, {
+          method: 'POST',
+          headers: { 'x-request-id': requestId },
+          body: buildCanonicalLeadFormData(outgoingPayload, attachments as FormData),
+          cache: 'no-store',
+        })
+      : await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-request-id': requestId,
+          },
+          body: JSON.stringify(outgoingPayload),
+          cache: 'no-store',
+        });
   } catch (error) {
     console.error('[peskids][lead] canonical API unreachable', { request_id: requestId, error });
     return { ok: false, status: 502, error: 'Lead service unavailable' };
@@ -185,7 +222,8 @@ export async function postPeskidsCanonicalLead(
 
 export async function postPeskidsLeadWithCRM(
   body: PeskidsLeadCaptureBody,
-  requestId: string
+  requestId: string,
+  attachments?: FormData | null
 ): Promise<CanonicalLeadResult> {
   let crmIds: {
     ghlContactId?: string;
@@ -210,7 +248,7 @@ export async function postPeskidsLeadWithCRM(
     console.warn('[peskids][lead] CRM sync failed, continuing with canonical:', err);
   }
 
-  return postPeskidsCanonicalLead(body, requestId, crmIds);
+  return postPeskidsCanonicalLead(body, requestId, crmIds, attachments);
 }
 
 /** @deprecated Use postPeskidsLeadWithCRM — GHL now requires PESKIDS_GHL_ENABLED=true */

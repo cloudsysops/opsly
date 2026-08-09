@@ -1,0 +1,26 @@
+{
+  "id": "vps-memory-2026-07",
+  "active": true,
+  "severity": "warning",
+  "updated_at": "2026-07-29",
+  "title_es": "Capacidad del servidor al límite",
+  "summary_es": "El VPS compartido (~4 GiB) está bajo presión de memoria. Aplicamos límites por servicio; el upgrade a 8 GiB queda pendiente de cuota mensual con Peskids.",
+  "peskids_body_es": "Estamos estabilizando la plataforma (CRM Twenty, operación diaria). El servidor compartido ya está al límite de memoria: para crecer con docentes y familias necesitamos aumentar capacidad. Mientras tanto aplicamos límites por servicio para proteger Peskids en producción. Sin el upgrade no recomendamos abrir profesores/clientes a escala.",
+  "opsly_body_es": "VPS ~4 GiB / 2 vCPU con swap alta. Caps en Twenty/n8n/peskids listos (apply nocturno). Upgrade DO 8 GiB / 4 vCPU (~$48/mes) diferido hasta OK comercial Peskids. No merge/deploy pesado de día; reboot + caps en ventana 22:00–06:00 America/Bogota.",
+  "email_subject_es": "[Opsly] Alerta capacidad VPS — Peskids live",
+  "owner_actions": [
+    "Aplicar caps en VPS de noche: ./scripts/ops/apply-vps-memory-caps.sh --execute",
+    "Alinear cuota mensual de capacidad con Peskids",
+    "Tras OK comercial: resize DigitalOcean a 8 GiB / 4 vCPU + reboot",
+    "Desactivar esta alerta en lib/capacity-alert/alert.json cuando el upgrade esté hecho"
+  ],
+  "runbook": "docs/runbooks/VPS-MEMORY-CAPS.md",
+  "notify_runbook": "docs/runbooks/CAPACITY-ALERT-NOTIFICATIONS.md",
+  "channels": {
+    "peskids_admin_banner": true,
+    "opsly_admin_banner": true,
+    "email": true,
+    "discord": true,
+    "cursor_agent": true
+  }
+}

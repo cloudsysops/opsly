@@ -52,8 +52,8 @@ export default function DsarPage(): React.ReactElement {
         <h2>Cómo ejercer tus derechos</h2>
         <p>Escríbenos a:</p>
         <p className="rounded-lg bg-pk-muted px-4 py-3 font-mono text-sm">
-          <a href="mailto:privacidad@peskids.co" className="text-pk-primary">
-            privacidad@peskids.co
+          <a href="mailto:peskidsnatacion@gmail.com" className="text-pk-primary">
+            peskidsnatacion@gmail.com
           </a>
         </p>
         <p>Incluye en tu mensaje:</p>

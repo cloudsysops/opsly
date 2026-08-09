@@ -2,10 +2,9 @@
 # Secrets requeridos (repository o environment "production"):
 #   VPS_HOST, VPS_USER, VPS_SSH_KEY, PLATFORM_DOMAIN
 #   TAILSCALE_AUTHKEY (opcional pero recomendado si SSH del VPS es solo tailnet / UFW bloquea 22 público):
-#     clave reusable+ephemeral (crear en consola Tailscale; si tu política exige tags, el tag va en la clave/ACL, no hace falta
-#     duplicarlo aquí salvo que uses un secreto TAILSCALE_TAGS con el action; ver docs/runbooks/DEPLOY-GITHUB-ACTIONS.md).
-#     Tras el paso "Connect Tailscale", el runner alcanza VPS_HOST si es la IP MagicDNS / Tailscale del VPS.
-#   TAILSCALE_TAGS (opcional): p. ej. tag:github-actions — solo si el action lo requiere; muchas claves funcionan sin este campo.
+#     clave reusable+ephemeral (si no es ephemeral, se acumulan nodos github-runner* offline en la admin).
+#     Conecta vía .github/actions/tailscale-connect (v4 + ping VPS). Ver docs/runbooks/DEPLOY-GITHUB-ACTIONS.md.
+#   TAILSCALE_TAGS: no usado por la composite actual; tags van en la auth key / ACL.
 #   VPS_SSH_HOST (opcional): si está definido, appleboy usa este host en lugar de VPS_HOST (útil: IP Tailscale
 #     para SSH mientras VPS_HOST se usa solo para health/DNS en otros contextos).
 #   Pull GHCR en el VPS (job deploy): usa github.token + github.actor (permiso packages:read del workflow).
@@ -539,10 +538,10 @@ jobs:
 
       - name: Connect Tailscale for SSH to VPS (tailnet)
         if: steps.tailscale_staging.outputs.enabled == 'true'
-        uses: tailscale/github-action@v2
+        uses: ./.github/actions/tailscale-connect
         with:
           authkey: ${{ env.TAILSCALE_AUTHKEY }}
-          version: 1.94.2
+          ping_host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST || '100.120.151.91' }}
 
       - name: Deploy staging via SSH (compose)
         uses: appleboy/ssh-action@v1.0.3
@@ -744,10 +743,10 @@ jobs:
 
       - name: Connect Tailscale for SSH to VPS (tailnet)
         if: steps.tailscale_production.outputs.enabled == 'true'
-        uses: tailscale/github-action@v2
+        uses: ./.github/actions/tailscale-connect
         with:
           authkey: ${{ env.TAILSCALE_AUTHKEY }}
-          version: 1.94.2
+          ping_host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST || '100.120.151.91' }}
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3

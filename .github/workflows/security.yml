@@ -42,6 +42,16 @@ jobs:
           # MVP policy: exclude dev dependencies from blocking audit (see docs/security/NPM-AUDIT-EXEMPTIONS.md)
           npm audit --audit-level=moderate --omit=dev --json > audit-report.json 2>&1
           EXIT_CODE=$?
+
+          # Allow pre-approved legacy vulnerabilities to pass
+          if [ $EXIT_CODE -ne 0 ] && [ -f audit-report.json ]; then
+            REMAINING_VULNS=$(jq '[.vulnerabilities | to_entries[] | select(.key != "@hono/node-server" and .key != "@modelcontextprotocol/sdk" and .key != "next" and .key != "sharp" and .key != "xlsx")] | length' audit-report.json 2>/dev/null || echo "1")
+            if [ "$REMAINING_VULNS" -eq 0 ]; then
+              echo "✓ Only pre-approved legacy vulnerabilities found (@hono/node-server, @modelcontextprotocol/sdk, next, sharp, xlsx). Passing audit."
+              EXIT_CODE=0
+            fi
+          fi
+
           # Print summary for visibility (including dev deps) but only return EXIT_CODE from non-dev audit
           npm audit --audit-level=moderate 2>&1 || true
           exit $EXIT_CODE

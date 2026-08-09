@@ -1,9 +1,9 @@
 # agent-skills — Engineering Workflow Skills
 
 **Source:** [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills)  
-**Installed:** 2026-05-26  
+**Installed:** 2026-08-05
 **Version:** main  
-**Skills:** 23
+**Skills:** 24
 
 ---
 
@@ -117,7 +117,7 @@ skills/vendor/agent-skills/
 
 ## Registration
 
-All 23 skills are registered in `skills/index.json` with:
+All 24 skills are registered in `skills/index.json` with:
 - Full description and usage
 - Trigger keywords for `skill-finder.js` fuzzy matching
 - `source: "addyosmani/agent-skills"` for provenance tracking

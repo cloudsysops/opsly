@@ -630,6 +630,17 @@
       "usage": "Requirements unclear, interview user, elicit needs, discovery conversation",
       "path": "skills/vendor/agent-skills/interview-me/",
       "triggers": ["interview me", "what do I want", "requirements unclear", "entrevístate", "no sé qué quiero", "help me define", "discover requirements"]
+    },
+    {
+      "name": "observability-and-instrumentation",
+      "version": "1.0.0",
+      "source": "addyosmani/agent-skills",
+      "description": "Instruments code so production behavior is visible and diagnosable. Logging, metrics, tracing, alerting — telemetry written with the feature.",
+      "category": "engineering",
+      "priority": "high",
+      "usage": "Add logging/metrics/tracing, production telemetry, alerting rules, diagnose blind spots in prod",
+      "path": "skills/vendor/agent-skills/observability-and-instrumentation/",
+      "triggers": ["observability", "instrumentation", "logging", "metrics", "tracing", "alerting", "telemetry", "SLO", "OpenTelemetry", "qué está pasando en prod", "instrumentar"]
     }
   ],
   "categories": {
@@ -676,11 +687,12 @@
     "testing": ["test-driven-development", "browser-testing-with-devtools"],
     "security_review": ["security-and-hardening"],
     "deploy_launch": ["shipping-and-launch", "ci-cd-and-automation"],
-    "debugging": ["debugging-and-error-recovery"],
+    "debugging": ["debugging-and-error-recovery", "observability-and-instrumentation"],
     "api_design": ["api-and-interface-design"],
     "frontend": ["frontend-ui-engineering"],
     "documentation": ["documentation-and-adrs"],
-    "git": ["git-workflow-and-versioning"]
+    "git": ["git-workflow-and-versioning"],
+    "observability": ["observability-and-instrumentation", "opsly-distributed-tracing"]
   },
   "deprecated": {
     "opsly-bootstrap": "Usar opsly-context",
@@ -690,9 +702,9 @@
     "agent-skills": {
       "source": "https://github.com/addyosmani/agent-skills",
       "version": "main",
-      "installed": "2026-05-25",
+      "installed": "2026-08-05",
       "path": "skills/vendor/agent-skills/",
-      "description": "Production-grade engineering workflow skills for AI coding agents (23 skills)",
+      "description": "Production-grade engineering workflow skills for AI coding agents (24 skills)",
       "skills": [
         "api-and-interface-design",
         "browser-testing-with-devtools",
@@ -709,6 +721,7 @@
         "idea-refine",
         "incremental-implementation",
         "interview-me",
+        "observability-and-instrumentation",
         "performance-optimization",
         "planning-and-task-breakdown",
         "security-and-hardening",

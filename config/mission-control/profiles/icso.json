@@ -1,0 +1,63 @@
+{
+  "id": "icso",
+  "mode": "agency",
+  "tenantSlug": "intcloudsysops",
+  "brand": {
+    "productName": "ICSO Mission Control",
+    "shortName": "ICSO MC",
+    "tagline": "SEE. AUTOMATE. GROW.",
+    "colors": {
+      "background": "#0A0A0A",
+      "surface": "#111827",
+      "primary": "#2563EB",
+      "accent": "#8B5CF6",
+      "success": "#22C55E",
+      "warning": "#F59E0B",
+      "critical": "#EF4444",
+      "text": "#F3F4F6",
+      "muted": "#9CA3AF"
+    }
+  },
+  "basePath": "/mission-control",
+  "nav": [
+    {
+      "title": "Agency",
+      "items": [
+        { "href": "/mission-control", "label": "Inicio" },
+        { "href": "/mission-control/pipeline", "label": "Pipeline" },
+        { "href": "/mission-control/catalog", "label": "Catálogo" },
+        { "href": "/mission-control/modules", "label": "Módulos Opsly" }
+      ]
+    },
+    {
+      "title": "Operaciones",
+      "items": [
+        { "href": "/mission-control/integrations", "label": "Integraciones" },
+        { "href": "/mission-control/health", "label": "Health" }
+      ]
+    },
+    {
+      "title": "Sistema",
+      "items": [
+        { "href": "/mission-control/command", "label": "Command" },
+        { "href": "/", "label": "Sitio público" }
+      ]
+    }
+  ],
+  "features": {
+    "pipeline": true,
+    "catalog": true,
+    "modules": true,
+    "integrations": true,
+    "usage": false,
+    "command": true
+  },
+  "publicPanelUrl": null,
+  "docsPath": "docs/00-architecture/MISSION-CONTROL-KIT.md",
+  "dataBoundaries": [
+    "peskids-leads",
+    "peskids-students",
+    "peskids-families",
+    "platform-tenants-pii"
+  ]
+}

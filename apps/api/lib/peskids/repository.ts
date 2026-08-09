@@ -22,6 +22,7 @@ export type PeskidsLeadRow = {
   referral_source: string | null;
   status: string;
   admin_notes: string | null;
+  metadata: Record<string, unknown> | null;
   created_at: string;
 };
 
@@ -77,7 +78,7 @@ export async function peskidsInsertLead(
       twenty_opportunity_id: body.twenty_opportunity_id ?? null,
     })
     .select(
-      'id, tenant_slug, full_name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, birth_date, document_type, document_number, company_name, company_nit, referral_source, status, admin_notes, created_at'
+      'id, tenant_slug, full_name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, birth_date, document_type, document_number, company_name, company_nit, referral_source, status, admin_notes, metadata, created_at'
     )
     .single();
 
@@ -216,4 +217,22 @@ export async function peskidsFetchDashboardSummary(): Promise<
       low_rating_alerts: (lowAlerts.data ?? []) as PeskidsFeedbackRow[],
     },
   };
+}
+
+export async function peskidsUpdateLeadMetadata(
+  leadId: string,
+  metadata: Record<string, unknown>
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const client = getServiceClient();
+  const { error } = await client
+    .schema('platform')
+    .from('peskids_leads')
+    .update({ metadata })
+    .eq('id', leadId)
+    .eq('tenant_slug', PESKIDS_TENANT_SLUG);
+
+  if (error !== null) {
+    return { ok: false, error: error.message };
+  }
+  return { ok: true };
 }
