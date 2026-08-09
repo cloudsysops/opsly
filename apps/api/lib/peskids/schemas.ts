@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { REQUEST_BODY_LIMITS } from '../constants';
 import {
   PESKIDS_CLASS_MODALITY_VALUES,
   PESKIDS_GRADE_VALUES,
@@ -7,6 +8,21 @@ import {
   PESKIDS_SERVICE_MODES,
   PESKIDS_TENANT_SLUG,
 } from './constants';
+
+/** Metadata acotada: evita blobs arbitrarios en leads/consent. */
+export const boundedStringMetadataSchema = z
+  .record(
+    z.string().trim().min(1).max(REQUEST_BODY_LIMITS.METADATA_KEY_MAX_LEN),
+    z.union([
+      z.string().max(REQUEST_BODY_LIMITS.METADATA_STRING_MAX_LEN),
+      z.number(),
+      z.boolean(),
+      z.null(),
+    ])
+  )
+  .refine((value) => Object.keys(value).length <= REQUEST_BODY_LIMITS.METADATA_MAX_KEYS, {
+    message: `metadata must have at most ${REQUEST_BODY_LIMITS.METADATA_MAX_KEYS} keys`,
+  });
 
 const nameField = z
   .string()
@@ -58,7 +74,7 @@ export const peskidsLeadBodySchema = z
     document_number: optionalDocumentField,
     company_name: optionalTextField(120),
     company_nit: optionalDocumentField,
-    metadata: z.record(z.string(), z.unknown()).optional(),
+    metadata: boundedStringMetadataSchema.optional(),
     referral_source: z.enum(PESKIDS_REFERRAL_SOURCES).optional(),
     ghl_contact_id: z.string().trim().min(1).max(120).optional(),
     twenty_person_id: z.string().trim().min(1).max(120).optional(),
@@ -105,7 +121,36 @@ export const peskidsMessageApprovalSchema = z.object({
   rejection_reason: z.string().trim().max(500).optional(),
 });
 
+/** POST público de form submissions — no confiar en userId del cliente. */
+export const peskidsFormSubmissionBodySchema = z
+  .object({
+    submissionData: z
+      .record(
+        z.string().trim().min(1).max(REQUEST_BODY_LIMITS.FORM_FIELD_KEY_MAX_LEN),
+        z.union([
+          z.string().max(REQUEST_BODY_LIMITS.FORM_FIELD_VALUE_MAX_LEN),
+          z.number(),
+          z.boolean(),
+          z.null(),
+        ])
+      )
+      .refine(
+        (value) => Object.keys(value).length <= REQUEST_BODY_LIMITS.FORM_SUBMISSION_MAX_FIELDS,
+        {
+          message: `submissionData must have at most ${REQUEST_BODY_LIMITS.FORM_SUBMISSION_MAX_FIELDS} fields`,
+        }
+      ),
+    email: z.string().trim().email().max(254).optional(),
+    /** Ignorado a propósito (no es identidad confiable). */
+    userId: z.unknown().optional(),
+  })
+  .transform((data) => ({
+    submissionData: data.submissionData,
+    email: data.email,
+  }));
+
 export type PeskidsMessageApprovalBody = z.infer<typeof peskidsMessageApprovalSchema>;
 
 export type PeskidsLeadBody = z.infer<typeof peskidsLeadBodySchema>;
 export type PeskidsFeedbackBody = z.infer<typeof peskidsFeedbackBodySchema>;
+export type PeskidsFormSubmissionBody = z.infer<typeof peskidsFormSubmissionBodySchema>;

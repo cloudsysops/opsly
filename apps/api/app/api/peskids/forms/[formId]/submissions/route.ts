@@ -1,11 +1,13 @@
 import type { NextRequest } from 'next/server';
-import { jsonError, jsonOk } from '@/lib/api-response';
+import { jsonError, jsonOk, parseJsonBody } from '@/lib/api-response';
 import { HTTP_STATUS } from '@/lib/constants';
 import { triggerWebhooks } from '@/lib/peskids-webhook-trigger';
 import type { WebhookConfig, WebhookTriggerResult } from '@/lib/peskids-types';
 import { getServiceClient } from '@/lib/supabase';
 import { extractIp } from '@/lib/audit';
 import { checkRateLimit } from '@/lib/rate-limiter-memory';
+import { peskidsFormSubmissionBodySchema } from '@/lib/peskids/schemas';
+import { formatZodError } from '@/lib/validation';
 
 // peskids.* tables pending DB type codegen — loose client interface for schema-qualified access
 interface PeskidsQB {
@@ -22,45 +24,36 @@ interface PeskidsClient {
 }
 
 interface FormSubmissionPayload {
-  formId: string;
   submissionData: Record<string, string | number | boolean | null>;
   email?: string;
-  userId?: string;
 }
 
 interface FormData {
   id: string;
   form_id: string;
   tenant_slug: string;
+  status: string;
 }
 
-function validateFormSubmissionRequest(
-  formId: unknown,
-  body: Partial<FormSubmissionPayload>
-): { valid: true } | { valid: false; error: Response } {
-  if (!formId) {
-    return { valid: false, error: jsonError('Missing form ID', HTTP_STATUS.BAD_REQUEST) };
-  }
-  if (!body.submissionData) {
-    return {
-      valid: false,
-      error: jsonError('Submission data is required', HTTP_STATUS.BAD_REQUEST),
-    };
-  }
-  return { valid: true };
-}
-
-async function fetchFormByFormId(
+async function fetchPublishedFormByFormId(
   supabase: ReturnType<typeof getServiceClient>,
   formId: string
 ): Promise<FormData | Response> {
   const db = supabase as unknown as PeskidsClient;
-  const { data: rawForm, error: formError } = await db.from('peskids.forms').select('id, form_id, tenant_slug').eq('form_id', formId).single();
+  const { data: rawForm, error: formError } = await db
+    .from('peskids.forms')
+    .select('id, form_id, tenant_slug, status')
+    .eq('form_id', formId)
+    .single();
 
   if (formError || !rawForm) {
     return jsonError('Form not found', HTTP_STATUS.NOT_FOUND);
   }
-  return rawForm as FormData;
+  const form = rawForm as FormData;
+  if (form.status !== 'active') {
+    return jsonError('Form not found', HTTP_STATUS.NOT_FOUND);
+  }
+  return form;
 }
 
 async function createSubmissionRecord(
@@ -68,7 +61,7 @@ async function createSubmissionRecord(
   submissionId: string,
   formId: string,
   tenantSlug: string,
-  body: Partial<FormSubmissionPayload>
+  body: FormSubmissionPayload
 ) {
   const db = supabase as unknown as PeskidsClient;
   const { data: rawSubmission, error: submissionError } = await db
@@ -79,7 +72,7 @@ async function createSubmissionRecord(
       tenant_slug: tenantSlug,
       submission_data: body.submissionData,
       email: body.email || null,
-      user_id: body.userId || null,
+      user_id: null,
       status: 'completed',
       completed_at: new Date().toISOString(),
       created_at: new Date().toISOString(),
@@ -102,12 +95,16 @@ async function triggerSubmissionWebhooks(
   formId: string,
   tenantSlug: string,
   submissionId: string,
-  submissionData: Record<string, string | number | boolean | null>,
-  userId?: string
+  submissionData: Record<string, string | number | boolean | null>
 ): Promise<WebhookTriggerResult | null> {
   try {
     const db = supabase as unknown as PeskidsClient;
-    const { data: rawWebhooks } = await db.from('peskids.webhook_configs').select('id, webhook_url, secret, is_active, failure_count').eq('form_id', formId).eq('tenant_slug', tenantSlug).eq('is_active', true);
+    const { data: rawWebhooks } = await db
+      .from('peskids.webhook_configs')
+      .select('id, webhook_url, secret, is_active, failure_count')
+      .eq('form_id', formId)
+      .eq('tenant_slug', tenantSlug)
+      .eq('is_active', true);
     const webhooks = rawWebhooks as unknown[] | null;
 
     if (!webhooks || webhooks.length === 0) {
@@ -120,7 +117,6 @@ async function triggerSubmissionWebhooks(
       tenant_slug: tenantSlug,
       form_data: submissionData,
       timestamp: Date.now(),
-      user_id: userId,
     });
   } catch (webhookError) {
     console.error('Failed to trigger webhooks:', webhookError);
@@ -133,14 +129,12 @@ async function logSubmissionAuditEvent(
   formId: string,
   submissionId: string,
   tenantSlug: string,
-  userId: string | undefined,
   email: string | undefined,
   webhookResults: WebhookTriggerResult | null,
   ip: string | null
 ): Promise<void> {
   try {
     const db = supabase as unknown as PeskidsClient;
-    // Security: Do not trust userId from body as primary actor_id
     const actorId = ip ? `anonymous:${ip}` : 'anonymous';
 
     await db.rpc('log_audit_event', {
@@ -152,7 +146,6 @@ async function logSubmissionAuditEvent(
       p_metadata: {
         form_id: formId,
         email,
-        untrusted_userId: userId,
         webhooks_triggered: webhookResults?.success || 0,
         webhooks_failed: webhookResults?.failed || 0,
         ip,
@@ -170,23 +163,32 @@ export async function POST(
   try {
     const { formId } = await params;
 
-    // Security: Rate limit based on IP to prevent spamming public endpoint
+    if (!formId || formId.length > 120) {
+      return jsonError('Missing form ID', HTTP_STATUS.BAD_REQUEST);
+    }
+
     const ip = extractIp(request);
     const rateLimit = await checkRateLimit(ip ? `ip:${ip}` : 'anonymous-submission');
     if (!rateLimit.allowed) {
       return jsonError('Too many requests', HTTP_STATUS.TOO_MANY_REQUESTS);
     }
 
-    const body = (await request.json()) as Partial<FormSubmissionPayload>;
+    const parsedBody = await parseJsonBody(request);
+    if (!parsedBody.ok) {
+      return parsedBody.response;
+    }
 
-    const validation = validateFormSubmissionRequest(formId, body);
-    if (!validation.valid) {
-      return validation.error;
+    const parsed = peskidsFormSubmissionBodySchema.safeParse(parsedBody.body);
+    if (!parsed.success) {
+      return jsonError(
+        `Invalid request body: ${formatZodError(parsed.error)}`,
+        HTTP_STATUS.BAD_REQUEST
+      );
     }
 
     const supabase = getServiceClient();
 
-    const formResult = await fetchFormByFormId(supabase, formId as string);
+    const formResult = await fetchPublishedFormByFormId(supabase, formId);
     if (formResult instanceof Response) {
       return formResult;
     }
@@ -197,9 +199,9 @@ export async function POST(
     const submissionResult = await createSubmissionRecord(
       supabase,
       submissionId,
-      formId as string,
+      formId,
       form.tenant_slug,
-      body
+      parsed.data
     );
     if (!submissionResult.ok || !submissionResult.submission) {
       return jsonError('Failed to save submission', HTTP_STATUS.INTERNAL_ERROR);
@@ -207,20 +209,18 @@ export async function POST(
 
     const webhookResults = await triggerSubmissionWebhooks(
       supabase,
-      formId as string,
+      formId,
       form.tenant_slug,
       submissionId,
-      body.submissionData as Record<string, string | number | boolean | null>,
-      body.userId
+      parsed.data.submissionData
     );
 
     await logSubmissionAuditEvent(
       supabase,
-      formId as string,
+      formId,
       submissionId,
       form.tenant_slug,
-      body.userId,
-      body.email,
+      parsed.data.email,
       webhookResults,
       ip
     );

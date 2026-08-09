@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { parseJsonBody } from '../../../../lib/api-response';
+import { extractIp } from '../../../../lib/audit';
+import { HTTP_STATUS } from '../../../../lib/constants';
 import { getStripe } from '../../../../lib/stripe';
 import { getServiceClient } from '../../../../lib/supabase';
 import { logger } from '../../../../lib/logger';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
 
 const slugRegex = /^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/;
 
@@ -77,14 +81,21 @@ async function createStripeSession(
 }
 
 export async function POST(request: Request): Promise<NextResponse> {
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: 'JSON inválido' }, { status: 400 });
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `checkout:${ip}` : 'checkout:anonymous');
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Demasiadas solicitudes. Inténtalo más tarde.' },
+      { status: HTTP_STATUS.TOO_MANY_REQUESTS }
+    );
   }
 
-  const parsed = checkoutSessionSchema.safeParse(body);
+  const parsedBody = await parseJsonBody(request);
+  if (!parsedBody.ok) {
+    return NextResponse.json({ error: 'JSON inválido' }, { status: HTTP_STATUS.BAD_REQUEST });
+  }
+
+  const parsed = checkoutSessionSchema.safeParse(parsedBody.body);
   if (!parsed.success) {
     return NextResponse.json(
       { error: 'Datos inválidos', details: parsed.error.flatten().fieldErrors },

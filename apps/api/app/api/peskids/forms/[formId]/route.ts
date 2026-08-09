@@ -2,6 +2,8 @@ import type { NextRequest } from 'next/server';
 import { jsonError, jsonOk } from '@/lib/api-response';
 import { HTTP_STATUS } from '@/lib/constants';
 import { getServiceClient } from '@/lib/supabase';
+import { extractIp } from '@/lib/audit';
+import { checkRateLimit } from '@/lib/rate-limiter-memory';
 
 interface FormField {
   id: string;
@@ -40,13 +42,20 @@ export async function GET(
   try {
     const { formId } = await params;
 
-    if (!formId) {
+    if (!formId || formId.length > 120) {
       return jsonError('Missing form ID', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const ip = extractIp(request);
+    const rateLimit = await checkRateLimit(
+      ip ? `peskids-form-get:${ip}` : 'peskids-form-get:anonymous'
+    );
+    if (!rateLimit.allowed) {
+      return jsonError('Too many requests', HTTP_STATUS.TOO_MANY_REQUESTS);
     }
 
     const supabase = getServiceClient();
 
-    // Get form
     const { data: form, error: formError } = await supabase
       .schema('peskids')
       .from('forms')
@@ -58,7 +67,10 @@ export async function GET(
       return jsonError('Form not found', HTTP_STATUS.NOT_FOUND);
     }
 
-    // Get form fields
+    if (form.status !== 'active') {
+      return jsonError('Form not found', HTTP_STATUS.NOT_FOUND);
+    }
+
     const { data: fields, error: fieldsError } = await supabase
       .schema('peskids')
       .from('form_fields')

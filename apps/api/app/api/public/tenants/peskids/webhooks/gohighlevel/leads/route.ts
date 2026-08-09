@@ -47,6 +47,7 @@ function constantTimeEqual(a: string, b: string): boolean {
 export async function POST(request: NextRequest): Promise<Response> {
   const secret = process.env.PESKIDS_INBOUND_WEBHOOK_SECRET?.trim();
   if (!secret) {
+    console.error('[peskids/gohighlevel] PESKIDS_INBOUND_WEBHOOK_SECRET not configured');
     await alertWebhookFailure('auth', 'PESKIDS_INBOUND_WEBHOOK_SECRET not configured');
     return jsonError(
       'webhook authentication not configured',
