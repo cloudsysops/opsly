@@ -21,8 +21,7 @@ export default function PrivacyPage(): React.ReactElement {
           <strong>Responsable:</strong> Peskids — Academia de Natación
           <br />
           <strong>Correo de contacto para asuntos de datos:</strong>{' '}
-          <a href="mailto:privacidad@peskids.co">privacidad@peskids.co</a> (o al correo del
-          operador: sierrasantiago90@gmail.com)
+          <a href="mailto:peskidsnatacion@gmail.com">peskidsnatacion@gmail.com</a>
           <br />
           <strong>Sede principal:</strong> Llanogrande, Rionegro, Antioquia, Colombia
         </p>
@@ -170,7 +169,7 @@ export default function PrivacyPage(): React.ReactElement {
         <p>
           Para ejercer estos derechos, visita nuestra página{' '}
           <a href="/dsar">Derechos del Titular</a> o escribe a{' '}
-          <a href="mailto:privacidad@peskids.co">privacidad@peskids.co</a>. Responderemos en un
+          <a href="mailto:peskidsnatacion@gmail.com">peskidsnatacion@gmail.com</a>. Responderemos en un
           máximo de <strong>15 días hábiles</strong>, conforme al artículo 14 de la Ley 1581.
         </p>
         <p>

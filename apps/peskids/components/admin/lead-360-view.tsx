@@ -23,6 +23,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn, formatRelativeTime } from '@/lib/utils';
 import { LeadEnrollForm } from '@/components/admin/lead-enroll-form'
+import { LeadQuickActions } from '@/components/admin/lead-quick-actions'
+import { SupportReplyTemplates } from '@/components/admin/support-reply-templates'
 import type { AdminLeadStatus } from '@/lib/validation/lead-admin.schema';
 
 type LeadRow = DashboardData['new_leads'][number];
@@ -330,9 +332,34 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
         )}
       </section>
 
+      {/* Quick Actions Panel */}
+      <LeadQuickActions
+        leadId={leadId}
+        currentStatus={lead.status}
+        busy={busy}
+        onBusyChange={setBusy}
+        onFeedback={setFeedback}
+        onCompleted={load}
+      />
+
+      <SupportReplyTemplates
+        leadName={lead.name}
+        leadType={lead.lead_type}
+        status={lead.status}
+        latestTrial={
+          payload?.trials.length
+            ? {
+                teacherName: payload.trials[payload.trials.length - 1].teacher_name,
+                scheduledDate: payload.trials[payload.trials.length - 1].scheduled_date,
+                scheduledTime: payload.trials[payload.trials.length - 1].scheduled_time,
+              }
+            : null
+        }
+      />
+
       <Card accent="slate" className="border-pk-border">
         <CardHeader>
-          <CardTitle className="text-base">Acciones rápidas</CardTitle>
+          <CardTitle className="text-base">Acciones adicionales</CardTitle>
           <CardDescription>Contacto manual y actualización operativa.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -530,14 +557,17 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
         </CardHeader>
         <CardContent>
           {payload.timeline.length > 0 ? (
-            <ol className="space-y-3">
+            <ol className="relative space-y-0 border-l-2 border-pk-primary/25 pl-5">
               {payload.timeline.map((entry, index) => (
                 <li
                   key={`${entry.kind}-${entry.at}-${index}`}
-                  className="flex gap-3 rounded-2xl border border-pk-border/80 bg-pk-muted/30 px-3 py-3"
+                  className="relative pb-4 last:pb-0"
                 >
-                  <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-pk-primary" aria-hidden />
-                  <div className="min-w-0">
+                  <span
+                    className="absolute -left-[1.4rem] top-1.5 h-3 w-3 rounded-full border-2 border-pk-primary bg-white"
+                    aria-hidden
+                  />
+                  <div className="rounded-2xl border border-pk-border/80 bg-pk-muted/30 px-3 py-3">
                     <p className="text-sm font-medium text-pk-ink">{entry.label}</p>
                     <p className="text-xs text-pk-sub">
                       {formatRelativeTime(new Date(entry.at))}

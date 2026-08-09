@@ -5,11 +5,13 @@
 # Secrets (repository or production environment):
 #   VPS_USER, VPS_SSH_KEY, VPS_HOST or VPS_SSH_HOST
 #   TAILSCALE_AUTHKEY (recommended for SSH via tailnet)
+#   CF_DNS_API_TOKEN (post-deploy Cloudflare purge for www.peskids.com)
 #   NEXT_PUBLIC_PESKIDS_WHATSAPP_E164, NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY,
 #   NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL (baked at build; sync from Doppler prd)
 #
 # Manual: Actions → Deploy Peskids → Run workflow
 # Night window: America/Bogota 22:00–06:00 (docs/runbooks/PRODUCTION-CHANGE-WINDOW.md)
+# Post-deploy: CDN purge — docs/runbooks/PESKIDS-CDN-CACHE.md
 
 name: Deploy Peskids
 
@@ -101,10 +103,14 @@ jobs:
             echo "display=${DISPLAY:-+57 300 000 0000}"
             echo "prefill=${PREFILL:-Hola Peskids 👋 Quiero info de matrícula.}"
             echo "contact_email=${CONTACT_EMAIL:-peskidsnatacion@gmail.com}"
+            # Never collapse domicilio → sede when GH secrets are missing.
             echo "llano_e164=${LLANO_E164:-${e164}}"
             echo "llano_display=${LLANO_DISPLAY:-+57 305 470 2600}"
-            echo "dom_e164=${DOM_E164:-${e164}}"
+            echo "dom_e164=${DOM_E164:-573054790273}"
             echo "dom_display=${DOM_DISPLAY:-+57 305 479 0273}"
+            if [ -z "${DOM_E164:-}" ]; then
+              echo "::warning::NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_E164 missing; using catalog domicilio default (sync from Doppler prd)"
+            fi
           } >> "$GITHUB_OUTPUT"
 
       - name: Build and push Peskids image
@@ -170,13 +176,10 @@ jobs:
 
       - name: Connect Tailscale for SSH
         if: env.TAILSCALE_AUTHKEY != ''
-        uses: tailscale/github-action@v2
+        uses: ./.github/actions/tailscale-connect
         with:
           authkey: ${{ env.TAILSCALE_AUTHKEY }}
-          version: 1.94.2
-          # Tailscale's .sha256 endpoint currently returns the bare hash.
-          # The v2 action expects a checksum value and appends the local filename.
-          sha256sum: c6f99a5d774c7783b56902188d69e9756fc3dddfb08ac6be4cb2585f3fecdc32
+          ping_host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST || '100.120.151.91' }}
 
       - name: Login GHCR on VPS and deploy Peskids
         uses: appleboy/ssh-action@v1.0.3
@@ -228,6 +231,21 @@ jobs:
           check_url "public health" "https://www.peskids.com/api/health" '"status":"ok"'
           check_url "admin login" "https://www.peskids.com/admin/login"
           check_url "familias login" "https://www.peskids.com/familias/login"
+
+      - name: Post-deploy — purge Cloudflare CDN
+        # Ensures www.peskids.com serves the new build (not a stale CF/Next edge cache).
+        # Soft-fail: deploy already succeeded on VPS.
+        continue-on-error: true
+        env:
+          CF_DNS_API_TOKEN: ${{ secrets.CF_DNS_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          chmod +x scripts/ops/purge-peskids-cdn.sh
+          if [ -z "${CF_DNS_API_TOKEN:-}" ]; then
+            echo "::warning::CF_DNS_API_TOKEN secret missing — skip CDN purge (set GitHub secret from Doppler prd)"
+            exit 0
+          fi
+          ./scripts/ops/purge-peskids-cdn.sh --soft
 
       - name: Notify Discord on failure
         if: failure()

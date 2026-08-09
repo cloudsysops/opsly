@@ -10,6 +10,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const nextConfig: NextConfig = {
   output: 'standalone',
   outputFileTracingRoot: path.join(__dirname, '../..'),
+  // Do NOT set outputFileTracingExcludes for sibling ../*/.next — same failure
+  // mode as Peskids #918 (missing webpack-runtime.js in GHCR standalone).
+  // Platform Dockerfiles build each app in isolation, so the Turbo parallel-trace
+  // race that originally motivated the exclude does not apply here.
   eslint: {
     ignoreDuringBuilds: true,
   },

@@ -7,12 +7,12 @@
 }
 
 body {
-  @apply bg-ops-bg text-neutral-100 antialiased;
+  @apply bg-[#050914] text-slate-100 antialiased;
+  /* Opsly Moon: premium dark blue — less cyber neon, higher contrast */
   background-image:
-    radial-gradient(130% 90% at 50% -10%, rgba(0, 255, 255, 0.18), transparent 52%),
-    radial-gradient(70% 70% at 100% 10%, rgba(157, 0, 255, 0.16), transparent 55%),
-    radial-gradient(70% 70% at 0% 100%, rgba(255, 0, 255, 0.12), transparent 50%),
-    linear-gradient(135deg, #0a0e27 0%, #101734 48%, #0a0e27 100%);
+    radial-gradient(ellipse 90% 60% at 50% -15%, rgba(109, 40, 217, 0.18), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 100% 0%, rgba(37, 99, 235, 0.12), transparent 50%),
+    linear-gradient(160deg, #050914 0%, #0a1220 45%, #050914 100%);
 }
 
 .cyber-grid-bg {

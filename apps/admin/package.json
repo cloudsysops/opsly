@@ -8,7 +8,8 @@
     "start": "next start -p 3001",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test:moon": "tsx --test lib/moon/__tests__/moon-unit.test.ts"
   },
   "dependencies": {
     "@intcloudsysops/capacity-alert": "*",
@@ -24,7 +25,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.469.0",
-    "mermaid": "^11.4.0",
+    "mermaid": "^11.16.1",
     "next": "^15.5.18",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",

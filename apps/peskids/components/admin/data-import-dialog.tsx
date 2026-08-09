@@ -49,7 +49,7 @@ export function DataImportDialog({ kind, onImported }: DataImportDialogProps): R
       const lower = file.name.toLowerCase();
       if (lower.endsWith('.pdf')) {
         throw new Error(
-          'Los PDF no se importan solos. Adjúntalos en el chat “Pedir cambios” para que Opsly los revise, o exporta tu Excel a .xlsx / .csv.'
+          'Los PDF no se importan solos. Adjúntalos en el chat “Pedir cambios” para que Opsly los revise, o exporta tu Excel como .csv UTF-8.'
         );
       }
       const parsed = await parseSpreadsheetFile(file);
@@ -128,7 +128,7 @@ export function DataImportDialog({ kind, onImported }: DataImportDialogProps): R
     <div className="inline-flex flex-col items-stretch gap-2">
       <Button type="button" size="sm" variant="secondary" onClick={() => setOpen((v) => !v)}>
         <ClipboardList className="mr-1.5 h-4 w-4" aria-hidden />
-        Subir Excel / CSV
+        Subir CSV
       </Button>
 
       {open ? (
@@ -138,8 +138,7 @@ export function DataImportDialog({ kind, onImported }: DataImportDialogProps): R
             <div>
               <p className="text-sm font-semibold text-pk-ink">{title}</p>
               <p className="mt-1 text-xs leading-relaxed text-pk-sub">
-                Acepta <strong>.xlsx</strong>, <strong>.xls</strong> o <strong>.csv</strong> desde tu
-                base en Excel. Los <strong>PDF</strong> y capturas de chats con familias súbelos en
+                Acepta <strong>.csv</strong> (exporta tu Excel como CSV UTF-8). Los <strong>PDF</strong> y capturas de chats con familias súbelos en
                 el chat <em>Pedir cambios</em>.
               </p>
             </div>
@@ -149,7 +148,7 @@ export function DataImportDialog({ kind, onImported }: DataImportDialogProps): R
             <span className="sr-only">Archivo</span>
             <input
               type="file"
-              accept=".csv,.xlsx,.xls,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              accept=".csv,text/csv,text/plain"
               className="block w-full text-sm text-pk-sub file:mr-3 file:rounded-full file:border-0 file:bg-pk-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
               disabled={busy}
               onChange={(event) => {

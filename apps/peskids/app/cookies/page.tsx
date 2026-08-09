@@ -154,7 +154,7 @@ export default function CookiesPage(): React.ReactElement {
         <h2>5. Contacto</h2>
         <p>
           Preguntas sobre esta política:{' '}
-          <a href="mailto:privacidad@peskids.co">privacidad@peskids.co</a>
+          <a href="mailto:peskidsnatacion@gmail.com">peskidsnatacion@gmail.com</a>
         </p>
       </section>
     </LegalPageLayout>
