@@ -23,7 +23,8 @@ export async function GET(
 
         // Verify form exists and belongs to tenant
         const { data: form, error: formError } = await supabase
-          .schema('peskids').from('forms')
+          .schema('peskids')
+          .from('forms')
           .select('id')
           .eq('form_id', formId)
           .eq('tenant_slug', tenantSlug)
@@ -35,7 +36,8 @@ export async function GET(
 
         // Get form submissions
         const { data: submissions, error: submissionsError } = await supabase
-          .schema('peskids').from('form_submissions')
+          .schema('peskids')
+          .from('form_submissions')
           .select('submission_id, submission_data, completed_at')
           .eq('form_id', formId)
           .eq('tenant_slug', tenantSlug)
