@@ -42,18 +42,14 @@ export type FollowupExecutionResult = {
 // Query
 // ---------------------------------------------------------------------------
 
-async function fetchPendingFollowupLeads(
-  tenantSlug: string
-): Promise<PendingFollowupLead[]> {
+async function fetchPendingFollowupLeads(tenantSlug: string): Promise<PendingFollowupLead[]> {
   const db = getServiceClient();
   const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
   const { data, error } = await db
     .schema('platform')
     .from('peskids_leads')
-    .select(
-      'id, lead_id, parent_name, child_name, email, phone, stage, created_at'
-    )
+    .select('id, lead_id, parent_name, child_name, email, phone, stage, created_at')
     .eq('tenant_slug', tenantSlug)
     .eq('stage', 'New Lead')
     .eq('followup_sent', false)
@@ -106,22 +102,28 @@ function readGhlPeskidsEnv(): {
   return { apiKey, baseUrl };
 }
 
-async function createGhlTask(lead: PendingFollowupLead): Promise<{
-  ok: true; taskId: string
-} | {
-  ok: false; error: string
-}> {
+async function createGhlTask(lead: PendingFollowupLead): Promise<
+  | {
+      ok: true;
+      taskId: string;
+    }
+  | {
+      ok: false;
+      error: string;
+    }
+> {
   const { apiKey, baseUrl } = readGhlPeskidsEnv();
 
   if (!apiKey) {
     return { ok: false, error: 'GHL API key not configured' };
   }
 
-  const title = lead.parent_name && lead.child_name
-    ? `Follow-up needed: ${lead.parent_name} (${lead.child_name})`
-    : lead.parent_name
-      ? `Follow-up needed: ${lead.parent_name}`
-      : 'Follow-up needed (Peskids lead)';
+  const title =
+    lead.parent_name && lead.child_name
+      ? `Follow-up needed: ${lead.parent_name} (${lead.child_name})`
+      : lead.parent_name
+        ? `Follow-up needed: ${lead.parent_name}`
+        : 'Follow-up needed (Peskids lead)';
 
   try {
     const response = await fetch(`${baseUrl}/v1/tasks/`, {
@@ -159,20 +161,20 @@ async function createGhlTask(lead: PendingFollowupLead): Promise<{
 // Append to followup_log JSONB column
 // ---------------------------------------------------------------------------
 
-async function appendFollowupLog(
-  leadDbId: string,
-  entry: FollowupLogEntry
-): Promise<void> {
+async function appendFollowupLog(leadDbId: string, entry: FollowupLogEntry): Promise<void> {
   const db = getServiceClient();
   const { error } = await db
     .schema('platform')
     .from('peskids_leads')
     .update({
       followup_sent: true,
-      followup_log: db.rpc('jsonb_append' as never, {
-        target: null,
-        value: JSON.stringify([entry]),
-      } as never),
+      followup_log: db.rpc(
+        'jsonb_append' as never,
+        {
+          target: null,
+          value: JSON.stringify([entry]),
+        } as never
+      ),
     } as never)
     .eq('id', leadDbId);
 
@@ -182,10 +184,7 @@ async function appendFollowupLog(
   }
 }
 
-async function appendFollowupLogFallback(
-  leadDbId: string,
-  entry: FollowupLogEntry
-): Promise<void> {
+async function appendFollowupLogFallback(leadDbId: string, entry: FollowupLogEntry): Promise<void> {
   const db = getServiceClient();
 
   const { data: row } = await db
@@ -195,9 +194,7 @@ async function appendFollowupLogFallback(
     .eq('id', leadDbId)
     .single();
 
-  const existing = (
-    row as { followup_log?: unknown[] } | undefined
-  )?.followup_log ?? [];
+  const existing = (row as { followup_log?: unknown[] } | undefined)?.followup_log ?? [];
   const updated = [...(Array.isArray(existing) ? existing : []), entry];
 
   const { error } = await db
@@ -221,9 +218,7 @@ async function appendFollowupLogFallback(
 // Public API
 // ---------------------------------------------------------------------------
 
-export async function getPendingFollowups(
-  tenantSlug: string
-): Promise<PendingFollowupsResponse> {
+export async function getPendingFollowups(tenantSlug: string): Promise<PendingFollowupsResponse> {
   const leads = await fetchPendingFollowupLeads(tenantSlug);
   return {
     tenant_slug: tenantSlug,
