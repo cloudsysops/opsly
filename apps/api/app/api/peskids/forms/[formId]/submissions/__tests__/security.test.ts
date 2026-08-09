@@ -47,7 +47,17 @@ describe('Peskids Form Submission Security', () => {
     (checkRateLimit as any).mockResolvedValue({ allowed: true });
 
     const mockRpc = vi.fn().mockResolvedValue({ error: null });
-    const mockSingle = vi.fn().mockResolvedValue({ data: { id: 'guid-1', tenant_slug: 't1' }, error: null });
+    const mockSingle = vi
+      .fn()
+      // 1) published form lookup  2) insert().select().single()
+      .mockResolvedValueOnce({
+        data: { id: 'guid-1', form_id: 'f1', tenant_slug: 't1', status: 'active' },
+        error: null,
+      })
+      .mockResolvedValueOnce({
+        data: { id: 'sub-row-1', completed_at: '2026-08-09T00:00:00.000Z' },
+        error: null,
+      });
     const mockFrom = vi.fn().mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),

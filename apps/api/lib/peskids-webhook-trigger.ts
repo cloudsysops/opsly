@@ -1,5 +1,6 @@
 import { createHmac } from 'crypto';
 import type { WebhookConfig, WebhookTriggerPayload, WebhookTriggerResult } from './peskids-types';
+import { assertSafeOutboundHttpsUrl } from './safe-outbound-url';
 
 export async function triggerWebhooks(
   webhooks: WebhookConfig[],
@@ -16,6 +17,13 @@ export async function triggerWebhooks(
       continue;
     }
 
+    const safeUrl = assertSafeOutboundHttpsUrl(webhook.webhook_url);
+    if (!safeUrl.ok) {
+      results.failed += 1;
+      results.errors.push(`Webhook ${webhook.id}: ${safeUrl.error}`);
+      continue;
+    }
+
     try {
       const payloadJson = JSON.stringify(payload);
       const signature = createHmac('sha256', webhook.secret).update(payloadJson).digest('hex');
@@ -24,7 +32,7 @@ export async function triggerWebhooks(
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       try {
-        const response = await fetch(webhook.webhook_url, {
+        const response = await fetch(safeUrl.href, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -34,6 +42,7 @@ export async function triggerWebhooks(
           },
           body: payloadJson,
           signal: controller.signal,
+          redirect: 'error',
         });
 
         if (response.ok) {

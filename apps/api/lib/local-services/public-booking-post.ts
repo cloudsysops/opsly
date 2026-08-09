@@ -1,4 +1,6 @@
 import type { NextRequest } from 'next/server';
+import { parseJsonBody } from '../api-response';
+import { extractIp } from '../audit';
 import { HTTP_STATUS } from '../constants';
 import { publicBookBodySchema } from '../local-services-booking-schema';
 import { assertLocalServicesTenantPublic } from '../local-services-public';
@@ -6,6 +8,7 @@ import {
   lsInsertBookingForTenantSlug,
   lsResolveServiceIdByExternalKey,
 } from '../repositories/local-services-repository';
+import { checkRateLimit } from '../rate-limiter';
 import { addressMentionsAllowedState } from '../technician-service-area';
 import {
   isTechnicianTenantMetadata,
@@ -22,14 +25,6 @@ type PublicBookingReady = {
   serviceId: string | null;
   technician: boolean;
 };
-
-async function readJsonBody(request: NextRequest): Promise<unknown | Response> {
-  try {
-    return await request.json();
-  } catch {
-    return Response.json({ error: 'Invalid JSON body' }, { status: HTTP_STATUS.BAD_REQUEST });
-  }
-}
 
 function externalIdRequiresTechnicianError(
   hasExternalId: boolean,
@@ -166,12 +161,20 @@ export async function postPublicLocalServicesBooking(
     return gate;
   }
 
-  const raw = await readJsonBody(request);
-  if (raw instanceof Response) {
-    return raw;
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(
+    ip ? `local-services-book:${ip}` : 'local-services-book:anonymous'
+  );
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
   }
 
-  const ready = await validatePublicBookingPayload(slug, raw);
+  const parsedBody = await parseJsonBody(request);
+  if (!parsedBody.ok) {
+    return parsedBody.response;
+  }
+
+  const ready = await validatePublicBookingPayload(slug, parsedBody.body);
   if (ready instanceof Response) {
     return ready;
   }

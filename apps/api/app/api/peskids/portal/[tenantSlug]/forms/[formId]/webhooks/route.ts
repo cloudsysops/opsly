@@ -3,6 +3,7 @@ import { jsonError, jsonOk } from '@/lib/api-response';
 import { HTTP_STATUS } from '@/lib/constants';
 import { randomBytes } from 'crypto';
 import { runTrustedPortalDalForPathSlug, PORTAL_READ_ACCESS } from '@/lib/portal-tenant-dal';
+import { assertSafeOutboundHttpsUrl } from '@/lib/safe-outbound-url';
 import { getServiceClient } from '@/lib/supabase';
 
 function generateSecret(): string {
@@ -72,11 +73,9 @@ export async function POST(
         return jsonError('webhook_url is required', HTTP_STATUS.BAD_REQUEST);
       }
 
-      // Validate webhook URL
-      try {
-        new URL(body.webhook_url);
-      } catch {
-        return jsonError('Invalid webhook_url format', HTTP_STATUS.BAD_REQUEST);
+      const safeUrl = assertSafeOutboundHttpsUrl(body.webhook_url);
+      if (!safeUrl.ok) {
+        return jsonError(safeUrl.error, HTTP_STATUS.BAD_REQUEST);
       }
 
       const supabase = getServiceClient();
@@ -102,7 +101,7 @@ export async function POST(
         .insert({
           form_id: formId,
           tenant_slug: tenantSlug,
-          webhook_url: body.webhook_url,
+          webhook_url: safeUrl.href,
           secret,
           is_active: body.is_active !== false,
           failure_count: 0,
@@ -127,7 +126,7 @@ export async function POST(
           p_resource_type: 'form',
           p_metadata: {
             webhook_id: config.id,
-            webhook_url: body.webhook_url,
+            webhook_url: safeUrl.href,
           },
         });
       } catch (auditError) {

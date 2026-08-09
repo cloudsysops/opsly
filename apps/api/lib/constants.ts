@@ -18,6 +18,8 @@ export const HTTP_STATUS = {
   FORBIDDEN: 403,
   NOT_FOUND: 404,
   CONFLICT: 409,
+  /** Cuerpo demasiado grande (DoS / memory). */
+  PAYLOAD_TOO_LARGE: 413,
   /** Proveedor cloud aún no implementado (p. ej. Azure/GCP). */
   NOT_IMPLEMENTED: 501,
   UNPROCESSABLE: 422,
@@ -196,6 +198,22 @@ export const DEFENSE_API = {
 export const DEFENSE_ORCHESTRATOR_ENQUEUE = {
   FETCH_TIMEOUT_MS: 8_000,
   RESPONSE_DETAIL_MAX_CHARS: 500,
+} as const;
+
+/** Tope de bytes para cuerpos HTTP (JSON / webhooks). */
+export const REQUEST_BODY_LIMITS = {
+  /** Default para parseJsonBody en rutas API. */
+  JSON_DEFAULT_BYTES: 256 * 1024,
+  /** Stripe / firmas HMAC (payloads pequeños en la práctica). */
+  WEBHOOK_RAW_BYTES: 1024 * 1024,
+  /** Metadata JSON en leads / consent (keys + values). */
+  METADATA_MAX_KEYS: 20,
+  METADATA_KEY_MAX_LEN: 64,
+  METADATA_STRING_MAX_LEN: 2_000,
+  /** Form submit público. */
+  FORM_SUBMISSION_MAX_FIELDS: 100,
+  FORM_FIELD_KEY_MAX_LEN: 100,
+  FORM_FIELD_VALUE_MAX_LEN: 5_000,
 } as const;
 
 /** Límites Zod: defense audits + remediation. */

@@ -12,8 +12,11 @@ import {
   type TrustedFeedbackIdentity,
 } from '../portal-feedback-auth';
 import { requireAdminAccess } from '../auth';
-import { getServiceClient } from '../supabase';
+import { parseJsonBody } from '../api-response';
+import { extractIp } from '../audit';
 import { HTTP_STATUS } from '../constants';
+import { checkRateLimit } from '../rate-limiter';
+import { getServiceClient } from '../supabase';
 
 const MIN_USER_MESSAGES_FOR_ANALYSIS = 2;
 const MIN_MESSAGE_LENGTH_FOR_ANALYSIS = 100;
@@ -80,15 +83,14 @@ type DecisionOutput = {
 };
 
 async function readJsonBody(req: NextRequest): Promise<Record<string, unknown> | Response> {
-  try {
-    const body = await req.json();
-    if (body && typeof body === 'object') {
-      return body as Record<string, unknown>;
-    }
-    return {};
-  } catch {
+  const parsed = await parseJsonBody(req);
+  if (!parsed.ok) {
     return Response.json({ error: 'JSON inválido' }, { status: HTTP_STATUS.BAD_REQUEST });
   }
+  if (parsed.body && typeof parsed.body === 'object') {
+    return parsed.body as Record<string, unknown>;
+  }
+  return {};
 }
 
 function optionalStringField(b: Record<string, unknown>, key: string): string | undefined {
@@ -252,6 +254,14 @@ export async function handleFeedbackPost(req: NextRequest): Promise<Response> {
   const trusted = await resolveTrustedFeedbackIdentity(req);
   if (!trusted.ok) {
     return trusted.response;
+  }
+
+  const ip = extractIp(req);
+  const rateLimit = await checkRateLimit(
+    `feedback:${trusted.identity.user_email}:${ip ?? 'unknown'}`
+  );
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
   }
 
   const bodyOrErr = await readJsonBody(req);

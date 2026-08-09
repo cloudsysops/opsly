@@ -80,7 +80,7 @@ export const goHighLevelLeadWebhookSchema = z
       })
       .optional(),
   })
-  .passthrough();
+  .strict();
 
 export type GoHighLevelLeadWebhook = z.infer<typeof goHighLevelLeadWebhookSchema>;
 
