@@ -48,10 +48,7 @@ export async function POST(request: NextRequest): Promise<Response> {
   const secret = process.env.PESKIDS_INBOUND_WEBHOOK_SECRET?.trim();
   if (!secret) {
     await alertWebhookFailure('auth', 'PESKIDS_INBOUND_WEBHOOK_SECRET not configured');
-    return jsonError(
-      'webhook authentication not configured',
-      HTTP_STATUS.SERVICE_UNAVAILABLE
-    );
+    return jsonError('webhook authentication not configured', HTTP_STATUS.SERVICE_UNAVAILABLE);
   }
   const header = request.headers.get('x-webhook-secret')?.trim() ?? '';
   if (!header || !constantTimeEqual(header, secret)) {
@@ -80,9 +77,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   // Persist lead to Supabase with latency tracking
   const persistTimer = createLatencyTimer();
-  const result = await persistPeskidsLead(
-    buildPeskidsLeadPersistInputFromGoHighLevel(parsed.data)
-  );
+  const result = await persistPeskidsLead(buildPeskidsLeadPersistInputFromGoHighLevel(parsed.data));
 
   if (!result.ok) {
     await recordSubabaseError('peskids', 'persist');
@@ -115,7 +110,12 @@ export async function POST(request: NextRequest): Promise<Response> {
     } else {
       // Opportunity creation failed but lead was created; log and alert but don't fail response
       await recordGhlApiError('peskids', 0, 'createPipelineOpportunity');
-      await alertGhlFailure('createPipelineOpportunity', undefined, 'Opportunity creation returned null', parsed.data.lead_id);
+      await alertGhlFailure(
+        'createPipelineOpportunity',
+        undefined,
+        'Opportunity creation returned null',
+        parsed.data.lead_id
+      );
     }
   }
 
@@ -128,7 +128,11 @@ export async function POST(request: NextRequest): Promise<Response> {
           void n8nTimer.end('peskids', 'n8n.dispatch');
         } else {
           void recordN8nDispatchFailure('peskids', dispatchResult.detail);
-          void alertN8nFailure('dispatchPeskidsLeadAutomation', dispatchResult.detail, parsed.data.lead_id);
+          void alertN8nFailure(
+            'dispatchPeskidsLeadAutomation',
+            dispatchResult.detail,
+            parsed.data.lead_id
+          );
         }
       })
       .catch((err: unknown) => {

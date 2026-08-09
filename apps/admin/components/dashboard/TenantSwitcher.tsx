@@ -101,7 +101,8 @@ export function TenantSwitcher(): React.ReactElement {
               {selectedTenant ? selectedTenant.owner_email : '—'}
             </p>
             <p className="font-mono text-xs text-neutral-400">
-              {selectedTenant ? selectedTenant.plan : '—'} · {selectedTenant ? selectedTenant.status : '—'}
+              {selectedTenant ? selectedTenant.plan : '—'} ·{' '}
+              {selectedTenant ? selectedTenant.status : '—'}
             </p>
           </div>
         </div>
@@ -110,9 +111,7 @@ export function TenantSwitcher(): React.ReactElement {
           <div className="space-y-3">
             <div className="flex flex-wrap gap-2">
               <Button variant="primary" size="sm" asChild>
-                <Link href={`/tenants/${selectedTenant.slug}`}>
-                  Ficha en Opsly Admin
-                </Link>
+                <Link href={`/tenants/${selectedTenant.slug}`}>Ficha en Opsly Admin</Link>
               </Button>
               <Button variant="ghost" size="sm" asChild>
                 <a
