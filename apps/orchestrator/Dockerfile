@@ -21,6 +21,7 @@ RUN npm run build -w @intcloudsysops/types && \
     npm run build -w @intcloudsysops/llm-gateway && \
     npm run build -w @intcloudsysops/ml && \
     npm run build -w @intcloudsysops/external-agent-registry && \
+    npm run build -w @intcloudsysops/agent-task-core && \
     npm run build -w @intcloudsysops/git-branch-orchestrator && \
     npm run build -w @intcloudsysops/session-manager && \
     npm run build -w @intcloudsysops/runtime && \
@@ -47,6 +48,7 @@ COPY --from=builder /app/lib/prompt-guard ./lib/prompt-guard
 COPY --from=builder /app/lib/pattern-catalog ./lib/pattern-catalog
 COPY --from=builder /app/lib/sigma-harness ./lib/sigma-harness
 COPY --from=builder /app/lib/external-agent-registry ./lib/external-agent-registry
+COPY --from=builder /app/lib/agent-task-core ./lib/agent-task-core
 COPY --from=builder /app/lib/session-manager/dist ./lib/session-manager/dist
 COPY --from=builder /app/lib/session-manager/package.json ./lib/session-manager/package.json
 COPY --from=builder /app/lib/git-branch-orchestrator/dist ./lib/git-branch-orchestrator/dist
