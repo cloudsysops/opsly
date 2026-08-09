@@ -1,57 +1,105 @@
 import Link from 'next/link';
 import { Check } from 'lucide-react';
 import type { ReactElement } from 'react';
-import { pricingTiers } from '@/lib/site';
+import {
+  buildDiscoveryMailto,
+  commercialCatalog,
+  formatOpsPrice,
+  formatSetupPrice,
+  modulesForPackage,
+} from '@/lib/commercial-catalog';
+import { siteConfig } from '@/lib/site';
 
 export function PricingCards(): ReactElement {
+  const packages = commercialCatalog.packages.filter((pkg) => pkg.id !== 'managed-ops');
+  const managed = commercialCatalog.packages.find((pkg) => pkg.id === 'managed-ops');
+
   return (
     <section className="icso-section bg-icso-surface/30" id="pricing">
       <div className="icso-container">
-        <p className="icso-eyebrow">Pricing</p>
-        <h2 className="mt-3 text-3xl font-bold sm:text-4xl">Plans that scale with you</h2>
+        <p className="icso-eyebrow">Packages</p>
+        <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
+          Modular packages, not custom chaos
+        </h2>
         <p className="mt-4 max-w-2xl text-icso-muted">
-          Placeholder pricing for positioning — final packages confirmed on discovery call.
+          Same Opsly modules for every client — compose by package, activate by vertical.
+          Ranges are USD guidance for LATAM; final SOW on discovery.
         </p>
         <ul className="mt-12 grid gap-8 lg:grid-cols-3">
-          {pricingTiers.map((tier) => (
-            <li
-              key={tier.name}
-              className={`icso-glass-card flex flex-col p-8 ${
-                tier.highlighted
-                  ? 'border-icso-primary shadow-glow ring-1 ring-icso-primary/50'
-                  : ''
-              }`}
-            >
-              {tier.highlighted ? (
-                <span className="mb-4 inline-flex w-fit rounded-full bg-icso-primary/20 px-3 py-1 text-xs font-semibold text-icso-cyan">
-                  Most popular
-                </span>
-              ) : null}
-              <h3 className="text-xl font-bold">{tier.name}</h3>
-              <p className="mt-2 text-sm text-icso-muted">{tier.description}</p>
-              <p className="mt-6 text-4xl font-bold">
-                {tier.price}
-                <span className="text-base font-normal text-icso-muted">{tier.period}</span>
-              </p>
-              <ul className="mt-8 flex-1 space-y-3">
-                {tier.features.map((feature) => (
-                  <li key={feature} className="flex gap-2 text-sm text-icso-muted">
-                    <Check className="h-5 w-5 shrink-0 text-icso-success" aria-hidden />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/contact#discovery"
-                className={`mt-8 text-center ${
-                  tier.highlighted ? 'icso-btn-primary' : 'icso-btn-secondary'
+          {packages.map((tier) => {
+            const mods = modulesForPackage(tier);
+            return (
+              <li
+                key={tier.id}
+                className={`icso-glass-card flex flex-col p-8 ${
+                  tier.highlighted
+                    ? 'border-icso-primary shadow-glow ring-1 ring-icso-primary/50'
+                    : ''
                 }`}
               >
-                Get started
-              </Link>
-            </li>
-          ))}
+                {tier.highlighted ? (
+                  <span className="mb-4 inline-flex w-fit rounded-full bg-icso-primary/20 px-3 py-1 text-xs font-semibold text-icso-cyan">
+                    Recommended
+                  </span>
+                ) : null}
+                <h3 className="text-xl font-bold">{tier.name}</h3>
+                <p className="mt-2 text-sm text-icso-muted">{tier.ideal_for}</p>
+                <p className="mt-6 text-3xl font-bold">
+                  {formatSetupPrice(tier)}
+                  <span className="block text-base font-normal text-icso-muted">
+                    setup · ops {formatOpsPrice(tier)}
+                  </span>
+                </p>
+                <ul className="mt-8 flex-1 space-y-3">
+                  {tier.includes.slice(0, 5).map((feature) => (
+                    <li key={feature} className="flex gap-2 text-sm text-icso-muted">
+                      <Check className="h-5 w-5 shrink-0 text-icso-success" aria-hidden />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                {mods.length > 0 ? (
+                  <p className="mt-4 text-xs text-icso-muted">
+                    Modules:{' '}
+                    {mods.map((m) => m.label).join(' · ')}
+                  </p>
+                ) : null}
+                <div className="mt-8 space-y-3">
+                  <Link
+                    href={`/contact?package=${encodeURIComponent(tier.id)}#discovery`}
+                    className={`block text-center ${
+                      tier.highlighted ? 'icso-btn-primary' : 'icso-btn-secondary'
+                    }`}
+                  >
+                    Talk about {tier.name}
+                  </Link>
+                  <a
+                    href={buildDiscoveryMailto({
+                      to: siteConfig.contactEmail,
+                      packageId: tier.id,
+                    })}
+                    className="block text-center text-xs font-medium text-icso-cyan hover:underline"
+                  >
+                    Email ready brief
+                  </a>
+                </div>
+              </li>
+            );
+          })}
         </ul>
+        {managed ? (
+          <p className="mt-10 text-center text-sm text-icso-muted">
+            Need hands-off ops?{' '}
+            <Link
+              href={`/contact?package=${encodeURIComponent(managed.id)}#discovery`}
+              className="font-medium text-icso-cyan hover:underline"
+            >
+              {managed.name}
+            </Link>{' '}
+            — {formatOpsPrice(managed)}.
+          </p>
+        ) : null}
+        <p className="mt-4 text-center text-xs text-icso-muted">{commercialCatalog.disclaimer}</p>
       </div>
     </section>
   );

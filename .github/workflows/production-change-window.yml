@@ -1,0 +1,77 @@
+# Gate merges/deploys that can affect production (Peskids live).
+# See docs/runbooks/PRODUCTION-CHANGE-WINDOW.md
+
+name: Production change window
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  production-change-window:
+    name: production-change-window
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve changed paths vs base
+        id: paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+            HEAD="${{ github.event.pull_request.head.sha }}"
+            mapfile -t FILES < <(git diff --name-only "$BASE...$HEAD" || true)
+          else
+            FILES=()
+          fi
+          {
+            echo "list<<EOF"
+            printf '%s\n' "${FILES[@]:-}"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+          echo "count=${#FILES[@]}" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve override labels
+        id: labels
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          labels='${{ toJson(github.event.pull_request.labels.*.name) }}'
+          echo "raw=$labels"
+          if echo "$labels" | grep -qi '"hotfix-prod"'; then
+            echo "hotfix=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "hotfix=false" >> "$GITHUB_OUTPUT"
+          fi
+          if echo "$labels" | grep -qi '"safe-daytime"'; then
+            echo "safe=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "safe=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Enforce night window for prod-impact PRs
+        env:
+          HOTFIX_PROD: ${{ steps.labels.outputs.hotfix == 'true' && '1' || '0' }}
+          SAFE_DAYTIME: ${{ steps.labels.outputs.safe == 'true' && '1' || '0' }}
+          CHANGED_PATHS: ${{ steps.paths.outputs.list }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t PATHS < <(printf '%s\n' "$CHANGED_PATHS" | grep -v '^[[:space:]]*$' || true)
+          if [ "${#PATHS[@]}" -eq 0 ]; then
+            echo "No file list (dispatch or empty diff) — clock notice only"
+            node scripts/ci/check-production-change-window.mjs --check-now || \
+              echo "::notice::Outside night window; prod-impact merges need label or night."
+            exit 0
+          fi
+          node scripts/ci/check-production-change-window.mjs --mode pr --paths "${PATHS[@]}"

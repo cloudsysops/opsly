@@ -29,7 +29,7 @@ export default function AvisoParentalPage(): React.ReactElement {
           <br />
           Sede: Llanogrande, Rionegro, Antioquia, Colombia
           <br />
-          Contacto: <a href="mailto:privacidad@peskids.co">privacidad@peskids.co</a>
+          Contacto: <a href="mailto:peskidsnatacion@gmail.com">peskidsnatacion@gmail.com</a>
         </p>
       </section>
 
@@ -119,7 +119,7 @@ export default function AvisoParentalPage(): React.ReactElement {
         </ul>
         <p>
           Para ejercer estos derechos: <a href="/dsar">formulario de derechos del titular</a> o
-          escribe a <a href="mailto:privacidad@peskids.co">privacidad@peskids.co</a>. Respuesta en
+          escribe a <a href="mailto:peskidsnatacion@gmail.com">peskidsnatacion@gmail.com</a>. Respuesta en
           máximo <strong>15 días hábiles</strong>.
         </p>
       </section>

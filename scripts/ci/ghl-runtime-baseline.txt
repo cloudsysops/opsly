@@ -16,7 +16,6 @@
 11 apps/icso/lib/gohighlevel-lead-sync.ts
 1 apps/icso/lib/icso-crm-sync.ts
 4 apps/icso/lib/icso-discovery-link.ts
-3 apps/icso/lib/site.ts
 4 apps/intcloudsysops/app/api/health/ghl/route.ts
 4 apps/intcloudsysops/app/api/webhooks/gohighlevel/route.ts
 3 apps/intcloudsysops/lib/agents/lead-followup.service.ts
@@ -41,16 +40,16 @@
 4 apps/peskids/lib/agents/lead-followup.service.ts
 8 apps/peskids/lib/agents/pipeline-manager.service.ts
 5 apps/peskids/lib/agents/trial-scheduler.service.ts
-8 apps/peskids/lib/analytics/pipeline-analytics.service.ts
-10 apps/peskids/lib/gohighlevel-lead-sync.ts
-3 apps/peskids/lib/gohighlevel-thread-client.ts
+7 apps/peskids/lib/analytics/pipeline-analytics.service.ts
+8 apps/peskids/lib/gohighlevel-lead-sync.ts
+2 apps/peskids/lib/gohighlevel-thread-client.ts
 3 apps/peskids/lib/integrations/peskids-provider-adapters.ts
 2 apps/peskids/lib/integrations/peskids-provider-config.ts
 2 apps/peskids/lib/monitoring/ghl-health.service.ts
 1 apps/peskids/lib/peskids-canonical-api.ts
 1 apps/peskids/lib/peskids-crm-sync.ts
 2 apps/peskids/lib/services/gohighlevel/index.ts
-10 apps/peskids/lib/services/gohighlevel/pipeline.service.ts
+9 apps/peskids/lib/services/gohighlevel/pipeline.service.ts
 2 apps/peskids/lib/services/gohighlevel/referral.service.ts
 6 apps/peskids/lib/services/gohighlevel/sync.service.ts
 2 apps/peskids/lib/services/gohighlevel/webhook-handler.ts
@@ -66,6 +65,7 @@
 12 lib/services/gohighlevel/service.ts
 1 lib/services/gohighlevel/types.ts
 5 lib/services/gohighlevel/workflows/ai-lead-followup.ts
+1 lib/services/index.ts
 12 lib/services/package.json
 7 lib/services/tsconfig.json
 4 lib/services/twenty/env-config.ts

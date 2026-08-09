@@ -1,0 +1,13 @@
+{
+  "name": "@intcloudsysops/capacity-alert",
+  "version": "1.0.0",
+  "description": "Shared capacity / VPS memory alert copy for Peskids, Opsly admin, email, Discord, and Cursor agents",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "test": "echo 'No tests yet'",
+    "type-check": "echo 'capacity-alert type-checked via consumers'"
+  },
+  "keywords": ["capacity", "alert", "opsly", "peskids"]
+}

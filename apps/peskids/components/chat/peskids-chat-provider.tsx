@@ -11,8 +11,14 @@ type PeskidsChatContextValue = {
   input: string;
   setInput: (value: string) => void;
   sending: boolean;
-  sendMessage: (textOverride?: string) => Promise<void>;
+  sendMessage: (textOverride?: string, displayText?: string) => Promise<void>;
   listRef: RefObject<HTMLDivElement | null>;
+  handoff: {
+    whatsappUrl: string | null;
+    whatsappLabel: string | null;
+    leadSaved: boolean;
+    classModality: 'llanogrande' | 'domicilio' | null;
+  } | null;
 };
 
 const PeskidsChatContext = createContext<PeskidsChatContextValue | null>(null);

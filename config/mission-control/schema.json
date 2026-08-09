@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "opsly-mission-control-profile",
+  "title": "Mission Control Profile",
+  "type": "object",
+  "required": ["id", "mode", "tenantSlug", "brand", "basePath", "nav", "features", "dataBoundaries"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "mode": { "type": "string", "enum": ["platform", "agency", "tenant"] },
+    "tenantSlug": { "type": "string", "minLength": 1 },
+    "basePath": { "type": "string", "minLength": 1 },
+    "brand": { "type": "object" },
+    "nav": { "type": "array" },
+    "features": { "type": "object" },
+    "publicPanelUrl": { "type": ["string", "null"] },
+    "docsPath": { "type": ["string", "null"] },
+    "dataBoundaries": { "type": "array", "items": { "type": "string" } }
+  }
+}

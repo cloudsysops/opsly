@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { GhlReferralService } from '../../services/gohighlevel/referral.service';
-import type { GoHighLevelClient, Contact } from '@intcloudsysops/services/gohighlevel';
+import type { GoHighLevelClient, Contact } from '@intcloudsysops/services';
 
 function createMockClient(): GoHighLevelClient {
   return {

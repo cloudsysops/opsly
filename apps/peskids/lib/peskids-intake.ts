@@ -291,8 +291,44 @@ function extractPreferredContact(
   return undefined;
 }
 
+function extractApplicantRole(text: string): PeskidsIntakeProfile['applicantRole'] | undefined {
+  const t = normalizeText(text).toLowerCase();
+  if (
+    t === 'family' ||
+    t === 'familia' ||
+    t === 'familia / matrícula' ||
+    t === 'familia / matricula'
+  ) {
+    return 'family';
+  }
+  if (
+    t === 'teacher_applicant' ||
+    t === 'profesor' ||
+    t === 'profesora' ||
+    t.includes('quiero ser profesor')
+  ) {
+    return 'teacher_applicant';
+  }
+  if (
+    t === 'company' ||
+    t === 'empresa' ||
+    t.includes('empresa o institución') ||
+    t.includes('empresa o institucion')
+  ) {
+    return 'company';
+  }
+  // Solo frases cortas de chip / intención clara (evita contaminar el nombre).
+  if (t.length <= 40) {
+    if (/^(familia|matr[ií]cula)\b/.test(t)) return 'family';
+    if (/\b(profesor|profesora|instructor|docente)\b/.test(t)) return 'teacher_applicant';
+    if (/\b(empresa|instituci[oó]n)\b/.test(t)) return 'company';
+  }
+  return undefined;
+}
+
 function profileFromText(text: string): Partial<PeskidsIntakeProfile> {
   return {
+    applicantRole: extractApplicantRole(text),
     parentName: extractParentName(text),
     email: extractEmail(text),
     phone: extractPhone(text),
@@ -315,6 +351,7 @@ function mergeProfile(
   update: Partial<PeskidsIntakeProfile>
 ): PeskidsIntakeProfile {
   return {
+    applicantRole: base.applicantRole ?? update.applicantRole,
     parentName: base.parentName ?? update.parentName,
     email: base.email ?? update.email,
     phone: base.phone ?? update.phone,
@@ -327,10 +364,12 @@ function mergeProfile(
     referralSource: base.referralSource ?? update.referralSource,
     childName: base.childName ?? update.childName,
     childAge: base.childAge ?? update.childAge,
+    companyName: base.companyName ?? update.companyName,
     issueType: base.issueType ?? update.issueType,
     issueDetails: base.issueDetails ?? update.issueDetails,
     urgency: base.urgency ?? update.urgency,
     preferredContact: base.preferredContact ?? update.preferredContact,
+    consentTreatment: base.consentTreatment ?? update.consentTreatment,
   };
 }
 
@@ -364,28 +403,53 @@ function requiredFieldOrder(
     return order;
   }
 
+  // Profesor / empresa: flujo corto → WhatsApp humano.
+  if (profile.applicantRole === 'teacher_applicant') {
+    return ['applicantRole', 'parentName', 'phone', 'email', 'consentTreatment'];
+  }
+  if (profile.applicantRole === 'company') {
+    return ['applicantRole', 'parentName', 'companyName', 'phone', 'email', 'consentTreatment'];
+  }
+
   const order: Array<keyof PeskidsIntakeProfile> = [
+    'applicantRole',
     'parentName',
-    'referralSource',
-    'specialCondition',
-    'teacherPreference',
-    'email',
     'classModality',
     'neighborhood',
     'gradeInterested',
+    'phone',
+    'email',
+    'referralSource',
+    'specialCondition',
+    'teacherPreference',
+    'consentTreatment',
   ];
   if (profile.specialCondition === 'yes' && !profile.specialConditionDetails) {
-    order.splice(3, 0, 'specialConditionDetails');
+    const idx = order.indexOf('specialCondition') + 1;
+    order.splice(idx, 0, 'specialConditionDetails');
   }
-  if (!profile.phone) order.push('phone');
+  // Sede Llanogrande: no pedir barrio aparte — se fija automáticamente.
+  if (profile.classModality === 'llanogrande') {
+    return order.filter((field) => field !== 'neighborhood');
+  }
   return order;
+}
+
+function fieldIsCaptured(
+  profile: PeskidsIntakeProfile,
+  field: keyof PeskidsIntakeProfile
+): boolean {
+  if (field === 'consentTreatment') return profile.consentTreatment === 'yes';
+  return Boolean(profile[field]);
 }
 
 function firstMissingField(
   profile: PeskidsIntakeProfile,
   mode: PeskidsChatMode
 ): keyof PeskidsIntakeProfile | null {
-  return requiredFieldOrder(profile, mode).find((field) => !profile[field]) ?? null;
+  return (
+    requiredFieldOrder(profile, mode).find((field) => !fieldIsCaptured(profile, field)) ?? null
+  );
 }
 
 /** Asigna la respuesta directa del usuario al campo que acabamos de preguntar. */
@@ -397,6 +461,14 @@ function applyDirectAnswer(
   if (!trimmed || isGreetingOnly(trimmed)) return {};
 
   switch (field) {
+    case 'applicantRole': {
+      const role = extractApplicantRole(trimmed);
+      return role ? { applicantRole: role } : {};
+    }
+    case 'companyName': {
+      if (trimmed.length < 2 || trimmed.length > 120) return {};
+      return { companyName: normalizeName(trimmed) };
+    }
     case 'parentName': {
       if (extractEmail(trimmed) || extractPhone(trimmed)) return {};
       const name = extractParentName(trimmed) ?? normalizeName(trimmed);
@@ -463,6 +535,15 @@ function applyDirectAnswer(
       if (preferredContact) return { preferredContact };
       return {};
     }
+    case 'consentTreatment': {
+      if (/\b(s[ií]|acepto|autorizo|de acuerdo|ok)\b/i.test(trimmed)) {
+        return { consentTreatment: 'yes' };
+      }
+      if (/\b(no|niego|rechazo)\b/i.test(trimmed)) {
+        return { consentTreatment: 'no' };
+      }
+      return {};
+    }
     default:
       return {};
   }
@@ -486,6 +567,8 @@ export async function buildPeskidsIntakeTurn(params: {
   if (params.source === 'whatsapp') {
     const fromWa = phoneFromSenderContact(params.senderContact);
     if (fromWa) profile.phone = fromWa;
+    // Canal WhatsApp: el contacto ya escribió al número oficial (consentimiento de canal).
+    profile.consentTreatment = 'yes';
   }
 
   const priorInbound = inboundHistory.filter(
@@ -493,7 +576,15 @@ export async function buildPeskidsIntakeTurn(params: {
   );
 
   for (const message of priorInbound) {
+    const fieldAnsweredInTurn = firstMissingField(profile, mode);
     profile = mergeProfile(profile, profileFromText(message.message_text));
+    // Las respuestas de texto suelen ser cortas (por ejemplo, "Valeria") y
+    // no siempre contienen una frase que permita extraer el campo por regex.
+    // Reproducimos también la pregunta activa de cada turno para no perder
+    // esos valores al reconstruir el perfil desde el historial.
+    if (fieldAnsweredInTurn && !fieldIsCaptured(profile, fieldAnsweredInTurn)) {
+      profile = mergeProfile(profile, applyDirectAnswer(fieldAnsweredInTurn, message.message_text));
+    }
   }
 
   if (!profile.parentName && params.senderName && !isGenericName(params.senderName)) {
@@ -502,6 +593,10 @@ export async function buildPeskidsIntakeTurn(params: {
 
   if (profile.specialCondition !== 'yes') {
     profile.specialConditionDetails = undefined;
+  }
+
+  if (profile.classModality === 'llanogrande' && !profile.neighborhood) {
+    profile.neighborhood = 'Llanogrande';
   }
 
   const missingBeforeLatest = firstMissingField(profile, mode);
@@ -514,8 +609,21 @@ export async function buildPeskidsIntakeTurn(params: {
   }
 
   const requiredOrder = requiredFieldOrder(profile, mode);
-  const missingField = requiredOrder.find((field) => !profile[field]) ?? null;
-  const capturedFields = requiredOrder.filter((field) => Boolean(profile[field])).map(String);
+  if (profile.classModality === 'llanogrande' && !profile.neighborhood) {
+    profile.neighborhood = 'Llanogrande';
+  }
+  if (
+    (profile.applicantRole === 'teacher_applicant' || profile.applicantRole === 'company') &&
+    !profile.classModality
+  ) {
+    profile.classModality = 'llanogrande';
+    profile.neighborhood = profile.neighborhood ?? 'Llanogrande';
+    profile.gradeInterested = profile.gradeInterested ?? 'Other';
+  }
+  const missingField = requiredOrder.find((field) => !fieldIsCaptured(profile, field)) ?? null;
+  const capturedFields = requiredOrder
+    .filter((field) => fieldIsCaptured(profile, field))
+    .map(String);
   const stage = missingField ? 'collecting' : 'handoff';
   const progress = formatProgress(capturedFields.length, requiredOrder.length);
 
@@ -531,7 +639,9 @@ export async function buildPeskidsIntakeTurn(params: {
       '¿Me compartes un poco más de información para completar tu solicitud?';
     reply = showWelcome
       ? `${mode === 'support' ? peskidsSupportWelcome(params.source) : peskidsIntakeWelcome(params.source)}\n\n${question}`
-      : question;
+      : profile.consentTreatment === 'no' && missingField === 'consentTreatment'
+        ? 'Entiendo. Sin tu autorización no podemos guardar la solicitud en la plataforma. Si quieres continuar, responde «Sí, autorizo».'
+        : question;
   } else {
     reply = mode === 'support' ? supportHandoffReplyToUser(profile) : handoffReplyToUser(profile);
   }

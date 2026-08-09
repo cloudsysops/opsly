@@ -1,0 +1,50 @@
+{
+  "id": "{{tenant_slug}}",
+  "mode": "tenant",
+  "tenantSlug": "{{tenant_slug}}",
+  "brand": {
+    "productName": "{{Product}} Mission Control",
+    "shortName": "{{Product}} MC",
+    "colors": {
+      "background": "#0A0A0A",
+      "surface": "#111827",
+      "primary": "#2563EB",
+      "accent": "#8B5CF6",
+      "success": "#22C55E",
+      "warning": "#F59E0B",
+      "critical": "#EF4444",
+      "text": "#F3F4F6",
+      "muted": "#9CA3AF"
+    }
+  },
+  "basePath": "/admin",
+  "nav": [
+    {
+      "title": "Negocio",
+      "items": [
+        { "href": "/admin", "label": "Inicio" },
+        { "href": "/admin/pipeline", "label": "Pipeline" },
+        { "href": "/admin/automations", "label": "Automatizaciones" }
+      ]
+    },
+    {
+      "title": "Operaciones",
+      "items": [
+        { "href": "/admin/integrations", "label": "Integraciones" },
+        { "href": "/admin/health", "label": "Health" },
+        { "href": "/admin/support", "label": "Soporte" }
+      ]
+    }
+  ],
+  "features": {
+    "pipeline": true,
+    "catalog": false,
+    "modules": false,
+    "integrations": true,
+    "usage": true,
+    "command": false
+  },
+  "publicPanelUrl": null,
+  "docsPath": "docs/runbooks/MISSION-CONTROL-TENANT-ROLLOUT.md",
+  "dataBoundaries": ["platform-admin", "other-tenants", "opsly-moon"]
+}

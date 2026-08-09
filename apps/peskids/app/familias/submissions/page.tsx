@@ -204,8 +204,8 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-pk-bg p-4">
-        <div className="max-w-md rounded-2xl border border-red-200 bg-red-50 p-6 text-center shadow-card">
-          <p className="text-sm text-red-800">{error}</p>
+        <div className="max-w-md rounded-2xl border border-red-200/50 bg-red-50/20 p-6 text-center shadow-card">
+          <p className="text-sm text-red-800/80">{error}</p>
           <Button className="mt-4" onClick={() => void fetchSubmissions()}>
             Reintentar
           </Button>

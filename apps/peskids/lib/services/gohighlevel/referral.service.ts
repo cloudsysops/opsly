@@ -1,5 +1,5 @@
 /** @deprecated LEGACY (GHL): referral code sync to GHL contacts — migrate to Twenty custom fields. */
-import type { GoHighLevelClient } from '@intcloudsysops/services/gohighlevel';
+import type { GoHighLevelClient } from '@intcloudsysops/services';
 import { normalizeReferralCode } from '../../peskids-referral-links';
 
 export class GhlReferralService {

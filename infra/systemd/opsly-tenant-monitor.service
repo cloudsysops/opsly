@@ -1,0 +1,15 @@
+[Unit]
+Description=Opsly tenant monitor (Peskids + configured tenants)
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/opsly
+Environment=OPSLY_ROOT=/opt/opsly
+EnvironmentFile=-/opt/opsly/.env
+ExecStart=/opt/opsly/scripts/monitor-tenants.sh --local-host
+Nice=10
+
+[Install]
+WantedBy=multi-user.target

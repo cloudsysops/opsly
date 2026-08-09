@@ -1,18 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
 import { WhatsAppLink } from '@/components/contact/whatsapp-link';
 import { WhatsAppIcon } from '@/components/contact/whatsapp-icon';
-import { buildWhatsAppUrl, PESKIDS_CONTACT } from '@/lib/contact-channels';
+import { buildWhatsAppUrl, getWhatsAppContact, PESKIDS_CONTACT } from '@/lib/contact-channels';
 import {
-  buildPostLeadWhatsAppPrefill,
+  buildPostLeadWhatsAppPrefillFromSession,
   readPeskidsLeadSession,
+  type PeskidsLeadSession,
 } from '@/lib/peskids-lead-session';
 import { navigateToPeskidsReservationForm } from '@/lib/peskids-reservation-form-nav';
 import { PESKIDS_WHATSAPP_CTA_LABEL } from '@/lib/peskids-landing-copy';
 import { peskidsColorTokens } from '@/lib/tokens';
 import { cn } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
 
 type GatedWhatsAppLinkVariant = 'button' | 'hero' | 'pill' | 'ghost' | 'onDark';
 
@@ -71,9 +72,16 @@ function gatedWhatsAppStyle(variant: GatedWhatsAppLinkVariant): React.CSSPropert
   return { color: whatsappDark };
 }
 
+function whatsappCtaLabel(session: PeskidsLeadSession, fallback: string): string {
+  if (fallback !== 'WhatsApp') return fallback;
+  if (session.class_modality === 'domicilio') return 'WhatsApp Domicilios';
+  if (session.class_modality === 'llanogrande') return 'WhatsApp Llanogrande';
+  return PESKIDS_WHATSAPP_CTA_LABEL;
+}
+
 /**
- * WhatsApp CTA visible en landing pública: abre wa.me solo si el lead ya completó el formulario.
- * Si no, lleva al formulario de captura.
+ * WhatsApp CTA en landing: solo abre wa.me si el lead ya completó el formulario.
+ * Si no, lleva al formulario de solicitud (datos a plataforma primero).
  */
 export function GatedWhatsAppLink({
   variant = 'button',
@@ -82,21 +90,21 @@ export function GatedWhatsAppLink({
   showIcon = true,
 }: GatedWhatsAppLinkProps): React.ReactElement {
   const pathname = usePathname();
-  const [leadName, setLeadName] = useState<string | null>(null);
+  const [session, setSession] = useState<PeskidsLeadSession | null>(null);
 
   useEffect(() => {
-    const session = readPeskidsLeadSession();
-    setLeadName(session?.name ?? null);
+    setSession(readPeskidsLeadSession());
   }, []);
 
-  if (leadName) {
+  if (session?.name) {
     return (
       <WhatsAppLink
         variant={variant}
         className={className}
-        label={label === 'WhatsApp' ? PESKIDS_WHATSAPP_CTA_LABEL : label}
+        label={whatsappCtaLabel(session, label)}
         showIcon={showIcon}
-        prefill={buildPostLeadWhatsAppPrefill(leadName)}
+        modality={session.class_modality}
+        prefill={buildPostLeadWhatsAppPrefillFromSession(session)}
       />
     );
   }
@@ -111,8 +119,8 @@ export function GatedWhatsAppLink({
       className={cn(base, className)}
       style={style}
       onClick={(): void => navigateToPeskidsReservationForm(pathname)}
-      aria-label={`Completa el formulario antes de escribir por WhatsApp al ${PESKIDS_CONTACT.whatsapp.display}`}
-      title="Primero completa el formulario de matrícula"
+      aria-label={`Completa el formulario de solicitud antes de WhatsApp (${PESKIDS_CONTACT.whatsapp.display})`}
+      title="Primero completa el formulario de solicitud"
     >
       {showIcon ? <WhatsAppIcon className={cn('shrink-0', iconSize)} /> : null}
       <span>{label}</span>
@@ -120,13 +128,23 @@ export function GatedWhatsAppLink({
   );
 }
 
-/** Opens WhatsApp when lead session exists; otherwise scrolls to the reservation form. */
+/** Opens WhatsApp when lead session exists; otherwise scrolls/navigates to the classic form. */
 export function openGatedWhatsAppOrForm(pathname: string | null): void {
   const session = readPeskidsLeadSession();
   if (session?.name) {
-    const url = buildWhatsAppUrl({ prefill: buildPostLeadWhatsAppPrefill(session.name) });
+    const url = buildWhatsAppUrl({
+      modality: session.class_modality,
+      prefill: buildPostLeadWhatsAppPrefillFromSession(session),
+    });
     window.open(url, '_blank', 'noopener,noreferrer');
     return;
   }
   navigateToPeskidsReservationForm(pathname);
+}
+
+export function resolveGatedWhatsAppDisplay(session: PeskidsLeadSession | null): string {
+  if (!session?.class_modality) return PESKIDS_CONTACT.whatsapp.display;
+  return getWhatsAppContact(
+    session.class_modality === 'domicilio' ? 'domicilio' : 'llanogrande'
+  ).display;
 }

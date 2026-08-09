@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { Instagram } from 'lucide-react'
 import { PeskidsLockup } from '@/components/brand/peskids-logo'
-import { GatedWhatsAppLink } from '@/components/marketing/gated-whatsapp-link'
 import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
 
 interface SiteHeaderProps {
@@ -16,7 +15,7 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
     <header className="sticky top-0 z-40 border-b border-pk-border/90 bg-pk-bg/90 backdrop-blur-md">
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-8 lg:px-14">
         <Link href="/" className="transition-opacity hover:opacity-90">
-          <PeskidsLockup height={40} />
+          <PeskidsLockup height={56} />
         </Link>
         {variant === 'marketing' ? (
           <div className="flex items-center gap-2 sm:gap-3">
@@ -28,11 +27,6 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
                 Acceso familias
               </Link>
             </nav>
-            <GatedWhatsAppLink
-              variant="pill"
-              label="WhatsApp"
-              className="hidden h-10 border-white/20 bg-white/10 text-white hover:border-white/30 hover:bg-white/15 sm:inline-flex"
-            />
             <Link
               href={PESKIDS_INSTAGRAM.profileUrl}
               target="_blank"

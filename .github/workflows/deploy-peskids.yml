@@ -5,10 +5,13 @@
 # Secrets (repository or production environment):
 #   VPS_USER, VPS_SSH_KEY, VPS_HOST or VPS_SSH_HOST
 #   TAILSCALE_AUTHKEY (recommended for SSH via tailnet)
+#   CF_DNS_API_TOKEN (post-deploy Cloudflare purge for www.peskids.com)
 #   NEXT_PUBLIC_PESKIDS_WHATSAPP_E164, NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY,
 #   NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL (baked at build; sync from Doppler prd)
 #
 # Manual: Actions → Deploy Peskids → Run workflow
+# Night window: America/Bogota 22:00–06:00 (docs/runbooks/PRODUCTION-CHANGE-WINDOW.md)
+# Post-deploy: CDN purge — docs/runbooks/PESKIDS-CDN-CACHE.md
 
 name: Deploy Peskids
 
@@ -18,6 +21,12 @@ on:
     types: [completed]
     branches: [main]
   workflow_dispatch:
+    inputs:
+      force_daytime:
+        description: 'Emergencia — desplegar fuera de ventana nocturna America/Bogota 22:00–06:00'
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
   group: deploy-peskids-${{ github.ref }}
@@ -33,6 +42,10 @@ jobs:
     outputs:
       sha: ${{ steps.sha.outputs.sha }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
       - id: sha
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
@@ -40,6 +53,13 @@ jobs:
           else
             echo "sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Night window (Peskids live — no daytime deploys)
+        env:
+          FORCE_DAYTIME: ${{ github.event_name == 'workflow_dispatch' && inputs.force_daytime && '1' || '0' }}
+        run: |
+          set -euo pipefail
+          node scripts/ci/check-production-change-window.mjs --mode deploy
 
   build-and-push:
     needs: gate
@@ -66,6 +86,10 @@ jobs:
           DISPLAY: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY }}
           PREFILL: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL }}
           CONTACT_EMAIL: ${{ secrets.NEXT_PUBLIC_PESKIDS_CONTACT_EMAIL }}
+          LLANO_E164: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_E164 }}
+          LLANO_DISPLAY: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_DISPLAY }}
+          DOM_E164: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_E164 }}
+          DOM_DISPLAY: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_DISPLAY }}
         run: |
           set -euo pipefail
           if [ -z "${E164:-}" ]; then
@@ -77,8 +101,16 @@ jobs:
           {
             echo "e164=${e164}"
             echo "display=${DISPLAY:-+57 300 000 0000}"
-            echo "prefill=${PREFILL:-Hola Peskids 👋 Quiero reservar una clase de prueba gratis.}"
+            echo "prefill=${PREFILL:-Hola Peskids 👋 Quiero info de matrícula.}"
             echo "contact_email=${CONTACT_EMAIL:-peskidsnatacion@gmail.com}"
+            # Never collapse domicilio → sede when GH secrets are missing.
+            echo "llano_e164=${LLANO_E164:-${e164}}"
+            echo "llano_display=${LLANO_DISPLAY:-+57 305 470 2600}"
+            echo "dom_e164=${DOM_E164:-573054790273}"
+            echo "dom_display=${DOM_DISPLAY:-+57 305 479 0273}"
+            if [ -z "${DOM_E164:-}" ]; then
+              echo "::warning::NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_E164 missing; using catalog domicilio default (sync from Doppler prd)"
+            fi
           } >> "$GITHUB_OUTPUT"
 
       - name: Build and push Peskids image
@@ -98,6 +130,10 @@ jobs:
             NEXT_PUBLIC_PESKIDS_WHATSAPP_E164=${{ steps.wa.outputs.e164 }}
             NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY=${{ steps.wa.outputs.display }}
             NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL=${{ steps.wa.outputs.prefill }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_E164=${{ steps.wa.outputs.llano_e164 }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_DISPLAY=${{ steps.wa.outputs.llano_display }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_E164=${{ steps.wa.outputs.dom_e164 }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_DISPLAY=${{ steps.wa.outputs.dom_display }}
             PESKIDS_GIT_SHA=${{ needs.gate.outputs.sha }}
             PESKIDS_IMAGE_TAG=ghcr.io/cloudsysops/peskids:${{ needs.gate.outputs.sha }}
 
@@ -140,13 +176,10 @@ jobs:
 
       - name: Connect Tailscale for SSH
         if: env.TAILSCALE_AUTHKEY != ''
-        uses: tailscale/github-action@v2
+        uses: ./.github/actions/tailscale-connect
         with:
           authkey: ${{ env.TAILSCALE_AUTHKEY }}
-          version: 1.94.2
-          # Tailscale's .sha256 endpoint currently returns the bare hash.
-          # The v2 action expects a checksum value and appends the local filename.
-          sha256sum: c6f99a5d774c7783b56902188d69e9756fc3dddfb08ac6be4cb2585f3fecdc32
+          ping_host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST || '100.120.151.91' }}
 
       - name: Login GHCR on VPS and deploy Peskids
         uses: appleboy/ssh-action@v1.0.3
@@ -198,6 +231,21 @@ jobs:
           check_url "public health" "https://www.peskids.com/api/health" '"status":"ok"'
           check_url "admin login" "https://www.peskids.com/admin/login"
           check_url "familias login" "https://www.peskids.com/familias/login"
+
+      - name: Post-deploy — purge Cloudflare CDN
+        # Ensures www.peskids.com serves the new build (not a stale CF/Next edge cache).
+        # Soft-fail: deploy already succeeded on VPS.
+        continue-on-error: true
+        env:
+          CF_DNS_API_TOKEN: ${{ secrets.CF_DNS_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          chmod +x scripts/ops/purge-peskids-cdn.sh
+          if [ -z "${CF_DNS_API_TOKEN:-}" ]; then
+            echo "::warning::CF_DNS_API_TOKEN secret missing — skip CDN purge (set GitHub secret from Doppler prd)"
+            exit 0
+          fi
+          ./scripts/ops/purge-peskids-cdn.sh --soft
 
       - name: Notify Discord on failure
         if: failure()

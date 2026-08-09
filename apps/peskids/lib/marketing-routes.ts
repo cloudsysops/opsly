@@ -26,8 +26,8 @@ export function isPeskidsPublicLandingPath(pathname: string | null | undefined):
   );
 }
 
-/** CTAs públicos → formulario de contacto/matrícula en home (soft-launch: sin clase gratis). */
-export const PESKIDS_PUBLIC_RESERVA_FORM_LABEL = 'Formulario de matrícula';
+/** CTAs públicos → formulario de solicitud (único path de captura). */
+export const PESKIDS_PUBLIC_RESERVA_FORM_LABEL = 'Completar solicitud';
 
 /** Etiqueta del botón WhatsApp en landing (gate: formulario primero). */
 export const PESKIDS_PUBLIC_WHATSAPP_LABEL = 'WhatsApp';
@@ -36,9 +36,9 @@ export const PESKIDS_PUBLIC_WHATSAPP_LABEL = 'WhatsApp';
 export const PESKIDS_PUBLIC_RESERVA_WHATSAPP_LABEL = PESKIDS_PUBLIC_WHATSAPP_LABEL;
 
 export const PESKIDS_ADMISSIONS_CHAT_FORM_REPLY =
-  'Para que Peskids te contacte, completa primero el formulario con tu nombre, correo y consentimiento. Después podrás continuar por WhatsApp si lo prefieres.';
+  'Completa el formulario de solicitud en la página. Al terminar te conectamos por WhatsApp con el equipo correcto.';
 
-/** Payload when web chat tries admissions intake without the lead form. */
+/** @deprecated Admissions chat now runs interactive intake; kept for older clients/tests. */
 export function peskidsAdmissionsChatFormRedirectPayload(): {
   ok: true;
   message_id: null;
@@ -65,7 +65,7 @@ export function peskidsAdmissionsChatFormRedirectPayload(): {
     input_mode: 'text',
     quick_replies: [],
     from_llm: false,
-    disclaimer: 'La solicitud oficial de contacto se registra solo con el formulario web.',
+    disclaimer: 'El formulario guarda la solicitud en la plataforma antes del WhatsApp humano.',
   };
 }
 

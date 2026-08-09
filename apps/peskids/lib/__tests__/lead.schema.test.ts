@@ -25,7 +25,7 @@ describe('leadCaptureFormSchema', () => {
     expect(parsed.referred_by_code).toBe('PK-ABC123');
   });
 
-  it('family llanogrande does not require manual neighborhood', () => {
+  it('family llanogrande does not require city or neighborhood', () => {
     const parsed = leadCaptureFormSchema.parse({
       lead_type: 'family',
       name: 'Ana López',
@@ -39,35 +39,74 @@ describe('leadCaptureFormSchema', () => {
     });
     expect(parsed.neighborhood).toBe('Llanogrande');
     expect(parsed.service_mode).toBe('llanogrande');
+    expect(parsed.lead_type).toBe('family');
+    if (parsed.lead_type === 'family') {
+      expect(parsed.city).toBeUndefined();
+    }
     expect(parsed.child_name).toBe('Mateo López');
   });
 
-  it('family domicilio requires neighborhood', () => {
-    const result = leadCaptureFormSchema.safeParse({
+  it('family domicilio requires city and neighborhood', () => {
+    const missingBoth = leadCaptureFormSchema.safeParse({
       lead_type: 'family',
       name: 'Ana López',
       email: 'ana@peskids.co',
+      phone: '3001112233',
       child_name: 'Mateo López',
       birth_date: '2018-05-10',
       document_number: '1234567890',
       class_modality: 'domicilio',
     });
-    expect(result.success).toBe(false);
+    expect(missingBoth.success).toBe(false);
+
+    const missingCity = leadCaptureFormSchema.safeParse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '3001112233',
+      child_name: 'Mateo López',
+      birth_date: '2018-05-10',
+      document_number: '1234567890',
+      class_modality: 'domicilio',
+      neighborhood: 'El Poblado',
+    });
+    expect(missingCity.success).toBe(false);
   });
 
-  it('family domicilio keeps provided neighborhood', () => {
+  it('family domicilio keeps provided city and neighborhood', () => {
     const parsed = leadCaptureFormSchema.parse({
       lead_type: 'family',
       name: 'Ana López',
       email: 'ana@peskids.co',
+      phone: '3001112233',
       child_name: 'Sofía',
       birth_date: '2016-01-15',
       document_number: '987654321',
       class_modality: 'domicilio',
+      city: 'Medellín',
       neighborhood: 'Envigado',
     });
     expect(parsed.neighborhood).toBe('Envigado');
     expect(parsed.service_mode).toBe('domicilio');
+    expect(parsed.lead_type).toBe('family');
+    if (parsed.lead_type === 'family') {
+      expect(parsed.city).toBe('Medellín');
+      expect(parsed.metadata).toMatchObject({ city: 'Medellín' });
+    }
+  });
+
+  it('family requires phone', () => {
+    const result = leadCaptureFormSchema.safeParse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '',
+      child_name: 'Mateo López',
+      birth_date: '2018-05-10',
+      document_number: '1234567890',
+      class_modality: 'llanogrande',
+    });
+    expect(result.success).toBe(false);
   });
 
   it('teacher applicant saves document number in output', () => {
@@ -120,9 +159,9 @@ describe('leadCaptureFormSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('allows empty optional phone on legacy family', () => {
-    const parsed = leadCaptureFormSchema.parse({ ...legacyFamily, phone: '' });
-    expect(parsed.phone).toBeUndefined();
+  it('rejects empty phone on legacy family', () => {
+    const result = leadCaptureFormSchema.safeParse({ ...legacyFamily, phone: '' });
+    expect(result.success).toBe(false);
   });
 
   it('requires grade_interested enum on legacy family', () => {
@@ -148,6 +187,7 @@ describe('leadApiPostSchema', () => {
     const parsed = leadApiPostSchema.parse({
       name: 'Ana López',
       email: 'ana@peskids.co',
+      phone: '3001112233',
       class_modality: 'domicilio',
       neighborhood: 'Envigado',
       grade_interested: '6-8',
@@ -164,11 +204,13 @@ describe('toCreateLeadInput', () => {
     const input = toCreateLeadInput({
       name: 'Carlos Ruiz',
       email: 'carlos@peskids.co',
+      phone: '3001112233',
       class_modality: 'llanogrande',
       neighborhood: 'Rionegro',
       grade_interested: '9-12',
       lead_type: 'family',
       service_mode: 'llanogrande',
+      city: undefined,
       metadata: { intake_version: 'legacy-family-v1' },
     });
     expect(input.full_name).toBe('Carlos Ruiz');

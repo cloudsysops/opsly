@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "description": "Tenant monitoring targets for Opsly VPS + public URL smoke. Start with production clients.",
+  "defaults": {
+    "http_timeout_seconds": 15,
+    "disk_warn_pct": 80,
+    "disk_critical_pct": 90,
+    "ram_available_warn_mb": 512,
+    "ram_available_critical_mb": 256,
+    "swap_used_warn_pct": 80,
+    "container_must_be_running": true
+  },
+  "tenants": [
+    {
+      "slug": "peskids",
+      "priority": 1,
+      "production": true,
+      "canonical_domain": "https://www.peskids.com",
+      "containers": [
+        "peskids",
+        "n8n_peskids",
+        "uptime_peskids",
+        "twenty_peskids",
+        "twenty_peskids_db",
+        "twenty_peskids_redis",
+        "wacrm_peskids"
+      ],
+      "urls": [
+        {
+          "name": "www_landing",
+          "url": "https://www.peskids.com/",
+          "expect_status": [200]
+        },
+        {
+          "name": "www_health",
+          "url": "https://www.peskids.com/api/health",
+          "expect_status": [200],
+          "expect_body_contains": ["\"status\""]
+        },
+        {
+          "name": "www_admin_login",
+          "url": "https://www.peskids.com/admin/login",
+          "expect_status": [200, 307, 308]
+        },
+        {
+          "name": "www_familias_login",
+          "url": "https://www.peskids.com/familias/login",
+          "expect_status": [200, 307, 308]
+        },
+        {
+          "name": "apex_landing",
+          "url": "https://peskids.com/",
+          "follow_redirects": false,
+          "expect_status": [200, 301, 302, 307, 308]
+        },
+        {
+          "name": "apex_health",
+          "url": "https://peskids.com/api/health",
+          "expect_status": [200],
+          "expect_body_contains": ["\"status\""]
+        },
+        {
+          "name": "legacy_opsly_redirect",
+          "url": "https://peskids.op-sly.com/",
+          "follow_redirects": false,
+          "expect_status": [200, 301, 302, 307, 308]
+        },
+        {
+          "name": "n8n",
+          "url": "https://n8n-peskids.op-sly.com/",
+          "expect_status": [200, 302]
+        },
+        {
+          "name": "uptime",
+          "url": "https://uptime-peskids.op-sly.com/",
+          "expect_status": [200, 302]
+        }
+      ]
+    }
+  ]
+}

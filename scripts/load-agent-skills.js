@@ -15,20 +15,38 @@
 const fs = require('fs');
 const path = require('path');
 
-// Configuration
-const AGENT_SKILLS_PATH = path.join(__dirname, '..', 'vendor', 'agent-skills');
+// Canonical vendored pack (synced from addyosmani/agent-skills).
+// Prefer skills/vendor; keep vendor/agent-skills as optional clone fallback.
+const AGENT_SKILLS_PATH_PRIMARY = path.join(__dirname, '..', 'skills', 'vendor', 'agent-skills');
+const AGENT_SKILLS_PATH_FALLBACK = path.join(__dirname, '..', 'vendor', 'agent-skills');
 const OPSLY_BRIDGE_PATH = path.join(__dirname, '..', 'skills', 'user', 'opsly-agent-skills-bridge');
 const SKILLS_INDEX_PATH = path.join(__dirname, '..', 'skills', 'index.json');
+
+function resolveAgentSkillsRoot() {
+  if (fs.existsSync(path.join(AGENT_SKILLS_PATH_PRIMARY, 'using-agent-skills', 'SKILL.md'))) {
+    return { root: AGENT_SKILLS_PATH_PRIMARY, layout: 'flat' };
+  }
+  if (fs.existsSync(path.join(AGENT_SKILLS_PATH_FALLBACK, 'skills'))) {
+    return { root: path.join(AGENT_SKILLS_PATH_FALLBACK, 'skills'), layout: 'nested' };
+  }
+  if (fs.existsSync(AGENT_SKILLS_PATH_FALLBACK)) {
+    return { root: AGENT_SKILLS_PATH_FALLBACK, layout: 'flat' };
+  }
+  return { root: AGENT_SKILLS_PATH_PRIMARY, layout: 'flat' };
+}
+
+const AGENT_SKILLS_RESOLVED = resolveAgentSkillsRoot();
+const AGENT_SKILLS_PATH = AGENT_SKILLS_RESOLVED.root;
 
 // Phase mapping
 const PHASE_MAP = {
   define: ['interview-me', 'spec-driven-development', 'idea-refine'],
   plan: ['planning-and-task-breakdown', 'doubt-driven-development'],
   build: ['incremental-implementation', 'test-driven-development', 'context-engineering'],
-  verify: ['browser-testing-with-devtools', 'debugging-and-error-recovery'],
-  review: ['code-review-and-quality', 'security-and-hardening', 'performance-optimization'],
+  verify: ['browser-testing-with-devtools', 'debugging-and-error-recovery', 'observability-and-instrumentation'],
+  review: ['code-review-and-quality', 'security-and-hardening', 'performance-optimization', 'observability-and-instrumentation'],
   simplify: ['code-simplification'],
-  ship: ['shipping-and-launch', 'deprecation-and-migration', 'ci-cd-and-automation', 'git-workflow-and-versioning']
+  ship: ['shipping-and-launch', 'deprecation-and-migration', 'ci-cd-and-automation', 'git-workflow-and-versioning', 'observability-and-instrumentation']
 };
 
 // Domain-specific context mappings
@@ -67,10 +85,13 @@ const DOMAIN_CONTEXT = {
 
 // Load agent-skills metadata
 function loadAgentSkillsMetadata() {
-  const skillsDir = path.join(AGENT_SKILLS_PATH, 'skills');
+  const skillsDir = AGENT_SKILLS_PATH;
+  if (!fs.existsSync(skillsDir)) {
+    return [];
+  }
   const skills = fs.readdirSync(skillsDir).filter(f => {
     const fullPath = path.join(skillsDir, f);
-    return fs.statSync(fullPath).isDirectory();
+    return fs.statSync(fullPath).isDirectory() && !f.startsWith('.');
   });
 
   return skills.map(skill => ({
@@ -260,11 +281,13 @@ Examples:
     console.log(`\n📋 Template: ${guidance.template}`);
   }
 
-  console.log(`\n📚 Agent Skills to Review:`);
+  console.log(`\n📚 Agent Skills to Review (root: ${AGENT_SKILLS_PATH}):`);
   guidance.agentSkills.forEach(skill => {
-    const skillPath = path.join(AGENT_SKILLS_PATH, 'skills', skill);
-    if (fs.existsSync(skillPath)) {
-      console.log(`   ✓ vendor/agent-skills/skills/${skill}/SKILL.md`);
+    const skillFile = path.join(AGENT_SKILLS_PATH, skill, 'SKILL.md');
+    if (fs.existsSync(skillFile)) {
+      console.log(`   ✓ skills/vendor/agent-skills/${skill}/SKILL.md`);
+    } else {
+      console.log(`   ✗ missing ${skill}/SKILL.md`);
     }
   });
 

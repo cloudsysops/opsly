@@ -27,11 +27,10 @@ describe('isPeskidsPublicLandingPath', () => {
 });
 
 describe('peskidsAdmissionsChatFormRedirectPayload', () => {
-  it('directs admissions chat to the public lead form', () => {
+  it('keeps legacy form payload for older clients', () => {
     const payload = peskidsAdmissionsChatFormRedirectPayload();
     expect(payload.stage).toBe('form_required');
     expect(payload.reply).toContain('formulario');
     expect(payload.reply).toContain('/#reserva-form');
-    expect(payload.disclaimer).toContain('formulario web');
   });
 });

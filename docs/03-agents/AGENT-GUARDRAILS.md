@@ -49,6 +49,7 @@ tags:
 - **No** `git push origin main` automático desde el agente si la política del equipo es PR + review (ajustar `opsly.mdc` localmente si aplica).
 - **No** `--force` a `main` / borrar historia sin humano.
 - Preferir **rama + PR** para cambios que toquen zona roja/ámbar.
+- **Ventana nocturna (Peskids live):** merge/deploy de impacto en producción solo `America/Bogota` **22:00–06:00**. De día: docs OK; runtime/infra solo con label `safe-daytime` o `hotfix-prod`. Ver [PRODUCTION-CHANGE-WINDOW.md](../runbooks/PRODUCTION-CHANGE-WINDOW.md) y check CI `production-change-window`.
 
 ## 5. Herramientas de cumplimiento (usar antes de merge)
 
@@ -77,7 +78,7 @@ En CI: `validate-structure` valida la raíz completa contra `config/root-whiteli
 
 ---
 
-**Última revisión:** 2026-05-10 — política raíz `docs/` + `config/docs-root-allowlist.json`; spec OpenAPI bajo `docs/00-architecture/`.
+**Última revisión:** 2026-07-27 — ventana nocturna de cambios en producción (Peskids operativo); 2026-05-10 — política raíz `docs/` + allowlist.
 
 ---
 

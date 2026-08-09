@@ -5,6 +5,7 @@ import { notifyDiscordFeedback } from '../feedback-notify';
 import { requireAdminAccess } from '../auth';
 import { getServiceClient } from '../supabase';
 import { HTTP_STATUS } from '../constants';
+import { extractIp, logAuditEvent } from '../audit';
 
 type DecisionRow = {
   id: string;
@@ -65,12 +66,27 @@ export async function handleFeedbackApprove(req: NextRequest): Promise<Response>
   }
 
   const row = decision as DecisionRow;
+  const slug = tenantSlugFromDecision(row);
+  const ip = extractIp(req);
 
   if (approved) {
     await approveFlow(supabase, decision_id, row);
   } else {
     await rejectFlow(supabase, decision_id, row.conversation_id);
   }
+
+  void logAuditEvent({
+    tenant_slug: slug,
+    action: approved ? 'feedback_approve' : 'feedback_reject',
+    resource: `feedback_decision:${decision_id}`,
+    ip,
+    user_agent: req.headers.get('user-agent') ?? undefined,
+    metadata: {
+      decision_id,
+      conversation_id: row.conversation_id,
+      approved,
+    },
+  });
 
   return Response.json({ success: true, approved });
 }
@@ -99,7 +115,8 @@ async function approveFlow(
     .eq('id', row.conversation_id);
 
   const slug = tenantSlugFromDecision(row);
-  const rawPrompt = row.implementation_prompt ?? 'Implementar feedback aprobado (describir cambio en Markdown).';
+  const rawPrompt =
+    row.implementation_prompt ?? 'Implementar feedback aprobado (describir cambio en Markdown).';
   const sanitized = sanitizeImplementationPrompt(rawPrompt);
   if (!sanitized.ok) {
     await notifyDiscordFeedback(

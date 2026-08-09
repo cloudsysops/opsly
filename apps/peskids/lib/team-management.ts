@@ -95,7 +95,7 @@ function getPeskidsSiteUrl(): string {
 }
 
 function getLogoUrl(): string {
-  return `${getPeskidsSiteUrl()}/brand/logo-reference.png`;
+  return `${getPeskidsSiteUrl()}/brand/logo-official.png`;
 }
 
 function getFromAddress(): string {
