@@ -171,8 +171,6 @@ describe('POST /api/public/tenants/peskids/webhooks/gohighlevel/leads', () => {
         {
           ...validLeadBody,
           pipeline_stage: 'New Lead',
-          automation: undefined,
-          ghl: undefined,
         },
         {
           'x-request-id': 'req-ghl-3',
@@ -206,8 +204,6 @@ describe('POST /api/public/tenants/peskids/webhooks/gohighlevel/leads', () => {
         {
           ...validLeadBody,
           pipeline_stage: 'New Lead',
-          automation: undefined,
-          ghl: undefined,
         },
         {
           'x-request-id': 'req-ghl-4',
@@ -229,8 +225,6 @@ describe('POST /api/public/tenants/peskids/webhooks/gohighlevel/leads', () => {
         {
           ...validLeadBody,
           occurred_at: 'not-a-date',
-          automation: undefined,
-          ghl: undefined,
         },
         {
           'x-request-id': 'req-ghl-2',
