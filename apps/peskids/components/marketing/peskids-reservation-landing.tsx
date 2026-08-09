@@ -18,6 +18,8 @@ export type PeskidsReservationLandingProps = {
   defaultReferralSource?: string;
   showLogo?: boolean;
   headingLevel?: 'h1' | 'h2';
+  /** Set false when a hero section already shows the title/description above this. */
+  showTitleAndIntro?: boolean;
 };
 
 export function PeskidsReservationLanding({
@@ -27,6 +29,7 @@ export function PeskidsReservationLanding({
   defaultReferralSource,
   showLogo = false,
   headingLevel = 'h2',
+  showTitleAndIntro = true,
 }: PeskidsReservationLandingProps): React.ReactElement {
   const intro = showInstagramCopy ? PESKIDS_INSTAGRAM_LANDING_INTRO : PESKIDS_RESERVATION_DESCRIPTION;
   const HeadingTag = headingLevel;
@@ -35,7 +38,9 @@ export function PeskidsReservationLanding({
     <section
       id="reserva"
       className="scroll-mt-24 bg-pk-bg px-4 py-10 sm:px-8 lg:px-14"
-      aria-labelledby="peskids-reservation-heading"
+      {...(showTitleAndIntro
+        ? { 'aria-labelledby': 'peskids-reservation-heading' }
+        : { 'aria-label': PESKIDS_RESERVATION_EYEBROW })}
     >
       <div className="mx-auto max-w-2xl">
         <div className="mb-8 text-center">
@@ -45,13 +50,17 @@ export function PeskidsReservationLanding({
             </div>
           ) : null}
           <p className="pk-eyebrow text-pk-primary">{PESKIDS_RESERVATION_EYEBROW}</p>
-          <HeadingTag
-            id="peskids-reservation-heading"
-            className="mb-3 text-3xl font-bold text-pk-ink sm:text-4xl"
-          >
-            {PESKIDS_RESERVATION_TITLE}
-          </HeadingTag>
-          <p className="mb-4 text-lg text-pk-sub">{intro}</p>
+          {showTitleAndIntro ? (
+            <>
+              <HeadingTag
+                id="peskids-reservation-heading"
+                className="mb-3 text-3xl font-bold text-pk-ink sm:text-4xl"
+              >
+                {PESKIDS_RESERVATION_TITLE}
+              </HeadingTag>
+              <p className="mb-4 text-lg text-pk-sub">{intro}</p>
+            </>
+          ) : null}
           <p className="mx-auto mb-6 max-w-xl text-left text-sm leading-relaxed text-pk-sub sm:text-center">
             {PESKIDS_RESERVATION_AUDIENCE}
           </p>
