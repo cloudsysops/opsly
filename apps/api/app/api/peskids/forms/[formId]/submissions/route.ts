@@ -131,7 +131,8 @@ async function logSubmissionAuditEvent(
   tenantSlug: string,
   email: string | undefined,
   webhookResults: WebhookTriggerResult | null,
-  ip: string | null
+  ip: string | null,
+  untrustedUserId: unknown
 ): Promise<void> {
   try {
     const db = supabase as unknown as PeskidsClient;
@@ -149,6 +150,8 @@ async function logSubmissionAuditEvent(
         webhooks_triggered: webhookResults?.success || 0,
         webhooks_failed: webhookResults?.failed || 0,
         ip,
+        // Present in request body but never used as identity (forensics only).
+        ...(untrustedUserId !== undefined ? { untrusted_userId: untrustedUserId } : {}),
       },
     });
   } catch (auditError) {
@@ -186,6 +189,13 @@ export async function POST(
       );
     }
 
+    const untrustedUserId =
+      typeof parsedBody.body === 'object' &&
+      parsedBody.body !== null &&
+      'userId' in parsedBody.body
+        ? (parsedBody.body as { userId?: unknown }).userId
+        : undefined;
+
     const supabase = getServiceClient();
 
     const formResult = await fetchPublishedFormByFormId(supabase, formId);
@@ -222,7 +232,8 @@ export async function POST(
       form.tenant_slug,
       parsed.data.email,
       webhookResults,
-      ip
+      ip,
+      untrustedUserId
     );
 
     return jsonOk({
