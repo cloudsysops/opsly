@@ -29,10 +29,15 @@ Arquitectura estable de Opsly: control plane, data plane, OpenClaw, LLM Gateway,
 - `../adr/ADR-044-core-first-tenant-slug-extraction.md` — decisión formal: core-first, `tenant_slug` activation, clean extraction
 - `../adr/ADR-045-tenant-analytics-batch-python-pandas-arrow.md` — decisión formal: Python/pandas batch, Arrow interchange, Superset opcional
 - `OPSLY-CONTROL-PLANE.md`
+- `OPSLY-MOON.md` — índice Opsly Moon (evolución `apps/admin`)
+- `OPSLY-MOON-AUDIT.md` — auditoría Opsly Moon (evolución de `apps/admin`; PR-MOON-0)
+- `OPSLY-MOON-DATA-SOURCES.md` — métricas REAL/ESTIMADO/PROYECTADO; omisiones
+- `OPSLY-MOON-ROUTE-MAP.md` — rutas legacy ↔ aliases `/moon`
 - `ARCHITECTURE-DISTRIBUTED.md`
 - `OPENCLAW-ARCHITECTURE.md`
 - `LLM-GATEWAY.md`
 - `ORCHESTRATOR.md`
+- `MISSION-CONTROL-KIT.md` — módulo reutilizable agency/tenant MC (ICSO + futuros clientes)
 
 ---
 

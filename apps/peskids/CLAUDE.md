@@ -20,7 +20,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Tenant slug:** `peskids`  
 **Team:** owner: sierrasantiago90@gmail.com  
 **Dev port:** 3004  
-**Prod URL:** https://peskids.op-sly.com (live)
+
+### Environments
+| Environment | URL | Purpose |
+|-------------|-----|---------|
+| **QA** | https://peskids.op-sly.com | Testing & validation (auto-deployed from main) |
+| **Production** | https://www.peskids.com | Live customers (manual deployment after QA) |
+
+**Deployment Strategy:** See [DEPLOYMENT-STRATEGY.md](../../docs/tenants/peskids/DEPLOYMENT-STRATEGY.md)
 
 ---
 

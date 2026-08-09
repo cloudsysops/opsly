@@ -101,7 +101,8 @@ describe('POST /api/leads', () => {
         class_modality: 'llanogrande',
         neighborhood: 'Llanogrande',
       }),
-      'req-lead-201'
+      'req-lead-201',
+      null
     );
     expect(buildReferralCodeMock).toHaveBeenCalledWith({
       tenantId: 'peskids',

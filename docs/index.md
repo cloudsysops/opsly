@@ -16,8 +16,10 @@ Punto de entrada compacto del vault. Política de carpetas:
 - [`STRUCTURE-GUARDRAILS.md`](STRUCTURE-GUARDRAILS.md) — reglas de ubicación
 - [`openapi-opsly-api.yaml`](00-architecture/openapi-opsly-api.yaml) — contrato API (subset)
 - Ciclo de vida de tenants: [`00-architecture/TENANT-INCUBATION-LIFECYCLE.md`](00-architecture/TENANT-INCUBATION-LIFECYCLE.md), [`04-infrastructure/VPS-PROVISIONING-STANDARD.md`](04-infrastructure/VPS-PROVISIONING-STANDARD.md), [`runbooks/MIGRATION-CHECKLIST.md`](runbooks/MIGRATION-CHECKLIST.md)
+- Opsly Moon (control plane): [`00-architecture/OPSLY-MOON.md`](00-architecture/OPSLY-MOON.md), [`00-architecture/OPSLY-MOON-AUDIT.md`](00-architecture/OPSLY-MOON-AUDIT.md), [`00-architecture/OPSLY-MOON-DATA-SOURCES.md`](00-architecture/OPSLY-MOON-DATA-SOURCES.md), [`00-architecture/OPSLY-MOON-ROUTE-MAP.md`](00-architecture/OPSLY-MOON-ROUTE-MAP.md) · runbooks [`runbooks/OPSLY-MOON-OPERATIONS.md`](runbooks/OPSLY-MOON-OPERATIONS.md)
 - Stubs de compatibilidad: [`stubs/README.md`](stubs/README.md)
 - Repo (fuera del vault): [`AGENTS.md`](../AGENTS.md), [`VISION.md`](../VISION.md), [`ROADMAP.md`](../ROADMAP.md)
+- Mission Control Kit (agency ICSO + tenants): [`00-architecture/MISSION-CONTROL-KIT.md`](00-architecture/MISSION-CONTROL-KIT.md), rollout [`runbooks/MISSION-CONTROL-TENANT-ROLLOUT.md`](runbooks/MISSION-CONTROL-TENANT-ROLLOUT.md), ICSO [`runbooks/ICSO-MISSION-CONTROL.md`](runbooks/ICSO-MISSION-CONTROL.md)
 
 ## Pilares numerados (gobierno docs)
 

@@ -1,6 +1,8 @@
 import type { NextRequest } from 'next/server';
+import { extractIp, logAuditEvent } from '../audit';
 import { HTTP_STATUS } from '../constants';
 import { publicBookBodySchema } from '../local-services-booking-schema';
+import { checkRateLimit } from '../rate-limiter';
 import { assertLocalServicesTenantPublic } from '../local-services-public';
 import {
   lsInsertBookingForTenantSlug,
@@ -126,7 +128,13 @@ async function validatePublicBookingPayload(
   return { body: parsed.data, serviceId, technician };
 }
 
-async function persistPublicBooking(slug: string, ready: PublicBookingReady): Promise<Response> {
+/* eslint-disable complexity */
+async function persistPublicBooking(
+  slug: string,
+  ready: PublicBookingReady,
+  request: NextRequest,
+  ip: string | null
+): Promise<Response> {
   const { body, serviceId, technician } = ready;
   const inserted = await lsInsertBookingForTenantSlug({
     tenantSlug: slug,
@@ -148,6 +156,17 @@ async function persistPublicBooking(slug: string, ready: PublicBookingReady): Pr
     return Response.json({ error: inserted.error }, { status: HTTP_STATUS.INTERNAL_ERROR });
   }
 
+  void logAuditEvent({
+    tenant_slug: slug,
+    action: 'CREATE',
+    resource: `local-services:booking:${inserted.id}`,
+    ip,
+    user_agent: request.headers.get('user-agent') ?? undefined,
+    metadata: {
+      event_type: 'booking.created',
+    },
+  });
+
   return Response.json(
     { ok: true, booking_id: inserted.id, tenant_slug: slug },
     { status: HTTP_STATUS.CREATED }
@@ -161,6 +180,15 @@ export async function postPublicLocalServicesBooking(
   request: NextRequest,
   slug: string
 ): Promise<Response> {
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(
+    ip ? `local-services-booking:${ip}` : 'local-services-booking:anonymous'
+  );
+
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+
   const gate = await assertLocalServicesTenantPublic(slug);
   if (gate !== null) {
     return gate;
@@ -176,5 +204,5 @@ export async function postPublicLocalServicesBooking(
     return ready;
   }
 
-  return persistPublicBooking(slug, ready);
+  return persistPublicBooking(slug, ready, request, ip);
 }

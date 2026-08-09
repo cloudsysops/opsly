@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "description": "Opsly Library Modules Registry",
-  "lastUpdated": "2026-05-09T03:30:00Z",
+  "lastUpdated": "2026-08-07T00:00:00Z",
   "modules": {
     "prompts": {
       "name": "@intcloudsysops/prompts",
@@ -196,6 +196,24 @@
         "resolveWompiForTenant",
         "isWompiEnabledForTenant"
       ]
+    },
+    "mission-control-kit": {
+      "name": "@intcloudsysops/mission-control-kit",
+      "version": "1.0.0",
+      "path": "lib/mission-control-kit",
+      "owner": "platform",
+      "description": "Reusable Mission Control contracts (agency ICSO + tenant client panels): profiles, nav, health labels, PII sanitize",
+      "status": "stable",
+      "dependencies": [],
+      "governance": "lib/mission-control-kit/GOVERNANCE.md",
+      "mainFile": "lib/mission-control-kit/src/index.ts",
+      "exports": [
+        "createIcsoAgencyProfile",
+        "createTenantMissionControlProfile",
+        "parseMissionControlProfile",
+        "sanitizeEntityCard",
+        "omitMrrUntilCommercialSource"
+      ]
     }
   },
   "consumers": {
@@ -212,7 +230,10 @@
       "depends": ["components", "observability", "security", "api", "telemetry"]
     },
     "apps/admin": {
-      "depends": ["components", "observability", "security", "api", "services"]
+      "depends": ["components", "observability", "security", "api", "services", "mission-control-kit"]
+    },
+    "apps/icso": {
+      "depends": ["mission-control-kit", "services"]
     },
     "apps/local-services": {
       "depends": ["components", "observability", "prompts", "security", "api", "config"]

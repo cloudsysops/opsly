@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 
-export default function HomePage() {
-  redirect('/dashboard');
+/** Opsly Moon home alias — legacy /dashboard remains. */
+export default function HomePage(): never {
+  redirect('/moon');
 }

@@ -10,6 +10,9 @@ interface IcsoLeadRequest {
   name: string;
   email: string;
   message: string;
+  packageId?: string;
+  verticalId?: string;
+  moduleId?: string;
 }
 
 interface IcsoLeadResponse {
@@ -28,7 +31,7 @@ interface IcsoLeadResponse {
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const body = (await request.json()) as IcsoLeadRequest;
-    const { name, email, message } = body;
+    const { name, email, message, packageId, verticalId, moduleId } = body;
 
     if (!name || !email || !message) {
       return NextResponse.json(
@@ -36,6 +39,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         { status: 400 }
       );
     }
+
+    const enrichedMessage = [
+      message.trim(),
+      packageId ? `[package=${packageId}]` : '',
+      verticalId ? `[vertical=${verticalId}]` : '',
+      moduleId ? `[module=${moduleId}]` : '',
+    ]
+      .filter(Boolean)
+      .join('\n');
 
     if (!isIcsoSupabaseConfigured()) {
       return NextResponse.json(
@@ -47,14 +59,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const crmResult = await syncLeadToCrm({
       name,
       email,
-      message,
+      message: enrichedMessage,
       source: 'ICSO Website',
     });
 
     const persisted = await persistIcsoLead({
       name,
       email,
-      message,
+      message: enrichedMessage,
       sourceForm: 'ICSO Contact Form',
       ghlContactId: crmResult.ghlContactId,
       twentyPersonId: crmResult.twentyPersonId,

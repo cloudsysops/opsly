@@ -1,4 +1,4 @@
-import { TwentyClient, resolveTwentyEnv, type TwentyTaskStatus } from '@intcloudsysops/services/twenty';
+import { TwentyClient, resolveTwentyEnv, type TwentyTaskStatus } from '@intcloudsysops/services';
 import { supabaseServer } from '@/lib/supabase';
 import type { Database } from '@/lib/types';
 

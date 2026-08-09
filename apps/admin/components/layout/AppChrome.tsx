@@ -5,6 +5,7 @@ import { Sidebar } from '@/components/layout/Sidebar';
 import { Topbar } from '@/components/layout/Topbar';
 import { CyberParticles } from '@/components/layout/CyberParticles';
 import { HackerHud } from '@/components/layout/HackerHud';
+import { CapacityAlertBanner } from '@/components/layout/CapacityAlertBanner';
 
 export function AppChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -18,6 +19,7 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
       <Sidebar />
       <div className="ml-[240px] flex min-h-screen min-w-0 flex-1 flex-col">
         <Topbar />
+        <CapacityAlertBanner />
         <HackerHud />
         <main className="flex-1 overflow-auto p-6">{children}</main>
         <footer className="holo-border mx-6 mb-4 rounded-xl px-6 py-3 font-mono text-[11px] text-ops-gray">

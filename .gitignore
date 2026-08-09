@@ -160,6 +160,9 @@ docs/.obsidian/plugins/recent-files-obsidian/data.json
 .claude/settings.local.json
 .claude/2-context-management/CLAUDE.local.md
 
+# Claude Code skill symlinks (local; regenerate with bash scripts/register-skills.sh)
+.claude/skills/
+
 # Claude Code worktrees (local clones; never commit)
 .claude/worktrees/
 

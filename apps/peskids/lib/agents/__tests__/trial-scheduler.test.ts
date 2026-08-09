@@ -3,7 +3,7 @@ import {
   TrialSchedulerService,
   GOHIGHLEVEL_CALENDAR_API_VERSION,
 } from '../trial-scheduler.service';
-import type { GoHighLevelClient } from '@intcloudsysops/services/gohighlevel';
+import type { GoHighLevelClient } from '@intcloudsysops/services';
 import type { TrialSchedulingStore } from '../trial-scheduling-store';
 
 const LEAD_ID = '11111111-1111-4111-8111-111111111111';

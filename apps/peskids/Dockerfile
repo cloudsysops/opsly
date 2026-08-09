@@ -7,10 +7,12 @@ WORKDIR /app
 
 COPY package*.json ./
 COPY turbo.json ./
+COPY tsconfig.json ./
 
 COPY lib/conversational-runtime/package.json ./lib/conversational-runtime/
 COPY lib/services/package.json ./lib/services/
 COPY lib/prompt-guard/package.json ./lib/prompt-guard/
+COPY lib/capacity-alert/package.json ./lib/capacity-alert/
 COPY lib/openwa/package.json ./lib/openwa/
 COPY lib/wacrm-channel/package.json ./lib/wacrm-channel/
 COPY lib/wompi-gateway/package.json ./lib/wompi-gateway/
@@ -23,11 +25,13 @@ RUN npm ci --ignore-scripts
 COPY lib/conversational-runtime/ ./lib/conversational-runtime/
 COPY lib/services/ ./lib/services/
 COPY lib/prompt-guard/ ./lib/prompt-guard/
+COPY lib/capacity-alert/ ./lib/capacity-alert/
 COPY lib/openwa/ ./lib/openwa/
 COPY lib/wacrm-channel/ ./lib/wacrm-channel/
 COPY lib/wompi-gateway/ ./lib/wompi-gateway/
 COPY packages/opsly-core/ ./packages/opsly-core/
 COPY packages/types/ ./packages/types/
+COPY scripts/peskids/unblock-admin-access.args.ts ./scripts/peskids/
 COPY apps/peskids/ ./apps/peskids/
 
 ARG NEXT_PUBLIC_SUPABASE_URL=
@@ -81,7 +85,7 @@ RUN npm run build -w @intcloudsysops/prompt-guard \
 
 WORKDIR /app/apps/peskids
 RUN mkdir -p public \
- && NEXT_TELEMETRY_DISABLED=1 npx next build --no-lint
+ && NEXT_TELEMETRY_DISABLED=1 npx next build --webpack
 
 FROM node:20-alpine AS runner
 

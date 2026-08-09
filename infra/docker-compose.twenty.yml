@@ -11,14 +11,40 @@
 #
 # After first boot: create workspace admin, then API key in Settings → API & Webhooks.
 # Set TWENTY_API_URL=${TWENTY_SERVER_URL} and TWENTY_API_KEY in Doppler for Peskids app.
+#
+# Memory caps (bridge until Peskids capacity upgrade): see docs/runbooks/VPS-MEMORY-CAPS.md
 
 name: tenant_twenty_peskids
+
+x-deploy-twenty-server: &deploy-twenty-server
+  resources:
+    limits:
+      memory: 640M
+    reservations:
+      memory: 256M
+
+x-deploy-twenty-worker: &deploy-twenty-worker
+  resources:
+    limits:
+      memory: 384M
+
+x-deploy-twenty-db: &deploy-twenty-db
+  resources:
+    limits:
+      memory: 256M
+
+x-deploy-twenty-redis: &deploy-twenty-redis
+  resources:
+    limits:
+      memory: 64M
 
 services:
   twenty-server:
     image: twentycrm/twenty:${TWENTY_IMAGE_TAG:-latest}
     container_name: twenty_peskids
     restart: unless-stopped
+    mem_limit: 640m
+    deploy: *deploy-twenty-server
     volumes:
       - twenty-peskids-data:/app/packages/twenty-server/.local-storage
     environment:
@@ -29,7 +55,6 @@ services:
       APP_SECRET: ${TWENTY_APP_SECRET}
       ENCRYPTION_KEY: ${TWENTY_ENCRYPTION_KEY}
       STORAGE_TYPE: local
-      # Email / magic-link via Resend SMTP relay
       EMAIL_DRIVER: smtp
       EMAIL_SMTP_HOST: smtp.resend.com
       EMAIL_SMTP_PORT: '587'
@@ -38,6 +63,7 @@ services:
       EMAIL_FROM_ADDRESS: ${TWENTY_PESKIDS_EMAIL_FROM:-no-reply@op-sly.com}
       EMAIL_FROM_NAME: ${TWENTY_PESKIDS_EMAIL_FROM_NAME:-Peskids CRM}
       EMAIL_SYSTEM_ADDRESS: ${TWENTY_PESKIDS_EMAIL_FROM:-no-reply@op-sly.com}
+      NODE_OPTIONS: ${TWENTY_NODE_OPTIONS:---max-old-space-size=512}
     depends_on:
       twenty-db:
         condition: service_healthy
@@ -65,6 +91,8 @@ services:
     image: twentycrm/twenty:${TWENTY_IMAGE_TAG:-latest}
     container_name: twenty_peskids_worker
     restart: unless-stopped
+    mem_limit: 384m
+    deploy: *deploy-twenty-worker
     command: ['yarn', 'worker:prod']
     volumes:
       - twenty-peskids-data:/app/packages/twenty-server/.local-storage
@@ -85,6 +113,7 @@ services:
       EMAIL_FROM_ADDRESS: ${TWENTY_PESKIDS_EMAIL_FROM:-no-reply@op-sly.com}
       EMAIL_FROM_NAME: ${TWENTY_PESKIDS_EMAIL_FROM_NAME:-Peskids CRM}
       EMAIL_SYSTEM_ADDRESS: ${TWENTY_PESKIDS_EMAIL_FROM:-no-reply@op-sly.com}
+      NODE_OPTIONS: ${TWENTY_WORKER_NODE_OPTIONS:---max-old-space-size=288}
     depends_on:
       twenty-server:
         condition: service_healthy
@@ -95,6 +124,8 @@ services:
     image: postgres:16
     container_name: twenty_peskids_db
     restart: unless-stopped
+    mem_limit: 256m
+    deploy: *deploy-twenty-db
     environment:
       POSTGRES_DB: default
       POSTGRES_USER: twenty
@@ -113,7 +144,9 @@ services:
     image: redis:7-alpine
     container_name: twenty_peskids_redis
     restart: unless-stopped
-    command: ['redis-server', '--maxmemory-policy', 'noeviction']
+    mem_limit: 64m
+    deploy: *deploy-twenty-redis
+    command: ['redis-server', '--maxmemory', '48mb', '--maxmemory-policy', 'allkeys-lru']
     networks:
       - twenty-internal
     healthcheck:

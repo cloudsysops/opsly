@@ -293,7 +293,12 @@ function extractPreferredContact(
 
 function extractApplicantRole(text: string): PeskidsIntakeProfile['applicantRole'] | undefined {
   const t = normalizeText(text).toLowerCase();
-  if (t === 'family' || t === 'familia' || t === 'familia / matrícula' || t === 'familia / matricula') {
+  if (
+    t === 'family' ||
+    t === 'familia' ||
+    t === 'familia / matrícula' ||
+    t === 'familia / matricula'
+  ) {
     return 'family';
   }
   if (
@@ -442,7 +447,9 @@ function firstMissingField(
   profile: PeskidsIntakeProfile,
   mode: PeskidsChatMode
 ): keyof PeskidsIntakeProfile | null {
-  return requiredFieldOrder(profile, mode).find((field) => !fieldIsCaptured(profile, field)) ?? null;
+  return (
+    requiredFieldOrder(profile, mode).find((field) => !fieldIsCaptured(profile, field)) ?? null
+  );
 }
 
 /** Asigna la respuesta directa del usuario al campo que acabamos de preguntar. */
@@ -569,7 +576,15 @@ export async function buildPeskidsIntakeTurn(params: {
   );
 
   for (const message of priorInbound) {
+    const fieldAnsweredInTurn = firstMissingField(profile, mode);
     profile = mergeProfile(profile, profileFromText(message.message_text));
+    // Las respuestas de texto suelen ser cortas (por ejemplo, "Valeria") y
+    // no siempre contienen una frase que permita extraer el campo por regex.
+    // Reproducimos también la pregunta activa de cada turno para no perder
+    // esos valores al reconstruir el perfil desde el historial.
+    if (fieldAnsweredInTurn && !fieldIsCaptured(profile, fieldAnsweredInTurn)) {
+      profile = mergeProfile(profile, applyDirectAnswer(fieldAnsweredInTurn, message.message_text));
+    }
   }
 
   if (!profile.parentName && params.senderName && !isGenericName(params.senderName)) {
@@ -606,7 +621,9 @@ export async function buildPeskidsIntakeTurn(params: {
     profile.gradeInterested = profile.gradeInterested ?? 'Other';
   }
   const missingField = requiredOrder.find((field) => !fieldIsCaptured(profile, field)) ?? null;
-  const capturedFields = requiredOrder.filter((field) => fieldIsCaptured(profile, field)).map(String);
+  const capturedFields = requiredOrder
+    .filter((field) => fieldIsCaptured(profile, field))
+    .map(String);
   const stage = missingField ? 'collecting' : 'handoff';
   const progress = formatProgress(capturedFields.length, requiredOrder.length);
 
