@@ -29,6 +29,8 @@
       "@intcloudsysops/errors/*": ["lib/errors/*"],
       "@intcloudsysops/external-agent-registry": ["lib/external-agent-registry/src"],
       "@intcloudsysops/external-agent-registry/*": ["lib/external-agent-registry/src/*"],
+      "@intcloudsysops/agent-task-core": ["lib/agent-task-core/src"],
+      "@intcloudsysops/agent-task-core/*": ["lib/agent-task-core/src/*"],
       "@intcloudsysops/git-branch-orchestrator": ["lib/git-branch-orchestrator"],
       "@intcloudsysops/git-branch-orchestrator/*": ["lib/git-branch-orchestrator/*"],
       "@intcloudsysops/migrations": ["lib/migrations"],

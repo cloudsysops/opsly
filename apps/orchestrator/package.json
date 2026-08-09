@@ -22,6 +22,7 @@
     "@ai-sdk/openai": "^3.0.53",
     "@anthropic-ai/sdk": "^0.57.0",
     "@intcloudsysops/content-studio": "*",
+    "@intcloudsysops/agent-task-core": "*",
     "@intcloudsysops/external-agent-registry": "*",
     "@intcloudsysops/git-branch-orchestrator": "*",
     "@intcloudsysops/llm-gateway": "*",

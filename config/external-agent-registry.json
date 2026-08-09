@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-05-15",
+  "updated_at": "2026-08-02",
   "principle": "Opsly orchestrates external market binaries only; no native duplicate agents.",
   "default_worker_id": "codex-cli",
   "routing_notes": {
@@ -25,6 +25,14 @@
       "write_access": false,
       "risk_ceiling": "medium",
       "capabilities": ["architecture", "planning", "deep-review", "documentation"],
+      "provider": "anthropic-cli",
+      "runtime": "cli",
+      "supported_task_types": ["planning", "documentation", "review"],
+      "skills": ["opsly-context"],
+      "local": true,
+      "open_source": false,
+      "priority": 40,
+      "fallback_agents": ["goose-cli"],
       "enabled": true
     },
     "opencode": {
@@ -38,6 +46,14 @@
       "write_access": true,
       "risk_ceiling": "medium",
       "capabilities": ["code-edit", "repo-review", "tests", "implementation"],
+      "provider": "opencode",
+      "runtime": "cli",
+      "supported_task_types": ["code", "review", "documentation"],
+      "skills": ["opsly-context"],
+      "local": true,
+      "open_source": true,
+      "priority": 10,
+      "fallback_agents": ["aider-cli", "goose-cli"],
       "enabled": true
     },
     "codex-cli": {
@@ -51,6 +67,14 @@
       "write_access": true,
       "risk_ceiling": "high",
       "capabilities": ["implementation", "debugging", "refactors", "integration"],
+      "provider": "openai-cli",
+      "runtime": "cli",
+      "supported_task_types": ["code", "infra"],
+      "skills": ["opsly-context"],
+      "local": true,
+      "open_source": false,
+      "priority": 25,
+      "fallback_agents": ["opencode"],
       "enabled": true
     },
     "cursor-ide": {
@@ -64,6 +88,14 @@
       "write_access": true,
       "risk_ceiling": "medium",
       "capabilities": ["ide-assisted-edits", "prompt-queue"],
+      "provider": "cursor",
+      "runtime": "cli",
+      "supported_task_types": ["code", "review"],
+      "skills": ["opsly-context"],
+      "local": true,
+      "open_source": false,
+      "priority": 35,
+      "fallback_agents": ["opencode"],
       "enabled": true
     },
     "copilot-cli": {
@@ -77,6 +109,14 @@
       "write_access": false,
       "risk_ceiling": "low",
       "capabilities": ["assistant", "quick-explanations"],
+      "provider": "github",
+      "runtime": "cli",
+      "supported_task_types": ["research", "documentation"],
+      "skills": ["opsly-context"],
+      "local": true,
+      "open_source": false,
+      "priority": 45,
+      "fallback_agents": ["goose-cli"],
       "enabled": true
     },
     "hermes-cli": {
@@ -90,6 +130,14 @@
       "write_access": false,
       "risk_ceiling": "medium",
       "capabilities": ["routing", "planning", "task-decomposition"],
+      "provider": "hermes",
+      "runtime": "cli",
+      "supported_task_types": ["planning", "research", "infra"],
+      "skills": ["opsly-context"],
+      "local": true,
+      "open_source": false,
+      "priority": 30,
+      "fallback_agents": ["goose-cli"],
       "enabled": true,
       "not_opsly_hermes_module": "apps/orchestrator/src/hermes is Opsly orchestration, not this CLI"
     },
@@ -104,6 +152,14 @@
       "write_access": false,
       "risk_ceiling": "high",
       "capabilities": ["security-review", "adversarial-audit"],
+      "provider": "security",
+      "runtime": "cli",
+      "supported_task_types": ["review"],
+      "skills": ["opsly-context", "opsly-qa"],
+      "local": true,
+      "open_source": false,
+      "priority": 20,
+      "fallback_agents": ["opencode"],
       "enabled": true
     },
     "aider-cli": {
@@ -117,6 +173,14 @@
       "write_access": true,
       "risk_ceiling": "medium",
       "capabilities": ["git-aware-edits"],
+      "provider": "aider",
+      "runtime": "cli",
+      "supported_task_types": ["code", "review"],
+      "skills": ["opsly-context"],
+      "local": true,
+      "open_source": true,
+      "priority": 20,
+      "fallback_agents": ["opencode"],
       "enabled": true
     },
     "goose-cli": {
@@ -130,6 +194,14 @@
       "write_access": true,
       "risk_ceiling": "medium",
       "capabilities": ["tool-use", "multi-step-automation"],
+      "provider": "goose",
+      "runtime": "cli",
+      "supported_task_types": ["research", "code", "infra", "documentation"],
+      "skills": ["opsly-context"],
+      "local": true,
+      "open_source": true,
+      "priority": 30,
+      "fallback_agents": ["opencode"],
       "enabled": true
     },
     "playwright-runner": {
@@ -143,6 +215,14 @@
       "write_access": false,
       "risk_ceiling": "low",
       "capabilities": ["browser-smoke", "portal-e2e"],
+      "provider": "playwright",
+      "runtime": "cli",
+      "supported_task_types": ["browser", "qa"],
+      "skills": ["opsly-context", "opsly-qa"],
+      "local": true,
+      "open_source": true,
+      "priority": 15,
+      "fallback_agents": ["goose-cli"],
       "enabled": true
     }
   }

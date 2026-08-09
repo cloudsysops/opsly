@@ -1,0 +1,21 @@
+{
+  "tenant_name": "Academy Demo",
+  "tenant_slug": "academy-demo",
+  "schema_name": "academy_demo",
+  "platform_domain": "op-sly.com",
+  "public_url": "https://academy-demo.op-sly.com",
+  "internal_port": 3099,
+  "stack_type": "incubator-app",
+  "owner_email": "academy-demo@example.invalid",
+  "vertical": "academy",
+  "modules_enabled": [],
+  "bundle": "starter",
+  "pattern_ids": ["incubator-app"],
+  "notes": "Non-production fixture for Opsly Reusable Core isolation tests. No secrets. Not for deploy.",
+  "agent_task_defaults": {
+    "local_only": true,
+    "open_source_preferred": true,
+    "execution_mode_default": "dry_run",
+    "max_cost_usd": 0
+  }
+}

@@ -93,7 +93,7 @@ describe('local prompt-submit → local-agents queue', () => {
       throw new Error('expected server to listen on a TCP port');
     }
     port = addr.port;
-  });
+  }, 60_000);
 
   afterEach(
     () =>
@@ -158,6 +158,122 @@ describe('local prompt-submit → local-agents queue', () => {
     expect(call0).toBeDefined();
     const jobArg = call0![0] as { type: string };
     expect(jobArg.type).toBe('local_claude');
+  });
+
+  it('accepts valid AgentTaskEnvelopeV1 and stores it on the job payload', async () => {
+    const requestId = 'req-envelope-ok-1';
+    const envelope = {
+      schema_version: 'AgentTaskEnvelopeV1',
+      request_id: requestId,
+      correlation_id: 'corr-envelope-ok-1',
+      tenant_slug: 'academy-demo',
+      task_type: 'review',
+      task: 'revisar routing',
+      selected_agent: 'local_opencode',
+      skills: [] as string[],
+      constraints: {
+        open_source_only: false,
+        local_only: false,
+        browser_allowed: false,
+        network_allowed: false,
+        write_allowed: false,
+        file_scope: [] as string[],
+        max_tokens: 1600,
+      },
+      execution_mode: 'enqueue',
+      source: 'opsly',
+      actor: 'system',
+      created_at: '2026-08-02T12:00:00.000Z',
+      timeout_ms: 120_000,
+      max_attempts: 2,
+      budget: { max_tokens: 1600 },
+      metadata: {},
+      fallback_agents: [] as string[],
+    };
+
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'academy-demo',
+        request_id: requestId,
+        agent: 'local_opencode',
+        prompt_body: 'revisar routing',
+        agent_task: envelope,
+      },
+      { Authorization: 'Bearer test-platform-admin' }
+    );
+
+    expect(status).toBe(202);
+    expect(JSON.parse(raw).job_type).toBe('local_opencode');
+    expect(enqueueLocalAgentJob).toHaveBeenCalledTimes(1);
+    const jobArg = enqueueLocalAgentJob.mock.calls[0]![0] as {
+      payload: { agent_task?: { schema_version: string; tenant_slug: string } };
+    };
+    expect(jobArg.payload.agent_task?.schema_version).toBe('AgentTaskEnvelopeV1');
+    expect(jobArg.payload.agent_task?.tenant_slug).toBe('academy-demo');
+  });
+
+  it('rejects AgentTaskEnvelopeV1 when tenant_slug/request_id mismatch', async () => {
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'academy-demo',
+        request_id: 'req-mismatch-body',
+        prompt_body: 'mismatch case',
+        agent_task: {
+          schema_version: 'AgentTaskEnvelopeV1',
+          request_id: 'req-mismatch-envelope',
+          correlation_id: 'corr-mismatch',
+          tenant_slug: 'other-tenant',
+          task_type: 'review',
+          task: 'mismatch case',
+          selected_agent: 'local_cursor',
+          skills: [],
+          constraints: {
+            open_source_only: false,
+            local_only: false,
+            browser_allowed: false,
+            network_allowed: false,
+            write_allowed: false,
+            file_scope: [],
+            max_tokens: 1600,
+          },
+          execution_mode: 'enqueue',
+          source: 'opsly',
+          actor: 'system',
+          created_at: '2026-08-02T12:00:00.000Z',
+          timeout_ms: 120_000,
+          max_attempts: 2,
+          budget: { max_tokens: 1600 },
+          metadata: {},
+          fallback_agents: [],
+        },
+      },
+      { Authorization: 'Bearer test-platform-admin' }
+    );
+
+    expect(status).toBe(400);
+    expect(raw).toMatch(/mismatch/i);
+    expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+  });
+
+  it('rejects invalid AgentTaskEnvelopeV1 shape', async () => {
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'academy-demo',
+        prompt_body: 'bad envelope',
+        agent_task: { schema_version: 'AgentTaskEnvelopeV9', tenant_slug: 'academy-demo' },
+      },
+      { Authorization: 'Bearer test-platform-admin' }
+    );
+
+    expect(status).toBe(400);
+    expect(raw).toMatch(/AgentTaskEnvelopeV1/i);
+    expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
   });
 
   it('POST /internal/enqueue-sandbox uses enqueueJob (openclaw), not enqueueLocalAgentJob', async () => {
