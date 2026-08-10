@@ -22,4 +22,3 @@ export abstract class BaseRepository<T> implements Repository<T> {
 
 // Re-export third-party service clients
 export * from './twenty/index.js';
-export * from './gohighlevel/index.js';

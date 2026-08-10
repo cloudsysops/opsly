@@ -5,7 +5,6 @@ export type PersistIcsoLeadInput = {
   email: string;
   message: string;
   sourceForm?: string;
-  ghlContactId?: string;
   twentyPersonId?: string;
   twentyOpportunityId?: string;
 };
@@ -51,7 +50,6 @@ export async function persistIcsoLead(
       status: 'active',
       notes: input.message.trim(),
       source_form: input.sourceForm ?? 'ICSO Contact Form',
-      ghl_contact_id: input.ghlContactId ?? null,
       twenty_person_id: input.twentyPersonId ?? null,
     })
     .select('id')

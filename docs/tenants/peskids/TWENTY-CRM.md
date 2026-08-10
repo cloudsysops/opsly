@@ -7,6 +7,8 @@ tenant: peskids
 
 # Peskids — Twenty CRM (reemplazo de GoHighLevel)
 
+> **2026-08:** GoHighLevel runtime removed from Opsly. Flags `PESKIDS_GHL_ENABLED` / `INTCLOUDSYSOPS_GHL_ENABLED` and GHL webhooks/services are gone. Use Twenty + n8n only.
+
 ## Objetivo
 
 Migrar el CRM comercial de **GoHighLevel (SaaS de pago)** a **Twenty CRM** (open source, self-hosted en el VPS Opsly), manteniendo:

@@ -1,4 +1,4 @@
-# Twenty CRM — self-hosted open-source CRM for Peskids (replaces GoHighLevel).
+# Twenty CRM — self-hosted open-source CRM for Peskids (replaces legacy CRM).
 #
 # Deploy (VPS, after Doppler vars):
 #   cd /opt/opsly/infra

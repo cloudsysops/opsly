@@ -40,10 +40,10 @@ done
 
 if [[ "$TENANT" == "icso" ]]; then
   server_url="https://crm-intcloudsysops.${DOMAIN}"
-  ghl_flag_var=INTCLOUDSYSOPS_GHL_ENABLED
+  ghl_flag_var=INTCLOUDSYSOPS_REMOVED_twentyENABLED
 else
   server_url="https://crm-peskids.${DOMAIN}"
-  ghl_flag_var=PESKIDS_GHL_ENABLED
+  ghl_flag_var=REMOVED_REMOVED_twentyFLAG
 fi
 
 app_secret="$(openssl rand -base64 32)"

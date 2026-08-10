@@ -50,12 +50,13 @@ export const peskidsLeadIntakeSchema = z.object({
 
 export type PeskidsLeadIntake = z.infer<typeof peskidsLeadIntakeSchema>;
 
-export const goHighLevelLeadWebhookSchema = z
+/** Canonical lead event for n8n / internal automation (no external CRM). */
+export const peskidsLeadAutomationEventSchema = z
   .object({
     event_id: z.string().trim().min(1),
     event_type: z.literal('lead.created'),
     tenant_slug: z.literal('peskids'),
-    source: z.enum(['gohighlevel', 'n8n', 'web']).default('gohighlevel'),
+    source: z.enum(['n8n', 'web', 'manual']).default('web'),
     lead_id: z.string().trim().min(1),
     pipeline_stage: z.enum(PESKIDS_PIPELINE_STAGES).or(z.string().trim().min(1)),
     occurred_at: z.string().datetime(),
@@ -71,18 +72,10 @@ export const goHighLevelLeadWebhookSchema = z
         reminder: true,
         trial_class_invitation: true,
       }),
-    ghl: z
-      .object({
-        contact_id: z.string().trim().min(1).optional(),
-        opportunity_id: z.string().trim().min(1).optional(),
-        pipeline_id: z.string().trim().min(1).optional(),
-        stage_id: z.string().trim().min(1).optional(),
-      })
-      .optional(),
   })
   .strict();
 
-export type GoHighLevelLeadWebhook = z.infer<typeof goHighLevelLeadWebhookSchema>;
+export type PeskidsLeadAutomationEvent = z.infer<typeof peskidsLeadAutomationEventSchema>;
 
 export function normalizePeskidsPipelineStage(value: string): PeskidsPipelineStage {
   const normalized = value.trim().toLowerCase();
@@ -125,7 +118,9 @@ export function leadStatusFromPipelineStage(
   }
 }
 
-export function buildPeskidsAutomationPayload(input: GoHighLevelLeadWebhook): Record<string, unknown> {
+export function buildPeskidsAutomationPayload(
+  input: PeskidsLeadAutomationEvent
+): Record<string, unknown> {
   return {
     tenant_slug: input.tenant_slug,
     lead_id: input.lead_id,
@@ -135,7 +130,6 @@ export function buildPeskidsAutomationPayload(input: GoHighLevelLeadWebhook): Re
     stage: normalizePeskidsPipelineStage(input.pipeline_stage),
     automation: input.automation,
     lead: input.lead,
-    ghl: input.ghl ?? null,
     next_actions: Object.entries(input.automation)
       .filter(([, enabled]) => enabled)
       .map(([action]) => action),

@@ -119,7 +119,7 @@ export async function alertGhlFailure(
   const errorMsg = error || (statusCode ? `HTTP ${statusCode}` : 'Unknown error');
   return sendSlackAlert(statusCode === 429 ? 'warning' : 'critical', {
     service: 'peskids',
-    component: 'gohighlevel',
+    component: 'legacy-crm',
     operation,
     error: errorMsg,
     leadId,

@@ -70,7 +70,7 @@
     },
     "crm_provider": {
       "type": "string",
-      "enum": ["gohighlevel", "twenty", "supabase-only", "manual"]
+      "enum": ["twenty", "twenty", "supabase-only", "manual"]
     },
     "ghl_location_id": {
       "type": "string",

@@ -72,7 +72,7 @@ const LAUNCH_STEPS: LaunchStep[] = [
     time: '4 min',
     gate: 'GHL location synced',
     details: [
-      'Link GoHighLevel location ID',
+      'Link Twenty CRM location ID',
       'Configure custom fields mapping',
       'Test lead sync webhook',
       'Verify CRM field validation',
@@ -219,7 +219,7 @@ function generatePlan(tenantSlug: string): LaunchPlan {
   const tenantConfig = path.join(process.cwd(), 'config', 'tenants', `${tenantSlug}.json`);
   const launchPath = path.join(process.cwd(), 'clients', `${tenantSlug}.launch.json`);
   let tenantName = tenantSlug;
-  let crmProvider: 'gohighlevel' | 'twenty' | 'supabase-only' | 'manual' = 'twenty';
+  let crmProvider: 'twenty' | 'twenty' | 'supabase-only' | 'manual' = 'twenty';
   let verticalId: string | undefined;
 
   if (fs.existsSync(launchPath)) {
@@ -274,7 +274,7 @@ function generatePlan(tenantSlug: string): LaunchPlan {
       ? [
           '✓ Form submission creates lead in Supabase',
           '✓ Lead syncs to Twenty when flags enabled',
-          '✓ GHL disabled via PESKIDS_GHL_ENABLED / INTCLOUDSYSOPS_GHL_ENABLED=false',
+          '✓ GHL disabled via REMOVED_REMOVED_twentyFLAG / INTCLOUDSYSOPS_REMOVED_twentyENABLED=false',
           '✓ Admin can view submissions',
           '✓ No errors in production logs',
         ]

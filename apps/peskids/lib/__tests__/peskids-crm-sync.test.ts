@@ -1,63 +1,67 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const sendLeadToTwentyMock = vi.fn();
-const sendLeadToGHLMock = vi.fn();
 const isTwentyConfiguredMock = vi.fn();
-const isPeskidsGhlEnabledMock = vi.fn();
+const sendLeadToTwentyMock = vi.fn();
+const resolveProvidersMock = vi.fn();
+const shouldSyncLeadToTwentyMock = vi.fn();
+
+vi.mock('@intcloudsysops/services', () => ({
+  isTwentyConfigured: isTwentyConfiguredMock,
+}));
 
 vi.mock('@/lib/twenty-lead-sync', () => ({
   sendLeadToTwenty: sendLeadToTwentyMock,
 }));
 
-vi.mock('@/lib/gohighlevel-lead-sync', () => ({
-  sendLeadToGHL: sendLeadToGHLMock,
+vi.mock('@/lib/integrations/peskids-provider-config', () => ({
+  resolvePeskidsIntegrationProviders: resolveProvidersMock,
+  shouldSyncLeadToTwenty: shouldSyncLeadToTwentyMock,
 }));
 
-vi.mock('@intcloudsysops/services/twenty', () => ({
-  isTwentyConfigured: isTwentyConfiguredMock,
-  isPeskidsGhlEnabled: isPeskidsGhlEnabledMock,
-}));
+import { syncLeadToCrm } from '@/lib/peskids-crm-sync';
 
 describe('syncLeadToCrm', () => {
   beforeEach(() => {
+    isTwentyConfiguredMock.mockReset();
     sendLeadToTwentyMock.mockReset();
-    sendLeadToGHLMock.mockReset();
-    isTwentyConfiguredMock.mockReturnValue(false);
-    isPeskidsGhlEnabledMock.mockReturnValue(false);
+    resolveProvidersMock.mockReset();
+    shouldSyncLeadToTwentyMock.mockReset();
+    resolveProvidersMock.mockReturnValue({
+      crm: 'legacy',
+      inbox: 'legacy',
+      booking: 'legacy',
+      explicitFlags: false,
+    });
+    isTwentyConfiguredMock.mockReturnValue(true);
+    shouldSyncLeadToTwentyMock.mockReturnValue(true);
   });
 
   it('syncs to Twenty when configured', async () => {
-    isTwentyConfiguredMock.mockReturnValue(true);
     sendLeadToTwentyMock.mockResolvedValue({
-      twentyPersonId: 'person-1',
-      twentyOpportunityId: 'opp-1',
+      twentyPersonId: 'p-1',
+      twentyOpportunityId: 'o-1',
     });
 
-    const { syncLeadToCrm } = await import('../peskids-crm-sync');
     const result = await syncLeadToCrm({
-      parentName: 'Ana García',
+      parentName: 'Ana',
       email: 'ana@example.com',
-      gradeInterested: 'K-5',
+      phone: '+573001112233',
     });
 
-    expect(result).toEqual({
-      twentyPersonId: 'person-1',
-      twentyOpportunityId: 'opp-1',
-    });
-    expect(sendLeadToGHLMock).not.toHaveBeenCalled();
+    expect(sendLeadToTwentyMock).toHaveBeenCalledOnce();
+    expect(result.twentyPersonId).toBe('p-1');
+    expect(result.twentyOpportunityId).toBe('o-1');
   });
 
-  it('syncs to GHL only when explicitly enabled', async () => {
-    isPeskidsGhlEnabledMock.mockReturnValue(true);
-    sendLeadToGHLMock.mockResolvedValue({ ghlContactId: 'ghl-99' });
+  it('skips Twenty when shouldSyncLeadToTwenty is false', async () => {
+    shouldSyncLeadToTwentyMock.mockReturnValue(false);
 
-    const { syncLeadToCrm } = await import('../peskids-crm-sync');
     const result = await syncLeadToCrm({
-      parentName: 'Ana García',
+      parentName: 'Ana',
       email: 'ana@example.com',
     });
 
-    expect(result).toEqual({ ghlContactId: 'ghl-99' });
     expect(sendLeadToTwentyMock).not.toHaveBeenCalled();
+    expect(result).toEqual({});
   });
 });

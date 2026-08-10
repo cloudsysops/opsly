@@ -5,7 +5,7 @@ const buildReferralCodeMock = vi.fn();
 const buildReferralLinkMock = vi.fn();
 
 vi.mock('@/lib/peskids-canonical-api', () => ({
-  postPeskidsLeadWithGHL: postCanonicalLeadMock,
+  postPeskidsLeadWithCRM: postCanonicalLeadMock,
 }));
 
 vi.mock('@/lib/peskids-referrals', () => ({

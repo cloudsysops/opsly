@@ -8,7 +8,7 @@ DRY_RUN=true
 EXECUTE_ONBOARD=false
 EXECUTE_DOPPLER=false
 EXECUTE_TWENTY=false
-EXECUTE_GHL_OFF=false
+EXECUTE_REMOVED_twentyOFF=false
 EXECUTE_WACRM=false
 PLAN="startup"
 
@@ -52,11 +52,11 @@ while [[ $# -gt 0 ]]; do
       DRY_RUN=false
       EXECUTE_ONBOARD=true
       EXECUTE_DOPPLER=true
-      EXECUTE_GHL_OFF=true
+      EXECUTE_REMOVED_twentyOFF=true
       ;;
     --execute-onboard) EXECUTE_ONBOARD=true; DRY_RUN=false ;;
     --execute-doppler) EXECUTE_DOPPLER=true; DRY_RUN=false ;;
-    --execute-ghl-off) EXECUTE_GHL_OFF=true; DRY_RUN=false ;;
+    --execute-ghl-off) EXECUTE_REMOVED_twentyOFF=true; DRY_RUN=false ;;
     --execute-twenty) EXECUTE_TWENTY=true; DRY_RUN=false ;;
     --execute-wacrm) EXECUTE_WACRM=true; DRY_RUN=false ;;
     --plan)
@@ -160,7 +160,7 @@ if [[ "$CRM" == "twenty" && "$TENANT_FLAG" != "none" ]]; then
   else
     echo "  plan ./scripts/tenants/doppler-configure-twenty-prd.sh --tenant $TENANT_FLAG"
   fi
-  if [[ "$EXECUTE_GHL_OFF" == true ]]; then
+  if [[ "$EXECUTE_REMOVED_twentyOFF" == true ]]; then
     run "${ROOT}/scripts/tenants/ghl-disable-legacy.sh" --tenant "$TENANT_FLAG"
   else
     echo "  plan ./scripts/tenants/ghl-disable-legacy.sh --tenant $TENANT_FLAG"

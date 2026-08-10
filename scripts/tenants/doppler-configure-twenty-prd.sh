@@ -13,8 +13,8 @@ usage() {
 Usage: ./scripts/tenants/doppler-configure-twenty-prd.sh [--dry-run] [--force] [--tenant peskids|icso|both]
 
 Sets CRM feature flags (Twenty primary, GHL legacy off by default):
-  PESKIDS_GHL_ENABLED=false
-  INTCLOUDSYSOPS_GHL_ENABLED=false
+  REMOVED_REMOVED_twentyFLAG=false
+  INTCLOUDSYSOPS_REMOVED_twentyENABLED=false
   PESKIDS_TWENTY_ENABLED=true          (when TWENTY_API_KEY + TWENTY_API_URL exist, or --force)
   INTCLOUDSYSOPS_TWENTY_ENABLED=true   (when TWENTY_INTCLOUDSYSOPS_API_* exist, or --force)
 
@@ -71,7 +71,7 @@ echo ""
 
 configure_peskids() {
   echo "Peskids:"
-  set_flag PESKIDS_GHL_ENABLED "false"
+  set_flag REMOVED_REMOVED_twentyFLAG "false"
   local api_key api_url
   api_key="$(get_plain TWENTY_API_KEY)"
   api_url="$(get_plain TWENTY_API_URL)"
@@ -84,7 +84,7 @@ configure_peskids() {
 
 configure_icso() {
   echo "ICSO (intcloudsysops):"
-  set_flag INTCLOUDSYSOPS_GHL_ENABLED "false"
+  set_flag INTCLOUDSYSOPS_REMOVED_twentyENABLED "false"
   local api_key api_url
   api_key="$(get_plain TWENTY_INTCLOUDSYSOPS_API_KEY)"
   api_url="$(get_plain TWENTY_INTCLOUDSYSOPS_API_URL)"

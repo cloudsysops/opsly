@@ -1,18 +1,14 @@
-import {
-  isIntcloudsysopsGhlEnabled,
-  isIntcloudsysopsTwentyConfigured,
-} from '@intcloudsysops/services/twenty';
-import { sendLeadToGHL } from '@/lib/gohighlevel-lead-sync';
+import { isIntcloudsysopsTwentyConfigured } from '@intcloudsysops/services/twenty';
 import { sendLeadToTwenty, type IcsoLeadData } from '@/lib/twenty-lead-sync';
 
 export type CrmLeadSyncInput = IcsoLeadData;
 
 export type CrmLeadSyncResult = {
-  ghlContactId?: string;
   twentyPersonId?: string;
   twentyOpportunityId?: string;
 };
 
+/** Sync ICSO leads to Twenty CRM (canonical). legacy CRM dual-write removed. */
 export async function syncLeadToCrm(data: CrmLeadSyncInput): Promise<CrmLeadSyncResult> {
   const result: CrmLeadSyncResult = {};
 
@@ -21,13 +17,6 @@ export async function syncLeadToCrm(data: CrmLeadSyncInput): Promise<CrmLeadSync
     if (twentyResult) {
       result.twentyPersonId = twentyResult.twentyPersonId;
       result.twentyOpportunityId = twentyResult.twentyOpportunityId;
-    }
-  }
-
-  if (isIntcloudsysopsGhlEnabled()) {
-    const ghlResult = await sendLeadToGHL(data);
-    if (ghlResult) {
-      result.ghlContactId = ghlResult.ghlContactId;
     }
   }
 

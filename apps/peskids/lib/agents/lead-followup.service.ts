@@ -1,4 +1,3 @@
-import type { PeskidsGoHighLevelThreadClient } from '@/lib/gohighlevel-thread-client';
 import type {
   FollowupLeadRecord,
   LeadFollowupStore,
@@ -19,42 +18,20 @@ export type ReengagementCandidate = ReengagementLeadCandidate;
 
 export type LeadFollowupServiceDeps = {
   store?: LeadFollowupStore;
-  ghlClient?: PeskidsGoHighLevelThreadClient | null;
   tenantId?: string;
 };
 
 /**
- * @deprecated Legacy GoHighLevel thread client service.
- * Not used in active Twenty/Supabase paths. Kept for backward compatibility.
- * Mark for removal in Phase 2 (post-30-day safety window).
+ * Generates follow-up drafts via LLM Gateway and queues them for staff / n8n.
+ * legacy CRM messaging removed — outbound send is approval-first via Opsly.
  */
 export class LeadFollowupService {
   private readonly store: LeadFollowupStore;
-  private readonly ghlClient: PeskidsGoHighLevelThreadClient | null;
   private readonly tenantId: string;
 
   constructor(deps: LeadFollowupServiceDeps = {}) {
     this.store = deps.store ?? createSupabaseLeadFollowupStore();
-    this.ghlClient = deps.ghlClient ?? null;
     this.tenantId = deps.tenantId ?? process.env.NEXT_PUBLIC_TENANT_ID ?? 'peskids';
-  }
-
-  /** Legacy GHL contact id used only as transient messaging channel. */
-  getCrmMessagingContactId(lead: FollowupLeadRecord): string | null {
-    return lead.ghl_contact_id?.trim() || null;
-  }
-
-  async resolveConversationId(crmContactId: string): Promise<string | null> {
-    if (!this.ghlClient) {
-      return null;
-    }
-
-    try {
-      const conversation = await this.ghlClient.findConversationByContactId(crmContactId);
-      return conversation?.id ?? null;
-    } catch {
-      return null;
-    }
   }
 
   async findStaleLeads(hoursThreshold = 24): Promise<FollowupLeadRecord[]> {
@@ -123,49 +100,6 @@ export class LeadFollowupService {
     return content;
   }
 
-  async sendFollowup(
-    crmContactId: string,
-    message: string,
-    channel: 'sms' | 'whatsapp',
-    options?: { conversationId?: string; replyToMessageId?: string }
-  ): Promise<boolean> {
-    if (!this.ghlClient) {
-      return false;
-    }
-
-    try {
-      const result = options?.conversationId
-        ? await this.ghlClient.sendConversationMessage({
-            contactId: crmContactId,
-            conversationId: options.conversationId,
-            replyToMessageId: options.replyToMessageId,
-            message,
-            channel,
-          })
-        : await this.ghlClient.sendMessage({
-            contactId: crmContactId,
-            message,
-            channel,
-          });
-      return result.status === 'sent' || result.status === 'pending';
-    } catch {
-      return false;
-    }
-  }
-
-  async escalateToHuman(crmContactId: string, reason: string): Promise<void> {
-    if (!this.ghlClient) {
-      return;
-    }
-
-    await this.ghlClient.createTask({
-      title: 'Lead sin respuesta — seguimiento humano requerido',
-      description: reason,
-      contactId: crmContactId,
-      priority: 'high',
-    });
-  }
-
   async queueManualFollowup(
     lead: FollowupLeadRecord,
     message: string,
@@ -202,33 +136,9 @@ export class LeadFollowupService {
     for (const lead of staleLeads) {
       try {
         const message = await this.generateFollowupMessage(lead, llmGatewayUrl);
-        const crmContactId = this.getCrmMessagingContactId(lead);
-
-        if (!crmContactId) {
-          await this.queueManualFollowup(lead, message, channel);
-          escalated++;
-          continue;
-        }
-
-        const conversationId = await this.resolveConversationId(crmContactId);
-        const sent = await this.sendFollowup(crmContactId, message, channel, {
-          ...(conversationId ? { conversationId } : {}),
-        });
-
-        if (!sent) {
-          await this.queueManualFollowup(lead, message, channel);
-          escalated++;
-          failed++;
-          continue;
-        }
-
+        await this.queueManualFollowup(lead, message, channel);
+        escalated++;
         followed++;
-
-        await this.escalateToHuman(
-          crmContactId,
-          `Lead ${lead.name} (${lead.id}) seguido automáticamente vía ${channel}. ` +
-            'Si no responde en 48h, el equipo debe contactar manualmente.'
-        );
       } catch {
         failed++;
       }
@@ -260,22 +170,8 @@ export class LeadFollowupService {
         message = this.buildReengagementMessage(parentName, lead.grade_interested);
       }
 
-      const crmContactId = this.getCrmMessagingContactId(lead);
-      if (!crmContactId || !this.ghlClient) {
-        await this.queueManualFollowup(lead, message, 'sms');
-        return false;
-      }
-
-      const sent = await this.sendFollowup(crmContactId, message, 'sms');
-      if (sent) {
-        await this.ghlClient.addContactTags(crmContactId, [
-          daysSinceContact >= 30 ? 'reengaged_no_response' : 'reengagement_1',
-        ]);
-        return true;
-      }
-
       await this.queueManualFollowup(lead, message, 'sms');
-      return false;
+      return true;
     } catch {
       return false;
     }

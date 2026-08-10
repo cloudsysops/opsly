@@ -11,7 +11,7 @@
  *   1. Client name (e.g., "Peskids")
  *   2. Tenant slug (e.g., "peskids")
  *   3. Primary email for owner
- *   4. GHL location ID (if using GoHighLevel CRM)
+ *   4. GHL location ID (if using Twenty CRM CRM)
  *   5. n8n workflows count (optional)
  *   6. Initial plan / tier
  */
@@ -94,7 +94,7 @@ async function setupClient(interactive = true): Promise<ClientConfig> {
     }
 
     // GHL setup (optional)
-    const useGhl = await prompt('Use GoHighLevel CRM integration? (y/N)');
+    const useGhl = await prompt('Use Twenty CRM CRM integration? (y/N)');
     if (useGhl.toLowerCase() === 'y') {
       ghlLocationId = await prompt('GHL location ID');
       if (!ghlLocationId) {

@@ -17,8 +17,7 @@ export const metadata: Metadata = {
   keywords: [
     'AI automation',
     'CRM automation',
-    'GoHighLevel',
-    'workflow automation',
+        'workflow automation',
     'IntCloud SysOps',
     'ICSO',
   ],

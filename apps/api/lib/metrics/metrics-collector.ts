@@ -123,7 +123,7 @@ export async function recordGhlContactCreated(tenantSlug: string): Promise<void>
     name: 'ghl.contact.created',
     type: 'counter',
     value: 1,
-    component: 'gohighlevel',
+    component: 'twenty',
     tenantSlug,
   });
 }
@@ -133,7 +133,7 @@ export async function recordGhlContactLatency(tenantSlug: string, latencyMs: num
     name: 'ghl.contact.latency_ms',
     type: 'histogram',
     value: latencyMs,
-    component: 'gohighlevel',
+    component: 'twenty',
     tenantSlug,
   });
 }
@@ -143,7 +143,7 @@ export async function recordGhlOpportunityCreated(tenantSlug: string): Promise<v
     name: 'ghl.opportunity.created',
     type: 'counter',
     value: 1,
-    component: 'gohighlevel',
+    component: 'twenty',
     tenantSlug,
   });
 }
@@ -153,7 +153,7 @@ export async function recordGhlOpportunityLatency(tenantSlug: string, latencyMs:
     name: 'ghl.opportunity.latency_ms',
     type: 'histogram',
     value: latencyMs,
-    component: 'gohighlevel',
+    component: 'twenty',
     tenantSlug,
   });
 }
@@ -188,7 +188,7 @@ export async function recordGhlApiError(tenantSlug: string, statusCode: number, 
     name: 'ghl.api.errors',
     type: 'counter',
     value: 1,
-    component: 'gohighlevel',
+    component: 'twenty',
     tenantSlug,
     tags: { statusCode: String(statusCode), operation },
   });
@@ -199,7 +199,7 @@ export async function recordGhlRateLimit(tenantSlug: string): Promise<void> {
     name: 'ghl.rate_limit_429',
     type: 'counter',
     value: 1,
-    component: 'gohighlevel',
+    component: 'twenty',
     tenantSlug,
   });
 }

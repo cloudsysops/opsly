@@ -142,7 +142,7 @@ Every 1 Hour → Execute Follow-ups (POST Peskids /api/admin/followups/execute)
 
 **Auth:** `Authorization: Bearer` with `PESKIDS_FOLLOWUP_CRON_SECRET` (fallback `PESKIDS_DIGEST_CRON_SECRET`).
 
-**Does not call GoHighLevel.** Execution lives in Peskids app (`executeDueFollowups`) and syncs Twenty task status to DONE when a followup is completed.
+**Does not call Twenty CRM.** Execution lives in Peskids app (`executeDueFollowups`) and syncs Twenty task status to DONE when a followup is completed.
 
 **Env vars required (n8n):**
 - `PESKIDS_APP_URL`
