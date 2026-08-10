@@ -29,6 +29,7 @@ describe('syncLeadToCrm', () => {
     const result = await syncLeadToCrm({
       name: 'Carlos',
       email: 'carlos@example.com',
+      message: 'Interested in Opsly',
     });
 
     expect(sendLeadToTwentyMock).toHaveBeenCalledOnce();
@@ -41,6 +42,7 @@ describe('syncLeadToCrm', () => {
     const result = await syncLeadToCrm({
       name: 'Carlos',
       email: 'carlos@example.com',
+      message: 'Interested in Opsly',
     });
 
     expect(sendLeadToTwentyMock).not.toHaveBeenCalled();
