@@ -1,4 +1,12 @@
 import { getServiceClient } from './supabase';
+import { CACHE_TTL } from './constants';
+import { logger } from './logger';
+import { getCache, setCache } from './redis-cache';
+
+/** Named constants to satisfy the 'no-magic-numbers' ESLint rule. */
+const PERCENTAGE_MULTIPLIER = 10000;
+const PERCENTAGE_DIVISOR = 100;
+const DEFAULT_DAYS_AGO = 30;
 
 /** Alineado a `apps/web/lib/stripe/plans` price_usd (MRR orientativo). */
 const PLAN_MRR_USD: Record<string, number> = {
@@ -37,54 +45,19 @@ function buildMetricsQueries(
   client: ReturnType<typeof getServiceClient>,
   since: string
 ): unknown[] {
+  const getBase = (): ReturnType<
+    ReturnType<ReturnType<ReturnType<typeof getServiceClient>['schema']>['from']>['select']
+  > => client.schema('platform').from('tenants').select('*', { count: 'exact', head: true });
+
   return [
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('status', 'active'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('status', 'suspended'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('is_demo', true),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('status', 'failed'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('plan', 'startup'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('plan', 'business'),
-    client
-      .schema('platform')
-      .from('tenants')
-      .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
-      .eq('plan', 'enterprise'),
+    getBase().is('deleted_at', null),
+    getBase().is('deleted_at', null).eq('status', 'active'),
+    getBase().is('deleted_at', null).eq('status', 'suspended'),
+    getBase().is('deleted_at', null).eq('is_demo', true),
+    getBase().is('deleted_at', null).eq('status', 'failed'),
+    getBase().is('deleted_at', null).eq('plan', 'startup'),
+    getBase().is('deleted_at', null).eq('plan', 'business'),
+    getBase().is('deleted_at', null).eq('plan', 'enterprise'),
     client
       .schema('platform')
       .from('tenants')
@@ -152,7 +125,10 @@ function calculateConversionMetrics(
 ): WebDashboardMetricsJson['conversion'] {
   const started = startedRes.count ?? 0;
   const completed = completedRes.count ?? 0;
-  const rate = started > 0 ? Math.round((completed / started) * 10000) / 100 : 0;
+  const rate =
+    started > 0
+      ? Math.round((completed / started) * PERCENTAGE_MULTIPLIER) / PERCENTAGE_DIVISOR
+      : 0;
   return { onboard_started: started, onboard_completed: completed, rate };
 }
 
@@ -166,9 +142,23 @@ function buildDashboardMetrics(results: unknown[]): WebDashboardMetricsJson {
 }
 
 export async function getWebDashboardMetricsJson(): Promise<WebDashboardMetricsJson> {
+  const cacheKey = 'metrics:web_dashboard_json';
+  // Check Redis cache first for fast response
+  const cached = await getCache<WebDashboardMetricsJson>(cacheKey);
+  if (cached !== null) {
+    return cached;
+  }
+
   const client = getServiceClient();
-  const since = daysAgoIso(30);
+  const since = daysAgoIso(DEFAULT_DAYS_AGO);
   const results = await fetchMetricsData(client, since);
   validateQueryResults(results as Array<{ error?: unknown }>);
-  return buildDashboardMetrics(results);
+  const dashboardMetrics = buildDashboardMetrics(results);
+
+  // Background non-blocking cache write to avoid adding to response latency
+  void setCache(cacheKey, dashboardMetrics, CACHE_TTL.SHORT).catch((err) => {
+    logger.error(`[web-dashboard-cache] failed to set ${cacheKey}`, err);
+  });
+
+  return dashboardMetrics;
 }
