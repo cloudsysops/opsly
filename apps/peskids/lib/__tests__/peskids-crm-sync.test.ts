@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const isTwentyConfiguredMock = vi.fn();
-const sendLeadToTwentyMock = vi.fn();
-const resolveProvidersMock = vi.fn();
-const shouldSyncLeadToTwentyMock = vi.fn();
+const isTwentyConfiguredMock = vi.hoisted(() => vi.fn());
+const sendLeadToTwentyMock = vi.hoisted(() => vi.fn());
+const resolveProvidersMock = vi.hoisted(() => vi.fn());
+const shouldSyncLeadToTwentyMock = vi.hoisted(() => vi.fn());
 
 vi.mock('@intcloudsysops/services', () => ({
   isTwentyConfigured: isTwentyConfiguredMock,
@@ -27,7 +27,7 @@ describe('syncLeadToCrm', () => {
     resolveProvidersMock.mockReset();
     shouldSyncLeadToTwentyMock.mockReset();
     resolveProvidersMock.mockReturnValue({
-      crm: 'legacy',
+      crm: 'twenty',
       inbox: 'legacy',
       booking: 'legacy',
       explicitFlags: false,
