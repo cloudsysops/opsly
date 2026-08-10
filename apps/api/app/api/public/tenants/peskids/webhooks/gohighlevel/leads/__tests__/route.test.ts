@@ -49,10 +49,7 @@ vi.mock('../../../../../../../../lib/peskids/opportunity', () => ({
   createPipelineOpportunity: createPipelineOpportunityMock,
 }));
 
-function ghlRequest(
-  body: unknown,
-  headers: Record<string, string> = {}
-): NextRequest {
+function ghlRequest(body: unknown, headers: Record<string, string> = {}): NextRequest {
   return new Request('http://localhost/api/public/tenants/peskids/webhooks/gohighlevel/leads', {
     method: 'POST',
     headers: {

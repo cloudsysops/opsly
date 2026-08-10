@@ -36,7 +36,10 @@ describe('request body limits', () => {
 
   it('rejects oversized buffers even without Content-Length', async () => {
     const huge = 'x'.repeat(REQUEST_BODY_LIMITS.JSON_DEFAULT_BYTES + 10);
-    const result = await readTextBodyLimited(jsonRequest(huge), REQUEST_BODY_LIMITS.JSON_DEFAULT_BYTES);
+    const result = await readTextBodyLimited(
+      jsonRequest(huge),
+      REQUEST_BODY_LIMITS.JSON_DEFAULT_BYTES
+    );
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.response.status).toBe(HTTP_STATUS.PAYLOAD_TOO_LARGE);
