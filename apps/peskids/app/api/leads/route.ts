@@ -122,7 +122,6 @@ export async function POST(request: NextRequest) {
         referral_link: referralLink,
         referral_discount_cents: 0,
         message: 'Interesado registrado correctamente',
-        ghl_contact_id: canonical.ghlContactId ?? null,
         twenty_person_id: canonical.twentyPersonId ?? null,
         twenty_opportunity_id: canonical.twentyOpportunityId ?? null,
       },

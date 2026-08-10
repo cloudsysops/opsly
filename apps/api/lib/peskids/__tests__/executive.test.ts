@@ -73,8 +73,8 @@ describe('peskids executive read model', () => {
       eq: vi.fn(() => leadsQuery),
       order: vi.fn(async () => ({
         data: [
-          { lead_id: 'lead-1', source: 'gohighlevel', referral_source: 'Instagram', stage: 'New Lead', status: 'new', created_at: '2026-06-01T10:00:00.000Z' },
-          { lead_id: 'lead-2', source: 'gohighlevel', referral_source: 'Referral', stage: 'Enrolled', status: 'converted', created_at: '2026-06-01T11:00:00.000Z' },
+          { lead_id: 'lead-1', source: 'web', referral_source: 'Instagram', stage: 'New Lead', status: 'new', created_at: '2026-06-01T10:00:00.000Z' },
+          { lead_id: 'lead-2', source: 'web', referral_source: 'Referral', stage: 'Enrolled', status: 'converted', created_at: '2026-06-01T11:00:00.000Z' },
           { lead_id: 'lead-3', source: 'web', referral_source: 'Website', stage: 'Contacted', status: 'contacted', created_at: '2026-05-15T11:00:00.000Z' },
         ],
         error: null,

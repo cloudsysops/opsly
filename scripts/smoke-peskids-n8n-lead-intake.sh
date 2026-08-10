@@ -11,7 +11,7 @@ PAYLOAD='{
   "event_id": "'"$REQUEST_ID"'",
   "event_type": "lead.created",
   "tenant_slug": "peskids",
-  "source": "gohighlevel",
+  "source": "twenty",
   "lead_id": "lead-smoke-001",
   "stage": "New Lead",
   "lead": {

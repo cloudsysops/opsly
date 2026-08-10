@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  gohighlevelLeadIntakeSchema,
+  externalLeadIntakeSchema,
   leadApiPostSchema,
   leadCaptureFormSchema,
   toCreateLeadInput,
@@ -218,9 +218,9 @@ describe('toCreateLeadInput', () => {
   });
 });
 
-describe('gohighlevelLeadIntakeSchema', () => {
+describe('externalLeadIntakeSchema', () => {
   it('validates the minimal parent/child intake fields', () => {
-    const parsed = gohighlevelLeadIntakeSchema.parse({
+    const parsed = externalLeadIntakeSchema.parse({
       parent_name: 'Maria Rodriguez',
       phone: '+573001112233',
       email: 'maria@example.com',

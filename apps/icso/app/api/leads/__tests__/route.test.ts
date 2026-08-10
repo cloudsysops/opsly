@@ -70,10 +70,8 @@ describe('POST /api/leads', () => {
     );
   });
 
-  it('includes legacy ghlContactId when sidecar returns it', async () => {
-    syncLeadToCrmMock.mockResolvedValue({
-      ghlContactId: 'ghl-contact-123',
-    });
+  it('returns null calendar when booking URL is unset', async () => {
+    syncLeadToCrmMock.mockResolvedValue({});
     persistIcsoLeadMock.mockResolvedValue({
       accountId: 'account-2',
       contactId: 'contact-2',
@@ -91,7 +89,6 @@ describe('POST /api/leads', () => {
     } as never);
     const data = await response.json();
 
-    expect(data.ghlContactId).toBe('ghl-contact-123');
     expect(data.calendarBookingUrl).toBeNull();
   });
 

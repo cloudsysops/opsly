@@ -10,7 +10,6 @@
   "offer_type": "discovery_call",
   "lead_sources": ["website", "linkedin", "referral"],
   "crm_provider": "twenty",
-  "ghl_location_id": "qD7Z9jt3owk0LMtKElow",
   "crm_pipeline_name": "Opsly Agency Sales",
   "landing_routes": ["/", "/services", "/contact", "/case-studies"],
   "brand_basic": {
@@ -18,7 +17,7 @@
   },
   "form_fields": ["name", "email", "phone", "company", "message"],
   "cta_text": "Agenda una llamada de descubrimiento",
-  "fallback_behavior": "Persist lead in Supabase; sync Twenty when INTCLOUDSYSOPS_TWENTY_ENABLED; GHL only if legacy flag on.",
+  "fallback_behavior": "Persist lead in Supabase; sync Twenty when INTCLOUDSYSOPS_TWENTY_ENABLED.",
   "n8n_workflows": [
     "lead-capture",
     "hot-lead-alert",

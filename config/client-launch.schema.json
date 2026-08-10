@@ -70,11 +70,7 @@
     },
     "crm_provider": {
       "type": "string",
-      "enum": ["gohighlevel", "twenty", "supabase-only", "manual"]
-    },
-    "ghl_location_id": {
-      "type": "string",
-      "minLength": 1
+      "enum": ["twenty", "supabase-only", "manual"]
     },
     "crm_pipeline_name": {
       "type": "string",

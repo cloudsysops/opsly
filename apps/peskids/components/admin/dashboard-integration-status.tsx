@@ -45,8 +45,8 @@ const statusLabelEs: Record<
 export function DashboardIntegrationStatus({
   data,
 }: DashboardIntegrationStatusProps): React.ReactElement | null {
-  // Demo-ready: only show live product surfaces (Twenty + n8n). Hide legacy GHL
-  // and optional WACRM when they are explicitly off — avoids “apagado” noise.
+  // Demo-ready: only show live product surfaces (Twenty + n8n). Hide optional
+  // WACRM when explicitly off — avoids “apagado” noise.
   const items = [data.integration_status.twenty, data.integration_status.n8n].filter(
     (item) => item.enabled || item.status === 'ok' || item.status === 'warning'
   );

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { requireAdminAccess } from '../../../../../../../../lib/auth';
 import { HTTP_STATUS } from '../../../../../../../../lib/constants';
-import { PESKIDS_PIPELINE_STAGES } from '../../../../../../../../lib/peskids/ghl-contract';
+import { PESKIDS_PIPELINE_STAGES } from '../../../../../../../../lib/peskids/pipeline-contract';
 import { updateLeadStage } from '../../../../../../../../lib/peskids/sales-pipeline';
 import { parseJsonBody, jsonError } from '../../../../../../../../lib/api-response';
 import { formatZodError } from '../../../../../../../../lib/validation';

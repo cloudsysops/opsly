@@ -9,7 +9,7 @@ export type {
   LeadFollowupStore,
   ReengagementLeadCandidate,
 } from './lead-followup-store';
-export { TrialSchedulerService, GOHIGHLEVEL_CALENDAR_API_VERSION } from './trial-scheduler.service';
+export { TrialSchedulerService } from './trial-scheduler.service';
 export type { TrialSchedulingResult, TrialScheduleInput, TrialSchedulerDeps } from './trial-scheduler.service';
 export {
   createSupabaseTrialSchedulingStore,

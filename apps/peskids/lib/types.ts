@@ -735,7 +735,7 @@ export type Database = {
       leads: {
         Row: {
           id: string;
-          ghl_contact_id: string | null;
+          twenty_person_id: string | null;
           tenant_id: string;
           franchise_id: string | null;
           name: string;
@@ -764,7 +764,7 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          ghl_contact_id?: string | null;
+          twenty_person_id?: string | null;
           tenant_id: string;
           franchise_id?: string | null;
           name: string;
@@ -796,7 +796,6 @@ export type Database = {
       students: {
         Row: {
           id: string;
-          ghl_contact_id: string | null;
           tenant_id: string;
           franchise_id: string | null;
           name: string;
@@ -812,7 +811,6 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          ghl_contact_id?: string | null;
           tenant_id: string;
           franchise_id?: string | null;
           name: string;
@@ -1146,7 +1144,6 @@ export interface DashboardIntegrationStatusItem {
 
 export interface DashboardIntegrationStatus {
   twenty: DashboardIntegrationStatusItem;
-  ghl: DashboardIntegrationStatusItem;
   n8n: DashboardIntegrationStatusItem;
   wacrm: DashboardIntegrationStatusItem;
 }

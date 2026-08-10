@@ -1,6 +1,6 @@
 import type { PeskidsIntakeProfile } from '@/lib/peskids-intake';
 import { gradeInterestedLabel } from '@/lib/peskids-intake-messages';
-import { postPeskidsLeadWithGHL } from '@/lib/peskids-canonical-api';
+import { postPeskidsLeadWithCRM } from '@/lib/peskids-canonical-api';
 
 /** Registra interesado vía la misma API canónica que POST /api/leads. */
 export async function submitLeadFromIntake(
@@ -19,7 +19,7 @@ export async function submitLeadFromIntake(
   const requestId = crypto.randomUUID();
   const referralSource = profile.referralSource?.trim() || 'whatsapp';
 
-  const result = await postPeskidsLeadWithGHL(
+  const result = await postPeskidsLeadWithCRM(
     {
       name: profile.parentName,
       email: profile.email,

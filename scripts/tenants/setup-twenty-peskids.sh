@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Provision Twenty CRM for Peskids on VPS (self-hosted, replaces GoHighLevel).
+# Provision Twenty CRM for Peskids on VPS (self-hosted, replaces Twenty CRM).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"

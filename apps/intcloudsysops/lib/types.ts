@@ -239,7 +239,6 @@ export type Database = {
       leads: {
         Row: {
           id: string;
-          ghl_contact_id: string | null;
           tenant_id: string;
           name: string;
           email: string;
@@ -258,7 +257,6 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          ghl_contact_id?: string | null;
           tenant_id: string;
           name: string;
           email: string;
@@ -280,7 +278,6 @@ export type Database = {
       students: {
         Row: {
           id: string;
-          ghl_contact_id: string | null;
           tenant_id: string;
           name: string;
           grade: string;
@@ -295,7 +292,6 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          ghl_contact_id?: string | null;
           tenant_id: string;
           name: string;
           grade: string;

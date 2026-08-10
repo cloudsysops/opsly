@@ -20,7 +20,7 @@ npm run type-check --workspace=@intcloudsysops/icso
 ## Brand assets
 
 - App: `public/brand/` (served at `/brand/*`)
-- Canonical copies: `docs/brand/icso/` (GHL upload / handoff)
+- Canonical copies: `docs/brand/icso/` (brand handoff)
 
 ## Deploy (VPS)
 
@@ -55,7 +55,7 @@ Sell flow: pick package or vertical on the site → contact form prefilled → C
 |------|------------------|--------|
 | Operativa | Supabase `intcloudsysops_*` | Fuente de verdad (requiere service role en runtime) |
 | CRM | Twenty REST | Primario cuando `INTCLOUDSYSOPS_TWENTY_ENABLED` + credenciales |
-| Legacy | GoHighLevel agency | Solo si `INTCLOUDSYSOPS_GHL_ENABLED=true` (default **false**) |
+| Legacy | legacy CRM agency | Solo si `INTCLOUDSYSOPS_LEGACY_CRM_ENABLED=true` (default **false**) |
 
 Runbook: [`docs/tenants/intcloudsysops/TWENTY-CRM.md`](../../docs/tenants/intcloudsysops/TWENTY-CRM.md).  
 No incluye Opsly checkout ni tenant apps de clientes.

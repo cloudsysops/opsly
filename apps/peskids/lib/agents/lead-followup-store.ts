@@ -12,7 +12,7 @@ export type FollowupLeadRecord = Pick<
   | 'class_modality'
   | 'neighborhood'
   | 'status'
-  | 'ghl_contact_id'
+  | 'twenty_person_id'
   | 'created_at'
 >;
 
@@ -40,7 +40,7 @@ export interface LeadFollowupStore {
 }
 
 const LEAD_SELECT =
-  'id, tenant_id, name, email, phone, grade_interested, class_modality, neighborhood, status, ghl_contact_id, created_at';
+  'id, tenant_id, name, email, phone, grade_interested, class_modality, neighborhood, status, twenty_person_id, created_at';
 
 function toIsoDate(date: Date): string {
   return date.toISOString().slice(0, 10);

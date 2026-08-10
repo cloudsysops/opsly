@@ -11,7 +11,7 @@ All workflows live in this folder and are imported into the n8n instance at
 |------|------|---------|---------|
 | `hot-lead-alert.json` | Peskids - Hot Lead Alert | Every 5 min (schedule) | Polls Supabase for new leads created in last 6 min, sends Discord embed per lead |
 | `peskids-lead-capture.json` | Peskids - Lead Capture | POST `/peskids-lead` | Normalises inbound lead payload, inserts to Supabase `leads` table, returns 202 |
-| `peskids-lead-intake.json` | Peskids - GHL Lead Intake | POST `/peskids-lead-intake` | Validates Opsly GHL automation envelope, dedupes by `event_id`, returns normalized JSON (no Supabase write) |
+| `peskids-lead-intake.json` | Peskids - Lead Intake | POST `/peskids-lead-intake` | Validates Opsly lead automation envelope, dedupes by `event_id`, returns normalized JSON (no Supabase write) |
 | `send-approved.json` | Peskids Send Approved Reply | POST `/peskids-send-approved` | Forwards an approved reply to a parent via WhatsApp (Baileys) |
 | `peskids-submission-event.json` | Peskids - Submission Event Dispatcher | POST `/peskids-submission-event` | Routes Phase 7 submission events to Discord / email by event type |
 | `peskids-followup-pending.json` | Peskids - Daily Followup Digest | Daily cron `0 8 * * *` | Queries pending followups from Supabase, sends digest to Discord + email |
@@ -22,7 +22,7 @@ All workflows live in this folder and are imported into the n8n instance at
 
 **Trigger:** `POST /peskids-lead-intake`
 
-**Caller:** `apps/api/lib/peskids/automation.ts` (`dispatchPeskidsLeadAutomation`) after GHL webhook persistence in Opsly API.
+**Caller:** `apps/api/lib/peskids/automation.ts` (`dispatchPeskidsLeadAutomation`) after lead persistence in Opsly API.
 
 **Base URL (Doppler):** `N8N_WEBHOOK_BASE_URL` → e.g. `https://n8n-peskids.op-sly.com/webhook`
 
@@ -32,7 +32,7 @@ All workflows live in this folder and are imported into the n8n instance at
 
 - Validates minimum fields (`tenant_slug`, `lead_id`, `event_id`, `lead.*`).
 - Dedupes on `event_id` via workflow static data (API already skips duplicate `lead_id` before dispatch).
-- Does **not** insert into Supabase (persistence is handled by the GHL webhook route).
+- Does **not** insert into Supabase (persistence is handled by the lead intake API route).
 - Returns the normalized payload as the response body so the caller can confirm acceptance without waiting on any downstream side effect.
 
 **Install / smoke:**
@@ -142,7 +142,7 @@ Every 1 Hour → Execute Follow-ups (POST Peskids /api/admin/followups/execute)
 
 **Auth:** `Authorization: Bearer` with `PESKIDS_FOLLOWUP_CRON_SECRET` (fallback `PESKIDS_DIGEST_CRON_SECRET`).
 
-**Does not call GoHighLevel.** Execution lives in Peskids app (`executeDueFollowups`) and syncs Twenty task status to DONE when a followup is completed.
+**Does not call Twenty CRM.** Execution lives in Peskids app (`executeDueFollowups`) and syncs Twenty task status to DONE when a followup is completed.
 
 **Env vars required (n8n):**
 - `PESKIDS_APP_URL`

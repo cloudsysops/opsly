@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Unified CRM smoke for Peskids (Twenty) and ICSO (GHL until feat/icso-twenty-crm merge).
+# Unified CRM smoke for Peskids and ICSO (Twenty path).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -12,9 +12,7 @@ usage() {
 Usage: ./scripts/tenants/twenty-crm-smoke.sh --tenant peskids|icso [--dry-run] [--base-url URL]
 
   peskids → scripts/peskids/twenty-crm-smoke.sh (Twenty path; TWENTY_SMOKE_EXPECT_IDS=true in prod)
-  icso    → scripts/icso/lead-capture-smoke.sh (current GHL route on peskids-review)
-
-After ICSO Twenty merge (feat/icso-twenty-crm): use same script; ICSO branch will assert twenty_* ids.
+  icso    → scripts/icso/lead-capture-smoke.sh (Twenty / Supabase lead intake)
 EOF
 }
 

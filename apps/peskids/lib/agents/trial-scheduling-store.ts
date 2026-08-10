@@ -31,7 +31,7 @@ export interface TrialSchedulingStore {
   getLeadContact(
     leadId: string,
     tenantId: string
-  ): Promise<{ name: string; ghl_contact_id: string | null } | null>;
+  ): Promise<{ name: string; twenty_person_id: string | null } | null>;
 }
 
 const ACTIVE_TRIAL_STATUSES: ScheduledTrialRecord['status'][] = ['scheduled', 'confirmed'];
@@ -175,17 +175,17 @@ export class SupabaseTrialSchedulingStore implements TrialSchedulingStore {
   async getLeadContact(
     leadId: string,
     tenantId: string
-  ): Promise<{ name: string; ghl_contact_id: string | null } | null> {
+  ): Promise<{ name: string; twenty_person_id: string | null } | null> {
     const { data, error } = await supabaseServer()
       .from('leads')
-      .select('name, ghl_contact_id')
+      .select('name, twenty_person_id')
       .eq('id', leadId)
       .eq('tenant_id', tenantId)
       .maybeSingle();
 
     if (error) throw error;
     if (!data) return null;
-    return { name: data.name, ghl_contact_id: data.ghl_contact_id };
+    return { name: data.name, twenty_person_id: data.twenty_person_id };
   }
 }
 

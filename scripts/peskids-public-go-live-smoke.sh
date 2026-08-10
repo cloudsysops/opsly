@@ -67,8 +67,8 @@ if [[ "${POST_LEAD}" == "1" ]]; then
   lead_resp="$(mktemp)"
   cat >"${lead_body}" <<'JSON'
 {
-  "name": "Smoke Test GHL",
-  "email": "smoke-ghl@example.com",
+  "name": "Smoke Test Twenty",
+  "email": "smoke-twenty@example.com",
   "phone": "+573000000000",
   "class_modality": "llanogrande",
   "neighborhood": "Llanogrande",

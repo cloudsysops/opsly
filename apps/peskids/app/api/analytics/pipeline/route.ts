@@ -23,8 +23,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       revenueAttribution,
       summary: {
         totalLeads: metrics.totalLeads,
-        ghlConfigured: metrics.ghlConfigured,
-        ghlError: metrics.ghlError,
+        crmConfigured: metrics.crmConfigured,
+        crmError: metrics.crmError,
       },
     });
   } catch (error) {

@@ -11,21 +11,6 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
-    "./gohighlevel": {
-      "types": "./dist/gohighlevel/index.d.ts",
-      "import": "./dist/gohighlevel/index.js",
-      "default": "./dist/gohighlevel/index.js"
-    },
-    "./gohighlevel/index.js": {
-      "types": "./dist/gohighlevel/index.d.ts",
-      "import": "./dist/gohighlevel/index.js",
-      "default": "./dist/gohighlevel/index.js"
-    },
-    "./gohighlevel/full.js": {
-      "types": "./dist/gohighlevel/full.d.ts",
-      "import": "./dist/gohighlevel/full.js",
-      "default": "./dist/gohighlevel/full.js"
-    },
     "./twenty": {
       "types": "./dist/twenty/index.d.ts",
       "import": "./dist/twenty/index.js",

@@ -1,13 +1,8 @@
-import type { GoHighLevelClient } from '@intcloudsysops/services';
-import { resolveGoHighLevelPeskidsEnv } from '@intcloudsysops/services';
-import { isPeskidsGhlEnabled } from '@intcloudsysops/services';
 import {
   createSupabaseTrialSchedulingStore,
   slotPartsFromIso,
   type TrialSchedulingStore,
 } from '@/lib/agents/trial-scheduling-store';
-
-export const GOHIGHLEVEL_CALENDAR_API_VERSION = '2021-04-15';
 
 export interface TrialSchedulingResult {
   scheduled: boolean;
@@ -23,109 +18,24 @@ export interface TrialScheduleInput {
   parentName: string;
   preferredDay?: string;
   modality?: 'llanogrande' | 'domicilio';
-  /** Legacy GHL contact id — optional messaging channel only */
-  crmMessagingContactId?: string | null;
 }
 
 export interface TrialSchedulerDeps {
   store?: TrialSchedulingStore;
-  ghlClient?: GoHighLevelClient | null;
   tenantId?: string;
-  /** Opt-in legacy GHL Calendar API fallback when local slots are empty */
-  ghlCalendarEnabled?: boolean;
-  trialCalendarName?: string;
-  baseUrl?: string;
-  calendarApiVersion?: string;
-}
-
-interface GhlFreeSlot {
-  start: string;
-  end: string;
-}
-
-interface GhlCalendar {
-  id: string;
-  name: string;
 }
 
 /**
- * Schedules trial classes from Peskids/Supabase first.
- * GHL Calendar API is an optional fallback; GHL messaging only when a legacy contact id exists.
+ * Schedules trial classes from Peskids/Supabase capacity.
+ * legacy CRM Calendar API fallback removed.
  */
 export class TrialSchedulerService {
   private readonly store: TrialSchedulingStore;
-  private readonly ghlClient: GoHighLevelClient | null;
   private readonly tenantId: string;
-  private readonly ghlCalendarEnabled: boolean;
-  private apiKey: string;
-  private baseUrl: string;
-  private locationId: string;
-  private calendarApiVersion: string;
-  private trialCalendarName: string;
 
   constructor(deps: TrialSchedulerDeps = {}) {
     this.store = deps.store ?? createSupabaseTrialSchedulingStore();
-    this.ghlClient = deps.ghlClient ?? null;
     this.tenantId = deps.tenantId ?? process.env.NEXT_PUBLIC_TENANT_ID ?? 'peskids';
-    this.ghlCalendarEnabled =
-      deps.ghlCalendarEnabled ?? (isPeskidsGhlEnabled() && Boolean(this.ghlClient));
-
-    const env = resolveGoHighLevelPeskidsEnv();
-    this.apiKey = env.apiKey;
-    this.locationId = env.locationId;
-    this.baseUrl = (deps.baseUrl ?? env.baseUrl ?? 'https://services.leadconnectorhq.com').replace(
-      /\/$/,
-      ''
-    );
-    this.calendarApiVersion =
-      deps.calendarApiVersion ?? GOHIGHLEVEL_CALENDAR_API_VERSION;
-    this.trialCalendarName = deps.trialCalendarName ?? 'Trial Class';
-  }
-
-  private async ghlCalendarFetch<T>(
-    method: string,
-    path: string,
-    body?: unknown
-  ): Promise<{ ok: boolean; status: number; json: T }> {
-    const url = `${this.baseUrl}${path}`;
-    const response = await fetch(url, {
-      method,
-      headers: {
-        Authorization: `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Version: this.calendarApiVersion,
-      },
-      body: body ? JSON.stringify(body) : undefined,
-    });
-    const text = await response.text();
-    let json: T;
-    try {
-      json = JSON.parse(text) as T;
-    } catch {
-      json = { raw: text } as T;
-    }
-    return { ok: response.ok, status: response.status, json };
-  }
-
-  private async resolveTrialCalendarId(): Promise<string | undefined> {
-    if (!this.ghlCalendarEnabled || !this.ghlClient) {
-      return undefined;
-    }
-
-    try {
-      const response = await this.ghlCalendarFetch<{
-        calendars?: GhlCalendar[];
-      }>('GET', `/calendars/?locationId=${encodeURIComponent(this.locationId)}`);
-      if (!response.ok) return undefined;
-      const calendars = response.json.calendars ?? [];
-      const trial = calendars.find(
-        (c) => c.name === this.trialCalendarName || c.name.toLowerCase().includes('trial')
-      );
-      return trial?.id;
-    } catch {
-      return undefined;
-    }
   }
 
   private generateLocalSlots(): Array<{ start: string; end: string }> {
@@ -182,54 +92,8 @@ export class TrialSchedulerService {
     return available;
   }
 
-  private async findGhlCalendarSlots(
-    calendarId?: string
-  ): Promise<Array<{ start: string; end: string }>> {
-    const resolvedId = calendarId ?? (await this.resolveTrialCalendarId());
-    if (!resolvedId) return [];
-
-    try {
-      const now = new Date();
-      const startDate = now.toISOString().split('T')[0];
-      const endDate = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split('T')[0];
-
-      const response = await this.ghlCalendarFetch<{
-        freeSlots?: GhlFreeSlot[];
-      }>(
-        'GET',
-        `/calendars/${resolvedId}/free-slots?locationId=${encodeURIComponent(this.locationId)}&startDate=${startDate}&endDate=${endDate}`
-      );
-
-      if (response.ok) {
-        return (response.json.freeSlots ?? []).slice(0, 5);
-      }
-    } catch {
-      return [];
-    }
-
-    return [];
-  }
-
-  /**
-   * Returns the next available trial slots from local Supabase capacity first.
-   * GHL Calendar API is only consulted when enabled and local capacity yields no slots.
-   */
-  async findAvailableSlots(calendarId?: string): Promise<Array<{ start: string; end: string }>> {
-    const local = await this.filterSlotsByLocalCapacity(this.generateLocalSlots());
-    if (local.length > 0) {
-      return local;
-    }
-
-    if (this.ghlCalendarEnabled) {
-      const ghlSlots = await this.findGhlCalendarSlots(calendarId);
-      if (ghlSlots.length > 0) {
-        return ghlSlots;
-      }
-    }
-
-    return [];
+  async findAvailableSlots(): Promise<Array<{ start: string; end: string }>> {
+    return this.filterSlotsByLocalCapacity(this.generateLocalSlots());
   }
 
   async scheduleTrial(input: TrialScheduleInput): Promise<TrialSchedulingResult> {
@@ -278,18 +142,6 @@ export class TrialSchedulerService {
 
       const displayDate = this.formatDisplayDate(slot.start);
       const displayTime = this.formatDisplayTime(slot.start);
-      const crmContactId = input.crmMessagingContactId?.trim() || null;
-
-      if (crmContactId && this.ghlClient) {
-        await this.sendConfirmation(crmContactId, input.parentName, displayDate, displayTime);
-        await this.createReminderTask(
-          crmContactId,
-          input.parentName,
-          displayDate,
-          displayTime,
-          slot.start
-        );
-      }
 
       return {
         scheduled: true,
@@ -305,47 +157,7 @@ export class TrialSchedulerService {
     }
   }
 
-  private async sendConfirmation(
-    contactId: string,
-    parentName: string,
-    date: string,
-    time: string
-  ): Promise<void> {
-    if (!this.ghlClient) return;
-
-    const message = `Hola ${parentName}! Tu clase de prueba en Peskids ha sido agendada para el ${date} a las ${time}. Te esperamos!`;
-    try {
-      await this.ghlClient.sendMessage({
-        contactId,
-        message,
-        channel: 'sms',
-      });
-    } catch {
-      // non-blocking: confirmation best-effort
-    }
-  }
-
-  private async createReminderTask(
-    contactId: string,
-    parentName: string,
-    date: string,
-    time: string,
-    startIso: string
-  ): Promise<void> {
-    if (!this.ghlClient) return;
-
-    const reminderDate = new Date(new Date(startIso).getTime() - 24 * 60 * 60 * 1000).toISOString();
-
-    await this.ghlClient.createTask({
-      title: 'Recordatorio clase de prueba — 24h antes',
-      description: `Enviar recordatorio a ${parentName} sobre su clase de prueba del ${date} a las ${time}.`,
-      contactId,
-      dueDate: reminderDate,
-      priority: 'high',
-    });
-  }
-
-  /** Send 24h reminder for a local trial class id. */
+  /** Queue a 24h reminder follow-up for staff / n8n (no external CRM send). */
   async sendReminder(trialClassId: string): Promise<boolean> {
     try {
       const appointment = await this.store.findTrialById(trialClassId, this.tenantId);
@@ -360,21 +172,11 @@ export class TrialSchedulerService {
       const time = this.formatDisplayTime(startIso);
       const message = `Recordatorio Peskids: ${parentName}, tu clase de prueba es mañana ${date} a las ${time}. Te esperamos!`;
 
-      const crmContactId = lead.ghl_contact_id?.trim() || null;
-      if (!crmContactId || !this.ghlClient) {
-        await this.store.createPendingFollowup({
-          tenantId: this.tenantId,
-          leadId: appointment.lead_id,
-          type: 'sms',
-          notes: `Recordatorio manual requerido: ${message}`,
-        });
-        return false;
-      }
-
-      await this.ghlClient.sendMessage({
-        contactId: crmContactId,
-        message,
-        channel: 'sms',
+      await this.store.createPendingFollowup({
+        tenantId: this.tenantId,
+        leadId: appointment.lead_id,
+        type: 'sms',
+        notes: `Recordatorio manual requerido: ${message}`,
       });
       return true;
     } catch {
@@ -382,7 +184,6 @@ export class TrialSchedulerService {
     }
   }
 
-  /** Process upcoming local trial classes and send reminders when possible. */
   async executeReminderCycle(): Promise<{ reminded: number; failed: number }> {
     const result = { reminded: 0, failed: 0 };
     try {

@@ -8,7 +8,6 @@ import { resolvePeskidsIntegrationProviders } from './peskids-provider-config';
 
 export type CrmContactLinks = {
   provider: PeskidsCrmProvider;
-  ghlContactUrl: string | null;
   twentyPersonUrl: string | null;
 };
 
@@ -20,7 +19,7 @@ export type InboxRoutingHint = {
 
 export type BookingRoutingHint = {
   provider: PeskidsBookingProvider;
-  calendarSource: 'ghl' | 'calcom' | 'manual';
+  calendarSource: 'calcom' | 'manual';
 };
 
 type Env = Record<string, string | undefined>;
@@ -30,27 +29,17 @@ function trimUrl(base: string | undefined): string {
 }
 
 /**
- * Deep links for admin "open in CRM" (Step 1 — GHL bridge visible).
+ * Deep links for admin "open in CRM" (Twenty).
  * Does not perform network I/O.
  */
 export function resolveCrmContactLinks(
   ids: {
-    ghlContactId?: string | null;
     twentyPersonId?: string | null;
   },
   env: Env = process.env as Env
 ): CrmContactLinks {
   const { crm } = resolvePeskidsIntegrationProviders(env);
-  const ghlLocationId = env.GOHIGHLEVEL_PESKIDS_LOCATION_ID?.trim();
-  const ghlAppBase = trimUrl(env.GOHIGHLEVEL_APP_URL) || 'https://app.gohighlevel.com';
   const twentyBase = trimUrl(env.TWENTY_API_URL ?? env.TWENTY_PESKIDS_API_URL);
-
-  const ghlContactUrl =
-    ids.ghlContactId && ghlLocationId
-      ? `${ghlAppBase}/v2/location/${ghlLocationId}/contacts/detail/${ids.ghlContactId}`
-      : ids.ghlContactId
-        ? `${ghlAppBase}/contacts/${ids.ghlContactId}`
-        : null;
 
   const twentyPersonUrl =
     ids.twentyPersonId && twentyBase
@@ -59,7 +48,6 @@ export function resolveCrmContactLinks(
 
   return {
     provider: crm,
-    ghlContactUrl,
     twentyPersonUrl,
   };
 }
@@ -87,14 +75,6 @@ export function resolveInboxRoutingHint(
     };
   }
 
-  if (inbox === 'ghl') {
-    return {
-      provider: inbox,
-      webhookPath: '/api/webhooks/gohighlevel',
-      notes: 'Legacy GHL conversations; requires PESKIDS_GHL_ENABLED=true.',
-    };
-  }
-
   return {
     provider: 'legacy',
     webhookPath: '/api/webhooks/inbound',
@@ -111,13 +91,16 @@ export function resolveBookingRoutingHint(
   if (booking === 'calcom') {
     return { provider: booking, calendarSource: 'calcom' };
   }
-  if (booking === 'ghl') {
-    return { provider: booking, calendarSource: 'ghl' };
-  }
   return {
     provider: 'legacy',
-    calendarSource: 'ghl',
+    calendarSource: 'manual',
   };
+}
+
+export function describeIntegrationProviders(
+  providers: PeskidsIntegrationProviders = resolvePeskidsIntegrationProviders()
+): string {
+  return `crm=${providers.crm};inbox=${providers.inbox};booking=${providers.booking};explicit=${providers.explicitFlags}`;
 }
 
 export type IntegrationStatusSnapshot = {
@@ -129,7 +112,6 @@ export type IntegrationStatusSnapshot = {
 
 export function buildIntegrationStatusSnapshot(
   crmIds: {
-    ghlContactId?: string | null;
     twentyPersonId?: string | null;
   },
   env: Env = process.env as Env

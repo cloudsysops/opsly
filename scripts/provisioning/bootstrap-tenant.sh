@@ -8,7 +8,6 @@ DRY_RUN=true
 EXECUTE_ONBOARD=false
 EXECUTE_DOPPLER=false
 EXECUTE_TWENTY=false
-EXECUTE_GHL_OFF=false
 EXECUTE_WACRM=false
 PLAN="startup"
 
@@ -21,7 +20,6 @@ Options:
   --execute              Enable all safe automation phases below
   --execute-onboard      POST /api/tenants via scripts/tenant/onboard.sh (needs PLATFORM_ADMIN_TOKEN)
   --execute-doppler      Run doppler-configure-twenty-prd.sh for tenant
-  --execute-ghl-off      Run ghl-disable-legacy.sh for tenant
   --execute-twenty       Run bootstrap-twenty.sh (Peskids compose on VPS only)
   --execute-wacrm        Run bootstrap-wacrm.sh when launch wacrm.enabled=true
   --plan startup|business|enterprise   For onboard API
@@ -31,7 +29,7 @@ Phases (always printed):
   2. client:plan (markdown plan)
   3. Registry check (config/tenants/<slug>.json)
   4. Optional onboard API
-  5. Optional Doppler Twenty + GHL off
+  5. Optional Doppler Twenty flags
   6. Optional Twenty stack bootstrap
   7. onboarding-readiness.sh (curl health URLs)
 
@@ -52,11 +50,9 @@ while [[ $# -gt 0 ]]; do
       DRY_RUN=false
       EXECUTE_ONBOARD=true
       EXECUTE_DOPPLER=true
-      EXECUTE_GHL_OFF=true
       ;;
     --execute-onboard) EXECUTE_ONBOARD=true; DRY_RUN=false ;;
     --execute-doppler) EXECUTE_DOPPLER=true; DRY_RUN=false ;;
-    --execute-ghl-off) EXECUTE_GHL_OFF=true; DRY_RUN=false ;;
     --execute-twenty) EXECUTE_TWENTY=true; DRY_RUN=false ;;
     --execute-wacrm) EXECUTE_WACRM=true; DRY_RUN=false ;;
     --plan)
@@ -160,13 +156,8 @@ if [[ "$CRM" == "twenty" && "$TENANT_FLAG" != "none" ]]; then
   else
     echo "  plan ./scripts/tenants/doppler-configure-twenty-prd.sh --tenant $TENANT_FLAG"
   fi
-  if [[ "$EXECUTE_GHL_OFF" == true ]]; then
-    run "${ROOT}/scripts/tenants/ghl-disable-legacy.sh" --tenant "$TENANT_FLAG"
-  else
-    echo "  plan ./scripts/tenants/ghl-disable-legacy.sh --tenant $TENANT_FLAG"
-  fi
 else
-  echo "  skip Twenty/GHL flags (crm=$CRM tenant_flag=$TENANT_FLAG)"
+  echo "  skip Twenty flags (crm=$CRM tenant_flag=$TENANT_FLAG)"
 fi
 echo ""
 

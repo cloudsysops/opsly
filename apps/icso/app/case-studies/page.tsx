@@ -18,7 +18,7 @@ export default function CaseStudiesPage(): ReactElement {
           <p className="icso-eyebrow">Case studies</p>
           <h1 className="mt-3 text-4xl font-bold sm:text-5xl">Results in production</h1>
           <p className="mt-6 max-w-2xl text-lg text-icso-muted">
-            Real programs built on GoHighLevel, Opsly, n8n, and AI — with measurable
+            Real programs built on legacy CRM, Opsly, n8n, and AI — with measurable
             operational impact.
           </p>
         </div>

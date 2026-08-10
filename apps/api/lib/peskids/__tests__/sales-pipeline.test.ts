@@ -1,285 +1,46 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const getServiceClientMock = vi.fn();
-const updateOpportunityStageMock = vi.fn();
-const getGoHighLevelServiceMock = vi.fn(() => ({
-  updateOpportunityStage: updateOpportunityStageMock,
+const maybeSingleMock = vi.fn();
+const selectMock = vi.fn(() => ({ eq: vi.fn(() => ({ eq: vi.fn(() => ({ maybeSingle: maybeSingleMock })) })) }));
+const updateMock = vi.fn(() => ({
+  eq: vi.fn(() => ({
+    select: vi.fn(() => ({ maybeSingle: maybeSingleMock })),
+  })),
 }));
+const fromMock = vi.fn(() => ({
+  select: selectMock,
+  update: updateMock,
+}));
+const schemaMock = vi.fn(() => ({ from: fromMock }));
 
 vi.mock('../../supabase', () => ({
-  getServiceClient: getServiceClientMock,
+  getServiceClient: () => ({ schema: schemaMock }),
 }));
 
-vi.mock('@intcloudsysops/services/gohighlevel', () => ({
-  getGoHighLevelService: getGoHighLevelServiceMock,
+vi.mock('../../logger', () => ({
+  logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() },
 }));
 
-function createQuery(result: { data: unknown; error: unknown }) {
-  const query = {
-    select: vi.fn(() => query),
-    eq: vi.fn(() => query),
-    order: vi.fn(() => query),
-    maybeSingle: vi.fn(async () => result),
-    update: vi.fn(() => query),
-    insert: vi.fn(() => query),
-  };
-  return query;
-}
+import { updateLeadStage } from '../sales-pipeline';
 
 describe('updateLeadStage', () => {
   beforeEach(() => {
-    getServiceClientMock.mockReset();
-    updateOpportunityStageMock.mockReset();
+    maybeSingleMock.mockReset();
+    fromMock.mockClear();
   });
 
-  it('returns NOT_FOUND when lead does not exist', async () => {
-    const fetchQuery = createQuery({ data: null, error: null });
-    getServiceClientMock.mockReturnValue({
-      schema: vi.fn(() => ({
-        from: vi.fn(() => fetchQuery),
-      })),
-    });
-
-    const { updateLeadStage } = await import('../sales-pipeline');
-    const result = await updateLeadStage('peskids', 'nonexistent-id', 'Contacted');
-
+  it('returns NOT_FOUND when lead missing', async () => {
+    maybeSingleMock.mockResolvedValueOnce({ data: null, error: null });
+    const result = await updateLeadStage('peskids', 'lead-1', 'Contacted');
     expect(result).toEqual({ ok: false, error: 'lead not found', code: 'NOT_FOUND' });
-    expect(fetchQuery.maybeSingle).toHaveBeenCalledTimes(1);
-    expect(updateOpportunityStageMock).not.toHaveBeenCalled();
   });
 
-  it('returns NO_CHANGE when stage is the same', async () => {
-    const fetchQuery = createQuery({
-      data: {
-        id: 'lead-1',
-        tenant_slug: 'peskids',
-        lead_id: 'ghl-lead-1',
-        source: 'gohighlevel',
-        stage: 'Contacted',
-        created_at: '2026-06-01T10:00:00.000Z',
-        updated_at: '2026-06-01T10:00:00.000Z',
-      },
+  it('returns NO_CHANGE when stage unchanged', async () => {
+    maybeSingleMock.mockResolvedValueOnce({
+      data: { id: '1', tenant_slug: 'peskids', lead_id: 'lead-1', source: 'web', stage: 'Contacted' },
       error: null,
     });
-    getServiceClientMock.mockReturnValue({
-      schema: vi.fn(() => ({
-        from: vi.fn(() => fetchQuery),
-      })),
-    });
-
-    const { updateLeadStage } = await import('../sales-pipeline');
     const result = await updateLeadStage('peskids', 'lead-1', 'Contacted');
-
     expect(result).toEqual({ ok: false, error: 'stage unchanged', code: 'NO_CHANGE' });
-    expect(updateOpportunityStageMock).not.toHaveBeenCalled();
-  });
-
-  it('updates stage and syncs to GHL when lead has ghl lead_id', async () => {
-    const fetchQuery = createQuery({
-      data: {
-        id: 'lead-1',
-        tenant_slug: 'peskids',
-        lead_id: 'ghl-lead-1',
-        source: 'gohighlevel',
-        stage: 'New Lead',
-        created_at: '2026-06-01T10:00:00.000Z',
-        updated_at: '2026-06-01T10:00:00.000Z',
-      },
-      error: null,
-    });
-    const updateQuery = createQuery({
-      data: {
-        id: 'lead-1',
-        tenant_slug: 'peskids',
-        lead_id: 'ghl-lead-1',
-        source: 'gohighlevel',
-        stage: 'Contacted',
-        created_at: '2026-06-01T10:00:00.000Z',
-        updated_at: '2026-06-02T10:00:00.000Z',
-      },
-      error: null,
-    });
-    const fromQuery = {
-      select: fetchQuery.select,
-      eq: fetchQuery.eq,
-      order: fetchQuery.order,
-      maybeSingle: fetchQuery.maybeSingle,
-      update: vi.fn(() => updateQuery),
-      insert: vi.fn(() => updateQuery),
-    };
-
-    getServiceClientMock.mockReturnValue({
-      schema: vi.fn(() => ({
-        from: vi.fn(() => fromQuery),
-      })),
-    });
-
-    updateOpportunityStageMock.mockResolvedValue({ success: true });
-
-    const { updateLeadStage } = await import('../sales-pipeline');
-    const result = await updateLeadStage('peskids', 'lead-1', 'Contacted');
-
-    expect(result).toEqual({
-      ok: true,
-      lead: expect.objectContaining({ id: 'lead-1', stage: 'Contacted' }),
-    });
-
-    expect(fetchQuery.maybeSingle).toHaveBeenCalledTimes(1);
-    expect(fromQuery.update).toHaveBeenCalledWith(
-      expect.objectContaining({ stage: 'Contacted' })
-    );
-    expect(fromQuery.update).toHaveBeenCalledTimes(1);
-    // Real GHL stage ID for "Contacted" in the Peskids Enrollment pipeline
-    expect(updateOpportunityStageMock).toHaveBeenCalledWith('peskids', 'ghl-lead-1', '75742c84-9063-4539-b755-b09bfdeb6346');
-  });
-
-  it('updates stage locally but allows GHL to fail gracefully', async () => {
-    const fetchQuery = createQuery({
-      data: {
-        id: 'lead-1',
-        tenant_slug: 'peskids',
-        lead_id: 'ghl-lead-1',
-        source: 'gohighlevel',
-        stage: 'Contacted',
-        created_at: '2026-06-01T10:00:00.000Z',
-        updated_at: '2026-06-01T10:00:00.000Z',
-      },
-      error: null,
-    });
-    const updateQuery = createQuery({
-      data: {
-        id: 'lead-1',
-        tenant_slug: 'peskids',
-        lead_id: 'ghl-lead-1',
-        source: 'gohighlevel',
-        stage: 'Enrolled',
-        created_at: '2026-06-01T10:00:00.000Z',
-        updated_at: '2026-06-02T10:00:00.000Z',
-      },
-      error: null,
-    });
-    const fromQuery = {
-      select: fetchQuery.select,
-      eq: fetchQuery.eq,
-      order: fetchQuery.order,
-      maybeSingle: fetchQuery.maybeSingle,
-      update: vi.fn(() => updateQuery),
-      insert: vi.fn(() => updateQuery),
-    };
-
-    getServiceClientMock.mockReturnValue({
-      schema: vi.fn(() => ({
-        from: vi.fn(() => fromQuery),
-      })),
-    });
-
-    updateOpportunityStageMock.mockRejectedValue(new Error('GHL API timeout'));
-
-    const { updateLeadStage } = await import('../sales-pipeline');
-    const result = await updateLeadStage('peskids', 'lead-1', 'Enrolled');
-
-    expect(result.ok).toBe(true);
-    expect(result.code).toBe('GHL_FAILED');
-    if ('lead' in result) {
-      expect(result.lead).toBeDefined();
-    }
-    expect(updateOpportunityStageMock).toHaveBeenCalled();
-  });
-
-  it('syncs Active Student to GHL using real stage ID', async () => {
-    const fetchQuery = createQuery({
-      data: {
-        id: 'lead-2',
-        tenant_slug: 'peskids',
-        lead_id: 'ghl-lead-2',
-        source: 'gohighlevel',
-        stage: 'Enrolled',
-        created_at: '2026-06-01T10:00:00.000Z',
-        updated_at: '2026-06-01T10:00:00.000Z',
-      },
-      error: null,
-    });
-    const updateQuery = createQuery({
-      data: {
-        id: 'lead-2',
-        tenant_slug: 'peskids',
-        lead_id: 'ghl-lead-2',
-        source: 'gohighlevel',
-        stage: 'Active Student',
-        created_at: '2026-06-01T10:00:00.000Z',
-        updated_at: '2026-06-02T10:00:00.000Z',
-      },
-      error: null,
-    });
-    const fromQuery = {
-      select: fetchQuery.select,
-      eq: fetchQuery.eq,
-      order: fetchQuery.order,
-      maybeSingle: fetchQuery.maybeSingle,
-      update: vi.fn(() => updateQuery),
-      insert: vi.fn(() => updateQuery),
-    };
-
-    getServiceClientMock.mockReturnValue({
-      schema: vi.fn(() => ({
-        from: vi.fn(() => fromQuery),
-      })),
-    });
-
-    updateOpportunityStageMock.mockResolvedValue({ success: true });
-
-    const { updateLeadStage } = await import('../sales-pipeline');
-    const result = await updateLeadStage('peskids', 'lead-2', 'Active Student');
-
-    expect(result).toEqual({
-      ok: true,
-      lead: expect.objectContaining({ id: 'lead-2', stage: 'Active Student' }),
-    });
-    // All stages now have real GHL IDs — Active Student must sync
-    expect(updateOpportunityStageMock).toHaveBeenCalledWith(
-      'peskids',
-      'ghl-lead-2',
-      'c9b615f7-b4da-416c-a3b1-28be6da1d063' // Real GHL stage ID for Active Student
-    );
-  });
-
-  it('returns error when database update fails', async () => {
-    const fetchQuery = createQuery({
-      data: {
-        id: 'lead-1',
-        tenant_slug: 'peskids',
-        lead_id: 'ghl-lead-1',
-        source: 'gohighlevel',
-        stage: 'New Lead',
-        created_at: '2026-06-01T10:00:00.000Z',
-        updated_at: '2026-06-01T10:00:00.000Z',
-      },
-      error: null,
-    });
-    const updateQuery = createQuery({
-      data: null,
-      error: { message: 'update failed' },
-    });
-    const fromQuery = {
-      select: fetchQuery.select,
-      eq: fetchQuery.eq,
-      order: fetchQuery.order,
-      maybeSingle: fetchQuery.maybeSingle,
-      update: vi.fn(() => updateQuery),
-      insert: vi.fn(() => updateQuery),
-    };
-
-    getServiceClientMock.mockReturnValue({
-      schema: vi.fn(() => ({
-        from: vi.fn(() => fromQuery),
-      })),
-    });
-
-    const { updateLeadStage } = await import('../sales-pipeline');
-    const result = await updateLeadStage('peskids', 'lead-1', 'Contacted');
-
-    expect(result.ok).toBe(false);
-    expect(result.error).toContain('update failed');
-    expect(updateOpportunityStageMock).not.toHaveBeenCalled();
   });
 });

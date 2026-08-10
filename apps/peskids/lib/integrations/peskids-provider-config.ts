@@ -1,15 +1,13 @@
 /**
- * Unified provider flags for Peskids CRM / inbox / booking migration.
+ * Unified provider flags for Peskids CRM / inbox / booking.
  *
- * When PESKIDS_*_PROVIDER is unset, `legacy` preserves pre-flag runtime behavior
- * (Twenty if configured + GHL only when PESKIDS_GHL_ENABLED=true).
- *
- * Explicit values opt into a single provider path for cutover pilots.
+ * When PESKIDS_*_PROVIDER is unset, `legacy` means Twenty CRM (if configured)
+ * + WA CRM inbox defaults. legacy CRM is no longer a supported provider.
  */
 
-export type PeskidsCrmProvider = 'ghl' | 'twenty' | 'espocrm' | 'legacy';
-export type PeskidsInboxProvider = 'ghl' | 'chatwoot' | 'wacrm' | 'legacy';
-export type PeskidsBookingProvider = 'ghl' | 'calcom' | 'legacy';
+export type PeskidsCrmProvider = 'twenty' | 'espocrm' | 'legacy';
+export type PeskidsInboxProvider = 'chatwoot' | 'wacrm' | 'legacy';
+export type PeskidsBookingProvider = 'calcom' | 'legacy';
 
 export type PeskidsIntegrationProviders = {
   crm: PeskidsCrmProvider;
@@ -21,9 +19,9 @@ export type PeskidsIntegrationProviders = {
 
 type Env = Record<string, string | undefined>;
 
-const CRM_VALUES = new Set<PeskidsCrmProvider>(['ghl', 'twenty', 'espocrm']);
-const INBOX_VALUES = new Set<PeskidsInboxProvider>(['ghl', 'chatwoot', 'wacrm']);
-const BOOKING_VALUES = new Set<PeskidsBookingProvider>(['ghl', 'calcom']);
+const CRM_VALUES = new Set<PeskidsCrmProvider>(['twenty', 'espocrm']);
+const INBOX_VALUES = new Set<PeskidsInboxProvider>(['chatwoot', 'wacrm']);
+const BOOKING_VALUES = new Set<PeskidsBookingProvider>(['calcom']);
 
 function normalizeProvider<T extends string>(
   raw: string | undefined,
@@ -71,23 +69,9 @@ export function shouldSyncLeadToTwenty(
   return false;
 }
 
-/** Whether outbound lead sync should call GoHighLevel (respects legacy + explicit ghl). */
-export function shouldSyncLeadToGhl(
-  providers: PeskidsIntegrationProviders,
-  ghlEnabled: boolean
-): boolean {
-  if (!ghlEnabled) {
-    return false;
-  }
-  if (providers.crm === 'ghl' || providers.crm === 'legacy') {
-    return true;
-  }
-  return false;
-}
-
-/** Documented defaults when operators set flags explicitly (see OPEN-SOURCE-CRM-MIGRATION.md). */
+/** Documented defaults when operators set flags explicitly. */
 export const PESKIDS_PROVIDER_DEFAULTS = {
-  crm: 'ghl',
+  crm: 'twenty',
   inbox: 'wacrm',
-  booking: 'ghl',
+  booking: 'calcom',
 } as const;

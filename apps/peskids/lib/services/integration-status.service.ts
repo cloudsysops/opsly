@@ -1,7 +1,4 @@
-import {
-  isPeskidsGhlEnabled,
-  resolveTwentyEnv,
-} from '@intcloudsysops/services';
+import { resolveTwentyEnv } from '@intcloudsysops/services';
 import { resolveWacrmServerUrl } from '@/lib/integrations/wacrm-admin-links';
 import type { DashboardIntegrationStatus } from '../types';
 
@@ -82,7 +79,6 @@ export async function fetchDashboardIntegrationStatus(
   const twenty = resolveTwentyEnv(env);
   const n8nBase = trimUrl(env.N8N_WEBHOOK_BASE_URL);
   const wacrmBase = resolveWacrmServerUrl(env);
-  const ghlEnabled = isPeskidsGhlEnabled(env);
 
   const [twentyHealth, n8nHealth, wacrmHealth] = await Promise.all([
     twenty.enabled && twenty.baseUrl
@@ -102,16 +98,6 @@ export async function fetchDashboardIntegrationStatus(
           twentyHealth?.checked_at ?? checkedAt
         )
       : disabledItem('Twenty', 'CRM no configurado (falta TWENTY_API_URL / TWENTY_API_KEY)', checkedAt),
-    ghl: ghlEnabled
-      ? {
-          label: 'GHL',
-          enabled: true,
-          status: 'warning',
-          detail: 'Legacy activo; no es la ruta actual de captación',
-          url: null,
-          checked_at: checkedAt,
-        }
-      : disabledItem('GHL', 'Ruta legacy apagada', checkedAt),
     n8n: n8nBase
       ? enabledItem(
           'n8n',
