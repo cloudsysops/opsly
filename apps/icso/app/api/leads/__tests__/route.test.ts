@@ -90,7 +90,6 @@ describe('POST /api/leads', () => {
     const data = await response.json();
 
     expect(data.calendarBookingUrl).toBeNull();
-    expect(data.ghlContactId).toBeUndefined();
   });
 
   it('rejects requests with missing fields', async () => {

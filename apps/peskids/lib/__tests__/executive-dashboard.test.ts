@@ -18,14 +18,6 @@ const emptyIntegration: DashboardData['integration_status'] = {
     url: null,
     checked_at: null,
   },
-  ghl: {
-    label: 'GHL',
-    enabled: false,
-    status: 'disabled',
-    detail: 'off',
-    url: null,
-    checked_at: null,
-  },
   n8n: {
     label: 'n8n',
     enabled: true,

@@ -38,13 +38,9 @@ export interface PipelineMetrics {
     trials: number;
     enrollments: number;
   }>;
-  /** Always true for Supabase-backed metrics (GHL removed). */
+  /** Always true for Supabase-backed metrics. */
   crmConfigured: boolean;
   crmError?: string;
-  /** @deprecated Use crmConfigured — kept for UI compatibility */
-  ghlConfigured: boolean;
-  /** @deprecated Use crmError */
-  ghlError?: string;
 }
 
 interface RevenueAttributionRow {
@@ -135,7 +131,6 @@ export class PipelineAnalyticsService {
         },
         monthlyTrend,
         crmConfigured: true,
-        ghlConfigured: false,
       };
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -224,8 +219,6 @@ export class PipelineAnalyticsService {
       monthlyTrend: [],
       crmConfigured: false,
       crmError: errorMsg,
-      ghlConfigured: false,
-      ghlError: errorMsg,
     };
   }
 }

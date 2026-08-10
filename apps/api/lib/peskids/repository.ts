@@ -84,7 +84,6 @@ export async function peskidsInsertLead(
       },
       referral_source: body.referral_source ?? null,
       status: 'new',
-      ghl_contact_id: body.ghl_contact_id ?? null,
       twenty_person_id: body.twenty_person_id ?? null,
       twenty_opportunity_id: body.twenty_opportunity_id ?? null,
     })

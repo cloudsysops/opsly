@@ -87,9 +87,8 @@
     "policies": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["ghl_runtime", "whatsapp_outbound", "payments_live"],
+      "required": ["whatsapp_outbound", "payments_live"],
       "properties": {
-        "ghl_runtime": { "const": "disabled" },
         "whatsapp_outbound": {
           "enum": ["approval_first", "disabled"]
         },

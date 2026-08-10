@@ -118,46 +118,6 @@ export async function recordLeadPersistLatency(tenantSlug: string, latencyMs: nu
   });
 }
 
-export async function recordGhlContactCreated(tenantSlug: string): Promise<void> {
-  return recordMetric({
-    name: 'ghl.contact.created',
-    type: 'counter',
-    value: 1,
-    component: 'twenty',
-    tenantSlug,
-  });
-}
-
-export async function recordGhlContactLatency(tenantSlug: string, latencyMs: number): Promise<void> {
-  return recordMetric({
-    name: 'ghl.contact.latency_ms',
-    type: 'histogram',
-    value: latencyMs,
-    component: 'twenty',
-    tenantSlug,
-  });
-}
-
-export async function recordGhlOpportunityCreated(tenantSlug: string): Promise<void> {
-  return recordMetric({
-    name: 'ghl.opportunity.created',
-    type: 'counter',
-    value: 1,
-    component: 'twenty',
-    tenantSlug,
-  });
-}
-
-export async function recordGhlOpportunityLatency(tenantSlug: string, latencyMs: number): Promise<void> {
-  return recordMetric({
-    name: 'ghl.opportunity.latency_ms',
-    type: 'histogram',
-    value: latencyMs,
-    component: 'twenty',
-    tenantSlug,
-  });
-}
-
 export async function recordN8nDispatchLatency(tenantSlug: string, latencyMs: number): Promise<void> {
   return recordMetric({
     name: 'n8n.dispatch.latency_ms',
@@ -180,27 +140,6 @@ export async function recordSubabaseError(tenantSlug: string, operation: string)
     component: 'supabase',
     tenantSlug,
     tags: { operation },
-  });
-}
-
-export async function recordGhlApiError(tenantSlug: string, statusCode: number, operation: string): Promise<void> {
-  return recordMetric({
-    name: 'ghl.api.errors',
-    type: 'counter',
-    value: 1,
-    component: 'twenty',
-    tenantSlug,
-    tags: { statusCode: String(statusCode), operation },
-  });
-}
-
-export async function recordGhlRateLimit(tenantSlug: string): Promise<void> {
-  return recordMetric({
-    name: 'ghl.rate_limit_429',
-    type: 'counter',
-    value: 1,
-    component: 'twenty',
-    tenantSlug,
   });
 }
 

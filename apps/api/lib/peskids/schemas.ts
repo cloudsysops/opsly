@@ -76,7 +76,6 @@ export const peskidsLeadBodySchema = z
     company_nit: optionalDocumentField,
     metadata: boundedStringMetadataSchema.optional(),
     referral_source: z.enum(PESKIDS_REFERRAL_SOURCES).optional(),
-    ghl_contact_id: z.string().trim().min(1).max(120).optional(),
     twenty_person_id: z.string().trim().min(1).max(120).optional(),
     twenty_opportunity_id: z.string().trim().min(1).max(120).optional(),
   })

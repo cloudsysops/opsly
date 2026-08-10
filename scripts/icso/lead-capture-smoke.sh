@@ -1,21 +1,18 @@
 #!/usr/bin/env bash
-# Smoke: ICSO contact form lead capture (GHL path on peskids-review; Twenty after merge).
+# Smoke: ICSO contact form lead capture (Twenty / Supabase path).
 set -euo pipefail
 
 BASE_URL="${ICSO_BASE_URL:-https://icso.op-sly.com}"
 DRY_RUN=false
-EXPECT_GHL="${ICSO_SMOKE_EXPECT_GHL:-false}"
 
 usage() {
   cat <<'EOF'
 Usage: ./scripts/icso/lead-capture-smoke.sh [--dry-run] [--base-url URL]
 
-POST /api/leads with test payload. Passes on success:true + contactId.
+POST /api/leads with test payload. Passes on success:true.
 
-  ICSO_SMOKE_EXPECT_GHL=true  — fail if response lacks contactId (GHL-era shape)
-
-After feat/icso-twenty-crm merge, set TWENTY_SMOKE_EXPECT_IDS=true and use
-scripts/tenants/twenty-crm-smoke.sh --tenant icso (Twenty smoke variant).
+Optional:
+  TWENTY_SMOKE_EXPECT_IDS=true  — fail if response lacks twentyPersonId
 EOF
 }
 
@@ -55,16 +52,9 @@ if ! echo "${response}" | grep -q '"success":true'; then
   exit 1
 fi
 
-if [[ "$EXPECT_GHL" == "true" ]]; then
-  if ! echo "${response}" | grep -q '"contactId"'; then
-    echo "FAIL: expected contactId (GHL path)" >&2
-    exit 1
-  fi
-fi
-
 if [[ "${TWENTY_SMOKE_EXPECT_IDS:-false}" == "true" ]]; then
   if ! echo "${response}" | grep -q 'twentyPersonId'; then
-    echo "FAIL: expected twentyPersonId (Twenty path — merge feat/icso-twenty-crm?)" >&2
+    echo "FAIL: expected twentyPersonId (Twenty path)" >&2
     exit 1
   fi
 fi

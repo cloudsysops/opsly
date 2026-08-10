@@ -11,7 +11,7 @@
  *   1. Client name (e.g., "Peskids")
  *   2. Tenant slug (e.g., "peskids")
  *   3. Primary email for owner
- *   4. GHL location ID (if using Twenty CRM CRM)
+ *   4. CRM provider note (Twenty by default)
  *   5. n8n workflows count (optional)
  *   6. Initial plan / tier
  */
@@ -64,7 +64,6 @@ async function setupClient(interactive = true): Promise<ClientConfig> {
   let tenantName = '';
   let tenantSlug = '';
   let ownerEmail = '';
-  let ghlLocationId = '';
 
   if (interactive) {
     // Prompt for client information
@@ -93,13 +92,9 @@ async function setupClient(interactive = true): Promise<ClientConfig> {
       throw new Error('Invalid email format');
     }
 
-    // GHL setup (optional)
-    const useGhl = await prompt('Use Twenty CRM CRM integration? (y/N)');
-    if (useGhl.toLowerCase() === 'y') {
-      ghlLocationId = await prompt('GHL location ID');
-      if (!ghlLocationId) {
-        console.warn('⚠️  Warning: GHL integration will be disabled without location ID');
-      }
+    const useTwenty = await prompt('Use Twenty CRM integration? (Y/n)');
+    if (useTwenty.toLowerCase() === 'n') {
+      console.log('ℹ️  CRM sync optional — Supabase remains source of truth');
     }
   } else {
     // Fallback to environment or defaults
@@ -117,9 +112,7 @@ async function setupClient(interactive = true): Promise<ClientConfig> {
     workflows_count: 4,
     pricing_per_unit: 0,
     currency: 'USD',
-    notes: `Direct tenant, ${tenantName} setup. Owner: ${ownerEmail}. CRM Starter Pack (4 workflows).${
-      ghlLocationId ? ` GHL location: ${ghlLocationId}.` : ''
-    } Phase 3 automation.`,
+    notes: `Direct tenant, ${tenantName} setup. Owner: ${ownerEmail}. CRM Starter Pack (4 workflows). Twenty CRM. Phase 3 automation.`,
   };
 
   return config;

@@ -69,14 +69,6 @@ describe('fetchDashboardData', () => {
         url: 'https://crm-peskids.op-sly.com',
         checked_at: '2026-07-18T12:00:00.000Z',
       },
-      ghl: {
-        label: 'GHL',
-        enabled: false,
-        status: 'disabled',
-        detail: 'Legacy off (PESKIDS_GHL_ENABLED=false)',
-        url: null,
-        checked_at: '2026-07-18T12:00:00.000Z',
-      },
       n8n: {
         label: 'n8n',
         enabled: true,

@@ -31,13 +31,6 @@ describe('resolvePeskidsIntegrationProviders', () => {
     expect(providers.explicitFlags).toBe(true);
   });
 
-  it('maps retired ghl provider token to legacy (Twenty path)', () => {
-    const providers = resolvePeskidsIntegrationProviders({
-      PESKIDS_CRM_PROVIDER: 'ghl',
-    });
-    expect(providers.crm).toBe('legacy');
-  });
-
   it('routes chatwoot pilot to placeholder webhook path', () => {
     const hint = resolveInboxRoutingHint({ PESKIDS_INBOX_PROVIDER: 'chatwoot' });
     expect(hint.provider).toBe('chatwoot');
@@ -55,7 +48,6 @@ describe('resolvePeskidsIntegrationProviders', () => {
 describe('shouldSyncLeadToTwenty', () => {
   const legacy = resolvePeskidsIntegrationProviders({});
   const crmTwenty = resolvePeskidsIntegrationProviders({ PESKIDS_CRM_PROVIDER: 'twenty' });
-  const crmGhlLegacy = resolvePeskidsIntegrationProviders({ PESKIDS_CRM_PROVIDER: 'ghl' });
 
   it('legacy mode syncs Twenty when configured', () => {
     expect(shouldSyncLeadToTwenty(legacy, true)).toBe(true);
@@ -64,10 +56,6 @@ describe('shouldSyncLeadToTwenty', () => {
 
   it('explicit twenty syncs when configured', () => {
     expect(shouldSyncLeadToTwenty(crmTwenty, true)).toBe(true);
-  });
-
-  it('retired ghl token still syncs Twenty via legacy mapping', () => {
-    expect(shouldSyncLeadToTwenty(crmGhlLegacy, true)).toBe(true);
   });
 });
 

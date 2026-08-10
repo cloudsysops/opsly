@@ -4,7 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 BASELINE_FILE="${SCRIPT_DIR}/ghl-runtime-baseline.txt"
-PATTERN='GoHighLevel|gohighlevel|GHL_|PESKIDS_GHL'
+PATTERN='GoHighLevel|gohighlevel|GHL_|PESKIDS_GHL|ghlConfigured|ghlError|ghl_contact_id|ghl_location_id|recordGhl|ghl_runtime'
 
 cd "$ROOT"
 

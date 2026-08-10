@@ -40,10 +40,8 @@ done
 
 if [[ "$TENANT" == "icso" ]]; then
   server_url="https://crm-intcloudsysops.${DOMAIN}"
-  ghl_flag_var=INTCLOUDSYSOPS_REMOVED_twentyENABLED
 else
   server_url="https://crm-peskids.${DOMAIN}"
-  ghl_flag_var=REMOVED_REMOVED_twentyFLAG
 fi
 
 app_secret="$(openssl rand -base64 32)"
@@ -60,14 +58,12 @@ if [[ "$EXECUTE" == true ]]; then
     TWENTY_APP_SECRET="$app_secret" \
     TWENTY_ENCRYPTION_KEY="$encryption_key" \
     TWENTY_PG_PASSWORD="$pg_password" \
-    "${ghl_flag_var}=false" \
     --project "$PROJECT" --config "$CONFIG" >/dev/null
   unset app_secret encryption_key pg_password
   echo "set  TWENTY_SERVER_URL=${server_url}"
   echo "set  TWENTY_APP_SECRET (hidden)"
   echo "set  TWENTY_ENCRYPTION_KEY (hidden)"
   echo "set  TWENTY_PG_PASSWORD (hidden)"
-  echo "set  ${ghl_flag_var}=false"
   echo ""
   echo "VPS: cd /opt/opsly && ./scripts/vps-bootstrap.sh && ./scripts/tenants/setup-twenty-peskids.sh"
   exit 0
@@ -86,7 +82,6 @@ doppler secrets set \\
   TWENTY_APP_SECRET="<openssl rand -base64 32>" \\
   TWENTY_ENCRYPTION_KEY="<openssl rand -base64 32>" \\
   TWENTY_PG_PASSWORD="<openssl rand -base64 24>" \\
-  ${ghl_flag_var}="false" \\
   --project ${PROJECT} --config ${CONFIG}
 
 # After Twenty UI admin + API key:

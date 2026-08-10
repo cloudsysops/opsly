@@ -98,7 +98,6 @@ export async function fetchDashboardIntegrationStatus(
           twentyHealth?.checked_at ?? checkedAt
         )
       : disabledItem('Twenty', 'CRM no configurado (falta TWENTY_API_URL / TWENTY_API_KEY)', checkedAt),
-    ghl: disabledItem('GHL', 'Retirado — usar Twenty + n8n', checkedAt),
     n8n: n8nBase
       ? enabledItem(
           'n8n',

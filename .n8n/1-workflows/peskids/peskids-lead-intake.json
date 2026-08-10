@@ -1,6 +1,6 @@
 {
   "id": "peskids-lead-intake",
-  "name": "Peskids - GHL Lead Intake",
+  "name": "Peskids - Lead Intake",
   "active": true,
   "nodes": [
     {
@@ -11,7 +11,7 @@
         "options": {}
       },
       "id": "pli-webhook",
-      "name": "GHL Lead Intake Webhook",
+      "name": "Lead Intake Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [0, 300],
@@ -29,7 +29,7 @@
     }
   ],
   "connections": {
-    "GHL Lead Intake Webhook": {
+    "Lead Intake Webhook": {
       "main": [
         [
           {

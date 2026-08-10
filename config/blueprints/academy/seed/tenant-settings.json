@@ -20,7 +20,6 @@
     "analytics": true
   },
   "policies": {
-    "ghl_runtime": "disabled",
     "whatsapp_outbound": "approval_first",
     "payments_live": "disabled_by_default"
   }

@@ -32,7 +32,7 @@ export const LOCAL_STATUS_TO_PIPELINE_STAGE: Partial<Record<LocalLeadStatus, Pip
 export interface PipelineRule {
   currentStage: PipelineStage;
   nextStage: PipelineStage;
-  /** Evaluates using public.leads.id — never a GHL contact id. */
+  /** Evaluates using public.leads.id — never an external CRM contact id. */
   condition: (leadId: string) => Promise<boolean>;
   description: string;
   source: 'messages' | 'followups' | 'trial_classes' | 'enrollments' | 'attendance';

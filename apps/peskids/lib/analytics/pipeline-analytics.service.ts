@@ -38,13 +38,9 @@ export interface PipelineMetrics {
     trials: number;
     enrollments: number;
   }>;
-  /** Always true for Supabase-backed metrics (GHL removed). */
+  /** Always true for Supabase-backed metrics. */
   crmConfigured: boolean;
   crmError?: string;
-  /** @deprecated Use crmConfigured — kept for UI compatibility */
-  ghlConfigured: boolean;
-  /** @deprecated Use crmError */
-  ghlError?: string;
 }
 
 interface RevenueAttributionRow {
@@ -86,7 +82,7 @@ export class PipelineAnalyticsService {
       const supabase = supabaseServer();
       const { data, error } = await supabase
         .from('leads')
-        .select('id, status, referral_source, created_at, updated_at')
+        .select('id, status, source, created_at, updated_at')
         .eq('tenant_id', 'peskids')
         .limit(2000);
 
@@ -103,7 +99,7 @@ export class PipelineAnalyticsService {
         const stage = LOCAL_STATUS_TO_STAGE[String(row.status ?? 'new')] ?? 'New Lead';
         byStage[stage] = (byStage[stage] ?? 0) + 1;
 
-        const source = String(row.referral_source ?? 'unknown').toLowerCase();
+        const source = String(row.source ?? 'unknown').toLowerCase();
         bySource[source] = (bySource[source] ?? 0) + 1;
 
         if (row.created_at) {
@@ -135,7 +131,6 @@ export class PipelineAnalyticsService {
         },
         monthlyTrend,
         crmConfigured: true,
-        ghlConfigured: false,
       };
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -224,8 +219,6 @@ export class PipelineAnalyticsService {
       monthlyTrend: [],
       crmConfigured: false,
       crmError: errorMsg,
-      ghlConfigured: false,
-      ghlError: errorMsg,
     };
   }
 }

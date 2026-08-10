@@ -110,22 +110,6 @@ export async function alertSubabaseFailure(
   });
 }
 
-export async function alertGhlFailure(
-  operation: string,
-  statusCode?: number,
-  error?: string,
-  leadId?: string
-): Promise<void> {
-  const errorMsg = error || (statusCode ? `HTTP ${statusCode}` : 'Unknown error');
-  return sendSlackAlert(statusCode === 429 ? 'warning' : 'critical', {
-    service: 'peskids',
-    component: 'legacy-crm',
-    operation,
-    error: errorMsg,
-    leadId,
-  });
-}
-
 export async function alertN8nFailure(
   operation: string,
   error: unknown,

@@ -20,7 +20,7 @@ npm run type-check --workspace=@intcloudsysops/icso
 ## Brand assets
 
 - App: `public/brand/` (served at `/brand/*`)
-- Canonical copies: `docs/brand/icso/` (GHL upload / handoff)
+- Canonical copies: `docs/brand/icso/` (brand handoff)
 
 ## Deploy (VPS)
 

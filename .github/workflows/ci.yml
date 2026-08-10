@@ -89,7 +89,7 @@ jobs:
       - name: Academy Blueprint contracts
         run: npm run validate:academy-blueprint
 
-      - name: GHL runtime no-regression guard
+      - name: CRM runtime no-regression guard (no GHL)
         run: npm run guard:ghl-runtime
 
       - name: ESLint si existe config (paralelo)
@@ -366,7 +366,7 @@ jobs:
           status=$?
           set -e
           if [[ "${status}" -ne 0 ]]; then
-            echo "::warning::Legacy invite smoke failed with exit code ${status}; ignored because invite delivery now lives in GHL."
+            echo "::warning::Legacy invite smoke failed with exit code ${status}; ignored — invite delivery is Resend + portal (not CRM)."
           fi
 
       - name: Install Playwright Browsers

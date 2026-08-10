@@ -31,10 +31,6 @@ function normalizeProvider<T extends string>(
   if (!value) {
     return 'legacy';
   }
-  // Reject retired legacy CRM provider values as legacy (Twenty path).
-  if (value === 'ghl' || value === 'legacy-crm') {
-    return 'legacy';
-  }
   if (allowed.has(value as T)) {
     return value as T;
   }
