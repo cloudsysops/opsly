@@ -1,16 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import { POST } from '../route';
-import * as rateLimiter from '@/lib/rate-limiter';
-import * as audit from '@/lib/audit';
-import * as supabase from '@/lib/supabase';
+import * as rateLimiter from '../../../../../lib/rate-limiter';
+import * as audit from '../../../../../lib/audit';
+import * as supabase from '../../../../../lib/supabase';
 
-vi.mock('@/lib/rate-limiter', () => ({
+const HTTP_STATUS_CREATED = 201;
+const HTTP_STATUS_TOO_MANY_REQUESTS = 429;
+
+vi.mock('../../../../../lib/rate-limiter', () => ({
   checkRateLimit: vi.fn(),
 }));
 
-vi.mock('@/lib/audit', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/audit')>();
+vi.mock('../../../../../lib/audit', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../../../../lib/audit')>();
   return {
     ...actual,
     logAuditEvent: vi.fn(),
@@ -18,7 +21,7 @@ vi.mock('@/lib/audit', async (importOriginal) => {
   };
 });
 
-vi.mock('@/lib/supabase', () => ({
+vi.mock('../../../../../lib/supabase', () => ({
   getServiceClient: vi.fn(),
 }));
 
@@ -44,7 +47,7 @@ describe('POST /api/governance/dsar security', () => {
     });
 
     const response = await POST(request);
-    expect(response.status).toBe(429);
+    expect(response.status).toBe(HTTP_STATUS_TOO_MANY_REQUESTS);
     const body = await response.json();
     expect(body.error).toBe('Too many requests');
   });
@@ -59,7 +62,11 @@ describe('POST /api/governance/dsar security', () => {
     const mockInsert = vi.fn().mockReturnValue({
       select: vi.fn().mockReturnValue({
         single: vi.fn().mockResolvedValue({
-          data: { id: 'test-id', created_at: new Date().toISOString(), sla_deadline: new Date().toISOString() },
+          data: {
+            id: 'test-id',
+            created_at: new Date().toISOString(),
+            sla_deadline: new Date().toISOString(),
+          },
           error: null,
         }),
       }),
@@ -71,7 +78,7 @@ describe('POST /api/governance/dsar security', () => {
           insert: mockInsert,
         }),
       }),
-    } as any);
+    } as unknown as ReturnType<typeof supabase.getServiceClient>);
 
     const request = new NextRequest('http://localhost/api/governance/dsar', {
       method: 'POST',
@@ -83,11 +90,13 @@ describe('POST /api/governance/dsar security', () => {
     });
 
     const response = await POST(request);
-    expect(response.status).toBe(201);
-    expect(audit.logAuditEvent).toHaveBeenCalledWith(expect.objectContaining({
-      tenant_slug: 'test-tenant',
-      action: 'CREATE',
-      resource: expect.stringContaining('dsar:'),
-    }));
+    expect(response.status).toBe(HTTP_STATUS_CREATED);
+    expect(audit.logAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tenant_slug: 'test-tenant',
+        action: 'CREATE',
+        resource: expect.stringContaining('dsar:'),
+      })
+    );
   });
 });
