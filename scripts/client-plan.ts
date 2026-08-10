@@ -67,19 +67,19 @@ const LAUNCH_STEPS: LaunchStep[] = [
   },
   {
     step: 3,
-    task: 'CRM Setup',
+    task: 'CRM Setup (Twenty)',
     owner: 'Ops',
     time: '4 min',
-    gate: 'GHL location synced',
+    gate: 'Twenty API key + pipeline ready',
     details: [
-      'Link Twenty CRM location ID',
-      'Configure custom fields mapping',
-      'Test lead sync webhook',
-      'Verify CRM field validation',
+      './scripts/tenants/bootstrap-twenty.sh --tenant <slug>',
+      'Manual: Twenty UI → API key → twenty-apply-api-key.sh',
+      './scripts/tenants/doppler-configure-twenty-prd.sh',
+      'Configure custom fields mapping + n8n lead sync',
     ],
     blockers: [
-      'GHL API key missing → fetch from Doppler prd',
-      'Location ID invalid → request from client',
+      'API key missing → twenty-apply-api-key.sh after UI signup',
+      'Twenty workspace invalid → request from client',
     ],
   },
   {
@@ -142,7 +142,7 @@ const LAUNCH_STEPS: LaunchStep[] = [
       '✓ Health check: GET /api/health → 200',
       '✓ Form load: GET /forms/lead-capture → renders',
       '✓ Form submit: POST /api/leads → 200 + email alert',
-      '✓ CRM sync: Verify lead in GHL within 10 sec',
+      '✓ CRM sync: Verify lead in Twenty (person/opportunity)',
       '✓ Admin panel: Login and view submissions',
     ],
     blockers: [
@@ -174,7 +174,7 @@ const LAUNCH_STEPS: LaunchStep[] = [
     gate: 'Credentials transferred',
     details: [
       'Send admin login credentials (securely)',
-      'Share landing page URL and GHL integration details',
+      'Share landing page URL and Twenty CRM access details',
       'Provide runbook: docs/tenants/{tenant}/RUNBOOK.md',
       'Schedule 1-week check-in call',
     ],
@@ -249,42 +249,23 @@ function generatePlan(tenantSlug: string): LaunchPlan {
   const steps = LAUNCH_STEPS.map((step) => ({ ...step, details: step.details ? [...step.details] : undefined }));
 
   if (crmProvider === 'twenty') {
-    const crmStep = steps.find((s) => s.step === 3);
-    if (crmStep) {
-      crmStep.task = 'CRM Setup (Twenty)';
-      crmStep.gate = 'Twenty API key + pipeline ready';
-      crmStep.details = [
-        './scripts/tenants/bootstrap-twenty.sh --tenant <peskids|icso>',
-        'Manual: Twenty UI → API key → twenty-apply-api-key.sh',
-        './scripts/tenants/doppler-configure-twenty-prd.sh',
-        './scripts/tenants/ghl-disable-legacy.sh',
-      ];
-      crmStep.blockers = ['API key missing → twenty-apply-api-key.sh after UI signup'];
-    }
     const smokeStep = steps.find((s) => s.step === 7);
     if (smokeStep?.details) {
       smokeStep.details = smokeStep.details.map((d) =>
-        d.includes('GHL') ? '✓ CRM sync: Twenty person/opportunity when TWENTY_SMOKE_EXPECT_IDS=true' : d
+        d.includes('CRM sync')
+          ? '✓ CRM sync: Twenty person/opportunity when TWENTY_SMOKE_EXPECT_IDS=true'
+          : d
       );
     }
   }
 
-  const successCriteria =
-    crmProvider === 'twenty'
-      ? [
-          '✓ Form submission creates lead in Supabase',
-          '✓ Lead syncs to Twenty when flags enabled',
-          '✓ GHL disabled via REMOVED_REMOVED_twentyFLAG / INTCLOUDSYSOPS_REMOVED_twentyENABLED=false',
-          '✓ Admin can view submissions',
-          '✓ No errors in production logs',
-        ]
-      : [
-          '✓ Form submission creates lead in Supabase',
-          '✓ Lead syncs to GHL within 10 seconds',
-          '✓ Admin can view all submissions',
-          '✓ Client receives email notification',
-          '✓ No errors in production logs',
-        ];
+  const successCriteria = [
+    '✓ Form submission creates lead in Supabase',
+    '✓ Lead syncs to Twenty when flags enabled',
+    '✓ Admin can view submissions',
+    '✓ Client receives email notification',
+    '✓ No errors in production logs',
+  ];
 
   const plan: LaunchPlan = {
     tenant_name: tenantName,
