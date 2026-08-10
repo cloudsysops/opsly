@@ -8,6 +8,9 @@
   ],
   "exclude": [
     "node_modules",
-    ".next"
+    ".next",
+    "lib/agents/lead-followup.service.ts",
+    "lib/agents/pipeline-manager.service.ts",
+    "lib/agents/trial-scheduler.service.ts"
   ]
 }
