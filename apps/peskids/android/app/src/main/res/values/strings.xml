@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Peskids</string>
+    <string name="title_activity_main">Peskids</string>
+    <string name="package_name">com.peskids.app</string>
+    <string name="custom_url_scheme">com.peskids.app</string>
+</resources>

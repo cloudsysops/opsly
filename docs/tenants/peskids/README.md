@@ -86,6 +86,7 @@ Paquete listo para cliente + implementación:
 | [OPS-RUNBOOK.md](./OPS-RUNBOOK.md) | Comandos seguros de lectura |
 | [EXTRACTION-PLAN.md](./EXTRACTION-PLAN.md) | Salida a repo independiente |
 | [TWENTY-CRM.md](./TWENTY-CRM.md) | Bootstrap Twenty + cutover GHL |
+| [MOBILE-APP.md](./MOBILE-APP.md) | App Capacitor Android + iOS (stores) |
 | [CLIENT-PITCH.md](./CLIENT-PITCH.md) | Explicación para cliente (español) |
 | [INCUBATION-CHECKLIST.md](./INCUBATION-CHECKLIST.md) | Checklist de incubación |
 | [FUTURE-REPO-SEED.md](./FUTURE-REPO-SEED.md) | Semilla `cloudsysops/peskids-platform` |

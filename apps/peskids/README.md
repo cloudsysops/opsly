@@ -27,6 +27,16 @@ npm run dev
 # Open http://localhost:3004
 ```
 
+## Mobile (Android + iOS)
+
+Capacitor shell over production web. See [`docs/tenants/peskids/MOBILE-APP.md`](../../docs/tenants/peskids/MOBILE-APP.md).
+
+```bash
+npm run cap:sync
+./scripts/peskids-cap-android.sh --open   # from repo root
+./scripts/peskids-cap-ios.sh --open
+```
+
 ## Architecture
 
 **Frontend:** Next.js 14 + React + TypeScript + Tailwind CSS  

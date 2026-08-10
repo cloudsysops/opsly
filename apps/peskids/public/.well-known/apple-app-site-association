@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "TEAMID.com.peskids.app",
+        "paths": ["/familias*", "/teacher*", "/admin*", "/thanks*", "/"]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["TEAMID.com.peskids.app"]
+  }
+}
