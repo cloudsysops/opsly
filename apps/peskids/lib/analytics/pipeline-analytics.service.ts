@@ -52,11 +52,15 @@ interface RevenueAttributionRow {
 const LOCAL_STATUS_TO_STAGE: Record<string, PipelineStage> = {
   new: 'New Lead',
   contacted: 'Contacted',
+  trial: 'Trial Class',
+  enrolled: 'Enrolled',
+  active: 'Active Student',
+  renewal: 'Renewal',
+  archived: 'Lost',
+  // legacy aliases
   qualified: 'Trial Class',
   converted: 'Enrolled',
   lost: 'Lost',
-  active: 'Active Student',
-  renewal: 'Renewal',
 };
 
 function toMonthKey(isoDate: string): string {
@@ -82,7 +86,7 @@ export class PipelineAnalyticsService {
       const supabase = supabaseServer();
       const { data, error } = await supabase
         .from('leads')
-        .select('id, status, source, created_at, updated_at')
+        .select('id, status, referral_source, created_at, updated_at')
         .eq('tenant_id', 'peskids')
         .limit(2000);
 
@@ -99,7 +103,7 @@ export class PipelineAnalyticsService {
         const stage = LOCAL_STATUS_TO_STAGE[String(row.status ?? 'new')] ?? 'New Lead';
         byStage[stage] = (byStage[stage] ?? 0) + 1;
 
-        const source = String(row.source ?? 'unknown').toLowerCase();
+        const source = String(row.referral_source ?? 'unknown').toLowerCase();
         bySource[source] = (bySource[source] ?? 0) + 1;
 
         if (row.created_at) {
