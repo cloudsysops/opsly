@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-08-11T04:06:11.801Z",
+  "generated_at": "2026-08-11T15:58:17.577Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -3427,7 +3427,7 @@
         "usar",
         "vivo"
       ],
-      "size_bytes": 281019
+      "size_bytes": 285457
     },
     {
       "path": "apps/admin/INVITATIONS_UI.md",
@@ -4209,6 +4209,253 @@
       "size_bytes": 7638
     },
     {
+      "path": "data/content/assets/reference/REFERENCE-IMAGES.md",
+      "title": "Reference Images — Opsly Universe",
+      "keywords": [
+        "agents",
+        "art",
+        "atlas",
+        "bridge",
+        "catalog",
+        "control",
+        "e06",
+        "e08",
+        "e10",
+        "generation",
+        "globe",
+        "images",
+        "jpg",
+        "key",
+        "map",
+        "markdown",
+        "mission",
+        "note",
+        "opsly",
+        "overlook",
+        "parallel",
+        "path",
+        "peskids",
+        "pool",
+        "reference",
+        "repair",
+        "s01",
+        "scene",
+        "series",
+        "universe",
+        "usage",
+        "workshop",
+        "world"
+      ],
+      "size_bytes": 4386
+    },
+    {
+      "path": "data/content/canon/CONTINUITY-RULES.md",
+      "title": "Continuity Rules",
+      "keywords": [
+        "2026",
+        "bible",
+        "build",
+        "character",
+        "consistency",
+        "continuity",
+        "existing",
+        "important",
+        "initial",
+        "markdown",
+        "mvp",
+        "opsly",
+        "per",
+        "pre",
+        "relationship",
+        "reorder",
+        "rules",
+        "same",
+        "season",
+        "series",
+        "symbol"
+      ],
+      "size_bytes": 4354
+    },
+    {
+      "path": "data/content/canon/NOVA.md",
+      "title": "NØVA",
+      "keywords": [
+        "agents",
+        "appearance",
+        "canon",
+        "failure",
+        "first",
+        "line",
+        "markdown",
+        "nova",
+        "opsly",
+        "relationship",
+        "signature",
+        "speech",
+        "style",
+        "traveler"
+      ],
+      "size_bytes": 1970
+    },
+    {
+      "path": "data/content/canon/ORIGIN-SAGA.md",
+      "title": "The Origin Saga — 11 Acts",
+      "keywords": [
+        "act",
+        "acts",
+        "agents",
+        "arc",
+        "blueprint",
+        "control",
+        "conversation",
+        "core",
+        "creator",
+        "didn",
+        "each",
+        "episode",
+        "first",
+        "fit",
+        "from",
+        "iii",
+        "intcloudsysops",
+        "join",
+        "line",
+        "lives",
+        "machine",
+        "machines",
+        "man",
+        "many",
+        "markdown",
+        "mission",
+        "opsly",
+        "origin",
+        "peskids",
+        "question",
+        "saga",
+        "software",
+        "studio",
+        "system",
+        "systems",
+        "team",
+        "too",
+        "venture",
+        "vii",
+        "viii",
+        "world"
+      ],
+      "size_bytes": 10359
+    },
+    {
+      "path": "data/content/canon/SYMBOLS.md",
+      "title": "Symbols — The Mystery",
+      "keywords": [
+        "act",
+        "appear",
+        "cipher",
+        "design",
+        "device",
+        "five",
+        "fragments",
+        "iii",
+        "luminous",
+        "markdown",
+        "mystery",
+        "opsly",
+        "ruins",
+        "rule",
+        "symbols",
+        "where"
+      ],
+      "size_bytes": 2754
+    },
+    {
+      "path": "data/content/canon/THE-TRAVELER.md",
+      "title": "The Traveler",
+      "keywords": [
+        "across",
+        "act",
+        "central",
+        "conflict",
+        "every",
+        "faith",
+        "lines",
+        "markdown",
+        "never",
+        "opsly",
+        "preachy",
+        "present",
+        "recurring",
+        "signature",
+        "speech",
+        "style",
+        "traveler",
+        "what"
+      ],
+      "size_bytes": 2447
+    },
+    {
+      "path": "data/content/canon/TIMELINE.md",
+      "title": "Timeline — Real Event → Fictionalized Beat",
+      "keywords": [
+        "beat",
+        "event",
+        "fictionalized",
+        "markdown",
+        "opsly",
+        "real",
+        "timeline"
+      ],
+      "size_bytes": 4619
+    },
+    {
+      "path": "data/content/canon/UNIVERSE-BIBLE.md",
+      "title": "OPSLY: THE PARALLEL PATH — Universe Bible",
+      "keywords": [
+        "bible",
+        "candidates",
+        "canon",
+        "content",
+        "doesn",
+        "ending",
+        "exist",
+        "existing",
+        "files",
+        "main",
+        "markdown",
+        "mvp",
+        "mystery",
+        "opsly",
+        "parallel",
+        "path",
+        "planes",
+        "policy",
+        "relationship",
+        "style",
+        "themes",
+        "title",
+        "truth",
+        "universe",
+        "visual",
+        "why",
+        "yet"
+      ],
+      "size_bytes": 5123
+    },
+    {
+      "path": "data/content/canon/WAVO.md",
+      "title": "Wavo — Peki Lab Crossover",
+      "keywords": [
+        "crossover",
+        "lab",
+        "markdown",
+        "opsly",
+        "peki",
+        "rule",
+        "wavo"
+      ],
+      "size_bytes": 931
+    },
+    {
       "path": "data/content/README.md",
       "title": "Opsly Brand Content — Content Production MVP",
       "keywords": [
@@ -4227,7 +4474,7 @@
         "this",
         "what"
       ],
-      "size_bytes": 2629
+      "size_bytes": 3443
     },
     {
       "path": "data/content/series/opsly-origins/episodes/001-todo-empezo-hablando-con-ia/script.md",
@@ -4246,6 +4493,248 @@
         "visual"
       ],
       "size_bytes": 1423
+    },
+    {
+      "path": "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "title": "Opsly: The Parallel Path — S1E01 \"La Pregunta\" / \"The Question\"",
+      "keywords": [
+        "boundary",
+        "concept",
+        "conflict",
+        "design",
+        "emotional",
+        "environments",
+        "event",
+        "fictionalization",
+        "inspired",
+        "logline",
+        "markdown",
+        "motifs",
+        "notes",
+        "opsly",
+        "parallel",
+        "path",
+        "pregunta",
+        "question",
+        "real",
+        "represented",
+        "s1e01",
+        "script",
+        "sound",
+        "technology",
+        "that",
+        "theme",
+        "visual"
+      ],
+      "size_bytes": 2732
+    },
+    {
+      "path": "data/content/series/opsly-parallel-path/episodes/002-too-many-lives/script.md",
+      "title": "Opsly: The Parallel Path — S1E02 \"Demasiadas Vidas\" / \"Too Many Lives\"",
+      "keywords": [
+        "demasiadas",
+        "lives",
+        "logline",
+        "many",
+        "markdown",
+        "notes",
+        "opsly",
+        "parallel",
+        "path",
+        "s1e02",
+        "script",
+        "too",
+        "vidas"
+      ],
+      "size_bytes": 1633
+    },
+    {
+      "path": "data/content/series/opsly-parallel-path/episodes/003-the-first-system/script.md",
+      "title": "Opsly: The Parallel Path — S1E03 \"El Primer Sistema\" / \"The First System\"",
+      "keywords": [
+        "first",
+        "logline",
+        "markdown",
+        "notes",
+        "opsly",
+        "parallel",
+        "path",
+        "primer",
+        "s1e03",
+        "script",
+        "sistema",
+        "system"
+      ],
+      "size_bytes": 1246
+    },
+    {
+      "path": "data/content/series/opsly-parallel-path/episodes/004-intcloudsysops/script.md",
+      "title": "Opsly: The Parallel Path — S1E04 \"IntCloudSysOps\"",
+      "keywords": [
+        "intcloudsysops",
+        "logline",
+        "markdown",
+        "notes",
+        "opsly",
+        "parallel",
+        "path",
+        "s1e04",
+        "script"
+      ],
+      "size_bytes": 1165
+    },
+    {
+      "path": "data/content/series/opsly-parallel-path/episodes/005-the-blueprint/script.md",
+      "title": "Opsly: The Parallel Path — S1E05 \"El Blueprint\" / \"The Blueprint\"",
+      "keywords": [
+        "blueprint",
+        "logline",
+        "markdown",
+        "notes",
+        "opsly",
+        "parallel",
+        "path",
+        "s1e05",
+        "script"
+      ],
+      "size_bytes": 1193
+    },
+    {
+      "path": "data/content/series/opsly-parallel-path/episodes/006-peskids/script.md",
+      "title": "Opsly: The Parallel Path — S1E06 \"Peskids\"",
+      "keywords": [
+        "logline",
+        "markdown",
+        "notes",
+        "opsly",
+        "parallel",
+        "path",
+        "peskids",
+        "s1e06",
+        "script"
+      ],
+      "size_bytes": 1087
+    },
+    {
+      "path": "data/content/series/opsly-parallel-path/episodes/007-the-agents/script.md",
+      "title": "Opsly: The Parallel Path — S1E07 \"Los Agentes\" / \"The Agents\"",
+      "keywords": [
+        "agentes",
+        "agents",
+        "logline",
+        "markdown",
+        "notes",
+        "opsly",
+        "parallel",
+        "path",
+        "s1e07",
+        "script"
+      ],
+      "size_bytes": 1148
+    },
+    {
+      "path": "data/content/series/opsly-parallel-path/episodes/008-mission-control/script.md",
+      "title": "Opsly: The Parallel Path — S1E08 \"Mission Control\"",
+      "keywords": [
+        "control",
+        "logline",
+        "markdown",
+        "mission",
+        "notes",
+        "opsly",
+        "parallel",
+        "path",
+        "s1e08",
+        "script"
+      ],
+      "size_bytes": 1313
+    },
+    {
+      "path": "data/content/series/opsly-parallel-path/episodes/009-the-venture-studio/script.md",
+      "title": "Opsly: The Parallel Path — S1E09 \"El Venture Studio\" / \"The Venture Studio\"",
+      "keywords": [
+        "logline",
+        "markdown",
+        "notes",
+        "opsly",
+        "parallel",
+        "path",
+        "s1e09",
+        "script",
+        "studio",
+        "venture"
+      ],
+      "size_bytes": 1339
+    },
+    {
+      "path": "data/content/series/opsly-parallel-path/episodes/010-the-machine/script.md",
+      "title": "Opsly: The Parallel Path — S1E10 \"La Máquina\" / \"The Machine\"",
+      "keywords": [
+        "logline",
+        "machine",
+        "maquina",
+        "markdown",
+        "notes",
+        "opsly",
+        "parallel",
+        "path",
+        "s1e10",
+        "script"
+      ],
+      "size_bytes": 1113
+    },
+    {
+      "path": "data/content/series/opsly-parallel-path/episodes/011-the-creator/script.md",
+      "title": "Opsly: The Parallel Path — S1E11 \"El Creador\" / \"The Creator\"",
+      "keywords": [
+        "creador",
+        "creator",
+        "logline",
+        "markdown",
+        "notes",
+        "opsly",
+        "parallel",
+        "path",
+        "s1e11",
+        "script"
+      ],
+      "size_bytes": 1267
+    },
+    {
+      "path": "data/content/series/opsly-parallel-path/episodes/012-the-message/script.md",
+      "title": "Opsly: The Parallel Path — S1E12 \"El Mensaje\" / \"The Message\"",
+      "keywords": [
+        "logline",
+        "markdown",
+        "mensaje",
+        "message",
+        "notes",
+        "opsly",
+        "parallel",
+        "path",
+        "s1e12",
+        "script"
+      ],
+      "size_bytes": 1055
+    },
+    {
+      "path": "data/content/series/opsly-parallel-path/episodes/013-the-map/script.md",
+      "title": "Opsly: The Parallel Path — S1E13 \"El Mapa\" / \"The Map\" (Season Finale)",
+      "keywords": [
+        "finale",
+        "logline",
+        "map",
+        "mapa",
+        "markdown",
+        "notes",
+        "opsly",
+        "parallel",
+        "path",
+        "s1e13",
+        "script",
+        "season"
+      ],
+      "size_bytes": 1466
     },
     {
       "path": "docs/.obsidian/PLUGINS-TO-INSTALL.md",
@@ -4582,6 +5071,7 @@
       "title": "Opsly Content Production MVP — Brand Channel (Character-Driven)",
       "keywords": [
         "2026",
+        "addendum",
         "adds",
         "audited",
         "before",
@@ -4604,16 +5094,20 @@
         "mvp",
         "opsly",
         "paid",
+        "parallel",
+        "path",
         "phase",
         "production",
         "relacionados",
         "relationship",
+        "same",
         "studio",
         "success",
         "this",
+        "universe",
         "what"
       ],
-      "size_bytes": 5987
+      "size_bytes": 7568
     },
     {
       "path": "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
@@ -89002,6 +89496,7 @@
       "config/doppler-audit-2026-04-07.md",
       ".cursor/goals/openclaw-agent-runtime-2026-05-14.md",
       ".cursor/prompts/queue/008-smoke-screen-daemon.md",
+      "data/content/canon/CONTINUITY-RULES.md",
       "apps/web/blog/2026-04-26-opsly-para-agencias.md",
       "docs/superpowers/plans/2026-05-30-skills-obsidian-integration.md",
       "docs/superpowers/plans/2026-05-31-collectx-sprint1.md",
@@ -89855,8 +90350,30 @@
       ".codex/CODEX.md",
       ".codex/LOCAL-AUTOMATION.md",
       "AGENCY_CONTEXT.md",
+      "data/content/series/opsly-parallel-path/episodes/008-mission-control/script.md",
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "data/content/series/opsly-parallel-path/episodes/004-intcloudsysops/script.md",
+      "data/content/series/opsly-parallel-path/episodes/006-peskids/script.md",
+      "data/content/series/opsly-parallel-path/episodes/011-the-creator/script.md",
+      "data/content/series/opsly-parallel-path/episodes/007-the-agents/script.md",
+      "data/content/series/opsly-parallel-path/episodes/010-the-machine/script.md",
+      "data/content/series/opsly-parallel-path/episodes/005-the-blueprint/script.md",
+      "data/content/series/opsly-parallel-path/episodes/003-the-first-system/script.md",
+      "data/content/series/opsly-parallel-path/episodes/012-the-message/script.md",
+      "data/content/series/opsly-parallel-path/episodes/009-the-venture-studio/script.md",
+      "data/content/series/opsly-parallel-path/episodes/013-the-map/script.md",
+      "data/content/series/opsly-parallel-path/episodes/002-too-many-lives/script.md",
       "data/content/series/opsly-origins/episodes/001-todo-empezo-hablando-con-ia/script.md",
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
       "data/content/README.md",
+      "data/content/canon/TIMELINE.md",
+      "data/content/canon/WAVO.md",
+      "data/content/canon/UNIVERSE-BIBLE.md",
+      "data/content/canon/SYMBOLS.md",
+      "data/content/canon/ORIGIN-SAGA.md",
+      "data/content/canon/CONTINUITY-RULES.md",
+      "data/content/canon/THE-TRAVELER.md",
+      "data/content/canon/NOVA.md",
       ".n8n/3-webhooks/github-webhook.md",
       ".n8n/3-webhooks/discord-webhook.md",
       ".n8n/README.md",
@@ -92486,8 +93003,30 @@
       ".codex/CODEX.md",
       ".codex/LOCAL-AUTOMATION.md",
       "AGENCY_CONTEXT.md",
+      "data/content/series/opsly-parallel-path/episodes/008-mission-control/script.md",
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "data/content/series/opsly-parallel-path/episodes/004-intcloudsysops/script.md",
+      "data/content/series/opsly-parallel-path/episodes/006-peskids/script.md",
+      "data/content/series/opsly-parallel-path/episodes/011-the-creator/script.md",
+      "data/content/series/opsly-parallel-path/episodes/007-the-agents/script.md",
+      "data/content/series/opsly-parallel-path/episodes/010-the-machine/script.md",
+      "data/content/series/opsly-parallel-path/episodes/005-the-blueprint/script.md",
+      "data/content/series/opsly-parallel-path/episodes/003-the-first-system/script.md",
+      "data/content/series/opsly-parallel-path/episodes/012-the-message/script.md",
+      "data/content/series/opsly-parallel-path/episodes/009-the-venture-studio/script.md",
+      "data/content/series/opsly-parallel-path/episodes/013-the-map/script.md",
+      "data/content/series/opsly-parallel-path/episodes/002-too-many-lives/script.md",
       "data/content/series/opsly-origins/episodes/001-todo-empezo-hablando-con-ia/script.md",
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
       "data/content/README.md",
+      "data/content/canon/TIMELINE.md",
+      "data/content/canon/WAVO.md",
+      "data/content/canon/UNIVERSE-BIBLE.md",
+      "data/content/canon/SYMBOLS.md",
+      "data/content/canon/ORIGIN-SAGA.md",
+      "data/content/canon/CONTINUITY-RULES.md",
+      "data/content/canon/THE-TRAVELER.md",
+      "data/content/canon/NOVA.md",
       ".n8n/3-webhooks/github-webhook.md",
       ".n8n/3-webhooks/discord-webhook.md",
       ".n8n/README.md",
@@ -95001,6 +95540,7 @@
     "policy": [
       "SECURITY.md",
       ".jules/bolt.md",
+      "data/content/canon/UNIVERSE-BIBLE.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/web-security-patterns.md",
       "lib/components/GOVERNANCE.md",
       "lib/config/GOVERNANCE.md",
@@ -96585,6 +97125,9 @@
       ".jules/sentinel.md",
       "packages/skills/user/opsly-peskids/SKILL.md",
       "packages/skills/user/opsly-peskids-deployment/SKILL.md",
+      "data/content/series/opsly-parallel-path/episodes/006-peskids/script.md",
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
+      "data/content/canon/ORIGIN-SAGA.md",
       ".n8n/1-workflows/peskids/README.md",
       "apps/peskids/README.md",
       "apps/peskids/CLAUDE.md",
@@ -97096,6 +97639,7 @@
     "usage": [
       ".jules/bolt.md",
       "packages/skills/vendor/agent-skills/idea-refine/SKILL.md",
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
       "tools/agent-packs/vendor/cyber-neo/README.md",
       "tools/agent-packs/vendor/the-architect/README.md",
       "lib/components/README.md",
@@ -97595,6 +98139,9 @@
     "control": [
       ".jules/sentinel.md",
       "packages/skills/vendor/agent-skills/security-and-hardening/SKILL.md",
+      "data/content/series/opsly-parallel-path/episodes/008-mission-control/script.md",
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
+      "data/content/canon/ORIGIN-SAGA.md",
       "AGENTS.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/cwe-top-25.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/owasp-top-10.md",
@@ -97892,6 +98439,9 @@
     ],
     "mission": [
       ".jules/sentinel.md",
+      "data/content/series/opsly-parallel-path/episodes/008-mission-control/script.md",
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
+      "data/content/canon/ORIGIN-SAGA.md",
       "lib/mission-control-kit/README.md",
       "lib/mission-control-kit/GOVERNANCE.md",
       "apps/experimental/mission-control-archive/ARCHIVE.md",
@@ -102004,6 +102554,7 @@
       "packages/skills/user/opsly-supabase-marketplace/SKILL.md",
       "packages/skills/user/opsly-ai-sdk-vercel/SKILL.md",
       "packages/skills/user/opsly-stripe-marketplace/SKILL.md",
+      "data/content/series/opsly-parallel-path/episodes/013-the-map/script.md",
       "docs/design/AGENT-ORCHESTRATION-INDEX.md",
       "docs/obsidian/index.md",
       "docs/legal/peskids/DPIA-2026.md",
@@ -102566,6 +103117,7 @@
       "packages/skills/user/opsly-simplify/SKILL.md",
       "packages/skills/vendor/agent-skills/interview-me/SKILL.md",
       "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
+      "data/content/canon/ORIGIN-SAGA.md",
       "vendor/agency-agents/integrations/qwen/agents/narrative-designer.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/narrative-designer/SKILL.md",
       "vendor/agency-agents/integrations/kimi/narrative-designer/system.md",
@@ -106173,6 +106725,7 @@
       "packages/skills/vendor/agent-skills/git-workflow-and-versioning/SKILL.md",
       "packages/skills/vendor/agent-skills/deprecation-and-migration/SKILL.md",
       "packages/skills/vendor/agent-skills/using-agent-skills/SKILL.md",
+      "data/content/canon/ORIGIN-SAGA.md",
       "tools/agent-packs/vendor/the-architect/questions/phase-1-discovery.md",
       "tools/agent-packs/vendor/the-architect/questions/phase-2-branches.md",
       "apps/orchestrator/src/meta/README.md",
@@ -107664,6 +108217,7 @@
     ],
     "team": [
       "packages/skills/user/opsly-peskids/SKILL.md",
+      "data/content/canon/ORIGIN-SAGA.md",
       "vendor/agency-agents/integrations/qwen/agents/studio-producer.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/studio-producer/SKILL.md",
       "vendor/agency-agents/integrations/kimi/studio-producer/system.md",
@@ -108090,6 +108644,19 @@
       "packages/skills/user/opsly-self-healing/SKILL.md",
       "packages/skills/templates/template-bash-script.md",
       "scripts/README.md",
+      "data/content/series/opsly-parallel-path/episodes/008-mission-control/script.md",
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "data/content/series/opsly-parallel-path/episodes/004-intcloudsysops/script.md",
+      "data/content/series/opsly-parallel-path/episodes/006-peskids/script.md",
+      "data/content/series/opsly-parallel-path/episodes/011-the-creator/script.md",
+      "data/content/series/opsly-parallel-path/episodes/007-the-agents/script.md",
+      "data/content/series/opsly-parallel-path/episodes/010-the-machine/script.md",
+      "data/content/series/opsly-parallel-path/episodes/005-the-blueprint/script.md",
+      "data/content/series/opsly-parallel-path/episodes/003-the-first-system/script.md",
+      "data/content/series/opsly-parallel-path/episodes/012-the-message/script.md",
+      "data/content/series/opsly-parallel-path/episodes/009-the-venture-studio/script.md",
+      "data/content/series/opsly-parallel-path/episodes/013-the-map/script.md",
+      "data/content/series/opsly-parallel-path/episodes/002-too-many-lives/script.md",
       "data/content/series/opsly-origins/episodes/001-todo-empezo-hablando-con-ia/script.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/cicd-security.md",
       "tools/productivity-starter/README.md",
@@ -108393,6 +108960,7 @@
     ],
     "planes": [
       "packages/skills/user/opsly-tenant/SKILL.md",
+      "data/content/canon/UNIVERSE-BIBLE.md",
       "apps/notebooklm-agent/README.md",
       "docs/plans/README.md",
       "docs/01-development/VISION.md",
@@ -110369,6 +110937,8 @@
     ],
     "creator": [
       "packages/skills/user/opsly-skill-creator/SKILL.md",
+      "data/content/series/opsly-parallel-path/episodes/011-the-creator/script.md",
+      "data/content/canon/ORIGIN-SAGA.md",
       "vendor/agency-agents/integrations/qwen/agents/tiktok-strategist.md",
       "vendor/agency-agents/integrations/qwen/agents/linkedin-content-creator.md",
       "vendor/agency-agents/integrations/qwen/agents/content-creator.md",
@@ -110535,6 +111105,10 @@
       "packages/skills/user/opsly-n8n-automation/SKILL.md",
       "packages/skills/user/opsly-architect-senior/SKILL.md",
       "packages/skills/vendor/agent-skills/ci-cd-and-automation/SKILL.md",
+      "data/content/series/opsly-parallel-path/episodes/007-the-agents/script.md",
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
+      "data/content/canon/ORIGIN-SAGA.md",
+      "data/content/canon/NOVA.md",
       ".n8n/README.md",
       ".n8n/2-context/AGENTS.md",
       "AGENTS.md",
@@ -111078,6 +111652,7 @@
       "packages/skills/vendor/agent-skills/planning-and-task-breakdown/SKILL.md",
       "packages/skills/vendor/agent-skills/context-engineering/SKILL.md",
       ".cursor/prompts/local-services-automation.md",
+      "data/content/canon/UNIVERSE-BIBLE.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/SKILL.md",
       "tools/agent-packs/vendor/cyber-neo/CLAUDE.md",
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
@@ -111111,6 +111686,7 @@
     "generation": [
       "packages/skills/user/opsly-n8n-automation/SKILL.md",
       ".cursor/prompts/local-services-ops-admin.md",
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/cwe-top-25.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/frontend-stacks.md",
       "vendor/agency-agents/integrations/qwen/agents/document-generator.md",
@@ -111258,6 +111834,7 @@
       "packages/skills/templates/template-migration.md",
       "packages/skills/vendor/agent-skills/idea-refine/SKILL.md",
       ".cursor/prompts/task-orchestrator-completion.md",
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
       "tools/agent-packs/vendor/cyber-neo/CLAUDE.md",
       "tools/agent-packs/vendor/the-architect/templates/claude-md-template.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/frontend-stacks.md",
@@ -111409,6 +111986,7 @@
     "never": [
       "packages/skills/user/opsly-n8n-automation/SKILL.md",
       "packages/skills/vendor/agent-skills/security-and-hardening/SKILL.md",
+      "data/content/canon/THE-TRAVELER.md",
       "vendor/agency-agents/integrations/qwen/agents/reality-checker.md",
       "vendor/agency-agents/integrations/qwen/agents/ai-data-remediation-engineer.md",
       "vendor/agency-agents/integrations/qwen/agents/chief-of-staff.md",
@@ -111537,6 +112115,7 @@
       "packages/skills/user/opsly-agent-skills-bridge/SKILL.md",
       "packages/skills/README.md",
       ".cursor/prompts/local-services-mvp.md",
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/iac-docker.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/SKILL.md",
       "tools/agent-packs/vendor/cyber-neo/CLAUDE.md",
@@ -111741,6 +112320,7 @@
       ".cursor/prompts/fix-organize-autonomous-system.md",
       ".cursor/prompts/task-orchestrator-completion.md",
       "data/content/README.md",
+      "data/content/canon/THE-TRAVELER.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/auth-authz-patterns.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/logging-patterns.md",
       "tools/agent-packs/vendor/cyber-neo/README.md",
@@ -113155,6 +113735,7 @@
     "sistema": [
       "packages/skills/user/opsly-autonomous/SKILL.md",
       "packages/skills/README.md",
+      "data/content/series/opsly-parallel-path/episodes/003-the-first-system/script.md",
       "docs/history/plans/MASTER-PLAN.md",
       "docs/00-architecture/hooks-system.md",
       "docs/00-architecture/BILLING-USD-DIAGRAMS.md",
@@ -114288,6 +114869,8 @@
     ],
     "real": [
       "packages/skills/user/opsly-quantum/SKILL.md",
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "data/content/canon/TIMELINE.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/state-management.md",
       "tools/agent-packs/vendor/the-architect/questions/phase-2-branches.md",
       "apps/peskids/README.md",
@@ -115293,6 +115876,7 @@
     ],
     "bridge": [
       "packages/skills/user/opsly-agent-skills-bridge/SKILL.md",
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
       "vendor/agency-agents/integrations/qwen/agents/ux-architect.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/ux-architect/SKILL.md",
       "vendor/agency-agents/integrations/kimi/ux-architect/system.md",
@@ -117124,9 +117708,25 @@
     ],
     "path": [
       "packages/skills/templates/template-api-route.md",
+      "data/content/series/opsly-parallel-path/episodes/008-mission-control/script.md",
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "data/content/series/opsly-parallel-path/episodes/004-intcloudsysops/script.md",
+      "data/content/series/opsly-parallel-path/episodes/006-peskids/script.md",
+      "data/content/series/opsly-parallel-path/episodes/011-the-creator/script.md",
+      "data/content/series/opsly-parallel-path/episodes/007-the-agents/script.md",
+      "data/content/series/opsly-parallel-path/episodes/010-the-machine/script.md",
+      "data/content/series/opsly-parallel-path/episodes/005-the-blueprint/script.md",
+      "data/content/series/opsly-parallel-path/episodes/003-the-first-system/script.md",
+      "data/content/series/opsly-parallel-path/episodes/012-the-message/script.md",
+      "data/content/series/opsly-parallel-path/episodes/009-the-venture-studio/script.md",
+      "data/content/series/opsly-parallel-path/episodes/013-the-map/script.md",
+      "data/content/series/opsly-parallel-path/episodes/002-too-many-lives/script.md",
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
+      "data/content/canon/UNIVERSE-BIBLE.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/cwe-top-25.md",
       "vendor/agency-agents/integrations/openclaw/workflow-architect/SOUL.md",
       "docs/runbooks/OPERATIONS-HANDBOOK.md",
+      "docs/00-architecture/CONTENT-PRODUCTION-MVP.md",
       "docs/01-development/QA-REVIEW-COMPLETE.md",
       "docs/adr/ADR-042-local-services-phase-2-webhooks.md",
       "docs/adr/ADR-032-scripts-organization.md",
@@ -118343,6 +118943,8 @@
     "question": [
       "packages/skills/vendor/agent-skills/interview-me/SKILL.md",
       "packages/skills/vendor/agent-skills/observability-and-instrumentation/SKILL.md",
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "data/content/canon/ORIGIN-SAGA.md",
       "vendor/agency-agents/integrations/qwen/agents/zhihu-strategist.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/zhihu-strategist/SKILL.md",
       "vendor/agency-agents/integrations/kimi/zhihu-strategist/system.md",
@@ -118979,6 +119581,8 @@
       "packages/skills/vendor/agent-skills/api-and-interface-design/SKILL.md",
       "packages/skills/vendor/agent-skills/deprecation-and-migration/SKILL.md",
       ".cursor/prompts/parallel-task-2-architect.md",
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "data/content/canon/SYMBOLS.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/owasp-top-10.md",
       "tools/agent-packs/vendor/cyber-neo/CLAUDE.md",
       "tools/agent-packs/vendor/the-architect/templates/claude-md-template.md",
@@ -119379,6 +119983,8 @@
       "packages/skills/vendor/agent-skills/frontend-ui-engineering/SKILL.md",
       "packages/skills/vendor/agent-skills/security-and-hardening/SKILL.md",
       ".cursor/prompts/fix-organize-autonomous-system.md",
+      "data/content/series/opsly-parallel-path/episodes/003-the-first-system/script.md",
+      "data/content/canon/ORIGIN-SAGA.md",
       "tools/agent-packs/vendor/the-architect/templates/claude-md-template.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/styling-systems.md",
       "lib/components/README.md",
@@ -119766,6 +120372,7 @@
     "five": [
       "packages/skills/vendor/agent-skills/code-review-and-quality/SKILL.md",
       "packages/skills/vendor/agent-skills/code-simplification/SKILL.md",
+      "data/content/canon/SYMBOLS.md",
       "docs/history/consolidation/CONSOLIDATION-SUMMARY.md",
       ".claude/agents/core/reviewer.md"
     ],
@@ -119897,6 +120504,9 @@
       "packages/skills/vendor/agent-skills/security-and-hardening/SKILL.md",
       "packages/skills/vendor/agent-skills/test-driven-development/SKILL.md",
       ".archived/context-builder-v2/src/design/architecture.md",
+      "data/content/series/opsly-parallel-path/episodes/003-the-first-system/script.md",
+      "data/content/canon/ORIGIN-SAGA.md",
+      "data/content/canon/NOVA.md",
       "tools/agent-packs/vendor/the-architect/knowledge/archetypes/marketing-site.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/styling-systems.md",
       "tools/agent-packs/vendor/the-architect/knowledge/stack-compatibility.md",
@@ -120191,6 +120801,8 @@
       "packages/skills/vendor/agent-skills/api-and-interface-design/SKILL.md",
       "packages/skills/vendor/agent-skills/debugging-and-error-recovery/SKILL.md",
       ".codex/CODEX.md",
+      "data/content/canon/WAVO.md",
+      "data/content/canon/SYMBOLS.md",
       "vendor/agency-agents/integrations/qwen/agents/threat-detection-engineer.md",
       "vendor/agency-agents/integrations/qwen/agents/ai-data-remediation-engineer.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/ai-data-remediation-engineer/SKILL.md",
@@ -120212,6 +120824,7 @@
       "packages/skills/vendor/agent-skills/context-engineering/SKILL.md",
       "packages/skills/vendor/agent-skills/using-agent-skills/SKILL.md",
       ".codex/CODEX.md",
+      "data/content/canon/CONTINUITY-RULES.md",
       "tools/agent-packs/vendor/the-architect/templates/claude-md-template.md",
       "lib/telemetry/GOVERNANCE.md",
       "lib/config/GOVERNANCE.md",
@@ -121984,6 +122597,8 @@
     ],
     "map": [
       "packages/skills/vendor/agent-skills/README.md",
+      "data/content/series/opsly-parallel-path/episodes/013-the-map/script.md",
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
       "vendor/agency-agents/integrations/qwen/agents/threat-detection-engineer.md",
       "vendor/agency-agents/integrations/qwen/agents/agentic-search-optimizer.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/agentic-search-optimizer/SKILL.md",
@@ -122212,6 +122827,7 @@
     ],
     "where": [
       "packages/skills/vendor/agent-skills/performance-optimization/SKILL.md",
+      "data/content/canon/SYMBOLS.md",
       "vendor/agency-agents/integrations/qwen/agents/narrative-designer.md",
       "vendor/agency-agents/integrations/qwen/agents/sales-engineer.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/narrative-designer/SKILL.md",
@@ -123856,6 +124472,8 @@
     ],
     "existing": [
       "packages/skills/vendor/agent-skills/documentation-and-adrs/SKILL.md",
+      "data/content/canon/UNIVERSE-BIBLE.md",
+      "data/content/canon/CONTINUITY-RULES.md",
       "vendor/agency-agents/integrations/qwen/agents/autonomous-optimization-architect.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/autonomous-optimization-architect/SKILL.md",
       "vendor/agency-agents/integrations/kimi/autonomous-optimization-architect/system.md",
@@ -124247,6 +124865,7 @@
     ],
     "title": [
       "packages/skills/vendor/agent-skills/planning-and-task-breakdown/SKILL.md",
+      "data/content/canon/UNIVERSE-BIBLE.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/report-template.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/SKILL.md",
       "vendor/agency-agents/integrations/qwen/agents/korean-business-navigator.md",
@@ -125404,6 +126023,9 @@
     "style": [
       "packages/skills/vendor/agent-skills/spec-driven-development/SKILL.md",
       "data/content/series/opsly-origins/episodes/001-todo-empezo-hablando-con-ia/script.md",
+      "data/content/canon/UNIVERSE-BIBLE.md",
+      "data/content/canon/THE-TRAVELER.md",
+      "data/content/canon/NOVA.md",
       "tools/agent-packs/vendor/the-architect/CLAUDE.md",
       "tools/agent-packs/vendor/the-architect/templates/claude-md-template.md",
       "vendor/agency-agents/integrations/qwen/agents/behavioral-nudge-engine.md",
@@ -126204,6 +126826,7 @@
     "boundary": [
       "packages/skills/vendor/agent-skills/security-and-hardening/SKILL.md",
       "packages/skills/vendor/agent-skills/browser-testing-with-devtools/SKILL.md",
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
       "vendor/agency-agents/integrations/qwen/agents/unreal-systems-engineer.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/unreal-systems-engineer/SKILL.md",
       "vendor/agency-agents/integrations/kimi/unreal-systems-engineer/system.md",
@@ -126601,6 +127224,7 @@
     "build": [
       "packages/skills/vendor/agent-skills/deprecation-and-migration/SKILL.md",
       ".cursor/prompts/parallel-task-1-executor.md",
+      "data/content/canon/CONTINUITY-RULES.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/iac-docker.md",
       "tools/agent-packs/vendor/the-architect/knowledge/archetypes/internal-tool.md",
       "tools/agent-packs/vendor/the-architect/knowledge/archetypes/api-backend.md",
@@ -127200,6 +127824,7 @@
     "content": [
       "packages/skills/vendor/agent-skills/browser-testing-with-devtools/SKILL.md",
       "data/content/README.md",
+      "data/content/canon/UNIVERSE-BIBLE.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/web-security-patterns.md",
       "tools/agent-packs/vendor/the-architect/knowledge/archetypes/content-platform.md",
       "tools/agent-packs/vendor/the-architect/knowledge/stack-compatibility.md",
@@ -127538,6 +128163,7 @@
     "failure": [
       "packages/skills/vendor/agent-skills/using-agent-skills/SKILL.md",
       "packages/skills/vendor/agent-skills/debugging-and-error-recovery/SKILL.md",
+      "data/content/canon/NOVA.md",
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
       "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
       "docs/operations/CRITICAL-RELIABILITY-SPRINT.md",
@@ -127684,6 +128310,8 @@
     ],
     "line": [
       "packages/skills/vendor/agent-skills/debugging-and-error-recovery/SKILL.md",
+      "data/content/canon/ORIGIN-SAGA.md",
+      "data/content/canon/NOVA.md",
       "vendor/agency-agents/integrations/openclaw/codebase-onboarding-engineer/AGENTS.md"
     ],
     "localize": [
@@ -127994,6 +128622,7 @@
     ],
     "pre": [
       "packages/skills/vendor/agent-skills/shipping-and-launch/SKILL.md",
+      "data/content/canon/CONTINUITY-RULES.md",
       "tools/productivity-starter/DEMO-WALKTHROUGH.md",
       "tools/productivity-starter/demo-script.md",
       "vendor/agency-agents/integrations/qwen/agents/bookkeeper-controller.md",
@@ -128518,6 +129147,8 @@
     "intcloudsysops": [
       "config/doppler-audit-2026-04-07.md",
       "README.md",
+      "data/content/series/opsly-parallel-path/episodes/004-intcloudsysops/script.md",
+      "data/content/canon/ORIGIN-SAGA.md",
       ".n8n/1-workflows/intcloudsysops/README.md",
       "lib/components/README.md",
       "lib/evaluation/README.md",
@@ -128691,6 +129322,8 @@
     ],
     "blueprint": [
       "config/blueprints/academy/README.md",
+      "data/content/series/opsly-parallel-path/episodes/005-the-blueprint/script.md",
+      "data/content/canon/ORIGIN-SAGA.md",
       "tools/agent-packs/vendor/the-architect/README.md",
       "tools/agent-packs/vendor/the-architect/templates/blueprint-template.md",
       "tools/agent-packs/vendor/the-architect/knowledge/skills-registry.md",
@@ -128761,6 +129394,8 @@
     ],
     "machine": [
       "config/blueprints/academy/README.md",
+      "data/content/series/opsly-parallel-path/episodes/010-the-machine/script.md",
+      "data/content/canon/ORIGIN-SAGA.md",
       "vendor/agency-agents/integrations/qwen/agents/ai-engineer.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/ai-engineer/SKILL.md",
       "vendor/agency-agents/integrations/kimi/ai-engineer/system.md",
@@ -128971,7 +129606,23 @@
       ".cursor/prompts/parallel-task-3-reviewer.md",
       ".cursor/prompts/parallel-task-1-executor.md",
       ".cursor/prompts/parallel-task-4-observability.md",
+      "data/content/series/opsly-parallel-path/episodes/008-mission-control/script.md",
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "data/content/series/opsly-parallel-path/episodes/004-intcloudsysops/script.md",
+      "data/content/series/opsly-parallel-path/episodes/006-peskids/script.md",
+      "data/content/series/opsly-parallel-path/episodes/011-the-creator/script.md",
+      "data/content/series/opsly-parallel-path/episodes/007-the-agents/script.md",
+      "data/content/series/opsly-parallel-path/episodes/010-the-machine/script.md",
+      "data/content/series/opsly-parallel-path/episodes/005-the-blueprint/script.md",
+      "data/content/series/opsly-parallel-path/episodes/003-the-first-system/script.md",
+      "data/content/series/opsly-parallel-path/episodes/012-the-message/script.md",
+      "data/content/series/opsly-parallel-path/episodes/009-the-venture-studio/script.md",
+      "data/content/series/opsly-parallel-path/episodes/013-the-map/script.md",
+      "data/content/series/opsly-parallel-path/episodes/002-too-many-lives/script.md",
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
+      "data/content/canon/UNIVERSE-BIBLE.md",
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/SKILL.md",
+      "docs/00-architecture/CONTENT-PRODUCTION-MVP.md",
       "docs/06-multi-agent/PARALLEL-EXECUTION-GUIDE.md",
       "docs/06-multi-agent/PARALLEL-EXECUTION-ARCHITECTURE.md",
       "docs/03-agents/AGENTS-GUIDE.md",
@@ -130074,6 +130725,19 @@
     ],
     "notes": [
       ".cursor/prompts/fix-organize-autonomous-system.md",
+      "data/content/series/opsly-parallel-path/episodes/008-mission-control/script.md",
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "data/content/series/opsly-parallel-path/episodes/004-intcloudsysops/script.md",
+      "data/content/series/opsly-parallel-path/episodes/006-peskids/script.md",
+      "data/content/series/opsly-parallel-path/episodes/011-the-creator/script.md",
+      "data/content/series/opsly-parallel-path/episodes/007-the-agents/script.md",
+      "data/content/series/opsly-parallel-path/episodes/010-the-machine/script.md",
+      "data/content/series/opsly-parallel-path/episodes/005-the-blueprint/script.md",
+      "data/content/series/opsly-parallel-path/episodes/003-the-first-system/script.md",
+      "data/content/series/opsly-parallel-path/episodes/012-the-message/script.md",
+      "data/content/series/opsly-parallel-path/episodes/009-the-venture-studio/script.md",
+      "data/content/series/opsly-parallel-path/episodes/013-the-map/script.md",
+      "data/content/series/opsly-parallel-path/episodes/002-too-many-lives/script.md",
       "data/content/series/opsly-origins/episodes/001-todo-empezo-hablando-con-ia/script.md",
       "tools/agent-packs/vendor/the-architect/knowledge/stack-compatibility.md",
       "vendor/agency-agents/integrations/qwen/agents/book-co-author.md",
@@ -130853,6 +131517,7 @@
     ],
     "mensaje": [
       ".cursor/prompts/local-services-tech-builder.md",
+      "data/content/series/opsly-parallel-path/episodes/012-the-message/script.md",
       "docs/runbooks/VPS-MEMORY-CAPS.md",
       "docs/runbooks/AGENCY-DEVOPS-OS-DEMO.md",
       "docs/blueprints/opsly-operational-blueprint/TEAM-FACING-EXPLANATION.md"
@@ -131298,6 +131963,7 @@
     ],
     "initial": [
       ".cursor/prompts/local-services-sales-closer.md",
+      "data/content/canon/CONTINUITY-RULES.md",
       "vendor/agency-agents/integrations/qwen/agents/legal-client-intake.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/legal-client-intake/SKILL.md",
       "vendor/agency-agents/integrations/kimi/legal-client-intake/system.md",
@@ -131528,6 +132194,7 @@
     "timeline": [
       ".cursor/prompts/local-services-sales-closer.md",
       ".cursor/prompts/local-services-mvp.md",
+      "data/content/canon/TIMELINE.md",
       "tools/agent-packs/vendor/the-architect/questions/phase-1-discovery.md",
       "vendor/agency-agents/integrations/qwen/agents/loan-officer-assistant.md",
       "vendor/agency-agents/integrations/qwen/agents/korean-business-navigator.md",
@@ -131868,6 +132535,8 @@
     "mvp": [
       ".cursor/prompts/local-services-mvp.md",
       "data/content/README.md",
+      "data/content/canon/UNIVERSE-BIBLE.md",
+      "data/content/canon/CONTINUITY-RULES.md",
       "apps/peskids/README.md",
       "apps/intcloudsysops/README.md",
       "docs/projects/PESKIDS-SCOPE.md",
@@ -131906,6 +132575,7 @@
     ],
     "recurring": [
       ".cursor/prompts/local-services-mvp.md",
+      "data/content/canon/THE-TRAVELER.md",
       "vendor/agency-agents/integrations/qwen/agents/accounts-payable-agent.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/accounts-payable-agent/SKILL.md",
       "vendor/agency-agents/integrations/kimi/accounts-payable-agent/system.md",
@@ -133119,6 +133789,7 @@
     ],
     "agentes": [
       ".github/copilot-instructions.md",
+      "data/content/series/opsly-parallel-path/episodes/007-the-agents/script.md",
       "docs/design/AGENT-ORCHESTRATION-INDEX.md",
       "docs/obsidian/index.md",
       "docs/runbooks/IDE-OCTOPUS-AGENTS.md",
@@ -135514,23 +136185,253 @@
       "docs/reports/audit-2026-04-07.md",
       "docs/blueprints/AI-TENANT-SETUP-BLUEPRINT.md"
     ],
-    "empezo": [
-      "data/content/series/opsly-origins/episodes/001-todo-empezo-hablando-con-ia/script.md"
+    "logline": [
+      "data/content/series/opsly-parallel-path/episodes/008-mission-control/script.md",
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "data/content/series/opsly-parallel-path/episodes/004-intcloudsysops/script.md",
+      "data/content/series/opsly-parallel-path/episodes/006-peskids/script.md",
+      "data/content/series/opsly-parallel-path/episodes/011-the-creator/script.md",
+      "data/content/series/opsly-parallel-path/episodes/007-the-agents/script.md",
+      "data/content/series/opsly-parallel-path/episodes/010-the-machine/script.md",
+      "data/content/series/opsly-parallel-path/episodes/005-the-blueprint/script.md",
+      "data/content/series/opsly-parallel-path/episodes/003-the-first-system/script.md",
+      "data/content/series/opsly-parallel-path/episodes/012-the-message/script.md",
+      "data/content/series/opsly-parallel-path/episodes/009-the-venture-studio/script.md",
+      "data/content/series/opsly-parallel-path/episodes/013-the-map/script.md",
+      "data/content/series/opsly-parallel-path/episodes/002-too-many-lives/script.md"
     ],
-    "hablando": [
-      "data/content/series/opsly-origins/episodes/001-todo-empezo-hablando-con-ia/script.md"
+    "s1e08": [
+      "data/content/series/opsly-parallel-path/episodes/008-mission-control/script.md"
     ],
-    "origins": [
-      "data/content/series/opsly-origins/episodes/001-todo-empezo-hablando-con-ia/script.md"
+    "concept": [
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "vendor/agency-agents/integrations/qwen/agents/image-prompt-engineer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/image-prompt-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/image-prompt-engineer/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-image-prompt-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/image-prompt-engineer.md",
+      "vendor/agency-agents/integrations/openclaw/image-prompt-engineer/AGENTS.md"
     ],
-    "todo": [
-      "data/content/series/opsly-origins/episodes/001-todo-empezo-hablando-con-ia/script.md",
-      "infra/terraform/README.md",
-      "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
-      ".agents/IMPLEMENTATION-CHECKLIST.md"
+    "conflict": [
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "data/content/canon/THE-TRAVELER.md",
+      "vendor/agency-agents/integrations/qwen/agents/legal-client-intake.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/legal-client-intake/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/legal-client-intake/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-legal-client-intake/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/legal-client-intake.md",
+      "vendor/agency-agents/integrations/openclaw/legal-client-intake/AGENTS.md"
+    ],
+    "emotional": [
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "vendor/agency-agents/integrations/qwen/agents/healthcare-customer-service.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/healthcare-customer-service/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/healthcare-customer-service/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-healthcare-customer-service/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/healthcare-customer-service.md",
+      "vendor/agency-agents/integrations/openclaw/healthcare-customer-service/AGENTS.md"
+    ],
+    "environments": [
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "lib/testing/GOVERNANCE.md",
+      "apps/peskids/CLAUDE.md",
+      "vendor/agency-agents/integrations/qwen/agents/unreal-world-builder.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-world-builder/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/unreal-world-builder/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-unreal-world-builder/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/unreal-world-builder.md",
+      "vendor/agency-agents/integrations/openclaw/unreal-world-builder/AGENTS.md",
+      "docs/01-development/GITHUB-SETTINGS.md"
+    ],
+    "event": [
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "data/content/canon/TIMELINE.md",
+      ".n8n/1-workflows/peskids/README.md",
+      "vendor/agency-agents/integrations/qwen/agents/game-audio-engineer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/game-audio-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/game-audio-engineer/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-game-audio-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/game-audio-engineer.md",
+      "vendor/agency-agents/integrations/openclaw/godot-gameplay-scripter/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/feishu-integration-developer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/game-audio-engineer/AGENTS.md",
+      "docs/00-architecture/VPS-CLEANUP-WEBHOOK-CONTRACT.md",
+      "docs/00-architecture/ORCHESTRATOR.md",
+      "docs/00-architecture/opsly-agent-runtime.md",
+      "docs/00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
+      "docs/03-agents/SYRA-OPENCLAW-INTEGRATION.md",
+      "docs/03-agents/SOCIAL-MEDIA-AGENT-SYRA.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/tenants/peskids/BLUEPRINT-MAPPING.md",
+      "docs/tenants/peskids/EVENT-CONTRACT.md",
+      "docs/tenants/peskids/SPRINT-01-STATUS.md",
+      "docs/tenants/peskids/SPRINT-01.md",
+      "docs/tenants/peskids/FORMS-SPEC.md",
+      "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
+      "docs/demo/hackathon-demo.md",
+      "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md"
+    ],
+    "fictionalization": [
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md"
+    ],
+    "inspired": [
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md"
+    ],
+    "motifs": [
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md"
+    ],
+    "pregunta": [
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md"
+    ],
+    "represented": [
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md"
+    ],
+    "s1e01": [
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md"
+    ],
+    "sound": [
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md"
+    ],
+    "technology": [
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "vendor/agency-agents/integrations/qwen/agents/senior-developer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/senior-developer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/senior-developer/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-senior-developer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/senior-developer.md",
+      "vendor/agency-agents/integrations/openclaw/senior-developer/AGENTS.md",
+      "docs/01-development/COST-DASHBOARD-WIREFRAMES.md"
+    ],
+    "that": [
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "lib/evaluation/GOVERNANCE.md",
+      "lib/config/GOVERNANCE.md",
+      "lib/services/GOVERNANCE.md",
+      "lib/api/GOVERNANCE.md",
+      "lib/errors/GOVERNANCE.md",
+      "lib/workflow/GOVERNANCE.md",
+      "lib/security/GOVERNANCE.md",
+      "vendor/agency-agents/integrations/qwen/agents/threat-detection-engineer.md",
+      "vendor/agency-agents/integrations/qwen/agents/unity-architect.md",
+      "vendor/agency-agents/integrations/qwen/agents/godot-shader-developer.md",
+      "vendor/agency-agents/integrations/qwen/agents/minimal-change-engineer.md",
+      "vendor/agency-agents/integrations/qwen/agents/unreal-world-builder.md",
+      "vendor/agency-agents/integrations/qwen/agents/game-designer.md",
+      "vendor/agency-agents/integrations/qwen/agents/bilibili-content-strategist.md",
+      "vendor/agency-agents/integrations/qwen/agents/outbound-strategist.md",
+      "vendor/agency-agents/integrations/qwen/agents/game-audio-engineer.md",
+      "vendor/agency-agents/integrations/qwen/agents/roblox-experience-designer.md",
+      "vendor/agency-agents/integrations/qwen/agents/account-strategist.md",
+      "vendor/agency-agents/integrations/qwen/agents/workflow-architect.md",
+      "vendor/agency-agents/integrations/qwen/agents/unreal-technical-artist.md",
+      "vendor/agency-agents/integrations/qwen/agents/level-designer.md",
+      "vendor/agency-agents/integrations/qwen/agents/unity-shader-graph-artist.md",
+      "vendor/agency-agents/integrations/qwen/agents/roblox-avatar-creator.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/unity-shader-graph-artist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/account-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-world-builder/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/level-designer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/roblox-experience-designer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/bilibili-content-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/roblox-avatar-creator/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/godot-shader-developer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/minimal-change-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/unity-architect/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/game-designer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/outbound-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-technical-artist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/workflow-architect/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/threat-detection-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/game-audio-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/unity-shader-graph-artist/system.md",
+      "vendor/agency-agents/integrations/kimi/account-strategist/system.md",
+      "vendor/agency-agents/integrations/kimi/unreal-world-builder/system.md",
+      "vendor/agency-agents/integrations/kimi/level-designer/system.md",
+      "vendor/agency-agents/integrations/kimi/roblox-experience-designer/system.md",
+      "vendor/agency-agents/integrations/kimi/bilibili-content-strategist/system.md",
+      "vendor/agency-agents/integrations/kimi/roblox-avatar-creator/system.md",
+      "vendor/agency-agents/integrations/kimi/godot-shader-developer/system.md",
+      "vendor/agency-agents/integrations/kimi/minimal-change-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/unity-architect/system.md",
+      "vendor/agency-agents/integrations/kimi/game-designer/system.md",
+      "vendor/agency-agents/integrations/kimi/outbound-strategist/system.md",
+      "vendor/agency-agents/integrations/kimi/unreal-technical-artist/system.md",
+      "vendor/agency-agents/integrations/kimi/workflow-architect/system.md",
+      "vendor/agency-agents/integrations/kimi/threat-detection-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/game-audio-engineer/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-workflow-architect/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-threat-detection-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-unreal-world-builder/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-game-designer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-outbound-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-minimal-change-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-roblox-experience-designer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-unreal-technical-artist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-unity-architect/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-unity-shader-graph-artist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-account-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-level-designer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-game-audio-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-bilibili-content-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-godot-shader-developer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-roblox-avatar-creator/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/threat-detection-engineer.md",
+      "vendor/agency-agents/integrations/opencode/agents/unity-architect.md",
+      "vendor/agency-agents/integrations/opencode/agents/godot-shader-developer.md",
+      "vendor/agency-agents/integrations/opencode/agents/minimal-change-engineer.md",
+      "vendor/agency-agents/integrations/opencode/agents/unreal-world-builder.md",
+      "vendor/agency-agents/integrations/opencode/agents/game-designer.md",
+      "vendor/agency-agents/integrations/opencode/agents/bilibili-content-strategist.md",
+      "vendor/agency-agents/integrations/opencode/agents/outbound-strategist.md",
+      "vendor/agency-agents/integrations/opencode/agents/game-audio-engineer.md",
+      "vendor/agency-agents/integrations/opencode/agents/roblox-experience-designer.md",
+      "vendor/agency-agents/integrations/opencode/agents/account-strategist.md",
+      "vendor/agency-agents/integrations/opencode/agents/workflow-architect.md",
+      "vendor/agency-agents/integrations/opencode/agents/unreal-technical-artist.md",
+      "vendor/agency-agents/integrations/opencode/agents/level-designer.md",
+      "vendor/agency-agents/integrations/opencode/agents/unity-shader-graph-artist.md",
+      "vendor/agency-agents/integrations/opencode/agents/roblox-avatar-creator.md",
+      "vendor/agency-agents/integrations/openclaw/unity-shader-graph-artist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/account-strategist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/unreal-world-builder/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/level-designer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/roblox-experience-designer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/bilibili-content-strategist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/godot-gameplay-scripter/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/roblox-avatar-creator/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/godot-shader-developer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/minimal-change-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/unity-architect/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/game-designer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/outbound-strategist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/unreal-technical-artist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/workflow-architect/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/threat-detection-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/game-audio-engineer/AGENTS.md",
+      "docs/obsidian/sources/archive/2026-04-21/6xk2xhn5f8hcllwj3npzaik36lqycdg0y3xw06lo.md",
+      "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "theme": [
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+      "vendor/agency-agents/integrations/qwen/agents/cms-developer.md",
+      "vendor/agency-agents/integrations/qwen/agents/proposal-strategist.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/proposal-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/cms-developer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/proposal-strategist/system.md",
+      "vendor/agency-agents/integrations/kimi/cms-developer/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-proposal-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-cms-developer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/cms-developer.md",
+      "vendor/agency-agents/integrations/opencode/agents/proposal-strategist.md",
+      "vendor/agency-agents/integrations/openclaw/proposal-strategist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/cms-developer/AGENTS.md"
     ],
     "visual": [
+      "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
       "data/content/series/opsly-origins/episodes/001-todo-empezo-hablando-con-ia/script.md",
+      "data/content/canon/UNIVERSE-BIBLE.md",
       "apps/peskids/docs/BRAND-GUIDELINES.md",
       "vendor/agency-agents/integrations/qwen/agents/visual-storyteller.md",
       "vendor/agency-agents/integrations/qwen/agents/image-prompt-engineer.md",
@@ -135603,6 +136504,277 @@
       "vendor/agency-agents/integrations/openclaw/unreal-technical-artist/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/video-optimization-specialist/AGENTS.md"
     ],
+    "s1e04": [
+      "data/content/series/opsly-parallel-path/episodes/004-intcloudsysops/script.md"
+    ],
+    "s1e06": [
+      "data/content/series/opsly-parallel-path/episodes/006-peskids/script.md"
+    ],
+    "creador": [
+      "data/content/series/opsly-parallel-path/episodes/011-the-creator/script.md"
+    ],
+    "s1e11": [
+      "data/content/series/opsly-parallel-path/episodes/011-the-creator/script.md"
+    ],
+    "s1e07": [
+      "data/content/series/opsly-parallel-path/episodes/007-the-agents/script.md"
+    ],
+    "maquina": [
+      "data/content/series/opsly-parallel-path/episodes/010-the-machine/script.md",
+      "docs/01-development/HYBRID-OPSLY-ADMIN.md",
+      "docs/01-development/LOCAL-MAC-IMPROVEMENT-PLAN.md",
+      "docs/04-infrastructure/VPS-SSH-WORKER-NODES.md",
+      "docs/03-agents/AGENT-URL-VALIDATION.md",
+      "docs/operations/RUN-VALIDATION-LOCALLY.md",
+      ".claude/SYNC-GUIDE.md"
+    ],
+    "s1e10": [
+      "data/content/series/opsly-parallel-path/episodes/010-the-machine/script.md"
+    ],
+    "s1e05": [
+      "data/content/series/opsly-parallel-path/episodes/005-the-blueprint/script.md"
+    ],
+    "primer": [
+      "data/content/series/opsly-parallel-path/episodes/003-the-first-system/script.md",
+      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
+      "docs/tenants/peskids/README.md",
+      "docs/brain/README.md"
+    ],
+    "s1e03": [
+      "data/content/series/opsly-parallel-path/episodes/003-the-first-system/script.md"
+    ],
+    "message": [
+      "data/content/series/opsly-parallel-path/episodes/012-the-message/script.md",
+      "tools/productivity-starter/DEMO-WALKTHROUGH.md",
+      "lib/voice-messaging/README.md",
+      "vendor/agency-agents/integrations/qwen/agents/feishu-integration-developer.md",
+      "vendor/agency-agents/integrations/qwen/agents/korean-business-navigator.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/korean-business-navigator/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/feishu-integration-developer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/korean-business-navigator/system.md",
+      "vendor/agency-agents/integrations/kimi/feishu-integration-developer/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-korean-business-navigator/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-feishu-integration-developer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/feishu-integration-developer.md",
+      "vendor/agency-agents/integrations/opencode/agents/korean-business-navigator.md",
+      "vendor/agency-agents/integrations/openclaw/korean-business-navigator/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/feishu-integration-developer/AGENTS.md",
+      "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
+      "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md",
+      "docs/tenants/peskids/WACRM-RUNBOOK.md",
+      "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
+      "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
+      "docs/reports/ICSO-E2E-VALIDATION.md"
+    ],
+    "s1e12": [
+      "data/content/series/opsly-parallel-path/episodes/012-the-message/script.md"
+    ],
+    "s1e09": [
+      "data/content/series/opsly-parallel-path/episodes/009-the-venture-studio/script.md"
+    ],
+    "studio": [
+      "data/content/series/opsly-parallel-path/episodes/009-the-venture-studio/script.md",
+      "data/content/canon/ORIGIN-SAGA.md",
+      "vendor/agency-agents/integrations/qwen/agents/studio-producer.md",
+      "vendor/agency-agents/integrations/qwen/agents/roblox-avatar-creator.md",
+      "vendor/agency-agents/integrations/qwen/agents/studio-operations.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/studio-operations/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/roblox-avatar-creator/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/studio-producer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/studio-operations/system.md",
+      "vendor/agency-agents/integrations/kimi/roblox-avatar-creator/system.md",
+      "vendor/agency-agents/integrations/kimi/studio-producer/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-studio-producer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-studio-operations/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-roblox-avatar-creator/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/studio-producer.md",
+      "vendor/agency-agents/integrations/opencode/agents/roblox-avatar-creator.md",
+      "vendor/agency-agents/integrations/opencode/agents/studio-operations.md",
+      "vendor/agency-agents/integrations/openclaw/studio-operations/IDENTITY.md",
+      "vendor/agency-agents/integrations/openclaw/studio-operations/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/roblox-avatar-creator/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/studio-producer/IDENTITY.md",
+      "vendor/agency-agents/integrations/openclaw/studio-producer/AGENTS.md",
+      "docs/superpowers/specs/2026-05-26-content-studio-ai-design.md",
+      "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
+      "docs/00-architecture/CONTENT-PRODUCTION-MVP.md",
+      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
+    ],
+    "venture": [
+      "data/content/series/opsly-parallel-path/episodes/009-the-venture-studio/script.md",
+      "data/content/canon/ORIGIN-SAGA.md",
+      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
+      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
+    ],
+    "finale": [
+      "data/content/series/opsly-parallel-path/episodes/013-the-map/script.md"
+    ],
+    "s1e13": [
+      "data/content/series/opsly-parallel-path/episodes/013-the-map/script.md"
+    ],
+    "season": [
+      "data/content/series/opsly-parallel-path/episodes/013-the-map/script.md",
+      "data/content/canon/CONTINUITY-RULES.md",
+      "docs/obsidian/sources/archive/2026-04-21/lrhenfvaovhaled7lamamtt7zpt70uxo5ysjftoj.md"
+    ],
+    "demasiadas": [
+      "data/content/series/opsly-parallel-path/episodes/002-too-many-lives/script.md"
+    ],
+    "lives": [
+      "data/content/series/opsly-parallel-path/episodes/002-too-many-lives/script.md",
+      "data/content/canon/ORIGIN-SAGA.md"
+    ],
+    "many": [
+      "data/content/series/opsly-parallel-path/episodes/002-too-many-lives/script.md",
+      "data/content/canon/ORIGIN-SAGA.md"
+    ],
+    "s1e02": [
+      "data/content/series/opsly-parallel-path/episodes/002-too-many-lives/script.md"
+    ],
+    "too": [
+      "data/content/series/opsly-parallel-path/episodes/002-too-many-lives/script.md",
+      "data/content/canon/ORIGIN-SAGA.md"
+    ],
+    "vidas": [
+      "data/content/series/opsly-parallel-path/episodes/002-too-many-lives/script.md"
+    ],
+    "empezo": [
+      "data/content/series/opsly-origins/episodes/001-todo-empezo-hablando-con-ia/script.md"
+    ],
+    "hablando": [
+      "data/content/series/opsly-origins/episodes/001-todo-empezo-hablando-con-ia/script.md"
+    ],
+    "origins": [
+      "data/content/series/opsly-origins/episodes/001-todo-empezo-hablando-con-ia/script.md"
+    ],
+    "todo": [
+      "data/content/series/opsly-origins/episodes/001-todo-empezo-hablando-con-ia/script.md",
+      "infra/terraform/README.md",
+      "docs/00-architecture/ARCHITECTURE-DISTRIBUTED.md",
+      ".agents/IMPLEMENTATION-CHECKLIST.md"
+    ],
+    "art": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
+      "vendor/agency-agents/integrations/qwen/agents/technical-artist.md",
+      "vendor/agency-agents/integrations/qwen/agents/sales-engineer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/sales-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/technical-artist/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/sales-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/technical-artist/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-technical-artist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-sales-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/technical-artist.md",
+      "vendor/agency-agents/integrations/opencode/agents/sales-engineer.md",
+      "vendor/agency-agents/integrations/openclaw/sales-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/technical-artist/AGENTS.md",
+      "docs/legal/peskids/DPIA-2026.md"
+    ],
+    "atlas": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md"
+    ],
+    "catalog": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
+      "lib/pattern-catalog/README.md",
+      "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md"
+    ],
+    "e06": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md"
+    ],
+    "e08": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md"
+    ],
+    "e10": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md"
+    ],
+    "globe": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md"
+    ],
+    "images": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
+      "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/iac-docker.md",
+      "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
+      "docs/operations/VPS-VALIDATION-GUIDE.md",
+      ".agents/skills/cyber-neo/references/iac-docker.md"
+    ],
+    "jpg": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md"
+    ],
+    "note": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
+      "vendor/agency-agents/integrations/qwen/agents/zk-steward.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/zk-steward/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/zk-steward/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-zk-steward/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/zk-steward.md",
+      "vendor/agency-agents/integrations/openclaw/zk-steward/AGENTS.md",
+      "docs/obsidian/templates/source-note.md",
+      "docs/adr/ADR-033-docs-canonicalization.md",
+      "docs/tenants/peskids/EVENT-CONTRACT.md"
+    ],
+    "overlook": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md"
+    ],
+    "pool": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
+      "docs/06-multi-agent/PARALLEL-EXECUTION-GUIDE.md",
+      "docs/04-infrastructure/WORKER-TEAM-ARCHITECTURE.md"
+    ],
+    "repair": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
+      "docs/orchestrator/REPAIR-QUEUE.md"
+    ],
+    "s01": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md"
+    ],
+    "scene": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
+      "vendor/agency-agents/integrations/qwen/agents/unity-architect.md",
+      "vendor/agency-agents/integrations/qwen/agents/godot-gameplay-scripter.md",
+      "vendor/agency-agents/integrations/qwen/agents/godot-multiplayer-engineer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/godot-multiplayer-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/godot-gameplay-scripter/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/unity-architect/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/godot-multiplayer-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/godot-gameplay-scripter/system.md",
+      "vendor/agency-agents/integrations/kimi/unity-architect/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-godot-gameplay-scripter/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-godot-multiplayer-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-unity-architect/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/unity-architect.md",
+      "vendor/agency-agents/integrations/opencode/agents/godot-gameplay-scripter.md",
+      "vendor/agency-agents/integrations/opencode/agents/godot-multiplayer-engineer.md",
+      "vendor/agency-agents/integrations/openclaw/godot-multiplayer-engineer/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/godot-multiplayer-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/godot-gameplay-scripter/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/unity-architect/SOUL.md"
+    ],
+    "series": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
+      "data/content/canon/CONTINUITY-RULES.md"
+    ],
+    "universe": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
+      "data/content/canon/UNIVERSE-BIBLE.md",
+      "docs/00-architecture/CONTENT-PRODUCTION-MVP.md"
+    ],
+    "workshop": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md"
+    ],
+    "world": [
+      "data/content/assets/reference/REFERENCE-IMAGES.md",
+      "data/content/canon/ORIGIN-SAGA.md",
+      "apps/orchestrator/src/meta/README.md",
+      "vendor/agency-agents/integrations/qwen/agents/unreal-world-builder.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-world-builder/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/unreal-world-builder/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-unreal-world-builder/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/unreal-world-builder.md",
+      "vendor/agency-agents/integrations/openclaw/unreal-world-builder/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/unreal-world-builder/IDENTITY.md",
+      "vendor/agency-agents/integrations/openclaw/unreal-world-builder/AGENTS.md",
+      "docs/obsidian/sources/archive/2026-04-21/6xk2xhn5f8hcllwj3npzaik36lqycdg0y3xw06lo.md"
+    ],
     "brand": [
       "data/content/README.md",
       "apps/peskids/docs/BRAND-GUIDELINES.md",
@@ -135645,6 +136817,561 @@
     "reading": [
       "data/content/README.md",
       "vendor/agency-agents/integrations/openclaw/zk-steward/AGENTS.md"
+    ],
+    "beat": [
+      "data/content/canon/TIMELINE.md"
+    ],
+    "fictionalized": [
+      "data/content/canon/TIMELINE.md"
+    ],
+    "crossover": [
+      "data/content/canon/WAVO.md"
+    ],
+    "lab": [
+      "data/content/canon/WAVO.md",
+      "docs/runbooks/PANINI-LAB-GOLIVE.md",
+      "docs/tenants/panini-lab/README.md",
+      "docs/demo/hackathon-demo.md"
+    ],
+    "peki": [
+      "data/content/canon/WAVO.md"
+    ],
+    "wavo": [
+      "data/content/canon/WAVO.md"
+    ],
+    "bible": [
+      "data/content/canon/UNIVERSE-BIBLE.md",
+      "data/content/canon/CONTINUITY-RULES.md"
+    ],
+    "candidates": [
+      "data/content/canon/UNIVERSE-BIBLE.md",
+      "docs/ops/issue-bankruptcy-2026-05-03/quick-wins.md"
+    ],
+    "canon": [
+      "data/content/canon/UNIVERSE-BIBLE.md",
+      "data/content/canon/NOVA.md",
+      "docs/plans/README.md",
+      "docs/01-development/VISION.md"
+    ],
+    "doesn": [
+      "data/content/canon/UNIVERSE-BIBLE.md"
+    ],
+    "ending": [
+      "data/content/canon/UNIVERSE-BIBLE.md"
+    ],
+    "exist": [
+      "data/content/canon/UNIVERSE-BIBLE.md",
+      "docs/audits/DATABASE-QUERY-AUDIT.md"
+    ],
+    "main": [
+      "data/content/canon/UNIVERSE-BIBLE.md",
+      "apps/peskids/DEPLOYMENT.md",
+      "apps/intcloudsysops/DEPLOYMENT.md",
+      "docs/ops/branch-protection-setup.md",
+      "docs/01-development/GITHUB-SETTINGS.md",
+      "docs/adr/ADR-043-supplement/COMPLETE-INDEX.md",
+      "docs/adr/ADR-043-supplement/README.md",
+      "docs/adr/ADR-043-supplement/DECISION-RATIONALE.md"
+    ],
+    "mystery": [
+      "data/content/canon/UNIVERSE-BIBLE.md",
+      "data/content/canon/SYMBOLS.md"
+    ],
+    "relationship": [
+      "data/content/canon/UNIVERSE-BIBLE.md",
+      "data/content/canon/CONTINUITY-RULES.md",
+      "data/content/canon/NOVA.md",
+      "vendor/agency-agents/integrations/qwen/agents/account-strategist.md",
+      "vendor/agency-agents/integrations/qwen/agents/korean-business-navigator.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/korean-business-navigator/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/account-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/korean-business-navigator/system.md",
+      "vendor/agency-agents/integrations/kimi/account-strategist/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-korean-business-navigator/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-account-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/account-strategist.md",
+      "vendor/agency-agents/integrations/opencode/agents/korean-business-navigator.md",
+      "vendor/agency-agents/integrations/openclaw/korean-business-navigator/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/zhihu-strategist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/account-strategist/SOUL.md",
+      "docs/00-architecture/CONTENT-PRODUCTION-MVP.md"
+    ],
+    "themes": [
+      "data/content/canon/UNIVERSE-BIBLE.md",
+      "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md"
+    ],
+    "truth": [
+      "data/content/canon/UNIVERSE-BIBLE.md",
+      "docs/design/DESIGN_REFERENCES.md",
+      "docs/runbooks/TENANT-BONUS-WORKFLOWS.md"
+    ],
+    "why": [
+      "data/content/canon/UNIVERSE-BIBLE.md",
+      "tools/agent-packs/vendor/cyber-neo/README.md",
+      "apps/experimental/ai-evolution-archive/ARCHIVE.md",
+      "apps/experimental/mission-control-archive/ARCHIVE.md",
+      "apps/experimental/ingestion-service-archive/ARCHIVE.md",
+      "vendor/agency-agents/integrations/qwen/agents/technical-writer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/technical-writer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/technical-writer/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-technical-writer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/technical-writer.md",
+      "vendor/agency-agents/integrations/openclaw/technical-writer/AGENTS.md",
+      "docs/obsidian/research/saas-pattern-radar.md",
+      "docs/obsidian/research/trading-pattern-radar.md",
+      "docs/obsidian/research/security-pattern-radar.md",
+      "docs/01-development/DEPLOYMENT-ARCHITECTURE.md",
+      "docs/examples/n8n/PESKIDS-N8N-DEPLOYMENT.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
+      "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
+      "docs/adr/ADR-036-cli-consolidation-tools-cli-first.md",
+      "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md",
+      "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
+      "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
+      "docs/blueprints/BRANCH-CLEANUP-AUDIT.md",
+      "docs/blueprints/PESKIDS-ICSO-CUTOVER-STATUS.md"
+    ],
+    "yet": [
+      "data/content/canon/UNIVERSE-BIBLE.md",
+      "docs/01-development/CLIENT-ONBOARDING-PLAYBOOK.md",
+      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
+      "docs/reports/PESKIDS-REUNION-CHECKLIST.md"
+    ],
+    "act": [
+      "data/content/canon/SYMBOLS.md",
+      "data/content/canon/ORIGIN-SAGA.md",
+      "data/content/canon/THE-TRAVELER.md",
+      "vendor/agency-agents/integrations/qwen/agents/proposal-strategist.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/proposal-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/proposal-strategist/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-proposal-strategist/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/proposal-strategist.md",
+      "vendor/agency-agents/integrations/openclaw/proposal-strategist/AGENTS.md",
+      "docs/design/OAR.md"
+    ],
+    "appear": [
+      "data/content/canon/SYMBOLS.md"
+    ],
+    "cipher": [
+      "data/content/canon/SYMBOLS.md"
+    ],
+    "device": [
+      "data/content/canon/SYMBOLS.md",
+      "vendor/agency-agents/integrations/qwen/agents/healthcare-marketing-compliance-specialist.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/healthcare-marketing-compliance-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/healthcare-marketing-compliance-specialist/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-healthcare-marketing-compliance-specialist/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/healthcare-marketing-compliance-specialist.md",
+      "vendor/agency-agents/integrations/openclaw/healthcare-marketing-compliance-specialist/AGENTS.md"
+    ],
+    "fragments": [
+      "data/content/canon/SYMBOLS.md"
+    ],
+    "iii": [
+      "data/content/canon/SYMBOLS.md",
+      "data/content/canon/ORIGIN-SAGA.md"
+    ],
+    "luminous": [
+      "data/content/canon/SYMBOLS.md"
+    ],
+    "ruins": [
+      "data/content/canon/SYMBOLS.md"
+    ],
+    "symbols": [
+      "data/content/canon/SYMBOLS.md"
+    ],
+    "acts": [
+      "data/content/canon/ORIGIN-SAGA.md"
+    ],
+    "arc": [
+      "data/content/canon/ORIGIN-SAGA.md",
+      "vendor/agency-agents/integrations/qwen/agents/narratologist.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/narratologist/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/narratologist/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-narratologist/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/narratologist.md",
+      "vendor/agency-agents/integrations/openclaw/narratologist/AGENTS.md"
+    ],
+    "conversation": [
+      "data/content/canon/ORIGIN-SAGA.md",
+      "tools/agent-packs/vendor/the-architect/CLAUDE.md",
+      ".agents/skills/the-architect/references/CLAUDE.md"
+    ],
+    "didn": [
+      "data/content/canon/ORIGIN-SAGA.md"
+    ],
+    "episode": [
+      "data/content/canon/ORIGIN-SAGA.md",
+      "docs/obsidian/sources/archive/2026-04-21/vics-basement-26.md",
+      "docs/obsidian/sources/archive/2026-04-21/lrhenfvaovhaled7lamamtt7zpt70uxo5ysjftoj.md"
+    ],
+    "fit": [
+      "data/content/canon/ORIGIN-SAGA.md",
+      "tools/agent-packs/vendor/the-architect/questions/phase-3-confirmation.md",
+      ".agents/skills/the-architect/references/questions/phase-3-confirmation.md"
+    ],
+    "from": [
+      "data/content/canon/ORIGIN-SAGA.md",
+      "tools/agent-packs/vendor/cyber-neo/README.md",
+      "apps/peskids/DEPLOYMENT.md",
+      "apps/intcloudsysops/DEPLOYMENT.md",
+      "vendor/agency-agents/integrations/qwen/agents/autonomous-optimization-architect.md",
+      "vendor/agency-agents/integrations/qwen/agents/senior-project-manager.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/autonomous-optimization-architect/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/senior-project-manager/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/autonomous-optimization-architect/system.md",
+      "vendor/agency-agents/integrations/kimi/senior-project-manager/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-autonomous-optimization-architect/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-senior-project-manager/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/autonomous-optimization-architect.md",
+      "vendor/agency-agents/integrations/opencode/agents/senior-project-manager.md",
+      "vendor/agency-agents/integrations/openclaw/autonomous-optimization-architect/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/accounts-payable-agent/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/senior-project-manager/SOUL.md",
+      "docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md",
+      "docs/database/DATABASE-OPERATIONS.md",
+      "docs/obsidian/sources/archive/2026-04-21/frombitstoifsint00daws.md",
+      "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
+      "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
+      "docs/01-development/NEXT-STEPS.md",
+      "docs/03-agents/SYRA-OPENCLAW-INTEGRATION.md",
+      "docs/adr/ADR-039-sales-channels-email-whatsapp.md",
+      "docs/adr/ADR-028-agent-api-routing.md",
+      "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
+      "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
+      "docs/blueprints/CUSTOMER-FOLLOWUP-MASTER.md",
+      "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md"
+    ],
+    "join": [
+      "data/content/canon/ORIGIN-SAGA.md"
+    ],
+    "machines": [
+      "data/content/canon/ORIGIN-SAGA.md",
+      "docs/01-development/PHASE-2-DEPLOYMENT.md",
+      ".agents/UNIFIED-AGENT-ARCHITECTURE.md"
+    ],
+    "man": [
+      "data/content/canon/ORIGIN-SAGA.md",
+      "docs/obsidian/sources/archive/2026-04-21/indian-man-using-laptop-while-drinking-cup-coffee-outdoor-street-cafe.md"
+    ],
+    "origin": [
+      "data/content/canon/ORIGIN-SAGA.md"
+    ],
+    "saga": [
+      "data/content/canon/ORIGIN-SAGA.md"
+    ],
+    "software": [
+      "data/content/canon/ORIGIN-SAGA.md",
+      "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/cwe-top-25.md",
+      "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/owasp-top-10.md",
+      "vendor/agency-agents/integrations/qwen/agents/short-video-editing-coach.md",
+      "vendor/agency-agents/integrations/qwen/agents/software-architect.md",
+      "vendor/agency-agents/integrations/qwen/agents/rapid-prototyper.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/short-video-editing-coach/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/software-architect/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/rapid-prototyper/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/short-video-editing-coach/system.md",
+      "vendor/agency-agents/integrations/kimi/software-architect/system.md",
+      "vendor/agency-agents/integrations/kimi/rapid-prototyper/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-short-video-editing-coach/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-software-architect/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-rapid-prototyper/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/short-video-editing-coach.md",
+      "vendor/agency-agents/integrations/opencode/agents/software-architect.md",
+      "vendor/agency-agents/integrations/opencode/agents/rapid-prototyper.md",
+      "vendor/agency-agents/integrations/openclaw/short-video-editing-coach/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/short-video-editing-coach/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/software-architect/IDENTITY.md",
+      "vendor/agency-agents/integrations/openclaw/software-architect/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/rapid-prototyper/AGENTS.md",
+      "docs/obsidian/sources/archive/2026-04-21/embeddedsoftware0000mass.md",
+      ".agents/skills/cyber-neo/references/cwe-top-25.md",
+      ".agents/skills/cyber-neo/references/owasp-top-10.md"
+    ],
+    "systems": [
+      "data/content/canon/ORIGIN-SAGA.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/styling-systems.md",
+      "vendor/agency-agents/integrations/qwen/agents/unity-multiplayer-engineer.md",
+      "vendor/agency-agents/integrations/qwen/agents/ui-designer.md",
+      "vendor/agency-agents/integrations/qwen/agents/game-designer.md",
+      "vendor/agency-agents/integrations/qwen/agents/narrative-designer.md",
+      "vendor/agency-agents/integrations/qwen/agents/voice-ai-integration-engineer.md",
+      "vendor/agency-agents/integrations/qwen/agents/godot-gameplay-scripter.md",
+      "vendor/agency-agents/integrations/qwen/agents/unreal-multiplayer-architect.md",
+      "vendor/agency-agents/integrations/qwen/agents/unreal-technical-artist.md",
+      "vendor/agency-agents/integrations/qwen/agents/godot-multiplayer-engineer.md",
+      "vendor/agency-agents/integrations/qwen/agents/roblox-systems-scripter.md",
+      "vendor/agency-agents/integrations/qwen/agents/unreal-systems-engineer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/narrative-designer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/godot-multiplayer-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/roblox-systems-scripter/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-multiplayer-architect/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/godot-gameplay-scripter/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/ui-designer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-systems-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/game-designer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/unity-multiplayer-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-technical-artist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/voice-ai-integration-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/narrative-designer/system.md",
+      "vendor/agency-agents/integrations/kimi/godot-multiplayer-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/roblox-systems-scripter/system.md",
+      "vendor/agency-agents/integrations/kimi/unreal-multiplayer-architect/system.md",
+      "vendor/agency-agents/integrations/kimi/godot-gameplay-scripter/system.md",
+      "vendor/agency-agents/integrations/kimi/ui-designer/system.md",
+      "vendor/agency-agents/integrations/kimi/unreal-systems-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/game-designer/system.md",
+      "vendor/agency-agents/integrations/kimi/unity-multiplayer-engineer/system.md",
+      "vendor/agency-agents/integrations/kimi/unreal-technical-artist/system.md",
+      "vendor/agency-agents/integrations/kimi/voice-ai-integration-engineer/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-voice-ai-integration-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-game-designer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-narrative-designer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-roblox-systems-scripter/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-godot-gameplay-scripter/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-ui-designer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-unreal-technical-artist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-godot-multiplayer-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-unity-multiplayer-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-unreal-multiplayer-architect/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-unreal-systems-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/unity-multiplayer-engineer.md",
+      "vendor/agency-agents/integrations/opencode/agents/ui-designer.md",
+      "vendor/agency-agents/integrations/opencode/agents/game-designer.md",
+      "vendor/agency-agents/integrations/opencode/agents/narrative-designer.md",
+      "vendor/agency-agents/integrations/opencode/agents/voice-ai-integration-engineer.md",
+      "vendor/agency-agents/integrations/opencode/agents/godot-gameplay-scripter.md",
+      "vendor/agency-agents/integrations/opencode/agents/unreal-multiplayer-architect.md",
+      "vendor/agency-agents/integrations/opencode/agents/unreal-technical-artist.md",
+      "vendor/agency-agents/integrations/opencode/agents/godot-multiplayer-engineer.md",
+      "vendor/agency-agents/integrations/opencode/agents/roblox-systems-scripter.md",
+      "vendor/agency-agents/integrations/opencode/agents/unreal-systems-engineer.md",
+      "vendor/agency-agents/integrations/openclaw/narrative-designer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/godot-multiplayer-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/roblox-systems-scripter/IDENTITY.md",
+      "vendor/agency-agents/integrations/openclaw/roblox-systems-scripter/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/unreal-multiplayer-architect/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/godot-gameplay-scripter/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/ui-designer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/unreal-systems-engineer/IDENTITY.md",
+      "vendor/agency-agents/integrations/openclaw/unreal-systems-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/game-designer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/unity-multiplayer-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/unreal-technical-artist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/voice-ai-integration-engineer/AGENTS.md",
+      "docs/governance/internal/EMPLOYEE-LIFECYCLE-POLICY.md",
+      ".agents/skills/the-architect/references/knowledge/building-blocks/styling-systems.md"
+    ],
+    "vii": [
+      "data/content/canon/ORIGIN-SAGA.md"
+    ],
+    "viii": [
+      "data/content/canon/ORIGIN-SAGA.md"
+    ],
+    "character": [
+      "data/content/canon/CONTINUITY-RULES.md",
+      "vendor/agency-agents/integrations/qwen/agents/narrative-designer.md",
+      "vendor/agency-agents/integrations/qwen/agents/psychologist.md",
+      "vendor/agency-agents/integrations/qwen/agents/narratologist.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/narrative-designer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/psychologist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/narratologist/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/narrative-designer/system.md",
+      "vendor/agency-agents/integrations/kimi/psychologist/system.md",
+      "vendor/agency-agents/integrations/kimi/narratologist/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-psychologist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-narrative-designer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-narratologist/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/narrative-designer.md",
+      "vendor/agency-agents/integrations/opencode/agents/psychologist.md",
+      "vendor/agency-agents/integrations/opencode/agents/narratologist.md",
+      "vendor/agency-agents/integrations/openclaw/narrative-designer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/psychologist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/narratologist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/whimsy-injector/AGENTS.md",
+      "docs/00-architecture/CONTENT-PRODUCTION-MVP.md"
+    ],
+    "consistency": [
+      "data/content/canon/CONTINUITY-RULES.md",
+      "vendor/agency-agents/integrations/qwen/agents/brand-guardian.md",
+      "vendor/agency-agents/integrations/qwen/agents/lsp-index-engineer.md",
+      "vendor/agency-agents/integrations/qwen/agents/support-responder.md",
+      "vendor/agency-agents/integrations/qwen/agents/chief-of-staff.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/brand-guardian/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/support-responder/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/chief-of-staff/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/lsp-index-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/brand-guardian/system.md",
+      "vendor/agency-agents/integrations/kimi/support-responder/system.md",
+      "vendor/agency-agents/integrations/kimi/chief-of-staff/system.md",
+      "vendor/agency-agents/integrations/kimi/lsp-index-engineer/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-chief-of-staff/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-lsp-index-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-brand-guardian/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-support-responder/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/brand-guardian.md",
+      "vendor/agency-agents/integrations/opencode/agents/lsp-index-engineer.md",
+      "vendor/agency-agents/integrations/opencode/agents/support-responder.md",
+      "vendor/agency-agents/integrations/opencode/agents/chief-of-staff.md",
+      "vendor/agency-agents/integrations/openclaw/brand-guardian/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/support-responder/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/chief-of-staff/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/lsp-index-engineer/SOUL.md",
+      "docs/tenants/peskids/BLUEPRINT-MAPPING.md"
+    ],
+    "continuity": [
+      "data/content/canon/CONTINUITY-RULES.md",
+      "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
+      "docs/01-development/SEMANA-3-INFORME.md",
+      ".claude/AGENTS-ENHANCEMENTS.md"
+    ],
+    "important": [
+      "data/content/canon/CONTINUITY-RULES.md",
+      "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
+      "docs/database/SUPABASE-MIGRATION-AUDIT.md",
+      "docs/00-architecture/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+      "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/01-development/TECHNICAL-DEBT.md",
+      "docs/01-development/QA-REVIEW-COMPLETE.md",
+      "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
+      "docs/audits/DOCKER-OPTIMIZATION.md",
+      "docs/audits/DATABASE-QUERY-AUDIT.md",
+      "docs/audits/CODE-REVIEW-API-ROUTES.md",
+      "docs/audits/LINT-RULES-GUIDE.md",
+      "docs/security/SECURITY-POSTURE-AUDIT.md"
+    ],
+    "per": [
+      "data/content/canon/CONTINUITY-RULES.md",
+      "lib/observability/GOVERNANCE.md",
+      "lib/workflow/GOVERNANCE.md",
+      "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
+      "docs/00-architecture/ELEVENLABS-ADVANCED-INTEGRATION.md",
+      "docs/01-development/COST-DASHBOARD-WIREFRAMES.md",
+      "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
+      "docs/04-infrastructure/PRODUCTION-READINESS.md",
+      "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
+      "docs/audits/COST-DEEP-DIVE.md",
+      "docs/adr/ADR-035-openclaw-per-tenant.md",
+      "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
+      "docs/reports/REVIEW-AGENT-ANALYSIS.md",
+      "docs/blueprints/opsly-operational-blueprint/CLIENT-INCUBATION-TEMPLATE.md",
+      "docs/blueprints/README-PHASE1-EXECUTE.md",
+      "docs/blueprints/PHASE1-IMPLEMENTATION-GUIDE.md"
+    ],
+    "reorder": [
+      "data/content/canon/CONTINUITY-RULES.md"
+    ],
+    "same": [
+      "data/content/canon/CONTINUITY-RULES.md",
+      "docs/ops/issue-bankruptcy-2026-05-03/issues-triage.md",
+      "docs/ops/issue-bankruptcy-2026-05-03/quick-wins.md",
+      "docs/00-architecture/CONTENT-PRODUCTION-MVP.md",
+      "docs/tenants/peskids/SPRINT-01-STATUS.md"
+    ],
+    "symbol": [
+      "data/content/canon/CONTINUITY-RULES.md"
+    ],
+    "across": [
+      "data/content/canon/THE-TRAVELER.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/api-design-patterns.md",
+      "vendor/agency-agents/integrations/qwen/agents/technical-artist.md",
+      "vendor/agency-agents/integrations/qwen/agents/jira-workflow-steward.md",
+      "vendor/agency-agents/integrations/qwen/agents/xr-immersive-developer.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/xr-immersive-developer/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/technical-artist/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/jira-workflow-steward/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/xr-immersive-developer/system.md",
+      "vendor/agency-agents/integrations/kimi/technical-artist/system.md",
+      "vendor/agency-agents/integrations/kimi/jira-workflow-steward/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-technical-artist/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-jira-workflow-steward/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-xr-immersive-developer/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/technical-artist.md",
+      "vendor/agency-agents/integrations/opencode/agents/jira-workflow-steward.md",
+      "vendor/agency-agents/integrations/opencode/agents/xr-immersive-developer.md",
+      "vendor/agency-agents/integrations/openclaw/xr-immersive-developer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/technical-artist/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/jira-workflow-steward/AGENTS.md",
+      "docs/reports/E2E-TESTING-PLAN.md",
+      ".agents/skills/the-architect/references/knowledge/building-blocks/api-design-patterns.md"
+    ],
+    "central": [
+      "data/content/canon/THE-TRAVELER.md",
+      "docs/03-agents/AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
+      "docs/blueprints/AI-TENANT-SETUP-BLUEPRINT.md"
+    ],
+    "every": [
+      "data/content/canon/THE-TRAVELER.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/database-patterns.md",
+      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/deployment-patterns.md",
+      "vendor/agency-agents/integrations/qwen/agents/minimal-change-engineer.md",
+      "vendor/agency-agents/integrations/qwen/agents/zk-steward.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/zk-steward/SKILL.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/minimal-change-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/zk-steward/system.md",
+      "vendor/agency-agents/integrations/kimi/minimal-change-engineer/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-minimal-change-engineer/SKILL.md",
+      "vendor/agency-agents/integrations/antigravity/agency-zk-steward/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/minimal-change-engineer.md",
+      "vendor/agency-agents/integrations/opencode/agents/zk-steward.md",
+      "vendor/agency-agents/integrations/openclaw/zk-steward/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/minimal-change-engineer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/workflow-architect/SOUL.md",
+      "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
+      "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
+      ".agents/skills/the-architect/references/knowledge/building-blocks/database-patterns.md",
+      ".agents/skills/the-architect/references/knowledge/building-blocks/deployment-patterns.md",
+      ".agents/IMPLEMENTATION-CHECKLIST.md"
+    ],
+    "faith": [
+      "data/content/canon/THE-TRAVELER.md"
+    ],
+    "lines": [
+      "data/content/canon/THE-TRAVELER.md",
+      "vendor/agency-agents/integrations/qwen/agents/private-domain-operator.md",
+      "vendor/agency-agents/integrations/gemini-cli/skills/private-domain-operator/SKILL.md",
+      "vendor/agency-agents/integrations/kimi/private-domain-operator/system.md",
+      "vendor/agency-agents/integrations/antigravity/agency-private-domain-operator/SKILL.md",
+      "vendor/agency-agents/integrations/opencode/agents/private-domain-operator.md",
+      "vendor/agency-agents/integrations/openclaw/narrative-designer/AGENTS.md",
+      "vendor/agency-agents/integrations/openclaw/short-video-editing-coach/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/weibo-strategist/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/cross-border-e-commerce-specialist/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/podcast-strategist/SOUL.md",
+      "vendor/agency-agents/integrations/openclaw/private-domain-operator/SOUL.md",
+      "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
+      "docs/infrastructure/AGENT-BOOTSTRAP-SYSTEM.md",
+      "docs/history/consolidation/CONSOLIDATION-INDEX.md",
+      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
+    ],
+    "preachy": [
+      "data/content/canon/THE-TRAVELER.md"
+    ],
+    "present": [
+      "data/content/canon/THE-TRAVELER.md",
+      "tools/agent-packs/vendor/the-architect/questions/phase-3-confirmation.md",
+      ".agents/skills/the-architect/references/questions/phase-3-confirmation.md"
+    ],
+    "signature": [
+      "data/content/canon/THE-TRAVELER.md",
+      "data/content/canon/NOVA.md"
+    ],
+    "speech": [
+      "data/content/canon/THE-TRAVELER.md",
+      "data/content/canon/NOVA.md",
+      "vendor/agency-agents/integrations/openclaw/workflow-architect/SOUL.md",
+      "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md"
+    ],
+    "traveler": [
+      "data/content/canon/THE-TRAVELER.md",
+      "data/content/canon/NOVA.md"
+    ],
+    "appearance": [
+      "data/content/canon/NOVA.md"
+    ],
+    "nova": [
+      "data/content/canon/NOVA.md"
     ],
     "app": [
       ".n8n/3-webhooks/github-webhook.md",
@@ -136016,33 +137743,6 @@
       "docs/examples/email-templates/INTCLOUDSYSOPS-EMAIL-TEMPLATES.md",
       "docs/examples/n8n/PESKIDS-N8N-DEPLOYMENT.md",
       "docs/blueprints/PHASE1-PHASE2-STATUS.md"
-    ],
-    "event": [
-      ".n8n/1-workflows/peskids/README.md",
-      "vendor/agency-agents/integrations/qwen/agents/game-audio-engineer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/game-audio-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/game-audio-engineer/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-game-audio-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/game-audio-engineer.md",
-      "vendor/agency-agents/integrations/openclaw/godot-gameplay-scripter/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/feishu-integration-developer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/game-audio-engineer/AGENTS.md",
-      "docs/00-architecture/VPS-CLEANUP-WEBHOOK-CONTRACT.md",
-      "docs/00-architecture/ORCHESTRATOR.md",
-      "docs/00-architecture/opsly-agent-runtime.md",
-      "docs/00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
-      "docs/03-agents/SYRA-OPENCLAW-INTEGRATION.md",
-      "docs/03-agents/SOCIAL-MEDIA-AGENT-SYRA.md",
-      "docs/adr/ADR-011-event-driven-orchestrator.md",
-      "docs/tenants/peskids/BLUEPRINT-MAPPING.md",
-      "docs/tenants/peskids/EVENT-CONTRACT.md",
-      "docs/tenants/peskids/SPRINT-01-STATUS.md",
-      "docs/tenants/peskids/SPRINT-01.md",
-      "docs/tenants/peskids/FORMS-SPEC.md",
-      "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
-      "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
-      "docs/demo/hackathon-demo.md",
-      "docs/blueprints/academy/ACADEMY-BLUEPRINT-AGENT-BASELINE.md"
     ],
     "followup": [
       ".n8n/1-workflows/peskids/README.md",
@@ -136888,33 +138588,6 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/cwe-top-25.md",
       ".agents/skills/cyber-neo/references/cwe-top-25.md"
     ],
-    "software": [
-      "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/cwe-top-25.md",
-      "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/owasp-top-10.md",
-      "vendor/agency-agents/integrations/qwen/agents/short-video-editing-coach.md",
-      "vendor/agency-agents/integrations/qwen/agents/software-architect.md",
-      "vendor/agency-agents/integrations/qwen/agents/rapid-prototyper.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/short-video-editing-coach/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/software-architect/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/rapid-prototyper/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/short-video-editing-coach/system.md",
-      "vendor/agency-agents/integrations/kimi/software-architect/system.md",
-      "vendor/agency-agents/integrations/kimi/rapid-prototyper/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-short-video-editing-coach/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-software-architect/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-rapid-prototyper/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/short-video-editing-coach.md",
-      "vendor/agency-agents/integrations/opencode/agents/software-architect.md",
-      "vendor/agency-agents/integrations/opencode/agents/rapid-prototyper.md",
-      "vendor/agency-agents/integrations/openclaw/short-video-editing-coach/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/short-video-editing-coach/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/software-architect/IDENTITY.md",
-      "vendor/agency-agents/integrations/openclaw/software-architect/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/rapid-prototyper/AGENTS.md",
-      "docs/obsidian/sources/archive/2026-04-21/embeddedsoftware0000mass.md",
-      ".agents/skills/cyber-neo/references/cwe-top-25.md",
-      ".agents/skills/cyber-neo/references/owasp-top-10.md"
-    ],
     "special": [
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/cwe-top-25.md",
       "vendor/agency-agents/integrations/openclaw/language-translator/AGENTS.md",
@@ -137025,12 +138698,6 @@
     ],
     "iac": [
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/iac-docker.md",
-      ".agents/skills/cyber-neo/references/iac-docker.md"
-    ],
-    "images": [
-      "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/iac-docker.md",
-      "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
-      "docs/operations/VPS-VALIDATION-GUIDE.md",
       ".agents/skills/cyber-neo/references/iac-docker.md"
     ],
     "installing": [
@@ -138068,38 +139735,6 @@
       "docs/01-development/AI-FRAMEWORKS.md",
       "docs/01-development/LIBRARIES-INSTALLED.md"
     ],
-    "from": [
-      "tools/agent-packs/vendor/cyber-neo/README.md",
-      "apps/peskids/DEPLOYMENT.md",
-      "apps/intcloudsysops/DEPLOYMENT.md",
-      "vendor/agency-agents/integrations/qwen/agents/autonomous-optimization-architect.md",
-      "vendor/agency-agents/integrations/qwen/agents/senior-project-manager.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/autonomous-optimization-architect/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/senior-project-manager/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/autonomous-optimization-architect/system.md",
-      "vendor/agency-agents/integrations/kimi/senior-project-manager/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-autonomous-optimization-architect/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-senior-project-manager/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/autonomous-optimization-architect.md",
-      "vendor/agency-agents/integrations/opencode/agents/senior-project-manager.md",
-      "vendor/agency-agents/integrations/openclaw/autonomous-optimization-architect/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/accounts-payable-agent/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/senior-project-manager/SOUL.md",
-      "docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md",
-      "docs/database/DATABASE-OPERATIONS.md",
-      "docs/obsidian/sources/archive/2026-04-21/frombitstoifsint00daws.md",
-      "docs/runbooks/HERMES-DEPLOYMENT-RUNBOOK.md",
-      "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
-      "docs/01-development/NEXT-STEPS.md",
-      "docs/03-agents/SYRA-OPENCLAW-INTEGRATION.md",
-      "docs/adr/ADR-039-sales-channels-email-whatsapp.md",
-      "docs/adr/ADR-028-agent-api-routing.md",
-      "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
-      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
-      "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
-      "docs/blueprints/CUSTOMER-FOLLOWUP-MASTER.md",
-      "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md"
-    ],
     "languages": [
       "tools/agent-packs/vendor/cyber-neo/README.md",
       "docs/obsidian/sources/archive/2026-04-21/fourthgeneration02mart.md"
@@ -138155,31 +139790,6 @@
     ],
     "symlink": [
       "tools/agent-packs/vendor/cyber-neo/README.md"
-    ],
-    "why": [
-      "tools/agent-packs/vendor/cyber-neo/README.md",
-      "apps/experimental/ai-evolution-archive/ARCHIVE.md",
-      "apps/experimental/mission-control-archive/ARCHIVE.md",
-      "apps/experimental/ingestion-service-archive/ARCHIVE.md",
-      "vendor/agency-agents/integrations/qwen/agents/technical-writer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/technical-writer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/technical-writer/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-technical-writer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/technical-writer.md",
-      "vendor/agency-agents/integrations/openclaw/technical-writer/AGENTS.md",
-      "docs/obsidian/research/saas-pattern-radar.md",
-      "docs/obsidian/research/trading-pattern-radar.md",
-      "docs/obsidian/research/security-pattern-radar.md",
-      "docs/01-development/DEPLOYMENT-ARCHITECTURE.md",
-      "docs/examples/n8n/PESKIDS-N8N-DEPLOYMENT.md",
-      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
-      "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
-      "docs/adr/ADR-036-cli-consolidation-tools-cli-first.md",
-      "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md",
-      "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
-      "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
-      "docs/blueprints/BRANCH-CLEANUP-AUDIT.md",
-      "docs/blueprints/PESKIDS-ICSO-CUTOVER-STATUS.md"
     ],
     "contributing": [
       "tools/agent-packs/vendor/cyber-neo/CLAUDE.md"
@@ -138249,10 +139859,6 @@
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
       ".claude/1-agent-teams/orchestrator.md",
       ".agents/skills/the-architect/references/README.md"
-    ],
-    "conversation": [
-      "tools/agent-packs/vendor/the-architect/CLAUDE.md",
-      ".agents/skills/the-architect/references/CLAUDE.md"
     ],
     "negociables": [
       "tools/agent-packs/vendor/the-architect/CLAUDE.md",
@@ -138991,29 +140597,6 @@
       "tools/agent-packs/vendor/the-architect/knowledge/archetypes/saas-webapp.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/saas-webapp.md"
     ],
-    "across": [
-      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/api-design-patterns.md",
-      "vendor/agency-agents/integrations/qwen/agents/technical-artist.md",
-      "vendor/agency-agents/integrations/qwen/agents/jira-workflow-steward.md",
-      "vendor/agency-agents/integrations/qwen/agents/xr-immersive-developer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/xr-immersive-developer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/technical-artist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/jira-workflow-steward/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/xr-immersive-developer/system.md",
-      "vendor/agency-agents/integrations/kimi/technical-artist/system.md",
-      "vendor/agency-agents/integrations/kimi/jira-workflow-steward/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-technical-artist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-jira-workflow-steward/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-xr-immersive-developer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/technical-artist.md",
-      "vendor/agency-agents/integrations/opencode/agents/jira-workflow-steward.md",
-      "vendor/agency-agents/integrations/opencode/agents/xr-immersive-developer.md",
-      "vendor/agency-agents/integrations/openclaw/xr-immersive-developer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/technical-artist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/jira-workflow-steward/AGENTS.md",
-      "docs/reports/E2E-TESTING-PLAN.md",
-      ".agents/skills/the-architect/references/knowledge/building-blocks/api-design-patterns.md"
-    ],
     "block": [
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/api-design-patterns.md",
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/testing-patterns.md",
@@ -139425,79 +141008,6 @@
       "docs/01-development/LIBRARIES-INSTALLED.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/styling-systems.md"
     ],
-    "systems": [
-      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/styling-systems.md",
-      "vendor/agency-agents/integrations/qwen/agents/unity-multiplayer-engineer.md",
-      "vendor/agency-agents/integrations/qwen/agents/ui-designer.md",
-      "vendor/agency-agents/integrations/qwen/agents/game-designer.md",
-      "vendor/agency-agents/integrations/qwen/agents/narrative-designer.md",
-      "vendor/agency-agents/integrations/qwen/agents/voice-ai-integration-engineer.md",
-      "vendor/agency-agents/integrations/qwen/agents/godot-gameplay-scripter.md",
-      "vendor/agency-agents/integrations/qwen/agents/unreal-multiplayer-architect.md",
-      "vendor/agency-agents/integrations/qwen/agents/unreal-technical-artist.md",
-      "vendor/agency-agents/integrations/qwen/agents/godot-multiplayer-engineer.md",
-      "vendor/agency-agents/integrations/qwen/agents/roblox-systems-scripter.md",
-      "vendor/agency-agents/integrations/qwen/agents/unreal-systems-engineer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/narrative-designer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/godot-multiplayer-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/roblox-systems-scripter/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-multiplayer-architect/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/godot-gameplay-scripter/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/ui-designer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-systems-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/game-designer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/unity-multiplayer-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-technical-artist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/voice-ai-integration-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/narrative-designer/system.md",
-      "vendor/agency-agents/integrations/kimi/godot-multiplayer-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/roblox-systems-scripter/system.md",
-      "vendor/agency-agents/integrations/kimi/unreal-multiplayer-architect/system.md",
-      "vendor/agency-agents/integrations/kimi/godot-gameplay-scripter/system.md",
-      "vendor/agency-agents/integrations/kimi/ui-designer/system.md",
-      "vendor/agency-agents/integrations/kimi/unreal-systems-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/game-designer/system.md",
-      "vendor/agency-agents/integrations/kimi/unity-multiplayer-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/unreal-technical-artist/system.md",
-      "vendor/agency-agents/integrations/kimi/voice-ai-integration-engineer/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-voice-ai-integration-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-game-designer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-narrative-designer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-roblox-systems-scripter/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-godot-gameplay-scripter/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-ui-designer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-unreal-technical-artist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-godot-multiplayer-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-unity-multiplayer-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-unreal-multiplayer-architect/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-unreal-systems-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/unity-multiplayer-engineer.md",
-      "vendor/agency-agents/integrations/opencode/agents/ui-designer.md",
-      "vendor/agency-agents/integrations/opencode/agents/game-designer.md",
-      "vendor/agency-agents/integrations/opencode/agents/narrative-designer.md",
-      "vendor/agency-agents/integrations/opencode/agents/voice-ai-integration-engineer.md",
-      "vendor/agency-agents/integrations/opencode/agents/godot-gameplay-scripter.md",
-      "vendor/agency-agents/integrations/opencode/agents/unreal-multiplayer-architect.md",
-      "vendor/agency-agents/integrations/opencode/agents/unreal-technical-artist.md",
-      "vendor/agency-agents/integrations/opencode/agents/godot-multiplayer-engineer.md",
-      "vendor/agency-agents/integrations/opencode/agents/roblox-systems-scripter.md",
-      "vendor/agency-agents/integrations/opencode/agents/unreal-systems-engineer.md",
-      "vendor/agency-agents/integrations/openclaw/narrative-designer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/godot-multiplayer-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/roblox-systems-scripter/IDENTITY.md",
-      "vendor/agency-agents/integrations/openclaw/roblox-systems-scripter/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/unreal-multiplayer-architect/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/godot-gameplay-scripter/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/ui-designer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/unreal-systems-engineer/IDENTITY.md",
-      "vendor/agency-agents/integrations/openclaw/unreal-systems-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/game-designer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/unity-multiplayer-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/unreal-technical-artist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/voice-ai-integration-engineer/AGENTS.md",
-      "docs/governance/internal/EMPLOYEE-LIFECYCLE-POLICY.md",
-      ".agents/skills/the-architect/references/knowledge/building-blocks/styling-systems.md"
-    ],
     "tailwind": [
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/styling-systems.md",
       "apps/peskids/docs/BRAND-GUIDELINES.md",
@@ -139514,28 +141024,6 @@
     "drizzle": [
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/database-patterns.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/database-patterns.md"
-    ],
-    "every": [
-      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/database-patterns.md",
-      "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/deployment-patterns.md",
-      "vendor/agency-agents/integrations/qwen/agents/minimal-change-engineer.md",
-      "vendor/agency-agents/integrations/qwen/agents/zk-steward.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/zk-steward/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/minimal-change-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/zk-steward/system.md",
-      "vendor/agency-agents/integrations/kimi/minimal-change-engineer/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-minimal-change-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-zk-steward/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/minimal-change-engineer.md",
-      "vendor/agency-agents/integrations/opencode/agents/zk-steward.md",
-      "vendor/agency-agents/integrations/openclaw/zk-steward/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/minimal-change-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/workflow-architect/SOUL.md",
-      "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
-      "docs/blueprints/TENANT-ONBOARDING-TEMPLATE.md",
-      ".agents/skills/the-architect/references/knowledge/building-blocks/database-patterns.md",
-      ".agents/skills/the-architect/references/knowledge/building-blocks/deployment-patterns.md",
-      ".agents/IMPLEMENTATION-CHECKLIST.md"
     ],
     "fields": [
       "tools/agent-packs/vendor/the-architect/knowledge/building-blocks/database-patterns.md",
@@ -139930,14 +141418,6 @@
       "tools/agent-packs/vendor/the-architect/questions/phase-3-confirmation.md",
       ".agents/skills/the-architect/references/questions/phase-3-confirmation.md"
     ],
-    "fit": [
-      "tools/agent-packs/vendor/the-architect/questions/phase-3-confirmation.md",
-      ".agents/skills/the-architect/references/questions/phase-3-confirmation.md"
-    ],
-    "present": [
-      "tools/agent-packs/vendor/the-architect/questions/phase-3-confirmation.md",
-      ".agents/skills/the-architect/references/questions/phase-3-confirmation.md"
-    ],
     "questions": [
       "tools/agent-packs/vendor/the-architect/questions/phase-3-confirmation.md",
       "tools/agent-packs/vendor/the-architect/questions/phase-1-discovery.md",
@@ -140179,28 +141659,6 @@
       "docs/blueprints/README-PHASE1-EXECUTE.md",
       "docs/blueprints/CUSTOMERS-DEPLOY-NOW.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md"
-    ],
-    "message": [
-      "tools/productivity-starter/DEMO-WALKTHROUGH.md",
-      "lib/voice-messaging/README.md",
-      "vendor/agency-agents/integrations/qwen/agents/feishu-integration-developer.md",
-      "vendor/agency-agents/integrations/qwen/agents/korean-business-navigator.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/korean-business-navigator/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/feishu-integration-developer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/korean-business-navigator/system.md",
-      "vendor/agency-agents/integrations/kimi/feishu-integration-developer/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-korean-business-navigator/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-feishu-integration-developer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/feishu-integration-developer.md",
-      "vendor/agency-agents/integrations/opencode/agents/korean-business-navigator.md",
-      "vendor/agency-agents/integrations/openclaw/korean-business-navigator/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/feishu-integration-developer/AGENTS.md",
-      "docs/01-development/DOCUMENTATION-GOVERNANCE.md",
-      "docs/tenants/peskids/OPEN-SOURCE-CRM-MIGRATION.md",
-      "docs/tenants/peskids/WACRM-RUNBOOK.md",
-      "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
-      "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
-      "docs/reports/ICSO-E2E-VALIDATION.md"
     ],
     "min": [
       "tools/productivity-starter/DEMO-WALKTHROUGH.md",
@@ -140871,114 +142329,6 @@
       "lib/testing/GOVERNANCE.md",
       "docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md"
     ],
-    "that": [
-      "lib/evaluation/GOVERNANCE.md",
-      "lib/config/GOVERNANCE.md",
-      "lib/services/GOVERNANCE.md",
-      "lib/api/GOVERNANCE.md",
-      "lib/errors/GOVERNANCE.md",
-      "lib/workflow/GOVERNANCE.md",
-      "lib/security/GOVERNANCE.md",
-      "vendor/agency-agents/integrations/qwen/agents/threat-detection-engineer.md",
-      "vendor/agency-agents/integrations/qwen/agents/unity-architect.md",
-      "vendor/agency-agents/integrations/qwen/agents/godot-shader-developer.md",
-      "vendor/agency-agents/integrations/qwen/agents/minimal-change-engineer.md",
-      "vendor/agency-agents/integrations/qwen/agents/unreal-world-builder.md",
-      "vendor/agency-agents/integrations/qwen/agents/game-designer.md",
-      "vendor/agency-agents/integrations/qwen/agents/bilibili-content-strategist.md",
-      "vendor/agency-agents/integrations/qwen/agents/outbound-strategist.md",
-      "vendor/agency-agents/integrations/qwen/agents/game-audio-engineer.md",
-      "vendor/agency-agents/integrations/qwen/agents/roblox-experience-designer.md",
-      "vendor/agency-agents/integrations/qwen/agents/account-strategist.md",
-      "vendor/agency-agents/integrations/qwen/agents/workflow-architect.md",
-      "vendor/agency-agents/integrations/qwen/agents/unreal-technical-artist.md",
-      "vendor/agency-agents/integrations/qwen/agents/level-designer.md",
-      "vendor/agency-agents/integrations/qwen/agents/unity-shader-graph-artist.md",
-      "vendor/agency-agents/integrations/qwen/agents/roblox-avatar-creator.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/unity-shader-graph-artist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/account-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-world-builder/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/level-designer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/roblox-experience-designer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/bilibili-content-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/roblox-avatar-creator/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/godot-shader-developer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/minimal-change-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/unity-architect/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/game-designer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/outbound-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-technical-artist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/workflow-architect/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/threat-detection-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/game-audio-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/unity-shader-graph-artist/system.md",
-      "vendor/agency-agents/integrations/kimi/account-strategist/system.md",
-      "vendor/agency-agents/integrations/kimi/unreal-world-builder/system.md",
-      "vendor/agency-agents/integrations/kimi/level-designer/system.md",
-      "vendor/agency-agents/integrations/kimi/roblox-experience-designer/system.md",
-      "vendor/agency-agents/integrations/kimi/bilibili-content-strategist/system.md",
-      "vendor/agency-agents/integrations/kimi/roblox-avatar-creator/system.md",
-      "vendor/agency-agents/integrations/kimi/godot-shader-developer/system.md",
-      "vendor/agency-agents/integrations/kimi/minimal-change-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/unity-architect/system.md",
-      "vendor/agency-agents/integrations/kimi/game-designer/system.md",
-      "vendor/agency-agents/integrations/kimi/outbound-strategist/system.md",
-      "vendor/agency-agents/integrations/kimi/unreal-technical-artist/system.md",
-      "vendor/agency-agents/integrations/kimi/workflow-architect/system.md",
-      "vendor/agency-agents/integrations/kimi/threat-detection-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/game-audio-engineer/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-workflow-architect/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-threat-detection-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-unreal-world-builder/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-game-designer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-outbound-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-minimal-change-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-roblox-experience-designer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-unreal-technical-artist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-unity-architect/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-unity-shader-graph-artist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-account-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-level-designer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-game-audio-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-bilibili-content-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-godot-shader-developer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-roblox-avatar-creator/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/threat-detection-engineer.md",
-      "vendor/agency-agents/integrations/opencode/agents/unity-architect.md",
-      "vendor/agency-agents/integrations/opencode/agents/godot-shader-developer.md",
-      "vendor/agency-agents/integrations/opencode/agents/minimal-change-engineer.md",
-      "vendor/agency-agents/integrations/opencode/agents/unreal-world-builder.md",
-      "vendor/agency-agents/integrations/opencode/agents/game-designer.md",
-      "vendor/agency-agents/integrations/opencode/agents/bilibili-content-strategist.md",
-      "vendor/agency-agents/integrations/opencode/agents/outbound-strategist.md",
-      "vendor/agency-agents/integrations/opencode/agents/game-audio-engineer.md",
-      "vendor/agency-agents/integrations/opencode/agents/roblox-experience-designer.md",
-      "vendor/agency-agents/integrations/opencode/agents/account-strategist.md",
-      "vendor/agency-agents/integrations/opencode/agents/workflow-architect.md",
-      "vendor/agency-agents/integrations/opencode/agents/unreal-technical-artist.md",
-      "vendor/agency-agents/integrations/opencode/agents/level-designer.md",
-      "vendor/agency-agents/integrations/opencode/agents/unity-shader-graph-artist.md",
-      "vendor/agency-agents/integrations/opencode/agents/roblox-avatar-creator.md",
-      "vendor/agency-agents/integrations/openclaw/unity-shader-graph-artist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/account-strategist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/unreal-world-builder/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/level-designer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/roblox-experience-designer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/bilibili-content-strategist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/godot-gameplay-scripter/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/roblox-avatar-creator/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/godot-shader-developer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/minimal-change-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/unity-architect/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/game-designer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/outbound-strategist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/unreal-technical-artist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/workflow-architect/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/threat-detection-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/game-audio-engineer/AGENTS.md",
-      "docs/obsidian/sources/archive/2026-04-21/6xk2xhn5f8hcllwj3npzaik36lqycdg0y3xw06lo.md",
-      "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md"
-    ],
     "validators": [
       "lib/evaluation/GOVERNANCE.md"
     ],
@@ -141241,23 +142591,6 @@
     ],
     "pagerduty": [
       "lib/observability/GOVERNANCE.md"
-    ],
-    "per": [
-      "lib/observability/GOVERNANCE.md",
-      "lib/workflow/GOVERNANCE.md",
-      "docs/superpowers/specs/2026-05-28-peskids-phase7-n8n-webhooks-design.md",
-      "docs/00-architecture/ELEVENLABS-ADVANCED-INTEGRATION.md",
-      "docs/01-development/COST-DASHBOARD-WIREFRAMES.md",
-      "docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md",
-      "docs/04-infrastructure/PRODUCTION-READINESS.md",
-      "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
-      "docs/audits/COST-DEEP-DIVE.md",
-      "docs/adr/ADR-035-openclaw-per-tenant.md",
-      "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
-      "docs/reports/REVIEW-AGENT-ANALYSIS.md",
-      "docs/blueprints/opsly-operational-blueprint/CLIENT-INCUBATION-TEMPLATE.md",
-      "docs/blueprints/README-PHASE1-EXECUTE.md",
-      "docs/blueprints/PHASE1-IMPLEMENTATION-GUIDE.md"
     ],
     "warning": [
       "lib/observability/GOVERNANCE.md",
@@ -141612,17 +142945,6 @@
       "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
       "docs/01-development/QA-REVIEW-COMPLETE.md"
     ],
-    "environments": [
-      "lib/testing/GOVERNANCE.md",
-      "apps/peskids/CLAUDE.md",
-      "vendor/agency-agents/integrations/qwen/agents/unreal-world-builder.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-world-builder/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/unreal-world-builder/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-unreal-world-builder/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/unreal-world-builder.md",
-      "vendor/agency-agents/integrations/openclaw/unreal-world-builder/AGENTS.md",
-      "docs/01-development/GITHUB-SETTINGS.md"
-    ],
     "call": [
       "lib/voice-messaging/README.md",
       "vendor/agency-agents/integrations/qwen/agents/sales-coach.md",
@@ -141913,10 +143235,6 @@
       "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/02-tools/GOOGLE-DRIVE-SYNC.md",
       ".claude/SYNC-GUIDE.md"
-    ],
-    "catalog": [
-      "lib/pattern-catalog/README.md",
-      "docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md"
     ],
     "harness": [
       "lib/pattern-catalog/README.md"
@@ -142347,15 +143665,6 @@
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
     ],
-    "main": [
-      "apps/peskids/DEPLOYMENT.md",
-      "apps/intcloudsysops/DEPLOYMENT.md",
-      "docs/ops/branch-protection-setup.md",
-      "docs/01-development/GITHUB-SETTINGS.md",
-      "docs/adr/ADR-043-supplement/COMPLETE-INDEX.md",
-      "docs/adr/ADR-043-supplement/README.md",
-      "docs/adr/ADR-043-supplement/DECISION-RATIONALE.md"
-    ],
     "backgrounds": [
       "apps/peskids/docs/BRAND-GUIDELINES.md"
     ],
@@ -142557,18 +143866,6 @@
       "vendor/agency-agents/integrations/openclaw/workflow-optimizer/AGENTS.md",
       "docs/03-agents/OPSLY-2-0-MULTI-AGENT-BLUEPRINT.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md"
-    ],
-    "world": [
-      "apps/orchestrator/src/meta/README.md",
-      "vendor/agency-agents/integrations/qwen/agents/unreal-world-builder.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/unreal-world-builder/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/unreal-world-builder/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-unreal-world-builder/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/unreal-world-builder.md",
-      "vendor/agency-agents/integrations/openclaw/unreal-world-builder/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/unreal-world-builder/IDENTITY.md",
-      "vendor/agency-agents/integrations/openclaw/unreal-world-builder/AGENTS.md",
-      "docs/obsidian/sources/archive/2026-04-21/6xk2xhn5f8hcllwj3npzaik36lqycdg0y3xw06lo.md"
     ],
     "orquestador": [
       "apps/orchestrator/README.md",
@@ -145935,33 +147232,6 @@
       "vendor/agency-agents/integrations/openclaw/workflow-optimizer/AGENTS.md",
       "vendor/agency-agents/integrations/openclaw/tool-evaluator/AGENTS.md"
     ],
-    "consistency": [
-      "vendor/agency-agents/integrations/qwen/agents/brand-guardian.md",
-      "vendor/agency-agents/integrations/qwen/agents/lsp-index-engineer.md",
-      "vendor/agency-agents/integrations/qwen/agents/support-responder.md",
-      "vendor/agency-agents/integrations/qwen/agents/chief-of-staff.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/brand-guardian/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/support-responder/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/chief-of-staff/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/lsp-index-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/brand-guardian/system.md",
-      "vendor/agency-agents/integrations/kimi/support-responder/system.md",
-      "vendor/agency-agents/integrations/kimi/chief-of-staff/system.md",
-      "vendor/agency-agents/integrations/kimi/lsp-index-engineer/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-chief-of-staff/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-lsp-index-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-brand-guardian/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-support-responder/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/brand-guardian.md",
-      "vendor/agency-agents/integrations/opencode/agents/lsp-index-engineer.md",
-      "vendor/agency-agents/integrations/opencode/agents/support-responder.md",
-      "vendor/agency-agents/integrations/opencode/agents/chief-of-staff.md",
-      "vendor/agency-agents/integrations/openclaw/brand-guardian/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/support-responder/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/chief-of-staff/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/lsp-index-engineer/SOUL.md",
-      "docs/tenants/peskids/BLUEPRINT-MAPPING.md"
-    ],
     "foundations": [
       "vendor/agency-agents/integrations/qwen/agents/brand-guardian.md",
       "vendor/agency-agents/integrations/qwen/agents/ux-architect.md",
@@ -147687,14 +148957,6 @@
       "vendor/agency-agents/integrations/openclaw/finance-tracker/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/healthcare-marketing-compliance-specialist/SOUL.md"
     ],
-    "concept": [
-      "vendor/agency-agents/integrations/qwen/agents/image-prompt-engineer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/image-prompt-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/image-prompt-engineer/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-image-prompt-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/image-prompt-engineer.md",
-      "vendor/agency-agents/integrations/openclaw/image-prompt-engineer/AGENTS.md"
-    ],
     "description": [
       "vendor/agency-agents/integrations/qwen/agents/image-prompt-engineer.md",
       "vendor/agency-agents/integrations/qwen/agents/recruitment-specialist.md",
@@ -148084,27 +149346,6 @@
       "vendor/agency-agents/integrations/antigravity/agency-unity-architect/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/unity-architect.md",
       "vendor/agency-agents/integrations/openclaw/unity-architect/AGENTS.md"
-    ],
-    "scene": [
-      "vendor/agency-agents/integrations/qwen/agents/unity-architect.md",
-      "vendor/agency-agents/integrations/qwen/agents/godot-gameplay-scripter.md",
-      "vendor/agency-agents/integrations/qwen/agents/godot-multiplayer-engineer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/godot-multiplayer-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/godot-gameplay-scripter/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/unity-architect/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/godot-multiplayer-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/godot-gameplay-scripter/system.md",
-      "vendor/agency-agents/integrations/kimi/unity-architect/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-godot-gameplay-scripter/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-godot-multiplayer-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-unity-architect/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/unity-architect.md",
-      "vendor/agency-agents/integrations/opencode/agents/godot-gameplay-scripter.md",
-      "vendor/agency-agents/integrations/opencode/agents/godot-multiplayer-engineer.md",
-      "vendor/agency-agents/integrations/openclaw/godot-multiplayer-engineer/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/godot-multiplayer-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/godot-gameplay-scripter/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/unity-architect/SOUL.md"
     ],
     "scriptableobject": [
       "vendor/agency-agents/integrations/qwen/agents/unity-architect.md",
@@ -149779,20 +151020,6 @@
       "vendor/agency-agents/integrations/openclaw/unreal-world-builder/AGENTS.md",
       "docs/00-architecture/RENDERING-ENGINE.md"
     ],
-    "theme": [
-      "vendor/agency-agents/integrations/qwen/agents/cms-developer.md",
-      "vendor/agency-agents/integrations/qwen/agents/proposal-strategist.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/proposal-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/cms-developer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/proposal-strategist/system.md",
-      "vendor/agency-agents/integrations/kimi/cms-developer/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-proposal-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-cms-developer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/cms-developer.md",
-      "vendor/agency-agents/integrations/opencode/agents/proposal-strategist.md",
-      "vendor/agency-agents/integrations/openclaw/proposal-strategist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/cms-developer/AGENTS.md"
-    ],
     "wordpress": [
       "vendor/agency-agents/integrations/qwen/agents/cms-developer.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/cms-developer/SKILL.md",
@@ -151118,17 +152345,6 @@
       "vendor/agency-agents/integrations/opencode/agents/zk-steward.md",
       "vendor/agency-agents/integrations/openclaw/zk-steward/SOUL.md"
     ],
-    "note": [
-      "vendor/agency-agents/integrations/qwen/agents/zk-steward.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/zk-steward/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/zk-steward/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-zk-steward/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/zk-steward.md",
-      "vendor/agency-agents/integrations/openclaw/zk-steward/AGENTS.md",
-      "docs/obsidian/templates/source-note.md",
-      "docs/adr/ADR-033-docs-canonicalization.md",
-      "docs/tenants/peskids/EVENT-CONTRACT.md"
-    ],
     "reply": [
       "vendor/agency-agents/integrations/qwen/agents/zk-steward.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/zk-steward/SKILL.md",
@@ -151448,28 +152664,6 @@
       "docs/01-development/LOCAL-FIRST-ARCHITECTURE.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md"
     ],
-    "character": [
-      "vendor/agency-agents/integrations/qwen/agents/narrative-designer.md",
-      "vendor/agency-agents/integrations/qwen/agents/psychologist.md",
-      "vendor/agency-agents/integrations/qwen/agents/narratologist.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/narrative-designer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/psychologist/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/narratologist/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/narrative-designer/system.md",
-      "vendor/agency-agents/integrations/kimi/psychologist/system.md",
-      "vendor/agency-agents/integrations/kimi/narratologist/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-psychologist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-narrative-designer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-narratologist/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/narrative-designer.md",
-      "vendor/agency-agents/integrations/opencode/agents/psychologist.md",
-      "vendor/agency-agents/integrations/opencode/agents/narratologist.md",
-      "vendor/agency-agents/integrations/openclaw/narrative-designer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/psychologist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/narratologist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/whimsy-injector/AGENTS.md",
-      "docs/00-architecture/CONTENT-PRODUCTION-MVP.md"
-    ],
     "dialogue": [
       "vendor/agency-agents/integrations/qwen/agents/narrative-designer.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/narrative-designer/SKILL.md",
@@ -151683,15 +152877,6 @@
       "vendor/agency-agents/integrations/kimi/salesforce-architect/system.md",
       "vendor/agency-agents/integrations/opencode/agents/salesforce-architect.md",
       "vendor/agency-agents/integrations/openclaw/salesforce-architect/IDENTITY.md"
-    ],
-    "act": [
-      "vendor/agency-agents/integrations/qwen/agents/proposal-strategist.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/proposal-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/proposal-strategist/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-proposal-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/proposal-strategist.md",
-      "vendor/agency-agents/integrations/openclaw/proposal-strategist/AGENTS.md",
-      "docs/design/OAR.md"
     ],
     "centric": [
       "vendor/agency-agents/integrations/qwen/agents/proposal-strategist.md",
@@ -153121,21 +154306,6 @@
       "vendor/agency-agents/integrations/opencode/agents/historian.md",
       "vendor/agency-agents/integrations/openclaw/historian/AGENTS.md"
     ],
-    "art": [
-      "vendor/agency-agents/integrations/qwen/agents/technical-artist.md",
-      "vendor/agency-agents/integrations/qwen/agents/sales-engineer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/sales-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/technical-artist/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/sales-engineer/system.md",
-      "vendor/agency-agents/integrations/kimi/technical-artist/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-technical-artist/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-sales-engineer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/technical-artist.md",
-      "vendor/agency-agents/integrations/opencode/agents/sales-engineer.md",
-      "vendor/agency-agents/integrations/openclaw/sales-engineer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/technical-artist/AGENTS.md",
-      "docs/legal/peskids/DPIA-2026.md"
-    ],
     "artist": [
       "vendor/agency-agents/integrations/qwen/agents/technical-artist.md",
       "vendor/agency-agents/integrations/qwen/agents/unreal-technical-artist.md",
@@ -153997,22 +155167,6 @@
       "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB683486-SEED419215-20180924-00000.md",
       "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB1177123-SEED419213-20200602-00000.md"
     ],
-    "relationship": [
-      "vendor/agency-agents/integrations/qwen/agents/account-strategist.md",
-      "vendor/agency-agents/integrations/qwen/agents/korean-business-navigator.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/korean-business-navigator/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/account-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/korean-business-navigator/system.md",
-      "vendor/agency-agents/integrations/kimi/account-strategist/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-korean-business-navigator/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-account-strategist/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/account-strategist.md",
-      "vendor/agency-agents/integrations/opencode/agents/korean-business-navigator.md",
-      "vendor/agency-agents/integrations/openclaw/korean-business-navigator/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/zhihu-strategist/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/account-strategist/SOUL.md",
-      "docs/00-architecture/CONTENT-PRODUCTION-MVP.md"
-    ],
     "reviews": [
       "vendor/agency-agents/integrations/qwen/agents/account-strategist.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/account-strategist/SKILL.md",
@@ -154066,23 +155220,6 @@
       "docs/tenants/peskids/SALES-FUNNEL-VALIDATION.md",
       "docs/tenants/peskids/IMPLEMENTATION-CHECKLIST.md",
       "docs/reports/PIPELINE-GAP-ANALYSIS.md"
-    ],
-    "lines": [
-      "vendor/agency-agents/integrations/qwen/agents/private-domain-operator.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/private-domain-operator/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/private-domain-operator/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-private-domain-operator/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/private-domain-operator.md",
-      "vendor/agency-agents/integrations/openclaw/narrative-designer/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/short-video-editing-coach/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/weibo-strategist/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/cross-border-e-commerce-specialist/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/podcast-strategist/SOUL.md",
-      "vendor/agency-agents/integrations/openclaw/private-domain-operator/SOUL.md",
-      "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
-      "docs/infrastructure/AGENT-BOOTSTRAP-SYSTEM.md",
-      "docs/history/consolidation/CONSOLIDATION-INDEX.md",
-      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
     ],
     "private": [
       "vendor/agency-agents/integrations/qwen/agents/private-domain-operator.md",
@@ -156176,14 +157313,6 @@
       "vendor/agency-agents/integrations/opencode/agents/healthcare-marketing-compliance-specialist.md",
       "vendor/agency-agents/integrations/openclaw/healthcare-marketing-compliance-specialist/AGENTS.md"
     ],
-    "device": [
-      "vendor/agency-agents/integrations/qwen/agents/healthcare-marketing-compliance-specialist.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/healthcare-marketing-compliance-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/healthcare-marketing-compliance-specialist/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-healthcare-marketing-compliance-specialist/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/healthcare-marketing-compliance-specialist.md",
-      "vendor/agency-agents/integrations/openclaw/healthcare-marketing-compliance-specialist/AGENTS.md"
-    ],
     "healthcare": [
       "vendor/agency-agents/integrations/qwen/agents/healthcare-marketing-compliance-specialist.md",
       "vendor/agency-agents/integrations/qwen/agents/healthcare-customer-service.md",
@@ -156341,14 +157470,6 @@
       "vendor/agency-agents/integrations/openclaw/support-responder/AGENTS.md"
     ],
     "attorney": [
-      "vendor/agency-agents/integrations/qwen/agents/legal-client-intake.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/legal-client-intake/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/legal-client-intake/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-legal-client-intake/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/legal-client-intake.md",
-      "vendor/agency-agents/integrations/openclaw/legal-client-intake/AGENTS.md"
-    ],
-    "conflict": [
       "vendor/agency-agents/integrations/qwen/agents/legal-client-intake.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/legal-client-intake/SKILL.md",
       "vendor/agency-agents/integrations/kimi/legal-client-intake/system.md",
@@ -157166,14 +158287,6 @@
       "vendor/agency-agents/integrations/antigravity/agency-godot-multiplayer-engineer/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/godot-multiplayer-engineer.md",
       "vendor/agency-agents/integrations/openclaw/godot-multiplayer-engineer/SOUL.md"
-    ],
-    "arc": [
-      "vendor/agency-agents/integrations/qwen/agents/narratologist.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/narratologist/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/narratologist/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-narratologist/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/narratologist.md",
-      "vendor/agency-agents/integrations/openclaw/narratologist/AGENTS.md"
     ],
     "guidance": [
       "vendor/agency-agents/integrations/qwen/agents/narratologist.md",
@@ -158029,14 +159142,6 @@
       "docs/runbooks/BACKUP-RECOVERY.md",
       "docs/01-development/DOCUMENTATION-GOVERNANCE.md"
     ],
-    "emotional": [
-      "vendor/agency-agents/integrations/qwen/agents/healthcare-customer-service.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/healthcare-customer-service/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/healthcare-customer-service/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-healthcare-customer-service/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/healthcare-customer-service.md",
-      "vendor/agency-agents/integrations/openclaw/healthcare-customer-service/AGENTS.md"
-    ],
     "insurance": [
       "vendor/agency-agents/integrations/qwen/agents/healthcare-customer-service.md",
       "vendor/agency-agents/integrations/gemini-cli/skills/healthcare-customer-service/SKILL.md",
@@ -158324,15 +159429,6 @@
       "vendor/agency-agents/integrations/openclaw/senior-developer/SOUL.md",
       "vendor/agency-agents/integrations/openclaw/senior-developer/AGENTS.md"
     ],
-    "technology": [
-      "vendor/agency-agents/integrations/qwen/agents/senior-developer.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/senior-developer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/senior-developer/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-senior-developer/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/senior-developer.md",
-      "vendor/agency-agents/integrations/openclaw/senior-developer/AGENTS.md",
-      "docs/01-development/COST-DASHBOARD-WIREFRAMES.md"
-    ],
     "suite": [
       "vendor/agency-agents/integrations/qwen/agents/api-tester.md",
       "vendor/agency-agents/integrations/qwen/agents/performance-benchmarker.md",
@@ -158452,33 +159548,6 @@
       "vendor/agency-agents/integrations/opencode/agents/studio-producer.md",
       "vendor/agency-agents/integrations/openclaw/studio-producer/IDENTITY.md",
       "vendor/agency-agents/integrations/openclaw/studio-producer/AGENTS.md"
-    ],
-    "studio": [
-      "vendor/agency-agents/integrations/qwen/agents/studio-producer.md",
-      "vendor/agency-agents/integrations/qwen/agents/roblox-avatar-creator.md",
-      "vendor/agency-agents/integrations/qwen/agents/studio-operations.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/studio-operations/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/roblox-avatar-creator/SKILL.md",
-      "vendor/agency-agents/integrations/gemini-cli/skills/studio-producer/SKILL.md",
-      "vendor/agency-agents/integrations/kimi/studio-operations/system.md",
-      "vendor/agency-agents/integrations/kimi/roblox-avatar-creator/system.md",
-      "vendor/agency-agents/integrations/kimi/studio-producer/system.md",
-      "vendor/agency-agents/integrations/antigravity/agency-studio-producer/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-studio-operations/SKILL.md",
-      "vendor/agency-agents/integrations/antigravity/agency-roblox-avatar-creator/SKILL.md",
-      "vendor/agency-agents/integrations/opencode/agents/studio-producer.md",
-      "vendor/agency-agents/integrations/opencode/agents/roblox-avatar-creator.md",
-      "vendor/agency-agents/integrations/opencode/agents/studio-operations.md",
-      "vendor/agency-agents/integrations/openclaw/studio-operations/IDENTITY.md",
-      "vendor/agency-agents/integrations/openclaw/studio-operations/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/roblox-avatar-creator/AGENTS.md",
-      "vendor/agency-agents/integrations/openclaw/studio-producer/IDENTITY.md",
-      "vendor/agency-agents/integrations/openclaw/studio-producer/AGENTS.md",
-      "docs/superpowers/specs/2026-05-26-content-studio-ai-design.md",
-      "docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md",
-      "docs/00-architecture/CONTENT-PRODUCTION-MVP.md",
-      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
-      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
     ],
     "authorship": [
       "vendor/agency-agents/integrations/qwen/agents/unity-shader-graph-artist.md",
@@ -160124,10 +161193,6 @@
     "rotating": [
       "vendor/agency-agents/integrations/openclaw/workflow-architect/SOUL.md"
     ],
-    "speech": [
-      "vendor/agency-agents/integrations/openclaw/workflow-architect/SOUL.md",
-      "docs/04-infrastructure/GOOGLE-CLOUD-ACTIVATION.md"
-    ],
     "states": [
       "vendor/agency-agents/integrations/openclaw/workflow-architect/SOUL.md"
     ],
@@ -160898,20 +161963,6 @@
     "20h": [
       "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md"
     ],
-    "important": [
-      "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
-      "docs/database/SUPABASE-MIGRATION-AUDIT.md",
-      "docs/00-architecture/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
-      "docs/00-architecture/ORCHESTRATOR-FIXES-EXECUTION.md",
-      "docs/01-development/TECHNICAL-DEBT.md",
-      "docs/01-development/QA-REVIEW-COMPLETE.md",
-      "docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md",
-      "docs/audits/DOCKER-OPTIMIZATION.md",
-      "docs/audits/DATABASE-QUERY-AUDIT.md",
-      "docs/audits/CODE-REVIEW-API-ROUTES.md",
-      "docs/audits/LINT-RULES-GUIDE.md",
-      "docs/security/SECURITY-POSTURE-AUDIT.md"
-    ],
     "kpi": [
       "docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
       "docs/runbooks/AUTONOMOUS-PROD-60D.md",
@@ -160943,10 +161994,6 @@
       "docs/adr/ADR-033-migrate-ia-legacy-to-gateway.md",
       "docs/adr/ADR-043-supplement/COMPLETE-INDEX.md",
       "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md"
-    ],
-    "canon": [
-      "docs/plans/README.md",
-      "docs/01-development/VISION.md"
     ],
     "carpeta": [
       "docs/plans/README.md",
@@ -161211,19 +162258,11 @@
     "representative": [
       "docs/ops/issue-bankruptcy-2026-05-03/issues-triage.md"
     ],
-    "same": [
-      "docs/ops/issue-bankruptcy-2026-05-03/issues-triage.md",
-      "docs/ops/issue-bankruptcy-2026-05-03/quick-wins.md",
-      "docs/tenants/peskids/SPRINT-01-STATUS.md"
-    ],
     "totals": [
       "docs/ops/issue-bankruptcy-2026-05-03/issues-triage.md"
     ],
     "updatedat": [
       "docs/ops/issue-bankruptcy-2026-05-03/issues-triage.md"
-    ],
-    "candidates": [
-      "docs/ops/issue-bankruptcy-2026-05-03/quick-wins.md"
     ],
     "few": [
       "docs/ops/issue-bankruptcy-2026-05-03/quick-wins.md"
@@ -161431,9 +162470,6 @@
       "docs/orchestrator/REPAIR-QUEUE.md"
     ],
     "implemente": [
-      "docs/orchestrator/REPAIR-QUEUE.md"
-    ],
-    "repair": [
       "docs/orchestrator/REPAIR-QUEUE.md"
     ],
     "superficie": [
@@ -162393,11 +163429,6 @@
     "prohibited": [
       "docs/governance/internal/CHANGE-MANAGEMENT-POLICY.md"
     ],
-    "continuity": [
-      "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
-      "docs/01-development/SEMANA-3-INFORME.md",
-      ".claude/AGENTS-ENHANCEMENTS.md"
-    ],
     "procedures": [
       "docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md",
       "docs/runbooks/BACKUP-RECOVERY.md",
@@ -162516,10 +163547,6 @@
     "swarmops": [
       "docs/design/OAR.md",
       "docs/00-architecture/ARCHITECTURE.md"
-    ],
-    "truth": [
-      "docs/design/DESIGN_REFERENCES.md",
-      "docs/runbooks/TENANT-BONUS-WORKFLOWS.md"
     ],
     "afirmacion": [
       "docs/obsidian/research/frontier-pattern-radar.md",
@@ -162807,10 +163834,6 @@
     "basement": [
       "docs/obsidian/sources/archive/2026-04-21/vics-basement-26.md"
     ],
-    "episode": [
-      "docs/obsidian/sources/archive/2026-04-21/vics-basement-26.md",
-      "docs/obsidian/sources/archive/2026-04-21/lrhenfvaovhaled7lamamtt7zpt70uxo5ysjftoj.md"
-    ],
     "vic": [
       "docs/obsidian/sources/archive/2026-04-21/vics-basement-26.md"
     ],
@@ -162870,9 +163893,6 @@
       "docs/obsidian/sources/archive/2026-04-21/indian-man-using-laptop-while-drinking-cup-coffee-outdoor-street-cafe.md"
     ],
     "laptop": [
-      "docs/obsidian/sources/archive/2026-04-21/indian-man-using-laptop-while-drinking-cup-coffee-outdoor-street-cafe.md"
-    ],
-    "man": [
       "docs/obsidian/sources/archive/2026-04-21/indian-man-using-laptop-while-drinking-cup-coffee-outdoor-street-cafe.md"
     ],
     "outdoor": [
@@ -163054,9 +164074,6 @@
       "docs/obsidian/sources/archive/2026-04-21/lrhenfvaovhaled7lamamtt7zpt70uxo5ysjftoj.md"
     ],
     "sarah": [
-      "docs/obsidian/sources/archive/2026-04-21/lrhenfvaovhaled7lamamtt7zpt70uxo5ysjftoj.md"
-    ],
-    "season": [
       "docs/obsidian/sources/archive/2026-04-21/lrhenfvaovhaled7lamamtt7zpt70uxo5ysjftoj.md"
     ],
     "canonicos": [
@@ -163951,11 +164968,6 @@
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
       "docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md"
     ],
-    "lab": [
-      "docs/runbooks/PANINI-LAB-GOLIVE.md",
-      "docs/tenants/panini-lab/README.md",
-      "docs/demo/hackathon-demo.md"
-    ],
     "panini": [
       "docs/runbooks/PANINI-LAB-GOLIVE.md",
       "docs/tenants/panini-lab/README.md",
@@ -164174,6 +165186,9 @@
     "persistencia": [
       "docs/00-architecture/COST-DASHBOARD.md"
     ],
+    "addendum": [
+      "docs/00-architecture/CONTENT-PRODUCTION-MVP.md"
+    ],
     "adds": [
       "docs/00-architecture/CONTENT-PRODUCTION-MVP.md"
     ],
@@ -164225,15 +165240,6 @@
       "docs/03-agents/FIRST-OPENCLAW-AGENTS-MAC2011.md",
       "docs/adr/ADR-017-worker-teams-billing-roadmap.md",
       "docs/adr/ADR-011-event-driven-orchestrator.md"
-    ],
-    "primer": [
-      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
-      "docs/tenants/peskids/README.md",
-      "docs/brain/README.md"
-    ],
-    "venture": [
-      "docs/00-architecture/OPSLY-VENTURE-STUDIO.md",
-      "docs/audits/OPSLY-VENTURE-STUDIO-FOUNDATION-AUDIT.md"
     ],
     "existentes": [
       "docs/00-architecture/OPSLYQUANTUM-SKILL-DESIGN.md",
@@ -165293,11 +166299,6 @@
       "docs/blueprints/TWENTY-BOOTSTRAP-IRREDUCIBLE.md",
       "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md"
     ],
-    "yet": [
-      "docs/01-development/CLIENT-ONBOARDING-PLAYBOOK.md",
-      "docs/audits/OPSLY-OPERATIONAL-HARDENING.md",
-      "docs/reports/PESKIDS-REUNION-CHECKLIST.md"
-    ],
     "bases": [
       "docs/01-development/SPRINT-PLANNING-SETUP.md",
       "docs/audits/DOCKER-OPTIMIZATION.md",
@@ -165573,14 +166574,6 @@
     ],
     "mando": [
       "docs/01-development/HYBRID-OPSLY-ADMIN.md"
-    ],
-    "maquina": [
-      "docs/01-development/HYBRID-OPSLY-ADMIN.md",
-      "docs/01-development/LOCAL-MAC-IMPROVEMENT-PLAN.md",
-      "docs/04-infrastructure/VPS-SSH-WORKER-NODES.md",
-      "docs/03-agents/AGENT-URL-VALIDATION.md",
-      "docs/operations/RUN-VALIDATION-LOCALLY.md",
-      ".claude/SYNC-GUIDE.md"
     ],
     "realista": [
       "docs/01-development/HYBRID-OPSLY-ADMIN.md"
@@ -165901,10 +166894,6 @@
       "docs/03-agents/AUTONOMOUS-EXECUTION-GUIDE.md",
       "docs/03-agents/AUTONOMOUS-ITERATION.md",
       "docs/03-agents/VALIDATION-AND-ITERATION-SYSTEM.md"
-    ],
-    "machines": [
-      "docs/01-development/PHASE-2-DEPLOYMENT.md",
-      ".agents/UNIFIED-AGENT-ARCHITECTURE.md"
     ],
     "invitar": [
       "docs/01-development/CLIENT-TESTING-CHECKLIST.md",
@@ -166291,10 +167280,6 @@
     ],
     "handler": [
       "docs/06-multi-agent/PARALLEL-EXECUTION-GUIDE.md"
-    ],
-    "pool": [
-      "docs/06-multi-agent/PARALLEL-EXECUTION-GUIDE.md",
-      "docs/04-infrastructure/WORKER-TEAM-ARCHITECTURE.md"
     ],
     "coming": [
       "docs/06-multi-agent/PARALLEL-EXECUTION-ARCHITECTURE.md",
@@ -166705,9 +167690,6 @@
     "portales": [
       "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md"
     ],
-    "pregunta": [
-      "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md"
-    ],
     "ufw": [
       "docs/04-infrastructure/ARCHITECT-SECURITY-REVIEW.md",
       "docs/04-infrastructure/SECURITY-MITIGATIONS-2026-04-09.md"
@@ -167021,9 +168003,6 @@
     "estimated": [
       "docs/audits/DATABASE-QUERY-AUDIT.md",
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md"
-    ],
-    "exist": [
-      "docs/audits/DATABASE-QUERY-AUDIT.md"
     ],
     "improve": [
       "docs/audits/DATABASE-QUERY-AUDIT.md"
@@ -167566,10 +168545,6 @@
     ],
     "tengo": [
       "docs/03-agents/SSH-USERS-FOR-AGENTS.md"
-    ],
-    "central": [
-      "docs/03-agents/AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
-      "docs/blueprints/AI-TENANT-SETUP-BLUEPRINT.md"
     ],
     "operativa": [
       "docs/03-agents/AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
@@ -169757,9 +170732,6 @@
       "docs/blueprints/TWENTY-BOOTSTRAP-IRREDUCIBLE.md",
       "docs/blueprints/OPERATIONAL-CLOSURE-SUMMARY.md"
     ],
-    "themes": [
-      "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md"
-    ],
     "gameplan": [
       "docs/blueprints/GO-LIVE-COMMAND.md"
     ],
@@ -170111,8 +171083,30 @@
     "apps/web/blog/2026-04-26-opsly-para-agencias.md",
     "config/blueprints/academy/README.md",
     "config/doppler-audit-2026-04-07.md",
+    "data/content/assets/reference/REFERENCE-IMAGES.md",
+    "data/content/canon/CONTINUITY-RULES.md",
+    "data/content/canon/NOVA.md",
+    "data/content/canon/ORIGIN-SAGA.md",
+    "data/content/canon/SYMBOLS.md",
+    "data/content/canon/THE-TRAVELER.md",
+    "data/content/canon/TIMELINE.md",
+    "data/content/canon/UNIVERSE-BIBLE.md",
+    "data/content/canon/WAVO.md",
     "data/content/README.md",
     "data/content/series/opsly-origins/episodes/001-todo-empezo-hablando-con-ia/script.md",
+    "data/content/series/opsly-parallel-path/episodes/001-the-question/script.md",
+    "data/content/series/opsly-parallel-path/episodes/002-too-many-lives/script.md",
+    "data/content/series/opsly-parallel-path/episodes/003-the-first-system/script.md",
+    "data/content/series/opsly-parallel-path/episodes/004-intcloudsysops/script.md",
+    "data/content/series/opsly-parallel-path/episodes/005-the-blueprint/script.md",
+    "data/content/series/opsly-parallel-path/episodes/006-peskids/script.md",
+    "data/content/series/opsly-parallel-path/episodes/007-the-agents/script.md",
+    "data/content/series/opsly-parallel-path/episodes/008-mission-control/script.md",
+    "data/content/series/opsly-parallel-path/episodes/009-the-venture-studio/script.md",
+    "data/content/series/opsly-parallel-path/episodes/010-the-machine/script.md",
+    "data/content/series/opsly-parallel-path/episodes/011-the-creator/script.md",
+    "data/content/series/opsly-parallel-path/episodes/012-the-message/script.md",
+    "data/content/series/opsly-parallel-path/episodes/013-the-map/script.md",
     "docs/.obsidian/PLUGINS-TO-INSTALL.md",
     "docs/.obsidian/templates/doc-template.md",
     "docs/00-architecture/AGENT-ROUTING.md",
