@@ -190,7 +190,7 @@ export interface ComplianceViolation {
 // planned, continuity-driven brand video content (fixed characters across
 // a multi-episode series/campaign), not one-off AI-generated per-event posts.
 
-export type CharacterId = 'opsly-founder' | 'opsly-robot-luna' | 'wavo';
+export type CharacterId = 'opsly-founder' | 'opsly-robot-luna' | 'wavo' | 'the-traveler' | 'nova';
 
 export type NarrativeRole = 'protagonist' | 'supporter' | 'guide';
 
@@ -235,7 +235,7 @@ export interface CharacterProfile {
   prohibited_variations: string[];
 }
 
-export type SeriesId = 'opsly-origins' | 'peki-lab' | 'build-with-opsly';
+export type SeriesId = 'opsly-origins' | 'peki-lab' | 'build-with-opsly' | 'opsly-parallel-path';
 
 export interface Series {
   id: SeriesId;

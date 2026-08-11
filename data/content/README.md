@@ -12,13 +12,24 @@ for the full architecture writeup and how this relates to that system.
 
 ```
 data/content/
+  canon/                 # Opsly Universe show bible (narrative reference docs)
+    UNIVERSE-BIBLE.md
+    THE-TRAVELER.md
+    NOVA.md
+    WAVO.md
+    SYMBOLS.md
+    TIMELINE.md
+    CONTINUITY-RULES.md   # read this first if characters/series seem inconsistent
+
   characters/            # Character Bible — one JSON per character
-    opsly-founder.json
+    opsly-founder.json    # MVP bible, still used by opsly-origins
     opsly-robot-luna.json
     wavo.json
+    the-traveler.json     # Opsly Universe canon, used by opsly-parallel-path
+    nova.json
 
   series/
-    opsly-origins/
+    opsly-origins/         # MVP: simple, factual, direct-to-camera founder story
       series.json
       episodes/
         <slug>/
@@ -26,11 +37,17 @@ data/content/
           script.md        # only for episodes past "idea" stage
     peki-lab/
     build-with-opsly/
+    opsly-parallel-path/   # Opsly Universe: cinematic, fictionalized Season 1 (10 episodes)
 
   campaigns/
     opsly-channel-launch-30-days/
       campaign.json       # 30-day schedule referencing episode ids above
 ```
+
+Two narrative layers coexist by design — see
+[`canon/CONTINUITY-RULES.md`](canon/CONTINUITY-RULES.md) for exactly how
+`opsly-founder`/`opsly-robot-luna` (MVP) relate to `the-traveler`/`nova`
+(Opsly Universe), and why neither was deleted or silently renamed.
 
 ## Reading this data
 

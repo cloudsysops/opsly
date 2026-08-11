@@ -1,0 +1,49 @@
+{
+  "id": "opsly-parallel-path-007",
+  "series_id": "opsly-parallel-path",
+  "episode_number": 7,
+  "title": {
+    "es": "Mission Control",
+    "en": "Mission Control"
+  },
+  "hook": {
+    "es": "Todas las conexiones empiezan a ser imposibles de seguir.",
+    "en": "All the connections start to become impossible to follow."
+  },
+  "objective": "The growing complexity of the Parallel World forces the creation of Moon, a central command view. The Traveler sees the whole map for the first time — and how much is still dark/unexplored.",
+  "audience": [
+    "general tech-curious audience",
+    "founders",
+    "developers",
+    "dreamers"
+  ],
+  "duration_estimate_sec": 50,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Ver todo el mapa, por primera vez.",
+    "captions": {
+      "es": "Moon: el centro de mando.",
+      "en": "Moon: mission control."
+    },
+    "hashtags": [
+      "#OpslyParallelPath",
+      "#MissionControl",
+      "#OpslyMoon",
+      "#TheTraveler"
+    ],
+    "thumbnail_concept": "The Traveler standing before a floating map interface (Moon), most of it lit, large sections still dark"
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-08-11T00:00:00Z",
+    "last_updated": "2026-08-11T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Theme: the need for visibility/control once a system outgrows what one person can track by feel.",
+      "Emotional conflict: awe at how far things have come, mixed with the weight of how much is still unknown.",
+      "Visual motif: the map-with-dark-zones device, reused and paid off in Episode 10.",
+      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 07."
+    ]
+  }
+}

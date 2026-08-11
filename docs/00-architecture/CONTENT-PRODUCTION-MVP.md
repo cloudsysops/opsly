@@ -113,6 +113,35 @@ npm run content:render-plan -- opsly-origins-001    # dry-run plan, no execution
 - [x] Pilot episode fully scripted and validated
 - [x] `lib/content-studio` type-check + full test suite (156 tests) green
 
+## Addendum (2026-08-11, same day) — Opsly Universe: The Parallel Path
+
+A second narrative layer was added on top of this MVP, same session: a
+semi-fictional cinematic universe ("OPSLY: THE PARALLEL PATH") with two new
+canonical characters (**The Traveler**, **NØVA**) and a 10-episode Season 1
+(`opsly-parallel-path` series, episode 1 fully scripted, 2-10 at idea stage
+with theme/emotional-conflict/visual-motif notes).
+
+This reuses the exact same infrastructure documented above — no new schema,
+no new CLI, no new lib module. It's purely additive data:
+
+- `CharacterIdSchema` / `SeriesIdSchema` (in `lib/content-studio/src/{characters,series}/schema.ts`)
+  gained new enum members (`the-traveler`, `nova`, `opsly-parallel-path`) —
+  existing members untouched.
+- New character files: `data/content/characters/{the-traveler,nova}.json`.
+- New series: `data/content/series/opsly-parallel-path/`.
+- New canon/show-bible docs (markdown, not part of the Zod-validated
+  pipeline): `data/content/canon/*.md`.
+
+**Important:** `the-traveler`/`nova` are a redesign of the same real-world
+protagonist/companion concept as `opsly-founder`/`opsly-robot-luna` from the
+original MVP — a deliberate, documented inconsistency rather than a silent
+rename, since the MVP characters are still live and tested (used by the
+`opsly-origins` series, including the already-shipped pilot
+`opsly-origins-001`). See
+[`data/content/canon/CONTINUITY-RULES.md`](../../data/content/canon/CONTINUITY-RULES.md)
+for the full explanation and which characters/series any future agent
+should default to.
+
 ## Enlaces relacionados
 
 - [`docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md`](CONTENT-STUDIO-ARCHITECTURE.md) — event-driven tenant content system

@@ -1,6 +1,15 @@
 import { z } from 'zod';
 
-export const CharacterIdSchema = z.enum(['opsly-founder', 'opsly-robot-luna', 'wavo']);
+export const CharacterIdSchema = z.enum([
+  'opsly-founder',
+  'opsly-robot-luna',
+  'wavo',
+  // Opsly Universe canon (2026-08-11) — see data/content/canon/CONTINUITY-RULES.md.
+  // opsly-founder / opsly-robot-luna remain valid (early MVP bible, still used by
+  // the opsly-origins series) but are superseded by these two for new universe content.
+  'the-traveler',
+  'nova',
+]);
 
 export const CharacterVisualSchema = z.object({
   silhouette_prompt: z.string().min(1),

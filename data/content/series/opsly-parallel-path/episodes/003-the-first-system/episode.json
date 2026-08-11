@@ -1,0 +1,50 @@
+{
+  "id": "opsly-parallel-path-003",
+  "series_id": "opsly-parallel-path",
+  "episode_number": 3,
+  "title": {
+    "es": "El Primer Sistema",
+    "en": "The First System"
+  },
+  "hook": {
+    "es": "Nada espectacular. Pero es real.",
+    "en": "Nothing spectacular. But it's real."
+  },
+  "objective": "First visit to the Parallel World. A small early automation becomes visible there as a modest glowing structure. Establish the core visual rule: real-world systems generate parallel-world architecture.",
+  "audience": [
+    "general tech-curious audience",
+    "founders",
+    "developers",
+    "dreamers"
+  ],
+  "duration_estimate_sec": 50,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Cada sistema real construye un mundo.",
+    "captions": {
+      "es": "El primer sistema, apenas una chispa.",
+      "en": "The first system, barely a spark."
+    },
+    "hashtags": [
+      "#OpslyParallelPath",
+      "#TheTraveler",
+      "#NOVA",
+      "#ParallelWorld"
+    ],
+    "thumbnail_concept": "A small glowing structure rising in the Parallel World, The Traveler and NØVA watching it form"
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-08-11T00:00:00Z",
+    "last_updated": "2026-08-11T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Theme: small, unglamorous beginnings are still real beginnings.",
+      "Emotional conflict: wanting the first system to feel bigger than it is.",
+      "Visual motif: first full reveal of the Parallel World — establish its geometric-city aesthetic here.",
+      "NØVA asks \"¿Eso es Opsly?\" — The Traveler answers \"No. Pero creo que es una pieza.\"",
+      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 03."
+    ]
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "id": "opsly-parallel-path-008",
+  "series_id": "opsly-parallel-path",
+  "episode_number": 8,
+  "title": {
+    "es": "La Máquina",
+    "en": "The Machine"
+  },
+  "hook": {
+    "es": "Para cualquiera es una computadora. Para ellos es una nave.",
+    "en": "To anyone else, it's a computer. To them, it's a ship."
+  },
+  "objective": "A borrowed gaming PC arrives and is converted into a worker in the Parallel World. NØVA realizes any machine can be connected if you know how.",
+  "audience": [
+    "general tech-curious audience",
+    "founders",
+    "developers",
+    "dreamers"
+  ],
+  "duration_estimate_sec": 45,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "¿Podemos convertir cualquier máquina en parte del mundo?",
+    "captions": {
+      "es": "Un PC prestado se convierte en nave.",
+      "en": "A borrowed PC becomes a ship."
+    },
+    "hashtags": [
+      "#OpslyParallelPath",
+      "#PCGamerWorker",
+      "#Infra",
+      "#NOVA"
+    ],
+    "thumbnail_concept": "A gaming PC tower glowing with the Parallel World's geometry, transforming into a small ship-like worker form"
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-08-11T00:00:00Z",
+    "last_updated": "2026-08-11T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Theme: resourcefulness — building with what's borrowed/available, not waiting for ideal tools.",
+      "Emotional conflict: precariousness of depending on something temporary/borrowed.",
+      "Dialogue beat: NØVA — \"¿Entonces podemos convertir cualquier máquina en parte del mundo?\" The Traveler — \"Si sabemos conectarla.\"",
+      "Directly inspired by real infra work (feat/pc-gamer-worker-plane) — keep grounded, don't overstate capability.",
+      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 08."
+    ]
+  }
+}

@@ -1,7 +1,12 @@
 import { z } from 'zod';
 import { CharacterIdSchema } from '../characters/schema.js';
 
-export const SeriesIdSchema = z.enum(['opsly-origins', 'peki-lab', 'build-with-opsly']);
+export const SeriesIdSchema = z.enum([
+  'opsly-origins',
+  'peki-lab',
+  'build-with-opsly',
+  'opsly-parallel-path',
+]);
 
 export const SeriesSchema = z.object({
   id: SeriesIdSchema,

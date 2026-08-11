@@ -1,0 +1,50 @@
+{
+  "id": "opsly-parallel-path-002",
+  "series_id": "opsly-parallel-path",
+  "episode_number": 2,
+  "title": {
+    "es": "Demasiadas Vidas",
+    "en": "Too Many Lives"
+  },
+  "hook": {
+    "es": "¿Cuál de estos eres tú?",
+    "en": "Which one of these is you?"
+  },
+  "objective": "The Traveler walks through fragments of his many past lives (construction, food service, cloud, code, physical labor). Establish that his path looks scattered from outside but is one search from inside.",
+  "audience": [
+    "general tech-curious audience",
+    "founders",
+    "developers",
+    "dreamers"
+  ],
+  "duration_estimate_sec": 50,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Todos tenemos demasiadas vidas.",
+    "captions": {
+      "es": "¿Cuál de todas tus vidas eres tú?",
+      "en": "Which of your lives are you?"
+    },
+    "hashtags": [
+      "#OpslyParallelPath",
+      "#TheTraveler",
+      "#Founders",
+      "#BuildInPublic"
+    ],
+    "thumbnail_concept": "The Traveler walking through overlapping translucent worlds (construction site, kitchen, server room, code)"
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-08-11T00:00:00Z",
+    "last_updated": "2026-08-11T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Theme: dispersion vs. search — what looks like scattered career changes is one continuous search for purpose.",
+      "Emotional conflict: self-doubt about not fitting into one world.",
+      "Visual motif: translucent overlapping worlds The Traveler physically walks between.",
+      "NØVA asks \"¿Cuál de estos eres tú?\" — The Traveler answers \"Todavía no lo sé.\"",
+      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 02."
+    ]
+  }
+}

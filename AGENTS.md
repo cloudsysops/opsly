@@ -580,6 +580,20 @@ Additive extension of `lib/content-studio` (no fork, no new unregistered lib):
 - Script episodes 002-004 per series (currently idea-stage)
 - Once `feat/pc-gamer-worker-plane` merges: wire render execution through its worker allowlist
 
+### Same-session addendum — Opsly Universe: The Parallel Path
+
+User shared a full narrative-universe brief (originally written for Codex) for a semi-fictional cinematic series about Opsly's origin — protagonist **The Traveler** (masked human-cyborg, never shows his face) and companion **NØVA** (small curious robot, inner-child archetype), crossing over with Wavo/Peskids. Asked me to build it myself instead.
+
+Built additively on the same MVP infrastructure (no new schema/lib/CLI):
+- `CharacterIdSchema`/`SeriesIdSchema` gained new enum members: `the-traveler`, `nova`, `opsly-parallel-path` — existing `opsly-founder`/`opsly-robot-luna`/`opsly-origins` untouched.
+- New characters: `data/content/characters/{the-traveler,nova}.json`
+- New series: `data/content/series/opsly-parallel-path/` — Season 1, 10 episodes (episode 1 "The Question" fully scripted at `storyboard` status; 2-10 at `idea` with theme/emotional-conflict/visual-motif notes)
+- New canon docs: `data/content/canon/{UNIVERSE-BIBLE,THE-TRAVELER,NOVA,WAVO,SYMBOLS,TIMELINE,CONTINUITY-RULES}.md`
+
+**Deliberate, documented inconsistency** (not a silent rename): `the-traveler`/`nova` redesign the same protagonist/companion concept as `opsly-founder`/`opsly-robot-luna`, but the MVP characters stay live — they're still used by `opsly-origins` (including the shipped pilot `opsly-origins-001`). Full rationale in `data/content/canon/CONTINUITY-RULES.md`. Any future agent adding **new** universe content should default to `the-traveler`/`nova`; only extend `opsly-founder`/`opsly-robot-luna` if explicitly asked to keep building the `opsly-origins` line.
+
+Validated: `npm run content:validate` → 5 characters, 4 series, 26 episodes, all compliant. `lib/content-studio`: tsc clean, 156/156 tests.
+
 ---
 
 ## 🔄 Phase 2 — Content Studio (2026-05-18)

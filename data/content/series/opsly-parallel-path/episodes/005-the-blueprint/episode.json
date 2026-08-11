@@ -1,0 +1,49 @@
+{
+  "id": "opsly-parallel-path-005",
+  "series_id": "opsly-parallel-path",
+  "episode_number": 5,
+  "title": {
+    "es": "El Blueprint",
+    "en": "The Blueprint"
+  },
+  "hook": {
+    "es": "Un mundo no tiene por qué existir solo para uno.",
+    "en": "A world doesn't have to exist for just one."
+  },
+  "objective": "The Traveler realizes the Peskids system is a reusable pattern, not a one-off. First wide view of the Parallel World showing many worlds beginning to connect.",
+  "audience": [
+    "general tech-curious audience",
+    "founders",
+    "developers",
+    "dreamers"
+  ],
+  "duration_estimate_sec": 50,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Un blueprint puede convertirse en muchos mundos.",
+    "captions": {
+      "es": "De un mundo a un blueprint.",
+      "en": "From one world to a blueprint."
+    },
+    "hashtags": [
+      "#OpslyParallelPath",
+      "#Blueprint",
+      "#TheTraveler",
+      "#Opsly"
+    ],
+    "thumbnail_concept": "Wide establishing shot of the Parallel World from above, many small worlds beginning to connect by light-threads"
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-08-11T00:00:00Z",
+    "last_updated": "2026-08-11T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Theme: recognizing patterns — the shift from building one thing to building a way of building things.",
+      "Emotional conflict: ambition growing faster than confidence.",
+      "Visual motif: first wide/aerial reveal of the full Parallel World, many worlds visible at once.",
+      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 05."
+    ]
+  }
+}
