@@ -1,5 +1,6 @@
 import { getServiceClient } from './supabase';
 import { PLAN_MRR_USD } from './stripe/plans';
+import type { PlanKey } from './supabase/types';
 import { getCache, setCache } from './redis-cache';
 import { CACHE_TTL } from './constants';
 import { logger } from './logger';
@@ -21,7 +22,7 @@ function calculateMrr(activePaidRes: unknown): number {
     if (row.is_demo || row.plan === 'demo' || !(row.plan in PLAN_MRR_USD)) {
       continue;
     }
-    mrr += PLAN_MRR_USD[row.plan] ?? 0;
+    mrr += PLAN_MRR_USD[row.plan as PlanKey] ?? 0;
   }
   return mrr;
 }
