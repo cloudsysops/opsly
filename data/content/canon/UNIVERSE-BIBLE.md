@@ -17,18 +17,30 @@ searching for purpose through technology, failure, and persistence.
 3. *OPSLY: THE MAP* — leans into the central mystery/message
 4. *THE TRAVELER'S CODE* — leans into the protagonist
 
-## The two planes
+## The three layers
 
-**REAL WORLD** — laptops, construction sites, restaurants, servers, small
+Originally framed as two planes (Real World / Parallel World); merged
+2026-08-11 with a parallel canon (`feat/icso-youtube-kids-swim`) into a
+richer three-layer model — see [`WORLDS.md`](WORLDS.md) for the full
+breakdown and [`CONTINUITY-RULES.md`](CONTINUITY-RULES.md) for the merge
+decision. Nothing already scripted changes meaning — "Real World" ≈
+MUNDUS, "Parallel World" ≈ NEXUS (+ AETHER for the symbolic/mystery layer
+specifically).
+
+**MUNDUS** — laptops, construction sites, restaurants, servers, small
 businesses, clients, cities. Where Cristian actually lived and worked.
 
-**PARALLEL WORLD** — networks, circuits, agents, geometric structures, data
-rivers, digital cities, gateways, Moon Mission Control, tenant worlds. Every
-system built in the real world generates a structure here.
+**NEXUS** — networks, circuits, agents, geometric structures, data rivers,
+digital cities, gateways, Moon Mission Control, tenant worlds. Every system
+built in MUNDUS generates a structure here.
 
-The two planes are not separate stories — every episode moves between them.
-What The Traveler builds in the real world becomes visible architecture in
-the parallel world.
+**AETHER** — the oldest layer: patterns as shape, rhythm, and structure.
+Where the luminous ruins and the cipher fragments actually live, and where
+the Messenger appears from and returns to.
+
+The layers are not separate stories — every episode moves between them.
+What The Traveler builds in MUNDUS becomes visible architecture in NEXUS,
+and the symbols that connect everything come from AETHER.
 
 ## The mystery
 
@@ -100,10 +112,14 @@ for exactly what's superseded and what isn't.
 ## Canon files
 
 - [`ORIGIN-SAGA.md`](ORIGIN-SAGA.md) — the full 11-act macro arc (biography → platform)
-- [`THE-TRAVELER.md`](THE-TRAVELER.md) — protagonist
+- [`WORLDS.md`](WORLDS.md) — MUNDUS/NEXUS/AETHER layers + tenant planets
+- [`THE-TRAVELER.md`](THE-TRAVELER.md) — protagonist (aka El Viajero)
 - [`NOVA.md`](NOVA.md) — companion
-- [`WAVO.md`](WAVO.md) — Peki Lab crossover
-- [`SYMBOLS.md`](SYMBOLS.md) — the mystery/cipher
+- [`PEKI.md`](PEKI.md) — Peskids teaching hero
+- [`WAVO.md`](WAVO.md) — Peskids tech/dashboard sidekick, Peki Lab crossover
+- [`THE-NULL.md`](THE-NULL.md) — antagonist (not yet used in Season 1)
+- [`MESSENGER.md`](MESSENGER.md) — mythic threshold entity (not yet used in Season 1)
+- [`SYMBOLS.md`](SYMBOLS.md) — the mystery/cipher + shape/number visual vocabulary
 - [`TIMELINE.md`](TIMELINE.md) — real-world inspiration vs. fictionalized beats, per episode
-- [`CONTINUITY-RULES.md`](CONTINUITY-RULES.md) — consistency rules + relationship to prior MVP characters
+- [`CONTINUITY-RULES.md`](CONTINUITY-RULES.md) — consistency rules + relationship to prior MVP characters and the merged parallel canon
 - [`../series/opsly-parallel-path/series.json`](../series/opsly-parallel-path/series.json) — Season 1, 13 episodes

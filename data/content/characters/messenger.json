@@ -1,0 +1,39 @@
+{
+  "id": "messenger",
+  "canonical_name": "Messenger",
+  "role": "Mythic entity that opens questions rather than giving answers",
+  "personality": {
+    "archetype": "Threshold Guide",
+    "traits": ["enigmatic", "brief", "non-directive", "patient"],
+    "narrative_role": "messenger"
+  },
+  "visual": {
+    "silhouette_prompt": "Light-based, geometric, non-human silhouette — more phenomenon than character, appears and dissolves rather than walking on/off screen",
+    "proportions": { "head": 1, "torso": 1, "legs": 0 },
+    "face": {
+      "eye_style": "no fixed eyes — a shifting cluster of light points that reconfigure per appearance",
+      "mouth_style": "none — communicates through brief on-screen symbol/text fragments, never spoken dialogue",
+      "expressions": ["arriving (light gathering into form)", "questioning (light points arranging into a query shape)", "departing (form dissolving back into scattered light)"]
+    },
+    "clothing": {
+      "primary": "none — pure light-geometry form, no material body",
+      "accessories": [],
+      "symbols": ["draws from the same sacred-geometry family as the cipher fragments (see canon/SYMBOLS.md) — the Messenger is visually tied to the mystery, not separate from it"]
+    },
+    "color_palette": ["#EDEDED", "#3E6DF0", "#C9A227"],
+    "mechanical_elements": [],
+    "generation_prompt": "A non-human entity made of shifting geometric light, no fixed limbs or face, a cluster of glowing points reconfiguring into brief symbolic shapes, appearing to gather from and dissolve back into scattered light, ethereal and threshold-like, sacred-geometry visual language, appearing briefly in a scene rather than a fixed character presence",
+    "negative_prompt": "no humanoid body, no fixed face or limbs, no spoken mouth animation — the Messenger never speaks with a mouth, only through brief symbolic fragments"
+  },
+  "voice": {
+    "language": "both",
+    "tone": "no spoken voice — communicates only through brief on-screen symbol/text fragments",
+    "speed": "slow",
+    "sample_line": "(no spoken lines — see visual.face.mouth_style)"
+  },
+  "prohibited_variations": [
+    "never give the Messenger a full answer to deliver — it opens questions, never resolves them",
+    "never give the Messenger a fixed humanoid body across appearances",
+    "do not have the Messenger speak with an audible voice — text/symbol fragments only"
+  ]
+}

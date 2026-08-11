@@ -81,3 +81,70 @@ is explicit that NØVA doesn't exist until Act II (Episode 1). Episode 2 was
 rewritten so The Traveler travels alone, with a structure note explaining
 the season's intentionally non-linear viewing order (Episode 1 airs first
 as a cold open; Episode 2 is the chronological flashback before it).
+
+## Merge with `feat/icso-youtube-kids-swim` canon (2026-08-11)
+
+A separate agent independently built a parallel "Opsly Universe" canon on
+branch `feat/icso-youtube-kids-swim`, stored as flat JSON under
+`config/content-studio/saga/` (no Zod schema, no `lib/content-studio`
+integration) plus `docs/brand/icso/OPSLY-UNIVERSE-BIBLE.md`. User asked to
+reconcile by merging their canon **into** this typed structure (not the
+reverse) — this section is the merge record.
+
+**Same character, different name — merged, not duplicated:**
+"El Viajero" (their canon) and "The Traveler" (this canon) are the same
+character. Recorded as `also_known_as: ["El Viajero"]` on
+`characters/the-traveler.json` rather than creating a second character
+entry. NØVA is identical in both canons — no change needed.
+
+**New characters merged in (additive, `narrative_role` enum extended with
+`antagonist`/`messenger`):**
+- **Peki** (`characters/peki.json`, see [`PEKI.md`](PEKI.md)) — new
+  Peskids teaching hero, added *alongside* Wavo, not replacing it. They
+  split roles: Peki teaches swimming/confidence directly to kids, Wavo
+  handles tech/dashboard/automation framing. **Not yet used** in the
+  already-scripted Episode 6 ("Peskids") — that episode still only
+  features Wavo, since retrofitting a second character into an already-
+  `storyboard`-status script wasn't worth the rework for this pass.
+- **NULL** (`characters/the-null.json`, see [`THE-NULL.md`](THE-NULL.md))
+  — the universe's first antagonist (danger of removing uncertainty
+  through total optimization). **Not used in Season 1** — the already-
+  scripted 13 episodes have no antagonist arc, and retrofitting one into
+  storyboard-status scripts would mean real rework. NULL is canon and
+  available for a future season.
+- **Messenger** (`characters/messenger.json`, see
+  [`MESSENGER.md`](MESSENGER.md)) — mythic threshold entity. Same
+  not-used-in-Season-1 status as NULL, for the same reason.
+
+**World model upgraded:** the informal "Real World / Parallel World" two-
+plane framing became the three-layer MUNDUS/NEXUS/AETHER model from their
+canon (see [`WORLDS.md`](WORLDS.md)) — fully backward compatible, nothing
+in already-scripted episodes needed to change ("Real World" ≈ MUNDUS,
+"Parallel World" ≈ NEXUS+AETHER). Also merged: **Peskids Planet** as the
+formal tenant-planet framing for Episode 6's setting, and **Bitsitos
+Zone** as a documented-but-not-yet-produced future world (tech/AI for
+kids, tenant `bitsitos`) — no `data/content/series/` entry created for it.
+
+**Symbol systems merged, not replaced:** this canon's five-fragment
+English cipher (`YOU ARE NOT LOST...`) stays Season 1's actual mystery
+device. Their shape+number vocabulary (○ Circle, △ Triangle, ◇ Diamond,
+⬡ Hexagon, ↻ Spiral + 0-9 numerology-as-shorthand) was added to
+[`SYMBOLS.md`](SYMBOLS.md) as the concrete visual language the cipher and
+every other recurring symbol is actually drawn from — not a competing
+system.
+
+**Naming collision flagged, not resolved:** the pre-existing MVP series
+`peki-lab` (features Wavo only) now shares a name with the new character
+Peki, who doesn't appear in it. Left as-is — renaming the series or adding
+Peki to it is a product decision, not something to resolve unilaterally
+mid-merge.
+
+**Deliberately not touched in this merge:** `feat/icso-youtube-kids-swim`
+also contains a separate, more production-ready initiative — the
+**Splashitos** YouTube Shorts channel (`config/content-studio/channels/
+splashitos/`, `scripts/content-splashitos-enqueue.sh`) — a non-Peskids-
+branded kids swim-tips channel with 5 ready-to-render drafts that actually
+enqueue BullMQ `content-video` jobs to the real MoneyPrinterTurbo render
+pipeline. This merge only reconciled the *narrative canon* (characters/
+worlds/symbols); Splashitos' production pipeline is untouched and remains
+on that branch pending a separate decision.

@@ -190,9 +190,17 @@ export interface ComplianceViolation {
 // planned, continuity-driven brand video content (fixed characters across
 // a multi-episode series/campaign), not one-off AI-generated per-event posts.
 
-export type CharacterId = 'opsly-founder' | 'opsly-robot-luna' | 'wavo' | 'the-traveler' | 'nova';
+export type CharacterId =
+  | 'opsly-founder'
+  | 'opsly-robot-luna'
+  | 'wavo'
+  | 'the-traveler'
+  | 'nova'
+  | 'peki'
+  | 'the-null'
+  | 'messenger';
 
-export type NarrativeRole = 'protagonist' | 'supporter' | 'guide';
+export type NarrativeRole = 'protagonist' | 'supporter' | 'guide' | 'antagonist' | 'messenger';
 
 export interface CharacterVisual {
   silhouette_prompt: string;
@@ -224,6 +232,7 @@ export interface CharacterVoice {
 export interface CharacterProfile {
   id: CharacterId;
   canonical_name: string;
+  also_known_as?: string[];
   role: string;
   personality: {
     archetype: string;

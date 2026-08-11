@@ -9,6 +9,11 @@ export const CharacterIdSchema = z.enum([
   // the opsly-origins series) but are superseded by these two for new universe content.
   'the-traveler',
   'nova',
+  // Merged in from a parallel canon (feat/icso-youtube-kids-swim, 2026-08-11) —
+  // see CONTINUITY-RULES.md "Merge with feat/icso-youtube-kids-swim canon".
+  'peki',
+  'the-null',
+  'messenger',
 ]);
 
 export const CharacterVisualSchema = z.object({
@@ -41,11 +46,13 @@ export const CharacterVoiceSchema = z.object({
 export const CharacterProfileSchema = z.object({
   id: CharacterIdSchema,
   canonical_name: z.string().min(1),
+  /** Other canonical names for the same character (e.g. a Spanish-language name used interchangeably). */
+  also_known_as: z.array(z.string()).optional(),
   role: z.string().min(1),
   personality: z.object({
     archetype: z.string().min(1),
     traits: z.array(z.string()).min(1),
-    narrative_role: z.enum(['protagonist', 'supporter', 'guide']),
+    narrative_role: z.enum(['protagonist', 'supporter', 'guide', 'antagonist', 'messenger']),
   }),
   visual: CharacterVisualSchema,
   voice: CharacterVoiceSchema,

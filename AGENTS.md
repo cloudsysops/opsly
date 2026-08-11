@@ -614,6 +614,21 @@ Validated: 5 characters, 4 series, 29 episodes all compliant; `validate-structur
 
 **Scope note:** did not extend this same treatment to the lighter MVP series (`opsly-origins`, `peki-lab`, `build-with-opsly`) — user's requests since the Origin Saga brief have focused exclusively on `opsly-parallel-path`; those three series remain at their original MVP idea-stage depth.
 
+### Same-session follow-up — merged parallel canon from `feat/icso-youtube-kids-swim`
+
+User asked to pull and check what the team advanced. Found a separate agent had independently built an overlapping "Opsly Universe" canon on `feat/icso-youtube-kids-swim` (flat JSON under `config/content-studio/saga/`, no Zod/lib integration) — same core concept (El Viajero=The Traveler, NØVA identical) but with real additions: antagonist NULL, mythic Messenger, new Peskids hero Peki (alongside Wavo), a 3-layer MUNDUS/NEXUS/AETHER world model, and a shape+number symbol vocabulary. That branch also contains a separate, more production-ready piece — **Splashitos**, a non-Peskids-branded kids swim-tips YouTube Shorts channel with 5 drafts that actually enqueue real BullMQ `content-video` jobs to MoneyPrinterTurbo.
+
+Asked the user how to reconcile; they chose: merge the other canon into this session's typed `data/content/` + `lib/content-studio` structure (not the reverse). Did:
+- Schema: added `also_known_as` (optional) to `CharacterProfile`; extended `narrative_role` with `antagonist`/`messenger`; extended `CharacterId` with `peki`/`the-null`/`messenger` — all additive.
+- `the-traveler.json` gained `also_known_as: ["El Viajero"]` — same character, not duplicated.
+- New characters: `peki.json`, `the-null.json`, `messenger.json` — full CharacterProfile with locked generation/negative prompts.
+- New canon docs: `WORLDS.md` (3-layer model + Peskids Planet + documented-not-produced Bitsitos Zone), `PEKI.md`, `THE-NULL.md`, `MESSENGER.md`. Updated `SYMBOLS.md` (shape+number vocabulary, complementary to the existing 5-fragment cipher), `UNIVERSE-BIBLE.md` (3-layer references), `CONTINUITY-RULES.md` (full merge decision record — see that file for the complete rationale).
+- **Deliberately NOT retrofitted:** NULL/Messenger into the already-`storyboard`-status 13 episodes (no antagonist arc existed when those were scripted — real rework, left for a future season), Peki into Episode 6 (still Wavo-only as scripted).
+- **Deliberately NOT touched:** Splashitos' production pipeline (queue wiring, MoneyPrinterTurbo config, `content-splashitos-enqueue.sh`) — only the narrative canon was reconciled. Splashitos remains on `feat/icso-youtube-kids-swim` pending a separate decision.
+- Flagged, not resolved: `peki-lab` (MVP series name) now collides with the new Peki character but doesn't feature him — needs a human decision (rename series or add Peki).
+
+Validated: 8 characters, 4 series, 29 episodes, all compliant; `validate-structure` passes; `lib/content-studio` tsc clean, 156/156 tests.
+
 ---
 
 ## 🔄 Phase 2 — Content Studio (2026-05-18)

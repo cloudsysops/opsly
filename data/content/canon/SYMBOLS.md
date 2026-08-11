@@ -39,6 +39,37 @@ were drift or failure. The truth the symbols point to is that those paths
 *were* the map being built, piece by piece — and that the map only exists
 because he walked it, not before.
 
+## Visual symbol vocabulary (merged from `feat/icso-youtube-kids-swim`)
+
+Alongside the five-fragment cipher above, the following shape+number
+vocabulary (merged in 2026-08-11, see
+[`CONTINUITY-RULES.md`](CONTINUITY-RULES.md)) is the concrete visual
+language used to *render* individual symbols throughout the Parallel
+World — on masks, chest emblems, architecture, and ruins. It doesn't
+replace the cipher; it's what the cipher (and every other recurring
+symbol) is actually drawn from.
+
+| Shape | Meaning | Typical use |
+|---|---|---|
+| ○ Circle | unity, family, protection, cycle | safety, belonging, return |
+| △ Triangle | imagine, build, share | creation, workflow, progress |
+| ◇ Diamond | threshold, connection, change | portal, decision, reveal |
+| ⬡ Hexagon | network, cooperation, many nodes | agent-systems, teamwork, distributed collaboration |
+| ↻ Spiral | growth through repetition | learning, iteration, practice |
+
+Numbers (0-9, skipping 6) carry meaning when they appear deliberately in a
+scene (a count of portals, a number on a door, a beat count) — not as
+numerology controlling destiny, just as narrative shorthand:
+
+`0` possibility · `1` origin · `2` encounter · `3` creation · `4` structure
+· `5` exploration · `7` knowledge · `8` continuity · `9` service
+
+**Design rule:** these shapes are the "warm" geometry family, shared by The
+Traveler's mask, NØVA's chest emblem, Peki's shoulder motif, and the
+Messenger's form. NULL (see [`THE-NULL.md`](THE-NULL.md)) deliberately does
+**not** use this family — its geometry is cold, hard-edged, and separate,
+by design.
+
 ## Luminous ruins (Act III device)
 
 When a build fails in the Parallel World, it doesn't disappear. It becomes
