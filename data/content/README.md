@@ -3,15 +3,15 @@
 Planned, character-driven brand video content for Opsly's own channel(s) —
 **not** the tenant event-driven content system (that lives in
 `lib/content-studio` and is documented in
-[`docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md`](../docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md)).
+[`docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md`](../../docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md)).
 
-See [`docs/00-architecture/CONTENT-PRODUCTION-MVP.md`](../docs/00-architecture/CONTENT-PRODUCTION-MVP.md)
+See [`docs/00-architecture/CONTENT-PRODUCTION-MVP.md`](../../docs/00-architecture/CONTENT-PRODUCTION-MVP.md)
 for the full architecture writeup and how this relates to that system.
 
 ## Layout
 
 ```
-content/
+data/content/
   characters/            # Character Bible — one JSON per character
     opsly-founder.json
     opsly-robot-luna.json
@@ -40,10 +40,10 @@ Load and validate everything through `@intcloudsysops/content-studio`
 ```ts
 import { CharacterRegistry, SeriesRegistry, EpisodeManager, CampaignManager } from '@intcloudsysops/content-studio';
 
-const characters = new CharacterRegistry({ charactersDir: 'content/characters' });
-const series = new SeriesRegistry({ seriesDir: 'content/series' });
-const episodes = new EpisodeManager({ seriesDir: 'content/series' });
-const campaign = new CampaignManager('content/campaigns/opsly-channel-launch-30-days/campaign.json');
+const characters = new CharacterRegistry({ charactersDir: 'data/content/characters' });
+const series = new SeriesRegistry({ seriesDir: 'data/content/series' });
+const episodes = new EpisodeManager({ seriesDir: 'data/content/series' });
+const campaign = new CampaignManager('data/content/campaigns/opsly-channel-launch-30-days/campaign.json');
 ```
 
 Or via CLI: `npm run content:list`, `content:episode -- <id>`, `content:calendar`,

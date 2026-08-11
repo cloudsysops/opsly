@@ -566,7 +566,7 @@ Additive extension of `lib/content-studio` (no fork, no new unregistered lib):
 
 - New types: `CharacterProfile`, `Series`, `Episode`, `EpisodeScene`, `Campaign` in `lib/content-studio/src/types.ts`
 - New submodules: `characters/CharacterRegistry`, `series/SeriesRegistry`, `episodes/EpisodeManager` (+ `checkEpisodeCompliance` reusing existing secret/PII patterns), `campaigns/CampaignManager`, `rendering/buildEpisodeRenderPlan` (dry-run only)
-- Content data in `content/` (repo root): 3 characters (Opsly Founder, Luna, Wavo), 3 series (Opsly Origins, Peki Lab, Build With Opsly), 1 fully-scripted pilot episode (`opsly-origins-001`), 15 idea-stage episodes, 30-day launch campaign calendar (`OPSLY_CHANNEL_LAUNCH_30_DAYS`)
+- Content data in `data/content/` (repo root — `content/` alone is blocked by `config/root-whitelist.json`'s `validate-structure` check, so it lives under the already-allowed `data/` folder): 3 characters (Opsly Founder, Luna, Wavo), 3 series (Opsly Origins, Peki Lab, Build With Opsly), 1 fully-scripted pilot episode (`opsly-origins-001`), 15 idea-stage episodes, 30-day launch campaign calendar (`OPSLY_CHANNEL_LAUNCH_30_DAYS`)
 - CLI (`scripts/content/*.ts` via `tsx`): `content:list`, `content:episode`, `content:validate`, `content:calendar`, `content:render-plan`
 - Tests: 4 new test files, full `lib/content-studio` suite passes (156/156), `tsc --noEmit` clean
 
@@ -576,7 +576,7 @@ Additive extension of `lib/content-studio` (no fork, no new unregistered lib):
 
 ### Next steps (not in this session)
 
-- Generate actual character sheet visual assets (DALL-E/Midjourney) against the Character Bible prompts in `content/characters/*.json`
+- Generate actual character sheet visual assets (DALL-E/Midjourney) against the Character Bible prompts in `data/content/characters/*.json`
 - Script episodes 002-004 per series (currently idea-stage)
 - Once `feat/pc-gamer-worker-plane` merges: wire render execution through its worker allowlist
 

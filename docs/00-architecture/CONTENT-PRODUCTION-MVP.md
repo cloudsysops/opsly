@@ -57,8 +57,8 @@ New, additive types in `lib/content-studio/src/types.ts`:
 New submodules in `lib/content-studio/src/`:
 
 ```
-characters/   CharacterRegistry — load + Zod-validate content/characters/*.json
-series/       SeriesRegistry    — load + Zod-validate content/series/*/series.json
+characters/   CharacterRegistry — load + Zod-validate data/content/characters/*.json
+series/       SeriesRegistry    — load + Zod-validate data/content/series/*/series.json
 episodes/     EpisodeManager    — load episodes, checkEpisodeCompliance()
 campaigns/    CampaignManager   — load campaign, buildCalendarView(), computeProductionStatus()
 rendering/    buildEpisodeRenderPlan() — dry-run only, no provider call, no publish
@@ -66,8 +66,8 @@ rendering/    buildEpisodeRenderPlan() — dry-run only, no provider call, no pu
 
 All exported from `@intcloudsysops/content-studio` (`lib/content-studio/src/index.ts`).
 
-Content data lives in `content/` at the repo root (see
-[`content/README.md`](../../content/README.md)) — three characters (Opsly
+Content data lives in `data/content/` at the repo root (see
+[`data/content/README.md`](../../data/content/README.md)) — three characters (Opsly
 Founder, Luna, Wavo), three series (Opsly Origins, Peki Lab, Build With
 Opsly), one fully-scripted pilot episode, 15 idea-stage episodes, and a
 30-day launch campaign calendar.
@@ -116,6 +116,6 @@ npm run content:render-plan -- opsly-origins-001    # dry-run plan, no execution
 ## Enlaces relacionados
 
 - [`docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md`](CONTENT-STUDIO-ARCHITECTURE.md) — event-driven tenant content system
-- [`content/README.md`](../../content/README.md) — data directory layout
+- [`data/content/README.md`](../../data/content/README.md) — data directory layout
 - [[00-architecture/README|00-architecture]]
 - [[brain/README|Brain Central]]
