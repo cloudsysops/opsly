@@ -69,6 +69,7 @@ Saga config:
 - [`symbols.json`](/Users/dragon/cboteros/proyectos/intcloudsysops/config/content-studio/saga/symbols.json)
 - [`episode-templates.json`](/Users/dragon/cboteros/proyectos/intcloudsysops/config/content-studio/saga/episode-templates.json)
 - [`campaigns.json`](/Users/dragon/cboteros/proyectos/intcloudsysops/config/content-studio/saga/campaigns.json)
+- [`briefs.json`](/Users/dragon/cboteros/proyectos/intcloudsysops/config/content-studio/saga/briefs.json)
 
 ## Comandos
 

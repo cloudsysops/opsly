@@ -10,6 +10,7 @@ Files:
 - `episode-templates.json` — reusable episode structures
 - `ideas.json` — first launch package for stories and videos
 - `campaigns.json` — campaign plan, mix, and approval rules
+- `briefs.json` — detailed brief, script, storyboard, and derivatives
 
 Rules:
 
