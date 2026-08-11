@@ -602,6 +602,18 @@ Integrated as canonical: new `data/content/canon/ORIGIN-SAGA.md` (full Act I-XI 
 
 Validated: 5 characters, 4 series, 29 episodes, all compliant; `validate-structure` passes; `lib/content-studio` tsc clean, 156/156 tests.
 
+### Same-session follow-up — full production scripts + reference images
+
+User provided 5 concept-art images (The Traveler + NØVA across key scenes: Parallel World overlook, Peskids pool, Mission Control globe, workshop repair, bridge/path key art) as visual reference for generation agents, plus asked for the full season completed so publishing can start.
+
+Saved images (resized 2-4.5MB PNGs → ~350-450KB JPEGs, no compression tooling existed in repo so installed Pillow ad hoc) to `data/content/assets/reference/`, cataloged in `REFERENCE-IMAGES.md` with episode mapping, cross-linked from the 4 matching episodes' production notes.
+
+Completed full `scenes[]` + bilingual `script.md` for all remaining 12 episodes of `opsly-parallel-path` (previously idea/notes-only) — all 13 episodes now at `storyboard` status, ready for asset generation. Reused the rich production notes already written (theme/dialogue/visual motifs) as the source material for each scene breakdown.
+
+Validated: 5 characters, 4 series, 29 episodes all compliant; `validate-structure` passes; `content:render-plan` correctly lists required assets per episode; `lib/content-studio` tsc clean, 156/156 tests.
+
+**Scope note:** did not extend this same treatment to the lighter MVP series (`opsly-origins`, `peki-lab`, `build-with-opsly`) — user's requests since the Origin Saga brief have focused exclusively on `opsly-parallel-path`; those three series remain at their original MVP idea-stage depth.
+
 ---
 
 ## 🔄 Phase 2 — Content Studio (2026-05-18)

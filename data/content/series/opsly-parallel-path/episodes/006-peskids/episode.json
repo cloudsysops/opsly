@@ -11,31 +11,61 @@
     "en": "A completely different world."
   },
   "objective": "The Traveler and NØVA bring the newly-formed Opsly blueprint (Episode 5) to its first real tenant-world: Peskids — water, children, swimming, real families. It stops being architecture and becomes something with people depending on it. NØVA meets Wavo for the first time, uniting the two franchises on-screen for the first time.",
-  "audience": [
-    "general tech-curious audience",
-    "founders",
-    "developers",
-    "dreamers"
-  ],
+  "audience": ["general tech-curious audience", "founders", "developers", "dreamers"],
   "duration_estimate_sec": 55,
-  "scenes": [],
+  "scenes": [
+    {
+      "number": 1,
+      "description": "The empty blueprint gets its first world",
+      "visuals": "The layered structure from Episode 5 glows brighter as a new shape attaches to it — an island full of water forming at its base",
+      "copy": "El blueprint, por fin, tuvo su primer mundo.",
+      "duration_sec": 8,
+      "assets_needed": ["blueprint-to-Peskids transition effect"]
+    },
+    {
+      "number": 2,
+      "description": "Arrival at Peskids",
+      "visuals": "The Traveler and NØVA stepping onto a glowing blue-crystal pool complex, water everywhere, small figures of children and companion robots visible swimming",
+      "copy": "Peskids. Una academia de natación. Familias. Clases. Seguimientos.",
+      "duration_sec": 10,
+      "assets_needed": ["Peskids pool-world environment (see ../../assets/reference/e06-peskids-pool-world.jpg)"]
+    },
+    {
+      "number": 3,
+      "description": "NØVA meets Wavo",
+      "visuals": "NØVA approaches a companion robot at the pool's edge — Wavo. The two robots regard each other, curious",
+      "copy": "Ahí, NØVA conoció a Wavo.",
+      "duration_sec": 10,
+      "assets_needed": ["character sheet: wavo (happy expression)", "character sheet: nova (curious expression)"]
+    },
+    {
+      "number": 4,
+      "description": "The platform meets real stakes",
+      "visuals": "The Traveler looking at a simple operational display — who to call, who hasn't been served, today's class, who needs follow-up",
+      "copy": "Ya no bastaba con arquitectura. Alguien necesitaba saber a quién llamar. Quién no había sido atendido. Qué clase había hoy.",
+      "duration_sec": 15,
+      "assets_needed": ["simple operational dashboard visual"]
+    },
+    {
+      "number": 5,
+      "description": "Closing — the lesson NØVA and Wavo land on together",
+      "visuals": "NØVA and Wavo side by side at the pool's edge, The Traveler watching from behind",
+      "copy": "La tecnología solo importa si mejora una experiencia humana real.",
+      "duration_sec": 12,
+      "assets_needed": []
+    }
+  ],
   "metadata": {
     "call_to_action": "Conoce Peskids.",
     "captions": {
       "es": "Donde NØVA conoció a Wavo.",
       "en": "Where NØVA met Wavo."
     },
-    "hashtags": [
-      "#OpslyParallelPath",
-      "#Peskids",
-      "#Wavo",
-      "#NOVA",
-      "#Crossover"
-    ],
+    "hashtags": ["#OpslyParallelPath", "#Peskids", "#Wavo", "#NOVA", "#Crossover"],
     "thumbnail_concept": "NØVA and Wavo side by side at a glowing pool edge, The Traveler watching from the water's edge"
   },
   "production": {
-    "status": "idea",
+    "status": "storyboard",
     "created_at": "2026-08-11T00:00:00Z",
     "last_updated": "2026-08-11T00:00:00Z",
     "published_platforms": [],
@@ -46,7 +76,8 @@
       "Emotional conflict: The Traveler realizing this world depends on him getting it right for real children/families, not an abstraction; the platform has to work in practice — an admin needs to know who to call, who hasn't been served, what class is today, who needs follow-up.",
       "Visual motif: water as a recurring symbol-bearing surface (see ../../canon/SYMBOLS.md). Peskids appears as an island full of water within the Parallel World.",
       "Crossover rule: see ../../canon/WAVO.md — NØVA represents imagination, Wavo represents applied learning; together they land on: technology only matters if it improves a real human experience.",
-      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 06."
+      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 06.",
+      "Reference image: ../../../assets/reference/e06-peskids-pool-world.jpg (do not reuse its generic robot design as Wavo's final look — use wavo.json's locked prompt)."
     ]
   }
 }

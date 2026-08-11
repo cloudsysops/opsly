@@ -13,7 +13,56 @@
   "objective": "Season finale. The fifth and final fragment completes the cipher: YOU ARE NOT LOST. YOU ARE BUILDING THE MAP. The Traveler looks back across every act — the many lives, the failures, the platform, the agents, the tenants, the machines, the new curiosities — and understands they were never a detour. Moon reveals many paths still unexplored. The season ends deliberately open: the map is still being drawn.",
   "audience": ["general tech-curious audience", "founders", "developers", "dreamers"],
   "duration_estimate_sec": 65,
-  "scenes": [],
+  "scenes": [
+    {
+      "number": 1,
+      "description": "The fifth fragment appears",
+      "visuals": "Back at Moon, the fifth and final fragment-space fills in on its own, completing the cipher",
+      "copy": "YOU ARE NOT LOST. YOU ARE BUILDING THE MAP.",
+      "duration_sec": 10,
+      "assets_needed": ["cipher fragment 5 / full message formation effect"]
+    },
+    {
+      "number": 2,
+      "description": "Retrospective montage",
+      "visuals": "Quick echoes of every act in sequence: the portal-worlds (Ep02), the first system and its ruin (Ep03), IntCloudSysOps (Ep04), the blueprint (Ep05), Peskids and Wavo (Ep06), the agents (Ep07), Moon (Ep08), the venture seeds (Ep09), the repaired machine (Ep10), the new content portal (Ep11)",
+      "copy": "Cada vida. Cada fallo. Cada mundo. Nunca fueron un desvío.",
+      "duration_sec": 18,
+      "assets_needed": ["retrospective montage sequence (reuses prior episode assets)"]
+    },
+    {
+      "number": 3,
+      "description": "Moon reveals the wider map",
+      "visuals": "The camera pulls back from Moon's globe to reveal it's still surrounded by far more dark, unexplored zones than lit ones",
+      "copy": "Moon reveló muchos caminos, todavía sin explorar.",
+      "duration_sec": 10,
+      "assets_needed": ["wide dark-zones reveal (reuse from Episode 8)"]
+    },
+    {
+      "number": 4,
+      "description": "Faith beat — no deity, just quiet hope",
+      "visuals": "The Traveler alone for a moment, looking up at the sky beyond the floating city, no magic answer arrives",
+      "copy": "No sé a dónde lleva este camino. Solo sé que todavía tengo que caminarlo.",
+      "duration_sec": 10,
+      "assets_needed": ["character sheet: the-traveler (reflective, looking up)"]
+    },
+    {
+      "number": 5,
+      "description": "Closing dialogue",
+      "visuals": "The Traveler and NØVA side by side, facing the many still-dark portals",
+      "copy": "NØVA — \"¿Y ahora para dónde?\" The Traveler — \"No tengo idea.\" NØVA sonríe — \"Perfecto.\"",
+      "duration_sec": 12,
+      "assets_needed": ["character sheet: nova (joyful expression)"]
+    },
+    {
+      "number": 6,
+      "description": "Closing card",
+      "visuals": "Cut to black. Text fades in.",
+      "copy": "OPSLY — THE PARALLEL PATH. The map is still being drawn.",
+      "duration_sec": 5,
+      "assets_needed": ["closing title card"]
+    }
+  ],
   "metadata": {
     "call_to_action": "Esto apenas empieza.",
     "captions": {
@@ -24,7 +73,7 @@
     "thumbnail_concept": "The Traveler and NØVA standing before the full Moon map, full cipher text glowing: YOU ARE NOT LOST. YOU ARE BUILDING THE MAP. — many portals around them still dim/unexplored"
   },
   "production": {
-    "status": "idea",
+    "status": "storyboard",
     "created_at": "2026-08-11T00:00:00Z",
     "last_updated": "2026-08-11T00:00:00Z",
     "published_platforms": [],
@@ -33,10 +82,9 @@
       "Season 1 finale — parallel mystery thread payoff, not a numbered Act — see ../../canon/SYMBOLS.md and ../../canon/ORIGIN-SAGA.md.",
       "Theme: reframing the entire season — dispersion (Act I) was never a detour, it was the map being built. Central conflict from Act I ('¿Estoy construyendo algo real, o simplemente saltando de idea en idea?') is answered, not erased.",
       "Emotional conflict resolved (not eliminated): purpose found in retrospect, not as a fixed destination ahead. Faith present as quiet hope, not certainty — no deity appears on-screen; The Traveler looks at the sky, finds no magic answer, and goes back to work.",
-      "Closing dialogue (final scene): NØVA — \"¿Y ahora para dónde?\" The Traveler, looking at all the still-dark portals — \"No tengo idea.\" NØVA smiles — \"Perfecto.\" Cut to black.",
-      "Closing card: \"OPSLY — THE PARALLEL PATH. The map is still being drawn.\"",
       "Ending is deliberately open by design — this is real-time storytelling about an unfinished journey, not a closed arc with a guaranteed outcome. Do not add a version of this ending that implies a specific future product/result as already achieved.",
-      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 13."
+      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 13.",
+      "Reference image: ../../../assets/reference/series-key-art-bridge-path.jpg — bridge/path walking-forward framing for the finale beat."
     ]
   }
 }

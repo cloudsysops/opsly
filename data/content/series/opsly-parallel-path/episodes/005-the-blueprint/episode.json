@@ -13,7 +13,48 @@
   "objective": "The repeating pattern noticed in Episode 4 (IntCloudSysOps) gets a name and a shape: Opsly. The architecture forms in layers — Tenant, Blueprint, Modules, Events, Agents, Approvals, Metrics, Learning. This happens before any specific client world exists; Opsly is built as a way of building, not as one product for one client.",
   "audience": ["general tech-curious audience", "founders", "developers", "dreamers"],
   "duration_estimate_sec": 55,
-  "scenes": [],
+  "scenes": [
+    {
+      "number": 1,
+      "description": "The pattern from Episode 4 gets a name",
+      "visuals": "The faint glowing pattern from before condenses into a single word forming in light: OPSLY",
+      "copy": "El patrón repetido, por fin, tuvo un nombre.",
+      "duration_sec": 8,
+      "assets_needed": ["OPSLY wordmark light-formation effect"]
+    },
+    {
+      "number": 2,
+      "description": "The layered architecture rises",
+      "visuals": "A vertical glowing structure forms layer by layer: Tenant, then Blueprint, then Modules, then Events, then Agents, then Approvals, then Metrics, then Learning — each layer snapping into place",
+      "copy": "Tenant. Blueprint. Modules. Events. Agents. Approvals. Metrics. Learning.",
+      "duration_sec": 18,
+      "assets_needed": ["layered-stack formation animation"]
+    },
+    {
+      "number": 3,
+      "description": "The structure stands empty",
+      "visuals": "The Traveler and NØVA looking up at the completed but still-empty structure — no tenant-world populates it yet",
+      "copy": "Un sistema no tiene por qué existir solo para uno.",
+      "duration_sec": 10,
+      "assets_needed": ["character sheet: the-traveler (reflective expression)", "character sheet: nova (curious expression)"]
+    },
+    {
+      "number": 4,
+      "description": "The Traveler connects it to Episode 2",
+      "visuals": "Faint echo of the eight portal-worlds from Episode 2 flickering briefly behind The Traveler",
+      "copy": "Quizás todas esas vidas anteriores no fueron dispersión. Fueron entrenamiento para entender esto.",
+      "duration_sec": 12,
+      "assets_needed": ["portal-world echo effect"]
+    },
+    {
+      "number": 5,
+      "description": "Closing — waiting for its first world",
+      "visuals": "The empty layered structure glowing quietly, waiting",
+      "copy": "Un blueprint puede convertirse en muchos mundos. Todavía no tenía ninguno.",
+      "duration_sec": 7,
+      "assets_needed": []
+    }
+  ],
   "metadata": {
     "call_to_action": "Un blueprint puede convertirse en muchos mundos.",
     "captions": {
@@ -24,18 +65,15 @@
     "thumbnail_concept": "The layered architecture (Tenant/Blueprint/Modules/Events/Agents/Approvals/Metrics/Learning) forming as a glowing vertical structure in the Parallel World, still empty of any tenant-world"
   },
   "production": {
-    "status": "idea",
+    "status": "storyboard",
     "created_at": "2026-08-11T00:00:00Z",
     "last_updated": "2026-08-11T00:00:00Z",
     "published_platforms": [],
     "publish_urls": {},
     "notes": [
       "Act V of the Origin Saga — see ../../canon/ORIGIN-SAGA.md.",
-      "REORDER NOTE: this episode now precedes Peskids (Episode 6), reversed from this season's earlier draft where Blueprint followed Peskids. The Origin Saga places platform-formation before the first tenant — Opsly is built as a general way of building, and Peskids (Ep06) is the first real world to run on it. See ../../canon/CONTINUITY-RULES.md for why this reorder was made and documented rather than left silent.",
+      "REORDER NOTE: this episode now precedes Peskids (Episode 6) — see ../../canon/CONTINUITY-RULES.md.",
       "Theme: naming the pattern — the shift from 'building projects' to 'building a way of building.'",
-      "Emotional conflict: ambition growing faster than confidence; the realization that a full platform is a much bigger commitment than another client project.",
-      "Visual motif: the layered stack (Tenant -> Blueprint -> Modules -> Events -> Agents -> Approvals -> Metrics -> Learning) rendered as a literal glowing vertical structure, still empty/unpopulated — it gets its first real content in Episode 6.",
-      "Cristian realizes his prior 'many lives' (Episode 2) may have been training for exactly this: understanding operation, sales, people, and infrastructure all at once, not just code.",
       "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 05."
     ]
   }

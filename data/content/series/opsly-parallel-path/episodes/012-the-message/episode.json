@@ -13,7 +13,56 @@
   "objective": "NØVA notices the recurring geometric symbols across every world visited so far (code, circuits, water, stars, architecture) and begins assembling them. The first four fragments of the cipher are revealed in sequence, building toward the finale.",
   "audience": ["general tech-curious audience", "founders", "developers", "dreamers"],
   "duration_estimate_sec": 55,
-  "scenes": [],
+  "scenes": [
+    {
+      "number": 1,
+      "description": "NØVA notices the pattern",
+      "visuals": "NØVA flying past the luminous ruins (Ep03), Peskids' water symbols (Ep06), Moon's globe glyphs (Ep08) — pausing at each, recognizing the same geometry",
+      "copy": "NØVA notó algo. Los mismos símbolos, en todos los mundos.",
+      "duration_sec": 10,
+      "assets_needed": ["symbol-recognition montage across prior episode environments"]
+    },
+    {
+      "number": 2,
+      "description": "Fragment 1",
+      "visuals": "NØVA arranges glowing fragments into the first line of text",
+      "copy": "YOU ARE NOT LOST.",
+      "duration_sec": 8,
+      "assets_needed": ["cipher fragment 1 text-formation effect"]
+    },
+    {
+      "number": 3,
+      "description": "Fragment 2",
+      "visuals": "A second fragment assembles near one of the luminous ruins from Episode 3",
+      "copy": "EVERY FAILURE IS A COORDINATE.",
+      "duration_sec": 8,
+      "assets_needed": ["cipher fragment 2 text-formation effect"]
+    },
+    {
+      "number": 4,
+      "description": "Fragment 3",
+      "visuals": "A third fragment assembles near the layered Opsly structure",
+      "copy": "WHAT YOU BUILD ALSO BUILDS YOU.",
+      "duration_sec": 8,
+      "assets_needed": ["cipher fragment 3 text-formation effect"]
+    },
+    {
+      "number": 5,
+      "description": "Fragment 4",
+      "visuals": "A fourth fragment assembles near Moon's globe",
+      "copy": "THE MAP DOES NOT EXIST UNTIL YOU WALK IT.",
+      "duration_sec": 8,
+      "assets_needed": ["cipher fragment 4 text-formation effect"]
+    },
+    {
+      "number": 6,
+      "description": "One fragment missing",
+      "visuals": "NØVA and The Traveler looking at the four assembled fragments, a fifth space clearly still empty",
+      "copy": "Cuatro fragmentos. Uno más para completar el mensaje.",
+      "duration_sec": 13,
+      "assets_needed": ["character sheet: the-traveler (curious/anticipating expression)", "character sheet: nova (excited expression)"]
+    }
+  ],
   "metadata": {
     "call_to_action": "Cuatro fragmentos. Uno más para completar el mensaje.",
     "captions": {
@@ -24,16 +73,14 @@
     "thumbnail_concept": "NØVA arranging four glowing symbol fragments in the air, each showing one line of text: YOU ARE NOT LOST / EVERY FAILURE IS A COORDINATE / WHAT YOU BUILD ALSO BUILDS YOU / THE MAP DOES NOT EXIST UNTIL YOU WALK IT"
   },
   "production": {
-    "status": "idea",
+    "status": "storyboard",
     "created_at": "2026-08-11T00:00:00Z",
     "last_updated": "2026-08-11T00:00:00Z",
     "published_platforms": [],
     "publish_urls": {},
     "notes": [
       "Parallel mystery thread (not one of the 11 Acts — runs alongside them) — see ../../canon/SYMBOLS.md and ../../canon/ORIGIN-SAGA.md.",
-      "Theme: pattern recognition as a form of hope — the symbols were never random, and each fragment reframes an earlier episode: fragment 1 (YOU ARE NOT LOST) answers Act I's doubt; fragment 2 (EVERY FAILURE IS A COORDINATE) answers Act III's ruins; fragment 3 (WHAT YOU BUILD ALSO BUILDS YOU) answers Act V-VII's platform/agent work; fragment 4 (THE MAP DOES NOT EXIST UNTIL YOU WALK IT) sets up the finale.",
-      "Emotional conflict: unease at not understanding the message's origin, alongside relief at its content.",
-      "Visual motif: pays off every symbol planted since Episode 1 (mask, chest emblem, architecture, water, code, luminous ruins).",
+      "Theme: pattern recognition as a form of hope — each fragment reframes an earlier episode (see SYMBOLS.md table).",
       "This episode is fully fictional narrative device — see ../../canon/UNIVERSE-BIBLE.md truth policy.",
       "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 12."
     ]
