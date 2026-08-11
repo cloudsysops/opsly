@@ -156,7 +156,7 @@ export default function RegisterPage() {
           </div>
         )}
 
-        <form onSubmit={(e) => void handleSubmit(e)}>
+        <form onSubmit={(e) => void handleSubmit(e)} noValidate>
           <div className="mt-10 grid gap-5 md:grid-cols-2">
             {PLANS.map((plan) => {
               const isSelected = selectedPlan === plan.id;
@@ -165,6 +165,7 @@ export default function RegisterPage() {
                   key={plan.id}
                   type="button"
                   onClick={() => setSelectedPlan(plan.id)}
+                  aria-pressed={isSelected}
                   className={`relative flex flex-col rounded-xl border p-6 text-left transition-all duration-200 ${
                     plan.highlighted
                       ? 'border-[#4ade80]/40 bg-[#4ade80]/[0.04]'
@@ -226,9 +227,13 @@ export default function RegisterPage() {
                 }}
                 className={`mt-1.5 ${fieldErrors.email ? 'border-red-500' : ''}`}
                 autoComplete="email"
+                aria-invalid={!!fieldErrors.email}
+                aria-describedby={fieldErrors.email ? 'email-error' : undefined}
               />
               {fieldErrors.email && (
-                <p className="mt-1 text-xs text-red-400">{fieldErrors.email}</p>
+                <p id="email-error" className="mt-1 text-xs text-red-400">
+                  {fieldErrors.email}
+                </p>
               )}
             </div>
 
@@ -249,11 +254,15 @@ export default function RegisterPage() {
                   if (fieldErrors.slug) setFieldErrors((p) => ({ ...p, slug: '' }));
                 }}
                 className={`mt-1.5 ${fieldErrors.slug ? 'border-red-500' : ''}`}
+                aria-invalid={!!fieldErrors.slug}
+                aria-describedby={fieldErrors.slug ? 'slug-error' : 'slug-helper'}
               />
               {fieldErrors.slug ? (
-                <p className="mt-1 text-xs text-red-400">{fieldErrors.slug}</p>
+                <p id="slug-error" className="mt-1 text-xs text-red-400">
+                  {fieldErrors.slug}
+                </p>
               ) : (
-                <p className="mt-1 text-xs text-neutral-500">
+                <p id="slug-helper" className="mt-1 text-xs text-neutral-500">
                   3-30 caracteres: solo letras minúsculas, números y guiones
                 </p>
               )}

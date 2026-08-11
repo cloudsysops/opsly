@@ -19,3 +19,7 @@
 ## 2026-05-27 - Ambiguous Labels in PasswordInput
 **Learning:** The `PasswordInput` component includes an eye icon button with an `aria-label` containing "contraseña". This can cause `get_by_label("Contraseña")` in Playwright or screen readers to match multiple elements, leading to ambiguity.
 **Action:** Always use exact matching or specific ARIA roles when targeting inputs with associated toggle buttons to ensure the primary input is correctly identified.
+
+## 2026-05-28 - Custom Client-Side Validation and noValidate in React
+**Learning:** Browser native validation (such as `<input type="email">` constraint checks) can preemptively block form submission in headless browsers or client environments. This prevents custom React state-based validation from running and fails to populate custom ARIA-describedby errors.
+**Action:** Always apply `noValidate` to `<form>` elements when implementing custom React state validation and ARIA accessibility attributes for field error reporting.
