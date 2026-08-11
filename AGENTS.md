@@ -546,6 +546,42 @@ See `docs/tenants/peskids/EXTRACTION-PLAN.md`:
 
 ---
 
+## 🔄 Content Production MVP — Brand Channel (2026-08-11)
+
+**Branch:** `claude/opsly-content-mvp-w2okmi`
+**Status:** MVP complete (Phase 1 — manual, no paid calls, no publishing)
+**Deliverable:** Character-driven scripted brand content for Opsly's own YouTube/social channel — distinct from the event-driven tenant content system below.
+
+### Audit before building (avoid duplicating parallel agent work)
+
+Checked in-flight branches before writing any code:
+
+- `feat/content-studio-phase2` — **already merged** to `main` (PR #362, #352). Confirmed it's the event-driven tenant system (auto-drafts from runtime events); genuinely different from scripted brand episodes, so no overlap.
+- `feat/pc-gamer-worker-plane` (open, not merged) — full gamer-PC media/GPU worker plane already exists there (Docker, BullMQ `ollama` worker, `OPSLY_WORKER_ALLOWLIST`, Mauro's gaming-schedule gates). **Did not duplicate this.** `content:render-plan` is dry-run only; real render execution is deferred until that branch merges and exposes a worker type for content rendering.
+- `lib/content-studio/src/rendering/moneyprinterturbo.ts` + `src/presets/tenant-content-presets.ts` already implement a working AI-video-render adapter — reused shape-compatibility (`VideoRenderRequest`/`TenantContentPreset`) instead of rebuilding.
+
+### What was built
+
+Additive extension of `lib/content-studio` (no fork, no new unregistered lib):
+
+- New types: `CharacterProfile`, `Series`, `Episode`, `EpisodeScene`, `Campaign` in `lib/content-studio/src/types.ts`
+- New submodules: `characters/CharacterRegistry`, `series/SeriesRegistry`, `episodes/EpisodeManager` (+ `checkEpisodeCompliance` reusing existing secret/PII patterns), `campaigns/CampaignManager`, `rendering/buildEpisodeRenderPlan` (dry-run only)
+- Content data in `content/` (repo root): 3 characters (Opsly Founder, Luna, Wavo), 3 series (Opsly Origins, Peki Lab, Build With Opsly), 1 fully-scripted pilot episode (`opsly-origins-001`), 15 idea-stage episodes, 30-day launch campaign calendar (`OPSLY_CHANNEL_LAUNCH_30_DAYS`)
+- CLI (`scripts/content/*.ts` via `tsx`): `content:list`, `content:episode`, `content:validate`, `content:calendar`, `content:render-plan`
+- Tests: 4 new test files, full `lib/content-studio` suite passes (156/156), `tsc --noEmit` clean
+
+### Full writeup
+
+[`docs/00-architecture/CONTENT-PRODUCTION-MVP.md`](docs/00-architecture/CONTENT-PRODUCTION-MVP.md)
+
+### Next steps (not in this session)
+
+- Generate actual character sheet visual assets (DALL-E/Midjourney) against the Character Bible prompts in `content/characters/*.json`
+- Script episodes 002-004 per series (currently idea-stage)
+- Once `feat/pc-gamer-worker-plane` merges: wire render execution through its worker allowlist
+
+---
+
 ## 🔄 Phase 2 — Content Studio (2026-05-18)
 
 **Branch:** `feat/content-studio-phase2`  

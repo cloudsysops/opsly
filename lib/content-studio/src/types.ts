@@ -183,3 +183,152 @@ export interface ComplianceViolation {
   message: string;
   field: string;
 }
+
+// ─── Brand Content Production (Character-driven scripted episodes) ──────────
+//
+// Distinct from the event-driven ContentDraft flow above: this models
+// planned, continuity-driven brand video content (fixed characters across
+// a multi-episode series/campaign), not one-off AI-generated per-event posts.
+
+export type CharacterId = 'opsly-founder' | 'opsly-robot-luna' | 'wavo';
+
+export type NarrativeRole = 'protagonist' | 'supporter' | 'guide';
+
+export interface CharacterVisual {
+  silhouette_prompt: string;
+  proportions: Record<string, number>;
+  face: {
+    eye_style: string;
+    mouth_style: string;
+    expressions: string[];
+  };
+  hair_style?: string;
+  clothing: {
+    primary: string;
+    accessories: string[];
+    symbols: string[];
+  };
+  color_palette: string[];
+  mechanical_elements: string[];
+  generation_prompt: string;
+  negative_prompt: string;
+}
+
+export interface CharacterVoice {
+  language: 'es' | 'en' | 'both';
+  tone: string;
+  speed: 'slow' | 'normal' | 'playful' | 'measured' | 'fast';
+  sample_line?: string;
+}
+
+export interface CharacterProfile {
+  id: CharacterId;
+  canonical_name: string;
+  role: string;
+  personality: {
+    archetype: string;
+    traits: string[];
+    narrative_role: NarrativeRole;
+  };
+  visual: CharacterVisual;
+  voice: CharacterVoice;
+  prohibited_variations: string[];
+}
+
+export type SeriesId = 'opsly-origins' | 'peki-lab' | 'build-with-opsly';
+
+export interface Series {
+  id: SeriesId;
+  name: string;
+  description: string;
+  theme: string;
+  audience: string[];
+  typical_duration_sec: number;
+  characters: CharacterId[];
+  brand: 'opsly' | 'peskids';
+  episode_count: number;
+  created_at: string;
+}
+
+export type EpisodeProductionState =
+  | 'idea'
+  | 'script'
+  | 'storyboard'
+  | 'assets'
+  | 'rendered'
+  | 'reviewed'
+  | 'published'
+  | 'archived';
+
+export interface EpisodeScene {
+  number: number;
+  description: string;
+  visuals: string;
+  copy: string;
+  duration_sec: number;
+  assets_needed: string[];
+}
+
+export interface EpisodeProduction {
+  status: EpisodeProductionState;
+  created_at: string;
+  last_updated: string;
+  script_approved_at?: string;
+  script_approved_by?: string;
+  assets_ready_at?: string;
+  rendered_at?: string;
+  reviewed_at?: string;
+  reviewed_by?: string;
+  published_at?: string;
+  published_platforms: string[];
+  publish_urls: Record<string, string>;
+  notes: string[];
+}
+
+export interface Episode {
+  id: string;
+  series_id: SeriesId;
+  episode_number: number;
+  title: { es: string; en: string };
+  hook: { es: string; en: string };
+  objective: string;
+  audience: string[];
+  duration_estimate_sec: number;
+  scenes: EpisodeScene[];
+  metadata: {
+    call_to_action: string;
+    captions: { es: string; en: string };
+    hashtags: string[];
+    thumbnail_concept: string;
+  };
+  production: EpisodeProduction;
+}
+
+export interface CampaignScheduleEntry {
+  episode_id: string;
+  scheduled_publish_date: string;
+  day_of_week: number;
+}
+
+export interface CampaignProductionStatus {
+  episodes_planned: number;
+  episodes_scripted: number;
+  episodes_with_assets: number;
+  episodes_rendered: number;
+  episodes_reviewed: number;
+  episodes_published: number;
+}
+
+export interface Campaign {
+  id: string;
+  name: string;
+  description: string;
+  series_ids: SeriesId[];
+  duration_days: number;
+  start_date: string;
+  end_date: string;
+  episode_schedule: CampaignScheduleEntry[];
+  objectives: string[];
+  target_platforms: string[];
+  production_status: CampaignProductionStatus;
+}
