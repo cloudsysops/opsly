@@ -594,6 +594,14 @@ Built additively on the same MVP infrastructure (no new schema/lib/CLI):
 
 Validated: `npm run content:validate` → 5 characters, 4 series, 26 episodes, all compliant. `lib/content-studio`: tsc clean, 156/156 tests.
 
+### Same-session follow-up — full 11-act Origin Saga
+
+User provided a much deeper narrative brief grounded in real biography (Medellín, IT admin/SOA consultant/Cloud-DevOps-Middleware freelance career, Providence migration, IntCloudSysOps formation) — an 11-act macro-story superseding the lighter 10-episode outline above.
+
+Integrated as canonical: new `data/content/canon/ORIGIN-SAGA.md` (full Act I-XI reference). Season 1 reorganized 10→13 episodes: inserted IntCloudSysOps (Ep04, Act IV), The Venture Studio (Ep09, Act IX), The Creator (Ep11, Act XI); reordered Blueprint before Peskids to match real chronology (platform forms before its first tenant) — documented in `canon/CONTINUITY-RULES.md` rather than left silent. Cipher expanded to 5 progressive fragments (`canon/SYMBOLS.md`); added "luminous ruins" motif for failed builds. Fixed a caught continuity bug: Episode 2 wrongly showed NØVA before his Act II birth — rewritten with an explicit non-linear structure note (Ep01 cold open, Ep02 chronological flashback).
+
+Validated: 5 characters, 4 series, 29 episodes, all compliant; `validate-structure` passes; `lib/content-studio` tsc clean, 156/156 tests.
+
 ---
 
 ## 🔄 Phase 2 — Content Studio (2026-05-18)
