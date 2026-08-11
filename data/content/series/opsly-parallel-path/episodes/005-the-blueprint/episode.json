@@ -7,31 +7,21 @@
     "en": "The Blueprint"
   },
   "hook": {
-    "es": "Un mundo no tiene por qué existir solo para uno.",
-    "en": "A world doesn't have to exist for just one."
+    "es": "Un sistema no tiene por qué existir solo para uno.",
+    "en": "A system doesn't have to exist for just one."
   },
-  "objective": "The Traveler realizes the Peskids system is a reusable pattern, not a one-off. First wide view of the Parallel World showing many worlds beginning to connect.",
-  "audience": [
-    "general tech-curious audience",
-    "founders",
-    "developers",
-    "dreamers"
-  ],
-  "duration_estimate_sec": 50,
+  "objective": "The repeating pattern noticed in Episode 4 (IntCloudSysOps) gets a name and a shape: Opsly. The architecture forms in layers — Tenant, Blueprint, Modules, Events, Agents, Approvals, Metrics, Learning. This happens before any specific client world exists; Opsly is built as a way of building, not as one product for one client.",
+  "audience": ["general tech-curious audience", "founders", "developers", "dreamers"],
+  "duration_estimate_sec": 55,
   "scenes": [],
   "metadata": {
     "call_to_action": "Un blueprint puede convertirse en muchos mundos.",
     "captions": {
-      "es": "De un mundo a un blueprint.",
-      "en": "From one world to a blueprint."
+      "es": "De un patrón repetido a un blueprint con nombre.",
+      "en": "From a repeated pattern to a named blueprint."
     },
-    "hashtags": [
-      "#OpslyParallelPath",
-      "#Blueprint",
-      "#TheTraveler",
-      "#Opsly"
-    ],
-    "thumbnail_concept": "Wide establishing shot of the Parallel World from above, many small worlds beginning to connect by light-threads"
+    "hashtags": ["#OpslyParallelPath", "#Blueprint", "#TheTraveler", "#Opsly"],
+    "thumbnail_concept": "The layered architecture (Tenant/Blueprint/Modules/Events/Agents/Approvals/Metrics/Learning) forming as a glowing vertical structure in the Parallel World, still empty of any tenant-world"
   },
   "production": {
     "status": "idea",
@@ -40,9 +30,12 @@
     "published_platforms": [],
     "publish_urls": {},
     "notes": [
-      "Theme: recognizing patterns — the shift from building one thing to building a way of building things.",
-      "Emotional conflict: ambition growing faster than confidence.",
-      "Visual motif: first wide/aerial reveal of the full Parallel World, many worlds visible at once.",
+      "Act V of the Origin Saga — see ../../canon/ORIGIN-SAGA.md.",
+      "REORDER NOTE: this episode now precedes Peskids (Episode 6), reversed from this season's earlier draft where Blueprint followed Peskids. The Origin Saga places platform-formation before the first tenant — Opsly is built as a general way of building, and Peskids (Ep06) is the first real world to run on it. See ../../canon/CONTINUITY-RULES.md for why this reorder was made and documented rather than left silent.",
+      "Theme: naming the pattern — the shift from 'building projects' to 'building a way of building.'",
+      "Emotional conflict: ambition growing faster than confidence; the realization that a full platform is a much bigger commitment than another client project.",
+      "Visual motif: the layered stack (Tenant -> Blueprint -> Modules -> Events -> Agents -> Approvals -> Metrics -> Learning) rendered as a literal glowing vertical structure, still empty/unpopulated — it gets its first real content in Episode 6.",
+      "Cristian realizes his prior 'many lives' (Episode 2) may have been training for exactly this: understanding operation, sales, people, and infrastructure all at once, not just code.",
       "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 05."
     ]
   }

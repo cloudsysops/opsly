@@ -71,8 +71,9 @@
     "published_platforms": [],
     "publish_urls": {},
     "notes": [
-      "Season 1, Episode 1 of Opsly: The Parallel Path — the universe's true pilot.",
-      "Short version target: 35-50s (trim scene 3 slightly to fit). Long version: expand scenes 1-2 with more of The Traveler's varied work history as cold open, target 5-8min — see opsly-parallel-path-long-002 concept in episode 02 idea notes.",
+      "Season 1, Episode 1 of Opsly: The Parallel Path — the universe's true pilot. Act II of the Origin Saga — see ../../canon/ORIGIN-SAGA.md.",
+      "STRUCTURE NOTE: functions as a cold open. Episode 2 (\"Too Many Lives\") is a flashback to the years before this moment — this episode airs first but NØVA's birth here is chronologically the end of Act I, not the start of the timeline.",
+      "Short version target: 35-50s (trim scene 3 slightly to fit). Long version: expand with Episode 2's many-lives montage as cold open before landing on this same night, target 5-8min.",
       "Real event inspiration / fictionalization boundary: see ../../canon/TIMELINE.md row 01.",
       "Ending line for narration/on-screen text: \"No fue la respuesta. Fue la primera pregunta.\"",
       "Character prompt lock: the-traveler.json + nova.json generation_prompt/negative_prompt — face must never be shown."

@@ -54,3 +54,30 @@ episode numbering.
 See `SYMBOLS.md` — reuse the same geometry family across every episode and
 every character's emblem/mask pattern. Do not introduce a second unrelated
 symbol system.
+
+## Season 1 reorder (2026-08-11, same day as initial build)
+
+The first draft of Season 1 shipped as 10 episodes with a different order:
+Peskids (Episode 4) came before Blueprint (Episode 5). When the fuller
+Origin Saga was provided (see `ORIGIN-SAGA.md`), it placed platform
+formation (Act V) *before* the first tenant-world (Act VI) — Opsly is built
+as a general way of building, and Peskids is the first real thing to run on
+it, not the trigger for realizing a blueprint is possible.
+
+**Resolution:** adopted the Origin Saga's ordering as canonical and
+reordered the season (Blueprint now Episode 5, Peskids now Episode 6),
+rather than keeping two conflicting timelines. Three new episodes were also
+inserted to cover previously-missing acts: IntCloudSysOps (Episode 4, Act
+IV), The Venture Studio (Episode 9, Act IX), The Creator (Episode 11, Act
+XI) — extending the season from 10 to 13 episodes. Episode ids were
+renumbered accordingly (old `opsly-parallel-path-004` "Peskids" is now
+`opsly-parallel-path-006`, etc.) — this is a same-day change before any
+episode outside 001 left `idea`/`storyboard` status, so no published
+content or external links were broken.
+
+A second inconsistency was caught and fixed in the same pass: Episode 2
+("Too Many Lives" / Act I) originally showed NØVA in dialogue, but the saga
+is explicit that NØVA doesn't exist until Act II (Episode 1). Episode 2 was
+rewritten so The Traveler travels alone, with a structure note explaining
+the season's intentionally non-linear viewing order (Episode 1 airs first
+as a cold open; Episode 2 is the chronological flashback before it).

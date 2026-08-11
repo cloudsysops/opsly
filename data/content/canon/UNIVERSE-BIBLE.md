@@ -8,9 +8,14 @@ searching for purpose through technology, failure, and persistence.
 
 ## Title candidates
 
-1. **OPSLY: THE PARALLEL PATH** (primary — used throughout this canon)
-2. *OPSLY: THE MAP* — leans into the central mystery/message
-3. *THE TRAVELER'S CODE* — leans into the protagonist
+1. **OPSLY: THE PARALLEL PATH** (primary — used throughout this canon, file
+   structure, and series id `opsly-parallel-path`)
+2. *OPSLY: THE MAP BUILDER* — working subtitle for the full 11-act saga
+   (see [`ORIGIN-SAGA.md`](ORIGIN-SAGA.md)); use as a subtitle/tagline
+   rather than replacing the primary title, to avoid renaming the already-
+   built series/directory structure
+3. *OPSLY: THE MAP* — leans into the central mystery/message
+4. *THE TRAVELER'S CODE* — leans into the protagonist
 
 ## The two planes
 
@@ -29,8 +34,12 @@ the parallel world.
 
 Geometric symbols recur throughout the universe — in code, circuits, nature,
 water, stars, architecture, dreams. Nobody knows their origin at first.
+Failures leave their own mark too: a failed build in the Parallel World
+doesn't vanish, it becomes a **luminous ruin**, permanently visible on the
+map (introduced Episode 3; see [`SYMBOLS.md`](SYMBOLS.md)).
 
-First cipher, assembled gradually across the season:
+Cipher, assembled progressively across the season (five fragments — see
+[`SYMBOLS.md`](SYMBOLS.md) for the full breakdown):
 
 > YOU ARE NOT LOST.
 > YOU ARE BUILDING THE MAP.
@@ -38,6 +47,15 @@ First cipher, assembled gradually across the season:
 The Traveler believes he's lost, searching for a purpose he can't yet name.
 The season's arc is the slow realization that everything he tried — every
 world he passed through — was the map, not a detour from it.
+
+## Why the ending doesn't exist yet
+
+The season closes deliberately open. We don't know if Opsly will be huge,
+which product wins, which tenant comes next, or how far any of this goes —
+and that's the point. This isn't "look how I built an empire," it's "I'm
+trying to build something — come find out with me how far it goes." See
+[`ORIGIN-SAGA.md`](ORIGIN-SAGA.md) for the full reasoning and the finale's
+closing line: *"The map is still being drawn."*
 
 **Faith note:** gratitude, hope, and purpose can appear naturally as part of
 The Traveler's inner life. The universe does not claim Dios/faith guarantees
@@ -81,10 +99,11 @@ for exactly what's superseded and what isn't.
 
 ## Canon files
 
+- [`ORIGIN-SAGA.md`](ORIGIN-SAGA.md) — the full 11-act macro arc (biography → platform)
 - [`THE-TRAVELER.md`](THE-TRAVELER.md) — protagonist
 - [`NOVA.md`](NOVA.md) — companion
 - [`WAVO.md`](WAVO.md) — Peki Lab crossover
 - [`SYMBOLS.md`](SYMBOLS.md) — the mystery/cipher
-- [`TIMELINE.md`](TIMELINE.md) — real-world inspiration vs. fictionalized beats
+- [`TIMELINE.md`](TIMELINE.md) — real-world inspiration vs. fictionalized beats, per episode
 - [`CONTINUITY-RULES.md`](CONTINUITY-RULES.md) — consistency rules + relationship to prior MVP characters
-- [`../series/opsly-parallel-path/series.json`](../series/opsly-parallel-path/series.json) — Season 1, 10 episodes
+- [`../series/opsly-parallel-path/series.json`](../series/opsly-parallel-path/series.json) — Season 1, 13 episodes

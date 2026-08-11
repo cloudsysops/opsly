@@ -1,0 +1,41 @@
+{
+  "id": "opsly-parallel-path-012",
+  "series_id": "opsly-parallel-path",
+  "episode_number": 12,
+  "title": {
+    "es": "El Mensaje",
+    "en": "The Message"
+  },
+  "hook": {
+    "es": "Los símbolos estaban ahí desde el principio.",
+    "en": "The symbols were there from the beginning."
+  },
+  "objective": "NØVA notices the recurring geometric symbols across every world visited so far (code, circuits, water, stars, architecture) and begins assembling them. The first four fragments of the cipher are revealed in sequence, building toward the finale.",
+  "audience": ["general tech-curious audience", "founders", "developers", "dreamers"],
+  "duration_estimate_sec": 55,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Cuatro fragmentos. Uno más para completar el mensaje.",
+    "captions": {
+      "es": "Los primeros mensajes, descifrados.",
+      "en": "The first messages, decoded."
+    },
+    "hashtags": ["#OpslyParallelPath", "#TheMessage", "#Symbols", "#NOVA"],
+    "thumbnail_concept": "NØVA arranging four glowing symbol fragments in the air, each showing one line of text: YOU ARE NOT LOST / EVERY FAILURE IS A COORDINATE / WHAT YOU BUILD ALSO BUILDS YOU / THE MAP DOES NOT EXIST UNTIL YOU WALK IT"
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-08-11T00:00:00Z",
+    "last_updated": "2026-08-11T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Parallel mystery thread (not one of the 11 Acts — runs alongside them) — see ../../canon/SYMBOLS.md and ../../canon/ORIGIN-SAGA.md.",
+      "Theme: pattern recognition as a form of hope — the symbols were never random, and each fragment reframes an earlier episode: fragment 1 (YOU ARE NOT LOST) answers Act I's doubt; fragment 2 (EVERY FAILURE IS A COORDINATE) answers Act III's ruins; fragment 3 (WHAT YOU BUILD ALSO BUILDS YOU) answers Act V-VII's platform/agent work; fragment 4 (THE MAP DOES NOT EXIST UNTIL YOU WALK IT) sets up the finale.",
+      "Emotional conflict: unease at not understanding the message's origin, alongside relief at its content.",
+      "Visual motif: pays off every symbol planted since Episode 1 (mask, chest emblem, architecture, water, code, luminous ruins).",
+      "This episode is fully fictional narrative device — see ../../canon/UNIVERSE-BIBLE.md truth policy.",
+      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 12."
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "id": "opsly-parallel-path-009",
+  "series_id": "opsly-parallel-path",
+  "episode_number": 9,
+  "title": {
+    "es": "El Venture Studio",
+    "en": "The Venture Studio"
+  },
+  "hook": {
+    "es": "¿Y si Opsly no solo administrara negocios, sino que ayudara a crearlos?",
+    "en": "What if Opsly didn't just run businesses, but helped create them?"
+  },
+  "objective": "The Traveler realizes the platform could generalize beyond running client businesses (academies, tourism, construction, restaurants, content) into a way of turning any idea into a testable venture — Blueprint -> Tenant -> Experiment -> Market. This mirrors his own lifelong habit of imagining things and trying to build them.",
+  "audience": ["founders", "developers", "entrepreneurs"],
+  "duration_estimate_sec": 50,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Imaginar algo y tratar de convertirlo en realidad.",
+    "captions": {
+      "es": "Cuando la plataforma empieza a parecerse a ti.",
+      "en": "When the platform starts to look like you."
+    },
+    "hashtags": ["#OpslyParallelPath", "#VentureStudio", "#TheTraveler", "#Blueprint"],
+    "thumbnail_concept": "The Traveler standing at a junction where many small glowing seed-worlds (academy, tourism, construction, restaurant, content) branch off from a single blueprint structure"
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-08-11T00:00:00Z",
+    "last_updated": "2026-08-11T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Act IX of the Origin Saga — see ../../canon/ORIGIN-SAGA.md.",
+      "Theme: the platform's architecture becomes a mirror of The Traveler's own personality — someone who imagines many things and tries to build them.",
+      "Emotional conflict: ambition without overreach — excitement about generalizing tempered by the season's recurring question (Act I / central conflict): is this building something real, or jumping to a new idea again?",
+      "Visual motif: Blueprint -> Tenant -> Experiment -> Market rendered as a literal branching path in the Parallel World.",
+      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 09. This is a forward-looking/aspirational concept as of 2026-08-11 — do not present specific ventures as launched facts unless already true and documented elsewhere.",
+      "This episode is explicitly framed as present-tense/ongoing, consistent with the season's open ending (Episode 13, 'The Map')."
+    ]
+  }
+}

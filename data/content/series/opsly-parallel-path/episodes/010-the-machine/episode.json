@@ -1,7 +1,7 @@
 {
-  "id": "opsly-parallel-path-008",
+  "id": "opsly-parallel-path-010",
   "series_id": "opsly-parallel-path",
-  "episode_number": 8,
+  "episode_number": 10,
   "title": {
     "es": "La Máquina",
     "en": "The Machine"
@@ -40,11 +40,14 @@
     "published_platforms": [],
     "publish_urls": {},
     "notes": [
-      "Theme: resourcefulness — building with what's borrowed/available, not waiting for ideal tools.",
-      "Emotional conflict: precariousness of depending on something temporary/borrowed.",
-      "Dialogue beat: NØVA — \"¿Entonces podemos convertir cualquier máquina en parte del mundo?\" The Traveler — \"Si sabemos conectarla.\"",
+      "Act X of the Origin Saga — see ../../canon/ORIGIN-SAGA.md.",
+      "Theme: resourcefulness — building with what's borrowed/available, not waiting for ideal tools; a lifelong pattern (see Act I) applied once more.",
+      "Emotional conflict: precariousness of depending on something temporary/borrowed — the machine isn't theirs and could disappear.",
+      "Visual motif: the PC arrives as an abandoned ship in the Parallel World; The Traveler and NØVA repair it together.",
+      "Dialogue beat 1: NØVA — \"¿Es nuestra?\" The Traveler — \"No.\" NØVA — \"¿Entonces para qué la arreglamos?\" The Traveler — \"Porque mientras esté aquí, puede ayudarnos a llegar más lejos.\"",
+      "Dialogue beat 2: NØVA — \"¿Entonces podemos convertir cualquier máquina en parte del mundo?\" The Traveler — \"Si sabemos conectarla.\"",
       "Directly inspired by real infra work (feat/pc-gamer-worker-plane) — keep grounded, don't overstate capability.",
-      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 08."
+      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 10."
     ]
   }
 }

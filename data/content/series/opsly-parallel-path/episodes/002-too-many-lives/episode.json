@@ -7,17 +7,12 @@
     "en": "Too Many Lives"
   },
   "hook": {
-    "es": "¿Cuál de estos eres tú?",
-    "en": "Which one of these is you?"
+    "es": "¿Por qué no puedo conformarme con una sola vida?",
+    "en": "Why can't I settle into just one life?"
   },
-  "objective": "The Traveler walks through fragments of his many past lives (construction, food service, cloud, code, physical labor). Establish that his path looks scattered from outside but is one search from inside.",
-  "audience": [
-    "general tech-curious audience",
-    "founders",
-    "developers",
-    "dreamers"
-  ],
-  "duration_estimate_sec": 50,
+  "objective": "Flashback to before Episode 1: The Traveler walks alone (NØVA does not exist yet) through fragments of his many past lives — infrastructure, cloud, construction, restaurants, sales, family, travel, business. Establish that his path looks scattered from outside but is one continuous search from inside.",
+  "audience": ["general tech-curious audience", "founders", "developers", "dreamers"],
+  "duration_estimate_sec": 55,
   "scenes": [],
   "metadata": {
     "call_to_action": "Todos tenemos demasiadas vidas.",
@@ -25,13 +20,8 @@
       "es": "¿Cuál de todas tus vidas eres tú?",
       "en": "Which of your lives are you?"
     },
-    "hashtags": [
-      "#OpslyParallelPath",
-      "#TheTraveler",
-      "#Founders",
-      "#BuildInPublic"
-    ],
-    "thumbnail_concept": "The Traveler walking through overlapping translucent worlds (construction site, kitchen, server room, code)"
+    "hashtags": ["#OpslyParallelPath", "#TheTraveler", "#Founders", "#BuildInPublic", "#Medellin"],
+    "thumbnail_concept": "The Traveler alone, walking through overlapping translucent portal-worlds (infrastructure, cloud, construction site, restaurant kitchen, family) — no NØVA visible"
   },
   "production": {
     "status": "idea",
@@ -40,11 +30,13 @@
     "published_platforms": [],
     "publish_urls": {},
     "notes": [
-      "Theme: dispersion vs. search — what looks like scattered career changes is one continuous search for purpose.",
-      "Emotional conflict: self-doubt about not fitting into one world.",
-      "Visual motif: translucent overlapping worlds The Traveler physically walks between.",
-      "NØVA asks \"¿Cuál de estos eres tú?\" — The Traveler answers \"Todavía no lo sé.\"",
-      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 02."
+      "Act I of the Origin Saga — see ../../canon/ORIGIN-SAGA.md.",
+      "STRUCTURE NOTE: this episode is a flashback to before Episode 1. NØVA does not appear — The Traveler travels alone through this act (per canon: NØVA is born in Episode 1/Act II). Season viewing order is non-linear by design: Ep01 is a cold-open tease of NØVA's birth, Ep02 rewinds to the years before it.",
+      "Theme: dispersion vs. search — what looks like scattered career/life changes (Medellín roots, IT/SOA/cloud/DevOps freelance work, migration to the US/Providence, restaurants, construction, family) is one continuous search for purpose.",
+      "Emotional conflict: self-doubt about not fitting into one world; the central question of the whole season first appears here: \"¿Estoy construyendo algo real, o simplemente saltando de idea en idea?\"",
+      "Visual motif: translucent overlapping portal-worlds The Traveler physically walks between, each labeled (INFRASTRUCTURE, CLOUD, CONSTRUCTION, RESTAURANTS, SALES, FAMILY, TRAVEL, BUSINESS).",
+      "Closing line (no NØVA to ask it to — delivered as voiceover/internal monologue): \"¿Por qué no puedo conformarme con una sola vida?\"",
+      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 02. Grounded in real biography (Medellín, IT admin/SOA consultant/Cloud-DevOps-Middleware freelance work, move to Providence, combining software with restaurants/construction) — do not add invented employer names, dates, or figures beyond what's documented."
     ]
   }
 }

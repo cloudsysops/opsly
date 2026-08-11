@@ -12,20 +12,39 @@ hexagrams and nested polygons) — never a direct copy of a specific religious
 or indigenous symbol system. When in doubt, simplify toward abstract
 geometry rather than borrowing a recognizable cultural glyph.
 
-## The cipher
+## The cipher — five fragments
 
 Fragments of a message are hidden across recurring symbol clusters. NØVA is
-the one who first notices the pattern repeats (Episode 9, "The Message").
-Assembled, the message reads:
+the one who first notices the pattern repeats (Episode 12, "The Message").
+The five fragments are revealed progressively, each one reframing an
+earlier point in the season:
+
+| # | Fragment | Reframes | Revealed |
+|---|----------|----------|----------|
+| 1 | YOU ARE NOT LOST. | Act I's doubt ("¿por qué no puedo conformarme con una sola vida?") | Ep 12 |
+| 2 | EVERY FAILURE IS A COORDINATE. | Act III's luminous ruins | Ep 12 |
+| 3 | WHAT YOU BUILD ALSO BUILDS YOU. | Acts V-VII (Blueprint, Peskids, Agents) | Ep 12 |
+| 4 | THE MAP DOES NOT EXIST UNTIL YOU WALK IT. | Sets up the finale | Ep 12 |
+| 5 | *(combined, full cipher)* — see below | Pays off the entire season | Ep 13 |
+
+Assembled in the finale (Episode 13, "The Map"), the full message reads:
 
 > YOU ARE NOT LOST.
 > YOU ARE BUILDING THE MAP.
 
-This is revealed in full at the end of Season 1 (Episode 10, "The Map") and
-functions as the thematic key to the whole season: The Traveler believed his
-many unrelated paths (construction, food service, cloud, code, small
-business) were drift or failure. The truth the symbols point to is that
-those paths *were* the map being built, piece by piece.
+This is the thematic key to the whole season: The Traveler believed his
+many unrelated paths (Medellín roots, infrastructure/cloud/DevOps freelance
+work, construction, restaurants, migration, small business, Opsly itself)
+were drift or failure. The truth the symbols point to is that those paths
+*were* the map being built, piece by piece — and that the map only exists
+because he walked it, not before.
+
+## Luminous ruins (Act III device)
+
+When a build fails in the Parallel World, it doesn't disappear. It becomes
+a dim, marked ruin, permanently visible on the map — the visual form of
+fragment 2 ("every failure is a coordinate"), planted in Episode 3, long
+before the cipher makes the connection explicit in Episode 12.
 
 ## Where symbols may appear
 
@@ -35,3 +54,4 @@ those paths *were* the map being built, piece by piece.
   ripple in water, a constellation) — plant early, pay off late
 - NØVA's chest emblem is a small, personal instance of the same geometry
   family (established in the Character Bible)
+- Luminous ruins left behind by every failed build (Episode 3 onward)

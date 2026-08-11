@@ -1,7 +1,7 @@
 {
-  "id": "opsly-parallel-path-007",
+  "id": "opsly-parallel-path-008",
   "series_id": "opsly-parallel-path",
-  "episode_number": 7,
+  "episode_number": 8,
   "title": {
     "es": "Mission Control",
     "en": "Mission Control"
@@ -40,10 +40,11 @@
     "published_platforms": [],
     "publish_urls": {},
     "notes": [
-      "Theme: the need for visibility/control once a system outgrows what one person can track by feel.",
-      "Emotional conflict: awe at how far things have come, mixed with the weight of how much is still unknown.",
-      "Visual motif: the map-with-dark-zones device, reused and paid off in Episode 10.",
-      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 07."
+      "Act VIII of the Origin Saga — see ../../canon/ORIGIN-SAGA.md.",
+      "Theme: the need for visibility/control once a system outgrows what one person can track by feel — Moon exists to see Peskids, future tenants, workers, agents, machines, health, and costs all at once.",
+      "Emotional conflict: awe at how far things have come, mixed with a paradox — the more control The Traveler gains, the bigger the map turns out to be. New unexplored worlds appear as he gains visibility, not fewer.",
+      "Visual motif: the map-with-dark-zones device, reused and paid off in Episode 13.",
+      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 08."
     ]
   }
 }

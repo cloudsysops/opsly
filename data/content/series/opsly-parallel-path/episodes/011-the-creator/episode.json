@@ -1,0 +1,41 @@
+{
+  "id": "opsly-parallel-path-011",
+  "series_id": "opsly-parallel-path",
+  "episode_number": 11,
+  "title": {
+    "es": "El Creador",
+    "en": "The Creator"
+  },
+  "hook": {
+    "es": "Ahora quiere contar historias.",
+    "en": "Now he wants to tell stories."
+  },
+  "objective": "Meta episode: The Traveler turns toward storytelling itself — YouTube, characters, his own journey as content. A new portal opens that looks disconnected from everything before it, but by now both The Traveler and the audience recognize the pattern: it will probably connect to the map too.",
+  "audience": ["general tech-curious audience", "creators", "founders"],
+  "duration_estimate_sec": 45,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Otra curiosidad. Probablemente también se conecta.",
+    "captions": {
+      "es": "El mapa incluso se dibuja a sí mismo contándose.",
+      "en": "The map even draws itself by telling itself."
+    },
+    "hashtags": ["#OpslyParallelPath", "#CreatorStudio", "#TheTraveler", "#NOVA"],
+    "thumbnail_concept": "A new, still-dim portal opening beside all the others on Moon's map, labeled only with a question mark, The Traveler and NØVA looking at it together"
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-08-11T00:00:00Z",
+    "last_updated": "2026-08-11T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Act XI of the Origin Saga — see ../../canon/ORIGIN-SAGA.md. This episode is meta: it is, itself, part of what it depicts (the Opsly Creator Studio content system that produced this very series).",
+      "Theme: recursion — the pattern of 'another world that looks disconnected but probably connects' repeats one more time, this time as the show itself.",
+      "Emotional conflict: minimal / reflective beat rather than a struggle — a brief pause before the season's mystery payoff (Episodes 12-13).",
+      "Visual motif: the portal opens dim/unlabeled, deliberately unresolved — mirrors the season's 'map still being drawn' ending.",
+      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 11. This episode IS the real event (Opsly Creator Studio / this content pipeline) — keep the fictionalization light, almost a wink to the audience.",
+      "Placed just before The Message/The Map (12-13) so the season's final act returns fully to the core mystery thread."
+    ]
+  }
+}

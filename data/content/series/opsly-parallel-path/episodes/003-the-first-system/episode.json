@@ -10,7 +10,7 @@
     "es": "Nada espectacular. Pero es real.",
     "en": "Nothing spectacular. But it's real."
   },
-  "objective": "First visit to the Parallel World. A small early automation becomes visible there as a modest glowing structure. Establish the core visual rule: real-world systems generate parallel-world architecture.",
+  "objective": "First visit to the Parallel World. A small early automation becomes visible there as a modest glowing structure. Establish the core visual rule: real-world systems generate parallel-world architecture — and that failures don't vanish, they become luminous ruins marked on the map.",
   "audience": [
     "general tech-curious audience",
     "founders",
@@ -40,10 +40,12 @@
     "published_platforms": [],
     "publish_urls": {},
     "notes": [
-      "Theme: small, unglamorous beginnings are still real beginnings.",
-      "Emotional conflict: wanting the first system to feel bigger than it is.",
-      "Visual motif: first full reveal of the Parallel World — establish its geometric-city aesthetic here.",
-      "NØVA asks \"¿Eso es Opsly?\" — The Traveler answers \"No. Pero creo que es una pieza.\"",
+      "Act III of the Origin Saga — see ../../canon/ORIGIN-SAGA.md.",
+      "Theme: small, unglamorous beginnings are still real beginnings; failure leaves information instead of disappearing.",
+      "Emotional conflict: wanting the first system to feel bigger than it is; first real on-screen failure and how to metabolize it.",
+      "Visual motif: first full reveal of the Parallel World — establish its geometric-city aesthetic here. LUMINOUS RUINS (canon device, see ../../canon/SYMBOLS.md): a failed build doesn't disappear, it becomes a dim, marked ruin permanently visible on the map.",
+      "Dialogue beat 1: NØVA asks \"¿Eso es Opsly?\" — The Traveler answers \"No. Pero creo que es una pieza.\"",
+      "Dialogue beat 2 (failure): NØVA — \"¿Fallamos?\" The Traveler — \"Sí.\" NØVA — \"¿Entonces la borramos?\" The Traveler — \"No. Ahora sabemos por dónde no pasar.\"",
       "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 03."
     ]
   }
