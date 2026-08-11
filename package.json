@@ -130,6 +130,8 @@
     "layer:deploy": "bash scripts/deploy-layer.sh",
     "peskids:cap:android": "bash scripts/peskids-cap-android.sh",
     "peskids:cap:android:open": "bash scripts/peskids-cap-android.sh --open",
+    "content:splashitos:enqueue": "bash scripts/content-splashitos-enqueue.sh",
+    "content:splashitos:dry-run": "bash scripts/content-splashitos-enqueue.sh --dry-run",
     "superagents:install": "bash scripts/install-superagents-stack.sh",
     "superagents:up": "bash scripts/superagents-up.sh",
     "superagents:doctor": "bash scripts/superagents-doctor.sh",
