@@ -51,6 +51,32 @@ future world so it isn't reinvented differently later. Do not create
 `data/content/series/` entries for Bitsitos without a deliberate decision
 to start producing that line.
 
+### Saga II — additional tenant planets (documented, not yet produced)
+
+A further expansion pass named more tenant planets than Peskids/Bitsitos.
+Recorded here so a future agent doesn't reinvent them under different
+names — none have episodes yet:
+
+| Planet | Theme |
+|---|---|
+| Turismo | Exploration, cultures |
+| Salud | Body, care, fragility |
+| Construcción | Matter, architecture |
+| Restaurantes | Fire, community |
+| Guardian | Protection |
+| Panini | Countries, knowledge, football |
+
+Once any of these is actually produced, Opsly stops being a protagonist
+and becomes purely the invisible infrastructure connecting the stories —
+that's the intended shift for Saga II as a whole, not just per-planet.
+
+## Locations within AETHER
+
+### The Ancestral Archive
+A place, not a character — see [`ANCESTORS.md`](ANCESTORS.md) for the
+full concept. Contains preserved human memory (craft, gesture, care),
+deliberately free of any interface or screen.
+
 ## Enlaces relacionados
 
 - [`UNIVERSE-BIBLE.md`](UNIVERSE-BIBLE.md) — planes, mystery, themes

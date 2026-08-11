@@ -1,6 +1,21 @@
 import { z } from 'zod';
 import { SeriesIdSchema } from '../series/schema.js';
 
+/**
+ * Open language map: 'es' and 'en' are mandatory (the pipeline's base
+ * languages), any other ISO-ish code (zh, ja, pt, ar, ...) is optional and
+ * additive — see data/content/canon/LANGUAGES.md. Using z.record instead of
+ * a closed object means new language keys are never silently stripped.
+ */
+export const LocalizedTextSchema = z
+  .record(z.string(), z.string())
+  .refine((obj) => typeof obj.es === 'string' && obj.es.length > 0, {
+    message: "must include a non-empty 'es' key",
+  })
+  .refine((obj) => typeof obj.en === 'string' && obj.en.length > 0, {
+    message: "must include a non-empty 'en' key",
+  });
+
 export const EpisodeProductionStateSchema = z.enum([
   'idea',
   'script',
@@ -41,10 +56,9 @@ export const EpisodeSchema = z.object({
   id: z.string().min(1),
   series_id: SeriesIdSchema,
   episode_number: z.number().int().positive(),
-  title: z.object({ es: z.string().min(1), en: z.string().min(1) }),
-  hook: z.object({
-    es: z.string().min(1).max(300),
-    en: z.string().min(1).max(300),
+  title: LocalizedTextSchema,
+  hook: LocalizedTextSchema.refine((obj) => Object.values(obj).every((v) => v.length <= 300), {
+    message: 'each hook translation must be ≤ 300 chars',
   }),
   objective: z.string().min(1),
   audience: z.array(z.string()).min(1),
@@ -52,7 +66,7 @@ export const EpisodeSchema = z.object({
   scenes: z.array(EpisodeSceneSchema),
   metadata: z.object({
     call_to_action: z.string().min(1),
-    captions: z.object({ es: z.string(), en: z.string() }),
+    captions: LocalizedTextSchema,
     hashtags: z.array(z.string()),
     thumbnail_concept: z.string(),
   }),

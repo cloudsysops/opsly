@@ -12,7 +12,8 @@ last_review: 2026-05-26
 
 **📚 Wiki:** [`docs/README.md`](docs/README.md) — índice completo de documentación  
 **⚡ Cheatsheet:** [`docs/QUICK-REFERENCE.md`](docs/QUICK-REFERENCE.md) — SSH, comandos, vars, sprint actual  
-**🧠 Sistema de conocimiento:** [`docs/KNOWLEDGE-SYSTEM.md`](docs/KNOWLEDGE-SYSTEM.md) — NotebookLM + Obsidian, flujo para agentes
+**🧠 Sistema de conocimiento:** [`docs/KNOWLEDGE-SYSTEM.md`](docs/KNOWLEDGE-SYSTEM.md) — NotebookLM + Obsidian, flujo para agentes  
+**🎬 Opsly Universe / content:** antes de crear o editar cualquier personaje, mundo, episodio o símbolo del universo narrativo, lee [`data/content/canon/CANON-STATUS.md`](data/content/canon/CANON-STATUS.md) — evita que agentes en paralelo dupliquen en vez de complementar.
 
 **Mapa de documentación (evitar duplicar con `docs/AGENTS-GUIDE.md`):** `VISION.md` = norte de producto; **`AGENTS.md` (este archivo)** = estado operativo, próximo paso, bloqueantes e incrementos **por sesión**; **`docs/AGENTS-GUIDE.md`** = convenciones **solo** para varios asistentes/automatismos en paralelo (no sustituye AGENTS). `docs/adr/` = decisiones de arquitectura. No copiar tablas de límites por plan aquí: enlazar `AGENTS-GUIDE` + `VISION.md`.
 
@@ -628,6 +629,19 @@ Asked the user how to reconcile; they chose: merge the other canon into this ses
 - Flagged, not resolved: `peki-lab` (MVP series name) now collides with the new Peki character but doesn't feature him — needs a human decision (rename series or add Peki).
 
 Validated: 8 characters, 4 series, 29 episodes, all compliant; `validate-structure` passes; `lib/content-studio` tsc clean, 156/156 tests.
+
+### Same-session follow-up — multi-language + anti-duplication protocol + richer canon
+
+User asked for three things together: (1) multi-language content (es/en + zh/ja/pt/ar) to move faster, (2) "unifica no elimines, completémonos" — keep merging additively, and (3) a mechanism so other agents complement instead of duplicating. Also shared an even richer narrative draft ("Los Arquitectos del Umbral") with new elements.
+
+Did:
+- **`data/content/canon/CANON-STATUS.md`** (new) — single-source-of-truth ledger: where each concept type lives, per-character/per-arc lock status, and a "before you build" checklist. Linked from the top of `AGENTS.md` so any agent hits it early. This is the actual answer to "how do we stop duplication."
+- **Multi-language schema**: `title`/`hook`/`metadata.captions` changed from closed `{es,en}` objects to an open language map (`LocalizedTextSchema` in `lib/content-studio/src/episodes/schema.ts` — `.record().refine()` requiring non-empty `es`/`en`, any other code additive, never silently stripped). `LocalizedText` type added to `types.ts`. New `LANGUAGES.md` documents supported codes and why (not per-language duplicate files — would fragment `production.status`). Pilot episode `opsly-parallel-path-001` translated into zh/ja/pt/ar as proof of concept; the other 12 Season 1 episodes remain es/en only (real translation task, not done in this pass).
+- **New canon docs** (all Season 2+/documented-only, not retrofitted into locked Season 1): `ANCESTORS.md` (the Ancestral Archive — "ellos eran las máquinas" reveal), `THE-MIRROR.md` (9-symbol multi-season mystery + "0 = TÚ" ending, explicitly nested above S1's 5-fragment cipher, not replacing it), updated `MESSENGER.md` (named messengers Ariel/Lumiel/El Guardián + the "show a door, never walk through it" rule), updated `THE-NULL.md` (NULL's argument + draft climactic dialogue with NØVA), updated `WORLDS.md` (Saga II tenant planets: Turismo/Salud/Construcción/Restaurantes/Guardian/Panini), updated `NOVA.md` (viewer-customization product concept — "¿quién crees que puedo llegar a ser?" instead of "¿cómo quieres que me vea?").
+
+Validated: 8 characters, 4 series, 29 episodes (now including a 6-language pilot), all compliant; `validate-structure` passes; `lib/content-studio` tsc clean, 156/156 tests.
+
+**PR #961 note:** `production-change-window` CI check is correctly red (this PR touches `lib/content-studio/**`, daytime in Bogotá) — explained in a PR comment, not treated as a bug. Deliberately not applying `night-merge` while the PR is still draft/actively iterated, to avoid queuing an unintended auto-deploy.
 
 ---
 

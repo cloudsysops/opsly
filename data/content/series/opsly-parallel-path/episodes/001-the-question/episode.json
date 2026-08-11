@@ -4,11 +4,19 @@
   "episode_number": 1,
   "title": {
     "es": "La Pregunta",
-    "en": "The Question"
+    "en": "The Question",
+    "zh": "问题",
+    "ja": "問い",
+    "pt": "A Pergunta",
+    "ar": "السؤال"
   },
   "hook": {
     "es": "¿Y si pudiera construir algo mío?",
-    "en": "What if I could build something of my own?"
+    "en": "What if I could build something of my own?",
+    "zh": "如果我能创造属于自己的东西呢?",
+    "ja": "もし自分だけのものを作れるとしたら?",
+    "pt": "E se eu pudesse construir algo meu?",
+    "ar": "ماذا لو استطعت أن أبني شيئًا خاصًا بي؟"
   },
   "objective": "Origin of the universe. Establish The Traveler alone, the first AI conversation, and NØVA's awakening — without revealing his face. Plant the tone: searching, not triumphant.",
   "audience": ["general tech-curious audience", "founders", "developers", "dreamers"],
@@ -59,7 +67,11 @@
     "call_to_action": "Este no fue el final. Fue el comienzo.",
     "captions": {
       "es": "Todo empezó con una pregunta. #OpslyParallelPath",
-      "en": "It all started with a question. #OpslyParallelPath"
+      "en": "It all started with a question. #OpslyParallelPath",
+      "zh": "一切始于一个问题。#OpslyParallelPath",
+      "ja": "すべては一つの問いから始まった。#OpslyParallelPath",
+      "pt": "Tudo começou com uma pergunta. #OpslyParallelPath",
+      "ar": "كل شيء بدأ بسؤال. #OpslyParallelPath"
     },
     "hashtags": ["#OpslyParallelPath", "#TheTraveler", "#NOVA", "#AI", "#OriginStory"],
     "thumbnail_concept": "The Traveler's hooded silhouette against a glowing laptop screen, a tiny blue light barely visible in the dark — text overlay: 'La Pregunta'"

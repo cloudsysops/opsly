@@ -294,19 +294,22 @@ export interface EpisodeProduction {
   notes: string[];
 }
 
+/** Open language map — 'es'/'en' guaranteed present, other codes (zh, ja, pt, ar, ...) optional. See data/content/canon/LANGUAGES.md. */
+export type LocalizedText = Record<string, string> & { es: string; en: string };
+
 export interface Episode {
   id: string;
   series_id: SeriesId;
   episode_number: number;
-  title: { es: string; en: string };
-  hook: { es: string; en: string };
+  title: LocalizedText;
+  hook: LocalizedText;
   objective: string;
   audience: string[];
   duration_estimate_sec: number;
   scenes: EpisodeScene[];
   metadata: {
     call_to_action: string;
-    captions: { es: string; en: string };
+    captions: LocalizedText;
     hashtags: string[];
     thumbnail_concept: string;
   };

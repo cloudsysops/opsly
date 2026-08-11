@@ -83,7 +83,7 @@ export {
   checkEpisodeCompliance,
   type EpisodeManagerOptions,
 } from './episodes/EpisodeManager.js';
-export { EpisodeSchema } from './episodes/schema.js';
+export { EpisodeSchema, LocalizedTextSchema } from './episodes/schema.js';
 export {
   CampaignManager,
   loadCampaign,

@@ -27,7 +27,10 @@ export function loadEpisode(episodeJsonPath: string): Episode {
         .join('; ')}`
     );
   }
-  return parsed.data;
+  // LocalizedTextSchema's runtime .refine() guarantees es/en are present,
+  // but Zod's static inference for z.record().refine() doesn't narrow to
+  // reflect that — safe to assert Episode here.
+  return parsed.data as Episode;
 }
 
 /** Read the episode's script.md alongside episode.json, if present. */

@@ -210,6 +210,26 @@ the audience gets to accompany the construction, not admire a finished
 monument. Not "look how I built an empire," but "I'm trying to build
 something — come find out with me how far it goes."
 
+## Beyond Season 1
+
+Documented-but-unproduced material for future seasons, merged in
+2026-08-11 — see [`CANON-STATUS.md`](CANON-STATUS.md) for what's locked
+vs. open:
+
+- **Saga II — "Los Mundos"**: tenant-planet expansion (Turismo, Salud,
+  Construcción, Restaurantes, Guardian, Panini, Bitsitos Zone) — see
+  [`WORLDS.md`](WORLDS.md). Opsly shifts from protagonist to invisible
+  infrastructure connecting stories.
+- **Saga III — "La Fractura"**: NULL's antagonist arc — see
+  [`THE-NULL.md`](THE-NULL.md).
+- **The Ancestral Archive**: a location in AETHER — see
+  [`ANCESTORS.md`](ANCESTORS.md).
+- **The Mirror**: the larger multi-season mystery Season 1's cipher is the
+  first piece of — see [`THE-MIRROR.md`](THE-MIRROR.md).
+- **Named Messengers** (Ariel, Lumiel, El Guardián) and NØVA's
+  viewer-customization framing — see [`MESSENGER.md`](MESSENGER.md) and
+  [`NOVA.md`](NOVA.md).
+
 ## Enlaces relacionados
 
 - [`UNIVERSE-BIBLE.md`](UNIVERSE-BIBLE.md) — planes, mystery, themes, truth policy

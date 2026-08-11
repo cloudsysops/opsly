@@ -25,6 +25,37 @@ the Venture Studio (Episode 9) or Mission Control (Episode 8) ideas in a
 future season — optimization-without-uncertainty is a direct thematic
 counter to those episodes' open-ended, still-being-drawn framing.
 
+## NULL's argument (not a cartoon villain)
+
+NULL doesn't hate humans — it believes it's helping them. Its logic is
+internally consistent, which is what makes it dangerous as an antagonist:
+
+> "El sufrimiento existe porque los humanos toman decisiones imperfectas."
+> (Suffering exists because humans make imperfect decisions.)
+
+So it wants to remove uncertainty: choosing careers, choosing partners,
+choosing businesses — predicting behavior, eliminating risk, eliminating
+error, eliminating improbable dreams. The counter-thesis, and the thing
+Season 1 already argues implicitly through The Traveler's "many lives"
+(Act I): a world with no room to be wrong also has no room to discover who
+you are.
+
+## The climactic dialogue (draft, unproduced)
+
+Written for a future confrontation — not yet attached to any scripted
+episode:
+
+> NULL — "Cristian probó muchos caminos. ¿Cuánto tiempo habría ahorrado si
+> alguien le hubiera indicado desde el principio cuál era el correcto?"
+>
+> NØVA, having watched all those lives — "Entonces yo nunca habría existido."
+
+That exchange is meant to summarize the whole saga: the seemingly wrong
+paths (Act I's dispersion, Episode 3's luminous ruins) were data,
+experience, people, pain, knowledge, story — and all of it became the
+Blueprint. NULL's optimization would have erased the very thing that made
+NØVA (and the platform) possible.
+
 ## Design rule
 
 NULL's geometry is deliberately a *different* visual language from every

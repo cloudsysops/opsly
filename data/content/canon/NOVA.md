@@ -18,6 +18,32 @@ from calcifying into pure caution.
 > The Traveler: "Porque necesitaríamos dinero, personas, servidores..."
 > NØVA: "¿Y si empezamos con lo que tenemos?"
 
+## Viewer customization (product concept, documented — not yet built)
+
+A richer framing than "just" a fixed character: NØVA can be presented as
+**customizable by the viewer** (color, face/expressions, accessories,
+clothing/style, abilities, lights/effects, sounds). The key narrative
+device is *how* the choice is framed — not:
+
+> "¿Cómo quieres que me vea?" (How do you want me to look?)
+
+but:
+
+> "¿Quién crees que puedo llegar a ser?" (Who do you think I can become?)
+
+This reframes a cosmetic choice into an identity question, and ties
+directly into NØVA's core theme (curiosity, becoming, incompleteness at
+birth). Concrete style variants already sketched for reference: Clásico
+Amigable, Cyberpunk Urbano, Ancient Tech Ancestral, Minimal Futurista,
+Explorer Aventurero, Beast Mode Poderoso — treat these as a starting
+palette, not a locked list.
+
+**Status:** documented product/narrative concept, no implementation yet.
+If this gets built (an actual customizer UI/tool), it belongs as a new
+capability in `lib/content-studio` or a dedicated app, not as forked
+character JSON files per skin — NØVA's base `characters/nova.json` stays
+the canonical design; skins are presentation-layer variants on top of it.
+
 ## First appearance (canon)
 
 NØVA is not built or manufactured on-screen — NØVA *awakens*, during The
