@@ -19,3 +19,7 @@
 ## 2026-05-27 - Ambiguous Labels in PasswordInput
 **Learning:** The `PasswordInput` component includes an eye icon button with an `aria-label` containing "contraseña". This can cause `get_by_label("Contraseña")` in Playwright or screen readers to match multiple elements, leading to ambiguity.
 **Action:** Always use exact matching or specific ARIA roles when targeting inputs with associated toggle buttons to ensure the primary input is correctly identified.
+
+## 2026-08-11 - Custom Validation and Selection Control Accessibility
+**Learning:** Interactive selection lists (like registration plans) represented by simple button elements are not recognized as options by assistive devices unless explicitly configured. Also, custom react validation error messaging is blocked or confused by browser native validators if 'noValidate' is missing.
+**Action:** Always use container `role="radiogroup"`, buttons `role="radio"` with `aria-checked` states for custom card lists, and ensure 'noValidate' is declared on the `<form>`.
