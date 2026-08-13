@@ -643,6 +643,20 @@ Validated: 8 characters, 4 series, 29 episodes (now including a 6-language pilot
 
 **PR #961 note:** `production-change-window` CI check is correctly red (this PR touches `lib/content-studio/**`, daytime in Bogotá) — explained in a PR comment, not treated as a bug. Deliberately not applying `night-merge` while the PR is still draft/actively iterated, to avoid queuing an unintended auto-deploy.
 
+### Same-session follow-up (2026-08-13) — real YouTube Data API publisher
+
+User asked whether YouTube upload was already automated (it wasn't — confirmed via repo-wide grep, nothing existed anywhere) and then asked to build the real connector.
+
+Did:
+- `lib/content-studio/src/publishers/youtube.ts` — `YouTubePublisher` class wrapping `googleapis` YouTube Data API v3 `videos.insert` (+ optional playlist add). Requires `client_id`/`client_secret`/`refresh_token` passed in explicitly (never reads Doppler itself); `loadYouTubeCredentialsFromEnv()` reads them from `YOUTUBE_CLIENT_ID`/`YOUTUBE_CLIENT_SECRET`/`YOUTUBE_REFRESH_TOKEN`. `made_for_kids` has no default anywhere in the stack — throws if not explicitly boolean (COPPA).
+- `scripts/content/youtube-publish.ts` (`npm run content:youtube:publish -- <episode-id> --video <path> --made-for-kids <bool> [--live] [--privacy ...] [--playlist ...]`) — dry-run by default (prints title/description/tags/privacy/file size, zero API calls); `--live` required to actually upload. **Approval gate**: refuses to run at all (dry-run or live) unless `episode.production.status` is `reviewed` or `published` — verified live against `opsly-parallel-path-001` (still `storyboard`), correctly refused. On a successful live publish, writes back `production.status/published_at/published_platforms/publish_urls.youtube` to the episode's JSON.
+- `docs/runbooks/YOUTUBE-PUBLISHING.md` — one-time Google Cloud project + OAuth consent screen + refresh-token generation steps, Doppler secret names, usage examples, made-for-kids guidance per series (Peki Lab → true, others → false by default judgment, confirm per episode).
+- Added `googleapis` dependency to `lib/content-studio/package.json` (installed via the same `--no-save --no-package-lock` workaround as earlier in this session, since the root lockfile still has the unrelated playwright ETARGET issue).
+
+**Explicitly not done** (per AGENTS.md AUTONOMY RULES — Doppler edits require human confirmation): no actual Google Cloud project was created, no OAuth credentials exist, nothing was added to Doppler. The connector is real, tested code with nothing to connect to yet — manual upload remains the only working path until a human completes the one-time setup in the runbook.
+
+Validated: `lib/content-studio` tsc clean, 165/165 tests (9 new, mocked `googleapis` — no real network calls in tests). `content:validate` + `validate-structure` pass.
+
 ---
 
 ## 🔄 Phase 2 — Content Studio (2026-05-18)

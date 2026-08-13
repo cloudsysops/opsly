@@ -79,3 +79,12 @@ picture; this table is the quick index.
   (`opsly-parallel-path-001`) translated into `zh`/`ja`/`pt`/`ar` as
   proof of concept; the other 12 Season 1 episodes are not yet
   translated beyond es/en.
+- **2026-08-13:** Added the real YouTube Data API v3 publisher
+  (`lib/content-studio/src/publishers/youtube.ts`,
+  `npm run content:youtube:publish`) — see
+  `docs/runbooks/YOUTUBE-PUBLISHING.md`. Code exists and is tested
+  (mocked API), but no Doppler credentials are configured yet, so nothing
+  can actually be uploaded until a human completes the one-time OAuth
+  setup. The approval gate (rejects anything not `reviewed`/`published`)
+  was verified live against `opsly-parallel-path-001` (correctly refused,
+  since it's still `storyboard`).
