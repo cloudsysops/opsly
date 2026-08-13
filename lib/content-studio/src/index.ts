@@ -93,3 +93,9 @@ export {
 } from './campaigns/CampaignManager.js';
 export { CampaignSchema } from './campaigns/schema.js';
 export { buildEpisodeRenderPlan, type EpisodeRenderPlan } from './rendering/episode-render-plan.js';
+
+// ─── YouTube Publishing ───────────────────────────────────────────────────────
+export {
+  YouTubePublisher,
+  loadYouTubeCredentialsFromEnv,
+} from './publishers/youtube.js';

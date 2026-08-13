@@ -52,6 +52,7 @@
     "content:validate": "tsx scripts/content/validate.ts",
     "content:calendar": "tsx scripts/content/calendar.ts",
     "content:render-plan": "tsx scripts/content/render-plan.ts",
+    "content:youtube:publish": "tsx scripts/content/youtube-publish.ts",
     "knowledge:archive:ingest": "node scripts/archive-to-obsidian.mjs",
     "knowledge:archive:ingest:all": "bash scripts/archive-ingest-all-domains.sh",
     "agents:hooks:bootstrap:internal": "bash scripts/agent-hooks.sh bootstrap --mode internal",

@@ -344,3 +344,42 @@ export interface Campaign {
   target_platforms: string[];
   production_status: CampaignProductionStatus;
 }
+
+// ─── YouTube Publishing ───────────────────────────────────────────────────────
+//
+// Uploads an already-rendered local video file to YouTube via the Data API v3.
+// Does not render video itself — see rendering/episode-render-plan.ts for that
+// (still dry-run-only as of this module). Requires OAuth2 credentials from
+// Doppler (never hardcoded) — see docs/runbooks/YOUTUBE-PUBLISHING.md.
+
+export type YouTubePrivacyStatus = 'private' | 'unlisted' | 'public';
+
+export interface YouTubeCredentials {
+  client_id: string;
+  client_secret: string;
+  refresh_token: string;
+}
+
+export interface YouTubePublishRequest {
+  /** Absolute path to an already-rendered local video file (mp4). */
+  file_path: string;
+  title: string;
+  description: string;
+  tags: string[];
+  /** YouTube category id, e.g. '28' = Science & Technology. Defaults to '22' (People & Blogs). */
+  category_id?: string;
+  privacy_status: YouTubePrivacyStatus;
+  /**
+   * Required, no default. YouTube's self-declared "made for kids" flag —
+   * legally required (COPPA) for children-directed content. Get this wrong
+   * and monetization/comments/personalized-ads behavior on the video is wrong.
+   */
+  made_for_kids: boolean;
+  playlist_id?: string;
+}
+
+export interface YouTubePublishResult {
+  video_id: string;
+  url: string;
+  uploaded_at: string;
+}
