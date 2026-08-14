@@ -507,6 +507,10 @@ services:
       DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL}
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       GITHUB_TOKEN_N8N: ${GITHUB_TOKEN_N8N:-}
+    # Agentes locales (Cursor/OpenCode) vía Tailscale: en .env p.ej. ORCHESTRATOR_EXPORT_BIND=100.120.151.91
+    # para exponer /api/local/prompt-submit a la cola local-agents. Por defecto 127.0.0.1: solo acceso local.
+    ports:
+      - '${ORCHESTRATOR_EXPORT_BIND:-127.0.0.1}:3011:3011'
     depends_on:
       redis:
         condition: service_healthy
