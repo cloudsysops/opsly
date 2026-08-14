@@ -6,6 +6,7 @@ import * as stripeMod from '../../../../lib/stripe';
 import * as promMod from '../../../../lib/fetch-host-metrics-prometheus';
 import * as dockerCountMod from '../../../../lib/docker-running-count';
 import * as prometheusUrlMod from '../../../../lib/prometheus';
+import * as redisCacheMod from '../../../../lib/redis-cache';
 
 vi.mock('../../../../lib/supabase', () => ({
   getServiceClient: vi.fn(),
@@ -25,6 +26,11 @@ vi.mock('../../../../lib/docker-running-count', () => ({
 
 vi.mock('../../../../lib/prometheus', () => ({
   getPrometheusBaseUrl: vi.fn(),
+}));
+
+vi.mock('../../../../lib/redis-cache', () => ({
+  getCache: vi.fn(),
+  setCache: vi.fn(() => Promise.resolve(true)),
 }));
 
 const ADMIN = 'metrics-admin-token';
@@ -105,7 +111,32 @@ describe('GET /api/metrics', () => {
     expect(res.status).toBe(401);
   });
 
+  it('returns cached metrics immediately on cache hit', async () => {
+    const cachedPayload = {
+      total_tenants: 42,
+      active_tenants: 40,
+      suspended_tenants: 2,
+      mrr_usd: 999.99,
+      tenants_by_plan: {
+        startup: 30,
+        business: 10,
+        enterprise: 2,
+      },
+    };
+    vi.mocked(redisCacheMod.getCache).mockResolvedValue(cachedPayload);
+
+    const res = await getMetrics(new Request('http://x/metrics', { headers: adminHeaders() }));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body).toEqual(cachedPayload);
+
+    // Ensure database and stripe weren't queried on cache hit
+    expect(supabaseMod.getServiceClient).not.toHaveBeenCalled();
+    expect(stripeMod.computeMrr).not.toHaveBeenCalled();
+  });
+
   it('returns 500 when a tenant count query errors', async () => {
+    vi.mocked(redisCacheMod.getCache).mockResolvedValue(null);
     vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
       mockTenantCountClient(
         {
@@ -124,6 +155,7 @@ describe('GET /api/metrics', () => {
   });
 
   it('returns 500 when computeMrr throws', async () => {
+    vi.mocked(redisCacheMod.getCache).mockResolvedValue(null);
     vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
       mockTenantCountClient({
         total: 10,
@@ -139,7 +171,8 @@ describe('GET /api/metrics', () => {
     expect(res.status).toBe(500);
   });
 
-  it('returns aggregated JSON on success', async () => {
+  it('returns aggregated JSON on success and caches result', async () => {
+    vi.mocked(redisCacheMod.getCache).mockResolvedValue(null);
     vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
       mockTenantCountClient({
         total: 10,
@@ -162,6 +195,18 @@ describe('GET /api/metrics', () => {
     expect(byPlan.startup).toBe(2);
     expect(byPlan.business).toBe(2);
     expect(byPlan.enterprise).toBe(1);
+
+    // Verify cache was checked and set
+    expect(redisCacheMod.getCache).toHaveBeenCalledWith('metrics:main_summary');
+    expect(redisCacheMod.setCache).toHaveBeenCalledWith(
+      'metrics:main_summary',
+      expect.objectContaining({
+        total_tenants: 10,
+        active_tenants: 7,
+        mrr_usd: 123.45,
+      }),
+      60
+    );
   });
 });
 
