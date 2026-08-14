@@ -72,3 +72,8 @@
 **Vulnerability:** Public Peskids endpoints for lead capture and feedback (`/api/public/tenants/peskids/leads` and `/api/public/tenants/peskids/feedback`) lacked rate limiting and audit logging. This made them vulnerable to automated spam and resource exhaustion without a traceable record of the activity.
 **Learning:** Even when core business logic (insertion) is validated via schemas, the endpoint remains vulnerable to abuse if it lacks perimeter protections like rate limiting. The existence of these protections in other "similar" endpoints (like DSAR) doesn't guarantee they are applied everywhere.
 **Prevention:** Systematically apply `checkRateLimit` and `logAuditEvent` to all public, unauthenticated POST handlers. Utilize IP-based rate limiting keys (e.g., `peskids-lead:${ip}`) to prevent abuse while allowing legitimate traffic.
+
+## 2026-08-14 - [Authorization Hardening of Peskids Responses Route]
+**Vulnerability:** The `GET /api/peskids/portal/[tenantSlug]/forms/[formId]/responses` route retrieves sensitive user form submissions but was previously lacking dedicated regression test coverage verifying its strict multi-tenant authorization check logic.
+**Learning:** Regression testing of route-level parameters wrapping `runTrustedPortalDalForPathSlug` is critical to ensuring access control boundaries are permanently enforced even through subsequent refactors.
+**Prevention:** Ensure new portal-facing routes utilize authorization tests validating that requests lacking session headers yield `401 Unauthorized` block outcomes.
