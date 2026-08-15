@@ -37,3 +37,7 @@
 ## 2026-06-26 - [Caching Admin Overview DB & Network Probes]
 **Learning:** The admin overview dashboardaggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
 **Action:** Always cache aggregated metrics and external probes in dashboard-facing API routes, and modularize parsing logic to maintain low cyclomatic complexity.
+
+## 2026-08-15 - [Private HTTP Cache Control on Protected API Endpoints]
+**Learning:** Using `Cache-Control: public` or `s-maxage` on API endpoints protected by authorization checks allows shared CDNs/edge caches to cache responses globally, causing future requests from unauthenticated users to bypass server-side authorization checks on cache hits. Using `Cache-Control: private` enables browser-level client caching and avoids serialization overhead while guaranteeing authorization checks execute on every origin request.
+**Action:** Always use `private` directives in `Cache-Control` headers for endpoints that execute server-side authorization or tenant access checks.
