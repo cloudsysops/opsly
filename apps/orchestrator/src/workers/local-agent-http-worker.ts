@@ -16,10 +16,11 @@ import { getAgentServiceRegistry } from '../lib/agent/agent-service-registry.js'
 import {
   agentForLocalJobType,
   jobTypeForLocalAgent,
-  LOCAL_AGENT_KINDS,
+  parseLocalAgentKindAllowlist,
   localAgentKindToWorkerConcurrencyKey,
   type LocalAgentKind,
   externalCliLabelForOpslyLocalAgent,
+  waitForFile,
 } from '../lib/local-worker-utils.js';
 import {
   logWorkerInfo,
@@ -119,6 +120,21 @@ function concurrencyKeyForLocalAgent(agent: LocalAgentKind): WorkerConcurrencyKe
   return localAgentKindToWorkerConcurrencyKey(agent);
 }
 
+export function localAgentExecuteHeaders(
+  env: NodeJS.ProcessEnv = process.env
+): Record<string, string> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const token = env.OPSLY_CLI_AGENT_TOKEN?.trim() || env.OPSLY_OPENCODE_AGENT_TOKEN?.trim();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  return headers;
+}
+
+export function shouldWaitForAcceptedResponse(result: Record<string, unknown>): boolean {
+  return result.accepted === true && !stringField(result, ['response_path']);
+}
+
 async function processLocalAgentJob(
   jobType: string,
   prompt_content: string,
@@ -147,7 +163,7 @@ async function processLocalAgentJob(
     logWorkerInfo('local-agents', `${agent}: invoking ${serviceUrl}/execute`);
     const response = await fetch(`${serviceUrl.replace(/\/+$/, '')}/execute`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: localAgentExecuteHeaders(),
       body: JSON.stringify({
         prompt_content,
         agent_role,
@@ -169,7 +185,18 @@ async function processLocalAgentJob(
     }
 
     responsePath = stringField(result, ['response_path']);
-    const responseText = responseTextFromResult(result);
+    const waitForAccepted = shouldWaitForAcceptedResponse(result);
+    if (waitForAccepted) {
+      const expected = path.join(cursorDir, 'responses', `response-${job_id}.md`);
+      const waitMs = Number(process.env.CURSOR_RESPONSE_WAIT_MS ?? 900_000);
+      logWorkerInfo('local-agents', `${agent}: accepted — waiting for ${expected}`);
+      const waited = await waitForFile(expected, waitMs);
+      if (!waited) {
+        throw new Error(`${agent} accepted job ${job_id} timed out waiting for ${expected}`);
+      }
+      responsePath = expected;
+    }
+    const responseText = waitForAccepted ? null : responseTextFromResult(result);
     if (!responsePath && responseText) {
       const responsesDir = path.join(cursorDir, 'responses');
       await fsp.mkdir(responsesDir, { recursive: true });
@@ -231,7 +258,8 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
     return unifiedWorkerInstance;
   }
 
-  const localConcurrency = LOCAL_AGENT_KINDS.map((agent) => ({
+  const allowedKinds = parseLocalAgentKindAllowlist();
+  const localConcurrency = allowedKinds.map((agent) => ({
     agent,
     concurrency: getWorkerConcurrency(concurrencyKeyForLocalAgent(agent)),
   }));
@@ -241,7 +269,7 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
     'local-agents',
     `Unified worker: ${localConcurrency.map((item) => `${item.agent}=${item.concurrency}`).join(' + ')} = ${totalConcurrency}`
   );
-  const validJobTypes = new Set(LOCAL_AGENT_KINDS.map((agent) => jobTypeForLocalAgent(agent)));
+  const validJobTypes = new Set(allowedKinds.map((agent) => jobTypeForLocalAgent(agent)));
 
   const worker = new Worker(
     'local-agents',
@@ -250,7 +278,9 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
       const data = job.data as { payload?: LocalAgentPayload };
 
       if (!validJobTypes.has(jobType)) {
-        throw new UnrecoverableError(`Invalid job type: ${jobType}`);
+        throw new Error(
+          `job name ${jobType} is not in OPSLY_LOCAL_AGENT_KINDS; retry so another host can claim it`
+        );
       }
 
       // Validate payload

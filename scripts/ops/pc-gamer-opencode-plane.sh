@@ -63,6 +63,7 @@ ensure_env() {
       echo "[dry-run] missing $ENV_WORKER — would require pc-gamer-docker-plane.sh first"
       echo "[dry-run] would append OPSLY_CLI_AGENT_TOKEN=<generated>"
       echo "[dry-run] would add 'local-agents' to OPSLY_WORKER_ALLOWLIST"
+      echo "[dry-run] would set OPSLY_LOCAL_AGENT_KINDS=local_opencode"
       echo "[dry-run] would append OPSLY_OPENCODE_AGENT_URL=http://127.0.0.1:${OPENCODE_PORT}"
       return 0
     fi
@@ -85,6 +86,13 @@ ensure_env() {
       rm -f "${ENV_WORKER}.bak"
     else
       echo 'OPSLY_WORKER_ALLOWLIST=ollama,local-agents' >>"$ENV_WORKER"
+    fi
+  fi
+  if ! grep -q '^OPSLY_LOCAL_AGENT_KINDS=' "$ENV_WORKER"; then
+    if [[ "$DRY_RUN" == "true" ]]; then
+      echo "[dry-run] would set OPSLY_LOCAL_AGENT_KINDS=local_opencode"
+    else
+      echo 'OPSLY_LOCAL_AGENT_KINDS=local_opencode' >>"$ENV_WORKER"
     fi
   fi
   if ! grep -q '^OPSLY_OPENCODE_AGENT_URL=' "$ENV_WORKER"; then
@@ -168,7 +176,7 @@ show_status() {
   curl -sf --max-time 3 "http://127.0.0.1:${OPENCODE_PORT}/health" 2>/dev/null || echo "bridge: DOWN (:${OPENCODE_PORT})"
   echo
   if [[ -f "$ENV_WORKER" ]]; then
-    grep -E '^OPSLY_WORKER_ALLOWLIST=|^OPSLY_OPENCODE_AGENT_URL=|^OPSLY_LOCAL_AGENT_UNIFIED_ONLY=' "$ENV_WORKER" || true
+    grep -E '^OPSLY_WORKER_ALLOWLIST=|^OPSLY_OPENCODE_AGENT_URL=|^OPSLY_LOCAL_AGENT_UNIFIED_ONLY=|^OPSLY_LOCAL_AGENT_KINDS=' "$ENV_WORKER" || true
   fi
   echo "=== systemd ==="
   systemctl --user is-active opsly-pc-gamer-opencode.service 2>/dev/null || echo "opsly-pc-gamer-opencode.service not installed/active"

@@ -14,7 +14,7 @@ WORKER_ID="${WORKER_ID:-pc-gamer-openclaw-01}"
 # Legacy heartbeat key also accepted
 WORKER_ID_LEGACY="${WORKER_ID_LEGACY:-pc-gamer}"
 TS_HOST="${PC_GAMER_TAILSCALE_HOST:-pc-gamer}"
-HEALTH_URL="${PC_GAMER_HEALTH_URL:-http://100.74.88.103:3011/health}"
+HEALTH_URL="${PC_GAMER_HEALTH_URL:-http://${TS_HOST}:3011/health}"
 SSH_HOST="${PC_GAMER_SSH_HOST:-pc-gamer}"
 
 for arg in "$@"; do

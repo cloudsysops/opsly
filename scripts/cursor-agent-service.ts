@@ -115,13 +115,12 @@ class CursorAgentService {
           return;
         }
 
-        // Default: ACK as soon as the prompt is on disk. Waiting for a human/agent
-        // reply used to abort BullMQ at 60s before anyone could work.
+        // ACK as soon as the prompt is on disk. Do not send `content` — the
+        // worker treats that as a finished response. It waits for /complete.
         res.status(202).json({
           success: true,
           accepted: true,
           prompt_path: promptFile,
-          content: `accepted: prompt written for job ${job_id}`,
         });
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : String(err);
