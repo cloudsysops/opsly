@@ -72,3 +72,8 @@
 **Vulnerability:** Public Peskids endpoints for lead capture and feedback (`/api/public/tenants/peskids/leads` and `/api/public/tenants/peskids/feedback`) lacked rate limiting and audit logging. This made them vulnerable to automated spam and resource exhaustion without a traceable record of the activity.
 **Learning:** Even when core business logic (insertion) is validated via schemas, the endpoint remains vulnerable to abuse if it lacks perimeter protections like rate limiting. The existence of these protections in other "similar" endpoints (like DSAR) doesn't guarantee they are applied everywhere.
 **Prevention:** Systematically apply `checkRateLimit` and `logAuditEvent` to all public, unauthenticated POST handlers. Utilize IP-based rate limiting keys (e.g., `peskids-lead:${ip}`) to prevent abuse while allowing legitimate traffic.
+
+## 2026-08-15 - [Missing Rate Limiting and Audit Logging in n8n Automation API]
+**Vulnerability:** The `/api/n8n/execute` and `/api/n8n/decide` endpoints were exposed to authorized requests without rate limiting or audit logging, leaving automated execution/decision actions vulnerable to loop abuse and lacking audit traceability.
+**Learning:** Automated agent or task execution endpoints that are protected by simple admin tokens still require rate limiting and audit logging to mitigate runaway execution loops and record execution provenance.
+**Prevention:** Always mandate IP-based rate limiting (`n8n-execute:${ip}`) and non-blocking security audit logging (`logAuditEvent`) on all agent delegation and execution routes.

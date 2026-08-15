@@ -1,5 +1,8 @@
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
 import { requireAdminToken } from '../../../../lib/auth';
+import { HTTP_STATUS } from '../../../../lib/constants';
 import { enqueueN8nExecution, n8nExecuteBodySchema } from '../../../../lib/n8n-super-agent';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
 
 function json200(body: Record<string, unknown>): Response {
   return Response.json(body, { status: 200 });
@@ -9,6 +12,12 @@ export async function POST(request: Request): Promise<Response> {
   const authError = requireAdminToken(request);
   if (authError) {
     return authError;
+  }
+
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `n8n-execute:${ip}` : 'n8n-execute:anonymous');
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
   }
 
   let raw: unknown;
@@ -33,6 +42,15 @@ export async function POST(request: Request): Promise<Response> {
 
   try {
     const enqueueResult = await enqueueN8nExecution(parsed.data);
+    void logAuditEvent({
+      action: 'n8n_execute',
+      resource: 'n8n:execution',
+      ip,
+      user_agent: request.headers.get('user-agent') ?? undefined,
+      metadata: {
+        goal: parsed.data.goal,
+      },
+    });
     return json200({
       success: true,
       observation: 'Execution delegated by opsly_billy',
