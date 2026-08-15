@@ -47,7 +47,7 @@ export async function POST(request: Request): Promise<Response> {
     ip,
     user_agent: request.headers.get('user-agent') ?? undefined,
     metadata: {
-      goal: parsed.data.goal,
+      task_description: parsed.data.task_description,
     },
   });
 

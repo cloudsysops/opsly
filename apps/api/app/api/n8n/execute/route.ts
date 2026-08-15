@@ -48,7 +48,8 @@ export async function POST(request: Request): Promise<Response> {
       ip,
       user_agent: request.headers.get('user-agent') ?? undefined,
       metadata: {
-        goal: parsed.data.goal,
+        agent_id: parsed.data.agent_id,
+        plan_step_index: parsed.data.plan_step_index,
       },
     });
     return json200({

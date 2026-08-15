@@ -51,7 +51,7 @@ describe('n8n API Security Routes', () => {
       const request = new Request('http://localhost/api/n8n/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ goal: 'test execution' }),
+        body: JSON.stringify({ agent_id: 'cursor', plan_step_index: 0, args: {} }),
       });
 
       const response = await executePOST(request);
@@ -73,7 +73,7 @@ describe('n8n API Security Routes', () => {
       const request = new Request('http://localhost/api/n8n/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ goal: 'test execution' }),
+        body: JSON.stringify({ agent_id: 'cursor', plan_step_index: 0, args: {} }),
       });
 
       const response = await executePOST(request);
@@ -82,7 +82,7 @@ describe('n8n API Security Routes', () => {
         expect.objectContaining({
           action: 'n8n_execute',
           resource: 'n8n:execution',
-          metadata: { goal: 'test execution' },
+          metadata: { agent_id: 'cursor', plan_step_index: 0 },
         })
       );
     });
@@ -99,7 +99,7 @@ describe('n8n API Security Routes', () => {
       const request = new Request('http://localhost/api/n8n/decide', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ goal: 'test decision' }),
+        body: JSON.stringify({ task_description: 'test decision' }),
       });
 
       const response = await decidePOST(request);
@@ -115,13 +115,13 @@ describe('n8n API Security Routes', () => {
         resetAt: new Date(),
       });
       vi.mocked(n8nAgent.buildDecisionPlan).mockReturnValue({
-        plan: ['step 1'],
+        plan: [],
       } as unknown as ReturnType<typeof n8nAgent.buildDecisionPlan>);
 
       const request = new Request('http://localhost/api/n8n/decide', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ goal: 'test decision' }),
+        body: JSON.stringify({ task_description: 'test decision' }),
       });
 
       const response = await decidePOST(request);
@@ -130,7 +130,7 @@ describe('n8n API Security Routes', () => {
         expect.objectContaining({
           action: 'n8n_decide',
           resource: 'n8n:decision',
-          metadata: { goal: 'test decision' },
+          metadata: { task_description: 'test decision' },
         })
       );
     });
