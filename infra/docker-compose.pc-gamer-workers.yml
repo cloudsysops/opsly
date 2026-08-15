@@ -1,0 +1,91 @@
+# PC-gamer worker plane — BullMQ consumers against VPS Redis (Tailscale).
+# Control plane stays on VPS. This host = execution muscle (GPU + CPU workers).
+#
+# Usage (from repo root on PC-gamer WSL):
+#   docker compose \
+#     -f infra/docker-compose.opslyquantum.yml \
+#     -f infra/docker-compose.opslyquantum.gpu.yml \
+#     -f infra/docker-compose.pc-gamer-workers.yml \
+#     --env-file .env.worker \
+#     up -d ollama worker-openclaw
+#
+# Profiles:
+#   --profile agents   HTTP local-agent bridges (optional)
+#   --profile split    second orchestrator replica (careful with concurrency)
+#
+# Do NOT start a second Redis for BullMQ here — REDIS_URL must point at VPS.
+# Merge with opslyquantum (+ gpu) compose so service `ollama` exists for depends_on.
+
+services:
+  worker-openclaw:
+    image: node:20-bookworm-slim
+    container_name: opsly-pc-gamer-worker-openclaw
+    working_dir: /app
+    volumes:
+      - ..:/app
+    environment:
+      WORKER_ID: ${WORKER_ID:-pc-gamer-openclaw-01}
+      OPSLY_EPHEMERAL_WORKER: ${OPSLY_EPHEMERAL_WORKER:-true}
+      OPSLY_WORKER_ALLOWLIST: ${OPSLY_WORKER_ALLOWLIST:-ollama,content-video}
+      MONEY_PRINTER_TURBO_URL: ${MONEY_PRINTER_TURBO_URL:-http://127.0.0.1:8080}
+      MONEY_PRINTER_TURBO_API_KEY: ${MONEY_PRINTER_TURBO_API_KEY:-}
+      OPSLY_ORCHESTRATOR_ROLE: ${OPSLY_ORCHESTRATOR_ROLE:-worker}
+      OPSLY_ORCHESTRATOR_MODE: ${OPSLY_ORCHESTRATOR_MODE:-worker-enabled}
+      REDIS_URL: ${REDIS_URL:?Set REDIS_URL in .env.worker (Doppler prd / Tailscale VPS)}
+      OPSLY_API_INTERNAL_URL: ${OPSLY_API_INTERNAL_URL:-}
+      ORCHESTRATOR_LLM_GATEWAY_URL: ${ORCHESTRATOR_LLM_GATEWAY_URL:-http://100.120.151.91:3010}
+      LLM_GATEWAY_URL: ${LLM_GATEWAY_URL:-http://100.120.151.91:3010}
+      # host network → Ollama compose en :11434 o native en loopback
+      OLLAMA_URL: ${OLLAMA_URL:-http://127.0.0.1:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2}
+      OPSLY_OLLAMA_DIRECT: ${OPSLY_OLLAMA_DIRECT:-true}
+      OPSLY_LOCAL_AGENT_UNIFIED_ONLY: ${OPSLY_LOCAL_AGENT_UNIFIED_ONLY:-true}
+      OPSLY_OPENCODE_AGENT_URL: ${OPSLY_OPENCODE_AGENT_URL:-http://127.0.0.1:5004}
+      OPSLY_CLI_AGENT_TOKEN: ${OPSLY_CLI_AGENT_TOKEN:-}
+      # Conservadores: máquina compartida / gaming
+      WORKER_CONCURRENCY_CURSOR: ${WORKER_CONCURRENCY_CURSOR:-1}
+      WORKER_CONCURRENCY_OLLAMA: ${WORKER_CONCURRENCY_OLLAMA:-1}
+      WORKER_CONCURRENCY_N8N: ${WORKER_CONCURRENCY_N8N:-1}
+      WORKER_CONCURRENCY_NOTIFY: ${WORKER_CONCURRENCY_NOTIFY:-1}
+    command:
+      - bash
+      - -lc
+      - |
+        set -euo pipefail
+        if [[ ! -d node_modules ]]; then
+          npm ci --ignore-scripts
+        fi
+        npm run build --workspace=@intcloudsysops/orchestrator
+        exec npm run start --workspace=@intcloudsysops/orchestrator
+    restart: unless-stopped
+    network_mode: host
+    depends_on:
+      ollama:
+        required: false
+
+  worker-openclaw-replica:
+    profiles: [split]
+    image: node:20-bookworm-slim
+    container_name: opsly-pc-gamer-worker-openclaw-02
+    working_dir: /app
+    volumes:
+      - ..:/app
+    environment:
+      WORKER_ID: ${WORKER_ID_REPLICA:-pc-gamer-openclaw-02}
+      OPSLY_ORCHESTRATOR_ROLE: worker
+      OPSLY_ORCHESTRATOR_MODE: worker-enabled
+      REDIS_URL: ${REDIS_URL:?Set REDIS_URL in .env.worker}
+      ORCHESTRATOR_LLM_GATEWAY_URL: ${ORCHESTRATOR_LLM_GATEWAY_URL:-http://100.120.151.91:3010}
+      LLM_GATEWAY_URL: ${LLM_GATEWAY_URL:-http://100.120.151.91:3010}
+      OLLAMA_URL: ${OLLAMA_URL:-http://127.0.0.1:11434}
+      WORKER_CONCURRENCY_OLLAMA: ${WORKER_CONCURRENCY_OLLAMA_REPLICA:-1}
+    command:
+      - bash
+      - -lc
+      - |
+        set -euo pipefail
+        if [[ ! -d node_modules ]]; then npm ci --ignore-scripts; fi
+        npm run build --workspace=@intcloudsysops/orchestrator
+        exec npm run start --workspace=@intcloudsysops/orchestrator
+    restart: unless-stopped
+    network_mode: host
