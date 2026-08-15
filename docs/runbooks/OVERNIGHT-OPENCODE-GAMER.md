@@ -74,6 +74,6 @@ Allowlist `local-agents` only. Health local en `:3018` (el VPS ya tiene `:3011`)
 1. `GET http://100.120.151.91:3011/health` → `queue-only`
 2. `POST /api/local/prompt-submit` agent `cursor` → **202** `job_type=local_cursor`
 3. Worker Mac tomó el job e invocó `http://127.0.0.1:5001/execute`
-4. El bridge escribe `.cursor/prompts/pending/prompt-<job>.md` y espera **60s** un archivo en `.cursor/responses/`. Si nadie completa el prompt en Cursor, el job termina en timeout (el archivo pending queda).
+4. El bridge escribe `.cursor/prompts/pending/prompt-<job>.md` y responde **202 accepted** al worker (ya no espera 60s). Completar después: `./scripts/ops/complete-cursor-job.sh --job-id <uuid> --content "…"`.
 
 El orchestrator en Compose debe estar en `redis_edge` (no solo `internal: true`) y montar `/opt/opsly/config` (registry + runtime-governor). Sin eso, `:3011` no publica o `POST` responde 500.

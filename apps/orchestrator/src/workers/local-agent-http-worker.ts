@@ -129,7 +129,8 @@ async function processLocalAgentJob(
   signal?: AbortSignal
 ): Promise<LocalAgentResponse> {
   const startTime = Date.now();
-  const cursorDir = path.join(process.cwd(), '.cursor');
+  const cursorDir =
+    process.env.OPSLY_CURSOR_DIR?.trim() || path.join(process.cwd(), '.cursor');
   const validationOrchestrator = createValidationOrchestrator(cursorDir);
 
   try {
