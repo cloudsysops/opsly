@@ -14,6 +14,7 @@ COPY config ./config
 RUN npm ci --ignore-scripts
 
 RUN npm run build -w @intcloudsysops/types && \
+    npm run build -w @intcloudsysops/notebooklm-agent && \
     npm run build -w @intcloudsysops/content-studio && \
     npm run build -w @intcloudsysops/pattern-catalog && \
     npm run build -w @intcloudsysops/sigma-harness && \
@@ -43,6 +44,7 @@ COPY --from=builder /app/apps/orchestrator/package.json ./apps/orchestrator/pack
 COPY --from=builder /app/apps/orchestrator/node_modules ./apps/orchestrator/node_modules
 COPY --from=builder /app/apps/ml ./apps/ml
 COPY --from=builder /app/apps/llm-gateway ./apps/llm-gateway
+COPY --from=builder /app/apps/notebooklm-agent ./apps/notebooklm-agent
 COPY --from=builder /app/packages/types ./packages/types
 COPY --from=builder /app/lib/prompt-guard ./lib/prompt-guard
 COPY --from=builder /app/lib/pattern-catalog ./lib/pattern-catalog
