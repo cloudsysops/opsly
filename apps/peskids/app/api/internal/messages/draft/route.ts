@@ -1,26 +1,12 @@
 import { NextRequest } from 'next/server';
 import { storeDraftReply } from '@/lib/message-store';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
-
-function internalSecret(): string | undefined {
-  return (
-    process.env.PESKIDS_INTERNAL_SECRET ||
-    process.env.PESKIDS_INBOUND_WEBHOOK_SECRET ||
-    process.env.JELOU_WEBHOOK_SECRET
-  );
-}
-
-function verifyInternal(req: NextRequest): boolean {
-  const secret = internalSecret();
-  if (!secret) return false;
-  const header = req.headers.get('x-internal-secret') || req.headers.get('x-webhook-secret') || '';
-  return header === secret;
-}
+import { verifyPeskidsInternalRequest } from '@/lib/internal-auth';
 
 export async function POST(req: NextRequest) {
   const requestId = resolveRequestId(req);
 
-  if (!verifyInternal(req)) {
+  if (!verifyPeskidsInternalRequest(req)) {
     return errorJson(requestId, 'Unauthorized', 401);
   }
 
