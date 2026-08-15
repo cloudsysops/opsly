@@ -38,9 +38,7 @@ export function PeskidsReservationLanding({
     <section
       id="reserva"
       className="scroll-mt-24 bg-pk-bg px-4 py-10 sm:px-8 lg:px-14"
-      {...(showTitleAndIntro
-        ? { 'aria-labelledby': 'peskids-reservation-heading' }
-        : { 'aria-label': PESKIDS_RESERVATION_EYEBROW })}
+      aria-labelledby="peskids-reservation-heading"
     >
       <div className="mx-auto max-w-2xl">
         <div className="mb-8 text-center">
@@ -50,17 +48,15 @@ export function PeskidsReservationLanding({
             </div>
           ) : null}
           <p className="pk-eyebrow text-pk-primary">{PESKIDS_RESERVATION_EYEBROW}</p>
-          {showTitleAndIntro ? (
-            <>
-              <HeadingTag
-                id="peskids-reservation-heading"
-                className="mb-3 text-3xl font-bold text-pk-ink sm:text-4xl"
-              >
-                {PESKIDS_RESERVATION_TITLE}
-              </HeadingTag>
-              <p className="mb-4 text-lg text-pk-sub">{intro}</p>
-            </>
-          ) : null}
+          <HeadingTag
+            id="peskids-reservation-heading"
+            className={
+              showTitleAndIntro ? 'mb-3 text-3xl font-bold text-pk-ink sm:text-4xl' : 'sr-only'
+            }
+          >
+            {PESKIDS_RESERVATION_TITLE}
+          </HeadingTag>
+          {showTitleAndIntro ? <p className="mb-4 text-lg text-pk-sub">{intro}</p> : null}
           <p className="mx-auto mb-6 max-w-xl text-left text-sm leading-relaxed text-pk-sub sm:text-center">
             {PESKIDS_RESERVATION_AUDIENCE}
           </p>
