@@ -3,6 +3,7 @@ import {
   agentForLocalJobType,
   jobTypeForLocalAgent,
   normalizeLocalAgentKind,
+  parseLocalAgentKindAllowlist,
   parsePromptFrontmatter,
 } from '../lib/local-worker-utils.js';
 
@@ -53,5 +54,16 @@ describe('local-worker-utils', () => {
   it('defaults unknown agent values to local_cursor', () => {
     expect(normalizeLocalAgentKind('bogus')).toBe('local_cursor');
     expect(normalizeLocalAgentKind('opencode')).toBe('local_opencode');
+  });
+
+  it('parses OPSLY_LOCAL_AGENT_KINDS host allowlist', () => {
+    expect(parseLocalAgentKindAllowlist(undefined)).toContain('local_cursor');
+    expect(parseLocalAgentKindAllowlist('')).toContain('local_opencode');
+    expect(parseLocalAgentKindAllowlist('local_cursor')).toEqual(['local_cursor']);
+    expect(parseLocalAgentKindAllowlist('opencode,cursor')).toEqual([
+      'local_cursor',
+      'local_opencode',
+    ]);
+    expect(parseLocalAgentKindAllowlist('bogus')).toContain('local_cursor');
   });
 });
