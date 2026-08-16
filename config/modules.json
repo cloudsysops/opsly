@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "description": "Opsly Library Modules Registry",
-  "lastUpdated": "2026-08-07T00:00:00Z",
+  "lastUpdated": "2026-08-16T00:00:00Z",
   "modules": {
     "prompts": {
       "name": "@intcloudsysops/prompts",
@@ -229,6 +229,25 @@
         "parseMissionControlProfile",
         "sanitizeEntityCard",
         "omitMrrUntilCommercialSource"
+      ]
+    },
+    "universe": {
+      "name": "@intcloudsysops/universe",
+      "version": "1.0.0",
+      "path": "lib/universe",
+      "owner": "operations",
+      "description": "Canonical Opsly Universe IP: characters, worlds, Visual DNA, story contracts. Consumed by agents; does not depend on content-studio.",
+      "status": "stable",
+      "dependencies": [],
+      "governance": "lib/universe/GOVERNANCE.md",
+      "mainFile": "lib/universe/src/index.ts",
+      "exports": [
+        "universe",
+        "getCharacter",
+        "getContext",
+        "composeStory",
+        "buildImagePrompt",
+        "buildVideoPrompt"
       ]
     }
   },
