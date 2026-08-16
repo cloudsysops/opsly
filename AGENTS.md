@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-05-26
+last_review: 2026-08-16
 ---
 
 # Opsly — Contexto del Agente
@@ -675,33 +675,27 @@ Week 4: Docs + runbook + MVP validation
 
 ## 🔄 Estado actual
 
-<!-- Actualizar al final de cada sesión. Sesiones pre-2026-05-26 → docs/AGENTS-SESSION-HISTORY.md -->
+<!-- Actualizar al final de cada sesión. Sesiones pre-2026-05-26 → docs/history/AGENTS-SESSION-HISTORY.md -->
 
-### 📌 Sesión Activa (2026-08-06)
+### 📌 Sesión Activa (2026-08-16)
 
-**Tema:** Peskids Claude lote en prod + higiene ramas + rescate ICSO (#881)  
-**Branch:** `main` (`883fe892`) — Peskids healthy  
-**Objetivo:** plataforma usable (Peskids) + camino ICSO/modules listo para merge
+**Tema:** Night-merge CI + Deploy health + Peskids fail-closed + entitlements en `main`  
+**Branch:** `main` (`dcb939f`) plataforma; Peskids imagen **`e787fd6`** (no se rebuilda con Deploy de plataforma)  
+**Objetivo:** un solo cerebro para agentes (Cursor/Claude/OpenCode/Copilot/workers) alineado a prod real
 
 **Hecho:**
-1. ✅ Lote Claude Peskids en prod (`883fe892`) — quick-actions, Matricular, templates, CV/video, email staff, ciudad/domicilio, logo, sidebar
-2. ✅ Hotfix standalone `webpack-runtime` (#918) tras outage breve; rollback + redeploy OK
-3. ✅ Migraciones Supabase 0093–0095 aplicadas; audit FK sin FK a `public.leads`
-4. ✅ Higiene: cerrados auto-fix #915/#912/#909/#890; borradas ramas Claude/Peskids ya mergeadas; cerrados Bolt metrics duplicados
-5. ✅ **PR [#882](https://github.com/cloudsysops/opsly/pull/882) mergeado (16-08-02:12Z, `dcb939f`)** — **Tenant entitlements engine (Module Registry)**:
-   - Rebase sobre `main` (estaba 104 commits atrás) + migración renumerada a **`0097_tenant_entitlements.sql`** (0093-0096 ya ocupadas en main)
-   - `lib/services/entitlements` (check/grant/revoke, fail-closed) + `apps/api/app/api/tenants/[slug]/entitlements` (GET/POST + DELETE `[moduleId]`, admin-gated)
-   - Añade `domain/locale/currency/timezone/branding_logo_url` a `platform.tenants`
-   - CI verde completo; suite API **653/653**; tests entitlements **9 + 13**
-   - **Migraciones aplicadas en prod**: `0096_drop_ghl_tracking_columns` + `0097_tenant_entitlements`
-   - **Redeploy API + smoke end-to-end en prod OK**: GET `200 []` → POST grant `weekly-report` `201` → DELETE `204` → GET `200 []`
+1. ✅ Peskids prod **`e787fd6`** ([#980](https://github.com/cloudsysops/opsly/pull/980)) — magic-link / leads / OpenWA **fail-closed**. Health: `https://www.peskids.com/api/health`. `POST /api/auth/magic-link` sin `x-internal-secret` → **401**. n8n debe enviar ese header. `/thanks` ya no lee PII del lead.
+2. ✅ Night-merge: esperar Deploy cuyo `headSha` = SHA de `main` **post-merge**; rollback vía PR `revert/night-merge-*` + `hotfix-prod` (no `git push origin main`). Reintentar `mergeable=UNKNOWN`. Runbook: [`docs/runbooks/NIGHT-MERGE.md`](docs/runbooks/NIGHT-MERGE.md).
+3. ✅ Platform Deploy ([#986](https://github.com/cloudsysops/opsly/pull/986)): health **público desde el runner**; probe Traefik local en VPS (`Host: api…` → `127.0.0.1`). No usar hairpin VPS→Cloudflare como criterio de fallo. `concurrency: deploy-${{ github.ref }}`, `cancel-in-progress: false`. SSH `command_timeout` 30m.
+4. ✅ Mergeados esta oleada: [#975](https://github.com/cloudsysops/opsly/pull/975) local-agents (Mac=`local_cursor`, PC=`local_opencode`); [#982](https://github.com/cloudsysops/opsly/pull/982) pin n8n; [#933](https://github.com/cloudsysops/opsly/pull/933) edge-watchdog; [#962](https://github.com/cloudsysops/opsly/pull/962) Palette a11y; [#970](https://github.com/cloudsysops/opsly/pull/970) Sentinel auth tests; [#986](https://github.com/cloudsysops/opsly/pull/986) Deploy; [#882](https://github.com/cloudsysops/opsly/pull/882) entitlements (`dcb939f`, Deploy verde).
+5. ✅ Cerrados como stale/superseded: #859, #932, #981, #983, #959, #955, #953, #951, #984, #985. Cola `night-merge` **vacía**.
+6. ✅ VPS: cron edge-watchdog `*/2`; nightly n8n `15 1 * * *` (America/Bogota). API `https://api.op-sly.com/api/health` → 200 supabase+redis ok.
 
 **Pendiente:**
-- Catálogo comercial (`config/commercial-catalog.json`) **todavía sin runtime tie real**: módulos venta (lead-capture, etc.) no mapean a los módulos técnicos activables. Referencia de diseño [`docs/00-architecture/MODULE-REGISTRY.md`](docs/00-architecture/MODULE-REGISTRY.md). (PR #881 catalog CMS sigue cerrado sin merge.)
-- Revisión cliente: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md)
-- Security: rebase #886 npm audit; sentinel forms #867
-- Archivar o rebasear #885/#887 (Claude) sin duplicar #881
-
+- Humano en VPS: `scripts/ops/scan-env-dollar-interpolation.sh --env-file /opt/opsly/.env --dry-run` (solo nombres de clave; nunca `cat` / `docker compose config` del `.env`). Si Compose avisa `The "uF" variable is not set`, escapar `$` en Doppler como `$$`.
+- Catálogo comercial (`config/commercial-catalog.json`) sin tie runtime a módulos técnicos. Diseño: [`docs/00-architecture/MODULE-REGISTRY.md`](docs/00-architecture/MODULE-REGISTRY.md).
+- Revisión cliente Peskids: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md).
+- **No** mergear en masa Sentinel/Bolt/Palette. **No** mezclar YouTube/content-studio en PRs de plataforma. PC-gamer: no encolar OpenCode si el nodo está en horario `gaming` / offline.
 
 ### 📅 Sesiones Recientes
 
@@ -734,7 +728,7 @@ Week 4: Docs + runbook + MVP validation
 - ✅ Smoke completo en producción: landing, admin, health, leads, feedback
 - ✅ Árbol local limpio
 
-**Historial completo:** [`docs/AGENTS-SESSION-HISTORY.md`](docs/AGENTS-SESSION-HISTORY.md)
+**Historial completo:** [`docs/history/AGENTS-SESSION-HISTORY.md`](docs/history/AGENTS-SESSION-HISTORY.md)
     - All endpoints return realistic mock data matching component interfaces
     - FormAnalyticsDashboard expects: formId, formTitle, submissionsCount, abandonmentRate, avgCompletionTime, errorCount
     - SubmissionsDashboard expects: formId, formTitle, submissionId, submittedAt, status
@@ -1606,11 +1600,11 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 ## 🔄 Próximo paso inmediato
 
-**Peskids:** prod `883fe892` — enviar checklist [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md). Health: `https://www.peskids.com/api/health`.
+**Peskids:** prod `e787fd6` (magic-link / leads / OpenWA fail-closed). Health: `https://www.peskids.com/api/health`. Checklist: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md).
 
-**Plataforma (valor ICSO):** merge nocturno [#881](https://github.com/cloudsysops/opsly/pull/881) tras CI verde — catalog CMS + `tenant_modules` (0096). No redeploy Peskids salvo hotfix.
+**Plataforma:** `main` = `dcb939f` (#882 entitlements, Deploy verde). Scan `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh`. Cola `night-merge` vacía. No mergear Sentinel/Bolt/Palette sin review.
 
-**Capacidad VPS:** alerta memoria **activa** (~4 GiB) — `docs/runbooks/VPS-MEMORY-CAPS.md`.
+**Capacidad VPS:** alerta memoria **activa** (~4 GiB) — `docs/runbooks/VPS-MEMORY-CAPS.md`. Compose `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh --env-file /opt/opsly/.env --dry-run` (solo nombres de clave).
 
 
 
