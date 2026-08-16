@@ -1594,11 +1594,11 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 ## 🔄 Próximo paso inmediato
 
-**Peskids:** prod `883fe892` — enviar checklist [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md). Health: `https://www.peskids.com/api/health`.
+**Peskids:** prod `e787fd6` (magic-link / leads / OpenWA fail-closed). Health: `https://www.peskids.com/api/health`. Checklist: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md).
 
-**Plataforma (valor ICSO):** merge nocturno [#881](https://github.com/cloudsysops/opsly/pull/881) tras CI verde — catalog CMS + `tenant_modules` (0096). No redeploy Peskids salvo hotfix.
+**Plataforma:** Deploy health desde runner (#986). `main` incluye entitlements (#882) — Deploy de ese SHA en cola/curso. Cola `night-merge` vacía. No mergear Sentinel/Bolt/Palette sin review.
 
-**Capacidad VPS:** alerta memoria **activa** (~4 GiB) — `docs/runbooks/VPS-MEMORY-CAPS.md`.
+**Capacidad VPS:** alerta memoria **activa** (~4 GiB) — `docs/runbooks/VPS-MEMORY-CAPS.md`. Compose `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh`.
 
 
 
