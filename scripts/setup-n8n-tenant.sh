@@ -78,7 +78,7 @@ else
   cat > "$OVERRIDE_FILE" << 'EOF'
 services:
   tenant_peskids:
-    image: n8nio/n8n:latest
+    image: n8nio/n8n:2.32.5
     container_name: tenant_peskids
     environment:
       N8N_HOST: "peskids.op-sly.com"

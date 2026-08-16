@@ -1,5 +1,6 @@
 # Squash-merge PRs labeled `night-merge` during America/Bogota night window,
 # wait for Deploy, smoke-test public health, rollback main if verify fails.
+# VPS n8n upgrade is separate: docs/runbooks/NIGHTLY-OPS-UPGRADE.md
 #
 # Enqueue: add label `night-merge` to a green PR. You can sleep — this runs at 01:00 Bogota.
 # Docs: docs/runbooks/NIGHT-MERGE.md
