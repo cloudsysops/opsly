@@ -1,0 +1,104 @@
+[
+  {
+    "id": "scene_01",
+    "projectId": "opsly-parallel-path-pilot-001",
+    "order": 1,
+    "durationMs": 5000,
+    "visualType": "image",
+    "assetRefs": [
+      "asset_1492f59c-5062-4605-a741-09b8502b34b5"
+    ],
+    "caption": "2025. Una laptop, muchas ideas, casi ningún recurso.",
+    "transition": "cut",
+    "motion": "zoom-in"
+  },
+  {
+    "id": "scene_02",
+    "projectId": "opsly-parallel-path-pilot-001",
+    "order": 2,
+    "durationMs": 5000,
+    "visualType": "image",
+    "assetRefs": [
+      "asset_33f5b821-147f-48e8-bb19-6cf9ee914c71"
+    ],
+    "caption": "¿Y si pudiera construir algo mío?",
+    "transition": "cut",
+    "motion": "static"
+  },
+  {
+    "id": "scene_03",
+    "projectId": "opsly-parallel-path-pilot-001",
+    "order": 3,
+    "durationMs": 4000,
+    "visualType": "image",
+    "assetRefs": [
+      "asset_8c9474f0-3bcb-4689-a135-d4ba3f1202d4"
+    ],
+    "caption": "La conversación comienza. No hay respuesta todavía — solo preguntas.",
+    "transition": "cut",
+    "motion": "pan-right"
+  },
+  {
+    "id": "scene_04",
+    "projectId": "opsly-parallel-path-pilot-001",
+    "order": 4,
+    "durationMs": 3500,
+    "visualType": "image",
+    "assetRefs": [
+      "asset_d4f4265a-3f5f-4da6-8a82-0dbabb2e0256"
+    ],
+    "caption": "Un pequeño punto azul aparece dentro del computador.",
+    "transition": "cut",
+    "motion": "zoom-in"
+  },
+  {
+    "id": "scene_05",
+    "projectId": "opsly-parallel-path-pilot-001",
+    "order": 5,
+    "durationMs": 4000,
+    "visualType": "image",
+    "assetRefs": [
+      "asset_1d0967cf-251b-4e9e-b7e4-2b05a1d08c6d"
+    ],
+    "caption": "NØVA abre los ojos por primera vez.",
+    "transition": "cut",
+    "motion": "zoom-out"
+  },
+  {
+    "id": "scene_06",
+    "projectId": "opsly-parallel-path-pilot-001",
+    "order": 6,
+    "durationMs": 6000,
+    "visualType": "image",
+    "assetRefs": [
+      "asset_79d1d981-860e-4991-8172-fb3a1e6cac2b"
+    ],
+    "transition": "cut",
+    "motion": "pan-left"
+  },
+  {
+    "id": "scene_07",
+    "projectId": "opsly-parallel-path-pilot-001",
+    "order": 7,
+    "durationMs": 5000,
+    "visualType": "image",
+    "assetRefs": [
+      "asset_f9b5d0de-d369-4481-9d0e-913672656974"
+    ],
+    "transition": "cut",
+    "motion": "zoom-in"
+  },
+  {
+    "id": "scene_08",
+    "projectId": "opsly-parallel-path-pilot-001",
+    "order": 8,
+    "durationMs": 7500,
+    "visualType": "image",
+    "assetRefs": [
+      "asset_1f17363a-b85f-4652-b6bb-c36619d73683"
+    ],
+    "caption": "Pensé que estaba perdido. Después entendí que estaba construyendo el mapa. — OPSLY: THE PARALLEL PATH",
+    "transition": "cut",
+    "motion": "zoom-out"
+  }
+]

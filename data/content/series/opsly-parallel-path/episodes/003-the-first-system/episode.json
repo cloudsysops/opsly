@@ -1,0 +1,80 @@
+{
+  "id": "opsly-parallel-path-003",
+  "series_id": "opsly-parallel-path",
+  "episode_number": 3,
+  "title": {
+    "es": "El Primer Sistema",
+    "en": "The First System"
+  },
+  "hook": {
+    "es": "Nada espectacular. Pero es real.",
+    "en": "Nothing spectacular. But it's real."
+  },
+  "objective": "First visit to the Parallel World. A small early automation becomes visible there as a modest glowing structure. Establish the core visual rule: real-world systems generate parallel-world architecture — and that failures don't vanish, they become luminous ruins marked on the map.",
+  "audience": ["general tech-curious audience", "founders", "developers", "dreamers"],
+  "duration_estimate_sec": 50,
+  "scenes": [
+    {
+      "number": 1,
+      "description": "The Traveler and NØVA building, hands-on",
+      "visuals": "Small workshop scene, The Traveler and NØVA working together over a modest glowing panel — an early automation being wired",
+      "copy": "Nada espectacular. Pero es real.",
+      "duration_sec": 8,
+      "assets_needed": ["character sheet: the-traveler (working posture)", "character sheet: nova (thinking expression)"]
+    },
+    {
+      "number": 2,
+      "description": "First reveal of the Parallel World",
+      "visuals": "The small system lifts off the workbench and rises into the Parallel World as a modest glowing structure — first full establishing shot of the geometric city",
+      "copy": "El primer sistema real se levanta como una pequeña estructura, en un mundo que apenas empieza a formarse.",
+      "duration_sec": 12,
+      "assets_needed": ["Parallel World establishing shot", "small glowing structure asset"]
+    },
+    {
+      "number": 3,
+      "description": "NØVA asks if this is Opsly",
+      "visuals": "NØVA circling the small structure, curious, The Traveler watching",
+      "copy": "NØVA — \"¿Eso es Opsly?\" The Traveler — \"No. Pero creo que es una pieza.\"",
+      "duration_sec": 8,
+      "assets_needed": []
+    },
+    {
+      "number": 4,
+      "description": "A build fails",
+      "visuals": "A second, larger structure attempt collapses into dim, fractured light — it doesn't disappear, it settles into the ground as a marked ruin",
+      "copy": "No todo funciona. Un sistema falla — y no desaparece.",
+      "duration_sec": 12,
+      "assets_needed": ["luminous ruin visual effect"]
+    },
+    {
+      "number": 5,
+      "description": "The luminous ruins lesson",
+      "visuals": "NØVA looking at the dim ruin, The Traveler beside him",
+      "copy": "NØVA — \"¿Fallamos?\" The Traveler — \"Sí.\" NØVA — \"¿Entonces la borramos?\" The Traveler — \"No. Ahora sabemos por dónde no pasar.\"",
+      "duration_sec": 10,
+      "assets_needed": ["character sheet: nova (thinking expression)"]
+    }
+  ],
+  "metadata": {
+    "call_to_action": "Cada sistema real construye un mundo.",
+    "captions": {
+      "es": "El primer sistema, apenas una chispa.",
+      "en": "The first system, barely a spark."
+    },
+    "hashtags": ["#OpslyParallelPath", "#TheTraveler", "#NOVA", "#ParallelWorld"],
+    "thumbnail_concept": "A small glowing structure rising in the Parallel World, The Traveler and NØVA watching it form"
+  },
+  "production": {
+    "status": "storyboard",
+    "created_at": "2026-08-11T00:00:00Z",
+    "last_updated": "2026-08-11T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Act III of the Origin Saga — see ../../canon/ORIGIN-SAGA.md.",
+      "Theme: small, unglamorous beginnings are still real beginnings; failure leaves information instead of disappearing.",
+      "Visual motif: LUMINOUS RUINS (canon device, see ../../canon/SYMBOLS.md) — introduced here, paid off at the cipher reveal in Episode 12.",
+      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 03."
+    ]
+  }
+}
