@@ -1,5 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
 import { getServiceClient } from '../../../../lib/supabase';
 
 const breachSchema = z.object({
@@ -14,11 +16,74 @@ const breachSchema = z.object({
   containment_actions: z.string().optional(),
 });
 
-export async function POST(request: NextRequest): Promise<Response> {
-  // Internal-only endpoint: requires service-role secret header
+type BreachInput = z.infer<typeof breachSchema>;
+
+function getActorId(ip: string | null): string {
+  return ip ? `anonymous:${ip}` : 'anonymous';
+}
+
+function verifyAuth(request: NextRequest): boolean {
   const authHeader = request.headers.get('authorization');
   const expectedToken = process.env.GOVERNANCE_BREACH_SECRET;
-  if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
+  return Boolean(expectedToken && authHeader === `Bearer ${expectedToken}`);
+}
+
+async function insertBreachLog(parsedData: BreachInput, ip: string | null): Promise<Response> {
+  const client = getServiceClient();
+  const { data, error } = await client
+    .schema('governance')
+    .from('breach_log')
+    .insert(parsedData)
+    .select('id, created_at')
+    .single();
+
+  if (error) {
+    console.error('[governance][breach] insert error', error);
+    await logAuditEvent({
+      action: 'governance_breach_report_failed',
+      actor_id: getActorId(ip),
+      tenant_id: parsedData.tenant_id,
+      ip_address: ip,
+      metadata: { reason: 'db_insert_error', title: parsedData.title },
+    });
+    return Response.json({ error: 'Failed to log breach' }, { status: 500 });
+  }
+
+  await logAuditEvent({
+    action: 'governance_breach_report',
+    actor_id: getActorId(ip),
+    tenant_id: parsedData.tenant_id,
+    ip_address: ip,
+    metadata: { breach_id: data.id, severity: parsedData.severity, title: parsedData.title },
+  });
+
+  return Response.json(
+    { ok: true, breach_id: data.id, logged_at: data.created_at },
+    { status: 201 }
+  );
+}
+
+export async function POST(request: NextRequest): Promise<Response> {
+  const ip = extractIp(request);
+  const rateLimitKey = ip ? `governance-breach:${ip}` : 'governance-breach:anonymous';
+  const rateLimit = await checkRateLimit(rateLimitKey);
+  if (!rateLimit.allowed) {
+    await logAuditEvent({
+      action: 'governance_breach_report_failed',
+      actor_id: getActorId(ip),
+      ip_address: ip,
+      metadata: { reason: 'rate_limited' },
+    });
+    return Response.json({ error: 'Too many requests' }, { status: 429 });
+  }
+
+  if (!verifyAuth(request)) {
+    await logAuditEvent({
+      action: 'governance_breach_report_failed',
+      actor_id: getActorId(ip),
+      ip_address: ip,
+      metadata: { reason: 'unauthorized' },
+    });
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -26,35 +91,28 @@ export async function POST(request: NextRequest): Promise<Response> {
   try {
     body = await request.json();
   } catch {
+    await logAuditEvent({
+      action: 'governance_breach_report_failed',
+      actor_id: getActorId(ip),
+      ip_address: ip,
+      metadata: { reason: 'invalid_json' },
+    });
     return Response.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
   const parsed = breachSchema.safeParse(body);
   if (!parsed.success) {
+    await logAuditEvent({
+      action: 'governance_breach_report_failed',
+      actor_id: getActorId(ip),
+      ip_address: ip,
+      metadata: { reason: 'validation_error' },
+    });
     return Response.json(
       { error: 'Invalid payload', details: parsed.error.flatten() },
       { status: 400 }
     );
   }
 
-  const client = getServiceClient();
-  const { data, error } = await client
-    .schema('governance')
-    .from('breach_log')
-    .insert(parsed.data)
-    .select('id, created_at')
-    .single();
-
-  if (error) {
-    console.error('[governance][breach] insert error', error);
-    return Response.json({ error: 'Failed to log breach' }, { status: 500 });
-  }
-
-  // TODO: trigger Discord alert to #ops-alerts via observability
-  // await alertDiscord({ title: `[BREACH] ${parsed.data.title}`, severity: parsed.data.severity });
-
-  return Response.json(
-    { ok: true, breach_id: data.id, logged_at: data.created_at },
-    { status: 201 }
-  );
+  return insertBreachLog(parsed.data, ip);
 }
