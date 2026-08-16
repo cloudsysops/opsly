@@ -66,6 +66,7 @@
     "opsly:drive:upload-tenant-onboarding": "python3 scripts/opsly_drive_automation.py upload-tenant-pack",
     "opsly:chat": "python3 tools/cli/main.py chat",
     "opsly:openclaw-cli": "bash scripts/openclaw-with-node22.sh",
+    "universe": "npm run cli --workspace=@intcloudsysops/universe --",
     "client:setup": "tsx scripts/client-setup.ts",
     "client:plan": "tsx scripts/client-plan.ts",
     "client:bootstrap": "bash scripts/provisioning/bootstrap-tenant.sh",
