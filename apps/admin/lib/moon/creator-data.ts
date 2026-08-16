@@ -2,6 +2,7 @@ import {
   assertSameTenant,
   brandKitFromPreset,
   evaluateRightsGate,
+  getFoundation,
   listAllTrendCandidates,
   listProjectEnvelopes,
   loadAllContentChannelPresets,
@@ -55,6 +56,7 @@ export async function loadCreatorStudioData(): Promise<{
   formats: ReturnType<typeof loadContentFormats>;
   characters: ReturnType<typeof loadContentCharacters>;
   brands: Array<{ channel: string; kit: ReturnType<typeof brandKitFromPreset> }>;
+  universeFoundation: ReturnType<typeof getFoundation>;
 }> {
   const projects = await listProjectEnvelopes();
   const presets = await loadAllContentChannelPresets();
@@ -65,6 +67,7 @@ export async function loadCreatorStudioData(): Promise<{
     formats: loadContentFormats(),
     characters: loadContentCharacters(),
     brands: presets.map((preset) => ({ channel: preset.channel, kit: brandKitFromPreset(preset) })),
+    universeFoundation: getFoundation(),
   };
 }
 

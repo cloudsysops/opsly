@@ -14,6 +14,7 @@ export {
 export { loadAllContentChannelPresets, brandKitFromPreset, charactersForChannel } from './presets.js';
 export {
   composeUniverseForProject,
+  getFoundation,
   featuredCharacterIdsForChannel,
   loadUniverseCharacters,
   suggestCharactersForTopic,

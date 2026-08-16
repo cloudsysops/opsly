@@ -58,6 +58,9 @@ describe('content os consumes universe', () => {
       tempChannelRoot()
     );
     const binding = envelope.universeContext ?? composeUniverseForProject(envelope);
+    expect(binding.foundation.version).toBe('1.0.0');
+    expect(binding.foundation.vision).toContain('THE MAP IS STILL BEING DRAWN');
+    expect(binding.foundation.childSafetyPrinciples.length).toBeGreaterThan(0);
     expect(binding.canonVersion).toBe('1.0');
     expect(binding.characterIds).toEqual(['traveler', 'nova', 'echo']);
     expect(binding.agentInputs.story).toMatchObject({ agent: 'story' });

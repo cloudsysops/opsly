@@ -6,6 +6,9 @@ import {
   contentAgentAdapter,
   getCharactersForChannel,
   getCharactersForTopic,
+  getChildSafetyPrinciples,
+  getFoundation as getUniverseFoundation,
+  getNonNegotiables,
   getTenantAdaptation,
   imageAgentAdapter,
   listCharacters,
@@ -107,7 +110,14 @@ function audienceForProject(audience: string): 'kids' | 'family' | 'general' {
 }
 
 function bindingFromContext(context: ComposedCharacterContext): UniverseProjectBinding {
+  const foundation = getUniverseFoundation();
   return {
+    foundation: {
+      version: foundation.foundationVersion,
+      vision: foundation.futureVision.statement,
+      childSafetyPrinciples: getChildSafetyPrinciples(),
+      nonNegotiables: getNonNegotiables(),
+    },
     canonVersion: context.canonVersion,
     promptVersion: context.promptVersion,
     characterIds: context.characters.map((character) => character.id),
@@ -125,6 +135,10 @@ function bindingFromContext(context: ComposedCharacterContext): UniverseProjectB
       content: contentAgentAdapter.toAgentInput(context),
     },
   };
+}
+
+export function getFoundation() {
+  return getUniverseFoundation();
 }
 
 export function composeUniverseForProject(envelope: ContentProjectEnvelope): UniverseProjectBinding {

@@ -88,6 +88,15 @@ export default async function MoonCreatorPage({
             <p className="font-mono text-[10px] uppercase text-slate-500">Portals</p>
             <p className="mt-1 text-2xl text-slate-50">{data.portals.length}</p>
           </MoonCard>
+          <MoonCard className="p-4 md:col-span-4">
+            <p className="font-mono text-[10px] uppercase text-slate-500">Universe canon</p>
+            <p className="mt-1 text-sm text-slate-100">Foundation v{data.universeFoundation.foundationVersion}</p>
+            <p className="mt-1 text-sm text-slate-300">{data.universeFoundation.futureVision.statement}</p>
+            <p className="mt-2 font-mono text-[10px] text-slate-500">
+              Child safety: {data.universeFoundation.childSafety.length} principles · Non-negotiables:{' '}
+              {data.universeFoundation.nonNegotiables.length}
+            </p>
+          </MoonCard>
         </div>
       ) : null}
 
