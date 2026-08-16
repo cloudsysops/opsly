@@ -688,16 +688,28 @@ Week 4: Docs + runbook + MVP validation
 2. ✅ Hotfix standalone `webpack-runtime` (#918) tras outage breve; rollback + redeploy OK
 3. ✅ Migraciones Supabase 0093–0095 aplicadas; audit FK sin FK a `public.leads`
 4. ✅ Higiene: cerrados auto-fix #915/#912/#909/#890; borradas ramas Claude/Peskids ya mergeadas; cerrados Bolt metrics duplicados
-5. ✅ PR [#881](https://github.com/cloudsysops/opsly/pull/881) reconciliada con `main` + `0096_tenant_modules.sql` (MERGEABLE)
+5. ✅ **PR [#882](https://github.com/cloudsysops/opsly/pull/882) mergeado (16-08-02:12Z, `dcb939f`)** — **Tenant entitlements engine (Module Registry)**:
+   - Rebase sobre `main` (estaba 104 commits atrás) + migración renumerada a **`0097_tenant_entitlements.sql`** (0093-0096 ya ocupadas en main)
+   - `lib/services/entitlements` (check/grant/revoke, fail-closed) + `apps/api/app/api/tenants/[slug]/entitlements` (GET/POST + DELETE `[moduleId]`, admin-gated)
+   - Añade `domain/locale/currency/timezone/branding_logo_url` a `platform.tenants`
+   - CI verde completo; suite API **653/653**; tests entitlements **9 + 13**
+   - **Migraciones aplicadas en prod**: `0096_drop_ghl_tracking_columns` + `0097_tenant_entitlements`
+   - **Redeploy API + smoke end-to-end en prod OK**: GET `200 []` → POST grant `weekly-report` `201` → DELETE `204` → GET `200 []`
 
 **Pendiente:**
-- CI verde + merge nocturno #881 (ICSO catalog CMS + tenant module activation)
+- Catálogo comercial (`config/commercial-catalog.json`) **todavía sin runtime tie real**: módulos venta (lead-capture, etc.) no mapean a los módulos técnicos activables. Referencia de diseño [`docs/00-architecture/MODULE-REGISTRY.md`](docs/00-architecture/MODULE-REGISTRY.md). (PR #881 catalog CMS sigue cerrado sin merge.)
 - Revisión cliente: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md)
 - Security: rebase #886 npm audit; sentinel forms #867
 - Archivar o rebasear #885/#887 (Claude) sin duplicar #881
 
 
 ### 📅 Sesiones Recientes
+
+**Sesión 2026-08-16 — Tenant entitlements engine en prod (Module Registry) ✅**
+- ✅ PR #882 mergeado (`dcb939f`) tras rebase sobre main + renumerar migración a `0097_tenant_entitlements`
+- ✅ Migraciones 0096 + 0097 aplicadas en Supabase prod (`supabase db push`)
+- ✅ API redeployada + smoke E2E en prod: `GET/POST/DELETE /api/tenants/{slug}/entitlements` OK
+- Base runtime para ofrecer módulos/servicios a tenants por `tenant_slug`
 
 **Sesión 2026-08-05 — WhatsApp domicilio + logo prod ✅**
 - ✅ Domicilio ya no cae al número de sede; mensaje deja el genérico de marketing
