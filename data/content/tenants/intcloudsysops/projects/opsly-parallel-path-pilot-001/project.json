@@ -1,0 +1,19 @@
+{
+  "id": "opsly-parallel-path-pilot-001",
+  "tenantId": "intcloudsysops",
+  "channel": "opsly-universe",
+  "series": "OPSLY: The Parallel Path",
+  "episode": 1,
+  "title": "Todo empezó con una pregunta",
+  "slug": "todo-empezo-con-una-pregunta",
+  "goal": "Introduce The Traveler and NØVA — condensed render-pipeline pilot cut across the arc canon's data/content/series/opsly-parallel-path/episodes/001-the-question/ (\"La Pregunta\") begins and episodes 3+ continue (Parallel World reveal, the map).",
+  "audience": "OPSLY Universe followers",
+  "format": "9:16",
+  "status": "ready_for_review",
+  "preset": "opsly-universe",
+  "createdAt": "2026-08-16T04:01:17.869Z",
+  "updatedAt": "2026-08-16T04:02:20.834Z",
+  "approval": {
+    "status": "ready_for_review"
+  }
+}

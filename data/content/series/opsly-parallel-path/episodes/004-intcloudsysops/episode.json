@@ -1,0 +1,80 @@
+{
+  "id": "opsly-parallel-path-004",
+  "series_id": "opsly-parallel-path",
+  "episode_number": 4,
+  "title": {
+    "es": "IntCloudSysOps",
+    "en": "IntCloudSysOps"
+  },
+  "hook": {
+    "es": "¿Por qué tenemos que empezar de cero cada vez?",
+    "en": "Why do we have to start from zero every time?"
+  },
+  "objective": "The Traveler formalizes a company around cloud/DevOps consulting and client work. Across many different clients, the same underlying patterns keep repeating — the question shifts from 'how do we build this project' to 'why do we rebuild the same pieces every time.'",
+  "audience": ["general tech-curious audience", "founders", "developers"],
+  "duration_estimate_sec": 50,
+  "scenes": [
+    {
+      "number": 1,
+      "description": "A new client-world portal opens",
+      "visuals": "The Traveler steps through a new portal into a distinct small world with its own skin/color, NØVA following close behind",
+      "copy": "Un nuevo cliente. Un nuevo mundo.",
+      "duration_sec": 8,
+      "assets_needed": ["client-world portal environment (generic, first)"]
+    },
+    {
+      "number": 2,
+      "description": "Multiple client-worlds in quick succession",
+      "visuals": "Quick cuts through three more distinct client-world skins, each different on the surface",
+      "copy": "Otro cliente. Otro mundo distinto. Y sin embargo...",
+      "duration_sec": 12,
+      "assets_needed": ["client-world portal environment (x3, varied skins)"]
+    },
+    {
+      "number": 3,
+      "description": "The pattern glows through",
+      "visuals": "Beneath each client-world's distinct surface, the same faint glowing pattern becomes visible — usuario, lead, workflow, notificación, pago, dashboard",
+      "copy": "...los mismos patrones brillando debajo. Usuario. Lead. Workflow. Notificación. Pago. Dashboard.",
+      "duration_sec": 12,
+      "assets_needed": ["repeating-pattern overlay effect"]
+    },
+    {
+      "number": 4,
+      "description": "The question changes",
+      "visuals": "The Traveler standing still among the four client-worlds, NØVA beside him, both looking at the repeated pattern",
+      "copy": "¿Por qué tenemos que empezar de cero cada vez?",
+      "duration_sec": 10,
+      "assets_needed": ["character sheet: the-traveler (thinking expression)"]
+    },
+    {
+      "number": 5,
+      "description": "IntCloudSysOps forms as a name",
+      "visuals": "A small label of light forms above the group of client-worlds — not a new world yet, just a name gathering the pattern together",
+      "copy": "IntCloudSysOps. Todavía no era Opsly. Pero ya era una pregunta correcta.",
+      "duration_sec": 8,
+      "assets_needed": []
+    }
+  ],
+  "metadata": {
+    "call_to_action": "Los mismos patrones, una y otra vez.",
+    "captions": {
+      "es": "Cada cliente distinto. Los mismos patrones debajo.",
+      "en": "Every client different. The same patterns underneath."
+    },
+    "hashtags": ["#OpslyParallelPath", "#IntCloudSysOps", "#TheTraveler", "#CloudOps"],
+    "thumbnail_concept": "The Traveler surrounded by many small distinct client-world fragments, each one revealing the same glowing pattern underneath"
+  },
+  "production": {
+    "status": "storyboard",
+    "created_at": "2026-08-11T00:00:00Z",
+    "last_updated": "2026-08-11T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Act IV of the Origin Saga — see ../../canon/ORIGIN-SAGA.md.",
+      "Theme: recognizing repetition as signal, not coincidence — the first hint of a reusable platform hiding inside years of one-off consulting work.",
+      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 04. IntCloudSysOps is a real company; keep this episode strictly about the pattern-recognition realization, not specific client names or figures.",
+      "Chronologically precedes Episode 5 (The Blueprint) — this is the seed, Blueprint is the naming of it."
+    ]
+  }
+}

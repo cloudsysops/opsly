@@ -1,0 +1,45 @@
+{
+  "id": "opsly-founder",
+  "canonical_name": "The Visionary",
+  "role": "Protagonist, Storyteller, Builder",
+  "personality": {
+    "archetype": "Visionary Builder",
+    "traits": ["optimistic", "technical", "curious", "mentor"],
+    "narrative_role": "protagonist"
+  },
+  "visual": {
+    "silhouette_prompt": "Human with a sleek mechanical left arm, integrated tech on torso, futuristic high-tech jacket, confident stance",
+    "proportions": { "head": 1, "torso": 3, "legs": 4 },
+    "face": {
+      "eye_style": "warm amber, human, thoughtful",
+      "mouth_style": "calm, slight smile when inspired",
+      "expressions": ["neutral-thinking", "inspired", "excited", "teaching", "reflecting"]
+    },
+    "hair_style": "dark, wavy, medium length",
+    "clothing": {
+      "primary": "black high-tech jacket with gold trim",
+      "accessories": ["utility belt with symbol pouches", "layered fringe scarf"],
+      "symbols": ["sacred geometry (cube, sphere, tetrahedron)", "circuit patterns"]
+    },
+    "color_palette": ["#000000", "#D4AF37", "#1E90FF", "#FFFFFF"],
+    "mechanical_elements": [
+      "left arm: full prosthetic, sleek metallic, blue-gold glowing joints",
+      "chest: integrated tech device, pulsing blue light",
+      "belt: utility belt with tech gadget symbols"
+    ],
+    "generation_prompt": "A visionary human-machine hybrid character, left arm is a sleek metallic prosthetic with blue-gold glowing accents, wearing a high-tech black jacket with sacred geometry patterns and gold trim, standing against a glowing digital city backdrop, contemplative and optimistic expression, cinematic lighting",
+    "negative_prompt": "no cartoonish proportions, no second robotic arm, no full-body armor, no helmet, keep face human and expressive"
+  },
+  "voice": {
+    "language": "both",
+    "tone": "warm, energetic, mentor-like",
+    "speed": "normal",
+    "sample_line": "2025. Una laptop, muchas ideas, casi ningún recurso."
+  },
+  "prohibited_variations": [
+    "do not change hair color or style between episodes",
+    "do not add a second mechanical limb",
+    "do not remove the sacred geometry symbols from clothing",
+    "do not alter the black/gold/blue color palette"
+  ]
+}

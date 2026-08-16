@@ -1,16 +1,25 @@
 #!/usr/bin/env tsx
 /**
- * ICSO Content Engine CLI — local-first structured video pipeline.
+ * ICSO Content Engine CLI — local-first structured video RENDER pipeline.
+ *
+ * Namespaced `content-engine:*` (not `content:*`) to stay distinct from
+ * lib/content-studio's story/canon-management CLI (`content:list`,
+ * `content:episode`, `content:calendar`, `content:render-plan` — a dry-run
+ * planner over data/content/series/**\/episode.json). This CLI is the
+ * complementary execution layer: it actually invokes ffmpeg and produces a
+ * real final.mp4, consuming ContentProject/Scene/Asset data that can
+ * originate from that canon (see scripts/content-seed-opsly-origins.ts for
+ * an example adapter).
  *
  * Usage:
- *   npm run content:list [-- --tenant <slug>]
- *   npm run content:create -- --tenant <slug> --channel <bitsitos|splashitos|opsly-universe> --series <slug> --title "<title>" [--episode N]
- *   npm run content:validate -- <projectId>
- *   npm run content:render-plan -- <projectId>
- *   npm run content:render -- <projectId>
- *   npm run content:thumbnail -- <projectId> [--at <seconds>]
- *   npm run content:metadata -- <projectId>
- *   npm run content -- --help
+ *   npm run content-engine:list [-- --tenant <slug>]
+ *   npm run content-engine:create -- --tenant <slug> --channel <bitsitos|splashitos|opsly-universe> --series <slug> --title "<title>" [--episode N]
+ *   npm run content-engine:validate -- <projectId>
+ *   npm run content-engine:render-plan -- <projectId>
+ *   npm run content-engine:render -- <projectId>
+ *   npm run content-engine:thumbnail -- <projectId> [--at <seconds>]
+ *   npm run content-engine:metadata -- <projectId> [--tags a,b,c] [--description "..."]
+ *   npm run content-engine -- --help
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
@@ -138,7 +147,7 @@ async function cmdCreate(flags: Record<string, string>): Promise<void> {
 
   console.log(`✅ Created content project: ${id}`);
   console.log(`   tenant: ${tenant}  channel: ${channel}  series: ${series}`);
-  console.log(`   Next: add scenes to data/content/tenants/${tenant}/projects/${id}/scenes.json, then npm run content:validate -- ${id}`);
+  console.log(`   Next: add scenes to data/content/tenants/${tenant}/projects/${id}/scenes.json, then npm run content-engine:validate -- ${id}`);
 }
 
 async function cmdValidate(projectId: string): Promise<void> {
@@ -223,9 +232,12 @@ async function cmdThumbnail(projectId: string, flags: Record<string, string>): P
   }
 }
 
-async function cmdMetadata(projectId: string): Promise<void> {
+async function cmdMetadata(projectId: string, flags: Record<string, string>): Promise<void> {
   const project = loadProject(projectId);
-  const metadata = buildYouTubeMetadata(project);
+  const metadata = buildYouTubeMetadata(project, {
+    description: flags.description,
+    tags: flags.tags ? flags.tags.split(',').map((t) => t.trim()).filter(Boolean) : undefined,
+  });
   const path = metadataPath(projectId);
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, JSON.stringify(metadata, null, 2) + '\n', 'utf8');
@@ -269,7 +281,7 @@ async function main(): Promise<void> {
       break;
     case 'metadata':
       if (!positional[0]) return void console.error(`${PROG}: metadata requires <projectId>`);
-      await cmdMetadata(positional[0]);
+      await cmdMetadata(positional[0], flags);
       break;
     default:
       console.error(`${PROG}: unknown command "${command}"`);

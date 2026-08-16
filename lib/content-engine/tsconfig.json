@@ -32,6 +32,7 @@
     "src/metadata/export.ts",
     "src/characters/types.ts",
     "src/characters/presets.ts",
+    "src/characters/canon-loader.ts",
     "src/approval/state-machine.ts",
     "src/index.ts"
   ],

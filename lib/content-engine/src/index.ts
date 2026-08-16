@@ -17,4 +17,5 @@ export * from './thumbnail/generate.js';
 export * from './metadata/export.js';
 export * from './characters/types.js';
 export * from './characters/presets.js';
+export * from './characters/canon-loader.js';
 export * from './approval/state-machine.js';

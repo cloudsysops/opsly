@@ -1,14 +1,28 @@
 #!/usr/bin/env tsx
 /**
- * One-off authoring script for the required pilot episode: opsly-origins-001.
+ * One-off authoring script for the pilot episode: opsly-parallel-path-pilot-001.
  *
- * No real character art exists in this repo (confirmed by repo search before
- * writing this script) — visuals are honestly-labeled placeholder stills
- * (solid color + scene description text), generated locally via ffmpeg.
- * Dialogue is delivered as burned captions (no TTS/manual voice files were
- * supplied for this pilot), which content-engine explicitly supports as a
- * V1 path ("funciona aunque inicialmente algunos assets sean suministrados
- * manualmente" / "V1 debe funcionar incluso usando únicamente imágenes").
+ * Scene copy for beats 1-5 is taken verbatim (ES) from the canonical script
+ * at data/content/series/opsly-parallel-path/episodes/001-the-question/script.md
+ * ("La Pregunta" / "The Question", S1E01 of OPSLY: The Parallel Path) —
+ * that canon was authored independently in PR #961 and pulled into this
+ * branch to reconcile with it rather than duplicate invented dialogue.
+ * Beats 6-8 (the infra/products montage, the Parallel World reveal, and the
+ * map scene) extend beyond what canon's episode 001 covers on its own —
+ * canon's own script.md notes it deliberately "stays grounded" and defers
+ * the first Parallel World reveal to Episode 3. This pilot is a condensed,
+ * render-pipeline proof-of-concept cut across that arc, not a claim to be
+ * the canonical serialized episode 001 cut (that id, opsly-parallel-path-001,
+ * belongs to canon's own episode.json).
+ *
+ * No real character art exists in this repo for The Traveler/NØVA (canon's
+ * own episode.json scenes list "character sheet: the-traveler" /
+ * "character sheet: nova" under assets_needed, and production.status is
+ * still "storyboard") — visuals here are honestly-labeled placeholder
+ * stills (solid color + scene description text), generated locally via
+ * ffmpeg. Dialogue is delivered as burned captions (no TTS/manual voice
+ * files were supplied for this pilot), which content-engine explicitly
+ * supports as a V1 path.
  *
  * Re-running this script is idempotent: it overwrites the same project id.
  */
@@ -29,7 +43,7 @@ import {
 } from '@intcloudsysops/content-engine';
 
 const TENANT = 'intcloudsysops';
-const PROJECT_ID = 'opsly-origins-001';
+const PROJECT_ID = 'opsly-parallel-path-pilot-001';
 const CHANNEL = 'opsly-universe';
 
 interface SceneSeed {
@@ -45,7 +59,7 @@ const SCENES: SceneSeed[] = [
     order: 1,
     durationMs: 5000,
     visualLabel: 'Habitacion oscura.\nThe Traveler frente a una laptop.',
-    caption: 'Todo empezó con una pregunta.',
+    caption: '2025. Una laptop, muchas ideas, casi ningún recurso.',
     motion: 'zoom-in',
   },
   {
@@ -59,18 +73,21 @@ const SCENES: SceneSeed[] = [
     order: 3,
     durationMs: 4000,
     visualLabel: 'Lineas de codigo\ny geometria.',
+    caption: 'La conversación comienza. No hay respuesta todavía — solo preguntas.',
     motion: 'pan-right',
   },
   {
     order: 4,
     durationMs: 3500,
     visualLabel: 'Una pequeña luz azul\nse forma.',
+    caption: 'Un pequeño punto azul aparece dentro del computador.',
     motion: 'zoom-in',
   },
   {
     order: 5,
     durationMs: 4000,
     visualLabel: 'NØVA abre los ojos.',
+    caption: 'NØVA abre los ojos por primera vez.',
     motion: 'zoom-out',
   },
   {
@@ -89,7 +106,7 @@ const SCENES: SceneSeed[] = [
     order: 8,
     durationMs: 7500,
     visualLabel: 'The Traveler y NØVA\nfrente al mapa.',
-    caption: 'Pensé que estaba perdido. ... Estaba construyendo el mapa. OPSLY',
+    caption: 'Pensé que estaba perdido. Después entendí que estaba construyendo el mapa. — OPSLY: THE PARALLEL PATH',
     motion: 'zoom-out',
   },
 ];
@@ -106,7 +123,10 @@ async function main(): Promise<void> {
     episode: 1,
     title: 'Todo empezó con una pregunta',
     slug: 'todo-empezo-con-una-pregunta',
-    goal: 'Introduce The Traveler and NØVA — the origin of the Parallel Path.',
+    goal:
+      'Introduce The Traveler and NØVA — condensed render-pipeline pilot cut across ' +
+      'the arc canon\'s data/content/series/opsly-parallel-path/episodes/001-the-question/ ' +
+      '("La Pregunta") begins and episodes 3+ continue (Parallel World reveal, the map).',
     audience: 'OPSLY Universe followers',
     format: preset.aspectRatio,
     status: 'idea',
@@ -145,7 +165,12 @@ async function main(): Promise<void> {
       relativePath,
       source: 'placeholder',
       license: 'internal-placeholder',
-      metadata: { note: 'Honest placeholder — no generated character art exists yet for this saga.' },
+      metadata: {
+        note:
+          'Honest placeholder — canon (data/content/characters/the-traveler.json, nova.json) ' +
+          'has full generation_prompt/negative_prompt specs, but no character-sheet art has ' +
+          'been generated yet (canon episode.json production.status is still "storyboard").',
+      },
     });
     assets.push(asset);
 

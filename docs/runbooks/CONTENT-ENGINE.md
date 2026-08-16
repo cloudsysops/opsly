@@ -18,6 +18,21 @@ exists and runs today — nothing aspirational.
   captions from dev-ops events and submits rendering to an external
   MoneyPrinterTurbo API. This module never calls an external render API —
   everything happens locally via `child_process.spawn('ffmpeg', ...)`.
+- **Reconciled with the parallel story-bible effort (PR #961):** that PR
+  independently built `data/content/{canon,characters,series,campaigns}` —
+  a real, detailed character bible (The Traveler, NØVA, WAVO, ...) and
+  scripted episodes, extending `lib/content-studio` with its own dry-run
+  `content:list`/`content:validate`/`content:render-plan`/`content:episode`
+  CLI. That canon data was pulled into this branch (`data/content/canon`,
+  `data/content/characters`, `data/content/series`, `data/content/assets`,
+  `data/content/campaigns` — siblings of this module's own
+  `data/content/tenants/`, no path collision) and this module's CLI was
+  renamed to the `content-engine:*` npm-script namespace specifically to
+  avoid colliding with #961's `content:*` names. The pilot episode (below)
+  uses real scene copy from `data/content/series/opsly-parallel-path/
+  episodes/001-the-question/script.md`. lib/content-studio's
+  `content:render-plan` is dry-run only; this module is the execution layer
+  that actually calls ffmpeg.
 
 ## Prerequisites
 
@@ -38,7 +53,7 @@ data/content/tenants/<tenant>/projects/<projectId>/
 data/content/tenants/<tenant>/assets/
   <projectId>/...  — actual image/voice/music files, tenant-isolated
 
-runtime/content-artifacts/<projectId>/   — build output (gitignored, regenerate via content:render)
+runtime/content-artifacts/<projectId>/   — build output (gitignored, regenerate via content-engine:render)
   final.mp4
   captions.srt
   thumbnail.jpg
@@ -63,20 +78,20 @@ directory, even if an `Asset` record is tampered with. Verified in
 ## CLI
 
 ```bash
-npm run content -- --help
-npm run content:list [-- --tenant <slug>]
-npm run content:create -- --tenant <slug> --channel <bitsitos|splashitos|opsly-universe> --series <slug> --title "<title>" [--episode N]
-npm run content:validate -- <projectId>
-npm run content:render-plan -- <projectId>
-npm run content:render -- <projectId>
-npm run content:thumbnail -- <projectId> [--at <seconds>]
-npm run content:metadata -- <projectId>
+npm run content-engine -- --help
+npm run content-engine:list [-- --tenant <slug>]
+npm run content-engine:create -- --tenant <slug> --channel <bitsitos|splashitos|opsly-universe> --series <slug> --title "<title>" [--episode N]
+npm run content-engine:validate -- <projectId>
+npm run content-engine:render-plan -- <projectId>
+npm run content-engine:render -- <projectId>
+npm run content-engine:thumbnail -- <projectId> [--at <seconds>]
+npm run content-engine:metadata -- <projectId>
 ```
 
-`content:create` scaffolds an empty project (`status: idea`, no scenes).
-Add scenes by hand-editing `scenes.json` (and register assets via
+`content-engine:create` scaffolds an empty project (`status: idea`, no
+scenes). Add scenes by hand-editing `scenes.json` (and register assets via
 `registerAsset()`/`saveAssets()` from the library — there is no
-`content:add-asset` CLI subcommand yet, see NEXT).
+`content-engine:add-asset` CLI subcommand yet, see NEXT).
 
 ### Status lifecycle
 
@@ -87,8 +102,8 @@ idea -> drafting -> assets_pending -> ready_to_render -> rendering -> ready_for_
 
 Enforced by `CONTENT_PROJECT_TRANSITIONS` — an illegal transition throws
 `InvalidStatusTransitionError` rather than silently succeeding.
-`content:render` refuses to run (exits `BLOCKED_RENDER`) unless the project
-passes `content:validate` first.
+`content-engine:render` refuses to run (exits `BLOCKED_RENDER`) unless the
+project passes `content-engine:validate` first.
 
 ## Channel presets
 
@@ -98,10 +113,10 @@ area/transition/audio levels/brand colors — loaded and validated by
 `lib/content-engine/src/presets/index.ts` (throws on a malformed or
 unknown-channel config file rather than silently falling back).
 
-## Rendering pipeline (what `content:render` actually does)
+## Rendering pipeline (what `content-engine:render` actually does)
 
-1. Validate the project (`content:validate` logic) — refuses to render an
-   invalid project.
+1. Validate the project (`content-engine:validate` logic) — refuses to
+   render an invalid project.
 2. Per scene: turn its image into a silent Ken Burns motion clip
    (`animateStill` — scale-to-cover + `zoompan` filter for
    zoom-in/zoom-out/pan-left/pan-right/static), and render its audio
@@ -123,26 +138,38 @@ text that goes into a `drawtext` filter.
 
 ## Pilot episode
 
-`opsly-origins-001` (tenant `intcloudsysops`, channel `opsly-universe`,
-series "OPSLY: The Parallel Path") — 8 scenes, ~40s. Seeded via
-`scripts/content-seed-opsly-origins.ts` (idempotent — safe to re-run).
+`opsly-parallel-path-pilot-001` (tenant `intcloudsysops`, channel
+`opsly-universe`, series "OPSLY: The Parallel Path") — 8 scenes, ~40s.
+Seeded via `scripts/content-seed-opsly-origins.ts` (idempotent — safe to
+re-run). Scene copy for beats 1-5 is verbatim (ES) from the canonical
+script at `data/content/series/opsly-parallel-path/episodes/
+001-the-question/script.md` ("La Pregunta", S1E01) — that canon's own id
+for its serialized cut of this same story is `opsly-parallel-path-001`;
+this project is a condensed, render-pipeline proof-of-concept cut across
+that arc (it also covers beats canon defers to later episodes — the
+Parallel World reveal, the map), not a claim to be the canonical episode.
 
-**No character art for this saga exists anywhere in this repo** (confirmed
-by a repo-wide search before writing the seed script — see PR description).
-The pilot's visuals are honestly-labeled placeholder stills (solid color +
-scene description text, `source: 'placeholder'` in each `Asset` record,
-generated via `generatePlaceholderStill`), not final art. Dialogue is
-delivered as burned captions — no TTS or manually-supplied voice files
-exist for this pilot, so scenes have no voiceover (this is an explicitly
-supported V1 path, not a workaround).
+**No rendered character art exists anywhere in this repo.** Canon
+(`data/content/characters/the-traveler.json`, `nova.json`) has a full
+character bible — silhouette/proportions/color-palette/
+generation_prompt/negative_prompt, ready for an image-gen model — but no
+actual character-sheet image has been generated yet (canon's own
+`episode.json` lists them under `assets_needed`, and
+`production.status` is still `"storyboard"`). This pilot's visuals are
+honestly-labeled placeholder stills (solid color + scene description
+text, `source: 'placeholder'` in each `Asset` record, generated via
+`generatePlaceholderStill`), not final art. Dialogue is delivered as
+burned captions — no TTS or manually-supplied voice files exist for this
+pilot, so scenes have no voiceover (this is an explicitly supported V1
+path, not a workaround).
 
 Reproduce:
 ```bash
 npx tsx scripts/content-seed-opsly-origins.ts
-npm run content:validate -- opsly-origins-001
-npm run content:render -- opsly-origins-001
-npm run content:thumbnail -- opsly-origins-001
-npm run content:metadata -- opsly-origins-001
+npm run content-engine:validate -- opsly-parallel-path-pilot-001
+npm run content-engine:render -- opsly-parallel-path-pilot-001
+npm run content-engine:thumbnail -- opsly-parallel-path-pilot-001
+npm run content-engine:metadata -- opsly-parallel-path-pilot-001
 ```
 
 ## Moon Creator UI
@@ -160,12 +187,24 @@ that shared filesystem is unsolved (see NEXT).
 
 ## Character continuity
 
-`lib/content-engine/src/characters/presets.ts` — real, typed
-`CharacterProfile`s for The Traveler and WAVO, plus a `NovaCustomization`
-config primitive with one example preset per variant (base, aquatic,
-explorer, builder, science, cyber, ancestral-tech). This is configuration
-only — no visual generator reads it yet, but the shape is real, exported,
-and tested.
+Two layers, not competing definitions:
+
+- `lib/content-engine/src/characters/presets.ts` — this module's own
+  lightweight `CharacterProfile`s (The Traveler, NØVA, WAVO) plus a
+  `NovaCustomization` config primitive with one example preset per variant
+  (base, aquatic, explorer, builder, science, cyber, ancestral-tech).
+- `lib/content-engine/src/characters/canon-loader.ts` —
+  `loadCanonCharacter(id)` / `listCanonCharacterIds()` load the **real**,
+  much richer bible from `data/content/characters/*.json` (canon pulled in
+  from PR #961): full silhouette/proportions/face/clothing/color-palette
+  detail, `generation_prompt`/`negative_prompt` ready for an image-gen
+  model, voice tone + sample line, and `prohibited_variations` a generator
+  must never violate (e.g. The Traveler's face must never be shown, in any
+  episode, any angle).
+
+Neither layer feeds a visual generator yet — no such generator exists in
+this repo — but the loader is real, tested against the actual repo canon
+files (not a fixture), and exported from the module's public API.
 
 ## Known limitations
 
@@ -178,7 +217,7 @@ and tested.
   own generated clips (consistent encode settings throughout) but would
   need re-encoding via a filter-graph concat instead if segments came from
   heterogeneous external sources.
-- No `content:add-asset` CLI subcommand — asset registration is a library
+- No `content-engine:add-asset` CLI subcommand — asset registration is a library
   call (`registerAsset` + `saveAssets`), used directly by authoring scripts
   like the pilot seed script.
 - Moon Creator UI has no production filesystem-sharing story with
