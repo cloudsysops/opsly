@@ -87,6 +87,8 @@ infra/terraform/tfplan
 
 # Runtime directories (VPS/local runtime)
 .tmp-peskids-*.png
+artifacts/content/
+content/tenants/
 
 runtime/logs/*
 runtime/letsencrypt/*
