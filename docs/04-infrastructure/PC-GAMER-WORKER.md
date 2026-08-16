@@ -102,6 +102,16 @@ doppler run --project ops-intcloudsysops --config prd -- \
   ./scripts/ops/enqueue-overnight-opencode.sh --prompt "…"
 ```
 
+**Autodispatch automático (opcional, recomendado):** para no encolar a mano cada
+noche, instala el LaunchAgent del Mac:
+
+```bash
+./scripts/ops/ensure-overnight-autodispatch-launchd.sh
+```
+
+Detecta online cada 5 min y encola el backlog ocioso solo en modo `heavy`.
+Runbook: [`docs/runbooks/PC-GAMER-OVERNIGHT-AUTODISPATCH.md`](../runbooks/PC-GAMER-OVERNIGHT-AUTODISPATCH.md).
+
 Autostart: user systemd `opsly-pc-gamer-docker.service` + timer heartbeat (+ `opsly-opencode-bridge` si overnight).  
 Fallback nativo (sin Docker): `systemctl --user enable --now opsly-worker-openclaw` + Ollama apt — ver histórico; **preferir Docker**.
 
@@ -227,6 +237,11 @@ swap=4GB
 | `docs/runbooks/PC-GAMER-MAURO-SCHEDULE.md` | Cómo ajustar horas con el dueño |
 | `docs/runbooks/OVERNIGHT-OPENCODE-GAMER.md` | Runbook crecimiento overnight |
 | `scripts/ops/start-mac-local-agents-worker.sh` | Worker Mac solo cola `local-agents` |
+| `scripts/ops/overnight-autodispatch.sh` | **Autodispatch:** descubrir online + encolar backlog ocioso respetando schedule (`--dry-run`) |
+| `config/overnight-backlog.json` | Manifiesto de tareas ociosas para autodispatch |
+| `scripts/ops/ensure-overnight-autodispatch-launchd.sh` | Instalar LaunchAgent del autodispatch (5 min, Doppler) |
+| `infra/launchd/com.opsly.pc-gamer-autodispatch.plist` | LaunchAgent: corre el autodispatch cada 5 min |
+| `docs/runbooks/PC-GAMER-OVERNIGHT-AUTODISPATCH.md` | Runbook del autodispatch overnight |
 
 ## Relacionado
 
