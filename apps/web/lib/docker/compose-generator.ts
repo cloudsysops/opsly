@@ -33,7 +33,7 @@ export function generateCompose(slug: string, ports: Record<string, number>): st
 
   return `services:
   ${n8nService}:
-    image: n8nio/n8n:latest
+    image: n8nio/n8n:2.32.5
     restart: unless-stopped
     ports:
       - "${n8nPort}:5678"
