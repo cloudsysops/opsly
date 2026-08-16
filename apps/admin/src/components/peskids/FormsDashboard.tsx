@@ -1,7 +1,13 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@intcloudsysops/components';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@intcloudsysops/components';
 import { FormAnalyticsCard } from './FormAnalyticsCard';
 
 interface FormAnalytics {
@@ -77,7 +83,9 @@ export function FormsDashboard({ tenantSlug }: FormsDashboardProps) {
         <Card>
           <CardContent className="pt-6">
             <div className="text-xs text-ops-gray">Total Errors</div>
-            <div className={`mt-2 text-3xl font-bold ${stats.totalErrors > 0 ? 'text-ops-red' : 'text-ops-green'}`}>
+            <div
+              className={`mt-2 text-3xl font-bold ${stats.totalErrors > 0 ? 'text-ops-red' : 'text-ops-green'}`}
+            >
               {stats.totalErrors}
             </div>
           </CardContent>
@@ -97,7 +105,9 @@ export function FormsDashboard({ tenantSlug }: FormsDashboardProps) {
           ) : forms.length === 0 ? (
             <Card>
               <CardContent className="py-8 text-center">
-                <p className="text-sm text-ops-gray">No forms found. Create your first form to see analytics.</p>
+                <p className="text-sm text-ops-gray">
+                  No forms found. Create your first form to see analytics.
+                </p>
               </CardContent>
             </Card>
           ) : (

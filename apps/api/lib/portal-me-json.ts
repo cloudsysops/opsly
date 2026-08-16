@@ -1,8 +1,4 @@
-import {
-  parsePortalMode,
-  portalUrlReachable,
-  resolvePortalServicesForTenant,
-} from './portal-me';
+import { parsePortalMode, portalUrlReachable, resolvePortalServicesForTenant } from './portal-me';
 import type { TrustedPortalSession } from './portal-trusted-identity';
 
 /**
