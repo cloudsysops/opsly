@@ -11,7 +11,7 @@ tags:
 
 # Opsly Moon — Fuentes de datos y etiquetado
 
-**PR-MOON-0.** Ninguna métrica de Moon Home debe mostrarse sin fuente y etiqueta de confianza.
+**PR-MOON-0 / post-#922.** Ninguna métrica de Moon Home debe mostrarse sin fuente y etiqueta de confianza. UI Home/Costs/Usage ya aplican REAL|ESTIMADO|PROYECTADO y omiten MRR.
 
 ## Etiquetas obligatorias
 

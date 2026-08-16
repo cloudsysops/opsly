@@ -1,28 +1,36 @@
 ---
 status: canon
-owner: operations
+owner: platform
 last_review: 2026-08-07
 type: runbook
 tags:
   - opsly/moon
+  - opsly/rollback
 ---
 
 # Opsly Moon — Rollback
 
-## UI / código
+## Principio
 
-1. Revertir PR(s) Moon o `git revert` de commits en la rama mergeada.
-2. Root `apps/admin/app/page.tsx` puede volver a `redirect('/dashboard')` si hace falta.
-3. Restaurar `AppChrome` en `layout.tsx` si el shell Moon rompe bookmarks críticos (legacy pages siguen existiendo bajo `/dashboard`, `/tenants`, …).
+Moon es UI/docs sobre `apps/admin`. Rollback = revertir commits/PR de admin+docs. **No** requiere migraciones DB ni cambios Doppler por defecto.
 
-## Feature
+## Opciones
 
-No hay feature flag runtime obligatorio: las rutas `/moon/*` son aditivas. Quitar nav Moon = revertir `MoonShell`/`nav.ts`.
+1. **Revert PR** night-shift / Moon en GitHub (preferido).
+2. **Checkout legacy routes:** `/dashboard`, `/tenants`, `/costs` siguen vivos sin `/moon`.
+3. **Root redirect:** si `/` → `/moon` causa problema, restaurar redirect a `/dashboard` en `apps/admin/app/page.tsx`.
 
-## Datos
+## No hacer
 
-Moon es mayormente read-only; no hay migraciones propias en MOON-0…13 de esta night shift.
+- Hard reset de `main` en prod.
+- Rebuild VPS paralelo bajo alerta de memoria.
+- Desactivar Peskids para “arreglar” Moon.
 
 ## Deploy
 
-No hay deploy Moon automático en esta entrega. Si se desplegó admin por error: redeploy imagen admin previa desde GHCR tag conocido.
+Solo en ventana nocturna America/Bogota 22:00–06:00 si el cambio toca imagen admin en prod (ver `PRODUCTION-CHANGE-WINDOW.md`). Este track night-shift **no** despliega.
+
+## Enlaces
+
+- [[OPSLY-MOON-OPERATIONS]]
+- [[PRODUCTION-CHANGE-WINDOW]]

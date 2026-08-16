@@ -1,6 +1,6 @@
 ---
 status: canon
-owner: security
+owner: platform
 last_review: 2026-08-07
 type: runbook
 tags:
@@ -8,28 +8,31 @@ tags:
   - opsly/security
 ---
 
-# Opsly Moon — Permissions
+# Opsly Moon — Permisos
 
-## Auth
+## Modelo actual
 
-Misma sesión admin Supabase que `apps/admin` (middleware + `AuthSessionRedirect`).
+Auth admin vía sesión Supabase (mismo gate que `apps/admin` legacy). No hay RBAC fino Moon-only en v1.
 
-## Principios
+## Reglas
 
 | Acción | Política |
 | --- | --- |
-| Lectura tenants/metrics/costs | Admin autenticado (existente) |
-| Mutación queue/deploy | **Bloqueada** en UI Moon hasta API + approval |
-| Approval decisions | Sin auto-approve; legacy auditado |
-| Command Center | Dry-run / navegación; sin gasto LLM no autorizado |
-| Secretos | Solo **nombres** de env; nunca valores |
+| Lectura tenants / metrics / costs | Sesión admin válida |
+| Mutación costos / approvals | Flujos API existentes + audit; **no** auto-approve |
+| Deploy / pause queue / activate n8n | **Bloqueado** en UI Moon hasta approval-first explícito |
+| Command Center | Dry-run local únicamente |
+| Ver PII tenant (leads, familias) | **Prohibido** en Moon |
 
-## Tenant isolation
+## Roles futuros (PROPOSED)
 
-- Ficha cliente: slug de path + APIs existentes.
-- No listar PII (`owner_email` omitido en cards Moon).
-- No mezclar datos operativos Peskids (leads/estudiantes).
+Owner, Operator, Tenant Support, Sales, Finance, Read-only — no implementar sin ADR.
 
-## Auditoría
+## Secrets
 
-Cambios sensibles deben pasar por Approval Center / flujos API existentes. Moon no añade bypass.
+Nunca mostrar valores; solo **nombres** de secretos requeridos en fleet (`required_secret_names`).
+
+## Enlaces
+
+- [[../00-architecture/OPSLY-MOON-AUDIT]]
+- [[../SECURITY_CHECKLIST]]
