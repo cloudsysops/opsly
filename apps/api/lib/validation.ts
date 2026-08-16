@@ -32,14 +32,14 @@ export const ListTenantsQuerySchema = z.object({
   plan: planEnum.optional(),
 });
 
-export const TenantRefParamSchema = z.union([
-  z.string().uuid(),
-  z
-    .string()
-    .min(TENANT_ROUTE_REF.SLUG_MIN_LEN)
-    .max(TENANT_ROUTE_REF.SLUG_MAX_LEN)
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-]);
+/** Slug-only (not UUID) — for routes that resolve by slug alone, e.g. entitlements. */
+export const TenantSlugParamSchema = z
+  .string()
+  .min(TENANT_ROUTE_REF.SLUG_MIN_LEN)
+  .max(TENANT_ROUTE_REF.SLUG_MAX_LEN)
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+
+export const TenantRefParamSchema = z.union([z.string().uuid(), TenantSlugParamSchema]);
 
 export const UpdateTenantSchema = z
   .object({
