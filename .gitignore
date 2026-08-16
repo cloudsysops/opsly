@@ -185,4 +185,8 @@ config/peskids-firebase-admin.json
 runtime/tmp/
 .playwright-mcp/
 .superpowers/
+
+# Content Engine build outputs (regenerate via `npm run content:render`) —
+# data/content/tenants/**/projects and assets ARE committed (source of truth).
+runtime/content-artifacts/
 .superpowers/

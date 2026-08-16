@@ -1,0 +1,101 @@
+[
+  {
+    "id": "scene_01",
+    "projectId": "opsly-origins-001",
+    "order": 1,
+    "durationMs": 5000,
+    "visualType": "image",
+    "assetRefs": [
+      "asset_a41452aa-f6b6-493b-ad6a-339ce81ca363"
+    ],
+    "caption": "Todo empezó con una pregunta.",
+    "transition": "cut",
+    "motion": "zoom-in"
+  },
+  {
+    "id": "scene_02",
+    "projectId": "opsly-origins-001",
+    "order": 2,
+    "durationMs": 5000,
+    "visualType": "image",
+    "assetRefs": [
+      "asset_927c3fb0-09af-4e25-845b-dce2b549a437"
+    ],
+    "caption": "¿Y si pudiera construir algo mío?",
+    "transition": "cut",
+    "motion": "static"
+  },
+  {
+    "id": "scene_03",
+    "projectId": "opsly-origins-001",
+    "order": 3,
+    "durationMs": 4000,
+    "visualType": "image",
+    "assetRefs": [
+      "asset_450618fd-7222-4fb5-95c1-77bea4964224"
+    ],
+    "transition": "cut",
+    "motion": "pan-right"
+  },
+  {
+    "id": "scene_04",
+    "projectId": "opsly-origins-001",
+    "order": 4,
+    "durationMs": 3500,
+    "visualType": "image",
+    "assetRefs": [
+      "asset_3e29d041-e82c-445f-8f86-ec268e0f92e2"
+    ],
+    "transition": "cut",
+    "motion": "zoom-in"
+  },
+  {
+    "id": "scene_05",
+    "projectId": "opsly-origins-001",
+    "order": 5,
+    "durationMs": 4000,
+    "visualType": "image",
+    "assetRefs": [
+      "asset_4cdb9d2f-88a8-418d-9089-c8fbb091abd4"
+    ],
+    "transition": "cut",
+    "motion": "zoom-out"
+  },
+  {
+    "id": "scene_06",
+    "projectId": "opsly-origins-001",
+    "order": 6,
+    "durationMs": 6000,
+    "visualType": "image",
+    "assetRefs": [
+      "asset_569ff52b-35a9-4b91-88c8-d82537aa9cbb"
+    ],
+    "transition": "cut",
+    "motion": "pan-left"
+  },
+  {
+    "id": "scene_07",
+    "projectId": "opsly-origins-001",
+    "order": 7,
+    "durationMs": 5000,
+    "visualType": "image",
+    "assetRefs": [
+      "asset_6e7f6e3d-5d77-43f4-850f-692083661ad5"
+    ],
+    "transition": "cut",
+    "motion": "zoom-in"
+  },
+  {
+    "id": "scene_08",
+    "projectId": "opsly-origins-001",
+    "order": 8,
+    "durationMs": 7500,
+    "visualType": "image",
+    "assetRefs": [
+      "asset_9342dc1f-80f7-4d0b-95af-08960bcfd366"
+    ],
+    "caption": "Pensé que estaba perdido. ... Estaba construyendo el mapa. OPSLY",
+    "transition": "cut",
+    "motion": "zoom-out"
+  }
+]

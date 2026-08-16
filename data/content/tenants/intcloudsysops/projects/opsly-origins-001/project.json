@@ -1,0 +1,19 @@
+{
+  "id": "opsly-origins-001",
+  "tenantId": "intcloudsysops",
+  "channel": "opsly-universe",
+  "series": "OPSLY: The Parallel Path",
+  "episode": 1,
+  "title": "Todo empezó con una pregunta",
+  "slug": "todo-empezo-con-una-pregunta",
+  "goal": "Introduce The Traveler and NØVA — the origin of the Parallel Path.",
+  "audience": "OPSLY Universe followers",
+  "format": "9:16",
+  "status": "ready_for_review",
+  "preset": "opsly-universe",
+  "createdAt": "2026-08-16T03:41:24.628Z",
+  "updatedAt": "2026-08-16T03:42:24.411Z",
+  "approval": {
+    "status": "ready_for_review"
+  }
+}

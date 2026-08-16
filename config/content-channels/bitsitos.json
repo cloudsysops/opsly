@@ -1,0 +1,26 @@
+{
+  "channel": "bitsitos",
+  "label": "Bitsitos",
+  "resolution": { "width": 1080, "height": 1920 },
+  "aspect_ratio": "9:16",
+  "fps": 30,
+  "default_duration_ms": 2000,
+  "scene_duration_limits": { "min_ms": 1000, "max_ms": 3000 },
+  "font": { "family": "DejaVu Sans", "size": 96, "weight": "bold" },
+  "subtitle_style": {
+    "font_size": 64,
+    "primary_color": "#00E5FF",
+    "outline_color": "#001A22",
+    "outline_width": 4,
+    "margin_vertical_px": 220
+  },
+  "safe_area": { "top_pct": 12, "bottom_pct": 18, "left_pct": 6, "right_pct": 6 },
+  "transition_style": "cut",
+  "music_level_db": -18,
+  "voice_level_db": -6,
+  "brand_colors": { "primary": "#00E5FF", "secondary": "#0057B7", "accent": "#FFFFFF" },
+  "logo": null,
+  "intro": { "duration_ms": 800 },
+  "outro": { "duration_ms": 1200, "text": "Bitsitos" },
+  "cta_style": "short-punchy"
+}

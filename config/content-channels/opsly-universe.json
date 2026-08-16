@@ -1,0 +1,26 @@
+{
+  "channel": "opsly-universe",
+  "label": "OPSLY Universe",
+  "resolution": { "width": 1080, "height": 1920 },
+  "aspect_ratio": "9:16",
+  "fps": 30,
+  "default_duration_ms": 4500,
+  "scene_duration_limits": { "min_ms": 2500, "max_ms": 8000 },
+  "font": { "family": "DejaVu Sans", "size": 72, "weight": "bold" },
+  "subtitle_style": {
+    "font_size": 56,
+    "primary_color": "#F2E9D8",
+    "outline_color": "#0B0B2E",
+    "outline_width": 3,
+    "margin_vertical_px": 190
+  },
+  "safe_area": { "top_pct": 10, "bottom_pct": 16, "left_pct": 7, "right_pct": 7 },
+  "transition_style": "dissolve",
+  "music_level_db": -16,
+  "voice_level_db": -6,
+  "brand_colors": { "primary": "#241B4E", "secondary": "#5A2CA0", "accent": "#D4AF37" },
+  "logo": null,
+  "intro": { "duration_ms": 1200 },
+  "outro": { "duration_ms": 2000, "text": "OPSLY" },
+  "cta_style": "cinematic-pause"
+}

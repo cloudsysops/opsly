@@ -24,6 +24,7 @@ export const MOON_NAV_SECTIONS: MoonNavSection[] = [
       { href: '/moon/ventures', label: 'Ventures' },
       { href: '/moon/blueprints', label: 'Blueprints' },
       { href: '/moon/modules', label: 'Módulos' },
+      { href: '/moon/creator', label: 'Creator Studio' },
     ],
   },
   {
