@@ -1,4 +1,12 @@
 import { assertCanonIntegrity } from './validate.js';
+import {
+  getChildSafetyPrinciples,
+  getFoundation,
+  getHistory,
+  getNonNegotiables,
+  getPrinciples,
+  getVision,
+} from './foundation.js';
 import { composeCharacterContext, getContext } from './composer.js';
 import {
   getCharacter,
@@ -27,10 +35,19 @@ import {
 import { composeStory } from './story.js';
 import { serializeCanon, writeCanonJson } from './serialize.js';
 import { CANON_VERSION, PROMPT_VERSION } from './constants.js';
+import { evaluateUniverseChangeGuard, isUniverseChangeAllowed } from './guard.js';
 
 assertCanonIntegrity();
 
 export const universe = {
+  getFoundation,
+  getVision,
+  getPrinciples,
+  getHistory,
+  getNonNegotiables,
+  getChildSafetyPrinciples,
+  evaluateUniverseChangeGuard,
+  isUniverseChangeAllowed,
   getCharacter,
   getCharacterBySlug,
   listCharacters,
@@ -60,6 +77,14 @@ export const universe = {
   promptVersion: PROMPT_VERSION,
 };
 
+export {
+  getFoundation,
+  getVision,
+  getPrinciples,
+  getHistory,
+  getNonNegotiables,
+  getChildSafetyPrinciples,
+} from './foundation.js';
 export {
   CANON_VERSION,
   PROMPT_VERSION,
@@ -105,6 +130,7 @@ export { composeStory } from './story.js';
 export { getTenantAdaptation, TENANT_ADAPTATIONS } from './tenant.js';
 export { serializeCanon, writeCanonJson } from './serialize.js';
 export { assertCanonIntegrity } from './validate.js';
+export { evaluateUniverseChangeGuard, isUniverseChangeAllowed } from './guard.js';
 export {
   UNIVERSE_CAPABILITIES,
   contentAgentAdapter,

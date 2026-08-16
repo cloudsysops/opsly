@@ -255,3 +255,39 @@ export const CanonSnapshotSchema = z.object({
   visualRules: z.array(NonEmpty),
   safetyRules: z.array(NonEmpty),
 });
+
+export const UniverseFoundationProvenanceSchema = z.enum([
+  'verified_history',
+  'founder_recollection',
+  'narrative_interpretation',
+  'fictional_canon',
+]);
+
+export const UniverseFoundationSchema = z.object({
+  foundationVersion: NonEmpty,
+  purpose: NonEmpty,
+  origin: z.object({
+    provenance: UniverseFoundationProvenanceSchema,
+    statement: NonEmpty,
+    sourceRefs: z.array(NonEmpty).min(1),
+  }),
+  principles: z.array(NonEmpty).min(1),
+  nonNegotiables: z.array(NonEmpty).min(1),
+  childSafety: z.array(NonEmpty).min(1),
+  aiPhilosophy: z.array(NonEmpty).min(1),
+  learningPhilosophy: z.array(NonEmpty).min(1),
+  historicalEras: z
+    .array(
+      z.object({
+        year: NonEmpty,
+        name: NonEmpty,
+        provenance: UniverseFoundationProvenanceSchema,
+        summary: NonEmpty,
+      }),
+    )
+    .min(1),
+  futureVision: z.object({
+    status: z.literal('open'),
+    statement: NonEmpty,
+  }),
+});
