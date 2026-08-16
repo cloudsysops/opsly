@@ -26,6 +26,13 @@ export const contentPortalValues = [
 ] as const;
 export type ContentPortal = (typeof contentPortalValues)[number];
 
+export interface ContentCharacterDefinition {
+  id: string;
+  name: string;
+  role: string;
+  portals: ContentPortal[];
+}
+
 export const contentFormatTemplateValues = [
   'NOVA_REACTS',
   'NOVA_EXPLAINS',
@@ -383,6 +390,7 @@ export interface TrendCandidate {
   rightsRisk: RightsVerdict;
   status: TrendCandidateStatus;
   createdAt: string;
+  suggestedCharacterIds?: string[];
 }
 
 export interface TransformativeAngleResult {
@@ -408,6 +416,25 @@ export interface ContentInsight {
   sampleSize: number;
 }
 
+export interface UniverseProjectBinding {
+  canonVersion: string;
+  promptVersion: string;
+  characterIds: string[];
+  characterNames: string[];
+  worldId: string | null;
+  topic: string;
+  tenant: string | null;
+  storyPrompt: string;
+  imagePrompt: string;
+  videoPrompt: string;
+  agentInputs: {
+    story: Record<string, unknown>;
+    image: Record<string, unknown>;
+    video: Record<string, unknown>;
+    content: Record<string, unknown>;
+  };
+}
+
 export interface ContentProjectEnvelope {
   schemaVersion: typeof CONTENT_ENGINE_SCHEMA_VERSION;
   project: ContentProject;
@@ -423,6 +450,7 @@ export interface ContentProjectEnvelope {
   sourceMoments?: TrendCandidate[];
   research?: string[];
   brandKit?: BrandKit;
+  universeContext?: UniverseProjectBinding;
 }
 
 export interface ContentProjectCreateInput {

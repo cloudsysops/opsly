@@ -105,7 +105,7 @@ export const kai = defineCharacter({
     prohibitedTopics: ['adult romance', 'graphic danger', 'cynicism', 'identity as branding'],
   },
   content: {
-    channels: ['youtube', 'peskids', 'splashitos', 'opsly-universe', 'social'],
+    channels: ['youtube', 'peskids', 'splashitos', 'opsly-universe', 'bitsitos', 'social'],
     ageRating: 'kids',
     formats: ['youtube-short', 'cartoon', 'story', 'lesson', 'thumbnail'],
   },

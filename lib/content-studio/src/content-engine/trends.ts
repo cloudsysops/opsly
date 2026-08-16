@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import type { TrendCandidate } from './types.js';
+import type { ContentChannel, TrendCandidate } from './types.js';
 import { getContentTenantRoot, getContentTenantsRoot } from './paths.js';
+import { suggestCharactersForTopic } from './universe-bridge.js';
 
 export function listTrendCandidates(tenantId: string, baseDir = process.cwd()): TrendCandidate[] {
   const filePath = path.join(getContentTenantRoot(tenantId, baseDir), 'trends.json');
@@ -68,5 +69,18 @@ export function createManualTrendCandidate(input: {
     rightsRisk: 'REVIEW_REQUIRED',
     status: 'discovered',
     createdAt: now,
+    suggestedCharacterIds: suggestCharactersForTopic(input.topic, channelFromTenant(input.tenantId)),
   };
+}
+
+function channelFromTenant(tenantId: string): ContentChannel | undefined {
+  if (
+    tenantId === 'peskids' ||
+    tenantId === 'splashitos' ||
+    tenantId === 'bitsitos' ||
+    tenantId === 'opsly-universe'
+  ) {
+    return tenantId;
+  }
+  return undefined;
 }

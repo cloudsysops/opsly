@@ -1,4 +1,4 @@
-import { mkdtempSync, writeFileSync, mkdirSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -192,7 +192,16 @@ describe('content os contracts', () => {
     const preset = await loadContentChannelPreset('opsly-universe');
     const kit = brandKitFromPreset(preset);
     expect(kit.characters).toContain('NØVA');
+    expect(kit.characters).toContain('THE TRAVELER');
+    expect(kit.characters).toContain('Echo');
     expect(kit.colors.length).toBeGreaterThan(0);
+  });
+
+  it('uses Universe tenant adaptation for Peskids brand kit, not a duplicate lore file', async () => {
+    const preset = await loadContentChannelPreset('peskids');
+    const kit = brandKitFromPreset(preset);
+    expect(kit.characters).toEqual(expect.arrayContaining(['Orion', 'Kai', 'Wavo']));
+    expect(kit.characters).not.toContain('NØVA');
   });
 
   it('marks owned original content as LOW_RISK', () => {
@@ -252,6 +261,7 @@ describe('content os contracts', () => {
     });
     expect(candidate.status).toBe('discovered');
     expect(candidate.rightsRisk).toBe('REVIEW_REQUIRED');
+    expect(candidate.suggestedCharacterIds).toEqual(expect.arrayContaining(['nova', 'echo']));
   });
 
   it('does not implement public publishing in V1', () => {
@@ -262,9 +272,12 @@ describe('content os contracts', () => {
     expect(contentOsCapabilityMap().analytics).toContain('no-metrics');
   });
 
-  it('loads characters from config', () => {
+  it('loads characters from Universe canon, not a parallel JSON registry', () => {
     const names = loadContentCharacters().map((item) => item.name);
-    expect(names).toEqual(expect.arrayContaining(['NØVA', 'THE TRAVELER', 'WAVO']));
+    expect(names).toEqual(
+      expect.arrayContaining(['NØVA', 'THE TRAVELER', 'Wavo', 'Orion', 'Kai', 'Echo', 'Lyra', 'Maya', 'Atlas'])
+    );
+    expect(existsSync(path.join(process.cwd(), 'config', 'content-characters.json'))).toBe(false);
   });
 
   it.skipIf(!ffmpegAvailable())('ffmpeg is available for smoke', () => {

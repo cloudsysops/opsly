@@ -86,6 +86,15 @@ describe('relationships and worlds', () => {
     expect(getWorld('nexus').name).toBe('NEXUS');
     expect(getWorld('move').allowedCharacters).toContain('orion');
   });
+
+  it('lists Bitsitos as a channel for Nova, Kai, and Echo', () => {
+    const { getCharactersForChannel } = universe;
+    expect(getCharactersForChannel('bitsitos').map((character) => character.id).sort()).toEqual([
+      'echo',
+      'kai',
+      'nova',
+    ]);
+  });
 });
 
 describe('prompts and composer', () => {

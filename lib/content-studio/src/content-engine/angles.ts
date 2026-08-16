@@ -1,4 +1,5 @@
 import type { ContentPortal, OpportunityScore, TransformativeAngleResult } from './types.js';
+import { novaCanonName } from './universe-bridge.js';
 
 const ANGLE_HINTS: Array<{ angle: TransformativeAngleResult['angle']; pattern: RegExp }> = [
   { angle: 'TEST', pattern: /(reemplazar|replace|siempre|nunca|todos|ninguno|every|all)/i },
@@ -21,7 +22,7 @@ export function proposeTransformativeAngle(input: {
     claim: input.claim,
     angle,
     novaQuestion: novaQuestion.startsWith('¿') ? novaQuestion : `¿De verdad ${input.claim}?`,
-    originalContribution: `NØVA investiga el claim en el portal ${input.portal ?? 'FUTURE'} con explicación y experimento propio.`,
+    originalContribution: `${novaCanonName()} investiga el claim en el portal ${input.portal ?? 'FUTURE'} con explicación y experimento propio.`,
     researchNeeded: ['Definir el claim verificable', 'Buscar contraejemplo', 'Diseñar un experimento reproducible'],
     suggestedExperiment: 'Correr la misma tarea con un humano y un agente Opsly y comparar el resultado.',
     rightsRisk: 'REVIEW_REQUIRED',

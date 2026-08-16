@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { BrandKit, ContentChannel, ContentChannelPreset } from './types.js';
 import { resolveRepoRoot } from './paths.js';
+import { charactersForChannel } from './universe-bridge.js';
 
 const CHANNELS: ContentChannel[] = ['bitsitos', 'splashitos', 'opsly-universe', 'peskids'];
 
@@ -37,11 +38,7 @@ export function brandKitFromPreset(preset: ContentChannelPreset): BrandKit {
   };
 }
 
-export function charactersForChannel(channel: ContentChannel): string[] {
-  if (channel === 'opsly-universe') return ['NØVA', 'THE TRAVELER'];
-  if (channel === 'splashitos' || channel === 'peskids') return ['WAVO', 'NØVA'];
-  return ['NØVA'];
-}
+export { charactersForChannel };
 
 export function contentChannelPresetDefaults(preset: ContentChannelPreset) {
   return {

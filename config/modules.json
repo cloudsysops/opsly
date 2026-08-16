@@ -267,6 +267,9 @@
     "apps/admin": {
       "depends": ["components", "observability", "security", "api", "services", "mission-control-kit"]
     },
+    "lib/content-studio": {
+      "depends": ["universe"]
+    },
     "apps/icso": {
       "depends": ["mission-control-kit", "services"]
     },

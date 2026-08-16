@@ -106,7 +106,7 @@ export const nova = defineCharacter({
     prohibitedTopics: ['becoming a weapon', 'replacing humans', 'identity as a finished product'],
   },
   content: {
-    channels: ['youtube', 'moon', 'opsly-universe', 'peskids', 'social'],
+    channels: ['youtube', 'moon', 'opsly-universe', 'peskids', 'bitsitos', 'social'],
     ageRating: 'family',
     formats: ['youtube-short', 'cartoon', 'story', 'interactive-guide', 'thumbnail'],
   },

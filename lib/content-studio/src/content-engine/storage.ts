@@ -21,6 +21,7 @@ import {
   getContentTenantsRoot,
 } from './paths.js';
 import { brandKitFromPreset, loadContentChannelPreset } from './presets.js';
+import { composeUniverseForProject } from './universe-bridge.js';
 
 async function ensureDir(dir: string): Promise<void> {
   await fs.mkdir(dir, { recursive: true });
@@ -79,7 +80,7 @@ export async function createProjectEnvelope(
     createdAt: now,
     updatedAt: now,
   };
-  return {
+  const envelope: ContentProjectEnvelope = {
     schemaVersion: 2,
     project,
     scenes: [],
@@ -87,6 +88,8 @@ export async function createProjectEnvelope(
     renderJobs: [],
     brandKit: brandKitFromPreset(channelPreset),
   };
+  envelope.universeContext = composeUniverseForProject(envelope);
+  return envelope;
 }
 
 export async function saveProjectEnvelope(

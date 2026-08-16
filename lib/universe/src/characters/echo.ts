@@ -105,7 +105,7 @@ export const echo = defineCharacter({
     prohibitedTopics: ['AI domination', 'omniscience', 'human replacement as destiny'],
   },
   content: {
-    channels: ['youtube', 'moon', 'opsly-universe', 'peskids', 'social'],
+    channels: ['youtube', 'moon', 'opsly-universe', 'peskids', 'bitsitos', 'social'],
     ageRating: 'family',
     formats: ['youtube-short', 'cartoon', 'story', 'interactive-guide', 'thumbnail'],
   },

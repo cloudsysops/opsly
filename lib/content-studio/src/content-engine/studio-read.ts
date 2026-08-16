@@ -11,7 +11,13 @@ export {
   loadContentFormats,
   loadContentCharacters,
 } from './taxonomy.js';
-export { loadAllContentChannelPresets, brandKitFromPreset } from './presets.js';
+export { loadAllContentChannelPresets, brandKitFromPreset, charactersForChannel } from './presets.js';
+export {
+  composeUniverseForProject,
+  featuredCharacterIdsForChannel,
+  loadUniverseCharacters,
+  suggestCharactersForTopic,
+} from './universe-bridge.js';
 export { evaluateRightsGate } from './rights.js';
 export { proposeTransformativeAngle, scoreOpportunity } from './angles.js';
 export { CONTENT_OS_CAPABILITIES, contentOsCapabilityMap } from './capabilities.js';

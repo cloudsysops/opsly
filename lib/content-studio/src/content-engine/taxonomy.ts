@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { resolveRepoRoot } from './paths.js';
-import type { ContentFormatTemplate, ContentPortal } from './types.js';
+import { loadUniverseCharacters } from './universe-bridge.js';
+import type { ContentCharacterDefinition, ContentFormatTemplate, ContentPortal } from './types.js';
 
 export interface ContentPortalDefinition {
   id: ContentPortal;
@@ -35,15 +36,10 @@ export function loadContentFormats(baseDir = process.cwd()): ContentFormatDefini
   return readJson<ContentFormatDefinition[]>('config/content-formats.json', baseDir);
 }
 
-export interface ContentCharacterDefinition {
-  id: string;
-  name: string;
-  role: string;
-  portals: ContentPortal[];
-}
+export type { ContentCharacterDefinition } from './types.js';
 
-export function loadContentCharacters(baseDir = process.cwd()): ContentCharacterDefinition[] {
-  return readJson<ContentCharacterDefinition[]>('config/content-characters.json', baseDir);
+export function loadContentCharacters(_baseDir = process.cwd()): ContentCharacterDefinition[] {
+  return loadUniverseCharacters();
 }
 
 export function getContentPortal(id: ContentPortal, baseDir = process.cwd()): ContentPortalDefinition {
