@@ -37,7 +37,9 @@ function extractCustomerId(
   return null;
 }
 
-async function resolveTenantByCustomerId(customerId: string): Promise<{ id: string; slug: string } | null> {
+async function resolveTenantByCustomerId(
+  customerId: string
+): Promise<{ id: string; slug: string } | null> {
   const { data, error } = await getServiceClient()
     .schema('platform')
     .from('tenants')
@@ -53,7 +55,9 @@ async function resolveTenantByCustomerId(customerId: string): Promise<{ id: stri
   return data as { id: string; slug: string } | null;
 }
 
-async function resolveTenantIdForSubscription(sub: Stripe.Subscription): Promise<string | undefined> {
+async function resolveTenantIdForSubscription(
+  sub: Stripe.Subscription
+): Promise<string | undefined> {
   if (typeof sub.metadata?.tenant_id === 'string') {
     return sub.metadata.tenant_id;
   }
@@ -93,13 +97,16 @@ async function upsertLegacySubscription(
 ): Promise<boolean> {
   const planMeta = sub.metadata?.plan ?? null;
   const db = getServiceClient();
-  const { error } = await db.schema('platform').from('subscriptions').insert({
-    tenant_id: tenantId,
-    stripe_event_id: eventId,
-    stripe_status: sub.status,
-    current_period_end: toIsoDate(sub.current_period_end),
-    plan: planMeta,
-  });
+  const { error } = await db
+    .schema('platform')
+    .from('subscriptions')
+    .insert({
+      tenant_id: tenantId,
+      stripe_event_id: eventId,
+      stripe_status: sub.status,
+      current_period_end: toIsoDate(sub.current_period_end),
+      plan: planMeta,
+    });
 
   if (!error) return true;
   if (error.code === '23505') return true;
@@ -165,7 +172,7 @@ async function upsertBillingSubscription(
     stripe_customer_id: customerId,
     status: mapStripeStatus(sub.status),
     billing_period: 'monthly',
-    amount_cents: (sub.items?.data?.[0]?.price?.unit_amount ?? 0),
+    amount_cents: sub.items?.data?.[0]?.price?.unit_amount ?? 0,
     currency: (sub.items?.data?.[0]?.price?.currency ?? 'usd').toUpperCase(),
     current_period_start: toIsoDateShort(sub.current_period_start),
     current_period_end: toIsoDateShort(sub.current_period_end),
@@ -183,10 +190,7 @@ async function upsertBillingSubscription(
       logger.error('billing_subscriptions update', error);
     }
   } else {
-    const { error } = await db
-      .schema('platform')
-      .from('billing_subscriptions')
-      .insert(insert);
+    const { error } = await db.schema('platform').from('billing_subscriptions').insert(insert);
 
     if (error && error.code !== '23505') {
       logger.error('billing_subscriptions insert', error);
@@ -237,10 +241,7 @@ async function upsertInvoice(
       logger.error('invoice update', error);
     }
   } else {
-    const { error } = await db
-      .schema('platform')
-      .from('invoices')
-      .insert(payload);
+    const { error } = await db.schema('platform').from('invoices').insert(payload);
 
     if (error) {
       logger.error('invoice insert', error);
@@ -310,9 +311,10 @@ async function handleSubscriptionUpdated(event: Stripe.Event): Promise<void> {
 
   const customerId = extractCustomerId(sub.customer);
   const planMeta = sub.metadata?.plan;
-  const planId = typeof planMeta === 'string' && PLAN_TO_BILLING_PLAN[planMeta]
-    ? PLAN_TO_BILLING_PLAN[planMeta]
-    : 'opsly-basic';
+  const planId =
+    typeof planMeta === 'string' && PLAN_TO_BILLING_PLAN[planMeta]
+      ? PLAN_TO_BILLING_PLAN[planMeta]
+      : 'opsly-basic';
 
   const inserted = await upsertLegacySubscription(tenantId, event.id, sub);
   if (!inserted) return;
@@ -331,7 +333,7 @@ async function handleSubscriptionUpdated(event: Stripe.Event): Promise<void> {
   }
 
   const validPlans = ['startup', 'business', 'enterprise'] as const;
-  if (validPlans.includes(planMeta as typeof validPlans[number])) {
+  if (validPlans.includes(planMeta as (typeof validPlans)[number])) {
     const { error: planError } = await db
       .schema('platform')
       .from('tenants')
@@ -383,7 +385,8 @@ async function handleInvoicePaid(invoice: Stripe.Invoice): Promise<void> {
   const db = getServiceClient();
 
   if (invoice.subscription) {
-    const subId = typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription.id;
+    const subId =
+      typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription.id;
     const periodEnd = invoice.period_end
       ? new Date(invoice.period_end * MS_PER_SECOND).toISOString()
       : null;
@@ -418,7 +421,8 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promise<void
   const db = getServiceClient();
 
   if (invoice.subscription) {
-    const subId = typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription.id;
+    const subId =
+      typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription.id;
     await db
       .schema('platform')
       .from('billing_subscriptions')
@@ -504,14 +508,20 @@ export async function handleStripeWebhookPost(request: Request): Promise<Respons
   try {
     rawBody = await request.text();
   } catch (e) {
-    logger.error('stripe webhook failed to read body', e instanceof Error ? e : { error: String(e) });
+    logger.error(
+      'stripe webhook failed to read body',
+      e instanceof Error ? e : { error: String(e) }
+    );
     return Response.json({ error: 'body_read_failed' }, { status: HTTP_STATUS.INTERNAL_ERROR });
   }
 
   const endpointSecret = resolveStripeWebhookEndpointSecret();
   if (!endpointSecret) {
     logger.error('stripe webhook endpoint secret not configured');
-    return Response.json({ error: 'webhook_not_configured' }, { status: HTTP_STATUS.INTERNAL_ERROR });
+    return Response.json(
+      { error: 'webhook_not_configured' },
+      { status: HTTP_STATUS.INTERNAL_ERROR }
+    );
   }
 
   const signature = request.headers.get('stripe-signature');
@@ -528,9 +538,10 @@ export async function handleStripeWebhookPost(request: Request): Promise<Respons
     const errPayload = e instanceof Error ? e : { error: String(e) };
     logger.error('stripe webhook dispatch error', errPayload);
     const msg = e instanceof Error ? e.message : String(e);
-    const slug = event.type === 'checkout.session.completed'
-      ? (event.data.object as Stripe.Checkout.Session).metadata?.tenant_slug
-      : undefined;
+    const slug =
+      event.type === 'checkout.session.completed'
+        ? (event.data.object as Stripe.Checkout.Session).metadata?.tenant_slug
+        : undefined;
     await notifyStripeWebhookCritical(event.type, msg, slug);
     if (event.type === 'checkout.session.completed') {
       return Response.json({ error: 'processing_failed' }, { status: HTTP_STATUS.INTERNAL_ERROR });
