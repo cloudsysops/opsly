@@ -74,14 +74,14 @@ describe('Peskids Form Submission Security', () => {
       method: 'POST',
       body: JSON.stringify({
         submissionData: { field: 'value' },
-        userId: 'attacker-specified-id'
+        userId: 'attacker-specified-id',
       }),
     });
 
     await POST(req, { params: Promise.resolve({ formId: 'f1' }) });
 
     // Verify audit log call
-    const auditCall = mockRpc.mock.calls.find(call => call[0] === 'log_audit_event');
+    const auditCall = mockRpc.mock.calls.find((call) => call[0] === 'log_audit_event');
     expect(auditCall).toBeDefined();
     const payload = auditCall[1];
 

@@ -29,7 +29,11 @@ export function MoonHomeClient({
 }: {
   configSummaries: ConfigSummary[];
 }): React.ReactElement {
-  const { data: tenantsData, error: tenantsError, isLoading: tenantsLoading } = useTenants({
+  const {
+    data: tenantsData,
+    error: tenantsError,
+    isLoading: tenantsLoading,
+  } = useTenants({
     page: 1,
     limit: 50,
   });
@@ -154,7 +158,9 @@ export function MoonHomeClient({
       </div>
 
       <section>
-        <h2 className="mb-3 font-display text-sm font-semibold text-slate-100">Clientes prioritarios</h2>
+        <h2 className="mb-3 font-display text-sm font-semibold text-slate-100">
+          Clientes prioritarios
+        </h2>
         {tenantsLoading ? (
           <div className="grid gap-3 md:grid-cols-2">
             <MoonSkeleton />

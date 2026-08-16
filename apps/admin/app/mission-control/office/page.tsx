@@ -47,8 +47,8 @@ export default function MissionControlOfficePage() {
             </p>
             <h1 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-100">Office</h1>
             <p className="mt-1 max-w-xl text-sm text-neutral-500">
-              Mapa HQ en tiempo casi real (polling). Cola BullMQ, equipos, intents OpenClaw y alertas
-              de política. Modo Phaser / WebSocket en sprints posteriores.
+              Mapa HQ en tiempo casi real (polling). Cola BullMQ, equipos, intents OpenClaw y
+              alertas de política. Modo Phaser / WebSocket en sprints posteriores.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -64,8 +64,8 @@ export default function MissionControlOfficePage() {
         <OfficeCanvas orchestrator={orchestratorData} teams={teams} openClaw={openClawData} />
 
         <p className="text-center font-mono text-[10px] text-neutral-600">
-          Datos: GET /api/admin/mission-control/&#123;teams,orchestrator,openclaw&#125; · Redis queue
-          lengths
+          Datos: GET /api/admin/mission-control/&#123;teams,orchestrator,openclaw&#125; · Redis
+          queue lengths
         </p>
       </div>
     </div>
