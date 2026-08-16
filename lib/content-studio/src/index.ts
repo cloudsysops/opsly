@@ -58,3 +58,44 @@ export {
   type MoneyPrinterTurboPayload,
   type MoneyPrinterTurboRenderClientOptions,
 } from './rendering/moneyprinterturbo.js';
+
+// ─── Brand Content Production (Character Bible, Series, Episodes, Campaigns) ──
+export {
+  CharacterRegistry,
+  loadCharacter,
+  loadAllCharacters,
+  type CharacterRegistryOptions,
+} from './characters/CharacterRegistry.js';
+export { CharacterProfileSchema, CharacterIdSchema } from './characters/schema.js';
+export {
+  SeriesRegistry,
+  loadSeries,
+  loadAllSeries,
+  type SeriesRegistryOptions,
+} from './series/SeriesRegistry.js';
+export { SeriesSchema, SeriesIdSchema } from './series/schema.js';
+export {
+  EpisodeManager,
+  loadEpisode,
+  loadEpisodeScript,
+  loadAllEpisodes,
+  loadAllEpisodesForSeries,
+  checkEpisodeCompliance,
+  type EpisodeManagerOptions,
+} from './episodes/EpisodeManager.js';
+export { EpisodeSchema, LocalizedTextSchema } from './episodes/schema.js';
+export {
+  CampaignManager,
+  loadCampaign,
+  buildCalendarView,
+  computeProductionStatus,
+  type CampaignCalendarDay,
+} from './campaigns/CampaignManager.js';
+export { CampaignSchema } from './campaigns/schema.js';
+export { buildEpisodeRenderPlan, type EpisodeRenderPlan } from './rendering/episode-render-plan.js';
+
+// ─── YouTube Publishing ───────────────────────────────────────────────────────
+export {
+  YouTubePublisher,
+  loadYouTubeCredentialsFromEnv,
+} from './publishers/youtube.js';

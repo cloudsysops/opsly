@@ -12,7 +12,8 @@ last_review: 2026-08-16
 
 **📚 Wiki:** [`docs/README.md`](docs/README.md) — índice completo de documentación  
 **⚡ Cheatsheet:** [`docs/QUICK-REFERENCE.md`](docs/QUICK-REFERENCE.md) — SSH, comandos, vars, sprint actual  
-**🧠 Sistema de conocimiento:** [`docs/KNOWLEDGE-SYSTEM.md`](docs/KNOWLEDGE-SYSTEM.md) — NotebookLM + Obsidian, flujo para agentes
+**🧠 Sistema de conocimiento:** [`docs/KNOWLEDGE-SYSTEM.md`](docs/KNOWLEDGE-SYSTEM.md) — NotebookLM + Obsidian, flujo para agentes  
+**🎬 Opsly Universe / content:** antes de crear o editar cualquier personaje, mundo, episodio o símbolo del universo narrativo, lee [`data/content/canon/CANON-STATUS.md`](data/content/canon/CANON-STATUS.md) — evita que agentes en paralelo dupliquen en vez de complementar.
 
 **Mapa de documentación (evitar duplicar con `docs/AGENTS-GUIDE.md`):** `VISION.md` = norte de producto; **`AGENTS.md` (este archivo)** = estado operativo, próximo paso, bloqueantes e incrementos **por sesión**; **`docs/AGENTS-GUIDE.md`** = convenciones **solo** para varios asistentes/automatismos en paralelo (no sustituye AGENTS). `docs/adr/` = decisiones de arquitectura. No copiar tablas de límites por plan aquí: enlazar `AGENTS-GUIDE` + `VISION.md`.
 
@@ -543,6 +544,118 @@ See `docs/tenants/peskids/EXTRACTION-PLAN.md`:
 **Git status:** 26 archivos modificados + 2 nuevos (`auth-admin-access.test.ts`, `bullmq-redis.ts`).
 
 **Bloqueante activo:** Cloudflare Proxy ON requerido para ocultar IP VPS pública (157.245.223.7). 28. **Siguiente** — p. ej. **redeploy API + admin** en VPS para servir `/costs` y payload nuevo; E2E invite con Supabase en CI; más rutas bajo `/api/portal/tenant/[slug]/`; persistir aprobaciones de costos en DB si hace falta; operación VPS según `VISION.md`.
+
+---
+
+## 🔄 Content Production MVP — Brand Channel (2026-08-11)
+
+**Branch:** `claude/opsly-content-mvp-w2okmi`
+**Status:** MVP complete (Phase 1 — manual, no paid calls, no publishing)
+**Deliverable:** Character-driven scripted brand content for Opsly's own YouTube/social channel — distinct from the event-driven tenant content system below.
+
+### Audit before building (avoid duplicating parallel agent work)
+
+Checked in-flight branches before writing any code:
+
+- `feat/content-studio-phase2` — **already merged** to `main` (PR #362, #352). Confirmed it's the event-driven tenant system (auto-drafts from runtime events); genuinely different from scripted brand episodes, so no overlap.
+- `feat/pc-gamer-worker-plane` (open, not merged) — full gamer-PC media/GPU worker plane already exists there (Docker, BullMQ `ollama` worker, `OPSLY_WORKER_ALLOWLIST`, Mauro's gaming-schedule gates). **Did not duplicate this.** `content:render-plan` is dry-run only; real render execution is deferred until that branch merges and exposes a worker type for content rendering.
+- `lib/content-studio/src/rendering/moneyprinterturbo.ts` + `src/presets/tenant-content-presets.ts` already implement a working AI-video-render adapter — reused shape-compatibility (`VideoRenderRequest`/`TenantContentPreset`) instead of rebuilding.
+
+### What was built
+
+Additive extension of `lib/content-studio` (no fork, no new unregistered lib):
+
+- New types: `CharacterProfile`, `Series`, `Episode`, `EpisodeScene`, `Campaign` in `lib/content-studio/src/types.ts`
+- New submodules: `characters/CharacterRegistry`, `series/SeriesRegistry`, `episodes/EpisodeManager` (+ `checkEpisodeCompliance` reusing existing secret/PII patterns), `campaigns/CampaignManager`, `rendering/buildEpisodeRenderPlan` (dry-run only)
+- Content data in `data/content/` (repo root — `content/` alone is blocked by `config/root-whitelist.json`'s `validate-structure` check, so it lives under the already-allowed `data/` folder): 3 characters (Opsly Founder, Luna, Wavo), 3 series (Opsly Origins, Peki Lab, Build With Opsly), 1 fully-scripted pilot episode (`opsly-origins-001`), 15 idea-stage episodes, 30-day launch campaign calendar (`OPSLY_CHANNEL_LAUNCH_30_DAYS`)
+- CLI (`scripts/content/*.ts` via `tsx`): `content:list`, `content:episode`, `content:validate`, `content:calendar`, `content:render-plan`
+- Tests: 4 new test files, full `lib/content-studio` suite passes (156/156), `tsc --noEmit` clean
+
+### Full writeup
+
+[`docs/00-architecture/CONTENT-PRODUCTION-MVP.md`](docs/00-architecture/CONTENT-PRODUCTION-MVP.md)
+
+### Next steps (not in this session)
+
+- Generate actual character sheet visual assets (DALL-E/Midjourney) against the Character Bible prompts in `data/content/characters/*.json`
+- Script episodes 002-004 per series (currently idea-stage)
+- Once `feat/pc-gamer-worker-plane` merges: wire render execution through its worker allowlist
+
+### Same-session addendum — Opsly Universe: The Parallel Path
+
+User shared a full narrative-universe brief (originally written for Codex) for a semi-fictional cinematic series about Opsly's origin — protagonist **The Traveler** (masked human-cyborg, never shows his face) and companion **NØVA** (small curious robot, inner-child archetype), crossing over with Wavo/Peskids. Asked me to build it myself instead.
+
+Built additively on the same MVP infrastructure (no new schema/lib/CLI):
+- `CharacterIdSchema`/`SeriesIdSchema` gained new enum members: `the-traveler`, `nova`, `opsly-parallel-path` — existing `opsly-founder`/`opsly-robot-luna`/`opsly-origins` untouched.
+- New characters: `data/content/characters/{the-traveler,nova}.json`
+- New series: `data/content/series/opsly-parallel-path/` — Season 1, 10 episodes (episode 1 "The Question" fully scripted at `storyboard` status; 2-10 at `idea` with theme/emotional-conflict/visual-motif notes)
+- New canon docs: `data/content/canon/{UNIVERSE-BIBLE,THE-TRAVELER,NOVA,WAVO,SYMBOLS,TIMELINE,CONTINUITY-RULES}.md`
+
+**Deliberate, documented inconsistency** (not a silent rename): `the-traveler`/`nova` redesign the same protagonist/companion concept as `opsly-founder`/`opsly-robot-luna`, but the MVP characters stay live — they're still used by `opsly-origins` (including the shipped pilot `opsly-origins-001`). Full rationale in `data/content/canon/CONTINUITY-RULES.md`. Any future agent adding **new** universe content should default to `the-traveler`/`nova`; only extend `opsly-founder`/`opsly-robot-luna` if explicitly asked to keep building the `opsly-origins` line.
+
+Validated: `npm run content:validate` → 5 characters, 4 series, 26 episodes, all compliant. `lib/content-studio`: tsc clean, 156/156 tests.
+
+### Same-session follow-up — full 11-act Origin Saga
+
+User provided a much deeper narrative brief grounded in real biography (Medellín, IT admin/SOA consultant/Cloud-DevOps-Middleware freelance career, Providence migration, IntCloudSysOps formation) — an 11-act macro-story superseding the lighter 10-episode outline above.
+
+Integrated as canonical: new `data/content/canon/ORIGIN-SAGA.md` (full Act I-XI reference). Season 1 reorganized 10→13 episodes: inserted IntCloudSysOps (Ep04, Act IV), The Venture Studio (Ep09, Act IX), The Creator (Ep11, Act XI); reordered Blueprint before Peskids to match real chronology (platform forms before its first tenant) — documented in `canon/CONTINUITY-RULES.md` rather than left silent. Cipher expanded to 5 progressive fragments (`canon/SYMBOLS.md`); added "luminous ruins" motif for failed builds. Fixed a caught continuity bug: Episode 2 wrongly showed NØVA before his Act II birth — rewritten with an explicit non-linear structure note (Ep01 cold open, Ep02 chronological flashback).
+
+Validated: 5 characters, 4 series, 29 episodes, all compliant; `validate-structure` passes; `lib/content-studio` tsc clean, 156/156 tests.
+
+### Same-session follow-up — full production scripts + reference images
+
+User provided 5 concept-art images (The Traveler + NØVA across key scenes: Parallel World overlook, Peskids pool, Mission Control globe, workshop repair, bridge/path key art) as visual reference for generation agents, plus asked for the full season completed so publishing can start.
+
+Saved images (resized 2-4.5MB PNGs → ~350-450KB JPEGs, no compression tooling existed in repo so installed Pillow ad hoc) to `data/content/assets/reference/`, cataloged in `REFERENCE-IMAGES.md` with episode mapping, cross-linked from the 4 matching episodes' production notes.
+
+Completed full `scenes[]` + bilingual `script.md` for all remaining 12 episodes of `opsly-parallel-path` (previously idea/notes-only) — all 13 episodes now at `storyboard` status, ready for asset generation. Reused the rich production notes already written (theme/dialogue/visual motifs) as the source material for each scene breakdown.
+
+Validated: 5 characters, 4 series, 29 episodes all compliant; `validate-structure` passes; `content:render-plan` correctly lists required assets per episode; `lib/content-studio` tsc clean, 156/156 tests.
+
+**Scope note:** did not extend this same treatment to the lighter MVP series (`opsly-origins`, `peki-lab`, `build-with-opsly`) — user's requests since the Origin Saga brief have focused exclusively on `opsly-parallel-path`; those three series remain at their original MVP idea-stage depth.
+
+### Same-session follow-up — merged parallel canon from `feat/icso-youtube-kids-swim`
+
+User asked to pull and check what the team advanced. Found a separate agent had independently built an overlapping "Opsly Universe" canon on `feat/icso-youtube-kids-swim` (flat JSON under `config/content-studio/saga/`, no Zod/lib integration) — same core concept (El Viajero=The Traveler, NØVA identical) but with real additions: antagonist NULL, mythic Messenger, new Peskids hero Peki (alongside Wavo), a 3-layer MUNDUS/NEXUS/AETHER world model, and a shape+number symbol vocabulary. That branch also contains a separate, more production-ready piece — **Splashitos**, a non-Peskids-branded kids swim-tips YouTube Shorts channel with 5 drafts that actually enqueue real BullMQ `content-video` jobs to MoneyPrinterTurbo.
+
+Asked the user how to reconcile; they chose: merge the other canon into this session's typed `data/content/` + `lib/content-studio` structure (not the reverse). Did:
+- Schema: added `also_known_as` (optional) to `CharacterProfile`; extended `narrative_role` with `antagonist`/`messenger`; extended `CharacterId` with `peki`/`the-null`/`messenger` — all additive.
+- `the-traveler.json` gained `also_known_as: ["El Viajero"]` — same character, not duplicated.
+- New characters: `peki.json`, `the-null.json`, `messenger.json` — full CharacterProfile with locked generation/negative prompts.
+- New canon docs: `WORLDS.md` (3-layer model + Peskids Planet + documented-not-produced Bitsitos Zone), `PEKI.md`, `THE-NULL.md`, `MESSENGER.md`. Updated `SYMBOLS.md` (shape+number vocabulary, complementary to the existing 5-fragment cipher), `UNIVERSE-BIBLE.md` (3-layer references), `CONTINUITY-RULES.md` (full merge decision record — see that file for the complete rationale).
+- **Deliberately NOT retrofitted:** NULL/Messenger into the already-`storyboard`-status 13 episodes (no antagonist arc existed when those were scripted — real rework, left for a future season), Peki into Episode 6 (still Wavo-only as scripted).
+- **Deliberately NOT touched:** Splashitos' production pipeline (queue wiring, MoneyPrinterTurbo config, `content-splashitos-enqueue.sh`) — only the narrative canon was reconciled. Splashitos remains on `feat/icso-youtube-kids-swim` pending a separate decision.
+- Flagged, not resolved: `peki-lab` (MVP series name) now collides with the new Peki character but doesn't feature him — needs a human decision (rename series or add Peki).
+
+Validated: 8 characters, 4 series, 29 episodes, all compliant; `validate-structure` passes; `lib/content-studio` tsc clean, 156/156 tests.
+
+### Same-session follow-up — multi-language + anti-duplication protocol + richer canon
+
+User asked for three things together: (1) multi-language content (es/en + zh/ja/pt/ar) to move faster, (2) "unifica no elimines, completémonos" — keep merging additively, and (3) a mechanism so other agents complement instead of duplicating. Also shared an even richer narrative draft ("Los Arquitectos del Umbral") with new elements.
+
+Did:
+- **`data/content/canon/CANON-STATUS.md`** (new) — single-source-of-truth ledger: where each concept type lives, per-character/per-arc lock status, and a "before you build" checklist. Linked from the top of `AGENTS.md` so any agent hits it early. This is the actual answer to "how do we stop duplication."
+- **Multi-language schema**: `title`/`hook`/`metadata.captions` changed from closed `{es,en}` objects to an open language map (`LocalizedTextSchema` in `lib/content-studio/src/episodes/schema.ts` — `.record().refine()` requiring non-empty `es`/`en`, any other code additive, never silently stripped). `LocalizedText` type added to `types.ts`. New `LANGUAGES.md` documents supported codes and why (not per-language duplicate files — would fragment `production.status`). Pilot episode `opsly-parallel-path-001` translated into zh/ja/pt/ar as proof of concept; the other 12 Season 1 episodes remain es/en only (real translation task, not done in this pass).
+- **New canon docs** (all Season 2+/documented-only, not retrofitted into locked Season 1): `ANCESTORS.md` (the Ancestral Archive — "ellos eran las máquinas" reveal), `THE-MIRROR.md` (9-symbol multi-season mystery + "0 = TÚ" ending, explicitly nested above S1's 5-fragment cipher, not replacing it), updated `MESSENGER.md` (named messengers Ariel/Lumiel/El Guardián + the "show a door, never walk through it" rule), updated `THE-NULL.md` (NULL's argument + draft climactic dialogue with NØVA), updated `WORLDS.md` (Saga II tenant planets: Turismo/Salud/Construcción/Restaurantes/Guardian/Panini), updated `NOVA.md` (viewer-customization product concept — "¿quién crees que puedo llegar a ser?" instead of "¿cómo quieres que me vea?").
+
+Validated: 8 characters, 4 series, 29 episodes (now including a 6-language pilot), all compliant; `validate-structure` passes; `lib/content-studio` tsc clean, 156/156 tests.
+
+**PR #961 note:** `production-change-window` CI check is correctly red (this PR touches `lib/content-studio/**`, daytime in Bogotá) — explained in a PR comment, not treated as a bug. Deliberately not applying `night-merge` while the PR is still draft/actively iterated, to avoid queuing an unintended auto-deploy.
+
+### Same-session follow-up (2026-08-13) — real YouTube Data API publisher
+
+User asked whether YouTube upload was already automated (it wasn't — confirmed via repo-wide grep, nothing existed anywhere) and then asked to build the real connector.
+
+Did:
+- `lib/content-studio/src/publishers/youtube.ts` — `YouTubePublisher` class wrapping `googleapis` YouTube Data API v3 `videos.insert` (+ optional playlist add). Requires `client_id`/`client_secret`/`refresh_token` passed in explicitly (never reads Doppler itself); `loadYouTubeCredentialsFromEnv()` reads them from `YOUTUBE_CLIENT_ID`/`YOUTUBE_CLIENT_SECRET`/`YOUTUBE_REFRESH_TOKEN`. `made_for_kids` has no default anywhere in the stack — throws if not explicitly boolean (COPPA).
+- `scripts/content/youtube-publish.ts` (`npm run content:youtube:publish -- <episode-id> --video <path> --made-for-kids <bool> [--live] [--privacy ...] [--playlist ...]`) — dry-run by default (prints title/description/tags/privacy/file size, zero API calls); `--live` required to actually upload. **Approval gate**: refuses to run at all (dry-run or live) unless `episode.production.status` is `reviewed` or `published` — verified live against `opsly-parallel-path-001` (still `storyboard`), correctly refused. On a successful live publish, writes back `production.status/published_at/published_platforms/publish_urls.youtube` to the episode's JSON.
+- `docs/runbooks/YOUTUBE-PUBLISHING.md` — one-time Google Cloud project + OAuth consent screen + refresh-token generation steps, Doppler secret names, usage examples, made-for-kids guidance per series (Peki Lab → true, others → false by default judgment, confirm per episode).
+- Added `googleapis` dependency to `lib/content-studio/package.json` (installed via the same `--no-save --no-package-lock` workaround as earlier in this session, since the root lockfile still has the unrelated playwright ETARGET issue).
+
+**Explicitly not done** (per AGENTS.md AUTONOMY RULES — Doppler edits require human confirmation): no actual Google Cloud project was created, no OAuth credentials exist, nothing was added to Doppler. The connector is real, tested code with nothing to connect to yet — manual upload remains the only working path until a human completes the one-time setup in the runbook.
+
+Validated: `lib/content-studio` tsc clean, 165/165 tests (9 new, mocked `googleapis` — no real network calls in tests). `content:validate` + `validate-structure` pass.
 
 ---
 

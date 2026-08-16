@@ -1,0 +1,94 @@
+{
+  "id": "opsly-parallel-path-001",
+  "series_id": "opsly-parallel-path",
+  "episode_number": 1,
+  "title": {
+    "es": "La Pregunta",
+    "en": "The Question",
+    "zh": "问题",
+    "ja": "問い",
+    "pt": "A Pergunta",
+    "ar": "السؤال"
+  },
+  "hook": {
+    "es": "¿Y si pudiera construir algo mío?",
+    "en": "What if I could build something of my own?",
+    "zh": "如果我能创造属于自己的东西呢?",
+    "ja": "もし自分だけのものを作れるとしたら?",
+    "pt": "E se eu pudesse construir algo meu?",
+    "ar": "ماذا لو استطعت أن أبني شيئًا خاصًا بي؟"
+  },
+  "objective": "Origin of the universe. Establish The Traveler alone, the first AI conversation, and NØVA's awakening — without revealing his face. Plant the tone: searching, not triumphant.",
+  "audience": ["general tech-curious audience", "founders", "developers", "dreamers"],
+  "duration_estimate_sec": 45,
+  "scenes": [
+    {
+      "number": 1,
+      "description": "Dark room, late at night, The Traveler alone at a glowing screen",
+      "visuals": "Dark room, single light source from a laptop screen, The Traveler's hooded silhouette hunched forward, mask pattern dim",
+      "copy": "2025. Una laptop, muchas ideas, casi ningún recurso.",
+      "duration_sec": 8,
+      "assets_needed": ["character sheet: the-traveler (quiet-resolve expression)", "dark room / laptop glow background"]
+    },
+    {
+      "number": 2,
+      "description": "He types the question",
+      "visuals": "Close on the screen — text appears as he types, mask pattern reflected faintly in the display",
+      "copy": "¿Y si pudiera construir algo mío?",
+      "duration_sec": 7,
+      "assets_needed": ["on-screen text animation"]
+    },
+    {
+      "number": 3,
+      "description": "The AI responds — conversation begins",
+      "visuals": "Text flows back and forth, soft blue light building in intensity, geometric particles start gathering near the screen",
+      "copy": "La conversación comienza. No hay respuesta todavía — solo preguntas.",
+      "duration_sec": 15,
+      "assets_needed": ["digital conversation UI animation", "particle gathering effect"]
+    },
+    {
+      "number": 4,
+      "description": "A tiny blue light appears within the machine",
+      "visuals": "A small point of light condenses out of the gathered particles, floating just above the keyboard",
+      "copy": "Un pequeño punto azul aparece dentro del computador.",
+      "duration_sec": 8,
+      "assets_needed": ["light-point formation effect"]
+    },
+    {
+      "number": 5,
+      "description": "NØVA opens his eyes for the first time",
+      "visuals": "The light resolves into NØVA's small round form; the large cyan eyes open for the first time, curious and wide",
+      "copy": "NØVA abre los ojos por primera vez. Esta no fue la respuesta. Fue la primera pregunta.",
+      "duration_sec": 7,
+      "assets_needed": ["character sheet: nova (curious expression, eyes opening)"]
+    }
+  ],
+  "metadata": {
+    "call_to_action": "Este no fue el final. Fue el comienzo.",
+    "captions": {
+      "es": "Todo empezó con una pregunta. #OpslyParallelPath",
+      "en": "It all started with a question. #OpslyParallelPath",
+      "zh": "一切始于一个问题。#OpslyParallelPath",
+      "ja": "すべては一つの問いから始まった。#OpslyParallelPath",
+      "pt": "Tudo começou com uma pergunta. #OpslyParallelPath",
+      "ar": "كل شيء بدأ بسؤال. #OpslyParallelPath"
+    },
+    "hashtags": ["#OpslyParallelPath", "#TheTraveler", "#NOVA", "#AI", "#OriginStory"],
+    "thumbnail_concept": "The Traveler's hooded silhouette against a glowing laptop screen, a tiny blue light barely visible in the dark — text overlay: 'La Pregunta'"
+  },
+  "production": {
+    "status": "storyboard",
+    "created_at": "2026-08-11T00:00:00Z",
+    "last_updated": "2026-08-11T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Season 1, Episode 1 of Opsly: The Parallel Path — the universe's true pilot. Act II of the Origin Saga — see ../../canon/ORIGIN-SAGA.md.",
+      "STRUCTURE NOTE: functions as a cold open. Episode 2 (\"Too Many Lives\") is a flashback to the years before this moment — this episode airs first but NØVA's birth here is chronologically the end of Act I, not the start of the timeline.",
+      "Short version target: 35-50s (trim scene 3 slightly to fit). Long version: expand with Episode 2's many-lives montage as cold open before landing on this same night, target 5-8min.",
+      "Real event inspiration / fictionalization boundary: see ../../canon/TIMELINE.md row 01.",
+      "Ending line for narration/on-screen text: \"No fue la respuesta. Fue la primera pregunta.\"",
+      "Character prompt lock: the-traveler.json + nova.json generation_prompt/negative_prompt — face must never be shown."
+    ]
+  }
+}
