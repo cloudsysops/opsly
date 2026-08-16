@@ -37,3 +37,7 @@
 ## 2026-06-26 - [Caching Admin Overview DB & Network Probes]
 **Learning:** The admin overview dashboardaggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
 **Action:** Always cache aggregated metrics and external probes in dashboard-facing API routes, and modularize parsing logic to maintain low cyclomatic complexity.
+
+## 2026-07-02 - [Caching Admin Tenant LLM Cost Analytics]
+**Learning:** Fetching raw LLM usage events from Supabase and calculating in-memory aggregations (by model and feature) on every GET `/api/admin/billing/llm-costs` request can cause noticeable UI latency as event volume grows. Scoping the Redis cache key by tenant slug and period (`admin:billing:llm-costs:${tenantSlug}:${period}`) with a short 60s TTL converts these DB queries and map-reduce computations into O(1) cache lookups while keeping non-blocking writes via `void setCache(...)`.
+**Action:** Cache tenant analytics and aggregated metrics per tenant/period key in Redis whenever endpoint data requires fetching raw event logs.

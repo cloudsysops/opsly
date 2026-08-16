@@ -5,7 +5,8 @@ import {
   type RawUsageAnalyticsRow,
 } from '../../../../../lib/admin-llm-cost-analytics';
 import { requireAdminAccess } from '../../../../../lib/auth';
-import { HTTP_STATUS } from '../../../../../lib/constants';
+import { CACHE_TTL, HTTP_STATUS } from '../../../../../lib/constants';
+import { getCache, setCache } from '../../../../../lib/redis-cache';
 import { getServiceClient } from '../../../../../lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -19,9 +20,7 @@ function currentPeriodLabel(): string {
 
 export async function GET(request: Request): Promise<Response> {
   const denied = await requireAdminAccess(request);
-  if (denied) {
-    return denied;
-  }
+  if (denied) return denied;
 
   const url = new URL(request.url);
   const tenantSlug = url.searchParams.get('tenant_slug')?.trim();
@@ -37,6 +36,11 @@ export async function GET(request: Request): Promise<Response> {
   if (!range) {
     return Response.json({ error: 'period must be YYYY-MM' }, { status: HTTP_STATUS.BAD_REQUEST });
   }
+
+  // Bolt Optimization: check Redis cache first for aggregated LLM costs
+  const cacheKey = `admin:billing:llm-costs:${tenantSlug}:${period}`;
+  const cached = await getCache<Record<string, unknown>>(cacheKey);
+  if (cached !== null) return Response.json(cached);
 
   const db = getServiceClient();
   const { data, error } = await db
@@ -56,15 +60,18 @@ export async function GET(request: Request): Promise<Response> {
 
   const rows = (data ?? []) as RawUsageAnalyticsRow[];
   const totalCost = rows.reduce((s, r) => s + Number(r.cost_usd ?? 0), 0);
-  const byModel = aggregateLlmCostsByModel(rows);
-  const byFeature = aggregateLlmCostsByFeature(rows);
 
-  return Response.json({
+  const payload = {
     period,
     tenant_slug: tenantSlug,
     total_cost_usd: totalCost,
     total_requests: rows.length,
-    by_model: byModel,
-    by_feature: byFeature,
-  });
+    by_model: aggregateLlmCostsByModel(rows),
+    by_feature: aggregateLlmCostsByFeature(rows),
+  };
+
+  // Bolt Optimization: non-blocking cache write (60s TTL)
+  void setCache(cacheKey, payload, CACHE_TTL.SHORT);
+
+  return Response.json(payload);
 }
