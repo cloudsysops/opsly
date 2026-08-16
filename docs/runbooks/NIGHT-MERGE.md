@@ -11,7 +11,7 @@ Cada noche (~**01:00 America/Bogota**) GitHub Actions:
 1. Busca PRs abiertos con label **`night-merge`**
 2. Valida: no draft, `MERGEABLE` (reintenta si GitHub devuelve `UNKNOWN`), checks CI en verde (sin FAILURE ni pending; ignora `production-change-window`)
 3. Squash-merge + borra la rama
-4. Espera el workflow **Deploy** en `main` cuyo `headSha` sea el SHA **después** del merge (nunca un Deploy viejo fallido)
+4. Espera el workflow **Deploy** en `main` cuyo `headSha` sea el SHA **después** del merge (nunca un Deploy viejo fallido). Deploy usa `concurrency` por rama (un SSH a la vez) y el health **público** lo hace el runner (no el VPS vía Cloudflare; el hairpin fallaba el job con la API ya arriba).
 5. Smoke: `api.{PLATFORM_DOMAIN}/api/health` + `peskids.{PLATFORM_DOMAIN}/`
 6. Si Deploy o smoke fallan → **rollback vía PR** (`revert/night-merge-*` + `hotfix-prod` + squash admin). No hace `git push origin main` (branch protection lo rechaza).
 
