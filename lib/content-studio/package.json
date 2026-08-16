@@ -8,9 +8,14 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
-    "./studio": "./src/content-engine/studio-read.ts"
+    "./studio": {
+      "types": "./dist/content-engine/studio-read.d.ts",
+      "import": "./dist/content-engine/studio-read.js",
+      "default": "./dist/content-engine/studio-read.js"
+    }
   },
   "scripts": {
     "build": "tsc",
