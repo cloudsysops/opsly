@@ -22,7 +22,6 @@ interface StatsResponse {
   totalErrors: number;
 }
 
-
 async function fetchFormsList(
   supabase: ReturnType<typeof getServiceClient>,
   tenantSlug: string
@@ -165,26 +164,26 @@ export async function GET(
 
         const supabase = getServiceClient();
 
-    const formsResult = await fetchFormsList(supabase, tenantSlug);
-    if (formsResult instanceof Response) {
-      return formsResult;
-    }
-    const forms = formsResult;
+        const formsResult = await fetchFormsList(supabase, tenantSlug);
+        if (formsResult instanceof Response) {
+          return formsResult;
+        }
+        const forms = formsResult;
 
-    const formIds = forms.map((f) => f.id);
-    const [formAnalytics, lastSubmissionMap] = await Promise.all([
-      fetchFormAnalytics(supabase, tenantSlug, formIds),
-      fetchLastSubmissions(supabase, tenantSlug),
-    ]);
+        const formIds = forms.map((f) => f.id);
+        const [formAnalytics, lastSubmissionMap] = await Promise.all([
+          fetchFormAnalytics(supabase, tenantSlug, formIds),
+          fetchLastSubmissions(supabase, tenantSlug),
+        ]);
 
-    const analyticsMap = new Map(formAnalytics.map((a) => [a.form_id, a]));
+        const analyticsMap = new Map(formAnalytics.map((a) => [a.form_id, a]));
 
-    const formsWithAnalytics: FormAnalytics[] = forms.map((form) => {
-      const analytics = analyticsMap.get(form.id);
-      return buildFormAnalyticObject(form, analytics, lastSubmissionMap);
-    });
+        const formsWithAnalytics: FormAnalytics[] = forms.map((form) => {
+          const analytics = analyticsMap.get(form.id);
+          return buildFormAnalyticObject(form, analytics, lastSubmissionMap);
+        });
 
-    const stats = calculateStats(formsWithAnalytics);
+        const stats = calculateStats(formsWithAnalytics);
 
         return jsonOk({
           forms: formsWithAnalytics,
