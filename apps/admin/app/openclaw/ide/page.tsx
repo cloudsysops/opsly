@@ -53,7 +53,8 @@ export default function OpenClawIdePage() {
   const { data: mcpCatalog } = useSWR(['agent-ide-mcp-tools'], () => getAgentIdeMcpTools());
 
   const selectedSession = useMemo(
-    () => sessionsData?.sessions.find((session) => session.session_id === selectedSessionId) ?? null,
+    () =>
+      sessionsData?.sessions.find((session) => session.session_id === selectedSessionId) ?? null,
     [selectedSessionId, sessionsData?.sessions]
   );
 
@@ -114,7 +115,10 @@ export default function OpenClawIdePage() {
   }
 
   async function handleExecuteTool(toolId: string): Promise<void> {
-    const result = await executeAgentIdeMcpTool(toolId, { agent_id: agentId, session_id: selectedSessionId });
+    const result = await executeAgentIdeMcpTool(toolId, {
+      agent_id: agentId,
+      session_id: selectedSessionId,
+    });
     setMcpResult(JSON.stringify(result, null, 2));
   }
 
@@ -125,8 +129,8 @@ export default function OpenClawIdePage() {
           <p className="text-xs uppercase tracking-[0.25em] text-ops-magenta">OpenClaw IDE</p>
           <h1 className="font-display text-2xl text-ops-cyan">IDE Octopus para Agentes</h1>
           <p className="mt-1 max-w-3xl text-sm text-ops-gray">
-            Consola admin para iniciar sesiones terminal por agente, leer output incremental y probar tools MCP
-            bajo policy.
+            Consola admin para iniciar sesiones terminal por agente, leer output incremental y
+            probar tools MCP bajo policy.
           </p>
         </div>
         <Badge variant="blue">backend BFF + orchestrator</Badge>
@@ -141,7 +145,11 @@ export default function OpenClawIdePage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Input value={agentId} onChange={(event) => setAgentId(event.target.value)} placeholder="agent_id" />
+            <Input
+              value={agentId}
+              onChange={(event) => setAgentId(event.target.value)}
+              placeholder="agent_id"
+            />
             <Input
               value={tenantSlug}
               onChange={(event) => setTenantSlug(event.target.value)}
@@ -173,7 +181,12 @@ export default function OpenClawIdePage() {
         <Card>
           <CardHeader className="flex-row items-center justify-between">
             <CardTitle className="text-sm">Terminal</CardTitle>
-            <Button variant="ghost" size="sm" onClick={() => void handleStop()} disabled={!selectedSessionId}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => void handleStop()}
+              disabled={!selectedSessionId}
+            >
               <Square className="mr-2 h-4 w-4" />
               Stop
             </Button>
@@ -191,7 +204,9 @@ export default function OpenClawIdePage() {
                   }`}
                   onClick={() => setSelectedSessionId(session.session_id)}
                 >
-                  <div className="font-mono">{session.process_label ?? session.session_id.slice(0, 8)}</div>
+                  <div className="font-mono">
+                    {session.process_label ?? session.session_id.slice(0, 8)}
+                  </div>
                   <div className={statusTone(session.status)}>{session.status}</div>
                 </button>
               ))}
@@ -199,7 +214,9 @@ export default function OpenClawIdePage() {
             {selectedSession ? (
               <div className="space-y-3 rounded-xl border border-white/10 bg-white/[0.02] p-3">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.16em] text-ops-gray">Objective loop</p>
+                  <p className="text-xs uppercase tracking-[0.16em] text-ops-gray">
+                    Objective loop
+                  </p>
                   <p className="mt-1 text-sm text-neutral-200">
                     {selectedSession.objective ?? 'Sin objective explícito.'}
                   </p>
@@ -238,7 +255,12 @@ export default function OpenClawIdePage() {
                   <Badge variant={tool.mode === 'action' ? 'yellow' : 'green'}>{tool.mode}</Badge>
                 </div>
                 <p className="mt-1 text-xs text-ops-gray">{tool.description}</p>
-                <Button className="mt-3 w-full" variant="ghost" size="sm" onClick={() => void handleExecuteTool(tool.id)}>
+                <Button
+                  className="mt-3 w-full"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => void handleExecuteTool(tool.id)}
+                >
                   Ejecutar policy check
                 </Button>
               </div>
