@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { getApiBaseUrl } from '@/lib/api';
@@ -118,7 +118,7 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
   }
 
   const inputClass =
-    'w-full rounded border border-ops-border bg-ops-bg px-3 py-2 text-sm text-neutral-100 placeholder:text-ops-gray focus:border-ops-green focus:outline-none';
+    'w-full rounded border border-ops-border bg-ops-bg px-3 py-2 text-sm text-neutral-100 placeholder:text-ops-gray transition-all focus:border-ops-green focus-visible:border-ops-green focus-visible:ring-2 focus-visible:ring-ops-green/30 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50';
 
   return (
     <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
@@ -303,7 +303,14 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
       {/* Submit */}
       <div className="flex justify-end">
         <Button type="submit" variant="primary" disabled={loading}>
-          {loading ? 'Creando...' : 'Crear Factura'}
+          {loading ? (
+            <>
+              <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+              Creando...
+            </>
+          ) : (
+            'Crear Factura'
+          )}
         </Button>
       </div>
     </form>

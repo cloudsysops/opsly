@@ -19,3 +19,7 @@
 ## 2026-05-27 - Ambiguous Labels in PasswordInput
 **Learning:** The `PasswordInput` component includes an eye icon button with an `aria-label` containing "contraseña". This can cause `get_by_label("Contraseña")` in Playwright or screen readers to match multiple elements, leading to ambiguity.
 **Action:** Always use exact matching or specific ARIA roles when targeting inputs with associated toggle buttons to ensure the primary input is correctly identified.
+
+## 2026-05-28 - Focus Indicators for Dropdowns and Text Areas
+**Learning:** Standard `<select>` dropdowns and `<textarea>` components in complex enterprise forms are frequently left with basic browser-default focus state behaviors. This creates an inconsistent and unpolished user experience and can lead to failures under strict WCAG accessibility guidelines on focus indicators if the focus outline becomes indistinguishable against dark-themed layouts.
+**Action:** Always map standard `<select>` and `<textarea>` styles to match custom text `<Input>` focus-visible rings using Tailwind's `focus-visible:ring-2` class with cohesive theme palettes.
