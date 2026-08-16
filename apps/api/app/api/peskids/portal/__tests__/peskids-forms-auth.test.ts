@@ -5,13 +5,13 @@ import { NextRequest } from 'next/server';
 vi.mock('@/lib/portal-trusted-identity', () => ({
   resolveTrustedPortalSession: vi.fn().mockResolvedValue({
     ok: false,
-    response: new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
+    response: new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 }),
   }),
   tenantSlugMatchesSession: vi.fn().mockReturnValue(true),
   PORTAL_READ_ROLES: ['owner', 'admin', 'operator', 'viewer'],
   PORTAL_WRITE_ROLES: ['owner', 'admin', 'operator'],
   PORTAL_READ_ACCESS: { allowedRoles: ['owner', 'admin', 'operator', 'viewer'] },
-  PORTAL_WRITE_ACCESS: { allowedRoles: ['owner', 'admin', 'operator'] }
+  PORTAL_WRITE_ACCESS: { allowedRoles: ['owner', 'admin', 'operator'] },
 }));
 
 vi.mock('@/lib/supabase', () => ({

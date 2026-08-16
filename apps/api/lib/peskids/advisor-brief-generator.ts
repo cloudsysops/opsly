@@ -21,7 +21,16 @@ function metadataString(metadata: Record<string, unknown> | null, key: string): 
 
 export async function generateAdvisorBrief(lead: PeskidsLeadRow): Promise<string | null> {
   try {
-    const { metadata, lead_type, full_name, child_name, email, phone, neighborhood, referral_source } = lead;
+    const {
+      metadata,
+      lead_type,
+      full_name,
+      child_name,
+      email,
+      phone,
+      neighborhood,
+      referral_source,
+    } = lead;
     const childAge = metadataString(metadata, 'child_age_years');
     const city = metadataString(metadata, 'city');
 
@@ -68,8 +77,7 @@ Sé conciso y práctico. El asesor necesita actuar en menos de 2 minutos.`;
       ],
     });
 
-    const briefText =
-      message.content[0]?.type === 'text' ? message.content[0].text : null;
+    const briefText = message.content[0]?.type === 'text' ? message.content[0].text : null;
 
     return briefText;
   } catch (error) {

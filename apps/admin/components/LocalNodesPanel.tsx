@@ -185,20 +185,16 @@ function WorkersSection({ workers }: { workers: RuntimeLocalNode['workers'] }) {
   );
 }
 
-function Badge({
-  tone,
-  children,
-}: {
-  tone: 'emerald' | 'amber' | 'zinc';
-  children: ReactNode;
-}) {
+function Badge({ tone, children }: { tone: 'emerald' | 'amber' | 'zinc'; children: ReactNode }) {
   const colors =
     tone === 'emerald'
       ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
       : tone === 'amber'
         ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
         : 'bg-zinc-800 text-zinc-300 border-zinc-700';
-  return <span className={`rounded-full border px-2 py-0.5 text-[11px] ${colors}`}>{children}</span>;
+  return (
+    <span className={`rounded-full border px-2 py-0.5 text-[11px] ${colors}`}>{children}</span>
+  );
 }
 
 function CapabilityRegistryPanel({ registry }: { registry: RuntimeCapabilityRegistry }) {
@@ -269,7 +265,8 @@ function PoppingSubagentsPanel({ catalog }: { catalog: PoppingSubagentCatalog })
         <div>
           <p className="text-sm font-medium text-zinc-100">Popping subagents</p>
           <p className="text-xs text-zinc-500">
-            {catalog.limits.maxPoppingSubagents} max, {catalog.limits.maxActivePoppingSubagents} active,
+            {catalog.limits.maxPoppingSubagents} max, {catalog.limits.maxActivePoppingSubagents}{' '}
+            active,
             {` ${catalog.limits.defaultTimeoutMinutes}m timeout`}
           </p>
         </div>
@@ -288,7 +285,8 @@ function PoppingSubagentsPanel({ catalog }: { catalog: PoppingSubagentCatalog })
             </div>
             <p className="mt-2 text-[11px] text-zinc-500">{role.rationale}</p>
             <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-zinc-600">
-              {role.skill} · {role.maxDurationMinutes}m · checkpoint {role.checkpointRequired ? 'yes' : 'no'}
+              {role.skill} · {role.maxDurationMinutes}m · checkpoint{' '}
+              {role.checkpointRequired ? 'yes' : 'no'}
             </p>
           </div>
         ))}
