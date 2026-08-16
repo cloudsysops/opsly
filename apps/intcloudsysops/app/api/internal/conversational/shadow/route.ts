@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import type { ChannelKind, InputMessage } from '@intcloudsysops/conversational-runtime';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
+import { verifyPeskidsInternalRequest } from '@/lib/internal-auth';
 import { getPeskidsShadowRuntime } from '@/lib/peskids-shadow-runtime';
 import { appendShadowAudit, listShadowAudit } from '@/lib/shadow-audit-store';
 
@@ -11,23 +12,6 @@ interface ShadowPayload {
   image_url?: string;
   sender?: string;
   channel?: string;
-}
-
-function internalSecret(): string | undefined {
-  return (
-    process.env.PESKIDS_INTERNAL_SECRET ||
-    process.env.PESKIDS_INBOUND_WEBHOOK_SECRET ||
-    process.env.JELOU_WEBHOOK_SECRET
-  );
-}
-
-function verifyInternal(req: NextRequest): boolean {
-  const secret = internalSecret();
-  if (!secret) {
-    return process.env.NODE_ENV !== 'production';
-  }
-  const header = req.headers.get('x-internal-secret') || req.headers.get('x-webhook-secret') || '';
-  return header.length > 0 && header === secret;
 }
 
 function parseChannel(raw: string): ChannelKind {
@@ -56,7 +40,7 @@ function toInput(body: ShadowPayload, sender: string, channel: ChannelKind): Inp
 
 export async function GET(req: NextRequest) {
   const requestId = resolveRequestId(req);
-  if (!verifyInternal(req)) {
+  if (!verifyPeskidsInternalRequest(req)) {
     return errorJson(requestId, 'Unauthorized', 401);
   }
   return successJson(requestId, { entries: listShadowAudit(50), mode: 'shadow' });
@@ -65,7 +49,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const requestId = resolveRequestId(req);
 
-  if (!verifyInternal(req)) {
+  if (!verifyPeskidsInternalRequest(req)) {
     return errorJson(requestId, 'Unauthorized', 401);
   }
 

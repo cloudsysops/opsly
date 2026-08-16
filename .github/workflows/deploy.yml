@@ -555,6 +555,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           timeout: 2m
+          command_timeout: 30m
           envs: STAGING_PLATFORM_DOMAIN,PLATFORM_DOMAIN_FALLBACK,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR
           script: |
             set -euo pipefail
@@ -759,6 +760,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           timeout: 2m
+          command_timeout: 30m
           envs: PLATFORM_DOMAIN,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR
           script: |
             set -euo pipefail
