@@ -59,7 +59,7 @@ describe('POST /api/governance/breach security', () => {
     expect(audit.logAuditEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         action: 'governance_breach_report_failed',
-        metadata: { reason: 'rate_limited' },
+        metadata: expect.objectContaining({ reason: 'rate_limited' }),
       })
     );
   });
@@ -90,7 +90,7 @@ describe('POST /api/governance/breach security', () => {
     expect(audit.logAuditEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         action: 'governance_breach_report_failed',
-        metadata: { reason: 'unauthorized' },
+        metadata: expect.objectContaining({ reason: 'unauthorized' }),
       })
     );
   });
@@ -142,7 +142,8 @@ describe('POST /api/governance/breach security', () => {
     expect(audit.logAuditEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         action: 'governance_breach_report',
-        tenant_id: 'tenant-123',
+        tenant_slug: 'tenant-123',
+        resource: 'governance:breach:breach-uuid-123',
         metadata: expect.objectContaining({
           breach_id: 'breach-uuid-123',
           severity: 'critical',

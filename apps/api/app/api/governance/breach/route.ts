@@ -41,20 +41,25 @@ async function insertBreachLog(parsedData: BreachInput, ip: string | null): Prom
     console.error('[governance][breach] insert error', error);
     await logAuditEvent({
       action: 'governance_breach_report_failed',
-      actor_id: getActorId(ip),
-      tenant_id: parsedData.tenant_id,
-      ip_address: ip,
-      metadata: { reason: 'db_insert_error', title: parsedData.title },
+      resource: 'governance:breach',
+      tenant_slug: parsedData.tenant_id,
+      ip,
+      metadata: { actor_id: getActorId(ip), reason: 'db_insert_error', title: parsedData.title },
     });
     return Response.json({ error: 'Failed to log breach' }, { status: 500 });
   }
 
   await logAuditEvent({
     action: 'governance_breach_report',
-    actor_id: getActorId(ip),
-    tenant_id: parsedData.tenant_id,
-    ip_address: ip,
-    metadata: { breach_id: data.id, severity: parsedData.severity, title: parsedData.title },
+    resource: `governance:breach:${data.id}`,
+    tenant_slug: parsedData.tenant_id,
+    ip,
+    metadata: {
+      actor_id: getActorId(ip),
+      breach_id: data.id,
+      severity: parsedData.severity,
+      title: parsedData.title,
+    },
   });
 
   return Response.json(
@@ -70,9 +75,9 @@ export async function POST(request: NextRequest): Promise<Response> {
   if (!rateLimit.allowed) {
     await logAuditEvent({
       action: 'governance_breach_report_failed',
-      actor_id: getActorId(ip),
-      ip_address: ip,
-      metadata: { reason: 'rate_limited' },
+      resource: 'governance:breach',
+      ip,
+      metadata: { actor_id: getActorId(ip), reason: 'rate_limited' },
     });
     return Response.json({ error: 'Too many requests' }, { status: 429 });
   }
@@ -80,9 +85,9 @@ export async function POST(request: NextRequest): Promise<Response> {
   if (!verifyAuth(request)) {
     await logAuditEvent({
       action: 'governance_breach_report_failed',
-      actor_id: getActorId(ip),
-      ip_address: ip,
-      metadata: { reason: 'unauthorized' },
+      resource: 'governance:breach',
+      ip,
+      metadata: { actor_id: getActorId(ip), reason: 'unauthorized' },
     });
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -93,9 +98,9 @@ export async function POST(request: NextRequest): Promise<Response> {
   } catch {
     await logAuditEvent({
       action: 'governance_breach_report_failed',
-      actor_id: getActorId(ip),
-      ip_address: ip,
-      metadata: { reason: 'invalid_json' },
+      resource: 'governance:breach',
+      ip,
+      metadata: { actor_id: getActorId(ip), reason: 'invalid_json' },
     });
     return Response.json({ error: 'Invalid JSON' }, { status: 400 });
   }
@@ -104,9 +109,9 @@ export async function POST(request: NextRequest): Promise<Response> {
   if (!parsed.success) {
     await logAuditEvent({
       action: 'governance_breach_report_failed',
-      actor_id: getActorId(ip),
-      ip_address: ip,
-      metadata: { reason: 'validation_error' },
+      resource: 'governance:breach',
+      ip,
+      metadata: { actor_id: getActorId(ip), reason: 'validation_error' },
     });
     return Response.json(
       { error: 'Invalid payload', details: parsed.error.flatten() },
