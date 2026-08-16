@@ -181,8 +181,13 @@ runtime/peskids.env
 apps/peskids/.secrets/
 config/peskids-firebase-admin.json
 
+# Content OS generated media (never commit renders or tenant working copies)
+runtime/content-os/
+runtime/content-studio/
+/content/tenants/
+/artifacts/content/
+
 # Agent scratch / MCP local
 runtime/tmp/
 .playwright-mcp/
-.superpowers/
 .superpowers/

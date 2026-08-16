@@ -1,0 +1,20 @@
+[
+  {
+    "id": "nova",
+    "name": "NØVA",
+    "role": "principal explorer",
+    "portals": ["FUTURE", "LAB", "WILD", "MIND"]
+  },
+  {
+    "id": "traveler",
+    "name": "THE TRAVELER",
+    "role": "mentor / companion",
+    "portals": ["ORIGINS", "UNKNOWN", "HUMAN"]
+  },
+  {
+    "id": "wavo",
+    "name": "WAVO",
+    "role": "aquatic universe",
+    "portals": ["MOVE", "EARTH"]
+  }
+]
