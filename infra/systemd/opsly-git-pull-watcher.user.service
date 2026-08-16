@@ -1,0 +1,19 @@
+[Unit]
+Description=Opsly git-pull watcher — despierta al agente local cuando hay commits nuevos en origin (worker/user session)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Ajustar %h/opsly si el clon no está en el home (p. ej. %h/proyectos/intcloudsysops).
+WorkingDirectory=%h/opsly
+Environment=REPO_ROOT=%h/opsly
+Environment=POLL_SEC=60
+ExecStart=/bin/bash %h/opsly/scripts/git-pull-watcher.sh
+Restart=on-failure
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
