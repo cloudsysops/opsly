@@ -35,7 +35,6 @@ export {
   type ApprovalQueueItemData,
   type DraftStats,
 } from './ui/draft-view-data.js';
-// ─── AI Generation ────────────────────────────────────────────────────────────
 export {
   generateAIContent,
   generateAIContentBilingual,
@@ -59,3 +58,42 @@ export {
   type MoneyPrinterTurboRenderClientOptions,
 } from './rendering/moneyprinterturbo.js';
 export * as contentEngine from './content-engine/index.js';
+
+export { buildEpisodeRenderPlan, type EpisodeRenderPlan } from './rendering/episode-render-plan.js';
+export {
+  EpisodeManager,
+  loadEpisode,
+  loadEpisodeScript,
+  loadAllEpisodes,
+  loadAllEpisodesForSeries,
+  checkEpisodeCompliance,
+  type EpisodeManagerOptions,
+} from './episodes/EpisodeManager.js';
+export { EpisodeSchema, LocalizedTextSchema } from './episodes/schema.js';
+export {
+  SeriesRegistry,
+  loadSeries,
+  loadAllSeries,
+  type SeriesRegistryOptions,
+} from './series/SeriesRegistry.js';
+export { SeriesSchema, SeriesIdSchema } from './series/schema.js';
+/** Legacy JSON bible for opsly-origins series. Live IP is `@intcloudsysops/universe`. */
+export {
+  CharacterRegistry,
+  loadCharacter,
+  loadAllCharacters,
+  type CharacterRegistryOptions,
+} from './characters/CharacterRegistry.js';
+export { CharacterProfileSchema, CharacterIdSchema } from './characters/schema.js';
+export {
+  CampaignManager,
+  loadCampaign,
+  buildCalendarView,
+  computeProductionStatus,
+  type CampaignCalendarDay,
+} from './campaigns/CampaignManager.js';
+export { CampaignSchema } from './campaigns/schema.js';
+export {
+  YouTubePublisher,
+  loadYouTubeCredentialsFromEnv,
+} from './publishers/youtube.js';

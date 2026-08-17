@@ -249,6 +249,18 @@
         "buildImagePrompt",
         "buildVideoPrompt"
       ]
+    },
+    "content-engine": {
+      "name": "@intcloudsysops/content-engine",
+      "version": "1.0.0",
+      "path": "lib/content-engine",
+      "owner": "operations",
+      "description": "Local-first create→render→approve video pipeline. Character canon is consumed from @intcloudsysops/universe.",
+      "status": "stable",
+      "dependencies": ["universe"],
+      "governance": "lib/content-engine/GOVERNANCE.md",
+      "mainFile": "lib/content-engine/src/index.ts",
+      "exports": ["loadCanonCharacter", "validateProject", "compose"]
     }
   },
   "consumers": {
@@ -268,6 +280,9 @@
       "depends": ["components", "observability", "security", "api", "services", "mission-control-kit"]
     },
     "lib/content-studio": {
+      "depends": ["universe"]
+    },
+    "lib/content-engine": {
       "depends": ["universe"]
     },
     "apps/icso": {
