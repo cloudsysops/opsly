@@ -60,6 +60,9 @@ services:
         exec npm run start --workspace=@intcloudsysops/orchestrator
     restart: unless-stopped
     network_mode: host
+    depends_on:
+      ollama:
+        required: false
 
   worker-openclaw-replica:
     profiles: [split]

@@ -64,7 +64,6 @@ describe('moon nav', () => {
     assert.equal(hrefs.includes('interesados'), false);
     assert.equal(hrefs.includes('pipeline'), false);
     assert.ok(hrefs.includes('/moon/clients'));
-    assert.ok(hrefs.includes('/moon/creator'));
   });
 });
 

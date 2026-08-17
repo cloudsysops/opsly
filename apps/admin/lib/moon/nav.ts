@@ -32,7 +32,6 @@ export const MOON_NAV_SECTIONS: MoonNavSection[] = [
       { href: '/moon/agents', label: 'Agentes', legacyHref: '/agents' },
       { href: '/moon/tasks', label: 'Tasks' },
       { href: '/moon/queue', label: 'Queue' },
-      { href: '/moon/creator', label: 'Creator Studio' },
       { href: '/moon/approvals', label: 'Approvals', legacyHref: '/approval-decisions' },
       { href: '/moon/automations', label: 'Automatizaciones' },
       { href: '/moon/integrations', label: 'Integraciones' },

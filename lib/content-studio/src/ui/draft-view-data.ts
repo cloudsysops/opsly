@@ -1,13 +1,5 @@
+import { formatDistanceToNow, format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import type { ContentDraft } from '../types.js';
-import {
-  eachDayOfInterval,
-  endOfMonth,
-  formatDateKey,
-  formatDayNumber,
-  formatMonthLabel,
-  formatRelativeTime,
-  startOfMonth,
-} from '../date-utils.js';
 
 export interface DraftStatusInfo {
   state: ContentDraft['state'];
@@ -70,7 +62,7 @@ export function getDraftListItemData(draft: Partial<ContentDraft>): DraftListIte
     id: draft.id || '',
     title: draft.title || 'Untitled',
     createdAgo: draft.created_at
-      ? formatRelativeTime(new Date(draft.created_at))
+      ? formatDistanceToNow(new Date(draft.created_at), { addSuffix: true })
       : 'Unknown',
     storyHook: draft.story_hook || '',
     platformCount: draft.captions?.length || 0,
@@ -99,35 +91,35 @@ export function getCalendarData(
 } {
   const monthStart = startOfMonth(month);
   const monthEnd = endOfMonth(month);
-  const daysInMonth = eachDayOfInterval(monthStart, monthEnd);
+  const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
   const draftsByDate: Record<string, Partial<ContentDraft>[]> = {};
   drafts
     .filter((d) => d.state === 'scheduled')
     .forEach((draft) => {
-      const normalizedDateKey = draft.created_at ? formatDateKey(new Date(draft.created_at)) : '';
-      if (normalizedDateKey) {
-        if (!draftsByDate[normalizedDateKey]) {
-          draftsByDate[normalizedDateKey] = [];
+      const dateKey = draft.created_at ? format(new Date(draft.created_at), 'yyyy-MM-dd') : '';
+      if (dateKey) {
+        if (!draftsByDate[dateKey]) {
+          draftsByDate[dateKey] = [];
         }
-        draftsByDate[normalizedDateKey].push(draft);
+        draftsByDate[dateKey].push(draft);
       }
     });
 
   const today = new Date();
 
   return {
-    monthLabel: formatMonthLabel(month),
+    monthLabel: format(month, 'MMMM yyyy'),
     weekDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     days: daysInMonth.map((day) => {
-      const dateKey = formatDateKey(day);
+      const dateKey = format(day, 'yyyy-MM-dd');
       const dayDrafts = draftsByDate[dateKey] || [];
 
       return {
         date: day,
-        dayNumber: formatDayNumber(day),
-        isDayToday: formatDateKey(day) === formatDateKey(today),
-        isCurrentMonth: day.getMonth() === month.getMonth() && day.getFullYear() === month.getFullYear(),
+        dayNumber: parseInt(format(day, 'd')),
+        isDayToday: format(day, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd'),
+        isCurrentMonth: format(day, 'yyyy-MM') === format(month, 'yyyy-MM'),
         draftCount: dayDrafts.length,
         drafts: dayDrafts,
       };
@@ -164,7 +156,7 @@ export function getApprovalQueueItemData(draft: Partial<ContentDraft>): Approval
     title: draft.title || 'Untitled',
     storyHookPreview: draft.story_hook ? draft.story_hook.substring(0, 100) : '',
     createdAgo: draft.created_at
-      ? formatRelativeTime(new Date(draft.created_at))
+      ? formatDistanceToNow(new Date(draft.created_at), { addSuffix: true })
       : 'Unknown',
     platformCount: draft.captions?.length || 0,
   };
