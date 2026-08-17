@@ -77,3 +77,8 @@
 **Vulnerability:** The `GET /api/peskids/portal/[tenantSlug]/forms/[formId]/responses` route retrieves sensitive user form submissions but was previously lacking dedicated regression test coverage verifying its strict multi-tenant authorization check logic.
 **Learning:** Regression testing of route-level parameters wrapping `runTrustedPortalDalForPathSlug` is critical to ensuring access control boundaries are permanently enforced even through subsequent refactors.
 **Prevention:** Ensure new portal-facing routes utilize authorization tests validating that requests lacking session headers yield `401 Unauthorized` block outcomes.
+
+## 2026-08-17 - [Missing Audit Logging on Admin Peskids Message Decision Endpoint]
+**Vulnerability:** The `/api/admin/peskids/[slug]/messages/[messageId]/approve` endpoint executed state-changing message approvals and rejections without generating security audit records, leaving administrative decisions untraceable.
+**Learning:** Administrative approval/rejection workflows in back-office modules can easily omit non-repudiation audit logs if logging is only considered during public endpoint development.
+**Prevention:** Always invoke `logAuditEvent` with proper action tags (`peskids_message_approved` / `peskids_message_rejected`), actor ID (`approvedBy`), resource ID, and verified client IP (`extractIp(request)`).
