@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "description": "Opsly Library Modules Registry",
-  "lastUpdated": "2026-08-16T00:00:00Z",
+  "lastUpdated": "2026-08-17T00:00:00Z",
   "modules": {
     "prompts": {
       "name": "@intcloudsysops/prompts",
@@ -261,6 +261,22 @@
       "governance": "lib/content-engine/GOVERNANCE.md",
       "mainFile": "lib/content-engine/src/index.ts",
       "exports": ["loadCanonCharacter", "validateProject", "compose"]
+    },
+    "game-core": {
+      "name": "@intcloudsysops/game-core",
+      "version": "1.0.0",
+      "path": "lib/game-core",
+      "owner": "operations",
+      "description": "Opsly Universe game contracts and First Portal loop. Consumes Universe; does not own canon.",
+      "status": "experimental",
+      "dependencies": ["universe"],
+      "governance": "lib/game-core/GOVERNANCE.md",
+      "mainFile": "lib/game-core/src/index.ts",
+      "exports": [
+        "createGameRuntime",
+        "getFirstPortalMission",
+        "GAME_SCHEMA_VERSION"
+      ]
     }
   },
   "consumers": {
@@ -293,6 +309,9 @@
     },
     "tools/agents": {
       "depends": ["prompts", "observability", "security", "config", "telemetry"]
+    },
+    "lib/game-core": {
+      "depends": ["universe"]
     }
   },
   "policies": {
