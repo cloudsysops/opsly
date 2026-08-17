@@ -26,6 +26,11 @@ Aligns with `GAME-VISION.md`:
 4. A knowledge fragment and a map fragment are earned.
 5. Events are observations (`mission.retried`, `mission.completed`), not diagnoses.
 
+## Browser client
+
+ICSO route `/universe/play` renders the First Portal loop. Adapter:
+`@intcloudsysops/game-web`. See [FIRST-PORTAL-WEB.md](FIRST-PORTAL-WEB.md).
+
 ## Not in this package
 
 - Phaser / Three.js / Godot client
