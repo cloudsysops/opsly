@@ -23,3 +23,7 @@
 ## 2026-05-28 - Focus Indicators for Dropdowns and Text Areas
 **Learning:** Standard `<select>` dropdowns and `<textarea>` components in complex enterprise forms are frequently left with basic browser-default focus state behaviors. This creates an inconsistent and unpolished user experience and can lead to failures under strict WCAG accessibility guidelines on focus indicators if the focus outline becomes indistinguishable against dark-themed layouts.
 **Action:** Always map standard `<select>` and `<textarea>` styles to match custom text `<Input>` focus-visible rings using Tailwind's `focus-visible:ring-2` class with cohesive theme palettes.
+
+## 2026-05-29 - External Link Affordances and New Tab Announcements
+**Learning:** External service cards opening links in new browser tabs (`target="_blank"`) without clear visual icons or screen reader warnings leave users unaware of context switches. Adding `aria-hidden="true"` to decorative icons and descriptive `aria-label`s announcing `(se abre en una nueva pestaña)` ensures WCAG compliance and smooth UX for all users.
+**Action:** Always include an explicit external link icon and screen-reader warning labels on interactive elements that navigate to external URLs or open new tabs.
