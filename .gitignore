@@ -93,13 +93,11 @@ runtime/letsencrypt/*
 runtime/tenants/*
 runtime/tmp/*
 runtime/pids/*
-runtime/opencode-overnight/*
 !runtime/pids/.gitkeep
 !runtime/logs/.gitkeep
 !runtime/letsencrypt/.gitkeep
 !runtime/tenants/.gitkeep
 !runtime/tmp/.gitkeep
-!runtime/opencode-overnight/.gitkeep
 
 # Supabase CLI local link metadata (regenerable)
 supabase/.temp/
