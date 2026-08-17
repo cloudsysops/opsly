@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "description": "Opsly Library Modules Registry",
-  "lastUpdated": "2026-08-07T00:00:00Z",
+  "lastUpdated": "2026-08-16T00:00:00Z",
   "modules": {
     "prompts": {
       "name": "@intcloudsysops/prompts",
@@ -230,6 +230,37 @@
         "sanitizeEntityCard",
         "omitMrrUntilCommercialSource"
       ]
+    },
+    "universe": {
+      "name": "@intcloudsysops/universe",
+      "version": "1.0.0",
+      "path": "lib/universe",
+      "owner": "operations",
+      "description": "Canonical Opsly Universe IP: characters, worlds, Visual DNA, story contracts. Consumed by agents; does not depend on content-studio.",
+      "status": "stable",
+      "dependencies": [],
+      "governance": "lib/universe/GOVERNANCE.md",
+      "mainFile": "lib/universe/src/index.ts",
+      "exports": [
+        "universe",
+        "getCharacter",
+        "getContext",
+        "composeStory",
+        "buildImagePrompt",
+        "buildVideoPrompt"
+      ]
+    },
+    "content-engine": {
+      "name": "@intcloudsysops/content-engine",
+      "version": "1.0.0",
+      "path": "lib/content-engine",
+      "owner": "operations",
+      "description": "Local-first create→render→approve video pipeline. Character canon is consumed from @intcloudsysops/universe.",
+      "status": "stable",
+      "dependencies": ["universe"],
+      "governance": "lib/content-engine/GOVERNANCE.md",
+      "mainFile": "lib/content-engine/src/index.ts",
+      "exports": ["loadCanonCharacter", "validateProject", "compose"]
     }
   },
   "consumers": {
@@ -247,6 +278,12 @@
     },
     "apps/admin": {
       "depends": ["components", "observability", "security", "api", "services", "mission-control-kit"]
+    },
+    "lib/content-studio": {
+      "depends": ["universe"]
+    },
+    "lib/content-engine": {
+      "depends": ["universe"]
     },
     "apps/icso": {
       "depends": ["mission-control-kit", "services"]

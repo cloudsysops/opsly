@@ -1,0 +1,31 @@
+{
+  "channel": "bitsitos",
+  "name": "Bitsitos",
+  "resolution": { "width": 1080, "height": 1920 },
+  "aspectRatio": "9:16",
+  "fps": 30,
+  "defaultDurationMs": 32000,
+  "font": "Inter",
+  "subtitleStyle": {
+    "fontSize": 68,
+    "primaryColor": "#F8FAFC",
+    "outlineColor": "#001827",
+    "outlineWidth": 6,
+    "shadowColor": "#001827",
+    "shadowOffset": 3,
+    "alignment": 2,
+    "marginV": 190
+  },
+  "safeArea": { "top": 120, "right": 90, "bottom": 260, "left": 90 },
+  "transitionStyle": "fast-cut",
+  "musicLevel": -18,
+  "voiceLevel": -3,
+  "brandColors": ["#00C2FF", "#0070FF", "#0B1023"],
+  "logo": null,
+  "intro": "Bitsitos",
+  "outro": "Aprende, comparte, crea",
+  "ctaStyle": "short punchy",
+  "sceneDurationLimits": { "minMs": 1000, "maxMs": 3000 },
+  "motionDefaults": ["zoom-in", "pan-right", "static"],
+  "tone": "fast, curious, educational, bright"
+}

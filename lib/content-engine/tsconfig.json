@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "dist",
+    "rootDir": "src",
+    "declaration": true,
+    "declarationMap": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/domain/types.ts",
+    "src/domain/ids.ts",
+    "src/presets/types.ts",
+    "src/presets/index.ts",
+    "src/storage/paths.ts",
+    "src/storage/project-store.ts",
+    "src/storage/asset-store.ts",
+    "src/validation/validate-project.ts",
+    "src/render/ffmpeg-adapter.ts",
+    "src/render/motion.ts",
+    "src/render/scene-renderer.ts",
+    "src/render/compose.ts",
+    "src/render/render-plan.ts",
+    "src/subtitles/srt.ts",
+    "src/audio/levels.ts",
+    "src/thumbnail/generate.ts",
+    "src/metadata/export.ts",
+    "src/characters/types.ts",
+    "src/characters/presets.ts",
+    "src/characters/canon-loader.ts",
+    "src/approval/state-machine.ts",
+    "src/index.ts"
+  ],
+  "exclude": ["dist", "node_modules"]
+}
