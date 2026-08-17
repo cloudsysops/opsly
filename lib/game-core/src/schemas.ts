@@ -130,3 +130,13 @@ export const GraphEdgeSchema = z.object({
   from: NonEmpty,
   to: NonEmpty,
 });
+
+export const SessionStateSchema = z.object({
+  session: GameSessionSchema,
+  player: PlayerProfileSchema,
+  world: WorldInstanceSchema.optional(),
+  mission: MissionResultSchema.optional(),
+  edges: z.array(GraphEdgeSchema),
+  inventory: InventorySchema,
+  events: z.array(GameEventSchema),
+});

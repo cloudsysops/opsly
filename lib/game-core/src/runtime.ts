@@ -10,6 +10,7 @@ import type {
   GameSession,
   Mission,
   MissionResult,
+  SessionState,
   StartSessionInput,
   WorldInstance,
 } from './types.js';
@@ -22,6 +23,9 @@ export interface GameRuntime {
   connectNodes(sessionId: string, from: string, to: string): MissionResult;
   getEvents(sessionId: string): GameEvent[];
   getInventory(sessionId: string): ReturnType<GameStore['get']>['inventory'];
+  getState(sessionId: string): SessionState;
+  exportSnapshot(sessionId: string): SessionState;
+  restoreSnapshot(state: SessionState): SessionState;
 }
 
 export function createGameRuntime(options?: { now?: () => Date }): GameRuntime {
@@ -35,6 +39,9 @@ export function createGameRuntime(options?: { now?: () => Date }): GameRuntime {
     connectNodes: (sessionId, from, to) => connectNodes(store, sessionId, from, to, now),
     getEvents: (sessionId) => [...store.get(sessionId).events],
     getInventory: (sessionId) => store.get(sessionId).inventory,
+    getState: (sessionId) => store.export(sessionId),
+    exportSnapshot: (sessionId) => store.export(sessionId),
+    restoreSnapshot: (state) => store.restore(state),
   };
 }
 

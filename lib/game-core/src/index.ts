@@ -30,6 +30,7 @@ export {
   MissionSchema,
   PlayerProfileSchema,
   RewardSchema,
+  SessionStateSchema,
   WorldInstanceSchema,
 } from './schemas.js';
 export type {
@@ -45,6 +46,7 @@ export type {
   MissionResult,
   PlayerProfile,
   Reward,
+  SessionState,
   StartSessionInput,
   WorldInstance,
 } from './types.js';
