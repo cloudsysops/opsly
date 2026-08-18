@@ -1,6 +1,6 @@
 [
   {
-    "id": "asset_1492f59c-5062-4605-a741-09b8502b34b5",
+    "id": "asset_acb88263-5069-4ba4-9253-fa127e441899",
     "tenantId": "intcloudsysops",
     "projectId": "opsly-parallel-path-pilot-001",
     "type": "image",
@@ -13,7 +13,7 @@
     }
   },
   {
-    "id": "asset_33f5b821-147f-48e8-bb19-6cf9ee914c71",
+    "id": "asset_85e34cab-1227-4788-8a88-08b1b48e5082",
     "tenantId": "intcloudsysops",
     "projectId": "opsly-parallel-path-pilot-001",
     "type": "image",
@@ -26,7 +26,7 @@
     }
   },
   {
-    "id": "asset_8c9474f0-3bcb-4689-a135-d4ba3f1202d4",
+    "id": "asset_8329f4c7-52c0-468d-b62e-a00f8d3eaf1f",
     "tenantId": "intcloudsysops",
     "projectId": "opsly-parallel-path-pilot-001",
     "type": "image",
@@ -39,7 +39,7 @@
     }
   },
   {
-    "id": "asset_d4f4265a-3f5f-4da6-8a82-0dbabb2e0256",
+    "id": "asset_67a29e59-78de-42cf-82f4-8f692731025a",
     "tenantId": "intcloudsysops",
     "projectId": "opsly-parallel-path-pilot-001",
     "type": "image",
@@ -52,7 +52,7 @@
     }
   },
   {
-    "id": "asset_1d0967cf-251b-4e9e-b7e4-2b05a1d08c6d",
+    "id": "asset_a098aa37-724b-4e3a-afea-9c3c6dce4512",
     "tenantId": "intcloudsysops",
     "projectId": "opsly-parallel-path-pilot-001",
     "type": "image",
@@ -65,7 +65,7 @@
     }
   },
   {
-    "id": "asset_79d1d981-860e-4991-8172-fb3a1e6cac2b",
+    "id": "asset_745f7071-278d-4a7c-b4d2-c2af9c3f77c9",
     "tenantId": "intcloudsysops",
     "projectId": "opsly-parallel-path-pilot-001",
     "type": "image",
@@ -78,7 +78,7 @@
     }
   },
   {
-    "id": "asset_f9b5d0de-d369-4481-9d0e-913672656974",
+    "id": "asset_0f1c3697-5b24-425f-a4c7-bda4bcc6b90a",
     "tenantId": "intcloudsysops",
     "projectId": "opsly-parallel-path-pilot-001",
     "type": "image",
@@ -91,7 +91,7 @@
     }
   },
   {
-    "id": "asset_1f17363a-b85f-4652-b6bb-c36619d73683",
+    "id": "asset_656280d0-3afd-464b-bf0b-8f03174d3aa0",
     "tenantId": "intcloudsysops",
     "projectId": "opsly-parallel-path-pilot-001",
     "type": "image",
