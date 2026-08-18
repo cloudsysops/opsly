@@ -21,6 +21,7 @@ import {
   TenantAdaptationSchema,
   UniverseFoundationProvenanceSchema,
   UniverseFoundationSchema,
+  UniverseBitSchema,
   UniverseCharacterSchema,
   UniverseStyleSchema,
   UniverseWorldSchema,
@@ -57,6 +58,7 @@ export type SearchCriteria = z.infer<typeof SearchCriteriaSchema>;
 export type CanonSnapshot = z.infer<typeof CanonSnapshotSchema>;
 export type UniverseFoundation = z.infer<typeof UniverseFoundationSchema>;
 export type UniverseFoundationProvenance = z.infer<typeof UniverseFoundationProvenanceSchema>;
+export type UniverseBit = z.infer<typeof UniverseBitSchema>;
 
 export type Audience = NonNullable<ComposeContextInput['audience']>;
 export type UniverseLanguage = NonNullable<ComposeContextInput['language']>;

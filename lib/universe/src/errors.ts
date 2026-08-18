@@ -22,6 +22,13 @@ export class UniverseUnknownWorldError extends UniverseError {
   }
 }
 
+export class UniverseUnknownBitError extends UniverseError {
+  constructor(ref: string) {
+    super('UNKNOWN_BIT', `Unknown universe bit: ${ref}`);
+    this.name = 'UniverseUnknownBitError';
+  }
+}
+
 export class UniverseCanonMutationError extends UniverseError {
   constructor(detail: string) {
     super('CANON_IMMUTABLE', `Tenant adaptation cannot mutate global canon: ${detail}`);

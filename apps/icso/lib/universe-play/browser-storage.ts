@@ -1,9 +1,22 @@
-export const PLAY_STORAGE_KEY = 'opsly.universe.first-portal.v1';
+export const PLAY_STORAGE_KEY = 'opsly.universe.player.v1';
+export const LEGACY_PLAY_STORAGE_KEY = 'opsly.universe.first-portal.v1';
 
 export interface PlayBrowserStorage {
   load(): unknown | null;
   save(value: unknown): void;
   clear(): void;
+}
+
+function readJson(storage: Pick<Storage, 'getItem'>, key: string): unknown | null {
+  const raw = storage.getItem(key);
+  if (!raw) {
+    return null;
+  }
+  try {
+    return JSON.parse(raw) as unknown;
+  } catch {
+    return null;
+  }
 }
 
 export function createPlayBrowserStorage(
@@ -15,15 +28,7 @@ export function createPlayBrowserStorage(
       if (!storage) {
         return null;
       }
-      const raw = storage.getItem(key);
-      if (!raw) {
-        return null;
-      }
-      try {
-        return JSON.parse(raw) as unknown;
-      } catch {
-        return null;
-      }
+      return readJson(storage, key) ?? readJson(storage, LEGACY_PLAY_STORAGE_KEY);
     },
     save(value: unknown): void {
       if (!storage) {
@@ -33,6 +38,7 @@ export function createPlayBrowserStorage(
     },
     clear(): void {
       storage?.removeItem(key);
+      storage?.removeItem(LEGACY_PLAY_STORAGE_KEY);
     },
   };
 }

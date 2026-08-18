@@ -6,6 +6,13 @@ export const FIRST_PORTAL_MISSION_ID = 'first-portal-ipo-001';
 export const FIRST_PORTAL_WORLD_ID = 'nexus';
 export const THRESHOLD_CHARACTER_ID = 'traveler';
 export const GUIDE_CHARACTER_ID = 'nova';
+export const WILD_PORTAL_ID = 'wild';
+export const WILD_MISSION_ID = 'wild-dewthread-001';
+export const WILD_WORLD_ID = 'wild';
+export const WILD_GUIDE_CHARACTER_ID = 'maya';
+export const FIRST_BIT_ID = 'dewthread';
+export const MAP_FRAGMENT_WILD_ID = 'map-fragment-wild';
+export const BIT_COLLECTIBLE_DEWTHREAD_ID = 'bit-dewthread';
 
 export const IPO_INPUT_NODE = 'node-input';
 export const IPO_PROCESS_NODE = 'node-process';
@@ -25,6 +32,10 @@ export const OBSERVATION_EVENT_TYPES = [
   'map-fragment.earned',
   'challenge.skipped',
   'challenge.returned',
+  'bit.encountered',
+  'choice.made',
+  'bond.connected',
+  'card.unlocked',
 ] as const;
 
 export const FORBIDDEN_EVENT_PREFIXES = [

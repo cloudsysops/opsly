@@ -2,6 +2,7 @@ import { chooseExplorer } from './explorer.js';
 import { recordEvent } from './events.js';
 import { enterPortal } from './portal.js';
 import { connectNodes, startMission } from './mission.js';
+import { applyWildChoice } from './wild-choice.js';
 import { startSession } from './session.js';
 import { GameStore } from './store.js';
 import type {
@@ -21,6 +22,7 @@ export interface GameRuntime {
   enterPortal(sessionId: string, portalId: string): WorldInstance;
   startMission(sessionId: string, missionId: string): Mission;
   connectNodes(sessionId: string, from: string, to: string): MissionResult;
+  applyWildChoice(sessionId: string, choice: string): MissionResult;
   getEvents(sessionId: string): GameEvent[];
   getInventory(sessionId: string): ReturnType<GameStore['get']>['inventory'];
   getState(sessionId: string): SessionState;
@@ -37,6 +39,7 @@ export function createGameRuntime(options?: { now?: () => Date }): GameRuntime {
     enterPortal: (sessionId, portalId) => enterPortal(store, sessionId, portalId, now),
     startMission: (sessionId, missionId) => startMission(store, sessionId, missionId, now),
     connectNodes: (sessionId, from, to) => connectNodes(store, sessionId, from, to, now),
+    applyWildChoice: (sessionId, choice) => applyWildChoice(store, sessionId, choice, now),
     getEvents: (sessionId) => [...store.get(sessionId).events],
     getInventory: (sessionId) => store.get(sessionId).inventory,
     getState: (sessionId) => store.export(sessionId),

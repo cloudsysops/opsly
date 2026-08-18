@@ -1,6 +1,7 @@
 export {
   AVATAR_VARIANTS,
   FORBIDDEN_EXPLORER_FIELDS,
+  LEGACY_STORAGE_KEY,
   PLAY_SCHEMA_VERSION,
   PLAY_TENANT_SLUG,
   STORAGE_KEY,
@@ -11,6 +12,7 @@ export {
   PlayActionSchema,
   PlaySaveSchema,
   assertNoForbiddenExplorerFields,
+  migratePlaySaveInput,
 } from './schemas.js';
 export { createMemoryStorage } from './storage.js';
 export { emptySave } from './types.js';

@@ -258,13 +258,24 @@ export function PlayClient(): ReactElement {
                     aria-disabled={locked}
                     disabled={locked || busy}
                     onClick={() => {
-                      if (!locked) {
-                        void run({ type: 'enter-first-portal' });
+                      if (locked) {
+                        return;
                       }
+                      if (portal.id === 'wild') {
+                        void run({ type: 'enter-wild' });
+                        return;
+                      }
+                      void run({ type: 'enter-first-portal' });
                     }}
                   >
                     <strong>{portal.name}</strong>
-                    <p>{locked ? `${portal.status === 'glowing' ? 'Glowing, still locked' : 'Locked'}` : 'Available'}</p>
+                    <p>
+                      {portal.status === 'available'
+                        ? 'Available'
+                        : portal.status === 'glowing'
+                          ? 'Glowing'
+                          : 'Locked'}
+                    </p>
                   </button>
                 );
               })}
@@ -348,7 +359,123 @@ export function PlayClient(): ReactElement {
               disabled={busy}
               onClick={() => void run({ type: 'return-to-nexus' })}
             >
-              Return to {view.worldName}
+              Return to NEXUS
+            </button>
+          </section>
+        ) : null}
+
+        {view.screen === 'wild' ? (
+          <section className="up-stage" aria-labelledby="up-wild">
+            <h1 id="up-wild" className="up-title">
+              {view.worldName}
+            </h1>
+            <p className="up-copy">{view.worldDescription}</p>
+            <article className="up-card" tabIndex={0}>
+              <h2>{view.maya?.name ?? 'Maya'}</h2>
+              <p>{view.maya?.tone}</p>
+            </article>
+            <p className="up-copy">{view.wildPrompt}</p>
+            <button
+              className="up-btn"
+              type="button"
+              disabled={busy}
+              onClick={() => void run({ type: 'continue-wild' })}
+            >
+              Look into the canopy
+            </button>
+          </section>
+        ) : null}
+
+        {view.screen === 'maya' ? (
+          <section className="up-stage" aria-labelledby="up-maya">
+            <h1 id="up-maya" className="up-title">
+              {view.maya?.name ?? 'Maya'}
+            </h1>
+            <p className="up-closing" aria-live="polite">
+              {view.wildPrompt}
+            </p>
+            <button
+              className="up-btn"
+              type="button"
+              disabled={busy}
+              onClick={() => void run({ type: 'continue-wild' })}
+            >
+              Return to the vine
+            </button>
+          </section>
+        ) : null}
+
+        {view.screen === 'first-bit' ? (
+          <section className="up-stage" aria-labelledby="up-bit">
+            <h1 id="up-bit" className="up-title">
+              {view.bit?.name}
+            </h1>
+            <div className="up-dewthread" aria-hidden="true">
+              <span className="up-dewthread-body" />
+              <span className="up-dewthread-thread" />
+              <span className="up-dewthread-thread up-dewthread-thread--late" />
+            </div>
+            <p className="up-copy">{view.bit?.description}</p>
+            <p className="up-copy">{view.missionTitle}</p>
+            <p className="up-live" aria-live="assertive">
+              {view.retryMessage ?? ''}
+            </p>
+            <div className="up-row">
+              {(view.choices ?? []).map((choice) => (
+                <button
+                  key={choice.id}
+                  type="button"
+                  className="up-card"
+                  disabled={busy}
+                  onClick={() => void run({ type: 'apply-wild-choice', choice: choice.id })}
+                >
+                  <strong>{choice.label}</strong>
+                </button>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {view.screen === 'connection' ? (
+          <section className="up-stage" aria-labelledby="up-bond">
+            <h1 id="up-bond" className="up-title">
+              Connection formed
+            </h1>
+            <p className="up-copy">
+              {view.bit?.name} stayed nearby. Not captured. Bond: {view.bondState}.
+            </p>
+            <button
+              className="up-btn"
+              type="button"
+              disabled={busy}
+              onClick={() => void run({ type: 'continue-wild' })}
+            >
+              Open Bit Card
+            </button>
+          </section>
+        ) : null}
+
+        {view.screen === 'bit-card' ? (
+          <section className="up-stage" aria-labelledby="up-card">
+            <h1 id="up-card" className="up-title">
+              {view.card?.title} Card
+            </h1>
+            <article className="up-card up-bit-card" tabIndex={0}>
+              <div className="up-dewthread" aria-hidden="true">
+                <span className="up-dewthread-body" />
+              </div>
+              <span className="up-kicker">{view.card?.affinity}</span>
+              <h2>{view.card?.ability}</h2>
+              <p>{view.card?.knowledgeDomain}</p>
+              <p>Bond {view.bondState}</p>
+            </article>
+            <button
+              className="up-btn"
+              type="button"
+              disabled={busy}
+              onClick={() => void run({ type: 'return-to-nexus' })}
+            >
+              Return to NEXUS
             </button>
           </section>
         ) : null}
