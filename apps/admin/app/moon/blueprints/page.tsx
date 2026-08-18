@@ -1,8 +1,4 @@
-import {
-  MoonCard,
-  MoonEmptyState,
-  MoonPageHeader,
-} from '@/components/moon/primitives';
+import { MoonCard, MoonEmptyState, MoonPageHeader } from '@/components/moon/primitives';
 import { loadVerticalBlueprints } from '@/lib/moon/config-loaders';
 
 export default async function MoonBlueprintsPage(): Promise<React.ReactElement> {

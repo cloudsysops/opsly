@@ -1,90 +1,90 @@
-'use client'
+'use client';
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   inviteActivationErrorMessage,
   validateInviteActivationForm,
-} from '@/lib/invite-activation-validation'
-import { isSuperAdminUser } from '@/lib/super-admin'
-import { createClient } from '@/lib/supabase/client'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { useMemo, useState } from 'react'
+} from '@/lib/invite-activation-validation';
+import { isSuperAdminUser } from '@/lib/super-admin';
+import { createClient } from '@/lib/supabase/client';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
-type FormSubmitEvent = Parameters<NonNullable<React.ComponentProps<'form'>['onSubmit']>>[0]
+type FormSubmitEvent = Parameters<NonNullable<React.ComponentProps<'form'>['onSubmit']>>[0];
 
 export function InviteActivate(): React.ReactElement {
-  const params = useParams()
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  const tokenRaw = typeof params.token === 'string' ? params.token : ''
-  const token = useMemo(() => decodeURIComponent(tokenRaw), [tokenRaw])
-  const email = searchParams.get('email') ?? ''
-  const code = searchParams.get('code')
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const tokenRaw = typeof params.token === 'string' ? params.token : '';
+  const token = useMemo(() => decodeURIComponent(tokenRaw), [tokenRaw]);
+  const email = searchParams.get('email') ?? '';
+  const code = searchParams.get('code');
 
-  const [password, setPassword] = useState('')
-  const [confirm, setConfirm] = useState('')
-  const [err, setErr] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [ready, setReady] = useState(false)
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [err, setErr] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [ready, setReady] = useState(false);
 
-  const displayName = email.includes('@') ? email.split('@')[0] : 'equipo'
+  const displayName = email.includes('@') ? email.split('@')[0] : 'equipo';
 
   async function onSubmit(e: FormSubmitEvent): Promise<void> {
-    e.preventDefault()
-    setErr(null)
+    e.preventDefault();
+    setErr(null);
     const validation = validateInviteActivationForm({
       password,
       confirm,
       email,
       token,
-    })
+    });
     if (validation) {
-      setErr(inviteActivationErrorMessage(validation))
-      return
+      setErr(inviteActivationErrorMessage(validation));
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const supabase = createClient()
+      const supabase = createClient();
       if (code && code.length > 0) {
-        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
         if (exchangeError) {
-          setErr(exchangeError.message)
-          return
+          setErr(exchangeError.message);
+          return;
         }
       } else {
         const { error: otpError } = await supabase.auth.verifyOtp({
           email,
           token,
           type: 'invite',
-        })
+        });
         if (otpError) {
-          setErr(otpError.message)
-          return
+          setErr(otpError.message);
+          return;
         }
       }
 
-      const { data: sessionData } = await supabase.auth.getSession()
+      const { data: sessionData } = await supabase.auth.getSession();
       if (!isSuperAdminUser(sessionData.session?.user)) {
-        setErr('Esta cuenta no tiene acceso al admin Opsly. Usa el portal de tu tenant.')
-        return
+        setErr('Esta cuenta no tiene acceso al admin Opsly. Usa el portal de tu tenant.');
+        return;
       }
 
       const { error: pwError } = await supabase.auth.updateUser({
         password,
-      })
+      });
       if (pwError) {
-        setErr(pwError.message)
-        return
+        setErr(pwError.message);
+        return;
       }
-      setReady(true)
-      router.replace('/dashboard')
-      router.refresh()
+      setReady(true);
+      router.replace('/dashboard');
+      router.refresh();
     } catch (error) {
-      setErr(error instanceof Error ? error.message : 'No se pudo activar la cuenta')
+      setErr(error instanceof Error ? error.message : 'No se pudo activar la cuenta');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -93,7 +93,9 @@ export function InviteActivate(): React.ReactElement {
       <div className="w-full max-w-md space-y-8 rounded-2xl border border-ops-border bg-ops-surface p-8 shadow-card">
         <div className="text-center">
           <h1 className="font-mono text-xl font-semibold text-ops-green">Opsly</h1>
-          <p className="mt-4 font-sans text-lg text-neutral-100">Bienvenido a Opsly, {displayName}</p>
+          <p className="mt-4 font-sans text-lg text-neutral-100">
+            Bienvenido a Opsly, {displayName}
+          </p>
           <p className="mt-2 font-sans text-sm text-ops-gray">
             Tu espacio de automatización está listo
           </p>
@@ -139,5 +141,5 @@ export function InviteActivate(): React.ReactElement {
         ) : null}
       </div>
     </div>
-  )
+  );
 }
