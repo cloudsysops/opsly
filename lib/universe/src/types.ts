@@ -19,6 +19,8 @@ import {
   StoryBeatBlockSchema,
   StoryContextSchema,
   TenantAdaptationSchema,
+  UniverseFoundationProvenanceSchema,
+  UniverseFoundationSchema,
   UniverseCharacterSchema,
   UniverseStyleSchema,
   UniverseWorldSchema,
@@ -53,6 +55,8 @@ export type ComposedStory = z.infer<typeof ComposedStorySchema>;
 export type BuiltPrompt = z.infer<typeof BuiltPromptSchema>;
 export type SearchCriteria = z.infer<typeof SearchCriteriaSchema>;
 export type CanonSnapshot = z.infer<typeof CanonSnapshotSchema>;
+export type UniverseFoundation = z.infer<typeof UniverseFoundationSchema>;
+export type UniverseFoundationProvenance = z.infer<typeof UniverseFoundationProvenanceSchema>;
 
 export type Audience = NonNullable<ComposeContextInput['audience']>;
 export type UniverseLanguage = NonNullable<ComposeContextInput['language']>;
