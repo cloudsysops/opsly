@@ -51,4 +51,14 @@ describe('game-core First Portal loop', () => {
     const session = game.startSession({ tenantSlug: 'opsly' });
     expect(() => game.enterPortal(session.id, FIRST_PORTAL_ID)).toThrow(/explorer/i);
   });
+
+  it('restores a snapshot into a new runtime', () => {
+    const original = createGameRuntime({ now: () => new Date('2026-08-17T00:00:00.000Z') });
+    const session = original.startSession({ tenantSlug: 'opsly' });
+    original.chooseExplorer(session.id, { displayName: 'Explorer' });
+    const snapshot = original.exportSnapshot(session.id);
+    const restored = createGameRuntime({ now: () => new Date('2026-08-17T00:00:00.000Z') });
+    restored.restoreSnapshot(snapshot);
+    expect(restored.getState(session.id).player.explorer?.displayName).toBe('Explorer');
+  });
 });

@@ -7,6 +7,7 @@ const root = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   resolve: {
     alias: {
+      '@intcloudsysops/game-core': path.resolve(root, '../game-core/src/index.ts'),
       '@intcloudsysops/universe': path.resolve(root, '../universe/src/index.ts'),
     },
   },

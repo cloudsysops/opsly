@@ -277,6 +277,22 @@
         "getFirstPortalMission",
         "GAME_SCHEMA_VERSION"
       ]
+    },
+    "game-web": {
+      "name": "@intcloudsysops/game-web",
+      "version": "1.0.0",
+      "path": "lib/game-web",
+      "owner": "operations",
+      "description": "First Portal play adapter: Game Core actions to view-models. No character canon.",
+      "status": "experimental",
+      "dependencies": ["game-core", "universe"],
+      "governance": "lib/game-web/GOVERNANCE.md",
+      "mainFile": "lib/game-web/src/index.ts",
+      "exports": [
+        "applyPlayAction",
+        "viewFromSave",
+        "createMemoryStorage"
+      ]
     }
   },
   "consumers": {
@@ -302,7 +318,7 @@
       "depends": ["universe"]
     },
     "apps/icso": {
-      "depends": ["mission-control-kit", "services"]
+      "depends": ["mission-control-kit", "services", "game-web", "game-core", "universe"]
     },
     "apps/local-services": {
       "depends": ["components", "observability", "prompts", "security", "api", "config"]
@@ -312,6 +328,9 @@
     },
     "lib/game-core": {
       "depends": ["universe"]
+    },
+    "lib/game-web": {
+      "depends": ["game-core", "universe"]
     }
   },
   "policies": {

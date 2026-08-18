@@ -1,22 +1,5 @@
-import type {
-  GameEvent,
-  GameSession,
-  GraphEdge,
-  Inventory,
-  MissionResult,
-  PlayerProfile,
-  WorldInstance,
-} from './types.js';
-
-export interface SessionState {
-  session: GameSession;
-  player: PlayerProfile;
-  world?: WorldInstance;
-  mission?: MissionResult;
-  edges: GraphEdge[];
-  inventory: Inventory;
-  events: GameEvent[];
-}
+import { SessionStateSchema } from './schemas.js';
+import type { SessionState } from './types.js';
 
 export class GameStore {
   private readonly sessions = new Map<string, SessionState>();
@@ -31,5 +14,15 @@ export class GameStore {
       throw new Error(`Unknown game session: ${sessionId}`);
     }
     return state;
+  }
+
+  export(sessionId: string): SessionState {
+    return SessionStateSchema.parse(structuredClone(this.get(sessionId)));
+  }
+
+  restore(state: SessionState): SessionState {
+    const parsed = SessionStateSchema.parse(state);
+    this.put(parsed);
+    return parsed;
   }
 }

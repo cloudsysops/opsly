@@ -12,6 +12,7 @@ import {
   MissionSchema,
   PlayerProfileSchema,
   RewardSchema,
+  SessionStateSchema,
   WorldInstanceSchema,
 } from './schemas.js';
 
@@ -28,6 +29,7 @@ export type Achievement = z.infer<typeof AchievementSchema>;
 export type Ability = z.infer<typeof AbilitySchema>;
 export type GameEvent = z.infer<typeof GameEventSchema>;
 export type GraphEdge = z.infer<typeof GraphEdgeSchema>;
+export type SessionState = z.infer<typeof SessionStateSchema>;
 
 export interface StartSessionInput {
   tenantSlug: string;
