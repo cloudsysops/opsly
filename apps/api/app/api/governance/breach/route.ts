@@ -1,5 +1,9 @@
+import { timingSafeEqual } from 'node:crypto';
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
+import { HTTP_STATUS } from '../../../../lib/constants';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
 import { getServiceClient } from '../../../../lib/supabase';
 
 const breachSchema = z.object({
@@ -14,31 +18,45 @@ const breachSchema = z.object({
   containment_actions: z.string().optional(),
 });
 
+function isAuthorizedToken(authHeader: string | null, expectedToken: string | undefined): boolean {
+  if (!authHeader || !expectedToken) return false;
+  const expectedHeader = `Bearer ${expectedToken}`;
+  const bufActual = Buffer.from(authHeader);
+  const bufExpected = Buffer.from(expectedHeader);
+  if (bufActual.length !== bufExpected.length) return false;
+  return timingSafeEqual(bufActual, bufExpected);
+}
+
 export async function POST(request: NextRequest): Promise<Response> {
-  // Internal-only endpoint: requires service-role secret header
+  const ip = extractIp(request);
+  const rateLimitKey = ip ? `governance-breach:${ip}` : 'governance-breach:anonymous';
+  const rateLimit = await checkRateLimit(rateLimitKey);
+
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+
   const authHeader = request.headers.get('authorization');
-  const expectedToken = process.env.GOVERNANCE_BREACH_SECRET;
-  if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!isAuthorizedToken(authHeader, process.env.GOVERNANCE_BREACH_SECRET)) {
+    return Response.json({ error: 'Unauthorized' }, { status: HTTP_STATUS.UNAUTHORIZED });
   }
 
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return Response.json({ error: 'Invalid JSON' }, { status: 400 });
+    return Response.json({ error: 'Invalid JSON' }, { status: HTTP_STATUS.BAD_REQUEST });
   }
 
   const parsed = breachSchema.safeParse(body);
   if (!parsed.success) {
     return Response.json(
       { error: 'Invalid payload', details: parsed.error.flatten() },
-      { status: 400 }
+      { status: HTTP_STATUS.BAD_REQUEST }
     );
   }
 
-  const client = getServiceClient();
-  const { data, error } = await client
+  const { data, error } = await getServiceClient()
     .schema('governance')
     .from('breach_log')
     .insert(parsed.data)
@@ -47,14 +65,20 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   if (error) {
     console.error('[governance][breach] insert error', error);
-    return Response.json({ error: 'Failed to log breach' }, { status: 500 });
+    return Response.json({ error: 'Failed to log breach' }, { status: HTTP_STATUS.INTERNAL_ERROR });
   }
 
-  // TODO: trigger Discord alert to #ops-alerts via observability
-  // await alertDiscord({ title: `[BREACH] ${parsed.data.title}`, severity: parsed.data.severity });
+  void logAuditEvent({
+    tenant_slug: parsed.data.tenant_id,
+    action: 'BREACH_LOGGED',
+    resource: `governance_breach:${data.id}`,
+    ip,
+    user_agent: request.headers.get('user-agent') ?? undefined,
+    metadata: { severity: parsed.data.severity, title: parsed.data.title },
+  });
 
   return Response.json(
     { ok: true, breach_id: data.id, logged_at: data.created_at },
-    { status: 201 }
+    { status: HTTP_STATUS.CREATED }
   );
 }
