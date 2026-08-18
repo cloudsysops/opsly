@@ -37,3 +37,7 @@
 ## 2026-06-26 - [Caching Admin Overview DB & Network Probes]
 **Learning:** The admin overview dashboardaggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
 **Action:** Always cache aggregated metrics and external probes in dashboard-facing API routes, and modularize parsing logic to maintain low cyclomatic complexity.
+
+## 2026-07-01 - [Admin Metrics Summary Caching]
+**Learning:** The `/api/admin/metrics` endpoint executes multiple RPC functions (`opsly_admin_metrics`, `opsly_admin_revenue_by_month`) and queries BullMQ job statistics on every request. Caching the full metrics summary payload in Redis for 60 seconds (`CACHE_TTL.SHORT`) reduces latency from ~100-200ms to <5ms on cache hits and protects database resources during high-frequency admin dashboard polling.
+**Action:** Use short-TTL Redis caching on admin metrics and telemetry endpoints that perform multi-query database aggregations and worker queue stat lookups.
