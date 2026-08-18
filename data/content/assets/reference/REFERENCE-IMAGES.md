@@ -68,6 +68,49 @@ Cathedral" by name). Useful as a density/scale reference for how the full
 Parallel World should feel from above, and as a candidate source for
 future region names if the saga extends past Season 1.
 
+### `official-character-roster-la-saga.jpg`
+Full-cast infographic ("PERFILES OFICIALES — LA SAGA") supplied directly by
+the user: portrait + role/origin/abilities/quote card for 8 characters —
+The Traveler, NØVA, KAI, LYRA, ORION, ATLAS, MAYA, ECHO — plus a "los
+portales" world-index (8 named portal categories: MIND, FUTURE, WILD,
+HUMAN, EARTH, MOVE, LAB, ORIGINS, UNKNOWN) and a color-meaning legend
+(azul/dorado/violeta/turquesa). **Maps to:** general cast/roster reference.
+
+**⚠️ Real, unresolved discrepancy with `../../characters/*.json` — flagged,
+not silently reconciled:** this roster's NØVA is drawn as a humanoid young
+man. `../../characters/nova.json`'s locked design is explicitly a **small
+round-bodied hovering robot** with `"do not make adult-humanoid
+proportions"` as a stated `prohibited_variations` entry. KAI, LYRA, ORION,
+ATLAS, and MAYA don't exist anywhere in the current character bible at
+all — this image introduces a materially larger ensemble cast than what's
+canonized. Before this image is used to prompt any generator, someone
+needs to decide: does the bible get revised to match this roster (new
+canonical NØVA design + 5 new characters), or does this image get
+excluded as non-canonical concept art? Not decided here.
+
+### `world-scenes-collage.jpg`
+6-panel scene collage supplied directly by the user: (1) The Traveler +
+a round companion robot walking a golden circuit-path through a floating
+city at sunset, (2) The Traveler + robot before a holographic globe of
+connected nodes in an ornate interior, (3) a round white/blue companion
+robot swimming underwater with children among coral, (4) The Traveler +
+robot walking toward a glowing portal arch, (5) a round white/blue/orange
+robot with goggles and a tablet in a bright tech interior, (6) a
+geometric multi-world diagram — several small worlds connected by golden
+lines around a central globe. **Maps to:** panels 1/2/4 closely match
+`s01-parallel-world-overlook.jpg`/`e08-mission-control-globe.jpg`'s
+framing and could supplement Episodes 3/8/13; panel 3 is a strong
+Peskids/Wavo-world reference (closer to Wavo's actual locked design than
+`e06-peskids-pool-world.jpg`'s generic robots — the robot here is
+round/hovering, consistent with `../../characters/wavo.json`); panel 5's
+robot is unbranded and doesn't match any locked character design as-is;
+panel 6 is a general world-connectivity reference, comparable to
+`parallel-world-atlas-map.jpg`. **Note:** this collage's NØVA/companion-
+robot designs (round, hovering) are consistent with the existing
+character bible, unlike the humanoid NØVA in
+`official-character-roster-la-saga.jpg` above — the two user-supplied
+images are not mutually consistent with each other either.
+
 ## Usage note for generation agents
 
 None of these images should be reproduced verbatim — they establish mood,
