@@ -17,6 +17,7 @@ COPY lib/openwa/package.json ./lib/openwa/
 COPY lib/wacrm-channel/package.json ./lib/wacrm-channel/
 COPY lib/wompi-gateway/package.json ./lib/wompi-gateway/
 COPY lib/franchise-core/package.json ./lib/franchise-core/
+COPY lib/franchise-persistence/package.json ./lib/franchise-persistence/
 COPY packages/opsly-core/package.json ./packages/opsly-core/
 COPY packages/types/package.json ./packages/types/
 COPY apps/peskids/package.json ./apps/peskids/
@@ -31,6 +32,7 @@ COPY lib/openwa/ ./lib/openwa/
 COPY lib/wacrm-channel/ ./lib/wacrm-channel/
 COPY lib/wompi-gateway/ ./lib/wompi-gateway/
 COPY lib/franchise-core/ ./lib/franchise-core/
+COPY lib/franchise-persistence/ ./lib/franchise-persistence/
 COPY packages/opsly-core/ ./packages/opsly-core/
 COPY packages/types/ ./packages/types/
 COPY scripts/peskids/unblock-admin-access.args.ts ./scripts/peskids/
@@ -84,7 +86,8 @@ ENV PESKIDS_IMAGE_TAG=$PESKIDS_IMAGE_TAG
 WORKDIR /app
 RUN npm run build -w @intcloudsysops/prompt-guard \
  && npm run build -w @intcloudsysops/services \
- && npm run build -w @intcloudsysops/franchise-core
+ && npm run build -w @intcloudsysops/franchise-core \
+ && npm run build -w @intcloudsysops/franchise-persistence
 
 WORKDIR /app/apps/peskids
 RUN mkdir -p public \

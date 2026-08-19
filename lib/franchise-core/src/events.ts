@@ -3,6 +3,8 @@ export const FRANCHISE_EVENTS = {
   franchiseApproved: 'franchise.approved',
   unitOpeningStarted: 'unit.opening.started',
   unitActivated: 'unit.activated',
+  territoryAssigned: 'territory.assigned',
+  agreementActivated: 'agreement.activated',
   agreementExpiring: 'agreement.expiring',
   agreementExpired: 'agreement.expired',
   salesReported: 'sales.reported',
@@ -13,6 +15,7 @@ export const FRANCHISE_EVENTS = {
   auditScheduled: 'audit.scheduled',
   auditCompleted: 'audit.completed',
   findingCreated: 'finding.created',
+  correctiveActionCreated: 'corrective_action.created',
   correctiveActionOverdue: 'corrective_action.overdue',
 } as const;
 

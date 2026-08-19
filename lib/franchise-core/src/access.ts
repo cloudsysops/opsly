@@ -45,6 +45,29 @@ export function canReadAudits(role: FranchiseRole): AccessDecision {
   return AUDIT_READ.has(role) ? allow('audit_role') : deny('audit_forbidden');
 }
 
+export function canReadAgreements(role: FranchiseRole): AccessDecision {
+  if (role === 'teacher') return deny('teacher_cannot_read_agreements');
+  if (role === 'auditor') return deny('auditor_cannot_read_agreements');
+  if (
+    role === 'platform_owner' ||
+    role === 'tenant_owner' ||
+    role === 'franchise_network_admin' ||
+    role === 'franchise_admin' ||
+    role === 'support' ||
+    role === 'franchise_staff'
+  ) {
+    return allow('agreement_role');
+  }
+  return deny('agreement_forbidden');
+}
+
+export function canWriteFinancial(role: FranchiseRole): AccessDecision {
+  if (role === 'teacher' || role === 'auditor' || role === 'franchise_staff') {
+    return deny('financial_write_forbidden');
+  }
+  return canReadRoyalties(role);
+}
+
 export function canAccessUnit(input: {
   role: FranchiseRole;
   tenantId: string;

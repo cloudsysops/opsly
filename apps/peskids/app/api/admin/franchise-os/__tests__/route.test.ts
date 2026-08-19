@@ -11,6 +11,16 @@ vi.mock('@/lib/services/franchise.service', () => ({
   listPeskidsFranchises: listPeskidsFranchisesMock,
 }));
 
+vi.mock('@/lib/franchise/persist', () => ({
+  getFranchiseService: vi.fn(),
+  resolveFranchiseActor: vi.fn(),
+  franchiseErrorResponse: (_requestId: string, err: unknown) => {
+    const status =
+      typeof err === 'object' && err && 'status' in err ? Number((err as { status: number }).status) : 500;
+    return new Response(JSON.stringify({ ok: false, error: 'persist' }), { status });
+  },
+}));
+
 function request(path: string): Request {
   return new Request(`http://localhost${path}`, { headers: { 'x-request-id': 'req-fos' } });
 }
@@ -64,5 +74,14 @@ describe('GET /api/admin/franchise-os', () => {
     const { GET } = await import('../route');
     const res = await GET(request('/api/admin/franchise-os?view=royalties') as never);
     expect(res.status).toBe(403);
+  });
+});
+
+describe('GET /api/admin/franchises/territories', () => {
+  it('rejects unauthenticated requests', async () => {
+    validateStaffRequestMock.mockResolvedValue({ ok: false, status: 401, error: 'Unauthorized' });
+    const { GET } = await import('../../franchises/territories/route');
+    const res = await GET(request('/api/admin/franchises/territories') as never);
+    expect(res.status).toBe(401);
   });
 });

@@ -11,6 +11,7 @@ const nextConfig = {
   transpilePackages: [
     '@intcloudsysops/capacity-alert',
     '@intcloudsysops/franchise-core',
+    '@intcloudsysops/franchise-persistence',
     '@intcloudsysops/opsly-core',
     '@intcloudsysops/conversational-runtime',
     '@intcloudsysops/openwa',

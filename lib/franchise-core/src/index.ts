@@ -35,6 +35,7 @@ export {
   type OpeningChecklist,
   type OpeningPhase,
   type RoyaltyCalculation,
+  type RoyaltyCalculationInputs,
   type RoyaltyPayment,
   type RoyaltyRule,
   type SalesReport,
@@ -72,9 +73,11 @@ export {
 export { auditIsComplete, deriveCorrectiveActionStatus, findingsForUnit, hasCriticalFailure, scoreAudit } from './audit.js';
 export {
   canAccessUnit,
+  canReadAgreements,
   canReadAudits,
   canReadNetwork,
   canReadRoyalties,
+  canWriteFinancial,
   mapTenantStaffRole,
   type AccessDecision,
 } from './access.js';

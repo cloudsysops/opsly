@@ -28,6 +28,7 @@
     "@capacitor/push-notifications": "^8.1.1",
     "@intcloudsysops/capacity-alert": "*",
     "@intcloudsysops/franchise-core": "*",
+    "@intcloudsysops/franchise-persistence": "*",
     "@intcloudsysops/openwa": "*",
     "@intcloudsysops/prompt-guard": "*",
     "@intcloudsysops/services": "*",

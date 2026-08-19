@@ -34,6 +34,9 @@
       ],
       "@intcloudsysops/franchise-core": [
         "../../lib/franchise-core/src/index.ts"
+      ],
+      "@intcloudsysops/franchise-persistence": [
+        "../../lib/franchise-persistence/src/index.ts"
       ]
     },
     "allowJs": true,

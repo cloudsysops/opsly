@@ -310,6 +310,22 @@
         "ownedUnitDefaults",
         "summarizeNetwork"
       ]
+    },
+    "franchise-persistence": {
+      "name": "@intcloudsysops/franchise-persistence",
+      "version": "0.1.0",
+      "path": "lib/franchise-persistence",
+      "owner": "platform",
+      "description": "Postgres/Supabase adapter for Franchise OS. Tenant-scoped queries; no Peskids domain duplication.",
+      "status": "experimental",
+      "dependencies": ["franchise-core"],
+      "governance": "lib/franchise-persistence/GOVERNANCE.md",
+      "mainFile": "lib/franchise-persistence/src/index.ts",
+      "exports": [
+        "createFranchiseService",
+        "createPgFranchiseStore",
+        "createSupabaseFranchiseStore"
+      ]
     }
   },
   "consumers": {
@@ -350,7 +366,7 @@
       "depends": ["game-core", "universe"]
     },
     "apps/peskids": {
-      "depends": ["franchise-core", "services"]
+      "depends": ["franchise-core", "franchise-persistence", "services"]
     }
   },
   "policies": {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canAccessUnit, canReadRoyalties, mapTenantStaffRole } from './access.js';
+import { canAccessUnit, canReadAgreements, canReadRoyalties, canWriteFinancial, mapTenantStaffRole } from './access.js';
 import { assertFranchiseeDistinctFromUnit, ownedUnitDefaults, UnitModelError } from './units.js';
 import { canActivateUnit, defaultOpeningTasks } from './opening.js';
 import { deriveCorrectiveActionStatus, scoreAudit } from './audit.js';
@@ -55,6 +55,10 @@ describe('access control', () => {
       }).allow
     ).toBe(false);
     expect(mapTenantStaffRole('owner')).toBe('tenant_owner');
+    expect(canReadAgreements('teacher').allow).toBe(false);
+    expect(canReadAgreements('auditor').allow).toBe(false);
+    expect(canWriteFinancial('teacher').allow).toBe(false);
+    expect(canWriteFinancial('franchise_network_admin').allow).toBe(true);
   });
 });
 

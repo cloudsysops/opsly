@@ -2,16 +2,17 @@ import { NextRequest } from 'next/server';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { validateStaffRequest } from '@/lib/staff-auth';
 import {
-    agreementBoard,
-    assertRoyaltyAccess,
-    canonicalEvents,
-    franchiseRoleFromAuth,
-    inspectRoyalty,
-    listFranchiseOsUnits,
-    networkBoard,
-    territoryConflictPayload,
+  agreementBoard,
+  assertRoyaltyAccess,
+  canonicalEvents,
+  franchiseRoleFromAuth,
+  inspectRoyalty,
+  listFranchiseOsUnits,
+  networkBoard,
+  territoryConflictPayload,
 } from '@/lib/services/franchise-os.service';
 import type { FranchiseAgreement, RoyaltyRule, SalesReport, Territory } from '@intcloudsysops/franchise-core';
+import { franchiseErrorResponse, getFranchiseService, resolveFranchiseActor } from '@/lib/franchise/persist';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,43 +53,49 @@ export async function GET(req: NextRequest) {
 
     if (view === 'royalties') {
       assertRoyaltyAccess(role);
-      return successJson(requestId, {
-        ok: true,
-        view,
-        calculations: [] as const,
-        note: 'Persist calculations via POST after migration 0098. Engine is versioned in @intcloudsysops/franchise-core.',
-      });
+      const actor = await resolveFranchiseActor(auth, requestId);
+      const service = getFranchiseService();
+      const [calculations, reports] = await Promise.all([
+        service.listRoyalties(actor),
+        service.listSalesReports(actor),
+      ]);
+      return successJson(requestId, { ok: true, view, calculations, reports });
     }
 
+    const actor = await resolveFranchiseActor(auth, requestId);
+    const service = getFranchiseService();
+
     if (view === 'territories') {
-      return successJson(requestId, {
-        ok: true,
-        view,
-        territories: [] as const,
-        conflicts: [] as const,
-        map_provider: 'not_configured',
-      });
+      const listed = await service.listTerritories(actor);
+      return successJson(requestId, { ok: true, view, ...listed, map_provider: 'not_configured' });
     }
 
     if (view === 'agreements') {
+      const agreements = await service.listAgreements(actor);
       return successJson(requestId, {
         ok: true,
         view,
-        agreements: [] as const,
+        agreements,
+        board: agreementBoard(agreements, new Date().toISOString()),
       });
     }
 
     if (view === 'audits') {
-      return successJson(requestId, { ok: true, view, audits: [] as const, findings: [] as const });
+      const audits = await service.listAudits(actor);
+      return successJson(requestId, { ok: true, view, audits });
     }
 
     return errorJson(requestId, 'Unknown view', 400);
   } catch (err) {
+    const persist = franchiseErrorResponse(requestId, err);
+    if (persist.status === 403 || persist.status === 503 || persist.status === 404) {
+      return persist;
+    }
     const status = typeof err === 'object' && err && 'status' in err ? Number(err.status) : 500;
     const message = err instanceof Error ? err.message : 'franchise-os failed';
     if (status === 403) return errorJson(requestId, message, 403);
     console.error('[GET /api/admin/franchise-os]', err, { request_id: requestId });
-    return errorJson(requestId, 'Failed to load franchise OS', 500);
+    return persist;
   }
 }
 
