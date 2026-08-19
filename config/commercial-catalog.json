@@ -77,6 +77,14 @@
       "summary": "Acelera redacción; nunca envía solo."
     },
     {
+      "id": "franchise-core",
+      "label": "Franchise OS",
+      "label_es": "Franchise OS (núcleo)",
+      "mvp_default": false,
+      "risk": "medium",
+      "summary": "Unidades, territorios, acuerdos y royalties versionados — reutilizable en sedes y franquicias sin nuevo tenant."
+    },
+    {
       "id": "extraction-pack",
       "label": "Tenant Extraction Pack",
       "label_es": "Pack de extracción",
