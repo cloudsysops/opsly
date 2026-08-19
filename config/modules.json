@@ -293,6 +293,23 @@
         "viewFromSave",
         "createMemoryStorage"
       ]
+    },
+    "franchise-core": {
+      "name": "@intcloudsysops/franchise-core",
+      "version": "0.1.0",
+      "path": "lib/franchise-core",
+      "owner": "platform",
+      "description": "Reusable Franchise OS domain: units, territories, agreements, versioned royalties, audits. No CRM or payment processor.",
+      "status": "experimental",
+      "dependencies": [],
+      "governance": "lib/franchise-core/GOVERNANCE.md",
+      "mainFile": "lib/franchise-core/src/index.ts",
+      "exports": [
+        "calculateRoyalty",
+        "findTerritoryConflicts",
+        "ownedUnitDefaults",
+        "summarizeNetwork"
+      ]
     }
   },
   "consumers": {
@@ -331,6 +348,9 @@
     },
     "lib/game-web": {
       "depends": ["game-core", "universe"]
+    },
+    "apps/peskids": {
+      "depends": ["franchise-core", "services"]
     }
   },
   "policies": {
