@@ -226,10 +226,11 @@ export async function processPortalOnboardingPost(request: Request): Promise<Res
 
   logAuditEvent({
     action: 'portal_onboarding_success',
-    actor_id: user.id,
+    actor_email: email,
     tenant_slug: slug,
-    ip_address: ip,
-    metadata: { org_name, plan, tenant_id: tenantResult.id },
+    resource: '/api/portal/onboarding',
+    ip,
+    metadata: { org_name, plan, tenant_id: tenantResult.id, user_id: user.id },
   });
 
   const bootstrapper = new TenantBootstrapper();
