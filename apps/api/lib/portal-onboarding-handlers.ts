@@ -1,9 +1,11 @@
 import { z } from 'zod';
 import type { User } from '@supabase/supabase-js';
 import { jsonError, parseJsonBody } from './api-response';
+import { extractIp, logAuditEvent } from './audit';
 import { HTTP_STATUS } from './constants';
 import { logger } from './logger';
 import { getUserFromAuthorizationHeader } from './portal-auth';
+import { checkRateLimit } from './rate-limiter';
 import { getServiceClient } from './supabase';
 import { TenantBootstrapper } from './tenant-bootstrapper';
 
@@ -197,6 +199,12 @@ function responseForTenantInsertFailure(tenantResult: { error: string; code?: st
  * POST /api/portal/onboarding — cuerpo principal (sin tryRoute).
  */
 export async function processPortalOnboardingPost(request: Request): Promise<Response> {
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(`portal-onboarding:${ip ?? 'unknown'}`);
+  if (!rateLimit.allowed) {
+    return jsonError('Too many requests', HTTP_STATUS.TOO_MANY_REQUESTS);
+  }
+
   const session = await readOnboardingSession(request);
   if (!session.ok) {
     return session.response;
@@ -215,6 +223,14 @@ export async function processPortalOnboardingPost(request: Request): Promise<Res
   if ('error' in tenantResult) {
     return responseForTenantInsertFailure(tenantResult);
   }
+
+  logAuditEvent({
+    action: 'portal_onboarding_success',
+    actor_id: user.id,
+    tenant_slug: slug,
+    ip_address: ip,
+    metadata: { org_name, plan, tenant_id: tenantResult.id },
+  });
 
   const bootstrapper = new TenantBootstrapper();
   return buildOnboardingSuccessResponse(user, tenantResult.id, slug, org_name, plan, bootstrapper);
