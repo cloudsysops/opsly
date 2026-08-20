@@ -1,8 +1,11 @@
 import { tryRoute } from '../../../../lib/api-response';
 import { getBullmqPipelineJobTotals } from '../../../../lib/bullmq-pipeline-counts';
-import { HTTP_STATUS } from '../../../../lib/constants';
+import { CACHE_TTL, HTTP_STATUS } from '../../../../lib/constants';
+import { getCache, setCache } from '../../../../lib/redis-cache';
 import { resolveSuperAdminSession } from '../../../../lib/super-admin-auth';
 import { getServiceClient } from '../../../../lib/supabase';
+
+const CACHE_KEY = 'admin:metrics:summary';
 
 function monthStartUtcIso(): string {
   const now = new Date();
@@ -25,6 +28,11 @@ function asMetricsRow(
 }
 
 async function fetchAdminMetrics(): Promise<Response> {
+  const cached = await getCache<Record<string, unknown>>(CACHE_KEY);
+  if (cached !== null) {
+    return Response.json(cached);
+  }
+
   const db = getServiceClient();
   const { data: sqlMetrics, error: sqlErr } = await db.rpc('opsly_admin_metrics', {
     p_month_start: monthStartUtcIso(),
@@ -44,7 +52,7 @@ async function fetchAdminMetrics(): Promise<Response> {
 
   const bull = await getBullmqPipelineJobTotals();
 
-  return Response.json({
+  const result = {
     active_tenants: parsed?.active_tenants ?? 0,
     gross_revenue_month_usd: parsed?.gross_revenue_month ?? 0,
     revenue_last_months: revenueSeries ?? [],
@@ -53,7 +61,12 @@ async function fetchAdminMetrics(): Promise<Response> {
       ...bull,
       redis_available: bull !== null,
     },
-  });
+  };
+
+  // Bolt Optimization: cache admin metrics summary for 60s to avoid expensive RPC and BullMQ calls.
+  void setCache(CACHE_KEY, result, CACHE_TTL.SHORT);
+
+  return Response.json(result);
 }
 
 export async function GET(request: Request): Promise<Response> {
