@@ -56,9 +56,7 @@ function isPrivateOrLocalHostname(hostname: string): boolean {
   return false;
 }
 
-export type SafeOutboundUrlResult =
-  | { ok: true; href: string }
-  | { ok: false; error: string };
+export type SafeOutboundUrlResult = { ok: true; href: string } | { ok: false; error: string };
 
 /**
  * Solo `https:` y hosts no privados. Rechaza userinfo embebido.
