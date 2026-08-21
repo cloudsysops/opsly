@@ -1,8 +1,11 @@
 import type { NextRequest } from 'next/server';
 import { jsonError, jsonOk } from '@/lib/api-response';
-import { HTTP_STATUS } from '@/lib/constants';
+import { CACHE_TTL, HTTP_STATUS } from '@/lib/constants';
 import { runTrustedPortalDalForPathSlug, PORTAL_READ_ACCESS } from '@/lib/portal-tenant-dal';
+import { getCache, setCache } from '@/lib/redis-cache';
 import { getServiceClient } from '@/lib/supabase';
+
+const CACHE_KEY_PREFIX = 'peskids:form_analytics:';
 
 interface FormAnalytics {
   formId: string;
@@ -21,7 +24,6 @@ interface StatsResponse {
   avgCompletionTime: number;
   totalErrors: number;
 }
-
 
 async function fetchFormsList(
   supabase: ReturnType<typeof getServiceClient>,
@@ -163,33 +165,48 @@ export async function GET(
           return jsonError('Missing tenant slug', HTTP_STATUS.BAD_REQUEST);
         }
 
+        /**
+         * BOLT OPTIMIZATION:
+         * Caches aggregated form analytics results in Redis (TTL: 60s) to bypass
+         * multiple Supabase queries per dashboard reload.
+         */
+        const cacheKey = `${CACHE_KEY_PREFIX}${tenantSlug}`;
+        const cached = await getCache<{ forms: FormAnalytics[]; stats: StatsResponse }>(cacheKey);
+        if (cached) {
+          return jsonOk(cached);
+        }
+
         const supabase = getServiceClient();
 
-    const formsResult = await fetchFormsList(supabase, tenantSlug);
-    if (formsResult instanceof Response) {
-      return formsResult;
-    }
-    const forms = formsResult;
+        const formsResult = await fetchFormsList(supabase, tenantSlug);
+        if (formsResult instanceof Response) {
+          return formsResult;
+        }
+        const forms = formsResult;
 
-    const formIds = forms.map((f) => f.id);
-    const [formAnalytics, lastSubmissionMap] = await Promise.all([
-      fetchFormAnalytics(supabase, tenantSlug, formIds),
-      fetchLastSubmissions(supabase, tenantSlug),
-    ]);
+        const formIds = forms.map((f) => f.id);
+        const [formAnalytics, lastSubmissionMap] = await Promise.all([
+          fetchFormAnalytics(supabase, tenantSlug, formIds),
+          fetchLastSubmissions(supabase, tenantSlug),
+        ]);
 
-    const analyticsMap = new Map(formAnalytics.map((a) => [a.form_id, a]));
+        const analyticsMap = new Map(formAnalytics.map((a) => [a.form_id, a]));
 
-    const formsWithAnalytics: FormAnalytics[] = forms.map((form) => {
-      const analytics = analyticsMap.get(form.id);
-      return buildFormAnalyticObject(form, analytics, lastSubmissionMap);
-    });
+        const formsWithAnalytics: FormAnalytics[] = forms.map((form) => {
+          const analytics = analyticsMap.get(form.id);
+          return buildFormAnalyticObject(form, analytics, lastSubmissionMap);
+        });
 
-    const stats = calculateStats(formsWithAnalytics);
+        const stats = calculateStats(formsWithAnalytics);
 
-        return jsonOk({
+        const payload = {
           forms: formsWithAnalytics,
           stats,
-        });
+        };
+
+        void setCache(cacheKey, payload, CACHE_TTL.SHORT);
+
+        return jsonOk(payload);
       } catch (error) {
         console.error('Analytics endpoint error:', error);
         return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
