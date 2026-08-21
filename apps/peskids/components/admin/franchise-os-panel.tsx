@@ -23,6 +23,15 @@ type AgreementBoardRow = {
 };
 type CalcRow = { id: string; royaltyDueMinor: number; ruleVersion: number; calculatedAt: string; unitId: string };
 type AuditRow = { id: string; unitId: string; status: string; auditor: string };
+type OpeningRow = {
+  canActivate: boolean;
+  blockers: Array<{ id: string; phase: string; title: string }>;
+  checklist: {
+    id: string;
+    unitId: string;
+    tasks: Array<{ id: string; phase: string; title: string; status: string; required: boolean }>;
+  };
+};
 type View = 'units' | 'territories' | 'agreements' | 'royalties' | 'audits';
 
 const TABS: Array<{ id: View; label: string; icon: typeof LayoutGrid }> = [
@@ -40,6 +49,7 @@ export function FranchiseOsPanel(): React.ReactElement {
   const [board, setBoard] = useState<AgreementBoardRow[]>([]);
   const [calculations, setCalculations] = useState<CalcRow[]>([]);
   const [audits, setAudits] = useState<AuditRow[]>([]);
+  const [openings, setOpenings] = useState<OpeningRow[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [notice, setNotice] = useState('');
@@ -47,20 +57,24 @@ export function FranchiseOsPanel(): React.ReactElement {
   async function load(): Promise<void> {
     setLoading(true);
     try {
-      const [viewRes, unitsRes] = await Promise.all([
+      const [viewRes, unitsRes, openingRes] = await Promise.all([
         fetch(`/api/admin/franchise-os?view=${view}`, { credentials: 'include' }),
         fetch('/api/admin/franchise-os?view=units', { credentials: 'include' }),
+        fetch('/api/admin/franchise-os?view=openings', { credentials: 'include' }),
       ]);
       const json = (await viewRes.json()) as {
         territories?: TerritoryRow[];
         board?: AgreementBoardRow[];
         calculations?: CalcRow[];
         audits?: AuditRow[];
+        openings?: OpeningRow[];
         error?: string;
         code?: string;
       };
       const unitsJson = (await unitsRes.json()) as { units?: UnitRow[] };
+      const openingJson = (await openingRes.json()) as { openings?: OpeningRow[] };
       if (unitsRes.ok) setUnits(unitsJson.units ?? []);
+      setOpenings(openingRes.ok ? openingJson.openings ?? [] : []);
       if (!viewRes.ok) {
         throw new Error(
           json.code === 'FRANCHISE_SCHEMA_NOT_AVAILABLE' ? json.code : json.error || 'No se pudo cargar Franchise OS'
@@ -145,6 +159,7 @@ export function FranchiseOsPanel(): React.ReactElement {
                 ))}
               </ul>
             )}
+            <OpeningControls unitId={firstUnit} openings={openings} onSubmit={postJson} />
           </CardContent>
         </Card>
       ) : null}
@@ -411,6 +426,70 @@ function AuditForm(props: { unitId: string }): React.ReactElement {
         <input name="dueDate" type="date" required className="rounded border border-pk-border px-2 py-1" />
         <Button type="submit" size="sm" disabled={!findingId}>Acción correctiva</Button>
       </form>
+    </div>
+  );
+}
+
+function OpeningControls(props: {
+  unitId: string;
+  openings: OpeningRow[];
+  onSubmit: (path: string, body: Record<string, unknown>) => Promise<void>;
+}): React.ReactElement {
+  const current = props.openings.find((row) => row.checklist.unitId === props.unitId) ?? props.openings[0];
+  async function complete(taskId: string): Promise<void> {
+    await props.onSubmit('/api/admin/franchises/openings/tasks', {
+      taskId,
+      status: 'completed',
+      evidenceUri: `opsly://opening/${taskId}`,
+    });
+  }
+  return (
+    <div className="space-y-3 border-t border-pk-border pt-4">
+      <p className="text-sm font-medium text-pk-ink">Checklist de apertura</p>
+      <p className="text-xs text-pk-sub">
+        Activación bloqueada hasta completar fases requeridas. Sin firma electrónica externa.
+      </p>
+      {current ? (
+        <ul className="space-y-1 text-sm">
+          {current.checklist.tasks.map((task) => (
+            <li key={task.id} className="flex flex-wrap items-center justify-between gap-2">
+              <span>
+                {task.title} · {task.status}
+                {task.required ? '' : ' (opcional)'}
+              </span>
+              {task.status !== 'completed' && task.status !== 'skipped' ? (
+                <Button type="button" size="sm" variant="secondary" onClick={() => void complete(task.id)}>
+                  Completar
+                </Button>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-xs text-pk-sub">Aún no hay checklist para esta unidad.</p>
+      )}
+      <div className="flex flex-wrap gap-2">
+        <Button
+          type="button"
+          size="sm"
+          onClick={() => void props.onSubmit('/api/admin/franchises/openings', { unitId: props.unitId })}
+          disabled={!props.unitId}
+        >
+          Iniciar apertura
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          onClick={() => void props.onSubmit('/api/admin/franchises/openings/activate', { unitId: props.unitId })}
+          disabled={!props.unitId || !current?.canActivate}
+        >
+          Activar unidad
+        </Button>
+      </div>
+      {current && current.blockers.length > 0 ? (
+        <p className="text-xs text-amber-700">{current.blockers.length} bloqueos de activación</p>
+      ) : null}
     </div>
   );
 }

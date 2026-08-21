@@ -2,8 +2,10 @@ import {
   canAccessUnit,
   canReadAgreements,
   canReadAudits,
+  canReadOpening,
   canReadRoyalties,
   canWriteFinancial,
+  canWriteOpening,
   type FranchiseRole,
 } from '@intcloudsysops/franchise-core';
 import type { FranchiseActor } from './actor.js';
@@ -51,6 +53,20 @@ export function assertAgreementRead(role: FranchiseRole): void {
 
 export function assertAuditRead(role: FranchiseRole): void {
   const decision = canReadAudits(role);
+  if (!decision.allow) {
+    throw new FranchisePersistenceError(decision.reason, decision.reason, 403);
+  }
+}
+
+export function assertOpeningRead(role: FranchiseRole): void {
+  const decision = canReadOpening(role);
+  if (!decision.allow) {
+    throw new FranchisePersistenceError(decision.reason, decision.reason, 403);
+  }
+}
+
+export function assertOpeningWrite(role: FranchiseRole): void {
+  const decision = canWriteOpening(role);
   if (!decision.allow) {
     throw new FranchisePersistenceError(decision.reason, decision.reason, 403);
   }

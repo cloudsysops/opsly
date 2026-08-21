@@ -85,6 +85,12 @@ export async function GET(req: NextRequest) {
       return successJson(requestId, { ok: true, view, audits });
     }
 
+    if (view === 'openings') {
+      const openings = await service.listOpenings(actor);
+      const reminders = await service.listReminders(actor);
+      return successJson(requestId, { ok: true, view, openings, reminders });
+    }
+
     return errorJson(requestId, 'Unknown view', 400);
   } catch (err) {
     const persist = franchiseErrorResponse(requestId, err);

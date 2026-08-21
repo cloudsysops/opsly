@@ -77,11 +77,11 @@ describe('GET /api/admin/franchise-os', () => {
   });
 });
 
-describe('GET /api/admin/franchises/territories', () => {
+describe('GET /api/admin/franchises/openings', () => {
   it('rejects unauthenticated requests', async () => {
     validateStaffRequestMock.mockResolvedValue({ ok: false, status: 401, error: 'Unauthorized' });
-    const { GET } = await import('../../franchises/territories/route');
-    const res = await GET(request('/api/admin/franchises/territories') as never);
+    const { GET } = await import('../../franchises/openings/route');
+    const res = await GET(request('/api/admin/franchises/openings') as never);
     expect(res.status).toBe(401);
   });
 });

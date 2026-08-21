@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { assertAgreementRead, assertRoyaltyRead, assertRoyaltyWrite, assertUnitScope } from './authorize.js';
+import { assertAgreementRead, assertOpeningRead, assertOpeningWrite, assertRoyaltyRead, assertRoyaltyWrite, assertUnitScope } from './authorize.js';
 import { FranchisePersistenceError } from './errors.js';
 import type { FranchiseActor } from './actor.js';
 
@@ -27,8 +27,14 @@ describe('franchise persistence authorize', () => {
   it('enforces unit scope for franchise admins', () => {
     expect(() => assertUnitScope(base, 'unit-b')).toThrow(/unit_isolation/);
     expect(() => assertUnitScope(base, 'unit-a')).not.toThrow();
-    expect(() =>
-      assertUnitScope({ ...base, role: 'franchise_network_admin', assignedUnitIds: [] }, 'unit-b')
-    ).not.toThrow();
+    expect(() => assertUnitScope({ ...base, role: 'franchise_network_admin', assignedUnitIds: [] }, 'unit-b'))
+      .not.toThrow();
+  });
+
+  it('denies teacher opening access and auditor writes', () => {
+    expect(() => assertOpeningRead('teacher')).toThrow(FranchisePersistenceError);
+    expect(() => assertOpeningWrite('teacher')).toThrow(FranchisePersistenceError);
+    expect(() => assertOpeningWrite('auditor')).toThrow(FranchisePersistenceError);
+    expect(() => assertOpeningRead('auditor')).not.toThrow();
   });
 });

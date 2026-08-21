@@ -122,6 +122,7 @@ export type DocumentReference = {
     | 'manual'
     | 'brand_guide'
     | 'audit_evidence'
+    | 'opening_evidence'
     | 'certificate'
     | 'supplier_contract'
     | 'other';

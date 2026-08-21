@@ -1,4 +1,11 @@
-import { OPENING_PHASES, type OpeningChecklist, type OpeningPhase, type OpeningTask } from './types.js';
+import {
+  OPENING_PHASES,
+  type DocumentReference,
+  type OpeningChecklist,
+  type OpeningPhase,
+  type OpeningTask,
+  type TaskStatus,
+} from './types.js';
 
 const PHASE_TITLES: Record<OpeningPhase, string> = {
   contract: 'Contract executed',
@@ -37,4 +44,21 @@ export function openingBlockers(checklist: OpeningChecklist): OpeningTask[] {
 
 export function canActivateUnit(checklist: OpeningChecklist): boolean {
   return openingBlockers(checklist).length === 0;
+}
+
+export function applyOpeningTaskProgress(
+  task: OpeningTask,
+  status: TaskStatus,
+  evidence: DocumentReference | null = task.evidence
+): OpeningTask {
+  return { ...task, status, evidence };
+}
+
+export function assembleOpeningChecklist(input: {
+  id: string;
+  tenantId: string;
+  unitId: string;
+  tasks: OpeningTask[];
+}): OpeningChecklist {
+  return { id: input.id, tenantId: input.tenantId, unitId: input.unitId, tasks: input.tasks };
 }

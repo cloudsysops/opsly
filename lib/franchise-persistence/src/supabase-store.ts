@@ -1,10 +1,12 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { OpeningTask } from '@intcloudsysops/franchise-core';
 import { isUndefinedTable, schemaMissingError } from './errors.js';
 import type { FranchiseStore } from './store.js';
 
 type PlatformFrom = {
   select: (columns: string) => PlatformFrom;
   insert: (values: Record<string, unknown> | Record<string, unknown>[]) => PlatformFrom;
+  update: (values: Record<string, unknown>) => PlatformFrom;
   eq: (column: string, value: unknown) => PlatformFrom;
   is: (column: string, value: null) => PlatformFrom;
   order: (column: string, opts: { ascending: boolean }) => PlatformFrom;
@@ -583,6 +585,145 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
         evidence: (row.evidence as never) ?? null,
       }));
     },
+    async upsertOpeningChecklist(actor, unitId) {
+      const existing = await platform()
+        .from('opening_checklists')
+        .select('*')
+        .eq('tenant_id', actor.tenantId)
+        .eq('unit_id', unitId)
+        .maybeSingle();
+      if (existing.error && isUndefinedTable(existing.error)) throw schemaMissingError();
+      if (existing.error) throw existing.error;
+      if (existing.data) {
+        return {
+          id: String(existing.data.id),
+          tenantId: actor.tenantId,
+          unitId,
+          status: existing.data.status as 'in_progress' | 'ready' | 'activated',
+        };
+      }
+      const data = await run(
+        platform()
+          .from('opening_checklists')
+          .insert({ tenant_id: actor.tenantId, unit_id: unitId, status: 'in_progress' })
+          .select('*')
+          .maybeSingle()
+      );
+      return {
+        id: String(data.id),
+        tenantId: actor.tenantId,
+        unitId,
+        status: 'in_progress',
+      };
+    },
+    async listOpeningChecklists(actor) {
+      const { data, error } = await platform()
+        .from('opening_checklists')
+        .select('*')
+        .eq('tenant_id', actor.tenantId)
+        .order('created_at', { ascending: false });
+      if (error) {
+        if (isUndefinedTable(error)) throw schemaMissingError();
+        throw error;
+      }
+      return (data ?? []).map((row) => ({
+        id: String(row.id),
+        tenantId: actor.tenantId,
+        unitId: String(row.unit_id),
+        status: row.status as 'in_progress' | 'ready' | 'activated',
+      }));
+    },
+    async listOpeningTasks(actor, checklistId) {
+      const { data, error } = await platform()
+        .from('opening_tasks')
+        .select('*')
+        .eq('tenant_id', actor.tenantId)
+        .eq('checklist_id', checklistId)
+        .order('created_at', { ascending: true });
+      if (error) {
+        if (isUndefinedTable(error)) throw schemaMissingError();
+        throw error;
+      }
+      return (data ?? []).map(mapOpeningTaskRow);
+    },
+    async insertOpeningTasks(actor, unitId, tasks) {
+      const created: OpeningTask[] = [];
+      for (const task of tasks) {
+        const data = await run(
+          platform()
+            .from('opening_tasks')
+            .insert({
+              tenant_id: actor.tenantId,
+              checklist_id: task.checklistId,
+              unit_id: unitId,
+              phase: task.phase,
+              title: task.title,
+              owner: task.owner,
+              due_date: task.dueDate,
+              required: task.required,
+              status: task.status,
+              evidence: task.evidence,
+            })
+            .select('*')
+            .maybeSingle()
+        );
+        created.push(mapOpeningTaskRow(data));
+      }
+      return created;
+    },
+    async getOpeningTask(actor, taskId) {
+      const { data, error } = await platform()
+        .from('opening_tasks')
+        .select('*')
+        .eq('tenant_id', actor.tenantId)
+        .eq('id', taskId)
+        .maybeSingle();
+      if (error) {
+        if (isUndefinedTable(error)) throw schemaMissingError();
+        throw error;
+      }
+      return data ? mapOpeningTaskRow(data) : null;
+    },
+    async updateOpeningTask(actor, task) {
+      const data = await run(
+        platform()
+          .from('opening_tasks')
+          .update({
+            status: task.status,
+            evidence: task.evidence,
+            owner: task.owner,
+            due_date: task.dueDate,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('tenant_id', actor.tenantId)
+          .eq('id', task.id)
+          .select('*')
+          .maybeSingle()
+      );
+      return mapOpeningTaskRow(data);
+    },
+    async markChecklistStatus(actor, checklistId, status) {
+      const { error } = await platform()
+        .from('opening_checklists')
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq('tenant_id', actor.tenantId)
+        .eq('id', checklistId);
+      if (error && isUndefinedTable(error)) throw schemaMissingError();
+      if (error) throw error;
+    },
+    async updateUnitOpening(actor, unitId, patch) {
+      const { error } = await platform()
+        .from('franchise_units')
+        .update({
+          status: patch.status,
+          opening_status: patch.openingStatus,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('tenant_id', actor.tenantId)
+        .eq('id', unitId);
+      if (error && isUndefinedTable(error)) throw schemaMissingError();
+      if (error) throw error;
+    },
     async insertChangeLog(input) {
       const { error } = await platform()
         .from('franchise_change_log')
@@ -601,4 +742,19 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
     },
   };
   return store;
+}
+
+function mapOpeningTaskRow(row: Record<string, unknown>): OpeningTask {
+  return {
+    id: String(row.id),
+    tenantId: String(row.tenant_id),
+    checklistId: String(row.checklist_id),
+    phase: row.phase as OpeningTask['phase'],
+    title: String(row.title),
+    owner: row.owner ? String(row.owner) : null,
+    dueDate: row.due_date ? String(row.due_date).slice(0, 10) : null,
+    required: Boolean(row.required),
+    status: row.status as OpeningTask['status'],
+    evidence: (row.evidence as import('@intcloudsysops/franchise-core').DocumentReference | null) ?? null,
+  };
 }

@@ -34,6 +34,7 @@ export {
   type GeoPoint,
   type OpeningChecklist,
   type OpeningPhase,
+  type OpeningTask,
   type RoyaltyCalculation,
   type RoyaltyCalculationInputs,
   type RoyaltyPayment,
@@ -42,6 +43,7 @@ export {
   type SalesSource,
   type SupportCase,
   type Supplier,
+  type TaskStatus,
   type Territory,
   type TerritoryExclusiveFor,
   type TerritoryGeometry,
@@ -76,12 +78,15 @@ export {
   canReadAgreements,
   canReadAudits,
   canReadNetwork,
+  canReadOpening,
   canReadRoyalties,
   canWriteFinancial,
+  canWriteOpening,
   mapTenantStaffRole,
   type AccessDecision,
 } from './access.js';
 export { FRANCHISE_EVENTS, franchiseEvent, type FranchiseEvent, type FranchiseEventName } from './events.js';
+export { reminderEvents, type ReminderInputs } from './reminders.js';
 export {
   missingMapProvider,
   type GeocodeQuery,
@@ -97,5 +102,11 @@ export {
   ownedUnitDefaults,
   UnitModelError,
 } from './units.js';
-export { canActivateUnit, defaultOpeningTasks, openingBlockers } from './opening.js';
+export {
+  applyOpeningTaskProgress,
+  assembleOpeningChecklist,
+  canActivateUnit,
+  defaultOpeningTasks,
+  openingBlockers,
+} from './opening.js';
 export { summarizeNetwork, type NetworkDashboard } from './network.js';

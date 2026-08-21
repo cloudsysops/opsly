@@ -1,16 +1,27 @@
 import {
+  applyOpeningTaskProgress,
+  assembleOpeningChecklist,
   calculateRoyalty,
+  canActivateUnit,
+  defaultOpeningTasks,
   findTerritoryConflicts,
   FRANCHISE_EVENTS,
   franchiseEvent,
   nextRoyaltyRuleVersion,
+  openingBlockers,
+  reminderEvents,
+  type DocumentReference,
+  type OpeningChecklist,
   type RoyaltyRule,
   type SalesReport,
+  type TaskStatus,
 } from '@intcloudsysops/franchise-core';
 import type { FranchiseActor } from './actor.js';
 import {
   assertAgreementRead,
   assertAuditRead,
+  assertOpeningRead,
+  assertOpeningWrite,
   assertRoyaltyRead,
   assertRoyaltyWrite,
   assertUnitScope,
@@ -286,6 +297,164 @@ export function createFranchiseService(store: FranchiseStore) {
       assertAuditRead(actor.role);
       const audits = await store.listAudits(actor);
       return audits.filter((row) => canScope(actor, row.unitId));
+    },
+
+    async startOpening(actor: FranchiseActor, unitId: string) {
+      await this.requireSchema();
+      assertOpeningWrite(actor.role);
+      assertUnitScope(actor, unitId);
+      const header = await store.upsertOpeningChecklist(actor, unitId);
+      let tasks = await store.listOpeningTasks(actor, header.id);
+      if (tasks.length === 0) {
+        const seeded = defaultOpeningTasks({ tenantId: actor.tenantId, checklistId: header.id });
+        tasks = await store.insertOpeningTasks(actor, unitId, seeded);
+      }
+      if (header.status !== 'activated') {
+        await store.updateUnitOpening(actor, unitId, { status: 'opening', openingStatus: 'contract' });
+      }
+      const checklist = assembleOpeningChecklist({ ...header, tasks });
+      await store.insertChangeLog({
+        tenantId: actor.tenantId,
+        actorId: actor.actorId,
+        entity: 'opening_checklist',
+        entityId: header.id,
+        action: 'create',
+        before: null,
+        after: checklist,
+        reason: actor.requestId,
+      });
+      return {
+        checklist,
+        blockers: openingBlockers(checklist),
+        canActivate: canActivateUnit(checklist),
+        event: franchiseEvent(FRANCHISE_EVENTS.unitOpeningStarted, {
+          tenantId: actor.tenantId,
+          unitId,
+          occurredAt: new Date().toISOString(),
+          payload: { checklistId: header.id },
+        }),
+      };
+    },
+
+    async listOpenings(actor: FranchiseActor) {
+      await this.requireSchema();
+      assertOpeningRead(actor.role);
+      const headers = await store.listOpeningChecklists(actor);
+      const scoped = headers.filter((row) => canScope(actor, row.unitId));
+      const checklists: OpeningChecklist[] = [];
+      for (const header of scoped) {
+        const tasks = await store.listOpeningTasks(actor, header.id);
+        checklists.push(assembleOpeningChecklist({ ...header, tasks }));
+      }
+      return checklists.map((checklist) => ({
+        checklist,
+        blockers: openingBlockers(checklist),
+        canActivate: canActivateUnit(checklist),
+      }));
+    },
+
+    async completeOpeningTask(
+      actor: FranchiseActor,
+      input: {
+        taskId: string;
+        status: TaskStatus;
+        evidenceUri?: string | null;
+      }
+    ) {
+      await this.requireSchema();
+      assertOpeningWrite(actor.role);
+      const current = await store.getOpeningTask(actor, input.taskId);
+      if (!current) throw new FranchisePersistenceError('not_found', 'opening task not found', 404);
+      const header = (await store.listOpeningChecklists(actor)).find((row) => row.id === current.checklistId);
+      if (!header) throw new FranchisePersistenceError('not_found', 'opening checklist not found', 404);
+      assertUnitScope(actor, header.unitId);
+      const evidence: DocumentReference | null = input.evidenceUri
+        ? {
+            id: crypto.randomUUID(),
+            tenantId: actor.tenantId,
+            kind: 'opening_evidence',
+            uri: input.evidenceUri,
+            visibility: 'unit',
+            ownerScope: 'unit',
+            version: '1',
+            expiresAt: null,
+          }
+        : current.evidence;
+      const next = applyOpeningTaskProgress(current, input.status, evidence);
+      const saved = await store.updateOpeningTask(actor, next);
+      const tasks = await store.listOpeningTasks(actor, header.id);
+      const checklist = assembleOpeningChecklist({ ...header, tasks });
+      const ready = canActivateUnit(checklist);
+      await store.markChecklistStatus(actor, header.id, ready ? 'ready' : 'in_progress');
+      return {
+        task: saved,
+        checklist,
+        blockers: openingBlockers(checklist),
+        canActivate: ready,
+        event: franchiseEvent(FRANCHISE_EVENTS.openingTaskCompleted, {
+          tenantId: actor.tenantId,
+          unitId: header.unitId,
+          occurredAt: new Date().toISOString(),
+          payload: { taskId: saved.id, phase: saved.phase },
+        }),
+      };
+    },
+
+    async activateUnit(actor: FranchiseActor, unitId: string) {
+      await this.requireSchema();
+      assertOpeningWrite(actor.role);
+      assertUnitScope(actor, unitId);
+      const header = (await store.listOpeningChecklists(actor)).find((row) => row.unitId === unitId);
+      if (!header) throw new FranchisePersistenceError('not_found', 'opening checklist not found', 404);
+      const tasks = await store.listOpeningTasks(actor, header.id);
+      const checklist = assembleOpeningChecklist({ ...header, tasks });
+      if (!canActivateUnit(checklist)) {
+        throw new FranchisePersistenceError(
+          'opening_blocked',
+          'Required opening tasks are incomplete',
+          409
+        );
+      }
+      await store.markChecklistStatus(actor, header.id, 'activated');
+      await store.updateUnitOpening(actor, unitId, { status: 'active', openingStatus: null });
+      await store.insertChangeLog({
+        tenantId: actor.tenantId,
+        actorId: actor.actorId,
+        entity: 'franchise_unit',
+        entityId: unitId,
+        action: 'status_change',
+        before: { status: 'opening' },
+        after: { status: 'active' },
+        reason: actor.requestId,
+      });
+      return {
+        checklist,
+        event: franchiseEvent(FRANCHISE_EVENTS.unitActivated, {
+          tenantId: actor.tenantId,
+          unitId,
+          occurredAt: new Date().toISOString(),
+          payload: { checklistId: header.id },
+        }),
+      };
+    },
+
+    async listReminders(actor: FranchiseActor, nowIso = new Date().toISOString()) {
+      await this.requireSchema();
+      assertOpeningRead(actor.role);
+      const [agreements, calculations, audits, openings] = await Promise.all([
+        this.listAgreements(actor).catch(() => []),
+        this.listRoyalties(actor).catch(() => []),
+        this.listAudits(actor).catch(() => []),
+        this.listOpenings(actor),
+      ]);
+      return reminderEvents({
+        nowIso,
+        agreements,
+        calculations,
+        payments: [],
+        audits,
+        checklists: openings.map((row) => row.checklist),
+      });
     },
   };
 }

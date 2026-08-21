@@ -5,6 +5,7 @@ import type {
   DocumentReference,
   FranchiseAgreement,
   Franchisee,
+  OpeningTask,
   RoyaltyCalculation,
   RoyaltyCalculationInputs,
   RoyaltyPayment,
@@ -384,6 +385,97 @@ export function createPgFranchiseStore(rawQuery: SqlQuery): FranchiseStore {
       );
       return rows.map(mapAction);
     },
+    async upsertOpeningChecklist(actor, unitId) {
+      const rows = await query<Record<string, unknown>>(
+        `INSERT INTO platform.opening_checklists (tenant_id, unit_id, status)
+         VALUES ($1,$2,'in_progress')
+         ON CONFLICT (tenant_id, unit_id) DO UPDATE SET updated_at = platform.opening_checklists.updated_at
+         RETURNING *`,
+        [actor.tenantId, unitId]
+      );
+      return mapChecklist(rows[0]);
+    },
+    async listOpeningChecklists(actor) {
+      const rows = await query<Record<string, unknown>>(
+        `SELECT * FROM platform.opening_checklists WHERE tenant_id = $1 ORDER BY created_at DESC`,
+        [actor.tenantId]
+      );
+      return rows.map(mapChecklist);
+    },
+    async listOpeningTasks(actor, checklistId) {
+      const rows = await query<Record<string, unknown>>(
+        `SELECT * FROM platform.opening_tasks
+         WHERE tenant_id = $1 AND checklist_id = $2
+         ORDER BY created_at ASC`,
+        [actor.tenantId, checklistId]
+      );
+      return rows.map(mapOpeningTask);
+    },
+    async insertOpeningTasks(actor, unitId, tasks) {
+      const created: OpeningTask[] = [];
+      for (const task of tasks) {
+        const rows = await query<Record<string, unknown>>(
+          `INSERT INTO platform.opening_tasks
+             (tenant_id, checklist_id, unit_id, phase, title, owner, due_date, required, status, evidence)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb)
+           ON CONFLICT (checklist_id, phase) DO UPDATE SET title = EXCLUDED.title
+           RETURNING *`,
+          [
+            actor.tenantId,
+            task.checklistId,
+            unitId,
+            task.phase,
+            task.title,
+            task.owner,
+            task.dueDate,
+            task.required,
+            task.status,
+            task.evidence ? JSON.stringify(task.evidence) : null,
+          ]
+        );
+        created.push(mapOpeningTask(rows[0]));
+      }
+      return created;
+    },
+    async getOpeningTask(actor, taskId) {
+      const rows = await query<Record<string, unknown>>(
+        `SELECT * FROM platform.opening_tasks WHERE tenant_id = $1 AND id = $2 LIMIT 1`,
+        [actor.tenantId, taskId]
+      );
+      return rows[0] ? mapOpeningTask(rows[0]) : null;
+    },
+    async updateOpeningTask(actor, task) {
+      const rows = await query<Record<string, unknown>>(
+        `UPDATE platform.opening_tasks
+         SET status = $3, evidence = $4::jsonb, owner = $5, due_date = $6, updated_at = now()
+         WHERE tenant_id = $1 AND id = $2
+         RETURNING *`,
+        [
+          actor.tenantId,
+          task.id,
+          task.status,
+          task.evidence ? JSON.stringify(task.evidence) : null,
+          task.owner,
+          task.dueDate,
+        ]
+      );
+      if (!rows[0]) throw new FranchisePersistenceError('not_found', 'opening task not found', 404);
+      return mapOpeningTask(rows[0]);
+    },
+    async markChecklistStatus(actor, checklistId, status) {
+      await query(
+        `UPDATE platform.opening_checklists SET status = $3, updated_at = now() WHERE tenant_id = $1 AND id = $2`,
+        [actor.tenantId, checklistId, status]
+      );
+    },
+    async updateUnitOpening(actor, unitId, patch) {
+      await query(
+        `UPDATE platform.franchise_units
+         SET status = $3, opening_status = $4, updated_at = now()
+         WHERE tenant_id = $1 AND id = $2`,
+        [actor.tenantId, unitId, patch.status, patch.openingStatus]
+      );
+    },
     async insertChangeLog(input) {
       await query(
         `INSERT INTO platform.franchise_change_log
@@ -563,5 +655,34 @@ function mapFranchisee(row: Record<string, unknown>): Franchisee {
       phone: null,
     },
     createdAt: asIso(row.created_at as Date | string),
+  };
+}
+
+function mapChecklist(row: Record<string, unknown>): {
+  id: string;
+  tenantId: string;
+  unitId: string;
+  status: 'in_progress' | 'ready' | 'activated';
+} {
+  return {
+    id: String(row.id),
+    tenantId: String(row.tenant_id),
+    unitId: String(row.unit_id),
+    status: row.status as 'in_progress' | 'ready' | 'activated',
+  };
+}
+
+function mapOpeningTask(row: Record<string, unknown>): OpeningTask {
+  return {
+    id: String(row.id),
+    tenantId: String(row.tenant_id),
+    checklistId: String(row.checklist_id),
+    phase: row.phase as OpeningTask['phase'],
+    title: String(row.title),
+    owner: row.owner ? String(row.owner) : null,
+    dueDate: row.due_date ? asDate(row.due_date as Date | string) : null,
+    required: Boolean(row.required),
+    status: row.status as OpeningTask['status'],
+    evidence: (row.evidence as DocumentReference | null) ?? null,
   };
 }

@@ -61,6 +61,26 @@ export function canReadAgreements(role: FranchiseRole): AccessDecision {
   return deny('agreement_forbidden');
 }
 
+export function canReadOpening(role: FranchiseRole): AccessDecision {
+  if (role === 'teacher') return deny('teacher_cannot_read_opening');
+  return AUDIT_READ.has(role) || role === 'franchise_staff' ? allow('opening_read') : deny('opening_forbidden');
+}
+
+export function canWriteOpening(role: FranchiseRole): AccessDecision {
+  if (role === 'teacher' || role === 'auditor') return deny('opening_write_forbidden');
+  if (
+    role === 'platform_owner' ||
+    role === 'tenant_owner' ||
+    role === 'franchise_network_admin' ||
+    role === 'franchise_admin' ||
+    role === 'support' ||
+    role === 'franchise_staff'
+  ) {
+    return allow('opening_write');
+  }
+  return deny('opening_forbidden');
+}
+
 export function canWriteFinancial(role: FranchiseRole): AccessDecision {
   if (role === 'teacher' || role === 'auditor' || role === 'franchise_staff') {
     return deny('financial_write_forbidden');

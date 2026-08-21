@@ -4,6 +4,7 @@ import type {
   CorrectiveAction,
   FranchiseAgreement,
   Franchisee,
+  OpeningTask,
   RoyaltyCalculation,
   RoyaltyPayment,
   RoyaltyRule,
@@ -20,6 +21,13 @@ export type NewSalesReport = Omit<SalesReport, 'id' | 'status'> & { status?: Sal
 export type NewRoyaltyRule = Omit<RoyaltyRule, 'version'> & { version?: number };
 export type NewAudit = Omit<Audit, 'id' | 'score' | 'performedAt' | 'status'> & {
   status?: Audit['status'];
+};
+
+export type OpeningChecklistRecord = {
+  id: string;
+  tenantId: string;
+  unitId: string;
+  status: 'in_progress' | 'ready' | 'activated';
 };
 
 export type FranchiseStore = {
@@ -50,6 +58,25 @@ export type FranchiseStore = {
   listAudits(actor: FranchiseActor): Promise<Audit[]>;
   listFindings(actor: FranchiseActor, auditId: string): Promise<AuditFinding[]>;
   listCorrectiveActions(actor: FranchiseActor): Promise<CorrectiveAction[]>;
+  upsertOpeningChecklist(
+    actor: FranchiseActor,
+    unitId: string
+  ): Promise<OpeningChecklistRecord>;
+  listOpeningChecklists(actor: FranchiseActor): Promise<OpeningChecklistRecord[]>;
+  listOpeningTasks(actor: FranchiseActor, checklistId: string): Promise<OpeningTask[]>;
+  insertOpeningTasks(actor: FranchiseActor, unitId: string, tasks: OpeningTask[]): Promise<OpeningTask[]>;
+  getOpeningTask(actor: FranchiseActor, taskId: string): Promise<OpeningTask | null>;
+  updateOpeningTask(actor: FranchiseActor, task: OpeningTask): Promise<OpeningTask>;
+  markChecklistStatus(
+    actor: FranchiseActor,
+    checklistId: string,
+    status: OpeningChecklistRecord['status']
+  ): Promise<void>;
+  updateUnitOpening(
+    actor: FranchiseActor,
+    unitId: string,
+    patch: { status: 'opening' | 'active'; openingStatus: string | null }
+  ): Promise<void>;
   insertChangeLog(input: {
     tenantId: string;
     actorId: string;

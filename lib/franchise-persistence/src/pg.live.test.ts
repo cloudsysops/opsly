@@ -46,7 +46,7 @@ describe('franchise persistence live postgres', () => {
     await h?.pool.end();
   });
 
-  it('replays 0098+0099 without destroying 0090-shaped units', async () => {
+  it('replays 0098+0099+0100 without destroying 0090-shaped units', async () => {
     const sql0098 = (await import('node:fs')).readFileSync(
       new URL('../../../supabase/migrations/0098_franchise_core.sql', import.meta.url),
       'utf8'
@@ -55,8 +55,13 @@ describe('franchise persistence live postgres', () => {
       new URL('../../../supabase/migrations/0099_franchise_core_rls.sql', import.meta.url),
       'utf8'
     );
+    const sql0100 = (await import('node:fs')).readFileSync(
+      new URL('../../../supabase/migrations/0100_franchise_opening_workflows.sql', import.meta.url),
+      'utf8'
+    );
     await h.pool.query(sql0098);
     await h.pool.query(sql0099);
+    await h.pool.query(sql0100);
     const units = await h.pool.query<{ code: string }>(
       `SELECT code FROM platform.franchise_units WHERE tenant_id = $1 ORDER BY code`,
       [h.tenantA]
@@ -384,5 +389,69 @@ describe('franchise persistence live postgres', () => {
     const teacher = actor(h, { actorId: h.userTeacher, role: 'teacher', assignedUnitIds: [h.unitA] });
     await expect(service.listRoyalties(teacher)).rejects.toMatchObject({ status: 403 });
     await expect(service.listAgreements(teacher)).rejects.toMatchObject({ status: 403 });
+  });
+
+  it('blocks unit activation until required opening tasks complete', async () => {
+    const network = actor(h);
+    const started = await service.startOpening(network, h.unitA);
+    expect(started.canActivate).toBe(false);
+    await expect(service.activateUnit(network, h.unitA)).rejects.toMatchObject({
+      code: 'opening_blocked',
+      status: 409,
+    });
+    for (const task of started.checklist.tasks.filter((row) => row.required)) {
+      await service.completeOpeningTask(network, {
+        taskId: task.id,
+        status: 'completed',
+        evidenceUri: `https://files.example.test/${task.phase}.pdf`,
+      });
+    }
+    const activated = await service.activateUnit(network, h.unitA);
+    expect(activated.event.name).toBe('unit.activated');
+    const unit = await h.pool.query<{ status: string; opening_status: string | null }>(
+      `SELECT status, opening_status FROM platform.franchise_units WHERE id = $1`,
+      [h.unitA]
+    );
+    expect(unit.rows[0].status).toBe('active');
+    expect(unit.rows[0].opening_status).toBeNull();
+  });
+
+  it('RLS: teacher cannot read opening checklists; unit A cannot see unit B opening', async () => {
+    const network = actor(h);
+    await service.startOpening(network, h.unitB);
+    const teacher = await asAuthenticated(h.pool, { userId: h.userTeacher, role: 'teacher' });
+    try {
+      const rows = await teacher.query(`SELECT id FROM platform.opening_checklists`);
+      expect(rows.rowCount).toBe(0);
+      await expect(
+        teacher.query(
+          `INSERT INTO platform.opening_checklists (tenant_id, unit_id) VALUES ($1,$2)`,
+          [h.tenantA, h.unitA]
+        )
+      ).rejects.toThrow();
+    } finally {
+      await releaseAuthenticated(teacher);
+    }
+    const unitAdmin = await asAuthenticated(h.pool, {
+      userId: h.userUnitA,
+      role: 'franchise_admin',
+      jwtRole: 'franchise_admin',
+    });
+    try {
+      const seen = await unitAdmin.query(`SELECT unit_id FROM platform.opening_checklists`);
+      expect(seen.rows.every((row) => row.unit_id === h.unitA)).toBe(true);
+      expect(seen.rows.some((row) => row.unit_id === h.unitB)).toBe(false);
+    } finally {
+      await releaseAuthenticated(unitAdmin);
+    }
+    const otherTenant = await asAuthenticated(h.pool, { userId: h.userOtherTenant, role: 'owner' });
+    try {
+      const cross = await otherTenant.query(`SELECT id FROM platform.opening_checklists WHERE tenant_id = $1`, [
+        h.tenantA,
+      ]);
+      expect(cross.rowCount).toBe(0);
+    } finally {
+      await releaseAuthenticated(otherTenant);
+    }
   });
 });
