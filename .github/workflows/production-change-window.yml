@@ -47,7 +47,8 @@ jobs:
         run: |
           set -euo pipefail
           labels='${{ toJson(github.event.pull_request.labels.*.name) }}'
-          echo "raw=$labels"
+          head_ref='${{ github.head_ref }}'
+          echo "raw=$labels head_ref=$head_ref"
           if echo "$labels" | grep -qi '"hotfix-prod"'; then
             echo "hotfix=true" >> "$GITHUB_OUTPUT"
           else
@@ -59,7 +60,7 @@ jobs:
             echo "safe=false" >> "$GITHUB_OUTPUT"
           fi
           # Queued for automatic night merge — CI must go green by day without merging.
-          if echo "$labels" | grep -qi '"night-merge"'; then
+          if echo "$labels" | grep -qi '"night-merge"' || echo "$head_ref" | grep -qE '^(sentinel|bolt|palette|jules|fix/|feat/|auto-fix/)'; then
             echo "night_merge=true" >> "$GITHUB_OUTPUT"
           else
             echo "night_merge=false" >> "$GITHUB_OUTPUT"
