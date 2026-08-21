@@ -23,3 +23,7 @@
 ## 2026-05-28 - Focus Indicators for Dropdowns and Text Areas
 **Learning:** Standard `<select>` dropdowns and `<textarea>` components in complex enterprise forms are frequently left with basic browser-default focus state behaviors. This creates an inconsistent and unpolished user experience and can lead to failures under strict WCAG accessibility guidelines on focus indicators if the focus outline becomes indistinguishable against dark-themed layouts.
 **Action:** Always map standard `<select>` and `<textarea>` styles to match custom text `<Input>` focus-visible rings using Tailwind's `focus-visible:ring-2` class with cohesive theme palettes.
+
+## 2026-05-29 - Status Indicator Dot Pattern
+**Learning:** Text-only status badges rely solely on color or reading label text to communicate status health. Adding a subtle `bg-current` status dot with `aria-hidden="true"` provides dual visual cues (shape + color) for low-vision users while keeping screen reader output clean and free of redundant decorative elements.
+**Action:** Include an `aria-hidden="true"` dot element (`bg-current`) inside status badge components to reinforce health states visually without cluttering assistive technology output.
