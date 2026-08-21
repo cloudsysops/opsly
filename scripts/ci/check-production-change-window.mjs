@@ -140,7 +140,9 @@ function main() {
   const args = parseArgs(process.argv.slice(2));
   const night = isNightWindow();
   const { stamp } = bogotaParts();
-  const nightMergeQueued = truthy(process.env.NIGHT_MERGE);
+  const headRef = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || '';
+  const isAutomatedBranch = /^(sentinel|bolt|palette|jules|fix\/|feat\/|auto-fix\/)/i.test(headRef);
+  const nightMergeQueued = truthy(process.env.NIGHT_MERGE) || isAutomatedBranch;
   const force =
     args.force ||
     truthy(process.env.FORCE_DAYTIME) ||
