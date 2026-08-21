@@ -33,6 +33,7 @@ export function StatusBadge({ state, label, className }: StatusBadgeProps): Reac
         className
       )}
     >
+      <span aria-hidden="true" className="mr-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-current" />
       {text}
     </span>
   );
