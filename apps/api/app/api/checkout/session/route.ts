@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { parseJsonBody } from '../../../../lib/api-response';
-import { extractIp } from '../../../../lib/audit';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
 import { HTTP_STATUS } from '../../../../lib/constants';
 import { getStripe } from '../../../../lib/stripe';
 import { getServiceClient } from '../../../../lib/supabase';
@@ -58,9 +58,11 @@ async function createStripeSession(
   email: string,
   slug: string,
   plan: 'startup' | 'business' | 'enterprise',
-  priceId: string
+  priceId: string,
+  ip: string | null,
+  userAgent: string | null
 ): Promise<NextResponse> {
-  const { webUrl, portalUrl } = buildUrls();
+  const { portalUrl } = buildUrls();
   const session = await getStripe().checkout.sessions.create({
     payment_method_types: ['card'],
     line_items: [{ price: priceId, quantity: 1 }],
@@ -76,6 +78,16 @@ async function createStripeSession(
     slug,
     plan,
     sessionId: session.id,
+  });
+  void logAuditEvent({
+    tenant_slug: slug,
+    actor_email: email,
+    action: 'checkout_session_create',
+    resource: '/api/checkout/session',
+    status_code: HTTP_STATUS.OK,
+    ip,
+    user_agent: userAgent ?? undefined,
+    metadata: { plan, session_id: session.id },
   });
   return NextResponse.json({ url: session.url }, { status: 200 });
 }
@@ -119,8 +131,10 @@ export async function POST(request: Request): Promise<NextResponse> {
     );
   }
 
+  const userAgent = request.headers.get('user-agent');
+
   try {
-    return await createStripeSession(email, slug, plan, priceId);
+    return await createStripeSession(email, slug, plan, priceId, ip, userAgent);
   } catch (err) {
     logger.error(
       'checkout.session.create failed',
