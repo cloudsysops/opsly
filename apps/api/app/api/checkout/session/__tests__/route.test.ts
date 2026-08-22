@@ -13,8 +13,14 @@ vi.mock('../../../../../lib/logger', () => ({
   logger: { info: vi.fn(), error: vi.fn(), warn: vi.fn() },
 }));
 
+vi.mock('../../../../../lib/audit', () => ({
+  extractIp: vi.fn(() => '1.2.3.4'),
+  logAuditEvent: vi.fn(() => Promise.resolve()),
+}));
+
 import { getStripe } from '../../../../../lib/stripe';
 import { getServiceClient } from '../../../../../lib/supabase';
+import { logAuditEvent } from '../../../../../lib/audit';
 
 const mockStripeCreate = vi.fn();
 const mockStripe = { checkout: { sessions: { create: mockStripeCreate } } };
@@ -147,6 +153,18 @@ describe('POST /api/checkout/session', () => {
             email: 'user@company.com',
             plan: 'startup',
           },
+        })
+      );
+
+      expect(logAuditEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'checkout_session_create',
+          actor_email: 'user@company.com',
+          tenant_slug: 'my-company',
+          resource: '/api/checkout/session',
+          status_code: 200,
+          ip: '1.2.3.4',
+          metadata: { plan: 'startup', session_id: 'cs_test_1' },
         })
       );
     });
