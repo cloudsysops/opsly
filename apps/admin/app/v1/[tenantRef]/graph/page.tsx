@@ -212,15 +212,11 @@ export default function GraphPage() {
             <div className="mt-4 grid grid-cols-4 gap-4 text-center">
               <div>
                 <div className="text-xs font-medium text-gray-600">Total Nodes</div>
-                <div className="text-lg font-semibold text-gray-900">
-                  {graph.dag.nodes.length}
-                </div>
+                <div className="text-lg font-semibold text-gray-900">{graph.dag.nodes.length}</div>
               </div>
               <div>
                 <div className="text-xs font-medium text-gray-600">Edges</div>
-                <div className="text-lg font-semibold text-gray-900">
-                  {graph.dag.edges.length}
-                </div>
+                <div className="text-lg font-semibold text-gray-900">{graph.dag.edges.length}</div>
               </div>
               <div>
                 <div className="text-xs font-medium text-gray-600">Agents</div>
@@ -265,9 +261,7 @@ export default function GraphPage() {
                     className="hover:bg-gray-50 cursor-pointer"
                     onClick={() => setSelectedNode(agent.agent_id)}
                   >
-                    <td className="px-6 py-4 font-mono text-xs text-gray-900">
-                      {agent.agent_id}
-                    </td>
+                    <td className="px-6 py-4 font-mono text-xs text-gray-900">{agent.agent_id}</td>
                     <td className="px-6 py-4">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -282,12 +276,8 @@ export default function GraphPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right text-gray-900">{agent.latency_ms}</td>
-                    <td className="px-6 py-4 text-right text-gray-900">
-                      {agent.jobs_processed}
-                    </td>
-                    <td className="px-6 py-4 text-right text-gray-900">
-                      {agent.error_count || 0}
-                    </td>
+                    <td className="px-6 py-4 text-right text-gray-900">{agent.jobs_processed}</td>
+                    <td className="px-6 py-4 text-right text-gray-900">{agent.error_count || 0}</td>
                     <td className="px-6 py-4 text-xs text-gray-600">
                       {agent.last_job_at ? new Date(agent.last_job_at).toLocaleString() : '—'}
                     </td>

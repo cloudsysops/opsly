@@ -27,7 +27,16 @@ const TAB_LABELS: Record<(typeof CREATOR_TABS)[number], string> = {
   analytics: 'Analytics',
 };
 
-const KANBAN_COLUMNS = ['IDEAS', 'RESEARCH', 'SCRIPT', 'ASSETS', 'RENDER', 'REVIEW', 'APPROVED', 'PUBLISHED'];
+const KANBAN_COLUMNS = [
+  'IDEAS',
+  'RESEARCH',
+  'SCRIPT',
+  'ASSETS',
+  'RENDER',
+  'REVIEW',
+  'APPROVED',
+  'PUBLISHED',
+];
 
 function toneForStatus(status: string): MoonHealthTone {
   if (status === 'approved' || status === 'published') return 'healthy';
@@ -93,7 +102,10 @@ export default async function MoonCreatorPage({
 
       {tab === 'ideas' ? (
         data.projects.filter((item) => item.project.status === 'idea').length === 0 ? (
-          <MoonEmptyState title="Sin ideas" description="Crea un proyecto con npm run content:create." />
+          <MoonEmptyState
+            title="Sin ideas"
+            description="Crea un proyecto con npm run content:create."
+          />
         ) : (
           <div className="space-y-3">
             {data.projects
@@ -137,12 +149,17 @@ export default async function MoonCreatorPage({
 
       {tab === 'productions' ? (
         data.projects.length === 0 ? (
-          <MoonEmptyState title="Sin productions" description="Ejecuta npm run content:demo para generar proyectos reales." />
+          <MoonEmptyState
+            title="Sin productions"
+            description="Ejecuta npm run content:demo para generar proyectos reales."
+          />
         ) : (
           <div className="grid gap-3 lg:grid-cols-4">
             {KANBAN_COLUMNS.map((column) => (
               <div key={column} className="space-y-2">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{column}</p>
+                <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
+                  {column}
+                </p>
                 {data.projects
                   .filter((item) => kanbanColumnFor(item.project.status) === column)
                   .map((item) => (
@@ -164,7 +181,10 @@ export default async function MoonCreatorPage({
 
       {tab === 'clips' ? (
         data.projects.every((item) => (item.clipCandidates ?? []).length === 0) ? (
-          <MoonEmptyState title="Sin clips" description="Los clips aparecen tras npm run content:discover-clips." />
+          <MoonEmptyState
+            title="Sin clips"
+            description="Los clips aparecen tras npm run content:discover-clips."
+          />
         ) : (
           <div className="space-y-3">
             {data.projects.flatMap((item) =>
@@ -187,7 +207,9 @@ export default async function MoonCreatorPage({
             <MoonCard key={character.id} className="p-4">
               <p className="text-sm text-slate-100">{character.name}</p>
               <p className="text-xs text-slate-400">{character.role}</p>
-              <p className="mt-2 font-mono text-[10px] text-slate-500">{character.portals.join(' · ')}</p>
+              <p className="mt-2 font-mono text-[10px] text-slate-500">
+                {character.portals.join(' · ')}
+              </p>
             </MoonCard>
           ))}
         </div>
@@ -199,7 +221,9 @@ export default async function MoonCreatorPage({
             <MoonCard key={brand.channel} className="p-4">
               <p className="text-sm text-slate-100">{brand.channel}</p>
               <p className="text-xs text-slate-400">CTA {brand.kit.cta}</p>
-              <p className="font-mono text-[10px] text-slate-500">{brand.kit.characters.join(' · ')}</p>
+              <p className="font-mono text-[10px] text-slate-500">
+                {brand.kit.characters.join(' · ')}
+              </p>
             </MoonCard>
           ))}
         </div>
@@ -207,7 +231,10 @@ export default async function MoonCreatorPage({
 
       {tab === 'calendar' ? (
         data.projects.length === 0 ? (
-          <MoonEmptyState title="Sin calendario" description="El calendario lista createdAt de proyectos reales." />
+          <MoonEmptyState
+            title="Sin calendario"
+            description="El calendario lista createdAt de proyectos reales."
+          />
         ) : (
           <div className="space-y-3">
             {data.projects.map((item) => (
@@ -216,7 +243,9 @@ export default async function MoonCreatorPage({
                   <p className="text-sm text-slate-100">{item.project.title}</p>
                   <p className="font-mono text-[11px] text-slate-500">{item.project.createdAt}</p>
                 </div>
-                <MoonStatusBadge tone={toneForStatus(item.project.status)}>{item.project.status}</MoonStatusBadge>
+                <MoonStatusBadge tone={toneForStatus(item.project.status)}>
+                  {item.project.status}
+                </MoonStatusBadge>
               </MoonCard>
             ))}
           </div>
