@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
 import { opslyManagementFeeUsd } from '../../../../lib/cloud-providers/fees';
 import type { CloudProviderId, ProvisioningPlan } from '../../../../lib/cloud-providers/interface';
 import { getCloudProvider } from '../../../../lib/cloud-providers/registry';
 import { HTTP_STATUS } from '../../../../lib/constants';
+import { checkRateLimit } from '../../../../lib/rate-limiter';
 
 const BodySchema = z.object({
   provider: z.enum(['aws', 'azure', 'gcp']),
@@ -26,44 +28,24 @@ function termsForProvider(provider: CloudProviderId): string {
   }
 }
 
-/**
- * POST /api/provisioning/quote — cotización infra (proveedor) + fee Opsly (sin persistir aún).
- * Público para onboarding; no incluye secretos del cliente.
- */
-export async function POST(request: Request): Promise<Response> {
-  let json: unknown;
-  try {
-    json = await request.json();
-  } catch {
-    return NextResponse.json({ error: 'JSON inválido' }, { status: HTTP_STATUS.BAD_REQUEST });
-  }
-
-  const parsed = BodySchema.safeParse(json);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'validación', details: parsed.error.flatten() },
-      { status: HTTP_STATUS.UNPROCESSABLE }
-    );
-  }
-
-  const { provider, plan } = parsed.data;
-
-  if (provider !== 'aws') {
-    return NextResponse.json(
-      {
-        error: 'provider_not_implemented',
-        message: `Cotización para ${provider} disponible próximamente.`,
-      },
-      { status: HTTP_STATUS.NOT_IMPLEMENTED }
-    );
-  }
-
+async function buildQuoteEstimate(
+  provider: CloudProviderId,
+  plan: ProvisioningPlan,
+  ip: string | null
+): Promise<Response> {
   try {
     const adapter = getCloudProvider(provider);
-    const estimate = await adapter.estimateProvisioningCost(plan as ProvisioningPlan);
-    const opslyFee = opslyManagementFeeUsd(plan as ProvisioningPlan);
+    const estimate = await adapter.estimateProvisioningCost(plan);
+    const opslyFee = opslyManagementFeeUsd(plan);
     const cloudUsd = estimate.monthlyEstimate;
     const total = cloudUsd + opslyFee;
+
+    void logAuditEvent({
+      action: 'provisioning_quote_create',
+      resource: '/api/provisioning/quote',
+      ip,
+      metadata: { provider, plan, total_monthly_usd: total },
+    });
 
     return NextResponse.json({
       provider,
@@ -83,4 +65,48 @@ export async function POST(request: Request): Promise<Response> {
       { status: HTTP_STATUS.INTERNAL_ERROR }
     );
   }
+}
+
+/**
+ * POST /api/provisioning/quote — cotización infra (proveedor) + fee Opsly (sin persistir aún).
+ * Público para onboarding; no incluye secretos del cliente.
+ */
+export async function POST(request: Request): Promise<Response> {
+  const ip = extractIp(request);
+  const rateLimitKey = ip ? `provisioning-quote:${ip}` : 'provisioning-quote:anonymous';
+  const rateLimit = await checkRateLimit(rateLimitKey);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      { status: HTTP_STATUS.TOO_MANY_REQUESTS }
+    );
+  }
+
+  let json: unknown;
+  try {
+    json = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'JSON inválido' }, { status: HTTP_STATUS.BAD_REQUEST });
+  }
+
+  const parsed = BodySchema.safeParse(json);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: 'validación', details: parsed.error.flatten() },
+      { status: HTTP_STATUS.UNPROCESSABLE }
+    );
+  }
+
+  const { provider, plan } = parsed.data;
+  if (provider !== 'aws') {
+    return NextResponse.json(
+      {
+        error: 'provider_not_implemented',
+        message: `Cotización para ${provider} disponible próximamente.`,
+      },
+      { status: HTTP_STATUS.NOT_IMPLEMENTED }
+    );
+  }
+
+  return buildQuoteEstimate(provider, plan as ProvisioningPlan, ip);
 }
