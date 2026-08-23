@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" fill="none">
+  <!-- Background shapes -->
+  <circle cx="120" cy="100" r="80" fill="#dbeafe" opacity="0.5"/>
+  <circle cx="400" cy="100" r="90" fill="#fef3c7" opacity="0.4"/>
+  <circle cx="680" cy="100" r="80" fill="#d1fae5" opacity="0.5"/>
+
+  <!-- Person 1 - Girl with book -->
+  <circle cx="120" cy="70" r="22" fill="#fbbf24"/>
+  <circle cx="120" cy="70" r="18" fill="#fcd34d"/>
+  <!-- Hair -->
+  <path d="M102,65 Q105,45 120,42 Q135,45 138,65" fill="#92400e"/>
+  <path d="M100,68 Q98,58 105,50" stroke="#92400e" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M140,68 Q142,58 135,50" stroke="#92400e" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- Face -->
+  <circle cx="113" cy="68" r="2" fill="#1e3a5f"/>
+  <circle cx="127" cy="68" r="2" fill="#1e3a5f"/>
+  <path d="M115,76 Q120,80 125,76" stroke="#1e3a5f" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- Body -->
+  <rect x="105" y="92" width="30" height="40" rx="8" fill="#3b82f6"/>
+  <!-- Arms -->
+  <line x1="105" y1="100" x2="88" y2="118" stroke="#fcd34d" stroke-width="6" stroke-linecap="round"/>
+  <line x1="135" y1="100" x2="152" y2="118" stroke="#fcd34d" stroke-width="6" stroke-linecap="round"/>
+  <!-- Book -->
+  <rect x="80" y="112" width="18" height="14" rx="2" fill="#ef4444"/>
+  <line x1="89" y1="112" x2="89" y2="126" stroke="white" stroke-width="1"/>
+  <!-- Legs -->
+  <line x1="115" y1="132" x2="112" y2="158" stroke="#1e3a5f" stroke-width="6" stroke-linecap="round"/>
+  <line x1="125" y1="132" x2="128" y2="158" stroke="#1e3a5f" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Person 2 - Boy with lightbulb -->
+  <circle cx="280" cy="75" r="20" fill="#fbbf24"/>
+  <circle cx="280" cy="75" r="16" fill="#fcd34d"/>
+  <!-- Hair -->
+  <rect x="264" y="58" width="32" height="12" rx="6" fill="#451a03"/>
+  <!-- Face -->
+  <circle cx="274" cy="73" r="2" fill="#1e3a5f"/>
+  <circle cx="286" cy="73" r="2" fill="#1e3a5f"/>
+  <path d="M276,80 Q280,83 284,80" stroke="#1e3a5f" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- Body -->
+  <rect x="266" y="95" width="28" height="38" rx="8" fill="#10b981"/>
+  <!-- Arms raised -->
+  <line x1="266" y1="102" x2="250" y2="85" stroke="#fcd34d" stroke-width="6" stroke-linecap="round"/>
+  <line x1="294" y1="102" x2="310" y2="85" stroke="#fcd34d" stroke-width="6" stroke-linecap="round"/>
+  <!-- Lightbulb above -->
+  <circle cx="280" cy="42" r="10" fill="#fbbf24" opacity="0.8"/>
+  <path d="M276,42 L280,34 L284,42" fill="#fbbf24"/>
+  <line x1="280" y1="52" x2="280" y2="55" stroke="#fbbf24" stroke-width="2"/>
+  <line x1="270" y1="42" x2="266" y2="42" stroke="#fbbf24" stroke-width="2"/>
+  <line x1="290" y1="42" x2="294" y2="42" stroke="#fbbf24" stroke-width="2"/>
+  <!-- Legs -->
+  <line x1="274" y1="133" x2="272" y2="158" stroke="#1e3a5f" stroke-width="6" stroke-linecap="round"/>
+  <line x1="286" y1="133" x2="288" y2="158" stroke="#1e3a5f" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Person 3 - Girl with star -->
+  <circle cx="400" cy="68" r="22" fill="#fbbf24"/>
+  <circle cx="400" cy="68" r="18" fill="#fcd34d"/>
+  <!-- Hair pigtails -->
+  <circle cx="380" cy="60" r="8" fill="#7c2d12"/>
+  <circle cx="420" cy="60" r="8" fill="#7c2d12"/>
+  <path d="M382,62 Q390,48 400,45 Q410,48 418,62" fill="#7c2d12"/>
+  <!-- Face -->
+  <circle cx="393" cy="66" r="2" fill="#1e3a5f"/>
+  <circle cx="407" cy="66" r="2" fill="#1e3a5f"/>
+  <path d="M395,74 Q400,78 405,74" stroke="#1e3a5f" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- Body -->
+  <rect x="385" y="90" width="30" height="42" rx="8" fill="#8b5cf6"/>
+  <!-- Arms -->
+  <line x1="385" y1="98" x2="368" y2="112" stroke="#fcd34d" stroke-width="6" stroke-linecap="round"/>
+  <line x1="415" y1="98" x2="432" y2="112" stroke="#fcd34d" stroke-width="6" stroke-linecap="round"/>
+  <!-- Star -->
+  <polygon points="432,106 435,112 442,113 437,118 438,125 432,121 426,125 427,118 422,113 429,112" fill="#fbbf24"/>
+  <!-- Legs -->
+  <line x1="395" y1="132" x2="392" y2="158" stroke="#1e3a5f" stroke-width="6" stroke-linecap="round"/>
+  <line x1="405" y1="132" x2="408" y2="158" stroke="#1e3a5f" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Person 4 - Boy with puzzle -->
+  <circle cx="520" cy="75" r="20" fill="#fbbf24"/>
+  <circle cx="520" cy="75" r="16" fill="#fcd34d"/>
+  <!-- Hair curly -->
+  <circle cx="510" cy="62" r="6" fill="#1c1917"/>
+  <circle cx="520" cy="58" r="6" fill="#1c1917"/>
+  <circle cx="530" cy="62" r="6" fill="#1c1917"/>
+  <!-- Face -->
+  <circle cx="514" cy="73" r="2" fill="#1e3a5f"/>
+  <circle cx="526" cy="73" r="2" fill="#1e3a5f"/>
+  <path d="M516,80 Q520,83 524,80" stroke="#1e3a5f" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- Body -->
+  <rect x="506" y="95" width="28" height="38" rx="8" fill="#f97316"/>
+  <!-- Arms -->
+  <line x1="506" y1="102" x2="490" y2="116" stroke="#fcd34d" stroke-width="6" stroke-linecap="round"/>
+  <line x1="534" y1="102" x2="550" y2="116" stroke="#fcd34d" stroke-width="6" stroke-linecap="round"/>
+  <!-- Puzzle piece -->
+  <rect x="542" y="108" width="16" height="16" rx="2" fill="#2563eb"/>
+  <circle cx="550" cy="108" r="4" fill="#2563eb"/>
+  <rect x="542" y="112" width="4" height="8" rx="2" fill="#60a5fa"/>
+  <!-- Legs -->
+  <line x1="514" y1="133" x2="512" y2="158" stroke="#1e3a5f" stroke-width="6" stroke-linecap="round"/>
+  <line x1="526" y1="133" x2="528" y2="158" stroke="#1e3a5f" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Person 5 - Girl jumping -->
+  <circle cx="670" cy="62" r="22" fill="#fbbf24"/>
+  <circle cx="670" cy="62" r="18" fill="#fcd34d"/>
+  <!-- Hair long -->
+  <path d="M652,56 Q658,38 670,35 Q682,38 688,56" fill="#dc2626"/>
+  <path d="M652,56 Q650,70 654,82" stroke="#dc2626" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <path d="M688,56 Q690,70 686,82" stroke="#dc2626" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <!-- Face -->
+  <circle cx="663" cy="60" r="2" fill="#1e3a5f"/>
+  <circle cx="677" cy="60" r="2" fill="#1e3a5f"/>
+  <ellipse cx="670" cy="69" rx="5" ry="3" fill="#1e3a5f"/>
+  <!-- Body -->
+  <rect x="655" y="84" width="30" height="38" rx="8" fill="#ec4899"/>
+  <!-- Arms up celebrating -->
+  <line x1="655" y1="92" x2="638" y2="72" stroke="#fcd34d" stroke-width="6" stroke-linecap="round"/>
+  <line x1="685" y1="92" x2="702" y2="72" stroke="#fcd34d" stroke-width="6" stroke-linecap="round"/>
+  <!-- Sparkles -->
+  <circle cx="632" cy="65" r="3" fill="#fbbf24"/>
+  <circle cx="708" cy="65" r="3" fill="#fbbf24"/>
+  <circle cx="670" cy="30" r="2" fill="#fbbf24"/>
+  <!-- Legs jumping -->
+  <line x1="662" y1="122" x2="655" y2="148" stroke="#1e3a5f" stroke-width="6" stroke-linecap="round"/>
+  <line x1="678" y1="122" x2="685" y2="148" stroke="#1e3a5f" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Ground line -->
+  <line x1="60" y1="164" x2="740" y2="164" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.4"/>
+</svg>
