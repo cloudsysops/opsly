@@ -34,10 +34,11 @@ export function ServiceCard(props: {
             href={url}
             target="_blank"
             rel="noreferrer"
+            aria-label={`Abrir ${title} en una nueva pestaña`}
             className="inline-flex items-center gap-1 break-all font-mono text-xs text-ops-green hover:underline"
           >
             {url}
-            <ExternalLink className="h-3 w-3 shrink-0" />
+            <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" />
           </Link>
         ) : (
           <p className="font-sans text-sm text-ops-gray">URL no disponible</p>
@@ -45,7 +46,12 @@ export function ServiceCard(props: {
         {children}
         {url ? (
           <Button variant="primary" size="sm" asChild>
-            <a href={url} target="_blank" rel="noreferrer">
+            <a
+              href={url}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`${actionLabel} (abre en una nueva pestaña)`}
+            >
               {actionLabel}
             </a>
           </Button>
