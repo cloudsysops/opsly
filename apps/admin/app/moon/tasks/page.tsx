@@ -34,13 +34,17 @@ export default function MoonTasksPage(): React.ReactElement {
         title="Tasks"
         subtitle="Read-model desde métricas de teams/cola. AgentTaskEnvelopeV1 no existe — no inventado."
         actions={
-          <Link href="/moon/queue" className="rounded-lg border border-white/15 px-2.5 py-1.5 text-xs">
+          <Link
+            href="/moon/queue"
+            className="rounded-lg border border-white/15 px-2.5 py-1.5 text-xs"
+          >
             Ver queue
           </Link>
         }
       />
       <MoonCard className="p-3 text-xs text-slate-400">
-        Acciones cancel/retry/pause: solo cuando exista API segura + approval. Esta vista es inspect-only.
+        Acciones cancel/retry/pause: solo cuando exista API segura + approval. Esta vista es
+        inspect-only.
         <span className="ml-2 inline-block">
           <MoonConfidenceBadge confidence="REAL" />
         </span>
@@ -55,7 +59,10 @@ export default function MoonTasksPage(): React.ReactElement {
       ) : null}
       <div className="space-y-2">
         {tasks.map((t) => (
-          <MoonCard key={t.task_id} className="flex flex-wrap items-center justify-between gap-3 p-4">
+          <MoonCard
+            key={t.task_id}
+            className="flex flex-wrap items-center justify-between gap-3 p-4"
+          >
             <div>
               <p className="font-mono text-sm text-slate-100">{t.task_id}</p>
               <p className="text-xs text-slate-500">

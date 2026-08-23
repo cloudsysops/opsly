@@ -48,8 +48,7 @@ export function TenantSurfaceLinks({
   const primary = surfaces.links.filter((l) => l.id !== 'opsly-admin-tenant');
 
   if (compact) {
-    const main =
-      primary.find((l) => l.id === 'staff-app' || l.id === 'client-site') ?? primary[0];
+    const main = primary.find((l) => l.id === 'staff-app' || l.id === 'client-site') ?? primary[0];
     if (!main) {
       return <span className="font-sans text-xs text-ops-gray">Sin URL de producto</span>;
     }
@@ -63,7 +62,8 @@ export function TenantSurfaceLinks({
         <span className="font-mono text-ops-cyan">
           {surfaces.deploymentMode === 'dedicated' ? 'dedicado (VPS cliente)' : 'incubado en Opsly'}
         </span>
-        . Los enlaces usan el dominio del tenant, no asumen que el cliente vive en portal.op-sly.com.
+        . Los enlaces usan el dominio del tenant, no asumen que el cliente vive en
+        portal.op-sly.com.
       </p>
       <div className="flex flex-wrap gap-2">
         {primary.map((link) => (

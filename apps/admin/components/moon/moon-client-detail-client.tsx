@@ -130,14 +130,8 @@ export function MoonClientDetailClient({
             <Field label="Blueprint / vertical" value={config?.vertical ?? '—'} />
             <Field label="Stack" value={config?.stack_type ?? '—'} />
             <Field label="Entorno" value={process.env.NEXT_PUBLIC_ENV ?? 'staging'} />
-            <Field
-              label="Módulos (config)"
-              value={String(config?.modules_enabled?.length ?? 0)}
-            />
-            <Field
-              label="Actualizado"
-              value={new Date(tenant.updated_at).toLocaleString('es')}
-            />
+            <Field label="Módulos (config)" value={String(config?.modules_enabled?.length ?? 0)} />
+            <Field label="Actualizado" value={new Date(tenant.updated_at).toLocaleString('es')} />
           </dl>
           <p className="text-xs text-slate-500">
             No se muestra owner_email ni leads/estudiantes. Uso operativo detallado vive en el panel
@@ -168,7 +162,10 @@ export function MoonClientDetailClient({
           ) : (
             <ul className="space-y-2">
               {config?.modules_enabled.map((m) => (
-                <li key={m} className="rounded-lg border border-white/10 px-3 py-2 font-mono text-sm">
+                <li
+                  key={m}
+                  className="rounded-lg border border-white/10 px-3 py-2 font-mono text-sm"
+                >
                   {m}
                 </li>
               ))}

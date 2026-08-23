@@ -43,14 +43,21 @@ describe('fetchHostMetricsFromPrometheus', () => {
     vi.mocked(redisCache.getCache).mockResolvedValue(null);
 
     // Mock successful Prometheus responses
-    vi.mocked(prometheus.promInstantQuery).mockResolvedValue({ status: 'success', data: { resultType: 'vector', result: [{ metric: {}, value: [0, '10'] }] } } as any);
+    vi.mocked(prometheus.promInstantQuery).mockResolvedValue({
+      status: 'success',
+      data: { resultType: 'vector', result: [{ metric: {}, value: [0, '10'] }] },
+    } as any);
     vi.mocked(prometheus.aggregateInstantVector).mockReturnValue(10);
 
     const result = await fetchHostMetricsFromPrometheus(mockBase);
 
     expect(result).toBeDefined();
     expect(prometheus.promInstantQuery).toHaveBeenCalledTimes(6);
-    expect(redisCache.setCache).toHaveBeenCalledWith(`metrics:host_prom:${mockBase}`, expect.anything(), expect.anything());
+    expect(redisCache.setCache).toHaveBeenCalledWith(
+      `metrics:host_prom:${mockBase}`,
+      expect.anything(),
+      expect.anything()
+    );
   });
 
   it('returns null if Prometheus fetch fails and no cache', async () => {
