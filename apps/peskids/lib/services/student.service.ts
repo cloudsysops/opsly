@@ -2,6 +2,7 @@ import { supabaseServer } from '@/lib/supabase';
 import type { Database } from '@/lib/types';
 import type { createStudentSchema, updateStudentSchema } from '@/lib/validation/student.schema';
 import type { z } from 'zod';
+import { pgFilterValue } from '@/lib/utils/postgrest-filter';
 
 type StudentRow = Database['public']['Tables']['students']['Row'];
 
@@ -26,7 +27,7 @@ export async function listFamilyStudents(
     .eq('status', 'active');
 
   query = email
-    ? query.or(`family_user_id.eq.${user.id},parent_email.ilike.${email}`)
+    ? query.or(`family_user_id.eq.${pgFilterValue(user.id)},parent_email.ilike.${pgFilterValue(email)}`)
     : query.eq('family_user_id', user.id);
 
   const { data, error } = await query.order('name');
@@ -65,7 +66,8 @@ export async function listStudents(input: {
     query = query.eq('status', input.status as 'active' | 'inactive');
   }
   if (input.search) {
-    query = query.or(`name.ilike.%${input.search}%,parent_email.ilike.%${input.search}%`);
+    const pattern = pgFilterValue(`%${input.search}%`);
+    query = query.or(`name.ilike.${pattern},parent_email.ilike.${pattern}`);
   }
 
   const { data, error } = await query;

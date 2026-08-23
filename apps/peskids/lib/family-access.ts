@@ -218,6 +218,23 @@ async function createFamilyAccessLink(params: {
     throw new Error('generateLink did not return action_link')
   }
 
+  // SECURITY: role/tenant_slug authorize the family portal (see lib/family-auth.ts,
+  // lib/runtime/tenant-identity.ts) and MUST live in app_metadata, which only the Admin API
+  // (service role, used here) can write. generateLink's `options.data` above only sets
+  // user_metadata, which any signed-in user can self-edit — never trust it for authorization.
+  if (data.user?.id) {
+    const { error: appMetaError } = await admin.auth.admin.updateUserById(data.user.id, {
+      app_metadata: {
+        ...(data.user.app_metadata ?? {}),
+        tenant_slug: TENANT_SLUG,
+        role: 'family',
+      },
+    })
+    if (appMetaError) {
+      throw new Error(appMetaError.message)
+    }
+  }
+
   return {
     link: actionLink,
   }

@@ -39,17 +39,13 @@ export function isStaffUser(user: User): boolean {
     return false;
   }
 
-  const userMeta =
-    user.user_metadata &&
-    typeof user.user_metadata === 'object' &&
-    !Array.isArray(user.user_metadata)
-      ? (user.user_metadata as Record<string, unknown>)
-      : {};
+  // SECURITY: is_superuser must come from app_metadata only — user_metadata is
+  // self-service and any authenticated user can set it via supabase.auth.updateUser().
   const appMeta =
     user.app_metadata && typeof user.app_metadata === 'object' && !Array.isArray(user.app_metadata)
       ? (user.app_metadata as Record<string, unknown>)
       : {};
-  const isSuperuser = userMeta.is_superuser === true || appMeta.is_superuser === true;
+  const isSuperuser = appMeta.is_superuser === true;
 
   if (isSuperuser) {
     return true;

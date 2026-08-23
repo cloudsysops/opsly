@@ -10,6 +10,7 @@ import { ClassScheduleConflictError } from '@/lib/class-types';
 import type { createClassSchema, updateClassSchema } from '@/lib/validation/class.schema';
 import type { Database } from '@/lib/types';
 import type { z } from 'zod';
+import { pgFilterValue } from '@/lib/utils/postgrest-filter';
 
 function tenantSlug(): string {
   return (process.env.NEXT_PUBLIC_TENANT_ID || 'peskids').trim().toLowerCase();
@@ -45,7 +46,9 @@ async function hasScheduleOverlap(input: {
     .eq('status', 'scheduled')
     .lt('starts_at', input.endsAt)
     .gt('ends_at', input.startsAt)
-    .or(`professor_user_id.eq.${input.professorUserId},pool_id.eq.${input.poolId}`);
+    .or(
+      `professor_user_id.eq.${pgFilterValue(input.professorUserId)},pool_id.eq.${pgFilterValue(input.poolId)}`
+    );
 
   if (input.excludeClassId) {
     query = query.neq('id', input.excludeClassId);

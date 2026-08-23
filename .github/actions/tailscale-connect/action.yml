@@ -15,7 +15,7 @@ runs:
   using: composite
   steps:
     - name: Connect Tailscale
-      uses: tailscale/github-action@v4
+      uses: tailscale/github-action@306e68a486fd2350f2bfc3b19fcd143891a4a2d8 # v4
       with:
         authkey: ${{ inputs.authkey }}
         # Unique per run; logout post-step removes ephemeral nodes when the key is ephemeral.

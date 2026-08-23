@@ -66,8 +66,8 @@ describe('validateStaffRequest', () => {
       json: async () => ({
         id: 'u1',
         email: 'support@peskids.com',
-        user_metadata: { role: 'support', tenant_slug: 'peskids' },
-        app_metadata: {},
+        user_metadata: {},
+        app_metadata: { role: 'support', tenant_slug: 'peskids' },
       }),
     } as never);
     const { validateStaffRequest } = await import('../staff-auth');
@@ -92,8 +92,8 @@ describe('validateStaffRequest', () => {
       json: async () => ({
         id: 'u1',
         email: 'admin@peskids.com',
-        user_metadata: { role: 'admin', tenant_slug: 'peskids' },
-        app_metadata: {},
+        user_metadata: {},
+        app_metadata: { role: 'admin', tenant_slug: 'peskids' },
       }),
     } as never);
     const { validateStaffRequest } = await import('../staff-auth');
@@ -117,7 +117,28 @@ describe('validateStaffRequest', () => {
       json: async () => ({
         id: 'u1',
         email: 'family@example.com',
-        user_metadata: { role: 'family', tenant_slug: 'peskids' },
+        user_metadata: {},
+        app_metadata: { role: 'family', tenant_slug: 'peskids' },
+      }),
+    } as never);
+    const { validateStaffRequest } = await import('../staff-auth');
+
+    const result = await validateStaffRequest(makeRequest({ authorization: 'Bearer client-jwt' }));
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.status).toBe(403);
+    }
+  });
+
+  it('SECURITY: rejects a self-elevated role set only in user_metadata (client-writable)', async () => {
+    vi.mocked(global.fetch).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        id: 'u1',
+        email: 'family@example.com',
+        // A family account attempting supabase.auth.updateUser({ data: { role: 'owner' } }).
+        user_metadata: { role: 'owner', tenant_slug: 'peskids' },
         app_metadata: {},
       }),
     } as never);

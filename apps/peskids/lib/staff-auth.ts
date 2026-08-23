@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 import type { User } from '@supabase/supabase-js';
 import { isStaffUser } from './staff-user';
 import { extractSupabaseAccessTokenFromCookies } from './supabase-auth-cookie';
+import { timingSafeEqual } from './utils/timing-safe-equal';
 
 export { isStaffUser } from './staff-user';
 
@@ -16,7 +17,7 @@ export async function validateStaffRequest(req: NextRequest): Promise<StaffAuthR
   const bearer = authHeader.toLowerCase().startsWith('bearer ') ? authHeader.slice(7).trim() : '';
   const cookieToken = req.cookies.get('admin-token')?.value?.trim() ?? '';
 
-  if (adminSecret && (bearer === adminSecret || cookieToken === adminSecret)) {
+  if (adminSecret && (timingSafeEqual(bearer, adminSecret) || timingSafeEqual(cookieToken, adminSecret))) {
     return { ok: true, method: 'secret' };
   }
 
@@ -53,7 +54,7 @@ export async function validateStaffSession(): Promise<StaffAuthResult> {
   const cookieStore = await cookies();
   const cookieToken = cookieStore.get('admin-token')?.value?.trim() ?? '';
 
-  if (adminSecret && cookieToken === adminSecret) {
+  if (adminSecret && timingSafeEqual(cookieToken, adminSecret)) {
     return { ok: true, method: 'secret' };
   }
 

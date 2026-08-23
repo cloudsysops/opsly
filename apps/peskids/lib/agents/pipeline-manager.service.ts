@@ -8,6 +8,7 @@ import {
 import { isPeskidsRenewalReminderEnabled } from '@/lib/peskids-pro-flags';
 import { createFollowup } from '@/lib/services/followup-admin.service';
 import { emitLeadRenewalDue } from '@/lib/events';
+import { pgFilterValue } from '@/lib/utils/postgrest-filter';
 
 function platformPeskidsLeads() {
   const client = supabaseServer() as {
@@ -131,7 +132,7 @@ export class PipelineManagerService {
       await platformPeskidsLeads()
         .update({ stage: newStage, updated_at: new Date().toISOString() })
         .eq('tenant_slug', this.tenantSlug)
-        .or(`lead_id.eq.${leadId},email.eq.${lead.email}`);
+        .or(`lead_id.eq.${pgFilterValue(leadId)},email.eq.${pgFilterValue(lead.email)}`);
     }
   }
 

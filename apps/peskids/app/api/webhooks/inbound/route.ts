@@ -8,6 +8,7 @@ import { buildPeskidsIntakeTurn } from '@/lib/peskids-intake';
 import { submitLeadFromIntake } from '@/lib/peskids-lead-from-intake';
 import { supabaseServer } from '@/lib/supabase';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
+import { timingSafeEqual } from '@/lib/utils/timing-safe-equal';
 
 type InboundSource = 'whatsapp' | 'instagram' | 'web';
 
@@ -34,7 +35,7 @@ function verifyInboundSecret(req: NextRequest): boolean {
   if (!secret) return false;
   const header =
     req.headers.get('x-webhook-secret') || req.headers.get('x-peskids-webhook-secret') || '';
-  return header.length > 0 && header === secret;
+  return header.length > 0 && timingSafeEqual(header, secret);
 }
 
 function normalizePayload(body: InboundPayload): {

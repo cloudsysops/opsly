@@ -2,14 +2,38 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { NextRequest } from 'next/server'
 
 const requestPeskidsStaffRecoveryMock = vi.fn()
+const rateLimitMock = vi.fn(() => true)
 
 vi.mock('@/lib/team-management', () => ({
   requestPeskidsStaffRecovery: requestPeskidsStaffRecoveryMock,
 }))
 
+vi.mock('@/lib/rate-limit', () => ({
+  rateLimit: rateLimitMock,
+  getClientIdentifier: () => 'test-client',
+}))
+
 describe('POST /api/auth/staff-recovery', () => {
   beforeEach(() => {
     requestPeskidsStaffRecoveryMock.mockReset()
+    rateLimitMock.mockReset()
+    rateLimitMock.mockReturnValue(true)
+  })
+
+  it('SECURITY: rejects with 429 once the rate limit is exceeded', async () => {
+    rateLimitMock.mockReturnValue(false)
+
+    const { POST } = await import('../route')
+    const request = new NextRequest('https://peskids.op-sly.com/api/auth/staff-recovery', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email: 'staff@example.com' }),
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(429)
+    expect(requestPeskidsStaffRecoveryMock).not.toHaveBeenCalled()
   })
 
   it('returns a generic accepted response for a valid email', async () => {

@@ -61,8 +61,8 @@ describe('family auth', () => {
     mockUser({
       id: 'u1',
       email: 'family@example.com',
-      user_metadata: { role: 'family', tenant_slug: 'peskids' },
-      app_metadata: {},
+      user_metadata: {},
+      app_metadata: { role: 'family', tenant_slug: 'peskids' },
     })
 
     const { validateFamilyRequest } = await import('../family-auth')
@@ -76,8 +76,8 @@ describe('family auth', () => {
     mockUser({
       id: 'u1',
       email: 'family@example.com',
-      user_metadata: { role: 'family', tenant_slug: 'peskids' },
-      app_metadata: {},
+      user_metadata: {},
+      app_metadata: { role: 'family', tenant_slug: 'peskids' },
     })
 
     const { validateFamilyRequest } = await import('../family-auth')
@@ -146,8 +146,8 @@ describe('family auth', () => {
     mockUser({
       id: 'u4',
       email: 'parent@example.com',
-      user_metadata: { role: 'support', tenant_slug: 'other-tenant' },
-      app_metadata: {},
+      user_metadata: {},
+      app_metadata: { role: 'support', tenant_slug: 'other-tenant' },
     })
     fromMock.mockReturnValue({
       select: () => ({

@@ -14,14 +14,17 @@ function metadataRecord(meta: unknown): Record<string, unknown> {
   return meta as Record<string, unknown>
 }
 
+// SECURITY: role and tenant_slug MUST be read from app_metadata only.
+// user_metadata is self-service data — any authenticated user can rewrite it via
+// supabase.auth.updateUser({ data: {...} }), so it can never be an authorization signal.
+// app_metadata is writable only via the Supabase Admin API (service role).
 export function tenantSlugFromUserMetadata(user: TenantMetadata | null | undefined): string | undefined {
   if (!user) {
     return undefined
   }
 
-  const userMeta = metadataRecord(user.user_metadata)
   const appMeta = metadataRecord(user.app_metadata)
-  const tenantSlug = normalize(userMeta.tenant_slug) || normalize(appMeta.tenant_slug)
+  const tenantSlug = normalize(appMeta.tenant_slug)
   return tenantSlug.length > 0 ? tenantSlug : undefined
 }
 
@@ -30,9 +33,8 @@ export function tenantRoleFromUserMetadata(user: TenantMetadata | null | undefin
     return undefined
   }
 
-  const userMeta = metadataRecord(user.user_metadata)
   const appMeta = metadataRecord(user.app_metadata)
-  const role = normalize(userMeta.role) || normalize(appMeta.role)
+  const role = normalize(appMeta.role)
   return role.length > 0 ? role : undefined
 }
 

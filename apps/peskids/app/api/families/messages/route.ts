@@ -3,6 +3,7 @@ import { validateFamilyRequest } from '@/lib/family-auth';
 import { supabaseServer } from '@/lib/supabase';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import type { Database } from '@/lib/types';
+import { pgFilterValue } from '@/lib/utils/postgrest-filter';
 
 type MessageRow = Database['public']['Tables']['messages']['Row'];
 
@@ -32,7 +33,9 @@ export async function GET(req: NextRequest) {
     .from('messages')
     .select('*', { count: 'exact' })
     .eq('tenant_id', tenantId)
-    .or(`sender_contact.ilike.${parentEmail},sender_contact.ilike.web:${parentEmail}`)
+    .or(
+      `sender_contact.ilike.${pgFilterValue(parentEmail)},sender_contact.ilike.${pgFilterValue(`web:${parentEmail}`)}`
+    )
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1);
 

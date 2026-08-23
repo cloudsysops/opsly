@@ -36,7 +36,9 @@ export async function verifySignature(
   parsedPayload?: OpenWAWebhookPayload
 ): Promise<boolean> {
   const s = secret ?? getWebhookSecret();
-  if (!s) return true;
+  // SECURITY: fail closed. An unconfigured secret must reject the request, not accept it —
+  // every other webhook in this app (Stripe, Wompi, Jelou, WACRM) fails closed on this path.
+  if (!s) return false;
   if (!signatureHeader) return false;
 
   const normalized = signatureHeader.startsWith('sha256=')

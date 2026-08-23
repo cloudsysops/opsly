@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response'
 import { requestPeskidsStaffRecovery } from '@/lib/team-management'
+import { getClientIdentifier, rateLimit } from '@/lib/rate-limit'
 
 const recoverySchema = z.object({
   email: z.string().email(),
@@ -9,6 +10,11 @@ const recoverySchema = z.object({
 
 export async function POST(req: NextRequest) {
   const requestId = resolveRequestId(req)
+
+  const clientId = getClientIdentifier(req.headers)
+  if (!rateLimit(`staff-recovery:${clientId}`, 3, 10 * 60 * 1000)) {
+    return errorJson(requestId, 'Too many requests', 429)
+  }
 
   let body: unknown
   try {

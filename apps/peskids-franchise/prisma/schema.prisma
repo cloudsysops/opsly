@@ -1,0 +1,4011 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// NOTE: All models use @@schema("franchise") to isolate from Peskids core tables
+
+// ============================================
+// AUTH MODELS (NextAuth)
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          UserRole  @default(PROSPECT)
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@schema("franchise")
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+
+  @@schema("franchise")
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@schema("franchise")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+
+  @@schema("franchise")
+}
+
+enum UserRole {
+  ADMIN
+  REVIEWER
+  PROSPECT
+}
+
+// ============================================
+// PROSPECT & CRM MODELS
+// ============================================
+
+model Prospect {
+  id           String  @id @default(cuid())
+  email        String  @unique
+  passwordHash String? // For prospect portal login
+
+  // Portal invite tokens
+  inviteToken       String?   @unique
+  inviteTokenExpiry DateTime?
+  inviteSentAt      DateTime?
+
+  // Password reset tokens
+  resetToken       String?   @unique
+  resetTokenExpiry DateTime?
+
+  firstName          String
+  lastName           String
+  phone              String?
+  preferredTerritory String?
+  interestLevel      InterestLevel
+  liquidity          LiquidityRange?
+  aboutYourself      String?         @db.Text
+  referralSource     String?
+
+  // UTM tracking
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+
+  // Pipeline & Scoring
+  pipelineStage PipelineStage @default(NEW_INQUIRY)
+  prospectScore Int           @default(0)
+  assignedTo    String? // Admin user email
+
+  // Pre-work tracking
+  preWorkStatus      PreWorkStatus @default(NOT_STARTED)
+  preWorkStartedAt   DateTime?
+  preWorkCompletedAt DateTime?
+
+  // Selection tracking
+  selectedAt DateTime? // When prospect was selected (for journey start date)
+
+  // Timestamps
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastContactAt DateTime?
+
+  // Relations
+  conversations        ChatConversation[]
+  preWorkSubmissions   PreWorkSubmission[]
+  documents            ProspectDocument[]
+  activities           ProspectActivity[]
+  notes                ProspectNote[]
+  academyProgress      AcademyProgress[]
+  earnedBadges         EarnedBadge[]
+  dailyActivity        AcademyDailyActivity[]
+  pointsLog            AcademyPointsLog[]
+  visitors             Visitor[]
+  franchisorTodos      FranchisorTodo[]
+
+  // CRM Relations
+  emails            CrmEmail[]
+  calls             CrmCall[]
+  meetings          CrmMeeting[]
+  tasks             CrmTask[]
+  summary           ProspectSummary?
+  preWorkEvaluation PreWorkEvaluation?
+  sentEmails        SentEmail[]
+
+  // Automation Relations
+  workflowExecutions WorkflowExecution[]
+  attribution        LeadAttribution?
+
+  // Franchisee Financial Account (created at SELECTED stage)
+  franchiseeAccount FranchiseeAccount?
+
+  // Operations Manual
+  manualAcknowledgments ManualAcknowledgment[]
+
+  // Help Desk
+  supportTickets SupportTicket[]
+
+  // Field Audits
+  fieldAudits FieldAudit[]
+
+  // Announcements
+  announcementReads AnnouncementRead[]
+
+  // Academy Program Enrollments
+  programEnrollments ProgramEnrollment[]
+
+  // Creative Assets
+  creativeAssets CreativeAsset[]
+
+  // PQS Feedback
+  feedback          Feedback[]
+  surveyResponses   SurveyResponse[]
+
+  @@index([pipelineStage])
+  @@index([assignedTo])
+  @@index([createdAt])
+
+  @@schema("franchise")
+}
+
+enum InterestLevel {
+  READY_TO_START
+  ACTIVELY_SEEKING_FUNDING
+  SERIOUSLY_CONSIDERING
+  JUST_EXPLORING
+  GATHERING_INFORMATION
+}
+
+enum LiquidityRange {
+  UNDER_50K
+  RANGE_50K_100K
+  RANGE_100K_250K
+  RANGE_250K_500K
+  OVER_500K
+}
+
+enum PipelineStage {
+  NEW_INQUIRY
+  INITIAL_CONTACT
+  DISCOVERY_CALL
+  PRE_WORK_IN_PROGRESS
+  PRE_WORK_COMPLETE
+  INTERVIEW
+  SELECTION_REVIEW
+  SELECTED
+  REJECTED
+  WITHDRAWN
+}
+
+enum PreWorkStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  NEEDS_REVISION
+}
+
+// ============================================
+// PRE-WORK MODULES
+// ============================================
+
+model PreWorkModule {
+  id             String         @id @default(cuid())
+  slug           String         @unique
+  title          String
+  description    String         @db.Text
+  instructions   String         @db.Text
+  sequence       Int
+  isRequired     Boolean        @default(true)
+  submissionType SubmissionType
+
+  // Published schema (what prospects see)
+  formSchema        Json?
+  formSchemaVersion Int   @default(1)
+
+  // Draft schema (admin edits)
+  draftFormSchema Json?
+  draftUpdatedAt  DateTime?
+  draftUpdatedBy  String?
+
+  // Relations
+  submissions   PreWorkSubmission[]
+  schemaHistory PreWorkSchemaVersion[]
+  aiSuggestions PreWorkAISuggestion[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@schema("franchise")
+}
+
+enum SubmissionType {
+  FORM
+  FILE_UPLOAD
+  TEXT
+  CHECKLIST
+  VIDEO_LOOM
+  MIXED
+}
+
+model PreWorkSubmission {
+  id            String           @id @default(cuid())
+  prospectId    String
+  moduleId      String
+  status        SubmissionStatus @default(DRAFT)
+  content       Json // Flexible content based on module type
+  schemaVersion Int              @default(1) // Track which schema version was used
+  submittedAt   DateTime?
+  reviewedAt    DateTime?
+  reviewedBy    String?
+  reviewNotes   String?          @db.Text
+  score         Int? // 1-10 internal score
+
+  prospect Prospect      @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  module   PreWorkModule @relation(fields: [moduleId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([prospectId, moduleId])
+  @@index([prospectId])
+  @@index([moduleId])
+
+  @@schema("franchise")
+}
+
+model PreWorkSchemaVersion {
+  id          String   @id @default(cuid())
+  moduleId    String
+  version     Int
+  formSchema  Json
+  publishedAt DateTime @default(now())
+  publishedBy String
+  changeNotes String?  @db.Text
+
+  module PreWorkModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([moduleId, version])
+
+  @@schema("franchise")
+}
+
+model PreWorkAISuggestion {
+  id           String    @id @default(cuid())
+  moduleId     String
+  suggestions  Json
+  analysisData Json?
+  generatedAt  DateTime  @default(now())
+  dismissedAt  DateTime?
+  appliedAt    DateTime?
+
+  module PreWorkModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@schema("franchise")
+}
+
+enum SubmissionStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  NEEDS_REVISION
+}
+
+// ============================================
+// PRE-WORK AI EVALUATION
+// ============================================
+
+model PreWorkEvaluation {
+  id         String @id @default(cuid())
+  prospectId String @unique
+
+  // Dimension Scores (0-10)
+  hustleScore        Float // 25% weight - Outreach volume, persistence, cold call willingness
+  instructionScore   Float // 20% weight - Following format requirements, completeness
+  communicationScore Float // 15% weight - Clarity, professionalism, video presence
+  marketScore        Float // 15% weight - Research depth, territory understanding
+  coachabilityScore  Float // 10% weight - Self-awareness, openness to feedback
+  valuesScore        Float // 10% weight - Alignment with STC mission, integrity
+  readinessScore     Float // 5% weight - Financial preparedness, timeline, commitment
+
+  // Composite
+  compositeScore  Float // Weighted 0-100
+  confidenceLevel String // HIGH, MEDIUM, LOW
+
+  // Qualitative
+  greenFlags     Json // Array of strings
+  redFlags       Json // Array of strings
+  adminSummary   String @db.Text
+  recommendation String // STRONG_YES, YES_WITH_COACHING, BORDERLINE, NO
+
+  // Specific Analysis
+  outreachCredibility String // HIGH, MEDIUM, LOW
+  planRealismAnalysis String @db.Text
+
+  // Meta
+  systemSuggestions Json? // Suggested interview questions, coaching areas
+  rawResponse       Json? // Full AI response for debugging
+
+  // Relations
+  prospect Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  generatedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@schema("franchise")
+}
+
+// ============================================
+// AI CHATBOT CONVERSATIONS
+// ============================================
+
+model ChatConversation {
+  id         String  @id @default(cuid())
+  prospectId String? // Null for anonymous visitors
+  sessionId  String // Browser session tracking
+  title      String?
+
+  messages ChatMessage[]
+  prospect Prospect?     @relation(fields: [prospectId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([prospectId])
+  @@index([sessionId])
+
+  @@schema("franchise")
+}
+
+model ChatMessage {
+  id             String      @id @default(cuid())
+  conversationId String
+  role           MessageRole
+  content        String      @db.Text
+  metadata       Json? // citations, confidence, etc.
+
+  conversation ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([conversationId])
+
+  @@schema("franchise")
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+// ============================================
+// DOCUMENT ACKNOWLEDGMENTS
+// ============================================
+
+model ProspectDocument {
+  id             String       @id @default(cuid())
+  prospectId     String
+  documentType   DocumentType
+  acknowledgedAt DateTime?
+  signatureData  String?      @db.Text // Base64 signature if needed
+  ipAddress      String?
+
+  // Dropbox Sign integration fields
+  signatureRequestId String?
+  signatureStatus    SignatureStatus @default(PENDING)
+  sentAt             DateTime?
+  signedAt           DateTime?
+  viewedAt           DateTime?
+  expiresAt          DateTime?
+
+  prospect Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@unique([prospectId, documentType])
+  @@index([prospectId])
+  @@index([signatureRequestId])
+
+  @@schema("franchise")
+}
+
+enum SignatureStatus {
+  PENDING
+  SENT
+  VIEWED
+  SIGNED
+  DECLINED
+  EXPIRED
+  ERROR
+}
+
+enum DocumentType {
+  FDD_RECEIPT
+  FRANCHISE_AGREEMENT
+  TERRITORY_AGREEMENT
+  NDA
+  PRE_WORK_TERMS
+}
+
+// ============================================
+// DOCUMENT MANAGEMENT SYSTEM
+// ============================================
+
+model Document {
+  id String @id @default(cuid())
+
+  // Document metadata
+  title       String
+  description String?     @db.Text
+  docType     DocType
+  category    DocCategory
+
+  // Version control
+  version  Int        @default(1)
+  parentId String? // Previous version
+  parent   Document?  @relation("DocumentVersions", fields: [parentId], references: [id])
+  versions Document[] @relation("DocumentVersions")
+
+  // File storage (Supabase)
+  fileUrl  String // Supabase storage URL
+  fileName String
+  fileSize Int // Bytes
+  mimeType String
+
+  // Access control
+  isPublic       Boolean @default(false)
+  franchiseeOnly Boolean @default(false)
+
+  // Expiration tracking
+  expiresAt      DateTime?
+  reminderSentAt DateTime?
+
+  // Ownership
+  uploadedById    String?
+  uploadedByEmail String?
+
+  // Relations
+  franchiseeDocuments FranchiseeDocument[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([docType])
+  @@index([category])
+  @@index([expiresAt])
+
+  @@schema("franchise")
+}
+
+model FranchiseeDocument {
+  id String @id @default(cuid())
+
+  franchiseeAccountId String
+  franchiseeAccount   FranchiseeAccount @relation(fields: [franchiseeAccountId], references: [id], onDelete: Cascade)
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  // Signature tracking (links to existing ProspectDocument for e-sign)
+  prospectDocumentId String?
+
+  // Acknowledgment tracking
+  acknowledgedAt DateTime?
+  acknowledgedBy String?
+
+  // Status
+  status FranchiseeDocStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([franchiseeAccountId, documentId])
+  @@index([franchiseeAccountId])
+  @@index([status])
+
+  @@schema("franchise")
+}
+
+enum DocType {
+  FDD // Franchise Disclosure Document
+  FRANCHISE_AGREEMENT
+  TERRITORY_AGREEMENT
+  OPERATIONS_MANUAL
+  TRAINING_MATERIAL
+  MARKETING_ASSET
+  COMPLIANCE_CERT
+  INSURANCE_CERT
+  LEGAL_NOTICE
+  TEMPLATE
+  OTHER
+}
+
+enum DocCategory {
+  LEGAL
+  OPERATIONS
+  MARKETING
+  TRAINING
+  COMPLIANCE
+  FINANCIAL
+}
+
+enum FranchiseeDocStatus {
+  PENDING
+  VIEWED
+  ACKNOWLEDGED
+  SIGNATURE_PENDING
+  SIGNED
+  EXPIRED
+}
+
+// ============================================
+// ACTIVITY LOG (CRM)
+// ============================================
+
+model ProspectActivity {
+  id           String       @id @default(cuid())
+  prospectId   String
+  activityType ActivityType
+  description  String
+  metadata     Json?
+  performedBy  String? // Admin email
+
+  prospect Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([prospectId])
+  @@index([createdAt])
+
+  @@schema("franchise")
+}
+
+enum ActivityType {
+  FORM_SUBMITTED
+  EMAIL_SENT
+  SMS_SENT
+  SMS_RECEIVED
+  CALL_LOGGED
+  STAGE_CHANGED
+  PRE_WORK_STARTED
+  PRE_WORK_SUBMITTED
+  DOCUMENT_SIGNED
+  DOCUMENT_DOWNLOADED
+  NOTE_ADDED
+  SCORE_UPDATED
+  LOGIN
+  PAGE_VIEW
+  WORKFLOW_TRIGGERED
+}
+
+// ============================================
+// ADMIN NOTES
+// ============================================
+
+model ProspectNote {
+  id          String  @id @default(cuid())
+  prospectId  String
+  content     String  @db.Text
+  authorEmail String
+  isPinned    Boolean @default(false)
+
+  prospect Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([prospectId])
+
+  @@schema("franchise")
+}
+
+// ============================================
+// RAG KNOWLEDGE BASE
+// ============================================
+
+model KnowledgeDocument {
+  id          String            @id @default(cuid())
+  title       String
+  slug        String            @unique
+  category    KnowledgeCategory
+  articleType WikiArticleType   @default(ARTICLE)
+  content     String            @db.Text
+  excerpt     String?           @db.Text
+  isPublic    Boolean           @default(true)
+  scope       KnowledgeScope    @default(ACADEMY)
+
+  // Author
+  authorId    String?
+  authorName  String?
+  authorImage String?
+
+  // SOP-specific fields (only used when articleType = SOP)
+  sopVersion  String?
+  sopOwner    String?
+  sopRequired Boolean           @default(false)
+
+  // Linking
+  linkedFrom WikiLink[] @relation("LinkedFrom")
+  linkedTo   WikiLink[] @relation("LinkedTo")
+
+  chunks KnowledgeChunk[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@index([articleType])
+  @@index([category])
+
+  @@schema("franchise")
+}
+
+model WikiLink {
+  id     String            @id @default(cuid())
+  fromId String
+  from   KnowledgeDocument @relation("LinkedFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  toId   String
+  to     KnowledgeDocument @relation("LinkedTo", fields: [toId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([fromId, toId])
+  @@index([fromId])
+  @@index([toId])
+
+  @@schema("franchise")
+}
+
+enum WikiArticleType {
+  ARTICLE
+  SOP
+  GUIDE
+  FAQ
+}
+
+enum KnowledgeScope {
+  PUBLIC // Website visitors only
+  ACADEMY // Selected franchisees only
+  BOTH // Available to all
+}
+
+enum KnowledgeCategory {
+  FRANCHISE_FAQ
+  BUSINESS_MODEL
+  TERRITORY_INFO
+  TRAINING_SUPPORT
+  TESTIMONIALS
+  CHESS_BENEFITS
+  COMPANY_INFO
+  INVESTMENT
+  PROCESS
+  OPERATIONS // Academy-only: SOPs, procedures
+  MARKETING // Academy-only: marketing playbooks
+  SALES // Academy-only: pricing, negotiations
+  LEGAL // Academy-only: contracts, compliance
+  FINANCE
+  ADMINISTRATION
+}
+
+model KnowledgeChunk {
+  id         String  @id @default(cuid())
+  documentId String
+  content    String  @db.Text
+  embedding  String? @db.Text // Store as JSON string until pgvector is installed
+  tokenCount Int
+  sequence   Int
+
+  document KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+
+  @@schema("franchise")
+}
+
+// ============================================
+// TERRITORY / MARKET MANAGEMENT
+// ============================================
+
+model Market {
+  id          String       @id @default(cuid())
+  name        String
+  state       String
+  description String?      @db.Text
+  status      MarketStatus @default(AVAILABLE)
+
+  // Territory boundaries (GeoJSON polygon)
+  boundaryGeoJson Json?
+  centerLat       Float?
+  centerLng       Float?
+  radiusMiles     Float? // Protected territory radius
+
+  // Territory creation metadata
+  boundaryType  BoundaryType? // How the territory was created
+  travelMode    TravelMode? // For isochrone territories
+  travelMinutes Int? // For isochrone territories
+  zipCodes      String[] // For ZIP-based territories
+  color         String? // Hex color for map rendering
+
+  // Legacy fields (for backward compatibility)
+  latitude  Float?
+  longitude Float?
+
+  // Demographics (cached from external API)
+  population             Int?
+  medianIncome           Int?
+  medianAge              Float?
+  householdsWithChildren Int?
+  totalHouseholds        Int?
+  childrenUnder18        Int?
+  children5to12          Int? // Primary target demo for STC
+  schoolCount            Int?
+  competitorCount        Int?
+  demographicsUpdatedAt  DateTime?
+
+  // Scoring
+  territoryScore Float? // Composite viability score 0-100
+
+  // Franchisee assignment
+  franchiseeAccountId String?
+  franchiseeAccount   FranchiseeAccount? @relation(fields: [franchiseeAccountId], references: [id])
+  assignedAt          DateTime?
+
+  // Legacy field - kept for migration
+  franchiseeId String? // Deprecated: use franchiseeAccountId
+
+  notes      String?   @db.Text
+  metadata   Json? // Flexible extra data
+  launchDate DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  demographicSnapshots DemographicSnapshot[]
+  poiSearches          POISearch[]
+  territoryNotes       TerritoryNote[]
+
+  @@unique([name, state])
+  @@index([franchiseeAccountId])
+  @@index([status])
+  @@index([territoryScore])
+
+  @@schema("franchise")
+}
+
+enum MarketStatus {
+  AVAILABLE // Open for franchise sales
+  RESERVED // In negotiation with prospect
+  SOLD // Franchisee assigned
+  ACTIVE // Operating franchise
+  COMING_SOON // Future expansion
+  UNAVAILABLE // Corporate or restricted
+}
+
+enum BoundaryType {
+  ISOCHRONE // Drive/walk time
+  ISODISTANCE // Radius circle
+  ZIP_CODES // ZIP code selection
+  ADMIN_BOUNDARY // State/county/city
+  MANUAL_DRAW // Freehand polygon
+}
+
+enum TravelMode {
+  DRIVING
+  WALKING
+  CYCLING
+  PUBLIC_TRANSIT
+}
+
+// ============================================
+// TERRITORY MAP WORKSPACES
+// ============================================
+
+model TerritoryMap {
+  id          String    @id @default(cuid())
+  name        String
+  description String?   @db.Text
+  centerLat   Float     @default(39.8283)
+  centerLng   Float     @default(-98.5795)
+  zoomLevel   Int       @default(4)
+  layers      Json?
+  isShared    Boolean   @default(false)
+  shareToken  String?   @unique
+  shareExpiry DateTime?
+  createdBy   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  datasets Dataset[]
+
+  @@index([createdBy])
+  @@index([shareToken])
+
+  @@schema("franchise")
+}
+
+model DemographicSnapshot {
+  id         String   @id @default(cuid())
+  marketId   String?
+  market     Market?  @relation(fields: [marketId], references: [id], onDelete: Cascade)
+  geometry   Json
+  dataSource String
+  indicators Json
+  fetchedAt  DateTime @default(now())
+
+  @@index([marketId])
+
+  @@schema("franchise")
+}
+
+model POISearch {
+  id          String   @id @default(cuid())
+  marketId    String?
+  market      Market?  @relation(fields: [marketId], references: [id], onDelete: Cascade)
+  query       String
+  category    String
+  bounds      Json
+  results     Json
+  resultCount Int      @default(0)
+  searchedAt  DateTime @default(now())
+
+  @@index([marketId])
+
+  @@schema("franchise")
+}
+
+model Dataset {
+  id             String         @id @default(cuid())
+  name           String
+  sourceType     DataSourceType @default(CSV)
+  territoryMapId String?
+  territoryMap   TerritoryMap?  @relation(fields: [territoryMapId], references: [id], onDelete: SetNull)
+  columns        Json
+  rowCount       Int            @default(0)
+  geocodedCount  Int            @default(0)
+  fileUrl        String?
+  uploadedBy     String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  dataPoints DataPoint[]
+
+  @@index([uploadedBy])
+
+  @@schema("franchise")
+}
+
+enum DataSourceType {
+  CSV
+  EXCEL
+  MANUAL
+}
+
+model DataPoint {
+  id         String   @id @default(cuid())
+  datasetId  String
+  dataset    Dataset  @relation(fields: [datasetId], references: [id], onDelete: Cascade)
+  lat        Float?
+  lng        Float?
+  address    String?
+  zipCode    String?
+  properties Json
+  createdAt  DateTime @default(now())
+
+  @@index([datasetId])
+  @@index([lat, lng])
+
+  @@schema("franchise")
+}
+
+model TerritoryNote {
+  id        String   @id @default(cuid())
+  marketId  String
+  market    Market   @relation(fields: [marketId], references: [id], onDelete: Cascade)
+  authorId  String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([marketId])
+
+  @@schema("franchise")
+}
+
+model ScoringConfig {
+  id                         String   @id @default(cuid())
+  region                     String   @default("US")
+  childrenDensityWeight      Float    @default(0.25)
+  householdIncomeWeight      Float    @default(0.20)
+  householdsWithKidsWeight   Float    @default(0.15)
+  competitorSaturationWeight Float    @default(0.15)
+  populationDensityWeight    Float    @default(0.10)
+  schoolDensityWeight        Float    @default(0.10)
+  educationLevelWeight       Float    @default(0.05)
+  childrenDensityBenchmark   Float    @default(500)
+  householdIncomeBenchmark   Float    @default(75000)
+  schoolDensityBenchmark     Float    @default(2)
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+
+  @@unique([region])
+
+  @@schema("franchise")
+}
+
+// ============================================
+// EMAIL NOTIFICATIONS
+// ============================================
+
+model NotificationLog {
+  id             String           @id @default(cuid())
+  type           NotificationType
+  recipientEmail String
+  subject        String
+  sentAt         DateTime         @default(now())
+  metadata       Json?
+
+  @@index([type])
+  @@index([sentAt])
+
+  @@schema("franchise")
+}
+
+enum NotificationType {
+  NEW_INQUIRY
+  PRE_WORK_COMPLETED
+  DAILY_DIGEST
+  HIGH_SCORE_ALERT
+  WELCOME_EMAIL
+  PRE_WORK_REMINDER
+}
+
+// ============================================
+// STORY TIME ACADEMY
+// ============================================
+
+model AcademyPhase {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  title       String
+  description String? @db.Text
+  order       Int     @default(0)
+  dayStart    Int? // Optional: for onboarding programs (e.g., day 1)
+  dayEnd      Int? // Optional: for onboarding programs (e.g., day 7)
+  imageUrl    String?
+
+  // Legacy fields (kept during migration, will be removed in Phase 4)
+  sequence Int?
+  duration String? // e.g., "Week 1-2" — replaced by dayStart/dayEnd
+
+  // Link to Academy Program
+  programId String?
+  program   AcademyProgram? @relation(fields: [programId], references: [id])
+
+  modules AcademyModule[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([programId])
+
+  @@schema("franchise")
+}
+
+model AcademyModule {
+  id          String            @id @default(cuid())
+  phaseId     String
+  slug        String            @unique
+  title       String
+  description String?           @db.Text
+  order       Int               @default(0)
+  moduleType  AcademyModuleType @default(ASSIGNMENT)
+  points      Int               @default(10)
+  duration    Int? // Estimated minutes
+  resourceUrl String? // Link to external resource
+
+  // Onboarding-specific fields (optional — only used for ONBOARDING programs)
+  owner                ModuleOwner? // Who does this task?
+  verificationType     VerificationType? // How to verify completion?
+  targetDay            Int? // Target completion day (1-90)
+  isMilestone          Boolean           @default(false)
+  notifyFranchisor     Boolean           @default(false)
+  franchisorActionText String? // "Set up their G Suite account"
+  richDescription      String?           @db.Text // HTML from TipTap editor
+
+  // Step guide fields (admin-editable explainer content)
+  stepWhat       String?  @db.Text // "What is this step?"
+  stepHow        String?  @db.Text // "How do you do it?"
+  stepWhy        String?  @db.Text // "Why is this important?"
+  dataFields     Json?              // Array of {key, label, type, required
+
+  @@schema("franchise")
+} for data collection
+  resourcePageId String?            // ManualPage ID for "View Resource Guide" overlay
+  sectionOrder   Json?              // Array of section IDs: "step-guide", block IDs, "data-collection"
+
+  // Completion email — auto-send via Gmail when franchisee completes this module
+  completionEmailTemplateId String?
+  completionEmailTemplate   EmailTemplate? @relation("CompletionEmailModules", fields: [completionEmailTemplateId], references: [id], onDelete: SetNull)
+
+  // Legacy fields (kept during migration, will be removed in Phase 4)
+  content  String? @db.Text // Old HTML/Markdown — migrated to ContentBlock
+  sequence Int? // Old ordering — replaced by order
+  quizData Json? // Old quiz JSON — migrated to QUIZ ContentBlocks
+
+  phase           AcademyPhase      @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  progress        AcademyProgress[]
+  contentBlocks   ContentBlock[]
+  franchisorTodos FranchisorTodo[]  @relation("ModuleTodos")
+  linkedResources ModuleResource[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([phaseId])
+}
+
+enum AcademyModuleType {
+  VIDEO
+  READING
+  QUIZ
+  CHECKLIST
+  ASSIGNMENT
+  RESOURCE
+}
+
+model AcademyProgress {
+  id           String         @id @default(cuid())
+  prospectId   String
+  moduleId     String
+  status       ProgressStatus @default(NOT_STARTED)
+  startedAt    DateTime?
+  completedAt  DateTime?
+  pointsEarned Int            @default(0)
+  timeSpent    Int            @default(0) // Seconds
+
+  // Verification data (for onboarding modules)
+  fileUrl      String? // Uploaded file (FILE_UPLOAD verification)
+  fileName     String?
+  textResponse String? @db.Text // Written response (TEXT_RESPONSE verification)
+  completedBy  String? // "franchisee" or "franchisor" or email
+  notes        String? @db.Text
+  collectedData Json?  // Structured data from module data collection fields
+
+  // Quiz tracking
+  quizScore    Int? // Quiz percentage
+  quizAttempts Int  @default(0)
+
+  // Legacy field
+  score Int? // Old quiz score — replaced by quizScore
+
+  prospect      Prospect               @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  module        AcademyModule          @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  blockProgress ContentBlockProgress[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([prospectId, moduleId])
+  @@index([prospectId])
+
+  @@schema("franchise")
+}
+
+// Tracks daily activity for streak calculation
+model AcademyDailyActivity {
+  id         String   @id @default(cuid())
+  prospectId String
+  date       DateTime @db.Date // Just the date, no time
+
+  prospect  Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([prospectId, date])
+  @@index([prospectId])
+  @@index([date])
+
+  @@schema("franchise")
+}
+
+enum ProgressStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  PENDING_REVIEW // Awaiting franchisor confirmation
+}
+
+model AcademyResource {
+  id          String           @id @default(cuid())
+  slug        String           @unique
+  title       String
+  description String           @db.Text
+  category    ResourceCategory
+  fileUrl     String?
+  externalUrl String?
+  content     String?          @db.Text // For inline content
+  isPublic    Boolean          @default(false) // Visible to selected franchisees only
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@schema("franchise")
+}
+
+enum ResourceCategory {
+  OPERATIONS
+  MARKETING
+  SALES
+  TRAINING
+  LEGAL
+  FINANCIAL
+  TEMPLATES
+}
+
+enum ResourceLinkType {
+  ACADEMY_RESOURCE
+  KNOWLEDGE_DOCUMENT
+  CREATIVE_ASSET
+  MANUAL_PAGE
+  EXTERNAL_URL
+}
+
+model ModuleResource {
+  id           String           @id @default(cuid())
+  moduleId     String
+  resourceType ResourceLinkType
+  resourceId   String
+  sortOrder    Int              @default(0)
+  label        String?
+
+  module AcademyModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([moduleId, resourceType, resourceId])
+  @@index([moduleId])
+  @@index([resourceType, resourceId])
+
+  @@schema("franchise")
+}
+
+model AcademyBadge {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  title       String
+  description String
+  imageUrl    String?
+  points      Int     @default(25)
+  criteria    String  @db.Text // Description of how to earn
+
+  earnedBadges EarnedBadge[]
+
+  createdAt DateTime @default(now())
+
+  @@schema("franchise")
+}
+
+model EarnedBadge {
+  id         String @id @default(cuid())
+  prospectId String
+  badgeId    String
+
+  prospect Prospect     @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  badge    AcademyBadge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  earnedAt DateTime @default(now())
+
+  @@unique([prospectId, badgeId])
+  @@index([prospectId])
+
+  @@schema("franchise")
+}
+
+// Tracks points earned for gamification
+model AcademyPointsLog {
+  id         String       @id @default(cuid())
+  prospectId String
+  points     Int
+  reason     PointsReason
+  metadata   Json? // Additional context (moduleId, badgeId, etc.)
+
+  prospect Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([prospectId])
+  @@index([createdAt])
+
+  @@schema("franchise")
+}
+
+enum PointsReason {
+  MODULE_COMPLETED
+  QUIZ_PASSED
+  BADGE_EARNED
+  STREAK_BONUS
+  PHASE_COMPLETED
+  FIRST_LOGIN
+  RESOURCE_VIEWED
+}
+
+// ============================================
+// ACADEMY PROGRAMS (Unified Training Management)
+// ============================================
+
+model AcademyProgram {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  name        String
+  description String      @db.Text
+  programType ProgramType @default(ONBOARDING)
+  isActive    Boolean     @default(true)
+  isDefault   Boolean     @default(false) // Auto-enroll new franchisees
+  sequence    Int         @default(0)
+
+  // Relations
+  enrollments   ProgramEnrollment[]
+  academyPhases AcademyPhase[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([programType])
+  @@index([isActive])
+
+  @@schema("franchise")
+}
+
+enum ProgramType {
+  ONBOARDING // 90-Day Journey
+  CONTINUING_EDUCATION // Additional training modules
+  CERTIFICATION // Certification programs
+}
+
+model ProgramEnrollment {
+  id           String           @id @default(cuid())
+  prospectId   String
+  programId    String
+  status       EnrollmentStatus @default(ENROLLED)
+  autoEnrolled Boolean          @default(false)
+  enrolledAt   DateTime         @default(now())
+  startedAt    DateTime?
+  completedAt  DateTime?
+
+  prospect Prospect       @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  program  AcademyProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([prospectId, programId])
+  @@index([prospectId])
+  @@index([programId])
+  @@index([status])
+
+  @@schema("franchise")
+}
+
+enum EnrollmentStatus {
+  ENROLLED
+  IN_PROGRESS
+  COMPLETED
+  PAUSED
+}
+
+// ============================================
+// VISITOR TRACKING & ANALYTICS
+// ============================================
+
+// Long-lived visitor record (persists across browser sessions)
+model Visitor {
+  id         String  @id @default(cuid())
+  visitorId  String  @unique // Stored in localStorage, persists across sessions
+  prospectId String? // Links when visitor converts to prospect
+
+  // Aggregate stats
+  firstSeenAt     DateTime @default(now())
+  lastSeenAt      DateTime @default(now())
+  totalSessions   Int      @default(1)
+  totalPageViews  Int      @default(0)
+  totalTimeOnSite Int      @default(0) // Total seconds across all sessions
+
+  // Relations
+  prospect Prospect?        @relation(fields: [prospectId], references: [id], onDelete: SetNull)
+  sessions VisitorSession[]
+
+  @@index([prospectId])
+  @@index([lastSeenAt])
+
+  @@schema("franchise")
+}
+
+// Individual browsing session
+model VisitorSession {
+  id         String  @id @default(cuid())
+  visitorId  String // FK to Visitor
+  sessionId  String  @unique // The short-lived session ID (same as Earl chat uses)
+  prospectId String? // Denormalized for easier queries
+
+  // UTM Tracking
+  utmSource   String? // facebook, google, instagram, etc.
+  utmMedium   String? // cpc, social, email, etc.
+  utmCampaign String? // spring_2026_launch, etc.
+  utmTerm     String? // keyword for paid search
+  utmContent  String? // ad variant identifier
+
+  // Traffic source
+  referrer       String? // Full referrer URL
+  referrerDomain String? // Just the domain for easier grouping
+  landingPage    String // First page they landed on
+
+  // Device & Browser info
+  deviceType     String? // mobile, tablet, desktop
+  browser        String? // Chrome, Safari, Firefox, etc.
+  browserVersion String?
+  os             String? // iOS, Android, Windows, macOS, etc.
+  osVersion      String?
+  screenWidth    Int?
+  screenHeight   Int?
+  language       String? // Browser language
+  timezone       String? // User's timezone
+
+  // Location (can be derived from IP later)
+  ipAddress String?
+  country   String?
+  region    String?
+  city      String?
+
+  // Session metrics
+  startedAt      DateTime  @default(now())
+  lastActivityAt DateTime  @default(now())
+  endedAt        DateTime? // Set when session ends/times out
+  totalDuration  Int       @default(0) // Seconds
+  pageViewCount  Int       @default(0)
+
+  // Conversion tracking
+  hadEarlChat     Boolean   @default(false)
+  submittedForm   Boolean   @default(false)
+  formSubmittedAt DateTime?
+
+  // Relations
+  visitor   Visitor    @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  pageViews PageView[]
+
+  @@index([visitorId])
+  @@index([prospectId])
+  @@index([startedAt])
+  @@index([utmSource])
+  @@index([utmCampaign])
+
+  @@schema("franchise")
+}
+
+// Individual page view
+model PageView {
+  id        String @id @default(cuid())
+  sessionId String // FK to VisitorSession
+
+  // Page info
+  pagePath  String // /about, /contact, etc.
+  pageTitle String? // Document title
+  pageType  String? // home, about, contact, faq, etc.
+
+  // Timing
+  enteredAt DateTime  @default(now())
+  exitedAt  DateTime?
+  duration  Int? // Seconds on page
+
+  // Engagement (optional, for future use)
+  scrollDepth Int? // Percentage scrolled (0-100)
+  clickCount  Int? // Number of clicks on page
+
+  // Navigation
+  previousPage String? // Where they came from (internal)
+
+  // Relations
+  session VisitorSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([pagePath])
+  @@index([enteredAt])
+
+  @@schema("franchise")
+}
+
+// ============================================
+// CUSTOM EVENT TRACKING
+// ============================================
+
+// Track specific user interactions: video plays, downloads, FAQ opens, scroll depth, etc.
+model CustomEvent {
+  id        String @id @default(cuid())
+  sessionId String // FK to VisitorSession.sessionId
+  visitorId String // FK to Visitor.visitorId
+
+  // Event details
+  eventType     EventType
+  eventName     String // e.g., "video_play", "pdf_download", "faq_open"
+  eventCategory String? // e.g., "engagement", "conversion", "navigation"
+
+  // Event data (flexible JSON for any additional context)
+  pagePath    String // Page where event occurred
+  elementId   String? // DOM element ID if applicable
+  elementText String? // Button/link text
+  metadata    Json? // Additional event-specific data
+
+  // For scroll tracking
+  scrollDepth Int? // Percentage (0-100)
+
+  // For video/media tracking
+  mediaUrl      String? // URL of video/media
+  mediaDuration Int? // Total duration in seconds
+  mediaPosition Int? // Current position in seconds
+
+  // For download tracking
+  fileName String? // Downloaded file name
+  fileType String? // pdf, doc, etc.
+
+  // Timing
+  timestamp DateTime @default(now())
+
+  @@index([sessionId])
+  @@index([visitorId])
+  @@index([eventType])
+  @@index([eventName])
+  @@index([timestamp])
+
+  @@schema("franchise")
+}
+
+enum EventType {
+  VIDEO_PLAY
+  VIDEO_PAUSE
+  VIDEO_COMPLETE
+  VIDEO_PROGRESS // For 25%, 50%, 75% milestones
+  DOWNLOAD
+  FAQ_OPEN
+  FAQ_CLOSE
+  SCROLL_MILESTONE // 25%, 50%, 75%, 100%
+  BUTTON_CLICK
+  LINK_CLICK
+  FORM_FOCUS
+  FORM_ABANDON
+  CTA_CLICK
+  SHARE_CLICK
+  CHAT_OPEN
+  CHAT_MESSAGE
+  TERRITORY_SEARCH
+  CALENDAR_CLICK
+  ACCORDION_TOGGLE
+  TAB_SWITCH
+  MODAL_OPEN
+  MODAL_CLOSE
+}
+
+// ============================================
+// SESSION REPLAY
+// ============================================
+
+// Stores session replay data for playback
+model SessionReplay {
+  id        String @id @default(cuid())
+  sessionId String @unique // FK to VisitorSession.sessionId
+  visitorId String // FK to Visitor.visitorId
+
+  // Recording metadata
+  startedAt  DateTime  @default(now())
+  endedAt    DateTime?
+  duration   Int       @default(0) // Seconds
+  eventCount Int       @default(0)
+
+  // Page dimensions for proper scaling during playback
+  viewportWidth  Int?
+  viewportHeight Int?
+  pageWidth      Int?
+  pageHeight     Int?
+
+  // Status
+  isComplete Boolean @default(false)
+
+  // Events stored as compressed JSON array
+  // Format: [{ t: timestamp_ms, type: "mouse"|"click"|"scroll"|"resize", x?, y?, scrollTop?, scrollLeft?, ...
+
+  @@schema("franchise")
+}]
+  events Json @default("[]")
+
+  // Metadata
+  pagePath  String // Initial page
+  userAgent String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sessionId])
+  @@index([visitorId])
+  @@index([startedAt])
+}
+
+// ============================================
+// A/B TESTING
+// ============================================
+
+// A/B Test definition
+model ABTest {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  description String? @db.Text
+
+  // Test configuration
+  targetPage String // Page path where test runs
+  element    String // CSS selector or component name
+  status     ABTestStatus @default(DRAFT)
+
+  // Variants stored as JSON: [{ id: "control", name: "Control", weight: 50, config: {...
+
+  @@schema("franchise")
+} }, ...]
+  variants Json @default("[]")
+
+  // Traffic allocation (0-100%)
+  trafficPercent Int @default(100)
+
+  // Timing
+  startDate DateTime?
+  endDate   DateTime?
+
+  // Results tracking
+  assignments ABTestAssignment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([targetPage])
+}
+
+enum ABTestStatus {
+  DRAFT
+  RUNNING
+  PAUSED
+  COMPLETED
+  ARCHIVED
+}
+
+// Tracks which variant a visitor was assigned
+model ABTestAssignment {
+  id        String @id @default(cuid())
+  testId    String
+  visitorId String // Visitor.visitorId
+  variantId String // ID from the variants JSON
+
+  // Conversion tracking
+  converted       Boolean   @default(false)
+  convertedAt     DateTime?
+  conversionValue Float? // Optional value (e.g., revenue)
+
+  test ABTest @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+  assignedAt DateTime @default(now())
+
+  @@unique([testId, visitorId])
+  @@index([testId])
+  @@index([visitorId])
+  @@index([variantId])
+
+  @@schema("franchise")
+}
+
+// ============================================
+// CRM - EMAIL SYNC
+// ============================================
+
+model CrmEmail {
+  id              String         @id @default(cuid())
+  prospectId      String
+  gmailMessageId  String         @unique
+  gmailThreadId   String
+  direction       EmailDirection
+  fromEmail       String
+  fromName        String?
+  toEmails        String[]
+  ccEmails        String[]
+  subject         String
+  bodyPreview     String         @db.Text
+  bodyHtml        String?        @db.Text
+  hasAttachments  Boolean        @default(false)
+  attachmentNames String[]
+  sentAt          DateTime
+  syncedAt        DateTime       @default(now())
+  adminEmail      String // Which admin email this was synced from
+
+  prospect Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  @@index([prospectId])
+  @@index([gmailThreadId])
+  @@index([sentAt])
+
+  @@schema("franchise")
+}
+
+enum EmailDirection {
+  INBOUND
+  OUTBOUND
+}
+
+// ============================================
+// CRM - CALL LOGGING
+// ============================================
+
+model CrmCall {
+  id           String        @id @default(cuid())
+  prospectId   String
+  callType     CallType
+  direction    CallDirection
+  duration     Int? // Duration in seconds
+  outcome      CallOutcome?
+  notes        String?       @db.Text
+  scheduledFor DateTime?
+  completedAt  DateTime?
+  loggedBy     String // Admin email
+
+  prospect Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([prospectId])
+  @@index([completedAt])
+
+  @@schema("franchise")
+}
+
+enum CallType {
+  PHONE
+  VIDEO
+}
+
+enum CallDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum CallOutcome {
+  CONNECTED
+  LEFT_VOICEMAIL
+  NO_ANSWER
+  BUSY
+  WRONG_NUMBER
+}
+
+// ============================================
+// CRM - MEETING TRACKING
+// ============================================
+
+model CrmMeeting {
+  id           String        @id @default(cuid())
+  prospectId   String
+  title        String
+  description  String?       @db.Text
+  meetingType  MeetingType
+  location     String? // Zoom link, address, etc.
+  scheduledFor DateTime
+  duration     Int // Duration in minutes
+  status       MeetingStatus @default(SCHEDULED)
+  outcome      String?       @db.Text
+  attendees    String[] // List of attendee emails
+  createdBy    String // Admin email
+
+  prospect Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([prospectId])
+  @@index([scheduledFor])
+
+  @@schema("franchise")
+}
+
+enum MeetingType {
+  DISCOVERY_CALL
+  INTERVIEW
+  PRE_WORK_REVIEW
+  FOLLOW_UP
+  OTHER
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+// ============================================
+// CRM - TASK MANAGEMENT
+// ============================================
+
+model CrmTask {
+  id          String       @id @default(cuid())
+  prospectId  String
+  title       String
+  description String?      @db.Text
+  dueDate     DateTime?
+  priority    TaskPriority @default(MEDIUM)
+  status      TaskStatus   @default(PENDING)
+  assignedTo  String? // Admin email
+  completedAt DateTime?
+  createdBy   String // Admin email
+
+  prospect Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([prospectId])
+  @@index([assignedTo])
+  @@index([dueDate])
+  @@index([status])
+
+  @@schema("franchise")
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// ============================================
+// CRM - AI SUMMARY CACHE
+// ============================================
+
+model ProspectSummary {
+  id              String  @id @default(cuid())
+  prospectId      String  @unique
+  summary         String  @db.Text
+  keyInsights     Json // Array of insight strings
+  sentiment       String? // POSITIVE, NEUTRAL, NEGATIVE, MIXED
+  engagementScore Int? // 1-100
+
+  prospect Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  generatedAt DateTime @default(now())
+
+  @@schema("franchise")
+}
+
+// ============================================
+// CRM - GMAIL SYNC STATE
+// ============================================
+
+model GmailSyncState {
+  id           String     @id @default(cuid())
+  adminEmail   String     @unique
+  lastSyncedAt DateTime?
+  historyId    String? // Gmail History ID for incremental sync
+  status       SyncStatus @default(IDLE)
+  lastError    String?
+
+  updatedAt DateTime @updatedAt
+
+  @@schema("franchise")
+}
+
+enum SyncStatus {
+  IDLE
+  SYNCING
+  ERROR
+}
+
+// ============================================
+// EMAIL TEMPLATES
+// ============================================
+
+model EmailTemplate {
+  id          String                @id @default(cuid())
+  slug        String                @unique
+  name        String
+  description String?
+  category    EmailTemplateCategory
+  subject     String
+  bodyHtml    String                @db.Text
+  variables   String[] // ["firstName", "portalUrl", etc.]
+  isSystem    Boolean               @default(false)
+  isActive    Boolean               @default(true)
+
+  // Completion email defaults (used when linked to a module)
+  defaultTo   String? // Default TO address (supports {{variables
+
+  @@schema("franchise")
+}})
+  defaultCc   String? // Default CC addresses (supports {{variables}})
+  defaultFrom String? // Sender override (default: franchising@acmefranchise.com)
+
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  sentEmails  SentEmail[]
+  completionEmailModules AcademyModule[] @relation("CompletionEmailModules")
+}
+
+enum EmailTemplateCategory {
+  PROSPECT
+  ADMIN
+  DOCUMENT
+  CUSTOM
+}
+
+model SentEmail {
+  id           String   @id @default(cuid())
+  prospectId   String?
+  templateId   String?
+  templateSlug String?
+  toEmail      String
+  subject      String
+  bodyHtml     String   @db.Text
+  bodyPreview  String // First 200 chars, plain text
+  sentBy       String // Admin email
+  sentAt       DateTime @default(now())
+
+  prospect Prospect?      @relation(fields: [prospectId], references: [id], onDelete: SetNull)
+  template EmailTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  @@index([prospectId])
+  @@index([sentAt])
+
+  @@schema("franchise")
+}
+
+// ============================================
+// 90-DAY JOURNEY (Story Time Academy)
+// ============================================
+
+// Module ownership types
+enum ModuleOwner {
+  FRANCHISEE // They do it, may upload proof
+  FRANCHISOR // Admin does it for them
+  COLLABORATIVE // Both parties involved
+}
+
+// Task verification requirements
+enum VerificationType {
+  CHECKBOX // Just mark complete
+  FILE_UPLOAD // Must upload documentation
+  TEXT_RESPONSE // Describe what they did
+  FRANCHISOR_CONFIRMS // Franchisor marks complete
+}
+
+// Franchisor to-do items (created when franchisee needs franchisor action)
+model FranchisorTodo {
+  id String @id @default(cuid())
+
+  prospectId String
+  prospect   Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  moduleId String?
+  module   AcademyModule? @relation("ModuleTodos", fields: [moduleId], references: [id], onDelete: Cascade)
+
+  actionText String // "Set up G Suite for John Smith"
+  status     FranchisorTodoStatus @default(PENDING)
+
+  completedAt  DateTime?
+  sentEmailId  String?   // Links to auto-sent completion email
+  sentEmailAt  DateTime? // When the completion email was sent
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([prospectId])
+  @@index([moduleId])
+  @@index([status])
+
+  @@schema("franchise")
+}
+
+enum FranchisorTodoStatus {
+  PENDING
+  COMPLETED
+  SKIPPED
+}
+
+// Content block types for rich content (unified)
+enum ContentBlockType {
+  TEXT // Rich text content from TipTap
+  CHECKPOINT // Must acknowledge to proceed
+  QUIZ // Multiple choice question
+  IMAGE // Image with optional caption
+  VIDEO // Embedded video (YouTube/Vimeo)
+  FILE // Downloadable attachment
+  CALLOUT // Tip, warning, or important note
+  CHECKLIST // Interactive checklist with items
+}
+
+// ============================================
+// CONTENT BLOCKS
+// ============================================
+
+// Rich content blocks within academy modules (unified system)
+model ContentBlock {
+  id       String           @id @default(cuid())
+  moduleId String
+  module   AcademyModule    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  type     ContentBlockType
+  order    Int
+
+  // For TEXT blocks
+  content String? @db.Text // HTML from TipTap
+
+  // For CHECKPOINT blocks
+  checkpointText String?
+
+  // For QUIZ blocks
+  quizQuestion    String?
+  quizOptions     Json? // ["Option A", "Option B", "Option C"]
+  correctAnswer   Int? // Index of correct option (0-based)
+  quizExplanation String? // Shown after answering
+
+  // For IMAGE blocks
+  imageUrl     String?
+  imageAlt     String?
+  imageCaption String?
+
+  // For VIDEO blocks
+  videoUrl      String?
+  videoProvider String? // "youtube" | "vimeo"
+
+  // For FILE blocks
+  fileUrl         String?
+  fileTitle       String?
+  fileDescription String?
+
+  // For CALLOUT blocks
+  calloutType    String? // "tip" | "warning" | "important"
+  calloutTitle   String?
+  calloutContent String? @db.Text
+
+  // For CHECKLIST blocks
+  checklistTitle String?
+  checklistItems Json? // [{ title, description, helpLink, dueDay, points
+
+  @@schema("franchise")
+}]
+
+  progress ContentBlockProgress[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([moduleId])
+}
+
+// Track checkpoint/quiz/checklist completion per franchisee per block
+model ContentBlockProgress {
+  id String @id @default(cuid())
+
+  progressId String
+  progress   AcademyProgress @relation(fields: [progressId], references: [id], onDelete: Cascade)
+
+  blockId String
+  block   ContentBlock @relation(fields: [blockId], references: [id], onDelete: Cascade)
+
+  completed   Boolean   @default(false)
+  response    String?   @db.Text // Quiz answer text or other response
+  correct     Boolean? // Quiz correctness
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([progressId, blockId])
+  @@index([progressId])
+  @@index([blockId])
+
+  @@schema("franchise")
+}
+
+// ============================================
+// WORKFLOW AUTOMATION
+// ============================================
+
+model WorkflowTrigger {
+  id            String      @id @default(cuid())
+  name          String
+  description   String?     @db.Text
+  triggerType   TriggerType
+  triggerConfig Json // Configuration specific to trigger type
+  isActive      Boolean     @default(true)
+  flowData      Json?       // React Flow canvas state: { nodes, edges, viewport
+
+  @@schema("franchise")
+}
+  category      String?     // "connection" | "conversion" | "retention" | "custom"
+  isTemplate    Boolean     @default(false)
+
+  actions    WorkflowAction[]
+  conditions WorkflowCondition[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([triggerType])
+  @@index([isActive])
+}
+
+enum TriggerType {
+  NEW_INQUIRY
+  STAGE_CHANGE
+  TIME_DELAY
+  INACTIVITY
+  FORM_SUBMITTED
+  PREWORK_COMPLETED
+  MANUAL
+}
+
+model WorkflowAction {
+  id           String     @id @default(cuid())
+  triggerId    String
+  actionType   ActionType
+  actionConfig Json // Configuration specific to action type
+  delayMinutes Int        @default(0) // Delay before executing action
+  order        Int        @default(0) // Execution order
+  nodeId       String?    // React Flow node ID for canvas mapping
+
+  trigger    WorkflowTrigger     @relation(fields: [triggerId], references: [id], onDelete: Cascade)
+  executions WorkflowExecution[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([triggerId])
+
+  @@schema("franchise")
+}
+
+enum ActionType {
+  SEND_EMAIL
+  CREATE_TASK
+  CHANGE_STAGE
+  NOTIFY_ADMIN
+  ADD_NOTE
+  WAIT
+}
+
+model WorkflowExecution {
+  id           String          @id @default(cuid())
+  actionId     String
+  prospectId   String
+  status       ExecutionStatus @default(PENDING)
+  result       Json? // Result data from execution
+  errorMessage String?
+  scheduledFor DateTime? // When this should execute (for delayed actions)
+  executedAt   DateTime?
+  nodeId           String?
+  resumeFromNodeId String?
+
+  action   WorkflowAction @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  prospect Prospect       @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([actionId])
+  @@index([prospectId])
+  @@index([status])
+  @@index([scheduledFor])
+
+  @@schema("franchise")
+}
+
+enum ExecutionStatus {
+  PENDING
+  SCHEDULED
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model WorkflowCondition {
+  id        String @id @default(cuid())
+  triggerId String
+  nodeId    String
+
+  field     String
+  operator  String
+  value     String
+
+  trigger   WorkflowTrigger @relation(fields: [triggerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([triggerId])
+
+  @@schema("franchise")
+}
+
+// ============================================
+// LEAD ATTRIBUTION
+// ============================================
+
+model LeadAttribution {
+  id         String @id @default(cuid())
+  prospectId String @unique
+
+  // First touch attribution
+  utmSource      String?
+  utmMedium      String?
+  utmCampaign    String?
+  utmTerm        String?
+  utmContent     String?
+  referrer       String?
+  landingPage    String?
+  firstTouchedAt DateTime @default(now())
+
+  prospect Prospect           @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  touches  AttributionTouch[]
+
+  @@schema("franchise")
+}
+
+model AttributionTouch {
+  id            String  @id @default(cuid())
+  attributionId String
+  touchType     String // page_view, form_submit, earl_chat, etc.
+  utmSource     String?
+  utmMedium     String?
+  utmCampaign   String?
+  pageUrl       String?
+
+  touchedAt DateTime @default(now())
+
+  attribution LeadAttribution @relation(fields: [attributionId], references: [id], onDelete: Cascade)
+
+  @@index([attributionId])
+  @@index([touchedAt])
+
+  @@schema("franchise")
+}
+
+// ============================================
+// FRANCHISE FINANCIAL MANAGEMENT
+// ============================================
+
+// Franchisee financial account (extends Prospect at SELECTED stage)
+model FranchiseeAccount {
+  id         String   @id @default(cuid())
+  prospectId String   @unique
+  prospect   Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  // Business Information
+  ein                  String? // Federal Employer ID
+  llcName              String? // Legal entity name
+  stateOfIncorporation String? // State where LLC formed
+  businessAddress      Json? // Full address { street, city, state, zip
+
+  @@schema("franchise")
+}
+
+  // Banking Information
+  bankName         String?
+  bankAccountLast4 String?
+  bankRoutingLast4 String?
+
+  // Insurance
+  insurancePolicyNumber  String?
+  insuranceCarrier       String?
+  insuranceExpiry        DateTime?
+  insuranceCoverageType  String?
+  insuranceEffectiveDate DateTime?
+  insuranceCOIUrl        String?   // Certificate of Insurance file URL
+
+  // Launch Information
+  launchDate    DateTime?
+  tcInstanceUrl String? // TutorCruncher dashboard URL
+
+  // TutorCruncher connection
+  tutorCruncherId    String? // TC branch/agency ID
+  tutorCruncherToken String? // Encrypted API token for their instance
+  tutorCruncherBase  String? // API base URL
+
+  // Stripe Connect
+  stripeAccountId   String? // Connected account ID (acct_xxx)
+  stripeOnboarded   Boolean   @default(false)
+  stripeOnboardedAt DateTime?
+
+  // Custom profile data collected from onboarding modules
+  profileData Json? // { "business_entity_type": "LLC", ... }
+
+  // Financial summary (cached from TC)
+  currentMonthRevenue Decimal?  @db.Decimal(10, 2)
+  ytdRevenue          Decimal?  @db.Decimal(10, 2)
+  lastSyncAt          DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Multi-Unit Support
+  isMultiUnit  Boolean      @default(false)
+  operatorType OperatorType @default(SINGLE_UNIT)
+
+  // Development agreement (for area developers)
+  developmentAgreementId String?
+  developmentAgreement   DevelopmentAgreement? @relation(fields: [developmentAgreementId], references: [id])
+
+  // Relations
+  invoices       RoyaltyInvoice[]
+  payments       RoyaltyPayment[]
+  ledgerEntries  LedgerEntry[]
+  tcSnapshots    TutorCruncherSnapshot[]
+  royaltyConfig  RoyaltyConfig?
+  certifications FranchiseeCertification[]
+  contacts       FranchiseeContact[]
+  markets        Market[] // One-to-many territories
+  documents      FranchiseeDocument[]
+
+  // Phase 3 Relations
+  franchiseAgreement FranchiseAgreement?
+  healthScores       HealthScore[]
+  posIntegration     POSIntegration?
+  posTransactions    POSTransaction[]
+
+  @@index([stripeAccountId])
+  @@index([developmentAgreementId])
+}
+
+// Franchisee contact person (multiple contacts per franchisee)
+model FranchiseeContact {
+  id                String            @id @default(cuid())
+  franchiseeId      String
+  franchiseeAccount FranchiseeAccount @relation(fields: [franchiseeId], references: [id], onDelete: Cascade)
+  contactType       ContactType
+  firstName         String
+  lastName          String
+  email             String?
+  phone             String?
+  isPrimary         Boolean           @default(false)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([franchiseeId])
+
+  @@schema("franchise")
+}
+
+enum ContactType {
+  PRIMARY_OWNER
+  SPOUSE_PARTNER
+  OPERATIONS
+  ACCOUNTING
+  EMERGENCY
+}
+
+enum OperatorType {
+  SINGLE_UNIT
+  MULTI_UNIT
+  AREA_DEVELOPER
+  REGIONAL_DEVELOPER
+  MASTER_FRANCHISEE
+}
+
+// Development agreement for multi-unit / area developers
+model DevelopmentAgreement {
+  id String @id @default(cuid())
+
+  // Agreement details
+  totalUnits     Int // Committed number of units
+  developmentFee Decimal @db.Decimal(10, 2)
+
+  // Timeline
+  startDate DateTime
+  endDate   DateTime // Must open all units by this date
+
+  // Schedule - array of { unitNumber, deadline, status, marketId?
+
+  @@schema("franchise")
+}
+  schedule Json
+
+  // Relations
+  franchiseeAccounts FranchiseeAccount[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Monthly TutorCruncher data snapshot (for audit trail)
+model TutorCruncherSnapshot {
+  id                  String            @id @default(cuid())
+  franchiseeAccountId String
+  franchiseeAccount   FranchiseeAccount @relation(fields: [franchiseeAccountId], references: [id], onDelete: Cascade)
+
+  year  Int
+  month Int
+
+  // Revenue breakdown
+  grossRevenue  Decimal  @db.Decimal(10, 2)
+  homeRevenue   Decimal? @db.Decimal(10, 2)
+  onlineRevenue Decimal? @db.Decimal(10, 2)
+  retailRevenue Decimal? @db.Decimal(10, 2)
+  schoolRevenue Decimal? @db.Decimal(10, 2)
+  otherRevenue  Decimal? @db.Decimal(10, 2)
+
+  // Activity metrics (for leaderboard)
+  totalLessons   Int?
+  totalHours     Decimal? @db.Decimal(10, 2)
+  activeStudents Int?
+  activeTutors   Int?
+
+  // Raw data for verification
+  rawData Json // Full TC response for audit
+
+  createdAt DateTime @default(now())
+
+  @@unique([franchiseeAccountId, year, month])
+  @@index([franchiseeAccountId])
+  @@index([year, month])
+
+  @@schema("franchise")
+}
+
+// Royalty configuration (global + per-franchisee overrides)
+model RoyaltyConfig {
+  id                  String             @id @default(cuid())
+  franchiseeAccountId String?            @unique // null = global default
+  franchiseeAccount   FranchiseeAccount? @relation(fields: [franchiseeAccountId], references: [id], onDelete: Cascade)
+
+  royaltyPercent    Decimal @default(7.0) @db.Decimal(5, 2)
+  brandFundPercent  Decimal @default(1.0) @db.Decimal(5, 2)
+  systemsFeePercent Decimal @default(2.0) @db.Decimal(5, 2)
+
+  // Optional minimums/caps
+  minimumMonthlyFee Decimal? @db.Decimal(10, 2)
+  maximumMonthlyFee Decimal? @db.Decimal(10, 2)
+
+  effectiveFrom DateTime  @default(now())
+  effectiveTo   DateTime?
+
+  notes String? @db.Text // For documenting special agreements
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@schema("franchise")
+}
+
+// Monthly royalty invoice
+model RoyaltyInvoice {
+  id                  String            @id @default(cuid())
+  invoiceNumber       String            @unique // INV-2026-02-001
+  franchiseeAccountId String
+  franchiseeAccount   FranchiseeAccount @relation(fields: [franchiseeAccountId], references: [id], onDelete: Cascade)
+
+  year  Int
+  month Int
+
+  // Revenue basis
+  grossRevenue Decimal @db.Decimal(10, 2)
+
+  // Itemized fees
+  royaltyAmount     Decimal @db.Decimal(10, 2) // 7%
+  royaltyPercent    Decimal @db.Decimal(5, 2) // Store rate for historical accuracy
+  brandFundAmount   Decimal @db.Decimal(10, 2) // 1%
+  brandFundPercent  Decimal @db.Decimal(5, 2)
+  systemsFeeAmount  Decimal @db.Decimal(10, 2) // 2%
+  systemsFeePercent Decimal @db.Decimal(5, 2)
+  totalAmount       Decimal @db.Decimal(10, 2) // 10%
+
+  // Adjustments
+  adjustmentAmount Decimal? @db.Decimal(10, 2)
+  adjustmentReason String?  @db.Text
+
+  // Status workflow
+  status InvoiceStatus @default(DRAFT)
+
+  // Franchisee verification
+  sentToFranchiseeAt   DateTime?
+  franchiseeReviewedAt DateTime?
+  franchiseeApproved   Boolean?
+  franchiseeNotes      String?   @db.Text
+
+  // Dates
+  invoiceDate DateTime
+  dueDate     DateTime
+  paidAt      DateTime?
+
+  // Stripe payment intent (if using auto-collect)
+  stripePaymentIntentId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payments RoyaltyPayment[]
+
+  @@unique([franchiseeAccountId, year, month])
+  @@index([franchiseeAccountId])
+  @@index([status])
+  @@index([year, month])
+
+  @@schema("franchise")
+}
+
+enum InvoiceStatus {
+  DRAFT // Being prepared
+  PENDING_REVIEW // Sent to franchisee for verification
+  APPROVED // Franchisee verified
+  DISPUTED // Franchisee raised concerns
+  PAYMENT_PENDING // Ready for payment
+  PROCESSING // Payment in progress
+  PAID // Payment received
+  OVERDUE // Past due date
+  CANCELLED // Voided
+}
+
+// Payment records
+model RoyaltyPayment {
+  id                  String            @id @default(cuid())
+  invoiceId           String
+  invoice             RoyaltyInvoice    @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  franchiseeAccountId String
+  franchiseeAccount   FranchiseeAccount @relation(fields: [franchiseeAccountId], references: [id], onDelete: Cascade)
+
+  amount Decimal       @db.Decimal(10, 2)
+  method PaymentMethod
+
+  // Stripe details
+  stripePaymentIntentId String?
+  stripeTransferId      String?
+  stripeChargeId        String?
+
+  status PaymentStatus @default(PENDING)
+
+  processedAt   DateTime?
+  failureReason String?
+  notes         String?   @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([invoiceId])
+  @@index([franchiseeAccountId])
+  @@index([status])
+
+  @@schema("franchise")
+}
+
+enum PaymentMethod {
+  STRIPE_CONNECT
+  STRIPE_ACH
+  ACH_DIRECT
+  CHECK
+  WIRE
+  MANUAL
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+// Immutable financial ledger for audit trail
+model LedgerEntry {
+  id                  String            @id @default(cuid())
+  franchiseeAccountId String
+  franchiseeAccount   FranchiseeAccount @relation(fields: [franchiseeAccountId], references: [id], onDelete: Cascade)
+
+  entryType    LedgerEntryType
+  amount       Decimal         @db.Decimal(10, 2)
+  balanceAfter Decimal         @db.Decimal(10, 2)
+
+  description   String
+  referenceType String? // "invoice", "payment", "adjustment"
+  referenceId   String?
+
+  createdAt DateTime @default(now())
+  // No updatedAt - ledger entries are immutable
+
+  @@index([franchiseeAccountId])
+  @@index([createdAt])
+
+  @@schema("franchise")
+}
+
+enum LedgerEntryType {
+  INVOICE_CREATED
+  PAYMENT_RECEIVED
+  ADJUSTMENT_CREDIT
+  ADJUSTMENT_DEBIT
+  REFUND
+}
+
+// ============================================
+// CERTIFICATIONS & COMPLIANCE
+// ============================================
+
+model Certification {
+  id                String                @id @default(cuid())
+  slug              String                @unique
+  name              String
+  description       String?               @db.Text
+  requiredForLaunch Boolean               @default(false)
+  renewalMonths     Int? // null = no renewal required
+  category          CertificationCategory @default(TRAINING)
+
+  franchiseeCerts FranchiseeCertification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@schema("franchise")
+}
+
+enum CertificationCategory {
+  TRAINING
+  COMPLIANCE
+  LEGAL
+  INSURANCE
+  OPERATIONS
+}
+
+model FranchiseeCertification {
+  id                  String            @id @default(cuid())
+  franchiseeAccountId String
+  franchiseeAccount   FranchiseeAccount @relation(fields: [franchiseeAccountId], references: [id], onDelete: Cascade)
+  certificationId     String
+  certification       Certification     @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+
+  earnedAt  DateTime
+  expiresAt DateTime?
+  status    CertStatus @default(ACTIVE)
+
+  // Supporting documents
+  documentUrl  String?
+  documentName String?
+
+  // Renewal tracking
+  renewalReminderSent Boolean @default(false)
+  renewedFromId       String? // If this is a renewal, link to previous cert
+
+  notes String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([franchiseeAccountId, certificationId])
+  @@index([franchiseeAccountId])
+  @@index([certificationId])
+  @@index([status])
+  @@index([expiresAt])
+
+  @@schema("franchise")
+}
+
+enum CertStatus {
+  ACTIVE
+  EXPIRING_SOON // 30 days before expiration
+  EXPIRED
+  REVOKED
+}
+
+// ============================================
+// OPERATIONS MANUAL
+// ============================================
+
+model ManualSection {
+  id          String  @id @default(cuid())
+  title       String
+  slug        String  @unique
+  description String? @db.Text
+  icon        String? // Emoji
+  sortOrder   Int     @default(0)
+
+  pages ManualPage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sortOrder])
+
+  @@schema("franchise")
+}
+
+model ManualPage {
+  id                     String           @id @default(cuid())
+  sectionId              String
+  section                ManualSection    @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  title                  String
+  slug                   String           @unique
+  content                String           @db.Text
+  excerpt                String?          @db.Text
+  sortOrder              Int              @default(0)
+  status                 ManualPageStatus @default(DRAFT)
+  requiresAcknowledgment Boolean          @default(false)
+  currentVersion         Int              @default(1)
+  publishedAt            DateTime?
+  publishedBy            String?
+
+  versions        ManualPageVersion[]
+  acknowledgments ManualAcknowledgment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sectionId])
+  @@index([status])
+  @@index([sortOrder])
+
+  @@schema("franchise")
+}
+
+enum ManualPageStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model ManualPageVersion {
+  id            String               @id @default(cuid())
+  pageId        String
+  page          ManualPage           @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  versionNumber Int
+  content       String               @db.Text
+  changeType    ManualPageChangeType @default(MINOR)
+  changeSummary String?
+  createdBy     String
+
+  createdAt DateTime @default(now())
+
+  @@unique([pageId, versionNumber])
+  @@index([pageId])
+
+  @@schema("franchise")
+}
+
+enum ManualPageChangeType {
+  MAJOR
+  MINOR
+}
+
+model ManualAcknowledgment {
+  id             String     @id @default(cuid())
+  prospectId     String
+  prospect       Prospect   @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  pageId         String
+  page           ManualPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  versionNumber  Int
+  acknowledgedAt DateTime   @default(now())
+
+  @@unique([prospectId, pageId])
+  @@index([prospectId])
+  @@index([pageId])
+
+  @@schema("franchise")
+}
+
+// ============================================
+// HELP DESK / SUPPORT TICKETS
+// ============================================
+
+model SupportTicket {
+  id           String         @id @default(cuid())
+  ticketNumber String         @unique // Format: TKT-YYYY-XXXXX
+  subject      String
+  description  String         @db.Text
+  category     TicketCategory
+  priority     TicketPriority @default(MEDIUM)
+  status       TicketStatus   @default(OPEN)
+
+  // Submitter (franchisee)
+  prospectId String
+  prospect   Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  // Assignment
+  assignedTo String?
+  assignedAt DateTime?
+
+  // Resolution
+  resolvedAt DateTime?
+  resolvedBy String?
+  resolution String?   @db.Text
+
+  // SLA tracking
+  firstResponseAt DateTime?
+  slaDeadline     DateTime?
+
+  comments SupportTicketComment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([prospectId])
+  @@index([status])
+  @@index([priority])
+  @@index([assignedTo])
+  @@index([createdAt])
+
+  @@schema("franchise")
+}
+
+enum TicketCategory {
+  TECHNICAL
+  BILLING
+  OPERATIONS
+  MARKETING
+  TRAINING
+  COMPLIANCE
+  OTHER
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_ON_FRANCHISEE
+  WAITING_ON_ADMIN
+  RESOLVED
+  CLOSED
+}
+
+model SupportTicketComment {
+  id       String        @id @default(cuid())
+  ticketId String
+  ticket   SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  authorEmail String
+  authorName  String
+  authorRole  String // "ADMIN" or "FRANCHISEE"
+  content     String  @db.Text
+  isInternal  Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([ticketId])
+
+  @@schema("franchise")
+}
+
+// ============================================
+// FIELD AUDITS
+// ============================================
+
+model AuditTemplate {
+  id          String        @id @default(cuid())
+  name        String
+  slug        String        @unique
+  description String?       @db.Text
+  category    AuditCategory
+  isActive    Boolean       @default(true)
+
+  items  AuditTemplateItem[]
+  audits FieldAudit[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@schema("franchise")
+}
+
+enum AuditCategory {
+  BRAND_STANDARDS
+  OPERATIONS
+  SAFETY
+  MARKETING
+  CUSTOMER_EXPERIENCE
+}
+
+model AuditTemplateItem {
+  id         String        @id @default(cuid())
+  templateId String
+  template   AuditTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  question    String
+  description String?       @db.Text
+  itemType    AuditItemType @default(PASS_FAIL)
+  weight      Int           @default(1)
+  sortOrder   Int           @default(0)
+  isRequired  Boolean       @default(true)
+
+  responses AuditResponse[]
+
+  @@index([templateId])
+
+  @@schema("franchise")
+}
+
+enum AuditItemType {
+  PASS_FAIL
+  RATING_1_5
+  YES_NO
+  TEXT
+  PHOTO
+}
+
+model FieldAudit {
+  id         String        @id @default(cuid())
+  templateId String
+  template   AuditTemplate @relation(fields: [templateId], references: [id])
+
+  prospectId String
+  prospect   Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  auditorEmail String
+  auditorName  String
+
+  status        AuditStatus @default(IN_PROGRESS)
+  scheduledDate DateTime?
+  completedAt   DateTime?
+  overallScore  Float?
+  notes         String?     @db.Text
+
+  responses         AuditResponse[]
+  correctiveActions CorrectiveAction[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([prospectId])
+  @@index([status])
+  @@index([scheduledDate])
+
+  @@schema("franchise")
+}
+
+enum AuditStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model AuditResponse {
+  id      String            @id @default(cuid())
+  auditId String
+  audit   FieldAudit        @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  itemId  String
+  item    AuditTemplateItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  value    String
+  score    Float?
+  notes    String? @db.Text
+  photoUrl String?
+
+  @@unique([auditId, itemId])
+  @@index([auditId])
+
+  @@schema("franchise")
+}
+
+model CorrectiveAction {
+  id      String     @id @default(cuid())
+  auditId String
+  audit   FieldAudit @relation(fields: [auditId], references: [id], onDelete: Cascade)
+
+  description String                 @db.Text
+  assignedTo  String
+  dueDate     DateTime
+  status      CorrectiveActionStatus @default(OPEN)
+  completedAt DateTime?
+  completedBy String?
+  evidence    String?
+  adminNotes  String?                @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([auditId])
+  @@index([status])
+  @@index([dueDate])
+
+  @@schema("franchise")
+}
+
+enum CorrectiveActionStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+  WAIVED
+}
+
+// ============================================
+// PHASE 3: FRANCHISE AGREEMENT & RENEWAL MANAGEMENT
+// ============================================
+
+model FranchiseAgreement {
+  id                  String            @id @default(cuid())
+  franchiseeAccountId String            @unique
+  franchiseeAccount   FranchiseeAccount @relation(fields: [franchiseeAccountId], references: [id], onDelete: Cascade)
+
+  // Agreement details
+  agreementNumber String   @unique // FA-2026-001
+  version         Int      @default(1)
+  startDate       DateTime
+  endDate         DateTime // Original term end date
+  termYears       Int      @default(10) // Standard franchise term
+
+  // Territory reference
+  territoryDescription String? @db.Text
+  exclusiveTerritory   Boolean @default(true)
+
+  // Financial terms captured at signing
+  initialFranchiseFee Decimal @db.Decimal(10, 2)
+  royaltyPercent      Decimal @db.Decimal(5, 2)
+  brandFundPercent    Decimal @db.Decimal(5, 2)
+  systemsFeePercent   Decimal @db.Decimal(5, 2)
+
+  // Renewal terms
+  renewalTermYears       Int      @default(10) // Term for renewals
+  renewalFee             Decimal? @db.Decimal(10, 2) // Renewal franchise fee
+  renewalNoticeMonths    Int      @default(6) // Months notice required for renewal
+  nonRenewalNoticeMonths Int      @default(6) // Months notice for non-renewal
+
+  // Status tracking
+  status AgreementStatus @default(ACTIVE)
+
+  // Document reference
+  documentUrl String?
+  signedAt    DateTime?
+  signedBy    String?
+  witnessedBy String?
+
+  // Relations
+  renewals AgreementRenewal[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([endDate])
+
+  @@schema("franchise")
+}
+
+enum AgreementStatus {
+  DRAFT
+  PENDING_SIGNATURE
+  ACTIVE
+  RENEWAL_ELIGIBLE // Within renewal window
+  RENEWAL_IN_PROGRESS
+  RENEWED
+  TERMINATED
+  EXPIRED
+  TRANSFERRED
+}
+
+model AgreementRenewal {
+  id          String             @id @default(cuid())
+  agreementId String
+  agreement   FranchiseAgreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+
+  // Renewal tracking
+  renewalNumber Int // 1st renewal, 2nd renewal, etc.
+  initiatedAt   DateTime @default(now())
+  initiatedBy   String // SYSTEM, admin email, or franchisee
+
+  // Timeline
+  notificationSentAt DateTime? // When renewal notice was sent
+  responseDeadline   DateTime? // When franchisee must respond
+  effectiveDate      DateTime? // When new term starts
+
+  // Renewal terms (may differ from original)
+  newTermYears      Int?
+  newEndDate        DateTime?
+  renewalFee        Decimal?  @db.Decimal(10, 2)
+  newRoyaltyPercent Decimal?  @db.Decimal(5, 2)
+  feeWaived         Boolean   @default(false)
+  feeWaivedReason   String?   @db.Text
+
+  // Status workflow
+  status RenewalStatus @default(PENDING_NOTICE)
+
+  // Franchisee response
+  franchiseeIntentAt DateTime?
+  franchiseeIntent   RenewalIntent?
+  franchiseeNotes    String?        @db.Text
+
+  // Franchisor decision
+  franchisorDecisionAt DateTime?
+  franchisorDecision   RenewalDecision?
+  franchisorNotes      String?          @db.Text
+  decisionBy           String?
+
+  // Document references
+  renewalAgreementUrl String?
+  signedAt            DateTime?
+
+  // Non-renewal / Termination
+  terminationReason      String?   @db.Text
+  terminationEffectiveAt DateTime?
+
+  // Transfer (if applicable)
+  transferToProspectId String?
+  transferApprovedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([agreementId, renewalNumber])
+  @@index([agreementId])
+  @@index([status])
+  @@index([effectiveDate])
+
+  @@schema("franchise")
+}
+
+enum RenewalStatus {
+  PENDING_NOTICE // Not yet in renewal window
+  NOTICE_SENT // 12/6/3 month notices sent
+  AWAITING_RESPONSE // Waiting for franchisee decision
+  INTENT_RECEIVED // Franchisee responded
+  UNDER_REVIEW // Franchisor reviewing
+  NEGOTIATING // Terms being negotiated
+  APPROVED // Renewal approved
+  DECLINED // Franchisor declined renewal
+  NON_RENEWAL // Franchisee chose not to renew
+  COMPLETED // New agreement signed
+  TERMINATED // Agreement terminated early
+  TRANSFERRED // Franchise transferred to new owner
+}
+
+enum RenewalIntent {
+  RENEW
+  NOT_RENEWING
+  CONSIDERING
+  TRANSFER_REQUESTED
+}
+
+enum RenewalDecision {
+  APPROVE_RENEWAL
+  APPROVE_WITH_CONDITIONS
+  DENY_RENEWAL
+  APPROVE_TRANSFER
+  TERMINATE
+}
+
+// ============================================
+// PHASE 3: ADVANCED ANALYTICS & REPORTING
+// ============================================
+
+model CustomReport {
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique
+  description String? @db.Text
+
+  // Report definition
+  reportType ReportType
+  dataSource String // Table/entity to query
+  metrics    Json // Array of metric definitions { field, aggregation, label
+
+  @@schema("franchise")
+}
+  dimensions Json // Array of dimension definitions { field, label }
+  filters    Json // Default filters { field, operator, value }
+  sortBy     Json? // { field, direction }
+
+  // Display options
+  chartType   ChartType?
+  chartConfig Json? // Chart-specific configuration
+
+  // Access control
+  isSystem  Boolean @default(false) // Built-in reports
+  isPublic  Boolean @default(false) // Available to franchisees
+  createdBy String
+
+  // Schedule (optional)
+  schedules ReportSchedule[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([reportType])
+  @@index([createdBy])
+}
+
+enum ReportType {
+  FINANCIAL
+  OPERATIONAL
+  COMPLIANCE
+  MARKETING
+  PERFORMANCE
+  CUSTOM
+}
+
+enum ChartType {
+  LINE
+  BAR
+  PIE
+  DONUT
+  AREA
+  TABLE
+  KPI
+  HEATMAP
+}
+
+model ReportSchedule {
+  id       String       @id @default(cuid())
+  reportId String
+  report   CustomReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  // Schedule configuration
+  frequency  ScheduleFrequency
+  dayOfWeek  Int? // 0-6 for weekly
+  dayOfMonth Int? // 1-31 for monthly
+  time       String // HH:MM in UTC
+
+  // Recipients
+  recipients String[] // Array of email addresses
+  format     ExportFormat @default(PDF)
+
+  // Status
+  isActive  Boolean   @default(true)
+  lastRunAt DateTime?
+  nextRunAt DateTime?
+  lastError String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([reportId])
+  @@index([nextRunAt])
+  @@index([isActive])
+
+  @@schema("franchise")
+}
+
+enum ScheduleFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+}
+
+enum ExportFormat {
+  PDF
+  EXCEL
+  CSV
+}
+
+// Franchisee Health Score
+model HealthScore {
+  id                  String            @id @default(cuid())
+  franchiseeAccountId String
+  franchiseeAccount   FranchiseeAccount @relation(fields: [franchiseeAccountId], references: [id], onDelete: Cascade)
+
+  // Scoring period
+  year  Int
+  month Int
+
+  // Component scores (0-100)
+  financialScore   Float // Revenue growth, collection rate, profitability
+  operationalScore Float // Lesson completion, customer satisfaction, retention
+  complianceScore  Float // Certifications, audits, document status
+  engagementScore  Float // Academy progress, support tickets, communication
+  growthScore      Float // New students, market penetration, expansion
+
+  // Overall composite score (weighted average)
+  compositeScore Float
+
+  // Risk assessment
+  riskLevel   RiskLevel
+  riskFactors Json // Array of { factor, impact, description
+
+  @@schema("franchise")
+}
+
+  // Trend data
+  previousScore Float? // Last month's composite score
+  trend         ScoreTrend
+
+  // Detailed breakdown (for drill-down)
+  breakdown Json // Full scoring details by category
+
+  // Recommendations
+  recommendations Json? // Array of { priority, category, action, impact }
+
+  createdAt DateTime @default(now())
+
+  @@unique([franchiseeAccountId, year, month])
+  @@index([franchiseeAccountId])
+  @@index([year, month])
+  @@index([riskLevel])
+  @@index([compositeScore])
+}
+
+enum RiskLevel {
+  LOW
+  MODERATE
+  ELEVATED
+  HIGH
+  CRITICAL
+}
+
+enum ScoreTrend {
+  IMPROVING
+  STABLE
+  DECLINING
+  NEW // First score, no comparison
+}
+
+// Configurable health score weights
+model HealthScoreWeight {
+  id String @id @default(cuid())
+
+  // Category weights (must sum to 100)
+  financialWeight   Float @default(30) // Revenue, collections
+  operationalWeight Float @default(25) // Service delivery
+  complianceWeight  Float @default(20) // Certs, audits
+  engagementWeight  Float @default(15) // Participation
+  growthWeight      Float @default(10) // Expansion
+
+  // Sub-component weights within each category (JSON)
+  financialComponents   Json // { revenueGrowth: 40, collectionRate: 30, profitMargin: 30
+
+  @@schema("franchise")
+}
+  operationalComponents Json
+  complianceComponents  Json
+  engagementComponents  Json
+  growthComponents      Json
+
+  // Thresholds for risk levels
+  criticalThreshold Float @default(40) // Below this = CRITICAL
+  highRiskThreshold Float @default(55) // Below this = HIGH
+  elevatedThreshold Float @default(70) // Below this = ELEVATED
+  moderateThreshold Float @default(85) // Below this = MODERATE, above = LOW
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================
+// PHASE 3: POS INTEGRATION FRAMEWORK
+// ============================================
+
+model POSIntegration {
+  id                  String            @id @default(cuid())
+  franchiseeAccountId String            @unique
+  franchiseeAccount   FranchiseeAccount @relation(fields: [franchiseeAccountId], references: [id], onDelete: Cascade)
+
+  // POS System
+  provider     POSProvider
+  providerName String? // For OTHER type
+
+  // Connection details
+  apiKey         String?
+  accessToken    String?
+  refreshToken   String?
+  tokenExpiresAt DateTime?
+  merchantId     String?
+  locationId     String?
+
+  // Connection status
+  status         IntegrationStatus @default(PENDING)
+  connectedAt    DateTime?
+  lastSyncAt     DateTime?
+  lastSyncStatus String?
+  lastError      String?
+
+  // Sync configuration
+  syncFrequency SyncFrequency @default(DAILY)
+  syncStartDate DateTime? // Don't sync data before this date
+  autoSync      Boolean       @default(true)
+
+  // Data pulled
+  syncTransactions Boolean @default(true)
+  syncInventory    Boolean @default(false)
+  syncCustomers    Boolean @default(false)
+
+  // Revenue mapping (how to categorize POS revenue)
+  revenueMapping Json? // { "Chess Club": "retail", "Private Lesson": "home"
+
+  @@schema("franchise")
+}
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum POSProvider {
+  SQUARE
+  STRIPE_TERMINAL
+  TOAST
+  CLOVER
+  SHOPIFY
+  TUTORCRUNCHER // Existing integration
+  MANUAL
+  OTHER
+}
+
+enum IntegrationStatus {
+  PENDING
+  CONNECTING
+  CONNECTED
+  ERROR
+  DISCONNECTED
+  EXPIRED
+}
+
+enum SyncFrequency {
+  REAL_TIME
+  HOURLY
+  DAILY
+  WEEKLY
+}
+
+// POS Transaction records (for detailed financial tracking)
+model POSTransaction {
+  id                  String            @id @default(cuid())
+  franchiseeAccountId String
+  franchiseeAccount   FranchiseeAccount @relation(fields: [franchiseeAccountId], references: [id], onDelete: Cascade)
+
+  // External reference
+  externalId String
+  provider   POSProvider
+  locationId String?
+
+  // Transaction details
+  transactionDate DateTime
+  grossAmount     Decimal  @db.Decimal(10, 2)
+  netAmount       Decimal  @db.Decimal(10, 2)
+  fees            Decimal? @db.Decimal(10, 2)
+  tax             Decimal? @db.Decimal(10, 2)
+
+  // Categorization
+  category    String? // home, online, retail, school, other
+  description String?
+
+  // Line items (JSON array)
+  lineItems Json? // [{ name, quantity, unitPrice, total
+
+  @@schema("franchise")
+}]
+
+  // Customer reference
+  customerName  String?
+  customerEmail String?
+
+  // Payment details
+  paymentMethod String? // cash, card, etc.
+  cardBrand     String?
+  cardLast4     String?
+
+  // Status
+  status         TransactionStatus @default(COMPLETED)
+  refundedAmount Decimal?          @db.Decimal(10, 2)
+
+  // Raw data
+  rawData Json? // Original POS response
+
+  syncedAt DateTime @default(now())
+
+  @@unique([franchiseeAccountId, externalId, provider])
+  @@index([franchiseeAccountId])
+  @@index([transactionDate])
+  @@index([category])
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  REFUNDED
+  PARTIALLY_REFUNDED
+  VOIDED
+}
+
+// Financial benchmarks (network-wide comparison data)
+model FinancialBenchmark {
+  id String @id @default(cuid())
+
+  year  Int
+  month Int
+
+  // Network-wide metrics
+  networkMedianRevenue  Decimal @db.Decimal(10, 2)
+  networkAvgRevenue     Decimal @db.Decimal(10, 2)
+  networkTopQuartile    Decimal @db.Decimal(10, 2) // 75th percentile
+  networkBottomQuartile Decimal @db.Decimal(10, 2) // 25th percentile
+
+  // By category
+  medianHomeRevenue   Decimal? @db.Decimal(10, 2)
+  medianOnlineRevenue Decimal? @db.Decimal(10, 2)
+  medianRetailRevenue Decimal? @db.Decimal(10, 2)
+  medianSchoolRevenue Decimal? @db.Decimal(10, 2)
+
+  // Operational benchmarks
+  medianLessonsPerMonth Int?
+  medianStudentsActive  Int?
+  medianTutorsActive    Int?
+  avgCustomerRetention  Float?
+
+  // Financial ratios
+  avgGrossMargin    Float?
+  avgCollectionRate Float?
+  avgDaysToPayment  Float?
+
+  // Growth benchmarks
+  avgRevenueGrowthMoM Float? // Month-over-month
+  avgRevenueGrowthYoY Float? // Year-over-year
+
+  // Sample size
+  franchiseeCount Int
+
+  createdAt DateTime @default(now())
+
+  @@unique([year, month])
+  @@index([year, month])
+
+  @@schema("franchise")
+}
+
+// ============================================
+// INDUSTRY BENCHMARKING MODELS
+// ============================================
+
+// Industry benchmark data for competitor/target companies
+model IndustryBenchmark {
+  id String @id @default(cuid())
+
+  // Company identification
+  companyName   String // e.g., "Soccer Shots", "Little Kickers", "Mathnasium"
+  companyType   CompanyType @default(COMPETITOR)
+  parentCompany String? // e.g., "Stronger Youth Brands"
+  category      String // e.g., "youth-sports", "tutoring", "enrichment"
+
+  // Data year
+  dataYear Int
+
+  // Scale metrics
+  systemWideRevenue  Decimal? @db.Decimal(12, 2) // Total across all units
+  franchiseeCount    Int?
+  companyOwnedUnits  Int?
+  totalUnits         Int?
+  countriesOperating Int?
+  statesOperating    Int?
+
+  // Unit economics
+  avgRevenuePerUnit    Decimal? @db.Decimal(10, 2)
+  medianRevenuePerUnit Decimal? @db.Decimal(10, 2)
+  topQuartileRevenue   Decimal? @db.Decimal(10, 2) // Top 25% avg
+  topPerformerRevenue  Decimal? @db.Decimal(10, 2) // Single best unit
+
+  // Fees
+  initialInvestmentLow  Decimal? @db.Decimal(10, 2)
+  initialInvestmentHigh Decimal? @db.Decimal(10, 2)
+  franchiseFee          Decimal? @db.Decimal(10, 2)
+  royaltyRate           Float? // Percentage
+  adFundRate            Float? // Percentage
+
+  // Operational metrics
+  childrenEnrolled    Int? // Total children served
+  territoryPopulation Int? // Population per territory
+  avgEBITDAPerUnit    Decimal? @db.Decimal(10, 2)
+  operatingMargin     Float? // Percentage
+
+  // Growth metrics
+  yoyGrowthRate  Float? // Year-over-year revenue growth
+  unitGrowthRate Float? // Year-over-year unit growth
+
+  // Acquisition/funding info
+  fundingRaised Decimal? @db.Decimal(12, 2)
+  valuation     Decimal? @db.Decimal(12, 2)
+  acquiredYear  Int?
+  acquiredBy    String?
+
+  // Data source
+  dataSource String? // e.g., "FDD Item 19", "Press Release", "Franchise Times"
+  sourceUrl  String?
+  notes      String? @db.Text
+
+  isActive Boolean @default(true)
+
+  // Staleness tracking
+  lastVerifiedAt  DateTime? // When admin last confirmed data is current
+  nextRefreshDate DateTime? // When this data should be refreshed
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([companyName, dataYear])
+  @@index([category])
+  @@index([companyType])
+
+  @@schema("franchise")
+}
+
+enum CompanyType {
+  COMPETITOR // Direct competitors
+  ACQUISITION_TARGET // Companies we aspire to match
+  ACQUIRER // Potential acquirers (e.g., Stronger Youth Brands)
+  INDUSTRY_BENCHMARK // General industry data
+}
+
+// STC growth milestones and targets
+model GrowthMilestone {
+  id String @id @default(cuid())
+
+  // Milestone identification
+  name         String // e.g., "Year 1", "Year 3", "Acquisition Ready"
+  targetYear   Int // Calendar year target
+  displayOrder Int    @default(0)
+
+  // Revenue targets
+  systemWideRevenueTarget Decimal? @db.Decimal(12, 2)
+  avgRevenuePerUnitTarget Decimal? @db.Decimal(10, 2)
+
+  // Scale targets
+  franchiseeCountTarget  Int?
+  totalUnitsTarget       Int?
+  statesTarget           Int?
+  childrenEnrolledTarget Int?
+
+  // Financial targets
+  operatingMarginTarget     Float?
+  franchiseeRetentionTarget Float?
+
+  // Qualitative goals
+  keyObjectives Json? // Array of objective strings
+
+  // Comparison reference
+  comparableCompany String? // e.g., "Soccer Shots at SYB investment"
+  comparableNotes   String? @db.Text
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([targetYear])
+
+  @@schema("franchise")
+}
+
+// STC actual performance snapshots (for tracking against milestones)
+model STCPerformanceSnapshot {
+  id String @id @default(cuid())
+
+  // Period
+  year    Int
+  month   Int
+  quarter Int?
+
+  // Revenue metrics
+  systemWideRevenue Decimal? @db.Decimal(12, 2)
+  avgRevenuePerUnit Decimal? @db.Decimal(10, 2)
+
+  // Scale metrics
+  activeFranchisees Int?
+  totalTerritories  Int?
+  statesOperating   Int?
+  childrenEnrolled  Int?
+
+  // Financial metrics
+  totalRoyaltiesCollected Decimal? @db.Decimal(10, 2)
+  collectionRate          Float?
+  avgOperatingMargin      Float?
+
+  // Operational metrics
+  totalLessonsDelivered Int?
+  avgLessonsPerUnit     Int?
+  avgStudentsPerUnit    Int?
+
+  // Growth metrics
+  newFranchiseesThisPeriod Int?
+  franchiseeChurnRate      Float?
+  revenueGrowthMoM         Float?
+  revenueGrowthYoY         Float?
+
+  // Notes
+  notes String? @db.Text
+
+  createdAt DateTime @default(now())
+
+  @@unique([year, month])
+  @@index([year])
+
+  @@schema("franchise")
+}
+
+// ============================================
+// ANNOUNCEMENT MODELS
+// ============================================
+
+model Announcement {
+  id          String               @id @default(cuid())
+  title       String
+  content     String               @db.Text
+  category    AnnouncementCategory
+  priority    AnnouncementPriority @default(NORMAL)
+  status      AnnouncementStatus   @default(DRAFT)
+  publishedAt DateTime?
+  expiresAt   DateTime?
+  createdBy   String // Admin email
+  isPinned    Boolean              @default(false)
+
+  reads     AnnouncementRead[]
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@index([status, publishedAt])
+  @@index([category])
+
+  @@schema("franchise")
+}
+
+model AnnouncementRead {
+  id             String   @id @default(cuid())
+  announcementId String
+  prospectId     String
+  readAt         DateTime @default(now())
+
+  announcement Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  prospect     Prospect     @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  @@unique([announcementId, prospectId])
+  @@index([prospectId])
+
+  @@schema("franchise")
+}
+
+// ============================================
+// CREATIVE ASSETS
+// ============================================
+
+enum AssetCategory {
+  LOGOS
+  SOCIAL_MEDIA
+  FLYERS_PRINT
+  EMAIL_TEMPLATES
+  PRESENTATIONS
+  LEGAL_DOCS
+  PHOTOS_MEDIA
+  OTHER
+}
+
+enum AssetSourceType {
+  CANVA
+  UPLOAD
+  URL
+}
+
+model CreativeAsset {
+  id          String          @id @default(cuid())
+  title       String
+  description String?         @db.Text
+  category    AssetCategory   @default(OTHER)
+  sourceType  AssetSourceType
+
+  // Canva fields
+  canvaDesignId     String?
+  canvaEmbedUrl     String?
+  canvaThumbnailUrl String?
+
+  // Upload fields
+  fileUrl       String?
+  fileName      String?
+  fileSizeBytes Int?
+  mimeType      String?
+
+  // External URL fields
+  externalUrl String?
+
+  // Common fields
+  thumbnailUrl String?
+  isOfficial   Boolean @default(false)
+  isPublic     Boolean @default(false)
+  sortOrder    Int     @default(0)
+
+  // Relations
+  uploadedById String?
+  uploadedBy   Prospect? @relation(fields: [uploadedById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([sourceType])
+  @@index([uploadedById])
+  @@index([isOfficial])
+
+  @@schema("franchise")
+}
+
+model CanvaConnection {
+  id           String   @id @default(cuid())
+  accessToken  String   @db.Text
+  refreshToken String   @db.Text
+  expiresAt    DateTime
+  scope        String
+  connectedBy  String
+  displayName  String?
+  canvaUserId  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@schema("franchise")
+}
+
+enum AnnouncementCategory {
+  GENERAL
+  POLICY
+  TRAINING
+  EVENT
+  SYSTEM
+  MARKETING
+}
+
+enum AnnouncementPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum AnnouncementStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+// ============================================
+// LEAD SOURCE MANAGEMENT
+// ============================================
+
+enum LeadSourceCategory {
+  PAID_SEARCH
+  PAID_SOCIAL
+  ORGANIC_SEARCH
+  ORGANIC_SOCIAL
+  REFERRAL
+  EMAIL
+  EVENTS
+  PARTNERSHIPS
+  DIRECT
+  OTHER
+}
+
+model LeadSource {
+  id        String             @id @default(cuid())
+  slug      String             @unique
+  name      String
+  category  LeadSourceCategory
+  utmSource String? // Maps to utm_source values
+  utmMedium String? // Maps to utm_medium values
+  isActive  Boolean            @default(true)
+  notes     String?            @db.Text
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  spends CampaignSpend[]
+
+  @@index([category])
+  @@index([isActive])
+
+  @@schema("franchise")
+}
+
+model CampaignSpend {
+  id           String     @id @default(cuid())
+  leadSourceId String
+  leadSource   LeadSource @relation(fields: [leadSourceId], references: [id], onDelete: Cascade)
+  month        Int // 1-12
+  year         Int
+  amount       Decimal    @db.Decimal(10, 2)
+  notes        String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([leadSourceId, month, year])
+  @@index([leadSourceId])
+  @@index([year, month])
+
+  @@schema("franchise")
+}
+
+// Stores uploaded files in PostgreSQL (no external storage dependency)
+model UploadedFile {
+  id        String   @id @default(cuid())
+  fileName  String
+  mimeType  String
+  fileSize  Int
+  data      Bytes    // File binary stored in Postgres
+  uploadedBy String  // Prospect ID or admin user ID
+  context   String?  // e.g. "bootcamp-docs", "compliance"
+  createdAt DateTime @default(now())
+
+  @@index([uploadedBy])
+
+  @@schema("franchise")
+}
+
+// ============================================
+// PRODUCT QUALITY SCORE (PQS) — Franchisee Feedback
+// ============================================
+
+model Feedback {
+  id          String          @id @default(cuid())
+  prospectId  String
+  prospect    Prospect        @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  type        FeedbackType    // PAGE_FEEDBACK, MILESTONE_COMPLETION, FEATURE_RATING
+  trigger     FeedbackTrigger // PERSISTENT_WIDGET, MILESTONE_PROMPT, MANUAL
+  rating      Int             // 1-5
+  comment     String?         @db.Text
+  pageUrl     String?
+  userRole    String          // PROSPECT, ADMIN
+  metadata    Json?           // Extra context (moduleId, taskId, etc.)
+
+  createdAt   DateTime        @default(now())
+
+  @@index([prospectId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([pageUrl])
+
+  @@schema("franchise")
+}
+
+model SurveyResponse {
+  id          String     @id @default(cuid())
+  prospectId  String
+  prospect    Prospect   @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  surveyType  SurveyType // MILESTONE_PREWORK, MILESTONE_30DAY, MILESTONE_90DAY, QUARTERLY
+
+  npsScore         Int   // 0-10
+  cesScore         Int   // 1-7
+  usabilityScore   Int   // 1-5
+  helpfulnessScore Int   // 1-5
+  reliabilityScore Int   // 1-5
+
+  whatWorksWell  String? @db.Text
+  whatToImprove  String? @db.Text
+
+  createdAt   DateTime   @default(now())
+
+  @@index([prospectId])
+  @@index([surveyType])
+  @@index([createdAt])
+
+  @@schema("franchise")
+}
+
+model ProductQualityScore {
+  id    String @id @default(cuid())
+  year  Int
+  month Int
+
+  npsScore       Float // -100 to +100
+  cesScore       Float // 1-7 average
+
+  usabilityAvg   Float // 1-5
+  helpfulnessAvg Float // 1-5
+  reliabilityAvg Float // 1-5
+
+  microFeedbackCount Int
+  microFeedbackAvg   Float
+
+  surveyResponseCount Int
+  totalFeedbackCount  Int
+
+  previousNps Float?
+  trend       ScoreTrend // Reuse existing enum
+
+  breakdown   Json?
+
+  createdAt   DateTime @default(now())
+
+  @@unique([year, month])
+  @@index([year, month])
+
+  @@schema("franchise")
+}
+
+model FeedbackThrottle {
+  id            String    @id @default(cuid())
+  prospectId    String
+  lastPromptAt  DateTime
+  lastDismissAt DateTime?
+  promptCount   Int       @default(0)
+
+  @@unique([prospectId])
+  @@index([prospectId])
+
+  @@schema("franchise")
+}
+
+model FeedbackChangelog {
+  id          String    @id @default(cuid())
+  title       String
+  description String    @db.Text
+  category    String?
+  createdBy   String
+  publishedAt DateTime?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@schema("franchise")
+}
+
+enum FeedbackType {
+  PAGE_FEEDBACK
+  MILESTONE_COMPLETION
+  FEATURE_RATING
+}
+
+enum FeedbackTrigger {
+  PERSISTENT_WIDGET
+  MILESTONE_PROMPT
+  MANUAL
+}
+
+enum SurveyType {
+  MILESTONE_PREWORK
+  MILESTONE_30DAY
+  MILESTONE_90DAY
+  QUARTERLY
+}

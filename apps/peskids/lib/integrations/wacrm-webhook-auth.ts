@@ -1,4 +1,5 @@
 import { resolveWacrmForTenant } from '@intcloudsysops/wacrm-channel';
+import { timingSafeEqual } from '@/lib/utils/timing-safe-equal';
 
 type Env = Record<string, string | undefined>;
 
@@ -30,7 +31,7 @@ export function verifyWacrmWebhookSecret(
     return false;
   }
   const token = provided?.trim() ?? '';
-  return token.length > 0 && token === expected;
+  return token.length > 0 && timingSafeEqual(token, expected);
 }
 
 export function extractWacrmWebhookSecretFromHeaders(

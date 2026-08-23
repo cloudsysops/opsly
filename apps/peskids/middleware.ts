@@ -4,6 +4,7 @@ import { createServerClient, type SetAllCookies } from '@supabase/ssr'
 import { isStaffUser } from '@/lib/staff-user'
 import type { Database } from '@/lib/types'
 import { isPathUnderAuthSurface } from '@/lib/runtime/tenant-auth-surface'
+import { timingSafeEqual } from '@/lib/utils/timing-safe-equal'
 
 const PESKIDS_AUTH_SURFACE = {
   entryPaths: ['/', '/admin/login'],
@@ -37,7 +38,7 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 
   const adminSecret = process.env.DASHBOARD_ADMIN_SECRET?.trim() ?? ''
   const adminToken = req.cookies.get('admin-token')?.value?.trim() ?? ''
-  if (adminSecret && adminToken === adminSecret) {
+  if (adminSecret && timingSafeEqual(adminToken, adminSecret)) {
     return NextResponse.next()
   }
 

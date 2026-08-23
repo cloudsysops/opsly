@@ -7,16 +7,16 @@ import {
 
 describe('staff surface helpers', () => {
   const admin = {
-    user_metadata: { role: 'admin', tenant_slug: 'peskids' },
-    app_metadata: {},
+    user_metadata: {},
+    app_metadata: { role: 'admin', tenant_slug: 'peskids' },
   } as never
   const support = {
-    user_metadata: { role: 'support', tenant_slug: 'peskids' },
-    app_metadata: {},
+    user_metadata: {},
+    app_metadata: { role: 'support', tenant_slug: 'peskids' },
   } as never
   const teacher = {
-    user_metadata: { role: 'teacher', tenant_slug: 'peskids' },
-    app_metadata: {},
+    user_metadata: {},
+    app_metadata: { role: 'teacher', tenant_slug: 'peskids' },
   } as never
 
   it('limits admin surface to owner/admin', () => {

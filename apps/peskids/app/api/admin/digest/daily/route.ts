@@ -6,6 +6,7 @@ import {
   isPeskidsOperationalNotificationsEnabled,
 } from '@/lib/peskids-pro-flags';
 import { buildDailyDigest } from '@/lib/services/daily-digest.service';
+import { timingSafeEqual } from '@/lib/utils/timing-safe-equal';
 
 function isCronAuthorized(req: NextRequest): boolean {
   const secret =
@@ -20,7 +21,7 @@ function isCronAuthorized(req: NextRequest): boolean {
     : '';
   const headerToken = req.headers.get('x-cron-secret')?.trim() ?? '';
 
-  return bearer === secret || headerToken === secret;
+  return timingSafeEqual(bearer, secret) || timingSafeEqual(headerToken, secret);
 }
 
 export async function GET(req: NextRequest) {

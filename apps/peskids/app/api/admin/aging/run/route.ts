@@ -2,6 +2,7 @@ import { type NextRequest } from 'next/server';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { validateStaffRequest } from '@/lib/staff-auth';
 import { runLeadAgingScan } from '@/lib/services/lead-aging.service';
+import { timingSafeIncludes } from '@/lib/utils/timing-safe-equal';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,7 +33,7 @@ function isCronAuthorized(req: NextRequest): boolean {
     : '';
   const headerToken = req.headers.get('x-cron-secret')?.trim() ?? '';
 
-  return secrets.includes(bearer) || secrets.includes(headerToken);
+  return timingSafeIncludes(secrets, bearer) || timingSafeIncludes(secrets, headerToken);
 }
 
 export async function POST(req: NextRequest) {

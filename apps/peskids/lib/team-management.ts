@@ -436,6 +436,23 @@ async function createAuthLink(params: {
     throw new Error('generateLink did not return action_link');
   }
 
+  // SECURITY: role/tenant_slug authorize the staff/admin surface (see lib/staff-user.ts,
+  // lib/runtime/tenant-identity.ts) and MUST live in app_metadata, which only the Admin API
+  // (service role, used here) can write. generateLink's `options.data` above only sets
+  // user_metadata, which any signed-in user can self-edit — never trust it for authorization.
+  if (data.user?.id) {
+    const { error: appMetaError } = await admin.auth.admin.updateUserById(data.user.id, {
+      app_metadata: {
+        ...(data.user.app_metadata ?? {}),
+        tenant_slug: TENANT_SLUG,
+        role: params.role,
+      },
+    });
+    if (appMetaError) {
+      throw new Error(appMetaError.message);
+    }
+  }
+
   const token = new URL(actionLink).searchParams.get('token');
   if (!token) {
     throw new Error('Could not parse invite token from action_link');
