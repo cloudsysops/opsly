@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { jsonError, jsonOk } from '@/lib/api-response';
 import { HTTP_STATUS } from '@/lib/constants';
-import { runTrustedPortalDalForPathSlug } from '@/lib/portal-tenant-dal';
+import { runTrustedPortalDalForPathSlug, PORTAL_WRITE_ACCESS } from '@/lib/portal-tenant-dal';
 import { getServiceClient } from '@/lib/supabase';
 
 // peskids.* tables pending DB type codegen
@@ -115,7 +115,10 @@ export async function POST(
   { params }: { params: Promise<{ tenantSlug: string }> }
 ): Promise<Response> {
   const { tenantSlug } = await params;
-  return runTrustedPortalDalForPathSlug(request, tenantSlug, async (session) => {
+  return runTrustedPortalDalForPathSlug(
+    request,
+    tenantSlug,
+    async (session) => {
     try {
       const body = (await request.json()) as Partial<BulkGradeRequest>;
 
@@ -147,5 +150,7 @@ export async function POST(
       console.error('Bulk grade error:', error);
       return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
     }
-  });
+  },
+  PORTAL_WRITE_ACCESS
+  );
 }

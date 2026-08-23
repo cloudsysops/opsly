@@ -30,6 +30,10 @@ describe('POST /api/peskids/portal/[tenantSlug]/submissions/bulk-grade authoriza
     const params = Promise.resolve({ tenantSlug: 'test-tenant' });
     const res = await POST(req, { params });
     expect(res.status).toBe(401);
+    expect(resolveTrustedPortalSession).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ allowedRoles: ['owner', 'admin', 'operator'] })
+    );
   });
 
   it('allows access with a valid session and passes correct actorId to auditing', async () => {
