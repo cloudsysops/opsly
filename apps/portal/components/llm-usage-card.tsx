@@ -34,8 +34,13 @@ function UsageBlock(props: { title: string; data: PortalUsagePayload | null }): 
           <dd className="font-mono tabular-nums">{formatInt(data.requests)}</dd>
         </div>
         <div className="flex justify-between gap-2">
-          <dt className="text-ops-gray">Tokens (entrada / salida)</dt>
-          <dd className="text-right font-mono text-xs tabular-nums">
+          <dt className="text-ops-gray" title="Tokens procesados (Entrada / Salida)">
+            Tokens (entrada / salida)
+          </dt>
+          <dd
+            className="text-right font-mono text-xs tabular-nums"
+            aria-label={`${formatInt(data.tokens_input)} tokens de entrada, ${formatInt(data.tokens_output)} tokens de salida`}
+          >
             {formatInt(data.tokens_input)} / {formatInt(data.tokens_output)}
           </dd>
         </div>
@@ -44,8 +49,18 @@ function UsageBlock(props: { title: string; data: PortalUsagePayload | null }): 
           <dd className="font-mono tabular-nums">{formatUsd(data.cost_usd)}</dd>
         </div>
         <div className="flex justify-between gap-2">
-          <dt className="text-ops-gray">Caché LLM</dt>
-          <dd className="font-mono tabular-nums">{formatInt(data.cache_hit_rate)}%</dd>
+          <dt
+            className="text-ops-gray"
+            title="Porcentaje de respuestas servidas directamente desde la caché"
+          >
+            Caché LLM
+          </dt>
+          <dd
+            className="font-mono tabular-nums"
+            aria-label={`${formatInt(data.cache_hit_rate)} por ciento de aciertos en caché`}
+          >
+            {formatInt(data.cache_hit_rate)}%
+          </dd>
         </div>
       </dl>
     </div>
@@ -57,9 +72,12 @@ export function LlmUsageCard(props: { usage: PortalUsageSnapshot }): ReactElemen
   const empty = usage.today === null && usage.month === null;
 
   return (
-    <section className="space-y-3 rounded-lg border border-ops-border bg-ops-surface p-5">
+    <section
+      aria-labelledby="llm-usage-heading"
+      className="space-y-3 rounded-lg border border-ops-border bg-ops-surface p-5"
+    >
       <div>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-ops-gray">
+        <h2 id="llm-usage-heading" className="text-sm font-semibold uppercase tracking-wide text-ops-gray">
           Uso de IA (LLM)
         </h2>
         <p className="mt-1 text-xs text-ops-gray">
