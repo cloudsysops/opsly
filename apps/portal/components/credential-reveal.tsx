@@ -109,6 +109,9 @@ export function CredentialReveal({ password }: CredentialRevealProps): ReactElem
           <span>{copied ? 'Copiado' : 'Copiar'}</span>
         </Button>
       </div>
+      <span className="sr-only" role="status" aria-live="polite">
+        {copied ? 'Contraseña copiada al portapapeles' : ''}
+      </span>
     </div>
   );
 }
