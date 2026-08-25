@@ -40,6 +40,9 @@ export async function POST(request: Request): Promise<Response> {
     const message = err instanceof Error ? err.message : String(err);
     const logArg = err instanceof Error ? err : new Error(message);
     logger.error('internal budget-enforce', logArg);
-    return Response.json({ error: message }, { status: HTTP_STATUS.INTERNAL_ERROR });
+    return Response.json(
+      { error: 'Internal budget enforcement failed' },
+      { status: HTTP_STATUS.INTERNAL_ERROR }
+    );
   }
 }
