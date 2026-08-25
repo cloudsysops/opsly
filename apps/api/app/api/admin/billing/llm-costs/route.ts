@@ -5,7 +5,8 @@ import {
   type RawUsageAnalyticsRow,
 } from '../../../../../lib/admin-llm-cost-analytics';
 import { requireAdminAccess } from '../../../../../lib/auth';
-import { HTTP_STATUS } from '../../../../../lib/constants';
+import { CACHE_TTL, HTTP_STATUS } from '../../../../../lib/constants';
+import { getCache, setCache } from '../../../../../lib/redis-cache';
 import { getServiceClient } from '../../../../../lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -38,6 +39,23 @@ export async function GET(request: Request): Promise<Response> {
     return Response.json({ error: 'period must be YYYY-MM' }, { status: HTTP_STATUS.BAD_REQUEST });
   }
 
+  // Bolt Optimization: cache LLM costs breakdown for 60s per tenant and period
+  // to avoid repeated database queries and row aggregations on admin dashboard refreshes.
+  const cacheKey = `admin:billing:llm-costs:${tenantSlug}:${period}`;
+  type LlmCostsPayload = {
+    period: string;
+    tenant_slug: string;
+    total_cost_usd: number;
+    total_requests: number;
+    by_model: ReturnType<typeof aggregateLlmCostsByModel>;
+    by_feature: ReturnType<typeof aggregateLlmCostsByFeature>;
+  };
+
+  const cached = await getCache<LlmCostsPayload>(cacheKey);
+  if (cached) {
+    return Response.json(cached);
+  }
+
   const db = getServiceClient();
   const { data, error } = await db
     .from('usage_events')
@@ -59,12 +77,16 @@ export async function GET(request: Request): Promise<Response> {
   const byModel = aggregateLlmCostsByModel(rows);
   const byFeature = aggregateLlmCostsByFeature(rows);
 
-  return Response.json({
+  const payload: LlmCostsPayload = {
     period,
     tenant_slug: tenantSlug,
     total_cost_usd: totalCost,
     total_requests: rows.length,
     by_model: byModel,
     by_feature: byFeature,
-  });
+  };
+
+  void setCache(cacheKey, payload, CACHE_TTL.SHORT);
+
+  return Response.json(payload);
 }
