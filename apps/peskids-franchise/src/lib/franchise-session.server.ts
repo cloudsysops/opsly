@@ -11,6 +11,8 @@ import {
   type FranchiseUiSession,
 } from './franchise-session';
 
+export { unitIdsForScope };
+
 export class FranchiseSessionError extends Error {
   constructor(
     public readonly status: 401 | 403 | 503,
