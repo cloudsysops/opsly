@@ -14,14 +14,6 @@ import { PESKIDS_TENANT_SLUG } from './franchise-constants';
 
 export type FranchiseScope = 'all' | string[];
 
-type FranchiseMembershipRow = {
-  user_id: string;
-  franchise_id: string;
-  role: string;
-  active: boolean;
-  tenant_slug: string;
-};
-
 function serviceClient() {
   const url = process.env.SUPABASE_URL?.trim() || process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
