@@ -10,7 +10,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { PESKIDS_TENANT_SLUG, type FranchiseRole } from './franchise-constants';
+import { PESKIDS_TENANT_SLUG } from './franchise-constants';
 
 export type FranchiseScope = 'all' | string[];
 
@@ -67,12 +67,12 @@ export async function resolveFranchiseScope(
   if (error || !data || data.length === 0) return [];
 
   const membershipRoles = data
-    .map((m: FranchiseMembershipRow) => m.role?.toLowerCase())
-    .filter((r): r is FranchiseRole => r === 'support' || r === 'teacher');
+    .map((m) => String(m.role ?? '').toLowerCase())
+    .filter((r): r is 'support' | 'teacher' => r === 'support' || r === 'teacher');
 
   // Support users with memberships get scoped access
   if (membershipRoles.some((r) => r === 'support')) {
-    return [...new Set(data.map((m: FranchiseMembershipRow) => m.franchise_id))];
+    return [...new Set(data.map((m) => String(m.franchise_id)))];
   }
 
   return [];
