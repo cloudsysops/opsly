@@ -19,7 +19,8 @@
     "db:seed": "prisma db seed",
     "seed:knowledge": "tsx prisma/seed-knowledge.ts",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "type-check": "../../node_modules/.bin/tsc --noEmit"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
