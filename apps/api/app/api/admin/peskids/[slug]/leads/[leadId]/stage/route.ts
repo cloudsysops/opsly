@@ -5,6 +5,7 @@ import { PESKIDS_PIPELINE_STAGES } from '../../../../../../../../lib/peskids/pip
 import { updateLeadStage } from '../../../../../../../../lib/peskids/sales-pipeline';
 import { parseJsonBody, jsonError } from '../../../../../../../../lib/api-response';
 import { formatZodError } from '../../../../../../../../lib/validation';
+import { extractIp, logAuditEvent } from '../../../../../../../../lib/audit';
 
 const stageUpdateSchema = z.object({
   stage: z.enum(PESKIDS_PIPELINE_STAGES),
@@ -42,6 +43,16 @@ export async function PATCH(
   const result = await updateLeadStage(slug, leadId, parsed.data.stage);
 
   if (result.ok) {
+    const ip = extractIp(request);
+    void logAuditEvent({
+      tenant_slug: slug,
+      action: 'peskids_lead_stage_updated',
+      resource: leadId,
+      ip,
+      metadata: {
+        stage: parsed.data.stage,
+      },
+    });
     return Response.json({ ok: true, lead: result.lead }, { status: HTTP_STATUS.OK });
   }
 
