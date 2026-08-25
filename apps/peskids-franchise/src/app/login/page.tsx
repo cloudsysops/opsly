@@ -1,32 +1,36 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { signIn } from "next-auth/react";
-import { Button } from "@/components/shared/Button";
-import { Input } from "@/components/shared/Input";
-import Link from "next/link";
-import Image from "next/image";
-import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense } from "react";
+import { useState, useEffect } from 'react';
+import { signIn } from 'next-auth/react';
+import { Button } from '@/components/shared/Button';
+import { Input } from '@/components/shared/Input';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Suspense } from 'react';
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/admin";
-  const error = searchParams.get("error");
-  const message = searchParams.get("message");
+  const callbackUrl = searchParams.get('callbackUrl') || '/admin';
+  const error = searchParams.get('error');
+  const message = searchParams.get('message');
 
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isAutoLogging, setIsAutoLogging] = useState(true);
 
-  // Auto-login as demo user for portfolio demo mode
   useEffect(() => {
+    if (process.env.NODE_ENV === 'production') {
+      setIsAutoLogging(false);
+      return;
+    }
+
     (async () => {
       try {
-        const result = await signIn("credentials", {
-          email: "demo@acmefranchise.com",
-          password: "demo",
+        const result = await signIn('credentials', {
+          email: 'demo@acmefranchise.com',
+          password: 'demo',
           redirect: false,
         });
         if (!result?.error) {
@@ -50,8 +54,8 @@ function LoginForm() {
   }
 
   const successMessages: Record<string, string> = {
-    "password-set": "Your password has been set. You can now sign in.",
-    "password-reset": "Your password has been reset. You can now sign in.",
+    'password-set': 'Your password has been set. You can now sign in.',
+    'password-reset': 'Your password has been reset. You can now sign in.',
   };
 
   async function handleCredentialsLogin(e: React.FormEvent<HTMLFormElement>) {
@@ -61,14 +65,14 @@ function LoginForm() {
 
     const formData = new FormData(e.currentTarget);
 
-    const result = await signIn("credentials", {
-      email: formData.get("email"),
-      password: formData.get("password"),
+    const result = await signIn('credentials', {
+      email: formData.get('email'),
+      password: formData.get('password'),
       redirect: false,
     });
 
     if (result?.error) {
-      setLoginError("Invalid email or password");
+      setLoginError('Invalid email or password');
       setIsLoading(false);
     } else {
       window.location.href = callbackUrl;
@@ -77,7 +81,7 @@ function LoginForm() {
 
   async function handleGoogleLogin() {
     setIsLoading(true);
-    await signIn("google", { callbackUrl: "/auth/callback" });
+    await signIn('google', { callbackUrl: '/auth/callback' });
   }
 
   return (
@@ -110,15 +114,13 @@ function LoginForm() {
 
           {(error || loginError) && (
             <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-              {loginError || "Authentication failed. Please try again."}
+              {loginError || 'Authentication failed. Please try again.'}
             </div>
           )}
 
           {/* Prospect Login */}
           <form onSubmit={handleCredentialsLogin} className="space-y-6">
-            <h3 className="text-lg font-semibold text-brand-navy">
-              Franchise Portal
-            </h3>
+            <h3 className="text-lg font-semibold text-brand-navy">Franchise Portal</h3>
 
             <Input
               id="email"
@@ -159,9 +161,7 @@ function LoginForm() {
                 <div className="w-full border-t border-gray-200" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="bg-white px-2 text-gray-500">
-                  @acmefranchise.com accounts
-                </span>
+                <span className="bg-white px-2 text-gray-500">@acmefranchise.com accounts</span>
               </div>
             </div>
           </div>
@@ -202,11 +202,8 @@ function LoginForm() {
         </div>
 
         <p className="mt-8 text-center text-sm text-gray-500">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/contact"
-            className="text-brand-purple hover:text-brand-navy font-medium"
-          >
+          Don&apos;t have an account?{' '}
+          <Link href="/contact" className="text-brand-purple hover:text-brand-navy font-medium">
             Submit an inquiry
           </Link>
         </p>

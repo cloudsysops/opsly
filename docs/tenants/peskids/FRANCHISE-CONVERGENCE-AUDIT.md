@@ -34,3 +34,13 @@ non-production until removed or explicitly gated:
 
 No real Peskids records should be backfilled from these fixtures. No Prisma
 drop or production migration is authorized by this audit.
+
+## Bounded legacy debt
+
+The clean Next 15 build measured 23,162 inherited Prettier diagnostics and 26
+legacy Next route-validator errors before this slice. They fall into three
+categories: clone-wide quote/formatting drift, synchronous dynamic-route
+`params` signatures, and missing local `date-fns` resolution from the dirty
+workspace lock/install state. The proposed cleanup is a separate compatibility
+PR; this slice formats and lints only touched files and does not add broad
+ignores.

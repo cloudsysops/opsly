@@ -1,13 +1,14 @@
-import NextAuth from "next-auth";
-import type { Adapter } from "next-auth/adapters";
-import Google from "next-auth/providers/google";
-import Credentials from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { compare } from "bcryptjs";
-import { db } from "./db";
-import type { UserRole } from "@prisma/client";
+import NextAuth from 'next-auth';
+import type { Adapter } from 'next-auth/adapters';
+import Google from 'next-auth/providers/google';
+import Credentials from 'next-auth/providers/credentials';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import { compare } from 'bcryptjs';
+import { db } from './db';
+import type { UserRole } from '@prisma/client';
+import { isFranchiseDemoAuthEnabled } from './demo-auth';
 
-declare module "next-auth" {
+declare module 'next-auth' {
   interface Session {
     user: {
       id: string;
@@ -24,10 +25,10 @@ declare module "next-auth" {
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(db) as Adapter,
-  session: { strategy: "jwt" },
+  session: { strategy: 'jwt' },
   pages: {
-    signIn: "/login",
-    error: "/login",
+    signIn: '/login',
+    error: '/login',
   },
   providers: [
     // Google OAuth for admin users (@acmefranchise.com)
@@ -36,19 +37,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
-          hd: "acmefranchise.com", // Restrict to domain
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code',
+          hd: 'acmefranchise.com', // Restrict to domain
         },
       },
     }),
     // Email/password for prospects
     Credentials({
-      name: "credentials",
+      name: 'credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -59,12 +60,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const password = credentials.password as string;
 
         // Demo mode: accept demo credentials without DB lookup
-        if (email === "demo@acmefranchise.com" && password === "demo") {
+        if (
+          isFranchiseDemoAuthEnabled() &&
+          email === 'demo@acmefranchise.com' &&
+          password === 'demo'
+        ) {
           return {
-            id: "demo-user",
-            email: "demo@acmefranchise.com",
-            name: "Demo User",
-            role: "ADMIN" as UserRole,
+            id: 'demo-user',
+            email: 'demo@acmefranchise.com',
+            name: 'Demo User',
+            role: 'ADMIN' as UserRole,
           };
         }
 
@@ -86,8 +91,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         await db.prospectActivity.create({
           data: {
             prospectId: prospect.id,
-            activityType: "LOGIN",
-            description: "Prospect logged into portal",
+            activityType: 'LOGIN',
+            description: 'Prospect logged into portal',
           },
         });
 
@@ -95,7 +100,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           id: prospect.id,
           email: prospect.email,
           name: `${prospect.firstName} ${prospect.lastName}`,
-          role: "PROSPECT" as UserRole,
+          role: 'PROSPECT' as UserRole,
         };
       },
     }),
@@ -103,15 +108,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async signIn({ user, account }) {
       // For Google OAuth, verify it's a @acmefranchise.com email
-      if (account?.provider === "google") {
-        if (!user.email?.endsWith("@acmefranchise.com")) {
+      if (account?.provider === 'google') {
+        if (!user.email?.endsWith('@acmefranchise.com')) {
           return false;
         }
 
         try {
           // Check if this is a SELECTED franchisee — they get PROSPECT role, not ADMIN
           const prospect = await db.prospect.findFirst({
-            where: { email: user.email, pipelineStage: "SELECTED" },
+            where: { email: user.email, pipelineStage: 'SELECTED' },
           });
 
           if (!prospect) {
@@ -119,15 +124,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             const dbUser = await db.user.findUnique({
               where: { email: user.email },
             });
-            if (dbUser && dbUser.role === "PROSPECT") {
+            if (dbUser && dbUser.role === 'PROSPECT') {
               await db.user.update({
                 where: { email: user.email },
-                data: { role: "ADMIN" },
+                data: { role: 'ADMIN' },
               });
             }
           }
         } catch (err) {
-          console.error("Error in signIn callback:", err);
+          console.error('Error in signIn callback:', err);
           // Still allow sign-in — role will be resolved in jwt callback
         }
       }
@@ -141,33 +146,33 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.name = user.name;
       }
       // On initial Google sign-in, determine role based on whether they're a franchisee
-      if (account?.provider === "google" && token.email?.endsWith("@acmefranchise.com")) {
+      if (account?.provider === 'google' && token.email?.endsWith('@acmefranchise.com')) {
         try {
           const prospect = await db.prospect.findFirst({
-            where: { email: token.email as string, pipelineStage: "SELECTED" },
+            where: { email: token.email as string, pipelineStage: 'SELECTED' },
           });
 
           if (prospect) {
             // Franchisee — use PROSPECT role with prospect ID so portal works
-            token.role = "PROSPECT" as UserRole;
+            token.role = 'PROSPECT' as UserRole;
             token.id = prospect.id;
             token.name = `${prospect.firstName} ${prospect.lastName}`;
           } else {
             // Genuine admin
-            token.role = "ADMIN" as UserRole;
+            token.role = 'ADMIN' as UserRole;
             try {
               await db.user.update({
                 where: { email: token.email as string },
-                data: { role: "ADMIN" },
+                data: { role: 'ADMIN' },
               });
             } catch {
               // User may not be created yet by adapter
             }
           }
         } catch (err) {
-          console.error("Error in jwt callback:", err);
+          console.error('Error in jwt callback:', err);
           // Default to ADMIN for @acmefranchise.com users if DB lookup fails
-          token.role = "ADMIN" as UserRole;
+          token.role = 'ADMIN' as UserRole;
         }
       }
       return token;
