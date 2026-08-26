@@ -45,3 +45,7 @@
 ## 2026-08-20 - [Caching Admin Metrics Summary]
 **Learning:** Administrative metrics endpoints like `/api/admin/metrics` run multiple database RPCs (`opsly_admin_metrics`, `opsly_admin_revenue_by_month`) and BullMQ queue inspections on every request. Applying a 60s Redis cache (`admin:metrics:summary`) eliminates database query overhead and Redis scan delays during frequent admin dashboard updates, serving cached responses instantly.
 **Action:** Always cache expensive RPC and job-runner queue summary endpoints in administrative dashboards with a short TTL (60s).
+
+## 2026-08-26 - [Caching Mission Control Read Model]
+**Learning:** Complex read models like Mission Control foundation aggregate data from multiple disk files (`config/*.json`, `config/tenants/*.json`), BullMQ queue queries, and external HTTP health probes. Caching the assembled read model in Redis with a short TTL (60s) avoids repeated disk I/O, network latency, and probe timeouts on frequent dashboard refreshes.
+**Action:** Always wrap expensive multi-source read models in short-term Redis cache to maintain high API responsiveness.
