@@ -6,12 +6,12 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 export const dynamic = "force-dynamic";
 
-export default function WorkflowHistoryPage({
+export default async function WorkflowHistoryPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = params;
+  const { id } = await params;
 
   return (
     <div className="py-6 px-4 max-w-6xl mx-auto">
