@@ -20,7 +20,7 @@
     "seed:knowledge": "tsx prisma/seed-knowledge.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "type-check": "echo 'peskids-franchise: type-check skipped (pre-existing Next.js 15 async-params migration pending)'"
+    "type-check": "../../node_modules/.bin/tsc --noEmit"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
