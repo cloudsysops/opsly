@@ -83,6 +83,46 @@
       "mvp_default": false,
       "risk": "low",
       "summary": "Cuando el cliente crece: repo propio sin romper Opsly."
+    },
+    {
+      "id": "franchise-core",
+      "label": "Franchise OS",
+      "label_es": "Sistema de franquicias",
+      "mvp_default": false,
+      "risk": "medium",
+      "summary": "Unidades, territorios, contratos, regalías versionadas y auditorías. No es un ERP."
+    },
+    {
+      "id": "royalties",
+      "label": "Royalties",
+      "label_es": "Regalías",
+      "mvp_default": false,
+      "risk": "medium",
+      "summary": "Motor de regalías versionado e inmutable. Requiere franchise-core."
+    },
+    {
+      "id": "audits",
+      "label": "Quality Audits",
+      "label_es": "Auditorías de calidad",
+      "mvp_default": false,
+      "risk": "low",
+      "summary": "Plantillas, hallazgos y acciones correctivas por unidad."
+    },
+    {
+      "id": "training",
+      "label": "Training Requirements",
+      "label_es": "Capacitación",
+      "mvp_default": false,
+      "risk": "low",
+      "summary": "Contrato de requisitos de formación. LMS externo por adapter."
+    },
+    {
+      "id": "documents",
+      "label": "Franchise Documents",
+      "label_es": "Documentos de red",
+      "mvp_default": false,
+      "risk": "low",
+      "summary": "Referencias a documentos existentes. No crea storage nuevo."
     }
   ],
   "packages": [

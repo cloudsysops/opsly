@@ -8,6 +8,7 @@ import {
   Bell,
   CalendarClock,
   ClipboardList,
+  Compass,
   GraduationCap,
   Home,
   Inbox,
@@ -62,6 +63,7 @@ const HASH_SECTION_ALIASES: Record<string, string> = {
 const navOps = [
   { icon: Home, label: 'Landing', href: '/' },
   { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },
+  { icon: Compass, label: 'Franquicias', href: '/admin/franchises' },
   { icon: LayoutGrid, label: 'Academia', href: '/admin#academy' },
   { icon: ShieldCheck, label: 'Equipo', href: '/admin#team' },
   { icon: GraduationCap, label: 'Clases', href: '/admin#classes' },

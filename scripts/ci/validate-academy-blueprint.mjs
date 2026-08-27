@@ -12,6 +12,7 @@ const MODULE_FILES = [
   'auth.yaml',
   'crm.yaml',
   'franchises.yaml',
+  'franchise-os.yaml',
   'classes.yaml',
   'families.yaml',
   'teachers.yaml',
