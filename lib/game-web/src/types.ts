@@ -28,6 +28,27 @@ export interface DialogueLine {
   text: string;
 }
 
+export interface BitView {
+  id: string;
+  name: string;
+  affinity: string;
+  description: string;
+  learningDomain: string;
+}
+
+export interface BitCardView {
+  title: string;
+  illustrationHint: string;
+  affinity: string;
+  ability: string;
+  knowledgeDomain: string;
+}
+
+export interface WildChoiceView {
+  id: string;
+  label: string;
+}
+
 export interface PlayView {
   screen: PlayScreen;
   title: string;
@@ -39,6 +60,12 @@ export interface PlayView {
   worldDescription: string;
   nova: CharacterView;
   traveler: CharacterView;
+  maya: CharacterView | null;
+  bit: BitView | null;
+  card: BitCardView | null;
+  bondState: string | null;
+  choices: WildChoiceView[];
+  wildPrompt: string | null;
   dialogue: DialogueLine | null;
   portals: PortalView[];
   missionTitle: string | null;

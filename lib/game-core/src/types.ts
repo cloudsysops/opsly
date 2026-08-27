@@ -14,6 +14,8 @@ import {
   RewardSchema,
   SessionStateSchema,
   WorldInstanceSchema,
+  BondSchema,
+  BitCardUnlockSchema,
 } from './schemas.js';
 
 export type ExplorerIdentity = z.infer<typeof ExplorerIdentitySchema>;
@@ -30,6 +32,8 @@ export type Ability = z.infer<typeof AbilitySchema>;
 export type GameEvent = z.infer<typeof GameEventSchema>;
 export type GraphEdge = z.infer<typeof GraphEdgeSchema>;
 export type SessionState = z.infer<typeof SessionStateSchema>;
+export type Bond = z.infer<typeof BondSchema>;
+export type BitCardUnlock = z.infer<typeof BitCardUnlockSchema>;
 
 export interface StartSessionInput {
   tenantSlug: string;

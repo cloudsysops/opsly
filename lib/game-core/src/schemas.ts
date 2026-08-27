@@ -131,6 +131,23 @@ export const GraphEdgeSchema = z.object({
   to: NonEmpty,
 });
 
+export const BondSchema = z.object({
+  bitId: NonEmpty,
+  state: z.enum(['unknown', 'encountered', 'connected']),
+  experiences: z.array(NonEmpty).default([]),
+});
+
+export const BitCardUnlockSchema = z.object({
+  bitId: NonEmpty,
+  unlockedAt: NonEmpty,
+});
+
+export const WildProgressSchema = z.object({
+  observed: z.boolean().default(false),
+  askedMaya: z.boolean().default(false),
+  mayaHint: z.string().optional(),
+});
+
 export const SessionStateSchema = z.object({
   session: GameSessionSchema,
   player: PlayerProfileSchema,
@@ -139,4 +156,11 @@ export const SessionStateSchema = z.object({
   edges: z.array(GraphEdgeSchema),
   inventory: InventorySchema,
   events: z.array(GameEventSchema),
+  discoveredWorlds: z.array(NonEmpty).default(['nexus']),
+  unlockedWorlds: z.array(NonEmpty).default(['nexus']),
+  bits: z.array(NonEmpty).default([]),
+  bonds: z.array(BondSchema).default([]),
+  cards: z.array(BitCardUnlockSchema).default([]),
+  mapFragments: z.array(NonEmpty).default([]),
+  wild: WildProgressSchema.optional(),
 });
