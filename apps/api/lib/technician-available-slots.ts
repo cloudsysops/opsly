@@ -1,4 +1,5 @@
-import { TECHNICIAN_SLOT_GRID, TIME_PARSING } from './constants';
+import { CACHE_TTL, TECHNICIAN_SLOT_GRID, TIME_PARSING } from './constants';
+import { getCache, setCache } from './redis-cache';
 import { getServiceClient } from './supabase';
 import { logger } from './logger';
 
@@ -113,6 +114,13 @@ export async function computeTechnicianSlots(params: {
   slotStepMinutes: number;
   serviceDurationMinutes: number;
 }): Promise<TechnicianSlot[]> {
+  // Key format: local_services:available_slots:<slug>:<date>:<duration>:<step>
+  const cacheKey = `local_services:available_slots:${params.tenantSlug}:${params.dateOnly}:${params.serviceDurationMinutes}:${params.slotStepMinutes}`;
+  const cached = await getCache<TechnicianSlot[]>(cacheKey);
+  if (cached !== null) {
+    return cached;
+  }
+
   const sched = await loadTechnicianScheduleForDay({
     tenantSlug: params.tenantSlug,
     dayOfWeek: params.dayOfWeek,
@@ -132,11 +140,16 @@ export async function computeTechnicianSlots(params: {
     serviceDurationMinutes: params.serviceDurationMinutes,
   });
 
-  return buildSlotGrid({
+  const slots = buildSlotGrid({
     startM,
     endM,
     slotStepMinutes: params.slotStepMinutes,
     serviceDurationMinutes: params.serviceDurationMinutes,
     busy,
   });
+
+  // Non-blocking short TTL (60s) caching of calculated slot availability
+  void setCache(cacheKey, slots, CACHE_TTL.SHORT);
+
+  return slots;
 }
