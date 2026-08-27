@@ -6,6 +6,7 @@ import * as stripeMod from '../../../../lib/stripe';
 import * as promMod from '../../../../lib/fetch-host-metrics-prometheus';
 import * as dockerCountMod from '../../../../lib/docker-running-count';
 import * as prometheusUrlMod from '../../../../lib/prometheus';
+import { getCache, setCache } from '../../../../lib/redis-cache';
 
 vi.mock('../../../../lib/supabase', () => ({
   getServiceClient: vi.fn(),
@@ -25,6 +26,12 @@ vi.mock('../../../../lib/docker-running-count', () => ({
 
 vi.mock('../../../../lib/prometheus', () => ({
   getPrometheusBaseUrl: vi.fn(),
+}));
+
+vi.mock('../../../../lib/redis-cache', () => ({
+  getCache: vi.fn(),
+  setCache: vi.fn(() => Promise.resolve(true)),
+  getRedisClient: vi.fn(),
 }));
 
 const ADMIN = 'metrics-admin-token';
@@ -94,6 +101,8 @@ describe('GET /api/metrics', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.PLATFORM_ADMIN_TOKEN = ADMIN;
+    vi.mocked(getCache).mockResolvedValue(null);
+    vi.mocked(setCache).mockResolvedValue(true);
   });
 
   afterAll(() => {
@@ -139,7 +148,7 @@ describe('GET /api/metrics', () => {
     expect(res.status).toBe(500);
   });
 
-  it('returns aggregated JSON on success', async () => {
+  it('returns aggregated JSON on success and populates cache', async () => {
     vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
       mockTenantCountClient({
         total: 10,
@@ -162,6 +171,47 @@ describe('GET /api/metrics', () => {
     expect(byPlan.startup).toBe(2);
     expect(byPlan.business).toBe(2);
     expect(byPlan.enterprise).toBe(1);
+
+    // Verify setCache was called with correct arguments
+    expect(setCache).toHaveBeenCalledWith(
+      'metrics:main_summary',
+      {
+        total_tenants: 10,
+        active_tenants: 7,
+        suspended_tenants: 1,
+        mrr_usd: 123.45,
+        tenants_by_plan: {
+          startup: 2,
+          business: 2,
+          enterprise: 1,
+        },
+      },
+      60
+    );
+  });
+
+  it('returns cached data directly on cache hit and bypasses DB and Stripe queries', async () => {
+    const cachedPayload = {
+      total_tenants: 15,
+      active_tenants: 12,
+      suspended_tenants: 3,
+      mrr_usd: 500.0,
+      tenants_by_plan: {
+        startup: 5,
+        business: 5,
+        enterprise: 5,
+      },
+    };
+    vi.mocked(getCache).mockResolvedValue(cachedPayload);
+
+    const res = await getMetrics(new Request('http://x/metrics', { headers: adminHeaders() }));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body).toEqual(cachedPayload);
+
+    // Verify Supabase client and computeMrr were NOT called
+    expect(supabaseMod.getServiceClient).not.toHaveBeenCalled();
+    expect(stripeMod.computeMrr).not.toHaveBeenCalled();
   });
 });
 

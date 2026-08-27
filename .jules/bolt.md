@@ -1,3 +1,7 @@
+## 2026-08-13 - [Caching Main Summary Metrics and Avoiding Cyclomatic Complexity Violations]
+**Learning:** Decoupling aggregated metrics computations and external payment processor queries (like computeMrr) using Redis caching with a short TTL (60s) reduces multiple synchronous database round-trips to an O(1) cache lookup. However, when building objects using multiple nullish coalescing operators (??) directly inside a route handler, ESLint's cyclomatic complexity rule adds 1 point for every ??. Decoupling payload construction into a dedicated helper function (e.g., buildMetricsPayload) easily avoids complexity limit violations (limit: 10).
+**Action:** Always cache summary endpoints in dashboard views, and abstract multi-property object building with default fallbacks (??) into typed helpers to keep complexity counts low.
+
 ## 2026-05-26 - [Caching of External Network Probes]
 **Learning:** External network probes like service reachability checks can significantly slow down dashboard responses when performed synchronously on every request. Caching these results in Redis with a short TTL (e.g., 60s) provides a measurable performance boost without sacrificing accuracy for transient outages. Using `void setCache(...)` allows for non-blocking background cache updates.
 **Action:** Always consider caching external probe results in the API layer, especially for multi-tenant dashboards that aggregate status from multiple services.
