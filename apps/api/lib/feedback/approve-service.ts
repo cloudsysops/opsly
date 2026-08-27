@@ -2,9 +2,11 @@ import type { NextRequest } from 'next/server';
 import { executeAutoImplement } from '@intcloudsysops/ml';
 import { sanitizeImplementationPrompt } from '@intcloudsysops/prompt-guard';
 import { notifyDiscordFeedback } from '../feedback-notify';
+import { extractIp, logAuditEvent } from '../audit';
 import { requireAdminAccess } from '../auth';
-import { getServiceClient } from '../supabase';
 import { HTTP_STATUS } from '../constants';
+import { checkRateLimit } from '../rate-limiter';
+import { getServiceClient } from '../supabase';
 
 type DecisionRow = {
   id: string;
@@ -46,6 +48,14 @@ export async function handleFeedbackApprove(req: NextRequest): Promise<Response>
   const unauthorized = await requireAdminAccess(req);
   if (unauthorized) return unauthorized;
 
+  const ip = extractIp(req);
+  const rateLimit = await checkRateLimit(
+    ip ? `feedback-approve:${ip}` : 'feedback-approve:anonymous'
+  );
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
+  }
+
   const parsed = await parseApproveBody(req);
   if (parsed instanceof Response) return parsed;
 
@@ -65,12 +75,26 @@ export async function handleFeedbackApprove(req: NextRequest): Promise<Response>
   }
 
   const row = decision as DecisionRow;
+  const tenantSlug = tenantSlugFromDecision(row);
 
   if (approved) {
     await approveFlow(supabase, decision_id, row);
   } else {
     await rejectFlow(supabase, decision_id, row.conversation_id);
   }
+
+  void logAuditEvent({
+    tenant_slug: tenantSlug,
+    action: approved ? 'feedback_approve' : 'feedback_reject',
+    resource: `feedback_decision:${decision_id}`,
+    ip,
+    user_agent: req.headers.get('user-agent') ?? undefined,
+    metadata: {
+      decision_id,
+      conversation_id: row.conversation_id,
+      approved,
+    },
+  });
 
   return Response.json({ success: true, approved });
 }
