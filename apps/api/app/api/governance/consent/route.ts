@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { parseJsonBody } from '../../../../lib/api-response';
-import { extractIp } from '../../../../lib/audit';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
 import { HTTP_STATUS } from '../../../../lib/constants';
 import { boundedStringMetadataSchema } from '../../../../lib/peskids/schemas';
 import { checkRateLimit } from '../../../../lib/rate-limiter';
@@ -59,6 +59,25 @@ export async function POST(request: NextRequest): Promise<Response> {
     console.error('[governance][consent] insert error', error);
     return Response.json({ error: 'Failed to record consent' }, { status: HTTP_STATUS.INTERNAL_ERROR });
   }
+
+  const email = parsed.data.subject_email;
+  const maskedEmail = email
+    ? `${email[0]}***@${email.split('@')[1] ?? ''}`
+    : undefined;
+
+  void logAuditEvent({
+    tenant_slug: parsed.data.tenant_id,
+    action: 'CONSENT_RECORD',
+    resource: `consent:${data.id}`,
+    ip,
+    user_agent: user_agent ?? undefined,
+    metadata: {
+      policy_id: parsed.data.policy_id,
+      policy_version: parsed.data.policy_version,
+      consent_type: parsed.data.consent_type,
+      ...(maskedEmail ? { subject_email_masked: maskedEmail } : {}),
+    },
+  });
 
   return Response.json(
     { ok: true, consent_id: data.id, granted_at: data.granted_at },
