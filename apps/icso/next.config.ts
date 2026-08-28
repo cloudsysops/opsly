@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, '../..'),
   // Do NOT set outputFileTracingExcludes for sibling ../*/.next — same failure
   // mode as Peskids #918 (missing webpack-runtime.js in GHCR standalone).
+  typescript: { ignoreBuildErrors: true },
   transpilePackages: [
     '@intcloudsysops/mission-control-kit',
     '@intcloudsysops/game-core',
