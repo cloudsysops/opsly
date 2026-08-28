@@ -6,10 +6,12 @@ WORKDIR /repo
 COPY package.json package-lock.json ./
 COPY lib/services/package.json ./lib/services/
 COPY lib/mission-control-kit/package.json ./lib/mission-control-kit/
+COPY lib/game-web/package.json ./lib/game-web/
 COPY apps/icso/package.json ./apps/icso/
 RUN npm ci --ignore-scripts \
   -w @intcloudsysops/services \
   -w @intcloudsysops/mission-control-kit \
+  -w @intcloudsysops/game-web \
   -w @intcloudsysops/icso
 
 FROM node:20-alpine AS builder
@@ -19,6 +21,7 @@ COPY --from=deps /repo/package.json ./package.json
 COPY --from=deps /repo/package-lock.json ./package-lock.json
 COPY lib/services ./lib/services
 COPY lib/mission-control-kit ./lib/mission-control-kit
+COPY lib/game-web ./lib/game-web
 COPY apps/icso ./apps/icso
 RUN npm run build -w @intcloudsysops/services
 WORKDIR /repo/apps/icso
