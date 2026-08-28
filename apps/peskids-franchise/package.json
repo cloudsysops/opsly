@@ -20,7 +20,7 @@
     "seed:knowledge": "tsx prisma/seed-knowledge.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "type-check": "echo 'peskids-franchise: type-check pending date-fns + Recharts fixes'"
+    "type-check": "tsc --noEmit"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

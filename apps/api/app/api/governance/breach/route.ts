@@ -97,7 +97,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   void logAuditEvent({
     tenant_slug: parsed.data.tenant_id,
-    actor_id: ip ? `ip:${ip}` : 'governance-service',
+    actor_email: ip ? `ip:${ip}` : 'governance-service',
     action: 'governance_breach_log_created',
     resource: `breach_log:${data.id}`,
     metadata: {
