@@ -1,6 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { POST } from '../[tenantSlug]/submissions/bulk-grade/route';
 import { NextRequest } from 'next/server';
+import { resolveTrustedPortalSession } from '@/lib/portal-trusted-identity';
 
 vi.mock('@/lib/portal-trusted-identity', () => ({
   resolveTrustedPortalSession: vi.fn().mockResolvedValue({
@@ -37,7 +38,6 @@ describe('POST /api/peskids/portal/[tenantSlug]/submissions/bulk-grade authoriza
   });
 
   it('allows access with a valid session and passes correct actorId to auditing', async () => {
-    const { resolveTrustedPortalSession } = await import('@/lib/portal-trusted-identity');
     vi.mocked(resolveTrustedPortalSession).mockResolvedValue({
       ok: true,
       session: {
