@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { parseJsonBody } from '../api-response';
-import { extractIp } from '../audit';
+import { extractIp, logAuditEvent } from '../audit';
 import { HTTP_STATUS } from '../constants';
 import { publicBookBodySchema } from '../local-services-booking-schema';
 import { assertLocalServicesTenantPublic } from '../local-services-public';
@@ -179,5 +179,22 @@ export async function postPublicLocalServicesBooking(
     return ready;
   }
 
-  return persistPublicBooking(slug, ready);
+  const response = await persistPublicBooking(slug, ready);
+  if (response.status === HTTP_STATUS.CREATED) {
+    const resData = (await response.clone().json()) as { booking_id?: string };
+    void logAuditEvent({
+      tenant_slug: slug,
+      action: 'local_services_booking_create',
+      resource: `/api/local-services/public/tenants/${slug}/bookings`,
+      status_code: HTTP_STATUS.CREATED,
+      ip,
+      user_agent: request.headers.get('user-agent') ?? undefined,
+      metadata: {
+        booking_id: resData.booking_id,
+        technician: ready.technician,
+      },
+    });
+  }
+
+  return response;
 }
