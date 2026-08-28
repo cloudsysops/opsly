@@ -139,7 +139,7 @@ export function PortalShowcase(): React.ReactElement {
             <div className="absolute -right-3 top-6">
               <StarBurst size={26} />
             </div>
-            <div className="absolute -left-4 bottom-8 max-w-[250px] rounded-[1.25rem] border border-pk-border bg-pk-surface p-4 shadow-card-hover">
+            <div className="absolute -left-4 bottom-8 max-w-[250px] rounded-pk border border-pk-border bg-pk-surface p-4 shadow-card-hover">
               <div className="flex gap-3">
                 <span
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xl"
@@ -225,7 +225,7 @@ export function PortalShowcase(): React.ReactElement {
           />
         </div>
 
-        <div className="mt-14 overflow-hidden rounded-[2rem] border border-pk-border bg-white shadow-card">
+        <div className="mt-14 overflow-hidden rounded-pk-lg border border-pk-border bg-white shadow-card">
           <div className="grid gap-0 lg:grid-cols-[0.95fr_1.05fr]">
             <div className="border-b border-pk-border bg-pk-snow p-6 lg:border-b-0 lg:border-r">
               <p className="pk-eyebrow">Referidos y descuento</p>
@@ -256,7 +256,7 @@ export function PortalShowcase(): React.ReactElement {
             </div>
 
             <div className="p-6 sm:p-8">
-              <div className="rounded-[1.5rem] border border-pk-border bg-pk-bg p-5">
+              <div className="rounded-pk border border-pk-border bg-pk-bg p-5">
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-sm font-bold text-pk-ink">Tu panel de familia</p>
@@ -304,7 +304,7 @@ export function PortalShowcase(): React.ReactElement {
         </div>
 
         <div
-          className="mt-14 overflow-hidden rounded-[2rem] text-white shadow-hero"
+          className="mt-14 overflow-hidden rounded-pk-lg text-white shadow-hero"
           style={{
             backgroundImage: `linear-gradient(to bottom right, ${peskidsColorTokens.primary.blue}, ${peskidsColorTokens.dark.darkestBlue})`,
           }}
@@ -394,7 +394,7 @@ function MetricCard({
 
 function HomePreview(): React.ReactElement {
   return (
-    <div className="overflow-hidden rounded-[2rem] border border-pk-border bg-white shadow-hero">
+    <div className="overflow-hidden rounded-pk-lg border border-pk-border bg-white shadow-hero">
       <div className="bg-pk-surface/80 px-5 py-4">
         <div className="flex items-center justify-between">
           <div>
@@ -409,7 +409,7 @@ function HomePreview(): React.ReactElement {
 
       <div className="p-5">
         <div
-          className="rounded-[1.75rem] p-5 text-white shadow-card-hover"
+          className="rounded-pk-lg p-5 text-white shadow-card-hover"
           style={{
             backgroundImage: `linear-gradient(to bottom right, ${peskidsColorTokens.primary.teal}, ${peskidsColorTokens.secondary.lightTeal})`,
           }}
@@ -450,7 +450,7 @@ function HomePreview(): React.ReactElement {
         </div>
 
         <div className="mt-4 grid gap-4 md:grid-cols-[0.95fr_1.05fr]">
-          <div className="rounded-[1.5rem] border border-pk-border bg-pk-surface p-4">
+          <div className="rounded-pk border border-pk-border bg-pk-surface p-4">
             <div className="flex items-center justify-between gap-2">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-pk-mutedText">
@@ -473,7 +473,7 @@ function HomePreview(): React.ReactElement {
             </p>
           </div>
 
-          <div className="rounded-[1.5rem] border border-pk-border bg-pk-surface p-4">
+          <div className="rounded-pk border border-pk-border bg-pk-surface p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-pk-mutedText">
@@ -533,7 +533,7 @@ function SchedulePreview(): React.ReactElement {
   ]
 
   return (
-    <div className="rounded-[1.75rem] border border-pk-border bg-white p-4">
+    <div className="rounded-pk-lg border border-pk-border bg-white p-4">
       <div className="flex items-center justify-between">
         <div>
           <p className="font-bold text-pk-ink">Mayo 2026</p>
@@ -605,7 +605,7 @@ function SchedulePreview(): React.ReactElement {
 
 function ProgressPreview(): React.ReactElement {
   return (
-    <div className="rounded-[1.75rem] border border-pk-border bg-white p-4">
+    <div className="rounded-pk-lg border border-pk-border bg-white p-4">
       <div className="flex items-center gap-3">
         <div
           className="flex h-12 w-12 items-center justify-center rounded-2xl text-2xl"
@@ -621,7 +621,7 @@ function ProgressPreview(): React.ReactElement {
         </div>
       </div>
 
-      <div className="mt-4 rounded-[1.5rem] bg-pk-deep p-4 text-white">
+      <div className="mt-4 rounded-pk bg-pk-deep p-4 text-white">
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/70">Progreso</p>
@@ -682,7 +682,7 @@ function ProgressPreview(): React.ReactElement {
 
 function OnboardingPreview(): React.ReactElement {
   return (
-    <div className="rounded-[1.75rem] border border-pk-border bg-white p-4">
+    <div className="rounded-pk-lg border border-pk-border bg-white p-4">
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-pk-mutedText">
@@ -735,7 +735,7 @@ function OnboardingPreview(): React.ReactElement {
         </div>
       </div>
 
-      <div className="mt-4 rounded-[1.5rem] border border-pk-border bg-pk-snow p-3">
+      <div className="mt-4 rounded-pk border border-pk-border bg-pk-snow p-3">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-pk-mutedText">¿Sabe nadar?</p>
         <div className="mt-3 space-y-2">
           {onboardingAnswers.map((answer, index) => (
@@ -752,7 +752,7 @@ function OnboardingPreview(): React.ReactElement {
         </div>
       </div>
 
-      <div className="mt-4 rounded-[1.5rem] bg-pk-deep p-4 text-white">
+      <div className="mt-4 rounded-pk bg-pk-deep p-4 text-white">
         <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/70">Plan sugerido</p>
         <div className="mt-2 flex items-end justify-between gap-4">
           <div>
@@ -783,7 +783,7 @@ function SocialPreview(): React.ReactElement {
           return (
             <div
               key={post.title}
-              className={cn('aspect-square rounded-[1.5rem] p-3 text-white', bg)}
+              className={cn('aspect-square rounded-pk p-3 text-white', bg)}
             >
               <div className="flex h-full flex-col justify-between">
                 <div className="flex items-center justify-between">
@@ -805,7 +805,7 @@ function SocialPreview(): React.ReactElement {
         })}
       </div>
 
-      <div className="rounded-[1.5rem] border border-pk-border bg-pk-snow p-4">
+      <div className="rounded-pk border border-pk-border bg-pk-snow p-4">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-pk-primary text-white">
             <Sparkles className="h-4 w-4" aria-hidden />
@@ -830,7 +830,7 @@ function AdminPreview(): React.ReactElement {
         <MiniStat value="78%" label="capacidad" tone="slate" />
       </div>
 
-      <div className="rounded-[1.5rem] border border-pk-border bg-white p-3">
+      <div className="rounded-pk border border-pk-border bg-white p-3">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-pk-mutedText">Interesados nuevos</p>
@@ -861,7 +861,7 @@ function AdminPreview(): React.ReactElement {
         </div>
       </div>
 
-      <div className="rounded-[1.5rem] border border-dashed border-pk-border bg-pk-bg p-3 text-xs text-pk-sub">
+      <div className="rounded-pk border border-dashed border-pk-border bg-pk-bg p-3 text-xs text-pk-sub">
         <div className="flex items-start gap-2">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-pk-primary" aria-hidden />
           <p>

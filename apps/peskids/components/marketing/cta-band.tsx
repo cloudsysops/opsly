@@ -10,7 +10,7 @@ import {
 export function CtaBand(): React.ReactElement {
   return (
     <section className="mx-4 mb-16 sm:mx-8 lg:mx-14">
-      <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-pk-deep to-[#1B607E] px-8 py-14 text-white sm:px-14">
+      <div className="relative overflow-hidden rounded-pk-lg bg-gradient-to-br from-pk-deep to-[#1B607E] px-8 py-14 text-white sm:px-14">
         <PeskidsWave
           color="rgba(76,184,176,0.18)"
           height={100}

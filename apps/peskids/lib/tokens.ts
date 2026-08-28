@@ -21,6 +21,19 @@ export const peskidsColorTokens = {
   // Status colors
   status: {
     success: '#1ebe57', // Success green
+    info: '#3B82F6', // Blue info
+  },
+
+  // Hero-specific brand variants (more vibrant than base tokens)
+  hero: {
+    teal: '#2DB7B0', // Lighter teal for hero "Pes" text
+    orange: '#FF5A1F', // Vibrant orange for "kids" text
+  },
+
+  // Layout
+  layout: {
+    sidebar: '#11253d', // Admin sidebar dark navy
+    infoBg: '#EFF6FF', // Info background tint
   },
 
   // Neutral colors
@@ -38,6 +51,7 @@ export const peskidsColorTokens = {
   dark: {
     darkestBlue: '#1B607E',
     darkBlue: '#128C7E',
+    teal: '#0D4C63', // Deep teal for dark sections (Delfines/Tiburones)
     brown: '#8B6A00',
   },
 } as const;

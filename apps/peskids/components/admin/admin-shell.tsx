@@ -346,7 +346,7 @@ export function AdminShell({
       >
         Saltar al contenido
       </a>
-      <aside className="hidden h-full w-64 shrink-0 flex-col overflow-hidden border-r border-white/8 bg-[#11253d] text-white md:flex">
+      <aside className="hidden h-full w-64 shrink-0 flex-col overflow-hidden border-r border-white/8 bg-pk-sidebar text-white md:flex">
         <div className="shrink-0 border-b border-white/10 px-5 py-5">
           <div className="flex items-center gap-3">
             <PeskidsLogo size={34} />
@@ -381,7 +381,7 @@ export function AdminShell({
             }}
           />
           <aside
-            className="absolute inset-y-0 left-0 flex w-[min(20rem,88vw)] flex-col bg-[#11253d] text-white shadow-xl"
+            className="absolute inset-y-0 left-0 flex w-[min(20rem,88vw)] flex-col bg-pk-sidebar text-white shadow-xl"
             role="dialog"
             aria-modal="true"
             aria-label="Navegación admin"
@@ -419,7 +419,7 @@ export function AdminShell({
       ) : null}
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex min-h-16 shrink-0 items-center justify-between gap-4 border-b border-pk-border bg-pk-surface/95 px-5 py-3 backdrop-blur-sm sm:px-7">
+        <header className="sticky top-0 z-30 flex h-[72px] shrink-0 items-center justify-between gap-4 border-b border-pk-border bg-pk-surface/95 px-5 py-3 backdrop-blur-sm sm:px-7">
           <div className="flex items-center gap-3 md:hidden">
             <Button
               ref={menuButtonRef}

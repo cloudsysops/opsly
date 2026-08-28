@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Download, Loader2, MessageSquare, Users } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { AppShell } from '@/components/layout/app-shell';
 import { FeedbackComposer } from '@/components/feedback/feedback-composer';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -191,7 +192,7 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
   if (!selectedSubmission) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-pk-bg p-4">
-        <div className="max-w-lg rounded-2xl border border-pk-border bg-white p-6 text-center shadow-card">
+        <div className="max-w-lg rounded-2xl border border-pk-border bg-pk-surface p-6 text-center shadow-card">
           <p className="text-lg font-semibold text-pk-ink">No encontramos esta entrega</p>
           <p className="mt-2 text-sm text-pk-sub">
             Puede que ya no exista o que todavía no haya cargado en esta sesión.
@@ -205,9 +206,8 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
   }
 
   return (
-    <div className="min-h-screen bg-pk-bg p-4 sm:p-6">
-      <div className="mx-auto max-w-6xl space-y-6">
-        <section className="rounded-3xl border border-pk-border bg-white p-5 shadow-card sm:p-6">
+    <AppShell variant="teacher">
+      <section className="rounded-3xl border border-pk-border bg-pk-surface p-5 shadow-card sm:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-2xl">
               <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-pk-mutedText">
@@ -277,7 +277,6 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
               </Button>
             </div>
           </div>
-        </section>
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <Card>
@@ -456,7 +455,7 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
           subjectHint={`Este feedback quedará ligado a ${selectedSubmission.studentName} y servirá para el seguimiento familiar.`}
           className="mt-4"
         />
-      </div>
-    </div>
+      </section>
+    </AppShell>
   );
 }

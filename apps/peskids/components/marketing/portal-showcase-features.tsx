@@ -132,7 +132,7 @@ function SchedulePreview(): React.ReactElement {
   ];
 
   return (
-    <div className="rounded-[1.75rem] border border-pk-border bg-white p-4">
+    <div className="rounded-pk-lg border border-pk-border bg-white p-4">
       <div className="flex items-center justify-between">
         <div>
           <p className="font-bold text-pk-ink">Mayo 2026</p>
@@ -223,7 +223,7 @@ function SchedulePreview(): React.ReactElement {
 
 function ProgressPreview(): React.ReactElement {
   return (
-    <div className="rounded-[1.75rem] border border-pk-border bg-white p-4">
+    <div className="rounded-pk-lg border border-pk-border bg-white p-4">
         <div className="flex items-center gap-3">
           <div
             className="flex h-12 w-12 items-center justify-center rounded-2xl text-2xl"
@@ -239,7 +239,7 @@ function ProgressPreview(): React.ReactElement {
           </div>
         </div>
 
-      <div className="mt-4 rounded-[1.5rem] bg-pk-deep p-4 text-white">
+      <div className="mt-4 rounded-pk bg-pk-deep p-4 text-white">
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/70">
@@ -310,7 +310,7 @@ function ProgressPreview(): React.ReactElement {
 
 function OnboardingPreview(): React.ReactElement {
   return (
-    <div className="rounded-[1.75rem] border border-pk-border bg-white p-4">
+    <div className="rounded-pk-lg border border-pk-border bg-white p-4">
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-pk-mutedText">
@@ -367,7 +367,7 @@ function OnboardingPreview(): React.ReactElement {
         </div>
       </div>
 
-      <div className="mt-4 rounded-[1.5rem] border border-pk-border bg-pk-snow p-3">
+      <div className="mt-4 rounded-pk border border-pk-border bg-pk-snow p-3">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-pk-mutedText">
           ¿Sabe nadar?
         </p>
@@ -386,7 +386,7 @@ function OnboardingPreview(): React.ReactElement {
         </div>
       </div>
 
-      <div className="mt-4 rounded-[1.5rem] bg-pk-deep p-4 text-white">
+      <div className="mt-4 rounded-pk bg-pk-deep p-4 text-white">
         <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/70">
           Plan sugerido
         </p>
@@ -419,7 +419,7 @@ function SocialPreview(): React.ReactElement {
           return (
             <div
               key={post.title}
-              className={cn('aspect-square rounded-[1.5rem] p-3 text-white', bg)}
+              className={cn('aspect-square rounded-pk p-3 text-white', bg)}
             >
               <div className="flex h-full flex-col justify-between">
                 <div className="flex items-center justify-between">
@@ -441,7 +441,7 @@ function SocialPreview(): React.ReactElement {
         })}
       </div>
 
-      <div className="rounded-[1.5rem] border border-pk-border bg-pk-snow p-4">
+      <div className="rounded-pk border border-pk-border bg-pk-snow p-4">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-pk-primary text-white">
             <Sparkles className="h-4 w-4" aria-hidden />
@@ -468,7 +468,7 @@ function AdminPreview(): React.ReactElement {
         <MiniStat value="78%" label="capacidad" tone="slate" />
       </div>
 
-      <div className="rounded-[1.5rem] border border-pk-border bg-white p-3">
+      <div className="rounded-pk border border-pk-border bg-white p-3">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-pk-mutedText">
@@ -504,7 +504,7 @@ function AdminPreview(): React.ReactElement {
         </div>
       </div>
 
-      <div className="rounded-[1.5rem] border border-dashed border-pk-border bg-pk-bg p-3 text-xs text-pk-sub">
+      <div className="rounded-pk border border-dashed border-pk-border bg-pk-bg p-3 text-xs text-pk-sub">
         <div className="flex items-start gap-2">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-pk-primary" aria-hidden />
           <p>El staff ve mensajes, interesados y alertas. Las familias no ven esta capa.</p>

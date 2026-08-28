@@ -48,7 +48,7 @@ export default function FamilyFormsPage(): React.ReactElement {
       <div className="mx-auto max-w-4xl space-y-6">
         <div>
           <p className="pk-eyebrow">Portal familias</p>
-          <h1 className="mt-2 text-3xl font-bold text-pk-ink">Formularios disponibles</h1>
+          <h1 className="mt-2 text-2xl font-semibold text-pk-ink sm:text-3xl">Formularios disponibles</h1>
           <p className="mt-2 text-sm text-pk-sub">
             Completa las actividades y formularios publicados por el equipo Peskids.
           </p>

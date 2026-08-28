@@ -137,7 +137,7 @@ export function SupportLogin({ authConfig }: { authConfig: AuthPublicConfig }): 
 
       <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-6xl items-center">
         <div className="grid w-full gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-8">
-          <section className="flex flex-col justify-between rounded-[2rem] border border-white/70 bg-white/60 p-6 shadow-[0_30px_90px_rgba(11,84,102,0.10)] backdrop-blur-xl sm:p-8 lg:p-10">
+          <section className="flex flex-col justify-between rounded-pk-lg border border-white/70 bg-white/60 p-6 shadow-[0_30px_90px_rgba(11,84,102,0.10)] backdrop-blur-xl sm:p-8 lg:p-10">
             <div className="space-y-8">
               <PeskidsLockup height={54} className="items-center" />
 
@@ -175,7 +175,7 @@ export function SupportLogin({ authConfig }: { authConfig: AuthPublicConfig }): 
             </div>
           </section>
 
-          <section className="relative overflow-hidden rounded-[2rem] border border-pk-primary/10 bg-white p-6 shadow-[0_30px_90px_rgba(11,84,102,0.14)] sm:p-8 lg:p-10">
+          <section className="relative overflow-hidden rounded-pk-lg border border-pk-primary/10 bg-pk-surface p-6 shadow-[0_30px_90px_rgba(11,84,102,0.14)] sm:p-8 lg:p-10">
             <div className="absolute right-6 top-6 h-16 w-16 rounded-full bg-pk-secondary/15 blur-2xl" />
             <div className="relative">
               <div className="mb-6 flex items-center gap-3">

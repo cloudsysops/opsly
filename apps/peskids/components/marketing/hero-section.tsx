@@ -4,9 +4,6 @@ import { WiggleLine } from '@/components/brand/peskids-logo'
 import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
 import { PESKIDS_RESERVATION_FORM_HREF } from '@/lib/peskids-landing-config'
 
-const instagramButtonClass =
-  'inline-flex h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] px-6 text-sm font-bold text-white shadow-sm transition hover:opacity-95'
-
 export function HeroSection(): React.ReactElement {
   return (
     <section className="relative overflow-hidden bg-pk-deep text-white">
@@ -23,8 +20,8 @@ export function HeroSection(): React.ReactElement {
           Se divierten.
           <br />
           Somos{' '}
-          <span className="text-[#2DB7B0]">Pes</span>
-          <span className="text-[#FF5A1F]">kids</span>
+          <span className="text-pk-hero-teal">Pes</span>
+          <span className="text-pk-hero-orange">kids</span>
           <span className="text-white">.</span>
         </h1>
 
@@ -39,7 +36,7 @@ export function HeroSection(): React.ReactElement {
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
           <Link
             href={PESKIDS_RESERVATION_FORM_HREF}
-            className="inline-flex h-12 items-center justify-center rounded-full bg-white px-6 text-sm font-bold text-pk-deep shadow-sm transition hover:bg-white/90"
+            className="inline-flex h-12 items-center justify-center rounded-full bg-white px-6 text-sm font-bold text-pk-deep shadow-sm transition-all duration-150 hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-pk-deep"
           >
             Completar solicitud
           </Link>
@@ -47,7 +44,7 @@ export function HeroSection(): React.ReactElement {
             href={PESKIDS_INSTAGRAM.profileUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className={instagramButtonClass}
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] px-6 text-sm font-bold text-white shadow-sm transition-all duration-150 hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-pk-deep"
             aria-label="Ver perfil de Peskids en Instagram"
           >
             <Instagram className="h-5 w-5 shrink-0 text-white" aria-hidden />

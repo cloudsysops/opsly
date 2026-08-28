@@ -25,7 +25,7 @@ function MiniReferralStep({
 
 function ReferralSection(): React.ReactElement {
   return (
-    <div className="overflow-hidden rounded-[2rem] border border-pk-border bg-white shadow-card">
+    <div className="overflow-hidden rounded-pk-lg border border-pk-border bg-white shadow-card">
       <div className="grid gap-0 lg:grid-cols-[0.95fr_1.05fr]">
         <div className="border-b border-pk-border bg-pk-snow p-6 lg:border-b-0 lg:border-r">
           <p className="pk-eyebrow">Referidos y descuento</p>
@@ -52,7 +52,7 @@ function ReferralSection(): React.ReactElement {
         </div>
 
         <div className="p-6 sm:p-8">
-          <div className="rounded-[1.5rem] border border-pk-border bg-pk-bg p-5">
+          <div className="rounded-pk border border-pk-border bg-pk-bg p-5">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-bold text-pk-ink">Tu espacio de familia</p>
@@ -104,7 +104,7 @@ function ReferralSection(): React.ReactElement {
 function FinalCTA(): React.ReactElement {
   return (
     <div
-      className="overflow-hidden rounded-[2rem] text-white shadow-hero"
+      className="overflow-hidden rounded-pk-lg text-white shadow-hero"
       style={{
         backgroundImage: `linear-gradient(to bottom right, ${peskidsColorTokens.primary.blue}, ${peskidsColorTokens.dark.darkestBlue})`,
       }}

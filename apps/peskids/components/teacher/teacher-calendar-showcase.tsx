@@ -36,7 +36,7 @@ export function TeacherCalendarShowcase(): React.ReactElement {
   const dayLabels = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 
   return (
-    <div className="overflow-hidden rounded-[2rem] border border-pk-border bg-white shadow-hero">
+    <div className="overflow-hidden rounded-pk-lg border border-pk-border bg-white shadow-hero">
       <div className="flex items-center justify-between gap-4 border-b border-pk-border bg-pk-snow px-5 py-4">
         <div>
           <p className="font-bold text-pk-ink">Calendario semanal</p>

@@ -22,7 +22,7 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
             <nav className="hidden items-center gap-5 text-sm font-semibold md:flex">
               <Link
                 href="/familias/login"
-                className="text-[#004C63] transition hover:text-[#2DB7B0]"
+                className="text-pk-ink transition hover:text-pk-hero-teal"
               >
                 Acceso familias
               </Link>

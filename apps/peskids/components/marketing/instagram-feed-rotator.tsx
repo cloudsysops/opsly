@@ -65,7 +65,7 @@ export function InstagramFeedRotator({
     <div className="grid gap-4 lg:grid-cols-[1.28fr_0.72fr]">
       <InstagramMediaCard item={activeItem} variant="featured" />
 
-      <div className="rounded-[1.5rem] border border-pk-border bg-pk-snow p-4 shadow-card">
+      <div className="rounded-pk border border-pk-border bg-pk-snow p-4 shadow-card">
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="pk-eyebrow flex items-center gap-2">

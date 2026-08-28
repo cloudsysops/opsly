@@ -23,7 +23,7 @@ const week = [
 
 function HomePreview(): React.ReactElement {
   return (
-    <div className="overflow-hidden rounded-[2rem] border border-pk-border bg-white shadow-hero">
+    <div className="overflow-hidden rounded-pk-lg border border-pk-border bg-white shadow-hero">
       <div className="bg-pk-surface/80 px-5 py-4">
         <div className="flex items-center justify-between">
           <div>
@@ -38,7 +38,7 @@ function HomePreview(): React.ReactElement {
 
       <div className="p-5">
         <div
-          className="rounded-[1.75rem] p-5 text-white shadow-card-hover"
+          className="rounded-pk-lg p-5 text-white shadow-card-hover"
           style={{
             backgroundImage: `linear-gradient(to bottom right, ${peskidsColorTokens.primary.teal}, ${peskidsColorTokens.secondary.lightTeal})`,
           }}
@@ -81,7 +81,7 @@ function HomePreview(): React.ReactElement {
         </div>
 
         <div className="mt-4 grid gap-4 md:grid-cols-[0.95fr_1.05fr]">
-          <div className="rounded-[1.5rem] border border-pk-border bg-pk-surface p-4">
+          <div className="rounded-pk border border-pk-border bg-pk-surface p-4">
             <div className="flex items-center justify-between gap-2">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-pk-mutedText">
@@ -104,7 +104,7 @@ function HomePreview(): React.ReactElement {
             </p>
           </div>
 
-          <div className="rounded-[1.5rem] border border-pk-border bg-pk-surface p-4">
+          <div className="rounded-pk border border-pk-border bg-pk-surface p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-pk-mutedText">
@@ -171,7 +171,7 @@ export function PortalShowcaseTestimonials(): React.ReactElement {
         <div className="absolute -right-3 top-6">
           <StarBurst size={26} />
         </div>
-        <div className="absolute -left-4 bottom-8 max-w-[250px] rounded-[1.25rem] border border-pk-border bg-pk-surface p-4 shadow-card-hover">
+        <div className="absolute -left-4 bottom-8 max-w-[250px] rounded-pk border border-pk-border bg-pk-surface p-4 shadow-card-hover">
           <div className="flex gap-3">
             <span
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xl"

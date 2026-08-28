@@ -31,7 +31,7 @@ export function InstagramMediaCard({
       rel="noopener noreferrer"
       className={cn(
         'group relative overflow-hidden shadow-card transition-shadow duration-200 hover:shadow-card-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pk-primary',
-        featured ? 'aspect-[4/3] rounded-[2rem]' : 'aspect-square rounded-[1.5rem]'
+        featured ? 'aspect-[4/3] rounded-pk-lg' : 'aspect-square rounded-pk'
       )}
       aria-label={
         item.caption

@@ -114,7 +114,7 @@ export function AdminLoginForm({ authConfig }: AdminLoginFormProps): React.React
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-pk-bg px-4">
-      <div className="w-full max-w-md rounded-2xl border border-pk-border bg-white p-8 shadow-card">
+      <div className="w-full max-w-md rounded-2xl border border-pk-border bg-pk-surface p-8 shadow-card">
         <div className="mb-5 flex items-center justify-center gap-2 rounded-full border border-pk-border bg-pk-muted px-2 py-2">
           <Link
             href="/admin/login"

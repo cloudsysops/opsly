@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Download, Loader2, MessageSquare, Sparkles, Users, ArrowRight } from 'lucide-react';
-import { RoleSwitcher } from '@/components/admin/role-switcher';
+import { AppShell } from '@/components/layout/app-shell';
 import { TeacherDashboard } from '@/components/dashboards/teacher-dashboard';
 import { FeedbackComposer } from '@/components/feedback/feedback-composer';
 import { Button } from '@/components/ui/button';
@@ -271,12 +271,8 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
   }
 
   return (
-    <div className="min-h-screen bg-pk-bg p-4 sm:p-6">
-      <div className="mx-auto max-w-7xl space-y-6">
-        <div className="flex items-center justify-end">
-          <RoleSwitcher />
-        </div>
-        <section className="overflow-hidden rounded-3xl border border-pk-border bg-white p-5 shadow-card sm:p-6">
+    <AppShell variant="teacher">
+      <section className="overflow-hidden rounded-3xl border border-pk-border bg-pk-surface p-5 shadow-card sm:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-2xl">
               <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-pk-mutedText">
@@ -308,7 +304,6 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
               </Button>
             </div>
           </div>
-        </section>
 
         <FeedbackComposer
           title="Feedback para la familia"
@@ -391,7 +386,7 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="grid gap-3 md:grid-cols-2">
-                <div className="rounded-2xl border border-pk-border bg-white p-4">
+                <div className="rounded-2xl border border-pk-border bg-pk-surface p-4">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-pk-mutedText">
                     Fecha
                   </p>
@@ -399,7 +394,7 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
                     {formatDateTime(selectedSubmission.submittedAt)}
                   </p>
                 </div>
-                <div className="rounded-2xl border border-pk-border bg-white p-4">
+                <div className="rounded-2xl border border-pk-border bg-pk-surface p-4">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-pk-mutedText">
                     Estado
                   </p>
@@ -410,13 +405,13 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
                 {selectedSubmission.feedback || 'Aún no hay feedback agregado para esta entrega.'}
               </p>
               <div className="grid gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl border border-pk-border bg-white p-4">
+                <div className="rounded-2xl border border-pk-border bg-pk-surface p-4">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-pk-mutedText">
                     Edad / rango
                   </p>
                   <p className="mt-1 text-sm font-medium text-pk-ink">{selectedLevel}</p>
                 </div>
-                <div className="rounded-2xl border border-pk-border bg-white p-4">
+                <div className="rounded-2xl border border-pk-border bg-pk-surface p-4">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-pk-mutedText">
                     Progreso
                   </p>
@@ -477,7 +472,7 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
           onBulkSendObservations={handleBulkSendObservations}
           onBulkReassign={handleBulkReassign}
         />
-      </div>
-    </div>
+      </section>
+    </AppShell>
   );
 }

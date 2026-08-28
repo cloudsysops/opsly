@@ -51,7 +51,7 @@ export function FamilyEmailLogin(): React.ReactElement {
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-pk-mutedText">
           Acceso por invitación
         </p>
-        <h1 className="mt-2 text-2xl font-semibold text-pk-text">Portal familias</h1>
+        <h1 className="mt-2 text-2xl font-semibold text-pk-ink sm:text-3xl">Portal familias</h1>
         <p className="mt-2 text-sm text-pk-sub">
           Ingresa el correo asociado a tu reserva o estudiante. Solo recibirás acceso si ya
           estás invitado al portal de familias de Peskids.

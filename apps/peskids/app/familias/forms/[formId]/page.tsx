@@ -87,7 +87,7 @@ export default function FamilyFormPage(): React.ReactElement {
             </CardHeader>
           </Card>
         ) : form ? (
-          <div className="rounded-3xl border border-pk-border bg-white p-5 shadow-card sm:p-8">
+          <div className="rounded-3xl border border-pk-border bg-pk-surface p-5 shadow-card sm:p-8">
             <FormSubmission form={form} onSubmit={submitForm} isLoading={submitting} />
           </div>
         ) : null}
