@@ -1,6 +1,8 @@
 import type { NextRequest } from 'next/server';
+import { extractIp } from '../audit';
 import { HTTP_STATUS, LOCAL_SERVICES_PUBLIC } from '../constants';
 import { assertLocalServicesTenantPublic } from '../local-services-public';
+import { checkRateLimit } from '../rate-limiter';
 import { lsGetServiceByExternalKey } from '../repositories/local-services-repository';
 import { computeTechnicianSlots } from '../technician-available-slots';
 import { isTechnicianTenantMetadata } from '../technician-tenant-profile';
@@ -44,6 +46,14 @@ export async function getPublicAvailableSlots(
   const gate = await assertLocalServicesTenantPublic(slug);
   if (gate !== null) {
     return gate;
+  }
+
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(
+    ip ? `local-services-slots:${ip}` : 'local-services-slots:anonymous'
+  );
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });
   }
 
   const metadata = await fetchTenantMetadataBySlug(slug);
