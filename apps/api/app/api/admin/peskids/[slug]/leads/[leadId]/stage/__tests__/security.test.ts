@@ -35,7 +35,9 @@ describe('PATCH /api/admin/peskids/[slug]/leads/[leadId]/stage security & author
       body: JSON.stringify({ stage: 'Contacted' }),
     });
 
-    const res = await PATCH(req, { params: Promise.resolve({ slug: 'peskids', leadId: 'lead-123' }) });
+    const res = await PATCH(req, {
+      params: Promise.resolve({ slug: 'peskids', leadId: 'lead-123' }),
+    });
     expect(res.status).toBe(401);
     expect(updateLeadStageMock).not.toHaveBeenCalled();
     expect(logAuditEventMock).not.toHaveBeenCalled();
@@ -54,7 +56,9 @@ describe('PATCH /api/admin/peskids/[slug]/leads/[leadId]/stage security & author
       body: JSON.stringify({ stage: 'Contacted' }),
     });
 
-    const res = await PATCH(req, { params: Promise.resolve({ slug: 'peskids', leadId: 'lead-123' }) });
+    const res = await PATCH(req, {
+      params: Promise.resolve({ slug: 'peskids', leadId: 'lead-123' }),
+    });
     expect(res.status).toBe(200);
 
     expect(logAuditEventMock).toHaveBeenCalledWith({

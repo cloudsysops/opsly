@@ -88,7 +88,10 @@ export async function sendSlackAlert(
     }
   } catch (err) {
     // Don't throw; alerting failure shouldn't break the request
-    console.error('[slack-alerter] Failed to send alert:', err instanceof Error ? err.message : String(err));
+    console.error(
+      '[slack-alerter] Failed to send alert:',
+      err instanceof Error ? err.message : String(err)
+    );
   }
 }
 
@@ -124,10 +127,7 @@ export async function alertN8nFailure(
   });
 }
 
-export async function alertWebhookFailure(
-  operation: string,
-  error: string
-): Promise<void> {
+export async function alertWebhookFailure(operation: string, error: string): Promise<void> {
   return sendSlackAlert('critical', {
     service: 'peskids',
     component: 'webhook-receiver',
@@ -159,7 +159,10 @@ export async function alertCircuitBreakerTrip(
   });
 }
 
-export async function alertDeadLetterQueueBacklog(count: number, ageMinutes: number): Promise<void> {
+export async function alertDeadLetterQueueBacklog(
+  count: number,
+  ageMinutes: number
+): Promise<void> {
   return sendSlackAlert('warning', {
     service: 'opsly',
     component: 'dead-letter-queue',

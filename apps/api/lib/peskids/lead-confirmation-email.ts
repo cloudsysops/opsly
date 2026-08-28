@@ -35,9 +35,7 @@ function buildConfirmationHtml(row: PeskidsLeadRow): string {
     process.env.PESKIDS_WHATSAPP_E164?.trim() ||
     '';
   const waLink =
-    whatsappE164.length > 0
-      ? `https://wa.me/${whatsappE164.replace(/[^\d]/g, '')}`
-      : null;
+    whatsappE164.length > 0 ? `https://wa.me/${whatsappE164.replace(/[^\d]/g, '')}` : null;
 
   return `
     <div style="font-family:system-ui,-apple-system,sans-serif;line-height:1.5;color:#111">
@@ -47,9 +45,7 @@ function buildConfirmationHtml(row: PeskidsLeadRow): string {
       } para el grado <strong>${grade}</strong>.</p>
       <p>Nuestro equipo te contactará pronto por WhatsApp o teléfono para agendar una clase de prueba.</p>
       ${
-        waLink
-          ? `<p>Si quieres escribirnos ahora: <a href="${waLink}">abrir WhatsApp</a>.</p>`
-          : ''
+        waLink ? `<p>Si quieres escribirnos ahora: <a href="${waLink}">abrir WhatsApp</a>.</p>` : ''
       }
       <p style="color:#666;font-size:12px">Este mensaje es automático. No compartas datos sensibles por email.</p>
     </div>

@@ -119,38 +119,38 @@ export async function POST(
     request,
     tenantSlug,
     async (session) => {
-    try {
-      const body = (await request.json()) as Partial<BulkGradeRequest>;
+      try {
+        const body = (await request.json()) as Partial<BulkGradeRequest>;
 
-      const validation = validateBulkGradeRequest(body);
-      if (!validation.valid) {
-        return validation.error;
+        const validation = validateBulkGradeRequest(body);
+        if (!validation.valid) {
+          return validation.error;
+        }
+
+        const supabase = getServiceClient();
+
+        const result = await gradeSubmissionsAndAudit(
+          supabase,
+          tenantSlug,
+          validation.request.submissionIds,
+          validation.request.score,
+          validation.request.feedback,
+          session.user.id
+        );
+
+        if (!result.ok) {
+          return jsonError(result.error, HTTP_STATUS.INTERNAL_ERROR);
+        }
+
+        return jsonOk({
+          updated: result.updated.length,
+          submissionIds: result.updated.map((u) => u.submission_id),
+        });
+      } catch (error) {
+        console.error('Bulk grade error:', error);
+        return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
       }
-
-      const supabase = getServiceClient();
-
-      const result = await gradeSubmissionsAndAudit(
-        supabase,
-        tenantSlug,
-        validation.request.submissionIds,
-        validation.request.score,
-        validation.request.feedback,
-        session.user.id
-      );
-
-      if (!result.ok) {
-        return jsonError(result.error, HTTP_STATUS.INTERNAL_ERROR);
-      }
-
-      return jsonOk({
-        updated: result.updated.length,
-        submissionIds: result.updated.map((u) => u.submission_id),
-      });
-    } catch (error) {
-      console.error('Bulk grade error:', error);
-      return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
-    }
-  },
-  PORTAL_WRITE_ACCESS
+    },
+    PORTAL_WRITE_ACCESS
   );
 }

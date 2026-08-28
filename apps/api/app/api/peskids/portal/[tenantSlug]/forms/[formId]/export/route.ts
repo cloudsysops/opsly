@@ -9,7 +9,10 @@ interface PeskidsQB {
   eq(col: string, val: unknown): PeskidsQB;
   order(col: string, opts?: unknown): PeskidsQB;
   single(): Promise<{ data: unknown | null; error: unknown }>;
-  then<T>(r: (v: { data: unknown[] | null; error: unknown }) => T, j?: (e: unknown) => T): Promise<T>;
+  then<T>(
+    r: (v: { data: unknown[] | null; error: unknown }) => T,
+    j?: (e: unknown) => T
+  ): Promise<T>;
 }
 interface PeskidsClient {
   from(table: string): PeskidsQB;
@@ -61,7 +64,12 @@ async function fetchFormForExport(
   tenantSlug: string
 ) {
   const db = supabase as unknown as PeskidsClient;
-  const { data: rawForm, error: formError } = await db.from('peskids.forms').select('id, title').eq('form_id', formId).eq('tenant_slug', tenantSlug).single();
+  const { data: rawForm, error: formError } = await db
+    .from('peskids.forms')
+    .select('id, title')
+    .eq('form_id', formId)
+    .eq('tenant_slug', tenantSlug)
+    .single();
   type FormRow = { id: string; title: string };
   const form = rawForm as FormRow | null;
 
@@ -77,7 +85,12 @@ async function fetchFormSubmissions(
   tenantSlug: string
 ) {
   const db = supabase as unknown as PeskidsClient;
-  const { data: rawSubs, error: submissionsError } = await db.from('peskids.form_submissions').select('submission_id, submission_data, completed_at, status, score, feedback').eq('form_id', formId).eq('tenant_slug', tenantSlug).order('completed_at', { ascending: false });
+  const { data: rawSubs, error: submissionsError } = await db
+    .from('peskids.form_submissions')
+    .select('submission_id, submission_data, completed_at, status, score, feedback')
+    .eq('form_id', formId)
+    .eq('tenant_slug', tenantSlug)
+    .order('completed_at', { ascending: false });
   const submissions = rawSubs as FormSubmission[] | null;
 
   if (submissionsError) {
@@ -199,7 +212,11 @@ export async function GET(
           return validation.error;
         }
 
-        const formResult = await fetchFormForExport(supabase, formId as string, tenantSlug as string);
+        const formResult = await fetchFormForExport(
+          supabase,
+          formId as string,
+          tenantSlug as string
+        );
         if (!formResult.ok) {
           return new Response(formResult.error, { status: HTTP_STATUS.NOT_FOUND });
         }
