@@ -30,6 +30,9 @@ ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+# Build content-studio so studio subpath export resolves (dist/ needed)
+RUN npm run build -w @intcloudsysops/universe && \
+    npm run build -w @intcloudsysops/content-studio
 RUN mkdir -p public && npm run build
 
 FROM node:20-alpine AS runner
