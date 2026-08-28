@@ -17,6 +17,7 @@ WORKDIR /repo
 COPY --from=deps /repo/node_modules ./node_modules
 COPY --from=deps /repo/package.json ./package.json
 COPY --from=deps /repo/package-lock.json ./package-lock.json
+COPY tsconfig.json tsconfig.workspace-paths.json ./
 COPY lib/services ./lib/services
 COPY lib/mission-control-kit ./lib/mission-control-kit
 COPY lib/game-core ./lib/game-core
