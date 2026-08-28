@@ -21,7 +21,7 @@ describe('POST /api/peskids/portal/[tenantSlug]/submissions/bulk-grade authoriza
     vi.clearAllMocks();
   });
 
-  it('returns 401 when no session is present', async () => {
+  it('returns 401 when no session is present (runTrustedPortalDalForPathSlug fails)', async () => {
     const req = new NextRequest(
       'http://localhost/api/peskids/portal/test-tenant/submissions/bulk-grade',
       {
@@ -81,6 +81,8 @@ describe('POST /api/peskids/portal/[tenantSlug]/submissions/bulk-grade authoriza
     const res = await POST(req, { params });
 
     expect(res.status).toBe(200);
+
+    // Verify audit log received the correct actorId
     expect(mockRpc).toHaveBeenCalledWith(
       'log_audit_event',
       expect.objectContaining({
