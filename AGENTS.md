@@ -677,22 +677,27 @@ Week 4: Docs + runbook + MVP validation
 
 <!-- Actualizar al final de cada sesión. Sesiones pre-2026-05-26 → docs/history/AGENTS-SESSION-HISTORY.md -->
 
-### 📌 Sesión Activa (2026-08-25)
+### 📌 Sesión Activa (2026-08-27)
 
 **Tema:** Franchise platform + First Portal game + Universe canon + pc-gamer autodispatch en `main`  
-**Branch:** `main` (`95f7be700`) plataforma  
+**Branch:** `main` (Franchise shell y avances de integración en `main`)
 **Objetivo:** un solo cerebro para agentes (Cursor/Claude/OpenCode/Copilot/workers) alineado a prod real
 
 **Hecho (2026-08-16 → 2026-08-25):**
-1. ✅ Franchise management platform ([`95f7be700`](https://github.com/cloudsysops/opsly/commit/95f7be700)) — standalone Next.js 15 app with Prisma, territories, royalties, RAG.
-2. ✅ First Portal playable web client ([`28c4d7c47`](https://github.com/cloudsysops/opsly/commit/28c4d7c47), [#1007](https://github.com/cloudsysops/opsly/pull/1007)).
-3. ✅ Universe contracts + canon guard ([`4affe2bda`](https://github.com/cloudsysops/opsly/commit/4affe2bda), [`57d6c3be0`](https://github.com/cloudsysops/opsly/commit/57d6c3be0), [#1005](https://github.com/cloudsysops/opsly/pull/1005), [#1003](https://github.com/cloudsysops/opsly/pull/1003)).
-4. ✅ pc-gamer overnight autodispatch ([`0752e3bc9`](https://github.com/cloudsysops/opsly/commit/0752e3bc9), [#1000](https://github.com/cloudsysops/opsly/pull/1000)).
-5. ✅ Render pipeline consolidated onto Universe canon ([`0228ca087`](https://github.com/cloudsysops/opsly/commit/0228ca087), [#1004](https://github.com/cloudsysops/opsly/pull/1004)).
-6. ✅ Cola `night-merge` **vacía**. VPS: cron edge-watchdog `*/2`; nightly n8n `15 1 * * *` (America/Bogota). API `https://api.op-sly.com/api/health` → 200 supabase+redis ok.
+1. ✅ Franchise management shell ([`95f7be700`](https://github.com/cloudsysops/opsly/commit/95f7be700), [`08b15e144`](https://github.com/cloudsysops/opsly/commit/08b15e144)) — standalone Next.js 15 UI with legacy Prisma/NextAuth retained only as transitional code.
+2. ✅ Canonical Peskids session and read-only unit boundary ([`21cd107da`](https://github.com/cloudsysops/opsly/commit/21cd107da)) — server-side `tenant_slug=peskids`, role/membership scope and real unit reads for `llanogrande-principal` and `domicilios-peskids`.
+3. ⚠️ Franchise dashboard APIs (stats/leads/students) exist, but student/family PII review is still required before production exposure.
+4. ✅ First Portal playable web client ([`28c4d7c47`](https://github.com/cloudsysops/opsly/commit/28c4d7c47), [#1007](https://github.com/cloudsysops/opsly/pull/1007)).
+5. ✅ Universe contracts + canon guard ([`4affe2bda`](https://github.com/cloudsysops/opsly/commit/4affe2bda), [`57d6c3be0`](https://github.com/cloudsysops/opsly/commit/57d6c3be0), [#1005](https://github.com/cloudsysops/opsly/pull/1005), [#1003](https://github.com/cloudsysops/opsly/pull/1003)).
+6. ✅ pc-gamer overnight autodispatch ([`0752e3bc9`](https://github.com/cloudsysops/opsly/commit/0752e3bc9), [#1000](https://github.com/cloudsysops/opsly/pull/1000)).
+7. ✅ Render pipeline consolidated onto Universe canon ([`0228ca087`](https://github.com/cloudsysops/opsly/commit/0228ca087), [#1004](https://github.com/cloudsysops/opsly/pull/1004)).
+8. ✅ Cola `night-merge` **vacía**. VPS: cron edge-watchdog `*/2`; nightly n8n `15 1 * * *` (America/Bogota). API `https://api.op-sly.com/api/health` → 200 supabase+redis ok.
 
 **Pendiente:**
-- PR [#1044](https://github.com/cloudsysops/opsly/pull/1044) (franchise setup) abierto y mergeable, branch `feat/peskids-franchise-setup` con 12 commits.
+- PR [#1044](https://github.com/cloudsysops/opsly/pull/1044) sigue abierto en `feat/peskids-franchise-setup`; el commit [`21cd107da`](https://github.com/cloudsysops/opsly/commit/21cd107da) está publicado, pero el PR está bloqueado por CI/lockfile y ventana de cambios.
+- No afirmar despliegue productivo de Franchise: no hay smoke test live de unidades ni migración productiva de este flujo.
+- Core reutilizable, persistencia/RLS y opening/activation gate siguen en ramas separadas y no deben tratarse como consolidados en `main`.
+- Siguiente slice: CRM canónico de candidatos/franquiciados; debe implementar lifecycle real y mantener separado el CRM de familias/alumnos.
 - 50 PRs abiertos total (18 Sentinel, 11 Bolt, 9 Palette, 5 franchise, 7 other).
 - Catálogo comercial (`config/commercial-catalog.json`) sin tie runtime a módulos técnicos. Diseño: [`docs/00-architecture/MODULE-REGISTRY.md`](docs/00-architecture/MODULE-REGISTRY.md).
 - **No** mergear en masa Sentinel/Bolt/Palette. **No** mezclar YouTube/content-studio en PRs de plataforma. PC-gamer: no encolar OpenCode si el nodo está en horario `gaming` / offline.
@@ -1600,11 +1605,11 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 ## 🔄 Próximo paso inmediato
 
-**Peskids:** prod `95f7be700` (franchise platform merged). Health: `https://www.peskids.com/api/health`. Checklist: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md).
+**Peskids:** producción continúa referenciada por su health/checklist; Franchise está en integración controlada, no declarada como desplegada. Health: `https://www.peskids.com/api/health`. Checklist: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md).
 
 **Plataforma:** `main` = `95f7be700` (#1007 game, #1005 universe, #1000 autodispatch, #1004 render pipeline). Scan `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh`. Cola `night-merge` vacía. No mergear Sentinel/Bolt/Palette sin review.
 
-**Franchise:** PR [#1044](https://github.com/cloudsysops/opsly/pull/1044) (franchise setup) open and mergeable on `feat/peskids-franchise-setup` (12 commits).
+**Franchise:** PR [#1044](https://github.com/cloudsysops/opsly/pull/1044) abierto en `feat/peskids-franchise-setup`; sesión canónica/unidades read-only en `21cd107da`; CI bloqueado y sin deploy/migración productiva.
 
 **Capacidad VPS:** alerta memoria **activa** (~4 GiB) — `docs/runbooks/VPS-MEMORY-CAPS.md`. Compose `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh --env-file /opt/opsly/.env --dry-run` (solo nombres de clave).
 

@@ -6,7 +6,7 @@ Kvadou de la fuente de verdad de producción. `tenant_slug` permanece fijo en
 
 | Capability | Kvadou clone (`apps/peskids-franchise`) | Opsly/Core | Peskids current | Canonical owner | Action |
 |---|---|---|---|---|---|
-| Authentication/session | NextAuth, Prisma `User`, Google `@acmefranchise.com`, demo credentials | No auth owner; receives trusted identity | Existing Supabase staff auth and `validateStaffRequest` | Peskids auth/session | Replace with thin UI session adapter; demo login dev/test only |
+| Authentication/session | NextAuth, Prisma `User`, Google `@acmefranchise.com`, demo credentials | No auth owner; receives trusted identity | Existing Supabase staff auth and `validateStaffRequest` | Peskids auth/session | Thin adapter exists for the read-only units slice; demo login remains dev/test only and legacy auth is not production source |
 | Tenant and access scope | Browser/session roles and Prisma relations | `tenantId`, `unitId` contracts; persistence/RLS on server | `tenant_slug=peskids`, staff memberships and franchise scope | Peskids auth + Supabase RLS | Derive tenant, role and unit assignments server-side |
 | Franchise candidates | Prisma `Prospect` and CRM pages | Candidate lifecycle belongs in franchise domain | Family/lead CRM is separate | Franchise Core candidate boundary | Port fields only; never mix with parents/students |
 | Franchisees | `FranchiseeAccount`, contacts and portal pages | `Franchisee` entity | Existing franchise rows/memberships where applicable | Core + Peskids adapter | Map UI to canonical service |
@@ -21,7 +21,7 @@ Kvadou de la fuente de verdad de producción. `tenant_slug` permanece fijo en
 | Manuals/documents | Prisma manual pages/sections and demo content | Document references, not a second blob store | Existing docs/storage capability | Existing storage + canonical document refs | Port references/version/acknowledgement; do not duplicate storage |
 | Suppliers/equipment | Supplier, equipment and marketplace-like Prisma models | Generic supplier/catalog capability is not yet production-proven | Peskids business configuration pending | Peskids config + future Core contract | Keep behind feature flag; no marketplace/payment flow |
 | Marketing/social | Brand assets, campaigns and social screens | No auto-posting requirement in Core | Peskids brand approvals are product-owned | Peskids approval workflow | Approval-first assets/templates; defer auto-posting |
-| Reports | Demo MRR/invoice/activity charts | Aggregates consume canonical entities | Peskids dashboard services and real operational data | Peskids/Core reporting services | Every metric needs a source; remove fake charts |
+| Reports | Demo MRR/invoice/activity charts | Aggregates consume canonical entities | Peskids dashboard services and real operational data | Peskids/Core reporting services | Dashboard stats/leads/students are partial; every metric needs a source and every returned field needs PII review |
 | Stripe Connect | Clone integration/configuration | Payment rail is outside pure domain core | Existing Stripe/Wompi/payment automations | Peskids payments decision | Audit only; defer Connect until marketplace/payout need is approved |
 | RLS | Prisma schema is not a production boundary | Persistence APIs and tenant/unit authorization | Supabase RLS and franchise memberships | Supabase/Postgres + server authorization | Prove A/B isolation and role restrictions with live tests |
 
@@ -38,6 +38,8 @@ tenant scope and deployment checks remain canonical.
 - Kvadou NextAuth/Prisma/demo credentials are not an acceptable production path.
 - Kvadou commercial values, Acme records, sample invoices and fake charts are
   fixtures/legacy content and must not be surfaced as Peskids truth.
+- The canonical unit read/API slice exists, but the broader dashboard is not
+  production-ready until student/family PII and all endpoint scopes are reviewed.
 - Franchise Core persistence/RLS/opening branches are open PRs and must not be
   assumed merged into `main`.
 - Commercial, legal and payment-rail values remain pending until approved;

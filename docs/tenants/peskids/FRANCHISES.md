@@ -48,7 +48,7 @@ Operativo existente:
 ## Permisos (fase actual)
 
 - `owner` / `admin` globales: ven **todo** (filtro admin opcional).
-- `teacher` / `support`: membership por franquicia preparado; **enforcement estricto** en una fase posterior.
+- `teacher` / `support`: el portal Franchise aplica membership/scope server-side para la lectura de unidades; el enforcement equivalente aún debe extenderse y probarse en todos los endpoints Peskids.
 - Seed: memberships owner/admin en ambas franquicias cuando hay `user_id` en `platform.tenant_memberships`.
 
 ## Migración
@@ -60,6 +60,7 @@ Operativo existente:
 
 - Filtro «Franquicia / sede» en dashboard admin/support (`?franchise_id=`).
 - Settings muestra franquicias activas / flagship (solo lectura).
+- El portal Franchise no debe exponer automáticamente emails de padres ni otra PII familiar; cualquier excepción requiere política explícita y pruebas de scope.
 
 ## Relación con PR intake (#831)
 
