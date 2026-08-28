@@ -11,8 +11,8 @@ const mQueue = {
 
 vi.mock('bullmq', () => {
   return {
-    Queue: vi.fn().mockImplementation(function() {
-        return mQueue;
+    Queue: vi.fn().mockImplementation(function () {
+      return mQueue;
     }),
   };
 });

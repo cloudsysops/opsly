@@ -22,10 +22,13 @@ describe('POST /api/peskids/portal/[tenantSlug]/submissions/bulk-grade authoriza
   });
 
   it('returns 401 when no session is present', async () => {
-    const req = new NextRequest('http://localhost/api/peskids/portal/test-tenant/submissions/bulk-grade', {
-      method: 'POST',
-      body: JSON.stringify({}),
-    });
+    const req = new NextRequest(
+      'http://localhost/api/peskids/portal/test-tenant/submissions/bulk-grade',
+      {
+        method: 'POST',
+        body: JSON.stringify({}),
+      }
+    );
 
     const params = Promise.resolve({ tenantSlug: 'test-tenant' });
     const res = await POST(req, { params });
@@ -47,7 +50,9 @@ describe('POST /api/peskids/portal/[tenantSlug]/submissions/bulk-grade authoriza
     const mockUpdate = vi.fn().mockReturnThis();
     const mockEq = vi.fn().mockReturnThis();
     const mockIn = vi.fn().mockReturnThis();
-    const mockSelect = vi.fn().mockResolvedValue({ data: [{ submission_id: 'sub-1' }], error: null });
+    const mockSelect = vi
+      .fn()
+      .mockResolvedValue({ data: [{ submission_id: 'sub-1' }], error: null });
 
     const { getServiceClient } = await import('@/lib/supabase');
     vi.mocked(getServiceClient).mockReturnValue({
@@ -60,23 +65,29 @@ describe('POST /api/peskids/portal/[tenantSlug]/submissions/bulk-grade authoriza
       rpc: mockRpc,
     } as any);
 
-    const req = new NextRequest('http://localhost/api/peskids/portal/test-tenant/submissions/bulk-grade', {
-      method: 'POST',
-      body: JSON.stringify({
-        submissionIds: ['sub-1'],
-        score: 85,
-        feedback: 'Great job!',
-      }),
-    });
+    const req = new NextRequest(
+      'http://localhost/api/peskids/portal/test-tenant/submissions/bulk-grade',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          submissionIds: ['sub-1'],
+          score: 85,
+          feedback: 'Great job!',
+        }),
+      }
+    );
 
     const params = Promise.resolve({ tenantSlug: 'test-tenant' });
     const res = await POST(req, { params });
 
     expect(res.status).toBe(200);
-    expect(mockRpc).toHaveBeenCalledWith('log_audit_event', expect.objectContaining({
-      p_actor_id: 'test-user',
-      p_tenant_slug: 'test-tenant',
-      p_action: 'form_submissions_bulk_graded',
-    }));
+    expect(mockRpc).toHaveBeenCalledWith(
+      'log_audit_event',
+      expect.objectContaining({
+        p_actor_id: 'test-user',
+        p_tenant_slug: 'test-tenant',
+        p_action: 'form_submissions_bulk_graded',
+      })
+    );
   });
 });
