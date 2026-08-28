@@ -77,6 +77,44 @@ describe('InsightDashboard', () => {
     expect(screen.getByText('Riesgo Churn Alto')).toBeInTheDocument();
     expect(screen.getByText('El uso disminuyó un 50% la última semana.')).toBeInTheDocument();
     expect(screen.getByText('Pico de Uso Detectado')).toBeInTheDocument();
+
+    const readBtn = screen.getByRole('button', { name: /marcar "Riesgo Churn Alto" como leído/i });
+    expect(readBtn.className).toContain('focus-visible:ring-2');
+    expect(readBtn.className).toContain('focus-visible:ring-ops-green/80');
+    expect(readBtn).toHaveAttribute('aria-busy', 'false');
+  });
+
+  it('sets aria-busy and displays loading spinner during async patch action', async () => {
+    let resolvePatch: (val: any) => void = () => {};
+    const mockFetch = vi.fn().mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolvePatch = resolve;
+        })
+    );
+    vi.stubGlobal('fetch', mockFetch);
+
+    render(<InsightDashboard tenantSlug="test-tenant" insights={[mockInsights[0]]} />);
+
+    const readBtn = screen.getByRole('button', { name: /marcar "Riesgo Churn Alto" como leído/i });
+    expect(readBtn).toHaveAttribute('aria-busy', 'false');
+
+    await act(async () => {
+      fireEvent.click(readBtn);
+    });
+
+    expect(readBtn).toHaveAttribute('aria-busy', 'true');
+    expect(readBtn).toBeDisabled();
+
+    await act(async () => {
+      resolvePatch({
+        ok: true,
+        json: () => Promise.resolve({}),
+      });
+      await Promise.resolve();
+    });
+
+    expect(readBtn).toHaveAttribute('aria-busy', 'false');
   });
 
   it('handles empty insights state', () => {
