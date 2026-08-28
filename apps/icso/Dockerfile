@@ -10,13 +10,7 @@ COPY lib/game-core/package.json ./lib/game-core/
 COPY lib/game-web/package.json ./lib/game-web/
 COPY lib/universe/package.json ./lib/universe/
 COPY apps/icso/package.json ./apps/icso/
-RUN npm ci --ignore-scripts \
-  -w @intcloudsysops/services \
-  -w @intcloudsysops/mission-control-kit \
-  -w @intcloudsysops/game-core \
-  -w @intcloudsysops/game-web \
-  -w @intcloudsysops/universe \
-  -w @intcloudsysops/icso
+RUN npm ci --ignore-scripts
 
 FROM node:20-alpine AS builder
 WORKDIR /repo
