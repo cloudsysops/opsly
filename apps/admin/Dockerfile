@@ -14,6 +14,7 @@ WORKDIR /repo
 COPY --from=deps /repo/node_modules ./node_modules
 COPY --from=deps /repo/package.json ./package.json
 COPY --from=deps /repo/package-lock.json ./package-lock.json
+COPY tsconfig.json tsconfig.workspace-paths.json ./
 COPY apps/admin ./apps/admin
 # Monorepo libs imported from apps/admin (runtime, design tokens, shared UI)
 COPY lib ./lib
@@ -29,9 +30,6 @@ ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
-# Build libs required by admin (content-studio/studio subpath needs dist/)
-RUN npm run build -w @intcloudsysops/universe && \
-    npm run build -w @intcloudsysops/content-studio
 RUN mkdir -p public && npm run build
 
 FROM node:20-alpine AS runner
