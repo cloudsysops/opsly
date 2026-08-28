@@ -20,6 +20,8 @@ export async function POST(request: NextRequest, context: Context) {
     const body = (await request.json()) as { status?: unknown };
     const status = parseCandidateStatus(body.status);
     if (!status) return NextResponse.json({ error: 'Invalid candidate status' }, { status: 422 });
+    if (status === 'approved' && !canAccessCandidateCrm(canonical, 'approve'))
+      return NextResponse.json({ error: 'Candidate approval denied' }, { status: 403 });
     const { id } = await context.params;
     const candidate = await transitionCandidate(id, status, canonical.userId);
     return candidate

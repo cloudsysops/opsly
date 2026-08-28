@@ -56,11 +56,30 @@ export default function CandidateDetailPage({ params }: { params: Promise<{ id: 
           <dt className="text-xs uppercase text-slate-500">Asignado a</dt>
           <dd>{candidate.assignedTo || 'Sin asignar'}</dd>
         </div>
+        <div className="md:col-span-2">
+          <dt className="text-xs uppercase text-slate-500">Notas</dt>
+          <dd className="whitespace-pre-wrap">{candidate.notes || '—'}</dd>
+        </div>
       </dl>
       <div className="rounded-xl bg-amber-50 p-4 text-sm text-amber-900">
         El territorio indicado es interés comercial, no exclusividad legal. La siguiente etapa
         después de convertir es revisión territorial, acuerdo y apertura.
       </div>
+      {candidate.status === 'financial_review' && (
+        <button
+          onClick={async () => {
+            const response = await fetch(`/api/franchise/candidates/${candidate.id}/approve`, {
+              method: 'POST',
+            });
+            const body = await response.json();
+            if (!response.ok) return setError(body.error);
+            setCandidate(body.candidate);
+          }}
+          className="rounded bg-brand-purple px-4 py-2 font-medium text-white"
+        >
+          Aprobar candidato
+        </button>
+      )}
       {candidate.status === 'approved' && !candidate.proposedUnitId && (
         <button
           onClick={async () => {
