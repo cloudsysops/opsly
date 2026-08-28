@@ -698,6 +698,7 @@ Week 4: Docs + runbook + MVP validation
 - No afirmar despliegue productivo de Franchise: no hay smoke test live de unidades ni migración productiva de este flujo.
 - Core reutilizable, persistencia/RLS y opening/activation gate siguen en ramas separadas y no deben tratarse como consolidados en `main`.
 - Siguiente slice: CRM canónico de candidatos/franquiciados; debe implementar lifecycle real y mantener separado el CRM de familias/alumnos.
+- Candidate CRM en implementación sobre branch `feat/peskids-franchise-candidate-crm-v3`: persistencia aditiva 0099 pendiente, Kanban y conversión idempotente a franquiciado/unidad propuesta; no activa.
 - 50 PRs abiertos total (18 Sentinel, 11 Bolt, 9 Palette, 5 franchise, 7 other).
 - Catálogo comercial (`config/commercial-catalog.json`) sin tie runtime a módulos técnicos. Diseño: [`docs/00-architecture/MODULE-REGISTRY.md`](docs/00-architecture/MODULE-REGISTRY.md).
 - **No** mergear en masa Sentinel/Bolt/Palette. **No** mezclar YouTube/content-studio en PRs de plataforma. PC-gamer: no encolar OpenCode si el nodo está en horario `gaming` / offline.
@@ -1610,6 +1611,8 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 **Plataforma:** `main` = `95f7be700` (#1007 game, #1005 universe, #1000 autodispatch, #1004 render pipeline). Scan `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh`. Cola `night-merge` vacía. No mergear Sentinel/Bolt/Palette sin review.
 
 **Franchise:** PR [#1044](https://github.com/cloudsysops/opsly/pull/1044) abierto en `feat/peskids-franchise-setup`; sesión canónica/unidades read-only en `21cd107da`; CI bloqueado y sin deploy/migración productiva.
+
+**Franchise candidate loop:** implementación separada pendiente de PR; no aplicar `0099_franchise_candidates.sql`, no convertir datos reales y no avanzar a territorio/acuerdo hasta validar tests, PII y autorización.
 
 **Capacidad VPS:** alerta memoria **activa** (~4 GiB) — `docs/runbooks/VPS-MEMORY-CAPS.md`. Compose `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh --env-file /opt/opsly/.env --dry-run` (solo nombres de clave).
 
