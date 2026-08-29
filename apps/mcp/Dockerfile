@@ -70,6 +70,14 @@ COPY --from=builder /repo/lib/sigma-harness ./lib/sigma-harness
 COPY --from=builder /repo/lib/prompt-guard ./lib/prompt-guard
 COPY --from=builder /repo/apps/llm-gateway ./apps/llm-gateway
 COPY --from=builder /repo/apps/notebooklm-agent ./apps/notebooklm-agent
+
+# Workspace symlinks: Docker COPY breaks npm workspace symlinks that point
+# outside node_modules (../../lib/*). Create explicit symlinks for transitive deps.
+RUN mkdir -p node_modules/@intcloudsysops && \
+    for pkg in universe content-studio game-core game-web; do \
+      [ -d "lib/${pkg}" ] && ln -sf "../../lib/${pkg}" "node_modules/@intcloudsysops/${pkg}"; \
+    done
+
 WORKDIR /app/apps/mcp
 EXPOSE 3003
 CMD ["npm", "run", "start"]
