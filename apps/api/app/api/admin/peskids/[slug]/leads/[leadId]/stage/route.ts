@@ -34,10 +34,7 @@ export async function PATCH(
 
   const parsed = stageUpdateSchema.safeParse(parsedBody.body);
   if (!parsed.success) {
-    return jsonError(
-      `Invalid body: ${formatZodError(parsed.error)}`,
-      HTTP_STATUS.BAD_REQUEST
-    );
+    return jsonError(`Invalid body: ${formatZodError(parsed.error)}`, HTTP_STATUS.BAD_REQUEST);
   }
 
   const result = await updateLeadStage(slug, leadId, parsed.data.stage);

@@ -128,7 +128,12 @@ describe('POST /api/portal/onboarding security', () => {
         tenant_slug: 'acme-corp',
         resource: '/api/portal/onboarding',
         ip: '127.0.0.1',
-        metadata: { org_name: 'Acme Corp', plan: 'startup', tenant_id: 'ten_123', user_id: 'usr_123' },
+        metadata: {
+          org_name: 'Acme Corp',
+          plan: 'startup',
+          tenant_id: 'ten_123',
+          user_id: 'usr_123',
+        },
       })
     );
   });
