@@ -95,7 +95,9 @@ export default function MissionControlChatPage() {
       {error ? <p className="text-sm text-red-400">{error}</p> : null}
 
       {result?.summary ? (
-        <p className="rounded-md border border-zinc-800 bg-zinc-950 p-3 text-sm text-zinc-300">{result.summary}</p>
+        <p className="rounded-md border border-zinc-800 bg-zinc-950 p-3 text-sm text-zinc-300">
+          {result.summary}
+        </p>
       ) : null}
 
       {result?.reply ? (
@@ -106,8 +108,8 @@ export default function MissionControlChatPage() {
 
       {result?.worker_recommendation ? (
         <p className="text-xs text-zinc-500">
-          Worker: {result.worker_recommendation.workerId} ({result.worker_recommendation.opslyJobType}) —{' '}
-          {result.worker_recommendation.rationale}
+          Worker: {result.worker_recommendation.workerId} (
+          {result.worker_recommendation.opslyJobType}) — {result.worker_recommendation.rationale}
           {result.human_approval_required ? ' · approval may be required' : ''}
         </p>
       ) : null}

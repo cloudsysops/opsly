@@ -63,10 +63,13 @@ function resolveLevel(failureCount: number): DunningStatus['level'] {
 
 function buildMessage(slug: string, count: number, level: DunningStatus['level']): string {
   const emoji =
-    level === 'suspended' ? '🚨' :
-    level === 'critical' ? '🔴' :
-    level === 'escalated' ? '🟡' :
-    '🟢';
+    level === 'suspended'
+      ? '🚨'
+      : level === 'critical'
+        ? '🔴'
+        : level === 'escalated'
+          ? '🟡'
+          : '🟢';
   return `**${emoji} Dunning** — tenant \`${slug}\` — ${count} failed payment(s) — ${level}`;
 }
 
@@ -92,11 +95,19 @@ class DunningService {
 
       const level = resolveLevel(existing.failureCount);
 
-      if (shouldNotify(existing, existing.failureCount) && NOTIFICATION_LEVELS.includes(existing.failureCount as typeof NOTIFICATION_LEVELS[number])) {
+      if (
+        shouldNotify(existing, existing.failureCount) &&
+        NOTIFICATION_LEVELS.includes(existing.failureCount as (typeof NOTIFICATION_LEVELS)[number])
+      ) {
         existing.lastNotificationLevel = existing.failureCount;
         const msg = buildMessage(slug, existing.failureCount, level);
         await postDiscord(msg);
-        logger.info('dunning.notification', { tenantId, slug, failureCount: existing.failureCount, level });
+        logger.info('dunning.notification', {
+          tenantId,
+          slug,
+          failureCount: existing.failureCount,
+          level,
+        });
       }
 
       if (existing.failureCount >= SUSPEND_AFTER_FAILURES) {
@@ -129,7 +140,12 @@ class DunningService {
   getDunningStatus(tenantId: string): DunningStatus {
     const entry = this.store.get(tenantId);
     if (!entry) {
-      return { failureCount: 0, shouldSuspend: false, level: 'none', message: 'No payment failures' };
+      return {
+        failureCount: 0,
+        shouldSuspend: false,
+        level: 'none',
+        message: 'No payment failures',
+      };
     }
 
     const level = resolveLevel(entry.failureCount);
