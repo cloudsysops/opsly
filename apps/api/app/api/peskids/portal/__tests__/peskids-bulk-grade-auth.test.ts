@@ -8,8 +8,8 @@ vi.mock('@/lib/portal-trusted-identity', () => ({
     response: new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 }),
   }),
   tenantSlugMatchesSession: vi.fn().mockReturnValue(true),
-  PORTAL_READ_ROLES: ['admin', 'teacher'],
-  PORTAL_WRITE_ROLES: ['admin', 'teacher'],
+  PORTAL_READ_ROLES: ['owner', 'admin', 'operator', 'viewer'],
+  PORTAL_WRITE_ROLES: ['owner', 'admin', 'operator'],
 }));
 
 vi.mock('@/lib/supabase', () => ({
@@ -39,7 +39,7 @@ describe('POST /api/peskids/portal/[tenantSlug]/submissions/bulk-grade authoriza
       session: {
         user: { id: 'test-user' },
         tenant: { id: 'test-tenant-id', slug: 'test-tenant' },
-        roles: ['teacher'],
+        roles: ['operator'],
       } as any,
     });
 

@@ -14,6 +14,8 @@ last_review: 2026-08-25
 **⚡ Cheatsheet:** [`docs/QUICK-REFERENCE.md`](docs/QUICK-REFERENCE.md) — SSH, comandos, vars, sprint actual  
 **🧠 Sistema de conocimiento:** [`docs/KNOWLEDGE-SYSTEM.md`](docs/KNOWLEDGE-SYSTEM.md) — NotebookLM + Obsidian, flujo para agentes
 
+**🎯 Consolidación de producto:** [`docs/00-architecture/PRODUCT-CONSOLIDATION-REGISTRY.md`](docs/00-architecture/PRODUCT-CONSOLIDATION-REGISTRY.md) — ownership canónico, ejecución gobernada y regla contra nueva infraestructura
+
 **Mapa de documentación (evitar duplicar con `docs/AGENTS-GUIDE.md`):** `VISION.md` = norte de producto; **`AGENTS.md` (este archivo)** = estado operativo, próximo paso, bloqueantes e incrementos **por sesión**; **`docs/AGENTS-GUIDE.md`** = convenciones **solo** para varios asistentes/automatismos en paralelo (no sustituye AGENTS). `docs/adr/` = decisiones de arquitectura. No copiar tablas de límites por plan aquí: enlazar `AGENTS-GUIDE` + `VISION.md`.
 
 **Planificación por sprint (IA + producto):** [`ROADMAP.md`](ROADMAP.md) (timeline semanal, milestones). **Guía técnica capa IA:** [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md) (TypeScript, rutas reales en `apps/*`).
@@ -698,6 +700,7 @@ Week 4: Docs + runbook + MVP validation
 - No afirmar despliegue productivo de Franchise: no hay smoke test live de unidades ni migración productiva de este flujo.
 - Core reutilizable, persistencia/RLS y opening/activation gate siguen en ramas separadas y no deben tratarse como consolidados en `main`.
 - Siguiente slice: CRM canónico de candidatos/franquiciados; debe implementar lifecycle real y mantener separado el CRM de familias/alumnos.
+- Candidate CRM en implementación sobre branch `feat/peskids-franchise-candidate-crm-v3`: persistencia aditiva 0099 pendiente, Kanban y conversión idempotente a franquiciado/unidad propuesta; no activa.
 - 50 PRs abiertos total (18 Sentinel, 11 Bolt, 9 Palette, 5 franchise, 7 other).
 - Catálogo comercial (`config/commercial-catalog.json`) sin tie runtime a módulos técnicos. Diseño: [`docs/00-architecture/MODULE-REGISTRY.md`](docs/00-architecture/MODULE-REGISTRY.md).
 - **No** mergear en masa Sentinel/Bolt/Palette. **No** mezclar YouTube/content-studio en PRs de plataforma. PC-gamer: no encolar OpenCode si el nodo está en horario `gaming` / offline.
@@ -1610,6 +1613,8 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 **Plataforma:** `main` = `95f7be700` (#1007 game, #1005 universe, #1000 autodispatch, #1004 render pipeline). Scan `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh`. Cola `night-merge` vacía. No mergear Sentinel/Bolt/Palette sin review.
 
 **Franchise:** PR [#1044](https://github.com/cloudsysops/opsly/pull/1044) abierto en `feat/peskids-franchise-setup`; sesión canónica/unidades read-only en `21cd107da`; CI bloqueado y sin deploy/migración productiva.
+
+**Franchise candidate loop:** implementación separada pendiente de PR; no aplicar `0099_franchise_candidates.sql`, no convertir datos reales y no avanzar a territorio/acuerdo hasta validar tests, PII y autorización.
 
 **Capacidad VPS:** alerta memoria **activa** (~4 GiB) — `docs/runbooks/VPS-MEMORY-CAPS.md`. Compose `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh --env-file /opt/opsly/.env --dry-run` (solo nombres de clave).
 

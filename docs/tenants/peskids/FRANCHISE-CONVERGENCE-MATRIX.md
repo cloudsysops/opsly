@@ -8,7 +8,7 @@ Kvadou de la fuente de verdad de producción. `tenant_slug` permanece fijo en
 |---|---|---|---|---|---|
 | Authentication/session | NextAuth, Prisma `User`, Google `@acmefranchise.com`, demo credentials | No auth owner; receives trusted identity | Existing Supabase staff auth and `validateStaffRequest` | Peskids auth/session | Thin adapter exists for the read-only units slice; demo login remains dev/test only and legacy auth is not production source |
 | Tenant and access scope | Browser/session roles and Prisma relations | `tenantId`, `unitId` contracts; persistence/RLS on server | `tenant_slug=peskids`, staff memberships and franchise scope | Peskids auth + Supabase RLS | Derive tenant, role and unit assignments server-side |
-| Franchise candidates | Prisma `Prospect` and CRM pages | Candidate lifecycle belongs in franchise domain | Family/lead CRM is separate | Franchise Core candidate boundary | Port fields only; never mix with parents/students |
+| Franchise candidates | Prisma `Prospect` and CRM pages | Candidate lifecycle belongs in franchise domain | Family/lead CRM is separate | Peskids Franchise candidate service | Canonical candidate pipeline/API/Kanban is implemented in this slice; never mix with parents/students |
 | Franchisees | `FranchiseeAccount`, contacts and portal pages | `Franchisee` entity | Existing franchise rows/memberships where applicable | Core + Peskids adapter | Map UI to canonical service |
 | Units/locations | `FranchiseeAccount`, `Location`, map fixtures | `FranchiseUnit`, `FranchiseLocation` | `platform.peskids_franchises`, `peskids_franchise_locations`; Llanogrande/Domicilios | Peskids unit model + Core contract | Display real units; no Acme fixtures in production |
 | Territories | Territory/map models, Mapbox/Leaflet UI | `Territory`, overlap/exclusivity engine | Peskids unit/location scope; canonical territory APIs on franchise branches | Franchise Core + persistence | Use API adapter; municipality/radius/exclusivity require server validation |
@@ -40,6 +40,9 @@ tenant scope and deployment checks remain canonical.
   fixtures/legacy content and must not be surfaced as Peskids truth.
 - The canonical unit read/API slice exists, but the broader dashboard is not
   production-ready until student/family PII and all endpoint scopes are reviewed.
+- Candidate CRM is additive and pending migration approval; conversion creates
+  an approved franchisee and a `prospect` unit through the canonical RPC, never
+  an active unit.
 - Franchise Core persistence/RLS/opening branches are open PRs and must not be
   assumed merged into `main`.
 - Commercial, legal and payment-rail values remain pending until approved;
