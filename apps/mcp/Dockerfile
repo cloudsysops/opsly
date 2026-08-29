@@ -75,7 +75,7 @@ COPY --from=builder /repo/apps/notebooklm-agent ./apps/notebooklm-agent
 # outside node_modules (../../lib/*). Create explicit symlinks for transitive deps.
 RUN mkdir -p node_modules/@intcloudsysops && \
     for pkg in universe content-studio game-core game-web; do \
-      [ -d "lib/${pkg}" ] && ln -sf "../../lib/${pkg}" "node_modules/@intcloudsysops/${pkg}"; \
+      if [ -d "lib/${pkg}" ]; then ln -sf "../../lib/${pkg}" "node_modules/@intcloudsysops/${pkg}"; fi; \
     done
 
 WORKDIR /app/apps/mcp
