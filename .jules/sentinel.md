@@ -78,7 +78,7 @@
 **Learning:** Regression testing of route-level parameters wrapping `runTrustedPortalDalForPathSlug` is critical to ensuring access control boundaries are permanently enforced even through subsequent refactors.
 **Prevention:** Ensure new portal-facing routes utilize authorization tests validating that requests lacking session headers yield `401 Unauthorized` block outcomes.
 
-## 2026-08-17 - [Missing Audit Logging on Admin Peskids Message Decision Endpoint]
-**Vulnerability:** The `/api/admin/peskids/[slug]/messages/[messageId]/approve` endpoint executed state-changing message approvals and rejections without generating security audit records, leaving administrative decisions untraceable.
-**Learning:** Administrative approval/rejection workflows in back-office modules can easily omit non-repudiation audit logs if logging is only considered during public endpoint development.
-**Prevention:** Always invoke `logAuditEvent` with proper action tags (`peskids_message_approved` / `peskids_message_rejected`), actor ID (`approvedBy`), resource ID, and verified client IP (`extractIp(request)`).
+## 2026-08-23 - [Timing-Unsafe Token Validation and Perimeter Protections in Governance Breach API]
+**Vulnerability:** The `POST /api/governance/breach` endpoint previously used strict direct string comparison (`authHeader !== 'Bearer ' + expectedToken`) to authenticate secret-bearer requests, creating a timing attack vector. Additionally, it lacked rate limiting and security audit logging for breach events.
+**Learning:** Internal or compliance API endpoints that authenticate with static secret tokens can leak token length and character matching information via timing differences if direct string comparisons are used instead of constant-time buffer comparisons (`timingSafeEqual`).
+**Prevention:** Always perform constant-time comparisons (`timingSafeEqual` from `node:crypto`) when validating secret tokens or signatures. In addition, ensure all mutation endpoints implement client IP rate limiting (`checkRateLimit`) and audit event logging (`logAuditEvent`).

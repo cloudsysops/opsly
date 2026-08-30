@@ -8,6 +8,7 @@ import {
   buildThumbnailPrompt,
   buildVideoPrompt,
   composeStory,
+  getFoundation,
   getCharacter,
   getContext,
   listCharacters,
@@ -36,6 +37,7 @@ Usage:
   npm run universe -- prompt nova image
   npm run universe -- story --characters nova,kai --topic "why robots learn" --world nexus
   npm run universe -- context --characters nova,kai --topic swimming --audience kids --tenant peskids
+  npm run universe -- foundation
   npm run universe -- export
 `;
 }
@@ -110,6 +112,10 @@ function main(): void {
         language: 'es',
       }),
     );
+    return;
+  }
+  if (command === 'foundation') {
+    printJson(getFoundation());
     return;
   }
   if (command === 'export') {

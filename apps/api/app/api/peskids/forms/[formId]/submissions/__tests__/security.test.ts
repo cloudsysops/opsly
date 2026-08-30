@@ -74,19 +74,22 @@ describe('Peskids Form Submission Security', () => {
       method: 'POST',
       body: JSON.stringify({
         submissionData: { field: 'value' },
-        userId: 'attacker-specified-id'
+        email: 'user@example.com',
+        userId: 'attacker-specified-id',
       }),
     });
 
     await POST(req, { params: Promise.resolve({ formId: 'f1' }) });
 
     // Verify audit log call
-    const auditCall = mockRpc.mock.calls.find(call => call[0] === 'log_audit_event');
+    const auditCall = mockRpc.mock.calls.find((call) => call[0] === 'log_audit_event');
     expect(auditCall).toBeDefined();
     const payload = auditCall[1];
 
     // Primary actor should be IP-based, NOT the userId from body
     expect(payload.p_actor_id).toBe(`anonymous:${mockIp}`);
     expect(payload.p_metadata.untrusted_userId).toBe('attacker-specified-id');
+    // Email should be masked to prevent PII leakage in audit logs
+    expect(payload.p_metadata.email).toBe('u***r@example.com');
   });
 });

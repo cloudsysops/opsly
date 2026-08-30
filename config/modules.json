@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "description": "Opsly Library Modules Registry",
-  "lastUpdated": "2026-08-16T00:00:00Z",
+  "lastUpdated": "2026-08-17T00:00:00Z",
   "modules": {
     "prompts": {
       "name": "@intcloudsysops/prompts",
@@ -261,6 +261,71 @@
       "governance": "lib/content-engine/GOVERNANCE.md",
       "mainFile": "lib/content-engine/src/index.ts",
       "exports": ["loadCanonCharacter", "validateProject", "compose"]
+    },
+    "game-core": {
+      "name": "@intcloudsysops/game-core",
+      "version": "1.0.0",
+      "path": "lib/game-core",
+      "owner": "operations",
+      "description": "Opsly Universe game contracts and First Portal loop. Consumes Universe; does not own canon.",
+      "status": "experimental",
+      "dependencies": ["universe"],
+      "governance": "lib/game-core/GOVERNANCE.md",
+      "mainFile": "lib/game-core/src/index.ts",
+      "exports": [
+        "createGameRuntime",
+        "getFirstPortalMission",
+        "GAME_SCHEMA_VERSION"
+      ]
+    },
+    "game-web": {
+      "name": "@intcloudsysops/game-web",
+      "version": "1.0.0",
+      "path": "lib/game-web",
+      "owner": "operations",
+      "description": "First Portal play adapter: Game Core actions to view-models. No character canon.",
+      "status": "experimental",
+      "dependencies": ["game-core", "universe"],
+      "governance": "lib/game-web/GOVERNANCE.md",
+      "mainFile": "lib/game-web/src/index.ts",
+      "exports": [
+        "applyPlayAction",
+        "viewFromSave",
+        "createMemoryStorage"
+      ]
+    },
+    "franchise-core": {
+      "name": "@intcloudsysops/franchise-core",
+      "version": "0.1.0",
+      "path": "lib/franchise-core",
+      "owner": "platform",
+      "description": "Reusable Franchise OS domain: units, territories, agreements, versioned royalties, audits. No CRM or payment processor.",
+      "status": "experimental",
+      "dependencies": [],
+      "governance": "lib/franchise-core/GOVERNANCE.md",
+      "mainFile": "lib/franchise-core/src/index.ts",
+      "exports": [
+        "calculateRoyalty",
+        "findTerritoryConflicts",
+        "ownedUnitDefaults",
+        "summarizeNetwork"
+      ]
+    },
+    "franchise-persistence": {
+      "name": "@intcloudsysops/franchise-persistence",
+      "version": "0.1.0",
+      "path": "lib/franchise-persistence",
+      "owner": "platform",
+      "description": "Postgres/Supabase adapter for Franchise OS. Tenant-scoped queries; no Peskids domain duplication.",
+      "status": "experimental",
+      "dependencies": ["franchise-core"],
+      "governance": "lib/franchise-persistence/GOVERNANCE.md",
+      "mainFile": "lib/franchise-persistence/src/index.ts",
+      "exports": [
+        "createFranchiseService",
+        "createPgFranchiseStore",
+        "createSupabaseFranchiseStore"
+      ]
     }
   },
   "consumers": {
@@ -286,13 +351,22 @@
       "depends": ["universe"]
     },
     "apps/icso": {
-      "depends": ["mission-control-kit", "services"]
+      "depends": ["mission-control-kit", "services", "game-web", "game-core", "universe"]
     },
     "apps/local-services": {
       "depends": ["components", "observability", "prompts", "security", "api", "config"]
     },
     "tools/agents": {
       "depends": ["prompts", "observability", "security", "config", "telemetry"]
+    },
+    "lib/game-core": {
+      "depends": ["universe"]
+    },
+    "lib/game-web": {
+      "depends": ["game-core", "universe"]
+    },
+    "apps/peskids": {
+      "depends": ["franchise-core", "franchise-persistence", "services"]
     }
   },
   "policies": {

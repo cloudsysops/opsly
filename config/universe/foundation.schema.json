@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://intcloudsysops.local/schemas/universe/foundation.schema.json",
+  "title": "Opsly Universe Foundation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "foundationVersion",
+    "purpose",
+    "origin",
+    "principles",
+    "nonNegotiables",
+    "childSafety",
+    "aiPhilosophy",
+    "learningPhilosophy",
+    "historicalEras",
+    "futureVision"
+  ],
+  "properties": {
+    "foundationVersion": { "type": "string", "minLength": 1 },
+    "purpose": { "type": "string", "minLength": 1 },
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provenance", "statement", "sourceRefs"],
+      "properties": {
+        "provenance": {
+          "type": "string",
+          "enum": [
+            "verified_history",
+            "founder_recollection",
+            "narrative_interpretation",
+            "fictional_canon"
+          ]
+        },
+        "statement": { "type": "string", "minLength": 1 },
+        "sourceRefs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        }
+      }
+    },
+    "principles": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "nonNegotiables": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "childSafety": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "aiPhilosophy": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "learningPhilosophy": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "historicalEras": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["year", "name", "provenance", "summary"],
+        "properties": {
+          "year": { "type": "string", "minLength": 1 },
+          "name": { "type": "string", "minLength": 1 },
+          "provenance": {
+            "type": "string",
+            "enum": [
+              "verified_history",
+              "founder_recollection",
+              "narrative_interpretation",
+              "fictional_canon"
+            ]
+          },
+          "summary": { "type": "string", "minLength": 1 }
+        }
+      },
+      "minItems": 1
+    },
+    "futureVision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "statement"],
+      "properties": {
+        "status": { "type": "string", "enum": ["open"] },
+        "statement": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

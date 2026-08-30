@@ -99,7 +99,8 @@ async function approveFlow(
     .eq('id', row.conversation_id);
 
   const slug = tenantSlugFromDecision(row);
-  const rawPrompt = row.implementation_prompt ?? 'Implementar feedback aprobado (describir cambio en Markdown).';
+  const rawPrompt =
+    row.implementation_prompt ?? 'Implementar feedback aprobado (describir cambio en Markdown).';
   const sanitized = sanitizeImplementationPrompt(rawPrompt);
   if (!sanitized.ok) {
     await notifyDiscordFeedback(
