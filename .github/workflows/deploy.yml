@@ -52,6 +52,12 @@ on:
         required: false
         default: false
 
+# Un solo deploy SSH a la vez por rama. No cancelar el que ya está en SSH
+# (cortar compose mid-flight deja Traefik a medias). Merges en ráfaga se encolan.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release-gate:
     if: github.event_name != 'workflow_dispatch' || inputs.skip_tests != true
@@ -555,6 +561,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           timeout: 2m
+          command_timeout: 30m
           envs: STAGING_PLATFORM_DOMAIN,PLATFORM_DOMAIN_FALLBACK,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR
           script: |
             set -euo pipefail
@@ -759,6 +766,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           timeout: 2m
+          command_timeout: 30m
           envs: PLATFORM_DOMAIN,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR
           script: |
             set -euo pipefail
@@ -803,22 +811,41 @@ jobs:
               echo "PLATFORM_DOMAIN no está definido" >&2
               exit 1
             fi
-            echo "Esperando que Traefik registre routers..."
-            sleep 60
-            for i in 1 2 3 4 5; do
-              if curl -sfk "https://api.${PLATFORM_DOMAIN}/api/health"; then
-                echo "✅ Health OK en intento $i"
+            echo "Esperando que Traefik registre routers (probe local, no hairpin Cloudflare)..."
+            sleep 45
+            local_ok=0
+            for i in 1 2 3 4 5 6; do
+              if curl -sf --max-time 8 -H "Host: api.${PLATFORM_DOMAIN}" "http://127.0.0.1/api/health"; then
+                echo "✅ Health local Traefik OK en intento $i"
+                local_ok=1
                 break
               fi
-              echo "Intento $i/5 fallido, esperando 15s..."
+              echo "Intento local $i/6 fallido, esperando 15s..."
               sleep 15
-              if [ "$i" -eq 5 ]; then
-                echo "❌ Health falló después de 5 intentos"
-                exit 1
-              fi
             done
+            if [ "$local_ok" -ne 1 ]; then
+              echo "⚠️ Health local no respondió; el runner comprobará la URL pública"
+            fi
 
-            echo "Deploy completado: $(date -u)"
+            echo "Deploy SSH completado: $(date -u)"
+
+      - name: Health check (public, from runner)
+        env:
+          PLATFORM_DOMAIN: ${{ secrets.PLATFORM_DOMAIN }}
+        run: |
+          set -euo pipefail
+          url="https://api.${PLATFORM_DOMAIN}/api/health"
+          echo "Probing ${url} from GitHub runner (avoids VPS→Cloudflare hairpin)"
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            if curl -sfk --max-time 20 "${url}"; then
+              echo "✅ Health público OK en intento ${i}"
+              exit 0
+            fi
+            echo "Intento ${i}/10 fallido, esperando 20s..."
+            sleep 20
+          done
+          echo "❌ Health público falló después de 10 intentos"
+          exit 1
 
       - name: Notify Discord on success
         if: success()

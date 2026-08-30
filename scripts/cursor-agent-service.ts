@@ -94,7 +94,6 @@ class CursorAgentService {
 
         console.log(`[CursorAgent] Prompt written to ${promptFile}`);
 
-        // Open Cursor with the prompt
         this.openCursorWithPrompt(promptFile)
           .then(() => {
             console.log(`[CursorAgent] Cursor opened for job ${job_id}`);
@@ -103,16 +102,26 @@ class CursorAgentService {
             console.error(`[CursorAgent] Error opening Cursor:`, err);
           });
 
-        // Wait for response with timeout (60 seconds)
-        const responsePromise = this.waitForResponse(job_id, 60000);
+        const waitRequested =
+          req.query.wait === '1' || req.query.wait === 'true' || process.env.CURSOR_AGENT_WAIT === 'true';
 
-        // Return immediately with response path once available
-        const responsePath = await responsePromise;
+        if (waitRequested) {
+          const timeoutMs = Number(process.env.CURSOR_AGENT_WAIT_MS ?? 300000);
+          const responsePath = await this.waitForResponse(job_id, timeoutMs);
+          res.json({
+            success: true,
+            response_path: responsePath,
+          } as ExecutionResponse);
+          return;
+        }
 
-        res.json({
+        // ACK as soon as the prompt is on disk. Do not send `content` — the
+        // worker treats that as a finished response. It waits for /complete.
+        res.status(202).json({
           success: true,
-          response_path: responsePath,
-        } as ExecutionResponse);
+          accepted: true,
+          prompt_path: promptFile,
+        });
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : String(err);
         console.error(`[CursorAgent] Error:`, errorMsg);
@@ -120,6 +129,31 @@ class CursorAgentService {
           success: false,
           error: errorMsg,
         } as ExecutionResponse);
+      }
+    });
+
+    /**
+     * Mark a job complete by writing `.cursor/responses/response-<job_id>.md`
+     */
+    this.app.post('/complete', async (req: Request, res: Response) => {
+      try {
+        const jobId = typeof req.body?.job_id === 'string' ? req.body.job_id.trim() : '';
+        const content = typeof req.body?.content === 'string' ? req.body.content : 'done';
+        if (!jobId) {
+          res.status(400).json({ success: false, error: 'job_id is required' });
+          return;
+        }
+        const responsesDir = path.join(this.cursorDir, 'responses');
+        await fsp.mkdir(responsesDir, { recursive: true });
+        const responsePath = path.join(responsesDir, `response-${jobId}.md`);
+        await fsp.writeFile(
+          responsePath,
+          `---\njob_id: ${jobId}\ncompleted_at: ${new Date().toISOString()}\n---\n\n${content}\n`,
+          'utf-8'
+        );
+        res.json({ success: true, response_path: responsePath });
+      } catch (err) {
+        res.status(500).json({ success: false, error: String(err) });
       }
     });
 

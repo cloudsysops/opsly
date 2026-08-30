@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-07-08
+last_review: 2026-08-16
 type: onboarding
 tags:
   - opsly/brain
@@ -32,6 +32,8 @@ Lee en este orden antes de cualquier acción:
 **Repo:** `cloudsysops/opsly` | **VPS:** `vps-dragon@100.120.151.91` (Tailscale) | **Secrets:** Doppler `ops-intcloudsysops / prd`
 
 **Tenant de referencia:** `peskids` — academia de natación, primer vertical incubado
+
+**Estado vivo (2026-08-16) — detalle en `AGENTS.md` secciones 🔄:** Peskids imagen `e787fd6` (#980, fail-closed). Plataforma `main` `dcb939f` (#882 entitlements). Deploy health desde el runner (#986), no hairpin VPS→Cloudflare. Night-merge espera Deploy del SHA post-merge; rollback vía revert PR. No mergear Sentinel/Bolt/Palette. No mezclar YouTube/content-studio. SSH solo Tailscale `100.120.151.91`.
 
 ---
 

@@ -23,6 +23,7 @@ export default function HomePage(): React.ReactElement {
         source={PESKIDS_HOME_LANDING.source}
         campaign={PESKIDS_HOME_LANDING.campaign}
         headingLevel="h2"
+        showTitleAndIntro={false}
       />
       <CtaBand />
       <SiteFooter />

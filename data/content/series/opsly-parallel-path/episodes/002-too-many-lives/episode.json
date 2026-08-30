@@ -1,0 +1,89 @@
+{
+  "id": "opsly-parallel-path-002",
+  "series_id": "opsly-parallel-path",
+  "episode_number": 2,
+  "title": {
+    "es": "Demasiadas Vidas",
+    "en": "Too Many Lives"
+  },
+  "hook": {
+    "es": "¿Por qué no puedo conformarme con una sola vida?",
+    "en": "Why can't I settle into just one life?"
+  },
+  "objective": "Flashback to before Episode 1: The Traveler walks alone (NØVA does not exist yet) through fragments of his many past lives — infrastructure, cloud, construction, restaurants, sales, family, travel, business. Establish that his path looks scattered from outside but is one continuous search from inside.",
+  "audience": ["general tech-curious audience", "founders", "developers", "dreamers"],
+  "duration_estimate_sec": 55,
+  "scenes": [
+    {
+      "number": 1,
+      "description": "The Traveler walks alone toward a row of translucent portal-worlds",
+      "visuals": "A long stone path in the Parallel World, no companion beside him, eight faint translucent portals arranged ahead like doorways, each labeled",
+      "copy": "Medellín. Después Providence. Entre las dos, demasiadas vidas.",
+      "duration_sec": 8,
+      "assets_needed": ["character sheet: the-traveler (quiet-resolve expression)", "portal-world row background"]
+    },
+    {
+      "number": 2,
+      "description": "INFRASTRUCTURE / CLOUD portal",
+      "visuals": "The Traveler steps through a portal into a server-room-like glowing lattice — racks of light, terminal glyphs floating",
+      "copy": "Administrador de sistemas. Consultor SOA. Cloud, DevOps, middleware. Aprendiendo que un sistema no falla por falta de tecnología — falla cuando está desconectado.",
+      "duration_sec": 10,
+      "assets_needed": ["server-lattice portal environment"]
+    },
+    {
+      "number": 3,
+      "description": "CONSTRUCTION / RESTAURANTS portal",
+      "visuals": "A second portal: scaffolding of light becoming a kitchen of light, The Traveler moving between both without pause",
+      "copy": "Construcción. Restaurantes. Ejecución. Operación. Lecciones que ningún curso de tecnología enseña.",
+      "duration_sec": 10,
+      "assets_needed": ["construction-to-kitchen portal environment"]
+    },
+    {
+      "number": 4,
+      "description": "FAMILY / TRAVEL portal",
+      "visuals": "A quieter portal — warm light, a small home silhouette, a road stretching into distance",
+      "copy": "Familia. Responsabilidad. Migración. Adaptación.",
+      "duration_sec": 8,
+      "assets_needed": ["family-travel portal environment"]
+    },
+    {
+      "number": 5,
+      "description": "The Traveler stops between all the portals, none chosen",
+      "visuals": "Wide shot: The Traveler standing at the center point where all eight portal-lights converge but don't merge, alone, mask dim",
+      "copy": "¿Por qué no puedo conformarme con una sola vida?",
+      "duration_sec": 12,
+      "assets_needed": ["character sheet: the-traveler (doubt expression, flickering mask pattern)"]
+    },
+    {
+      "number": 6,
+      "description": "Final beat — walking on, no answer yet",
+      "visuals": "The Traveler turns and keeps walking past all the portals, none closing, all still glowing behind him",
+      "copy": "Todavía no lo sabía. Pero cada una de esas vidas estaba dejando una pieza.",
+      "duration_sec": 7,
+      "assets_needed": []
+    }
+  ],
+  "metadata": {
+    "call_to_action": "Todos tenemos demasiadas vidas.",
+    "captions": {
+      "es": "¿Cuál de todas tus vidas eres tú?",
+      "en": "Which of your lives are you?"
+    },
+    "hashtags": ["#OpslyParallelPath", "#TheTraveler", "#Founders", "#BuildInPublic", "#Medellin"],
+    "thumbnail_concept": "The Traveler alone, walking through overlapping translucent portal-worlds (infrastructure, cloud, construction site, restaurant kitchen, family) — no NØVA visible"
+  },
+  "production": {
+    "status": "storyboard",
+    "created_at": "2026-08-11T00:00:00Z",
+    "last_updated": "2026-08-11T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Act I of the Origin Saga — see ../../canon/ORIGIN-SAGA.md.",
+      "STRUCTURE NOTE: this episode is a flashback to before Episode 1. NØVA does not appear — The Traveler travels alone through this act (per canon: NØVA is born in Episode 1/Act II). Season viewing order is non-linear by design: Ep01 is a cold-open tease of NØVA's birth, Ep02 rewinds to the years before it.",
+      "Theme: dispersion vs. search — what looks like scattered career/life changes (Medellín roots, IT/SOA/cloud/DevOps freelance work, migration to the US/Providence, restaurants, construction, family) is one continuous search for purpose.",
+      "Emotional conflict: self-doubt about not fitting into one world; the central question of the whole season first appears here: \"¿Estoy construyendo algo real, o simplemente saltando de idea en idea?\"",
+      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 02. Grounded in real biography — do not add invented employer names, dates, or figures beyond what's documented."
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "id": "opsly-origins-long-004",
+  "series_id": "opsly-origins",
+  "episode_number": 6,
+  "title": {
+    "es": "Esto apenas empieza",
+    "en": "This is just the beginning"
+  },
+  "hook": {
+    "es": "Un mes de historia. Muchos años por delante.",
+    "en": "One month of story. Many years ahead."
+  },
+  "objective": "Close the 30-day campaign arc with a forward-looking recap.",
+  "audience": [
+    "founders",
+    "developers"
+  ],
+  "duration_estimate_sec": 600,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Únete al viaje",
+    "captions": {
+      "es": "El primer mes, resumido. Lo que viene, apenas empieza.",
+      "en": "The first month, recapped. What's next is just beginning."
+    },
+    "hashtags": [
+      "#Opsly",
+      "#OpslyOrigins",
+      "#Future"
+    ],
+    "thumbnail_concept": "Montage frame of all four weeks, Opsly moon glowing"
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-08-11T00:00:00Z",
+    "last_updated": "2026-08-11T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Idea-stage — planned in 30-day launch calendar. Script + scenes pending."
+    ]
+  }
+}

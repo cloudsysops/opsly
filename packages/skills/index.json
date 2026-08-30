@@ -159,6 +159,30 @@
         "path": "skills/user/opsly-peskids/"
       },
     {
+      "name": "opsly-universe",
+      "version": "1.0.0",
+      "description": "Canon de personajes, mundos y Visual DNA de OPSLY Universe. Consultar siempre antes de generar imagen, video, diálogo o historia con NØVA, Kai, Traveler y el resto del elenco.",
+      "category": "content",
+      "priority": "high",
+      "usage": "Lookup de personajes, compose de contexto, prompts visuales y story beats sin reinventar IP",
+      "path": "skills/user/opsly-universe/",
+      "triggers": [
+        "NØVA",
+        "Nova",
+        "Traveler",
+        "Kai",
+        "Lyra",
+        "Orion",
+        "Atlas",
+        "Maya",
+        "Echo",
+        "Wavo",
+        "OPSLY Universe",
+        "Visual DNA",
+        "character registry"
+      ]
+    },
+    {
       "name": "opsly-infra",
       "version": "1.1.0",
       "description": "Docker, Compose, VPS, deploy, Traefik v3 (middlewares, ACME), Cloudflare DNS, scripts de infraestructura. Operaciones de infraestructura y despliegue.",

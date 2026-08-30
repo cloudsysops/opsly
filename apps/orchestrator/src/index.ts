@@ -11,6 +11,7 @@ import {
   shouldRunControlPlane,
   shouldRunWorkers,
 } from './orchestrator-role.js';
+import { isWorkerAllowed, parseWorkerAllowlist } from './worker-allowlist.js';
 import {
   agentClassifierQueue,
   connection,
@@ -95,119 +96,153 @@ async function runEventSubscription(teamManager: TeamManager): Promise<AsyncClea
 
 function startAllWorkers(): AsyncCleanup[] {
   const cleanup: AsyncCleanup[] = [];
+  const allowlist = parseWorkerAllowlist();
+  const allow = (key: string): boolean => isWorkerAllowed(key, allowlist);
   const localAgentUnifiedOnly = process.env.OPSLY_LOCAL_AGENT_UNIFIED_ONLY === 'true';
   const superOrchestratorWorkerEnabled =
     process.env.OPSLY_SUPER_ORCHESTRATOR_WORKER_ENABLED === 'true';
-  const cursorWorker = startCursorWorker(connection);
-  const n8nWorker = startN8nWorker(connection);
-  const notifyWorker = startNotifyWorker(connection);
-  const driveWorker = startDriveWorker(connection);
-  const backupWorker = startBackupWorker(connection);
-  const healthWorker = startHealthWorker(connection);
-  const suspensionWorker = startSuspensionWorker(connection);
-  const webhookWorker = createWebhookWorker();
-  const webhooksProcessingWorker = startWebhooksProcessingWorker();
-  const generalEventsWorker = startGeneralEventsWorker();
-  const ollamaWorker = startOllamaWorker(connection);
-  const evolutionWorker = startEvolutionWorker(connection);
-  const intentDispatchWorker = startIntentDispatchWorker(connection);
-  const terminalWorker = startTerminalWorker(connection);
-  const localAgentsWorker = startLocalAgentsUnifiedWorker(connection);
-  const localClaudeWorker = localAgentUnifiedOnly ? undefined : startLocalClaudeWorker(connection);
-  const localCopilotWorker = localAgentUnifiedOnly ? undefined : startLocalCopilotWorker(connection);
-  const localOpenCodeWorker = localAgentUnifiedOnly ? undefined : startLocalOpenCodeWorker(connection);
-  const localCursorWorker = localAgentUnifiedOnly ? undefined : startLocalCursorWorker(connection);
-  const superOrchestratorWorker = superOrchestratorWorkerEnabled
-  ? startSuperOrchestratorWorker(connection)
-  : undefined;
+
+  const cursorWorker = allow('cursor') ? startCursorWorker(connection) : undefined;
+  const n8nWorker = allow('n8n') ? startN8nWorker(connection) : undefined;
+  const notifyWorker = allow('notify') ? startNotifyWorker(connection) : undefined;
+  const driveWorker = allow('drive') ? startDriveWorker(connection) : undefined;
+  const backupWorker = allow('backup') ? startBackupWorker(connection) : undefined;
+  const healthWorker = allow('health') ? startHealthWorker(connection) : undefined;
+  const suspensionWorker = allow('suspension') ? startSuspensionWorker(connection) : undefined;
+  const webhookWorker = allow('opsly-webhooks') ? createWebhookWorker() : undefined;
+  const webhooksProcessingWorker = allow('webhooks-processing')
+    ? startWebhooksProcessingWorker()
+    : undefined;
+  const generalEventsWorker = allow('general-events') ? startGeneralEventsWorker() : undefined;
+  const ollamaWorker = allow('ollama') ? startOllamaWorker(connection) : undefined;
+  const evolutionWorker = allow('evolution') ? startEvolutionWorker(connection) : undefined;
+  const intentDispatchWorker = allow('intent_dispatch')
+    ? startIntentDispatchWorker(connection)
+    : undefined;
+  const terminalWorker = allow('terminal_task') ? startTerminalWorker(connection) : undefined;
+  const localAgentsWorker = allow('local-agents')
+    ? startLocalAgentsUnifiedWorker(connection)
+    : undefined;
+  const localClaudeWorker =
+    allow('local-claude') && !localAgentUnifiedOnly
+      ? startLocalClaudeWorker(connection)
+      : undefined;
+  const localCopilotWorker =
+    allow('local-copilot') && !localAgentUnifiedOnly
+      ? startLocalCopilotWorker(connection)
+      : undefined;
+  const localOpenCodeWorker =
+    allow('local-opencode') && !localAgentUnifiedOnly
+      ? startLocalOpenCodeWorker(connection)
+      : undefined;
+  const localCursorWorker =
+    allow('local-cursor') && !localAgentUnifiedOnly
+      ? startLocalCursorWorker(connection)
+      : undefined;
+  const superOrchestratorWorker =
+    allow('super-orchestrator') && superOrchestratorWorkerEnabled
+      ? startSuperOrchestratorWorker(connection)
+      : undefined;
 
   let agentClassifierCleanup: AsyncCleanup[] = [];
-  if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true') {
+  if (
+    allow('agent-classifier') &&
+    process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true'
+  ) {
     const { worker: agentClassifierWorker, closeRedis } = startAgentClassifierWorker(connection);
     agentClassifierCleanup = [async () => agentClassifierWorker.close(), closeRedis];
   }
 
   const sandboxWorker =
-  process.env.OPSLY_SANDBOX_WORKER_ENABLED === 'true' ? startSandboxWorker(connection) : undefined;
-  const jcodeWorker = startJcodeWorker(connection);
-  const hiveWorker = startHiveWorker(connection);
-  const defenseAuditWorker = startDefenseAuditWorker(connection);
-  const researchWorker = createResearchWorker(connection);
-  const plannerWorker = startOpenClawPlannerWorker(connection);
-  const skepticWorker = startOpenClawSkepticWorker(connection);
+    allow('sandbox') && process.env.OPSLY_SANDBOX_WORKER_ENABLED === 'true'
+      ? startSandboxWorker(connection)
+      : undefined;
+  const jcodeWorker = allow('jcode') ? startJcodeWorker(connection) : undefined;
+  const hiveWorker = allow('hive') ? startHiveWorker(connection) : undefined;
+  const defenseAuditWorker = allow('defense-audit')
+    ? startDefenseAuditWorker(connection)
+    : undefined;
+  const researchWorker = allow('research') ? createResearchWorker(connection) : undefined;
+  const plannerWorker = allow('planner') ? startOpenClawPlannerWorker(connection) : undefined;
+  const skepticWorker = allow('skeptic') ? startOpenClawSkepticWorker(connection) : undefined;
   const agentFarmWorkerEnabled = process.env.OPSLY_AGENT_FARM_WORKER_ENABLED === 'true';
-  const agentFarmWorker = agentFarmWorkerEnabled ? startAgentFarmWorker(connection) : undefined;
+  const agentFarmWorker =
+    allow('agent-farm') && agentFarmWorkerEnabled
+      ? startAgentFarmWorker(connection)
+      : undefined;
   const approvalGateWorkerEnabled = process.env.OPSLY_APPROVAL_GATE_WORKER_ENABLED === 'true';
-  const approvalGateResult = approvalGateWorkerEnabled ? startApprovalGateWorker(connection) : undefined;
+  const approvalGateResult =
+    allow('approval-gate') && approvalGateWorkerEnabled
+      ? startApprovalGateWorker(connection)
+      : undefined;
   // Maia Life Systems
-  const selfHealWorker = startSelfHealWorker(connection);
-  const autoDeployWorker = startAutoDeployWorker(connection);
-  const costGateWorker = startCostGateWorker(connection);
-  const claudeCodeWorker = startClaudeCodeWorker(connection);
-  const validationWorker = startValidationWorker(connection);
-  const memoryWriterWorker = startMemoryWriterWorker(connection);
-  const shieldScanWorker = startShieldScanWorker();
+  const selfHealWorker = allow('self-heal') ? startSelfHealWorker(connection) : undefined;
+  const autoDeployWorker = allow('auto-deploy') ? startAutoDeployWorker(connection) : undefined;
+  const costGateWorker = allow('cost-gate') ? startCostGateWorker(connection) : undefined;
+  const claudeCodeWorker = allow('claude-code') ? startClaudeCodeWorker(connection) : undefined;
+  const validationWorker = allow('validation') ? startValidationWorker(connection) : undefined;
+  const memoryWriterWorker = allow('memory-writer')
+    ? startMemoryWriterWorker(connection)
+    : undefined;
+  const shieldScanWorker = allow('shield-scan') ? startShieldScanWorker() : undefined;
   const sigmaHarnessWorker =
-    process.env.OPSLY_SIGMA_HARNESS_WORKER_ENABLED !== 'false'
+    allow('sigma') && process.env.OPSLY_SIGMA_HARNESS_WORKER_ENABLED !== 'false'
       ? startSigmaHarnessWorker(connection)
       : undefined;
 
-  const contentVideoWorker = startContentVideoWorker();
+  const contentVideoWorker = allow('content-video') ? startContentVideoWorker() : undefined;
 
-  cleanup.push(
-    async () => cursorWorker.close(),
-    async () => n8nWorker.close(),
-    async () => notifyWorker.close(),
-    async () => driveWorker.close(),
-    async () => backupWorker.close(),
-    async () => healthWorker.stop(),
-    async () => suspensionWorker.close(),
-    async () => webhookWorker.close(),
-    async () => webhooksProcessingWorker.close(),
-    async () => generalEventsWorker.close(),
-    async () => ollamaWorker.close(),
-    async () => evolutionWorker.close(),
-    async () => intentDispatchWorker.close(),
-    async () => terminalWorker.close(),
-    async () => localAgentsWorker.close(),
-    ...(localClaudeWorker ? [async () => localClaudeWorker.close()] : []),
-    ...(localCopilotWorker ? [async () => localCopilotWorker.close()] : []),
-    ...(localOpenCodeWorker ? [async () => localOpenCodeWorker.close()] : []),
-    ...(localCursorWorker ? [async () => localCursorWorker.close()] : []),
-    ...(superOrchestratorWorker ? [async () => superOrchestratorWorker.close()] : []),
-  ...(sandboxWorker ? [async () => sandboxWorker.close()] : []),
-  async () => jcodeWorker.close(),
-  async () => hiveWorker.close(),
-  async () => defenseAuditWorker.close(),
-  async () => researchWorker.close(),
-  async () => plannerWorker.close(),
-  async () => skepticWorker.close(),
-  ...(agentFarmWorker ? [async () => agentFarmWorker.close()] : []),
-  ...(approvalGateResult ? [async () => approvalGateResult.worker.close()] : []),
-  ...agentClassifierCleanup,
-    // Maia Life Systems
-    async () => selfHealWorker.close(),
-    async () => autoDeployWorker.close(),
-    async () => costGateWorker.close(),
-    async () => claudeCodeWorker.close(),
-    async () => validationWorker.close(),
-    async () => memoryWriterWorker.close(),
-    async () => shieldScanWorker.stop(),
-    ...(sigmaHarnessWorker ? [async () => sigmaHarnessWorker.close()] : []),
-    async () => contentVideoWorker.close(),
-  );
+  const pushClose = (fn: AsyncCleanup | undefined): void => {
+    if (fn) {
+      cleanup.push(fn);
+    }
+  };
 
-  const localWorkersLabel = localAgentUnifiedOnly
-    ? 'local-agents unified-only'
-    : 'local-agents (cursor/claude/copilot/opencode), local-claude, local-copilot, local-opencode, local-cursor';
-  const superWorkerLabel = superOrchestratorWorkerEnabled ? ', super-orchestrator' : '';
-  const agentFarmLabel = agentFarmWorkerEnabled ? ', agent-farm' : '';
-  const approvalGateLabel = approvalGateWorkerEnabled ? ', approval-gate' : '';
+  pushClose(cursorWorker ? async () => cursorWorker.close() : undefined);
+  pushClose(n8nWorker ? async () => n8nWorker.close() : undefined);
+  pushClose(notifyWorker ? async () => notifyWorker.close() : undefined);
+  pushClose(driveWorker ? async () => driveWorker.close() : undefined);
+  pushClose(backupWorker ? async () => backupWorker.close() : undefined);
+  pushClose(healthWorker ? async () => healthWorker.stop() : undefined);
+  pushClose(suspensionWorker ? async () => suspensionWorker.close() : undefined);
+  pushClose(webhookWorker ? async () => webhookWorker.close() : undefined);
+  pushClose(webhooksProcessingWorker ? async () => webhooksProcessingWorker.close() : undefined);
+  pushClose(generalEventsWorker ? async () => generalEventsWorker.close() : undefined);
+  pushClose(ollamaWorker ? async () => ollamaWorker.close() : undefined);
+  pushClose(evolutionWorker ? async () => evolutionWorker.close() : undefined);
+  pushClose(intentDispatchWorker ? async () => intentDispatchWorker.close() : undefined);
+  pushClose(terminalWorker ? async () => terminalWorker.close() : undefined);
+  pushClose(localAgentsWorker ? async () => localAgentsWorker.close() : undefined);
+  pushClose(localClaudeWorker ? async () => localClaudeWorker.close() : undefined);
+  pushClose(localCopilotWorker ? async () => localCopilotWorker.close() : undefined);
+  pushClose(localOpenCodeWorker ? async () => localOpenCodeWorker.close() : undefined);
+  pushClose(localCursorWorker ? async () => localCursorWorker.close() : undefined);
+  pushClose(superOrchestratorWorker ? async () => superOrchestratorWorker.close() : undefined);
+  pushClose(sandboxWorker ? async () => sandboxWorker.close() : undefined);
+  pushClose(jcodeWorker ? async () => jcodeWorker.close() : undefined);
+  pushClose(hiveWorker ? async () => hiveWorker.close() : undefined);
+  pushClose(defenseAuditWorker ? async () => defenseAuditWorker.close() : undefined);
+  pushClose(researchWorker ? async () => researchWorker.close() : undefined);
+  pushClose(plannerWorker ? async () => plannerWorker.close() : undefined);
+  pushClose(skepticWorker ? async () => skepticWorker.close() : undefined);
+  pushClose(agentFarmWorker ? async () => agentFarmWorker.close() : undefined);
+  pushClose(approvalGateResult ? async () => approvalGateResult.worker.close() : undefined);
+  cleanup.push(...agentClassifierCleanup);
+  pushClose(selfHealWorker ? async () => selfHealWorker.close() : undefined);
+  pushClose(autoDeployWorker ? async () => autoDeployWorker.close() : undefined);
+  pushClose(costGateWorker ? async () => costGateWorker.close() : undefined);
+  pushClose(claudeCodeWorker ? async () => claudeCodeWorker.close() : undefined);
+  pushClose(validationWorker ? async () => validationWorker.close() : undefined);
+  pushClose(memoryWriterWorker ? async () => memoryWriterWorker.close() : undefined);
+  pushClose(shieldScanWorker ? async () => shieldScanWorker.stop() : undefined);
+  pushClose(sigmaHarnessWorker ? async () => sigmaHarnessWorker.close() : undefined);
+  pushClose(contentVideoWorker ? async () => contentVideoWorker.close() : undefined);
+
+  const started = cleanup.length;
+  const allowLabel =
+    allowlist === null ? 'all' : [...allowlist].sort().join(',') || 'none';
   console.log(
-    `[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, evolution, intent_dispatch, terminal_task, jcode, hive, defense-audit, shield-scan, research, planner, skeptic, content-video${localWorkersLabel}${superWorkerLabel}${agentFarmLabel}${approvalGateLabel}` +
-    (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
-    (process.env.OPSLY_SANDBOX_WORKER_ENABLED === 'true' ? ', sandbox' : '') +
-    '; Hermes tick → servicio opsly-hermes (no este proceso).'
+    `[orchestrator] Workers started=${started} allowlist=${allowLabel}; Hermes tick → servicio opsly-hermes (no este proceso).`
   );
   return cleanup;
 }

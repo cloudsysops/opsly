@@ -1,0 +1,81 @@
+{
+  "id": "opsly-parallel-path-010",
+  "series_id": "opsly-parallel-path",
+  "episode_number": 10,
+  "title": {
+    "es": "La Máquina",
+    "en": "The Machine"
+  },
+  "hook": {
+    "es": "Para cualquiera es una computadora. Para ellos es una nave.",
+    "en": "To anyone else, it's a computer. To them, it's a ship."
+  },
+  "objective": "A borrowed gaming PC arrives and is converted into a worker in the Parallel World. NØVA realizes any machine can be connected if you know how.",
+  "audience": ["general tech-curious audience", "founders", "developers", "dreamers"],
+  "duration_estimate_sec": 45,
+  "scenes": [
+    {
+      "number": 1,
+      "description": "An abandoned ship arrives",
+      "visuals": "A weathered, powered-down ship-like machine drifts into view at the edge of the Parallel World — actually a borrowed gaming PC, reimagined",
+      "copy": "Llegó una máquina prestada.",
+      "duration_sec": 6,
+      "assets_needed": ["abandoned-ship machine design"]
+    },
+    {
+      "number": 2,
+      "description": "Repair scene",
+      "visuals": "The Traveler and NØVA together at a workbench, hands-on, wiring the machine back to life, gears and glowing panels around them",
+      "copy": "The Traveler y NØVA la repararon juntos.",
+      "duration_sec": 10,
+      "assets_needed": ["workshop repair scene (see ../../assets/reference/e10-workshop-repair-scene.jpg)"]
+    },
+    {
+      "number": 3,
+      "description": "NØVA's question about ownership",
+      "visuals": "NØVA looking at the half-repaired machine, head tilted",
+      "copy": "NØVA — \"¿Es nuestra?\" The Traveler — \"No.\" NØVA — \"¿Entonces para qué la arreglamos?\"",
+      "duration_sec": 10,
+      "assets_needed": ["character sheet: nova (curious expression)"]
+    },
+    {
+      "number": 4,
+      "description": "The Traveler's answer",
+      "visuals": "The Traveler finishing the last connection, the machine's lights coming on",
+      "copy": "The Traveler — \"Porque mientras esté aquí, puede ayudarnos a llegar más lejos.\"",
+      "duration_sec": 8,
+      "assets_needed": []
+    },
+    {
+      "number": 5,
+      "description": "The machine joins the world",
+      "visuals": "The now-glowing ship-machine lifts and takes its place among the Parallel World's other structures",
+      "copy": "NØVA — \"¿Entonces podemos convertir cualquier máquina en parte del mundo?\" The Traveler — \"Si sabemos conectarla.\"",
+      "duration_sec": 11,
+      "assets_needed": []
+    }
+  ],
+  "metadata": {
+    "call_to_action": "Usa lo que tienes.",
+    "captions": {
+      "es": "Una nave prestada. Un mundo un poco más grande.",
+      "en": "A borrowed ship. A slightly bigger world."
+    },
+    "hashtags": ["#OpslyParallelPath", "#PCGamerWorker", "#Infra", "#NOVA"],
+    "thumbnail_concept": "The gaming PC transformed into a ship-like worker form, glowing, The Traveler and NØVA standing beside it"
+  },
+  "production": {
+    "status": "storyboard",
+    "created_at": "2026-08-11T00:00:00Z",
+    "last_updated": "2026-08-11T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Act X of the Origin Saga — see ../../canon/ORIGIN-SAGA.md.",
+      "Theme: resourcefulness — building with what's borrowed/available, not waiting for ideal tools; a lifelong pattern (see Act I) applied once more.",
+      "Directly inspired by real infra work (feat/pc-gamer-worker-plane) — keep grounded, don't overstate capability.",
+      "Real event / fictionalization boundary: see ../../canon/TIMELINE.md row 10.",
+      "Reference image: ../../../assets/reference/e10-workshop-repair-scene.jpg — intimate two-shot workshop framing."
+    ]
+  }
+}

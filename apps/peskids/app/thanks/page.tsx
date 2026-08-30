@@ -1,11 +1,9 @@
 import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
-import { headers } from 'next/headers';
 import { PeskidsLockup } from '@/components/brand/peskids-logo';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { WhatsAppMessagePreview } from '@/components/forms';
 import { ThanksWhatsAppFallback } from '@/components/forms/thanks-whatsapp-fallback';
 import {
   PESKIDS_FORM_SUCCESS_DETAIL,
@@ -15,23 +13,6 @@ import {
   PESKIDS_FORM_SUCCESS_TITLE,
   PESKIDS_WHATSAPP_CTA_LABEL,
 } from '@/lib/peskids-landing-copy';
-import { peskidsPublicSiteBaseUrl } from '@/lib/peskids-lead-session';
-
-async function resolveThanksFetchBase(): Promise<string> {
-  const configured = peskidsPublicSiteBaseUrl();
-  if (configured && !/localhost|127\.0\.0\.1/i.test(configured)) {
-    return configured;
-  }
-  try {
-    const h = await headers();
-    const host = h.get('x-forwarded-host') || h.get('host');
-    const proto = h.get('x-forwarded-proto') || 'https';
-    if (host) return `${proto}://${host}`.replace(/\/$/, '');
-  } catch {
-    // headers() unavailable outside request
-  }
-  return configured || 'https://www.peskids.com';
-}
 
 type ThanksSearchParams = Promise<{
   modality?: string;
@@ -70,57 +51,6 @@ export default async function ThanksPage({
   const leadId = resolvedSearchParams.lead_id?.trim();
   const copy = thanksCopy(modality);
 
-  let leadData: {
-    full_name: string;
-    email: string;
-    phone: string;
-    lead_type: string;
-    grade_interested: string;
-    class_modality: string | null;
-    company_name: string | null;
-    company_nit: string | null;
-    metadata: Record<string, unknown> | null;
-    child_name: string | null;
-    neighborhood: string | null;
-  } | null = null;
-
-  if (leadId) {
-    try {
-      const baseUrl = await resolveThanksFetchBase();
-      const response = await fetch(`${baseUrl}/api/leads/${leadId}`, {
-        cache: 'no-store',
-      });
-      if (response.ok) {
-        const result = (await response.json()) as {
-          ok?: boolean;
-          data?: {
-            full_name: string;
-            email: string;
-            phone: string;
-            lead_type: string;
-            grade_interested: string;
-            class_modality: string | null;
-            company_name: string | null;
-            company_nit: string | null;
-            metadata: Record<string, unknown> | null;
-            child_name: string | null;
-            neighborhood: string | null;
-          };
-        };
-        if (result.ok && result.data) {
-          leadData = result.data;
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch lead data:', error);
-    }
-  }
-
-  const leadType =
-    leadData?.lead_type === 'teacher_applicant' || leadData?.lead_type === 'company'
-      ? leadData.lead_type
-      : 'family';
-
   return (
     <div className="flex min-h-screen flex-col bg-pk-bg">
       <header className="border-b border-pk-border bg-pk-surface/90 px-6 py-4">
@@ -137,40 +67,14 @@ export default async function ThanksPage({
             <CardDescription className="text-base">{copy.detail}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 pb-8">
-            {leadData && leadId ? (
-              <WhatsAppMessagePreview
-                clientName={leadData.full_name}
-                clientEmail={leadData.email}
-                clientPhone={leadData.phone}
-                leadType={leadType}
-                gradeInterested={leadData.grade_interested}
-                classModality={
-                  leadData.class_modality === 'llanogrande' ||
-                  leadData.class_modality === 'domicilio'
-                    ? leadData.class_modality
-                    : null
-                }
-                childName={leadData.child_name}
-                neighborhood={leadData.neighborhood}
-                companyName={leadData.company_name}
-                companyNit={leadData.company_nit}
-                metadata={leadData.metadata}
-                leadId={leadId}
-              />
-            ) : (
-              <ThanksWhatsAppFallback
-                label={copy.waLabel}
-                modality={modality ?? null}
-                leadId={leadId ?? null}
-              />
-            )}
+            <ThanksWhatsAppFallback
+              label={copy.waLabel}
+              modality={modality ?? null}
+              leadId={leadId ?? null}
+            />
             <div className="rounded-xl border border-pk-border bg-pk-bg px-4 py-3 text-left text-sm text-pk-sub">
               <p className="font-semibold text-pk-ink">¿Qué sigue?</p>
-              <p className="mt-1">
-                {leadData && leadId && leadType !== 'family'
-                  ? 'Envía este mensaje por email al equipo de soporte para ser atendido. El equipo validará tu solicitud.'
-                  : PESKIDS_FORM_SUCCESS_NEXT}
-              </p>
+              <p className="mt-1">{PESKIDS_FORM_SUCCESS_NEXT}</p>
             </div>
             <Link href="/">
               <Button variant="primary" fullWidth>

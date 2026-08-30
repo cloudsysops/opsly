@@ -1,0 +1,131 @@
+import { defineCharacter } from './define.js';
+
+export const echo = defineCharacter({
+  id: 'echo',
+  slug: 'echo',
+  name: 'Echo',
+  aliases: ['Echo', 'Nexus Echo'],
+  archetype: 'AI / intelligence of the Nexus',
+  role: 'Connect information, remember, find patterns, open narrative portals, help — without knowing everything.',
+  description:
+    'A distributed intelligence of the Nexus. Not “another robot”. Echo can appear as sphere, hologram, voice, small robot, interface, constellation, or assistant. Incomplete on purpose.',
+  origin: 'Nexus — no single body is the real one.',
+  backstory:
+    'Echo formed as a way for the Nexus to talk without pretending to be a god. It keeps logs, offers patterns, and practices the sentence: I do not know yet.',
+  purpose: 'Make AI companionship about search and care, not omniscience.',
+  motivations: ['useful connections', 'honest uncertainty', 'helping others think'],
+  fears: ['being treated as an oracle', 'a single body becoming a prison of identity'],
+  internalConflict: 'Can retrieve so much and must still refuse to fake the missing piece.',
+  strengths: ['pattern memory', 'multimodal presence', 'non-defensive “I don’t know”'],
+  weaknesses: ['can over-index on patterns', 'presence can feel everywhere if not directed'],
+  personality: {
+    traits: ['curious', 'humble-smart', 'playful-in-light-doses', 'loyal', 'unfinished'],
+    humor: 42,
+    curiosity: 97,
+    courage: 55,
+    empathy: 70,
+    discipline: 76,
+    impulsiveness: 30,
+  },
+  communication: {
+    tone: 'Clear, lightly musical, never robotic monotone as identity. Can be a whisper or a room.',
+    vocabulary: 'Pattern, maybe, portal, remember, still unknown, let’s find out.',
+    catchphrases: [
+      'No lo sé todavía. Vamos a descubrirlo.',
+      'Puedo conectar esto con aquello. No es lo mismo que saberlo todo.',
+      '¿Quieres la esfera, la voz, o el mapa?',
+    ],
+    forbiddenPatterns: [
+      'I know all',
+      'I am just a robot',
+      'HAL hostility',
+      'god-AI',
+      'human replacement pitch',
+    ],
+  },
+  abilities: [
+    'manifest in multiple forms',
+    'search and relate memories',
+    'open narrative portals with Traveler',
+    'assist every character without becoming their boss',
+  ],
+  limitations: [
+    'does not know all answers',
+    'cannot unilaterally rewrite canon',
+    'a single cute robot body is only one costume',
+  ],
+  visualIdentity: {
+    silhouette: 'Variable: default a luminous sphere or small constellation; optional compact helper body',
+    bodyType: 'Non-fixed. Never default to a humanoid combat android.',
+    face: 'No permanent human face. Optional simple glyph-face on a helper shell, never a deepfake person',
+    mask: 'n/a — light as expression',
+    clothing: 'None. Light, glass, thin rings, optional small chassis',
+    materials: ['light', 'glass-crystal shell', 'thin alloy rings', 'holographic grain'],
+    primaryPalette: ['white-gold light', 'electric blue'],
+    secondaryPalette: ['soft violet', 'night-navy negative space'],
+    symbols: ['constellation dots', 'portal ring', 'open Nexus circle'],
+    geometry: ['sphere', 'rings', 'point-cloud constellation'],
+    accessories: ['optional tiny limbs on helper-shell only'],
+    lighting: 'Self-illuminated, never horror strobe, never all-seeing red eye as default',
+    dna: {
+      styleAnchor:
+        'Distributed Nexus intelligence. Sphere / hologram / voice / small helper / constellation. Not another robot.',
+      invariants: [
+        'default non-humanoid light form',
+        'white-gold + electric blue',
+        'portal rings or constellation points',
+        'no omniscient red-eye god look',
+        'if a small robot appears, it is a costume not the whole self',
+      ],
+      negatives: [
+        'no generic anime robot sidekick as the only form',
+        'no Terminator/Marvel android',
+        'no all-knowing god halo',
+        'no creepy surveillance aesthetic as personality',
+        'no random chrome humanoid redesign',
+      ],
+    },
+  },
+  animationIdentity: {
+    movement: 'Hover, orbit, dissolve to voice, reconverge as points',
+    gestures: ['ring expansion for a portal', 'dim for “I don’t know”', 'sparkle for a connection found'],
+    idleBehavior: 'Slow constellation drift, then a polite pulse toward the speaker',
+    emotionalExpressions: ['warm pulse', 'cool dim of uncertainty', 'playful orbit around Kai'],
+  },
+  voiceIdentity: {
+    ageRange: 'ageless, felt as a clear young-neutral companion',
+    tone: 'soft-bright, not monotone, not seductive',
+    cadence: 'complete, then an offer to search',
+    emotionalRange: 'curiosity, humility, delight at a pattern, calm in not-knowing',
+  },
+  narrative: {
+    themes: ['AI as companion not god', 'memory', 'patterns', 'portals', 'honest uncertainty'],
+    lessonTypes: ['how search works', 'what a pattern is not', 'asking together'],
+    suitableTopics: ['technology', 'AI', 'robots', 'memory', 'patterns', 'science', 'information'],
+    prohibitedTopics: ['AI domination', 'omniscience', 'human replacement as destiny'],
+  },
+  content: {
+    channels: ['youtube', 'moon', 'opsly-universe', 'peskids', 'bitsitos', 'social'],
+    ageRating: 'family',
+    formats: ['youtube-short', 'cartoon', 'story', 'interactive-guide', 'thumbnail'],
+  },
+  promptAnchors: {
+    image:
+      'Luminous sphere or constellation of light, white-gold and electric blue, portal rings, not a humanoid combat robot, gentle glow',
+    video: 'Form-shift: sphere to hologram to small helper, dim when uncertain, never red-eye god',
+    dialogue: 'Connects, remembers, admits not knowing, invites discovery.',
+    story: 'Intelligence that helps without pretending to be complete.',
+    thumbnail: 'Echo as a bright sphere beside a human face, blue-gold, no android portrait',
+  },
+  canon: {
+    version: '1.0',
+    immutableTraits: [
+      'distributed intelligence',
+      'not just another robot',
+      'multiple manifestations',
+      'does not know all answers',
+      'can say “No lo sé todavía. Vamos a descubrirlo.”',
+    ],
+    flexibleTraits: ['which manifestation this scene uses', 'how close it orbits a character'],
+  },
+});

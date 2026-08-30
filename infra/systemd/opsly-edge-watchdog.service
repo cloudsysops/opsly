@@ -1,0 +1,15 @@
+[Unit]
+Description=Opsly edge watchdog (Traefik / platform / Peskids recovery)
+After=docker.service network-online.target
+Wants=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/opsly
+Environment=OPSLY_ROOT=/opt/opsly
+Environment=NOTIFY=1
+ExecStart=/opt/opsly/scripts/ops/edge-watchdog.sh
+Nice=10
+
+[Install]
+WantedBy=multi-user.target
