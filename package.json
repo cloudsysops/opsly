@@ -155,7 +155,7 @@
     "opsly:git-sync": "bash scripts/git-sync-repo.sh",
     "opsly:repos:status": "bash scripts/opsly-repo-align.sh --status",
     "opsly:repos:align": "bash scripts/opsly-repo-align.sh --local --vps --branch main --vps-reset",
-    "postinstall": "npm run build -w @intcloudsysops/types && npm run build -w @intcloudsysops/external-agent-registry && npm run build -w @intcloudsysops/agent-task-core && npm run build -w @intcloudsysops/franchise-core && npm run build -w @intcloudsysops/franchise-persistence && npm run build -w @intcloudsysops/universe && npm run build -w @intcloudsysops/content-studio && npm run build -w @intcloudsysops/content-engine && npm run build -w @intcloudsysops/pattern-catalog && npm run build -w @intcloudsysops/sigma-harness",
+    "postinstall": "npm run build -w @intcloudsysops/types && npm run build -w @intcloudsysops/external-agent-registry && npm run build -w @intcloudsysops/agent-task-core && npm run build -w @intcloudsysops/franchise-core && npm run build -w @intcloudsysops/universe && npm run build -w @intcloudsysops/content-studio && npm run build -w @intcloudsysops/content-engine && npm run build -w @intcloudsysops/pattern-catalog && npm run build -w @intcloudsysops/sigma-harness",
     "prepare": "husky",
     "commit": "git-cz",
     "patterns:install": "bash scripts/install-patterns.sh --with-sigma",
