@@ -38,6 +38,6 @@
 **Learning:** The admin overview dashboardaggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
 **Action:** Always cache aggregated metrics and external probes in dashboard-facing API routes, and modularize parsing logic to maintain low cyclomatic complexity.
 
-## 2026-06-27 - [Tenant Insights Query Caching]
-**Learning:** Portal insights queries (`getInsightsForTenant`) are executed on every tenant portal page load and polling interval. Incorporating Redis caching with a key parameterized by `tenantId`, `includeRead`, and `limit` cuts response latency from ~50-100ms down to ~1-2ms and eliminates redundant Supabase table queries.
-**Action:** Cache tenant-scoped analytical query results in Redis using parameters like `includeRead` and `limit` in the key structure to ensure correct cache hit isolation.
+## 2026-08-26 - [Caching Mission Control Read Model]
+**Learning:** Complex read models like Mission Control foundation aggregate data from multiple disk files (`config/*.json`, `config/tenants/*.json`), BullMQ queue queries, and external HTTP health probes. Caching the assembled read model in Redis with a short TTL (60s) avoids repeated disk I/O, network latency, and probe timeouts on frequent dashboard refreshes.
+**Action:** Always wrap expensive multi-source read models in short-term Redis cache to maintain high API responsiveness.

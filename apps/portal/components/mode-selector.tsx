@@ -4,6 +4,7 @@ import { Loader2, ShieldCheck, Sparkles, Terminal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
+import { Announcer } from '@/components/ui/accessibility';
 import { Button } from '@/components/ui/button';
 import { PORTAL_DEMO_COOKIE, PORTAL_DEMO_MODE_COOKIE } from '@/lib/demo-tenant';
 import { createClient } from '@/lib/supabase';
@@ -14,10 +15,12 @@ export function ModeSelector(): ReactElement {
   const router = useRouter();
   const [loading, setLoading] = useState<PortalMode | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [announcement, setAnnouncement] = useState('');
 
   const selectMode = async (mode: PortalMode): Promise<void> => {
     setError(null);
     setLoading(mode);
+    setAnnouncement(`Guardando modo ${mode}...`);
     try {
       const hasDemoSession =
         document.cookie.includes(`${PORTAL_DEMO_COOKIE}=1`) &&
@@ -62,6 +65,7 @@ export function ModeSelector(): ReactElement {
 
   return (
     <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
+      <Announcer message={announcement} />
       {error ? (
         <p role="alert" className="md:col-span-2 text-center text-sm text-ops-red">
           {error}
@@ -85,6 +89,7 @@ export function ModeSelector(): ReactElement {
           className="mt-6"
           variant="primary"
           disabled={loading !== null}
+          aria-busy={loading === 'developer'}
           onClick={() => void selectMode('developer')}
         >
           {loading === 'developer' ? (
@@ -116,6 +121,7 @@ export function ModeSelector(): ReactElement {
           className="mt-6"
           variant="primary"
           disabled={loading !== null}
+          aria-busy={loading === 'managed'}
           onClick={() => void selectMode('managed')}
         >
           {loading === 'managed' ? (
@@ -147,6 +153,7 @@ export function ModeSelector(): ReactElement {
           className="mt-6"
           variant="primary"
           disabled={loading !== null}
+          aria-busy={loading === 'security_defense'}
           onClick={() => void selectMode('security_defense')}
         >
           {loading === 'security_defense' ? (

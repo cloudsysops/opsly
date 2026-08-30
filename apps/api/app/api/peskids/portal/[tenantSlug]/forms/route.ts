@@ -16,9 +16,14 @@ interface PeskidsQB {
   in(col: string, vals: unknown[]): PeskidsQB;
   order(col: string, opts?: unknown): PeskidsQB;
   single(): Promise<{ data: unknown | null; error: unknown }>;
-  then<T>(r: (v: { data: unknown[] | null; error: unknown }) => T, j?: (e: unknown) => T): Promise<T>;
+  then<T>(
+    r: (v: { data: unknown[] | null; error: unknown }) => T,
+    j?: (e: unknown) => T
+  ): Promise<T>;
 }
-interface PeskidsClient { from(table: string): PeskidsQB; }
+interface PeskidsClient {
+  from(table: string): PeskidsQB;
+}
 
 interface FormMetadata {
   formId: string;
@@ -67,8 +72,18 @@ async function fetchFormsWithSubmissionStats(
   tenantSlug: string
 ) {
   const db = supabase as unknown as PeskidsClient;
-  const { data: rawForms, error: formsError } = await db.from('peskids.forms').select('id, form_id, title, description, status').eq('tenant_slug', tenantSlug).order('created_at', { ascending: false });
-  type FormRow = { id: string; form_id: string; title: string; description: string; status: string };
+  const { data: rawForms, error: formsError } = await db
+    .from('peskids.forms')
+    .select('id, form_id, title, description, status')
+    .eq('tenant_slug', tenantSlug)
+    .order('created_at', { ascending: false });
+  type FormRow = {
+    id: string;
+    form_id: string;
+    title: string;
+    description: string;
+    status: string;
+  };
   const forms = rawForms as FormRow[] | null;
 
   if (formsError) {
@@ -81,7 +96,11 @@ async function fetchFormsWithSubmissionStats(
   const lastSubmissions = new Map<string, string>();
 
   if (formIds.length > 0) {
-    const { data: rawSubs, error: submissionsError } = await db.from('peskids.form_submissions').select('form_id, completed_at').eq('tenant_slug', tenantSlug).in('form_id', formIds);
+    const { data: rawSubs, error: submissionsError } = await db
+      .from('peskids.form_submissions')
+      .select('form_id, completed_at')
+      .eq('tenant_slug', tenantSlug)
+      .in('form_id', formIds);
     const submissions = rawSubs as FormSubmissionData[] | null;
 
     if (!submissionsError && submissions) {
@@ -158,7 +177,9 @@ async function createFormFields(
   }));
 
   const db = supabase as unknown as PeskidsClient;
-  const { error: fieldsError } = await db.from('peskids.form_fields').insert(fieldsData as unknown as Record<string, unknown>[]);
+  const { error: fieldsError } = await db
+    .from('peskids.form_fields')
+    .insert(fieldsData as unknown as Record<string, unknown>[]);
 
   if (fieldsError) {
     console.error('Failed to create form fields:', fieldsError);
@@ -179,7 +200,8 @@ export async function GET(
 
         // Fetch forms for this tenant
         const { data: forms, error: formsError } = await supabase
-          .schema('peskids').from('forms')
+          .schema('peskids')
+          .from('forms')
           .select('id, form_id, title, description, status')
           .eq('tenant_slug', tenantSlug)
           .order('created_at', { ascending: false });
@@ -189,25 +211,25 @@ export async function GET(
           return jsonError('Failed to fetch forms', HTTP_STATUS.INTERNAL_ERROR);
         }
 
-    const result = await fetchFormsWithSubmissionStats(supabase, tenantSlug);
-    if (!result.ok) {
-      return jsonError(result.error, HTTP_STATUS.INTERNAL_ERROR);
-    }
+        const result = await fetchFormsWithSubmissionStats(supabase, tenantSlug);
+        if (!result.ok) {
+          return jsonError(result.error, HTTP_STATUS.INTERNAL_ERROR);
+        }
 
-    const formMetadata: FormMetadata[] = (result.forms || []).map((form) => ({
-      formId: form.form_id,
-      formTitle: form.title,
-      description: form.description,
-      submissionCount: result.submissionCounts.get(form.id) || 0,
-      lastSubmissionAt: result.lastSubmissions.get(form.id),
-      status: form.status as FormMetadata['status'],
-    }));
+        const formMetadata: FormMetadata[] = (result.forms || []).map((form) => ({
+          formId: form.form_id,
+          formTitle: form.title,
+          description: form.description,
+          submissionCount: result.submissionCounts.get(form.id) || 0,
+          lastSubmissionAt: result.lastSubmissions.get(form.id),
+          status: form.status as FormMetadata['status'],
+        }));
 
-    return jsonOk({ forms: formMetadata });
-  } catch (error) {
-    console.error('Forms endpoint error:', error);
-    return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
-  }
+        return jsonOk({ forms: formMetadata });
+      } catch (error) {
+        console.error('Forms endpoint error:', error);
+        return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
+      }
     },
     PORTAL_READ_ACCESS
   );

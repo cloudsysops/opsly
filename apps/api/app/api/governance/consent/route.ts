@@ -57,7 +57,10 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   if (error) {
     console.error('[governance][consent] insert error', error);
-    return Response.json({ error: 'Failed to record consent' }, { status: HTTP_STATUS.INTERNAL_ERROR });
+    return Response.json(
+      { error: 'Failed to record consent' },
+      { status: HTTP_STATUS.INTERNAL_ERROR }
+    );
   }
 
   return Response.json(

@@ -34,10 +34,12 @@ export function ServiceCard(props: {
             href={url}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1 break-all font-mono text-xs text-ops-green hover:underline"
+            className="inline-flex items-center gap-1 break-all font-mono text-xs text-ops-green hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ops-green focus-visible:ring-offset-2 rounded-xs"
+            aria-label={`${url} (se abre en una nueva pestaña)`}
+            title={`${url} (se abre en una nueva pestaña)`}
           >
             {url}
-            <ExternalLink className="h-3 w-3 shrink-0" />
+            <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" />
           </Link>
         ) : (
           <p className="font-sans text-sm text-ops-gray">URL no disponible</p>
@@ -45,8 +47,15 @@ export function ServiceCard(props: {
         {children}
         {url ? (
           <Button variant="primary" size="sm" asChild>
-            <a href={url} target="_blank" rel="noreferrer">
+            <a
+              href={url}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`${actionLabel} (se abre en una nueva pestaña)`}
+              title={actionLabel}
+            >
               {actionLabel}
+              <ExternalLink className="ml-1 h-3.5 w-3.5" aria-hidden="true" />
             </a>
           </Button>
         ) : null}
