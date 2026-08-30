@@ -6,7 +6,7 @@ export interface AuditEventInput {
   actor_email?: string;
   actor_id?: string;
   action: string;
-  resource: string;
+  resource?: string;
   resource_id?: string;
   resource_type?: string;
   status_code?: number;
@@ -30,7 +30,7 @@ export async function logAuditEvent(event: AuditEventInput): Promise<void> {
         actor_email: event.actor_email ?? null,
         actor_id: event.actor_id ?? null,
         action: event.action,
-        resource: event.resource,
+        resource: event.resource ?? event.resource_type ?? 'unknown',
         resource_id: event.resource_id ?? null,
         resource_type: event.resource_type ?? null,
         status_code: event.status_code ?? null,
