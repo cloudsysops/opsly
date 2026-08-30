@@ -55,13 +55,6 @@ export function isTwentyConfigured(
   return resolveTwentyEnv(env).enabled;
 }
 
-/** Explicit opt-in after migration off GoHighLevel. */
-export function isPeskidsGhlEnabled(
-  env: Record<string, string | undefined> = process.env as Record<string, string | undefined>
-): boolean {
-  return parseBooleanFlag(env.PESKIDS_GHL_ENABLED, false);
-}
-
 export function resolveTwentyEnvForIntcloudsysops(
   env: Record<string, string | undefined> = process.env as Record<string, string | undefined>
 ): TwentyEnvConfig {
@@ -97,11 +90,4 @@ export function isIntcloudsysopsTwentyConfigured(
   env: Record<string, string | undefined> = process.env as Record<string, string | undefined>
 ): boolean {
   return resolveTwentyEnvForIntcloudsysops(env).enabled;
-}
-
-/** Explicit opt-in for legacy GoHighLevel sidecar (agency location). */
-export function isIntcloudsysopsGhlEnabled(
-  env: Record<string, string | undefined> = process.env as Record<string, string | undefined>
-): boolean {
-  return parseBooleanFlag(env.INTCLOUDSYSOPS_GHL_ENABLED, false);
 }

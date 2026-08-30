@@ -11,21 +11,6 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
-    "./gohighlevel": {
-      "types": "./dist/gohighlevel/index.d.ts",
-      "import": "./dist/gohighlevel/index.js",
-      "default": "./dist/gohighlevel/index.js"
-    },
-    "./gohighlevel/index.js": {
-      "types": "./dist/gohighlevel/index.d.ts",
-      "import": "./dist/gohighlevel/index.js",
-      "default": "./dist/gohighlevel/index.js"
-    },
-    "./gohighlevel/full.js": {
-      "types": "./dist/gohighlevel/full.d.ts",
-      "import": "./dist/gohighlevel/full.js",
-      "default": "./dist/gohighlevel/full.js"
-    },
     "./twenty": {
       "types": "./dist/twenty/index.d.ts",
       "import": "./dist/twenty/index.js",
@@ -35,12 +20,20 @@
       "types": "./dist/twenty/index.d.ts",
       "import": "./dist/twenty/index.js",
       "default": "./dist/twenty/index.js"
+    },
+    "./entitlements": {
+      "types": "./dist/entitlements/index.d.ts",
+      "import": "./dist/entitlements/index.js",
+      "default": "./dist/entitlements/index.js"
     }
   },
   "scripts": {
     "build": "tsc",
     "type-check": "tsc --noEmit",
     "test": "vitest run"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.106.0"
   },
   "devDependencies": {
     "vitest": "^4.1.8"

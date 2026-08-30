@@ -14,17 +14,17 @@
   },
   "include": [
     "index.ts",
-    "gohighlevel/env-config.ts",
-    "gohighlevel/client.ts",
-    "gohighlevel/service.ts",
-    "gohighlevel/types.ts",
-    "gohighlevel/index.ts",
-    "gohighlevel/full.ts",
-    "gohighlevel/workflows/ai-lead-followup.ts",
+    "shims.d.ts",
     "twenty/env-config.ts",
     "twenty/client.ts",
     "twenty/types.ts",
-    "twenty/index.ts"
+    "twenty/index.ts",
+    "entitlements/client.ts",
+    "entitlements/types.ts",
+    "entitlements/index.ts"
   ],
-  "exclude": ["dist", "node_modules"]
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
 }

@@ -2,16 +2,23 @@
 
 /**
  * Push notification abstraction.
- * Web (PWA): uses Web Push API + VAPID via sw-register.tsx
- * Native (Capacitor iOS/Android): uses FCM via @capacitor/push-notifications
+ * Web (PWA): Web Push + VAPID via `components/pwa/sw-register.tsx`
+ * Native (Capacitor): FCM / APNs via `@capacitor/push-notifications`
  */
+
+type CapacitorWindow = Window & {
+  Capacitor?: {
+    isNativePlatform?: () => boolean;
+  };
+};
 
 export function isNativeApp(): boolean {
   if (typeof window === 'undefined') return false;
-  return (
-    window.matchMedia('(display-mode: standalone)').matches &&
-    typeof (window as unknown as Record<string, unknown>).Capacitor !== 'undefined'
-  );
+  const cap = (window as CapacitorWindow).Capacitor;
+  if (typeof cap?.isNativePlatform === 'function') {
+    return cap.isNativePlatform();
+  }
+  return false;
 }
 
 export async function registerNativePush(userId: string): Promise<void> {
@@ -39,11 +46,12 @@ export async function registerNativePush(userId: string): Promise<void> {
     });
 
     PushNotifications.addListener('pushNotificationReceived', (notification) => {
-      console.log('[native-push] received in foreground:', notification.title);
+      console.info('[native-push] foreground:', notification.title);
     });
 
     PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
-      const url: string = (action.notification.data as Record<string, string>)?.url ?? '/familias/submissions';
+      const data = action.notification.data as Record<string, string> | undefined;
+      const url = data?.url ?? '/familias';
       window.location.href = url;
     });
   } catch (err) {

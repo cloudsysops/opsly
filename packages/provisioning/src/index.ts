@@ -1,10 +1,4 @@
 export {
-  GhlProvisioningAgent,
-  formatReportMarkdown,
-  writeProvisioningReports,
-  type GhlProvisionerOptions,
-} from './ghl-provisioner.js';
-export {
   tenantProvisionManifestSchema,
   validateManifest,
   summarizeReport,

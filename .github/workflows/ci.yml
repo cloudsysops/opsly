@@ -51,6 +51,8 @@ jobs:
           (cd apps/notebooklm-agent && npm run build)
           (cd lib/content-studio && npm run build)
           (cd lib/services && npm run build)
+          (cd lib/franchise-core && npm run build)
+          (cd lib/franchise-persistence && npm run build)
           (cd lib/git-branch-orchestrator && npm run build)
           (cd lib/session-manager && npm run build)
           (cd lib/runtime && npm run build)
@@ -71,6 +73,8 @@ jobs:
           # peskids has its own tsconfig.typecheck.json (excludes .next/types,
           # which doesn't exist pre-build) — use its npm script, not a bare tsc.
           (cd apps/peskids && npm run type-check) & pid9=$!
+          (cd lib/franchise-core && npx tsc --noEmit) & pid10=$!
+          (cd lib/franchise-persistence && npx tsc --noEmit) & pid11=$!
           status=0
           wait $pid1 || status=1
           wait $pid2 || status=1
@@ -81,6 +85,8 @@ jobs:
           wait $pid7 || status=1
           wait $pid8 || status=1
           wait $pid9 || status=1
+          wait $pid10 || status=1
+          wait $pid11 || status=1
           exit $status
 
       - name: OpenAPI subset (CI gate; duplica validate-context para fallo temprano en PR)
@@ -89,7 +95,7 @@ jobs:
       - name: Academy Blueprint contracts
         run: npm run validate:academy-blueprint
 
-      - name: GHL runtime no-regression guard
+      - name: CRM runtime no-regression guard (no GHL)
         run: npm run guard:ghl-runtime
 
       - name: ESLint si existe config (paralelo)
@@ -168,6 +174,7 @@ jobs:
           (cd lib/prompt-guard && npm test) & pid_pg=$!
           (cd apps/llm-gateway && npm test -- --exclude __tests__/cache-namespace.test.ts) & pid4=$!
           (cd apps/peskids && npm test) & pid_peskids=$!
+          (cd lib/franchise-core && npm test) & pid_fc=$!
           status=0
           wait $pid_api || status=1
           wait $pid0 || status=1
@@ -176,7 +183,42 @@ jobs:
           wait $pid_pg || status=1
           wait $pid4 || status=1
           wait $pid_peskids || status=1
+          wait $pid_fc || status=1
           exit $status
+
+  franchise-os-pg:
+    name: Franchise OS live Postgres
+    needs: lint
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: npm ci + franchise persistence RLS tests
+        env:
+          FRANCHISE_TEST_DATABASE_URL: postgresql://postgres:test@localhost:5432/test
+        run: |
+          set -euo pipefail
+          npm ci
+          npm run build -w @intcloudsysops/franchise-core
+          npm test --workspace=@intcloudsysops/franchise-core
+          npm test --workspace=@intcloudsysops/franchise-persistence
 
   test-integration:
     needs: lint
@@ -345,6 +387,7 @@ jobs:
       - lint
       - test-unit
       - test-integration
+      - franchise-os-pg
       - build
     runs-on: ubuntu-latest
     steps:
@@ -366,7 +409,7 @@ jobs:
           status=$?
           set -e
           if [[ "${status}" -ne 0 ]]; then
-            echo "::warning::Legacy invite smoke failed with exit code ${status}; ignored because invite delivery now lives in GHL."
+            echo "::warning::Legacy invite smoke failed with exit code ${status}; ignored — invite delivery is Resend + portal (not CRM)."
           fi
 
       - name: Install Playwright Browsers

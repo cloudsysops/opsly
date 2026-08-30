@@ -1,6 +1,3 @@
-import { getGoHighLevelService } from '@intcloudsysops/services';
-import type { GoHighLevelService } from '@intcloudsysops/services';
-import { isPeskidsGhlEnabled } from '@intcloudsysops/services';
 import { supabaseServer } from '@/lib/supabase';
 import type { PipelineRule, PipelineStage } from '@/lib/agents/pipeline-rules';
 import {
@@ -41,13 +38,9 @@ export interface PipelineCycleResult {
 
 export type PipelineManagerDeps = {
   tenantSlug?: string;
-  ghlService?: GoHighLevelService | null;
-  ghlSyncEnabled?: boolean;
 };
 
 export class PipelineManagerService {
-  private readonly ghlService: GoHighLevelService | null;
-  private readonly ghlSyncEnabled: boolean;
   private readonly rules: PipelineRule[];
   private readonly tenantSlug: string;
 
@@ -55,9 +48,6 @@ export class PipelineManagerService {
     const resolved = typeof deps === 'string' ? { tenantSlug: deps } : deps;
 
     this.tenantSlug = resolved.tenantSlug ?? 'peskids';
-    this.ghlService = resolved.ghlService ?? getGoHighLevelService();
-    this.ghlSyncEnabled =
-      resolved.ghlSyncEnabled ?? (isPeskidsGhlEnabled() && Boolean(this.ghlService));
     this.rules = buildPipelineRules({
       supabase: supabaseServer(),
       tenantSlug: this.tenantSlug,
@@ -72,16 +62,6 @@ export class PipelineManagerService {
     'Active Student',
     'Renewal',
   ];
-
-  /** Legacy GHL stage ids — secondary sync only when PESKIDS_GHL_ENABLED=true */
-  static readonly PESKIDS_TO_GHL_STAGE: Record<PipelineStage, string> = {
-    'New Lead': 'f4c7365b-efe8-4d33-9559-c7f06881f172',
-    Contacted: '75742c84-9063-4539-b755-b09bfdeb6346',
-    'Trial Class': '13f095d8-4c87-4637-a6f7-b8d2d294ad0b',
-    Enrolled: 'd69d8656-1836-4d48-8a83-5268895c5c74',
-    'Active Student': 'c9b615f7-b4da-416c-a3b1-28be6da1d063',
-    Renewal: 'e9c02a74-f298-48a4-a1e5-1c952f950531',
-  };
 
   private stageIndex(stage: string): number {
     return PipelineManagerService.PIPELINE_STAGES.indexOf(stage as PipelineStage);
@@ -133,7 +113,7 @@ export class PipelineManagerService {
     return LOCAL_STATUS_TO_PIPELINE_STAGE[data.status] ?? 'New Lead';
   }
 
-  /** Persist stage on public.leads; mirror platform row; optional legacy GHL sync. */
+  /** Persist stage on public.leads; mirror platform row. */
   private async advanceStage(leadId: string, newStage: PipelineStage): Promise<void> {
     const localStatus = PIPELINE_STAGE_TO_LOCAL_STATUS[newStage];
 
@@ -142,7 +122,7 @@ export class PipelineManagerService {
       .update({ status: localStatus })
       .eq('id', leadId)
       .eq('tenant_id', this.tenantSlug)
-      .select('email, ghl_contact_id')
+      .select('email')
       .maybeSingle();
 
     if (error) throw error;
@@ -153,25 +133,11 @@ export class PipelineManagerService {
         .eq('tenant_slug', this.tenantSlug)
         .or(`lead_id.eq.${leadId},email.eq.${lead.email}`);
     }
-
-    const ghlContactId = lead?.ghl_contact_id;
-    if (!ghlContactId || !this.ghlSyncEnabled || !this.ghlService) {
-      return;
-    }
-
-    const ghlStageId = PipelineManagerService.PESKIDS_TO_GHL_STAGE[newStage];
-    if (!ghlStageId) return;
-
-    await this.ghlService.updateOpportunityStage(
-      this.tenantSlug,
-      ghlContactId,
-      ghlStageId
-    );
   }
 
   /**
    * Evaluate pipeline rules for a local lead UUID.
-   * Primary key: public.leads.id — not ghl_contact_id.
+   * Primary key: public.leads.id.
    */
   async evaluateAndAdvance(leadId: string): Promise<StageAdvanceResult> {
     const { data: leadRow, error: leadError } = await supabaseServer()
@@ -224,29 +190,7 @@ export class PipelineManagerService {
     return { advanced: false };
   }
 
-  /**
-   * Legacy adapter — resolves public.leads.id from ghl_contact_id.
-   * Do not use in new code; prefer evaluateAndAdvance(leadId).
-   */
-  async evaluateAndAdvanceByGhlContactId(ghlContactId: string): Promise<StageAdvanceResult> {
-    const { data, error } = await supabaseServer()
-      .from('leads')
-      .select('id')
-      .eq('tenant_id', this.tenantSlug)
-      .eq('ghl_contact_id', ghlContactId)
-      .maybeSingle();
-
-    if (error || !data?.id) {
-      return {
-        advanced: false,
-        error: `Lead not found for legacy GHL contact: ${ghlContactId}`,
-      };
-    }
-
-    return this.evaluateAndAdvance(data.id);
-  }
-
-  /** Bulk evaluation over public.leads — no GHL contact list. */
+  /** Bulk evaluation over public.leads. */
   async executePipelineCycle(): Promise<PipelineCycleResult> {
     const result: PipelineCycleResult = {
       evaluated: 0,

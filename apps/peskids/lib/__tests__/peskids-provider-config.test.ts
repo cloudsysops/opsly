@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import {
   PESKIDS_PROVIDER_DEFAULTS,
   resolvePeskidsIntegrationProviders,
-  shouldSyncLeadToGhl,
   shouldSyncLeadToTwenty,
 } from '@/lib/integrations/peskids-provider-config';
 import {
@@ -46,45 +45,21 @@ describe('resolvePeskidsIntegrationProviders', () => {
   });
 });
 
-describe('shouldSyncLeadToTwenty / shouldSyncLeadToGhl', () => {
+describe('shouldSyncLeadToTwenty', () => {
   const legacy = resolvePeskidsIntegrationProviders({});
   const crmTwenty = resolvePeskidsIntegrationProviders({ PESKIDS_CRM_PROVIDER: 'twenty' });
-  const crmGhl = resolvePeskidsIntegrationProviders({ PESKIDS_CRM_PROVIDER: 'ghl' });
 
   it('legacy mode syncs Twenty when configured', () => {
     expect(shouldSyncLeadToTwenty(legacy, true)).toBe(true);
     expect(shouldSyncLeadToTwenty(legacy, false)).toBe(false);
   });
 
-  it('legacy mode syncs GHL only when enabled flag is true', () => {
-    expect(shouldSyncLeadToGhl(legacy, true)).toBe(true);
-    expect(shouldSyncLeadToGhl(legacy, false)).toBe(false);
-  });
-
-  it('explicit twenty skips GHL even if enabled', () => {
+  it('explicit twenty syncs when configured', () => {
     expect(shouldSyncLeadToTwenty(crmTwenty, true)).toBe(true);
-    expect(shouldSyncLeadToGhl(crmTwenty, true)).toBe(false);
-  });
-
-  it('explicit ghl skips Twenty even if configured', () => {
-    expect(shouldSyncLeadToTwenty(crmGhl, true)).toBe(false);
-    expect(shouldSyncLeadToGhl(crmGhl, true)).toBe(true);
   });
 });
 
 describe('resolveCrmContactLinks', () => {
-  it('builds GHL deep link when location id is present', () => {
-    const links = resolveCrmContactLinks(
-      { ghlContactId: 'contact-1' },
-      {
-        GOHIGHLEVEL_PESKIDS_LOCATION_ID: 'loc-abc',
-        GOHIGHLEVEL_APP_URL: 'https://app.gohighlevel.com',
-      }
-    );
-    expect(links.ghlContactUrl).toContain('loc-abc');
-    expect(links.ghlContactUrl).toContain('contact-1');
-  });
-
   it('builds Twenty person URL when API base is set', () => {
     const links = resolveCrmContactLinks(
       { twentyPersonId: 'person-99' },
@@ -112,7 +87,7 @@ describe('resolveInboxRoutingHint', () => {
 
 describe('buildIntegrationStatusSnapshot', () => {
   it('documents recommended defaults separately from runtime legacy', () => {
-    expect(PESKIDS_PROVIDER_DEFAULTS.crm).toBe('ghl');
+    expect(PESKIDS_PROVIDER_DEFAULTS.crm).toBe('twenty');
     expect(PESKIDS_PROVIDER_DEFAULTS.inbox).toBe('wacrm');
     const snapshot = buildIntegrationStatusSnapshot({}, {});
     expect(snapshot.providers.crm).toBe('legacy');

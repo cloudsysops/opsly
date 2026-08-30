@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { requireAdminAccess } from '../../../../../../../../lib/auth';
 import { HTTP_STATUS } from '../../../../../../../../lib/constants';
-import { PESKIDS_PIPELINE_STAGES } from '../../../../../../../../lib/peskids/ghl-contract';
+import { PESKIDS_PIPELINE_STAGES } from '../../../../../../../../lib/peskids/pipeline-contract';
 import { updateLeadStage } from '../../../../../../../../lib/peskids/sales-pipeline';
 import { parseJsonBody, jsonError } from '../../../../../../../../lib/api-response';
 import { formatZodError } from '../../../../../../../../lib/validation';
@@ -33,10 +33,7 @@ export async function PATCH(
 
   const parsed = stageUpdateSchema.safeParse(parsedBody.body);
   if (!parsed.success) {
-    return jsonError(
-      `Invalid body: ${formatZodError(parsed.error)}`,
-      HTTP_STATUS.BAD_REQUEST
-    );
+    return jsonError(`Invalid body: ${formatZodError(parsed.error)}`, HTTP_STATUS.BAD_REQUEST);
   }
 
   const result = await updateLeadStage(slug, leadId, parsed.data.stage);

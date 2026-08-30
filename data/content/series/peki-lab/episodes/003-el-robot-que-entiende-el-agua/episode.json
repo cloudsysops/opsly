@@ -1,0 +1,42 @@
+{
+  "id": "peki-lab-003",
+  "series_id": "peki-lab",
+  "episode_number": 3,
+  "title": {
+    "es": "El robot que entiende el agua",
+    "en": "The robot who understands water"
+  },
+  "hook": {
+    "es": "Wavo sabe cosas sobre el agua que te van a sorprender.",
+    "en": "Wavo knows things about water that will surprise you."
+  },
+  "objective": "Blend science facts with Wavo's personality.",
+  "audience": [
+    "kids"
+  ],
+  "duration_estimate_sec": 60,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Aprende con Wavo",
+    "captions": {
+      "es": "Ciencia del agua, explicada por Wavo.",
+      "en": "Water science, explained by Wavo."
+    },
+    "hashtags": [
+      "#PekiLab",
+      "#Science",
+      "#Peskids"
+    ],
+    "thumbnail_concept": "Wavo pointing at floating water droplet diagram"
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-08-11T00:00:00Z",
+    "last_updated": "2026-08-11T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Idea-stage — planned in 30-day launch calendar. Script + scenes pending."
+    ]
+  }
+}

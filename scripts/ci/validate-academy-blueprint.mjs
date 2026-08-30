@@ -106,7 +106,7 @@ if (twenty?.defaultEnabled !== true || wacrm?.defaultEnabled !== false) {
   fail('Twenty must default on and WACRM must default off');
 }
 
-const forbiddenPattern = /gohighlevel|GHL_|PESKIDS_GHL/;
+const forbiddenPattern = /gohighlevel|GHL_|PESKIDS_GHL|ghl_runtime/;
 for (const name of CONTRACT_FILES) {
   if (forbiddenPattern.test(readContract(name))) {
     fail(`${name} contains a legacy CRM reference`);
@@ -125,6 +125,9 @@ for (const relative of machineRequired) {
   if (!fs.existsSync(filePath)) {
     fail(`missing machine pack file config/blueprints/academy/${relative}`);
   }
+  if (forbiddenPattern.test(fs.readFileSync(filePath, 'utf8'))) {
+    fail(`config/blueprints/academy/${relative} contains a legacy CRM reference`);
+  }
 }
 
 for (const moduleName of MODULE_FILES) {
@@ -133,7 +136,11 @@ for (const moduleName of MODULE_FILES) {
     fail(`missing module config/blueprints/academy/modules/${moduleName}`);
   }
   try {
-    const parsed = YAML.parse(fs.readFileSync(filePath, 'utf8'));
+    const raw = fs.readFileSync(filePath, 'utf8');
+    if (forbiddenPattern.test(raw)) {
+      fail(`config/blueprints/academy/modules/${moduleName} contains a legacy CRM reference`);
+    }
+    const parsed = YAML.parse(raw);
     if (!parsed || typeof parsed !== 'object' || !parsed.id) {
       fail(`module ${moduleName} must define id`);
     }
@@ -154,9 +161,6 @@ if (machineBlueprint?.metadata?.ownerPlatform !== 'icso') {
 }
 if (machineBlueprint?.metadata?.pilotTenant !== 'peskids') {
   fail('config/blueprints/academy/blueprint.yaml must set metadata.pilotTenant=peskids');
-}
-if (machineBlueprint?.spec?.defaults?.ghl_runtime !== 'disabled') {
-  fail('academy machine pack must keep ghl_runtime disabled');
 }
 
 console.log(

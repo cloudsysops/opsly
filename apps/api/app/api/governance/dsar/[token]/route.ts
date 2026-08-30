@@ -51,9 +51,8 @@ export async function GET(
     ip,
     user_agent: request.headers.get('user-agent') ?? undefined,
     metadata: {
-      subject_email: data.subject_email,
       request_type: data.request_type,
-      sla_deadline: data.sla_deadline,
+      status: data.status,
     },
   });
 

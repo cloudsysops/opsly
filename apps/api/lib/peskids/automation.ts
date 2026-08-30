@@ -1,5 +1,5 @@
-import type { GoHighLevelLeadWebhook } from './ghl-contract';
-import { buildPeskidsAutomationPayload } from './ghl-contract';
+import type { PeskidsLeadAutomationEvent } from './pipeline-contract';
+import { buildPeskidsAutomationPayload } from './pipeline-contract';
 import { alertN8nFailure } from '../alerting/slack-notifier';
 import { recordN8nDispatchFailure, recordN8nDispatchLatency } from '../metrics/metrics-collector';
 
@@ -35,7 +35,7 @@ export async function fetchWithRetry(
 }
 
 export async function dispatchPeskidsLeadAutomation(
-  payload: GoHighLevelLeadWebhook
+  payload: PeskidsLeadAutomationEvent
 ): Promise<{ ok: true; detail: string } | { ok: false; detail: string }> {
   const base = process.env.N8N_WEBHOOK_BASE_URL?.trim().replace(/\/$/, '');
   if (!base) {
@@ -46,14 +46,11 @@ export async function dispatchPeskidsLeadAutomation(
 
   try {
     const startMs = Date.now();
-    const response = await fetchWithRetry(
-      `${base}${PESKIDS_N8N_LEAD_INTAKE_PATH}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(buildPeskidsAutomationPayload(payload)),
-      }
-    );
+    const response = await fetchWithRetry(`${base}${PESKIDS_N8N_LEAD_INTAKE_PATH}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(buildPeskidsAutomationPayload(payload)),
+    });
 
     const latencyMs = Date.now() - startMs;
     await recordN8nDispatchLatency('peskids', latencyMs);

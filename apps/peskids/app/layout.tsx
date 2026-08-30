@@ -6,6 +6,7 @@ import { PeskidsClientShell } from '@/components/chat/peskids-client-shell';
 import { CookieBanner } from '@/components/legal/cookie-banner';
 import { SwRegister } from '@/components/pwa/sw-register';
 import { NativePushRegister } from '@/components/pwa/native-push-register';
+import { NativeShell } from '@/components/pwa/native-shell';
 import './globals.css';
 
 const nunito = Nunito({
@@ -57,6 +58,7 @@ export default function RootLayout({
         <PeskidsClientShell>{children}</PeskidsClientShell>
         <CookieBanner />
         <SwRegister />
+        <NativeShell />
         <NativePushRegister />
       </body>
     </html>

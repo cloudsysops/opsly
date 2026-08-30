@@ -10,6 +10,8 @@ const nextConfig = {
   // builds alone in its Dockerfile, so the Turbo parallel-trace race does not apply.
   transpilePackages: [
     '@intcloudsysops/capacity-alert',
+    '@intcloudsysops/franchise-core',
+    '@intcloudsysops/franchise-persistence',
     '@intcloudsysops/opsly-core',
     '@intcloudsysops/conversational-runtime',
     '@intcloudsysops/openwa',
@@ -26,6 +28,20 @@ const nextConfig = {
       },
     ]
     return [
+      {
+        source: '/.well-known/apple-app-site-association',
+        headers: [
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'Cache-Control', value: 'public, max-age=3600' },
+        ],
+      },
+      {
+        source: '/.well-known/assetlinks.json',
+        headers: [
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'Cache-Control', value: 'public, max-age=3600' },
+        ],
+      },
       { source: '/', headers: htmlCache },
       {
         source: '/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)',

@@ -1,66 +1,51 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const sendLeadToTwentyMock = vi.hoisted(() => vi.fn());
-const sendLeadToGHLMock = vi.hoisted(() => vi.fn());
 const isIntcloudsysopsTwentyConfiguredMock = vi.hoisted(() => vi.fn());
-const isIntcloudsysopsGhlEnabledMock = vi.hoisted(() => vi.fn());
+const sendLeadToTwentyMock = vi.hoisted(() => vi.fn());
+
+vi.mock('@intcloudsysops/services/twenty', () => ({
+  isIntcloudsysopsTwentyConfigured: isIntcloudsysopsTwentyConfiguredMock,
+}));
 
 vi.mock('@/lib/twenty-lead-sync', () => ({
   sendLeadToTwenty: sendLeadToTwentyMock,
 }));
 
-vi.mock('@/lib/gohighlevel-lead-sync', () => ({
-  sendLeadToGHL: sendLeadToGHLMock,
-}));
-
-vi.mock('@intcloudsysops/services/twenty', () => ({
-  isIntcloudsysopsTwentyConfigured: isIntcloudsysopsTwentyConfiguredMock,
-  isIntcloudsysopsGhlEnabled: isIntcloudsysopsGhlEnabledMock,
-}));
+import { syncLeadToCrm } from '@/lib/icso-crm-sync';
 
 describe('syncLeadToCrm', () => {
   beforeEach(() => {
-    sendLeadToTwentyMock.mockReset();
-    sendLeadToGHLMock.mockReset();
     isIntcloudsysopsTwentyConfiguredMock.mockReset();
-    isIntcloudsysopsGhlEnabledMock.mockReset();
-  });
-
-  it('syncs Twenty when configured', async () => {
+    sendLeadToTwentyMock.mockReset();
     isIntcloudsysopsTwentyConfiguredMock.mockReturnValue(true);
-    isIntcloudsysopsGhlEnabledMock.mockReturnValue(false);
-    sendLeadToTwentyMock.mockResolvedValue({
-      twentyPersonId: 'person-1',
-      twentyOpportunityId: 'opp-1',
-    });
-
-    const { syncLeadToCrm } = await import('../icso-crm-sync');
-    const result = await syncLeadToCrm({
-      name: 'Jane Doe',
-      email: 'jane@example.com',
-      message: 'Need automation',
-    });
-
-    expect(result).toEqual({
-      twentyPersonId: 'person-1',
-      twentyOpportunityId: 'opp-1',
-    });
-    expect(sendLeadToGHLMock).not.toHaveBeenCalled();
   });
 
-  it('syncs GHL only when legacy flag enabled', async () => {
-    isIntcloudsysopsTwentyConfiguredMock.mockReturnValue(false);
-    isIntcloudsysopsGhlEnabledMock.mockReturnValue(true);
-    sendLeadToGHLMock.mockResolvedValue({ ghlContactId: 'ghl-99' });
-
-    const { syncLeadToCrm } = await import('../icso-crm-sync');
-    const result = await syncLeadToCrm({
-      name: 'John Doe',
-      email: 'john@example.com',
-      message: 'Hello',
+  it('syncs to Twenty when configured', async () => {
+    sendLeadToTwentyMock.mockResolvedValue({
+      twentyPersonId: 'p-1',
+      twentyOpportunityId: 'o-1',
     });
 
-    expect(result).toEqual({ ghlContactId: 'ghl-99' });
+    const result = await syncLeadToCrm({
+      name: 'Carlos',
+      email: 'carlos@example.com',
+      message: 'Interested in Opsly',
+    });
+
+    expect(sendLeadToTwentyMock).toHaveBeenCalledOnce();
+    expect(result.twentyPersonId).toBe('p-1');
+  });
+
+  it('returns empty when Twenty is not configured', async () => {
+    isIntcloudsysopsTwentyConfiguredMock.mockReturnValue(false);
+
+    const result = await syncLeadToCrm({
+      name: 'Carlos',
+      email: 'carlos@example.com',
+      message: 'Interested in Opsly',
+    });
+
     expect(sendLeadToTwentyMock).not.toHaveBeenCalled();
+    expect(result).toEqual({});
   });
 });

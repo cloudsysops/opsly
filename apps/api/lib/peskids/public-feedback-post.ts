@@ -20,7 +20,9 @@ async function readJsonBody(request: NextRequest): Promise<unknown | Response> {
  */
 export async function postPublicPeskidsFeedback(request: NextRequest): Promise<Response> {
   const ip = extractIp(request);
-  const rateLimit = await checkRateLimit(ip ? `peskids-feedback:${ip}` : 'peskids-feedback:anonymous');
+  const rateLimit = await checkRateLimit(
+    ip ? `peskids-feedback:${ip}` : 'peskids-feedback:anonymous'
+  );
 
   if (!rateLimit.allowed) {
     return Response.json({ error: 'Too many requests' }, { status: HTTP_STATUS.TOO_MANY_REQUESTS });

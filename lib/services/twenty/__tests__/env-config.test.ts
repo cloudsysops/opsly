@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  isIntcloudsysopsGhlEnabled,
   isIntcloudsysopsTwentyConfigured,
-  isPeskidsGhlEnabled,
   isTwentyConfigured,
   resolveTwentyEnv,
   resolveTwentyEnvForIntcloudsysops,
@@ -42,17 +40,6 @@ describe('resolveTwentyEnv', () => {
   });
 });
 
-describe('isPeskidsGhlEnabled', () => {
-  it('defaults to false (migration off GHL)', () => {
-    expect(isPeskidsGhlEnabled({})).toBe(false);
-    expect(isPeskidsGhlEnabled({ GOHIGHLEVEL_PESKIDS_API_KEY: 'pit-test' })).toBe(false);
-  });
-
-  it('requires explicit opt-in', () => {
-    expect(isPeskidsGhlEnabled({ PESKIDS_GHL_ENABLED: 'true' })).toBe(true);
-  });
-});
-
 describe('resolveTwentyEnvForIntcloudsysops', () => {
   it('prefers tenant-specific env vars', () => {
     const config = resolveTwentyEnvForIntcloudsysops({
@@ -75,16 +62,5 @@ describe('resolveTwentyEnvForIntcloudsysops', () => {
         INTCLOUDSYSOPS_TWENTY_ENABLED: 'false',
       })
     ).toBe(false);
-  });
-});
-
-describe('isIntcloudsysopsGhlEnabled', () => {
-  it('defaults to false', () => {
-    expect(isIntcloudsysopsGhlEnabled({})).toBe(false);
-    expect(isIntcloudsysopsGhlEnabled({ GOHIGHLEVEL_API_KEY: 'pit-test' })).toBe(false);
-  });
-
-  it('requires explicit opt-in', () => {
-    expect(isIntcloudsysopsGhlEnabled({ INTCLOUDSYSOPS_GHL_ENABLED: 'true' })).toBe(true);
   });
 });

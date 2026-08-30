@@ -25,7 +25,6 @@ spec:
     crm: twenty
     messaging: manual_then_wacrm
     payments: disabled
-    ghl_runtime: disabled
     whatsapp_outbound: approval_first
   modules:
     auth: true
@@ -54,7 +53,6 @@ spec:
     - tenant-scoped
     - twenty-primary-crm
     - approval-first-outbound
-    - ghl-legacy-off
     - payments-disabled-by-default
     - no-parallel-control-plane
     - no-tenant-per-franchise-yet

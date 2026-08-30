@@ -2,14 +2,14 @@ import { getServiceClient } from '../supabase';
 import {
   leadStatusFromPipelineStage,
   normalizePeskidsPipelineStage,
-  type GoHighLevelLeadWebhook,
+  type PeskidsLeadAutomationEvent,
   type PeskidsPipelineStage,
-} from './ghl-contract';
+} from './pipeline-contract';
 
 export type PeskidsLeadPersistInput = {
   tenantSlug: string;
   leadId: string;
-  source: 'web' | 'gohighlevel' | 'n8n' | 'manual';
+  source: 'web' | 'n8n' | 'manual';
   stage: PeskidsPipelineStage;
   createdAt: string;
   parentName: string;
@@ -20,10 +20,6 @@ export type PeskidsLeadPersistInput = {
   interest: string;
   eventId: string;
   automationReady: boolean;
-  ghlContactId?: string | null;
-  ghlOpportunityId?: string | null;
-  ghlPipelineId?: string | null;
-  ghlStageId?: string | null;
 };
 
 export type PeskidsLeadRecord = {
@@ -33,26 +29,10 @@ export type PeskidsLeadRecord = {
   source: string | null;
   stage: string | null;
   created_at: string;
-  ghl_contact_id?: string | null;
-  ghl_opportunity_id?: string | null;
-  ghl_pipeline_id?: string | null;
-  ghl_stage_id?: string | null;
 };
 
 function leadSelectList(): string {
-  return [
-    'id',
-    'tenant_slug',
-    'lead_id',
-    'source',
-    'stage',
-    'created_at',
-    'updated_at',
-    'ghl_contact_id',
-    'ghl_opportunity_id',
-    'ghl_pipeline_id',
-    'ghl_stage_id',
-  ].join(', ');
+  return ['id', 'tenant_slug', 'lead_id', 'source', 'stage', 'created_at', 'updated_at'].join(', ');
 }
 
 function buildLeadBaseRow(input: PeskidsLeadPersistInput): Record<string, unknown> {
@@ -72,11 +52,7 @@ function buildLeadBaseRow(input: PeskidsLeadPersistInput): Record<string, unknow
     interest: input.interest,
     event_id: input.eventId,
     automation_ready: input.automationReady,
-    referral_source: input.source === 'gohighlevel' ? 'GoHighLevel' : input.source,
-    ghl_contact_id: input.ghlContactId ?? null,
-    ghl_opportunity_id: input.ghlOpportunityId ?? null,
-    ghl_pipeline_id: input.ghlPipelineId ?? null,
-    ghl_stage_id: input.ghlStageId ?? null,
+    referral_source: input.source,
   };
 }
 
@@ -152,8 +128,8 @@ export async function persistPeskidsLead(
   return { ok: true, row: data as unknown as PeskidsLeadRecord, created: true };
 }
 
-export function buildPeskidsLeadPersistInputFromGoHighLevel(
-  payload: GoHighLevelLeadWebhook
+export function buildPeskidsLeadPersistInputFromAutomation(
+  payload: PeskidsLeadAutomationEvent
 ): PeskidsLeadPersistInput {
   const stage = normalizePeskidsPipelineStage(payload.pipeline_stage);
   return {
@@ -170,9 +146,5 @@ export function buildPeskidsLeadPersistInputFromGoHighLevel(
     interest: payload.lead.interest,
     eventId: payload.event_id,
     automationReady: true,
-    ghlContactId: payload.ghl?.contact_id ?? null,
-    ghlOpportunityId: payload.ghl?.opportunity_id ?? null,
-    ghlPipelineId: payload.ghl?.pipeline_id ?? null,
-    ghlStageId: payload.ghl?.stage_id ?? null,
   };
 }

@@ -15,7 +15,7 @@ export const createLeadSchema = z.object({
 
 export type CreateLeadInput = z.infer<typeof createLeadSchema>;
 
-export const gohighlevelLeadIntakeSchema = z.object({
+export const externalLeadIntakeSchema = z.object({
   parent_name: z.string().trim().min(2, 'Parent name must be at least 2 characters').max(100),
   phone: z
     .string()
@@ -29,7 +29,7 @@ export const gohighlevelLeadIntakeSchema = z.object({
   interest: z.string().trim().min(2, 'Interest must be at least 2 characters').max(80),
 });
 
-export type GoHighLevelLeadIntakeInput = z.infer<typeof gohighlevelLeadIntakeSchema>;
+export type ExternalLeadIntakeInput = z.infer<typeof externalLeadIntakeSchema>;
 
 export const leadFieldMap: Record<string, string> = {
   name: 'full_name',

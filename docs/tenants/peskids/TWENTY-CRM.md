@@ -5,26 +5,28 @@ last_review: 2026-06-09
 tenant: peskids
 ---
 
-# Peskids — Twenty CRM (reemplazo de GoHighLevel)
+# Peskids — Twenty CRM
+
+> **2026-08:** GoHighLevel está **retirado** del monorepo. CRM canónico: **Twenty + n8n**. No reactivar GHL.
 
 ## Objetivo
 
-Migrar el CRM comercial de **GoHighLevel (SaaS de pago)** a **Twenty CRM** (open source, self-hosted en el VPS Opsly), manteniendo:
+CRM comercial en **Twenty** (self-hosted en VPS Opsly), manteniendo:
 
-- Captura de leads en Supabase (`platform.peskids_leads`) como fuente operativa
+- Captura de leads en Supabase (`platform.peskids_leads` / `public.leads`) como fuente operativa
 - Automatización vía **n8n CRM Starter Pack** + **Resend**
 - Operaciones (clases, familias, docentes) en la app Peskids
 
-## Estado en repo (2026-06-09)
+## Estado en repo (2026-08)
 
 | Componente | Estado |
 |-----------|--------|
 | Cliente `@intcloudsysops/services/twenty` | Implementado en `lib/services/twenty/` |
 | Sync al crear lead (`POST /api/leads`) | `syncLeadToCrm()` → Twenty si está configurado |
-| GoHighLevel sidecar | **Desactivado por defecto** — requiere `PESKIDS_GHL_ENABLED=true` |
-| Migración DB | `0082_peskids_twenty_crm_ids.sql` (`twenty_person_id`, `twenty_opportunity_id`) |
+| GoHighLevel | **Eliminado** del runtime (sin flags, webhooks ni servicios) |
+| Migración DB Twenty | `0082_peskids_twenty_crm_ids.sql` (`twenty_person_id`, `twenty_opportunity_id`) |
+| Drop columnas GHL | `0096_drop_ghl_tracking_columns.sql` |
 | Compose VPS | `infra/docker-compose.twenty.yml` |
-| Instancia prod | **Pendiente** — no hay contenedor Twenty en VPS (verificado 2026-06-09) |
 
 ## Arquitectura
 

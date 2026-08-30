@@ -1,6 +1,6 @@
 import { getServiceClient } from '../supabase';
 import { logger } from '../logger';
-import { PESKIDS_PIPELINE_STAGES, type PeskidsPipelineStage } from './ghl-contract';
+import { PESKIDS_PIPELINE_STAGES, type PeskidsPipelineStage } from './pipeline-contract';
 import { getCache, setCache } from '../redis-cache';
 import { CACHE_TTL } from '../constants';
 

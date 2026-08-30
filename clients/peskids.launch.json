@@ -10,7 +10,6 @@
   "offer_type": "free_class",
   "lead_sources": ["website", "instagram", "whatsapp"],
   "crm_provider": "twenty",
-  "ghl_location_id": "KJ5LawrOOe3hIerqtMRu",
   "crm_pipeline_name": "Peskids Enrollment",
   "landing_routes": ["/", "/instagram"],
   "brand_basic": {

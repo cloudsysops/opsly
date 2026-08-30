@@ -31,7 +31,7 @@ describe('lead-ingest', () => {
         id: 'row-1',
         tenant_slug: 'peskids',
         lead_id: 'lead-1',
-        source: 'gohighlevel',
+        source: 'web',
         stage: 'New Lead',
         created_at: '2026-06-01T10:00:00.000Z',
       },
@@ -56,7 +56,7 @@ describe('lead-ingest', () => {
     const result = await persistPeskidsLead({
       tenantSlug: 'peskids',
       leadId: 'lead-1',
-      source: 'gohighlevel',
+      source: 'web',
       stage: 'New Lead',
       createdAt: '2026-06-01T10:00:00.000Z',
       parentName: 'Maria Rodriguez',
@@ -72,7 +72,7 @@ describe('lead-ingest', () => {
     expect(result).toEqual({
       ok: true,
       created: true,
-      row: expect.objectContaining({ lead_id: 'lead-1', source: 'gohighlevel', stage: 'New Lead' }),
+      row: expect.objectContaining({ lead_id: 'lead-1', source: 'web', stage: 'New Lead' }),
     });
     expect(existingQuery.maybeSingle).toHaveBeenCalledTimes(1);
     expect(fromQuery.insert).toHaveBeenCalledTimes(1);
@@ -89,7 +89,7 @@ describe('lead-ingest', () => {
         id: 'row-1',
         tenant_slug: 'peskids',
         lead_id: 'lead-1',
-        source: 'gohighlevel',
+        source: 'web',
         stage: 'New Lead',
         created_at: '2026-06-01T10:00:00.000Z',
       },
@@ -100,7 +100,7 @@ describe('lead-ingest', () => {
         id: 'row-1',
         tenant_slug: 'peskids',
         lead_id: 'lead-1',
-        source: 'gohighlevel',
+        source: 'web',
         stage: 'Contacted',
         created_at: '2026-06-01T10:00:00.000Z',
       },
@@ -125,7 +125,7 @@ describe('lead-ingest', () => {
     const result = await persistPeskidsLead({
       tenantSlug: 'peskids',
       leadId: 'lead-1',
-      source: 'gohighlevel',
+      source: 'web',
       stage: 'Contacted',
       createdAt: '2026-06-01T11:00:00.000Z',
       parentName: 'Maria Rodriguez',

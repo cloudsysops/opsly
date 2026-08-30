@@ -7,6 +7,8 @@ tenant: intcloudsysops
 
 # Intcloudsysops (ICSO) — Twenty CRM
 
+> **2026-08:** GoHighLevel runtime removed from Opsly. Flags `PESKIDS_GHL_ENABLED` / `INTCLOUDSYSOPS_GHL_ENABLED` and GHL webhooks/services are gone. Use Twenty + n8n only.
+
 ## Objetivo
 
 Migrar el intake comercial de **GoHighLevel (agencia)** a **Twenty CRM + Supabase + n8n**, sin afectar otros tenants (Peskids usa flags y credenciales distintas).

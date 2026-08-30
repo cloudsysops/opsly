@@ -35,7 +35,6 @@ export type CanonicalLeadResult =
       leadId: string;
       tenantSlug: string;
       createdAt: string;
-      ghlContactId?: string;
       twentyPersonId?: string;
       twentyOpportunityId?: string;
     }
@@ -85,7 +84,6 @@ function normalizeReferralSource(
 export function buildCanonicalLeadPayload(
   body: PeskidsLeadCaptureBody,
   crmIds?: {
-    ghlContactId?: string;
     twentyPersonId?: string;
     twentyOpportunityId?: string;
   }
@@ -117,7 +115,6 @@ export function buildCanonicalLeadPayload(
       ...(body.metadata ?? {}),
     },
     referral_source: normalizeReferralSource(body.referral_source),
-    ...(crmIds?.ghlContactId ? { ghl_contact_id: crmIds.ghlContactId } : {}),
     ...(crmIds?.twentyPersonId ? { twenty_person_id: crmIds.twentyPersonId } : {}),
     ...(crmIds?.twentyOpportunityId
       ? { twenty_opportunity_id: crmIds.twentyOpportunityId }
@@ -150,7 +147,6 @@ export async function postPeskidsCanonicalLead(
   body: PeskidsLeadCaptureBody,
   requestId: string,
   crmIds?: {
-    ghlContactId?: string;
     twentyPersonId?: string;
     twentyOpportunityId?: string;
   },
@@ -214,7 +210,6 @@ export async function postPeskidsCanonicalLead(
     leadId,
     tenantSlug: typeof payload.tenant_slug === 'string' ? payload.tenant_slug : 'peskids',
     createdAt: typeof payload.created_at === 'string' ? payload.created_at : new Date().toISOString(),
-    ghlContactId: crmIds?.ghlContactId,
     twentyPersonId: crmIds?.twentyPersonId,
     twentyOpportunityId: crmIds?.twentyOpportunityId,
   };
@@ -226,7 +221,6 @@ export async function postPeskidsLeadWithCRM(
   attachments?: FormData | null
 ): Promise<CanonicalLeadResult> {
   let crmIds: {
-    ghlContactId?: string;
     twentyPersonId?: string;
     twentyOpportunityId?: string;
   } = {};
@@ -240,7 +234,6 @@ export async function postPeskidsLeadWithCRM(
       source: body.referral_source || 'web',
     });
     crmIds = {
-      ghlContactId: crmResult.ghlContactId,
       twentyPersonId: crmResult.twentyPersonId,
       twentyOpportunityId: crmResult.twentyOpportunityId,
     };
@@ -251,10 +244,3 @@ export async function postPeskidsLeadWithCRM(
   return postPeskidsCanonicalLead(body, requestId, crmIds, attachments);
 }
 
-/** @deprecated Use postPeskidsLeadWithCRM — GHL now requires PESKIDS_GHL_ENABLED=true */
-export async function postPeskidsLeadWithGHL(
-  body: PeskidsLeadCaptureBody,
-  requestId: string
-): Promise<CanonicalLeadResult> {
-  return postPeskidsLeadWithCRM(body, requestId);
-}

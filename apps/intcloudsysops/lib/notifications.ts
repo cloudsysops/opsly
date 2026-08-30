@@ -5,6 +5,7 @@
  */
 
 import webpush from 'web-push';
+import { resolvePeskidsInternalSecret } from '@/lib/internal-auth';
 import { supabaseServer } from '@/lib/supabase';
 import type { NotificationEventType } from '@/lib/types';
 
@@ -75,14 +76,18 @@ async function generateMagicLinkUrl(email: string, redirectTo = '/familias/submi
   const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXT_PUBLIC_TENANT_DOMAIN ?? '').replace(/\/$/, '');
   const fallback = appUrl ? `${appUrl}/familias` : '/familias';
 
-  if (!appUrl) {
+  const internalSecret = resolvePeskidsInternalSecret();
+  if (!appUrl || !internalSecret) {
     return fallback;
   }
 
   try {
     const res = await fetch(`${appUrl}/api/auth/magic-link`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-internal-secret': internalSecret,
+      },
       body: JSON.stringify({ email, redirectTo }),
       signal: AbortSignal.timeout(8_000),
     });
