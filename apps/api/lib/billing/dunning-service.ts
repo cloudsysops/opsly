@@ -223,7 +223,7 @@ class DunningService {
               else if (entry.failureCount >= 3) escalated++;
             }
           }
-        } while (cursor !== 0);
+        } while (cursor !== '0');
         return { total, suspended, escalated };
       } catch (e) {
         logger.error('dunning.redis.scan', e instanceof Error ? e : { error: String(e) });
