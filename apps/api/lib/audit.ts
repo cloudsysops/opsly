@@ -4,8 +4,11 @@ import { getServiceClient } from './supabase';
 export interface AuditEventInput {
   tenant_slug?: string;
   actor_email?: string;
+  actor_id?: string;
   action: string;
   resource: string;
+  resource_id?: string;
+  resource_type?: string;
   status_code?: number;
   ip?: string | null;
   user_agent?: string;
@@ -25,8 +28,11 @@ export async function logAuditEvent(event: AuditEventInput): Promise<void> {
       .insert({
         tenant_slug: event.tenant_slug ?? null,
         actor_email: event.actor_email ?? null,
+        actor_id: event.actor_id ?? null,
         action: event.action,
         resource: event.resource,
+        resource_id: event.resource_id ?? null,
+        resource_type: event.resource_type ?? null,
         status_code: event.status_code ?? null,
         ip: event.ip ?? null,
         user_agent: event.user_agent ?? null,
