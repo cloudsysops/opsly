@@ -63,8 +63,8 @@ describe('DunningService', () => {
         await svc.recordPaymentFailure(TENANT_ID, TENANT_SLUG);
       }
 
-      const escalationIdx = Array.from({ length: countDiscordCalls() }).findIndex(
-        (_, i) => discordBodyAt(i).includes('escalated')
+      const escalationIdx = Array.from({ length: countDiscordCalls() }).findIndex((_, i) =>
+        discordBodyAt(i).includes('escalated')
       );
       expect(escalationIdx).toBeGreaterThanOrEqual(0);
     });
@@ -74,8 +74,8 @@ describe('DunningService', () => {
         await svc.recordPaymentFailure(TENANT_ID, TENANT_SLUG);
       }
 
-      const suspendedNotifs = Array.from({ length: countDiscordCalls() }).filter(
-        (_, i) => discordBodyAt(i).includes('suspended')
+      const suspendedNotifs = Array.from({ length: countDiscordCalls() }).filter((_, i) =>
+        discordBodyAt(i).includes('suspended')
       );
       expect(suspendedNotifs.length).toBe(2);
       expect(orchestrator.suspendTenant).toHaveBeenCalledWith(TENANT_ID, 'dunning-service');
@@ -117,9 +117,7 @@ describe('DunningService', () => {
     it('handles Discord fetch error gracefully without crashing', async () => {
       vi.mocked(fetch).mockRejectedValue(new Error('Discord unreachable'));
 
-      await expect(
-        svc.recordPaymentFailure(TENANT_ID, TENANT_SLUG)
-      ).resolves.toBeUndefined();
+      await expect(svc.recordPaymentFailure(TENANT_ID, TENANT_SLUG)).resolves.toBeUndefined();
     });
   });
 

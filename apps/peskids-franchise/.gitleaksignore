@@ -1,0 +1,3 @@
+# False positives: "children5to12" is a data key name, not an API key
+src/components/territories/DemographicsPanel.tsx:generic-api-key:26
+src/components/territories/TerritoryComparisonView.tsx:generic-api-key:25

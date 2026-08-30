@@ -24,6 +24,6 @@
 **Learning:** Standard `<select>` dropdowns and `<textarea>` components in complex enterprise forms are frequently left with basic browser-default focus state behaviors. This creates an inconsistent and unpolished user experience and can lead to failures under strict WCAG accessibility guidelines on focus indicators if the focus outline becomes indistinguishable against dark-themed layouts.
 **Action:** Always map standard `<select>` and `<textarea>` styles to match custom text `<Input>` focus-visible rings using Tailwind's `focus-visible:ring-2` class with cohesive theme palettes.
 
-## 2026-05-29 - Conditional Interactivity for Card Components
-**Learning:** Standard summary card components (e.g., `KPICard`) styled unconditionally with `cursor-pointer hover:scale-[1.02]` mislead users into expecting interactivity when no click action exists. Conversely, when click actions are attached, standard `<div>` elements lack keyboard access (`role="button"`, `tabIndex={0}`, Enter/Space key handling, and focus-visible rings).
-**Action:** Conditionally apply pointer cursor and hover scaling only when an `onClick` callback is provided, and pair interactive cards with full ARIA button semantics and keyboard navigation.
+## 2026-05-29 - Screen Reader Announcements and ARIA-Busy for Card Mode Toggles
+**Learning:** Selection cards with async actions (like workspace or portal mode switching) often disable buttons during pending requests without communicating the loading state or progress to screen reader users, leaving assistive technology users unsure if their click was registered.
+**Action:** Always complement loading indicators (`Loader2`) on async action buttons with dynamic `aria-busy` attributes and an `Announcer` component (`role="status" aria-live="polite"`) to announce state changes.

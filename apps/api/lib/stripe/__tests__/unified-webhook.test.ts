@@ -97,9 +97,11 @@ function mockInvoicesTable(existingId: string | null = null) {
   return {
     select: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),
-    maybeSingle: vi.fn().mockResolvedValue(
-      existingId ? { data: { id: existingId }, error: null } : { data: null, error: null }
-    ),
+    maybeSingle: vi
+      .fn()
+      .mockResolvedValue(
+        existingId ? { data: { id: existingId }, error: null } : { data: null, error: null }
+      ),
     insert: vi.fn().mockResolvedValue({ error: null }),
     update: vi.fn(() => ({
       eq: vi.fn().mockResolvedValue({ error: null }),
@@ -426,9 +428,7 @@ describe('dispatchStripeEvent', () => {
         tenants: () => tenantsSingleResult(null),
       });
 
-      await expect(
-        dispatchStripeEvent(invoicePaidEvent())
-      ).resolves.toBeUndefined();
+      await expect(dispatchStripeEvent(invoicePaidEvent())).resolves.toBeUndefined();
     });
   });
 
@@ -497,9 +497,7 @@ describe('dispatchStripeEvent', () => {
         await dispatchStripeEvent(failEvent(`in_fail_${i}`));
       }
 
-      expect(orchestrator.suspendTenant).toHaveBeenCalledWith(
-        TENANT_ID, 'stripe-webhook-dunning'
-      );
+      expect(orchestrator.suspendTenant).toHaveBeenCalledWith(TENANT_ID, 'stripe-webhook-dunning');
     });
 
     it('does not suspend before 5 failures', async () => {
@@ -514,7 +512,8 @@ describe('dispatchStripeEvent', () => {
       await dispatchStripeEvent(failEvent());
 
       expect(notifications.notifyInvoicePaymentFailed).toHaveBeenCalledWith(
-        TENANT_SLUG, 'in_fail_1'
+        TENANT_SLUG,
+        'in_fail_1'
       );
     });
 
@@ -653,9 +652,7 @@ describe('handleStripeWebhookPost', () => {
         metadata: { tenant_slug: TENANT_SLUG, email: 'owner@acme.com', plan: 'startup' },
       } as Stripe.Checkout.Session)
     );
-    vi.mocked(orchestrator.provisionTenant).mockRejectedValue(
-      new Error('DB connection failed')
-    );
+    vi.mocked(orchestrator.provisionTenant).mockRejectedValue(new Error('DB connection failed'));
     mockTables({
       stripe_sync_logs: () => ({
         insert: vi.fn().mockResolvedValue({ error: null }),
@@ -679,9 +676,7 @@ describe('handleStripeWebhookPost', () => {
     vi.mocked(stripeIndex.constructWebhookEvent).mockReturnValue(
       makeEvent('invoice.paid', { id: 'in_err', customer: 'cus_1' } as Stripe.Invoice)
     );
-    vi.mocked(orchestrator.provisionTenant).mockRejectedValue(
-      new Error('unused')
-    );
+    vi.mocked(orchestrator.provisionTenant).mockRejectedValue(new Error('unused'));
     mockTables({
       stripe_sync_logs: () => ({
         insert: vi.fn().mockResolvedValue({ error: null }),
@@ -737,9 +732,7 @@ describe('handleStripeWebhookPost', () => {
 
   it('calls constructWebhookEvent with raw body, signature and secret', async () => {
     const rawBody = JSON.stringify({ id: 'evt_raw_test' });
-    vi.mocked(stripeIndex.constructWebhookEvent).mockReturnValue(
-      makeEvent('unknown.event', {})
-    );
+    vi.mocked(stripeIndex.constructWebhookEvent).mockReturnValue(makeEvent('unknown.event', {}));
     mockTables({
       stripe_sync_logs: () => ({
         insert: vi.fn().mockResolvedValue({ error: null }),
@@ -754,8 +747,6 @@ describe('handleStripeWebhookPost', () => {
       })
     );
 
-    expect(stripeIndex.constructWebhookEvent).toHaveBeenCalledWith(
-      rawBody, 't=123,v1=sig', SECRET
-    );
+    expect(stripeIndex.constructWebhookEvent).toHaveBeenCalledWith(rawBody, 't=123,v1=sig', SECRET);
   });
 });

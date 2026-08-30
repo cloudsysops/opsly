@@ -1,60 +1,60 @@
-'use client'
+'use client';
 
-import { Loader2 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { isSuperAdminUser } from '@/lib/super-admin'
-import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { isSuperAdminUser } from '@/lib/super-admin';
+import { createClient } from '@/lib/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function UpdatePasswordPage(): React.ReactElement {
-  const router = useRouter()
-  const [password, setPassword] = useState('')
-  const [confirm, setConfirm] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [ready, setReady] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const router = useRouter();
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const supabase = createClient()
+    const supabase = createClient();
     void supabase.auth.getSession().then(({ data }) => {
-      const user = data.session?.user
+      const user = data.session?.user;
       if (!user || !isSuperAdminUser(user)) {
-        setError('Solo cuentas de administración de plataforma pueden usar este formulario.')
-        setReady(false)
-        return
+        setError('Solo cuentas de administración de plataforma pueden usar este formulario.');
+        setReady(false);
+        return;
       }
-      setReady(true)
-    })
-  }, [])
+      setReady(true);
+    });
+  }, []);
 
   async function onSubmit(e: React.FormEvent): Promise<void> {
-    e.preventDefault()
-    setError(null)
+    e.preventDefault();
+    setError(null);
     if (password.length < 8) {
-      setError('Mínimo 8 caracteres.')
-      return
+      setError('Mínimo 8 caracteres.');
+      return;
     }
     if (password !== confirm) {
-      setError('Las contraseñas no coinciden.')
-      return
+      setError('Las contraseñas no coinciden.');
+      return;
     }
-    setLoading(true)
+    setLoading(true);
     try {
-      const supabase = createClient()
-      const { error: updateError } = await supabase.auth.updateUser({ password })
+      const supabase = createClient();
+      const { error: updateError } = await supabase.auth.updateUser({ password });
       if (updateError) {
-        setError(updateError.message)
-        return
+        setError(updateError.message);
+        return;
       }
-      router.replace('/dashboard')
-      router.refresh()
+      router.replace('/dashboard');
+      router.refresh();
     } catch {
-      setError('No se pudo guardar. Solicita un enlace nuevo.')
+      setError('No se pudo guardar. Solicita un enlace nuevo.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -103,5 +103,5 @@ export default function UpdatePasswordPage(): React.ReactElement {
         </CardContent>
       </Card>
     </main>
-  )
+  );
 }
