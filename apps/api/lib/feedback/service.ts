@@ -389,9 +389,7 @@ async function runClarifyBranch(
     cache: false,
     system: SYSTEM_PROMPT,
     messages: messages.map((m) =>
-      m.role === 'user'
-        ? { role: 'user', content: wrapUntrustedUserText(m.content) }
-        : m
+      m.role === 'user' ? { role: 'user', content: wrapUntrustedUserText(m.content) } : m
     ),
   });
   return { assistantResponse: guardChatOutput(llmResponse.content) };
