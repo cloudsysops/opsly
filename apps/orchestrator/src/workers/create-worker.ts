@@ -31,7 +31,11 @@ export function createWorker(opts: CreateWorkerOpts): Worker {
     queueName,
     async (job: Job) => {
       if (jobName && job.name !== jobName) {
-        return;
+        // Returning would mark the job completed with no work (stolen by the
+        // wrong host, e.g. an ollama-only node on the shared openclaw queue).
+        throw new Error(
+          `job name ${job.name} is not ${jobName}; retry so another worker can claim it`
+        );
       }
       const t0 = Date.now();
       logWorkerLifecycle('start', workerName, job);

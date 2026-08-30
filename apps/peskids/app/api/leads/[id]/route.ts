@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { supabaseServer } from '@/lib/supabase';
+import { validateStaffRequest } from '@/lib/staff-auth';
 
 interface PeskidsLead {
   id: string;
@@ -36,6 +37,10 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const requestId = resolveRequestId(request);
+  const auth = await validateStaffRequest(request);
+  if (!auth.ok) {
+    return errorJson(requestId, auth.error, auth.status);
+  }
 
   try {
     const { id } = await params;

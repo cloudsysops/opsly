@@ -33,6 +33,8 @@ npm run type-check --workspace=@intcloudsysops/icso
 
 Staff panel: **`/mission-control`**
 
+Playable Universe slice: **`/universe/play`** (First Portal; Game Core + local save)
+
 - Module kit: `@intcloudsysops/mission-control-kit`
 - Profile: `config/mission-control/profiles/icso.json`
 - Gate: `ICSO_MC_ACCESS_TOKEN` (optional in local)

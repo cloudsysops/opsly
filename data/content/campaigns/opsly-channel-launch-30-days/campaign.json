@@ -1,0 +1,45 @@
+{
+  "id": "OPSLY_CHANNEL_LAUNCH_30_DAYS",
+  "name": "Opsly Channel Launch — 30 Days",
+  "description": "First 30-day content calendar for the Opsly brand channel: 3 series (Opsly Origins, Peki Lab, Build With Opsly), Mon/Wed/Fri shorts + Sunday long-form.",
+  "series_ids": ["opsly-origins", "peki-lab", "build-with-opsly"],
+  "duration_days": 30,
+  "start_date": "2026-08-17",
+  "end_date": "2026-09-15",
+  "episode_schedule": [
+    { "episode_id": "opsly-origins-001", "scheduled_publish_date": "2026-08-17", "day_of_week": 0 },
+    { "episode_id": "peki-lab-001", "scheduled_publish_date": "2026-08-19", "day_of_week": 2 },
+    { "episode_id": "build-with-opsly-001", "scheduled_publish_date": "2026-08-21", "day_of_week": 4 },
+    { "episode_id": "opsly-origins-long-001", "scheduled_publish_date": "2026-08-23", "day_of_week": 6 },
+
+    { "episode_id": "opsly-origins-002", "scheduled_publish_date": "2026-08-24", "day_of_week": 0 },
+    { "episode_id": "peki-lab-002", "scheduled_publish_date": "2026-08-26", "day_of_week": 2 },
+    { "episode_id": "build-with-opsly-002", "scheduled_publish_date": "2026-08-28", "day_of_week": 4 },
+    { "episode_id": "peki-lab-long-002", "scheduled_publish_date": "2026-08-30", "day_of_week": 6 },
+
+    { "episode_id": "opsly-origins-003", "scheduled_publish_date": "2026-08-31", "day_of_week": 0 },
+    { "episode_id": "peki-lab-003", "scheduled_publish_date": "2026-09-02", "day_of_week": 2 },
+    { "episode_id": "build-with-opsly-003", "scheduled_publish_date": "2026-09-04", "day_of_week": 4 },
+    { "episode_id": "build-with-opsly-long-003", "scheduled_publish_date": "2026-09-06", "day_of_week": 6 },
+
+    { "episode_id": "opsly-origins-004", "scheduled_publish_date": "2026-09-07", "day_of_week": 0 },
+    { "episode_id": "peki-lab-004", "scheduled_publish_date": "2026-09-09", "day_of_week": 2 },
+    { "episode_id": "build-with-opsly-004", "scheduled_publish_date": "2026-09-11", "day_of_week": 4 },
+    { "episode_id": "opsly-origins-long-004", "scheduled_publish_date": "2026-09-13", "day_of_week": 6 }
+  ],
+  "objectives": [
+    "Establish Opsly Origins, Peki Lab, and Build With Opsly as recognizable series",
+    "Validate hook formats and short-form pacing before scaling production",
+    "Build the Character Bible catalog of reusable visual assets",
+    "Publish the pilot episode fully (idea -> script -> storyboard -> rendered -> published)"
+  ],
+  "target_platforms": ["youtube_shorts", "youtube", "tiktok", "instagram_reels"],
+  "production_status": {
+    "episodes_planned": 16,
+    "episodes_scripted": 1,
+    "episodes_with_assets": 0,
+    "episodes_rendered": 0,
+    "episodes_reviewed": 0,
+    "episodes_published": 0
+  }
+}

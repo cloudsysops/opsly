@@ -1,0 +1,43 @@
+{
+  "id": "peki-lab-001",
+  "series_id": "peki-lab",
+  "episode_number": 1,
+  "title": {
+    "es": "Wavo entra a la piscina",
+    "en": "Wavo dives into the pool"
+  },
+  "hook": {
+    "es": "¡Hola! Soy Wavo, y hoy vamos a nadar con tecnología.",
+    "en": "Hi! I'm Wavo, and today we're swimming with technology."
+  },
+  "objective": "Introduce Wavo to a kids audience — establish tone and personality.",
+  "audience": [
+    "kids",
+    "parents"
+  ],
+  "duration_estimate_sec": 45,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Nada con Wavo",
+    "captions": {
+      "es": "Conoce a Wavo, tu guía en la piscina.",
+      "en": "Meet Wavo, your pool guide."
+    },
+    "hashtags": [
+      "#PekiLab",
+      "#Peskids",
+      "#KidsLearning"
+    ],
+    "thumbnail_concept": "Wavo waving at pool edge, bright sunny background"
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-08-11T00:00:00Z",
+    "last_updated": "2026-08-11T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Idea-stage — planned in 30-day launch calendar. Script + scenes pending."
+    ]
+  }
+}

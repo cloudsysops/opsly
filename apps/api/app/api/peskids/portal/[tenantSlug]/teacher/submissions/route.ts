@@ -12,9 +12,14 @@ interface PeskidsQB {
   is(col: string, val: unknown): PeskidsQB;
   not(col: string, ...args: unknown[]): PeskidsQB;
   order(col: string, opts?: unknown): PeskidsQB;
-  then<T>(r: (v: { data: unknown[] | null; error: unknown }) => T, j?: (e: unknown) => T): Promise<T>;
+  then<T>(
+    r: (v: { data: unknown[] | null; error: unknown }) => T,
+    j?: (e: unknown) => T
+  ): Promise<T>;
 }
-interface PeskidsClient { from(table: string): PeskidsQB; }
+interface PeskidsClient {
+  from(table: string): PeskidsQB;
+}
 
 interface StudentSubmission {
   submissionId: string;
@@ -25,7 +30,6 @@ interface StudentSubmission {
   score?: number;
   feedbackProvided: boolean;
 }
-
 
 interface SubmissionRow {
   id: string;
@@ -86,7 +90,10 @@ async function fetchFormTitleMap(
   if (formIds.size === 0) return titleMap;
 
   const db = supabase as unknown as PeskidsClient;
-  const { data: rawForms } = await db.from('peskids.forms').select('id, title').in('id', Array.from(formIds));
+  const { data: rawForms } = await db
+    .from('peskids.forms')
+    .select('id, title')
+    .in('id', Array.from(formIds));
   type FormRow = { id: string; title: string };
   const forms = rawForms as FormRow[] | null;
 
@@ -141,27 +148,27 @@ export async function GET(
         }
 
         const supabase = getServiceClient();
-    const submissionsResult = await buildSubmissionsQuery(supabase, tenantSlug, statusParam);
-    if (!submissionsResult.ok) {
-      return jsonError(submissionsResult.error, HTTP_STATUS.INTERNAL_ERROR);
-    }
+        const submissionsResult = await buildSubmissionsQuery(supabase, tenantSlug, statusParam);
+        if (!submissionsResult.ok) {
+          return jsonError(submissionsResult.error, HTTP_STATUS.INTERNAL_ERROR);
+        }
 
-    const formIds = new Set<string>();
-    submissionsResult.submissions.forEach((sub) => {
-      if (sub.form_id) formIds.add(sub.form_id);
-    });
+        const formIds = new Set<string>();
+        submissionsResult.submissions.forEach((sub) => {
+          if (sub.form_id) formIds.add(sub.form_id);
+        });
 
-    const formTitleMap = await fetchFormTitleMap(supabase, formIds);
+        const formTitleMap = await fetchFormTitleMap(supabase, formIds);
 
-    const studentSubmissions: StudentSubmission[] = submissionsResult.submissions.map((sub) =>
-      mapSubmissionToStudentSubmission(sub as SubmissionRow, formTitleMap)
-    );
+        const studentSubmissions: StudentSubmission[] = submissionsResult.submissions.map((sub) =>
+          mapSubmissionToStudentSubmission(sub as SubmissionRow, formTitleMap)
+        );
 
-    return jsonOk({ submissions: studentSubmissions });
-  } catch (error) {
-    console.error('Teacher submissions endpoint error:', error);
-    return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
-  }
+        return jsonOk({ submissions: studentSubmissions });
+      } catch (error) {
+        console.error('Teacher submissions endpoint error:', error);
+        return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
+      }
     },
     PORTAL_READ_ACCESS
   );

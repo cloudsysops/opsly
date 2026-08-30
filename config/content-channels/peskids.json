@@ -1,0 +1,31 @@
+{
+  "channel": "peskids",
+  "name": "Peskids",
+  "resolution": { "width": 1080, "height": 1920 },
+  "aspectRatio": "9:16",
+  "fps": 30,
+  "defaultDurationMs": 28000,
+  "font": "Nunito",
+  "subtitleStyle": {
+    "fontSize": 60,
+    "primaryColor": "#F8FFFE",
+    "outlineColor": "#0B3A45",
+    "outlineWidth": 6,
+    "shadowColor": "#0B3A45",
+    "shadowOffset": 3,
+    "alignment": 2,
+    "marginV": 180
+  },
+  "safeArea": { "top": 110, "right": 90, "bottom": 240, "left": 90 },
+  "transitionStyle": "soft-cut",
+  "musicLevel": -20,
+  "voiceLevel": -3,
+  "brandColors": ["#1CC9D9", "#0EA5E9", "#F0FDFA"],
+  "logo": null,
+  "intro": "Peskids",
+  "outro": "Confianza en el agua",
+  "ctaStyle": "family",
+  "sceneDurationLimits": { "minMs": 1600, "maxMs": 4000 },
+  "motionDefaults": ["slow-zoom-in", "static"],
+  "tone": "safe, family, educational, aquatic"
+}

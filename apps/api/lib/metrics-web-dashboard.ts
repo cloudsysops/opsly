@@ -1,12 +1,13 @@
 import { getServiceClient } from './supabase';
+import { PLAN_MRR_USD } from './stripe/plans';
+import type { PlanKey } from './supabase/types';
+import { getCache, setCache } from './redis-cache';
+import { CACHE_TTL } from './constants';
+import { logger } from './logger';
 
-/** Alineado a `apps/web/lib/stripe/plans` price_usd (MRR orientativo). */
-const PLAN_MRR_USD: Record<string, number> = {
-  startup: 49,
-  business: 149,
-  enterprise: 499,
-  demo: 0,
-};
+const CONVERSION_RATE_MULTIPLIER = 10000;
+const CONVERSION_RATE_DIVISOR = 100;
+const CONVERSION_METRICS_DAYS_AGO = 30;
 
 function daysAgoIso(days: number): string {
   const d = new Date();
@@ -21,7 +22,7 @@ function calculateMrr(activePaidRes: unknown): number {
     if (row.is_demo || row.plan === 'demo' || !(row.plan in PLAN_MRR_USD)) {
       continue;
     }
-    mrr += PLAN_MRR_USD[row.plan] ?? 0;
+    mrr += PLAN_MRR_USD[row.plan as PlanKey] ?? 0;
   }
   return mrr;
 }
@@ -152,7 +153,10 @@ function calculateConversionMetrics(
 ): WebDashboardMetricsJson['conversion'] {
   const started = startedRes.count ?? 0;
   const completed = completedRes.count ?? 0;
-  const rate = started > 0 ? Math.round((completed / started) * 10000) / 100 : 0;
+  const rate =
+    started > 0
+      ? Math.round((completed / started) * CONVERSION_RATE_MULTIPLIER) / CONVERSION_RATE_DIVISOR
+      : 0;
   return { onboard_started: started, onboard_completed: completed, rate };
 }
 
@@ -166,9 +170,22 @@ function buildDashboardMetrics(results: unknown[]): WebDashboardMetricsJson {
 }
 
 export async function getWebDashboardMetricsJson(): Promise<WebDashboardMetricsJson> {
+  const cacheKey = 'metrics:web_dashboard_json';
+  const cached = await getCache<WebDashboardMetricsJson>(cacheKey);
+  if (cached !== null) {
+    return cached;
+  }
+
   const client = getServiceClient();
-  const since = daysAgoIso(30);
+  const since = daysAgoIso(CONVERSION_METRICS_DAYS_AGO);
   const results = await fetchMetricsData(client, since);
   validateQueryResults(results as Array<{ error?: unknown }>);
-  return buildDashboardMetrics(results);
+  const metrics = buildDashboardMetrics(results);
+
+  // Background cache update to avoid blocking the response.
+  void setCache(cacheKey, metrics, CACHE_TTL.SHORT).catch((err) => {
+    logger.error(`[metrics-web-dashboard] failed to set ${cacheKey}`, err);
+  });
+
+  return metrics;
 }

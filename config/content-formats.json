@@ -1,0 +1,122 @@
+[
+  {
+    "id": "NOVA_REACTS",
+    "hookStyle": "freeze + pregunta corta",
+    "sceneStructure": ["FREEZE", "NOVA_QUESTION", "PORTAL", "CONTEXT", "EXPLANATION", "EXPERIMENT", "CONCLUSION"],
+    "pace": "fast",
+    "targetDurationSec": 40,
+    "character": "NØVA",
+    "portal": "FUTURE",
+    "ctaStyle": "pregunta al viewer",
+    "captionStyle": "pregunta grande",
+    "visualTreatment": "split screen"
+  },
+  {
+    "id": "NOVA_EXPLAINS",
+    "hookStyle": "dato sorprendente",
+    "sceneStructure": ["WOW", "WHY", "EXPLORE", "UNDERSTAND", "HUMAN", "TAKEAWAY"],
+    "pace": "measured",
+    "targetDurationSec": 45,
+    "character": "NØVA",
+    "portal": "FUTURE",
+    "ctaStyle": "mythic soft",
+    "captionStyle": "una idea por escena",
+    "visualTreatment": "title cards cinematic"
+  },
+  {
+    "id": "REALITY_CHECK",
+    "hookStyle": "claim vs evidencia",
+    "sceneStructure": ["CLAIM", "TEST", "RESULT", "TAKEAWAY"],
+    "pace": "investigative",
+    "targetDurationSec": 42,
+    "character": "NØVA",
+    "portal": "LAB",
+    "ctaStyle": "muestra el experimento",
+    "captionStyle": "contraste",
+    "visualTreatment": "before/after"
+  },
+  {
+    "id": "INTO_THE_PORTAL",
+    "hookStyle": "portal se abre",
+    "sceneStructure": ["HOOK", "PORTAL", "WORLD", "RETURN"],
+    "pace": "cinematic",
+    "targetDurationSec": 38,
+    "character": "THE TRAVELER",
+    "portal": "UNKNOWN",
+    "ctaStyle": "sigue el mapa",
+    "captionStyle": "poetic",
+    "visualTreatment": "geometric portals"
+  },
+  {
+    "id": "HUMAN_STORY",
+    "hookStyle": "una persona",
+    "sceneStructure": ["PERSON", "STAKES", "ACTION", "MEANING"],
+    "pace": "emotional",
+    "targetDurationSec": 48,
+    "character": "THE TRAVELER",
+    "portal": "HUMAN",
+    "ctaStyle": "por que importa",
+    "captionStyle": "intimate",
+    "visualTreatment": "close storytelling"
+  },
+  {
+    "id": "WILD_DISCOVERY",
+    "hookStyle": "animal o hecho natural",
+    "sceneStructure": ["WOW", "HOW", "WHY", "TAKEAWAY"],
+    "pace": "curious",
+    "targetDurationSec": 36,
+    "character": "NØVA",
+    "portal": "WILD",
+    "ctaStyle": "dato para recordar",
+    "captionStyle": "fact punch",
+    "visualTreatment": "nature + nova overlay"
+  },
+  {
+    "id": "TECH_EXPERIMENT",
+    "hookStyle": "vamos a probarlo",
+    "sceneStructure": ["SETUP", "RUN", "COMPARE", "CONCLUSION"],
+    "pace": "hands-on",
+    "targetDurationSec": 50,
+    "character": "NØVA",
+    "portal": "LAB",
+    "ctaStyle": "repite el experimento",
+    "captionStyle": "step labels",
+    "visualTreatment": "screen + nova"
+  },
+  {
+    "id": "SPORT_SCIENCE",
+    "hookStyle": "el cuerpo en movimiento",
+    "sceneStructure": ["MOVE", "BODY", "SCIENCE", "PRACTICE"],
+    "pace": "energetic",
+    "targetDurationSec": 32,
+    "character": "WAVO",
+    "portal": "MOVE",
+    "ctaStyle": "prueba esto",
+    "captionStyle": "coach short",
+    "visualTreatment": "sport science overlay"
+  },
+  {
+    "id": "OPSLY_STORY",
+    "hookStyle": "universo propio",
+    "sceneStructure": ["MAP", "QUESTION", "TRAVEL", "RETURN"],
+    "pace": "serial",
+    "targetDurationSec": 44,
+    "character": "NØVA",
+    "portal": "ORIGINS",
+    "ctaStyle": "estabas construyendo el mapa",
+    "captionStyle": "mythic",
+    "visualTreatment": "opsly universe"
+  },
+  {
+    "id": "SPLASHITOS_LEARNS",
+    "hookStyle": "confianza en el agua",
+    "sceneStructure": ["SAFE", "SKILL", "PRACTICE", "CHEER"],
+    "pace": "gentle",
+    "targetDurationSec": 28,
+    "character": "WAVO",
+    "portal": "MOVE",
+    "ctaStyle": "familia",
+    "captionStyle": "simple kids",
+    "visualTreatment": "soft water palette"
+  }
+]

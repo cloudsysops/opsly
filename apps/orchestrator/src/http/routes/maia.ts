@@ -59,7 +59,10 @@ export async function handleMaiaSelfHeal(ctx: RouteContext): Promise<void> {
   const tenantSlug = typeof b.tenant_slug === 'string' ? b.tenant_slug : 'platform';
   const service = typeof b.service === 'string' ? b.service : 'app';
   const action =
-    b.action === 'restart' || b.action === 'refresh-env' || b.action === 'full-restart'
+    b.action === 'restart' ||
+    b.action === 'refresh-env' ||
+    b.action === 'full-restart' ||
+    b.action === 'edge-recover'
       ? b.action
       : 'restart';
   const reason = typeof b.reason === 'string' ? b.reason : 'manual_trigger';

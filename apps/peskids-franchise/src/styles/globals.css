@@ -1,0 +1,453 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Brand Colors */
+  --brand-navy: #2D2F8E;
+  --brand-purple: #6A469D;
+  --brand-cyan: #50C8DF;
+  --brand-green: #34B256;
+  --brand-yellow: #FACC29;
+  --brand-orange: #F79A30;
+  --brand-light: #E8FBFF;
+
+  /* Franchisee Portal Extended Palette */
+  --fp-emerald: #059669;
+  --fp-emerald-light: #d1fae5;
+  --fp-gold: #d97706;
+  --fp-gold-light: #fef3c7;
+  --fp-slate: #475569;
+  --fp-slate-light: #f1f5f9;
+  --fp-warm-white: #fdfbf7;
+  --fp-warm-gray: #78716c;
+
+  /* Health Score Colors */
+  --health-excellent: #059669;
+  --health-good: #34B256;
+  --health-warning: #d97706;
+  --health-critical: #dc2626;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #2D2F8E 0%, #6A469D 100%);
+  --gradient-success: linear-gradient(135deg, #059669 0%, #34B256 100%);
+  --gradient-gold: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+  --gradient-cyan: linear-gradient(135deg, #0891b2 0%, #50C8DF 100%);
+  --gradient-warm: linear-gradient(180deg, #fdfbf7 0%, #f5f3ef 100%);
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
+  --shadow-card-hover: 0 10px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.04);
+  --shadow-elevated: 0 20px 40px -12px rgb(0 0 0 / 0.15);
+  --shadow-glow-success: 0 0 20px rgb(5 150 105 / 0.3);
+  --shadow-glow-warning: 0 0 20px rgb(217 119 6 / 0.3);
+
+  /* Animation Timings */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus styles for accessibility */
+:focus-visible {
+  outline: 2px solid var(--brand-cyan);
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--brand-navy);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-purple);
+}
+
+/* ============================================
+   FRANCHISEE PORTAL STYLES
+   ============================================ */
+
+/* Premium Card Styling */
+@layer components {
+  .fp-card {
+    @apply bg-white rounded-2xl border border-gray-100/80;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.3s var(--ease-smooth), transform 0.3s var(--ease-smooth);
+  }
+
+  .fp-card:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .fp-card-elevated {
+    @apply bg-white rounded-2xl;
+    box-shadow: var(--shadow-elevated);
+  }
+
+  /* Metric Cards */
+  .fp-metric-card {
+    @apply fp-card p-6 relative overflow-hidden;
+  }
+
+  .fp-metric-card::before {
+    content: '';
+    @apply absolute top-0 left-0 right-0 h-1;
+    background: var(--gradient-primary);
+  }
+
+  .fp-metric-value {
+    @apply font-display text-3xl font-bold text-gray-900 tracking-tight;
+  }
+
+  .fp-metric-label {
+    @apply font-body text-sm font-medium text-gray-500 uppercase tracking-wider;
+  }
+
+  /* Health Score Ring */
+  .fp-health-ring {
+    --ring-size: 180px;
+    --ring-thickness: 12px;
+    width: var(--ring-size);
+    height: var(--ring-size);
+    position: relative;
+  }
+
+  .fp-health-ring svg {
+    transform: rotate(-90deg);
+  }
+
+  .fp-health-ring .ring-bg {
+    fill: none;
+    stroke: #e5e7eb;
+    stroke-width: var(--ring-thickness);
+  }
+
+  .fp-health-ring .ring-progress {
+    fill: none;
+    stroke-width: var(--ring-thickness);
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s var(--ease-smooth), stroke 0.5s var(--ease-smooth);
+  }
+
+  .fp-health-ring .ring-score {
+    @apply absolute inset-0 flex flex-col items-center justify-center;
+  }
+
+  .fp-health-ring .ring-score-value {
+    @apply font-display text-5xl font-bold;
+  }
+
+  .fp-health-ring .ring-score-label {
+    @apply font-body text-sm font-medium text-gray-500 uppercase tracking-wide;
+  }
+
+  /* Leaderboard Ranking */
+  .fp-rank-badge {
+    @apply inline-flex items-center justify-center w-8 h-8 rounded-full font-display font-bold text-sm;
+  }
+
+  .fp-rank-badge.gold {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    @apply text-amber-900 shadow-lg;
+    box-shadow: 0 4px 12px rgb(245 158 11 / 0.4);
+  }
+
+  .fp-rank-badge.silver {
+    background: linear-gradient(135deg, #e5e7eb 0%, #9ca3af 100%);
+    @apply text-gray-700 shadow-lg;
+  }
+
+  .fp-rank-badge.bronze {
+    background: linear-gradient(135deg, #fcd7a8 0%, #d97706 100%);
+    @apply text-amber-900 shadow-lg;
+  }
+
+  /* Progress Bars */
+  .fp-progress-bar {
+    @apply h-2 bg-gray-100 rounded-full overflow-hidden;
+  }
+
+  .fp-progress-fill {
+    @apply h-full rounded-full transition-all duration-700;
+    background: var(--gradient-primary);
+  }
+
+  .fp-progress-fill.success {
+    background: var(--gradient-success);
+  }
+
+  /* Achievement Badges */
+  .fp-badge {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium;
+    background: linear-gradient(135deg, rgba(106, 70, 157, 0.1) 0%, rgba(45, 47, 142, 0.1) 100%);
+    @apply text-brand-purple border border-purple-200/50;
+  }
+
+  .fp-badge.earned {
+    background: var(--gradient-gold);
+    @apply text-amber-900 border-none shadow-md;
+  }
+
+  /* Action Buttons */
+  .fp-btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-xl font-body font-semibold text-white;
+    background: var(--gradient-primary);
+    transition: transform 0.2s var(--ease-spring), box-shadow 0.2s var(--ease-smooth);
+  }
+
+  .fp-btn-primary:hover {
+    @apply shadow-lg;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgb(45 47 142 / 0.4);
+  }
+
+  .fp-btn-primary:active {
+    transform: translateY(0);
+  }
+}
+
+/* Animations */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s var(--ease-smooth) forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s var(--ease-spring) forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.4s var(--ease-spring) forwards;
+  }
+
+  .animate-ring-progress {
+    animation: ringProgress 1.5s var(--ease-smooth) forwards;
+  }
+
+  .animate-count-up {
+    animation: countUp 1s var(--ease-smooth) forwards;
+  }
+
+  .stagger-1 { animation-delay: 0.1s; }
+  .stagger-2 { animation-delay: 0.2s; }
+  .stagger-3 { animation-delay: 0.3s; }
+  .stagger-4 { animation-delay: 0.4s; }
+  .stagger-5 { animation-delay: 0.5s; }
+  .stagger-6 { animation-delay: 0.6s; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes ringProgress {
+  from { stroke-dashoffset: 565; }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Pulse glow for attention */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgb(5 150 105 / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px 4px rgb(5 150 105 / 0.2);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* Celebration shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+/* ============================================
+   PROSE ANCHOR SCROLL OFFSET
+   Compensates for sticky portal/academy headers
+   when clicking in-page anchor links (TOC).
+   Desktop header: 56px, Mobile header: ~92px.
+   ============================================ */
+.prose :is(h1, h2, h3, h4, h5, h6) {
+  scroll-margin-top: 6rem; /* 96px */
+}
+
+/* ============================================
+   TIPTAP EDITOR STYLES
+   ============================================ */
+
+/* Heading anchor scroll offset for admin editor TOC clicks */
+.ProseMirror :is(h1, h2, h3, h4, h5, h6) {
+  scroll-margin-top: 6rem;
+}
+
+/* Ordered list continuation — when TipTap splits an <ol> around nested
+   bullet lists, the second <ol> restarts at 1. This counter keeps the
+   numbering continuous across sibling <ol> elements at the top level. */
+.ProseMirror {
+  counter-reset: pm-ol-0;
+}
+.ProseMirror > ol {
+  list-style: none;
+}
+.ProseMirror > ol > li {
+  counter-increment: pm-ol-0;
+  position: relative;
+}
+.ProseMirror > ol > li::before {
+  content: counter(pm-ol-0) ". ";
+  position: absolute;
+  right: calc(100% + 0.25em);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Table editing */
+.ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+}
+
+.ProseMirror th,
+.ProseMirror td {
+  border: 1px solid #cbd5e1;
+  padding: 0.5rem 0.75rem;
+  min-width: 100px;
+  vertical-align: top;
+}
+
+.ProseMirror th {
+  background-color: #f1f5f9;
+  font-weight: 600;
+}
+
+.ProseMirror .selectedCell {
+  background-color: #dbeafe;
+}
+
+.ProseMirror .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #6366f1;
+  cursor: col-resize;
+}
+
+.ProseMirror .tableWrapper {
+  overflow-x: auto;
+}
+
+/* Placeholder text */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #9ca3af;
+  pointer-events: none;
+  height: 0;
+}
+
+/* ============================================
+   MOBILE UI POLISH
+   ============================================ */
+
+/* Smooth scrolling on iOS */
+html {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent text size adjustment on orientation change */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Better tap targets on mobile */
+@media (max-width: 640px) {
+  .fp-btn-primary,
+  .fp-btn-secondary,
+  button[class*="fp-btn"],
+  .fp-card a {
+    min-height: 44px;
+  }
+}
+
+/* Hide scrollbar while keeping scroll functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;   /* IE / Edge */
+  scrollbar-width: none;      /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;              /* Chrome / Safari */
+}
+
+/* Safe area insets for notch devices */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .mb-safe {
+    margin-bottom: env(safe-area-inset-bottom);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+}

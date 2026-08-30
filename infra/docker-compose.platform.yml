@@ -507,6 +507,14 @@ services:
       DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL}
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       GITHUB_TOKEN_N8N: ${GITHUB_TOKEN_N8N:-}
+      OPSLY_ROOT: ${OPSLY_ROOT:-/opt/opsly}
+      OPSLY_EXTERNAL_AGENT_REGISTRY_PATH: /opt/opsly/config/external-agent-registry.json
+    volumes:
+      - /opt/opsly/config:/opt/opsly/config:ro
+    # Agentes locales (Cursor/OpenCode) vía Tailscale: en .env p.ej. ORCHESTRATOR_EXPORT_BIND=100.120.151.91
+    # para exponer /api/local/prompt-submit a la cola local-agents. Por defecto 127.0.0.1: solo acceso local.
+    ports:
+      - '${ORCHESTRATOR_EXPORT_BIND:-127.0.0.1}:3011:3011'
     depends_on:
       redis:
         condition: service_healthy
@@ -515,8 +523,11 @@ services:
     labels:
       - 'com.centurylinklabs.watchtower.enable=true'
     logging: *default-logging
+    # `internal: true` blocks docker-proxy / published ports. redis_edge is the
+    # same non-internal bridge llm-gateway uses so ORCHESTRATOR_EXPORT_BIND works.
     networks:
       - internal
+      - redis_edge
     restart: unless-stopped
     healthcheck:
       <<: *healthcheck-node
