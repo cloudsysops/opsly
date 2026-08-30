@@ -1,9 +1,8 @@
-export { LeadFollowupService } from './lead-followup.service';
-export type { LeadFollowupResult, LeadFollowupServiceDeps } from './lead-followup.service';
-export { TrialSchedulerService } from './trial-scheduler.service';
-export type { TrialSchedulingResult, TrialScheduleInput, TrialSchedulerDeps } from './trial-scheduler.service';
-export { PipelineManagerService } from './pipeline-manager.service';
-export type { PipelineCycleResult, PipelineManagerDeps, StageAdvanceResult } from './pipeline-manager.service';
+/**
+ * Agent surface for cloudops-portal twin.
+ * Heavy Peskids agent services live in `apps/peskids` until store/deps are ported.
+ * Keep pipeline rule helpers here (pure, no missing imports).
+ */
 export {
   buildPipelineRules,
   LOCAL_STATUS_TO_PIPELINE_STAGE,

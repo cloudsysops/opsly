@@ -13,12 +13,13 @@
     "test:smoke": "node ../../node_modules/playwright/cli.js test e2e/release1-smoke.spec.ts",
     "bi:snapshot": "python3 analytics/peskids_bi.py",
     "vapid:generate": "node scripts/generate-vapid-keys.mjs",
-    "cap:sync": "npx cap sync",
-    "cap:ios": "npx cap sync && npx cap open ios",
-    "cap:android": "npx cap sync && npx cap open android",
-    "cap:android:build": "bash ../../scripts/peskids-cap-android.sh",
+    "cap:sync": "npm exec -- capacitor sync",
+    "cap:ios": "bash ../../scripts/peskids-cap-ios.sh --open",
+    "cap:android": "bash ../../scripts/peskids-cap-android.sh --open",
+    "cap:android:build": "bash ../../scripts/peskids-cap-android.sh --build",
     "cap:android:studio": "bash ../../scripts/peskids-cap-android.sh --open",
-    "cap:build": "next build && npx cap sync"
+    "cap:ios:sync": "bash ../../scripts/peskids-cap-ios.sh",
+    "cap:build": "npm exec -- capacitor sync"
   },
   "dependencies": {
     "@capacitor/android": "^8.3.4",
@@ -26,6 +27,7 @@
     "@capacitor/core": "^8.3.4",
     "@capacitor/ios": "^8.3.4",
     "@capacitor/push-notifications": "^8.1.1",
+    "@capacitor/splash-screen": "^8.0.2",
     "@intcloudsysops/capacity-alert": "*",
     "@intcloudsysops/franchise-core": "*",
     "@intcloudsysops/franchise-persistence": "*",
@@ -49,7 +51,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@capacitor/cli": "8.4.2",
+    "@capacitor/cli": "^8.4.2",
     "@types/node": "^20.19.41",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
