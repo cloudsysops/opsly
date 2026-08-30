@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "description": "Opsly Library Modules Registry",
-  "lastUpdated": "2026-08-17T00:00:00Z",
+  "lastUpdated": "2026-08-18T00:00:00Z",
   "modules": {
     "prompts": {
       "name": "@intcloudsysops/prompts",
@@ -231,6 +231,25 @@
         "omitMrrUntilCommercialSource"
       ]
     },
+    "franchise-core": {
+      "name": "@intcloudsysops/franchise-core",
+      "version": "0.1.0",
+      "path": "lib/franchise-core",
+      "owner": "platform",
+      "description": "Reusable Franchise OS core: networks, franchisees, units, territories, agreements, versioned royalty engine, audits and corrective actions. Tenant-agnostic — Peskids is the first adapter. Royalties are versioned and reproducible (never silently recomputed).",
+      "status": "experimental",
+      "dependencies": [],
+      "governance": "lib/franchise-core/GOVERNANCE.md",
+      "mainFile": "lib/franchise-core/src/index.ts",
+      "exports": [
+        "computeRoyalty",
+        "buildRoyaltyCalculation",
+        "createNextRuleVersion",
+        "territoriesOverlap",
+        "deriveAgreementStatus",
+        "scoreFromFindings"
+      ]
+    },
     "universe": {
       "name": "@intcloudsysops/universe",
       "version": "1.0.0",
@@ -322,6 +341,9 @@
     },
     "apps/local-services": {
       "depends": ["components", "observability", "prompts", "security", "api", "config"]
+    },
+    "apps/peskids": {
+      "depends": ["franchise-core"]
     },
     "tools/agents": {
       "depends": ["prompts", "observability", "security", "config", "telemetry"]
