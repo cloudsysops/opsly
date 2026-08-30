@@ -1,101 +1,116 @@
+// franchise-core barrel — re-exports from existing modules only.
+
+// ─── types.ts ──────────────────────────────────────────────
 export {
+  FRANCHISE_UNIT_TYPES,
   AGREEMENT_STATUSES,
-  AUDIT_STATUSES,
-  CORRECTIVE_ACTION_STATUSES,
-  FINDING_SEVERITIES,
-  FRANCHISE_ROLES,
-  FRANCHISEE_STATUSES,
-  OPENING_PHASES,
-  RENEWAL_TYPES,
-  ROYALTY_BASES,
-  ROYALTY_PAYMENT_STATUSES,
-  SALES_SOURCES,
-  SUPPLIER_POLICIES,
-  SUPPLIER_STATUSES,
-  TERRITORY_EXCLUSIVE_FOR,
-  TRAINING_STATUSES,
-  UNIT_STATUSES,
-  UNIT_TYPES,
-  type AgreementStatus,
-  type Audit,
-  type AuditFinding,
-  type AuditTemplate,
-  type BrandStandard,
-  type ChangeAuditEntry,
-  type CorrectiveAction,
+  type TenantId,
+  type FranchiseUnitId,
+  type FranchiseeId,
+  type NetworkId,
   type CurrencyCode,
-  type DocumentReference,
-  type FranchiseAgreement,
-  type FranchiseLocation,
-  type FranchiseNetwork,
-  type FranchiseRole,
-  type FranchiseUnit,
+  type MoneyAmount,
   type Franchisee,
-  type GeoPoint,
-  type OpeningChecklist,
-  type OpeningPhase,
-  type RoyaltyCalculation,
-  type RoyaltyCalculationInputs,
-  type RoyaltyPayment,
+  type FranchiseUnit,
+  type GeoReference,
+  type FranchiseLocation,
+  type Territory,
+  type RenewalType,
+  type FranchiseAgreement,
   type RoyaltyRule,
   type SalesReport,
-  type SalesSource,
-  type SupportCase,
-  type Supplier,
-  type Territory,
-  type TerritoryExclusiveFor,
-  type TerritoryGeometry,
-  type TrainingRequirement,
-  type UnitStatus,
-  type UnitType,
+  type RoyaltyCalculation,
+  type RoyaltyPayment,
+  type BrandStandard,
 } from './types.js';
 
-export { applyBpsHalfUp, assertBps, assertMinor, MoneyError } from './money.js';
+// ─── royalty.ts ────────────────────────────────────────────
 export {
-  assertCalculationImmutable,
-  buildRoyaltyInputs,
-  calculateRoyalty,
-  nextRoyaltyRuleVersion,
-  reportedSalesMinor,
-  royaltyDueFromInputs,
-  royaltyIdempotencyKey,
-  RoyaltyError,
+  roundMoney,
+  RoyaltyRuleNotEffectiveError,
+  RoyaltyRuleExpiredError,
+  RoyaltyCurrencyMismatchError,
+  type SalesReportLike,
+  type RoyaltyRuleSnapshot,
+  type RoyaltyBreakdown,
+  ruleEffectiveOn,
+  assertRuleEffectiveForPeriod,
+  snapshotRule,
+  selectRuleForPeriod,
+  computeRoyalty,
+  royaltyCalculationKey,
+  type BuildRoyaltyCalculationInput,
+  buildRoyaltyCalculation,
+  computeRoyaltyForReport,
+  type RoyaltyRulePatch,
+  type NextRuleVersionResult,
+  createNextRuleVersion,
 } from './royalty.js';
-export { findTerritoryConflicts, haversineKm, territoriesConflict, type TerritoryConflict } from './territory.js';
+
+// ─── territory.ts ──────────────────────────────────────────
 export {
-  DEFAULT_EXPIRY_WINDOWS_DAYS,
-  agreementExpiryAlerts,
-  assertAgreementUnitsBelongToTenant,
-  daysUntilExpiration,
+  type OverlapOutcome,
+  type TerritoryConflict,
+  haversineMeters,
+  territoriesOverlap,
+  findExclusiveTerritoryConflicts,
+  type TerritoryValidation,
+  validateTerritory,
+  territoryTypeFromGeo,
+} from './territory.js';
+
+// ─── agreement.ts ──────────────────────────────────────────
+export {
+  AGREEMENT_STATUS_FLOW,
+  isAgreementStatus,
+  canTransitionAgreement,
+  type DerivedAgreementStatusInput,
+  type AgreementStatus,
   deriveAgreementStatus,
+  type ExpiryAlertLevel,
   type ExpiryAlert,
+  expiryAlertLevel,
+  agreementExpiryAlerts,
+  noticeCompliant,
+  expirationDateFromTerm,
+  agreementOperationalStatus,
 } from './agreement.js';
-export { auditIsComplete, deriveCorrectiveActionStatus, findingsForUnit, hasCriticalFailure, scoreAudit } from './audit.js';
+
+// ─── audit.ts ──────────────────────────────────────────────
 export {
-  canAccessUnit,
-  canReadAgreements,
-  canReadAudits,
+  AUDIT_STATUS_FLOW,
+  canTransitionAudit,
+  CORRECTIVE_ACTION_STATUS_FLOW,
+  canTransitionCorrectiveAction,
+  effectiveCorrectiveActionStatus,
+  effectiveAuditStatus,
+  type AuditScore,
+  scoreFromFindings,
+  correctiveActionOperationalStatus,
+  correctiveActionCounts,
+} from './audit.js';
+
+// ─── access.ts ─────────────────────────────────────────────
+export {
+  type AccessDecision,
   canReadNetwork,
   canReadRoyalties,
+  canReadAudits,
+  canReadAgreements,
   canWriteFinancial,
+  canAccessUnit,
   mapTenantStaffRole,
-  type AccessDecision,
 } from './access.js';
-export { FRANCHISE_EVENTS, franchiseEvent, type FranchiseEvent, type FranchiseEventName } from './events.js';
+
+// ─── events.ts ─────────────────────────────────────────────
 export {
-  missingMapProvider,
-  type GeocodeQuery,
-  type MapProvider,
-  type RoyaltyPaymentProvider,
-  type SignatureProvider,
-  type UnavailableProvider,
-} from './adapters.js';
+  FRANCHISE_EVENTS,
+  type FranchiseEventName,
+  type FranchiseEvent,
+  franchiseEvent,
+} from './events.js';
+
+// ─── constants.ts (re-exported via types.ts) ───────────────
 export {
-  assertFranchiseeDistinctFromUnit,
-  assertOwnedUnitHasNoRequiredFranchisee,
-  assertValidUnitType,
-  ownedUnitDefaults,
-  UnitModelError,
-} from './units.js';
-export { canActivateUnit, defaultOpeningTasks, openingBlockers } from './opening.js';
-export { summarizeNetwork, type NetworkDashboard } from './network.js';
+  FINDING_SEVERITIES,
+} from './constants.js';
