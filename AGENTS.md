@@ -951,6 +951,7 @@ Week 4: Docs + runbook + MVP validation
 | n8n (tenants)      | ✅ Running        | -      | smiletripcare, localrank, jkboterolabs, peskids          |
 | Uptime Kuma        | ✅ Running        | -      | Por tenant                                                |
 | Peskids app stack  | ✅ Running        | 3004   | `peskids` healthy, `n8n_peskids` / `uptime_peskids` live  |
+| Peskids Franchise  | ✅ Scaffolded     | -      | `apps/peskids-franchise` management portal               |
 
 **Sesión 2026-04-20 — Semana 5 Completada ✅ (Feedback Loop API)**
 

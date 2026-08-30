@@ -124,6 +124,18 @@ async function triggerSubmissionWebhooks(
   }
 }
 
+function maskEmail(email: string | undefined): string | undefined {
+  if (!email) return undefined;
+  const parts = email.split('@');
+  if (parts.length !== 2) return '***';
+  const [local, domain] = parts;
+  if (!local || !domain) return '***';
+  if (local.length <= 2) {
+    return `***@${domain}`;
+  }
+  return `${local[0]}***${local[local.length - 1]}@${domain}`;
+}
+
 async function logSubmissionAuditEvent(
   supabase: ReturnType<typeof getServiceClient>,
   formId: string,
@@ -146,7 +158,7 @@ async function logSubmissionAuditEvent(
       p_resource_type: 'form_submission',
       p_metadata: {
         form_id: formId,
-        email,
+        email: maskEmail(email),
         webhooks_triggered: webhookResults?.success || 0,
         webhooks_failed: webhookResults?.failed || 0,
         ip,
