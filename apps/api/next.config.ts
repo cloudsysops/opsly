@@ -27,7 +27,18 @@ const nextConfig: NextConfig = {
     '@redis/search',
     '@redis/time-series',
   ],
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals.push(
+        'redis',
+        '@redis/client',
+        '@redis/bloom',
+        '@redis/graph',
+        '@redis/json',
+        '@redis/search',
+        '@redis/time-series',
+      );
+    }
     config.resolve.extensionAlias = {
       '.js': ['.ts', '.tsx', '.js'],
       '.jsx': ['.tsx', '.jsx'],
