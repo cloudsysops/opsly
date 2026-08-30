@@ -1,7 +1,7 @@
 import { createServerClient, type SetAllCookies } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 import { isAdminPublicDemoEnabled } from '@/lib/admin-public-demo';
-import { isPathUnderAuthSurface } from '../../../../lib/runtime/src/tenant-auth-surface';
+import { isPathUnderAuthSurface } from '../../../../lib/runtime/src/tenant-auth-surface'
 
 const ADMIN_AUTH_SURFACE = {
   entryPaths: ['/', '/login'],

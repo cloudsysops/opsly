@@ -23,7 +23,7 @@ export default function AdminMessagesPage(): React.ReactElement {
 
   return (
     <AdminShell lastUpdated={null}>
-      <div className="flex h-[calc(100vh-72px)] overflow-hidden rounded-2xl border border-pk-border bg-pk-surface shadow-card">
+      <div className="flex h-[calc(100vh-64px)] overflow-hidden rounded-2xl border border-pk-border bg-white shadow-card">
         {/* Left panel: conversation list */}
         <aside
           className={cn(

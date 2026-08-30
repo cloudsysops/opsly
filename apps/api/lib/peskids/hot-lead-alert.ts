@@ -7,7 +7,11 @@ import type { PeskidsLeadRow } from './repository';
 /** Webhook path for event-driven hot-lead alerts (n8n). */
 export const PESKIDS_N8N_HOT_LEAD_ALERT_PATH = '/peskids-hot-lead-alert';
 
-export type HotLeadAlertDeliveryStatus = 'skipped' | 'pending' | 'sent' | 'failed';
+export type HotLeadAlertDeliveryStatus =
+  | 'skipped'
+  | 'pending'
+  | 'sent'
+  | 'failed';
 
 export type HotLeadAlertResult = {
   ok: boolean;

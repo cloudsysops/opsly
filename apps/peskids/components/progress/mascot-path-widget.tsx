@@ -51,7 +51,7 @@ export function MascotPathWidget({
   }, [selectedMascot.id])
 
   return (
-    <section className={cn('overflow-hidden rounded-pk-lg border border-pk-border bg-white shadow-card', className)}>
+    <section className={cn('overflow-hidden rounded-[2rem] border border-pk-border bg-white shadow-card', className)}>
       <div className="border-b border-pk-border bg-pk-snow px-5 py-4">
         <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-pk-mutedText">
           Mascota y avatar
@@ -68,12 +68,12 @@ export function MascotPathWidget({
       </div>
 
       <div className="grid gap-5 p-5 lg:grid-cols-[0.92fr_1.08fr]">
-        <div className="rounded-pk-lg border border-pk-border bg-pk-deep p-5 text-white">
+        <div className="rounded-[1.75rem] border border-pk-border bg-pk-deep p-5 text-white">
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/70">
             Avatar activo
           </p>
           <div className="mt-4 flex items-center gap-4">
-            <div className="flex h-20 w-20 items-center justify-center rounded-pk bg-white/10 text-5xl shadow-inner">
+            <div className="flex h-20 w-20 items-center justify-center rounded-[1.5rem] bg-white/10 text-5xl shadow-inner">
               {selectedMascot.emoji}
             </div>
             <div className="min-w-0">
@@ -82,7 +82,7 @@ export function MascotPathWidget({
             </div>
           </div>
 
-          <div className="mt-5 rounded-pk bg-white/10 p-4">
+          <div className="mt-5 rounded-[1.5rem] bg-white/10 p-4">
             <div className="flex items-center gap-2">
               <BadgeCheck className="h-4 w-4 text-pk-sun" aria-hidden />
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/75">
@@ -130,7 +130,7 @@ export function MascotPathWidget({
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-pk-lg border border-pk-border bg-pk-snow p-4">
+          <div className="rounded-[1.75rem] border border-pk-border bg-pk-snow p-4">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-pk-mutedText">
@@ -170,7 +170,7 @@ export function MascotPathWidget({
             </div>
           </div>
 
-          <div className="rounded-pk-lg border border-pk-border bg-white p-4">
+          <div className="rounded-[1.75rem] border border-pk-border bg-white p-4">
             <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-pk-mutedText">
               Cómo crece
             </p>

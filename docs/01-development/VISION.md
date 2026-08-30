@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: product
-last_review: 2026-08-27
+last_review: 2026-05-25
 ---
 
 # Opsly — Visión y Objetivos
@@ -41,25 +41,6 @@ Plataforma multi-tenant SaaS que despliega y gestiona:
 2. **Opsly Shield** — Guardian Bots defensivos (Blue Team AI) para seguridad 24/7 sin SOC dedicado
 
 Ambos con facturación Stripe, backups automáticos, dashboard global y orquestación via OpenClaw.
-
-### Peskids Franchise — capacidad de tenant
-
-Peskids Franchise permite operar varias unidades comerciales dentro de
-Peskids sin crear tenants Opsly adicionales. La unidad principal de
-Llanogrande, Domicilios y futuras franquicias comparte el tenant
-`tenant_slug=peskids`, mientras que el acceso se limita por rol, membresía y
-`franchise_id` resuelto server-side.
-
-El portal de franquicias es inicialmente un shell de UX separado que consume
-servicios/APIs canónicos de Peskids y Opsly. Kvadou aporta pantallas que pueden
-reutilizarse, pero NextAuth, Prisma, usuarios demo, datos Acme y valores
-comerciales de ejemplo quedan fuera de producción.
-
-La expansión funcional sigue este orden: sesión/unidades, CRM de candidatos,
-territorios, acuerdos/configuración comercial aprobada, regalías/pagos,
-apertura/activation gate y finalmente auditorías, formación, manuales y
-reportes. La información de alumnos y familias mantiene mínimo acceso y no se
-expone automáticamente a franquiciados.
 
 ### Opsly Shield — Guardian Grid (pivot defensivo)
 

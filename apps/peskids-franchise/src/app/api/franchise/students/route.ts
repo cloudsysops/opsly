@@ -10,6 +10,7 @@ export const dynamic = 'force-dynamic';
 type FranchiseStudent = {
   id: string;
   full_name: string;
+  parent_email: string | null;
   grade: string | null;
   status: string;
   enrollment_date: string | null;
@@ -56,7 +57,10 @@ export async function GET(request: NextRequest) {
     let studentsQuery = client
       .schema('peskids')
       .from('students')
-      .select('id, full_name, grade, status, enrollment_date, franchise_id', { count: 'exact' })
+      .select(
+        'id, full_name, parent_email, grade, status, enrollment_date, franchise_id',
+        { count: 'exact' }
+      )
       .eq('tenant_slug', 'peskids')
       .order('enrollment_date', { ascending: false });
 
@@ -84,12 +88,13 @@ export async function GET(request: NextRequest) {
     const enrichedStudents: FranchiseStudent[] = (students ?? []).map((student) => ({
       id: student.id,
       full_name: student.full_name,
+      parent_email: student.parent_email,
       grade: student.grade,
       status: student.status,
       enrollment_date: student.enrollment_date,
       franchise_id: student.franchise_id,
       franchise_name: student.franchise_id
-        ? (franchiseMap.get(student.franchise_id) ?? null)
+        ? franchiseMap.get(student.franchise_id) ?? null
         : null,
     }));
 

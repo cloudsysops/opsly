@@ -83,9 +83,8 @@ export default function DefensePlatformPage() {
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-neutral-400">
             Audits, compliance tracking, and vulnerability rows stored in Supabase schema{' '}
-            <span className="font-mono text-ops-magenta/90">defense</span>. Jobs run via
-            orchestrator <span className="font-mono">defense_audit</span> + LLM Gateway (no direct
-            provider SDK).
+            <span className="font-mono text-ops-magenta/90">defense</span>. Jobs run via orchestrator{' '}
+            <span className="font-mono">defense_audit</span> + LLM Gateway (no direct provider SDK).
           </p>
         </div>
         <button
@@ -131,8 +130,8 @@ export default function DefensePlatformPage() {
         <CardHeader>
           <CardTitle className="text-neutral-100">Queue security audit</CardTitle>
           <p className="text-xs text-neutral-500">
-            POST <span className="font-mono">/api/defense/audits</span> requires admin session.
-            Orchestrator must reach Supabase + LLM Gateway.
+            POST <span className="font-mono">/api/defense/audits</span> requires admin session. Orchestrator must
+            reach Supabase + LLM Gateway.
           </p>
         </CardHeader>
         <CardContent className="flex flex-wrap items-end gap-3">
@@ -223,7 +222,8 @@ export default function DefensePlatformPage() {
                 Status: <span className="text-neutral-200">{detail.status}</span>
               </div>
               <div>
-                Framework: <span className="text-neutral-200">{detail.framework ?? '—'}</span>
+                Framework:{' '}
+                <span className="text-neutral-200">{detail.framework ?? '—'}</span>
               </div>
             </div>
             <VulnerabilitySummary items={detail.vulnerabilities} />

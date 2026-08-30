@@ -105,9 +105,7 @@ export default function DashboardPage() {
                 RAM
               </div>
               <div className="font-mono text-2xl tabular-nums text-neutral-100">
-                {isLoading || !data
-                  ? '—'
-                  : `${data.ram_used_gb.toFixed(1)} / ${data.ram_total_gb.toFixed(1)} GB`}
+                {isLoading || !data ? '—' : `${data.ram_used_gb.toFixed(1)} / ${data.ram_total_gb.toFixed(1)} GB`}
               </div>
               <p className="mt-1 text-[11px] text-ops-gray">Uso de memoria del host</p>
             </div>
@@ -211,11 +209,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <ActivityChart buckets={auditData?.buckets} isLoading={auditLoading} />
-              <ActivityFeed
-                entries={auditData?.entries}
-                isLoading={auditLoading}
-                error={auditError}
-              />
+              <ActivityFeed entries={auditData?.entries} isLoading={auditLoading} error={auditError} />
             </CardContent>
           </Card>
         </div>

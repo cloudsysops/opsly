@@ -151,7 +151,7 @@ export default function FamilySubmissionDetailPage(): React.ReactElement {
   if (!selectedSubmission) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-pk-bg p-4">
-        <div className="max-w-lg rounded-2xl border border-pk-border bg-pk-surface p-6 text-center shadow-card">
+        <div className="max-w-lg rounded-2xl border border-pk-border bg-white p-6 text-center shadow-card">
           <p className="text-lg font-semibold text-pk-ink">No encontramos esta entrega</p>
           <p className="mt-2 text-sm text-pk-sub">
             Puede que ya no exista o que todavía no haya cargado en esta sesión.
@@ -167,7 +167,7 @@ export default function FamilySubmissionDetailPage(): React.ReactElement {
   return (
     <div className="min-h-screen bg-pk-bg p-4 sm:p-6">
       <div className="mx-auto max-w-6xl space-y-6">
-        <section className="rounded-3xl border border-pk-border bg-pk-surface p-5 shadow-card sm:p-6">
+        <section className="rounded-3xl border border-pk-border bg-white p-5 shadow-card sm:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-2xl">
               <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-pk-mutedText">
@@ -277,7 +277,7 @@ export default function FamilySubmissionDetailPage(): React.ReactElement {
           </Card>
         </div>
 
-        <Card className="overflow-hidden border-pk-border bg-pk-surface shadow-card">
+        <Card className="overflow-hidden border-pk-border bg-white shadow-card">
           <CardHeader>
             <CardTitle className="text-base">Notas de Peskids</CardTitle>
             <CardDescription>
@@ -302,7 +302,7 @@ export default function FamilySubmissionDetailPage(): React.ReactElement {
                       publicNotes.map((note) => (
                         <div
                           key={note.id}
-                          className="rounded-2xl border border-pk-border bg-pk-surface p-4"
+                          className="rounded-2xl border border-pk-border bg-white p-4"
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div>
@@ -321,7 +321,7 @@ export default function FamilySubmissionDetailPage(): React.ReactElement {
                         </div>
                       ))
                     ) : (
-                      <p className="rounded-2xl border border-dashed border-pk-border bg-pk-surface px-4 py-6 text-sm text-pk-sub">
+                      <p className="rounded-2xl border border-dashed border-pk-border bg-white px-4 py-6 text-sm text-pk-sub">
                         No hay feedback público todavía.
                       </p>
                     )}

@@ -217,11 +217,11 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
   return (
     <div className="min-h-screen bg-pk-bg p-4 sm:p-6">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-8 overflow-hidden rounded-pk-lg border border-pk-border bg-gradient-to-br from-white via-white to-teal-50/60 shadow-card">
+        <div className="mb-8 overflow-hidden rounded-[2rem] border border-pk-border bg-gradient-to-br from-white via-white to-teal-50/60 shadow-card">
           <div className="grid gap-6 px-5 py-6 sm:px-8 sm:py-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:px-10 lg:py-10">
             <div>
               <p className="pk-eyebrow">Panel familias</p>
-              <h1 className="mt-4 max-w-2xl text-2xl font-semibold tracking-tight text-pk-ink sm:text-3xl lg:text-4xl">
+              <h1 className="mt-4 max-w-2xl text-3xl font-bold tracking-tight text-pk-ink sm:text-4xl lg:text-[3.55rem]">
                 Tu progreso, tus clases y tu feedback, en una sola portada.
               </h1>
               <p className="mt-5 max-w-2xl text-base leading-relaxed text-pk-sub sm:text-lg">
@@ -247,7 +247,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
             </div>
 
             <div className="grid gap-4">
-              <div className="rounded-pk-lg border border-pk-border bg-pk-surface p-5 shadow-card-hover">
+              <div className="rounded-[1.75rem] border border-pk-border bg-white p-5 shadow-card-hover">
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-pk-mutedText">
@@ -293,7 +293,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
                 </div>
               </div>
 
-              <div className="rounded-pk-lg border border-pk-border bg-pk-deep p-5 text-white shadow-card-hover">
+              <div className="rounded-[1.75rem] border border-pk-border bg-pk-deep p-5 text-white shadow-card-hover">
                 <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/70">
                   Vista rápida
                 </p>
@@ -329,7 +329,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
           description="Cada peque elige un avatar y lo hace crecer mientras avanza por etapas."
         />
 
-        <Card className="mb-8 overflow-hidden border-pk-border bg-pk-surface shadow-card">
+        <Card className="mb-8 overflow-hidden border-pk-border bg-white shadow-card">
           <CardHeader>
             <CardTitle className="text-base">Notas de Peskids</CardTitle>
             <CardDescription>
@@ -352,7 +352,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
                   <div className="mt-4 space-y-3">
                     {publicNotes.length > 0 ? (
                       publicNotes.map((note) => (
-                        <div key={note.id} className="rounded-2xl border border-pk-border bg-pk-surface p-4">
+                        <div key={note.id} className="rounded-2xl border border-pk-border bg-white p-4">
                           <div className="flex items-start justify-between gap-2">
                             <div>
                               <p className="text-sm font-semibold text-pk-ink">{note.child_name}</p>
@@ -370,7 +370,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
                         </div>
                       ))
                     ) : (
-                      <p className="rounded-2xl border border-dashed border-pk-border bg-pk-surface px-4 py-6 text-sm text-pk-sub">
+                      <p className="rounded-2xl border border-dashed border-pk-border bg-white px-4 py-6 text-sm text-pk-sub">
                         No hay feedback público todavía.
                       </p>
                     )}
@@ -476,7 +476,7 @@ function FamilyMetricCard({
   compact?: boolean
 }): React.ReactElement {
   return (
-    <div className="rounded-2xl border border-pk-border bg-pk-surface p-4 shadow-card">
+    <div className="rounded-2xl border border-pk-border bg-white p-4 shadow-card">
       <p className={compact ? 'text-sm font-semibold text-pk-ink' : 'text-2xl font-bold text-pk-ink'}>
         {value}
       </p>

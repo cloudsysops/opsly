@@ -92,10 +92,9 @@ export default function MissionControlPage() {
           <div>
             <h1 className="text-3xl font-bold text-white">Mission Control</h1>
             <p className="text-gray-400 mt-1">
-              OpenClaw Orchestrator Dashboard — modo/rol desde{' '}
-              <code className="text-gray-300">GET /health</code> del servicio (
-              <code className="text-gray-300">ORCHESTRATOR_INTERNAL_URL</code>); cola BullMQ desde
-              Redis compartido.
+              OpenClaw Orchestrator Dashboard — modo/rol desde <code className="text-gray-300">GET /health</code> del
+              servicio (<code className="text-gray-300">ORCHESTRATOR_INTERNAL_URL</code>); cola BullMQ desde Redis
+              compartido.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -372,14 +371,12 @@ export default function MissionControlPage() {
                     >
                       <div className="font-mono text-cyan-300">{intentRow.request_id}</div>
                       <div>
-                        {intentRow.intent ?? 'unknown-intent'} | stage=
-                        {intentRow.current_stage ?? 'n/a'} | status={intentRow.status}
+                        {intentRow.intent ?? 'unknown-intent'} | stage={intentRow.current_stage ?? 'n/a'} |
+                        status={intentRow.status}
                       </div>
                       <div className="text-xs text-gray-500">
                         tenant={intentRow.tenant_slug ?? 'n/a'} updated=
-                        {intentRow.updated_at
-                          ? new Date(intentRow.updated_at).toLocaleTimeString()
-                          : 'n/a'}
+                        {intentRow.updated_at ? new Date(intentRow.updated_at).toLocaleTimeString() : 'n/a'}
                       </div>
                     </div>
                   ))}

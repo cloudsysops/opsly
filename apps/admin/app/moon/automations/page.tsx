@@ -1,4 +1,8 @@
-import { MoonCard, MoonEmptyState, MoonPageHeader } from '@/components/moon/primitives';
+import {
+  MoonCard,
+  MoonEmptyState,
+  MoonPageHeader,
+} from '@/components/moon/primitives';
 import { loadTenantConfigSummaries } from '@/lib/moon/config-loaders';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
@@ -35,8 +39,8 @@ export default async function MoonAutomationsPage(): Promise<React.ReactElement>
         subtitle="Inventario read-only. No se activan workflows desde Moon. Dry-run por defecto."
       />
       <MoonCard className="p-4 text-sm text-slate-300">
-        Catálogo n8n workflows: <span className="font-mono">{catalogCount}</span> entradas en config
-        (si existe). Activación = proceso tenant/ops con approval.
+        Catálogo n8n workflows: <span className="font-mono">{catalogCount}</span> entradas en
+        config (si existe). Activación = proceso tenant/ops con approval.
       </MoonCard>
       {tenants.length === 0 ? (
         <MoonEmptyState

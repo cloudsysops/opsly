@@ -97,8 +97,7 @@ export default function MoonApprovalsPage(): React.ReactElement {
               <div>deploy: {row.deployment_id ?? '—'}</div>
             </dl>
             <p className="text-[11px] text-slate-600">
-              Aprobar / rechazar / pedir cambios: usar flujo legacy auditado — no auto-approve desde
-              Moon.
+              Aprobar / rechazar / pedir cambios: usar flujo legacy auditado — no auto-approve desde Moon.
             </p>
           </MoonCard>
         ))}

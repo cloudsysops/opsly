@@ -103,7 +103,7 @@ export function FamilyHomeClient(): React.ReactElement {
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
-      <section className="rounded-pk-lg border border-pk-border bg-white p-6 shadow-card sm:p-8">
+      <section className="rounded-[2rem] border border-pk-border bg-white p-6 shadow-card sm:p-8">
         <p className="pk-eyebrow">Portal familias</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight text-pk-ink">
           Tu agenda, tus reservas y el seguimiento de tus hijos en un solo lugar.

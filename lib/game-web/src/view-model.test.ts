@@ -11,6 +11,6 @@ describe('play view projects Universe canon', () => {
     expect(view.traveler.name).toBe('THE TRAVELER');
     expect(view.worldName).toBe('NEXUS');
     expect(view.explorerOptions.palettes.length).toBeGreaterThan(0);
-    expect(view.storageKey).toMatch(/player\.v1/);
+    expect(view.storageKey).toMatch(/first-portal/);
   });
 });

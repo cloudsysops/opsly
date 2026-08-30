@@ -2,8 +2,6 @@ import { serverErrorLogged } from '../../../lib/api-response';
 import { requireAdminAccessUnlessDemoRead } from '../../../lib/auth';
 import { computeMrr } from '../../../lib/stripe';
 import { getServiceClient } from '../../../lib/supabase';
-import { getCache, setCache } from '../../../lib/redis-cache';
-import { CACHE_TTL } from '../../../lib/constants';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 type CountHeadResult = {
@@ -95,56 +93,10 @@ function firstMetricsError(rows: MetricRows): Error | null {
   return new Error(errors[0].message);
 }
 
-function buildMetricsPayload(
-  rows: MetricRows,
-  mrrUsd: number
-): {
-  total_tenants: number;
-  active_tenants: number;
-  suspended_tenants: number;
-  mrr_usd: number;
-  tenants_by_plan: {
-    startup: number;
-    business: number;
-    enterprise: number;
-  };
-} {
-  return {
-    total_tenants: rows.totalRes.count ?? 0,
-    active_tenants: rows.activeRes.count ?? 0,
-    suspended_tenants: rows.suspendedRes.count ?? 0,
-    mrr_usd: mrrUsd,
-    tenants_by_plan: {
-      startup: rows.startupRes.count ?? 0,
-      business: rows.businessRes.count ?? 0,
-      enterprise: rows.enterpriseRes.count ?? 0,
-    },
-  };
-}
-
 export async function GET(request: Request): Promise<Response> {
   const authError = await requireAdminAccessUnlessDemoRead(request);
   if (authError) {
     return authError;
-  }
-
-  // Redis cache key for main summary metrics
-  const cacheKey = 'metrics:main_summary';
-  const cached = await getCache<{
-    total_tenants: number;
-    active_tenants: number;
-    suspended_tenants: number;
-    mrr_usd: number;
-    tenants_by_plan: {
-      startup: number;
-      business: number;
-      enterprise: number;
-    };
-  }>(cacheKey);
-
-  // If cached data is available, return it immediately to prevent unnecessary DB and Stripe fetches
-  if (cached) {
-    return Response.json(cached);
   }
 
   const client = getServiceClient();
@@ -161,10 +113,15 @@ export async function GET(request: Request): Promise<Response> {
     return serverErrorLogged('computeMrr:', e);
   }
 
-  const payload = buildMetricsPayload(rows, mrr_usd);
-
-  // Cache the generated payload in Redis asynchronously using a short TTL (60s)
-  void setCache(cacheKey, payload, CACHE_TTL.SHORT);
-
-  return Response.json(payload);
+  return Response.json({
+    total_tenants: rows.totalRes.count ?? 0,
+    active_tenants: rows.activeRes.count ?? 0,
+    suspended_tenants: rows.suspendedRes.count ?? 0,
+    mrr_usd,
+    tenants_by_plan: {
+      startup: rows.startupRes.count ?? 0,
+      business: rows.businessRes.count ?? 0,
+      enterprise: rows.enterpriseRes.count ?? 0,
+    },
+  });
 }

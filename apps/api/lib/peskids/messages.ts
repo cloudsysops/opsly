@@ -56,7 +56,9 @@ const MESSAGE_SELECT = [
 
 export async function fetchPendingMessages(
   tenantSlug: string
-): Promise<{ ok: true; messages: PendingMessageItem[] } | { ok: false; error: string }> {
+): Promise<
+  { ok: true; messages: PendingMessageItem[] } | { ok: false; error: string }
+> {
   const db = getServiceClient();
   const { data, error } = await db
     .schema('platform')
@@ -103,17 +105,20 @@ async function dispatchSendApproved(
   }
 
   try {
-    const response = await fetchWithRetry(`${base}${PESKIDS_N8N_SEND_APPROVED_PATH}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message_id: messageId,
-        source,
-        to: threadId,
-        text: responseText,
-        tenant_id: tenantSlug,
-      }),
-    });
+    const response = await fetchWithRetry(
+      `${base}${PESKIDS_N8N_SEND_APPROVED_PATH}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message_id: messageId,
+          source,
+          to: threadId,
+          text: responseText,
+          tenant_id: tenantSlug,
+        }),
+      }
+    );
 
     if (!response.ok) {
       const body = await response.text().catch(() => '');
@@ -132,7 +137,9 @@ export async function approveMessage(
   tenantSlug: string,
   approvedBy: string,
   modifiedResponse?: string
-): Promise<{ ok: true; sent_at: string } | { ok: false; error: string }> {
+): Promise<
+  { ok: true; sent_at: string } | { ok: false; error: string }
+> {
   const db = getServiceClient();
 
   const { data: message, error: fetchError } = await db

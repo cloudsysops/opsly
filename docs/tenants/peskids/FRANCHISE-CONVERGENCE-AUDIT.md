@@ -21,10 +21,7 @@ provider restricted to `@acmefranchise.com`, and a credentials provider that
 accepts `demo@acmefranchise.com` / `demo`. This is incompatible with the
 Peskids production boundary. A canonical-session adapter must be added only
 after the runtime/SSO cookie boundary is chosen; copying a Supabase session or
-accepting a browser-provided role would create an authorization flaw. The
-first canonical boundary now exists in `apps/peskids-franchise`: the separate
-runtime resolves the Peskids bearer session and active memberships server-side,
-fixes the tenant to `peskids`, and exposes read-only unit data.
+accepting a browser-provided role would create an authorization flaw.
 
 ## Demo/legacy leakage scan
 
@@ -37,17 +34,6 @@ non-production until removed or explicitly gated:
 
 No real Peskids records should be backfilled from these fixtures. No Prisma
 drop or production migration is authorized by this audit.
-
-The candidate CRM slice is separate from family leads: it uses the canonical
-Peskids tenant/session boundary, server-validated transitions, candidate event
-logging, and an idempotent conversion RPC to `platform.franchisees` plus a
-non-active proposed unit. Migration `0099_franchise_candidates.sql` is not
-applied to production.
-
-The dashboard/stats/leads/students routes are only a partial integration. They
-must complete a PII review before production use; in particular, family contact
-fields such as `parent_email` must not be exposed to franchise users by
-default.
 
 ## Bounded legacy debt
 

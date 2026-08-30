@@ -1,12 +1,8 @@
 import { getServiceClient } from './supabase';
 
 // peskids.* tables pending DB type codegen
-interface PeskidsQB {
-  insert(data: Record<string, unknown>): Promise<{ error: unknown }>;
-}
-interface PeskidsClient {
-  from(table: string): PeskidsQB;
-}
+interface PeskidsQB { insert(data: Record<string, unknown>): Promise<{ error: unknown }>; }
+interface PeskidsClient { from(table: string): PeskidsQB; }
 
 interface AuditLogOptions {
   tenantSlug: string;

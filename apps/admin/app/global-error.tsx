@@ -24,16 +24,12 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
               <ShieldAlert className="h-5 w-5" />
               CLIENT RUNTIME FAILURE
             </div>
-            <h1 className="font-display text-2xl text-ops-cyan">
-              Se detectó una excepción en frontend
-            </h1>
+            <h1 className="font-display text-2xl text-ops-cyan">Se detectó una excepción en frontend</h1>
             <p className="mt-3 text-sm text-neutral-300">
               El sistema capturó el error y aisló la pantalla para evitar caída total del panel.
             </p>
             {error.digest ? (
-              <p className="digital-readout mt-2 text-xs text-ops-magenta">
-                digest: {error.digest}
-              </p>
+              <p className="digital-readout mt-2 text-xs text-ops-magenta">digest: {error.digest}</p>
             ) : null}
             <div className="mt-6 flex flex-wrap gap-3">
               <button

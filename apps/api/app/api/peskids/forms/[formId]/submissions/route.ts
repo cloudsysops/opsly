@@ -16,10 +16,7 @@ interface PeskidsQB {
   eq(col: string, val: unknown): PeskidsQB;
   order(col: string, opts?: unknown): PeskidsQB;
   single(): Promise<{ data: unknown | null; error: unknown }>;
-  then<T>(
-    r: (v: { data: unknown[] | null; error: unknown }) => T,
-    j?: (e: unknown) => T
-  ): Promise<T>;
+  then<T>(r: (v: { data: unknown[] | null; error: unknown }) => T, j?: (e: unknown) => T): Promise<T>;
 }
 interface PeskidsClient {
   from(table: string): PeskidsQB;
@@ -193,7 +190,9 @@ export async function POST(
     }
 
     const untrustedUserId =
-      typeof parsedBody.body === 'object' && parsedBody.body !== null && 'userId' in parsedBody.body
+      typeof parsedBody.body === 'object' &&
+      parsedBody.body !== null &&
+      'userId' in parsedBody.body
         ? (parsedBody.body as { userId?: unknown }).userId
         : undefined;
 

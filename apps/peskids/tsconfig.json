@@ -31,9 +31,6 @@
       ],
       "@intcloudsysops/services/*": [
         "../../lib/services/*"
-      ],
-      "@intcloudsysops/franchise-core": [
-        "../../lib/franchise-core/src/index.ts"
       ]
     },
     "allowJs": true,

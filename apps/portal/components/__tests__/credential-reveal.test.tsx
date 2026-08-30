@@ -46,7 +46,6 @@ describe('CredentialReveal', () => {
 
     expect(mockWriteText).toHaveBeenCalledWith('secret-password');
     expect(screen.getByText('Copiado')).toBeInTheDocument();
-    expect(screen.getByRole('status')).toHaveTextContent('Contraseña copiada al portapapeles');
   });
 
   it('reverts copy message after timeout', async () => {

@@ -1,4 +1,8 @@
-import { MoonCard, MoonPageHeader, MoonStatusBadge } from '@/components/moon/primitives';
+import {
+  MoonCard,
+  MoonPageHeader,
+  MoonStatusBadge,
+} from '@/components/moon/primitives';
 
 const INTEGRATIONS = [
   { id: 'supabase', label: 'Supabase', note: 'platform + schemas tenant' },

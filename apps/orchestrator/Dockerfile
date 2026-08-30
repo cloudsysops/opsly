@@ -15,7 +15,6 @@ RUN npm ci --ignore-scripts
 
 RUN npm run build -w @intcloudsysops/types && \
     npm run build -w @intcloudsysops/notebooklm-agent && \
-    npm run build -w @intcloudsysops/universe && \
     npm run build -w @intcloudsysops/content-studio && \
     npm run build -w @intcloudsysops/pattern-catalog && \
     npm run build -w @intcloudsysops/sigma-harness && \
@@ -60,22 +59,12 @@ COPY --from=builder /app/lib/runtime/dist ./lib/runtime/dist
 COPY --from=builder /app/lib/runtime/package.json ./lib/runtime/package.json
 COPY --from=builder /app/lib/content-studio/dist ./lib/content-studio/dist
 COPY --from=builder /app/lib/content-studio/package.json ./lib/content-studio/package.json
-COPY --from=builder /app/lib/universe/dist ./lib/universe/dist
-COPY --from=builder /app/lib/universe/package.json ./lib/universe/package.json
 COPY --from=builder /app/lib/voice-messaging/dist ./lib/voice-messaging/dist
 COPY --from=builder /app/lib/voice-messaging/package.json ./lib/voice-messaging/package.json
 COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/config/git-branch-policy.json ./config/git-branch-policy.json
 COPY --from=builder /app/config/external-agent-registry.json ./config/external-agent-registry.json
 COPY --from=builder /app/config/runtime-governor.json ./config/runtime-governor.json
-
-# Workspace symlinks: Docker COPY follows symlinks within the copy scope,
-# but npm workspace symlinks point outside node_modules (../../lib/*).
-# Create explicit symlinks so transitive imports resolve at runtime.
-RUN mkdir -p node_modules/@intcloudsysops && \
-    for pkg in universe content-studio game-core game-web; do \
-      if [ -d "lib/${pkg}" ]; then ln -sf "../../lib/${pkg}" "node_modules/@intcloudsysops/${pkg}"; fi; \
-    done
 
 WORKDIR /app/apps/orchestrator
 EXPOSE 3011

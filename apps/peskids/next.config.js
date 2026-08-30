@@ -10,7 +10,6 @@ const nextConfig = {
   // builds alone in its Dockerfile, so the Turbo parallel-trace race does not apply.
   transpilePackages: [
     '@intcloudsysops/capacity-alert',
-    '@intcloudsysops/franchise-core',
     '@intcloudsysops/opsly-core',
     '@intcloudsysops/conversational-runtime',
     '@intcloudsysops/openwa',

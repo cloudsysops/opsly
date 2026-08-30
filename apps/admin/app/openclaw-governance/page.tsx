@@ -133,7 +133,9 @@ export default function OpenClawGovernancePage() {
           <div>
             max_concurrent_agents: {teamConfig?.constraints.max_concurrent_agents ?? 'unknown'}
           </div>
-          <div>total_parallel_capacity: {metrics?.total_parallel_capacity ?? 'unknown'}</div>
+          <div>
+            total_parallel_capacity: {metrics?.total_parallel_capacity ?? 'unknown'}
+          </div>
           <div className="grid gap-2 md:grid-cols-2">
             {(teamConfig?.agents ?? []).map((agent) => (
               <AgentRuntimeCard key={agent.id} agent={agent} teamMetrics={metrics?.teams ?? []} />

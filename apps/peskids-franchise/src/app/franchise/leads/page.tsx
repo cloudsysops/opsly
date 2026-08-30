@@ -5,18 +5,28 @@ import { useEffect, useState } from 'react';
 type FranchiseLead = {
   id: string;
   full_name: string;
+  email: string | null;
+  phone: string | null;
   status: string;
   service_mode: string | null;
   class_modality: string | null;
+  neighborhood: string | null;
   created_at: string;
   franchise_id: string | null;
   franchise_name: string | null;
+};
+
+type FranchiseUnit = {
+  id: string;
+  slug: string;
+  name: string;
 };
 
 const STATUS_OPTIONS = ['new', 'contacted', 'qualified', 'converted', 'lost'] as const;
 
 export default function FranchiseLeadsPage() {
   const [leads, setLeads] = useState<FranchiseLead[]>([]);
+  const [units, setUnits] = useState<FranchiseUnit[]>([]);
   const [total, setTotal] = useState(0);
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [page, setPage] = useState(0);
@@ -28,19 +38,25 @@ export default function FranchiseLeadsPage() {
     const params = new URLSearchParams({ limit: String(limit), offset: String(page * limit) });
     if (statusFilter) params.set('status', statusFilter);
 
-    fetch(`/api/franchise/leads?${params}`, { cache: 'no-store' })
-      .then((r) => {
+    Promise.all([
+      fetch(`/api/franchise/leads?${params}`, { cache: 'no-store' }).then((r) => {
         if (r.status === 401) {
           window.location.href = '/login?callbackUrl=/franchise/leads';
           return null;
         }
         if (!r.ok) throw new Error('leads failed');
         return r.json();
-      })
-      .then((leadsResult) => {
+      }),
+      fetch('/api/franchise/units', { cache: 'no-store' }).then((r) => {
+        if (!r.ok) return { units: [] };
+        return r.json();
+      }),
+    ])
+      .then(([leadsResult, unitsResult]) => {
         if (!leadsResult) return;
         setLeads(leadsResult.leads ?? []);
         setTotal(leadsResult.total ?? 0);
+        setUnits(unitsResult.units ?? []);
         setState('ready');
       })
       .catch(() => setState('error'));
@@ -93,9 +109,12 @@ export default function FranchiseLeadsPage() {
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50">
                   <th className="px-4 py-3 text-left font-medium text-slate-600">Nombre</th>
+                  <th className="px-4 py-3 text-left font-medium text-slate-600">Email</th>
+                  <th className="px-4 py-3 text-left font-medium text-slate-600">Teléfono</th>
                   <th className="px-4 py-3 text-left font-medium text-slate-600">Estado</th>
                   <th className="px-4 py-3 text-left font-medium text-slate-600">Modalidad</th>
                   <th className="px-4 py-3 text-left font-medium text-slate-600">Unidad</th>
+                  <th className="px-4 py-3 text-left font-medium text-slate-600">Barrio</th>
                   <th className="px-4 py-3 text-left font-medium text-slate-600">Fecha</th>
                 </tr>
               </thead>
@@ -103,11 +122,14 @@ export default function FranchiseLeadsPage() {
                 {leads.map((lead) => (
                   <tr key={lead.id} className="border-b border-slate-50 hover:bg-slate-50/50">
                     <td className="px-4 py-3 font-medium text-slate-900">{lead.full_name}</td>
+                    <td className="px-4 py-3 text-slate-600">{lead.email ?? '—'}</td>
+                    <td className="px-4 py-3 text-slate-600">{lead.phone ?? '—'}</td>
                     <td className="px-4 py-3">
                       <StatusBadge status={lead.status} />
                     </td>
                     <td className="px-4 py-3 text-slate-600">{lead.service_mode ?? '—'}</td>
                     <td className="px-4 py-3 text-slate-600">{lead.franchise_name ?? '—'}</td>
+                    <td className="px-4 py-3 text-slate-600">{lead.neighborhood ?? '—'}</td>
                     <td className="px-4 py-3 text-slate-500">
                       {new Date(lead.created_at).toLocaleDateString('es-CO')}
                     </td>

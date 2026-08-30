@@ -32,7 +32,15 @@ export type PeskidsLeadRecord = {
 };
 
 function leadSelectList(): string {
-  return ['id', 'tenant_slug', 'lead_id', 'source', 'stage', 'created_at', 'updated_at'].join(', ');
+  return [
+    'id',
+    'tenant_slug',
+    'lead_id',
+    'source',
+    'stage',
+    'created_at',
+    'updated_at',
+  ].join(', ');
 }
 
 function buildLeadBaseRow(input: PeskidsLeadPersistInput): Record<string, unknown> {

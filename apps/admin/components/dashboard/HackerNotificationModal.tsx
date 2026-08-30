@@ -33,13 +33,9 @@ export function HackerNotificationModal() {
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3 px-5 py-4 font-mono text-xs text-neutral-200">
-          <p className="digital-readout text-ops-cyan">
-            [SYS] PATTERN DETECTED · PREDICTIVE SPIKE +18%
-          </p>
+          <p className="digital-readout text-ops-cyan">[SYS] PATTERN DETECTED · PREDICTIVE SPIKE +18%</p>
           <p>[AI] Recomendación: activar throttling suave para workers secundarios.</p>
-          <p className="text-ops-magenta">
-            [ACTION] Apply staged deployment and monitor latency stream.
-          </p>
+          <p className="text-ops-magenta">[ACTION] Apply staged deployment and monitor latency stream.</p>
         </div>
         <DialogFooter className="border-t border-ops-cyan/30 px-5 py-4">
           <Button

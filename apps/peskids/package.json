@@ -27,7 +27,6 @@
     "@capacitor/ios": "^8.3.4",
     "@capacitor/push-notifications": "^8.1.1",
     "@intcloudsysops/capacity-alert": "*",
-    "@intcloudsysops/franchise-core": "*",
     "@intcloudsysops/openwa": "*",
     "@intcloudsysops/prompt-guard": "*",
     "@intcloudsysops/services": "*",

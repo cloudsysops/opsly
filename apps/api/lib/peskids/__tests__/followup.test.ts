@@ -2,16 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const getServiceClientMock = vi.fn();
 const fetchMock = vi.fn();
-const getCacheMock = vi.fn();
-const setCacheMock = vi.fn(() => Promise.resolve(true));
 
 vi.mock('../../supabase', () => ({
   getServiceClient: getServiceClientMock,
-}));
-
-vi.mock('../../redis-cache', () => ({
-  getCache: getCacheMock,
-  setCache: setCacheMock,
 }));
 
 vi.stubGlobal('fetch', fetchMock);
@@ -64,9 +57,6 @@ describe('peskids followup service', () => {
     vi.setSystemTime(new Date('2026-06-03T12:00:00.000Z'));
     getServiceClientMock.mockReset();
     fetchMock.mockReset();
-    getCacheMock.mockReset();
-    setCacheMock.mockReset();
-    setCacheMock.mockReturnValue(Promise.resolve(true));
   });
 
   afterEach(() => {
@@ -74,36 +64,7 @@ describe('peskids followup service', () => {
   });
 
   describe('getPendingFollowups', () => {
-    it('returns cached pending followups if cache hit occurs', async () => {
-      const cachedData = {
-        tenant_slug: 'peskids',
-        pending_followups: [
-          {
-            id: 'lead-cached',
-            lead_id: 'cached-id',
-            parent_name: 'Cached Parent',
-            child_name: null,
-            email: 'cached@example.com',
-            phone: null,
-            stage: 'New Lead',
-            created_at: '2026-06-01T10:00:00.000Z',
-            hours_since_creation: 50,
-          },
-        ],
-        count: 1,
-      };
-      getCacheMock.mockResolvedValueOnce(cachedData);
-
-      const { getPendingFollowups } = await import('../followup');
-      const result = await getPendingFollowups('peskids');
-
-      expect(result).toEqual(cachedData);
-      expect(getCacheMock).toHaveBeenCalledWith('peskids:pending_followups:peskids');
-      expect(getServiceClientMock).not.toHaveBeenCalled();
-    });
-
-    it('returns leads older than 24h in New Lead stage with followup_sent=false on cache miss', async () => {
-      getCacheMock.mockResolvedValueOnce(null);
+    it('returns leads older than 24h in New Lead stage with followup_sent=false', async () => {
       const leadsQuery = createLeadsListQuery({
         data: [
           {

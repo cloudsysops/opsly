@@ -68,11 +68,7 @@ export async function loadCreatorStudioData(): Promise<{
   };
 }
 
-export async function approveCreatorProject(
-  tenantId: string,
-  projectId: string,
-  reviewer: string
-): Promise<void> {
+export async function approveCreatorProject(tenantId: string, projectId: string, reviewer: string): Promise<void> {
   const envelope = await loadProjectEnvelopeByTenant(tenantId, projectId);
   assertSameTenant(envelope, tenantId);
   const rights = evaluateRightsGate(envelope);

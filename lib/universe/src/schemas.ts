@@ -291,34 +291,3 @@ export const UniverseFoundationSchema = z.object({
     statement: NonEmpty,
   }),
 });
-
-export const UniverseBitBondRuleSchema = z.enum([
-  'connection_not_capture',
-  'no_rushing',
-  'no_pet_prize',
-  'observation_before_touch',
-]);
-
-export const UniverseBitSchema = z.object({
-  id: NonEmpty,
-  slug: NonEmpty,
-  name: NonEmpty,
-  world: NonEmpty,
-  affinity: NonEmpty,
-  description: NonEmpty,
-  personality: NonEmpty,
-  traits: TraitList,
-  abilities: TraitList,
-  limitations: TraitList,
-  learningDomain: NonEmpty,
-  visualDNA: VisualDnaSchema,
-  bondRules: z.array(UniverseBitBondRuleSchema).min(1),
-  cardRepresentation: z.object({
-    title: NonEmpty,
-    illustrationHint: NonEmpty,
-    affinity: NonEmpty,
-    ability: NonEmpty,
-    knowledgeDomain: NonEmpty,
-  }),
-  canonVersion: z.literal(CANON_VERSION),
-});

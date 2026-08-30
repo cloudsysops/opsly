@@ -1,10 +1,6 @@
 import { z } from 'zod';
 import { getServiceClient } from '../supabase';
 import { logger } from '../logger';
-import { getCache, setCache } from '../redis-cache';
-import { CACHE_TTL } from '../constants';
-
-const CACHE_KEY_PREFIX = 'peskids:pending_followups:';
 
 /** Shape of a follow-up log entry appended to each lead row. */
 const followupLogEntrySchema = z.object({
@@ -41,14 +37,18 @@ export type FollowupExecutionResult = {
   errors: { lead_id: string; error: string }[];
 };
 
-async function fetchPendingFollowupLeads(tenantSlug: string): Promise<PendingFollowupLead[]> {
+async function fetchPendingFollowupLeads(
+  tenantSlug: string
+): Promise<PendingFollowupLead[]> {
   const db = getServiceClient();
   const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
   const { data, error } = await db
     .schema('platform')
     .from('peskids_leads')
-    .select('id, lead_id, parent_name, child_name, email, phone, stage, created_at')
+    .select(
+      'id, lead_id, parent_name, child_name, email, phone, stage, created_at'
+    )
     .eq('tenant_slug', tenantSlug)
     .eq('stage', 'New Lead')
     .eq('followup_sent', false)
@@ -80,7 +80,10 @@ async function fetchPendingFollowupLeads(tenantSlug: string): Promise<PendingFol
   });
 }
 
-async function appendFollowupLogFallback(leadDbId: string, entry: FollowupLogEntry): Promise<void> {
+async function appendFollowupLogFallback(
+  leadDbId: string,
+  entry: FollowupLogEntry
+): Promise<void> {
   const db = getServiceClient();
 
   const { data: row } = await db
@@ -90,7 +93,9 @@ async function appendFollowupLogFallback(leadDbId: string, entry: FollowupLogEnt
     .eq('id', leadDbId)
     .single();
 
-  const existing = (row as { followup_log?: unknown[] } | undefined)?.followup_log ?? [];
+  const existing = (
+    row as { followup_log?: unknown[] } | undefined
+  )?.followup_log ?? [];
   const updated = [...(Array.isArray(existing) ? existing : []), entry];
 
   const { error } = await db
@@ -110,28 +115,15 @@ async function appendFollowupLogFallback(leadDbId: string, entry: FollowupLogEnt
   }
 }
 
-/**
- * BOLT OPTIMIZATION:
- * Caches pending followups in Redis with a short TTL (60s) to eliminate repeated
- * Supabase database queries on frequent admin dashboard polling/renders.
- */
-export async function getPendingFollowups(tenantSlug: string): Promise<PendingFollowupsResponse> {
-  const cacheKey = `${CACHE_KEY_PREFIX}${tenantSlug}`;
-  const cached = await getCache<PendingFollowupsResponse>(cacheKey);
-  if (cached) {
-    return cached;
-  }
-
+export async function getPendingFollowups(
+  tenantSlug: string
+): Promise<PendingFollowupsResponse> {
   const leads = await fetchPendingFollowupLeads(tenantSlug);
-  const response: PendingFollowupsResponse = {
+  return {
     tenant_slug: tenantSlug,
     pending_followups: leads,
     count: leads.length,
   };
-
-  void setCache(cacheKey, response, CACHE_TTL.SHORT);
-
-  return response;
 }
 
 /**
@@ -154,7 +146,7 @@ export async function executePendingFollowups(
     try {
       const label = lead.parent_name
         ? `${lead.parent_name}${lead.child_name ? ` (${lead.child_name})` : ''}`
-        : (lead.email ?? lead.id);
+        : lead.email ?? lead.id;
 
       await appendFollowupLogFallback(lead.id, {
         executed_at: new Date().toISOString(),

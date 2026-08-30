@@ -49,17 +49,13 @@ describe('Mission Control and Admin Security Auth', () => {
       vi.mocked(requireAdminAccess).mockResolvedValue(
         Response.json({ error: 'forbidden' }, { status: 403 }) as never
       );
-      const res = await orchestratorGET(
-        new Request('http://localhost/api/admin/mission-control/orchestrator')
-      );
+      const res = await orchestratorGET(new Request('http://localhost/api/admin/mission-control/orchestrator'));
       expect(res.status).toBe(403);
     });
 
     it('returns 200 when admin access is granted', async () => {
       vi.mocked(requireAdminAccess).mockResolvedValue(null as never);
-      const res = await orchestratorGET(
-        new Request('http://localhost/api/admin/mission-control/orchestrator')
-      );
+      const res = await orchestratorGET(new Request('http://localhost/api/admin/mission-control/orchestrator'));
       expect(res.status).toBe(200);
     });
   });

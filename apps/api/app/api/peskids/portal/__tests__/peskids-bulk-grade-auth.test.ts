@@ -5,11 +5,11 @@ import { NextRequest } from 'next/server';
 vi.mock('@/lib/portal-trusted-identity', () => ({
   resolveTrustedPortalSession: vi.fn().mockResolvedValue({
     ok: false,
-    response: new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 }),
+    response: new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
   }),
   tenantSlugMatchesSession: vi.fn().mockReturnValue(true),
-  PORTAL_READ_ROLES: ['owner', 'admin', 'operator', 'viewer'],
-  PORTAL_WRITE_ROLES: ['owner', 'admin', 'operator'],
+  PORTAL_READ_ROLES: ['admin', 'teacher'],
+  PORTAL_WRITE_ROLES: ['admin', 'teacher'],
 }));
 
 vi.mock('@/lib/supabase', () => ({
@@ -22,27 +22,24 @@ describe('POST /api/peskids/portal/[tenantSlug]/submissions/bulk-grade authoriza
   });
 
   it('returns 401 when no session is present (runTrustedPortalDalForPathSlug fails)', async () => {
-    const req = new NextRequest(
-      'http://localhost/api/peskids/portal/test-tenant/submissions/bulk-grade',
-      {
-        method: 'POST',
-        body: JSON.stringify({}),
-      }
-    );
+    const req = new NextRequest('http://localhost/api/peskids/portal/test-tenant/submissions/bulk-grade', {
+      method: 'POST',
+      body: JSON.stringify({}),
+    });
 
     const params = Promise.resolve({ tenantSlug: 'test-tenant' });
     const res = await POST(req, { params });
     expect(res.status).toBe(401);
   });
 
-  it('allows access with a valid session and grades submissions', async () => {
+  it('allows access with a valid session and passes correct actorId to auditing', async () => {
     const { resolveTrustedPortalSession } = await import('@/lib/portal-trusted-identity');
     vi.mocked(resolveTrustedPortalSession).mockResolvedValue({
       ok: true,
       session: {
         user: { id: 'test-user' },
         tenant: { id: 'test-tenant-id', slug: 'test-tenant' },
-        roles: ['operator'],
+        roles: ['teacher'],
       } as any,
     });
 
@@ -50,9 +47,7 @@ describe('POST /api/peskids/portal/[tenantSlug]/submissions/bulk-grade authoriza
     const mockUpdate = vi.fn().mockReturnThis();
     const mockEq = vi.fn().mockReturnThis();
     const mockIn = vi.fn().mockReturnThis();
-    const mockSelect = vi
-      .fn()
-      .mockResolvedValue({ data: [{ submission_id: 'sub-1' }], error: null });
+    const mockSelect = vi.fn().mockResolvedValue({ data: [{ submission_id: 'sub-1' }], error: null });
 
     const { getServiceClient } = await import('@/lib/supabase');
     vi.mocked(getServiceClient).mockReturnValue({
@@ -65,17 +60,14 @@ describe('POST /api/peskids/portal/[tenantSlug]/submissions/bulk-grade authoriza
       rpc: mockRpc,
     } as any);
 
-    const req = new NextRequest(
-      'http://localhost/api/peskids/portal/test-tenant/submissions/bulk-grade',
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          submissionIds: ['sub-1'],
-          score: 85,
-          feedback: 'Great job!',
-        }),
-      }
-    );
+    const req = new NextRequest('http://localhost/api/peskids/portal/test-tenant/submissions/bulk-grade', {
+      method: 'POST',
+      body: JSON.stringify({
+        submissionIds: ['sub-1'],
+        score: 85,
+        feedback: 'Great job!',
+      }),
+    });
 
     const params = Promise.resolve({ tenantSlug: 'test-tenant' });
     const res = await POST(req, { params });
@@ -83,13 +75,10 @@ describe('POST /api/peskids/portal/[tenantSlug]/submissions/bulk-grade authoriza
     expect(res.status).toBe(200);
 
     // Verify audit log received the correct actorId
-    expect(mockRpc).toHaveBeenCalledWith(
-      'log_audit_event',
-      expect.objectContaining({
-        p_actor_id: 'test-user',
-        p_tenant_slug: 'test-tenant',
-        p_action: 'form_submissions_bulk_graded',
-      })
-    );
+    expect(mockRpc).toHaveBeenCalledWith('log_audit_event', expect.objectContaining({
+      p_actor_id: 'test-user',
+      p_tenant_slug: 'test-tenant',
+      p_action: 'form_submissions_bulk_graded',
+    }));
   });
 });

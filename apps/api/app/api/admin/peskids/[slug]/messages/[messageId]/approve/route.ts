@@ -1,7 +1,10 @@
 import { requireAdminAccess } from '../../../../../../../../lib/auth';
 import { HTTP_STATUS } from '../../../../../../../../lib/constants';
 import { logger } from '../../../../../../../../lib/logger';
-import { approveMessage, rejectMessage } from '../../../../../../../../lib/peskids/messages';
+import {
+  approveMessage,
+  rejectMessage,
+} from '../../../../../../../../lib/peskids/messages';
 import { peskidsMessageApprovalSchema } from '../../../../../../../../lib/peskids/schemas';
 
 const PESKIDS_TENANT_SLUG = 'peskids';
@@ -20,7 +23,8 @@ export async function POST(
     return Response.json({ error: 'Not found' }, { status: HTTP_STATUS.NOT_FOUND });
   }
 
-  const requestId = request.headers.get('x-request-id')?.trim() || globalThis.crypto.randomUUID();
+  const requestId =
+    request.headers.get('x-request-id')?.trim() || globalThis.crypto.randomUUID();
   const approvedBy = request.headers.get('x-admin-user')?.trim() || 'admin';
 
   let raw: unknown;
@@ -49,7 +53,12 @@ export async function POST(
 
   try {
     if (approved) {
-      const result = await approveMessage(messageId, slug, approvedBy, modified_response);
+      const result = await approveMessage(
+        messageId,
+        slug,
+        approvedBy,
+        modified_response
+      );
 
       if (!result.ok) {
         logger.error('peskids.admin.messages.approve_failed', {
@@ -83,7 +92,12 @@ export async function POST(
       );
     }
 
-    const rejectResult = await rejectMessage(messageId, slug, approvedBy, rejection_reason);
+    const rejectResult = await rejectMessage(
+      messageId,
+      slug,
+      approvedBy,
+      rejection_reason
+    );
 
     if (!rejectResult.ok) {
       return Response.json(

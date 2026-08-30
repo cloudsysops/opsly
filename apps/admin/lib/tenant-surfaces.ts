@@ -1,6 +1,6 @@
 import type { Json } from './types';
 import { parseServiceUrls } from './service-urls';
-import { resolveTenantSiteTarget } from '../../../lib/runtime/src/tenant-site-routing';
+import { resolveTenantSiteTarget } from '../../../lib/runtime/src/tenant-site-routing'
 
 /** Cómo opera el tenant respecto al control plane Opsly. */
 export type TenantDeploymentMode = 'incubated' | 'dedicated';
@@ -100,9 +100,7 @@ export function resolveTenantSurfaces(
   const staffApp = readString(meta, 'staff_app_url');
   const portalApp = readString(meta, 'portal_app_url');
   const incubatedStaff =
-    staffApp ??
-    resolveIncubatedStaffOrigin(slug) ??
-    (clientBase ? `${normalizeOrigin(clientBase)}/admin` : null);
+    staffApp ?? resolveIncubatedStaffOrigin(slug) ?? (clientBase ? `${normalizeOrigin(clientBase)}/admin` : null);
 
   const links: TenantSurfaceLink[] = [];
 

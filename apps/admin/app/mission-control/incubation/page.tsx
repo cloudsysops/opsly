@@ -19,7 +19,13 @@ function toneForStatus(status: string): 'emerald' | 'amber' | 'rose' | 'slate' {
   return 'amber';
 }
 
-function Pill({ label, tone }: { label: string; tone: 'emerald' | 'amber' | 'rose' | 'slate' }) {
+function Pill({
+  label,
+  tone,
+}: {
+  label: string;
+  tone: 'emerald' | 'amber' | 'rose' | 'slate';
+}) {
   const classes =
     tone === 'emerald'
       ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
@@ -31,7 +37,15 @@ function Pill({ label, tone }: { label: string; tone: 'emerald' | 'amber' | 'ros
   return <span className={`rounded-full border px-2 py-0.5 text-[11px] ${classes}`}>{label}</span>;
 }
 
-function StatCard({ label, value, hint }: { label: string; value: string | number; hint: string }) {
+function StatCard({
+  label,
+  value,
+  hint,
+}: {
+  label: string;
+  value: string | number;
+  hint: string;
+}) {
   return (
     <div className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-4">
       <p className="text-[11px] uppercase tracking-[0.24em] text-zinc-500">{label}</p>
@@ -64,9 +78,7 @@ export default function MissionControlIncubationPage() {
         <header className="flex flex-wrap items-start justify-between gap-4 border-b border-zinc-800 pb-5">
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-cyan-400">Incubation Machine</p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-              Project Incubation Control
-            </h1>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight">Project Incubation Control</h1>
             <p className="mt-2 max-w-3xl text-sm text-zinc-400">
               One read model for incubating projects inside Opsly: tenant selection, workflow
               bootstrap, agent governance, and extraction readiness.
@@ -100,7 +112,11 @@ export default function MissionControlIncubationPage() {
             value={selectedTenant?.name ?? (isLoading ? 'loading' : 'unknown')}
             hint={selectedTenant?.slug ?? 'select a tenant to generate a plan'}
           />
-          <StatCard label="Stage" value={currentStage} hint={data?.summary ?? 'waiting for data'} />
+          <StatCard
+            label="Stage"
+            value={currentStage}
+            hint={data?.summary ?? 'waiting for data'}
+          />
           <StatCard
             label="Extraction"
             value={selectedTenant?.extraction_ready ? 'ready' : 'blocked'}
@@ -177,15 +193,11 @@ export default function MissionControlIncubationPage() {
               <p className="text-sm font-medium text-zinc-100">Execution Summary</p>
               <div className="mt-3 space-y-3 text-sm">
                 <div className="rounded-xl border border-zinc-800/70 px-3 py-2 text-zinc-300">
-                  <div className="text-xs uppercase tracking-[0.18em] text-zinc-500">
-                    Next action
-                  </div>
+                  <div className="text-xs uppercase tracking-[0.18em] text-zinc-500">Next action</div>
                   <div className="mt-1">{data?.next_action ?? 'Loading...'}</div>
                 </div>
                 <div className="rounded-xl border border-zinc-800/70 px-3 py-2 text-zinc-300">
-                  <div className="text-xs uppercase tracking-[0.18em] text-zinc-500">
-                    Current stage
-                  </div>
+                  <div className="text-xs uppercase tracking-[0.18em] text-zinc-500">Current stage</div>
                   <div className="mt-1">
                     {currentStage} {nextStage !== '—' ? `→ ${nextStage}` : ''}
                   </div>
@@ -245,19 +257,13 @@ export default function MissionControlIncubationPage() {
           </div>
           <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             {candidates.map((candidate) => (
-              <div
-                key={candidate.slug}
-                className="rounded-xl border border-zinc-800/70 bg-zinc-900/50 p-3"
-              >
+              <div key={candidate.slug} className="rounded-xl border border-zinc-800/70 bg-zinc-900/50 p-3">
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <div className="text-sm font-medium text-zinc-100">{candidate.name}</div>
                     <div className="text-xs text-zinc-500">{candidate.slug}</div>
                   </div>
-                  <Pill
-                    label={candidate.stage_label}
-                    tone={toneForStatus(candidate.operational_status)}
-                  />
+                  <Pill label={candidate.stage_label} tone={toneForStatus(candidate.operational_status)} />
                 </div>
                 <div className="mt-2 text-xs text-zinc-500">
                   <div>plan: {candidate.plan}</div>

@@ -76,9 +76,7 @@ export function Topbar() {
         ))}
       </nav>
       <Separator orientation="vertical" className="h-6" />
-      <div className="digital-readout max-w-[220px] truncate text-xs text-ops-magenta">
-        {email || '—'}
-      </div>
+      <div className="digital-readout max-w-[220px] truncate text-xs text-ops-magenta">{email || '—'}</div>
     </header>
   );
 }

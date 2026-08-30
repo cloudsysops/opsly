@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { dispatchPeskidsHotLeadAlert, PESKIDS_N8N_HOT_LEAD_ALERT_PATH } from '../hot-lead-alert';
+import {
+  dispatchPeskidsHotLeadAlert,
+  PESKIDS_N8N_HOT_LEAD_ALERT_PATH,
+} from '../hot-lead-alert';
 import type { PeskidsLeadRow } from '../repository';
 
 const sampleLead: PeskidsLeadRow = {

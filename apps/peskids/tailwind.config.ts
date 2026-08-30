@@ -24,11 +24,6 @@ const config: Config = {
           success: peskidsColorTokens.status.success,
           warning: peskidsColorTokens.secondary.yellow,
           danger: '#dc2626',
-          'hero-teal': peskidsColorTokens.hero.teal,
-          'hero-orange': peskidsColorTokens.hero.orange,
-          sidebar: peskidsColorTokens.layout.sidebar,
-          info: peskidsColorTokens.status.info,
-          'info-bg': peskidsColorTokens.layout.infoBg,
         },
       },
       fontFamily: {

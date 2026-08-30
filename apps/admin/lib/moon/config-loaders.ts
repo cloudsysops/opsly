@@ -75,10 +75,7 @@ export async function loadLibModuleRegistry(): Promise<MoonModuleRegistryEntry[]
   try {
     const raw = await readFile(path, 'utf8');
     const parsed = JSON.parse(raw) as {
-      modules?: Record<
-        string,
-        { name?: string; version?: string; status?: string; description?: string }
-      >;
+      modules?: Record<string, { name?: string; version?: string; status?: string; description?: string }>;
     };
     if (!parsed.modules) return [];
     return Object.entries(parsed.modules).map(([id, mod]) => ({
