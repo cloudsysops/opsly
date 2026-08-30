@@ -1,11 +1,12 @@
 /**
  * Dunning Service — tracks payment failure escalation per tenant.
  *
- * MVP: in-memory Map with TTL. Future: persist to Redis or DB.
+ * Primary store: Redis (TTL 30 days). Fallback: in-memory Map when Redis unavailable.
  */
 
 import { logger } from '../logger';
 import { suspendTenant } from '../orchestrator';
+import { getRedisClient } from '../redis-cache';
 
 interface DunningEntry {
   failureCount: number;
@@ -23,7 +24,8 @@ interface DunningStatus {
 
 const SUSPEND_AFTER_FAILURES = 5;
 const NOTIFICATION_LEVELS = [1, 3, 5] as const;
-const TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+const TTL_SECONDS = 30 * 24 * 60 * 60; // 30 days
+const KEY_PREFIX = 'dunning:';
 
 let webhookUrl: string | null = null;
 
@@ -73,72 +75,109 @@ function buildMessage(slug: string, count: number, level: DunningStatus['level']
   return `**${emoji} Dunning** — tenant \`${slug}\` — ${count} failed payment(s) — ${level}`;
 }
 
-class DunningService {
-  private store = new Map<string, DunningEntry>();
+function redisKey(tenantId: string): string {
+  return `${KEY_PREFIX}${tenantId}`;
+}
 
-  private cleanup(): void {
-    const now = Date.now();
-    for (const [key, entry] of this.store) {
-      if (now - entry.lastFailureAt > TTL_MS) {
-        this.store.delete(key);
+class DunningService {
+  private fallback = new Map<string, DunningEntry>();
+
+  private async loadEntry(tenantId: string): Promise<DunningEntry | null> {
+    const redis = await getRedisClient();
+    if (redis) {
+      try {
+        const raw = await redis.get(redisKey(tenantId));
+        if (raw) return JSON.parse(raw) as DunningEntry;
+      } catch (e) {
+        logger.error('dunning.redis.load', e instanceof Error ? e : { error: String(e) });
       }
     }
+    return this.fallback.get(tenantId) ?? null;
+  }
+
+  private async saveEntry(tenantId: string, entry: DunningEntry): Promise<void> {
+    const redis = await getRedisClient();
+    if (redis) {
+      try {
+        await redis.set(redisKey(tenantId), JSON.stringify(entry), { EX: TTL_SECONDS });
+      } catch (e) {
+        logger.error('dunning.redis.save', e instanceof Error ? e : { error: String(e) });
+      }
+    }
+    this.fallback.set(tenantId, entry);
+  }
+
+  private async deleteEntry(tenantId: string): Promise<void> {
+    const redis = await getRedisClient();
+    if (redis) {
+      try {
+        await redis.del(redisKey(tenantId));
+      } catch (e) {
+        logger.error('dunning.redis.del', e instanceof Error ? e : { error: String(e) });
+      }
+    }
+    this.fallback.delete(tenantId);
   }
 
   async recordPaymentFailure(tenantId: string, slug: string): Promise<void> {
     const now = Date.now();
-    const existing = this.store.get(tenantId);
+    const existing = await this.loadEntry(tenantId);
+
+    let entry: DunningEntry;
 
     if (existing) {
-      existing.failureCount += 1;
-      existing.lastFailureAt = now;
+      entry = {
+        ...existing,
+        failureCount: existing.failureCount + 1,
+        lastFailureAt: now,
+      };
 
-      const level = resolveLevel(existing.failureCount);
+      const level = resolveLevel(entry.failureCount);
 
       if (
-        shouldNotify(existing, existing.failureCount) &&
-        NOTIFICATION_LEVELS.includes(existing.failureCount as (typeof NOTIFICATION_LEVELS)[number])
+        shouldNotify(entry, entry.failureCount) &&
+        NOTIFICATION_LEVELS.includes(entry.failureCount as (typeof NOTIFICATION_LEVELS)[number])
       ) {
-        existing.lastNotificationLevel = existing.failureCount;
-        const msg = buildMessage(slug, existing.failureCount, level);
+        entry.lastNotificationLevel = entry.failureCount;
+        const msg = buildMessage(slug, entry.failureCount, level);
         await postDiscord(msg);
         logger.info('dunning.notification', {
           tenantId,
           slug,
-          failureCount: existing.failureCount,
+          failureCount: entry.failureCount,
           level,
         });
       }
 
-      if (existing.failureCount >= SUSPEND_AFTER_FAILURES) {
+      if (entry.failureCount >= SUSPEND_AFTER_FAILURES) {
         try {
           await suspendTenant(tenantId, 'dunning-service');
-          existing.lastNotificationLevel = existing.failureCount;
-          const msg = buildMessage(slug, existing.failureCount, 'suspended');
+          entry.lastNotificationLevel = entry.failureCount;
+          const msg = buildMessage(slug, entry.failureCount, 'suspended');
           await postDiscord(msg);
-          logger.info('dunning.suspended', { tenantId, slug, failureCount: existing.failureCount });
+          logger.info('dunning.suspended', { tenantId, slug, failureCount: entry.failureCount });
         } catch (e) {
           logger.error('dunning.suspend.failed', e instanceof Error ? e : { error: String(e) });
         }
       }
     } else {
-      this.store.set(tenantId, {
+      entry = {
         failureCount: 1,
         firstFailureAt: now,
         lastFailureAt: now,
         lastNotificationLevel: 1,
-      });
+      };
 
       const msg = buildMessage(slug, 1, 'warning');
       await postDiscord(msg);
       logger.info('dunning.first_failure', { tenantId, slug });
     }
 
-    this.cleanup();
+    await this.saveEntry(tenantId, entry);
   }
 
-  getDunningStatus(tenantId: string): DunningStatus {
-    const entry = this.store.get(tenantId);
+  async getDunningStatus(tenantId: string): Promise<DunningStatus> {
+    const entry = await this.loadEntry(tenantId);
     if (!entry) {
       return {
         failureCount: 0,
@@ -157,19 +196,47 @@ class DunningService {
     };
   }
 
-  clearFailures(tenantId: string): void {
-    this.store.delete(tenantId);
+  async clearFailures(tenantId: string): Promise<void> {
+    await this.deleteEntry(tenantId);
     logger.info('dunning.cleared', { tenantId });
   }
 
-  getStatsForAdmin(): { total: number; suspended: number; escalated: number } {
+  async getStatsForAdmin(): Promise<{ total: number; suspended: number; escalated: number }> {
     let suspended = 0;
     let escalated = 0;
-    for (const entry of this.store.values()) {
+    let total = 0;
+
+    // Check Redis first for all dunning keys
+    const redis = await getRedisClient();
+    if (redis) {
+      try {
+        let cursor = 0;
+        do {
+          const result = await redis.scan(cursor, { MATCH: `${KEY_PREFIX}*`, COUNT: 100 });
+          cursor = result.cursor;
+          for (const key of result.keys) {
+            total++;
+            const raw = await redis.get(key);
+            if (raw) {
+              const entry = JSON.parse(raw) as DunningEntry;
+              if (entry.failureCount >= SUSPEND_AFTER_FAILURES) suspended++;
+              else if (entry.failureCount >= 3) escalated++;
+            }
+          }
+        } while (cursor !== 0);
+        return { total, suspended, escalated };
+      } catch (e) {
+        logger.error('dunning.redis.scan', e instanceof Error ? e : { error: String(e) });
+      }
+    }
+
+    // Fallback to in-memory
+    for (const entry of this.fallback.values()) {
+      total++;
       if (entry.failureCount >= SUSPEND_AFTER_FAILURES) suspended++;
       else if (entry.failureCount >= 3) escalated++;
     }
-    return { total: this.store.size, suspended, escalated };
+    return { total, suspended, escalated };
   }
 }
 

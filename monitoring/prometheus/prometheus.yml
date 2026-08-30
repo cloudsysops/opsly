@@ -15,43 +15,6 @@ rule_files:
   - "rules/*.yml"
 
 scrape_configs:
-  # MCP Gateway
-  - job_name: "mcp-gateway"
-    static_configs:
-      - targets: ["localhost:3001"]
-    metrics_path: "/metrics"
-    scrape_interval: 10s
-
-  # Agent Manager
-  - job_name: "agent-manager"
-    static_configs:
-      - targets: ["localhost:3002"]
-    metrics_path: "/metrics"
-
-  # Tenant Invitations
-  - job_name: "tenant-invitations"
-    static_configs:
-      - targets: ["localhost:3003"]
-    metrics_path: "/metrics"
-
-  # Onboarding Agent
-  - job_name: "onboarding-agent"
-    static_configs:
-      - targets: ["localhost:3004"]
-    metrics_path: "/metrics"
-
-  # Rendering Engine
-  - job_name: "rendering-engine"
-    static_configs:
-      - targets: ["localhost:3005"]
-    metrics_path: "/metrics"
-
-  # MCP Rendering Server
-  - job_name: "mcp-rendering-server"
-    static_configs:
-      - targets: ["localhost:3006"]
-    metrics_path: "/metrics"
-
   # PostgreSQL (via postgres_exporter)
   - job_name: "postgresql"
     static_configs:

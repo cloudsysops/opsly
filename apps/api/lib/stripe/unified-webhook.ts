@@ -437,7 +437,7 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promise<void
   const dunning = getDunningService();
   await dunning.recordPaymentFailure(tenant.id, tenant.slug);
 
-  const status = dunning.getDunningStatus(tenant.id);
+  const status = await dunning.getDunningStatus(tenant.id);
 
   if (status.shouldSuspend) {
     try {
@@ -465,7 +465,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<v
   await upsertInvoice(tenant.id, invoice, 'paid');
 
   const dunning = getDunningService();
-  dunning.clearFailures(tenant.id);
+  await dunning.clearFailures(tenant.id);
 }
 
 // ─── Dispatcher ───────────────────────────────────────────────────

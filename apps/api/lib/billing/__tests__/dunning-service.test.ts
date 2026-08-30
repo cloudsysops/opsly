@@ -32,8 +32,8 @@ describe('DunningService', () => {
     process.env.DISCORD_WEBHOOK_URL = 'https://discord.example.com';
     const mod = await import('../dunning-service');
     svc = mod.getDunningService();
-    svc.clearFailures(TENANT_ID);
-    svc.clearFailures(TENANT_2_ID);
+    await svc.clearFailures(TENANT_ID);
+    await svc.clearFailures(TENANT_2_ID);
   });
 
   afterEach(() => {
@@ -45,7 +45,7 @@ describe('DunningService', () => {
     it('tracks failure count from 1st to 5th failure', async () => {
       for (let i = 1; i <= 5; i++) {
         await svc.recordPaymentFailure(TENANT_ID, TENANT_SLUG);
-        const status = svc.getDunningStatus(TENANT_ID);
+        const status = await svc.getDunningStatus(TENANT_ID);
         expect(status.failureCount).toBe(i);
       }
     });
@@ -104,7 +104,7 @@ describe('DunningService', () => {
 
       const mod = await import('../dunning-service');
       const freshSvc = mod.getDunningService();
-      freshSvc.clearFailures(TENANT_ID);
+      await freshSvc.clearFailures(TENANT_ID);
 
       for (let i = 0; i < 5; i++) {
         await freshSvc.recordPaymentFailure(TENANT_ID, TENANT_SLUG);
@@ -123,7 +123,7 @@ describe('DunningService', () => {
 
   describe('getDunningStatus', () => {
     it('returns none level when no failures recorded', () => {
-      const status = svc.getDunningStatus(TENANT_ID);
+      const status = await svc.getDunningStatus(TENANT_ID);
 
       expect(status.failureCount).toBe(0);
       expect(status.shouldSuspend).toBe(false);
@@ -133,7 +133,7 @@ describe('DunningService', () => {
 
     it('returns warning level after 1 failure', async () => {
       await svc.recordPaymentFailure(TENANT_ID, TENANT_SLUG);
-      const status = svc.getDunningStatus(TENANT_ID);
+      const status = await svc.getDunningStatus(TENANT_ID);
 
       expect(status.level).toBe('warning');
       expect(status.shouldSuspend).toBe(false);
@@ -143,7 +143,7 @@ describe('DunningService', () => {
       for (let i = 0; i < 3; i++) {
         await svc.recordPaymentFailure(TENANT_ID, TENANT_SLUG);
       }
-      const status = svc.getDunningStatus(TENANT_ID);
+      const status = await svc.getDunningStatus(TENANT_ID);
 
       expect(status.level).toBe('escalated');
       expect(status.shouldSuspend).toBe(false);
@@ -153,7 +153,7 @@ describe('DunningService', () => {
       for (let i = 0; i < 5; i++) {
         await svc.recordPaymentFailure(TENANT_ID, TENANT_SLUG);
       }
-      const status = svc.getDunningStatus(TENANT_ID);
+      const status = await svc.getDunningStatus(TENANT_ID);
 
       expect(status.level).toBe('suspended');
       expect(status.shouldSuspend).toBe(true);
@@ -163,11 +163,11 @@ describe('DunningService', () => {
   describe('clearFailures', () => {
     it('resets failure count on payment success', async () => {
       await svc.recordPaymentFailure(TENANT_ID, TENANT_SLUG);
-      expect(svc.getDunningStatus(TENANT_ID).failureCount).toBe(1);
+      expect(await svc.getDunningStatus(TENANT_ID).failureCount).toBe(1);
 
-      svc.clearFailures(TENANT_ID);
+      await svc.clearFailures(TENANT_ID);
 
-      const status = svc.getDunningStatus(TENANT_ID);
+      const status = await svc.getDunningStatus(TENANT_ID);
       expect(status.failureCount).toBe(0);
       expect(status.level).toBe('none');
     });
@@ -176,18 +176,18 @@ describe('DunningService', () => {
       for (let i = 0; i < 3; i++) {
         await svc.recordPaymentFailure(TENANT_ID, TENANT_SLUG);
       }
-      expect(svc.getDunningStatus(TENANT_ID).failureCount).toBe(3);
+      expect(await svc.getDunningStatus(TENANT_ID).failureCount).toBe(3);
 
-      svc.clearFailures(TENANT_ID);
+      await svc.clearFailures(TENANT_ID);
       await svc.recordPaymentFailure(TENANT_ID, TENANT_SLUG);
 
-      expect(svc.getDunningStatus(TENANT_ID).failureCount).toBe(1);
+      expect(await svc.getDunningStatus(TENANT_ID).failureCount).toBe(1);
     });
   });
 
   describe('getStatsForAdmin', () => {
     it('returns zero stats when no tenants tracked', () => {
-      const stats = svc.getStatsForAdmin();
+      const stats = await svc.getStatsForAdmin();
 
       expect(stats.total).toBe(0);
       expect(stats.suspended).toBe(0);
@@ -202,7 +202,7 @@ describe('DunningService', () => {
         await svc.recordPaymentFailure(TENANT_2_ID, TENANT_2_SLUG);
       }
 
-      const stats = svc.getStatsForAdmin();
+      const stats = await svc.getStatsForAdmin();
 
       expect(stats.total).toBe(2);
       expect(stats.escalated).toBe(1);
@@ -212,7 +212,7 @@ describe('DunningService', () => {
     it('excludes warning-only tenants from escalated count', async () => {
       await svc.recordPaymentFailure(TENANT_ID, TENANT_SLUG);
 
-      const stats = svc.getStatsForAdmin();
+      const stats = await svc.getStatsForAdmin();
 
       expect(stats.total).toBe(1);
       expect(stats.escalated).toBe(0);

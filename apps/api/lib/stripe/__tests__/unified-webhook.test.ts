@@ -122,9 +122,9 @@ function mockSubscriptionsInsert() {
 }
 
 describe('dispatchStripeEvent', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
-    getDunningService().clearFailures(TENANT_ID);
+    await getDunningService().clearFailures(TENANT_ID);
     process.env.DISCORD_WEBHOOK_URL = DISCORD_URL;
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true }));
   });
@@ -487,7 +487,7 @@ describe('dispatchStripeEvent', () => {
     it('records a payment failure in dunning service', async () => {
       await dispatchStripeEvent(failEvent());
 
-      const status = getDunningService().getDunningStatus(TENANT_ID);
+      const status = await getDunningService().getDunningStatus(TENANT_ID);
       expect(status.failureCount).toBe(1);
       expect(status.level).toBe('warning');
     });
