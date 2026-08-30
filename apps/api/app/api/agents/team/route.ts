@@ -79,10 +79,9 @@ export async function GET(req: NextRequest): Promise<Response> {
       generated_at: new Date().toISOString(),
     });
   } catch (error: unknown) {
-    console.error('Failed to load agents team config:', error);
     return Response.json(
       {
-        error: 'Unable to load agents team config',
+        error: error instanceof Error ? error.message : 'Unable to load agents team config',
       },
       { status: 500 }
     );

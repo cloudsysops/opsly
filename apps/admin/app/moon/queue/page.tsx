@@ -25,10 +25,7 @@ export default function MoonQueuePage(): React.ReactElement {
         title="Queue"
         subtitle="Resumen BullMQ vía agregados de teams. Pause/resume requieren API + approval."
         actions={
-          <Link
-            href="/moon/tasks"
-            className="rounded-lg border border-white/15 px-2.5 py-1.5 text-xs"
-          >
+          <Link href="/moon/tasks" className="rounded-lg border border-white/15 px-2.5 py-1.5 text-xs">
             Tasks
           </Link>
         }
@@ -63,8 +60,7 @@ export default function MoonQueuePage(): React.ReactElement {
           </dl>
           <p className="text-xs text-slate-500">Fuente: {summary.source}</p>
           <p className="text-xs text-amber-200/80">
-            Acciones sensibles (pause/resume/remove failed) deshabilitadas hasta contrato
-            approval-first.
+            Acciones sensibles (pause/resume/remove failed) deshabilitadas hasta contrato approval-first.
           </p>
         </MoonCard>
       ) : null}

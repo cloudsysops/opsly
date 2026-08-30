@@ -25,10 +25,7 @@ export default function MoonUsagePage(): React.ReactElement {
         title="Usage"
         subtitle="Agregados de plataforma. Detalle por tenant en ficha cliente. Sin MRR ficticio."
         actions={
-          <Link
-            href="/metrics/llm"
-            className="rounded-lg border border-white/15 px-2.5 py-1.5 text-xs"
-          >
+          <Link href="/metrics/llm" className="rounded-lg border border-white/15 px-2.5 py-1.5 text-xs">
             Legacy LLM metrics
           </Link>
         }

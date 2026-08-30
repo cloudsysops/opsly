@@ -1,6 +1,5 @@
 'use client';
 
-import { Loader2 } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
@@ -138,28 +137,20 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
-                  className="inline-flex items-center gap-1.5 rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ops-green/80 focus-visible:ring-offset-2 focus-visible:ring-offset-ops-bg disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+                  className="rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
                   disabled={busyAction?.startsWith(insight.id) || insight.read_at !== null}
-                  aria-busy={busyAction === `${insight.id}-read`}
                   onClick={() => void patch(insight.id, 'read')}
                   aria-label={`Marcar "${insight.title}" como leído`}
                 >
-                  {busyAction === `${insight.id}-read` ? (
-                    <Loader2 className="h-3 w-3 shrink-0 animate-spin" aria-hidden="true" />
-                  ) : null}
                   Marcar leído
                 </button>
                 <button
                   type="button"
-                  className="inline-flex items-center gap-1.5 rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ops-green/80 focus-visible:ring-offset-2 focus-visible:ring-offset-ops-bg disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+                  className="rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
                   disabled={busyAction?.startsWith(insight.id)}
-                  aria-busy={busyAction === `${insight.id}-dismiss`}
                   onClick={() => void patch(insight.id, 'dismiss')}
                   aria-label={`Descartar "${insight.title}"`}
                 >
-                  {busyAction === `${insight.id}-dismiss` ? (
-                    <Loader2 className="h-3 w-3 shrink-0 animate-spin" aria-hidden="true" />
-                  ) : null}
                   Descartar
                 </button>
               </div>

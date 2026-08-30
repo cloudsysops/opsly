@@ -1,9 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { jsonError, parseJsonBody, serverErrorLogged } from '../api-response';
-import { extractIp, logAuditEvent } from '../audit';
 import { requireAdminAccess } from '../auth';
 import { HTTP_STATUS } from '../constants';
-import { checkRateLimit } from '../rate-limiter';
 import { technicianBookingCompleteBodySchema } from '../admin-local-services-complete-schema';
 import { coalesceNull } from '../nullish';
 import {
@@ -84,14 +82,6 @@ export async function postTechnicianBookingComplete(
     return authError;
   }
 
-  const ip = extractIp(request);
-  const rateLimit = await checkRateLimit(
-    ip ? `technician-complete:${ip}` : 'technician-complete:anonymous'
-  );
-  if (!rateLimit.allowed) {
-    return jsonError('Too many requests', HTTP_STATUS.TOO_MANY_REQUESTS);
-  }
-
   const parsed = await parseSlugBookingIdAndBody(request, routeParams.slug, routeParams.bookingId);
   if (!parsed.ok) {
     return parsed.response;
@@ -119,15 +109,6 @@ export async function postTechnicianBookingComplete(
   if (!done.ok) {
     return serverErrorLogged('complete booking status', new Error('status_update_failed'));
   }
-
-  void logAuditEvent({
-    tenant_slug: tenantSlug,
-    action: 'technician_booking_complete',
-    resource: `booking:${bookingId}`,
-    status_code: HTTP_STATUS.OK,
-    ip,
-    metadata: { report_id: rep.id },
-  });
 
   return Response.json({ ok: true, report_id: rep.id, booking_id: bookingId });
 }

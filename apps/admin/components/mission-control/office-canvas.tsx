@@ -190,12 +190,7 @@ type IntentData = {
 function McIntentNode(props: NodeProps) {
   const d = props.data as IntentData;
   return (
-    <div
-      className={cn(
-        'min-w-[200px] max-w-[240px] rounded-lg border px-3 py-2',
-        lifecycleRing(d.lifecycle)
-      )}
-    >
+    <div className={cn('min-w-[200px] max-w-[240px] rounded-lg border px-3 py-2', lifecycleRing(d.lifecycle))}>
       <Handle className="!h-2 !w-2 !bg-sky-500" position={Position.Top} type="target" />
       <p className="text-[10px] uppercase tracking-wider text-sky-500/90">Task / intent</p>
       <p className="mt-1 truncate font-mono text-[10px] text-sky-200/90" title={d.requestId}>
@@ -303,9 +298,8 @@ function buildGraph(input: {
     });
   });
 
-  const intents: OpenClawIntentRuntime[] = input.openClaw?.intents_in_progress?.length
-    ? input.openClaw.intents_in_progress
-    : [];
+  const intents: OpenClawIntentRuntime[] =
+    input.openClaw?.intents_in_progress?.length ? input.openClaw.intents_in_progress : [];
   const fallbackIntents = intents.length ? intents : (input.openClaw?.intents.slice(0, 6) ?? []);
   fallbackIntents.forEach((intent, i) => {
     const id = `intent-${intent.request_id}`;

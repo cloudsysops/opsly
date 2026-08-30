@@ -317,7 +317,6 @@ jobs:
               "ghcr.io/cloudsysops/intcloudsysops-${service}:${IMAGE_TAG}" \
               /app/apps/orchestrator \
               redis @intcloudsysops/prompt-guard @intcloudsysops/content-studio \
-              @intcloudsysops/universe \
               @intcloudsysops/external-agent-registry \
               @intcloudsysops/pattern-catalog @intcloudsysops/sigma-harness
           done

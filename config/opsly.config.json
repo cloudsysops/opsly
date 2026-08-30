@@ -98,22 +98,5 @@
       "status": "active",
       "createdAt": "2026-04-15"
     }
-  ],
-  "workers": {
-    "pc-gamer": {
-      "name": "pc-gamer",
-      "type": "ephemeral",
-      "owner": "Mauro",
-      "tailscale_host": "pc-gamer",
-      "ssh_user": "devops",
-      "opsly_root": "/home/devops/opsly",
-      "capabilities": [
-        "ollama",
-        "content-video",
-        "local-agents"
-      ],
-      "schedule_ref": "config/pc-gamer-schedule.json",
-      "status": "pending-setup"
-    }
-  }
+  ]
 }

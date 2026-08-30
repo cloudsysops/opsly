@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { jsonError, jsonOk } from '@/lib/api-response';
 import { HTTP_STATUS } from '@/lib/constants';
 import { getServiceClient } from '@/lib/supabase';
-import { extractIp, logAuditEvent } from '@/lib/audit';
+import { extractIp } from '@/lib/audit';
 import { checkRateLimit } from '@/lib/rate-limiter-memory';
 
 interface FormField {
@@ -101,16 +101,6 @@ export async function GET(
       createdAt: form.created_at,
       updatedAt: form.updated_at,
     };
-
-    void logAuditEvent({
-      action: 'peskids_form_retrieved',
-      resource: formId,
-      tenant_slug: form.tenant_slug,
-      ip,
-      metadata: {
-        fields_count: formData.fields.length,
-      },
-    });
 
     return jsonOk(formData);
   } catch (error) {

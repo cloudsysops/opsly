@@ -10,9 +10,12 @@ export const dynamic = 'force-dynamic';
 type FranchiseLead = {
   id: string;
   full_name: string;
+  email: string | null;
+  phone: string | null;
   status: string;
   service_mode: string | null;
   class_modality: string | null;
+  neighborhood: string | null;
   created_at: string;
   franchise_id: string | null;
   franchise_name: string | null;
@@ -57,20 +60,16 @@ export async function GET(request: NextRequest) {
     let leadsQuery = client
       .schema('peskids')
       .from('leads')
-      .select('id, full_name, status, service_mode, class_modality, created_at, franchise_id', {
-        count: 'exact',
-      })
+      .select(
+        'id, full_name, email, phone, status, service_mode, class_modality, neighborhood, created_at, franchise_id',
+        { count: 'exact' }
+      )
       .eq('tenant_slug', 'peskids')
       .order('created_at', { ascending: false });
 
     if (scope !== 'all') {
       if (franchiseIds.length === 0) {
-        return NextResponse.json({
-          leads: [],
-          total: 0,
-          tenant: ui.tenant,
-          unitScope: ui.unitScope,
-        });
+        return NextResponse.json({ leads: [], total: 0, tenant: ui.tenant, unitScope: ui.unitScope });
       }
       leadsQuery = leadsQuery.in('franchise_id', franchiseIds);
     }
@@ -87,12 +86,15 @@ export async function GET(request: NextRequest) {
     const enrichedLeads: FranchiseLead[] = (leads ?? []).map((lead) => ({
       id: lead.id,
       full_name: lead.full_name,
+      email: lead.email,
+      phone: lead.phone,
       status: lead.status,
       service_mode: lead.service_mode,
       class_modality: lead.class_modality,
+      neighborhood: lead.neighborhood,
       created_at: lead.created_at,
       franchise_id: lead.franchise_id,
-      franchise_name: lead.franchise_id ? (franchiseMap.get(lead.franchise_id) ?? null) : null,
+      franchise_name: lead.franchise_id ? franchiseMap.get(lead.franchise_id) ?? null : null,
     }));
 
     return NextResponse.json({

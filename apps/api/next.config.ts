@@ -18,14 +18,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   transpilePackages: ['@intcloudsysops/openwa', '@intcloudsysops/tenant-profile'],
-  serverExternalPackages: [
-    '@redis/client',
-    '@redis/bloom',
-    '@redis/graph',
-    '@redis/json',
-    '@redis/search',
-    '@redis/time-series',
-  ],
+  serverExternalPackages: ['@redis/client', '@redis/bloom', '@redis/graph', '@redis/json', '@redis/search', '@redis/time-series'],
   webpack: (config) => {
     config.resolve.extensionAlias = {
       '.js': ['.ts', '.tsx', '.js'],

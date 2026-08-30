@@ -35,12 +35,6 @@ export function startSession(
       items: [],
     },
     events: [],
-    discoveredWorlds: ['nexus'],
-    unlockedWorlds: ['nexus'],
-    bits: [],
-    bonds: [],
-    cards: [],
-    mapFragments: [],
   });
   recordEvent(store, {
     sessionId: session.id,

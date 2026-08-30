@@ -57,13 +57,7 @@ export function GET(request: Request): Promise<Response> {
     try {
       const redis = await getRedis();
       if (redis) {
-        const result = await redis.sendCommand([
-          'EVAL',
-          RATE_LIMIT_LUA,
-          '1',
-          key,
-          String(RATE_WINDOW_SECONDS),
-        ]);
+        const result = await redis.sendCommand(['EVAL', RATE_LIMIT_LUA, '1', key, String(RATE_WINDOW_SECONDS)]);
         count = typeof result === 'number' ? result : Number(result);
       } else {
         // Sentinel: Fail-secure if Redis (the rate limit backend) is unavailable.

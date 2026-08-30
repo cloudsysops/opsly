@@ -10,19 +10,12 @@ export {
   IPO_PROCESS_NODE,
   KNOWLEDGE_FRAGMENT_IPO_ID,
   MAP_FRAGMENT_FIRST_PORTAL_ID,
-  MAP_FRAGMENT_WILD_ID,
   MODULE_ID,
   OBSERVATION_EVENT_TYPES,
   THRESHOLD_CHARACTER_ID,
-  WILD_GUIDE_CHARACTER_ID,
-  WILD_MISSION_ID,
-  WILD_PORTAL_ID,
-  WILD_WORLD_ID,
-  FIRST_BIT_ID,
 } from './constants.js';
 export { createGameRuntime } from './runtime.js';
 export { getFirstPortalMission, FIRST_PORTAL_COLLECTIBLES } from './first-portal.js';
-export { getWildMission, WILD_CHOICE_IDS, WILD_COLLECTIBLES } from './wild.js';
 export { isIpoSolved, isLegalIpoEdge } from './mission.js';
 export { assertObservationEvent, assertPseudonymousId } from './safety.js';
 export {
@@ -39,14 +32,10 @@ export {
   RewardSchema,
   SessionStateSchema,
   WorldInstanceSchema,
-  BondSchema,
-  BitCardUnlockSchema,
 } from './schemas.js';
 export type {
   Ability,
   Achievement,
-  BitCardUnlock,
-  Bond,
   ChooseExplorerInput,
   Collectible,
   ExplorerIdentity,

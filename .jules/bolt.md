@@ -1,7 +1,3 @@
-## 2026-08-13 - [Caching Main Summary Metrics and Avoiding Cyclomatic Complexity Violations]
-**Learning:** Decoupling aggregated metrics computations and external payment processor queries (like computeMrr) using Redis caching with a short TTL (60s) reduces multiple synchronous database round-trips to an O(1) cache lookup. However, when building objects using multiple nullish coalescing operators (??) directly inside a route handler, ESLint's cyclomatic complexity rule adds 1 point for every ??. Decoupling payload construction into a dedicated helper function (e.g., buildMetricsPayload) easily avoids complexity limit violations (limit: 10).
-**Action:** Always cache summary endpoints in dashboard views, and abstract multi-property object building with default fallbacks (??) into typed helpers to keep complexity counts low.
-
 ## 2026-05-26 - [Caching of External Network Probes]
 **Learning:** External network probes like service reachability checks can significantly slow down dashboard responses when performed synchronously on every request. Caching these results in Redis with a short TTL (e.g., 60s) provides a measurable performance boost without sacrificing accuracy for transient outages. Using `void setCache(...)` allows for non-blocking background cache updates.
 **Action:** Always consider caching external probe results in the API layer, especially for multi-tenant dashboards that aggregate status from multiple services.
@@ -42,6 +38,6 @@
 **Learning:** The admin overview dashboardaggregates data from multiple sources (Supabase, BullMQ, Prometheus, and external status URLs). Caching the active tenant count (Supabase) and the Mac2011 status (external fetch) in Redis for 60s significantly reduces tail latency and DB load. To satisfy the `complexity` lint rule (limit: 10) when adding caching logic, extracting response parsing into a helper function (e.g., `parseMac2011Status`) is an effective pattern.
 **Action:** Always cache aggregated metrics and external probes in dashboard-facing API routes, and modularize parsing logic to maintain low cyclomatic complexity.
 
-## 2026-08-20 - [Caching Admin Metrics Summary]
-**Learning:** Administrative metrics endpoints like `/api/admin/metrics` run multiple database RPCs (`opsly_admin_metrics`, `opsly_admin_revenue_by_month`) and BullMQ queue inspections on every request. Applying a 60s Redis cache (`admin:metrics:summary`) eliminates database query overhead and Redis scan delays during frequent admin dashboard updates, serving cached responses instantly.
-**Action:** Always cache expensive RPC and job-runner queue summary endpoints in administrative dashboards with a short TTL (60s).
+## 2026-08-26 - [Caching Mission Control Read Model]
+**Learning:** Complex read models like Mission Control foundation aggregate data from multiple disk files (`config/*.json`, `config/tenants/*.json`), BullMQ queue queries, and external HTTP health probes. Caching the assembled read model in Redis with a short TTL (60s) avoids repeated disk I/O, network latency, and probe timeouts on frequent dashboard refreshes.
+**Action:** Always wrap expensive multi-source read models in short-term Redis cache to maintain high API responsiveness.

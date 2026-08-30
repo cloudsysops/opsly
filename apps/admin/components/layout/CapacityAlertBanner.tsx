@@ -52,9 +52,7 @@ export function CapacityAlertBanner(): React.ReactElement | null {
             Capacity alert · {capacityAlert.severity}
           </p>
           <p className="mt-1 text-sm font-semibold text-amber-50">{capacityAlert.title_es}</p>
-          <p className="mt-1 text-xs leading-relaxed text-amber-100/85">
-            {capacityAlert.opsly_body_es}
-          </p>
+          <p className="mt-1 text-xs leading-relaxed text-amber-100/85">{capacityAlert.opsly_body_es}</p>
           <p className="mt-2 font-mono text-[10px] text-amber-200/70">
             Runbook: {capacityAlert.runbook}
           </p>

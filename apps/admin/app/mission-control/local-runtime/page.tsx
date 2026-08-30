@@ -3,14 +3,7 @@
 import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import useSWR from 'swr';
-import {
-  CheckCircle2,
-  CircleAlert,
-  Download,
-  PackageSearch,
-  ShieldCheck,
-  TerminalSquare,
-} from 'lucide-react';
+import { CheckCircle2, CircleAlert, Download, PackageSearch, ShieldCheck, TerminalSquare } from 'lucide-react';
 
 import { getBaseUrl } from '../../../lib/api-client';
 
@@ -127,8 +120,7 @@ export default function LocalRuntimePage() {
             <p className="text-xs uppercase tracking-[0.25em] text-ops-magenta">Mission Control</p>
             <h1 className="mt-2 text-3xl font-bold">Local Runtime</h1>
             <p className="mt-2 max-w-3xl text-sm text-neutral-400">
-              Permission-based discovery for developer apps, binaries, Docker tooling, and approved
-              install plans.
+              Permission-based discovery for developer apps, binaries, Docker tooling, and approved install plans.
             </p>
           </div>
           <button
@@ -140,22 +132,10 @@ export default function LocalRuntimePage() {
         </header>
 
         <section className="grid gap-4 md:grid-cols-4">
-          <SummaryCard
-            icon={<PackageSearch className="h-5 w-5" />}
-            label="Registered"
-            value={tools.length}
-          />
-          <SummaryCard
-            icon={<CheckCircle2 className="h-5 w-5" />}
-            label="Installed"
-            value={installed}
-          />
+          <SummaryCard icon={<PackageSearch className="h-5 w-5" />} label="Registered" value={tools.length} />
+          <SummaryCard icon={<CheckCircle2 className="h-5 w-5" />} label="Installed" value={installed} />
           <SummaryCard icon={<CircleAlert className="h-5 w-5" />} label="Missing" value={missing} />
-          <SummaryCard
-            icon={<ShieldCheck className="h-5 w-5" />}
-            label="Required Missing"
-            value={missingRequired}
-          />
+          <SummaryCard icon={<ShieldCheck className="h-5 w-5" />} label="Required Missing" value={missingRequired} />
         </section>
 
         {error ? (
@@ -191,16 +171,11 @@ export default function LocalRuntimePage() {
                 {tool.installed ? 'installed' : `missing ${tool.missing.join(', ')}`}
               </div>
               <div className="truncate font-mono text-xs text-neutral-300">
-                {tool.binaries.find((binary) => binary.version)?.version ??
-                  (tool.app?.running ? 'app running' : '-')}
+                {tool.binaries.find((binary) => binary.version)?.version ?? (tool.app?.running ? 'app running' : '-')}
               </div>
               <div className="text-xs text-neutral-400">
-                {tool.install.package
-                  ? `${tool.install.provider}: ${tool.install.package}`
-                  : 'none'}
-                {tool.install.allowed ? (
-                  <span className="ml-2 text-emerald-300">allowlisted</span>
-                ) : null}
+                {tool.install.package ? `${tool.install.provider}: ${tool.install.package}` : 'none'}
+                {tool.install.allowed ? <span className="ml-2 text-emerald-300">allowlisted</span> : null}
               </div>
               <div>
                 <button
@@ -222,12 +197,9 @@ export default function LocalRuntimePage() {
               <TerminalSquare className="h-5 w-5 text-ops-cyan" />
               Workspace
             </h2>
-            <div className="font-mono text-sm text-neutral-300">
-              {data?.workspace_root ?? '~/opsly-workspace/opsly'}
-            </div>
+            <div className="font-mono text-sm text-neutral-300">{data?.workspace_root ?? '~/opsly-workspace/opsly'}</div>
             <p className="mt-3 text-sm text-neutral-500">
-              Installs are not executed here. This MVP creates auditable plans only; execution needs
-              human approval.
+              Installs are not executed here. This MVP creates auditable plans only; execution needs human approval.
             </p>
           </div>
 
@@ -235,15 +207,10 @@ export default function LocalRuntimePage() {
             <h2 className="mb-3 text-lg font-semibold">Automation History</h2>
             <div className="space-y-3">
               {(history?.events ?? []).map((event) => (
-                <div
-                  key={event.id}
-                  className="border-b border-neutral-900 pb-2 text-xs last:border-b-0"
-                >
+                <div key={event.id} className="border-b border-neutral-900 pb-2 text-xs last:border-b-0">
                   <div className="flex justify-between gap-2 text-neutral-300">
                     <span>{event.action}</span>
-                    <span className={event.allowed ? 'text-emerald-300' : 'text-red-300'}>
-                      {event.status}
-                    </span>
+                    <span className={event.allowed ? 'text-emerald-300' : 'text-red-300'}>{event.status}</span>
                   </div>
                   <div className="mt-1 text-neutral-500">{event.target}</div>
                 </div>

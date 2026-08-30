@@ -80,7 +80,7 @@ export default function CreateFormPage(): React.ReactElement {
   return (
     <div className="min-h-screen bg-pk-bg p-4 sm:p-6">
       <div className="mx-auto max-w-5xl space-y-6">
-        <section className="overflow-hidden rounded-3xl border border-pk-border bg-pk-surface p-5 shadow-card sm:p-6">
+        <section className="overflow-hidden rounded-3xl border border-pk-border bg-white p-5 shadow-card sm:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-2xl">
               <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-pk-mutedText">

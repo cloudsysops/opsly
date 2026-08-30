@@ -21,9 +21,7 @@ function NavBody({ onNavigate }: { onNavigate?: () => void }): React.ReactElemen
             <Moon className="h-4 w-4" aria-hidden />
           </span>
           <span>
-            <span className="block font-display text-sm font-semibold tracking-tight">
-              Opsly Moon
-            </span>
+            <span className="block font-display text-sm font-semibold tracking-tight">Opsly Moon</span>
             <span className="block font-mono text-[9px] uppercase tracking-[0.18em] text-slate-500">
               Control Center
             </span>

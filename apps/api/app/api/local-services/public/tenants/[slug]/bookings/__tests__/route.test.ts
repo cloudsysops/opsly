@@ -4,12 +4,6 @@ import * as portalMe from '../../../../../../../../lib/portal-me';
 import * as repo from '../../../../../../../../lib/repositories/local-services-repository';
 import * as tenantMeta from '../../../../../../../../lib/tenant-metadata';
 import { technicianMetadataAsJson } from '../../../../../../../../lib/technician-tenant-profile';
-import { logAuditEvent } from '../../../../../../../../lib/audit';
-
-vi.mock('../../../../../../../../lib/audit', () => ({
-  extractIp: vi.fn(() => '127.0.0.1'),
-  logAuditEvent: vi.fn(() => Promise.resolve()),
-}));
 
 vi.mock('../../../../../../../../lib/portal-me', () => ({
   fetchPortalTenantRowBySlug: vi.fn(),
@@ -80,19 +74,6 @@ describe('POST /api/local-services/public/tenants/[slug]/bookings', () => {
       expect.objectContaining({
         tenantSlug: 'acme',
         customerEmail: 'c@test.com',
-      })
-    );
-    expect(logAuditEvent).toHaveBeenCalledWith(
-      expect.objectContaining({
-        tenant_slug: 'acme',
-        action: 'local_services_booking_create',
-        resource: '/api/local-services/public/tenants/acme/bookings',
-        status_code: 201,
-        ip: '127.0.0.1',
-        metadata: {
-          booking_id: 'b1',
-          technician: false,
-        },
       })
     );
   });

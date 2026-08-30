@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 type FranchiseStudent = {
   id: string;
   full_name: string;
+  parent_email: string | null;
   grade: string | null;
   status: string;
   enrollment_date: string | null;
@@ -103,6 +104,7 @@ export default function FranchiseStudentsPage() {
                 {students.map((student) => (
                   <tr key={student.id} className="border-b border-slate-50 hover:bg-slate-50/50">
                     <td className="px-4 py-3 font-medium text-slate-900">{student.full_name}</td>
+                    <td className="px-4 py-3 text-slate-600">{student.parent_email ?? '—'}</td>
                     <td className="px-4 py-3 text-slate-600">{student.grade ?? '—'}</td>
                     <td className="px-4 py-3">
                       <StatusBadge status={student.status} />

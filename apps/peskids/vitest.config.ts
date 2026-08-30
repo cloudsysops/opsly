@@ -8,7 +8,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname),
-      '@intcloudsysops/franchise-core': path.resolve(__dirname, '../../lib/franchise-core/src/index.ts'),
     },
   },
   test: {

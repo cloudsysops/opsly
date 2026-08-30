@@ -93,7 +93,7 @@ jobs:
       - name: Generate audit report
         run: |
           npm --version
-          npm audit --audit-level=moderate --json > audit-report.json || true
+          npm audit --json > audit-report.json || true
 
           {
             echo "## Dependency Audit Report"

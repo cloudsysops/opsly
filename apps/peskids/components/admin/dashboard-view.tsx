@@ -410,7 +410,7 @@ export function DashboardView({
         data-admin-section="inicio"
         className="mb-6 overflow-hidden rounded-3xl border border-pk-border bg-gradient-to-br from-white via-white to-teal-50/60 p-5 shadow-card sm:p-6"
       >
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-2xl">
             <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-pk-mutedText">
               Peskids / Admin
@@ -717,7 +717,7 @@ export function DashboardView({
       <ClassesPanel />
       <AcademyOpsMap data={data} />
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
         <StatCard
           sectionId="students"
           title="Estudiantes activos"

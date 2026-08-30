@@ -24,17 +24,6 @@ vi.mock('../lib/portal-feedback-auth', () => ({
   resolveTrustedFeedbackIdentity: vi.fn(),
 }));
 
-vi.mock('../lib/audit', () => ({
-  extractIp: vi.fn(() => '127.0.0.1'),
-  logAuditEvent: vi.fn(),
-}));
-
-vi.mock('../lib/rate-limiter', () => ({
-  checkRateLimit: vi.fn(() => Promise.resolve({ allowed: true })),
-}));
-
-import { logAuditEvent } from '../lib/audit';
-import { checkRateLimit } from '../lib/rate-limiter';
 import { llmCall } from '@intcloudsysops/llm-gateway';
 import { resolveTrustedFeedbackIdentity } from '../lib/portal-feedback-auth';
 import { analyzeFeedback, executeAutoImplement } from '@intcloudsysops/ml';
@@ -443,7 +432,7 @@ describe('/api/feedback/approve', () => {
     expect(res.status).toBe(401);
   });
 
-  it('con token y approved llama executeAutoImplement, checkRateLimit y logAuditEvent', async () => {
+  it('con token y approved llama executeAutoImplement', async () => {
     const updateDec = vi.fn().mockReturnValue({ eq: async () => ({ error: null }) });
     const updateConv = vi.fn().mockReturnValue({ eq: async () => ({ error: null }) });
     const from = vi.fn((table: string) => {
@@ -487,84 +476,6 @@ describe('/api/feedback/approve', () => {
     );
 
     expect(res.status).toBe(200);
-    expect(checkRateLimit).toHaveBeenCalledWith('feedback-approve:127.0.0.1');
     expect(executeAutoImplement).toHaveBeenCalledWith('dec-1', 'haz X', 'acme');
-    expect(logAuditEvent).toHaveBeenCalledWith(
-      expect.objectContaining({
-        tenant_slug: 'acme',
-        action: 'feedback_approve',
-        resource: 'feedback_decision:dec-1',
-      })
-    );
-  });
-
-  it('excede rate limit → 429', async () => {
-    vi.mocked(checkRateLimit).mockResolvedValueOnce({ allowed: false });
-
-    const res = await approvePost(
-      new Request('http://localhost/api/feedback/approve', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-token': 'admin-secret-token',
-        },
-        body: JSON.stringify({ decision_id: 'dec-1', approved: true }),
-      })
-    );
-
-    expect(res.status).toBe(429);
-  });
-
-  it('con token y rejected registra logAuditEvent con feedback_reject', async () => {
-    const updateDec = vi.fn().mockReturnValue({ eq: async () => ({ error: null }) });
-    const updateConv = vi.fn().mockReturnValue({ eq: async () => ({ error: null }) });
-    const from = vi.fn((table: string) => {
-      if (table === 'feedback_decisions') {
-        return {
-          select: () => ({
-            eq: () => ({
-              single: async () => ({
-                data: {
-                  id: 'dec-2',
-                  conversation_id: 'c2',
-                  implementation_prompt: null,
-                  feedback_conversations: { tenant_slug: 'acme' },
-                },
-                error: null,
-              }),
-            }),
-          }),
-          update: updateDec,
-        };
-      }
-      if (table === 'feedback_conversations') {
-        return { update: updateConv };
-      }
-      return {};
-    });
-
-    vi.mocked(supabaseMod.getServiceClient).mockReturnValue({
-      schema: () => ({ from }),
-    } as never);
-
-    const res = await approvePost(
-      new Request('http://localhost/api/feedback/approve', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-token': 'admin-secret-token',
-        },
-        body: JSON.stringify({ decision_id: 'dec-2', approved: false }),
-      })
-    );
-
-    expect(res.status).toBe(200);
-    expect(logAuditEvent).toHaveBeenCalledWith(
-      expect.objectContaining({
-        tenant_slug: 'acme',
-        action: 'feedback_reject',
-        resource: 'feedback_decision:dec-2',
-      })
-    );
   });
 });

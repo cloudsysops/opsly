@@ -33,10 +33,7 @@ export default async function MoonAgentsPage(): Promise<React.ReactElement> {
       <section className="space-y-3">
         <h2 className="font-display text-sm font-semibold">Servicios locales / HTTP</h2>
         {services.length === 0 ? (
-          <MoonEmptyState
-            title="Sin agent-services"
-            description="config/agent-services.json vacío o ausente."
-          />
+          <MoonEmptyState title="Sin agent-services" description="config/agent-services.json vacío o ausente." />
         ) : (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {services.map((s) => (
@@ -83,10 +80,7 @@ export default async function MoonAgentsPage(): Promise<React.ReactElement> {
       <section className="space-y-3">
         <h2 className="font-display text-sm font-semibold">External workers</h2>
         {workers.length === 0 ? (
-          <MoonEmptyState
-            title="Sin workers externos"
-            description="external-agent-registry sin entradas."
-          />
+          <MoonEmptyState title="Sin workers externos" description="external-agent-registry sin entradas." />
         ) : (
           <div className="grid gap-3 md:grid-cols-2">
             {workers.map((w) => (

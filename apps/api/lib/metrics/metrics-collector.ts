@@ -108,10 +108,7 @@ export async function recordLeadPersisted(tenantSlug: string, created: boolean):
   });
 }
 
-export async function recordLeadPersistLatency(
-  tenantSlug: string,
-  latencyMs: number
-): Promise<void> {
+export async function recordLeadPersistLatency(tenantSlug: string, latencyMs: number): Promise<void> {
   return recordMetric({
     name: 'lead.persist.latency_ms',
     type: 'histogram',
@@ -121,10 +118,7 @@ export async function recordLeadPersistLatency(
   });
 }
 
-export async function recordN8nDispatchLatency(
-  tenantSlug: string,
-  latencyMs: number
-): Promise<void> {
+export async function recordN8nDispatchLatency(tenantSlug: string, latencyMs: number): Promise<void> {
   return recordMetric({
     name: 'n8n.dispatch.latency_ms',
     type: 'histogram',

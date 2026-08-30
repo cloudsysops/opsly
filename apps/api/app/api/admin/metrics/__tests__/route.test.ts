@@ -13,15 +13,9 @@ vi.mock('../../../../../lib/bullmq-pipeline-counts', () => ({
   getBullmqPipelineJobTotals: vi.fn(),
 }));
 
-vi.mock('../../../../../lib/redis-cache', () => ({
-  getCache: vi.fn(),
-  setCache: vi.fn(() => Promise.resolve(true)),
-}));
-
 import { getBullmqPipelineJobTotals } from '../../../../../lib/bullmq-pipeline-counts';
 import { getUserFromAuthorizationHeader } from '../../../../../lib/portal-auth';
 import { getServiceClient } from '../../../../../lib/supabase';
-import { getCache, setCache } from '../../../../../lib/redis-cache';
 
 const superAdminUser = {
   id: 'admin-1',
@@ -33,7 +27,6 @@ describe('GET /api/admin/metrics', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(getUserFromAuthorizationHeader).mockResolvedValue(superAdminUser as never);
-    vi.mocked(getCache).mockResolvedValue(null);
     vi.mocked(getBullmqPipelineJobTotals).mockResolvedValue({
       openclaw_total: 2,
       teams_total: 1,
@@ -100,32 +93,5 @@ describe('GET /api/admin/metrics', () => {
     expect(body.active_tenants).toBe(5);
     expect(body.gross_revenue_month_usd).toBe(42.5);
     expect(body.bullmq_pipeline_jobs).toBe(3);
-    expect(setCache).toHaveBeenCalledWith(
-      'admin:metrics:summary',
-      expect.objectContaining({ active_tenants: 5 }),
-      60
-    );
-  });
-
-  it('returns cached response immediately when cache hit occurs', async () => {
-    const cachedData = {
-      active_tenants: 10,
-      gross_revenue_month_usd: 100,
-      revenue_last_months: [],
-      bullmq_pipeline_jobs: 0,
-      bullmq: { redis_available: true },
-    };
-    vi.mocked(getCache).mockResolvedValue(cachedData);
-
-    const res = await GET(
-      new Request('http://localhost/api/admin/metrics', {
-        headers: { Authorization: 'Bearer token' },
-      })
-    );
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body).toEqual(cachedData);
-    expect(getServiceClient).not.toHaveBeenCalled();
-    expect(getBullmqPipelineJobTotals).not.toHaveBeenCalled();
   });
 });

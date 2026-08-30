@@ -46,11 +46,14 @@ export async function dispatchPeskidsLeadAutomation(
 
   try {
     const startMs = Date.now();
-    const response = await fetchWithRetry(`${base}${PESKIDS_N8N_LEAD_INTAKE_PATH}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(buildPeskidsAutomationPayload(payload)),
-    });
+    const response = await fetchWithRetry(
+      `${base}${PESKIDS_N8N_LEAD_INTAKE_PATH}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildPeskidsAutomationPayload(payload)),
+      }
+    );
 
     const latencyMs = Date.now() - startMs;
     await recordN8nDispatchLatency('peskids', latencyMs);

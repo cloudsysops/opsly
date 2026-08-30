@@ -232,7 +232,7 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
         }}
       />
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
         <TeacherTodayAgendaCard
           slots={todayAgenda}
           attendanceFocusClassId={attendanceFocusClassId}

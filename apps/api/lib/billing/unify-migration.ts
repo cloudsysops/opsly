@@ -86,12 +86,12 @@ export async function runUnifyMigration(): Promise<UnifyMigrationResult> {
     seen.add(row.tenant_id);
 
     try {
-      const { data: existing } = (await db
+      const { data: existing } = await db
         .schema('platform')
         .from('billing_subscriptions')
         .select('id')
         .eq('tenant_id', row.tenant_id)
-        .maybeSingle()) as { data: BillingSubscriptionCheck | null; error: unknown };
+        .maybeSingle() as { data: BillingSubscriptionCheck | null; error: unknown };
 
       if (existing) {
         result.alreadyMigrated += 1;
@@ -100,18 +100,16 @@ export async function runUnifyMigration(): Promise<UnifyMigrationResult> {
 
       const { tenant_id, stripe_status, current_period_end, plan } = row;
 
-      const { data: tenant } = (await db
+      const { data: tenant } = await db
         .schema('platform')
         .from('tenants')
         .select('stripe_customer_id, stripe_subscription_id')
         .eq('id', tenant_id)
-        .maybeSingle()) as {
-        data: { stripe_customer_id: string | null; stripe_subscription_id: string | null } | null;
-        error: unknown;
-      };
+        .maybeSingle() as { data: { stripe_customer_id: string | null; stripe_subscription_id: string | null } | null; error: unknown };
 
-      const planId =
-        plan && PLAN_TO_BILLING_PLAN[plan] ? PLAN_TO_BILLING_PLAN[plan] : 'opsly-basic';
+      const planId = plan && PLAN_TO_BILLING_PLAN[plan]
+        ? PLAN_TO_BILLING_PLAN[plan]
+        : 'opsly-basic';
 
       const { error: insertError } = await db
         .schema('platform')
@@ -125,7 +123,9 @@ export async function runUnifyMigration(): Promise<UnifyMigrationResult> {
           billing_period: 'monthly',
           amount_cents: 0,
           currency: 'USD',
-          current_period_end: current_period_end ? current_period_end.slice(0, 10) : null,
+          current_period_end: current_period_end
+            ? current_period_end.slice(0, 10)
+            : null,
           current_period_start: null,
           auto_renew: stripe_status === 'active',
         });
@@ -140,9 +140,7 @@ export async function runUnifyMigration(): Promise<UnifyMigrationResult> {
         result.details.push(`Insert error for tenant ${tenant_id}: ${insertError.message}`);
       } else {
         result.newlyMigrated += 1;
-        result.details.push(
-          `Migrated tenant ${tenant_id} → plan ${planId} (status: ${stripe_status})`
-        );
+        result.details.push(`Migrated tenant ${tenant_id} → plan ${planId} (status: ${stripe_status})`);
       }
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);

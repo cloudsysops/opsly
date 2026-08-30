@@ -20,15 +20,10 @@ export function EmptyState({
 }: EmptyStateProps): ReactElement {
   return (
     <div
-      role="region"
-      aria-label={title}
       className={cn('flex flex-col items-center justify-center px-4 py-12 text-center', className)}
     >
       {icon !== undefined && icon !== null ? (
-        <div
-          aria-hidden="true"
-          className="mb-4 rounded-full border border-ops-border bg-ops-surface p-3 text-ops-gray"
-        >
+        <div className="mb-4 rounded-full border border-ops-border bg-ops-surface p-3 text-ops-gray">
           {icon}
         </div>
       ) : null}

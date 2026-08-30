@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { jsonError, jsonOk } from '@/lib/api-response';
 import { HTTP_STATUS } from '@/lib/constants';
-import { runTrustedPortalDalForPathSlug, PORTAL_WRITE_ACCESS } from '@/lib/portal-tenant-dal';
+import { runTrustedPortalDalForPathSlug } from '@/lib/portal-tenant-dal';
 import { getServiceClient } from '@/lib/supabase';
 
 // peskids.* tables pending DB type codegen
@@ -115,42 +115,37 @@ export async function POST(
   { params }: { params: Promise<{ tenantSlug: string }> }
 ): Promise<Response> {
   const { tenantSlug } = await params;
-  return runTrustedPortalDalForPathSlug(
-    request,
-    tenantSlug,
-    async (session) => {
-      try {
-        const body = (await request.json()) as Partial<BulkGradeRequest>;
+  return runTrustedPortalDalForPathSlug(request, tenantSlug, async (session) => {
+    try {
+      const body = (await request.json()) as Partial<BulkGradeRequest>;
 
-        const validation = validateBulkGradeRequest(body);
-        if (!validation.valid) {
-          return validation.error;
-        }
-
-        const supabase = getServiceClient();
-
-        const result = await gradeSubmissionsAndAudit(
-          supabase,
-          tenantSlug,
-          validation.request.submissionIds,
-          validation.request.score,
-          validation.request.feedback,
-          session.user.id
-        );
-
-        if (!result.ok) {
-          return jsonError(result.error, HTTP_STATUS.INTERNAL_ERROR);
-        }
-
-        return jsonOk({
-          updated: result.updated.length,
-          submissionIds: result.updated.map((u) => u.submission_id),
-        });
-      } catch (error) {
-        console.error('Bulk grade error:', error);
-        return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
+      const validation = validateBulkGradeRequest(body);
+      if (!validation.valid) {
+        return validation.error;
       }
-    },
-    PORTAL_WRITE_ACCESS
-  );
+
+      const supabase = getServiceClient();
+
+      const result = await gradeSubmissionsAndAudit(
+        supabase,
+        tenantSlug,
+        validation.request.submissionIds,
+        validation.request.score,
+        validation.request.feedback,
+        session.user.id
+      );
+
+      if (!result.ok) {
+        return jsonError(result.error, HTTP_STATUS.INTERNAL_ERROR);
+      }
+
+      return jsonOk({
+        updated: result.updated.length,
+        submissionIds: result.updated.map((u) => u.submission_id),
+      });
+    } catch (error) {
+      console.error('Bulk grade error:', error);
+      return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
+    }
+  });
 }

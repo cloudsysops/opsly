@@ -1,13 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@intcloudsysops/components';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@intcloudsysops/components';
 
 interface FormAnalyticsMetrics {
   submissionCount: number;
@@ -69,9 +63,7 @@ export function FormAnalyticsCard({
 
           <div>
             <div className="text-xs text-ops-gray">Abandonment</div>
-            <div
-              className={`text-2xl font-bold ${abandonnmentPercent > 30 ? 'text-ops-red' : 'text-ops-yellow'}`}
-            >
+            <div className={`text-2xl font-bold ${abandonnmentPercent > 30 ? 'text-ops-red' : 'text-ops-yellow'}`}>
               {abandonnmentPercent}%
             </div>
           </div>
@@ -83,9 +75,7 @@ export function FormAnalyticsCard({
 
           <div>
             <div className="text-xs text-ops-gray">Errors</div>
-            <div
-              className={`text-2xl font-bold ${metrics.errorCount > 0 ? 'text-ops-red' : 'text-ops-green'}`}
-            >
+            <div className={`text-2xl font-bold ${metrics.errorCount > 0 ? 'text-ops-red' : 'text-ops-green'}`}>
               {metrics.errorCount}
             </div>
           </div>

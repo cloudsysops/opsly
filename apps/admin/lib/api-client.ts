@@ -576,11 +576,7 @@ export type CreateDefenseAuditPayload = {
 
 export async function createDefenseAudit(
   body: CreateDefenseAuditPayload
-): Promise<{
-  success: boolean;
-  audit: DefenseAuditRow;
-  orchestrator?: { queued: boolean; detail?: string };
-}> {
+): Promise<{ success: boolean; audit: DefenseAuditRow; orchestrator?: { queued: boolean; detail?: string } }> {
   return request(`/api/defense/audits`, {
     method: 'POST',
     body: JSON.stringify(body),
@@ -691,14 +687,11 @@ export async function stopAgentIdeTerminalSession(
   agentId: string,
   sessionId: string
 ): Promise<{ success: boolean; status: string }> {
-  return request(
-    `/api/admin/agents/terminal/${encodeURIComponent(agentId)}/sessions/${encodeURIComponent(
-      sessionId
-    )}/stop`,
-    {
-      method: 'POST',
-    }
-  );
+  return request(`/api/admin/agents/terminal/${encodeURIComponent(agentId)}/sessions/${encodeURIComponent(
+    sessionId
+  )}/stop`, {
+    method: 'POST',
+  });
 }
 
 export async function getAgentIdeMcpTools(): Promise<AgentIdeMcpCatalogResponse> {

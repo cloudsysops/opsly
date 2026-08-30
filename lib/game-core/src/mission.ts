@@ -1,19 +1,15 @@
 import {
-  FIRST_PORTAL_MISSION_ID,
   GAME_SCHEMA_VERSION,
   IPO_INPUT_NODE,
   IPO_OUTPUT_NODE,
   IPO_PROCESS_NODE,
-  WILD_MISSION_ID,
-  WILD_WORLD_ID,
 } from './constants.js';
 import { recordEvent } from './events.js';
-import { FIRST_PORTAL_COLLECTIBLES, getFirstPortalMission } from './first-portal.js';
+import { getFirstPortalMission } from './first-portal.js';
 import { grantCollectibles } from './inventory.js';
 import { GraphEdgeSchema, MissionResultSchema } from './schemas.js';
-import { getWildMission } from './wild.js';
 import type { GameStore } from './store.js';
-import type { Collectible, GraphEdge, Mission, MissionResult } from './types.js';
+import type { GraphEdge, Mission, MissionResult } from './types.js';
 
 export function isIpoSolved(edges: GraphEdge[]): boolean {
   const has = (from: string, to: string): boolean =>
@@ -28,26 +24,16 @@ export function isLegalIpoEdge(from: string, to: string): boolean {
   );
 }
 
-function resolveMission(missionId: string): Mission {
-  if (missionId === FIRST_PORTAL_MISSION_ID) return getFirstPortalMission();
-  if (missionId === WILD_MISSION_ID) return getWildMission();
-  throw new Error(`Unknown mission: ${missionId}`);
-}
-
-function missionStartedEvidence(missionId: string): string {
-  if (missionId === WILD_MISSION_ID) {
-    return 'Explorer received the WILD canopy mission';
-  }
-  return 'Explorer received the First Portal systems mission';
-}
-
 export function startMission(
   store: GameStore,
   sessionId: string,
   missionId: string,
   now: () => Date,
 ): Mission {
-  const mission = resolveMission(missionId);
+  const mission = getFirstPortalMission();
+  if (mission.id !== missionId) {
+    throw new Error(`Unknown mission: ${missionId}`);
+  }
   const state = store.get(sessionId);
   if (state.session.portalId !== mission.portalId) {
     throw new Error('Enter the matching portal before starting this mission');
@@ -60,15 +46,12 @@ export function startMission(
   });
   state.session = { ...state.session, missionId };
   state.edges = [];
-  if (missionId === WILD_MISSION_ID) {
-    state.wild = { observed: false, askedMaya: false };
-  }
   store.put(state);
   recordEvent(store, {
     sessionId,
     type: 'mission.started',
     missionId,
-    evidence: missionStartedEvidence(missionId),
+    evidence: 'Explorer received the First Portal systems mission',
     now,
   });
   return mission;
@@ -88,7 +71,10 @@ export function connectNodes(
   }
   state.edges.push(edge);
   if (!isLegalIpoEdge(from, to)) {
-    state.mission = { ...state.mission, attempts: state.mission.attempts + 1 };
+    state.mission = {
+      ...state.mission,
+      attempts: state.mission.attempts + 1,
+    };
     recordEvent(store, {
       sessionId,
       type: 'mission.retried',
@@ -101,22 +87,13 @@ export function connectNodes(
     return state.mission;
   }
   if (isIpoSolved(state.edges)) {
-    return completeMission(store, sessionId, now, {
-      evidence: 'Explorer restored INPUT → PROCESS → OUTPUT',
-      items: FIRST_PORTAL_COLLECTIBLES,
-      unlockWorldId: WILD_WORLD_ID,
-    });
+    return completeMission(store, sessionId, now);
   }
   store.put(state);
   return state.mission;
 }
 
-export function completeMission(
-  store: GameStore,
-  sessionId: string,
-  now: () => Date,
-  input: { evidence: string; items: Collectible[]; unlockWorldId?: string },
-): MissionResult {
+function completeMission(store: GameStore, sessionId: string, now: () => Date): MissionResult {
   const state = store.get(sessionId);
   if (!state.mission) {
     throw new Error('No mission to complete');
@@ -130,17 +107,14 @@ export function completeMission(
   if (state.world) {
     state.world = { ...state.world, status: 'cleared' };
   }
-  if (input.unlockWorldId && !state.unlockedWorlds.includes(input.unlockWorldId)) {
-    state.unlockedWorlds = [...state.unlockedWorlds, input.unlockWorldId];
-  }
   store.put(state);
   recordEvent(store, {
     sessionId,
     type: 'mission.completed',
     missionId: completed.missionId,
-    evidence: input.evidence,
+    evidence: 'Explorer restored INPUT → PROCESS → OUTPUT',
     now,
   });
-  grantCollectibles(store, sessionId, now, input.items);
+  grantCollectibles(store, sessionId, now);
   return completed;
 }

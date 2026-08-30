@@ -33,7 +33,7 @@ export function TeacherWeeklyOverview({
 }: TeacherWeeklyOverviewProps): React.ReactElement {
   return (
     <>
-      <section className="overflow-hidden rounded-pk-lg border border-pk-border bg-gradient-to-br from-white via-white to-teal-50/80 shadow-hero">
+      <section className="overflow-hidden rounded-[2rem] border border-pk-border bg-gradient-to-br from-white via-white to-teal-50/80 shadow-hero">
         <div className="grid gap-10 px-5 py-6 sm:px-8 sm:py-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:px-10 lg:py-10">
           <div className="relative z-10">
             <div className="flex flex-wrap items-center gap-2">
@@ -75,7 +75,7 @@ export function TeacherWeeklyOverview({
           </div>
 
           <div className="relative">
-            <div className="overflow-hidden rounded-pk-lg border border-pk-border bg-white shadow-hero">
+            <div className="overflow-hidden rounded-[2rem] border border-pk-border bg-white shadow-hero">
               <div className="flex items-center justify-between gap-4 border-b border-pk-border bg-pk-snow px-5 py-4">
                 <div>
                   <p className="font-bold text-pk-ink">Agenda del profesor</p>

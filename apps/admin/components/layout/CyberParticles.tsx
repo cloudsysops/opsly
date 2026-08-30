@@ -80,11 +80,5 @@ export function CyberParticles() {
     };
   }, []);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className="pointer-events-none fixed inset-0 z-0 opacity-50"
-      aria-hidden
-    />
-  );
+  return <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-0 opacity-50" aria-hidden />;
 }

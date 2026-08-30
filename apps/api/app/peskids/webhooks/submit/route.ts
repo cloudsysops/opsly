@@ -9,14 +9,9 @@ interface PeskidsQB {
   insert(data: Record<string, unknown>): PeskidsQB;
   update(data: Record<string, unknown>): PeskidsQB;
   eq(col: string, val: unknown): PeskidsQB;
-  then<T>(
-    r: (v: { data: unknown[] | null; error: unknown }) => T,
-    j?: (e: unknown) => T
-  ): Promise<T>;
+  then<T>(r: (v: { data: unknown[] | null; error: unknown }) => T, j?: (e: unknown) => T): Promise<T>;
 }
-interface PeskidsClient {
-  from(table: string): PeskidsQB;
-}
+interface PeskidsClient { from(table: string): PeskidsQB; }
 
 interface WebhookPayload {
   form_id: string;

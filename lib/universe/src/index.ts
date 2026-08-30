@@ -36,7 +36,6 @@ import { composeStory } from './story.js';
 import { serializeCanon, writeCanonJson } from './serialize.js';
 import { CANON_VERSION, PROMPT_VERSION } from './constants.js';
 import { evaluateUniverseChangeGuard, isUniverseChangeAllowed } from './guard.js';
-import { getBit, listBits } from './bits/registry.js';
 
 assertCanonIntegrity();
 
@@ -64,8 +63,6 @@ export const universe = {
   listRelationships,
   getLore,
   getUniverseStyle,
-  getBit,
-  listBits,
   getContext,
   composeCharacterContext,
   composeStory,
@@ -97,7 +94,6 @@ export {
 } from './foundation.js';
 export {
   UniverseError,
-  UniverseUnknownBitError,
   UniverseUnknownCharacterError,
   UniverseUnknownWorldError,
   UniverseCanonMutationError,
@@ -146,5 +142,3 @@ export {
 export { collectVisualDna, formatVisualDnaBlock, getVisualDna } from './visual/dna.js';
 export { UNIVERSE_STYLE } from './visual/universe-style.js';
 export { CANONICAL_CHARACTERS } from './characters/index.js';
-export { CANONICAL_BITS } from './bits/index.js';
-export { bitCardFromBit, getBit, getBitsForWorld, listBits } from './bits/registry.js';

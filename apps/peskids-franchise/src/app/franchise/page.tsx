@@ -100,7 +100,9 @@ export default function FranchiseDashboardPage() {
     return (
       <main className="p-8">
         <h1 className="text-2xl font-semibold text-slate-900">Error</h1>
-        <p className="mt-2 text-slate-600">No fue posible cargar el dashboard. Intenta de nuevo.</p>
+        <p className="mt-2 text-slate-600">
+          No fue posible cargar el dashboard. Intenta de nuevo.
+        </p>
       </main>
     );
   }
@@ -110,12 +112,6 @@ export default function FranchiseDashboardPage() {
       <div>
         <h1 className="text-3xl font-semibold text-brand-navy">Dashboard de Franquicia</h1>
         <p className="mt-1 text-slate-600">Resumen de operaciones por unidad</p>
-        <Link
-          href="/franchise/candidates"
-          className="mt-3 inline-flex rounded-lg bg-brand-purple px-3 py-2 text-sm font-medium text-white"
-        >
-          Abrir candidatos
-        </Link>
       </div>
 
       {/* KPI Cards */}
@@ -123,11 +119,7 @@ export default function FranchiseDashboardPage() {
         <StatCard label="Leads totales" value={stats.totals.leads} color="navy" />
         <StatCard label="Estudiantes activos" value={stats.totals.activeStudents} color="green" />
         <StatCard label="Clases" value={stats.totals.classes} color="cyan" />
-        <StatCard
-          label="Leads esta semana"
-          value={stats.recentActivity.leadsThisWeek}
-          color="orange"
-        />
+        <StatCard label="Leads esta semana" value={stats.recentActivity.leadsThisWeek} color="orange" />
       </div>
 
       {/* Per-unit breakdown */}
@@ -166,7 +158,10 @@ export default function FranchiseDashboardPage() {
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-slate-900">Leads Recientes</h2>
-          <Link href="/franchise/leads" className="text-sm text-brand-purple hover:underline">
+          <Link
+            href="/franchise/leads"
+            className="text-sm text-brand-purple hover:underline"
+          >
             Ver todos
           </Link>
         </div>

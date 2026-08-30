@@ -1,5 +1,9 @@
 import Link from 'next/link';
-import { MoonCard, MoonEmptyState, MoonPageHeader } from '@/components/moon/primitives';
+import {
+  MoonCard,
+  MoonEmptyState,
+  MoonPageHeader,
+} from '@/components/moon/primitives';
 
 export default function MoonDeploymentsPage(): React.ReactElement {
   return (
@@ -8,10 +12,7 @@ export default function MoonDeploymentsPage(): React.ReactElement {
         title="Deployments"
         subtitle="Sin deploy desde UI. Mapear Actions/VPS vía runbooks. Approval-first obligatorio."
         actions={
-          <Link
-            href="/moon/health"
-            className="rounded-lg border border-white/15 px-2.5 py-1.5 text-xs"
-          >
+          <Link href="/moon/health" className="rounded-lg border border-white/15 px-2.5 py-1.5 text-xs">
             Health
           </Link>
         }

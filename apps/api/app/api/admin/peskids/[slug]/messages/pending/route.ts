@@ -19,7 +19,8 @@ export async function GET(
     return Response.json({ error: 'Not found' }, { status: HTTP_STATUS.NOT_FOUND });
   }
 
-  const requestId = request.headers.get('x-request-id')?.trim() || globalThis.crypto.randomUUID();
+  const requestId =
+    request.headers.get('x-request-id')?.trim() || globalThis.crypto.randomUUID();
 
   try {
     const result = await fetchPendingMessages(slug);

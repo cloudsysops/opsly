@@ -97,10 +97,7 @@ export function MoonHeader(): React.ReactElement {
             setCommand('');
           }}
         >
-          <Search
-            className="pointer-events-none absolute left-3 h-3.5 w-3.5 text-slate-500"
-            aria-hidden
-          />
+          <Search className="pointer-events-none absolute left-3 h-3.5 w-3.5 text-slate-500" aria-hidden />
           <input
             value={command}
             onChange={(event) => setCommand(event.target.value)}

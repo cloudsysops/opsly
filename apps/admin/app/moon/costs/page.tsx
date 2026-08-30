@@ -21,7 +21,9 @@ export default function MoonCostsPage(): React.ReactElement {
   const { data, error, isLoading } = useSWR('moon-costs-page', () => getAdminCosts(), {
     revalidateOnFocus: false,
   });
-  const lines = data ? [...linesFromRecord(data.current), ...linesFromRecord(data.proposed)] : [];
+  const lines = data
+    ? [...linesFromRecord(data.current), ...linesFromRecord(data.proposed)]
+    : [];
 
   return (
     <div className="space-y-6">
@@ -37,10 +39,7 @@ export default function MoonCostsPage(): React.ReactElement {
       {isLoading ? <MoonSkeleton className="h-32" /> : null}
       {error ? <MoonErrorState message={String(error.message)} /> : null}
       {!isLoading && !error && !data ? (
-        <MoonEmptyState
-          title="Costos no configurados"
-          description="Falta respuesta de /api/admin/costs."
-        />
+        <MoonEmptyState title="Costos no configurados" description="Falta respuesta de /api/admin/costs." />
       ) : null}
       {data ? (
         <div className="space-y-3">

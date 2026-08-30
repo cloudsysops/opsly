@@ -119,5 +119,7 @@ export function MoonErrorState({ message }: { message: string }): React.ReactEle
 }
 
 export function MoonSkeleton({ className }: { className?: string }): React.ReactElement {
-  return <div className={cn('animate-pulse rounded-xl bg-white/5', className ?? 'h-24 w-full')} />;
+  return (
+    <div className={cn('animate-pulse rounded-xl bg-white/5', className ?? 'h-24 w-full')} />
+  );
 }

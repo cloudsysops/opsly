@@ -1,9 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const maybeSingleMock = vi.fn();
-const selectMock = vi.fn(() => ({
-  eq: vi.fn(() => ({ eq: vi.fn(() => ({ maybeSingle: maybeSingleMock })) })),
-}));
+const selectMock = vi.fn(() => ({ eq: vi.fn(() => ({ eq: vi.fn(() => ({ maybeSingle: maybeSingleMock })) })) }));
 const updateMock = vi.fn(() => ({
   eq: vi.fn(() => ({
     select: vi.fn(() => ({ maybeSingle: maybeSingleMock })),
@@ -39,13 +37,7 @@ describe('updateLeadStage', () => {
 
   it('returns NO_CHANGE when stage unchanged', async () => {
     maybeSingleMock.mockResolvedValueOnce({
-      data: {
-        id: '1',
-        tenant_slug: 'peskids',
-        lead_id: 'lead-1',
-        source: 'web',
-        stage: 'Contacted',
-      },
+      data: { id: '1', tenant_slug: 'peskids', lead_id: 'lead-1', source: 'web', stage: 'Contacted' },
       error: null,
     });
     const result = await updateLeadStage('peskids', 'lead-1', 'Contacted');
