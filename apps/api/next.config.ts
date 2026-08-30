@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
   },
   transpilePackages: ['@intcloudsysops/openwa', '@intcloudsysops/tenant-profile'],
   serverExternalPackages: [
+    'redis',
     '@redis/client',
     '@redis/bloom',
     '@redis/graph',
