@@ -234,13 +234,6 @@ export interface BrandKit {
   voiceProfile: string;
 }
 
-export interface UniverseFoundationBinding {
-  version: string;
-  vision: string;
-  childSafetyPrinciples: string[];
-  nonNegotiables: string[];
-}
-
 export interface ContentProject {
   id: string;
   tenantId: string;
@@ -424,7 +417,6 @@ export interface ContentInsight {
 }
 
 export interface UniverseProjectBinding {
-  foundation: UniverseFoundationBinding;
   canonVersion: string;
   promptVersion: string;
   characterIds: string[];
@@ -585,46 +577,6 @@ export const ContentProjectEnvelopeSchema = z.object({
   renderJobs: z.array(ContentRenderJobSchema),
   approval: ContentApprovalSchema.optional(),
   metadata: ContentMetadataSchema.optional(),
-  brandKit: z
-    .object({
-      logo: z.string().nullable(),
-      colors: z.array(z.string().min(1)),
-      fonts: z.array(z.string().min(1)),
-      captionPreset: z.string().min(1),
-      intro: z.string().min(1),
-      outro: z.string().min(1),
-      watermark: z.string().nullable(),
-      cta: z.string().min(1),
-      characters: z.array(z.string().min(1)),
-      voiceProfile: z.string().min(1),
-    })
-    .optional(),
-  universeContext: z
-    .object({
-      foundation: z.object({
-        version: z.string().min(1),
-        vision: z.string().min(1),
-        childSafetyPrinciples: z.array(z.string().min(1)),
-        nonNegotiables: z.array(z.string().min(1)),
-      }),
-      canonVersion: z.string().min(1),
-      promptVersion: z.string().min(1),
-      characterIds: z.array(z.string().min(1)),
-      characterNames: z.array(z.string().min(1)),
-      worldId: z.string().nullable(),
-      topic: z.string().min(1),
-      tenant: z.string().nullable(),
-      storyPrompt: z.string().min(1),
-      imagePrompt: z.string().min(1),
-      videoPrompt: z.string().min(1),
-      agentInputs: z.object({
-        story: z.record(z.string(), z.unknown()),
-        image: z.record(z.string(), z.unknown()),
-        video: z.record(z.string(), z.unknown()),
-        content: z.record(z.string(), z.unknown()),
-      }),
-    })
-    .optional(),
 });
 
 export const ContentProjectCreateInputSchema = z.object({

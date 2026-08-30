@@ -1,4 +1,6 @@
 /* eslint-disable no-magic-numbers, max-lines-per-function */
+import { CACHE_TTL } from '../constants';
+import { getCache, setCache } from '../redis-cache';
 import { getServiceClient } from '../supabase/client';
 import type { PlanKey, TenantStatus } from '../supabase/types';
 import { churnRiskFromLastUsage, linearForecastNext, zScoreAnomaly } from './heuristics';
@@ -346,6 +348,13 @@ export async function getInsightsForTenant(
 ): Promise<TenantInsightRow[]> {
   const limit = options.limit ?? 24;
   const includeRead = options.includeRead ?? false;
+  const cacheKey = `tenant:insights:${tenantId}:${includeRead ? '1' : '0'}:${limit}`;
+
+  const cached = await getCache<TenantInsightRow[]>(cacheKey);
+  if (cached !== null) {
+    return cached;
+  }
+
   const db = getServiceClient();
   let q = db
     .schema('platform')
@@ -365,7 +374,12 @@ export async function getInsightsForTenant(
     throw new Error(`tenant_insights list: ${error.message}`);
   }
   const rows = (data ?? []) as TenantInsightRow[];
-  return rows.sort((a, b) => b.impact_score * b.confidence - a.impact_score * a.confidence);
+  const sorted = rows.sort((a, b) => b.impact_score * b.confidence - a.impact_score * a.confidence);
+
+  // Bolt Optimization: Cache tenant insights in Redis for 60s to avoid repeated Supabase queries.
+  void setCache(cacheKey, sorted, CACHE_TTL.SHORT);
+
+  return sorted;
 }
 
 export async function markInsightRead(insightId: string, tenantId: string): Promise<void> {

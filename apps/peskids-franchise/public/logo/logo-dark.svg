@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" fill="none">
+  <!-- Storefront icon -->
+  <rect x="4" y="16" width="36" height="28" rx="3" fill="#60a5fa"/>
+  <rect x="4" y="12" width="36" height="8" rx="2" fill="#93bbfd"/>
+  <polygon points="2,12 22,2 42,12" fill="#93c5fd"/>
+  <rect x="10" y="26" width="10" height="14" rx="1.5" fill="white" opacity="0.9"/>
+  <rect x="24" y="26" width="10" height="8" rx="1.5" fill="white" opacity="0.9"/>
+  <circle cx="18" cy="33" r="1.2" fill="#60a5fa"/>
+  <!-- Awning stripes -->
+  <path d="M6,20 Q10,24 14,20 Q18,24 22,20 Q26,24 30,20 Q34,24 38,20" stroke="white" stroke-width="1.2" fill="none" opacity="0.5"/>
+  <!-- Text -->
+  <text x="52" y="30" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="white">Acme</text>
+  <text x="52" y="50" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#93c5fd" letter-spacing="0.5">FRANCHISE</text>
+</svg>

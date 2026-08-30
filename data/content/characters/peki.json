@@ -1,0 +1,43 @@
+{
+  "id": "peki",
+  "canonical_name": "Peki",
+  "role": "Main Peskids hero — swimming, confidence, and family learning for kids",
+  "personality": {
+    "archetype": "Brave Teaching Companion",
+    "traits": ["brave", "friendly", "teaching", "active", "curious"],
+    "narrative_role": "guide"
+  },
+  "visual": {
+    "silhouette_prompt": "Compact child-friendly robot in swim gear, rounded proportions, confident open posture, built for water",
+    "proportions": { "head": 2, "torso": 2, "legs": 2 },
+    "face": {
+      "eye_style": "large round bright eyes, warm and encouraging",
+      "mouth_style": "simple confident smile, expands into an open cheer when a kid succeeds",
+      "expressions": ["brave (chin up, chest out)", "encouraging (leaning toward viewer)", "teaching (one hand demonstrating a stroke)", "celebrating (arms up)", "reassuring (crouched to child height)"]
+    },
+    "clothing": {
+      "primary": "clean bright swim gear — rash-guard-style shell, no loose fabric",
+      "accessories": ["swim goggles (worn up on head when not swimming)", "small float-ring accessory clipped to belt"],
+      "symbols": ["small wave emblem on chest", "circle motif on shoulders (safety/belonging)"]
+    },
+    "color_palette": ["#00B4D8", "#FFFFFF", "#FFD166", "#023047"],
+    "mechanical_elements": [
+      "water-sealed joints, visible but smooth (not exposed circuitry — built for safety, not battle)",
+      "chest emblem lights up softly when teaching a new skill"
+    ],
+    "generation_prompt": "A brave, friendly child-sized robot in clean bright swim gear, large warm round eyes, confident open posture at a pool's edge, goggles worn up on its head, a small glowing wave emblem on its chest, clean bright turquoise-and-white palette, child-safe teaching pose, family-friendly educational illustration style",
+    "negative_prompt": "no exposed wiring or combat-style mechanical parts, no dark or moody color palette, no aggressive or overly technical design — keep it warm, rounded, and unmistakably kid-safe"
+  },
+  "voice": {
+    "language": "both",
+    "tone": "warm, encouraging, patient teacher",
+    "speed": "normal",
+    "sample_line": "¡Flotar es confianza, no fuerza!"
+  },
+  "prohibited_variations": [
+    "do not give Peki exposed mechanical/circuitry details — Wavo has that register, Peki stays smooth and soft-edged",
+    "do not make Peki's default expression neutral or serious — default is warm and encouraging",
+    "do not change the turquoise/white/yellow palette",
+    "do not merge Peki's role with Wavo's — Peki teaches swimming/confidence directly to kids; Wavo handles tech/dashboard/automation framing (see canon/PEKI.md)"
+  ]
+}

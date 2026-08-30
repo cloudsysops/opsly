@@ -1,0 +1,214 @@
+.up-root {
+  min-height: 100dvh;
+  margin: 0;
+  color: #e8f4ff;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(80, 170, 255, 0.18), transparent 55%),
+    radial-gradient(800px 500px at 110% 80%, rgba(168, 85, 247, 0.16), transparent 50%),
+    #050814;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+.up-root[data-palette='gold-navy'] {
+  --up-accent: #d4af37;
+}
+.up-root[data-palette='pool-teal'] {
+  --up-accent: #2dd4bf;
+}
+.up-root[data-palette='canopy-green'] {
+  --up-accent: #86efac;
+}
+.up-root[data-palette='paper-violet'] {
+  --up-accent: #c4b5fd;
+}
+
+.up-shell {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 3rem;
+}
+
+.up-kicker {
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  color: #7dd3fc;
+}
+
+.up-title {
+  font-family: Palatino, 'Palatino Linotype', Georgia, serif;
+  font-size: clamp(2.1rem, 7vw, 3.6rem);
+  line-height: 1.05;
+  margin: 0.4rem 0 0.6rem;
+}
+
+.up-sub {
+  color: #9ec9e6;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+}
+
+.up-copy {
+  color: #c7d7e8;
+  line-height: 1.55;
+  max-width: 38rem;
+}
+
+.up-btn,
+.up-card,
+.up-field input,
+.up-field select {
+  font: inherit;
+}
+
+.up-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.7rem 1.3rem;
+  border-radius: 999px;
+  border: 1px solid rgba(125, 211, 252, 0.45);
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.18), rgba(15, 23, 42, 0.7));
+  color: #f8fbff;
+  cursor: pointer;
+}
+
+.up-btn:focus-visible,
+.up-card:focus-visible,
+.up-field input:focus-visible,
+.up-field select:focus-visible {
+  outline: 3px solid #fde68a;
+  outline-offset: 3px;
+}
+
+.up-btn[disabled],
+.up-card[aria-disabled='true'] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.up-btn-ghost {
+  background: transparent;
+}
+
+.up-stage {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.up-field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.up-field span {
+  font-size: 0.8rem;
+  color: #9ec9e6;
+}
+
+.up-field input,
+.up-field select {
+  min-height: 2.75rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(2, 6, 23, 0.65);
+  color: #f8fbff;
+  padding: 0.5rem 0.8rem;
+}
+
+.up-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.up-beings,
+.up-portals,
+.up-nodes,
+.up-rewards {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .up-beings,
+  .up-portals,
+  .up-nodes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .up-nodes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.up-card {
+  text-align: left;
+  border-radius: 1.1rem;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(8, 15, 36, 0.72);
+  padding: 1rem;
+  color: inherit;
+  cursor: pointer;
+}
+
+.up-card[data-status='glowing'] {
+  box-shadow: 0 0 24px rgba(250, 204, 21, 0.28);
+  border-color: #facc15;
+}
+
+.up-card[data-selected='true'] {
+  border-color: var(--up-accent, #7dd3fc);
+  box-shadow: 0 0 0 2px var(--up-accent, #7dd3fc);
+}
+
+.up-avatar {
+  width: 3.5rem;
+  height: 3.5rem;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 30% 20%, var(--up-accent, #7dd3fc), #0f172a 70%);
+}
+
+.up-avatar--ring {
+  border-radius: 999px;
+  border: 3px solid #f8fbff;
+}
+.up-avatar--spark {
+  clip-path: polygon(50% 0, 80% 35%, 100% 50%, 80% 65%, 50% 100%, 20% 65%, 0 50%, 20% 35%);
+}
+.up-avatar--wave {
+  border-radius: 40% 60% 45% 55%;
+}
+
+.up-live {
+  min-height: 1.4rem;
+  color: #fde68a;
+}
+
+.up-debug {
+  margin-top: 2rem;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.up-debug pre {
+  white-space: pre-wrap;
+  overflow: auto;
+  max-height: 12rem;
+}
+
+.up-machine {
+  border-radius: 1.4rem;
+  padding: 1rem;
+  border: 1px dashed rgba(125, 211, 252, 0.4);
+  background: rgba(2, 6, 23, 0.45);
+}
+
+.up-closing {
+  font-family: Palatino, Georgia, serif;
+  font-size: 1.2rem;
+  min-height: 3.2rem;
+}

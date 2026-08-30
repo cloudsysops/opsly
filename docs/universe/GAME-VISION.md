@@ -12,3 +12,10 @@ First playable slice:
 - One fragment of the map is earned.
 
 The game should teach exploration, cooperation, building, safety, and curiosity through play.
+
+## Runtime pointer (2026-08-16)
+
+In-process contracts live in `@intcloudsysops/game-core` (`lib/game-core`).
+The first browser client is ICSO `/universe/play` (`docs/universe/FIRST-PORTAL-WEB.md`).
+See [GAME-CORE.md](GAME-CORE.md). The game consumes Universe; it does not own canon.
+PC Gamer remains compute. `game-engineer` is development-only.

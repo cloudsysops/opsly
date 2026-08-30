@@ -31,6 +31,7 @@ carpeta correcta antes de crear o editar documentación.
 | [`04-operations/`](04-operations/README.md) | Validaciones y visión operativa no procedimental. |
 | [`06-multi-agent/`](06-multi-agent/README.md) | Coordinación multi-agente y ejecución paralela. |
 | [`tenants/`](tenants/README.md) | Multi-tenant: prod, runbooks, testing, onboarding. |
+| [`universe/`](universe/README.md) | Canon OPSLY Universe: foundation, characters, worlds, game vision. |
 | [`adr/`](adr/) | ADRs numerados y suplementos. |
 | [`runbooks/`](runbooks/README.md) | Procedimientos accionables e incident response. |
 | [`reports/`](reports/README.md) | Snapshots, evidencias y reportes puntuales. |

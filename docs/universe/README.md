@@ -14,6 +14,8 @@ It comes from a long-running sequence of systems work, experiments, tenants, and
 - [TIMELINE.md](TIMELINE.md)
 - [CANON.md](CANON.md)
 - [GAME-VISION.md](GAME-VISION.md)
+- [GAME-CORE.md](GAME-CORE.md)
+- [FIRST-PORTAL-WEB.md](FIRST-PORTAL-WEB.md)
 - [CHILD-SAFETY-PRINCIPLES.md](CHILD-SAFETY-PRINCIPLES.md)
 - [DECISIONS.md](DECISIONS.md)
 

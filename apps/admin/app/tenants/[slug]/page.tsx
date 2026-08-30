@@ -125,7 +125,9 @@ export default function TenantDetailPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-sans text-sm text-ops-gray">Revisar producto cliente</CardTitle>
+          <CardTitle className="font-sans text-sm text-ops-gray">
+            Revisar producto cliente
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <TenantSurfaceLinks
@@ -138,7 +140,9 @@ export default function TenantDetailPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-sans text-sm text-ops-gray">Stack técnico (n8n / uptime)</CardTitle>
+          <CardTitle className="font-sans text-sm text-ops-gray">
+            Stack técnico (n8n / uptime)
+          </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
           {urls.n8n ? (

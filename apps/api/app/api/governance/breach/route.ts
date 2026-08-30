@@ -1,5 +1,8 @@
 import type { NextRequest } from 'next/server';
+import { timingSafeEqual } from 'node:crypto';
 import { z } from 'zod';
+import { extractIp, logAuditEvent } from '../../../../lib/audit';
+import { checkRateLimit } from '../../../../lib/rate-limiter-memory';
 import { getServiceClient } from '../../../../lib/supabase';
 
 const breachSchema = z.object({
@@ -14,11 +17,25 @@ const breachSchema = z.object({
   containment_actions: z.string().optional(),
 });
 
+function isTokenValid(authHeader: string | null, expectedToken: string): boolean {
+  if (!authHeader) return false;
+  const expectedHeader = `Bearer ${expectedToken}`;
+  const authBuf = Buffer.from(authHeader);
+  const expectedBuf = Buffer.from(expectedHeader);
+  if (authBuf.length !== expectedBuf.length) return false;
+  return timingSafeEqual(authBuf, expectedBuf);
+}
+
 export async function POST(request: NextRequest): Promise<Response> {
-  // Internal-only endpoint: requires service-role secret header
+  const ip = extractIp(request);
+  const rateLimit = await checkRateLimit(ip ? `governance-breach:${ip}` : 'governance-breach:anon');
+  if (!rateLimit.allowed) {
+    return Response.json({ error: 'Too many requests' }, { status: 429 });
+  }
+
   const authHeader = request.headers.get('authorization');
   const expectedToken = process.env.GOVERNANCE_BREACH_SECRET;
-  if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
+  if (!expectedToken || !isTokenValid(authHeader, expectedToken)) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -50,8 +67,16 @@ export async function POST(request: NextRequest): Promise<Response> {
     return Response.json({ error: 'Failed to log breach' }, { status: 500 });
   }
 
-  // TODO: trigger Discord alert to #ops-alerts via observability
-  // await alertDiscord({ title: `[BREACH] ${parsed.data.title}`, severity: parsed.data.severity });
+  void logAuditEvent({
+    tenant_slug: parsed.data.tenant_id,
+    action: 'governance_breach_log_created',
+    resource: `/api/governance/breach/${data.id}`,
+    ip,
+    metadata: {
+      severity: parsed.data.severity,
+      title: parsed.data.title,
+    },
+  });
 
   return Response.json(
     { ok: true, breach_id: data.id, logged_at: data.created_at },

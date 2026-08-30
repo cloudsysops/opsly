@@ -78,6 +78,13 @@ export const universe = {
 };
 
 export {
+  CANON_VERSION,
+  PROMPT_VERSION,
+  MODULE_ID,
+  STORY_BEATS,
+  PROMPT_MODALITIES,
+} from './constants.js';
+export {
   getFoundation,
   getVision,
   getPrinciples,
@@ -85,13 +92,6 @@ export {
   getNonNegotiables,
   getChildSafetyPrinciples,
 } from './foundation.js';
-export {
-  CANON_VERSION,
-  PROMPT_VERSION,
-  MODULE_ID,
-  STORY_BEATS,
-  PROMPT_MODALITIES,
-} from './constants.js';
 export {
   UniverseError,
   UniverseUnknownCharacterError,
