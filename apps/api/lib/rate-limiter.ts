@@ -1,4 +1,3 @@
-import { createClient } from 'redis';
 import {
   checkRateLimit as checkRateLimitMemory,
   RATE_LIMIT_MAX_REQUESTS,
@@ -13,7 +12,6 @@ export {
   type RateLimitResult,
 } from './rate-limiter-memory';
 
-type RedisClient = ReturnType<typeof createClient>;
 type RateLimitReply = {
   count: number;
   ttlSeconds: number;
@@ -30,8 +28,9 @@ local ttl = redis.call('TTL', KEYS[1])
 return { current, ttl }
 `;
 
-let client: RedisClient | null = null;
-let connectPromise: Promise<RedisClient | null> | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let client: any | null = null;
+let connectPromise: Promise<any | null> | null = null;
 let hasLoggedMissingRedisUrl = false;
 
 function redisUrl(): string | null {
@@ -82,7 +81,8 @@ function resetAtFromTtl(nowMs: number, ttlSeconds: number): Date {
   return new Date(nowMs + safeTtlSeconds * 1000);
 }
 
-async function getRateLimitRedis(): Promise<RedisClient | null> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function getRateLimitRedis(): Promise<any | null> {
   const url = redisUrl();
   if (!url) {
     if (!hasLoggedMissingRedisUrl) {
@@ -97,8 +97,9 @@ async function getRateLimitRedis(): Promise<RedisClient | null> {
   }
 
   if (!connectPromise) {
-    connectPromise = (async (): Promise<RedisClient | null> => {
+    connectPromise = (async (): Promise<any | null> => {
       try {
+        const { createClient } = await import('redis');
         const nextClient = createClient({ url });
         nextClient.on('error', (error: Error) => {
           console.error('[rate-limiter]', error.message);
