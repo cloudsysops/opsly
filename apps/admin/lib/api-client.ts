@@ -574,9 +574,7 @@ export type CreateDefenseAuditPayload = {
   scope?: string[];
 };
 
-export async function createDefenseAudit(
-  body: CreateDefenseAuditPayload
-): Promise<{
+export async function createDefenseAudit(body: CreateDefenseAuditPayload): Promise<{
   success: boolean;
   audit: DefenseAuditRow;
   orchestrator?: { queued: boolean; detail?: string };
