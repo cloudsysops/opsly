@@ -12,9 +12,9 @@
       "default": "./dist/index.js"
     },
     "./studio": {
-      "types": "./dist/content-engine/studio-read.d.ts",
-      "import": "./dist/content-engine/studio-read.js",
-      "default": "./dist/content-engine/studio-read.js"
+      "types": "./src/content-engine/studio-read.ts",
+      "import": "./src/content-engine/studio-read.ts",
+      "default": "./src/content-engine/studio-read.ts"
     }
   },
   "scripts": {
