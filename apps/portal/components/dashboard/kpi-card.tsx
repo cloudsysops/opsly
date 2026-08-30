@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import type { KeyboardEvent, ReactElement } from 'react';
 import { cn } from '@/lib/utils';
 
 export type KpiColor = 'blue' | 'green' | 'purple' | 'orange' | 'red';
@@ -10,6 +10,7 @@ export interface KPICardProps {
   trend?: number;
   icon?: string;
   color?: KpiColor;
+  onClick?: () => void;
 }
 
 const colorClass: Record<KpiColor, string> = {
@@ -27,15 +28,31 @@ export function KPICard({
   trend,
   icon = '📊',
   color = 'blue',
+  onClick,
 }: KPICardProps): ReactElement {
+  const isInteractive = onClick !== undefined;
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
+    if (isInteractive && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
   return (
     <div
+      role={isInteractive ? 'button' : undefined}
+      tabIndex={isInteractive ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={handleKeyDown}
       className={cn(
-        'relative cursor-pointer overflow-hidden rounded-xl border bg-gradient-to-br p-6 backdrop-blur-sm transition-transform hover:scale-[1.02]',
+        'relative overflow-hidden rounded-xl border bg-gradient-to-br p-6 backdrop-blur-sm transition-transform',
+        isInteractive &&
+          'cursor-pointer hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ops-green/80 focus-visible:ring-offset-2 focus-visible:ring-offset-ops-bg',
         colorClass[color]
       )}
     >
-      <div className="absolute -right-4 -top-4 text-6xl opacity-10" aria-hidden>
+      <div className="absolute -right-4 -top-4 text-6xl opacity-10" aria-hidden="true">
         {icon}
       </div>
 
@@ -55,8 +72,9 @@ export function KPICard({
                 'mb-1 text-sm font-medium',
                 trend >= 0 ? 'text-green-400' : 'text-red-400'
               )}
+              aria-label={`${trend >= 0 ? 'Aumento del' : 'Disminución del'} ${Math.abs(trend)}%`}
             >
-              {trend >= 0 ? '↑' : '↓'} {Math.abs(trend)}%
+              <span aria-hidden="true">{trend >= 0 ? '↑' : '↓'}</span> {Math.abs(trend)}%
             </span>
           ) : null}
         </div>
