@@ -15,12 +15,12 @@ const WorkflowCanvas = dynamic(
   }
 );
 
-export default function WorkflowBuilderPage({
+export default async function WorkflowBuilderPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = params;
+  const { id } = await params;
 
   return (
     <div className="h-[calc(100vh-8rem)]">

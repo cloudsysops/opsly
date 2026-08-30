@@ -74,6 +74,7 @@ describe('Peskids Form Submission Security', () => {
       method: 'POST',
       body: JSON.stringify({
         submissionData: { field: 'value' },
+        email: 'user@example.com',
         userId: 'attacker-specified-id'
       }),
     });
@@ -88,5 +89,7 @@ describe('Peskids Form Submission Security', () => {
     // Primary actor should be IP-based, NOT the userId from body
     expect(payload.p_actor_id).toBe(`anonymous:${mockIp}`);
     expect(payload.p_metadata.untrusted_userId).toBe('attacker-specified-id');
+    // Email should be masked to prevent PII leakage in audit logs
+    expect(payload.p_metadata.email).toBe('u***r@example.com');
   });
 });

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-export default function JourneyTaskRedirect({ params }: { params: { phase: string; taskSlug: string } }) {
-  redirect(`/portal/learning/journey/${params.phase}/task/${params.taskSlug}`);
+export default async function JourneyTaskRedirect({ params }: { params: Promise<{ phase: string; taskSlug: string }> }) {
+  const { phase, taskSlug } = await params;
+  redirect(`/portal/learning/journey/${phase}/task/${taskSlug}`);
 }

@@ -145,4 +145,3 @@ export function endpointRisk(endpoint: ApiEndpoint): 'low' | 'medium' | 'high' {
   if (category === 'portal') return isMutation(endpoint.methods) ? 'medium' : 'low';
   return isMutation(endpoint.methods) ? 'medium' : 'low';
 }
-

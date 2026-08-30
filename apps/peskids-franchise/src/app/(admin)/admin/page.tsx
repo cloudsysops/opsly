@@ -1,33 +1,21 @@
-import { db } from "@/lib/db";
-import { Card, CardContent, CardHeader } from "@/components/shared/Card";
-import { WideContainer } from "@/components/shared/ResponsiveContainer";
-import Link from "next/link";
-import { subDays, startOfYear, format } from "date-fns";
-import nextDynamic from "next/dynamic";
+import { db } from '@/lib/db';
+import { Card, CardContent, CardHeader } from '@/components/shared/Card';
+import { WideContainer } from '@/components/shared/ResponsiveContainer';
+import Link from 'next/link';
+import { subDays, startOfYear, format } from 'date-fns';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 import {
   KPICard,
   AlertsBanner,
   ActionItemsGrid,
   RecentActivityFeed,
   QuickActionsPanel,
-} from "@/components/admin/dashboard";
+} from '@/components/admin/dashboard';
 
 export const revalidate = 0;
 
-// Dynamic import for chart to avoid SSR issues with Recharts
-const RevenueTrendChart = nextDynamic(
-  () => import("@/components/admin/dashboard/RevenueTrendChart"),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="h-[300px] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-navy" />
-      </div>
-    ),
-  }
-);
+import RevenueTrendChart from '@/components/admin/dashboard/RevenueTrendChartClient';
 
 async function getDashboardData() {
   const now = new Date();
@@ -82,7 +70,7 @@ async function getDashboardData() {
     db.prospect.count({
       where: {
         pipelineStage: {
-          notIn: ["SELECTED", "REJECTED", "WITHDRAWN"],
+          notIn: ['SELECTED', 'REJECTED', 'WITHDRAWN'],
         },
       },
     }),
@@ -97,18 +85,18 @@ async function getDashboardData() {
       },
     }),
     db.prospect.count({
-      where: { pipelineStage: "SELECTED" },
+      where: { pipelineStage: 'SELECTED' },
     }),
     db.prospect.count({
-      where: { pipelineStage: "REJECTED" },
+      where: { pipelineStage: 'REJECTED' },
     }),
     db.prospect.groupBy({
-      by: ["pipelineStage"],
+      by: ['pipelineStage'],
       _count: true,
     }),
     db.prospect.findMany({
       where: {
-        pipelineStage: "SELECTED",
+        pipelineStage: 'SELECTED',
         selectedAt: { not: null },
       },
       select: {
@@ -131,7 +119,7 @@ async function getDashboardData() {
         amount: true,
       },
       where: {
-        status: "SUCCEEDED",
+        status: 'SUCCEEDED',
         processedAt: { gte: yearStart },
       },
     }),
@@ -141,7 +129,7 @@ async function getDashboardData() {
       },
       where: {
         status: {
-          in: ["PENDING_REVIEW", "APPROVED", "PAYMENT_PENDING"],
+          in: ['PENDING_REVIEW', 'APPROVED', 'PAYMENT_PENDING'],
         },
       },
     }),
@@ -151,29 +139,29 @@ async function getDashboardData() {
       },
       _count: true,
       where: {
-        status: "PAYMENT_PENDING",
+        status: 'PAYMENT_PENDING',
         dueDate: { lt: now },
       },
     }),
     db.royaltyInvoice.count({
-      where: { status: "DISPUTED" },
+      where: { status: 'DISPUTED' },
     }),
     db.tutorCruncherSnapshot.groupBy({
-      by: ["year", "month"],
+      by: ['year', 'month'],
       _sum: {
         grossRevenue: true,
       },
-      orderBy: [{ year: "desc" }, { month: "desc" }],
+      orderBy: [{ year: 'desc' }, { month: 'desc' }],
       take: 6,
     }),
 
     // Franchisee Network queries
     db.prospect.count({
-      where: { pipelineStage: "SELECTED" },
+      where: { pipelineStage: 'SELECTED' },
     }),
     db.academyProgress.findMany({
       where: {
-        prospect: { pipelineStage: "SELECTED" },
+        prospect: { pipelineStage: 'SELECTED' },
       },
       select: {
         status: true,
@@ -181,7 +169,7 @@ async function getDashboardData() {
       },
     }),
     db.franchiseeCertification.groupBy({
-      by: ["status"],
+      by: ['status'],
       _count: true,
     }),
     db.tutorCruncherSnapshot.findFirst({
@@ -189,7 +177,7 @@ async function getDashboardData() {
         year: now.getFullYear(),
         month: now.getMonth() + 1,
       },
-      orderBy: { grossRevenue: "desc" },
+      orderBy: { grossRevenue: 'desc' },
       include: {
         franchiseeAccount: {
           include: {
@@ -216,25 +204,25 @@ async function getDashboardData() {
           lte: thirtyDaysFromNow,
           gt: now,
         },
-        status: { not: "EXPIRED" },
+        status: { not: 'EXPIRED' },
       },
     }),
     db.prospect.count({
       where: {
         pipelineStage: {
-          notIn: ["SELECTED", "REJECTED", "WITHDRAWN"],
+          notIn: ['SELECTED', 'REJECTED', 'WITHDRAWN'],
         },
         updatedAt: { lt: fourteenDaysAgo },
       },
     }),
     db.workflowExecution.count({
-      where: { status: "FAILED" },
+      where: { status: 'FAILED' },
     }),
 
     // Recent Activity
     db.prospectActivity.findMany({
       take: 10,
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
       include: {
         prospect: {
           select: {
@@ -249,19 +237,19 @@ async function getDashboardData() {
 
     // Operations stats
     db.supportTicket.count({
-      where: { status: { in: ["OPEN", "IN_PROGRESS", "WAITING_ON_ADMIN"] } },
+      where: { status: { in: ['OPEN', 'IN_PROGRESS', 'WAITING_ON_ADMIN'] } },
     }),
     db.supportTicket.count({
       where: {
-        status: { in: ["OPEN", "IN_PROGRESS", "WAITING_ON_ADMIN"] },
+        status: { in: ['OPEN', 'IN_PROGRESS', 'WAITING_ON_ADMIN'] },
         slaDeadline: { lt: now },
       },
     }),
     db.correctiveAction.count({
-      where: { status: { in: ["OPEN", "IN_PROGRESS"] } },
+      where: { status: { in: ['OPEN', 'IN_PROGRESS'] } },
     }),
     db.correctiveAction.count({
-      where: { status: { in: ["OPEN", "IN_PROGRESS"] }, dueDate: { lt: now } },
+      where: { status: { in: ['OPEN', 'IN_PROGRESS'] }, dueDate: { lt: now } },
     }),
   ]);
 
@@ -276,9 +264,7 @@ async function getDashboardData() {
       ? Math.round(
           avgDaysToSelection.reduce((sum, p) => {
             if (p.selectedAt) {
-              const days =
-                (p.selectedAt.getTime() - p.createdAt.getTime()) /
-                (1000 * 60 * 60 * 24);
+              const days = (p.selectedAt.getTime() - p.createdAt.getTime()) / (1000 * 60 * 60 * 24);
               return sum + days;
             }
             return sum;
@@ -290,7 +276,7 @@ async function getDashboardData() {
   const franchiseeProgressMap = new Map<string, number>();
   academyProgressData.forEach((p) => {
     const current = franchiseeProgressMap.get(p.prospectId) || 0;
-    if (p.status === "COMPLETED") {
+    if (p.status === 'COMPLETED') {
       franchiseeProgressMap.set(p.prospectId, current + 1);
     }
   });
@@ -306,16 +292,14 @@ async function getDashboardData() {
       : 0;
 
   // Compliance rate
-  const activeCerts =
-    certificationStats.find((s) => s.status === "ACTIVE")?._count || 0;
+  const activeCerts = certificationStats.find((s) => s.status === 'ACTIVE')?._count || 0;
   const totalCerts = certificationStats.reduce((sum, s) => sum + s._count, 0);
-  const complianceRate =
-    totalCerts > 0 ? Math.round((activeCerts / totalCerts) * 100) : 0;
+  const complianceRate = totalCerts > 0 ? Math.round((activeCerts / totalCerts) * 100) : 0;
 
   // Revenue trend (last 6 months, reverse to chronological order)
   const monthlyTrend = monthlyRevenueTrend
     .map((m) => ({
-      month: format(new Date(m.year, m.month - 1), "MMM"),
+      month: format(new Date(m.year, m.month - 1), 'MMM'),
       revenue: Number(m._sum.grossRevenue || 0),
       royalties: Number(m._sum.grossRevenue || 0) * 0.1, // 10% royalty estimate
     }))
@@ -326,9 +310,7 @@ async function getDashboardData() {
   const previousMonthRevenue = monthlyTrend[monthlyTrend.length - 2]?.revenue || 0;
   const momGrowth =
     previousMonthRevenue > 0
-      ? Math.round(
-          ((currentMonthRevenue - previousMonthRevenue) / previousMonthRevenue) * 100
-        )
+      ? Math.round(((currentMonthRevenue - previousMonthRevenue) / previousMonthRevenue) * 100)
       : 0;
 
   // YTD financials
@@ -339,14 +321,14 @@ async function getDashboardData() {
 
   // Pipeline by stage for funnel
   const stageOrder = [
-    "NEW_INQUIRY",
-    "INITIAL_CONTACT",
-    "DISCOVERY_CALL",
-    "PRE_WORK_IN_PROGRESS",
-    "PRE_WORK_COMPLETE",
-    "INTERVIEW",
-    "SELECTION_REVIEW",
-    "SELECTED",
+    'NEW_INQUIRY',
+    'INITIAL_CONTACT',
+    'DISCOVERY_CALL',
+    'PRE_WORK_IN_PROGRESS',
+    'PRE_WORK_COMPLETE',
+    'INTERVIEW',
+    'SELECTION_REVIEW',
+    'SELECTED',
   ];
 
   const byStage = stageOrder.map((stage) => ({
@@ -377,8 +359,7 @@ async function getDashboardData() {
         ? {
             name: `${topPerformer.franchiseeAccount.prospect.firstName} ${topPerformer.franchiseeAccount.prospect.lastName}`,
             revenue: Number(topPerformer.grossRevenue),
-            territory:
-              topPerformer.franchiseeAccount.prospect.preferredTerritory || "Unknown",
+            territory: topPerformer.franchiseeAccount.prospect.preferredTerritory || 'Unknown',
           }
         : null,
     },
@@ -411,14 +392,14 @@ async function getDashboardData() {
 }
 
 const stageLabels: Record<string, string> = {
-  NEW_INQUIRY: "New Inquiry",
-  INITIAL_CONTACT: "Initial Contact",
-  DISCOVERY_CALL: "Discovery",
-  PRE_WORK_IN_PROGRESS: "Pre-Work",
-  PRE_WORK_COMPLETE: "Ready",
-  INTERVIEW: "Interview",
-  SELECTION_REVIEW: "Review",
-  SELECTED: "Selected",
+  NEW_INQUIRY: 'New Inquiry',
+  INITIAL_CONTACT: 'Initial Contact',
+  DISCOVERY_CALL: 'Discovery',
+  PRE_WORK_IN_PROGRESS: 'Pre-Work',
+  PRE_WORK_COMPLETE: 'Ready',
+  INTERVIEW: 'Interview',
+  SELECTION_REVIEW: 'Review',
+  SELECTED: 'Selected',
 };
 
 const formatCurrency = (value: number) => {
@@ -438,37 +419,37 @@ export default async function CommandCenterDashboard() {
   const bannerAlerts = [];
   if (data.alerts.overdueInvoices > 0) {
     bannerAlerts.push({
-      id: "overdue",
-      type: "overdue" as const,
-      message: `${data.alerts.overdueInvoices} overdue invoice${data.alerts.overdueInvoices > 1 ? "s" : ""}`,
-      href: "/admin/franchisees/invoices?status=PAYMENT_PENDING",
+      id: 'overdue',
+      type: 'overdue' as const,
+      message: `${data.alerts.overdueInvoices} overdue invoice${data.alerts.overdueInvoices > 1 ? 's' : ''}`,
+      href: '/admin/franchisees/invoices?status=PAYMENT_PENDING',
       count: data.alerts.overdueInvoices,
     });
   }
   if (data.alerts.disputedInvoices > 0) {
     bannerAlerts.push({
-      id: "disputed",
-      type: "disputed" as const,
-      message: `${data.alerts.disputedInvoices} disputed invoice${data.alerts.disputedInvoices > 1 ? "s" : ""}`,
-      href: "/admin/franchisees/invoices?status=DISPUTED",
+      id: 'disputed',
+      type: 'disputed' as const,
+      message: `${data.alerts.disputedInvoices} disputed invoice${data.alerts.disputedInvoices > 1 ? 's' : ''}`,
+      href: '/admin/franchisees/invoices?status=DISPUTED',
       count: data.alerts.disputedInvoices,
     });
   }
   if (data.operations.overdueTickets > 0) {
     bannerAlerts.push({
-      id: "overdue-tickets",
-      type: "overdue" as const,
-      message: `${data.operations.overdueTickets} support ticket${data.operations.overdueTickets > 1 ? "s" : ""} past SLA`,
-      href: "/admin/operations/tickets",
+      id: 'overdue-tickets',
+      type: 'overdue' as const,
+      message: `${data.operations.overdueTickets} support ticket${data.operations.overdueTickets > 1 ? 's' : ''} past SLA`,
+      href: '/admin/operations/tickets',
       count: data.operations.overdueTickets,
     });
   }
   if (data.operations.overdueCorrectiveActions > 0) {
     bannerAlerts.push({
-      id: "overdue-actions",
-      type: "overdue" as const,
-      message: `${data.operations.overdueCorrectiveActions} overdue corrective action${data.operations.overdueCorrectiveActions > 1 ? "s" : ""}`,
-      href: "/admin/operations/audits",
+      id: 'overdue-actions',
+      type: 'overdue' as const,
+      message: `${data.operations.overdueCorrectiveActions} overdue corrective action${data.operations.overdueCorrectiveActions > 1 ? 's' : ''}`,
+      href: '/admin/operations/audits',
       count: data.operations.overdueCorrectiveActions,
     });
   }
@@ -477,9 +458,7 @@ export default async function CommandCenterDashboard() {
     <WideContainer className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-brand-navy">
-          Command Center
-        </h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-brand-navy">Command Center</h1>
         <p className="mt-1 text-sm sm:text-base text-gray-600">
           Overview of your franchise business
         </p>
@@ -506,13 +485,17 @@ export default async function CommandCenterDashboard() {
           <CardContent className="p-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Active</div>
+                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+                  Active
+                </div>
                 <div className="text-2xl font-bold text-brand-navy mt-0.5">
                   {data.pipeline.activeProspects}
                 </div>
               </div>
               <div>
-                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">New 7d/30d</div>
+                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+                  New 7d/30d
+                </div>
                 <div className="text-2xl font-bold text-gray-900 mt-0.5">
                   <span className="text-brand-orange">{data.pipeline.newThisWeek}</span>
                   <span className="text-gray-300 mx-1">/</span>
@@ -520,15 +503,19 @@ export default async function CommandCenterDashboard() {
                 </div>
               </div>
               <div>
-                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Conversion</div>
+                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+                  Conversion
+                </div>
                 <div className="text-2xl font-bold text-brand-green mt-0.5">
                   {data.pipeline.conversionRate}%
                 </div>
               </div>
               <div>
-                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Avg Days</div>
+                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+                  Avg Days
+                </div>
                 <div className="text-2xl font-bold text-brand-cyan mt-0.5">
-                  {data.pipeline.avgDaysToSelection || "—"}
+                  {data.pipeline.avgDaysToSelection || '—'}
                 </div>
               </div>
             </div>
@@ -551,32 +538,40 @@ export default async function CommandCenterDashboard() {
           <CardContent className="p-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">YTD Revenue</div>
+                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+                  YTD Revenue
+                </div>
                 <div className="text-2xl font-bold text-brand-navy mt-0.5">
                   {formatCurrency(data.financials.ytdRevenue)}
                 </div>
               </div>
               <div>
-                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Royalties</div>
+                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+                  Royalties
+                </div>
                 <div className="text-2xl font-bold text-brand-green mt-0.5">
                   {formatCurrency(data.financials.ytdRoyaltiesCollected)}
                 </div>
               </div>
               <div>
-                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">MoM Growth</div>
+                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+                  MoM Growth
+                </div>
                 <div
                   className={`text-2xl font-bold mt-0.5 ${
-                    data.financials.momGrowth >= 0 ? "text-brand-green" : "text-red-600"
+                    data.financials.momGrowth >= 0 ? 'text-brand-green' : 'text-red-600'
                   }`}
                 >
-                  {data.financials.momGrowth >= 0 ? "+" : ""}
+                  {data.financials.momGrowth >= 0 ? '+' : ''}
                   {data.financials.momGrowth}%
                 </div>
               </div>
               <div>
-                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Collection</div>
+                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+                  Collection
+                </div>
                 <div className="text-2xl font-bold text-brand-cyan mt-0.5">
-                  {data.financials.ytdRoyaltiesCollected > 0 ? "100%" : "—"}
+                  {data.financials.ytdRoyaltiesCollected > 0 ? '100%' : '—'}
                 </div>
               </div>
             </div>
@@ -599,27 +594,35 @@ export default async function CommandCenterDashboard() {
           <CardContent className="p-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Franchisees</div>
+                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+                  Franchisees
+                </div>
                 <div className="text-2xl font-bold text-brand-navy mt-0.5">
                   {data.franchisees.activeCount}
                 </div>
               </div>
               <div>
-                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Academy</div>
+                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+                  Academy
+                </div>
                 <div className="text-2xl font-bold text-brand-cyan mt-0.5">
                   {data.franchisees.avgAcademyProgress}%
                 </div>
               </div>
               <div>
-                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Compliance</div>
+                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+                  Compliance
+                </div>
                 <div className="text-2xl font-bold text-brand-green mt-0.5">
                   {data.franchisees.complianceRate}%
                 </div>
               </div>
               <div>
-                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Top Performer</div>
+                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+                  Top Performer
+                </div>
                 <div className="text-sm font-bold text-brand-orange mt-1 truncate">
-                  {data.franchisees.topPerformer?.name || "—"}
+                  {data.franchisees.topPerformer?.name || '—'}
                 </div>
               </div>
             </div>
@@ -642,26 +645,42 @@ export default async function CommandCenterDashboard() {
           <CardContent className="p-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Open Tickets</div>
-                <div className={`text-2xl font-bold mt-0.5 ${data.operations.openTickets > 0 ? "text-brand-orange" : "text-brand-green"}`}>
+                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+                  Open Tickets
+                </div>
+                <div
+                  className={`text-2xl font-bold mt-0.5 ${data.operations.openTickets > 0 ? 'text-brand-orange' : 'text-brand-green'}`}
+                >
                   {data.operations.openTickets}
                 </div>
               </div>
               <div>
-                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Overdue SLA</div>
-                <div className={`text-2xl font-bold mt-0.5 ${data.operations.overdueTickets > 0 ? "text-red-600" : "text-brand-green"}`}>
+                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+                  Overdue SLA
+                </div>
+                <div
+                  className={`text-2xl font-bold mt-0.5 ${data.operations.overdueTickets > 0 ? 'text-red-600' : 'text-brand-green'}`}
+                >
                   {data.operations.overdueTickets}
                 </div>
               </div>
               <div>
-                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Corrective Actions</div>
-                <div className={`text-2xl font-bold mt-0.5 ${data.operations.openCorrectiveActions > 0 ? "text-brand-orange" : "text-brand-green"}`}>
+                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+                  Corrective Actions
+                </div>
+                <div
+                  className={`text-2xl font-bold mt-0.5 ${data.operations.openCorrectiveActions > 0 ? 'text-brand-orange' : 'text-brand-green'}`}
+                >
                   {data.operations.openCorrectiveActions}
                 </div>
               </div>
               <div>
-                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Overdue Actions</div>
-                <div className={`text-2xl font-bold mt-0.5 ${data.operations.overdueCorrectiveActions > 0 ? "text-red-600" : "text-brand-green"}`}>
+                <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+                  Overdue Actions
+                </div>
+                <div
+                  className={`text-2xl font-bold mt-0.5 ${data.operations.overdueCorrectiveActions > 0 ? 'text-red-600' : 'text-brand-green'}`}
+                >
                   {data.operations.overdueCorrectiveActions}
                 </div>
               </div>
@@ -671,14 +690,12 @@ export default async function CommandCenterDashboard() {
       </div>
 
       {/* Action Items */}
-      {(data.alerts.franchisorTodos > 0 ||
-        data.alerts.overdueInvoices > 0 ||
-        data.alerts.expiringCerts > 0 ||
-        data.alerts.stalledProspects > 0) ? (
+      {data.alerts.franchisorTodos > 0 ||
+      data.alerts.overdueInvoices > 0 ||
+      data.alerts.expiringCerts > 0 ||
+      data.alerts.stalledProspects > 0 ? (
         <div>
-          <h2 className="text-base font-semibold text-brand-navy mb-3">
-            Attention Needed
-          </h2>
+          <h2 className="text-base font-semibold text-brand-navy mb-3">Attention Needed</h2>
           <ActionItemsGrid
             alerts={{
               franchisorTodos: data.alerts.franchisorTodos,
@@ -690,9 +707,7 @@ export default async function CommandCenterDashboard() {
         </div>
       ) : (
         <div className="flex items-center gap-3">
-          <span className="text-base font-semibold text-brand-navy">
-            Attention Needed
-          </span>
+          <span className="text-base font-semibold text-brand-navy">Attention Needed</span>
           <ActionItemsGrid
             alerts={{
               franchisorTodos: 0,
@@ -709,9 +724,7 @@ export default async function CommandCenterDashboard() {
         {/* Revenue Trend Chart */}
         <Card className="overflow-hidden">
           <CardHeader className="py-3 px-4 border-b border-gray-100">
-            <h2 className="text-sm font-semibold text-brand-navy">
-              Revenue Trend (Last 6 Months)
-            </h2>
+            <h2 className="text-sm font-semibold text-brand-navy">Revenue Trend (Last 6 Months)</h2>
           </CardHeader>
           <CardContent className="p-4">
             <RevenueTrendChart data={data.financials.monthlyTrend} />
@@ -722,9 +735,7 @@ export default async function CommandCenterDashboard() {
         <Card className="overflow-hidden">
           <CardHeader className="py-3 px-4 border-b border-gray-100">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-brand-navy">
-                Pipeline Funnel
-              </h2>
+              <h2 className="text-sm font-semibold text-brand-navy">Pipeline Funnel</h2>
               <Link
                 href="/admin/crm/analytics"
                 className="text-[11px] text-gray-500 hover:text-brand-purple transition-colors"
@@ -736,20 +747,17 @@ export default async function CommandCenterDashboard() {
           <CardContent className="p-4">
             <div className="space-y-1.5">
               {data.pipeline.byStage.map((stage, index) => {
-                const maxCount = Math.max(
-                  ...data.pipeline.byStage.map((s) => s.count),
-                  1
-                );
+                const maxCount = Math.max(...data.pipeline.byStage.map((s) => s.count), 1);
                 const width = stage.count > 0 ? (stage.count / maxCount) * 100 : 3;
                 const colors = [
-                  "bg-brand-orange",
-                  "bg-amber-400",
-                  "bg-brand-cyan",
-                  "bg-brand-purple",
-                  "bg-indigo-500",
-                  "bg-blue-500",
-                  "bg-brand-navy",
-                  "bg-brand-green",
+                  'bg-brand-orange',
+                  'bg-amber-400',
+                  'bg-brand-cyan',
+                  'bg-brand-purple',
+                  'bg-indigo-500',
+                  'bg-blue-500',
+                  'bg-brand-navy',
+                  'bg-brand-green',
                 ];
 
                 return (
@@ -762,7 +770,9 @@ export default async function CommandCenterDashboard() {
                         className={`h-full ${colors[index]} flex items-center transition-all rounded`}
                         style={{ width: `${width}%`, minWidth: stage.count > 0 ? '28px' : '12px' }}
                       >
-                        <span className={`text-[10px] font-semibold w-full text-center ${stage.count > 0 ? 'text-white' : 'text-gray-400'}`}>
+                        <span
+                          className={`text-[10px] font-semibold w-full text-center ${stage.count > 0 ? 'text-white' : 'text-gray-400'}`}
+                        >
                           {stage.count}
                         </span>
                       </div>
@@ -780,9 +790,7 @@ export default async function CommandCenterDashboard() {
         {/* Recent Activity (2/3 width) */}
         <Card className="lg:col-span-2 overflow-hidden">
           <CardHeader className="py-3 px-4 border-b border-gray-100">
-            <h2 className="text-sm font-semibold text-brand-navy">
-              Recent Activity
-            </h2>
+            <h2 className="text-sm font-semibold text-brand-navy">Recent Activity</h2>
           </CardHeader>
           <CardContent className="p-4">
             <RecentActivityFeed activities={data.recentActivity} />
@@ -792,9 +800,7 @@ export default async function CommandCenterDashboard() {
         {/* Quick Actions (1/3 width) */}
         <Card className="overflow-hidden">
           <CardHeader className="py-3 px-4 border-b border-gray-100">
-            <h2 className="text-sm font-semibold text-brand-navy">
-              Quick Actions
-            </h2>
+            <h2 className="text-sm font-semibold text-brand-navy">Quick Actions</h2>
           </CardHeader>
           <CardContent className="p-4">
             <QuickActionsPanel />
