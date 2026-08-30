@@ -15,7 +15,10 @@ export default function MoonBillingPage(): React.ReactElement {
         title="Billing"
         subtitle="Sin ingresos simulados. Solo fuentes comerciales reales (Stripe) cuando existan."
         actions={
-          <Link href="/moon/costs" className="rounded-lg border border-white/15 px-2.5 py-1.5 text-xs">
+          <Link
+            href="/moon/costs"
+            className="rounded-lg border border-white/15 px-2.5 py-1.5 text-xs"
+          >
             Costos
           </Link>
         }
