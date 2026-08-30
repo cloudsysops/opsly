@@ -14,6 +14,7 @@ carpeta correcta antes de crear o editar documentación.
 - Estado operativo de sesión: [`03-agents/AGENTS.md`](03-agents/AGENTS.md) (stub: [`stubs/AGENTS.md`](stubs/AGENTS.md)); repo raíz: [`../AGENTS.md`](../AGENTS.md).
 - Norte de producto: [`01-development/VISION.md`](01-development/VISION.md) (stub: [`stubs/VISION.md`](stubs/VISION.md)); repo raíz: [`../VISION.md`](../VISION.md).
 - Roadmap activo: [`01-development/ROADMAP.md`](01-development/ROADMAP.md) (stub: [`stubs/ROADMAP.md`](stubs/ROADMAP.md)); repo raíz: [`../ROADMAP.md`](../ROADMAP.md).
+- Canon OPSLY Universe: [`universe/README.md`](universe/README.md).
 - Reglas de estructura: [`STRUCTURE-GUARDRAILS.md`](STRUCTURE-GUARDRAILS.md).
 - Índice compacto Obsidian (MOC de todo el vault): [`index.md`](index.md).
 - Ciclo documental (plan, pruebas, docs, índices, sin tareas a medias): [`01-development/DOCUMENTATION-LIFECYCLE.md`](01-development/DOCUMENTATION-LIFECYCLE.md).
@@ -30,6 +31,7 @@ carpeta correcta antes de crear o editar documentación.
 | [`04-operations/`](04-operations/README.md) | Validaciones y visión operativa no procedimental. |
 | [`06-multi-agent/`](06-multi-agent/README.md) | Coordinación multi-agente y ejecución paralela. |
 | [`tenants/`](tenants/README.md) | Multi-tenant: prod, runbooks, testing, onboarding. |
+| [`universe/`](universe/README.md) | Canon OPSLY Universe: foundation, characters, worlds, game vision. |
 | [`adr/`](adr/) | ADRs numerados y suplementos. |
 | [`runbooks/`](runbooks/README.md) | Procedimientos accionables e incident response. |
 | [`reports/`](reports/README.md) | Snapshots, evidencias y reportes puntuales. |

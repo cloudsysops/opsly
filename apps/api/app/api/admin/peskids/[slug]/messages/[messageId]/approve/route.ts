@@ -1,10 +1,8 @@
 import { requireAdminAccess } from '../../../../../../../../lib/auth';
+import { extractIp, logAuditEvent } from '../../../../../../../../lib/audit';
 import { HTTP_STATUS } from '../../../../../../../../lib/constants';
 import { logger } from '../../../../../../../../lib/logger';
-import {
-  approveMessage,
-  rejectMessage,
-} from '../../../../../../../../lib/peskids/messages';
+import { approveMessage, rejectMessage } from '../../../../../../../../lib/peskids/messages';
 import { peskidsMessageApprovalSchema } from '../../../../../../../../lib/peskids/schemas';
 
 const PESKIDS_TENANT_SLUG = 'peskids';
@@ -23,9 +21,9 @@ export async function POST(
     return Response.json({ error: 'Not found' }, { status: HTTP_STATUS.NOT_FOUND });
   }
 
-  const requestId =
-    request.headers.get('x-request-id')?.trim() || globalThis.crypto.randomUUID();
+  const requestId = request.headers.get('x-request-id')?.trim() || globalThis.crypto.randomUUID();
   const approvedBy = request.headers.get('x-admin-user')?.trim() || 'admin';
+  const ip = extractIp(request);
 
   let raw: unknown;
   try {
@@ -53,12 +51,7 @@ export async function POST(
 
   try {
     if (approved) {
-      const result = await approveMessage(
-        messageId,
-        slug,
-        approvedBy,
-        modified_response
-      );
+      const result = await approveMessage(messageId, slug, approvedBy, modified_response);
 
       if (!result.ok) {
         logger.error('peskids.admin.messages.approve_failed', {
@@ -81,6 +74,20 @@ export async function POST(
         sent_at: result.sent_at,
       });
 
+      void logAuditEvent({
+        action: 'peskids_message_approved',
+        actor_id: approvedBy,
+        tenant_slug: slug,
+        resource_id: messageId,
+        resource_type: 'peskids_message',
+        metadata: {
+          approved_by: approvedBy,
+          request_id: requestId,
+          sent_at: result.sent_at,
+          ip,
+        },
+      });
+
       return Response.json(
         {
           ok: true,
@@ -92,12 +99,7 @@ export async function POST(
       );
     }
 
-    const rejectResult = await rejectMessage(
-      messageId,
-      slug,
-      approvedBy,
-      rejection_reason
-    );
+    const rejectResult = await rejectMessage(messageId, slug, approvedBy, rejection_reason);
 
     if (!rejectResult.ok) {
       return Response.json(
@@ -112,6 +114,20 @@ export async function POST(
       approvedBy,
       requestId,
       reason: rejection_reason,
+    });
+
+    void logAuditEvent({
+      action: 'peskids_message_rejected',
+      actor_id: approvedBy,
+      tenant_slug: slug,
+      resource_id: messageId,
+      resource_type: 'peskids_message',
+      metadata: {
+        rejected_by: approvedBy,
+        rejection_reason,
+        request_id: requestId,
+        ip,
+      },
     });
 
     return Response.json(

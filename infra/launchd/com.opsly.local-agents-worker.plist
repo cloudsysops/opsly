@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.opsly.local-agents-worker</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/bin/doppler</string>
+    <string>run</string>
+    <string>--project</string>
+    <string>ops-intcloudsysops</string>
+    <string>--config</string>
+    <string>prd</string>
+    <string>--</string>
+    <string>/Users/dragon/cboteros/proyectos/intcloudsysops/scripts/ops/start-mac-local-agents-worker.sh</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>/Users/dragon/cboteros/proyectos/intcloudsysops</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/Users/dragon/.nvm/versions/node/v22.22.3/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+  <key>KeepAlive</key>
+  <true/>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>/Users/dragon/Library/Logs/opsly/local-agents-worker.out</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/dragon/Library/Logs/opsly/local-agents-worker.err</string>
+</dict>
+</plist>

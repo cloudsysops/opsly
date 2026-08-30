@@ -1,0 +1,44 @@
+{
+  "id": "build-with-opsly-001",
+  "series_id": "build-with-opsly",
+  "episode_number": 1,
+  "title": {
+    "es": "¿De dónde nacen las ideas?",
+    "en": "Where do ideas come from?"
+  },
+  "hook": {
+    "es": "Toda gran construcción empieza con una pregunta simple.",
+    "en": "Every great build starts with a simple question."
+  },
+  "objective": "Broaden beyond Opsly-the-product into builder culture generally.",
+  "audience": [
+    "developers",
+    "founders",
+    "general tech"
+  ],
+  "duration_estimate_sec": 30,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Construye con nosotros",
+    "captions": {
+      "es": "¿De dónde nace una gran idea?",
+      "en": "Where does a great idea come from?"
+    },
+    "hashtags": [
+      "#BuildWithOpsly",
+      "#Builders",
+      "#AI"
+    ],
+    "thumbnail_concept": "Lightbulb made of circuit lines"
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-08-11T00:00:00Z",
+    "last_updated": "2026-08-11T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Idea-stage — planned in 30-day launch calendar. Script + scenes pending."
+    ]
+  }
+}

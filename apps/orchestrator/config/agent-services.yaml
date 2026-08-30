@@ -27,7 +27,7 @@ services:
     enabled: true
     endpoint: http://localhost:5001
     env_var: OPSLY_CURSOR_AGENT_URL
-    timeout: 60000
+    timeout: 30000
     retry_attempts: 2
 
   local_codex:

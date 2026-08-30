@@ -67,7 +67,7 @@ services:
       retries: 5
 
   n8n:
-    image: n8nio/n8n:latest
+    image: n8nio/n8n:2.32.5
     container_name: opslyquantum-n8n
     ports:
       - '5679:5678'

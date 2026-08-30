@@ -380,6 +380,28 @@ export const LOCAL_AGENT_KINDS: readonly LocalAgentKind[] = [
   'local_playwright',
 ];
 
+/**
+ * Restrict which local_* job names a host consumes.
+ * Empty / unset = all kinds (historic). Mac should set `local_cursor`;
+ * PC-gamer OpenCode should set `local_opencode` so they do not steal each other.
+ */
+export function parseLocalAgentKindAllowlist(
+  raw: string | undefined = process.env.OPSLY_LOCAL_AGENT_KINDS
+): readonly LocalAgentKind[] {
+  if (!raw || raw.trim().length === 0) {
+    return LOCAL_AGENT_KINDS;
+  }
+  const wanted = new Set(
+    raw
+      .split(',')
+      .map((part) => part.trim().toLowerCase().replace(/-/g, '_'))
+      .filter((part) => part.length > 0)
+      .map((part) => (part.startsWith('local_') ? part : `local_${part}`))
+  );
+  const kinds = LOCAL_AGENT_KINDS.filter((kind) => wanted.has(kind));
+  return kinds.length > 0 ? kinds : LOCAL_AGENT_KINDS;
+}
+
 export function externalCliLabelForOpslyLocalAgent(kind: LocalAgentKind): string {
   return OPSLY_LOCAL_AGENT_EXTERNAL_CLI[kind];
 }

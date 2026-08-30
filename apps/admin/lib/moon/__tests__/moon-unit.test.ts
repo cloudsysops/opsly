@@ -5,10 +5,7 @@
 
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import {
-  omitMrrUntilCommercialSource,
-  moonConfidenceLabel,
-} from '../data-label';
+import { omitMrrUntilCommercialSource, moonConfidenceLabel } from '../data-label';
 import { healthFromTenantStatus, sanitizeTenantForMoonCard } from '../tenant-card';
 import { isMoonNavActive, MOON_NAV_SECTIONS } from '../nav';
 import { mapTeamMetricsToMoonTasks, summarizeQueueFromTeams } from '../queue-mapper';
@@ -64,6 +61,7 @@ describe('moon nav', () => {
     assert.equal(hrefs.includes('interesados'), false);
     assert.equal(hrefs.includes('pipeline'), false);
     assert.ok(hrefs.includes('/moon/clients'));
+    assert.ok(hrefs.includes('/moon/creator'));
   });
 });
 

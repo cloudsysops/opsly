@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "updated_at": "2026-08-11",
+  "worlds": [
+    {
+      "id": "mundus",
+      "name": "MUNDUS",
+      "type": "physical_world",
+      "description": "Family, work, money, travel, school, swimming pools, cities, tools, and real-life friction.",
+      "themes": ["family", "effort", "discipline", "safety", "growth"],
+      "content_use": ["human-stakes", "parent-adjacent", "real-world-problems"]
+    },
+    {
+      "id": "nexus",
+      "name": "NEXUS",
+      "type": "digital_world",
+      "description": "The home of NØVA, agents, dashboards, missions, and tenant-created planets.",
+      "themes": ["systems", "agents", "interfaces", "creation", "scale"],
+      "content_use": ["agent-stories", "platform-lore", "productization"]
+    },
+    {
+      "id": "aether",
+      "name": "AETHER",
+      "type": "mythic_layer",
+      "description": "Ancient layer of patterns, geometry, constellations, spirals, thresholds, and symbolic language.",
+      "themes": ["geometry", "ancestry", "mystery", "pattern", "threshold"],
+      "content_use": ["symbolic-scenes", "revelations", "mythic-transitions"]
+    },
+    {
+      "id": "peskids_planet",
+      "name": "Peskids Planet",
+      "type": "tenant_planet",
+      "description": "Oceanic planet for swimming, confidence, child learning, and family safety.",
+      "themes": ["water", "confidence", "practice", "parents", "sports"],
+      "content_use": ["shorts", "education", "service-offer", "licensed-content"],
+      "tenant": "peskids"
+    },
+    {
+      "id": "bitsitos_zone",
+      "name": "Bitsitos Zone",
+      "type": "tenant_planet",
+      "description": "Tech, AI, agents, and games for children and families.",
+      "themes": ["technology", "ai", "agents", "games", "education"],
+      "content_use": ["shorts", "lore-adjacent-education", "family-tech"],
+      "tenant": "bitsitos"
+    }
+  ]
+}
