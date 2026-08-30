@@ -15,6 +15,7 @@ RUN npm ci --ignore-scripts
 
 RUN npm run build -w @intcloudsysops/types && \
     npm run build -w @intcloudsysops/notebooklm-agent && \
+    npm run build -w @intcloudsysops/universe && \
     npm run build -w @intcloudsysops/content-studio && \
     npm run build -w @intcloudsysops/pattern-catalog && \
     npm run build -w @intcloudsysops/sigma-harness && \
@@ -59,6 +60,8 @@ COPY --from=builder /app/lib/runtime/dist ./lib/runtime/dist
 COPY --from=builder /app/lib/runtime/package.json ./lib/runtime/package.json
 COPY --from=builder /app/lib/content-studio/dist ./lib/content-studio/dist
 COPY --from=builder /app/lib/content-studio/package.json ./lib/content-studio/package.json
+COPY --from=builder /app/lib/universe/dist ./lib/universe/dist
+COPY --from=builder /app/lib/universe/package.json ./lib/universe/package.json
 COPY --from=builder /app/lib/voice-messaging/dist ./lib/voice-messaging/dist
 COPY --from=builder /app/lib/voice-messaging/package.json ./lib/voice-messaging/package.json
 COPY --from=builder /app/scripts ./scripts
