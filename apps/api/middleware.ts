@@ -2,7 +2,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { pickCorsOrigin } from './lib/cors-origins';
 import { HTTP_STATUS } from './lib/constants';
-import { checkRateLimit, type RateLimitResult } from './lib/rate-limiter-memory';
+import { checkRateLimit, checkIpRateLimit, type RateLimitResult } from './lib/rate-limiter';
 
 const CORS_METHODS = 'GET,POST,PATCH,DELETE,OPTIONS';
 const CORS_HEADERS = 'Content-Type,Authorization,x-admin-token';
@@ -227,7 +227,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   }
 
   const tenantSlug = resolveTenantSlug(request);
-  const rateLimitResult = tenantSlug ? await checkRateLimit(tenantSlug) : null;
+  const rateLimitResult = tenantSlug
+    ? await checkRateLimit(tenantSlug)
+    : await checkIpRateLimit(request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? request.ip ?? 'unknown');
 
   if (rateLimitResult && !rateLimitResult.allowed) {
     return applyApiHeaders(

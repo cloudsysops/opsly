@@ -151,6 +151,43 @@ export async function checkRateLimit(tenantSlug: string): Promise<RateLimitResul
   }
 }
 
+const IP_RATE_LIMIT_MAX_REQUESTS = 200;
+
+function ipRateLimitKey(ip: string): string {
+  return `ratelimit:ip:${ip}`;
+}
+
+export async function checkIpRateLimit(ip: string): Promise<RateLimitResult> {
+  const nowMs = Date.now();
+  const redis = await getRateLimitRedis();
+  if (!redis) {
+    return { allowed: true, remaining: IP_RATE_LIMIT_MAX_REQUESTS, resetAt: new Date(nowMs + RATE_LIMIT_WINDOW_SECONDS * 1000) };
+  }
+
+  const key = ipRateLimitKey(ip);
+
+  try {
+    const reply = parseRateLimitReply(
+      await redis.sendCommand([
+        'EVAL',
+        RATE_LIMIT_LUA_SCRIPT,
+        '1',
+        key,
+        String(RATE_LIMIT_WINDOW_SECONDS),
+      ])
+    );
+
+    return {
+      allowed: reply.count <= IP_RATE_LIMIT_MAX_REQUESTS,
+      remaining: Math.max(0, IP_RATE_LIMIT_MAX_REQUESTS - reply.count),
+      resetAt: resetAtFromTtl(nowMs, reply.ttlSeconds),
+    };
+  } catch (error) {
+    console.error('[rate-limiter] ip request failed', error);
+    return { allowed: true, remaining: IP_RATE_LIMIT_MAX_REQUESTS, resetAt: new Date(nowMs + RATE_LIMIT_WINDOW_SECONDS * 1000) };
+  }
+}
+
 export function resetRateLimiterStateForTests(): void {
   client = null;
   connectPromise = null;
