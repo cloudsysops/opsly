@@ -7,6 +7,7 @@ COPY package.json package-lock.json ./
 COPY apps/admin/package.json ./apps/admin/
 COPY lib/components/package.json ./lib/components/
 COPY lib/runtime/package.json ./lib/runtime/
+COPY lib/universe/package.json ./lib/universe/
 RUN npm ci --ignore-scripts
 
 FROM node:20-alpine AS builder
