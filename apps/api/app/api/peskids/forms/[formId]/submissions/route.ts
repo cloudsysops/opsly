@@ -16,7 +16,10 @@ interface PeskidsQB {
   eq(col: string, val: unknown): PeskidsQB;
   order(col: string, opts?: unknown): PeskidsQB;
   single(): Promise<{ data: unknown | null; error: unknown }>;
-  then<T>(r: (v: { data: unknown[] | null; error: unknown }) => T, j?: (e: unknown) => T): Promise<T>;
+  then<T>(
+    r: (v: { data: unknown[] | null; error: unknown }) => T,
+    j?: (e: unknown) => T
+  ): Promise<T>;
 }
 interface PeskidsClient {
   from(table: string): PeskidsQB;
@@ -124,6 +127,18 @@ async function triggerSubmissionWebhooks(
   }
 }
 
+function maskEmail(email: string | undefined): string | undefined {
+  if (!email) return undefined;
+  const parts = email.split('@');
+  if (parts.length !== 2) return '***';
+  const [local, domain] = parts;
+  if (!local || !domain) return '***';
+  if (local.length <= 2) {
+    return `***@${domain}`;
+  }
+  return `${local[0]}***${local[local.length - 1]}@${domain}`;
+}
+
 async function logSubmissionAuditEvent(
   supabase: ReturnType<typeof getServiceClient>,
   formId: string,
@@ -146,7 +161,7 @@ async function logSubmissionAuditEvent(
       p_resource_type: 'form_submission',
       p_metadata: {
         form_id: formId,
-        email,
+        email: maskEmail(email),
         webhooks_triggered: webhookResults?.success || 0,
         webhooks_failed: webhookResults?.failed || 0,
         ip,
@@ -190,9 +205,7 @@ export async function POST(
     }
 
     const untrustedUserId =
-      typeof parsedBody.body === 'object' &&
-      parsedBody.body !== null &&
-      'userId' in parsedBody.body
+      typeof parsedBody.body === 'object' && parsedBody.body !== null && 'userId' in parsedBody.body
         ? (parsedBody.body as { userId?: unknown }).userId
         : undefined;
 

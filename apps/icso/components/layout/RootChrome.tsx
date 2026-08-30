@@ -8,7 +8,7 @@ import { SiteHeader } from '@/components/layout/SiteHeader';
 /** Marketing chrome for public site; Mission Control uses its own shell. */
 export function RootChrome({ children }: { children: ReactNode }): ReactElement {
   const pathname = usePathname();
-  if (pathname?.startsWith('/mission-control')) {
+  if (pathname?.startsWith('/mission-control') || pathname?.startsWith('/universe')) {
     return <>{children}</>;
   }
   return (

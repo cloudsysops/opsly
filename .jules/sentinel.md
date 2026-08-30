@@ -73,7 +73,12 @@
 **Learning:** Even when core business logic (insertion) is validated via schemas, the endpoint remains vulnerable to abuse if it lacks perimeter protections like rate limiting. The existence of these protections in other "similar" endpoints (like DSAR) doesn't guarantee they are applied everywhere.
 **Prevention:** Systematically apply `checkRateLimit` and `logAuditEvent` to all public, unauthenticated POST handlers. Utilize IP-based rate limiting keys (e.g., `peskids-lead:${ip}`) to prevent abuse while allowing legitimate traffic.
 
-## 2026-08-11 - [Missing Audit Logging and Potential PII Leakage in Consent Route]
-**Vulnerability:** The `/api/governance/consent` endpoint recorded user consent details, but lacked any secure security audit logging (via `logAuditEvent`). Additionally, logging raw email addresses directly in log metadata violates security privacy standards on PII data leakage in platform logs.
-**Learning:** Compliance and consent-collection endpoints are highly sensitive security actions that must have traceable audits. When audit logging is applied, raw PII fields must be securely masked or hashed to prevent exposure in logs.
-**Prevention:** Use the centralized `logAuditEvent` on all dynamic transaction/compliance endpoints, and apply a robust `maskEmail` utility to any user emails in metadata logs.
+## 2026-08-14 - [Authorization Hardening of Peskids Responses Route]
+**Vulnerability:** The `GET /api/peskids/portal/[tenantSlug]/forms/[formId]/responses` route retrieves sensitive user form submissions but was previously lacking dedicated regression test coverage verifying its strict multi-tenant authorization check logic.
+**Learning:** Regression testing of route-level parameters wrapping `runTrustedPortalDalForPathSlug` is critical to ensuring access control boundaries are permanently enforced even through subsequent refactors.
+**Prevention:** Ensure new portal-facing routes utilize authorization tests validating that requests lacking session headers yield `401 Unauthorized` block outcomes.
+
+## 2026-08-23 - [Timing-Unsafe Token Validation and Perimeter Protections in Governance Breach API]
+**Vulnerability:** The `POST /api/governance/breach` endpoint previously used strict direct string comparison (`authHeader !== 'Bearer ' + expectedToken`) to authenticate secret-bearer requests, creating a timing attack vector. Additionally, it lacked rate limiting and security audit logging for breach events.
+**Learning:** Internal or compliance API endpoints that authenticate with static secret tokens can leak token length and character matching information via timing differences if direct string comparisons are used instead of constant-time buffer comparisons (`timingSafeEqual`).
+**Prevention:** Always perform constant-time comparisons (`timingSafeEqual` from `node:crypto`) when validating secret tokens or signatures. In addition, ensure all mutation endpoints implement client IP rate limiting (`checkRateLimit`) and audit event logging (`logAuditEvent`).

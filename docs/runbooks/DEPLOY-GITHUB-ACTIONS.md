@@ -60,11 +60,21 @@ docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d -
 
 ## Verificación manual post-deploy
 
+El job **Deploy** comprueba health en dos sitios: probe local Traefik en el VPS (`Host: api.${PLATFORM_DOMAIN}` a `127.0.0.1`) y luego `https://api.${PLATFORM_DOMAIN}/api/health` **desde el runner**. No uses el curl público *desde el VPS* como criterio de fallo: Cloudflare hairpin suele devolver error con la API ya sana.
+
 ```bash
 curl -sfk "https://api.${PLATFORM_DOMAIN}/api/health"
 ```
 
 Sustituye `PLATFORM_DOMAIN` por el dominio base (mismo valor que en Doppler / secret `PLATFORM_DOMAIN`).
+
+Si el SSH de Deploy avisa `The "uF" variable is not set` (u otro nombre de 1–3 letras), un secreto en `/opt/opsly/.env` tiene `$` sin escapar y Compose lo interpola. Lista **solo nombres de clave** (nunca valores):
+
+```bash
+./scripts/ops/scan-env-dollar-interpolation.sh --env-file /opt/opsly/.env --dry-run
+```
+
+Corrige el valor en Doppler (`$$` o quita el `$` literal) y regenera `.env`. No hagas `cat` / `docker compose config` del archivo.
 
 ---
 

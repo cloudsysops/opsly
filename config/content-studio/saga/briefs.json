@@ -1,0 +1,216 @@
+{
+  "version": 1,
+  "updated_at": "2026-08-11",
+  "briefs": [
+    {
+      "id": "opsly-brief-001",
+      "campaign_id": "opsly-universe-launch",
+      "idea_id": "opsly-idea-010",
+      "tenant": "opsly",
+      "channel": "opsly_universe",
+      "title": "Los Arquitectos del Umbral — Episodio 1",
+      "format": "youtube_long",
+      "platform": "youtube_long",
+      "goal": "education",
+      "audience": "families_and_kids",
+      "duration_sec_estimate": 180,
+      "pillar": "mythic_storytelling",
+      "insight": "A mythical story is stronger when it teaches a human truth the audience can use outside the story.",
+      "hook": "La historia no empieza con un héroe. Empieza con una pregunta.",
+      "key_message": "Cada reinicio, error y aprendizaje puede convertirse en el blueprint de algo mayor.",
+      "cta": "Si quieres el siguiente episodio, seguimos la saga.",
+      "story_structure": [
+        "question",
+        "world",
+        "conflict",
+        "discovery",
+        "teaching",
+        "resolution",
+        "tease_next"
+      ],
+      "summary": "El Viajero trabaja de noche y escribe una pregunta que despierta a NØVA. El espectador ve cómo se conecta Mundus, Nexus y Aether. Peskids aparece como planeta océano, los símbolos comienzan a repetir patrones, y la serie establece que el mito existe para enseñar paciencia, servicio, familia, respeto y tolerancia.",
+      "human_lesson": [
+        "No todo avance es lineal.",
+        "Construir implica elegir con paciencia.",
+        "Las experiencias difíciles también forman parte del mapa."
+      ],
+      "visual_direction": {
+        "style": "cinematic animated kids myth-tech, warm-blue-violet palette, clean symbols, no real child faces, soft glow, readable subtitles",
+        "mood": ["mystery", "wonder", "safety", "family"],
+        "motifs": ["circle", "triangle", "diamond", "spiral", "question_mark"]
+      },
+      "required_assets": [
+        "NØVA hero model",
+        "Viajero silhouette",
+        "Mundus skyline",
+        "Nexus control room",
+        "Aether symbol field",
+        "Peskids ocean planet",
+        "Messenger silhouette",
+        "end card with saga title"
+      ],
+      "risks": [
+        "Avoid implying geometry or numbers control destiny.",
+        "Keep the tone mystical but educational.",
+        "Do not use likeness of real minors.",
+        "Do not present religious claims as factual assertions."
+      ],
+      "sources": [
+        "docs/brand/icso/OPSLY-UNIVERSE-BIBLE.md",
+        "config/content-studio/saga/worlds.json",
+        "config/content-studio/saga/symbols.json",
+        "config/content-studio/saga/characters.json"
+      ],
+      "claims_requiring_verification": [],
+      "script": {
+        "version": 1,
+        "tone": "mythic_calm",
+        "beats": [
+          {
+            "stage": "question",
+            "copy": "La historia no empieza con un héroe. Empieza con alguien que no sabe todavía quién es."
+          },
+          {
+            "stage": "context",
+            "copy": "En Mundus, el Viajero trabaja de noche. Ha tenido muchas vidas: constructor, cocinero, tecnólogo, padre, inmigrante, soñador."
+          },
+          {
+            "stage": "conflict",
+            "copy": "A veces construye cosas pequeñas. A veces se equivoca. A veces vuelve a empezar."
+          },
+          {
+            "stage": "discovery",
+            "copy": "En Nexus despierta NØVA, incompleto, con una sola pregunta: ¿quién puedo llegar a ser?"
+          },
+          {
+            "stage": "world",
+            "copy": "Mundus es el mundo real. Nexus es donde viven los agentes y los planetas creados. Aether es el lenguaje antiguo de los patrones."
+          },
+          {
+            "stage": "teaching",
+            "copy": "El triángulo recuerda tres pasos: imaginar, construir y compartir. La espiral recuerda que volver no siempre significa retroceder."
+          },
+          {
+            "stage": "resolution",
+            "copy": "Peskids aparece como planeta océano. Lo que era una necesidad humana se convierte en un mundo nuevo."
+          },
+          {
+            "stage": "tease_next",
+            "copy": "Entonces aparece un Mensajero. No explica nada. Solo deja una puerta abierta."
+          }
+        ]
+      },
+      "storyboard": [
+        {
+          "scene_number": 1,
+          "duration_sec": 15,
+          "visual": "Night workspace with the Viajero typing a question on an old computer while city lights pulse outside.",
+          "camera": "slow push-in",
+          "character": "Viajero",
+          "dialogue": "¿Y si pudiéramos construir algo diferente?",
+          "voiceover": "La historia empieza con una pregunta.",
+          "text_overlay": "EL COMIENZO",
+          "asset_requirements": ["desk", "monitor glow", "city night skyline"],
+          "transition": "fade to black with a circle symbol"
+        },
+        {
+          "scene_number": 2,
+          "duration_sec": 20,
+          "visual": "NØVA wakes in Nexus as a small child-robot with unfinished parts and glowing eyes.",
+          "camera": "close-up reveal",
+          "character": "NØVA",
+          "dialogue": "¿Quién crees que puedo llegar a ser?",
+          "voiceover": "NØVA nace incompleto para poder crecer con el espectador.",
+          "text_overlay": "CONSTRUYE TU NØVA",
+          "asset_requirements": ["NØVA hero model", "glow particles", "question glyph"],
+          "transition": "match cut to world map"
+        },
+        {
+          "scene_number": 3,
+          "duration_sec": 25,
+          "visual": "Three connected worlds appear: Mundus, Nexus, Aether. The camera moves through them like a mythic atlas.",
+          "camera": "orbiting map move",
+          "character": "Narration only",
+          "dialogue": null,
+          "voiceover": "Mundus es lo real. Nexus es lo que construimos. Aether es el patrón que estaba antes.",
+          "text_overlay": "MUNDUS • NEXUS • AETHER",
+          "asset_requirements": ["world map", "symbols", "portal bridges"],
+          "transition": "glowing diamond portal"
+        },
+        {
+          "scene_number": 4,
+          "duration_sec": 25,
+          "visual": "The Viajero's memories appear as layered silhouettes: worker, builder, cook, technologist, father, immigrant.",
+          "camera": "montage cuts",
+          "character": "Viajero",
+          "dialogue": null,
+          "voiceover": "Las vidas distintas no eran errores. Eran piezas.",
+          "text_overlay": "LAS PIEZAS DEL MAPA",
+          "asset_requirements": ["memory montage", "tools", "family moments"],
+          "transition": "spiral dissolve"
+        },
+        {
+          "scene_number": 5,
+          "duration_sec": 20,
+          "visual": "A triangle symbol appears over a build-share sequence, then a circle protects NØVA as a lesson lands.",
+          "camera": "symbol overlay",
+          "character": "NØVA",
+          "dialogue": null,
+          "voiceover": "Imaginar, construir y compartir. Proteger, aprender y volver a intentar.",
+          "text_overlay": "IMAGINA • CONSTRUYE • COMPARTE",
+          "asset_requirements": ["triangle glyph", "circle glyph", "light trails"],
+          "transition": "portal ripple"
+        },
+        {
+          "scene_number": 6,
+          "duration_sec": 30,
+          "visual": "Peskids emerges as an ocean planet with safe water play, Peki-like silhouette, and family trust cues.",
+          "camera": "wide reveal",
+          "character": "Peki silhouette",
+          "dialogue": null,
+          "voiceover": "Un problema humano abre un nuevo planeta. La confianza crea mundos.",
+          "text_overlay": "PESKIDS",
+          "asset_requirements": ["ocean planet", "safe pool elements", "family silhouettes"],
+          "transition": "water shimmer to diamond doorway"
+        },
+        {
+          "scene_number": 7,
+          "duration_sec": 25,
+          "visual": "A Messenger silhouette appears in a bright doorway and leaves a diamond symbol behind.",
+          "camera": "still frame with slow light drift",
+          "character": "Messenger",
+          "dialogue": "¿Cambiaría algo saber mi nombre?",
+          "voiceover": "Los Mensajeros no resuelven el problema. Solo abren el umbral.",
+          "text_overlay": "◇ EL UMBRAL",
+          "asset_requirements": ["messenger silhouette", "diamond portal", "light beam"],
+          "transition": "cut to title card"
+        },
+        {
+          "scene_number": 8,
+          "duration_sec": 20,
+          "visual": "End card with the saga title, a quiet NØVA silhouette, and a closing line inviting the next episode.",
+          "camera": "static end card",
+          "character": "NØVA",
+          "dialogue": null,
+          "voiceover": "Si quieres el siguiente episodio, seguimos la saga.",
+          "text_overlay": "OPSly Universe — Los Arquitectos del Umbral",
+          "asset_requirements": ["title card", "logo lockup", "next episode teaser"],
+          "transition": "end"
+        }
+      ],
+      "short_derivatives": [
+        {
+          "from_scene": 2,
+          "title": "Construye tu NØVA",
+          "format": "youtube_short"
+        },
+        {
+          "from_scene": 6,
+          "title": "Peskids aparece como planeta océano",
+          "format": "instagram_reel"
+        }
+      ],
+      "status": "draft"
+    }
+  ]
+}

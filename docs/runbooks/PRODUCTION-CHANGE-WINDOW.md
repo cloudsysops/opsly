@@ -57,6 +57,10 @@ Si el PR mezcla docs + `apps/peskids` → se trata como impacto prod.
 
 No mergear ni desplegar Peskids/runtime de día. Abrir PR, dejar listo, añadir **`night-merge`** (o merge en ventana nocturna). Ver `.cursor/rules/production-change-window.mdc`.
 
+## Nightly merge + upgrades
+
+PRs con label **`night-merge`** se squash-mergean a la **01:00 America/Bogota** vía `scripts/nightly-ops-upgrade.sh` (smoke + rollback n8n). Ver [`NIGHTLY-OPS-UPGRADE.md`](NIGHTLY-OPS-UPGRADE.md).
+
 ## Comandos
 
 ```bash

@@ -1,6 +1,7 @@
 import { createClient } from 'redis';
 import { notifyDiscord } from './NotifyWorker.js';
-import { logWorkerInfo, logWorkerWarn, logWorkerError } from '../observability/worker-log.js';
+import { logWorkerWarn, logWorkerError } from '../observability/worker-log.js';
+import { orchestratorQueue } from '../queue.js';
 
 const HEALTH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutos
 const MAX_CONSECUTIVE_FAILURES = 3;
@@ -8,6 +9,7 @@ const FAILURE_TTL_SECONDS = 3600; // 1h — limpia contadores obsoletos
 const FAILURE_KEY = (slug: string, svc: string) => `health:failures:${slug}:${svc}`;
 const RESTART_LOCK_KEY = (slug: string) => `health:restart-lock:${slug}`;
 const RESTART_LOCK_TTL = 10 * 60; // 10 min — evita reinicios repetidos
+const PLATFORM_EDGE_LOCK = 'health:restart-lock:platform:edge';
 
 interface TenantRow {
   slug: string;
@@ -56,10 +58,56 @@ async function pingUrl(url: string): Promise<boolean> {
 
 function buildServiceUrls(slug: string): Record<string, string> {
   const domain = process.env.PLATFORM_DOMAIN ?? '';
-  return {
+  const urls: Record<string, string> = {
     n8n: `https://n8n-${slug}.${domain}`,
     uptime: `https://uptime-${slug}.${domain}`,
   };
+  // Peskids public origin (CF 521 class) — not only n8n/uptime
+  if (slug === 'peskids') {
+    urls.app = process.env.PESKIDS_PUBLIC_HEALTH_URL ?? 'https://www.peskids.com/api/health';
+  }
+  return urls;
+}
+
+async function enqueueEdgeRecover(reason: string): Promise<boolean> {
+  try {
+    await orchestratorQueue.add('self-heal', {
+      tenant_slug: 'peskids',
+      service: 'edge',
+      action: 'edge-recover',
+      reason,
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function checkPlatformEdge(redis: ReturnType<typeof createClient>): Promise<void> {
+  const domain = process.env.PLATFORM_DOMAIN ?? 'op-sly.com';
+  const url = `https://api.${domain}/api/health`;
+  const ok = await pingUrl(url);
+  const fKey = FAILURE_KEY('platform', 'api');
+  if (ok) {
+    await resetFailures(redis, fKey);
+    return;
+  }
+  const failures = await incrementFailures(redis, fKey);
+  logWorkerWarn('health', 'Platform API failure', { failures, url });
+  if (failures < MAX_CONSECUTIVE_FAILURES) return;
+
+  const already = await redis.get(PLATFORM_EDGE_LOCK);
+  if (already) return;
+  await redis.set(PLATFORM_EDGE_LOCK, '1', { EX: RESTART_LOCK_TTL });
+  await notifyDiscord(
+    '⚠️ Platform API unreachable — edge-recover',
+    `API falló ${failures} veces.\nURL: ${url}\nEncolando self-heal edge-recover…`,
+    'warning'
+  );
+  const queued = await enqueueEdgeRecover(`health_worker_api_${failures}`);
+  if (queued) {
+    await resetFailures(redis, fKey);
+  }
 }
 
 async function getFailureCount(
@@ -157,6 +205,20 @@ async function checkTenant(redis: ReturnType<typeof createClient>, slug: string)
           'warning'
         );
 
+        // Peskids app / edge: prefer edge-watchdog via SelfHeal (handles Traefik 521)
+        if (slug === 'peskids' || svc === 'app') {
+          const queued = await enqueueEdgeRecover(`health_worker_${slug}_${svc}_${failures}`);
+          if (queued) {
+            await notifyDiscord(
+              `🔄 Edge-recover queued for ${slug}`,
+              `\`${svc}\` → self-heal edge-recover. Monitorizando…`,
+              'info'
+            );
+            await resetFailures(redis, fKey);
+            continue;
+          }
+        }
+
         const restarted = await tryDockerRestart(slug);
         if (restarted) {
           await notifyDiscord(
@@ -166,7 +228,17 @@ async function checkTenant(redis: ReturnType<typeof createClient>, slug: string)
           );
           await resetFailures(redis, fKey);
         } else {
-          // Restart también falló → escalar
+          // Compose restart failed → try edge-watchdog once, then escalate
+          const queued = await enqueueEdgeRecover(`health_worker_fallback_${slug}_${svc}`);
+          if (queued) {
+            await notifyDiscord(
+              `🔄 Fallback edge-recover for ${slug}`,
+              `compose restart falló; encolado edge-recover`,
+              'warning'
+            );
+            await resetFailures(redis, fKey);
+            continue;
+          }
           const details = `slug=${slug}, svc=${svc}, url=${url}, failures=${failures}`;
           await notifyDiscord(
             `🔴 Restart FAILED — escalating ${slug}`,
@@ -213,7 +285,10 @@ export function startHealthWorker(connection: {
 
   async function tick(): Promise<void> {
     const slugs = await fetchActiveSlugs();
-    await Promise.allSettled(slugs.map((slug) => checkTenant(redis, slug)));
+    await Promise.allSettled([
+      checkPlatformEdge(redis),
+      ...slugs.map((slug) => checkTenant(redis, slug)),
+    ]);
   }
 
   // Primera ejecución inmediata

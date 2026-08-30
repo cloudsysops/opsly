@@ -1,0 +1,119 @@
+{
+  "foundationVersion": "1.0.0",
+  "purpose": "Preserve the origin, vision, and non-negotiables of Opsly Universe as machine-readable canon for future agents and humans.",
+  "origin": {
+    "provenance": "founder_recollection",
+    "statement": "The project grew from a long-running impulse to understand hardware, software, systems, networks, security, building, teaching, and how those pieces fit into a map of human growth.",
+    "sourceRefs": [
+      "AGENTS.md",
+      "VISION.md",
+      "data/content/canon/ORIGIN-SAGA.md",
+      "data/content/canon/UNIVERSE-BIBLE.md"
+    ]
+  },
+  "principles": [
+    "We do not choose the child's path; we help them discover it.",
+    "AI discovers possibilities. Children choose their path. Adults help them grow.",
+    "Technology should amplify human capability, not erase humanity.",
+    "The Map is narrative, game, and personal exploration, not diagnosis, destiny, or ranking.",
+    "Universe canon is versioned and reused by consumers; consumers do not redefine the canon."
+  ],
+  "nonNegotiables": [
+    "No open child DMs.",
+    "No unrestricted text or voice chat with minors.",
+    "No behavioral advertising to child profiles.",
+    "No public real identities by default for child explorers.",
+    "No automatic publishing of children's creations or identity.",
+    "No selling access to children.",
+    "No copied third-party IP, mechanics, or visual signatures.",
+    "No hardcoding tenant-specific canon into shared universe modules."
+  ],
+  "childSafety": [
+    "Parent or guardian consent gates privileged actions.",
+    "Verified Guides do not receive unrestricted access to minors.",
+    "Content stays pseudonymous unless an adult-approved workflow says otherwise.",
+    "Public location, direct contact, and open chat are excluded from the baseline."
+  ],
+  "aiPhilosophy": [
+    "AI suggests, explains, assists, drafts, and adapts.",
+    "AI does not assign destiny, diagnosis, or permanent identity labels.",
+    "Human review stays in the approval loop for public-facing steps."
+  ],
+  "learningPhilosophy": [
+    "Learning happens through exploration, building, feedback, and reflection.",
+    "Different paths can teach the same lesson in different ways.",
+    "Progress is observed evidence, not a mystical score."
+  ],
+  "historicalEras": [
+    {
+      "year": "2008",
+      "name": "The First Portal",
+      "provenance": "founder_recollection",
+      "summary": "Beginning of systems thinking around hardware, software, programming, networks, and security."
+    },
+    {
+      "year": "2024",
+      "name": "Nebula Nexus",
+      "provenance": "founder_recollection",
+      "summary": "Antecedent that combined gaming, education, AI, Big Data, cybersecurity, cards, creatures, and growth."
+    },
+    {
+      "year": "2024",
+      "name": "Cipher Sentinel",
+      "provenance": "founder_recollection",
+      "summary": "Cyber training and guardian concept preserved as a legacy ancestor of later game and learning systems."
+    },
+    {
+      "year": "2024",
+      "name": "Yu-Gi-Cloud",
+      "provenance": "narrative_interpretation",
+      "summary": "Legacy experiment preserved historically, not as current commercial IP."
+    },
+    {
+      "year": "2025",
+      "name": "AI Factory Era",
+      "provenance": "founder_recollection",
+      "summary": "Specialized intelligences, templates, skills, tools, and agents become a repeatable operating pattern."
+    },
+    {
+      "year": "2025",
+      "name": "CloudSysOps / ICSO",
+      "provenance": "verified_history",
+      "summary": "Automation and infrastructure become the operational twin."
+    },
+    {
+      "year": "2025",
+      "name": "Opsly",
+      "provenance": "verified_history",
+      "summary": "Tenants, blueprints, modules, agents, approvals, metrics, and learning form the platform layer."
+    },
+    {
+      "year": "2025",
+      "name": "Peskids",
+      "provenance": "verified_history",
+      "summary": "First meaningful real-world child/family/teacher environment."
+    },
+    {
+      "year": "2025",
+      "name": "Mission Control / Moon",
+      "provenance": "verified_history",
+      "summary": "Control plane for agents, workers, health, and orchestration."
+    },
+    {
+      "year": "2025",
+      "name": "Content OS",
+      "provenance": "verified_history",
+      "summary": "Stories, scenes, images, video, and publishing workflows become reusable operations."
+    },
+    {
+      "year": "2026",
+      "name": "@intcloudsysops/universe",
+      "provenance": "verified_history",
+      "summary": "Canonical characters, worlds, visual DNA, and story context used by content and game systems."
+    }
+  ],
+  "futureVision": {
+    "status": "open",
+    "statement": "THE MAP IS STILL BEING DRAWN."
+  }
+}

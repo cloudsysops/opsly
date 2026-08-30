@@ -4,6 +4,10 @@ import path from 'node:path';
 import { createClient, type RedisClientType } from 'redis';
 
 import { getOpenClawMissionControlSnapshot } from './admin-mission-control-openclaw';
+import { CACHE_TTL } from './constants';
+import { getCache, setCache } from './redis-cache';
+
+const MISSION_CONTROL_CACHE_KEY = 'mission_control:foundation_read_model';
 
 export type HealthSignal = 'up' | 'down' | 'unknown';
 export type ReadinessSignal = 'ready' | 'blocked' | 'unknown';
@@ -741,18 +745,21 @@ function buildVpsSection(
   orchestratorHealth: HealthSignal,
   llmHealth: HealthSignal,
   redisHealth: HealthSignal
-) {
+): MissionControlReadModel['vps'] {
   return {
     host: process.env.OPSLY_VPS_HOST?.trim() ?? 'vps-dragon',
     status: vpsStatus,
-    api_connectivity: 'up' as HealthSignal,
+    api_connectivity: 'up',
     orchestrator_connectivity: orchestratorHealth,
     llm_gateway_connectivity: llmHealth,
     redis_connectivity: redisHealth,
   };
 }
 
-function buildBackupsSection(backupsReady: number, opslyConfig: PlatformConfig) {
+function buildBackupsSection(
+  backupsReady: number,
+  opslyConfig: PlatformConfig
+): MissionControlReadModel['backups'] {
   const cronStatus = readString(opslyConfig.backups?.cron) ? 'ready' : 'blocked';
   return {
     status: aggregateReadiness([backupsReady > 0 ? 'ready' : 'blocked', cronStatus]),
@@ -762,7 +769,10 @@ function buildBackupsSection(backupsReady: number, opslyConfig: PlatformConfig) 
   };
 }
 
-function buildSslSection(sslReady: number, opslyConfig: PlatformConfig) {
+function buildSslSection(
+  sslReady: number,
+  opslyConfig: PlatformConfig
+): MissionControlReadModel['ssl'] {
   return {
     status: aggregateReadiness([sslReady > 0 ? 'ready' : 'blocked']),
     wildcard_domain: opslyConfig.domains?.wildcard ?? '*.op-sly.com',
@@ -773,7 +783,7 @@ function buildSslSection(sslReady: number, opslyConfig: PlatformConfig) {
 function buildWorkflowsSection(
   workflowsReady: number,
   tenantRegistry: { items: PlatformTenantRegistryEntry[] }
-) {
+): MissionControlReadModel['workflows'] {
   const totalWorkflows = tenantRegistry.items.reduce(
     (sum: number, tenant: PlatformTenantRegistryEntry) => sum + tenant.workflows_count,
     0
@@ -799,9 +809,9 @@ function buildUptimeServices(
   orchestratorHealth: HealthSignal,
   llmHealth: HealthSignal,
   redisHealth: HealthSignal
-) {
+): Array<{ name: string; status: HealthSignal; url: string | null }> {
   return [
-    { name: 'api', status: 'up' as HealthSignal, url: null },
+    { name: 'api', status: 'up', url: null },
     {
       name: 'orchestrator',
       status: orchestratorHealth,
@@ -825,14 +835,110 @@ function buildUptimeSection(
   orchestratorHealth: HealthSignal,
   llmHealth: HealthSignal,
   redisHealth: HealthSignal
-) {
+): MissionControlReadModel['uptime'] {
   return {
     status: aggregateReadiness([vpsStatus === 'healthy' ? 'ready' : 'blocked']),
     services: buildUptimeServices(orchestratorHealth, llmHealth, redisHealth),
   };
 }
 
-export async function getMissionControlFoundationReadModel(): Promise<MissionControlReadModel> {
+function buildTenantReadinessCounts(items: PlatformTenantRegistryEntry[]): {
+  backupsReady: number;
+  sslReady: number;
+  workflowsReady: number;
+} {
+  return {
+    backupsReady: items.filter((item) => item.backup_ready).length,
+    sslReady: items.filter((item) => item.ssl_ready).length,
+    workflowsReady: items.filter((item) => item.workflows_count > 0).length,
+  };
+}
+
+type MissionControlAssembleParams = {
+  tenantRegistry: Awaited<ReturnType<typeof getPlatformTenantRegistry>>;
+  agentRegistry: Awaited<ReturnType<typeof getPlatformAgentRegistry>>;
+  openclaw: Awaited<ReturnType<typeof getOpenClawMissionControlSnapshot>>;
+  opslyConfig: PlatformConfig;
+  vpsStatus: OperationalStatus;
+  orchestratorHealth: HealthSignal;
+  llmHealth: HealthSignal;
+  redisHealth: HealthSignal;
+  approvalQueue: { waiting: number; active: number };
+};
+
+function buildAgentSection(
+  summary: ReturnType<typeof summarizeAgentHealth>,
+  items: PlatformAgentRegistryEntry[]
+): MissionControlReadModel['ai_agents'] {
+  return {
+    total: summary.total,
+    healthy: summary.healthy,
+    degraded: summary.degraded,
+    blocked: summary.blocked,
+    items,
+  };
+}
+
+function buildExtractionSection(
+  items: PlatformTenantRegistryEntry[]
+): MissionControlReadModel['extraction_readiness'] {
+  const extractionReady = items.filter((item) => item.extraction_ready).length;
+  return {
+    ready: extractionReady,
+    blocked: items.length - extractionReady,
+    items: items.map((item) => ({
+      slug: item.slug,
+      stage: item.lifecycle_stage,
+      ready: item.extraction_ready,
+      reason: item.extraction_reason,
+    })),
+  };
+}
+
+function assembleMissionControlReadModel(
+  params: MissionControlAssembleParams
+): MissionControlReadModel {
+  const {
+    tenantRegistry,
+    agentRegistry,
+    openclaw,
+    opslyConfig,
+    vpsStatus,
+    orchestratorHealth,
+    llmHealth,
+    redisHealth,
+    approvalQueue,
+  } = params;
+  const { backupsReady, sslReady, workflowsReady } = buildTenantReadinessCounts(
+    tenantRegistry.items
+  );
+
+  return {
+    generated_at: new Date().toISOString(),
+    vps: buildVpsSection(vpsStatus, orchestratorHealth, llmHealth, redisHealth),
+    tenants: {
+      total: tenantRegistry.items.length,
+      by_stage: tenantRegistry.by_stage,
+      extraction_ready: tenantRegistry.extraction_ready,
+      items: tenantRegistry.items,
+    },
+    backups: buildBackupsSection(backupsReady, opslyConfig),
+    ssl: buildSslSection(sslReady, opslyConfig),
+    workflows: buildWorkflowsSection(workflowsReady, tenantRegistry),
+    uptime: buildUptimeSection(vpsStatus, orchestratorHealth, llmHealth, redisHealth),
+    ai_agents: buildAgentSection(agentRegistry.summary, agentRegistry.items),
+    pending_approvals: {
+      count: approvalQueue.waiting + approvalQueue.active,
+      queues: [
+        { queue: 'approval-gate', waiting: approvalQueue.waiting, active: approvalQueue.active },
+      ],
+    },
+    extraction_readiness: buildExtractionSection(tenantRegistry.items),
+    openclaw,
+  };
+}
+
+async function buildFreshMissionControlFoundationReadModel(): Promise<MissionControlReadModel> {
   const [
     tenantRegistry,
     agentRegistry,
@@ -859,53 +965,32 @@ export async function getMissionControlFoundationReadModel(): Promise<MissionCon
     redis: redisHealth,
   });
 
-  const backupsReady = tenantRegistry.items.filter((item) => item.backup_ready).length;
-  const sslReady = tenantRegistry.items.filter((item) => item.ssl_ready).length;
-  const workflowsReady = tenantRegistry.items.filter((item) => item.workflows_count > 0).length;
-  const extractionItems = tenantRegistry.items.map((item) => ({
-    slug: item.slug,
-    stage: item.lifecycle_stage,
-    ready: item.extraction_ready,
-    reason: item.extraction_reason,
-  }));
-
-  const agentSummary = agentRegistry.summary;
-
-  return {
-    generated_at: new Date().toISOString(),
-    vps: buildVpsSection(vpsStatus, orchestratorHealth, llmHealth, redisHealth),
-    tenants: {
-      total: tenantRegistry.items.length,
-      by_stage: tenantRegistry.by_stage,
-      extraction_ready: tenantRegistry.extraction_ready,
-      items: tenantRegistry.items,
-    },
-    backups: buildBackupsSection(backupsReady, opslyConfig),
-    ssl: buildSslSection(sslReady, opslyConfig),
-    workflows: buildWorkflowsSection(workflowsReady, tenantRegistry),
-    uptime: buildUptimeSection(vpsStatus, orchestratorHealth, llmHealth, redisHealth),
-    ai_agents: {
-      total: agentSummary.total,
-      healthy: agentSummary.healthy,
-      degraded: agentSummary.degraded,
-      blocked: agentSummary.blocked,
-      items: agentRegistry.items,
-    },
-    pending_approvals: {
-      count: approvalQueue.waiting + approvalQueue.active,
-      queues: [
-        {
-          queue: 'approval-gate',
-          waiting: approvalQueue.waiting,
-          active: approvalQueue.active,
-        },
-      ],
-    },
-    extraction_readiness: {
-      ready: tenantRegistry.extraction_ready,
-      blocked: tenantRegistry.items.length - tenantRegistry.extraction_ready,
-      items: extractionItems,
-    },
+  return assembleMissionControlReadModel({
+    tenantRegistry,
+    agentRegistry,
     openclaw,
-  };
+    opslyConfig,
+    vpsStatus,
+    orchestratorHealth,
+    llmHealth,
+    redisHealth,
+    approvalQueue,
+  });
+}
+
+/**
+ * BOLT OPTIMIZATION:
+ * Caches the assembled Mission Control foundation read model in Redis (60s TTL)
+ * to avoid repeated disk reads, OpenClaw log queries, and HTTP/Redis probes on every request.
+ */
+export async function getMissionControlFoundationReadModel(): Promise<MissionControlReadModel> {
+  const cached = await getCache<MissionControlReadModel>(MISSION_CONTROL_CACHE_KEY);
+  if (cached !== null) {
+    return cached;
+  }
+
+  const snapshot = await buildFreshMissionControlFoundationReadModel();
+  void setCache(MISSION_CONTROL_CACHE_KEY, snapshot, CACHE_TTL.SHORT);
+
+  return snapshot;
 }

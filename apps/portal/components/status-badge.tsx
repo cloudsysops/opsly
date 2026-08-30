@@ -26,13 +26,22 @@ export function StatusBadge({ state, label, className }: StatusBadgeProps): Reac
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-sm border px-2 py-0.5 text-xs font-medium',
+        'inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-xs font-medium',
         healthy && 'border-ops-green/40 bg-ops-green/10 text-ops-green',
         unhealthy && 'border-ops-red/40 bg-ops-red/10 text-ops-red',
         !healthy && !unhealthy && 'border-ops-border bg-ops-surface text-ops-gray',
         className
       )}
     >
+      <span
+        aria-hidden="true"
+        className={cn(
+          'h-1.5 w-1.5 rounded-full shrink-0',
+          healthy && 'bg-ops-green',
+          unhealthy && 'bg-ops-red',
+          !healthy && !unhealthy && 'bg-ops-gray'
+        )}
+      />
       {text}
     </span>
   );

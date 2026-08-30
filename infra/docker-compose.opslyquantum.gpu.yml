@@ -1,0 +1,36 @@
+# Override NVIDIA GPU for opslyquantum `ollama` — PC-gamer / hosts with real GPU.
+# Do NOT merge into docker-compose.opslyquantum.yml (CPU-only Mac/VPS must keep working).
+#
+# Requires: NVIDIA driver + NVIDIA Container Toolkit on the host.
+#   https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+#
+# Compose (non-Swarm) ignores `deploy.resources`; use `gpus:` + NVIDIA_* env.
+#
+# Usage (repo root):
+#   OLLAMA_GPU=1 ./scripts/ensure-ollama-local.sh --ensure
+#   # or:
+#   docker compose \
+#     -f infra/docker-compose.opslyquantum.yml \
+#     -f infra/docker-compose.opslyquantum.gpu.yml \
+#     --env-file infra/opslyquantum.env \
+#     up -d ollama
+#
+# Verify:
+#   docker exec opslyquantum-ollama nvidia-smi
+#   docker exec opslyquantum-ollama ollama ps   # PROCESSOR → GPU after a pull/run
+
+services:
+  ollama:
+    gpus: all
+    environment:
+      OLLAMA_ORIGINS: ${OLLAMA_ORIGINS:-*}
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    # Swarm-compatible reservation (harmless no-op on Compose classic)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

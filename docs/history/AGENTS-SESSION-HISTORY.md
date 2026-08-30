@@ -1,13 +1,24 @@
 ---
 status: archive
 owner: operations
-last_review: 2026-06-22
+last_review: 2026-08-16
 ---
 
 # Opsly — Sesiones Completadas (Historial)
 
-> Archivo histórico de sesiones cerradas (pre 2026-05-26).
-> Para sesiones activas y bloqueantes, ver [`AGENTS.md`](../AGENTS.md).
+> Archivo histórico de sesiones cerradas.
+> Para sesiones activas y bloqueantes, ver [`AGENTS.md`](../../AGENTS.md).
+
+---
+
+## Sesión 2026-08-16 — Night-merge, Deploy health, Peskids fail-closed ✅
+
+- Peskids prod `e787fd6` (#980): magic-link / leads / OpenWA fail-closed; health `https://www.peskids.com/api/health`.
+- Night-merge: espera Deploy cuyo `headSha` = SHA post-merge; rollback con PR revert + `hotfix-prod` (no `git push main`); reintenta `mergeable=UNKNOWN`.
+- Platform Deploy (#986): health público desde el runner; probe Traefik local en VPS; SSH timeout 30m; `concurrency` por ref sin cancelar in-progress.
+- Mergeados: #975 local-agents, #982 n8n pin, #933 edge-watchdog, #962 Palette a11y, #970 Sentinel tests, #986 Deploy, #882 entitlements (`dcb939f`).
+- Scan `$` en `.env` (nombres de clave; nunca volcar valores): `scripts/ops/scan-env-dollar-interpolation.sh`.
+- No mergear Sentinel/Bolt/Palette en masa. No mezclar YouTube/content-studio.
 
 ---
 
