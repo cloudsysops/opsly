@@ -14,6 +14,9 @@ FORCE="${NIGHT_MERGE_FORCE:-0}"
 STATE_DIR="${NIGHT_MERGE_STATE_DIR:-/tmp/opsly-night-merge}"
 MERGED_SHAS_FILE="${STATE_DIR}/merged-shas.txt"
 SHA_BEFORE_FILE="${STATE_DIR}/sha-before.txt"
+MERGE_STARTED_FILE="${STATE_DIR}/merge-started.txt"
+UNKNOWN_RETRIES="${NIGHT_MERGE_UNKNOWN_RETRIES:-4}"
+UNKNOWN_RETRY_SLEEP="${NIGHT_MERGE_UNKNOWN_RETRY_SLEEP:-15}"
 
 mkdir -p "${STATE_DIR}"
 : >"${MERGED_SHAS_FILE}"
@@ -43,10 +46,32 @@ notify() {
   fi
 }
 
+fetch_pr_rollup() {
+  local pr="$1"
+  gh pr view "${pr}" --repo "${REPO}" --json statusCheckRollup,reviewDecision,isDraft,mergeable,mergeStateStatus
+}
+
+# GitHub often returns mergeable=UNKNOWN for a few seconds. Retry instead of skip-forever.
+resolve_mergeable() {
+  local pr="$1"
+  local rollup="$2"
+  local mergeable attempt
+  mergeable="$(jq -r '.mergeable' <<<"${rollup}")"
+  attempt=0
+  while [[ "${mergeable}" == "UNKNOWN" && "${attempt}" -lt "${UNKNOWN_RETRIES}" ]]; do
+    attempt=$((attempt + 1))
+    warn "PR #${pr} mergeable=UNKNOWN — retry ${attempt}/${UNKNOWN_RETRIES}"
+    sleep "${UNKNOWN_RETRY_SLEEP}"
+    rollup="$(fetch_pr_rollup "${pr}")"
+    mergeable="$(jq -r '.mergeable' <<<"${rollup}")"
+  done
+  printf '%s\n' "${rollup}"
+}
+
 checks_green() {
   local pr="$1"
   local rollup
-  rollup="$(gh pr view "${pr}" --repo "${REPO}" --json statusCheckRollup,reviewDecision,isDraft,mergeable,mergeStateStatus)"
+  rollup="$(resolve_mergeable "${pr}" "$(fetch_pr_rollup "${pr}")")"
   local is_draft mergeable
   is_draft="$(jq -r '.isDraft' <<<"${rollup}")"
   mergeable="$(jq -r '.mergeable' <<<"${rollup}")"
@@ -54,9 +79,12 @@ checks_green() {
     warn "PR #${pr} is draft — skip"
     return 1
   fi
-  if [[ "${mergeable}" != "MERGEABLE" ]]; then
+  if [[ "${mergeable}" == "CONFLICTING" ]]; then
     warn "PR #${pr} mergeable=${mergeable} — skip"
     return 1
+  fi
+  if [[ "${mergeable}" != "MERGEABLE" ]]; then
+    warn "PR #${pr} mergeable=${mergeable} after retries — continue if checks are green"
   fi
 
   local failing pending
@@ -79,10 +107,16 @@ list_target_prs() {
     --jq '.[].number'
 }
 
+iso_now_minus_seconds() {
+  local seconds="${1:-30}"
+  node -e "console.log(new Date(Date.now() - ${seconds} * 1000).toISOString())"
+}
+
 record_sha_before() {
   local sha
   sha="$(gh api "repos/${REPO}/commits/main" --jq '.sha')"
   printf '%s\n' "${sha}" >"${SHA_BEFORE_FILE}"
+  iso_now_minus_seconds 30 >"${MERGE_STARTED_FILE}"
   log "main before merges: ${sha}"
 }
 
@@ -106,25 +140,40 @@ merge_pr() {
   log "Merged #${pr} → main@${sha}"
 }
 
+# Pick the Deploy run for this merge SHA. Never fall back to an older
+# completed failure just because its headSha differs from sha-before.
+select_deploy_run_json() {
+  local after="$1"
+  local since="$2"
+  local filter
+  filter="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/night-merge-select-deploy.jq"
+  jq --arg after "${after}" --arg since "${since}" -f "${filter}"
+}
+
 wait_for_deploy() {
   if [[ "${DRY_RUN}" == "1" ]]; then
     log "DRY_RUN skip deploy wait"
     return 0
   fi
   local deadline=$((SECONDS + DEPLOY_WAIT_SECONDS))
-  local sha_before
+  local sha_before after_sha since
   sha_before="$(cat "${SHA_BEFORE_FILE}")"
-  log "Waiting up to ${DEPLOY_WAIT_SECONDS}s for Deploy on main after ${sha_before:0:7}…"
+  since="$(cat "${MERGE_STARTED_FILE}")"
+  after_sha="$(gh api "repos/${REPO}/commits/main" --jq '.sha')"
+  if [[ "${after_sha}" == "${sha_before}" ]]; then
+    log "main SHA unchanged; no new Deploy expected"
+    return 0
+  fi
+  log "Waiting up to ${DEPLOY_WAIT_SECONDS}s for Deploy headSha=${after_sha:0:7} created>=${since}…"
   while ((SECONDS < deadline)); do
     local run
     run="$(
-      gh run list --repo "${REPO}" --branch main --workflow Deploy --limit 8 \
+      gh run list --repo "${REPO}" --branch main --workflow Deploy --limit 20 \
         --json databaseId,status,conclusion,headSha,createdAt \
-        | jq --arg before "${sha_before}" '
-          [.[] | select(.headSha != $before)] | .[0] // empty
-        '
+        | select_deploy_run_json "${after_sha}" "${since}"
     )"
     if [[ -z "${run}" || "${run}" == "null" ]]; then
+      log "No Deploy run yet for ${after_sha:0:7}; waiting…"
       sleep 20
       continue
     fi
@@ -187,28 +236,43 @@ rollback() {
     return 0
   fi
 
-  # Revert each commit after sha_before (newest first)
   local commits
   commits="$(git rev-list --reverse "${sha_before}..HEAD")"
   if [[ -z "${commits}" ]]; then
     warn "No commits to revert"
     return 0
   fi
-  # shellcheck disable=SC2086
   local reverse
   reverse="$(git rev-list "${sha_before}..HEAD")"
   local sha
   for sha in ${reverse}; do
     log "Reverting ${sha}"
     git revert --no-edit "${sha}" || {
-      warn "git revert failed for ${sha}; attempting hard reset to ${sha_before}"
-      git reset --hard "${sha_before}"
-      break
+      warn "git revert failed for ${sha}; cannot hard-reset protected main"
+      notify "🚨 Night merge ROLLBACK FAILED" "git revert conflict toward ${sha_before:0:7} — needs human"
+      return 1
     }
   done
-  git push origin main
-  notify "🚨 Night merge ROLLBACK" "main restored toward ${sha_before:0:7} after failed verify"
-  log "Rollback push complete"
+
+  # Protected main rejects direct pushes. Open a revert PR and admin-merge it.
+  local branch pr_url
+  branch="revert/night-merge-$(date -u +%Y%m%d-%H%M%S)"
+  git checkout -b "${branch}"
+  git push -u origin "${branch}"
+  pr_url="$(
+    gh pr create --repo "${REPO}" --base main --head "${branch}" \
+      --title "revert(night-merge): restore main after failed verify" \
+      --body "Automatic night-merge rollback. Restore toward \`${sha_before}\` after Deploy/smoke failed. Do not merge extra work on this PR." \
+      --label hotfix-prod
+  )"
+  log "Rollback PR: ${pr_url}"
+  if [[ "${NIGHT_MERGE_ADMIN:-0}" == "1" ]]; then
+    gh pr merge "${pr_url}" --repo "${REPO}" --squash --delete-branch --admin
+  else
+    gh pr merge "${pr_url}" --repo "${REPO}" --squash --delete-branch
+  fi
+  notify "🚨 Night merge ROLLBACK" "main restored toward ${sha_before:0:7} via ${pr_url}"
+  log "Rollback PR merged"
 }
 
 main() {

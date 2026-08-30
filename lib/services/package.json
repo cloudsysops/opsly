@@ -20,12 +20,20 @@
       "types": "./dist/twenty/index.d.ts",
       "import": "./dist/twenty/index.js",
       "default": "./dist/twenty/index.js"
+    },
+    "./entitlements": {
+      "types": "./dist/entitlements/index.d.ts",
+      "import": "./dist/entitlements/index.js",
+      "default": "./dist/entitlements/index.js"
     }
   },
   "scripts": {
     "build": "tsc",
     "type-check": "tsc --noEmit",
     "test": "vitest run"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.106.0"
   },
   "devDependencies": {
     "vitest": "^4.1.8"

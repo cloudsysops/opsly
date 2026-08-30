@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-05-26
+last_review: 2026-08-25
 ---
 
 # Opsly — Contexto del Agente
@@ -675,29 +675,35 @@ Week 4: Docs + runbook + MVP validation
 
 ## 🔄 Estado actual
 
-<!-- Actualizar al final de cada sesión. Sesiones pre-2026-05-26 → docs/AGENTS-SESSION-HISTORY.md -->
+<!-- Actualizar al final de cada sesión. Sesiones pre-2026-05-26 → docs/history/AGENTS-SESSION-HISTORY.md -->
 
-### 📌 Sesión Activa (2026-08-06)
+### 📌 Sesión Activa (2026-08-25)
 
-**Tema:** Peskids Claude lote en prod + higiene ramas + rescate ICSO (#881)  
-**Branch:** `main` (`883fe892`) — Peskids healthy  
-**Objetivo:** plataforma usable (Peskids) + camino ICSO/modules listo para merge
+**Tema:** Franchise platform + First Portal game + Universe canon + pc-gamer autodispatch en `main`  
+**Branch:** `main` (`95f7be700`) plataforma
+**Objetivo:** un solo cerebro para agentes (Cursor/Claude/OpenCode/Copilot/workers) alineado a prod real
 
-**Hecho:**
-1. ✅ Lote Claude Peskids en prod (`883fe892`) — quick-actions, Matricular, templates, CV/video, email staff, ciudad/domicilio, logo, sidebar
-2. ✅ Hotfix standalone `webpack-runtime` (#918) tras outage breve; rollback + redeploy OK
-3. ✅ Migraciones Supabase 0093–0095 aplicadas; audit FK sin FK a `public.leads`
-4. ✅ Higiene: cerrados auto-fix #915/#912/#909/#890; borradas ramas Claude/Peskids ya mergeadas; cerrados Bolt metrics duplicados
-5. ✅ PR [#881](https://github.com/cloudsysops/opsly/pull/881) reconciliada con `main` + `0096_tenant_modules.sql` (MERGEABLE)
+**Hecho (2026-08-16 → 2026-08-25):**
+1. ✅ Franchise management platform ([`95f7be700`](https://github.com/cloudsysops/opsly/commit/95f7be700)) — standalone Next.js 15 app with Prisma, territories, royalties, RAG.
+2. ✅ First Portal playable web client ([`28c4d7c47`](https://github.com/cloudsysops/opsly/commit/28c4d7c47), [#1007](https://github.com/cloudsysops/opsly/pull/1007)).
+3. ✅ Universe contracts + canon guard ([`4affe2bda`](https://github.com/cloudsysops/opsly/commit/4affe2bda), [`57d6c3be0`](https://github.com/cloudsysops/opsly/commit/57d6c3be0), [#1005](https://github.com/cloudsysops/opsly/pull/1005), [#1003](https://github.com/cloudsysops/opsly/pull/1003)).
+4. ✅ pc-gamer overnight autodispatch ([`0752e3bc9`](https://github.com/cloudsysops/opsly/commit/0752e3bc9), [#1000](https://github.com/cloudsysops/opsly/pull/1000)).
+5. ✅ Render pipeline consolidated onto Universe canon ([`0228ca087`](https://github.com/cloudsysops/opsly/commit/0228ca087), [#1004](https://github.com/cloudsysops/opsly/pull/1004)).
+6. ✅ Cola `night-merge` **vacía**. VPS: cron edge-watchdog `*/2`; nightly n8n `15 1 * * *` (America/Bogota). API `https://api.op-sly.com/api/health` → 200 supabase+redis ok.
 
 **Pendiente:**
-- CI verde + merge nocturno #881 (ICSO catalog CMS + tenant module activation)
-- Revisión cliente: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md)
-- Security: rebase #886 npm audit; sentinel forms #867
-- Archivar o rebasear #885/#887 (Claude) sin duplicar #881
-
+- PR [#1044](https://github.com/cloudsysops/opsly/pull/1044) (franchise setup) abierto y mergeable, branch `feat/peskids-franchise-setup` con 12 commits.
+- 50 PRs abiertos total (18 Sentinel, 11 Bolt, 9 Palette, 5 franchise, 7 other).
+- Catálogo comercial (`config/commercial-catalog.json`) sin tie runtime a módulos técnicos. Diseño: [`docs/00-architecture/MODULE-REGISTRY.md`](docs/00-architecture/MODULE-REGISTRY.md).
+- **No** mergear en masa Sentinel/Bolt/Palette. **No** mezclar YouTube/content-studio en PRs de plataforma. PC-gamer: no encolar OpenCode si el nodo está en horario `gaming` / offline.
 
 ### 📅 Sesiones Recientes
+
+**Sesión 2026-08-16 — Tenant entitlements engine en prod (Module Registry) ✅**
+- ✅ PR #882 mergeado (`dcb939f`) tras rebase sobre main + renumerar migración a `0097_tenant_entitlements`
+- ✅ Migraciones 0096 + 0097 aplicadas en Supabase prod (`supabase db push`)
+- ✅ API redeployada + smoke E2E en prod: `GET/POST/DELETE /api/tenants/{slug}/entitlements` OK
+- Base runtime para ofrecer módulos/servicios a tenants por `tenant_slug`
 
 **Sesión 2026-08-05 — WhatsApp domicilio + logo prod ✅**
 - ✅ Domicilio ya no cae al número de sede; mensaje deja el genérico de marketing
@@ -722,7 +728,7 @@ Week 4: Docs + runbook + MVP validation
 - ✅ Smoke completo en producción: landing, admin, health, leads, feedback
 - ✅ Árbol local limpio
 
-**Historial completo:** [`docs/AGENTS-SESSION-HISTORY.md`](docs/AGENTS-SESSION-HISTORY.md)
+**Historial completo:** [`docs/history/AGENTS-SESSION-HISTORY.md`](docs/history/AGENTS-SESSION-HISTORY.md)
     - All endpoints return realistic mock data matching component interfaces
     - FormAnalyticsDashboard expects: formId, formTitle, submissionsCount, abandonmentRate, avgCompletionTime, errorCount
     - SubmissionsDashboard expects: formId, formTitle, submissionId, submittedAt, status
@@ -945,6 +951,7 @@ Week 4: Docs + runbook + MVP validation
 | n8n (tenants)      | ✅ Running        | -      | smiletripcare, localrank, jkboterolabs, peskids          |
 | Uptime Kuma        | ✅ Running        | -      | Por tenant                                                |
 | Peskids app stack  | ✅ Running        | 3004   | `peskids` healthy, `n8n_peskids` / `uptime_peskids` live  |
+| Peskids Franchise  | ✅ Scaffolded     | -      | `apps/peskids-franchise` management portal               |
 
 **Sesión 2026-04-20 — Semana 5 Completada ✅ (Feedback Loop API)**
 
@@ -1594,11 +1601,13 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 ## 🔄 Próximo paso inmediato
 
-**Peskids:** prod `883fe892` — enviar checklist [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md). Health: `https://www.peskids.com/api/health`.
+**Peskids:** prod `95f7be700` (franchise platform merged). Health: `https://www.peskids.com/api/health`. Checklist: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md).
 
-**Plataforma (valor ICSO):** merge nocturno [#881](https://github.com/cloudsysops/opsly/pull/881) tras CI verde — catalog CMS + `tenant_modules` (0096). No redeploy Peskids salvo hotfix.
+**Plataforma:** `main` = `95f7be700` (#1007 game, #1005 universe, #1000 autodispatch, #1004 render pipeline). Scan `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh`. Cola `night-merge` vacía. No mergear Sentinel/Bolt/Palette sin review.
 
-**Capacidad VPS:** alerta memoria **activa** (~4 GiB) — `docs/runbooks/VPS-MEMORY-CAPS.md`.
+**Franchise:** PR [#1044](https://github.com/cloudsysops/opsly/pull/1044) (franchise setup) open and mergeable on `feat/peskids-franchise-setup` (12 commits).
+
+**Capacidad VPS:** alerta memoria **activa** (~4 GiB) — `docs/runbooks/VPS-MEMORY-CAPS.md`. Compose `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh --env-file /opt/opsly/.env --dry-run` (solo nombres de clave).
 
 
 
@@ -2070,6 +2079,10 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
 | Fecha      | Decisión                                                                                                                                                                                                                                                                                                                                                                                                   | Razón                                                                                                                                                                                                  |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------- | -------------------------------------------------------------------------- |
+| 2026-08-25 | **Franchise management platform** (`95f7be700`): standalone Next.js 15 app with Prisma, territories, royalties, RAG. Commit `95f7be700`. | New revenue line — franchise operations platform separate from core Opsly but sharing infrastructure. |
+| 2026-08-25 | **First Portal game client** (`28c4d7c47`): playable web client. Commit `28c4d7c47`, PR #1007. | Interactive game layer on top of Universe canon. |
+| 2026-08-25 | **Universe canon** (`57d6c3be0`): narrative universe foundation + contracts + canon guard. Commits `4affe2bda`, `57d6c3be0`, PRs #1005, #1003. | Establishes shared narrative contracts across game/content/rendering modules. |
+| 2026-08-25 | **pc-gamer overnight autodispatch** (`0752e3bc9`): overnight dispatch pattern. Commit `0752e3bc9`, PR #1000. | Autonomous scheduling for compute-heavy tasks during off-hours. |
 | 2026-04-18 | **Design Doc OAR** (`docs/design/OAR.md`): **Opsly Agentic Runtime** — loops explícitos (ReAct, Plan & Execute, Reflection), máquina de estados, `MemoryInterface` + `AgentActionPort` (tipado estricto, `tenant_slug`). Integración prevista con Mode System. **ADR-027** (`docs/adr/ADR-027-hybrid-compute-plane-k8s.md`): control plane en Compose por defecto; compute plane (workers, sandboxes, ML) candidato a K8s bajo criterios de activación. | Contrato de comportamiento entre orchestrator y LLM Gateway; estrategia híbrida sin big-bang K8s. |
 | 2026-04-14 | **ADR-025** (`docs/adr/ADR-025-notebooklm-knowledge-layer.md`): NotebookLM como **knowledge layer universal** para todos los agentes IA. Feed automático post-commit de AGENTS.md, ADRs, system_state.json, costos LLM. Query startup obligatorio ("estado operativo actual"). Routing LLM Gateway consulta NotebookLM si detecta keywords operativas. Feature flag `NOTEBOOKLM_ENABLED` + fallback local. | Agentes más inteligentes desde el primer segundo; contexto compartido sin duplicar estado; decisiones propagan automáticamente.                                                                        |
 | 2026-04-14 | **ADR-024** (`docs/adr/ADR-024-ollama-local-worker-primary.md`): Ollama local como provider primary en worker Mac 2011 (`opslyquantum`). VPS = control plane (`queue-only`). Worker Mac 2011 = worker plane (`worker-enabled`). Routing `cheap` → `llama_local` primary (costo $0), fallback cloud. LLM Gateway ya tiene `llama_local` configurado en `providers.ts`.                                      | Aliviar CPU VPS; costo $0 en tokens para tareas simples; worker Mac 2011 usa hardware ocioso.                                                                                                          |
@@ -2214,6 +2227,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 │   ├── portal/              # Next.js portal cliente (login, invitación, modos)
 │   ├── web/                 # App web (workspace)
 │   ├── icso/                # Marketing site IntCloud SysOps (agency, frontend-only)
+│   ├── peskids-franchise/   # Franchise management platform (Prisma, territories, royalties, RAG)
 │   ├── mcp/                 # OpenClaw MCP server (tools → API / GitHub)
 │   ├── orchestrator/        # OpenClaw BullMQ + processIntent
 │   ├── ml/                  # OpenClaw ML (RAG, clasificación, embeddings)

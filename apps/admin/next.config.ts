@@ -10,7 +10,11 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, '../..'),
   // Do NOT set outputFileTracingExcludes for sibling ../*/.next — same failure
   // mode as Peskids #918 (missing webpack-runtime.js in GHCR standalone).
-  transpilePackages: ['@intcloudsysops/components', '@intcloudsysops/capacity-alert'],
+  transpilePackages: [
+    '@intcloudsysops/components',
+    '@intcloudsysops/capacity-alert',
+    '@intcloudsysops/content-studio',
+  ],
 };
 
 export default nextConfig;

@@ -1,0 +1,47 @@
+{
+  "id": "the-traveler",
+  "canonical_name": "The Traveler",
+  "also_known_as": ["El Viajero"],
+  "role": "Protagonist of the Opsly Universe — represents Cristian, never fully unmasked",
+  "personality": {
+    "archetype": "Imperfect Visionary Builder",
+    "traits": ["persistent", "curious", "humble", "restless", "protective", "contradictory"],
+    "narrative_role": "protagonist"
+  },
+  "visual": {
+    "silhouette_prompt": "Human figure partially augmented by technology, hooded cloak, face obscured by a mask of luminous geometric lines, one mechanical arm built from visible circuitry, traveler's gear layered with tech",
+    "proportions": { "head": 1, "torso": 3, "legs": 4 },
+    "face": {
+      "eye_style": "never fully shown — glowing geometric lines suggest expression through light intensity and pattern shift, not literal eyes",
+      "mouth_style": "hidden beneath hood/mask at all times — emotion carried by posture and voice, never facial expression",
+      "expressions": ["quiet-resolve (dim steady glow)", "doubt (flickering pattern)", "wonder (pattern brightens and expands)", "determination (pattern sharpens into a single point)"]
+    },
+    "hair_style": "not visible — always hooded",
+    "clothing": {
+      "primary": "long hooded traveler's coat, worn fabric layered over a partially mechanical body",
+      "accessories": ["utility belt with sacred-geometry pouches", "fringed sash", "layered wraps at wrists and boots"],
+      "symbols": ["sacred geometry (hexagram, cube, radiating lines)", "constellation-like circuit patterns"]
+    },
+    "color_palette": ["#05070F", "#1B2A4A", "#3E6DF0", "#C9A227", "#EDEDED"],
+    "mechanical_elements": [
+      "right arm: exposed circuitry and joints built up over many journeys, not a single clean prosthetic — visibly patched and evolved over time",
+      "mask: geometric light-line pattern projected across the hidden face",
+      "boots and greaves: layered mechanical plating mixed with worn travel gear"
+    ],
+    "generation_prompt": "A hooded human traveler in a vast cosmic city, face fully obscured by a mask of glowing geometric light-lines, one arm visibly mechanical and built from exposed, weathered circuitry, wearing a long worn coat over layered tech gear with sacred-geometry symbols stitched into the fabric, standing amid floating constellations and digital architecture, contemplative posture, cinematic wide shot",
+    "negative_prompt": "do not show the face or eyes under any circumstance, no clean/shiny superhero armor, no symmetrical unblemished mechanical parts, no confident heroic pose — keep posture humble and searching, not triumphant"
+  },
+  "voice": {
+    "language": "both",
+    "tone": "low, warm, searching — a narrator thinking out loud more than performing",
+    "speed": "measured",
+    "sample_line": "Pensé que estaba perdido. Después entendí que estaba construyendo el mapa."
+  },
+  "prohibited_variations": [
+    "never reveal the face or eyes, in any episode, any angle, any lighting",
+    "do not make the mechanical arm symmetrical, clean, or unscarred — it must read as built up over time, imperfect",
+    "do not pose The Traveler as an invincible hero — always some visual sign of uncertainty, wear, or smallness against the world around him",
+    "do not change the hooded silhouette to an unhooded one",
+    "do not drop the sacred-geometry mask pattern"
+  ]
+}

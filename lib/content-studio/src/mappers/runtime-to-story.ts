@@ -1,5 +1,5 @@
-import { formatDistanceToNow } from 'date-fns';
 import type { ContentEvent, ContentDraft } from '../types.js';
+import { formatRelativeTime } from '../date-utils.js';
 
 type StoryTemplate = {
   title: string;
@@ -11,73 +11,63 @@ const storyTemplates: Record<ContentEvent['event_type'], StoryTemplate> = {
   session_created: {
     title: 'New Session Started',
     call_to_action: 'Check it out →',
-    story_hook: (event) => {
-      const ago = formatDistanceToNow(new Date(event.timestamp), { addSuffix: true });
-      return `Started a new automation session ${ago}. Ready to ship features.`;
-    },
+    story_hook: (event) =>
+      `Started a new automation session ${formatRelativeTime(new Date(event.timestamp))}. Ready to ship features.`,
   },
   deployment_success: {
     title: 'Version Deployed',
     call_to_action: 'See what changed →',
     story_hook: (event) => {
-      const ago = formatDistanceToNow(new Date(event.timestamp), { addSuffix: true });
-      return `Deployed new version to production ${ago}. Changes live now.`;
+      return `Deployed new version to production ${formatRelativeTime(new Date(event.timestamp))}. Changes live now.`;
     },
   },
   approval_completed: {
     title: 'Security Cleared',
     call_to_action: 'Review details →',
     story_hook: (event) => {
-      const ago = formatDistanceToNow(new Date(event.timestamp), { addSuffix: true });
-      return `Security review completed ${ago}. All checks passed ✓`;
+      return `Security review completed ${formatRelativeTime(new Date(event.timestamp))}. All checks passed ✓`;
     },
   },
   branch_merged: {
     title: 'Feature Shipped',
     call_to_action: 'What we shipped →',
     story_hook: (event) => {
-      const ago = formatDistanceToNow(new Date(event.timestamp), { addSuffix: true });
-      return `Merged feature branch ${ago}. New capability live.`;
+      return `Merged feature branch ${formatRelativeTime(new Date(event.timestamp))}. New capability live.`;
     },
   },
   test_suite_passed: {
     title: 'Tests Passing',
     call_to_action: 'Confidence unlocked →',
     story_hook: (event) => {
-      const ago = formatDistanceToNow(new Date(event.timestamp), { addSuffix: true });
-      return `Full test suite passed ${ago}. Code quality validated.`;
+      return `Full test suite passed ${formatRelativeTime(new Date(event.timestamp))}. Code quality validated.`;
     },
   },
   security_scan_clean: {
     title: 'Security Scan Clean',
     call_to_action: 'Zero vulns 🎉 →',
     story_hook: (event) => {
-      const ago = formatDistanceToNow(new Date(event.timestamp), { addSuffix: true });
-      return `Security scan completed ${ago}. Zero vulnerabilities detected.`;
+      return `Security scan completed ${formatRelativeTime(new Date(event.timestamp))}. Zero vulnerabilities detected.`;
     },
   },
   worker_online: {
     title: 'Worker Online',
     call_to_action: 'Distributed power →',
     story_hook: (event) => {
-      const ago = formatDistanceToNow(new Date(event.timestamp), { addSuffix: true });
-      return `Worker joined the team ${ago}. Distributed work active.`;
+      return `Worker joined the team ${formatRelativeTime(new Date(event.timestamp))}. Distributed work active.`;
     },
   },
   session_resumed: {
     title: 'Session Recovered',
     call_to_action: 'Resilience in action →',
     story_hook: (event) => {
-      const ago = formatDistanceToNow(new Date(event.timestamp), { addSuffix: true });
-      return `Recovered from outage ${ago}. Work resumed seamlessly.`;
+      return `Recovered from outage ${formatRelativeTime(new Date(event.timestamp))}. Work resumed seamlessly.`;
     },
   },
   migration_finished: {
     title: 'Infrastructure Upgraded',
     call_to_action: 'Modern stack →',
     story_hook: (event) => {
-      const ago = formatDistanceToNow(new Date(event.timestamp), { addSuffix: true });
-      return `Infrastructure migration completed ${ago}. System modernized.`;
+      return `Infrastructure migration completed ${formatRelativeTime(new Date(event.timestamp))}. System modernized.`;
     },
   },
 };

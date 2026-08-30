@@ -4,7 +4,7 @@
 
 services:
   n8n_{{SLUG}}:
-    image: n8nio/n8n:latest
+    image: n8nio/n8n:2.32.5
     container_name: n8n_{{SLUG}}
     mem_limit: 384m
     deploy:

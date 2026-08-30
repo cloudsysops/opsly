@@ -15,7 +15,7 @@ export const PESKIDS_RESERVATION_DESCRIPTION =
 
 /** Who the form is for — below the title, distinct from hero handoff copy. */
 export const PESKIDS_RESERVATION_AUDIENCE =
-  'Nuestro formulario está destinado a familias interesadas en ingresar a sus hijos o familiares a nuestras clases, profesores interesados en trabajar con nosotros o empresas interesadas en crear alianzas.';
+  'Este formulario es para familias que quieren inscribir a sus hijos en nuestras clases, profesores interesados en unirse a nuestro equipo, o empresas interesadas en crear alianzas con Peskids.';
 
 /** @deprecated Prefer PESKIDS_RESERVATION_AUDIENCE — kept for older imports/tests. */
 export const PESKIDS_RESERVATION_BULLETS = [

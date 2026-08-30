@@ -1,0 +1,43 @@
+{
+  "id": "opsly-origins-002",
+  "series_id": "opsly-origins",
+  "episode_number": 2,
+  "title": {
+    "es": "¿Qué pasa cuando una idea no te deja dormir?",
+    "en": "What happens when an idea won't let you sleep?"
+  },
+  "hook": {
+    "es": "A veces una idea no pide permiso.",
+    "en": "Sometimes an idea doesn't ask permission."
+  },
+  "objective": "Show the obsessive, restless energy of early building.",
+  "audience": [
+    "founders",
+    "developers"
+  ],
+  "duration_estimate_sec": 45,
+  "scenes": [],
+  "metadata": {
+    "call_to_action": "Sigue la historia",
+    "captions": {
+      "es": "Cuando la idea es más fuerte que el sueño.",
+      "en": "When the idea is stronger than sleep."
+    },
+    "hashtags": [
+      "#Opsly",
+      "#Founders",
+      "#BuildInPublic"
+    ],
+    "thumbnail_concept": "Founder at desk late at night, clock in background"
+  },
+  "production": {
+    "status": "idea",
+    "created_at": "2026-08-11T00:00:00Z",
+    "last_updated": "2026-08-11T00:00:00Z",
+    "published_platforms": [],
+    "publish_urls": {},
+    "notes": [
+      "Idea-stage — planned in 30-day launch calendar. Script + scenes pending."
+    ]
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "id": "opsly-robot-luna",
+  "canonical_name": "Luna",
+  "role": "Supporting character, ancestral robot companion, voice of wisdom",
+  "personality": {
+    "archetype": "Wise Companion",
+    "traits": ["calm", "supportive", "curious", "protective"],
+    "narrative_role": "supporter"
+  },
+  "visual": {
+    "silhouette_prompt": "Elegant humanoid robot, sleek polished metal body, glowing blue-purple eyes, geometric armor with floating symbols",
+    "proportions": { "head": 1, "torso": 3, "legs": 4 },
+    "face": {
+      "eye_style": "luminous blue-purple gradient, minimalist digital display",
+      "mouth_style": "no fixed mouth — emotive through eye glow and head tilt",
+      "expressions": ["curious", "affirmative", "protective", "joyful", "thoughtful"]
+    },
+    "clothing": {
+      "primary": "polished metal body with translucent glowing panels",
+      "accessories": ["floating geometric shoulder symbols"],
+      "symbols": ["circuit networks", "ancestral spiral patterns", "sacred geometry"]
+    },
+    "color_palette": ["#4B0082", "#1E90FF", "#FFFFFF", "#D4AF37"],
+    "mechanical_elements": [
+      "full body: polished metal with translucent internal glow panels",
+      "chest: pulsing multicolor energy core",
+      "shoulders: geometric armor with floating symbols",
+      "hands: graceful, articulated"
+    ],
+    "generation_prompt": "An elegant ancestral robot companion, humanoid, sleek polished metal body with glowing blue-purple eyes, geometric armor with floating wisdom symbols, standing beside a human figure, serene and supportive posture, cinematic lighting",
+    "negative_prompt": "no bulky industrial design, no visible screws or seams, no aggressive posture, keep silhouette graceful and slim"
+  },
+  "voice": {
+    "language": "both",
+    "tone": "calm, wise, supportive",
+    "speed": "measured",
+    "sample_line": "Peskids se convirtió en un blueprint."
+  },
+  "prohibited_variations": [
+    "do not give Luna a visible mouth or human facial features",
+    "do not change the blue-purple eye glow to another color",
+    "do not make the body bulky or industrial",
+    "do not remove the floating shoulder symbols"
+  ]
+}

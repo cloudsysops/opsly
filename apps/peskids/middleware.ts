@@ -31,7 +31,7 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     return NextResponse.next()
   }
 
-  if (!path.startsWith('/admin')) {
+  if (!path.startsWith('/admin') && !path.startsWith('/setup')) {
     return NextResponse.next()
   }
 
@@ -79,5 +79,5 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 }
 
 export const config = {
-  matcher: ['/admin', '/admin/:path*', '/api/admin/login'],
+  matcher: ['/admin', '/admin/:path*', '/setup', '/setup/:path*', '/api/admin/login'],
 }

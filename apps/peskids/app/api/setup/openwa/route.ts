@@ -1,9 +1,15 @@
 import { NextRequest } from 'next/server';
 import { isOpenWAEnabled, openwaRegisterWebhook, openwaSetupStatus } from '@intcloudsysops/openwa';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
+import { validateStaffRequest } from '@/lib/staff-auth';
 
 export async function GET(req: NextRequest) {
   const requestId = resolveRequestId(req);
+  const auth = await validateStaffRequest(req);
+  if (!auth.ok) {
+    return errorJson(requestId, auth.error, auth.status);
+  }
+
   if (!isOpenWAEnabled()) {
     return errorJson(requestId, 'OpenWA not configured (OPENWA_API_URL / OPENWA_API_KEY)', 503);
   }
@@ -21,6 +27,11 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const requestId = resolveRequestId(req);
+  const auth = await validateStaffRequest(req);
+  if (!auth.ok) {
+    return errorJson(requestId, auth.error, auth.status);
+  }
+
   if (!isOpenWAEnabled()) {
     return errorJson(requestId, 'OpenWA not configured', 503);
   }
