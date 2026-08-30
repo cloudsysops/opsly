@@ -15,7 +15,11 @@ export const vpsCleanupWebhookSchema = z.object({
   severity: z.enum(['info', 'warning', 'critical']),
   vps: z.string().min(1),
   service: z.string().min(1),
-  tenant_slug: z.string().regex(/^[a-z0-9-]{3,64}$/).nullable().optional(),
+  tenant_slug: z
+    .string()
+    .regex(/^[a-z0-9-]{3,64}$/)
+    .nullable()
+    .optional(),
   message: z.string().min(1),
   timestamp: z.string().datetime(),
   requested_cleanup: z
@@ -53,13 +57,17 @@ export interface VpsCleanupEvaluation {
   rationale: string[];
 }
 
-function selectSafeActions(actions: readonly string[]): Array<(typeof VPS_CLEANUP_SAFE_ACTIONS)[number]> {
+function selectSafeActions(
+  actions: readonly string[]
+): Array<(typeof VPS_CLEANUP_SAFE_ACTIONS)[number]> {
   return actions.filter((action): action is (typeof VPS_CLEANUP_SAFE_ACTIONS)[number] =>
     VPS_CLEANUP_SAFE_ACTIONS.includes(action as never)
   );
 }
 
-function buildSuggestions(actions: Array<(typeof VPS_CLEANUP_SAFE_ACTIONS)[number]>): VpsCleanupSuggestion[] {
+function buildSuggestions(
+  actions: Array<(typeof VPS_CLEANUP_SAFE_ACTIONS)[number]>
+): VpsCleanupSuggestion[] {
   const suggestions: VpsCleanupSuggestion[] = [];
   if (actions.includes('logs')) {
     suggestions.push({
@@ -94,8 +102,9 @@ function buildSuggestions(actions: Array<(typeof VPS_CLEANUP_SAFE_ACTIONS)[numbe
 
 export function evaluateVpsCleanupEvent(event: VpsCleanupWebhookEvent): VpsCleanupEvaluation {
   const safeActions = selectSafeActions(event.requested_cleanup);
-  const riskyActions = event.requested_cleanup.filter((action): action is (typeof VPS_CLEANUP_RISKY_ACTIONS)[number] =>
-    VPS_CLEANUP_RISKY_ACTIONS.includes(action as never)
+  const riskyActions = event.requested_cleanup.filter(
+    (action): action is (typeof VPS_CLEANUP_RISKY_ACTIONS)[number] =>
+      VPS_CLEANUP_RISKY_ACTIONS.includes(action as never)
   );
 
   const rationale: string[] = [];
