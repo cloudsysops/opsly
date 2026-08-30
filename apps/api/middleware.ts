@@ -229,7 +229,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   const tenantSlug = resolveTenantSlug(request);
   const rateLimitResult = tenantSlug
     ? await checkRateLimit(tenantSlug)
-    : await checkIpRateLimit(request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? request.ip ?? 'unknown');
+    : await checkIpRateLimit(
+        request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? request.ip ?? 'unknown'
+      );
 
   if (rateLimitResult && !rateLimitResult.allowed) {
     return applyApiHeaders(
