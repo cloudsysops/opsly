@@ -210,7 +210,7 @@ class DunningService {
     const redis = await getRedisClient();
     if (redis) {
       try {
-        let cursor = 0;
+        let cursor = '0';
         do {
           const result = await redis.scan(cursor, { MATCH: `${KEY_PREFIX}*`, COUNT: 100 });
           cursor = result.cursor;
