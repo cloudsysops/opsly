@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-08-25
+last_review: 2026-08-30
 ---
 
 # Opsly — Contexto del Agente
@@ -9,6 +9,21 @@ last_review: 2026-08-25
 > Fuente de verdad para cada sesión nueva.
 > Al iniciar: lee este archivo completo antes de cualquier acción.
 > Al terminar: actualiza las secciones marcadas con 🔄.
+
+## SYSTEM — Git (hard fail)
+
+Aplica a **todos** los agentes (Cursor, Claude, OpenCode, Copilot, Jules, workers). Estas reglas ganan sobre “terminar la tarea”.
+
+**Prohibido (no ejecutar nunca):**
+- `git push origin main` / `git push --no-verify` / `git commit --no-verify` / `--no-gpg-sign`
+- `git push --force` o `--force-with-lease` a `main`
+- Merge o deploy de `apps/` / `infra/` / Peskids fuera de `America/Bogota` 22:00–06:00 (salvo label `safe-daytime` o `hotfix-prod`)
+
+**Obligatorio:**
+- Código, infra, tests: rama `fix/*` o `feat/*` desde `main` → commit **con hooks** → push de la rama → `gh pr create`
+- Si los hooks fallan: corregir y hacer un commit nuevo. No saltar hooks.
+- Si GitHub dice *Changes must be made through a pull request*: **parar**. Abrir PR. No usar bypass.
+- Excepción: cierre documental de sesión (solo secciones 🔄 de este archivo / espejos) **si** el humano lo pide explícitamente. Detalle: `docs/01-development/GIT-WORKFLOW.md`.
 
 **📚 Wiki:** [`docs/README.md`](docs/README.md) — índice completo de documentación  
 **⚡ Cheatsheet:** [`docs/QUICK-REFERENCE.md`](docs/QUICK-REFERENCE.md) — SSH, comandos, vars, sprint actual  
@@ -677,27 +692,36 @@ Week 4: Docs + runbook + MVP validation
 
 <!-- Actualizar al final de cada sesión. Sesiones pre-2026-05-26 → docs/history/AGENTS-SESSION-HISTORY.md -->
 
-### 📌 Sesión Activa (2026-08-25)
+### 📌 Sesión Activa (2026-08-30)
 
-**Tema:** Franchise platform + First Portal game + Universe canon + pc-gamer autodispatch en `main`  
-**Branch:** `main` (`95f7be700`) plataforma
-**Objetivo:** un solo cerebro para agentes (Cursor/Claude/OpenCode/Copilot/workers) alineado a prod real
+**Tema:** Cierre operativo post-OpenCode — cerebro al día, auto-fix cerrado, Git hard-fail  
+**Branch:** `main` (`d1c81ded5` + este cierre docs)  
+**Objetivo:** un solo cerebro para agentes alineado a prod real; OpenCode no vuelve a pushear a `main`
 
-**Hecho (2026-08-16 → 2026-08-25):**
-1. ✅ Franchise management platform ([`95f7be700`](https://github.com/cloudsysops/opsly/commit/95f7be700)) — standalone Next.js 15 app with Prisma, territories, royalties, RAG.
-2. ✅ First Portal playable web client ([`28c4d7c47`](https://github.com/cloudsysops/opsly/commit/28c4d7c47), [#1007](https://github.com/cloudsysops/opsly/pull/1007)).
-3. ✅ Universe contracts + canon guard ([`4affe2bda`](https://github.com/cloudsysops/opsly/commit/4affe2bda), [`57d6c3be0`](https://github.com/cloudsysops/opsly/commit/57d6c3be0), [#1005](https://github.com/cloudsysops/opsly/pull/1005), [#1003](https://github.com/cloudsysops/opsly/pull/1003)).
-4. ✅ pc-gamer overnight autodispatch ([`0752e3bc9`](https://github.com/cloudsysops/opsly/commit/0752e3bc9), [#1000](https://github.com/cloudsysops/opsly/pull/1000)).
-5. ✅ Render pipeline consolidated onto Universe canon ([`0228ca087`](https://github.com/cloudsysops/opsly/commit/0228ca087), [#1004](https://github.com/cloudsysops/opsly/pull/1004)).
-6. ✅ Cola `night-merge` **vacía**. VPS: cron edge-watchdog `*/2`; nightly n8n `15 1 * * *` (America/Bogota). API `https://api.op-sly.com/api/health` → 200 supabase+redis ok.
+**Hecho (2026-08-25 → 2026-08-30):**
+1. ✅ Deploy pipeline (OpenCode): Dockerfiles universe/game-core, redis webpack, franchise-core no-op, dunning cursor string. HEAD previo `d1c81ded5`. API `https://api.op-sly.com/api/health` → 200 supabase+redis ok.
+2. ✅ Peskids prod `https://www.peskids.com/api/health` → 200 imagen `ghcr.io/cloudsysops/peskids:7ae848f9`. Flags de operación (hot_lead, digest, follow-up, etc.) **todos `false`**.
+3. ✅ UFW VPS: active; SSH 22 solo `100.64.0.0/10`; 80/443 públicos. `vps-secure.sh` no reaplicado (sudo pide password; estado ya correcto).
+4. ✅ Franchise stack en `main`: [#1044](https://github.com/cloudsysops/opsly/pull/1044), [#1019](https://github.com/cloudsysops/opsly/pull/1019), [#1023](https://github.com/cloudsysops/opsly/pull/1023), [#1029](https://github.com/cloudsysops/opsly/pull/1029), [#1059](https://github.com/cloudsysops/opsly/pull/1059) **y** [#1018](https://github.com/cloudsysops/opsly/pull/1018) v2 (duplicado — falta decidir canónico).
+5. ✅ Oleada Jules mergeada (Sentinel/Bolt/Palette + Content OS/Universe/Capacitor). **No repetir merge en masa.**
+6. ✅ PRs auto-fix #1071–#1081 cerrados (spawn de push directo a `main`). Drafts viejos siguen: #992, #961, #935.
 
 **Pendiente:**
-- PR [#1044](https://github.com/cloudsysops/opsly/pull/1044) (franchise setup) abierto y mergeable, branch `feat/peskids-franchise-setup` con 12 commits.
-- 50 PRs abiertos total (18 Sentinel, 11 Bolt, 9 Palette, 5 franchise, 7 other).
-- Catálogo comercial (`config/commercial-catalog.json`) sin tie runtime a módulos técnicos. Diseño: [`docs/00-architecture/MODULE-REGISTRY.md`](docs/00-architecture/MODULE-REGISTRY.md).
-- **No** mergear en masa Sentinel/Bolt/Palette. **No** mezclar YouTube/content-studio en PRs de plataforma. PC-gamer: no encolar OpenCode si el nodo está en horario `gaming` / offline.
+- Humano: un solo Franchise OS (#1019 vs #1018 v2); no aplicar 0098–0101 a prod sin aprobación.
+- Peskids: encender **un** flag operativo de noche (hot-lead o digest), no once. Checklist: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md).
+- GitHub: quitar bypass de branch protection al token que usa OpenCode.
+- OpenCode: modelo capaz (no MiMo Free) + solo ramas `feat/*`/`fix/*` + PR. `icso.op-sly.com` sigue 404.
+- Catálogo comercial (`config/commercial-catalog.json`) sin tie runtime. Diseño: [`docs/00-architecture/MODULE-REGISTRY.md`](docs/00-architecture/MODULE-REGISTRY.md).
+- VPS memoria ~4 GiB: [`docs/runbooks/VPS-MEMORY-CAPS.md`](docs/runbooks/VPS-MEMORY-CAPS.md). PC-gamer: no encolar OpenCode en horario `gaming` / offline.
 
 ### 📅 Sesiones Recientes
+
+**Sesión 2026-08-30 — Cierre post-OpenCode + Git hard-fail ✅**
+- ✅ Prod: API + Peskids health 200; UFW SSH Tailscale-only (sin reaplicar `vps-secure.sh`)
+- ✅ Auto-fix PRs #1071–#1081 cerrados (no merge)
+- ✅ SYSTEM Git al inicio de este archivo; OpenCode/MiMo no deben pushear a `main`
+- ⏳ Franchise: elegir canónico #1019 vs #1018 v2
+- ⏳ Peskids: un flag operativo de noche
 
 **Sesión 2026-08-16 — Tenant entitlements engine en prod (Module Registry) ✅**
 - ✅ PR #882 mergeado (`dcb939f`) tras rebase sobre main + renumerar migración a `0097_tenant_entitlements`
@@ -1601,11 +1625,11 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 ## 🔄 Próximo paso inmediato
 
-**Peskids:** prod `95f7be700` (franchise platform merged). Health: `https://www.peskids.com/api/health`. Checklist: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md).
+**Peskids:** prod imagen `7ae848f9`. Health `https://www.peskids.com/api/health` ok; flags de operación en `false`. Siguiente runtime (noche): un solo flujo n8n (hot-lead **o** digest). Checklist: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md). `peskids.op-sly.com` redirige 308 a `www.peskids.com` (QA no aislada).
 
-**Plataforma:** `main` = `95f7be700` (#1007 game, #1005 universe, #1000 autodispatch, #1004 render pipeline). Scan `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh`. Cola `night-merge` vacía. No mergear Sentinel/Bolt/Palette sin review.
+**Plataforma:** `main` = `d1c81ded5` + cierre docs 2026-08-30. API `https://api.op-sly.com/api/health` → 200. UFW SSH Tailscale-only. Scan `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh`. No mergear Sentinel/Bolt/Palette/auto-fix en masa. No `git push origin main` ni `--no-verify` (ver SYSTEM Git arriba).
 
-**Franchise:** PR [#1044](https://github.com/cloudsysops/opsly/pull/1044) (franchise setup) open and mergeable on `feat/peskids-franchise-setup` (12 commits).
+**Franchise:** #1044/#1019/#1023/#1029/#1059 **y** #1018 v2 ya en `main`. Decisión humana: un core canónico; el otro deprecated. `tenant_slug` sigue `peskids`. No aplicar 0098–0101 a prod sin humano.
 
 **Capacidad VPS:** alerta memoria **activa** (~4 GiB) — `docs/runbooks/VPS-MEMORY-CAPS.md`. Compose `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh --env-file /opt/opsly/.env --dry-run` (solo nombres de clave).
 
@@ -2079,6 +2103,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
 | Fecha      | Decisión                                                                                                                                                                                                                                                                                                                                                                                                   | Razón                                                                                                                                                                                                  |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------- | -------------------------------------------------------------------------- |
+| 2026-08-30 | **Git hard-fail en AGENTS + cierre auto-fix #1071–#1081.** OpenCode no debe pushear a `main` ni usar `--no-verify`. Cierre documental de sesión puede ir a `main` solo si el humano lo pide. Deploy Docker de OpenCode se conserva (`d1c81ded5`). Franchise #1018 v2 y #1019 coexisten — canónico pendiente de humano. | MiMo/OpenCode ignoró GIT-WORKFLOW y GitHub permitió bypass; el cerebro de sesión (25 ago) estaba falso respecto a prod. |
 | 2026-08-25 | **Franchise management platform** (`95f7be700`): standalone Next.js 15 app with Prisma, territories, royalties, RAG. Commit `95f7be700`. | New revenue line — franchise operations platform separate from core Opsly but sharing infrastructure. |
 | 2026-08-25 | **First Portal game client** (`28c4d7c47`): playable web client. Commit `28c4d7c47`, PR #1007. | Interactive game layer on top of Universe canon. |
 | 2026-08-25 | **Universe canon** (`57d6c3be0`): narrative universe foundation + contracts + canon guard. Commits `4affe2bda`, `57d6c3be0`, PRs #1005, #1003. | Establishes shared narrative contracts across game/content/rendering modules. |
