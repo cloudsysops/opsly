@@ -14,7 +14,7 @@ tags:
 
 Cómo el **Mac operador** descubre que el PC-gamer está online y encola
 automáticamente trabajo del backlog ocioso (cola BullMQ `local-agents` del VPS),
-respetando el **calendario de Mauro** (`config/pc-gamer-schedule.json`).
+respetando el **calendario de Mauro** (`config/pc-gamer-schedule.json`: `day` de lunes a viernes, `heavy` de noche, `gaming` al atardecer).
 
 **No es un orquestador nuevo** — reutiliza:
 
@@ -104,11 +104,8 @@ doppler run --project ops-intcloudsysops --config prd -- \
 
 ## Gate de modo (resumen)
 
-`config/overnight-backlog.json` marca cada tarea con `min_mode`: el modo del
-calendario debe ser `heavy` (o superior) para encolar opencode, salvo que
-`allow_enqueue` incluya `opencode` o se use `--force`. El **DRAFT de Mauro**
-(`config/pc-gamer-schedule.json`) solo permite `light`/`ollama_short` por ahora;
-hasta confirmarlo, el autodispatch no encolará automáticamente.
+`config/overnight-backlog.json` marca cada tarea con `min_mode`. Modo `day` o `heavy`
+permite OpenCode. `gaming` no. Lun–vie diurno usa `day`.
 
 Nota operativa: el probe de online tarda **~26 s** cuando el gamer está apagado
 (timeout SSH/Tailscale). Es aceptable en un ciclo de 5 min.

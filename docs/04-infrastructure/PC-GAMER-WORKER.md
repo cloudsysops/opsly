@@ -82,9 +82,9 @@ Cuando el PC está **encendido + Tailscale**, el plano durable es Docker (Ollama
 
 ```bash
 cd ~/opsly
-git pull --ff-only origin feat/pc-gamer-worker-plane
+git pull --ff-only origin main
 # .env.worker ya con REDIS_URL (Doppler)
-./scripts/ops/pc-gamer-docker-plane.sh --up --pull-model --install-autostart
+./scripts/ops/pc-gamer-docker-plane.sh --up --use-host-ollama --install-autostart
 # Overnight OpenCode (opcional):
 ./scripts/ops/pc-gamer-opencode-plane.sh --up --install-autostart
 sudo loginctl enable-linger devops   # una vez
@@ -109,7 +109,7 @@ noche, instala el LaunchAgent del Mac:
 ./scripts/ops/ensure-overnight-autodispatch-launchd.sh
 ```
 
-Detecta online cada 5 min y encola el backlog ocioso solo en modo `heavy`.
+Detecta online cada 5 min y encola el backlog ocioso en modo `day` (horario laboral) o `heavy` (noche). `gaming` no encola OpenCode.
 Runbook: [`docs/runbooks/PC-GAMER-OVERNIGHT-AUTODISPATCH.md`](../runbooks/PC-GAMER-OVERNIGHT-AUTODISPATCH.md).
 
 Autostart: user systemd `opsly-pc-gamer-docker.service` + timer heartbeat (+ `opsly-opencode-bridge` si overnight).  
@@ -157,7 +157,7 @@ Desde Mac / VPS (antes de encolar GPU o trainer):
 ./scripts/ops/check-pc-gamer-online.sh --json
 ```
 
-Criterio: `/health` del worker **o** heartbeat Redis fresco. Si ambos fallan → **no** mandar trabajo delicado.
+Criterio: `/health` del worker (Tailscale **o** SSH→WSL) **o** heartbeat Redis fresco. Doppler `REDIS_URL` con host `redis` se reescribe a Tailscale VPS en el probe. Si ambos fallan → **no** mandar trabajo delicado.
 
 VPS orchestrator debe permanecer en **`queue-only` / `control`** (ADR-020) para no robar la cola.
 

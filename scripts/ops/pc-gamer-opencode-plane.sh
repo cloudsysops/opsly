@@ -132,6 +132,7 @@ start_bridge() {
   echo "[pc-gamer-opencode] starting cli-agent-service (opencode) on :${OPENCODE_PORT}…"
   mkdir -p "${ROOT}/runtime/logs"
   run env \
+    PATH="${HOME}/.npm-global/bin:${HOME}/.local/bin:${PATH}" \
     OPSLY_CLI_AGENT=opencode \
     PORT="$OPENCODE_PORT" \
     OPSLY_CLI_AGENT_TOKEN="$token" \
@@ -149,16 +150,16 @@ compose_up() {
     start_bridge
     sleep 2
   fi
-  echo "[pc-gamer-opencode] recreating worker-openclaw with local-agents allowlist…"
+  echo "[pc-gamer-opencode] ensuring worker-openclaw (no-deps, host Ollama)…"
   if [[ -f infra/opslyquantum.env ]]; then
     run docker compose "${COMPOSE_WORKERS[@]}" \
       --env-file "$ENV_WORKER" \
       --env-file infra/opslyquantum.env \
-      up -d --force-recreate worker-openclaw
+      up -d --no-deps worker-openclaw
   else
     run docker compose "${COMPOSE_WORKERS[@]}" \
       --env-file "$ENV_WORKER" \
-      up -d --force-recreate worker-openclaw
+      up -d --no-deps worker-openclaw
   fi
 }
 
@@ -207,6 +208,7 @@ After=network-online.target
 [Service]
 Type=simple
 WorkingDirectory=${ROOT}
+Environment=PATH=${HOME}/.npm-global/bin:${HOME}/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 Environment=OPSLY_CLI_AGENT=opencode
 Environment=PORT=${OPENCODE_PORT}
 Environment=OPSLY_CLI_AGENT_TOKEN=${token}
