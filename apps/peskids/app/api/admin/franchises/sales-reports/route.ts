@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { validateStaffRequest } from '@/lib/staff-auth';
 import { franchiseErrorResponse, getFranchiseService, resolveFranchiseActor } from '@/lib/franchise/persist';
-import type { SalesSource } from '@intcloudsysops/franchise-core';
+import type { SalesReportSource } from '@intcloudsysops/franchise-core';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,10 +27,10 @@ export async function POST(req: NextRequest) {
     unitId?: string;
     periodStart?: string;
     periodEnd?: string;
-    grossSalesMinor?: number;
-    excludedSalesMinor?: number;
-    netSalesMinor?: number;
-    source?: SalesSource;
+    grossSales?: number;
+    excludedSales?: number;
+    netSales?: number;
+    source?: SalesReportSource;
     sourceReference?: string | null;
   };
   try {
@@ -38,8 +38,8 @@ export async function POST(req: NextRequest) {
   } catch {
     return errorJson(requestId, 'Invalid JSON', 400);
   }
-  if (!body.unitId || !body.periodStart || !body.periodEnd || body.grossSalesMinor == null) {
-    return errorJson(requestId, 'unitId, period, grossSalesMinor required', 400);
+  if (!body.unitId || !body.periodStart || !body.periodEnd || body.grossSales == null) {
+    return errorJson(requestId, 'unitId, period, grossSales required', 400);
   }
   try {
     const actor = await resolveFranchiseActor(auth, requestId);
@@ -48,14 +48,15 @@ export async function POST(req: NextRequest) {
       unitId: body.unitId,
       periodStart: body.periodStart,
       periodEnd: body.periodEnd,
-      grossSalesMinor: body.grossSalesMinor,
-      refundsMinor: 0,
-      taxesMinor: 0,
-      excludedSalesMinor: body.excludedSalesMinor ?? 0,
-      netSalesMinor: body.netSalesMinor ?? body.grossSalesMinor - (body.excludedSalesMinor ?? 0),
+      grossSales: body.grossSales,
+      refunds: 0,
+      taxes: 0,
+      excludedSales: body.excludedSales ?? 0,
+      netSales: body.netSales ?? body.grossSales - (body.excludedSales ?? 0),
       currency: 'COP',
       source: body.source ?? 'manual',
       sourceReference: body.sourceReference ?? null,
+      createdAt: new Date().toISOString(),
     });
     return successJson(requestId, { ok: true, report: result.report });
   } catch (err) {

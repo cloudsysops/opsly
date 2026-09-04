@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
       legalName: body.legalName,
       taxId: null,
       status: 'active',
-      primaryContact: { name: body.legalName, email: 'franchisee@peskids.local', phone: null },
+      primaryContact: { name: body.legalName, email: 'franchisee@peskids.local' },
     });
     const result = await storeService.createAgreement(actor, {
       tenantId: actor.tenantId,
@@ -61,14 +61,12 @@ export async function POST(req: NextRequest) {
       unitIds: body.unitIds,
       effectiveDate: body.effectiveDate,
       expirationDate: body.expirationDate,
-      renewalType: 'franchisor_discretion',
+      renewalType: 'manual',
       renewalTermMonths: 12,
       noticeDays: 90,
-      canonicalFeeMinor: 0,
-      currency: 'COP',
+      canonicalFee: null,
       royaltyRuleId: body.royaltyRuleId ?? null,
       territoryId: body.territoryId ?? null,
-      documentRef: null,
     });
     return successJson(requestId, { ok: true, agreement: result.agreement });
   } catch (err) {

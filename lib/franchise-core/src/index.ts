@@ -36,6 +36,10 @@ export {
   type TrainingRequirement,
   type SupportCase,
   type DocumentReference,
+  type FranchiseUnitType,
+  type FranchiseUnitStatus,
+  type SalesReportSource,
+  type SalesReportStatus,
 } from './types.js';
 
 // ─── royalty.ts ────────────────────────────────────────────

@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   let body: {
     auditId?: string;
     unitId?: string;
-    severity?: 'low' | 'medium' | 'high' | 'critical';
+    severity?: 'minor' | 'major' | 'critical' | 'info';
     notes?: string;
     standardRef?: string | null;
   };

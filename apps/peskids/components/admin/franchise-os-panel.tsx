@@ -18,10 +18,10 @@ type UnitRow = {
 type TerritoryRow = { id: string; name: string; exclusive: boolean; unitId: string | null };
 type AgreementBoardRow = {
   derivedStatus: string;
-  alerts: Array<{ windowDays: number; daysRemaining: number }>;
+  alerts: Array<{ thresholdDays: number; daysUntilExpiry: number }>;
   agreement: { id: string; expirationDate: string; franchiseeId: string };
 };
-type CalcRow = { id: string; royaltyDueMinor: number; ruleVersion: number; calculatedAt: string; unitId: string };
+type CalcRow = { id: string; royaltyDue: number; ruleVersion: number; calculatedAt: string; unitId: string };
 type AuditRow = { id: string; unitId: string; status: string; auditor: string };
 type View = 'units' | 'territories' | 'agreements' | 'royalties' | 'audits';
 
@@ -182,7 +182,7 @@ export function FranchiseOsPanel(): React.ReactElement {
               {board.map((row) => (
                 <li key={row.agreement.id} className="py-2">
                   {row.derivedStatus} · vence {row.agreement.expirationDate}
-                  {row.alerts[0] ? ` · ventana ${row.alerts[0].windowDays}d` : ''}
+                  {row.alerts[0] ? ` · ventana ${row.alerts[0].thresholdDays}d` : ''}
                 </li>
               ))}
             </ul>
@@ -208,7 +208,7 @@ export function FranchiseOsPanel(): React.ReactElement {
                 <ul className="divide-y divide-pk-border">
                   {calculations.map((row) => (
                     <li key={row.id} className="py-2 font-mono">
-                      v{row.ruleVersion} · {row.royaltyDueMinor} minor · {row.calculatedAt}
+                      v{row.ruleVersion} · {row.royaltyDue} COP · {row.calculatedAt}
                     </li>
                   ))}
                 </ul>
@@ -254,10 +254,10 @@ function TerritoryForm(props: {
       exclusive: true,
       exclusiveFor: 'fixed_location',
       validFrom: String(form.get('validFrom') ?? ''),
-      geometry: {
+      geo: {
         kind: 'municipality',
-        countryCode: 'CO',
-        adminName: String(form.get('adminName') ?? ''),
+        code: 'CO',
+        name: String(form.get('adminName') ?? ''),
       },
     });
   }
@@ -309,7 +309,7 @@ function RoyaltyForm(props: { unitId: string }): React.ReactElement {
         unitId: props.unitId,
         periodStart: String(form.get('periodStart') ?? ''),
         periodEnd: String(form.get('periodEnd') ?? ''),
-        grossSalesMinor: gross,
+        grossSales: gross,
         source: 'manual',
         sourceReference: String(form.get('ref') ?? ''),
       }),
@@ -324,7 +324,7 @@ function RoyaltyForm(props: { unitId: string }): React.ReactElement {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         reportId: id,
-        rule: { name: 'Standard 5%', percentageBps: 500, basis: 'gross_sales' },
+        rule: { name: 'Standard 5%', percentage: 5, basis: 'gross_sales' },
       }),
     });
     if (!calcRes.ok) {
@@ -336,7 +336,7 @@ function RoyaltyForm(props: { unitId: string }): React.ReactElement {
     <form className="grid gap-2 sm:grid-cols-4" onSubmit={(event) => void onSubmit(event)}>
       <input name="periodStart" type="date" required className="rounded border border-pk-border px-2 py-1" />
       <input name="periodEnd" type="date" required className="rounded border border-pk-border px-2 py-1" />
-      <input name="gross" type="number" required placeholder="Gross minor" className="rounded border border-pk-border px-2 py-1" />
+      <input name="gross" type="number" required placeholder="Ventas brutas COP" className="rounded border border-pk-border px-2 py-1" />
       <input name="ref" placeholder="source ref" className="rounded border border-pk-border px-2 py-1" />
       <Button type="submit" size="sm">Reportar y calcular</Button>
       {reportId ? <p className="text-xs text-pk-sub">report {reportId.slice(0, 8)}</p> : null}
@@ -369,7 +369,7 @@ function AuditForm(props: { unitId: string }): React.ReactElement {
       body: JSON.stringify({
         auditId,
         unitId: props.unitId,
-        severity: 'medium',
+        severity: 'major',
         notes: String(form.get('notes') ?? ''),
       }),
     });

@@ -22,7 +22,6 @@ import type {
   FindingSeverity,
   FranchiseLocationKind,
   FranchiseeStatus,
-  FranchiseRole,
   FranchiseUnitStatus,
   FranchiseUnitType,
   OpeningStatus,

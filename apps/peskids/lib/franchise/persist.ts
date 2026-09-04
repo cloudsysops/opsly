@@ -44,9 +44,9 @@ export async function resolveFranchiseActor(
   let assignedUnitIds: string[] = [];
   if (!NETWORK_ROLES.has(role) && auth.ok && auth.user?.id) {
     const { data, error } = await platformClient()
-      .from('franchise_unit_members')
-      .select('unit_id')
-      .eq('tenant_id', tenantId)
+      .from('peskids_franchise_staff_memberships')
+      .select('franchise_id')
+      .eq('tenant_slug', PESKIDS_TENANT_SLUG)
       .eq('user_id', auth.user.id)
       .eq('active', true);
     if (error && (error.code === '42P01' || /does not exist/i.test(error.message ?? ''))) {
@@ -57,7 +57,9 @@ export async function resolveFranchiseActor(
       );
     }
     if (error) throw error;
-    assignedUnitIds = ((data ?? []) as Array<{ unit_id: string }>).map((row) => row.unit_id);
+    assignedUnitIds = ((data ?? []) as Array<{ franchise_id: string }>).map(
+      (row) => `peskids:${row.franchise_id}`
+    );
   }
   return {
     tenantId,

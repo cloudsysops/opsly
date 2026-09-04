@@ -29,15 +29,15 @@ export async function POST(req: NextRequest) {
     exclusiveFor?: 'fixed_location' | 'home_service' | 'both';
     validFrom?: string;
     validTo?: string | null;
-    geometry?: { kind: 'municipality'; countryCode: string; adminName: string };
+    geo?: { kind: 'municipality'; code?: string | null; name?: string | null };
   };
   try {
     body = (await req.json()) as typeof body;
   } catch {
     return errorJson(requestId, 'Invalid JSON', 400);
   }
-  if (!body.name || !body.validFrom || !body.geometry) {
-    return errorJson(requestId, 'name, validFrom and geometry required', 400);
+  if (!body.name || !body.validFrom || !body.geo) {
+    return errorJson(requestId, 'name, validFrom and geo required', 400);
   }
   try {
     const actor = await resolveFranchiseActor(auth, requestId);
@@ -45,11 +45,13 @@ export async function POST(req: NextRequest) {
       tenantId: actor.tenantId,
       name: body.name,
       unitId: body.unitId ?? null,
+      type: 'municipality',
       exclusive: body.exclusive ?? false,
       exclusiveFor: body.exclusiveFor ?? 'both',
       validFrom: body.validFrom,
       validTo: body.validTo ?? null,
-      geometry: body.geometry,
+      geo: body.geo,
+      createdAt: new Date().toISOString(),
     });
     return successJson(requestId, { ok: true, territory: result.territory, conflicts: result.conflicts });
   } catch (err) {
