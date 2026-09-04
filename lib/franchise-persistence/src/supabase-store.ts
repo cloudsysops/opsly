@@ -84,7 +84,8 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
             unit_id: row.unitId,
             name: row.name,
             status: row.status ?? 'active',
-            geometry: row.geometry,
+            type: row.type,
+            geo: row.geo,
             exclusive: row.exclusive,
             exclusive_for: row.exclusiveFor,
             valid_from: row.validFrom,
@@ -98,7 +99,9 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
         tenantId: actor.tenantId,
         name: row.name,
         status: (data.status as typeof row.status) ?? 'active',
-        geometry: row.geometry,
+        type: row.type,
+        geo: row.geo,
+        createdAt: String(data.created_at),
         exclusive: row.exclusive,
         exclusiveFor: row.exclusiveFor,
         validFrom: row.validFrom,
@@ -120,13 +123,15 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
         id: String(row.id),
         tenantId: String(row.tenant_id),
         name: String(row.name),
-        status: row.status as 'draft' | 'active' | 'expired' | 'revoked',
-        geometry: row.geometry as never,
+        status: row.status as 'active' | 'inactive' | 'archived',
+        type: row.type as never,
+        geo: row.geo as never,
         exclusive: Boolean(row.exclusive),
         exclusiveFor: row.exclusive_for as 'fixed_location' | 'home_service' | 'both',
         validFrom: String(row.valid_from).slice(0, 10),
         validTo: row.valid_to ? String(row.valid_to).slice(0, 10) : null,
         unitId: row.unit_id ? String(row.unit_id) : null,
+        createdAt: String(row.created_at),
       }));
     },
     async insertAgreement(actor, row) {
@@ -137,14 +142,13 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
             tenant_id: actor.tenantId,
             franchisee_id: row.franchiseeId,
             unit_ids: row.unitIds,
-            status: row.status ?? 'draft',
+            state: row.state ?? 'draft',
             effective_date: row.effectiveDate,
             expiration_date: row.expirationDate,
             renewal_type: row.renewalType,
             renewal_term_months: row.renewalTermMonths,
             notice_days: row.noticeDays,
-            canonical_fee_minor: row.canonicalFeeMinor,
-            currency: row.currency,
+            canonical_fee: row.canonicalFee,
             royalty_rule_id: row.royaltyRuleId,
             territory_id: row.territoryId,
             document_ref: row.documentRef,
@@ -156,7 +160,7 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
         ...row,
         id: String(data.id),
         tenantId: actor.tenantId,
-        status: (data.status as typeof row.status) ?? row.status ?? 'draft',
+        state: (data.state as typeof row.state) ?? row.state ?? 'draft',
         createdAt: String(data.created_at),
       };
     },
@@ -175,14 +179,13 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
         tenantId: String(row.tenant_id),
         franchiseeId: String(row.franchisee_id),
         unitIds: (row.unit_ids as string[]) ?? [],
-        status: row.status as never,
+        state: row.state as never,
         effectiveDate: String(row.effective_date).slice(0, 10),
         expirationDate: String(row.expiration_date).slice(0, 10),
         renewalType: row.renewal_type as never,
         renewalTermMonths: row.renewal_term_months == null ? null : Number(row.renewal_term_months),
         noticeDays: Number(row.notice_days),
-        canonicalFeeMinor: Number(row.canonical_fee_minor),
-        currency: String(row.currency),
+        canonicalFee: row.canonical_fee as never,
         royaltyRuleId: row.royalty_rule_id ? String(row.royalty_rule_id) : null,
         territoryId: row.territory_id ? String(row.territory_id) : null,
         documentRef: (row.document_ref as never) ?? null,
@@ -198,9 +201,9 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
             tenant_id: actor.tenantId,
             name: row.name,
             basis: row.basis,
-            percentage_bps: row.percentageBps,
-            minimum_amount_minor: row.minimumAmountMinor,
-            fixed_fee_minor: row.fixedFeeMinor,
+            percentage: row.percentage,
+            minimum_amount: row.minimumAmount?.amount ?? null,
+            fixed_fee: row.fixedFee?.amount ?? null,
             currency: row.currency,
             frequency: row.frequency,
             excluded_categories: row.excludedCategories,
@@ -232,9 +235,9 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
         tenantId: actor.tenantId,
         name: String(data.name),
         basis: data.basis as never,
-        percentageBps: Number(data.percentage_bps),
-        minimumAmountMinor: data.minimum_amount_minor == null ? null : Number(data.minimum_amount_minor),
-        fixedFeeMinor: data.fixed_fee_minor == null ? null : Number(data.fixed_fee_minor),
+        percentage: Number(data.percentage),
+        minimumAmount: data.minimum_amount == null ? null : { amount: Number(data.minimum_amount), currency: String(data.currency) },
+        fixedFee: data.fixed_fee == null ? null : { amount: Number(data.fixed_fee), currency: String(data.currency) },
         currency: String(data.currency),
         frequency: data.frequency as never,
         excludedCategories: (data.excluded_categories as string[]) ?? [],
@@ -242,6 +245,7 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
         effectiveFrom: String(data.effective_from).slice(0, 10),
         effectiveTo: data.effective_to ? String(data.effective_to).slice(0, 10) : null,
         version: Number(data.version),
+        createdAt: String(data.created_at),
       };
     },
     async listRoyaltyRules(actor, id) {
@@ -271,11 +275,11 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
             unit_id: row.unitId,
             period_start: row.periodStart,
             period_end: row.periodEnd,
-            gross_sales_minor: row.grossSalesMinor,
-            refunds_minor: row.refundsMinor,
-            taxes_minor: row.taxesMinor,
-            excluded_sales_minor: row.excludedSalesMinor,
-            net_sales_minor: row.netSalesMinor,
+        gross_sales: row.grossSales,
+        refunds: row.refunds,
+        taxes: row.taxes,
+        excluded_sales: row.excludedSales,
+        net_sales: row.netSales,
             currency: row.currency,
             source: row.source,
             source_reference: row.sourceReference,
@@ -302,15 +306,16 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
         unitId: String(row.unit_id),
         periodStart: String(row.period_start).slice(0, 10),
         periodEnd: String(row.period_end).slice(0, 10),
-        grossSalesMinor: Number(row.gross_sales_minor),
-        refundsMinor: Number(row.refunds_minor),
-        taxesMinor: Number(row.taxes_minor),
-        excludedSalesMinor: Number(row.excluded_sales_minor),
-        netSalesMinor: Number(row.net_sales_minor),
+        grossSales: Number(row.gross_sales),
+        refunds: Number(row.refunds),
+        taxes: Number(row.taxes),
+        excludedSales: Number(row.excluded_sales),
+        netSales: Number(row.net_sales),
         currency: String(row.currency),
         source: row.source as never,
         sourceReference: row.source_reference ? String(row.source_reference) : null,
         status: row.status as never,
+        createdAt: String(row.created_at),
       }));
     },
     async getSalesReport(actor, id) {
@@ -331,19 +336,20 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
         unitId: String(data.unit_id),
         periodStart: String(data.period_start).slice(0, 10),
         periodEnd: String(data.period_end).slice(0, 10),
-        grossSalesMinor: Number(data.gross_sales_minor),
-        refundsMinor: Number(data.refunds_minor),
-        taxesMinor: Number(data.taxes_minor),
-        excludedSalesMinor: Number(data.excluded_sales_minor),
-        netSalesMinor: Number(data.net_sales_minor),
+        grossSales: Number(data.gross_sales),
+        refunds: Number(data.refunds),
+        taxes: Number(data.taxes),
+        excludedSales: Number(data.excluded_sales),
+        netSales: Number(data.net_sales),
         currency: String(data.currency),
         source: data.source as never,
         sourceReference: data.source_reference ? String(data.source_reference) : null,
         status: data.status as never,
+        createdAt: String(data.created_at),
       };
     },
     async insertCalculation(actor, row) {
-      const existing = await this.getCalculationByKey(actor, row.idempotencyKey);
+      const existing = await this.getCalculationByKey(actor, { unitId: row.unitId, salesReportId: row.salesReportId, ruleVersion: row.ruleVersion });
       if (existing) return existing;
       const data = await run(
         platform()
@@ -353,25 +359,36 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
             tenant_id: actor.tenantId,
             unit_id: row.unitId,
             sales_report_id: row.salesReportId,
-            royalty_rule_id: row.royaltyRuleId,
+            royalty_rule_id: row.ruleId,
             rule_version: row.ruleVersion,
+            basis: row.basis,
+            reported_sales: row.reportedSales,
+            exclusions: row.exclusions,
+            royalty_base: row.royaltyBase,
+            percentage: row.percentage,
+            percentage_amount: row.percentageAmount,
+            fixed_fee: row.fixedFee,
+            minimum_applied: row.minimumApplied,
+            royalty_due: row.royaltyDue,
             currency: row.currency,
             inputs: row.inputs,
-            royalty_due_minor: row.royaltyDueMinor,
-            calculated_at: row.calculatedAt,
-            idempotency_key: row.idempotencyKey,
+            calculation: row.calculation,
+            result: row.result,
+            status: row.status,
           })
           .select('*')
           .maybeSingle()
       );
       return { ...row, id: String(data.id) };
     },
-    async getCalculationByKey(actor, idempotencyKey) {
+    async getCalculationByKey(actor, key) {
       const { data, error } = await platform()
         .from('royalty_calculations')
         .select('*')
         .eq('tenant_id', actor.tenantId)
-        .eq('idempotency_key', idempotencyKey)
+        .eq('unit_id', key.unitId)
+        .eq('sales_report_id', key.salesReportId)
+        .eq('rule_version', key.ruleVersion)
         .maybeSingle();
       if (error) {
         if (isUndefinedTable(error)) throw schemaMissingError();
@@ -383,13 +400,23 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
         tenantId: actor.tenantId,
         unitId: String(data.unit_id),
         salesReportId: String(data.sales_report_id),
-        royaltyRuleId: String(data.royalty_rule_id),
+        ruleId: String(data.royalty_rule_id),
         ruleVersion: Number(data.rule_version),
+        basis: data.basis as never,
+        reportedSales: Number(data.reported_sales),
+        exclusions: Number(data.exclusions),
+        royaltyBase: Number(data.royalty_base),
+        percentage: Number(data.percentage),
+        percentageAmount: Number(data.percentage_amount),
+        fixedFee: Number(data.fixed_fee),
+        minimumApplied: Boolean(data.minimum_applied),
+        royaltyDue: Number(data.royalty_due),
         currency: String(data.currency),
-        inputs: data.inputs as never,
-        royaltyDueMinor: Number(data.royalty_due_minor),
-        calculatedAt: String(data.calculated_at),
-        idempotencyKey: String(data.idempotency_key),
+        status: data.status as never,
+        inputs: data.inputs as Record<string, unknown>,
+        calculation: data.calculation as Record<string, unknown>,
+        result: data.result as Record<string, unknown>,
+        createdAt: String(data.created_at),
       };
     },
     async listCalculations(actor) {
@@ -407,13 +434,23 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
         tenantId: actor.tenantId,
         unitId: String(row.unit_id),
         salesReportId: String(row.sales_report_id),
-        royaltyRuleId: String(row.royalty_rule_id),
+        ruleId: String(row.royalty_rule_id),
         ruleVersion: Number(row.rule_version),
+        basis: row.basis as never,
+        reportedSales: Number(row.reported_sales),
+        exclusions: Number(row.exclusions),
+        royaltyBase: Number(row.royalty_base),
+        percentage: Number(row.percentage),
+        percentageAmount: Number(row.percentage_amount),
+        fixedFee: Number(row.fixed_fee),
+        minimumApplied: Boolean(row.minimum_applied),
+        royaltyDue: Number(row.royalty_due),
         currency: String(row.currency),
-        inputs: row.inputs as never,
-        royaltyDueMinor: Number(row.royalty_due_minor),
-        calculatedAt: String(row.calculated_at),
-        idempotencyKey: String(row.idempotency_key),
+        status: row.status as never,
+        inputs: row.inputs as Record<string, unknown>,
+        calculation: row.calculation as Record<string, unknown>,
+        result: row.result as Record<string, unknown>,
+        createdAt: String(row.created_at),
       }));
     },
     async insertPayment(actor, row) {
@@ -423,7 +460,7 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
           .insert({
             tenant_id: actor.tenantId,
             calculation_id: row.calculationId,
-            amount_minor: row.amountMinor,
+            amount: row.amount,
             currency: row.currency,
             status: row.status,
             method: row.method,
@@ -454,7 +491,7 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
     async insertAudit(actor, row) {
       const data = await run(
         platform()
-          .from('franchise_audits')
+          .from('audits')
           .insert({
             tenant_id: actor.tenantId,
             unit_id: row.unitId,
@@ -478,6 +515,7 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
         performedAt: null,
         score: null,
         status: (data.status as 'scheduled') ?? 'scheduled',
+        createdAt: String(data.created_at),
       };
     },
     async insertFinding(actor, row) {
@@ -519,7 +557,7 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
     },
     async listAudits(actor) {
       const { data, error } = await platform()
-        .from('franchise_audits')
+        .from('audits')
         .select('*')
         .eq('tenant_id', actor.tenantId)
         .order('scheduled_at', { ascending: false });
@@ -538,6 +576,7 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
         performedAt: row.performed_at ? String(row.performed_at) : null,
         score: row.score == null ? null : Number(row.score),
         status: row.status as never,
+        createdAt: String(row.created_at),
       }));
     },
     async listFindings(actor, auditId) {
@@ -559,6 +598,7 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
         standardRef: row.standard_ref ? String(row.standard_ref) : null,
         evidence: (row.evidence as never) ?? null,
         notes: String(row.notes ?? ''),
+        createdAt: String(row.created_at),
       }));
     },
     async listCorrectiveActions(actor) {
@@ -581,6 +621,7 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
         status: row.status as never,
         resolution: row.resolution ? String(row.resolution) : null,
         evidence: (row.evidence as never) ?? null,
+        createdAt: String(row.created_at),
       }));
     },
     async insertChangeLog(input) {

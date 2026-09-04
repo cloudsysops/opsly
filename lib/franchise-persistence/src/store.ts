@@ -1,5 +1,5 @@
 import type {
-  Audit,
+  FranchiseAudit,
   AuditFinding,
   CorrectiveAction,
   FranchiseAgreement,
@@ -13,13 +13,14 @@ import type {
 import type { FranchiseActor } from './actor.js';
 
 export type NewTerritory = Omit<Territory, 'id' | 'status'> & { status?: Territory['status'] };
-export type NewAgreement = Omit<FranchiseAgreement, 'id' | 'createdAt' | 'status'> & {
-  status?: FranchiseAgreement['status'];
+export type NewAgreement = Omit<FranchiseAgreement, 'id' | 'createdAt' | 'state'> & {
+  state?: FranchiseAgreement['state'];
 };
 export type NewSalesReport = Omit<SalesReport, 'id' | 'status'> & { status?: SalesReport['status'] };
 export type NewRoyaltyRule = Omit<RoyaltyRule, 'version'> & { version?: number };
-export type NewAudit = Omit<Audit, 'id' | 'score' | 'performedAt' | 'status'> & {
-  status?: Audit['status'];
+export type NewAudit = Omit<FranchiseAudit, 'id' | 'score' | 'performedAt' | 'status' | 'createdAt'> & {
+  status?: FranchiseAudit['status'];
+  templateVersion: number;
 };
 
 export type FranchiseStore = {
@@ -37,17 +38,17 @@ export type FranchiseStore = {
   getSalesReport(actor: FranchiseActor, id: string): Promise<SalesReport | null>;
   listSalesReports(actor: FranchiseActor): Promise<SalesReport[]>;
   insertCalculation(actor: FranchiseActor, row: RoyaltyCalculation): Promise<RoyaltyCalculation>;
-  getCalculationByKey(actor: FranchiseActor, idempotencyKey: string): Promise<RoyaltyCalculation | null>;
+  getCalculationByKey(actor: FranchiseActor, key: { unitId: string; salesReportId: string; ruleVersion: number }): Promise<RoyaltyCalculation | null>;
   listCalculations(actor: FranchiseActor): Promise<RoyaltyCalculation[]>;
   insertPayment(actor: FranchiseActor, row: Omit<RoyaltyPayment, 'id'>): Promise<RoyaltyPayment>;
   insertAuditTemplate(
     actor: FranchiseActor,
     row: { id?: string; name: string; version: number; questions: unknown }
   ): Promise<{ id: string }>;
-  insertAudit(actor: FranchiseActor, row: NewAudit): Promise<Audit>;
+  insertAudit(actor: FranchiseActor, row: NewAudit): Promise<FranchiseAudit>;
   insertFinding(actor: FranchiseActor, row: Omit<AuditFinding, 'id'>): Promise<AuditFinding>;
   insertCorrectiveAction(actor: FranchiseActor, row: Omit<CorrectiveAction, 'id'>): Promise<CorrectiveAction>;
-  listAudits(actor: FranchiseActor): Promise<Audit[]>;
+  listAudits(actor: FranchiseActor): Promise<FranchiseAudit[]>;
   listFindings(actor: FranchiseActor, auditId: string): Promise<AuditFinding[]>;
   listCorrectiveActions(actor: FranchiseActor): Promise<CorrectiveAction[]>;
   insertChangeLog(input: {

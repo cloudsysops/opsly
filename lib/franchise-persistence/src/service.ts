@@ -1,9 +1,10 @@
 import {
-  calculateRoyalty,
-  findTerritoryConflicts,
+  buildRoyaltyCalculation,
+  findExclusiveTerritoryConflicts,
   FRANCHISE_EVENTS,
   franchiseEvent,
-  nextRoyaltyRuleVersion,
+  createNextRuleVersion,
+  snapshotRule,
   type RoyaltyRule,
   type SalesReport,
 } from '@intcloudsysops/franchise-core';
@@ -34,14 +35,14 @@ export function createFranchiseService(store: FranchiseStore) {
     async createTerritory(actor: FranchiseActor, input: NewTerritory) {
       await this.requireSchema();
       assertRoyaltyWrite(actor.role);
-      if (input.unitId) assertUnitScope(actor, input.unitId);
+      if (input.unitId !== undefined && input.unitId !== null) assertUnitScope(actor, input.unitId);
       const existing = await store.listTerritories(actor);
       const next = {
         ...input,
         id: 'pending',
         status: input.status ?? 'active',
       };
-      const conflicts = findTerritoryConflicts([...existing, next]);
+      const conflicts = findExclusiveTerritoryConflicts([...existing, next]);
       const created = await store.insertTerritory(actor, input);
       await store.insertChangeLog({
         tenantId: actor.tenantId,
@@ -58,7 +59,7 @@ export function createFranchiseService(store: FranchiseStore) {
         conflicts: conflicts.filter((c) => c.aId === 'pending' || c.bId === 'pending'),
         event: franchiseEvent(FRANCHISE_EVENTS.territoryAssigned, {
           tenantId: actor.tenantId,
-          unitId: created.unitId,
+          unitId: created.unitId ?? null,
           occurredAt: new Date().toISOString(),
           payload: { territoryId: created.id },
         }),
@@ -70,7 +71,7 @@ export function createFranchiseService(store: FranchiseStore) {
       assertAgreementRead(actor.role);
       const rows = await store.listTerritories(actor);
       const scoped = rows.filter((row) => !row.unitId || canScope(actor, row.unitId));
-      return { territories: scoped, conflicts: findTerritoryConflicts(scoped) };
+      return { territories: scoped, conflicts: findExclusiveTerritoryConflicts(scoped) };
     },
 
     async createAgreement(actor: FranchiseActor, input: NewAgreement) {
@@ -142,7 +143,10 @@ export function createFranchiseService(store: FranchiseStore) {
     async createRuleVersion(actor: FranchiseActor, current: RoyaltyRule, patch: Partial<RoyaltyRule>) {
       await this.requireSchema();
       assertRoyaltyWrite(actor.role);
-      const next = nextRoyaltyRuleVersion(current, patch);
+      if (!patch.effectiveFrom) throw new FranchisePersistenceError('invalid_input', 'effectiveFrom is required', 400);
+      const effectiveFrom = patch.effectiveFrom;
+      if (!effectiveFrom) throw new FranchisePersistenceError('invalid_input', 'effectiveFrom is required', 400);
+      const next = createNextRuleVersion(current, { ...patch, effectiveFrom }).next;
       return store.insertRoyaltyRule(actor, next);
     },
 
@@ -157,12 +161,9 @@ export function createFranchiseService(store: FranchiseStore) {
       assertUnitScope(actor, report.unitId);
       const rule = await store.getRoyaltyRule(actor, input.ruleId, input.ruleVersion);
       if (!rule) throw new FranchisePersistenceError('not_found', 'royalty rule version not found', 404);
-      const calculation = calculateRoyalty({
-        id: crypto.randomUUID(),
-        unitId: report.unitId,
-        rule,
-        report,
-        calculatedAt: new Date().toISOString(),
+      const calculation = buildRoyaltyCalculation({
+        id: crypto.randomUUID(), tenantId: actor.tenantId, unitId: report.unitId,
+        salesReport: report, rule: snapshotRule(rule, report.periodEnd), createdAt: new Date().toISOString(),
       });
       const persisted = await store.insertCalculation(actor, calculation);
       await store.insertChangeLog({
@@ -180,8 +181,8 @@ export function createFranchiseService(store: FranchiseStore) {
         event: franchiseEvent(FRANCHISE_EVENTS.royaltyCalculated, {
           tenantId: actor.tenantId,
           unitId: persisted.unitId,
-          occurredAt: persisted.calculatedAt,
-          payload: { royaltyDueMinor: persisted.royaltyDueMinor, ruleVersion: persisted.ruleVersion },
+          occurredAt: persisted.createdAt,
+          payload: { royaltyDue: persisted.royaltyDue, ruleVersion: persisted.ruleVersion },
         }),
       };
     },
@@ -197,7 +198,7 @@ export function createFranchiseService(store: FranchiseStore) {
       actor: FranchiseActor,
       input: {
         calculationId: string;
-        amountMinor: number;
+        amount: number;
         currency: string;
         method: 'manual' | 'stripe' | 'wompi' | 'bank' | 'other';
         externalReference: string | null;
@@ -208,12 +209,13 @@ export function createFranchiseService(store: FranchiseStore) {
       return store.insertPayment(actor, {
         tenantId: actor.tenantId,
         calculationId: input.calculationId,
-        amountMinor: input.amountMinor,
+        amount: input.amount,
         currency: input.currency,
         status: 'paid',
         method: input.method,
         externalReference: input.externalReference,
         paidAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
       });
     },
 
@@ -229,7 +231,7 @@ export function createFranchiseService(store: FranchiseStore) {
       input: {
         auditId: string;
         unitId: string;
-        severity: 'low' | 'medium' | 'high' | 'critical';
+        severity: 'minor' | 'major' | 'critical' | 'info';
         notes: string;
         standardRef: string | null;
       }
@@ -245,6 +247,7 @@ export function createFranchiseService(store: FranchiseStore) {
         standardRef: input.standardRef,
         evidence: null,
         notes: input.notes,
+        createdAt: new Date().toISOString(),
       });
     },
 
@@ -269,6 +272,7 @@ export function createFranchiseService(store: FranchiseStore) {
         status: 'open',
         resolution: null,
         evidence: null,
+        createdAt: new Date().toISOString(),
       });
       return {
         action: created,
