@@ -141,13 +141,13 @@ export function createPgFranchiseStore(rawQuery: SqlQuery): FranchiseStore {
     async insertRoyaltyRule(actor, row) {
       const rows = await query<Record<string, unknown>>(
         `INSERT INTO platform.royalty_rules
-           (id, tenant_id, name, basis, percentage, minimum_amount, fixed_fee, currency,
+           (tenant_id, rule_id, name, basis, percentage, minimum_amount, fixed_fee, currency,
             frequency, excluded_categories, tax_treatment, effective_from, effective_to, version)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
          RETURNING *`,
         [
-          row.id,
           actor.tenantId,
+          row.id,
           row.name,
           row.basis,
           row.percentage,
@@ -155,7 +155,7 @@ export function createPgFranchiseStore(rawQuery: SqlQuery): FranchiseStore {
           row.fixedFee?.amount ?? null,
           row.currency,
           row.frequency,
-          row.excludedCategories,
+          JSON.stringify(row.excludedCategories),
           row.taxTreatment,
           row.effectiveFrom,
           row.effectiveTo,
@@ -166,14 +166,14 @@ export function createPgFranchiseStore(rawQuery: SqlQuery): FranchiseStore {
     },
     async getRoyaltyRule(actor, id, version) {
       const rows = await query<Record<string, unknown>>(
-        `SELECT * FROM platform.royalty_rules WHERE tenant_id = $1 AND id = $2 AND version = $3`,
+        `SELECT * FROM platform.royalty_rules WHERE tenant_id = $1 AND rule_id = $2 AND version = $3`,
         [actor.tenantId, id, version]
       );
       return rows[0] ? mapRule(rows[0]) : null;
     },
     async listRoyaltyRules(actor, id) {
       const rows = await query<Record<string, unknown>>(
-        `SELECT * FROM platform.royalty_rules WHERE tenant_id = $1 AND id = $2 ORDER BY version ASC`,
+        `SELECT * FROM platform.royalty_rules WHERE tenant_id = $1 AND rule_id = $2 ORDER BY version ASC`,
         [actor.tenantId, id]
       );
       return rows.map(mapRule);
@@ -246,7 +246,7 @@ export function createPgFranchiseStore(rawQuery: SqlQuery): FranchiseStore {
       try {
         const rows = await query<Record<string, unknown>>(
           `INSERT INTO platform.royalty_calculations
-             (id, tenant_id, unit_id, sales_report_id, royalty_rule_id, rule_version, basis,
+             (id, tenant_id, unit_id, sales_report_id, rule_id, rule_version, basis,
               reported_sales, exclusions, royalty_base, percentage, percentage_amount, fixed_fee,
               minimum_applied, royalty_due, currency, status, inputs, calculation, result)
            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18::jsonb,$19::jsonb,$20::jsonb)
@@ -320,7 +320,7 @@ export function createPgFranchiseStore(rawQuery: SqlQuery): FranchiseStore {
     },
     async insertAuditTemplate(actor, row) {
       const rows = await query<{ id: string }>(
-        `INSERT INTO platform.audit_templates (id, tenant_id, name, version, questions)
+        `INSERT INTO platform.audit_templates (id, tenant_id, name, version, definition)
          VALUES (COALESCE($1::uuid, gen_random_uuid()), $2, $3, $4, $5::jsonb)
          RETURNING id`,
         [row.id ?? null, actor.tenantId, row.name, row.version, JSON.stringify(row.questions)]
@@ -330,13 +330,12 @@ export function createPgFranchiseStore(rawQuery: SqlQuery): FranchiseStore {
     async insertAudit(actor, row) {
       const rows = await query<Record<string, unknown>>(
         `INSERT INTO platform.audits
-           (tenant_id, unit_id, template_id, template_version, auditor, scheduled_at, status)
-         VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+           (tenant_id, unit_id, template_id, auditor, scheduled_at, status)
+         VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
         [
           actor.tenantId,
           row.unitId,
           row.templateId,
-          row.templateVersion,
           row.auditor,
           row.scheduledAt,
           row.status ?? 'scheduled',
@@ -402,18 +401,17 @@ export function createPgFranchiseStore(rawQuery: SqlQuery): FranchiseStore {
     },
     async insertChangeLog(input) {
       await query(
-        `INSERT INTO platform.franchise_change_log
-           (tenant_id, actor_id, entity, entity_id, action, before, after, reason)
-         VALUES ($1,$2,$3,$4,$5,$6::jsonb,$7::jsonb,$8)`,
+        `INSERT INTO platform.audit_events
+           (tenant_slug, actor_email, action, resource, status_code, metadata)
+         SELECT slug, $2, $3, $4 || '/' || $5, 200, $6::jsonb
+         FROM platform.tenants WHERE id = $1`,
         [
           input.tenantId,
           input.actorId,
+          input.action,
           input.entity,
           input.entityId,
-          input.action,
-          JSON.stringify(input.before),
-          JSON.stringify(input.after),
-          input.reason,
+          JSON.stringify({ before: input.before, after: input.after, reason: input.reason }),
         ]
       );
     },
@@ -433,7 +431,7 @@ function mapTerritory(row: Record<string, unknown>): Territory {
     validTo: row.valid_to ? asDate(row.valid_to as Date | string) : null,
     unitId: row.unit_id ? String(row.unit_id) : null,
     serviceModel: row.service_model ? String(row.service_model) : null,
-    geo: row.geo as Territory['geo'],
+    geo: parseJson<Territory['geo']>(row.geo),
     createdAt: asIso(row.created_at as Date | string),
     updatedAt: row.updated_at ? asIso(row.updated_at as Date | string) : null,
   };
@@ -451,7 +449,7 @@ function mapAgreement(row: Record<string, unknown>): FranchiseAgreement {
     renewalType: row.renewal_type as FranchiseAgreement['renewalType'],
     renewalTermMonths: row.renewal_term_months == null ? null : Number(row.renewal_term_months),
     noticeDays: Number(row.notice_days),
-    canonicalFee: row.canonical_fee == null ? null : { ...(row.canonical_fee as { amount: number; currency: string }) },
+    canonicalFee: parseJson<FranchiseAgreement['canonicalFee']>(row.canonical_fee),
     royaltyRuleId: row.royalty_rule_id ? String(row.royalty_rule_id) : null,
     territoryId: row.territory_id ? String(row.territory_id) : null,
     documentRef: row.document_ref ? String(row.document_ref) : null,
@@ -462,7 +460,7 @@ function mapAgreement(row: Record<string, unknown>): FranchiseAgreement {
 
 function mapRule(row: Record<string, unknown>): RoyaltyRule {
   return {
-    id: String(row.id),
+    id: String(row.rule_id),
     tenantId: String(row.tenant_id),
     name: String(row.name),
     basis: row.basis as RoyaltyRule['basis'],
@@ -471,7 +469,7 @@ function mapRule(row: Record<string, unknown>): RoyaltyRule {
     fixedFee: row.fixed_fee == null ? null : { amount: Number(row.fixed_fee), currency: String(row.currency) },
     currency: String(row.currency),
     frequency: row.frequency as RoyaltyRule['frequency'],
-    excludedCategories: (row.excluded_categories as string[]) ?? [],
+    excludedCategories: parseJson<string[]>(row.excluded_categories) ?? [],
     taxTreatment: row.tax_treatment as RoyaltyRule['taxTreatment'],
     effectiveFrom: asDate(row.effective_from as Date | string),
     effectiveTo: row.effective_to ? asDate(row.effective_to as Date | string) : null,
@@ -509,7 +507,7 @@ function mapCalculation(row: Record<string, unknown>): RoyaltyCalculation {
     tenantId: String(row.tenant_id),
     unitId: String(row.unit_id),
     salesReportId: String(row.sales_report_id),
-    ruleId: String(row.royalty_rule_id),
+    ruleId: String(row.rule_id),
     ruleVersion: Number(row.rule_version),
     basis: row.basis as RoyaltyCalculation['basis'],
     reportedSales: Number(row.reported_sales),
@@ -522,9 +520,9 @@ function mapCalculation(row: Record<string, unknown>): RoyaltyCalculation {
     royaltyDue: Number(row.royalty_due),
     currency: String(row.currency),
     status: row.status as RoyaltyCalculation['status'],
-    inputs: (row.inputs as Record<string, unknown>) ?? {},
-    calculation: (row.calculation as Record<string, unknown>) ?? {},
-    result: (row.result as Record<string, unknown>) ?? {},
+    inputs: parseJson<Record<string, unknown>>(row.inputs) ?? {},
+    calculation: parseJson<Record<string, unknown>>(row.calculation) ?? {},
+    result: parseJson<Record<string, unknown>>(row.result) ?? {},
     createdAt: asIso(row.created_at as Date | string),
   };
 }
@@ -604,4 +602,10 @@ function mapFranchisee(row: Record<string, unknown>): Franchisee {
     },
     createdAt: asIso(row.created_at as Date | string),
   };
+}
+
+function parseJson<T>(value: unknown): T | null {
+  if (value == null) return null;
+  if (typeof value === 'string') return JSON.parse(value) as T;
+  return value as T;
 }

@@ -17,6 +17,16 @@ export function createSupabaseFranchiseStore(client: SupabaseClient): FranchiseS
   return createRestFranchiseStore(client);
 }
 
+function agreementUnitIds(row: Record<string, unknown>): string[] {
+  const links = row.franchise_agreement_units;
+  if (!Array.isArray(links)) return [];
+  return links.flatMap((link) => {
+    if (!link || typeof link !== 'object') return [];
+    const unitId = (link as { unit_id?: unknown }).unit_id;
+    return typeof unitId === 'string' ? [unitId] : [];
+  });
+}
+
 function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
   const platform = (): { from: (table: string) => PlatformFrom } =>
     client.schema('platform') as unknown as { from: (table: string) => PlatformFrom };
@@ -141,7 +151,6 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
           .insert({
             tenant_id: actor.tenantId,
             franchisee_id: row.franchiseeId,
-            unit_ids: row.unitIds,
             state: row.state ?? 'draft',
             effective_date: row.effectiveDate,
             expiration_date: row.expirationDate,
@@ -156,6 +165,14 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
           .select('*')
           .maybeSingle()
       );
+      if (row.unitIds.length > 0) {
+        await run(
+          platform()
+            .from('franchise_agreement_units')
+            .insert(row.unitIds.map((unitId) => ({ agreement_id: data.id, unit_id: unitId })))
+            .select('*')
+        );
+      }
       return {
         ...row,
         id: String(data.id),
@@ -167,7 +184,7 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
     async listAgreements(actor) {
       const { data, error } = await platform()
         .from('franchise_agreements')
-        .select('*')
+        .select('*, franchise_agreement_units(unit_id)')
         .eq('tenant_id', actor.tenantId)
         .order('expiration_date', { ascending: true });
       if (error) {
@@ -178,7 +195,7 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
         id: String(row.id),
         tenantId: String(row.tenant_id),
         franchiseeId: String(row.franchisee_id),
-        unitIds: (row.unit_ids as string[]) ?? [],
+        unitIds: agreementUnitIds(row),
         state: row.state as never,
         effectiveDate: String(row.effective_date).slice(0, 10),
         expirationDate: String(row.expiration_date).slice(0, 10),

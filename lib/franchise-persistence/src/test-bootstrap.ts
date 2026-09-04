@@ -154,6 +154,8 @@ export async function bootstrapFranchiseDb(url: string): Promise<Harness> {
   // migration replay proves a clean install instead of reusing prior state.
   await pool.query(`DROP SCHEMA IF EXISTS platform CASCADE; DROP SCHEMA IF EXISTS auth CASCADE;`);
   await pool.query(PRELUDE);
+  const sql0016 = readFileSync(join(REPO_ROOT, 'supabase/migrations/0016_audit_trail.sql'), 'utf8');
+  await pool.query(sql0016);
   const sql0098 = readFileSync(join(REPO_ROOT, 'supabase/migrations/0098_franchise_core.sql'), 'utf8');
   const sql0099 = readFileSync(join(REPO_ROOT, 'supabase/migrations/0099_franchise_core_rls.sql'), 'utf8');
   await pool.query(sql0098);
@@ -203,6 +205,19 @@ export async function bootstrapFranchiseDb(url: string): Promise<Harness> {
     [b, netB.rows[0].id]
   );
 
+  // 0090 is the canonical Peskids membership source. Link the generic test
+  // units to its legacy operating records so 0099 RLS exercises real scope.
+  const franchiseA = await pool.query<{ id: string }>(
+    `INSERT INTO platform.peskids_franchises (tenant_slug, slug, name, type, status)
+     VALUES ('peskids','llanogrande-principal','Llanogrande','flagship','active') RETURNING id`
+  );
+  const franchiseB = await pool.query<{ id: string }>(
+    `INSERT INTO platform.peskids_franchises (tenant_slug, slug, name, type, status)
+     VALUES ('peskids','domicilios-peskids','Domicilios','mobile','active') RETURNING id`
+  );
+  await pool.query(`UPDATE platform.franchise_units SET external_source = 'platform.peskids_franchises', external_ref = $1 WHERE id = $2`, [franchiseA.rows[0].id, unitA.rows[0].id]);
+  await pool.query(`UPDATE platform.franchise_units SET external_source = 'platform.peskids_franchises', external_ref = $1 WHERE id = $2`, [franchiseB.rows[0].id, unitB.rows[0].id]);
+
   const userNetwork = '11111111-1111-4111-8111-111111111111';
   const userUnitA = '22222222-2222-4222-8222-222222222222';
   const userTeacher = '33333333-3333-4333-8333-333333333333';
@@ -223,28 +238,28 @@ export async function bootstrapFranchiseDb(url: string): Promise<Harness> {
     [b, userOtherTenant]
   );
   await pool.query(
-    `INSERT INTO platform.franchise_unit_members (tenant_id, unit_id, user_id, role, active)
-     VALUES ($1,$2,$3,'franchise_admin', true)
-     ON CONFLICT (unit_id, user_id, role) DO NOTHING`,
-    [a, unitA.rows[0].id, userUnitA]
+    `INSERT INTO platform.peskids_franchise_staff_memberships (tenant_slug, franchise_id, user_id, role, active)
+     VALUES ('peskids',$1,$2,'admin', true)
+     ON CONFLICT (franchise_id, user_id, role) DO NOTHING`,
+    [franchiseA.rows[0].id, userUnitA]
   );
   await pool.query(
-    `INSERT INTO platform.franchise_unit_members (tenant_id, unit_id, user_id, role, active)
-     VALUES ($1,$2,$3,'teacher', true)
-     ON CONFLICT (unit_id, user_id, role) DO NOTHING`,
-    [a, unitA.rows[0].id, userTeacher]
+    `INSERT INTO platform.peskids_franchise_staff_memberships (tenant_slug, franchise_id, user_id, role, active)
+     VALUES ('peskids',$1,$2,'teacher', true)
+     ON CONFLICT (franchise_id, user_id, role) DO NOTHING`,
+    [franchiseA.rows[0].id, userTeacher]
   );
   await pool.query(
-    `INSERT INTO platform.franchise_unit_members (tenant_id, unit_id, user_id, role, active)
-     VALUES ($1,$2,$3,'auditor', true)
-     ON CONFLICT (unit_id, user_id, role) DO NOTHING`,
-    [a, unitA.rows[0].id, userAuditor]
+    `INSERT INTO platform.peskids_franchise_staff_memberships (tenant_slug, franchise_id, user_id, role, active)
+     VALUES ('peskids',$1,$2,'owner', true)
+     ON CONFLICT (franchise_id, user_id, role) DO NOTHING`,
+    [franchiseA.rows[0].id, userAuditor]
   );
   await pool.query(
-    `INSERT INTO platform.franchise_unit_members (tenant_id, unit_id, user_id, role, active)
-     VALUES ($1,$2,$3,'support', true)
-     ON CONFLICT (unit_id, user_id, role) DO NOTHING`,
-    [a, unitA.rows[0].id, userSupport]
+    `INSERT INTO platform.peskids_franchise_staff_memberships (tenant_slug, franchise_id, user_id, role, active)
+     VALUES ('peskids',$1,$2,'support', true)
+     ON CONFLICT (franchise_id, user_id, role) DO NOTHING`,
+    [franchiseA.rows[0].id, userSupport]
   );
 
   return {

@@ -23,11 +23,11 @@ BEGIN
     ALTER TABLE platform.sales_reports
       ADD CONSTRAINT chk_sales_reports_nonneg
       CHECK (
-        gross_sales_minor >= 0
-        AND refunds_minor >= 0
-        AND taxes_minor >= 0
-        AND excluded_sales_minor >= 0
-        AND net_sales_minor >= 0
+        gross_sales >= 0
+        AND refunds >= 0
+        AND taxes >= 0
+        AND excluded_sales >= 0
+        AND net_sales >= 0
       );
   END IF;
 
@@ -36,7 +36,7 @@ BEGIN
   ) THEN
     ALTER TABLE platform.royalty_calculations
       ADD CONSTRAINT chk_royalty_calculations_nonneg
-      CHECK (royalty_due_minor >= 0);
+      CHECK (royalty_due >= 0);
   END IF;
 
   IF NOT EXISTS (
@@ -44,7 +44,7 @@ BEGIN
   ) THEN
     ALTER TABLE platform.royalty_payments
       ADD CONSTRAINT chk_royalty_payments_nonneg
-      CHECK (amount_minor >= 0);
+      CHECK (amount >= 0);
   END IF;
 
   IF NOT EXISTS (
@@ -52,7 +52,14 @@ BEGIN
   ) THEN
     ALTER TABLE platform.franchise_agreements
       ADD CONSTRAINT chk_franchise_agreements_fee_nonneg
-      CHECK (canonical_fee_minor >= 0);
+      CHECK (
+        canonical_fee IS NULL
+        OR (
+          jsonb_typeof(canonical_fee) = 'object'
+          AND canonical_fee ? 'amount'
+          AND (canonical_fee->>'amount')::numeric >= 0
+        )
+      );
   END IF;
 END $$;
 
@@ -105,9 +112,9 @@ CREATE TRIGGER royalty_calculations_unit_tenant
   BEFORE INSERT OR UPDATE ON platform.royalty_calculations
   FOR EACH ROW EXECUTE FUNCTION platform.franchise_assert_unit_tenant();
 
-DROP TRIGGER IF EXISTS franchise_audits_unit_tenant ON platform.franchise_audits;
-CREATE TRIGGER franchise_audits_unit_tenant
-  BEFORE INSERT OR UPDATE ON platform.franchise_audits
+DROP TRIGGER IF EXISTS audits_unit_tenant ON platform.audits;
+CREATE TRIGGER audits_unit_tenant
+  BEFORE INSERT OR UPDATE ON platform.audits
   FOR EACH ROW EXECUTE FUNCTION platform.franchise_assert_unit_tenant();
 
 DROP TRIGGER IF EXISTS audit_findings_unit_tenant ON platform.audit_findings;
@@ -226,10 +233,13 @@ SET search_path = platform, pg_temp
 AS $$
   SELECT EXISTS (
     SELECT 1
-    FROM platform.franchise_unit_members m
-    WHERE m.unit_id = p_unit
-      AND m.user_id = auth.uid()
-      AND m.active = true
+        FROM platform.peskids_franchise_staff_memberships m
+        JOIN platform.franchise_units u
+          ON u.external_source = 'platform.peskids_franchises'
+         AND u.external_ref = m.franchise_id::text
+        WHERE u.id = p_unit
+          AND m.user_id = auth.uid()
+          AND m.active = true
   );
 $$;
 
@@ -254,8 +264,11 @@ AS $$
   SELECT platform.franchise_is_network_admin(p_tenant)
       OR EXISTS (
         SELECT 1
-        FROM platform.franchise_unit_members m
-        WHERE m.tenant_id = p_tenant
+        FROM platform.peskids_franchise_staff_memberships m
+        JOIN platform.franchise_units u
+          ON u.external_source = 'platform.peskids_franchises'
+         AND u.external_ref = m.franchise_id::text
+        WHERE u.tenant_id = p_tenant
           AND m.user_id = auth.uid()
           AND m.active = true
       );
@@ -271,7 +284,7 @@ AS $$
   SELECT platform.franchise_jwt_staff_role() = 'teacher'
       OR EXISTS (
         SELECT 1
-        FROM platform.franchise_unit_members m
+        FROM platform.peskids_franchise_staff_memberships m
         WHERE m.user_id = auth.uid()
           AND m.active = true
           AND m.role = 'teacher'
@@ -288,7 +301,7 @@ AS $$
   SELECT platform.franchise_jwt_staff_role() IN ('auditor')
       OR EXISTS (
         SELECT 1
-        FROM platform.franchise_unit_members m
+        FROM platform.peskids_franchise_staff_memberships m
         WHERE m.user_id = auth.uid()
           AND m.active = true
           AND m.role = 'auditor'
@@ -350,8 +363,10 @@ CREATE POLICY franchise_agreements_authenticated_select
     AND (
       platform.franchise_is_network_admin(tenant_id)
       OR EXISTS (
-        SELECT 1 FROM unnest(unit_ids) AS u(id)
-        WHERE platform.franchise_assigned_to_unit(u.id)
+        SELECT 1
+        FROM platform.franchise_agreement_units au
+        WHERE au.agreement_id = franchise_agreements.id
+          AND platform.franchise_assigned_to_unit(au.unit_id)
       )
     )
   );
@@ -429,17 +444,17 @@ CREATE POLICY franchisees_authenticated_insert
   ON platform.franchisees FOR INSERT TO authenticated
   WITH CHECK (platform.franchise_financial_ok(tenant_id));
 
-DROP POLICY IF EXISTS franchise_audits_authenticated_select ON platform.franchise_audits;
-CREATE POLICY franchise_audits_authenticated_select
-  ON platform.franchise_audits FOR SELECT TO authenticated
+DROP POLICY IF EXISTS audits_authenticated_select ON platform.audits;
+CREATE POLICY audits_authenticated_select
+  ON platform.audits FOR SELECT TO authenticated
   USING (
     NOT platform.franchise_is_teacher()
     AND platform.franchise_can_access_unit(tenant_id, unit_id)
   );
 
-DROP POLICY IF EXISTS franchise_audits_authenticated_insert ON platform.franchise_audits;
-CREATE POLICY franchise_audits_authenticated_insert
-  ON platform.franchise_audits FOR INSERT TO authenticated
+DROP POLICY IF EXISTS audits_authenticated_insert ON platform.audits;
+CREATE POLICY audits_authenticated_insert
+  ON platform.audits FOR INSERT TO authenticated
   WITH CHECK (
     NOT platform.franchise_is_teacher()
     AND platform.franchise_can_access_unit(tenant_id, unit_id)
@@ -487,16 +502,14 @@ GRANT SELECT, INSERT ON
   platform.royalty_calculations,
   platform.royalty_payments,
   platform.audit_templates,
-  platform.franchise_audits,
+  platform.audits,
   platform.audit_findings,
-  platform.corrective_actions,
-  platform.franchise_change_log
+  platform.corrective_actions
 TO authenticated;
 GRANT SELECT ON
   platform.franchise_networks,
   platform.franchise_units,
-  platform.franchise_locations,
-  platform.franchise_unit_members
+  platform.franchise_locations
 TO authenticated;
 
 COMMENT ON FUNCTION platform.franchise_financial_ok(uuid) IS

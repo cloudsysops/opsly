@@ -449,10 +449,19 @@ CREATE INDEX IF NOT EXISTS idx_corrective_actions_tenant_status_due
   ON platform.corrective_actions(tenant_id, status, due_date);
 
 -- PRIMARY location FK (set after all tables exist).
-ALTER TABLE platform.franchise_units
-  ADD CONSTRAINT fk_franchise_units_primary_location
-  FOREIGN KEY (primary_location_id) REFERENCES platform.franchise_locations(id)
-  ON DELETE SET NULL;
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'fk_franchise_units_primary_location'
+      AND conrelid = 'platform.franchise_units'::regclass
+  ) THEN
+    ALTER TABLE platform.franchise_units
+      ADD CONSTRAINT fk_franchise_units_primary_location
+      FOREIGN KEY (primary_location_id) REFERENCES platform.franchise_locations(id)
+      ON DELETE SET NULL;
+  END IF;
+END $$;
 
 -- updated_at triggers (platform.set_updated_at from 0036_billing_invoices.sql).
 DROP TRIGGER IF EXISTS franchise_networks_updated_at ON platform.franchise_networks;

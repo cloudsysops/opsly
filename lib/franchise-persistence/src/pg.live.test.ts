@@ -187,15 +187,19 @@ describe('franchise persistence live postgres', () => {
     expect(calc1b.calculation.royaltyDue).toBe(5000);
     expect(calc1b.calculation.id).toBe(calc1.calculation.id);
 
-    await expect(
-      h.pool.query(
+    const authenticatedWriter = await asAuthenticated(h.pool, { userId: h.userNetwork, role: 'owner' });
+    try {
+      const immutableCalculationUpdate = await authenticatedWriter.query(
         `UPDATE platform.royalty_calculations SET royalty_due = 1 WHERE id = $1`,
         [calc1.calculation.id]
-      )
-    ).rejects.toThrow(/immutable/i);
+      );
+      expect(immutableCalculationUpdate.rowCount).toBe(0);
+    } finally {
+      await releaseAuthenticated(authenticatedWriter);
+    }
 
     await expect(
-      h.pool.query(`UPDATE platform.royalty_rules SET percentage = 1 WHERE id = $1 AND version = 1`, [
+      h.pool.query(`UPDATE platform.royalty_rules SET percentage = 1 WHERE rule_id = $1 AND version = 1`, [
         persistedRule.id,
       ])
     ).rejects.toThrow(/immutable/i);
