@@ -31,6 +31,12 @@ export type OpeningStatus = (typeof OPENING_STATUSES)[number];
 export const FRANCHISEE_STATUSES = ['prospect', 'active', 'suspended', 'terminated'] as const;
 export type FranchiseeStatus = (typeof FRANCHISEE_STATUSES)[number];
 
+export const FRANCHISE_ROLES = [
+  'platform_owner', 'tenant_owner', 'franchise_network_admin', 'franchise_admin',
+  'franchise_staff', 'support', 'auditor', 'teacher',
+] as const;
+export type FranchiseRole = (typeof FRANCHISE_ROLES)[number];
+
 export const TERRITORY_TYPES = ['radius', 'polygon', 'municipality', 'service_area'] as const;
 export type TerritoryType = (typeof TERRITORY_TYPES)[number];
 

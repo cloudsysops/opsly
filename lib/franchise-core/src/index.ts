@@ -10,7 +10,9 @@ export {
   type NetworkId,
   type CurrencyCode,
   type MoneyAmount,
+  type AgreementStatus,
   type Franchisee,
+  type FranchiseRole,
   type FranchiseUnit,
   type GeoReference,
   type FranchiseLocation,
@@ -22,6 +24,18 @@ export {
   type RoyaltyCalculation,
   type RoyaltyPayment,
   type BrandStandard,
+  type FranchiseAudit,
+  type AuditFinding,
+  type CorrectiveAction,
+  type OpeningPhase,
+  type OpeningTaskStatus,
+  type OpeningChecklist,
+  type OpeningTask,
+  type ApprovedSupplier,
+  type SupplierRequirement,
+  type TrainingRequirement,
+  type SupportCase,
+  type DocumentReference,
 } from './types.js';
 
 // ─── royalty.ts ────────────────────────────────────────────
@@ -65,7 +79,6 @@ export {
   isAgreementStatus,
   canTransitionAgreement,
   type DerivedAgreementStatusInput,
-  type AgreementStatus,
   deriveAgreementStatus,
   type ExpiryAlertLevel,
   type ExpiryAlert,
@@ -75,6 +88,21 @@ export {
   expirationDateFromTerm,
   agreementOperationalStatus,
 } from './agreement.js';
+
+// ─── opening/units/network.ts ─────────────────────────────
+export {
+  canActivateUnit,
+  defaultOpeningTasks,
+  openingBlockers,
+  assembleOpeningChecklist,
+} from './opening.js';
+export {
+  assertFranchiseeDistinctFromUnit,
+  assertValidUnitType,
+  ownedUnitDefaults,
+  UnitModelError,
+} from './units.js';
+export { summarizeNetwork, type NetworkDashboard } from './network.js';
 
 // ─── audit.ts ──────────────────────────────────────────────
 export {
