@@ -11,6 +11,14 @@ const PRELUDE = `
 CREATE SCHEMA IF NOT EXISTS platform;
 CREATE SCHEMA IF NOT EXISTS auth;
 
+CREATE OR REPLACE FUNCTION platform.set_updated_at()
+RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  NEW.updated_at := now();
+  RETURN NEW;
+END;
+$$;
+
 CREATE TABLE IF NOT EXISTS platform.tenants (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   slug text UNIQUE NOT NULL,
@@ -142,6 +150,9 @@ export function testDatabaseUrl(): string | null {
 
 export async function bootstrapFranchiseDb(url: string): Promise<Harness> {
   const pool = new pg.Pool({ connectionString: url });
+  // This database is disposable test infrastructure. Reset both schemas so
+  // migration replay proves a clean install instead of reusing prior state.
+  await pool.query(`DROP SCHEMA IF EXISTS platform CASCADE; DROP SCHEMA IF EXISTS auth CASCADE;`);
   await pool.query(PRELUDE);
   const sql0098 = readFileSync(join(REPO_ROOT, 'supabase/migrations/0098_franchise_core.sql'), 'utf8');
   const sql0099 = readFileSync(join(REPO_ROOT, 'supabase/migrations/0099_franchise_core_rls.sql'), 'utf8');
