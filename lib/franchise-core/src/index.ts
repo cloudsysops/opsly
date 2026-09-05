@@ -22,6 +22,11 @@ export {
   type RoyaltyCalculation,
   type RoyaltyPayment,
   type BrandStandard,
+  type FranchiseAudit,
+  type AuditFinding,
+  type CorrectiveAction,
+  type FranchiseRole,
+  type AgreementStatus,
 } from './types.js';
 
 // ─── royalty.ts ────────────────────────────────────────────
@@ -65,7 +70,6 @@ export {
   isAgreementStatus,
   canTransitionAgreement,
   type DerivedAgreementStatusInput,
-  type AgreementStatus,
   deriveAgreementStatus,
   type ExpiryAlertLevel,
   type ExpiryAlert,
