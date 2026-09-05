@@ -30,6 +30,16 @@ test('bitsitos and splashitos batches parse and have unique draft ids', () => {
   assert.equal(new Set(splashitos).size, splashitos.length, 'duplicate Splashitos draft ids');
 });
 
+test('opsly universe batch is wired for PC-gamer rendering', () => {
+  const universe = batchIds('opsly-universe');
+  assert.ok(universe.length >= 4, `expected universe drafts, got ${universe.length}`);
+  assert.equal(new Set(universe).size, universe.length, 'duplicate Universe draft ids');
+
+  const channels = loadJson('config/content-studio/youtube-channels.json');
+  assert.equal(channels.channels['opsly-universe'].batch_dir, 'config/content-studio/channels/opsly-universe');
+  assert.equal(channels.channels['opsly-universe'].approval_required, true);
+});
+
 test('youtube publish plan ids exist in channel batches', () => {
   const plan = loadJson('config/content-studio/youtube-publish-plan.json');
   const bitsitos = new Set(batchIds('bitsitos'));
@@ -57,12 +67,13 @@ test('overnight backlog auto-tasks are gamer-safe kinds', () => {
   assert.ok(kinds.has('content_video'));
   for (const t of backlog.tasks) {
     if (t.kind === 'content_video') {
-      assert.ok(['bitsitos', 'splashitos'].includes(t.channel), t.id);
+      assert.ok(['bitsitos', 'splashitos', 'opsly-universe'].includes(t.channel), t.id);
       assert.ok(['light', 'heavy'].includes(t.min_mode), t.id);
     }
   }
   const ids = backlog.tasks.map((t) => t.id);
   assert.ok(ids.includes('canvas-content-studio-bitsitos'));
+  assert.ok(ids.includes('canvas-content-studio-opsly-universe'));
   assert.ok(existsSync(join(root, 'scripts/ops/pc-gamer-watch.sh')));
 });
 

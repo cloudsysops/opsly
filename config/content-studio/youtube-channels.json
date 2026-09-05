@@ -14,7 +14,8 @@
     "education": { "channel": "bitsitos", "batches": ["batch-01", "batch-03", "longform-04"] },
     "entertainment": { "channel": "bitsitos", "batches": ["batch-02-games", "batch-03", "longform-04"] },
     "sports": { "channel": "splashitos", "batches": ["batch-01-swim", "batch-02-deporte", "longform-04"] },
-    "tech_ai": { "channel": "bitsitos", "batches": ["batch-01", "batch-02"] }
+    "tech_ai": { "channel": "bitsitos", "batches": ["batch-01", "batch-02"] },
+    "story_worlds": { "channel": "opsly-universe", "batches": ["batch-01-portals"] }
   },
   "channels": {
     "bitsitos": {
@@ -42,6 +43,20 @@
       "monetization_goal": "youtube_partner_then_peskids_license",
       "playlists": ["Natación", "Deporte en casa", "Seguridad"],
       "notes": "Crear canal Splashitos; pegar ID. Deporte + agua."
+    },
+    "opsly-universe": {
+      "brand": "Opsly Universe",
+      "slug": "opsly-universe",
+      "niche": "stories_worlds_games",
+      "youtube_channel_id": "",
+      "studio_url": "",
+      "kit_dir": "runtime/content-studio/youtube-upload-kit/opsly-universe",
+      "batch_dir": "config/content-studio/channels/opsly-universe",
+      "doppler_prefix": "YOUTUBE_OPSLY_UNIVERSE",
+      "approval_required": true,
+      "monetization_goal": "universe_storytelling_and_games",
+      "playlists": ["Portales", "Personajes", "Mundos", "Juegos"],
+      "notes": "Historias originales del canon Opsly Universe; requiere canal y revisión humana antes de publicar."
     }
   },
   "doppler_secrets": {

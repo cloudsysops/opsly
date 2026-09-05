@@ -26,6 +26,14 @@
       "description": "Canvas/factory: render Splashitos en PC-gamer"
     },
     {
+      "id": "canvas-content-studio-opsly-universe",
+      "kind": "content_video",
+      "agent": "content-video",
+      "channel": "opsly-universe",
+      "min_mode": "light",
+      "description": "Universe/factory: render historias y personajes en PC-gamer"
+    },
+    {
       "id": "overnight-backlog-triage",
       "kind": "opencode",
       "agent": "opencode",

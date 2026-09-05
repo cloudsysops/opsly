@@ -1,7 +1,7 @@
 {
   "version": 2,
   "updated_at": "2026-09-05",
-  "mission": "ICSO YouTube Content Factory — Bitsitos + Splashitos (not Peskids)",
+  "mission": "ICSO YouTube Content Factory — Bitsitos + Splashitos + Opsly Universe (not Peskids)",
   "constraints": {
     "no_peskids_branding": true,
     "no_vps_heavy_daytime": true,
