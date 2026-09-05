@@ -1,22 +1,37 @@
 {
-  "$schema_comment": "Backlog ocioso para el PC-gamer worker (autodispatch overnight). Correr SOLO con PLATFORM_ADMIN_TOKEN vía Doppler (nunca en el gamer).",
+  "$schema_comment": "Backlog automático cuando el PC-gamer enciende. Correr vía Doppler en el Mac (nunca secrets en el gamer). kind=content_video | opencode. Canvas Peskids/VPS NO van aquí.",
   "owner": "icso",
-  "updated": "2026-08-16",
+  "updated": "2026-09-05",
   "timezone": "America/Bogota",
+  "canvas_excluded": [
+    "peskids-opsly-e2e-gaps: flags n8n / Doppler / noche — humano",
+    "webhooks-ai-docker-audit: caps VPS / n8n crash — no GPU",
+    "opsly-platform-status: Franchise core / AGENTS.md — decisión humana"
+  ],
   "tasks": [
     {
+      "id": "canvas-content-studio-bitsitos",
+      "kind": "content_video",
+      "agent": "content-video",
+      "channel": "bitsitos",
+      "min_mode": "light",
+      "description": "Canvas/factory: render Bitsitos en PC-gamer (queue content-video, MPT localhost)"
+    },
+    {
+      "id": "canvas-content-studio-splashitos",
+      "kind": "content_video",
+      "agent": "content-video",
+      "channel": "splashitos",
+      "min_mode": "light",
+      "description": "Canvas/factory: render Splashitos en PC-gamer"
+    },
+    {
       "id": "overnight-backlog-triage",
+      "kind": "opencode",
       "agent": "opencode",
       "prompt_file": "scripts/ops/prompts/overnight-backlog-triage.md",
       "min_mode": "heavy",
-      "description": "Triage de backlog (issues/PRs/TODOs) → PR segura overnight en rama overnight/*"
-    },
-    {
-      "id": "overnight-content-studio",
-      "agent": "opencode",
-      "prompt_file": "scripts/ops/prompts/overnight-content-studio.md",
-      "min_mode": "heavy",
-      "description": "Render/pipeline de Content Studio (Splashitos/bitsitos) → kit de subida para revisión humana"
+      "description": "Triage issues/PRs/TODOs → PR overnight/* (solo heavy; no martillar governor)"
     }
   ]
 }

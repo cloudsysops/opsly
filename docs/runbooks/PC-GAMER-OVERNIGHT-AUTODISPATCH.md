@@ -1,7 +1,7 @@
 ---
 status: active
 owner: operations
-last_review: 2026-08-16
+last_review: 2026-09-05
 type: runbook
 tags:
   - opsly/infrastructure
@@ -12,38 +12,41 @@ tags:
 
 # PC-gamer — Overnight Autodispatch
 
-Cómo el **Mac operador** descubre que el PC-gamer está online y encola
-automáticamente trabajo del backlog ocioso (cola BullMQ `local-agents` del VPS),
-respetando el **calendario de Mauro** (`config/pc-gamer-schedule.json`).
+Cómo el **Mac operador** descubre que el PC-gamer **encendió** y encola
+trabajo solo: no esperes a decirle a un agente en el chat.
 
-**No es un orquestador nuevo** — reutiliza:
+Dos LaunchAgents (cada 5 min):
 
-- `check-pc-gamer-online.sh` (detección online: Tailscale + `/health` + heartbeat)
-- `pc-gamer-schedule.sh` (modo gaming/light/heavy + allow/deny)
-- `enqueue-overnight-opencode.sh` (POST `/api/local/prompt-submit` → VPS Redis)
-- Worker BullMQ `local-agents` del nodo (`unified-local-agent-worker.ts`)
+1. `com.opsly.pcgamerwatch` → `scripts/ops/pc-gamer-watch.sh`  
+   Tailscale aparece → reconnect `--with-content` → rising edge → autodispatch.
+2. `com.opsly.pc-gamer-autodispatch` → Doppler + `overnight-autodispatch.sh`  
+   Si ya hay SSH o health, encola backlog.
+
+**Listo ≠ heartbeat Redis.** Un heartbeat stale no dispara trabajo.
+Listo = `ssh=true` **o** `health=true`.
+
+**No es un orquestador nuevo** — reutiliza check-online, schedule, enqueue
+content-video (`content-studio-enqueue.sh`) y OpenCode (`prompt-submit`).
 
 ## Flujo
 
 ```text
-launchd cada 5 min (Mac)          (o cron / VPS)
+launchd 5 min
         │
-        ▼
-./scripts/ops/overnight-autodispatch.sh -- [doppler run]
+        ├─ pc-gamer-watch.sh
+        │     Tailscale offline → wait
+        │     Tailscale up + SSH/health down → reconnect --with-content
+        │     rising edge (apagado → listo) → overnight-autodispatch.sh
         │
-        ├─ schedule: ¿modo permite opencode?  ── no ─► exit 2 (semaforizado)
-        │                                              notify Discord warn
-        ├─ online: ¿pc-gamer health OK / heartbeat?  ── no ─► exit 2 (difiere)
-        │
-        ▼
-revisa config/overnight-backlog.json (tareas ociosas, min_mode)
-        ▼  por tarea elegible
-dedupe vs runtime/opencode-overnight/state.json
-        ▼  pasa el gate
-enqueue-overnight-opencode.sh  →  cola local-agents (VPS Redis)
-        ▼
-mark "active" + notify Discord success        (el worker la consume cuando corre)
+        └─ overnight-autodispatch.sh (Doppler)
+              SSH o health? ── no ─► exit 2
+              modo gaming? ── sí ─► exit 2
+              backlog:
+                kind=content_video → cola content-video (Bitsitos/Splashitos)
+                kind=opencode → local-agents (solo heavy; no reintenta failed)
 ```
+
+Canvas Peskids (flags n8n), VPS RAM y Franchise **no** se encolan.
 
 El encolado es **asíncrono**: si el nodo cae justo después de encolar, el job
 espera en la cola persistente de Redis y lo toma el worker `local-agents` cuando

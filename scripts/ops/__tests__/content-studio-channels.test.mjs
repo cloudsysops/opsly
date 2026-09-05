@@ -50,6 +50,22 @@ test('youtube-channels.json points at existing batch dirs', () => {
   assert.match(channels.channels.bitsitos.youtube_channel_id, /^UC/);
 });
 
+test('overnight backlog auto-tasks are gamer-safe kinds', () => {
+  const backlog = loadJson('config/overnight-backlog.json');
+  assert.ok(Array.isArray(backlog.tasks));
+  const kinds = new Set(backlog.tasks.map((t) => t.kind));
+  assert.ok(kinds.has('content_video'));
+  for (const t of backlog.tasks) {
+    if (t.kind === 'content_video') {
+      assert.ok(['bitsitos', 'splashitos'].includes(t.channel), t.id);
+      assert.ok(['light', 'heavy'].includes(t.min_mode), t.id);
+    }
+  }
+  const ids = backlog.tasks.map((t) => t.id);
+  assert.ok(ids.includes('canvas-content-studio-bitsitos'));
+  assert.ok(existsSync(join(root, 'scripts/ops/pc-gamer-watch.sh')));
+});
+
 test('content studio renders only on pc-gamer and schedule allows content_video', () => {
   const agents = loadJson('config/content-studio/content-agents.json');
   assert.deepEqual(agents.constraints.render_hosts, ['pc-gamer']);
