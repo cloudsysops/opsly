@@ -122,7 +122,7 @@ describe('DunningService', () => {
   });
 
   describe('getDunningStatus', () => {
-    it('returns none level when no failures recorded', () => {
+    it('returns none level when no failures recorded', async () => {
       const status = await svc.getDunningStatus(TENANT_ID);
 
       expect(status.failureCount).toBe(0);
@@ -163,7 +163,7 @@ describe('DunningService', () => {
   describe('clearFailures', () => {
     it('resets failure count on payment success', async () => {
       await svc.recordPaymentFailure(TENANT_ID, TENANT_SLUG);
-      expect(await svc.getDunningStatus(TENANT_ID).failureCount).toBe(1);
+      expect((await svc.getDunningStatus(TENANT_ID)).failureCount).toBe(1);
 
       await svc.clearFailures(TENANT_ID);
 
@@ -176,17 +176,17 @@ describe('DunningService', () => {
       for (let i = 0; i < 3; i++) {
         await svc.recordPaymentFailure(TENANT_ID, TENANT_SLUG);
       }
-      expect(await svc.getDunningStatus(TENANT_ID).failureCount).toBe(3);
+      expect((await svc.getDunningStatus(TENANT_ID)).failureCount).toBe(3);
 
       await svc.clearFailures(TENANT_ID);
       await svc.recordPaymentFailure(TENANT_ID, TENANT_SLUG);
 
-      expect(await svc.getDunningStatus(TENANT_ID).failureCount).toBe(1);
+      expect((await svc.getDunningStatus(TENANT_ID)).failureCount).toBe(1);
     });
   });
 
   describe('getStatsForAdmin', () => {
-    it('returns zero stats when no tenants tracked', () => {
+    it('returns zero stats when no tenants tracked', async () => {
       const stats = await svc.getStatsForAdmin();
 
       expect(stats.total).toBe(0);
