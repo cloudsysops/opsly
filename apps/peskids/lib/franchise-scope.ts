@@ -11,6 +11,8 @@
 
 import { PESKIDS_TENANT_SLUG } from './franchise-constants';
 import { supabaseServerUntypedSchema } from './supabase';
+import { tenantRoleFromUserMetadata } from './runtime/tenant-identity';
+import type { StaffAuthResult } from './staff-auth';
 
 export type FranchiseScope = 'all' | string[];
 
@@ -91,4 +93,57 @@ export function isFranchiseVisible(scope: FranchiseScope, franchiseId: string | 
   if (scope === 'all') return true;
   if (!franchiseId) return false;
   return scope.includes(franchiseId);
+}
+
+/**
+ * Franchise scope for a staff session.
+ *
+ * `method: 'secret'` is the shared DASHBOARD_ADMIN_SECRET (the tenant owner
+ * credential), so it sees the whole network. Everything else is resolved from
+ * the Supabase user's role plus their membership rows — never from anything the
+ * client sent.
+ */
+export async function resolveStaffFranchiseScope(auth: StaffAuthResult): Promise<FranchiseScope> {
+  if (!auth.ok) return [];
+  if (auth.method === 'secret' && !auth.user) return 'all';
+  if (!auth.user) return [];
+  return resolveFranchiseScope(auth.user.id, tenantRoleFromUserMetadata(auth.user));
+}
+
+export type ResolvedFranchiseFilter =
+  | { ok: true; franchiseId: string | null }
+  | { ok: false; status: 403; reason: 'franchise_forbidden' }
+  | { ok: false; status: 400; reason: 'franchise_required' };
+
+/**
+ * Decides which `franchise_id` a request may actually read, given the scope the
+ * server derived for the session and whatever the client asked for.
+ *
+ * Pure so the rule is unit-testable in isolation:
+ *  - global scope: honour the request (null means "the whole network")
+ *  - no scope at all: refuse
+ *  - scoped + explicit request: must be inside the scope, else 403
+ *  - scoped + no request: fall back to the single franchise in scope; if there
+ *    is more than one, require the caller to name one rather than silently
+ *    widening to the whole network
+ */
+export function resolveFranchiseFilter(
+  scope: FranchiseScope,
+  requestedFranchiseId: string | null
+): ResolvedFranchiseFilter {
+  if (scope === 'all') {
+    return { ok: true, franchiseId: requestedFranchiseId };
+  }
+  if (scope.length === 0) {
+    return { ok: false, status: 403, reason: 'franchise_forbidden' };
+  }
+  if (requestedFranchiseId) {
+    return scope.includes(requestedFranchiseId)
+      ? { ok: true, franchiseId: requestedFranchiseId }
+      : { ok: false, status: 403, reason: 'franchise_forbidden' };
+  }
+  if (scope.length === 1) {
+    return { ok: true, franchiseId: scope[0] };
+  }
+  return { ok: false, status: 400, reason: 'franchise_required' };
 }
