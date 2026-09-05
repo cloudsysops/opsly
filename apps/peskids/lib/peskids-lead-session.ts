@@ -114,7 +114,7 @@ function familySummaryLines(options?: PostLeadWhatsAppPrefillOptions): string[] 
   const documentNumber = trimOrNull(options?.document_number);
   const neighborhood = trimOrNull(options?.neighborhood);
   const lines: string[] = [];
-  if (ageRange) lines.push(`👧 Edad del niño/a: ${formatAgeRange(ageRange)}`);
+  if (ageRange) lines.push(`👧 Edad del niño: ${formatAgeRange(ageRange)}`);
   if (modality) lines.push(`🏊 Modalidad: ${modality}`);
   if (childName) lines.push(`👶 Niño/a: ${childName}`);
   if (birthDate) lines.push(`🎂 Fecha de nacimiento: ${birthDate}`);
