@@ -56,6 +56,9 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "app/api/admin/franchises/**",
+    "app/api/admin/franchise-os/**",
+    "lib/franchise/**"
   ]
 }
