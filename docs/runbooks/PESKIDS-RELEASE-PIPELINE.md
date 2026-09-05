@@ -29,8 +29,9 @@ environment `production` aprobado y ventana 22:00–06:00 `America/Bogota`.
 Promueve la misma imagen; nunca recompila. Luego verifica health público,
 homepage, login y SHA/tag. Si falla, restaura el último tag SHA conocido.
 
-El environment `staging` requiere SSH, `DOPPLER_TOKEN_STG`, dominio y Supabase
-de staging. `production` requiere SSH, `DOPPLER_TOKEN_PRD` y reviewers. Si falta
+El environment `staging` requiere SSH, `DOPPLER_TOKEN_STG`, dominio y
+`STAGING_NEXT_PUBLIC_SUPABASE_URL`/`STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+`production` requiere SSH, `DOPPLER_TOKEN_PRD` y reviewers. Si falta
 configuración, el workflow falla cerrado. No se usa `latest`.
 
 `night-merge` queda como compatibilidad para PRs antiguos; ya no es necesario

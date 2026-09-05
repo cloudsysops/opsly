@@ -27,6 +27,7 @@ jobs:
   build:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+    environment: staging
     outputs:
       sha: ${{ steps.ref.outputs.sha }}
       image: ghcr.io/cloudsysops/peskids:sha-${{ steps.ref.outputs.sha }}
@@ -54,6 +55,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
+      - name: Validate staging-only public configuration
+        env:
+          STAGING_SUPABASE_URL: ${{ secrets.STAGING_NEXT_PUBLIC_SUPABASE_URL }}
+          STAGING_SUPABASE_ANON_KEY: ${{ secrets.STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          set -euo pipefail
+          [ -n "$STAGING_SUPABASE_URL" ] || { echo "Missing STAGING_NEXT_PUBLIC_SUPABASE_URL in staging environment" >&2; exit 1; }
+          [ -n "$STAGING_SUPABASE_ANON_KEY" ] || { echo "Missing STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY in staging environment" >&2; exit 1; }
+
       - name: Build immutable Peskids image
         id: build-image
         uses: docker/build-push-action@v5
@@ -63,13 +73,13 @@ jobs:
           push: true
           tags: ghcr.io/cloudsysops/peskids:sha-${{ steps.ref.outputs.sha }}
           build-args: |
-            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.STAGING_NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY }}
             NEXT_PUBLIC_PESKIDS_SITE_URL=https://peskids-staging.${{ secrets.STAGING_PLATFORM_DOMAIN }}
-            NEXT_PUBLIC_PESKIDS_CONTACT_EMAIL=${{ secrets.NEXT_PUBLIC_PESKIDS_CONTACT_EMAIL }}
-            NEXT_PUBLIC_PESKIDS_WHATSAPP_E164=${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_E164 }}
-            NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY=${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY }}
-            NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL=${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL }}
+            NEXT_PUBLIC_PESKIDS_CONTACT_EMAIL=${{ secrets.STAGING_NEXT_PUBLIC_PESKIDS_CONTACT_EMAIL }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_E164=${{ secrets.STAGING_NEXT_PUBLIC_PESKIDS_WHATSAPP_E164 }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY=${{ secrets.STAGING_NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL=${{ secrets.STAGING_NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL }}
             PESKIDS_GIT_SHA=${{ steps.ref.outputs.sha }}
             PESKIDS_IMAGE_TAG=ghcr.io/cloudsysops/peskids:sha-${{ steps.ref.outputs.sha }}
 
