@@ -339,7 +339,6 @@ export function LeadCaptureForm({
       const parsedFamily = formParsed.data as {
         child_name?: string
         neighborhood?: string
-        grade_interested?: string
         company_name?: string
       }
 
@@ -353,7 +352,6 @@ export function LeadCaptureForm({
         birth_date: leadType === 'family' ? formData.birth_date : null,
         document_number: leadType === 'family' ? formData.document_number : null,
         neighborhood: parsedFamily.neighborhood ?? null,
-        grade_interested: parsedFamily.grade_interested ?? null,
         company_name: parsedFamily.company_name ?? null,
         company_nit: leadType === 'company' ? formData.company_nit || null : null,
         contact_role: leadType === 'company' ? formData.contact_role || formData.name : null,

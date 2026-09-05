@@ -14,7 +14,8 @@ describe('peskids-lead-session', () => {
       email: 'maria@example.com',
       phone: '3001234567',
       child_name: 'Sofía',
-      grade_interested: 'K-5',
+      birth_date: '2018-05-10',
+      document_number: '123456789',
       lead_id: 'lead-abc',
       siteBaseUrl: 'https://www.peskids.com',
     });
@@ -23,6 +24,9 @@ describe('peskids-lead-session', () => {
     expect(text).toContain('maria@example.com');
     expect(text).toContain('3001234567');
     expect(text).toContain('Sofía');
+    expect(text).toMatch(/👧 Edad del niño: \d+ años/);
+    expect(text).toContain('🎂 Fecha de nacimiento: 2018-05-10');
+    expect(text).toContain('🧾 Cédula del acudiente: 123456789');
     expect(text).toContain('Sede Llanogrande');
     expect(text).toContain('🔗 Abrir lead en Peskids: https://www.peskids.com/admin/interesados/lead-abc');
     expect(text).not.toContain('Referencia de solicitud:');
@@ -45,6 +49,8 @@ describe('peskids-lead-session', () => {
       email: null,
       phone: null,
       child_name: null,
+      birth_date: null,
+      document_number: null,
       neighborhood: null,
       grade_interested: null,
       company_name: null,
