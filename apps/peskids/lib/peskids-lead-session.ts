@@ -12,6 +12,8 @@ export type PeskidsLeadSession = {
   email?: string | null;
   phone?: string | null;
   child_name?: string | null;
+  birth_date?: string | null;
+  document_number?: string | null;
   neighborhood?: string | null;
   grade_interested?: string | null;
   company_name?: string | null;
@@ -30,6 +32,8 @@ export type PostLeadWhatsAppPrefillOptions = {
   email?: string | null;
   phone?: string | null;
   child_name?: string | null;
+  birth_date?: string | null;
+  document_number?: string | null;
   neighborhood?: string | null;
   grade_interested?: string | null;
   company_name?: string | null;
@@ -104,11 +108,15 @@ function familySummaryLines(options?: PostLeadWhatsAppPrefillOptions): string[] 
   const modality = modalityLabel(options?.class_modality);
   const grade = trimOrNull(options?.grade_interested);
   const childName = trimOrNull(options?.child_name);
+  const birthDate = trimOrNull(options?.birth_date);
+  const documentNumber = trimOrNull(options?.document_number);
   const neighborhood = trimOrNull(options?.neighborhood);
   const lines: string[] = [];
   if (grade) lines.push(`👧 Grado interesado: ${grade}`);
   if (modality) lines.push(`🏊 Modalidad: ${modality}`);
   if (childName) lines.push(`👶 Niño/a: ${childName}`);
+  if (birthDate) lines.push(`🎂 Fecha de nacimiento: ${birthDate}`);
+  if (documentNumber) lines.push(`🧾 Cédula del acudiente: ${documentNumber}`);
   if (neighborhood) lines.push(`📍 Barrio / zona: ${neighborhood}`);
   return lines;
 }
@@ -174,6 +182,9 @@ export function parsePeskidsLeadSession(raw: string | null): PeskidsLeadSession 
       email: typeof session.email === 'string' ? session.email : null,
       phone: typeof session.phone === 'string' ? session.phone : null,
       child_name: typeof session.child_name === 'string' ? session.child_name : null,
+      birth_date: typeof session.birth_date === 'string' ? session.birth_date : null,
+      document_number:
+        typeof session.document_number === 'string' ? session.document_number : null,
       neighborhood: typeof session.neighborhood === 'string' ? session.neighborhood : null,
       grade_interested:
         typeof session.grade_interested === 'string' ? session.grade_interested : null,
@@ -217,6 +228,8 @@ export function writePeskidsLeadSession(
     email: trimOrNull(options?.email),
     phone: trimOrNull(options?.phone),
     child_name: trimOrNull(options?.child_name),
+    birth_date: trimOrNull(options?.birth_date),
+    document_number: trimOrNull(options?.document_number),
     neighborhood: trimOrNull(options?.neighborhood),
     grade_interested: trimOrNull(options?.grade_interested),
     company_name: trimOrNull(options?.company_name),
@@ -239,6 +252,8 @@ export function buildPostLeadWhatsAppPrefillFromSession(session: PeskidsLeadSess
     email: session.email,
     phone: session.phone,
     child_name: session.child_name,
+    birth_date: session.birth_date,
+    document_number: session.document_number,
     neighborhood: session.neighborhood,
     grade_interested: session.grade_interested,
     company_name: session.company_name,

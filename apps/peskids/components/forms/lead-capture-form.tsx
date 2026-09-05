@@ -350,6 +350,8 @@ export function LeadCaptureForm({
         email: formParsed.data.email,
         phone: formParsed.data.phone,
         child_name: parsedFamily.child_name ?? null,
+        birth_date: leadType === 'family' ? formData.birth_date : null,
+        document_number: leadType === 'family' ? formData.document_number : null,
         neighborhood: parsedFamily.neighborhood ?? null,
         grade_interested: parsedFamily.grade_interested ?? null,
         company_name: parsedFamily.company_name ?? null,
