@@ -6,10 +6,13 @@
 # Usage:
 #   ./scripts/content-studio-enqueue.sh --channel bitsitos --dry-run
 #   ./scripts/content-studio-enqueue.sh --channel bitsitos --batch config/content-studio/channels/bitsitos/batch-02-ai-agents-games.json --dry-run
-#   REDIS_URL=redis://… MONEY_PRINTER_TURBO_URL=http://gamer:8080 ./scripts/content-studio-enqueue.sh --channel bitsitos
+#   REDIS_URL=redis://… ./scripts/content-studio-enqueue.sh --channel bitsitos
+# Jobs always target worker-local MoneyPrinter (http://127.0.0.1:8080 on PC-gamer).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# shellcheck disable=SC1091
+source "$ROOT/scripts/ops/content-studio-gamer-env.sh"
 CHANNEL="bitsitos"
 DRY_RUN=0
 BATCH_OVERRIDE=""
@@ -87,6 +90,7 @@ fi
 export CONTENT_TENANT_SLUG="${CONTENT_TENANT_SLUG:-icso-${CHANNEL}}"
 export CHANNEL_DIR
 export BATCH_OVERRIDE
+echo "enqueue MoneyPrinter (worker-local)=${MONEY_PRINTER_TURBO_URL}"
 node --input-type=module <<'EOF'
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';

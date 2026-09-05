@@ -7,6 +7,7 @@
 #   ./scripts/ops/pc-gamer-reconnect.sh
 #   ./scripts/ops/pc-gamer-reconnect.sh --wait 600
 #   ./scripts/ops/pc-gamer-reconnect.sh --use-host-ollama
+#   ./scripts/ops/pc-gamer-reconnect.sh --with-content
 #   ./scripts/ops/pc-gamer-reconnect.sh --with-opencode
 #
 set -euo pipefail
@@ -16,9 +17,10 @@ WAIT_SEC=0
 USE_HOST_OLLAMA=false
 PULL_MODEL=false
 WITH_OPENCODE=false
+WITH_CONTENT=false
 SSH_HOST="${PC_GAMER_SSH_HOST:-pc-gamer}"
 REMOTE_ROOT="${PC_GAMER_OPSLY_ROOT:-/home/devops/opsly}"
-BRANCH="${PC_GAMER_BRANCH:-feat/pc-gamer-worker-plane}"
+BRANCH="${PC_GAMER_BRANCH:-feat/content-studio-youtube}"
 
 for arg in "$@"; do
   case "$arg" in
@@ -32,6 +34,7 @@ for arg in "$@"; do
     --use-host-ollama) USE_HOST_OLLAMA=true ;;
     --pull-model) PULL_MODEL=true ;;
     --with-opencode) WITH_OPENCODE=true ;;
+    --with-content) WITH_CONTENT=true ;;
     -h|--help)
       sed -n '2,18p' "$0"
       exit 0
@@ -91,11 +94,12 @@ echo "[reconnect] host=$SSH_HOST branch=$BRANCH"
 PLANE_ARGS=(--up --install-autostart)
 [[ "$PULL_MODEL" == "true" ]] && PLANE_ARGS+=(--pull-model)
 [[ "$USE_HOST_OLLAMA" == "true" ]] && PLANE_ARGS+=(--use-host-ollama)
+[[ "$WITH_CONTENT" == "true" ]] && PLANE_ARGS+=(--with-content)
 PLANE_ARGS_STR="${PLANE_ARGS[*]}"
 
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "[dry-run] skip SSH wait / remote plane"
-  echo "[dry-run] would: git pull ${BRANCH}; docker-plane ${PLANE_ARGS_STR}; with_opencode=${WITH_OPENCODE}"
+  echo "[dry-run] would: git pull ${BRANCH}; docker-plane ${PLANE_ARGS_STR}; with_content=${WITH_CONTENT}; with_opencode=${WITH_OPENCODE}"
   if [[ "$WITH_OPENCODE" == "true" ]]; then
     echo "[dry-run] would: pc-gamer-opencode-plane.sh --up --install-autostart"
   fi
@@ -150,4 +154,4 @@ else
   ./scripts/ops/check-pc-gamer-online.sh --json || true
 fi
 
-echo "[reconnect] done — enqueue ollama/OpenCode only if online=true"
+echo "[reconnect] done — enqueue ollama/content-video only if online=true"

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Content Factory bootstrap — Mac primary + optional PC-gamer GPU.
-# Does NOT deploy VPS. Does NOT use Peskids branding.
+# Content Factory bootstrap — PC-gamer is the only render host.
+# Mac enqueue + kits + YouTube approval. Does NOT deploy VPS. Does NOT use Peskids branding.
 #
 # Usage:
 #   ./scripts/content-factory-bootstrap.sh --dry-run
-#   ./scripts/content-factory-bootstrap.sh --mac-bridge
-#   ./scripts/content-factory-bootstrap.sh --mac-bridge --rebuild-kits
-#   ./scripts/content-factory-bootstrap.sh --gamer-up   # needs Tailscale + SSH
+#   ./scripts/content-factory-bootstrap.sh --gamer-up
+#   ./scripts/content-factory-bootstrap.sh --rebuild-kits
 #   ./scripts/content-factory-bootstrap.sh --watch-oauth
+#   ./scripts/content-factory-bootstrap.sh --mac-bridge   # emergency only
 #
 set -euo pipefail
 
@@ -40,6 +40,11 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# Default: bring the gamer content plane up (no Mac render).
+if [[ "$MAC_BRIDGE" -eq 0 && "$REBUILD_KITS" -eq 0 && "$GAMER_UP" -eq 0 && "$WATCH_OAUTH" -eq 0 && "$GEN_ASSETS" -eq 0 ]]; then
+  GAMER_UP=1
+fi
+
 run() {
   if [[ "$DRY_RUN" -eq 1 ]]; then
     echo "[dry-run] $*"
@@ -49,9 +54,9 @@ run() {
 }
 
 echo "[content-factory] root=$ROOT"
-echo "[content-factory] capacity: VPS alert active → no heavy VPS deploy; render on Mac/gamer"
+echo "[content-factory] render host=pc-gamer (Mac does not start MoneyPrinter by default)"
 
-if [[ "$GEN_ASSETS" -eq 1 || "$MAC_BRIDGE" -eq 1 ]]; then
+if [[ "$GEN_ASSETS" -eq 1 ]]; then
   run mkdir -p runtime/content-studio/brand-assets
   if [[ "$DRY_RUN" -eq 0 ]]; then
     if ! command -v magick >/dev/null 2>&1; then
@@ -77,6 +82,7 @@ if [[ "$GEN_ASSETS" -eq 1 || "$MAC_BRIDGE" -eq 1 ]]; then
 fi
 
 if [[ "$MAC_BRIDGE" -eq 1 ]]; then
+  echo "[content-factory] WARNING: --mac-bridge is emergency-only. Default render is PC-gamer." >&2
   run mkdir -p runtime/content-studio/renders
   if [[ "$DRY_RUN" -eq 0 ]]; then
     if ! curl -sf --max-time 2 http://127.0.0.1:8080/health >/dev/null 2>&1; then
@@ -87,35 +93,34 @@ if [[ "$MAC_BRIDGE" -eq 1 ]]; then
     curl -sf --max-time 3 http://127.0.0.1:8080/health
     echo
   else
-    echo "[dry-run] start moneyprinter-bridge :8080"
+    echo "[dry-run] emergency moneyprinter-bridge :8080"
   fi
 fi
 
 if [[ "$REBUILD_KITS" -eq 1 ]]; then
+  run ./scripts/ops/content-studio-sync-renders.sh
   run ./scripts/content-studio-publish-youtube.sh --channel bitsitos --kit
   run ./scripts/content-studio-publish-youtube.sh --channel splashitos --kit
 fi
 
 if [[ "$GAMER_UP" -eq 1 ]]; then
-  echo "[content-factory] Checking PC-gamer…"
+  echo "[content-factory] Bringing PC-gamer content plane…"
+  RECONNECT=(./scripts/ops/pc-gamer-reconnect.sh --use-host-ollama --with-content)
   if [[ "$DRY_RUN" -eq 1 ]]; then
-    echo "[dry-run] ./scripts/ops/check-pc-gamer-online.sh --json"
-    echo "[dry-run] ssh → ./scripts/ops/pc-gamer-docker-plane.sh --up --with-content"
-    exit 0
+    echo "[dry-run] ${RECONNECT[*]}"
+  else
+    if [[ -x ./scripts/ops/check-pc-gamer-online.sh ]]; then
+      ./scripts/ops/check-pc-gamer-online.sh --json || true
+    fi
+    export PC_GAMER_BRANCH="${PC_GAMER_BRANCH:-feat/content-studio-youtube}"
+    if ! "${RECONNECT[@]}"; then
+      echo "[content-factory] PC-gamer OFFLINE or plane failed." >&2
+      echo "  Encender el PC + Tailscale + WSL Ubuntu, luego reintenta --gamer-up" >&2
+      echo "  Doc: docs/04-infrastructure/PC-GAMER-WORKER.md" >&2
+      echo "  Manual WSL: cd ~/opsly && git pull --ff-only && ./scripts/ops/pc-gamer-docker-plane.sh --up --use-host-ollama --with-content" >&2
+      exit 2
+    fi
   fi
-  if ! ./scripts/ops/check-pc-gamer-online.sh --json | grep -q '"ssh":true'; then
-    echo "[content-factory] PC-gamer OFFLINE. Enciéndelo + Tailscale, luego reintenta --gamer-up" >&2
-    echo "  Doc: docs/04-infrastructure/PC-GAMER-WORKER.md" >&2
-    exit 2
-  fi
-  # Host alias from check script / ssh config
-  GAMER_HOST="${PC_GAMER_SSH_HOST:-pc-gamer}"
-  ssh -o BatchMode=yes -o ConnectTimeout=20 "$GAMER_HOST" \
-    "cd ~/opsly && git pull --ff-only && ./scripts/ops/pc-gamer-docker-plane.sh --up --with-content" || {
-      echo "[content-factory] SSH/plane failed. Manual on WSL:" >&2
-      echo "  cd ~/opsly && ./scripts/ops/pc-gamer-docker-plane.sh --up --with-content" >&2
-      exit 3
-    }
 fi
 
 if [[ "$WATCH_OAUTH" -eq 1 ]]; then

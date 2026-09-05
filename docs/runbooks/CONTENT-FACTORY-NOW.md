@@ -7,35 +7,53 @@ type: runbook
 
 # Content Factory — arranque completo (Bitsitos + Splashitos)
 
-> **Capacidad VPS:** alerta activa (~4 GiB). No deploy pesado de día. Render = **Mac** o **PC gamer**.
+> **Capacidad VPS:** alerta activa (~4 GiB). No deploy pesado de día. Render = **solo PC-gamer**. Mac encola, sincroniza MP4s y arma el kit. YouTube sigue approval-first.
 
 ## Estado objetivo
 
 | Pieza | Quién | Status |
 |-------|-------|--------|
-| Shorts edu/ent/tech | Mac bridge | Kits listos |
-| Shorts deporte | Mac bridge | Kits listos |
-| Long ~2.5 min | Mac bridge | batch-04 |
-| Imágenes/escenas | bridge gradients + brand bar | Mejorado |
-| Avatar/banner | `runtime/content-studio/brand-assets/` | Generar con bootstrap |
-| PC gamer content-video | WSL Docker `--with-content` | Offline hasta encender |
-| OAuth → Doppler → upload API | Humano + script | Bloqueado hasta `json listo` |
-| Agentes | `config/content-studio/content-agents.json` | Roster |
+| Shorts + long | PC-gamer `content-video` + MoneyPrinter `:8080` | Requiere PC encendido |
+| Enqueue / Redis | Mac + Doppler `REDIS_URL` | Job `mpt_base_url=http://127.0.0.1:8080` |
+| Kits YouTube | Mac tras `content-studio-sync-renders.sh` | Approval-first |
+| Avatar/banner | `runtime/content-studio/brand-assets/` | `--gen-assets` en Mac (ImageMagick) |
+| OAuth → Doppler → upload API | Humano + script | No `--upload` sin draft nombrado |
+| Agentes | `config/content-studio/content-agents.json` | Roster gamer-only |
 
-## 1) Mac ahora (sin gamer)
+## 1) PC-gamer (obligatorio para render)
 
 ```bash
-chmod +x scripts/content-factory-bootstrap.sh
-./scripts/content-factory-bootstrap.sh --mac-bridge --gen-assets --rebuild-kits
+./scripts/ops/check-pc-gamer-online.sh --json
+npm run content:factory              # = --gamer-up
+# o:
+./scripts/ops/pc-gamer-reconnect.sh --use-host-ollama --with-content
 ```
 
-Kits:
+En WSL si falla SSH:
 
-- `runtime/content-studio/youtube-upload-kit/bitsitos/`
-- `runtime/content-studio/youtube-upload-kit/splashitos/`
-- Brand: `runtime/content-studio/brand-assets/*avatar.png` + `*banner.png`
+```bash
+cd ~/opsly
+git fetch origin && git checkout feat/content-studio-youtube && git pull --ff-only
+cp infra/pc-gamer.env.example .env.worker   # + REDIS_URL real
+./scripts/ops/pc-gamer-docker-plane.sh --up --use-host-ollama --with-content
+```
 
-Publicar (hasta OAuth): arrastra MP4 a Studio + sube avatar/banner en personalización del canal.
+Allowlist: `OPSLY_WORKER_ALLOWLIST=ollama,content-video`  
+MoneyPrinter en el gamer: `MONEY_PRINTER_TURBO_URL=http://127.0.0.1:8080`
+
+Enqueue desde Mac (Doppler; **no** apuntes el job al IP Tailscale):
+
+```bash
+doppler run --project ops-intcloudsysops --config prd -- \
+  npm run content:bitsitos:gamer
+```
+
+Tras los jobs:
+
+```bash
+./scripts/ops/content-studio-sync-renders.sh
+npm run content:bitsitos:publish -- --kit
+```
 
 ## 2) Cuenta YouTube / opslyquantum
 
@@ -44,27 +62,21 @@ Checklist: [`OPSLYQUANTUM-YOUTUBE-SETUP.md`](../brand/icso/OPSLYQUANTUM-YOUTUBE-
 ```bash
 ./scripts/content-factory-bootstrap.sh --watch-oauth
 # cuando exista ~/Downloads/youtube-oauth-client.json → Doppler + refresh token
-npm run content:bitsitos:upload
+# upload solo si el humano nombra el draft
 ```
 
-## 3) PC gamer (cuando esté online)
+## 3) Kits / brand en Mac (sin render)
 
 ```bash
-./scripts/ops/check-pc-gamer-online.sh --json
-./scripts/content-factory-bootstrap.sh --gamer-up
-# en WSL si falla SSH:
-cd ~/opsly && git pull --ff-only
-cp infra/pc-gamer.env.example .env.worker   # + REDIS_URL real
-./scripts/ops/pc-gamer-docker-plane.sh --up --with-content
+./scripts/content-factory-bootstrap.sh --gen-assets --rebuild-kits
 ```
 
-Allowlist: `OPSLY_WORKER_ALLOWLIST=ollama,content-video`  
-Enqueue desde Mac (con REDIS_URL):
+Kits:
 
-```bash
-MONEY_PRINTER_TURBO_URL=http://100.74.88.103:8080 \
-  ./scripts/content-studio-enqueue.sh --channel bitsitos
-```
+- `runtime/content-studio/youtube-upload-kit/bitsitos/`
+- `runtime/content-studio/youtube-upload-kit/splashitos/`
+
+`--mac-bridge` existe solo como emergencia y avisa. No es el default.
 
 ## 4) Agentes a trabajar
 
@@ -72,8 +84,8 @@ Roster: `config/content-studio/content-agents.json`
 
 | Agente | Trabajo |
 |--------|---------|
-| Cursor (Mac) | Bridge, render, kits, docs |
-| PC-gamer worker | Cola `content-video` + GPU |
+| Cursor (Mac) | Enqueue, sync, kits, docs |
+| PC-gamer worker | Cola `content-video` + GPU + bridge `:8080` |
 | Hermes | Cadencia pilares |
 | Humano | OAuth + Studio branding + approve public |
 
@@ -88,4 +100,7 @@ Privacidad inicial: **unlisted** (`YOUTUBE_PRIVACY`).
 
 - Branding Peskids sin autorización
 - Render/deploy pesado en VPS de día
+- Arrancar MoneyPrinter en Mac como camino normal
+- Encolar `content-video` si el gamer está offline (los jobs no tienen consumidor)
 - Reusar OAuth SmileTripCare
+- `--upload` / `--auto-publish` sin draft nombrado por un humano

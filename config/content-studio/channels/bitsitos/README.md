@@ -8,9 +8,10 @@ Doc: [`docs/brand/icso/YOUTUBE-KIDS-TECH-CHANNEL.md`](../../../../docs/brand/ics
 # Listar 7 guiones virales
 npm run content:bitsitos:dry-run
 
-# Mac + PC gamer (render)
-MONEY_PRINTER_TURBO_URL=http://100.74.88.103:8080 \
-  REDIS_URL=… npm run content:bitsitos:gamer
+# PC-gamer only (job → localhost:8080 en el worker)
+doppler run --project ops-intcloudsysops --config prd -- \
+  npm run content:bitsitos:gamer
+./scripts/ops/content-studio-sync-renders.sh
 
 # Kit / upload YouTube (default unlisted)
 npm run content:bitsitos:publish -- --dry-run

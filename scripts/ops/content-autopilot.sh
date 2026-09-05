@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Content autopilot — crear → render (pc-gamer / Mac) → kit YouTube.
+# Content autopilot — crear → render (PC-gamer only) → kit YouTube.
 #
 # Gates:
-#   1. Schedule: mode day o heavy (gaming/offline bloquean enqueue discrecional).
-#   2. Nodo gamer: si está offline, el enqueue queda en cola (asíncrono).
+#   1. Schedule: heavy / light / day (gaming bloquea enqueue).
+#   2. Nodo gamer: si está offline, NO enqueue y NO arranca Mac MoneyPrinter.
 # Publicación: approval-first (kit). --auto-publish solo con AUTO_PUBLISH_YOUTUBE=true.
 #
 # Usage:
@@ -46,10 +46,12 @@ ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 cd "$ROOT"
 
 CHANNEL="${CHANNEL:-bitsitos}"
+# shellcheck disable=SC1091
+source "$ROOT/scripts/ops/content-studio-gamer-env.sh"
 STATE_DIR="${OPSLY_CONTENT_STATE:-runtime/content-autopilot}"
 LOG_DIR="${HOME}/Library/Logs/opsly"
 LOG_FILE="${LOG_DIR}/content-autopilot.log"
-ALLOWED_MODES="${CONTENT_AUTOPILOT_MODES:-day,heavy}"
+ALLOWED_MODES="${CONTENT_AUTOPILOT_MODES:-${CONTENT_STUDIO_SCHEDULE_MODES}}"
 
 mkdir -p "${STATE_DIR}"
 mkdir -p "${LOG_DIR}" 2>/dev/null || true
@@ -97,13 +99,14 @@ if [[ "$mode_ok" != true ]]; then
   exit 2
 fi
 
-if [[ -x "$ROOT/scripts/ops/check-pc-gamer-online.sh" ]]; then
-  if ! "$ROOT/scripts/ops/check-pc-gamer-online.sh" --quiet 2>/dev/null; then
-    echo "gate: pc-gamer offline → jobs esperarán en cola (ok, asíncrono)" >&2
-    log "gate=online offline → enqueue pasivo"
-  else
-    log "gate=online ok"
+if [[ "$DRY_RUN" != true && "$KIT_ONLY" != true ]]; then
+  if ! content_studio_gamer_ready; then
+    echo "gate: pc-gamer no alcanzable (SSH/health). No enqueue, no Mac render." >&2
+    echo "  ./scripts/ops/pc-gamer-reconnect.sh --use-host-ollama --with-content" >&2
+    log "gate=online ssh/health down → abort"
+    exit 2
   fi
+  log "gate=online ok"
 fi
 
 enqueue_args=()
@@ -129,6 +132,8 @@ fi
 
 if [[ "$DRY_RUN" == true ]]; then
   publish_args=(--channel "$CHANNEL" --dry-run)
+elif [[ -x "$ROOT/scripts/ops/content-studio-sync-renders.sh" ]]; then
+  "$ROOT/scripts/ops/content-studio-sync-renders.sh" || echo "sync renders skipped (gamer SSH?)" >&2
 fi
 "$ROOT/scripts/content-studio-publish-youtube.sh" "${publish_args[@]}"
 

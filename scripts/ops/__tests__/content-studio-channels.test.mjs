@@ -49,3 +49,16 @@ test('youtube-channels.json points at existing batch dirs', () => {
   assert.ok(existsSync(join(root, channels.channels.splashitos.batch_dir)));
   assert.match(channels.channels.bitsitos.youtube_channel_id, /^UC/);
 });
+
+test('content studio renders only on pc-gamer and schedule allows content_video', () => {
+  const agents = loadJson('config/content-studio/content-agents.json');
+  assert.deepEqual(agents.constraints.render_hosts, ['pc-gamer']);
+  assert.equal(agents.queues['content-video'].mpt_base_url, 'http://127.0.0.1:8080');
+  assert.ok(!agents.constraints.render_hosts.includes('mac-local'));
+
+  const schedule = loadJson('config/pc-gamer-schedule.json');
+  assert.ok(schedule.modes.heavy.allow_enqueue.includes('content_video'));
+  assert.ok(schedule.modes.light.allow_enqueue.includes('content_video'));
+  assert.ok(schedule.modes.gaming.deny_enqueue.includes('content_video'));
+  assert.ok(!schedule.modes.gaming.allow_enqueue.includes('content_video'));
+});

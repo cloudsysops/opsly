@@ -8,6 +8,7 @@ Ver estrategia: [`docs/brand/icso/YOUTUBE-KIDS-SWIM-CHANNEL.md`](../../../docs/b
 # Listar guiones
 npm run content:splashitos:dry-run
 
-# Encolar render (PC gamer / worker content-video + MoneyPrinter)
-REDIS_URL=… MONEY_PRINTER_TURBO_URL=… npm run content:splashitos:enqueue
+# Encolar render (PC-gamer only; job usa localhost:8080 en el worker)
+doppler run --project ops-intcloudsysops --config prd -- \
+  npm run content:splashitos:enqueue
 ```

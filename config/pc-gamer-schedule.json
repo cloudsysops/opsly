@@ -2,18 +2,19 @@
   "$schema_comment": "Horarios PC-gamer (dueño: Mauro). TZ America/Bogota. Ajustar tras confirmar con él.",
   "timezone": "America/Bogota",
   "owner": "Mauro",
-  "updated": "2026-08-08",
+  "updated": "2026-09-05",
   "notes": [
     "DRAFT hasta confirmación humana con Mauro.",
-    "gaming = no GPU pesada / no OpenCode build; solo idle o jobs light.",
-    "heavy = OpenCode + Ollama generate / builds / tests.",
-    "light = Ollama classify/resumen corto, heartbeat, docs-only prompts."
+    "gaming = no GPU pesada / no OpenCode build / no Content Studio render.",
+    "heavy = OpenCode + Ollama generate / builds / tests + Content Studio.",
+    "light = Ollama classify/resumen corto, heartbeat, Content Studio Shorts.",
+    "content_video always renders on PC-gamer (never Mac, never VPS)."
   ],
   "modes": {
     "gaming": {
       "description": "Mauro probablemente jugando — CPU/GPU del host para él",
       "allow_enqueue": ["light"],
-      "deny_enqueue": ["heavy", "opencode", "ollama_generate_long"],
+      "deny_enqueue": ["heavy", "opencode", "ollama_generate_long", "content_video"],
       "worker_hint": {
         "OPSLY_WORKER_ALLOWLIST": "ollama",
         "WORKER_CONCURRENCY_OLLAMA": "0",
@@ -22,7 +23,7 @@
     },
     "light": {
       "description": "Máquina libre parcialmente — trabajo suave",
-      "allow_enqueue": ["light", "ollama_short"],
+      "allow_enqueue": ["light", "ollama_short", "content_video"],
       "deny_enqueue": ["heavy", "opencode"],
       "worker_hint": {
         "OPSLY_WORKER_ALLOWLIST": "ollama",
@@ -31,10 +32,10 @@
     },
     "heavy": {
       "description": "Mauro no usa el PC — OpenCode + Ollama a tope razonable",
-      "allow_enqueue": ["light", "heavy", "opencode", "ollama_generate_long"],
+      "allow_enqueue": ["light", "heavy", "opencode", "ollama_generate_long", "content_video"],
       "deny_enqueue": [],
       "worker_hint": {
-        "OPSLY_WORKER_ALLOWLIST": "ollama,local-agents",
+        "OPSLY_WORKER_ALLOWLIST": "ollama,local-agents,content-video",
         "WORKER_CONCURRENCY_OLLAMA": "1"
       }
     }
@@ -89,11 +90,16 @@
       "heartbeat / health check",
       "enqueue deferral bookkeeping"
     ],
+    "content_video": [
+      "Content Studio Shorts render (MoneyPrinter on PC-gamer)",
+      "BullMQ content-video enqueue"
+    ],
     "heavy": [
       "opencode build / refactor / tests",
       "ollama long generate",
       "docker image builds",
-      "full type-check / vitest suites"
+      "full type-check / vitest suites",
+      "Content Studio batch render"
     ]
   }
 }

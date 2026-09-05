@@ -39,9 +39,9 @@ OAuth GCP: [`OPSLYQUANTUM-YOUTUBE-SETUP.md`](./OPSLYQUANTUM-YOUTUBE-SETUP.md)
 Agentes: `config/content-studio/content-agents.json`
 
 ```bash
-npm run content:factory:mac          # bridge + brand assets + kits
+npm run content:factory              # PC-gamer content plane (--gamer-up)
 npm run content:factory:oauth-watch  # espera youtube-oauth-client.json
-npm run content:factory:gamer        # cuando PC gamer esté online
+# emergencia: npm run content:factory:mac
 ```
 
 ## Cómo ganar plata
@@ -81,11 +81,12 @@ npm run content:splashitos:publish -- --kit
 # Tech / IA / agentes / juegos
 npm run content:bitsitos:dry-run
 ./scripts/content-studio-enqueue.sh --channel bitsitos --batch config/content-studio/channels/bitsitos/batch-02-ai-agents-games.json --dry-run
-# render local: ver scripts o bridge :8080
+doppler run --project ops-intcloudsysops --config prd -- npm run content:bitsitos:gamer
+./scripts/ops/content-studio-sync-renders.sh
 npm run content:bitsitos:publish -- --kit
 ```
 
-Producción: Mac + PC gamer (`docs/04-infrastructure/PC-GAMER-WORKER.md`).
+Producción: render **solo PC-gamer** (`docs/04-infrastructure/PC-GAMER-WORKER.md`).
 
 ## Pilares de contenido (Shorts + Long)
 

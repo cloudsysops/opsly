@@ -138,11 +138,11 @@ Canal comercial primario: **Bitsitos** (tech kids). Splashitos = secundario.
 # En el gamer (WSL):
 ./scripts/ops/pc-gamer-docker-plane.sh --up --with-content --pull-model
 
-# Desde Mac:
-MONEY_PRINTER_TURBO_URL=http://100.74.88.103:8080 \
-  doppler run --project ops-intcloudsysops --config prd -- \
+# Desde Mac (el job apunta a localhost:8080 porque el worker vive en el gamer):
+doppler run --project ops-intcloudsysops --config prd -- \
   npm run content:bitsitos:gamer
 
+./scripts/ops/content-studio-sync-renders.sh
 npm run content:bitsitos:publish -- --kit
 ```
 
