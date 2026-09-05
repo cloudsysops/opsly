@@ -4,14 +4,18 @@
 peskids_runtime_environment() {
   local explicit="${PESKIDS_ENVIRONMENT:-}"
   local config="${DOPPLER_CONFIG:-}"
+  local node_env="${NODE_ENV:-}"
   explicit="$(printf '%s' "$explicit" | tr '[:upper:]' '[:lower:]')"
   config="$(printf '%s' "$config" | tr '[:upper:]' '[:lower:]')"
+  node_env="$(printf '%s' "$node_env" | tr '[:upper:]' '[:lower:]')"
   if [[ "$explicit" == "production" || "$explicit" == "staging" || "$explicit" == "development" ]]; then
     printf '%s\n' "$explicit"
   elif [[ "$config" == "prd" || "$config" == "prod" || "$config" == "production" ]]; then
     printf '%s\n' production
   elif [[ "$config" == "stg" || "$config" == "staging" || "$config" == "qa" ]]; then
     printf '%s\n' staging
+  elif [[ "$node_env" == "production" ]]; then
+    printf '%s\n' production
   else
     printf '%s\n' development
   fi
