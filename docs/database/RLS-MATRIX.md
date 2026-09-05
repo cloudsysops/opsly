@@ -51,7 +51,7 @@ is **denied** for every non-BYPASSRLS role.
 | `panini_lab.wc_players` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `panini_lab.wc_results` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `panini_lab.wc_teams` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
-| `peskids.audit_log` | on | 1 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
+| `peskids.audit_log` | on | 2 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
 | `peskids.class_enrollments` | on | 3 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
 | `peskids.classes` | on | 2 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
 | `peskids.form_analytics` | on | 2 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
@@ -61,15 +61,15 @@ is **denied** for every non-BYPASSRLS role.
 | `peskids.form_submissions` | on | 3 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
 | `peskids.form_templates` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `peskids.forms` | on | 2 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
-| `peskids.notification_preferences` | **OFF** | 0 |  |  |  |  | _service-only_ |
-| `peskids.notifications` | **OFF** | 0 |  |  |  |  | _service-only_ |
+| `peskids.notification_preferences` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
+| `peskids.notifications` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `peskids.payments` | on | 1 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
 | `peskids.point_transactions` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `peskids.pools` | on | 2 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
-| `peskids.push_subscriptions` | **OFF** | 0 |  |  |  |  | _service-only_ |
-| `peskids.referral_clicks` | **OFF** | 0 |  |  |  |  | _service-only_ |
-| `peskids.referral_links` | **OFF** | 0 |  |  |  |  | _service-only_ |
-| `peskids.referral_redemptions` | **OFF** | 0 |  |  |  |  | _service-only_ |
+| `peskids.push_subscriptions` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
+| `peskids.referral_clicks` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
+| `peskids.referral_links` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
+| `peskids.referral_redemptions` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `peskids.store_cart_items` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `peskids.store_order_items` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `peskids.store_orders` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
@@ -89,7 +89,7 @@ is **denied** for every non-BYPASSRLS role.
 | `platform.approved_suppliers` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `platform.audit_events` | on | 4 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
 | `platform.audit_findings` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
-| `platform.audit_log` | on | 1 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
+| `platform.audit_log` | on | 2 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
 | `platform.audit_templates` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `platform.audits` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `platform.billing_plans` | on | 1 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
@@ -113,7 +113,7 @@ is **denied** for every non-BYPASSRLS role.
 | `platform.franchise_territories` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `platform.franchise_units` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `platform.franchisees` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
-| `platform.hermes_audit` | on | 0 |  |  |  |  | _service-only_ |
+| `platform.hermes_audit` | on | 1 |  |  | ✓ |  | `PUBLIC` |
 | `platform.hermes_metrics` | on | 0 |  |  |  |  | _service-only_ |
 | `platform.hermes_state` | on | 0 |  |  |  |  | _service-only_ |
 | `platform.hermes_workflows` | on | 0 |  |  |  |  | _service-only_ |
@@ -137,9 +137,9 @@ is **denied** for every non-BYPASSRLS role.
 | `platform.opening_tasks` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `platform.peskids_aging_alert_deliveries` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `platform.peskids_feedback` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
-| `platform.peskids_franchise_locations` | **OFF** | 0 |  |  |  |  | _service-only_ |
-| `platform.peskids_franchise_staff_memberships` | **OFF** | 0 |  |  |  |  | _service-only_ |
-| `platform.peskids_franchises` | **OFF** | 0 |  |  |  |  | _service-only_ |
+| `platform.peskids_franchise_locations` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
+| `platform.peskids_franchise_staff_memberships` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
+| `platform.peskids_franchises` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `platform.peskids_lead_email_deliveries` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `platform.peskids_leads` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `platform.peskids_messages` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
@@ -159,7 +159,7 @@ is **denied** for every non-BYPASSRLS role.
 | `platform.supplier_requirements` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `platform.support_cases` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `platform.tenant_budgets` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
-| `platform.tenant_embeddings` | **OFF** | 0 |  |  |  |  | _service-only_ |
+| `platform.tenant_embeddings` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `platform.tenant_entitlements` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `platform.tenant_insights` | on | 0 |  |  |  |  | _service-only_ |
 | `platform.tenant_limits` | on | 1 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
@@ -168,7 +168,7 @@ is **denied** for every non-BYPASSRLS role.
 | `platform.tenant_webhooks` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `platform.tenants` | on | 1 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
 | `platform.training_requirements` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
-| `platform.usage_events` | **OFF** | 0 |  |  |  |  | _service-only_ |
+| `platform.usage_events` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `public.agent_execution_patterns` | **OFF** | 0 |  |  |  |  | _service-only_ |
 | `public.calls` | on | 2 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
 | `public.feedback` | on | 8 | ✓ | ✓ | ✓ |  | `PUBLIC` `anon` |
@@ -178,12 +178,12 @@ is **denied** for every non-BYPASSRLS role.
 | `public.intcloudsysops_deals` | on | 4 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
 | `public.intcloudsysops_feedback` | on | 3 | ✓ | ✓ | ✓ |  | `PUBLIC` |
 | `public.intcloudsysops_followups` | on | 3 | ✓ | ✓ | ✓ |  | `PUBLIC` |
-| `public.lead_status_audit` | on | 1 | ✓ |  |  |  | `PUBLIC` |
+| `public.lead_status_audit` | on | 2 | ✓ |  | ✓ |  | `PUBLIC` |
 | `public.leads` | FORCE | 12 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` `anon` `authenticated` |
 | `public.messages` | on | 5 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` `authenticated` |
 | `public.staff_improvement_messages` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `public.students` | on | 6 | ✓ | ✓ | ✓ |  | `PUBLIC` |
-| `public.tenant_settings` | **OFF** | 0 |  |  |  |  | _service-only_ |
+| `public.tenant_settings` | on | 1 | ✓ | ✓ | ✓ | ✓ | _service-only_ |
 | `public.trial_classes` | on | 1 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
 | `public.validation_metrics` | **OFF** | 0 |  |  |  |  | _service-only_ |
 | `public.voice_transcriptions` | on | 2 | ✓ | ✓ | ✓ | ✓ | `PUBLIC` |
@@ -344,6 +344,8 @@ is **denied** for every non-BYPASSRLS role.
 
 ### `peskids.audit_log`
 
+- **`audit_log_no_update`** — `UPDATE` to `PUBLIC`
+  - `USING`: `false`
 - **`service_role_full_audit`** — `ALL` to `PUBLIC`
   - `USING`: `(auth.role() = 'service_role'::text)`
   - `WITH CHECK`: `(auth.role() = 'service_role'::text)`
@@ -418,6 +420,18 @@ is **denied** for every non-BYPASSRLS role.
   - `USING`: `(auth.role() = 'service_role'::text)`
   - `WITH CHECK`: `(auth.role() = 'service_role'::text)`
 
+### `peskids.notification_preferences`
+
+- **`service_role_full_notification_preferences`** — `ALL` to `service_role`
+  - `USING`: `true`
+  - `WITH CHECK`: `true`
+
+### `peskids.notifications`
+
+- **`service_role_full_notifications`** — `ALL` to `service_role`
+  - `USING`: `true`
+  - `WITH CHECK`: `true`
+
 ### `peskids.payments`
 
 - **`service_role_full_payments`** — `ALL` to `PUBLIC`
@@ -437,6 +451,30 @@ is **denied** for every non-BYPASSRLS role.
 - **`service_role_full_pools`** — `ALL` to `PUBLIC`
   - `USING`: `(auth.role() = 'service_role'::text)`
   - `WITH CHECK`: `(auth.role() = 'service_role'::text)`
+
+### `peskids.push_subscriptions`
+
+- **`service_role_full_push_subscriptions`** — `ALL` to `service_role`
+  - `USING`: `true`
+  - `WITH CHECK`: `true`
+
+### `peskids.referral_clicks`
+
+- **`service_role_full_referral_clicks`** — `ALL` to `service_role`
+  - `USING`: `true`
+  - `WITH CHECK`: `true`
+
+### `peskids.referral_links`
+
+- **`service_role_full_referral_links`** — `ALL` to `service_role`
+  - `USING`: `true`
+  - `WITH CHECK`: `true`
+
+### `peskids.referral_redemptions`
+
+- **`service_role_full_referral_redemptions`** — `ALL` to `service_role`
+  - `USING`: `true`
+  - `WITH CHECK`: `true`
 
 ### `peskids.store_cart_items`
 
@@ -534,6 +572,8 @@ is **denied** for every non-BYPASSRLS role.
 
 ### `platform.audit_log`
 
+- **`audit_log_no_update`** — `UPDATE` to `PUBLIC`
+  - `USING`: `false`
 - **`service_role_only`** — `ALL` to `PUBLIC`
   - `USING`: `(auth.role() = 'service_role'::text)`
 
@@ -646,6 +686,11 @@ is **denied** for every non-BYPASSRLS role.
   - `USING`: `true`
   - `WITH CHECK`: `true`
 
+### `platform.hermes_audit`
+
+- **`hermes_audit_no_update`** — `UPDATE` to `PUBLIC`
+  - `USING`: `false`
+
 ### `platform.invoice_line_items`
 
 - **`service_role_full`** — `ALL` to `PUBLIC`
@@ -740,6 +785,24 @@ is **denied** for every non-BYPASSRLS role.
 ### `platform.peskids_feedback`
 
 - **`service_role_all_peskids_feedback`** — `ALL` to `service_role`
+  - `USING`: `true`
+  - `WITH CHECK`: `true`
+
+### `platform.peskids_franchise_locations`
+
+- **`service_role_full_peskids_franchise_locations`** — `ALL` to `service_role`
+  - `USING`: `true`
+  - `WITH CHECK`: `true`
+
+### `platform.peskids_franchise_staff_memberships`
+
+- **`service_role_full_peskids_franchise_staff_memberships`** — `ALL` to `service_role`
+  - `USING`: `true`
+  - `WITH CHECK`: `true`
+
+### `platform.peskids_franchises`
+
+- **`service_role_full_peskids_franchises`** — `ALL` to `service_role`
   - `USING`: `true`
   - `WITH CHECK`: `true`
 
@@ -862,6 +925,12 @@ is **denied** for every non-BYPASSRLS role.
   - `USING`: `true`
   - `WITH CHECK`: `true`
 
+### `platform.tenant_embeddings`
+
+- **`service_role_full_tenant_embeddings`** — `ALL` to `service_role`
+  - `USING`: `true`
+  - `WITH CHECK`: `true`
+
 ### `platform.tenant_entitlements`
 
 - **`service_role_all_tenant_entitlements`** — `ALL` to `service_role`
@@ -899,6 +968,12 @@ is **denied** for every non-BYPASSRLS role.
 ### `platform.training_requirements`
 
 - **`service_role_all_training_requirements`** — `ALL` to `service_role`
+  - `USING`: `true`
+  - `WITH CHECK`: `true`
+
+### `platform.usage_events`
+
+- **`service_role_full_usage_events`** — `ALL` to `service_role`
   - `USING`: `true`
   - `WITH CHECK`: `true`
 
@@ -998,6 +1073,8 @@ is **denied** for every non-BYPASSRLS role.
 
 - **`Authenticated users can read audit for their tenant`** — `SELECT` to `PUBLIC`
   - `USING`: `((tenant_slug = current_setting('app.settings.tenant_slug'::text, true)) OR (current_setting('app.settings.is_service_role'::text, true) = 'true'::text))`
+- **`lead_status_audit_no_update`** — `UPDATE` to `PUBLIC`
+  - `USING`: `false`
 
 ### `public.leads`
 
@@ -1066,6 +1143,12 @@ is **denied** for every non-BYPASSRLS role.
 - **`parent_update_own_children`** — `UPDATE` to `PUBLIC`
   - `USING`: `(is_owner() OR ((family_user_id IS NOT NULL) AND (family_user_id = auth.uid())))`
   - `WITH CHECK`: `(is_owner() OR ((family_user_id IS NOT NULL) AND (family_user_id = auth.uid())))`
+
+### `public.tenant_settings`
+
+- **`service_role_full_tenant_settings`** — `ALL` to `service_role`
+  - `USING`: `true`
+  - `WITH CHECK`: `true`
 
 ### `public.trial_classes`
 

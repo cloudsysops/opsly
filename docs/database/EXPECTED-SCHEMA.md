@@ -25,11 +25,11 @@ date: 2026-09-05
 | `defense` | 5 | 5 | 0 |
 | `governance` | 5 | 5 | 0 |
 | `panini_lab` | 11 | 11 | 0 |
-| `peskids` | 29 | 23 | 6 |
-| `platform` | 89 | 82 | 7 |
-| `public` | 19 | 16 | 3 |
+| `peskids` | 29 | 29 | 0 |
+| `platform` | 89 | 87 | 2 |
+| `public` | 19 | 17 | 2 |
 | `sandbox` | 5 | 2 | 3 |
-| **total** | **163** | **144** | **19** |
+| **total** | **163** | **156** | **7** |
 
 ---
 
@@ -503,8 +503,9 @@ date: 2026-09-05
 
 ### `peskids.audit_log`
 
-- **RLS:** enabled · **policies:** 1
+- **RLS:** enabled · **policies:** 2
 - **PK:** `PRIMARY KEY (id)`
+- **FK:** `fk_audit_log_tenant_slug` → `platform.tenants`
 
 | column | type | not null | default |
 |---|---|---|---|
@@ -518,12 +519,13 @@ date: 2026-09-05
 | `ip_address` | `text` |  |  |
 | `user_agent` | `text` |  |  |
 | `created_at` | `timestamp with time zone` |  | `now()` |
+| `request_id` | `text` |  |  |
 
 ### `peskids.class_enrollments`
 
 - **RLS:** enabled · **policies:** 3
 - **PK:** `PRIMARY KEY (id)`
-- **FK:** `class_enrollments_class_id_fkey` → `peskids.classes`, `class_enrollments_student_id_fkey` → `public.students`
+- **FK:** `class_enrollments_class_id_fkey` → `peskids.classes`, `class_enrollments_student_id_fkey` → `public.students`, `fk_class_enrollments_tenant_slug` → `platform.tenants`
 - **CHECK:** 4 constraint(s)
 
 | column | type | not null | default |
@@ -546,7 +548,7 @@ date: 2026-09-05
 
 - **RLS:** enabled · **policies:** 2
 - **PK:** `PRIMARY KEY (id)`
-- **FK:** `classes_franchise_id_fkey` → `platform.peskids_franchises`, `classes_pool_id_fkey` → `peskids.pools`
+- **FK:** `classes_franchise_id_fkey` → `platform.peskids_franchises`, `classes_pool_id_fkey` → `peskids.pools`, `fk_classes_tenant_slug` → `platform.tenants`
 - **CHECK:** 6 constraint(s)
 
 | column | type | not null | default |
@@ -577,6 +579,7 @@ date: 2026-09-05
 - **RLS:** enabled · **policies:** 2
 - **PK:** `PRIMARY KEY (id)`
 - **UNIQUE:** `form_analytics_unique`
+- **FK:** `fk_form_analytics_tenant_slug` → `platform.tenants`
 
 | column | type | not null | default |
 |---|---|---|---|
@@ -596,7 +599,7 @@ date: 2026-09-05
 
 - **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
-- **FK:** `form_deliveries_template_id_fkey` → `peskids.form_templates`
+- **FK:** `fk_form_deliveries_tenant_slug` → `platform.tenants`, `form_deliveries_template_id_fkey` → `peskids.form_templates`
 - **CHECK:** 2 constraint(s)
 
 | column | type | not null | default |
@@ -640,7 +643,7 @@ date: 2026-09-05
 
 - **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
-- **FK:** `form_responses_delivery_id_fkey` → `peskids.form_deliveries`, `form_responses_template_id_fkey` → `peskids.form_templates`
+- **FK:** `fk_form_responses_tenant_slug` → `platform.tenants`, `form_responses_delivery_id_fkey` → `peskids.form_deliveries`, `form_responses_template_id_fkey` → `peskids.form_templates`
 - **CHECK:** 1 constraint(s)
 
 | column | type | not null | default |
@@ -664,7 +667,7 @@ date: 2026-09-05
 - **RLS:** enabled · **policies:** 3
 - **PK:** `PRIMARY KEY (id)`
 - **UNIQUE:** `form_submissions_unique`
-- **FK:** `form_submissions_form_id_fkey` → `peskids.forms`
+- **FK:** `fk_form_submissions_tenant_slug` → `platform.tenants`, `form_submissions_form_id_fkey` → `peskids.forms`
 - **CHECK:** 1 constraint(s)
 
 | column | type | not null | default |
@@ -691,6 +694,7 @@ date: 2026-09-05
 
 - **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
+- **FK:** `fk_form_templates_tenant_slug` → `platform.tenants`
 - **CHECK:** 2 constraint(s)
 
 | column | type | not null | default |
@@ -710,6 +714,7 @@ date: 2026-09-05
 - **RLS:** enabled · **policies:** 2
 - **PK:** `PRIMARY KEY (id)`
 - **UNIQUE:** `forms_unique`
+- **FK:** `fk_forms_tenant_slug` → `platform.tenants`
 - **CHECK:** 1 constraint(s)
 
 | column | type | not null | default |
@@ -726,9 +731,10 @@ date: 2026-09-05
 
 ### `peskids.notification_preferences`
 
-- **RLS:** **disabled** · **policies:** 0
+- **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
 - **UNIQUE:** `notification_preferences_user_id_tenant_slug_key`
+- **FK:** `fk_notification_preferences_tenant_slug` → `platform.tenants`
 
 | column | type | not null | default |
 |---|---|---|---|
@@ -744,8 +750,9 @@ date: 2026-09-05
 
 ### `peskids.notifications`
 
-- **RLS:** **disabled** · **policies:** 0
+- **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
+- **FK:** `fk_notifications_tenant_slug` → `platform.tenants`
 
 | column | type | not null | default |
 |---|---|---|---|
@@ -763,8 +770,8 @@ date: 2026-09-05
 
 - **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
-- **FK:** `payments_enrollment_id_fkey` → `peskids.class_enrollments`
-- **CHECK:** 3 constraint(s)
+- **FK:** `fk_payments_tenant_slug` → `platform.tenants`, `payments_enrollment_id_fkey` → `peskids.class_enrollments`
+- **CHECK:** 6 constraint(s)
 
 | column | type | not null | default |
 |---|---|---|---|
@@ -810,7 +817,7 @@ date: 2026-09-05
 
 - **RLS:** enabled · **policies:** 2
 - **PK:** `PRIMARY KEY (id)`
-- **FK:** `pools_franchise_id_fkey` → `platform.peskids_franchises`
+- **FK:** `fk_pools_tenant_slug` → `platform.tenants`, `pools_franchise_id_fkey` → `platform.peskids_franchises`
 - **CHECK:** 2 constraint(s)
 
 | column | type | not null | default |
@@ -826,9 +833,10 @@ date: 2026-09-05
 
 ### `peskids.push_subscriptions`
 
-- **RLS:** **disabled** · **policies:** 0
+- **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
 - **UNIQUE:** `push_subscriptions_user_id_endpoint_key`
+- **FK:** `fk_push_subscriptions_tenant_slug` → `platform.tenants`
 
 | column | type | not null | default |
 |---|---|---|---|
@@ -843,7 +851,7 @@ date: 2026-09-05
 
 ### `peskids.referral_clicks`
 
-- **RLS:** **disabled** · **policies:** 0
+- **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
 - **FK:** `referral_clicks_referral_link_id_fkey` → `peskids.referral_links`
 
@@ -857,9 +865,10 @@ date: 2026-09-05
 
 ### `peskids.referral_links`
 
-- **RLS:** **disabled** · **policies:** 0
+- **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
 - **UNIQUE:** `referral_links_code_key`
+- **FK:** `fk_referral_links_tenant_slug` → `platform.tenants`
 
 | column | type | not null | default |
 |---|---|---|---|
@@ -873,9 +882,9 @@ date: 2026-09-05
 
 ### `peskids.referral_redemptions`
 
-- **RLS:** **disabled** · **policies:** 0
+- **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
-- **FK:** `referral_redemptions_referral_link_id_fkey` → `peskids.referral_links`
+- **FK:** `fk_referral_redemptions_tenant_slug` → `platform.tenants`, `referral_redemptions_referral_link_id_fkey` → `peskids.referral_links`
 - **CHECK:** 1 constraint(s)
 
 | column | type | not null | default |
@@ -896,7 +905,7 @@ date: 2026-09-05
 - **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
 - **UNIQUE:** `store_cart_items_tenant_slug_student_id_product_id_key`
-- **FK:** `store_cart_items_product_id_fkey` → `peskids.store_products`, `store_cart_items_student_id_fkey` → `public.students`
+- **FK:** `fk_store_cart_items_tenant_slug` → `platform.tenants`, `store_cart_items_product_id_fkey` → `peskids.store_products`, `store_cart_items_student_id_fkey` → `public.students`
 
 | column | type | not null | default |
 |---|---|---|---|
@@ -912,6 +921,7 @@ date: 2026-09-05
 - **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
 - **FK:** `store_order_items_order_id_fkey` → `peskids.store_orders`, `store_order_items_product_id_fkey` → `peskids.store_products`
+- **CHECK:** 1 constraint(s)
 
 | column | type | not null | default |
 |---|---|---|---|
@@ -926,8 +936,8 @@ date: 2026-09-05
 
 - **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
-- **FK:** `store_orders_student_id_fkey` → `public.students`
-- **CHECK:** 2 constraint(s)
+- **FK:** `fk_store_orders_tenant_slug` → `platform.tenants`, `store_orders_student_id_fkey` → `public.students`
+- **CHECK:** 5 constraint(s)
 
 | column | type | not null | default |
 |---|---|---|---|
@@ -950,7 +960,8 @@ date: 2026-09-05
 
 - **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
-- **CHECK:** 1 constraint(s)
+- **FK:** `fk_store_products_tenant_slug` → `platform.tenants`
+- **CHECK:** 2 constraint(s)
 
 | column | type | not null | default |
 |---|---|---|---|
@@ -971,7 +982,7 @@ date: 2026-09-05
 
 - **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
-- **FK:** `student_badges_class_id_fkey` → `peskids.classes`, `student_badges_student_id_fkey` → `public.students`
+- **FK:** `fk_student_badges_tenant_slug` → `platform.tenants`, `student_badges_class_id_fkey` → `peskids.classes`, `student_badges_student_id_fkey` → `public.students`
 - **CHECK:** 1 constraint(s)
 
 | column | type | not null | default |
@@ -1007,6 +1018,7 @@ date: 2026-09-05
 
 - **RLS:** enabled · **policies:** 2
 - **PK:** `PRIMARY KEY (id)`
+- **FK:** `fk_submission_events_tenant_slug` → `platform.tenants`
 
 | column | type | not null | default |
 |---|---|---|---|
@@ -1026,7 +1038,7 @@ date: 2026-09-05
 - **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
 - **FK:** `subscription_payments_subscription_id_fkey` → `peskids.subscriptions`
-- **CHECK:** 1 constraint(s)
+- **CHECK:** 2 constraint(s)
 
 | column | type | not null | default |
 |---|---|---|---|
@@ -1044,8 +1056,8 @@ date: 2026-09-05
 
 - **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
-- **FK:** `subscriptions_student_id_fkey` → `public.students`
-- **CHECK:** 1 constraint(s)
+- **FK:** `fk_subscriptions_tenant_slug` → `platform.tenants`, `subscriptions_student_id_fkey` → `public.students`
+- **CHECK:** 4 constraint(s)
 
 | column | type | not null | default |
 |---|---|---|---|
@@ -1069,6 +1081,7 @@ date: 2026-09-05
 - **RLS:** enabled · **policies:** 3
 - **PK:** `PRIMARY KEY (id)`
 - **UNIQUE:** `webhook_configs_unique`
+- **FK:** `fk_webhook_configs_tenant_slug` → `platform.tenants`
 
 | column | type | not null | default |
 |---|---|---|---|
@@ -1231,6 +1244,7 @@ date: 2026-09-05
 | `user_agent` | `text` |  |  |
 | `metadata` | `jsonb` | YES | `'{}'::jsonb` |
 | `created_at` | `timestamp with time zone` | YES | `now()` |
+| `request_id` | `text` |  |  |
 
 ### `platform.audit_findings`
 
@@ -1253,7 +1267,7 @@ date: 2026-09-05
 
 ### `platform.audit_log`
 
-- **RLS:** enabled · **policies:** 1
+- **RLS:** enabled · **policies:** 2
 - **PK:** `PRIMARY KEY (id)`
 - **FK:** `audit_log_tenant_id_fkey` → `platform.tenants`
 
@@ -1265,6 +1279,7 @@ date: 2026-09-05
 | `actor` | `text` | YES |  |
 | `metadata` | `jsonb` |  | `'{}'::jsonb` |
 | `created_at` | `timestamp with time zone` |  | `now()` |
+| `request_id` | `text` |  |  |
 
 ### `platform.audit_templates`
 
@@ -1732,7 +1747,7 @@ date: 2026-09-05
 
 ### `platform.hermes_audit`
 
-- **RLS:** enabled · **policies:** 0
+- **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
 
 | column | type | not null | default |
@@ -2196,7 +2211,7 @@ date: 2026-09-05
 
 ### `platform.peskids_franchise_locations`
 
-- **RLS:** **disabled** · **policies:** 0
+- **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
 - **UNIQUE:** `peskids_franchise_locations_franchise_id_slug_key`
 - **FK:** `peskids_franchise_locations_franchise_id_fkey` → `platform.peskids_franchises`
@@ -2219,7 +2234,7 @@ date: 2026-09-05
 
 ### `platform.peskids_franchise_staff_memberships`
 
-- **RLS:** **disabled** · **policies:** 0
+- **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
 - **UNIQUE:** `peskids_franchise_staff_membershi_franchise_id_user_id_role_key`
 - **FK:** `peskids_franchise_staff_memberships_franchise_id_fkey` → `platform.peskids_franchises`
@@ -2238,7 +2253,7 @@ date: 2026-09-05
 
 ### `platform.peskids_franchises`
 
-- **RLS:** **disabled** · **policies:** 0
+- **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
 - **UNIQUE:** `peskids_franchises_tenant_slug_slug_key`
 - **FK:** `peskids_franchises_parent_franchise_id_fkey` → `platform.peskids_franchises`
@@ -2702,7 +2717,7 @@ date: 2026-09-05
 
 ### `platform.tenant_embeddings`
 
-- **RLS:** **disabled** · **policies:** 0
+- **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
 
 | column | type | not null | default |
@@ -2896,7 +2911,7 @@ date: 2026-09-05
 
 ### `platform.usage_events`
 
-- **RLS:** **disabled** · **policies:** 0
+- **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (id)`
 
 | column | type | not null | default |
@@ -3135,7 +3150,7 @@ date: 2026-09-05
 
 ### `public.lead_status_audit`
 
-- **RLS:** enabled · **policies:** 1
+- **RLS:** enabled · **policies:** 2
 - **PK:** `PRIMARY KEY (id)`
 - **CHECK:** 1 constraint(s)
 
@@ -3150,13 +3165,14 @@ date: 2026-09-05
 | `action` | `text` | YES |  |
 | `metadata` | `jsonb` |  |  |
 | `created_at` | `timestamp with time zone` | YES | `now()` |
+| `request_id` | `text` |  |  |
 
 ### `public.leads`
 
 - **RLS:** enabled (FORCE) · **policies:** 12
 - **PK:** `PRIMARY KEY (id)`
 - **FK:** `leads_franchise_id_fkey` → `platform.peskids_franchises`
-- **CHECK:** 4 constraint(s)
+- **CHECK:** 5 constraint(s)
 
 | column | type | not null | default |
 |---|---|---|---|
@@ -3268,7 +3284,7 @@ date: 2026-09-05
 
 ### `public.tenant_settings`
 
-- **RLS:** **disabled** · **policies:** 0
+- **RLS:** enabled · **policies:** 1
 - **PK:** `PRIMARY KEY (tenant_id)`
 - **CHECK:** 3 constraint(s)
 

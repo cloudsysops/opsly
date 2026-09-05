@@ -27,33 +27,21 @@ date: 2026-09-05
 
 | severity | count |
 |---|---:|
-| CRITICAL | 9 |
-| HIGH | 44 |
-| MEDIUM | 60 |
-| LOW | 174 |
-| **total** | **287** |
+| CRITICAL | 0 |
+| HIGH | 31 |
+| MEDIUM | 46 |
+| LOW | 188 |
+| **total** | **265** |
 
 ---
 
-## RLS_DISABLED (CRITICAL)
+## RLS_DISABLED (HIGH)
 
 Row Level Security is not enabled. Any role holding a table grant reads every tenant's rows; isolation depends entirely on application-level filtering.
 
-- `peskids.notification_preferences`
-- `peskids.notifications`
-- `peskids.push_subscriptions`
-- `peskids.referral_clicks`
-- `peskids.referral_links`
-- `peskids.referral_redemptions`
-- `platform.peskids_franchise_locations`
-- `platform.peskids_franchise_staff_memberships`
-- `platform.peskids_franchises`
 - `platform.agent_episode_logs`
 - `platform.llm_cache`
-- `platform.tenant_embeddings`
-- `platform.usage_events`
 - `public.agent_execution_patterns`
-- `public.tenant_settings`
 - `public.validation_metrics`
 - `sandbox.agent_classifiers`
 - `sandbox.agent_metrics`
@@ -65,17 +53,7 @@ Row Level Security is not enabled. Any role holding a table grant reads every te
 
 Tenant discriminator `tenant_slug text` has no FOREIGN KEY to platform.tenants. Nothing at the database level stops a typo'd or deleted tenant key from creating orphaned, invisible rows.
 
-- `peskids.audit_log.tenant_slug`
-- `peskids.class_enrollments.tenant_slug`
-- `peskids.notification_preferences.tenant_slug`
-- `peskids.notifications.tenant_slug`
-- `peskids.payments.tenant_slug`
-- `peskids.push_subscriptions.tenant_slug`
-- `peskids.referral_links.tenant_slug`
-- `peskids.referral_redemptions.tenant_slug`
-- `peskids.student_badges.tenant_slug`
 - `peskids.student_points.tenant_slug`
-- `peskids.subscriptions.tenant_slug`
 - `platform.audit_events.tenant_slug`
 - `platform.feedback_conversations.tenant_slug`
 - `platform.llm_feedback.tenant_slug`
@@ -121,7 +99,6 @@ RLS is enabled but no policy exists: the table is deny-all for every non-superus
 - `platform.feedback_conversations`
 - `platform.feedback_decisions`
 - `platform.feedback_messages`
-- `platform.hermes_audit`
 - `platform.hermes_metrics`
 - `platform.hermes_state`
 - `platform.hermes_workflows`
@@ -142,20 +119,7 @@ Tenant discriminator `tenant_id text` has no FOREIGN KEY to platform.tenants. No
 - `governance.retention_schedule.tenant_id`
 - `panini_lab.collection_items.tenant_slug`
 - `panini_lab.conversation_events.tenant_slug`
-- `peskids.classes.tenant_slug`
-- `peskids.form_analytics.tenant_slug`
-- `peskids.form_deliveries.tenant_slug`
-- `peskids.form_responses.tenant_slug`
-- `peskids.form_submissions.tenant_slug`
-- `peskids.form_templates.tenant_slug`
-- `peskids.forms.tenant_slug`
 - `peskids.point_transactions.tenant_slug`
-- `peskids.pools.tenant_slug`
-- `peskids.store_cart_items.tenant_slug`
-- `peskids.store_orders.tenant_slug`
-- `peskids.store_products.tenant_slug`
-- `peskids.submission_events.tenant_slug`
-- `peskids.webhook_configs.tenant_slug`
 - `platform.agent_episode_logs.tenant_slug`
 - `platform.agent_teams.tenant_slug`
 - `platform.conversations.tenant_slug`
@@ -290,6 +254,7 @@ FK column is not the leading column of any index. Parent DELETE/UPDATE takes a s
 
 No DELETE policy. That command is denied for non-BYPASSRLS roles.
 
+- `platform.hermes_audit`
 - `platform.metrics_log`
 - `public.feedback`
 - `public.followups`
@@ -305,8 +270,17 @@ No DELETE policy. That command is denied for non-BYPASSRLS roles.
 
 No INSERT policy. That command is denied for non-BYPASSRLS roles.
 
+- `platform.hermes_audit`
 - `platform.metrics_log`
 - `public.lead_status_audit`
+
+---
+
+## RLS_NO_SELECT (LOW)
+
+No SELECT policy. That command is denied for non-BYPASSRLS roles.
+
+- `platform.hermes_audit`
 
 ---
 
@@ -315,7 +289,6 @@ No INSERT policy. That command is denied for non-BYPASSRLS roles.
 No UPDATE policy. That command is denied for non-BYPASSRLS roles.
 
 - `platform.metrics_log`
-- `public.lead_status_audit`
 - `public.webhook_logs`
 
 ---
@@ -339,7 +312,13 @@ RLS enabled, but every policy targets service_role only. Effectively service-rol
 - `peskids.form_deliveries`
 - `peskids.form_responses`
 - `peskids.form_templates`
+- `peskids.notification_preferences`
+- `peskids.notifications`
 - `peskids.point_transactions`
+- `peskids.push_subscriptions`
+- `peskids.referral_clicks`
+- `peskids.referral_links`
+- `peskids.referral_redemptions`
 - `peskids.store_cart_items`
 - `peskids.store_order_items`
 - `peskids.store_orders`
@@ -373,6 +352,9 @@ RLS enabled, but every policy targets service_role only. Effectively service-rol
 - `platform.opening_tasks`
 - `platform.peskids_aging_alert_deliveries`
 - `platform.peskids_feedback`
+- `platform.peskids_franchise_locations`
+- `platform.peskids_franchise_staff_memberships`
+- `platform.peskids_franchises`
 - `platform.peskids_lead_email_deliveries`
 - `platform.peskids_leads`
 - `platform.peskids_messages`
@@ -383,9 +365,12 @@ RLS enabled, but every policy targets service_role only. Effectively service-rol
 - `platform.supplier_requirements`
 - `platform.support_cases`
 - `platform.tenant_budgets`
+- `platform.tenant_embeddings`
 - `platform.tenant_entitlements`
 - `platform.tenant_memberships`
 - `platform.tenant_service_accounts`
 - `platform.tenant_webhooks`
 - `platform.training_requirements`
+- `platform.usage_events`
 - `public.staff_improvement_messages`
+- `public.tenant_settings`

@@ -48,6 +48,10 @@ echo "==> Running negative RLS cases"
 P -d "$DB" -q -v ON_ERROR_STOP=1 -f "$REPO_ROOT/tools/db-assurance/tests/02-rls-negative.sql" >/dev/null || {
   echo "FATAL: test suite failed to execute" >&2; exit 1; }
 
+echo "==> Running schema integrity cases"
+P -d "$DB" -q -v ON_ERROR_STOP=1 -f "$REPO_ROOT/tools/db-assurance/tests/03-integrity.sql" >/dev/null || {
+  echo "FATAL: integrity suite failed to execute" >&2; exit 1; }
+
 echo
 P -d "$DB" -P pager=off -c \
   "SELECT status, name, persona, expected AS exp, actual AS act
