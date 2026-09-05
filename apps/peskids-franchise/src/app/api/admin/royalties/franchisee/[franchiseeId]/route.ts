@@ -5,10 +5,8 @@ import { db } from '@/lib/db';
 export const dynamic = 'force-dynamic';
 
 // GET /api/admin/royalties/franchisee/[franchiseeId] - Get franchisee detail
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { franchiseeId: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ franchiseeId: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
     if (!session?.user?.email?.endsWith('@acmefranchise.com')) {

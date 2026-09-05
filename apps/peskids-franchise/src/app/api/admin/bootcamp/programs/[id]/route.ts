@@ -5,10 +5,8 @@ import { db } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 // GET - Get a single program with details
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
 
@@ -62,10 +60,8 @@ export async function GET(
 }
 
 // PUT - Update a program
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
 
@@ -123,10 +119,8 @@ export async function PUT(
 }
 
 // DELETE - Delete a program (only if no enrollments)
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
 
