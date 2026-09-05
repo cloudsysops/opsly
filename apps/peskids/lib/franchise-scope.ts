@@ -9,18 +9,18 @@
  * franchise-aware filtering to its admin routes.
  */
 
-import { createClient } from '@supabase/supabase-js';
 import { PESKIDS_TENANT_SLUG } from './franchise-constants';
+import { supabaseServerUntypedSchema } from './supabase';
 
 export type FranchiseScope = 'all' | string[];
 
+/** Canonical service-role client (see lib/supabase.ts) — never construct one here. */
 function serviceClient() {
-  const url = process.env.SUPABASE_URL?.trim() || process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
-  if (!url || !key) return null;
-  return createClient(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
+  try {
+    return supabaseServerUntypedSchema();
+  } catch {
+    return null;
+  }
 }
 
 /**

@@ -9,7 +9,7 @@
  */
 
 import { NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAuthAdmin } from '@/lib/supabase';
 import { resolveRequestId, errorJson, successJson } from '@/lib/api-response';
 import { verifyPeskidsInternalRequest } from '@/lib/internal-auth';
 import { rateLimit } from '@/lib/rate-limit';
@@ -57,9 +57,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   const redirectPath = rawRedirect.startsWith('/') ? rawRedirect : '/familias/submissions';
   const redirectTo = appUrl ? `${appUrl}${redirectPath}` : redirectPath;
 
-  const admin = createClient(supabaseUrl, serviceRoleKey, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
+  const admin = supabaseAuthAdmin();
 
   const { data, error } = await admin.auth.admin.generateLink({
     type: 'magiclink',
