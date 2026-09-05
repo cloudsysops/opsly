@@ -66,7 +66,16 @@ export async function POST(req: NextRequest): Promise<Response> {
   });
 
   if (error || !data?.properties?.action_link) {
-    console.error('[magic-link] generateLink error', { email, error, request_id: requestId });
+    // Never log the email itself — an auth-link failure is not a reason to
+    // put a family address in the log stream.
+    console.error(
+      JSON.stringify({
+        component: 'peskids.auth',
+        event: 'magic_link_generate_failed',
+        request_id: requestId,
+        error_code: (error as { code?: string } | null)?.code ?? 'unknown',
+      })
+    );
     const fallback = appUrl ? `${appUrl}/familias/login` : '/familias/login';
     return successJson(requestId, { url: fallback });
   }
