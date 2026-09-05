@@ -2,7 +2,11 @@
 # Validate Opsly pattern catalog and optionally install upstream Sigma rules.
 set -euo pipefail
 
-REPO_ROOT="${OPSLY_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+if [[ -n "${OPSLY_ROOT:-}" ]]; then
+  REPO_ROOT="$(cd "$OPSLY_ROOT" && pwd)"
+else
+  REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+fi
 WITH_SIGMA=false
 DRY_RUN=false
 

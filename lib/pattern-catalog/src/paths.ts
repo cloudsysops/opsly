@@ -48,6 +48,10 @@ export function validatePatternIndex(repoRoot?: string): string[] {
     ...index.tenant.map((p) => ({ kind: 'tenant', path: p })),
     ...index.opsly.map((p) => ({ kind: 'opsly', path: p })),
   ];
+  // getPattern()/listPatterns() key on id across all kinds (loadAllPatterns
+  // returns a single Map), so a duplicate id silently collapses two patterns
+  // into one at read time - catch that here instead.
+  const seenIds = new Map<string, string>();
   for (const entry of all) {
     const full = path.join(getPatternsRoot(root), entry.path);
     if (!existsSync(full)) {
@@ -61,6 +65,14 @@ export function validatePatternIndex(repoRoot?: string): string[] {
       }
       if (parsed.kind !== entry.kind) {
         errors.push(`${entry.path}: kind mismatch (index=${entry.kind}, file=${parsed.kind})`);
+      }
+      if (parsed.id) {
+        const existing = seenIds.get(parsed.id);
+        if (existing) {
+          errors.push(`${entry.path}: duplicate id "${parsed.id}" (also used by ${existing})`);
+        } else {
+          seenIds.set(parsed.id, entry.path);
+        }
       }
     } catch {
       errors.push(`${entry.path}: invalid JSON`);
