@@ -1,0 +1,126 @@
+{
+  "channel": {
+    "slug": "icso-bitsitos",
+    "brand": "Bitsitos",
+    "language": "es",
+    "owner": "icso",
+    "not_peskids": true,
+    "primary_surface": "youtube_shorts",
+    "aspect_ratio": "9:16",
+    "target_duration_sec": 40,
+    "tone": "curious_fun_edu",
+    "batch": "03-edu-entretenimiento",
+    "visual_style": "bright kids education entertainment, bold Spanish subtitles, no real child faces"
+  },
+  "preset": {
+    "slug": "youtube_shorts",
+    "label": "YouTube Shorts",
+    "platforms": ["youtube_shorts"],
+    "pillars": ["education", "entertainment"],
+    "tone_of_voice": "curious_fun_edu",
+    "language": "es",
+    "aspect_ratio": "9:16",
+    "target_duration_sec": 40,
+    "approval_required": true,
+    "render_provider": "moneyprinterturbo",
+    "notes": "Bitsitos batch 03 — educación + entretenimiento para rotar con tech/IA"
+  },
+  "drafts": [
+    {
+      "id": "bitsitos-015-pregunta",
+      "title": "1 pregunta que enciende el cerebro",
+      "story_hook": "Antes de buscar en Google… pregunta en voz alta.",
+      "call_to_action": "Hagan 1 pregunta rara en la cena. Bitsitos.",
+      "image_prompt": "Cartoon lightbulb question mark over dinner table family silhouettes, subtitle PREGUNTA, kids education",
+      "reel_script": [
+        { "scene": "Kid opens phone first", "copy": "¿Primero el celular… o la pregunta?", "duration_sec": 4 },
+        { "scene": "Ask out loud", "copy": "Díganla en voz alta 10 segundos.", "duration_sec": 12 },
+        { "scene": "Then search together", "copy": "Después buscan… y discuten.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "1 pregunta hoy. Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: celular vs pregunta.\nTip: pregunta en voz alta.\nCTA: Bitsitos.",
+      "hashtags": ["#Bitsitos", "#Educación", "#Familia", "#Curiosidad", "#Shorts"],
+      "pillar": "education"
+    },
+    {
+      "id": "bitsitos-016-mapa-idea",
+      "title": "Mapa mental en 30 segundos",
+      "story_hook": "Una idea en el centro… 3 rayitos.",
+      "call_to_action": "Dibujen el mapa de su tema favorito. Bitsitos.",
+      "image_prompt": "Simple mind map center bubble with three branches stars books rocket, subtitle MAPA, kids study tip",
+      "reel_script": [
+        { "scene": "Blank page panic", "copy": "¿Por dónde empiezo a estudiar?", "duration_sec": 4 },
+        { "scene": "Center + 3 branches", "copy": "Centro = tema. 3 ramas = ideas.", "duration_sec": 14 },
+        { "scene": "Add one example each", "copy": "En cada rama: 1 ejemplo real.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Mapa listo. Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: estudiar vacío.\nTip: mapa 1+3.\nCTA: Bitsitos.",
+      "hashtags": ["#Bitsitos", "#Estudio", "#Educación", "#MapaMental", "#Shorts"],
+      "pillar": "education"
+    },
+    {
+      "id": "bitsitos-017-error-ok",
+      "title": "El error que sí enseña",
+      "story_hook": "Equivocarse no es fallar: es data.",
+      "call_to_action": "Cuenten 1 error útil de hoy. Bitsitos.",
+      "image_prompt": "Cartoon eraser turning into a glowing lesson star, subtitle ERROR OK, warm kids education",
+      "reel_script": [
+        { "scene": "Kid hides worksheet", "copy": "¿Escondes el error?", "duration_sec": 4 },
+        { "scene": "Circle the mistake", "copy": "Márquenlo: ¿qué aprendí?", "duration_sec": 12 },
+        { "scene": "Retry once", "copy": "Reintento 1 vez con calma.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Error = data. Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: esconder error.\nTip: marcar + reintentar.\nCTA: Bitsitos.",
+      "hashtags": ["#Bitsitos", "#Educación", "#Mentalidad", "#Familia", "#Shorts"],
+      "pillar": "education"
+    },
+    {
+      "id": "bitsitos-018-show-3",
+      "title": "Mini show: 3 actos en casa",
+      "story_hook": "Entretenimiento casero: inicio, lío, final.",
+      "call_to_action": "Actúen 3 actos en 1 minuto. Bitsitos.",
+      "image_prompt": "Cartoon stage curtains three panels BEGIN MESS END with kids puppet silhouettes, subtitle SHOW, entertainment kids",
+      "reel_script": [
+        { "scene": "Curtain opens", "copy": "Acto 1: ¿quién es el héroe?", "duration_sec": 5 },
+        { "scene": "Chaos prop", "copy": "Acto 2: el problema aparece.", "duration_sec": 12 },
+        { "scene": "Happy fix", "copy": "Acto 3: lo resuelven juntos.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Su show hoy. Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: show en casa.\nTip: 3 actos.\nCTA: Bitsitos.",
+      "hashtags": ["#Bitsitos", "#Entretenimiento", "#Teatro", "#Familia", "#Shorts"],
+      "pillar": "entertainment"
+    },
+    {
+      "id": "bitsitos-019-cuento-reloj",
+      "title": "Cuento relámpago (60s)",
+      "story_hook": "Personaje + problema + giro = cuento.",
+      "call_to_action": "Inventen un cuento de 4 frases. Bitsitos.",
+      "image_prompt": "Storybook pages flipping with fox hero storm and rainbow twist, subtitle CUENTO, kids entertainment education",
+      "reel_script": [
+        { "scene": "Blank book", "copy": "¿Sin ideas? Usen la fórmula.", "duration_sec": 4 },
+        { "scene": "Formula cards", "copy": "Quién + qué quiere + obstáculo + giro.", "duration_sec": 14 },
+        { "scene": "Example fox", "copy": "‘Zorro quiere miel… lluvia… paraguas loco’.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "4 frases. Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: sin ideas.\nTip: fórmula cuento.\nCTA: Bitsitos.",
+      "hashtags": ["#Bitsitos", "#Cuentos", "#Entretenimiento", "#Creatividad", "#Shorts"],
+      "pillar": "entertainment"
+    },
+    {
+      "id": "bitsitos-020-risa-regla",
+      "title": "Humor limpio: la regla del sí",
+      "story_hook": "Reír juntos sin herir a nadie.",
+      "call_to_action": "Digan un chiste que pase la regla. Bitsitos.",
+      "image_prompt": "Green check comedy mic and red X mean joke icons, subtitle RISA OK, friendly kids entertainment",
+      "reel_script": [
+        { "scene": "Mean joke frown", "copy": "Si alguien se siente mal… no.", "duration_sec": 5 },
+        { "scene": "Green check laughs", "copy": "Regla: ¿todos pueden reír?", "duration_sec": 12 },
+        { "scene": "Silly wordplay", "copy": "Mejor: juegos de palabras y tonterías.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Humor limpio. Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: humor que duele.\nTip: todos pueden reír.\nCTA: Bitsitos.",
+      "hashtags": ["#Bitsitos", "#Humor", "#Entretenimiento", "#Valores", "#Shorts"],
+      "pillar": "entertainment"
+    }
+  ]
+}

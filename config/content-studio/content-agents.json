@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "updated_at": "2026-08-11",
+  "mission": "ICSO YouTube Content Factory — Bitsitos + Splashitos (not Peskids)",
+  "constraints": {
+    "no_peskids_branding": true,
+    "no_vps_heavy_daytime": true,
+    "render_hosts": ["mac-local", "pc-gamer"],
+    "publish": "approval-first unlisted then public"
+  },
+  "agents": [
+    {
+      "id": "cursor-executor",
+      "role": "render_and_kit",
+      "runtime": "mac",
+      "tasks": [
+        "moneyprinter-bridge :8080",
+        "render batch Shorts + long medium",
+        "rebuild youtube-upload-kit",
+        "UPLOAD-BOARD.html"
+      ],
+      "commands": [
+        "./scripts/content-factory-bootstrap.sh --mac-bridge --gen-assets --rebuild-kits"
+      ]
+    },
+    {
+      "id": "pc-gamer-gpu",
+      "role": "content-video-worker",
+      "runtime": "pc-gamer-wsl",
+      "tasks": [
+        "docker plane --with-content",
+        "BullMQ queue content-video",
+        "MoneyPrinter bridge GPU host"
+      ],
+      "commands": [
+        "./scripts/ops/pc-gamer-docker-plane.sh --up --with-content",
+        "OPSLY_WORKER_ALLOWLIST=ollama,content-video"
+      ],
+      "requires": ["tailscale", "REDIS_URL in .env.worker"]
+    },
+    {
+      "id": "hermes-planner",
+      "role": "cadence_planner",
+      "runtime": "mac-or-vps-queue",
+      "tasks": [
+        "rotate pillars edu / ent / sports / tech",
+        "1 Short/day publish order"
+      ]
+    },
+    {
+      "id": "human-publisher",
+      "role": "oauth_and_studio",
+      "runtime": "browser",
+      "tasks": [
+        "opslyquantum OAuth JSON",
+        "Studio channel branding (avatar/banner)",
+        "drag-drop until API live"
+      ],
+      "blocker_doc": "docs/brand/icso/OPSLYQUANTUM-YOUTUBE-SETUP.md"
+    }
+  ],
+  "queues": {
+    "content-video": {
+      "worker": "ContentVideoWorker",
+      "enqueue": "./scripts/content-studio-enqueue.sh --channel bitsitos"
+    }
+  },
+  "publish_order_today": [
+    "bitsitos-015 education",
+    "bitsitos-018 entertainment",
+    "splashitos-008 sports",
+    "bitsitos-001 tech",
+    "bitsitos-long-001-edu when ready"
+  ]
+}

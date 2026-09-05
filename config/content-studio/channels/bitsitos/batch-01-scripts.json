@@ -1,0 +1,136 @@
+{
+  "channel": {
+    "slug": "icso-bitsitos",
+    "brand": "Bitsitos",
+    "language": "es",
+    "owner": "icso",
+    "not_peskids": true,
+    "primary_surface": "youtube_shorts",
+    "aspect_ratio": "9:16",
+    "target_duration_sec": 40,
+    "tone": "curious_authentic",
+    "visual_style": "bright illustrated kids tech literacy, bold Spanish subtitles, circuit/pixel accents, no real child faces required, friendly mascot optional, clean educational style"
+  },
+  "preset": {
+    "slug": "youtube_shorts",
+    "label": "YouTube Shorts",
+    "platforms": ["youtube_shorts"],
+    "pillars": ["education", "marketing"],
+    "tone_of_voice": "curious_authentic",
+    "language": "es",
+    "visual_style": "bright illustrated kids tech literacy, bold Spanish subtitles, circuit/pixel accents",
+    "aspect_ratio": "9:16",
+    "target_duration_sec": 40,
+    "approval_required": true,
+    "render_provider": "moneyprinterturbo",
+    "notes": "ICSO Bitsitos — authentic tech for kids/families; not Peskids"
+  },
+  "drafts": [
+    {
+      "id": "bitsitos-001-wifi",
+      "title": "Tu WiFi no es magia (30s)",
+      "story_hook": "¿El WiFi ‘viaja’ por el aire como humo? Casi…",
+      "call_to_action": "Prueba: aleja el router de la microondas 1 día. Guarda + Bitsitos.",
+      "image_prompt": "Cartoon router sending soft radio waves to tablet and laptop, Spanish subtitle WIFI, turquoise and amber tech palette, kids education, no logos",
+      "reel_script": [
+        { "scene": "Kid stares at spinning WiFi icon", "copy": "¿Magia? No.", "duration_sec": 3 },
+        { "scene": "Router radio waves simple", "copy": "Son ondas de radio: invisible, pero real.", "duration_sec": 10 },
+        { "scene": "Wall blocks some signal", "copy": "Paredes y microondas lo debilitan.", "duration_sec": 10 },
+        { "scene": "Router in open place", "copy": "Router al centro de casa = más barras.", "duration_sec": 10 },
+        { "scene": "End card Bitsitos", "copy": "Guarda y síguenos: Bitsitos", "duration_sec": 5 }
+      ],
+      "youtube_shorts_script": "Hook: ¿WiFi magia?\nTip: ondas de radio; paredes/microondas bajan señal; router al centro.\nCTA: prueba 1 día + Bitsitos.",
+      "hashtags": ["#Bitsitos", "#WiFi", "#TechParaNiños", "#FamiliaDigital", "#Shorts"]
+    },
+    {
+      "id": "bitsitos-002-password",
+      "title": "Contraseña que un niño sí recuerda",
+      "story_hook": "123456 no es ‘fácil’: es regalar la cuenta.",
+      "call_to_action": "Inventen 1 frase-familia hoy. Bitsitos.",
+      "image_prompt": "Cartoon lock with colorful passphrase tiles like GATO-ROJO-BICICLETA, subtitle FRASE SECRETA, kids tech education",
+      "reel_script": [
+        { "scene": "123456 crossed out", "copy": "Esto NO es seguro…", "duration_sec": 4 },
+        { "scene": "Passphrase three words", "copy": "Mejor: 3 palabras raras juntas.", "duration_sec": 12 },
+        { "scene": "Family invents phrase", "copy": "Ejemplo: gato-rojo-bicicleta-2026.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Una frase-familia hoy. Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Anti: 123456.\nTip: frase de 3+ palabras.\nCTA: inventen una + Bitsitos.",
+      "hashtags": ["#Bitsitos", "#Contraseñas", "#Ciberseguridad", "#Niños", "#Shorts"]
+    },
+    {
+      "id": "bitsitos-003-ia",
+      "title": "Qué es la IA (sin miedo)",
+      "story_hook": "La IA no ‘piensa’ como tú: adivina patrones.",
+      "call_to_action": "Pregúntenle algo a un chat… y verifiquen juntos. Bitsitos.",
+      "image_prompt": "Friendly cartoon brain made of puzzle pieces next to curious kid silhouette, subtitle PATRONES, no scary robots, educational",
+      "reel_script": [
+        { "scene": "Scary robot myth", "copy": "No es un robot que te lee la mente.", "duration_sec": 5 },
+        { "scene": "Pattern matching simple", "copy": "Aprendió con muchísimos ejemplos.", "duration_sec": 12 },
+        { "scene": "Can be wrong", "copy": "A veces se inventa. Por eso verificamos.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Curiosos + críticos = Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: IA no lee mentes.\nTip: patrones + puede errar; verificar en familia.\nCTA: Bitsitos.",
+      "hashtags": ["#Bitsitos", "#IA", "#TechParaNiños", "#Aprender", "#Shorts"]
+    },
+    {
+      "id": "bitsitos-004-phishing",
+      "title": "El email falso en 20 segundos",
+      "story_hook": "Si te apuran a hacer clic… frena.",
+      "call_to_action": "Regla: papá/mamá revisa enlaces raros. Bitsitos.",
+      "image_prompt": "Cartoon email envelope with fake gift bait and stop hand, subtitle NO CLIC, kids cyber safety education",
+      "reel_script": [
+        { "scene": "Urgent fake gift email", "copy": "‘¡Ganaste! Haz clic YA’… sospechoso.", "duration_sec": 5 },
+        { "scene": "Check sender weird domain", "copy": "Mira el remitente: ¿se ve raro?", "duration_sec": 12 },
+        { "scene": "Ask adult before click", "copy": "Niños: avisen. Adultos: no abran el link.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Frena = ganas. Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: clic urgente.\nTip: revisar remitente + avisar adulto.\nCTA: Bitsitos.",
+      "hashtags": ["#Bitsitos", "#Phishing", "#SeguridadOnline", "#Familia", "#Shorts"]
+    },
+    {
+      "id": "bitsitos-005-pantallas",
+      "title": "Regla de oro de pantallas",
+      "story_hook": "No es ‘cero pantallas’: es pantallas con propósito.",
+      "call_to_action": "Elijan 1 bloque de juego digital hoy. Bitsitos.",
+      "image_prompt": "Cartoon timer and tablet with outdoor bike waiting by window, subtitle CON PROPOSITO, warm family tech education",
+      "reel_script": [
+        { "scene": "Endless scroll tired kid", "copy": "Scroll infinito cansa el cerebro.", "duration_sec": 5 },
+        { "scene": "Timer and plan", "copy": "Acuerden: cuánto + para qué.", "duration_sec": 12 },
+        { "scene": "After screen outdoor", "copy": "Después: agua, estirar o jugar afuera.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "1 bloque con propósito. Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: no es cero pantallas.\nTip: tiempo + propósito + aftercare.\nCTA: Bitsitos.",
+      "hashtags": ["#Bitsitos", "#Pantallas", "#HábitosDigitales", "#Familia", "#Shorts"]
+    },
+    {
+      "id": "bitsitos-006-nube",
+      "title": "USB vs nube (para peques)",
+      "story_hook": "¿Dónde viven tus dibujos digitales?",
+      "call_to_action": "Guarden 1 carpeta ‘Tareas’ en la nube familiar. Bitsitos.",
+      "image_prompt": "Cartoon USB stick and fluffy cloud with folder icons, subtitle USB VS NUBE, playful tech literacy",
+      "reel_script": [
+        { "scene": "USB as backpack", "copy": "USB = mochila: lo llevas tú.", "duration_sec": 6 },
+        { "scene": "Cloud as library locker", "copy": "Nube = casillero online: entra con cuenta.", "duration_sec": 12 },
+        { "scene": "Backup both idea", "copy": "Importante: copia en dos sitios.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Carpeta Tareas hoy. Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: ¿dónde viven los archivos?\nTip: USB mochila / nube casillero / 2 copias.\nCTA: Bitsitos.",
+      "hashtags": ["#Bitsitos", "#Nube", "#Archivos", "#TechParaNiños", "#Shorts"]
+    },
+    {
+      "id": "bitsitos-007-permisos",
+      "title": "El permiso que papás olvidan",
+      "story_hook": "La app pide micrófono… ¿para un juego de colores?",
+      "call_to_action": "Revisen permisos de 1 app hoy. Bitsitos.",
+      "image_prompt": "Cartoon phone permission toggles mic camera location with question marks, subtitle PERMISOS, family privacy education",
+      "reel_script": [
+        { "scene": "App asks mic for no reason", "copy": "Si no lo necesita… niega.", "duration_sec": 5 },
+        { "scene": "Settings permissions", "copy": "Ajustes → app → permisos.", "duration_sec": 12 },
+        { "scene": "Only what is needed", "copy": "Cámara, mic, ubicación: solo si hace falta.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "1 app revisada = Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: permiso raro.\nTip: niega lo innecesario; revisen 1 app.\nCTA: Bitsitos.",
+      "hashtags": ["#Bitsitos", "#Privacidad", "#Permisos", "#Padres", "#Shorts"]
+    }
+  ]
+}

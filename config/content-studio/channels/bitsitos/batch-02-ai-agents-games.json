@@ -1,0 +1,136 @@
+{
+  "channel": {
+    "slug": "icso-bitsitos",
+    "brand": "Bitsitos",
+    "language": "es",
+    "owner": "icso",
+    "not_peskids": true,
+    "primary_surface": "youtube_shorts",
+    "aspect_ratio": "9:16",
+    "target_duration_sec": 40,
+    "tone": "curious_authentic",
+    "batch": "02-ai-agents-games",
+    "visual_style": "bright illustrated kids tech, AI mascot friendly, game story panels, bold Spanish subtitles, no real child faces"
+  },
+  "preset": {
+    "slug": "youtube_shorts",
+    "label": "YouTube Shorts",
+    "platforms": ["youtube_shorts"],
+    "pillars": ["ai", "agents", "games", "education"],
+    "tone_of_voice": "curious_authentic",
+    "language": "es",
+    "visual_style": "bright illustrated kids tech AI agents games",
+    "aspect_ratio": "9:16",
+    "target_duration_sec": 40,
+    "approval_required": true,
+    "render_provider": "moneyprinterturbo",
+    "notes": "Bitsitos batch 02 — AI, agents, game stories for YouTube income"
+  },
+  "drafts": [
+    {
+      "id": "bitsitos-008-agente",
+      "title": "¿Qué es un agente de IA?",
+      "story_hook": "Un agente no es magia: es un ayudante con misión.",
+      "call_to_action": "Di en voz alta una misión de 1 paso. Bitsitos.",
+      "image_prompt": "Friendly cartoon robot helper with a checklist mission badge, subtitle AGENTE, kids tech education, no scary AI",
+      "reel_script": [
+        { "scene": "Confused kid with chat bubble", "copy": "¿Chat… o agente?", "duration_sec": 4 },
+        { "scene": "Agent with goal checklist", "copy": "Agente = objetivo + pasos + herramientas.", "duration_sec": 12 },
+        { "scene": "Example tidy backpack mission", "copy": "Ejemplo: ‘arma la mochila’ paso a paso.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "1 misión hoy. Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: chat vs agente.\nTip: objetivo + pasos + tools.\nCTA: Bitsitos.",
+      "hashtags": ["#Bitsitos", "#AgentesIA", "#IA", "#TechParaNiños", "#Shorts"]
+    },
+    {
+      "id": "bitsitos-009-prompt",
+      "title": "El prompt que sí entiende la IA",
+      "story_hook": "Si pides mal… la IA adivina mal.",
+      "call_to_action": "Escriban: rol + tarea + ejemplo. Bitsitos.",
+      "image_prompt": "Cartoon speech bubble with three blocks ROL TAREA EJEMPLO, friendly AI face, kids education subtitle PROMPT",
+      "reel_script": [
+        { "scene": "Vague ask fails", "copy": "‘Haz algo cool’… no sirve.", "duration_sec": 4 },
+        { "scene": "Three blocks formula", "copy": "Mejor: quién eres + qué quiero + un ejemplo.", "duration_sec": 14 },
+        { "scene": "Story for kids example", "copy": "‘Eres guía: cuéntame un cuento de 4 frases’.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Prueben la fórmula. Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Anti: pedido vago.\nTip: rol + tarea + ejemplo.\nCTA: Bitsitos.",
+      "hashtags": ["#Bitsitos", "#Prompt", "#IA", "#Aprender", "#Shorts"]
+    },
+    {
+      "id": "bitsitos-010-alucina",
+      "title": "Cuando la IA se inventa cosas",
+      "story_hook": "Se llama alucinación: suena seguro… y puede estar mal.",
+      "call_to_action": "Regla: 2 fuentes antes de creerlo. Bitsitos.",
+      "image_prompt": "Cartoon AI saying wrong fact with red X and book/check icons, subtitle VERIFICA, calm educational kids style",
+      "reel_script": [
+        { "scene": "Confident wrong answer", "copy": "A veces ‘suena’ verdad… y no lo es.", "duration_sec": 5 },
+        { "scene": "Check with adult or book", "copy": "Verifiquen con papá/mamá o otra fuente.", "duration_sec": 12 },
+        { "scene": "Ask again differently", "copy": "O pidan: ‘¿estás seguro? dame fuentes’.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Curiosos + críticos. Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: IA inventa.\nTip: verificar 2 fuentes.\nCTA: Bitsitos.",
+      "hashtags": ["#Bitsitos", "#IA", "#PensamientoCritico", "#Familia", "#Shorts"]
+    },
+    {
+      "id": "bitsitos-011-juego-nivel",
+      "title": "Historia de juego: el boss del nivel 1",
+      "story_hook": "Todo gran juego empieza con un mini-reto.",
+      "call_to_action": "Inventen el boss del nivel 1 en 20s. Bitsitos.",
+      "image_prompt": "Cute cartoon game level map with small friendly boss slime, subtitle NIVEL 1, colorful kids game story style",
+      "reel_script": [
+        { "scene": "Hero at door level 1", "copy": "Nivel 1: no el dragón final…", "duration_sec": 4 },
+        { "scene": "Small slime boss", "copy": "Un reto chiquito que enseña la mecánica.", "duration_sec": 12 },
+        { "scene": "Learn jump then fight", "copy": "Primero saltar… después el boss.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Diseñen su nivel 1. Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: boss nivel 1.\nTip: reto chico enseña mecánica.\nCTA: Bitsitos.",
+      "hashtags": ["#Bitsitos", "#GameDesign", "#Juegos", "#Historias", "#Shorts"]
+    },
+    {
+      "id": "bitsitos-012-npc",
+      "title": "NPC: el personaje que ayuda",
+      "story_hook": "No todos pelean: algunos dan pistas.",
+      "call_to_action": "Creen 1 NPC con una pista. Bitsitos.",
+      "image_prompt": "Cartoon village NPC giving a glowing clue map to young hero, subtitle NPC, wholesome kids game story",
+      "reel_script": [
+        { "scene": "Empty town", "copy": "Un mundo sin ayuda se siente solo…", "duration_sec": 4 },
+        { "scene": "NPC gives clue", "copy": "NPC = personaje que da misión o pista.", "duration_sec": 12 },
+        { "scene": "Kid invents NPC line", "copy": "‘Si ves 3 estrellas, gira a la izquierda’.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "1 NPC hoy. Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: no todos pelean.\nTip: NPC da pista/misión.\nCTA: Bitsitos.",
+      "hashtags": ["#Bitsitos", "#NPC", "#GameDesign", "#Creatividad", "#Shorts"]
+    },
+    {
+      "id": "bitsitos-013-loop",
+      "title": "El loop que engancha (juegos)",
+      "story_hook": "Jugar → ganar monedita → mejorar → repetir.",
+      "call_to_action": "Dibujen su loop en un papel. Bitsitos.",
+      "image_prompt": "Circular arrow diagram play earn upgrade play again with cute coin and star, subtitle LOOP, kids game design education",
+      "reel_script": [
+        { "scene": "Kid bored one-shot game", "copy": "Si no hay progreso… se aburre.", "duration_sec": 4 },
+        { "scene": "Loop arrows", "copy": "Loop: juega, gana, mejora, vuelve.", "duration_sec": 14 },
+        { "scene": "Small reward star", "copy": "Premio chiquito + meta más grande.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Su loop en papel. Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: por qué engancha.\nTip: loop jugar-ganar-mejorar.\nCTA: Bitsitos.",
+      "hashtags": ["#Bitsitos", "#GameLoop", "#Juegos", "#Design", "#Shorts"]
+    },
+    {
+      "id": "bitsitos-014-agente-casa",
+      "title": "Agente en casa: tarea de 3 pasos",
+      "story_hook": "Convierte ‘limpia tu cuarto’ en una misión de agente.",
+      "call_to_action": "3 pasos + check. Bitsitos.",
+      "image_prompt": "Cartoon checklist on tablet with kid-room icons clothes books trash, subtitle MISION, family AI agent education",
+      "reel_script": [
+        { "scene": "Vague chore overwhelm", "copy": "‘Limpia TODO’… se traba.", "duration_sec": 4 },
+        { "scene": "Three steps list", "copy": "Agente: 1 ropa 2 libros 3 basura.", "duration_sec": 14 },
+        { "scene": "Check each done", "copy": "Marca cada paso. Fin de misión.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Misión de 3 pasos. Bitsitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: chore overwhelm.\nTip: agente = 3 pasos + check.\nCTA: Bitsitos.",
+      "hashtags": ["#Bitsitos", "#Agentes", "#Productividad", "#Familia", "#Shorts"]
+    }
+  ]
+}

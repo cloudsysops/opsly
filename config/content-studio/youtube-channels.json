@@ -1,0 +1,65 @@
+{
+  "owner": "icso",
+  "not_peskids": true,
+  "doppler_project": "ops-intcloudsysops",
+  "doppler_config": "prd",
+  "defaults": {
+    "privacy": "unlisted",
+    "made_for_kids": false,
+    "category_id": "27",
+    "language": "es",
+    "primary_surface": "youtube_shorts"
+  },
+  "content_pillars": {
+    "education": { "channel": "bitsitos", "batches": ["batch-01", "batch-03", "longform-04"] },
+    "entertainment": { "channel": "bitsitos", "batches": ["batch-02-games", "batch-03", "longform-04"] },
+    "sports": { "channel": "splashitos", "batches": ["batch-01-swim", "batch-02-deporte", "longform-04"] },
+    "tech_ai": { "channel": "bitsitos", "batches": ["batch-01", "batch-02"] }
+  },
+  "channels": {
+    "bitsitos": {
+      "brand": "Bitsitos",
+      "slug": "icso-bitsitos",
+      "niche": "tech_ai_education_entertainment",
+      "youtube_channel_id": "UCnR41BenV3taCLiYQiOqoGg",
+      "studio_url": "https://studio.youtube.com/channel/UCnR41BenV3taCLiYQiOqoGg",
+      "kit_dir": "runtime/content-studio/youtube-upload-kit/bitsitos",
+      "batch_dir": "config/content-studio/channels/bitsitos",
+      "doppler_prefix": "YOUTUBE_BITSITOS",
+      "monetization_goal": "youtube_partner_shorts_and_long",
+      "playlists": ["Educación", "Entretenimiento", "Tech e IA", "Juegos"],
+      "notes": "Shorts diarios + 1 long/semana (outlines en longform-04)."
+    },
+    "splashitos": {
+      "brand": "Splashitos",
+      "slug": "icso-splashitos",
+      "niche": "sports_swim_kids",
+      "youtube_channel_id": "",
+      "studio_url": "",
+      "kit_dir": "runtime/content-studio/youtube-upload-kit/splashitos",
+      "batch_dir": "config/content-studio/channels/splashitos",
+      "doppler_prefix": "YOUTUBE_SPLASHITOS",
+      "monetization_goal": "youtube_partner_then_peskids_license",
+      "playlists": ["Natación", "Deporte en casa", "Seguridad"],
+      "notes": "Crear canal Splashitos; pegar ID. Deporte + agua."
+    }
+  },
+  "doppler_secrets": {
+    "required_for_api_upload": [
+      "YOUTUBE_CLIENT_ID",
+      "YOUTUBE_CLIENT_SECRET",
+      "YOUTUBE_REFRESH_TOKEN"
+    ],
+    "channel_metadata": [
+      "YOUTUBE_BITSITOS_CHANNEL_ID",
+      "YOUTUBE_SPLASHITOS_CHANNEL_ID",
+      "YOUTUBE_PRIVACY",
+      "YOUTUBE_MADE_FOR_KIDS",
+      "YOUTUBE_DEFAULT_CATEGORY_ID",
+      "YOUTUBE_UPLOAD_DEFAULT_CHANNEL"
+    ],
+    "optional": [
+      "YOUTUBE_REDIRECT_URI"
+    ]
+  }
+}

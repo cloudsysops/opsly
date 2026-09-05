@@ -1,0 +1,139 @@
+BITSITOS — pack YouTube Studio (pegar tal cual)
+Canal: https://studio.youtube.com/channel/UCnR41BenV3taCLiYQiOqoGg
+Cuenta Google: intcloudsysops@gmail.com (no cboteros1)
+
+Imágenes (ya recortadas a medida):
+  Foto de perfil 800x800   → runtime/content-studio/brand-assets/bitsitos-avatar.png
+  Banner 2560x1440         → runtime/content-studio/brand-assets/bitsitos-banner.png
+  Marca de agua 150x150    → runtime/content-studio/brand-assets/bitsitos-watermark.png
+
+════════════════════════════════════════
+1) PERSONALIZACIÓN → Perfil
+════════════════════════════════════════
+Nombre del canal:
+Bitsitos
+
+Handle (si está libre; si no: @BitsitosKids o @BitsitosFamilia):
+@Bitsitos
+
+════════════════════════════════════════
+2) PERSONALIZACIÓN → Marca
+════════════════════════════════════════
+Foto: bitsitos-avatar.png
+Banner: bitsitos-banner.png
+Marca de agua en videos: bitsitos-watermark.png
+  Duración: todo el video
+  Opacidad: ~70%
+  Esquina: inferior derecha (invertir en Shorts si tapa el CTA)
+
+════════════════════════════════════════
+3) PERSONALIZACIÓN → Información básica  (descripción)
+════════════════════════════════════════
+Bitsitos — tecnología auténtica para niños y familias 🧩
+
+Shorts claros de 30–60s: WiFi, contraseñas, IA sin miedo, agentes, juegos,
+seguridad online y hábitos digitales que sí puedes practicar en casa hoy.
+
+Hecho para papás que enseñan y peques curiosos. Sin clickbait vacío.
+
+Nuevo tip casi cada día. Guarda el Short y pruébalo en familia.
+
+Pilares
+• Tech e IA — cómo funciona de verdad
+• Educación — una idea, un hábito
+• Entretenimiento — mini shows y cuentos limpios
+• Juegos — bosses, NPCs y loops que enganchan
+
+⚠️ Contenido educativo. No sustituye supervisión parental ni clases certificadas.
+Canal de ICSO / Opsly Content Lab. No afiliado a Peskids.
+
+#Bitsitos #TechParaNiños #FamiliaDigital #IAParaNiños
+
+════════════════════════════════════════
+4) Enlaces del canal
+════════════════════════════════════════
+Sitio (cuando esté): https://icso.op-sly.com   (o el dominio ICSO real)
+Contacto: intcloudsysops@gmail.com
+Instagram / TikTok: crear @bitsitos y pegar cuando existan (no dejar vacíos rotos)
+
+════════════════════════════════════════
+5) Palabras clave del canal
+════════════════════════════════════════
+bitsitos, tecnología para niños, ia para niños, agentes de ia, seguridad digital,
+wifi explicado, contraseñas para niños, educación familiar, shorts educativos,
+tech literacy, papás y tecnología, juegos para niños, hábitos digitales
+
+════════════════════════════════════════
+6) País e idioma
+════════════════════════════════════════
+País: Colombia
+Idioma predeterminado: Español
+Audiencia: No, este canal no está hecho para niños
+  (el tono es para papás que enseñan; monetiza mejor. Si un video habla SOLO al niño, márcalo en ese video.)
+
+════════════════════════════════════════
+7) Diseño del canal (pestañas)
+════════════════════════════════════════
+Tráiler para visitantes nuevos: el Short 001  https://youtu.be/xnlYm8WAkUk
+Video destacado para suscriptores: rotar al Short de la semana
+
+Playlists (crear y añadir videos):
+  Educación
+  Entretenimiento
+  Tech e IA
+  Juegos
+
+Secciones del home:
+  1. Videos recientes (Shorts)
+  2. Tech e IA
+  3. Educación
+  4. Juegos
+  5. Long-form (cuando subas los de 2 min)
+
+════════════════════════════════════════
+8) Configuración → Subidas  (defaults)
+════════════════════════════════════════
+Visibilidad: Oculto (unlisted)  → pasar a Público tras 1 revisión
+Categoría: Educación
+Idioma: Español
+Títulos/descripciones: copiar del kit .txt
+Comentarios: Activados + filtrar groserías
+Licencia: Standard YouTube
+Remix / Shorts: permitir
+Alerta de menores: desactivada a nivel canal (marcar por video si aplica)
+
+Plantilla de descripción (defaults de subida):
+
+Bitsitos — un tip que sí puedes probar hoy.
+
+Guarda el Short y enséñalo en familia.
+
+⚠️ Educativo. No sustituye supervisión parental.
+ICSO / Opsly Content Lab. No Peskids.
+
+#Bitsitos #TechParaNiños #FamiliaDigital
+
+════════════════════════════════════════
+9) Configuración → Comunidad
+════════════════════════════════════════
+Filtro automático: activar
+Palabras bloqueadas: groserías + “peskids” si no hay contrato
+Links en comentarios: restringir hasta tener comunidad
+
+════════════════════════════════════════
+10) Monetización (después)
+════════════════════════════════════════
+Aún no Partner (0 subs). Objetivo: 1k subs + umbral Shorts.
+No pidas Super Thanks hasta tener comunidad.
+No uses marca Peskids.
+
+════════════════════════════════════════
+Orden en Studio (15 min)
+════════════════════════════════════════
+1. Personalización → cambiar nombre a Bitsitos + handle
+2. Subir foto, banner, marca de agua
+3. Pegar descripción + keywords + país
+4. Crear 4 playlists y meter los 10 videos ya subidos
+5. Tráiler = https://youtu.be/xnlYm8WAkUk
+6. Publicar cambios
+7. (Opcional) pasar 001–003 de unlisted → público para arrancar
