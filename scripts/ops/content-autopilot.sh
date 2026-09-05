@@ -121,7 +121,7 @@ fi
 
 publish_args=(--channel "$CHANNEL")
 if [[ "$AUTO_PUBLISH" == true && "${AUTO_PUBLISH_YOUTUBE:-}" == "true" && "$KIT_ONLY" != true ]]; then
-  publish_args+=(--upload)
+  publish_args+=(--upload --limit 1)
   echo "auto-publish ACTIVO (AUTO_PUBLISH_YOUTUBE=true + --auto-publish)"
   log "publish=upload channel=${CHANNEL}"
 else

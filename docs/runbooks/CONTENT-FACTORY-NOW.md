@@ -7,7 +7,7 @@ type: runbook
 
 # Content Factory — arranque completo (Bitsitos + Splashitos)
 
-> **Capacidad VPS:** alerta activa (~4 GiB). No deploy pesado de día. Render = **solo PC-gamer**. Mac encola, sincroniza MP4s y arma el kit. YouTube sigue approval-first.
+> **Capacidad VPS:** alerta activa (~4 GiB). No deploy pesado de día. Render = **solo PC-gamer**. Mac encola, sincroniza MP4s y **publica 24×7** el siguiente unpublished (unlisted, tope 6/día por cuota YouTube).
 
 ## Estado objetivo
 
@@ -15,9 +15,9 @@ type: runbook
 |-------|-------|--------|
 | Shorts + long | PC-gamer `content-video` + MoneyPrinter `:8080` | Requiere PC encendido |
 | Enqueue / Redis | Mac + Doppler `REDIS_URL` | Job `mpt_base_url=http://127.0.0.1:8080` |
-| Kits YouTube | Mac tras `content-studio-sync-renders.sh` | Approval-first |
+| Kits YouTube | Mac tras `content-studio-sync-renders.sh` | Ledger `runtime/content-studio/published.json` |
 | Avatar/banner | `runtime/content-studio/brand-assets/` | `--gen-assets` en Mac (ImageMagick) |
-| OAuth → Doppler → upload API | Humano + script | No `--upload` sin draft nombrado |
+| OAuth → Doppler → upload API | LaunchAgent 24×7 cada 15 min | Siguiente unpublished `--limit 1` |
 | Agentes | `config/content-studio/content-agents.json` | Roster gamer-only |
 
 ## 1) PC-gamer (obligatorio para render)
@@ -62,7 +62,9 @@ Checklist: [`OPSLYQUANTUM-YOUTUBE-SETUP.md`](../brand/icso/OPSLYQUANTUM-YOUTUBE-
 ```bash
 ./scripts/content-factory-bootstrap.sh --watch-oauth
 # cuando exista ~/Downloads/youtube-oauth-client.json → Doppler + refresh token
-# upload solo si el humano nombra el draft
+# 24×7: el Mac sube el siguiente unpublished (unlisted)
+npm run content:24x7:dry
+./scripts/ops/ensure-content-studio-24x7-launchd.sh
 ```
 
 ## 3) Kits / brand en Mac (sin render)
@@ -84,17 +86,27 @@ Roster: `config/content-studio/content-agents.json`
 
 | Agente | Trabajo |
 |--------|---------|
-| Cursor (Mac) | Enqueue, sync, kits, docs |
+| Cursor (Mac) | Enqueue, sync, kits, tick 24×7 |
 | PC-gamer worker | Cola `content-video` + GPU + bridge `:8080` |
 | Hermes | Cadencia pilares |
-| Humano | OAuth + Studio branding + approve public |
+| Launchd | `com.opsly.content-studio-24x7` cada 15 min |
+| Humano | OAuth en Doppler + branding Splashitos channel id |
 
-## 5) Cadencia publicar
+## 5) Cadencia publicar (24×7)
 
-1 Short/día rotando: Educación → Entretenimiento → Deporte → Tech.  
+Fábrica siempre encendida en el Mac. **No** 24 uploads/día: la API de YouTube da ~6 videos/día (1600 unidades × 6 ≈ cuota 10k).
+
+| Pieza | Regla |
+|-------|--------|
+| Tick | `scripts/ops/content-studio-24x7.sh` cada 15 min |
+| Upload | 1 unpublished por tick, si pasaron 4 h y hay cupo |
+| Tope | `CONTENT_STUDIO_UPLOADS_PER_DAY=6` |
+| Privacidad | `YOUTUBE_PRIVACY` (Doppler, default **unlisted**) |
+| Render | Solo gamer en `heavy`/`light`; durante `gaming` solo publica |
+| Splashitos | Skip upload hasta `YOUTUBE_SPLASHITOS_CHANNEL_ID` |
+| Skip | `runtime/content-studio/published.json` + `upload-results.json` |
+
 Orden: [`BITSITOS-UPLOAD-NOW.md`](../brand/icso/BITSITOS-UPLOAD-NOW.md) · [`SPLASHITOS-UPLOAD-NOW.md`](../brand/icso/SPLASHITOS-UPLOAD-NOW.md)
-
-Privacidad inicial: **unlisted** (`YOUTUBE_PRIVACY`).
 
 ## 6) No hacer
 
@@ -103,4 +115,5 @@ Privacidad inicial: **unlisted** (`YOUTUBE_PRIVACY`).
 - Arrancar MoneyPrinter en Mac como camino normal
 - Encolar `content-video` si el gamer está offline (los jobs no tienen consumidor)
 - Reusar OAuth SmileTripCare
-- `--upload` / `--auto-publish` sin draft nombrado por un humano
+- `--upload` sin `--limit` (re-subiría el lote; el ledger ya salta publicados)
+- `YOUTUBE_MADE_FOR_KIDS=true` sin revisión humana

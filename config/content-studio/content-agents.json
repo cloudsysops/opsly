@@ -6,8 +6,8 @@
     "no_peskids_branding": true,
     "no_vps_heavy_daytime": true,
     "render_hosts": ["pc-gamer"],
-    "mac_role": "enqueue + kit + youtube approval",
-    "publish": "approval-first unlisted then public"
+    "mac_role": "enqueue + kit + 24x7 youtube publish",
+    "publish": "24x7 next-unpublished unlisted, max 6/day (YouTube quota)"
   },
   "agents": [
     {
@@ -19,12 +19,13 @@
         "enqueue content-video (mpt http://127.0.0.1:8080 on gamer)",
         "sync renders from gamer",
         "rebuild youtube-upload-kit",
-        "UPLOAD-BOARD.html"
+        "24x7 publish next unpublished (--limit 1)"
       ],
       "commands": [
         "./scripts/content-factory-bootstrap.sh --gamer-up",
         "./scripts/ops/content-studio-sync-renders.sh",
-        "./scripts/content-studio-publish-youtube.sh --channel bitsitos --kit"
+        "./scripts/ops/content-studio-24x7.sh",
+        "./scripts/content-studio-publish-youtube.sh --channel bitsitos --upload --limit 1"
       ]
     },
     {
@@ -49,7 +50,7 @@
       "runtime": "mac-or-vps-queue",
       "tasks": [
         "rotate pillars edu / ent / sports / tech",
-        "1 Short/day publish order"
+        "24x7 factory tick, max 6 uploads/day YouTube quota"
       ]
     },
     {
@@ -57,9 +58,9 @@
       "role": "oauth_and_studio",
       "runtime": "browser",
       "tasks": [
-        "opslyquantum OAuth JSON",
+        "opslyquantum OAuth JSON in Doppler",
         "Studio channel branding (avatar/banner)",
-        "drag-drop until API live"
+        "Splashitos channel id when ready"
       ],
       "blocker_doc": "docs/brand/icso/OPSLYQUANTUM-YOUTUBE-SETUP.md"
     }

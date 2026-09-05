@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Prepare / optionally upload ICSO Content Studio Shorts to YouTube.
-# Default is approval-first: writes an upload kit. --upload needs OAuth env.
+# Default writes an upload kit. --upload needs OAuth and skips already-published ids.
 #
 # Usage:
 #   ./scripts/content-studio-publish-youtube.sh --channel bitsitos --dry-run
@@ -65,6 +65,7 @@ export YOUTUBE_DEFAULT_CATEGORY_ID="${YOUTUBE_DEFAULT_CATEGORY_ID:-27}"
 export CONTENT_STUDIO_CHANNELS_JSON="${CONTENT_STUDIO_CHANNELS_JSON:-$ROOT/config/content-studio/youtube-channels.json}"
 export CONTENT_STUDIO_PUBLISH_LIMIT="$LIMIT"
 export CONTENT_STUDIO_PUBLISH_ORDER_FILE="$ORDER_FILE"
+export CONTENT_STUDIO_PUBLISHED_FILE="${CONTENT_STUDIO_PUBLISHED_FILE:-$ROOT/runtime/content-studio/published.json}"
 export MODE
 
 if [[ ! -d "$CONTENT_STUDIO_CHANNEL_DIR" ]]; then
@@ -83,7 +84,7 @@ import {
   copyFileSync,
   statSync,
 } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 
 const mode = process.env.MODE;
 const channelKey = process.env.CONTENT_STUDIO_CHANNEL || 'bitsitos';
@@ -143,18 +144,31 @@ const kitDir = process.env.CONTENT_STUDIO_KIT_DIR;
 const privacy = process.env.YOUTUBE_PRIVACY || 'unlisted';
 const madeForKids = String(process.env.YOUTUBE_MADE_FOR_KIDS || 'false') === 'true';
 
-const mp4s = existsSync(rendersDir)
-  ? readdirSync(rendersDir).filter((f) => f.endsWith('.mp4'))
-  : [];
+function listMp4s(dir) {
+  if (!dir || !existsSync(dir)) return [];
+  return readdirSync(dir).filter((f) => f.endsWith('.mp4'));
+}
 
-function findMp4(draftId) {
-  const matches = mp4s.filter((f) => f.startsWith(draftId));
+const renderMp4s = listMp4s(rendersDir);
+const kitMp4s = listMp4s(kitDir);
+const mp4s = [...new Set([...renderMp4s, ...kitMp4s])];
+
+function newestMatch(dir, names, draftId) {
+  const matches = names.filter((f) => f.startsWith(draftId));
   matches.sort(
     (a, b) =>
-      statSync(join(rendersDir, b)).mtimeMs - statSync(join(rendersDir, a)).mtimeMs ||
-      statSync(join(rendersDir, b)).size - statSync(join(rendersDir, a)).size
+      statSync(join(dir, b)).mtimeMs - statSync(join(dir, a)).mtimeMs ||
+      statSync(join(dir, b)).size - statSync(join(dir, a)).size
   );
   return matches[0] || null;
+}
+
+function findMp4(draftId) {
+  const fromRenders = newestMatch(rendersDir, renderMp4s, draftId);
+  if (fromRenders) return { path: join(rendersDir, fromRenders), name: fromRenders };
+  const fromKit = newestMatch(kitDir, kitMp4s, draftId);
+  if (fromKit) return { path: join(kitDir, fromKit), name: fromKit };
+  return null;
 }
 
 const items = drafts.map((d) => {
@@ -177,8 +191,8 @@ const items = drafts.map((d) => {
     privacyStatus: privacy,
     selfDeclaredMadeForKids: madeForKids,
     youtube_channel_id: youtubeChannelId || null,
-    mp4: file ? join(rendersDir, file) : null,
-    mp4_name: file,
+    mp4: file?.path || null,
+    mp4_name: file?.name || null,
     publish_rank: publishRank.has(d.id) ? publishRank.get(d.id) : Number.MAX_SAFE_INTEGER,
     source_index: drafts.findIndex((item) => item.id === d.id),
   };
@@ -191,11 +205,43 @@ const orderedItems = items
       a.publish_rank - b.publish_rank ||
       a.source_index - b.source_index
   );
-const selectedItems = publishLimit > 0 ? orderedItems.slice(0, publishLimit) : orderedItems;
+
+const publishedFile = process.env.CONTENT_STUDIO_PUBLISHED_FILE || '';
+let publishedLedger = { videos: {}, days: {} };
+if (publishedFile && existsSync(publishedFile)) {
+  try {
+    publishedLedger = JSON.parse(readFileSync(publishedFile, 'utf8'));
+  } catch {
+    publishedLedger = { videos: {}, days: {} };
+  }
+}
+const alreadyPublished = publishedLedger.videos || {};
+const resultsPath = join(kitDir, 'upload-results.json');
+if (existsSync(resultsPath)) {
+  try {
+    const prev = JSON.parse(readFileSync(resultsPath, 'utf8'));
+    for (const row of Array.isArray(prev) ? prev : []) {
+      if (row?.draft_id && row?.youtube_id && !alreadyPublished[row.draft_id]) {
+        alreadyPublished[row.draft_id] = {
+          youtube_id: row.youtube_id,
+          channel: channelKey,
+          source: 'upload-results',
+        };
+      }
+    }
+  } catch {
+    /* keep ledger */
+  }
+}
+
+const unpublished = orderedItems.filter((it) => !alreadyPublished[it.draft_id]);
+const uploadPool = unpublished.filter((it) => it.mp4);
+const pool = mode === 'upload' || mode === 'dry-run' ? uploadPool : unpublished;
+const selectedItems = publishLimit > 0 ? pool.slice(0, publishLimit) : pool;
 const publishItems = selectedItems.map(({ publish_rank, ...item }) => item);
 
 console.log(
-  `mode=${mode} channel=${channelKey} youtube_channel_id=${youtubeChannelId || '(unset)'} renders=${mp4s.length} drafts=${items.length} selected=${publishItems.length}${publishLimit > 0 ? ` limit=${publishLimit}` : ''}`
+  `mode=${mode} channel=${channelKey} youtube_channel_id=${youtubeChannelId || '(unset)'} renders=${mp4s.length} drafts=${items.length} unpublished=${unpublished.length} ready=${uploadPool.length} selected=${publishItems.length}${publishLimit > 0 ? ` limit=${publishLimit}` : ''}`
 );
 for (const it of publishItems) {
   console.log(`- ${it.draft_id}: ${it.mp4_name || 'MISSING mp4'} | ${it.title}`);
@@ -238,6 +284,16 @@ for (const it of publishItems) {
 console.log(`kit written → ${kitDir}`);
 
 if (mode !== 'upload') {
+  process.exit(0);
+}
+
+if (!youtubeChannelId) {
+  console.warn(`skip upload: no YouTube channel id for ${channelKey}`);
+  process.exit(0);
+}
+
+if (publishItems.length === 0) {
+  console.log(`skip upload: nothing unpublished with mp4 for ${channelKey}`);
   process.exit(0);
 }
 
@@ -332,6 +388,41 @@ for (const it of publishItems) {
   const id = await uploadVideo(token, it);
   results.push({ draft_id: it.draft_id, youtube_id: id });
 }
-writeFileSync(join(kitDir, 'upload-results.json'), JSON.stringify(results, null, 2));
+const previousResults = existsSync(resultsPath)
+  ? (() => {
+      try {
+        const parsed = JSON.parse(readFileSync(resultsPath, 'utf8'));
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    })()
+  : [];
+const mergedResults = [...previousResults];
+for (const row of results) {
+  if (!mergedResults.some((prev) => prev.draft_id === row.draft_id)) {
+    mergedResults.push(row);
+  }
+}
+writeFileSync(resultsPath, JSON.stringify(mergedResults, null, 2));
+
+if (publishedFile && results.length > 0) {
+  mkdirSync(dirname(publishedFile), { recursive: true });
+  const day = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Bogota' });
+  publishedLedger.videos = alreadyPublished;
+  publishedLedger.days = publishedLedger.days || {};
+  for (const row of results) {
+    publishedLedger.videos[row.draft_id] = {
+      youtube_id: row.youtube_id,
+      channel: channelKey,
+      at: new Date().toISOString(),
+    };
+  }
+  const prevCount = Number(publishedLedger.days[day]?.count || 0);
+  publishedLedger.days[day] = { count: prevCount + results.length };
+  publishedLedger.last_upload_at = new Date().toISOString();
+  publishedLedger.last_channel = channelKey;
+  writeFileSync(publishedFile, JSON.stringify(publishedLedger, null, 2));
+}
 console.log(`uploaded ${results.length} videos`);
 EOF

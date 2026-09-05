@@ -77,6 +77,22 @@ test('overnight backlog auto-tasks are gamer-safe kinds', () => {
   assert.ok(existsSync(join(root, 'scripts/ops/pc-gamer-watch.sh')));
 });
 
+test('24x7 factory tick and launchd exist with YouTube quota cadence', () => {
+  assert.ok(existsSync(join(root, 'scripts/ops/content-studio-24x7.sh')));
+  assert.ok(existsSync(join(root, 'scripts/ops/ensure-content-studio-24x7-launchd.sh')));
+  assert.ok(existsSync(join(root, 'infra/launchd/com.opsly.content-studio-24x7.plist')));
+  const plan = loadJson('config/content-studio/youtube-publish-plan.json');
+  assert.match(String(plan.cadence_note || ''), /6 uploads/);
+  const agents = loadJson('config/content-studio/content-agents.json');
+  assert.match(agents.constraints.publish, /24x7/);
+  const plist = readFileSync(
+    join(root, 'infra/launchd/com.opsly.content-studio-24x7.plist'),
+    'utf8'
+  );
+  assert.match(plist, /content-studio-24x7\.sh/);
+  assert.match(plist, /<integer>900<\/integer>/);
+});
+
 test('content studio renders only on pc-gamer and schedule allows content_video', () => {
   const agents = loadJson('config/content-studio/content-agents.json');
   assert.deepEqual(agents.constraints.render_hosts, ['pc-gamer']);

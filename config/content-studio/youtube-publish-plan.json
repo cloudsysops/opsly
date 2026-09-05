@@ -1,9 +1,10 @@
 {
-  "version": 1,
-  "updated_at": "2026-08-12",
+  "version": 2,
+  "updated_at": "2026-09-05",
+  "cadence_note": "24x7 factory tick. YouTube Data API default quota ≈ 6 uploads/day. Launchd publishes next unpublished every 4h. Render only when pc-gamer is not gaming.",
   "channels": {
     "bitsitos": {
-      "cadence": "1/day",
+      "cadence": "24x7 auto, max 6/day shared quota",
       "publish_order_today": [
         "bitsitos-001-wifi",
         "bitsitos-002-password",
@@ -31,7 +32,7 @@
       ]
     },
     "splashitos": {
-      "cadence": "1/day",
+      "cadence": "24x7 auto when YOUTUBE_SPLASHITOS_CHANNEL_ID is set",
       "publish_order_today": [
         "splashitos-001-flotar",
         "splashitos-002-patada",

@@ -14,9 +14,8 @@ Tarea de esta noche:
    Si el gamer está offline: aborta (exit 2). No uses --allow-mac-render.
 3. Si no hay guiones pendientes en bitsitos, repite con `--channel splashitos`.
 4. Deja un resumen en un PR draft (o comentario si no hay cambios de código) de qué
-   se renderizó y qué queda pendiente de aprobación humana en el kit de subida.
-   NO uses --auto-publish ni --upload: la subida a YouTube es decisión humana en el
-   kit (approval-first), salvo AUTO_PUBLISH_YOUTUBE=true explícito que tú no activas.
+   se renderizó. YouTube lo publica el Mac (`content-studio-24x7.sh` / LaunchAgent),
+   no este worktree overnight. No lances `--upload` desde OpenCode.
 
 No hay guion nuevo que escribir esta noche salvo que se te indique explícitamente
 en el prompt de la tarea — esta plantilla es solo para render/pipeline, no para
