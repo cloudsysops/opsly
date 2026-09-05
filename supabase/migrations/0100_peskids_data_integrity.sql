@@ -201,10 +201,24 @@ BEGIN
         t, 'fk_' || t || '_tenant_slug');
 
       -- An FK with no supporting index turns every tenant delete/rename into a
-      -- sequential scan of this table.
-      EXECUTE format(
-        'CREATE INDEX IF NOT EXISTS %I ON peskids.%I (tenant_slug)',
-        'idx_' || t || '_tenant_slug', t);
+      -- sequential scan of this table. Several of these tables already have an
+      -- index leading with tenant_slug under an older name (idx_<t>_tenant), so
+      -- check the actual leading column rather than the index name — creating a
+      -- second identical index would cost writes and buy nothing.
+      IF NOT EXISTS (
+        SELECT 1
+        FROM pg_index x
+        JOIN pg_class ic ON ic.oid = x.indexrelid
+        JOIN pg_attribute a
+          ON a.attrelid = x.indrelid AND a.attnum = x.indkey[0]
+        WHERE x.indrelid = format('peskids.%I', t)::regclass
+          AND a.attname = 'tenant_slug'
+          AND x.indpred IS NULL
+      ) THEN
+        EXECUTE format(
+          'CREATE INDEX %I ON peskids.%I (tenant_slug)',
+          'idx_' || t || '_tenant_slug', t);
+      END IF;
     END IF;
   END LOOP;
 END
