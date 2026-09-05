@@ -9,8 +9,8 @@
   "exclude": [
     "node_modules",
     ".next",
-    "app/api/admin/franchises/**",
-    "app/api/admin/franchise-os/**",
+    "app/api/admin/_franchises/**",
+    "app/api/admin/_franchise-os/**",
     "lib/franchise/**"
   ]
 }
