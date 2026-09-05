@@ -153,6 +153,7 @@ export function LeadCaptureForm({
       if (!formData.class_modality) return 'Selecciona sede o domicilio'
       if (!formData.child_name.trim()) return 'Nombre del alumno requerido'
       if (!formData.birth_date) return 'Fecha de nacimiento del alumno requerida'
+      if (formData.document_number.trim().length < 4) return 'Cédula del acudiente requerida'
       // Sede Llanogrande: no pedir ciudad ni barrio (barrio se fija en schema).
       // Domicilio: ciudad + barrio obligatorios.
       if (formData.class_modality === 'domicilio') {
@@ -524,6 +525,8 @@ export function LeadCaptureForm({
                         type="date"
                         value={formData.birth_date}
                         onChange={(e) => setField('birth_date', e.target.value)}
+                        required
+                        autoComplete="bday"
                         className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink focus:border-pk-primary focus:outline-none"
                       />
                     </div>
@@ -548,13 +551,15 @@ export function LeadCaptureForm({
                       </div>
                       <div>
                         <Label htmlFor="document_number" className="text-sm font-medium text-pk-ink">
-                          Cédula
+                          Cédula del acudiente *
                         </Label>
                         <input
                           id="document_number"
                           type="text"
                           value={formData.document_number}
                           onChange={(e) => setField('document_number', e.target.value)}
+                          required
+                          autoComplete="off"
                           className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
                           placeholder="Cédula"
                         />

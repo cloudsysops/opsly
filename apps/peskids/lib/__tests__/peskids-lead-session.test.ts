@@ -7,7 +7,7 @@ import {
 } from '@/lib/peskids-lead-session';
 
 describe('peskids-lead-session', () => {
-  it('buildPostLeadWhatsAppPrefill includes the lead name and form summary', () => {
+  it('buildPostLeadWhatsAppPrefill includes the lead name, form summary and admin lead link', () => {
     const text = buildPostLeadWhatsAppPrefill('María García', {
       lead_type: 'family',
       class_modality: 'llanogrande',
@@ -24,8 +24,8 @@ describe('peskids-lead-session', () => {
     expect(text).toContain('3001234567');
     expect(text).toContain('Sofía');
     expect(text).toContain('Sede Llanogrande');
-    expect(text).toContain('Referencia de solicitud: lead-abc');
-    expect(text).not.toContain('/admin/interesados/');
+    expect(text).toContain('🔗 Abrir lead en Peskids: https://www.peskids.com/admin/interesados/lead-abc');
+    expect(text).not.toContain('Referencia de solicitud:');
   });
 
   it('buildAdminLeadValidationUrl uses interesados path', () => {

@@ -111,6 +111,14 @@ function mailtoHref(email: string): string {
   return `mailto:${encodeURIComponent(email)}`;
 }
 
+function formatBirthDate(value: string | null | undefined): string | null {
+  if (!value) return null;
+  return new Intl.DateTimeFormat('es-CO', {
+    dateStyle: 'long',
+    timeZone: 'America/Bogota',
+  }).format(new Date(`${value}T12:00:00-05:00`));
+}
+
 async function readApiError(response: Response, fallback: string): Promise<string> {
   try {
     const json = (await response.json()) as { error?: string };
@@ -276,6 +284,16 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
             {lead.phone ? <p className="text-sm text-pk-sub">{lead.phone}</p> : null}
             {lead.neighborhood ? (
               <p className="text-sm text-pk-sub">Barrio: {lead.neighborhood}</p>
+            ) : null}
+            {lead.birth_date ? (
+              <p className="text-sm text-pk-sub">
+                Fecha de nacimiento: {formatBirthDate(lead.birth_date)}
+              </p>
+            ) : null}
+            {lead.document_number ? (
+              <p className="text-sm text-pk-sub">
+                Cédula del acudiente: {lead.document_number}
+              </p>
             ) : null}
           </div>
           <div className="flex flex-wrap gap-2">

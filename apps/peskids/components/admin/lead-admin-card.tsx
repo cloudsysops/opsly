@@ -41,6 +41,14 @@ function modalityText(lead: AdminLeadCardLead): string {
   return classModalityLabel(lead.class_modality);
 }
 
+function formatBirthDate(value: string | null | undefined): string | null {
+  if (!value) return null;
+  return new Intl.DateTimeFormat('es-CO', {
+    dateStyle: 'medium',
+    timeZone: 'America/Bogota',
+  }).format(new Date(`${value}T12:00:00-05:00`));
+}
+
 /**
  * One lead per card: identity, status, key facts, funnel timeline, quick actions.
  */
@@ -101,6 +109,9 @@ export function AdminLeadCard({
         <Badge tone="amber">{modalityText(lead)}</Badge>
         <Badge tone="teal">{formatAgeRange(lead.grade_interested)}</Badge>
         {lead.child_name ? <Badge tone="neutral">Hijo/a: {lead.child_name}</Badge> : null}
+        {lead.birth_date ? (
+          <Badge tone="neutral">Nacimiento: {formatBirthDate(lead.birth_date)}</Badge>
+        ) : null}
         {lead.neighborhood ? <Badge tone="neutral">{lead.neighborhood}</Badge> : null}
         {lead.company_name ? <Badge tone="neutral">{lead.company_name}</Badge> : null}
       </div>
