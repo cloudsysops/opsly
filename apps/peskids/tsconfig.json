@@ -57,8 +57,8 @@
   ],
   "exclude": [
     "node_modules",
-    "app/api/admin/_franchises/**",
+    "app/api/admin/franchises/_*/**",
     "app/api/admin/_franchise-os/**",
-    "lib/franchise/**"
+    "lib/franchise/persist.ts"
   ]
 }

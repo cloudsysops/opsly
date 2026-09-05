@@ -1,9 +1,8 @@
-// Excluded from tsc via tsconfig.json — specs units.ts/opening.ts/network.ts
-// and audit.ts helpers (scoreAudit, deriveCorrectiveActionStatus) that were
-// never implemented. Kept as the design spec for that work; re-include once
-// those modules exist.
+// Design spec for units.ts/opening.ts/network.ts and audit.ts helpers
+// (deriveCorrectiveActionStatus, scoreAudit) that were never implemented.
+// Excluded from tsc/vitest (see tsconfig.json / vitest.config.ts) until
+// those modules exist. Runnable ACL coverage lives in access.test.ts.
 import { describe, expect, it } from 'vitest';
-import { canAccessUnit, canReadAgreements, canReadRoyalties, canWriteFinancial, mapTenantStaffRole } from './access.js';
 import { assertFranchiseeDistinctFromUnit, ownedUnitDefaults, UnitModelError } from './units.js';
 import { canActivateUnit, defaultOpeningTasks } from './opening.js';
 import { deriveCorrectiveActionStatus, scoreAudit } from './audit.js';
@@ -33,36 +32,6 @@ describe('franchisee vs unit', () => {
       createdAt: '2026-01-01T00:00:00.000Z',
     };
     expect(() => assertFranchiseeDistinctFromUnit(franchisee, unit)).toThrow(UnitModelError);
-  });
-});
-
-describe('access control', () => {
-  it('blocks tenant crossover and teachers on royalties', () => {
-    expect(canReadRoyalties('teacher').allow).toBe(false);
-    expect(canReadRoyalties('tenant_owner').allow).toBe(true);
-    expect(
-      canAccessUnit({
-        role: 'franchise_admin',
-        tenantId: 'a',
-        resourceTenantId: 'b',
-        unitId: 'u1',
-        assignedUnitIds: ['u1'],
-      }).allow
-    ).toBe(false);
-    expect(
-      canAccessUnit({
-        role: 'franchise_admin',
-        tenantId: 'a',
-        resourceTenantId: 'a',
-        unitId: 'u2',
-        assignedUnitIds: ['u1'],
-      }).allow
-    ).toBe(false);
-    expect(mapTenantStaffRole('owner')).toBe('tenant_owner');
-    expect(canReadAgreements('teacher').allow).toBe(false);
-    expect(canReadAgreements('auditor').allow).toBe(false);
-    expect(canWriteFinancial('teacher').allow).toBe(false);
-    expect(canWriteFinancial('franchise_network_admin').allow).toBe(true);
   });
 });
 
