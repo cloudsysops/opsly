@@ -90,7 +90,7 @@ chain_files() {
 # "the two chains are interleaved wrong" from "this migration is broken".
 # -----------------------------------------------------------------------------
 resolve_mode() {
-  local -a pending=()
+  local -a pending=() applied=()
   while IFS= read -r f; do pending+=("$f"); done < <(chain_files resolve)
   local pass=0
   while :; do
@@ -102,6 +102,7 @@ resolve_mode() {
       local out; out="$(psql_q -d "$DB_NAME" -q -f "$f" 2>&1)"
       if [[ $? -eq 0 ]]; then
         progressed=1
+        applied+=("$f")
         [[ $QUIET -eq 0 ]] && echo "ok(p$pass)  $name"
       else
         still+=("$f")
@@ -120,7 +121,35 @@ resolve_mode() {
     echo "  BROKEN  $name"
     echo "          ${LAST_ERR[$name]}"
   done
-  [[ ${#pending[@]} -gt 0 && -n "${pending[0]:-}" ]] && return 1
+  local broken=0
+  [[ ${#pending[@]} -gt 0 && -n "${pending[0]:-}" ]] && broken=${#pending[@]}
+
+  # --twice: re-apply everything that succeeded, over the now-migrated database.
+  # A migration that errors here is not re-runnable — which matters, because a
+  # non-atomic migration that failed halfway WILL be re-run, and 94 of 136
+  # migrations in this repo have no BEGIN/COMMIT.
+  if [[ $TWICE -eq 1 ]]; then
+    echo
+    echo "==> Pass 2: re-applying ${#applied[@]} migrations over the migrated database"
+    local nonidem=0
+    local -a nonidem_list=()
+    for f in "${applied[@]:-}"; do
+      [[ -z "$f" ]] && continue
+      local name; name="$(basename "$f")"
+      local out; out="$(psql_q -d "$DB_NAME" -q -f "$f" 2>&1)"
+      if [[ $? -ne 0 ]]; then
+        nonidem=$((nonidem + 1)); nonidem_list+=("$name")
+        echo "NOT-IDEMPOTENT  $name"
+        echo "$out" | grep -m1 'ERROR' | sed 's/^/                /'
+      fi
+    done
+    echo
+    echo "==> Idempotency: $((${#applied[@]} - nonidem)) of ${#applied[@]} re-applied clean, $nonidem failed"
+    [[ $nonidem -gt 0 || $broken -gt 0 ]] && return 1
+    return 0
+  fi
+
+  [[ $broken -gt 0 ]] && return 1
   return 0
 }
 declare -A LAST_ERR

@@ -81,6 +81,28 @@ half applied and the rest not, with nothing recording that it happened. This is
 the single largest source of drift risk in the repository, and it is why 47
 files land in `MANUAL_REVIEW`.
 
+**40 of 132 applicable migrations are not re-runnable.** Measured with
+`replay.sh --chain resolve --twice`, which re-applies the whole chain over an
+already-migrated database:
+
+| Failure on second apply | Count |
+|---|---:|
+| `policy "..." already exists` | 26 |
+| `relation "..." already exists` (mostly indexes) | 12 |
+| `trigger`, `column`, `type`, `constraint` already exists | 6 |
+
+These two facts compound into the actual hazard. A non-atomic migration that
+fails halfway leaves the database in a state that **cannot be repaired by
+re-running the file**, because the statements that did succeed now raise
+"already exists" and abort it again at a different point. Recovery then requires
+someone to read the SQL and hand-apply the remainder — which is exactly the
+situation `20260524_add_rls_policies_peskids.sql` creates on `public.leads`.
+
+The fix for new migrations is mechanical: guard with `IF NOT EXISTS`, or a
+`DO $$ ... EXCEPTION WHEN duplicate_object THEN NULL; END $$` block, which is
+already the dominant idiom in this repo (`0070`, `0064`). It simply is not
+applied consistently.
+
 ### The four that cannot apply to a clean database
 
 | Migration | Failure |
