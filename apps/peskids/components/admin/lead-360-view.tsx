@@ -282,6 +282,7 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
             </h1>
             <p className="text-sm text-pk-sub">{lead.email}</p>
             {lead.phone ? <p className="text-sm text-pk-sub">{lead.phone}</p> : null}
+            {lead.child_name ? <p className="text-sm text-pk-sub">Niño/a: {lead.child_name}</p> : null}
             {lead.neighborhood ? (
               <p className="text-sm text-pk-sub">Barrio: {lead.neighborhood}</p>
             ) : null}
