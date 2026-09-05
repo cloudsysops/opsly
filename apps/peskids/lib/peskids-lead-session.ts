@@ -1,5 +1,7 @@
 /** Client session flag: public lead captured before opening WhatsApp. */
 
+import { formatAgeRange } from '@/lib/peskids-domain';
+
 export const PESKIDS_LEAD_SESSION_KEY = 'peskids_public_lead';
 
 export type PeskidsLeadSession = {
@@ -106,13 +108,13 @@ function companySummaryLines(options?: PostLeadWhatsAppPrefillOptions): string[]
 
 function familySummaryLines(options?: PostLeadWhatsAppPrefillOptions): string[] {
   const modality = modalityLabel(options?.class_modality);
-  const grade = trimOrNull(options?.grade_interested);
+  const ageRange = trimOrNull(options?.grade_interested);
   const childName = trimOrNull(options?.child_name);
   const birthDate = trimOrNull(options?.birth_date);
   const documentNumber = trimOrNull(options?.document_number);
   const neighborhood = trimOrNull(options?.neighborhood);
   const lines: string[] = [];
-  if (grade) lines.push(`👧 Grado interesado: ${grade}`);
+  if (ageRange) lines.push(`👧 Edad del niño/a: ${formatAgeRange(ageRange)}`);
   if (modality) lines.push(`🏊 Modalidad: ${modality}`);
   if (childName) lines.push(`👶 Niño/a: ${childName}`);
   if (birthDate) lines.push(`🎂 Fecha de nacimiento: ${birthDate}`);
