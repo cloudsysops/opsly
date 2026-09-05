@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin/", "/portal/", "/api/"],
       },
     ],
-    sitemap: "https://franchising.acmefranchise.com/sitemap.xml",
+    sitemap: "https://franchise.peskids.com/sitemap.xml",
   };
 }

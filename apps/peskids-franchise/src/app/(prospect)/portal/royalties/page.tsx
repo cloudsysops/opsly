@@ -532,10 +532,10 @@ export default function FranchiseeRoyaltiesPage() {
                 Contact us if you have questions about your invoices or payments.
               </p>
               <a
-                href="mailto:franchising@acmefranchise.com"
+                href="mailto:franchising@peskids.com"
                 className="inline-flex items-center text-sm font-medium text-brand-purple hover:underline"
               >
-                franchising@acmefranchise.com
+                franchising@peskids.com
               </a>
             </div>
           </div>

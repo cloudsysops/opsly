@@ -31,7 +31,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     error: '/login',
   },
   providers: [
-    // Google OAuth for admin users (@acmefranchise.com)
+    // Google OAuth for admin users (@peskids.com)
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
@@ -40,7 +40,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           prompt: 'consent',
           access_type: 'offline',
           response_type: 'code',
-          hd: 'acmefranchise.com', // Restrict to domain
+          hd: 'peskids.com', // Restrict to domain
         },
       },
     }),
@@ -62,12 +62,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // Demo mode: accept demo credentials without DB lookup
         if (
           isFranchiseDemoAuthEnabled() &&
-          email === 'demo@acmefranchise.com' &&
+          email === 'demo@peskids.com' &&
           password === 'demo'
         ) {
           return {
             id: 'demo-user',
-            email: 'demo@acmefranchise.com',
+            email: 'demo@peskids.com',
             name: 'Demo User',
             role: 'ADMIN' as UserRole,
           };
@@ -107,9 +107,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async signIn({ user, account }) {
-      // For Google OAuth, verify it's a @acmefranchise.com email
+      // For Google OAuth, verify it's a @peskids.com email
       if (account?.provider === 'google') {
-        if (!user.email?.endsWith('@acmefranchise.com')) {
+        if (!user.email?.endsWith('@peskids.com')) {
           return false;
         }
 
@@ -146,7 +146,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.name = user.name;
       }
       // On initial Google sign-in, determine role based on whether they're a franchisee
-      if (account?.provider === 'google' && token.email?.endsWith('@acmefranchise.com')) {
+      if (account?.provider === 'google' && token.email?.endsWith('@peskids.com')) {
         try {
           const prospect = await db.prospect.findFirst({
             where: { email: token.email as string, pipelineStage: 'SELECTED' },
@@ -171,7 +171,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
         } catch (err) {
           console.error('Error in jwt callback:', err);
-          // Default to ADMIN for @acmefranchise.com users if DB lookup fails
+          // Default to ADMIN for @peskids.com users if DB lookup fails
           token.role = 'ADMIN' as UserRole;
         }
       }

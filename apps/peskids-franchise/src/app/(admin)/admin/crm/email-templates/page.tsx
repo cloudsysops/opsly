@@ -303,7 +303,7 @@ function getBlankTemplate(): string {
           <!-- Header with Logo -->
           <tr>
             <td style="background: linear-gradient(135deg, #2D2F8E 0%, #6A469D 100%); padding: 32px; text-align: center;">
-              <img src="https://via.placeholder.com/180x60?text=Acme+Franchise" alt="Acme Franchise" width="180" style="display: block; margin: 0 auto;" />
+              <img src="https://via.placeholder.com/180x60?text=Peskids+Franchise" alt="Peskids Franchise" width="180" style="display: block; margin: 0 auto;" />
             </td>
           </tr>
           <!-- Content -->
@@ -315,7 +315,7 @@ function getBlankTemplate(): string {
 
               <p style="margin-top: 24px; color: #6b7280; font-size: 14px;">
                 Best regards,<br>
-                The Acme Franchise Team
+                The Peskids Franchise Team
               </p>
             </td>
           </tr>
@@ -323,14 +323,14 @@ function getBlankTemplate(): string {
           <tr>
             <td style="background: linear-gradient(135deg, #2D2F8E 0%, #6A469D 100%); padding: 32px; text-align: center;">
               <p style="margin: 0 0 8px; font-size: 14px; color: white; font-weight: 600;">
-                Acme Franchise Franchising
+                Peskids Franchise Franchising
               </p>
               <p style="margin: 0; font-size: 13px; color: rgba(255,255,255,0.8);">
-                <a href="mailto:franchising@acmefranchise.com" style="color: #50C8DF; text-decoration: none;">franchising@acmefranchise.com</a>
+                <a href="mailto:franchising@peskids.com" style="color: #50C8DF; text-decoration: none;">franchising@peskids.com</a>
               </p>
               <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
                 <p style="margin: 0; font-size: 11px; color: rgba(255,255,255,0.6);">
-                  © {{currentYear}} Acme Franchise. All rights reserved.
+                  © {{currentYear}} Peskids Franchise. All rights reserved.
                 </p>
               </div>
             </td>

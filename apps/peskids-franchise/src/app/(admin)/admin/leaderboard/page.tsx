@@ -50,7 +50,7 @@ function formatPercent(value: number): string {
 
 export default async function LeaderboardPage() {
   const session = await auth();
-  if (!session?.user?.email?.endsWith('@acmefranchise.com')) {
+  if (!session?.user?.email?.endsWith('@peskids.com')) {
     redirect('/');
   }
 

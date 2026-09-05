@@ -40,7 +40,7 @@ export async function GET() {
     if (!agreement) {
       return NextResponse.json({
         hasAgreement: false,
-        message: 'No franchise agreement found. Please contact franchising@acmefranchise.com.',
+        message: 'No franchise agreement found. Please contact franchising@peskids.com.',
       });
     }
 

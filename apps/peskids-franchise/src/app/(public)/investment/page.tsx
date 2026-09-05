@@ -1,17 +1,21 @@
 import { Metadata } from "next";
 import { LinkButton } from "@/components/shared/Button";
-import { TrackedDownloadLink } from "@/components/shared/TrackedDownloadLink";
-import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
+
+// TODO(content): every figure on this page must come from Peskids' own real
+// Franchise Disclosure Document (Items 5, 6, 7) before this goes live. These
+// were previously copied verbatim from an unrelated real company's actual
+// FDD - do not invent replacement numbers; leave as placeholders until real
+// figures are supplied.
 
 export const metadata: Metadata = {
   title: "Cost & Investment",
   description:
-    "Understand the investment required to own an Acme Franchise.",
+    "Understand the investment required to own a Peskids Franchise.",
   alternates: {
-    canonical: "https://franchising.acmefranchise.com/investment",
+    canonical: "https://franchise.peskids.com/investment",
   },
   openGraph: {
-    url: "https://franchising.acmefranchise.com/investment",
+    url: "https://franchise.peskids.com/investment",
   },
 };
 
@@ -19,61 +23,56 @@ const investmentComponents = [
   {
     item: "Initial Franchise Fee",
     description: "One-time fee for territory rights and initial training (non-refundable)",
-    range: "$45,000",
+    range: "[Add real figure]",
   },
   {
     item: "Equipment Fee",
-    description: "Board games, lesson books, classroom materials, and marketing materials",
-    range: "$669 - $2,267",
+    description: "Materials, classroom equipment, and marketing materials",
+    range: "[Add real figure]",
   },
   {
     item: "Opening Advertising Campaign",
     description: "Initial marketing to promote the opening of your franchise",
-    range: "$500 - $2,000",
+    range: "[Add real figure]",
   },
   {
     item: "Additional Funds (3 months)",
     description: "Working capital for initial operating expenses",
-    range: "$5,458 - $22,721",
+    range: "[Add real figure]",
   },
   {
     item: "Other Costs",
     description: "Insurance, licenses, professional fees, and miscellaneous expenses",
-    range: "$4,000 - $4,000",
+    range: "[Add real figure]",
   },
 ];
 
 const ongoingFees = [
   {
     fee: "Royalty Fee",
-    amount: "7% of Gross Revenue",
-    description: "Weekly fee (minimum $200/week) for ongoing support, training, and brand usage",
+    amount: "[Add real %]",
+    description: "Ongoing fee for support, training, and brand usage",
   },
   {
     fee: "Brand Fund Contribution",
-    amount: "2% of Gross Revenue",
+    amount: "[Add real %]",
     description: "Contribution to national marketing and brand development",
   },
   {
-    fee: "Internal Systems Fee",
-    amount: "1% of Gross Revenue",
-    description: "Operations hub, scheduling, and CRM tools",
-  },
-  {
     fee: "Local Advertising",
-    amount: "$500 - $2,000/month",
-    description: "Required minimum monthly spend on local marketing (paid to third parties)",
+    amount: "[Add real figure]",
+    description: "Required minimum monthly spend on local marketing",
   },
   {
     fee: "Software & Applications",
-    amount: "$30 - $80/month",
+    amount: "[Add real figure]",
     description: "Required third-party software and applications",
   },
 ];
 
 const qualifications = [
-  "Net worth of at least $150,000",
-  "Liquid capital of $50,000 - $100,000 available for investment",
+  "[Add real net worth requirement]",
+  "[Add real liquid capital requirement]",
   "Passion for children's education and development",
   "Strong communication and relationship-building skills",
   "Willingness to follow the franchise system",
@@ -92,7 +91,7 @@ export default function InvestmentPage() {
             </h1>
             <p className="mt-3 text-base sm:text-lg leading-7 sm:leading-8 text-gray-600">
               Transparent information about the costs and qualifications for
-              owning an Acme Franchise.
+              owning a Peskids Franchise.
             </p>
           </div>
         </div>
@@ -106,11 +105,11 @@ export default function InvestmentPage() {
               Initial Investment
             </h2>
             <p className="mt-4 text-base sm:text-lg text-gray-600">
-              The total investment necessary to begin operation of an Acme Franchise is{" "}
+              The total investment necessary to begin operation of a Peskids Franchise is{" "}
               <span className="font-bold text-brand-navy">
-                $55,627 to $75,988
+                [Add real total range]
               </span>
-              . This includes a $45,000 initial franchise fee.
+              . This includes the initial franchise fee.
             </p>
 
             {/* Mobile Cards View */}
@@ -133,7 +132,7 @@ export default function InvestmentPage() {
               <div className="bg-brand-navy text-white rounded-xl p-4">
                 <div className="flex justify-between items-center">
                   <div className="font-semibold text-sm">Total Estimated</div>
-                  <div className="font-bold">$55,627 - $75,988</div>
+                  <div className="font-bold">[Add real total range]</div>
                 </div>
               </div>
             </div>
@@ -174,7 +173,7 @@ export default function InvestmentPage() {
                       Total Estimated Investment
                     </td>
                     <td className="px-4 lg:px-6 py-4 text-right font-bold">
-                      $55,627 - $75,988
+                      [Add real total range]
                     </td>
                   </tr>
                 </tfoot>
@@ -251,147 +250,24 @@ export default function InvestmentPage() {
         </div>
       </div>
 
-      {/* Financing Options - Benetrends Partnership */}
+      {/* Financing Options */}
+      {/* TODO(content): if Peskids has a real financing partner, add it here
+          with their real branding/terms. Do not claim a partnership that
+          doesn't exist - the previous content named a real financing company
+          (with real trademarks and contact info) that Peskids has no actual
+          relationship with. */}
       <div className="bg-white py-10 sm:py-16 border-t border-gray-100">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl">
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-brand-navy sm:text-4xl">
               Financing Options
             </h2>
-
-            {/* Benetrends Partnership Banner */}
-            <div className="mt-6 sm:mt-8 rounded-2xl bg-gradient-to-r from-[#F7941D] to-[#F7A94D] p-6 sm:p-8 text-white">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                  <p className="text-sm font-medium text-white/80 uppercase tracking-wide">
-                    Financing Partner
-                  </p>
-                  <h3 className="text-xl sm:text-2xl font-bold mt-1">
-                    Benetrends Financial
-                  </h3>
-                  <p className="mt-2 text-white/90 text-sm sm:text-base">
-                    We&apos;ve partnered with Benetrends to jumpstart your business success
-                    with a customized program that utilizes a comprehensive suite of funding options.
-                  </p>
-                </div>
-                <TrackedDownloadLink
-                  href="/pdf/Benetrends_Overview_SC.pdf"
-                  documentName="Benetrends Financing Overview"
-                  fileName="Benetrends_Overview_SC.pdf"
-                  source="/investment"
-                  className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-3 bg-white text-[#F7941D] font-semibold rounded-lg hover:bg-white/90 transition-colors text-sm sm:text-base"
-                >
-                  <ArrowDownTrayIcon className="h-5 w-5" />
-                  Download Overview
-                </TrackedDownloadLink>
-              </div>
-            </div>
-
-            {/* Benetrends Description */}
-            <div className="mt-6 sm:mt-8 text-base sm:text-lg text-gray-600">
-              <p>
-                Benetrends has helped more than <strong>30,000 entrepreneurs</strong> successfully
-                launch their dreams for over <strong>40 years</strong>, with proven and innovative
-                funding strategies that maximize opportunities while minimizing risk.
-              </p>
-            </div>
-
-            {/* Financing Options Grid */}
-            <div className="mt-8 grid gap-4 sm:gap-6">
-              {/* 401(k)/IRA Rollover */}
-              <div className="rounded-xl border border-gray-200 p-5 sm:p-6 hover:border-brand-cyan hover:shadow-sm transition-all">
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-brand-cyan/10 rounded-xl flex items-center justify-center">
-                    <span className="text-xl sm:text-2xl">💰</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-brand-navy text-base sm:text-lg">
-                      401(k)/IRA Rollover Funding
-                    </h3>
-                    <p className="mt-1 text-sm sm:text-base text-gray-600">
-                      The Rainmaker Plan&reg; allows you to use the funds in your retirement
-                      plan to purchase or expand your business while eliminating debt &mdash;
-                      tax-deferred and penalty-free.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* SBA Loans */}
-              <div className="rounded-xl border border-gray-200 p-5 sm:p-6 hover:border-brand-cyan hover:shadow-sm transition-all">
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-brand-cyan/10 rounded-xl flex items-center justify-center">
-                    <span className="text-xl sm:text-2xl">🏦</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-brand-navy text-base sm:text-lg">
-                      SBA Loans
-                    </h3>
-                    <p className="mt-1 text-sm sm:text-base text-gray-600">
-                      One of the most popular loan offerings for small businesses. Benetrends
-                      has one of the highest loan approval ratings in the industry with a
-                      <strong> money-back fee guarantee</strong>.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Securities-Backed Loans */}
-              <div className="rounded-xl border border-gray-200 p-5 sm:p-6 hover:border-brand-cyan hover:shadow-sm transition-all">
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-brand-cyan/10 rounded-xl flex items-center justify-center">
-                    <span className="text-xl sm:text-2xl">📈</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-brand-navy text-base sm:text-lg">
-                      Securities-Backed Loans
-                    </h3>
-                    <p className="mt-1 text-sm sm:text-base text-gray-600">
-                      A line of credit backed by securities in your investment portfolio.
-                      Cash needs are acquired within 10 days without disrupting investments.
-                      The portfolio remains in your name.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Tax Advantaged Strategies */}
-              <div className="rounded-xl border border-gray-200 p-5 sm:p-6 hover:border-brand-cyan hover:shadow-sm transition-all">
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-brand-cyan/10 rounded-xl flex items-center justify-center">
-                    <span className="text-xl sm:text-2xl">📋</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-brand-navy text-base sm:text-lg">
-                      Tax Advantaged Capitalization Strategies
-                    </h3>
-                    <p className="mt-1 text-sm sm:text-base text-gray-600">
-                      The Rainmaker Advantage Plan&reg; creates a structure that will greatly
-                      minimize or eliminate taxes on gains when selling the business.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Contact Benetrends */}
-            <div className="mt-8 p-5 sm:p-6 bg-gray-50 rounded-xl text-center">
-              <p className="text-sm sm:text-base text-gray-600">
-                Learn more about financing options at{" "}
-                <a
-                  href="https://www.benetrends.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-brand-purple font-medium hover:underline"
-                >
-                  Benetrends.com
-                </a>
-                {" "}or call{" "}
-                <a href="tel:866-423-6387" className="text-brand-purple font-medium hover:underline">
-                  866.423.6387
-                </a>
-              </p>
-            </div>
+            <p className="mt-4 text-base sm:text-lg text-gray-600">
+              Common ways franchisees fund their initial investment include
+              401(k)/IRA rollovers, SBA loans, securities-backed loans, and
+              personal savings. Our team can point you toward financing
+              resources during your conversation.
+            </p>
           </div>
         </div>
       </div>

@@ -240,7 +240,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
       <div className="flex items-center gap-3 px-4 py-4 border-b border-white/10">
         <Image
           src="/logo/logo.svg"
-          alt="Acme Franchise"
+          alt="Peskids Franchise"
           width={40}
           height={40}
           className="rounded-lg"

@@ -403,8 +403,8 @@ export default function FranchiseeSupportPage() {
           <h3 className="font-semibold text-gray-900 mb-2">Need Immediate Help?</h3>
           <p className="text-sm text-gray-600">
             For urgent issues affecting your operations, please contact us directly at{" "}
-            <a href="mailto:franchising@acmefranchise.com" className="text-brand-purple hover:underline">
-              franchising@acmefranchise.com
+            <a href="mailto:franchising@peskids.com" className="text-brand-purple hover:underline">
+              franchising@peskids.com
             </a>
             {" "}or call our support line. Regular tickets are typically responded to within 24 hours.
           </p>

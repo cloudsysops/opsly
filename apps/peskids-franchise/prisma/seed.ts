@@ -13,7 +13,7 @@ async function main() {
       description: "Map your territory, identify schools, and build your target list.",
       instructions: `
         <h3>Objective</h3>
-        <p>Define the geographic territory where you plan to operate your Acme Franchise franchise.</p>
+        <p>Define the geographic territory where you plan to operate your Peskids Franchise franchise.</p>
 
         <h3>What You Need to Do</h3>
         <ol>
@@ -148,7 +148,7 @@ async function main() {
       description: "Create your detailed plan for launching your franchise.",
       instructions: `
         <h3>Objective</h3>
-        <p>Develop a concrete plan for your first 90 days as a Acme Franchise franchisee.</p>
+        <p>Develop a concrete plan for your first 90 days as a Peskids Franchise franchisee.</p>
 
         <h3>Sections to Complete</h3>
         <ol>

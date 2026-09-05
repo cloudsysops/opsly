@@ -5,12 +5,12 @@ import JsonLd from "@/components/shared/JsonLd";
 export const metadata: Metadata = {
   title: "FAQ",
   description:
-    "Frequently asked questions about the Acme Franchise opportunity.",
+    "Frequently asked questions about the Peskids Franchise opportunity.",
   alternates: {
-    canonical: "https://franchising.acmefranchise.com/faq",
+    canonical: "https://franchise.peskids.com/faq",
   },
   openGraph: {
-    url: "https://franchising.acmefranchise.com/faq",
+    url: "https://franchise.peskids.com/faq",
   },
 };
 
@@ -19,9 +19,9 @@ const faqCategories = [
     title: "About the Opportunity",
     faqs: [
       {
-        question: "Do I need chess experience to become a franchisee?",
+        question: "Do I need teaching experience to become a franchisee?",
         answer:
-          "No! Our comprehensive curriculum certification program teaches you everything you need to know about chess and how to teach it using our unique Story Time method. Many of our most successful franchisees were not chess players before joining.",
+          "No! Our comprehensive curriculum certification program teaches you everything you need to know to run our program. Many of our most successful franchisees had no prior teaching experience before joining.",
       },
       {
         question: "Do I need teaching experience?",
@@ -46,7 +46,7 @@ const faqCategories = [
       {
         question: "What is the total investment required?",
         answer:
-          "The estimated initial investment ranges from $55,627 to $75,988, including a $45,000 franchise fee, equipment, working capital, and initial marketing. See our Investment page for a detailed breakdown, and refer to Item 7 of the Franchise Disclosure Document for complete details.",
+          "The estimated initial investment includes a franchise fee, equipment, working capital, and initial marketing. See our Investment page for a detailed breakdown, and refer to Item 7 of the Franchise Disclosure Document for complete details.",
       },
       {
         question: "Are financing options available?",
@@ -56,7 +56,7 @@ const faqCategories = [
       {
         question: "What are the ongoing fees?",
         answer:
-          "Ongoing fees include a 7% royalty on gross revenue, a 2% brand fund contribution, and a 1% systems fee (10% total). These fees support ongoing training, marketing, and operational systems.",
+          "Ongoing fees include a royalty on gross revenue and a brand fund contribution. See our Investment page and Items 5-6 of the FDD for exact figures. These fees support ongoing training, marketing, and operational systems.",
       },
       {
         question: "What kind of revenue can I expect?",
@@ -71,7 +71,7 @@ const faqCategories = [
       {
         question: "What training is provided?",
         answer:
-          "Our training program includes curriculum certification (learning our Acme Franchise method), business operations training, marketing and sales training, and hands-on practice. Training is a combination of virtual sessions and in-person experience.",
+          "Our training program includes curriculum certification (learning our Peskids Franchise method), business operations training, marketing and sales training, and hands-on practice. Training is a combination of virtual sessions and in-person experience.",
       },
       {
         question: "What ongoing support do I receive?",
@@ -101,7 +101,7 @@ const faqCategories = [
       {
         question: "What equipment and materials are needed?",
         answer:
-          "You'll need chess sets, curriculum materials, demonstration boards, and promotional items. We provide a complete startup kit and ongoing access to materials through our supplier network.",
+          "You'll need curriculum materials, activity supplies, and promotional items. We provide a complete startup kit and ongoing access to materials through our supplier network.",
       },
       {
         question: "How do I find schools and partners?",
@@ -121,12 +121,12 @@ const faqCategories = [
       {
         question: "Why is pre-work required?",
         answer:
-          "Pre-work ensures you understand what running an Acme Franchise entails before making a commitment. It demonstrates initiative and helps us identify candidates who will thrive as franchisees. Successful completion is required for selection.",
+          "Pre-work ensures you understand what running an Peskids Franchise entails before making a commitment. It demonstrates initiative and helps us identify candidates who will thrive as franchisees. Successful completion is required for selection.",
       },
       {
         question: "What happens at Discovery Day?",
         answer:
-          "Discovery Day is an in-person visit to Westside where you'll meet the team, observe classes, review detailed financials, and ask questions. It's your opportunity to experience Acme Franchise firsthand and make an informed decision.",
+          "Discovery Day is an in-person visit to Westside where you'll meet the team, observe classes, review detailed financials, and ask questions. It's your opportunity to experience Peskids Franchise firsthand and make an informed decision.",
       },
       {
         question: "How are franchisees selected?",
@@ -164,7 +164,7 @@ export default function FAQPage() {
               Frequently Asked Questions
             </h1>
             <p className="mt-4 text-base sm:text-lg leading-7 sm:leading-8 text-gray-600">
-              Find answers to common questions about the Acme Franchise
+              Find answers to common questions about the Peskids Franchise
               franchise opportunity.
             </p>
           </div>

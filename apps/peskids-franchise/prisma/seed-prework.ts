@@ -96,7 +96,7 @@ School Name | Type | Est. Students | Contact Name & Title (if found)
 <h5>5. Honest Assessment</h5>
 <ul>
   <li>What concerns you about this market? Be honest—we appreciate realism over optimism.</li>
-  <li>What makes this market ripe for Acme Franchise despite those concerns?</li>
+  <li>What makes this market ripe for Peskids Franchise despite those concerns?</li>
 </ul>
 
 <h4>What we're looking for:</h4>
@@ -150,7 +150,7 @@ School Name | Type | Est. Students | Contact Name & Title (if found)
 </ul>
 
 <h4>Your Call Script (REQUIRED):</h4>
-<p>Paste your actual script. We want to see how you introduce Acme Franchise and handle the conversation.</p>
+<p>Paste your actual script. We want to see how you introduce Peskids Franchise and handle the conversation.</p>
 
 <h4>Script Evolution:</h4>
 <p>How did your script change after real calls? What did you learn and adjust?</p>
@@ -210,10 +210,10 @@ School Name | Type | Est. Students | Contact Name & Title (if found)
 <h4>VIDEO SUBMISSION (REQUIRED - Not Optional)</h4>
 <p>Record a 2-5 minute Loom video covering:</p>
 <ol>
-  <li><strong>Introduce yourself</strong> (30 seconds) - Who are you? Why Acme Franchise?</li>
+  <li><strong>Introduce yourself</strong> (30 seconds) - Who are you? Why Peskids Franchise?</li>
   <li><strong>Best conversation</strong> (1 minute) - Recreate your best call. What did you say? How did they respond?</li>
   <li><strong>Difficult moment</strong> (1 minute) - Describe a hard moment and what you learned</li>
-  <li><strong>Why Acme Franchise</strong> (1 minute) - Why this specific franchise?</li>
+  <li><strong>Why Peskids Franchise</strong> (1 minute) - Why this specific franchise?</li>
   <li><strong>Commitment level</strong> (30 seconds) - Your availability and commitment to making this work</li>
 </ol>
 

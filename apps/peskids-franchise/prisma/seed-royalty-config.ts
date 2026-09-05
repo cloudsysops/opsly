@@ -48,7 +48,7 @@ async function main() {
     {
       slug: 'stc-brand-training',
       name: 'STC Brand Training',
-      description: 'Complete Acme Franchise brand values, messaging, and guidelines training',
+      description: 'Complete Peskids Franchise brand values, messaging, and guidelines training',
       requiredForLaunch: true,
       renewalMonths: null,
       category: 'TRAINING' as const,

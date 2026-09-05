@@ -179,7 +179,7 @@ export default function PortalTopNav({ user, healthScore }: PortalTopNavProps) {
         <Link href="/portal/my-franchise" className="flex items-center gap-2.5 flex-shrink-0">
           <Image
             src="/logo/logo.svg"
-            alt="Acme Franchise"
+            alt="Peskids Franchise"
             width={30}
             height={30}
             className="rounded-lg shadow-md"

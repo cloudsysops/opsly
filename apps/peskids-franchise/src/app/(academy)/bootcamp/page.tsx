@@ -62,7 +62,7 @@ export default function AcademyDashboard() {
           badges_earned: 0,
           recent_badges: [],
           next_action: {
-            title: "Welcome to Acme Franchise",
+            title: "Welcome to Peskids Franchise",
             link: "/bootcamp/journey",
             phase: "Foundation",
           },
@@ -189,7 +189,7 @@ export default function AcademyDashboard() {
               </h1>
               <p className="text-blue-100 text-sm sm:text-base max-w-xl">
                 Your comprehensive training and resource center. Complete your
-                90-day journey to build a successful Acme Franchise.
+                90-day journey to build a successful Peskids Franchise.
               </p>
             </div>
             <div className="flex-shrink-0">

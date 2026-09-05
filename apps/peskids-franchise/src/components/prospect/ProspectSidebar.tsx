@@ -193,7 +193,7 @@ export default function ProspectSidebar({
           <div className="relative">
             <Image
               src="/logo/logo.svg"
-              alt="Acme Franchise"
+              alt="Peskids Franchise"
               width={44}
               height={44}
               className="rounded-xl shadow-lg"

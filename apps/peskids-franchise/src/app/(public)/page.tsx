@@ -5,14 +5,14 @@ import { TestimonialCarousel } from "@/components/marketing/TestimonialCarousel"
 import { LinkButton } from "@/components/shared/Button";
 
 export const metadata: Metadata = {
-  title: "Own an Acme Franchise",
+  title: "Own a Peskids Franchise",
   description:
-    "Build a rewarding business teaching chess to young children. Acme Franchise combines education and play with a structured franchise model. Explore available territories today.",
+    "Build a rewarding business bringing after-school enrichment to young children. Peskids Franchise combines education and play with a structured franchise model. Explore available territories today.",
   alternates: {
-    canonical: "https://franchising.acmefranchise.com",
+    canonical: "https://franchise.peskids.com",
   },
   openGraph: {
-    url: "https://franchising.acmefranchise.com",
+    url: "https://franchise.peskids.com",
   },
 };
 
@@ -31,8 +31,8 @@ export default function HomePage() {
               Ready to Make a Difference?
             </h2>
             <p className="mx-auto mt-4 sm:mt-6 max-w-xl text-base sm:text-lg leading-7 sm:leading-8 text-brand-light/80 px-2 sm:px-0">
-              Join the Acme Franchise family and build a business that
-              transforms children&apos;s lives through the magic of chess.
+              Join the Peskids Franchise family and build a business that
+              transforms children&apos;s lives after school.
             </p>
             <div className="mt-6 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-x-6">
               <LinkButton

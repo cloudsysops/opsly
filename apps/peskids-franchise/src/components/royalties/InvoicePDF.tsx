@@ -286,7 +286,7 @@ export function InvoicePDF({ data }: { data: InvoicePDFData }) {
               />
             )}
             <Text style={{ fontSize: 16, fontWeight: 'bold', color: BRAND_NAVY }}>
-              Acme Franchise Franchising LLC
+              Peskids Franchise Franchising LLC
             </Text>
           </View>
           <View style={styles.invoiceTitle}>
@@ -302,8 +302,8 @@ export function InvoicePDF({ data }: { data: InvoicePDFData }) {
         <View style={styles.addressSection}>
           <View style={styles.addressBox}>
             <Text style={styles.addressLabel}>From</Text>
-            <Text style={styles.addressName}>Acme Franchise Franchising LLC</Text>
-            <Text style={styles.addressText}>franchising@acmefranchise.com</Text>
+            <Text style={styles.addressName}>Peskids Franchise Franchising LLC</Text>
+            <Text style={styles.addressText}>franchising@peskids.com</Text>
           </View>
           <View style={styles.addressBox}>
             <Text style={styles.addressLabel}>Bill To</Text>
@@ -457,7 +457,7 @@ export function InvoicePDF({ data }: { data: InvoicePDFData }) {
             Please remit payment by {formatDate(data.dueDate)}
           </Text>
           <Text style={styles.footerText}>
-            ACH or check payable to Acme Franchise
+            ACH or check payable to Peskids Franchise
           </Text>
           <View style={styles.footerContact}>
             <View>
@@ -465,7 +465,7 @@ export function InvoicePDF({ data }: { data: InvoicePDFData }) {
                 Questions? Contact us at:
               </Text>
               <Text style={styles.footerText}>
-                franchising@acmefranchise.com
+                franchising@peskids.com
               </Text>
             </View>
             <View>
@@ -473,7 +473,7 @@ export function InvoicePDF({ data }: { data: InvoicePDFData }) {
                 Thank you for being part of the
               </Text>
               <Text style={[styles.footerText, { textAlign: 'right', color: BRAND_NAVY, fontWeight: 'bold' }]}>
-                Acme Franchise Family!
+                Peskids Franchise Family!
               </Text>
             </View>
           </View>

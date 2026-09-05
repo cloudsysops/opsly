@@ -11,7 +11,7 @@ async function main() {
       id: "phase-1",
       slug: "foundation",
       title: "Foundation",
-      description: "Build your foundation for success. Learn the Acme Franchise mission, values, and business model.",
+      description: "Build your foundation for success. Learn the Peskids Franchise mission, values, and business model.",
       sequence: 1,
       duration: "Week 1",
     },
@@ -57,11 +57,11 @@ async function main() {
       id: "mod-welcome",
       phaseId: "phase-1",
       slug: "welcome-to-stc",
-      title: "Welcome to Acme Franchise",
+      title: "Welcome to Peskids Franchise",
       description: "An introduction to our mission, story, and what makes STC special.",
       content: `
-        <h2>Welcome to the Acme Franchise Family!</h2>
-        <p>Congratulations on joining one of the most innovative chess education programs in the world. Acme Franchise combines the magic of storytelling with the strategic thinking of chess to create an engaging learning experience for children.</p>
+        <h2>Welcome to the Peskids Franchise Family!</h2>
+        <p>Congratulations on joining one of the most innovative chess education programs in the world. Peskids Franchise combines the magic of storytelling with the strategic thinking of chess to create an engaging learning experience for children.</p>
 
         <h3>Our Mission</h3>
         <p>To teach every child the game of chess through the power of story, making learning fun and accessible from the earliest ages.</p>
@@ -75,7 +75,7 @@ async function main() {
         </ul>
 
         <h3>Your Journey Ahead</h3>
-        <p>Over the next 90 days, you'll learn everything you need to build a successful Acme Franchise franchise. This academy will guide you through operations, sales, marketing, and growth strategies.</p>
+        <p>Over the next 90 days, you'll learn everything you need to build a successful Peskids Franchise franchise. This academy will guide you through operations, sales, marketing, and growth strategies.</p>
       `,
       sequence: 1,
       duration: 15,
@@ -87,8 +87,8 @@ async function main() {
       phaseId: "phase-1",
       slug: "intro-video",
       title: "Welcome Video from Our Founder",
-      description: "Watch a personal message from our founder about the Acme Franchise mission.",
-      content: `<p>In this video, you'll hear directly from our founder about why Acme Franchise was created and the impact we're making in children's education worldwide.</p>`,
+      description: "Watch a personal message from our founder about the Peskids Franchise mission.",
+      content: `<p>In this video, you'll hear directly from our founder about why Peskids Franchise was created and the impact we're making in children's education worldwide.</p>`,
       sequence: 2,
       duration: 8,
       points: 15,
@@ -102,7 +102,7 @@ async function main() {
       title: "Understanding the Business Model",
       description: "Deep dive into revenue streams, pricing, and how franchisees make money.",
       content: `
-        <h2>The Acme Franchise Business Model</h2>
+        <h2>The Peskids Franchise Business Model</h2>
 
         <h3>Revenue Streams</h3>
         <p>As a franchisee, you have multiple ways to generate income:</p>
@@ -152,7 +152,7 @@ async function main() {
       title: "The STC Curriculum",
       description: "Learn about our unique story-based chess curriculum and how to deliver it.",
       content: `
-        <h2>Acme Franchise Curriculum</h2>
+        <h2>Peskids Franchise Curriculum</h2>
 
         <h3>The Characters</h3>
         <p>Each chess piece is brought to life through characters that children love:</p>
@@ -195,8 +195,8 @@ async function main() {
       phaseId: "phase-1",
       slug: "foundation-quiz",
       title: "Foundation Knowledge Check",
-      description: "Test your understanding of the Acme Franchise foundation concepts.",
-      content: `<p>You've learned about the Acme Franchise mission, business model, and curriculum. Now let's make sure you've got the fundamentals down!</p>`,
+      description: "Test your understanding of the Peskids Franchise foundation concepts.",
+      content: `<p>You've learned about the Peskids Franchise mission, business model, and curriculum. Now let's make sure you've got the fundamentals down!</p>`,
       sequence: 5,
       duration: 10,
       points: 25,
@@ -205,7 +205,7 @@ async function main() {
         passingScore: 70,
         questions: [
           {
-            question: "What is the primary teaching method that makes Acme Franchise unique?",
+            question: "What is the primary teaching method that makes Peskids Franchise unique?",
             options: [
               "Memorization-based learning",
               "Story-based learning with character pieces",
@@ -215,7 +215,7 @@ async function main() {
             correctIndex: 1
           },
           {
-            question: "What is the minimum age Acme Franchise curriculum is designed for?",
+            question: "What is the minimum age Peskids Franchise curriculum is designed for?",
             options: [
               "5 years old",
               "6 years old",
@@ -264,7 +264,7 @@ async function main() {
       phaseId: "phase-2",
       slug: "operations-walkthrough",
       title: "Operations Walkthrough Video",
-      description: "Watch a detailed walkthrough of how a typical day looks for a Acme Franchise franchisee.",
+      description: "Watch a detailed walkthrough of how a typical day looks for a Peskids Franchise franchisee.",
       content: `<p>This video provides a real-world look at franchise operations, including scheduling classes, managing instructors, and handling parent communications.</p>`,
       sequence: 1,
       duration: 12,
@@ -679,7 +679,7 @@ async function main() {
       id: "res-ops-manual",
       slug: "operations-manual",
       title: "Operations Manual",
-      description: "Complete guide to running your Acme Franchise franchise.",
+      description: "Complete guide to running your Peskids Franchise franchise.",
       category: ResourceCategory.OPERATIONS,
       content: "This comprehensive manual covers all aspects of franchise operations including daily procedures, quality standards, and best practices.",
     },

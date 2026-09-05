@@ -12,7 +12,7 @@ const BRAND = {
 };
 
 // Logo URL (absolute URL for email clients)
-const LOGO_URL = 'https://via.placeholder.com/180x60?text=Acme+Franchise';
+const LOGO_URL = 'https://via.placeholder.com/180x60?text=Peskids+Franchise';
 const BASE_URL = 'https://franchise-stc-993771038de6.herokuapp.com';
 
 const baseStyles = `
@@ -61,7 +61,7 @@ function wrapInTemplate(content: string, preheader?: string): string {
           <!-- Header with Logo -->
           <tr>
             <td style="background: linear-gradient(135deg, ${BRAND.navy} 0%, ${BRAND.purple} 100%); padding: 32px; text-align: center;">
-              <img src="${LOGO_URL}" alt="Acme Franchise" width="180" style="display: block; margin: 0 auto;" />
+              <img src="${LOGO_URL}" alt="Peskids Franchise" width="180" style="display: block; margin: 0 auto;" />
             </td>
           </tr>
           <!-- Content -->
@@ -74,14 +74,14 @@ function wrapInTemplate(content: string, preheader?: string): string {
           <tr>
             <td style="background: linear-gradient(135deg, ${BRAND.navy} 0%, ${BRAND.purple} 100%); padding: 32px; text-align: center;">
               <p style="margin: 0 0 8px; font-size: 14px; color: white; font-weight: 600;">
-                Acme Franchise Franchising
+                Peskids Franchise Franchising
               </p>
               <p style="margin: 0; font-size: 13px; color: rgba(255,255,255,0.8);">
-                <a href="mailto:franchising@acmefranchise.com" style="color: ${BRAND.cyan}; text-decoration: none;">franchising@acmefranchise.com</a>
+                <a href="mailto:franchising@peskids.com" style="color: ${BRAND.cyan}; text-decoration: none;">franchising@peskids.com</a>
               </p>
               <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
                 <p style="margin: 0; font-size: 11px; color: rgba(255,255,255,0.6);">
-                  © ${new Date().getFullYear()} Acme Franchise. All rights reserved.
+                  © ${new Date().getFullYear()} Peskids Franchise. All rights reserved.
                 </p>
               </div>
             </td>
@@ -168,7 +168,7 @@ export function welcomeProspectEmail(prospect: {
     <h2 style="margin: 0 0 8px; color: ${BRAND.navy}; font-size: 28px; font-weight: 700;">Welcome, ${prospect.firstName}!</h2>
     <p style="margin: 0 0 24px; color: ${BRAND.purple}; font-size: 16px;">Your franchise journey begins here</p>
 
-    <p style="font-size: 16px; color: #374151;">Thank you for your interest in becoming an Acme Franchise partner! We're excited to learn more about you and explore whether this opportunity is the right fit.</p>
+    <p style="font-size: 16px; color: #374151;">Thank you for your interest in becoming an Peskids Franchise partner! We're excited to learn more about you and explore whether this opportunity is the right fit.</p>
 
     <div style="background: linear-gradient(135deg, ${BRAND.light} 0%, #fff 100%); padding: 24px; border-radius: 12px; margin: 28px 0; border-left: 4px solid ${BRAND.cyan};">
       <p style="margin: 0 0 8px; font-weight: 700; color: ${BRAND.navy}; font-size: 16px;">What happens next?</p>
@@ -198,7 +198,7 @@ export function welcomeProspectEmail(prospect: {
               <td style="width: 32px; vertical-align: top;">
                 <div style="width: 24px; height: 24px; background-color: ${BRAND.orange}; border-radius: 50%; text-align: center; line-height: 24px; font-size: 12px;">✓</div>
               </td>
-              <td style="color: #374151; font-size: 15px;">The <strong>proven business model</strong> behind Acme Franchise</td>
+              <td style="color: #374151; font-size: 15px;">The <strong>proven business model</strong> behind Peskids Franchise</td>
             </tr>
           </table>
         </td>
@@ -227,14 +227,14 @@ export function welcomeProspectEmail(prospect: {
     <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
       <p style="margin: 0; color: #6b7280; font-size: 14px;">
         Best regards,<br>
-        <strong style="color: ${BRAND.navy};">The Acme Franchise Team</strong>
+        <strong style="color: ${BRAND.navy};">The Peskids Franchise Team</strong>
       </p>
     </div>
   `;
 
   return {
-    subject: "Welcome to Acme Franchise - Your Franchise Journey Begins!",
-    html: wrapInTemplate(content, "Thank you for your interest in Acme Franchise franchising."),
+    subject: "Welcome to Peskids Franchise - Your Franchise Journey Begins!",
+    html: wrapInTemplate(content, "Thank you for your interest in Peskids Franchise franchising."),
   };
 }
 
@@ -311,7 +311,7 @@ export function preWorkConfirmationEmail(prospect: {
 
     <p style="margin-top: 24px; color: #6b7280; font-size: 14px;">
       Best regards,<br>
-      The Acme Franchise Team
+      The Peskids Franchise Team
     </p>
   `;
 
@@ -331,7 +331,7 @@ export function portalInviteEmail(prospect: {
   const content = `
     <h2 style="margin: 0 0 20px; color: #2D2F8E; font-size: 20px;">You're Invited to the Franchise Portal!</h2>
     <p>Hi ${prospect.firstName},</p>
-    <p>Great news! After our initial conversation, we'd like to invite you to access the Acme Franchise Portal.</p>
+    <p>Great news! After our initial conversation, we'd like to invite you to access the Peskids Franchise Portal.</p>
 
     <div style="background-color: #E8FBFF; padding: 20px; border-radius: 8px; margin: 24px 0; border-left: 4px solid #50C8DF;">
       <p style="margin: 0; font-weight: 600; color: #2D2F8E;">What's in the Portal?</p>
@@ -357,12 +357,12 @@ export function portalInviteEmail(prospect: {
 
     <p style="margin-top: 24px; color: #6b7280; font-size: 14px;">
       Best regards,<br>
-      The Acme Franchise Team
+      The Peskids Franchise Team
     </p>
   `;
 
   return {
-    subject: "You're Invited to the Acme Franchise Portal",
+    subject: "You're Invited to the Peskids Franchise Portal",
     html: wrapInTemplate(content, "Access your franchise pre-work portal and begin your journey."),
   };
 }
@@ -377,7 +377,7 @@ export function passwordResetEmail(prospect: {
   const content = `
     <h2 style="margin: 0 0 20px; color: #2D2F8E; font-size: 20px;">Reset Your Password</h2>
     <p>Hi ${prospect.firstName},</p>
-    <p>We received a request to reset your password for the Acme Franchise Portal.</p>
+    <p>We received a request to reset your password for the Peskids Franchise Portal.</p>
 
     <p style="margin-top: 24px; text-align: center;">
       <a href="${resetUrl}" style="${buttonStyles}">Reset Password</a>
@@ -389,12 +389,12 @@ export function passwordResetEmail(prospect: {
 
     <p style="margin-top: 24px; color: #6b7280; font-size: 14px;">
       Best regards,<br>
-      The Acme Franchise Team
+      The Peskids Franchise Team
     </p>
   `;
 
   return {
-    subject: "Reset Your Acme Franchise Portal Password",
+    subject: "Reset Your Peskids Franchise Portal Password",
     html: wrapInTemplate(content, "Reset your franchise portal password."),
   };
 }
@@ -411,7 +411,7 @@ export function accountUpdatedEmail(data: {
     ? `
     <div style="background-color: #FEF3C7; padding: 16px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #F79A30;">
       <p style="margin: 0; font-weight: 600; color: #92400E;">Your login email has changed</p>
-      <p style="margin: 8px 0 0; color: #92400E;">Please use this email address to sign in going forward. If you have a @acmefranchise.com email, use the "Sign in with Google" button on the login page.</p>
+      <p style="margin: 8px 0 0; color: #92400E;">Please use this email address to sign in going forward. If you have a @peskids.com email, use the "Sign in with Google" button on the login page.</p>
     </div>
     `
     : "";
@@ -437,7 +437,7 @@ export function accountUpdatedEmail(data: {
 
     <p style="margin-top: 16px; color: #6b7280; font-size: 14px;">
       Best regards,<br>
-      The Acme Franchise Team
+      The Peskids Franchise Team
     </p>
   `;
 

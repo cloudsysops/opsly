@@ -29,7 +29,7 @@ function LoginForm() {
     (async () => {
       try {
         const result = await signIn('credentials', {
-          email: 'demo@acmefranchise.com',
+          email: 'demo@peskids.com',
           password: 'demo',
           redirect: false,
         });
@@ -90,13 +90,13 @@ function LoginForm() {
         <Link href="/" className="flex flex-col items-center gap-4">
           <Image
             src="/logo/logo.svg"
-            alt="Acme Franchise"
+            alt="Peskids Franchise"
             width={80}
             height={80}
             className="rounded-xl"
           />
           <span className="text-3xl font-bold text-brand-navy text-center">
-            Acme Franchise Franchising
+            Peskids Franchise Franchising
           </span>
         </Link>
         <h2 className="mt-4 text-center text-xl font-semibold text-brand-navy/80">
@@ -161,7 +161,7 @@ function LoginForm() {
                 <div className="w-full border-t border-gray-200" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="bg-white px-2 text-gray-500">@acmefranchise.com accounts</span>
+                <span className="bg-white px-2 text-gray-500">@peskids.com accounts</span>
               </div>
             </div>
           </div>
@@ -193,10 +193,10 @@ function LoginForm() {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              Sign in with Google (@acmefranchise.com)
+              Sign in with Google (@peskids.com)
             </Button>
             <p className="mt-2 text-xs text-center text-gray-500">
-              For admins and franchisees with a @acmefranchise.com email
+              For admins and franchisees with a @peskids.com email
             </p>
           </div>
         </div>

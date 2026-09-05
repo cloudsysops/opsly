@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const BASE_URL = "https://franchising.acmefranchise.com";
+const BASE_URL = "https://franchise.peskids.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -65,7 +65,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
     {
-      url: `${BASE_URL}/why-stc`,
+      url: `${BASE_URL}/why-peskids`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,

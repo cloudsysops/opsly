@@ -113,7 +113,7 @@ export function TemplateEditor({
           value={subject}
           onChange={(e) => onSubjectChange(e.target.value)}
           onFocus={() => setActiveField("subject")}
-          placeholder="e.g., Welcome to Acme Franchise!"
+          placeholder="e.g., Welcome to Peskids Franchise!"
           className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-cyan focus:border-transparent font-mono text-sm"
         />
         <p className="mt-1 text-xs text-gray-500">

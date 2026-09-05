@@ -4,12 +4,12 @@ import { ContactForm } from "@/components/marketing/ContactForm";
 export const metadata: Metadata = {
   title: "Contact Us",
   description:
-    "Get in touch to learn more about the Acme Franchise opportunity.",
+    "Get in touch to learn more about the Peskids Franchise opportunity.",
   alternates: {
-    canonical: "https://franchising.acmefranchise.com/contact",
+    canonical: "https://franchise.peskids.com/contact",
   },
   openGraph: {
-    url: "https://franchising.acmefranchise.com/contact",
+    url: "https://franchise.peskids.com/contact",
   },
 };
 
@@ -24,7 +24,7 @@ export default function ContactPage() {
               Start Your Journey
             </h1>
             <p className="mt-3 sm:mt-4 text-base sm:text-lg leading-7 sm:leading-8 text-gray-600">
-              Ready to explore the Acme Franchise opportunity? Fill
+              Ready to explore the Peskids Franchise opportunity? Fill
               out the form below and we&apos;ll be in touch within 24-48 hours.
             </p>
           </div>
@@ -117,10 +117,10 @@ export default function ContactPage() {
                       />
                     </svg>
                     <a
-                      href="mailto:franchising@acmefranchise.com"
+                      href="mailto:franchising@peskids.com"
                       className="text-brand-navy hover:text-brand-purple"
                     >
-                      franchising@acmefranchise.com
+                      franchising@peskids.com
                     </a>
                   </div>
                   <div className="flex items-center gap-3">

@@ -4,7 +4,7 @@ export const runtime = "edge";
 
 export async function GET() {
   const baseUrl =
-    process.env.NEXTAUTH_URL || "https://franchising.acmefranchise.com";
+    process.env.NEXTAUTH_URL || "https://franchise.peskids.com";
 
   return new ImageResponse(
     (
@@ -76,7 +76,7 @@ export async function GET() {
               letterSpacing: "-1px",
             }}
           >
-            Own a Children&#39;s Chess
+            Own a Children&#39;s After-School
           </div>
           <div
             style={{
@@ -89,7 +89,7 @@ export async function GET() {
               letterSpacing: "-1px",
             }}
           >
-            Education Franchise
+            Enrichment Franchise
           </div>
 
           {/* Subtext */}
@@ -103,8 +103,8 @@ export async function GET() {
               marginBottom: "24px",
             }}
           >
-            Build a rewarding business teaching chess to young children with a
-            proven curriculum and comprehensive support.
+            Build a rewarding business bringing after-school programs to young
+            children with a proven model and comprehensive support.
           </div>
 
           {/* Stats row */}
@@ -192,7 +192,7 @@ export async function GET() {
               letterSpacing: "1px",
             }}
           >
-            franchising.acmefranchise.com
+            franchise.peskids.com
           </div>
         </div>
       </div>

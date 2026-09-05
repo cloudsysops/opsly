@@ -11,7 +11,7 @@ async function main() {
     update: {
       name: "Brand Standards Audit",
       description:
-        "Evaluate franchisee adherence to Acme Franchise brand guidelines including signage, materials, attire, and digital presence.",
+        "Evaluate franchisee adherence to Peskids Franchise brand guidelines including signage, materials, attire, and digital presence.",
       category: "BRAND_STANDARDS",
       isActive: true,
     },
@@ -19,7 +19,7 @@ async function main() {
       name: "Brand Standards Audit",
       slug: "brand-standards",
       description:
-        "Evaluate franchisee adherence to Acme Franchise brand guidelines including signage, materials, attire, and digital presence.",
+        "Evaluate franchisee adherence to Peskids Franchise brand guidelines including signage, materials, attire, and digital presence.",
       category: "BRAND_STANDARDS",
       isActive: true,
     },
@@ -34,7 +34,7 @@ async function main() {
     { question: "Signage properly displayed and in good condition", itemType: "PASS_FAIL" as const, weight: 2, sortOrder: 1, isRequired: true },
     { question: "Logo used correctly on all materials", itemType: "PASS_FAIL" as const, weight: 2, sortOrder: 2, isRequired: true },
     { question: "Brand colors consistent across materials", itemType: "PASS_FAIL" as const, weight: 1, sortOrder: 3, isRequired: true },
-    { question: "Staff wearing approved Acme Franchise attire", itemType: "PASS_FAIL" as const, weight: 1, sortOrder: 4, isRequired: true },
+    { question: "Staff wearing approved Peskids Franchise attire", itemType: "PASS_FAIL" as const, weight: 1, sortOrder: 4, isRequired: true },
     { question: "Marketing materials are current and undamaged", itemType: "PASS_FAIL" as const, weight: 1, sortOrder: 5, isRequired: true },
     { question: "Business cards available and up to date", itemType: "PASS_FAIL" as const, weight: 1, sortOrder: 6, isRequired: true },
     { question: "Chess sets display STC branding", itemType: "PASS_FAIL" as const, weight: 1, sortOrder: 7, isRequired: true },

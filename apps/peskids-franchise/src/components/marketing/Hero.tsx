@@ -104,7 +104,7 @@ export function Hero() {
 
           {/* Subheadline */}
           <p className="mt-4 sm:mt-6 text-base sm:text-xl leading-7 sm:leading-8 text-white/80 max-w-2xl mx-auto px-2">
-            Join the Acme Franchise family. Build a rewarding business
+            Join the Peskids Franchise family. Build a rewarding business
             teaching children ages 3-8 with our proven, story-based curriculum.
           </p>
 
@@ -159,7 +159,7 @@ export function Hero() {
       <div className="relative z-10 -mb-12 sm:-mb-16 lg:-mb-20">
         <Image
           src="/images/characters/team-illustration.svg"
-          alt="Acme Franchise Characters"
+          alt="Peskids Franchise Characters"
           width={900}
           height={150}
           className="mx-auto h-24 sm:h-32 lg:h-40 w-auto drop-shadow-2xl"
@@ -226,7 +226,7 @@ export function Hero() {
                     <h3 className="font-semibold text-brand-navy">Corporate Markets</h3>
                   </div>
                   <p className="text-xs text-gray-500 mb-3">
-                    Owned and operated by Acme Franchise
+                    Owned and operated by Peskids Franchise
                   </p>
                   <div className="space-y-2">
                     {corporateMarkets.map((market, i) => (
@@ -263,7 +263,7 @@ export function Hero() {
               {/* CTA */}
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-600 mb-3">
-                  Interested in bringing Acme Franchise to your area?
+                  Interested in bringing Peskids Franchise to your area?
                 </p>
                 <Link
                   href="/contact"
