@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { validateStaffRequest } from '@/lib/staff-auth';
-import { agreementBoard } from '@/lib/services/franchise-os.service';
+import { agreementBoard } from '@/lib/franchise/agreement-board';
 import { franchiseErrorResponse, getFranchiseService, resolveFranchiseActor } from '@/lib/franchise/persist';
 import { createSupabaseFranchiseStore } from '@intcloudsysops/franchise-persistence';
 import { supabaseServer } from '@/lib/supabase';

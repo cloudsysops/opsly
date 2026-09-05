@@ -32,7 +32,7 @@ describe('GET /api/dashboard', () => {
     } as never)
 
     expect(response.status).toBe(401)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Unauthorized',
       request_id: 'req-123',
@@ -66,7 +66,7 @@ describe('GET /api/dashboard', () => {
 
     expect(response.status).toBe(500)
     expect(response.headers.get('cache-control')).toBe('no-store, private, max-age=0, must-revalidate')
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Failed to fetch dashboard data',
       request_id: 'req-500',

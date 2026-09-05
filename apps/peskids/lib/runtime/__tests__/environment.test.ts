@@ -31,42 +31,42 @@ function env(overrides: Record<string, string | undefined> = {}): NodeJS.Process
 
 describe('resolveAppEnvironment', () => {
   it('prefers the explicit server-side variable', () => {
-    expect(resolveAppEnvironment({ [APP_ENV_VAR]: 'production' } as NodeJS.ProcessEnv)).toBe(
+    expect(resolveAppEnvironment({ [APP_ENV_VAR]: 'production' } as unknown as NodeJS.ProcessEnv)).toBe(
       'production'
     );
-    expect(resolveAppEnvironment({ [APP_ENV_VAR]: 'STAGING' } as NodeJS.ProcessEnv)).toBe('staging');
+    expect(resolveAppEnvironment({ [APP_ENV_VAR]: 'STAGING' } as unknown as NodeJS.ProcessEnv)).toBe('staging');
   });
 
   it('accepts the Doppler config aliases', () => {
-    expect(resolveAppEnvironment({ [APP_ENV_VAR]: 'prd' } as NodeJS.ProcessEnv)).toBe('production');
-    expect(resolveAppEnvironment({ [APP_ENV_VAR]: 'qa' } as NodeJS.ProcessEnv)).toBe('staging');
+    expect(resolveAppEnvironment({ [APP_ENV_VAR]: 'prd' } as unknown as NodeJS.ProcessEnv)).toBe('production');
+    expect(resolveAppEnvironment({ [APP_ENV_VAR]: 'qa' } as unknown as NodeJS.ProcessEnv)).toBe('staging');
   });
 
   it('falls back to DOPPLER_CONFIG then NODE_ENV', () => {
-    expect(resolveAppEnvironment({ DOPPLER_CONFIG: 'prd' } as NodeJS.ProcessEnv)).toBe('production');
-    expect(resolveAppEnvironment({ DOPPLER_CONFIG: 'stg' } as NodeJS.ProcessEnv)).toBe('staging');
-    expect(resolveAppEnvironment({ NODE_ENV: 'production' } as NodeJS.ProcessEnv)).toBe(
+    expect(resolveAppEnvironment({ DOPPLER_CONFIG: 'prd' } as unknown as NodeJS.ProcessEnv)).toBe('production');
+    expect(resolveAppEnvironment({ DOPPLER_CONFIG: 'stg' } as unknown as NodeJS.ProcessEnv)).toBe('staging');
+    expect(resolveAppEnvironment({ NODE_ENV: 'production' } as unknown as NodeJS.ProcessEnv)).toBe(
       'production'
     );
-    expect(resolveAppEnvironment({ NODE_ENV: 'development' } as NodeJS.ProcessEnv)).toBe(
+    expect(resolveAppEnvironment({ NODE_ENV: 'development' } as unknown as NodeJS.ProcessEnv)).toBe(
       'development'
     );
   });
 
   it('returns null for an unrecognised explicit value rather than guessing', () => {
-    expect(resolveAppEnvironment({ [APP_ENV_VAR]: 'prod-eu-2' } as NodeJS.ProcessEnv)).toBeNull();
+    expect(resolveAppEnvironment({ [APP_ENV_VAR]: 'prod-eu-2' } as unknown as NodeJS.ProcessEnv)).toBeNull();
   });
 
   it('never reads a NEXT_PUBLIC_ variable to pick the environment', () => {
     const resolved = resolveAppEnvironment({
       NEXT_PUBLIC_APP_ENV: 'production',
       NODE_ENV: 'development',
-    } as NodeJS.ProcessEnv);
+    } as unknown as NodeJS.ProcessEnv);
     expect(resolved).toBe('development');
   });
 
   it('defaults to development when nothing is configured', () => {
-    expect(currentEnvironment({} as NodeJS.ProcessEnv)).toBe('development');
+    expect(currentEnvironment({} as unknown as NodeJS.ProcessEnv)).toBe('development');
   });
 });
 
@@ -163,7 +163,7 @@ describe('checkEnvironmentBoundary', () => {
       [APP_ENV_VAR]: 'development',
       NEXT_PUBLIC_SUPABASE_URL: 'http://localhost:54321',
       PESKIDS_ALLOW_UNPINNED_SUPABASE: 'true',
-    } as NodeJS.ProcessEnv);
+    } as unknown as NodeJS.ProcessEnv);
     expect(result.ok).toBe(true);
   });
 
@@ -222,7 +222,7 @@ describe('browserSelectableEnvironmentKeys', () => {
       NEXT_PUBLIC_PESKIDS_DEPLOY_ENV: 'x',
       NEXT_PUBLIC_SUPABASE_URL: 'x',
       PESKIDS_APP_ENV: 'x',
-    } as NodeJS.ProcessEnv);
+    } as unknown as NodeJS.ProcessEnv);
     expect(keys.sort()).toEqual(['NEXT_PUBLIC_APP_ENV', 'NEXT_PUBLIC_PESKIDS_DEPLOY_ENV']);
   });
 });

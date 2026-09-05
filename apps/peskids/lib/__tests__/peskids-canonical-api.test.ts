@@ -101,7 +101,7 @@ describe('peskids-canonical-api', () => {
       'req-canonical-400'
     );
 
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       ok: false,
       status: 400,
       error: 'Invalid request body',

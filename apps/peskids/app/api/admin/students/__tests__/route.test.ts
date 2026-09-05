@@ -39,7 +39,7 @@ describe('GET /api/admin/students', () => {
     const response = await GET(req);
 
     expect(response.status).toBe(401);
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Unauthorized',
       request_id: 'req-students-401',

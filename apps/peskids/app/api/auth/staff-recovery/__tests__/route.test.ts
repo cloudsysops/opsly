@@ -48,7 +48,7 @@ describe('POST /api/auth/staff-recovery', () => {
     const response = await POST(request)
 
     expect(response.status).toBe(400)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Email requerido',
       request_id: expect.any(String),

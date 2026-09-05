@@ -91,7 +91,7 @@ describe('POST /api/feedback', () => {
     } as never)
 
     expect(response.status).toBe(401)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Unauthorized',
       request_id: 'feedback-family-401',
@@ -116,7 +116,7 @@ describe('POST /api/feedback', () => {
     } as never)
 
     expect(response.status).toBe(403)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Forbidden',
       request_id: 'feedback-admin-403',

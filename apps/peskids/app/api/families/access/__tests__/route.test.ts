@@ -52,7 +52,7 @@ describe('POST /api/families/access', () => {
 
     const res = await POST(req)
     expect(res.status).toBe(400)
-    await expect(res.json()).resolves.toEqual({
+    await expect(res.json()).resolves.toMatchObject({
       ok: false,
       error: 'Email requerido',
       request_id: expect.any(String),

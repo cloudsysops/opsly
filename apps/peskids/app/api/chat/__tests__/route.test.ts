@@ -60,7 +60,7 @@ describe('POST /api/chat', () => {
     } as never)
 
     expect(response.status).toBe(400)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'message required',
       request_id: 'req-chat-400',

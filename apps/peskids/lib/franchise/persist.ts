@@ -5,20 +5,35 @@ import {
   createSupabaseFranchiseStore,
   type FranchiseActor,
 } from '@intcloudsysops/franchise-persistence';
+import { mapTenantStaffRole } from '@intcloudsysops/franchise-core';
 import { NextResponse } from 'next/server';
 import { PESKIDS_TENANT_SLUG } from '@/lib/franchise-constants';
-import { supabaseServer } from '@/lib/supabase';
+import { supabaseServer, supabaseServerUntypedSchema } from '@/lib/supabase';
 import type { StaffAuthResult } from '@/lib/staff-auth';
-import { franchiseRoleFromAuth } from '@/lib/services/franchise-os.service';
+import { tenantRoleFromUserMetadata } from '@/lib/runtime/tenant-identity';
 
 const NETWORK_ROLES = new Set(['platform_owner', 'tenant_owner', 'franchise_network_admin']);
 
+/**
+ * Maps a staff session onto a Franchise OS ACL role.
+ *
+ * Lives here (rather than in the deleted franchise-os.service) because it is the
+ * only place the role is derived, and it must always be derived from the
+ * *session* — never from anything the client sends.
+ *
+ * A `method === 'secret'` session is the shared DASHBOARD_ADMIN_SECRET, which is
+ * the tenant owner credential, so it maps to `tenant_owner`.
+ */
+export function franchiseRoleFromAuth(auth: StaffAuthResult): FranchiseActor['role'] {
+  if (auth.ok && auth.method === 'secret') return 'tenant_owner';
+  if (auth.ok && auth.user) {
+    return mapTenantStaffRole(tenantRoleFromUserMetadata(auth.user) ?? 'support');
+  }
+  return 'franchise_staff';
+}
+
 function platformClient() {
-  return (supabaseServer() as unknown as {
-    schema: (name: string) => {
-      from: (table: string) => ReturnType<ReturnType<typeof supabaseServer>['from']>;
-    };
-  }).schema('platform');
+  return supabaseServerUntypedSchema().schema('platform');
 }
 
 export function getFranchiseService() {

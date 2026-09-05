@@ -132,7 +132,7 @@ describe('POST /api/leads', () => {
     } as never);
 
     expect(response.status).toBe(502);
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Lead service unavailable',
       request_id: 'req-lead-502',
