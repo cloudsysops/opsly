@@ -2,7 +2,7 @@
 # Validate Opsly pattern catalog and optionally install upstream Sigma rules.
 set -euo pipefail
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO_ROOT="${OPSLY_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 WITH_SIGMA=false
 DRY_RUN=false
 
@@ -43,20 +43,7 @@ done
 cd "$REPO_ROOT"
 
 echo "==> Validating pattern catalog"
-node --import tsx <<'NODE'
-import { validatePatternIndex, listPatterns } from './lib/pattern-catalog/src/index.ts';
-
-const errors = validatePatternIndex();
-if (errors.length) {
-  console.error(errors.join('\n'));
-  process.exit(1);
-}
-const counts = { harness: 0, tenant: 0, opsly: 0 };
-for (const kind of ['harness', 'tenant', 'opsly'] as const) {
-  counts[kind] = listPatterns(kind).length;
-}
-console.log('Pattern catalog OK:', JSON.stringify(counts));
-NODE
+node --import tsx "$REPO_ROOT/scripts/validate-pattern-catalog.mts"
 
 if [[ "$WITH_SIGMA" == true ]]; then
   echo "==> Installing Sigma rules (upstream context for harness)"
