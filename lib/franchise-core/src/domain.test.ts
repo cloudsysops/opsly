@@ -1,3 +1,7 @@
+// Excluded from tsc via tsconfig.json — specs units.ts/opening.ts/network.ts
+// and audit.ts helpers (scoreAudit, deriveCorrectiveActionStatus) that were
+// never implemented. Kept as the design spec for that work; re-include once
+// those modules exist.
 import { describe, expect, it } from 'vitest';
 import { canAccessUnit, canReadAgreements, canReadRoyalties, canWriteFinancial, mapTenantStaffRole } from './access.js';
 import { assertFranchiseeDistinctFromUnit, ownedUnitDefaults, UnitModelError } from './units.js';
