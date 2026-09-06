@@ -131,7 +131,7 @@ export function getPeskidsAttendanceRiskThreshold(
  * Default OFF — schema 0098/0099 is not production-approved.
  */
 export function isPeskidsFranchiseOsEnabled(
-  env: NodeJS.ProcessEnv = process.env
+  env: Record<string, string | undefined> = process.env
 ): boolean {
   return parseBooleanFlag(env.PESKIDS_FRANCHISE_OS_ENABLED, false);
 }
