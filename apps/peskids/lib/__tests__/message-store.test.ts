@@ -270,6 +270,22 @@ describe('message-store helpers', () => {
       data: null,
       error: { message: 'write failed' },
     })
+    const maybeSingleLookup = vi.fn().mockResolvedValue({ data: null, error: null })
+    fromMock.mockImplementation((table: string) => {
+      if (table !== 'messages') {
+        throw new Error(`Unexpected table ${table}`)
+      }
+      return {
+        insert: insertMock,
+        select: vi.fn(() => ({
+          eq: vi.fn(() => ({
+            eq: vi.fn(() => ({
+              maybeSingle: maybeSingleLookup,
+            })),
+          })),
+        })),
+      }
+    })
 
     await expect(
       storeInboundMessage({

@@ -3,9 +3,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const postCanonicalLeadMock = vi.fn();
 const buildReferralCodeMock = vi.fn();
 const buildReferralLinkMock = vi.fn();
+const findLeadIdByEmailMock = vi.fn();
 
 vi.mock('@/lib/peskids-canonical-api', () => ({
   postPeskidsLeadWithCRM: postCanonicalLeadMock,
+}));
+
+vi.mock('@/lib/lead-intake-idempotency', () => ({
+  findLeadIdByEmail: findLeadIdByEmailMock,
 }));
 
 vi.mock('@/lib/peskids-referrals', () => ({
@@ -22,6 +27,8 @@ describe('POST /api/leads', () => {
     postCanonicalLeadMock.mockReset();
     buildReferralCodeMock.mockReset();
     buildReferralLinkMock.mockReset();
+    findLeadIdByEmailMock.mockReset();
+    findLeadIdByEmailMock.mockResolvedValue(null);
     process.env.NEXT_PUBLIC_TENANT_ID = 'peskids';
   });
 
@@ -64,9 +71,13 @@ describe('POST /api/leads', () => {
     const response = await POST({
       headers: new Headers({ 'x-request-id': 'req-lead-201' }),
       json: async () => ({
+        lead_type: 'family',
         name: 'Ana López',
         email: 'ana@example.com',
         phone: ' 3001234567 ',
+        child_name: 'Mateo López',
+        birth_date: '2018-05-10',
+        document_number: '1234567890',
         class_modality: 'llanogrande',
         neighborhood: 'Llanogrande',
         grade_interested: 'K-5',
@@ -121,9 +132,13 @@ describe('POST /api/leads', () => {
     const response = await POST({
       headers: new Headers({ 'x-request-id': 'req-lead-502' }),
       json: async () => ({
+        lead_type: 'family',
         name: 'Ana López',
         email: 'ana@example.com',
         phone: '3001234567',
+        child_name: 'Mateo López',
+        birth_date: '2018-05-10',
+        document_number: '1234567890',
         class_modality: 'llanogrande',
         neighborhood: 'Llanogrande',
         grade_interested: 'K-5',
