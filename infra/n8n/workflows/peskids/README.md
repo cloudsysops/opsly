@@ -32,3 +32,8 @@ Do **not** activate in production until Doppler flags are approved:
 Also requires `N8N_WEBHOOK_BASE_URL`, `OPSLY_CRM_NOTIFY_WEBHOOK_URL`, and
 `PESKIDS_DIGEST_CRON_SECRET` (or `PESKIDS_AGING_CRON_SECRET`) for cron routes.
 Aging never auto-messages parents on WhatsApp.
+
+Support WhatsApp alerts use the existing `peskids-notify` webhook and require
+`PESKIDS_SUPPORT_WHATSAPP` in E.164 format. They send a summary and a protected
+lead link; they do not send the document number. Enable the hot-lead flag only
+after the n8n workflow and support number have been verified in staging.

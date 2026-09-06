@@ -121,30 +121,67 @@ async function dispatchOperationalNotify(content: string): Promise<{
     return { ok: true, detail: 'operational notifications disabled' };
   }
   const base = process.env.N8N_WEBHOOK_BASE_URL?.trim().replace(/\/$/, '');
-  if (!base) {
-    return { ok: false, detail: 'N8N_WEBHOOK_BASE_URL not configured' };
-  }
-  try {
-    const response = await fetch(`${base}${PESKIDS_N8N_OPERATIONAL_NOTIFY_PATH}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        enabled: true,
-        content,
-        event_type: 'aging.alert',
-        tenant_slug: tenantSlug(),
-      }),
-    });
-    if (!response.ok) {
-      return { ok: false, detail: `n8n returned ${response.status}` };
-    }
-    return { ok: true, detail: 'queued in n8n' };
-  } catch (err) {
+  const supportPhone = process.env.PESKIDS_SUPPORT_WHATSAPP?.trim();
+  if (!base && !supportPhone) {
     return {
       ok: false,
-      detail: err instanceof Error ? err.message : String(err),
+      detail: 'N8N_WEBHOOK_BASE_URL and PESKIDS_SUPPORT_WHATSAPP not configured',
     };
   }
+
+  const deliveries: string[] = [];
+  const failures: string[] = [];
+
+  if (base) {
+    try {
+      const response = await fetch(`${base}${PESKIDS_N8N_OPERATIONAL_NOTIFY_PATH}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          enabled: true,
+          content,
+          event_type: 'aging.alert',
+          tenant_slug: tenantSlug(),
+        }),
+      });
+      if (response.ok) deliveries.push('operational');
+      else failures.push(`operational n8n returned ${response.status}`);
+    } catch (err) {
+      failures.push(`operational ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+
+  if (supportPhone && !base) {
+    failures.push('whatsapp N8N_WEBHOOK_BASE_URL not configured');
+  }
+
+  if (supportPhone && base) {
+    try {
+      const response = await fetch(`${base}/peskids-notify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'lead_aging_support',
+          tenant_id: tenantSlug(),
+          to: supportPhone,
+          title: 'Peskids: lead sin atender',
+          body: content,
+          metadata: { event_type: 'lead.aging' },
+        }),
+      });
+      if (response.ok) deliveries.push('whatsapp');
+      else failures.push(`whatsapp n8n returned ${response.status}`);
+    } catch (err) {
+      failures.push(`whatsapp ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+
+  return deliveries.length > 0
+    ? {
+        ok: true,
+        detail: `queued: ${deliveries.join(', ')}${failures.length ? `; failed: ${failures.join('; ')}` : ''}`,
+      }
+    : { ok: false, detail: failures.join('; ') || 'no notification channel configured' };
 }
 
 function kindForBucket(bucket: Exclude<LeadAgingBucket, 'none'>): AgingAlertKind {
