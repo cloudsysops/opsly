@@ -14,10 +14,12 @@ Connector: `lib/content-studio/src/publishers/youtube.ts` (`YouTubePublisher`).
 CLI: `npm run content:youtube:publish -- <episode-id> --video <path.mp4> ...`
 (`scripts/content/youtube-publish.ts`).
 
-**Status:** code exists and is unit-tested (mocked API), but has **never
-been run against a real YouTube channel** — no Doppler credentials are
-configured yet. Uploading is entirely manual until someone completes the
-one-time setup below and configures Doppler.
+**Factory 24×7 (Bitsitos / Splashitos):** `scripts/ops/content-studio-24x7.sh`
++ LaunchAgent `com.opsly.content-studio-24x7`. Sube el siguiente unpublished
+(`--limit 1`, unlisted, tope 6/día). Runbook: `docs/runbooks/CONTENT-FACTORY-NOW.md`.
+
+**Status (CLI `content:youtube:publish`):** connector unit-tested; live factory
+uses `scripts/content-studio-publish-youtube.sh` + Doppler `YOUTUBE_*`.
 
 ## What this does NOT do
 

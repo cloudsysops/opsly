@@ -219,7 +219,7 @@ Wants=network-online.target
 Type=oneshot
 RemainAfterExit=yes
 WorkingDirectory=${ROOT}
-ExecStart=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh --up
+ExecStart=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh --up --with-content --use-host-ollama
 ExecStop=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh --down
 TimeoutStartSec=600
 

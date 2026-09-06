@@ -6,8 +6,9 @@ Ver estrategia: [`docs/brand/icso/YOUTUBE-KIDS-SWIM-CHANNEL.md`](../../../docs/b
 
 ```bash
 # Listar guiones
-./scripts/content-splashitos-enqueue.sh --dry-run
+npm run content:splashitos:dry-run
 
-# Encolar render (PC gamer / worker content-video + MoneyPrinter)
-REDIS_URL=… MONEY_PRINTER_TURBO_URL=… ./scripts/content-splashitos-enqueue.sh
+# Encolar render (PC-gamer only; job usa localhost:8080 en el worker)
+doppler run --project ops-intcloudsysops --config prd -- \
+  npm run content:splashitos:enqueue
 ```

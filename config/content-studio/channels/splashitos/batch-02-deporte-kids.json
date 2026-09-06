@@ -1,0 +1,126 @@
+{
+  "channel": {
+    "slug": "icso-splashitos",
+    "brand": "Splashitos",
+    "language": "es",
+    "owner": "icso",
+    "not_peskids": true,
+    "primary_surface": "youtube_shorts",
+    "aspect_ratio": "9:16",
+    "target_duration_sec": 40,
+    "tone": "energetic_safe_sport",
+    "batch": "02-deporte-kids",
+    "visual_style": "bright kids sports pool park, bold Spanish subtitles, no real child faces"
+  },
+  "preset": {
+    "slug": "youtube_shorts",
+    "label": "YouTube Shorts",
+    "platforms": ["youtube_shorts"],
+    "pillars": ["sports", "swim", "movement"],
+    "tone_of_voice": "energetic_safe_sport",
+    "language": "es",
+    "aspect_ratio": "9:16",
+    "target_duration_sec": 40,
+    "approval_required": true,
+    "render_provider": "moneyprinterturbo",
+    "notes": "Splashitos batch 02 — deporte y movimiento kids"
+  },
+  "drafts": [
+    {
+      "id": "splashitos-008-calentar",
+      "title": "Calentar antes de jugar (30s)",
+      "story_hook": "El deporte empieza… antes del deporte.",
+      "call_to_action": "10 saltitos + 10 brazos. Splashitos.",
+      "image_prompt": "Cartoon kids silhouette warm-up jumps and arm circles, subtitle CALENTAR, sports kids safe",
+      "reel_script": [
+        { "scene": "Sprint cold", "copy": "¿Correr en frío? Mala idea.", "duration_sec": 4 },
+        { "scene": "Jumping jacks", "copy": "10 saltitos suaves.", "duration_sec": 12 },
+        { "scene": "Arm circles", "copy": "10 círculos de brazos.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Listos. Splashitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: frío.\nTip: 10+10 calentar.\nCTA: Splashitos.",
+      "hashtags": ["#Splashitos", "#Deporte", "#Calentamiento", "#Kids", "#Shorts"],
+      "pillar": "sports"
+    },
+    {
+      "id": "splashitos-009-equilibrio",
+      "title": "Equilibrio de campeón",
+      "story_hook": "Un pie… 10 segundos… sonríes.",
+      "call_to_action": "Prueben equilibrio en ambos pies. Splashitos.",
+      "image_prompt": "Cartoon flamingo kid balancing on one foot with timer 10, subtitle EQUILIBRIO, sports kids",
+      "reel_script": [
+        { "scene": "Wobble", "copy": "¿Se tambalea?", "duration_sec": 4 },
+        { "scene": "One foot", "copy": "Un pie, mirada fija, 10 s.", "duration_sec": 14 },
+        { "scene": "Switch foot", "copy": "Cambien de pie.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Equilibrio OK. Splashitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: tambalear.\nTip: 10s por pie.\nCTA: Splashitos.",
+      "hashtags": ["#Splashitos", "#Equilibrio", "#Deporte", "#Kids", "#Shorts"],
+      "pillar": "sports"
+    },
+    {
+      "id": "splashitos-010-agua-regla",
+      "title": "Deporte en agua: regla de oro",
+      "story_hook": "Nunca solos. Nunca sin adulto.",
+      "call_to_action": "Repitan la regla en voz alta. Splashitos.",
+      "image_prompt": "Pool edge adult silhouette watching kids float icons, subtitle NUNCA SOLOS, swim safety sports",
+      "reel_script": [
+        { "scene": "Empty pool danger", "copy": "Piscina vacía de adultos = alto.", "duration_sec": 5 },
+        { "scene": "Adult watching", "copy": "Siempre un adulto mirando.", "duration_sec": 12 },
+        { "scene": "Buddy system", "copy": "Y un compañero cerca.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Regla de oro. Splashitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: piscina sola.\nTip: adulto + buddy.\nCTA: Splashitos.",
+      "hashtags": ["#Splashitos", "#Natación", "#Seguridad", "#Deporte", "#Shorts"],
+      "pillar": "sports"
+    },
+    {
+      "id": "splashitos-011-carrera-fair",
+      "title": "Carrera justa: todos ganan algo",
+      "story_hook": "Ganar no es humillar.",
+      "call_to_action": "Felicitación al 1º y al esfuerzo. Splashitos.",
+      "image_prompt": "Finish line kids high-five winner and last runner both smiling, subtitle FAIR PLAY, sports kids",
+      "reel_script": [
+        { "scene": "Boast win", "copy": "¿Ganaste y te burlas? No.", "duration_sec": 4 },
+        { "scene": "High five", "copy": "Choca esos cinco al esfuerzo.", "duration_sec": 12 },
+        { "scene": "Personal best", "copy": "Meta: mejorar TU marca.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Fair play. Splashitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: burla.\nTip: fair play.\nCTA: Splashitos.",
+      "hashtags": ["#Splashitos", "#FairPlay", "#Deporte", "#Valores", "#Shorts"],
+      "pillar": "sports"
+    },
+    {
+      "id": "splashitos-012-fuerza-core",
+      "title": "Fuerza suave: plank 10s",
+      "story_hook": "Fuerte no es gritar: es aguantar.",
+      "call_to_action": "Plank de rodillas 10 s. Splashitos.",
+      "image_prompt": "Cartoon kid knee plank with timer 10 and strong star, subtitle PLANCHA, kids sports fitness safe",
+      "reel_script": [
+        { "scene": "Heavy weights myth", "copy": "No necesitas pesas gigantes.", "duration_sec": 4 },
+        { "scene": "Knee plank", "copy": "Plancha de rodillas, espalda recta.", "duration_sec": 14 },
+        { "scene": "Count 10", "copy": "Cuenten 10… respiren.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Core listo. Splashitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: pesas.\nTip: plank 10s.\nCTA: Splashitos.",
+      "hashtags": ["#Splashitos", "#Fuerza", "#FitnessKids", "#Deporte", "#Shorts"],
+      "pillar": "sports"
+    },
+    {
+      "id": "splashitos-013-hidratacion",
+      "title": "Agua > jugo en el partido",
+      "story_hook": "Tu tanque es agua, no solo azúcar.",
+      "call_to_action": "Llenen la botella antes de salir. Splashitos.",
+      "image_prompt": "Water bottle champion vs soda can sleepy, subtitle AGUA, kids sports hydration",
+      "reel_script": [
+        { "scene": "Soda crash", "copy": "Jugo dulce… luego bajón.", "duration_sec": 4 },
+        { "scene": "Water bottle", "copy": "Agua antes, durante, después.", "duration_sec": 14 },
+        { "scene": "Small sips", "copy": "Sorbos chiquitos, constante.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Botella lista. Splashitos.", "duration_sec": 8 }
+      ],
+      "youtube_shorts_script": "Hook: bajón azúcar.\nTip: agua constante.\nCTA: Splashitos.",
+      "hashtags": ["#Splashitos", "#Hidratación", "#Deporte", "#Salud", "#Shorts"],
+      "pillar": "sports"
+    }
+  ]
+}

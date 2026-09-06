@@ -1,23 +1,21 @@
 #!/usr/bin/env bash
-# Overnight autodispatch — PC-gamer worker plane.
-# Cada pocos minutos (launchd/cron en Mac o VPS): evalúa schedule + online y
-# encola SOLO tareas del backlog que el modo actual permita y que el nodo pueda
-# procesar. El worker BullMQ `local-agents` del nodo consume la cola cuando está vivo.
+# Autodispatch — PC-gamer worker plane.
+# Launchd/cron en Mac: si el nodo está realmente alcanzable (SSH o health),
+# encola backlog (content-video + opencode) según el calendario de Mauro.
 #
-# Zero secrets: PLATFORM_ADMIN_TOKEN se provee vía Doppler (`doppler run …`) — nunca
-# está en el repo ni se embebe aquí.
+# Zero secrets: Doppler (`doppler run …`). Nunca en el gamer.
 #
 # Salidas:
 #   exit 0 = nada que hacer / done
-#   exit 1 = error de infra (no encola)
-#   exit 2 = no disponible (nodo offline o modo no permite) — semaforizado, no ruido
+#   exit 1 = error de infra
+#   exit 2 = no disponible (offline o modo gaming) — semaforizado
 #
 # Usage:
 #   doppler run --project ops-intcloudsysops --config prd -- \
 #     ./scripts/ops/overnight-autodispatch.sh
 #   ./scripts/ops/overnight-autodispatch.sh --dry-run
 #   ./scripts/ops/overnight-autodispatch.sh --list
-#   ./scripts/ops/overnight-autodispatch.sh --mode heavy --force-online  # testing
+#   ./scripts/ops/overnight-autodispatch.sh --mode heavy --force-online
 #   ./scripts/ops/overnight-autodispatch.sh --reset-state
 #
 set -euo pipefail
@@ -56,6 +54,8 @@ done
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 cd "$ROOT"
+# shellcheck disable=SC1091
+source "$ROOT/scripts/ops/content-studio-gamer-env.sh"
 
 RUN_STATE_DIR="${OPSLY_OVERNIGHT_STATE:-runtime/opencode-overnight}"
 STATE_FILE="${RUN_STATE_DIR}/state.json"
@@ -68,27 +68,34 @@ mkdir -p "${RUN_STATE_DIR}" "$(dirname "${LOG_FILE}")"
 log() { echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) $*" >>"${LOG_FILE}"; }
 
 notify() {
-  # nunca falla el job por notificación; timeout duro 15s (el curl interno no
-  # tiene límite y podría colgar el ciclo de 5 min).
   timeout 15 ./scripts/notify-discord.sh --title "$1" --message "$2" --type "${3:-info}" >/dev/null 2>&1 || true
 }
 
 json_get() {
-  # json_get <json> <field> — string|number atom de salida
-  JSON_IN="$1" FIELD="$2" node --input-type=module -e '
-    const d = JSON.parse(process.env.JSON_IN);
-    process.stdout.write(String(d[process.env.FIELD] ?? ""));
+  JSON_IN="${1:-{}}" FIELD="$2" node --input-type=module -e '
+    try {
+      const d = JSON.parse(process.env.JSON_IN || "{}");
+      process.stdout.write(String(d[process.env.FIELD] ?? ""));
+    } catch { process.stdout.write(""); }
   '
 }
-json_arr_has() {
-  # json_arr_has <json> <field> <needle>
-  JSON_IN="$1" FIELD="$2" NEEDLE="$3" node --input-type=module -e '
-    const d = JSON.parse(process.env.JSON_IN);
-    process.stdout.write(Array.isArray(d[process.env.FIELD]) && d[process.env.FIELD].includes(process.env.NEEDLE) ? "true" : "false");
-  '
+
+rewrite_docker_redis_host() {
+  [[ -n "${REDIS_URL:-}" ]] || return 0
+  export REDIS_URL
+  REDIS_URL="$(node --input-type=module -e '
+    const raw = process.env.REDIS_URL || "";
+    try {
+      const u = new URL(raw);
+      if (u.hostname === "redis") {
+        u.hostname = process.env.OPSLY_REDIS_TAILSCALE_HOST || "100.120.151.91";
+      }
+      process.stdout.write(u.toString());
+    } catch { process.stdout.write(raw); }
+  ')"
 }
+
 task_status() {
-  # task_status <id> — imprime estado canónico o vacío si nunca se marcó
   ID="$1" node --input-type=module -e '
     import { readFileSync, existsSync } from "node:fs";
     const f = process.env.STATE_FILE;
@@ -99,6 +106,7 @@ task_status() {
     } catch { process.exit(0); }
   '
 }
+
 mark() {
   local id="$1" status="$2" extra="${3:-}"
   ID="$id" STATUS="$status" EXTRA="$extra" node --input-type=module -e '
@@ -124,16 +132,13 @@ if [[ "$RESET" == "true" ]]; then
   exit 0
 fi
 
-if [[ -z "${PLATFORM_ADMIN_TOKEN:-}" ]]; then
-  echo "[autodispatch] ERROR: PLATFORM_ADMIN_TOKEN no set — corre vía 'doppler run …'." >&2
-  exit 1
-fi
-
 if [[ "$LIST" == "true" ]]; then
   BACKLOG="$BACKLOG" node --input-type=module -e '
     import { readFileSync } from "node:fs";
     const bk = JSON.parse(readFileSync(process.env.BACKLOG, "utf8"));
-    for (const t of bk.tasks) console.log(`${t.id}\tagent=${t.agent}\tmin_mode=${t.min_mode}\t${t.description}`);
+    for (const t of bk.tasks) {
+      console.log(`${t.id}\tkind=${t.kind || "opencode"}\tmin_mode=${t.min_mode}\t${t.description}`);
+    }
   '
   exit 0
 fi
@@ -141,83 +146,120 @@ fi
 echo "[autodispatch] mode_force=${FORCE_MODE:-auto} online_force=${FORCE_ONLINE} task=${TASK_FILTER:-all}"
 log "run mode=${FORCE_MODE:-auto} online_force=${FORCE_ONLINE} task=${TASK_FILTER:-all}"
 
-# --- schedule (modo real) ---
-# pc-gamer-schedule.sh --json SIEMPRE imprime JSON válido en una línea (luego exit 0);
-# no añadir fallback aquí para no duplicar líneas y romper json_get.
-SCHED_JSON="$(./scripts/ops/pc-gamer-schedule.sh --json 2>/dev/null)"
+SCHED_JSON="$(./scripts/ops/pc-gamer-schedule.sh --json 2>/dev/null || echo '{}')"
 MODE="$(json_get "$SCHED_JSON" mode)"; MODE="${MODE:-gaming}"
 [[ -n "$FORCE_MODE" ]] && MODE="$FORCE_MODE"
 ALLOW_LIST="$(json_get "$SCHED_JSON" allow_enqueue)"
 
-ALLOWS_OPENCODE="$(json_arr_has "$SCHED_JSON" allow_enqueue opencode)"
-[[ "$MODE" == "heavy" ]] && ALLOWS_OPENCODE="true"
-[[ "$MODE" == "gaming" || "$MODE" == "light" ]] && ALLOWS_OPENCODE="false"
+ONLINE_JSON="$(./scripts/ops/check-pc-gamer-online.sh --json 2>/dev/null || echo '{}')"
+SSH="$(json_get "$ONLINE_JSON" ssh)"; SSH="${SSH:-false}"
+HEALTH="$(json_get "$ONLINE_JSON" health)"; HEALTH="${HEALTH:-false}"
+READY=false
+[[ "$SSH" == "true" || "$HEALTH" == "true" ]] && READY=true
+[[ "$FORCE_ONLINE" == "true" ]] && READY=true
 
-# --- online check ---
-# En --json imprime SIEMPRE una línea JSON; si sale offline termina con exit 1.
-# El fallback se elimina a propósito: añadirlo al capturar la salida duplicaría
-# la línea JSON y rompería el parseo en json_get.
-ONLINE_JSON="$(./scripts/ops/check-pc-gamer-online.sh --json 2>/dev/null || true)"
-ONLINE="$(json_get "$ONLINE_JSON" online)"
-[[ "$FORCE_ONLINE" == "true" ]] && ONLINE="true"
-
-if [[ "$ONLINE" != "true" ]]; then
-  echo "[autodispatch] nodo offline — no encola (cola persistente en VPS esperará al worker). exit=2"
-  log "offline MODE=${MODE} → exit=2"
+if [[ "$READY" != "true" ]]; then
+  echo "[autodispatch] gamer no alcanzable (ssh=${SSH} health=${HEALTH}) — no encola. exit=2"
+  log "not-ready ssh=${SSH} health=${HEALTH} MODE=${MODE} → exit=2"
   exit 2
 fi
 
-if [[ "$FORCE" != "true" && "$ALLOWS_OPENCODE" != "true" ]]; then
-  echo "[autodispatch] modo '${MODE}' NO permite opencode — skip (exit=2). allow=$ALLOW_LIST"
-  log "mode=${MODE} does not allow opencode → blocked"
-  notify "pc-gamer autodispatch" "modo ${MODE} no permite opencode — sin encolado" "warning"
+ALLOWS_CONTENT=false
+ALLOWS_OPENCODE=false
+[[ "$ALLOW_LIST" == *content_video* || "$MODE" == "heavy" || "$MODE" == "light" ]] && ALLOWS_CONTENT=true
+[[ "$ALLOW_LIST" == *opencode* || "$MODE" == "heavy" ]] && ALLOWS_OPENCODE=true
+[[ "$MODE" == "gaming" && "$FORCE" != "true" ]] && ALLOWS_CONTENT=false && ALLOWS_OPENCODE=false
+
+if [[ "$FORCE" != "true" && "$ALLOWS_CONTENT" != "true" && "$ALLOWS_OPENCODE" != "true" ]]; then
+  echo "[autodispatch] modo '${MODE}' no permite content_video ni opencode — skip. exit=2"
+  log "mode=${MODE} blocked"
   exit 2
 fi
 
-echo "[autodispatch] nodo online + modo '${MODE}' permite opencode — revisando backlog…"
-log "online MODE=${MODE} proceed"
+echo "[autodispatch] ready ssh=${SSH} health=${HEALTH} mode=${MODE} content=${ALLOWS_CONTENT} opencode=${ALLOWS_OPENCODE}"
+log "ready MODE=${MODE} proceed"
+rewrite_docker_redis_host
 
-# --- candidatos del backlog ---
 CANDIDATES="$(
-  BACKLOG="$BACKLOG" MODE="$MODE" TASK_FILTER="$TASK_FILTER" node --input-type=module -e '
+  BACKLOG="$BACKLOG" MODE="$MODE" TASK_FILTER="$TASK_FILTER" \
+  ALLOWS_CONTENT="$ALLOWS_CONTENT" ALLOWS_OPENCODE="$ALLOWS_OPENCODE" \
+  node --input-type=module -e '
     import { readFileSync } from "node:fs";
     const bk = JSON.parse(readFileSync(process.env.BACKLOG, "utf8"));
     const mode = process.env.MODE;
     const filter = process.env.TASK_FILTER || "";
-    const order = { light: 0, heavy: 1 };
+    const order = { light: 0, day: 0, heavy: 1 };
+    const modeRank = order[mode] ?? -1;
+    const allowContent = process.env.ALLOWS_CONTENT === "true";
+    const allowOpencode = process.env.ALLOWS_OPENCODE === "true";
     const tasks = bk.tasks
       .filter((t) => (!filter || t.id === filter))
-      .filter((t) => order[t.min_mode] !== undefined && order[t.min_mode] <= order[mode])
-      .map((t) => [t.id, t.agent, t.prompt_file, t.min_mode].join("\t"));
+      .filter((t) => (order[t.min_mode] ?? 99) <= modeRank)
+      .filter((t) => {
+        const kind = t.kind || "opencode";
+        if (kind === "content_video") return allowContent;
+        return allowOpencode;
+      })
+      .map((t) => [t.id, t.kind || "opencode", t.agent || "-", t.prompt_file || "-", t.min_mode, t.channel || "-"].join("|"));
     process.stdout.write(tasks.join("\n") + (tasks.length ? "\n" : ""));
   '
 )"
 
 [[ -z "$CANDIDATES" ]] && { echo "[autodispatch] sin tareas elegibles para modo '${MODE}'. done."; exit 0; }
 
-while IFS=$'\t' read -r id agent prompt_file min_mode; do
+while IFS='|' read -r id kind agent prompt_file min_mode channel; do
+  [[ -z "${id:-}" ]] && continue
   ST="$(task_status "$id")"
   case "$ST" in
     done|skipped|queued|active|dry-run)
-      echo "[autodispatch] SKIP ${id}: estado='${ST}' (cola ya tiene trabajo o terminó)."
+      echo "[autodispatch] SKIP ${id}: estado='${ST}'"
       log "skip ${id} status=${ST}"
       continue
       ;;
+    failed)
+      if [[ "$FORCE" != "true" ]]; then
+        echo "[autodispatch] SKIP ${id}: failed previo (usa --reset-state o --force)"
+        log "skip ${id} status=failed"
+        continue
+      fi
+      ;;
   esac
 
-  if ! [[ -f "$prompt_file" ]]; then
-    echo "[autodispatch] SKIP ${id}: falta prompt_file ${prompt_file}"
-    log "skip ${id} missing prompt file"
+  echo "[autodispatch] ENCOLANDO ${id} kind=${kind} mode=${MODE}"
+  log "enqueue ${id} kind=${kind} mode=${MODE}"
+  REQ_ID="${id}-$(date -u +%Y%m%dT%H%M%SZ)"
+
+  if [[ "$DRY_RUN" == "true" ]]; then
+    echo "[autodispatch][dry-run] ${id} kind=${kind} channel=${channel} agent=${agent}"
     continue
   fi
 
-  echo "[autodispatch] ENCOLANDO ${id} (agent=${agent}, min_mode=${min_mode}, modo=${MODE})"
-  log "enqueue ${id} agent=${agent} mode=${MODE}"
+  if [[ "$kind" == "content_video" ]]; then
+    if [[ -z "${REDIS_URL:-}" ]]; then
+      echo "[autodispatch] SKIP ${id}: REDIS_URL unset (doppler run)" >&2
+      continue
+    fi
+    local_channel="$channel"
+    [[ "$local_channel" == "-" || -z "$local_channel" ]] && local_channel="bitsitos"
+    mark "$id" "queued" "{\"request_id\":\"${REQ_ID}\",\"channel\":\"${local_channel}\"}"
+    if ENQ_OUT="$(./scripts/content-studio-enqueue.sh --channel "$local_channel" 2>&1)"; then
+      echo "$ENQ_OUT"
+      mark "$id" "active" "{\"request_id\":\"${REQ_ID}\",\"channel\":\"${local_channel}\"}"
+      notify "pc-gamer autodispatch" "Content Studio ${local_channel} encolado (${MODE})" "success"
+      log "enqueue ${id} OK"
+    else
+      echo "[autodispatch] ERROR ${id}: $ENQ_OUT" >&2
+      mark "$id" "failed" "{\"request_id\":\"${REQ_ID}\",\"error\":\"content enqueue failed\"}"
+    fi
+    continue
+  fi
 
-  REQ_ID="${id}-$(date -u +%Y%m%dT%H%M%SZ)"
-  if [[ "$DRY_RUN" == "true" ]]; then
-    echo "[autodispatch][dry-run] POST /api/local/prompt-submit id=${id} request_id=${REQ_ID}"
-    mark "$id" "dry-run" "{\"request_id\":\"${REQ_ID}\",\"reason\":\"dry-run\"}"
+  if [[ -z "${PLATFORM_ADMIN_TOKEN:-}" ]]; then
+    echo "[autodispatch] SKIP ${id}: PLATFORM_ADMIN_TOKEN unset" >&2
+    continue
+  fi
+  if ! [[ -f "$prompt_file" ]]; then
+    echo "[autodispatch] SKIP ${id}: falta prompt ${prompt_file}"
     continue
   fi
 
@@ -227,12 +269,12 @@ while IFS=$'\t' read -r id agent prompt_file min_mode; do
         --agent "$agent" --prompt-file "$prompt_file" $( [[ "$FORCE" == "true" ]] && echo --force ) 2>&1)"; then
     echo "$ENQ_OUT"
     mark "$id" "active" "{\"request_id\":\"${REQ_ID}\",\"agent\":\"${agent}\"}"
-    notify "pc-gamer autodispatch" "Encolado ${id} (${MODE}) — request ${REQ_ID}" "success"
-    log "enqueue ${id} OK request=${REQ_ID}"
+    notify "pc-gamer autodispatch" "Encolado ${id} (${MODE})" "success"
+    log "enqueue ${id} OK"
   else
-    echo "[autodispatch] ERROR encolando ${id}: $ENQ_OUT" >&2
-    mark "$id" "failed" "{\"request_id\":\"${REQ_ID}\",\"error\":\"enqueue cmd failed\"}"
-    log "enqueue ${id} FAILED request=${REQ_ID}"
+    echo "[autodispatch] ERROR ${id}: $ENQ_OUT" >&2
+    mark "$id" "failed" "{\"request_id\":\"${REQ_ID}\",\"error\":\"opencode enqueue failed\"}"
+    log "enqueue ${id} FAILED"
   fi
 done <<<"$CANDIDATES"
 

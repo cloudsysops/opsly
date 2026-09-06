@@ -1,0 +1,84 @@
+{
+  "channel": {
+    "slug": "icso-bitsitos",
+    "brand": "Bitsitos",
+    "language": "es",
+    "owner": "icso",
+    "not_peskids": true,
+    "primary_surface": "youtube_long",
+    "aspect_ratio": "16:9",
+    "target_duration_sec": 480,
+    "tone": "story_edu_ent_sport",
+    "batch": "04-longform-outlines",
+    "notes": "Guiones long-form (8 min). Render bridge actual es Shorts 9:16 — usar como teleprompter/A-roll hasta long renderer."
+  },
+  "preset": {
+    "slug": "youtube_long",
+    "label": "YouTube Long-form",
+    "platforms": ["youtube"],
+    "pillars": ["education", "entertainment", "sports"],
+    "tone_of_voice": "host_family_friendly",
+    "language": "es",
+    "aspect_ratio": "16:9",
+    "target_duration_sec": 480,
+    "approval_required": true,
+    "render_provider": "manual_or_future_long",
+    "notes": "Outlines listos para grabar/host + B-roll; no auto-render MoneyPrinter Shorts"
+  },
+  "drafts": [
+    {
+      "id": "bitsitos-long-001-edu",
+      "title": "Cómo estudiar sin pelear con el celular (8 min)",
+      "pillar": "education",
+      "story_hook": "Un plan de 3 bloques que papás y peques pueden probar hoy.",
+      "outline": [
+        "0:00 Hook: el celular gana siempre… hasta que hay reglas de juego",
+        "0:45 Mito vs verdad sobre ‘multitasking’",
+        "2:00 Bloque 1: 20 min foco (timer visible)",
+        "3:30 Bloque 2: 5 min movimiento",
+        "4:30 Bloque 3: 10 min repaso mapa mental",
+        "6:00 Demo en vivo con un tema escolar",
+        "7:00 Reto familiar de la semana",
+        "7:40 CTA: Shorts Bitsitos + suscripción"
+      ],
+      "call_to_action": "Comenten su tema del bloque 1. Bitsitos.",
+      "hashtags": ["#Bitsitos", "#Educación", "#Estudio", "#Familia"]
+    },
+    {
+      "id": "bitsitos-long-002-ent",
+      "title": "Creamos un mini show en familia (8 min)",
+      "pillar": "entertainment",
+      "story_hook": "De cero a aplausos: 3 actos, 1 utilería, 0 presupuesto.",
+      "outline": [
+        "0:00 Hook: aburridos un sábado",
+        "0:40 Estructura de 3 actos (repaso Short)",
+        "2:00 Elegir héroe y problema en 2 minutos",
+        "3:30 Ensayo relámpago",
+        "5:00 Presentación completa (ejemplo)",
+        "6:30 Cómo filmarlo en vertical para Shorts",
+        "7:20 CTA: suban su show a Stories / comenten"
+      ],
+      "call_to_action": "Etiqueten #BitsitosShow. Bitsitos.",
+      "hashtags": ["#Bitsitos", "#Entretenimiento", "#Familia", "#Show"]
+    },
+    {
+      "id": "bitsitos-long-003-sport",
+      "title": "Circuito deporte kids en casa / parque (8 min)",
+      "pillar": "sports",
+      "story_hook": "Calentar → 4 estaciones → hidratar → high-five.",
+      "outline": [
+        "0:00 Hook: ‘no hay gym’ no es excusa",
+        "0:50 Seguridad + adulto presente (regla Splashitos)",
+        "1:40 Calentamiento 60s",
+        "2:40 Estación 1 equilibrio",
+        "3:40 Estación 2 plank suave",
+        "4:40 Estación 3 carrera in situ / skips",
+        "5:40 Estación 4 estiramiento",
+        "6:30 Hidratación + fair play",
+        "7:20 CTA: Splashitos Shorts + Bitsitos"
+      ],
+      "call_to_action": "Graben su circuito. Splashitos + Bitsitos.",
+      "hashtags": ["#Splashitos", "#Bitsitos", "#Deporte", "#Kids"]
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "channel": {
+    "slug": "icso-bitsitos",
+    "brand": "Bitsitos",
+    "language": "es",
+    "owner": "icso",
+    "not_peskids": true,
+    "primary_surface": "youtube_long_vertical",
+    "aspect_ratio": "9:16",
+    "target_duration_sec": 150,
+    "tone": "host_family_friendly",
+    "batch": "04-longform-medium",
+    "visual_style": "chapter cards kids edu ent sport, bold Spanish titles, no real child faces",
+    "notes": "Long vertical (~2.5 min) renderable by Shorts bridge until 16:9 long pipeline exists"
+  },
+  "preset": {
+    "slug": "youtube_shorts",
+    "label": "YouTube Long-vertical (bridge)",
+    "platforms": ["youtube", "youtube_shorts"],
+    "pillars": ["education", "entertainment", "sports"],
+    "tone_of_voice": "host_family_friendly",
+    "language": "es",
+    "aspect_ratio": "9:16",
+    "target_duration_sec": 150,
+    "approval_required": true,
+    "render_provider": "moneyprinterturbo",
+    "notes": "Medium long-form via scene cards; true 8min outlines remain in longform-04-outlines.json"
+  },
+  "drafts": [
+    {
+      "id": "bitsitos-long-001-edu",
+      "title": "Estudiar sin pelear con el celular (2 min)",
+      "pillar": "education",
+      "story_hook": "3 bloques: foco, movimiento, mapa.",
+      "call_to_action": "Comenten el tema del bloque 1. Bitsitos.",
+      "image_prompt": "Cartoon study desk phone in drawer timer 20, kids education chapter cards",
+      "reel_script": [
+        { "scene": "Hook phone wins", "copy": "¿El celular siempre gana?", "duration_sec": 8 },
+        { "scene": "Rules of the game", "copy": "Hoy: reglas de juego, no pelea.", "duration_sec": 10 },
+        { "scene": "Myth multitask", "copy": "Multitarea = menos foco.", "duration_sec": 12 },
+        { "scene": "Block 1", "copy": "Bloque 1: 20 min foco. Timer visible.", "duration_sec": 18 },
+        { "scene": "Phone away", "copy": "Celular en cajón o otra habitación.", "duration_sec": 12 },
+        { "scene": "Block 2", "copy": "Bloque 2: 5 min movimiento.", "duration_sec": 14 },
+        { "scene": "Block 3", "copy": "Bloque 3: mapa mental 10 min.", "duration_sec": 16 },
+        { "scene": "Demo", "copy": "Centro = tema. 3 ramas. 1 ejemplo.", "duration_sec": 16 },
+        { "scene": "Family challenge", "copy": "Reto familiar: 1 bloque hoy.", "duration_sec": 12 },
+        { "scene": "CTA", "copy": "Comenten su tema. Bitsitos.", "duration_sec": 12 }
+      ],
+      "youtube_shorts_script": "Hook celular.\n3 bloques.\nCTA Bitsitos.",
+      "hashtags": ["#Bitsitos", "#Educación", "#Estudio", "#Familia", "#Long"]
+    },
+    {
+      "id": "bitsitos-long-002-ent",
+      "title": "Mini show en familia en 2 minutos",
+      "pillar": "entertainment",
+      "story_hook": "3 actos, 1 utilería, 0 presupuesto.",
+      "call_to_action": "Etiqueten #BitsitosShow. Bitsitos.",
+      "image_prompt": "Cartoon living room stage curtain lamp as prop, kids entertainment show",
+      "reel_script": [
+        { "scene": "Bored saturday", "copy": "¿Sábado aburrido?", "duration_sec": 8 },
+        { "scene": "3 acts", "copy": "Show de 3 actos: inicio, lío, final.", "duration_sec": 14 },
+        { "scene": "Hero", "copy": "Eijan héroe en 30 segundos.", "duration_sec": 12 },
+        { "scene": "Problem", "copy": "¿Qué problema debe resolver?", "duration_sec": 12 },
+        { "scene": "Prop", "copy": "1 utilería: lámpara, cojín o cuchara.", "duration_sec": 12 },
+        { "scene": "Rehearsal", "copy": "Ensayo relámpago: 1 vez cada acto.", "duration_sec": 14 },
+        { "scene": "Act1", "copy": "Acto 1: presentación del héroe.", "duration_sec": 12 },
+        { "scene": "Act2", "copy": "Acto 2: el lío (problema).", "duration_sec": 12 },
+        { "scene": "Act3", "copy": "Acto 3: solución + aplausos.", "duration_sec": 12 },
+        { "scene": "Film tip", "copy": "Filmen vertical para Shorts.", "duration_sec": 12 },
+        { "scene": "CTA", "copy": "#BitsitosShow. Bitsitos.", "duration_sec": 10 }
+      ],
+      "youtube_shorts_script": "Hook aburrido.\n3 actos.\nCTA show.",
+      "hashtags": ["#Bitsitos", "#Entretenimiento", "#Familia", "#Show", "#Long"]
+    },
+    {
+      "id": "bitsitos-long-003-sport",
+      "title": "Circuito deporte kids en casa (2 min)",
+      "pillar": "sports",
+      "story_hook": "Calentar → 4 estaciones → hidratar.",
+      "call_to_action": "Graben su circuito. Splashitos + Bitsitos.",
+      "image_prompt": "Cartoon home circuit four stations balance plank skips stretch, kids sports",
+      "reel_script": [
+        { "scene": "No gym excuse", "copy": "¿No hay gym? No importa.", "duration_sec": 8 },
+        { "scene": "Safety", "copy": "Adulto presente. Espacio libre.", "duration_sec": 12 },
+        { "scene": "Warmup", "copy": "Calentar: 10 saltitos + 10 brazos.", "duration_sec": 14 },
+        { "scene": "Station 1", "copy": "Estación 1: equilibrio 10 s por pie.", "duration_sec": 14 },
+        { "scene": "Station 2", "copy": "Estación 2: plank suave 15 s.", "duration_sec": 14 },
+        { "scene": "Station 3", "copy": "Estación 3: skips en el sitio 20 s.", "duration_sec": 14 },
+        { "scene": "Station 4", "copy": "Estación 4: estirar suave.", "duration_sec": 12 },
+        { "scene": "Hydrate", "copy": "Agua. Fair play. High-five.", "duration_sec": 12 },
+        { "scene": "Repeat", "copy": "Repitan el circuito 1 vez más.", "duration_sec": 12 },
+        { "scene": "CTA", "copy": "Splashitos + Bitsitos. ¡A moverse!", "duration_sec": 12 }
+      ],
+      "youtube_shorts_script": "Hook sin gym.\n4 estaciones.\nCTA deporte.",
+      "hashtags": ["#Splashitos", "#Bitsitos", "#Deporte", "#Kids", "#Long"]
+    }
+  ]
+}

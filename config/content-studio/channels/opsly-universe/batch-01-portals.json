@@ -1,0 +1,105 @@
+{
+  "channel": {
+    "slug": "opsly-universe",
+    "brand": "Opsly Universe",
+    "language": "es",
+    "owner": "icso",
+    "not_peskids": true,
+    "primary_surface": "youtube_shorts",
+    "aspect_ratio": "9:16",
+    "target_duration_sec": 45,
+    "tone": "cinematic_curious_safe",
+    "visual_style": "cinematic illustrated science-fantasy, blue-violet space, turquoise portals, warm gold light, expressive robot companions, consistent character design, Spanish captions, no real child faces, no logos",
+    "characters": ["traveler", "nova", "kai", "echo"],
+    "worlds": ["WILD", "MOVE", "FUTURE", "CYBER", "HUMAN"],
+    "canon_source": "@intcloudsysops/universe"
+  },
+  "preset": {
+    "slug": "opsly-universe-youtube-shorts",
+    "label": "Opsly Universe Shorts",
+    "platforms": ["youtube_shorts"],
+    "pillars": ["story", "education", "games"],
+    "tone_of_voice": "cinematic_curious_safe",
+    "language": "es",
+    "visual_style": "cinematic illustrated science-fantasy with consistent canon characters",
+    "aspect_ratio": "9:16",
+    "target_duration_sec": 45,
+    "approval_required": true,
+    "render_provider": "moneyprinterturbo",
+    "notes": "Universe canon is the source for characters and worlds; human approval before YouTube."
+  },
+  "drafts": [
+    {
+      "id": "universe-001-map-without-chosen-one",
+      "title": "No existe un elegido: el mapa se construye caminando",
+      "story_hook": "En Opsly Universe nadie nace con el camino decidido.",
+      "call_to_action": "¿Qué portal explorarías primero? Descúbrelo con Nova.",
+      "characters": ["traveler", "nova", "echo"],
+      "world": "NEXUS",
+      "image_prompt": "The Traveler and Nova standing before five glowing portals marked WILD MOVE FUTURE CYBER HUMAN, Echo floating between them, cinematic illustrated science-fantasy, blue violet sky, turquoise portal light, gold horizon, consistent character sheet, vertical 9:16, no text, no logos",
+      "reel_script": [
+        { "scene": "The Traveler opens a map with five portals", "copy": "No hay un camino elegido.", "duration_sec": 6 },
+        { "scene": "Nova points to different portals", "copy": "Cada curiosidad abre una puerta.", "duration_sec": 10 },
+        { "scene": "Echo projects a changing constellation", "copy": "Cada decisión cambia el mapa.", "duration_sec": 10 },
+        { "scene": "The group steps toward the Nexus", "copy": "Explora. Aprende. Crea.", "duration_sec": 10 },
+        { "scene": "Opsly Universe end card", "copy": "¿Qué portal eliges?", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Hook: nadie nace con el camino decidido. Historia: cinco portales, una decisión y un mapa que cambia. CTA: ¿qué portal explorarías primero?",
+      "hashtags": ["#OpslyUniverse", "#Nova", "#Historias", "#Mundos", "#Shorts"]
+    },
+    {
+      "id": "universe-002-nova-wild-scent",
+      "title": "Nova descubre el superpoder del olfato",
+      "story_hook": "En el portal Wild, Nova aprende que observar también es investigar.",
+      "call_to_action": "Mira a tu alrededor y encuentra una pista de la naturaleza.",
+      "characters": ["nova", "maya", "kai"],
+      "world": "WILD",
+      "image_prompt": "Nova the friendly blue-eyed robot exploring a lush safe forest with Kai and Maya, a curious dog hero following a scent trail, glowing turquoise science overlays, cinematic illustrated children's adventure, vertical 9:16, no real child faces, no logos",
+      "reel_script": [
+        { "scene": "Nova notices a scent trail in the forest", "copy": "¿Qué está siguiendo Kai?", "duration_sec": 6 },
+        { "scene": "Maya explains observation", "copy": "Investigar empieza por observar.", "duration_sec": 10 },
+        { "scene": "The trail leads to a safe lost seedling", "copy": "Una pista puede ayudar a cuidar.", "duration_sec": 10 },
+        { "scene": "Nova records the discovery", "copy": "La naturaleza también cuenta historias.", "duration_sec": 10 },
+        { "scene": "Wild portal end card", "copy": "Explora con respeto.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Hook: ¿qué sigue Kai? Historia: observar, encontrar una pista y cuidar una pequeña planta. CTA: encuentra una pista de la naturaleza.",
+      "hashtags": ["#OpslyUniverse", "#Wild", "#Naturaleza", "#Curiosidad", "#Shorts"]
+    },
+    {
+      "id": "universe-003-echo-cyber-quest",
+      "title": "Echo y la contraseña del portal Cyber",
+      "story_hook": "El portal Cyber no se abre con magia: se abre con una decisión segura.",
+      "call_to_action": "Crea una frase segura con un adulto y no la compartas.",
+      "characters": ["echo", "nova", "traveler"],
+      "world": "CYBER",
+      "image_prompt": "Echo glowing AI orb and Nova in a secure futuristic library, a portal protected by three symbolic constellation keys, deep navy and cyan, warm gold accents, cinematic illustrated science-fantasy, vertical 9:16, no readable text, no logos",
+      "reel_script": [
+        { "scene": "A portal asks for a weak key", "copy": "123456 no abre ningún misterio.", "duration_sec": 6 },
+        { "scene": "Echo builds a long phrase from stars", "copy": "Mejor: varias palabras inesperadas.", "duration_sec": 10 },
+        { "scene": "Nova checks with a guide", "copy": "Y nunca la compartas en público.", "duration_sec": 10 },
+        { "scene": "The portal opens safely", "copy": "La seguridad también es aventura.", "duration_sec": 10 },
+        { "scene": "Cyber portal end card", "copy": "Explora seguro.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Hook: el portal Cyber necesita una decisión segura. Tip: usa varias palabras inesperadas y no compartas la frase. CTA: créala con un adulto.",
+      "hashtags": ["#OpslyUniverse", "#Cyber", "#Seguridad", "#Nova", "#Shorts"]
+    },
+    {
+      "id": "universe-004-traveler-future-game",
+      "title": "El juego que construye el mundo Future",
+      "story_hook": "El Traveler llega a Future y descubre que jugar también puede ser diseñar.",
+      "call_to_action": "Dibuja una máquina que ayude a alguien sin hacerle daño.",
+      "characters": ["traveler", "atlas", "nova"],
+      "world": "FUTURE",
+      "image_prompt": "The Traveler, Atlas and Nova building a friendly floating machine in a bright futuristic city, modular blocks, holographic sketches, optimistic blue cyan and gold palette, cinematic illustrated children's science adventure, vertical 9:16, no logos",
+      "reel_script": [
+        { "scene": "The Traveler enters a city of unfinished inventions", "copy": "Future todavía se está construyendo.", "duration_sec": 6 },
+        { "scene": "Atlas places the first block", "copy": "Una idea empieza pequeña.", "duration_sec": 10 },
+        { "scene": "Nova tests a safe helper machine", "copy": "Probamos, aprendemos y mejoramos.", "duration_sec": 10 },
+        { "scene": "The machine helps carry supplies", "copy": "La tecnología debe ayudar a las personas.", "duration_sec": 10 },
+        { "scene": "Future portal end card", "copy": "¿Qué construirías tú?", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Hook: Future se está construyendo. Historia: una idea, una prueba y una máquina que ayuda. CTA: dibuja una invención segura.",
+      "hashtags": ["#OpslyUniverse", "#Future", "#Inventar", "#Juegos", "#Shorts"]
+    }
+  ]
+}

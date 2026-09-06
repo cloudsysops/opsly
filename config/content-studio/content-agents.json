@@ -1,0 +1,82 @@
+{
+  "version": 2,
+  "updated_at": "2026-09-05",
+  "mission": "ICSO YouTube Content Factory — Bitsitos + Splashitos + Opsly Universe (not Peskids)",
+  "constraints": {
+    "no_peskids_branding": true,
+    "no_vps_heavy_daytime": true,
+    "render_hosts": ["pc-gamer"],
+    "mac_role": "enqueue + kit + 24x7 youtube publish",
+    "publish": "24x7 next-unpublished unlisted, max 6/day (YouTube quota)"
+  },
+  "agents": [
+    {
+      "id": "cursor-executor",
+      "role": "enqueue_and_kit",
+      "runtime": "mac",
+      "tasks": [
+        "check pc-gamer online",
+        "enqueue content-video (mpt http://127.0.0.1:8080 on gamer)",
+        "sync renders from gamer",
+        "rebuild youtube-upload-kit",
+        "24x7 publish next unpublished (--limit 1)"
+      ],
+      "commands": [
+        "./scripts/content-factory-bootstrap.sh --gamer-up",
+        "./scripts/ops/content-studio-sync-renders.sh",
+        "./scripts/ops/content-studio-24x7.sh",
+        "./scripts/content-studio-publish-youtube.sh --channel bitsitos --upload --limit 1"
+      ]
+    },
+    {
+      "id": "pc-gamer-gpu",
+      "role": "content-video-worker",
+      "runtime": "pc-gamer-wsl",
+      "tasks": [
+        "docker plane --with-content",
+        "BullMQ queue content-video",
+        "MoneyPrinter bridge GPU host :8080"
+      ],
+      "commands": [
+        "./scripts/ops/pc-gamer-reconnect.sh --use-host-ollama --with-content",
+        "./scripts/ops/pc-gamer-docker-plane.sh --up --use-host-ollama --with-content",
+        "OPSLY_WORKER_ALLOWLIST=ollama,content-video"
+      ],
+      "requires": ["tailscale", "REDIS_URL in .env.worker"]
+    },
+    {
+      "id": "hermes-planner",
+      "role": "cadence_planner",
+      "runtime": "mac-or-vps-queue",
+      "tasks": [
+        "rotate pillars edu / ent / sports / tech",
+        "24x7 factory tick, max 6 uploads/day YouTube quota"
+      ]
+    },
+    {
+      "id": "human-publisher",
+      "role": "oauth_and_studio",
+      "runtime": "browser",
+      "tasks": [
+        "opslyquantum OAuth JSON in Doppler",
+        "Studio channel branding (avatar/banner)",
+        "Splashitos channel id when ready"
+      ],
+      "blocker_doc": "docs/brand/icso/OPSLYQUANTUM-YOUTUBE-SETUP.md"
+    }
+  ],
+  "queues": {
+    "content-video": {
+      "worker": "ContentVideoWorker",
+      "enqueue": "./scripts/content-studio-enqueue.sh --channel bitsitos",
+      "mpt_base_url": "http://127.0.0.1:8080"
+    }
+  },
+  "publish_order_today": [
+    "bitsitos-015 education",
+    "bitsitos-018 entertainment",
+    "splashitos-008 sports",
+    "bitsitos-001 tech",
+    "bitsitos-long-001-edu when ready"
+  ]
+}
