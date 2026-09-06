@@ -130,18 +130,9 @@ jobs:
           envs: RELEASE_SHA,PESKIDS_IMAGE,PESKIDS_IMAGE_DIGEST,DOPPLER_TOKEN_STG,GHCR_TOKEN
           script: |
             set -euo pipefail
-            STAGING_DIR="/opt/opsly-staging"
-            if [[ ! -d "$STAGING_DIR/.git" ]]; then
-              if ! mkdir -p "$STAGING_DIR" 2>/dev/null || [[ ! -w "$STAGING_DIR" ]]; then
-                STAGING_DIR="$HOME/opsly-staging"
-              fi
-              if [[ ! -d "$STAGING_DIR/.git" ]]; then
-                git clone --filter=blob:none https://github.com/cloudsysops/opsly.git "$STAGING_DIR"
-              fi
-            fi
-            cd "$STAGING_DIR"
-            git fetch --depth=1 origin "$RELEASE_SHA"
-            git -c advice.detachedHead=false checkout --force "$RELEASE_SHA"
+            cd /opt/opsly-staging
+            git fetch origin "$RELEASE_SHA"
+            git -c advice.detachedHead=false checkout "$RELEASE_SHA"
             echo "$GHCR_TOKEN" | docker login ghcr.io -u github-actions --password-stdin
             export RELEASE_SHA PESKIDS_IMAGE PESKIDS_IMAGE_DIGEST DOPPLER_TOKEN_STG
             bash scripts/peskids-staging-deploy.sh

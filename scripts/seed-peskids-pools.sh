@@ -2,7 +2,15 @@
 set -euo pipefail
 
 # Seed default Peskids pools for operations MVP (idempotent via PostgREST).
-# Usage: doppler run --project ops-intcloudsysops --config prd -- ./scripts/seed-peskids-pools.sh [--dry-run]
+# BLOCKED on production, and blocked everywhere unless PESKIDS_ALLOW_DEMO_SEED=1.
+# Usage:
+#   PESKIDS_ALLOW_DEMO_SEED=1 doppler run --project ops-intcloudsysops --config stg -- \
+#     ./scripts/seed-peskids-pools.sh [--dry-run]
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# shellcheck source=lib/peskids-demo-seed-guard.sh
+source "${ROOT}/scripts/lib/peskids-demo-seed-guard.sh"
+peskids_require_demo_seed_allow "./scripts/seed-peskids-pools.sh" || exit 1
 
 DRY_RUN=false
 if [[ "${1:-}" == "--dry-run" ]]; then
