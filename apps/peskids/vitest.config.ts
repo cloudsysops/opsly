@@ -22,6 +22,6 @@ export default defineConfig({
     ],
     // References @/lib/services/franchise-os.service, which was never
     // implemented (see tsconfig.json exclude for the Franchise OS routes).
-    exclude: ['**/node_modules/**', 'app/api/admin/franchise-os/__tests__/route.test.ts'],
+    exclude: ['**/node_modules/**', 'app/api/admin/_franchise-os/__tests__/route.test.ts'],
   },
 })

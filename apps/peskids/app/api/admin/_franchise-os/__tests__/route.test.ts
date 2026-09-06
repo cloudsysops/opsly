@@ -97,7 +97,7 @@ describe('GET /api/admin/franchises/territories', () => {
 
   it('rejects unauthenticated requests', async () => {
     validateStaffRequestMock.mockResolvedValue({ ok: false, status: 401, error: 'Unauthorized' });
-    const { GET } = await import('../../franchises/territories/route');
+    const { GET } = await import('../../franchises/_territories/route');
     const res = await GET(request('/api/admin/franchises/territories') as never);
     expect(res.status).toBe(401);
   });

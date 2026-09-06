@@ -57,13 +57,8 @@
   ],
   "exclude": [
     "node_modules",
-    "app/api/admin/franchises/agreements/**",
-    "app/api/admin/franchises/audits/**",
-    "app/api/admin/franchises/corrective-actions/**",
-    "app/api/admin/franchises/royalties/**",
-    "app/api/admin/franchises/sales-reports/**",
-    "app/api/admin/franchises/territories/**",
-    "app/api/admin/franchise-os/**",
+    "app/api/admin/franchises/_*/**",
+    "app/api/admin/_franchise-os/**",
     "lib/franchise/persist.ts"
   ]
 }
