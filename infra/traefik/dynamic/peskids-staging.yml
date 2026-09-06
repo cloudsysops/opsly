@@ -1,0 +1,17 @@
+http:
+  routers:
+    peskids-staging:
+      rule: "Host(`peskids-staging.op-sly.com`)"
+      service: peskids-staging
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: peskids-staging.op-sly.com
+
+  services:
+    peskids-staging:
+      loadBalancer:
+        servers:
+          - url: "http://peskids-staging:3004"
