@@ -21,6 +21,7 @@ export function MessageInboxPanel({
   const [threadState, setThreadState] = useState<string | null>(null);
   const [threadMode, setThreadMode] = useState<'admissions' | 'support' | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
 
   const openThread = useCallback(async (messageId: string) => {
     setActiveId(messageId);
@@ -49,6 +50,34 @@ export function MessageInboxPanel({
       setLoading(false);
     }
   }, []);
+
+  const generateReply = useCallback(async () => {
+    if (!activeId) return;
+    setGenerating(true);
+    setStatus(null);
+    try {
+      const res = await fetch(`/api/messages/${activeId}/suggest-reply`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      const data = (await res.json()) as { reply?: string; error?: string };
+      if (!res.ok) {
+        if (res.status === 401) {
+          setStatus('Sesión vencida. Vuelve a iniciar sesión en admin.');
+          return;
+        }
+        setStatus(data.error ?? 'No se pudo generar una respuesta');
+        return;
+      }
+      if (data.reply) {
+        setReplyText(data.reply);
+      }
+    } catch {
+      setStatus('Error de red al generar la respuesta');
+    } finally {
+      setGenerating(false);
+    }
+  }, [activeId]);
 
   const copyMessage = useCallback(async (messageId: string, text: string) => {
     try {
@@ -143,10 +172,14 @@ export function MessageInboxPanel({
         active={activeId !== null}
         loading={loading}
         sending={sending}
+        generating={generating}
         replyText={replyText}
         threadState={threadState}
         threadMode={threadMode}
         onReplyChange={setReplyText}
+        onGenerate={() => {
+          void generateReply();
+        }}
         onApprove={() => {
           void runAction('approve');
         }}
