@@ -143,8 +143,6 @@ jobs:
             git fetch --depth=1 origin "$RELEASE_SHA"
             git -c advice.detachedHead=false checkout --force "$RELEASE_SHA"
             echo "$GHCR_TOKEN" | docker login ghcr.io -u github-actions --password-stdin
-            sed -i 's/expected_digest="${PESKIDS_IMAGE%@*}@${PESKIDS_IMAGE_DIGEST}"/actual_digest="${repo_digest##*@}"/' scripts/peskids-staging-deploy.sh
-            sed -i 's/\[ "\$repo_digest" = "\$expected_digest" \]/[ "$actual_digest" = "$PESKIDS_IMAGE_DIGEST" ]/' scripts/peskids-staging-deploy.sh
             export RELEASE_SHA PESKIDS_IMAGE PESKIDS_IMAGE_DIGEST DOPPLER_TOKEN_STG
             bash scripts/peskids-staging-deploy.sh
 
