@@ -17,7 +17,6 @@
  */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { Database } from './types';
-import { checkEnvironmentBoundary } from './runtime/environment';
 import { assertPeskidsDatabaseBoundary } from './runtime-environment';
 
 /**
@@ -40,31 +39,10 @@ let boundaryChecked = false;
  * checked before the first one is handed out. This is the backstop for the
  * startup check in instrumentation.ts (which does not run in every worker, e.g.
  * a standalone script importing a service).
- *
- * NOTE: there are currently two independent environment-boundary implementations
- * in this codebase (`./runtime/environment` from the app-data-safety-loop branch,
- * `./runtime-environment` from #1093/#1094) with different env var names. Both are
- * run here defense-in-depth until a human picks one canonical implementation —
- * see the PR overlap note. Do not delete either without that decision.
  */
 function assertBoundaryOnce(): void {
   if (boundaryChecked) return;
   assertPeskidsDatabaseBoundary();
-  const result = checkEnvironmentBoundary();
-  if (!result.ok) {
-    const blocking = result.violations.filter(
-      (violation) =>
-        violation.code === 'production_db_outside_production' ||
-        violation.code === 'production_not_using_production_db' ||
-        violation.code === 'browser_selectable_environment'
-    );
-    if (blocking.length > 0) {
-      throw new Error(
-        `Refusing to open a service-role connection: environment boundary violated ` +
-          `(${blocking.map((violation) => violation.code).join(', ')})`
-      );
-    }
-  }
   boundaryChecked = true;
 }
 

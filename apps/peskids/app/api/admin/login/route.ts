@@ -3,7 +3,7 @@ import { getAdminSecret } from '@/lib/admin-auth';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { timingSafeSecretsEqual } from '@/lib/internal-auth';
 import { getClientIdentifier, rateLimit } from '@/lib/rate-limit';
-import { isProduction } from '@/lib/runtime/environment';
+import { isProduction } from '@/lib/runtime-environment';
 
 /**
  * POST /api/admin/login — exchanges DASHBOARD_ADMIN_SECRET for the admin cookie.

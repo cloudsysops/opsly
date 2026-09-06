@@ -14,7 +14,7 @@ type HealthBody = {
 function stubHealthyDevEnvironment(): void {
   vi.stubEnv('PESKIDS_GIT_SHA', 'abc123def');
   vi.stubEnv('PESKIDS_IMAGE_TAG', 'ghcr.io/cloudsysops/peskids:abc123def');
-  vi.stubEnv('PESKIDS_APP_ENV', 'development');
+  vi.stubEnv('PESKIDS_ENVIRONMENT', 'development');
   vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'http://localhost:54321');
   vi.stubEnv('PESKIDS_ALLOW_UNPINNED_SUPABASE', 'true');
 }
@@ -41,26 +41,28 @@ describe('GET /api/health', () => {
     expect(body.image_tag).toBe('ghcr.io/cloudsysops/peskids:abc123def');
   });
 
-  it('reports degraded with violation codes when staging points at the production DB', async () => {
+  it('reports a 503 error with violation codes when staging points at the production DB', async () => {
     stubHealthyDevEnvironment();
-    vi.stubEnv('PESKIDS_APP_ENV', 'staging');
-    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://prodprojectref0001.supabase.co');
-    vi.stubEnv('PESKIDS_PRODUCTION_SUPABASE_PROJECT_REF', 'prodprojectref0001');
+    vi.stubEnv('PESKIDS_ENVIRONMENT', 'staging');
+    // The known production ref, reached via https://<ref>.supabase.co.
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://jkwykpldnitavhmtuzmo.supabase.co');
+    vi.stubEnv('PESKIDS_EXPECTED_SUPABASE_URL', 'https://jkwykpldnitavhmtuzmo.supabase.co');
     vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY', 'service-role-secret-value');
 
     const { GET } = await import('../route');
     const response = await GET();
+    expect(response.status).toBe(503);
     const body = (await response.json()) as HealthBody;
 
-    expect(body.status).toBe('degraded');
+    expect(body.status).toBe('error');
     expect(body.environment_boundary.ok).toBe(false);
-    expect(body.environment_boundary.violations).toContain('production_db_outside_production');
+    expect(body.environment_boundary.violations).toContain('staging_using_production_db');
 
     // The health endpoint is unauthenticated: it must never echo connection
     // strings, project refs or secrets.
     const serialized = JSON.stringify(body);
     expect(serialized).not.toContain('service-role-secret-value');
     expect(serialized).not.toContain('supabase.co');
-    expect(serialized).not.toContain('prodprojectref0001');
+    expect(serialized).not.toContain('jkwykpldnitavhmtuzmo');
   });
 });

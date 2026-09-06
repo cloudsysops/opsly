@@ -10,7 +10,7 @@ import {
 } from '@/lib/api-response';
 import { intakeIdempotencyKey, lookupIntake, rememberIntake } from '@/lib/intake-idempotency';
 import { getClientIdentifier, rateLimit } from '@/lib/rate-limit';
-import { currentEnvironment } from '@/lib/runtime/environment';
+import { currentEnvironment } from '@/lib/runtime-environment';
 import { leadApiPostSchema } from '@/lib/validation/lead.schema';
 import { firstZodErrorMessage } from '@/lib/validation/zod-errors';
 import { findLeadIdByEmail } from '@/lib/lead-intake-idempotency';

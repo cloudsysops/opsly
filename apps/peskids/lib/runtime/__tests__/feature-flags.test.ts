@@ -21,7 +21,7 @@ describe('module gates', () => {
   it('opens outside production when only the flag is on', () => {
     const result = moduleAvailability(
       FRANCHISE_ROYALTIES_GATE,
-      env({ PESKIDS_APP_ENV: 'staging', PESKIDS_FRANCHISE_ROYALTIES_ENABLED: 'true' })
+      env({ PESKIDS_ENVIRONMENT: 'staging', PESKIDS_FRANCHISE_ROYALTIES_ENABLED: 'true' })
     );
     expect(result).toEqual({ available: true });
   });
@@ -29,7 +29,7 @@ describe('module gates', () => {
   it('stays closed in production when only the flag is on', () => {
     const result = moduleAvailability(
       FRANCHISE_ROYALTIES_GATE,
-      env({ PESKIDS_APP_ENV: 'production', PESKIDS_FRANCHISE_ROYALTIES_ENABLED: 'true' })
+      env({ PESKIDS_ENVIRONMENT: 'production', PESKIDS_FRANCHISE_ROYALTIES_ENABLED: 'true' })
     );
     expect(result).toEqual({ available: false, reason: 'not_production_ready' });
   });
@@ -38,7 +38,7 @@ describe('module gates', () => {
     const result = moduleAvailability(
       FRANCHISE_ROYALTIES_GATE,
       env({
-        PESKIDS_APP_ENV: 'production',
+        PESKIDS_ENVIRONMENT: 'production',
         PESKIDS_FRANCHISE_ROYALTIES_ENABLED: 'true',
         PESKIDS_FRANCHISE_ROYALTIES_PRODUCTION_READY: 'true',
       })
@@ -50,7 +50,7 @@ describe('module gates', () => {
     const result = moduleAvailability(
       FRANCHISE_ROYALTIES_GATE,
       env({
-        PESKIDS_APP_ENV: 'production',
+        PESKIDS_ENVIRONMENT: 'production',
         PESKIDS_FRANCHISE_ROYALTIES_PRODUCTION_READY: 'true',
       })
     );
@@ -81,7 +81,7 @@ describe('module gates', () => {
 
   it('assertModuleEnabled throws a 503-shaped error when closed', () => {
     try {
-      assertModuleEnabled(FRANCHISE_OS_GATE, env({ PESKIDS_APP_ENV: 'production' }));
+      assertModuleEnabled(FRANCHISE_OS_GATE, env({ PESKIDS_ENVIRONMENT: 'production' }));
       throw new Error('expected assertModuleEnabled to throw');
     } catch (error) {
       expect(error).toBeInstanceOf(ModuleDisabledError);
@@ -94,7 +94,7 @@ describe('module gates', () => {
     expect(() =>
       assertModuleEnabled(
         FRANCHISE_OS_GATE,
-        env({ PESKIDS_APP_ENV: 'staging', PESKIDS_FRANCHISE_OS_ENABLED: 'true' })
+        env({ PESKIDS_ENVIRONMENT: 'staging', PESKIDS_FRANCHISE_OS_ENABLED: 'true' })
       )
     ).not.toThrow();
   });

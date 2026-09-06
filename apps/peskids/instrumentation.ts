@@ -22,7 +22,7 @@ export async function register(): Promise<void> {
     return;
   }
 
-  const { checkEnvironmentBoundary } = await import('./lib/runtime/environment');
+  const { checkEnvironmentBoundary } = await import('./lib/runtime-environment');
   const result = checkEnvironmentBoundary(process.env);
 
   if (!result.ok) {

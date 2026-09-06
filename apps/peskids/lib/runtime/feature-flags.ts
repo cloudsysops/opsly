@@ -12,6 +12,8 @@
  * Everything defaults to OFF — an unset variable never opens a gate.
  */
 
+import { isProduction } from '@/lib/runtime-environment';
+
 export type ModuleGate = {
   /** Stable identifier used in error payloads and logs. */
   module: string;
@@ -64,18 +66,6 @@ function parseBooleanFlag(value: string | undefined): boolean {
   return normalized === '1' || normalized === 'true' || normalized === 'yes' || normalized === 'on';
 }
 
-function isProductionEnvironment(env: NodeJS.ProcessEnv): boolean {
-  const explicit = (env.PESKIDS_APP_ENV ?? '').trim().toLowerCase();
-  if (explicit) {
-    return explicit === 'production' || explicit === 'prd' || explicit === 'prod';
-  }
-  const doppler = (env.DOPPLER_CONFIG ?? '').trim().toLowerCase();
-  if (doppler) {
-    return doppler === 'prd' || doppler === 'prod' || doppler === 'production';
-  }
-  return (env.NODE_ENV ?? '').trim().toLowerCase() === 'production';
-}
-
 export type ModuleAvailability =
   | { available: true }
   | { available: false; reason: 'flag_off' | 'not_production_ready' };
@@ -87,7 +77,7 @@ export function moduleAvailability(
   if (!parseBooleanFlag(env[gate.flagVar])) {
     return { available: false, reason: 'flag_off' };
   }
-  if (isProductionEnvironment(env) && !parseBooleanFlag(env[gate.productionReadyVar])) {
+  if (isProduction(env) && !parseBooleanFlag(env[gate.productionReadyVar])) {
     return { available: false, reason: 'not_production_ready' };
   }
   return { available: true };

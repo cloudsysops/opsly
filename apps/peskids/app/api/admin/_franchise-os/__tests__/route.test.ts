@@ -31,7 +31,7 @@ function request(path: string): Request {
 describe('GET /api/admin/franchise-os', () => {
   beforeEach(() => {
     validateStaffRequestMock.mockReset();
-    vi.stubEnv('PESKIDS_APP_ENV', 'production');
+    vi.stubEnv('PESKIDS_ENVIRONMENT', 'production');
   });
 
   afterEach(() => {
@@ -80,7 +80,7 @@ describe('GET /api/admin/franchise-os', () => {
   });
 
   it('reports the module as moved once the gate is opened', async () => {
-    vi.stubEnv('PESKIDS_APP_ENV', 'staging');
+    vi.stubEnv('PESKIDS_ENVIRONMENT', 'staging');
     vi.stubEnv('PESKIDS_FRANCHISE_OS_ENABLED', 'true');
     validateStaffRequestMock.mockResolvedValue({ ok: true, method: 'secret' });
     const { GET } = await import('../route');
