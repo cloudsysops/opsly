@@ -21,7 +21,7 @@ export type LeadPipelineStage = {
 export const LEAD_PIPELINE_STAGES: readonly LeadPipelineStage[] = [
   { id: 'new', label: 'Nuevo' },
   { id: 'contacted', label: 'Contactado' },
-  { id: 'trial', label: 'Prueba' },
+  { id: 'trial', label: 'Clase de prueba' },
   { id: 'enrolled', label: 'Matriculado' },
 ] as const;
 

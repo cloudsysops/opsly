@@ -31,6 +31,7 @@ import { WacrmLeadInboxActions } from '@/components/admin/wacrm-lead-inbox-actio
 import { classModalityLabel, leadTypeLabel, serviceModeLabel } from '@/lib/lead-modality'
 import { buildPeskidsReferralLink } from '@/lib/peskids-referral-links'
 import { formatAgeRange } from '@/lib/peskids-domain'
+import { dateOneMonthFrom } from '@/lib/admin/lead-followup-actions'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -72,19 +73,12 @@ async function patchLead(
   return json.lead
 }
 
-const POST_ENROLLMENT_STATUSES: ReadonlyArray<LeadRow['status']> = [
-  'enrolled',
-  'active',
-  'renewal',
-  'archived',
-]
-
 function canMarkContacted(status: LeadRow['status']): boolean {
-  return status !== 'contacted' && !POST_ENROLLMENT_STATUSES.includes(status)
+  return status === 'new'
 }
 
 function canConvertToStudent(status: LeadRow['status']): boolean {
-  return !POST_ENROLLMENT_STATUSES.includes(status)
+  return status === 'trial'
 }
 
 function formatCop(cents: number): string {
@@ -164,6 +158,7 @@ export function DashboardView({
   const [leadFeedback, setLeadFeedback] = useState<Record<string, string>>({})
   const [savingLeadId, setSavingLeadId] = useState<string | null>(null)
   const [convertingLeadId, setConvertingLeadId] = useState<string | null>(null)
+  const [followupLeadId, setFollowupLeadId] = useState<string | null>(null)
 
   useEffect(() => {
     setNoteDrafts((current) => {
@@ -358,6 +353,75 @@ export function DashboardView({
       }
     },
     [noteDrafts, onRefresh]
+  )
+
+  const handleMarkTrial = useCallback(
+    async (leadId: string) => {
+      setSavingLeadId(leadId)
+      setLeadFeedback((current) => {
+        const next = { ...current }
+        delete next[leadId]
+        return next
+      })
+      try {
+        await patchLead(leadId, { status: 'trial' })
+        setLeadFeedback((current) => ({
+          ...current,
+          [leadId]: 'Clase de prueba registrada.',
+        }))
+        onRefresh()
+      } catch {
+        setLeadFeedback((current) => ({
+          ...current,
+          [leadId]: 'No se pudo registrar la clase de prueba. Intenta de nuevo.',
+        }))
+      } finally {
+        setSavingLeadId(null)
+      }
+    },
+    [onRefresh]
+  )
+
+  const handleScheduleOneMonthFollowup = useCallback(
+    async (leadId: string) => {
+      setFollowupLeadId(leadId)
+      setLeadFeedback((current) => {
+        const next = { ...current }
+        delete next[leadId]
+        return next
+      })
+      try {
+        const response = await fetch('/api/admin/followups', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contact_id: leadId,
+            contact_type: 'lead',
+            type: 'call',
+            due_date: dateOneMonthFrom(new Date()),
+            notes: 'Contactar en 1 mes después de la clase de prueba.',
+          }),
+        })
+        const json = (await response.json()) as { ok?: boolean; error?: string }
+        if (!response.ok || !json.ok) {
+          throw new Error(json.error || 'No se pudo programar el seguimiento')
+        }
+        setLeadFeedback((current) => ({
+          ...current,
+          [leadId]: 'Seguimiento programado para contactar en 1 mes.',
+        }))
+        onRefresh()
+      } catch {
+        setLeadFeedback((current) => ({
+          ...current,
+          [leadId]: 'No se pudo programar el seguimiento. Intenta de nuevo.',
+        }))
+      } finally {
+        setFollowupLeadId(null)
+      }
+    },
+    [onRefresh]
   )
 
   const handleConvertLead = useCallback(
@@ -663,6 +727,22 @@ export function DashboardView({
                               </span>
                             </Button>
                           ) : null}
+                          {lead.status === 'contacted' ? (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="secondary"
+                              disabled={savingLeadId === lead.id}
+                              onClick={() => void handleMarkTrial(lead.id)}
+                            >
+                              {savingLeadId === lead.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                              ) : null}
+                              <span className={savingLeadId === lead.id ? 'ml-1' : undefined}>
+                                Marcar clase de prueba
+                              </span>
+                            </Button>
+                          ) : null}
                           <Button
                             type="button"
                             size="sm"
@@ -684,8 +764,24 @@ export function DashboardView({
                                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
                               ) : null}
                               <span className={convertingLeadId === lead.id ? 'ml-1' : undefined}>
-                                Convertir a alumno
+                                Marcar matriculado
                               </span>
+                            </Button>
+                          ) : null}
+                          {lead.status === 'trial' ? (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="ghost"
+                              disabled={followupLeadId === lead.id}
+                              onClick={() => void handleScheduleOneMonthFollowup(lead.id)}
+                            >
+                              {followupLeadId === lead.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                              ) : (
+                                <CalendarClock className="h-4 w-4" aria-hidden />
+                              )}
+                              <span className="ml-1">Contactar en 1 mes</span>
                             </Button>
                           ) : null}
                         </div>

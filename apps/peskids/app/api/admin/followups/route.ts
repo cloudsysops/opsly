@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { validateStaffSession } from '@/lib/staff-auth';
-import { isAdminSurfaceUser } from '@/lib/staff-user';
+import { isOperationalStaffUser } from '@/lib/staff-user';
 import { createFollowupSchema } from '@/lib/validation/followup.schema';
 import { createFollowup, listFollowups } from '@/lib/services/followup-admin.service';
 import type { FollowupRow } from '@/lib/services/followup-admin.service';
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     return errorJson(requestId, auth.error, auth.status);
   }
 
-  if (auth.user && !isAdminSurfaceUser(auth.user)) {
+  if (auth.user && !isOperationalStaffUser(auth.user)) {
     return errorJson(requestId, 'Forbidden', 403);
   }
 

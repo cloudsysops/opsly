@@ -33,6 +33,7 @@ describe('lead-pipeline-progress', () => {
 
   it('exposes Spanish labels and tones', () => {
     expect(LEAD_STATUS_LABEL.new).toMatch(/Nuevo/i);
+    expect(LEAD_PIPELINE_STAGES[2].label).toBe('Clase de prueba');
     expect(leadStatusTone('new')).toBe('coral');
     expect(leadStatusTone('enrolled')).toBe('green');
   });
