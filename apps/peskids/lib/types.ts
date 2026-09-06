@@ -1171,6 +1171,13 @@ export interface DashboardSalesAnalytics {
     label: string;
     count: number;
   }>;
+  modality_breakdown: Array<{
+    key: 'llanogrande' | 'domicilio' | 'other';
+    label: string;
+    total: number;
+    enrolled: number;
+    conversion_pct: number | null;
+  }>;
   avg_hours_to_first_followup: number | null;
   avg_hours_to_trial: number | null;
   trials_scheduled_count: number;
@@ -1275,6 +1282,8 @@ export interface DashboardData {
       document_number?: string | null;
       /** True only after a trial_classes row reaches status=attended. */
       first_class_attended?: boolean;
+      /** Hours from lead creation to the first recorded support contact. */
+      first_contact_hours?: number | null;
       company_name?: string | null;
       referral_source?: string | null;
       twenty_person_id?: string | null;
