@@ -141,6 +141,8 @@ export async function listFamilyAgenda(input: {
       enrollment_status: row.status,
       payment_status: row.payment_status,
       attendance: row.attendance,
+      behavior_tags: row.behavior_tags,
+      teacher_note: row.teacher_note,
     }))
     .sort((left, right) => left.starts_at.localeCompare(right.starts_at));
 }

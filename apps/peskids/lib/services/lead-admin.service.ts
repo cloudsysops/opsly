@@ -9,6 +9,7 @@ import type { DashboardData } from '@/lib/types';
 import type { AdminLeadStatus } from '@/lib/validation/lead-admin.schema';
 import { syncLeadStageToTwenty } from '@/lib/twenty-stage-sync';
 import { emitLeadStatusTransition } from '@/lib/events';
+import { recordLeadStatusAudit } from '@/lib/services/lead-status-audit.service';
 
 export type DashboardLead = DashboardData['new_leads'][number];
 
@@ -175,9 +176,7 @@ async function updateLegacyLead(
     return null;
   }
 
-  return mapLegacyLeadRow(
-    data as Parameters<typeof mapLegacyLeadRow>[0]
-  );
+  return mapLegacyLeadRow(data as Parameters<typeof mapLegacyLeadRow>[0]);
 }
 
 async function fetchPlatformLead(
@@ -206,10 +205,7 @@ async function fetchPlatformLead(
   return mapPlatformLeadRow(data as PlatformPeskidsLeadRow);
 }
 
-async function fetchLegacyLead(
-  leadId: string,
-  tenantSlug: string
-): Promise<DashboardLead | null> {
+async function fetchLegacyLead(leadId: string, tenantSlug: string): Promise<DashboardLead | null> {
   const { data, error } = await supabaseServer()
     .from('leads')
     .select(
@@ -247,8 +243,7 @@ export async function updateLeadForAdmin(
   tenantSlug: string,
   input: UpdateLeadAdminInput
 ): Promise<DashboardLead | null> {
-  const previous =
-    input.status !== undefined ? await getLeadForAdmin(leadId, tenantSlug) : null;
+  const previous = input.status !== undefined ? await getLeadForAdmin(leadId, tenantSlug) : null;
   const fromStatus = previous?.status ?? null;
 
   const platformLead = await updatePlatformLead(leadId, tenantSlug, input);
@@ -274,6 +269,15 @@ export async function updateLeadForAdmin(
   }
 
   if (input.status !== undefined) {
+    if (fromStatus !== input.status) {
+      void recordLeadStatusAudit({
+        leadId,
+        oldStatus: fromStatus,
+        newStatus: input.status,
+        action: 'status_change',
+        metadata: { source: 'admin_lead_patch' },
+      });
+    }
     void emitLeadStatusTransition({
       leadId,
       fromStatus,

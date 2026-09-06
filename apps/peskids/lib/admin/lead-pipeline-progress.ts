@@ -21,8 +21,8 @@ export type LeadPipelineStage = {
 export const LEAD_PIPELINE_STAGES: readonly LeadPipelineStage[] = [
   { id: 'new', label: 'Nuevo' },
   { id: 'contacted', label: 'Contactado' },
-  { id: 'trial', label: 'Prueba' },
   { id: 'enrolled', label: 'Matriculado' },
+  { id: 'trial', label: 'Clase programada' },
 ] as const;
 
 export type LeadPipelineStepState = 'done' | 'current' | 'upcoming' | 'skipped';
@@ -41,11 +41,11 @@ function statusToIndex(status: LeadAdminStatus): number {
       return 0;
     case 'contacted':
       return 1;
-    case 'trial':
-      return 2;
     case 'enrolled':
     case 'active':
     case 'renewal':
+      return 2;
+    case 'trial':
       return 3;
     case 'archived':
       return -1;
@@ -55,7 +55,10 @@ function statusToIndex(status: LeadAdminStatus): number {
 }
 
 /** Build step states for the horizontal status timeline on lead cards. */
-export function buildLeadPipelineProgress(status: LeadAdminStatus): LeadPipelineProgress {
+export function buildLeadPipelineProgress(
+  status: LeadAdminStatus,
+  firstClassAttended = false
+): LeadPipelineProgress {
   const archived = status === 'archived';
   const currentIndex = statusToIndex(status);
   const states: LeadPipelineStepState[] = LEAD_PIPELINE_STAGES.map((_, index) => {
@@ -65,8 +68,12 @@ export function buildLeadPipelineProgress(status: LeadAdminStatus): LeadPipeline
     return 'upcoming';
   });
 
+  const stages = LEAD_PIPELINE_STAGES.map((stage) =>
+    stage.id === 'trial' && firstClassAttended ? { ...stage, label: 'Primera clase' } : stage
+  );
+
   return {
-    stages: LEAD_PIPELINE_STAGES,
+    stages,
     currentIndex,
     states,
     archived,
@@ -76,7 +83,7 @@ export function buildLeadPipelineProgress(status: LeadAdminStatus): LeadPipeline
 export const LEAD_STATUS_LABEL: Record<LeadAdminStatus, string> = {
   new: 'Nuevo',
   contacted: 'Contactado',
-  trial: 'Clase de prueba',
+  trial: 'Clase programada',
   enrolled: 'Matriculado',
   active: 'Activo',
   renewal: 'Renovación',

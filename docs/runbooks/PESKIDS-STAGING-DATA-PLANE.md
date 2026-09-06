@@ -44,6 +44,18 @@ completed. Historical files were **not** rewritten in git (prod checksums):
    (`001`+). Apply those except `20260819_franchise_core_rls.sql`.
 
 Repeatable entry: `./scripts/peskids-apply-staging-schema.sh --dry-run`.
+For the isolated Peskids operations RLS validation in PR #1110, use the
+explicit QA-only opt-in after review:
+
+```bash
+./scripts/peskids-apply-staging-schema.sh \
+  --project-ref hljetbbgiphpjbldebpo \
+  --include-operations-rls
+```
+
+The opt-in adds only `0100_peskids_operations_tenant_rls.sql`; it refuses any
+project other than the configured QA project and never includes `0098` or
+`0099`. Run the same command with `--dry-run` before applying it.
 
 ## Remaining human items
 
@@ -66,7 +78,9 @@ Deploy fails if staging project ref equals `jkwykpldnitavhmtuzmo`
 
 `0001`–`0097` in `supabase/migrations/` (current safe production-compatible
 set). Explicitly excluded: `0098_franchise_core.sql`,
-`0099_franchise_core_rls.sql`, and any `0100+`.
+`0099_franchise_core_rls.sql`, and any `0100+` by default. The only approved
+exception is the explicit `--include-operations-rls` QA validation described
+above, which includes `0100_peskids_operations_tenant_rls.sql` only.
 
 ## Webhooks
 

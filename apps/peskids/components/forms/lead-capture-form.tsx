@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
+import { trackMetaLead } from '@/components/analytics/meta-pixel'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
 import {
   buildPostLeadWhatsAppPrefill,
@@ -18,6 +19,7 @@ import {
   type PeskidsLeadType,
 } from '@/lib/validation/lead.schema'
 import {
+  PESKIDS_CONSENT_IDENTITY_DOCUMENT,
   PESKIDS_CONSENT_MARKETING,
   PESKIDS_CONSENT_PHOTOS_VIDEOS,
   PESKIDS_CONSENT_TREATMENT,
@@ -37,7 +39,7 @@ import { Label } from '@/components/ui/label'
 import { firstZodErrorMessage } from '@/lib/validation/zod-errors'
 import { cn } from '@/lib/utils'
 
-const CONSENT_POLICY_VERSION = 'pk-parental-v1+pk-privacy-v1@1.0'
+const CONSENT_POLICY_VERSION = 'pk-parental-v1+pk-privacy-v1@1.1'
 
 const LEAD_TYPE_LABELS: Record<PeskidsLeadType, string> = {
   family: 'Familia / Alumno',
@@ -133,6 +135,11 @@ export function LeadCaptureForm({
   const [consentTreatment, setConsentTreatment] = useState(false)
   const [consentMarketing, setConsentMarketing] = useState(false)
   const [consentPhotosVideos, setConsentPhotosVideos] = useState(false)
+  const [consentIdentityDocument, setConsentIdentityDocument] = useState(false)
+
+  const leadTypeCollectsDocument =
+    (formData.lead_type || 'family') === 'family' ||
+    formData.lead_type === 'teacher_applicant'
 
   const referredByCode = useMemo(
     () => searchParams.get('ref')?.trim().toUpperCase() ?? '',
@@ -253,6 +260,7 @@ export function LeadCaptureForm({
         consent_treatment: consentTreatment ? true : undefined,
         consent_marketing: consentMarketing,
         consent_photos_videos: consentPhotosVideos,
+        consent_identity_document: consentIdentityDocument,
         consent_policy_version: CONSENT_POLICY_VERSION,
         source,
         campaign,
@@ -311,8 +319,13 @@ export function LeadCaptureForm({
         data?: { lead_id?: string }
         lead_id?: string
         id?: string
+        meta_event_id?: string
       }
       const leadId = (apiBody.data?.lead_id ?? apiBody.lead_id ?? apiBody.id)?.trim() || ''
+
+      if (apiBody.meta_event_id) {
+        trackMetaLead(apiBody.meta_event_id)
+      }
 
       void fetch(
         process.env.NEXT_PUBLIC_N8N_LEAD_WEBHOOK || 'https://www.peskids.com/webhooks/lead-capture',
@@ -904,6 +917,19 @@ export function LeadCaptureForm({
                   />
                   <span className="text-xs text-pk-mutedText">{PESKIDS_CONSENT_PHOTOS_VIDEOS}</span>
                 </label>
+                {leadTypeCollectsDocument ? (
+                  <label className="flex gap-3">
+                    <input
+                      type="checkbox"
+                      checked={consentIdentityDocument}
+                      onChange={(e) => setConsentIdentityDocument(e.target.checked)}
+                      className="mt-1 h-4 w-4"
+                    />
+                    <span className="text-xs text-pk-mutedText">
+                      {PESKIDS_CONSENT_IDENTITY_DOCUMENT}
+                    </span>
+                  </label>
+                ) : null}
               </div>
 
               {error && (
@@ -914,7 +940,9 @@ export function LeadCaptureForm({
 
               <Button
                 type="submit"
-                disabled={loading || !consentTreatment}
+                disabled={
+                  loading || !consentTreatment || (leadTypeCollectsDocument && !consentIdentityDocument)
+                }
                 className="w-full bg-pk-primary text-white hover:opacity-90"
               >
                 {loading ? (
