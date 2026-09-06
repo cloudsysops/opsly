@@ -69,8 +69,10 @@ jobs:
             ref="$(printf '%s' "$STAGING_NEXT_PUBLIC_SUPABASE_URL" | sed -n 's#https://\([a-z0-9]*\)\.supabase\..*#\1#p')"
             echo "PESKIDS_STAGING_ISOLATION: staging_ref=${ref}"
             echo "PESKIDS_STAGING_ISOLATION: production_ref=jkwykpldnitavhmtuzmo"
-            [ -n "$ref" ] && [ "$ref" != "jkwykpldnitavhmtuzmo" ] && [ "$ref" = "hljetbbgiphpjbldebpo" ] \
-              || { echo "PESKIDS_STAGING_ISOLATION: refuse deploy — staging is not opsly-QA" >&2; exit 1; }
+            if [ -z "$ref" ] || [ "$ref" = "jkwykpldnitavhmtuzmo" ] || [ "$ref" != "hljetbbgiphpjbldebpo" ]; then
+              echo "PESKIDS_STAGING_ISOLATION: refuse deploy — staging is not opsly-QA" >&2
+              exit 1
+            fi
           fi
 
       - name: Build immutable Peskids image
