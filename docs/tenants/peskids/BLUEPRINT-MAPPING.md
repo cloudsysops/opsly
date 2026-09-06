@@ -1,7 +1,7 @@
 ---
 status: draft
 owner: operations
-last_review: 2026-05-24
+last_review: 2026-09-06
 type: tenant
 tags:
   - opsly/tenant
@@ -89,6 +89,19 @@ weekly_report.generated → Email to owner
 - **Follow-up Workflow:** Create task → Schedule reminder → Complete → Log outcome
 
 **Validation:** ✅ Peskids shows 3+ distinct workflows can coexist in single platform
+
+### 5.1 Trust boundary for messaging and dashboards
+
+| Surface | Role | Authority |
+| --- | --- | --- |
+| Teacher dashboard | Agenda, attendance, class notes | Assigned classes after auth |
+| Family portal | Agenda, reservations, progress | Linked family scope |
+| WhatsApp | Notice, inbound conversation, human handoff | No free-text state changes initially |
+| Short verification code | Optional bridge to dashboard | One-time, short-lived, tenant-scoped |
+
+**Validation status:** dashboard contracts are covered by scoped tests; real
+browser/session smoke remains pending in QA. WhatsApp must not bypass auth or
+RLS.
 
 ---
 
