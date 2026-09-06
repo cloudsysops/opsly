@@ -7,9 +7,22 @@ import {
 } from '@intcloudsysops/franchise-persistence';
 import { NextResponse } from 'next/server';
 import { PESKIDS_TENANT_SLUG } from '@/lib/franchise-constants';
+import { isPeskidsFranchiseOsEnabled } from '@/lib/peskids-pro-flags';
 import { supabaseServer } from '@/lib/supabase';
 import type { StaffAuthResult } from '@/lib/staff-auth';
 import { franchiseRoleFromAuth } from '@/lib/services/franchise-os.service';
+
+const FRANCHISE_OS_DISABLED = 'FRANCHISE_OS_DISABLED';
+
+function assertFranchiseOsEnabled(): void {
+  if (!isPeskidsFranchiseOsEnabled()) {
+    throw new FranchisePersistenceError(
+      FRANCHISE_OS_DISABLED,
+      'Franchise OS is disabled in this environment',
+      503
+    );
+  }
+}
 
 const NETWORK_ROLES = new Set(['platform_owner', 'tenant_owner', 'franchise_network_admin']);
 
@@ -22,6 +35,7 @@ function platformClient() {
 }
 
 export function getFranchiseService() {
+  assertFranchiseOsEnabled();
   return createFranchiseService(createSupabaseFranchiseStore(supabaseServer()));
 }
 
@@ -29,6 +43,7 @@ export async function resolveFranchiseActor(
   auth: StaffAuthResult,
   requestId: string
 ): Promise<FranchiseActor> {
+  assertFranchiseOsEnabled();
   const store = createSupabaseFranchiseStore(supabaseServer());
   const tenantId = await store.resolveTenantId(PESKIDS_TENANT_SLUG);
   if (!tenantId) {

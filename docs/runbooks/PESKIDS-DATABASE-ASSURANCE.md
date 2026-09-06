@@ -84,6 +84,16 @@ Required operational evidence before declaring `DATABASE_ASSURANCE_READY`:
 7. connection, slow-query, deadlock and failed-auth telemetry;
 8. retention decision for leads, family/student PII, uploads and audit logs.
 
+## RPO / RTO
+
+Policy targets (not yet measured on a restore drill):
+
+- **RPO:** 15 minutes with PITR, otherwise 24 hours.
+- **RTO:** 2 hours for a read-only Peskids site after isolated restore.
+
+Procedure and backup-scope gap: [`PESKIDS-DATA-OPERATIONS.md`](./PESKIDS-DATA-OPERATIONS.md).
+Staging project split: [`PESKIDS-STAGING-DATA-PLANE.md`](./PESKIDS-STAGING-DATA-PLANE.md).
+
 ## Emergency restore sequence
 
 ```text

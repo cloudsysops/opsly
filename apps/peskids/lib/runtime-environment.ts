@@ -4,8 +4,19 @@ export type PeskidsEnvironment = 'development' | 'staging' | 'production';
 
 type RuntimeEnv = Record<string, string | undefined>;
 
+/** Production Opsly/Peskids project. Staging must never resolve to this ref. */
+export const PESKIDS_PRODUCTION_SUPABASE_PROJECT_REF = 'jkwykpldnitavhmtuzmo';
+
+/** Isolated Opsly QA project. Use for Peskids staging only. */
+export const PESKIDS_STAGING_SUPABASE_PROJECT_REF = 'hljetbbgiphpjbldebpo';
+
 function normalizeUrl(value: string): string {
   return value.trim().replace(/\/$/, '').toLowerCase();
+}
+
+export function extractSupabaseProjectRef(url: string): string | null {
+  const match = url.trim().match(/^https:\/\/([a-z0-9]+)\.supabase\.(?:co|in)\b/i);
+  return match?.[1]?.toLowerCase() ?? null;
 }
 
 export function resolvePeskidsEnvironment(env: RuntimeEnv = process.env): PeskidsEnvironment {
@@ -14,9 +25,21 @@ export function resolvePeskidsEnvironment(env: RuntimeEnv = process.env): Peskid
     return explicit;
   }
 
-  const config = env.DOPPLER_CONFIG?.trim().toLowerCase();
+  const config = env.DOPPLER_CONFIG?.trim().toLowerCase() ?? '';
   if (config === 'prd' || config === 'prod' || config === 'production') return 'production';
-  if (config === 'stg' || config === 'staging' || config === 'qa') return 'staging';
+  // stg_peskids is the Peskids QA Doppler config. Bare `stg` is Smile — still
+  // treat it as non-prod so a miswired container fails the URL boundary, not
+  // by being classified as production.
+  if (
+    config === 'stg' ||
+    config === 'staging' ||
+    config === 'qa' ||
+    config === 'stg_peskids' ||
+    config === 'stg_qa' ||
+    config.startsWith('stg_')
+  ) {
+    return 'staging';
+  }
   return env.NODE_ENV?.trim().toLowerCase() === 'production' ? 'production' : 'development';
 }
 
@@ -51,8 +74,17 @@ export function assertPeskidsDatabaseBoundary(env: RuntimeEnv = process.env): vo
 
   const productionUrl = env.PESKIDS_PRODUCTION_SUPABASE_URL?.trim();
   const stagingUrl = env.PESKIDS_STAGING_SUPABASE_URL?.trim();
-  if (environment === 'staging' && productionUrl && normalizeUrl(actual) === normalizeUrl(productionUrl)) {
-    throw new Error('Peskids staging must not use the production Supabase project');
+  const actualRef = extractSupabaseProjectRef(actual);
+  const productionRef =
+    extractSupabaseProjectRef(productionUrl ?? '') ?? PESKIDS_PRODUCTION_SUPABASE_PROJECT_REF;
+
+  if (environment === 'staging') {
+    if (actualRef && actualRef === productionRef) {
+      throw new Error('Peskids staging must not use the production Supabase project');
+    }
+    if (productionUrl && normalizeUrl(actual) === normalizeUrl(productionUrl)) {
+      throw new Error('Peskids staging must not use the production Supabase project');
+    }
   }
   if (environment === 'production' && stagingUrl && normalizeUrl(actual) === normalizeUrl(stagingUrl)) {
     throw new Error('Peskids production must not use the staging Supabase project');

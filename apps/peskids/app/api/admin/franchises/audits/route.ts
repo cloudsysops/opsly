@@ -4,6 +4,7 @@ import { validateStaffRequest } from '@/lib/staff-auth';
 import { franchiseErrorResponse, getFranchiseService, resolveFranchiseActor } from '@/lib/franchise/persist';
 import { createSupabaseFranchiseStore } from '@intcloudsysops/franchise-persistence';
 import { supabaseServer } from '@/lib/supabase';
+import { franchiseAuditPostSchema } from '@/lib/validation/franchise-os.schema';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,13 +25,17 @@ export async function POST(req: NextRequest) {
   const requestId = resolveRequestId(req);
   const auth = await validateStaffRequest(req);
   if (!auth.ok) return errorJson(requestId, auth.error, auth.status);
-  let body: { unitId?: string; auditor?: string };
+  let raw: unknown;
   try {
-    body = (await req.json()) as typeof body;
+    raw = await req.json();
   } catch {
     return errorJson(requestId, 'Invalid JSON', 400);
   }
-  if (!body.unitId) return errorJson(requestId, 'unitId required', 400);
+  const parsed = franchiseAuditPostSchema.safeParse(raw);
+  if (!parsed.success) {
+    return errorJson(requestId, 'Invalid payload', 400);
+  }
+  const body = parsed.data;
   try {
     const actor = await resolveFranchiseActor(auth, requestId);
     const store = createSupabaseFranchiseStore(supabaseServer());

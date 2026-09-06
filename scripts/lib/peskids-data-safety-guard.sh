@@ -12,7 +12,7 @@ peskids_runtime_environment() {
     printf '%s\n' "$explicit"
   elif [[ "$config" == "prd" || "$config" == "prod" || "$config" == "production" ]]; then
     printf '%s\n' production
-  elif [[ "$config" == "stg" || "$config" == "staging" || "$config" == "qa" ]]; then
+  elif [[ "$config" == "stg" || "$config" == "staging" || "$config" == "qa" || "$config" == "stg_peskids" || "$config" == "stg_qa" || "$config" == stg_* ]]; then
     printf '%s\n' staging
   elif [[ "$node_env" == "production" ]]; then
     printf '%s\n' production
