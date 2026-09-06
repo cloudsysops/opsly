@@ -6,6 +6,7 @@ import { checkRateLimit } from '../rate-limiter';
 import { assertPeskidsTenantPublic } from './assert-tenant';
 import { PESKIDS_TEACHER_ATTACHMENTS_BUCKET, PESKIDS_TENANT_SLUG } from './constants';
 import { dispatchPeskidsHotLeadAlert } from './hot-lead-alert';
+import { dispatchPeskidsSupportWhatsAppAlert } from './support-whatsapp-alert';
 import { dispatchPeskidsLeadConfirmationEmail } from './lead-confirmation-email';
 import { dispatchPeskidsStaffLeadNotification } from './staff-notification-email';
 import { peskidsInsertLead, peskidsUpdateLeadMetadata } from './repository';
@@ -120,6 +121,12 @@ export async function postPublicPeskidsLead(request: NextRequest): Promise<Respo
   // Never block lead persistence on n8n/Discord/email outages.
   void dispatchPeskidsHotLeadAlert(row).catch((error: unknown) => {
     console.warn('[peskids] hot-lead alert dispatch failed', {
+      lead_id: row.id,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  });
+  void dispatchPeskidsSupportWhatsAppAlert(row).catch((error: unknown) => {
+    console.warn('[peskids] support WhatsApp alert failed', {
       lead_id: row.id,
       error: error instanceof Error ? error.message : String(error),
     });

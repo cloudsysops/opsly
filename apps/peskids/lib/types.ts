@@ -188,6 +188,10 @@ export type Database = {
           status: 'reserved' | 'confirmed' | 'cancelled' | 'no_show' | 'attended' | 'waitlisted';
           payment_status: 'pending' | 'paid' | 'failed' | 'refunded';
           attendance: 'present' | 'absent' | 'excused' | null;
+          behavior_tags: string[];
+          teacher_note: string | null;
+          attendance_updated_at: string | null;
+          attendance_updated_by: string | null;
           joined_at: string;
           cancelled_at: string | null;
           stripe_checkout_session_id: string | null;
@@ -203,6 +207,10 @@ export type Database = {
           status?: 'reserved' | 'confirmed' | 'cancelled' | 'no_show' | 'attended' | 'waitlisted';
           payment_status?: 'pending' | 'paid' | 'failed' | 'refunded';
           attendance?: 'present' | 'absent' | 'excused' | null;
+          behavior_tags?: string[];
+          teacher_note?: string | null;
+          attendance_updated_at?: string | null;
+          attendance_updated_by?: string | null;
           joined_at?: string;
           cancelled_at?: string | null;
           stripe_checkout_session_id?: string | null;
@@ -1265,6 +1273,8 @@ export interface DashboardData {
       birth_date?: string | null;
       document_type?: string | null;
       document_number?: string | null;
+      /** True only after a trial_classes row reaches status=attended. */
+      first_class_attended?: boolean;
       company_name?: string | null;
       referral_source?: string | null;
       twenty_person_id?: string | null;

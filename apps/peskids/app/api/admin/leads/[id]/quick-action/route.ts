@@ -12,6 +12,7 @@ type RouteContext = { params: Promise<{ id: string }> };
 function quickActionMessage(action: string): string {
   if (action === 'mark_attended') return 'marked as attended';
   if (action === 'mark_enrolled') return 'marked as enrolled';
+  if (action === 'follow_up_month') return 'follow-up scheduled for one month';
   if (action === 'hold') return 'put on hold';
   return 'cancelled';
 }
