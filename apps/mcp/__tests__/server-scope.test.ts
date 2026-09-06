@@ -26,6 +26,11 @@ describe('OpenClawMcpServer OAuth scopes', () => {
     expect(out).toEqual({ tenants: { ok: true } });
   });
 
+  it('rejects protected tools without credentials even when input is valid', async () => {
+    const server = createServer();
+    await expect(server.callTool('get_tenants', {})).rejects.toThrow('Unauthorized');
+  });
+
   it('rejects when Bearer token lacks scope', async () => {
     const token = generateAccessToken('claude-ai', ['tenants:read'], undefined, 600);
     const server = createServer();
