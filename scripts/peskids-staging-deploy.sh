@@ -69,11 +69,19 @@ filter_peskids_docker_env "$env_file"
 printf 'PESKIDS_GIT_SHA=%s\nPESKIDS_IMAGE_TAG=%s\n' "$RELEASE_SHA" "$PESKIDS_IMAGE" >> "$env_file"
 docker pull "$PESKIDS_IMAGE"
 repo_digest="$(docker image inspect --format '{{index .RepoDigests 0}}' "$PESKIDS_IMAGE")"
-expected_digest="${PESKIDS_IMAGE%@*}@${PESKIDS_IMAGE_DIGEST}"
-[ "$repo_digest" = "$expected_digest" ] || { echo "Staging image digest mismatch" >&2; exit 1; }
+actual_digest="${repo_digest##*@}"
+[ "$actual_digest" = "$PESKIDS_IMAGE_DIGEST" ] || { echo "Staging image digest mismatch" >&2; exit 1; }
 docker rm -f "$container" 2>/dev/null || true
 docker run -d --name "$container" --restart unless-stopped --network traefik-public \
-  -p "127.0.0.1:${port}:3004" --env-file "$env_file" "$PESKIDS_IMAGE" >/dev/null
+  -p "127.0.0.1:${port}:3004" --env-file "$env_file" \
+  --label traefik.enable=true \
+  --label traefik.docker.network=traefik-public \
+  --label 'traefik.http.routers.peskids-staging.rule=Host(`peskids-staging.op-sly.com`)' \
+  --label traefik.http.routers.peskids-staging.entrypoints=websecure \
+  --label traefik.http.routers.peskids-staging.tls=true \
+  --label traefik.http.routers.peskids-staging.tls.certresolver=letsencrypt \
+  --label traefik.http.services.peskids-staging.loadbalancer.server.port=3004 \
+  "$PESKIDS_IMAGE" >/dev/null
 
 for attempt in {1..30}; do
   if body="$(curl -fsSL --max-time 5 "http://127.0.0.1:${port}/api/health" 2>/dev/null)" \
