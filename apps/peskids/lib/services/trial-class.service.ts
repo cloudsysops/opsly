@@ -107,6 +107,19 @@ export async function listTrialClasses(
   return enriched;
 }
 
+export async function hasAttendedTrialClass(leadId: string): Promise<boolean> {
+  const { data, error } = await supabaseServer()
+    .from('trial_classes')
+    .select('id')
+    .eq('tenant_id', tenantSlug())
+    .eq('lead_id', leadId)
+    .eq('status', 'attended')
+    .limit(1);
+
+  if (error) throw error;
+  return (data ?? []).length > 0;
+}
+
 export async function createTrialClass(
   input: z.infer<typeof createTrialClassSchema>
 ): Promise<TrialClassWithLead> {

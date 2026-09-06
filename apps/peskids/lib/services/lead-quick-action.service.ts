@@ -1,6 +1,6 @@
 import { supabaseServer } from '@/lib/supabase';
 import { getLeadForAdmin, updateLeadForAdmin } from '@/lib/services/lead-admin.service';
-import { createTrialClass } from '@/lib/services/trial-class.service';
+import { createTrialClass, hasAttendedTrialClass } from '@/lib/services/trial-class.service';
 import { createOneMonthLeadFollowup } from '@/lib/services/followup-admin.service';
 
 type QuickActionInput = {
@@ -101,7 +101,7 @@ export async function postPeskidsLeadQuickAction(
             teacher_name: input.teacherName,
             scheduled_date: input.scheduledDate,
             scheduled_time: input.scheduledTime,
-            reason: input.reason || 'marked_attended',
+            reason: input.reason || 'class_scheduled',
           },
         });
 
@@ -147,6 +147,13 @@ export async function postPeskidsLeadQuickAction(
     if (input.action === 'follow_up_month') {
       if (oldStatus !== 'trial') {
         return { ok: false, error: 'Lead must have a trial class before follow-up', status: 409 };
+      }
+      if (!(await hasAttendedTrialClass(input.leadId))) {
+        return {
+          ok: false,
+          error: 'La primera clase debe estar marcada como asistida antes del seguimiento',
+          status: 409,
+        };
       }
       const followup = await createOneMonthLeadFollowup(input.leadId);
       await recordAudit({

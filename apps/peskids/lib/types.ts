@@ -1265,6 +1265,8 @@ export interface DashboardData {
       birth_date?: string | null;
       document_type?: string | null;
       document_number?: string | null;
+      /** True only after a trial_classes row reaches status=attended. */
+      first_class_attended?: boolean;
       company_name?: string | null;
       referral_source?: string | null;
       twenty_person_id?: string | null;

@@ -13,6 +13,7 @@ type LeadRow = DashboardData['new_leads'][number];
 type LeadQuickActionsProps = {
   leadId: string;
   currentStatus: LeadRow['status'];
+  firstClassAttended?: boolean;
   busy: boolean;
   onBusyChange: (busy: boolean) => void;
   onFeedback: (message: string) => void;
@@ -25,6 +26,7 @@ type QuickActionModalState = 'closed' | 'mark_attended' | 'hold' | 'confirm_canc
 export function LeadQuickActions({
   leadId,
   currentStatus,
+  firstClassAttended = false,
   busy,
   onBusyChange,
   onFeedback,
@@ -37,14 +39,16 @@ export function LeadQuickActions({
   const [scheduledTime, setScheduledTime] = useState('14:00');
   const [holdMonth, setHoldMonth] = useState('');
 
-  const canQuickAction = !['enrolled', 'active', 'renewal', 'archived'].includes(currentStatus);
+  const canQuickAction = pipelineOnly
+    ? currentStatus === 'enrolled' || currentStatus === 'trial'
+    : !['enrolled', 'active', 'renewal', 'archived'].includes(currentStatus);
   const canEnroll = currentStatus === 'trial';
 
   const actionFeedbackLabel: Record<
     'mark_attended' | 'mark_enrolled' | 'follow_up_month' | 'hold' | 'cancel',
     string
   > = {
-    mark_attended: 'Primera clase registrada',
+    mark_attended: 'Clase programada',
     mark_enrolled: 'Matriculado',
     follow_up_month: 'Seguimiento programado en 1 mes',
     hold: 'Puesto en espera',
@@ -124,7 +128,7 @@ export function LeadQuickActions({
                       Programar primera clase
                     </Button>
                   ) : null}
-                  {currentStatus === 'trial' ? (
+                  {currentStatus === 'trial' && firstClassAttended ? (
                     <Button
                       size="lg"
                       variant="secondary"
@@ -139,6 +143,12 @@ export function LeadQuickActions({
                       )}
                       Contactar en 1 mes
                     </Button>
+                  ) : null}
+                  {currentStatus === 'trial' && !firstClassAttended ? (
+                    <p className="basis-full text-xs text-pk-sub">
+                      Clase programada. Registra la asistencia en la agenda para habilitar el
+                      contacto de seguimiento en 1 mes.
+                    </p>
                   ) : null}
                 </>
               ) : canEnroll ? (
@@ -244,7 +254,7 @@ export function LeadQuickActions({
                 className="flex-1 gap-2"
               >
                 {busy && <Loader2 className="h-4 w-4 animate-spin" />}
-                Guardar primera clase
+                Programar primera clase
               </Button>
               <Button
                 variant="ghost"

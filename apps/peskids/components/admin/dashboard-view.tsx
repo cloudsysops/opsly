@@ -125,7 +125,7 @@ const leadStatusFilterLabel: Record<'all' | DashboardData['new_leads'][number]['
   all: 'Todos',
   new: 'Nuevos',
   contacted: 'Contactados',
-  trial: 'Primera clase',
+  trial: 'Clase programada',
   enrolled: 'Matriculados',
   active: 'Activos',
   renewal: 'Renovación',
@@ -688,6 +688,7 @@ export function DashboardView({
                           <LeadQuickActions
                             leadId={lead.id}
                             currentStatus={lead.status}
+                            firstClassAttended={lead.first_class_attended}
                             busy={quickActionLeadId === lead.id}
                             onBusyChange={(busy) => setQuickActionLeadId(busy ? lead.id : null)}
                             onFeedback={(message) =>

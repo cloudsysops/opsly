@@ -120,7 +120,11 @@ export function AdminLeadCard({
         <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-pk-mutedText">
           Línea de tiempo
         </p>
-        <LeadStatusPipeline status={status} compact={compactPipeline} />
+        <LeadStatusPipeline
+          status={status}
+          firstClassAttended={lead.first_class_attended}
+          compact={compactPipeline}
+        />
       </div>
 
       {lead.admin_notes?.trim() ? (
