@@ -10,6 +10,7 @@ import {
   type TrialClassWithLead,
 } from '@/lib/services/trial-class.service';
 import type { Database } from '@/lib/types';
+import { minimizeLeadForStaffApi, type StaffLeadView } from '@/lib/lead-response-minimize';
 
 export type Lead360TimelineKind = 'lead_created' | 'followup' | 'trial' | 'twenty_sync';
 
@@ -20,7 +21,7 @@ export type Lead360TimelineEntry = {
 };
 
 export type Lead360View = {
-  lead: DashboardLead;
+  lead: StaffLeadView;
   followups: FollowupWithContact[];
   trials: TrialClassWithLead[];
   aging_badge: LeadAgingBadge | null;
@@ -133,7 +134,7 @@ export async function getLead360(leadId: string, tenantSlug: string): Promise<Le
     lead.created_at != null ? leadAgingBadge(lead.status, lead.created_at) : null;
 
   return {
-    lead,
+    lead: minimizeLeadForStaffApi(lead),
     followups,
     trials,
     aging_badge,

@@ -75,7 +75,9 @@ export const attendanceUpdateSchema = z.object({
     .max(200, 'Máximo 200 asistencias por lote'),
 }).strict();
 
-export const checkoutSchema = z.object({
-  enrollment_id: z.string().uuid(),
-  provider: z.enum(['stripe', 'wompi']).optional().default('stripe'),
-}).strict();
+export const checkoutSchema = z
+  .object({
+    enrollment_id: z.string().uuid(),
+    provider: z.enum(['stripe', 'wompi']).optional().default('stripe'),
+  })
+  .strict();

@@ -18,6 +18,7 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { Database } from './types';
 import { checkEnvironmentBoundary } from './runtime/environment';
+import { assertPeskidsDatabaseBoundary } from './runtime-environment';
 
 /**
  * Throws if a service-role client is being constructed anywhere a browser can
@@ -39,9 +40,16 @@ let boundaryChecked = false;
  * checked before the first one is handed out. This is the backstop for the
  * startup check in instrumentation.ts (which does not run in every worker, e.g.
  * a standalone script importing a service).
+ *
+ * NOTE: there are currently two independent environment-boundary implementations
+ * in this codebase (`./runtime/environment` from the app-data-safety-loop branch,
+ * `./runtime-environment` from #1093/#1094) with different env var names. Both are
+ * run here defense-in-depth until a human picks one canonical implementation —
+ * see the PR overlap note. Do not delete either without that decision.
  */
 function assertBoundaryOnce(): void {
   if (boundaryChecked) return;
+  assertPeskidsDatabaseBoundary();
   const result = checkEnvironmentBoundary();
   if (!result.ok) {
     const blocking = result.violations.filter(
@@ -74,7 +82,7 @@ function createServerClient(token?: string) {
 
   if (!supabaseUrl || !serviceRoleKey) {
     throw new Error(
-      'Missing Supabase server env: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (Doppler prd)'
+      'Missing Supabase server env: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY'
     );
   }
 

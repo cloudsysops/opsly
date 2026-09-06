@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import type { User } from '@supabase/supabase-js';
+import { resolvePeskidsEnvironment } from './runtime-environment';
 import { isStaffUser } from './staff-user';
 import { extractSupabaseAccessTokenFromCookies } from './supabase-auth-cookie';
 import { timingSafeSecretsEqual } from './internal-auth';
@@ -11,17 +12,19 @@ export type StaffAuthResult =
   | { ok: true; method: 'secret' | 'supabase'; user?: User }
   | { ok: false; status: number; error: string };
 
-export async function validateStaffRequest(req: NextRequest): Promise<StaffAuthResult> {
+function acceptsDashboardAdminSecret(presented: string): boolean {
   const adminSecret = process.env.DASHBOARD_ADMIN_SECRET?.trim() ?? '';
+  if (!adminSecret || !timingSafeSecretsEqual(presented, adminSecret)) return false;
+  if (resolvePeskidsEnvironment() !== 'production') return true;
+  return process.env.PESKIDS_ALLOW_DASHBOARD_ADMIN_SECRET?.trim() === '1';
+}
+
+export async function validateStaffRequest(req: NextRequest): Promise<StaffAuthResult> {
   const authHeader = req.headers.get('authorization') || '';
   const bearer = authHeader.toLowerCase().startsWith('bearer ') ? authHeader.slice(7).trim() : '';
   const cookieToken = req.cookies.get('admin-token')?.value?.trim() ?? '';
 
-  if (
-    adminSecret &&
-    (timingSafeSecretsEqual(bearer, adminSecret) ||
-      timingSafeSecretsEqual(cookieToken, adminSecret))
-  ) {
+  if (acceptsDashboardAdminSecret(bearer) || acceptsDashboardAdminSecret(cookieToken)) {
     return { ok: true, method: 'secret' };
   }
 
@@ -54,11 +57,10 @@ export async function validateStaffRequest(req: NextRequest): Promise<StaffAuthR
 }
 
 export async function validateStaffSession(): Promise<StaffAuthResult> {
-  const adminSecret = process.env.DASHBOARD_ADMIN_SECRET?.trim() ?? '';
   const cookieStore = await cookies();
   const cookieToken = cookieStore.get('admin-token')?.value?.trim() ?? '';
 
-  if (adminSecret && timingSafeSecretsEqual(cookieToken, adminSecret)) {
+  if (acceptsDashboardAdminSecret(cookieToken)) {
     return { ok: true, method: 'secret' };
   }
 

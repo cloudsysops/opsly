@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
+import { generateAccessToken } from '../src/auth/tokens.js';
 import { createServer } from '../src/server.js';
 
 describe('ai-integrations tools', () => {
   it('list_ai_integrations devuelve catálogo sin snapshots', async () => {
     const server = createServer();
-    const out = (await server.callTool('list_ai_integrations', {})) as {
+    const out = (await server.callTool('list_ai_integrations', {}, {
+      authorization: `Bearer ${generateAccessToken('test', ['metrics:read'])}`,
+    })) as {
       integrations: { id: string }[];
     };
     expect(Array.isArray(out.integrations)).toBe(true);

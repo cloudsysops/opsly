@@ -2,24 +2,20 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const validateStaffRequestMock = vi.fn()
 const fetchDashboardDataMock = vi.fn()
-const resolveStaffFranchiseScopeMock = vi.fn()
+const authorizeDashboardFranchiseFilterMock = vi.fn()
 const { GET } = await import('../route')
 
 vi.mock('@/lib/staff-auth', () => ({
   validateStaffRequest: validateStaffRequestMock,
 }))
 
+vi.mock('@/lib/dashboard-access', () => ({
+  authorizeDashboardFranchiseFilter: authorizeDashboardFranchiseFilterMock,
+}))
+
 vi.mock('@/lib/services/dashboard.service', () => ({
   fetchDashboardData: fetchDashboardDataMock,
 }))
-
-// resolveFranchiseFilter stays real — it is the rule under test. Only the
-// membership lookup (which needs the DB) is stubbed.
-vi.mock('@/lib/franchise-scope', async () => {
-  const actual =
-    await vi.importActual<typeof import('@/lib/franchise-scope')>('@/lib/franchise-scope')
-  return { ...actual, resolveStaffFranchiseScope: resolveStaffFranchiseScopeMock }
-})
 
 const LLANO = '11111111-1111-4111-8111-111111111111'
 const DOMI = '22222222-2222-4222-8222-222222222222'
@@ -35,8 +31,8 @@ describe('GET /api/dashboard', () => {
   beforeEach(() => {
     validateStaffRequestMock.mockReset()
     fetchDashboardDataMock.mockReset()
-    resolveStaffFranchiseScopeMock.mockReset()
-    resolveStaffFranchiseScopeMock.mockResolvedValue('all')
+    authorizeDashboardFranchiseFilterMock.mockReset()
+    authorizeDashboardFranchiseFilterMock.mockResolvedValue({ ok: true, franchiseId: null })
     delete process.env.NEXT_PUBLIC_TENANT_ID
   })
 
@@ -62,11 +58,34 @@ describe('GET /api/dashboard', () => {
     const response = await get('https://peskids.op-sly.com/api/dashboard?range=month')
 
     expect(response.status).toBe(200)
+    expect(authorizeDashboardFranchiseFilterMock).toHaveBeenCalled()
     expect(fetchDashboardDataMock).toHaveBeenCalledWith('peskids', 'month', null)
     expect(response.headers.get('cache-control')).toBe(
       'no-store, private, max-age=0, must-revalidate'
     )
     await expect(response.json()).resolves.toEqual({ ok: true, new_leads_count: 1 })
+  })
+
+  it('rejects a forged franchise_id before querying the dashboard', async () => {
+    validateStaffRequestMock.mockResolvedValue({ ok: true, method: 'supabase', user: { id: 'support-1' } })
+    authorizeDashboardFranchiseFilterMock.mockResolvedValue({
+      ok: false,
+      status: 403,
+      error: 'Forbidden',
+    })
+
+    const response = await GET({
+      headers: new Headers({ 'x-request-id': 'req-forge' }),
+      nextUrl: new URL('https://peskids.op-sly.com/api/dashboard?franchise_id=unit-b'),
+    } as never)
+
+    expect(response.status).toBe(403)
+    expect(fetchDashboardDataMock).not.toHaveBeenCalled()
+    await expect(response.json()).resolves.toEqual({
+      ok: false,
+      error: 'Forbidden',
+      request_id: 'req-forge',
+    })
   })
 
   it('returns a request-scoped 500 payload when the service throws', async () => {
@@ -95,7 +114,11 @@ describe('GET /api/dashboard', () => {
     })
 
     it('REFUSES a forged franchise_id outside the session scope', async () => {
-      resolveStaffFranchiseScopeMock.mockResolvedValue([LLANO])
+      authorizeDashboardFranchiseFilterMock.mockResolvedValue({
+        ok: false,
+        status: 403,
+        error: 'Forbidden',
+      })
 
       const response = await get(
         `https://peskids.op-sly.com/api/dashboard?franchise_id=${DOMI}`,
@@ -112,7 +135,11 @@ describe('GET /api/dashboard', () => {
     })
 
     it('REFUSES a staff session with no franchise membership', async () => {
-      resolveStaffFranchiseScopeMock.mockResolvedValue([])
+      authorizeDashboardFranchiseFilterMock.mockResolvedValue({
+        ok: false,
+        status: 403,
+        error: 'Forbidden',
+      })
 
       const response = await get('https://peskids.op-sly.com/api/dashboard')
 
@@ -121,7 +148,7 @@ describe('GET /api/dashboard', () => {
     })
 
     it('pins a single-franchise session to its own franchise even with no query param', async () => {
-      resolveStaffFranchiseScopeMock.mockResolvedValue([LLANO])
+      authorizeDashboardFranchiseFilterMock.mockResolvedValue({ ok: true, franchiseId: LLANO })
 
       const response = await get('https://peskids.op-sly.com/api/dashboard')
 
@@ -130,7 +157,11 @@ describe('GET /api/dashboard', () => {
     })
 
     it('never widens a multi-franchise scoped session to the whole network', async () => {
-      resolveStaffFranchiseScopeMock.mockResolvedValue([LLANO, DOMI])
+      authorizeDashboardFranchiseFilterMock.mockResolvedValue({
+        ok: false,
+        status: 400,
+        error: 'franchise_id is required for multi-franchise staff',
+      })
 
       const response = await get('https://peskids.op-sly.com/api/dashboard')
 
@@ -139,7 +170,7 @@ describe('GET /api/dashboard', () => {
     })
 
     it('allows an in-scope franchise_id', async () => {
-      resolveStaffFranchiseScopeMock.mockResolvedValue([LLANO, DOMI])
+      authorizeDashboardFranchiseFilterMock.mockResolvedValue({ ok: true, franchiseId: DOMI })
 
       const response = await get(`https://peskids.op-sly.com/api/dashboard?franchise_id=${DOMI}`)
 

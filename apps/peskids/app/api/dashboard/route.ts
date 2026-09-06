@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authorizeDashboardFranchiseFilter } from '@/lib/dashboard-access';
 import { validateStaffRequest } from '@/lib/staff-auth';
 import { fetchDashboardData } from '@/lib/services/dashboard.service';
-import { resolveFranchiseFilter, resolveStaffFranchiseScope } from '@/lib/franchise-scope';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,10 +37,8 @@ export async function GET(req: NextRequest) {
     const requestedFranchiseId = req.nextUrl.searchParams.get('franchise_id')?.trim() || null;
     const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids';
 
-    const scope = await resolveStaffFranchiseScope(auth);
-    const filter = resolveFranchiseFilter(scope, requestedFranchiseId);
-
-    if (!filter.ok) {
+    const scoped = await authorizeDashboardFranchiseFilter(auth, requestedFranchiseId);
+    if (!scoped.ok) {
       console.warn(
         JSON.stringify({
           component: 'peskids.dashboard',
@@ -49,24 +47,16 @@ export async function GET(req: NextRequest) {
           tenant_slug: tenantId,
           actor_id: auth.user?.id ?? 'dashboard-admin',
           requested_franchise_id: requestedFranchiseId,
-          reason: filter.reason,
+          reason: scoped.error,
         })
       );
       return NextResponse.json(
-        {
-          ok: false,
-          error:
-            filter.status === 403
-              ? 'Forbidden'
-              : 'franchise_id is required for multi-franchise staff',
-          code: filter.status === 403 ? 'FORBIDDEN' : 'BAD_REQUEST',
-          request_id: requestId,
-        },
-        { status: filter.status, headers: NO_STORE }
+        { ok: false, error: scoped.error, code: scoped.status === 403 ? 'FORBIDDEN' : 'BAD_REQUEST', request_id: requestId },
+        { status: scoped.status, headers: NO_STORE }
       );
     }
 
-    const data = await fetchDashboardData(tenantId, range, filter.franchiseId);
+    const data = await fetchDashboardData(tenantId, range, scoped.franchiseId);
     return NextResponse.json(data, { headers: NO_STORE });
   } catch (error) {
     console.error('[dashboard] error:', error, { request_id: requestId });

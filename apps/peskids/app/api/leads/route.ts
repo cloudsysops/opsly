@@ -13,6 +13,7 @@ import { getClientIdentifier, rateLimit } from '@/lib/rate-limit';
 import { currentEnvironment } from '@/lib/runtime/environment';
 import { leadApiPostSchema } from '@/lib/validation/lead.schema';
 import { firstZodErrorMessage } from '@/lib/validation/zod-errors';
+import { findLeadIdByEmail } from '@/lib/lead-intake-idempotency';
 
 /** The browser's address, as a value safe to pass upstream as X-Forwarded-For. */
 function clientForwardedFor(headers: Headers): string | null {
@@ -100,6 +101,29 @@ export async function POST(request: NextRequest) {
     }
 
     const body = parsed.data;
+    const existingLeadId = await findLeadIdByEmail(body.email);
+    if (existingLeadId) {
+      const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids';
+      const referralCode =
+        body.referral_code?.trim().toUpperCase() ??
+        buildPeskidsReferralCode({
+          tenantId,
+          leadId: existingLeadId,
+          email: body.email,
+        });
+      return successJson(requestId, {
+        ok: true,
+        id: existingLeadId,
+        lead_id: existingLeadId,
+        tenant_slug: tenantId,
+        lead_type: body.lead_type,
+        referral_code: referralCode,
+        referral_link: buildPeskidsReferralLink(referralCode),
+        referral_discount_cents: 0,
+        message: 'Interesado ya registrado',
+        replayed: true,
+      });
+    }
 
     // Consent is an audit record, so it is logged structurally — with the
     // request id and NOT with the person's name, email or phone.

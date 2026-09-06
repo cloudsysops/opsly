@@ -14,6 +14,7 @@ import {
 } from '@/lib/runtime/feature-flags';
 import { createSalesReportSchema } from '@/lib/validation/franchise.schema';
 import { firstZodErrorMessage } from '@/lib/validation/zod-errors';
+import type { SalesSource } from '@intcloudsysops/franchise-core';
 
 export const dynamic = 'force-dynamic';
 
@@ -80,7 +81,7 @@ export async function POST(req: NextRequest) {
       excludedSales,
       netSales: body.netSalesMinor ?? body.grossSalesMinor - excludedSales,
       currency: 'COP',
-      source: body.source ?? 'manual',
+      source: (body.source ?? 'manual') as SalesSource,
       sourceReference: body.sourceReference ?? null,
       createdAt: new Date().toISOString(),
     });

@@ -3,6 +3,7 @@ import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { validateStaffRequest } from '@/lib/staff-auth';
 import { agreementBoard } from '@/lib/franchise/agreement-board';
 import { franchiseErrorResponse, getFranchiseService, resolveFranchiseActor } from '@/lib/franchise/persist';
+import { franchiseAgreementPostSchema } from '@/lib/validation/franchise-os.schema';
 import { createSupabaseFranchiseStore } from '@intcloudsysops/franchise-persistence';
 import { supabaseServer } from '@/lib/supabase';
 
@@ -29,22 +30,17 @@ export async function POST(req: NextRequest) {
   const requestId = resolveRequestId(req);
   const auth = await validateStaffRequest(req);
   if (!auth.ok) return errorJson(requestId, auth.error, auth.status);
-  let body: {
-    legalName?: string;
-    unitIds?: string[];
-    effectiveDate?: string;
-    expirationDate?: string;
-    royaltyRuleId?: string | null;
-    territoryId?: string | null;
-  };
+  let raw: unknown;
   try {
-    body = (await req.json()) as typeof body;
+    raw = await req.json();
   } catch {
     return errorJson(requestId, 'Invalid JSON', 400);
   }
-  if (!body.legalName || !body.unitIds?.length || !body.effectiveDate || !body.expirationDate) {
-    return errorJson(requestId, 'legalName, unitIds, effectiveDate, expirationDate required', 400);
+  const parsed = franchiseAgreementPostSchema.safeParse(raw);
+  if (!parsed.success) {
+    return errorJson(requestId, 'Invalid payload', 400);
   }
+  const body = parsed.data;
   try {
     const actor = await resolveFranchiseActor(auth, requestId);
     const storeService = getFranchiseService();

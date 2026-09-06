@@ -296,11 +296,37 @@ const consentSchema = z.object({
 
 export type LeadApiPostInput = LeadCaptureFormInput & z.infer<typeof consentSchema>;
 
+const FORBIDDEN_LEAD_AUTHORITY_KEYS = [
+  'tenant_id',
+  'tenant_slug',
+  'franchise_id',
+  'unit_id',
+  'role',
+  'user_id',
+  'service_role',
+] as const;
+
+function rejectLeadAuthorityKeys(raw: unknown): z.ZodError | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const extras = FORBIDDEN_LEAD_AUTHORITY_KEYS.filter((key) => key in raw);
+  if (extras.length === 0) return null;
+  return new z.ZodError(
+    extras.map((key) => ({
+      code: z.ZodIssueCode.unrecognized_keys,
+      keys: [key],
+      path: [key],
+      message: 'Unrecognized key',
+    }))
+  );
+}
+
 /** POST /api/leads — form intake + consent (Ley 1581). */
 export const leadApiPostSchema = {
   safeParse(raw: unknown):
     | { success: true; data: LeadApiPostInput }
     | { success: false; error: z.ZodError } {
+    const forbidden = rejectLeadAuthorityKeys(raw);
+    if (forbidden) return { success: false, error: forbidden };
     const consent = consentSchema.safeParse(raw);
     if (!consent.success) return consent;
     const form = leadCaptureFormSchema.safeParse(raw);
