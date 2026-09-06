@@ -9,6 +9,14 @@ export type EnrollmentStatus =
   | 'waitlisted';
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 export type AttendanceStatus = 'present' | 'absent' | 'excused';
+export type BehaviorTag =
+  | 'happy'
+  | 'engaged'
+  | 'calm'
+  | 'shy'
+  | 'tired'
+  | 'needs_support'
+  | 'other';
 
 export interface PeskidsPool {
   id: string;
@@ -53,6 +61,10 @@ export interface PeskidsClassEnrollment {
   status: EnrollmentStatus;
   payment_status: PaymentStatus;
   attendance: AttendanceStatus | null;
+  behavior_tags: BehaviorTag[];
+  teacher_note: string | null;
+  attendance_updated_at: string | null;
+  attendance_updated_by: string | null;
   joined_at: string;
   cancelled_at: string | null;
   stripe_checkout_session_id: string | null;
@@ -79,6 +91,8 @@ export interface AgendaItem {
   enrollment_status?: EnrollmentStatus;
   payment_status?: PaymentStatus;
   attendance?: AttendanceStatus | null;
+  behavior_tags?: BehaviorTag[];
+  teacher_note?: string | null;
 }
 
 export interface OperationsMetrics {

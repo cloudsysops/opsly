@@ -5,7 +5,7 @@ import { CheckCircle2, ClipboardList, PencilLine, RotateCcw } from 'lucide-react
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import type { AttendanceStatus } from '@/lib/class-types';
+import type { AttendanceStatus, BehaviorTag } from '@/lib/class-types';
 import type { DaySlot } from './teacher-dashboard-types';
 
 function slotStatusLabel(status: DaySlot['status']): string {
@@ -27,6 +27,8 @@ interface EnrollmentItem {
   student_name?: string;
   parent_email?: string | null;
   attendance: AttendanceStatus | null;
+  behavior_tags?: BehaviorTag[];
+  teacher_note?: string | null;
 }
 
 interface ClassEnrollmentsResponse {
@@ -38,10 +40,20 @@ const attendanceOptions: ReadonlyArray<{
   value: AttendanceStatus;
   tone: 'green' | 'amber' | 'violet';
 }> = [
-    { label: 'Presente', value: 'present', tone: 'green' },
-    { label: 'Ausente', value: 'absent', tone: 'amber' },
-    { label: 'Excusado', value: 'excused', tone: 'violet' },
-  ];
+  { label: 'Presente', value: 'present', tone: 'green' },
+  { label: 'Ausente', value: 'absent', tone: 'amber' },
+  { label: 'Excusado', value: 'excused', tone: 'violet' },
+];
+
+const behaviorOptions: ReadonlyArray<{ label: string; value: BehaviorTag }> = [
+  { label: 'Feliz', value: 'happy' },
+  { label: 'Participativo', value: 'engaged' },
+  { label: 'Tranquilo', value: 'calm' },
+  { label: 'Tímido', value: 'shy' },
+  { label: 'Cansado', value: 'tired' },
+  { label: 'Requiere apoyo', value: 'needs_support' },
+  { label: 'Otro', value: 'other' },
+];
 
 function parseLocalDateTimeInput(value: string): Date | null {
   const trimmed = value.trim();
@@ -60,10 +72,16 @@ export function TeacherTodayAgendaCard({
   onNoteFocusHandled,
 }: TeacherTodayAgendaCardProps): React.ReactElement {
   const [expandedClassId, setExpandedClassId] = useState<string | null>(null);
-  const [enrollmentsByClass, setEnrollmentsByClass] = useState<Record<string, EnrollmentItem[]>>({});
+  const [enrollmentsByClass, setEnrollmentsByClass] = useState<Record<string, EnrollmentItem[]>>(
+    {}
+  );
   const [draftAttendance, setDraftAttendance] = useState<
     Record<string, Record<string, AttendanceStatus | null>>
   >({});
+  const [draftBehavior, setDraftBehavior] = useState<Record<string, Record<string, BehaviorTag[]>>>(
+    {}
+  );
+  const [draftNotes, setDraftNotes] = useState<Record<string, Record<string, string>>>({});
   const [loadingClassId, setLoadingClassId] = useState<string | null>(null);
   const [savingClassId, setSavingClassId] = useState<string | null>(null);
   const [messageByClass, setMessageByClass] = useState<Record<string, string>>({});
@@ -104,6 +122,18 @@ export function TeacherTodayAgendaCard({
           enrollments.map((enrollment) => [enrollment.id, enrollment.attendance ?? null])
         ),
       }));
+      setDraftBehavior((current) => ({
+        ...current,
+        [slot.classId]: Object.fromEntries(
+          enrollments.map((enrollment) => [enrollment.id, enrollment.behavior_tags ?? []])
+        ),
+      }));
+      setDraftNotes((current) => ({
+        ...current,
+        [slot.classId]: Object.fromEntries(
+          enrollments.map((enrollment) => [enrollment.id, enrollment.teacher_note ?? ''])
+        ),
+      }));
     } catch {
       setMessageByClass((current) => ({
         ...current,
@@ -128,6 +158,22 @@ export function TeacherTodayAgendaCard({
     }));
   };
 
+  const handleBehaviorToggle = (
+    classId: string,
+    enrollmentId: string,
+    behavior: BehaviorTag
+  ): void => {
+    setDraftBehavior((current) => {
+      const selected = current[classId]?.[enrollmentId] ?? [];
+      const next = selected.includes(behavior)
+        ? selected.filter((item) => item !== behavior)
+        : selected.length < 4
+          ? [...selected, behavior]
+          : selected;
+      return { ...current, [classId]: { ...current[classId], [enrollmentId]: next } };
+    });
+  };
+
   const handleSaveAttendance = async (classId: string): Promise<void> => {
     const classDraft = draftAttendance[classId];
     if (!classDraft) {
@@ -139,6 +185,8 @@ export function TeacherTodayAgendaCard({
       .map(([enrollmentId, attendance]) => ({
         enrollment_id: enrollmentId,
         attendance,
+        behavior_tags: draftBehavior[classId]?.[enrollmentId] ?? [],
+        teacher_note: draftNotes[classId]?.[enrollmentId] ?? '',
       }));
 
     if (updates.length === 0) {
@@ -218,10 +266,7 @@ export function TeacherTodayAgendaCard({
 
   const handleReschedule = async (slot: DaySlot): Promise<void> => {
     const defaultValue = slot.startsAt.slice(0, 16);
-    const input = window.prompt(
-      'Nueva fecha y hora de inicio (AAAA-MM-DDTHH:mm)',
-      defaultValue
-    );
+    const input = window.prompt('Nueva fecha y hora de inicio (AAAA-MM-DDTHH:mm)', defaultValue);
     if (!input?.trim()) {
       return;
     }
@@ -304,10 +349,7 @@ export function TeacherTodayAgendaCard({
           <p className="text-sm text-pk-sub">No hay clases programadas para hoy.</p>
         ) : null}
         {slots.map((slot) => (
-          <div
-            key={slot.classId}
-            className="rounded-2xl border border-pk-border bg-white p-4"
-          >
+          <div key={slot.classId} className="rounded-2xl border border-pk-border bg-white p-4">
             <div className="flex items-start justify-between gap-2">
               <div>
                 <div className="flex items-center gap-2">
@@ -396,10 +438,11 @@ export function TeacherTodayAgendaCard({
                               <button
                                 key={option.value}
                                 type="button"
-                                className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${currentAttendance === option.value
+                                className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${
+                                  currentAttendance === option.value
                                     ? 'border-pk-primary bg-white text-pk-ink'
                                     : 'border-pk-border bg-pk-snow text-pk-sub hover:border-pk-primary/40'
-                                  }`}
+                                }`}
                                 onClick={() =>
                                   handleAttendanceChange(slot.classId, enrollment.id, option.value)
                                 }
@@ -414,6 +457,45 @@ export function TeacherTodayAgendaCard({
                             ))}
                           </div>
                         </div>
+                        <div className="mt-3">
+                          <p className="mb-2 text-xs font-semibold text-pk-sub">Comportamiento</p>
+                          <div className="flex flex-wrap gap-2">
+                            {behaviorOptions.map((option) => {
+                              const selected = (
+                                draftBehavior[slot.classId]?.[enrollment.id] ?? []
+                              ).includes(option.value);
+                              return (
+                                <button
+                                  key={option.value}
+                                  type="button"
+                                  className={`rounded-full border px-2.5 py-1 text-xs ${selected ? 'border-pk-primary bg-pk-primary/10 text-pk-ink' : 'border-pk-border text-pk-sub'}`}
+                                  onClick={() =>
+                                    handleBehaviorToggle(slot.classId, enrollment.id, option.value)
+                                  }
+                                >
+                                  {option.label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                          <label className="mt-3 block text-xs font-semibold text-pk-sub">
+                            Observación para la familia
+                            <textarea
+                              className="mt-1 min-h-16 w-full rounded-xl border border-pk-border bg-white p-2 text-sm font-normal text-pk-ink"
+                              maxLength={500}
+                              value={draftNotes[slot.classId]?.[enrollment.id] ?? ''}
+                              onChange={(event) =>
+                                setDraftNotes((current) => ({
+                                  ...current,
+                                  [slot.classId]: {
+                                    ...current[slot.classId],
+                                    [enrollment.id]: event.target.value,
+                                  },
+                                }))
+                              }
+                            />
+                          </label>
+                        </div>
                       </div>
                     );
                   })}
@@ -421,12 +503,13 @@ export function TeacherTodayAgendaCard({
 
                 {messageByClass[slot.classId] ? (
                   <p
-                    className={`mt-3 text-sm ${messageByClass[slot.classId]?.includes('correctamente') ||
-                        messageByClass[slot.classId]?.includes('guardada') ||
-                        messageByClass[slot.classId]?.includes('reagendada')
+                    className={`mt-3 text-sm ${
+                      messageByClass[slot.classId]?.includes('correctamente') ||
+                      messageByClass[slot.classId]?.includes('guardada') ||
+                      messageByClass[slot.classId]?.includes('reagendada')
                         ? 'text-emerald-700'
                         : 'text-pk-danger'
-                      }`}
+                    }`}
                     role="alert"
                   >
                     {messageByClass[slot.classId]}

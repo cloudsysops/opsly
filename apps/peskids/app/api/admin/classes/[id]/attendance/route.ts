@@ -47,7 +47,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
   }
 
   try {
-    const updated = await updateAttendance(classId, parsed.data.updates);
+    const updated = await updateAttendance(classId, parsed.data.updates, auth.user?.id ?? null);
     return successJson(requestId, { ok: true, updated });
   } catch (err) {
     console.error('[PATCH attendance]', err, { request_id: requestId });
