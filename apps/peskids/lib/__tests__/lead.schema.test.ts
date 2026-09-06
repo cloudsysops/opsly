@@ -211,6 +211,38 @@ describe('leadApiPostSchema', () => {
     expect(result.success).toBe(false);
   });
 
+  it('requires explicit identity-document consent when a family cédula is submitted', () => {
+    const withoutDocumentConsent = leadApiPostSchema.safeParse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '3001112233',
+      child_name: 'Mateo López',
+      birth_date: '2018-05-10',
+      document_number: '1234567890',
+      class_modality: 'llanogrande',
+      consent_treatment: true,
+      consent_identity_document: false,
+    });
+
+    expect(withoutDocumentConsent.success).toBe(false);
+
+    const withDocumentConsent = leadApiPostSchema.safeParse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '3001112233',
+      child_name: 'Mateo López',
+      birth_date: '2018-05-10',
+      document_number: '1234567890',
+      class_modality: 'llanogrande',
+      consent_treatment: true,
+      consent_identity_document: true,
+    });
+
+    expect(withDocumentConsent.success).toBe(true);
+  });
+
   it('accepts legacy payload with consent', () => {
     const parsed = leadApiPostSchema.parse({
       name: 'Ana López',

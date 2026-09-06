@@ -286,6 +286,7 @@ const consentSchema = z.object({
   consent_treatment: z.literal(true, {
     message: 'Debes autorizar el tratamiento de datos',
   }),
+  consent_identity_document: z.boolean().optional().default(false),
   consent_marketing: z.boolean().optional().default(false),
   consent_photos_videos: z.boolean().optional().default(false),
   consent_policy_version: z.string().min(1).optional(),
@@ -331,6 +332,21 @@ export const leadApiPostSchema = {
     if (!consent.success) return consent;
     const form = leadCaptureFormSchema.safeParse(raw);
     if (!form.success) return form;
+    const capturesIdentityDocument =
+      (form.data.lead_type === 'family' || form.data.lead_type === 'teacher_applicant') &&
+      Boolean('document_number' in form.data && form.data.document_number);
+    if (capturesIdentityDocument && consent.data.consent_identity_document !== true) {
+      return {
+        success: false,
+        error: new z.ZodError([
+          {
+            code: z.ZodIssueCode.custom,
+            path: ['consent_identity_document'],
+            message: 'Debes autorizar expresamente el tratamiento de la cédula',
+          },
+        ]),
+      };
+    }
     return { success: true, data: { ...form.data, ...consent.data } };
   },
   parse(raw: unknown): LeadApiPostInput {
