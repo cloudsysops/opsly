@@ -46,6 +46,34 @@ describe('leadCaptureFormSchema', () => {
     expect(parsed.child_name).toBe('Mateo López');
   });
 
+  it('requires the guardian document number for family leads', () => {
+    const result = leadCaptureFormSchema.safeParse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '3001112233',
+      child_name: 'Mateo López',
+      birth_date: '2018-05-10',
+      document_number: '',
+      class_modality: 'llanogrande',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('requires the child birth date for family leads', () => {
+    const result = leadCaptureFormSchema.safeParse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '3001112233',
+      child_name: 'Mateo López',
+      birth_date: '',
+      document_number: '1234567890',
+      class_modality: 'llanogrande',
+    });
+    expect(result.success).toBe(false);
+  });
+
   it('family domicilio requires city and neighborhood', () => {
     const missingBoth = leadCaptureFormSchema.safeParse({
       lead_type: 'family',
