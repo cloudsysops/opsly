@@ -2,11 +2,12 @@
   "$schema_comment": "Horarios PC-gamer (dueño: Mauro). TZ America/Bogota. Ajustar tras confirmar con él.",
   "timezone": "America/Bogota",
   "owner": "Mauro",
-  "updated": "2026-08-08",
+  "updated": "2026-09-03",
   "notes": [
-    "DRAFT hasta confirmación humana con Mauro.",
+    "DRAFT de horas con Mauro; 2026-09-03: día laboral = mode day (OpenCode permitido).",
     "gaming = no GPU pesada / no OpenCode build; solo idle o jobs light.",
-    "heavy = OpenCode + Ollama generate / builds / tests.",
+    "day = horario laboral: OpenCode + Ollama corto, concurrency 1. No generate largo.",
+    "heavy = noche: OpenCode + Ollama generate / builds / tests.",
     "light = Ollama classify/resumen corto, heartbeat, docs-only prompts."
   ],
   "modes": {
@@ -29,6 +30,15 @@
         "WORKER_CONCURRENCY_OLLAMA": "1"
       }
     },
+    "day": {
+      "description": "Horario laboral — OpenCode + Ollama cortos; GPU conservadora",
+      "allow_enqueue": ["light", "ollama_short", "opencode"],
+      "deny_enqueue": ["ollama_generate_long"],
+      "worker_hint": {
+        "OPSLY_WORKER_ALLOWLIST": "ollama,local-agents",
+        "WORKER_CONCURRENCY_OLLAMA": "1"
+      }
+    },
     "heavy": {
       "description": "Mauro no usa el PC — OpenCode + Ollama a tope razonable",
       "allow_enqueue": ["light", "heavy", "opencode", "ollama_generate_long"],
@@ -42,41 +52,41 @@
   "weekly": {
     "mon": [
       { "start": "00:00", "end": "08:00", "mode": "heavy" },
-      { "start": "08:00", "end": "18:00", "mode": "light" },
+      { "start": "08:00", "end": "18:00", "mode": "day" },
       { "start": "18:00", "end": "23:30", "mode": "gaming" },
       { "start": "23:30", "end": "24:00", "mode": "heavy" }
     ],
     "tue": [
       { "start": "00:00", "end": "08:00", "mode": "heavy" },
-      { "start": "08:00", "end": "18:00", "mode": "light" },
+      { "start": "08:00", "end": "18:00", "mode": "day" },
       { "start": "18:00", "end": "23:30", "mode": "gaming" },
       { "start": "23:30", "end": "24:00", "mode": "heavy" }
     ],
     "wed": [
       { "start": "00:00", "end": "08:00", "mode": "heavy" },
-      { "start": "08:00", "end": "18:00", "mode": "light" },
+      { "start": "08:00", "end": "18:00", "mode": "day" },
       { "start": "18:00", "end": "23:30", "mode": "gaming" },
       { "start": "23:30", "end": "24:00", "mode": "heavy" }
     ],
     "thu": [
       { "start": "00:00", "end": "08:00", "mode": "heavy" },
-      { "start": "08:00", "end": "18:00", "mode": "light" },
+      { "start": "08:00", "end": "18:00", "mode": "day" },
       { "start": "18:00", "end": "23:30", "mode": "gaming" },
       { "start": "23:30", "end": "24:00", "mode": "heavy" }
     ],
     "fri": [
       { "start": "00:00", "end": "08:00", "mode": "heavy" },
-      { "start": "08:00", "end": "17:00", "mode": "light" },
+      { "start": "08:00", "end": "17:00", "mode": "day" },
       { "start": "17:00", "end": "24:00", "mode": "gaming" }
     ],
     "sat": [
       { "start": "00:00", "end": "10:00", "mode": "heavy" },
-      { "start": "10:00", "end": "14:00", "mode": "light" },
+      { "start": "10:00", "end": "14:00", "mode": "day" },
       { "start": "14:00", "end": "24:00", "mode": "gaming" }
     ],
     "sun": [
       { "start": "00:00", "end": "10:00", "mode": "heavy" },
-      { "start": "10:00", "end": "14:00", "mode": "light" },
+      { "start": "10:00", "end": "14:00", "mode": "day" },
       { "start": "14:00", "end": "23:00", "mode": "gaming" },
       { "start": "23:00", "end": "24:00", "mode": "heavy" }
     ]
@@ -88,6 +98,11 @@
       "ollama classify / short summary",
       "heartbeat / health check",
       "enqueue deferral bookkeeping"
+    ],
+    "day": [
+      "opencode refactor / tests acotados",
+      "ollama short summary",
+      "backlog triage overnight/*"
     ],
     "heavy": [
       "opencode build / refactor / tests",

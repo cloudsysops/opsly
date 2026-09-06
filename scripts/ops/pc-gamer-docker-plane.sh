@@ -50,14 +50,30 @@ ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 cd "$ROOT"
 
 ENV_WORKER="${ROOT}/.env.worker"
-COMPOSE_BASE=(-f infra/docker-compose.opslyquantum.yml)
-# Overlay GPU solo si existe y no estamos en host-Ollama (WSL suele no tener nvidia-ctk).
-if [[ "$USE_HOST_OLLAMA" != "true" && -f infra/docker-compose.opslyquantum.gpu.yml ]]; then
-  COMPOSE_BASE+=(-f infra/docker-compose.opslyquantum.gpu.yml)
-fi
-COMPOSE_WORKERS=("${COMPOSE_BASE[@]}" -f infra/docker-compose.pc-gamer-workers.yml)
 COMPOSE_MPT=(-f infra/docker-compose.pc-gamer-moneyprinter.yml)
 OLLAMA_MODEL="${OLLAMA_MODEL:-llama3.2}"
+COMPOSE_BASE=()
+COMPOSE_WORKERS=()
+
+refresh_compose_files() {
+  COMPOSE_BASE=(-f infra/docker-compose.opslyquantum.yml)
+  if [[ "$USE_HOST_OLLAMA" != "true" && -f infra/docker-compose.opslyquantum.gpu.yml ]]; then
+    COMPOSE_BASE+=(-f infra/docker-compose.opslyquantum.gpu.yml)
+  fi
+  COMPOSE_WORKERS=("${COMPOSE_BASE[@]}" -f infra/docker-compose.pc-gamer-workers.yml)
+}
+
+prefer_host_ollama_without_nvidia() {
+  if [[ "$USE_HOST_OLLAMA" == "true" ]]; then
+    return 0
+  fi
+  if ! docker info 2>/dev/null | grep -qiE 'Runtimes:.*nvidia|nvidia'; then
+    echo "[pc-gamer-docker] no NVIDIA runtime — using host Ollama (WSL-safe)"
+    USE_HOST_OLLAMA=true
+  fi
+}
+
+refresh_compose_files
 
 run() {
   if [[ "$DRY_RUN" == "true" ]]; then
@@ -140,6 +156,8 @@ ensure_env() {
 
 compose_up() {
   need_docker
+  prefer_host_ollama_without_nvidia
+  refresh_compose_files
   ensure_env
   stop_native_competitors
   local services=(worker-openclaw)
@@ -149,10 +167,14 @@ compose_up() {
     services=(ollama worker-openclaw)
   fi
   echo "[pc-gamer-docker] docker compose up -d ${services[*]}"
+  local up_args=(up -d)
+  if [[ "$USE_HOST_OLLAMA" == "true" ]]; then
+    up_args+=(--no-deps)
+  fi
   run docker compose "${COMPOSE_WORKERS[@]}" \
     --env-file "$ENV_WORKER" \
     --env-file infra/opslyquantum.env \
-    up -d "${services[@]}"
+    "${up_args[@]}" "${services[@]}"
   if [[ "$WITH_CONTENT" == "true" ]]; then
     echo "[pc-gamer-docker] starting moneyprinter-bridge…"
     run docker compose "${COMPOSE_MPT[@]}" --env-file "$ENV_WORKER" up -d moneyprinter-bridge
@@ -163,8 +185,10 @@ compose_up() {
   fi
   if [[ "$DRY_RUN" != "true" ]]; then
     sleep 2
-    docker exec opslyquantum-ollama nvidia-smi -L 2>/dev/null \
-      || echo "[pc-gamer-docker] GPU in container: no (CPU OK; install nvidia-ctk later)"
+    if [[ "$USE_HOST_OLLAMA" != "true" ]]; then
+      docker exec opslyquantum-ollama nvidia-smi -L 2>/dev/null \
+        || echo "[pc-gamer-docker] GPU in container: no (CPU OK; install nvidia-ctk later)"
+    fi
     if [[ "$WITH_CONTENT" == "true" ]]; then
       curl -sf --max-time 3 http://127.0.0.1:8080/health \
         || echo "[pc-gamer-docker] moneyprinter :8080 not ready yet"
@@ -219,7 +243,7 @@ Wants=network-online.target
 Type=oneshot
 RemainAfterExit=yes
 WorkingDirectory=${ROOT}
-ExecStart=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh --up
+ExecStart=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh --up --use-host-ollama
 ExecStop=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh --down
 TimeoutStartSec=600
 

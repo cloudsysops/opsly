@@ -4,7 +4,8 @@ import express from 'express';
 import { spawn } from 'node:child_process';
 import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { homedir } from 'node:os';
+import { join, resolve } from 'node:path';
 import { guardLlmTextPrompt } from '@intcloudsysops/prompt-guard';
 
 type ExecuteRequest = {
@@ -35,6 +36,16 @@ const dryRun = process.env.OPSLY_CLI_AGENT_DRY_RUN === '1';
 const executeToken = process.env.OPSLY_CLI_AGENT_TOKEN || '';
 const bindHost = process.env.OPSLY_CLI_AGENT_BIND?.trim() || '127.0.0.1';
 let inFlightJobId: string | null = null;
+
+function ensureCliAgentPath(): void {
+  const extras = [join(homedir(), '.npm-global', 'bin'), join(homedir(), '.local', 'bin')].filter(
+    (dir) => existsSync(dir),
+  );
+  const parts = (process.env.PATH || '').split(':').filter(Boolean);
+  process.env.PATH = [...extras.filter((dir) => !parts.includes(dir)), ...parts].join(':');
+}
+
+ensureCliAgentPath();
 
 function positiveInteger(value: string | undefined, fallback: number): number {
   if (!value) return fallback;

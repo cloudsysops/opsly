@@ -38,6 +38,11 @@ if [[ -z "${REDIS_URL:-}" && -f .env.worker ]]; then
   set +a
 fi
 
+# Doppler prd uses Docker hostname `redis`. Mac LaunchAgent cannot resolve it.
+# shellcheck source=scripts/lib/rewrite-docker-redis-url.sh
+source "${ROOT}/scripts/lib/rewrite-docker-redis-url.sh"
+rewrite_docker_redis_url
+
 tailscale_ok=false
 health_ok=false
 heartbeat_ok=false
@@ -50,6 +55,10 @@ if command -v tailscale >/dev/null 2>&1; then
 fi
 
 if curl -sf --max-time 4 "$HEALTH_URL" >/dev/null 2>&1; then
+  health_ok=true
+elif ssh -o BatchMode=yes -o ConnectTimeout=5 "$SSH_HOST" \
+  'wsl -d Ubuntu -u devops -- curl -sf --max-time 3 http://127.0.0.1:3011/health' >/dev/null 2>&1; then
+  # WSL NAT hides :3011 from Tailscale; SSH into the box is enough for daytime enqueue.
   health_ok=true
 fi
 

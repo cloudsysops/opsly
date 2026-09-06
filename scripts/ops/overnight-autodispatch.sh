@@ -150,8 +150,8 @@ MODE="$(json_get "$SCHED_JSON" mode)"; MODE="${MODE:-gaming}"
 ALLOW_LIST="$(json_get "$SCHED_JSON" allow_enqueue)"
 
 ALLOWS_OPENCODE="$(json_arr_has "$SCHED_JSON" allow_enqueue opencode)"
-[[ "$MODE" == "heavy" ]] && ALLOWS_OPENCODE="true"
-[[ "$MODE" == "gaming" || "$MODE" == "light" ]] && ALLOWS_OPENCODE="false"
+[[ "$MODE" == "heavy" || "$MODE" == "day" ]] && ALLOWS_OPENCODE="true"
+[[ "$MODE" == "gaming" ]] && ALLOWS_OPENCODE="false"
 
 # --- online check ---
 # En --json imprime SIEMPRE una línea JSON; si sale offline termina con exit 1.
@@ -184,7 +184,7 @@ CANDIDATES="$(
     const bk = JSON.parse(readFileSync(process.env.BACKLOG, "utf8"));
     const mode = process.env.MODE;
     const filter = process.env.TASK_FILTER || "";
-    const order = { light: 0, heavy: 1 };
+    const order = { light: 0, day: 1, heavy: 1 };
     const tasks = bk.tasks
       .filter((t) => (!filter || t.id === filter))
       .filter((t) => order[t.min_mode] !== undefined && order[t.min_mode] <= order[mode])

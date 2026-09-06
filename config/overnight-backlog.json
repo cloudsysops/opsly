@@ -1,15 +1,15 @@
 {
   "$schema_comment": "Backlog ocioso para el PC-gamer worker (autodispatch overnight). Correr SOLO con PLATFORM_ADMIN_TOKEN vía Doppler (nunca en el gamer).",
   "owner": "icso",
-  "updated": "2026-08-16",
+  "updated": "2026-09-03",
   "timezone": "America/Bogota",
   "tasks": [
     {
       "id": "overnight-backlog-triage",
       "agent": "opencode",
       "prompt_file": "scripts/ops/prompts/overnight-backlog-triage.md",
-      "min_mode": "heavy",
-      "description": "Triage de backlog (issues/PRs/TODOs) → PR segura overnight en rama overnight/*"
+      "min_mode": "day",
+      "description": "Triage de backlog (issues/PRs/TODOs) → PR segura en rama overnight/* (día laboral o noche)"
     },
     {
       "id": "overnight-content-studio",

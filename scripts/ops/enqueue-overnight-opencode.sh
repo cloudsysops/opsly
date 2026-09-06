@@ -80,7 +80,7 @@ if [[ "$FORCE" != "true" ]]; then
     echo "[enqueue-opencode] modo actual='$MODE' no permite '$NEEDLE' — usa --force para saltarte el gate" >&2
     exit 1
   fi
-  echo "[enqueue-opencode] modo actual='$MODE' permite $NEEDLE, encolando agent=$AGENT…"
+  echo "[enqueue-opencode] modo actual='$MODE' permite $NEEDLE, encolando agent=${AGENT}"
 fi
 
 if ! ./scripts/ops/check-pc-gamer-online.sh >/dev/null 2>&1; then

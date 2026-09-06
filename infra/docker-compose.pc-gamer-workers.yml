@@ -56,7 +56,9 @@ services:
         if [[ ! -d node_modules ]]; then
           npm ci --ignore-scripts
         fi
-        npm run build --workspace=@intcloudsysops/orchestrator
+        if [[ ! -f apps/orchestrator/dist/index.js ]]; then
+          npm run build --workspace=@intcloudsysops/orchestrator
+        fi
         exec npm run start --workspace=@intcloudsysops/orchestrator
     restart: unless-stopped
     network_mode: host
@@ -83,7 +85,9 @@ services:
       - |
         set -euo pipefail
         if [[ ! -d node_modules ]]; then npm ci --ignore-scripts; fi
-        npm run build --workspace=@intcloudsysops/orchestrator
+        if [[ ! -f apps/orchestrator/dist/index.js ]]; then
+          npm run build --workspace=@intcloudsysops/orchestrator
+        fi
         exec npm run start --workspace=@intcloudsysops/orchestrator
     restart: unless-stopped
     network_mode: host
