@@ -1,13 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 import { Database } from './types';
+import { assertPeskidsDatabaseBoundary } from './runtime-environment';
 
 function createServerClient(token?: string) {
+  assertPeskidsDatabaseBoundary();
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !serviceRoleKey) {
     throw new Error(
-      'Missing Supabase server env: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (Doppler prd)'
+      'Missing Supabase server env: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY'
     );
   }
 

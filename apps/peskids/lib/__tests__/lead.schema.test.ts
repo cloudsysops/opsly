@@ -225,6 +225,19 @@ describe('leadApiPostSchema', () => {
     expect(parsed.consent_treatment).toBe(true);
     expect(parsed.lead_type).toBe('family');
   });
+
+  it('rejects tenant or role authority keys', () => {
+    const result = leadApiPostSchema.safeParse({
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      class_modality: 'domicilio',
+      neighborhood: 'Envigado',
+      grade_interested: '6-8',
+      consent_treatment: true,
+      tenant_slug: 'other-tenant',
+    });
+    expect(result.success).toBe(false);
+  });
 });
 
 describe('toCreateLeadInput', () => {

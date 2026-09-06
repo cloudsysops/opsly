@@ -9,6 +9,9 @@
  *     npx tsx scripts/peskids/clean-production-inbox.ts --yes
  */
 import { createClient } from '@supabase/supabase-js';
+import { execFileSync } from 'node:child_process';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const TENANT_ID = 'peskids';
 
@@ -37,6 +40,12 @@ async function main(): Promise<void> {
     console.error('Refusing without --dry-run or --yes');
     process.exit(1);
   }
+
+  execFileSync(
+    'bash',
+    [join(dirname(fileURLToPath(import.meta.url)), '../lib/peskids-data-safety-guard.sh'), 'inbox cleanup'],
+    { env: process.env, stdio: 'inherit' }
+  );
 
   const admin = createClient(requireEnv('SUPABASE_URL'), requireEnv('SUPABASE_SERVICE_ROLE_KEY'), {
     auth: { persistSession: false, autoRefreshToken: false },

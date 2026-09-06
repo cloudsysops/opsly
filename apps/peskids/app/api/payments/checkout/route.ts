@@ -39,8 +39,7 @@ export async function POST(req: NextRequest) {
           });
     return successJson(requestId, { ok: true, provider: parsed.data.provider, ...checkout });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Checkout failed';
     console.error('[POST /api/payments/checkout]', err, { request_id: requestId });
-    return errorJson(requestId, message, 502);
+    return errorJson(requestId, 'Checkout failed', 502);
   }
 }
