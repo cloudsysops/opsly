@@ -1,10 +1,11 @@
 import { supabaseServer } from '@/lib/supabase';
 import { getLeadForAdmin, updateLeadForAdmin } from '@/lib/services/lead-admin.service';
 import { createTrialClass } from '@/lib/services/trial-class.service';
+import { createOneMonthLeadFollowup } from '@/lib/services/followup-admin.service';
 
 type QuickActionInput = {
   leadId: string;
-  action: 'mark_attended' | 'mark_enrolled' | 'hold' | 'cancel';
+  action: 'mark_attended' | 'mark_enrolled' | 'follow_up_month' | 'hold' | 'cancel';
   teacherName?: string;
   scheduledDate?: string;
   scheduledTime?: string;
@@ -124,6 +125,9 @@ export async function postPeskidsLeadQuickAction(
     }
 
     if (input.action === 'mark_enrolled') {
+      if (oldStatus !== 'trial') {
+        return { ok: false, error: 'Lead must have a trial class before enrollment', status: 409 };
+      }
       const updated = await updateLeadForAdmin(input.leadId, slug, { status: 'enrolled' });
       if (!updated) {
         return { ok: false, error: 'Failed to update lead', status: 400 };
@@ -135,6 +139,22 @@ export async function postPeskidsLeadQuickAction(
         newStatus: 'enrolled',
         action: 'status_change',
         metadata: { reason: input.reason || 'marked_enrolled' },
+      });
+
+      return { ok: true };
+    }
+
+    if (input.action === 'follow_up_month') {
+      if (oldStatus !== 'trial') {
+        return { ok: false, error: 'Lead must have a trial class before follow-up', status: 409 };
+      }
+      const followup = await createOneMonthLeadFollowup(input.leadId);
+      await recordAudit({
+        leadId: input.leadId,
+        oldStatus,
+        newStatus: oldStatus ?? 'trial',
+        action: 'status_change',
+        metadata: { followup_id: followup.id, reason: input.reason || 'follow_up_month' },
       });
 
       return { ok: true };
