@@ -64,7 +64,10 @@ export const PESKIDS_INSTAGRAM_LANDING_INTRO =
   'Desde Instagram: responde estas preguntas y te direccionamos con el asesor de tu sede.';
 
 export const PESKIDS_CONSENT_TREATMENT =
-  'Autorizo a Peskids para tratar mis datos personales y, cuando aplique, los del menor bajo mi responsabilidad, con el fin de atender esta solicitud de información y contacto, conforme a su Política de Privacidad.';
+  'Autorizo a Peskids para tratar mis datos personales y, cuando aplique, los datos necesarios del menor bajo mi responsabilidad, con el fin de atender esta solicitud y contactarme, conforme a su Política de Privacidad.';
+
+export const PESKIDS_CONSENT_IDENTITY_DOCUMENT =
+  'Autorizo expresamente a Peskids para tratar mi cédula como dato personal, únicamente para verificar mi identidad, gestionar esta solicitud y prestar el servicio solicitado.';
 
 export const PESKIDS_CONSENT_MARKETING =
   'Acepto recibir información sobre programas, novedades y promociones de Peskids por WhatsApp o correo electrónico. Puedo cancelar esta autorización en cualquier momento.';

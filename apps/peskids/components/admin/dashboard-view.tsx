@@ -35,6 +35,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { FeedbackComposer } from '@/components/feedback/feedback-composer'
+import { LeadQuickActions } from '@/components/admin/lead-quick-actions'
 import { cn, formatRelativeTime } from '@/lib/utils'
 
 interface DashboardViewProps {
@@ -72,19 +73,12 @@ async function patchLead(
   return json.lead
 }
 
-const POST_ENROLLMENT_STATUSES: ReadonlyArray<LeadRow['status']> = [
-  'enrolled',
-  'active',
-  'renewal',
-  'archived',
-]
-
 function canMarkContacted(status: LeadRow['status']): boolean {
-  return status !== 'contacted' && !POST_ENROLLMENT_STATUSES.includes(status)
+  return status === 'new'
 }
 
 function canConvertToStudent(status: LeadRow['status']): boolean {
-  return !POST_ENROLLMENT_STATUSES.includes(status)
+  return status === 'contacted'
 }
 
 function formatCop(cents: number): string {
@@ -131,7 +125,7 @@ const leadStatusFilterLabel: Record<'all' | DashboardData['new_leads'][number]['
   all: 'Todos',
   new: 'Nuevos',
   contacted: 'Contactados',
-  trial: 'En seguimiento',
+  trial: 'Clase programada',
   enrolled: 'Matriculados',
   active: 'Activos',
   renewal: 'Renovación',
@@ -164,6 +158,7 @@ export function DashboardView({
   const [leadFeedback, setLeadFeedback] = useState<Record<string, string>>({})
   const [savingLeadId, setSavingLeadId] = useState<string | null>(null)
   const [convertingLeadId, setConvertingLeadId] = useState<string | null>(null)
+  const [quickActionLeadId, setQuickActionLeadId] = useState<string | null>(null)
 
   useEffect(() => {
     setNoteDrafts((current) => {
@@ -581,7 +576,7 @@ export function DashboardView({
         </div>
         <div className="mb-4 flex flex-wrap gap-2">
           {(
-            ['all', 'new', 'contacted', 'trial', 'enrolled', 'active', 'renewal', 'archived'] as const
+            ['all', 'new', 'contacted', 'enrolled', 'trial', 'active', 'renewal', 'archived'] as const
           ).map((status) => (
             <Button
               key={status}
@@ -684,11 +679,25 @@ export function DashboardView({
                                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
                               ) : null}
                               <span className={convertingLeadId === lead.id ? 'ml-1' : undefined}>
-                                Convertir a alumno
+                                Marcar matriculado
                               </span>
                             </Button>
                           ) : null}
                         </div>
+                        {lead.status === 'enrolled' || lead.status === 'trial' ? (
+                          <LeadQuickActions
+                            leadId={lead.id}
+                            currentStatus={lead.status}
+                            firstClassAttended={lead.first_class_attended}
+                            busy={quickActionLeadId === lead.id}
+                            onBusyChange={(busy) => setQuickActionLeadId(busy ? lead.id : null)}
+                            onFeedback={(message) =>
+                              setLeadFeedback((current) => ({ ...current, [lead.id]: message }))
+                            }
+                            onCompleted={onRefresh}
+                            pipelineOnly
+                          />
+                        ) : null}
                         {leadFeedback[lead.id] ? (
                           <p className="text-xs text-pk-primary">{leadFeedback[lead.id]}</p>
                         ) : null}

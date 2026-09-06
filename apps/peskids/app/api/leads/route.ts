@@ -10,6 +10,7 @@ import { findLeadIdByEmail } from '@/lib/lead-intake-idempotency';
 // FormData only carries strings/Files; the client serializes these booleans with String(value).
 const BOOLEAN_FIELDS = new Set([
   'consent_treatment',
+  'consent_identity_document',
   'consent_marketing',
   'consent_photos_videos',
 ]);
@@ -90,6 +91,7 @@ export async function POST(request: NextRequest) {
 
     console.warn('[peskids][lead] consent', {
       treatment: body.consent_treatment,
+      identity_document: body.consent_identity_document,
       marketing: body.consent_marketing,
       policy_version: body.consent_policy_version,
       lead_type: body.lead_type,

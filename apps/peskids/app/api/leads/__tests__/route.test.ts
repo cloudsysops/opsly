@@ -82,6 +82,7 @@ describe('POST /api/leads', () => {
         neighborhood: 'Llanogrande',
         grade_interested: 'K-5',
         consent_treatment: true,
+        consent_identity_document: true,
         referred_by_code: ' abc123 ',
       }),
     } as never);
@@ -143,6 +144,7 @@ describe('POST /api/leads', () => {
         neighborhood: 'Llanogrande',
         grade_interested: 'K-5',
         consent_treatment: true,
+        consent_identity_document: true,
       }),
     } as never);
 

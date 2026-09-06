@@ -223,7 +223,13 @@ export async function fetchDashboardData(
 
   const recentMessagesTyped = (recentMessages as DashboardData['recent_messages']) || [];
   const followupsTyped = (followups as DashboardData['followups']) || [];
-  const leadsTyped = (newLeads as unknown as DashboardData['new_leads']) || [];
+  const attendedTrialLeadIds = new Set(
+    typedTrials.filter((trial) => trial.status === 'attended').map((trial) => trial.lead_id)
+  );
+  const leadsTyped = ((newLeads as unknown as DashboardData['new_leads']) || []).map((lead) => ({
+    ...lead,
+    first_class_attended: attendedTrialLeadIds.has(lead.id),
+  }));
 
   const executive = buildExecutiveDashboard({
     leads: leadsTyped,

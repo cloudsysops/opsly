@@ -15,14 +15,20 @@ describe('lead-pipeline-progress', () => {
     expect(progress.stages).toHaveLength(LEAD_PIPELINE_STAGES.length);
   });
 
-  it('completes funnel for enrolled/active', () => {
+  it('places enrollment before the first class', () => {
     expect(buildLeadPipelineProgress('enrolled').states).toEqual([
+      'done',
+      'done',
+      'current',
+      'upcoming',
+    ]);
+    expect(buildLeadPipelineProgress('active').currentIndex).toBe(2);
+    expect(buildLeadPipelineProgress('trial').states).toEqual([
       'done',
       'done',
       'done',
       'current',
     ]);
-    expect(buildLeadPipelineProgress('active').currentIndex).toBe(3);
   });
 
   it('flags archived leads as skipped', () => {
@@ -33,6 +39,9 @@ describe('lead-pipeline-progress', () => {
 
   it('exposes Spanish labels and tones', () => {
     expect(LEAD_STATUS_LABEL.new).toMatch(/Nuevo/i);
+    expect(LEAD_PIPELINE_STAGES[3].label).toBe('Clase programada');
+    expect(buildLeadPipelineProgress('trial').stages[3].label).toBe('Clase programada');
+    expect(buildLeadPipelineProgress('trial', true).stages[3].label).toBe('Primera clase');
     expect(leadStatusTone('new')).toBe('coral');
     expect(leadStatusTone('enrolled')).toBe('green');
   });
