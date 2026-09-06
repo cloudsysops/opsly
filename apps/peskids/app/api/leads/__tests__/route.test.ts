@@ -100,6 +100,7 @@ describe('POST /api/leads', () => {
       twenty_person_id: null,
       twenty_opportunity_id: null,
       request_id: 'req-lead-201',
+      meta_event_id: 'req-lead-201',
     });
     expect(postCanonicalLeadMock).toHaveBeenCalledWith(
       expect.objectContaining({

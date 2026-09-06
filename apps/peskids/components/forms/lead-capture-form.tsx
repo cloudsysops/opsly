@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
+import { trackMetaLead } from '@/components/analytics/meta-pixel'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
 import {
   buildPostLeadWhatsAppPrefill,
@@ -311,8 +312,13 @@ export function LeadCaptureForm({
         data?: { lead_id?: string }
         lead_id?: string
         id?: string
+        meta_event_id?: string
       }
       const leadId = (apiBody.data?.lead_id ?? apiBody.lead_id ?? apiBody.id)?.trim() || ''
+
+      if (apiBody.meta_event_id) {
+        trackMetaLead(apiBody.meta_event_id)
+      }
 
       void fetch(
         process.env.NEXT_PUBLIC_N8N_LEAD_WEBHOOK || 'https://www.peskids.com/webhooks/lead-capture',
