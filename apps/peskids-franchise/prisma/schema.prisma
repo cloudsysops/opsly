@@ -1894,7 +1894,7 @@ model EmailTemplate {
   // Completion email defaults (used when linked to a module)
   defaultTo   String? // Default TO address (supports {{variables}})
   defaultCc   String? // Default CC addresses (supports {{variables}})
-  defaultFrom String? // Sender override (default: franchising@acmefranchise.com)
+  defaultFrom String? // Sender override (default: franchising@peskids.com)
 
   createdAt   DateTime              @default(now())
   updatedAt   DateTime              @updatedAt

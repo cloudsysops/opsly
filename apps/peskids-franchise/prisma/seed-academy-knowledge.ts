@@ -18,7 +18,7 @@ INITIAL OUTREACH STRATEGY:
    - Find the decision-maker (often Director or Owner for private, Principal for public)
 
 2. First Contact Script:
-"Hi [Name], I'm [Your Name] with Acme Franchise. We teach chess to young children ages 3-8 using storytelling - our method won 2021 Toy of the Year. I'd love to show you a 15-minute demo with your students. When would work best for a quick call?"
+"Hi [Name], I'm [Your Name] with Peskids Franchise. We teach chess to young children ages 3-8 using storytelling - our method won 2021 Toy of the Year. I'd love to show you a 15-minute demo with your students. When would work best for a quick call?"
 
 PRICING STRATEGY:
 - School pays (all-play model): $15-20 per student per lesson
@@ -55,7 +55,7 @@ Campaign: Free Trial Class
 Target: Parents 25-45, 10-mile radius, interests in education, chess, enrichment
 Budget: $10-20/day
 Creative: Video of kids playing chess with testimonial
-Copy: "FREE Chess Class for Kids 3-8! Our award-winning Acme Franchise program teaches chess through storytelling. Limited spots - register now!"
+Copy: "FREE Chess Class for Kids 3-8! Our award-winning Peskids Franchise program teaches chess through storytelling. Limited spots - register now!"
 CTA: Sign Up Now → Landing page
 
 COMMUNITY EVENT MARKETING:
@@ -70,7 +70,7 @@ Materials needed:
 
 EMAIL CAMPAIGNS:
 Welcome Series (after lead capture):
-Day 0: "Welcome! Here's what Acme Franchise is about"
+Day 0: "Welcome! Here's what Peskids Franchise is about"
 Day 2: "Why chess for kids? The research"
 Day 5: "See our students in action" (video)
 Day 7: "Ready to try? Book your free class"
@@ -226,7 +226,7 @@ COMPENSATION STRUCTURE:
 - Reviews: Annual, with merit increases
 
 TRAINING REQUIREMENTS:
-1. Acme Franchise Academy (online certification)
+1. Peskids Franchise Academy (online certification)
 2. Shadow experienced tutor (2-3 classes)
 3. Teach with mentor observation (2-3 classes)
 4. Solo teaching with check-ins

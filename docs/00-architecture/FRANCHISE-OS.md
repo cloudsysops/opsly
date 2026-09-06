@@ -1,3 +1,12 @@
+> **DEPRECATED (2026-09-05):** este núcleo in-house (`lib/franchise-core`,
+> `lib/franchise-persistence`, rutas `_franchise-os`/`franchises/_*` en Peskids)
+> fue **borrado**. Nunca llegó a compilar en producción (`franchise-os.service.ts`
+> nunca existió) ni tuvo un solo usuario real. La dirección de producto es usar
+> `apps/peskids-franchise` (plataforma standalone ya funcional — pipeline de
+> prospectos, royalties, territorios, agreements, RAG) como servicio en
+> background, igual que Twenty CRM. Ver issue #1089 y PR #1090. Este documento
+> queda como registro histórico del diseño original.
+
 # Franchise OS (Franchise Core Capability Matrix)
 
 > Tenant-agnostic franchise operating brain. **Peskids** is the first adapter —

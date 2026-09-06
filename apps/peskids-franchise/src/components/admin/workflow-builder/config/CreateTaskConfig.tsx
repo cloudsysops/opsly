@@ -74,7 +74,7 @@ export default function CreateTaskConfig({ data, onChange }: ConfigProps) {
           type="email"
           className={inputClass}
           value={assignTo}
-          placeholder="admin@acmefranchise.com"
+          placeholder="admin@peskids.com"
           onChange={(e) => onChange({ assignTo: e.target.value })}
         />
       </div>

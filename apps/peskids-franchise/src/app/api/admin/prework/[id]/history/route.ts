@@ -11,7 +11,7 @@ type RouteContext = { params: Promise<{ id: string }> };
 export async function GET(req: NextRequest, context: RouteContext) {
   try {
     const session = await auth();
-    if (!session?.user?.email?.endsWith("@acmefranchise.com")) {
+    if (!session?.user?.email?.endsWith("@peskids.com")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -58,7 +58,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
 export async function POST(req: NextRequest, context: RouteContext) {
   try {
     const session = await auth();
-    if (!session?.user?.email?.endsWith("@acmefranchise.com")) {
+    if (!session?.user?.email?.endsWith("@peskids.com")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

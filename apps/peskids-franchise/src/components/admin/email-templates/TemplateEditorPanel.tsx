@@ -388,7 +388,7 @@ export function TemplateEditorPanel({
                 value={subject}
                 onChange={(e) => onSubjectChange(e.target.value)}
                 onFocus={() => { lastFocusedGmailField.current = "subject"; }}
-                placeholder="e.g., Welcome to Acme Franchise, {{firstName}}!"
+                placeholder="e.g., Welcome to Peskids Franchise, {{firstName}}!"
                 className="w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-brand-cyan focus:border-transparent text-sm"
               />
               <p className="mt-1 text-xs text-gray-500">
@@ -416,7 +416,7 @@ export function TemplateEditorPanel({
                     value={defaultFrom}
                     onChange={(e) => onDefaultFromChange(e.target.value)}
                     onFocus={() => { lastFocusedGmailField.current = "from"; }}
-                    placeholder="franchising@acmefranchise.com"
+                    placeholder="franchising@peskids.com"
                     className="w-full px-2.5 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-cyan focus:border-transparent"
                   />
                 </div>
@@ -532,7 +532,7 @@ Write your email content here...
 Use {{variables}} for personalization like {{firstName}}, {{lastName}}, {{territory}}, etc.
 
 Best regards,
-The Acme Franchise Team`}
+The Peskids Franchise Team`}
                       className="w-full min-h-[300px] text-sm leading-relaxed focus:outline-none resize-none border-0 p-0"
                       style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
                     />
@@ -540,8 +540,8 @@ The Acme Franchise Team`}
 
                   {/* Email Footer Preview */}
                   <div className="bg-gradient-to-r from-brand-navy to-brand-purple p-4 text-center">
-                    <p className="text-sm text-white font-semibold">Acme Franchise Franchising</p>
-                    <p className="text-xs text-brand-cyan mt-1">franchising@acmefranchise.com</p>
+                    <p className="text-sm text-white font-semibold">Peskids Franchise Franchising</p>
+                    <p className="text-xs text-brand-cyan mt-1">franchising@peskids.com</p>
                   </div>
                 </div>
               )}
@@ -566,8 +566,8 @@ The Acme Franchise Team`}
                   <div className="flex items-start gap-3">
                     <span className="text-sm font-medium text-gray-500 w-16">From:</span>
                     <div>
-                      <span className="text-sm text-gray-900">Acme Franchise Franchising</span>
-                      <span className="text-sm text-gray-400 ml-2">&lt;franchising@acmefranchise.com&gt;</span>
+                      <span className="text-sm text-gray-900">Peskids Franchise Franchising</span>
+                      <span className="text-sm text-gray-400 ml-2">&lt;franchising@peskids.com&gt;</span>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">

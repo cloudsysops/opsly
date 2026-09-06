@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 // GET all custom reports
 export async function GET(req: NextRequest) {
   const session = await auth();
-  if (!session?.user?.email?.endsWith("@acmefranchise.com")) {
+  if (!session?.user?.email?.endsWith("@peskids.com")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
 // POST create new custom report
 export async function POST(req: NextRequest) {
   const session = await auth();
-  if (!session?.user?.email?.endsWith("@acmefranchise.com")) {
+  if (!session?.user?.email?.endsWith("@peskids.com")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

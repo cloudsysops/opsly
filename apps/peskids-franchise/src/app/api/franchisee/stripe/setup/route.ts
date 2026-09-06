@@ -66,7 +66,7 @@ export async function POST() {
     }
 
     // Create new Stripe Connect account
-    const businessName = `${prospect.firstName} ${prospect.lastName} - Acme Franchise`;
+    const businessName = `${prospect.firstName} ${prospect.lastName} - Peskids Franchise`;
     const account = await createConnectAccount(
       prospect.email,
       businessName

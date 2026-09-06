@@ -3,9 +3,9 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Terms of Use",
   description:
-    "Terms of Use for the Acme Franchise Franchising website.",
+    "Terms of Use for the Peskids Franchise Franchising website.",
   alternates: {
-    canonical: "https://franchising.acmefranchise.com/terms",
+    canonical: "https://franchise.peskids.com/terms",
   },
 };
 
@@ -26,7 +26,7 @@ export default function TermsOfUsePage() {
               1. Acceptance of Terms
             </h2>
             <p>
-              By accessing and using this website (franchising.acmefranchise.com), you accept
+              By accessing and using this website (franchise.peskids.com), you accept
               and agree to be bound by these Terms of Use. If you do not agree to these terms,
               please do not use this website.
             </p>
@@ -88,7 +88,7 @@ export default function TermsOfUsePage() {
             </h2>
             <p>
               All content on this website, including text, graphics, logos, images, and
-              software, is the property of Acme Franchise Franchising LLC or its licensors
+              software, is the property of Peskids Franchise Franchising LLC or its licensors
               and is protected by copyright and trademark laws. You may not reproduce,
               distribute, or create derivative works from this content without our prior
               written consent.
@@ -116,7 +116,7 @@ export default function TermsOfUsePage() {
               the chat assistant is for general informational purposes only and should not be
               relied upon as legal, financial, or professional advice. The chat assistant
               cannot make franchise offers, provide financial performance representations, or
-              bind Acme Franchise Franchising LLC to any commitment.
+              bind Peskids Franchise Franchising LLC to any commitment.
             </p>
           </section>
 
@@ -137,7 +137,7 @@ export default function TermsOfUsePage() {
               9. Limitation of Liability
             </h2>
             <p>
-              To the fullest extent permitted by law, Acme Franchise Franchising LLC shall
+              To the fullest extent permitted by law, Peskids Franchise Franchising LLC shall
               not be liable for any indirect, incidental, special, or consequential damages
               arising out of or in connection with your use of this website. Our total liability
               shall not exceed the amount you paid to access the website (which is zero).
@@ -173,11 +173,11 @@ export default function TermsOfUsePage() {
               Questions about these Terms of Use should be directed to:
             </p>
             <div className="mt-3 bg-brand-light rounded-xl p-4">
-              <p className="font-medium text-brand-navy">Acme Franchise Franchising LLC</p>
+              <p className="font-medium text-brand-navy">Peskids Franchise Franchising LLC</p>
               <p>Westside, TN</p>
               <p>
-                <a href="mailto:franchising@acmefranchise.com" className="text-brand-purple hover:underline">
-                  franchising@acmefranchise.com
+                <a href="mailto:franchising@peskids.com" className="text-brand-purple hover:underline">
+                  franchising@peskids.com
                 </a>
               </p>
             </div>

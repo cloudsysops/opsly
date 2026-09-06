@@ -124,7 +124,7 @@ export async function GET(req: NextRequest) {
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                   <h1 style="color: #2D2F8E;">Franchise Agreement Renewal Notice</h1>
                   <p>Dear ${prospect.firstName},</p>
-                  <p>This is your <strong>${milestone.label}</strong> reminder that your Acme Franchise agreement
+                  <p>This is your <strong>${milestone.label}</strong> reminder that your Peskids Franchise agreement
                   <strong>${agreement.agreementNumber}</strong> is set to expire on
                   <strong>${endDate.toLocaleDateString()}</strong>.</p>
 
@@ -144,14 +144,14 @@ export async function GET(req: NextRequest) {
 
                   <p>If you have any questions, please don't hesitate to reach out.</p>
 
-                  <p>Best regards,<br>Acme Franchise Team</p>
+                  <p>Best regards,<br>Peskids Franchise Team</p>
                 </div>
               `,
             });
 
             // Send admin notification
             await sendEmail({
-              to: "franchising@acmefranchise.com",
+              to: "franchising@peskids.com",
               subject: `[Action Required] Renewal Notice Sent - ${prospect.firstName} ${prospect.lastName}`,
               html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -275,7 +275,7 @@ export async function GET(req: NextRequest) {
 
                 <p>If you have any questions, please don't hesitate to reach out.</p>
 
-                <p>Best regards,<br>Acme Franchise Team</p>
+                <p>Best regards,<br>Peskids Franchise Team</p>
               </div>
             `;
 
@@ -288,7 +288,7 @@ export async function GET(req: NextRequest) {
 
             // Send admin notification
             await sendEmail({
-              to: "franchising@acmefranchise.com",
+              to: "franchising@peskids.com",
               subject: `[Insurance Expiring] ${milestone.label} — ${account.prospect.firstName} ${account.prospect.lastName}`,
               html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

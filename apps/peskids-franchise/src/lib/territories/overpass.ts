@@ -29,7 +29,7 @@ export const POI_CATEGORIES: Record<
   },
   competitors: {
     label: "Competitors",
-    query: '["amenity"~"school|community_centre"]["name"~"chess|tutor|kumon|mathnasium|learning|sylvan",i]',
+    query: '["amenity"~"school|community_centre"]["name"~"tutor|kumon|mathnasium|learning|sylvan",i]',
   },
   community: {
     label: "Community Centers",

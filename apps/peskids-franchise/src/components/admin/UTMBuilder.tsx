@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/shared/Button";
 
-const BASE_URL = "https://franchising.acmefranchise.com";
+const BASE_URL = "https://franchise.peskids.com";
 
 const SOURCE_PRESETS = [
   { value: "facebook", label: "Facebook" },

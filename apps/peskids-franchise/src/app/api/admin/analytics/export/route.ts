@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user?.email?.endsWith("@acmefranchise.com")) {
+    if (!session?.user?.email?.endsWith("@peskids.com")) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

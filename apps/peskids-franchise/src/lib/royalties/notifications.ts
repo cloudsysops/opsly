@@ -3,8 +3,8 @@ import { getMonthName } from './invoice-generator';
 import { generateInvoicePDF } from './pdf-generator';
 
 const ADMIN_EMAILS = [
-  'franchising@acmefranchise.com',
-  'admin@acmefranchise.com',
+  'franchising@peskids.com',
+  'admin@peskids.com',
 ];
 
 const BASE_URL = process.env.NEXTAUTH_URL || 'https://franchise-stc-993771038de6.herokuapp.com';
@@ -69,7 +69,7 @@ export async function sendInvoiceForReview(
 <body>
   <div class="container">
     <div class="header">
-      <h1>🏰 Acme Franchise</h1>
+      <h1>🏰 Peskids Franchise</h1>
       <p style="margin: 10px 0 0;">Royalty Invoice for ${monthName} ${data.year}</p>
     </div>
     <div class="content">
@@ -108,13 +108,13 @@ export async function sendInvoiceForReview(
 
       <p>If you have any questions, please reply to this email or contact our franchising team.</p>
 
-      <p>Thank you for being part of the Acme Franchise family!</p>
+      <p>Thank you for being part of the Peskids Franchise family!</p>
 
-      <p>Best regards,<br>The Acme Franchise Team</p>
+      <p>Best regards,<br>The Peskids Franchise Team</p>
     </div>
     <div class="footer">
-      <p>Acme Franchise Franchising<br>
-      <a href="${BASE_URL}">franchise.acmefranchise.com</a></p>
+      <p>Peskids Franchise Franchising<br>
+      <a href="${BASE_URL}">franchise.peskids.com</a></p>
     </div>
   </div>
 </body>
@@ -246,7 +246,7 @@ export async function sendPaymentConfirmation(
 
       <p>Keep up the great work!</p>
 
-      <p>Best regards,<br>The Acme Franchise Team</p>
+      <p>Best regards,<br>The Peskids Franchise Team</p>
     </div>
   </div>
 </body>
@@ -305,7 +305,7 @@ export async function sendOverdueReminder(
 
       <p>If you've already submitted payment, please disregard this notice. If you're experiencing difficulties or need to discuss payment arrangements, please contact us immediately.</p>
 
-      <p>Thank you,<br>The Acme Franchise Team</p>
+      <p>Thank you,<br>The Peskids Franchise Team</p>
     </div>
   </div>
 </body>
@@ -389,7 +389,7 @@ export async function sendPaymentDueNotification(
 
       <p>If you have any questions, please reply to this email or contact our franchising team.</p>
 
-      <p>Thank you,<br>The Acme Franchise Team</p>
+      <p>Thank you,<br>The Peskids Franchise Team</p>
     </div>
   </div>
 </body>

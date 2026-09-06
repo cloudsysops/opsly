@@ -12,7 +12,7 @@ function getEmailStatus() {
   const hasGmail =
     !!(process.env.GOOGLE_SERVICE_ACCOUNT_JSON || process.env.GOOGLE_SERVICE_ACCOUNT_KEY) &&
     !!process.env.GMAIL_ADMIN_EMAILS;
-  const fromEmail = "franchising@acmefranchise.com";
+  const fromEmail = "franchising@peskids.com";
 
   return { hasPostmark, hasGmail, fromEmail };
 }

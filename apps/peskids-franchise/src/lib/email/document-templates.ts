@@ -56,13 +56,13 @@ export function getSignatureRequestEmail(params: DocumentEmailParams): EmailTemp
               <p style="text-align: center;">
                 <a href="${params.portalUrl}/portal/documents" class="button">Sign Document</a>
               </p>
-              <p>If you have any questions about the document, please don't hesitate to reach out to us at <a href="mailto:franchising@acmefranchise.com">franchising@acmefranchise.com</a>.</p>
-              <p>Thank you for your interest in Acme Franchise!</p>
-              <p>Best regards,<br>The Acme Franchise Franchising Team</p>
+              <p>If you have any questions about the document, please don't hesitate to reach out to us at <a href="mailto:franchising@peskids.com">franchising@peskids.com</a>.</p>
+              <p>Thank you for your interest in Peskids Franchise!</p>
+              <p>Best regards,<br>The Peskids Franchise Franchising Team</p>
             </div>
             <div class="footer">
-              <p>Acme Franchise Franchising<br>
-              <a href="${params.portalUrl}">franchising.acmefranchise.com</a></p>
+              <p>Peskids Franchise Franchising<br>
+              <a href="${params.portalUrl}">franchise.peskids.com</a></p>
             </div>
           </div>
         </body>
@@ -95,12 +95,12 @@ export function getDocumentSignedEmail(params: DocumentEmailParams): EmailTempla
               <p style="text-align: center;">
                 <a href="${params.portalUrl}/portal/documents" class="button">View Documents</a>
               </p>
-              <p>If you have any questions, please contact us at <a href="mailto:franchising@acmefranchise.com">franchising@acmefranchise.com</a>.</p>
-              <p>Best regards,<br>The Acme Franchise Franchising Team</p>
+              <p>If you have any questions, please contact us at <a href="mailto:franchising@peskids.com">franchising@peskids.com</a>.</p>
+              <p>Best regards,<br>The Peskids Franchise Franchising Team</p>
             </div>
             <div class="footer">
-              <p>Acme Franchise Franchising<br>
-              <a href="${params.portalUrl}">franchising.acmefranchise.com</a></p>
+              <p>Peskids Franchise Franchising<br>
+              <a href="${params.portalUrl}">franchise.peskids.com</a></p>
             </div>
           </div>
         </body>
@@ -130,12 +130,12 @@ export function getDocumentDeclinedEmail(params: DocumentEmailParams): EmailTemp
               <p>Hi ${params.prospectName},</p>
               <p>We noticed that you declined to sign the <strong>${documentTitle}</strong>.</p>
               <p>If this was a mistake or if you have questions about the document, please reach out to us. We're happy to discuss any concerns you may have.</p>
-              <p>You can contact us at <a href="mailto:franchising@acmefranchise.com">franchising@acmefranchise.com</a> or reply to this email.</p>
-              <p>Best regards,<br>The Acme Franchise Franchising Team</p>
+              <p>You can contact us at <a href="mailto:franchising@peskids.com">franchising@peskids.com</a> or reply to this email.</p>
+              <p>Best regards,<br>The Peskids Franchise Franchising Team</p>
             </div>
             <div class="footer">
-              <p>Acme Franchise Franchising<br>
-              <a href="${params.portalUrl}">franchising.acmefranchise.com</a></p>
+              <p>Peskids Franchise Franchising<br>
+              <a href="${params.portalUrl}">franchise.peskids.com</a></p>
             </div>
           </div>
         </body>
@@ -168,12 +168,12 @@ export function getDocumentExpiredEmail(params: DocumentEmailParams): EmailTempl
               <p style="text-align: center;">
                 <a href="${params.portalUrl}/portal/documents" class="button">View Documents</a>
               </p>
-              <p>If you need assistance, please contact us at <a href="mailto:franchising@acmefranchise.com">franchising@acmefranchise.com</a>.</p>
-              <p>Best regards,<br>The Acme Franchise Franchising Team</p>
+              <p>If you need assistance, please contact us at <a href="mailto:franchising@peskids.com">franchising@peskids.com</a>.</p>
+              <p>Best regards,<br>The Peskids Franchise Franchising Team</p>
             </div>
             <div class="footer">
-              <p>Acme Franchise Franchising<br>
-              <a href="${params.portalUrl}">franchising.acmefranchise.com</a></p>
+              <p>Peskids Franchise Franchising<br>
+              <a href="${params.portalUrl}">franchise.peskids.com</a></p>
             </div>
           </div>
         </body>
@@ -195,7 +195,7 @@ export function getAdminDocumentSignedEmail(
   const documentTitle = DOCUMENT_TITLES[documentType];
 
   return {
-    subject: `[Acme Franchising] Document Signed: ${prospectName} - ${documentTitle}`,
+    subject: `[Peskids Franchising] Document Signed: ${prospectName} - ${documentTitle}`,
     html: `
       <!DOCTYPE html>
       <html>
@@ -244,12 +244,12 @@ export function getSignatureReminderEmail(params: DocumentEmailParams): EmailTem
               <p style="text-align: center;">
                 <a href="${params.portalUrl}/portal/documents" class="button">Sign Document</a>
               </p>
-              <p>If you have any questions or need assistance, please contact us at <a href="mailto:franchising@acmefranchise.com">franchising@acmefranchise.com</a>.</p>
-              <p>Best regards,<br>The Acme Franchise Franchising Team</p>
+              <p>If you have any questions or need assistance, please contact us at <a href="mailto:franchising@peskids.com">franchising@peskids.com</a>.</p>
+              <p>Best regards,<br>The Peskids Franchise Franchising Team</p>
             </div>
             <div class="footer">
-              <p>Acme Franchise Franchising<br>
-              <a href="${params.portalUrl}">franchising.acmefranchise.com</a></p>
+              <p>Peskids Franchise Franchising<br>
+              <a href="${params.portalUrl}">franchise.peskids.com</a></p>
             </div>
           </div>
         </body>

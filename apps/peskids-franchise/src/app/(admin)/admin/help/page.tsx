@@ -33,10 +33,10 @@ export default function HelpPage() {
               Need help? Reach out to the tech team.
             </p>
             <a
-              href="mailto:admin@acmefranchise.com"
+              href="mailto:admin@peskids.com"
               className="text-brand-purple hover:underline"
             >
-              admin@acmefranchise.com
+              admin@peskids.com
             </a>
           </CardContent>
         </Card>

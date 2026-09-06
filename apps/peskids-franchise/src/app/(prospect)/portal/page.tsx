@@ -32,10 +32,10 @@ const stageConfigs: Record<string, StageConfig> = {
   NEW_INQUIRY: {
     label: "New Inquiry",
     shortLabel: "Inquiry",
-    title: "Welcome to Acme Franchise!",
+    title: "Welcome to Peskids Franchise!",
     message:
-      "Thank you for your interest in owning an Acme Franchise. Our team is reviewing your inquiry and will reach out within 24-48 hours to schedule a discovery call.",
-    tip: "While you wait, explore our website to learn more about the Acme Franchise model and success stories.",
+      "Thank you for your interest in owning an Peskids Franchise. Our team is reviewing your inquiry and will reach out within 24-48 hours to schedule a discovery call.",
+    tip: "While you wait, explore our website to learn more about the Peskids Franchise model and success stories.",
   },
   INITIAL_CONTACT: {
     label: "Initial Contact",
@@ -50,7 +50,7 @@ const stageConfigs: Record<string, StageConfig> = {
     shortLabel: "Discovery",
     title: "Discovery Call Scheduled",
     message:
-      "You have a discovery call scheduled with our team. This is your chance to learn about the franchise opportunity and see if Acme Franchise is the right fit for you.",
+      "You have a discovery call scheduled with our team. This is your chance to learn about the franchise opportunity and see if Peskids Franchise is the right fit for you.",
     tip: "Come prepared with questions about your target market, investment expectations, and what day-to-day operations look like.",
   },
   PRE_WORK_IN_PROGRESS: {
@@ -95,7 +95,7 @@ const stageConfigs: Record<string, StageConfig> = {
     shortLabel: "Selected",
     title: "Congratulations — You're In!",
     message:
-      "You've been selected to join the Acme Franchise family! Head to your franchisee dashboard to begin your 90-day journey.",
+      "You've been selected to join the Peskids Franchise family! Head to your franchisee dashboard to begin your 90-day journey.",
     nextAction: {
       label: "Go to Dashboard",
       href: "/portal/my-franchise",
@@ -507,7 +507,7 @@ export default async function PortalDashboard() {
         </Link>
 
         <Link
-          href="mailto:franchising@acmefranchise.com"
+          href="mailto:franchising@peskids.com"
           className="group bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl hover:border-brand-cyan/30 transition-all"
         >
           <div className="p-2.5 rounded-xl bg-green-100 w-fit mb-4 group-hover:bg-green-200 transition-colors">

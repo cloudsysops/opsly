@@ -166,7 +166,7 @@ async function main() {
       prospectId: sarah.id,
       content:
         "Great discovery call. Sarah has teaching background and understands the education space. Her husband is supportive and they have savings set aside. She's methodical and thorough - exactly what we want in a franchisee. Watch her progress on pre-work closely.",
-      authorEmail: "admin@acmefranchise.com",
+      authorEmail: "admin@peskids.com",
       createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
     },
   });
@@ -361,7 +361,7 @@ async function main() {
       prospectId: michael.id,
       content:
         "Exceptional candidate. Tech background gives him operational sophistication. His school outreach was impressive - got 3 schools interested before even signing. Atlanta territory is great. Referred by Jon Sieber who vouched for him.",
-      authorEmail: "franchising@acmefranchise.com",
+      authorEmail: "franchising@peskids.com",
       createdAt: new Date(Date.now() - 50 * 24 * 60 * 60 * 1000),
     },
   });
@@ -374,7 +374,7 @@ async function main() {
       prospectId: michael.id,
       content:
         "Interview went great. Michael has clear vision for his territory. His 90-day plan was the best we've seen. Recommendation: APPROVE immediately.",
-      authorEmail: "admin@acmefranchise.com",
+      authorEmail: "admin@peskids.com",
       createdAt: new Date(Date.now() - 17 * 24 * 60 * 60 * 1000),
     },
   });
@@ -401,7 +401,7 @@ async function main() {
 
   console.log("ADMIN LOGIN:");
   console.log("   Go to: /login");
-  console.log('   Click "Sign in with Google" (use @acmefranchise.com account)');
+  console.log('   Click "Sign in with Google" (use @peskids.com account)');
   console.log("   CRM Dashboard: /admin");
   console.log("   Pipeline Board: /admin/pipeline");
   console.log("   Prospect List: /admin/prospects\n");

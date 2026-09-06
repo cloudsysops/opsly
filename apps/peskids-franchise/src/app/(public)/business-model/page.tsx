@@ -4,12 +4,12 @@ import { LinkButton } from "@/components/shared/Button";
 export const metadata: Metadata = {
   title: "Business Model",
   description:
-    "Learn how the Acme Franchise business model works and what to expect as a franchisee.",
+    "Learn how the Peskids Franchise business model works and what to expect as a franchisee.",
   alternates: {
-    canonical: "https://franchising.acmefranchise.com/business-model",
+    canonical: "https://franchise.peskids.com/business-model",
   },
   openGraph: {
-    url: "https://franchising.acmefranchise.com/business-model",
+    url: "https://franchise.peskids.com/business-model",
   },
 };
 
@@ -17,7 +17,7 @@ const revenueStreams = [
   {
     title: "After-School Programs",
     description:
-      "Partner with schools to offer after-school chess enrichment programs. High-volume, recurring revenue with minimal overhead.",
+      "Partner with schools to offer after-school enrichment programs. High-volume, recurring revenue with minimal overhead.",
     icon: "🏫",
   },
   {
@@ -29,13 +29,13 @@ const revenueStreams = [
   {
     title: "Summer Camps",
     description:
-      "Week-long intensive chess camps during school breaks. Great for building community and word-of-mouth.",
+      "Week-long intensive enrichment camps during school breaks. Great for building community and word-of-mouth.",
     icon: "☀️",
   },
   {
     title: "Birthday Parties",
     description:
-      "Unique chess-themed birthday party experiences that parents love and kids remember.",
+      "Unique themed birthday party experiences that parents love and kids remember.",
     icon: "🎂",
   },
   {
@@ -129,7 +129,7 @@ export default function BusinessModelPage() {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-brand-green flex-shrink-0">✓</span>
-                    Teaching classes using the Acme Franchise curriculum
+                    Teaching classes using the Peskids Franchise curriculum
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-brand-green flex-shrink-0">✓</span>

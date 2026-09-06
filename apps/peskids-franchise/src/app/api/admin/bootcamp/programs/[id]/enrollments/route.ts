@@ -5,10 +5,8 @@ import { db } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 // GET - List enrollments with progress + available franchisees
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
 
@@ -105,10 +103,8 @@ export async function GET(
 }
 
 // POST - Enroll franchisees in a program
-export async function POST(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
 
@@ -169,10 +165,8 @@ export async function POST(
 }
 
 // DELETE - Unenroll a franchisee from a program
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
 

@@ -480,8 +480,8 @@ export default function FranchiseeCompliancePage() {
           <h3 className="font-semibold text-gray-900 mb-2">Need Help?</h3>
           <p className="text-sm text-gray-600">
             Contact{' '}
-            <a href="mailto:franchising@acmefranchise.com" className="text-brand-purple hover:underline">
-              franchising@acmefranchise.com
+            <a href="mailto:franchising@peskids.com" className="text-brand-purple hover:underline">
+              franchising@peskids.com
             </a>
             {' '}if you have questions about compliance requirements or need assistance uploading documents.
           </p>

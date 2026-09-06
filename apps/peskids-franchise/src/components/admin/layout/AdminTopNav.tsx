@@ -38,7 +38,7 @@ export default function AdminTopNav({ user, onMenuClick }: AdminTopNavProps) {
           <Link href="/admin" className="flex items-center gap-2.5">
             <Image
               src="/logo/logo.svg"
-              alt="Acme Franchise"
+              alt="Peskids Franchise"
               width={28}
               height={28}
               className="rounded-md"

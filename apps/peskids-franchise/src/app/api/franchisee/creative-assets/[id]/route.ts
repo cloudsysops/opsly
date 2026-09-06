@@ -5,10 +5,8 @@ import { db } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 // PATCH /api/franchisee/creative-assets/[id] - Update own asset only
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
     if (!session?.user?.email) {
@@ -74,10 +72,8 @@ export async function PATCH(
 }
 
 // DELETE /api/franchisee/creative-assets/[id] - Delete own asset only
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
     if (!session?.user?.email) {

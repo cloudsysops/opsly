@@ -7,15 +7,13 @@ import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
 
-export async function POST(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
 
     // Check authentication
-    if (!session?.user?.email?.endsWith("@acmefranchise.com")) {
+    if (!session?.user?.email?.endsWith("@peskids.com")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

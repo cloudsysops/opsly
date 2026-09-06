@@ -5,12 +5,12 @@ import { StateAvailabilityMap } from "@/components/marketing/StateAvailabilityMa
 export const metadata: Metadata = {
   title: "Available Markets",
   description:
-    "Explore available Acme Franchise territories across the country. See which states are open for franchising.",
+    "Explore available Peskids Franchise territories across the country. See which states are open for franchising.",
   alternates: {
-    canonical: "https://franchising.acmefranchise.com/markets",
+    canonical: "https://franchise.peskids.com/markets",
   },
   openGraph: {
-    url: "https://franchising.acmefranchise.com/markets",
+    url: "https://franchise.peskids.com/markets",
   },
 };
 
@@ -23,7 +23,7 @@ export default function MarketsPage() {
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-cyan/20 rounded-full blur-3xl" />
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-brand-purple/30 rounded-full blur-3xl" />
-          {/* Chess pattern overlay */}
+          {/* Decorative pattern overlay */}
           <div className="absolute inset-0 opacity-5" style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }} />
@@ -44,7 +44,7 @@ export default function MarketsPage() {
               </span>
             </h1>
             <p className="mt-4 sm:mt-6 text-base sm:text-xl leading-7 sm:leading-8 text-white/80 max-w-2xl mx-auto">
-              Acme Franchise is actively expanding across the United States.
+              Peskids Franchise is actively expanding across the United States.
               Click on your state to check availability and start your franchise journey.
             </p>
           </div>
@@ -98,7 +98,7 @@ export default function MarketsPage() {
                   <h3 className="text-lg sm:text-xl font-bold text-brand-navy mb-2 sm:mb-3">Exclusive Rights</h3>
                   <p className="text-sm sm:text-base text-gray-600">
                     Each franchisee receives exclusive rights to operate in their defined territory.
-                    No other Acme Franchisee can offer programs in your area.
+                    No other Peskids Franchisee can offer programs in your area.
                   </p>
                 </div>
                 {/* Back */}

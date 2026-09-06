@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user?.email?.endsWith('@acmefranchise.com')) {
+    if (!session?.user?.email?.endsWith('@peskids.com')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

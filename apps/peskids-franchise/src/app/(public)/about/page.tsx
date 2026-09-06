@@ -5,64 +5,56 @@ import { LinkButton } from "@/components/shared/Button";
 export const metadata: Metadata = {
   title: "About Us",
   description:
-    "Learn about Acme Franchise and our mission to transform children's education through the magic of chess.",
+    "Learn about Peskids Franchise and our mission to bring quality after-school enrichment to every child.",
   alternates: {
-    canonical: "https://franchising.acmefranchise.com/about",
+    canonical: "https://franchise.peskids.com/about",
   },
   openGraph: {
-    url: "https://franchising.acmefranchise.com/about",
+    url: "https://franchise.peskids.com/about",
   },
 };
 
+// TODO(content): replace with real Peskids leadership team names/bios/photos.
 const team = [
   {
-    name: "Paul Levy",
+    name: "[Founder name]",
     role: "CEO",
-    bio: "Leading Acme Franchise with a vision to bring chess education to every child.",
-    image: "/images/team/paul-levy.png",
+    bio: "[Add a short bio for this leader.]",
+    image: "/images/team/placeholder-1.png",
     bgColor: "bg-brand-green",
   },
   {
-    name: "Jon Sieber",
+    name: "[Co-Founder name]",
     role: "Co-Founder",
-    bio: "Passionate about his family, his business, and his bicycle.",
-    image: "/images/team/jon-sieber.png",
+    bio: "[Add a short bio for this leader.]",
+    image: "/images/team/placeholder-2.png",
     bgColor: "bg-brand-yellow",
   },
   {
-    name: "Sam Williams",
+    name: "[Co-Founder name]",
     role: "Co-Founder",
-    bio: "Chess enthusiast, storyteller, co-founder — in that order.",
-    image: "/images/team/harlan-alford.png",
+    bio: "[Add a short bio for this leader.]",
+    image: "/images/team/placeholder-3.png",
     bgColor: "bg-brand-purple",
   },
 ];
 
+// TODO(content): replace with Peskids' real founding story and milestones.
 const milestones = [
   {
-    year: "2011",
-    title: "The Beginning",
-    event: "Founded as Chess at Three in New York City. What started as a single tutor with a dream became a movement to make chess accessible to young children through storytelling."
+    year: "[Year]",
+    title: "[Milestone title]",
+    event: "[Add a real milestone from Peskids' history here.]"
   },
   {
-    year: "2015",
-    title: "Growing Roots",
-    event: "Expanded from private tutoring into school partnerships. Our story-based curriculum proved so effective that schools began requesting dedicated programs."
+    year: "[Year]",
+    title: "[Milestone title]",
+    event: "[Add a real milestone from Peskids' history here.]"
   },
   {
-    year: "2020",
-    title: "Scaling Impact",
-    event: "Reached 400+ tutors and 50,000 students. Partnered with over 600 schools nationwide, demonstrating the model could scale while maintaining quality."
-  },
-  {
-    year: "2023",
-    title: "A New Chapter",
-    event: "Rebranded to Acme Franchise to reflect our expanded curriculum and vision. Began developing the franchise model to bring our system to entrepreneurs nationwide."
-  },
-  {
-    year: "2025",
+    year: "2026",
     title: "Franchise Launch",
-    event: "Acme Franchise Franchising officially launched. Welcomed our first franchise partners in Westside and Eastside, marking the start of nationwide expansion."
+    event: "Peskids Franchise officially launched, bringing our proven after-school enrichment model to entrepreneurs."
   },
 ];
 
@@ -77,24 +69,12 @@ export default function AboutPage() {
               Our Story
             </h1>
             <p className="mt-3 sm:mt-4 text-base sm:text-lg leading-7 sm:leading-8 text-gray-600">
-              Acme Franchise began with a simple idea: what if we could teach
-              chess to children as young as 3 years old using the power of
-              storytelling?
+              Peskids Franchise began with a simple idea: give every child access
+              to a quality after-school program, close to home.
             </p>
           </div>
 
-          {/* Vimeo Video Embed */}
-          <div className="mx-auto max-w-4xl">
-            <div className="relative aspect-video rounded-xl sm:rounded-2xl overflow-hidden shadow-xl sm:shadow-2xl">
-              <iframe
-                src="https://player.vimeo.com/video/1142207977?h=0&title=0&byline=0&portrait=0"
-                className="absolute inset-0 w-full h-full"
-                allow="autoplay; fullscreen; picture-in-picture"
-                allowFullScreen
-                title="Acme Franchise Overview Video"
-              />
-            </div>
-          </div>
+          {/* TODO(content): embed a real Peskids overview video here. */}
         </div>
       </div>
 
@@ -109,21 +89,14 @@ export default function AboutPage() {
               </h2>
               <div className="mt-6 sm:mt-8 space-y-4 sm:space-y-6 text-base sm:text-lg leading-7 sm:leading-8 text-gray-600">
                 <p>
-                  Since 2011, Acme Franchise has made it possible for young kids
-                  to master tricky subjects like chess, all through the power of
-                  storytelling.
+                  Peskids has helped families give their children a safe, engaging
+                  place to learn and grow after school.
                 </p>
+                {/* TODO(content): replace with Peskids' real founding story, locations served, and growth to date. */}
                 <p>
-                  Founded and headquartered in New York City, Acme Franchise&apos;s
-                  team of 400+ tutors has taught over 50,000 students to date and partnered
-                  with more than 600 schools across the U.S.
-                </p>
-                <p>
-                  Today, Acme Franchise offers a range of programs, all based on
-                  the unifying principle that children can learn anything through
-                  fun, well-crafted stories. In Singapore, these include chess for
-                  ages three and up, playgroups for infants as young as six months
-                  old, and role-playing games for children of school-going age.
+                  Today, Peskids Franchise brings that same proven after-school
+                  enrichment model to entrepreneurs who want to build a business
+                  that makes a difference for families in their community.
                 </p>
               </div>
             </div>
@@ -176,7 +149,7 @@ export default function AboutPage() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-lg font-bold text-brand-navy">We Set Up the Board Correctly.</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-brand-navy">We Do Things Right.</h3>
                   <p className="mt-1 text-sm sm:text-base text-gray-600">
                     Having fun never comes at the expense of excellence.
                   </p>
@@ -251,9 +224,9 @@ export default function AboutPage() {
               Meet the Team
             </h2>
             <p className="mt-3 sm:mt-4 text-base sm:text-lg leading-7 sm:leading-8 text-gray-600">
-              At Acme Franchise, we&apos;re more than just chess tutors—
+              At Peskids Franchise, we&apos;re more than just instructors—
               <span className="hidden sm:inline"><br /></span>
-              we&apos;re storytellers, educators, and your child&apos;s biggest cheerleaders.
+              we&apos;re educators and your child&apos;s biggest cheerleaders.
             </p>
           </div>
           <div className="mx-auto mt-8 sm:mt-10 grid max-w-5xl grid-cols-1 gap-6 sm:gap-8 sm:grid-cols-3">
@@ -286,18 +259,19 @@ export default function AboutPage() {
       </div>
 
       {/* Full width image */}
+      {/* TODO(content): replace with a real Peskids photo. */}
       <div className="relative h-64 sm:h-96 overflow-hidden">
         <Image
-          src="/images/kids/child-playing-chess.png"
-          alt="Child learning chess"
+          src="/images/kids/child-learning.png"
+          alt="Child at a Peskids after-school program"
           fill
           className="object-cover"
         />
         <div className="absolute inset-0 bg-brand-navy/60 flex items-center justify-center">
           <div className="text-center text-white px-4 sm:px-6">
-            <h2 className="text-2xl sm:text-3xl font-bold">Read a Story. Learn Chess.</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold">Learn. Play. Grow.</h2>
             <p className="mt-3 sm:mt-4 text-base sm:text-lg text-white/80">
-              Join us in transforming children&apos;s education through the magic of chess.
+              Join us in giving children a place to thrive after school.
             </p>
           </div>
         </div>

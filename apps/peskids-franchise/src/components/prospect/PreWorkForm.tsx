@@ -395,7 +395,7 @@ function ResearchForm({
         id="opportunity_summary"
         name="opportunity_summary"
         label="Opportunity Summary"
-        placeholder="Why is this market ripe for Acme Franchise despite those challenges? What makes it worth pursuing?"
+        placeholder="Why is this market ripe for Peskids Franchise despite those challenges? What makes it worth pursuing?"
         className="min-h-[100px]"
         defaultValue={(existingContent?.opportunity_summary as string) || ""}
         disabled={isReadOnly}
@@ -709,7 +709,7 @@ function OutreachForm({
           id="call_script"
           name="call_script"
           label="Your Actual Script"
-          placeholder="Paste your call script here. How do you introduce yourself and Acme Franchise?"
+          placeholder="Paste your call script here. How do you introduce yourself and Peskids Franchise?"
           className="min-h-[150px] font-mono text-sm"
           defaultValue={(existingContent?.call_script as string) || ""}
           disabled={isReadOnly}
@@ -875,7 +875,7 @@ function ReflectionForm({
             <li>Introduce yourself (30 sec)</li>
             <li>Your best conversation - recreate it (1 min)</li>
             <li>A difficult moment and what you learned (1 min)</li>
-            <li>Why Acme Franchise specifically (1 min)</li>
+            <li>Why Peskids Franchise specifically (1 min)</li>
             <li>Your commitment level and availability (30 sec)</li>
           </ol>
         </div>

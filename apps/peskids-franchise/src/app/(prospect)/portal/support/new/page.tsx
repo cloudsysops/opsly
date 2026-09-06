@@ -298,8 +298,8 @@ export default function NewTicketPage() {
               <h3 className="font-semibold text-gray-900 text-sm mb-2">Need Immediate Help?</h3>
               <p className="text-xs text-gray-600">
                 For critical issues affecting your business, email us directly at{" "}
-                <a href="mailto:franchising@acmefranchise.com" className="text-brand-purple hover:underline">
-                  franchising@acmefranchise.com
+                <a href="mailto:franchising@peskids.com" className="text-brand-purple hover:underline">
+                  franchising@peskids.com
                 </a>
               </p>
             </CardContent>

@@ -4,20 +4,20 @@ const prisma = new PrismaClient();
 
 const knowledgeDocuments = [
   {
-    title: "What is Acme Franchise?",
+    title: "What is Peskids Franchise?",
     category: "COMPANY_INFO" as const,
-    content: `Acme Franchise is a children's chess education company that uses storytelling to make chess accessible and engaging for young learners ages 3-9.
+    content: `Peskids Franchise is a children's chess education company that uses storytelling to make chess accessible and engaging for young learners ages 3-9.
 
 Our unique curriculum wraps chess concepts in memorable stories and characters. Instead of abstract rules, children learn that knights do a special "gallop-gallop-step to the side" dance, and bishops are sneaky teachers who only walk on the same color squares.
 
-Acme Franchise was established in 2011 in lower Manhattan, New York City, originally under the name Chess at Three. The program was the brainchild of Tyler Schwartz, Jon Sieber, and Sam Williams, who were looking for a way to teach young children the game of chess.
+Peskids Franchise was established in 2011 in lower Manhattan, New York City, originally under the name Chess at Three. The program was the brainchild of Tyler Schwartz, Jon Sieber, and Sam Williams, who were looking for a way to teach young children the game of chess.
 
 Key Milestones:
 - 2011: Founded in Manhattan, NYC as "Chess at Three"
 - 2012: Expanded into The Hamptons and Westchester, New York
-- 2018: Launched the Acme Franchise boardgame for retail
+- 2018: Launched the Peskids Franchise boardgame for retail
 - 2021: The boardgame was awarded "2021 Toy of the Year" and named Time Magazine's "Best Inventions of 2021"
-- 2024: Rebranded the tutoring business to Acme Franchise
+- 2024: Rebranded the tutoring business to Peskids Franchise
 - 2025: Began franchising to offer others the opportunity to expand the brand
 
 The game has been approved as a certified MESH (Mental Emotional and Social Health) game.`,
@@ -27,7 +27,7 @@ The game has been approved as a certified MESH (Mental Emotional and Social Heal
     title: "Mission, Vision and Core Values",
     category: "COMPANY_INFO" as const,
     content: `Mission:
-Acme Franchise transforms complex educational concepts into engaging, accessible experiences for children by weaving together storytelling, interactive gameplay, and family engagement.
+Peskids Franchise transforms complex educational concepts into engaging, accessible experiences for children by weaving together storytelling, interactive gameplay, and family engagement.
 
 Vision:
 Partner with passionate local entrepreneurs, schools, and communities to deliver innovative, proprietary teaching tools to over one million kids per year.
@@ -47,7 +47,7 @@ Chess is for everyone. Regardless of age, regardless of gender - chess is for yo
   {
     title: "Franchise Business Model",
     category: "BUSINESS_MODEL" as const,
-    content: `The Acme Franchise franchise opportunity allows passionate individuals to own their own children's chess education business.
+    content: `The Peskids Franchise franchise opportunity allows passionate individuals to own their own children's chess education business.
 
 Revenue Streams:
 
@@ -80,7 +80,7 @@ Based on 10 active school partnerships with typical 4 classrooms and 20 students
     category: "INVESTMENT" as const,
     content: `Initial Investment (from Item 7 of FDD):
 
-The total investment necessary to begin operation of a Acme Franchise franchise is $55,627 to $75,988. This includes:
+The total investment necessary to begin operation of a Peskids Franchise franchise is $55,627 to $75,988. This includes:
 
 - Initial Franchise Fee: $45,000 (non-refundable)
 - Equipment Fee: $669 - $2,267 (board games, lesson books, classroom materials, marketing materials)
@@ -107,14 +107,14 @@ IMPORTANT: See Items 5, 6, and 7 of our Franchise Disclosure Document for comple
   {
     title: "Training and Support",
     category: "TRAINING_SUPPORT" as const,
-    content: `Acme Franchise provides comprehensive training and ongoing support to all franchisees.
+    content: `Peskids Franchise provides comprehensive training and ongoing support to all franchisees.
 
 Initial Training:
 The initial training program is in Westside, Tennessee for five (5) days. Training includes up to two (2) people; at least one owner and manager must attend.
 
 Pre-Training Materials:
 - Training Agenda
-- Acme Franchise Kit
+- Peskids Franchise Kit
 - Operations Manuals (Introduction, Training and Pre-Opening)
 - Access to the Teach Story Time Portal (must complete Modules 1-3)
 
@@ -127,8 +127,8 @@ Training Topics:
 - Classroom management
 - Operations systems
 
-Acme Franchise Academy:
-Prior to teaching lessons, franchisees complete Acme Franchise Academy covering:
+Peskids Franchise Academy:
+Prior to teaching lessons, franchisees complete Peskids Franchise Academy covering:
 - The curriculum
 - Chess basics
 - How to use teaching tools
@@ -142,7 +142,7 @@ Ongoing Support:
 - Quarterly business reviews
 - Advanced curriculum training
 - Peer networking events
-- Franchise support email: franchisesupport@acmefranchise.com
+- Franchise support email: franchisesupport@peskids.com
 - Earl AI assistant for operational questions`,
     isPublic: true,
   },
@@ -229,8 +229,8 @@ Stories capture children's attention in ways that enhance learning. Fantasy elem
 - Empathetic characters
 - Adaptive storylines
 
-Acme Franchise Application:
-The weaving of gameplay, storytelling, and family connection is the foundation of all Acme Franchise programs. The program reimagines chess by embedding gameplay in engaging stories that support:
+Peskids Franchise Application:
+The weaving of gameplay, storytelling, and family connection is the foundation of all Peskids Franchise programs. The program reimagines chess by embedding gameplay in engaging stories that support:
 - Critical thinking
 - Executive function
 - Collaboration
@@ -244,7 +244,7 @@ Each game is taught using silly stories with captivating characters, vibrant ill
   {
     title: "Franchisor-Franchisee Relationship",
     category: "BUSINESS_MODEL" as const,
-    content: `The franchise system is built on an interdependent relationship between all Acme Franchise franchisees and the franchisor.
+    content: `The franchise system is built on an interdependent relationship between all Peskids Franchise franchisees and the franchisor.
 
 Franchisor Responsibilities:
 - Build and develop the business model, branding, and operational guidelines
@@ -256,7 +256,7 @@ Franchisor Responsibilities:
 - Legal compliance and intellectual property protection
 
 Franchisee Responsibilities:
-- Follow Acme Franchise established guidelines and procedures
+- Follow Peskids Franchise established guidelines and procedures
 - Manage local operations including staffing, marketing, and sales
 - Adhere to brand standards for products and services
 - Implement local marketing while following brand guidelines
@@ -266,10 +266,10 @@ Franchisee Responsibilities:
 
 Key Relationship Points:
 - Franchisees are independently owned and operated
-- Acme Franchise does NOT control hiring, firing, supervision, or compensation
+- Peskids Franchise does NOT control hiring, firing, supervision, or compensation
 - Franchisees are solely responsible for employment decisions
 - Open communication is key to mutual success
-- Submit suggestions to franchisesupport@acmefranchise.com
+- Submit suggestions to franchisesupport@peskids.com
 - Decisions benefit the entire franchise system`,
     isPublic: true,
   },
@@ -277,7 +277,7 @@ Key Relationship Points:
     title: "Frequently Asked Questions",
     category: "FRANCHISE_FAQ" as const,
     content: `Q: Do I need chess experience?
-A: No! Our curriculum certification teaches you everything you need to know about chess and our teaching method. You'll complete Acme Franchise Academy before teaching.
+A: No! Our curriculum certification teaches you everything you need to know about chess and our teaching method. You'll complete Peskids Franchise Academy before teaching.
 
 Q: Do I need teaching experience?
 A: Not required, but helpful. We train you on classroom management and engaging young learners ages 2-8.
@@ -298,7 +298,7 @@ Q: Can I hire instructors?
 A: Yes! Most franchisees start as owner-operators and hire additional tutors as they grow. Training on recruiting and managing tutors is included.
 
 Q: What about curriculum updates?
-A: Acme Franchise provides ongoing curriculum development. You'll receive notification when changes are made and access to new materials.
+A: Peskids Franchise provides ongoing curriculum development. You'll receive notification when changes are made and access to new materials.
 
 Q: Is there an annual conference?
 A: Yes, there's a $1,500 per attendee annual conference fee for the franchisee gathering.`,
@@ -349,7 +349,7 @@ What We Look For in Franchisees:
   {
     title: "Research Whitepaper: Effectiveness of Storytelling and Gameplay",
     category: "CHESS_BENEFITS" as const,
-    content: `Acme Franchise has published a comprehensive research whitepaper titled "Effectiveness of Storytelling and Gameplay to Ignite Learning" authored by Lee A. Scott, M.A. and Jennifer Jipson, Ph.D., with Dr. Deborah Weber as advisor.
+    content: `Peskids Franchise has published a comprehensive research whitepaper titled "Effectiveness of Storytelling and Gameplay to Ignite Learning" authored by Lee A. Scott, M.A. and Jennifer Jipson, Ph.D., with Dr. Deborah Weber as advisor.
 
 KEY RESEARCH FINDINGS:
 
@@ -407,7 +407,7 @@ Westside was one of our first franchise markets, led by Jon Sieber. Here's what'
 
 Networking Strategy:
 - Outreach to family-focused venues like Woodland Play Cafe & Family Club
-- Direct messaging introducing Acme Franchise and class opportunities
+- Direct messaging introducing Peskids Franchise and class opportunities
 - Quick response follow-up within hours
 
 Social Media Outreach:
@@ -422,7 +422,7 @@ Essential materials for market launch include:
 - Coloring sheets
 - Prize spinner wheel
 - Sandwich board
-- Acme Franchise branded tent
+- Peskids Franchise branded tent
 - Branded tablecloth
 - Logo and character stickers
 
@@ -484,7 +484,7 @@ The FDD is a legal document that must be provided in its complete form. Our team
 WHAT TO EXPECT:
 After speaking with our franchise team, you'll receive the complete FDD including Item 19 with all financial performance data. You'll have at least 14 days to review it with your attorney and financial advisor before making any decisions.
 
-IMPORTANT: Acme Franchise does not make earnings predictions or projections. We do not authorize our employees or representatives to make any financial performance representations beyond what is documented in the FDD. If anyone provides earnings projections, please report it to our management at franchisesupport@acmefranchise.com.`,
+IMPORTANT: Peskids Franchise does not make earnings predictions or projections. We do not authorize our employees or representatives to make any financial performance representations beyond what is documented in the FDD. If anyone provides earnings projections, please report it to our management at franchisesupport@peskids.com.`,
     isPublic: true,
   },
   {
@@ -511,13 +511,13 @@ WHAT WE CANNOT DO:
 HOW TO HANDLE EARNINGS QUESTIONS:
 Say something like: "I can't provide specific earnings projections. After your initial conversation with our team, they'll share the Franchise Disclosure Document which contains all the detailed financial information. Would you like to schedule a call?"
 
-IMPORTANT: Acme Franchise does not authorize employees or representatives to make financial performance representations. The FDD contains all official financial data and is only shared after an initial conversation with our franchise team.`,
+IMPORTANT: Peskids Franchise does not authorize employees or representatives to make financial performance representations. The FDD contains all official financial data and is only shared after an initial conversation with our franchise team.`,
     isPublic: true,
   },
   {
     title: "Franchise Disclosure Document Overview",
     category: "PROCESS" as const,
-    content: `The Franchise Disclosure Document (FDD) is a legal document that provides detailed information about the Acme Franchise franchise opportunity. Federal and state laws require us to provide this document at least 14 days before you sign any agreement or pay any fees.
+    content: `The Franchise Disclosure Document (FDD) is a legal document that provides detailed information about the Peskids Franchise franchise opportunity. Federal and state laws require us to provide this document at least 14 days before you sign any agreement or pay any fees.
 
 WHEN YOU RECEIVE THE FDD:
 The FDD is shared AFTER your initial conversation with our franchise team - not before. This allows us to understand your goals and ensure mutual fit before diving into the detailed documentation.
@@ -540,7 +540,7 @@ KEY FDD ITEMS (shared after initial conversation):
 - Exhibit E: List of current and former franchisees
 
 REGISTRATION STATES:
-Acme Franchise is registered to offer franchises in states that regulate franchise sales: California, Hawaii, Illinois, Indiana, Maryland, Michigan, Minnesota, New York, North Dakota, Oregon, Rhode Island, South Dakota, Virginia, Washington, and Wisconsin.
+Peskids Franchise is registered to offer franchises in states that regulate franchise sales: California, Hawaii, Illinois, Indiana, Maryland, Michigan, Minnesota, New York, North Dakota, Oregon, Rhode Island, South Dakota, Virginia, Washington, and Wisconsin.
 
 NOTE: This website and Earl the chatbot provide general information only. This is not an offer to sell a franchise. An offer is made only through the Franchise Disclosure Document, which you'll receive after speaking with our team.`,
     isPublic: true,

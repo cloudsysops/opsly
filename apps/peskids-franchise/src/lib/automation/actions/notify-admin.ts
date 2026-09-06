@@ -11,8 +11,8 @@ interface NotifyAdminConfig {
 }
 
 const DEFAULT_ADMIN_EMAILS = [
-  "franchising@acmefranchise.com",
-  "admin@acmefranchise.com",
+  "franchising@peskids.com",
+  "admin@peskids.com",
 ];
 
 export async function executeNotifyAdminAction(
@@ -85,7 +85,7 @@ export async function executeNotifyAdminAction(
 
   const success = await sendEmail({
     to: recipients,
-    subject: `[Acme Franchise] ${subject}`,
+    subject: `[Peskids Franchise] ${subject}`,
     html,
   });
 
