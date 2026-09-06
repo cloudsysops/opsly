@@ -1,11 +1,37 @@
 ---
-status: draft
+status: accepted
 owner: product
-last_review: 2026-05-19
+last_review: 2026-09-06
 tenant_slug: peskids
 ---
 
 # Peskids — canal WhatsApp
+
+## Decisión operativa: dashboard primero, WhatsApp como aviso
+
+En Colombia muchas personas desconfían de enlaces recibidos por WhatsApp. Por
+eso, el canal de confianza para cambiar estados, confirmar clases o ver PII es
+el dashboard autenticado de Peskids. WhatsApp no será la superficie principal
+de operación.
+
+- El mensaje puede avisar que hay una acción pendiente, pero no necesita incluir
+  un enlace.
+- El profesor puede abrir manualmente `peskids.op-sly.com/teacher` desde un
+  marcador o desde la pantalla instalada de la PWA.
+- Como alternativa, el mensaje puede incluir un código corto de un solo uso;
+  el profesor lo introduce en el dashboard. El código expira rápidamente y no
+  sustituye la sesión ni el rol.
+- Las acciones sensibles permanecen en el dashboard y requieren sesión,
+  rol-profesor y clase asignada.
+
+### Mensaje recomendado al profesor
+
+> Peskids: tienes una clase pendiente de cerrar. Abre la aplicación Peskids
+> desde tu acceso habitual. Nunca te pediremos contraseñas por WhatsApp.
+
+No se enviarán enlaces acortados, enlaces con tokens ni credenciales por el
+canal de WhatsApp. Los enlaces directos solo se usarán cuando el usuario los
+solicite y estén protegidos por una plantilla y un dominio reconocible.
 
 Plan operativo y técnico para **manejar WhatsApp** en Peskids sin romper **approval-first** ni mezclar con integraciones de otros productos (Local Services / Twilio, GoHighLevel auto-send).
 
@@ -64,6 +90,10 @@ flowchart LR
 
 **Modo operativo actual:** el canal puede quedar en `auto` para que WhatsApp responda con preguntas de intake y, al final, deje el handoff listo para soporte humano. Si se quiere pausar, cambiar a `draft`.
 
+Para profesores, el modo inicial será `notify_only`: notificar y registrar,
+sin ejecutar cambios de estado desde un mensaje libre. La confirmación se hace
+en el dashboard o mediante código verificado.
+
 ### Fase 2 — Borrador IA (opcional)
 
 - IA genera **borrador** de handoff para soporte humano (`draft`).
@@ -120,6 +150,9 @@ Si el owner pide “mensaje de recibido” automático:
 ## Checklist antes de activar API
 
 - [ ] Proveedor elegido y documentado abajo
+- [ ] Canal de acción del profesor validado en `/teacher/dashboard`
+- [ ] No-link/código de un solo uso probado en QA
+- [ ] Bandeja humana y procedimiento de bloqueo/opt-out documentados
 - [ ] Cuenta Meta Business del owner
 - [ ] Sprint 01 cerrado (forms + dashboard validados)
 - [ ] `AI-APPROVAL-POLICY.md` revisada con owner

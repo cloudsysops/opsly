@@ -12,7 +12,19 @@ interface EnrollmentRow {
   starts_at?: string;
   status: string;
   payment_status: string;
+  behavior_tags?: string[];
+  teacher_note?: string | null;
 }
+
+const BEHAVIOR_LABELS: Record<string, string> = {
+  happy: 'Feliz',
+  engaged: 'Participativo',
+  calm: 'Tranquilo',
+  shy: 'Tímido',
+  tired: 'Cansado',
+  needs_support: 'Requiere apoyo',
+  other: 'Otro',
+};
 
 function formatWhen(iso?: string): string {
   if (!iso) return '—';
@@ -114,6 +126,15 @@ export function FamilyReservationsClient(): React.ReactElement {
                     <p>
                       Estado: {row.status} · Pago: {row.payment_status}
                     </p>
+                    {row.behavior_tags?.length ? (
+                      <p className="mt-1">
+                        Clase:{' '}
+                        {row.behavior_tags.map((tag) => BEHAVIOR_LABELS[tag] ?? tag).join(' · ')}
+                      </p>
+                    ) : null}
+                    {row.teacher_note ? (
+                      <p className="mt-1">Observación: {row.teacher_note}</p>
+                    ) : null}
                   </div>
                   <div className="flex gap-2">
                     {row.payment_status === 'pending' ? (
