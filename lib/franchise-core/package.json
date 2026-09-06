@@ -1,6 +1,6 @@
 {
   "name": "@intcloudsysops/franchise-core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Reusable Franchise OS core: networks, franchisees, units, territories, agreements, versioned royalty engine, audits and corrective actions. Tenant-agnostic — Peskids is the first adapter.",
   "type": "module",
   "main": "./src/index.ts",
