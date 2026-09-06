@@ -270,6 +270,53 @@ describe('leadApiPostSchema', () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it('requires consent_identity_document when a document_number was submitted', () => {
+    const result = leadApiPostSchema.safeParse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '3001112233',
+      child_name: 'Mateo López',
+      birth_date: '2018-05-10',
+      document_number: '1234567890',
+      class_modality: 'llanogrande',
+      consent_treatment: true,
+      consent_identity_document: false,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts a family lead once consent_identity_document is authorized', () => {
+    const parsed = leadApiPostSchema.parse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '3001112233',
+      child_name: 'Mateo López',
+      birth_date: '2018-05-10',
+      document_number: '1234567890',
+      class_modality: 'llanogrande',
+      consent_treatment: true,
+      consent_identity_document: true,
+    });
+    expect(parsed.consent_identity_document).toBe(true);
+    expect(parsed.document_number).toBe('1234567890');
+  });
+
+  it('does not require consent_identity_document for the legacy payload (no document collected)', () => {
+    const parsed = leadApiPostSchema.parse({
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '3001112233',
+      class_modality: 'domicilio',
+      neighborhood: 'Envigado',
+      grade_interested: '6-8',
+      consent_treatment: true,
+    });
+    expect(parsed.consent_identity_document).toBe(false);
+    expect(parsed.lead_type).toBe('family');
+  });
 });
 
 describe('toCreateLeadInput', () => {

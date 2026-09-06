@@ -66,14 +66,15 @@ export const PESKIDS_INSTAGRAM_LANDING_INTRO =
 export const PESKIDS_CONSENT_TREATMENT =
   'Autorizo a Peskids para tratar mis datos personales y, cuando aplique, los datos necesarios del menor bajo mi responsabilidad, con el fin de atender esta solicitud y contactarme, conforme a su Política de Privacidad.';
 
-export const PESKIDS_CONSENT_IDENTITY_DOCUMENT =
-  'Autorizo expresamente a Peskids para tratar mi cédula como dato personal, únicamente para verificar mi identidad, gestionar esta solicitud y prestar el servicio solicitado.';
-
 export const PESKIDS_CONSENT_MARKETING =
   'Acepto recibir información sobre programas, novedades y promociones de Peskids por WhatsApp o correo electrónico. Puedo cancelar esta autorización en cualquier momento.';
 
 export const PESKIDS_CONSENT_PHOTOS_VIDEOS =
   'Autorizo a Peskids para usar fotos y videos de mis clases en sus redes sociales (Instagram, Facebook, TikTok) con fines promocionales. Entiendo que estas imágenes serán de carácter educativo y profesional.';
+
+/** Only shown/required when the form actually collects a document_number (family, teacher_applicant). */
+export const PESKIDS_CONSENT_IDENTITY_DOCUMENT =
+  'Autorizo a Peskids a solicitar y almacenar mi número de documento de identidad (o el del acudiente, cuando aplique) con el fin de verificar la identidad y preparar el contrato de matrícula. Este dato se conserva según nuestra Política de Retención de Datos y solo tiene acceso el personal autorizado de la sede.';
 
 /** @deprecated Prefer PESKIDS_RESERVATION_FORM_ANCHOR — kept for older anchors. */
 export const PESKIDS_CHAT_SECTION_ANCHOR = 'reserva';

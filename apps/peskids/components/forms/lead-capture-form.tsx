@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
+import { trackMetaLead } from '@/components/analytics/meta-pixel'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
 import {
   buildPostLeadWhatsAppPrefill,
@@ -38,7 +39,7 @@ import { Label } from '@/components/ui/label'
 import { firstZodErrorMessage } from '@/lib/validation/zod-errors'
 import { cn } from '@/lib/utils'
 
-const CONSENT_POLICY_VERSION = 'pk-parental-v1+pk-privacy-v1@1.0'
+const CONSENT_POLICY_VERSION = 'pk-parental-v1+pk-privacy-v1@1.1'
 
 const LEAD_TYPE_LABELS: Record<PeskidsLeadType, string> = {
   family: 'Familia / Alumno',
@@ -132,9 +133,13 @@ export function LeadCaptureForm({
   const [submitted, setSubmitted] = useState(false)
   const [formData, setFormData] = useState(() => emptyForm(defaultReferralSource))
   const [consentTreatment, setConsentTreatment] = useState(false)
-  const [consentIdentityDocument, setConsentIdentityDocument] = useState(false)
   const [consentMarketing, setConsentMarketing] = useState(false)
   const [consentPhotosVideos, setConsentPhotosVideos] = useState(false)
+  const [consentIdentityDocument, setConsentIdentityDocument] = useState(false)
+
+  const leadTypeCollectsDocument =
+    (formData.lead_type || 'family') === 'family' ||
+    formData.lead_type === 'teacher_applicant'
 
   const referredByCode = useMemo(
     () => searchParams.get('ref')?.trim().toUpperCase() ?? '',
@@ -150,12 +155,6 @@ export function LeadCaptureForm({
     if (!formData.email.includes('@')) return 'Correo válido requerido'
     if (formData.phone.trim().length < 7) return 'Teléfono requerido (mín. 7 dígitos)'
     if (formData.name.trim().length < 2) return 'Nombre requerido'
-    if (
-      (formData.lead_type === 'family' || formData.lead_type === 'teacher_applicant') &&
-      !consentIdentityDocument
-    ) {
-      return 'Autoriza expresamente el tratamiento de la cédula para continuar'
-    }
 
     if (formData.lead_type === 'family') {
       if (!formData.class_modality) return 'Selecciona sede o domicilio'
@@ -259,9 +258,9 @@ export function LeadCaptureForm({
       const apiParsed = leadApiPostSchema.safeParse({
         ...rawPayload,
         consent_treatment: consentTreatment ? true : undefined,
-        consent_identity_document: consentIdentityDocument,
         consent_marketing: consentMarketing,
         consent_photos_videos: consentPhotosVideos,
+        consent_identity_document: consentIdentityDocument,
         consent_policy_version: CONSENT_POLICY_VERSION,
         source,
         campaign,
@@ -320,8 +319,13 @@ export function LeadCaptureForm({
         data?: { lead_id?: string }
         lead_id?: string
         id?: string
+        meta_event_id?: string
       }
       const leadId = (apiBody.data?.lead_id ?? apiBody.lead_id ?? apiBody.id)?.trim() || ''
+
+      if (apiBody.meta_event_id) {
+        trackMetaLead(apiBody.meta_event_id)
+      }
 
       void fetch(
         process.env.NEXT_PUBLIC_N8N_LEAD_WEBHOOK || 'https://www.peskids.com/webhooks/lead-capture',
@@ -895,28 +899,6 @@ export function LeadCaptureForm({
                   />
                   <span className="text-xs text-pk-mutedText">{PESKIDS_CONSENT_TREATMENT}</span>
                 </label>
-                {formData.lead_type === 'family' || formData.lead_type === 'teacher_applicant' ? (
-                  <label htmlFor="consent_identity_document" className="flex gap-3">
-                    <input
-                      id="consent_identity_document"
-                      type="checkbox"
-                      checked={consentIdentityDocument}
-                      onChange={(e) => setConsentIdentityDocument(e.target.checked)}
-                      required
-                      className="mt-1 h-4 w-4"
-                    />
-                    <span className="text-xs text-pk-mutedText">
-                      {PESKIDS_CONSENT_IDENTITY_DOCUMENT}{' '}
-                      <a
-                        href="/privacy"
-                        className="font-semibold text-pk-primary underline"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        Ver Política de Privacidad.
-                      </a>
-                    </span>
-                  </label>
-                ) : null}
                 <label className="flex gap-3">
                   <input
                     type="checkbox"
@@ -935,6 +917,19 @@ export function LeadCaptureForm({
                   />
                   <span className="text-xs text-pk-mutedText">{PESKIDS_CONSENT_PHOTOS_VIDEOS}</span>
                 </label>
+                {leadTypeCollectsDocument ? (
+                  <label className="flex gap-3">
+                    <input
+                      type="checkbox"
+                      checked={consentIdentityDocument}
+                      onChange={(e) => setConsentIdentityDocument(e.target.checked)}
+                      className="mt-1 h-4 w-4"
+                    />
+                    <span className="text-xs text-pk-mutedText">
+                      {PESKIDS_CONSENT_IDENTITY_DOCUMENT}
+                    </span>
+                  </label>
+                ) : null}
               </div>
 
               {error && (
@@ -946,10 +941,7 @@ export function LeadCaptureForm({
               <Button
                 type="submit"
                 disabled={
-                  loading ||
-                  !consentTreatment ||
-                  ((formData.lead_type === 'family' || formData.lead_type === 'teacher_applicant') &&
-                    !consentIdentityDocument)
+                  loading || !consentTreatment || (leadTypeCollectsDocument && !consentIdentityDocument)
                 }
                 className="w-full bg-pk-primary text-white hover:opacity-90"
               >

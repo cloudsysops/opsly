@@ -286,9 +286,12 @@ const consentSchema = z.object({
   consent_treatment: z.literal(true, {
     message: 'Debes autorizar el tratamiento de datos',
   }),
-  consent_identity_document: z.boolean().optional().default(false),
   consent_marketing: z.boolean().optional().default(false),
   consent_photos_videos: z.boolean().optional().default(false),
+  // Required only for lead types that actually collect a document_number
+  // (family, teacher_applicant) — enforced below, not here, since this
+  // schema alone doesn't see lead_type.
+  consent_identity_document: z.boolean().optional().default(false),
   consent_policy_version: z.string().min(1).optional(),
   referral_code: z.string().trim().optional(),
   source: z.string().trim().optional(),
@@ -332,17 +335,18 @@ export const leadApiPostSchema = {
     if (!consent.success) return consent;
     const form = leadCaptureFormSchema.safeParse(raw);
     if (!form.success) return form;
-    const capturesIdentityDocument =
-      (form.data.lead_type === 'family' || form.data.lead_type === 'teacher_applicant') &&
-      Boolean('document_number' in form.data && form.data.document_number);
-    if (capturesIdentityDocument && consent.data.consent_identity_document !== true) {
+    const collectsDocumentNumber =
+      'document_number' in form.data &&
+      typeof form.data.document_number === 'string' &&
+      form.data.document_number.trim().length > 0;
+    if (collectsDocumentNumber && !consent.data.consent_identity_document) {
       return {
         success: false,
         error: new z.ZodError([
           {
             code: z.ZodIssueCode.custom,
             path: ['consent_identity_document'],
-            message: 'Debes autorizar expresamente el tratamiento de la cédula',
+            message: 'Debes autorizar el tratamiento de tu documento de identidad',
           },
         ]),
       };

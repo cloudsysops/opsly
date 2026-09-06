@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Caveat_Brush, JetBrains_Mono, Nunito } from 'next/font/google';
 import { AuthSessionRedirect } from '@/components/auth/auth-session-redirect';
+import { MetaPixel } from '@/components/analytics/meta-pixel';
 import { PeskidsClientShell } from '@/components/chat/peskids-client-shell';
 import { CookieBanner } from '@/components/legal/cookie-banner';
 import { SwRegister } from '@/components/pwa/sw-register';
@@ -55,6 +56,7 @@ export default function RootLayout({
     >
       <body className={nunito.className}>
         <AuthSessionRedirect />
+        <MetaPixel />
         <PeskidsClientShell>{children}</PeskidsClientShell>
         <CookieBanner />
         <SwRegister />
