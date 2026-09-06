@@ -1262,6 +1262,9 @@ export interface DashboardData {
       lead_type?: Database['public']['Tables']['leads']['Row']['lead_type'];
       service_mode?: Database['public']['Tables']['leads']['Row']['service_mode'];
       child_name?: string | null;
+      birth_date?: string | null;
+      document_type?: string | null;
+      document_number?: string | null;
       company_name?: string | null;
       referral_source?: string | null;
       twenty_person_id?: string | null;

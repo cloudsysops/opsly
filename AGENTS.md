@@ -2630,6 +2630,47 @@ refusing to allow an OAuth App to create or update workflow `.github/workflows/d
 
 ---
 
+## 🔄 Estado Actual (2026-09-04 — Security: fail-closed en MCP auth y Peskids Franchise)
+
+**Agente:** Claude
+**Rama:** `fix/mcp-tool-auth-required` (2 commits adelante de `main`, worktree limpio)
+**Actividad:** Cierre de dos vulnerabilidades de fail-open detectadas en revisión de seguridad
+**Status:** ✅ CÓDIGO Y TESTS LISTOS · ⛔ BLOQUEADO EN PUSH (credenciales)
+
+### Session Focus: Cerrar bypasses de autenticación (fail-open → fail-closed)
+
+**Commits:**
+
+1. **`4c7561a72` — fix(mcp): require auth for protected tools**
+   - **Problema:** en `apps/mcp/src/server.ts`, el chequeo de scope solo corría si `requiredScope !== undefined && authHeader !== undefined`. Una llamada a una tool protegida **sin ningún header `Authorization`** saltaba el chequeo por completo (fail-open).
+   - **Fix:** el chequeo corre siempre salvo `trustedTransport` explícito. Ese flag solo lo puede setear el bridge local por stdio (`apps/mcp/src/mcp-sdk-bridge.ts`), y únicamente cuando no hay token OAuth remoto (`extra.authInfo?.token === undefined`). Callers remotos ya no pueden auto-otorgarse confianza.
+   - **Archivos:** `apps/mcp/src/server.ts`, `apps/mcp/src/mcp-sdk-bridge.ts` + tests en `apps/mcp/__tests__/{server,server-scope,ai-integrations}.test.ts`
+   - **Tests:** ✅ 10/10 verdes (`npx vitest run` en `apps/mcp`)
+
+2. **`a2cdbc1c4` — fix(security): fail closed on auth and redirects**
+   - **Problema 1 (Peskids Franchise auth):** en `apps/peskids-franchise/src/lib/auth.ts`, si fallaba el lookup de membresía/rol en DB durante el sign-in, el código permitía el login igual y por defecto asignaba rol `ADMIN` a usuarios `@acmefranchise.com`.
+   - **Fix 1:** falla el `signIn` callback (`return false`) y el `jwt` callback lanza error (`throw new Error(...)`) si no se puede verificar la membresía — nunca más se asume ADMIN por default.
+   - **Problema 2 (open redirect):** `apps/peskids-franchise/src/app/login/page.tsx` usaba `searchParams.get('callbackUrl')` directo como destino de redirect tras login, sin validar.
+   - **Fix 2:** nuevo helper `apps/peskids-franchise/src/lib/safe-callback-url.ts` — rechaza valores que no empiecen con `/` o que sean protocol-relative (`//evil.com`), cae a `/admin` por default.
+   - **Tests:** ✅ 1/1 verde (`safe-callback-url.test.ts`)
+
+### Bloqueante activo
+
+No se pudo empujar la rama ni verificar/crear PR desde esta sesión:
+- `gh auth status` → token en `GH_TOKEN`/keyring **inválido**.
+- `git ls-remote origin` (SSH) → `Broken pipe`, no llega al repo.
+
+Esto es un problema de credenciales/red del entorno local, no del código. Revisar `gh auth refresh -h github.com` y el token de GitHub en Doppler (`ops-intcloudsysops / prd`).
+
+### Próximos pasos
+
+1. Resolver auth de `gh`/SSH (usuario).
+2. `git push -u origin fix/mcp-tool-auth-required`
+3. `gh pr create --draft --base main --head fix/mcp-tool-auth-required`
+4. Merge a `main` tras pasar CI.
+
+---
+
 ## Enlaces relacionados
 
 - [[.github/index|.github]]
