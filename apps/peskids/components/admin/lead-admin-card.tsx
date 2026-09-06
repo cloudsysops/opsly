@@ -1,14 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  Clock,
-  ExternalLink,
-  Mail,
-  MessageSquare,
-  Phone,
-  Users,
-} from 'lucide-react';
+import { Clock, ExternalLink, Mail, MessageSquare, Phone, Users } from 'lucide-react';
 import type { DashboardData } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -163,7 +156,11 @@ export function AdminLeadCard({
             size="sm"
             variant="ghost"
             onClick={() =>
-              window.open(`mailto:${encodeURIComponent(lead.email)}`, '_blank', 'noopener,noreferrer')
+              window.open(
+                `mailto:${encodeURIComponent(lead.email)}`,
+                '_blank',
+                'noopener,noreferrer'
+              )
             }
           >
             <Mail className="h-4 w-4" aria-hidden />

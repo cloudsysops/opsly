@@ -176,9 +176,7 @@ async function updateLegacyLead(
     return null;
   }
 
-  return mapLegacyLeadRow(
-    data as Parameters<typeof mapLegacyLeadRow>[0]
-  );
+  return mapLegacyLeadRow(data as Parameters<typeof mapLegacyLeadRow>[0]);
 }
 
 async function fetchPlatformLead(
@@ -207,10 +205,7 @@ async function fetchPlatformLead(
   return mapPlatformLeadRow(data as PlatformPeskidsLeadRow);
 }
 
-async function fetchLegacyLead(
-  leadId: string,
-  tenantSlug: string
-): Promise<DashboardLead | null> {
+async function fetchLegacyLead(leadId: string, tenantSlug: string): Promise<DashboardLead | null> {
   const { data, error } = await supabaseServer()
     .from('leads')
     .select(
@@ -248,8 +243,7 @@ export async function updateLeadForAdmin(
   tenantSlug: string,
   input: UpdateLeadAdminInput
 ): Promise<DashboardLead | null> {
-  const previous =
-    input.status !== undefined ? await getLeadForAdmin(leadId, tenantSlug) : null;
+  const previous = input.status !== undefined ? await getLeadForAdmin(leadId, tenantSlug) : null;
   const fromStatus = previous?.status ?? null;
 
   const platformLead = await updatePlatformLead(leadId, tenantSlug, input);

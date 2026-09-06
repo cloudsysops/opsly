@@ -34,7 +34,7 @@ describe('sales analytics', () => {
       ],
       followups: [
         { contact_id: 'domi-1', contact_type: 'lead', created_at: '2026-09-06T10:00:00Z' },
-      ],
+      ] as unknown as DashboardData['followups'],
       trialClasses: [],
     });
 

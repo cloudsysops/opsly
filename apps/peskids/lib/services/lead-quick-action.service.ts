@@ -112,7 +112,7 @@ export async function postPeskidsLeadQuickAction(
         };
       }
       const followup = await createOneMonthLeadFollowup(input.leadId);
-      await recordAudit({
+      await recordLeadStatusAudit({
         leadId: input.leadId,
         oldStatus,
         newStatus: oldStatus ?? 'trial',

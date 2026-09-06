@@ -3,19 +3,18 @@ import { hoursToFirstContact } from '@/lib/admin/lead-response-time';
 
 type SalesLead = DashboardData['new_leads'][number];
 type SalesFollowup = DashboardData['followups'][number] & {
-  created_at?: string;
+  created_at?: string | null;
 };
-type SalesContactEvent = Pick<SalesFollowup, 'contact_id' | 'contact_type' | 'created_at'>;
+type SalesContactEvent = Pick<SalesFollowup, 'contact_id' | 'contact_type'> & {
+  created_at?: string | null;
+};
 type SalesTrialClass = {
   lead_id: string;
   created_at?: string;
   status?: string;
 };
 
-const SOURCE_LABELS: Record<
-  'instagram' | 'facebook' | 'website' | 'referral' | 'other',
-  string
-> = {
+const SOURCE_LABELS: Record<'instagram' | 'facebook' | 'website' | 'referral' | 'other', string> = {
   instagram: 'Instagram',
   facebook: 'Facebook',
   website: 'Web',
@@ -83,13 +82,14 @@ export function buildDashboardSalesAnalytics(input: {
   trialClasses: SalesTrialClass[];
 }): DashboardSalesAnalytics {
   const statusCounts = { ...EMPTY_STAGE_COUNTS };
-  const sourceCounts: Record<'instagram' | 'facebook' | 'website' | 'referral' | 'other', number> = {
-    instagram: 0,
-    facebook: 0,
-    website: 0,
-    referral: 0,
-    other: 0,
-  };
+  const sourceCounts: Record<'instagram' | 'facebook' | 'website' | 'referral' | 'other', number> =
+    {
+      instagram: 0,
+      facebook: 0,
+      website: 0,
+      referral: 0,
+      other: 0,
+    };
   const modalityCounts = new Map<
     'llanogrande' | 'domicilio' | 'other',
     { total: number; enrolled: number }
@@ -174,9 +174,11 @@ export function buildDashboardSalesAnalytics(input: {
       synced_to_twenty: value.synced_to_twenty,
     })),
     lead_status_counts: statusCounts,
-    source_breakdown: (Object.entries(sourceCounts) as Array<
-      ['instagram' | 'facebook' | 'website' | 'referral' | 'other', number]
-    >).map(([key, count]) => ({
+    source_breakdown: (
+      Object.entries(sourceCounts) as Array<
+        ['instagram' | 'facebook' | 'website' | 'referral' | 'other', number]
+      >
+    ).map(([key, count]) => ({
       key,
       label: SOURCE_LABELS[key],
       count,
@@ -185,10 +187,12 @@ export function buildDashboardSalesAnalytics(input: {
       const bucket = modalityCounts.get(key) ?? { total: 0, enrolled: 0 };
       return {
         key,
-        label: key === 'llanogrande' ? 'Llanogrande' : key === 'domicilio' ? 'Domicilio' : 'Sin definir',
+        label:
+          key === 'llanogrande' ? 'Llanogrande' : key === 'domicilio' ? 'Domicilio' : 'Sin definir',
         total: bucket.total,
         enrolled: bucket.enrolled,
-        conversion_pct: bucket.total > 0 ? Math.round((bucket.enrolled / bucket.total) * 100) : null,
+        conversion_pct:
+          bucket.total > 0 ? Math.round((bucket.enrolled / bucket.total) * 100) : null,
       };
     }),
     avg_hours_to_first_followup: average(followupDiffs),
