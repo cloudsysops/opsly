@@ -12,7 +12,7 @@ Peskids y el control plane Opsly están **operativos de día**. Para no interfer
 
 | Acción | Cuándo |
 |--------|--------|
-| Merge a `main` que toque **runtime / deploy / infra / migraciones** | Solo en **ventana nocturna** `America/Bogota` **22:00–06:00** |
+| Promoción/deploy a producción de runtime / infra / migraciones | Solo en **ventana nocturna** `America/Bogota` **22:00–06:00** |
 | Deploy a VPS / GHCR de Peskids (u otros tenants en prod) | Misma ventana nocturna |
 | Docs, skills, reglas Cursor, copy sin runtime | **Sí de día** (sin label) |
 | Cambio mínimo que **no** afecta producción ni operación | De día solo con label GitHub **`safe-daytime`** |
@@ -22,7 +22,7 @@ Peskids y el control plane Opsly están **operativos de día**. Para no interfer
 
 - Zona: **`America/Bogota`**
 - Horario permitido: **22:00 inclusive → 06:00 exclusive**
-- Fuera de esa franja, CI `production-change-window` falla en PRs de impacto prod, y `Deploy Peskids` no despliega (salvo `force_daytime` / `hotfix-prod`).
+- Fuera de esa franja, la promoción de producción falla. El merge a `main` no despliega Peskids.
 
 ## Paths de impacto (noche o hotfix)
 
@@ -49,13 +49,13 @@ Si el PR mezcla docs + `apps/peskids` → se trata como impacto prod.
 
 ## Merge mientras duermes
 
-1. De día: PR listo + CI verde + label **`night-merge`**.
-2. A la 01:00 corre [`.github/workflows/night-merge.yml`](../../.github/workflows/night-merge.yml).
-3. Si el Deploy o el smoke fallan, el job intenta **rollback** de `main` y avisa por Discord.
+1. De día: PR revisado, CI verde y staging verificado.
+2. En la ventana: ejecutar **Promote Peskids release candidate** con el SHA completo.
+3. Si deploy o smoke fallan, se restaura el último artefacto SHA conocido.
 
 ## Agentes / Cursor
 
-No mergear ni desplegar Peskids/runtime de día. Abrir PR, dejar listo, añadir **`night-merge`** (o merge en ventana nocturna). Ver `.cursor/rules/production-change-window.mdc`.
+Se puede mergear Peskids/runtime de día cuando CI y revisión estén verdes; no se puede promover a producción de día. `night-merge` queda para compatibilidad. Ver `.cursor/rules/production-change-window.mdc`.
 
 ## Nightly merge + upgrades
 

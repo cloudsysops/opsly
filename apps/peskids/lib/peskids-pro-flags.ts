@@ -126,6 +126,16 @@ export function getPeskidsAttendanceRiskThreshold(
   return Number.isFinite(parsed) && parsed > 0 ? parsed : 3;
 }
 
+/**
+ * Franchise OS writes (royalties, territories, agreements, audits).
+ * Default OFF — schema 0098/0099 is not production-approved.
+ */
+export function isPeskidsFranchiseOsEnabled(
+  env: Record<string, string | undefined> = process.env
+): boolean {
+  return parseBooleanFlag(env.PESKIDS_FRANCHISE_OS_ENABLED, false);
+}
+
 export function getPeskidsContactSlaHours(
   env: NodeJS.ProcessEnv = process.env
 ): number {

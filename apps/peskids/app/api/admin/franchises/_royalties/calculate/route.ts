@@ -5,6 +5,7 @@ import { franchiseErrorResponse, getFranchiseService, resolveFranchiseActor } fr
 import { createSupabaseFranchiseStore } from '@intcloudsysops/franchise-persistence';
 import { supabaseServer } from '@/lib/supabase';
 import type { RoyaltyRule } from '@intcloudsysops/franchise-core';
+import { franchiseRoyaltyCalculatePostSchema } from '@/lib/validation/franchise-os.schema';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,12 +13,17 @@ export async function POST(req: NextRequest) {
   const requestId = resolveRequestId(req);
   const auth = await validateStaffRequest(req);
   if (!auth.ok) return errorJson(requestId, auth.error, auth.status);
-  let body: { reportId?: string; ruleId?: string; ruleVersion?: number; rule?: Partial<RoyaltyRule> };
+  let raw: unknown;
   try {
-    body = (await req.json()) as typeof body;
+    raw = await req.json();
   } catch {
     return errorJson(requestId, 'Invalid JSON', 400);
   }
+  const parsed = franchiseRoyaltyCalculatePostSchema.safeParse(raw);
+  if (!parsed.success) {
+    return errorJson(requestId, 'Invalid payload', 400);
+  }
+  const body = parsed.data;
   try {
     const actor = await resolveFranchiseActor(auth, requestId);
     const service = getFranchiseService();

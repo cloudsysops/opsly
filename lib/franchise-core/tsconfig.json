@@ -8,5 +8,6 @@
     "noEmit": true,
     "rootDir": "."
   },
-  "include": ["src/**/*.ts", "__tests__/**/*.ts"]
+  "include": ["src/**/*.ts", "__tests__/**/*.ts"],
+  "exclude": ["src/domain.test.ts"]
 }

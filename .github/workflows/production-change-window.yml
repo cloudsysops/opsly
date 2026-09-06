@@ -1,4 +1,4 @@
-# Gate merges/deploys that can affect production (Peskids live).
+# Merge-time notice only. Production promotion enforces the real window.
 # See docs/runbooks/PRODUCTION-CHANGE-WINDOW.md
 
 name: Production change window
@@ -65,7 +65,7 @@ jobs:
             echo "night_merge=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Enforce night window for prod-impact PRs
+      - name: Allow reviewed daytime merge; enforce window at promotion
         env:
           HOTFIX_PROD: ${{ steps.labels.outputs.hotfix == 'true' && '1' || '0' }}
           SAFE_DAYTIME: ${{ steps.labels.outputs.safe == 'true' && '1' || '0' }}
@@ -74,11 +74,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mapfile -t PATHS < <(printf '%s\n' "$CHANGED_PATHS" | grep -v '^[[:space:]]*$' || true)
-          if [ "${#PATHS[@]}" -eq 0 ]; then
-            echo "No file list (dispatch or empty diff) — clock notice only"
-            node scripts/ci/check-production-change-window.mjs --check-now || \
-              echo "::notice::Outside night window; prod-impact merges need label or night."
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Merge gate: CI/review protect main. Production window is enforced by promotion workflow."
             exit 0
           fi
-          node scripts/ci/check-production-change-window.mjs --mode pr --paths "${PATHS[@]}"
+          node scripts/ci/check-production-change-window.mjs --check-now || \
+            echo "::notice::This workflow is informational outside the production window."

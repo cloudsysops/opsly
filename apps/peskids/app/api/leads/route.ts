@@ -5,6 +5,7 @@ import { postPeskidsLeadWithCRM } from '@/lib/peskids-canonical-api';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { leadApiPostSchema } from '@/lib/validation/lead.schema';
 import { firstZodErrorMessage } from '@/lib/validation/zod-errors';
+import { findLeadIdByEmail } from '@/lib/lead-intake-idempotency';
 
 // FormData only carries strings/Files; the client serializes these booleans with String(value).
 const BOOLEAN_FIELDS = new Set([
@@ -63,6 +64,29 @@ export async function POST(request: NextRequest) {
     }
 
     const body = parsed.data;
+    const existingLeadId = await findLeadIdByEmail(body.email);
+    if (existingLeadId) {
+      const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids';
+      const referralCode =
+        body.referral_code?.trim().toUpperCase() ??
+        buildPeskidsReferralCode({
+          tenantId,
+          leadId: existingLeadId,
+          email: body.email,
+        });
+      return successJson(requestId, {
+        ok: true,
+        id: existingLeadId,
+        lead_id: existingLeadId,
+        tenant_slug: tenantId,
+        lead_type: body.lead_type,
+        referral_code: referralCode,
+        referral_link: buildPeskidsReferralLink(referralCode),
+        referral_discount_cents: 0,
+        message: 'Interesado ya registrado',
+        replayed: true,
+      });
+    }
 
     console.warn('[peskids][lead] consent', {
       treatment: body.consent_treatment,

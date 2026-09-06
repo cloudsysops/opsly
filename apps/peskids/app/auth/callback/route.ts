@@ -8,14 +8,14 @@ import {
 import { getPeskidsPublicBaseUrl, isLocalhostLikeOrigin, isProductionRuntime } from '@/lib/app-url';
 import { recoveryExchangeErrorMessage } from '@/lib/auth-recovery-messages';
 import { normalizeRequestOrigin } from '@/lib/request-origin';
+import { getAuthPublicConfig } from '@/lib/auth-public-config';
 
 function getSupabaseConfig(): { url: string; anon: string } | null {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? '';
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ?? '';
-  if (!url || !anon) {
+  const config = getAuthPublicConfig();
+  if (!config.configured) {
     return null;
   }
-  return { url, anon };
+  return { url: config.supabaseUrl, anon: config.supabaseAnonKey };
 }
 
 function resolveCallbackOrigin(requestOrigin: string): string {

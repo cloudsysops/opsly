@@ -1,5 +1,6 @@
 import peskidsPkg from '../../../package.json';
 import { buildPeskidsProObservability } from '@/lib/observability/peskids-pro-health';
+import { assertPeskidsDatabaseBoundary } from '@/lib/runtime-environment';
 
 function resolveVersion(): string {
   return typeof peskidsPkg.version === 'string' ? peskidsPkg.version : '0.0.0';
@@ -24,6 +25,15 @@ function resolveImageTag(): string | null {
 }
 
 export async function GET(): Promise<Response> {
+  try {
+    assertPeskidsDatabaseBoundary();
+  } catch {
+    return Response.json(
+      { status: 'error', code: 'ENVIRONMENT_BOUNDARY_INVALID', service: 'peskids' },
+      { status: 503 }
+    );
+  }
+
   const gitSha = resolveGitSha();
   const imageTag = resolveImageTag();
 

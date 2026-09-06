@@ -11,6 +11,9 @@ export type PlatformPeskidsLeadRow = {
   neighborhood: string | null;
   grade_interested: string;
   child_name?: string | null;
+  birth_date?: string | null;
+  document_type?: string | null;
+  document_number?: string | null;
   company_name?: string | null;
   status: string;
   admin_notes: string | null;
@@ -98,6 +101,9 @@ export function mapPlatformLeadRow(row: PlatformPeskidsLeadRow): DashboardLead {
     neighborhood: row.neighborhood,
     grade_interested: row.grade_interested,
     child_name: row.child_name ?? null,
+    birth_date: row.birth_date ?? null,
+    document_type: row.document_type ?? null,
+    document_number: row.document_number ?? null,
     company_name: row.company_name ?? null,
     status: mapPlatformLeadStatus(row.status),
     admin_notes: row.admin_notes,
