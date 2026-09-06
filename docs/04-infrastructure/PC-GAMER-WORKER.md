@@ -161,6 +161,30 @@ Criterio: `/health` del worker **o** heartbeat Redis fresco. Si ambos fallan →
 
 VPS orchestrator debe permanecer en **`queue-only` / `control`** (ADR-020) para no robar la cola.
 
+### Modo real (RAM/GPU) tiene precedencia sobre el horario fijo
+
+`config/pc-gamer-schedule.json` es un horario `DRAFT` — una suposición de cuándo Mauro
+juega, no una medición. `scripts/ops/check-pc-gamer-load.sh` lee RAM libre y % de uso
+de GPU reales por SSH (`nvidia-smi` + `Get-CimInstance Win32_OperatingSystem`) y
+`overnight-autodispatch.sh` lo usa para corregir el modo del calendario en ambas
+direcciones antes de decidir si encola:
+
+- Calendario dice `gaming` pero la máquina está idle (RAM/GPU libres) → relaja a `light`.
+- Calendario dice `light`/`heavy` pero se detecta carga real (Mauro jugando fuera de su
+  bloque habitual) → fuerza `gaming`.
+- Si la lectura en vivo no es alcanzable (SSH/WSL caído), se respeta el calendario tal
+  cual — nunca se asume "libre" sin poder confirmarlo.
+
+```bash
+./scripts/ops/check-pc-gamer-load.sh --json
+# {"reachable":true,"free_ram_gb":20.4,"gpu_util_pct":0,"gpu_mem_used_mib":990,"busy":false}
+```
+
+Un job ya en curso cuando empieza a jugar **se deja terminar**; solo se bloquea el
+*siguiente* encolado — no hay corte abrupto de trabajo a mitad de camino.
+
+Umbrales ajustables por env: `PC_GAMER_BUSY_GPU_UTIL_PCT` (default 20), `PC_GAMER_BUSY_FREE_RAM_GB` (default 10).
+
 ## Verificar
 
 ```bash
@@ -232,8 +256,9 @@ swap=4GB
 | `scripts/ops/check-pc-gamer-online.sh` | Gate antes de encolar |
 | `scripts/ops/assert-ephemeral-worker-env.sh` | Anti secretos maestros |
 | `OPSLY_WORKER_ALLOWLIST` | Filtra workers en `apps/orchestrator` |
-| `scripts/ops/pc-gamer-schedule.sh` | Modo gaming/light/heavy según Mauro |
+| `scripts/ops/pc-gamer-schedule.sh` | Modo gaming/light/heavy según calendario (DRAFT) |
 | `config/pc-gamer-schedule.json` | Calendario semanal (DRAFT) |
+| `scripts/ops/check-pc-gamer-load.sh` | RAM/GPU en vivo — corrige el modo del calendario |
 | `docs/runbooks/PC-GAMER-MAURO-SCHEDULE.md` | Cómo ajustar horas con el dueño |
 | `docs/runbooks/OVERNIGHT-OPENCODE-GAMER.md` | Runbook crecimiento overnight |
 | `scripts/ops/start-mac-local-agents-worker.sh` | Worker Mac solo cola `local-agents` |

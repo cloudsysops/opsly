@@ -146,6 +146,26 @@ log "run mode=${FORCE_MODE:-auto} online_force=${FORCE_ONLINE} task=${TASK_FILTE
 # no añadir fallback aquí para no duplicar líneas y romper json_get.
 SCHED_JSON="$(./scripts/ops/pc-gamer-schedule.sh --json 2>/dev/null)"
 MODE="$(json_get "$SCHED_JSON" mode)"; MODE="${MODE:-gaming}"
+
+# --- carga real (RAM/GPU) tiene precedencia sobre el horario fijo, salvo --mode manual ---
+# El horario es una suposición ("Mauro probablemente juega 18-23:30"); la lectura en vivo
+# confirma o corrige eso. Si no es alcanzable, se respeta el horario tal cual (fail-safe
+# ya vive dentro de check-pc-gamer-load.sh: no alcanzable → busy=true).
+if [[ -z "$FORCE_MODE" ]]; then
+  LOAD_JSON="$(./scripts/ops/check-pc-gamer-load.sh --json 2>/dev/null || true)"
+  LOAD_REACHABLE="$(json_get "$LOAD_JSON" reachable)"
+  LOAD_BUSY="$(json_get "$LOAD_JSON" busy)"
+  if [[ "$LOAD_REACHABLE" == "true" ]]; then
+    if [[ "$LOAD_BUSY" == "true" && "$MODE" != "gaming" ]]; then
+      log "live load busy (RAM/GPU) → override MODE ${MODE} -> gaming"
+      MODE="gaming"
+    elif [[ "$LOAD_BUSY" == "false" && "$MODE" == "gaming" ]]; then
+      log "live load idle durante bloque gaming del horario → relax MODE gaming -> light"
+      MODE="light"
+    fi
+  fi
+fi
+
 [[ -n "$FORCE_MODE" ]] && MODE="$FORCE_MODE"
 ALLOW_LIST="$(json_get "$SCHED_JSON" allow_enqueue)"
 
