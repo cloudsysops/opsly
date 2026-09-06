@@ -50,13 +50,10 @@ for arg in "$@"; do
   esac
 done
 
-SUPABASE_URL="${SUPABASE_URL:-}"
-SUPABASE_SERVICE_ROLE_KEY="${SUPABASE_SERVICE_ROLE_KEY:-}"
-if [[ -z "$SUPABASE_URL" || -z "$SUPABASE_SERVICE_ROLE_KEY" ]]; then
-  echo "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY" >&2
-  exit 1
-fi
-
+# The confirmation gate is checked BEFORE the credential check on purpose: a
+# refusal must never depend on the operator happening to have credentials
+# loaded, and it must be assertable in CI without any secret present.
+# See scripts/test-prod-guards.sh.
 if [[ "$MODE" == "execute" && "${PESKIDS_PURGE_DEMO_CONFIRM:-}" != "yes" ]]; then
   cat >&2 <<EOF
 REFUSED: --execute requires PESKIDS_PURGE_DEMO_CONFIRM=yes
@@ -67,6 +64,13 @@ REFUSED: --execute requires PESKIDS_PURGE_DEMO_CONFIRM=yes
 3) Then:
    PESKIDS_PURGE_DEMO_CONFIRM=yes ./scripts/purge-peskids-demo-data.sh --execute
 EOF
+  exit 1
+fi
+
+SUPABASE_URL="${SUPABASE_URL:-}"
+SUPABASE_SERVICE_ROLE_KEY="${SUPABASE_SERVICE_ROLE_KEY:-}"
+if [[ -z "$SUPABASE_URL" || -z "$SUPABASE_SERVICE_ROLE_KEY" ]]; then
+  echo "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY" >&2
   exit 1
 fi
 
