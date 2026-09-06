@@ -251,7 +251,7 @@ export function groupLeadsIntoPipelineColumns(
 async function fetchAllPlatformLeads(tenantSlug: string): Promise<DashboardLead[] | null> {
   const { data, error } = await platformFrom()
     .select(
-      'id, full_name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, company_name, status, admin_notes, referral_source, created_at, twenty_person_id, twenty_opportunity_id'
+      'id, full_name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, birth_date, document_type, document_number, company_name, status, admin_notes, referral_source, created_at, twenty_person_id, twenty_opportunity_id'
     )
     .eq('tenant_slug', tenantSlug)
     .order('created_at', { ascending: false });
@@ -272,7 +272,7 @@ async function fetchAllLegacyLeads(tenantSlug: string): Promise<DashboardLead[]>
   const { data, error } = await supabaseServer()
     .from('leads')
     .select(
-      'id, name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, company_name, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source, created_at, franchise_id'
+      'id, name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, birth_date, document_type, document_number, company_name, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source, created_at, franchise_id'
     )
     .eq('tenant_id', tenantSlug)
     .order('created_at', { ascending: false });
@@ -293,6 +293,9 @@ async function fetchAllLegacyLeads(tenantSlug: string): Promise<DashboardLead[]>
     | 'neighborhood'
     | 'grade_interested'
     | 'child_name'
+    | 'birth_date'
+    | 'document_type'
+    | 'document_number'
     | 'company_name'
     | 'status'
     | 'admin_notes'
@@ -318,6 +321,9 @@ async function fetchAllLegacyLeads(tenantSlug: string): Promise<DashboardLead[]>
         neighborhood: row.neighborhood,
         grade_interested: row.grade_interested,
         child_name: row.child_name,
+        birth_date: row.birth_date,
+        document_type: row.document_type,
+        document_number: row.document_number,
         company_name: row.company_name,
         status: row.status,
         admin_notes: row.admin_notes,

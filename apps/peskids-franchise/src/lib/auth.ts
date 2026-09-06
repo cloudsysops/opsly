@@ -133,7 +133,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
         } catch (err) {
           console.error('Error in signIn callback:', err);
-          // Still allow sign-in — role will be resolved in jwt callback
+          // Fail closed: a database lookup failure must never grant admin access.
+          return false;
         }
       }
       return true;
@@ -171,8 +172,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
         } catch (err) {
           console.error('Error in jwt callback:', err);
-          // Default to ADMIN for @peskids.com users if DB lookup fails
-          token.role = 'ADMIN' as UserRole;
+          // Do not default to ADMIN when membership/role resolution fails.
+          throw new Error('Unable to verify franchise administrator membership');
         }
       }
       return token;

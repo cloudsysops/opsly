@@ -4,6 +4,7 @@ import { createServerClient, type SetAllCookies } from '@supabase/ssr'
 import { isStaffUser } from '@/lib/staff-user'
 import type { Database } from '@/lib/types'
 import { isPathUnderAuthSurface } from '@/lib/runtime/tenant-auth-surface'
+import { getAuthPublicConfig } from '@/lib/auth-public-config'
 
 const PESKIDS_AUTH_SURFACE = {
   entryPaths: ['/', '/admin/login'],
@@ -41,9 +42,8 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     return NextResponse.next()
   }
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!url || !anon) {
+  const { supabaseUrl: url, supabaseAnonKey: anon, configured } = getAuthPublicConfig()
+  if (!configured || !url || !anon) {
     const login = new URL('/admin/login', req.url)
     return NextResponse.redirect(login)
   }

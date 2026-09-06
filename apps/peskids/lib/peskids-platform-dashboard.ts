@@ -28,7 +28,7 @@ export async function fetchPlatformLeadsForDashboard(
 > {
   let query = platformFrom('peskids_leads')
     .select(
-      'id, full_name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, company_name, status, admin_notes, referral_source, created_at, franchise_id, twenty_person_id, twenty_opportunity_id'
+      'id, full_name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, birth_date, document_type, document_number, company_name, status, admin_notes, referral_source, created_at, franchise_id, twenty_person_id, twenty_opportunity_id'
     )
     .eq('tenant_slug', tenantSlug)
     .gte('created_at', periodStartISO)
@@ -92,7 +92,7 @@ export async function fetchDashboardLeads(
   let query = supabase
     .from('leads')
     .select(
-      'id, name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, company_name, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source, created_at, franchise_id'
+      'id, name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, birth_date, document_type, document_number, company_name, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source, created_at, franchise_id'
     )
     .eq('tenant_id', tenantSlug)
     .gte('created_at', periodStartISO)
@@ -119,6 +119,9 @@ export async function fetchDashboardLeads(
     neighborhood: string | null;
     grade_interested: string;
     child_name?: string | null;
+    birth_date?: string | null;
+    document_type?: string | null;
+    document_number?: string | null;
     company_name?: string | null;
     status: DashboardData['new_leads'][number]['status'];
     admin_notes: string | null;
@@ -145,6 +148,9 @@ export async function fetchDashboardLeads(
         neighborhood: row.neighborhood,
         grade_interested: row.grade_interested,
         child_name: row.child_name,
+        birth_date: row.birth_date,
+        document_type: row.document_type,
+        document_number: row.document_number,
         company_name: row.company_name,
         status: row.status,
         admin_notes: row.admin_notes,

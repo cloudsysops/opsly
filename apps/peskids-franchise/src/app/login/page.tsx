@@ -8,11 +8,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense } from 'react';
+import { safeCallbackUrl } from '@/lib/safe-callback-url';
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/admin';
+  const callbackUrl = safeCallbackUrl(searchParams.get('callbackUrl'));
   const error = searchParams.get('error');
   const message = searchParams.get('message');
 

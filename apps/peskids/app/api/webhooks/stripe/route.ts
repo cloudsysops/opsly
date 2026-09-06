@@ -1,17 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
+import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import {
   markEnrollmentPaidFromCheckout,
   verifyStripeWebhookSignature,
 } from '@/lib/services/payment.service';
+import { resolvePeskidsEnvironment } from '@/lib/runtime-environment';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
+  const requestId = resolveRequestId(req);
+  const environment = resolvePeskidsEnvironment();
   const payload = await req.text();
   const signature = req.headers.get('stripe-signature');
 
   if (!verifyStripeWebhookSignature(payload, signature)) {
-    return NextResponse.json({ ok: false, error: 'Invalid signature' }, { status: 400 });
+    console.warn('[peskids][stripe] invalid signature', { request_id: requestId, environment });
+    return errorJson(requestId, 'Invalid signature', 400);
   }
 
   let event: {
@@ -22,7 +27,7 @@ export async function POST(req: NextRequest) {
   try {
     event = JSON.parse(payload) as typeof event;
   } catch {
-    return NextResponse.json({ ok: false, error: 'Invalid JSON' }, { status: 400 });
+    return errorJson(requestId, 'Invalid JSON', 400);
   }
 
   if (event.type === 'checkout.session.completed') {
@@ -41,6 +46,11 @@ export async function POST(req: NextRequest) {
       typeof session.payment_intent === 'string' ? session.payment_intent : null;
 
     if (enrollmentId && sessionId) {
+      console.info('[peskids][stripe] checkout.session.completed', {
+        request_id: requestId,
+        environment,
+        tenant: process.env.NEXT_PUBLIC_TENANT_ID || 'peskids',
+      });
       await markEnrollmentPaidFromCheckout({
         enrollmentId,
         sessionId,
@@ -49,5 +59,5 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ ok: true, received: true });
+  return successJson(requestId, { ok: true, received: true });
 }

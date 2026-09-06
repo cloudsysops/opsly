@@ -42,6 +42,8 @@ describe('validateStaffRequest', () => {
     cookieTokenValue = '';
     cookieStore.getAll.mockClear();
     delete process.env.DASHBOARD_ADMIN_SECRET;
+    delete process.env.PESKIDS_ENVIRONMENT;
+    delete process.env.PESKIDS_ALLOW_DASHBOARD_ADMIN_SECRET;
     process.env.NEXT_PUBLIC_TENANT_ID = 'peskids';
     process.env.SUPABASE_URL = 'https://project.supabase.co';
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role';
@@ -57,6 +59,19 @@ describe('validateStaffRequest', () => {
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.method).toBe('secret');
+    }
+  });
+
+  it('rejects the dashboard secret in production unless explicitly allowed', async () => {
+    process.env.DASHBOARD_ADMIN_SECRET = 'secret';
+    process.env.PESKIDS_ENVIRONMENT = 'production';
+    const { validateStaffRequest } = await import('../staff-auth');
+
+    const result = await validateStaffRequest(makeRequest({ authorization: 'Bearer secret' }));
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.status).toBe(401);
     }
   });
 

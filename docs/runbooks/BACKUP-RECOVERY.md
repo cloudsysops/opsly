@@ -16,6 +16,11 @@ Opsly backups are automated daily via GitHub Actions (`backup.yml`) running `scr
 
 *\* Platform schema (tenants, subscriptions, feedback) should be snapshotted periodically via Supabase project dashboard or `pg_dump` manually.*
 
+**Peskids exception:** application data is in `peskids` / `platform.peskids_*` /
+`public` tables, not `tenant_peskids`. Use
+`scripts/ops/backup-peskids-schemas.sh` and
+[`PESKIDS-DATA-OPERATIONS.md`](./PESKIDS-DATA-OPERATIONS.md).
+
 **Not backed up (recoverable from source):**
 - Docker Compose definitions (`infra/`) — in git
 - n8n workflow exports — can be re-imported from `.n8n/` or git
