@@ -29,8 +29,11 @@ environment `production` aprobado y ventana 22:00–06:00 `America/Bogota`.
 Promueve la misma imagen; nunca recompila. Luego verifica health público,
 homepage, login y SHA/tag. Si falla, restaura el último tag SHA conocido.
 
-El environment `staging` requiere SSH, `DOPPLER_TOKEN_STG`, dominio y
-`STAGING_NEXT_PUBLIC_SUPABASE_URL`/`STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+El environment `staging` requiere SSH, `DOPPLER_TOKEN_STG` (lee Doppler
+`stg_peskids`, no Smile `stg`), dominio y
+`STAGING_NEXT_PUBLIC_SUPABASE_URL`/`STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY`
+apuntando a `opsly-QA` (`hljetbbgiphpjbldebpo`). El deploy falla si la URL
+es el proyecto de producción (`jkwykpldnitavhmtuzmo`).
 `production` requiere SSH, `DOPPLER_TOKEN_PRD` y reviewers. Si falta
 configuración, el workflow falla cerrado. No se usa `latest`.
 
