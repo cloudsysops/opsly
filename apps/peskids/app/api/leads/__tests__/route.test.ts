@@ -5,9 +5,17 @@ import { resetRateLimit } from '@/lib/rate-limit';
 const postCanonicalLeadMock = vi.fn();
 const buildReferralCodeMock = vi.fn();
 const buildReferralLinkMock = vi.fn();
+const findLeadIdByEmailMock = vi.fn();
 
 vi.mock('@/lib/peskids-canonical-api', () => ({
   postPeskidsLeadWithCRM: postCanonicalLeadMock,
+}));
+
+// Supabase-backed duplicate-email lookup: not what this file's idempotency
+// tests exercise (that's the in-memory intake-idempotency cache below), so it
+// defaults to "no existing lead" and is stubbed out to avoid a real DB call.
+vi.mock('@/lib/lead-intake-idempotency', () => ({
+  findLeadIdByEmail: findLeadIdByEmailMock,
 }));
 
 vi.mock('@/lib/peskids-referrals', () => ({
@@ -63,6 +71,8 @@ describe('POST /api/leads', () => {
     postCanonicalLeadMock.mockReset();
     buildReferralCodeMock.mockReset();
     buildReferralLinkMock.mockReset();
+    findLeadIdByEmailMock.mockReset();
+    findLeadIdByEmailMock.mockResolvedValue(null);
     resetIntakeIdempotencyCache();
     resetRateLimit();
     process.env.NEXT_PUBLIC_TENANT_ID = 'peskids';

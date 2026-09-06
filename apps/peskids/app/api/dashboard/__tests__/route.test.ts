@@ -84,6 +84,7 @@ describe('GET /api/dashboard', () => {
     await expect(response.json()).resolves.toEqual({
       ok: false,
       error: 'Forbidden',
+      code: 'FORBIDDEN',
       request_id: 'req-forge',
     })
   })
