@@ -1,10 +1,11 @@
-import { supabaseServer } from '@/lib/supabase';
 import { getLeadForAdmin, updateLeadForAdmin } from '@/lib/services/lead-admin.service';
-import { createTrialClass } from '@/lib/services/trial-class.service';
+import { createTrialClass, hasAttendedTrialClass } from '@/lib/services/trial-class.service';
+import { createOneMonthLeadFollowup } from '@/lib/services/followup-admin.service';
+import { recordLeadStatusAudit } from '@/lib/services/lead-status-audit.service';
 
 type QuickActionInput = {
   leadId: string;
-  action: 'mark_attended' | 'mark_enrolled' | 'hold' | 'cancel';
+  action: 'mark_attended' | 'mark_enrolled' | 'follow_up_month' | 'hold' | 'cancel';
   teacherName?: string;
   scheduledDate?: string;
   scheduledTime?: string;
@@ -19,52 +20,8 @@ type QuickActionResult = {
   trialClassId?: string;
 };
 
-type AuditAction = 'status_change' | 'teacher_assign' | 'hold' | 'cancel';
-
-type LeadStatusAuditInsert = {
-  tenant_slug: string;
-  lead_id: string;
-  old_status: string | null;
-  new_status: string;
-  action: AuditAction;
-  metadata: Record<string, unknown>;
-};
-
 function tenantSlug(): string {
   return (process.env.NEXT_PUBLIC_TENANT_ID || 'peskids').trim().toLowerCase();
-}
-
-// lead_status_audit predates the next `db:codegen` run, so the typed Database
-// client doesn't know it yet — same escape hatch as lead-admin.service.ts's platformFrom().
-function auditTable() {
-  const client = supabaseServer() as unknown as {
-    from: (tableName: string) => {
-      insert: (row: LeadStatusAuditInsert) => Promise<{ error: { message: string } | null }>;
-    };
-  };
-  return client.from('lead_status_audit');
-}
-
-async function recordAudit(input: {
-  leadId: string;
-  oldStatus: string | null;
-  newStatus: string;
-  action: AuditAction;
-  metadata: Record<string, unknown>;
-}): Promise<void> {
-  const { error } = await auditTable().insert({
-    tenant_slug: tenantSlug(),
-    lead_id: input.leadId,
-    old_status: input.oldStatus,
-    new_status: input.newStatus,
-    action: input.action,
-    metadata: input.metadata,
-  });
-
-  if (error) {
-    // Audit is best-effort; never block the underlying lead/trial mutation on it.
-    console.warn('lead_status_audit insert failed', { error, lead_id: input.leadId });
-  }
 }
 
 export async function postPeskidsLeadQuickAction(
@@ -90,7 +47,7 @@ export async function postPeskidsLeadQuickAction(
           teacher_name: input.teacherName,
         });
 
-        await recordAudit({
+        await recordLeadStatusAudit({
           leadId: input.leadId,
           oldStatus,
           newStatus: 'trial',
@@ -100,7 +57,7 @@ export async function postPeskidsLeadQuickAction(
             teacher_name: input.teacherName,
             scheduled_date: input.scheduledDate,
             scheduled_time: input.scheduledTime,
-            reason: input.reason || 'marked_attended',
+            reason: input.reason || 'class_scheduled',
           },
         });
 
@@ -112,7 +69,7 @@ export async function postPeskidsLeadQuickAction(
         return { ok: false, error: 'Failed to update lead', status: 400 };
       }
 
-      await recordAudit({
+      await recordLeadStatusAudit({
         leadId: input.leadId,
         oldStatus,
         newStatus: 'contacted',
@@ -124,17 +81,43 @@ export async function postPeskidsLeadQuickAction(
     }
 
     if (input.action === 'mark_enrolled') {
+      if (oldStatus !== 'trial') {
+        return { ok: false, error: 'Lead must have a trial class before enrollment', status: 409 };
+      }
       const updated = await updateLeadForAdmin(input.leadId, slug, { status: 'enrolled' });
       if (!updated) {
         return { ok: false, error: 'Failed to update lead', status: 400 };
       }
 
-      await recordAudit({
+      await recordLeadStatusAudit({
         leadId: input.leadId,
         oldStatus,
         newStatus: 'enrolled',
         action: 'status_change',
         metadata: { reason: input.reason || 'marked_enrolled' },
+      });
+
+      return { ok: true };
+    }
+
+    if (input.action === 'follow_up_month') {
+      if (oldStatus !== 'trial') {
+        return { ok: false, error: 'Lead must have a trial class before follow-up', status: 409 };
+      }
+      if (!(await hasAttendedTrialClass(input.leadId))) {
+        return {
+          ok: false,
+          error: 'La primera clase debe estar marcada como asistida antes del seguimiento',
+          status: 409,
+        };
+      }
+      const followup = await createOneMonthLeadFollowup(input.leadId);
+      await recordLeadStatusAudit({
+        leadId: input.leadId,
+        oldStatus,
+        newStatus: oldStatus ?? 'trial',
+        action: 'status_change',
+        metadata: { followup_id: followup.id, reason: input.reason || 'follow_up_month' },
       });
 
       return { ok: true };
@@ -153,7 +136,7 @@ export async function postPeskidsLeadQuickAction(
         return { ok: false, error: 'Failed to update lead', status: 400 };
       }
 
-      await recordAudit({
+      await recordLeadStatusAudit({
         leadId: input.leadId,
         oldStatus,
         newStatus: 'contacted',
@@ -170,7 +153,7 @@ export async function postPeskidsLeadQuickAction(
         return { ok: false, error: 'Failed to update lead', status: 400 };
       }
 
-      await recordAudit({
+      await recordLeadStatusAudit({
         leadId: input.leadId,
         oldStatus,
         newStatus: 'archived',

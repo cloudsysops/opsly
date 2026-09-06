@@ -1,7 +1,7 @@
 ---
-status: draft
+status: accepted
 owner: architecture
-last_review: 2026-05-18
+last_review: 2026-09-06
 tenant_slug: peskids
 ---
 
@@ -74,7 +74,9 @@ flowchart LR
   end
 
   Web2 --> Web
-  WA -.->|approval-first| Edge
+  WA -.->|aviso / inbound / approval-first| Edge
+  Teacher[Profesor] -->|sesión + código opcional| Web
+  Family[Familia] -->|sesión| Web
   Web --> PSB
   Edge -->|webhooks| API2
   API2 --> Events
@@ -118,6 +120,8 @@ Sin hardcodear dominios en código; usar env (`PLATFORM_DOMAIN`, `TENANT_BASE_DO
 2. ¿n8n permanece en Opsly VPS o se replica en deploy Vercel/serverless?
 3. ¿Jelou como canal primario post-MVP?
 4. Contrato de eventos con Opsly (auth, retry, idempotencia).
+5. **Aceptado:** dashboards autenticados son la superficie de acción; WhatsApp
+   notifica y conversa, pero no es autoridad para cambiar estados.
 
 ---
 

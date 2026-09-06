@@ -100,6 +100,8 @@ export async function listFamilyEnrollments(
       class_title?: string;
       starts_at?: string;
       ends_at?: string;
+      behavior_tags?: string[];
+      teacher_note?: string | null;
     }
   >
 > {
@@ -122,6 +124,8 @@ export async function listFamilyEnrollments(
       class_title: typed.classes?.title,
       starts_at: typed.classes?.starts_at,
       ends_at: typed.classes?.ends_at,
+      behavior_tags: typed.behavior_tags,
+      teacher_note: typed.teacher_note,
     };
   });
 }
@@ -273,13 +277,27 @@ export async function cancelEnrollment(
 
 export async function updateAttendance(
   classId: string,
-  updates: Array<{ enrollment_id: string; attendance: 'present' | 'absent' | 'excused' }>
+  updates: Array<{
+    enrollment_id: string;
+    attendance: 'present' | 'absent' | 'excused';
+    behavior_tags?: string[];
+    teacher_note?: string;
+  }>,
+  updatedBy?: string | null
 ): Promise<number> {
   let count = 0;
   for (const item of updates) {
     const patch: Database['peskids']['Tables']['class_enrollments']['Update'] = {
       attendance: item.attendance,
+      attendance_updated_at: new Date().toISOString(),
+      attendance_updated_by: updatedBy ?? null,
     };
+    if (item.behavior_tags !== undefined) {
+      patch.behavior_tags = item.behavior_tags;
+    }
+    if (item.teacher_note !== undefined) {
+      patch.teacher_note = item.teacher_note.trim() || null;
+    }
     if (item.attendance === 'present') {
       patch.status = 'attended';
     }

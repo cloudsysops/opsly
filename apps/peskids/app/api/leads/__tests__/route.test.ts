@@ -82,6 +82,7 @@ describe('POST /api/leads', () => {
         neighborhood: 'Llanogrande',
         grade_interested: 'K-5',
         consent_treatment: true,
+        consent_identity_document: true,
         referred_by_code: ' abc123 ',
       }),
     } as never);
@@ -100,6 +101,7 @@ describe('POST /api/leads', () => {
       twenty_person_id: null,
       twenty_opportunity_id: null,
       request_id: 'req-lead-201',
+      meta_event_id: 'req-lead-201',
     });
     expect(postCanonicalLeadMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -143,6 +145,7 @@ describe('POST /api/leads', () => {
         neighborhood: 'Llanogrande',
         grade_interested: 'K-5',
         consent_treatment: true,
+        consent_identity_document: true,
       }),
     } as never);
 

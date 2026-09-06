@@ -1,6 +1,6 @@
 'use client';
 
-import { Loader2 } from 'lucide-react';
+import { Loader2, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { conversationLabel, statusLabel, statusTone } from './message-inbox-utils';
@@ -9,10 +9,12 @@ interface MessageReplyComposerProps {
   active: boolean;
   loading: boolean;
   sending: boolean;
+  generating: boolean;
   replyText: string;
   threadState: string | null;
   threadMode: 'admissions' | 'support' | null;
   onReplyChange: (value: string) => void;
+  onGenerate: () => void;
   onApprove: () => void;
   onCopy: () => void;
   onMarkSent: () => void;
@@ -25,10 +27,12 @@ export function MessageReplyComposer({
   active,
   loading,
   sending,
+  generating,
   replyText,
   threadState,
   threadMode,
   onReplyChange,
+  onGenerate,
   onApprove,
   onCopy,
   onMarkSent,
@@ -71,6 +75,16 @@ export function MessageReplyComposer({
         />
       )}
       <div className="mt-2 flex flex-wrap gap-2">
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          disabled={generating || sending || loading}
+          onClick={onGenerate}
+        >
+          <Sparkles className="h-3.5 w-3.5" />
+          {generating ? 'Generando...' : 'Generar respuesta'}
+        </Button>
         <Button
           type="button"
           size="sm"
