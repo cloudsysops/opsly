@@ -61,6 +61,21 @@ export type {
 
 export { FRANCHISE_UNIT_TYPES, AGREEMENT_STATUSES } from './constants.js';
 
+/**
+ * Franchise OS ACL role. Distinct from app-level staff roles (owner/admin/
+ * support/teacher) — `mapTenantStaffRole` in `access.ts` maps the latter onto
+ * this set.
+ */
+export type FranchiseRole =
+  | 'platform_owner'
+  | 'tenant_owner'
+  | 'franchise_network_admin'
+  | 'franchise_admin'
+  | 'franchise_staff'
+  | 'auditor'
+  | 'support'
+  | 'teacher';
+
 /** Opsly tenant that owns this franchise network (e.g. `peskids`). */
 export type TenantId = string;
 export type FranchiseUnitId = string;

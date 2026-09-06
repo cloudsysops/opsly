@@ -53,9 +53,9 @@ mkdir -p "$(dirname "$VENDOR_DIR")"
 
 if [[ -d "$VENDOR_DIR/.git" ]]; then
   echo "Updating existing Sigma clone at $VENDOR_DIR"
-  git -C "$VENDOR_DIR" fetch --tags origin
-  git -C "$VENDOR_DIR" checkout "$SIGMA_REF"
-  git -C "$VENDOR_DIR" pull --ff-only origin "$SIGMA_REF" 2>/dev/null || true
+  git -C "$VENDOR_DIR" fetch origin "$SIGMA_REF" --tags
+  git -C "$VENDOR_DIR" checkout "$SIGMA_REF" 2>/dev/null || git -C "$VENDOR_DIR" checkout -B "$SIGMA_REF" FETCH_HEAD
+  git -C "$VENDOR_DIR" pull --ff-only origin "$SIGMA_REF"
 else
   echo "Cloning Sigma ($SIGMA_REF) into $VENDOR_DIR"
   git clone --depth 1 --branch "$SIGMA_REF" "$SIGMA_REPO" "$VENDOR_DIR"
