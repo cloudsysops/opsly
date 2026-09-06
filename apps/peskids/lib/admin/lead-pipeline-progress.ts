@@ -21,8 +21,8 @@ export type LeadPipelineStage = {
 export const LEAD_PIPELINE_STAGES: readonly LeadPipelineStage[] = [
   { id: 'new', label: 'Nuevo' },
   { id: 'contacted', label: 'Contactado' },
-  { id: 'trial', label: 'Clase de prueba' },
   { id: 'enrolled', label: 'Matriculado' },
+  { id: 'trial', label: 'Primera clase' },
 ] as const;
 
 export type LeadPipelineStepState = 'done' | 'current' | 'upcoming' | 'skipped';
@@ -41,11 +41,11 @@ function statusToIndex(status: LeadAdminStatus): number {
       return 0;
     case 'contacted':
       return 1;
-    case 'trial':
-      return 2;
     case 'enrolled':
     case 'active':
     case 'renewal':
+      return 2;
+    case 'trial':
       return 3;
     case 'archived':
       return -1;
@@ -76,7 +76,7 @@ export function buildLeadPipelineProgress(status: LeadAdminStatus): LeadPipeline
 export const LEAD_STATUS_LABEL: Record<LeadAdminStatus, string> = {
   new: 'Nuevo',
   contacted: 'Contactado',
-  trial: 'Clase de prueba',
+  trial: 'Primera clase',
   enrolled: 'Matriculado',
   active: 'Activo',
   renewal: 'Renovación',

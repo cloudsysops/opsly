@@ -78,7 +78,7 @@ function canMarkContacted(status: LeadRow['status']): boolean {
 }
 
 function canConvertToStudent(status: LeadRow['status']): boolean {
-  return status === 'trial'
+  return status === 'contacted'
 }
 
 function formatCop(cents: number): string {
@@ -125,7 +125,7 @@ const leadStatusFilterLabel: Record<'all' | DashboardData['new_leads'][number]['
   all: 'Todos',
   new: 'Nuevos',
   contacted: 'Contactados',
-  trial: 'En seguimiento',
+  trial: 'Primera clase',
   enrolled: 'Matriculados',
   active: 'Activos',
   renewal: 'Renovación',
@@ -576,7 +576,7 @@ export function DashboardView({
         </div>
         <div className="mb-4 flex flex-wrap gap-2">
           {(
-            ['all', 'new', 'contacted', 'trial', 'enrolled', 'active', 'renewal', 'archived'] as const
+            ['all', 'new', 'contacted', 'enrolled', 'trial', 'active', 'renewal', 'archived'] as const
           ).map((status) => (
             <Button
               key={status}
@@ -684,7 +684,7 @@ export function DashboardView({
                             </Button>
                           ) : null}
                         </div>
-                        {lead.status === 'contacted' || lead.status === 'trial' ? (
+                        {lead.status === 'enrolled' || lead.status === 'trial' ? (
                           <LeadQuickActions
                             leadId={lead.id}
                             currentStatus={lead.status}

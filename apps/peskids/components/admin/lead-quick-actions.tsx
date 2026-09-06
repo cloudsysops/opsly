@@ -44,7 +44,7 @@ export function LeadQuickActions({
     'mark_attended' | 'mark_enrolled' | 'follow_up_month' | 'hold' | 'cancel',
     string
   > = {
-    mark_attended: 'Clase de prueba registrada',
+    mark_attended: 'Primera clase registrada',
     mark_enrolled: 'Matriculado',
     follow_up_month: 'Seguimiento programado en 1 mes',
     hold: 'Puesto en espera',
@@ -104,7 +104,7 @@ export function LeadQuickActions({
             <CardTitle className="text-base">Acciones rápidas</CardTitle>
             <CardDescription>
               {pipelineOnly
-                ? 'Avanza la clase de prueba o programa el próximo contacto.'
+                ? 'Programa la primera clase o el próximo contacto.'
                 : 'Atender, posponer o cancelar este lead.'}
             </CardDescription>
           </CardHeader>
@@ -112,7 +112,7 @@ export function LeadQuickActions({
             <div className="flex flex-wrap gap-3">
               {pipelineOnly ? (
                 <>
-                  {currentStatus === 'contacted' ? (
+                  {currentStatus === 'enrolled' ? (
                     <Button
                       size="lg"
                       variant="primary"
@@ -121,7 +121,7 @@ export function LeadQuickActions({
                       className="gap-2 flex-1 min-w-max"
                     >
                       <CalendarClock className="h-5 w-5" />
-                      Programar clase de prueba
+                      Programar primera clase
                     </Button>
                   ) : null}
                   {currentStatus === 'trial' ? (
@@ -201,7 +201,7 @@ export function LeadQuickActions({
       {modalOpen === 'mark_attended' && (
         <Card className="border-pk-border bg-blue-50/30">
           <CardHeader>
-            <CardTitle className="text-base">Programar clase de prueba</CardTitle>
+            <CardTitle className="text-base">Programar primera clase</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -244,7 +244,7 @@ export function LeadQuickActions({
                 className="flex-1 gap-2"
               >
                 {busy && <Loader2 className="h-4 w-4 animate-spin" />}
-                Guardar clase de prueba
+                Guardar primera clase
               </Button>
               <Button
                 variant="ghost"

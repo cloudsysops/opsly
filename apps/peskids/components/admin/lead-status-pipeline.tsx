@@ -77,7 +77,7 @@ export function LeadStatusPipeline({
                 />
                 <span
                   className={cn(
-                    'mt-1.5 max-w-full truncate text-center',
+                    'mt-1.5 max-w-full whitespace-normal break-words text-center',
                     compact ? 'text-[10px] leading-tight' : 'text-[11px] leading-tight',
                     labelClass
                   )}
