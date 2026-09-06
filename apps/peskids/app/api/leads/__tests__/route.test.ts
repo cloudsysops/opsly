@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { resetIntakeIdempotencyCache } from '@/lib/intake-idempotency';
+import { resetRateLimit } from '@/lib/rate-limit';
 
 const postCanonicalLeadMock = vi.fn();
 const buildReferralCodeMock = vi.fn();
@@ -9,6 +11,9 @@ vi.mock('@/lib/peskids-canonical-api', () => ({
   postPeskidsLeadWithCRM: postCanonicalLeadMock,
 }));
 
+// Supabase-backed duplicate-email lookup: not what this file's idempotency
+// tests exercise (that's the in-memory intake-idempotency cache below), so it
+// defaults to "no existing lead" and is stubbed out to avoid a real DB call.
 vi.mock('@/lib/lead-intake-idempotency', () => ({
   findLeadIdByEmail: findLeadIdByEmailMock,
 }));
@@ -22,6 +27,45 @@ vi.mock('@/lib/peskids-referral-links', () => ({
   buildPeskidsReferralLink: buildReferralLinkMock,
 }));
 
+let emailCounter = 0;
+/** Distinct per test so the intake idempotency cache does not couple them. */
+function uniqueEmail(): string {
+  emailCounter += 1;
+  return `ana${emailCounter}@example.com`;
+}
+
+function leadBody(overrides: Record<string, unknown> = {}) {
+  return {
+    name: 'Ana López',
+    email: uniqueEmail(),
+    phone: '3001234567',
+    class_modality: 'llanogrande',
+    neighborhood: 'Llanogrande',
+    grade_interested: 'K-5',
+    consent_treatment: true,
+    ...overrides,
+  };
+}
+
+/**
+ * The real Headers class rejects values containing CRLF at construction
+ * time, which would make it impossible to test that the route itself drops
+ * a header-injection attempt - the malicious value would never reach the
+ * handler. This minimal stand-in accepts any string value so those tests
+ * can actually exercise the sanitization logic.
+ */
+function mockHeaders(values: Record<string, string>) {
+  const lower = new Map(Object.entries(values).map(([k, v]) => [k.toLowerCase(), v]));
+  return { get: (name: string) => lower.get(name.toLowerCase()) ?? null };
+}
+
+function request(body: Record<string, unknown>, requestId: string, headers: Record<string, string> = {}) {
+  return {
+    headers: mockHeaders({ 'x-request-id': requestId, ...headers }),
+    json: async () => body,
+  } as never;
+}
+
 describe('POST /api/leads', () => {
   beforeEach(() => {
     postCanonicalLeadMock.mockReset();
@@ -29,30 +73,21 @@ describe('POST /api/leads', () => {
     buildReferralLinkMock.mockReset();
     findLeadIdByEmailMock.mockReset();
     findLeadIdByEmailMock.mockResolvedValue(null);
+    resetIntakeIdempotencyCache();
+    resetRateLimit();
     process.env.NEXT_PUBLIC_TENANT_ID = 'peskids';
   });
 
   it('rejects requests without consent before touching the canonical API', async () => {
     const { POST } = await import('../route');
 
-    const response = await POST({
-      headers: new Headers({ 'x-request-id': 'req-lead-400' }),
-      json: async () => ({
-        name: 'Ana López',
-        email: 'ana@example.com',
-        class_modality: 'llanogrande',
-        neighborhood: 'Llanogrande',
-        grade_interested: 'K-5',
-        consent_treatment: false,
-      }),
-    } as never);
+    const response = await POST(
+      request(leadBody({ consent_treatment: false, phone: undefined }), 'req-lead-400')
+    );
 
     expect(response.status).toBe(400);
     const body = await response.json();
-    expect(body).toMatchObject({
-      ok: false,
-      request_id: 'req-lead-400',
-    });
+    expect(body).toMatchObject({ ok: false, request_id: 'req-lead-400' });
     expect(typeof body.error).toBe('string');
     expect(postCanonicalLeadMock).not.toHaveBeenCalled();
   });
@@ -67,24 +102,9 @@ describe('POST /api/leads', () => {
     buildReferralCodeMock.mockReturnValue('PK-CODE');
     buildReferralLinkMock.mockReturnValue('https://peskids.op-sly.com/familias?ref=PK-CODE');
 
+    const body = leadBody({ phone: ' 3001234567 ', referred_by_code: ' abc123 ' });
     const { POST } = await import('../route');
-    const response = await POST({
-      headers: new Headers({ 'x-request-id': 'req-lead-201' }),
-      json: async () => ({
-        lead_type: 'family',
-        name: 'Ana López',
-        email: 'ana@example.com',
-        phone: ' 3001234567 ',
-        child_name: 'Mateo López',
-        birth_date: '2018-05-10',
-        document_number: '1234567890',
-        class_modality: 'llanogrande',
-        neighborhood: 'Llanogrande',
-        grade_interested: 'K-5',
-        consent_treatment: true,
-        referred_by_code: ' abc123 ',
-      }),
-    } as never);
+    const response = await POST(request(body, 'req-lead-201'));
 
     expect(response.status).toBe(201);
     await expect(response.json()).resolves.toEqual({
@@ -104,7 +124,7 @@ describe('POST /api/leads', () => {
     expect(postCanonicalLeadMock).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'Ana López',
-        email: 'ana@example.com',
+        email: body.email,
         phone: '3001234567',
         lead_type: 'family',
         grade_interested: 'K-5',
@@ -112,13 +132,60 @@ describe('POST /api/leads', () => {
         neighborhood: 'Llanogrande',
       }),
       'req-lead-201',
-      null
+      null,
+      expect.objectContaining({ forwardedFor: null })
     );
     expect(buildReferralCodeMock).toHaveBeenCalledWith({
       tenantId: 'peskids',
       leadId: 'lead-1',
-      email: 'ana@example.com',
+      email: body.email,
     });
+  });
+
+  it('forwards the browser address so the upstream per-IP limit is meaningful', async () => {
+    postCanonicalLeadMock.mockResolvedValue({
+      ok: true,
+      leadId: 'lead-ip',
+      tenantSlug: 'peskids',
+      createdAt: '2026-05-27T12:00:00.000Z',
+    });
+    buildReferralCodeMock.mockReturnValue('PK-CODE');
+    buildReferralLinkMock.mockReturnValue('link');
+
+    const { POST } = await import('../route');
+    await POST(
+      request(leadBody(), 'req-lead-ip', { 'x-forwarded-for': '203.0.113.7, 10.0.0.1' })
+    );
+
+    expect(postCanonicalLeadMock).toHaveBeenCalledWith(
+      expect.anything(),
+      'req-lead-ip',
+      null,
+      { forwardedFor: '203.0.113.7' }
+    );
+  });
+
+  it('drops a non-address value in x-forwarded-for instead of passing it upstream', async () => {
+    postCanonicalLeadMock.mockResolvedValue({
+      ok: true,
+      leadId: 'lead-bad-ip',
+      tenantSlug: 'peskids',
+      createdAt: '2026-05-27T12:00:00.000Z',
+    });
+    buildReferralCodeMock.mockReturnValue('PK-CODE');
+    buildReferralLinkMock.mockReturnValue('link');
+
+    const { POST } = await import('../route');
+    await POST(
+      request(leadBody(), 'req-lead-bad-ip', { 'x-forwarded-for': 'evil\r\nX-Admin: 1' })
+    );
+
+    expect(postCanonicalLeadMock).toHaveBeenCalledWith(
+      expect.anything(),
+      'req-lead-bad-ip',
+      null,
+      { forwardedFor: null }
+    );
   });
 
   it('returns upstream canonical API failures', async () => {
@@ -129,28 +196,111 @@ describe('POST /api/leads', () => {
     });
 
     const { POST } = await import('../route');
-    const response = await POST({
-      headers: new Headers({ 'x-request-id': 'req-lead-502' }),
-      json: async () => ({
-        lead_type: 'family',
-        name: 'Ana López',
-        email: 'ana@example.com',
-        phone: '3001234567',
-        child_name: 'Mateo López',
-        birth_date: '2018-05-10',
-        document_number: '1234567890',
-        class_modality: 'llanogrande',
-        neighborhood: 'Llanogrande',
-        grade_interested: 'K-5',
-        consent_treatment: true,
-      }),
-    } as never);
+    const response = await POST(request(leadBody(), 'req-lead-502'));
 
     expect(response.status).toBe(502);
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Lead service unavailable',
       request_id: 'req-lead-502',
+    });
+  });
+
+  describe('idempotency', () => {
+    beforeEach(() => {
+      postCanonicalLeadMock.mockResolvedValue({
+        ok: true,
+        leadId: 'lead-dupe',
+        tenantSlug: 'peskids',
+        createdAt: '2026-05-27T12:00:00.000Z',
+      });
+      buildReferralCodeMock.mockReturnValue('PK-CODE');
+      buildReferralLinkMock.mockReturnValue('link');
+    });
+
+    it('DUPLICATE SUBMISSION: the same form twice creates one lead', async () => {
+      const body = leadBody();
+      const { POST } = await import('../route');
+
+      const first = await POST(request(body, 'req-dupe-1'));
+      const second = await POST(request(body, 'req-dupe-2'));
+
+      expect(first.status).toBe(201);
+      expect(second.status).toBe(200);
+
+      const firstJson = await first.json();
+      const secondJson = await second.json();
+      expect(secondJson.lead_id).toBe(firstJson.lead_id);
+      expect(secondJson.duplicate).toBe(true);
+
+      // The single assertion that matters: the canonical API (and therefore the
+      // CRM sync and the hot-lead alert) ran exactly once.
+      expect(postCanonicalLeadMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('honours an explicit Idempotency-Key even when the payload differs', async () => {
+      const { POST } = await import('../route');
+      const key = 'form-submit-01HYX000';
+
+      const first = await POST(request(leadBody(), 'req-key-1', { 'idempotency-key': key }));
+      const second = await POST(
+        request(leadBody({ name: 'Ana Lopez' }), 'req-key-2', { 'idempotency-key': key })
+      );
+
+      expect(first.status).toBe(201);
+      expect(second.status).toBe(200);
+      expect(postCanonicalLeadMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('treats a genuinely different family as a new lead', async () => {
+      const { POST } = await import('../route');
+
+      await POST(request(leadBody(), 'req-a'));
+      await POST(request(leadBody(), 'req-b'));
+
+      expect(postCanonicalLeadMock).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not cache a failed submission', async () => {
+      postCanonicalLeadMock.mockResolvedValueOnce({
+        ok: false,
+        status: 502,
+        error: 'Lead service unavailable',
+      });
+
+      const body = leadBody();
+      const { POST } = await import('../route');
+
+      const failed = await POST(request(body, 'req-fail'));
+      expect(failed.status).toBe(502);
+
+      const retried = await POST(request(body, 'req-retry'));
+      expect(retried.status).toBe(201);
+      expect(postCanonicalLeadMock).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('rate limiting', () => {
+    it('refuses a flood of submissions from one client', async () => {
+      postCanonicalLeadMock.mockResolvedValue({
+        ok: true,
+        leadId: 'lead-flood',
+        tenantSlug: 'peskids',
+        createdAt: '2026-05-27T12:00:00.000Z',
+      });
+      buildReferralCodeMock.mockReturnValue('PK-CODE');
+      buildReferralLinkMock.mockReturnValue('link');
+
+      const { POST } = await import('../route');
+      const headers = { 'x-forwarded-for': '198.51.100.42' };
+
+      const statuses: number[] = [];
+      for (let i = 0; i < 12; i += 1) {
+        const response = await POST(request(leadBody(), `req-flood-${i}`, headers));
+        statuses.push(response.status);
+      }
+
+      expect(statuses.filter((status) => status === 429).length).toBeGreaterThan(0);
     });
   });
 });

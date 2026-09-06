@@ -1,9 +1,60 @@
-import { createClient } from '@supabase/supabase-js';
+/**
+ * CANONICAL service-role Supabase client for Peskids.
+ *
+ * There are exactly three client flavours in this app and each has one home:
+ *
+ *   browser-safe (anon key, RLS applies)   -> lib/supabase-browser.ts
+ *   server, acting as the signed-in user   -> lib/supabase-server.ts (SSR cookies)
+ *   server, service role (bypasses RLS)    -> this file
+ *
+ * Nothing else may call `createClient` from `@supabase/supabase-js` directly —
+ * `lib/__tests__/db-client-boundaries.test.ts` enforces that statically.
+ *
+ * The service-role key must never reach a browser bundle, so every construction
+ * goes through `assertServerRuntime()` first. That is a real runtime tripwire,
+ * not documentation: if a `'use client'` module ever imports this file the
+ * component throws immediately instead of shipping the key.
+ */
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { Database } from './types';
 import { assertPeskidsDatabaseBoundary } from './runtime-environment';
 
-function createServerClient(token?: string) {
+/**
+ * Throws if a service-role client is being constructed anywhere a browser can
+ * observe it. Exported so other server-only modules can reuse the same guard.
+ */
+export function assertServerRuntime(context = 'supabaseServer'): void {
+  if (typeof window !== 'undefined') {
+    throw new Error(
+      `${context}: the Supabase service-role client is server-only and must never be ` +
+        `constructed in the browser.`
+    );
+  }
+}
+
+let boundaryChecked = false;
+
+/**
+ * The service-role client bypasses RLS entirely, so the environment boundary is
+ * checked before the first one is handed out. This is the backstop for the
+ * startup check in instrumentation.ts (which does not run in every worker, e.g.
+ * a standalone script importing a service).
+ */
+function assertBoundaryOnce(): void {
+  if (boundaryChecked) return;
   assertPeskidsDatabaseBoundary();
+  boundaryChecked = true;
+}
+
+/** Test-only: clears the memoised boundary result. */
+export function resetSupabaseBoundaryCacheForTests(): void {
+  boundaryChecked = false;
+}
+
+function createServerClient(token?: string) {
+  assertServerRuntime();
+  assertBoundaryOnce();
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -33,6 +84,25 @@ export const supabaseServer = (token?: string) => {
 
 /** Alias for webhook routes (same service-role client). */
 export const getServiceClient = supabaseServer;
+
+/**
+ * Service-role client for Supabase Auth admin operations (generateLink, etc.).
+ * Same credentials as `supabaseServer()`, but named so the audit trail shows
+ * which call sites hold admin-auth power rather than plain table access.
+ */
+export function supabaseAuthAdmin() {
+  return createServerClient();
+}
+
+/**
+ * Same canonical service-role client, but with the generated `Database` generic
+ * dropped so schemas that are not in `lib/types.ts` (notably `platform`) can be
+ * addressed. Still routes through `createServerClient`, so the server-only and
+ * environment-boundary guards apply.
+ */
+export function supabaseServerUntypedSchema(): SupabaseClient {
+  return createServerClient() as unknown as SupabaseClient;
+}
 
 export type RecentMessageWithMode = Pick<
   Database['public']['Tables']['messages']['Row'],

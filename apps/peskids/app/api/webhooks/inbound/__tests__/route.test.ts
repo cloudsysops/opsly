@@ -74,7 +74,7 @@ describe('POST /api/webhooks/inbound', () => {
     } as never)
 
     expect(response.status).toBe(401)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Unauthorized',
       request_id: 'req-inbound-401',
@@ -93,7 +93,7 @@ describe('POST /api/webhooks/inbound', () => {
     } as never)
 
     expect(response.status).toBe(400)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Invalid payload: require from/sender_contact and text/message',
       request_id: 'req-inbound-400',

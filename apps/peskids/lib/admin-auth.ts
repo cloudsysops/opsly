@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { timingSafeSecretsEqual } from './internal-auth';
 
 export function getAdminSecret(): string | undefined {
   return process.env.DASHBOARD_ADMIN_SECRET;
@@ -13,14 +14,14 @@ export function validateAdminRequest(req: NextRequest): { valid: boolean; error?
   const authHeader = req.headers.get('authorization');
   if (authHeader) {
     const token = authHeader.replace(/^Bearer\s+/i, '');
-    if (token === adminSecret) {
+    if (timingSafeSecretsEqual(token, adminSecret)) {
       return { valid: true };
     }
     return { valid: false, error: 'Invalid admin token' };
   }
 
   const cookieToken = req.cookies.get('admin-token')?.value;
-  if (cookieToken && cookieToken === adminSecret) {
+  if (cookieToken && timingSafeSecretsEqual(cookieToken, adminSecret)) {
     return { valid: true };
   }
 

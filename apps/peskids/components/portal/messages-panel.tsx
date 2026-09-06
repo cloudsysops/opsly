@@ -12,7 +12,6 @@ interface FamilyMessage {
   id: string;
   source: 'whatsapp' | 'instagram' | 'web';
   sender_name: string | null;
-  sender_contact: string;
   message_text: string;
   direction: 'inbound' | 'draft' | 'outbound';
   status: 'pending' | 'approved' | 'sent' | null;
@@ -107,7 +106,6 @@ export function MessagesPanel(): React.ReactElement {
       id: tempId,
       source: 'web',
       sender_name: 'Tú',
-      sender_contact: '',
       message_text: text,
       direction: 'inbound',
       status: 'pending',

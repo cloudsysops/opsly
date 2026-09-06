@@ -15,6 +15,7 @@ export const createClassSchema = z
     price_cents: z.number().int().nonnegative(),
     currency: z.string().trim().min(3).max(3).default('cop'),
   })
+  .strict()
   .refine((data) => new Date(data.ends_at).getTime() > new Date(data.starts_at).getTime(), {
     message: 'ends_at must be after starts_at',
     path: ['ends_at'],
@@ -33,7 +34,7 @@ export const updateClassSchema = z.object({
   status: z.enum(['scheduled', 'cancelled', 'completed']).optional(),
   cancelled_reason: z.string().trim().max(500).optional(),
   session_notes: z.string().trim().max(500).optional(),
-});
+}).strict();
 
 export const teacherUpdateClassSchema = z
   .object({
@@ -41,6 +42,7 @@ export const teacherUpdateClassSchema = z
     ends_at: z.string().datetime().optional(),
     session_notes: z.string().trim().max(500).optional(),
   })
+  .strict()
   .refine((data) => Object.values(data).some((value) => value !== undefined), {
     message: 'At least one field is required',
   })
@@ -57,18 +59,21 @@ export const teacherUpdateClassSchema = z
 export const createEnrollmentSchema = z.object({
   class_id: z.string().uuid(),
   student_id: z.string().uuid(),
-});
+}).strict();
 
 export const attendanceUpdateSchema = z.object({
   updates: z
     .array(
-      z.object({
-        enrollment_id: z.string().uuid(),
-        attendance: z.enum(['present', 'absent', 'excused']),
-      })
+      z
+        .object({
+          enrollment_id: z.string().uuid(),
+          attendance: z.enum(['present', 'absent', 'excused']),
+        })
+        .strict()
     )
-    .min(1),
-});
+    .min(1)
+    .max(200, 'Máximo 200 asistencias por lote'),
+}).strict();
 
 export const checkoutSchema = z
   .object({

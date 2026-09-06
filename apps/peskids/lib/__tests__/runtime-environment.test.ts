@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   assertPeskidsDatabaseBoundary,
+  browserSelectableEnvironmentKeys,
+  checkEnvironmentBoundary,
+  currentEnvironment,
+  isProduction,
   resolvePeskidsEnvironment,
 } from '@/lib/runtime-environment';
 
@@ -68,6 +72,50 @@ describe('Peskids runtime environment boundary', () => {
         PESKIDS_EXPECTED_SUPABASE_URL: 'https://prod.supabase.co',
       })
     ).toThrow('does not match');
+  });
+
+  it('convenience aliases resolve the same environment', () => {
+    expect(currentEnvironment({ PESKIDS_ENVIRONMENT: 'staging' })).toBe('staging');
+    expect(isProduction({ PESKIDS_ENVIRONMENT: 'production' })).toBe(true);
+    expect(isProduction({ PESKIDS_ENVIRONMENT: 'staging' })).toBe(false);
+  });
+
+  it('flags a NEXT_PUBLIC_ variable that would let the browser pick the environment', () => {
+    const keys = browserSelectableEnvironmentKeys({
+      NEXT_PUBLIC_APP_ENV: 'production',
+      NEXT_PUBLIC_SUPABASE_URL: 'https://x.supabase.co',
+    });
+    expect(keys).toEqual(['NEXT_PUBLIC_APP_ENV']);
+
+    expect(() =>
+      assertPeskidsDatabaseBoundary({
+        PESKIDS_ENVIRONMENT: 'development',
+        NEXT_PUBLIC_APP_ENV: 'production',
+      })
+    ).toThrow('browser bundle');
+  });
+
+  it('rejects staging advertising a production hostname', () => {
+    const result = checkEnvironmentBoundary({
+      PESKIDS_ENVIRONMENT: 'staging',
+      SUPABASE_URL: 'https://hljetbbgiphpjbldebpo.supabase.co',
+      PESKIDS_EXPECTED_SUPABASE_URL: 'https://hljetbbgiphpjbldebpo.supabase.co',
+      NEXT_PUBLIC_PESKIDS_SITE_URL: 'https://www.peskids.com',
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.violations.map((v) => v.code)).toContain('production_host_outside_production');
+    }
+  });
+
+  it('allows production to advertise its own hostname', () => {
+    const result = checkEnvironmentBoundary({
+      PESKIDS_ENVIRONMENT: 'production',
+      SUPABASE_URL: 'https://jkwykpldnitavhmtuzmo.supabase.co',
+      PESKIDS_EXPECTED_SUPABASE_URL: 'https://jkwykpldnitavhmtuzmo.supabase.co',
+      NEXT_PUBLIC_PESKIDS_SITE_URL: 'https://www.peskids.com',
+    });
+    expect(result.ok).toBe(true);
   });
 });
 

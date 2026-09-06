@@ -5,6 +5,21 @@ import { fetchDashboardData } from '@/lib/services/dashboard.service';
 
 export const dynamic = 'force-dynamic';
 
+const NO_STORE = {
+  'Cache-Control': 'no-store, private, max-age=0, must-revalidate',
+} as const;
+
+/**
+ * GET /api/dashboard
+ *
+ * authenticate -> derive tenant -> derive franchise scope from the session ->
+ * authorize the requested franchise -> query.
+ *
+ * `?franchise_id=` used to be passed straight into the query, so any staff
+ * session could read another sede's leads, students and revenue simply by
+ * changing the query string. It is now only ever a *request*: the scope comes
+ * from the session and an out-of-scope id is a 403.
+ */
 export async function GET(req: NextRequest) {
   const requestId = req.headers.get('x-request-id') ?? crypto.randomUUID();
 
@@ -12,39 +27,47 @@ export async function GET(req: NextRequest) {
     const auth = await validateStaffRequest(req);
     if (!auth.ok) {
       return NextResponse.json(
-        { ok: false, error: auth.error, request_id: requestId },
-        { status: auth.status }
+        { ok: false, error: auth.error, code: auth.status === 403 ? 'FORBIDDEN' : 'UNAUTHORIZED', request_id: requestId },
+        { status: auth.status, headers: NO_STORE }
       );
     }
 
     const rangeParam = req.nextUrl.searchParams.get('range');
     const range = rangeParam === 'month' ? 'month' : 'week';
     const requestedFranchiseId = req.nextUrl.searchParams.get('franchise_id')?.trim() || null;
-    const scoped = await authorizeDashboardFranchiseFilter(auth, requestedFranchiseId);
-    if (!scoped.ok) {
-      return NextResponse.json(
-        { ok: false, error: scoped.error, request_id: requestId },
-        { status: scoped.status }
-      );
-    }
     const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids';
 
+    const scoped = await authorizeDashboardFranchiseFilter(auth, requestedFranchiseId);
+    if (!scoped.ok) {
+      console.warn(
+        JSON.stringify({
+          component: 'peskids.dashboard',
+          event: 'franchise_scope_denied',
+          request_id: requestId,
+          tenant_slug: tenantId,
+          actor_id: auth.user?.id ?? 'dashboard-admin',
+          requested_franchise_id: requestedFranchiseId,
+          reason: scoped.error,
+        })
+      );
+      return NextResponse.json(
+        { ok: false, error: scoped.error, code: scoped.status === 403 ? 'FORBIDDEN' : 'BAD_REQUEST', request_id: requestId },
+        { status: scoped.status, headers: NO_STORE }
+      );
+    }
+
     const data = await fetchDashboardData(tenantId, range, scoped.franchiseId);
-    return NextResponse.json(data, {
-      headers: {
-        'Cache-Control': 'no-store, private, max-age=0, must-revalidate',
-      },
-    });
+    return NextResponse.json(data, { headers: NO_STORE });
   } catch (error) {
     console.error('[dashboard] error:', error, { request_id: requestId });
     return NextResponse.json(
-      { ok: false, error: 'Failed to fetch dashboard data', request_id: requestId },
       {
-        status: 500,
-        headers: {
-          'Cache-Control': 'no-store, private, max-age=0, must-revalidate',
-        },
-      }
+        ok: false,
+        error: 'Failed to fetch dashboard data',
+        code: 'INTERNAL_ERROR',
+        request_id: requestId,
+      },
+      { status: 500, headers: NO_STORE }
     );
   }
 }

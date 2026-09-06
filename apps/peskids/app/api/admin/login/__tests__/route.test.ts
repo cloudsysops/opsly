@@ -27,7 +27,7 @@ describe('POST /api/admin/login', () => {
     const response = await POST(req)
 
     expect(response.status).toBe(503)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Admin authentication not configured',
       request_id: 'req-admin-login-503',

@@ -1,159 +1,55 @@
+/**
+ * /api/admin/franchise-os — retired in-app Franchise OS aggregate.
+ *
+ * The service module this route depended on (lib/services/franchise-os.service)
+ * was deleted when Franchise OS moved to the standalone `apps/peskids-franchise`
+ * app. Leaving the route importing a missing module broke the whole build; more
+ * importantly, an unfinished module must not stay reachable just because the UI
+ * stopped linking to it.
+ *
+ * So the route now: authenticates first (an anonymous caller still gets 401, not
+ * a status leak), then refuses with a structured 503 while the module gate is
+ * closed. The gate is closed by default everywhere and cannot be opened in
+ * production without an explicit production-ready declaration.
+ */
 import { NextRequest } from 'next/server';
-import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
+import { errorJson, resolveRequestId } from '@/lib/api-response';
 import { validateStaffRequest } from '@/lib/staff-auth';
-import {
-  agreementBoard,
-  assertRoyaltyAccess,
-  canonicalEvents,
-  franchiseRoleFromAuth,
-  inspectRoyalty,
-  listFranchiseOsUnits,
-  networkBoard,
-  territoryConflictPayload,
-} from '@/lib/services/franchise-os.service';
-import type { FranchiseAgreement, RoyaltyRule, SalesReport, Territory } from '@intcloudsysops/franchise-core';
-import { franchiseErrorResponse, getFranchiseService, resolveFranchiseActor } from '@/lib/franchise/persist';
+import { FRANCHISE_OS_GATE, moduleAvailability } from '@/lib/runtime/feature-flags';
 
 export const dynamic = 'force-dynamic';
 
-const TENANT_ID = 'peskids';
-
-export async function GET(req: NextRequest) {
+async function refuse(req: NextRequest) {
   const requestId = resolveRequestId(req);
+
   const auth = await validateStaffRequest(req);
-  if (!auth.ok) return errorJson(requestId, auth.error, auth.status);
-
-  const role = franchiseRoleFromAuth(auth);
-  const url = new URL(req.url);
-  const view = url.searchParams.get('view') ?? 'units';
-
-  try {
-    if (view === 'units' || view === 'network') {
-      const units = await listFranchiseOsUnits(TENANT_ID);
-      const payload: Record<string, unknown> = {
-        ok: true,
-        view,
-        tenant_slug: 'peskids',
-        units,
-        events: canonicalEvents(),
-        map_provider: 'not_configured',
-      };
-      if (view === 'network') {
-        payload.network = networkBoard({
-          nowIso: new Date().toISOString(),
-          units,
-          calculations: [],
-          payments: [],
-          agreements: [],
-          correctiveActions: [],
-        });
-      }
-      return successJson(requestId, payload);
-    }
-
-    if (view === 'royalties') {
-      assertRoyaltyAccess(role);
-      const actor = await resolveFranchiseActor(auth, requestId);
-      const service = getFranchiseService();
-      const [calculations, reports] = await Promise.all([
-        service.listRoyalties(actor),
-        service.listSalesReports(actor),
-      ]);
-      return successJson(requestId, { ok: true, view, calculations, reports });
-    }
-
-    const actor = await resolveFranchiseActor(auth, requestId);
-    const service = getFranchiseService();
-
-    if (view === 'territories') {
-      const listed = await service.listTerritories(actor);
-      return successJson(requestId, { ok: true, view, ...listed, map_provider: 'not_configured' });
-    }
-
-    if (view === 'agreements') {
-      const agreements = await service.listAgreements(actor);
-      return successJson(requestId, {
-        ok: true,
-        view,
-        agreements,
-        board: agreementBoard(agreements, new Date().toISOString()),
-      });
-    }
-
-    if (view === 'audits') {
-      const audits = await service.listAudits(actor);
-      return successJson(requestId, { ok: true, view, audits });
-    }
-
-    return errorJson(requestId, 'Unknown view', 400);
-  } catch (err) {
-    const persist = franchiseErrorResponse(requestId, err);
-    if (persist.status === 403 || persist.status === 503 || persist.status === 404) {
-      return persist;
-    }
-    const status = typeof err === 'object' && err && 'status' in err ? Number(err.status) : 500;
-    const message = err instanceof Error ? err.message : 'franchise-os failed';
-    if (status === 403) return errorJson(requestId, message, 403);
-    console.error('[GET /api/admin/franchise-os]', err, { request_id: requestId });
-    return persist;
+  if (!auth.ok) {
+    return errorJson(requestId, auth.error, auth.status);
   }
+
+  const availability = moduleAvailability(FRANCHISE_OS_GATE);
+  if (!availability.available) {
+    return errorJson(
+      requestId,
+      'Franchise OS is not available in this deployment',
+      503,
+      'MODULE_DISABLED'
+    );
+  }
+
+  // Gate open but there is no implementation left in this app.
+  return errorJson(
+    requestId,
+    'Franchise OS moved to the standalone peskids-franchise app',
+    410,
+    'MODULE_MOVED'
+  );
 }
 
-type CalculateBody = {
-  action?: string;
-  rule?: RoyaltyRule;
-  report?: SalesReport;
-  territories?: Territory[];
-  agreements?: FranchiseAgreement[];
-};
+export async function GET(req: NextRequest) {
+  return refuse(req);
+}
 
 export async function POST(req: NextRequest) {
-  const requestId = resolveRequestId(req);
-  const auth = await validateStaffRequest(req);
-  if (!auth.ok) return errorJson(requestId, auth.error, auth.status);
-  const role = franchiseRoleFromAuth(auth);
-
-  let body: CalculateBody;
-  try {
-    body = (await req.json()) as CalculateBody;
-  } catch {
-    return errorJson(requestId, 'Invalid JSON', 400);
-  }
-
-  try {
-    if (body.action === 'inspect_royalty') {
-      assertRoyaltyAccess(role);
-      if (!body.rule || !body.report) return errorJson(requestId, 'rule and report required', 400);
-      const calculation = inspectRoyalty({
-        id: crypto.randomUUID(),
-        unitId: body.report.unitId,
-        rule: body.rule,
-        report: body.report,
-        calculatedAt: new Date().toISOString(),
-      });
-      return successJson(requestId, { ok: true, calculation });
-    }
-
-    if (body.action === 'territory_conflicts') {
-      return successJson(requestId, {
-        ok: true,
-        conflicts: territoryConflictPayload(body.territories ?? []),
-      });
-    }
-
-    if (body.action === 'agreement_alerts') {
-      return successJson(requestId, {
-        ok: true,
-        board: agreementBoard(body.agreements ?? [], new Date().toISOString()),
-      });
-    }
-
-    return errorJson(requestId, 'Unknown action', 400);
-  } catch (err) {
-    const status = typeof err === 'object' && err && 'status' in err ? Number(err.status) : 500;
-    const message = err instanceof Error ? err.message : 'franchise-os failed';
-    if (status === 403) return errorJson(requestId, message, 403);
-    console.error('[POST /api/admin/franchise-os]', err, { request_id: requestId });
-    return errorJson(requestId, 'Failed to run franchise OS action', 500);
-  }
+  return refuse(req);
 }

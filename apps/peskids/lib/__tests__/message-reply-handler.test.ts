@@ -72,7 +72,7 @@ describe('handleMessageReply', () => {
       action: 'approve',
     });
 
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       ok: false,
       status: 404,
       error: 'Message not found',

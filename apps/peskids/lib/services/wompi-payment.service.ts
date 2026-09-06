@@ -2,6 +2,10 @@ import { supabaseServer } from '@/lib/supabase';
 import type { PaymentStatus } from '@/lib/class-types';
 import { getClassById } from '@/lib/services/class.service';
 import {
+  markEnrollmentPaidBySession,
+  recordCheckoutSession,
+} from '@/lib/services/payment.service';
+import {
   resolveWompiForTenant,
   WompiClient,
   verifyWompiWebhookSignature as verifyWompiWebhookSignatureGeneric,
@@ -68,20 +72,17 @@ export async function createWompiPaymentLinkForEnrollment(input: {
     redirectUrl: `${appBaseUrl()}/familias/reservas?paid=1`,
   });
 
-  await peskidsClient()
-    .from('class_enrollments')
-    .update({ payment_provider: 'wompi', wompi_transaction_id: paymentLinkId })
-    .eq('id', row.id);
-
-  await peskidsClient().from('payments').insert({
-    tenant_slug: tenantSlug(),
-    family_user_id: input.familyUserId,
-    enrollment_id: row.id,
-    amount_cents: classItem.price_cents,
-    currency: 'cop',
-    status: 'pending',
+  // Atomic (see migration 20260905_payment_atomicity_and_webhook_idempotency):
+  // stamping the payment-link id on the enrollment and creating the pending
+  // payment row happen in one transaction, so a Wompi link can never exist
+  // without a payment row for the webhook to settle.
+  await recordCheckoutSession({
+    enrollmentId: row.id,
+    familyUserId: input.familyUserId,
     provider: 'wompi',
-    wompi_transaction_id: paymentLinkId,
+    sessionId: paymentLinkId,
+    amountCents: classItem.price_cents,
+    currency: 'cop',
     metadata: { class_id: row.class_id },
   });
 
@@ -103,28 +104,23 @@ export async function markEnrollmentPaidFromWompi(input: {
   paymentLinkId: string;
   transactionId: string;
   status: string;
-}): Promise<void> {
+}): Promise<{ applied: boolean; alreadyPaid: boolean }> {
   if (input.status !== 'APPROVED') {
-    return;
+    return { applied: false, alreadyPaid: false };
   }
 
-  await peskidsClient()
-    .from('class_enrollments')
-    .update({
-      payment_status: 'paid',
-      status: 'confirmed',
-      wompi_transaction_id: input.transactionId,
-    })
-    .eq('wompi_transaction_id', input.paymentLinkId);
+  // One transaction for both rows. Previously these were two separate updates
+  // AND the second one overwrote wompi_transaction_id (the payment-link id) with
+  // the transaction id — so a partial failure could not be retried, because the
+  // key the lookup depends on had already been destroyed. The link id now lives
+  // in its own column (wompi_payment_link_id) and is never overwritten.
+  const result = await markEnrollmentPaidBySession({
+    provider: 'wompi',
+    sessionId: input.paymentLinkId,
+    transactionId: input.transactionId,
+  });
 
-  await peskidsClient()
-    .from('payments')
-    .update({
-      status: 'paid',
-      paid_at: new Date().toISOString(),
-      wompi_transaction_id: input.transactionId,
-    })
-    .eq('wompi_transaction_id', input.paymentLinkId);
+  return { applied: true, alreadyPaid: result.alreadyPaid };
 }
 
 export function verifyWompiWebhookSignature(rawBody: string): WompiWebhookEvent | null {

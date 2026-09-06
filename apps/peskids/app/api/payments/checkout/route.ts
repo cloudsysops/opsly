@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
+import { errorJson, internalErrorJson, resolveRequestId, successJson } from '@/lib/api-response';
 import { validateFamilyRequest } from '@/lib/family-auth';
 import { checkoutSchema } from '@/lib/validation/class.schema';
 import { createCheckoutForEnrollment } from '@/lib/services/payment.service';
@@ -39,7 +39,15 @@ export async function POST(req: NextRequest) {
           });
     return successJson(requestId, { ok: true, provider: parsed.data.provider, ...checkout });
   } catch (err) {
-    console.error('[POST /api/payments/checkout]', err, { request_id: requestId });
-    return errorJson(requestId, 'Checkout failed', 502);
+    // Never echo `err.message`: it can carry the raw Stripe/Wompi error body,
+    // a PostgREST/SQL error, or a provider key fragment. The real error is
+    // logged server-side against the request id instead.
+    return internalErrorJson(
+      requestId,
+      'POST /api/payments/checkout',
+      err,
+      'No pudimos iniciar el pago. Intenta de nuevo.',
+      502
+    );
   }
 }

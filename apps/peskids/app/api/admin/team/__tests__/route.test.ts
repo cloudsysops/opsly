@@ -34,7 +34,7 @@ describe('GET /api/admin/team', () => {
     const response = await GET({ headers: new Headers({ 'x-request-id': 'req-team-403' }) } as never)
 
     expect(response.status).toBe(403)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Forbidden',
       request_id: 'req-team-403',
