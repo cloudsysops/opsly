@@ -5,6 +5,7 @@ import { fetchOperationsMetrics } from './operations-metrics.service';
 import { fetchDashboardLeads } from '../peskids-platform-dashboard';
 import { buildDashboardSalesAnalytics } from './sales-analytics.service';
 import { fetchDashboardIntegrationStatus } from './integration-status.service';
+import { firstLeadContactAt, hoursToFirstContact } from '../admin/lead-response-time';
 import {
   buildExecutiveDashboard,
   calendarDateInTz,
@@ -13,6 +14,15 @@ import {
 
 type Range = 'week' | 'month';
 type LeadSourceKey = 'instagram' | 'facebook' | 'website' | 'referral' | 'other';
+
+type LeadAuditQuery = {
+  select: (columns: string) => LeadAuditQuery;
+  eq: (column: string, value: string) => LeadAuditQuery;
+  gte: (
+    column: string,
+    value: string
+  ) => Promise<{ data: Array<{ lead_id: string; created_at: string | null }> | null; error: unknown }>;
+};
 
 const EMPTY_LEAD_SOURCES: Record<LeadSourceKey, number> = {
   instagram: 0,
@@ -212,13 +222,6 @@ export async function fetchDashboardData(
     scheduled_time: string | null;
   }>;
 
-  const salesAnalytics = buildDashboardSalesAnalytics({
-    periodStartISO,
-    leads: newLeads as DashboardData['new_leads'],
-    followups: (followups ?? []) as Array<DashboardData['followups'][number] & { created_at?: string }>,
-    trialClasses: typedTrials,
-  });
-
   const integration_status = await fetchDashboardIntegrationStatus(process.env as Record<string, string | undefined>);
 
   const recentMessagesTyped = (recentMessages as DashboardData['recent_messages']) || [];
@@ -226,9 +229,46 @@ export async function fetchDashboardData(
   const attendedTrialLeadIds = new Set(
     typedTrials.filter((trial) => trial.status === 'attended').map((trial) => trial.lead_id)
   );
+  let statusContactEvents: Array<{
+    contact_id: string;
+    contact_type: 'lead';
+    created_at: string | null;
+  }> = [];
+  try {
+    const auditClient = supabase as unknown as {
+      from: (tableName: string) => LeadAuditQuery;
+    };
+    const auditResult = await auditClient
+      .from('lead_status_audit')
+      .select('lead_id, created_at')
+      .eq('tenant_slug', tenantId)
+      .eq('new_status', 'contacted')
+      .gte('created_at', periodStartISO);
+    if (!auditResult.error) {
+      statusContactEvents = (auditResult.data ?? []).map((row) => ({
+        contact_id: String(row.lead_id),
+        contact_type: 'lead' as const,
+        created_at: row.created_at,
+      }));
+    }
+  } catch {
+    // Older environments may not have the audit table; followups remain the fallback.
+  }
+  const contactEvents = [...followupsTyped, ...statusContactEvents];
+  const salesAnalytics = buildDashboardSalesAnalytics({
+    periodStartISO,
+    leads: newLeads as DashboardData['new_leads'],
+    followups: followupsTyped,
+    contactEvents,
+    trialClasses: typedTrials,
+  });
   const leadsTyped = ((newLeads as unknown as DashboardData['new_leads']) || []).map((lead) => ({
     ...lead,
     first_class_attended: attendedTrialLeadIds.has(lead.id),
+    first_contact_hours: hoursToFirstContact(
+      lead.created_at,
+      firstLeadContactAt(lead.id, contactEvents)
+    ),
   }));
 
   const executive = buildExecutiveDashboard({

@@ -9,6 +9,7 @@ import type { DashboardData } from '@/lib/types';
 import type { AdminLeadStatus } from '@/lib/validation/lead-admin.schema';
 import { syncLeadStageToTwenty } from '@/lib/twenty-stage-sync';
 import { emitLeadStatusTransition } from '@/lib/events';
+import { recordLeadStatusAudit } from '@/lib/services/lead-status-audit.service';
 
 export type DashboardLead = DashboardData['new_leads'][number];
 
@@ -274,6 +275,15 @@ export async function updateLeadForAdmin(
   }
 
   if (input.status !== undefined) {
+    if (fromStatus !== input.status) {
+      void recordLeadStatusAudit({
+        leadId,
+        oldStatus: fromStatus,
+        newStatus: input.status,
+        action: 'status_change',
+        metadata: { source: 'admin_lead_patch' },
+      });
+    }
     void emitLeadStatusTransition({
       leadId,
       fromStatus,

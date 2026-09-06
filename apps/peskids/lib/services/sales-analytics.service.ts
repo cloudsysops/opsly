@@ -1,9 +1,11 @@
 import type { DashboardData, DashboardSalesAnalytics } from '../types';
+import { hoursToFirstContact } from '@/lib/admin/lead-response-time';
 
 type SalesLead = DashboardData['new_leads'][number];
 type SalesFollowup = DashboardData['followups'][number] & {
   created_at?: string;
 };
+type SalesContactEvent = Pick<SalesFollowup, 'contact_id' | 'contact_type' | 'created_at'>;
 type SalesTrialClass = {
   lead_id: string;
   created_at?: string;
@@ -57,15 +59,6 @@ function toDate(value: string | undefined): Date | null {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
-function hoursBetween(older: string | undefined, newer: string | undefined): number | null {
-  const start = toDate(older);
-  const end = toDate(newer);
-  if (!start || !end) return null;
-  const diff = end.getTime() - start.getTime();
-  if (diff < 0) return null;
-  return Math.round((diff / 3_600_000) * 10) / 10;
-}
-
 function buildDateSeries(startISO: string): string[] {
   const start = toDate(startISO);
   if (!start) return [];
@@ -86,6 +79,7 @@ export function buildDashboardSalesAnalytics(input: {
   periodStartISO: string;
   leads: SalesLead[];
   followups: SalesFollowup[];
+  contactEvents?: SalesContactEvent[];
   trialClasses: SalesTrialClass[];
 }): DashboardSalesAnalytics {
   const statusCounts = { ...EMPTY_STAGE_COUNTS };
@@ -96,8 +90,12 @@ export function buildDashboardSalesAnalytics(input: {
     referral: 0,
     other: 0,
   };
+  const modalityCounts = new Map<
+    'llanogrande' | 'domicilio' | 'other',
+    { total: number; enrolled: number }
+  >();
   const followupByLead = new Map<string, string>();
-  for (const followup of input.followups) {
+  for (const followup of input.contactEvents ?? input.followups) {
     if (followup.contact_type !== 'lead') continue;
     const current = followupByLead.get(followup.contact_id);
     if (!current || (followup.created_at && followup.created_at < current)) {
@@ -149,10 +147,18 @@ export function buildDashboardSalesAnalytics(input: {
     const followupCreatedAt = followupByLead.get(lead.id);
     const trialCreatedAt = trialByLead.get(lead.id);
     const leadCreatedAtISO = lead.created_at;
-    const followupHours = hoursBetween(leadCreatedAtISO, followupCreatedAt ?? undefined);
-    const trialHours = hoursBetween(leadCreatedAtISO, trialCreatedAt ?? undefined);
+    const followupHours = hoursToFirstContact(leadCreatedAtISO, followupCreatedAt);
+    const trialHours = hoursToFirstContact(leadCreatedAtISO, trialCreatedAt);
     if (followupHours !== null) followupDiffs.push(followupHours);
     if (trialHours !== null) trialDiffs.push(trialHours);
+
+    const rawModality = lead.class_modality?.trim().toLowerCase();
+    const modality: 'llanogrande' | 'domicilio' | 'other' =
+      rawModality === 'llanogrande' || rawModality === 'domicilio' ? rawModality : 'other';
+    const modalityBucket = modalityCounts.get(modality) ?? { total: 0, enrolled: 0 };
+    modalityBucket.total += 1;
+    if (['enrolled', 'active', 'renewal'].includes(lead.status)) modalityBucket.enrolled += 1;
+    modalityCounts.set(modality, modalityBucket);
   }
 
   const average = (values: number[]): number | null => {
@@ -175,6 +181,16 @@ export function buildDashboardSalesAnalytics(input: {
       label: SOURCE_LABELS[key],
       count,
     })),
+    modality_breakdown: (['llanogrande', 'domicilio', 'other'] as const).map((key) => {
+      const bucket = modalityCounts.get(key) ?? { total: 0, enrolled: 0 };
+      return {
+        key,
+        label: key === 'llanogrande' ? 'Llanogrande' : key === 'domicilio' ? 'Domicilio' : 'Sin definir',
+        total: bucket.total,
+        enrolled: bucket.enrolled,
+        conversion_pct: bucket.total > 0 ? Math.round((bucket.enrolled / bucket.total) * 100) : null,
+      };
+    }),
     avg_hours_to_first_followup: average(followupDiffs),
     avg_hours_to_trial: average(trialDiffs),
     trials_scheduled_count: trialsScheduledCount,

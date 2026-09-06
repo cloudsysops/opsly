@@ -102,6 +102,12 @@ export function AdminLeadCard({
           <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden />
           Registrado {createdLabel}
         </p>
+        <p className="flex items-center gap-1.5 text-xs text-pk-mutedText">
+          <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden />
+          {lead.first_contact_hours === null || lead.first_contact_hours === undefined
+            ? 'Pendiente de primera atención'
+            : `Primera atención en ${lead.first_contact_hours} h`}
+        </p>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-1.5">

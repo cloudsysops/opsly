@@ -1,7 +1,7 @@
-import { supabaseServer } from '@/lib/supabase';
 import { getLeadForAdmin, updateLeadForAdmin } from '@/lib/services/lead-admin.service';
 import { createTrialClass, hasAttendedTrialClass } from '@/lib/services/trial-class.service';
 import { createOneMonthLeadFollowup } from '@/lib/services/followup-admin.service';
+import { recordLeadStatusAudit } from '@/lib/services/lead-status-audit.service';
 
 type QuickActionInput = {
   leadId: string;
@@ -20,52 +20,8 @@ type QuickActionResult = {
   trialClassId?: string;
 };
 
-type AuditAction = 'status_change' | 'teacher_assign' | 'hold' | 'cancel';
-
-type LeadStatusAuditInsert = {
-  tenant_slug: string;
-  lead_id: string;
-  old_status: string | null;
-  new_status: string;
-  action: AuditAction;
-  metadata: Record<string, unknown>;
-};
-
 function tenantSlug(): string {
   return (process.env.NEXT_PUBLIC_TENANT_ID || 'peskids').trim().toLowerCase();
-}
-
-// lead_status_audit predates the next `db:codegen` run, so the typed Database
-// client doesn't know it yet — same escape hatch as lead-admin.service.ts's platformFrom().
-function auditTable() {
-  const client = supabaseServer() as unknown as {
-    from: (tableName: string) => {
-      insert: (row: LeadStatusAuditInsert) => Promise<{ error: { message: string } | null }>;
-    };
-  };
-  return client.from('lead_status_audit');
-}
-
-async function recordAudit(input: {
-  leadId: string;
-  oldStatus: string | null;
-  newStatus: string;
-  action: AuditAction;
-  metadata: Record<string, unknown>;
-}): Promise<void> {
-  const { error } = await auditTable().insert({
-    tenant_slug: tenantSlug(),
-    lead_id: input.leadId,
-    old_status: input.oldStatus,
-    new_status: input.newStatus,
-    action: input.action,
-    metadata: input.metadata,
-  });
-
-  if (error) {
-    // Audit is best-effort; never block the underlying lead/trial mutation on it.
-    console.warn('lead_status_audit insert failed', { error, lead_id: input.leadId });
-  }
 }
 
 export async function postPeskidsLeadQuickAction(
@@ -91,7 +47,7 @@ export async function postPeskidsLeadQuickAction(
           teacher_name: input.teacherName,
         });
 
-        await recordAudit({
+        await recordLeadStatusAudit({
           leadId: input.leadId,
           oldStatus,
           newStatus: 'trial',
@@ -113,7 +69,7 @@ export async function postPeskidsLeadQuickAction(
         return { ok: false, error: 'Failed to update lead', status: 400 };
       }
 
-      await recordAudit({
+      await recordLeadStatusAudit({
         leadId: input.leadId,
         oldStatus,
         newStatus: 'contacted',
@@ -133,7 +89,7 @@ export async function postPeskidsLeadQuickAction(
         return { ok: false, error: 'Failed to update lead', status: 400 };
       }
 
-      await recordAudit({
+      await recordLeadStatusAudit({
         leadId: input.leadId,
         oldStatus,
         newStatus: 'enrolled',
@@ -180,7 +136,7 @@ export async function postPeskidsLeadQuickAction(
         return { ok: false, error: 'Failed to update lead', status: 400 };
       }
 
-      await recordAudit({
+      await recordLeadStatusAudit({
         leadId: input.leadId,
         oldStatus,
         newStatus: 'contacted',
@@ -197,7 +153,7 @@ export async function postPeskidsLeadQuickAction(
         return { ok: false, error: 'Failed to update lead', status: 400 };
       }
 
-      await recordAudit({
+      await recordLeadStatusAudit({
         leadId: input.leadId,
         oldStatus,
         newStatus: 'archived',

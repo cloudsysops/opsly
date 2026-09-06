@@ -49,14 +49,14 @@ export function SalesAnalyticsPanel({ data }: SalesAnalyticsPanelProps): React.R
             </div>
             <div className="rounded-2xl border border-pk-border bg-pk-muted/40 p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-pk-mutedText">
-                Tiempo a seguimiento
+                Primera atención
               </p>
               <p className="mt-2 text-3xl font-semibold text-pk-ink">
                 {data.sales_analytics.avg_hours_to_first_followup === null
                   ? '—'
                   : `${data.sales_analytics.avg_hours_to_first_followup} h`}
               </p>
-              <p className="mt-1 text-xs text-pk-sub">Promedio desde interesado hasta primer seguimiento.</p>
+              <p className="mt-1 text-xs text-pk-sub">Promedio desde el registro hasta la primera acción de soporte.</p>
             </div>
             <div className="rounded-2xl border border-pk-border bg-pk-muted/40 p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-pk-mutedText">
@@ -67,16 +67,16 @@ export function SalesAnalyticsPanel({ data }: SalesAnalyticsPanelProps): React.R
                   ? '—'
                   : `${data.sales_analytics.avg_hours_to_trial} h`}
               </p>
-              <p className="mt-1 text-xs text-pk-sub">Promedio desde interesado hasta primer contacto.</p>
+              <p className="mt-1 text-xs text-pk-sub">Promedio desde el registro hasta programar la primera clase.</p>
             </div>
             <div className="rounded-2xl border border-pk-border bg-pk-muted/40 p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-pk-mutedText">
                 Matrículas
               </p>
               <p className="mt-2 text-3xl font-semibold text-pk-ink">
-                {data.sales_analytics.trials_scheduled_count}
+                {data.converted_leads_count}
               </p>
-              <p className="mt-1 text-xs text-pk-sub">Interesados convertidos a alumno activo.</p>
+              <p className="mt-1 text-xs text-pk-sub">Leads matriculados dentro del rango seleccionado.</p>
             </div>
           </div>
 
@@ -161,6 +161,21 @@ export function SalesAnalyticsPanel({ data }: SalesAnalyticsPanelProps): React.R
                     <div key={item.key} className="flex items-center justify-between gap-3 text-sm">
                       <span className="text-pk-sub">{item.label}</span>
                       <span className="font-semibold text-pk-ink">{item.count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-pk-border bg-pk-surface p-4">
+                <p className="text-sm font-semibold text-pk-ink">Modalidad y conversión</p>
+                <div className="mt-3 space-y-2">
+                  {data.sales_analytics.modality_breakdown.map((item) => (
+                    <div key={item.key} className="flex items-center justify-between gap-3 text-sm">
+                      <span className="text-pk-sub">{item.label}</span>
+                      <span className="text-right font-semibold text-pk-ink">
+                        {item.total} leads · {item.enrolled} matriculados ·{' '}
+                        {item.conversion_pct === null ? '—' : `${item.conversion_pct}%`}
+                      </span>
                     </div>
                   ))}
                 </div>
