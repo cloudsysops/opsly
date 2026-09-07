@@ -57,9 +57,9 @@ Si el PR mezcla docs + `apps/peskids` → se trata como impacto prod.
 
 Se puede mergear Peskids/runtime de día cuando CI y revisión estén verdes; no se puede promover a producción de día. `night-merge` queda para compatibilidad. Ver `.cursor/rules/production-change-window.mdc`.
 
-## Nightly merge + upgrades
+## Nightly merge + upgrades + cleanup
 
-PRs con label **`night-merge`** se squash-mergean a la **01:00 America/Bogota** vía `scripts/nightly-ops-upgrade.sh` (smoke + rollback n8n). Ver [`NIGHTLY-OPS-UPGRADE.md`](NIGHTLY-OPS-UPGRADE.md).
+PRs con label **`night-merge`** se squash-mergean a la **01:00 America/Bogota**. Después: nightly-ops (~01:15) y **Night cleanup** (03:30) con revisión anterior/posterior. Ver [`NIGHTLY-OPS-UPGRADE.md`](NIGHTLY-OPS-UPGRADE.md) y [`NIGHT-CLEANUP.md`](NIGHT-CLEANUP.md).
 
 ## Comandos
 

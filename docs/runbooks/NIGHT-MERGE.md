@@ -56,6 +56,8 @@ git log origin/main --oneline -15
 # Revert manual de squash commits o reset coordinado (evitar --force a main sin humano)
 ```
 
-## Relación con n8n nightly
+## Relación con n8n nightly y night cleanup
 
 El upgrade n8n + rollback de contenedores (`scripts/nightly-ops-upgrade.sh`, ~01:15) es **aparte**. Este workflow cubre **git merge → deploy → smoke → git rollback**.
+
+A las **03:30 Bogotá** corre [Night cleanup](./NIGHT-CLEANUP.md): revisión de health **antes y después**, higiene de ramas mergeadas y prune Docker ligero. No mergea PRs.

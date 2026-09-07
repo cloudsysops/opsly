@@ -25,7 +25,7 @@ Si el smoke falla → exit 1 + alerta Discord. Cada tenant n8n fallido queda en 
 |---------------|-------|-----|
 | 01:00 | GitHub Actions `Night merge` | Squash-merge PRs `night-merge` |
 | 01:15 | VPS cron `nightly-ops-upgrade` | pull + n8n upgrade + smoke + rollback |
-| 02:30 | VPS cleanup cron | reset logs |
+| **03:30** | GitHub Actions `Night cleanup` | pre-review → higiene git + prune ligero → post-review. [`NIGHT-CLEANUP.md`](./NIGHT-CLEANUP.md) |
 | mañana | humano | solo si Discord ❌ o `pending-human-actions.txt` (apt/reboot) |
 
 ## Ventana
