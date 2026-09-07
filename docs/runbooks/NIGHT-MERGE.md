@@ -12,7 +12,7 @@ Cada noche (~**01:00 America/Bogota**) GitHub Actions:
 2. Valida: no draft, `MERGEABLE` (reintenta si GitHub devuelve `UNKNOWN`), checks CI en verde (sin FAILURE ni pending; ignora `production-change-window`)
 3. Squash-merge + borra la rama
 4. Espera el workflow **Deploy** en `main` cuyo `headSha` sea el SHA **después** del merge (nunca un Deploy viejo fallido). Deploy usa `concurrency` por rama (un SSH a la vez) y el health **público** lo hace el runner (no el VPS vía Cloudflare; el hairpin fallaba el job con la API ya arriba).
-5. Smoke: `api.{PLATFORM_DOMAIN}/api/health` + `peskids.{PLATFORM_DOMAIN}/`
+5. Smoke: `api.{PLATFORM_DOMAIN}/api/health` + **`https://www.peskids.com/api/health`** (prod Peskids; no `peskids.op-sly.com`)
 6. Si Deploy o smoke fallan → **rollback vía PR** (`revert/night-merge-*` + `hotfix-prod` + squash admin). No hace `git push origin main` (branch protection lo rechaza).
 
 ## Cómo encolar (de día)
@@ -56,6 +56,8 @@ git log origin/main --oneline -15
 # Revert manual de squash commits o reset coordinado (evitar --force a main sin humano)
 ```
 
-## Relación con n8n nightly
+## Relación con n8n nightly y night cleanup
 
 El upgrade n8n + rollback de contenedores (`scripts/nightly-ops-upgrade.sh`, ~01:15) es **aparte**. Este workflow cubre **git merge → deploy → smoke → git rollback**.
+
+A las **03:30 Bogotá** corre [Night cleanup](./NIGHT-CLEANUP.md): revisión de health **antes y después**, higiene de ramas mergeadas y prune Docker ligero. No mergea PRs.
