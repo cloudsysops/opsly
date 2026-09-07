@@ -80,9 +80,11 @@ test('seeded registry is fail-closed and pins immutable SHA', () => {
   assert.equal(live.autonomousPromotion.products.peskids, false);
   const pending = selectPromotable(live, 'peskids');
   assert.equal(pending.length, 1);
-  assert.equal(pending[0].gitSha, 'f27efea66c37969bfcdce267a3aeb1c51ce4f226');
+  assert.equal(pending[0].gitSha, '5ed3aa2c1469400b5c32a8001852241fe1425e46');
   assert.equal(pending[0].previousProductionSha, 'c4822d9e380e142c7b55df856c92027400363113');
   assert.equal(pending[0].migrationPlan, 'none');
+  assert.equal(pending[0].id, 'peskids-5ed3aa2c');
+  assert.equal(live.candidates.find((row) => row.id === 'peskids-f27efea66').status, 'superseded');
   assert.equal(isAutonomyEnabled(live, 'peskids'), false);
 });
 
@@ -204,9 +206,9 @@ test('shaEquals accepts short prefixes and rejects short junk', () => {
 
 test('morning report names the exact RC and rollback SHA', () => {
   const report = morningReport(seeded, [
-    { rcId: 'peskids-f27efea66', action: 'hold', reason: 'autonomy_disabled', nextStatus: 'waiting_for_window' },
+    { rcId: 'peskids-5ed3aa2c', action: 'hold', reason: 'autonomy_disabled', nextStatus: 'waiting_for_window' },
   ]);
-  assert.match(report, /f27efea66c37969bfcdce267a3aeb1c51ce4f226/);
+  assert.match(report, /5ed3aa2c1469400b5c32a8001852241fe1425e46/);
   assert.match(report, /c4822d9e380e142c7b55df856c92027400363113/);
   assert.match(report, /Autonomy: off/);
 });
