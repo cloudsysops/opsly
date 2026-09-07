@@ -1,0 +1,19 @@
+{
+  "description": "Canonical Capacitor shells. Add a tenant here before creating wrappers or store binaries. Helper: scripts/cap-mobile.sh",
+  "apps": {
+    "peskids": {
+      "dir": "apps/peskids",
+      "appId": "com.peskids.app",
+      "scheme": "peskids",
+      "defaultUrl": "https://www.peskids.com",
+      "docs": "docs/tenants/peskids/MOBILE-APP.md"
+    },
+    "icso": {
+      "dir": "apps/icso",
+      "appId": "com.intcloudsysops.icso",
+      "scheme": "icso",
+      "defaultUrl": "https://icso.op-sly.com",
+      "docs": "docs/tenants/intcloudsysops/MOBILE-APP.md"
+    }
+  }
+}

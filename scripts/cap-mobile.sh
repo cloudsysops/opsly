@@ -15,10 +15,12 @@
 #     (default.cap.config.ts or capacitor.config.ts). Generate with `npx cap add`.
 #   - Requires the app to declare @capacitor/* deps in its own package.json.
 #
-# See: docs/tenants/<app>/MOBILE-APP.md
+# Registry: config/mobile-apps.json
+# Hub: docs/01-development/MOBILE-APPS.md
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REGISTRY="${ROOT}/config/mobile-apps.json"
 
 APP_NAME="${1:-}"
 PLATFORM="${2:-}"
@@ -48,6 +50,21 @@ if [[ -z "$APP_NAME" || -z "$PLATFORM" ]]; then
   exit 1
 fi
 
+if [[ ! "$APP_NAME" =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
+  echo "Invalid app slug '$APP_NAME'" >&2
+  exit 1
+fi
+
+if [[ ! -f "$REGISTRY" ]]; then
+  echo "Missing mobile registry: $REGISTRY" >&2
+  exit 1
+fi
+
+APP_DIR="$(
+  node -e 'const fs=require("fs"); const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); const s=process.argv[2]; const e=r.apps && r.apps[s]; if (!e || typeof e.dir !== "string") { console.error("Unknown mobile app: " + s + ". Add it to config/mobile-apps.json first."); process.exit(2); } process.stdout.write(e.dir);' \
+    "$REGISTRY" "$APP_NAME"
+)"
+
 case "$PLATFORM" in
   ios|android) ;;
   *)
@@ -61,7 +78,7 @@ if [[ "$MODE" == "build" && "$PLATFORM" != "android" ]]; then
   exit 1
 fi
 
-APP="$ROOT/apps/$APP_NAME"
+APP="$ROOT/$APP_DIR"
 
 if [[ ! -d "$APP" ]]; then
   echo "Missing app dir: $APP" >&2

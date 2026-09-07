@@ -17,9 +17,13 @@ Control) dentro del WebView, no un segundo frontend.
 | Scheme | `icso://` |
 | Web URL | `https://icso.op-sly.com` (default) |
 | Config | [`apps/icso/capacitor.config.ts`](../../../apps/icso/capacitor.config.ts) |
+| Shared helper | [`scripts/cap-mobile.sh`](../../../scripts/cap-mobile.sh) via `config/mobile-apps.json` |
+| Hub | [`docs/01-development/MOBILE-APPS.md`](../../01-development/MOBILE-APPS.md) |
 | Web placeholder | `apps/icso/capacitor-web/` |
 | Android | `apps/icso/android/` |
 | iOS | `apps/icso/ios/` |
+
+`apps/intcloudsysops/` is not a Capacitor target. The native ICSO shell lives only under `apps/icso/`.
 
 ## Alcance
 
