@@ -2679,6 +2679,18 @@ Esto es un problema de credenciales/red del entorno local, no del código. Revis
 
 ---
 
+### Session: Content Production — auditoría post-merge (2026-09-07)
+
+**Contexto:** PR #961 (`claude/opsly-content-mvp-w2okmi`, Character Bible + 13 episodios de Opsly: The Parallel Path + conector YouTube) fue cerrado sin merge el 2026-09-07. Al investigar el nuevo sistema `@intcloudsysops/universe`/`content-engine` en `main`, se confirmó por diff directo que **todo el contenido de esa rama ya está en `main`, byte a byte idéntico** (episodios, canon docs, personajes JSON, `publishers/youtube.ts`, submódulos de `lib/content-studio`) — aparentemente aplicado a `main` por otra vía, fuera de ese PR.
+
+**Único hallazgo real:** al fusionarse, colisionaron nombres de npm scripts con el nuevo `content-os-cli.ts`. `content:validate` y `content:render-plan` quedaron reasignados a esa herramienta (repurpose/rights-check de video ajeno), y `content:list`/`content:episode`/`content:calendar` desaparecieron de `package.json` — aunque los archivos (`scripts/content/*.ts`) seguían en disco, huérfanos.
+
+**Fix aplicado:** rama `claude/opsly-content-mvp-w2okmi` reiniciada desde `main` actual (el contenido viejo era 100% redundante, sin pérdida) + 5 scripts npm recuperados bajo namespace sin colisión: `content:series:list`, `content:series:episode`, `content:series:calendar`, `content:series:validate`, `content:series:render-plan`. Verificados uno a uno contra los datos actuales de `main` (29 episodios, 4 series, 8 personajes) — funcionan. `tsc --noEmit` limpio y 189/189 tests verdes en `@intcloudsysops/content-studio`.
+
+**No se tocó:** `@intcloudsysops/universe`, `content-engine`, `content-os-cli.ts`, ni ningún dato narrativo — son namespaces distintos y complementarios, no hay nada más que portar.
+
+---
+
 ## Enlaces relacionados
 
 - [[.github/index|.github]]

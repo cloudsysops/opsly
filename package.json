@@ -174,7 +174,12 @@
     "content-engine:metadata": "tsx scripts/content-cli.ts metadata",
     "content:approve": "tsx scripts/content-engine.ts approve",
     "content:reject": "tsx scripts/content-engine.ts reject",
-    "content:youtube:publish": "tsx scripts/content/youtube-publish.ts"
+    "content:youtube:publish": "tsx scripts/content/youtube-publish.ts",
+    "content:series:list": "tsx scripts/content/list.ts",
+    "content:series:episode": "tsx scripts/content/episode.ts",
+    "content:series:calendar": "tsx scripts/content/calendar.ts",
+    "content:series:validate": "tsx scripts/content/validate.ts",
+    "content:series:render-plan": "tsx scripts/content/render-plan.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
