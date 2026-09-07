@@ -301,6 +301,10 @@ describe('enrollment form + submit', () => {
       leadName: 'Ana Perez',
     });
     expect(issued?.whatsapp_draft.template).toBe('ENROLLMENT_LINK');
+    const before = enrollmentStaffViewFromMetadata(
+      (await store.getById('lead-1', 'peskids'))?.metadata ?? {}
+    );
+    expect(before.next_action).toBe('SEND_ENROLLMENT_LINK');
     const raw = issued?.url.split('/').pop() ?? '';
     const opened = await resolveEnrollmentToken({
       store,
@@ -320,11 +324,21 @@ describe('enrollment form + submit', () => {
       next_action: 'PREPARE_FIRST_CLASS',
       student_id: 'stu-e2e',
     });
-    const staff = enrollmentStaffViewFromMetadata(
-      (await store.getById('lead-1', 'peskids'))?.metadata ?? {}
-    );
+    const saved = await store.getById('lead-1', 'peskids');
+    const staff = enrollmentStaffViewFromMetadata(saved?.metadata ?? {});
     expect(staff.next_action).toBe('PREPARE_FIRST_CLASS');
     expect(staff.first_class).toBe('pending');
+    expect(saved?.referral_source).toBe('qr');
+    expect(saved?.created_at).toBe('2026-09-01T10:00:00.000Z');
+    expect(saved?.metadata.campaign).toBe('qr-sede');
+    expect(saved?.metadata.enrollment_timeline?.map((row) => row.kind)).toEqual([
+      'enrollment.link.created',
+      'enrollment.link.opened',
+      'enrollment.form.submitted',
+      'family.created',
+      'student.created',
+      'student.enrolled',
+    ]);
     expect(anyCustomerAutoSendEnabled({})).toBe(false);
   });
 
