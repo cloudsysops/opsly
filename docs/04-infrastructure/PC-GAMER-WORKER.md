@@ -1,7 +1,7 @@
 ---
 status: active
 owner: operations
-last_review: 2026-08-14
+last_review: 2026-09-07
 type: infrastructure
 tags:
   - opsly/infrastructure
@@ -35,6 +35,10 @@ VPS vps-dragon (100.120.151.91) ── control plane siempre ON
 | Mac | IDE / Doppler | Sin impacto runtime |
 
 Conector: **Tailscale + Redis VPS + LLM Gateway**. Sin Swarm. Sin segundo orchestrator.
+
+**Regla:** el PC gamer **ejecuta**. La nube **decide y guarda el estado**. Si el PC se apaga, Opsly sigue; los jobs GPU quedan en BullMQ (`QUEUED`).
+
+Enrutar por **capacidad** (`gpu.nvidia`, `video.render`, `llm.local`, `ffmpeg`), no por hostname. Registro: [`config/compute-workers.json`](../../config/compute-workers.json). CLI: `npm run compute:workers` / `npm run compute:assign -- --job content.render.video`.
 
 ## Reglas no negociables
 
@@ -146,6 +150,17 @@ MONEY_PRINTER_TURBO_URL=http://100.74.88.103:8080 \
 npm run content:bitsitos:publish -- --kit
 ```
 
+Primer job real en el bridge: `content.render.video` → FFmpeg title card + thumbnail (`scripts/ops/content-render-ffmpeg.mjs`). Si falta ffmpeg, el job **falla** (no hay MP4 placeholder). Los artefactos locales no son canónicos: sincronizar y guardar la referencia en Opsly.
+
+AI Board / Mission Control:
+
+```bash
+npm run compute:assign -- --job content.render.video
+npm run compute:assign -- --job ai.local.inference --apply   # requiere REDIS_URL Tailscale
+```
+
+Mission Control muestra un panel compacto **PC GAMER** (status, GPU/VRAM, heartbeat, cola). `GET /api/admin/compute-workers`.
+
 Docs: [`docs/brand/icso/YOUTUBE-KIDS-TECH-CHANNEL.md`](../brand/icso/YOUTUBE-KIDS-TECH-CHANNEL.md).
 
 ## Enviar trabajo solo si está disponible
@@ -228,7 +243,11 @@ swap=4GB
 | `scripts/ops/enqueue-overnight-opencode.sh` | Mac → encolar `local_opencode` |
 | `scripts/ops/pc-gamer-reconnect.sh` | Mac → SSH → levantar plano (+ `--with-opencode`) |
 | `scripts/setup-pc-gamer-worker.sh` | Bootstrap (delega a docker plane) |
-| `scripts/ops/pc-gamer-heartbeat.sh` | TTL heartbeat Redis |
+| `config/compute-workers.json` | Capacidades + job types (no hostname hardcode) |
+| `scripts/ops/compute-worker-router.mjs` | Router por capacidad; offline → job sigue `QUEUED` |
+| `scripts/ops/board-assign-gpu-job.mjs` | AI Board asigna GPU job (`--apply` encola BullMQ) |
+| `scripts/ops/content-render-ffmpeg.mjs` | Primer job real: title card MP4 + thumbnail |
+| `scripts/ops/pc-gamer-heartbeat.sh` | TTL heartbeat Redis (JSON GPU/VRAM/disk) |
 | `scripts/ops/check-pc-gamer-online.sh` | Gate antes de encolar |
 | `scripts/ops/assert-ephemeral-worker-env.sh` | Anti secretos maestros |
 | `OPSLY_WORKER_ALLOWLIST` | Filtra workers en `apps/orchestrator` |
