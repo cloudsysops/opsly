@@ -1,4 +1,6 @@
 # Opsly — workflow catalog: docs/ops/workflows-index.md
+# Push to main → build :staging+:sha and deploy STAGING only.
+# Production SSH is .github/workflows/promote-production.yml (window-gated).
 # Secrets requeridos (repository o environment "production"):
 #   VPS_HOST, VPS_USER, VPS_SSH_KEY, PLATFORM_DOMAIN
 #   TAILSCALE_AUTHKEY (opcional pero recomendado si SSH del VPS es solo tailnet / UFW bloquea 22 público):
@@ -51,6 +53,11 @@ on:
         type: boolean
         required: false
         default: false
+      phase:
+        description: "staging = images+staging SSH. promote is .github/workflows/promote-production.yml"
+        type: choice
+        options: [staging]
+        default: staging
 
 # Un solo deploy SSH a la vez por rama. No cancelar el que ya está en SSH
 # (cortar compose mid-flight deja Traefik a medias). Merges en ráfaga se encolan.
@@ -125,7 +132,7 @@ jobs:
           file: apps/api/Dockerfile
           push: true
           tags: |
-            ghcr.io/cloudsysops/intcloudsysops-api:latest
+            ghcr.io/cloudsysops/intcloudsysops-api:staging
             ghcr.io/cloudsysops/intcloudsysops-api:${{ github.sha }}
           build-args: |
             PLATFORM_DOMAIN=${{ secrets.PLATFORM_DOMAIN }}
@@ -137,7 +144,7 @@ jobs:
           file: apps/admin/Dockerfile
           push: true
           tags: |
-            ghcr.io/cloudsysops/intcloudsysops-admin:latest
+            ghcr.io/cloudsysops/intcloudsysops-admin:staging
             ghcr.io/cloudsysops/intcloudsysops-admin:${{ github.sha }}
           build-args: |
             NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
@@ -152,7 +159,7 @@ jobs:
           file: apps/portal/Dockerfile
           push: true
           tags: |
-            ghcr.io/cloudsysops/intcloudsysops-portal:latest
+            ghcr.io/cloudsysops/intcloudsysops-portal:staging
             ghcr.io/cloudsysops/intcloudsysops-portal:${{ github.sha }}
           build-args: |
             NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
@@ -168,7 +175,7 @@ jobs:
           file: apps/icso/Dockerfile
           push: true
           tags: |
-            ghcr.io/cloudsysops/intcloudsysops-icso:latest
+            ghcr.io/cloudsysops/intcloudsysops-icso:staging
             ghcr.io/cloudsysops/intcloudsysops-icso:${{ github.sha }}
           build-args: |
             NEXT_PUBLIC_SITE_URL=https://intcloudsysops.com
@@ -180,7 +187,7 @@ jobs:
           file: apps/llm-gateway/Dockerfile
           push: true
           tags: |
-            ghcr.io/cloudsysops/intcloudsysops-llm-gateway:latest
+            ghcr.io/cloudsysops/intcloudsysops-llm-gateway:staging
             ghcr.io/cloudsysops/intcloudsysops-llm-gateway:${{ github.sha }}
 
       - name: Build and push Orchestrator image
@@ -190,7 +197,7 @@ jobs:
           file: apps/orchestrator/Dockerfile
           push: true
           tags: |
-            ghcr.io/cloudsysops/intcloudsysops-orchestrator:latest
+            ghcr.io/cloudsysops/intcloudsysops-orchestrator:staging
             ghcr.io/cloudsysops/intcloudsysops-orchestrator:${{ github.sha }}
 
       - name: Build and push Hermes image
@@ -201,7 +208,7 @@ jobs:
           file: Dockerfile.hermes
           push: true
           tags: |
-            ghcr.io/cloudsysops/intcloudsysops-hermes:latest
+            ghcr.io/cloudsysops/intcloudsysops-hermes:staging
             ghcr.io/cloudsysops/intcloudsysops-hermes:${{ github.sha }}
 
       - name: Build and push Context Builder image
@@ -211,7 +218,7 @@ jobs:
           file: apps/context-builder/Dockerfile
           push: true
           tags: |
-            ghcr.io/cloudsysops/intcloudsysops-context-builder:latest
+            ghcr.io/cloudsysops/intcloudsysops-context-builder:staging
             ghcr.io/cloudsysops/intcloudsysops-context-builder:${{ github.sha }}
 
   build-mcp:
@@ -241,7 +248,7 @@ jobs:
           file: apps/mcp/Dockerfile
           push: true
           tags: |
-            ghcr.io/cloudsysops/intcloudsysops-mcp:latest
+            ghcr.io/cloudsysops/intcloudsysops-mcp:staging
             ghcr.io/cloudsysops/intcloudsysops-mcp:${{ github.sha }}
 
   verify-runtime-images:
@@ -487,9 +494,17 @@ jobs:
 
   deploy-staging:
     needs:
+      - build-and-push
+      - build-mcp
       - build-and-push-staging
       - build-mcp-staging
-    if: github.ref_name == 'staging'
+    # Main push deploys staging only. Production is promote-production.yml.
+    if: |
+      always() &&
+      (
+        (github.ref_name == 'main' && needs.build-and-push.result == 'success' && needs.build-mcp.result == 'success') ||
+        (github.ref_name == 'staging' && needs.build-and-push-staging.result == 'success' && needs.build-mcp-staging.result == 'success')
+      )
     runs-on: ubuntu-latest
     environment: staging
     permissions:
@@ -556,13 +571,14 @@ jobs:
           PLATFORM_DOMAIN_FALLBACK: ${{ secrets.PLATFORM_DOMAIN }}
           GITHUB_DEPLOY_TOKEN: ${{ github.token }}
           GITHUB_DEPLOY_ACTOR: ${{ github.actor }}
+          GITHUB_SHA: ${{ github.sha }}
         with:
           host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           timeout: 2m
           command_timeout: 30m
-          envs: STAGING_PLATFORM_DOMAIN,PLATFORM_DOMAIN_FALLBACK,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR
+          envs: STAGING_PLATFORM_DOMAIN,PLATFORM_DOMAIN_FALLBACK,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR,GITHUB_SHA
           script: |
             set -euo pipefail
             DEPLOY_PATH=/opt/opsly-staging
@@ -578,13 +594,12 @@ jobs:
 
             mkdir -p "$(dirname "$DEPLOY_PATH")"
             if [ ! -d "$DEPLOY_PATH/.git" ]; then
-              echo "Clonando repo en $DEPLOY_PATH (rama staging)..."
+              echo "Clonando repo en $DEPLOY_PATH (ReleaseCandidate SHA)..."
               git clone "$REPO_URL" "$DEPLOY_PATH"
             fi
             cd "$DEPLOY_PATH"
-            git fetch origin staging
-            git checkout staging
-            git reset --hard origin/staging
+            git fetch origin
+            git reset --hard "${GITHUB_SHA}"
 
             cd "$DEPLOY_PATH/infra"
             docker logout ghcr.io 2>/dev/null || true
@@ -691,12 +706,8 @@ jobs:
       - build-and-push
       - build-mcp
       - verify-runtime-images
-    # Solo producción: imágenes GHCR + compose. En staging este job no corre (build-* están skipped).
-    # verify-runtime-images tiene continue-on-error: true — deploy corre si build tuvo éxito.
-    if: |
-      github.ref_name == 'main' &&
-      needs.build-and-push.result == 'success' &&
-      needs.build-mcp.result == 'success'
+    # Production SSH lives in promote-production.yml. Push to main must not deploy prod.
+    if: false
     runs-on: ubuntu-latest
     environment: production
     permissions:

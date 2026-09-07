@@ -1,0 +1,215 @@
+# Opsly — workflow catalog: docs/ops/workflows-index.md
+# PROMOTE_PRODUCTION — never runs on push to main.
+# Merge → staging automatically. This workflow retags ReleaseCandidate → :latest
+# and SSHs /opt/opsly only inside America/Bogota 22:00–06:00.
+name: Promote Production
+
+on:
+  schedule:
+    - cron: "0 3 * * *"   # 22:00 America/Bogota
+    - cron: "0 4 * * *"   # 23:00
+    - cron: "0 6 * * *"   # 01:00 canonical
+    - cron: "0 9 * * *"   # 04:00 retry
+    - cron: "0 10 * * *"  # 05:00 last in-window hour
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "ReleaseCandidate SHA (default: current main)"
+        required: false
+        type: string
+      dry_run:
+        description: "Gate + plan only; do not SSH production"
+        type: boolean
+        required: false
+        default: true
+      force_daytime:
+        description: "Emergency — promote outside window (hotfix-prod)"
+        type: boolean
+        required: false
+        default: false
+
+concurrency:
+  group: promote-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+  actions: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.sha.outputs.sha }}
+      action: ${{ steps.gate.outputs.action }}
+      execute: ${{ steps.exec.outputs.execute }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - id: sha
+        run: |
+          set -euo pipefail
+          if [ -n "${{ inputs.sha }}" ]; then
+            echo "sha=${{ inputs.sha }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - id: exec
+        run: |
+          set -euo pipefail
+          execute=false
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ "${{ inputs.dry_run }}" != "true" ]; then execute=true; fi
+          elif [ "${{ vars.AUTO_PROMOTE_PRODUCTION }}" = "true" ]; then
+            execute=true
+          fi
+          echo "execute=${execute}" >> "$GITHUB_OUTPUT"
+          echo "Schedule/dispatch live SSH requires uncheck dry_run or vars.AUTO_PROMOTE_PRODUCTION=true"
+
+      - id: gate
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          FORCE_DAYTIME: ${{ inputs.force_daytime == true && '1' || '0' }}
+          RC_SHA: ${{ steps.sha.outputs.sha }}
+          DRY_RUN: "1"
+        run: |
+          set -euo pipefail
+          chmod +x scripts/ci/promote-production.sh
+          scripts/ci/promote-production.sh | tee /tmp/promote-out.txt
+          action="$(node -e 'const fs=require("fs"); const t=fs.readFileSync("/tmp/promote-out.txt","utf8"); const m=t.match(/"action": "([^"]+)"/); process.stdout.write(m?m[1]:"allow")')"
+          echo "action=${action}" >> "$GITHUB_OUTPUT"
+
+  retag-latest:
+    needs: gate
+    if: needs.gate.outputs.action == 'allow' && needs.gate.outputs.execute == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Retag ReleaseCandidate SHA as :latest (does not rebuild)
+        env:
+          SHA: ${{ needs.gate.outputs.sha }}
+        run: |
+          set -euo pipefail
+          images=(
+            intcloudsysops-api
+            intcloudsysops-admin
+            intcloudsysops-portal
+            intcloudsysops-icso
+            intcloudsysops-llm-gateway
+            intcloudsysops-orchestrator
+            intcloudsysops-hermes
+            intcloudsysops-context-builder
+            intcloudsysops-mcp
+          )
+          for img in "${images[@]}"; do
+            src="ghcr.io/cloudsysops/${img}:${SHA}"
+            dst="ghcr.io/cloudsysops/${img}:latest"
+            echo "retag ${src} → ${dst}"
+            docker buildx imagetools create -t "${dst}" "${src}" || echo "::warning::retag skipped for ${img}"
+          done
+
+  deploy-production:
+    needs: [gate, retag-latest]
+    if: needs.gate.outputs.action == 'allow' && needs.gate.outputs.execute == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      packages: read
+    env:
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.gate.outputs.sha }}
+
+      - name: Idempotency — skip SSH if VPS already at SHA
+        id: already
+        env:
+          WANT: ${{ needs.gate.outputs.sha }}
+        run: |
+          echo "already=false" >> "$GITHUB_OUTPUT"
+
+      - name: Connect Tailscale
+        if: env.TAILSCALE_AUTHKEY != '' && steps.already.outputs.already != 'true'
+        uses: ./.github/actions/tailscale-connect
+        with:
+          authkey: ${{ env.TAILSCALE_AUTHKEY }}
+          ping_host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST || '100.120.151.91' }}
+
+      - name: Promote via SSH (compose pull :latest)
+        if: steps.already.outputs.already != 'true'
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          PLATFORM_DOMAIN: ${{ secrets.PLATFORM_DOMAIN }}
+          GITHUB_DEPLOY_TOKEN: ${{ github.token }}
+          GITHUB_DEPLOY_ACTOR: ${{ github.actor }}
+          RC_SHA: ${{ needs.gate.outputs.sha }}
+        with:
+          host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          timeout: 2m
+          command_timeout: 30m
+          envs: PLATFORM_DOMAIN,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR,RC_SHA
+          script: |
+            set -euo pipefail
+            DEPLOY_PATH=/opt/opsly
+            cd "$DEPLOY_PATH"
+            current="$(git rev-parse HEAD)"
+            if [ "${current}" = "${RC_SHA}" ]; then
+              echo "idempotent: VPS already at ${RC_SHA}"
+              exit 0
+            fi
+            git fetch origin
+            git reset --hard "${RC_SHA}"
+            cd /opt/opsly/infra
+            docker logout ghcr.io 2>/dev/null || true
+            echo "$GITHUB_DEPLOY_TOKEN" | docker login ghcr.io -u "$GITHUB_DEPLOY_ACTOR" --password-stdin
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull traefik app admin portal icso prometheus node-exporter
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull mcp llm-gateway orchestrator hermes context-builder || true
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps --force-recreate traefik app admin portal icso prometheus node-exporter
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps --force-recreate mcp llm-gateway orchestrator hermes context-builder || true
+
+      - name: Health check (public)
+        env:
+          PLATFORM_DOMAIN: ${{ secrets.PLATFORM_DOMAIN }}
+        run: |
+          set -euo pipefail
+          url="https://api.${PLATFORM_DOMAIN}/api/health"
+          for i in 1 2 3 4 5 6 7 8; do
+            if curl -sfk --max-time 20 "${url}"; then
+              echo "✅ production health OK"
+              exit 0
+            fi
+            sleep 20
+          done
+          echo "❌ production health failed" >&2
+          exit 1
+
+      - name: Rollback notice
+        if: failure()
+        continue-on-error: true
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          echo "Promote failed — open revert/hotfix-prod PR toward previous SHA (planProductionRollback)"
+          if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then exit 0; fi
+          curl -fsS -X POST "$DISCORD_WEBHOOK_URL" -H "Content-Type: application/json" \
+            -d '{"embeds":[{"title":"❌ Promote production failed — rollback required","color":16729156}]}'

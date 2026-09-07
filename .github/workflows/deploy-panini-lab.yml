@@ -67,7 +67,6 @@ jobs:
           file: apps/panini-lab/Dockerfile
           push: true
           tags: |
-            ghcr.io/cloudsysops/intcloudsysops-panini-lab:latest
             ghcr.io/cloudsysops/intcloudsysops-panini-lab:${{ needs.gate.outputs.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -79,6 +78,7 @@ jobs:
 
   deploy-vps:
     needs: [gate, build-and-push]
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment: production
     permissions:

@@ -54,13 +54,6 @@ jobs:
             echo "sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Night window (Peskids live — no daytime deploys)
-        env:
-          FORCE_DAYTIME: ${{ github.event_name == 'workflow_dispatch' && inputs.force_daytime && '1' || '0' }}
-        run: |
-          set -euo pipefail
-          node scripts/ci/check-production-change-window.mjs --mode deploy
-
   build-and-push:
     needs: gate
     runs-on: ubuntu-latest
@@ -120,7 +113,6 @@ jobs:
           file: apps/peskids/Dockerfile
           push: true
           tags: |
-            ghcr.io/cloudsysops/peskids:latest
             ghcr.io/cloudsysops/peskids:${{ needs.gate.outputs.sha }}
           build-args: |
             NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
@@ -145,6 +137,7 @@ jobs:
 
   deploy-vps:
     needs: [gate, build-and-push]
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment: production
     permissions:
@@ -156,6 +149,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ needs.gate.outputs.sha }}
+
+      - name: Night window (production Peskids — fail closed)
+        env:
+          FORCE_DAYTIME: ${{ inputs.force_daytime && '1' || '0' }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          node scripts/ci/check-production-change-window.mjs --mode promote
 
       - name: Validate deploy secrets
         env:

@@ -1,78 +1,47 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-07-27
+last_review: 2026-09-07
 ---
 
 # Ventana de cambios en producción (noche)
 
-Peskids y el control plane Opsly están **operativos de día**. Para no interferir con matrículas, WhatsApp, admin y clases:
+Peskids y el control plane Opsly están **operativos de día**. La ventana **no se ensancha** para poner CI verde.
 
-## Regla
+## Regla (tras desacoplar merge de prod)
 
 | Acción | Cuándo |
 |--------|--------|
-| Promoción/deploy a producción de runtime / infra / migraciones | Solo en **ventana nocturna** `America/Bogota` **22:00–06:00** |
-| Deploy a VPS / GHCR de Peskids (u otros tenants en prod) | Misma ventana nocturna |
-| Docs, skills, reglas Cursor, copy sin runtime | **Sí de día** (sin label) |
-| Cambio mínimo que **no** afecta producción ni operación | De día solo con label GitHub **`safe-daytime`** |
-| Emergencia (outage / seguridad) | De día con label **`hotfix-prod`** + aprobación humana |
+| **Merge a `main`** (CI verde) | Cualquier hora — **no** despliega producción |
+| **Deploy staging** (`/opt/opsly-staging`) | Automático en push a `main` |
+| **Promote production** (VPS `/opt/opsly`, Peskids, Panini) | Solo **ventana nocturna** `America/Bogota` **22:00–06:00** |
+| Docs, skills, reglas Cursor | De día |
+| Emergencia prod | Label **`hotfix-prod`** + `force_daytime` en promote |
 
-## Ventana nocturna
+## Ventana nocturna (solo promote)
 
 - Zona: **`America/Bogota`**
-- Horario permitido: **22:00 inclusive → 06:00 exclusive**
-- Fuera de esa franja, la promoción de producción falla. El merge a `main` no despliega Peskids.
+- Permitido: **22:00 inclusive → 06:00 exclusive**
+- Cron de GitHub es **UTC**. Delay del scheduler no autoriza promote; el run **schedule** fuera de ventana hace **skip (exit 0)**.
 
-## Paths de impacto (noche o hotfix)
+## Paths
 
-- `apps/**` (incluye Peskids, API, portal, admin, …)
-- `infra/**`
-- `supabase/**`
-- `scripts/` de deploy/VPS/peskids (`*deploy*`, `peskids-*`, `vps-*`, …)
-- `.github/workflows/deploy*.yml`
-
-## Paths seguros de día (solo estos en el PR)
-
-- `docs/**`, `*.md` de gobernanza, `.cursor/**`, `.agents/**`, `skills/**`
-- Plantillas GitHub que no despliegan
-
-Si el PR mezcla docs + `apps/peskids` → se trata como impacto prod.
+El check `production-change-window` en PRs ya **no bloquea merge diurno** de `apps/`/`infra/`: merge ≠ prod. El gate de promote sigue fail-closed.
 
 ## Labels
 
 | Label | Uso |
 |-------|-----|
-| `night-merge` | Cola de **merge automático nocturno** (01:00 Bogotá): CI verde de día (este label **pasa** el gate `production-change-window` sin autorizar merge diurno) → squash-merge → Deploy → smoke → rollback si falla. Ver [`NIGHT-MERGE.md`](NIGHT-MERGE.md) |
-| `safe-daytime` | Humano certifica: no afecta prod/ops; merge de día OK |
-| `hotfix-prod` | Emergencia; merge/deploy de día OK |
-
-## Merge mientras duermes
-
-1. De día: PR revisado, CI verde y staging verificado.
-2. En la ventana: ejecutar **Promote Peskids release candidate** con el SHA completo.
-3. Si deploy o smoke fallan, se restaura el último artefacto SHA conocido.
-
-## Agentes / Cursor
-
-Se puede mergear Peskids/runtime de día cuando CI y revisión estén verdes; no se puede promover a producción de día. `night-merge` queda para compatibilidad. Ver `.cursor/rules/production-change-window.mdc`.
-
-## Nightly merge + upgrades + cleanup
-
-PRs con label **`night-merge`** se squash-mergean a la **01:00 America/Bogota**. Después: nightly-ops (~01:15) y **Night cleanup** (03:30) con revisión anterior/posterior. Ver [`NIGHTLY-OPS-UPGRADE.md`](NIGHTLY-OPS-UPGRADE.md) y [`NIGHT-CLEANUP.md`](NIGHT-CLEANUP.md).
+| `night-merge` | Cola **MERGE_TO_MAIN** (crons + catch-up diurno si GitHub retrasó el de 01:00) |
+| `safe-daytime` | Legacy; ya no es obligatorio para merge de runtime |
+| `hotfix-prod` | Emergencia de promote diurno |
 
 ## Comandos
 
 ```bash
-# ¿Estamos en ventana? (exit 0 = sí)
 node scripts/ci/check-production-change-window.mjs --check-now
-
-# Simular paths de un PR
-node scripts/ci/check-production-change-window.mjs --paths apps/peskids/app/page.tsx
+node scripts/ci/check-production-change-window.mjs --mode promote --event workflow_dispatch
+node scripts/ci/check-production-change-window.mjs --mode pr --paths apps/peskids/app/page.tsx
 ```
 
-## Enforce en GitHub
-
-1. Workflow **Production change window** en PRs (status check).
-2. Añadir check **`production-change-window`** a branch protection de `main` (Settings → Branches).
-3. Deploy Peskids: gate nocturno + input `force_daytime` en `workflow_dispatch`.
+Doc de pipeline: [`RELEASE-AUTOMATION.md`](RELEASE-AUTOMATION.md) · cola: [`NIGHT-MERGE.md`](NIGHT-MERGE.md)
