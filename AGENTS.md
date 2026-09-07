@@ -692,29 +692,43 @@ Week 4: Docs + runbook + MVP validation
 
 <!-- Actualizar al final de cada sesión. Sesiones pre-2026-05-26 → docs/history/AGENTS-SESSION-HISTORY.md -->
 
-### 📌 Sesión Activa (2026-08-30)
+### 📌 Sesión Activa (2026-09-07)
 
-**Tema:** Cierre operativo post-OpenCode — cerebro al día, auto-fix cerrado, Git hard-fail  
-**Branch:** `main` (`d1c81ded5` + este cierre docs)  
-**Objetivo:** un solo cerebro para agentes alineado a prod real; OpenCode no vuelve a pushear a `main`
+**Tema:** PR queue cleanup + lib core test coverage + AGENTS.md update
+**Branch:** `main` (`f27efea6` post-merges)
+**Objetivo:** Organizar cola de PRs, mergear features Peskids pendientes, cerrar stale, subir test coverage
 
-**Hecho (2026-08-25 → 2026-08-30):**
-1. ✅ Deploy pipeline (OpenCode): Dockerfiles universe/game-core, redis webpack, franchise-core no-op, dunning cursor string. HEAD previo `d1c81ded5`. API `https://api.op-sly.com/api/health` → 200 supabase+redis ok.
-2. ✅ Peskids prod `https://www.peskids.com/api/health` → 200 imagen `ghcr.io/cloudsysops/peskids:7ae848f9`. Flags de operación (hot_lead, digest, follow-up, etc.) **todos `false`**.
-3. ✅ UFW VPS: active; SSH 22 solo `100.64.0.0/10`; 80/443 públicos. `vps-secure.sh` no reaplicado (sudo pide password; estado ya correcto).
-4. ✅ Franchise stack en `main`: [#1044](https://github.com/cloudsysops/opsly/pull/1044), [#1019](https://github.com/cloudsysops/opsly/pull/1019), [#1023](https://github.com/cloudsysops/opsly/pull/1023), [#1029](https://github.com/cloudsysops/opsly/pull/1029), [#1059](https://github.com/cloudsysops/opsly/pull/1059) **y** [#1018](https://github.com/cloudsysops/opsly/pull/1018) v2 (duplicado — falta decidir canónico).
-5. ✅ Oleada Jules mergeada (Sentinel/Bolt/Palette + Content OS/Universe/Capacitor). **No repetir merge en masa.**
-6. ✅ PRs auto-fix #1071–#1081 cerrados (spawn de push directo a `main`). Drafts viejos siguen: #992, #961, #935.
+**Hecho (2026-09-06 → 2026-09-07):**
+1. ✅ **10 PRs mergeados a `main`:**
+   - #1110 fix(security): RLS classes y pools por tenant
+   - #1109 feat(peskids): alertas WhatsApp leads nuevos/sin atender
+   - #1105 feat(peskids): acciones post-clase de prueba
+   - #1111 feat(peskids): teacher feedback a family dashboard
+   - #1107 feat(peskids): AI-assisted WhatsApp reply para staff
+   - #1108 feat(peskids): analytics atencion y conversion de leads
+   - #1106 feat(peskids): OG image Instagram, Meta Pixel/CAPI
+   - #1095 feat(db): Database Assurance loop
+   - #1098 fix(franchise): remove in-house Franchise OS (canonico)
+   - #1097 feat(peskids): Data-Safety loop (auth, PII, idempotency)
+2. ✅ **CI fixes durante merge:** lint/prettier en #1108, type error SalesContactEvent, merge conflicts en #1108/#1106/#1097/#1098, duplicate consent constant, attendance schema missing fields
+3. ✅ **7 PRs cerrados:** #1085 (deprecated franchise), #1104/#1112/#1113 (auto-fix bot stale), #935/#961/#992/#1082/#1083/#1088 (stale experimental)
+4. ✅ **#1116 merged by owner:** night cleanup with pre/post review
+5. ✅ **Test coverage lib core:** 32 tests nuevos en lib/errors, lib/security, lib/config, lib/observability
+6. ✅ **Environment verified:** type-check 78/78, API 688 tests, Peskids 150 tests, Orchestrator 228 tests, Portal 63 tests, LLM Gateway 90 tests
 
 **Pendiente:**
-- Humano: un solo Franchise OS (#1019 vs #1018 v2); no aplicar 0098–0101 a prod sin aprobación.
-- Peskids: encender **un** flag operativo de noche (hot-lead o digest), no once. Checklist: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md).
-- GitHub: quitar bypass de branch protection al token que usa OpenCode.
-- OpenCode: modelo capaz (no MiMo Free) + solo ramas `feat/*`/`fix/*` + PR. `icso.op-sly.com` sigue 404.
-- Catálogo comercial (`config/commercial-catalog.json`) sin tie runtime. Diseño: [`docs/00-architecture/MODULE-REGISTRY.md`](docs/00-architecture/MODULE-REGISTRY.md).
-- VPS memoria ~4 GiB: [`docs/runbooks/VPS-MEMORY-CAPS.md`](docs/runbooks/VPS-MEMORY-CAPS.md). PC-gamer: no encolar OpenCode en horario `gaming` / offline.
+- Peskids: encender **un** flag operativo de noche (hot-lead o digest). Flags en `.env.example` todos `false`.
+- Deploy: los 10 merges no estan deployados al VPS aun (requiere SSH + GHCR pull).
+- PR #1117 (auto-fix nightly) puede cerrarse cuando aparezca.
 
 ### 📅 Sesiones Recientes
+
+**Sesión 2026-09-07 — PR queue cleanup + lib tests ✅**
+- ✅ 10 PRs mergeados (Peskids features, security, DB assurance, franchise cleanup, data-safety)
+- ✅ 7 PRs cerrados (stale/deprecated)
+- ✅ 32 tests nuevos para lib/errors, lib/security, lib/config, lib/observability
+- ✅ CI fixes: lint, type errors, merge conflicts resueltos durante merge
+- ✅ Franchise decision: #1098 es canonico (remove in-house OS), #1085 cerrado
 
 **Sesión 2026-08-30 — Cierre post-OpenCode + Git hard-fail ✅**
 - ✅ Prod: API + Peskids health 200; UFW SSH Tailscale-only (sin reaplicar `vps-secure.sh`)
