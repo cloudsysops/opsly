@@ -17,6 +17,11 @@ La imagen se ejecuta como `peskids-staging`, separada del contenedor productivo
 `peskids` y expuesta solo en `127.0.0.1:3304` del host de staging. Se verifican
 health, homepage, login y el SHA expuesto por `/api/health`.
 
+El checkout del workflow en el VPS usa `/opt/opsly-staging` si es escribible;
+si no (VPS sin sudo passwordless), cae a `$HOME/opsly-staging`. No hardcodear
+`cd /opt/opsly-staging`. No confundir con el compose de plataforma en
+`docs/04-infrastructure/CICD-VPS.md`.
+
 El workflow publica `release-candidate.json` con commit, tag, digest, staging,
 smoke, seguridad y política de migraciones. No aplica migraciones productivas.
 

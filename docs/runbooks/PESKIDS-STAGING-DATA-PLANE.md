@@ -1,7 +1,7 @@
 ---
 status: draft
 owner: operations
-last_review: 2026-09-05
+last_review: 2026-09-06
 type: runbook
 tags:
   - opsly/peskids
@@ -14,20 +14,21 @@ tags:
 Application env guards are not isolation. Staging and production must not
 share database, Auth, Storage, or service-role credentials.
 
-## Current evidence (2026-09-05 night)
+## Current evidence (2026-09-06 evening)
 
 | Resource | Production | Staging / QA |
 | --- | --- | --- |
-| Supabase project | `jkwykpldnitavhmtuzmo` (`opsly-prod`) | **`hljetbbgiphpjbldebpo` (`opsly-QA`)** — created 2026-09-05 |
-| Doppler | `prd` | **`stg_peskids`** (do not use Smile `stg` / `stg_qa`) |
-| Schema applied | live prod | **`0001`–`0097` (93 versions). `0098`/`0099` not applied.** |
-| Production PII in QA | n/a | **0** non-`@example.com` leads/students after seed |
-| Live host `peskids.op-sly.com` | still on prod project until #1093 deploys `stg_peskids` | container `peskids-staging` not flipped in this loop |
-| Franchise OS | `PESKIDS_FRANCHISE_OS_ENABLED=false` | Keep false. App franchise files skipped `20260819_franchise_core_rls.sql` |
+| Supabase project | `jkwykpldnitavhmtuzmo` (`opsly-prod`) | **`hljetbbgiphpjbldebpo` (`opsly-QA`)** |
+| Doppler | `prd` | **`stg_peskids`** (not Smile `stg` / `stg_qa`) |
+| Public host | `www.peskids.com` (container `peskids`) | **`https://peskids-staging.op-sly.com`** (container `peskids-staging`) |
+| Schema | live prod; do not apply `0098`/`0099` | **`0001`–`0097`**. `0098`/`0099` not applied. Duplicate git prefixes `0100_*` were renumbered `0103`–`0106`. |
+| Auth users | production staff | QA `qa-*@example.com` via `scripts/peskids-staging-auth-seed.sh` |
+| Storage | production | buckets `peskids-staging` + `peskids-qa` |
+| Franchise OS | keep disabled | keep disabled; skip `20260819_franchise_core_rls.sql` |
 
-`DB_URL` in `stg_peskids` is a leftover private Postgres (`psql://10.x`, db
-`appdb`). It is **not** the QA database. Do not run migrations against it.
-Peskids uses `SUPABASE_URL` + service role.
+`DB_URL` was dropped from `stg_peskids`. Peskids uses `SUPABASE_URL` + service
+role against opsly-QA only. VPS checkout is `$HOME/opsly-staging` when
+`/opt/opsly-staging` is not writable.
 
 Do **not** point Peskids staging at Smile QA. Do **not** copy production
 customer data.
@@ -59,17 +60,14 @@ project other than the configured QA project and never includes `0098` or
 
 ## Remaining human items
 
-1. Auth redirect URLs on `opsly-QA` for the QA host only.
-2. Create staging Auth users (admin, teacher, support, franchise admin,
-   auditor) with `PESKIDS_STAGING_SEED_PASSWORD` in Doppler `stg_peskids`
-   — never print it. RLS tests must use those JWTs, not service role.
-3. Separate Storage buckets on `opsly-QA`.
-4. Merge #1093 so VPS `peskids-staging` downloads `stg_peskids` and fails
-   if the project ref is production.
-5. Point staging n8n / inbound webhooks at test-safe workflows only.
-6. Confirm PITR on the **production** dashboard:
+1. Auth redirect URLs on `opsly-QA` (`site_url` + allow list for
+   `https://peskids-staging.op-sly.com` only).
+2. Point staging n8n / inbound webhooks at test-safe workflows only.
+3. Confirm PITR on the **production** dashboard:
    `PITR_ENABLED` · `PITR_DISABLED` · `UNKNOWN_REQUIRES_ACCOUNT_CHECK`.
-7. Isolated restore drill + measured RTO. Do not restore into production.
+4. Isolated restore drill + measured RTO. Do not restore into production.
+5. Do **not** apply `0103`–`0106` to production without review. `0098`/`0099`
+   stay excluded.
 
 Deploy fails if staging project ref equals `jkwykpldnitavhmtuzmo`
 (`scripts/ci/assert-peskids-staging-isolation.sh`).

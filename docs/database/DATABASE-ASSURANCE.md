@@ -10,6 +10,13 @@ tags:
 
 # Database Assurance — audit report
 
+> **Live follow-up (2026-09-06).** Isolation is no longer an open git-only
+> question. Staging is `opsly-QA` (`hljetbbgiphpjbldebpo`) via Doppler
+> `stg_peskids`; production remains `opsly-prod` (`jkwykpldnitavhmtuzmo`).
+> Current host and seed evidence: [`docs/runbooks/PESKIDS-STAGING-DATA-PLANE.md`](../runbooks/PESKIDS-STAGING-DATA-PLANE.md).
+> Do not open a second assurance loop or a second QA project. This file stays
+> as the **static audit**; treat BLOCKED isolation rows as superseded.
+
 > **Scope of evidence.** This audit ran with **no access to any live database**:
 > no Supabase dashboard or API, no VPS, no Doppler, no staging or production
 > Postgres. Everything asserted here was derived from files committed to this
