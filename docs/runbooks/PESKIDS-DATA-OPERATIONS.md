@@ -22,7 +22,7 @@ backups, restore, RPO/RTO, drift, observability, and child/family retention.
 | --- | --- | --- |
 | RPO | ≤ 15 minutes if Supabase PITR is on the paid project; otherwise ≤ 24 hours (daily dump) | Policy in `docs/governance/internal/BUSINESS-CONTINUITY-POLICY.md`. **PITR status not verified in this session.** |
 | RTO | ≤ 2 hours for Peskids site read path after isolated restore + redirect | Not measured. Restore drill pending. |
-| Staging PII | No production family/child rows in staging | **opsly-QA** (`hljetbbgiphpjbldebpo`) has 0 non-`@example.com` leads/students after synthetic seed. Live `peskids.op-sly.com` still uses prod until #1093 deploys `stg_peskids`. See `PESKIDS-STAGING-DATA-PLANE.md`. |
+| Staging PII | No production family/child rows in staging | **opsly-QA** (`hljetbbgiphpjbldebpo`) has 0 non-`@example.com` leads/students after synthetic seed. Live staging host is `peskids-staging.op-sly.com`. Prod `www.peskids.com` stays on `opsly-prod`. See `PESKIDS-STAGING-DATA-PLANE.md`. |
 
 ## Backup scope
 

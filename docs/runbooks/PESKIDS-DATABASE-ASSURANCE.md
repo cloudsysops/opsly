@@ -5,6 +5,18 @@ operations. It is evidence-based: a migration file is not evidence that the
 migration is applied, and a backup is not evidence of recoverability until a
 restore drill succeeds.
 
+## Canonical sources (do not open a parallel loop)
+
+| Loop | Canonical | Do not duplicate |
+| --- | --- | --- |
+| Staging isolation + host | [`PESKIDS-STAGING-DATA-PLANE.md`](./PESKIDS-STAGING-DATA-PLANE.md) + [`PESKIDS-RELEASE-PIPELINE.md`](./PESKIDS-RELEASE-PIPELINE.md) | New “QA project discovery” docs; Smile `stg` |
+| Application guards | #1094 in `apps/peskids/lib` (`lead-intake-idempotency`, runtime boundary) | #1097 as a second data-safety tree |
+| DB audit toolkit | [`docs/database/DATABASE-ASSURANCE.md`](../database/DATABASE-ASSURANCE.md) + `tools/db-assurance/` | Re-auditing isolation from git only |
+| Backups / restore | [`PESKIDS-DATA-OPERATIONS.md`](./PESKIDS-DATA-OPERATIONS.md) | Restoring into production |
+| Schema apply | `scripts/peskids-apply-staging-schema.sh` (≤0097; 0100 operations RLS opt-in) | Applying `0098`/`0099` or un-renumbered duplicate `0100` files |
+
+Honest state: `ENVIRONMENT_ISOLATION_IN_PROGRESS`. Not `PESKIDS_DATA_ASSURANCE_READY` until restore drill + PITR check.
+
 ## Current application boundary audit
 
 | Surface | Auth boundary | Data authority | Client | Write | Current risk / next proof |

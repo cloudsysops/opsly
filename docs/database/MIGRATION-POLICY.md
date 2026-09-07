@@ -194,12 +194,12 @@ to production.**
 1. **Wrap it in `BEGIN` / `COMMIT`.** The only exception is `CREATE INDEX
    CONCURRENTLY` / `DROP INDEX CONCURRENTLY`, which cannot run in a transaction.
    When you take that exception, say so in a header comment and make every
-   statement individually idempotent — see `0102_index_hygiene.sql`.
+   statement individually idempotent — see `0106_index_hygiene.sql`.
 2. **Never edit a migration that has been applied anywhere.** Add a new one.
 3. **Add constraints `NOT VALID` first.** `ALTER TABLE ... ADD CONSTRAINT ...
    NOT VALID` enforces the rule for new writes without scanning the table, so it
    cannot fail on existing data and takes no long lock. `VALIDATE CONSTRAINT` is
-   then a separate, deliberate step. See `0100_peskids_data_integrity.sql`.
+   then a separate, deliberate step. See `0104_peskids_data_integrity.sql`.
 4. **Adding a `NOT NULL` column needs a default**, or it is
    `REQUIRES_APP_COORDINATION` and needs the expand/contract dance.
 5. **Guard with `IF NOT EXISTS` / `IF EXISTS`,** or a `DO` block that checks
