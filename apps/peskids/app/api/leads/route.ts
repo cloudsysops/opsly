@@ -14,6 +14,7 @@ import { currentEnvironment } from '@/lib/runtime-environment';
 import { leadApiPostSchema } from '@/lib/validation/lead.schema';
 import { firstZodErrorMessage } from '@/lib/validation/zod-errors';
 import { findLeadIdByEmail } from '@/lib/lead-intake-idempotency';
+import { sendMetaLeadCapiEvent } from '@/lib/analytics/meta-conversions';
 
 /** The browser's address, as a value safe to pass upstream as X-Forwarded-For. */
 function clientForwardedFor(headers: Headers): string | null {
@@ -31,6 +32,7 @@ function clientForwardedFor(headers: Headers): string | null {
 // FormData only carries strings/Files; the client serializes these booleans with String(value).
 const BOOLEAN_FIELDS = new Set([
   'consent_treatment',
+  'consent_identity_document',
   'consent_marketing',
   'consent_photos_videos',
 ]);
@@ -136,6 +138,7 @@ export async function POST(request: NextRequest) {
         tenant_slug: process.env.NEXT_PUBLIC_TENANT_ID || 'peskids',
         source: 'web_form',
         consent_treatment: body.consent_treatment,
+        consent_identity_document: body.consent_identity_document,
         consent_marketing: body.consent_marketing,
         consent_policy_version: body.consent_policy_version,
         lead_type: body.lead_type,
@@ -207,6 +210,23 @@ export async function POST(request: NextRequest) {
       });
     const referralLink = buildPeskidsReferralLink(referralCode);
 
+    // Fire-and-forget: a Meta API hiccup must never fail lead creation. The
+    // same `requestId` is passed to the client so the browser pixel (see
+    // components/analytics/meta-pixel.tsx) can send the matching event with
+    // the identical event_id and let Meta deduplicate the two.
+    void sendMetaLeadCapiEvent({
+      eventId: requestId,
+      email: body.email,
+      phone: body.phone,
+      sourceUrl:
+        request.headers.get('referer') ||
+        (request.nextUrl ? `${request.nextUrl.origin}${request.nextUrl.pathname}` : 'https://www.peskids.com/'),
+      clientIp: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null,
+      userAgent: request.headers.get('user-agent'),
+      fbc: request.cookies?.get('_fbc')?.value ?? null,
+      fbp: request.cookies?.get('_fbp')?.value ?? null,
+    });
+
     const responseBody = {
       ok: true,
       id: canonical.leadId,
@@ -219,6 +239,7 @@ export async function POST(request: NextRequest) {
       message: 'Interesado registrado correctamente',
       twenty_person_id: canonical.twentyPersonId ?? null,
       twenty_opportunity_id: canonical.twentyOpportunityId ?? null,
+      meta_event_id: requestId,
     };
 
     if (idempotencyKey) {

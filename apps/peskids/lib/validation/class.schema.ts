@@ -68,7 +68,10 @@ export const attendanceUpdateSchema = z.object({
         .object({
           enrollment_id: z.string().uuid(),
           attendance: z.enum(['present', 'absent', 'excused']),
-          behavior_tags: z.array(z.string().trim().max(50)).max(10).optional(),
+          behavior_tags: z
+            .array(z.enum(['happy', 'engaged', 'calm', 'shy', 'tired', 'needs_support', 'other']))
+            .max(4)
+            .optional(),
           teacher_note: z.string().trim().max(500).optional(),
         })
         .strict()
