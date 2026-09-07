@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-08-30
+last_review: 2026-09-07
 ---
 
 # Opsly — Contexto del Agente
@@ -694,48 +694,42 @@ Week 4: Docs + runbook + MVP validation
 
 ### 📌 Sesión Activa (2026-09-07)
 
-**Tema:** PR queue cleanup + lib core test coverage + AGENTS.md update
-**Branch:** `main` (`f27efea6` post-merges)
-**Objetivo:** Organizar cola de PRs, mergear features Peskids pendientes, cerrar stale, subir test coverage
+**Tema:** Peskids RC `f27efea66` en staging + notas 🔄 alineadas a prod real
+**Branch:** `origin/main` = `f27efea66` (#1116). Este PR (#1118) solo tests `lib/` + docs.
+**Objetivo:** no mentirle al siguiente agente sobre SHAs, flags ni promote
 
-**Hecho (2026-09-06 → 2026-09-07):**
-1. ✅ **10 PRs mergeados a `main`:**
-   - #1110 fix(security): RLS classes y pools por tenant
-   - #1109 feat(peskids): alertas WhatsApp leads nuevos/sin atender
-   - #1105 feat(peskids): acciones post-clase de prueba
-   - #1111 feat(peskids): teacher feedback a family dashboard
-   - #1107 feat(peskids): AI-assisted WhatsApp reply para staff
-   - #1108 feat(peskids): analytics atencion y conversion de leads
-   - #1106 feat(peskids): OG image Instagram, Meta Pixel/CAPI
-   - #1095 feat(db): Database Assurance loop
-   - #1098 fix(franchise): remove in-house Franchise OS (canonico)
-   - #1097 feat(peskids): Data-Safety loop (auth, PII, idempotency)
-2. ✅ **CI fixes durante merge:** lint/prettier en #1108, type error SalesContactEvent, merge conflicts en #1108/#1106/#1097/#1098, duplicate consent constant, attendance schema missing fields
-3. ✅ **7 PRs cerrados:** #1085 (deprecated franchise), #1104/#1112/#1113 (auto-fix bot stale), #935/#961/#992/#1082/#1083/#1088 (stale experimental)
-4. ✅ **#1116 merged by owner:** night cleanup with pre/post review
-5. ✅ **Test coverage lib core:** 32 tests nuevos en lib/errors, lib/security, lib/config, lib/observability
-6. ✅ **Environment verified:** type-check 78/78, API 688 tests, Peskids 150 tests, Orchestrator 228 tests, Portal 63 tests, LLM Gateway 90 tests
+**Live (verificado 2026-09-07 ~02:00 UTC / 21:00 Bogotá):**
+1. ✅ `main` = `f27efea66c37969bfcdce267a3aeb1c51ce4f226` (`feat(ops): night cleanup… (#1116)`)
+2. ✅ Staging `https://peskids-staging.op-sly.com/api/health` → 200, `environment=staging`, `environment_boundary.ok=true`, `git_sha=f27efea66`
+3. ✅ Prod `https://www.peskids.com/api/health` → 200, `git_sha=c4822d9e380e142c7b55df856c92027400363113`
+4. ✅ Prod **`hot_lead_alerts=true`**. Resto de flags n8n **`false`**. Staging: todos los flags `false`.
+5. ✅ #1116 mergeado. #1115 unificó checkout staging + migraciones 0103–0106 (no aplicar a prod).
+6. ✅ Cola stale cerrada: #1088/#1083/#1082/#992/#961/#935. #1117 auto-fix cerrado sin merge.
 
 **Pendiente:**
-- Peskids: encender **un** flag operativo de noche (hot-lead o digest). Flags en `.env.example` todos `false`.
-- Deploy: los 10 merges no estan deployados al VPS aun (requiere SSH + GHCR pull).
-- PR #1117 (auto-fix nightly) puede cerrarse cuando aparezca.
+- **Promote RC `f27efea66`** — HIGH; ventana `America/Bogota` 22:00–06:00; **gate humano**. No `force_daytime`. Workflow: Actions → Deploy Peskids → `workflow_dispatch` (`force_daytime=false`). Rebuilds prod image from that **git SHA** (tag `peskids:f27efea66…`); no reutilizar la imagen staging (`sha-f27efea66`, URL/Supabase QA).
+- **No encender** digest ni un segundo flag n8n. Hot-lead ya está ON en prod.
+- Humano: Auth `site_url` + allow list en **opsly-QA** (`hljetbbgiphpjbldebpo`) = solo `https://peskids-staging.op-sly.com`. MCP no lee Auth settings (403 / sin tool).
+- Humano: confirmar PITR en **opsly-prod** (`jkwykpldnitavhmtuzmo`). Drill de restore **solo contra opsly-QA**, nunca overwrite prod.
+- No aplicar `0098`/`0099`/`0103`–`0106` a prod.
 
 ### 📅 Sesiones Recientes
 
+**Sesión 2026-09-07 — Live-state correction (AI Review Board) ✅**
+- ✅ RC `f27efea66` smoke en staging (health + boundary + home + admin login)
+- ✅ Prod sigue `c4822d9e` con `hot_lead_alerts=true` — no pedir “encender hot-lead”
+- ✅ #1118: 32 tests `lib/` (errors/security/config/observability); no mergear este draft antes del promote
+- ⏳ Promote prod de `f27efea66` después de 22:00 Bogotá + humano
+
 **Sesión 2026-09-07 — PR queue cleanup + lib tests ✅**
 - ✅ 10 PRs mergeados (Peskids features, security, DB assurance, franchise cleanup, data-safety)
-- ✅ 7 PRs cerrados (stale/deprecated)
-- ✅ 32 tests nuevos para lib/errors, lib/security, lib/config, lib/observability
-- ✅ CI fixes: lint, type errors, merge conflicts resueltos durante merge
-- ✅ Franchise decision: #1098 es canonico (remove in-house OS), #1085 cerrado
+- ✅ Stale/experimental cerrados (#1088/#1083/#1082/#992/#961/#935 y auto-fix)
+- ✅ Franchise: #1098 canónico (remove in-house OS)
 
 **Sesión 2026-08-30 — Cierre post-OpenCode + Git hard-fail ✅**
 - ✅ Prod: API + Peskids health 200; UFW SSH Tailscale-only (sin reaplicar `vps-secure.sh`)
 - ✅ Auto-fix PRs #1071–#1081 cerrados (no merge)
 - ✅ SYSTEM Git al inicio de este archivo; OpenCode/MiMo no deben pushear a `main`
-- ⏳ Franchise: elegir canónico #1019 vs #1018 v2
-- ⏳ Peskids: un flag operativo de noche
 
 **Sesión 2026-08-16 — Tenant entitlements engine en prod (Module Registry) ✅**
 - ✅ PR #882 mergeado (`dcb939f`) tras rebase sobre main + renumerar migración a `0097_tenant_entitlements`
@@ -1639,11 +1633,11 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 ## 🔄 Próximo paso inmediato
 
-**Peskids:** prod imagen `7ae848f9`. Health `https://www.peskids.com/api/health` ok; flags de operación en `false`. Siguiente runtime (noche): un solo flujo n8n (hot-lead **o** digest). Checklist: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md). `peskids.op-sly.com` redirige 308 a `www.peskids.com` (QA no aislada).
+**Peskids RC:** `main` = staging = `f27efea66`. Prod = `c4822d9e` (`https://www.peskids.com`). Staging aislado: `https://peskids-staging.op-sly.com` (`environment_boundary.ok=true`). `peskids.op-sly.com` es 308 a www — **no** es prod ni QA. Hot-lead **ya ON** en prod; no encender digest. Promote: Actions → **Deploy Peskids** → `workflow_dispatch` en ventana 22:00–06:00 Bogotá, **mismo git SHA**, `force_daytime=false`. Checklist: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md).
 
-**Plataforma:** `main` = `d1c81ded5` + cierre docs 2026-08-30. API `https://api.op-sly.com/api/health` → 200. UFW SSH Tailscale-only. Scan `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh`. No mergear Sentinel/Bolt/Palette/auto-fix en masa. No `git push origin main` ni `--no-verify` (ver SYSTEM Git arriba).
+**Plataforma:** API `https://api.op-sly.com/api/health` → 200. UFW SSH Tailscale-only. No mergear Content Studio / PC-gamer / auto-fix en masa. No `git push origin main` ni `--no-verify`.
 
-**Franchise:** #1044/#1019/#1023/#1029/#1059 **y** #1018 v2 ya en `main`. Decisión humana: un core canónico; el otro deprecated. `tenant_slug` sigue `peskids`. No aplicar 0098–0101 a prod sin humano.
+**Franchise:** #1098 canónico (sin Franchise OS in-house). `tenant_slug` = `peskids`. No aplicar `0098`/`0099`/`0103`–`0106` a prod sin humano.
 
 **Capacidad VPS:** alerta memoria **activa** (~4 GiB) — `docs/runbooks/VPS-MEMORY-CAPS.md`. Compose `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh --env-file /opt/opsly/.env --dry-run` (solo nombres de clave).
 
