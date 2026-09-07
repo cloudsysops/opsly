@@ -134,6 +134,13 @@ describe('enrollment token security', () => {
     expect(
       evaluateEnrollmentAccess(accessFixture({ used_at: now.toISOString() }), hash, now, 'submit')
     ).toEqual({ ok: false, reason: 'replay' });
+    expect(
+      evaluateEnrollmentAccess(
+        accessFixture({ purpose: 'family_access' as unknown as EnrollmentAccessRecord['purpose'] }),
+        hash,
+        now
+      )
+    ).toEqual({ ok: false, reason: 'wrong_purpose' });
   });
 
   it('does not leak whether a lead exists for unknown tokens', async () => {
@@ -234,6 +241,91 @@ describe('enrollment form + submit', () => {
     expect(enrollmentStaffViewFromMetadata(saved?.metadata ?? {}).next_action).toBe(
       'PREPARE_FIRST_CLASS'
     );
+  });
+
+  it('rejects family_id and student_id as unauthorized field tampering', async () => {
+    const result = await submitEnrollmentForm({
+      store: memoryStore([]),
+      rawToken: generateEnrollmentToken(),
+      body: { ...validForm, family_id: 'fam-1', student_id: 'stu-1' },
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.status).toBe(400);
+    }
+    expect(convertLeadToStudentMock).not.toHaveBeenCalled();
+  });
+
+  it('persists enrollment when the event bus / n8n emit fails', async () => {
+    const raw = generateEnrollmentToken();
+    const store = memoryStore([
+      {
+        id: 'lead-1',
+        tenant_slug: 'peskids',
+        status: 'new',
+        metadata: {
+          enrollment_access: accessFixture({ token_hash: hashEnrollmentToken(raw) }),
+        },
+        referral_source: 'whatsapp',
+        created_at: '2026-09-01T10:00:00.000Z',
+      },
+    ]);
+    convertLeadToStudentMock.mockResolvedValue({
+      created: true,
+      student: { id: 'stu-offline' },
+      lead: { id: 'lead-1', status: 'enrolled' },
+    });
+    emitEventMock.mockRejectedValue(new Error('orchestrator / n8n unreachable'));
+
+    const result = await submitEnrollmentForm({ store, rawToken: raw, body: validForm });
+    expect(result.ok).toBe(true);
+    const saved = await store.getById('lead-1', 'peskids');
+    expect(saved?.metadata.enrollment_outcome?.student.student_id).toBe('stu-offline');
+    expect(saved?.metadata.first_class?.status).toBe('pending');
+  });
+
+  it('walks issue → open → submit → staff next action without auto-send', async () => {
+    const store = memoryStore([
+      {
+        id: 'lead-1',
+        tenant_slug: 'peskids',
+        status: 'new',
+        metadata: { campaign: 'qr-sede' },
+        referral_source: 'qr',
+        created_at: '2026-09-01T10:00:00.000Z',
+      },
+    ]);
+    const issued = await issueEnrollmentLink({
+      store,
+      leadId: 'lead-1',
+      leadName: 'Ana Perez',
+    });
+    expect(issued?.whatsapp_draft.template).toBe('ENROLLMENT_LINK');
+    const raw = issued?.url.split('/').pop() ?? '';
+    const opened = await resolveEnrollmentToken({
+      store,
+      rawToken: raw,
+      mode: 'open',
+      markOpened: true,
+    });
+    expect(opened.ok).toBe(true);
+    convertLeadToStudentMock.mockResolvedValue({
+      created: true,
+      student: { id: 'stu-e2e' },
+      lead: { id: 'lead-1', status: 'enrolled' },
+    });
+    const submitted = await submitEnrollmentForm({ store, rawToken: raw, body: validForm });
+    expect(submitted).toMatchObject({
+      ok: true,
+      next_action: 'PREPARE_FIRST_CLASS',
+      student_id: 'stu-e2e',
+    });
+    const staff = enrollmentStaffViewFromMetadata(
+      (await store.getById('lead-1', 'peskids'))?.metadata ?? {}
+    );
+    expect(staff.next_action).toBe('PREPARE_FIRST_CLASS');
+    expect(staff.first_class).toBe('pending');
+    expect(anyCustomerAutoSendEnabled({})).toBe(false);
   });
 
   it('keeps a generic error when the token is unknown', async () => {

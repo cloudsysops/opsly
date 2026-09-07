@@ -60,6 +60,18 @@ Staging proof (synthetic only):
 5. Confirm no customer WhatsApp/SMS/email is sent.
 6. Rollback: `PESKIDS_HOT_LEAD_ALERTS_ENABLED=false`.
 
+## Staging probe (2026-09-07)
+
+Synthetic HEAD only. No customer data written.
+
+| URL | Result |
+| --- | --- |
+| `https://peskids-staging.op-sly.com/` | 200 |
+| `https://peskids-staging.op-sly.com/matricula/<opaque>` | 404 — route not deployed yet |
+| `https://www.peskids.com/matricula/<opaque>` | 404 — expected; this PR is not in production |
+
+Live golden-flow E2E stays blocked until a **night** staging deploy of #1130. Do not daytime-deploy Peskids.
+
 ## Production
 
 This slice does **not** authorize production flag activation, production deploy, or a new applied migration.
