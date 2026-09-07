@@ -46,6 +46,14 @@ interface LocalAgentPayload {
 
 interface LocalAgentResponse {
   success: boolean;
+  jobId?: string;
+  requestId?: string;
+  workerId?: string;
+  result?: string;
+  durationMs?: number;
+  runtime?: string;
+  model?: string;
+  errorCode?: string;
   response_path?: string;
   error?: string;
   execution_time_ms?: number;
@@ -82,8 +90,44 @@ function stringField(record: Record<string, unknown>, keys: readonly string[]): 
   return null;
 }
 
+export function sanitizeLocalAgentError(value: string): string {
+  return value
+    .replace(/sk-[A-Za-z0-9_-]{12,}/g, 'sk-***')
+    .replace(/nvapi-[A-Za-z0-9_-]{12,}/g, 'nvapi-***')
+    .replace(/Bearer\s+[A-Za-z0-9._-]+/gi, 'Bearer ***')
+    .replace(/(api[_-]?key|token|password)=([^\s]+)/gi, '$1=***')
+    .slice(0, 300);
+}
+
+export function mapLocalAgentBridgeFailure(
+  agent: string,
+  status: number,
+  body: Record<string, unknown> | null
+): { unrecoverable: boolean; errorCode: string; message: string } {
+  const errorCode =
+    typeof body?.errorCode === 'string' && body.errorCode.trim().length > 0
+      ? body.errorCode.trim()
+      : status === 400
+        ? 'VALIDATION_ERROR'
+        : status === 401
+          ? 'UNAUTHORIZED'
+          : status === 503
+            ? 'AGENT_BINARY_NOT_FOUND'
+            : 'BRIDGE_HTTP_ERROR';
+  const raw =
+    stringField(body ?? {}, ['error', 'message']) ?? `${agent} service error: ${status}`;
+  const message = sanitizeLocalAgentError(raw);
+  const unrecoverable =
+    status === 400 ||
+    status === 401 ||
+    errorCode === 'VALIDATION_ERROR' ||
+    errorCode === 'AGENT_BINARY_NOT_FOUND';
+  return { unrecoverable, errorCode, message };
+}
+
 function responseTextFromResult(result: Record<string, unknown>): string | null {
   return stringField(result, [
+    'result',
     'response_content',
     'content',
     'message',
@@ -142,7 +186,8 @@ async function processLocalAgentJob(
   agent_role: string,
   registry: ReturnType<typeof getAgentServiceRegistry>,
   max_steps: number = 5,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  model?: string
 ): Promise<LocalAgentResponse> {
   const startTime = Date.now();
   const cursorDir =
@@ -169,18 +214,24 @@ async function processLocalAgentJob(
         agent_role,
         max_steps,
         job_id,
+        ...(model ? { model } : {}),
       }),
       signal: signal ?? AbortSignal.timeout(service.timeout_ms),
     });
 
-    if (!response.ok) {
-      throw new Error(`${agent} service error: ${response.status}`);
-    }
-
     const result = await readJsonRecord(response);
+    if (!response.ok) {
+      const mapped = mapLocalAgentBridgeFailure(agent, response.status, result);
+      if (mapped.unrecoverable) {
+        throw new UnrecoverableError(`${mapped.errorCode}: ${mapped.message}`);
+      }
+      throw new Error(`${mapped.errorCode}: ${mapped.message}`);
+    }
     if (result.success === false) {
       throw new Error(
-        stringField(result, ['error', 'message']) ?? `${agent} service returned success=false`
+        sanitizeLocalAgentError(
+          stringField(result, ['error', 'message']) ?? `${agent} service returned success=false`
+        )
       );
     }
 
@@ -226,6 +277,13 @@ async function processLocalAgentJob(
 
       return {
         success: true,
+        jobId: job_id,
+        requestId: job_id,
+        workerId: process.env.WORKER_ID,
+        result: responseText ?? undefined,
+        durationMs: Date.now() - startTime,
+        runtime: agent,
+        model: typeof result.model === 'string' ? result.model : model,
         response_path: responsePath,
         execution_time_ms: Date.now() - startTime,
         validation_decision: {
@@ -237,16 +295,31 @@ async function processLocalAgentJob(
 
     return {
       success: true,
+      jobId: job_id,
+      requestId: job_id,
+      workerId: process.env.WORKER_ID,
+      result: responseText ?? undefined,
+      durationMs: Date.now() - startTime,
+      runtime: agent,
+      model: typeof result.model === 'string' ? result.model : model,
       response_path: responsePath || undefined,
       execution_time_ms: Date.now() - startTime,
     };
   } catch (err) {
-    const errorMsg = err instanceof Error ? err.message : String(err);
+    if (err instanceof UnrecoverableError) {
+      throw err;
+    }
+    const errorMsg = sanitizeLocalAgentError(err instanceof Error ? err.message : String(err));
     logWorkerError('local-agents', `Job ${job_id} error: ${errorMsg}`);
 
     return {
       success: false,
+      jobId: job_id,
+      requestId: job_id,
+      workerId: process.env.WORKER_ID,
+      errorCode: 'BRIDGE_HTTP_ERROR',
       error: errorMsg,
+      durationMs: Date.now() - startTime,
       execution_time_ms: Date.now() - startTime,
     };
   }
@@ -293,6 +366,7 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
       const agent_role = payload.agent_role || 'executor';
       const max_steps = payload.max_steps || 5;
       const job_id = payload.job_id || job.id?.toString() || '';
+      const model = payload.model;
 
       if (!prompt_content) {
         throw new UnrecoverableError('Empty prompt_content');
@@ -306,7 +380,16 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
 
       try {
         const process = (signal?: AbortSignal) =>
-          processLocalAgentJob(jobType, prompt_content, job_id, agent_role, registry, max_steps, signal);
+          processLocalAgentJob(
+            jobType,
+            prompt_content,
+            job_id,
+            agent_role,
+            registry,
+            max_steps,
+            signal,
+            model
+          );
         const result = payload.agent_task === undefined
           ? await process()
           : await (async () => {
