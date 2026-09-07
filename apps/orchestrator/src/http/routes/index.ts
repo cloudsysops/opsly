@@ -11,6 +11,7 @@ export {
   handleHiveInit,
 } from './hive.js';
 export { handleEnqueueAgentFarm, handleOpenClawImproveDocumentation, handleMetaOptimizerMetrics } from './internal.js';
+export { handleBoardEvents } from './board-events.js';
 export {
   handleStartTerminalTask,
   handleTerminalStatus,

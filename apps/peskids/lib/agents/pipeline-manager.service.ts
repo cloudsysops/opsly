@@ -57,7 +57,7 @@ export class PipelineManagerService {
   static readonly PIPELINE_STAGES: PipelineStage[] = [
     'New Lead',
     'Contacted',
-    'Trial Class',
+    'Enrollment',
     'Enrolled',
     'Active Student',
     'Renewal',

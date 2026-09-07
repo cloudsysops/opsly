@@ -367,15 +367,6 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
         leadName={lead.name}
         leadType={lead.lead_type}
         status={lead.status}
-        latestTrial={
-          payload?.trials.length
-            ? {
-                teacherName: payload.trials[payload.trials.length - 1].teacher_name,
-                scheduledDate: payload.trials[payload.trials.length - 1].scheduled_date,
-                scheduledTime: payload.trials[payload.trials.length - 1].scheduled_time,
-              }
-            : null
-        }
       />
 
       <Card accent="slate" className="border-pk-border">

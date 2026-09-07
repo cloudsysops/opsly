@@ -8,7 +8,8 @@ function mockSupabaseForRules(overrides: {
   phone?: string | null;
   messageCount?: number;
   followupCompletedCount?: number;
-  trialCount?: number;
+    trialCount?: number;
+    studentCount?: number;
   enrollmentCount?: number;
   attendanceCount?: number;
   activeStudentCount?: number;
@@ -137,23 +138,23 @@ describe('pipeline-rules (local)', () => {
     await expect(rules[0].condition(LEAD_ID)).resolves.toBe(false);
   });
 
-  it('Contacted → Trial Class from trial_classes', async () => {
+  it('Contacted → Enrollment from linked student', async () => {
     const rules = buildPipelineRules({
-      supabase: mockSupabaseForRules({ trialCount: 1 }) as never,
+      supabase: mockSupabaseForRules({ studentIds: ['student-1'] }) as never,
       tenantSlug: 'peskids',
     });
     await expect(rules[1].condition(LEAD_ID)).resolves.toBe(true);
   });
 
-  it('Contacted → Trial Class is false without trial row', async () => {
+  it('Contacted → Enrollment is false without linked student', async () => {
     const rules = buildPipelineRules({
-      supabase: mockSupabaseForRules({ trialCount: 0 }) as never,
+      supabase: mockSupabaseForRules({ studentIds: [] }) as never,
       tenantSlug: 'peskids',
     });
     await expect(rules[1].condition(LEAD_ID)).resolves.toBe(false);
   });
 
-  it('Trial Class → Enrolled with paid enrollment on linked student', async () => {
+  it('Enrollment → Enrolled with paid enrollment on linked student', async () => {
     const rules = buildPipelineRules({
       supabase: mockSupabaseForRules({
         studentIds: ['student-1'],

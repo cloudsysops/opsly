@@ -132,7 +132,7 @@ function buildAcademyDomains(data: DashboardData): AcademyDomain[] {
       label: 'Reservas',
       status: 'ready',
       owner: 'Panel',
-      summary: 'Clase de prueba, confirmación y rebooking ya viven en el flujo de admisiones.',
+      summary: 'Matrícula, primera clase y rebooking viven en el flujo de admisiones.',
       nextAction: 'Enviar reserva al embudo y seguimiento automático tras cada booking.',
       icon: iconMap.reservations,
     },

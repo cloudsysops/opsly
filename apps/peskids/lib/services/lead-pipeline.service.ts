@@ -15,16 +15,16 @@ import type { AdminLeadStatus } from '@/lib/validation/lead-admin.schema';
 export type PipelineColumnId =
   | 'nuevos'
   | 'contactados'
-  | 'trial_agendado'
-  | 'trial_realizado'
+  | 'enrollment'
+  | 'first_class'
   | 'matriculados'
   | 'perdidos';
 
 export const PIPELINE_COLUMN_ORDER: PipelineColumnId[] = [
   'nuevos',
   'contactados',
-  'trial_agendado',
-  'trial_realizado',
+  'enrollment',
+  'first_class',
   'matriculados',
   'perdidos',
 ];
@@ -32,18 +32,18 @@ export const PIPELINE_COLUMN_ORDER: PipelineColumnId[] = [
 export const PIPELINE_COLUMN_LABELS: Record<PipelineColumnId, string> = {
   nuevos: 'Nuevos',
   contactados: 'Contactados',
-  trial_agendado: 'Trial agendado',
-  trial_realizado: 'Trial realizado',
+  enrollment: 'Matrícula',
+  first_class: 'Primera clase',
   matriculados: 'Matriculados',
   perdidos: 'Perdidos',
 };
 
-/** Admin status applied when a card moves into this column (best-effort for trial split). */
+/** Admin status applied when a card moves into this column. */
 export const PIPELINE_COLUMN_ADMIN_STATUS: Record<PipelineColumnId, AdminLeadStatus> = {
   nuevos: 'new',
   contactados: 'contacted',
-  trial_agendado: 'trial',
-  trial_realizado: 'trial',
+  enrollment: 'trial',
+  first_class: 'trial',
   matriculados: 'enrolled',
   perdidos: 'archived',
 };
@@ -94,11 +94,12 @@ export function leadHasAttendedTrial(
 }
 
 /**
- * Maps a lead (+ trial attendance hint) into a Kanban column without schema changes.
+ * Maps a lead into a Kanban column. Live admin status `trial` is a leftover
+ * enum value meaning enrollment-in-progress, not a trial class.
  */
 export function resolvePipelineColumn(
   lead: Pick<DashboardLead, 'id' | 'status'>,
-  trialsByLead: ReadonlyMap<string, readonly TrialSummary[]>
+  _firstClassByLead?: ReadonlyMap<string, readonly TrialSummary[]>
 ): PipelineColumnId {
   const status = lead.status;
 
@@ -106,9 +107,7 @@ export function resolvePipelineColumn(
   if (status === 'enrolled' || status === 'active' || status === 'renewal') return 'matriculados';
   if (status === 'contacted') return 'contactados';
   if (status === 'new') return 'nuevos';
-  if (status === 'trial') {
-    return leadHasAttendedTrial(lead.id, trialsByLead) ? 'trial_realizado' : 'trial_agendado';
-  }
+  if (status === 'trial') return 'enrollment';
 
   return 'nuevos';
 }
@@ -160,8 +159,8 @@ function emptyColumns(): Record<PipelineColumnId, PipelineLeadCard[]> {
   return {
     nuevos: [],
     contactados: [],
-    trial_agendado: [],
-    trial_realizado: [],
+    enrollment: [],
+    first_class: [],
     matriculados: [],
     perdidos: [],
   };
@@ -171,8 +170,8 @@ function emptyCounts(): Record<PipelineColumnId, number> {
   return {
     nuevos: 0,
     contactados: 0,
-    trial_agendado: 0,
-    trial_realizado: 0,
+    enrollment: 0,
+    first_class: 0,
     matriculados: 0,
     perdidos: 0,
   };
@@ -339,19 +338,6 @@ async function fetchAllLegacyLeads(tenantSlug: string): Promise<DashboardLead[]>
   );
 }
 
-async function fetchTrialSummaries(tenantSlug: string): Promise<TrialSummary[]> {
-  const { data, error } = await supabaseServer()
-    .from('trial_classes')
-    .select('lead_id, status')
-    .eq('tenant_id', tenantSlug);
-
-  if (error) {
-    throw error;
-  }
-
-  return (data ?? []) as TrialSummary[];
-}
-
 async function fetchOverdueFollowupLeadIds(
   tenantSlug: string,
   now: Date = new Date()
@@ -381,12 +367,10 @@ export async function fetchPipelineBoard(
   const leads =
     platformLeads ?? (await fetchAllLegacyLeads(tenantSlug));
 
-  const [trials, overdueFollowupLeadIds] = await Promise.all([
-    fetchTrialSummaries(tenantSlug),
-    fetchOverdueFollowupLeadIds(tenantSlug, now),
-  ]);
+  const overdueFollowupLeadIds = await fetchOverdueFollowupLeadIds(tenantSlug, now);
 
-  return groupLeadsIntoPipelineColumns(leads, trials, overdueFollowupLeadIds, filters, now);
+  // Kanban columns no longer depend on leftover trial_classes rows.
+  return groupLeadsIntoPipelineColumns(leads, [], overdueFollowupLeadIds, filters, now);
 }
 
 export function parsePipelineFilters(searchParams: URLSearchParams): PipelineFilters {
