@@ -79,12 +79,11 @@ test('seeded registry is fail-closed and pins immutable SHA', () => {
   assert.equal(live.autonomousPromotion.enabled, false);
   assert.equal(live.autonomousPromotion.products.peskids, false);
   const pending = selectPromotable(live, 'peskids');
-  assert.equal(pending.length, 1);
-  assert.equal(pending[0].gitSha, '5ed3aa2c1469400b5c32a8001852241fe1425e46');
-  assert.equal(pending[0].previousProductionSha, 'c4822d9e380e142c7b55df856c92027400363113');
-  assert.equal(pending[0].migrationPlan, 'none');
-  assert.equal(pending[0].id, 'peskids-5ed3aa2c');
+  assert.equal(pending.length, 0);
+  assert.equal(live.candidates.find((row) => row.id === 'peskids-5ed3aa2c').status, 'rolled_back');
   assert.equal(live.candidates.find((row) => row.id === 'peskids-f27efea66').status, 'superseded');
+  assert.equal(live.circuit.peskids.consecutiveRollbacks, 1);
+  assert.equal(live.circuit.peskids.open, false);
   assert.equal(isAutonomyEnabled(live, 'peskids'), false);
 });
 

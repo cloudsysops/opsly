@@ -50,6 +50,12 @@ Autonomous promote only when **all** of these hold:
 
 If `main` later becomes `abcd1234`, promotion still deploys the approved RC SHA.
 
+Staging health is necessary but not sufficient. Deploy Peskids **rebuilds**
+the production image (`NEXT_PUBLIC_PESKIDS_SITE_URL=https://www.peskids.com`).
+A green QA-baked staging tag does not prove that rebuild. On 2026-09-06 the
+`5ed3aa2c` promote died with `missing_supabase_url` and rolled back to
+`c4822d9e`. Future autonomy should fail closed on that class of error.
+
 ## Scheduler
 
 [`.github/workflows/promote-approved-rc.yml`](../../.github/workflows/promote-approved-rc.yml)
