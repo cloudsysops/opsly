@@ -112,7 +112,8 @@ noche, instala el LaunchAgent del Mac:
 Detecta online cada 5 min y encola el backlog ocioso solo en modo `heavy`.
 Runbook: [`docs/runbooks/PC-GAMER-OVERNIGHT-AUTODISPATCH.md`](../runbooks/PC-GAMER-OVERNIGHT-AUTODISPATCH.md).
 
-Autostart canónico: user systemd `opsly-pc-gamer-worker.service` (`--up --use-host-ollama`, **sin** `--with-content`) + timer heartbeat + `opsly-opencode-bridge`.  
+Autostart canónico: user systemd `opsly-pc-gamer-worker.service` (`--up --use-host-ollama`, **sin** `--with-content`) + `opsly-pc-gamer-wsl-keepalive.service` + timer heartbeat + `opsly-opencode-bridge`.  
+The worker unit is **ensure-up only** — it must **not** `ExecStop=--down`. WSL recycles the user session ~15s after `wsl.exe`/SSH exits; a destructive stop would SIGTERM a healthy container. Manual teardown: `systemctl --user start opsly-pc-gamer-worker-down.service`. Compose `--up` uses `--no-recreate`.  
 `opsly-pc-gamer-docker.service` queda **disabled** — arrancaba GPU Docker / MoneyPrinter y provocaba restart loops.  
 Señal online canónica: Redis `opsly:worker:heartbeat:pc-gamer-openclaw-01`. **No** exigir inbound `:3011`.
 

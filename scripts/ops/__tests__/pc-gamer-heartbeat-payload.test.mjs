@@ -48,11 +48,17 @@ test('inferStatusFromHeartbeat treats empty as OFFLINE and ISO as ONLINE', () =>
 
 test('safe autostart unit uses host Ollama and no content-video', () => {
   const script = readFileSync(join(root, 'scripts/ops/pc-gamer-docker-plane.sh'), 'utf8');
-  assert.match(script, /up -d --no-deps/);
+  assert.match(script, /up -d --no-deps --no-recreate/);
   assert.match(script, /opsly-pc-gamer-worker\.service/);
+  assert.match(script, /opsly-pc-gamer-wsl-keepalive\.service/);
+  assert.match(script, /opsly-pc-gamer-worker-down\.service/);
   assert.match(script, /--up --use-host-ollama/);
   assert.doesNotMatch(
     script,
     /ExecStart=\$\{ROOT\}\/scripts\/ops\/pc-gamer-docker-plane\.sh --up --with-content/
+  );
+  assert.doesNotMatch(
+    script,
+    /ExecStop=\$\{ROOT\}\/scripts\/ops\/pc-gamer-docker-plane\.sh --down/
   );
 });

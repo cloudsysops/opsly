@@ -148,9 +148,10 @@ compose_up() {
   else
     services=(ollama worker-openclaw)
   fi
-  local compose_up=(up -d)
+  # --no-recreate: WSL user-session recycle must not SIGTERM a healthy worker.
+  local compose_up=(up -d --no-recreate)
   if [[ "$USE_HOST_OLLAMA" == "true" ]]; then
-    compose_up=(up -d --no-deps)
+    compose_up=(up -d --no-deps --no-recreate)
   fi
   echo "[pc-gamer-docker] docker compose ${compose_up[*]} ${services[*]}"
   run docker compose "${COMPOSE_WORKERS[@]}" \
@@ -203,18 +204,22 @@ install_autostart() {
   local unit_dir="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
   local unsafe_unit="$unit_dir/opsly-pc-gamer-docker.service"
   local unit="$unit_dir/opsly-pc-gamer-worker.service"
+  local down_unit="$unit_dir/opsly-pc-gamer-worker-down.service"
+  local keep_unit="$unit_dir/opsly-pc-gamer-wsl-keepalive.service"
   local timer="$unit_dir/opsly-pc-gamer-heartbeat.timer"
   local hb_svc="$unit_dir/opsly-pc-gamer-heartbeat.service"
 
   if [[ "$DRY_RUN" == "true" ]]; then
-    echo "[dry-run] would write $unit $hb_svc $timer"
+    echo "[dry-run] would write $unit $down_unit $keep_unit $hb_svc $timer"
     echo "[dry-run] would disable $unsafe_unit if present"
-    echo "[dry-run] systemctl --user enable --now opsly-pc-gamer-worker.service opsly-pc-gamer-heartbeat.timer"
+    echo "[dry-run] systemctl --user enable --now opsly-pc-gamer-wsl-keepalive.service opsly-pc-gamer-worker.service opsly-pc-gamer-heartbeat.timer"
     return 0
   fi
 
   mkdir -p "$unit_dir"
 
+  # Ensure-up only. Do NOT ExecStop=--down: WSL user-session recycle (~15s after
+  # SSH/wsl.exe exits) would tear down a healthy Docker worker mid-flight.
   cat >"$unit" <<EOF
 [Unit]
 Description=Opsly PC-gamer host-Ollama worker (no GPU Docker, no content-video)
@@ -229,10 +234,34 @@ RemainAfterExit=yes
 WorkingDirectory=${ROOT}
 ExecStartPre=${ROOT}/scripts/ops/pc-gamer-preflight.sh --timeout 90
 ExecStart=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh --up --use-host-ollama
-ExecStop=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh --down
 TimeoutStartSec=180
 Restart=on-failure
 RestartSec=30
+
+[Install]
+WantedBy=default.target
+EOF
+
+  cat >"$down_unit" <<EOF
+[Unit]
+Description=Manual stop of Opsly PC-gamer worker containers
+Documentation=file://${ROOT}/docs/04-infrastructure/PC-GAMER-WORKER.md
+
+[Service]
+Type=oneshot
+WorkingDirectory=${ROOT}
+ExecStart=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh --down
+EOF
+
+  cat >"$keep_unit" <<EOF
+[Unit]
+Description=Keep WSL user manager from idling (does not own Docker lifecycle)
+
+[Service]
+Type=simple
+ExecStart=/bin/sleep infinity
+Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=default.target
@@ -266,9 +295,11 @@ EOF
 
   systemctl --user daemon-reload
   systemctl --user disable --now opsly-pc-gamer-docker.service 2>/dev/null || true
+  systemctl --user enable --now opsly-pc-gamer-wsl-keepalive.service
   systemctl --user enable --now opsly-pc-gamer-worker.service
   systemctl --user enable --now opsly-pc-gamer-heartbeat.timer
-  echo "[pc-gamer-docker] safe autostart enabled (host Ollama only; linger already recommended)"
+  echo "[pc-gamer-docker] safe autostart enabled (host Ollama; no ExecStop --down; linger + keepalive)"
+  echo "[pc-gamer-docker] manual stop: systemctl --user start opsly-pc-gamer-worker-down.service"
 }
 
 # default: status if nothing else
