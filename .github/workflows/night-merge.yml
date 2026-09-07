@@ -8,8 +8,12 @@ name: Night merge
 
 on:
   schedule:
-    # 01:00 America/Bogota = 06:00 UTC (no DST)
+    # 23:00 America/Bogota = 04:00 UTC — survives ~6h GitHub Actions schedule delay
+    - cron: "0 4 * * *"
+    # 01:00 America/Bogota = 06:00 UTC (canonical; GHA may delay past 06:00 Bogota)
     - cron: "0 6 * * *"
+    # 04:00 America/Bogota = 09:00 UTC — in-window retry if 01:00 ran late
+    - cron: "0 9 * * *"
   workflow_dispatch:
     inputs:
       force:

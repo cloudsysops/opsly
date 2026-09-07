@@ -6,7 +6,15 @@ last_review: 2026-08-15
 
 # Night merge automático (mientras duermes)
 
-Cada noche (~**01:00 America/Bogota**) GitHub Actions:
+Cada noche GitHub Actions busca PRs con label **`night-merge`** en estos horarios America/Bogota (UTC, no DST):
+
+| Bogotá | UTC cron | Por qué |
+|--------|----------|---------|
+| 23:00 | `0 4 * * *` | Sobrevive ~6h de delay de Actions y sigue dentro de 22:00–06:00 |
+| 01:00 | `0 6 * * *` | Canónico |
+| 04:00 | `0 9 * * *` | Reintento in-window si el de 01:00 llegó tarde |
+
+Un run **schedule** que caiga **fuera** de 22:00–06:00 hace skip (exit 0), no failure. El 2026-09-07 el cron de 01:00 corrió a las 06:10 Bogotá y falló el gate; #1124/#1125 no se mergearon.
 
 1. Busca PRs abiertos con label **`night-merge`**
 2. Valida: no draft, `MERGEABLE` (reintenta si GitHub devuelve `UNKNOWN`), checks CI en verde (sin FAILURE ni pending; ignora `production-change-window`)

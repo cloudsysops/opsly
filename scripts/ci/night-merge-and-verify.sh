@@ -283,6 +283,11 @@ rollback() {
 main() {
   require_gh
   if ! in_night_window; then
+    if [[ "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
+      log "Outside America/Bogota night window (GitHub likely delayed the cron) — skip, do not fail"
+      notify "ℹ️ Night merge skipped" "Scheduled run landed outside 22:00–06:00 America/Bogota"
+      exit 0
+    fi
     die "Outside America/Bogota night window (set NIGHT_MERGE_FORCE=1 to override)"
   fi
 
