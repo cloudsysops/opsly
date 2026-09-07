@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   parseBody: vi.fn(),
-  enqueueJob: vi.fn(async () => ({ id: 'job-1' })),
+  enqueueJob: vi.fn(async (_job?: unknown) => ({ id: 'job-1' })),
 }));
 
 vi.mock('../http/utils.js', async (importOriginal) => {
@@ -52,6 +52,23 @@ function parseBodyJson(res: { body?: string }): Record<string, unknown> {
   return JSON.parse(res.body ?? '{}') as Record<string, unknown>;
 }
 
+function firstEnqueuedJob(): {
+  idempotency_key?: string;
+  type?: string;
+  payload?: { board_job?: { automation_level?: number; execute_external?: boolean; entity_id?: string } };
+} {
+  const calls = mocks.enqueueJob.mock.calls as unknown as unknown[][];
+  const job = calls[0]?.[0];
+  if (!job || typeof job !== 'object') {
+    throw new Error('expected enqueueJob to receive a job');
+  }
+  return job as {
+    idempotency_key?: string;
+    type?: string;
+    payload?: { board_job?: { automation_level?: number; execute_external?: boolean; entity_id?: string } };
+  };
+}
+
 describe('AI Board event ingest', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -67,11 +84,7 @@ describe('AI Board event ingest', () => {
     await handleBoardEvents(ctx);
     expect(ctx.res.statusCode).toBe(202);
     expect(mocks.enqueueJob).toHaveBeenCalledTimes(1);
-    const job = mocks.enqueueJob.mock.calls.at(0)?.[0] as unknown as {
-      idempotency_key?: string;
-      type?: string;
-      payload?: { board_job?: { automation_level?: number; execute_external?: boolean } };
-    };
+    const job = firstEnqueuedJob();
     expect(job.type).toBe('notify');
     expect(job.idempotency_key).toBe('peskids:SEND_ENROLLMENT_LINK:HOT_LEAD_CREATED:lead-1');
     expect(job.payload?.board_job?.automation_level).toBe(2);
@@ -101,9 +114,7 @@ describe('AI Board event ingest', () => {
     await handleBoardEvents(ctx);
     expect(ctx.res.statusCode).toBe(202);
     expect(mocks.enqueueJob).toHaveBeenCalledTimes(1);
-    const job = mocks.enqueueJob.mock.calls.at(0)?.[0] as unknown as {
-      payload?: { board_job?: { entity_id?: string } };
-    };
+    const job = firstEnqueuedJob();
     expect(job.payload?.board_job?.entity_id).toBe('lead-1');
   });
 
