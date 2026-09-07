@@ -9,9 +9,20 @@
     "lint": "eslint . --max-warnings 0",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "cap:sync": "npm exec -- capacitor sync",
+    "cap:ios": "bash ../../scripts/icso-cap-ios.sh --open",
+    "cap:ios:sync": "bash ../../scripts/icso-cap-ios.sh",
+    "cap:android": "bash ../../scripts/icso-cap-android.sh --build",
+    "cap:android:open": "bash ../../scripts/icso-cap-android.sh --open",
+    "cap:android:build": "bash ../../scripts/icso-cap-android.sh --build"
   },
   "dependencies": {
+    "@capacitor/android": "^8.3.4",
+    "@capacitor/app": "^8.1.0",
+    "@capacitor/core": "^8.3.4",
+    "@capacitor/ios": "^8.3.4",
+    "@capacitor/splash-screen": "^8.0.2",
     "@intcloudsysops/game-core": "*",
     "@intcloudsysops/game-web": "*",
     "@intcloudsysops/mission-control-kit": "*",
@@ -24,6 +35,7 @@
     "react-dom": "^19.2.6"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.4.2",
     "@playwright/test": "^1.60.0",
     "@types/node": "^22.13.10",
     "@types/react": "^19.2.14",

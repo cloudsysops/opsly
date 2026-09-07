@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ICSO</string>
+    <string name="title_activity_main">ICSO</string>
+    <string name="package_name">com.intcloudsysops.icso</string>
+    <string name="custom_url_scheme">com.intcloudsysops.icso</string>
+</resources>
