@@ -21,8 +21,8 @@ const DEFAULT_CONFIG: SpeedToLeadConfig = {
 
 // Admin emails to notify
 const ADMIN_EMAILS = [
-  "franchising@acmefranchise.com",
-  "admin@acmefranchise.com",
+  "franchising@peskids.com",
+  "admin@peskids.com",
 ];
 
 /**

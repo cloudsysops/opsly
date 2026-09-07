@@ -43,13 +43,13 @@ export default function ForgotPasswordPage() {
         <Link href="/" className="flex flex-col items-center gap-4">
           <Image
             src="/logo/logo.svg"
-            alt="Acme Franchise"
+            alt="Peskids Franchise"
             width={80}
             height={80}
             className="rounded-xl"
           />
           <span className="text-3xl font-bold text-brand-navy">
-            Acme Franchise Franchising
+            Peskids Franchise Franchising
           </span>
         </Link>
       </div>

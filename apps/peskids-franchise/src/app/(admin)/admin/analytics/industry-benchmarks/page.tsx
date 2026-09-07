@@ -197,7 +197,7 @@ export default function IndustryBenchmarksPage() {
         {/* STC Current Status */}
         <div className="bg-gradient-to-r from-brand-purple to-brand-navy rounded-lg p-6 text-white">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Acme Franchise - Current Status</h2>
+            <h2 className="text-lg font-semibold">Peskids Franchise - Current Status</h2>
             {stcMetrics && (
               <span className="text-sm text-white/70">
                 As of {new Date(stcMetrics.asOfDate).toLocaleDateString()}
@@ -431,7 +431,7 @@ export default function IndustryBenchmarksPage() {
                         <div className="w-2 h-8 bg-brand-purple rounded mr-3"></div>
                         <div>
                           <div className="font-bold text-brand-purple">
-                            Acme Franchise
+                            Peskids Franchise
                           </div>
                           <div className="text-xs text-gray-500">Your Company</div>
                         </div>

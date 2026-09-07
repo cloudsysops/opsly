@@ -183,7 +183,7 @@ export default function FranchiseeAgreementPage() {
               {data?.message || "Your franchise agreement is being prepared. Please contact us for more information."}
             </p>
             <a
-              href="mailto:franchising@acmefranchise.com"
+              href="mailto:franchising@peskids.com"
               className="inline-flex items-center mt-4 text-brand-purple hover:text-brand-purple/80"
             >
               Contact Franchising Team
@@ -272,7 +272,7 @@ export default function FranchiseeAgreementPage() {
                   Please respond to your renewal notice by {activeRenewal.responseDeadline ? formatDate(activeRenewal.responseDeadline) : 'the deadline'}.
                 </p>
                 <a
-                  href="mailto:franchising@acmefranchise.com?subject=Franchise Renewal Response"
+                  href="mailto:franchising@peskids.com?subject=Franchise Renewal Response"
                   className="inline-flex items-center mt-3 px-4 py-2 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition-colors"
                 >
                   Respond to Renewal Notice
@@ -603,7 +603,7 @@ export default function FranchiseeAgreementPage() {
                   <h3 className="font-semibold text-blue-800">Territory Protection</h3>
                   <p className="text-sm text-blue-700 mt-1">
                     {agreement.exclusiveTerritory
-                      ? "Your territory is exclusive. Acme Franchise will not grant another franchise within your defined territory boundaries."
+                      ? "Your territory is exclusive. Peskids Franchise will not grant another franchise within your defined territory boundaries."
                       : "Your territory is non-exclusive. Other franchises may operate within the same area."}
                   </p>
                 </div>
@@ -655,7 +655,7 @@ export default function FranchiseeAgreementPage() {
                       Action Required: Please respond to your renewal notice.
                     </p>
                     <p className="text-sm text-amber-700 mt-1">
-                      Contact <a href="mailto:franchising@acmefranchise.com" className="underline">franchising@acmefranchise.com</a> to submit your renewal intent.
+                      Contact <a href="mailto:franchising@peskids.com" className="underline">franchising@peskids.com</a> to submit your renewal intent.
                     </p>
                   </div>
                 )}
@@ -730,7 +730,7 @@ export default function FranchiseeAgreementPage() {
                 Renewal notice must be provided at least {agreement.renewalNoticeMonths} months before your
                 agreement expires. If you do not wish to renew, you must notify us at least{" "}
                 {agreement.nonRenewalNoticeMonths} months in advance. Questions about renewal?{" "}
-                <a href="mailto:franchising@acmefranchise.com" className="text-brand-purple hover:underline">
+                <a href="mailto:franchising@peskids.com" className="text-brand-purple hover:underline">
                   Contact our team
                 </a>.
               </p>

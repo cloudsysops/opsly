@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
                 </a>
               </div>
               <p style="color: #9CA3AF; font-size: 14px; text-align: center;">
-                Acme Franchise Franchising LLC
+                Peskids Franchise Franchising LLC
               </p>
             </div>
           </div>

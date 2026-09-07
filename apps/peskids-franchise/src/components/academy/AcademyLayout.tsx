@@ -107,7 +107,7 @@ export default function AcademyLayout({
               <div className="relative">
                 <Image
                   src="/logo/logo.svg"
-                  alt="Acme Franchise"
+                  alt="Peskids Franchise"
                   width={40}
                   height={40}
                   className="rounded-xl shadow-md group-hover:shadow-lg transition-shadow"
@@ -118,7 +118,7 @@ export default function AcademyLayout({
                   Operations Bootcamp
                 </h1>
                 <p className="text-xs text-blue-200 font-medium">
-                  Acme Franchise
+                  Peskids Franchise
                 </p>
               </div>
             </Link>
@@ -247,7 +247,7 @@ export default function AcademyLayout({
               <div className="flex items-center gap-3">
                 <Image
                   src="/logo/logo.svg"
-                  alt="Acme Franchise"
+                  alt="Peskids Franchise"
                   width={32}
                   height={32}
                   className="rounded-lg"

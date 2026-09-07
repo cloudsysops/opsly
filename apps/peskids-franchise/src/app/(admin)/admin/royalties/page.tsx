@@ -397,7 +397,7 @@ export default function RoyaltiesDashboardPage() {
                     <div className="text-sm text-blue-800">
                       <p className="font-medium mb-1">This process will:</p>
                       <ul className="list-disc list-inside space-y-1 text-blue-700">
-                        <li>Sync revenue data from AcmeFranchise databases (Westside/Eastside)</li>
+                        <li>Sync revenue data from PeskidsFranchise databases (Westside/Eastside)</li>
                         <li>Calculate royalty fees (7% royalty + 2% brand fund + 1% systems fee)</li>
                         <li>Create draft invoices for each franchisee</li>
                       </ul>

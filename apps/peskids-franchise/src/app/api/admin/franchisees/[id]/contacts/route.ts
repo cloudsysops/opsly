@@ -6,10 +6,8 @@ import { ContactType } from "@prisma/client";
 export const dynamic = "force-dynamic";
 
 // GET /api/admin/franchisees/[id]/contacts - List contacts for a franchisee
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
     if (!session?.user || session.user.role !== "ADMIN") {
@@ -58,10 +56,8 @@ export async function GET(
 }
 
 // POST /api/admin/franchisees/[id]/contacts - Create a new contact
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
     if (!session?.user || session.user.role !== "ADMIN") {

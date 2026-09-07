@@ -2,7 +2,7 @@ const features = [
   {
     title: "Proven Curriculum",
     description:
-      "Our award-winning Acme Franchise curriculum uses storytelling to make chess accessible and fun for children ages 3-9.",
+      "Our Peskids Franchise curriculum makes after-school enrichment accessible and fun for children.",
     icon: (
       <svg
         className="h-6 w-6"
@@ -134,7 +134,7 @@ export function Features() {
           </p>
           <p className="mt-3 sm:mt-4 text-base sm:text-lg leading-7 sm:leading-8 text-gray-600">
             We provide comprehensive support to help you build a thriving
-            children&apos;s chess education business.
+            children&apos;s after-school enrichment business.
           </p>
         </div>
         <div className="mx-auto mt-8 sm:mt-10 max-w-5xl">

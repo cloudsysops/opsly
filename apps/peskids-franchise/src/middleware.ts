@@ -75,7 +75,7 @@ export const config = {
     "/steps",
     "/support",
     "/testimonials",
-    "/why-stc",
+    "/why-peskids",
     "/privacy",
     "/terms",
   ],

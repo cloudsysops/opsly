@@ -54,8 +54,8 @@ export function TemplatePreview({ templateId, subject, bodyHtml }: TemplatePrevi
         <div className="px-4 py-3 border-b bg-gray-50">
           <div className="flex items-center gap-2 text-sm">
             <span className="font-medium text-gray-500">From:</span>
-            <span className="text-gray-900">Acme Franchise Franchising</span>
-            <span className="text-gray-400">&lt;franchising@acmefranchise.com&gt;</span>
+            <span className="text-gray-900">Peskids Franchise Franchising</span>
+            <span className="text-gray-400">&lt;franchising@peskids.com&gt;</span>
           </div>
           <div className="flex items-center gap-2 text-sm mt-1">
             <span className="font-medium text-gray-500">To:</span>

@@ -13,7 +13,7 @@ export async function POST(
 ) {
   try {
     const session = await auth();
-    if (!session?.user?.email?.endsWith('@acmefranchise.com')) {
+    if (!session?.user?.email?.endsWith('@peskids.com')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -92,7 +92,7 @@ export async function POST(
             currency: 'usd',
             product_data: {
               name: `Royalty Invoice ${invoice.invoiceNumber}`,
-              description: `Acme Franchise royalties for ${invoice.year}-${String(invoice.month).padStart(2, '0')}`,
+              description: `Peskids Franchise royalties for ${invoice.year}-${String(invoice.month).padStart(2, '0')}`,
             },
             unit_amount: amountInCents,
           },

@@ -87,7 +87,7 @@ export async function POST(
             currency: 'usd',
             product_data: {
               name: `Royalty Invoice ${invoice.invoiceNumber}`,
-              description: `${monthName} ${invoice.year} Royalties - Acme Franchise`,
+              description: `${monthName} ${invoice.year} Royalties - Peskids Franchise`,
             },
             unit_amount: Math.round(remainingAmount * 100), // Convert to cents
           },

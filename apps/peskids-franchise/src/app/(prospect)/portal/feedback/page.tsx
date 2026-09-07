@@ -12,7 +12,7 @@ const VALID_TYPES: SurveyType[] = ["MILESTONE_PREWORK", "MILESTONE_30DAY", "MILE
 export default async function FeedbackSurveyPage({
   searchParams,
 }: {
-  searchParams: { type?: string };
+  searchParams: Promise<{ type?: string }>;
 }) {
   const session = await auth();
 
@@ -20,7 +20,8 @@ export default async function FeedbackSurveyPage({
     redirect("/login");
   }
 
-  const rawType = searchParams.type || "QUARTERLY";
+  const resolvedSearchParams = await searchParams;
+  const rawType = resolvedSearchParams.type || "QUARTERLY";
   const surveyType: SurveyType = VALID_TYPES.includes(rawType as SurveyType)
     ? (rawType as SurveyType)
     : "QUARTERLY";

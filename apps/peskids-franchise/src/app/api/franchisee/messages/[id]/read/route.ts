@@ -5,10 +5,8 @@ import { db } from '@/lib/db';
 export const dynamic = 'force-dynamic';
 
 // POST /api/franchisee/messages/[id]/read - Mark an announcement as read
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
     if (!session?.user?.email) {

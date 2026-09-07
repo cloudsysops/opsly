@@ -10,7 +10,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string; scheduleId: string }> }
 ) {
   const session = await auth();
-  if (!session?.user?.email?.endsWith("@acmefranchise.com")) {
+  if (!session?.user?.email?.endsWith("@peskids.com")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -36,7 +36,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string; scheduleId: string }> }
 ) {
   const session = await auth();
-  if (!session?.user?.email?.endsWith("@acmefranchise.com")) {
+  if (!session?.user?.email?.endsWith("@peskids.com")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

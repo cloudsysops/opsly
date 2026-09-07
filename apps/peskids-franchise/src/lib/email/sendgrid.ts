@@ -17,8 +17,8 @@ export interface EmailOptions {
   attachments?: EmailAttachment[];
 }
 
-const FROM_EMAIL = "franchising@acmefranchise.com";
-const FROM_NAME = "Acme Franchise Franchising";
+const FROM_EMAIL = "franchising@peskids.com";
+const FROM_NAME = "Peskids Franchise Franchising";
 
 let client: postmark.ServerClient | null = null;
 

@@ -539,10 +539,10 @@ export default function FranchiseeInvoiceDetailPage({ params }: { params: Promis
                 If you have questions about this invoice or believe there&apos;s an error, please contact us.
               </p>
               <a
-                href="mailto:franchising@acmefranchise.com"
+                href="mailto:franchising@peskids.com"
                 className="text-brand-purple hover:underline text-sm font-medium"
               >
-                franchising@acmefranchise.com
+                franchising@peskids.com
               </a>
             </CardContent>
           </Card>

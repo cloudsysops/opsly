@@ -4,12 +4,12 @@ import { LinkButton } from "@/components/shared/Button";
 export const metadata: Metadata = {
   title: "Steps to Ownership",
   description:
-    "Learn about the steps to becoming an Acme Franchisee.",
+    "Learn about the steps to becoming an Peskids Franchisee.",
   alternates: {
-    canonical: "https://franchising.acmefranchise.com/steps",
+    canonical: "https://franchise.peskids.com/steps",
   },
   openGraph: {
-    url: "https://franchising.acmefranchise.com/steps",
+    url: "https://franchise.peskids.com/steps",
   },
 };
 
@@ -18,7 +18,7 @@ const steps = [
     phase: "0",
     title: "Application Submission",
     description:
-      "Complete our online application to express your interest in the Acme Franchise opportunity. This is your first step toward building something meaningful.",
+      "Complete our online application to express your interest in the Peskids Franchise opportunity. This is your first step toward building something meaningful.",
     details: [],
     highlight: false,
   },
@@ -26,9 +26,9 @@ const steps = [
     phase: "1",
     title: "Initial Screening",
     description:
-      "We'll introduce you to Acme Franchise and franchising, covering how we hire, market, and sell. We'll also learn about your goals, motivations, and ability to follow our established system.",
+      "We'll introduce you to Peskids Franchise and franchising, covering how we hire, market, and sell. We'll also learn about your goals, motivations, and ability to follow our established system.",
     details: [
-      "What is Acme Franchise?",
+      "What is Peskids Franchise?",
       "What is franchising?",
       "Your goals and motivations",
       "Can you follow a system and protect our brand?",
@@ -101,7 +101,7 @@ const steps = [
     phase: "7",
     title: "Discovery Day",
     description:
-      "Visit us in person to meet the team, observe classes in action, and experience Acme Franchise firsthand. This is your chance to ask detailed questions and see the magic happen.",
+      "Visit us in person to meet the team, observe classes in action, and experience Peskids Franchise firsthand. This is your chance to ask detailed questions and see the magic happen.",
     details: [
       "Meet the leadership team",
       "Observe live classes",
@@ -114,7 +114,7 @@ const steps = [
     phase: "8",
     title: "Territory Awarded",
     description:
-      "Congratulations! If it's a mutual fit, we'll award your territory and welcome you to the Acme Franchise family. Your journey as a franchise owner officially begins.",
+      "Congratulations! If it's a mutual fit, we'll award your territory and welcome you to the Peskids Franchise family. Your journey as a franchise owner officially begins.",
     details: [
       "Franchise agreement signing",
       "Territory confirmation",
@@ -163,7 +163,7 @@ export default function StepsPage() {
               Steps to Ownership
             </h1>
             <p className="mt-4 text-base sm:text-lg leading-7 sm:leading-8 text-gray-600">
-              Our thorough process ensures both you and Acme Franchise are
+              Our thorough process ensures both you and Peskids Franchise are
               set up for success. Here&apos;s what to expect.
             </p>
           </div>

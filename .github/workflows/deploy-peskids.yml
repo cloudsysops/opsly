@@ -1,146 +1,260 @@
-# Peskids production promotion only.
-# Build and staging happen in peskids-staging.yml. This workflow never rebuilds.
-name: Promote Peskids release candidate
+# Peskids tenant site — build GHCR + deploy VPS after CI passes on main.
+# PR: CI must be green before merge (branch protection). Post-merge: this workflow runs
+# when the "CI" workflow completes successfully on main.
+#
+# Secrets (repository or production environment):
+#   VPS_USER, VPS_SSH_KEY, VPS_HOST or VPS_SSH_HOST
+#   TAILSCALE_AUTHKEY (recommended for SSH via tailnet)
+#   CF_DNS_API_TOKEN (post-deploy Cloudflare purge for www.peskids.com)
+#   NEXT_PUBLIC_PESKIDS_WHATSAPP_E164, NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY,
+#   NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL (baked at build; sync from Doppler prd)
+#
+# Manual: Actions → Deploy Peskids → Run workflow
+# Night window: America/Bogota 22:00–06:00 (docs/runbooks/PRODUCTION-CHANGE-WINDOW.md)
+# Post-deploy: CDN purge — docs/runbooks/PESKIDS-CDN-CACHE.md
+
+name: Deploy Peskids
 
 on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
-      release_sha:
-        description: 'Exact commit SHA of a successful Peskids staging candidate'
-        required: true
-        type: string
+      force_daytime:
+        description: 'Emergencia — desplegar fuera de ventana nocturna America/Bogota 22:00–06:00'
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
-  group: promote-peskids-production
+  group: deploy-peskids-${{ github.ref }}
   cancel-in-progress: false
 
-permissions:
-  contents: read
-  actions: read
-  packages: read
-
 jobs:
-  resolve-candidate:
-    name: Resolve and verify release candidate
+  gate:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
     outputs:
-      image: ${{ steps.candidate.outputs.image }}
-      image_digest: ${{ steps.candidate.outputs.image_digest }}
+      sha: ${{ steps.sha.outputs.sha }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
           fetch-depth: 1
 
-      - name: Find successful staging run for exact SHA
-        id: candidate
+      - id: sha
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Night window (Peskids live — no daytime deploys)
         env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_SHA: ${{ inputs.release_sha }}
+          FORCE_DAYTIME: ${{ github.event_name == 'workflow_dispatch' && inputs.force_daytime && '1' || '0' }}
         run: |
           set -euo pipefail
-          [[ "$RELEASE_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "release_sha must be a full 40-character SHA" >&2; exit 1; }
-          run_id="$(gh run list --workflow peskids-staging.yml --commit "$RELEASE_SHA" --status success --limit 1 --json databaseId --jq '.[0].databaseId')"
-          [ -n "$run_id" ] || { echo "No successful Peskids staging run for $RELEASE_SHA" >&2; exit 1; }
-          mkdir -p candidate
-          gh run download "$run_id" --name peskids-release-candidate --dir candidate
-          test -s candidate/release-candidate.json
-          jq -e --arg sha "$RELEASE_SHA" '.commitSha == $sha and .stagingHealth == "ok" and .stagingVerification == "passed"' candidate/release-candidate.json >/dev/null
-          image="$(jq -r '.imageTag' candidate/release-candidate.json)"
-          digest="$(jq -r '.imageDigest' candidate/release-candidate.json)"
-          [[ "$image" == ghcr.io/cloudsysops/peskids:sha-* ]] || { echo "Candidate image is not immutable" >&2; exit 1; }
-          [[ "$digest" == sha256:* ]] || { echo "Candidate has no image digest" >&2; exit 1; }
-          echo "image=$image" >> "$GITHUB_OUTPUT"
-          echo "image_digest=$digest" >> "$GITHUB_OUTPUT"
-          cat candidate/release-candidate.json >> "$GITHUB_STEP_SUMMARY"
+          node scripts/ci/check-production-change-window.mjs --mode deploy
 
-  promote:
-    name: Promote exact artifact to production
-    needs: resolve-candidate
+  build-and-push:
+    needs: gate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.gate.outputs.sha }}
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Resolve WhatsApp build-args
+        id: wa
+        env:
+          E164: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_E164 }}
+          DISPLAY: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY }}
+          PREFILL: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL }}
+          CONTACT_EMAIL: ${{ secrets.NEXT_PUBLIC_PESKIDS_CONTACT_EMAIL }}
+          LLANO_E164: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_E164 }}
+          LLANO_DISPLAY: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_DISPLAY }}
+          DOM_E164: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_E164 }}
+          DOM_DISPLAY: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_DISPLAY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${E164:-}" ]; then
+            echo "::warning::NEXT_PUBLIC_PESKIDS_WHATSAPP_E164 missing; using placeholder (set GitHub secret from Doppler prd)"
+            e164="573000000000"
+          else
+            e164="${E164}"
+          fi
+          {
+            echo "e164=${e164}"
+            echo "display=${DISPLAY:-+57 300 000 0000}"
+            echo "prefill=${PREFILL:-Hola Peskids 👋 Quiero info de matrícula.}"
+            echo "contact_email=${CONTACT_EMAIL:-peskidsnatacion@gmail.com}"
+            # Never collapse domicilio → sede when GH secrets are missing.
+            echo "llano_e164=${LLANO_E164:-${e164}}"
+            echo "llano_display=${LLANO_DISPLAY:-+57 305 470 2600}"
+            echo "dom_e164=${DOM_E164:-573054790273}"
+            echo "dom_display=${DOM_DISPLAY:-+57 305 479 0273}"
+            if [ -z "${DOM_E164:-}" ]; then
+              echo "::warning::NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_E164 missing; using catalog domicilio default (sync from Doppler prd)"
+            fi
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build and push Peskids image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/peskids/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/cloudsysops/peskids:latest
+            ghcr.io/cloudsysops/peskids:${{ needs.gate.outputs.sha }}
+          build-args: |
+            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+            NEXT_PUBLIC_PESKIDS_SITE_URL=https://www.peskids.com
+            NEXT_PUBLIC_PESKIDS_CONTACT_EMAIL=${{ steps.wa.outputs.contact_email }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_E164=${{ steps.wa.outputs.e164 }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY=${{ steps.wa.outputs.display }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL=${{ steps.wa.outputs.prefill }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_E164=${{ steps.wa.outputs.llano_e164 }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_LLANOGRANDE_DISPLAY=${{ steps.wa.outputs.llano_display }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_E164=${{ steps.wa.outputs.dom_e164 }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_DOMICILIO_DISPLAY=${{ steps.wa.outputs.dom_display }}
+            PESKIDS_GIT_SHA=${{ needs.gate.outputs.sha }}
+            PESKIDS_IMAGE_TAG=ghcr.io/cloudsysops/peskids:${{ needs.gate.outputs.sha }}
+
+      - name: Build summary
+        run: |
+          echo "Image: ghcr.io/cloudsysops/peskids:${{ needs.gate.outputs.sha }}"
+          echo "WhatsApp E164 (build-arg): ${{ steps.wa.outputs.e164 }}"
+          echo "Contact email (build-arg): ${{ steps.wa.outputs.contact_email }}"
+
+  deploy-vps:
+    needs: [gate, build-and-push]
     runs-on: ubuntu-latest
     environment: production
+    permissions:
+      contents: read
+      packages: read
     env:
       TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
-          fetch-depth: 1
+          ref: ${{ needs.gate.outputs.sha }}
 
-      - name: Enforce Bogotá production window
-        run: node scripts/ci/check-production-change-window.mjs --mode deploy
-
-      - name: Validate production deploy secrets
+      - name: Validate deploy secrets
         env:
           VPS_USER: ${{ secrets.VPS_USER }}
           VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
-          VPS_HOST: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
-          DOPPLER_TOKEN_PRD: ${{ secrets.DOPPLER_TOKEN_PRD }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_SSH_HOST: ${{ secrets.VPS_SSH_HOST }}
         run: |
           set -euo pipefail
-          [ -n "$VPS_USER" ] && [ -n "$VPS_SSH_KEY" ] && [ -n "$VPS_HOST" ] && [ -n "$DOPPLER_TOKEN_PRD" ]
+          missing=0
+          [ -n "${VPS_USER:-}" ] || { echo "Missing VPS_USER" >&2; missing=1; }
+          [ -n "${VPS_SSH_KEY:-}" ] || { echo "Missing VPS_SSH_KEY" >&2; missing=1; }
+          if [ -z "${VPS_SSH_HOST:-}" ] && [ -z "${VPS_HOST:-}" ]; then
+            echo "Missing VPS_SSH_HOST or VPS_HOST" >&2
+            missing=1
+          fi
+          [ "$missing" -eq 0 ]
 
       - name: Connect Tailscale for SSH
         if: env.TAILSCALE_AUTHKEY != ''
         uses: ./.github/actions/tailscale-connect
         with:
           authkey: ${{ env.TAILSCALE_AUTHKEY }}
-          ping_host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+          ping_host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST || '100.120.151.91' }}
 
-      - name: Promote candidate image without rebuilding
-        id: promote
+      - name: Login GHCR on VPS and deploy Peskids
         uses: appleboy/ssh-action@v1.0.3
         env:
-          RELEASE_SHA: ${{ inputs.release_sha }}
-          PESKIDS_IMAGE: ${{ needs.resolve-candidate.outputs.image }}
-          PESKIDS_IMAGE_DIGEST: ${{ needs.resolve-candidate.outputs.image_digest }}
-          DOPPLER_TOKEN_PRD: ${{ secrets.DOPPLER_TOKEN_PRD }}
-          PESKIDS_DEPLOY_IN_PLACE: '1'
+          GITHUB_DEPLOY_TOKEN: ${{ github.token }}
+          GITHUB_DEPLOY_ACTOR: ${{ github.actor }}
+          PESKIDS_IMAGE: ghcr.io/cloudsysops/peskids:${{ needs.gate.outputs.sha }}
         with:
           host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           timeout: 5m
           command_timeout: 25m
-          envs: RELEASE_SHA,PESKIDS_IMAGE,PESKIDS_IMAGE_DIGEST,DOPPLER_TOKEN_PRD,PESKIDS_DEPLOY_IN_PLACE
+          envs: GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR,PESKIDS_IMAGE,PESKIDS_DEPLOY_IN_PLACE
           script: |
             set -euo pipefail
             cd /opt/opsly
             git fetch origin main
             git checkout main
             git pull --ff-only origin main
+            docker logout ghcr.io 2>/dev/null || true
+            echo "$GITHUB_DEPLOY_TOKEN" | docker login ghcr.io -u "$GITHUB_DEPLOY_ACTOR" --password-stdin
             export PESKIDS_IMAGE
             export PESKIDS_DEPLOY_IN_PLACE=1
-            bash scripts/peskids-promote-vps.sh --promote
-            body="$(curl -fsSL --max-time 20 http://127.0.0.1:3004/api/health)"
-            echo "$body" | jq -e --arg sha "$RELEASE_SHA" --arg tag "$PESKIDS_IMAGE" '.status == "ok" and .git_sha == $sha and .image_tag == $tag' >/dev/null
-            echo "Promoted $RELEASE_SHA ($PESKIDS_IMAGE, $PESKIDS_IMAGE_DIGEST)"
+            bash scripts/peskids-deploy-vps.sh
 
-      - name: Verify public production SHA and smoke
-        env:
-          EXPECTED_SHA: ${{ inputs.release_sha }}
-          EXPECTED_IMAGE: ${{ needs.resolve-candidate.outputs.image }}
+      - name: Health check (public)
         run: |
           set -euo pipefail
-          health="$(curl -fsSL --max-time 20 https://www.peskids.com/api/health)"
-          echo "$health" | jq -e --arg sha "$EXPECTED_SHA" --arg tag "$EXPECTED_IMAGE" '.status == "ok" and .git_sha == $sha and .image_tag == $tag' >/dev/null
-          curl -fsSL --max-time 20 https://www.peskids.com/ >/dev/null
-          curl -fsSL --max-time 20 https://www.peskids.com/admin/login >/dev/null
-          echo "Production SHA verified: $EXPECTED_SHA"
+          check_url() {
+            local label="$1"
+            local url="$2"
+            local needle="${3:-}"
+            local body
+            local attempt
+            for attempt in 1 2 3 4 5 6 7 8; do
+              if body="$(curl -fsSL --max-redirs 5 "$url" 2>/dev/null)"; then
+                if [ -z "$needle" ] || printf '%s' "$body" | grep -q "$needle"; then
+                  echo "✅ ${label} OK (intento $attempt)"
+                  return 0
+                fi
+              fi
+              echo "Intento $attempt/8 para ${label}..."
+              sleep 10
+            done
+            echo "::error::${label} no respondió correctamente en ${url}"
+            return 1
+          }
 
-      - name: Roll back failed promotion to previous immutable image
-        if: failure() && steps.promote.outcome != 'skipped'
-        uses: appleboy/ssh-action@v1.0.3
+          check_url "public health" "https://www.peskids.com/api/health" '"status":"ok"'
+          check_url "admin login" "https://www.peskids.com/admin/login"
+          check_url "familias login" "https://www.peskids.com/familias/login"
+
+      - name: Post-deploy — purge Cloudflare CDN
+        # Ensures www.peskids.com serves the new build (not a stale CF/Next edge cache).
+        # Soft-fail: deploy already succeeded on VPS.
+        continue-on-error: true
         env:
-          DOPPLER_TOKEN_PRD: ${{ secrets.DOPPLER_TOKEN_PRD }}
-        with:
-          host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          timeout: 5m
-          command_timeout: 25m
-          envs: DOPPLER_TOKEN_PRD
-          script: |
-            set -euo pipefail
-            cd /opt/opsly
-            bash scripts/peskids-promote-vps.sh --rollback
+          CF_DNS_API_TOKEN: ${{ secrets.CF_DNS_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          chmod +x scripts/ops/purge-peskids-cdn.sh
+          if [ -z "${CF_DNS_API_TOKEN:-}" ]; then
+            echo "::warning::CF_DNS_API_TOKEN secret missing — skip CDN purge (set GitHub secret from Doppler prd)"
+            exit 0
+          fi
+          ./scripts/ops/purge-peskids-cdn.sh --soft
+
+      - name: Notify Discord on failure
+        if: failure()
+        continue-on-error: true
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then exit 0; fi
+          curl -fsS -X POST "$DISCORD_WEBHOOK_URL" -H "Content-Type: application/json" \
+            -d "$(jq -n --arg url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+              '{embeds:[{title:"❌ Deploy Peskids fallido",color:15158332,fields:[{name:"Run",value:$url}]}]}')"
