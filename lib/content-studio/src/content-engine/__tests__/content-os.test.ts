@@ -9,7 +9,7 @@ import { ownedFixtureTranscript, transcribeMedia } from '../transcribe.js';
 import { assertSameTenant, createProjectEnvelope, setProjectApproval } from '../storage.js';
 import { loadContentCharacters, loadContentPortals, loadContentFormats } from '../taxonomy.js';
 import { brandKitFromPreset, loadContentChannelPreset } from '../presets.js';
-import { sanitizeDrawtext, ffmpegAvailable } from '../ffmpeg.js';
+import { generateOwnedFixture, probeMedia, sanitizeDrawtext, ffmpegAvailable } from '../ffmpeg.js';
 import { publishPubliclyNotImplemented } from '../publishing.js';
 import { createManualTrendCandidate } from '../trends.js';
 import { contentOsCapabilityMap } from '../capabilities.js';
@@ -182,6 +182,18 @@ describe('content os contracts', () => {
   it('sanitizes drawtext for allowlisted ffmpeg filters', () => {
     expect(sanitizeDrawtext("hi:there['x']")).not.toContain(':');
     expect(sanitizeDrawtext("hi:there['x']")).not.toContain("'");
+  });
+
+  it.skipIf(!ffmpegAvailable())('delegates media probing to the canonical content-engine', async () => {
+    const root = mkdtempSync(path.join(os.tmpdir(), 'content-os-probe-'));
+    const fixture = path.join(root, 'fixture.mp4');
+    await generateOwnedFixture(fixture, 1);
+
+    const result = await probeMedia(fixture);
+
+    expect(result.duration).toBeGreaterThan(0);
+    expect(result.width).toBe(1280);
+    expect(result.height).toBe(720);
   });
 
   it('does not invent a transcript when sidecar is missing', async () => {

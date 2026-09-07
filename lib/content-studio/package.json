@@ -24,6 +24,7 @@
     "test:watch": "vitest watch"
   },
   "dependencies": {
+    "@intcloudsysops/content-engine": "*",
     "@intcloudsysops/types": "*",
     "@intcloudsysops/universe": "*",
     "date-fns": "^3.0.0",

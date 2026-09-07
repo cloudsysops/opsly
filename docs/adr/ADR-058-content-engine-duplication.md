@@ -1,7 +1,7 @@
 # Two content-engines exist — consolidation deferred pending real-ffmpeg validation
 
 Date: 2026-09-07
-Status: PROPOSAL (documented, not actioned)
+Status: PARTIALLY IMPLEMENTED (safe adapter delegation only)
 Author: Claude Code (session https://claude.ai/code/session_01R5iuYy3C35Mx9EXSF6cNGG)
 
 ## Context
@@ -75,6 +75,23 @@ Went in intending a full refactor (delegate `content-studio/ffmpeg.ts` to
 real `ffmpeg`/`ffprobe` binary (a dev machine, the VPS, or CI running the
 new code path directly) rather than merged from a sandbox that can't render
 a single test frame.
+
+## Safe slice implemented
+
+The first low-risk slice is now implemented in `lib/content-studio`:
+
+- `@intcloudsysops/content-studio` depends on the canonical
+  `@intcloudsysops/content-engine` package.
+- `ffmpegAvailable()` delegates to the canonical cached availability check.
+- `probeMedia()` delegates to the canonical `probe()` implementation and only
+  maps field names (`durationSec` to `duration`, optional dimensions to zero).
+- The duplicate `ffprobe` process wrapper was removed.
+- A content-studio test exercises the delegation with a real generated media
+  fixture when FFmpeg is available.
+
+No operation that changes rendered video output was redirected. The codec,
+pixel-format, filter, concat, thumbnail, caption and audio paths remain on
+their existing implementation until the production FFmpeg build is validated.
 
 ## What IS safe to unify whenever this is picked up
 

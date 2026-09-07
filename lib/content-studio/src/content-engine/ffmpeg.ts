@@ -1,6 +1,7 @@
-import { spawn, spawnSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import { isFfmpegAvailable, probe } from '@intcloudsysops/content-engine';
 
 export type FfmpegOp =
   | 'probe'
@@ -42,44 +43,8 @@ function runFfmpeg(args: string[]): Promise<void> {
   });
 }
 
-function runFfprobe(filePath: string): Promise<{ duration: number; width: number; height: number }> {
-  return new Promise((resolve, reject) => {
-    const child = spawn(
-      'ffprobe',
-      ['-v', 'error', '-print_format', 'json', '-show_format', '-show_streams', assertSafePath(filePath)],
-      { stdio: ['ignore', 'pipe', 'pipe'] }
-    );
-    let stdout = '';
-    let stderr = '';
-    child.stdout.on('data', (chunk: Buffer) => {
-      stdout += chunk.toString();
-    });
-    child.stderr.on('data', (chunk: Buffer) => {
-      stderr += chunk.toString();
-    });
-    child.on('error', reject);
-    child.on('close', (code) => {
-      if (code !== 0) {
-        reject(new Error(`ffprobe failed: ${stderr.slice(-400)}`));
-        return;
-      }
-      const parsed = JSON.parse(stdout) as {
-        format?: { duration?: string };
-        streams?: Array<{ width?: number; height?: number; codec_type?: string }>;
-      };
-      const video = parsed.streams?.find((stream) => stream.codec_type === 'video');
-      resolve({
-        duration: Number(parsed.format?.duration ?? 0),
-        width: video?.width ?? 0,
-        height: video?.height ?? 0,
-      });
-    });
-  });
-}
-
 export function ffmpegAvailable(): boolean {
-  const result = spawnSync('ffmpeg', ['-version'], { stdio: 'ignore' });
-  return result.status === 0;
+  return isFfmpegAvailable();
 }
 
 function defaultFontFile(): string | null {
@@ -99,7 +64,12 @@ function drawtextFilter(text: string, extras: string): string {
 }
 
 export async function probeMedia(filePath: string): Promise<{ duration: number; width: number; height: number }> {
-  return runFfprobe(filePath);
+  const result = await probe(filePath);
+  return {
+    duration: result.durationSec,
+    width: result.width ?? 0,
+    height: result.height ?? 0,
+  };
 }
 
 export function sanitizeDrawtext(text: string): string {
