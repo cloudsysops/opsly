@@ -23,6 +23,14 @@ vi.mock('@/lib/services/dashboard.service', () => ({
   decorateLeadWithCrmUrls: decorateLeadWithCrmUrlsMock,
 }));
 
+vi.mock('@/lib/enrollment-access/store', () => ({
+  supabaseEnrollmentLeadStore: {
+    getById: vi.fn().mockResolvedValue(null),
+    findByTokenHash: vi.fn(),
+    saveMetadata: vi.fn(),
+  },
+}));
+
 import { getLead360 } from '@/lib/services/lead-360.service';
 
 const baseLead: DashboardLead = {
@@ -109,6 +117,7 @@ describe('getLead360', () => {
     expect(result?.lead.twenty_person_url).toContain('person-1');
     expect(result?.followups).toHaveLength(1);
     expect(result?.trials).toEqual([]);
+    expect(result?.enrollment.next_action).toBe('SEND_ENROLLMENT_LINK');
     expect(result?.aging_badge?.bucket).toBe('escalation_48h');
 
     const labels = result?.timeline.map((entry) => entry.label) ?? [];

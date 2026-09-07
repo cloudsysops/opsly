@@ -13,6 +13,7 @@ import {
   isPeskidsOperationalNotificationsEnabled,
   isPeskidsRenewalReminderEnabled,
   isPeskidsTrialReminderEnabled,
+  isPeskidsWhatsappAutoSendEnabled,
 } from '@/lib/peskids-pro-flags';
 
 describe('peskids Pro flags (app)', () => {
@@ -42,6 +43,7 @@ describe('peskids Pro flags (app)', () => {
     expect(isPeskidsTrialReminderEnabled()).toBe(false);
     expect(isPeskidsLeadConfirmationEnabled()).toBe(false);
     expect(isPeskidsFamilyAccessEmailEnabled()).toBe(false);
+    expect(isPeskidsWhatsappAutoSendEnabled()).toBe(false);
     expect(isPeskidsRenewalReminderEnabled()).toBe(false);
     expect(isPeskidsAttendanceRiskAlertEnabled()).toBe(false);
     expect(getPeskidsContactSlaHours()).toBe(48);

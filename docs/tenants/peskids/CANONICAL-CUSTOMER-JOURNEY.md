@@ -57,15 +57,15 @@ AI Board: `lead.created` (hot / has phone) → `SEND_ENROLLMENT_LINK` P1 LEVEL 2
 | Real lead persist + `lead.created` | IMPLEMENTED | Public intake + fire-and-forget board event |
 | `SEND_ENROLLMENT_LINK` job | IMPLEMENTED | AI Board + orchestrator ingest, prepare-only |
 | Staff WhatsApp enrollment copy | IMPLEMENTED | Support templates; wa.me still human SEND |
-| Secure enrollment form schema | CONTRACT_ONLY | `enrollment-form.schema.ts` not the live public form |
-| Form submit → Family + Student + Enrollment + lead attribution | PARTIAL | Existing lead conversion / portal enroll; new schema not wired |
-| `first_class.scheduled` + reminder draft | CONTRACT_ONLY | AI Board mapping exists; leftover trial scheduler is not canonical |
+| Secure enrollment form schema | IMPLEMENTED | Public `/matricula/<opaque-token>` + strict schema; no `lead_id` in URL |
+| Form submit → Family + Student + Enrollment + lead attribution | IMPLEMENTED | Token hash on lead metadata; convertLeadToStudent + enrollment_outcome snapshot |
+| `first_class.scheduled` + reminder draft | PARTIAL | After form: 360 shows FIRST CLASS PENDING + `PREPARE_FIRST_CLASS`. Scheduler reuse only. |
 | Attendance PRESENT / ABSENT / EXCUSED | PARTIAL | Existing class attendance API; new events catalogued |
 | Teacher structured feedback | CONTRACT_ONLY | `journey-feedback.schema.ts` |
 | Longitudinal progress (family-visible vs internal) | CONTRACT_ONLY | Append-only helper in schema only |
 | Family feedback | PARTIAL | Existing parent feedback; new schema not wired |
 | Continuity next action | CONTRACT_ONLY | Template family + followup events |
-| Timeline 360 full journey | PARTIAL | Live 360: lead created + followups + Twenty. Canonical event names exist; enrollment/class/feedback rows are not persisted on that timeline yet |
+| Timeline 360 full journey | PARTIAL | Live 360 now includes enrollment link/form/family/student events from lead metadata. Attendance/feedback still later. |
 
 `enrollment.link.sent` is compatibility for a prepared staff send. It is **not** `whatsapp.sent_confirmed`.
 
@@ -79,10 +79,11 @@ No trial-specific templates.
 
 ## Golden flow contract
 
-`lib/ai-board/src/peskids-journey.ts` is the journey contract. Only the lead → enrollment-link job path is production-wired today.
+`lib/ai-board/src/peskids-journey.ts` is the journey contract. Lead → secure enrollment form → family/student link is now wired. First-class scheduling remains a staff next action, not a new product.
 
 ## Enlaces relacionados
 
+- [[tenants/peskids/SECURE-ENROLLMENT-FLOW|Secure enrollment flow]]
 - [[tenants/peskids/AI-BOARD-INTEGRATION|AI Board integration]]
 - [[tenants/peskids/EVENT-CONTRACT|Event contract]]
 - [[tenants/peskids/AI-APPROVAL-POLICY|AI approval policy]]
