@@ -16,7 +16,10 @@ Hub para **multi-tenant**: producción, runbooks, pruebas, onboarding y subclien
 | [`onboarding-prompts/`](onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md) | Plantillas y validación de onboarding (histórico `docs/prompts/tenant-onboarding/`). |
 | [`legalvial/`](legalvial/LEGALVIAL-ARCHITECTURE-DECISION.md) | Notas del subcliente LegalVial (LocalRank). |
 | [`peskids/`](peskids/README.md) | Tenant incubado Peskids (MVP, extracción a `peskids-platform`). |
+| [`intcloudsysops/`](intcloudsysops/MOBILE-APP.md) | Agencia ICSO (sitio `apps/icso`); app nativa Capacitor. |
 | [`panini-lab/`](panini-lab/README.md) | Demo conversacional Mundial 2026 — `panini.op-sly.com`, runtime incubator. |
+
+Apps nativas (Peskids + ICSO): [`../01-development/MOBILE-APPS.md`](../01-development/MOBILE-APPS.md).
 
 **Stubs de compatibilidad** (no editar): `docs/stubs/TENANT-PRODUCTION-*.md`, `docs/04-infrastructure/TENANT-PRODUCTION-*.md`, `docs/runbooks/TENANT-*.md` relevantes, `docs/01-development/TENANT-TESTING-*.md`, `docs/prompts/tenant-onboarding/*.md`.
 

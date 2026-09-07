@@ -15,6 +15,8 @@ Misma sesión Supabase, mismos paneles `/familias` y `/teacher`. No hay segundo 
 | App ID | `com.peskids.app` |
 | Scheme | `peskids://` |
 | Config | [`apps/peskids/capacitor.config.ts`](../../../apps/peskids/capacitor.config.ts) |
+| Shared helper | [`scripts/cap-mobile.sh`](../../../scripts/cap-mobile.sh) via `config/mobile-apps.json` |
+| Hub | [`docs/01-development/MOBILE-APPS.md`](../../01-development/MOBILE-APPS.md) |
 | Web placeholder | `apps/peskids/capacitor-web/` |
 | Android | `apps/peskids/android/` |
 | iOS | `apps/peskids/ios/` |
