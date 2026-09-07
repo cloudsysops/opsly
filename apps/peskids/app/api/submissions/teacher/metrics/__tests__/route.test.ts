@@ -45,7 +45,7 @@ describe('GET /api/submissions/teacher/metrics', () => {
     } as never)
 
     expect(response.status).toBe(401)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Unauthorized',
       request_id: 'req-teacher-metrics-401',

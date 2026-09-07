@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { createServerClient, type SetAllCookies } from '@supabase/ssr'
 import { isStaffUser } from '@/lib/staff-user'
+import { constantTimeEquals } from '@/lib/runtime/constant-time'
 import type { Database } from '@/lib/types'
 import { isPathUnderAuthSurface } from '@/lib/runtime/tenant-auth-surface'
 import { getAuthPublicConfig } from '@/lib/auth-public-config'
@@ -38,7 +39,7 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 
   const adminSecret = process.env.DASHBOARD_ADMIN_SECRET?.trim() ?? ''
   const adminToken = req.cookies.get('admin-token')?.value?.trim() ?? ''
-  if (adminSecret && adminToken === adminSecret) {
+  if (adminSecret && constantTimeEquals(adminToken, adminSecret)) {
     return NextResponse.next()
   }
 

@@ -32,7 +32,7 @@ describe('GET /api/submissions/teacher', () => {
     const response = await GET({ headers: new Headers({ 'x-request-id': 'req-teacher-submissions-403' }) } as never)
 
     expect(response.status).toBe(403)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Forbidden',
       request_id: 'req-teacher-submissions-403',

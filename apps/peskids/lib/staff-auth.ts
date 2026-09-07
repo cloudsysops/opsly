@@ -4,6 +4,7 @@ import type { User } from '@supabase/supabase-js';
 import { resolvePeskidsEnvironment } from './runtime-environment';
 import { isStaffUser } from './staff-user';
 import { extractSupabaseAccessTokenFromCookies } from './supabase-auth-cookie';
+import { timingSafeSecretsEqual } from './internal-auth';
 
 export { isStaffUser } from './staff-user';
 
@@ -13,7 +14,7 @@ export type StaffAuthResult =
 
 function acceptsDashboardAdminSecret(presented: string): boolean {
   const adminSecret = process.env.DASHBOARD_ADMIN_SECRET?.trim() ?? '';
-  if (!adminSecret || presented !== adminSecret) return false;
+  if (!adminSecret || !timingSafeSecretsEqual(presented, adminSecret)) return false;
   if (resolvePeskidsEnvironment() !== 'production') return true;
   return process.env.PESKIDS_ALLOW_DASHBOARD_ADMIN_SECRET?.trim() === '1';
 }

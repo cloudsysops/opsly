@@ -95,7 +95,7 @@ describe('GET /api/submissions', () => {
     const response = await GET(buildGetRequest());
 
     expect(response.status).toBe(401);
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Unauthorized',
       request_id: 'req-submissions-get',

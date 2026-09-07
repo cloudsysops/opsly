@@ -9,7 +9,7 @@
  */
 
 import { NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAuthAdmin } from '@/lib/supabase';
 import { resolveRequestId, errorJson, successJson } from '@/lib/api-response';
 import { verifyPeskidsInternalRequest } from '@/lib/internal-auth';
 import { rateLimit } from '@/lib/rate-limit';
@@ -57,9 +57,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   const redirectPath = rawRedirect.startsWith('/') ? rawRedirect : '/familias/submissions';
   const redirectTo = appUrl ? `${appUrl}${redirectPath}` : redirectPath;
 
-  const admin = createClient(supabaseUrl, serviceRoleKey, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
+  const admin = supabaseAuthAdmin();
 
   const { data, error } = await admin.auth.admin.generateLink({
     type: 'magiclink',
@@ -68,7 +66,16 @@ export async function POST(req: NextRequest): Promise<Response> {
   });
 
   if (error || !data?.properties?.action_link) {
-    console.error('[magic-link] generateLink error', { email, error, request_id: requestId });
+    // Never log the email itself — an auth-link failure is not a reason to
+    // put a family address in the log stream.
+    console.error(
+      JSON.stringify({
+        component: 'peskids.auth',
+        event: 'magic_link_generate_failed',
+        request_id: requestId,
+        error_code: (error as { code?: string } | null)?.code ?? 'unknown',
+      })
+    );
     const fallback = appUrl ? `${appUrl}/familias/login` : '/familias/login';
     return successJson(requestId, { url: fallback });
   }

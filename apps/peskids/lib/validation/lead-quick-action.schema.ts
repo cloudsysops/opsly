@@ -10,6 +10,6 @@ export const leadQuickActionSchema = z.object({
     .optional(),
   hold_until_month: z.string().trim().max(120).optional(),
   reason: z.string().trim().max(200).optional(),
-});
+}).strict();
 
 export type LeadQuickActionInput = z.infer<typeof leadQuickActionSchema>;

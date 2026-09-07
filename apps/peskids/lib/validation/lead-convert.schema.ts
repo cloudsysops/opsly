@@ -26,6 +26,6 @@ export const leadConvertSchema = z.object({
   notes: z.string().trim().max(500).optional().nullable(),
   /** When true, skip soft duplicate warnings and force create (still blocks source_lead_id dup). */
   force: z.boolean().optional(),
-});
+}).strict();
 
 export type LeadConvertInput = z.infer<typeof leadConvertSchema>;

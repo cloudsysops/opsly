@@ -1,5 +1,10 @@
 const requestCounts = new Map<string, { count: number; resetTime: number }>();
 
+/** Test-only: clears all in-memory rate-limit counters between test cases. */
+export function resetRateLimit(): void {
+  requestCounts.clear();
+}
+
 export function rateLimit(
   identifier: string,
   maxRequests: number = 5,

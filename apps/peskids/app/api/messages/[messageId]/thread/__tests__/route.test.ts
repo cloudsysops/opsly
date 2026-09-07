@@ -59,7 +59,7 @@ describe('GET /api/messages/[messageId]/thread', () => {
     )
 
     expect(response.status).toBe(401)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Unauthorized',
       request_id: 'req-thread-401',

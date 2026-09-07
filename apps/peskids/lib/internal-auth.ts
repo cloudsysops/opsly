@@ -23,6 +23,17 @@ export function resolvePeskidsInternalSecret(): string | undefined {
   return undefined;
 }
 
+/**
+ * Constant-time secret comparison.
+ *
+ * Exported so every shared-secret check in the app (webhooks, the admin token)
+ * uses the same implementation instead of `===`, which leaks the length of the
+ * matching prefix through timing.
+ */
+export function timingSafeSecretsEqual(provided: string, expected: string): boolean {
+  return secretsEqual(provided, expected);
+}
+
 function secretsEqual(provided: string, expected: string): boolean {
   const actual = Buffer.from(provided);
   const want = Buffer.from(expected);

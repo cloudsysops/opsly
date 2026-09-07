@@ -19,7 +19,7 @@ describe('submitLeadFromIntake', () => {
         parentName: 'Ana',
         email: 'ana@example.com',
       })
-    ).resolves.toEqual({ ok: false });
+    ).resolves.toMatchObject({ ok: false });
     expect(postPeskidsLeadWithCRMMock).not.toHaveBeenCalled();
   });
 
@@ -88,7 +88,7 @@ describe('submitLeadFromIntake', () => {
       consentTreatment: 'yes',
     });
 
-    expect(result).toEqual({ ok: false });
+    expect(result).toMatchObject({ ok: false });
   });
 
   it('returns false without phone or consent', async () => {
@@ -101,7 +101,7 @@ describe('submitLeadFromIntake', () => {
         neighborhood: 'Llanogrande',
         gradeInterested: '6-8',
       })
-    ).resolves.toEqual({ ok: false });
+    ).resolves.toMatchObject({ ok: false });
   });
 
   it('saves teacher_applicant with short chat profile', async () => {

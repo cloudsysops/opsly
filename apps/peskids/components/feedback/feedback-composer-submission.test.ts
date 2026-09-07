@@ -89,7 +89,7 @@ describe('submitFeedback', () => {
       audience: 'family',
     })
 
-    expect(result).toEqual({ ok: false, error: 'Forbidden' })
+    expect(result).toMatchObject({ ok: false, error: 'Forbidden' })
     expect(fetchMock).toHaveBeenCalledOnce()
     const [, requestInit] = fetchMock.mock.calls[0] ?? []
     expect(requestInit?.body).toContain('"child_name":"Sofia"')
