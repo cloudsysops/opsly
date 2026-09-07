@@ -8,8 +8,14 @@ OUT=""
 TIMEOUT="${NIGHT_CLEANUP_CURL_TIMEOUT:-20}"
 PLATFORM_DOMAIN="${PLATFORM_DOMAIN:-op-sly.com}"
 API_URL="${SMOKE_API_URL:-https://api.${PLATFORM_DOMAIN}/api/health}"
+# Production Peskids is www.peskids.com. peskids.op-sly.com is a 308, not prod.
 PESKIDS_URL="${SMOKE_PESKIDS_URL:-https://www.peskids.com/api/health}"
 STAGING_URL="${SMOKE_STAGING_URL:-https://peskids-staging.op-sly.com/api/health}"
+
+if [[ "${PESKIDS_URL}" == *peskids.op-sly.com* && "${PESKIDS_URL}" != *peskids-staging* ]]; then
+  echo "ERROR: Peskids prod is https://www.peskids.com — not peskids.op-sly.com" >&2
+  exit 1
+fi
 
 usage() {
   echo "Uso: $0 --phase pre|post --out <json>"

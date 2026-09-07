@@ -7,7 +7,8 @@ REPO="${GITHUB_REPOSITORY:-cloudsysops/opsly}"
 LABEL="${NIGHT_MERGE_LABEL:-night-merge}"
 PLATFORM_DOMAIN="${PLATFORM_DOMAIN:-op-sly.com}"
 SMOKE_API_URL="${SMOKE_API_URL:-https://api.${PLATFORM_DOMAIN}/api/health}"
-SMOKE_PESKIDS_URL="${SMOKE_PESKIDS_URL:-https://peskids.${PLATFORM_DOMAIN}/}"
+# Prod Peskids is www.peskids.com — peskids.op-sly.com is a 308, not the live site.
+SMOKE_PESKIDS_URL="${SMOKE_PESKIDS_URL:-https://www.peskids.com/api/health}"
 DEPLOY_WAIT_SECONDS="${DEPLOY_WAIT_SECONDS:-1500}"
 DRY_RUN="${DRY_RUN:-0}"
 FORCE="${NIGHT_MERGE_FORCE:-0}"
@@ -197,6 +198,10 @@ wait_for_deploy() {
 
 smoke() {
   local url code
+  if [[ "${SMOKE_PESKIDS_URL}" == *peskids.op-sly.com* && "${SMOKE_PESKIDS_URL}" != *peskids-staging* ]]; then
+    warn "Peskids prod is https://www.peskids.com — refusing peskids.op-sly.com"
+    return 1
+  fi
   for url in "${SMOKE_API_URL}" "${SMOKE_PESKIDS_URL}"; do
     code="$(curl -sS -o /tmp/night-merge-smoke.out -w '%{http_code}' --max-time 25 -L "${url}" || true)"
     log "smoke ${url} → HTTP ${code}"

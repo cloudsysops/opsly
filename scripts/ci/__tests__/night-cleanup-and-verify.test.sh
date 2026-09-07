@@ -12,6 +12,12 @@ bash -n "${REVIEW}"
 bash -n "${ORCH}"
 bash -n "${VPS}"
 
+if SMOKE_PESKIDS_URL="https://peskids.op-sly.com/api/health" \
+  "${REVIEW}" --phase pre --out /tmp/night-cleanup-bad-prod.json 2>/dev/null; then
+  echo "expected review to reject peskids.op-sly.com as prod" >&2
+  exit 1
+fi
+
 verdict() {
   local pre="$1"
   local post="$2"

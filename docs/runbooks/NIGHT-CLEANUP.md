@@ -10,6 +10,17 @@ Limpieza automática en **madrugada**, dentro de la ventana
 `America/Bogota` **22:00–06:00**. No sustituye Night merge ni nightly-ops
 upgrade: corre **después** de ambos y **revisa salud antes y después**.
 
+## Hosts (no confundir)
+
+| Rol | URL canónica |
+| --- | --- |
+| **Peskids producción** | **`https://www.peskids.com`** |
+| Peskids staging | `https://peskids-staging.op-sly.com` |
+| Opsly API | `https://api.op-sly.com` |
+| No es prod | `peskids.op-sly.com` (308 hacia www) |
+
+Night cleanup y Night merge fuman **`www.peskids.com/api/health`**, no el alias `op-sly`.
+
 ## Qué no es
 
 - No es un segundo data-assurance / QA discovery.
