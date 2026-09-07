@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Comprueba si el worker efímero pc-gamer está online (Tailscale + health + heartbeat Redis).
-# Exit 0 = disponible para encolar trabajo best-effort; 1 = no enviar trabajo delicado.
+# Comprueba si el worker efímero pc-gamer está online.
+# Señal canónica: Redis heartbeat. :3011 es opcional (WSL-local, no inbound).
 #
 # Usage (Mac / VPS):
 #   ./scripts/ops/check-pc-gamer-online.sh
@@ -11,7 +11,6 @@ set -euo pipefail
 
 JSON=false
 WORKER_ID="${WORKER_ID:-pc-gamer-openclaw-01}"
-# Legacy heartbeat key also accepted
 WORKER_ID_LEGACY="${WORKER_ID_LEGACY:-pc-gamer}"
 TS_HOST="${PC_GAMER_TAILSCALE_HOST:-pc-gamer}"
 HEALTH_URL="${PC_GAMER_HEALTH_URL:-http://${TS_HOST}:3011/health}"
@@ -40,7 +39,6 @@ fi
 
 tailscale_ok=false
 health_ok=false
-heartbeat_ok=false
 ssh_ok=false
 
 if command -v tailscale >/dev/null 2>&1; then
@@ -49,6 +47,7 @@ if command -v tailscale >/dev/null 2>&1; then
   fi
 fi
 
+# Optional auxiliary probe. Never required for ONLINE.
 if curl -sf --max-time 4 "$HEALTH_URL" >/dev/null 2>&1; then
   health_ok=true
 fi
@@ -57,47 +56,66 @@ if ssh -o BatchMode=yes -o ConnectTimeout=5 "$SSH_HOST" "echo ok" >/dev/null 2>&
   ssh_ok=true
 fi
 
-check_heartbeat_key() {
-  local key="$1"
-  if [[ -z "${REDIS_URL:-}" ]]; then
-    return 1
-  fi
-  if command -v redis-cli >/dev/null 2>&1; then
-    local v
-    v="$(redis-cli -u "$REDIS_URL" GET "$key" 2>/dev/null || true)"
-    [[ -n "$v" ]] && return 0
-  fi
-  # ioredis (same client as BullMQ) — evita WRONGPASS de redis-cli con user vacío
-  if [[ -d "$ROOT/node_modules/ioredis" ]] || node -e "require('ioredis')" >/dev/null 2>&1; then
-    KEY="$key" node --input-type=module -e "
-      import IORedis from 'ioredis';
+SNAPSHOT="$(
+  REDIS_URL="${REDIS_URL:-}" \
+  WORKER_ID="$WORKER_ID" \
+  WORKER_ID_LEGACY="$WORKER_ID_LEGACY" \
+  TAILSCALE="$tailscale_ok" \
+  HEALTH="$health_ok" \
+  SSH="$ssh_ok" \
+  node --input-type=module -e "
+    import IORedis from 'ioredis';
+    import { inferStatusFromHeartbeat } from './scripts/ops/pc-gamer-heartbeat-payload.mjs';
+
+    const keys = [
+      'opsly:worker:heartbeat:' + process.env.WORKER_ID,
+      'opsly:worker:heartbeat:' + process.env.WORKER_ID_LEGACY,
+    ];
+    let value = '';
+    let ttl = -2;
+    if (process.env.REDIS_URL) {
       const r = new IORedis(process.env.REDIS_URL, { maxRetriesPerRequest: 1, connectTimeout: 4000 });
-      const v = await r.get(process.env.KEY);
+      for (const key of keys) {
+        const found = await r.get(key);
+        if (found) {
+          value = found;
+          ttl = await r.ttl(key);
+          break;
+        }
+      }
       await r.quit();
-      process.exit(v ? 0 : 1);
-    " 2>/dev/null && return 0
-  fi
-  return 1
-}
+    }
+    const heartbeat = Boolean(value);
+    const state = heartbeat
+      ? inferStatusFromHeartbeat(value, { ttlSeconds: ttl })
+      : (process.env.HEALTH === 'true' ? 'DEGRADED' : 'OFFLINE');
+    const online = state === 'ONLINE' || state === 'BUSY' || state === 'DEGRADED';
+    const payload = {
+      worker_id: process.env.WORKER_ID,
+      online,
+      state,
+      tailscale: process.env.TAILSCALE === 'true',
+      ssh: process.env.SSH === 'true',
+      health: process.env.HEALTH === 'true',
+      heartbeat,
+      heartbeat_ttl: ttl,
+    };
+    if (value.startsWith('{')) {
+      try { payload.heartbeat_payload = JSON.parse(value); } catch { /* ignore */ }
+    }
+    process.stdout.write(JSON.stringify(payload));
+  "
+)"
 
-if check_heartbeat_key "opsly:worker:heartbeat:${WORKER_ID}" \
-  || check_heartbeat_key "opsly:worker:heartbeat:${WORKER_ID_LEGACY}"; then
-  heartbeat_ok=true
-fi
-
-# Disponible si health OK O heartbeat fresco; SSH/Tailscale son señales auxiliares.
-online=false
-if [[ "$health_ok" == "true" || "$heartbeat_ok" == "true" ]]; then
-  online=true
-fi
+online="$(node -e 'const p=JSON.parse(process.argv[1]); process.stdout.write(String(p.online))' "$SNAPSHOT")"
+state="$(node -e 'const p=JSON.parse(process.argv[1]); process.stdout.write(p.state)' "$SNAPSHOT")"
 
 if [[ "$JSON" == "true" ]]; then
-  printf '{"worker_id":"%s","online":%s,"tailscale":%s,"ssh":%s,"health":%s,"heartbeat":%s}\n' \
-    "$WORKER_ID" "$online" "$tailscale_ok" "$ssh_ok" "$health_ok" "$heartbeat_ok"
+  printf '%s\n' "$SNAPSHOT"
 else
-  echo "pc-gamer online=$online tailscale=$tailscale_ok ssh=$ssh_ok health=$health_ok heartbeat=$heartbeat_ok"
+  echo "pc-gamer online=$online state=$state tailscale=$tailscale_ok ssh=$ssh_ok health=$health_ok"
   if [[ "$online" != "true" && "$ssh_ok" == "true" ]]; then
-    echo "hint: SSH up but worker quiet — run ./scripts/ops/pc-gamer-reconnect.sh"
+    echo "hint: SSH up but heartbeat missing — run ./scripts/ops/pc-gamer-heartbeat.sh"
   fi
 fi
 

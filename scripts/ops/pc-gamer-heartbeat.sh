@@ -34,19 +34,24 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 cd "$ROOT"
 
-KEY="opsly:worker:heartbeat:${WORKER_ID}"
-VALUE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-
-if [[ "$DRY_RUN" == "true" ]]; then
-  echo "[dry-run] SET $KEY $VALUE EX $TTL"
-  exit 0
-fi
-
 if [[ -z "${REDIS_URL:-}" && -f .env.worker ]]; then
   set -a
   # shellcheck disable=SC1091
   source .env.worker
   set +a
+fi
+
+KEY="opsly:worker:heartbeat:${WORKER_ID}"
+PAYLOAD_JS="${ROOT}/scripts/ops/pc-gamer-heartbeat-payload.mjs"
+if [[ -f "$PAYLOAD_JS" ]]; then
+  VALUE="$(WORKER_ID="$WORKER_ID" node "$PAYLOAD_JS")"
+else
+  VALUE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+fi
+
+if [[ "$DRY_RUN" == "true" ]]; then
+  echo "[dry-run] SET $KEY <heartbeat-json> EX $TTL"
+  exit 0
 fi
 
 if [[ -z "${REDIS_URL:-}" ]]; then

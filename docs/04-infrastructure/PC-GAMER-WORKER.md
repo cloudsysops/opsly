@@ -112,8 +112,9 @@ noche, instala el LaunchAgent del Mac:
 Detecta online cada 5 min y encola el backlog ocioso solo en modo `heavy`.
 Runbook: [`docs/runbooks/PC-GAMER-OVERNIGHT-AUTODISPATCH.md`](../runbooks/PC-GAMER-OVERNIGHT-AUTODISPATCH.md).
 
-Autostart: user systemd `opsly-pc-gamer-docker.service` + timer heartbeat (+ `opsly-opencode-bridge` si overnight).  
-Fallback nativo (sin Docker): `systemctl --user enable --now opsly-worker-openclaw` + Ollama apt — ver histórico; **preferir Docker**.
+Autostart canónico: user systemd `opsly-pc-gamer-worker.service` (`--up --use-host-ollama`, **sin** `--with-content`) + timer heartbeat + `opsly-opencode-bridge`.  
+`opsly-pc-gamer-docker.service` queda **disabled** — arrancaba GPU Docker / MoneyPrinter y provocaba restart loops.  
+Señal online canónica: Redis `opsly:worker:heartbeat:pc-gamer-openclaw-01`. **No** exigir inbound `:3011`.
 
 ```bash
 # Legacy one-liner (sigue válido)
@@ -123,7 +124,7 @@ Fallback nativo (sin Docker): `systemctl --user enable --now opsly-worker-opencl
 Variables clave en `.env.worker`:
 
 - `OPSLY_EPHEMERAL_WORKER=true` — rechaza rol control/full; **también activa Ollama directo** (`OLLAMA_URL`) sin pasar por el Gateway del VPS
-- `OPSLY_WORKER_ALLOWLIST=ollama` — GPU only; overnight: `ollama,local-agents`; **Splashitos / Shorts:** `ollama,content-video`
+- `OPSLY_WORKER_ALLOWLIST=ollama,local-agents` — overnight proven. Add `content-video` only after `ffmpeg -version` and a successful render.
 - `MONEY_PRINTER_TURBO_URL=http://127.0.0.1:8080` — bridge local (`scripts/moneyprinter-bridge.mjs` / compose moneyprinter)
 - `OPSLY_OPENCODE_AGENT_URL=http://127.0.0.1:5004` + `OPSLY_CLI_AGENT_TOKEN` — bridge OpenCode (no admin token)
 - `OLLAMA_URL=http://127.0.0.1:11434` — inferencia local (margen $0)

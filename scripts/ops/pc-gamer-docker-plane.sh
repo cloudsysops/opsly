@@ -116,9 +116,9 @@ ensure_env() {
   fi
   if ! grep -q '^OPSLY_WORKER_ALLOWLIST=' "$ENV_WORKER"; then
     if [[ "$WITH_CONTENT" == "true" ]]; then
-      echo 'OPSLY_WORKER_ALLOWLIST=ollama,content-video' >>"$ENV_WORKER"
+      echo 'OPSLY_WORKER_ALLOWLIST=ollama,local-agents,content-video' >>"$ENV_WORKER"
     else
-      echo 'OPSLY_WORKER_ALLOWLIST=ollama' >>"$ENV_WORKER"
+      echo 'OPSLY_WORKER_ALLOWLIST=ollama,local-agents' >>"$ENV_WORKER"
     fi
   elif [[ "$WITH_CONTENT" == "true" ]] && ! grep -q 'content-video' "$ENV_WORKER"; then
     # Append content-video to existing allowlist line (idempotent-ish).
@@ -148,11 +148,15 @@ compose_up() {
   else
     services=(ollama worker-openclaw)
   fi
-  echo "[pc-gamer-docker] docker compose up -d ${services[*]}"
+  local compose_up=(up -d)
+  if [[ "$USE_HOST_OLLAMA" == "true" ]]; then
+    compose_up=(up -d --no-deps)
+  fi
+  echo "[pc-gamer-docker] docker compose ${compose_up[*]} ${services[*]}"
   run docker compose "${COMPOSE_WORKERS[@]}" \
     --env-file "$ENV_WORKER" \
     --env-file infra/opslyquantum.env \
-    up -d "${services[@]}"
+    "${compose_up[@]}" "${services[@]}"
   if [[ "$WITH_CONTENT" == "true" ]]; then
     echo "[pc-gamer-docker] starting moneyprinter-bridge…"
     run docker compose "${COMPOSE_MPT[@]}" --env-file "$ENV_WORKER" up -d moneyprinter-bridge
@@ -197,13 +201,15 @@ show_status() {
 
 install_autostart() {
   local unit_dir="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
-  local unit="$unit_dir/opsly-pc-gamer-docker.service"
+  local unsafe_unit="$unit_dir/opsly-pc-gamer-docker.service"
+  local unit="$unit_dir/opsly-pc-gamer-worker.service"
   local timer="$unit_dir/opsly-pc-gamer-heartbeat.timer"
   local hb_svc="$unit_dir/opsly-pc-gamer-heartbeat.service"
 
   if [[ "$DRY_RUN" == "true" ]]; then
     echo "[dry-run] would write $unit $hb_svc $timer"
-    echo "[dry-run] systemctl --user enable --now opsly-pc-gamer-docker.service opsly-pc-gamer-heartbeat.timer"
+    echo "[dry-run] would disable $unsafe_unit if present"
+    echo "[dry-run] systemctl --user enable --now opsly-pc-gamer-worker.service opsly-pc-gamer-heartbeat.timer"
     return 0
   fi
 
@@ -211,17 +217,22 @@ install_autostart() {
 
   cat >"$unit" <<EOF
 [Unit]
-Description=Opsly PC-gamer Docker worker plane (ephemeral)
-After=network-online.target docker.service
+Description=Opsly PC-gamer host-Ollama worker (no GPU Docker, no content-video)
+After=network-online.target
 Wants=network-online.target
+StartLimitBurst=3
+StartLimitIntervalSec=600
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
 WorkingDirectory=${ROOT}
-ExecStart=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh --up
+ExecStartPre=${ROOT}/scripts/ops/pc-gamer-preflight.sh --timeout 90
+ExecStart=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh --up --use-host-ollama
 ExecStop=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh --down
-TimeoutStartSec=600
+TimeoutStartSec=180
+Restart=on-failure
+RestartSec=30
 
 [Install]
 WantedBy=default.target
@@ -230,7 +241,7 @@ EOF
   cat >"$hb_svc" <<EOF
 [Unit]
 Description=Opsly PC-gamer Redis heartbeat
-After=opsly-pc-gamer-docker.service
+After=opsly-pc-gamer-worker.service
 
 [Service]
 Type=oneshot
@@ -254,9 +265,10 @@ WantedBy=timers.target
 EOF
 
   systemctl --user daemon-reload
-  systemctl --user enable --now opsly-pc-gamer-docker.service
+  systemctl --user disable --now opsly-pc-gamer-docker.service 2>/dev/null || true
+  systemctl --user enable --now opsly-pc-gamer-worker.service
   systemctl --user enable --now opsly-pc-gamer-heartbeat.timer
-  echo "[pc-gamer-docker] autostart enabled (linger recommended: sudo loginctl enable-linger \$USER)"
+  echo "[pc-gamer-docker] safe autostart enabled (host Ollama only; linger already recommended)"
 }
 
 # default: status if nothing else
