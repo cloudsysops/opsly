@@ -10,8 +10,10 @@
 #   NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL (baked at build; sync from Doppler prd)
 #
 # Manual: Actions → Deploy Peskids → Run workflow
+# Autonomous: Promote Approved Release Candidates calls this with release_sha.
 # Night window: America/Bogota 22:00–06:00 (docs/runbooks/PRODUCTION-CHANGE-WINDOW.md)
 # Post-deploy: CDN purge — docs/runbooks/PESKIDS-CDN-CACHE.md
+# Unattended policy: docs/runbooks/UNATTENDED-RELEASE.md
 
 name: Deploy Peskids
 
@@ -20,8 +22,23 @@ on:
     workflows: [CI]
     types: [completed]
     branches: [main]
+  workflow_call:
+    inputs:
+      release_sha:
+        description: 'Exact git SHA to deploy. Immutable. Never substitute HEAD.'
+        required: true
+        type: string
+      force_daytime:
+        description: 'Emergencia — desplegar fuera de ventana nocturna America/Bogota 22:00–06:00'
+        required: false
+        type: boolean
+        default: false
   workflow_dispatch:
     inputs:
+      release_sha:
+        description: 'Exact git SHA to deploy. If empty, uses the dispatch ref SHA.'
+        required: false
+        type: string
       force_daytime:
         description: 'Emergencia — desplegar fuera de ventana nocturna America/Bogota 22:00–06:00'
         required: false
@@ -29,13 +46,14 @@ on:
         default: false
 
 concurrency:
-  group: deploy-peskids-${{ github.ref }}
+  group: deploy-peskids-production
   cancel-in-progress: false
 
 jobs:
   gate:
     if: |
       github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'workflow_call' ||
       (github.event.workflow_run.conclusion == 'success' &&
        github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
@@ -44,19 +62,38 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
       - id: sha
+        env:
+          RELEASE_SHA: ${{ inputs.release_sha }}
+          EVENT_NAME: ${{ github.event_name }}
+          FALLBACK_SHA: ${{ github.sha }}
+          WORKFLOW_RUN_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          if [ -n "${RELEASE_SHA:-}" ]; then
+            echo "Using immutable release_sha=${RELEASE_SHA}"
+            echo "sha=${RELEASE_SHA}" >> "$GITHUB_OUTPUT"
+          elif [ "${EVENT_NAME}" = "workflow_dispatch" ]; then
+            echo "sha=${FALLBACK_SHA}" >> "$GITHUB_OUTPUT"
+          elif [ "${EVENT_NAME}" = "workflow_run" ]; then
+            echo "sha=${WORKFLOW_RUN_SHA}" >> "$GITHUB_OUTPUT"
           else
-            echo "sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+            echo "::error::No release SHA for event ${EVENT_NAME}"
+            exit 1
           fi
+
+      - name: Confirm exact commit exists
+        run: |
+          set -euo pipefail
+          sha="${{ steps.sha.outputs.sha }}"
+          git fetch origin "$sha" --depth=1 2>/dev/null || true
+          git rev-parse --verify "${sha}^{commit}"
 
       - name: Night window (Peskids live — no daytime deploys)
         env:
-          FORCE_DAYTIME: ${{ github.event_name == 'workflow_dispatch' && inputs.force_daytime && '1' || '0' }}
+          FORCE_DAYTIME: ${{ inputs.force_daytime && '1' || '0' }}
         run: |
           set -euo pipefail
           node scripts/ci/check-production-change-window.mjs --mode deploy

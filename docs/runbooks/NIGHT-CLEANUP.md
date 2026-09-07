@@ -33,6 +33,7 @@ Night cleanup y Night merge fuman **`www.peskids.com/api/health`**, no el alias 
 
 | Hora (Bogotá) | Quién | Qué |
 | --- | --- | --- |
+| **22:10** | [Unattended release](./UNATTENDED-RELEASE.md) | Revalida RC aprobado → Deploy Peskids (SHA exacto) o dry-run |
 | 01:00 | [Night merge](./NIGHT-MERGE.md) | Squash-merge PRs `night-merge` → Deploy → smoke |
 | 01:15 | [Nightly ops upgrade](./NIGHTLY-OPS-UPGRADE.md) | pull + n8n + smoke (si el cron VPS está instalado) |
 | **03:30** | **Night cleanup** (este runbook) | pre-review → higiene → post-review |

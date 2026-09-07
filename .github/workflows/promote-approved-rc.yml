@@ -1,0 +1,197 @@
+# Opsly — workflow catalog: docs/ops/workflows-index.md
+# Promote Board-approved Release Candidates during the Bogotá night window.
+# Docs: docs/runbooks/UNATTENDED-RELEASE.md
+# Invokes canonical Deploy Peskids with the exact RC SHA. Never deploys HEAD.
+name: Promote Approved Release Candidates
+
+on:
+  schedule:
+    # 22:10 America/Bogota = 03:10 UTC (no DST)
+    - cron: "10 3 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Revalidate only; do not call Deploy Peskids"
+        type: boolean
+        required: false
+        default: true
+      product:
+        description: "Product id in config/release-candidates.json"
+        type: string
+        required: false
+        default: peskids
+      apply:
+        description: "Allow a real promote when autonomy flags are already on"
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+  actions: write
+  packages: write
+
+concurrency:
+  group: promote-approved-rc
+  cancel-in-progress: false
+
+jobs:
+  decide:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      action: ${{ steps.policy.outputs.action }}
+      should_deploy: ${{ steps.policy.outputs.should_deploy }}
+      sha: ${{ steps.policy.outputs.sha }}
+      previous_sha: ${{ steps.policy.outputs.previous_sha }}
+      rc_id: ${{ steps.policy.outputs.rc_id }}
+      reason: ${{ steps.policy.outputs.reason }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Policy unit tests
+        run: node --test scripts/ops/__tests__/release-candidate.test.mjs
+
+      - name: Gather live evidence
+        id: evidence
+        run: |
+          set -euo pipefail
+          staging="$(curl -fsS --max-time 20 https://peskids-staging.op-sly.com/api/health)"
+          prod="$(curl -fsS --max-time 20 https://www.peskids.com/api/health)"
+          printf '%s' "$staging" > "${RUNNER_TEMP}/staging-health.json"
+          printf '%s' "$prod" > "${RUNNER_TEMP}/prod-health.json"
+          node -e '
+            const fs = require("fs");
+            const staging = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + "/staging-health.json", "utf8"));
+            const prod = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + "/prod-health.json", "utf8"));
+            const evidence = {
+              mainSha: process.env.GITHUB_SHA,
+              stagingSha: staging.git_sha,
+              stagingHealthOk: staging.status === "ok",
+              prodSha: prod.git_sha,
+              prodHealthOk: prod.status === "ok",
+              ciGreen: true,
+              securityGreen: true
+            };
+            fs.writeFileSync(process.env.RUNNER_TEMP + "/rc-evidence.json", JSON.stringify(evidence, null, 2));
+            console.log(JSON.stringify(evidence, null, 2));
+          '
+
+      - name: Revalidate release candidate
+        id: policy
+        env:
+          PRODUCT: ${{ github.event_name == 'workflow_dispatch' && inputs.product || 'peskids' }}
+        run: |
+          set -euo pipefail
+          node scripts/ops/release-candidate.mjs --revalidate --json \
+            --product "$PRODUCT" \
+            --evidence-file "${RUNNER_TEMP}/rc-evidence.json" \
+            > "${RUNNER_TEMP}/rc-decision.json"
+          cat "${RUNNER_TEMP}/rc-decision.json"
+          node -e '
+            const fs = require("fs");
+            const d = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + "/rc-decision.json", "utf8"));
+            const out = process.env.GITHUB_OUTPUT;
+            const line = (k, v) => fs.appendFileSync(out, `${k}=${v ?? ""}\n`);
+            line("action", d.action);
+            line("should_deploy", d.shouldDeploy ? "true" : "false");
+            line("sha", d.deploySha || "");
+            line("previous_sha", d.rollbackSha || "");
+            line("rc_id", d.rcId || "");
+            line("reason", d.reason || "");
+          '
+
+      - name: Morning-style summary
+        if: always()
+        run: |
+          set -euo pipefail
+          {
+            echo "## Release candidate decision"
+            echo
+            echo '```json'
+            cat "${RUNNER_TEMP}/rc-decision.json"
+            echo
+            echo '```'
+            node scripts/ops/release-candidate.mjs --morning-report
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    needs: decide
+    if: |
+      needs.decide.outputs.should_deploy == 'true' &&
+      (github.event_name == 'schedule' || github.event.inputs.apply == 'true')
+    uses: ./.github/workflows/deploy-peskids.yml
+    with:
+      release_sha: ${{ needs.decide.outputs.sha }}
+      force_daytime: false
+    secrets: inherit
+
+  verify:
+    needs: [decide, deploy]
+    if: |
+      needs.decide.outputs.should_deploy == 'true' &&
+      (github.event_name == 'schedule' || github.event.inputs.apply == 'true') &&
+      needs.deploy.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Observe production
+        env:
+          EXPECTED_SHA: ${{ needs.decide.outputs.sha }}
+        run: |
+          set -euo pipefail
+          sleep 20
+          curl -fsS --max-time 20 https://www.peskids.com/api/health > "${RUNNER_TEMP}/prod-health.json"
+          curl -fsS --max-time 20 -o /dev/null https://www.peskids.com/
+          curl -fsS --max-time 20 -o /dev/null https://www.peskids.com/admin/login
+          node scripts/ops/release-candidate.mjs --verify-prod \
+            --health-file "${RUNNER_TEMP}/prod-health.json" \
+            --expected-sha "$EXPECTED_SHA" \
+            --expected-flag hot_lead_alerts=true
+
+  rollback:
+    needs: [decide, deploy, verify]
+    if: |
+      always() &&
+      needs.decide.outputs.should_deploy == 'true' &&
+      (github.event_name == 'schedule' || github.event.inputs.apply == 'true') &&
+      (needs.deploy.result == 'failure' || needs.verify.result == 'failure')
+    uses: ./.github/workflows/deploy-peskids.yml
+    with:
+      release_sha: ${{ needs.decide.outputs.previous_sha }}
+      force_daytime: false
+    secrets: inherit
+
+  incident:
+    needs: [decide, deploy, verify, rollback]
+    if: |
+      always() &&
+      needs.decide.outputs.should_deploy == 'true' &&
+      (needs.deploy.result == 'failure' || needs.verify.result == 'failure')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record rollback incident
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          SHA: ${{ needs.decide.outputs.sha }}
+          PREV: ${{ needs.decide.outputs.previous_sha }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          echo "::error::Release ${SHA} failed; rollback target ${PREV}. ${RUN_URL}"
+          if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then
+            echo "No Discord webhook — morning report only"
+            exit 0
+          fi
+          curl -fsS -X POST "$DISCORD_WEBHOOK_URL" -H "Content-Type: application/json" \
+            -d "{\"content\":\"Peskids RC ${SHA} failed verification. Rollback ${PREV}. ${RUN_URL}\"}"

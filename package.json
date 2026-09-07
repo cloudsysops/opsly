@@ -32,6 +32,8 @@
     "validate-context": "python3 -m json.tool context/system_state.json > /dev/null",
     "validate-openapi": "node scripts/ci/validate-openapi.mjs",
     "validate-structure": "node scripts/validate-structure.js",
+    "release:rc": "node scripts/ops/release-candidate.mjs",
+    "test:release-rc": "node --test scripts/ops/__tests__/release-candidate.test.mjs",
     "validate:academy-blueprint": "node scripts/ci/validate-academy-blueprint.mjs",
     "guard:ghl-runtime": "bash scripts/ci/check-no-new-ghl-runtime.sh",
     "validate:strict": "npm run validate-structure",
