@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "timezone": "America/Bogota",
+  "autonomousPromotion": {
+    "enabled": false,
+    "products": {
+      "peskids": false
+    }
+  },
+  "circuit": {
+    "peskids": {
+      "open": false,
+      "consecutiveRollbacks": 0,
+      "maxConsecutiveRollbacks": 2
+    }
+  },
+  "blockedMigrations": ["0098", "0099", "0103", "0104", "0105", "0106"],
+  "requiredBoardSeats": [
+    "product",
+    "architecture",
+    "security",
+    "database",
+    "qa",
+    "release"
+  ],
+  "candidates": [
+    {
+      "id": "peskids-f27efea66",
+      "product": "peskids",
+      "gitSha": "f27efea66c37969bfcdce267a3aeb1c51ce4f226",
+      "artifactRef": "ghcr.io/cloudsysops/peskids:f27efea66c37969bfcdce267a3aeb1c51ce4f226",
+      "stagingSha": "f27efea66c37969bfcdce267a3aeb1c51ce4f226",
+      "previousProductionSha": "c4822d9e380e142c7b55df856c92027400363113",
+      "riskLevel": "medium",
+      "boardDecision": "approved",
+      "boardEvidence": {
+        "product": "APPROVE",
+        "architecture": "APPROVE",
+        "security": "APPROVE",
+        "database": "APPROVE",
+        "qa": "APPROVE",
+        "release": "APPROVE",
+        "ci": "34072941305",
+        "stagingRun": "34073675871"
+      },
+      "ciVerified": true,
+      "securityVerified": true,
+      "stagingVerified": true,
+      "migrationPlan": "none",
+      "migrations": [],
+      "preserveFlags": {
+        "hot_lead_alerts": true
+      },
+      "notBefore": "22:00",
+      "expiresAt": "06:00",
+      "timezone": "America/Bogota",
+      "status": "waiting_for_window",
+      "createdAt": "2026-09-07T01:40:00.000Z",
+      "approvedAt": "2026-09-07T02:00:00.000Z",
+      "notes": "Immutable SHA. origin/main may move (e.g. #1118 5ed3aa2c); do not retarget this RC."
+    }
+  ]
+}

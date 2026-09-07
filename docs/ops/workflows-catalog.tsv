@@ -16,6 +16,7 @@ hermes-health.yml	health-autonomy	keep	2026-05-02T13:54:41Z	yes	success sample f
 nightly-fix.yml	ci-quality	review_quarterly		unknown	no success in sample; manual-only scheduled or failing
 notebooklm-sync.yml	sync-docs	review_quarterly		unknown	no success in sample; manual-only scheduled or failing
 obsidian-vault-sync.yml	sync-docs	keep	2026-05-03T20:35:20Z	yes	success sample from gh run list
+promote-approved-rc.yml	deploy-release	keep			unattended RC promoter; calls Deploy Peskids by exact SHA
 promote-production-canary.yml	deploy-release	review_quarterly		unknown	no success in sample; manual-only scheduled or failing
 security-bot-deployment.yml	deploy-release	review_quarterly		unknown	no success in sample; manual-only scheduled or failing
 security.yml	ci-quality	keep	2026-05-03T00:41:00Z	yes	success sample from gh run list

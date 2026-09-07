@@ -47,6 +47,15 @@ Si el PR mezcla docs + `apps/peskids` → se trata como impacto prod.
 | `safe-daytime` | Humano certifica: no afecta prod/ops; merge de día OK |
 | `hotfix-prod` | Emergencia; merge/deploy de día OK |
 
+## Promoción autónoma (Release Candidate)
+
+Merge diurno ≠ deploy. Un Release Candidate aprobado (SHA inmutable) espera
+la ventana y **Promote Approved Release Candidates** revalida antes de
+invocar **Deploy Peskids**. Flag inicial
+`AUTONOMOUS_PRODUCTION_PROMOTION=false` en
+[`config/release-candidates.json`](../../config/release-candidates.json).
+Detalle: [`UNATTENDED-RELEASE.md`](UNATTENDED-RELEASE.md).
+
 ## Merge mientras duermes
 
 1. De día: PR revisado, CI verde y staging verificado.
