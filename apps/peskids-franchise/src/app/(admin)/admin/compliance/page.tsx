@@ -28,7 +28,7 @@ function getStatusFromDays(days: number | null, isExpired: boolean): 'active' | 
 
 export default async function CompliancePage() {
   const session = await auth();
-  if (!session?.user?.email?.endsWith('@acmefranchise.com')) {
+  if (!session?.user?.email?.endsWith('@peskids.com')) {
     redirect('/');
   }
 

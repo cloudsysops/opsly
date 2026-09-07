@@ -19,7 +19,7 @@ function getAnthropic() {
   return anthropic;
 }
 
-const SUMMARY_SYSTEM_PROMPT = `You are an AI assistant analyzing franchise prospect data for Acme Franchise.
+const SUMMARY_SYSTEM_PROMPT = `You are an AI assistant analyzing franchise prospect data for Peskids Franchise.
 
 Your task is to generate a comprehensive summary of a prospect's engagement and potential fit.
 

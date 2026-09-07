@@ -4,12 +4,12 @@ import { LinkButton } from "@/components/shared/Button";
 export const metadata: Metadata = {
   title: "Support & Training",
   description:
-    "Comprehensive training and ongoing support for Acme Franchisees.",
+    "Comprehensive training and ongoing support for Peskids Franchisees.",
   alternates: {
-    canonical: "https://franchising.acmefranchise.com/support",
+    canonical: "https://franchise.peskids.com/support",
   },
   openGraph: {
-    url: "https://franchising.acmefranchise.com/support",
+    url: "https://franchise.peskids.com/support",
   },
 };
 
@@ -55,7 +55,7 @@ const supportTypes = [
   {
     title: "Curriculum Support",
     description:
-      "Access to our complete Acme Franchise curriculum, including lesson plans, materials, and ongoing updates.",
+      "Access to our complete Peskids Franchise curriculum, including lesson plans, materials, and ongoing updates.",
     icon: "📚",
   },
   {
@@ -190,7 +190,7 @@ export default function SupportPage() {
             </h2>
             <div className="mt-4 sm:mt-6 space-y-3 sm:space-y-4 text-base sm:text-lg text-gray-600">
               <p>
-                Every Acme Franchisee completes our comprehensive
+                Every Peskids Franchisee completes our comprehensive
                 curriculum certification program. You&apos;ll learn:
               </p>
               <ul className="space-y-3 sm:space-y-4">
@@ -200,10 +200,10 @@ export default function SupportPage() {
                   </span>
                   <div>
                     <strong className="text-brand-navy text-sm sm:text-base">
-                      The Acme Franchise Method
+                      The Peskids Franchise Method
                     </strong>
                     <p className="text-sm sm:text-base">
-                      Our unique approach to teaching chess through storytelling
+                      Our unique approach to after-school enrichment through engaging
                       and character-based instruction.
                     </p>
                   </div>

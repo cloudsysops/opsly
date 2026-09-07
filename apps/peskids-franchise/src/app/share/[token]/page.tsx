@@ -167,7 +167,7 @@ export default function SharedMapPage() {
       <header className="bg-white border-b border-gray-200 px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-bold text-brand-navy">Acme Franchise</h1>
+            <h1 className="text-lg font-bold text-brand-navy">Peskids Franchise</h1>
             <p className="text-xs text-gray-500">Shared Territory Map</p>
           </div>
           <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">

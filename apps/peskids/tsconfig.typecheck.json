@@ -8,9 +8,6 @@
   ],
   "exclude": [
     "node_modules",
-    ".next",
-    "app/api/admin/franchises/_*/**",
-    "app/api/admin/_franchise-os/**",
-    "lib/franchise/persist.ts"
+    ".next"
   ]
 }

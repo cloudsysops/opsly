@@ -5,10 +5,8 @@ import { db } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 // GET /api/admin/franchisees/[id]/aggregate - Aggregated metrics across all territories
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
     if (!session?.user || session.user.role !== "ADMIN") {

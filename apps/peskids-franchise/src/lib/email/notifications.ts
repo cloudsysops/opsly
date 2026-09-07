@@ -9,8 +9,8 @@ import {
 
 // Admin email addresses to notify
 const ADMIN_EMAILS = [
-  "franchising@acmefranchise.com",
-  "admin@acmefranchise.com",
+  "franchising@peskids.com",
+  "admin@peskids.com",
 ];
 
 // High score threshold for alerts
@@ -256,7 +256,7 @@ export async function sendDailyDigest(data: DailyDigestData): Promise<void> {
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: white; border-radius: 12px; overflow: hidden;">
           <tr>
             <td style="background: linear-gradient(135deg, #2D2F8E 0%, #6A469D 100%); padding: 30px; text-align: center;">
-              <h1 style="margin: 0; color: white; font-size: 24px;">Acme Franchise</h1>
+              <h1 style="margin: 0; color: white; font-size: 24px;">Peskids Franchise</h1>
             </td>
           </tr>
           <tr>

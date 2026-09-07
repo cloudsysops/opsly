@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "description": "Opsly Library Modules Registry",
-  "lastUpdated": "2026-08-17T00:00:00Z",
+  "lastUpdated": "2026-09-05T00:00:00Z",
   "modules": {
     "prompts": {
       "name": "@intcloudsysops/prompts",
@@ -293,39 +293,6 @@
         "viewFromSave",
         "createMemoryStorage"
       ]
-    },
-    "franchise-core": {
-      "name": "@intcloudsysops/franchise-core",
-      "version": "0.1.0",
-      "path": "lib/franchise-core",
-      "owner": "platform",
-      "description": "Reusable Franchise OS domain: units, territories, agreements, versioned royalties, audits. No CRM or payment processor.",
-      "status": "experimental",
-      "dependencies": [],
-      "governance": "lib/franchise-core/GOVERNANCE.md",
-      "mainFile": "lib/franchise-core/src/index.ts",
-      "exports": [
-        "calculateRoyalty",
-        "findTerritoryConflicts",
-        "ownedUnitDefaults",
-        "summarizeNetwork"
-      ]
-    },
-    "franchise-persistence": {
-      "name": "@intcloudsysops/franchise-persistence",
-      "version": "0.1.0",
-      "path": "lib/franchise-persistence",
-      "owner": "platform",
-      "description": "Postgres/Supabase adapter for Franchise OS. Tenant-scoped queries; no Peskids domain duplication.",
-      "status": "experimental",
-      "dependencies": ["franchise-core"],
-      "governance": "lib/franchise-persistence/GOVERNANCE.md",
-      "mainFile": "lib/franchise-persistence/src/index.ts",
-      "exports": [
-        "createFranchiseService",
-        "createPgFranchiseStore",
-        "createSupabaseFranchiseStore"
-      ]
     }
   },
   "consumers": {
@@ -366,7 +333,7 @@
       "depends": ["game-core", "universe"]
     },
     "apps/peskids": {
-      "depends": ["franchise-core", "franchise-persistence", "services"]
+      "depends": ["services"]
     }
   },
   "policies": {

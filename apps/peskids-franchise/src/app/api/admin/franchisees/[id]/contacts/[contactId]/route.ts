@@ -8,8 +8,9 @@ export const dynamic = "force-dynamic";
 // PATCH /api/admin/franchisees/[id]/contacts/[contactId] - Update a contact
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string; contactId: string } }
+  props: { params: Promise<{ id: string; contactId: string }> }
 ) {
+  const params = await props.params;
   try {
     const session = await auth();
     if (!session?.user || session.user.role !== "ADMIN") {
@@ -101,8 +102,9 @@ export async function PATCH(
 // DELETE /api/admin/franchisees/[id]/contacts/[contactId] - Delete a contact
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string; contactId: string } }
+  props: { params: Promise<{ id: string; contactId: string }> }
 ) {
+  const params = await props.params;
   try {
     const session = await auth();
     if (!session?.user || session.user.role !== "ADMIN") {

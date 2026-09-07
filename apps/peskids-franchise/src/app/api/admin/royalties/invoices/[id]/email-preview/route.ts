@@ -14,7 +14,7 @@ export async function GET(
 ) {
   try {
     const session = await auth();
-    if (!session?.user?.email?.endsWith('@acmefranchise.com')) {
+    if (!session?.user?.email?.endsWith('@peskids.com')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -74,7 +74,7 @@ export async function GET(
 <body>
   <div class="container">
     <div class="header">
-      <h1>Acme Franchise</h1>
+      <h1>Peskids Franchise</h1>
       <p style="margin: 10px 0 0;">Royalty Invoice for ${monthName} ${invoice.year}</p>
     </div>
     <div class="content">
@@ -112,13 +112,13 @@ export async function GET(
 
       <p>If you have any questions, please reply to this email or contact our franchising team.</p>
 
-      <p>Thank you for being part of the Acme Franchise family!</p>
+      <p>Thank you for being part of the Peskids Franchise family!</p>
 
-      <p>Best regards,<br>The Acme Franchise Team</p>
+      <p>Best regards,<br>The Peskids Franchise Team</p>
     </div>
     <div class="footer">
-      <p>Acme Franchise Franchising<br>
-      <a href="${BASE_URL}">franchise.acmefranchise.com</a></p>
+      <p>Peskids Franchise Franchising<br>
+      <a href="${BASE_URL}">franchise.peskids.com</a></p>
     </div>
   </div>
 </body>

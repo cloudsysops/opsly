@@ -231,7 +231,7 @@ export default function CoachChat({ prospectId }: CoachChatProps) {
               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#6A469D] to-brand-navy p-1 mb-4 overflow-hidden">
                 <Image
                   src="/images/characters/mascot.svg"
-                  alt="Acme Franchise Mascot"
+                  alt="Peskids Franchise Mascot"
                   width={96}
                   height={96}
                   className="rounded-full"
@@ -241,7 +241,7 @@ export default function CoachChat({ prospectId }: CoachChatProps) {
                 Hi! I'm Earl, your AI Coach
               </h2>
               <p className="text-sm text-slate-500 max-w-md mb-6">
-                I'm here to help you succeed as an Acme Franchisee.
+                I'm here to help you succeed as an Peskids Franchisee.
                 Ask me anything about operations, marketing, school partnerships, and more!
               </p>
 

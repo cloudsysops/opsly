@@ -195,7 +195,7 @@ export function ContactForm() {
         id="aboutYourself"
         name="aboutYourself"
         label="Tell us about yourself and why you're interested *"
-        placeholder="Share your background, what draws you to children's education, and why Acme Franchise appeals to you..."
+        placeholder="Share your background, what draws you to children's education, and why Peskids Franchise appeals to you..."
         required
       />
 
@@ -238,8 +238,8 @@ export function ContactForm() {
       </Button>
 
       <p className="text-xs text-gray-500 text-center">
-        By submitting this form, you agree to receive information about Story
-        Time Chess franchise opportunities. We respect your privacy and will
+        By submitting this form, you agree to receive information about
+        Peskids Franchise opportunities. We respect your privacy and will
         never share your information.
       </p>
     </form>

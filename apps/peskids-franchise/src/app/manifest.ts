@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Acme Franchise Portal",
-    short_name: "STC Franchise",
-    description: "Franchise management portal for Acme Franchise",
+    name: "Peskids Franchise Portal",
+    short_name: "Peskids Franchise",
+    description: "Franchise management portal for Peskids Franchise",
     start_url: "/portal/my-franchise",
     display: "standalone",
     background_color: "#f8fafc",

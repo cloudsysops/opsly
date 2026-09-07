@@ -119,7 +119,7 @@ export default function UsersSettingsPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@acmefranchise.com"
+                  placeholder="name@peskids.com"
                   required
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-navy/20 focus:border-brand-navy outline-none"
                 />
@@ -216,7 +216,7 @@ export default function UsersSettingsPage() {
           <p className="text-gray-600">
             Any user with an{" "}
             <code className="px-1.5 py-0.5 bg-gray-100 rounded text-sm">
-              @acmefranchise.com
+              @peskids.com
             </code>{" "}
             Google account will automatically receive admin access when they sign in.
           </p>

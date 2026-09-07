@@ -13,9 +13,9 @@ interface Message {
 }
 
 const suggestedQuestions = [
-  "What makes Acme Franchise unique?",
+  "What makes Peskids Franchise unique?",
   "Is there research behind your teaching approach?",
-  "Do I need chess experience?",
+  "Do I need teaching experience?",
   "What's the investment required?",
 ];
 
@@ -149,7 +149,7 @@ export function EarlChatWidget() {
         id: `error_${Date.now()}`,
         role: "assistant",
         content:
-          "I'm having trouble connecting right now. Please try again or reach out to us directly at franchising@acmefranchise.com",
+          "I'm having trouble connecting right now. Please try again or reach out to us directly at franchising@peskids.com",
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -268,7 +268,7 @@ export function EarlChatWidget() {
                 Hi! I&apos;m Earl 👋
               </p>
               <p className="text-gray-500 text-sm mb-6">
-                I&apos;m here to answer your questions about the Acme Franchise opportunity.
+                I&apos;m here to answer your questions about the Peskids Franchise opportunity.
               </p>
               <div className="space-y-2">
                 {suggestedQuestions.map((q) => (

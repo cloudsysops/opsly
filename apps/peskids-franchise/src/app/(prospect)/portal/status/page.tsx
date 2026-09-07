@@ -45,7 +45,7 @@ const pipelineStages = [
   {
     key: "SELECTED",
     label: "Selected!",
-    description: "Congratulations! Welcome to the Acme Franchise family!",
+    description: "Congratulations! Welcome to the Peskids Franchise family!",
   },
 ];
 

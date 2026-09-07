@@ -4,10 +4,8 @@ import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { moduleId: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ moduleId: string }> }) {
+  const params = await props.params;
   const session = await auth();
   if (!session || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -94,10 +92,8 @@ export async function GET(
   return NextResponse.json({ resources: resolved });
 }
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { moduleId: string } }
-) {
+export async function POST(req: NextRequest, props: { params: Promise<{ moduleId: string }> }) {
+  const params = await props.params;
   const session = await auth();
   if (!session || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
