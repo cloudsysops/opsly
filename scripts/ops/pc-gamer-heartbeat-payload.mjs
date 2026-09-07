@@ -76,7 +76,16 @@ export function buildHeartbeatPayload(env = process.env, probes = {}) {
   const localAgentsReady =
     probes.localAgents ?? probeHttp(env.OPSLY_OPENCODE_AGENT_URL || 'http://127.0.0.1:5004/health');
   const ffmpegReady = probes.ffmpeg ?? commandExists('ffmpeg');
-  const gpu = queryNvidia();
+  const injected =
+    Object.prototype.hasOwnProperty.call(probes, 'gpu') ||
+    Object.prototype.hasOwnProperty.call(probes, 'ollama') ||
+    Object.prototype.hasOwnProperty.call(probes, 'localAgents') ||
+    Object.prototype.hasOwnProperty.call(probes, 'ffmpeg');
+  const gpu = Object.prototype.hasOwnProperty.call(probes, 'gpu')
+    ? (probes.gpu && typeof probes.gpu === 'object' ? probes.gpu : {})
+    : injected
+      ? {}
+      : queryNvidia();
 
   const capabilities = [];
   if (allowlist.includes('ollama') && ollamaReady) capabilities.push('ollama');
