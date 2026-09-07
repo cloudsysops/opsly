@@ -1,19 +1,22 @@
-# Squash-merge PRs labeled `night-merge` during America/Bogota night window,
-# wait for Deploy, smoke-test public health, rollback main if verify fails.
-# VPS n8n upgrade is separate: docs/runbooks/NIGHTLY-OPS-UPGRADE.md
-#
-# Enqueue: add label `night-merge` to a green PR. You can sleep — this runs at 01:00 Bogota.
-# Docs: docs/runbooks/NIGHT-MERGE.md
+# MERGE_TO_MAIN for PRs labeled `night-merge`.
+# Does not deploy production. Staging is the Deploy workflow on main.
+# Production: .github/workflows/promote-production.yml
+# Docs: docs/runbooks/NIGHT-MERGE.md · docs/runbooks/RELEASE-AUTOMATION.md
 name: Night merge
 
 on:
   schedule:
-    # 01:00 America/Bogota = 06:00 UTC (no DST)
-    - cron: "0 6 * * *"
+    # Extra crons recover GitHub Actions delay (2026-09-07: 01:00 cron ran 06:10 Bogotá).
+    # Merge is not window-gated; catch-up crons exist so labeled PRs are not lost.
+    - cron: "0 4 * * *"   # 23:00 America/Bogota
+    - cron: "0 6 * * *"   # 01:00 America/Bogota (canonical)
+    - cron: "0 9 * * *"   # 04:00 America/Bogota
+    - cron: "0 14 * * *"  # 09:00 America/Bogota daytime catch-up
+    - cron: "0 20 * * *"  # 15:00 America/Bogota afternoon catch-up
   workflow_dispatch:
     inputs:
       force:
-        description: "Skip night-window gate (emergency / test)"
+        description: "Unused for merge (merge≠prod). Kept for compatibility."
         type: boolean
         required: false
         default: false
@@ -48,23 +51,21 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Night merge + verify (+ rollback on failure)
+      - name: MERGE_TO_MAIN (staging verify, production untouched)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
           PLATFORM_DOMAIN: ${{ secrets.PLATFORM_DOMAIN }}
+          SMOKE_STAGING_API_URL: ${{ secrets.STAGING_SMOKE_API_URL }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           NIGHT_MERGE_FORCE: ${{ inputs.force == true && '1' || '0' }}
           DRY_RUN: ${{ inputs.dry_run == true && '1' || '0' }}
-          # Allow bot to merge despite review rules when nightly automation is trusted
           NIGHT_MERGE_ADMIN: "1"
+          NIGHT_MERGE_DENY_PRS: "1123"
           DEPLOY_WAIT_SECONDS: "1500"
         run: |
           set -euo pipefail
           chmod +x scripts/ci/night-merge-and-verify.sh
-          # schedule always forces window check; workflow_dispatch may set force
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            export NIGHT_MERGE_FORCE=0
-          fi
           ./scripts/ci/night-merge-and-verify.sh

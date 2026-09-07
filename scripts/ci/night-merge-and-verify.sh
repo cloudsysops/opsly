@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
-# Night merge: validate labeled PRs → squash-merge → wait Deploy → smoke → rollback on failure.
-# Intended for GitHub Actions at 01:00 America/Bogota (06:00 UTC).
+# MERGE_TO_MAIN: labeled PRs → squash-merge → wait Deploy (staging) → optional staging smoke.
+# Production is NOT deployed from this script. See scripts/ci/promote-production.sh.
 set -euo pipefail
 
 REPO="${GITHUB_REPOSITORY:-cloudsysops/opsly}"
 LABEL="${NIGHT_MERGE_LABEL:-night-merge}"
 PLATFORM_DOMAIN="${PLATFORM_DOMAIN:-op-sly.com}"
-SMOKE_API_URL="${SMOKE_API_URL:-https://api.${PLATFORM_DOMAIN}/api/health}"
-# Prod Peskids is www.peskids.com — peskids.op-sly.com is a 308, not the live site.
-SMOKE_PESKIDS_URL="${SMOKE_PESKIDS_URL:-https://www.peskids.com/api/health}"
+SMOKE_STAGING_API_URL="${SMOKE_STAGING_API_URL:-}"
 DEPLOY_WAIT_SECONDS="${DEPLOY_WAIT_SECONDS:-1500}"
 DRY_RUN="${DRY_RUN:-0}"
 FORCE="${NIGHT_MERGE_FORCE:-0}"
+# Never merge these as collateral (space-separated).
+DENY_PRS="${NIGHT_MERGE_DENY_PRS:-1123}"
 STATE_DIR="${NIGHT_MERGE_STATE_DIR:-/tmp/opsly-night-merge}"
 MERGED_SHAS_FILE="${STATE_DIR}/merged-shas.txt"
 SHA_BEFORE_FILE="${STATE_DIR}/sha-before.txt"
@@ -32,11 +32,15 @@ require_gh() {
   command -v node >/dev/null 2>&1 || die "node required"
 }
 
-in_night_window() {
-  if [[ "${FORCE}" == "1" ]]; then
-    return 0
-  fi
-  node scripts/ci/check-production-change-window.mjs --check-now
+pr_denied() {
+  local pr="$1"
+  local denied
+  for denied in ${DENY_PRS}; do
+    if [[ "${pr}" == "${denied}" ]]; then
+      return 0
+    fi
+  done
+  return 1
 }
 
 notify() {
@@ -197,19 +201,17 @@ wait_for_deploy() {
 }
 
 smoke() {
-  local url code
-  if [[ "${SMOKE_PESKIDS_URL}" == *peskids.op-sly.com* && "${SMOKE_PESKIDS_URL}" != *peskids-staging* ]]; then
-    warn "Peskids prod is https://www.peskids.com — refusing peskids.op-sly.com"
+  if [[ -z "${SMOKE_STAGING_API_URL}" ]]; then
+    log "No SMOKE_STAGING_API_URL — Deploy workflow (staging) is the verify signal"
+    return 0
+  fi
+  local code
+  code="$(curl -sS -o /tmp/night-merge-smoke.out -w '%{http_code}' --max-time 25 -L "${SMOKE_STAGING_API_URL}" || true)"
+  log "staging smoke ${SMOKE_STAGING_API_URL} → HTTP ${code}"
+  if [[ ! "${code}" =~ ^2 ]]; then
+    warn "Staging smoke failed"
     return 1
   fi
-  for url in "${SMOKE_API_URL}" "${SMOKE_PESKIDS_URL}"; do
-    code="$(curl -sS -o /tmp/night-merge-smoke.out -w '%{http_code}' --max-time 25 -L "${url}" || true)"
-    log "smoke ${url} → HTTP ${code}"
-    if [[ ! "${code}" =~ ^2 ]]; then
-      warn "Smoke failed for ${url}"
-      return 1
-    fi
-  done
   return 0
 }
 
@@ -282,9 +284,7 @@ rollback() {
 
 main() {
   require_gh
-  if ! in_night_window; then
-    die "Outside America/Bogota night window (set NIGHT_MERGE_FORCE=1 to override)"
-  fi
+  log "MERGE_TO_MAIN (production untouched). deny_prs=${DENY_PRS}"
 
   local prs=()
   local n
@@ -303,6 +303,10 @@ main() {
   local merged=0
   for n in "${prs[@]}"; do
     log "Evaluating PR #${n}"
+    if pr_denied "${n}"; then
+      warn "PR #${n} is denylisted (NIGHT_MERGE_DENY_PRS) — skip"
+      continue
+    fi
     if ! checks_green "${n}"; then
       continue
     fi
@@ -319,23 +323,21 @@ main() {
     exit 0
   fi
 
-  log "Merged ${merged} PR(s); verifying…"
+  log "Merged ${merged} PR(s); waiting for staging Deploy (not production)…"
   if ! wait_for_deploy; then
-    warn "Deploy verify failed — rolling back"
+    warn "Staging Deploy verify failed — rolling back main"
     rollback
-    die "Deploy failed; rolled back"
+    die "Staging deploy failed; rolled back"
   fi
 
-  # brief settle for Traefik/edge
-  sleep 30
   if ! smoke; then
-    warn "Smoke failed — rolling back"
+    warn "Staging smoke failed — rolling back main"
     rollback
-    die "Smoke failed; rolled back"
+    die "Staging smoke failed; rolled back"
   fi
 
-  notify "✅ Night merge OK" "Merged ${merged} PR(s); Deploy + smoke passed"
-  log "Night merge complete"
+  notify "✅ MERGE_TO_MAIN OK" "Merged ${merged} PR(s); staging Deploy verified. Production not touched."
+  log "Merge complete — ReleaseCandidate is origin/main; promote separately"
 }
 
 main "$@"

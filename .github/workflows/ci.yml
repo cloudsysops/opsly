@@ -324,6 +324,14 @@ jobs:
           # Solo fallar en issues severity=error (el repo histórico tiene muchos style/info)
           shellcheck -S error scripts/*.sh
 
+      - name: Release automation policy tests
+        run: |
+          set -euo pipefail
+          node --test scripts/ci/__tests__/release-pipeline.test.mjs
+          bash scripts/ci/__tests__/night-merge-select-deploy.test.sh
+          bash -n scripts/ci/night-merge-and-verify.sh
+          bash -n scripts/ci/promote-production.sh
+
   secret-scan:
     needs: structure-validation
     runs-on: ubuntu-latest

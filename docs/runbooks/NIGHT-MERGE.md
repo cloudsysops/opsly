@@ -1,63 +1,45 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-08-15
+last_review: 2026-09-07
 ---
 
-# Night merge automático (mientras duermes)
+# Night merge = MERGE_TO_MAIN (no production)
 
-Cada noche (~**01:00 America/Bogota**) GitHub Actions:
+GitHub Actions squash-mergea PRs con label **`night-merge`**. Eso **no** despliega producción.
 
 1. Busca PRs abiertos con label **`night-merge`**
-2. Valida: no draft, `MERGEABLE` (reintenta si GitHub devuelve `UNKNOWN`), checks CI en verde (sin FAILURE ni pending; ignora `production-change-window`)
-3. Squash-merge + borra la rama
-4. Espera el workflow **Deploy** en `main` cuyo `headSha` sea el SHA **después** del merge (nunca un Deploy viejo fallido). Deploy usa `concurrency` por rama (un SSH a la vez) y el health **público** lo hace el runner (no el VPS vía Cloudflare; el hairpin fallaba el job con la API ya arriba).
-5. Smoke: `api.{PLATFORM_DOMAIN}/api/health` + **`https://www.peskids.com/api/health`** (prod Peskids; no `peskids.op-sly.com`)
-6. Si Deploy o smoke fallan → **rollback vía PR** (`revert/night-merge-*` + `hotfix-prod` + squash admin). No hace `git push origin main` (branch protection lo rechaza).
+2. Omite denylist (`NIGHT_MERGE_DENY_PRS`, default **1123**)
+3. Valida: no draft, checks verdes (ignora `production-change-window`)
+4. Squash-merge
+5. Espera el workflow **Deploy** en `main` (ahora **staging only**)
+6. Smoke staging opcional (`STAGING_SMOKE_API_URL`)
+7. Si staging falla → rollback de `main` vía revert PR
 
-## Cómo encolar (de día)
+Promote: [`RELEASE-AUTOMATION.md`](RELEASE-AUTOMATION.md) / `.github/workflows/promote-production.yml`
 
-1. Abre/deja el PR listo con CI verde.
-2. Añade label: **`night-merge`**.
-3. No hace falta que estés despierto: el cron lo mergea.
+## Horarios (UTC, Bogotá UTC−5, sin DST)
+
+| Bogotá | UTC cron | Por qué |
+|--------|----------|---------|
+| 23:00 | `0 4 * * *` | Sobrevive delay de Actions |
+| 01:00 | `0 6 * * *` | Canónico |
+| 04:00 | `0 9 * * *` | Reintento |
+| 09:00 | `0 14 * * *` | Catch-up si el cron de 01:00 aterrizó a las 06:10 (2026-09-07) |
+| 15:00 | `0 20 * * *` | Catch-up tarde |
+
+Merge **no** está atado a 22:00–06:00. Promote **sí**.
+
+## Cómo encolar
 
 ```bash
 gh pr edit <N> --repo cloudsysops/opsly --add-label night-merge
 ```
 
-## Labels relacionados
+## Manual
 
-| Label | Efecto |
-|-------|--------|
-| `night-merge` | Cola de merge automático nocturno |
-| `safe-daytime` | Merge de día OK (sin impacto prod) |
-| `hotfix-prod` | Emergencia de día |
-
-## Manual / prueba
-
-Actions → **Night merge** → Run workflow:
-
-- `dry_run=true` — solo valida, no mergea
-- `force=true` — ignora ventana (solo emergencias)
-
-## Local
+Actions → **Night merge** → `dry_run=true` valida sin mergear.
 
 ```bash
-# Dry-run (requiere gh auth)
-DRY_RUN=1 NIGHT_MERGE_FORCE=1 ./scripts/ci/night-merge-and-verify.sh
+DRY_RUN=1 ./scripts/ci/night-merge-and-verify.sh
 ```
-
-## Si falla el rollback automático
-
-```bash
-# Ver último SHA bueno en el log del job / Discord
-git fetch origin
-git log origin/main --oneline -15
-# Revert manual de squash commits o reset coordinado (evitar --force a main sin humano)
-```
-
-## Relación con n8n nightly y night cleanup
-
-El upgrade n8n + rollback de contenedores (`scripts/nightly-ops-upgrade.sh`, ~01:15) es **aparte**. Este workflow cubre **git merge → deploy → smoke → git rollback**.
-
-A las **03:30 Bogotá** corre [Night cleanup](./NIGHT-CLEANUP.md): revisión de health **antes y después**, higiene de ramas mergeadas y prune Docker ligero. No mergea PRs.

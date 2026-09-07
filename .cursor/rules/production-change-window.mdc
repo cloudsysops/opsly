@@ -1,33 +1,31 @@
 ---
-description: Ventana nocturna para merge/deploy de producción (Peskids operativo de día)
+description: Ventana nocturna solo para promote a producción. Merge a main no despliega prod.
 alwaysApply: true
 ---
 
 # Production change window — noche
 
-Peskids está **en operación diaria**. No interferir de día.
+Peskids está **en operación diaria**. No interferir de día **en producción**.
 
 ## Obligatorio
 
-1. **Merge a `main`** que toque `apps/`, `infra/`, `supabase/`, scripts de deploy/VPS/peskids, o workflows `deploy*` → solo en **`America/Bogota` 22:00–06:00**.
-2. **Deploy** Peskids / VPS / GHCR prod → misma ventana.
-3. De día: abrir PR, dejar CI verde, label **`night-merge`** → merge automático a la 01:00 Bogotá (salvo excepciones).
+1. **Promote a producción** (VPS `/opt/opsly`, Peskids, Panini, GHCR `:latest`) → solo **`America/Bogota` 22:00–06:00**.
+2. **Merge a `main`** no despliega producción; va a staging (`:staging` + SHA).
+3. No ensanchar la ventana para poner CI verde.
 
 ## Excepciones de día
 
 | Caso | Cómo |
 |------|------|
-| Solo docs / skills / reglas Cursor / markdown de gobernanza | Merge de día OK (sin label) |
-| Cambio mínimo que **no** afecta prod ni operación | Label GitHub **`safe-daytime`** + justificación en el PR |
-| Emergencia (outage / seguridad) | Label **`hotfix-prod`** + humano; deploy con `force_daytime` |
-| Cola nocturna automática | Label **`night-merge`** (CI verde); workflow merge+smoke+rollback |
+| Merge a main / docs / skills | OK de día (staging automático) |
+| Emergencia prod | Label **`hotfix-prod`** + promote `force_daytime` |
+| Cola automática de merge | Label **`night-merge`** |
 
 ## Qué no hacer de día
 
-- Merge + deploy de Peskids “para probar en prod”
-- Rebuild VPS / `peskids-deploy-vps.sh` / `peskids-rebuild-vps.sh` en horario laboral
-- Empujar carga Docker alta al VPS mientras Peskids atiende leads
+- Promote / SSH a `/opt/opsly` o `peskids-deploy-vps.sh` en horario laboral
+- Taggear `:latest` desde un push a `main` (Watchtower)
 
 ## Doc
 
-`docs/runbooks/PRODUCTION-CHANGE-WINDOW.md` · `docs/runbooks/NIGHT-MERGE.md`
+`docs/runbooks/PRODUCTION-CHANGE-WINDOW.md` · `docs/runbooks/RELEASE-AUTOMATION.md` · `docs/runbooks/NIGHT-MERGE.md`
