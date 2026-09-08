@@ -16,11 +16,10 @@ import { getAgentServiceRegistry } from '../lib/agent/agent-service-registry.js'
 import {
   agentForLocalJobType,
   jobTypeForLocalAgent,
-  parseLocalAgentKindAllowlist,
+  LOCAL_AGENT_KINDS,
   localAgentKindToWorkerConcurrencyKey,
   type LocalAgentKind,
   externalCliLabelForOpslyLocalAgent,
-  waitForFile,
 } from '../lib/local-worker-utils.js';
 import {
   logWorkerInfo,
@@ -31,7 +30,6 @@ import {
 import { getWorkerConcurrency, type WorkerConcurrencyKey } from '../worker-concurrency.js';
 import { createValidationOrchestrator } from '../lib/validation/validation-orchestrator.js';
 import { writeValidationGuard } from '../lib/validation/validation-utils.js';
-import { AgentTaskRuntime } from '../runtime/agent-task-runtime.js';
 
 interface LocalAgentPayload {
   prompt_content?: string;
@@ -41,19 +39,10 @@ interface LocalAgentPayload {
   job_id?: string;
   goal?: string;
   context?: Record<string, unknown>;
-  agent_task?: unknown;
 }
 
 interface LocalAgentResponse {
   success: boolean;
-  jobId?: string;
-  requestId?: string;
-  workerId?: string;
-  result?: string;
-  durationMs?: number;
-  runtime?: string;
-  model?: string;
-  errorCode?: string;
   response_path?: string;
   error?: string;
   execution_time_ms?: number;
@@ -90,44 +79,8 @@ function stringField(record: Record<string, unknown>, keys: readonly string[]): 
   return null;
 }
 
-export function sanitizeLocalAgentError(value: string): string {
-  return value
-    .replace(/sk-[A-Za-z0-9_-]{12,}/g, 'sk-***')
-    .replace(/nvapi-[A-Za-z0-9_-]{12,}/g, 'nvapi-***')
-    .replace(/Bearer\s+[A-Za-z0-9._-]+/gi, 'Bearer ***')
-    .replace(/(api[_-]?key|token|password)=([^\s]+)/gi, '$1=***')
-    .slice(0, 300);
-}
-
-export function mapLocalAgentBridgeFailure(
-  agent: string,
-  status: number,
-  body: Record<string, unknown> | null
-): { unrecoverable: boolean; errorCode: string; message: string } {
-  const errorCode =
-    typeof body?.errorCode === 'string' && body.errorCode.trim().length > 0
-      ? body.errorCode.trim()
-      : status === 400
-        ? 'VALIDATION_ERROR'
-        : status === 401
-          ? 'UNAUTHORIZED'
-          : status === 503
-            ? 'AGENT_BINARY_NOT_FOUND'
-            : 'BRIDGE_HTTP_ERROR';
-  const raw =
-    stringField(body ?? {}, ['error', 'message']) ?? `${agent} service error: ${status}`;
-  const message = sanitizeLocalAgentError(raw);
-  const unrecoverable =
-    status === 400 ||
-    status === 401 ||
-    errorCode === 'VALIDATION_ERROR' ||
-    errorCode === 'AGENT_BINARY_NOT_FOUND';
-  return { unrecoverable, errorCode, message };
-}
-
 function responseTextFromResult(result: Record<string, unknown>): string | null {
   return stringField(result, [
-    'result',
     'response_content',
     'content',
     'message',
@@ -164,34 +117,16 @@ function concurrencyKeyForLocalAgent(agent: LocalAgentKind): WorkerConcurrencyKe
   return localAgentKindToWorkerConcurrencyKey(agent);
 }
 
-export function localAgentExecuteHeaders(
-  env: NodeJS.ProcessEnv = process.env
-): Record<string, string> {
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  const token = env.OPSLY_CLI_AGENT_TOKEN?.trim() || env.OPSLY_OPENCODE_AGENT_TOKEN?.trim();
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
-  return headers;
-}
-
-export function shouldWaitForAcceptedResponse(result: Record<string, unknown>): boolean {
-  return result.accepted === true && !stringField(result, ['response_path']);
-}
-
 async function processLocalAgentJob(
   jobType: string,
   prompt_content: string,
   job_id: string,
   agent_role: string,
   registry: ReturnType<typeof getAgentServiceRegistry>,
-  max_steps: number = 5,
-  signal?: AbortSignal,
-  model?: string
+  max_steps: number = 5
 ): Promise<LocalAgentResponse> {
   const startTime = Date.now();
-  const cursorDir =
-    process.env.OPSLY_CURSOR_DIR?.trim() || path.join(process.cwd(), '.cursor');
+  const cursorDir = path.join(process.cwd(), '.cursor');
   const validationOrchestrator = createValidationOrchestrator(cursorDir);
 
   try {
@@ -206,48 +141,36 @@ async function processLocalAgentJob(
     }
 
     logWorkerInfo('local-agents', `${agent}: invoking ${serviceUrl}/execute`);
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    const bridgeToken = process.env.OPSLY_CLI_AGENT_TOKEN?.trim();
+    if (bridgeToken) {
+      headers.Authorization = `Bearer ${bridgeToken}`;
+    }
     const response = await fetch(`${serviceUrl.replace(/\/+$/, '')}/execute`, {
       method: 'POST',
-      headers: localAgentExecuteHeaders(),
+      headers,
       body: JSON.stringify({
         prompt_content,
         agent_role,
         max_steps,
         job_id,
-        ...(model ? { model } : {}),
       }),
-      signal: signal ?? AbortSignal.timeout(service.timeout_ms),
+      signal: AbortSignal.timeout(service.timeout_ms),
     });
 
-    const result = await readJsonRecord(response);
     if (!response.ok) {
-      const mapped = mapLocalAgentBridgeFailure(agent, response.status, result);
-      if (mapped.unrecoverable) {
-        throw new UnrecoverableError(`${mapped.errorCode}: ${mapped.message}`);
-      }
-      throw new Error(`${mapped.errorCode}: ${mapped.message}`);
+      throw new Error(`${agent} service error: ${response.status}`);
     }
+
+    const result = await readJsonRecord(response);
     if (result.success === false) {
       throw new Error(
-        sanitizeLocalAgentError(
-          stringField(result, ['error', 'message']) ?? `${agent} service returned success=false`
-        )
+        stringField(result, ['error', 'message']) ?? `${agent} service returned success=false`
       );
     }
 
     responsePath = stringField(result, ['response_path']);
-    const waitForAccepted = shouldWaitForAcceptedResponse(result);
-    if (waitForAccepted) {
-      const expected = path.join(cursorDir, 'responses', `response-${job_id}.md`);
-      const waitMs = Number(process.env.CURSOR_RESPONSE_WAIT_MS ?? 900_000);
-      logWorkerInfo('local-agents', `${agent}: accepted — waiting for ${expected}`);
-      const waited = await waitForFile(expected, waitMs);
-      if (!waited) {
-        throw new Error(`${agent} accepted job ${job_id} timed out waiting for ${expected}`);
-      }
-      responsePath = expected;
-    }
-    const responseText = waitForAccepted ? null : responseTextFromResult(result);
+    const responseText = responseTextFromResult(result);
     if (!responsePath && responseText) {
       const responsesDir = path.join(cursorDir, 'responses');
       await fsp.mkdir(responsesDir, { recursive: true });
@@ -277,13 +200,6 @@ async function processLocalAgentJob(
 
       return {
         success: true,
-        jobId: job_id,
-        requestId: job_id,
-        workerId: process.env.WORKER_ID,
-        result: responseText ?? undefined,
-        durationMs: Date.now() - startTime,
-        runtime: agent,
-        model: typeof result.model === 'string' ? result.model : model,
         response_path: responsePath,
         execution_time_ms: Date.now() - startTime,
         validation_decision: {
@@ -295,31 +211,16 @@ async function processLocalAgentJob(
 
     return {
       success: true,
-      jobId: job_id,
-      requestId: job_id,
-      workerId: process.env.WORKER_ID,
-      result: responseText ?? undefined,
-      durationMs: Date.now() - startTime,
-      runtime: agent,
-      model: typeof result.model === 'string' ? result.model : model,
       response_path: responsePath || undefined,
       execution_time_ms: Date.now() - startTime,
     };
   } catch (err) {
-    if (err instanceof UnrecoverableError) {
-      throw err;
-    }
-    const errorMsg = sanitizeLocalAgentError(err instanceof Error ? err.message : String(err));
+    const errorMsg = err instanceof Error ? err.message : String(err);
     logWorkerError('local-agents', `Job ${job_id} error: ${errorMsg}`);
 
     return {
       success: false,
-      jobId: job_id,
-      requestId: job_id,
-      workerId: process.env.WORKER_ID,
-      errorCode: 'BRIDGE_HTTP_ERROR',
       error: errorMsg,
-      durationMs: Date.now() - startTime,
       execution_time_ms: Date.now() - startTime,
     };
   }
@@ -331,8 +232,7 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
     return unifiedWorkerInstance;
   }
 
-  const allowedKinds = parseLocalAgentKindAllowlist();
-  const localConcurrency = allowedKinds.map((agent) => ({
+  const localConcurrency = LOCAL_AGENT_KINDS.map((agent) => ({
     agent,
     concurrency: getWorkerConcurrency(concurrencyKeyForLocalAgent(agent)),
   }));
@@ -342,7 +242,7 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
     'local-agents',
     `Unified worker: ${localConcurrency.map((item) => `${item.agent}=${item.concurrency}`).join(' + ')} = ${totalConcurrency}`
   );
-  const validJobTypes = new Set(allowedKinds.map((agent) => jobTypeForLocalAgent(agent)));
+  const validJobTypes = new Set(LOCAL_AGENT_KINDS.map((agent) => jobTypeForLocalAgent(agent)));
 
   const worker = new Worker(
     'local-agents',
@@ -351,9 +251,7 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
       const data = job.data as { payload?: LocalAgentPayload };
 
       if (!validJobTypes.has(jobType)) {
-        throw new Error(
-          `job name ${jobType} is not in OPSLY_LOCAL_AGENT_KINDS; retry so another host can claim it`
-        );
+        throw new UnrecoverableError(`Invalid job type: ${jobType}`);
       }
 
       // Validate payload
@@ -366,7 +264,6 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
       const agent_role = payload.agent_role || 'executor';
       const max_steps = payload.max_steps || 5;
       const job_id = payload.job_id || job.id?.toString() || '';
-      const model = payload.model;
 
       if (!prompt_content) {
         throw new UnrecoverableError('Empty prompt_content');
@@ -379,62 +276,14 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
       logWorkerLifecycle('start', 'local-agents', job);
 
       try {
-        const process = (signal?: AbortSignal) =>
-          processLocalAgentJob(
-            jobType,
-            prompt_content,
-            job_id,
-            agent_role,
-            registry,
-            max_steps,
-            signal,
-            model
-          );
-        const result = payload.agent_task === undefined
-          ? await process()
-          : await (async () => {
-              const runtime = new AgentTaskRuntime({
-                onEvent: (event) =>
-                  logWorkerInfo('local-agents', event.type, {
-                    request_id: event.request_id,
-                    correlation_id: event.correlation_id,
-                    tenant_slug: event.tenant_slug,
-                    agent: event.agent,
-                    duration_ms: event.duration_ms,
-                    error_code: event.error_code,
-                  }),
-              });
-              const runtimeResult = await runtime.execute(
-                payload.agent_task,
-                {
-                  id: jobType,
-                  execute: async ({ signal }) => {
-                    const adapterResult = await process(signal);
-                    return {
-                      success: adapterResult.success,
-                      result: adapterResult,
-                      error_code: adapterResult.success ? undefined : 'ADAPTER_EXECUTION_FAILED',
-                    };
-                  },
-                }
-              );
-              if (runtimeResult.status === 'awaiting_approval') {
-                throw new UnrecoverableError('AgentTaskEnvelopeV1 requires approval before execution');
-              }
-              if (runtimeResult.status === 'timed_out') {
-                throw new Error('AgentTaskEnvelopeV1 execution timed out');
-              }
-              if (runtimeResult.status === 'cancelled') {
-                throw new UnrecoverableError('AgentTaskEnvelopeV1 execution cancelled');
-              }
-              if (runtimeResult.status === 'failed') {
-                throw new Error(runtimeResult.error_code ?? 'AgentTaskEnvelopeV1 execution failed');
-              }
-              const adapterResult = runtimeResult.result;
-              return typeof adapterResult === 'object' && adapterResult !== null
-                ? (adapterResult as LocalAgentResponse)
-                : { success: true, execution_time_ms: runtimeResult.duration_ms };
-            })();
+        const result = await processLocalAgentJob(
+          jobType,
+          prompt_content,
+          job_id,
+          agent_role,
+          registry,
+          max_steps
+        );
 
         const elapsed = Date.now() - t0;
         logWorkerLifecycle('complete', 'local-agents', job, { duration_ms: elapsed });
