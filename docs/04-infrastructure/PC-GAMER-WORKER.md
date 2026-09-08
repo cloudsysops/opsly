@@ -43,7 +43,8 @@ Enrutar por **capacidad** (`gpu.nvidia`, `video.render`, `llm.local`, `ffmpeg`),
 ## Reglas no negociables
 
 1. **No** SSH a Internet; **no** abrir puerto 22 en el router.
-2. Preferir **Tailscale** (`Host pc-gamer` → user `devops` → `wsl -d Ubuntu`).
+2. Preferir **Tailscale** (`Host pc-gamer` → Windows OpenSSH → `wsl -d Ubuntu`).
+   User Linux: `devops`. Root WSL (bootstrap): `wsl -d Ubuntu -u root`.
 3. **No** almacenar en el PC: Doppler master/service tokens, AWS/GCP admin, `SUPABASE_SERVICE_ROLE_KEY` de prod, secretos de clientes, claves SSH productivas, GitHub PAT amplios, `PLATFORM_ADMIN_TOKEN`, Stripe live.
 4. Credenciales de **mínimo privilegio**: solo `REDIS_URL` (password de cola) + URLs Tailscale del gateway.
 5. El nodo **puede desaparecer** sin romper Opsly (fail-open prod).
@@ -53,6 +54,28 @@ Enrutar por **capacidad** (`gpu.nvidia`, `video.render`, `llm.local`, `ffmpeg`),
 9. Jobs LLM de plataforma pasan por Gateway; **excepción documentada:** worker efímero con `OPSLY_OLLAMA_DIRECT` / `OLLAMA_URL` local ($0). OpenCode overnight usa CLI local, no el Gateway.
 10. **No** crear otro control plane / orchestrator / Redis de prod en el gamer.
 11. **No** encolar trabajo delicado si el nodo está offline (`check-pc-gamer-online.sh`).
+
+## sudo NOPASSWD (WSL `devops` only)
+
+SSH a `pc-gamer` cae en **CMD de Windows**. El usuario Linux `devops` vive en WSL Ubuntu. Para que un agente (Claude / overnight) instale paquetes y servicios **sin TTY**, el drop-in es:
+
+`/etc/sudoers.d/devops` → `devops ALL=(ALL) NOPASSWD: ALL`
+
+Eso **no** va al VPS (`100.120.151.91` / `vps-dragon`). El archivo existente `/etc/sudoers.d/opsly-ollama` (solo `systemctl` de Ollama) se deja.
+
+Aplicar / comprobar desde Mac:
+
+```bash
+./scripts/ops/setup-pc-gamer-sudoers.sh --dry-run
+./scripts/ops/setup-pc-gamer-sudoers.sh          # wsl -u root + visudo
+./scripts/ops/setup-pc-gamer-sudoers.sh --status # sudo -n true
+```
+
+Comprobación manual:
+
+```bash
+ssh pc-gamer wsl -d Ubuntu -- sudo -n true
+```
 
 Validación local de `.env.worker`:
 
@@ -248,6 +271,7 @@ swap=4GB
 | `scripts/ops/board-assign-gpu-job.mjs` | AI Board asigna GPU job (`--apply` encola BullMQ) |
 | `scripts/ops/content-render-ffmpeg.mjs` | Primer job real: title card MP4 + thumbnail |
 | `scripts/ops/pc-gamer-heartbeat.sh` | TTL heartbeat Redis (JSON GPU/VRAM/disk) |
+| `scripts/ops/setup-pc-gamer-sudoers.sh` | NOPASSWD `devops` en WSL (no VPS) |
 | `scripts/ops/check-pc-gamer-online.sh` | Gate antes de encolar |
 | `scripts/ops/assert-ephemeral-worker-env.sh` | Anti secretos maestros |
 | `OPSLY_WORKER_ALLOWLIST` | Filtra workers en `apps/orchestrator` |
