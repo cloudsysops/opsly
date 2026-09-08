@@ -130,6 +130,40 @@ Variables clave en `.env.worker`:
 - `LLM_GATEWAY_URL=http://100.120.151.91:3010` — opcional / metering; no requerido para jobs `ollama` en modo efímero
 - `OPSLY_OLLAMA_DIRECT=true` — fuerza ruta directa aunque no sea efímero
 
+### OpenCode — enrutamiento de modelos (2026-09-08)
+
+`opsly-opencode-bridge.service` (systemd `--user`, `EnvironmentFile=%h/opsly/.env.worker`)
+ejecuta `opencode` real (no un stub) contra `~/.config/opencode/opencode.jsonc`. Config
+actual — proveedores registrados, no todos operativos:
+
+| Provider | Modelo default | Estado | Nota |
+|---|---|---|---|
+| `ollama` (local, $0) | `qwen3:14b` | ✅ **default**, probado end-to-end (ejecuta comandos reales) | ~230s por tarea con el prompt completo de OpenCode (~71K tokens) en GPU local |
+| `ollama` | `qwen3:8b` | ✅ instalado | tareas rápidas / clasificación |
+| `ollama` | `gemma3:12b` | ✅ instalado | visión / imágenes |
+| `ollama` | `llama3.2` | ✅ instalado | fallback; insuficiente para trabajo real de agente (solo conversa) |
+| `groq` | `openai/gpt-oss-20b` | ❌ bloqueado | cuenta limitada a 8000 TPM — el prompt de OpenCode (71K tokens) no cabe en NINGÚN modelo Groq de esta cuenta |
+| `nvidia` | `mistralai/mixtral-8x22b-v0.1` | ❌ bloqueado | `NVIDIA_API_KEY` válida pero sin funciones de inferencia habilitadas en consola (probados 4 modelos, todos "Not found for account") |
+| `openrouter` | `deepseek/deepseek-chat-v3.1:free` | ❌ bloqueado | tier `:free` no desbloqueado en la cuenta (requiere crédito mínimo en openrouter.ai/credits) |
+
+**Selección de modelo por request:** `{"model":"ollama/qwen3:14b", "prompt_content":"..."}`
+al bridge (`http://127.0.0.1:5004/execute`). El campo `model` es opcional; sin él, opencode
+usa el `model` top-level de `opencode.jsonc` (hoy `ollama/qwen3:14b`).
+
+**Política VRAM (RTX 5070 Ti, 16.3GB):**
+- Máximo 1 job pesado simultáneo — **no correr `qwen3:14b` y `gemma3:12b` en paralelo**
+- Uso observado con `qwen3:14b` solo: ~13.1/16.3 GB
+- **Incidente 2026-09-08:** WSL se bloqueó/terminó durante benchmarking concurrente de
+  varios modelos bajo carga — se recuperó solo al reintentar `wsl -d Ubuntu` (auto-boot),
+  contenedores Docker volvieron por su propia política `restart: unless-stopped`. Umbral
+  exacto de seguridad para concurrencia aún no medido — evitar disparar más de una tarea
+  pesada a la vez hasta perfilarlo.
+
+**Para desbloquear los proveedores cloud gratis** (mejoraría latencia sobre el local):
+Groq necesita subir de tier (paga u orgánico), NVIDIA necesita habilitar modelos
+específicos en [build.nvidia.com](https://build.nvidia.com), OpenRouter necesita crédito
+mínimo. Mientras tanto, Ollama local (`qwen3:14b`) es la ruta que funciona.
+
 ### Content Studio / Bitsitos (+ Splashitos) en gamer
 
 Canal comercial primario: **Bitsitos** (tech kids). Splashitos = secundario.
@@ -222,6 +256,8 @@ swap=4GB
 | Path | Uso |
 |------|-----|
 | `infra/pc-gamer.env.example` | Plantilla mínima privilegio |
+| `~/.config/opencode/opencode.jsonc` (en el gamer, no en el repo) | Enrutamiento de modelos OpenCode (ollama/groq/nvidia/openrouter) |
+| `scripts/ops/prompts/content-studio-real-render.md` | Prompt overnight: conectar `MoneyPrinterTurboRenderClient` real al worker `content-video` |
 | `infra/docker-compose.pc-gamer-workers.yml` | Worker BullMQ (host network) |
 | `scripts/ops/pc-gamer-docker-plane.sh` | Up/down + autostart Docker |
 | `scripts/ops/pc-gamer-opencode-plane.sh` | Bridge OpenCode + allowlist overnight |
