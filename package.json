@@ -174,7 +174,11 @@
     "content-engine:metadata": "tsx scripts/content-cli.ts metadata",
     "content:approve": "tsx scripts/content-engine.ts approve",
     "content:reject": "tsx scripts/content-engine.ts reject",
-    "content:youtube:publish": "tsx scripts/content/youtube-publish.ts"
+    "content:youtube:publish": "tsx scripts/content/youtube-publish.ts",
+    "moneyprinter:bridge": "node scripts/moneyprinter-bridge.mjs",
+    "compute:workers": "node scripts/ops/compute-worker-router.mjs --status",
+    "compute:assign": "node scripts/ops/board-assign-gpu-job.mjs",
+    "test:compute-workers": "node --test scripts/ops/__tests__/compute-worker-router.test.mjs scripts/ops/__tests__/content-render-ffmpeg.test.mjs"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",

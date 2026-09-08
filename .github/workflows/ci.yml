@@ -324,6 +324,9 @@ jobs:
           # Solo fallar en issues severity=error (el repo histórico tiene muchos style/info)
           shellcheck -S error scripts/*.sh
 
+      - name: compute-worker policy tests
+        run: node --test scripts/ops/__tests__/compute-worker-router.test.mjs scripts/ops/__tests__/content-render-ffmpeg.test.mjs
+
   secret-scan:
     needs: structure-validation
     runs-on: ubuntu-latest
