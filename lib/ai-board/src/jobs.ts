@@ -58,7 +58,7 @@ export function mapSignalToBoardJob(signal: BoardSignal): BoardJobSpec | null {
     case 'ENROLLMENT_SUBMITTED':
       return buildJob({
         signal,
-        jobType: 'PREPARE_WHATSAPP_DRAFT',
+        jobType: 'PREPARE_FIRST_CLASS',
         priority: 'P2',
         level: 2,
         acceptance: CONTACT_HOT_LEAD_ACCEPTANCE,

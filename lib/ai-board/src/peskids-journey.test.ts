@@ -76,7 +76,10 @@ describe('Peskids canonical journey', () => {
       data: { enrollment_id: 'enr-1', lead_id: 'lead-1' },
     });
     expect(enrolled.signals[0]?.type).toBe('ENROLLMENT_SUBMITTED');
+    expect(enrolled.jobs[0]?.job_type).toBe('PREPARE_FIRST_CLASS');
+    expect(enrolled.jobs[0]?.execute_external).toBe(false);
     expect(whatsappTemplateForEvent('enrollment.form.submitted')).toBe('ENROLLMENT_CONFIRMED');
+    expect(nextStaffActionForEvent('enrollment.form.submitted')).toBe('PREPARE_FIRST_CLASS');
 
     const firstClass = ingestDomainEvent({
       event_type: 'first_class.scheduled',

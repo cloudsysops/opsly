@@ -91,6 +91,7 @@ export function mapDomainEventToSignals(event: DomainEvent): BoardSignal[] {
     case 'followup.overdue':
     case 'lead.unattended':
       return mapFollowupOverdue(event);
+    case 'enrollment.link.created':
     case 'enrollment.link.prepared':
     case 'enrollment.link.sent':
     case 'enrollment.incomplete':

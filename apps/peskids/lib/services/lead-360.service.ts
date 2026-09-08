@@ -7,13 +7,18 @@ import {
 } from '@/lib/services/followup-admin.service';
 import type { TrialClassWithLead } from '@/lib/services/trial-class.service';
 import { minimizeLeadForStaffApi, type StaffLeadView } from '@/lib/lead-response-minimize';
+import { supabaseEnrollmentLeadStore } from '@/lib/enrollment-access/store';
+import { enrollmentStaffViewFromMetadata } from '@/lib/enrollment-access/staff-state';
+import type { EnrollmentStaffView } from '@/lib/enrollment-access/staff-state';
+import type { EnrollmentTimelineKind } from '@/lib/enrollment-access/types';
 
 export type Lead360TimelineKind =
   | 'lead_created'
   | 'followup'
   | 'enrollment'
   | 'class'
-  | 'twenty_sync';
+  | 'twenty_sync'
+  | EnrollmentTimelineKind;
 
 export type Lead360TimelineEntry = {
   at: string;
@@ -28,6 +33,7 @@ export type Lead360View = {
   trials: TrialClassWithLead[];
   aging_badge: LeadAgingBadge | null;
   timeline: Lead360TimelineEntry[];
+  enrollment: EnrollmentStaffView;
 };
 
 const FOLLOWUP_TYPE_LABEL: Record<FollowupWithContact['type'], string> = {
@@ -78,9 +84,24 @@ function buildTwentySyncEntry(lead: DashboardLead): Lead360TimelineEntry {
   };
 }
 
+const ENROLLMENT_TIMELINE_LABEL: Record<EnrollmentTimelineKind, string> = {
+  'enrollment.link.created': 'Enlace de matrícula creado',
+  'enrollment.link.opened': 'Enlace de matrícula abierto',
+  'enrollment.form.submitted': 'Formulario de matrícula enviado',
+  'family.created': 'Familia creada',
+  'family.linked': 'Familia vinculada',
+  'student.created': 'Estudiante creado',
+  'student.linked': 'Estudiante vinculado',
+  'student.enrolled': 'Estudiante matriculado',
+  'whatsapp.draft.created': 'Borrador de WhatsApp preparado',
+  'whatsapp.opened': 'WhatsApp abierto',
+  'whatsapp.sent_confirmed': 'WhatsApp confirmado por staff',
+};
+
 function buildLead360Timeline(
   lead: DashboardLead,
-  followups: FollowupWithContact[]
+  followups: FollowupWithContact[],
+  enrollmentEntries: Array<{ at: string; kind: EnrollmentTimelineKind }>
 ): Lead360TimelineEntry[] {
   const entries: Lead360TimelineEntry[] = [];
 
@@ -94,6 +115,13 @@ function buildLead360Timeline(
 
   entries.push(...buildFollowupTimelineEntries(followups));
   entries.push(buildTwentySyncEntry(lead));
+  entries.push(
+    ...enrollmentEntries.map((entry) => ({
+      at: entry.at,
+      kind: entry.kind,
+      label: ENROLLMENT_TIMELINE_LABEL[entry.kind],
+    }))
+  );
 
   return entries.sort((a, b) => b.at.localeCompare(a.at));
 }
@@ -106,6 +134,8 @@ export async function getLead360(leadId: string, tenantSlug: string): Promise<Le
 
   const lead = decorateLeadWithCrmUrls(rawLead);
   const followups = await listFollowups({ contact_type: 'lead', contact_id: leadId });
+  const enrollmentLead = await supabaseEnrollmentLeadStore.getById(leadId, tenantSlug);
+  const enrollment = enrollmentStaffViewFromMetadata(enrollmentLead?.metadata ?? {});
 
   const aging_badge =
     lead.created_at != null ? leadAgingBadge(lead.status, lead.created_at) : null;
@@ -115,6 +145,11 @@ export async function getLead360(leadId: string, tenantSlug: string): Promise<Le
     followups,
     trials: [],
     aging_badge,
-    timeline: buildLead360Timeline(lead, followups),
+    timeline: buildLead360Timeline(
+      lead,
+      followups,
+      enrollmentLead?.metadata.enrollment_timeline ?? []
+    ),
+    enrollment,
   };
 }

@@ -10,13 +10,17 @@ export function firstName(fullName: string): string {
 
 export function buildFamilySupportTemplates(
   name: string,
-  status: string
+  status: string,
+  enrollmentUrl?: string
 ): SupportReplyTemplate[] {
+  const linkLine = enrollmentUrl
+    ? ` Completa la matrícula aquí: ${enrollmentUrl}`
+    : ' Te compartimos el formulario de matrícula para completar los datos de la familia y el estudiante.';
   const templates: SupportReplyTemplate[] = [
     {
       id: 'enrollment_link',
       label: 'Enviar link de matrícula',
-      message: `Hola ${name}! 🏊 Gracias por escribirnos a Peskids. Te compartimos el formulario de matrícula para completar los datos de la familia y el estudiante. Cualquier duda nos escribes por aquí.`,
+      message: `Hola ${name}! Gracias por escribirnos a Peskids.${linkLine} Cualquier duda nos escribes por aquí.`,
     },
   ];
 
@@ -82,9 +86,10 @@ export function buildSupportReplyTemplates(input: {
   leadName: string;
   leadType: string | null | undefined;
   status: string;
+  enrollmentUrl?: string;
 }): SupportReplyTemplate[] {
   const name = firstName(input.leadName);
   if (input.leadType === 'teacher_applicant') return teacherApplicantTemplates(name);
   if (input.leadType === 'company') return companyTemplates(name);
-  return buildFamilySupportTemplates(name, input.status);
+  return buildFamilySupportTemplates(name, input.status, input.enrollmentUrl);
 }

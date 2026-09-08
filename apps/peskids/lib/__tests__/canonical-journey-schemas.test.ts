@@ -9,20 +9,19 @@ import {
 describe('canonical enrollment form', () => {
   it('accepts required guardian/student/program/consents without extra child PII', () => {
     const parsed = peskidsEnrollmentFormSchema.parse({
-      lead_id: 'lead-1',
       request_id: 'req-1',
-      source: 'instagram',
       guardian: {
-        name: 'Ana Perez',
+        first_name: 'Ana',
+        last_name: 'Perez',
         email: 'ana@example.com',
         phone: '+573001112233',
       },
-      student: { first_name: 'Luis', grade: 'K-5' },
+      student: { first_name: 'Luis', age_range: 'K-5' },
       program: { modality: 'llanogrande', interest: 'natacion' },
       operational: {},
       consents: { enrollment_confirmed: true, privacy_accepted: true },
     });
-    expect(parsed.lead_id).toBe('lead-1');
+    expect('lead_id' in parsed).toBe(false);
     expect('document' in parsed.student).toBe(false);
   });
 });

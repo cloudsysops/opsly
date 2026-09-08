@@ -13,6 +13,7 @@ type SupportReplyTemplatesProps = {
   leadName: string;
   leadType: string | null | undefined;
   status: string;
+  enrollmentUrl?: string;
 };
 
 export function SupportReplyTemplates(props: SupportReplyTemplatesProps): React.ReactElement {

@@ -50,12 +50,15 @@ export type PeskidsLeadSource = (typeof PESKIDS_LEAD_SOURCES)[number];
 export const PESKIDS_CANONICAL_EVENTS = [
   'lead.created',
   'lead.contacted',
+  'enrollment.link.created',
   'enrollment.link.prepared',
   'enrollment.link.opened',
   'enrollment.link.sent',
   'enrollment.form.submitted',
   'family.created',
+  'family.linked',
   'student.created',
+  'student.linked',
   'student.enrolled',
   'first_class.scheduled',
   'class.scheduled',
@@ -145,6 +148,7 @@ export function whatsappTemplateForEvent(
   switch (eventType) {
     case 'lead.created':
       return 'NEW_LEAD';
+    case 'enrollment.link.created':
     case 'enrollment.link.prepared':
     case 'enrollment.link.opened':
     case 'enrollment.link.sent':
@@ -204,13 +208,14 @@ export function nextStaffActionForEvent(eventType: string): string {
   switch (eventType) {
     case 'lead.created':
     case 'lead.contacted':
+    case 'enrollment.link.created':
     case 'enrollment.link.prepared':
     case 'enrollment.link.opened':
     case 'enrollment.link.sent':
       return 'SEND_ENROLLMENT_LINK';
     case 'enrollment.form.submitted':
     case 'student.enrolled':
-      return 'CONFIRM_ENROLLMENT';
+      return 'PREPARE_FIRST_CLASS';
     case 'first_class.scheduled':
     case 'class.reminder.created':
     case 'class.scheduled':

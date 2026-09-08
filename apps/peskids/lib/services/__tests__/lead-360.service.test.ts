@@ -23,6 +23,14 @@ vi.mock('@/lib/services/dashboard.service', () => ({
   decorateLeadWithCrmUrls: decorateLeadWithCrmUrlsMock,
 }));
 
+vi.mock('@/lib/enrollment-access/store', () => ({
+  supabaseEnrollmentLeadStore: {
+    getById: vi.fn().mockResolvedValue(null),
+    findByTokenHash: vi.fn(),
+    saveMetadata: vi.fn(),
+  },
+}));
+
 import { getLead360 } from '@/lib/services/lead-360.service';
 
 const baseLead: DashboardLead = {
@@ -109,6 +117,7 @@ describe('getLead360', () => {
     expect(result?.lead.twenty_person_url).toContain('person-1');
     expect(result?.followups).toHaveLength(1);
     expect(result?.trials).toEqual([]);
+    expect(result?.enrollment.next_action).toBe('SEND_ENROLLMENT_LINK');
     expect(result?.aging_badge?.bucket).toBe('escalation_48h');
 
     const labels = result?.timeline.map((entry) => entry.label) ?? [];
@@ -120,5 +129,53 @@ describe('getLead360', () => {
     const firstEntry = result?.timeline[0];
     const secondEntry = result?.timeline[1];
     expect(firstEntry && secondEntry && firstEntry.at >= secondEntry.at).toBe(true);
+  });
+
+  it('surfaces PREPARE FIRST CLASS and enrollment timeline after a successful submit', async () => {
+    getLeadForAdminMock.mockResolvedValue({ ...baseLead, status: 'enrolled' });
+    listFollowupsMock.mockResolvedValue([]);
+    const { supabaseEnrollmentLeadStore } = await import('@/lib/enrollment-access/store');
+    vi.mocked(supabaseEnrollmentLeadStore.getById).mockResolvedValue({
+      id: baseLead.id,
+      tenant_slug: 'peskids',
+      status: 'enrolled',
+      referral_source: 'instagram',
+      created_at: baseLead.created_at,
+      metadata: {
+        campaign: 'ig-sept',
+        first_class: { status: 'pending' },
+        enrollment_outcome: {
+          lead_id: baseLead.id,
+          family: { link: 'created', family_ref: 'fam_abc' },
+          student: { link: 'created', student_id: 'stu-1' },
+          source: 'instagram',
+          campaign: 'ig-sept',
+          request_id: 'req-1',
+          enrolled_at: '2026-07-22T10:00:00.000Z',
+        },
+        enrollment_timeline: [
+          { at: '2026-07-21T11:00:00.000Z', kind: 'enrollment.link.created' },
+          { at: '2026-07-21T12:00:00.000Z', kind: 'enrollment.link.opened' },
+          { at: '2026-07-22T10:00:00.000Z', kind: 'enrollment.form.submitted' },
+          { at: '2026-07-22T10:00:01.000Z', kind: 'student.enrolled' },
+        ],
+      },
+    });
+
+    const result = await getLead360(baseLead.id, 'peskids');
+    expect(result?.enrollment.next_action).toBe('PREPARE_FIRST_CLASS');
+    expect(result?.enrollment.student_id).toBe('stu-1');
+    expect(result?.enrollment.family_ref).toBe('fam_abc');
+    expect(result?.enrollment.first_class).toBe('pending');
+    const kinds = result?.timeline.map((entry) => entry.kind) ?? [];
+    expect(kinds).toEqual(
+      expect.arrayContaining([
+        'enrollment.link.created',
+        'enrollment.link.opened',
+        'enrollment.form.submitted',
+        'student.enrolled',
+      ])
+    );
+    expect(kinds).not.toContain('whatsapp.sent');
   });
 });
