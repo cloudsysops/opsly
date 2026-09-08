@@ -6,6 +6,7 @@ import type { createFollowupSchema, patchFollowupSchema } from '@/lib/validation
 import { createTwentyTaskForLeadFollowup, syncTwentyTaskStatus } from '@/lib/twenty-followup-sync';
 import { sendNotification } from '@/lib/notifications';
 import { emitFollowupCompleted, emitFollowupCreated } from '@/lib/events';
+import { dateOneMonthFrom } from '@/lib/admin/lead-followup-actions';
 import type { z } from 'zod';
 
 export type FollowupRow = Database['public']['Tables']['followups']['Row'];
@@ -143,6 +144,50 @@ export async function createFollowup(
   }
 
   return withContactName(data);
+}
+
+/**
+ * Create the standard post-trial follow-up once per lead/date.
+ * Retries return the existing pending task instead of adding an identical one.
+ */
+export async function createOneMonthLeadFollowup(leadId: string): Promise<FollowupWithContact> {
+  const dueDate = dateOneMonthFrom(new Date());
+  const notes = 'Contactar en 1 mes después de la clase de prueba.';
+  const findExisting = async (): Promise<FollowupWithContact | null> => {
+    const existing = await supabaseServer()
+      .from('followups')
+      .select('*')
+      .eq('tenant_id', tenantSlug())
+      .eq('contact_id', leadId)
+      .eq('contact_type', 'lead')
+      .eq('type', 'call')
+      .eq('due_date', dueDate)
+      .eq('status', 'pending')
+      .eq('notes', notes)
+      .limit(1)
+      .maybeSingle();
+
+    if (existing.error) throw existing.error;
+    return existing.data ? withContactName(existing.data) : null;
+  };
+
+  const existing = await findExisting();
+  if (existing) return existing;
+
+  try {
+    return await createFollowup({
+      contact_id: leadId,
+      contact_type: 'lead',
+      type: 'call',
+      due_date: dueDate,
+      notes,
+    });
+  } catch (error) {
+    // A concurrent retry may have won the unique partial index race.
+    const concurrent = await findExisting();
+    if (concurrent) return concurrent;
+    throw error;
+  }
 }
 
 export async function getFollowupById(followupId: string): Promise<FollowupRow | null> {

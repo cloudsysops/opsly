@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "rule": "Compute nodes execute. Cloud decides and stores state. Route by capability, not hostname.",
+  "connectivity": "tailscale-outbound",
+  "limits": {
+    "maxConcurrentGpuJobs": 1,
+    "maxConcurrentCpuJobs": 2,
+    "vramBusyThresholdPct": 85,
+    "heartbeatStaleSec": 180
+  },
+  "forbiddenOnComputeNodes": [
+    "production-database",
+    "supabase-primary-state",
+    "unscoped-auth-secrets",
+    "customer-pii",
+    "financial-operations",
+    "release-authority"
+  ],
+  "jobTypes": {
+    "content.render.video": {
+      "queue": "content-video",
+      "jobName": "render",
+      "requires": ["video.render", "ffmpeg"],
+      "minVramGb": 0
+    },
+    "ai.local.inference": {
+      "queue": "openclaw",
+      "jobName": "ollama",
+      "requires": ["llm.local"],
+      "minVramGb": 8
+    },
+    "content.generate.image": {
+      "queue": "content-video",
+      "jobName": "render",
+      "requires": ["image.generate"],
+      "minVramGb": 8,
+      "status": "capability-only"
+    },
+    "ai.embedding": {
+      "queue": "openclaw",
+      "jobName": "ollama",
+      "requires": ["embedding"],
+      "minVramGb": 4
+    },
+    "media.transcode": {
+      "queue": "content-video",
+      "jobName": "render",
+      "requires": ["ffmpeg"],
+      "minVramGb": 0
+    },
+    "universe.asset.generate": {
+      "queue": "content-video",
+      "jobName": "render",
+      "requires": ["image.generate"],
+      "minVramGb": 8,
+      "status": "capability-only"
+    },
+    "game.asset.build": {
+      "queue": "content-video",
+      "jobName": "render",
+      "requires": ["ffmpeg"],
+      "minVramGb": 0,
+      "status": "capability-only"
+    },
+    "test.gpu": {
+      "queue": "openclaw",
+      "jobName": "ollama",
+      "requires": ["gpu.nvidia"],
+      "minVramGb": 0
+    }
+  },
+  "workers": [
+    {
+      "workerId": "pc-gamer-openclaw-01",
+      "hostname": "pc-gamer",
+      "role": "ephemeral-compute",
+      "replaceable": true,
+      "connectivity": "tailscale-outbound",
+      "capabilities": [
+        "gpu.nvidia",
+        "cuda",
+        "video.render",
+        "image.generate",
+        "llm.local",
+        "embedding",
+        "ffmpeg"
+      ],
+      "gpuVendor": "nvidia",
+      "gpuModel": "unknown",
+      "vramGb": 16,
+      "ramGb": 32,
+      "cpuCores": 8,
+      "limits": {
+        "maxConcurrentGpuJobs": 1,
+        "maxConcurrentCpuJobs": 2
+      }
+    }
+  ]
+}

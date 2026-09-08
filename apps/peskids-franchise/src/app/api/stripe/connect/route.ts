@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     if (!stripeAccountId) {
       const account = await createConnectAccount(
         prospect.email,
-        `${prospect.firstName} ${prospect.lastName} - Acme Franchise`
+        `${prospect.firstName} ${prospect.lastName} - Peskids Franchise`
       );
       stripeAccountId = account.id;
 

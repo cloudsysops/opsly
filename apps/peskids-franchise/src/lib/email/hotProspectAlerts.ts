@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 const ADMIN_EMAILS = [
-  "franchising@acmefranchise.com",
-  "admin@acmefranchise.com",
+  "franchising@peskids.com",
+  "admin@peskids.com",
 ];
 
 interface HotProspectAlert {

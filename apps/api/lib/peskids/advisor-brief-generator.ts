@@ -61,7 +61,7 @@ RESUMEN:
 
 SIGUIENTE ACCIÓN:
 1. [Acción inmediata - ejemplo: Llamar hoy, Enviar info de horarios]
-2. [Acción secundaria - ejemplo: Ofrecer clase de prueba, Enviar precios]
+2. [Acción secundaria - ejemplo: Enviar link de matrícula, Enviar precios]
 3. [Acción de seguimiento - ejemplo: Agendar sesión, Proponer plan de membresía]
 
 Sé conciso y práctico. El asesor necesita actuar en menos de 2 minutos.`;

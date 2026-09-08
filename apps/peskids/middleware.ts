@@ -2,8 +2,10 @@ import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { createServerClient, type SetAllCookies } from '@supabase/ssr'
 import { isStaffUser } from '@/lib/staff-user'
+import { constantTimeEquals } from '@/lib/runtime/constant-time'
 import type { Database } from '@/lib/types'
 import { isPathUnderAuthSurface } from '@/lib/runtime/tenant-auth-surface'
+import { getAuthPublicConfig } from '@/lib/auth-public-config'
 
 const PESKIDS_AUTH_SURFACE = {
   entryPaths: ['/', '/admin/login'],
@@ -37,13 +39,12 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 
   const adminSecret = process.env.DASHBOARD_ADMIN_SECRET?.trim() ?? ''
   const adminToken = req.cookies.get('admin-token')?.value?.trim() ?? ''
-  if (adminSecret && adminToken === adminSecret) {
+  if (adminSecret && constantTimeEquals(adminToken, adminSecret)) {
     return NextResponse.next()
   }
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!url || !anon) {
+  const { supabaseUrl: url, supabaseAnonKey: anon, configured } = getAuthPublicConfig()
+  if (!configured || !url || !anon) {
     const login = new URL('/admin/login', req.url)
     return NextResponse.redirect(login)
   }

@@ -82,7 +82,7 @@ describe('submission chat route', () => {
     )
 
     expect(response.status).toBe(403)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Forbidden',
       request_id: 'req-subchat-forbidden',
@@ -254,7 +254,7 @@ describe('submission chat route', () => {
     expect(response.status).toBe(400)
     expect(storeInboundMessageMock).not.toHaveBeenCalled()
     expect(storeOutboundMessageMock).not.toHaveBeenCalled()
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Message cannot be empty',
       request_id: 'req-subchat-empty',

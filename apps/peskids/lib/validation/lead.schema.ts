@@ -288,6 +288,10 @@ const consentSchema = z.object({
   }),
   consent_marketing: z.boolean().optional().default(false),
   consent_photos_videos: z.boolean().optional().default(false),
+  // Required only for lead types that actually collect a document_number
+  // (family, teacher_applicant) — enforced below, not here, since this
+  // schema alone doesn't see lead_type.
+  consent_identity_document: z.boolean().optional().default(false),
   consent_policy_version: z.string().min(1).optional(),
   referral_code: z.string().trim().optional(),
   source: z.string().trim().optional(),
@@ -296,15 +300,57 @@ const consentSchema = z.object({
 
 export type LeadApiPostInput = LeadCaptureFormInput & z.infer<typeof consentSchema>;
 
+const FORBIDDEN_LEAD_AUTHORITY_KEYS = [
+  'tenant_id',
+  'tenant_slug',
+  'franchise_id',
+  'unit_id',
+  'role',
+  'user_id',
+  'service_role',
+] as const;
+
+function rejectLeadAuthorityKeys(raw: unknown): z.ZodError | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const extras = FORBIDDEN_LEAD_AUTHORITY_KEYS.filter((key) => key in raw);
+  if (extras.length === 0) return null;
+  return new z.ZodError(
+    extras.map((key) => ({
+      code: z.ZodIssueCode.unrecognized_keys,
+      keys: [key],
+      path: [key],
+      message: 'Unrecognized key',
+    }))
+  );
+}
+
 /** POST /api/leads — form intake + consent (Ley 1581). */
 export const leadApiPostSchema = {
   safeParse(raw: unknown):
     | { success: true; data: LeadApiPostInput }
     | { success: false; error: z.ZodError } {
+    const forbidden = rejectLeadAuthorityKeys(raw);
+    if (forbidden) return { success: false, error: forbidden };
     const consent = consentSchema.safeParse(raw);
     if (!consent.success) return consent;
     const form = leadCaptureFormSchema.safeParse(raw);
     if (!form.success) return form;
+    const collectsDocumentNumber =
+      'document_number' in form.data &&
+      typeof form.data.document_number === 'string' &&
+      form.data.document_number.trim().length > 0;
+    if (collectsDocumentNumber && !consent.data.consent_identity_document) {
+      return {
+        success: false,
+        error: new z.ZodError([
+          {
+            code: z.ZodIssueCode.custom,
+            path: ['consent_identity_document'],
+            message: 'Debes autorizar el tratamiento de tu documento de identidad',
+          },
+        ]),
+      };
+    }
     return { success: true, data: { ...form.data, ...consent.data } };
   },
   parse(raw: unknown): LeadApiPostInput {

@@ -1,5 +1,6 @@
 import { createBrowserClient } from '@supabase/ssr';
 import type { Database } from './types';
+import { getAuthPublicConfig } from './auth-public-config';
 
 export type SupabaseBrowserConfig = {
   supabaseUrl: string;
@@ -7,10 +8,11 @@ export type SupabaseBrowserConfig = {
 };
 
 function resolveBrowserConfig(config?: Partial<SupabaseBrowserConfig>): SupabaseBrowserConfig {
+  const publicConfig = getAuthPublicConfig();
   const supabaseUrl =
-    config?.supabaseUrl?.trim() || process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || '';
+    config?.supabaseUrl?.trim() || publicConfig.supabaseUrl;
   const supabaseAnonKey =
-    config?.supabaseAnonKey?.trim() || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() || '';
+    config?.supabaseAnonKey?.trim() || publicConfig.supabaseAnonKey;
   return {
     supabaseUrl: supabaseUrl || 'https://placeholder.supabase.co',
     supabaseAnonKey: supabaseAnonKey || 'placeholder',

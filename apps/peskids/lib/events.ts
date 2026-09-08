@@ -1,33 +1,59 @@
 import { OpslyEvent } from './types';
 
 /**
- * Catalog of domain events for the "Peskids Pro 1.0" program
- * (docs/tenants/peskids/PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md).
+ * Catalog of domain events for Peskids.
  *
- * `lead.created` and `feedback.created`/`feedback.alert` below are already
- * emitted for real via `emitLeadCreated`/`emitFeedbackCreated`. The rest are
- * declared here as the target vocabulary so later PRs (PR-PRO-1, 3, 4, 9)
- * emit a name from this list instead of inventing ad-hoc strings. Runtime
- * emitters: `emitLeadCreated` / `emitFeedbackCreated`, lead-admin status
- * (`lead.status_changed` / `lead.contacted` / `lead.lost`), followups
- * (`followup.created` / `followup.completed` / `followup.overdue`), lead
- * conversion (`student.enrolled`), and trial-class service
- * (`trial.scheduled` / `trial.completed` / `trial.no_show`).
+ * Canonical journey (no trial class):
+ * LEAD → ENROLLMENT FORM → ENROLLMENT → FIRST CLASS → ATTENDANCE →
+ * TEACHER FEEDBACK → STUDENT PROGRESS → FAMILY FEEDBACK → CONTINUITY
+ *
+ * `trial.*` names remain only so leftover `trial-class.service` emitters
+ * still type-check. They are not a business stage.
  */
-export const PESKIDS_PRO_EVENT_NAMES = [
+export const PESKIDS_CANONICAL_EVENT_NAMES = [
   'lead.created',
   'lead.contacted',
   'lead.status_changed',
   'lead.lost',
+  'enrollment.link.created',
+  'enrollment.link.prepared',
+  'enrollment.link.opened',
+  'enrollment.link.sent',
+  'enrollment.form.submitted',
+  'family.created',
+  'family.linked',
+  'student.created',
+  'student.linked',
+  'student.enrolled',
+  'first_class.scheduled',
+  'class.scheduled',
+  'class.reminder.created',
+  'class.attended',
+  'class.absent',
+  'class.cancelled',
+  'teacher.feedback.created',
+  'student.progress.updated',
+  'family.feedback.created',
+  'family.contact_requested',
+  'whatsapp.draft.created',
+  'whatsapp.opened',
+  'whatsapp.sent_confirmed',
   'followup.created',
   'followup.completed',
   'followup.overdue',
+  'lead.renewal_due',
+  'student.attendance_risk',
+] as const;
+
+export const PESKIDS_DEPRECATED_TRIAL_EVENT_NAMES = [
   'trial.scheduled',
   'trial.completed',
   'trial.no_show',
-  'student.enrolled',
-  'lead.renewal_due',
-  'student.attendance_risk',
+] as const;
+
+export const PESKIDS_PRO_EVENT_NAMES = [
+  ...PESKIDS_CANONICAL_EVENT_NAMES,
+  ...PESKIDS_DEPRECATED_TRIAL_EVENT_NAMES,
 ] as const;
 
 export type PeskidsProEventName = (typeof PESKIDS_PRO_EVENT_NAMES)[number];
@@ -89,10 +115,10 @@ export async function emitEvent(
 
 export async function emitLeadCreated(
   leadId: string,
-  name: string,
-  email: string,
+  _name: string,
+  _email: string,
   phone: string | null,
-  gradeInterested: string,
+  _gradeInterested: string,
   referralSource: string | null,
   referralCode?: string | null,
   referredByCode?: string | null,
@@ -100,10 +126,8 @@ export async function emitLeadCreated(
 ): Promise<void> {
   await emitEvent('lead.created', {
     lead_id: leadId,
-    name,
-    email,
-    phone,
-    grade_interested: gradeInterested,
+    has_phone: Boolean(phone?.trim()),
+    hot: Boolean(phone?.trim()),
     referral_source: referralSource,
     referral_code: referralCode ?? null,
     referred_by_code: referredByCode ?? null,

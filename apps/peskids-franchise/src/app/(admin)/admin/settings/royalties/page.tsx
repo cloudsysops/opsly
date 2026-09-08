@@ -161,7 +161,7 @@ export default async function RoyaltiesSettingsPage() {
             <div>
               <p className="font-medium text-gray-900">Royalty Fee (7%)</p>
               <p>
-                Core franchise fee paid for use of the Acme Franchise brand,
+                Core franchise fee paid for use of the Peskids Franchise brand,
                 curriculum, and ongoing support.
               </p>
             </div>

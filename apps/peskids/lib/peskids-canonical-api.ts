@@ -143,6 +143,20 @@ function buildCanonicalLeadFormData(
   return formData;
 }
 
+/** Traceability headers carried through every hop of the lead pipeline. */
+export type CanonicalLeadContext = {
+  /** Browser address, forwarded so the upstream per-IP rate limit is meaningful. */
+  forwardedFor?: string | null;
+};
+
+function traceHeaders(requestId: string, context?: CanonicalLeadContext): Record<string, string> {
+  const headers: Record<string, string> = { 'x-request-id': requestId };
+  if (context?.forwardedFor) {
+    headers['x-forwarded-for'] = context.forwardedFor;
+  }
+  return headers;
+}
+
 export async function postPeskidsCanonicalLead(
   body: PeskidsLeadCaptureBody,
   requestId: string,
@@ -150,7 +164,8 @@ export async function postPeskidsCanonicalLead(
     twentyPersonId?: string;
     twentyOpportunityId?: string;
   },
-  attachments?: FormData | null
+  attachments?: FormData | null,
+  context?: CanonicalLeadContext
 ): Promise<CanonicalLeadResult> {
   const url = `${OPSLY_API_ORIGIN}/api/public/tenants/peskids/leads`;
   const outgoingPayload = buildCanonicalLeadPayload(body, crmIds);
@@ -167,7 +182,7 @@ export async function postPeskidsCanonicalLead(
     response = hasAttachments
       ? await fetch(url, {
           method: 'POST',
-          headers: { 'x-request-id': requestId },
+          headers: traceHeaders(requestId, context),
           body: buildCanonicalLeadFormData(outgoingPayload, attachments as FormData),
           cache: 'no-store',
         })
@@ -175,7 +190,7 @@ export async function postPeskidsCanonicalLead(
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-request-id': requestId,
+            ...traceHeaders(requestId, context),
           },
           body: JSON.stringify(outgoingPayload),
           cache: 'no-store',
@@ -218,7 +233,8 @@ export async function postPeskidsCanonicalLead(
 export async function postPeskidsLeadWithCRM(
   body: PeskidsLeadCaptureBody,
   requestId: string,
-  attachments?: FormData | null
+  attachments?: FormData | null,
+  context?: CanonicalLeadContext
 ): Promise<CanonicalLeadResult> {
   let crmIds: {
     twentyPersonId?: string;
@@ -241,6 +257,6 @@ export async function postPeskidsLeadWithCRM(
     console.warn('[peskids][lead] CRM sync failed, continuing with canonical:', err);
   }
 
-  return postPeskidsCanonicalLead(body, requestId, crmIds, attachments);
+  return postPeskidsCanonicalLead(body, requestId, crmIds, attachments, context);
 }
 

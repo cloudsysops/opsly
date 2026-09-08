@@ -6,6 +6,13 @@ import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { guardLlmTextPrompt } from '@intcloudsysops/prompt-guard';
+import {
+  classifySpawnError,
+  extraSearchPaths,
+  promptContentFromBody,
+  redactSecrets,
+  resolveAgentCommand,
+} from './lib/cli-agent-bridge.mjs';
 
 type ExecuteRequest = {
   job_id?: string;
@@ -76,7 +83,7 @@ function buildPrompt(body: ExecuteRequest): string {
 }
 
 function promptContent(body: ExecuteRequest): string {
-  return body.prompt_content || body.prompt || '';
+  return promptContentFromBody(body);
 }
 
 function commandFor(prompt: string, body: ExecuteRequest): CommandSpec {
@@ -88,7 +95,8 @@ function commandFor(prompt: string, body: ExecuteRequest): CommandSpec {
     return { command: override, args: [] };
   }
 
-  const modelArgs = body.model ? ['--model', body.model] : [];
+  const selectedModel = body.model || process.env.OPSLY_OPENCODE_MODEL?.trim();
+  const modelArgs = selectedModel ? ['--model', selectedModel] : [];
 
   switch (agent) {
     case 'claude':
@@ -259,6 +267,9 @@ function buildChildEnv(): NodeJS.ProcessEnv {
     'GOOSE_CONFIG_DIR',
     'HERMES_HOME',
     'NODE_OPTIONS',
+    'OLLAMA_HOST',
+    'OLLAMA_URL',
+    'OLLAMA_MODEL',
   ];
   const extraAllowlist = (process.env.OPSLY_CLI_AGENT_ENV_ALLOWLIST || '')
     .split(',')
@@ -273,15 +284,16 @@ function buildChildEnv(): NodeJS.ProcessEnv {
     }
   }
 
+  const extra = extraSearchPaths(process.env).join(':');
+  if (extra) {
+    env.PATH = env.PATH ? `${extra}:${env.PATH}` : extra;
+  }
+
   return env;
 }
 
 function redact(value: string): string {
-  return value
-    .replace(/sk-[A-Za-z0-9_-]{12,}/g, 'sk-***')
-    .replace(/nvapi-[A-Za-z0-9_-]{12,}/g, 'nvapi-***')
-    .replace(/Bearer\s+[A-Za-z0-9._-]+/gi, 'Bearer ***')
-    .replace(/(api[_-]?key|token|password)=([^\s]+)/gi, '$1=***');
+  return redactSecrets(value);
 }
 
 function appendLimited(current: string, chunk: Buffer): string {
@@ -298,7 +310,8 @@ function runCommand(spec: CommandSpec): Promise<{ stdout: string; stderr: string
   return new Promise((resolvePromise, reject) => {
     validateWorkspaceScope();
 
-    const child = spawn(spec.command, spec.args, {
+    const resolved = resolveAgentCommand(spec.command);
+    const child = spawn(resolved, spec.args, {
       cwd,
       detached: true,
       env: buildChildEnv(),
@@ -365,7 +378,12 @@ app.post('/execute', async (req, res) => {
 
   try {
     if (!isAuthorized(req)) {
-      res.status(401).json({ success: false, job_id: jobId, error: 'unauthorized' });
+      res.status(401).json({
+        success: false,
+        job_id: jobId,
+        errorCode: 'UNAUTHORIZED',
+        error: 'unauthorized',
+      });
       return;
     }
 
@@ -380,7 +398,12 @@ app.post('/execute', async (req, res) => {
     }
 
     if (!promptContent(body).trim()) {
-      res.status(400).json({ success: false, job_id: jobId, error: 'prompt_content is required' });
+      res.status(400).json({
+        success: false,
+        job_id: jobId,
+        errorCode: 'VALIDATION_ERROR',
+        error: 'prompt_content is required',
+      });
       return;
     }
 
@@ -408,22 +431,33 @@ app.post('/execute', async (req, res) => {
     const result = await runCommand(spec);
     const content = result.stdout.trim() || result.stderr.trim();
 
+    const selectedModel = body.model || process.env.OPSLY_OPENCODE_MODEL?.trim() || agent;
     res.status(result.code === 0 ? 200 : 500).json({
       success: result.code === 0,
       job_id: jobId,
+      request_id: jobId,
       response_content: content,
+      result: content,
       stdout: result.stdout,
       stderr: result.stderr,
       exit_code: result.code,
+      errorCode: result.code === 0 ? undefined : 'AGENT_EXIT_NONZERO',
       execution_time_ms: Date.now() - started,
-      model: body.model || agent,
+      durationMs: Date.now() - started,
+      runtime: agent,
+      model: selectedModel,
     });
   } catch (error) {
-    res.status(500).json({
+    const classified = classifySpawnError(error);
+    res.status(classified.status).json({
       success: false,
       job_id: jobId,
-      error: redact(error instanceof Error ? error.message : String(error)),
+      request_id: jobId,
+      errorCode: classified.errorCode,
+      error: classified.error,
       execution_time_ms: Date.now() - started,
+      durationMs: Date.now() - started,
+      runtime: agent,
     });
   } finally {
     if (inFlightJobId === jobId) {

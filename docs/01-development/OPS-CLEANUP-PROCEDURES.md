@@ -43,7 +43,17 @@ sudo /opt/opsly/scripts/vps-cleanup-robust.sh --aggressive
 sudo /opt/opsly/scripts/vps-cleanup-robust.sh --dry-run
 ```
 
-## Limpieza automática (cron)
+## Limpieza automática canónica (madrugada)
+
+GitHub Actions **Night cleanup** (03:30 `America/Bogota`) hace revisión
+de health **antes y después**, borra remotes ya mergeados y prune Docker
+ligero. Runbook: [`docs/runbooks/NIGHT-CLEANUP.md`](../runbooks/NIGHT-CLEANUP.md).
+
+No actives el cron de abajo **y** el workflow a la vez. El cron es
+legado (03:00 UTC; domingo agresivo). El workflow **no** hace
+`volume prune`.
+
+## Limpieza automática (cron legado)
 
 El archivo de ejemplo `infra/cron/opsly-cleanup` define:
 

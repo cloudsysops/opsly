@@ -117,7 +117,7 @@ const newLeadConnection: TemplateDef = {
           actionType: "SEND_EMAIL",
           label: "Send Follow-up Email",
           subject:
-            "Following up on your interest in Acme Franchise",
+            "Following up on your interest in Peskids Franchise",
           body: "Hi {{firstName}}, ...",
         },
       },
@@ -134,7 +134,7 @@ const newLeadConnection: TemplateDef = {
         data: {
           actionType: "SEND_EMAIL",
           label: "Still Interested?",
-          subject: "Still interested in Acme Franchise?",
+          subject: "Still interested in Peskids Franchise?",
           body: "Hi {{firstName}}, ...",
         },
       },
@@ -218,8 +218,8 @@ const newLeadConnection: TemplateDef = {
       order: 6,
       delayMinutes: 0,
       actionConfig: {
-        subject: "Following up on your interest in Acme Franchise",
-        body: "<p>Hi {{firstName}},</p><p>I wanted to follow up on your inquiry about Acme Franchise franchising. Do you have any questions I can help with?</p><p>Best regards,<br>The STC Franchising Team</p>",
+        subject: "Following up on your interest in Peskids Franchise",
+        body: "<p>Hi {{firstName}},</p><p>I wanted to follow up on your inquiry about Peskids Franchise franchising. Do you have any questions I can help with?</p><p>Best regards,<br>The STC Franchising Team</p>",
       },
     },
     {
@@ -235,8 +235,8 @@ const newLeadConnection: TemplateDef = {
       order: 8,
       delayMinutes: 0,
       actionConfig: {
-        subject: "Still interested in Acme Franchise?",
-        body: "<p>Hi {{firstName}},</p><p>We haven't heard from you in a while. Are you still interested in learning more about Acme Franchise franchise opportunities?</p><p>We'd love to chat whenever you're ready.</p><p>Best,<br>The STC Franchising Team</p>",
+        subject: "Still interested in Peskids Franchise?",
+        body: "<p>Hi {{firstName}},</p><p>We haven't heard from you in a while. Are you still interested in learning more about Peskids Franchise franchise opportunities?</p><p>We'd love to chat whenever you're ready.</p><p>Best,<br>The STC Franchising Team</p>",
       },
     },
   ],
@@ -275,7 +275,7 @@ const discoveryCallPrep: TemplateDef = {
         data: {
           actionType: "SEND_EMAIL",
           label: "Send Prep Email",
-          subject: "Preparing for your Discovery Call with Acme Franchise",
+          subject: "Preparing for your Discovery Call with Peskids Franchise",
           body: "Hi {{firstName}}, ...",
         },
       },
@@ -321,8 +321,8 @@ const discoveryCallPrep: TemplateDef = {
       order: 0,
       delayMinutes: 0,
       actionConfig: {
-        subject: "Preparing for your Discovery Call with Acme Franchise",
-        body: "<p>Hi {{firstName}},</p><p>We're excited to connect with you for a discovery call! Here's what to expect:</p><ul><li>A 30-minute conversation about your goals</li><li>An overview of the Acme Franchise franchise model</li><li>Answers to any questions you have</li></ul><p>Looking forward to speaking with you!</p><p>Best,<br>The STC Franchising Team</p>",
+        subject: "Preparing for your Discovery Call with Peskids Franchise",
+        body: "<p>Hi {{firstName}},</p><p>We're excited to connect with you for a discovery call! Here's what to expect:</p><ul><li>A 30-minute conversation about your goals</li><li>An overview of the Peskids Franchise franchise model</li><li>Answers to any questions you have</li></ul><p>Looking forward to speaking with you!</p><p>Best,<br>The STC Franchising Team</p>",
       },
     },
     {
@@ -511,7 +511,7 @@ const staleLeadReengagement: TemplateDef = {
         data: {
           actionType: "SEND_EMAIL",
           label: "Send Check-in Email",
-          subject: "Checking in - Acme Franchise",
+          subject: "Checking in - Peskids Franchise",
           body: "Hi {{firstName}}, ...",
         },
       },
@@ -585,8 +585,8 @@ const staleLeadReengagement: TemplateDef = {
       order: 0,
       delayMinutes: 0,
       actionConfig: {
-        subject: "Checking in - Acme Franchise",
-        body: "<p>Hi {{firstName}},</p><p>It's been a little while since we last connected. We wanted to check in and see if you're still interested in learning about Acme Franchise franchise opportunities.</p><p>Our team is here whenever you're ready to take the next step.</p><p>Warm regards,<br>The STC Franchising Team</p>",
+        subject: "Checking in - Peskids Franchise",
+        body: "<p>Hi {{firstName}},</p><p>It's been a little while since we last connected. We wanted to check in and see if you're still interested in learning about Peskids Franchise franchise opportunities.</p><p>Our team is here whenever you're ready to take the next step.</p><p>Warm regards,<br>The STC Franchising Team</p>",
       },
     },
     {

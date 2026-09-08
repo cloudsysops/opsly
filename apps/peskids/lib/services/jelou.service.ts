@@ -84,10 +84,8 @@ export async function handleLeadSubmission(webhook: JelouWebhookPayload): Promis
 
   await emitEvent('lead.created', {
     lead_id: data.id,
-    name: lead.name,
-    email: lead.email,
-    phone: lead.phone,
-    interested_grade: lead.interested_grade,
+    has_phone: Boolean(lead.phone != null && String(lead.phone).trim()),
+    hot: Boolean(lead.phone != null && String(lead.phone).trim()),
     source: lead.source,
     channel: webhook.data.channel,
     contact_id: lead.contact_id,

@@ -10,6 +10,7 @@ import {
   isProductionRuntime,
 } from '@/lib/app-url';
 import { normalizeRequestOrigin } from '@/lib/request-origin';
+import { getAuthPublicConfig } from '@/lib/auth-public-config';
 
 function metadataFromUser(user: {
   user_metadata?: unknown;
@@ -48,10 +49,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.redirect(loginUrl);
   }
 
+  const publicConfig = getAuthPublicConfig();
+  if (!publicConfig.configured) {
+    return NextResponse.redirect(loginUrl);
+  }
   const cookieStore = await cookies();
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    publicConfig.supabaseUrl,
+    publicConfig.supabaseAnonKey,
     {
       cookies: {
         getAll() {

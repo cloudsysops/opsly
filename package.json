@@ -112,6 +112,10 @@
     "docs:sync": "node scripts/sync-docs.js && node scripts/generate-sprint-tracking.js && node scripts/generate-agents-assignments.js",
     "docs:watch": "nodemon --watch docs/implementation/status.yaml --exec \"npm run docs:sync\"",
     "test:docs": "bash scripts/test-sync-docs.sh",
+    "test:prod-guards": "bash scripts/test-prod-guards.sh",
+    "db:replay": "bash tools/db-assurance/replay.sh --chain resolve",
+    "db:rls-test": "bash tools/db-assurance/rls-test.sh",
+    "db:audit": "bash tools/db-assurance/run-audit.sh",
     "notion:fetch": "node scripts/notion-to-yaml.js",
     "notion:push": "node scripts/yaml-to-notion.js",
     "notion:sync": "npm run notion:fetch && npm run docs:sync",
@@ -160,7 +164,7 @@
     "opsly:git-sync": "bash scripts/git-sync-repo.sh",
     "opsly:repos:status": "bash scripts/opsly-repo-align.sh --status",
     "opsly:repos:align": "bash scripts/opsly-repo-align.sh --local --vps --branch main --vps-reset",
-    "postinstall": "npm run build -w @intcloudsysops/types && npm run build -w @intcloudsysops/external-agent-registry && npm run build -w @intcloudsysops/agent-task-core && npm run build -w @intcloudsysops/franchise-core && npm run build -w @intcloudsysops/universe && npm run build -w @intcloudsysops/content-studio && npm run build -w @intcloudsysops/content-engine && npm run build -w @intcloudsysops/pattern-catalog && npm run build -w @intcloudsysops/sigma-harness",
+    "postinstall": "npm run build -w @intcloudsysops/types && npm run build -w @intcloudsysops/external-agent-registry && npm run build -w @intcloudsysops/agent-task-core && npm run build -w @intcloudsysops/universe && npm run build -w @intcloudsysops/content-studio && npm run build -w @intcloudsysops/content-engine && npm run build -w @intcloudsysops/pattern-catalog && npm run build -w @intcloudsysops/sigma-harness",
     "prepare": "husky",
     "commit": "git-cz",
     "patterns:install": "bash scripts/install-patterns.sh --with-sigma",
@@ -210,7 +214,10 @@
     "youtube:oauth:dry": "bash scripts/youtube-oauth-doppler-setup.sh --dry-run",
     "youtube:oauth": "bash scripts/youtube-oauth-doppler-setup.sh",
     "youtube:doppler:check": "doppler secrets --only-names --project ops-intcloudsysops --config prd | grep -i YOUTUBE || true",
-    "moneyprinter:bridge": "node scripts/moneyprinter-bridge.mjs"
+    "moneyprinter:bridge": "node scripts/moneyprinter-bridge.mjs",
+    "compute:workers": "node scripts/ops/compute-worker-router.mjs --status",
+    "compute:assign": "node scripts/ops/board-assign-gpu-job.mjs",
+    "test:compute-workers": "node --test scripts/ops/__tests__/compute-worker-router.test.mjs scripts/ops/__tests__/content-render-ffmpeg.test.mjs"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
@@ -285,7 +292,8 @@
       "uuid": "11.1.1"
     },
     "brace-expansion": "1.1.18",
-    "fast-uri": "3.1.5",
+    "d3-color": "^3.1.0",
+    "fast-uri": "3.1.7",
     "fast-xml-builder": "1.2.0",
     "fast-xml-parser": {
       "fast-xml-builder": "1.2.0"
@@ -312,7 +320,7 @@
     "dompurify": "^3.4.13",
     "mermaid": "^11.16.1",
     "nanoid": "^3.3.17",
-    "qs": "6.15.2",
+    "qs": "6.16.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@eslint/eslintrc": {

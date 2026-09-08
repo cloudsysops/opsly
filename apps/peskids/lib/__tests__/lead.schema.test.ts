@@ -46,6 +46,34 @@ describe('leadCaptureFormSchema', () => {
     expect(parsed.child_name).toBe('Mateo López');
   });
 
+  it('requires the guardian document number for family leads', () => {
+    const result = leadCaptureFormSchema.safeParse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '3001112233',
+      child_name: 'Mateo López',
+      birth_date: '2018-05-10',
+      document_number: '',
+      class_modality: 'llanogrande',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('requires the child birth date for family leads', () => {
+    const result = leadCaptureFormSchema.safeParse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '3001112233',
+      child_name: 'Mateo López',
+      birth_date: '',
+      document_number: '1234567890',
+      class_modality: 'llanogrande',
+    });
+    expect(result.success).toBe(false);
+  });
+
   it('family domicilio requires city and neighborhood', () => {
     const missingBoth = leadCaptureFormSchema.safeParse({
       lead_type: 'family',
@@ -183,6 +211,38 @@ describe('leadApiPostSchema', () => {
     expect(result.success).toBe(false);
   });
 
+  it('requires explicit identity-document consent when a family cédula is submitted', () => {
+    const withoutDocumentConsent = leadApiPostSchema.safeParse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '3001112233',
+      child_name: 'Mateo López',
+      birth_date: '2018-05-10',
+      document_number: '1234567890',
+      class_modality: 'llanogrande',
+      consent_treatment: true,
+      consent_identity_document: false,
+    });
+
+    expect(withoutDocumentConsent.success).toBe(false);
+
+    const withDocumentConsent = leadApiPostSchema.safeParse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '3001112233',
+      child_name: 'Mateo López',
+      birth_date: '2018-05-10',
+      document_number: '1234567890',
+      class_modality: 'llanogrande',
+      consent_treatment: true,
+      consent_identity_document: true,
+    });
+
+    expect(withDocumentConsent.success).toBe(true);
+  });
+
   it('accepts legacy payload with consent', () => {
     const parsed = leadApiPostSchema.parse({
       name: 'Ana López',
@@ -195,6 +255,66 @@ describe('leadApiPostSchema', () => {
       consent_marketing: false,
     });
     expect(parsed.consent_treatment).toBe(true);
+    expect(parsed.lead_type).toBe('family');
+  });
+
+  it('rejects tenant or role authority keys', () => {
+    const result = leadApiPostSchema.safeParse({
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      class_modality: 'domicilio',
+      neighborhood: 'Envigado',
+      grade_interested: '6-8',
+      consent_treatment: true,
+      tenant_slug: 'other-tenant',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('requires consent_identity_document when a document_number was submitted', () => {
+    const result = leadApiPostSchema.safeParse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '3001112233',
+      child_name: 'Mateo López',
+      birth_date: '2018-05-10',
+      document_number: '1234567890',
+      class_modality: 'llanogrande',
+      consent_treatment: true,
+      consent_identity_document: false,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts a family lead once consent_identity_document is authorized', () => {
+    const parsed = leadApiPostSchema.parse({
+      lead_type: 'family',
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '3001112233',
+      child_name: 'Mateo López',
+      birth_date: '2018-05-10',
+      document_number: '1234567890',
+      class_modality: 'llanogrande',
+      consent_treatment: true,
+      consent_identity_document: true,
+    });
+    expect(parsed.consent_identity_document).toBe(true);
+    expect(parsed.document_number).toBe('1234567890');
+  });
+
+  it('does not require consent_identity_document for the legacy payload (no document collected)', () => {
+    const parsed = leadApiPostSchema.parse({
+      name: 'Ana López',
+      email: 'ana@peskids.co',
+      phone: '3001112233',
+      class_modality: 'domicilio',
+      neighborhood: 'Envigado',
+      grade_interested: '6-8',
+      consent_treatment: true,
+    });
+    expect(parsed.consent_identity_document).toBe(false);
     expect(parsed.lead_type).toBe('family');
   });
 });

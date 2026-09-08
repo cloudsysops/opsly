@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-// States where Acme Franchise is NOT licensed to franchise
+// States where Peskids Franchise is NOT licensed to franchise
 const NOT_LICENSED_STATES = [
   "WA", "ND", "MN", "IL", "WI", "NY", "RI", "SD", "IN", "UT", "NE", "KY", "MD", "HI", "LA"
 ];

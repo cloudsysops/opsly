@@ -3,6 +3,7 @@ import { supabaseServer } from '@/lib/supabase';
 import type { Database } from '@/lib/types';
 import { EnrollmentNotAllowedError, type PeskidsClassEnrollment } from '@/lib/class-types';
 import { getClassById } from '@/lib/services/class.service';
+import { toClassRosterEntry, type ClassRosterEntry } from '@/lib/privacy/pii-projections';
 
 const CANCEL_MIN_HOURS = 24;
 
@@ -47,16 +48,18 @@ export async function studentBelongsToFamily(
   return false;
 }
 
+/**
+ * Class roster.
+ *
+ * `includeGuardianContact` decides whether the guardian's email is part of the
+ * response at all — when false the key is absent, not null. Taking attendance
+ * does not require a guardian's address, so the teacher audience defaults to
+ * excluded (see lib/privacy/pii-projections.ts).
+ */
 export async function listEnrollmentsForClass(
-  classId: string
-): Promise<
-  Array<
-    PeskidsClassEnrollment & {
-      student_name?: string;
-      parent_email?: string | null;
-    }
-  >
-> {
+  classId: string,
+  options: { includeGuardianContact: boolean } = { includeGuardianContact: false }
+): Promise<ClassRosterEntry[]> {
   const { data, error } = await peskidsClient()
     .from('class_enrollments')
     .select('*')
@@ -70,26 +73,53 @@ export async function listEnrollmentsForClass(
   if (enrollments.length === 0) return [];
 
   const studentIds = [...new Set(enrollments.map((e) => e.student_id))];
+
+  // Only ask the database for the guardian email when the caller is allowed it —
+  // data that is never fetched cannot be leaked by a later refactor.
+  const studentColumns = options.includeGuardianContact ? 'id, name, parent_email' : 'id, name';
   const { data: students } = await supabaseServer()
     .from('students')
-    .select('id, name, parent_email')
+    .select(studentColumns)
     .in('id', studentIds);
 
   const studentMap = new Map(
-    (students ?? []).map((s) => [
-      (s as { id: string }).id,
-      s as { id: string; name: string; parent_email: string | null },
-    ])
+    ((students ?? []) as unknown as Array<{
+      id: string;
+      name: string;
+      parent_email?: string | null;
+    }>).map((s) => [s.id, s])
   );
 
   return enrollments.map((enrollment) => {
     const student = studentMap.get(enrollment.student_id);
-    return {
-      ...enrollment,
-      student_name: student?.name,
-      parent_email: student?.parent_email ?? null,
-    };
+    return toClassRosterEntry(
+      {
+        id: enrollment.id,
+        class_id: enrollment.class_id,
+        student_id: enrollment.student_id,
+        status: enrollment.status,
+        payment_status: enrollment.payment_status,
+        attendance: enrollment.attendance ?? null,
+        joined_at: enrollment.joined_at ?? null,
+        student_name: student?.name,
+        parent_email: student?.parent_email ?? null,
+      },
+      options
+    );
   });
+}
+
+/** True when the class exists in this tenant and is taught by `userId`. */
+export async function classBelongsToTeacher(classId: string, userId: string): Promise<boolean> {
+  const { data, error } = await peskidsClient()
+    .from('classes')
+    .select('id, professor_user_id')
+    .eq('id', classId)
+    .eq('tenant_slug', tenantSlug())
+    .maybeSingle();
+
+  if (error || !data) return false;
+  return (data as { professor_user_id: string | null }).professor_user_id === userId;
 }
 
 export async function listFamilyEnrollments(
@@ -100,6 +130,8 @@ export async function listFamilyEnrollments(
       class_title?: string;
       starts_at?: string;
       ends_at?: string;
+      behavior_tags?: string[];
+      teacher_note?: string | null;
     }
   >
 > {
@@ -122,6 +154,8 @@ export async function listFamilyEnrollments(
       class_title: typed.classes?.title,
       starts_at: typed.classes?.starts_at,
       ends_at: typed.classes?.ends_at,
+      behavior_tags: typed.behavior_tags,
+      teacher_note: typed.teacher_note,
     };
   });
 }
@@ -273,13 +307,27 @@ export async function cancelEnrollment(
 
 export async function updateAttendance(
   classId: string,
-  updates: Array<{ enrollment_id: string; attendance: 'present' | 'absent' | 'excused' }>
+  updates: Array<{
+    enrollment_id: string;
+    attendance: 'present' | 'absent' | 'excused';
+    behavior_tags?: string[];
+    teacher_note?: string;
+  }>,
+  updatedBy?: string | null
 ): Promise<number> {
   let count = 0;
   for (const item of updates) {
     const patch: Database['peskids']['Tables']['class_enrollments']['Update'] = {
       attendance: item.attendance,
+      attendance_updated_at: new Date().toISOString(),
+      attendance_updated_by: updatedBy ?? null,
     };
+    if (item.behavior_tags !== undefined) {
+      patch.behavior_tags = item.behavior_tags;
+    }
+    if (item.teacher_note !== undefined) {
+      patch.teacher_note = item.teacher_note.trim() || null;
+    }
     if (item.attendance === 'present') {
       patch.status = 'attended';
     }

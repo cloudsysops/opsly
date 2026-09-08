@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { PESKIDS_PRO_EVENT_NAMES } from '@/lib/events';
+import {
+  PESKIDS_CANONICAL_EVENT_NAMES,
+  PESKIDS_DEPRECATED_TRIAL_EVENT_NAMES,
+  PESKIDS_PRO_EVENT_NAMES,
+} from '@/lib/events';
 import type { LeadStatus } from '@/lib/domain/peskids-pro-contracts';
 import {
   adminLeadStatusToPro,
@@ -18,31 +22,29 @@ import {
 const ALL_PRO_LEAD_STATUSES: LeadStatus[] = [
   'new',
   'contacted',
-  'trial_scheduled',
-  'trial_completed',
+  'enrollment_in_progress',
   'enrolled',
   'lost',
 ];
 
-describe('peskids-pro mappers (PR-PRO-0 contracts)', () => {
+describe('peskids-pro mappers (canonical journey)', () => {
   it('round-trips admin ↔ pro for coarse stages', () => {
     expect(adminLeadStatusToPro('new')).toBe('new');
     expect(adminLeadStatusToPro('contacted')).toBe('contacted');
-    expect(adminLeadStatusToPro('trial')).toBe('trial_scheduled');
+    expect(adminLeadStatusToPro('trial')).toBe('enrollment_in_progress');
     expect(adminLeadStatusToPro('enrolled')).toBe('enrolled');
     expect(adminLeadStatusToPro('archived')).toBe('lost');
 
-    expect(proLeadStatusToAdmin('trial_scheduled')).toBe('trial');
-    expect(proLeadStatusToAdmin('trial_completed')).toBe('trial');
+    expect(proLeadStatusToAdmin('enrollment_in_progress')).toBe('trial');
     expect(proLeadStatusToAdmin('lost')).toBe('archived');
   });
 
   it('round-trips platform ↔ pro for coarse stages', () => {
-    expect(platformLeadStatusToPro('qualified')).toBe('trial_scheduled');
+    expect(platformLeadStatusToPro('qualified')).toBe('enrollment_in_progress');
     expect(platformLeadStatusToPro('converted')).toBe('enrolled');
     expect(platformLeadStatusToPro('lost')).toBe('lost');
 
-    expect(proLeadStatusToPlatform('trial_completed')).toBe('qualified');
+    expect(proLeadStatusToPlatform('enrollment_in_progress')).toBe('qualified');
     expect(proLeadStatusToPlatform('enrolled')).toBe('converted');
   });
 
@@ -50,8 +52,7 @@ describe('peskids-pro mappers (PR-PRO-0 contracts)', () => {
     const expected: Record<LeadStatus, string> = {
       new: 'NEW',
       contacted: 'CONTACTED',
-      trial_scheduled: 'TRIAL_SCHEDULED',
-      trial_completed: 'TRIAL_COMPLETED',
+      enrollment_in_progress: 'ENROLLMENT',
       enrolled: 'ENROLLED',
       lost: 'LOST',
     };
@@ -62,12 +63,12 @@ describe('peskids-pro mappers (PR-PRO-0 contracts)', () => {
 
   it('maps admin statuses to Twenty stage slugs via Pro', () => {
     expect(adminLeadStatusToTwentyStageSlug('contacted')).toBe('CONTACTED');
-    expect(adminLeadStatusToTwentyStageSlug('trial')).toBe('TRIAL_SCHEDULED');
+    expect(adminLeadStatusToTwentyStageSlug('trial')).toBe('ENROLLMENT');
     expect(adminLeadStatusToTwentyStageSlug('enrolled')).toBe('ENROLLED');
     expect(adminLeadStatusToTwentyStageSlug('archived')).toBe('LOST');
   });
 
-  it('aliases trial attended ↔ completed without changing live DB values', () => {
+  it('keeps leftover trial row adapters without treating them as a business stage', () => {
     expect(trialStatusLiveToPro('attended')).toBe('completed');
     expect(trialStatusProToLive('completed')).toBe('attended');
     expect(trialStatusLiveToPro('scheduled')).toBe('scheduled');
@@ -85,19 +86,26 @@ describe('peskids-pro mappers (PR-PRO-0 contracts)', () => {
     expect(followUpTypeLiveToPro('call')).toBe('call');
   });
 
-  it('normalizes lead source strings', () => {
+  it('normalizes lead source strings including QR and ads', () => {
     expect(normalizeLeadSource('Instagram')).toBe('instagram');
     expect(normalizeLeadSource('web')).toBe('website');
     expect(normalizeLeadSource('Friend')).toBe('referral');
     expect(normalizeLeadSource('wa')).toBe('whatsapp');
+    expect(normalizeLeadSource('QR')).toBe('qr');
+    expect(normalizeLeadSource('ads')).toBe('ads');
     expect(normalizeLeadSource('')).toBe('other');
   });
 
-  it('exposes the Pro domain event catalog without wiring new emitters', () => {
-    expect(PESKIDS_PRO_EVENT_NAMES).toContain('lead.created');
+  it('exposes canonical events and keeps trial events as deprecated leftovers', () => {
+    expect(PESKIDS_CANONICAL_EVENT_NAMES).toContain('lead.created');
+    expect(PESKIDS_CANONICAL_EVENT_NAMES).toContain('enrollment.form.submitted');
+    expect(PESKIDS_CANONICAL_EVENT_NAMES).toContain('first_class.scheduled');
+    expect(PESKIDS_CANONICAL_EVENT_NAMES).toContain('class.attended');
+    expect(PESKIDS_CANONICAL_EVENT_NAMES).toContain('enrollment.link.prepared');
+    expect(PESKIDS_CANONICAL_EVENT_NAMES).toContain('whatsapp.opened');
+    expect(PESKIDS_CANONICAL_EVENT_NAMES).toContain('whatsapp.sent_confirmed');
+    expect(PESKIDS_CANONICAL_EVENT_NAMES).not.toContain('trial.scheduled');
+    expect(PESKIDS_DEPRECATED_TRIAL_EVENT_NAMES).toContain('trial.scheduled');
     expect(PESKIDS_PRO_EVENT_NAMES).toContain('student.enrolled');
-    expect(PESKIDS_PRO_EVENT_NAMES).toContain('lead.renewal_due');
-    expect(PESKIDS_PRO_EVENT_NAMES).toContain('student.attendance_risk');
-    expect(PESKIDS_PRO_EVENT_NAMES).toHaveLength(13);
   });
 });

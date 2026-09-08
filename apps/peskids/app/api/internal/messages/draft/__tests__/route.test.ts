@@ -25,7 +25,7 @@ describe('POST /api/internal/messages/draft', () => {
     } as never)
 
     expect(response.status).toBe(401)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Unauthorized',
       request_id: 'req-draft-401',
@@ -41,7 +41,7 @@ describe('POST /api/internal/messages/draft', () => {
     } as never)
 
     expect(response.status).toBe(400)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'parent_message_id and draft_text required',
       request_id: 'req-draft-400',

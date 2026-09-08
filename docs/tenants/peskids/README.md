@@ -13,6 +13,8 @@ tenant_slug: peskids
 >
 > **Programa activo:** [`PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md`](./PESKIDS-PRO-1.0-IMPLEMENTATION-PLAN.md) — baseline, PRs PRO-0…12, exclusiones Meta/WACRM.
 >
+> **Canonical journey:** [`CANONICAL-CUSTOMER-JOURNEY.md`](./CANONICAL-CUSTOMER-JOURNEY.md) — LEAD → ENROLLMENT → FIRST CLASS. Trial class is not a business stage.
+>
 > **Revisión cliente (2026-08-05):** [`CLIENT-REVIEW-2026-08-05.md`](./CLIENT-REVIEW-2026-08-05.md) — WhatsApp domicilio + mensaje + logo **en prod** (`www.peskids.com`); checklist para el equipo Peskids.
 
 Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**). Opsly actúa como **incubadora y plano de control**: stack n8n + monitoreo, CRM base y futura capa de datos/producto. El objetivo a medio plazo es **extraer** un producto independiente (`peskids-platform`) sin romper Opsly ni depender permanentemente del runtime de orquestación de Opsly.
@@ -83,6 +85,7 @@ Paquete listo para cliente + implementación:
 | [DATA-MODEL.md](./DATA-MODEL.md) | Entidades de producto (borrador) |
 | [WORKFLOWS.md](./WORKFLOWS.md) | Flujos n8n/operativos |
 | [AI-APPROVAL-POLICY.md](./AI-APPROVAL-POLICY.md) | Límites de IA (approval-first) |
+| [AI-BOARD-INTEGRATION.md](./AI-BOARD-INTEGRATION.md) | Señales, LEVEL 2, jobs durables |
 | [OPS-RUNBOOK.md](./OPS-RUNBOOK.md) | Comandos seguros de lectura |
 | [EXTRACTION-PLAN.md](./EXTRACTION-PLAN.md) | Salida a repo independiente |
 | [TWENTY-CRM.md](./TWENTY-CRM.md) | Bootstrap Twenty + cutover GHL |

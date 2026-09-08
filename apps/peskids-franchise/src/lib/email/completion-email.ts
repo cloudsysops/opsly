@@ -58,7 +58,7 @@ export async function sendCompletionEmail({
 
   const fromEmail =
     resolveVariables(template.defaultFrom || "", context) ||
-    "franchising@acmefranchise.com";
+    "franchising@peskids.com";
 
   const toRaw = resolveVariables(template.defaultTo || "", context);
   const ccRaw = resolveVariables(template.defaultCc || "", context);

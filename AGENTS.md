@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-08-30
+last_review: 2026-09-07
 ---
 
 # Opsly — Contexto del Agente
@@ -692,36 +692,44 @@ Week 4: Docs + runbook + MVP validation
 
 <!-- Actualizar al final de cada sesión. Sesiones pre-2026-05-26 → docs/history/AGENTS-SESSION-HISTORY.md -->
 
-### 📌 Sesión Activa (2026-08-30)
+### 📌 Sesión Activa (2026-09-07)
 
-**Tema:** Cierre operativo post-OpenCode — cerebro al día, auto-fix cerrado, Git hard-fail  
-**Branch:** `main` (`d1c81ded5` + este cierre docs)  
-**Objetivo:** un solo cerebro para agentes alineado a prod real; OpenCode no vuelve a pushear a `main`
+**Tema:** Peskids RC `f27efea66` en staging + notas 🔄 alineadas a prod real
+**Branch:** `origin/main` = `f27efea66` (#1116). Este PR (#1118) solo tests `lib/` + docs.
+**Objetivo:** no mentirle al siguiente agente sobre SHAs, flags ni promote
 
-**Hecho (2026-08-25 → 2026-08-30):**
-1. ✅ Deploy pipeline (OpenCode): Dockerfiles universe/game-core, redis webpack, franchise-core no-op, dunning cursor string. HEAD previo `d1c81ded5`. API `https://api.op-sly.com/api/health` → 200 supabase+redis ok.
-2. ✅ Peskids prod `https://www.peskids.com/api/health` → 200 imagen `ghcr.io/cloudsysops/peskids:7ae848f9`. Flags de operación (hot_lead, digest, follow-up, etc.) **todos `false`**.
-3. ✅ UFW VPS: active; SSH 22 solo `100.64.0.0/10`; 80/443 públicos. `vps-secure.sh` no reaplicado (sudo pide password; estado ya correcto).
-4. ✅ Franchise stack en `main`: [#1044](https://github.com/cloudsysops/opsly/pull/1044), [#1019](https://github.com/cloudsysops/opsly/pull/1019), [#1023](https://github.com/cloudsysops/opsly/pull/1023), [#1029](https://github.com/cloudsysops/opsly/pull/1029), [#1059](https://github.com/cloudsysops/opsly/pull/1059) **y** [#1018](https://github.com/cloudsysops/opsly/pull/1018) v2 (duplicado — falta decidir canónico).
-5. ✅ Oleada Jules mergeada (Sentinel/Bolt/Palette + Content OS/Universe/Capacitor). **No repetir merge en masa.**
-6. ✅ PRs auto-fix #1071–#1081 cerrados (spawn de push directo a `main`). Drafts viejos siguen: #992, #961, #935.
+**Live (verificado 2026-09-07 ~02:00 UTC / 21:00 Bogotá):**
+1. ✅ `main` = `f27efea66c37969bfcdce267a3aeb1c51ce4f226` (`feat(ops): night cleanup… (#1116)`)
+2. ✅ Staging `https://peskids-staging.op-sly.com/api/health` → 200, `environment=staging`, `environment_boundary.ok=true`, `git_sha=f27efea66`
+3. ✅ Prod `https://www.peskids.com/api/health` → 200, `git_sha=c4822d9e380e142c7b55df856c92027400363113`
+4. ✅ Prod **`hot_lead_alerts=true`**. Resto de flags n8n **`false`**. Staging: todos los flags `false`.
+5. ✅ #1116 mergeado. #1115 unificó checkout staging + migraciones 0103–0106 (no aplicar a prod).
+6. ✅ Cola stale cerrada: #1088/#1083/#1082/#992/#961/#935. #1117 auto-fix cerrado sin merge.
 
 **Pendiente:**
-- Humano: un solo Franchise OS (#1019 vs #1018 v2); no aplicar 0098–0101 a prod sin aprobación.
-- Peskids: encender **un** flag operativo de noche (hot-lead o digest), no once. Checklist: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md).
-- GitHub: quitar bypass de branch protection al token que usa OpenCode.
-- OpenCode: modelo capaz (no MiMo Free) + solo ramas `feat/*`/`fix/*` + PR. `icso.op-sly.com` sigue 404.
-- Catálogo comercial (`config/commercial-catalog.json`) sin tie runtime. Diseño: [`docs/00-architecture/MODULE-REGISTRY.md`](docs/00-architecture/MODULE-REGISTRY.md).
-- VPS memoria ~4 GiB: [`docs/runbooks/VPS-MEMORY-CAPS.md`](docs/runbooks/VPS-MEMORY-CAPS.md). PC-gamer: no encolar OpenCode en horario `gaming` / offline.
+- **Promote RC `f27efea66`** — HIGH; ventana `America/Bogota` 22:00–06:00; **gate humano**. No `force_daytime`. Workflow: Actions → Deploy Peskids → `workflow_dispatch` (`force_daytime=false`). Rebuilds prod image from that **git SHA** (tag `peskids:f27efea66…`); no reutilizar la imagen staging (`sha-f27efea66`, URL/Supabase QA).
+- **No encender** digest ni un segundo flag n8n. Hot-lead ya está ON en prod.
+- Humano: Auth `site_url` + allow list en **opsly-QA** (`hljetbbgiphpjbldebpo`) = solo `https://peskids-staging.op-sly.com`. MCP no lee Auth settings (403 / sin tool).
+- Humano: confirmar PITR en **opsly-prod** (`jkwykpldnitavhmtuzmo`). Drill de restore **solo contra opsly-QA**, nunca overwrite prod.
+- No aplicar `0098`/`0099`/`0103`–`0106` a prod.
 
 ### 📅 Sesiones Recientes
+
+**Sesión 2026-09-07 — Live-state correction (AI Review Board) ✅**
+- ✅ RC `f27efea66` smoke en staging (health + boundary + home + admin login)
+- ✅ Prod sigue `c4822d9e` con `hot_lead_alerts=true` — no pedir “encender hot-lead”
+- ✅ #1118: 32 tests `lib/` (errors/security/config/observability); no mergear este draft antes del promote
+- ⏳ Promote prod de `f27efea66` después de 22:00 Bogotá + humano
+
+**Sesión 2026-09-07 — PR queue cleanup + lib tests ✅**
+- ✅ 10 PRs mergeados (Peskids features, security, DB assurance, franchise cleanup, data-safety)
+- ✅ Stale/experimental cerrados (#1088/#1083/#1082/#992/#961/#935 y auto-fix)
+- ✅ Franchise: #1098 canónico (remove in-house OS)
 
 **Sesión 2026-08-30 — Cierre post-OpenCode + Git hard-fail ✅**
 - ✅ Prod: API + Peskids health 200; UFW SSH Tailscale-only (sin reaplicar `vps-secure.sh`)
 - ✅ Auto-fix PRs #1071–#1081 cerrados (no merge)
 - ✅ SYSTEM Git al inicio de este archivo; OpenCode/MiMo no deben pushear a `main`
-- ⏳ Franchise: elegir canónico #1019 vs #1018 v2
-- ⏳ Peskids: un flag operativo de noche
 
 **Sesión 2026-08-16 — Tenant entitlements engine en prod (Module Registry) ✅**
 - ✅ PR #882 mergeado (`dcb939f`) tras rebase sobre main + renumerar migración a `0097_tenant_entitlements`
@@ -1625,11 +1633,11 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 ## 🔄 Próximo paso inmediato
 
-**Peskids:** prod imagen `7ae848f9`. Health `https://www.peskids.com/api/health` ok; flags de operación en `false`. Siguiente runtime (noche): un solo flujo n8n (hot-lead **o** digest). Checklist: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md). `peskids.op-sly.com` redirige 308 a `www.peskids.com` (QA no aislada).
+**Peskids RC:** `main` = staging = `f27efea66`. Prod = `c4822d9e` (`https://www.peskids.com`). Staging aislado: `https://peskids-staging.op-sly.com` (`environment_boundary.ok=true`). `peskids.op-sly.com` es 308 a www — **no** es prod ni QA. Hot-lead **ya ON** en prod; no encender digest. Promote: Actions → **Deploy Peskids** → `workflow_dispatch` en ventana 22:00–06:00 Bogotá, **mismo git SHA**, `force_daytime=false`. Checklist: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md).
 
-**Plataforma:** `main` = `d1c81ded5` + cierre docs 2026-08-30. API `https://api.op-sly.com/api/health` → 200. UFW SSH Tailscale-only. Scan `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh`. No mergear Sentinel/Bolt/Palette/auto-fix en masa. No `git push origin main` ni `--no-verify` (ver SYSTEM Git arriba).
+**Plataforma:** API `https://api.op-sly.com/api/health` → 200. UFW SSH Tailscale-only. No mergear Content Studio / PC-gamer / auto-fix en masa. No `git push origin main` ni `--no-verify`.
 
-**Franchise:** #1044/#1019/#1023/#1029/#1059 **y** #1018 v2 ya en `main`. Decisión humana: un core canónico; el otro deprecated. `tenant_slug` sigue `peskids`. No aplicar 0098–0101 a prod sin humano.
+**Franchise:** #1098 canónico (sin Franchise OS in-house). `tenant_slug` = `peskids`. No aplicar `0098`/`0099`/`0103`–`0106` a prod sin humano.
 
 **Capacidad VPS:** alerta memoria **activa** (~4 GiB) — `docs/runbooks/VPS-MEMORY-CAPS.md`. Compose `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh --env-file /opt/opsly/.env --dry-run` (solo nombres de clave).
 
@@ -2627,6 +2635,47 @@ refusing to allow an OAuth App to create or update workflow `.github/workflows/d
 - Environment override: `apps/peskids/app/thanks/page.tsx`
 
 **Blocker Status:** ✅ RESOLVED (via Cursor + `gh` CLI)
+
+---
+
+## 🔄 Estado Actual (2026-09-04 — Security: fail-closed en MCP auth y Peskids Franchise)
+
+**Agente:** Claude
+**Rama:** `fix/mcp-tool-auth-required` (2 commits adelante de `main`, worktree limpio)
+**Actividad:** Cierre de dos vulnerabilidades de fail-open detectadas en revisión de seguridad
+**Status:** ✅ CÓDIGO Y TESTS LISTOS · ⛔ BLOQUEADO EN PUSH (credenciales)
+
+### Session Focus: Cerrar bypasses de autenticación (fail-open → fail-closed)
+
+**Commits:**
+
+1. **`4c7561a72` — fix(mcp): require auth for protected tools**
+   - **Problema:** en `apps/mcp/src/server.ts`, el chequeo de scope solo corría si `requiredScope !== undefined && authHeader !== undefined`. Una llamada a una tool protegida **sin ningún header `Authorization`** saltaba el chequeo por completo (fail-open).
+   - **Fix:** el chequeo corre siempre salvo `trustedTransport` explícito. Ese flag solo lo puede setear el bridge local por stdio (`apps/mcp/src/mcp-sdk-bridge.ts`), y únicamente cuando no hay token OAuth remoto (`extra.authInfo?.token === undefined`). Callers remotos ya no pueden auto-otorgarse confianza.
+   - **Archivos:** `apps/mcp/src/server.ts`, `apps/mcp/src/mcp-sdk-bridge.ts` + tests en `apps/mcp/__tests__/{server,server-scope,ai-integrations}.test.ts`
+   - **Tests:** ✅ 10/10 verdes (`npx vitest run` en `apps/mcp`)
+
+2. **`a2cdbc1c4` — fix(security): fail closed on auth and redirects**
+   - **Problema 1 (Peskids Franchise auth):** en `apps/peskids-franchise/src/lib/auth.ts`, si fallaba el lookup de membresía/rol en DB durante el sign-in, el código permitía el login igual y por defecto asignaba rol `ADMIN` a usuarios `@acmefranchise.com`.
+   - **Fix 1:** falla el `signIn` callback (`return false`) y el `jwt` callback lanza error (`throw new Error(...)`) si no se puede verificar la membresía — nunca más se asume ADMIN por default.
+   - **Problema 2 (open redirect):** `apps/peskids-franchise/src/app/login/page.tsx` usaba `searchParams.get('callbackUrl')` directo como destino de redirect tras login, sin validar.
+   - **Fix 2:** nuevo helper `apps/peskids-franchise/src/lib/safe-callback-url.ts` — rechaza valores que no empiecen con `/` o que sean protocol-relative (`//evil.com`), cae a `/admin` por default.
+   - **Tests:** ✅ 1/1 verde (`safe-callback-url.test.ts`)
+
+### Bloqueante activo
+
+No se pudo empujar la rama ni verificar/crear PR desde esta sesión:
+- `gh auth status` → token en `GH_TOKEN`/keyring **inválido**.
+- `git ls-remote origin` (SSH) → `Broken pipe`, no llega al repo.
+
+Esto es un problema de credenciales/red del entorno local, no del código. Revisar `gh auth refresh -h github.com` y el token de GitHub en Doppler (`ops-intcloudsysops / prd`).
+
+### Próximos pasos
+
+1. Resolver auth de `gh`/SSH (usuario).
+2. `git push -u origin fix/mcp-tool-auth-required`
+3. `gh pr create --draft --base main --head fix/mcp-tool-auth-required`
+4. Merge a `main` tras pasar CI.
 
 ---
 

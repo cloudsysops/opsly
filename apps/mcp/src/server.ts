@@ -47,7 +47,7 @@ type SchemaWithSafeParse = {
   safeParse: (input: unknown) => ParseResult;
 };
 
-/** Scope OAuth requerido por tool cuando se envía `Authorization` en `callTool`. */
+/** Scope OAuth requerido por cada tool protegida. La ausencia de credenciales debe fallar cerradamente. */
 export const TOOL_REQUIRED_SCOPES: Record<string, string> = {
   get_tenants: 'tenants:read',
   get_tenant: 'tenants:read',
@@ -108,6 +108,8 @@ export const TOOL_REQUIRED_SCOPES: Record<string, string> = {
 export type CallToolOptions = {
   authorization?: string;
   toolContext?: ToolContext;
+  /** Only the local stdio transport may explicitly opt into process trust. */
+  trustedTransport?: boolean;
 };
 
 function isSchemaWithSafeParse(value: unknown): value is SchemaWithSafeParse {
@@ -154,7 +156,7 @@ export class OpenClawMcpServer {
     }
     const requiredScope = TOOL_REQUIRED_SCOPES[name];
     const authHeader = options?.authorization;
-    if (requiredScope !== undefined && authHeader !== undefined) {
+    if (requiredScope !== undefined && !options?.trustedTransport) {
       const auth = requireMCPAuth(authHeader, requiredScope);
       if (!auth.authorized) {
         throw new Error(`Unauthorized: ${name} requires scope ${requiredScope}`);

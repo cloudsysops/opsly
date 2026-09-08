@@ -3,9 +3,9 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "Privacy Policy for Acme Franchise Franchising — how we collect, use, and protect your personal information.",
+    "Privacy Policy for Peskids Franchise Franchising — how we collect, use, and protect your personal information.",
   alternates: {
-    canonical: "https://franchising.acmefranchise.com/privacy",
+    canonical: "https://franchise.peskids.com/privacy",
   },
 };
 
@@ -26,8 +26,8 @@ export default function PrivacyPolicyPage() {
               1. Introduction
             </h2>
             <p>
-              Acme Franchise Franchising LLC (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) operates
-              the website at franchising.acmefranchise.com. This Privacy Policy describes how we
+              Peskids Franchise Franchising LLC (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) operates
+              the website at franchise.peskids.com. This Privacy Policy describes how we
               collect, use, disclose, and protect your personal information when you visit our
               website or interact with our franchise inquiry process.
             </p>
@@ -66,7 +66,7 @@ export default function PrivacyPolicyPage() {
               <li>Respond to your franchise inquiries and provide requested information</li>
               <li>Evaluate your candidacy for a franchise opportunity</li>
               <li>Communicate with you about the franchise process</li>
-              <li>Send you relevant information about Acme Franchise franchising</li>
+              <li>Send you relevant information about Peskids Franchise franchising</li>
               <li>Improve our website, services, and user experience</li>
               <li>Analyze website traffic and marketing effectiveness</li>
               <li>Comply with legal obligations</li>
@@ -85,7 +85,7 @@ export default function PrivacyPolicyPage() {
               <li>Service providers who assist with our website operations, email delivery,
                 and business tools (e.g., Postmark for email, Stripe for payment processing)</li>
               <li>Professional advisors such as attorneys and accountants as needed</li>
-              <li>Financing partners (such as Benetrends Financial) only with your explicit consent</li>
+              <li>Financing partners only with your explicit consent</li>
               <li>Law enforcement or government agencies when required by law</li>
             </ul>
           </section>
@@ -141,8 +141,8 @@ export default function PrivacyPolicyPage() {
             </ul>
             <p className="mt-3">
               To exercise any of these rights, contact us at{" "}
-              <a href="mailto:franchising@acmefranchise.com" className="text-brand-purple hover:underline">
-                franchising@acmefranchise.com
+              <a href="mailto:franchising@peskids.com" className="text-brand-purple hover:underline">
+                franchising@peskids.com
               </a>.
             </p>
           </section>
@@ -190,11 +190,11 @@ export default function PrivacyPolicyPage() {
               If you have questions about this Privacy Policy, contact us at:
             </p>
             <div className="mt-3 bg-brand-light rounded-xl p-4">
-              <p className="font-medium text-brand-navy">Acme Franchise Franchising LLC</p>
+              <p className="font-medium text-brand-navy">Peskids Franchise Franchising LLC</p>
               <p>Westside, TN</p>
               <p>
-                <a href="mailto:franchising@acmefranchise.com" className="text-brand-purple hover:underline">
-                  franchising@acmefranchise.com
+                <a href="mailto:franchising@peskids.com" className="text-brand-purple hover:underline">
+                  franchising@peskids.com
                 </a>
               </p>
             </div>

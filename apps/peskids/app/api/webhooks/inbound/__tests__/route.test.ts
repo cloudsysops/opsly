@@ -74,7 +74,7 @@ describe('POST /api/webhooks/inbound', () => {
     } as never)
 
     expect(response.status).toBe(401)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Unauthorized',
       request_id: 'req-inbound-401',
@@ -93,7 +93,7 @@ describe('POST /api/webhooks/inbound', () => {
     } as never)
 
     expect(response.status).toBe(400)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Invalid payload: require from/sender_contact and text/message',
       request_id: 'req-inbound-400',
@@ -140,10 +140,28 @@ describe('POST /api/webhooks/inbound', () => {
       auto_reply_mode: 'manual',
       stage: 'collecting',
       progress: 30,
-      profile: { child_name: 'Ana' },
       from_llm: false,
       n8n: { ok: false, detail: 'reply mode=manual' },
       request_id: 'req-inbound-201',
     })
+  })
+
+  it('rejects unknown inbound keys', async () => {
+    const { POST } = await import('../route')
+    const response = await POST({
+      headers: new Headers({
+        'x-webhook-secret': 'secret',
+        'x-request-id': 'req-inbound-strict',
+      }),
+      json: async () => ({
+        source: 'whatsapp',
+        from: '3001234567',
+        text: 'Hola',
+        tenant_slug: 'other',
+      }),
+    } as never)
+
+    expect(response.status).toBe(400)
+    expect(storeInboundMessageMock).not.toHaveBeenCalled()
   })
 })

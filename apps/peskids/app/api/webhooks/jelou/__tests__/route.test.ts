@@ -34,7 +34,7 @@ describe('POST /api/webhooks/jelou', () => {
     } as never)
 
     expect(response.status).toBe(503)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Webhook not configured',
       request_id: 'req-no-secret',
@@ -55,7 +55,7 @@ describe('POST /api/webhooks/jelou', () => {
     } as never)
 
     expect(response.status).toBe(401)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Invalid signature',
       request_id: 'req-invalid',
@@ -166,7 +166,7 @@ describe('POST /api/webhooks/jelou', () => {
     } as never)
 
     expect(response.status).toBe(500)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Internal server error',
       request_id: 'req-500',

@@ -305,15 +305,15 @@ function generateTocHtml(toc: TocItem[]): string {
 
 const DOCUMENTS = [
   {
-    file: "Section 1 Introduction Acme Franchise.docx.md",
+    file: "Section 1 Introduction Peskids Franchise.docx.md",
     title: "Section 1: Introduction",
     slug: "om-section-1-introduction",
     sortOrder: 0,
     excerpt:
-      "Welcome to the Acme Franchise franchise family. Covers the history, mission, vision, core values, and foundational principles of the franchise system.",
+      "Welcome to the Peskids Franchise franchise family. Covers the history, mission, vision, core values, and foundational principles of the franchise system.",
   },
   {
-    file: "Section 2 Establishing the Business Acme Franchise.docx.md",
+    file: "Section 2 Establishing the Business Peskids Franchise.docx.md",
     title: "Section 2: Establishing the Business",
     slug: "om-section-2-establishing-the-business",
     sortOrder: 1,
@@ -321,23 +321,23 @@ const DOCUMENTS = [
       "Guidelines for establishing your business entity, obtaining licenses and permits, setting up your location, and securing required insurance coverage.",
   },
   {
-    file: "Section 3 Personnel Acme Franchise.docx.md",
+    file: "Section 3 Personnel Peskids Franchise.docx.md",
     title: "Section 3: Personnel",
     slug: "om-section-3-personnel",
     sortOrder: 2,
     excerpt:
-      "Best practices for recruiting, interviewing, training, and retaining quality tutors who deliver the Acme Franchise experience.",
+      "Best practices for recruiting, interviewing, training, and retaining quality tutors who deliver the Peskids Franchise experience.",
   },
   {
-    file: "Section 4 Marketing the Business Acme Franchise.docx.md",
+    file: "Section 4 Marketing the Business Peskids Franchise.docx.md",
     title: "Section 4: Marketing the Business",
     slug: "om-section-4-marketing",
     sortOrder: 3,
     excerpt:
-      "Brand standards, marketing strategies, approval processes, and tactics for promoting your Acme Franchise business in your territory.",
+      "Brand standards, marketing strategies, approval processes, and tactics for promoting your Peskids Franchise business in your territory.",
   },
   {
-    file: "Section 5 Operating Procedures Acme Franchise.docx.md",
+    file: "Section 5 Operating Procedures Peskids Franchise.docx.md",
     title: "Section 5: Operating Procedures",
     slug: "om-section-5-operating-procedures",
     sortOrder: 4,
@@ -359,14 +359,14 @@ async function main() {
     update: {
       title: "Franchise Operations Manual",
       description:
-        "Complete operations manual for Acme Franchise franchisees",
+        "Complete operations manual for Peskids Franchise franchisees",
       icon: "\uD83D\uDCCB",
     },
     create: {
       title: "Franchise Operations Manual",
       slug: "franchise-operations-manual",
       description:
-        "Complete operations manual for Acme Franchise franchisees",
+        "Complete operations manual for Peskids Franchise franchisees",
       icon: "\uD83D\uDCCB",
       sortOrder: 0,
     },

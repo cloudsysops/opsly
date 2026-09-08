@@ -4,7 +4,7 @@ import type { Database } from '@/lib/types';
 export type PipelineStage =
   | 'New Lead'
   | 'Contacted'
-  | 'Trial Class'
+  | 'Enrollment'
   | 'Enrolled'
   | 'Active Student'
   | 'Renewal';
@@ -14,7 +14,7 @@ export type LocalLeadStatus = Database['public']['Tables']['leads']['Row']['stat
 export const PIPELINE_STAGE_TO_LOCAL_STATUS: Record<PipelineStage, LocalLeadStatus> = {
   'New Lead': 'new',
   Contacted: 'contacted',
-  'Trial Class': 'trial',
+  Enrollment: 'trial',
   Enrolled: 'enrolled',
   'Active Student': 'active',
   Renewal: 'renewal',
@@ -23,7 +23,7 @@ export const PIPELINE_STAGE_TO_LOCAL_STATUS: Record<PipelineStage, LocalLeadStat
 export const LOCAL_STATUS_TO_PIPELINE_STAGE: Partial<Record<LocalLeadStatus, PipelineStage>> = {
   new: 'New Lead',
   contacted: 'Contacted',
-  trial: 'Trial Class',
+  trial: 'Enrollment',
   enrolled: 'Enrolled',
   active: 'Active Student',
   renewal: 'Renewal',
@@ -35,7 +35,7 @@ export interface PipelineRule {
   /** Evaluates using public.leads.id — never an external CRM contact id. */
   condition: (leadId: string) => Promise<boolean>;
   description: string;
-  source: 'messages' | 'followups' | 'trial_classes' | 'enrollments' | 'attendance';
+  source: 'messages' | 'followups' | 'students' | 'enrollments' | 'attendance';
 }
 
 export interface RuleServices {
@@ -111,25 +111,19 @@ function hasHumanContact(services: RuleServices) {
 }
 
 /**
- * Contacted → Trial Class
- * Local only: trial_classes for lead_id in scheduled | confirmed | attended.
+ * Contacted → Enrollment
+ * Local signal: student linked via source_lead_id (enrollment form submitted).
+ * Trial-class rows are not a canonical stage.
  */
-function hasTrialProgress(services: RuleServices) {
+function hasEnrollmentStarted(services: RuleServices) {
   return async (leadId: string): Promise<boolean> => {
-    const { count, error } = await services.supabase
-      .from('trial_classes')
-      .select('id', { count: 'exact', head: true })
-      .eq('tenant_id', services.tenantSlug)
-      .eq('lead_id', leadId)
-      .in('status', ['scheduled', 'confirmed', 'attended']);
-
-    if (error) return false;
-    return (count ?? 0) > 0;
+    const studentIds = await leadStudentIds(services, leadId);
+    return studentIds.length > 0;
   };
 }
 
 /**
- * Trial Class → Enrolled
+ * Enrollment → Enrolled
  * Student linked via source_lead_id with paid enrollment.
  */
 function hasEnrolled(services: RuleServices) {
@@ -226,13 +220,13 @@ export function buildPipelineRules(
     },
     {
       currentStage: 'Contacted',
-      nextStage: 'Trial Class',
-      condition: hasTrialProgress(services),
-      description: 'Trial class booked or attended in public.trial_classes',
-      source: 'trial_classes',
+      nextStage: 'Enrollment',
+      condition: hasEnrollmentStarted(services),
+      description: 'Enrollment form submitted: student linked to lead',
+      source: 'students',
     },
     {
-      currentStage: 'Trial Class',
+      currentStage: 'Enrollment',
       nextStage: 'Enrolled',
       condition: hasEnrolled(services),
       description: 'Paid enrollment for student linked to lead',

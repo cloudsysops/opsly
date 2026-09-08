@@ -13,7 +13,7 @@ const BRAND = {
   light: "#E8FBFF",
 };
 
-const LOGO_URL = "https://via.placeholder.com/180x60?text=Acme+Franchise";
+const LOGO_URL = "https://via.placeholder.com/180x60?text=Peskids+Franchise";
 const BASE_URL = "https://franchise-stc-993771038de6.herokuapp.com";
 
 const baseStyles = `
@@ -51,7 +51,7 @@ function wrapInTemplate(content: string, preheader?: string): string {
           <!-- Header with Logo -->
           <tr>
             <td style="background: linear-gradient(135deg, ${BRAND.navy} 0%, ${BRAND.purple} 100%); padding: 32px; text-align: center;">
-              <img src="${LOGO_URL}" alt="Acme Franchise" width="180" style="display: block; margin: 0 auto;" />
+              <img src="${LOGO_URL}" alt="Peskids Franchise" width="180" style="display: block; margin: 0 auto;" />
             </td>
           </tr>
           <!-- Content -->
@@ -64,14 +64,14 @@ function wrapInTemplate(content: string, preheader?: string): string {
           <tr>
             <td style="background: linear-gradient(135deg, ${BRAND.navy} 0%, ${BRAND.purple} 100%); padding: 32px; text-align: center;">
               <p style="margin: 0 0 8px; font-size: 14px; color: white; font-weight: 600;">
-                Acme Franchise Franchising
+                Peskids Franchise Franchising
               </p>
               <p style="margin: 0; font-size: 13px; color: rgba(255,255,255,0.8);">
-                <a href="mailto:franchising@acmefranchise.com" style="color: ${BRAND.cyan}; text-decoration: none;">franchising@acmefranchise.com</a>
+                <a href="mailto:franchising@peskids.com" style="color: ${BRAND.cyan}; text-decoration: none;">franchising@peskids.com</a>
               </p>
               <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
                 <p style="margin: 0; font-size: 11px; color: rgba(255,255,255,0.6);">
-                  © {{currentYear}} Acme Franchise. All rights reserved.
+                  © {{currentYear}} Peskids Franchise. All rights reserved.
                 </p>
               </div>
             </td>
@@ -92,13 +92,13 @@ const systemTemplates = [
     name: "Welcome Email",
     description: "Sent to new prospects after they submit an inquiry form",
     category: EmailTemplateCategory.PROSPECT,
-    subject: "Welcome to Acme Franchise - Your Franchise Journey Begins!",
+    subject: "Welcome to Peskids Franchise - Your Franchise Journey Begins!",
     variables: ["firstName"],
     bodyHtml: wrapInTemplate(`
     <h2 style="margin: 0 0 8px; color: ${BRAND.navy}; font-size: 28px; font-weight: 700;">Welcome, {{firstName}}!</h2>
     <p style="margin: 0 0 24px; color: ${BRAND.purple}; font-size: 16px;">Your franchise journey begins here</p>
 
-    <p style="font-size: 16px; color: #374151;">Thank you for your interest in becoming a Acme Franchise franchise partner! We're excited to learn more about you and explore whether this opportunity is the right fit.</p>
+    <p style="font-size: 16px; color: #374151;">Thank you for your interest in becoming a Peskids Franchise franchise partner! We're excited to learn more about you and explore whether this opportunity is the right fit.</p>
 
     <div style="background: linear-gradient(135deg, ${BRAND.light} 0%, #fff 100%); padding: 24px; border-radius: 12px; margin: 28px 0; border-left: 4px solid ${BRAND.cyan};">
       <p style="margin: 0 0 8px; font-weight: 700; color: ${BRAND.navy}; font-size: 16px;">What happens next?</p>
@@ -128,7 +128,7 @@ const systemTemplates = [
               <td style="width: 32px; vertical-align: top;">
                 <div style="width: 24px; height: 24px; background-color: ${BRAND.orange}; border-radius: 50%; text-align: center; line-height: 24px; font-size: 12px;">✓</div>
               </td>
-              <td style="color: #374151; font-size: 15px;">The <strong>proven business model</strong> behind Acme Franchise</td>
+              <td style="color: #374151; font-size: 15px;">The <strong>proven business model</strong> behind Peskids Franchise</td>
             </tr>
           </table>
         </td>
@@ -157,22 +157,22 @@ const systemTemplates = [
     <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
       <p style="margin: 0; color: #6b7280; font-size: 14px;">
         Best regards,<br>
-        <strong style="color: ${BRAND.navy};">The Acme Franchise Franchise Team</strong>
+        <strong style="color: ${BRAND.navy};">The Peskids Franchise Franchise Team</strong>
       </p>
     </div>
-  `, "Thank you for your interest in Acme Franchise franchising."),
+  `, "Thank you for your interest in Peskids Franchise franchising."),
   },
   {
     slug: "portal-invite",
     name: "Portal Invitation",
     description: "Invitation for prospects to access the franchise portal and complete pre-work",
     category: EmailTemplateCategory.PROSPECT,
-    subject: "You're Invited to the Acme Franchise Franchise Portal",
+    subject: "You're Invited to the Peskids Franchise Franchise Portal",
     variables: ["firstName", "setPasswordUrl"],
     bodyHtml: wrapInTemplate(`
     <h2 style="margin: 0 0 20px; color: ${BRAND.navy}; font-size: 20px;">You're Invited to the Franchise Portal!</h2>
     <p>Hi {{firstName}},</p>
-    <p>Great news! After our initial conversation, we'd like to invite you to access the Acme Franchise Franchise Portal.</p>
+    <p>Great news! After our initial conversation, we'd like to invite you to access the Peskids Franchise Franchise Portal.</p>
 
     <div style="background-color: ${BRAND.light}; padding: 20px; border-radius: 8px; margin: 24px 0; border-left: 4px solid ${BRAND.cyan};">
       <p style="margin: 0; font-weight: 600; color: ${BRAND.navy};">What's in the Portal?</p>
@@ -198,7 +198,7 @@ const systemTemplates = [
 
     <p style="margin-top: 24px; color: #6b7280; font-size: 14px;">
       Best regards,<br>
-      The Acme Franchise Franchise Team
+      The Peskids Franchise Franchise Team
     </p>
   `, "Access your franchise pre-work portal and begin your journey."),
   },
@@ -207,12 +207,12 @@ const systemTemplates = [
     name: "Password Reset",
     description: "Sent when a prospect requests a password reset",
     category: EmailTemplateCategory.PROSPECT,
-    subject: "Reset Your Acme Franchise Portal Password",
+    subject: "Reset Your Peskids Franchise Portal Password",
     variables: ["firstName", "resetPasswordUrl"],
     bodyHtml: wrapInTemplate(`
     <h2 style="margin: 0 0 20px; color: ${BRAND.navy}; font-size: 20px;">Reset Your Password</h2>
     <p>Hi {{firstName}},</p>
-    <p>We received a request to reset your password for the Acme Franchise Franchise Portal.</p>
+    <p>We received a request to reset your password for the Peskids Franchise Franchise Portal.</p>
 
     <p style="margin-top: 24px; text-align: center;">
       <a href="{{resetPasswordUrl}}" style="${buttonStyles}">Reset Password</a>
@@ -224,7 +224,7 @@ const systemTemplates = [
 
     <p style="margin-top: 24px; color: #6b7280; font-size: 14px;">
       Best regards,<br>
-      The Acme Franchise Franchise Team
+      The Peskids Franchise Franchise Team
     </p>
   `, "Reset your franchise portal password."),
   },
@@ -262,7 +262,7 @@ const systemTemplates = [
 
     <p style="margin-top: 24px; color: #6b7280; font-size: 14px;">
       Best regards,<br>
-      The Acme Franchise Franchise Team
+      The Peskids Franchise Franchise Team
     </p>
   `, "Congratulations on completing your pre-work modules!"),
   },
@@ -378,18 +378,18 @@ const systemTemplates = [
     name: "General Outreach",
     description: "A blank template for general follow-up emails",
     category: EmailTemplateCategory.CUSTOM,
-    subject: "Following Up - Acme Franchise Franchise",
+    subject: "Following Up - Peskids Franchise Franchise",
     variables: ["firstName"],
     bodyHtml: wrapInTemplate(`
     <p>Hi {{firstName}},</p>
 
-    <p>I wanted to follow up with you regarding your interest in the Acme Franchise franchise opportunity.</p>
+    <p>I wanted to follow up with you regarding your interest in the Peskids Franchise franchise opportunity.</p>
 
     <p>[Add your personalized message here]</p>
 
     <p style="margin-top: 24px; color: #6b7280; font-size: 14px;">
       Best regards,<br>
-      The Acme Franchise Franchise Team
+      The Peskids Franchise Franchise Team
     </p>
   `, "Following up on your franchise inquiry."),
   },

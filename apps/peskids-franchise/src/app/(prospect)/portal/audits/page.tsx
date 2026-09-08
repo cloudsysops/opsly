@@ -317,11 +317,11 @@ export default function FranchiseeAuditsPage() {
         <CardContent className="py-6">
           <h3 className="font-semibold text-gray-900 mb-2">About Audits</h3>
           <p className="text-sm text-gray-600">
-            Field audits help ensure consistent quality across all Acme Franchises.
+            Field audits help ensure consistent quality across all Peskids Franchises.
             After each audit, you&apos;ll receive a detailed report with your scores and any corrective
             actions needed. Questions? Contact{' '}
-            <a href="mailto:franchising@acmefranchise.com" className="text-brand-purple hover:underline">
-              franchising@acmefranchise.com
+            <a href="mailto:franchising@peskids.com" className="text-brand-purple hover:underline">
+              franchising@peskids.com
             </a>
           </p>
         </CardContent>

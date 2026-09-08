@@ -17,7 +17,7 @@ const sections = [
     slug: "getting-started",
     title: "Getting Started",
     description:
-      "Everything you need to know to begin your journey as a Acme Franchise franchisee.",
+      "Everything you need to know to begin your journey as a Peskids Franchise franchisee.",
     icon: "\u{1F680}",
     sortOrder: 0,
   },
@@ -75,30 +75,30 @@ const pages: PageData[] = [
   // ========================================
   {
     slug: "welcome-to-stc-franchise",
-    title: "Welcome to Acme Franchise Franchise",
+    title: "Welcome to Peskids Franchise Franchise",
     excerpt:
-      "An overview of the Acme Franchise franchise system, what to expect as a franchisee, and the support available to you.",
+      "An overview of the Peskids Franchise franchise system, what to expect as a franchisee, and the support available to you.",
     sortOrder: 0,
     requiresAcknowledgment: false,
     sectionSlug: "getting-started",
-    content: `<h2>Welcome to the Acme Franchise Family</h2>
-<p>Congratulations on becoming a Acme Franchise franchisee! You are now part of a growing network of passionate educators and entrepreneurs who are transforming the way children learn chess. Our franchise system is designed to give you the tools, training, and ongoing support you need to build a thriving business in your community.</p>
+    content: `<h2>Welcome to the Peskids Franchise Family</h2>
+<p>Congratulations on becoming a Peskids Franchise franchisee! You are now part of a growing network of passionate educators and entrepreneurs who are transforming the way children learn chess. Our franchise system is designed to give you the tools, training, and ongoing support you need to build a thriving business in your community.</p>
 
-<h3>What Acme Franchise Is All About</h3>
-<p>Acme Franchise is not just another chess program. We use a narrative-driven curriculum that introduces chess concepts through engaging stories, colorful characters, and imaginative play. Children as young as three years old can begin learning chess with us, building critical thinking skills, patience, and confidence along the way. Our approach has been featured nationally and has helped thousands of families discover the joy of chess.</p>
+<h3>What Peskids Franchise Is All About</h3>
+<p>Peskids Franchise is not just another chess program. We use a narrative-driven curriculum that introduces chess concepts through engaging stories, colorful characters, and imaginative play. Children as young as three years old can begin learning chess with us, building critical thinking skills, patience, and confidence along the way. Our approach has been featured nationally and has helped thousands of families discover the joy of chess.</p>
 
 <h3>What to Expect as a Franchisee</h3>
-<p>As a franchisee, you will operate your own Acme Franchise territory, delivering classes at schools, community centers, libraries, and private homes. Your responsibilities include:</p>
+<p>As a franchisee, you will operate your own Peskids Franchise territory, delivering classes at schools, community centers, libraries, and private homes. Your responsibilities include:</p>
 <ul>
   <li>Marketing and outreach to schools and families in your territory</li>
-  <li>Scheduling and delivering chess classes using the Acme Franchise curriculum</li>
+  <li>Scheduling and delivering chess classes using the Peskids Franchise curriculum</li>
   <li>Hiring, training, and managing part-time chess tutors</li>
   <li>Managing enrollments, invoicing, and customer relationships</li>
   <li>Meeting monthly reporting and royalty obligations</li>
 </ul>
 
 <h3>Support Available to You</h3>
-<p>You are never alone in this journey. The Acme Franchise corporate team provides:</p>
+<p>You are never alone in this journey. The Peskids Franchise corporate team provides:</p>
 <ul>
   <li><strong>Dedicated onboarding support</strong> through the 90-Day Launch Journey</li>
   <li><strong>Marketing materials</strong> including flyers, social media templates, and email campaigns</li>
@@ -117,7 +117,7 @@ const pages: PageData[] = [
     requiresAcknowledgment: false,
     sectionSlug: "getting-started",
     content: `<h2>Your Franchise Portal</h2>
-<p>The Acme Franchise Franchise Portal is your central hub for managing every aspect of your franchise. This section walks you through the key features and how to get the most out of the system.</p>
+<p>The Peskids Franchise Franchise Portal is your central hub for managing every aspect of your franchise. This section walks you through the key features and how to get the most out of the system.</p>
 
 <h3>Dashboard</h3>
 <p>When you log in, your dashboard gives you a snapshot of your franchise health at a glance. You will see your current month revenue, upcoming classes, outstanding tasks from your 90-Day Journey, and any notifications from the corporate team. Check your dashboard daily to stay on top of priorities.</p>
@@ -135,7 +135,7 @@ const pages: PageData[] = [
 <p>If you need assistance at any point, you have several options:</p>
 <ul>
   <li><strong>Earl the Squirrel (AI Assistant)</strong> - Use the chat widget on any page to ask questions about franchise operations</li>
-  <li><strong>Email</strong> - Reach the franchise team at <a href="mailto:franchising@acmefranchise.com">franchising@acmefranchise.com</a></li>
+  <li><strong>Email</strong> - Reach the franchise team at <a href="mailto:franchising@peskids.com">franchising@peskids.com</a></li>
   <li><strong>Scheduled Calls</strong> - Request a call with your franchisor through the portal</li>
 </ul>`,
   },
@@ -153,7 +153,7 @@ const pages: PageData[] = [
 <h3>Franchise Operations</h3>
 <p>For questions about your territory, class scheduling, tutor management, curriculum delivery, or day-to-day operations:</p>
 <ul>
-  <li><strong>Email:</strong> <a href="mailto:franchising@acmefranchise.com">franchising@acmefranchise.com</a></li>
+  <li><strong>Email:</strong> <a href="mailto:franchising@peskids.com">franchising@peskids.com</a></li>
   <li><strong>Response Time:</strong> Within 24 hours on business days</li>
   <li><strong>Best For:</strong> Territory questions, scheduling conflicts, operational guidance, partnership agreements</li>
 </ul>
@@ -161,7 +161,7 @@ const pages: PageData[] = [
 <h3>Marketing Support</h3>
 <p>For marketing materials, brand guidelines, social media questions, or advertising approval:</p>
 <ul>
-  <li><strong>Email:</strong> <a href="mailto:franchising@acmefranchise.com">franchising@acmefranchise.com</a> (subject line: Marketing Request)</li>
+  <li><strong>Email:</strong> <a href="mailto:franchising@peskids.com">franchising@peskids.com</a> (subject line: Marketing Request)</li>
   <li><strong>Response Time:</strong> Within 48 hours on business days</li>
   <li><strong>Best For:</strong> Custom flyer requests, social media content review, event marketing support</li>
 </ul>
@@ -169,7 +169,7 @@ const pages: PageData[] = [
 <h3>Billing & Royalties</h3>
 <p>For questions about royalty invoices, payment processing, revenue discrepancies, or financial reporting:</p>
 <ul>
-  <li><strong>Email:</strong> <a href="mailto:admin@acmefranchise.com">admin@acmefranchise.com</a></li>
+  <li><strong>Email:</strong> <a href="mailto:admin@peskids.com">admin@peskids.com</a></li>
   <li><strong>Response Time:</strong> Within 24 hours on business days</li>
   <li><strong>Best For:</strong> Invoice disputes, payment questions, Stripe Connect issues, revenue verification</li>
 </ul>
@@ -177,7 +177,7 @@ const pages: PageData[] = [
 <h3>Technical Support</h3>
 <p>For issues with the franchise portal, login problems, or software-related questions:</p>
 <ul>
-  <li><strong>Email:</strong> <a href="mailto:admin@acmefranchise.com">admin@acmefranchise.com</a></li>
+  <li><strong>Email:</strong> <a href="mailto:admin@peskids.com">admin@peskids.com</a></li>
   <li><strong>Response Time:</strong> Within 24 hours (urgent issues within 4 hours)</li>
   <li><strong>Best For:</strong> Portal bugs, password resets, system access issues, integration problems</li>
 </ul>
@@ -208,7 +208,7 @@ const pages: PageData[] = [
 <p>Before every class, confirm you have the following items packed and ready:</p>
 <ul>
   <li><strong>Chess sets</strong> - One set per two students, plus one demonstration set</li>
-  <li><strong>Acme Franchise storybook</strong> for the lesson being taught</li>
+  <li><strong>Peskids Franchise storybook</strong> for the lesson being taught</li>
   <li><strong>Character cards</strong> matching the lesson (King, Queen, Rook, Bishop, Knight, Pawn)</li>
   <li><strong>Attendance sheet</strong> or digital check-in device</li>
   <li><strong>Name tags</strong> for new students</li>
@@ -218,7 +218,7 @@ const pages: PageData[] = [
 </ul>
 
 <h3>Reviewing the Lesson Plan</h3>
-<p>Each class follows the Acme Franchise curriculum sequence. Before class, review:</p>
+<p>Each class follows the Peskids Franchise curriculum sequence. Before class, review:</p>
 <ol>
   <li>Which story and chess piece you are introducing or reviewing</li>
   <li>The key learning objectives for the session</li>
@@ -227,7 +227,7 @@ const pages: PageData[] = [
 </ol>
 
 <h3>Room Setup</h3>
-<p>Arrive at the venue at least 15 minutes early to set up. Arrange tables and chairs so that all students can see the demonstration board. Place chess sets at each station with pieces in starting position. If using a projector or TV screen, test the connection and have your slides ready. Post the Acme Franchise banner near the entrance so parents can easily identify the classroom.</p>
+<p>Arrive at the venue at least 15 minutes early to set up. Arrange tables and chairs so that all students can see the demonstration board. Place chess sets at each station with pieces in starting position. If using a projector or TV screen, test the connection and have your slides ready. Post the Peskids Franchise banner near the entrance so parents can easily identify the classroom.</p>
 
 <h3>Confirming with the Venue</h3>
 <p>The day before class, send a brief confirmation to your venue contact. Confirm the room assignment, class time, and expected student count. If this is a school partnership, confirm with the front office that you are on the visitor list and know the check-in procedure.</p>`,
@@ -246,7 +246,7 @@ const pages: PageData[] = [
 <h3>Class Structure (Typical 45-60 Minute Session)</h3>
 <ol>
   <li><strong>Welcome & Review (5 minutes)</strong> - Greet students by name, review what was learned last week, build excitement for today's lesson</li>
-  <li><strong>Story Time (10-15 minutes)</strong> - Read the Acme Franchise story for the lesson, introduce the new chess piece or concept using the narrative</li>
+  <li><strong>Story Time (10-15 minutes)</strong> - Read the Peskids Franchise story for the lesson, introduce the new chess piece or concept using the narrative</li>
   <li><strong>Demonstration (5-10 minutes)</strong> - Show the chess concept on the demonstration board, walk through examples, ask questions to check understanding</li>
   <li><strong>Practice Games (15-20 minutes)</strong> - Students play practice games or mini-challenges that reinforce the lesson concept</li>
   <li><strong>Wrap-Up & Preview (5 minutes)</strong> - Celebrate achievements, hand out stickers or prizes, preview next week's story</li>
@@ -290,7 +290,7 @@ const pages: PageData[] = [
 <ul>
   <li>Return all tables and chairs to their original positions</li>
   <li>Pick up any stray chess pieces, stickers, or materials from the floor</li>
-  <li>Pack all Acme Franchise materials into your transport bag</li>
+  <li>Pack all Peskids Franchise materials into your transport bag</li>
   <li>Check that no personal items were left behind by students</li>
   <li>Thank the venue staff on your way out</li>
 </ul>
@@ -336,8 +336,8 @@ const pages: PageData[] = [
     sortOrder: 0,
     requiresAcknowledgment: false,
     sectionSlug: "marketing-sales",
-    content: `<h2>Marketing Your Acme Franchise Franchise</h2>
-<p>Effective local marketing is the engine that drives enrollment and revenue growth. Your territory is your opportunity. This guide outlines the approved marketing channels, budget guidelines, and strategies that have proven successful across the Acme Franchise franchise network.</p>
+    content: `<h2>Marketing Your Peskids Franchise Franchise</h2>
+<p>Effective local marketing is the engine that drives enrollment and revenue growth. Your territory is your opportunity. This guide outlines the approved marketing channels, budget guidelines, and strategies that have proven successful across the Peskids Franchise franchise network.</p>
 
 <h3>Approved Marketing Channels</h3>
 <p>You are encouraged to use the following channels to promote your franchise locally:</p>
@@ -362,12 +362,12 @@ const pages: PageData[] = [
 <h3>What Requires Approval</h3>
 <p>The following activities require franchisor approval before execution:</p>
 <ol>
-  <li>Any paid advertising that modifies the Acme Franchise brand messaging or imagery</li>
+  <li>Any paid advertising that modifies the Peskids Franchise brand messaging or imagery</li>
   <li>Press releases or media interviews</li>
   <li>Partnerships with businesses that involve co-branding</li>
   <li>Any marketing spend exceeding $500 in a single month</li>
 </ol>
-<p>Submit approval requests via email to <a href="mailto:franchising@acmefranchise.com">franchising@acmefranchise.com</a> with your proposed materials attached. Allow 3-5 business days for review.</p>`,
+<p>Submit approval requests via email to <a href="mailto:franchising@peskids.com">franchising@peskids.com</a> with your proposed materials attached. Allow 3-5 business days for review.</p>`,
   },
   {
     slug: "school-partnerships",
@@ -378,7 +378,7 @@ const pages: PageData[] = [
     requiresAcknowledgment: false,
     sectionSlug: "marketing-sales",
     content: `<h2>Building School Partnerships</h2>
-<p>School partnerships are the foundation of a successful Acme Franchise franchise. A single school partnership can generate steady, recurring revenue and provide a built-in audience of families. This guide covers how to approach schools, pitch effectively, and set up successful partnerships.</p>
+<p>School partnerships are the foundation of a successful Peskids Franchise franchise. A single school partnership can generate steady, recurring revenue and provide a built-in audience of families. This guide covers how to approach schools, pitch effectively, and set up successful partnerships.</p>
 
 <h3>Identifying Target Schools</h3>
 <p>Focus your outreach on schools that are most likely to convert:</p>
@@ -393,7 +393,7 @@ const pages: PageData[] = [
 <h3>Making First Contact</h3>
 <p>Your first contact should be brief, professional, and focused on the value to the school. Recommended approach:</p>
 <ol>
-  <li><strong>Email first</strong> - Send a concise introduction email to the principal, enrichment coordinator, or after-school director. Include a one-page overview of Acme Franchise and mention that you offer free demo classes.</li>
+  <li><strong>Email first</strong> - Send a concise introduction email to the principal, enrichment coordinator, or after-school director. Include a one-page overview of Peskids Franchise and mention that you offer free demo classes.</li>
   <li><strong>Follow up by phone</strong> - Call 3-5 business days after your email. Reference the email and ask if they would be interested in a complimentary demo class.</li>
   <li><strong>In-person visit</strong> - If you are in the area, stop by the front office with a flyer and ask to leave it for the decision maker. Keep it brief and friendly.</li>
 </ol>
@@ -428,15 +428,15 @@ const pages: PageData[] = [
     requiresAcknowledgment: false,
     sectionSlug: "marketing-sales",
     content: `<h2>Community Events</h2>
-<p>Community events are one of the most effective ways to introduce Acme Franchise to new families and generate enrollment leads. Whether you are running a demo at a library, hosting a chess tournament, or setting up a booth at a local fair, these events put your brand in front of your target audience in a fun, memorable way.</p>
+<p>Community events are one of the most effective ways to introduce Peskids Franchise to new families and generate enrollment leads. Whether you are running a demo at a library, hosting a chess tournament, or setting up a booth at a local fair, these events put your brand in front of your target audience in a fun, memorable way.</p>
 
 <h3>Types of Events</h3>
 <p>Successful franchisees typically run a mix of the following event types:</p>
 <ul>
-  <li><strong>Library Acme Franchise sessions</strong> - Partner with your local library to host a free Acme Franchise class during their regular programming. Libraries are excellent partners because they actively seek children's programs and have built-in audiences.</li>
+  <li><strong>Library Peskids Franchise sessions</strong> - Partner with your local library to host a free Peskids Franchise class during their regular programming. Libraries are excellent partners because they actively seek children's programs and have built-in audiences.</li>
   <li><strong>Chess tournaments for kids</strong> - Host beginner-friendly tournaments at community centers, schools, or parks. Keep the format simple (round-robin, short time controls) and emphasize fun over competition.</li>
-  <li><strong>Pop-up demo events</strong> - Set up a table at farmers markets, school fairs, community festivals, or family-friendly businesses. Bring demo chess sets and Acme Franchise storybooks for children to try.</li>
-  <li><strong>Birthday party packages</strong> - Offer chess-themed birthday party packages. These introduce Acme Franchise to entire friend groups and often convert to class enrollments.</li>
+  <li><strong>Pop-up demo events</strong> - Set up a table at farmers markets, school fairs, community festivals, or family-friendly businesses. Bring demo chess sets and Peskids Franchise storybooks for children to try.</li>
+  <li><strong>Birthday party packages</strong> - Offer chess-themed birthday party packages. These introduce Peskids Franchise to entire friend groups and often convert to class enrollments.</li>
 </ul>
 
 <h3>Planning Your Event</h3>
@@ -450,7 +450,7 @@ const pages: PageData[] = [
 </ol>
 
 <h3>During the Event</h3>
-<p>Be high-energy, approachable, and ready to talk to every family. Wear your Acme Franchise branded shirt. Engage children first (let them try the chess sets) and parents second (explain the program, hand out flyers). Take photos and videos with permission for social media content.</p>
+<p>Be high-energy, approachable, and ready to talk to every family. Wear your Peskids Franchise branded shirt. Engage children first (let them try the chess sets) and parents second (explain the program, hand out flyers). Take photos and videos with permission for social media content.</p>
 
 <h3>After the Event</h3>
 <p>Follow up with all leads within 48 hours. Send an email thanking them for attending, include a link to learn more or enroll, and offer a special promotion for event attendees if appropriate. Post event photos on social media and tag the venue to build the partnership relationship.</p>`,
@@ -468,10 +468,10 @@ const pages: PageData[] = [
     requiresAcknowledgment: true,
     sectionSlug: "brand-standards",
     content: `<h2>Logo & Visual Identity Guidelines</h2>
-<p>Consistent visual branding across all franchisees is essential to building trust and recognition for Acme Franchise. These guidelines ensure that every piece of material a parent or school sees reinforces our professional, fun, and educational brand identity.</p>
+<p>Consistent visual branding across all franchisees is essential to building trust and recognition for Peskids Franchise. These guidelines ensure that every piece of material a parent or school sees reinforces our professional, fun, and educational brand identity.</p>
 
 <h3>Logo Usage</h3>
-<p>The Acme Franchise logo is our most important brand asset. Follow these rules at all times:</p>
+<p>The Peskids Franchise logo is our most important brand asset. Follow these rules at all times:</p>
 <ul>
   <li><strong>Use only approved logo files.</strong> Download logos from the portal Documents section. Never recreate, redraw, or modify the logo.</li>
   <li><strong>Maintain clear space.</strong> Keep a minimum clear space around the logo equal to the height of the "S" in "Story." No text, images, or other elements should encroach on this space.</li>
@@ -481,7 +481,7 @@ const pages: PageData[] = [
 </ul>
 
 <h3>Brand Color Palette</h3>
-<p>Our brand colors reflect the playful, trustworthy nature of Acme Franchise. Use these colors consistently in all materials:</p>
+<p>Our brand colors reflect the playful, trustworthy nature of Peskids Franchise. Use these colors consistently in all materials:</p>
 <ul>
   <li><strong>Navy (#2D2F8E)</strong> - Primary brand color. Use for headers, buttons, and prominent elements.</li>
   <li><strong>Purple (#6A469D)</strong> - Accent color. Use for gradients, secondary elements, and highlights.</li>
@@ -520,10 +520,10 @@ const pages: PageData[] = [
     requiresAcknowledgment: true,
     sectionSlug: "brand-standards",
     content: `<h2>Communication Guidelines</h2>
-<p>Every interaction you have with parents, schools, and community members reflects on the Acme Franchise brand. Consistent, professional, and warm communication builds trust and differentiates us from generic chess programs. These guidelines apply to all written and verbal communications.</p>
+<p>Every interaction you have with parents, schools, and community members reflects on the Peskids Franchise brand. Consistent, professional, and warm communication builds trust and differentiates us from generic chess programs. These guidelines apply to all written and verbal communications.</p>
 
 <h3>Tone of Voice</h3>
-<p>The Acme Franchise brand voice is:</p>
+<p>The Peskids Franchise brand voice is:</p>
 <ul>
   <li><strong>Warm and approachable.</strong> We are friendly educators, not corporate salespeople. Write and speak the way you would talk to a neighbor whose child you care about.</li>
   <li><strong>Enthusiastic but not pushy.</strong> Share excitement about chess and learning without aggressive sales language. Let the program speak for itself.</li>
@@ -534,8 +534,8 @@ const pages: PageData[] = [
 <h3>Email Communication Standards</h3>
 <p>When sending emails to parents, schools, or partners:</p>
 <ol>
-  <li>Use your Acme Franchise email address or the portal email system. Never send franchise-related emails from personal accounts.</li>
-  <li>Include the Acme Franchise logo in your email signature.</li>
+  <li>Use your Peskids Franchise email address or the portal email system. Never send franchise-related emails from personal accounts.</li>
+  <li>Include the Peskids Franchise logo in your email signature.</li>
   <li>Proofread every email before sending. Spelling and grammar errors undermine professionalism.</li>
   <li>Respond to all inquiries within 24 hours on business days. If you cannot provide a full answer, send an acknowledgment and timeline.</li>
   <li>Keep emails concise. Parents are busy. Get to the point within the first two sentences.</li>
@@ -548,7 +548,7 @@ const pages: PageData[] = [
   <li><strong>Post positive, educational content.</strong> Share chess tips, class highlights, student achievements, and enrollment opportunities.</li>
   <li><strong>Do not engage in negative interactions.</strong> If you receive a negative comment or review, respond professionally and offer to resolve the issue offline. Never argue publicly.</li>
   <li><strong>Do not post political, religious, or controversial content</strong> on your franchise social media accounts.</li>
-  <li><strong>Tag @AcmeFranchise</strong> in posts when appropriate so the corporate team can amplify your content.</li>
+  <li><strong>Tag @PeskidsFranchise</strong> in posts when appropriate so the corporate team can amplify your content.</li>
 </ul>
 
 <h3>Parent Communication Best Practices</h3>
@@ -568,15 +568,15 @@ const pages: PageData[] = [
     requiresAcknowledgment: false,
     sectionSlug: "brand-standards",
     content: `<h2>Dress Code & Professional Appearance</h2>
-<p>Your appearance is part of the Acme Franchise brand experience. When you walk into a school, community center, or event, you are representing not just yourself but the entire franchise network. A polished, consistent appearance builds trust with parents and venue partners.</p>
+<p>Your appearance is part of the Peskids Franchise brand experience. When you walk into a school, community center, or event, you are representing not just yourself but the entire franchise network. A polished, consistent appearance builds trust with parents and venue partners.</p>
 
 <h3>Class & Event Attire</h3>
 <p>For all classes and events, the following dress code applies to you and any tutors you employ:</p>
 <ul>
-  <li><strong>Acme Franchise branded polo or t-shirt</strong> - Wear the official branded shirt at every class and event. Order additional shirts through the portal if needed.</li>
+  <li><strong>Peskids Franchise branded polo or t-shirt</strong> - Wear the official branded shirt at every class and event. Order additional shirts through the portal if needed.</li>
   <li><strong>Clean, neat pants or shorts</strong> - Dark jeans, khakis, or clean athletic pants are appropriate. Avoid ripped, stained, or excessively casual clothing.</li>
   <li><strong>Closed-toe shoes</strong> - Required for safety when working with children. Clean sneakers or casual shoes are fine.</li>
-  <li><strong>Name badge</strong> - Wear your Acme Franchise name badge at all times during classes and events.</li>
+  <li><strong>Name badge</strong> - Wear your Peskids Franchise name badge at all times during classes and events.</li>
 </ul>
 
 <h3>What to Avoid</h3>
@@ -588,7 +588,7 @@ const pages: PageData[] = [
 </ul>
 
 <h3>School Visits & Meetings</h3>
-<p>When visiting schools for meetings with administrators or partnership discussions, dress one step above your class attire. A Acme Franchise polo with clean khakis or slacks is appropriate. You do not need to wear a suit, but you should look like a professional who is serious about education and business.</p>
+<p>When visiting schools for meetings with administrators or partnership discussions, dress one step above your class attire. A Peskids Franchise polo with clean khakis or slacks is appropriate. You do not need to wear a suit, but you should look like a professional who is serious about education and business.</p>
 
 <h3>Tutor Appearance Standards</h3>
 <p>All tutors you hire must follow the same dress code. Provide each tutor with at least one branded shirt upon hiring. Include the dress code expectations in your tutor onboarding materials and reinforce standards during performance reviews. Tutors who consistently fail to meet appearance standards should be coached and, if necessary, replaced.</p>
@@ -609,7 +609,7 @@ const pages: PageData[] = [
     requiresAcknowledgment: true,
     sectionSlug: "policies-compliance",
     content: `<h2>Child Safety Policy</h2>
-<p>The safety of every child in our program is our highest priority. This policy outlines the protocols, requirements, and procedures that every Acme Franchise franchisee and tutor must follow without exception. Failure to comply with this policy may result in immediate termination of your franchise agreement.</p>
+<p>The safety of every child in our program is our highest priority. This policy outlines the protocols, requirements, and procedures that every Peskids Franchise franchisee and tutor must follow without exception. Failure to comply with this policy may result in immediate termination of your franchise agreement.</p>
 
 <h3>Background Check Requirements</h3>
 <p>Every individual who has direct contact with children through your franchise must pass a comprehensive background check before their first class:</p>
@@ -663,7 +663,7 @@ const pages: PageData[] = [
 <h3>What Constitutes a Reportable Incident</h3>
 <p>The following situations must be reported using the formal incident reporting process:</p>
 <ul>
-  <li><strong>Injury to a child</strong> during a Acme Franchise class or event, no matter how minor</li>
+  <li><strong>Injury to a child</strong> during a Peskids Franchise class or event, no matter how minor</li>
   <li><strong>Medical emergency</strong> of any kind (allergic reaction, seizure, fainting, etc.)</li>
   <li><strong>Behavioral incident</strong> involving physical aggression between students</li>
   <li><strong>Property damage</strong> at a venue caused by a student, tutor, or franchisee</li>
@@ -713,7 +713,7 @@ const pages: PageData[] = [
     requiresAcknowledgment: true,
     sectionSlug: "policies-compliance",
     content: `<h2>Data Privacy & Confidentiality Policy</h2>
-<p>As a Acme Franchise franchisee, you handle sensitive personal information about children and families. Protecting this data is both a legal requirement and a core franchise obligation. This policy outlines your responsibilities for data handling, privacy compliance, and confidentiality.</p>
+<p>As a Peskids Franchise franchisee, you handle sensitive personal information about children and families. Protecting this data is both a legal requirement and a core franchise obligation. This policy outlines your responsibilities for data handling, privacy compliance, and confidentiality.</p>
 
 <h3>Types of Data You Handle</h3>
 <p>In the course of operating your franchise, you will collect and store:</p>
@@ -754,7 +754,7 @@ const pages: PageData[] = [
 </ul>
 
 <h3>Confidentiality Obligations</h3>
-<p>As a franchisee, you also have confidentiality obligations regarding Acme Franchise business information:</p>
+<p>As a franchisee, you also have confidentiality obligations regarding Peskids Franchise business information:</p>
 <ul>
   <li>Do not share franchise financial data, royalty rates, or operational metrics with anyone outside the franchise system</li>
   <li>Proprietary curriculum content, training materials, and business processes are confidential and may not be shared with competitors or used outside the franchise</li>

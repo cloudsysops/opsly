@@ -9,6 +9,7 @@ import type { DashboardData } from '@/lib/types';
 import type { AdminLeadStatus } from '@/lib/validation/lead-admin.schema';
 import { syncLeadStageToTwenty } from '@/lib/twenty-stage-sync';
 import { emitLeadStatusTransition } from '@/lib/events';
+import { recordLeadStatusAudit } from '@/lib/services/lead-status-audit.service';
 
 export type DashboardLead = DashboardData['new_leads'][number];
 
@@ -54,6 +55,9 @@ function mapLegacyLeadRow(row: {
   neighborhood: string | null;
   grade_interested: string;
   child_name?: string | null;
+  birth_date?: string | null;
+  document_type?: string | null;
+  document_number?: string | null;
   company_name?: string | null;
   status: DashboardLead['status'];
   admin_notes: string | null;
@@ -76,6 +80,9 @@ function mapLegacyLeadRow(row: {
     neighborhood: row.neighborhood,
     grade_interested: row.grade_interested,
     child_name: row.child_name,
+    birth_date: row.birth_date,
+    document_type: row.document_type,
+    document_number: row.document_number,
     company_name: row.company_name,
     status: row.status,
     admin_notes: row.admin_notes,
@@ -118,7 +125,7 @@ async function updatePlatformLead(
     .eq('id', leadId)
     .eq('tenant_slug', tenantSlug)
     .select(
-      'id, full_name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, company_name, status, admin_notes, referral_source, created_at, twenty_person_id, twenty_opportunity_id'
+      'id, full_name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, birth_date, document_type, document_number, company_name, status, admin_notes, referral_source, created_at, twenty_person_id, twenty_opportunity_id'
     )
     .maybeSingle();
 
@@ -157,7 +164,7 @@ async function updateLegacyLead(
     .eq('id', leadId)
     .eq('tenant_id', tenantSlug)
     .select(
-      'id, name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, company_name, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source'
+      'id, name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, birth_date, document_type, document_number, company_name, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source'
     )
     .maybeSingle();
 
@@ -169,9 +176,7 @@ async function updateLegacyLead(
     return null;
   }
 
-  return mapLegacyLeadRow(
-    data as Parameters<typeof mapLegacyLeadRow>[0]
-  );
+  return mapLegacyLeadRow(data as Parameters<typeof mapLegacyLeadRow>[0]);
 }
 
 async function fetchPlatformLead(
@@ -180,7 +185,7 @@ async function fetchPlatformLead(
 ): Promise<DashboardLead | null> {
   const { data, error } = await platformFrom()
     .select(
-      'id, full_name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, company_name, status, admin_notes, referral_source, created_at, twenty_person_id, twenty_opportunity_id'
+      'id, full_name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, birth_date, document_type, document_number, company_name, status, admin_notes, referral_source, created_at, twenty_person_id, twenty_opportunity_id'
     )
     .eq('id', leadId)
     .eq('tenant_slug', tenantSlug)
@@ -200,14 +205,11 @@ async function fetchPlatformLead(
   return mapPlatformLeadRow(data as PlatformPeskidsLeadRow);
 }
 
-async function fetchLegacyLead(
-  leadId: string,
-  tenantSlug: string
-): Promise<DashboardLead | null> {
+async function fetchLegacyLead(leadId: string, tenantSlug: string): Promise<DashboardLead | null> {
   const { data, error } = await supabaseServer()
     .from('leads')
     .select(
-      'id, name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, company_name, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source, created_at'
+      'id, name, email, phone, lead_type, service_mode, class_modality, neighborhood, grade_interested, child_name, birth_date, document_type, document_number, company_name, status, admin_notes, referral_code, referred_by_code, referral_discount_cents, referral_redemptions, referral_source, created_at'
     )
     .eq('id', leadId)
     .eq('tenant_id', tenantSlug)
@@ -241,8 +243,7 @@ export async function updateLeadForAdmin(
   tenantSlug: string,
   input: UpdateLeadAdminInput
 ): Promise<DashboardLead | null> {
-  const previous =
-    input.status !== undefined ? await getLeadForAdmin(leadId, tenantSlug) : null;
+  const previous = input.status !== undefined ? await getLeadForAdmin(leadId, tenantSlug) : null;
   const fromStatus = previous?.status ?? null;
 
   const platformLead = await updatePlatformLead(leadId, tenantSlug, input);
@@ -268,6 +269,15 @@ export async function updateLeadForAdmin(
   }
 
   if (input.status !== undefined) {
+    if (fromStatus !== input.status) {
+      void recordLeadStatusAudit({
+        leadId,
+        oldStatus: fromStatus,
+        newStatus: input.status,
+        action: 'status_change',
+        metadata: { source: 'admin_lead_patch' },
+      });
+    }
     void emitLeadStatusTransition({
       leadId,
       fromStatus,

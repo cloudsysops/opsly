@@ -1,0 +1,138 @@
+# Opsly — workflow catalog: docs/ops/workflows-index.md
+# Night window cleanup with pre/post review. Docs: docs/runbooks/NIGHT-CLEANUP.md
+name: Night cleanup
+
+on:
+  schedule:
+    # 03:30 America/Bogota = 08:30 UTC (after night-merge 01:00 and nightly-ops 01:15)
+    - cron: "30 8 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "List/validate only; do not delete branches or close PRs"
+        type: boolean
+        required: false
+        default: false
+      force:
+        description: "Skip night-window gate (test only)"
+        type: boolean
+        required: false
+        default: false
+      skip_vps:
+        description: "Skip VPS light Docker prune"
+        type: boolean
+        required: false
+        default: false
+      apply_merged_branches:
+        description: "Delete remotes already fully merged into main"
+        type: boolean
+        required: false
+        default: true
+      close_stale_autofix:
+        description: "Close auto-fix/* PRs with 0 unique commits vs main"
+        type: boolean
+        required: false
+        default: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: night-cleanup-main
+  cancel-in-progress: false
+
+jobs:
+  night-cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Git hygiene + public health pre/post
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PLATFORM_DOMAIN: ${{ secrets.PLATFORM_DOMAIN }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DRY_RUN: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry_run) && '1' || '0' }}
+          NIGHT_CLEANUP_FORCE: ${{ (github.event_name == 'workflow_dispatch' && inputs.force) && '1' || '0' }}
+          APPLY_MERGED_BRANCHES: ${{ (github.event_name == 'schedule' || inputs.apply_merged_branches) && '1' || '0' }}
+          CLOSE_STALE_AUTOFIX: ${{ (github.event_name == 'schedule' || inputs.close_stale_autofix) && '1' || '0' }}
+          NIGHT_CLEANUP_STATE_DIR: ${{ runner.temp }}/opsly-night-cleanup
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            export NIGHT_CLEANUP_FORCE=0
+            export DRY_RUN=0
+            export APPLY_MERGED_BRANCHES=1
+            export CLOSE_STALE_AUTOFIX=1
+          fi
+          chmod +x scripts/ci/night-cleanup-and-verify.sh scripts/ci/night-cleanup-review.sh
+          ./scripts/ci/night-cleanup-and-verify.sh
+
+      - name: Upload pre/post review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: night-cleanup-review
+          path: ${{ runner.temp }}/opsly-night-cleanup/
+          if-no-files-found: warn
+
+      - name: Decide VPS step
+        id: vps
+        env:
+          SKIP: ${{ github.event_name == 'workflow_dispatch' && inputs.skip_vps && '1' || '0' }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          if [ "${SKIP}" = "1" ]; then
+            echo "ready=false" >> "${GITHUB_OUTPUT}"
+            echo "VPS skipped by input"
+            exit 0
+          fi
+          if [ -z "${VPS_SSH_KEY:-}" ]; then
+            echo "ready=false" >> "${GITHUB_OUTPUT}"
+            echo "VPS_SSH_KEY missing — git/health cleanup still ran"
+            exit 0
+          fi
+          echo "ready=true" >> "${GITHUB_OUTPUT}"
+
+      - name: VPS light prune with pre/post snapshot
+        if: steps.vps.outputs.ready == 'true'
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          timeout: 2m
+          command_timeout: 15m
+          script_stop: true
+          script: |
+            set -euo pipefail
+            echo "=== PRE ==="
+            df -h / | tail -1 || true
+            docker system df || true
+            docker ps --format '{{.Names}} {{.Status}}' || true
+            echo "=== CLEANUP (light, no volumes, no sudo) ==="
+            docker image prune -a --filter "until=168h" -f
+            docker builder prune -af || true
+            docker container prune -f
+            echo "=== POST ==="
+            df -h / | tail -1 || true
+            docker system df || true
+            docker ps --format '{{.Names}} {{.Status}}' || true
+            if ! docker ps --format '{{.Names}}' | grep -qx peskids; then
+              echo "ERROR: contenedor peskids ausente tras prune" >&2
+              exit 1
+            fi

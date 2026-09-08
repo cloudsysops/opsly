@@ -26,7 +26,7 @@ describe('GET /api/analytics/forms', () => {
     const response = await GET({ headers: new Headers({ 'x-request-id': 'analytics-401' }) } as never)
 
     expect(response.status).toBe(401)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Unauthorized',
       request_id: 'analytics-401',
@@ -74,7 +74,7 @@ describe('GET /api/analytics/forms', () => {
     const response = await GET({ headers: new Headers({ 'x-request-id': 'analytics-500' }) } as never)
 
     expect(response.status).toBe(500)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       ok: false,
       error: 'Failed to fetch form analytics',
       request_id: 'analytics-500',

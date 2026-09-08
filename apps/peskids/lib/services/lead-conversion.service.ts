@@ -287,16 +287,8 @@ async function emitStudentEnrolled(input: {
   await emitEvent('student.enrolled', {
     student_id: input.student.id,
     lead_id: input.lead.id,
-    child_name: input.student.name,
-    parent_email: input.student.parent_email,
-    parent_phone: input.student.parent_phone,
-    grade: input.student.grade,
-    enrollment_date: input.student.enrollment_date,
+    created: input.created,
     program: input.options.program ?? null,
     class_id: input.options.class_id ?? null,
-    teacher_name: input.options.teacher_name ?? null,
-    schedule_label: input.options.schedule_label ?? null,
-    created: input.created,
-    twenty_opportunity_id: input.lead.twenty_opportunity_id ?? null,
   });
 }

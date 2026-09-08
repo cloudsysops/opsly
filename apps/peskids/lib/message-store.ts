@@ -30,7 +30,7 @@ function tenantId(): string {
 
 export async function storeInboundMessage(
   input: InboundMessageInput
-): Promise<{ message: StoredMessage | null; error: string | null }> {
+): Promise<{ message: StoredMessage | null; error: string | null; replayed?: boolean }> {
   const supabase = supabaseServer();
   const { data, error } = await supabase
     .from('messages')
@@ -51,6 +51,10 @@ export async function storeInboundMessage(
     .single();
 
   if (error) {
+    const existing = await findMessageByExternalId(input.external_id);
+    if (existing) {
+      return { message: existing, error: null, replayed: true };
+    }
     return { message: null, error: error.message };
   }
   return { message: data as StoredMessage, error: null };
@@ -127,7 +131,7 @@ export async function findMessageByExternalId(
   externalId: string
 ): Promise<StoredMessage | null> {
   const supabase = supabaseServer();
-  const { data, error } = await supabase
+  const result = await supabase
     .from('messages')
     .select(
       'id, source, sender_name, sender_contact, message_text, created_at, direction, parent_message_id, ai_generated, status'
@@ -136,11 +140,11 @@ export async function findMessageByExternalId(
     .eq('external_id', externalId)
     .maybeSingle();
 
-  if (error || !data) {
+  if (!result || result.error || !result.data) {
     return null;
   }
 
-  return data as StoredMessage;
+  return result.data as StoredMessage;
 }
 
 export async function storeOutboundMessageWithExternalId(params: {

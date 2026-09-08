@@ -5,10 +5,8 @@ import { db } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 // GET - List enrollments for a franchisee
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
     if (!session?.user || session.user.role !== "ADMIN") {
@@ -58,10 +56,8 @@ export async function GET(
 }
 
 // POST - Enroll a franchisee in a program
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
     if (!session?.user || session.user.role !== "ADMIN") {

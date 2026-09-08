@@ -7,6 +7,7 @@ const pickCorsOriginMock = vi.hoisted(() => vi.fn());
 vi.mock('../lib/rate-limiter-memory', () => ({
   checkRateLimit: checkRateLimitMock,
   RATE_LIMIT_MAX_REQUESTS: 100,
+  RATE_LIMIT_WINDOW_SECONDS: 60,
 }));
 
 vi.mock('../lib/cors-origins', () => ({
@@ -21,11 +22,14 @@ describe('middleware rate limiting', () => {
     pickCorsOriginMock.mockReturnValue(null);
   });
 
-  it('omite rate limiting cuando la request no resuelve tenant', async () => {
+  it('usa rate limiting por IP cuando la request no resuelve tenant', async () => {
     const response = await middleware(new NextRequest('http://localhost/api/health'));
 
+    // Tenant-based limiting is skipped, but middleware.ts falls back to
+    // checkIpRateLimit (lib/rate-limiter.ts) rather than skipping rate
+    // limiting entirely - it still sets the header.
     expect(checkRateLimitMock).not.toHaveBeenCalled();
-    expect(response.headers.get('X-RateLimit-Limit')).toBeNull();
+    expect(response.headers.get('X-RateLimit-Limit')).toBe('100');
   });
 
   it('aplica rate limiting usando el slug del path', async () => {

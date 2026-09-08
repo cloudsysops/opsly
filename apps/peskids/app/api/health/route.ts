@@ -1,5 +1,6 @@
 import peskidsPkg from '../../../package.json';
 import { buildPeskidsProObservability } from '@/lib/observability/peskids-pro-health';
+import { checkEnvironmentBoundary } from '@/lib/runtime-environment';
 
 function resolveVersion(): string {
   return typeof peskidsPkg.version === 'string' ? peskidsPkg.version : '0.0.0';
@@ -24,16 +25,32 @@ function resolveImageTag(): string | null {
 }
 
 export async function GET(): Promise<Response> {
-  const gitSha = resolveGitSha();
-  const imageTag = resolveImageTag();
+  const boundary = checkEnvironmentBoundary();
+
+  // Only the environment name and the violation codes are exposed — never the
+  // Supabase URL, project ref, or any message that could carry a secret.
+  if (!boundary.ok) {
+    return Response.json(
+      {
+        status: 'error',
+        code: 'ENVIRONMENT_BOUNDARY_INVALID',
+        service: 'peskids',
+        environment: boundary.environment,
+        environment_boundary: { ok: false, violations: boundary.violations.map((violation) => violation.code) },
+      },
+      { status: 503 }
+    );
+  }
 
   return Response.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     version: resolveVersion(),
     service: 'peskids',
-    git_sha: gitSha,
-    image_tag: imageTag,
+    environment: boundary.environment,
+    environment_boundary: { ok: true },
+    git_sha: resolveGitSha(),
+    image_tag: resolveImageTag(),
     observability: buildPeskidsProObservability(),
   });
 }

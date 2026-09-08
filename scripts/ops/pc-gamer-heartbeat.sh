@@ -35,7 +35,9 @@ ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 cd "$ROOT"
 
 KEY="opsly:worker:heartbeat:${WORKER_ID}"
-VALUE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+if ! VALUE="$(WORKER_ID="$WORKER_ID" node "${SCRIPT_DIR}/pc-gamer-heartbeat-payload.mjs" 2>/dev/null)"; then
+  VALUE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+fi
 
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "[dry-run] SET $KEY $VALUE EX $TTL"

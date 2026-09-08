@@ -67,7 +67,7 @@ const RechartsRadarChart = dynamic_import(
                 iconType="circle"
               />
               <Tooltip
-                formatter={(value: number | undefined) => `${Math.round(value || 0)}`}
+                formatter={(value: number | string | readonly (number | string)[] | undefined) => `${Math.round(Number(value) || 0)}`}
                 contentStyle={{
                   borderRadius: '12px',
                   border: '1px solid #e5e7eb',
@@ -112,12 +112,12 @@ const RechartsBarChart = dynamic_import(
                 tickFormatter={(v: number) => v >= 1000 ? `$${(v / 1000).toFixed(0)}K` : `$${v}`}
               />
               <Tooltip
-                formatter={(value: number | undefined) =>
+                formatter={(value: number | string | readonly (number | string)[] | undefined) =>
                   new Intl.NumberFormat('en-US', {
                     style: 'currency',
                     currency: 'USD',
                     minimumFractionDigits: 0,
-                  }).format(value || 0)
+                  }).format(Number(value) || 0)
                 }
                 contentStyle={{
                   borderRadius: '12px',

@@ -11,6 +11,9 @@
  * Scope: tenant_id = peskids only. Does not delete students/families.
  */
 import { createClient } from '@supabase/supabase-js';
+import { execFileSync } from 'node:child_process';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const TENANT_ID = 'peskids';
 
@@ -28,6 +31,12 @@ async function main(): Promise<void> {
     console.error('Refusing to delete without --dry-run or --yes');
     process.exit(1);
   }
+
+  execFileSync(
+    'bash',
+    [join(dirname(fileURLToPath(import.meta.url)), '../lib/peskids-data-safety-guard.sh'), 'lead cleanup'],
+    { env: process.env, stdio: 'inherit' }
+  );
 
   const admin = createClient(requireEnv('SUPABASE_URL'), requireEnv('SUPABASE_SERVICE_ROLE_KEY'), {
     auth: { persistSession: false, autoRefreshToken: false },

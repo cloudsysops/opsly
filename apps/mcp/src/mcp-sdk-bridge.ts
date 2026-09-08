@@ -99,6 +99,9 @@ export function createSdkBridgeServer(
               : {};
           const out = await openClaw.callTool(def.name, args ?? {}, {
             ...auth,
+            // This bridge is only used by the local stdio transport. Remote
+            // callers must provide OAuth credentials and cannot set this flag.
+            trustedTransport: extra.authInfo?.token === undefined,
             toolContext: resolveToolContext(args),
           });
           const text = typeof out === 'string' ? out : JSON.stringify(out, null, 2);

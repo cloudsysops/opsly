@@ -1,5 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { generateAccessToken } from '../src/auth/tokens.js';
 import { createServer, getAllToolDefinitions } from '../src/server.js';
+
+beforeEach(() => {
+  process.env.MCP_JWT_SECRET = 'unit-test-mcp-jwt-secret-32chars!';
+});
 
 describe('createServer', () => {
   it('getAllToolDefinitions coincide con listTools', () => {
@@ -48,6 +53,15 @@ describe('createServer', () => {
 
   it('valida inputSchema y rechaza payload invalido', async () => {
     const server = createServer();
-    await expect(server.callTool('get_tenant', {})).rejects.toThrow('Invalid input for get_tenant');
+    await expect(
+      server.callTool('get_tenant', {}, {
+        authorization: `Bearer ${generateAccessToken('test', ['tenants:read'])}`,
+      })
+    ).rejects.toThrow('Invalid input for get_tenant');
+  });
+
+  it('rechaza una tool protegida cuando falta Authorization', async () => {
+    const server = createServer();
+    await expect(server.callTool('get_tenants', {})).rejects.toThrow('Unauthorized');
   });
 });

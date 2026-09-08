@@ -17,10 +17,11 @@ tags:
 - `lead.status_changed` / `lead.contacted` / `lead.lost` — `lib/services/lead-admin.service.ts`
 - `followup.created` / `followup.completed` — `lib/services/followup-admin.service.ts`
 - `followup.overdue` — `lib/services/lead-aging.service.ts`
-- `trial.scheduled` / `trial.completed` / `trial.no_show` — `lib/services/trial-class.service.ts`
 - `student.enrolled` — `lib/services/lead-conversion.service.ts`
 - `lead.renewal_due` — `lib/agents/pipeline-manager.service.ts` (gated by `PESKIDS_RENEWAL_REMINDER_ENABLED`, default off; fires when a lead advances to the Renewal pipeline stage)
 - `student.attendance_risk` — `lib/services/attendance-risk.service.ts` (gated by `PESKIDS_ATTENDANCE_RISK_ALERT_ENABLED`, default off)
+
+**Deprecated leftover (not a business stage):** `trial.scheduled` / `trial.completed` / `trial.no_show` may still be emitted by `trial-class.service.ts`. AI Board does not map them. Canonical journey: [`CANONICAL-CUSTOMER-JOURNEY.md`](./CANONICAL-CUSTOMER-JOURNEY.md).
 
 **Principles:**
 - Every user action → event
@@ -54,7 +55,7 @@ tags:
 | `feedback.created` | `lib/validation/feedback.schema.ts` → `parentFeedbackFormSchema` | `satisfaction` 1–5; `contact_me_back` → API `contact_wanted` |
 | `feedback.alert` | `isLowSatisfactionRating()` + `emitFeedbackCreated` | Se emite automáticamente si `rating < 3` |
 
-**Bus:** `OPSLY_EVENT_BUS_URL` (opcional). Sin URL configurada → log warning, no bloquea submit.
+**Bus:** `OPSLY_EVENT_BUS_URL` (opcional) → Orchestrator `POST /events`. Sin URL configurada → no bloquea submit. PII se elimina antes de mapear a señales AI Board.
 
 **[PENDIENTE-DECISIÓN]:** Payload final para extracción Opsly (n8n webhook vs cola BullMQ) — ver `lib/n8n-submission-events.ts` para envíos paralelos.
 
@@ -70,39 +71,28 @@ tags:
 ```json
 {
   "event_type": "lead.created",
-  "event_id": "uuid-unique-per-event",
-  "tenant_id": "peskids",
   "tenant_slug": "peskids",
-  "timestamp": "2026-05-20T10:15:30Z",
-  "lead_id": "uuid-lead-id",
-  "name": "Maria Rodriguez",
-  "email": "maria@example.com",
-  "phone": "+1-555-123-4567",
-  "grade_interested": "K-5",
-  "referral_source": "Friend",
-  "metadata": {
-    "ip_address": "192.168.1.100",
-    "user_agent": "Mozilla/5.0...",
-    "referrer_url": "https://peskids.app"
+  "occurred_at": "2026-05-20T10:15:30Z",
+  "data": {
+    "lead_id": "uuid-lead-id",
+    "hot": true,
+    "has_phone": true
   }
 }
 ```
 
-**Schema Validation:**
+**Schema Validation (event bus / AI Board):**
 - event_type: string (required, fixed: "lead.created")
-- event_id: UUID (required, unique)
-- tenant_id: string (required)
-- timestamp: ISO8601 (required)
+- tenant_id / tenant_slug: string (required)
 - lead_id: UUID (required)
-- name: string (required, 2–50 chars)
-- email: string (required, valid email)
-- phone: string (optional, max 20 chars)
-- grade_interested: enum (required: K-5, 6-8, 9-12, Other)
+- has_phone / hot: boolean (optional; used to emit `HOT_LEAD_CREATED`)
 - referral_source: string (optional)
+
+Name, email, and phone belong in Postgres, not on this payload.
 
 **Retry Behavior:** At-least-once, 3 attempts, 5s backoff
 
-**Privacy:** No passwords, no PII beyond name/email/phone (needed for followup)
+**Privacy:** Signal payloads use canonical IDs only (`lead_id`). Name, email, and phone stay in Supabase, not on the event bus. See [`AI-BOARD-INTEGRATION.md`](./AI-BOARD-INTEGRATION.md).
 
 **Future Uses:**
 - Lead source attribution (which channel converts best?)

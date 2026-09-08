@@ -204,15 +204,15 @@ async function notifyDocumentSigned(
           <p>Hi ${prospect.firstName},</p>
           <p>Thank you for signing the ${documentType.replace(/_/g, " ")}. We have received your signed document.</p>
           <p>You can view your signed documents in your prospect portal at any time.</p>
-          <p>Best regards,<br>Acme Franchise Franchising Team</p>
+          <p>Best regards,<br>Peskids Franchise Franchising Team</p>
         </div>
       `,
     });
 
     // Email to admins
     const ADMIN_EMAILS = [
-      "franchising@acmefranchise.com",
-      "admin@acmefranchise.com",
+      "franchising@peskids.com",
+      "admin@peskids.com",
     ];
 
     await sendEmail({

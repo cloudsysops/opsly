@@ -17,7 +17,7 @@ export async function POST(
 ) {
   try {
     const session = await auth();
-    if (!session?.user?.email?.endsWith('@acmefranchise.com')) {
+    if (!session?.user?.email?.endsWith('@peskids.com')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -73,7 +73,7 @@ export async function POST(
     }
 
     // Create new Stripe Connect account
-    const businessName = `${franchisee.prospect.firstName} ${franchisee.prospect.lastName} - Acme Franchise`;
+    const businessName = `${franchisee.prospect.firstName} ${franchisee.prospect.lastName} - Peskids Franchise`;
     const account = await createConnectAccount(
       franchisee.prospect.email,
       businessName
@@ -122,7 +122,7 @@ export async function GET(
 ) {
   try {
     const session = await auth();
-    if (!session?.user?.email?.endsWith('@acmefranchise.com')) {
+    if (!session?.user?.email?.endsWith('@peskids.com')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

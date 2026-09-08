@@ -188,6 +188,10 @@ export type Database = {
           status: 'reserved' | 'confirmed' | 'cancelled' | 'no_show' | 'attended' | 'waitlisted';
           payment_status: 'pending' | 'paid' | 'failed' | 'refunded';
           attendance: 'present' | 'absent' | 'excused' | null;
+          behavior_tags: string[];
+          teacher_note: string | null;
+          attendance_updated_at: string | null;
+          attendance_updated_by: string | null;
           joined_at: string;
           cancelled_at: string | null;
           stripe_checkout_session_id: string | null;
@@ -203,6 +207,10 @@ export type Database = {
           status?: 'reserved' | 'confirmed' | 'cancelled' | 'no_show' | 'attended' | 'waitlisted';
           payment_status?: 'pending' | 'paid' | 'failed' | 'refunded';
           attendance?: 'present' | 'absent' | 'excused' | null;
+          behavior_tags?: string[];
+          teacher_note?: string | null;
+          attendance_updated_at?: string | null;
+          attendance_updated_by?: string | null;
           joined_at?: string;
           cancelled_at?: string | null;
           stripe_checkout_session_id?: string | null;
@@ -1163,6 +1171,13 @@ export interface DashboardSalesAnalytics {
     label: string;
     count: number;
   }>;
+  modality_breakdown: Array<{
+    key: 'llanogrande' | 'domicilio' | 'other';
+    label: string;
+    total: number;
+    enrolled: number;
+    conversion_pct: number | null;
+  }>;
   avg_hours_to_first_followup: number | null;
   avg_hours_to_trial: number | null;
   trials_scheduled_count: number;
@@ -1262,6 +1277,13 @@ export interface DashboardData {
       lead_type?: Database['public']['Tables']['leads']['Row']['lead_type'];
       service_mode?: Database['public']['Tables']['leads']['Row']['service_mode'];
       child_name?: string | null;
+      birth_date?: string | null;
+      document_type?: string | null;
+      document_number?: string | null;
+      /** True only after a trial_classes row reaches status=attended. */
+      first_class_attended?: boolean;
+      /** Hours from lead creation to the first recorded support contact. */
+      first_contact_hours?: number | null;
       company_name?: string | null;
       referral_source?: string | null;
       twenty_person_id?: string | null;

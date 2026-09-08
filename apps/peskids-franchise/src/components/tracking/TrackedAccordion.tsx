@@ -23,7 +23,7 @@ interface TrackedAccordionItemProps {
  *   id="faq-franchise-fee"
  *   isFAQ
  * >
- *   The franchise fee is $45,000...
+ *   The franchise fee is [amount]...
  * </TrackedAccordionItem>
  */
 export function TrackedAccordionItem({

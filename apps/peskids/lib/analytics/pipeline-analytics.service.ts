@@ -3,7 +3,7 @@ import { supabaseServer } from '@/lib/supabase';
 export type PipelineStage =
   | 'New Lead'
   | 'Contacted'
-  | 'Trial Class'
+  | 'Enrollment'
   | 'Enrolled'
   | 'Active Student'
   | 'Renewal'
@@ -12,7 +12,7 @@ export type PipelineStage =
 export const PIPELINE_STAGE_ORDER: readonly PipelineStage[] = [
   'New Lead',
   'Contacted',
-  'Trial Class',
+  'Enrollment',
   'Enrolled',
   'Active Student',
   'Renewal',
@@ -23,19 +23,19 @@ export interface PipelineMetrics {
   byStage: Record<PipelineStage, number>;
   conversionRates: {
     leadToContacted: number;
-    contactedToTrial: number;
-    trialToEnrolled: number;
+    contactedToEnrollment: number;
+    enrollmentToEnrolled: number;
     enrolledToActive: number;
   };
   bySource: Record<string, number>;
   timeToConversion: {
-    avgDaysLeadToTrial: number;
-    avgDaysTrialToEnrolled: number;
+    avgDaysLeadToEnrollment: number;
+    avgDaysEnrollmentToEnrolled: number;
   };
   monthlyTrend: Array<{
     month: string;
     newLeads: number;
-    trials: number;
+    enrollmentsStarted: number;
     enrollments: number;
   }>;
   /** Always true for Supabase-backed metrics. */
@@ -52,13 +52,13 @@ interface RevenueAttributionRow {
 const LOCAL_STATUS_TO_STAGE: Record<string, PipelineStage> = {
   new: 'New Lead',
   contacted: 'Contacted',
-  trial: 'Trial Class',
+  trial: 'Enrollment',
   enrolled: 'Enrolled',
   active: 'Active Student',
   renewal: 'Renewal',
   archived: 'Lost',
   // legacy aliases
-  qualified: 'Trial Class',
+  qualified: 'Enrollment',
   converted: 'Enrolled',
   lost: 'Lost',
 };
@@ -72,7 +72,7 @@ function emptyByStage(): Record<PipelineStage, number> {
   return {
     'New Lead': 0,
     Contacted: 0,
-    'Trial Class': 0,
+    Enrollment: 0,
     Enrolled: 0,
     'Active Student': 0,
     Renewal: 0,
@@ -97,7 +97,7 @@ export class PipelineAnalyticsService {
       const rows = data ?? [];
       const byStage = emptyByStage();
       const bySource: Record<string, number> = {};
-      const monthly: Record<string, { newLeads: number; trials: number; enrollments: number }> = {};
+      const monthly: Record<string, { newLeads: number; enrollmentsStarted: number; enrollments: number }> = {};
 
       for (const row of rows) {
         const stage = LOCAL_STATUS_TO_STAGE[String(row.status ?? 'new')] ?? 'New Lead';
@@ -109,10 +109,10 @@ export class PipelineAnalyticsService {
         if (row.created_at) {
           const month = toMonthKey(row.created_at);
           if (!monthly[month]) {
-            monthly[month] = { newLeads: 0, trials: 0, enrollments: 0 };
+            monthly[month] = { newLeads: 0, enrollmentsStarted: 0, enrollments: 0 };
           }
           monthly[month].newLeads += 1;
-          if (stage === 'Trial Class') monthly[month].trials += 1;
+          if (stage === 'Enrollment') monthly[month].enrollmentsStarted += 1;
           if (stage === 'Enrolled' || stage === 'Active Student') {
             monthly[month].enrollments += 1;
           }
@@ -130,8 +130,8 @@ export class PipelineAnalyticsService {
         conversionRates,
         bySource,
         timeToConversion: {
-          avgDaysLeadToTrial: 0,
-          avgDaysTrialToEnrolled: 0,
+          avgDaysLeadToEnrollment: 0,
+          avgDaysEnrollmentToEnrolled: 0,
         },
         monthlyTrend,
         crmConfigured: true,
@@ -189,20 +189,20 @@ export class PipelineAnalyticsService {
       byStage['New Lead'] > 0
         ? Math.round((byStage.Contacted / byStage['New Lead']) * 100)
         : 0;
-    const contactedToTrial =
+    const contactedToEnrollment =
       byStage.Contacted > 0
-        ? Math.round((byStage['Trial Class'] / byStage.Contacted) * 100)
+        ? Math.round((byStage.Enrollment / byStage.Contacted) * 100)
         : 0;
-    const trialToEnrolled =
-      byStage['Trial Class'] > 0
-        ? Math.round((byStage.Enrolled / byStage['Trial Class']) * 100)
+    const enrollmentToEnrolled =
+      byStage.Enrollment > 0
+        ? Math.round((byStage.Enrolled / byStage.Enrollment) * 100)
         : 0;
     const enrolledToActive =
       byStage.Enrolled > 0
         ? Math.round((byStage['Active Student'] / byStage.Enrolled) * 100)
         : 0;
 
-    return { leadToContacted, contactedToTrial, trialToEnrolled, enrolledToActive };
+    return { leadToContacted, contactedToEnrollment, enrollmentToEnrolled, enrolledToActive };
   }
 
   private buildFallbackMetrics(errorMsg: string): PipelineMetrics {
@@ -211,14 +211,14 @@ export class PipelineAnalyticsService {
       byStage: emptyByStage(),
       conversionRates: {
         leadToContacted: 0,
-        contactedToTrial: 0,
-        trialToEnrolled: 0,
+        contactedToEnrollment: 0,
+        enrollmentToEnrolled: 0,
         enrolledToActive: 0,
       },
       bySource: {},
       timeToConversion: {
-        avgDaysLeadToTrial: 0,
-        avgDaysTrialToEnrolled: 0,
+        avgDaysLeadToEnrollment: 0,
+        avgDaysEnrollmentToEnrolled: 0,
       },
       monthlyTrend: [],
       crmConfigured: false,

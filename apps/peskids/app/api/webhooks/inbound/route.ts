@@ -8,10 +8,11 @@ import { buildPeskidsIntakeTurn } from '@/lib/peskids-intake';
 import { submitLeadFromIntake } from '@/lib/peskids-lead-from-intake';
 import { supabaseServer } from '@/lib/supabase';
 import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
+import { timingSafeSecretsEqual } from '@/lib/internal-auth';
+import { inboundWebhookSchema } from '@/lib/validation/inbound-webhook.schema';
 
 type InboundSource = 'whatsapp' | 'instagram' | 'web';
-
-interface InboundPayload {
+type InboundPayload = {
   source?: InboundSource;
   from?: string;
   sender_contact?: string;
@@ -23,7 +24,7 @@ interface InboundPayload {
   messageId?: string;
   external_id?: string;
   timestamp?: string;
-}
+};
 
 function webhookSecret(): string | undefined {
   return process.env.PESKIDS_INBOUND_WEBHOOK_SECRET || process.env.JELOU_WEBHOOK_SECRET;
@@ -34,7 +35,8 @@ function verifyInboundSecret(req: NextRequest): boolean {
   if (!secret) return false;
   const header =
     req.headers.get('x-webhook-secret') || req.headers.get('x-peskids-webhook-secret') || '';
-  return header.length > 0 && header === secret;
+  // Constant time: `===` on a shared secret leaks the matching prefix length.
+  return header.length > 0 && timingSafeSecretsEqual(header, secret);
 }
 
 function normalizePayload(body: InboundPayload): {
@@ -77,13 +79,27 @@ export async function POST(req: NextRequest) {
       return errorJson(requestId, 'Unauthorized', 401);
     }
 
-    const body = (await req.json()) as InboundPayload;
+    let raw: unknown;
+    try {
+      raw = await req.json();
+    } catch {
+      return errorJson(requestId, 'Invalid JSON body', 400);
+    }
+    const parsed = inboundWebhookSchema.safeParse(raw);
+    if (!parsed.success) {
+      return errorJson(requestId, 'Invalid payload: require from/sender_contact and text/message', 400);
+    }
+    const body = parsed.data as InboundPayload;
     const normalized = normalizePayload(body);
     if (!normalized) {
       return errorJson(requestId, 'Invalid payload: require from/sender_contact and text/message', 400);
     }
 
-    const { message, error } = await storeInboundMessage(normalized);
+    const { message, error, replayed } = await storeInboundMessage(normalized);
+
+    if (replayed && message) {
+      return successJson(requestId, { ok: true, message, replayed: true }, 200);
+    }
 
     if (error || !message) {
       console.error('Inbound message insert failed:', error, { request_id: requestId });
@@ -175,7 +191,6 @@ export async function POST(req: NextRequest) {
         auto_reply_mode: whatsappReplyMode,
         stage: intake.stage,
         progress: intake.progress,
-        profile: intake.profile,
         from_llm: false,
         n8n: sendResult,
       },

@@ -1,14 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  Clock,
-  ExternalLink,
-  Mail,
-  MessageSquare,
-  Phone,
-  Users,
-} from 'lucide-react';
+import { Clock, ExternalLink, Mail, MessageSquare, Phone, Users } from 'lucide-react';
 import type { DashboardData } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -39,6 +32,14 @@ function modalityText(lead: AdminLeadCardLead): string {
   const service = serviceModeLabel(lead.service_mode);
   if (service !== '—') return service;
   return classModalityLabel(lead.class_modality);
+}
+
+function formatBirthDate(value: string | null | undefined): string | null {
+  if (!value) return null;
+  return new Intl.DateTimeFormat('es-CO', {
+    dateStyle: 'medium',
+    timeZone: 'America/Bogota',
+  }).format(new Date(`${value}T12:00:00-05:00`));
 }
 
 /**
@@ -94,6 +95,12 @@ export function AdminLeadCard({
           <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden />
           Registrado {createdLabel}
         </p>
+        <p className="flex items-center gap-1.5 text-xs text-pk-mutedText">
+          <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden />
+          {lead.first_contact_hours === null || lead.first_contact_hours === undefined
+            ? 'Pendiente de primera atención'
+            : `Primera atención en ${lead.first_contact_hours} h`}
+        </p>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-1.5">
@@ -101,6 +108,9 @@ export function AdminLeadCard({
         <Badge tone="amber">{modalityText(lead)}</Badge>
         <Badge tone="teal">{formatAgeRange(lead.grade_interested)}</Badge>
         {lead.child_name ? <Badge tone="neutral">Hijo/a: {lead.child_name}</Badge> : null}
+        {lead.birth_date ? (
+          <Badge tone="neutral">Nacimiento: {formatBirthDate(lead.birth_date)}</Badge>
+        ) : null}
         {lead.neighborhood ? <Badge tone="neutral">{lead.neighborhood}</Badge> : null}
         {lead.company_name ? <Badge tone="neutral">{lead.company_name}</Badge> : null}
       </div>
@@ -109,7 +119,11 @@ export function AdminLeadCard({
         <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-pk-mutedText">
           Línea de tiempo
         </p>
-        <LeadStatusPipeline status={status} compact={compactPipeline} />
+        <LeadStatusPipeline
+          status={status}
+          firstClassAttended={lead.first_class_attended}
+          compact={compactPipeline}
+        />
       </div>
 
       {lead.admin_notes?.trim() ? (
@@ -142,7 +156,11 @@ export function AdminLeadCard({
             size="sm"
             variant="ghost"
             onClick={() =>
-              window.open(`mailto:${encodeURIComponent(lead.email)}`, '_blank', 'noopener,noreferrer')
+              window.open(
+                `mailto:${encodeURIComponent(lead.email)}`,
+                '_blank',
+                'noopener,noreferrer'
+              )
             }
           >
             <Mail className="h-4 w-4" aria-hidden />

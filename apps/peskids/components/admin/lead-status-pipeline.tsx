@@ -8,6 +8,7 @@ import {
 
 type LeadStatusPipelineProps = {
   status: LeadAdminStatus;
+  firstClassAttended?: boolean;
   className?: string;
   compact?: boolean;
 };
@@ -17,10 +18,11 @@ type LeadStatusPipelineProps = {
  */
 export function LeadStatusPipeline({
   status,
+  firstClassAttended = false,
   className,
   compact = false,
 }: LeadStatusPipelineProps): React.ReactElement {
-  const progress = buildLeadPipelineProgress(status);
+  const progress = buildLeadPipelineProgress(status, firstClassAttended);
 
   return (
     <div className={cn('w-full', className)} aria-label={`Estado del embudo: ${status}`}>
@@ -77,7 +79,7 @@ export function LeadStatusPipeline({
                 />
                 <span
                   className={cn(
-                    'mt-1.5 max-w-full truncate text-center',
+                    'mt-1.5 max-w-full whitespace-normal break-words text-center',
                     compact ? 'text-[10px] leading-tight' : 'text-[11px] leading-tight',
                     labelClass
                   )}

@@ -5,8 +5,8 @@
 import { sendEmail } from "./sendgrid";
 
 const ADMIN_EMAILS = [
-  "franchising@acmefranchise.com",
-  "admin@acmefranchise.com",
+  "franchising@peskids.com",
+  "admin@peskids.com",
 ];
 
 interface ProspectInfo {
@@ -107,7 +107,7 @@ export async function notifyFranchiseeTaskCompleted(
 
       <p style="color: #666; margin-top: 30px;">
         Keep up the great work!<br>
-        - The Acme Franchise Team
+        - The Peskids Franchise Team
       </p>
     </div>
   `;
@@ -167,7 +167,7 @@ export async function notifyOverdueTasks(
 
       <p style="color: #666; margin-top: 30px;">
         We believe in you!<br>
-        - The Acme Franchise Team
+        - The Peskids Franchise Team
       </p>
     </div>
   `;
@@ -224,7 +224,7 @@ export async function notifyMilestoneComplete(
 
       <p style="color: #666; margin-top: 30px;">
         We're so proud of your progress!<br>
-        - The Acme Franchise Team
+        - The Peskids Franchise Team
       </p>
     </div>
   `;

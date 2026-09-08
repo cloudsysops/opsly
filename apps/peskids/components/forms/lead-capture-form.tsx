@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
+import { trackMetaLead } from '@/components/analytics/meta-pixel'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
 import {
   buildPostLeadWhatsAppPrefill,
@@ -18,6 +19,7 @@ import {
   type PeskidsLeadType,
 } from '@/lib/validation/lead.schema'
 import {
+  PESKIDS_CONSENT_IDENTITY_DOCUMENT,
   PESKIDS_CONSENT_MARKETING,
   PESKIDS_CONSENT_PHOTOS_VIDEOS,
   PESKIDS_CONSENT_TREATMENT,
@@ -37,7 +39,7 @@ import { Label } from '@/components/ui/label'
 import { firstZodErrorMessage } from '@/lib/validation/zod-errors'
 import { cn } from '@/lib/utils'
 
-const CONSENT_POLICY_VERSION = 'pk-parental-v1+pk-privacy-v1@1.0'
+const CONSENT_POLICY_VERSION = 'pk-parental-v1+pk-privacy-v1@1.1'
 
 const LEAD_TYPE_LABELS: Record<PeskidsLeadType, string> = {
   family: 'Familia / Alumno',
@@ -133,6 +135,11 @@ export function LeadCaptureForm({
   const [consentTreatment, setConsentTreatment] = useState(false)
   const [consentMarketing, setConsentMarketing] = useState(false)
   const [consentPhotosVideos, setConsentPhotosVideos] = useState(false)
+  const [consentIdentityDocument, setConsentIdentityDocument] = useState(false)
+
+  const leadTypeCollectsDocument =
+    (formData.lead_type || 'family') === 'family' ||
+    formData.lead_type === 'teacher_applicant'
 
   const referredByCode = useMemo(
     () => searchParams.get('ref')?.trim().toUpperCase() ?? '',
@@ -153,6 +160,7 @@ export function LeadCaptureForm({
       if (!formData.class_modality) return 'Selecciona sede o domicilio'
       if (!formData.child_name.trim()) return 'Nombre del alumno requerido'
       if (!formData.birth_date) return 'Fecha de nacimiento del alumno requerida'
+      if (formData.document_number.trim().length < 4) return 'Cédula del acudiente requerida'
       // Sede Llanogrande: no pedir ciudad ni barrio (barrio se fija en schema).
       // Domicilio: ciudad + barrio obligatorios.
       if (formData.class_modality === 'domicilio') {
@@ -252,6 +260,7 @@ export function LeadCaptureForm({
         consent_treatment: consentTreatment ? true : undefined,
         consent_marketing: consentMarketing,
         consent_photos_videos: consentPhotosVideos,
+        consent_identity_document: consentIdentityDocument,
         consent_policy_version: CONSENT_POLICY_VERSION,
         source,
         campaign,
@@ -310,8 +319,13 @@ export function LeadCaptureForm({
         data?: { lead_id?: string }
         lead_id?: string
         id?: string
+        meta_event_id?: string
       }
       const leadId = (apiBody.data?.lead_id ?? apiBody.lead_id ?? apiBody.id)?.trim() || ''
+
+      if (apiBody.meta_event_id) {
+        trackMetaLead(apiBody.meta_event_id)
+      }
 
       void fetch(
         process.env.NEXT_PUBLIC_N8N_LEAD_WEBHOOK || 'https://www.peskids.com/webhooks/lead-capture',
@@ -338,7 +352,6 @@ export function LeadCaptureForm({
       const parsedFamily = formParsed.data as {
         child_name?: string
         neighborhood?: string
-        grade_interested?: string
         company_name?: string
       }
 
@@ -349,8 +362,9 @@ export function LeadCaptureForm({
         email: formParsed.data.email,
         phone: formParsed.data.phone,
         child_name: parsedFamily.child_name ?? null,
+        birth_date: leadType === 'family' ? formData.birth_date : null,
+        document_number: leadType === 'family' ? formData.document_number : null,
         neighborhood: parsedFamily.neighborhood ?? null,
-        grade_interested: parsedFamily.grade_interested ?? null,
         company_name: parsedFamily.company_name ?? null,
         company_nit: leadType === 'company' ? formData.company_nit || null : null,
         contact_role: leadType === 'company' ? formData.contact_role || formData.name : null,
@@ -524,6 +538,8 @@ export function LeadCaptureForm({
                         type="date"
                         value={formData.birth_date}
                         onChange={(e) => setField('birth_date', e.target.value)}
+                        required
+                        autoComplete="bday"
                         className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink focus:border-pk-primary focus:outline-none"
                       />
                     </div>
@@ -548,13 +564,15 @@ export function LeadCaptureForm({
                       </div>
                       <div>
                         <Label htmlFor="document_number" className="text-sm font-medium text-pk-ink">
-                          Cédula
+                          Cédula del acudiente *
                         </Label>
                         <input
                           id="document_number"
                           type="text"
                           value={formData.document_number}
                           onChange={(e) => setField('document_number', e.target.value)}
+                          required
+                          autoComplete="off"
                           className="mt-2 w-full rounded-pk border border-pk-border bg-pk-surface px-3 py-2 text-sm text-pk-ink placeholder-pk-mutedText focus:border-pk-primary focus:outline-none"
                           placeholder="Cédula"
                         />
@@ -899,6 +917,19 @@ export function LeadCaptureForm({
                   />
                   <span className="text-xs text-pk-mutedText">{PESKIDS_CONSENT_PHOTOS_VIDEOS}</span>
                 </label>
+                {leadTypeCollectsDocument ? (
+                  <label className="flex gap-3">
+                    <input
+                      type="checkbox"
+                      checked={consentIdentityDocument}
+                      onChange={(e) => setConsentIdentityDocument(e.target.checked)}
+                      className="mt-1 h-4 w-4"
+                    />
+                    <span className="text-xs text-pk-mutedText">
+                      {PESKIDS_CONSENT_IDENTITY_DOCUMENT}
+                    </span>
+                  </label>
+                ) : null}
               </div>
 
               {error && (
@@ -909,7 +940,9 @@ export function LeadCaptureForm({
 
               <Button
                 type="submit"
-                disabled={loading || !consentTreatment}
+                disabled={
+                  loading || !consentTreatment || (leadTypeCollectsDocument && !consentIdentityDocument)
+                }
                 className="w-full bg-pk-primary text-white hover:opacity-90"
               >
                 {loading ? (

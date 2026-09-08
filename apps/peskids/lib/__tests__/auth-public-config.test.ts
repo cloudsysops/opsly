@@ -6,6 +6,7 @@ describe('getAuthPublicConfig', () => {
   afterEach(() => {
     delete process.env.NEXT_PUBLIC_SUPABASE_URL;
     delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    delete process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
     delete process.env.SUPABASE_URL;
     delete process.env.SUPABASE_ANON_KEY;
   });
@@ -17,6 +18,14 @@ describe('getAuthPublicConfig', () => {
     expect(config.configured).toBe(true);
     expect(config.supabaseUrl).toBe('https://project.supabase.co');
     expect(config.supabaseAnonKey).toBe('anon-key');
+  });
+
+  it('accepts the dashboard publishable key alias', () => {
+    process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://hljetbbgiphpjbldebpo.supabase.co';
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_test';
+    const config = getAuthPublicConfig();
+    expect(config.configured).toBe(true);
+    expect(config.supabaseAnonKey).toBe('sb_publishable_test');
   });
 
   it('falls back to SUPABASE_* runtime env', () => {
