@@ -66,6 +66,7 @@ import {
   handleGetVoiceMessage,
   handleSubmitTranscription,
   handleGetTranscriptions,
+  handleBoardEvents,
 } from './http/routes/index.js';
 
 const DEFAULT_PORT = 3011;
@@ -87,6 +88,8 @@ function buildRouter(): Router {
   const r = new Router();
 
   r.get('/health', handleHealthCheck);
+  r.post('/events', handleBoardEvents);
+  r.post('/internal/board/signals', handleBoardEvents);
 
   r.get('/internal/openclaw-job', handleOpenclawJobStatus);
 

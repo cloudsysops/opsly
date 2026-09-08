@@ -181,6 +181,22 @@
       "mainFile": "lib/conversational-runtime/src/index.ts",
       "exports": ["createConversationalRuntime", "InputMessage", "AgentResponse"]
     },
+    "ai-board": {
+      "name": "@intcloudsysops/ai-board",
+      "version": "0.1.0",
+      "path": "lib/ai-board",
+      "owner": "platform",
+      "description": "AI Board signal-to-job mapping and automation-level policy. Not a second decision engine.",
+      "status": "experimental",
+      "dependencies": [],
+      "mainFile": "lib/ai-board/src/index.ts",
+      "exports": [
+        "ingestDomainEvent",
+        "mapDomainEventToSignals",
+        "mapSignalToBoardJob",
+        "PESKIDS_SUPPORT_AUTOMATION_CAP"
+      ]
+    },
     "agent-task-core": {
       "name": "@intcloudsysops/agent-task-core",
       "version": "0.1.0",
