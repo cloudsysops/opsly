@@ -178,6 +178,7 @@
     "content:youtube:publish": "tsx scripts/content/youtube-publish.ts",
     "moneyprinter:bridge": "node scripts/moneyprinter-bridge.mjs",
     "compute:workers": "node scripts/ops/compute-worker-router.mjs --status",
+    "compute:model-route": "tsx scripts/ops/pc-gamer-model-router.ts",
     "compute:assign": "node scripts/ops/board-assign-gpu-job.mjs",
     "test:compute-workers": "node --test scripts/ops/__tests__/compute-worker-router.test.mjs scripts/ops/__tests__/content-render-ffmpeg.test.mjs"
   },

@@ -13,6 +13,12 @@ import {
   redactSecrets,
   resolveAgentCommand,
 } from './lib/cli-agent-bridge.mjs';
+import {
+  PcGamerModelRoutingError,
+  type PcGamerTaskType,
+  pcGamerRoutingConfig,
+  resolvePcGamerModel,
+} from './ops/pc-gamer-model-router.js';
 
 type ExecuteRequest = {
   job_id?: string;
@@ -21,6 +27,7 @@ type ExecuteRequest = {
   agent_role?: string;
   max_steps?: number;
   model?: string;
+  task_type?: PcGamerTaskType;
 };
 
 type CommandSpec = {
@@ -86,16 +93,30 @@ function promptContent(body: ExecuteRequest): string {
   return promptContentFromBody(body);
 }
 
+function selectedModelFor(body: ExecuteRequest): string {
+  if (agent !== 'opencode') {
+    return body.model || process.env.OPSLY_OPENCODE_MODEL?.trim() || agent;
+  }
+
+  return resolvePcGamerModel({
+    requestedModel: body.model,
+    taskType: body.task_type,
+    environmentModel: process.env.OPSLY_OPENCODE_MODEL,
+  }).model;
+}
+
 function commandFor(prompt: string, body: ExecuteRequest): CommandSpec {
   const override = process.env.OPSLY_CLI_AGENT_COMMAND?.trim();
   if (override) {
     if (process.env.OPSLY_CLI_AGENT_ALLOW_COMMAND_OVERRIDE !== '1') {
-      throw new Error('OPSLY_CLI_AGENT_COMMAND is disabled unless OPSLY_CLI_AGENT_ALLOW_COMMAND_OVERRIDE=1');
+      throw new Error(
+        'OPSLY_CLI_AGENT_COMMAND is disabled unless OPSLY_CLI_AGENT_ALLOW_COMMAND_OVERRIDE=1'
+      );
     }
     return { command: override, args: [] };
   }
 
-  const selectedModel = body.model || process.env.OPSLY_OPENCODE_MODEL?.trim();
+  const selectedModel = selectedModelFor(body);
   const modelArgs = selectedModel ? ['--model', selectedModel] : [];
 
   switch (agent) {
@@ -172,7 +193,8 @@ function commandFor(prompt: string, body: ExecuteRequest): CommandSpec {
           cwd,
           '--sandbox',
           'read-only',
-          'Run an adversarial security and correctness review only. Do not edit files.\n\n' + prompt,
+          'Run an adversarial security and correctness review only. Do not edit files.\n\n' +
+            prompt,
         ],
       };
     case 'aider':
@@ -205,13 +227,7 @@ function commandFor(prompt: string, body: ExecuteRequest): CommandSpec {
     case 'playwright':
       return {
         command: 'npm',
-        args: [
-          'run',
-          'test:e2e',
-          '--workspace=@intcloudsysops/portal',
-          '--',
-          '--reporter=line',
-        ],
+        args: ['run', 'test:e2e', '--workspace=@intcloudsysops/portal', '--', '--reporter=line'],
       };
     default:
       throw new Error(`Unsupported OPSLY_CLI_AGENT: ${agent}`);
@@ -306,7 +322,9 @@ function appendLimited(current: string, chunk: Buffer): string {
   return `${truncated}\n[opsly] output truncated at ${outputLimitBytes} bytes`;
 }
 
-function runCommand(spec: CommandSpec): Promise<{ stdout: string; stderr: string; code: number | null }> {
+function runCommand(
+  spec: CommandSpec
+): Promise<{ stdout: string; stderr: string; code: number | null }> {
   return new Promise((resolvePromise, reject) => {
     validateWorkspaceScope();
 
@@ -368,6 +386,7 @@ app.get('/health', (_req, res) => {
     in_flight_job_id: inFlightJobId,
     output_limit_bytes: outputLimitBytes,
     timeout_ms: timeoutMs,
+    model_routing: agent === 'opencode' ? 'pc-gamer-capability-v1' : undefined,
   });
 });
 
@@ -414,6 +433,8 @@ app.post('/execute', async (req, res) => {
     }
 
     const prompt = buildPrompt({ ...body, job_id: jobId, prompt_content: guarded.prompt });
+    const selectedModel = selectedModelFor(body);
+    const routing = pcGamerRoutingConfig();
 
     if (dryRun) {
       res.json({
@@ -421,7 +442,10 @@ app.post('/execute', async (req, res) => {
         job_id: jobId,
         response_content: `# ${agent} dry-run\n\nReceived ${prompt.length} characters.`,
         execution_time_ms: Date.now() - started,
-        model: body.model || agent,
+        model: selectedModel,
+        task_type: body.task_type,
+        provider: agent === 'opencode' ? routing.provider : agent,
+        cost_usd: agent === 'opencode' ? routing.costUsdPerRequest : undefined,
       });
       return;
     }
@@ -431,7 +455,6 @@ app.post('/execute', async (req, res) => {
     const result = await runCommand(spec);
     const content = result.stdout.trim() || result.stderr.trim();
 
-    const selectedModel = body.model || process.env.OPSLY_OPENCODE_MODEL?.trim() || agent;
     res.status(result.code === 0 ? 200 : 500).json({
       success: result.code === 0,
       job_id: jobId,
@@ -446,8 +469,25 @@ app.post('/execute', async (req, res) => {
       durationMs: Date.now() - started,
       runtime: agent,
       model: selectedModel,
+      task_type: body.task_type,
+      provider: agent === 'opencode' ? routing.provider : agent,
+      cost_usd: agent === 'opencode' ? routing.costUsdPerRequest : undefined,
+      fallback_used: false,
     });
   } catch (error) {
+    if (error instanceof PcGamerModelRoutingError) {
+      res.status(400).json({
+        success: false,
+        job_id: jobId,
+        request_id: jobId,
+        errorCode: 'MODEL_NOT_ALLOWED',
+        error: error.message,
+        execution_time_ms: Date.now() - started,
+        durationMs: Date.now() - started,
+        runtime: agent,
+      });
+      return;
+    }
     const classified = classifySpawnError(error);
     res.status(classified.status).json({
       success: false,

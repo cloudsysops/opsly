@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "provider": "ollama",
+  "costUsdPerRequest": 0,
+  "defaultModel": "ollama/qwen3:8b",
+  "maxConcurrentHeavyJobs": 1,
+  "vramBusyThresholdPct": 85,
+  "minimumFreeVramGbForHeavyJob": 3,
+  "models": {
+    "ollama/qwen3:8b": {
+      "role": "fast-general",
+      "taskTypes": ["summary", "classify", "support", "qa"],
+      "heavy": false,
+      "fallbacks": ["ollama/llama3.2:latest"]
+    },
+    "ollama/qwen3:14b": {
+      "role": "coding-reasoning",
+      "taskTypes": ["code", "research", "technical-reasoning"],
+      "heavy": true,
+      "fallbacks": ["ollama/llama3.2:latest"]
+    },
+    "ollama/gemma3:12b": {
+      "role": "vision",
+      "taskTypes": ["vision"],
+      "heavy": true,
+      "fallbacks": []
+    },
+    "ollama/llama3.2:latest": {
+      "role": "fallback-smoke",
+      "taskTypes": ["fallback", "smoke"],
+      "heavy": false,
+      "fallbacks": []
+    }
+  }
+}

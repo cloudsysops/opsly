@@ -28,11 +28,11 @@ VPS vps-dragon (100.120.151.91) ── control plane siempre ON
         Traefik · API · Redis BullMQ · Peskids · queue-only orchestrator
 ```
 
-| Host | Rol | Si se apaga |
-|------|-----|-------------|
-| VPS | Control plane | Outage (único SPOF aceptado) |
+| Host     | Rol            | Si se apaga                                        |
+| -------- | -------------- | -------------------------------------------------- |
+| VPS      | Control plane  | Outage (único SPOF aceptado)                       |
 | PC-gamer | Worker efímero | Jobs GPU esperan o caen a cloud; **Peskids sigue** |
-| Mac | IDE / Doppler | Sin impacto runtime |
+| Mac      | IDE / Doppler  | Sin impacto runtime                                |
 
 Conector: **Tailscale + Redis VPS + LLM Gateway**. Sin Swarm. Sin segundo orchestrator.
 
@@ -85,13 +85,13 @@ Validación local de `.env.worker`:
 
 ## Qué sí corre aquí (valor)
 
-| Carga | Notas |
-|-------|--------|
-| Inferencia GPU (Ollama) | Best-effort; heartbeat + allowlist `ollama` |
-| Entrenador / eval de agentes | Lotes offline: traces → critique → sandbox; no decide tráfico cliente |
-| Builds / tests pesados | Opcional; no CI de merge a `main` de prod |
-| Shadow A/B local vs cloud | Métricas; sin cutover automático |
-| **Overnight OpenCode** | Bridge `:5004` + cola `local-agents`; worktree `~/opsly-overnight` — [`OVERNIGHT-OPENCODE-GAMER.md`](../runbooks/OVERNIGHT-OPENCODE-GAMER.md) |
+| Carga                        | Notas                                                                                                                                         |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Inferencia GPU (Ollama)      | Best-effort; heartbeat + allowlist `ollama`                                                                                                   |
+| Entrenador / eval de agentes | Lotes offline: traces → critique → sandbox; no decide tráfico cliente                                                                         |
+| Builds / tests pesados       | Opcional; no CI de merge a `main` de prod                                                                                                     |
+| Shadow A/B local vs cloud    | Métricas; sin cutover automático                                                                                                              |
+| **Overnight OpenCode**       | Bridge `:5004` + cola `local-agents`; worktree `~/opsly-overnight` — [`OVERNIGHT-OPENCODE-GAMER.md`](../runbooks/OVERNIGHT-OPENCODE-GAMER.md) |
 
 ## Qué no corre aquí
 
@@ -156,6 +156,33 @@ Variables clave en `.env.worker`:
 - `OLLAMA_URL=http://127.0.0.1:11434` — inferencia local (margen $0)
 - `LLM_GATEWAY_URL=http://100.120.151.91:3010` — opcional / metering; no requerido para jobs `ollama` en modo efímero
 - `OPSLY_OLLAMA_DIRECT=true` — fuerza ruta directa aunque no sea efímero
+
+### Routing local de modelos
+
+La política canónica está en [`config/pc-gamer-model-routing.json`](../../config/pc-gamer-model-routing.json)
+y se aplica en el bridge OpenCode. El caller puede enviar `task_type` o un `model` explícito:
+
+```json
+{
+  "task_type": "code",
+  "prompt_content": "..."
+}
+```
+
+Rutas actuales:
+
+| Capacidad                                 | Modelo                   | Uso                           |
+| ----------------------------------------- | ------------------------ | ----------------------------- |
+| `code`, `research`, `technical-reasoning` | `ollama/qwen3:14b`       | Código y razonamiento técnico |
+| `summary`, `classify`, `support`, `qa`    | `ollama/qwen3:8b`        | Trabajo rápido/general        |
+| `vision`                                  | `ollama/gemma3:12b`      | Imágenes y screenshots        |
+| `fallback`, `smoke`                       | `ollama/llama3.2:latest` | Fallback seguro               |
+
+El `model` explícito tiene prioridad. Modelos fuera de la allowlist se rechazan con
+`MODEL_NOT_ALLOWED`; no se descargan automáticamente. Los jobs pesados mantienen
+`maxConcurrentHeavyJobs=1` y un margen mínimo configurable de VRAM. Cada respuesta
+del bridge incluye `provider=ollama`, `cost_usd=0`, `model` y `task_type` para que
+Mission Control pueda agregar métricas sin añadir secretos al gamer.
 
 ### Content Studio / Bitsitos (+ Splashitos) en gamer
 
@@ -257,34 +284,34 @@ swap=4GB
 
 ## Archivos
 
-| Path | Uso |
-|------|-----|
-| `infra/pc-gamer.env.example` | Plantilla mínima privilegio |
-| `infra/docker-compose.pc-gamer-workers.yml` | Worker BullMQ (host network) |
-| `scripts/ops/pc-gamer-docker-plane.sh` | Up/down + autostart Docker |
-| `scripts/ops/pc-gamer-opencode-plane.sh` | Bridge OpenCode + allowlist overnight |
-| `scripts/ops/enqueue-overnight-opencode.sh` | Mac → encolar `local_opencode` |
-| `scripts/ops/pc-gamer-reconnect.sh` | Mac → SSH → levantar plano (+ `--with-opencode`) |
-| `scripts/setup-pc-gamer-worker.sh` | Bootstrap (delega a docker plane) |
-| `config/compute-workers.json` | Capacidades + job types (no hostname hardcode) |
-| `scripts/ops/compute-worker-router.mjs` | Router por capacidad; offline → job sigue `QUEUED` |
-| `scripts/ops/board-assign-gpu-job.mjs` | AI Board asigna GPU job (`--apply` encola BullMQ) |
-| `scripts/ops/content-render-ffmpeg.mjs` | Primer job real: title card MP4 + thumbnail |
-| `scripts/ops/pc-gamer-heartbeat.sh` | TTL heartbeat Redis (JSON GPU/VRAM/disk) |
-| `scripts/ops/setup-pc-gamer-sudoers.sh` | NOPASSWD `devops` en WSL (no VPS) |
-| `scripts/ops/check-pc-gamer-online.sh` | Gate antes de encolar |
-| `scripts/ops/assert-ephemeral-worker-env.sh` | Anti secretos maestros |
-| `OPSLY_WORKER_ALLOWLIST` | Filtra workers en `apps/orchestrator` |
-| `scripts/ops/pc-gamer-schedule.sh` | Modo gaming/light/heavy según Mauro |
-| `config/pc-gamer-schedule.json` | Calendario semanal (DRAFT) |
-| `docs/runbooks/PC-GAMER-MAURO-SCHEDULE.md` | Cómo ajustar horas con el dueño |
-| `docs/runbooks/OVERNIGHT-OPENCODE-GAMER.md` | Runbook crecimiento overnight |
-| `scripts/ops/start-mac-local-agents-worker.sh` | Worker Mac solo cola `local-agents` |
-| `scripts/ops/overnight-autodispatch.sh` | **Autodispatch:** descubrir online + encolar backlog ocioso respetando schedule (`--dry-run`) |
-| `config/overnight-backlog.json` | Manifiesto de tareas ociosas para autodispatch |
-| `scripts/ops/ensure-overnight-autodispatch-launchd.sh` | Instalar LaunchAgent del autodispatch (5 min, Doppler) |
-| `infra/launchd/com.opsly.pc-gamer-autodispatch.plist` | LaunchAgent: corre el autodispatch cada 5 min |
-| `docs/runbooks/PC-GAMER-OVERNIGHT-AUTODISPATCH.md` | Runbook del autodispatch overnight |
+| Path                                                   | Uso                                                                                           |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `infra/pc-gamer.env.example`                           | Plantilla mínima privilegio                                                                   |
+| `infra/docker-compose.pc-gamer-workers.yml`            | Worker BullMQ (host network)                                                                  |
+| `scripts/ops/pc-gamer-docker-plane.sh`                 | Up/down + autostart Docker                                                                    |
+| `scripts/ops/pc-gamer-opencode-plane.sh`               | Bridge OpenCode + allowlist overnight                                                         |
+| `scripts/ops/enqueue-overnight-opencode.sh`            | Mac → encolar `local_opencode`                                                                |
+| `scripts/ops/pc-gamer-reconnect.sh`                    | Mac → SSH → levantar plano (+ `--with-opencode`)                                              |
+| `scripts/setup-pc-gamer-worker.sh`                     | Bootstrap (delega a docker plane)                                                             |
+| `config/compute-workers.json`                          | Capacidades + job types (no hostname hardcode)                                                |
+| `scripts/ops/compute-worker-router.mjs`                | Router por capacidad; offline → job sigue `QUEUED`                                            |
+| `scripts/ops/board-assign-gpu-job.mjs`                 | AI Board asigna GPU job (`--apply` encola BullMQ)                                             |
+| `scripts/ops/content-render-ffmpeg.mjs`                | Primer job real: title card MP4 + thumbnail                                                   |
+| `scripts/ops/pc-gamer-heartbeat.sh`                    | TTL heartbeat Redis (JSON GPU/VRAM/disk)                                                      |
+| `scripts/ops/setup-pc-gamer-sudoers.sh`                | NOPASSWD `devops` en WSL (no VPS)                                                             |
+| `scripts/ops/check-pc-gamer-online.sh`                 | Gate antes de encolar                                                                         |
+| `scripts/ops/assert-ephemeral-worker-env.sh`           | Anti secretos maestros                                                                        |
+| `OPSLY_WORKER_ALLOWLIST`                               | Filtra workers en `apps/orchestrator`                                                         |
+| `scripts/ops/pc-gamer-schedule.sh`                     | Modo gaming/light/heavy según Mauro                                                           |
+| `config/pc-gamer-schedule.json`                        | Calendario semanal (DRAFT)                                                                    |
+| `docs/runbooks/PC-GAMER-MAURO-SCHEDULE.md`             | Cómo ajustar horas con el dueño                                                               |
+| `docs/runbooks/OVERNIGHT-OPENCODE-GAMER.md`            | Runbook crecimiento overnight                                                                 |
+| `scripts/ops/start-mac-local-agents-worker.sh`         | Worker Mac solo cola `local-agents`                                                           |
+| `scripts/ops/overnight-autodispatch.sh`                | **Autodispatch:** descubrir online + encolar backlog ocioso respetando schedule (`--dry-run`) |
+| `config/overnight-backlog.json`                        | Manifiesto de tareas ociosas para autodispatch                                                |
+| `scripts/ops/ensure-overnight-autodispatch-launchd.sh` | Instalar LaunchAgent del autodispatch (5 min, Doppler)                                        |
+| `infra/launchd/com.opsly.pc-gamer-autodispatch.plist`  | LaunchAgent: corre el autodispatch cada 5 min                                                 |
+| `docs/runbooks/PC-GAMER-OVERNIGHT-AUTODISPATCH.md`     | Runbook del autodispatch overnight                                                            |
 
 ## Relacionado
 
