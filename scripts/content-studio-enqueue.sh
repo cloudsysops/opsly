@@ -62,11 +62,18 @@ if [[ "$DRY_RUN" -eq 1 ]]; then
   echo "[dry-run] Would enqueue drafts from $(printf '%s ' "${BATCHES[@]}") to queue content-video"
   export CHANNEL_DIR
   export BATCH_OVERRIDE
+  export ROOT
   node --input-type=module <<'EOF'
 import { readFileSync, readdirSync } from 'node:fs';
 import { basename, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
+const { applyBrandKit, loadBrandKit } = await import(
+  pathToFileURL(join(process.env.ROOT, 'scripts/ops/content-studio-brand-kit.mjs')).href
+);
 const dir = process.env.CHANNEL_DIR;
 const override = process.env.BATCH_OVERRIDE;
+const kit = loadBrandKit(process.env.ROOT);
+const channelKey = dir.split('/').pop();
 const files = override
   ? [override]
   : readdirSync(dir)
@@ -76,7 +83,13 @@ const files = override
 for (const path of files) {
   const batch = JSON.parse(readFileSync(path, 'utf8'));
   console.log(`- ${basename(path)}: channel=${batch.channel?.brand} slug=${batch.channel?.slug} drafts=${batch.drafts?.length || 0}`);
-  for (const d of batch.drafts || []) console.log(`    ${d.id}: ${d.title}`);
+  for (const d of batch.drafts || []) {
+    const branded = applyBrandKit(kit, channelKey, d.image_prompt);
+    console.log(`    ${d.id}: ${d.title}`);
+    if (branded.visual_refs.length) {
+      console.log(`      visual_refs=${branded.visual_refs.length} prefix=${branded.image_prompt !== (d.image_prompt || '')}`);
+    }
+  }
 }
 EOF
   exit 0
@@ -90,12 +103,17 @@ fi
 export CONTENT_TENANT_SLUG="${CONTENT_TENANT_SLUG:-icso-${CHANNEL}}"
 export CHANNEL_DIR
 export BATCH_OVERRIDE
+export ROOT
 echo "enqueue MoneyPrinter (worker-local)=${MONEY_PRINTER_TURBO_URL}"
 node --input-type=module <<'EOF'
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { Queue } from 'bullmq';
 import { randomUUID } from 'node:crypto';
+import { pathToFileURL } from 'node:url';
+const { applyBrandKit, loadBrandKit } = await import(
+  pathToFileURL(join(process.env.ROOT, 'scripts/ops/content-studio-brand-kit.mjs')).href
+);
 
 const dir = process.env.CHANNEL_DIR;
 const redisUrl = process.env.REDIS_URL;
@@ -107,6 +125,7 @@ const connection = {
   maxRetriesPerRequest: null,
 };
 
+const kit = loadBrandKit(process.env.ROOT);
 const queue = new Queue('content-video', { connection });
 const now = new Date().toISOString();
 
@@ -124,6 +143,7 @@ for (const batchPath of batchFiles) {
   const channelKey = process.env.CHANNEL_DIR.split('/').pop();
   for (const item of batch.drafts || []) {
     const request_id = randomUUID();
+    const branded = applyBrandKit(kit, channelKey, item.image_prompt);
     const draft = {
       id: item.id,
       tenant_slug: process.env.CONTENT_TENANT_SLUG,
@@ -138,7 +158,8 @@ for (const batchPath of batchFiles) {
           characterCount: `${item.story_hook}\n\n${item.call_to_action}`.length,
         },
       ],
-      image_prompt: item.image_prompt,
+      image_prompt: branded.image_prompt,
+      visual_refs: branded.visual_refs,
       reel_script: item.reel_script,
       call_to_action: item.call_to_action,
       compliance_flags: ['not_peskids', 'icso_owned', channelKey],
@@ -168,7 +189,7 @@ for (const batchPath of batchFiles) {
         mpt_api_key: process.env.MONEY_PRINTER_TURBO_API_KEY,
       },
       {
-        jobId: `${channelKey}:${item.id}`,
+        jobId: `${channelKey}__${item.id}`,
         removeOnComplete: 100,
         removeOnFail: 50,
       }

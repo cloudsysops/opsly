@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Opsly · Colors — primary surfaces</title>
+<link rel="stylesheet" href="../colors_and_type.css" />
+<style>
+  html,body{margin:0;background:#0A0A0A;color:#fff;font-family:var(--font-sans);}
+  body{padding:18px;}
+  .row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .sw{border:1px solid var(--ops-border);border-radius:8px;overflow:hidden;}
+  .chip{height:84px;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;}
+  .meta{display:flex;justify-content:space-between;padding:8px 10px;background:#0A0A0A;border-top:1px solid var(--ops-border);}
+  .name{font-family:var(--font-mono);font-size:11px;color:#fff;}
+  .hex{font-family:var(--font-mono);font-size:11px;color:var(--ops-gray);}
+  .label{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.18em;opacity:.7;color:#fff;}
+</style>
+</head>
+<body>
+<div class="row">
+  <div class="sw"><div class="chip" style="background:#0A0E27"><span class="label" style="color:#00FFFF">admin · bg</span></div><div class="meta"><span class="name">--ops-admin-bg</span><span class="hex">#0A0E27</span></div></div>
+  <div class="sw"><div class="chip" style="background:#101734"><span class="label" style="color:#00FFFF">admin · surface</span></div><div class="meta"><span class="name">--ops-admin-surface</span><span class="hex">#101734</span></div></div>
+  <div class="sw"><div class="chip" style="background:#223064"><span class="label" style="color:#00FFFF">admin · border</span></div><div class="meta"><span class="name">--ops-admin-border</span><span class="hex">#223064</span></div></div>
+  <div class="sw"><div class="chip" style="background:#0A0A0A"><span class="label" style="color:#22C55E">portal · bg</span></div><div class="meta"><span class="name">--ops-bg</span><span class="hex">#0A0A0A</span></div></div>
+  <div class="sw"><div class="chip" style="background:#111111"><span class="label" style="color:#22C55E">portal · surface</span></div><div class="meta"><span class="name">--ops-surface</span><span class="hex">#111111</span></div></div>
+  <div class="sw"><div class="chip" style="background:#1E1E1E"><span class="label" style="color:#22C55E">portal · border</span></div><div class="meta"><span class="name">--ops-border</span><span class="hex">#1E1E1E</span></div></div>
+</div>
+</body></html>

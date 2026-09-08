@@ -1,0 +1,11 @@
+Clicksitos — canal vivo (Cristian B / @cristianb550)
+
+ID: UCuWcqyL7Vvq3CpMv3EZUQeQ
+Studio: https://studio.youtube.com/channel/UCuWcqyL7Vvq3CpMv3EZUQeQ
+
+1. En Studio: Personalización → nombre Clicksitos (recomendado).
+2. Doppler: YOUTUBE_CLICKSITOS_CHANNEL_ID = ese UC.
+3. Rehacer OAuth eligiendo ESTA Brand Account (no @opsly):
+   ./scripts/youtube-oauth-doppler-setup.sh --client-json ~/Downloads/youtube-oauth-client.json
+4. mine=true debe ser UCuWcqyL7Vvq3CpMv3EZUQeQ.
+5. npm run content:clicksitos:upload:next

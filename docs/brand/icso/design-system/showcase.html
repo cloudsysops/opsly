@@ -1,0 +1,955 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Opsly · Sistema de diseño</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="colors_and_type.css" />
+<link rel="stylesheet" href="motion.css" />
+<style>
+/* =========================================================================
+   SHOWCASE — single document, scroll-through brand experience
+   ========================================================================= */
+*,*::before,*::after{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; background:#05060D; color:var(--fg-1); font-family: var(--font-sans-portal); -webkit-font-smoothing: antialiased; }
+html{ scroll-behavior:smooth; }
+body{ overflow-x:hidden; }
+a{ color: inherit; text-decoration: none; }
+img,svg{ display:block; }
+
+/* shared layout */
+.shell{ max-width:1280px; margin:0 auto; padding: 0 32px; }
+.section{ position:relative; padding: 120px 0; }
+.section + .section{ border-top:1px solid rgba(255,255,255,.05); }
+.eyebrow{
+  font-family: var(--font-mono); font-size:11px; letter-spacing:.24em;
+  text-transform:uppercase; color: var(--fg-muted);
+  display:inline-flex; align-items:center; gap:10px;
+}
+.eyebrow::before{ content:""; width:24px; height:1px; background: linear-gradient(90deg, transparent, currentColor); }
+.section-title{ font-family: var(--font-sans-portal); font-weight:700; font-size: clamp(36px, 5vw, 56px); line-height:1.05; letter-spacing:-.015em; margin: 14px 0 18px; }
+.section-lede{ font-family: var(--font-sans-portal); font-size: 18px; line-height:1.55; color: var(--fg-3); max-width: 64ch; margin: 0 0 56px; }
+
+/* =========================================================================
+   01 HERO — full-bleed cyber stage
+   ========================================================================= */
+.hero{
+  position: relative;
+  min-height: 100vh;
+  display: grid; place-items: center;
+  background:
+    radial-gradient(1200px 700px at 50% 10%, rgba(157,0,255,.18), transparent 60%),
+    radial-gradient(900px 500px at 20% 80%, rgba(0,255,255,.10), transparent 60%),
+    radial-gradient(900px 500px at 85% 70%, rgba(255,0,255,.10), transparent 60%),
+    #05060D;
+  overflow: hidden;
+}
+.hero-grid{
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(0,255,255,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(157,0,255,0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 60%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 60%, transparent 100%);
+  animation: ops-drift 24s linear infinite;
+}
+.hero-vignette{
+  position:absolute; inset:0; pointer-events:none;
+  background: radial-gradient(ellipse at center, transparent 30%, rgba(5,6,13,.7) 80%, #05060D 100%);
+}
+.hero-noise{
+  position:absolute; inset:0; pointer-events:none; opacity:.06; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .35 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.hero-inner{ position:relative; z-index:2; text-align:center; padding: 0 24px; max-width: 1080px; }
+.hero-stamp{
+  display:inline-flex; align-items:center; gap:10px;
+  font-family: var(--font-mono); font-size:11px; letter-spacing:.28em; text-transform:uppercase;
+  color: var(--ops-cyan);
+  border: 1px solid rgba(0,255,255,.35);
+  padding: 6px 12px; border-radius: 2px;
+  background: rgba(0,255,255,.04);
+  margin-bottom: 28px;
+}
+.hero-stamp .dot{ width:6px; height:6px; border-radius:50%; background: var(--ops-green); box-shadow:0 0 8px var(--ops-green); }
+.hero-mark{
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(72px, 14vw, 200px);
+  letter-spacing: .08em;
+  line-height: .9;
+  background: linear-gradient(120deg,#00FFFF 0%, #FF00FF 50%, #9D00FF 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  animation: ops-holo 8s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px rgba(0,255,255,.18)) drop-shadow(0 0 80px rgba(157,0,255,.18));
+}
+.hero-mark-shadow{
+  position:absolute; left:50%; transform: translateX(-50%);
+  top: 50%;
+  font-family: var(--font-display); font-weight:700;
+  font-size: clamp(72px, 14vw, 200px); letter-spacing:.08em; line-height:.9;
+  color: rgba(255,255,255,.025);
+  pointer-events:none;
+  white-space:nowrap;
+}
+.hero-tagline{
+  font-family: var(--font-sans-portal);
+  font-size: clamp(20px, 2vw, 28px); font-weight:500;
+  color: var(--fg-1);
+  margin-top: 32px;
+}
+.hero-tagline .accent{
+  background: linear-gradient(90deg, var(--ops-cyan), var(--ops-magenta));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.hero-sub{
+  font-family: var(--font-sans-portal); font-size: 16px; color: var(--fg-3);
+  margin: 18px auto 0; max-width: 56ch; line-height: 1.55;
+}
+.hero-meta{
+  margin-top: 56px;
+  display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 1px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 2px;
+  max-width: 880px; margin-left:auto; margin-right:auto;
+  font-family: var(--font-mono);
+}
+.hero-meta > div{ background: rgba(5,6,13,.6); padding: 16px 14px; }
+.hero-meta .k{ font-size:10px; letter-spacing:.2em; text-transform:uppercase; color: var(--fg-muted); }
+.hero-meta .v{ font-size:14px; color: var(--fg-1); margin-top:6px; font-variant-numeric: tabular-nums; }
+.hero-meta .v.green{ color: var(--ops-green); }
+.hero-meta .v.cyan{ color: var(--ops-cyan); }
+
+.hero-statusbar{
+  position:absolute; bottom: 0; left:0; right:0; z-index:3;
+  border-top: 1px solid rgba(255,255,255,.06);
+  background: rgba(5,6,13,.7);
+  backdrop-filter: blur(8px);
+  font-family: var(--font-mono); font-size: 12px; color: var(--fg-3);
+  padding: 10px 0; overflow:hidden;
+}
+.hero-statusbar .track{ display:flex; gap: 44px; white-space: nowrap; }
+.hero-statusbar .item{ display:inline-flex; align-items:center; gap:8px; }
+.hero-statusbar .item b{ color: var(--ops-cyan); font-weight:500; }
+.hero-statusbar .green{ color: var(--ops-green); }
+.hero-statusbar .yellow{ color: var(--ops-yellow); }
+
+.hero-scroll{
+  position:absolute; bottom: 56px; left:50%; transform: translateX(-50%);
+  font-family: var(--font-mono); font-size:10px; letter-spacing:.28em; text-transform:uppercase;
+  color: var(--fg-muted);
+  display:flex; flex-direction:column; align-items:center; gap:8px; z-index:3;
+}
+.hero-scroll .line{ width:1px; height:36px; background: linear-gradient(180deg, var(--fg-muted), transparent); }
+
+/* =========================================================================
+   02 SURFACES STRIP — three product worlds
+   ========================================================================= */
+.surfaces{ background:#05060D; }
+.surfaces-grid{
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+}
+.surf{
+  position: relative; overflow: hidden;
+  border-radius: 16px;
+  padding: 40px 32px 32px;
+  min-height: 460px;
+  display: flex; flex-direction: column;
+  text-decoration:none;
+  transition: transform .35s var(--ease-out), border-color .35s var(--ease-out);
+  isolation: isolate;
+}
+.surf:hover{ transform: translateY(-3px); }
+.surf .label{
+  font-family: var(--font-mono); font-size:10px; letter-spacing:.24em; text-transform:uppercase;
+  color: var(--fg-muted);
+}
+.surf h3{ font-family: var(--font-sans-portal); font-weight:700; font-size:28px; line-height:1.1; margin: 8px 0 8px; letter-spacing:-.01em; color: var(--fg-1); }
+.surf p{ font-family: var(--font-sans-portal); font-size:14px; color: var(--fg-3); line-height: 1.55; margin:0; }
+.surf .cta{
+  margin-top: auto; padding-top: 24px;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing:.16em; text-transform: uppercase;
+  display:inline-flex; align-items:center; gap:8px;
+}
+.surf .cta::after{ content:"→"; transition: transform .2s var(--ease-out); }
+.surf:hover .cta::after{ transform: translateX(4px); }
+
+/* surf-admin */
+.surf-admin{
+  background:
+    linear-gradient(180deg, rgba(0,255,255,.06), transparent 50%),
+    #0A0E27;
+  border: 1px solid rgba(0,255,255,.18);
+}
+.surf-admin .label{ color: var(--ops-cyan); }
+.surf-admin .cta{ color: var(--ops-cyan); }
+.surf-admin .preview{
+  margin-top: 20px;
+  border: 1px solid rgba(0,255,255,.18);
+  border-radius: 8px;
+  background: rgba(0,255,255,.02);
+  padding: 12px;
+  font-family: var(--font-mono); font-size: 11px;
+}
+.surf-admin .preview .row{ display:flex; align-items:center; gap:10px; padding: 6px 0; border-bottom: 1px dashed rgba(255,255,255,.06); }
+.surf-admin .preview .row:last-child{ border:0; }
+.surf-admin .preview .row .pill{ font-size:10px; padding: 2px 6px; border-radius:2px; border:1px solid; }
+.surf-admin .preview .row .name{ color: var(--fg-2); flex: 1; }
+.surf-admin .preview .row .num{ color: var(--ops-cyan); }
+.pill-ok{ color: var(--ops-green); border-color: rgba(34,197,94,.4); background: rgba(34,197,94,.08); }
+.pill-warn{ color: var(--ops-yellow); border-color: rgba(234,179,8,.4); background: rgba(234,179,8,.08); }
+
+/* surf-portal */
+.surf-portal{
+  background: #0A0A0A;
+  border: 1px solid rgba(34,197,94,.18);
+}
+.surf-portal .label{ color: var(--ops-green); }
+.surf-portal .cta{ color: var(--ops-green); }
+.surf-portal .preview{
+  margin-top: 20px; padding: 14px;
+  border: 1px solid var(--ops-border); border-radius: 8px;
+  background: #060606;
+  font-family: var(--font-mono); font-size: 12px; line-height: 1.7;
+}
+.surf-portal .preview .prompt{ color: var(--ops-green); }
+.surf-portal .preview .key{ color: var(--ops-yellow); }
+.surf-portal .preview .val{ color: var(--fg-2); }
+.surf-portal .preview .ok{ color: var(--ops-green); }
+
+/* surf-web */
+.surf-web{
+  background:
+    linear-gradient(180deg, rgba(124,58,237,.18), transparent 60%),
+    #0A0A0A;
+  border: 1px solid rgba(124,58,237,.22);
+}
+.surf-web .label{ color: var(--ops-violet-hover); }
+.surf-web .cta{ color: var(--ops-violet-hover); }
+.surf-web .preview{
+  margin-top: 20px; padding: 16px;
+  border: 1px solid rgba(124,58,237,.22); border-radius: 12px;
+  background: rgba(124,58,237,.06);
+}
+.surf-web .preview .badge{
+  display:inline-block; font-family: var(--font-mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+  color: var(--ops-violet-hover); border:1px solid rgba(124,58,237,.4); padding: 3px 8px; border-radius: 999px; background: rgba(124,58,237,.1);
+}
+.surf-web .preview .price{ font-family: var(--font-sans-portal); font-weight:700; font-size:34px; margin-top: 10px; color: var(--fg-1); letter-spacing:-.01em; }
+.surf-web .preview .price small{ font-size:14px; font-weight:400; color: var(--fg-3); }
+.surf-web .preview .feat{ margin-top: 12px; font-family: var(--font-sans-portal); font-size: 13px; color: var(--fg-2); display:flex; flex-direction:column; gap:6px; }
+.surf-web .preview .feat span::before{ content:"✓ "; color: var(--ops-violet-hover); }
+
+/* =========================================================================
+   03 LIVING TOKENS — color, type, scale
+   ========================================================================= */
+.tokens{ background: #07080F; }
+
+.token-row{ display: grid; grid-template-columns: 200px 1fr; gap: 40px; padding: 36px 0; border-top: 1px solid rgba(255,255,255,.06); }
+.token-row:first-of-type{ border-top:0; }
+.token-row .lab{ font-family: var(--font-mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase; color: var(--fg-muted); padding-top: 6px; }
+.token-row .lab small{ display:block; color: var(--fg-4); text-transform:none; letter-spacing:0; margin-top:6px; font-size:12px; line-height: 1.5; }
+
+.swatch-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.swatch{
+  position: relative; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.08);
+  display:flex; flex-direction:column; justify-content: space-between; padding: 14px;
+  font-family: var(--font-mono); font-size: 11px;
+  transition: transform .25s var(--ease-out);
+  cursor: default;
+}
+.swatch:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.18); }
+.swatch .name{ font-size:10px; letter-spacing:.18em; text-transform:uppercase; color: rgba(255,255,255,.7); text-shadow: 0 1px 4px rgba(0,0,0,.5); }
+.swatch .hex{ font-size:13px; color:#fff; text-shadow: 0 1px 4px rgba(0,0,0,.5); font-variant-numeric: tabular-nums; }
+.swatch.dark .name, .swatch.dark .hex{ color:#fff; text-shadow: 0 1px 6px rgba(0,0,0,.7); }
+.swatch.light .name, .swatch.light .hex{ color: rgba(0,0,0,.7); text-shadow: none; }
+
+/* type samples */
+.type-stack{ display: grid; gap: 16px; }
+.type-card{
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  padding: 24px 28px;
+  background: rgba(255,255,255,.015);
+  display: grid; grid-template-columns: 140px 1fr; gap: 28px; align-items: baseline;
+}
+.type-card .meta{ font-family: var(--font-mono); font-size:11px; color: var(--fg-muted); letter-spacing:.16em; text-transform:uppercase; }
+.type-card .meta b{ display:block; color: var(--fg-1); font-weight:500; letter-spacing:.04em; text-transform:none; font-size: 14px; margin-top: 4px; }
+.type-card .meta .files{ font-family: var(--font-mono); font-size: 10px; color: var(--fg-4); letter-spacing:.12em; margin-top: 8px; text-transform:lowercase; }
+.type-sample-display{ font-family: var(--font-display); font-weight:700; font-size: 56px; letter-spacing:.06em; color: var(--ops-cyan); text-transform: uppercase; }
+.type-sample-electrolize{ font-family: var(--font-sans-admin); font-size: 32px; line-height:1.2; color: var(--fg-1); }
+.type-sample-inter{ font-family: var(--font-sans-portal); font-weight:500; font-size: 28px; line-height:1.2; color: var(--fg-1); letter-spacing:-.01em; }
+.type-sample-mono{ font-family: var(--font-mono); font-size: 24px; color: var(--ops-green); }
+
+/* type-scale row */
+.scale-row{
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px; padding: 20px;
+  background: rgba(255,255,255,.015);
+  display: flex; align-items: baseline; gap: 24px; flex-wrap:wrap;
+}
+.scale-row > div{ display:flex; align-items:baseline; gap:8px; }
+.scale-row .px{ font-family: var(--font-mono); font-size:10px; color: var(--fg-muted); letter-spacing:.12em; }
+.scale-row .glyph{ font-family: var(--font-sans-portal); color: var(--fg-1); font-weight:500; line-height: 1; letter-spacing:-.01em; }
+
+/* =========================================================================
+   04 MOTION GALLERY
+   ========================================================================= */
+.motion-bg{
+  background: #05060D;
+  position: relative; overflow: hidden;
+}
+.motion-bg::before{
+  content:""; position:absolute; inset:0; opacity:.4;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, #000 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, #000 30%, transparent 100%);
+  pointer-events:none;
+}
+.motion-grid{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.motion-tile{
+  position: relative;
+  aspect-ratio: 4/3;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  background: rgba(255,255,255,.02);
+  overflow: hidden;
+  display: grid; place-items: center;
+  isolation: isolate;
+}
+.motion-tile .label{
+  position: absolute; left: 14px; top: 12px;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing:.2em; text-transform:uppercase;
+  color: var(--fg-muted);
+}
+.motion-tile .name{
+  position: absolute; right: 14px; bottom: 12px;
+  font-family: var(--font-mono); font-size: 11px; color: var(--fg-2); letter-spacing:.04em;
+}
+
+/* tile content */
+.dot-pulse{ width: 18px; height: 18px; border-radius:50%; background: var(--ops-green); }
+.holo-bar{
+  width: 80%; height: 12px; border-radius: 999px;
+}
+.scan-window{ width: 78%; height: 60%; border-radius: 8px; background: #0A0E27; border:1px solid rgba(0,255,255,.18); position: relative; overflow:hidden; }
+.scan-window::after{
+  content:""; position:absolute; left:0; right:0; height: 30%;
+  background: linear-gradient(180deg, transparent, rgba(0,255,255,.35), transparent);
+  animation: ops-scan 3s linear infinite;
+}
+.flicker-text{ font-family: var(--font-display); font-weight:700; font-size: 28px; color: var(--ops-cyan); letter-spacing:.12em; }
+.gradient-text{ font-family: var(--font-display); font-weight:700; font-size: 28px; letter-spacing:.06em; }
+.typewriter-line{ font-family: var(--font-mono); font-size: 14px; color: var(--ops-green); }
+.typewriter-line .ops-anim-typewriter{ width: 22ch; }
+.grid-tile{ width:100%; height:100%; }
+.grid-tile-inner{ position:absolute; inset:0; }
+.marquee-tile{ width: 100%; overflow: hidden; padding: 8px 0; }
+.marquee-tile .track{ display: inline-flex; gap: 36px; font-family: var(--font-mono); font-size: 13px; color: var(--fg-2); white-space: nowrap; animation: ops-marquee 24s linear infinite; }
+.marquee-tile .green{ color: var(--ops-green); }
+.marquee-tile .cyan{ color: var(--ops-cyan); }
+
+/* =========================================================================
+   05 SIGNATURE MOMENTS — six heroic compositions
+   ========================================================================= */
+.signature{ background: #07080F; }
+.sig-grid{ display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 280px; gap: 16px; }
+.sig{
+  position: relative; overflow: hidden; border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.06);
+  isolation: isolate;
+  display:flex; flex-direction:column; justify-content: flex-end;
+  padding: 22px;
+}
+.sig .lab{
+  font-family: var(--font-mono); font-size: 10px; letter-spacing:.2em; text-transform:uppercase;
+  color: rgba(255,255,255,.6);
+}
+.sig h4{ font-family: var(--font-sans-portal); font-weight:600; font-size: 18px; color: var(--fg-1); margin: 6px 0 0; }
+
+/* sig 1 — wordmark moment */
+.sig-1{
+  grid-column: span 2; grid-row: span 2;
+  background:
+    radial-gradient(800px 500px at 30% 50%, rgba(0,255,255,.18), transparent 60%),
+    radial-gradient(600px 400px at 80% 80%, rgba(157,0,255,.18), transparent 60%),
+    #05060D;
+  display:grid; place-items: center; padding: 0;
+}
+.sig-1 .big-mark{
+  font-family: var(--font-display); font-weight:700;
+  font-size: clamp(56px, 7vw, 110px); letter-spacing:.08em; line-height: .9;
+  background: linear-gradient(120deg, #00FFFF, #FF00FF, #9D00FF);
+  background-size: 200% 200%;
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  animation: ops-holo 8s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(0,255,255,.18));
+}
+.sig-1 .lab-overlay{ position:absolute; left:22px; top:22px; font-family: var(--font-mono); font-size:10px; letter-spacing:.24em; text-transform:uppercase; color: rgba(255,255,255,.45); }
+.sig-1 .name-overlay{ position:absolute; left:22px; bottom:22px; font-family: var(--font-sans-portal); font-weight:600; font-size:18px; color: var(--fg-1); }
+
+/* sig 2 — terminal log */
+.sig-2{ background: #060606; border: 1px solid rgba(34,197,94,.18); }
+.sig-2 .term{
+  position: absolute; inset: 22px 22px 60px;
+  font-family: var(--font-mono); font-size: 12px; line-height: 1.7; color: var(--fg-2); overflow: hidden;
+}
+.sig-2 .term .ts{ color: var(--fg-4); }
+.sig-2 .term .ok{ color: var(--ops-green); }
+.sig-2 .term .warn{ color: var(--ops-yellow); }
+.sig-2 .term .info{ color: var(--ops-cyan); }
+.sig-2 .term .pr{ color: var(--ops-green); }
+
+/* sig 3 — KPI + sparkline */
+.sig-3{
+  background:
+    linear-gradient(180deg, rgba(0,255,255,.04), transparent 50%),
+    #0A0E27;
+  border: 1px solid rgba(0,255,255,.18);
+}
+.sig-3 .lab{ color: var(--ops-cyan); }
+.sig-3 .kpi-stack{ position:absolute; left: 22px; top: 22px; right: 22px; }
+.sig-3 .kpi{ font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--fg-1); font-size: 56px; letter-spacing:-.02em; }
+.sig-3 .kpi small{ font-size: 14px; color: var(--ops-green); margin-left: 8px; }
+.sig-3 .kpi-lab{ font-family: var(--font-mono); font-size:10px; letter-spacing:.24em; text-transform:uppercase; color: var(--fg-muted); margin-top: 6px; }
+.sig-3 svg.spark{ position:absolute; left: 0; right:0; bottom: 50px; width:100%; height: 80px; }
+
+/* sig 4 — pricing card */
+.sig-4{
+  background:
+    linear-gradient(180deg, rgba(124,58,237,.16), transparent 60%),
+    #0A0A0A;
+  border: 1px solid rgba(124,58,237,.22);
+}
+.sig-4 .pricing{ position: absolute; inset: 22px; display:flex; flex-direction:column; }
+.sig-4 .badge{ display:inline-block; align-self: flex-start; font-family: var(--font-mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#fff; background: linear-gradient(90deg, #7C3AED, #6366F1); padding: 4px 10px; border-radius: 999px; }
+.sig-4 .plan{ font-family: var(--font-sans-portal); font-weight:600; font-size:20px; color: var(--fg-1); margin-top: 14px; }
+.sig-4 .price{ font-family: var(--font-sans-portal); font-weight:700; font-size: 64px; line-height:1; letter-spacing:-.02em; color: var(--fg-1); margin-top: 6px; }
+.sig-4 .price small{ font-size:18px; color: var(--fg-3); font-weight:400; margin-left:4px; }
+.sig-4 .meta{ font-family: var(--font-mono); font-size:11px; color: var(--fg-3); margin-top: auto; letter-spacing:.04em; }
+
+/* sig 5 — gauge */
+.sig-5{ background: radial-gradient(400px 300px at 50% 40%, rgba(34,197,94,.06), transparent 70%), #0A0E27; border: 1px solid rgba(34,197,94,.18); }
+.sig-5 .gauge-wrap{ position: absolute; inset: 22px 22px 60px; display:grid; place-items:center; }
+.sig-5 .lab-bottom{ position: absolute; left:22px; bottom:22px; }
+
+/* sig 6 — alert ribbon */
+.sig-6{
+  background:
+    linear-gradient(180deg, rgba(255,0,255,.12), transparent 50%),
+    #0A0E27;
+  border: 1px solid rgba(255,0,255,.28);
+}
+.sig-6 .alert{ position: absolute; inset: 22px; display:flex; flex-direction: column; gap:14px; }
+.sig-6 .alert-head{ display:flex; align-items:center; gap:10px; font-family: var(--font-mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase; color: var(--ops-magenta); }
+.sig-6 .alert-head .dot{ width:8px; height:8px; border-radius:50%; background: var(--ops-magenta); box-shadow:0 0 12px var(--ops-magenta); }
+.sig-6 .msg{ font-family: var(--font-sans-portal); font-weight:600; font-size: 22px; color: var(--fg-1); line-height:1.25; letter-spacing:-.005em; }
+.sig-6 .meta{ font-family: var(--font-mono); font-size: 12px; color: var(--fg-3); margin-top:auto; }
+
+/* =========================================================================
+   06 ENTRY POINTS — kits + foundations + repo
+   ========================================================================= */
+.entry{ background: #05060D; }
+.entry-grid{ display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; }
+.entry-card{
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  background: rgba(255,255,255,.015);
+  padding: 28px;
+  display: flex; flex-direction: column;
+}
+.entry-card h4{ font-family: var(--font-sans-portal); font-weight:600; font-size: 18px; margin: 0 0 4px; color: var(--fg-1); }
+.entry-card p{ font-family: var(--font-sans-portal); font-size: 14px; color: var(--fg-3); margin: 0 0 18px; line-height: 1.55; }
+.kit-list{ display:flex; flex-direction:column; gap: 8px; margin-top: auto; }
+.kit-row{
+  display: grid; grid-template-columns: 14ch 1fr auto; gap: 18px; align-items: center;
+  padding: 12px 14px; border: 1px solid rgba(255,255,255,.06); border-radius: 8px;
+  background: rgba(0,0,0,.25);
+  transition: border-color .2s var(--ease-out), transform .2s var(--ease-out);
+}
+.kit-row:hover{ transform: translateX(2px); }
+.kit-row .tag{ font-family: var(--font-mono); font-size: 10px; letter-spacing:.2em; text-transform:uppercase; }
+.kit-row .tag.admin{ color: var(--ops-cyan); }
+.kit-row .tag.portal{ color: var(--ops-green); }
+.kit-row .tag.web{ color: var(--ops-violet-hover); }
+.kit-row .name{ font-family: var(--font-sans-portal); font-size: 14px; color: var(--fg-1); font-weight:500; }
+.kit-row .name small{ display:block; color: var(--fg-3); font-weight:400; font-size:12px; margin-top: 2px; }
+.kit-row .arrow{ font-family: var(--font-mono); font-size: 12px; color: var(--fg-muted); }
+.kit-row.admin:hover{ border-color: rgba(0,255,255,.4); }
+.kit-row.portal:hover{ border-color: rgba(34,197,94,.4); }
+.kit-row.web:hover{ border-color: rgba(124,58,237,.4); }
+
+.foundations{ display:grid; gap: 8px; margin-top: auto; }
+.found-row{ font-family: var(--font-mono); font-size: 13px; color: var(--fg-2); padding: 8px 12px; border-radius: 6px; transition: background .2s; display:flex; align-items:center; gap: 10px; }
+.found-row:hover{ background: rgba(255,255,255,.04); }
+.found-row .ext{ color: var(--fg-muted); font-size: 11px; }
+.found-row .arrow{ margin-left:auto; color: var(--fg-muted); }
+
+footer{
+  border-top: 1px solid rgba(255,255,255,.06);
+  padding: 28px 0 40px;
+  font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted);
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+}
+footer .left{ letter-spacing:.18em; text-transform:uppercase; }
+footer .right{ display: flex; gap: 18px; }
+footer a{ color: var(--fg-3); }
+footer a:hover{ color: var(--fg-1); }
+
+/* =========================================================================
+   responsive
+   ========================================================================= */
+@media (max-width: 900px){
+  .surfaces-grid, .sig-grid, .motion-grid{ grid-template-columns: 1fr; }
+  .sig-grid{ grid-auto-rows: auto; }
+  .sig-1{ grid-column: span 1; grid-row: span 1; aspect-ratio: 16/10; }
+  .token-row{ grid-template-columns: 1fr; gap: 16px; }
+  .swatch-grid{ grid-template-columns: repeat(2, 1fr); }
+  .type-card{ grid-template-columns: 1fr; gap: 12px; }
+  .entry-grid{ grid-template-columns: 1fr; }
+  .hero-meta{ grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ===================================================================== -->
+<!-- 01 HERO                                                                -->
+<!-- ===================================================================== -->
+<section class="hero" data-screen-label="01 Hero">
+  <div class="hero-grid"></div>
+  <div class="hero-noise"></div>
+  <div class="hero-vignette"></div>
+
+  <div class="hero-inner">
+    <div class="hero-stamp">
+      <span class="dot"></span> Sistema · v1.0 · 2026
+    </div>
+    <div style="position:relative; display:inline-block;">
+      <div class="hero-mark">OPSLY</div>
+    </div>
+    <div class="hero-tagline">
+      Operaciones unificadas para equipos en la nube. <br/>
+      <span class="accent">VPS, local, orquestación y LLM</span> en una sola plataforma.
+    </div>
+    <p class="hero-sub">
+      Tres superficies — Admin, Portal, Web — sobre un mismo sistema de tokens, tipografía y motion. Diseñado para escalar con tu stack y mantenerse legible bajo presión.
+    </p>
+
+    <div class="hero-meta">
+      <div><div class="k">Superficies</div><div class="v">3</div></div>
+      <div><div class="k">Tokens</div><div class="v">42</div></div>
+      <div><div class="k">Componentes</div><div class="v cyan">12</div></div>
+      <div><div class="k">Estado</div><div class="v green">●  estable</div></div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <span class="line"></span>
+  </div>
+
+  <!-- status ticker -->
+  <div class="hero-statusbar">
+    <div class="track ops-anim-marquee">
+      <span class="item"><b>SYS</b><span class="green">●</span> all systems nominal</span>
+      <span class="item"><b>UPTIME</b> 99.982%</span>
+      <span class="item"><b>TENANTS</b> 1,284 active</span>
+      <span class="item"><b>AGENTS</b> 4,712 online</span>
+      <span class="item"><b>P95</b> 142ms</span>
+      <span class="item"><b>BUDGET</b> 74% used</span>
+      <span class="item"><b>BUILD</b> #2741</span>
+      <span class="item"><b>REGION</b> eu-west-1 · us-east-1 · sa-east-1</span>
+      <!-- repeat for marquee loop -->
+      <span class="item"><b>SYS</b><span class="green">●</span> all systems nominal</span>
+      <span class="item"><b>UPTIME</b> 99.982%</span>
+      <span class="item"><b>TENANTS</b> 1,284 active</span>
+      <span class="item"><b>AGENTS</b> 4,712 online</span>
+      <span class="item"><b>P95</b> 142ms</span>
+      <span class="item"><b>BUDGET</b> 74% used</span>
+      <span class="item"><b>BUILD</b> #2741</span>
+      <span class="item"><b>REGION</b> eu-west-1 · us-east-1 · sa-east-1</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- 02 SURFACES                                                            -->
+<!-- ===================================================================== -->
+<section class="section surfaces" data-screen-label="02 Surfaces">
+  <div class="shell">
+    <div class="eyebrow">Tres superficies · una gramática</div>
+    <h2 class="section-title">El mismo sistema, tres voces.</h2>
+    <p class="section-lede">
+      Admin habla en cyber-neón para operadores. Portal habla en terminal-restraint para tenants. Web habla en violeta-índigo para nuevos usuarios. Mismos tokens, mismo motion, distinto registro.
+    </p>
+
+    <div class="surfaces-grid">
+
+      <a class="surf surf-admin" href="ui_kits/admin/dashboard.html">
+        <div class="label">apps/admin · cyber</div>
+        <h3>Mission control</h3>
+        <p>Plano de control para operadores. Sidebar oscura, holo-borders, KPI cards en cian, auditoría streaming, tablas densas de tenants.</p>
+        <div class="preview">
+          <div class="row"><span class="name">acme-corp</span><span class="num">312 ag</span><span class="pill pill-ok">healthy</span></div>
+          <div class="row"><span class="name">demo-tenant</span><span class="num">28 ag</span><span class="pill pill-warn">trial</span></div>
+          <div class="row"><span class="name">stagehand-io</span><span class="num">141 ag</span><span class="pill pill-ok">healthy</span></div>
+          <div class="row"><span class="name">betalux</span><span class="num">8 ag</span><span class="pill pill-warn">setup</span></div>
+        </div>
+        <span class="cta">abrir admin</span>
+      </a>
+
+      <a class="surf surf-portal" href="ui_kits/portal/dashboard.html">
+        <div class="label">apps/portal · terminal</div>
+        <h3>Customer workspace</h3>
+        <p>Espacio del tenant para configurar agentes, conectar webhooks y ver el estado de sus servicios. Tipografía Inter, accentos verde-ops.</p>
+        <div class="preview">
+<div><span class="prompt">opsly@acme</span> <span class="val">~ $</span> opsly agents list</div>
+<div><span class="key">NAME</span>             <span class="key">STATUS</span>      <span class="key">P95</span></div>
+<div>billing-bot      <span class="ok">running</span>      120ms</div>
+<div>onboarding-bot   <span class="ok">running</span>       89ms</div>
+<div>support-triage   <span class="ok">running</span>      207ms</div>
+<div><span class="prompt">opsly@acme</span> <span class="val">~ $</span> <span class="ops-caret"></span></div>
+        </div>
+        <span class="cta">abrir portal</span>
+      </a>
+
+      <a class="surf surf-web" href="ui_kits/web/landing.html">
+        <div class="label">apps/web · marketing</div>
+        <h3>Landing &amp; checkout</h3>
+        <p>Sitio público. Hero violeta sobre near-black, social proof, grilla de features, pricing 3-tier con plan más popular destacado.</p>
+        <div class="preview">
+          <span class="badge">Más popular</span>
+          <div class="price">$49<small>/mes</small></div>
+          <div class="feat">
+            <span>Hasta 50 agentes</span>
+            <span>Integraciones ilimitadas</span>
+            <span>Soporte prioritario</span>
+          </div>
+        </div>
+        <span class="cta">abrir landing</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- 03 TOKENS — color, type, scale                                         -->
+<!-- ===================================================================== -->
+<section class="section tokens" data-screen-label="03 Tokens">
+  <div class="shell">
+    <div class="eyebrow">Tokens vivos</div>
+    <h2 class="section-title">El sistema, expuesto.</h2>
+    <p class="section-lede">
+      Cada superficie comparte el mismo set de variables CSS — <code style="font-family:var(--font-mono); color: var(--ops-green);">--ops-*</code> — y deriva su personalidad de cómo las combina. Aquí el catálogo.
+    </p>
+
+    <!-- color row -->
+    <div class="token-row">
+      <div class="lab">Color
+        <small>Status compartido + acentos por superficie. El verde ops es la firma — significa salud, listo, estable.</small>
+      </div>
+      <div>
+        <div class="swatch-grid" style="margin-bottom: 14px;">
+          <div class="swatch dark" style="background:#0A0A0A;"><div class="name">--ops-bg</div><div class="hex">#0A0A0A</div></div>
+          <div class="swatch dark" style="background:#111111;"><div class="name">--ops-surface</div><div class="hex">#111111</div></div>
+          <div class="swatch dark" style="background:#0A0E27;"><div class="name">--ops-admin-bg</div><div class="hex">#0A0E27</div></div>
+          <div class="swatch dark" style="background:#101734;"><div class="name">--ops-admin-surface</div><div class="hex">#101734</div></div>
+        </div>
+        <div class="swatch-grid" style="margin-bottom: 14px;">
+          <div class="swatch dark" style="background:#22C55E;"><div class="name">--ops-green</div><div class="hex">#22C55E</div></div>
+          <div class="swatch dark" style="background:#EAB308;"><div class="name">--ops-yellow</div><div class="hex">#EAB308</div></div>
+          <div class="swatch dark" style="background:#EF4444;"><div class="name">--ops-red</div><div class="hex">#EF4444</div></div>
+          <div class="swatch dark" style="background:#3388FF;"><div class="name">--ops-blue</div><div class="hex">#3388FF</div></div>
+        </div>
+        <div class="swatch-grid" style="margin-bottom: 14px;">
+          <div class="swatch dark" style="background:#00FFFF;"><div class="name" style="color: rgba(0,0,0,.7);">--ops-cyan</div><div class="hex" style="color: rgba(0,0,0,.85);">#00FFFF</div></div>
+          <div class="swatch dark" style="background:#FF00FF;"><div class="name">--ops-magenta</div><div class="hex">#FF00FF</div></div>
+          <div class="swatch dark" style="background:#9D00FF;"><div class="name">--ops-purple</div><div class="hex">#9D00FF</div></div>
+          <div class="swatch dark" style="background: linear-gradient(120deg,#00FFFF,#FF00FF,#9D00FF);"><div class="name">holo</div><div class="hex">cyan→magenta→purple</div></div>
+        </div>
+        <div class="swatch-grid">
+          <div class="swatch dark" style="background:#7C3AED;"><div class="name">--ops-violet</div><div class="hex">#7C3AED</div></div>
+          <div class="swatch dark" style="background:#8B5CF6;"><div class="name">--ops-violet-hover</div><div class="hex">#8B5CF6</div></div>
+          <div class="swatch dark" style="background:#6366F1;"><div class="name">--ops-indigo</div><div class="hex">#6366F1</div></div>
+          <div class="swatch dark" style="background: linear-gradient(120deg,#7C3AED,#6366F1);"><div class="name">web halo</div><div class="hex">violet→indigo</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- type row -->
+    <div class="token-row">
+      <div class="lab">Tipografía
+        <small>Cuatro familias, cuatro registros. Inter en portal, Electrolize en admin, Orbitron solo para titulares cyber, JetBrains Mono para todo lo numérico y técnico.</small>
+      </div>
+      <div class="type-stack">
+        <div class="type-card">
+          <div class="meta">DISPLAY<b>Orbitron</b><div class="files">--font-display</div></div>
+          <div class="type-sample-display">OPS · LIVE</div>
+        </div>
+        <div class="type-card">
+          <div class="meta">SANS · ADMIN<b>Electrolize</b><div class="files">--font-sans-admin</div></div>
+          <div class="type-sample-electrolize">Plataforma · VPS, local, orquestación y LLM</div>
+        </div>
+        <div class="type-card">
+          <div class="meta">SANS · PORTAL<b>Inter</b><div class="files">--font-sans-portal</div></div>
+          <div class="type-sample-inter">Despliega tu stack en minutos.</div>
+        </div>
+        <div class="type-card">
+          <div class="meta">MONO<b>JetBrains Mono</b><div class="files">--font-mono</div></div>
+          <div class="type-sample-mono">[ 142ms ]  p95 · acme-corp · ok</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- scale row -->
+    <div class="token-row">
+      <div class="lab">Escala<small>De caption a hero. Mismo paso geométrico (≈1.25) en toda la pila.</small></div>
+      <div>
+        <div class="scale-row">
+          <div><span class="px">11</span><span class="glyph" style="font-size:11px;">Aa</span></div>
+          <div><span class="px">12</span><span class="glyph" style="font-size:12px;">Aa</span></div>
+          <div><span class="px">14</span><span class="glyph" style="font-size:14px;">Aa</span></div>
+          <div><span class="px">16</span><span class="glyph" style="font-size:16px;">Aa</span></div>
+          <div><span class="px">20</span><span class="glyph" style="font-size:20px;">Aa</span></div>
+          <div><span class="px">24</span><span class="glyph" style="font-size:24px;">Aa</span></div>
+          <div><span class="px">32</span><span class="glyph" style="font-size:32px;">Aa</span></div>
+          <div><span class="px">48</span><span class="glyph" style="font-size:48px;">Aa</span></div>
+          <div><span class="px">60</span><span class="glyph" style="font-size:60px;">Aa</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- spacing row -->
+    <div class="token-row">
+      <div class="lab">Espaciado &amp; radii<small>Pasos en múltiplos de 4. Radii sharp (admin/portal botones) → xl (cards web).</small></div>
+      <div>
+        <div style="display:flex; gap: 10px; align-items:flex-end; margin-bottom: 18px; flex-wrap:wrap;">
+          <div style="text-align:center;"><div style="width:4px;height:32px;background:var(--ops-cyan);"></div><div style="font:10px var(--font-mono); color:var(--fg-muted); margin-top:4px; letter-spacing:.1em;">4</div></div>
+          <div style="text-align:center;"><div style="width:8px;height:32px;background:var(--ops-cyan);"></div><div style="font:10px var(--font-mono); color:var(--fg-muted); margin-top:4px; letter-spacing:.1em;">8</div></div>
+          <div style="text-align:center;"><div style="width:12px;height:32px;background:var(--ops-cyan);"></div><div style="font:10px var(--font-mono); color:var(--fg-muted); margin-top:4px; letter-spacing:.1em;">12</div></div>
+          <div style="text-align:center;"><div style="width:16px;height:32px;background:var(--ops-cyan);"></div><div style="font:10px var(--font-mono); color:var(--fg-muted); margin-top:4px; letter-spacing:.1em;">16</div></div>
+          <div style="text-align:center;"><div style="width:24px;height:32px;background:var(--ops-cyan);"></div><div style="font:10px var(--font-mono); color:var(--fg-muted); margin-top:4px; letter-spacing:.1em;">24</div></div>
+          <div style="text-align:center;"><div style="width:32px;height:32px;background:var(--ops-cyan);"></div><div style="font:10px var(--font-mono); color:var(--fg-muted); margin-top:4px; letter-spacing:.1em;">32</div></div>
+          <div style="text-align:center;"><div style="width:48px;height:32px;background:var(--ops-cyan);"></div><div style="font:10px var(--font-mono); color:var(--fg-muted); margin-top:4px; letter-spacing:.1em;">48</div></div>
+          <div style="text-align:center;"><div style="width:64px;height:32px;background:var(--ops-cyan);"></div><div style="font:10px var(--font-mono); color:var(--fg-muted); margin-top:4px; letter-spacing:.1em;">64</div></div>
+        </div>
+        <div style="display:flex; gap: 14px; align-items:center; flex-wrap:wrap;">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:6px;"><div style="width:54px;height:54px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:2px;"></div><div style="font:10px var(--font-mono); color:var(--fg-muted); letter-spacing:.1em;">2 · sharp</div></div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:6px;"><div style="width:54px;height:54px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:4px;"></div><div style="font:10px var(--font-mono); color:var(--fg-muted); letter-spacing:.1em;">4 · sm</div></div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:6px;"><div style="width:54px;height:54px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:8px;"></div><div style="font:10px var(--font-mono); color:var(--fg-muted); letter-spacing:.1em;">8 · md</div></div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:6px;"><div style="width:54px;height:54px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:12px;"></div><div style="font:10px var(--font-mono); color:var(--fg-muted); letter-spacing:.1em;">12 · lg</div></div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:6px;"><div style="width:54px;height:54px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:16px;"></div><div style="font:10px var(--font-mono); color:var(--fg-muted); letter-spacing:.1em;">16 · xl</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- 04 MOTION GALLERY                                                      -->
+<!-- ===================================================================== -->
+<section class="section motion-bg" data-screen-label="04 Motion">
+  <div class="shell">
+    <div class="eyebrow">Motion library</div>
+    <h2 class="section-title">El sistema en movimiento.</h2>
+    <p class="section-lede">
+      Nueve animaciones nombradas, todas en <code style="font-family:var(--font-mono); color:var(--ops-green);">motion.css</code>. Pulse para liveness, scan para procesando, holo para premium, marquee para status. Todas honran <code style="font-family:var(--font-mono);">prefers-reduced-motion</code>.
+    </p>
+
+    <div class="motion-grid">
+      <div class="motion-tile"><span class="label">.ops-anim-pulse</span><div class="dot-pulse ops-anim-pulse"></div><span class="name">pulse · liveness</span></div>
+      <div class="motion-tile"><span class="label">.ops-anim-pulse-ring</span><div class="dot-pulse ops-anim-pulse-ring" style="background: var(--ops-cyan);"></div><span class="name">pulse-ring · listening</span></div>
+      <div class="motion-tile"><span class="label">.ops-anim-holo</span><div class="holo-bar ops-anim-holo"></div><span class="name">holo-shimmer · brand</span></div>
+      <div class="motion-tile"><span class="label">.ops-anim-scan</span><div class="scan-window"></div><span class="name">scan · processing</span></div>
+      <div class="motion-tile"><span class="label">.ops-anim-flicker</span><div class="flicker-text ops-anim-flicker">SYS · OK</div><span class="name">flicker · neon</span></div>
+      <div class="motion-tile"><span class="label">.ops-anim-gradient-flow</span><div class="gradient-text ops-anim-gradient-flow">DESPLEGAR</div><span class="name">gradient-flow · CTA</span></div>
+      <div class="motion-tile"><span class="label">.ops-anim-typewriter</span><div class="typewriter-line"><span class="ops-anim-typewriter">opsly deploy --tenant=acme</span></div><span class="name">typewriter · CLI</span></div>
+      <div class="motion-tile" style="background: rgba(0,0,0,.4);"><span class="label">.ops-anim-grid-drift</span><div class="grid-tile-inner ops-anim-grid-drift"></div><span class="name">grid-drift · backdrop</span></div>
+      <div class="motion-tile">
+        <span class="label">.ops-anim-marquee</span>
+        <div class="marquee-tile">
+          <div class="track">
+            <span><span class="green">●</span> healthy</span><span><b class="cyan">142</b>ms p95</span><span>UPTIME 99.98%</span><span>1284 tenants</span>
+            <span><span class="green">●</span> healthy</span><span><b class="cyan">142</b>ms p95</span><span>UPTIME 99.98%</span><span>1284 tenants</span>
+          </div>
+        </div>
+        <span class="name">marquee · status</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- 05 SIGNATURE MOMENTS                                                   -->
+<!-- ===================================================================== -->
+<section class="section signature" data-screen-label="05 Signature moments">
+  <div class="shell">
+    <div class="eyebrow">Signature moments</div>
+    <h2 class="section-title">Composiciones que hablan.</h2>
+    <p class="section-lede">
+      Seis momentos donde el sistema gana volumen. Úsalos como referencia para slides, hero shots y momentos de marca.
+    </p>
+
+    <div class="sig-grid">
+
+      <!-- 1: hero wordmark -->
+      <div class="sig sig-1">
+        <span class="lab-overlay">001 · Wordmark</span>
+        <div class="big-mark">OPSLY</div>
+        <span class="name-overlay">Brand · holo · hero</span>
+      </div>
+
+      <!-- 2: terminal -->
+      <div class="sig sig-2">
+        <div class="term">
+          <div><span class="ts">[14:02:18]</span> <span class="info">▶</span> deploy started · acme-corp</div>
+          <div><span class="ts">[14:02:19]</span> <span class="ok">✓</span> tokens validated</div>
+          <div><span class="ts">[14:02:21]</span> <span class="ok">✓</span> agent billing-bot synced</div>
+          <div><span class="ts">[14:02:22]</span> <span class="warn">!</span> webhook latency 312ms</div>
+          <div><span class="ts">[14:02:24]</span> <span class="ok">✓</span> 4 services healthy</div>
+          <div><span class="ts">[14:02:25]</span> <span class="pr">$</span> opsly status<span class="ops-caret"></span></div>
+        </div>
+        <span class="lab" style="color: var(--ops-green);">Portal · terminal</span>
+        <h4>Live deploy log</h4>
+      </div>
+
+      <!-- 3: KPI + spark -->
+      <div class="sig sig-3">
+        <div class="kpi-stack">
+          <div class="kpi">142<small>ms ↓ 8%</small></div>
+          <div class="kpi-lab">P95 · últimas 24h</div>
+        </div>
+        <svg class="spark" viewBox="0 0 400 80" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#00FFFF" stop-opacity=".4"/>
+              <stop offset="100%" stop-color="#00FFFF" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d="M0,60 L40,52 L80,58 L120,40 L160,46 L200,30 L240,38 L280,22 L320,28 L360,18 L400,24 L400,80 L0,80 Z" fill="url(#sg)"/>
+          <path d="M0,60 L40,52 L80,58 L120,40 L160,46 L200,30 L240,38 L280,22 L320,28 L360,18 L400,24" fill="none" stroke="#00FFFF" stroke-width="1.5"/>
+        </svg>
+        <span class="lab">Admin · KPI</span>
+        <h4 style="position:absolute; left:22px; bottom:22px;">Latencia P95</h4>
+      </div>
+
+      <!-- 4: pricing -->
+      <div class="sig sig-4">
+        <div class="pricing">
+          <span class="badge">Más popular</span>
+          <div class="plan">Pro</div>
+          <div class="price">$49<small>/mes</small></div>
+          <div class="meta">hasta 50 agentes · soporte prioritario</div>
+        </div>
+        <span class="lab" style="position:absolute; right:22px; top:22px;">Web · pricing</span>
+      </div>
+
+      <!-- 5: gauge -->
+      <div class="sig sig-5">
+        <span class="lab" style="position:absolute; left:22px; top:22px; color: var(--ops-green);">Admin · gauge</span>
+        <div class="gauge-wrap">
+          <svg viewBox="0 0 140 140" width="160" height="160">
+            <circle cx="70" cy="70" r="52" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="10"/>
+            <circle cx="70" cy="70" r="52" fill="none" stroke="#22C55E" stroke-width="10"
+              stroke-dasharray="326" stroke-dashoffset="78" stroke-linecap="round"
+              transform="rotate(-90 70 70)"/>
+            <text x="70" y="68" text-anchor="middle" font-family="JetBrains Mono" font-size="32" font-weight="500" fill="#fff" font-variant-numeric="tabular-nums">76</text>
+            <text x="70" y="92" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#94A3B8" letter-spacing="2">CPU · %</text>
+          </svg>
+        </div>
+        <h4 class="lab-bottom">CpuGauge — verde &lt;60, amarillo &lt;85, rojo ≥85</h4>
+      </div>
+
+      <!-- 6: alert -->
+      <div class="sig sig-6">
+        <div class="alert">
+          <div class="alert-head"><span class="dot ops-anim-pulse"></span> Incident · LLM budget</div>
+          <div class="msg">acme-corp ha consumido el 92% de su presupuesto LLM mensual.</div>
+          <div class="meta">Última verificación · hace 2 min · sev=warning</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- 06 ENTRY POINTS                                                        -->
+<!-- ===================================================================== -->
+<section class="section entry" data-screen-label="06 Entry points">
+  <div class="shell">
+    <div class="eyebrow">Empieza aquí</div>
+    <h2 class="section-title">Abre cualquier puerta.</h2>
+    <p class="section-lede">
+      UI kits completos para arrancar una pantalla, foundations para mantener el sistema, signature moments para inspiración.
+    </p>
+
+    <div class="entry-grid">
+      <div class="entry-card">
+        <h4>UI kits</h4>
+        <p>Pantallas completas para cada superficie. Listas para clonar y editar.</p>
+        <div class="kit-list">
+          <a class="kit-row admin" href="ui_kits/admin/console.html">
+            <span class="tag admin">apps/admin</span>
+            <span class="name">Mission Control<small>Cmd+K · live feed · topología · gauges</small></span>
+            <span class="arrow">→</span>
+          </a>
+          <a class="kit-row admin" href="ui_kits/admin/dashboard.html">
+            <span class="tag admin">apps/admin</span>
+            <span class="name">Dashboard<small>KPIs · tenants · audit log</small></span>
+            <span class="arrow">→</span>
+          </a>
+          <a class="kit-row portal" href="ui_kits/portal/deploy-flow.html">
+            <span class="tag portal">apps/portal</span>
+            <span class="name">Deploy Flow<small>wizard · 4 pasos · interactivo</small></span>
+            <span class="arrow">→</span>
+          </a>
+          <a class="kit-row portal" href="ui_kits/portal/dashboard.html">
+            <span class="tag portal">apps/portal</span>
+            <span class="name">Dashboard<small>agentes · webhooks · suscripción</small></span>
+            <span class="arrow">→</span>
+          </a>
+          <a class="kit-row web" href="ui_kits/web/landing.html">
+            <span class="tag web">apps/web</span>
+            <span class="name">Landing<small>hero · features · pricing</small></span>
+            <span class="arrow">→</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="entry-card">
+        <h4>Foundations</h4>
+        <p>El sistema en código y prosa. Empieza por el README.</p>
+        <div class="foundations">
+          <a class="found-row" href="README.md">README.md <span class="ext">brand · voice · tokens</span><span class="arrow">→</span></a>
+          <a class="found-row" href="SKILL.md">SKILL.md <span class="ext">cuándo usar el sistema</span><span class="arrow">→</span></a>
+          <a class="found-row" href="colors_and_type.css">colors_and_type.css <span class="ext">--ops-* · presets</span><span class="arrow">→</span></a>
+          <a class="found-row" href="motion.css">motion.css <span class="ext">9 animaciones nombradas</span><span class="arrow">→</span></a>
+          <a class="found-row" href="preview/colors-surfaces.html">preview/ <span class="ext">19 cards revisables</span><span class="arrow">→</span></a>
+          <a class="found-row" href="assets/opsly-wordmark.svg">assets/ <span class="ext">wordmark · grid · holo</span><span class="arrow">→</span></a>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="left">Opsly · Sistema de diseño · v1.0 · MAY 2026</div>
+      <div class="right">
+        <a href="https://github.com/cloudsysops/opsly" target="_blank" rel="noopener">cloudsysops/opsly ↗</a>
+        <a href="index.html">índice</a>
+      </div>
+    </footer>
+  </div>
+</section>
+
+</body>
+</html>

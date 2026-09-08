@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Opsly · Colors — status</title>
+<link rel="stylesheet" href="../colors_and_type.css" />
+<style>
+  html,body{margin:0;background:#0A0A0A;color:#fff;font-family:var(--font-sans);}
+  body{padding:18px;}
+  .row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+  .sw{border:1px solid var(--ops-border);border-radius:8px;overflow:hidden;background:#111;}
+  .chip{height:60px;}
+  .meta{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border-top:1px solid var(--ops-border);}
+  .name{font-family:var(--font-mono);font-size:11px;color:#fff;}
+  .hex{font-family:var(--font-mono);font-size:10px;color:var(--ops-gray);}
+  .pillrow{margin-top:14px;display:flex;flex-wrap:wrap;gap:6px;}
+  .pill{display:inline-flex;align-items:center;gap:6px;border-radius:4px;border:1px solid;padding:2px 8px;font-family:var(--font-sans);font-size:12px;text-transform:lowercase;font-weight:500;}
+  .dot{width:6px;height:6px;border-radius:50%;}
+</style>
+</head>
+<body>
+<div class="row">
+  <div class="sw"><div class="chip" style="background:#22C55E"></div><div class="meta"><span class="name">green</span><span class="hex">#22C55E</span></div></div>
+  <div class="sw"><div class="chip" style="background:#EAB308"></div><div class="meta"><span class="name">yellow</span><span class="hex">#EAB308</span></div></div>
+  <div class="sw"><div class="chip" style="background:#EF4444"></div><div class="meta"><span class="name">red</span><span class="hex">#EF4444</span></div></div>
+  <div class="sw"><div class="chip" style="background:#3388FF"></div><div class="meta"><span class="name">blue</span><span class="hex">#3388FF</span></div></div>
+  <div class="sw"><div class="chip" style="background:#94A3B8"></div><div class="meta"><span class="name">gray</span><span class="hex">#94A3B8</span></div></div>
+</div>
+<div class="pillrow">
+  <span class="pill" style="border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.1);color:#22C55E"><span class="dot" style="background:#22C55E"></span>active</span>
+  <span class="pill" style="border-color:rgba(234,179,8,.5);background:rgba(234,179,8,.1);color:#EAB308"><span class="dot" style="background:#EAB308"></span>provisioning</span>
+  <span class="pill" style="border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.1);color:#EF4444"><span class="dot" style="background:#EF4444"></span>failed</span>
+  <span class="pill" style="border-color:rgba(51,136,255,.5);background:rgba(51,136,255,.1);color:#3388FF"><span class="dot" style="background:#3388FF"></span>info</span>
+  <span class="pill" style="border-color:rgba(148,163,184,.5);background:rgba(148,163,184,.1);color:#94A3B8"><span class="dot" style="background:#94A3B8"></span>suspended</span>
+</div>
+</body></html>

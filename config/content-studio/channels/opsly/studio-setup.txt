@@ -1,0 +1,13 @@
+Opsly @opsly — checklist Studio (humano)
+
+Canal: UCuC5_xc2M3muQzuPR2rrhwA
+https://studio.youtube.com/channel/UCuC5_xc2M3muQzuPR2rrhwA
+
+1. Personalización → Nombre: Opsly (o "Opsly | Powered by ICSO")
+2. Handle: @opsly (ya existe)
+3. Foto/banner: runtime/content-studio/brand-assets/opsly-*.png
+4. About: pegar channel-about.txt
+5. Enlaces: op-sly.com (sin secretos)
+6. Audiencia: No hecho para niños
+7. Doppler: YOUTUBE_OPSLY_CHANNEL_ID + YOUTUBE_UPLOAD_DEFAULT_CHANNEL=opsly
+8. No re-OAuth si mine=true sigue siendo este UC.

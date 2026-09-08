@@ -1,0 +1,8 @@
+Opsly — agentes gobernados para equipos que operan de verdad.
+
+Un control plane. Varios tenants. LLM solo por gateway.
+Sin forks por cliente. Sin secretos en el repo. Sin SSH público.
+
+IntCloud SysOps / ICSO. No es Peskids. No es un canal kids.
+
+#Opsly #Agentes #SaaS #MultiTenant #Ops

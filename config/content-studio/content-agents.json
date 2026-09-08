@@ -1,13 +1,32 @@
 {
   "version": 2,
   "updated_at": "2026-09-05",
-  "mission": "ICSO YouTube Content Factory — Bitsitos + Splashitos + Opsly Universe (not Peskids)",
+  "mission": "ICSO YouTube Content Factory — Opsly + Bitsitos + Splashitos + Clicksitos + Opsly Universe (not Peskids)",
   "constraints": {
     "no_peskids_branding": true,
     "no_vps_heavy_daytime": true,
     "render_hosts": ["pc-gamer"],
     "mac_role": "enqueue + kit + 24x7 youtube publish",
-    "publish": "24x7 next-unpublished unlisted, max 6/day (YouTube quota)"
+    "publish": "24x7 next-unpublished unlisted, max 6/day (YouTube quota)",
+    "brand_kit": "config/content-studio/brand-kit.json"
+  },
+  "visual_canon": {
+    "opsly": {
+      "studio_avatar": "docs/brand/icso/youtube/opsly-avatar.png",
+      "studio_banner": "docs/brand/icso/youtube/opsly-banner.png",
+      "use": "ICSO eye + hexagon for @opsly thumbnails and image_prompt. Never Universe kids boards as this channel avatar."
+    },
+    "opsly-universe": {
+      "boards": [
+        "docs/brand/icso/universe/guardianes-del-conocimiento.png",
+        "docs/brand/icso/universe/play-learn-and-grow.png",
+        "docs/brand/icso/universe/the-map-being-drawn.png",
+        "docs/brand/icso/universe/the-map-unfolds.png",
+        "docs/brand/icso/universe/atlas-parallel-universes.jpg"
+      ],
+      "use": "Character sheets, portals, Bitsitos/Splashitos islands. Approval required before publish."
+    },
+    "design_system": "docs/brand/icso/design-system/SKILL.md"
   },
   "agents": [
     {
@@ -59,8 +78,9 @@
       "runtime": "browser",
       "tasks": [
         "opslyquantum OAuth JSON in Doppler",
-        "Studio channel branding (avatar/banner)",
-        "Splashitos channel id when ready"
+        "Studio @opsly: upload docs/brand/icso/youtube/opsly-avatar.png + opsly-banner.png",
+        "Studio About: paste config/content-studio/channels/opsly/channel-about.txt",
+        "Splashitos + Clicksitos channel ids when ready"
       ],
       "blocker_doc": "docs/brand/icso/OPSLYQUANTUM-YOUTUBE-SETUP.md"
     }

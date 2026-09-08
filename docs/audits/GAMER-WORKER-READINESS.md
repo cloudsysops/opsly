@@ -35,9 +35,9 @@ Control plane VPS permanece `queue-only`. Peskids no depende de este nodo.
 
 ## Gaps (no bloquean margen local)
 
-1. **GPU:** `nvidia-smi` OK (RTX 5070 Ti); Ollama cae a CPU (CUDA discover timeout en WSL). Throughput menor; costo sigue $0.
+1. ~~**GPU:** `nvidia-smi` OK (RTX 5070 Ti); Ollama cae a CPU (CUDA discover timeout en WSL).~~ **Resuelto (2026-09-07):** confirmado `offloaded 29/29 layers to GPU`, CUDA0 buffer ~1.9GiB, runner start 2.94s, eval ~9ms/token. GPU discovery funciona tras el update de driver a 616.64.
 2. **Tailscale expose Ollama:** frágil bajo NAT (portproxy). No requerido si jobs van al worker.
-3. **Windows native Ollama:** winget source roto en el host; opcional más adelante para GPU nativa.
+3. **Windows native Ollama:** winget source roto en el host (`0x8a15000f`, persiste tras `source reset`/remove+re-add); mitigado para otras herramientas descargando binarios directo (ver ffmpeg). Opcional más adelante para GPU nativa fuera de WSL.
 
 ## Classification
 

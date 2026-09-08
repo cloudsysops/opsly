@@ -1,0 +1,311 @@
+/* =========================================================================
+   Opsly Design System — Foundation tokens
+   Color, type, radii, shadow, motion. Aligned to apps/admin, apps/portal,
+   apps/web in the cloudsysops/opsly monorepo.
+   ========================================================================= */
+
+/* --- Webfonts (Google Fonts CDN) -----------------------------------------
+   Source uses next/font/google with these exact families & weights.
+   ----------------------------------------------------------------------- */
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Electrolize&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+:root {
+  /* ---------------------------------------------------------------- COLOR */
+
+  /* Surface — admin (cyber, deep navy) */
+  --ops-admin-bg:        #0A0E27;
+  --ops-admin-surface:   #101734;
+  --ops-admin-border:    #223064;
+
+  /* Surface — portal / web (near-black) */
+  --ops-bg:              #0A0A0A;
+  --ops-surface:         #111111;
+  --ops-border:          #1E1E1E;
+
+  /* Status (shared across all surfaces) */
+  --ops-green:           #22C55E;
+  --ops-yellow:          #EAB308;
+  --ops-red:             #EF4444;
+  --ops-gray:            #94A3B8;
+  --ops-blue:            #3388FF;
+
+  /* Neon accents (admin only) */
+  --ops-cyan:            #00FFFF;
+  --ops-magenta:         #FF00FF;
+  --ops-purple:          #9D00FF;
+
+  /* Marketing accents (web) */
+  --ops-violet:          #7C3AED;   /* primary on /apps/web */
+  --ops-violet-hover:    #8B5CF6;
+  --ops-indigo:          #6366F1;
+
+  /* Foreground scale (works on both dark backgrounds) */
+  --fg-1:                #F5F5F5;   /* near-white, primary text */
+  --fg-2:                #D4D4D4;   /* neutral-300, body */
+  --fg-3:                #A3A3A3;   /* neutral-400, secondary */
+  --fg-4:                #737373;   /* neutral-500, tertiary / hints */
+  --fg-muted:            var(--ops-gray);
+
+  /* Semantic foregrounds */
+  --fg-link:             var(--ops-green);     /* portal & admin */
+  --fg-link-web:         var(--ops-violet);    /* web */
+  --fg-success:          var(--ops-green);
+  --fg-warning:          var(--ops-yellow);
+  --fg-danger:           var(--ops-red);
+  --fg-info:             var(--ops-blue);
+
+  /* ----------------------------------------------------------------- TYPE */
+
+  /* Families
+     Source uses next/font/google in apps/admin and apps/portal layout.tsx.
+     - Admin sans  -> Electrolize  (geometric, slightly condensed, very monoline)
+     - Portal sans -> Inter        (system-feel, neutral, readable for tenant UI)
+     - Display     -> Orbitron     (admin only; wordmark + KPI digital readouts)
+     - Mono        -> JetBrains    (status pills, slugs, audit log, code) */
+  --font-display:        "Orbitron", ui-sans-serif, system-ui, sans-serif;
+  --font-sans-admin:     "Electrolize", ui-sans-serif, system-ui, sans-serif;
+  --font-sans-portal:    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-sans-web:       "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-sans-system:    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono:           "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Backwards-compat alias — default sans = portal sans (Inter).
+     Prior versions used --font-sans for both surfaces; UI kits now scope
+     explicitly to --font-sans-admin or --font-sans-portal. */
+  --font-sans:           var(--font-sans-portal);
+
+  /* Sizes (rem-ish in px for clarity) */
+  --fs-10:               10px;   /* tiny tracking labels */
+  --fs-11:               11px;
+  --fs-12:               12px;   /* status pills, captions */
+  --fs-13:               13px;
+  --fs-14:               14px;   /* body */
+  --fs-16:               16px;
+  --fs-18:               18px;   /* card title (admin) / wordmark */
+  --fs-20:               20px;
+  --fs-24:               24px;   /* KPI value */
+  --fs-32:               32px;   /* H2 marketing */
+  --fs-48:               48px;   /* H1 marketing */
+  --fs-60:               60px;   /* hero */
+
+  /* Tracking */
+  --track-tight:         -0.01em;
+  --track-normal:        0em;
+  --track-wide:          0.08em;
+  --track-eyebrow:       0.12em;
+  --track-eyebrow-xl:    0.24em;
+
+  /* Line heights */
+  --lh-tight:            1.1;
+  --lh-snug:             1.25;
+  --lh-normal:           1.5;
+  --lh-relaxed:          1.6;
+
+  /* --------------------------------------------------------- RADII / EDGES */
+  --radius-sharp:        2px;    /* portal buttons, status pills */
+  --radius-sm:           4px;    /* admin buttons, inputs, badges */
+  --radius-md:           8px;    /* web buttons / inputs, sidebar items */
+  --radius-lg:           12px;   /* portal cards */
+  --radius-xl:           16px;   /* admin cards, web cards */
+
+  /* ---------------------------------------------------------------- SHADOW */
+  --shadow-card-admin:   0 0 18px rgba(157, 0, 255, 0.18);
+  --shadow-cyber-hover:  0 0 0 1px rgba(0,255,255,.7), 0 0 22px rgba(0,255,255,.28);
+  --shadow-elev-portal:  0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-elev-portal-hover: 0 12px 32px rgba(0, 0, 0, 0.55);
+  --shadow-violet-halo:  0 0 40px rgba(139, 92, 246, 0.15);
+
+  /* ---------------------------------------------------------------- MOTION */
+  --ease-out:            cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out:         cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast:            120ms;
+  --dur-base:            150ms;
+  --dur-slow:            200ms;
+
+  /* ---------------------------------------------------------------- LAYOUT */
+  --space-1:             4px;
+  --space-2:             8px;
+  --space-3:             12px;
+  --space-4:             16px;
+  --space-5:             20px;
+  --space-6:             24px;
+  --space-8:             32px;
+  --space-10:            40px;
+  --space-12:            48px;
+  --space-16:            64px;
+}
+
+/* =========================================================================
+   Semantic typography presets — apply directly to elements
+   ========================================================================= */
+
+.ops-wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-18);
+  letter-spacing: 0.16em;
+  text-transform: none;
+}
+
+.ops-h1 {
+  font-family: var(--font-sans-system);
+  font-weight: 800;
+  font-size: clamp(40px, 6vw, 60px);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--track-tight);
+  color: var(--fg-1);
+}
+
+.ops-h2 {
+  font-family: var(--font-sans-system);
+  font-weight: 700;
+  font-size: var(--fs-32);
+  line-height: var(--lh-snug);
+  color: var(--fg-1);
+}
+
+/* Admin/portal card title — Orbitron, cyan, uppercase, wide tracking */
+.ops-card-title-admin {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-14);
+  text-transform: uppercase;
+  letter-spacing: var(--track-eyebrow);
+  color: var(--ops-cyan);
+}
+
+/* Portal card title — sans, neutral, no caps */
+.ops-card-title-portal {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--fs-16);
+  color: var(--fg-1);
+}
+
+/* Eyebrow / section label */
+.ops-eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  text-transform: uppercase;
+  letter-spacing: var(--track-eyebrow);
+  color: var(--fg-muted);
+}
+
+.ops-eyebrow-xl {
+  font-family: var(--font-mono);
+  font-size: var(--fs-10);
+  text-transform: uppercase;
+  letter-spacing: var(--track-eyebrow-xl);
+  color: var(--ops-magenta);
+}
+
+/* Body */
+.ops-body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-14);
+  line-height: var(--lh-relaxed);
+  color: var(--fg-2);
+}
+
+.ops-body-system {
+  font-family: var(--font-sans-system);
+  font-size: var(--fs-16);
+  line-height: var(--lh-relaxed);
+  color: var(--fg-2);
+}
+
+/* KPI value — mono, tabular */
+.ops-kpi-value {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--fs-24);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-1);
+}
+
+/* Code / slug / log */
+.ops-code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-13);
+  color: var(--fg-2);
+}
+
+/* Status pill (lowercase mono-style) */
+.ops-status {
+  font-family: var(--font-sans);
+  font-size: var(--fs-12);
+  font-weight: 500;
+  text-transform: lowercase;
+  letter-spacing: 0.01em;
+}
+
+/* Digital readout (admin neon variant) */
+.ops-digital-readout {
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+  text-shadow:
+    0 0 8px rgba(0, 255, 255, 0.5),
+    0 0 18px rgba(157, 0, 255, 0.35);
+}
+
+/* =========================================================================
+   Signature admin chrome utilities (lifted from apps/admin/app/globals.css)
+   ========================================================================= */
+
+.holo-border {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--ops-admin-surface), var(--ops-admin-surface)) padding-box,
+    linear-gradient(120deg, rgba(0,255,255,.7), rgba(255,0,255,.65), rgba(157,0,255,.7)) border-box;
+}
+
+.neon-glow {
+  box-shadow:
+    0 0 0 1px rgba(0, 255, 255, 0.45),
+    0 0 20px rgba(0, 255, 255, 0.20),
+    0 0 40px rgba(157, 0, 255, 0.20);
+}
+
+.cyber-hover {
+  transition:
+    transform var(--dur-slow) var(--ease-out),
+    box-shadow var(--dur-slow) var(--ease-out),
+    border-color var(--dur-slow) var(--ease-out);
+}
+.cyber-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-cyber-hover);
+}
+
+.cyber-grid-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0,255,255,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(157,0,255,0.08) 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: .4;
+  animation: ops-grid-pan 16s linear infinite;
+}
+
+@keyframes ops-grid-pan {
+  0%   { background-position: 0 0, 0 0; }
+  100% { background-position: 0 44px, 44px 0; }
+}
+
+@keyframes ops-pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+
+@keyframes ops-neon-flicker {
+  0%, 18%, 22%, 100% { opacity: 1; }
+  20%, 21%           { opacity: 0.7; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

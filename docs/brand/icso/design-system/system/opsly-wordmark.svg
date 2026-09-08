@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 64" role="img" aria-label="Opsly">
+  <defs>
+    <linearGradient id="opsly-mark" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="#00FFFF"></stop>
+      <stop offset="55%" stop-color="#9D00FF"></stop>
+      <stop offset="100%" stop-color="#FF00FF"></stop>
+    </linearGradient>
+  </defs>
+  <text x="0" y="46" font-family="Orbitron, sans-serif" font-weight="700" font-size="42" letter-spacing="6" fill="url(#opsly-mark)">OPSLY</text>
+</svg>

@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "updated_at": "2026-09-05",
+  "owner": "icso",
+  "not_peskids": true,
+  "purpose": "Visual canon for Content Studio agents: YouTube channel look + image-generation references. Do not invent a second palette.",
+  "how_agents_use": [
+    "Read this file before writing image_prompt, thumbnails, or channel art.",
+    "Open the listed PNG/JPG as the look-and-feel reference for that channel.",
+    "Prefix every generated image_prompt with the channel image_prompt_prefix.",
+    "Never mix surfaces: @opsly = ICSO eye/hexagon; Universe boards = story worlds only.",
+    "Never use Peskids logos, firebase, or client_secret files as brand art."
+  ],
+  "studio_note": "YouTube Data API cannot set the profile picture. Human uploads avatar + banner in Studio. About text is config/content-studio/channels/opsly/channel-about.txt.",
+  "palettes": {
+    "opsly_company": {
+      "bg": "#0A0E27",
+      "surface": "#101734",
+      "cyan": "#00FFFF",
+      "green": "#22C55E",
+      "violet": "#7C3AED",
+      "magenta": "#FF00FF",
+      "fg": "#F5F5F5",
+      "source": "docs/brand/icso/design-system/colors_and_type.css"
+    },
+    "opsly_universe": {
+      "navy": "#0B1B3A",
+      "cyan": "#00E5FF",
+      "gold": "#E8C36A",
+      "violet": "#7C3AED",
+      "turquoise": "#2DD4BF"
+    }
+  },
+  "channels": {
+    "opsly": {
+      "handle": "@opsly",
+      "youtube_channel_id": "UCuC5_xc2M3muQzuPR2rrhwA",
+      "surface": "company_control_plane",
+      "audience": "operators_founders_not_kids",
+      "studio": {
+        "avatar": "docs/brand/icso/youtube/opsly-avatar.png",
+        "banner": "docs/brand/icso/youtube/opsly-banner.png",
+        "about": "config/content-studio/channels/opsly/channel-about.txt",
+        "name": "Opsly"
+      },
+      "reference_images": [
+        "docs/brand/icso/youtube/opsly-avatar.png",
+        "docs/brand/icso/youtube/opsly-banner.png",
+        "docs/brand/icso/logo-square.png",
+        "docs/brand/icso/design-system/assets/opsly-wordmark.svg",
+        "docs/brand/icso/design-system/assets/holo-gradient.svg"
+      ],
+      "do_not_use_as_avatar": [
+        "docs/brand/icso/universe/guardianes-del-conocimiento.png",
+        "docs/brand/icso/universe/play-learn-and-grow.png",
+        "docs/brand/icso/universe/the-map-being-drawn.png",
+        "docs/brand/icso/universe/the-map-unfolds.png",
+        "docs/brand/icso/universe/atlas-parallel-universes.jpg"
+      ],
+      "style_tokens": [
+        "ICSO eye in hexagon",
+        "dark navy #0A0E27",
+        "cyan #00FFFF",
+        "matrix-green vertex dots #22C55E",
+        "wireframe / control-plane diagrams",
+        "no real faces",
+        "no secrets on screen",
+        "no Universe kids characters"
+      ],
+      "image_prompt_prefix": "Match ICSO Opsly brand: stylized cyan eye inside a thin hexagon with green vertex dots, dark navy #0A0E27 background, cyan #00FFFF and green #22C55E accents, illustrated control-plane / terminal diagrams, Spanish subtitle, no real faces, no secrets, no kids cartoon characters, no Peskids"
+    },
+    "opsly-universe": {
+      "handle": "",
+      "surface": "story_worlds",
+      "approval_required": true,
+      "reference_images": [
+        "docs/brand/icso/universe/guardianes-del-conocimiento.png",
+        "docs/brand/icso/universe/play-learn-and-grow.png",
+        "docs/brand/icso/universe/the-map-being-drawn.png",
+        "docs/brand/icso/universe/the-map-unfolds.png",
+        "docs/brand/icso/universe/atlas-parallel-universes.jpg"
+      ],
+      "style_tokens": [
+        "cinematic illustrated science-fantasy",
+        "Traveler robes + visor",
+        "Nova explorer",
+        "Kai small round robot",
+        "Echo glowing sphere",
+        "turquoise portals",
+        "gold wisdom light",
+        "no real child photos"
+      ],
+      "image_prompt_prefix": "Match Opsly Universe boards: cinematic illustrated science-fantasy, navy/cyan/gold/violet, Traveler + Nova + Kai/Echo consistent character sheets from guardianes-del-conocimiento, turquoise portals, floating islands, no real child faces, no ICSO eye as the hero mark, no Peskids"
+    },
+    "bitsitos": {
+      "surface": "kids_tech_edu",
+      "reference_images": [
+        "docs/brand/icso/universe/the-map-unfolds.png",
+        "docs/brand/icso/universe/play-learn-and-grow.png"
+      ],
+      "style_tokens": [
+        "Bitsitos island = tech and coding city",
+        "friendly cartoon",
+        "family safe",
+        "turquoise and amber"
+      ],
+      "image_prompt_prefix": "Match Bitsitos pocket of Opsly Universe (tech/coding island on the-map-unfolds): friendly cartoon kids-tech, turquoise and amber, no scary AI, no Peskids logo, no ICSO eye as mascot"
+    },
+    "splashitos": {
+      "surface": "kids_swim_sports",
+      "reference_images": [
+        "docs/brand/icso/universe/the-map-unfolds.png",
+        "docs/brand/icso/universe/play-learn-and-grow.png"
+      ],
+      "style_tokens": [
+        "Splashitos island = ocean and life",
+        "water teal",
+        "safe sports"
+      ],
+      "image_prompt_prefix": "Match Splashitos pocket of Opsly Universe (ocean/life island on the-map-unfolds): water teal, safe swim/sports cartoon, adult supervision implied, no Peskids logo"
+    },
+    "clicksitos": {
+      "surface": "gaming_13_plus",
+      "reference_images": [],
+      "style_tokens": [
+        "violet to magenta",
+        "HUD / aim",
+        "not kids"
+      ],
+      "image_prompt_prefix": "Match Clicksitos gaming: dark HUD, violet #7C3AED to magenta, aim/crosshair motifs, 13+ not kids, no ICSO eye, no Universe child explorers, no Peskids"
+    }
+  }
+}

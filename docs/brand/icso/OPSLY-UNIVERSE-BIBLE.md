@@ -6,6 +6,18 @@ OPSLY Universe is the mythic layer for ICSO content. It is designed for YouTube,
 
 Symbols do not control destiny. Geometry, numbers, ancestors, and messengers are narrative language. They help the audience feel pattern, mystery, and continuity while the actual message stays human: learn, build, protect, share, and grow.
 
+## Visual boards (agent reference)
+
+Use these files as look-and-feel — not as the `@opsly` company avatar:
+
+- `docs/brand/icso/universe/guardianes-del-conocimiento.png` — character sheets (Traveler, Nova, Kai, Lyra, Orion, Atlas, Maya, Echo)
+- `docs/brand/icso/universe/play-learn-and-grow.png` — Play / Learn / Grow pillars
+- `docs/brand/icso/universe/the-map-being-drawn.png` — map-in-progress
+- `docs/brand/icso/universe/the-map-unfolds.png` — islands (Bitsitos tech, Splashitos ocean)
+- `docs/brand/icso/universe/atlas-parallel-universes.jpg` — atlas art
+
+Index for enqueue/prompts: `config/content-studio/brand-kit.json`. Company channel art: `docs/brand/icso/youtube/`.
+
 ## Canonical Layers
 
 - MUNDUS: the physical world of family, work, money, school, fear, tools, cities, and real effort.

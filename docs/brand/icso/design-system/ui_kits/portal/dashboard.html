@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Opsly · Portal UI kit</title>
+<link rel="stylesheet" href="../../colors_and_type.css" />
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;}
+  html,body{margin:0;background:var(--ops-bg);color:#F5F5F5;font-family:var(--font-sans);min-height:100vh;}
+  a{color:#22C55E;text-decoration:none;}
+
+  /* header */
+  header.app{position:sticky;top:0;z-index:5;backdrop-filter:blur(10px);background:rgba(10,10,10,.7);border-bottom:1px solid #1E1E1E;}
+  .hwrap{max-width:1100px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:24px;}
+  .mark{font-family:var(--font-display);font-weight:700;letter-spacing:.16em;font-size:18px;color:#22C55E;}
+  .nav{display:flex;gap:18px;font-size:13px;}
+  .nav a{color:#A3A3A3;}
+  .nav a.active{color:#fff;}
+  .hwrap .right{margin-left:auto;display:flex;align-items:center;gap:14px;}
+  .who{font-family:var(--font-mono);font-size:12px;color:#94A3B8;}
+  .who b{color:#fff;}
+  .ws-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid #1E1E1E;border-radius:2px;background:#111;font-family:var(--font-mono);font-size:12px;color:#fff;}
+  .ws-pill .green{color:#22C55E;}
+
+  main{max-width:1100px;margin:0 auto;padding:24px;}
+  .h-row{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:16px;}
+  h1{font:600 24px var(--font-sans-system);margin:0;color:#fff;letter-spacing:-.005em;}
+  .sub{font-family:var(--font-mono);font-size:12px;color:#94A3B8;text-transform:uppercase;letter-spacing:.14em;margin-top:6px;}
+
+  /* card */
+  .card{background:#111;border:1px solid #1E1E1E;border-radius:12px;}
+  .card.elev{box-shadow:0 8px 24px rgba(0,0,0,.4);}
+  .card.bordered{border:2px solid #22C55E;}
+  .card .h{padding:14px 16px;border-bottom:1px solid #1E1E1E;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .card .h .t{font:600 15px var(--font-sans-system);color:#fff;}
+  .card .h .a{font-family:var(--font-mono);font-size:11px;color:#94A3B8;text-transform:uppercase;letter-spacing:.14em;}
+  .card .b{padding:16px;}
+
+  /* layout grid */
+  .grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;}
+  .grid.three{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+
+  /* KPIs */
+  .kpi{padding:14px 16px;}
+  .kpi .lab{font-family:var(--font-mono);font-size:11px;color:#94A3B8;text-transform:uppercase;letter-spacing:.14em;}
+  .kpi .val{display:flex;align-items:baseline;gap:6px;margin-top:6px;}
+  .kpi .num{font-family:var(--font-mono);font-size:28px;color:#fff;font-variant-numeric:tabular-nums;}
+  .kpi .unit{font-family:var(--font-sans);font-size:12px;color:#94A3B8;}
+  .kpi .delta-up{font-family:var(--font-mono);font-size:11px;color:#22C55E;margin-left:auto;}
+  .kpi .delta-down{font-family:var(--font-mono);font-size:11px;color:#EF4444;margin-left:auto;}
+
+  /* sub list */
+  .sub-row{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #1E1E1E;}
+  .sub-row:last-child{border:0;}
+  .sub-row .l{font:500 13px var(--font-sans-system);color:#fff;}
+  .sub-row .l small{display:block;color:#94A3B8;font:400 12px var(--font-mono);margin-top:2px;}
+  .sub-row .r{margin-left:auto;font-family:var(--font-mono);font-size:13px;color:#fff;}
+
+  /* btns */
+  .btn{display:inline-flex;align-items:center;gap:6px;border-radius:2px;height:32px;padding:0 14px;font:500 13px var(--font-sans-system);border:1px solid;cursor:pointer;transition:all .15s ease-out;}
+  .btn:active{transform:scale(.99);}
+  .btn-primary{background:rgba(34,197,94,.15);border-color:#22C55E;color:#22C55E;}
+  .btn-primary:hover{background:rgba(34,197,94,.22);}
+  .btn-default{background:transparent;border-color:#1E1E1E;color:#F5F5F5;}
+  .btn-default:hover{background:rgba(255,255,255,.04);}
+  .btn-ghost{background:transparent;border-color:transparent;color:#A3A3A3;}
+
+  /* status pill */
+  .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid;border-radius:4px;padding:1px 8px;font:500 11px var(--font-sans-system);text-transform:lowercase;}
+  .p-active{border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.15);color:#22C55E;}
+  .p-prov{border-color:rgba(234,179,8,.4);background:rgba(234,179,8,.1);color:#EAB308;}
+  .p-paused{border-color:rgba(148,163,184,.4);background:rgba(148,163,184,.15);color:#94A3B8;}
+  .ddot{width:6px;height:6px;border-radius:50%;}
+
+  /* terminal-ish input */
+  .ti{display:flex;align-items:center;height:36px;border:1px solid #1E1E1E;background:#0A0A0A;border-radius:4px;padding:0 12px;font-family:var(--font-mono);font-size:13px;color:#F5F5F5;caret-color:#22C55E;}
+  .ti:focus-within{border-color:#22C55E;box-shadow:0 0 0 1px rgba(34,197,94,.5);outline:none;}
+  .ti input{background:transparent;border:0;outline:0;color:inherit;font:inherit;width:100%;}
+  .ti .pre{color:#525252;margin-right:6px;}
+
+  /* code preview */
+  .code{font-family:var(--font-mono);font-size:12px;color:#D4D4D4;background:#0A0A0A;border:1px solid #1E1E1E;border-radius:6px;padding:12px;line-height:1.7;}
+  .code .k{color:#22C55E;}
+  .code .s{color:#EAB308;}
+  .code .c{color:#525252;}
+
+  .agents-row{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #1E1E1E;}
+  .agents-row:last-child{border:0;}
+  .agents-row .ico{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:6px;color:#22C55E;}
+  .agents-row .meta{display:flex;flex-direction:column;}
+  .agents-row .meta b{font:500 13px var(--font-sans-system);color:#fff;}
+  .agents-row .meta small{font:400 12px var(--font-mono);color:#94A3B8;}
+  .agents-row .stats{margin-left:auto;font-family:var(--font-mono);font-size:11px;color:#94A3B8;text-align:right;}
+  .agents-row .stats b{color:#fff;font-weight:500;}
+</style>
+</head>
+<body>
+
+<header class="app">
+  <div class="hwrap">
+    <span class="mark">OPSLY</span>
+    <nav class="nav">
+      <a class="active">Resumen</a>
+      <a>Agentes</a>
+      <a>Workflows</a>
+      <a>Métricas</a>
+      <a>Facturación</a>
+      <a>Soporte</a>
+    </nav>
+    <div class="right">
+      <span class="ws-pill"><span class="green">●</span> mi-empresa</span>
+      <span class="who">Hola, <b>Camila</b></span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="h-row">
+    <div>
+      <h1>Buenas tardes, Camila.</h1>
+      <div class="sub">Workspace · mi-empresa.opsly.io · Plan Business</div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-default"><i data-lucide="external-link" style="width:14px;height:14px;"></i> Abrir n8n</button>
+      <button class="btn btn-primary">▶ Nuevo workflow</button>
+    </div>
+  </div>
+
+  <!-- KPI strip -->
+  <div class="grid three" style="margin-bottom:16px;">
+    <div class="card kpi"><div class="lab">Workflows activos</div><div class="val"><span class="num">14</span><span class="unit">/ 25 incluidos</span><span class="delta-up">↑ 2</span></div></div>
+    <div class="card kpi"><div class="lab">Respuestas IA (mes)</div><div class="val"><span class="num">12,488</span><span class="delta-up">↑ 18%</span></div></div>
+    <div class="card kpi"><div class="lab">Coste IA (mes)</div><div class="val"><span class="num">$28.40</span><span class="unit">/ $100 cap</span></div></div>
+  </div>
+
+  <div class="grid">
+    <!-- Agents -->
+    <div class="card elev">
+      <div class="h">
+        <span class="t">Mis agentes</span>
+        <span class="a">3 activos · 1 pausado</span>
+      </div>
+      <div class="b" style="padding-top:6px;padding-bottom:6px;">
+        <div class="agents-row">
+          <div class="ico"><i data-lucide="message-square" style="width:16px;height:16px;"></i></div>
+          <div class="meta"><b>sales-replies</b><small>n8n · gpt-4o-mini · webhook</small></div>
+          <div class="stats"><b>2,140</b> respuestas<br><span style="color:#22C55E">healthy</span> · 142ms</div>
+          <span class="pill p-active"><span class="ddot" style="background:#22C55E"></span>active</span>
+        </div>
+        <div class="agents-row">
+          <div class="ico"><i data-lucide="mail" style="width:16px;height:16px;"></i></div>
+          <div class="meta"><b>email-summarizer</b><small>n8n · claude-haiku · cron 15min</small></div>
+          <div class="stats"><b>684</b> respuestas<br><span style="color:#22C55E">healthy</span> · 88ms</div>
+          <span class="pill p-active"><span class="ddot" style="background:#22C55E"></span>active</span>
+        </div>
+        <div class="agents-row">
+          <div class="ico"><i data-lucide="boxes" style="width:16px;height:16px;"></i></div>
+          <div class="meta"><b>order-router</b><small>n8n · gpt-4o · webhook</small></div>
+          <div class="stats"><b>9,664</b> respuestas<br><span style="color:#EAB308">degraded</span> · 612ms</div>
+          <span class="pill p-prov"><span class="ddot" style="background:#EAB308"></span>provisioning</span>
+        </div>
+        <div class="agents-row">
+          <div class="ico" style="background:rgba(148,163,184,.1);border-color:#1E1E1E;color:#94A3B8;"><i data-lucide="book-open" style="width:16px;height:16px;"></i></div>
+          <div class="meta" style="color:#94A3B8;"><b style="color:#A3A3A3;">kb-indexer</b><small>n8n · embeddings-3-small · manual</small></div>
+          <div class="stats"><b>—</b><br>pausado hace 4d</div>
+          <span class="pill p-paused">paused</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subscription -->
+    <div class="card bordered">
+      <div class="h"><span class="t">Tu suscripción</span><span class="a">renueva 12 jun 2026</span></div>
+      <div class="b">
+        <div class="sub-row">
+          <div class="l">Plan Business <small>$149 / mes · 25 workflows · LLM cap $100</small></div>
+          <div class="r">$149.00</div>
+        </div>
+        <div class="sub-row">
+          <div class="l">Uso adicional IA <small>0 tokens fuera del cap</small></div>
+          <div class="r">$0.00</div>
+        </div>
+        <div class="sub-row">
+          <div class="l" style="color:#94A3B8;">Próxima factura</div>
+          <div class="r" style="color:#22C55E;">$149.00</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:14px;">
+          <button class="btn btn-default" style="flex:1;">Cambiar plan</button>
+          <button class="btn btn-default" style="flex:1;">Facturas →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- bottom row -->
+  <div class="grid" style="margin-top:16px;">
+    <!-- webhook integration -->
+    <div class="card">
+      <div class="h"><span class="t">Conectar tu webhook</span><span class="a">paso 2 de 3</span></div>
+      <div class="b">
+        <div style="font-family:var(--font-sans-system);font-size:13px;color:#A3A3A3;margin-bottom:10px;">
+          Pega esta URL en tu plataforma (Stripe, Shopify, Typeform…). Opsly enrutará los eventos al agente que elijas.
+        </div>
+        <div class="ti"><span class="pre">https://</span><input value="api.ops.mi-empresa.opsly.io/webhooks/stripe" /></div>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button class="btn btn-primary">Copiar</button>
+          <button class="btn btn-default">Probar webhook</button>
+          <button class="btn btn-ghost" style="margin-left:auto;">Saltar este paso →</button>
+        </div>
+
+        <div class="code" style="margin-top:14px;">
+<span class="c"># curl request de prueba</span>
+<span class="k">curl</span> -X POST <span class="s">"https://api.ops.mi-empresa.opsly.io/webhooks/stripe"</span> \
+  -H <span class="s">"X-Opsly-Signature: t=1715433321,v1=…"</span> \
+  -d <span class="s">'{"event":"checkout.session.completed"}'</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- support / status -->
+    <div class="card">
+      <div class="h"><span class="t">Estado del servicio</span><span class="a"><span class="pill p-active"><span class="ddot" style="background:#22C55E"></span>operational</span></span></div>
+      <div class="b">
+        <div class="sub-row"><div class="l">API gateway</div><div class="r" style="color:#22C55E;">99.98%</div></div>
+        <div class="sub-row"><div class="l">n8n runner</div><div class="r" style="color:#22C55E;">99.96%</div></div>
+        <div class="sub-row"><div class="l">LLM gateway</div><div class="r" style="color:#22C55E;">99.92%</div></div>
+        <div class="sub-row"><div class="l">Uptime Kuma</div><div class="r" style="color:#22C55E;">100.00%</div></div>
+        <div style="margin-top:14px;font:400 12px var(--font-mono);color:#94A3B8;line-height:1.7;">
+          SLA contratado: <b style="color:#fff;">99.5%</b> · 30d rolling.<br>
+          Ventana de mantenimiento: domingos 03:00–04:00 UTC.
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>lucide.createIcons({attrs:{'stroke-width':1.6}});</script>
+</body></html>

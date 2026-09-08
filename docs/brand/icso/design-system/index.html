@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Opsly Runtime OS · Portal + Mission Control</title>
+<link rel="stylesheet" href="system/colors_and_type.css" />
+<link rel="stylesheet" href="screens/shared.css" />
+<style>
+  html, body { margin: 0; height: 100%; background: #f0eee9; font-family: var(--font-sans-system); }
+</style>
+
+<!-- React + Babel -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- Design canvas -->
+<script type="text/babel" src="design-canvas.jsx"></script>
+
+<!-- Portal screens -->
+<script type="text/babel" src="screens/portal-onboarding-a.jsx"></script>
+<script type="text/babel" src="screens/portal-onboarding-b.jsx"></script>
+
+<!-- Admin chrome + screens -->
+<script type="text/babel" src="screens/admin-chrome.jsx"></script>
+<script type="text/babel" src="screens/mc-dashboard.jsx"></script>
+<script type="text/babel" src="screens/mc-screens.jsx"></script>
+
+<!-- App -->
+<script type="text/babel">
+const PORTAL_W = 1100;
+const PORTAL_H = 740;
+const ADMIN_W = 1480;
+const ADMIN_H = 940;
+
+function App() {
+  return (
+    <DesignCanvas>
+      <DCSection id="portal-onboarding" title="Portal · Onboarding" subtitle="Six-step first-run flow · restrained terminal aesthetic · near-black canvas, green caret">
+        <DCArtboard id="p1" label="01 · Environment detection" width={PORTAL_W} height={PORTAL_H}>
+          <PortalStep1 />
+        </DCArtboard>
+        <DCArtboard id="p2" label="02 · Repository detection" width={PORTAL_W} height={PORTAL_H}>
+          <PortalStep2 />
+        </DCArtboard>
+        <DCArtboard id="p3" label="03 · Branch health" width={PORTAL_W} height={PORTAL_H}>
+          <PortalStep3 />
+        </DCArtboard>
+        <DCArtboard id="p4" label="04 · Resumable sessions" width={PORTAL_W} height={PORTAL_H}>
+          <PortalStep4 />
+        </DCArtboard>
+        <DCArtboard id="p5" label="05 · Workspace setup" width={PORTAL_W} height={PORTAL_H}>
+          <PortalStep5 />
+        </DCArtboard>
+        <DCArtboard id="p6" label="06 · Mission Control launch" width={PORTAL_W} height={PORTAL_H}>
+          <PortalStep6 />
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="mission-control" title="Admin · Mission Control" subtitle="Cyberpunk ops-room · cyan/magenta holo borders · grid + scanline atmosphere">
+        <DCArtboard id="m1" label="Dashboard · main" width={ADMIN_W} height={ADMIN_H}>
+          <MissionControlDash />
+        </DCArtboard>
+        <DCArtboard id="m2" label="Sessions · detail" width={ADMIN_W} height={ADMIN_H}>
+          <SessionsDetail />
+        </DCArtboard>
+        <DCArtboard id="m3" label="OpenClaw · approvals" width={ADMIN_W} height={ADMIN_H}>
+          <ApprovalsQueue />
+        </DCArtboard>
+        <DCArtboard id="m4" label="Costs &amp; budgets" width={ADMIN_W} height={ADMIN_H}>
+          <CostsDashboard />
+        </DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

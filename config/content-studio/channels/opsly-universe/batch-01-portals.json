@@ -9,7 +9,7 @@
     "aspect_ratio": "9:16",
     "target_duration_sec": 45,
     "tone": "cinematic_curious_safe",
-    "visual_style": "cinematic illustrated science-fantasy, blue-violet space, turquoise portals, warm gold light, expressive robot companions, consistent character design, Spanish captions, no real child faces, no logos",
+    "visual_style": "cinematic illustrated science-fantasy matching docs/brand/icso/universe boards (guardianes, play-learn-grow, map-being-drawn, map-unfolds, atlas), blue-violet space, turquoise portals, warm gold light, Traveler/Nova/Kai/Echo consistent sheets, Spanish captions, no real child faces, no ICSO eye as hero mark",
     "characters": ["traveler", "nova", "kai", "echo"],
     "worlds": ["WILD", "MOVE", "FUTURE", "CYBER", "HUMAN"],
     "canon_source": "@intcloudsysops/universe"

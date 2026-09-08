@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Opsly · Web UI kit</title>
+<link rel="stylesheet" href="../../colors_and_type.css" />
+<style>
+  *,*::before,*::after{box-sizing:border-box;}
+  html,body{margin:0;background:#0A0A0A;color:#fff;font-family:var(--font-sans-system);}
+  a{color:inherit;text-decoration:none;}
+
+  /* nav */
+  .nav{position:sticky;top:0;z-index:5;height:64px;display:flex;align-items:center;backdrop-filter:blur(8px);background:rgba(10,10,10,.8);border-bottom:1px solid rgba(255,255,255,.08);}
+  .nwrap{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:32px;width:100%;}
+  .mark{font-family:var(--font-display);font-weight:700;letter-spacing:.16em;font-size:18px;
+    background:linear-gradient(90deg,#A78BFA,#818CF8);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .nlinks{display:flex;gap:24px;font-size:14px;color:rgba(255,255,255,.7);}
+  .nlinks a:hover{color:#fff;}
+  .nright{margin-left:auto;display:flex;gap:10px;align-items:center;}
+  .btn{display:inline-flex;align-items:center;gap:6px;border-radius:8px;padding:10px 18px;font:600 14px var(--font-sans-system);cursor:pointer;border:1px solid transparent;transition:all .15s;}
+  .btn-primary{background:#7C3AED;color:#fff;}
+  .btn-primary:hover{background:#8B5CF6;transform:translateY(-1px);}
+  .btn-ghost{background:transparent;border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.85);}
+  .btn-ghost:hover{background:rgba(255,255,255,.05);}
+
+  /* hero */
+  .hero{position:relative;padding:96px 24px 64px;overflow:hidden;}
+  .hero-bloom{position:absolute;left:50%;top:0;transform:translate(-50%,-30%);width:900px;height:600px;background:radial-gradient(closest-side,rgba(124,58,237,.25),transparent);filter:blur(40px);pointer-events:none;}
+  .hero-inner{max-width:920px;margin:0 auto;text-align:center;position:relative;}
+  .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(124,58,237,.4);background:rgba(124,58,237,.08);color:#C4B5FD;border-radius:999px;padding:6px 14px;font:500 12px var(--font-sans-system);margin-bottom:18px;}
+  .pill .dot{width:6px;height:6px;border-radius:50%;background:#A78BFA;}
+  h1{font:800 clamp(40px,6vw,60px)/1.05 var(--font-sans-system);letter-spacing:-.01em;margin:0;}
+  h1 .grad{background:linear-gradient(90deg,#A78BFA,#818CF8);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .lead{margin:18px auto 0;max-width:640px;font:400 18px/1.6 var(--font-sans-system);color:rgba(255,255,255,.7);}
+  .ctas{margin-top:28px;display:flex;gap:10px;justify-content:center;}
+  .meta{margin-top:14px;font:400 12px var(--font-mono);color:rgba(255,255,255,.5);}
+
+  /* features */
+  section{max-width:1100px;margin:0 auto;padding:48px 24px;}
+  .eyebrow{font:500 12px var(--font-mono);text-transform:uppercase;letter-spacing:.18em;color:#A78BFA;text-align:center;margin-bottom:8px;}
+  h2{font:700 32px/1.2 var(--font-sans-system);text-align:center;margin:0 0 36px;letter-spacing:-.005em;}
+
+  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  .ops-card{background:#111;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;}
+  .ops-card .ico{width:44px;height:44px;border-radius:10px;background:rgba(124,58,237,.15);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px;}
+  .ops-card h3{font:600 16px var(--font-sans-system);margin:0 0 6px;}
+  .ops-card p{font:400 14px/1.55 var(--font-sans-system);color:rgba(255,255,255,.6);margin:0;}
+
+  /* pricing */
+  .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:stretch;}
+  .price{background:#111;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:14px;transition:all .2s ease;}
+  .price:hover{transform:translateY(-2px);}
+  .price.featured{border-color:rgba(124,58,237,.6);box-shadow:0 0 40px rgba(139,92,246,.15);position:relative;}
+  .price.featured::after{content:"Más popular";position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#7C3AED;color:#fff;font:500 11px var(--font-sans-system);padding:4px 12px;border-radius:999px;}
+  .price h4{font:600 14px var(--font-mono);text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.5);margin:0;}
+  .price .pp{display:flex;align-items:baseline;gap:6px;}
+  .price .pp .num{font:800 44px/1 var(--font-sans-system);color:#fff;letter-spacing:-.02em;}
+  .price .pp .per{font:400 14px var(--font-sans-system);color:rgba(255,255,255,.5);}
+  .price .desc{font:400 14px/1.5 var(--font-sans-system);color:rgba(255,255,255,.6);}
+  .price ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font:400 14px/1.4 var(--font-sans-system);color:rgba(255,255,255,.85);}
+  .price li{display:flex;gap:10px;align-items:flex-start;}
+  .check{color:#A78BFA;flex:0 0 auto;}
+  .price .btn{width:100%;justify-content:center;margin-top:auto;}
+
+  /* footer */
+  footer{border-top:1px solid rgba(255,255,255,.08);padding:48px 24px 32px;font:400 13px/1.6 var(--font-sans-system);color:rgba(255,255,255,.5);}
+  .fwrap{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  .fcol h5{font:500 12px var(--font-mono);text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.7);margin:0 0 8px;}
+  .fcol a{display:block;padding:3px 0;color:rgba(255,255,255,.5);}
+  .fcol a:hover{color:#fff;}
+
+  /* social proof strip */
+  .proof{padding:24px;background:rgba(255,255,255,.02);border-block:1px solid rgba(255,255,255,.06);}
+  .proof-wrap{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:32px;justify-content:center;font-family:var(--font-mono);color:rgba(255,255,255,.4);font-size:13px;flex-wrap:wrap;}
+  .proof-wrap b{color:rgba(255,255,255,.7);}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nwrap">
+    <span class="mark">OPSLY</span>
+    <div class="nlinks">
+      <a>Producto</a>
+      <a>Precios</a>
+      <a>Casos</a>
+      <a>Documentación</a>
+      <a>Blog</a>
+    </div>
+    <div class="nright">
+      <a class="btn btn-ghost">Entrar</a>
+      <a class="btn btn-primary">Empezar →</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bloom"></div>
+  <div class="hero-inner">
+    <span class="pill"><span class="dot"></span> Nuevo · LLM gateway con cache automático</span>
+    <h1>Automatización <span class="grad">IA</span> para tu empresa.<br>Sin servidores, sin DevOps.</h1>
+    <p class="lead">Despliega tu stack de agentes autónomos (n8n + IA) en minutos. Con backups, métricas y SLA garantizado del 99.5%.</p>
+    <div class="ctas">
+      <a class="btn btn-primary" style="padding:14px 22px;font-size:15px;">Empezar ahora →</a>
+      <a class="btn btn-ghost" style="padding:14px 22px;font-size:15px;">Ver demo · 2 min</a>
+    </div>
+    <div class="meta">Sin tarjeta · 14 días de prueba · Cancela cuando quieras</div>
+  </div>
+</section>
+
+<div class="proof">
+  <div class="proof-wrap">
+    <span>+<b>120</b> equipos</span><span>·</span>
+    <span><b>4.2M</b> respuestas IA / mes</span><span>·</span>
+    <span>SLA <b>99.5%</b></span><span>·</span>
+    <span>Ahorra <b>3 semanas</b> de configuración</span>
+  </div>
+</div>
+
+<section>
+  <div class="eyebrow">Qué incluye</div>
+  <h2>Todo lo que necesitas para llevar IA a producción.</h2>
+  <div class="features">
+    <div class="ops-card"><div class="ico">⚡</div><h3>Deploy en minutos</h3><p>Crea tu stack completo (n8n + Uptime Kuma + LLM gateway) sin tocar Docker ni Traefik.</p></div>
+    <div class="ops-card"><div class="ico">🧠</div><h3>IA con control de costos</h3><p>Cache, rate-limit y caps por workspace. Eliges modelo (GPT-4o, Claude, Llama) sin reescribir tus flujos.</p></div>
+    <div class="ops-card"><div class="ico">🔒</div><h3>Zero-Trust por diseño</h3><p>Aislamiento por tenant en Docker Compose, secrets cifrados, audit log inmutable.</p></div>
+    <div class="ops-card"><div class="ico">📊</div><h3>Métricas que sirven</h3><p>Latencia, coste por agente, tokens in/out — sin parsear logs.</p></div>
+    <div class="ops-card"><div class="ico">💾</div><h3>Backups automáticos</h3><p>Snapshots diarios + retention 30d incluidos en todos los planes.</p></div>
+    <div class="ops-card"><div class="ico">🔗</div><h3>200+ integraciones</h3><p>Stripe, Shopify, HubSpot, Typeform, Slack — vía n8n. Webhook-first.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">Precios</div>
+  <h2>Precios simples. Sin costos ocultos.</h2>
+  <div class="pricing">
+    <div class="price">
+      <h4>Startup</h4>
+      <div class="pp"><span class="num">$49</span><span class="per">/ mes</span></div>
+      <div class="desc">Para equipos que quieren probar IA en producción.</div>
+      <ul>
+        <li><span class="check">✓</span> 5 workflows simultáneos</li>
+        <li><span class="check">✓</span> 50K respuestas IA / mes</li>
+        <li><span class="check">✓</span> Backups diarios · 7d</li>
+        <li><span class="check">✓</span> Soporte por email · 48h</li>
+      </ul>
+      <a class="btn btn-ghost">Empezar gratis</a>
+    </div>
+    <div class="price featured">
+      <h4>Business</h4>
+      <div class="pp"><span class="num">$149</span><span class="per">/ mes</span></div>
+      <div class="desc">El plan que eligen 8 de cada 10 equipos.</div>
+      <ul>
+        <li><span class="check">✓</span> 25 workflows simultáneos</li>
+        <li><span class="check">✓</span> 250K respuestas IA / mes</li>
+        <li><span class="check">✓</span> Backups diarios · 30d + restore on-demand</li>
+        <li><span class="check">✓</span> SLA 99.5% · soporte prioritario</li>
+        <li><span class="check">✓</span> LLM cap configurable</li>
+      </ul>
+      <a class="btn btn-primary">Empezar ahora →</a>
+    </div>
+    <div class="price">
+      <h4>Enterprise</h4>
+      <div class="pp"><span class="num">Custom</span></div>
+      <div class="desc">VPC dedicado, on-prem o región específica.</div>
+      <ul>
+        <li><span class="check">✓</span> Workflows ilimitados</li>
+        <li><span class="check">✓</span> Region pinning (LatAm, EU, US)</li>
+        <li><span class="check">✓</span> SSO + SCIM + audit export</li>
+        <li><span class="check">✓</span> SLA 99.9% · soporte 24/7</li>
+        <li><span class="check">✓</span> Onboarding asistido</li>
+      </ul>
+      <a class="btn btn-ghost">Contactar ventas</a>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:24px;font:400 13px var(--font-sans-system);color:rgba(255,255,255,.5);">
+    Sin costos ocultos. Cancela cuando quieras. Precios en USD, IVA aparte.
+  </div>
+</section>
+
+<footer>
+  <div class="fwrap">
+    <div class="fcol" style="max-width:280px;">
+      <span class="mark" style="font-size:16px;">OPSLY</span>
+      <p style="margin-top:10px;">Control plane para automatización IA. Hecho con ❤︎ en LatAm.</p>
+    </div>
+    <div class="fcol"><h5>Producto</h5><a>Funcionalidades</a><a>Precios</a><a>Roadmap</a><a>Estado</a></div>
+    <div class="fcol"><h5>Empresa</h5><a>Sobre</a><a>Blog</a><a>Casos</a><a>Contacto</a></div>
+    <div class="fcol"><h5>Legal</h5><a>Términos</a><a>Privacidad</a><a>DPA</a><a>Seguridad</a></div>
+  </div>
+  <div style="max-width:1100px;margin:32px auto 0;display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:11px;color:rgba(255,255,255,.4);">
+    <span>© 2026 Opsly · cloudsysops</span>
+    <span>v1.4.0 · build f930e93</span>
+  </div>
+</footer>
+
+</body></html>

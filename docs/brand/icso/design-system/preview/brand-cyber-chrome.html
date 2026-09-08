@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Opsly · Cyber chrome (admin)</title>
+<link rel="stylesheet" href="../colors_and_type.css" />
+<style>
+  html,body{margin:0;background:#0A0E27;color:#fff;font-family:var(--font-sans);overflow:hidden;}
+  body{padding:18px;position:relative;height:120px;}
+  .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(157,0,255,.08) 1px,transparent 1px);background-size:44px 44px;opacity:.5;}
+  .scan{position:absolute;left:0;right:0;top:0;height:50%;background:linear-gradient(to bottom,transparent,rgba(0,255,255,.18),transparent);mix-blend-mode:screen;animation:s 4s linear infinite;}
+  @keyframes s{0%{transform:translateY(-120%)}100%{transform:translateY(220%)}}
+  .layer{position:relative;z-index:1;display:flex;gap:14px;align-items:center;}
+  .holo{padding:14px 18px;border-radius:12px;border:1px solid transparent;
+    background:linear-gradient(#101734,#101734) padding-box,linear-gradient(120deg,rgba(0,255,255,.7),rgba(255,0,255,.65),rgba(157,0,255,.7)) border-box;
+    box-shadow:0 0 0 1px rgba(0,255,255,.45),0 0 20px rgba(0,255,255,.2),0 0 40px rgba(157,0,255,.2);
+    font-family:var(--font-display);font-weight:700;letter-spacing:.16em;color:#00FFFF;text-shadow:0 0 8px rgba(0,255,255,.5),0 0 18px rgba(157,0,255,.35);}
+  .meta{font-family:var(--font-mono);font-size:11px;color:#94A3B8;line-height:1.7;}
+  b{color:#fff;}
+</style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="scan"></div>
+  <div class="layer">
+    <div class="holo">OPSLY · ADMIN</div>
+    <div class="meta">
+      .holo-border &nbsp;·&nbsp; .neon-glow &nbsp;·&nbsp; .cyber-grid-bg<br>
+      <b>scanline</b> 8s linear &nbsp;·&nbsp; <b>grid-pan</b> 16s linear &nbsp;·&nbsp; <b>neon-flicker</b> 2.4s
+    </div>
+  </div>
+</body></html>

@@ -1,0 +1,151 @@
+{
+  "channel": {
+    "slug": "icso-opsly",
+    "brand": "Opsly",
+    "language": "es",
+    "owner": "icso",
+    "not_peskids": true,
+    "primary_surface": "youtube_shorts",
+    "aspect_ratio": "9:16",
+    "target_duration_sec": 35,
+    "tone": "clear_operator",
+    "batch": "01-platform",
+    "visual_style": "ICSO eye in hexagon, dark navy #0A0E27, cyan #00FFFF, green vertex dots, illustrated control-plane diagrams, bold Spanish subtitles, no real faces, no secrets, no Universe kids characters. Refs: docs/brand/icso/youtube/opsly-avatar.png"
+  },
+  "preset": {
+    "slug": "youtube_shorts",
+    "label": "YouTube Shorts",
+    "platforms": ["youtube_shorts"],
+    "pillars": ["agents", "multi_tenant", "ops"],
+    "tone_of_voice": "clear_operator",
+    "language": "es",
+    "visual_style": "ICSO eye hexagon navy cyan",
+    "aspect_ratio": "9:16",
+    "target_duration_sec": 35,
+    "approval_required": false,
+    "render_provider": "moneyprinterturbo",
+    "notes": "ICSO Opsly company channel @opsly. Not kids. Not Peskids. No secrets."
+  },
+  "drafts": [
+    {
+      "id": "opsly-001-un-control-plane",
+      "title": "Un solo control plane. Varios clientes.",
+      "story_hook": "Si cada cliente tiene su orquestador, ya perdiste.",
+      "call_to_action": "Opsly: un core. Tenants por slug. @opsly",
+      "image_prompt": "Illustrated dark control plane hub with several tenant nodes, subtitle UN CORE, teal gold, no logos of other brands, no secrets",
+      "reel_script": [
+        { "scene": "Fork per client", "copy": "¿Un stack por cliente?", "duration_sec": 4 },
+        { "scene": "One core", "copy": "Un control plane. Varios tenants.", "duration_sec": 10 },
+        { "scene": "Slug trace", "copy": "Todo lleva tenant_slug.", "duration_sec": 10 },
+        { "scene": "End card", "copy": "Core primero. Opsly.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Hook: no forks.\nTip: un core, muchos tenants.\nCTA: Opsly.",
+      "hashtags": ["#Opsly", "#SaaS", "#Agentes", "#MultiTenant", "#Shorts"]
+    },
+    {
+      "id": "opsly-002-agente-gobernado",
+      "title": "Un agente sin traza no es un agente",
+      "story_hook": "Si no hay request_id, no puedes cobrar ni auditar.",
+      "call_to_action": "Job + tenant + request_id. Opsly.",
+      "image_prompt": "Cartoon job ticket with TENANT and REQUEST ID badges, dark ops desk, teal glow, subtitle TRAZA",
+      "reel_script": [
+        { "scene": "Chat without log", "copy": "Chat suelto ≠ agente.", "duration_sec": 4 },
+        { "scene": "Ticket fields", "copy": "Cola, tenant, request_id.", "duration_sec": 10 },
+        { "scene": "Gateway only", "copy": "LLM solo por el gateway.", "duration_sec": 10 },
+        { "scene": "End card", "copy": "Gobernado o no existe. Opsly.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Hook: no trace, no agent.\nTip: tenant + request_id.\nCTA: Opsly.",
+      "hashtags": ["#Opsly", "#Agentes", "#Observability", "#LLM", "#Shorts"]
+    },
+    {
+      "id": "opsly-003-tenant-no-fork",
+      "title": "Branding sí. Fork no.",
+      "story_hook": "El logo del cliente no justifica copiar el backend.",
+      "call_to_action": "Capability en core. Activa por slug. Opsly.",
+      "image_prompt": "Two storefronts sharing one engine room, subtitle NO FORK, dark teal illustrated",
+      "reel_script": [
+        { "scene": "Copy paste app", "copy": "Copiar la app ‘por ahora’…", "duration_sec": 4 },
+        { "scene": "Shared lib", "copy": "La lógica vive en el core.", "duration_sec": 10 },
+        { "scene": "Flag by slug", "copy": "El tenant solo enciende la capability.", "duration_sec": 10 },
+        { "scene": "End card", "copy": "Marca sí. Fork no. Opsly.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Anti: fork por cliente.\nTip: core + slug.\nCTA: Opsly.",
+      "hashtags": ["#Opsly", "#Arquitectura", "#SaaS", "#MultiTenant", "#Shorts"]
+    },
+    {
+      "id": "opsly-004-secretos-doppler",
+      "title": "Los secretos no van en el repo",
+      "story_hook": "Si está en git, ya se filtró.",
+      "call_to_action": "Doppler. Nunca .env en el chat. Opsly.",
+      "image_prompt": "Illustrated vault vs crossed-out git file, subtitle SECRETOS, dark ops, no real keys visible",
+      "reel_script": [
+        { "scene": "Commit env", "copy": "Commit de .env = incidente.", "duration_sec": 4 },
+        { "scene": "Vault", "copy": "Un vault. Un proyecto. Un config.", "duration_sec": 10 },
+        { "scene": "No dump", "copy": "El agente no imprime secretos.", "duration_sec": 10 },
+        { "scene": "End card", "copy": "Vault o no se sube. Opsly.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Anti: secrets in git.\nTip: vault only.\nCTA: Opsly.",
+      "hashtags": ["#Opsly", "#Security", "#DevOps", "#SaaS", "#Shorts"]
+    },
+    {
+      "id": "opsly-005-noche-prod",
+      "title": "Prod de día no se toca",
+      "story_hook": "El cliente está vendiendo. Tú no ‘pruebas’ en live.",
+      "call_to_action": "Merge/deploy de impacto: noche. Opsly.",
+      "image_prompt": "Illustrated clock 22:00 and a live storefront, subtitle NOCHE, dark teal gold",
+      "reel_script": [
+        { "scene": "Day traffic", "copy": "De día el tenant atiende.", "duration_sec": 4 },
+        { "scene": "PR wait", "copy": "PR de día. Merge de noche.", "duration_sec": 10 },
+        { "scene": "Exception", "copy": "Salvo hotfix real.", "duration_sec": 10 },
+        { "scene": "End card", "copy": "No rompas el horario. Opsly.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Hook: no daytime prod play.\nTip: night merge.\nCTA: Opsly.",
+      "hashtags": ["#Opsly", "#SRE", "#Deploy", "#SaaS", "#Shorts"]
+    },
+    {
+      "id": "opsly-006-ssh-tailscale",
+      "title": "SSH no se publica a internet",
+      "story_hook": "Si el 22 está abierto al mundo, ya te están tocando.",
+      "call_to_action": "Admin solo por Tailscale. Opsly.",
+      "image_prompt": "Illustrated lock on SSH port, private mesh vs public internet X, subtitle TAILSCALE, no IPs written",
+      "reel_script": [
+        { "scene": "Open 22", "copy": "SSH público = target.", "duration_sec": 4 },
+        { "scene": "Private mesh", "copy": "Admin por red privada.", "duration_sec": 10 },
+        { "scene": "80 443 only", "copy": "Público: 80 y 443. Punto.", "duration_sec": 10 },
+        { "scene": "End card", "copy": "Cierra el 22. Opsly.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Anti: public SSH.\nTip: private admin mesh.\nCTA: Opsly.",
+      "hashtags": ["#Opsly", "#Security", "#SSH", "#DevOps", "#Shorts"]
+    },
+    {
+      "id": "opsly-007-gpu-no-vps",
+      "title": "El render no vive en el VPS",
+      "story_hook": "4 GiB no rinden un Short. El VPS orquesta.",
+      "call_to_action": "GPU en el worker. Cola en el core. Opsly.",
+      "image_prompt": "Small VPS box vs GPU workstation, queue arrow between them, subtitle GPU WORKER, dark teal",
+      "reel_script": [
+        { "scene": "Tiny VPS", "copy": "El VPS no es tu GPU.", "duration_sec": 4 },
+        { "scene": "Queue", "copy": "El core encola. El worker renderiza.", "duration_sec": 10 },
+        { "scene": "Day gaming", "copy": "Si el gamer juega, no encolas video.", "duration_sec": 10 },
+        { "scene": "End card", "copy": "Cada máquina un oficio. Opsly.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Hook: VPS ≠ GPU.\nTip: queue + worker.\nCTA: Opsly.",
+      "hashtags": ["#Opsly", "#GPU", "#Workers", "#Content", "#Shorts"]
+    },
+    {
+      "id": "opsly-008-approvals",
+      "title": "Auto-publish no es el default",
+      "story_hook": "Un token mal elegido publica en el canal equivocado.",
+      "call_to_action": "OAuth = Brand Account correcta. Opsly.",
+      "image_prompt": "Illustrated two channel doors OPSLY vs OTHER with a key choosing one, subtitle BRAND ACCOUNT, no secrets",
+      "reel_script": [
+        { "scene": "Wrong channel", "copy": "El upload va a la cuenta del token.", "duration_sec": 4 },
+        { "scene": "Match id", "copy": "Si el ID no coincide, no sube.", "duration_sec": 10 },
+        { "scene": "Unlisted first", "copy": "Primero unlisted. Luego público.", "duration_sec": 10 },
+        { "scene": "End card", "copy": "Canal correcto o skip. Opsly.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Hook: token picks the channel.\nTip: match Brand Account.\nCTA: Opsly.",
+      "hashtags": ["#Opsly", "#YouTube", "#ContentStudio", "#Ops", "#Shorts"]
+    }
+  ]
+}

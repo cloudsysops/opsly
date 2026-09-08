@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Opsly · Iconography (Lucide)</title>
+<link rel="stylesheet" href="../colors_and_type.css" />
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  html,body{margin:0;background:#0A0A0A;color:#fff;font-family:var(--font-sans);}
+  body{padding:20px;}
+  h4{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:#94A3B8;margin:0 0 10px;}
+  .grid{display:grid;grid-template-columns:repeat(8,1fr);gap:14px;}
+  .ic{display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;color:#A3A3A3;text-align:center;}
+  .ic [data-lucide]{stroke:#D4D4D4;}
+  .glyphs{margin-top:14px;display:flex;gap:18px;align-items:center;font-family:var(--font-mono);font-size:11px;color:#94A3B8;}
+  .glyph{font-size:22px;color:#fff;font-family:var(--font-sans-system);}
+</style>
+</head>
+<body>
+<h4>Lucide · stroke 1.5 · 20px</h4>
+<div class="grid">
+  <div class="ic"><i data-lucide="layout-dashboard"></i><span>dashboard</span></div>
+  <div class="ic"><i data-lucide="boxes"></i><span>machines</span></div>
+  <div class="ic"><i data-lucide="server"></i><span>tenants</span></div>
+  <div class="ic"><i data-lucide="mail"></i><span>invitations</span></div>
+  <div class="ic"><i data-lucide="bar-chart-3"></i><span>metrics</span></div>
+  <div class="ic"><i data-lucide="network"></i><span>api</span></div>
+  <div class="ic"><i data-lucide="activity"></i><span>agents</span></div>
+  <div class="ic"><i data-lucide="layout-grid"></i><span>mission</span></div>
+  <div class="ic"><i data-lucide="gavel"></i><span>governance</span></div>
+  <div class="ic"><i data-lucide="circle-dollar-sign"></i><span>costs</span></div>
+  <div class="ic"><i data-lucide="book-open"></i><span>notebook</span></div>
+  <div class="ic"><i data-lucide="message-square"></i><span>feedback</span></div>
+  <div class="ic"><i data-lucide="shield-check"></i><span>approvals</span></div>
+  <div class="ic"><i data-lucide="shield-alert"></i><span>defense</span></div>
+  <div class="ic"><i data-lucide="settings"></i><span>settings</span></div>
+  <div class="ic"><i data-lucide="external-link"></i><span>open</span></div>
+</div>
+<h4 style="margin-top:14px">Unicode glyphs (used as icons)</h4>
+<div class="glyphs">
+  <div><span class="glyph">→</span> CTA / breadcrumb</div>
+  <div><span class="glyph">·</span> separator</div>
+  <div><span class="glyph">✓</span> feature check</div>
+  <div><span class="glyph">▲</span> trend up</div>
+  <div><span class="glyph">▼</span> trend down</div>
+  <div><span class="glyph">✕</span> close</div>
+</div>
+<script>lucide.createIcons({attrs:{width:20,height:20,'stroke-width':1.5}});</script>
+</body></html>

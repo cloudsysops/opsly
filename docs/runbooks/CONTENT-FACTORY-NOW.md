@@ -5,7 +5,7 @@ last_review: 2026-09-05
 type: runbook
 ---
 
-# Content Factory — arranque completo (Bitsitos + Splashitos)
+# Content Factory — arranque completo (Bitsitos + Splashitos + Clicksitos)
 
 > **Capacidad VPS:** alerta activa (~4 GiB). No deploy pesado de día. Render = **solo PC-gamer**. Mac encola, sincroniza MP4s y **publica 24×7** el siguiente unpublished (unlisted, tope 6/día por cuota YouTube).
 
@@ -77,6 +77,7 @@ Kits:
 
 - `runtime/content-studio/youtube-upload-kit/bitsitos/`
 - `runtime/content-studio/youtube-upload-kit/splashitos/`
+- `runtime/content-studio/youtube-upload-kit/clicksitos/`
 
 `--mac-bridge` existe solo como emergencia y avisa. No es el default.
 
@@ -90,7 +91,7 @@ Roster: `config/content-studio/content-agents.json`
 | PC-gamer worker | Cola `content-video` + GPU + bridge `:8080` |
 | Hermes | Cadencia pilares |
 | Launchd | `com.opsly.content-studio-24x7` cada 15 min |
-| Humano | OAuth en Doppler + branding Splashitos channel id |
+| Humano | OAuth en Doppler + IDs Splashitos / Clicksitos |
 
 ## 5) Cadencia publicar (24×7)
 
@@ -104,9 +105,10 @@ Fábrica siempre encendida en el Mac. **No** 24 uploads/día: la API de YouTube 
 | Privacidad | `YOUTUBE_PRIVACY` (Doppler, default **unlisted**) |
 | Render | Solo gamer en `heavy`/`light`; durante `gaming` solo publica |
 | Splashitos | Skip upload hasta `YOUTUBE_SPLASHITOS_CHANNEL_ID` |
+| Clicksitos | Skip upload hasta `YOUTUBE_CLICKSITOS_CHANNEL_ID` + OAuth de esa Brand Account |
 | Skip | `runtime/content-studio/published.json` + `upload-results.json` |
 
-Orden: [`BITSITOS-UPLOAD-NOW.md`](../brand/icso/BITSITOS-UPLOAD-NOW.md) · [`SPLASHITOS-UPLOAD-NOW.md`](../brand/icso/SPLASHITOS-UPLOAD-NOW.md)
+Orden: [`OPSLY-YOUTUBE-CHANNEL.md`](../brand/icso/OPSLY-YOUTUBE-CHANNEL.md) · [`BITSITOS-UPLOAD-NOW.md`](../brand/icso/BITSITOS-UPLOAD-NOW.md) · [`SPLASHITOS-UPLOAD-NOW.md`](../brand/icso/SPLASHITOS-UPLOAD-NOW.md) · [`CLICKSITOS-UPLOAD-NOW.md`](../brand/icso/CLICKSITOS-UPLOAD-NOW.md)
 
 ## 6) No hacer
 

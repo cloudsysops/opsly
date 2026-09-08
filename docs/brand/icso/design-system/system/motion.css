@@ -1,0 +1,128 @@
+/* =========================================================================
+   Opsly Motion Library
+   Named keyframes + utility classes for the cyber, terminal and marketing
+   surfaces. Pair with colors_and_type.css.
+   ========================================================================= */
+
+/* ------------------------------------------------------------------ pulse */
+@keyframes ops-pulse {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%      { opacity: .55; transform: scale(.96); }
+}
+.ops-anim-pulse { animation: ops-pulse 1.4s var(--ease-in-out, ease-in-out) infinite; }
+
+/* ----------------------------------------------------------- pulse-ring */
+@keyframes ops-pulse-ring {
+  0%   { box-shadow: 0 0 0 0   rgba(34,197,94,.45); }
+  70%  { box-shadow: 0 0 0 10px rgba(34,197,94,0);  }
+  100% { box-shadow: 0 0 0 0   rgba(34,197,94,0);  }
+}
+.ops-anim-pulse-ring { animation: ops-pulse-ring 1.6s ease-out infinite; border-radius:999px; }
+
+/* --------------------------------------------------------------- scanline */
+@keyframes ops-scan {
+  0%   { transform: translateY(-110%); }
+  100% { transform: translateY(110%); }
+}
+.ops-anim-scan {
+  position:absolute; inset:0; pointer-events:none; overflow:hidden;
+}
+.ops-anim-scan::after{
+  content:""; position:absolute; left:0; right:0; height:32%;
+  background: linear-gradient(180deg, transparent, rgba(0,255,255,.18), transparent);
+  animation: ops-scan 4s linear infinite;
+  mix-blend-mode: screen;
+}
+
+/* ----------------------------------------------------------- holo-shimmer */
+@keyframes ops-holo {
+  0%   { background-position:   0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position:   0% 50%; }
+}
+.ops-anim-holo {
+  background: linear-gradient(120deg,#00FFFF,#FF00FF,#9D00FF,#00FFFF);
+  background-size: 300% 300%;
+  animation: ops-holo 8s ease-in-out infinite;
+}
+
+/* ----------------------------------------------------------- gradient-flow */
+@keyframes ops-gradient-flow {
+  0%   { background-position:  0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+.ops-anim-gradient-flow {
+  background: linear-gradient(90deg,#7C3AED,#6366F1,#7C3AED,#6366F1);
+  background-size: 200% 100%;
+  animation: ops-gradient-flow 6s linear infinite;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* ----------------------------------------------------------------- flicker */
+@keyframes ops-flicker {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; text-shadow: 0 0 6px currentColor, 0 0 14px currentColor; }
+  20%, 24%, 55% { opacity: .55; text-shadow: none; }
+}
+.ops-anim-flicker { animation: ops-flicker 6s linear infinite; }
+
+/* ------------------------------------------------------- caret-blink (CLI) */
+@keyframes ops-caret { 50% { opacity: 0; } }
+.ops-caret { display:inline-block; width:.55em; height:1em; vertical-align:-0.15em; background: currentColor; animation: ops-caret 1s steps(1) infinite; }
+
+/* ----------------------------------------------------------- sparkle drift */
+@keyframes ops-drift {
+  0%   { transform: translate3d(0,0,0); }
+  100% { transform: translate3d(-44px,-44px,0); }
+}
+.ops-anim-grid-drift {
+  background-image:
+    linear-gradient(rgba(0,255,255,0.10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(157,0,255,0.10) 1px, transparent 1px);
+  background-size: 44px 44px;
+  animation: ops-drift 20s linear infinite;
+}
+
+/* ------------------------------------------------------------------ ticker */
+@keyframes ops-marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ops-anim-marquee {
+  display: inline-flex; white-space: nowrap;
+  animation: ops-marquee 40s linear infinite;
+}
+
+/* --------------------------------------------------------------- fade-in-up */
+@keyframes ops-fade-in-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.ops-anim-fade-in-up { animation: ops-fade-in-up .5s var(--ease-out, ease-out) both; }
+
+/* -------------------------------------------------- typewriter (mono only) */
+@keyframes ops-typewriter {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+.ops-anim-typewriter {
+  display:inline-block; overflow:hidden; white-space:nowrap;
+  border-right: 2px solid currentColor;
+  animation: ops-typewriter 2.4s steps(40, end) both, ops-caret 1s steps(1) infinite;
+}
+
+/* ---------------------------------------------------------------- ascend KPI */
+@keyframes ops-ascend {
+  from { transform: translateY(8px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.ops-anim-ascend { animation: ops-ascend .35s var(--ease-out, ease-out) both; }
+
+/* -------------------------------------------------------- reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .ops-anim-pulse, .ops-anim-pulse-ring, .ops-anim-scan::after,
+  .ops-anim-holo, .ops-anim-gradient-flow, .ops-anim-flicker,
+  .ops-caret, .ops-anim-grid-drift, .ops-anim-marquee,
+  .ops-anim-fade-in-up, .ops-anim-typewriter, .ops-anim-ascend {
+    animation: none !important;
+  }
+}

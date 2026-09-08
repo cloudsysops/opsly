@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Opsly · Admin · Tenants</title>
+<link rel="stylesheet" href="../../colors_and_type.css" />
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;}
+  html,body{margin:0;background:var(--ops-admin-bg);color:#F5F5F5;font-family:var(--font-sans);min-height:100vh;}
+  body{position:relative;overflow-x:hidden;}
+  .stage-bg{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(60% 40% at 18% 18%,rgba(0,255,255,.08),transparent 60%),radial-gradient(50% 40% at 82% 25%,rgba(255,0,255,.08),transparent 60%),radial-gradient(60% 40% at 50% 90%,rgba(157,0,255,.10),transparent 60%);}
+  .grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(0,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(157,0,255,.06) 1px,transparent 1px);background-size:44px 44px;opacity:.4;}
+  .app{position:relative;z-index:1;min-height:100vh;display:grid;grid-template-columns:240px 1fr;}
+
+  .sb{position:sticky;top:0;height:100vh;margin:16px 0 16px 16px;border-radius:16px;padding:16px 12px;border:1px solid transparent;background:linear-gradient(rgba(16,23,52,.94),rgba(16,23,52,.94)) padding-box,linear-gradient(120deg,rgba(0,255,255,.7),rgba(255,0,255,.65),rgba(157,0,255,.7)) border-box;box-shadow:0 0 0 1px rgba(0,255,255,.45),0 0 20px rgba(0,255,255,.2),0 0 40px rgba(157,0,255,.2);}
+  .sb-brand{padding:6px 8px 14px;border-bottom:1px solid rgba(34,48,100,.7);margin-bottom:12px;}
+  .sb-brand .mark{font-family:var(--font-display);font-weight:700;letter-spacing:.16em;font-size:18px;background:linear-gradient(90deg,#00FFFF,#FF00FF);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .sb-brand .sub{display:block;font-family:var(--font-mono);font-size:9px;letter-spacing:.24em;color:#94A3B8;text-transform:uppercase;margin-top:2px;}
+  .sb-sect{font-family:var(--font-mono);font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:#94A3B8;padding:10px 8px 4px;}
+  .sb-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;font-size:13px;color:#D4D4D4;cursor:pointer;}
+  .sb-item [data-lucide]{stroke:#94A3B8;width:16px;height:16px;}
+  .sb-item:hover{background:rgba(0,255,255,.06);color:#fff;}
+  .sb-item.active{background:rgba(0,255,255,.10);color:#00FFFF;border:1px solid rgba(0,255,255,.4);}
+  .sb-item.active [data-lucide]{stroke:#00FFFF;}
+
+  .tb{position:sticky;top:0;z-index:5;margin:16px 16px 0;border-radius:14px;padding:10px 16px;display:flex;align-items:center;gap:18px;background:linear-gradient(rgba(10,14,39,.85),rgba(10,14,39,.85)) padding-box,linear-gradient(120deg,rgba(0,255,255,.5),rgba(255,0,255,.45),rgba(157,0,255,.5)) border-box;border:1px solid transparent;backdrop-filter:blur(8px);}
+  .crumb{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#94A3B8;}
+  .crumb b{color:#00FFFF;} .crumb i{color:#FF00FF;font-style:normal;margin:0 6px;}
+  .tb-spacer{flex:1;}
+  .tb-search{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid #223064;border-radius:6px;padding:6px 10px;width:280px;}
+  .tb-search input{flex:1;background:transparent;border:0;outline:0;color:#fff;font:400 12px var(--font-mono);}
+  .btn{display:inline-flex;align-items:center;gap:6px;border-radius:4px;border:1px solid;height:30px;padding:0 12px;font:500 12px var(--font-sans);cursor:pointer;background:transparent;color:inherit;}
+  .btn-primary{background:rgba(0,255,255,.1);border-color:rgba(0,255,255,.5);color:#00FFFF;}
+  .btn-default{background:rgba(255,255,255,.04);border-color:#223064;color:#D4D4D4;}
+  .btn-destructive{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.5);color:#EF4444;}
+
+  main{padding:18px 16px 28px;}
+  .h-row{display:flex;align-items:end;justify-content:space-between;margin:6px 4px 16px;gap:12px;}
+  h1{font-family:var(--font-display);font-weight:700;letter-spacing:.06em;font-size:22px;color:#fff;margin:0;}
+  h1 small{display:block;font-family:var(--font-mono);font-size:10px;letter-spacing:.24em;color:#FF00FF;text-transform:uppercase;margin-top:4px;}
+
+  /* filters */
+  .filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;font:500 11px var(--font-mono);text-transform:uppercase;letter-spacing:.1em;border:1px solid #223064;border-radius:4px;color:#94A3B8;cursor:pointer;background:rgba(255,255,255,.02);}
+  .chip.on{color:#00FFFF;border-color:rgba(0,255,255,.5);background:rgba(0,255,255,.08);}
+  .chip .ddot{width:6px;height:6px;border-radius:50%;}
+
+  /* split layout */
+  .split{display:grid;grid-template-columns:1.5fr 1fr;gap:14px;}
+  .card{border-radius:16px;border:1px solid transparent;background:linear-gradient(rgba(16,23,52,.85),rgba(16,23,52,.85)) padding-box,linear-gradient(120deg,rgba(0,255,255,.7),rgba(255,0,255,.65),rgba(157,0,255,.7)) border-box;box-shadow:0 0 18px rgba(157,0,255,.18);}
+  .card .h{padding:12px 16px;border-bottom:1px solid rgba(34,48,100,.7);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .card .h .t{font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.12em;color:#00FFFF;text-transform:uppercase;}
+  .card .h .a{font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;color:#94A3B8;text-transform:uppercase;}
+  .card .b{padding:14px 16px;}
+  .card .b.flush{padding:0;}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead th{font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#94A3B8;text-align:left;padding:10px 12px;border-bottom:1px solid #223064;}
+  tbody td{padding:10px 12px;border-bottom:1px solid rgba(34,48,100,.45);font-family:var(--font-mono);color:#D4D4D4;vertical-align:middle;}
+  tbody tr{cursor:pointer;}
+  tbody tr:hover{background:rgba(0,255,255,.04);}
+  tbody tr.sel{background:rgba(0,255,255,.08);box-shadow:inset 3px 0 0 #00FFFF;}
+  td .slug{color:#fff;}
+  td .id{color:#737373;font-size:11px;}
+
+  .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid;border-radius:4px;padding:1px 8px;font:500 11px var(--font-sans);text-transform:lowercase;}
+  .p-active{border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.15);color:#22C55E;}
+  .p-prov{border-color:rgba(234,179,8,.4);background:rgba(234,179,8,.1);color:#EAB308;}
+  .p-failed{border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.15);color:#EF4444;}
+  .p-susp{border-color:rgba(148,163,184,.5);background:rgba(148,163,184,.2);color:#94A3B8;}
+  .ddot{width:6px;height:6px;border-radius:50%;}
+
+  /* detail panel */
+  .dp{padding:0;}
+  .dp-h{padding:16px;border-bottom:1px solid rgba(34,48,100,.7);}
+  .dp-h .top{display:flex;align-items:center;gap:10px;}
+  .dp-h h2{font:600 18px/1.2 var(--font-sans-system);margin:0;color:#fff;}
+  .dp-h .meta{font-family:var(--font-mono);font-size:11px;color:#94A3B8;margin-top:6px;line-height:1.7;}
+  .dp-h .meta b{color:#fff;font-weight:500;}
+  .dp-actions{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;}
+
+  .kv{display:grid;grid-template-columns:130px 1fr;gap:6px 14px;font-family:var(--font-mono);font-size:12px;padding:14px 16px;border-bottom:1px solid rgba(34,48,100,.5);}
+  .kv .k{color:#94A3B8;text-transform:uppercase;letter-spacing:.1em;font-size:10px;align-self:center;}
+  .kv .v{color:#fff;}
+  .kv .v.muted{color:#94A3B8;}
+  .kv .copy{color:#00FFFF;cursor:pointer;font-size:11px;margin-left:6px;}
+
+  /* timeline */
+  .tl{padding:14px 16px;}
+  .tl-item{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid rgba(34,48,100,.4);}
+  .tl-item:last-child{border:0;}
+  .tl-item .ic{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:0 0 24px;font-size:12px;}
+  .tl-item .body{flex:1;font-family:var(--font-mono);font-size:12px;line-height:1.5;}
+  .tl-item .body b{color:#22C55E;font-weight:500;}
+  .tl-item .body span{color:#94A3B8;}
+  .tl-item .when{font-family:var(--font-mono);font-size:11px;color:#525252;}
+  .ic.success{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.5);color:#22C55E;}
+  .ic.warn{background:rgba(234,179,8,.15);border:1px solid rgba(234,179,8,.5);color:#EAB308;}
+  .ic.info{background:rgba(0,255,255,.1);border:1px solid rgba(0,255,255,.4);color:#00FFFF;}
+</style>
+</head>
+<body>
+<div class="stage-bg"></div>
+<div class="grid-bg"></div>
+
+<div class="app">
+  <aside class="sb">
+    <div class="sb-brand"><div class="mark">OPSLY</div><div class="sub">Admin · v1.4.0</div></div>
+    <div class="sb-sect">Plataforma</div>
+    <div class="sb-item"><i data-lucide="layout-dashboard"></i> Dashboard</div>
+    <div class="sb-item"><i data-lucide="boxes"></i> Machines</div>
+    <div class="sb-item active"><i data-lucide="server"></i> Tenants</div>
+    <div class="sb-item"><i data-lucide="mail"></i> Invitations</div>
+    <div class="sb-item"><i data-lucide="bar-chart-3"></i> Metrics</div>
+    <div class="sb-item"><i data-lucide="network"></i> API</div>
+    <div class="sb-sect">Mission control</div>
+    <div class="sb-item"><i data-lucide="activity"></i> Agents</div>
+    <div class="sb-item"><i data-lucide="layout-grid"></i> Mission</div>
+    <div class="sb-item"><i data-lucide="gavel"></i> OpenClaw gov</div>
+    <div class="sb-item"><i data-lucide="circle-dollar-sign"></i> Costs</div>
+    <div class="sb-sect">System</div>
+    <div class="sb-item"><i data-lucide="shield-check"></i> Approvals</div>
+    <div class="sb-item"><i data-lucide="settings"></i> Settings</div>
+  </aside>
+
+  <div>
+    <header class="tb">
+      <span class="crumb"><b>OPSLY</b><i>·</i>ADMIN<i>·</i>TENANTS</span>
+      <span class="tb-spacer"></span>
+      <div class="tb-search"><i data-lucide="search" style="width:14px;height:14px;color:#94A3B8;"></i><input placeholder="slug, email, customer_id…" /></div>
+      <button class="btn btn-primary">+ Crear tenant</button>
+    </header>
+
+    <main>
+      <div class="h-row">
+        <h1>Tenants<small>9 totales · 7 activos · 1 provisionando · 1 fallido</small></h1>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-default"><i data-lucide="download" style="width:14px;height:14px;"></i> Export CSV</button>
+          <button class="btn btn-default"><i data-lucide="filter" style="width:14px;height:14px;"></i> Filtros</button>
+        </div>
+      </div>
+
+      <div class="filters">
+        <span class="chip on">All</span>
+        <span class="chip"><span class="ddot" style="background:#22C55E"></span>active 7</span>
+        <span class="chip"><span class="ddot" style="background:#EAB308"></span>provisioning 1</span>
+        <span class="chip"><span class="ddot" style="background:#EF4444"></span>failed 1</span>
+        <span class="chip">suspended 0</span>
+        <span class="chip" style="margin-left:auto;">plan: <span style="color:#fff;margin-left:4px">all</span></span>
+        <span class="chip">region: <span style="color:#fff;margin-left:4px">all</span></span>
+      </div>
+
+      <div class="split">
+        <!-- table -->
+        <div class="card">
+          <div class="h"><span class="t">Listado</span><span class="a">orden: created ↓</span></div>
+          <div class="b flush">
+            <table>
+              <thead><tr><th>slug</th><th>plan</th><th>region</th><th>status</th><th>workflows</th><th>$ LLM mes</th><th>creado</th></tr></thead>
+              <tbody>
+                <tr class="sel"><td><span class="slug">acme</span><br><span class="id">cs_a1B2C3d4</span></td><td>BUSINESS</td><td>sa-east-1</td><td><span class="pill p-active"><span class="ddot" style="background:#22C55E"></span>active</span></td><td>14 / 25</td><td>$28.40</td><td>10/05/26</td></tr>
+                <tr><td><span class="slug">mi-empresa</span><br><span class="id">cs_x9Y8Z7w6</span></td><td>STARTUP</td><td>sa-east-1</td><td><span class="pill p-active"><span class="ddot" style="background:#22C55E"></span>active</span></td><td>4 / 5</td><td>$11.80</td><td>09/05/26</td></tr>
+                <tr><td><span class="slug">smiletripcare</span></td><td>BUSINESS</td><td>eu-central-1</td><td><span class="pill p-active"><span class="ddot" style="background:#22C55E"></span>active</span></td><td>22 / 25</td><td>$94.20</td><td>02/05/26</td></tr>
+                <tr><td><span class="slug">kuda-trade</span></td><td>BUSINESS</td><td>us-east-1</td><td><span class="pill p-active"><span class="ddot" style="background:#22C55E"></span>active</span></td><td>11 / 25</td><td>$41.10</td><td>28/04/26</td></tr>
+                <tr><td><span class="slug">volta-edu</span></td><td>STARTUP</td><td>sa-east-1</td><td><span class="pill p-active"><span class="ddot" style="background:#22C55E"></span>active</span></td><td>5 / 5</td><td>$22.05</td><td>21/04/26</td></tr>
+                <tr><td><span class="slug">norte-tow</span></td><td>STARTUP</td><td>sa-east-1</td><td><span class="pill p-active"><span class="ddot" style="background:#22C55E"></span>active</span></td><td>3 / 5</td><td>$8.10</td><td>14/04/26</td></tr>
+                <tr><td><span class="slug">ipsum-co</span></td><td>STARTUP</td><td>sa-east-1</td><td><span class="pill p-active"><span class="ddot" style="background:#22C55E"></span>active</span></td><td>2 / 5</td><td>$1.40</td><td>02/04/26</td></tr>
+                <tr><td><span class="slug">demo-7</span></td><td>STARTUP</td><td>sa-east-1</td><td><span class="pill p-prov"><span class="ddot" style="background:#EAB308"></span>provisioning</span></td><td>—</td><td>—</td><td>hace 4m</td></tr>
+                <tr><td><span class="slug">labs-23</span></td><td>—</td><td>sa-east-1</td><td><span class="pill p-failed">failed</span></td><td>—</td><td>—</td><td>hace 2h</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- detail -->
+        <div class="card dp">
+          <div class="dp-h">
+            <div class="top">
+              <h2>acme</h2>
+              <span class="pill p-active"><span class="ddot" style="background:#22C55E"></span>active</span>
+              <span class="pill" style="border-color:rgba(124,58,237,.5);background:rgba(124,58,237,.1);color:#A78BFA;">BUSINESS</span>
+            </div>
+            <div class="meta">
+              <b>acme.opsly.io</b> · sa-east-1 · creado 10/05/2026 09:14:02 UTC<br>
+              owner <b>marina@acme.io</b> · 4 invitados · MRR <b>$149.00</b>
+            </div>
+            <div class="dp-actions">
+              <button class="btn btn-primary">Abrir Mission control →</button>
+              <button class="btn btn-default">Reiniciar stack</button>
+              <button class="btn btn-default">Suspender</button>
+              <button class="btn btn-destructive">Eliminar</button>
+            </div>
+          </div>
+          <div class="kv">
+            <div class="k">tenant_id</div><div class="v">cs_a1B2C3d4 <span class="copy">copy</span></div>
+            <div class="k">stripe</div><div class="v">cus_OqW…q92 <span class="copy">copy</span></div>
+            <div class="k">stack</div><div class="v">n8n 1.74 · uptime-kuma 1.23 · llm-gw 0.9.4</div>
+            <div class="k">host</div><div class="v">ops-prod-01 · 10.0.4.21</div>
+            <div class="k">budget LLM</div><div class="v">$28.40 / $100 · <span style="color:#22C55E;">28%</span></div>
+            <div class="k">backups</div><div class="v">daily · 30d retention · last 02:14 UTC ✓</div>
+          </div>
+          <div class="tl">
+            <div style="font:500 11px var(--font-mono);text-transform:uppercase;letter-spacing:.18em;color:#94A3B8;margin-bottom:6px;">Timeline</div>
+            <div class="tl-item"><div class="ic success">✓</div><div class="body"><b>tenant.provisioned</b> <span>orchestrator · stack listo en 38s</span></div><div class="when">10 may · 09:14</div></div>
+            <div class="tl-item"><div class="ic info">→</div><div class="body"><b>checkout.session.completed</b> <span>BUSINESS plan · stripe</span></div><div class="when">10 may · 09:14</div></div>
+            <div class="tl-item"><div class="ic success">✓</div><div class="body"><b>webhook.invoice.paid</b> <span>$149.00 USD · cobro inicial</span></div><div class="when">10 may · 09:14</div></div>
+            <div class="tl-item"><div class="ic warn">!</div><div class="body"><b>llm.budget.threshold</b> <span>cruzó 25% del cap mensual</span></div><div class="when">14 may · 22:08</div></div>
+            <div class="tl-item"><div class="ic success">✓</div><div class="body"><b>backup.completed</b> <span>snapshot 482 MB · s3://opsly-bk/</span></div><div class="when">hoy · 02:14</div></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script>lucide.createIcons({attrs:{'stroke-width':1.6}});</script>
+</body></html>

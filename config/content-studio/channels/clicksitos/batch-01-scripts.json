@@ -1,0 +1,181 @@
+{
+  "channel": {
+    "slug": "icso-clicksitos",
+    "brand": "Clicksitos",
+    "language": "es",
+    "owner": "icso",
+    "not_peskids": true,
+    "primary_surface": "youtube_shorts",
+    "aspect_ratio": "9:16",
+    "target_duration_sec": 35,
+    "tone": "competitive_fast",
+    "batch": "01-clicks",
+    "visual_style": "neon gamer HUD, illustrated FPS/reels energy, bold Spanish subtitles, no real faces, dark arena + magenta/cyan glow"
+  },
+  "preset": {
+    "slug": "youtube_shorts",
+    "label": "YouTube Shorts / Reels",
+    "platforms": ["youtube_shorts", "reels"],
+    "pillars": ["gaming", "clicks", "aim", "ranked"],
+    "tone_of_voice": "competitive_fast",
+    "language": "es",
+    "visual_style": "neon gamer HUD clicks and reels, magenta cyan",
+    "aspect_ratio": "9:16",
+    "target_duration_sec": 35,
+    "approval_required": false,
+    "render_provider": "moneyprinterturbo",
+    "notes": "ICSO Clicksitos — gaming clicks/reels. Not kids. Not Peskids."
+  },
+  "drafts": [
+    {
+      "id": "clicksitos-001-clutch",
+      "title": "El clutch no es suerte",
+      "story_hook": "1v3 y ganas… si no disparas de nervios.",
+      "call_to_action": "Guarda el Short y haz 5 clutches en deathmatch. Clicksitos.",
+      "image_prompt": "Illustrated 1v3 clutch neon HUD, one player vs three silhouettes, subtitle CLUTCH, magenta cyan gamer style, no real faces",
+      "reel_script": [
+        { "scene": "Score 1v3", "copy": "No es luck. Es ritmo.", "duration_sec": 4 },
+        { "scene": "Isolate one enemy", "copy": "Separa: uno, peek, reset.", "duration_sec": 10 },
+        { "scene": "Crosshair still", "copy": "Mira quieta. El spray viene después.", "duration_sec": 10 },
+        { "scene": "End card", "copy": "5 clutches hoy. Clicksitos.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Hook: 1v3 no es suerte.\nTip: separa, peek, mira quieta.\nCTA: Clicksitos.",
+      "hashtags": ["#Clicksitos", "#Clutch", "#FPS", "#Gaming", "#Shorts"]
+    },
+    {
+      "id": "clicksitos-002-aim",
+      "title": "Aim: 10 minutos que sí suben",
+      "story_hook": "Si calientas mal, ranked te come.",
+      "call_to_action": "Hoy: 5 min flicks + 5 min tracking. Clicksitos.",
+      "image_prompt": "Cartoon aim trainer grid with glowing crosshair, subtitle AIM 10, neon arcade, no real faces",
+      "reel_script": [
+        { "scene": "Cold aim miss", "copy": "¿Entras cold a ranked?", "duration_sec": 4 },
+        { "scene": "Flick grid", "copy": "5 min flicks. Codo quieto.", "duration_sec": 10 },
+        { "scene": "Tracking bots", "copy": "5 min tracking. No chase el mouse.", "duration_sec": 10 },
+        { "scene": "End card", "copy": "10 min. Luego queue. Clicksitos.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Anti: ranked cold.\nTip: 5 flick + 5 track.\nCTA: Clicksitos.",
+      "hashtags": ["#Clicksitos", "#Aim", "#Warmup", "#FPS", "#Shorts"]
+    },
+    {
+      "id": "clicksitos-003-settings",
+      "title": "Settings que no te frenan",
+      "story_hook": "Más FPS no gana si el input lag te come.",
+      "call_to_action": "Baja sombras, sube sharpness. Clicksitos.",
+      "image_prompt": "Illustrated game settings panel FPS HIGH shadows LOW, subtitle SETTINGS, neon HUD, no real faces",
+      "reel_script": [
+        { "scene": "Pretty but 80fps", "copy": "Bonito… y late.", "duration_sec": 4 },
+        { "scene": "Shadows off", "copy": "Sombras low. Efectos low.", "duration_sec": 10 },
+        { "scene": "Sharpen + reflex", "copy": "Nitidez up. Low latency on.", "duration_sec": 10 },
+        { "scene": "End card", "copy": "Se ve claro. Se siente rápido. Clicksitos.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Hook: pretty ≠ win.\nTip: shadows low, latency on.\nCTA: Clicksitos.",
+      "hashtags": ["#Clicksitos", "#Settings", "#FPS", "#PCGamer", "#Shorts"]
+    },
+    {
+      "id": "clicksitos-004-ranked",
+      "title": "Ranked: deja de tilt-queue",
+      "story_hook": "Perdiste 2. No entres a la tercera.",
+      "call_to_action": "Regla: 2 losses → deathmatch o agua. Clicksitos.",
+      "image_prompt": "Cartoon ranked badge cracked then reset, water bottle, subtitle NO TILT, neon magenta, no real faces",
+      "reel_script": [
+        { "scene": "Lose streak", "copy": "Dos losses. Cerebro off.", "duration_sec": 4 },
+        { "scene": "Stop queue", "copy": "No tercera. Reset 10 min.", "duration_sec": 10 },
+        { "scene": "DM or walk", "copy": "Deathmatch o agua. Luego sí.", "duration_sec": 10 },
+        { "scene": "End card", "copy": "El elo se cuida. Clicksitos.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Hook: no third after 2 losses.\nTip: reset 10 min.\nCTA: Clicksitos.",
+      "hashtags": ["#Clicksitos", "#Ranked", "#Tilt", "#Gaming", "#Shorts"]
+    },
+    {
+      "id": "clicksitos-005-warmup",
+      "title": "Warmup de 3 clicks",
+      "story_hook": "Antes del queue: 3 clicks limpios.",
+      "call_to_action": "Head, body, flick. Repite 20. Clicksitos.",
+      "image_prompt": "Three glowing click marks HEAD BODY FLICK on a target dummy, subtitle 3 CLICKS, neon gamer, no real faces",
+      "reel_script": [
+        { "scene": "Ready check", "copy": "No queue aún.", "duration_sec": 3 },
+        { "scene": "Head click", "copy": "1: head. Para.", "duration_sec": 9 },
+        { "scene": "Body then flick", "copy": "2: body. 3: flick y para.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "20 reps. Ahora sí. Clicksitos.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Hook: 3 clicks before queue.\nTip: head, body, flick.\nCTA: Clicksitos.",
+      "hashtags": ["#Clicksitos", "#Clicks", "#Warmup", "#FPS", "#Shorts"]
+    },
+    {
+      "id": "clicksitos-006-peek",
+      "title": "Peek: tú disparas primero",
+      "story_hook": "Si wide-peekeas a lo loco, te comen el ángulo.",
+      "call_to_action": "Jiggle, info, luego commit. Clicksitos.",
+      "image_prompt": "Illustrated corner peek with shoulder jiggle and crosshair ready, subtitle PEEK, neon arena, no real faces",
+      "reel_script": [
+        { "scene": "Wide peek death", "copy": "Wide peek = highlight… del rival.", "duration_sec": 4 },
+        { "scene": "Jiggle info", "copy": "Jiggle. Info. Vuelve.", "duration_sec": 10 },
+        { "scene": "Commit shot", "copy": "Luego commit con mira lista.", "duration_sec": 10 },
+        { "scene": "End card", "copy": "Tú disparas primero. Clicksitos.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Anti: wide peek.\nTip: jiggle → info → commit.\nCTA: Clicksitos.",
+      "hashtags": ["#Clicksitos", "#Peek", "#FPS", "#Tips", "#Shorts"]
+    },
+    {
+      "id": "clicksitos-007-sensi",
+      "title": "Sensibilidad: deja de tocarla",
+      "story_hook": "Cambiar sensi cada death no te hace pro.",
+      "call_to_action": "Fija 7 días. Solo warmup. Clicksitos.",
+      "image_prompt": "Cartoon mouse DPI lock padlock, subtitle SENSI LOCK, neon desk setup illustrated, no real faces",
+      "reel_script": [
+        { "scene": "Slider chaos", "copy": "¿Otra vez el slider?", "duration_sec": 4 },
+        { "scene": "Lock 7 days", "copy": "Elige una. 7 días. Punto.", "duration_sec": 10 },
+        { "scene": "Muscle memory", "copy": "La mano aprende. Tú no adivinas.", "duration_sec": 10 },
+        { "scene": "End card", "copy": "Lock y a jugar. Clicksitos.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Anti: sensi cada death.\nTip: lock 7 days.\nCTA: Clicksitos.",
+      "hashtags": ["#Clicksitos", "#Sensi", "#DPI", "#FPS", "#Shorts"]
+    },
+    {
+      "id": "clicksitos-008-tilt",
+      "title": "Si gritaste, ya perdiste el round",
+      "story_hook": "El mic tilt tira más elo que un miss.",
+      "call_to_action": "Mute all 1 mapa si estás caliente. Clicksitos.",
+      "image_prompt": "Illustrated muted mic icon over cracked ranked badge, subtitle MUTE, neon magenta, no real faces",
+      "reel_script": [
+        { "scene": "Scream mic", "copy": "Gritaste. El equipo se apagó.", "duration_sec": 4 },
+        { "scene": "Mute", "copy": "Mute all. Un mapa.", "duration_sec": 10 },
+        { "scene": "Play next", "copy": "Info corta. Sin novela.", "duration_sec": 10 },
+        { "scene": "End card", "copy": "Cabeza fría. Clicksitos.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Hook: scream = lose.\nTip: mute one map.\nCTA: Clicksitos.",
+      "hashtags": ["#Clicksitos", "#Tilt", "#Ranked", "#Gaming", "#Shorts"]
+    },
+    {
+      "id": "clicksitos-009-reel-hook",
+      "title": "El hook de un reel que sí para el scroll",
+      "story_hook": "Los primeros 2 segundos deciden.",
+      "call_to_action": "Empieza con el fail, no con el logo. Clicksitos.",
+      "image_prompt": "Vertical phone reel timeline 0-2s FAIL then WIN, subtitle HOOK, neon social gaming, no real faces",
+      "reel_script": [
+        { "scene": "Scroll past logo", "copy": "Logo primero = skip.", "duration_sec": 3 },
+        { "scene": "Open on fail", "copy": "Abre con el miss o el clip.", "duration_sec": 10 },
+        { "scene": "Payoff", "copy": "Luego el tip. 1 idea. Ya.", "duration_sec": 12 },
+        { "scene": "End card", "copy": "Fail → tip → CTA. Clicksitos.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Anti: logo first.\nTip: fail then tip.\nCTA: Clicksitos.",
+      "hashtags": ["#Clicksitos", "#Reels", "#Shorts", "#Content", "#Gaming"]
+    },
+    {
+      "id": "clicksitos-010-crosshair",
+      "title": "Crosshair: pequeño, visible, listo",
+      "story_hook": "Si no ves la mira en el spray, ya perdiste el duelo.",
+      "call_to_action": "Contraste alto. Centro limpio. Clicksitos.",
+      "image_prompt": "Clean small cyan crosshair on dark wall, subtitle MIRA, neon FPS HUD, no real faces",
+      "reel_script": [
+        { "scene": "Fat crosshair", "copy": "Mira gorda = no ves el head.", "duration_sec": 4 },
+        { "scene": "Small contrast", "copy": "Chica. Contraste. Sin gap enorme.", "duration_sec": 10 },
+        { "scene": "Pre-aim", "copy": "Deja la mira donde sale gente.", "duration_sec": 10 },
+        { "scene": "End card", "copy": "Mira lista. Click. Clicksitos.", "duration_sec": 6 }
+      ],
+      "youtube_shorts_script": "Anti: fat crosshair.\nTip: small + contrast + preaim.\nCTA: Clicksitos.",
+      "hashtags": ["#Clicksitos", "#Crosshair", "#FPS", "#Aim", "#Shorts"]
+    }
+  ]
+}

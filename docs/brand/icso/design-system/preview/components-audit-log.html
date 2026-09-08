@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Opsly · Audit-log row pattern</title>
+<link rel="stylesheet" href="../colors_and_type.css" />
+<style>
+  html,body{margin:0;background:#0A0A0A;color:#fff;font-family:var(--font-sans);}
+  body{padding:18px;}
+  .log{border:1px solid #1E1E1E;background:#0A0A0A;font-family:var(--font-mono);font-size:12px;}
+  .row{display:flex;gap:14px;padding:8px 12px;border-bottom:1px solid #1E1E1E;align-items:baseline;}
+  .row:last-child{border:0;}
+  .a{color:#22C55E;flex:0 0 220px;}
+  .t{color:#fff;}
+  .u{color:#94A3B8;}
+  .when{color:#94A3B8;margin-left:auto;}
+</style>
+</head>
+<body>
+  <div class="log">
+    <div class="row"><span class="a">tenant.provisioned</span><span class="t">mi-empresa</span><span class="u">orchestrator</span><span class="when">42s ago</span></div>
+    <div class="row"><span class="a">checkout.session.completed</span><span class="t">acme</span><span class="u">stripe</span><span class="when">3m ago</span></div>
+    <div class="row"><span class="a">webhook.invoice.paid</span><span class="t">acme</span><span class="u">stripe</span><span class="when">3m ago</span></div>
+    <div class="row"><span class="a">llm.budget.alert</span><span class="t">demo-7</span><span class="u">cost-cap</span><span class="when">14m ago</span></div>
+    <div class="row"><span class="a">tenant.suspended</span><span class="t">test-old</span><span class="u">admin@opsly.io</span><span class="when">2h ago</span></div>
+  </div>
+</body></html>

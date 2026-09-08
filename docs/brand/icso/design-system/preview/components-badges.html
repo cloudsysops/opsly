@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Opsly · Status badges & pills</title>
+<link rel="stylesheet" href="../colors_and_type.css" />
+<style>
+  html,body{margin:0;background:#0A0A0A;color:#fff;font-family:var(--font-sans);}
+  body{padding:20px;}
+  h4{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:#94A3B8;margin:0 0 10px;}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid;border-radius:4px;padding:2px 8px;font-family:var(--font-sans);font-size:12px;font-weight:500;text-transform:lowercase;}
+  .dot{width:6px;height:6px;border-radius:50%;}
+  .ping{position:relative;display:inline-flex;width:8px;height:8px;}
+  .ping::before{content:"";position:absolute;inset:0;border-radius:50%;background:#EAB308;opacity:.4;animation:pp 1.4s linear infinite;}
+  .ping::after{content:"";position:absolute;inset:0;border-radius:50%;background:#EAB308;}
+  @keyframes pp{0%{transform:scale(1);opacity:.4}100%{transform:scale(2.2);opacity:0}}
+  .plan{display:inline-block;padding:2px 8px;border-radius:4px;font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;border:1px solid;}
+</style>
+</head>
+<body>
+<h4>Tenant status</h4>
+<div class="row">
+  <span class="pill" style="border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.15);color:#22C55E"><span class="dot" style="background:#22C55E"></span>active</span>
+  <span class="pill" style="border-color:rgba(234,179,8,.4);background:rgba(234,179,8,.1);color:#EAB308"><span class="ping"></span>provisioning</span>
+  <span class="pill" style="border-color:rgba(234,179,8,.4);background:rgba(234,179,8,.1);color:#EAB308">configuring</span>
+  <span class="pill" style="border-color:rgba(234,179,8,.4);background:rgba(234,179,8,.1);color:#EAB308">deploying</span>
+  <span class="pill" style="border-color:rgba(148,163,184,.5);background:rgba(148,163,184,.2);color:#94A3B8">suspended</span>
+  <span class="pill" style="border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.15);color:#EF4444">failed</span>
+  <span class="pill" style="border-color:rgba(148,163,184,.5);background:rgba(148,163,184,.15);color:#94A3B8">deleted</span>
+</div>
+<h4>Service health</h4>
+<div class="row">
+  <span class="pill" style="border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.1);color:#22C55E">healthy</span>
+  <span class="pill" style="border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.1);color:#EF4444">unhealthy</span>
+  <span class="pill" style="border-color:#1E1E1E;background:#111;color:#94A3B8">unknown</span>
+</div>
+<h4>Plan</h4>
+<div class="row">
+  <span class="plan" style="color:#94A3B8;border-color:#1E1E1E;background:#111;">STARTUP</span>
+  <span class="plan" style="color:#7C3AED;border-color:rgba(124,58,237,.5);background:rgba(124,58,237,.1);">BUSINESS</span>
+  <span class="plan" style="color:#00FFFF;border-color:rgba(0,255,255,.5);background:rgba(0,255,255,.08);">ENTERPRISE</span>
+</div>
+</body></html>

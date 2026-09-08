@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Opsly · Portal · Onboarding</title>
+<link rel="stylesheet" href="../../colors_and_type.css" />
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;}
+  html,body{margin:0;background:var(--ops-bg);color:#F5F5F5;font-family:var(--font-sans-system);min-height:100vh;}
+  .wrap{max-width:840px;margin:0 auto;padding:48px 24px;}
+  .mark{font-family:var(--font-display);font-weight:700;letter-spacing:.16em;font-size:18px;color:#22C55E;text-align:center;display:block;margin-bottom:8px;}
+  .eyebrow{text-align:center;font:500 11px var(--font-mono);text-transform:uppercase;letter-spacing:.18em;color:#94A3B8;margin-bottom:24px;}
+
+  /* stepper */
+  .steps{display:flex;align-items:center;gap:0;margin:0 0 36px;}
+  .step{flex:1;display:flex;align-items:center;gap:10px;font:500 12px var(--font-mono);text-transform:uppercase;letter-spacing:.12em;color:#525252;}
+  .step .n{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#111;border:1px solid #1E1E1E;font-size:11px;}
+  .step.done{color:#22C55E;}
+  .step.done .n{background:rgba(34,197,94,.15);border-color:#22C55E;color:#22C55E;}
+  .step.active{color:#fff;}
+  .step.active .n{background:rgba(34,197,94,.25);border-color:#22C55E;color:#22C55E;box-shadow:0 0 0 4px rgba(34,197,94,.1);}
+  .step .bar{flex:1;height:1px;background:#1E1E1E;margin:0 14px;}
+  .step.done .bar{background:#22C55E;}
+
+  .card{background:#111;border:1px solid #1E1E1E;border-radius:12px;padding:32px;}
+  h1{font:700 28px/1.15 var(--font-sans-system);margin:0 0 6px;letter-spacing:-.01em;}
+  .lead{font:400 15px/1.55 var(--font-sans-system);color:#A3A3A3;margin:0 0 24px;}
+
+  label{display:block;font:500 12px var(--font-mono);text-transform:uppercase;letter-spacing:.14em;color:#94A3B8;margin:14px 0 6px;}
+  .ti{display:flex;align-items:stretch;border:1px solid #1E1E1E;background:#0A0A0A;border-radius:6px;overflow:hidden;}
+  .ti:focus-within{border-color:#22C55E;box-shadow:0 0 0 1px rgba(34,197,94,.5);}
+  .ti .pre,.ti .post{display:flex;align-items:center;padding:0 12px;color:#525252;font:400 13px var(--font-mono);background:rgba(255,255,255,.02);}
+  .ti input{flex:1;background:transparent;border:0;outline:0;color:#F5F5F5;font:400 14px var(--font-mono);padding:10px 12px;caret-color:#22C55E;}
+  .hint{font:400 12px var(--font-sans-system);color:#737373;margin-top:6px;}
+  .ok{color:#22C55E;}
+
+  /* radio cards (stack picker) */
+  .picks{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:6px;}
+  .pick{position:relative;border:1px solid #1E1E1E;border-radius:8px;padding:14px;cursor:pointer;background:#0A0A0A;}
+  .pick.sel{border-color:#22C55E;background:rgba(34,197,94,.05);}
+  .pick.sel::after{content:"✓";position:absolute;top:10px;right:12px;color:#22C55E;font:700 14px var(--font-sans-system);}
+  .pick h4{font:600 14px var(--font-sans-system);margin:0 0 4px;}
+  .pick p{font:400 12px/1.5 var(--font-sans-system);color:#94A3B8;margin:0 0 8px;}
+  .pick .tags{display:flex;gap:6px;flex-wrap:wrap;}
+  .tag{font:500 10px var(--font-mono);padding:1px 6px;border-radius:3px;background:rgba(255,255,255,.04);color:#A3A3A3;border:1px solid #1E1E1E;}
+
+  /* btns */
+  .btn{display:inline-flex;align-items:center;gap:6px;border-radius:6px;height:40px;padding:0 18px;font:600 14px var(--font-sans-system);cursor:pointer;border:1px solid;transition:all .15s ease-out;}
+  .btn-primary{background:#22C55E;border-color:#22C55E;color:#0A0A0A;}
+  .btn-primary:hover{background:#16A34A;}
+  .btn-default{background:transparent;border-color:#1E1E1E;color:#F5F5F5;}
+  .actions{margin-top:28px;display:flex;justify-content:space-between;align-items:center;}
+
+  /* provisioning view (alternate) */
+  .prov{margin-top:24px;font:400 13px/1.7 var(--font-mono);color:#A3A3A3;background:#0A0A0A;border:1px solid #1E1E1E;border-radius:8px;padding:18px;}
+  .prov .row{display:flex;align-items:center;gap:10px;}
+  .prov .row + .row{margin-top:6px;}
+  .prov .ic{width:14px;height:14px;display:inline-flex;}
+  .prov .done{color:#22C55E;}
+  .prov .now{color:#EAB308;}
+  .prov .pending{color:#525252;}
+  .pulse{width:8px;height:8px;border-radius:50%;background:#EAB308;animation:p 1.2s ease-in-out infinite;}
+  @keyframes p{50%{opacity:.4}}
+
+  .right-meta{font:400 12px var(--font-mono);color:#525252;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="mark">OPSLY</span>
+  <div class="eyebrow">Bienvenida a Opsly · Configura tu workspace</div>
+
+  <div class="steps">
+    <div class="step done"><span class="n">✓</span> Cuenta</div>
+    <div class="bar" style="flex:1;height:1px;background:#22C55E;margin:0 8px;"></div>
+    <div class="step active"><span class="n">2</span> Workspace</div>
+    <div class="bar" style="flex:1;height:1px;background:#1E1E1E;margin:0 8px;"></div>
+    <div class="step"><span class="n">3</span> Stack</div>
+    <div class="bar" style="flex:1;height:1px;background:#1E1E1E;margin:0 8px;"></div>
+    <div class="step"><span class="n">4</span> Deploy</div>
+  </div>
+
+  <div class="card">
+    <h1>Crea tu workspace</h1>
+    <p class="lead">Esto define el subdominio donde vivirá tu instancia de n8n y el LLM gateway. No se puede cambiar después.</p>
+
+    <label>Nombre de la empresa</label>
+    <div class="ti"><input value="Mi Empresa SAS" /></div>
+
+    <label>Slug del workspace</label>
+    <div class="ti">
+      <span class="pre">https://</span>
+      <input value="mi-empresa" />
+      <span class="post">.opsly.io</span>
+    </div>
+    <div class="hint"><span class="ok">✓</span> Disponible — listo para provisionar.</div>
+
+    <label>Región del data plane</label>
+    <div class="picks">
+      <div class="pick sel">
+        <h4>São Paulo · BR</h4>
+        <p>Latencia &lt; 60ms desde LatAm. SLA 99.5%.</p>
+        <div class="tags"><span class="tag">aws-sa-east-1</span><span class="tag">recomendada</span></div>
+      </div>
+      <div class="pick">
+        <h4>Frankfurt · EU</h4>
+        <p>Cumple GDPR. SLA 99.5%.</p>
+        <div class="tags"><span class="tag">aws-eu-central-1</span></div>
+      </div>
+      <div class="pick">
+        <h4>Virginia · US</h4>
+        <p>Latencia más baja para integraciones US.</p>
+        <div class="tags"><span class="tag">aws-us-east-1</span></div>
+      </div>
+      <div class="pick">
+        <h4>On-prem / VPS propio</h4>
+        <p>Ejecuta el stack en tu infra. Solo plan Enterprise.</p>
+        <div class="tags"><span class="tag">enterprise</span></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-default">← Atrás</button>
+      <span class="right-meta">Paso 2 de 4 · ~30s restantes</span>
+      <button class="btn btn-primary">Continuar →</button>
+    </div>
+
+    <div class="prov">
+      <div style="font:500 11px var(--font-mono);text-transform:uppercase;letter-spacing:.14em;color:#94A3B8;margin-bottom:10px;">Vista previa · qué pasa cuando confirmes</div>
+      <div class="row done"><span class="ic">✓</span> Crear tenant <span style="color:#fff">mi-empresa</span> en orchestrator</div>
+      <div class="row done"><span class="ic">✓</span> Reservar subdominio <span style="color:#fff">mi-empresa.opsly.io</span> en Traefik</div>
+      <div class="row now"><span class="pulse"></span> Provisionar Docker Compose · n8n + Uptime Kuma + LLM gateway</div>
+      <div class="row pending"><span class="ic">·</span> Sembrar credenciales y abrir webhook público</div>
+      <div class="row pending"><span class="ic">·</span> Enviar credenciales por email a <span style="color:#A3A3A3">camila@mi-empresa.com</span></div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:24px;font:400 12px var(--font-mono);color:#525252;">
+    ¿Necesitas ayuda? <span style="color:#22C55E;">soporte@opsly.io</span> · respuesta en 48h
+  </div>
+</div>
+<script>lucide.createIcons({attrs:{'stroke-width':1.6}});</script>
+</body></html>

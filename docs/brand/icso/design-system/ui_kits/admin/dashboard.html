@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Opsly · Admin UI kit</title>
+<link rel="stylesheet" href="../../colors_and_type.css" />
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;}
+  html,body{margin:0;background:var(--ops-admin-bg);color:#F5F5F5;font-family:var(--font-sans);min-height:100vh;}
+  body{position:relative;overflow-x:hidden;}
+  /* atmosphere */
+  .stage-bg{position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(60% 40% at 18% 18%, rgba(0,255,255,.10), transparent 60%),
+      radial-gradient(50% 40% at 82% 25%, rgba(255,0,255,.10), transparent 60%),
+      radial-gradient(60% 40% at 50% 90%, rgba(157,0,255,.12), transparent 60%);}
+  .grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:linear-gradient(rgba(0,255,255,.08) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(157,0,255,.08) 1px,transparent 1px);
+    background-size:44px 44px;opacity:.4;animation:gp 16s linear infinite;}
+  @keyframes gp{to{background-position:0 44px,44px 0;}}
+  .scan{position:fixed;left:0;right:0;top:0;height:50%;background:linear-gradient(to bottom,transparent,rgba(0,255,255,.08),transparent);mix-blend-mode:screen;animation:sc 8s linear infinite;z-index:0;pointer-events:none;}
+  @keyframes sc{0%{transform:translateY(-100%)}100%{transform:translateY(200%)}}
+
+  .app{position:relative;z-index:1;min-height:100vh;display:grid;grid-template-columns:240px 1fr;}
+
+  /* sidebar */
+  .sb{position:sticky;top:0;height:100vh;margin:16px 0 16px 16px;border-radius:16px;padding:16px 12px;
+      border:1px solid transparent;
+      background:linear-gradient(rgba(16,23,52,.94),rgba(16,23,52,.94)) padding-box,
+                 linear-gradient(120deg,rgba(0,255,255,.7),rgba(255,0,255,.65),rgba(157,0,255,.7)) border-box;
+      box-shadow:0 0 0 1px rgba(0,255,255,.45),0 0 20px rgba(0,255,255,.2),0 0 40px rgba(157,0,255,.2);}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:6px 8px 14px;border-bottom:1px solid rgba(34,48,100,.7);margin-bottom:12px;}
+  .sb-brand .mark{font-family:var(--font-display);font-weight:700;letter-spacing:.16em;font-size:18px;
+    background:linear-gradient(90deg,#00FFFF,#FF00FF);-webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(0,255,255,.4);}
+  .sb-brand .sub{display:block;font-family:var(--font-mono);font-size:9px;letter-spacing:.24em;color:#94A3B8;text-transform:uppercase;margin-top:2px;}
+  .sb-sect{font-family:var(--font-mono);font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:#94A3B8;padding:10px 8px 4px;}
+  .sb-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;font-size:13px;color:#D4D4D4;cursor:pointer;font-family:var(--font-sans);}
+  .sb-item [data-lucide]{stroke:#94A3B8;width:16px;height:16px;}
+  .sb-item:hover{background:rgba(0,255,255,.06);color:#fff;}
+  .sb-item.active{background:rgba(0,255,255,.10);color:#00FFFF;border:1px solid rgba(0,255,255,.4);}
+  .sb-item.active [data-lucide]{stroke:#00FFFF;animation:flick 2.4s ease-in-out infinite;}
+  @keyframes flick{0%,18%,22%,100%{opacity:1}20%,21%{opacity:.7}}
+
+  /* topbar */
+  .tb{position:sticky;top:0;z-index:5;margin:16px 16px 0;border-radius:14px;padding:10px 16px;
+      display:flex;align-items:center;gap:18px;
+      background:rgba(10,14,39,.85);backdrop-filter:blur(8px);
+      border:1px solid transparent;
+      background:linear-gradient(rgba(10,14,39,.85),rgba(10,14,39,.85)) padding-box,
+                 linear-gradient(120deg,rgba(0,255,255,.5),rgba(255,0,255,.45),rgba(157,0,255,.5)) border-box;}
+  .crumb{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#94A3B8;}
+  .crumb b{color:#00FFFF;}
+  .crumb i{color:#FF00FF;font-style:normal;margin:0 6px;}
+  .tb-spacer{flex:1;}
+  .tb-pill{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(34,197,94,.5);background:rgba(34,197,94,.1);color:#22C55E;font-size:12px;border-radius:4px;padding:2px 8px;font-weight:500;text-transform:lowercase;font-family:var(--font-sans);}
+  .tb-pill .dot{width:6px;height:6px;border-radius:50%;background:#22C55E;animation:pd 1.2s ease-in-out infinite;}
+  @keyframes pd{50%{opacity:.4}}
+  .tb-meta{font-family:var(--font-mono);font-size:11px;color:#94A3B8;}
+  .tb-meta b{color:#fff;font-weight:500;}
+
+  /* main */
+  main{padding:18px 16px 28px;}
+  .h-row{display:flex;align-items:end;justify-content:space-between;margin:6px 4px 16px;}
+  h1{font-family:var(--font-display);font-weight:700;letter-spacing:.06em;font-size:22px;color:#fff;margin:0;}
+  h1 small{display:block;font-family:var(--font-mono);font-size:10px;letter-spacing:.24em;color:#FF00FF;text-transform:uppercase;margin-top:4px;}
+  .demo-tag{font-family:var(--font-mono);font-size:11px;color:#EAB308;border:1px solid rgba(234,179,8,.4);background:rgba(234,179,8,.08);padding:3px 8px;border-radius:4px;}
+
+  /* KPI grid */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+  .kpi{background:rgba(16,23,52,.85);border:1px solid #223064;border-left:4px solid;border-radius:6px;padding:12px 14px;}
+  .kpi.green{border-left-color:#22C55E;}
+  .kpi.yellow{border-left-color:#EAB308;}
+  .kpi.gray{border-left-color:#94A3B8;}
+  .kpi .lab{font-family:var(--font-sans);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#94A3B8;}
+  .kpi .val{display:flex;align-items:baseline;gap:6px;margin-top:6px;}
+  .kpi .num{font-family:var(--font-mono);font-size:28px;font-weight:500;color:#fff;font-variant-numeric:tabular-nums;}
+  .kpi .unit{font-family:var(--font-sans);font-size:11px;color:#94A3B8;}
+  .kpi .delta{font-family:var(--font-mono);font-size:11px;margin-left:auto;}
+
+  /* card with holo */
+  .card{border-radius:16px;border:1px solid transparent;
+    background:linear-gradient(rgba(16,23,52,.85),rgba(16,23,52,.85)) padding-box,
+               linear-gradient(120deg,rgba(0,255,255,.7),rgba(255,0,255,.65),rgba(157,0,255,.7)) border-box;
+    box-shadow:0 0 18px rgba(157,0,255,.18);}
+  .card .h{padding:12px 16px;border-bottom:1px solid rgba(34,48,100,.7);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .card .h .t{font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.12em;color:#00FFFF;text-transform:uppercase;}
+  .card .h .a{font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;color:#94A3B8;text-transform:uppercase;}
+  .card .b{padding:14px 16px;}
+
+  .grid-2{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;}
+  .grid-2-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+
+  /* table */
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead th{font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#94A3B8;text-align:left;padding:8px 10px;border-bottom:1px solid #223064;}
+  tbody td{padding:10px;border-bottom:1px solid rgba(34,48,100,.5);font-family:var(--font-mono);color:#D4D4D4;}
+  tbody tr:hover{background:rgba(0,255,255,.04);}
+  td .slug{color:#fff;}
+  td .id{color:#737373;font-size:11px;}
+
+  /* status pills */
+  .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid;border-radius:4px;padding:1px 8px;font-family:var(--font-sans);font-size:11px;font-weight:500;text-transform:lowercase;}
+  .p-active{border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.15);color:#22C55E;}
+  .p-prov{border-color:rgba(234,179,8,.4);background:rgba(234,179,8,.1);color:#EAB308;}
+  .p-failed{border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.15);color:#EF4444;}
+  .p-susp{border-color:rgba(148,163,184,.5);background:rgba(148,163,184,.2);color:#94A3B8;}
+  .pill .ddot{width:6px;height:6px;border-radius:50%;}
+
+  /* audit log */
+  .log{font-family:var(--font-mono);font-size:12px;}
+  .log-row{display:flex;gap:10px;padding:6px 0;border-bottom:1px solid rgba(34,48,100,.4);align-items:baseline;}
+  .log-row:last-child{border:0;}
+  .log .a{color:#22C55E;flex:0 0 200px;}
+  .log .t{color:#fff;}
+  .log .u{color:#94A3B8;margin-left:auto;font-size:11px;}
+
+  /* gauges */
+  .gauges{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .g{position:relative;display:flex;align-items:center;justify-content:center;height:130px;}
+  .g svg{transform:rotate(-90deg);}
+  .g .lab{position:absolute;display:flex;flex-direction:column;align-items:center;}
+  .g .lab .v{font-family:var(--font-mono);font-size:22px;color:#fff;font-variant-numeric:tabular-nums;text-shadow:0 0 8px rgba(0,255,255,.3);}
+  .g .lab .u{font-family:var(--font-sans);font-size:10px;color:#94A3B8;text-transform:uppercase;letter-spacing:.14em;}
+
+  /* btn */
+  .btn{display:inline-flex;align-items:center;gap:6px;border-radius:4px;border:1px solid;height:30px;padding:0 12px;font-size:12px;font-weight:500;font-family:var(--font-sans);cursor:pointer;background:transparent;color:inherit;}
+  .btn-primary{background:rgba(0,255,255,.1);border-color:rgba(0,255,255,.5);color:#00FFFF;}
+  .btn-default{background:rgba(255,255,255,.04);border-color:#223064;color:#D4D4D4;}
+  .btn-destructive{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.5);color:#EF4444;}
+</style>
+</head>
+<body>
+<div class="stage-bg"></div>
+<div class="grid-bg"></div>
+<div class="scan"></div>
+
+<div class="app">
+  <!-- ==================== sidebar ==================== -->
+  <aside class="sb">
+    <div class="sb-brand">
+      <div>
+        <div class="mark">OPSLY</div>
+        <div class="sub">Admin · v1.4.0</div>
+      </div>
+    </div>
+
+    <div class="sb-sect">Plataforma</div>
+    <div class="sb-item active"><i data-lucide="layout-dashboard"></i> Dashboard</div>
+    <div class="sb-item"><i data-lucide="boxes"></i> Machines</div>
+    <div class="sb-item"><i data-lucide="server"></i> Tenants</div>
+    <div class="sb-item"><i data-lucide="mail"></i> Invitations</div>
+    <div class="sb-item"><i data-lucide="bar-chart-3"></i> Metrics</div>
+    <div class="sb-item"><i data-lucide="network"></i> API</div>
+
+    <div class="sb-sect">Mission control</div>
+    <div class="sb-item"><i data-lucide="activity"></i> Agents</div>
+    <div class="sb-item"><i data-lucide="layout-grid"></i> Mission</div>
+    <div class="sb-item"><i data-lucide="gavel"></i> OpenClaw gov</div>
+    <div class="sb-item"><i data-lucide="circle-dollar-sign"></i> Costs &amp; budgets</div>
+    <div class="sb-item"><i data-lucide="message-square"></i> Feedback</div>
+
+    <div class="sb-sect">System</div>
+    <div class="sb-item"><i data-lucide="shield-check"></i> Approvals</div>
+    <div class="sb-item"><i data-lucide="shield-alert"></i> Defense</div>
+    <div class="sb-item"><i data-lucide="settings"></i> Settings</div>
+  </aside>
+
+  <!-- ==================== content ==================== -->
+  <div>
+    <header class="tb">
+      <span class="crumb"><b>OPSLY</b><i>·</i>ADMIN<i>·</i>DASHBOARD</span>
+      <span class="tb-spacer"></span>
+      <span class="tb-pill"><span class="dot"></span>orchestrator online</span>
+      <span class="tb-meta">Actualizado <b>10/05/2026 14:32:01</b></span>
+    </header>
+
+    <main>
+      <div class="h-row">
+        <h1>Mission control<small>PLATAFORMA · VPS, LOCAL Y LLM</small></h1>
+        <span class="demo-tag">Sin Prometheus · valores demo</span>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpis">
+        <div class="kpi green"><div class="lab">Tenants activos</div><div class="val"><span class="num">7</span><span class="delta" style="color:#22C55E">▲ 2</span></div></div>
+        <div class="kpi green"><div class="lab">Agentes en ejecución</div><div class="val"><span class="num">42</span><span class="unit">/ 64</span></div></div>
+        <div class="kpi yellow"><div class="lab">Coste LLM (mes)</div><div class="val"><span class="num">$184.55</span><span class="delta" style="color:#EAB308">▲ 12%</span></div></div>
+        <div class="kpi gray"><div class="lab">Hit rate caché</div><div class="val"><span class="num">68</span><span class="unit">%</span></div></div>
+      </div>
+
+      <!-- main grid -->
+      <div class="grid-2">
+        <!-- tenants table -->
+        <div class="card">
+          <div class="h"><span class="t">Tenants</span><span class="a">7 activos · 2 provisionando</span></div>
+          <div class="b" style="padding:0 0 6px;">
+            <table>
+              <thead><tr><th>slug</th><th>plan</th><th>status</th><th>creado</th><th></th></tr></thead>
+              <tbody>
+                <tr><td><span class="slug">acme</span> <span class="id">· cs_a1B2…</span></td><td>BUSINESS</td><td><span class="pill p-active"><span class="ddot" style="background:#22C55E"></span>active</span></td><td>10 may 2026</td><td>→</td></tr>
+                <tr><td><span class="slug">mi-empresa</span> <span class="id">· cs_x9Y8…</span></td><td>STARTUP</td><td><span class="pill p-active"><span class="ddot" style="background:#22C55E"></span>active</span></td><td>09 may 2026</td><td>→</td></tr>
+                <tr><td><span class="slug">smiletripcare</span></td><td>BUSINESS</td><td><span class="pill p-active"><span class="ddot" style="background:#22C55E"></span>active</span></td><td>02 may 2026</td><td>→</td></tr>
+                <tr><td><span class="slug">demo-7</span></td><td>STARTUP</td><td><span class="pill p-prov"><span class="ddot" style="background:#EAB308"></span>provisioning</span></td><td>hace 4 min</td><td>→</td></tr>
+                <tr><td><span class="slug">test-old</span></td><td>STARTUP</td><td><span class="pill p-susp">suspended</span></td><td>14 abr 2026</td><td>→</td></tr>
+                <tr><td><span class="slug">labs-23</span></td><td>—</td><td><span class="pill p-failed">failed</span></td><td>hace 2 h</td><td>→</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- audit log -->
+        <div class="card">
+          <div class="h"><span class="t">Audit log</span><span class="a">live · últimos 24h</span></div>
+          <div class="b log">
+            <div class="log-row"><span class="a">tenant.provisioned</span><span class="t">mi-empresa</span><span class="u">orchestrator · 42s</span></div>
+            <div class="log-row"><span class="a">checkout.session.completed</span><span class="t">acme</span><span class="u">stripe · 3m</span></div>
+            <div class="log-row"><span class="a">webhook.invoice.paid</span><span class="t">acme</span><span class="u">stripe · 3m</span></div>
+            <div class="log-row"><span class="a">llm.budget.alert</span><span class="t">demo-7</span><span class="u">cost-cap · 14m</span></div>
+            <div class="log-row"><span class="a">agent.run.completed</span><span class="t">smiletripcare</span><span class="u">n8n · 22m</span></div>
+            <div class="log-row"><span class="a">tenant.suspended</span><span class="t">test-old</span><span class="u">admin · 2h</span></div>
+            <div class="log-row"><span class="a">tenant.create.failed</span><span class="t">labs-23</span><span class="u">orchestrator · 2h</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2-row">
+        <!-- gauges -->
+        <div class="card">
+          <div class="h"><span class="t">VPS · ops-prod-01</span><span class="a">12d 4h uptime</span></div>
+          <div class="b">
+            <div class="gauges">
+              <div>
+                <div class="g">
+                  <svg width="110" height="110" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="52" fill="none" stroke="#223064" stroke-width="9"/>
+                    <circle cx="60" cy="60" r="52" fill="none" stroke="#22C55E" stroke-width="9" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="166.6"/>
+                  </svg>
+                  <div class="lab"><span class="v">49.0</span><span class="u">CPU</span></div>
+                </div>
+              </div>
+              <div>
+                <div class="g">
+                  <svg width="110" height="110" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="52" fill="none" stroke="#223064" stroke-width="9"/>
+                    <circle cx="60" cy="60" r="52" fill="none" stroke="#EAB308" stroke-width="9" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="78.4"/>
+                  </svg>
+                  <div class="lab"><span class="v">76.0</span><span class="u">RAM</span></div>
+                </div>
+              </div>
+              <div>
+                <div class="g">
+                  <svg width="110" height="110" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="52" fill="none" stroke="#223064" stroke-width="9"/>
+                    <circle cx="60" cy="60" r="52" fill="none" stroke="#22C55E" stroke-width="9" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="218.9"/>
+                  </svg>
+                  <div class="lab"><span class="v">33.0</span><span class="u">DISK</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- governance approvals -->
+        <div class="card">
+          <div class="h"><span class="t">OpenClaw · approvals</span><span class="a">3 pendientes</span></div>
+          <div class="b" style="display:flex;flex-direction:column;gap:10px;font-family:var(--font-sans);font-size:13px;">
+            <div style="display:flex;align-items:center;gap:10px;border:1px solid #223064;border-radius:6px;padding:10px 12px;">
+              <i data-lucide="shield-check" style="color:#22C55E;width:16px;height:16px;"></i>
+              <div style="flex:1;"><b>agent.spawn</b> <span style="color:#94A3B8;">acme · sales-bot</span></div>
+              <button class="btn btn-primary">Aprobar</button>
+              <button class="btn btn-destructive">Bloquear</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;border:1px solid #223064;border-radius:6px;padding:10px 12px;">
+              <i data-lucide="circle-dollar-sign" style="color:#EAB308;width:16px;height:16px;"></i>
+              <div style="flex:1;"><b>llm.budget.raise</b> <span style="color:#94A3B8;">demo-7 · $50 → $200</span></div>
+              <button class="btn btn-primary">Aprobar</button>
+              <button class="btn btn-default">Diferir</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;border:1px solid #223064;border-radius:6px;padding:10px 12px;">
+              <i data-lucide="shield-alert" style="color:#EF4444;width:16px;height:16px;"></i>
+              <div style="flex:1;"><b>tool.delete</b> <span style="color:#94A3B8;">smiletripcare · n8n.workflow.purge</span></div>
+              <button class="btn btn-destructive">Bloquear</button>
+              <button class="btn btn-default">Revisar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>lucide.createIcons({attrs:{'stroke-width':1.6}});</script>
+</body></html>

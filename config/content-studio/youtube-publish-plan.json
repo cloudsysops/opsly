@@ -46,6 +46,34 @@
         "splashitos-012-fuerza-core",
         "splashitos-013-hidratacion"
       ]
+    },
+    "clicksitos": {
+      "cadence": "24x7 auto when YOUTUBE_CLICKSITOS_CHANNEL_ID is set and OAuth is that Brand Account",
+      "publish_order_today": [
+        "clicksitos-001-clutch",
+        "clicksitos-002-aim",
+        "clicksitos-003-settings",
+        "clicksitos-004-ranked",
+        "clicksitos-005-warmup",
+        "clicksitos-006-peek",
+        "clicksitos-007-sensi",
+        "clicksitos-008-tilt",
+        "clicksitos-009-reel-hook",
+        "clicksitos-010-crosshair"
+      ]
+    },
+    "opsly": {
+      "cadence": "24x7 auto — OAuth already bound to @opsly",
+      "publish_order_today": [
+        "opsly-001-un-control-plane",
+        "opsly-002-agente-gobernado",
+        "opsly-003-tenant-no-fork",
+        "opsly-004-secretos-doppler",
+        "opsly-005-noche-prod",
+        "opsly-006-ssh-tailscale",
+        "opsly-007-gpu-no-vps",
+        "opsly-008-approvals"
+      ]
     }
   }
 }

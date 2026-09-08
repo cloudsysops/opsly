@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Opsly · Inputs & forms</title>
+<link rel="stylesheet" href="../colors_and_type.css" />
+<style>
+  html,body{margin:0;background:#0A0A0A;color:#fff;font-family:var(--font-sans);}
+  body{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  h4{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:#94A3B8;margin:0 0 10px;}
+  label{display:block;font-size:12px;color:#A3A3A3;margin-bottom:4px;}
+  /* admin/portal */
+  .ti{display:flex;align-items:center;height:36px;border:1px solid #1E1E1E;background:#0A0A0A;border-radius:4px;padding:0 12px;font-family:var(--font-mono);font-size:13px;color:#F5F5F5;caret-color:#22C55E;}
+  .ti:focus-within{outline:none;border-color:#22C55E;box-shadow:0 0 0 1px rgba(34,197,94,.5);}
+  .ti input{background:transparent;border:0;outline:0;color:inherit;font:inherit;width:100%;}
+  .prefix{color:#525252;margin-right:6px;font-size:12px;user-select:none;}
+  /* web */
+  .wi{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:12px 16px;color:#fff;font-family:var(--font-sans-system);font-size:14px;}
+  .wi:focus{outline:none;border-color:#7C3AED;box-shadow:0 0 0 1px #7C3AED;}
+  .err{color:#EF4444;font-size:12px;margin-top:4px;font-family:var(--font-sans-system);}
+</style>
+</head>
+<body>
+<div>
+  <h4>Admin / portal · terminal-caret</h4>
+  <label>tenant slug</label>
+  <div class="ti"><input value="mi-empresa" /></div>
+  <label style="margin-top:10px">webhook URL</label>
+  <div class="ti"><input value="https://api.ops.smiletripcare.com/webhooks/stripe" /></div>
+</div>
+<div>
+  <h4>Web · violet focus ring</h4>
+  <label>Email de trabajo</label>
+  <input class="wi" value="tu@empresa.com" />
+  <label style="margin-top:10px">Nombre del workspace</label>
+  <div style="display:flex;align-items:stretch;border:1px solid rgba(255,255,255,.2);border-radius:8px;background:rgba(255,255,255,.05);overflow:hidden;">
+    <span style="display:flex;align-items:center;padding:0 8px 0 16px;color:rgba(255,255,255,.3);font-family:var(--font-sans-system);font-size:13px;">opsly.io/</span>
+    <input style="flex:1;background:transparent;border:0;outline:0;padding:12px 16px 12px 0;color:#fff;font:inherit;" value="mi-empresa" />
+  </div>
+  <p class="err">Slug ya en uso. Prueba otro.</p>
+</div>
+</body></html>

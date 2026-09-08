@@ -22,7 +22,9 @@ Queue: [`config/content-studio/youtube-publish-plan.json`](../../../config/conte
 |-------|---------|-----|
 | `YOUTUBE_BITSITOS_CHANNEL_ID` | `UCnR41BenV3taCLiYQiOqoGg` | Canal Bitsitos |
 | `YOUTUBE_SPLASHITOS_CHANNEL_ID` | _(vacío hasta crear canal)_ | Canal Splashitos |
-| `YOUTUBE_UPLOAD_DEFAULT_CHANNEL` | `bitsitos` | Default publish |
+| `YOUTUBE_CLICKSITOS_CHANNEL_ID` | `UCuWcqy…` (Cristian B; re-OAuth) | Canal gamer Clicksitos |
+| `YOUTUBE_OPSLY_CHANNEL_ID` | `UCuC5…` (`@opsly`) | Canal empresa Opsly |
+| `YOUTUBE_UPLOAD_DEFAULT_CHANNEL` | `opsly` | Default publish |
 | `YOUTUBE_PRIVACY` | `unlisted` | Primero oculto → luego public |
 | `YOUTUBE_MADE_FOR_KIDS` | `false` | Padres que enseñan (mejor ads sociales) |
 | `YOUTUBE_DEFAULT_CATEGORY_ID` | `27` | Education |

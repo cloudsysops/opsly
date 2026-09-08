@@ -103,9 +103,10 @@ const pairs = {
   YOUTUBE_PRIVACY: cfg.defaults.privacy,
   YOUTUBE_MADE_FOR_KIDS: String(cfg.defaults.made_for_kids),
   YOUTUBE_DEFAULT_CATEGORY_ID: cfg.defaults.category_id,
-  YOUTUBE_UPLOAD_DEFAULT_CHANNEL: 'bitsitos',
+  YOUTUBE_UPLOAD_DEFAULT_CHANNEL: 'clicksitos',
   YOUTUBE_BITSITOS_CHANNEL_ID: cfg.channels.bitsitos.youtube_channel_id || '',
   YOUTUBE_SPLASHITOS_CHANNEL_ID: cfg.channels.splashitos.youtube_channel_id || '',
+  YOUTUBE_CLICKSITOS_CHANNEL_ID: cfg.channels.clicksitos?.youtube_channel_id || '',
   YOUTUBE_REDIRECT_URI: process.env.YOUTUBE_REDIRECT_URI || '',
 };
 for (const [k, v] of Object.entries(pairs)) {
@@ -294,13 +295,13 @@ if not items:
     print("[warn] OAuth OK pero mine=true no devolvió canal. Revisa Brand Account.")
 else:
     ch = items[0]
-    print(f"[ok] canal={ch['snippet']['title']} id={ch['id']} subs={ch['statistics'].get('subscriberCount')}")
+    print(f"[ok] oauth_channel={ch['snippet']['title']} id={ch['id']} subs={ch['statistics'].get('subscriberCount')}")
     subprocess.run(
         [
             "doppler",
             "secrets",
             "set",
-            f"YOUTUBE_BITSITOS_CHANNEL_ID={ch['id']}",
+            f"YOUTUBE_OAUTH_CHANNEL_ID={ch['id']}",
             "--project",
             project,
             "--config",
@@ -308,9 +309,71 @@ else:
         ],
         check=False,
     )
-    print("[doppler] set YOUTUBE_BITSITOS_CHANNEL_ID from mine=true")
+    print("[doppler] set YOUTUBE_OAUTH_CHANNEL_ID from mine=true")
+    expected = os.environ.get("YOUTUBE_BITSITOS_EXPECTED_ID", "UCnR41BenV3taCLiYQiOqoGg")
+    title = (ch.get("snippet") or {}).get("title") or ""
+    if ch["id"] != expected:
+        print(
+            f"[warn] OAuth no es Bitsitos ({expected}). No se sobrescribe YOUTUBE_BITSITOS_CHANNEL_ID. "
+            "En Google elige la Brand Account de Bitsitos y vuelve a correr este script."
+        )
+    else:
+        subprocess.run(
+            [
+                "doppler",
+                "secrets",
+                "set",
+                f"YOUTUBE_BITSITOS_CHANNEL_ID={ch['id']}",
+                "--project",
+                project,
+                "--config",
+                config,
+            ],
+            check=False,
+        )
+        print("[doppler] set YOUTUBE_BITSITOS_CHANNEL_ID from mine=true")
+    clicksitos_expected = os.environ.get(
+        "YOUTUBE_CLICKSITOS_EXPECTED_ID", "UCuWcqyL7Vvq3CpMv3EZUQeQ"
+    ).strip()
+    looks_clicksitos = "clicksitos" in title.lower() or (
+        clicksitos_expected and ch["id"] == clicksitos_expected
+    )
+    if looks_clicksitos:
+        subprocess.run(
+            [
+                "doppler",
+                "secrets",
+                "set",
+                f"YOUTUBE_CLICKSITOS_CHANNEL_ID={ch['id']}",
+                "--project",
+                project,
+                "--config",
+                config,
+            ],
+            check=False,
+        )
+        print("[doppler] set YOUTUBE_CLICKSITOS_CHANNEL_ID from mine=true")
+        print("[next] pega ese UC… en youtube-channels.json → channels.clicksitos.youtube_channel_id")
+    opsly_expected = os.environ.get(
+        "YOUTUBE_OPSLY_EXPECTED_ID", "UCuC5_xc2M3muQzuPR2rrhwA"
+    ).strip()
+    if ch["id"] == opsly_expected:
+        subprocess.run(
+            [
+                "doppler",
+                "secrets",
+                "set",
+                f"YOUTUBE_OPSLY_CHANNEL_ID={ch['id']}",
+                "--project",
+                project,
+                "--config",
+                config,
+            ],
+            check=False,
+        )
+        print("[doppler] set YOUTUBE_OPSLY_CHANNEL_ID from mine=true")
 
 print("[done] Doppler listo. Prueba:")
-print("  doppler run --project ops-intcloudsysops --config prd -- npm run content:bitsitos:publish -- --dry-run")
-print("  doppler run --project ops-intcloudsysops --config prd -- npm run content:bitsitos:publish -- --upload")
+print("  doppler run --project ops-intcloudsysops --config prd -- npm run content:opsly:publish -- --dry-run")
+print("  doppler run --project ops-intcloudsysops --config prd -- npm run content:opsly:publish -- --upload --limit 1")
 PY

@@ -14,6 +14,7 @@
     "education": { "channel": "bitsitos", "batches": ["batch-01", "batch-03", "longform-04"] },
     "entertainment": { "channel": "bitsitos", "batches": ["batch-02-games", "batch-03", "longform-04"] },
     "sports": { "channel": "splashitos", "batches": ["batch-01-swim", "batch-02-deporte", "longform-04"] },
+    "gaming": { "channel": "clicksitos", "batches": ["batch-01-clicks"] },
     "tech_ai": { "channel": "bitsitos", "batches": ["batch-01", "batch-02"] },
     "story_worlds": { "channel": "opsly-universe", "batches": ["batch-01-portals"] }
   },
@@ -44,6 +45,22 @@
       "playlists": ["Natación", "Deporte en casa", "Seguridad"],
       "notes": "Crear canal Splashitos; pegar ID. Deporte + agua."
     },
+    "clicksitos": {
+      "brand": "Clicksitos",
+      "slug": "icso-clicksitos",
+      "niche": "gaming_clicks_reels",
+      "audience": "13_plus_gamers",
+      "youtube_channel_id": "UCuWcqyL7Vvq3CpMv3EZUQeQ",
+      "studio_url": "https://studio.youtube.com/channel/UCuWcqyL7Vvq3CpMv3EZUQeQ",
+      "kit_dir": "runtime/content-studio/youtube-upload-kit/clicksitos",
+      "batch_dir": "config/content-studio/channels/clicksitos",
+      "doppler_prefix": "YOUTUBE_CLICKSITOS",
+      "category_id": "20",
+      "made_for_kids": false,
+      "monetization_goal": "youtube_partner_shorts_gaming",
+      "playlists": ["Clicks", "Aim", "Ranked", "Settings", "Reels"],
+      "notes": "Canal vivo Cristian B / @cristianb550 (UCuWcqy…). OAuth debe ser esa Brand Account, no @opsly. Renombrar a Clicksitos en Studio. No kids. No Peskids."
+    },
     "opsly-universe": {
       "brand": "Opsly Universe",
       "slug": "opsly-universe",
@@ -68,6 +85,7 @@
     "channel_metadata": [
       "YOUTUBE_BITSITOS_CHANNEL_ID",
       "YOUTUBE_SPLASHITOS_CHANNEL_ID",
+      "YOUTUBE_CLICKSITOS_CHANNEL_ID",
       "YOUTUBE_PRIVACY",
       "YOUTUBE_MADE_FOR_KIDS",
       "YOUTUBE_DEFAULT_CATEGORY_ID",

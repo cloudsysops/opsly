@@ -76,6 +76,28 @@ if [[ "$GEN_ASSETS" -eq 1 ]]; then
       -gravity center -fill white -pointsize 110 -annotate +0-40 'SPLASHITOS' \
       -pointsize 48 -annotate +0+80 'Natación + deporte kids' \
       runtime/content-studio/brand-assets/splashitos-banner.png
+    magick -size 800x800 "gradient:#7C3AED-#DB2777" \
+      -gravity center -fill white -pointsize 72 -annotate +0+0 'CLICKSITOS' \
+      runtime/content-studio/brand-assets/clicksitos-avatar.png
+    magick -size 2560x1440 "gradient:#0F172A-#DB2777" \
+      -gravity center -fill white -pointsize 110 -annotate +0-40 'CLICKSITOS' \
+      -pointsize 48 -annotate +0+80 'Clicks + aim + reels gamer' \
+      runtime/content-studio/brand-assets/clicksitos-banner.png
+    if [[ -f docs/brand/icso/youtube/opsly-avatar.png ]]; then
+      cp -f docs/brand/icso/youtube/opsly-avatar.png runtime/content-studio/brand-assets/opsly-avatar.png
+    else
+      magick -size 800x800 "gradient:#0A0E27-#00FFFF" \
+        -gravity center -fill white -pointsize 96 -annotate +0+0 'OPSLY' \
+        runtime/content-studio/brand-assets/opsly-avatar.png
+    fi
+    if [[ -f docs/brand/icso/youtube/opsly-banner.png ]]; then
+      cp -f docs/brand/icso/youtube/opsly-banner.png runtime/content-studio/brand-assets/opsly-banner.png
+    else
+      magick -size 2560x1440 "gradient:#0A0E27-#101734" \
+        -gravity center -fill white -pointsize 120 -annotate +0-40 'OPSLY' \
+        -pointsize 48 -annotate +0+80 'Agentes gobernados · un control plane' \
+        runtime/content-studio/brand-assets/opsly-banner.png
+    fi
     echo "[content-factory] brand assets → runtime/content-studio/brand-assets/"
     fi
   fi
@@ -101,6 +123,8 @@ if [[ "$REBUILD_KITS" -eq 1 ]]; then
   run ./scripts/ops/content-studio-sync-renders.sh
   run ./scripts/content-studio-publish-youtube.sh --channel bitsitos --kit
   run ./scripts/content-studio-publish-youtube.sh --channel splashitos --kit
+  run ./scripts/content-studio-publish-youtube.sh --channel clicksitos --kit
+  run ./scripts/content-studio-publish-youtube.sh --channel opsly --kit
 fi
 
 if [[ "$GAMER_UP" -eq 1 ]]; then

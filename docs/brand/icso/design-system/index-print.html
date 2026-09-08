@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Opsly Runtime OS · Print</title>
+<link rel="stylesheet" href="system/colors_and_type.css" />
+<link rel="stylesheet" href="screens/shared.css" />
+<style>
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
+
+  html, body { margin: 0; padding: 0; background: #f0eee9; color: #fff; font-family: var(--font-sans-system); }
+
+  /* Each page is a fixed-pixel artboard. We rely on @page CSS to size paper
+     and CSS scale to fit. Two sizes — portal artboards and admin artboards
+     have slightly different aspect ratios; both print landscape. */
+  .page {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    break-after: page;
+    overflow: hidden;
+    position: relative;
+    margin: 0 auto;
+    background: #0a0a0a;
+  }
+  .page:last-child { break-after: auto; }
+
+  .page-portal {
+    width: 1100px; height: 740px;
+  }
+  .page-admin {
+    width: 1480px; height: 940px;
+  }
+
+  /* Cover sheet */
+  .cover {
+    width: 1100px; height: 740px;
+    background: #0a0a0a;
+    color: #fff;
+    padding: 80px 80px;
+    display: flex; flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-atm {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(60% 40% at 18% 18%, rgba(0,255,255,.10), transparent 60%),
+      radial-gradient(50% 40% at 82% 25%, rgba(255,0,255,.10), transparent 60%),
+      radial-gradient(60% 40% at 50% 90%, rgba(157,0,255,.12), transparent 60%);
+    pointer-events: none;
+  }
+  .cover-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,255,.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(157,0,255,.08) 1px, transparent 1px);
+    background-size: 44px 44px; opacity: .25; pointer-events: none;
+  }
+  .cover-inner { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; }
+  .cover h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 80px;
+    letter-spacing: .05em;
+    margin: auto 0 8px;
+    background: linear-gradient(90deg, var(--ops-cyan), var(--ops-magenta));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    line-height: 1.05;
+  }
+  .cover .sub {
+    font-family: var(--font-sans-system);
+    font-size: 22px; color: var(--fg-2); margin: 0 0 40px;
+    max-width: 720px; line-height: 1.4;
+  }
+  .cover .meta-row {
+    display: flex; gap: 40px; padding-top: 24px;
+    border-top: 1px solid rgba(34,48,100,.7);
+  }
+  .cover .meta-row > div {
+    font-family: var(--font-mono);
+    font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--fg-3);
+  }
+  .cover .meta-row > div b {
+    display: block; font-family: var(--font-display); font-weight: 600;
+    font-size: 15px; letter-spacing: .04em; color: #fff;
+    text-transform: none; margin-top: 6px;
+  }
+
+  /* Section divider — full-page heading between sections */
+  .divider {
+    width: 1100px; height: 740px;
+    background: #0a0a0a; color: #fff;
+    padding: 80px;
+    display: flex; flex-direction: column; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .divider .num {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    letter-spacing: .3em;
+    color: var(--ops-magenta);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .divider h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 64px;
+    letter-spacing: .03em;
+    margin: 0 0 18px;
+    color: #fff;
+  }
+  .divider p {
+    font-family: var(--font-sans-system);
+    font-size: 18px; color: var(--fg-3); margin: 0;
+    max-width: 760px; line-height: 1.5;
+  }
+  .divider .lines {
+    display: flex; gap: 16px; margin-top: 36px;
+  }
+  .divider .lines > i {
+    flex: 1; height: 2px;
+    background: linear-gradient(90deg, var(--ops-cyan), var(--ops-magenta));
+    border-radius: 2px;
+  }
+
+  /* Caption above each artboard */
+  .caption {
+    position: absolute; top: 14px; left: 18px;
+    z-index: 50;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.4);
+    pointer-events: none;
+  }
+  .caption b {
+    color: rgba(255,255,255,.85);
+    font-weight: 600;
+    margin-left: 6px;
+  }
+
+  /* Print rules */
+  @page { size: 11in 8.5in landscape; margin: 0; }
+
+  @media print {
+    html, body { background: #0a0a0a; }
+    .page, .cover, .divider {
+      width: 100vw !important;
+      height: 100vh !important;
+      transform-origin: top left;
+    }
+    /* Scale content to fit page */
+    .page-portal-scale, .cover-scale, .divider-scale {
+      transform-origin: top left;
+      /* Browser fits content automatically via CSS — set explicit scaling below */
+    }
+  }
+
+  /* Screen mode: stack pages vertically with a small gap so the user can preview */
+  @media screen {
+    body { padding: 24px 0; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+    .page, .cover, .divider {
+      box-shadow: 0 4px 24px rgba(0,0,0,.15);
+    }
+  }
+</style>
+
+<!-- React + Babel -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- Stub design canvas so screens that import its helpers still load fine -->
+<script>
+  // Mock DesignCanvas + DCSection + DCArtboard so the screen modules' deps
+  // resolve without bringing the actual canvas chrome.
+  window.DesignCanvas = () => null;
+  window.DCSection = () => null;
+  window.DCArtboard = () => null;
+</script>
+
+<!-- Portal screens -->
+<script type="text/babel" src="screens/portal-onboarding-a.jsx"></script>
+<script type="text/babel" src="screens/portal-onboarding-b.jsx"></script>
+
+<!-- Admin chrome + screens -->
+<script type="text/babel" src="screens/admin-chrome.jsx"></script>
+<script type="text/babel" src="screens/mc-dashboard.jsx"></script>
+<script type="text/babel" src="screens/mc-screens.jsx"></script>
+
+<script type="text/babel">
+function PrintDoc() {
+  const portalScreens = [
+    { id: "p1", num: "01", label: "Environment detection", Comp: PortalStep1 },
+    { id: "p2", num: "02", label: "Repository detection",  Comp: PortalStep2 },
+    { id: "p3", num: "03", label: "Branch health",         Comp: PortalStep3 },
+    { id: "p4", num: "04", label: "Resumable sessions",    Comp: PortalStep4 },
+    { id: "p5", num: "05", label: "Workspace setup",       Comp: PortalStep5 },
+    { id: "p6", num: "06", label: "Mission Control launch", Comp: PortalStep6 },
+  ];
+  const adminScreens = [
+    { id: "m1", label: "Mission Control · Dashboard",  Comp: MissionControlDash },
+    { id: "m2", label: "Mission Control · Sessions",   Comp: SessionsDetail },
+    { id: "m3", label: "OpenClaw · Approvals",         Comp: ApprovalsQueue },
+    { id: "m4", label: "Costs & Budgets",              Comp: CostsDashboard },
+  ];
+
+  return (
+    <>
+      {/* COVER */}
+      <div className="cover">
+        <div className="cover-atm" />
+        <div className="cover-grid" />
+        <div className="cover-inner">
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <span className="ops-mark" style={{ fontSize: 22 }}>OPSLY</span>
+            <span style={{ width: 1, height: 20, background: "rgba(255,255,255,.2)" }} />
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, letterSpacing: ".2em", textTransform: "uppercase", color: "var(--fg-muted)" }}>Runtime OS · Production Spec</span>
+          </div>
+          <h1>Operator's<br />command pane.</h1>
+          <p className="sub">
+            Portal onboarding flow and Mission Control admin surface. Ten screens, two
+            aesthetics — restrained terminal for the customer-facing portal, full cyber-ops
+            console for the workspace-owner admin.
+          </p>
+          <div style={{ flex: 1 }} />
+          <div className="meta-row">
+            <div>Project<b>Opsly Design System</b></div>
+            <div>Version<b>v1.4.0 · build May 2026</b></div>
+            <div>Surfaces<b>Portal · Admin</b></div>
+            <div>Artboards<b>10 screens · 2 sections</b></div>
+          </div>
+        </div>
+      </div>
+
+      {/* SECTION DIVIDER — PORTAL */}
+      <div className="divider">
+        <div className="num">◆ Section 01 · Customer-facing</div>
+        <h2>Portal · Onboarding</h2>
+        <p>
+          Six-step first-run flow. Restrained terminal aesthetic — near-black canvas,
+          ops-green caret, mono detail. The customer is doing real operational work
+          (probing their machine, picking repos, cleaning branches), so the design
+          stays out of the way.
+        </p>
+        <div className="lines">
+          <i /><i /><i /><i /><i /><i />
+        </div>
+      </div>
+
+      {/* PORTAL SCREENS */}
+      {portalScreens.map(s => (
+        <div className="page page-portal" key={s.id}>
+          <div className="caption">Step {s.num}<b>{s.label}</b></div>
+          <s.Comp />
+        </div>
+      ))}
+
+      {/* SECTION DIVIDER — ADMIN */}
+      <div className="divider" style={{ background: "var(--ops-admin-bg)" }}>
+        <div className="num" style={{ color: "var(--ops-cyan)" }}>◆ Section 02 · Workspace owner</div>
+        <h2 style={{ background: "linear-gradient(90deg, var(--ops-cyan), var(--ops-magenta))", WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" }}>Mission Control.</h2>
+        <p>
+          Four dense, operator-first dashboards. Cyberpunk ops-room aesthetic —
+          cyan/magenta holo borders, scanlines, animated grid. Information density
+          is the point: every pixel reports state.
+        </p>
+        <div className="lines">
+          <i /><i /><i /><i />
+        </div>
+      </div>
+
+      {/* ADMIN SCREENS */}
+      {adminScreens.map(s => (
+        <div className="page page-admin" key={s.id}>
+          <div className="caption" style={{ color: "rgba(255,255,255,.5)" }}>Admin<b>{s.label}</b></div>
+          <s.Comp />
+        </div>
+      ))}
+
+      {/* COLOPHON */}
+      <div className="cover" style={{ height: 740 }}>
+        <div className="cover-atm" />
+        <div className="cover-inner">
+          <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: "auto" }}>
+            <span className="ops-mark" style={{ fontSize: 18 }}>OPSLY</span>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: ".2em", textTransform: "uppercase", color: "var(--fg-muted)" }}>Colophon · End of document</span>
+          </div>
+          <h1 style={{ fontSize: 48, marginBottom: 16 }}>Design tokens.</h1>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 36, marginBottom: 36 }}>
+            <div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: ".2em", textTransform: "uppercase", color: "var(--fg-muted)", marginBottom: 12 }}>Color · status</div>
+              <Swatch c="#22C55E" name="ops-green"   role="primary · portal" />
+              <Swatch c="#EAB308" name="ops-yellow"  role="warning · provisioning" />
+              <Swatch c="#EF4444" name="ops-red"     role="error · destructive" />
+              <Swatch c="#3388FF" name="ops-blue"    role="info · paused state" />
+              <Swatch c="#94A3B8" name="ops-gray"    role="muted text" />
+            </div>
+            <div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: ".2em", textTransform: "uppercase", color: "var(--fg-muted)", marginBottom: 12 }}>Color · neon (admin)</div>
+              <Swatch c="#00FFFF" name="ops-cyan"    role="primary · admin" />
+              <Swatch c="#FF00FF" name="ops-magenta" role="risk · separator" />
+              <Swatch c="#9D00FF" name="ops-purple"  role="tertiary glow" />
+              <Swatch c="#0A0E27" name="ops-admin-bg" role="canvas · admin" />
+              <Swatch c="#0A0A0A" name="ops-bg"      role="canvas · portal" />
+            </div>
+            <div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: ".2em", textTransform: "uppercase", color: "var(--fg-muted)", marginBottom: 12 }}>Type</div>
+              <TypeSwatch fam="Orbitron" weight="700" name="Display" use="wordmark · admin titles · KPI" />
+              <TypeSwatch fam="Electrolize" weight="400" name="Admin sans" use="ops-room body" />
+              <TypeSwatch fam="Inter" weight="400" name="Portal sans" use="customer-facing body" />
+              <TypeSwatch fam="JetBrains Mono" weight="400" name="Mono" use="slugs · timestamps · logs" />
+            </div>
+          </div>
+          <div className="meta-row">
+            <div>Generated<b>May 2026 · Opsly Design</b></div>
+            <div>Format<b>HTML → PDF · 11×8.5″ landscape</b></div>
+            <div>Pages<b>14 (cover + 2 dividers + 10 + colophon)</b></div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function Swatch({ c, name, role }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+      <span style={{ width: 30, height: 18, background: c, borderRadius: 3, border: "1px solid rgba(255,255,255,.1)" }} />
+      <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "#fff" }}>{name}</span>
+      <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--fg-3)", marginLeft: "auto" }}>{role}</span>
+    </div>
+  );
+}
+function TypeSwatch({ fam, weight, name, use }) {
+  return (
+    <div style={{ marginBottom: 12 }}>
+      <div style={{ fontFamily: fam, fontWeight: weight, fontSize: 18, color: "#fff", marginBottom: 2 }}>{fam}</div>
+      <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--fg-3)" }}>{name} · {use}</div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<PrintDoc />);
+
+// Auto-print after fonts and Babel-transpiled scripts have loaded.
+(async function() {
+  // Wait for all <script type="text/babel"> tags to be processed.
+  // Babel-standalone transpiles them synchronously after fetch, but we wait
+  // for the React tree to mount first.
+  const ready = () => document.querySelector('.cover') && document.querySelectorAll('.page').length >= 10;
+  await new Promise(res => {
+    if (ready()) return res();
+    const t = setInterval(() => { if (ready()) { clearInterval(t); res(); } }, 100);
+  });
+  if (document.fonts && document.fonts.ready) {
+    try { await document.fonts.ready; } catch (e) {}
+  }
+  await new Promise(r => setTimeout(r, 700));
+  window.print();
+})();
+</script>
+</body>
+</html>

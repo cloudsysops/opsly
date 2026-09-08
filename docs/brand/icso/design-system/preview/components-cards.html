@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Opsly · Cards</title>
+<link rel="stylesheet" href="../colors_and_type.css" />
+<style>
+  html,body{margin:0;background:#0A0A0A;color:#fff;font-family:var(--font-sans);}
+  body{padding:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .c{padding:0;border-radius:12px;overflow:hidden;}
+  .h{padding:12px 14px;border-bottom:1px solid;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;}
+  .b{padding:14px;font-size:13px;color:#D4D4D4;}
+  /* admin */
+  .admin{background:#101734;border:1px solid transparent;
+    background:linear-gradient(#101734,#101734) padding-box,linear-gradient(120deg,rgba(0,255,255,.7),rgba(255,0,255,.65),rgba(157,0,255,.7)) border-box;
+    box-shadow:0 0 18px rgba(157,0,255,.18);border-radius:16px;}
+  .admin .h{font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.12em;color:#00FFFF;border-color:rgba(34,48,100,.7);}
+  /* portal */
+  .portal{background:#111;border:1px solid #1E1E1E;}
+  .portal .h{color:#fff;border-color:#1E1E1E;text-transform:none;letter-spacing:0;font-family:var(--font-sans);font-size:14px;font-weight:600;}
+  /* web */
+  .web{background:#111;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:18px;}
+  .web .ico{font-size:24px;margin-bottom:8px;}
+  .web h3{font:600 16px var(--font-sans-system);margin:0 0 6px;color:#fff;}
+  .web p{font:14px/1.5 var(--font-sans-system);margin:0;color:#A3A3A3;}
+</style>
+</head>
+<body>
+  <div class="c admin"><div class="h">Plataforma · VPS</div><div class="b">CPU 24.1%<br>RAM 8.2 / 16 GB<br>Uptime 12d 4h</div></div>
+  <div class="c portal"><div class="h">Tu suscripción</div><div class="b">Plan Business · $149/mes<br>Renueva el 12 jun 2026</div></div>
+  <div class="web"><div class="ico">⚡</div><h3>Deploy en minutos</h3><p>Crea tu stack de automatización completo (n8n + Uptime Kuma) sin configurar servidores.</p></div>
+</body></html>

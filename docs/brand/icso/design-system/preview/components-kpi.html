@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Opsly · KPI cards</title>
+<link rel="stylesheet" href="../colors_and_type.css" />
+<style>
+  html,body{margin:0;background:#0A0E27;color:#fff;font-family:var(--font-sans);}
+  body{padding:18px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  .kpi{position:relative;background:#101734;border:1px solid #223064;border-left:4px solid;border-radius:4px;padding:10px 14px;}
+  .kpi .lab{font-family:var(--font-sans);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#94A3B8;}
+  .kpi .val{display:flex;align-items:baseline;gap:6px;margin-top:4px;}
+  .num{font-family:var(--font-mono);font-size:24px;font-weight:500;color:#fff;font-variant-numeric:tabular-nums;}
+  .unit{font-family:var(--font-sans);font-size:11px;color:#94A3B8;}
+  .trend-up{font-family:var(--font-mono);font-size:11px;color:#22C55E;}
+  .trend-down{font-family:var(--font-mono);font-size:11px;color:#EF4444;}
+</style>
+</head>
+<body>
+  <div class="kpi" style="border-left-color:#22C55E"><div class="lab">Respuestas LLM (mes)</div><div class="val"><span class="num">12,488</span><span class="trend-up">▲</span></div></div>
+  <div class="kpi" style="border-left-color:#22C55E"><div class="lab">Tokens (mes)</div><div class="val"><span class="num">4.21</span><span class="unit">M in+out</span></div></div>
+  <div class="kpi" style="border-left-color:#EAB308"><div class="lab">Coste LLM (mes)</div><div class="val"><span class="num">$184.55</span><span class="trend-down">▼</span></div></div>
+  <div class="kpi" style="border-left-color:#94A3B8"><div class="lab">Hit rate caché</div><div class="val"><span class="num">68</span><span class="unit">%</span></div></div>
+</body></html>

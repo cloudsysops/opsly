@@ -26,6 +26,22 @@
       "description": "Canvas/factory: render Splashitos en PC-gamer"
     },
     {
+      "id": "canvas-content-studio-opsly",
+      "kind": "content_video",
+      "agent": "content-video",
+      "channel": "opsly",
+      "min_mode": "light",
+      "description": "Canvas/factory: render Opsly company Shorts en PC-gamer"
+    },
+    {
+      "id": "canvas-content-studio-clicksitos",
+      "kind": "content_video",
+      "agent": "content-video",
+      "channel": "clicksitos",
+      "min_mode": "light",
+      "description": "Canvas/factory: render Clicksitos (gaming clicks/reels) en PC-gamer"
+    },
+    {
       "id": "canvas-content-studio-opsly-universe",
       "kind": "content_video",
       "agent": "content-video",

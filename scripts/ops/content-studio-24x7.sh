@@ -181,14 +181,23 @@ if [[ "$RENDER_ONLY" != true && "$PUBLISH_ON" == true ]]; then
     echo "publish skip: daily cap or interval (max=${MAX_UPLOADS}/day, every ${INTERVAL_H}h)"
     log "publish=skip cadence"
   else
-    first="bitsitos"
-    second="splashitos"
-    if [[ "$last_channel" == "bitsitos" ]]; then
-      first="splashitos"
-      second="bitsitos"
-    fi
+    rotate="$(
+      CONTENT_STUDIO_LAST_CHANNEL="$last_channel" node --input-type=module <<'EOF'
+import { readFileSync } from 'node:fs';
+const cfg = JSON.parse(readFileSync('config/content-studio/youtube-channels.json', 'utf8'));
+const keys = Object.entries(cfg.channels || {})
+  .filter(([, v]) => v && v.approval_required !== true)
+  .map(([k]) => k);
+const last = process.env.CONTENT_STUDIO_LAST_CHANNEL || '';
+const idx = keys.indexOf(last);
+const start = idx >= 0 ? (idx + 1) % keys.length : 0;
+const ordered = keys.slice(start).concat(keys.slice(0, start));
+process.stdout.write(ordered.join(' '));
+EOF
+    )"
     uploaded=false
-    for channel in "$first" "$second"; do
+    # shellcheck disable=SC2086
+    for channel in $rotate; do
       if [[ "$DRY_RUN" == true ]]; then
         echo "[dry-run] next unpublished --channel ${channel} --limit 1"
         ./scripts/content-studio-publish-youtube.sh --channel "$channel" --dry-run --limit 1 || true
@@ -232,7 +241,7 @@ EOF
       fi
     done
     if [[ "$uploaded" != true ]]; then
-      echo "publish: no unpublished MP4 ready (or Splashitos channel id empty)"
+      echo "publish: no unpublished MP4 ready (or channel id / OAuth mismatch)"
       log "publish=none"
     fi
   fi
@@ -249,8 +258,20 @@ if [[ "$PUBLISH_ONLY" != true ]]; then
     echo "render skip: enqueue interval ${ENQUEUE_H}h not elapsed"
     log "render=skip interval"
   else
-    maybe_enqueue bitsitos
-    maybe_enqueue splashitos
+    enqueue_list="$(
+      node --input-type=module <<'EOF'
+import { readFileSync } from 'node:fs';
+const cfg = JSON.parse(readFileSync('config/content-studio/youtube-channels.json', 'utf8'));
+const keys = Object.entries(cfg.channels || {})
+  .filter(([, v]) => v && v.approval_required !== true)
+  .map(([k]) => k);
+process.stdout.write(keys.join(' '));
+EOF
+    )"
+    # shellcheck disable=SC2086
+    for channel in $enqueue_list; do
+      maybe_enqueue "$channel"
+    done
     if [[ "$DRY_RUN" != true ]]; then
       mark_enqueued
     fi

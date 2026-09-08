@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Content Studio channel pipeline: require PC-gamer → enqueue worker-local render.
 # Mac never starts MoneyPrinter unless --allow-mac-render (emergency).
-# Primary commercial channel: bitsitos (tech for kids). splashitos = secondary.
+# Commercial channels: bitsitos, splashitos, clicksitos (gaming). Universe = approval.
 #
 # Usage:
 #   ./scripts/content-studio-gamer-pipeline.sh --channel bitsitos --dry-run

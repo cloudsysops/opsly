@@ -10,7 +10,7 @@
 #
 # Env (Doppler / local; never commit):
 #   YOUTUBE_CLIENT_ID / YOUTUBE_CLIENT_SECRET / YOUTUBE_REFRESH_TOKEN  (OAuth upload)
-#   YOUTUBE_BITSITOS_CHANNEL_ID / YOUTUBE_SPLASHITOS_CHANNEL_ID
+#   YOUTUBE_OPSLY_CHANNEL_ID / YOUTUBE_BITSITOS_CHANNEL_ID / YOUTUBE_SPLASHITOS_CHANNEL_ID / YOUTUBE_CLICKSITOS_CHANNEL_ID
 #   YOUTUBE_PRIVACY=unlisted|private|public   (default: unlisted)
 #   YOUTUBE_MADE_FOR_KIDS=false              (default false = for parents teaching kids)
 #   CONTENT_STUDIO_RENDERS_DIR=runtime/content-studio/renders
@@ -103,7 +103,8 @@ const youtubeChannelId =
   process.env[envChannelIdKey]?.trim() ||
   channelMeta.youtube_channel_id ||
   '';
-const categoryId = process.env.YOUTUBE_DEFAULT_CATEGORY_ID || '27';
+const categoryId =
+  String(channelMeta.category_id || process.env.YOUTUBE_DEFAULT_CATEGORY_ID || '27');
 
 const batchFiles = readdirSync(channelDir)
   .filter((f) => f.startsWith('batch-') && f.endsWith('.json'))
@@ -289,6 +290,14 @@ if (mode !== 'upload') {
 
 if (!youtubeChannelId) {
   console.warn(`skip upload: no YouTube channel id for ${channelKey}`);
+  process.exit(0);
+}
+
+const oauthChannelId = process.env.YOUTUBE_OAUTH_CHANNEL_ID?.trim() || '';
+if (oauthChannelId && oauthChannelId !== youtubeChannelId) {
+  console.error(
+    `skip upload: OAuth is bound to ${oauthChannelId}, target ${channelKey} is ${youtubeChannelId}. Re-run youtube-oauth-doppler-setup.sh and choose that Brand Account.`
+  );
   process.exit(0);
 }
 

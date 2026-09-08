@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Opsly · CPU gauge</title>
+<link rel="stylesheet" href="../colors_and_type.css" />
+<style>
+  html,body{margin:0;background:#0A0A0A;color:#fff;font-family:var(--font-sans);}
+  body{padding:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .g{position:relative;height:140px;display:flex;align-items:center;justify-content:center;background:#111;border:1px solid #1E1E1E;border-radius:12px;}
+  svg{transform:rotate(-90deg);}
+  .lab{position:absolute;display:flex;flex-direction:column;align-items:center;}
+  .v{font-family:var(--font-mono);font-size:28px;color:#fff;font-variant-numeric:tabular-nums;}
+  .u{font-family:var(--font-sans);font-size:11px;color:#94A3B8;}
+  h4{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:#94A3B8;margin:0 0 6px;}
+</style>
+</head>
+<body>
+<div>
+  <h4>healthy &lt;60%</h4>
+  <div class="g">
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="52" fill="none" stroke="#1E1E1E" stroke-width="10"/>
+      <circle cx="60" cy="60" r="52" fill="none" stroke="#22C55E" stroke-width="10" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="166.6"/>
+    </svg>
+    <div class="lab"><span class="v">49.0</span><span class="u">% CPU</span></div>
+  </div>
+</div>
+<div>
+  <h4>warn 60–85%</h4>
+  <div class="g">
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="52" fill="none" stroke="#1E1E1E" stroke-width="10"/>
+      <circle cx="60" cy="60" r="52" fill="none" stroke="#EAB308" stroke-width="10" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="78.4"/>
+    </svg>
+    <div class="lab"><span class="v">76.0</span><span class="u">% CPU</span></div>
+  </div>
+</div>
+<div>
+  <h4>critical ≥85%</h4>
+  <div class="g">
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="52" fill="none" stroke="#1E1E1E" stroke-width="10"/>
+      <circle cx="60" cy="60" r="52" fill="none" stroke="#EF4444" stroke-width="10" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="22.9"/>
+    </svg>
+    <div class="lab"><span class="v">93.0</span><span class="u">% CPU</span></div>
+  </div>
+</div>
+</body></html>
