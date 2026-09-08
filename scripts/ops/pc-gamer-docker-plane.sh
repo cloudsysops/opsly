@@ -6,6 +6,7 @@
 #   ./scripts/ops/pc-gamer-docker-plane.sh --dry-run
 #   ./scripts/ops/pc-gamer-docker-plane.sh --up
 #   ./scripts/ops/pc-gamer-docker-plane.sh --up --pull-model
+#   ./scripts/ops/pc-gamer-docker-plane.sh --up --with-content
 #   ./scripts/ops/pc-gamer-docker-plane.sh --down
 #   ./scripts/ops/pc-gamer-docker-plane.sh --status
 #   ./scripts/ops/pc-gamer-docker-plane.sh --install-autostart
@@ -20,6 +21,7 @@ PULL_MODEL=false
 INSTALL_AUTOSTART=false
 STOP_NATIVE=true
 USE_HOST_OLLAMA=false
+WITH_CONTENT=false
 
 for arg in "$@"; do
   case "$arg" in
@@ -31,8 +33,9 @@ for arg in "$@"; do
     --install-autostart) INSTALL_AUTOSTART=true ;;
     --keep-native) STOP_NATIVE=false ;;
     --use-host-ollama) USE_HOST_OLLAMA=true ;;
+    --with-content) WITH_CONTENT=true ;;
     -h|--help)
-      sed -n '2,20p' "$0"
+      sed -n '2,22p' "$0"
       exit 0
       ;;
     *)
@@ -47,8 +50,13 @@ ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 cd "$ROOT"
 
 ENV_WORKER="${ROOT}/.env.worker"
-COMPOSE_BASE=(-f infra/docker-compose.opslyquantum.yml -f infra/docker-compose.opslyquantum.gpu.yml)
+COMPOSE_BASE=(-f infra/docker-compose.opslyquantum.yml)
+# Overlay GPU solo si existe y no estamos en host-Ollama (WSL suele no tener nvidia-ctk).
+if [[ "$USE_HOST_OLLAMA" != "true" && -f infra/docker-compose.opslyquantum.gpu.yml ]]; then
+  COMPOSE_BASE+=(-f infra/docker-compose.opslyquantum.gpu.yml)
+fi
 COMPOSE_WORKERS=("${COMPOSE_BASE[@]}" -f infra/docker-compose.pc-gamer-workers.yml)
+COMPOSE_MPT=(-f infra/docker-compose.pc-gamer-moneyprinter.yml)
 OLLAMA_MODEL="${OLLAMA_MODEL:-llama3.2}"
 
 run() {
@@ -107,10 +115,23 @@ ensure_env() {
     echo 'OPSLY_EPHEMERAL_WORKER=true' >>"$ENV_WORKER"
   fi
   if ! grep -q '^OPSLY_WORKER_ALLOWLIST=' "$ENV_WORKER"; then
-    echo 'OPSLY_WORKER_ALLOWLIST=ollama' >>"$ENV_WORKER"
+    if [[ "$WITH_CONTENT" == "true" ]]; then
+      echo 'OPSLY_WORKER_ALLOWLIST=ollama,content-video' >>"$ENV_WORKER"
+    else
+      echo 'OPSLY_WORKER_ALLOWLIST=ollama' >>"$ENV_WORKER"
+    fi
+  elif [[ "$WITH_CONTENT" == "true" ]] && ! grep -q 'content-video' "$ENV_WORKER"; then
+    # Append content-video to existing allowlist line (idempotent-ish).
+    if grep -qE '^OPSLY_WORKER_ALLOWLIST=.*\bollama\b' "$ENV_WORKER"; then
+      sed -i.bak -E 's/^(OPSLY_WORKER_ALLOWLIST=.*)$/\1,content-video/' "$ENV_WORKER"
+      rm -f "${ENV_WORKER}.bak"
+    fi
   fi
   if ! grep -q '^OPSLY_OLLAMA_DIRECT=' "$ENV_WORKER"; then
     echo 'OPSLY_OLLAMA_DIRECT=true' >>"$ENV_WORKER"
+  fi
+  if [[ "$WITH_CONTENT" == "true" ]] && ! grep -q '^MONEY_PRINTER_TURBO_URL=' "$ENV_WORKER"; then
+    echo 'MONEY_PRINTER_TURBO_URL=http://127.0.0.1:8080' >>"$ENV_WORKER"
   fi
   if [[ ! -f infra/opslyquantum.env && -f infra/opslyquantum.env.example ]]; then
     run cp infra/opslyquantum.env.example infra/opslyquantum.env
@@ -132,6 +153,10 @@ compose_up() {
     --env-file "$ENV_WORKER" \
     --env-file infra/opslyquantum.env \
     up -d "${services[@]}"
+  if [[ "$WITH_CONTENT" == "true" ]]; then
+    echo "[pc-gamer-docker] starting moneyprinter-bridge…"
+    run docker compose "${COMPOSE_MPT[@]}" --env-file "$ENV_WORKER" up -d moneyprinter-bridge
+  fi
   if [[ "$PULL_MODEL" == "true" && "$USE_HOST_OLLAMA" != "true" && "$DRY_RUN" != "true" ]]; then
     echo "[pc-gamer-docker] Pulling ${OLLAMA_MODEL}…"
     docker exec opslyquantum-ollama ollama pull "$OLLAMA_MODEL" || true
@@ -140,6 +165,10 @@ compose_up() {
     sleep 2
     docker exec opslyquantum-ollama nvidia-smi -L 2>/dev/null \
       || echo "[pc-gamer-docker] GPU in container: no (CPU OK; install nvidia-ctk later)"
+    if [[ "$WITH_CONTENT" == "true" ]]; then
+      curl -sf --max-time 3 http://127.0.0.1:8080/health \
+        || echo "[pc-gamer-docker] moneyprinter :8080 not ready yet"
+    fi
   fi
 }
 
@@ -150,6 +179,7 @@ compose_down() {
     --env-file infra/opslyquantum.env \
     stop worker-openclaw ollama 2>/dev/null || true
   run docker compose "${COMPOSE_WORKERS[@]}" stop worker-openclaw ollama 2>/dev/null || true
+  run docker compose "${COMPOSE_MPT[@]}" stop moneyprinter-bridge 2>/dev/null || true
 }
 
 show_status() {
@@ -160,6 +190,8 @@ show_status() {
   curl -sf --max-time 3 http://127.0.0.1:3011/health 2>/dev/null || echo "worker :3011 down"
   echo
   curl -sf --max-time 3 http://127.0.0.1:11434/api/tags 2>/dev/null | head -c 160 || echo "ollama :11434 down"
+  echo
+  curl -sf --max-time 3 http://127.0.0.1:8080/health 2>/dev/null || echo "moneyprinter :8080 down"
   echo
 }
 

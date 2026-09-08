@@ -1,0 +1,34 @@
+# MoneyPrinter bridge for PC-gamer (Content Studio / Splashitos).
+# Host network → worker on same machine calls http://127.0.0.1:8080/render
+#
+# Usage (WSL, repo root):
+#   docker compose -f infra/docker-compose.pc-gamer-moneyprinter.yml --env-file .env.worker up -d
+# Or native:
+#   node scripts/moneyprinter-bridge.mjs
+
+services:
+  moneyprinter-bridge:
+    image: node:20-bookworm-slim
+    container_name: opsly-pc-gamer-moneyprinter-bridge
+    working_dir: /app
+    volumes:
+      - ..:/app
+    environment:
+      MPT_BRIDGE_PORT: ${MPT_BRIDGE_PORT:-8080}
+      MPT_BRIDGE_HOST: ${MPT_BRIDGE_HOST:-0.0.0.0}
+      MPT_BRIDGE_OUT_DIR: ${MPT_BRIDGE_OUT_DIR:-runtime/content-studio/renders}
+      MPT_BRIDGE_PUBLIC_BASE: ${MPT_BRIDGE_PUBLIC_BASE:-http://127.0.0.1:8080}
+      MPT_BRIDGE_API_KEY: ${MONEY_PRINTER_TURBO_API_KEY:-}
+      MONEY_PRINTER_TURBO_API_KEY: ${MONEY_PRINTER_TURBO_API_KEY:-}
+    command:
+      - bash
+      - -lc
+      - |
+        set -euo pipefail
+        apt-get update -qq
+        apt-get install -y -qq --no-install-recommends ffmpeg imagemagick fonts-dejavu-core ca-certificates
+        rm -rf /var/lib/apt/lists/*
+        export MPT_FONT="${MPT_FONT:-DejaVu-Sans-Bold}"
+        exec node scripts/moneyprinter-bridge.mjs
+    restart: unless-stopped
+    network_mode: host

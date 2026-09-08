@@ -1,0 +1,28 @@
+{
+  "updated_at": "2026-09-07T05:44:48Z",
+  "status": "PC_GAMER_OVERNIGHT_READY",
+  "ready": [
+    "ollama",
+    "local-agents",
+    "heartbeat",
+    "safe-autostart"
+  ],
+  "blocked": [
+    {
+      "id": "PC_GAMER_VIDEO_BRIDGE_REPAIR",
+      "cause": "MoneyPrinter Exited 100; container dpkg interrupted; host ffmpeg missing"
+    },
+    {
+      "id": "CONTENT_STUDIO_GPU_RENDER_TEST",
+      "depends_on": "PC_GAMER_VIDEO_BRIDGE_REPAIR"
+    },
+    {
+      "id": "REVIEW_PR_1123",
+      "classification": "REQUEST_CHANGES"
+    }
+  ],
+  "prs": [
+    1124,
+    1125
+  ]
+}
