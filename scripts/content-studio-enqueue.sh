@@ -139,7 +139,7 @@ for (const file of batchFiles) {
         mpt_api_key: process.env.MONEY_PRINTER_TURBO_API_KEY,
       },
       {
-        jobId: `${channelKey}:${item.id}`,
+        jobId: `${channelKey}__${item.id}`,
         removeOnComplete: 100,
         removeOnFail: 50,
       }
