@@ -184,6 +184,15 @@ El `model` explícito tiene prioridad. Modelos fuera de la allowlist se rechazan
 del bridge incluye `provider=ollama`, `cost_usd=0`, `model` y `task_type` para que
 Mission Control pueda agregar métricas sin añadir secretos al gamer.
 
+Proveedores cloud registrados en `opencode.jsonc` del gamer (no en el repo) pero
+**bloqueados por cuenta**, no por código: Groq (TPM 8000 < prompt OpenCode ~71K),
+NVIDIA (API key sin inferencia habilitada), OpenRouter (tier `:free` sin crédito).
+Hasta desbloquearlos, la ruta que funciona es Ollama local.
+
+**Incidente 2026-09-08:** WSL se bloqueó bajo benchmarking concurrente de varios
+modelos; se recuperó al reintentar `wsl -d Ubuntu`. No disparar más de un job
+pesado a la vez.
+
 ### Content Studio / Bitsitos (+ Splashitos) en gamer
 
 Canal comercial primario: **Bitsitos** (tech kids). Splashitos = secundario.

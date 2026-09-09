@@ -17,6 +17,13 @@
       "prompt_file": "scripts/ops/prompts/overnight-content-studio.md",
       "min_mode": "heavy",
       "description": "Render/pipeline de Content Studio (Splashitos/bitsitos) → kit de subida para revisión humana"
+    },
+    {
+      "id": "content-studio-real-render",
+      "agent": "opencode",
+      "prompt_file": "scripts/ops/prompts/content-studio-real-render.md",
+      "min_mode": "heavy",
+      "description": "Investigar/conectar MoneyPrinterTurboRenderClient real al worker content-video; si falta infra, documentar gap"
     }
   ]
 }
