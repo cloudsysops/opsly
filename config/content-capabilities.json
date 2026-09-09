@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "lastUpdated": "2026-09-09",
+  "canonicalDoc": "docs/00-architecture/CONTENT-PIPELINE-CANONICAL.md",
+  "productionPath": "GAMEPLAY → INGEST → SESSION → TRANSCRIPT? → HIGHLIGHTS → SCORE → CLIP → RENDER → CONTENT STUDIO → RIGHTS → QA → READY_FOR_REVIEW → APPROVAL → PUBLISH",
+  "rule": "Before implementing any content/video/clip/highlight/publish feature: read this file. Extend the canonical owner. If unclear, BLOCK and report. No second pipeline, render engine, publisher, or highlight engine.",
+  "stateRoot": "runtime/content-os/tenants/<tenant>/projects/<id>/project.json",
+  "reviewUi": "apps/admin/app/moon/creator/",
+  "channelGameplay": "icso-gaming-tbd",
+  "incomingPrs": ["#1155", "#1158", "#1157", "#1131"],
+  "capabilities": {
+    "gameplay.ingest": {
+      "name": "gameplay.ingest",
+      "canonical_owner": "lib/content-studio/src/content-engine/pipeline.ts",
+      "path": "lib/content-studio/src/content-engine/pipeline.ts",
+      "functions": ["ingestOwnedVideo", "ingestPrecutHighlight", "prepareGameplaySession"],
+      "status": "canonical",
+      "runtime": "control-plane + pc-gamer-execution",
+      "tests": [
+        "lib/content-studio/src/content-engine/__tests__/content-os.test.ts",
+        "lib/content-studio/src/content-engine/__tests__/gameplay-session.test.ts"
+      ],
+      "deprecated_paths": [],
+      "notes": "prepareGameplaySession lands in #1158. Watcher Instant Replay must call prepare-session, not bare ingest."
+    },
+    "session.registry": {
+      "name": "session.registry",
+      "canonical_owner": "ContentProjectEnvelope.session",
+      "path": "lib/content-studio/src/content-engine/types.ts",
+      "status": "canonical",
+      "runtime": "control-plane",
+      "tests": ["lib/content-studio/src/content-engine/__tests__/gameplay-session.test.ts"],
+      "deprecated_paths": [],
+      "notes": "No second session table or JSON store. Envelope field incoming on #1158."
+    },
+    "transcription": {
+      "name": "transcription",
+      "canonical_owner": "lib/content-studio/src/content-engine/transcribe.ts",
+      "path": "lib/content-studio/src/content-engine/transcribe.ts",
+      "status": "canonical_interface_adapter_missing",
+      "runtime": "pc-gamer-execution-optional",
+      "tests": ["lib/content-studio/src/content-engine/__tests__/content-os.test.ts"],
+      "deprecated_paths": [],
+      "notes": "Fail-closed sidecar only. Whisper present throws BLOCKED_WHISPER_ADAPTER. Gameplay does not require transcript; use highlight.detect. Any STT (Whisper/WhisperX) must implement TranscriptionAdapter here."
+    },
+    "highlight.detect": {
+      "name": "highlight.detect",
+      "canonical_owner": "lib/content-studio/src/content-engine/audio-peak-discovery.ts",
+      "path": "lib/content-studio/src/content-engine/audio-peak-discovery.ts",
+      "status": "canonical",
+      "runtime": "control-plane-or-pc-gamer-ffmpeg",
+      "tests": ["lib/content-studio/src/content-engine/__tests__/audio-peak-discovery.test.ts"],
+      "deprecated_paths": [],
+      "notes": "Gameplay = silencedetect peaks. Transcript clips use clip-discovery.ts as ADAPTER for scripted/commentary, not a second gameplay engine. Auto-clipper is REFERENCE_ONLY."
+    },
+    "highlight.score": {
+      "name": "highlight.score",
+      "canonical_owner": "lib/content-studio/src/content-engine/highlight-score.ts",
+      "path": "lib/content-studio/src/content-engine/highlight-score.ts",
+      "status": "canonical",
+      "runtime": "control-plane",
+      "tests": ["lib/content-studio/src/content-engine/__tests__/highlight-score.test.ts"],
+      "deprecated_paths": [],
+      "notes": "Incoming #1158. Quality over quota. MIN_PRIMARY_SCORE=35, max 5. Do not invent a second scorer."
+    },
+    "clip.extract": {
+      "name": "clip.extract",
+      "canonical_owner": "lib/content-studio/src/content-engine/ffmpeg.ts",
+      "path": "lib/content-studio/src/content-engine/ffmpeg.ts",
+      "functions": ["extractClip"],
+      "status": "canonical",
+      "runtime": "pc-gamer-execution-or-local-ffmpeg",
+      "tests": ["lib/content-studio/src/content-engine/__tests__/ffmpeg-smoke.test.ts"],
+      "deprecated_paths": [],
+      "notes": "lib/content-engine/src/render/ffmpeg-adapter.ts trim is ADAPTER for scene-compose only. ADR-058 defers merging argv."
+    },
+    "vertical.reframe": {
+      "name": "vertical.reframe",
+      "canonical_owner": "lib/content-studio/src/content-engine/ffmpeg.ts",
+      "path": "lib/content-studio/src/content-engine/ffmpeg.ts",
+      "functions": ["verticalReframe"],
+      "status": "canonical",
+      "runtime": "pc-gamer-execution-or-local-ffmpeg",
+      "tests": ["lib/content-studio/src/content-engine/__tests__/ffmpeg-smoke.test.ts"],
+      "deprecated_paths": [],
+      "notes": "Forces libx264 + yuv420p + aac. Do not swap to content-engine scale() without an ffmpeg golden test (ADR-058)."
+    },
+    "captions": {
+      "name": "captions",
+      "canonical_owner": "lib/content-studio/src/content-engine/ffmpeg.ts",
+      "path": "lib/content-studio/src/content-engine/ffmpeg.ts",
+      "functions": ["captionBurn", "writeSrt"],
+      "status": "canonical",
+      "runtime": "control-plane",
+      "tests": ["lib/content-studio/src/content-engine/__tests__/content-os.test.ts"],
+      "deprecated_paths": [],
+      "notes": "Video hooks stay generic (Gameplay highlight). caption-generator.ts is event-draft copy, other domain. content-engine srt.ts is scene-compose ADAPTER."
+    },
+    "render": {
+      "name": "render",
+      "canonical_owner": "lib/content-studio/src/content-engine/pipeline.ts",
+      "path": "lib/content-studio/src/content-engine/pipeline.ts",
+      "functions": ["renderTopClips"],
+      "status": "canonical",
+      "runtime": "pc-gamer-execution-or-local-ffmpeg",
+      "tests": [
+        "lib/content-studio/src/content-engine/__tests__/content-os.test.ts",
+        "lib/content-studio/src/content-engine/__tests__/gameplay-session.test.ts"
+      ],
+      "deprecated_paths": [
+        "apps/rendering-engine (Hermes MCP) — superseded for this pipeline"
+      ],
+      "notes": "Gameplay render = FFmpeg via renderTopClips. MoneyPrinterTurbo + ContentVideoWorker = synthetic event/kids video ADAPTER, not gameplay. Remotion = REFERENCE_ONLY until ADR + cost approval."
+    },
+    "dragon.overlay": {
+      "name": "dragon.overlay",
+      "canonical_owner": "lib/content-studio/src/content-engine/types.ts",
+      "path": "lib/content-studio/src/content-engine/types.ts",
+      "status": "canonical_stub_missing_renderer",
+      "runtime": "control-plane",
+      "tests": ["lib/content-studio/src/content-engine/__tests__/highlight-score.test.ts"],
+      "deprecated_paths": [],
+      "notes": "DragonCyberMode defaults to NONE on #1158. Extend ffmpeg.ts when a real overlay exists. Do not add a new overlay engine or LivePortrait vendor."
+    },
+    "rights": {
+      "name": "rights",
+      "canonical_owner": "lib/content-studio/src/content-engine/rights.ts",
+      "path": "lib/content-studio/src/content-engine/rights.ts",
+      "status": "canonical",
+      "runtime": "control-plane",
+      "tests": ["lib/content-studio/src/content-engine/__tests__/content-os.test.ts"],
+      "deprecated_paths": [],
+      "notes": "MUSIC_RIGHTS stays UNKNOWN until proven. commentary mode always human review. compliance-checker.ts is event-draft secrets regex, other domain."
+    },
+    "qa": {
+      "name": "qa",
+      "canonical_owner": "lib/content-studio/src/content-engine/pipeline.ts",
+      "path": "lib/content-studio/src/content-engine/pipeline.ts",
+      "functions": ["runContentQaCheck"],
+      "status": "canonical",
+      "runtime": "control-plane",
+      "tests": ["lib/content-studio/src/content-engine/__tests__/gameplay-channel.test.ts"],
+      "deprecated_paths": [],
+      "notes": "Advisory qaFlags only. Never auto-approve or auto-publish."
+    },
+    "approval": {
+      "name": "approval",
+      "canonical_owner": "lib/content-studio/src/content-engine/storage.ts",
+      "path": "lib/content-studio/src/content-engine/storage.ts",
+      "functions": ["setProjectApproval"],
+      "ui": "apps/admin/app/moon/creator/",
+      "status": "canonical",
+      "runtime": "control-plane",
+      "tests": ["lib/content-studio/src/content-engine/__tests__/content-os.test.ts"],
+      "deprecated_paths": [],
+      "notes": "Moon is the human gate for gameplay. lib/content-engine approval state-machine is scene-compose ADAPTER. content-approval-queue.ts is event-draft ADAPTER. PC gamer must not store approval."
+    },
+    "publish": {
+      "name": "publish",
+      "canonical_owner": "lib/content-studio/src/content-engine/publishing.ts",
+      "path": "lib/content-studio/src/content-engine/publishing.ts",
+      "adapter": "lib/content-studio/src/publishers/youtube.ts",
+      "cli": "scripts/content/youtube-publish.ts",
+      "status": "canonical_gate",
+      "runtime": "vps-control-plane",
+      "tests": [
+        "lib/content-studio/src/content-engine/__tests__/content-os.test.ts",
+        "lib/content-studio/src/publishers/__tests__/youtube.test.ts"
+      ],
+      "deprecated_paths": [],
+      "notes": "assertHumanApprovedPublish required. OPSLY_CONTENT_PUBLISHING=disabled by default. AUTO_PUBLISH stays off. Credentials only on VPS via Doppler. enqueueApprovedPublishJob (#1158) is a record, not an upload."
+    },
+    "metrics": {
+      "name": "metrics",
+      "canonical_owner": "none",
+      "path": "lib/content-studio/src/content-engine/capabilities.ts",
+      "status": "missing",
+      "runtime": "none",
+      "tests": [],
+      "deprecated_paths": [],
+      "notes": "analytics: not-wired-no-metrics-source. Do not invent views/CTR/retention. BLOCK fake dashboards."
+    }
+  },
+  "otherDomains": {
+    "scene_compose": {
+      "owner": "lib/content-engine/",
+      "role": "ADAPTER",
+      "cli": "scripts/content-cli.ts (npm run content-engine:*)",
+      "state": "data/content/tenants/<slug>/ + runtime/content-artifacts/",
+      "use": "Original stills→ffmpeg storyboards (Bitsitos/Splashitos scripted). Not Mauro gameplay."
+    },
+    "event_drafts": {
+      "owner": "lib/content-studio/src/{mappers,generators,adapters,rendering/moneyprinterturbo.ts}",
+      "role": "ADAPTER",
+      "queue": "content-video",
+      "worker": "apps/orchestrator/src/workers/ContentVideoWorker.ts",
+      "use": "Runtime event → caption/story → MoneyPrinterTurbo. Not gameplay."
+    },
+    "brand_bible": {
+      "owner": "lib/content-studio/src/{characters,series,episodes,campaigns}/ + data/content/",
+      "role": "REFERENCE_ONLY for gameplay",
+      "use": "Opsly brand Character Bible. Do not mix into icso-gaming-tbd."
+    }
+  },
+  "oss": {
+    "auto-clipper": "ADAPT",
+    "opencut": "REFERENCE_ONLY",
+    "remotion": "REFERENCE_ONLY",
+    "moneyprinterturbo": "ADAPT",
+    "twitchdownloader": "REFERENCE_ONLY",
+    "hermes-rendering-engine": "SUPERSEDED",
+    "liveportrait": "REFERENCE_ONLY",
+    "kokoro-orpheus-tts": "REFERENCE_ONLY"
+  }
+}

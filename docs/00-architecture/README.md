@@ -38,6 +38,7 @@ Arquitectura estable de Opsly: control plane, data plane, OpenClaw, LLM Gateway,
 - `LLM-GATEWAY.md`
 - `ORCHESTRATOR.md`
 - `MISSION-CONTROL-KIT.md` — módulo reutilizable agency/tenant MC (ICSO + futuros clientes)
+- `CONTENT-PIPELINE-CANONICAL.md` — único path de producción Mauro/gameplay + dueños por capability
 
 ---
 

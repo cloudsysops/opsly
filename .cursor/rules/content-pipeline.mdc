@@ -1,0 +1,45 @@
+---
+description: Content / gameplay / clips — one pipeline, check registry first
+globs:
+  - lib/content-studio/**
+  - lib/content-engine/**
+  - scripts/content*.ts
+  - scripts/ops/pc-gamer-*
+  - apps/admin/app/moon/creator/**
+  - config/content-capabilities.json
+  - docs/**/CONTENT*
+alwaysApply: false
+---
+
+# Content pipeline — no duplicates
+
+**Registry:** `config/content-capabilities.json`  
+**Canon:** `docs/00-architecture/CONTENT-PIPELINE-CANONICAL.md`  
+**Skill:** `opsly-content-studio`
+
+Before any ingest / clip / highlight / render / publish / caption change:
+
+1. Read the registry. Find `canonical_owner`.
+2. Search `lib/content-studio/src/content-engine/` and `config/modules.json`.
+3. If another worktree/PR already implements it (#1155, #1158, #1131, #1151) → extend or BLOCK.
+4. Unclear owner → BLOCK and report. Do not invent a parallel path.
+
+## Forbidden
+
+- A second content pipeline, orchestrator, or envelope format
+- A second render engine (Remotion, OpenCut, YOLO, Hermes `render_video`) for Mauro
+- A second publisher or auto-publish
+- A second highlight engine
+- Fake metrics (views/CTR/retention)
+- Mixing Mauro gameplay into Bitsitos kids
+- Canonical state, approvals, or publish secrets on the PC gamer
+
+## Allowed
+
+- Extend the listed canonical owner
+- PC gamer as **execution** (ffmpeg / optional STT adapter / watcher)
+- VPS as **control** (envelope, Moon, Doppler publish creds)
+
+Gameplay production path:
+
+`INGEST → SESSION → HIGHLIGHTS → SCORE → CLIP → RENDER → RIGHTS → QA → APPROVAL → PUBLISH`

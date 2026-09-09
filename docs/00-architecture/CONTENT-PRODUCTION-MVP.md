@@ -10,6 +10,10 @@ tags:
 
 # Opsly Content Production MVP — Brand Channel (Character-Driven)
 
+> **Historical (Opsly brand bible / campaign calendar).** Gameplay production:
+> [`CONTENT-PIPELINE-CANONICAL.md`](./CONTENT-PIPELINE-CANONICAL.md).
+> Do not treat this file as the Mauro pipeline.
+
 ## Relationship to Content Studio (`lib/content-studio`)
 
 This is **not** a replacement for or fork of `lib/content-studio` —
