@@ -46,10 +46,27 @@ function Receive-Json($socket) {
 
 $password = $env:OBS_WEBSOCKET_PASSWORD
 if ([string]::IsNullOrEmpty($password)) {
-  $obsConfigPath = Join-Path $env:APPDATA 'obs-studio\plugin_config\obs-websocket\config.json'
-  if (Test-Path -LiteralPath $obsConfigPath) {
-    $obsConfig = Get-Content -LiteralPath $obsConfigPath -Raw | ConvertFrom-Json
-    $password = [string]$obsConfig.server_password
+  $configPaths = @(
+    (Join-Path $env:APPDATA 'obs-studio\plugin_config\obs-websocket\config.json')
+  )
+  $obsProcess = Get-CimInstance Win32_Process -Filter "Name = 'obs64.exe'" | Select-Object -First 1
+  if ($obsProcess) {
+    $owner = Invoke-CimMethod -InputObject $obsProcess -MethodName GetOwner
+    if ($owner.User) {
+      $profile = Get-CimInstance Win32_UserProfile |
+        Where-Object { $_.LocalPath -like "*\$($owner.User)" } |
+        Select-Object -First 1
+      if ($profile) {
+        $configPaths += Join-Path $profile.LocalPath 'AppData\Roaming\obs-studio\plugin_config\obs-websocket\config.json'
+      }
+    }
+  }
+  foreach ($obsConfigPath in $configPaths | Select-Object -Unique) {
+    if (Test-Path -LiteralPath $obsConfigPath) {
+      $obsConfig = Get-Content -LiteralPath $obsConfigPath -Raw | ConvertFrom-Json
+      $password = [string]$obsConfig.server_password
+      if (-not [string]::IsNullOrEmpty($password)) { break }
+    }
   }
 }
 if ([string]::IsNullOrEmpty($password)) {
