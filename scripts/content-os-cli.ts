@@ -16,6 +16,7 @@ import {
   transcribeProject,
   discoverProjectClips,
   ingestOwnedVideo,
+  ingestPrecutHighlight,
   copyEvidenceBundle,
 } from '../lib/content-studio/src/content-engine/pipeline.ts';
 import { getContentArtifactsRoot, getContentProjectArtifactsRoot } from '../lib/content-studio/src/content-engine/paths.ts';
@@ -60,6 +61,13 @@ async function main(): Promise<void> {
   if (cmd === 'ingest') {
     if (!file) throw new Error('--file is required');
     const envelope = await ingestOwnedVideo({ tenantId: tenant, filePath: path.resolve(file) });
+    console.log(envelope.project.id);
+    return;
+  }
+
+  if (cmd === 'ingest-highlight') {
+    if (!file) throw new Error('--file is required');
+    const envelope = await ingestPrecutHighlight({ tenantId: tenant, filePath: path.resolve(file) });
     console.log(envelope.project.id);
     return;
   }
@@ -201,7 +209,7 @@ async function main(): Promise<void> {
     return;
   }
 
-  console.log(`commands: create ingest transcribe discover-clips clips validate rights-check metadata approve list trend render-plan thumbnail slice render original commentary demo`);
+  console.log(`commands: create ingest ingest-highlight transcribe discover-clips clips validate rights-check metadata approve list trend render-plan thumbnail slice render original commentary demo`);
 }
 
 main().catch((error: unknown) => {
