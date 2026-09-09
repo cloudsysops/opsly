@@ -39,7 +39,7 @@ if [[ -d "${SEED_DIR}" ]]; then
   done
 fi
 
-next="$(./scripts/next-prompt-in-queue.sh || true)"
+next="$(bash scripts/next-prompt-in-queue.sh || true)"
 if ! grep -q 'Siguiente pendiente:' <<<"${next}"; then
   log "no pending prompt in .cursor/prompts/queue/"
   exit 0
