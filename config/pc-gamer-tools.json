@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "worker": "pc-gamer",
+  "policy": {
+    "localOnly": true,
+    "humanApprovalRequiredForPublish": true,
+    "autoPublish": false,
+    "customerDataAllowed": false,
+    "streamingAllowed": false
+  },
+  "tools": {
+    "obs": {
+      "transport": "obs-websocket-5",
+      "endpoint": "ws://127.0.0.1:4455",
+      "command": "scripts/opsly-live-obs.sh",
+      "allowedActions": [
+        "get_version",
+        "get_stream_status",
+        "get_stats",
+        "get_record_status",
+        "start_record",
+        "stop_record",
+        "pause_record",
+        "resume_record",
+        "save_replay_buffer",
+        "set_current_program_scene",
+        "get_current_program_scene",
+        "get_scene_list"
+      ],
+      "blockedActions": [
+        "start_stream",
+        "stop_stream",
+        "set_stream_service_settings"
+      ],
+      "secretSource": "OBS_WEBSOCKET_PASSWORD_FILE"
+    },
+    "content_pipeline": {
+      "command": "node scripts/content-os-cli.ts",
+      "capabilities": [
+        "ingest",
+        "prepare-highlight",
+        "validate",
+        "render-plan",
+        "rights-check",
+        "human-review-queue"
+      ],
+      "publishing": "approval-required"
+    },
+    "vendor_research": {
+      "command": "opsly-content-vendor",
+      "networkFetch": false,
+      "researchOnly": true,
+      "publishing": "disabled"
+    }
+  }
+}

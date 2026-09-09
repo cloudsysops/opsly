@@ -53,6 +53,7 @@
     "agents:hooks:bootstrap:external": "bash scripts/agent-hooks.sh bootstrap --mode external",
     "agents:hooks:post-commit": "bash scripts/agent-hooks.sh post-commit",
     "opsly:ensure-ollama": "bash scripts/ensure-ollama-local.sh",
+    "opsly:live:obs": "bash scripts/opsly-live-obs.sh",
     "opsly:vps-ssh:ensure-key": "bash scripts/vps-ssh-ensure-key.sh",
     "opsly:vps-ssh:verify": "bash scripts/vps-ssh-verify.sh",
     "opsly:vps-ssh:bootstrap": "bash scripts/vps-ssh-bootstrap-from-admin.sh",
