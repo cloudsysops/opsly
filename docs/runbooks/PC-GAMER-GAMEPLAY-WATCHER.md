@@ -76,3 +76,26 @@ command. The watcher does not send WhatsApp, upload, or publish anything.
 The watcher is intentionally lightweight while Mauro plays. If processing
 causes contention, pause the service or defer the heavy ingest job according
 to `config/pc-gamer-schedule.json`; do not bypass the GPU gate.
+
+## Disk retention
+
+The PC-gamer retention timer is intentionally narrow:
+
+- It runs in dry-run mode unless `--apply` is explicitly supplied.
+- The installed timer removes only artifacts for projects marked `archived`
+  and older than 30 days, and only when Windows `C:` has less than 150 GB
+  free.
+- It never removes NVIDIA originals, tenant assets, `human_review` projects,
+  approved projects, or production data.
+- NVIDIA source deletion requires a separate, explicit retention decision;
+  the automatic job does not delete the source master.
+
+Install the local timer after verifying the unit files:
+
+```bash
+mkdir -p ~/.config/systemd/user
+cp infra/systemd/opsly-pc-gamer-content-retention.service ~/.config/systemd/user/
+cp infra/systemd/opsly-pc-gamer-content-retention.timer ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now opsly-pc-gamer-content-retention.timer
+```
