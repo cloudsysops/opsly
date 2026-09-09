@@ -135,7 +135,7 @@ export function composeUniverseForProject(envelope: ContentProjectEnvelope): Uni
     envelope.project.learningGoal ?? envelope.project.question ?? envelope.project.title;
   const characterIds = featuredCharacterIdsForChannel(channel);
   const context = universe.getContext({
-    characters: characterIds,
+    characters: characterIds.length > 0 ? characterIds : undefined,
     topic,
     audience: audienceForProject(envelope.project.audience),
     tenant,
