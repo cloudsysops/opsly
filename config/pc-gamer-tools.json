@@ -25,6 +25,14 @@
         "installPath": "C:/ProgramData/obs-studio/plugins/advanced-scene-switcher",
         "source": "https://github.com/WarmUpTill/SceneSwitcher/releases/tag/1.36.1",
         "sha256": "7119dff4c4cb7b5e0a7cf8e9549cee2d157a0621f4797f4ce3caa1f7cb66b286"
+      },
+      {
+        "id": "obs-shaderfilter",
+        "version": "2.6.0",
+        "purpose": "optional visual effects and shader filters for edited clips",
+        "installPath": "C:/ProgramData/obs-studio/plugins/obs-shaderfilter",
+        "source": "https://github.com/exeldro/obs-shaderfilter/releases/tag/2.6.0",
+        "sha256": "0e75fc5f2523befd9c66c0adb14f9c838cc0cd705b32487e121abb03ad2f2486"
       }
     ],
     "obs": {
