@@ -45,6 +45,10 @@ function Receive-Json($socket) {
 }
 
 $password = $env:OBS_WEBSOCKET_PASSWORD
+if ([string]::IsNullOrEmpty($password)) {
+  $line = & wsl.exe -d Ubuntu -- bash -lc "grep '^OBS_WEBSOCKET_PASSWORD=' /home/devops/.config/opsly/obs-websocket.env" 2>$null
+  if ($line) { $password = ([string]$line -replace '^OBS_WEBSOCKET_PASSWORD=', '').Trim() }
+}
 if ([string]::IsNullOrEmpty($password)) { throw 'OBS_WEBSOCKET_PASSWORD is not set' }
 $socket = [Net.WebSockets.ClientWebSocket]::new()
 try {
