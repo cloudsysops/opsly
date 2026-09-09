@@ -54,7 +54,7 @@ if ([string]::IsNullOrEmpty($password)) {
     $owner = Invoke-CimMethod -InputObject $obsProcess -MethodName GetOwner
     if ($owner.User) {
       $profile = Get-CimInstance Win32_UserProfile |
-        Where-Object { $_.LocalPath -like "*\$($owner.User)" } |
+        Where-Object { (Split-Path $_.LocalPath -Leaf) -eq $owner.User } |
         Select-Object -First 1
       if ($profile) {
         $configPaths += Join-Path $profile.LocalPath 'AppData\Roaming\obs-studio\plugin_config\obs-websocket\config.json'
