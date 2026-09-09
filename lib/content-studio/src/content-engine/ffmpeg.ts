@@ -16,6 +16,22 @@ export type FfmpegOp =
   | 'titleCard'
   | 'overlayCharacter';
 
+export interface SilenceInterval {
+  start: number;
+  end: number;
+}
+
+export function parseSilenceDetectOutput(stderr: string): SilenceInterval[] {
+  const starts = [...stderr.matchAll(/silence_start:\s*(-?[\d.]+)/g)].map((m) => Number(m[1]));
+  const ends = [...stderr.matchAll(/silence_end:\s*(-?[\d.]+)/g)].map((m) => Number(m[1]));
+  const count = Math.min(starts.length, ends.length);
+  const intervals: SilenceInterval[] = [];
+  for (let i = 0; i < count; i += 1) {
+    intervals.push({ start: starts[i], end: ends[i] });
+  }
+  return intervals;
+}
+
 function assertSafePath(filePath: string): string {
   const resolved = path.resolve(filePath);
   if (resolved.includes('\0')) {
@@ -38,6 +54,24 @@ function runFfmpeg(args: string[]): Promise<void> {
         return;
       }
       reject(new Error(`ffmpeg failed (${code}): ${stderr.slice(-800)}`));
+    });
+  });
+}
+
+export function detectSilence(input: string, noiseDb = -30, minDurationSec = 0.5): Promise<SilenceInterval[]> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(
+      'ffmpeg',
+      ['-i', assertSafePath(input), '-af', `silencedetect=noise=${noiseDb}dB:d=${minDurationSec}`, '-f', 'null', '-'],
+      { stdio: ['ignore', 'ignore', 'pipe'] }
+    );
+    let stderr = '';
+    child.stderr.on('data', (chunk: Buffer) => {
+      stderr += chunk.toString();
+    });
+    child.on('error', reject);
+    child.on('close', () => {
+      resolve(parseSilenceDetectOutput(stderr));
     });
   });
 }
