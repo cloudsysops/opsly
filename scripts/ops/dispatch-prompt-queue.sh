@@ -49,6 +49,13 @@ fi
 prompt_file="$(awk '/^Siguiente pendiente:/{getline; print; exit}' <<<"${next}")"
 log "pending: ${prompt_file}"
 
+if [[ "$(basename "${prompt_file}")" == "010-night-merge-wave2-rebase.md" ]]; then
+  if gh pr view 1154 --repo cloudsysops/opsly --json state --jq '.state' 2>/dev/null | grep -qx OPEN; then
+    log "wave2 skipped — #1154 still OPEN"
+    exit 0
+  fi
+fi
+
 if [[ "${DRY_RUN}" == "1" ]]; then
   log "DRY_RUN would start OpenCode, open Terminal, run local-prompt-watcher:once"
   exit 0
