@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ingestOwnedVideo, discoverProjectClipsFromAudio } from '../pipeline.js';
+import { ingestOwnedVideo, discoverProjectClipsFromAudio, ingestPrecutHighlight } from '../pipeline.js';
 import { loadContentChannelPreset } from '../presets.js';
 import { featuredCharacterIdsForChannel } from '../universe-bridge.js';
 import { ffmpegAvailable, generateOwnedFixture } from '../ffmpeg.js';
@@ -117,6 +117,54 @@ describe.skipIf(!ffmpegAvailable())('discoverProjectClipsFromAudio', () => {
     expect(envelope.transcript).toBeUndefined();
     envelope = await discoverProjectClipsFromAudio(envelope, baseDir);
     expect(envelope.clipCandidates?.length).toBeGreaterThan(0);
+    expect(envelope.project.status).toBe('edit');
+  });
+});
+
+describe.skipIf(!ffmpegAvailable())('ingestPrecutHighlight', () => {
+  it('sets a single full-duration high-confidence clip candidate, no discovery step', async () => {
+    const baseDir = mkdtempSync(path.join(os.tmpdir(), 'nvidia-highlight-'));
+    mkdirSync(path.join(baseDir, 'config', 'content-channels'), { recursive: true });
+    writeFileSync(
+      path.join(baseDir, 'config', 'content-channels', 'icso-gaming-tbd.json'),
+      JSON.stringify({
+        channel: 'icso-gaming-tbd',
+        name: 'ICSO Gaming (TBD)',
+        resolution: { width: 1080, height: 1920 },
+        aspectRatio: '9:16',
+        fps: 30,
+        defaultDurationMs: 30000,
+        font: 'Inter',
+        subtitleStyle: {
+          fontSize: 64,
+          primaryColor: '#F8FAFC',
+          outlineColor: '#0A0A0A',
+          outlineWidth: 6,
+          shadowColor: '#0A0A0A',
+          shadowOffset: 3,
+          alignment: 2,
+          marginV: 180,
+        },
+        safeArea: { top: 120, right: 90, bottom: 260, left: 90 },
+        transitionStyle: 'fast-cut',
+        musicLevel: -18,
+        voiceLevel: -3,
+        brandColors: ['#7C3AED', '#1E1B4B', '#0A0A0A'],
+        logo: null,
+        intro: 'TBD — placeholder, brand not decided',
+        outro: 'TBD — placeholder, brand not decided',
+        ctaStyle: 'TBD',
+        sceneDurationLimits: { minMs: 1000, maxMs: 4000 },
+        motionDefaults: ['zoom-in', 'static'],
+        tone: 'TBD — youth/adult gaming, not kids-safe by default; placeholder pending brand decision',
+      })
+    );
+    const fixture = path.join(baseDir, 'highlight.mp4');
+    await generateOwnedFixture(fixture, 8);
+    const envelope = await ingestPrecutHighlight({ tenantId: 'icso-gaming-tbd', filePath: fixture, baseDir });
+    expect(envelope.clipCandidates).toHaveLength(1);
+    expect(envelope.clipCandidates?.[0]).toMatchObject({ start: 0, category: 'nvidia_highlight', score: 100 });
+    expect(envelope.clipCandidates?.[0].end).toBeGreaterThan(7);
     expect(envelope.project.status).toBe('edit');
   });
 });

@@ -152,6 +152,39 @@ export async function discoverProjectClipsFromAudio(
   return next;
 }
 
+export async function ingestPrecutHighlight(options: {
+  tenantId: string;
+  filePath: string;
+  baseDir?: string;
+}): Promise<ContentProjectEnvelope> {
+  const baseDir = options.baseDir ?? process.cwd();
+  let envelope = await ingestOwnedVideo({
+    tenantId: options.tenantId,
+    filePath: options.filePath,
+    mode: 'original',
+    baseDir,
+  });
+  const probe = await probeMedia(options.filePath);
+  const clipCandidate: ClipCandidate = {
+    id: 'nvidia-highlight-001',
+    start: 0,
+    end: probe.duration,
+    duration: Number(probe.duration.toFixed(2)),
+    transcript: '',
+    hook: 'NVIDIA highlight',
+    category: 'nvidia_highlight',
+    score: 100,
+    reasons: ['nvidia_auto_highlight'],
+  };
+  envelope = {
+    ...envelope,
+    clipCandidates: [clipCandidate],
+    project: { ...envelope.project, status: 'edit', updatedAt: new Date().toISOString() },
+  };
+  await saveProjectEnvelope(envelope, baseDir);
+  return envelope;
+}
+
 async function renderOneClip(
   envelope: ContentProjectEnvelope,
   clip: ClipCandidate,
