@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createProjectEnvelope, saveProjectEnvelope, writeAssetFromSource, addProjectRenderJob, setProjectApproval, setProjectMetadata } from './storage.js';
 import { discoverClips } from './clip-discovery.js';
+import { discoverClipsFromAudioPeaks } from './audio-peak-discovery.js';
 import { evaluateRightsGate, scoreOriginalContribution } from './rights.js';
 import { transcribeMedia, ownedFixtureTranscript, writeSidecarTranscript } from './transcribe.js';
 import {
@@ -120,6 +121,28 @@ export async function discoverProjectClips(
     throw new Error('Transcript required before clip discovery');
   }
   const clipCandidates = discoverClips(envelope.transcript, { limit: 5 });
+  const next = {
+    ...envelope,
+    clipCandidates,
+    project: { ...envelope.project, status: 'edit' as const, updatedAt: new Date().toISOString() },
+  };
+  await saveProjectEnvelope(next, baseDir);
+  return next;
+}
+
+export async function discoverProjectClipsFromAudio(
+  envelope: ContentProjectEnvelope,
+  baseDir = process.cwd()
+): Promise<ContentProjectEnvelope> {
+  const sourceAsset = envelope.assets[0];
+  if (!sourceAsset) {
+    throw new Error('No source asset for audio-peak discovery');
+  }
+  const audioPath = path.join(
+    getContentTenantAssetsRoot(envelope.project.tenantId, baseDir),
+    `${sourceAsset.id}.wav`
+  );
+  const clipCandidates = await discoverClipsFromAudioPeaks(audioPath, { limit: 5 });
   const next = {
     ...envelope,
     clipCandidates,
