@@ -47,8 +47,12 @@ const VIDEO_EXTENSIONS = new Set(['.mp4', '.mov', '.mkv', '.webm']);
 const STABLE_CHECK_DELAY_MS = 5000;
 
 function runCli(cmd, args) {
+  const command =
+    cmd === 'prepare-highlight'
+      ? ['python3', 'scripts/ops/pc-gamer-clip-agent.py', ...args]
+      : ['npx', 'tsx', 'scripts/content-os-cli.ts', cmd, ...args];
   return new Promise((resolve, reject) => {
-    const child = spawn('npx', ['tsx', 'scripts/content-os-cli.ts', cmd, ...args], { stdio: 'inherit' });
+    const child = spawn(command[0], command.slice(1), { stdio: 'inherit' });
     child.on('error', reject);
     child.on('close', (code) => (code === 0 ? resolve() : reject(new Error(`${cmd} exited ${code}`))));
   });

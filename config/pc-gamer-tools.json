@@ -96,6 +96,16 @@
       ],
       "publishing": "approval-required"
     },
+    "pythonAgents": {
+      "clipAgent": {
+        "command": "python3 scripts/ops/pc-gamer-clip-agent.py",
+        "role": "local orchestration for gameplay highlight preparation",
+        "delegatesTo": "scripts/content-os-cli.ts prepare-highlight",
+        "publishing": "disabled",
+        "approvalRequired": true,
+        "network": "disabled-by-default"
+      }
+    },
     "vendor_research": {
       "command": "opsly-content-vendor",
       "networkFetch": false,
