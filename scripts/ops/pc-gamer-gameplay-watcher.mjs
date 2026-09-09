@@ -31,6 +31,9 @@ export function pickCommand(filePath, folders) {
   if (isInside(filePath, folders.highlightsDir)) {
     return { cmd: 'prepare-highlight', args: ['--tenant', 'icso-gaming-tbd', '--file', filePath] };
   }
+  if (folders.obsRecordingsDir && isInside(filePath, folders.obsRecordingsDir)) {
+    return { cmd: 'prepare-highlight', args: ['--tenant', 'icso-gaming-tbd', '--file', filePath] };
+  }
   if (isInside(filePath, folders.instantReplayDir)) {
     return {
       cmd: 'ingest',
@@ -53,10 +56,12 @@ function runCli(cmd, args) {
 
 async function pollOnce(config) {
   const seen = new Set(loadDedupState(config.statePath));
-  const candidates = [
-    ...readdirSync(config.instantReplayDir).map((name) => path.join(config.instantReplayDir, name)),
-    ...readdirSync(config.highlightsDir).map((name) => path.join(config.highlightsDir, name)),
-  ].filter((filePath) => VIDEO_EXTENSIONS.has(path.extname(filePath).toLowerCase()) && !seen.has(filePath));
+  const sourceDirs = [config.instantReplayDir, config.highlightsDir, config.obsRecordingsDir].filter(
+    (directory) => directory && existsSync(directory),
+  );
+  const candidates = sourceDirs
+    .flatMap((directory) => readdirSync(directory).map((name) => path.join(directory, name)))
+    .filter((filePath) => VIDEO_EXTENSIONS.has(path.extname(filePath).toLowerCase()) && !seen.has(filePath));
 
   for (const filePath of candidates) {
     const before = statSync(filePath);
@@ -79,6 +84,7 @@ async function main() {
   const config = {
     instantReplayDir: process.env.NVIDIA_INSTANT_REPLAY_DIR,
     highlightsDir: process.env.NVIDIA_HIGHLIGHTS_DIR,
+    obsRecordingsDir: process.env.OBS_RECORDINGS_DIR,
     statePath: process.env.WATCHER_STATE_PATH ?? path.join(process.cwd(), '.pc-gamer-watcher-state.json'),
   };
   if (!config.instantReplayDir || !config.highlightsDir) {

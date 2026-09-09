@@ -44,4 +44,17 @@ describe('PC-gamer gameplay watcher', () => {
       args: ['--tenant', 'icso-gaming-tbd', '--file', '/videos/highlights/clip-07.mp4'],
     });
   });
+
+  it('routes OBS recordings to automatic draft preparation', () => {
+    expect(
+      pickCommand('/videos/obs/valorant-clip.mp4', {
+        instantReplayDir: '/videos/instant-replay',
+        highlightsDir: '/videos/highlights',
+        obsRecordingsDir: '/videos/obs',
+      }),
+    ).toEqual({
+      cmd: 'prepare-highlight',
+      args: ['--tenant', 'icso-gaming-tbd', '--file', '/videos/obs/valorant-clip.mp4'],
+    });
+  });
 });

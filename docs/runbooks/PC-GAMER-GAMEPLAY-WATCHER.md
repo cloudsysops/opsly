@@ -20,6 +20,8 @@ publishes automatically.
   They use audio-peak discovery and remain subject to rights and human review.
 - `NVIDIA_HIGHLIGHTS_DIR`: NVIDIA auto-highlight files. They use the pre-cut
   ingest path and still require review.
+- `OBS_RECORDINGS_DIR`: optional OBS recordings/replays. They use the pre-cut
+  ingest path and remain subject to review.
 - `WATCHER_STATE_PATH`: local deduplication state; keep it outside git.
 
 The final channel name, logo, CTA, and audience branding remain TBD. Do not
@@ -49,6 +51,7 @@ Description=Opsly PC-gamer gameplay watcher
 WorkingDirectory=%h/opsly
 Environment="NVIDIA_INSTANT_REPLAY_DIR=/mnt/c/Users/REPLACE_ME/Videos/InstantReplay"
 Environment="NVIDIA_HIGHLIGHTS_DIR=/mnt/c/Users/REPLACE_ME/Videos/Highlights"
+Environment="OBS_RECORDINGS_DIR=/mnt/c/Users/REPLACE_ME/Videos/NVIDIA/OBS"
 Environment=WATCHER_STATE_PATH=%h/.local/state/opsly/gameplay-watcher.json
 ExecStart=/usr/bin/node scripts/ops/pc-gamer-gameplay-watcher.mjs
 Restart=on-failure
