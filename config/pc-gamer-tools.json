@@ -9,6 +9,24 @@
     "streamingAllowed": false
   },
   "tools": {
+    "obsPlugins": [
+      {
+        "id": "aitum-vertical",
+        "version": "1.6.4",
+        "purpose": "vertical canvas for Shorts/Reels/TikTok",
+        "installPath": "C:/ProgramData/obs-studio/plugins/vertical-canvas",
+        "source": "https://github.com/Aitum/obs-vertical-canvas/releases/tag/1.6.4",
+        "sha256": "91a7edb5ce9c39f70135964b2084c77b7cc4bf43608e3a4fb7e44345ff54f4f7"
+      },
+      {
+        "id": "advanced-scene-switcher",
+        "version": "1.36.1",
+        "purpose": "safe scene automation and event-driven capture workflows",
+        "installPath": "C:/ProgramData/obs-studio/plugins/advanced-scene-switcher",
+        "source": "https://github.com/WarmUpTill/SceneSwitcher/releases/tag/1.36.1",
+        "sha256": "7119dff4c4cb7b5e0a7cf8e9549cee2d157a0621f4797f4ce3caa1f7cb66b286"
+      }
+    ],
     "obs": {
       "transport": "obs-websocket-5",
       "endpoint": "ws://127.0.0.1:4455",
