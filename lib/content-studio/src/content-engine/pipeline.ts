@@ -25,6 +25,7 @@ import type {
   ContentProjectCreateInput,
   ContentProjectEnvelope,
   ContentProvenance,
+  ContentScene,
 } from './types.js';
 
 function ownedProvenance(tenantId: string): ContentProvenance {
@@ -38,6 +39,32 @@ function ownedProvenance(tenantId: string): ContentProvenance {
     attributionRequired: false,
     permissionEvidence: 'tenant-owned-fixture-or-upload',
   };
+}
+
+/**
+ * Keep the storyboard in sync with the clips that are actually rendered.
+ * Repurpose projects use the source asset as the scene reference; FFmpeg still
+ * performs the temporal extraction and vertical reframe during rendering.
+ */
+export function scenesFromClipCandidates(
+  project: ContentProjectEnvelope,
+  clips: ClipCandidate[],
+): ContentScene[] {
+  const sourceAsset = project.assets[0];
+  if (!sourceAsset) return [];
+
+  return clips.map((clip, index) => ({
+    id: `scene-${index + 1}`,
+    projectId: project.project.id,
+    order: index + 1,
+    durationMs: Math.max(1, Math.round(clip.duration * 1000)),
+    visualType: 'source_clip',
+    assetRefs: [sourceAsset.id],
+    caption: clip.hook.trim() || `${clip.category} highlight`,
+    transition: 'cut',
+    motion: 'static',
+    editorialBeat: 'WOW',
+  }));
 }
 
 export async function ingestOwnedVideo(options: {
@@ -252,7 +279,10 @@ export async function renderTopClips(
     outputPath: outputs[0],
     logs: outputs,
   };
-  let next = addProjectRenderJob(envelope, job);
+  let next = addProjectRenderJob({
+    ...envelope,
+    scenes: scenesFromClipCandidates(envelope, selected),
+  }, job);
   next = setProjectMetadata(next, buildContentMetadata(next));
   next = {
     ...next,
