@@ -11,9 +11,12 @@ import {
   loadProjectEnvelopeByTenant,
   saveProjectEnvelope,
   setProjectApproval,
-  enqueueApprovedPublishJob,
+  enqueueApprovedPublishJobs,
+  buildDistributionPackages,
+  writeDistributionManifest,
   type ContentProjectEnvelope,
   type ContentProjectStatus,
+  type PublishingPlatform,
 } from '@intcloudsysops/content-studio/studio';
 
 export const CREATOR_TABS = [
@@ -72,7 +75,8 @@ export async function loadCreatorStudioData(): Promise<{
 export async function approveCreatorProject(
   tenantId: string,
   projectId: string,
-  reviewer: string
+  reviewer: string,
+  platforms: PublishingPlatform[] = ['youtube']
 ): Promise<void> {
   const envelope = await loadProjectEnvelopeByTenant(tenantId, projectId);
   assertSameTenant(envelope, tenantId);
@@ -84,9 +88,14 @@ export async function approveCreatorProject(
     state: 'approved',
     approvedBy: reviewer,
     approvedAt: new Date().toISOString(),
-    reviewNotes: `Moon human approval. Rights ${rights.verdict}`,
+    reviewNotes: `Moon human approval. Rights ${rights.verdict}. Platforms ${platforms.join(',')}`,
   });
-  const next = enqueueApprovedPublishJob(approved);
+  const packaged = {
+    ...approved,
+    distributionPackages: buildDistributionPackages(approved),
+  };
+  writeDistributionManifest(packaged, packaged.distributionPackages ?? []);
+  const next = enqueueApprovedPublishJobs(packaged, platforms.length ? platforms : ['youtube']);
   await saveProjectEnvelope(next);
 }
 

@@ -272,6 +272,17 @@ export default async function MoonCreatorPage({
                   </div>
                   <MoonStatusBadge tone="warning">{item.project.status}</MoonStatusBadge>
                 </div>
+                {item.aiReview ? (
+                  <p className="font-mono text-[11px] text-slate-400">
+                    AI {item.aiReview.decision ?? item.aiReview.state} · score {item.aiReview.score?.total ?? '—'} · r
+                    {item.aiReview.round}/{item.aiReview.maxRounds} · {item.aiReview.currentVersionId ?? 'v?'}
+                  </p>
+                ) : null}
+                {(item.aiReview?.findings ?? []).slice(0, 3).map((finding) => (
+                  <p key={finding.finding_id} className="font-mono text-[11px] text-amber-200/80">
+                    {finding.severity} {finding.finding_id} {finding.timecode_start}s–{finding.timecode_end}s · {finding.issue}
+                  </p>
+                ))}
                 {(item.clipCandidates ?? []).length > 0 ? (
                   <ul className="space-y-1 font-mono text-[11px] text-slate-400">
                     {(item.clipCandidates ?? []).slice(0, 5).map((clip) => (
@@ -283,14 +294,22 @@ export default async function MoonCreatorPage({
                   </ul>
                 ) : null}
                 <div className="flex flex-wrap gap-2">
-                  <form action={approveCreatorProjectAction}>
+                  <form action={approveCreatorProjectAction} className="space-y-2">
                     <input type="hidden" name="tenantId" value={item.project.tenantId} />
                     <input type="hidden" name="projectId" value={item.project.id} />
+                    <div className="flex flex-wrap gap-2 text-[11px] text-slate-300">
+                      {['youtube', 'tiktok', 'instagram', 'facebook', 'x'].map((platform) => (
+                        <label key={platform} className="inline-flex items-center gap-1">
+                          <input type="checkbox" name={`platform_${platform}`} defaultChecked={platform === 'youtube'} />
+                          {platform}
+                        </label>
+                      ))}
+                    </div>
                     <button
                       type="submit"
                       className="rounded-lg border border-emerald-400/40 px-3 py-1.5 text-xs text-emerald-100"
                     >
-                      Approve
+                      Approve &amp; Schedule
                     </button>
                   </form>
                   <form action={rejectCreatorProjectAction}>

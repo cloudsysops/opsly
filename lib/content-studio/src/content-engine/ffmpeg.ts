@@ -140,6 +140,214 @@ export async function probeMedia(filePath: string): Promise<{ duration: number; 
   return runFfprobe(filePath);
 }
 
+export interface MediaProbe {
+  duration: number;
+  width: number;
+  height: number;
+  videoCodec: string;
+  audioCodec: string | null;
+  hasAudio: boolean;
+  aspect: string;
+}
+
+export async function probeMediaDetailed(filePath: string): Promise<MediaProbe> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(
+      'ffprobe',
+      ['-v', 'error', '-print_format', 'json', '-show_format', '-show_streams', assertSafePath(filePath)],
+      { stdio: ['ignore', 'pipe', 'pipe'] }
+    );
+    let stdout = '';
+    let stderr = '';
+    child.stdout.on('data', (chunk: Buffer) => {
+      stdout += chunk.toString();
+    });
+    child.stderr.on('data', (chunk: Buffer) => {
+      stderr += chunk.toString();
+    });
+    child.on('error', reject);
+    child.on('close', (code) => {
+      if (code !== 0) {
+        reject(new Error(`ffprobe failed: ${stderr.slice(-400)}`));
+        return;
+      }
+      const parsed = JSON.parse(stdout) as {
+        format?: { duration?: string };
+        streams?: Array<{
+          width?: number;
+          height?: number;
+          codec_type?: string;
+          codec_name?: string;
+        }>;
+      };
+      const video = parsed.streams?.find((stream) => stream.codec_type === 'video');
+      const audio = parsed.streams?.find((stream) => stream.codec_type === 'audio');
+      const width = video?.width ?? 0;
+      const height = video?.height ?? 0;
+      resolve({
+        duration: Number(parsed.format?.duration ?? 0),
+        width,
+        height,
+        videoCodec: video?.codec_name ?? 'unknown',
+        audioCodec: audio?.codec_name ?? null,
+        hasAudio: Boolean(audio),
+        aspect: width > 0 && height > 0 ? `${width}:${height}` : 'unknown',
+      });
+    });
+  });
+}
+
+function parseDetectIntervals(stderr: string, startKey: string, endKey: string): SilenceInterval[] {
+  const starts = [...stderr.matchAll(new RegExp(`${startKey}:\\s*(-?[\\d.]+)`, 'g'))].map((m) => Number(m[1]));
+  const ends = [...stderr.matchAll(new RegExp(`${endKey}:\\s*(-?[\\d.]+)`, 'g'))].map((m) => Number(m[1]));
+  const count = Math.min(starts.length, ends.length);
+  const intervals: SilenceInterval[] = [];
+  for (let i = 0; i < count; i += 1) {
+    intervals.push({ start: starts[i], end: ends[i] });
+  }
+  return intervals;
+}
+
+export function detectBlackFrames(input: string, minDurationSec = 0.8): Promise<SilenceInterval[]> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(
+      'ffmpeg',
+      ['-i', assertSafePath(input), '-vf', `blackdetect=d=${minDurationSec}:pix_th=0.10`, '-f', 'null', '-'],
+      { stdio: ['ignore', 'ignore', 'pipe'] }
+    );
+    let stderr = '';
+    child.stderr.on('data', (chunk: Buffer) => {
+      stderr += chunk.toString();
+    });
+    child.on('error', reject);
+    child.on('close', (code) => {
+      if (code !== 0) {
+        reject(new Error(`ffmpeg blackdetect failed (${code}): ${stderr.slice(-400)}`));
+        return;
+      }
+      resolve(parseDetectIntervals(stderr, 'black_start', 'black_end'));
+    });
+  });
+}
+
+export function detectFrozenFrames(input: string, minDurationSec = 1): Promise<SilenceInterval[]> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(
+      'ffmpeg',
+      ['-i', assertSafePath(input), '-vf', `freezedetect=n=-60dB:d=${minDurationSec}`, '-f', 'null', '-'],
+      { stdio: ['ignore', 'ignore', 'pipe'] }
+    );
+    let stderr = '';
+    child.stderr.on('data', (chunk: Buffer) => {
+      stderr += chunk.toString();
+    });
+    child.on('error', reject);
+    child.on('close', (code) => {
+      if (code !== 0) {
+        reject(new Error(`ffmpeg freezedetect failed (${code}): ${stderr.slice(-400)}`));
+        return;
+      }
+      resolve(parseDetectIntervals(stderr, 'freeze_start', 'freeze_end'));
+    });
+  });
+}
+
+export function measureMeanVolume(input: string): Promise<number | null> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(
+      'ffmpeg',
+      ['-i', assertSafePath(input), '-af', 'volumedetect', '-f', 'null', '-'],
+      { stdio: ['ignore', 'ignore', 'pipe'] }
+    );
+    let stderr = '';
+    child.stderr.on('data', (chunk: Buffer) => {
+      stderr += chunk.toString();
+    });
+    child.on('error', reject);
+    child.on('close', (code) => {
+      if (code !== 0) {
+        reject(new Error(`ffmpeg volumedetect failed (${code}): ${stderr.slice(-400)}`));
+        return;
+      }
+      const match = stderr.match(/mean_volume:\s*(-?[\d.]+)\s*dB/);
+      resolve(match ? Number(match[1]) : null);
+    });
+  });
+}
+
+export async function trimMedia(input: string, output: string, startSec: number, durationSec?: number): Promise<void> {
+  fs.mkdirSync(path.dirname(output), { recursive: true });
+  const args = [
+    '-y',
+    '-ss',
+    String(Math.max(0, startSec)),
+    '-i',
+    assertSafePath(input),
+  ];
+  if (durationSec !== undefined) {
+    args.push('-t', String(Math.max(0.5, durationSec)));
+  }
+  args.push('-c:v', 'libx264', '-c:a', 'aac', '-pix_fmt', 'yuv420p', assertSafePath(output));
+  await runFfmpeg(args);
+}
+
+export async function normalizeAudio(input: string, output: string): Promise<void> {
+  fs.mkdirSync(path.dirname(output), { recursive: true });
+  await runFfmpeg([
+    '-y',
+    '-i',
+    assertSafePath(input),
+    '-af',
+    'loudnorm=I=-16:TP=-1.5:LRA=11',
+    '-c:v',
+    'libx264',
+    '-c:a',
+    'aac',
+    '-pix_fmt',
+    'yuv420p',
+    assertSafePath(output),
+  ]);
+}
+
+/** 9:16 short with 2s black+silence then gameplay — forces a real review finding. */
+export async function generateLeadingBlackGameplayFixture(output: string): Promise<void> {
+  fs.mkdirSync(path.dirname(output), { recursive: true });
+  await runFfmpeg([
+    '-y',
+    '-f',
+    'lavfi',
+    '-i',
+    'color=c=black:s=1080x1920:d=2',
+    '-f',
+    'lavfi',
+    '-i',
+    'anullsrc=r=44100:cl=stereo:d=2',
+    '-f',
+    'lavfi',
+    '-i',
+    'color=c=0x1a1a2e:s=1080x1920:d=8',
+    '-f',
+    'lavfi',
+    '-i',
+    'sine=f=440:d=8',
+    '-filter_complex',
+    '[0:v][2:v]concat=n=2:v=1:a=0[v];[1:a][3:a]concat=n=2:v=0:a=1[a]',
+    '-map',
+    '[v]',
+    '-map',
+    '[a]',
+    '-c:v',
+    'libx264',
+    '-c:a',
+    'aac',
+    '-pix_fmt',
+    'yuv420p',
+    '-t',
+    '10',
+    assertSafePath(output),
+  ]);
+}
+
 export function sanitizeDrawtext(text: string): string {
   return text.replace(/[':\\[\]]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 90);
 }
