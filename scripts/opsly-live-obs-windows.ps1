@@ -80,7 +80,7 @@ try {
   $hello = Receive-Json $socket
   $auth = $null
   if ($hello.op -eq 0 -and $hello.d.authentication) {
-    $auth = Hash-Base64 ($hello.d.authentication.salt + $password)
+    $auth = Hash-Base64 ($password + $hello.d.authentication.salt)
     $auth = Hash-Base64 ($auth + $hello.d.authentication.challenge)
   }
   $identify = @{ op = 1; d = @{ rpcVersion = 1 } }
