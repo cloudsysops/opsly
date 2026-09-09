@@ -27,7 +27,7 @@ permissions:
   contents: write
   pull-requests: write
   checks: read
-  actions: read
+  actions: write
 
 concurrency:
   group: night-merge-main
@@ -60,6 +60,7 @@ jobs:
           # Allow bot to merge despite review rules when nightly automation is trusted
           NIGHT_MERGE_ADMIN: "1"
           DEPLOY_WAIT_SECONDS: "1500"
+          DEPLOY_DISPATCH_AFTER_SECONDS: "120"
         run: |
           set -euo pipefail
           chmod +x scripts/ci/night-merge-and-verify.sh

@@ -10,6 +10,7 @@ SMOKE_API_URL="${SMOKE_API_URL:-https://api.${PLATFORM_DOMAIN}/api/health}"
 # Prod Peskids is www.peskids.com — peskids.op-sly.com is a 308, not the live site.
 SMOKE_PESKIDS_URL="${SMOKE_PESKIDS_URL:-https://www.peskids.com/api/health}"
 DEPLOY_WAIT_SECONDS="${DEPLOY_WAIT_SECONDS:-1500}"
+DEPLOY_DISPATCH_AFTER_SECONDS="${DEPLOY_DISPATCH_AFTER_SECONDS:-120}"
 DRY_RUN="${DRY_RUN:-0}"
 FORCE="${NIGHT_MERGE_FORCE:-0}"
 STATE_DIR="${NIGHT_MERGE_STATE_DIR:-/tmp/opsly-night-merge}"
@@ -166,6 +167,8 @@ wait_for_deploy() {
     return 0
   fi
   log "Waiting up to ${DEPLOY_WAIT_SECONDS}s for Deploy headSha=${after_sha:0:7} created>=${since}…"
+  local wait_started=$SECONDS
+  local dispatch_attempted=0
   while ((SECONDS < deadline)); do
     local run
     run="$(
@@ -174,6 +177,22 @@ wait_for_deploy() {
         | select_deploy_run_json "${after_sha}" "${since}"
     )"
     if [[ -z "${run}" || "${run}" == "null" ]]; then
+      if [[ "${dispatch_attempted}" == "0" ]] && (( SECONDS - wait_started >= DEPLOY_DISPATCH_AFTER_SECONDS )); then
+        local current_sha
+        current_sha="$(gh api "repos/${REPO}/commits/main" --jq '.sha')"
+        if [[ "${current_sha}" != "${after_sha}" ]]; then
+          warn "main advanced while Deploy was absent (${current_sha:0:7} != ${after_sha:0:7}); refusing recovery dispatch"
+          return 1
+        fi
+        log "No Deploy run for ${after_sha:0:7}; dispatching Deploy workflow for current main"
+        if gh workflow run Deploy --repo "${REPO}" --ref main -f skip_tests=false; then
+          dispatch_attempted=1
+          notify "🔄 Night merge recovery" "Deploy absent for main@${after_sha:0:7}; dispatched Deploy automatically"
+        else
+          warn "Unable to dispatch Deploy for ${after_sha:0:7}"
+          return 1
+        fi
+      fi
       log "No Deploy run yet for ${after_sha:0:7}; waiting…"
       sleep 20
       continue
