@@ -1,0 +1,83 @@
+# Opsly — workflow catalog: docs/ops/workflows-index.md
+# Daily Tailscale node-key hygiene + GitHub secret age warning.
+# Does not rotate Doppler/GitHub secret values. Does not deploy Peskids.
+name: Key hygiene
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/key-hygiene.yml
+      - config/tailscale-key-hygiene.json
+      - scripts/ops/ensure-tailscale-key-hygiene.sh
+      - scripts/ops/tailscale_key_hygiene.py
+      - scripts/ops/__tests__/test_tailscale_key_hygiene.py
+  schedule:
+    - cron: "15 13 * * *"
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: Disable node-key expiry on Opsly servers
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Planner unit tests
+        run: python3 scripts/ops/__tests__/test_tailscale_key_hygiene.py
+      - name: Shell syntax
+        run: bash -n scripts/ops/ensure-tailscale-key-hygiene.sh
+
+  tailscale:
+    if: github.event_name != 'pull_request'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Doppler CLI
+        run: curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sudo sh
+      - name: Disable expiry on servers
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_PRD }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DOPPLER_TOKEN:-}" ]; then
+            echo "Skipping Tailscale hygiene: secret DOPPLER_TOKEN_PRD is not configured."
+            exit 0
+          fi
+          chmod +x scripts/ops/ensure-tailscale-key-hygiene.sh
+          mode="--apply"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.apply }}" = "false" ]; then
+            mode="--dry-run"
+          fi
+          ./scripts/ops/ensure-tailscale-key-hygiene.sh "${mode}" --notify
+
+  github-secret-age:
+    if: github.event_name != 'pull_request'
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Warn on stale GitHub Actions secrets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if python3 scripts/utils/check-secret-rotation.py \
+            --repo "${GITHUB_REPOSITORY}" \
+            --max-age-days 90 \
+            --warn-age-days 75 \
+            --secrets TAILSCALE_AUTHKEY DOPPLER_TOKEN_PRD DOPPLER_TOKEN_STG; then
+            echo "GitHub secret age: ok"
+            exit 0
+          fi
+          echo "::warning::GitHub secret age warning (human rotation only; values are not changed)."
+          exit 0
