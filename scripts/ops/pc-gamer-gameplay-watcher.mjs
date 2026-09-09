@@ -29,7 +29,7 @@ function isInside(filePath, root) {
 
 export function pickCommand(filePath, folders) {
   if (isInside(filePath, folders.highlightsDir)) {
-    return { cmd: 'ingest-highlight', args: ['--tenant', 'icso-gaming-tbd', '--file', filePath] };
+    return { cmd: 'prepare-highlight', args: ['--tenant', 'icso-gaming-tbd', '--file', filePath] };
   }
   if (isInside(filePath, folders.instantReplayDir)) {
     return {

@@ -212,6 +212,19 @@ export async function ingestPrecutHighlight(options: {
   return envelope;
 }
 
+export async function preparePrecutHighlight(options: {
+  tenantId: string;
+  filePath: string;
+  baseDir?: string;
+}): Promise<ContentProjectEnvelope> {
+  const baseDir = options.baseDir ?? process.cwd();
+  let envelope = await ingestPrecutHighlight({ ...options, baseDir });
+  envelope = await renderTopClips(envelope, baseDir, 1);
+  envelope = await rightsAndQueueApproval(envelope, baseDir);
+  await saveProjectEnvelope(envelope, baseDir);
+  return envelope;
+}
+
 export function runContentQaCheck(envelope: ContentProjectEnvelope): string[] {
   const flags: string[] = [];
   const latestJob = envelope.renderJobs[0];

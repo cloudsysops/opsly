@@ -33,12 +33,15 @@ describe('PC-gamer gameplay watcher', () => {
     });
   });
 
-  it('routes NVIDIA Highlights to the pre-cut path', () => {
+  it('routes NVIDIA Highlights to automatic draft preparation', () => {
     expect(
       pickCommand('/videos/highlights/clip-07.mp4', {
         instantReplayDir: '/videos/instant-replay',
         highlightsDir: '/videos/highlights',
-      }).cmd,
-    ).toBe('ingest-highlight');
+      }),
+    ).toEqual({
+      cmd: 'prepare-highlight',
+      args: ['--tenant', 'icso-gaming-tbd', '--file', '/videos/highlights/clip-07.mp4'],
+    });
   });
 });
