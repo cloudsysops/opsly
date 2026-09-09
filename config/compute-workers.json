@@ -83,11 +83,13 @@
         "image.generate",
         "llm.local",
         "embedding",
-        "ffmpeg"
+        "ffmpeg",
+        "gpu.telemetry",
+        "nvidia.capture"
       ],
       "gpuVendor": "nvidia",
-      "gpuModel": "unknown",
-      "vramGb": 16,
+      "gpuModel": "RTX 5070 Ti",
+      "vramGb": 16.3,
       "ramGb": 32,
       "cpuCores": 8,
       "limits": {

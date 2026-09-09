@@ -9,6 +9,18 @@
     "streamingAllowed": false
   },
   "tools": {
+    "nvidia": {
+      "provider": "nvidia-app",
+      "gpu": "RTX 5070 Ti",
+      "telemetryCommand": "nvidia-smi --query-gpu=name,driver_version,memory.used,memory.total,utilization.gpu,temperature.gpu --format=csv,noheader,nounits",
+      "heartbeat": "scripts/ops/pc-gamer-heartbeat-payload.mjs",
+      "captureDirectories": [
+        "C:/Users/PC MAURO/Videos/NVIDIA/Valorant",
+        "C:/Users/PC MAURO/AppData/Local/NVIDIA Corporation/NVIDIA Overlay/Highlights"
+      ],
+      "publishing": "disabled",
+      "autoDriverUpdate": false
+    },
     "obsPlugins": [
       {
         "id": "aitum-vertical",
