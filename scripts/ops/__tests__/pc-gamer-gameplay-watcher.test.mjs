@@ -28,8 +28,8 @@ describe('PC-gamer gameplay watcher', () => {
       highlightsDir: '/videos/highlights',
     });
     expect(result).toEqual({
-      cmd: 'ingest',
-      args: ['--tenant', 'icso-gaming-tbd', '--mode', 'original', '--file', '/videos/instant-replay/session-01.mp4'],
+      cmd: 'prepare-session',
+      args: ['--tenant', 'icso-gaming-tbd', '--file', '/videos/instant-replay/session-01.mp4'],
     });
   });
 

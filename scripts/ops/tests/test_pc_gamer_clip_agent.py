@@ -33,6 +33,20 @@ class TestPcGamerClipAgent(unittest.TestCase):
             ],
         )
 
+    def test_builds_prepare_session_command(self) -> None:
+        command = agent.build_pipeline_command(
+            Path("/repo"),
+            "gaming",
+            Path("/videos/session.mp4"),
+            "prepare-session",
+        )
+        self.assertEqual(command[3], "prepare-session")
+        self.assertEqual(command[-1], "/videos/session.mp4")
+
+    def test_rejects_unknown_pipeline(self) -> None:
+        with self.assertRaises(ValueError):
+            agent.build_pipeline_command(Path("/repo"), "gaming", Path("/videos/clip.mp4"), "publish")
+
     def test_rejects_non_video_or_empty_input(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             empty = Path(directory) / "empty.mp4"

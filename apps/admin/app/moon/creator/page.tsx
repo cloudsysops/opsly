@@ -11,7 +11,7 @@ import {
   loadCreatorStudioData,
   parseCreatorTab,
 } from '@/lib/moon/creator-data';
-import { approveCreatorProjectAction } from './actions';
+import { approveCreatorProjectAction, rejectCreatorProjectAction } from './actions';
 import type { MoonHealthTone } from '@/lib/moon/tenant-card';
 
 const TAB_LABELS: Record<(typeof CREATOR_TABS)[number], string> = {
@@ -267,20 +267,43 @@ export default async function MoonCreatorPage({
                     <p className="text-sm text-slate-100">{item.project.title}</p>
                     <p className="font-mono text-[11px] text-slate-500">
                       {item.project.tenantId} · {item.rights?.verdict ?? 'pending'}
+                      {item.session?.game ? ` · game ${item.session.game}` : ''}
                     </p>
                   </div>
                   <MoonStatusBadge tone="warning">{item.project.status}</MoonStatusBadge>
                 </div>
-                <form action={approveCreatorProjectAction}>
-                  <input type="hidden" name="tenantId" value={item.project.tenantId} />
-                  <input type="hidden" name="projectId" value={item.project.id} />
-                  <button
-                    type="submit"
-                    className="rounded-lg border border-emerald-400/40 px-3 py-1.5 text-xs text-emerald-100"
-                  >
-                    Approve
-                  </button>
-                </form>
+                {(item.clipCandidates ?? []).length > 0 ? (
+                  <ul className="space-y-1 font-mono text-[11px] text-slate-400">
+                    {(item.clipCandidates ?? []).slice(0, 5).map((clip) => (
+                      <li key={clip.id}>
+                        {clip.id} · {clip.start}s–{clip.end}s · score {clip.score}
+                        {clip.reasons[0] ? ` · ${clip.reasons[0]}` : ''}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                <div className="flex flex-wrap gap-2">
+                  <form action={approveCreatorProjectAction}>
+                    <input type="hidden" name="tenantId" value={item.project.tenantId} />
+                    <input type="hidden" name="projectId" value={item.project.id} />
+                    <button
+                      type="submit"
+                      className="rounded-lg border border-emerald-400/40 px-3 py-1.5 text-xs text-emerald-100"
+                    >
+                      Approve
+                    </button>
+                  </form>
+                  <form action={rejectCreatorProjectAction}>
+                    <input type="hidden" name="tenantId" value={item.project.tenantId} />
+                    <input type="hidden" name="projectId" value={item.project.id} />
+                    <button
+                      type="submit"
+                      className="rounded-lg border border-rose-400/40 px-3 py-1.5 text-xs text-rose-100"
+                    >
+                      Reject
+                    </button>
+                  </form>
+                </div>
               </MoonCard>
             ))}
           </div>
