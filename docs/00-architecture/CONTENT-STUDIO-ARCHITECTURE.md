@@ -255,3 +255,4 @@ POST /api/content/regenerate      # Rerun generators for a draft
 
 - [[00-architecture/README|00-architecture]]
 - [[brain/README|Brain Central]]
+- [[superpowers/specs/2026-09-09-content-vendor-research|Vendor research (fuera del monorepo)]]
