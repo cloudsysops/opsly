@@ -34,6 +34,7 @@ const CHANNEL_FEATURED_FALLBACK: Record<ContentChannel, readonly string[]> = {
   splashitos: ['orion', 'kai', 'wavo'],
   peskids: ['orion', 'kai', 'wavo'],
   'opsly-universe': ['traveler', 'nova', 'echo'],
+  'icso-gaming-tbd': [],
 };
 
 function worldIdToPortal(worldId: string): ContentPortal | null {

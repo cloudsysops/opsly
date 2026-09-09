@@ -88,7 +88,12 @@ export async function createProjectEnvelope(
     renderJobs: [],
     brandKit: brandKitFromPreset(channelPreset),
   };
-  envelope.universeContext = composeUniverseForProject(envelope);
+  try {
+    envelope.universeContext = composeUniverseForProject(envelope);
+  } catch (error) {
+    // Placeholder channels with no featured characters may not be able to compose universe context.
+    // Skip universe context for these channels.
+  }
   return envelope;
 }
 

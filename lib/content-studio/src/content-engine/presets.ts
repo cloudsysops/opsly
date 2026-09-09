@@ -4,7 +4,7 @@ import type { BrandKit, ContentChannel, ContentChannelPreset } from './types.js'
 import { resolveRepoRoot } from './paths.js';
 import { charactersForChannel } from './universe-bridge.js';
 
-const CHANNELS: ContentChannel[] = ['bitsitos', 'splashitos', 'opsly-universe', 'peskids'];
+const CHANNELS: ContentChannel[] = ['bitsitos', 'splashitos', 'opsly-universe', 'peskids', 'icso-gaming-tbd'];
 
 export async function loadContentChannelPreset(
   channel: ContentChannel,

@@ -53,7 +53,8 @@ export async function ingestOwnedVideo(options: {
       options.tenantId === 'peskids' ||
       options.tenantId === 'bitsitos' ||
       options.tenantId === 'splashitos' ||
-      options.tenantId === 'opsly-universe'
+      options.tenantId === 'opsly-universe' ||
+      options.tenantId === 'icso-gaming-tbd'
         ? options.tenantId
         : 'opsly-universe',
     series: 'creator-studio',
