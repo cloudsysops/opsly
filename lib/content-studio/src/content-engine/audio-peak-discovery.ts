@@ -40,7 +40,12 @@ export async function discoverClipsFromAudioPeaks(
   if (!(duration > 0)) {
     throw new Error(`AUDIO_PEAK_DISCOVERY_FAILED: zero-duration media at ${audioPath}`);
   }
-  const silences = await detectSilence(audioPath, options?.noiseDb ?? -30, options?.silenceMinSec ?? 0.5);
+  let silences;
+  try {
+    silences = await detectSilence(audioPath, options?.noiseDb ?? -30, options?.silenceMinSec ?? 0.5);
+  } catch (error) {
+    throw new Error(`AUDIO_PEAK_DISCOVERY_FAILED: silencedetect failed for ${audioPath}: ${(error as Error).message}`);
+  }
   const segments = computeLoudSegments(duration, silences, options);
   if (segments.length === 0) {
     throw new Error(`AUDIO_PEAK_DISCOVERY_EMPTY: no loud segments found in ${audioPath}`);

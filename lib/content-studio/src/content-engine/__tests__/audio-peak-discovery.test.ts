@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { parseSilenceDetectOutput } from '../ffmpeg.js';
+import { parseSilenceDetectOutput, detectSilence } from '../ffmpeg.js';
 import { computeLoudSegments, discoverClipsFromAudioPeaks } from '../audio-peak-discovery.js';
 import { ffmpegAvailable, generateOwnedFixture } from '../ffmpeg.js';
-import { mkdtempSync } from 'node:fs';
+import { mkdtempSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -46,11 +46,27 @@ describe('computeLoudSegments', () => {
   });
 });
 
+describe.skipIf(!ffmpegAvailable())('detectSilence error handling', () => {
+  it('rejects with error when ffmpeg exits non-zero on corrupt file', async () => {
+    const baseDir = mkdtempSync(path.join(os.tmpdir(), 'audio-peaks-'));
+    const corrupt = path.join(baseDir, 'corrupt.mp4');
+    writeFileSync(corrupt, 'This is not a valid media file', 'utf8');
+    await expect(detectSilence(corrupt)).rejects.toThrow(/ffmpeg silencedetect failed/);
+  });
+});
+
 describe.skipIf(!ffmpegAvailable())('discoverClipsFromAudioPeaks', () => {
   it('throws AUDIO_PEAK_DISCOVERY_FAILED for a nonexistent file', async () => {
     await expect(discoverClipsFromAudioPeaks('/nonexistent/path.wav')).rejects.toThrow(
       /AUDIO_PEAK_DISCOVERY_FAILED/
     );
+  });
+
+  it('throws AUDIO_PEAK_DISCOVERY_FAILED when silencedetect fails on corrupt file', async () => {
+    const baseDir = mkdtempSync(path.join(os.tmpdir(), 'audio-peaks-'));
+    const corrupt = path.join(baseDir, 'corrupt.mp4');
+    writeFileSync(corrupt, 'This is not a valid media file', 'utf8');
+    await expect(discoverClipsFromAudioPeaks(corrupt)).rejects.toThrow(/AUDIO_PEAK_DISCOVERY_FAILED/);
   });
 
   it('returns at least one candidate for a generated fixture with sound throughout', async () => {

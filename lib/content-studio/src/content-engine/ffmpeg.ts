@@ -70,7 +70,11 @@ export function detectSilence(input: string, noiseDb = -30, minDurationSec = 0.5
       stderr += chunk.toString();
     });
     child.on('error', reject);
-    child.on('close', () => {
+    child.on('close', (code) => {
+      if (code !== 0) {
+        reject(new Error(`ffmpeg silencedetect failed (${code}): ${stderr.slice(-800)}`));
+        return;
+      }
       resolve(parseSilenceDetectOutput(stderr));
     });
   });
