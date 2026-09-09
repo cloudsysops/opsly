@@ -11,17 +11,19 @@ No worktrees were deleted or reset.
 
 | Worktree / branch | Class | Notes |
 | --- | --- | --- |
-| Mac `docs/mauro-gameplay-pipeline-spec` | **DIRTY** | Spec/skill + untracked Capacitor/ICSO images. Do not implement here. |
-| `/private/tmp/opsly-content-gaming-config` `feat/mauro-gameplay-session-pipeline` | **ACTIVE** | #1158 session MVP. pycache untracked only. |
+| `/private/tmp/opsly-content-canon` `docs/content-pipeline-canonical` | **ACTIVE** | #1159 this unification (docs + registry). Clean. |
+| Mac checkout `docs/mauro-gameplay-pipeline-spec` | **DIRTY** | Capacitor/ICSO images + REFERENCE-IMAGES + transmedia spec. Do not implement here. Do not reset. |
+| `/private/tmp/opsly-content-gaming-config` `feat/mauro-gameplay-session-pipeline` | **ACTIVE** | #1158 session MVP. Only `__pycache__` untracked. |
 | `origin/feat/content-gaming-channel-config` | **ACTIVE** | #1155 intake / watcher / audio-peak. |
-| `/private/tmp/opsly-pc-gamer-stabilize` `fix/pc-gamer-compose-main` | **ACTIVE** | #1157 compose stabilize. |
+| `/private/tmp/opsly-pc-gamer-stabilize` `fix/pc-gamer-compose-main` | **ACTIVE** | #1157 compose stabilize. Clean. |
 | `/private/tmp/opsly-vendor-pointer` `docs/content-vendor-research` | **EXPERIMENTAL** | #1151 vendor pointer; clones stay outside repo. |
-| `intcloudsysops-content-engine` `feat/content-engine-mvp` | **SUPERSEDED** | Scene-compose already on main as `lib/content-engine`. Behind remote. |
-| `.claude/worktrees/mauro-gameplay-pipeline-impl` | **DIRTY** | Old QA-gate SHA + untracked `docs/content-drafts/`. Superceded by #1155 lineage. |
-| `worktrees-tmp/content-pipeline-universe` | **UNKNOWN** | Remote branch gone. Docs-only leftover. |
-| `docs/adr-content-engine-consolidation` | **ACTIVE** | #1131 ADR-058 proposal. |
-| `fix/content-engine-safe-unification` | **EXPERIMENTAL** | #1132 ffmpeg probe delegate. Blocked by ADR-058. |
-| Codex/game/franchise worktrees | **UNRELATED** | Do not mix with content pipeline. |
+| `intcloudsysops-content-engine` `feat/content-engine-mvp` | **SUPERSEDED** | Scene-compose already on `main` as `lib/content-engine`. |
+| `.claude/worktrees/mauro-gameplay-pipeline-impl` | **DIRTY** | Old SHA + untracked `docs/content-drafts/`. Superseded by #1155 lineage. |
+| `worktrees-tmp/content-pipeline-universe` | **UNKNOWN** | Remote branch gone. Docs leftover. Do not delete blindly. |
+| `docs/adr-content-engine-consolidation` | **ACTIVE** | #1131 ADR-058. |
+| `fix/content-engine-safe-unification` | **EXPERIMENTAL** | #1132 ffmpeg probe. Blocked by ADR-058. |
+| Codex / game / franchise / peskids worktrees | **UNRELATED** | Security, night-merge, franchise, game portal. Do not mix. |
 
-Open content PRs to stack, not squash: #1154 (night) → #1157 → #1155 → #1158.
-Docs-only unification: this report + canonical doc + `config/content-capabilities.json`.
+Open content PRs (do not squash): #1154 (night) → #1157 → #1155 → #1158.
+Docs-only unification: #1159 (`CONTENT-PIPELINE-CANONICAL.md` + `config/content-capabilities.json`).
+No worktrees deleted or reset in this loop.
