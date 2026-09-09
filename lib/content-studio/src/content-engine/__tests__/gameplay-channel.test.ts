@@ -168,3 +168,63 @@ describe.skipIf(!ffmpegAvailable())('ingestPrecutHighlight', () => {
     expect(envelope.project.status).toBe('edit');
   });
 });
+
+import { runContentQaCheck } from '../pipeline.js';
+import type { ContentProjectEnvelope } from '../types.js';
+
+function baseEnvelopeForQa(): ContentProjectEnvelope {
+  return {
+    schemaVersion: 2,
+    project: {
+      id: 'qa-demo',
+      tenantId: 'icso-gaming-tbd',
+      channel: 'icso-gaming-tbd',
+      series: 'demo',
+      episode: '1',
+      title: 'QA Demo',
+      slug: 'qa-demo',
+      goal: 'engagement',
+      audience: 'general',
+      format: 'youtube_short',
+      status: 'qa',
+      preset: 'icso-gaming-tbd',
+      mode: 'original',
+      createdAt: '2026-09-08T00:00:00.000Z',
+      updatedAt: '2026-09-08T00:00:00.000Z',
+    },
+    scenes: [],
+    assets: [],
+    renderJobs: [],
+  };
+}
+
+describe('runContentQaCheck', () => {
+  it('flags when there are no render jobs', () => {
+    expect(runContentQaCheck(baseEnvelopeForQa())).toContain('no_render_job');
+  });
+
+  it('flags a failed render job', () => {
+    const envelope = baseEnvelopeForQa();
+    envelope.renderJobs = [
+      { id: 'r1', projectId: envelope.project.id, status: 'failed', logs: [], error: 'boom' },
+    ];
+    expect(runContentQaCheck(envelope)).toContain('render_failed');
+  });
+
+  it('flags when the rights gate is BLOCKED', () => {
+    const envelope = baseEnvelopeForQa();
+    envelope.renderJobs = [{ id: 'r1', projectId: envelope.project.id, status: 'completed', logs: [], outputPath: 'x.mp4' }];
+    envelope.rights = { verdict: 'BLOCKED', reasons: ['no provenance'], blockedCodes: ['missing_provenance'] };
+    expect(runContentQaCheck(envelope)).toContain('rights_blocked');
+  });
+
+  it('returns no flags for a clean, completed, low-risk project', () => {
+    const envelope = baseEnvelopeForQa();
+    envelope.renderJobs = [{ id: 'r1', projectId: envelope.project.id, status: 'completed', logs: [], outputPath: 'x.mp4' }];
+    envelope.rights = { verdict: 'LOW_RISK', reasons: ['owned'], blockedCodes: [] };
+    envelope.clipCandidates = [
+      { id: 'c1', start: 0, end: 10, duration: 10, transcript: '', hook: 'h', category: 'audio_peak', score: 50, reasons: [] },
+    ];
+    expect(runContentQaCheck(envelope)).toEqual([]);
+  });
+});

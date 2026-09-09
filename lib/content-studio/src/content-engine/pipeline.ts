@@ -185,6 +185,24 @@ export async function ingestPrecutHighlight(options: {
   return envelope;
 }
 
+export function runContentQaCheck(envelope: ContentProjectEnvelope): string[] {
+  const flags: string[] = [];
+  const latestJob = envelope.renderJobs[0];
+  if (!latestJob) {
+    flags.push('no_render_job');
+  } else {
+    if (latestJob.status === 'failed') flags.push('render_failed');
+    if (latestJob.status === 'completed' && !latestJob.outputPath) flags.push('render_missing_output');
+  }
+  if (!envelope.clipCandidates || envelope.clipCandidates.length === 0) {
+    flags.push('no_clip_candidates');
+  }
+  if (envelope.rights?.verdict === 'BLOCKED') {
+    flags.push('rights_blocked');
+  }
+  return flags;
+}
+
 async function renderOneClip(
   envelope: ContentProjectEnvelope,
   clip: ClipCandidate,
@@ -264,8 +282,9 @@ export async function rightsAndQueueApproval(
     { ...withScore, rights, project: { ...withScore.project, status: 'rights_review' } },
     { state: 'ready_for_review', reviewNotes: `Rights ${rights.verdict}` }
   );
-  await saveProjectEnvelope(queued, baseDir);
-  return queued;
+  const qaFlags = runContentQaCheck(queued);
+  await saveProjectEnvelope({ ...queued, qaFlags }, baseDir);
+  return { ...queued, qaFlags };
 }
 
 export async function runRepurposeSlice(options: {
