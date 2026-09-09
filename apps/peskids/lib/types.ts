@@ -1045,30 +1045,6 @@ export type Database = {
         Update: Partial<Database['public']['Tables']['staff_improvement_messages']['Insert']>;
         Relationships: [];
       };
-      admin_data_backups: {
-        Row: {
-          id: string;
-          tenant_id: string;
-          uploaded_by_email: string | null;
-          file_name: string;
-          mime_type: string;
-          size_bytes: number;
-          storage_path: string;
-          note: string | null;
-          created_at: string;
-        };
-        Insert: {
-          tenant_id?: string;
-          uploaded_by_email?: string | null;
-          file_name: string;
-          mime_type: string;
-          size_bytes: number;
-          storage_path: string;
-          note?: string | null;
-        };
-        Update: Partial<Database['public']['Tables']['admin_data_backups']['Insert']>;
-        Relationships: [];
-      };
       messages: {
         Row: {
           id: string;

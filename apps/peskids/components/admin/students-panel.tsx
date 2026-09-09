@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { DataImportDialog } from '@/components/admin/data-import-dialog';
-import { DataBackupPanel } from '@/components/admin/data-backup-panel';
 import { formatAgeRange } from '@/lib/peskids-domain';
 
 interface StudentRow {
@@ -191,7 +190,6 @@ export function StudentsPanel(): React.ReactElement {
           </div>
           <div className="flex flex-col items-end gap-2 sm:flex-row sm:items-start">
             <DataImportDialog kind="students" onImported={() => void load()} />
-            <DataBackupPanel />
             <Button type="button" size="sm" onClick={() => setShowForm((v) => !v)}>
               <Plus className="mr-1 h-4 w-4" aria-hidden />
               Agregar alumno
