@@ -59,6 +59,8 @@ jobs:
           DRY_RUN: ${{ inputs.dry_run == true && '1' || '0' }}
           # Allow bot to merge despite review rules when nightly automation is trusted
           NIGHT_MERGE_ADMIN: "1"
+          # Do not auto-merge revert PRs (false-positive #1153). Discord + open PR only.
+          NIGHT_MERGE_AUTO_ROLLBACK_MERGE: "0"
           DEPLOY_WAIT_SECONDS: "1500"
           DEPLOY_DISPATCH_AFTER_SECONDS: "120"
         run: |

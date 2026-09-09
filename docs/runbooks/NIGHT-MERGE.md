@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-08-15
+last_review: 2026-09-09
 ---
 
 # Night merge automático (mientras duermes)
@@ -62,3 +62,37 @@ git log origin/main --oneline -15
 El upgrade n8n + rollback de contenedores (`scripts/nightly-ops-upgrade.sh`, ~01:15) es **aparte**. Este workflow cubre **git merge → deploy → smoke → git rollback**.
 
 A las **03:30 Bogotá** corre [Night cleanup](./NIGHT-CLEANUP.md): revisión de health **antes y después**, higiene de ramas mergeadas y prune Docker ligero. No mergea PRs.
+
+## Por qué Deploy no arranca tras el bot (2026-09-09)
+
+GitHub **no dispara** otros workflows cuando el push a `main` lo hace `GITHUB_TOKEN` (el squash del job Night merge). Por eso el 2026-09-09 el bot mergeó #1149, esperó Deploy 25 min, timeout, y abrió el revert falso #1153 (cerrado; `main` conservó #1149).
+
+Mitigación en este script:
+
+1. Tras mergear, **despacha** `Deploy` con `gh workflow run`.
+2. Si a los 120 s sigue ausente, reintenta el dispatch (mismo SHA).
+3. Un revert se **abre** como PR `hotfix-prod` y se notifica a Discord; **no** se auto-mergea (`NIGHT_MERGE_AUTO_ROLLBACK_MERGE` default `0`).
+
+## Cola 2026-09-09 (una sola PR stacked)
+
+No etiquetar a la vez #1156 y un PR que ya incluye esos commits.
+
+| Orden | PR | Qué | Label `night-merge` |
+|-------|-----|-----|---------------------|
+| 1 | **#1154** (rebased onto #1156) | audit lockfile + dispatch Deploy + no auto-rollback | **SÍ — única de esta noche** |
+| 2 | #1155, #1150, #1151, #1144, #1146, #1147 | gameplay / key hygiene / vendor / peskids rollback / gamer plane | **NO** hasta que #1154 esté en `main` y se rebaseen otra vez |
+
+Agentes post-merge: [`docs/01-development/night-queue/010-night-merge-wave2-rebase.md`](../01-development/night-queue/010-night-merge-wave2-rebase.md) (el dispatcher copia a `.cursor/prompts/queue/`). Disparo sin esperar chat: `scripts/ops/dispatch-prompt-queue.sh` (launchd) o n8n `docs/n8n-workflows/night-agent-queue.json`. **No** usar `docs/ACTIVE-PROMPT.md` como shell en el VPS.
+
+```bash
+# Instalar launcher local (Mac, escribe ~/Library/LaunchAgents — no toca prod)
+./scripts/ops/install-night-agent-launchd.sh
+# Primera ola a partir de 22:00 Bogotá (idempotente; no-op de día)
+./scripts/ops/night-merge-wave1.sh --dry-run
+```
+
+## Enlaces relacionados
+
+- [[NIGHT-CLEANUP|Night cleanup]]
+- [[PRODUCTION-CHANGE-WINDOW|Ventana de producción]]
+- [[01-development/AGENT-PROMPT-QUEUE|Cola de prompts]]
