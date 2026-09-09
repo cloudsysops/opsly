@@ -35,6 +35,18 @@
         "sha256": "0e75fc5f2523befd9c66c0adb14f9c838cc0cd705b32487e121abb03ad2f2486"
       }
     ],
+    "obsScripts": [
+      {
+        "id": "smart-replay-mover",
+        "version": "2.15.0",
+        "purpose": "organize replay clips by active game",
+        "path": "C:/Users/PC MAURO/Documents/Opsly/OBS/SmartReplay/Smart_Replay_Mover.lua",
+        "source": "https://github.com/SlonickLab/Smart-Replay-Mover/releases/tag/v2.15.0",
+        "sha256": "26021fed6e3b2dc0a1a95a87872cf750c1d4ab7f9f3e57f355f43e6c4866c5e6",
+        "publishing": "disabled",
+        "requiresManualObsActivation": true
+      }
+    ],
     "obs": {
       "transport": "obs-websocket-5",
       "endpoint": "ws://127.0.0.1:4455",
