@@ -46,13 +46,20 @@ function Receive-Json($socket) {
 
 $password = $env:OBS_WEBSOCKET_PASSWORD
 if ([string]::IsNullOrEmpty($password)) {
+  $obsConfigPath = Join-Path $env:APPDATA 'obs-studio\plugin_config\obs-websocket\config.json'
+  if (Test-Path -LiteralPath $obsConfigPath) {
+    $obsConfig = Get-Content -LiteralPath $obsConfigPath -Raw | ConvertFrom-Json
+    $password = [string]$obsConfig.server_password
+  }
+}
+if ([string]::IsNullOrEmpty($password)) {
   $line = & wsl.exe -d Ubuntu -- bash -lc "grep '^OBS_WEBSOCKET_PASSWORD=' /home/devops/.config/opsly/obs-websocket.env" 2>$null
   if ($line) { $password = ([string]$line -replace '^OBS_WEBSOCKET_PASSWORD=', '').Trim() }
 }
 if ([string]::IsNullOrEmpty($password)) { throw 'OBS_WEBSOCKET_PASSWORD is not set' }
 $socket = [Net.WebSockets.ClientWebSocket]::new()
 try {
-  $socket.ConnectAsync([Uri]'ws://127.0.0.1:4455', [Threading.CancellationToken]::None).GetAwaiter().GetResult()
+  $socket.ConnectAsync([Uri]'ws://127.0.0.1:4455', [Threading.CancellationToken]::None).GetAwaiter().GetResult() | Out-Null
   $hello = Receive-Json $socket
   $auth = $null
   if ($hello.op -eq 0 -and $hello.d.authentication) {
