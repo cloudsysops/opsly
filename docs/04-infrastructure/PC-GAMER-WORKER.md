@@ -109,13 +109,15 @@ Cuando el PC está **encendido + Tailscale**, el plano durable es Docker (Ollama
 
 ```bash
 cd ~/opsly
-git pull --ff-only origin feat/pc-gamer-worker-plane
+git pull --ff-only origin main
 # .env.worker ya con REDIS_URL (Doppler)
 ./scripts/ops/pc-gamer-docker-plane.sh --up --pull-model --install-autostart
 # Overnight OpenCode (opcional):
 ./scripts/ops/pc-gamer-opencode-plane.sh --up --install-autostart
 sudo loginctl enable-linger devops   # una vez
 ```
+
+Reconnect desde Mac también usa **`main`** (`PC_GAMER_BRANCH` solo para un experimento nombrado). El plano Docker es **un solo** `docker compose` (workers + moneyprinter file en el mismo proyecto `infra`, `COMPOSE_IGNORE_ORPHANS=1`). Un segundo `up` de `docker-compose.pc-gamer-moneyprinter.yml` huérfana el worker y lo mata (crash loop `Up < 1s`). `--down` es solo operador; el unit `opsly-pc-gamer-docker.service` **no** hace `ExecStop --down` (un recycle de sesión no debe tumbar :3011).
 
 **Desde Mac cuando vuelve online:**
 
@@ -277,6 +279,12 @@ swap=4GB
 | `OPSLY_WORKER_ALLOWLIST` | Filtra workers en `apps/orchestrator` |
 | `scripts/ops/pc-gamer-schedule.sh` | Modo gaming/light/heavy según Mauro |
 | `config/pc-gamer-schedule.json` | Calendario semanal (DRAFT) |
+
+## Python policy (gamer WSL)
+
+Allowed now: **CPython stdlib only** (`/usr/bin/python3`, 3.12). No `pip install`, venv, torch, whisper, opencv, ultralytics, or numpy until a later approved capability needs them.
+
+`scripts/ops/pc-gamer-clip-agent.py` lives on **PR #1155**, not on gamer `main` until that PR merges and the host pulls the exact SHA. Proof after that pull: `python3 scripts/ops/pc-gamer-clip-agent.py --help`, then one local highlight with `OPSLY_CONTENT_PUBLISHING=disabled`. Do not add Auto-clipper / Remotion / Whisper / OpenCV / YOLO before that proof.
 | `docs/runbooks/PC-GAMER-MAURO-SCHEDULE.md` | Cómo ajustar horas con el dueño |
 | `docs/runbooks/OVERNIGHT-OPENCODE-GAMER.md` | Runbook crecimiento overnight |
 | `scripts/ops/start-mac-local-agents-worker.sh` | Worker Mac solo cola `local-agents` |

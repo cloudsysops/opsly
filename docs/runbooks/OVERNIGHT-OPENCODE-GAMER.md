@@ -46,7 +46,7 @@ Sin `--force`, el script respeta el modo `gaming`/`light`/`heavy`. Viernes noche
 
 ```bash
 cd ~/opsly
-git pull --ff-only origin feat/pc-gamer-agent-plane
+git pull --ff-only origin main
 ./scripts/ops/pc-gamer-docker-plane.sh --up --use-host-ollama --install-autostart
 ./scripts/ops/pc-gamer-opencode-plane.sh --up --install-autostart
 ```
