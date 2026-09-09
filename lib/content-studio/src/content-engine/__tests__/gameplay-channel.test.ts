@@ -7,7 +7,9 @@ import { mkdtempSync, writeFileSync, mkdirSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-describe.skipIf(!ffmpegAvailable())('icso-gaming-tbd channel', () => {
+const skip = !ffmpegAvailable();
+
+describe.skipIf(skip)('icso-gaming-tbd channel', () => {
   it('resolves the gaming channel instead of falling back to opsly-universe', async () => {
     const baseDir = mkdtempSync(path.join(os.tmpdir(), 'gaming-channel-'));
     mkdirSync(path.join(baseDir, 'config', 'content-channels'), { recursive: true });
