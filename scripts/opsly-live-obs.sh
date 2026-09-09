@@ -31,4 +31,11 @@ if [[ -n "${OBS_WEBSOCKET_PASSWORD_FILE:-}" && -z "${OBS_WEBSOCKET_PASSWORD:-}" 
   export OBS_WEBSOCKET_PASSWORD="$(<"$OBS_WEBSOCKET_PASSWORD_FILE")"
 fi
 
+# WSL localhost forwarding is not guaranteed when OBS runs in the Windows
+# interactive session. Use the Windows-side WebSocket client in that case.
+if command -v powershell.exe >/dev/null 2>&1 && [[ "${OBS_WEBSOCKET_USE_WINDOWS_BRIDGE:-auto}" != "false" ]]; then
+  WINDOWS_SCRIPT="$(wslpath -w "$ROOT/scripts/opsly-live-obs-windows.ps1")"
+  exec powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$WINDOWS_SCRIPT" -Payload "${1:-$(cat)}"
+fi
+
 exec "$PY" "$ROOT/tools/live-automation/dispatch.py" "$@"
