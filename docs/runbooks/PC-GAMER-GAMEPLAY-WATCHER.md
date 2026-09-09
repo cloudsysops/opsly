@@ -47,8 +47,8 @@ Description=Opsly PC-gamer gameplay watcher
 
 [Service]
 WorkingDirectory=%h/opsly
-Environment=NVIDIA_INSTANT_REPLAY_DIR=/mnt/c/Users/REPLACE_ME/Videos/InstantReplay
-Environment=NVIDIA_HIGHLIGHTS_DIR=/mnt/c/Users/REPLACE_ME/Videos/Highlights
+Environment="NVIDIA_INSTANT_REPLAY_DIR=/mnt/c/Users/REPLACE_ME/Videos/InstantReplay"
+Environment="NVIDIA_HIGHLIGHTS_DIR=/mnt/c/Users/REPLACE_ME/Videos/Highlights"
 Environment=WATCHER_STATE_PATH=%h/.local/state/opsly/gameplay-watcher.json
 ExecStart=/usr/bin/node scripts/ops/pc-gamer-gameplay-watcher.mjs
 Restart=on-failure
