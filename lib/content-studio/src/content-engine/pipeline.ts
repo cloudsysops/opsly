@@ -19,6 +19,8 @@ import {
 } from './ffmpeg.js';
 import { getContentProjectArtifactsRoot, getContentProjectWorkingRoot, getContentTenantAssetsRoot } from './paths.js';
 import { buildContentMetadata } from './metadata.js';
+import { selectPrimaryCandidates } from './highlight-score.js';
+import { writeGameplayArtifactBundle } from './session-artifacts.js';
 import type {
   ClipCandidate,
   ContentMode,
@@ -26,6 +28,7 @@ import type {
   ContentProjectEnvelope,
   ContentProvenance,
   ContentScene,
+  GameplayCaptureSource,
 } from './types.js';
 
 function ownedProvenance(tenantId: string): ContentProvenance {
@@ -221,6 +224,77 @@ export async function preparePrecutHighlight(options: {
   let envelope = await ingestPrecutHighlight({ ...options, baseDir });
   envelope = await renderTopClips(envelope, baseDir, 1);
   envelope = await rightsAndQueueApproval(envelope, baseDir);
+  writeGameplayArtifactBundle(envelope, baseDir);
+  await saveProjectEnvelope(envelope, baseDir);
+  return envelope;
+}
+
+export async function prepareGameplaySession(options: {
+  tenantId: string;
+  filePath: string;
+  baseDir?: string;
+  game?: string;
+  captureSource?: GameplayCaptureSource;
+  title?: string;
+  minScore?: number;
+  maxPrimary?: number;
+}): Promise<ContentProjectEnvelope> {
+  const baseDir = options.baseDir ?? process.cwd();
+  const sourceFile = path.resolve(options.filePath);
+  if (!fs.existsSync(sourceFile)) {
+    throw new Error(`GAMEPLAY_SOURCE_MISSING: ${sourceFile}`);
+  }
+  const startedAt = new Date().toISOString();
+  const probe = await probeMedia(sourceFile);
+  let envelope = await ingestOwnedVideo({
+    tenantId: options.tenantId,
+    filePath: sourceFile,
+    title: options.title ?? path.basename(sourceFile, path.extname(sourceFile)),
+    mode: 'original',
+    baseDir,
+  });
+  envelope = {
+    ...envelope,
+    session: {
+      sessionId: envelope.project.id,
+      tenant: options.tenantId,
+      channel: envelope.project.channel,
+      game: options.game ?? 'unknown',
+      startedAt,
+      endedAt: new Date().toISOString(),
+      sourceFile,
+      duration: probe.duration,
+      captureSource: options.captureSource ?? 'synthetic',
+      processingStatus: 'discovering',
+    },
+  };
+  await saveProjectEnvelope(envelope, baseDir);
+  envelope = await discoverProjectClipsFromAudio(envelope, baseDir);
+  const selected = selectPrimaryCandidates(envelope.clipCandidates ?? [], {
+    minScore: options.minScore,
+    maxPrimary: options.maxPrimary,
+  });
+  if (selected.primary.length === 0) {
+    throw new Error('NO_QUALITY_CANDIDATES: audio peaks existed but none passed the score floor');
+  }
+  envelope = {
+    ...envelope,
+    clipCandidates: [...selected.primary, ...selected.overflow],
+    selectedClipIds: selected.primary.map((clip) => clip.id),
+    session: envelope.session
+      ? { ...envelope.session, processingStatus: 'rendering' }
+      : envelope.session,
+  };
+  await saveProjectEnvelope(envelope, baseDir);
+  envelope = await renderTopClips(envelope, baseDir, selected.primary.length);
+  envelope = await rightsAndQueueApproval(envelope, baseDir);
+  if (envelope.session) {
+    envelope = {
+      ...envelope,
+      session: { ...envelope.session, processingStatus: 'ready_for_review' },
+    };
+  }
+  writeGameplayArtifactBundle(envelope, baseDir);
   await saveProjectEnvelope(envelope, baseDir);
   return envelope;
 }

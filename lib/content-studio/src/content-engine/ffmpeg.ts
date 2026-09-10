@@ -361,6 +361,30 @@ export async function generateOwnedFixture(output: string, durationSec = 48): Pr
   ]);
 }
 
+/** Synthetic gameplay with loud bursts separated by silence — for audio-peak discovery. */
+export async function generatePeakedGameplayFixture(output: string): Promise<void> {
+  fs.mkdirSync(path.dirname(output), { recursive: true });
+  await runFfmpeg([
+    '-y',
+    '-f',
+    'lavfi',
+    '-i',
+    'color=c=0x1a1a2e:s=1280x720:d=19',
+    '-f',
+    'lavfi',
+    '-i',
+    "sine=f=440:d=19,volume=eval=frame:volume='if(between(t,0,5)+between(t,7,12)+between(t,14,19),1,0)'",
+    '-c:v',
+    'libx264',
+    '-c:a',
+    'aac',
+    '-shortest',
+    '-pix_fmt',
+    'yuv420p',
+    assertSafePath(output),
+  ]);
+}
+
 export const FFMPEG_OPS: FfmpegOp[] = [
   'probe',
   'extractClip',

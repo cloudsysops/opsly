@@ -19,6 +19,7 @@ export {
   suggestCharactersForTopic,
 } from './universe-bridge.js';
 export { evaluateRightsGate } from './rights.js';
+export { enqueueApprovedPublishJob } from './publishing.js';
 export { proposeTransformativeAngle, scoreOpportunity } from './angles.js';
 export { CONTENT_OS_CAPABILITIES, contentOsCapabilityMap } from './capabilities.js';
 export type {
