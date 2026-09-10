@@ -112,8 +112,6 @@ PLATFORM_ADMIN_TOKEN="<token>" npm run opsly:local-prompt-watcher:once
 ./scripts/next-prompt-in-queue.sh
 ```
 
-Prompts versionados para la noche: `docs/01-development/night-queue/` — `dispatch-prompt-queue.sh` los copia a `.cursor/prompts/queue/` (gitignored) y abre OpenCode. n8n: `docs/n8n-workflows/night-agent-queue.json` (HTTP al orchestrator; **no** escribe `docs/ACTIVE-PROMPT.md`).
-
 Si no existe el script, basta con listar la carpeta `queue/` manualmente; el protocolo sigue siendo válido.
 
 ## Relación con otras carpetas

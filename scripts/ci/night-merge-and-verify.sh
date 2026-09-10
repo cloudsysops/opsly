@@ -10,7 +10,6 @@ SMOKE_API_URL="${SMOKE_API_URL:-https://api.${PLATFORM_DOMAIN}/api/health}"
 # Prod Peskids is www.peskids.com — peskids.op-sly.com is a 308, not the live site.
 SMOKE_PESKIDS_URL="${SMOKE_PESKIDS_URL:-https://www.peskids.com/api/health}"
 DEPLOY_WAIT_SECONDS="${DEPLOY_WAIT_SECONDS:-1500}"
-DEPLOY_DISPATCH_AFTER_SECONDS="${DEPLOY_DISPATCH_AFTER_SECONDS:-120}"
 DRY_RUN="${DRY_RUN:-0}"
 FORCE="${NIGHT_MERGE_FORCE:-0}"
 STATE_DIR="${NIGHT_MERGE_STATE_DIR:-/tmp/opsly-night-merge}"
@@ -105,11 +104,8 @@ checks_green() {
 }
 
 list_target_prs() {
-  # Lowest number first so a stacked recovery PR (audit + dispatch) lands
-  # before later feature PRs. Never label both a base PR and a PR that
-  # already contains those commits — the second squash will conflict.
   gh pr list --repo "${REPO}" --state open --label "${LABEL}" --json number,title \
-    --jq 'sort_by(.number) | .[].number'
+    --jq '.[].number'
 }
 
 iso_now_minus_seconds() {
@@ -170,8 +166,6 @@ wait_for_deploy() {
     return 0
   fi
   log "Waiting up to ${DEPLOY_WAIT_SECONDS}s for Deploy headSha=${after_sha:0:7} created>=${since}…"
-  local wait_started=$SECONDS
-  local dispatch_attempted=0
   while ((SECONDS < deadline)); do
     local run
     run="$(
@@ -180,22 +174,6 @@ wait_for_deploy() {
         | select_deploy_run_json "${after_sha}" "${since}"
     )"
     if [[ -z "${run}" || "${run}" == "null" ]]; then
-      if [[ "${dispatch_attempted}" == "0" ]] && (( SECONDS - wait_started >= DEPLOY_DISPATCH_AFTER_SECONDS )); then
-        local current_sha
-        current_sha="$(gh api "repos/${REPO}/commits/main" --jq '.sha')"
-        if [[ "${current_sha}" != "${after_sha}" ]]; then
-          warn "main advanced while Deploy was absent (${current_sha:0:7} != ${after_sha:0:7}); refusing recovery dispatch"
-          return 1
-        fi
-        log "No Deploy run for ${after_sha:0:7}; dispatching Deploy workflow for current main"
-        if gh workflow run Deploy --repo "${REPO}" --ref main -f skip_tests=false; then
-          dispatch_attempted=1
-          notify "🔄 Night merge recovery" "Deploy absent for main@${after_sha:0:7}; dispatched Deploy automatically"
-        else
-          warn "Unable to dispatch Deploy for ${after_sha:0:7}"
-          return 1
-        fi
-      fi
       log "No Deploy run yet for ${after_sha:0:7}; waiting…"
       sleep 20
       continue
@@ -293,20 +271,13 @@ rollback() {
       --label hotfix-prod
   )"
   log "Rollback PR: ${pr_url}"
-  # Default: do NOT admin-merge the revert. Last false-positive opened #1153
-  # against a healthy main because Deploy never started (GITHUB_TOKEN push).
-  if [[ "${NIGHT_MERGE_AUTO_ROLLBACK_MERGE:-0}" == "1" ]]; then
-    if [[ "${NIGHT_MERGE_ADMIN:-0}" == "1" ]]; then
-      gh pr merge "${pr_url}" --repo "${REPO}" --squash --delete-branch --admin
-    else
-      gh pr merge "${pr_url}" --repo "${REPO}" --squash --delete-branch
-    fi
-    notify "🚨 Night merge ROLLBACK merged" "main restored toward ${sha_before:0:7} via ${pr_url}"
-    log "Rollback PR merged"
+  if [[ "${NIGHT_MERGE_ADMIN:-0}" == "1" ]]; then
+    gh pr merge "${pr_url}" --repo "${REPO}" --squash --delete-branch --admin
   else
-    notify "🚨 Night merge ROLLBACK PR (not auto-merged)" "Review ${pr_url} before merge. Deploy may be missing because GITHUB_TOKEN merges do not trigger workflows — dispatch Deploy first."
-    log "Rollback PR opened and left for human/agent review (not auto-merged)"
+    gh pr merge "${pr_url}" --repo "${REPO}" --squash --delete-branch
   fi
+  notify "🚨 Night merge ROLLBACK" "main restored toward ${sha_before:0:7} via ${pr_url}"
+  log "Rollback PR merged"
 }
 
 main() {
@@ -330,7 +301,6 @@ main() {
   record_sha_before
 
   local merged=0
-  local after_sha sha_before
   for n in "${prs[@]}"; do
     log "Evaluating PR #${n}"
     if ! checks_green "${n}"; then
@@ -350,16 +320,6 @@ main() {
   fi
 
   log "Merged ${merged} PR(s); verifying…"
-  # GITHUB_TOKEN squash-merge does not trigger other workflows. Dispatch
-  # Deploy immediately so wait_for_deploy is not a 25-minute timeout.
-  after_sha="$(gh api "repos/${REPO}/commits/main" --jq '.sha')"
-  sha_before="$(cat "${SHA_BEFORE_FILE}")"
-  if [[ "${after_sha}" != "${sha_before}" ]]; then
-    log "Dispatching Deploy for main@${after_sha:0:7} (GITHUB_TOKEN merge does not auto-trigger)"
-    gh workflow run Deploy --repo "${REPO}" --ref main -f skip_tests=false \
-      || warn "Immediate Deploy dispatch failed; wait_for_deploy will retry"
-    notify "🔄 Night merge" "Merged ${merged} PR(s) → main@${after_sha:0:7}; Deploy dispatched"
-  fi
   if ! wait_for_deploy; then
     warn "Deploy verify failed — rolling back"
     rollback

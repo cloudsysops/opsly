@@ -50,9 +50,6 @@ This directory contains operational and deployment scripts organized by category
 ```bash
 ./scripts/ops/monitor-resources.sh
 ./scripts/ops/cleanup-disk.sh
-./scripts/ops/night-merge-wave1.sh --dry-run
-./scripts/ops/dispatch-prompt-queue.sh --dry-run
-./scripts/ops/install-night-agent-launchd.sh --dry-run
 ```
 
 ### Utilities
