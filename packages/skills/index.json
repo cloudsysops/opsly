@@ -132,6 +132,15 @@
       "path": "skills/user/opsly-mcp/"
     },
     {
+      "name": "opsly-claude-codex-review",
+      "version": "1.0.0",
+      "description": "Claude Code builder + Codex MCP independent reviewer (AI Board BUILD→REVIEW loop)",
+      "category": "integration",
+      "priority": "high",
+      "usage": "Usar Codex como revisor independiente vía claude-codex-bridge sin ediciones concurrentes",
+      "path": "skills/user/opsly-claude-codex-review/"
+    },
+    {
       "name": "opsly-supabase",
       "version": "1.0.0",
       "description": "Migraciones SQL, schema platform, RLS, políticas. Crear migraciones SQL o diseñar queries contra schema platform",
@@ -675,7 +684,7 @@
     "architecture": ["opsly-modularity", "opsly-architect-senior", "opsly-architect"],
     "development": ["opsly-api", "opsly-bash", "opsly-frontend"],
     "ai": ["opsly-llm", "opsly-notebooklm", "opsly-feedback-ml", "opsly-ai-sdk-vercel"],
-    "integration": ["opsly-mcp", "opsly-google-cloud"],
+    "integration": ["opsly-mcp", "opsly-claude-codex-review", "opsly-google-cloud"],
     "database": ["opsly-supabase", "opsly-supabase-marketplace"],
     "operations": ["opsly-tenant", "opsly-peskids"],
     "infrastructure": ["opsly-infra"],
