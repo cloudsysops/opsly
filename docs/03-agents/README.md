@@ -28,7 +28,6 @@ Cerebro operativo de agentes: contexto, prompts, roles, guardrails, Hive, OpenCl
 - `AGENTS.md`
 - `COPILOT-CODING-AGENT.md` — firewall del agente en PRs de GitHub (sin SSH/Tailscale)
 - `LOCAL-AGENT-EXECUTION.md`
-- `CLAUDE-CODEX-MCP-BRIDGE.md` — Claude Code ↔ Codex via MCP (builder / reviewer roles)
 - `SOCIAL-MEDIA-AGENT-SYRA.md`
 
 ---
