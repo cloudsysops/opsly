@@ -55,6 +55,13 @@ export class AnthropicDirectClient implements LLMClient {
 
 // ─── LLM Gateway (internal) ───────────────────────────────────────────────────
 
+export interface GatewayReviewOptions {
+  model?: 'sonnet' | 'haiku' | 'cheap';
+  maxTokens?: number;
+  requestId?: string;
+  feature?: string;
+}
+
 export class GatewayClient implements LLMClient {
   private readonly gatewayUrl: string;
   private readonly tenantSlug: string;
@@ -68,6 +75,21 @@ export class GatewayClient implements LLMClient {
   }
 
   async complete(system: string, user: string, maxTokens = 2048): Promise<string> {
+    return this.review(system, user, { maxTokens });
+  }
+
+  /**
+   * Single gateway-backed LLM call for content review. All LLM traffic flows
+   * through the LLM Gateway (OpenClaw) — never a direct provider or a local
+   * model endpoint. `requestId` is recorded for traceability (tenant_slug +
+   * request_id), in line with the platform's zero-bypass rule.
+   */
+  async review(
+    system: string,
+    user: string,
+    options: GatewayReviewOptions = {}
+  ): Promise<string> {
+    const { model = 'sonnet', maxTokens = 2048, requestId, feature = 'content_studio' } = options;
     const resp = await fetch(`${this.gatewayUrl}/v1/chat`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -76,9 +98,10 @@ export class GatewayClient implements LLMClient {
         system,
         messages: [{ role: 'user', content: user }],
         max_tokens: maxTokens,
-        model: 'sonnet',
+        model,
         skip_repo_context: true,
-        feature: 'content_studio',
+        feature,
+        request_id: requestId,
       }),
     });
 

@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
+import { GatewayClient } from '../llm/client.js';
 import type { ReviewFinding } from './types.js';
 
 function assertSafePath(filePath: string): string {
@@ -67,63 +69,67 @@ export interface VisionAdapterResult {
   notes: string[];
 }
 
+function newVisionRequestId(): string {
+  return `content-vision-${randomUUID()}`;
+}
+
 /**
- * Optional Gemma/vision adapter. Fail-closed: if Ollama is unavailable,
- * returns no findings and leaves FFmpeg QA as the source of truth.
+ * Optional visual reviewer, routed through the LLM Gateway (OpenClaw) — never
+ * a direct local model endpoint. Because the gateway's /v1/chat contract is
+ * text-only, extracted frames are described by filename plus a visual-review
+ * prompt; image bytes are never sent over the network. Fail-closed: if the
+ * gateway is unavailable, no findings are returned and deterministic FFmpeg QA
+ * remains the source of truth.
  */
 export async function runOptionalVisionReview(input: {
   videoPath: string;
   durationSec: number;
   workDir: string;
+  tenantSlug?: string;
 }): Promise<VisionAdapterResult> {
-  const model = process.env.OPSLY_CONTENT_VISION_MODEL ?? 'gemma3:12b';
-  const base = process.env.OLLAMA_URL?.replace(/\/$/, '');
-  if (!base || process.env.OPSLY_CONTENT_VISION_ENABLED !== 'true') {
+  const gatewayUrl = process.env.LLM_GATEWAY_URL;
+  if (!gatewayUrl || process.env.OPSLY_CONTENT_VISION_ENABLED !== 'true') {
     return {
       used: false,
       model: 'ffmpeg-deterministic',
       findings: [],
-      notes: ['vision adapter skipped (OPSLY_CONTENT_VISION_ENABLED!=true or no OLLAMA_URL)'],
+      notes: ['vision adapter skipped (OPSLY_CONTENT_VISION_ENABLED!=true or no LLM_GATEWAY_URL)'],
     };
   }
 
   let frames: string[] = [];
   try {
-    frames = await extractReviewFrames(input.videoPath, path.join(input.workDir, 'review-frames'), input.durationSec);
+    frames = await extractReviewFrames(
+      input.videoPath,
+      path.join(input.workDir, 'review-frames'),
+      input.durationSec,
+    );
   } catch (error) {
     return {
       used: false,
-      model,
+      model: 'ffmpeg-deterministic',
       findings: [],
       notes: [`frame extract failed: ${error instanceof Error ? error.message : 'unknown'}`],
     };
   }
 
+  const prompt =
+    'You are an independent video QA reviewer. Receiving only the names of extracted frames, ' +
+    'review for visible defects: composition, caption obstruction, crop, clarity, brand. ' +
+    'Do not invent story events. Reply with JSON array of {severity,issue,recommended_fix} or [].\n' +
+    `Frames: ${frames.map((f) => path.basename(f)).join(', ')}`;
+
+  const client = new GatewayClient(input.tenantSlug ?? 'opsly', gatewayUrl);
+
   try {
-    const prompt =
-      'You are an independent video QA reviewer. Describe only visible defects in these gameplay frames: ' +
-      'composition, caption obstruction, crop, clarity, brand. Do not invent story events. ' +
-      'Reply with JSON array of {severity,issue,recommended_fix} or [].';
-    const controller = AbortSignal.timeout(12_000);
-    const response = await fetch(`${base}/api/generate`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        model,
-        prompt: `${prompt}\nFrames: ${frames.map((f) => path.basename(f)).join(', ')}`,
-        stream: false,
-        options: { temperature: 0.1 },
-      }),
-      signal: controller,
-    });
-    if (!response.ok) {
-      return { used: false, model, findings: [], notes: [`ollama ${response.status}`] };
-    }
-    const payload = (await response.json()) as { response?: string };
-    const text = payload.response ?? '';
+    const text = await client.review(
+      'Independent visual reviewer for Opsly content.',
+      prompt,
+      { model: 'sonnet', requestId: newVisionRequestId(), feature: 'content_studio' }
+    );
     const match = text.match(/\[[\s\S]*\]/);
     if (!match) {
-      return { used: true, model, findings: [], notes: ['no JSON findings from vision model'] };
+      return { used: true, model: 'sonnet', findings: [], notes: ['no JSON findings from vision model'] };
     }
     const parsed = JSON.parse(match[0]) as Array<{
       severity?: string;
@@ -135,24 +141,25 @@ export async function runOptionalVisionReview(input: {
       .slice(0, 5)
       .map((item, index) => ({
         finding_id: `vision-${index}`,
-        severity: item.severity === 'CRITICAL' || item.severity === 'IMPORTANT' || item.severity === 'MINOR'
-          ? item.severity
-          : 'MINOR',
+        severity:
+          item.severity === 'CRITICAL' || item.severity === 'IMPORTANT' || item.severity === 'MINOR'
+            ? item.severity
+            : 'MINOR',
         timecode_start: 0,
         timecode_end: input.durationSec,
         category: 'VIDEO',
         issue: String(item.issue),
         recommended_fix: String(item.recommended_fix),
-        evidence: `vision:${model}`,
+        evidence: 'vision:llm-gateway',
         repairable: true,
       }));
-    return { used: true, model, findings, notes: [`frames=${frames.length}`] };
+    return { used: true, model: 'sonnet', findings, notes: [`frames=${frames.length}`] };
   } catch (error) {
     return {
       used: false,
-      model,
+      model: 'sonnet',
       findings: [],
-      notes: [`vision call failed: ${error instanceof Error ? error.message : 'unknown'}`],
+      notes: [`vision gateway call failed: ${error instanceof Error ? error.message : 'unknown'}`],
     };
   }
 }

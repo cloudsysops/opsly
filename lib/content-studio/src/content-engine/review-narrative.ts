@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+import { GatewayClient } from '../llm/client.js';
 import type { ReviewFinding } from './types.js';
 
 export interface NarrativeAdapterResult {
@@ -7,24 +9,30 @@ export interface NarrativeAdapterResult {
   notes: string[];
 }
 
+export function newRequestId(): string {
+  return `content-narrative-${randomUUID()}`;
+}
+
 /**
- * Optional Qwen narrative reviewer. Independent of the creator agent context.
- * Fail-closed when local LLM is unavailable — deterministic QA still runs.
+ * Optional narrative reviewer, routed through the LLM Gateway (OpenClaw) —
+ * never a direct local model endpoint. Independent of the creator agent
+ * context. Fail-closed when the gateway is unavailable: deterministic QA
+ * remains the source of truth and no findings are returned.
  */
 export async function runOptionalNarrativeReview(input: {
   title?: string;
   captions?: string;
   transcript?: string;
   durationSec: number;
+  tenantSlug?: string;
 }): Promise<NarrativeAdapterResult> {
-  const model = process.env.OPSLY_CONTENT_NARRATIVE_MODEL ?? 'qwen3:14b';
-  const base = process.env.OLLAMA_URL?.replace(/\/$/, '');
-  if (!base || process.env.OPSLY_CONTENT_NARRATIVE_ENABLED !== 'true') {
+  const gatewayUrl = process.env.LLM_GATEWAY_URL;
+  if (!gatewayUrl || process.env.OPSLY_CONTENT_NARRATIVE_ENABLED !== 'true') {
     return {
       used: false,
       model: 'metadata-deterministic',
       findings: [],
-      notes: ['narrative adapter skipped (OPSLY_CONTENT_NARRATIVE_ENABLED!=true or no OLLAMA_URL)'],
+      notes: ['narrative adapter skipped (OPSLY_CONTENT_NARRATIVE_ENABLED!=true or no LLM_GATEWAY_URL)'],
     };
   }
 
@@ -40,26 +48,17 @@ export async function runOptionalNarrativeReview(input: {
     `durationSec: ${input.durationSec}`,
   ].join('\n');
 
+  const client = new GatewayClient(input.tenantSlug ?? 'opsly', gatewayUrl);
+
   try {
-    const response = await fetch(`${base}/api/generate`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        model,
-        prompt,
-        stream: false,
-        options: { temperature: 0.1 },
-      }),
-      signal: AbortSignal.timeout(12_000),
-    });
-    if (!response.ok) {
-      return { used: false, model, findings: [], notes: [`ollama ${response.status}`] };
-    }
-    const payload = (await response.json()) as { response?: string };
-    const text = payload.response ?? '';
+    const text = await client.review(
+      'Independent narrative reviewer for Opsly content.',
+      prompt,
+      { model: 'sonnet', requestId: newRequestId(), feature: 'content_studio' }
+    );
     const match = text.match(/\[[\s\S]*\]/);
     if (!match) {
-      return { used: true, model, findings: [], notes: ['no JSON findings from narrative model'] };
+      return { used: true, model: 'sonnet', findings: [], notes: ['no JSON findings from narrative model'] };
     }
     const parsed = JSON.parse(match[0]) as Array<{
       severity?: string;
@@ -73,24 +72,25 @@ export async function runOptionalNarrativeReview(input: {
       .slice(0, 5)
       .map((item, index) => ({
         finding_id: `narrative-${index}`,
-        severity: item.severity === 'CRITICAL' || item.severity === 'IMPORTANT' || item.severity === 'MINOR'
-          ? item.severity
-          : 'MINOR',
+        severity:
+          item.severity === 'CRITICAL' || item.severity === 'IMPORTANT' || item.severity === 'MINOR'
+            ? item.severity
+            : 'MINOR',
         timecode_start: 0,
         timecode_end: input.durationSec,
         category: allowed.has(String(item.category)) ? (item.category as ReviewFinding['category']) : 'STORY',
         issue: String(item.issue),
         recommended_fix: String(item.recommended_fix),
-        evidence: `narrative:${model}`,
+        evidence: 'narrative:llm-gateway',
         repairable: true,
       }));
-    return { used: true, model, findings, notes: [] };
+    return { used: true, model: 'sonnet', findings, notes: [] };
   } catch (error) {
     return {
       used: false,
-      model,
+      model: 'sonnet',
       findings: [],
-      notes: [`narrative call failed: ${error instanceof Error ? error.message : 'unknown'}`],
+      notes: [`narrative gateway call failed: ${error instanceof Error ? error.message : 'unknown'}`],
     };
   }
 }
