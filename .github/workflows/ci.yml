@@ -327,6 +327,9 @@ jobs:
       - name: compute-worker policy tests
         run: node --test scripts/ops/__tests__/compute-worker-router.test.mjs scripts/ops/__tests__/content-render-ffmpeg.test.mjs
 
+      - name: Peskids Docker next-build flags (no --webpack on Next 15.5)
+        run: bash scripts/ci/check-peskids-docker-build-flags.sh
+
   secret-scan:
     needs: structure-validation
     runs-on: ubuntu-latest

@@ -47,6 +47,17 @@ Claude BUILD
                  └─no──→ AI_BOARD_APPROVED / APPROVED
 ```
 
+## Claude Code resume checklist (pass on return)
+
+Before editing or deploying, Claude Code should:
+
+1. `git fetch origin && git pull --ff-only` on a **clean worktree** (not the dirty Mac Capacitor tree).
+2. Confirm GitHub: `gh auth status` + SSH `git@github.com` OK.
+3. Peskids live: `curl -sf https://www.peskids.com/api/health` → `git_sha` must match `origin/main` (or document lag).
+4. **Never** reintroduce `next build --webpack` in `apps/peskids/Dockerfile` (CI guard + #1168).
+5. Roles: Claude builds; Codex reviews only (`opsly-claude-codex-review` / `/codex`).
+6. Night PRs: keep `night-merge` on content (#1160); do not daytime-merge `apps/peskids` without `hotfix-prod` / `force_daytime`.
+
 ## Prerequisites
 
 ```bash

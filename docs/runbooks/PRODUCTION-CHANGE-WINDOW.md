@@ -76,3 +76,10 @@ node scripts/ci/check-production-change-window.mjs --paths apps/peskids/app/page
 1. Workflow **Production change window** en PRs (status check).
 2. Añadir check **`production-change-window`** a branch protection de `main` (Settings → Branches).
 3. Deploy Peskids: gate nocturno + input `force_daytime` en `workflow_dispatch`.
+
+### Peskids Docker gotcha (2026-09-10)
+
+- Next **15.5** en `apps/peskids`: `next build` ya usa webpack. **No** pasar `--webpack` ni `--turbopack` en `apps/peskids/Dockerfile`.
+- Ese flag rompe GHCR (`unknown option '--webpack'`) y deja prod atrás de `main`.
+- Guard CI: `scripts/ci/check-peskids-docker-build-flags.sh` (job `scripts-check`).
+- Tras merge a `main`: Actions → **Deploy Peskids**. De día solo con `force_daytime=true` + label `hotfix-prod` / humano.
