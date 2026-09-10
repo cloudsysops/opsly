@@ -84,8 +84,10 @@ RUN npm run build -w @intcloudsysops/prompt-guard \
  && npm run build -w @intcloudsysops/services
 
 WORKDIR /app/apps/peskids
+# Next 15.5: `next build` uses webpack by default. Do not pass `--webpack`
+# (that flag is Next 16+ and breaks GHCR image builds with unknown option).
 RUN mkdir -p public \
- && NEXT_TELEMETRY_DISABLED=1 npx next build --webpack
+ && NEXT_TELEMETRY_DISABLED=1 npx next build
 
 FROM node:20-alpine AS runner
 
