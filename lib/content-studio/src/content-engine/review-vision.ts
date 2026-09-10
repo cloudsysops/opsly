@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
-import { GatewayClient } from '../llm/client.js';
+import { GatewayClient, resolveContentReviewRoutingModel } from '../llm/client.js';
 import type { ReviewFinding } from './types.js';
 
 function assertSafePath(filePath: string): string {
@@ -119,17 +119,26 @@ export async function runOptionalVisionReview(input: {
     'Do not invent story events. Reply with JSON array of {severity,issue,recommended_fix} or [].\n' +
     `Frames: ${frames.map((f) => path.basename(f)).join(', ')}`;
 
+  const routingModel = resolveContentReviewRoutingModel(
+    process.env.OPSLY_CONTENT_VISION_MODEL,
+    'cheap'
+  );
   const client = new GatewayClient(input.tenantSlug ?? 'opsly', gatewayUrl);
 
   try {
     const text = await client.review(
       'Independent visual reviewer for Opsly content.',
       prompt,
-      { model: 'sonnet', requestId: newVisionRequestId(), feature: 'content_studio' }
+      { model: routingModel, requestId: newVisionRequestId(), feature: 'content_studio' }
     );
     const match = text.match(/\[[\s\S]*\]/);
     if (!match) {
-      return { used: true, model: 'sonnet', findings: [], notes: ['no JSON findings from vision model'] };
+      return {
+        used: true,
+        model: routingModel,
+        findings: [],
+        notes: ['no JSON findings from vision model'],
+      };
     }
     const parsed = JSON.parse(match[0]) as Array<{
       severity?: string;
@@ -153,11 +162,11 @@ export async function runOptionalVisionReview(input: {
         evidence: 'vision:llm-gateway',
         repairable: true,
       }));
-    return { used: true, model: 'sonnet', findings, notes: [`frames=${frames.length}`] };
+    return { used: true, model: routingModel, findings, notes: [`frames=${frames.length}`] };
   } catch (error) {
     return {
       used: false,
-      model: 'sonnet',
+      model: routingModel,
       findings: [],
       notes: [`vision gateway call failed: ${error instanceof Error ? error.message : 'unknown'}`],
     };

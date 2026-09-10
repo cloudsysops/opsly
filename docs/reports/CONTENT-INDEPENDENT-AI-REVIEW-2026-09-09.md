@@ -48,22 +48,30 @@ Tests (ffmpeg required):
 - `MUSIC_RIGHTS=UNKNOWN` → `publishReady=false`.
 - Enqueue creates **records only**; adapters do not upload in this PR.
 
-## Optional local models
+## Optional local models (via LLM Gateway — zero bypass)
 
-```
+Content review never calls Ollama directly. Set flags on the **CLI/runner** host
+and point at the gateway; Ollama lives on the PC gamer, reached from the **VPS
+gateway** via Tailscale.
+
+```bash
+# Runner / Content OS CLI
+LLM_GATEWAY_URL=http://100.120.151.91:3010   # or public Traefik URL if exposed
 OPSLY_CONTENT_VISION_ENABLED=true
 OPSLY_CONTENT_NARRATIVE_ENABLED=true
-OLLAMA_URL=http://127.0.0.1:11434
-OPSLY_CONTENT_VISION_MODEL=gemma3:12b
-OPSLY_CONTENT_NARRATIVE_MODEL=qwen3:14b
+# Gateway routing preference (default cheap = llama_local first).
+# Ollama tags like qwen3:14b are accepted and normalized to cheap.
+OPSLY_CONTENT_VISION_MODEL=cheap
+OPSLY_CONTENT_NARRATIVE_MODEL=cheap
+
+# VPS llm-gateway (Doppler prd) — actual weights
+OLLAMA_URL=http://<pc-gamer-tailscale>:11434
+OLLAMA_MODEL=qwen3:14b
 ```
 
-Without these, FFmpeg deterministic QA alone drives the proven E2E.
-
-Next hardening (do not start a second board): route vision/narrative through
-existing `lib/content-studio/src/llm/client.ts` → LLM Gateway (no direct Ollama
-bypass). Do not clone Auto-clipper/OpenCut/Remotion. Do not continue
-`feat/content-review-board` — it duplicates this PR.
+Without the ENABLE flags + `LLM_GATEWAY_URL`, FFmpeg deterministic QA alone
+drives the proven E2E. Do not clone Auto-clipper/OpenCut/Remotion. Do not
+continue `feat/content-review-board` — it duplicates this PR.
 
 ## Inventory correction (agents)
 

@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { GatewayClient } from '../llm/client.js';
+import { GatewayClient, resolveContentReviewRoutingModel } from '../llm/client.js';
 import type { ReviewFinding } from './types.js';
 
 export interface NarrativeAdapterResult {
@@ -48,17 +48,26 @@ export async function runOptionalNarrativeReview(input: {
     `durationSec: ${input.durationSec}`,
   ].join('\n');
 
+  const routingModel = resolveContentReviewRoutingModel(
+    process.env.OPSLY_CONTENT_NARRATIVE_MODEL,
+    'cheap'
+  );
   const client = new GatewayClient(input.tenantSlug ?? 'opsly', gatewayUrl);
 
   try {
     const text = await client.review(
       'Independent narrative reviewer for Opsly content.',
       prompt,
-      { model: 'sonnet', requestId: newRequestId(), feature: 'content_studio' }
+      { model: routingModel, requestId: newRequestId(), feature: 'content_studio' }
     );
     const match = text.match(/\[[\s\S]*\]/);
     if (!match) {
-      return { used: true, model: 'sonnet', findings: [], notes: ['no JSON findings from narrative model'] };
+      return {
+        used: true,
+        model: routingModel,
+        findings: [],
+        notes: ['no JSON findings from narrative model'],
+      };
     }
     const parsed = JSON.parse(match[0]) as Array<{
       severity?: string;
@@ -84,11 +93,11 @@ export async function runOptionalNarrativeReview(input: {
         evidence: 'narrative:llm-gateway',
         repairable: true,
       }));
-    return { used: true, model: 'sonnet', findings, notes: [] };
+    return { used: true, model: routingModel, findings, notes: [] };
   } catch (error) {
     return {
       used: false,
-      model: 'sonnet',
+      model: routingModel,
       findings: [],
       notes: [`narrative gateway call failed: ${error instanceof Error ? error.message : 'unknown'}`],
     };
