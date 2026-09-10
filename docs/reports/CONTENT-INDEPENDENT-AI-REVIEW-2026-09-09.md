@@ -59,3 +59,21 @@ OPSLY_CONTENT_NARRATIVE_MODEL=qwen3:14b
 ```
 
 Without these, FFmpeg deterministic QA alone drives the proven E2E.
+
+Next hardening (do not start a second board): route vision/narrative through
+existing `lib/content-studio/src/llm/client.ts` → LLM Gateway (no direct Ollama
+bypass). Do not clone Auto-clipper/OpenCut/Remotion. Do not continue
+`feat/content-review-board` — it duplicates this PR.
+
+## Inventory correction (agents)
+
+Inventories run against Mac `docs/mauro-gameplay-pipeline-spec` are **stale**.
+That branch lacks #1155/#1158/#1160 code. Canonical code lives in:
+
+| Capability | Where |
+| --- | --- |
+| Mauro session + gaming channel | #1155 / #1158 |
+| Independent review / repair / versions / distribution | **this PR #1160** |
+| PC-gamer compose stabilize | #1157 |
+
+Night merge order: #1154 → #1157 → #1155 → #1158 → #1160.
