@@ -38,6 +38,7 @@ interface LocalAgentPayload {
   agent_role?: string;
   max_steps?: number;
   model?: string;
+  task_type?: string;
   job_id?: string;
   goal?: string;
   context?: Record<string, unknown>;
@@ -53,6 +54,9 @@ interface LocalAgentResponse {
   durationMs?: number;
   runtime?: string;
   model?: string;
+  task_type?: string;
+  provider?: string;
+  cost_usd?: number;
   errorCode?: string;
   response_path?: string;
   error?: string;
@@ -114,8 +118,7 @@ export function mapLocalAgentBridgeFailure(
           : status === 503
             ? 'AGENT_BINARY_NOT_FOUND'
             : 'BRIDGE_HTTP_ERROR';
-  const raw =
-    stringField(body ?? {}, ['error', 'message']) ?? `${agent} service error: ${status}`;
+  const raw = stringField(body ?? {}, ['error', 'message']) ?? `${agent} service error: ${status}`;
   const message = sanitizeLocalAgentError(raw);
   const unrecoverable =
     status === 400 ||
@@ -187,11 +190,11 @@ async function processLocalAgentJob(
   registry: ReturnType<typeof getAgentServiceRegistry>,
   max_steps: number = 5,
   signal?: AbortSignal,
-  model?: string
+  model?: string,
+  task_type?: string
 ): Promise<LocalAgentResponse> {
   const startTime = Date.now();
-  const cursorDir =
-    process.env.OPSLY_CURSOR_DIR?.trim() || path.join(process.cwd(), '.cursor');
+  const cursorDir = process.env.OPSLY_CURSOR_DIR?.trim() || path.join(process.cwd(), '.cursor');
   const validationOrchestrator = createValidationOrchestrator(cursorDir);
 
   try {
@@ -215,6 +218,7 @@ async function processLocalAgentJob(
         max_steps,
         job_id,
         ...(model ? { model } : {}),
+        ...(task_type ? { task_type } : {}),
       }),
       signal: signal ?? AbortSignal.timeout(service.timeout_ms),
     });
@@ -284,6 +288,9 @@ async function processLocalAgentJob(
         durationMs: Date.now() - startTime,
         runtime: agent,
         model: typeof result.model === 'string' ? result.model : model,
+        task_type,
+        provider: typeof result.provider === 'string' ? result.provider : undefined,
+        cost_usd: typeof result.cost_usd === 'number' ? result.cost_usd : undefined,
         response_path: responsePath,
         execution_time_ms: Date.now() - startTime,
         validation_decision: {
@@ -302,6 +309,9 @@ async function processLocalAgentJob(
       durationMs: Date.now() - startTime,
       runtime: agent,
       model: typeof result.model === 'string' ? result.model : model,
+      task_type,
+      provider: typeof result.provider === 'string' ? result.provider : undefined,
+      cost_usd: typeof result.cost_usd === 'number' ? result.cost_usd : undefined,
       response_path: responsePath || undefined,
       execution_time_ms: Date.now() - startTime,
     };
@@ -367,6 +377,7 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
       const max_steps = payload.max_steps || 5;
       const job_id = payload.job_id || job.id?.toString() || '';
       const model = payload.model;
+      const task_type = payload.task_type;
 
       if (!prompt_content) {
         throw new UnrecoverableError('Empty prompt_content');
@@ -388,25 +399,25 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
             registry,
             max_steps,
             signal,
-            model
+            model,
+            task_type
           );
-        const result = payload.agent_task === undefined
-          ? await process()
-          : await (async () => {
-              const runtime = new AgentTaskRuntime({
-                onEvent: (event) =>
-                  logWorkerInfo('local-agents', event.type, {
-                    request_id: event.request_id,
-                    correlation_id: event.correlation_id,
-                    tenant_slug: event.tenant_slug,
-                    agent: event.agent,
-                    duration_ms: event.duration_ms,
-                    error_code: event.error_code,
-                  }),
-              });
-              const runtimeResult = await runtime.execute(
-                payload.agent_task,
-                {
+        const result =
+          payload.agent_task === undefined
+            ? await process()
+            : await (async () => {
+                const runtime = new AgentTaskRuntime({
+                  onEvent: (event) =>
+                    logWorkerInfo('local-agents', event.type, {
+                      request_id: event.request_id,
+                      correlation_id: event.correlation_id,
+                      tenant_slug: event.tenant_slug,
+                      agent: event.agent,
+                      duration_ms: event.duration_ms,
+                      error_code: event.error_code,
+                    }),
+                });
+                const runtimeResult = await runtime.execute(payload.agent_task, {
                   id: jobType,
                   execute: async ({ signal }) => {
                     const adapterResult = await process(signal);
@@ -416,25 +427,28 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
                       error_code: adapterResult.success ? undefined : 'ADAPTER_EXECUTION_FAILED',
                     };
                   },
+                });
+                if (runtimeResult.status === 'awaiting_approval') {
+                  throw new UnrecoverableError(
+                    'AgentTaskEnvelopeV1 requires approval before execution'
+                  );
                 }
-              );
-              if (runtimeResult.status === 'awaiting_approval') {
-                throw new UnrecoverableError('AgentTaskEnvelopeV1 requires approval before execution');
-              }
-              if (runtimeResult.status === 'timed_out') {
-                throw new Error('AgentTaskEnvelopeV1 execution timed out');
-              }
-              if (runtimeResult.status === 'cancelled') {
-                throw new UnrecoverableError('AgentTaskEnvelopeV1 execution cancelled');
-              }
-              if (runtimeResult.status === 'failed') {
-                throw new Error(runtimeResult.error_code ?? 'AgentTaskEnvelopeV1 execution failed');
-              }
-              const adapterResult = runtimeResult.result;
-              return typeof adapterResult === 'object' && adapterResult !== null
-                ? (adapterResult as LocalAgentResponse)
-                : { success: true, execution_time_ms: runtimeResult.duration_ms };
-            })();
+                if (runtimeResult.status === 'timed_out') {
+                  throw new Error('AgentTaskEnvelopeV1 execution timed out');
+                }
+                if (runtimeResult.status === 'cancelled') {
+                  throw new UnrecoverableError('AgentTaskEnvelopeV1 execution cancelled');
+                }
+                if (runtimeResult.status === 'failed') {
+                  throw new Error(
+                    runtimeResult.error_code ?? 'AgentTaskEnvelopeV1 execution failed'
+                  );
+                }
+                const adapterResult = runtimeResult.result;
+                return typeof adapterResult === 'object' && adapterResult !== null
+                  ? (adapterResult as LocalAgentResponse)
+                  : { success: true, execution_time_ms: runtimeResult.duration_ms };
+              })();
 
         const elapsed = Date.now() - t0;
         logWorkerLifecycle('complete', 'local-agents', job, { duration_ms: elapsed });
