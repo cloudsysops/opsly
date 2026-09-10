@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "description": "Opsly Library Modules Registry",
-  "lastUpdated": "2026-09-05T00:00:00Z",
+  "lastUpdated": "2026-09-09T00:00:00Z",
   "modules": {
     "prompts": {
       "name": "@intcloudsysops/prompts",
@@ -266,12 +266,29 @@
         "buildVideoPrompt"
       ]
     },
+    "content-studio": {
+      "name": "@intcloudsysops/content-studio",
+      "version": "1.0.0",
+      "path": "lib/content-studio",
+      "owner": "operations",
+      "description": "Content OS v2 gameplay/commentary pipeline (canonical) plus event-draft adapters. See config/content-capabilities.json.",
+      "status": "stable",
+      "dependencies": ["universe"],
+      "governance": "lib/content-studio/GOVERNANCE.md",
+      "mainFile": "lib/content-studio/src/content-engine/index.ts",
+      "exports": [
+        "ingestOwnedVideo",
+        "renderTopClips",
+        "evaluateRightsGate",
+        "setProjectApproval"
+      ]
+    },
     "content-engine": {
       "name": "@intcloudsysops/content-engine",
       "version": "1.0.0",
       "path": "lib/content-engine",
       "owner": "operations",
-      "description": "Local-first create→render→approve video pipeline. Character canon is consumed from @intcloudsysops/universe.",
+      "description": "Scene-compose ADAPTER (stills→ffmpeg). Not Mauro gameplay. Character canon from @intcloudsysops/universe.",
       "status": "stable",
       "dependencies": ["universe"],
       "governance": "lib/content-engine/GOVERNANCE.md",

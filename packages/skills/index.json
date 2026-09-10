@@ -674,6 +674,25 @@
       "usage": "Add logging/metrics/tracing, production telemetry, alerting rules, diagnose blind spots in prod",
       "path": "skills/vendor/agent-skills/observability-and-instrumentation/",
       "triggers": ["observability", "instrumentation", "logging", "metrics", "tracing", "alerting", "telemetry", "SLO", "OpenTelemetry", "qué está pasando en prod", "instrumentar"]
+    },
+    {
+      "name": "opsly-content-studio",
+      "version": "1.1.0",
+      "description": "Content OS v2 + anti-duplication. Read config/content-capabilities.json before any clip/highlight/publish work.",
+      "category": "operations",
+      "priority": "high",
+      "usage": "Mauro gameplay, ingest, clips, rights, Moon approval, publish gate",
+      "path": "skills/user/opsly-content-studio/",
+      "triggers": [
+        "content-os",
+        "content-engine",
+        "gameplay",
+        "mauro",
+        "highlight",
+        "clip",
+        "ingest video",
+        "rights gate"
+      ]
     }
   ],
   "categories": {
@@ -686,7 +705,7 @@
     "ai": ["opsly-llm", "opsly-notebooklm", "opsly-feedback-ml", "opsly-ai-sdk-vercel"],
     "integration": ["opsly-mcp", "opsly-claude-codex-review", "opsly-google-cloud"],
     "database": ["opsly-supabase", "opsly-supabase-marketplace"],
-    "operations": ["opsly-tenant", "opsly-peskids"],
+    "operations": ["opsly-tenant", "opsly-peskids", "opsly-content-studio"],
     "infrastructure": ["opsly-infra"],
     "orchestration": ["opsly-orchestrator", "opsly-agent-teams", "opsly-jcode"],
     "billing": ["opsly-billing", "opsly-stripe-marketplace"],
@@ -715,6 +734,7 @@
     "supabase_oficial": ["opsly-supabase", "opsly-supabase-marketplace"],
     "frontend_ai_chat": ["opsly-frontend", "opsly-ai-sdk-vercel"],
     "cierre_tarea_agente": ["opsly-agent-verification", "opsly-qa"],
+    "contenido_video": ["opsly-content-studio", "opsly-modularity"],
     "engineering_workflow": ["using-agent-skills", "spec-driven-development", "planning-and-task-breakdown", "incremental-implementation"],
     "code_quality": ["code-review-and-quality", "code-simplification", "doubt-driven-development"],
     "testing": ["test-driven-development", "browser-testing-with-devtools"],
