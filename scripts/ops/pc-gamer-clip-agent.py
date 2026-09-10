@@ -19,12 +19,22 @@ from typing import Sequence
 VIDEO_EXTENSIONS = {".mp4", ".mov", ".mkv", ".webm"}
 
 
-def build_pipeline_command(repo_root: Path, tenant: str, media_file: Path) -> list[str]:
+ALLOWED_PIPELINES = {"prepare-highlight", "prepare-session"}
+
+
+def build_pipeline_command(
+    repo_root: Path,
+    tenant: str,
+    media_file: Path,
+    pipeline: str = "prepare-highlight",
+) -> list[str]:
+    if pipeline not in ALLOWED_PIPELINES:
+        raise ValueError(f"unsupported pipeline: {pipeline}")
     return [
         "npx",
         "tsx",
         "scripts/content-os-cli.ts",
-        "prepare-highlight",
+        pipeline,
         "--tenant",
         tenant,
         "--file",
@@ -53,10 +63,15 @@ def parse_project_id(stdout: str) -> str:
     return project_id
 
 
-def run_clip_job(repo_root: Path, tenant: str, media_file: Path) -> dict[str, object]:
+def run_clip_job(
+    repo_root: Path,
+    tenant: str,
+    media_file: Path,
+    pipeline: str = "prepare-highlight",
+) -> dict[str, object]:
     validate_media_file(media_file)
     completed = subprocess.run(
-        build_pipeline_command(repo_root, tenant, media_file),
+        build_pipeline_command(repo_root, tenant, media_file, pipeline),
         cwd=repo_root,
         capture_output=True,
         text=True,
@@ -73,6 +88,7 @@ def run_clip_job(repo_root: Path, tenant: str, media_file: Path) -> dict[str, ob
         "tenant": tenant,
         "project_id": parse_project_id(completed.stdout),
         "source": str(media_file),
+        "pipeline": pipeline,
         "approval_required": True,
         "publishing": "disabled",
     }
@@ -82,6 +98,11 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tenant", default="icso-gaming-tbd")
     parser.add_argument("--file", required=True, type=Path)
+    parser.add_argument(
+        "--pipeline",
+        default="prepare-highlight",
+        choices=sorted(ALLOWED_PIPELINES),
+    )
     parser.add_argument(
         "--repo-root",
         type=Path,
@@ -93,7 +114,12 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
     try:
-        result = run_clip_job(args.repo_root.resolve(), args.tenant, args.file.resolve())
+        result = run_clip_job(
+            args.repo_root.resolve(),
+            args.tenant,
+            args.file.resolve(),
+            args.pipeline,
+        )
     except (OSError, RuntimeError, ValueError) as error:
         print(json.dumps({"ok": False, "agent": "pc-gamer-clip-agent", "error": str(error)}))
         return 1

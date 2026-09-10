@@ -36,8 +36,8 @@ export function pickCommand(filePath, folders) {
   }
   if (isInside(filePath, folders.instantReplayDir)) {
     return {
-      cmd: 'ingest',
-      args: ['--tenant', 'icso-gaming-tbd', '--mode', 'original', '--file', filePath],
+      cmd: 'prepare-session',
+      args: ['--tenant', 'icso-gaming-tbd', '--file', filePath],
     };
   }
   throw new Error(`gameplay file is outside configured folders: ${filePath}`);
@@ -48,8 +48,8 @@ const STABLE_CHECK_DELAY_MS = 5000;
 
 function runCli(cmd, args) {
   const command =
-    cmd === 'prepare-highlight'
-      ? ['python3', 'scripts/ops/pc-gamer-clip-agent.py', ...args]
+    cmd === 'prepare-highlight' || cmd === 'prepare-session'
+      ? ['python3', 'scripts/ops/pc-gamer-clip-agent.py', '--pipeline', cmd, ...args]
       : ['npx', 'tsx', 'scripts/content-os-cli.ts', cmd, ...args];
   return new Promise((resolve, reject) => {
     const child = spawn(command[0], command.slice(1), { stdio: 'inherit' });

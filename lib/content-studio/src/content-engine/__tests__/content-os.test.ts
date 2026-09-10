@@ -279,6 +279,13 @@ describe('content os contracts', () => {
       approvedAt: '2026-08-16T00:00:00.000Z',
     });
     expect(approved.project.status).toBe('approved');
+    const rejected = setProjectApproval(queued, {
+      state: 'rejected',
+      approvedBy: 'human',
+      approvedAt: '2026-08-16T00:00:00.000Z',
+    });
+    expect(rejected.project.status).toBe('failed');
+    expect(rejected.approval?.state).toBe('rejected');
   });
 
   it('enforces tenant isolation on assertSameTenant', () => {
