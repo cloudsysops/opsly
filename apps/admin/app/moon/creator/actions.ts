@@ -19,6 +19,11 @@ export async function rejectCreatorProjectAction(formData: FormData): Promise<vo
   if (!tenantId || !projectId) {
     throw new Error('tenantId and projectId required');
   }
-  await rejectCreatorProject(tenantId, projectId, 'moon-human', 'Rejected from Moon Creator Studio');
+  await rejectCreatorProject(
+    tenantId,
+    projectId,
+    'moon-human',
+    'Rejected from Moon Creator Studio'
+  );
   revalidatePath('/moon/creator');
 }
