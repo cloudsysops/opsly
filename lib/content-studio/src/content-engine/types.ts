@@ -7,6 +7,9 @@ export const contentChannelValues = [
   'splashitos',
   'opsly-universe',
   'peskids',
+  // Placeholder slug — youth/adult gaming channel, brand/name not decided yet.
+  // Rename everywhere this string appears once branding lands.
+  'icso-gaming-tbd',
 ] as const;
 export type ContentChannel = (typeof contentChannelValues)[number];
 
@@ -451,6 +454,7 @@ export interface ContentProjectEnvelope {
   research?: string[];
   brandKit?: BrandKit;
   universeContext?: UniverseProjectBinding;
+  qaFlags?: string[];
 }
 
 export interface ContentProjectCreateInput {

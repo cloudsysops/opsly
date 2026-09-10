@@ -34,6 +34,7 @@ const CHANNEL_FEATURED_FALLBACK: Record<ContentChannel, readonly string[]> = {
   splashitos: ['orion', 'kai', 'wavo'],
   peskids: ['orion', 'kai', 'wavo'],
   'opsly-universe': ['traveler', 'nova', 'echo'],
+  'icso-gaming-tbd': [],
 };
 
 function worldIdToPortal(worldId: string): ContentPortal | null {
@@ -134,7 +135,7 @@ export function composeUniverseForProject(envelope: ContentProjectEnvelope): Uni
     envelope.project.learningGoal ?? envelope.project.question ?? envelope.project.title;
   const characterIds = featuredCharacterIdsForChannel(channel);
   const context = universe.getContext({
-    characters: characterIds,
+    characters: characterIds.length > 0 ? characterIds : undefined,
     topic,
     audience: audienceForProject(envelope.project.audience),
     tenant,
