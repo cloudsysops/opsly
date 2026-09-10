@@ -36,6 +36,37 @@ Si varios agentes tocan el mismo tema, **una rama coordinada** o PRs encadenados
 
 ## Regla de sesión
 
+### Preservación de trabajo entre máquinas
+
+Obligatorio para Mac de administración, PC gamer, workers y VPS, y para todos los
+agentes. Reutilizar el flujo Git y los hooks existentes; no crear otro autosync.
+
+1. Antes de pull, cambio de rama, cierre o entrega, inventariar **cada worktree**:
+   cambios staged/unstaged/untracked, stash y commits locales. Comparar con refs
+   remotas actualizadas. Un SHA ausente del remoto no prueba trabajo perdido:
+   comprobar también squash/rebase y PR equivalentes.
+2. Identificar al agente/tema dueño. Si sigue escribiendo, coordinar un punto de
+   entrega; no cambiar su rama, índice ni archivos. Separar trabajos distintos.
+3. Revisar diff, secretos, PII y artefactos generados. Código/documentación útil
+   se guarda en una rama temática con commit **con hooks**. No usar `git add .`
+   sobre un árbol mixto. Cachés, logs, credenciales y vídeos no se suben a Git;
+   los assets requieren el almacenamiento aprobado y su referencia verificable.
+4. Hacer push normal de la rama y verificar que su SHA está en el remoto. Abrir
+   o actualizar PR según el flujo vigente. No push directo a main, force push,
+   saltos de hooks ni cambios de política para conseguir un respaldo.
+5. Si falla un control, conservar el trabajo local y reportar ruta, rama, SHA,
+   archivos pendientes y error exacto. No declararlo respaldado ni eliminarlo.
+6. En VPS, no convertir el respaldo en deploy ni actualizar automáticamente el
+   checkout de producción. Preservación, revisión, merge y release son pasos
+   separados. Nunca reset/clean/stash-drop ni borrado de ramas como parte de este
+   procedimiento.
+7. Cerrar con evidencia por máquina: `máquina | worktree | rama | SHA local |
+   SHA remoto verificado | PR | pendientes | bloqueo`. Una máquina inaccesible
+   se marca NO_VERIFICADA; nunca «sin pendientes» por falta de acceso.
+
+Esta regla exige evidencia de preservación; no es autorización para publicar
+automáticamente trabajo ajeno, secretos o cambios sin validar.
+
 - Una sesión debe tener **una rama y un tema dominante**.
 - Si el worktree mezcla áreas grandes distintas, dividir antes de seguir.
 - Si se empieza en `main` con cambios locales, crear rama antes de editar.

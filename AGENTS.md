@@ -12,6 +12,13 @@ last_review: 2026-09-07
 
 ## SYSTEM — Git (hard fail)
 
+**Respaldo obligatorio entre máquinas:** antes de cerrar sesión, cambiar de rama,
+actualizar un clon o entregar trabajo, aplicar la sección «Preservación de trabajo
+entre máquinas» de `docs/01-development/GIT-WORKFLOW.md`. Un commit local no es
+respaldo remoto. Reportar máquina, worktree, rama, SHA remoto verificado, PR y
+pendientes/bloqueantes. Nunca cerrar como «respaldado» si el push no se verificó.
+No mezclar cambios de agentes activos ni subir secretos, PII, cachés o renders.
+
 Aplica a **todos** los agentes (Cursor, Claude, OpenCode, Copilot, Jules, workers). Estas reglas ganan sobre “terminar la tarea”.
 
 **Prohibido (no ejecutar nunca):**
