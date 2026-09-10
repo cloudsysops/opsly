@@ -132,4 +132,18 @@ describe('compute-worker-router', () => {
     assert.equal(snap.queues['content-video'].waiting, 2);
     assert.ok(snap.jobTypes.includes('ai.local.inference'));
   });
+
+  it('routes content.review through the ollama/openclaw job (llm.local)', () => {
+    const review = assignJob(freshRegistry(), 'content.review', {}, now);
+    assert.equal(review.ok, true);
+    assert.equal(review.action, 'enqueue');
+    assert.equal(review.queue, 'openclaw');
+    assert.equal(review.jobName, 'ollama');
+  });
+
+  it('declares content.transcribe as capability-only (runtime not installed)', () => {
+    const transcription = assignJob(freshRegistry(), 'content.transcribe', {}, now);
+    assert.equal(transcription.ok, false);
+    assert.equal(transcription.reason, 'runtime_not_installed');
+  });
 });
