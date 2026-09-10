@@ -7,6 +7,9 @@ export const contentChannelValues = [
   'splashitos',
   'opsly-universe',
   'peskids',
+  // Placeholder slug — youth/adult gaming channel, brand/name not decided yet.
+  // Rename everywhere this string appears once branding lands.
+  'icso-gaming-tbd',
 ] as const;
 export type ContentChannel = (typeof contentChannelValues)[number];
 
@@ -330,6 +333,30 @@ export interface ContentTranscript {
   segments: TranscriptSegment[];
 }
 
+export const highlightScoreDimensionValues = [
+  'ENTERTAINMENT',
+  'REACTION_STRENGTH',
+  'HOOK',
+  'CLARITY',
+  'VISUAL_QUALITY',
+  'STORY_VALUE',
+  'TECH_CONNECTION',
+  'UNIQUENESS',
+  'DUPLICATION',
+  'RIGHTS_RISK',
+] as const;
+export type HighlightScoreDimension = (typeof highlightScoreDimensionValues)[number];
+export type HighlightScoreBreakdown = Record<HighlightScoreDimension, number>;
+
+export const dragonCyberModeValues = [
+  'NONE',
+  'COMMENTARY',
+  'REACTION',
+  'TECH_CONNECTION',
+  'STORY_CROSSOVER',
+] as const;
+export type DragonCyberMode = (typeof dragonCyberModeValues)[number];
+
 export interface ClipCandidate {
   id: string;
   start: number;
@@ -340,6 +367,50 @@ export interface ClipCandidate {
   category: string;
   score: number;
   reasons: string[];
+  scoreBreakdown?: HighlightScoreBreakdown;
+  recommendedFormats?: ContentFormat[];
+  dragonMode?: DragonCyberMode;
+}
+
+export const gameplayCaptureSourceValues = [
+  'obs',
+  'nvidia_instant_replay',
+  'nvidia_highlight',
+  'synthetic',
+] as const;
+export type GameplayCaptureSource = (typeof gameplayCaptureSourceValues)[number];
+
+export interface GameplaySessionMeta {
+  sessionId: string;
+  tenant: string;
+  channel: ContentChannel;
+  game: string;
+  startedAt: string;
+  endedAt: string;
+  sourceFile: string;
+  duration: number;
+  captureSource: GameplayCaptureSource;
+  processingStatus: string;
+}
+
+export const contentPublishJobStatusValues = [
+  'queued',
+  'scheduled',
+  'published',
+  'failed',
+] as const;
+export type ContentPublishJobStatus = (typeof contentPublishJobStatusValues)[number];
+
+export interface ContentPublishJob {
+  id: string;
+  platform: 'youtube' | 'instagram' | 'tiktok';
+  status: ContentPublishJobStatus;
+  scheduledAt?: string;
+  publishedAt?: string;
+  url?: string;
+  error?: string;
+  retryCount: number;
+  externalPostId?: string;
 }
 
 export interface RightsGateResult {
@@ -451,6 +522,10 @@ export interface ContentProjectEnvelope {
   research?: string[];
   brandKit?: BrandKit;
   universeContext?: UniverseProjectBinding;
+  qaFlags?: string[];
+  session?: GameplaySessionMeta;
+  selectedClipIds?: string[];
+  publishJobs?: ContentPublishJob[];
 }
 
 export interface ContentProjectCreateInput {

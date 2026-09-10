@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Opsly PC-gamer safe content retention
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+Unit=opsly-pc-gamer-content-retention.service
+
+[Install]
+WantedBy=timers.target

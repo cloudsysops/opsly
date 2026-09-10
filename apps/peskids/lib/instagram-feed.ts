@@ -66,8 +66,8 @@ export const INSTAGRAM_FALLBACK_ITEMS: InstagramFeedItem[] = [
     mediaType: 'reel',
     fallback: {
       tone: 'sun',
-      title: 'Clase de prueba',
-      body: 'Reserva por DM o formulario web. Te esperamos en la sede.',
+      title: 'Matrícula abierta',
+      body: 'Completa el formulario web o escríbenos. Te esperamos en la sede.',
       mediaLabel: 'Reel',
     },
   },

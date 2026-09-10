@@ -4,12 +4,10 @@ import type { DashboardLead } from '@/lib/services/lead-admin.service';
 const {
   getLeadForAdminMock,
   listFollowupsMock,
-  listTrialClassesMock,
   decorateLeadWithCrmUrlsMock,
 } = vi.hoisted(() => ({
   getLeadForAdminMock: vi.fn(),
   listFollowupsMock: vi.fn(),
-  listTrialClassesMock: vi.fn(),
   decorateLeadWithCrmUrlsMock: vi.fn(),
 }));
 
@@ -21,12 +19,16 @@ vi.mock('@/lib/services/followup-admin.service', () => ({
   listFollowups: listFollowupsMock,
 }));
 
-vi.mock('@/lib/services/trial-class.service', () => ({
-  listTrialClasses: listTrialClassesMock,
-}));
-
 vi.mock('@/lib/services/dashboard.service', () => ({
   decorateLeadWithCrmUrls: decorateLeadWithCrmUrlsMock,
+}));
+
+vi.mock('@/lib/enrollment-access/store', () => ({
+  supabaseEnrollmentLeadStore: {
+    getById: vi.fn().mockResolvedValue(null),
+    findByTokenHash: vi.fn(),
+    saveMetadata: vi.fn(),
+  },
 }));
 
 import { getLead360 } from '@/lib/services/lead-360.service';
@@ -72,10 +74,9 @@ describe('getLead360', () => {
 
     expect(result).toBeNull();
     expect(listFollowupsMock).not.toHaveBeenCalled();
-    expect(listTrialClassesMock).not.toHaveBeenCalled();
   });
 
-  it('aggregates lead, followups, trials, aging badge and timeline', async () => {
+  it('aggregates lead, followups, aging badge and canonical timeline', async () => {
     getLeadForAdminMock.mockResolvedValue(baseLead);
     listFollowupsMock.mockResolvedValue([
       {
@@ -96,23 +97,6 @@ describe('getLead360', () => {
         contact_name: baseLead.name,
       },
     ]);
-    listTrialClassesMock.mockResolvedValue([
-      {
-        id: 't1',
-        tenant_id: 'peskids',
-        lead_id: baseLead.id,
-        scheduled_date: '2026-07-25',
-        scheduled_time: '15:00:00',
-        modality: 'llanogrande',
-        teacher_name: null,
-        notes: null,
-        status: 'scheduled',
-        created_at: '2026-07-23T09:00:00.000Z',
-        updated_at: '2026-07-23T09:00:00.000Z',
-        lead_name: baseLead.name,
-        lead_email: baseLead.email,
-      },
-    ]);
 
     const now = new Date('2026-07-23T12:00:00.000Z');
     vi.useFakeTimers();
@@ -128,22 +112,70 @@ describe('getLead360', () => {
       contact_type: 'lead',
       contact_id: baseLead.id,
     });
-    expect(listTrialClassesMock).toHaveBeenCalledWith({ lead_id: baseLead.id });
     expect(decorateLeadWithCrmUrlsMock).toHaveBeenCalledWith(baseLead);
 
     expect(result?.lead.twenty_person_url).toContain('person-1');
     expect(result?.followups).toHaveLength(1);
-    expect(result?.trials).toHaveLength(1);
+    expect(result?.trials).toEqual([]);
+    expect(result?.enrollment.next_action).toBe('SEND_ENROLLMENT_LINK');
     expect(result?.aging_badge?.bucket).toBe('escalation_48h');
 
     const labels = result?.timeline.map((entry) => entry.label) ?? [];
     expect(labels).toContain('Interesado registrado');
     expect(labels.some((label) => label.startsWith('Seguimiento'))).toBe(true);
-    expect(labels.some((label) => label.startsWith('Clase de prueba'))).toBe(true);
+    expect(labels.some((label) => label.includes('Clase de prueba'))).toBe(false);
     expect(labels).toContain('Registro sincronizado con Twenty CRM');
     expect(result?.timeline.length).toBeGreaterThan(1);
     const firstEntry = result?.timeline[0];
     const secondEntry = result?.timeline[1];
     expect(firstEntry && secondEntry && firstEntry.at >= secondEntry.at).toBe(true);
+  });
+
+  it('surfaces PREPARE FIRST CLASS and enrollment timeline after a successful submit', async () => {
+    getLeadForAdminMock.mockResolvedValue({ ...baseLead, status: 'enrolled' });
+    listFollowupsMock.mockResolvedValue([]);
+    const { supabaseEnrollmentLeadStore } = await import('@/lib/enrollment-access/store');
+    vi.mocked(supabaseEnrollmentLeadStore.getById).mockResolvedValue({
+      id: baseLead.id,
+      tenant_slug: 'peskids',
+      status: 'enrolled',
+      referral_source: 'instagram',
+      created_at: baseLead.created_at,
+      metadata: {
+        campaign: 'ig-sept',
+        first_class: { status: 'pending' },
+        enrollment_outcome: {
+          lead_id: baseLead.id,
+          family: { link: 'created', family_ref: 'fam_abc' },
+          student: { link: 'created', student_id: 'stu-1' },
+          source: 'instagram',
+          campaign: 'ig-sept',
+          request_id: 'req-1',
+          enrolled_at: '2026-07-22T10:00:00.000Z',
+        },
+        enrollment_timeline: [
+          { at: '2026-07-21T11:00:00.000Z', kind: 'enrollment.link.created' },
+          { at: '2026-07-21T12:00:00.000Z', kind: 'enrollment.link.opened' },
+          { at: '2026-07-22T10:00:00.000Z', kind: 'enrollment.form.submitted' },
+          { at: '2026-07-22T10:00:01.000Z', kind: 'student.enrolled' },
+        ],
+      },
+    });
+
+    const result = await getLead360(baseLead.id, 'peskids');
+    expect(result?.enrollment.next_action).toBe('PREPARE_FIRST_CLASS');
+    expect(result?.enrollment.student_id).toBe('stu-1');
+    expect(result?.enrollment.family_ref).toBe('fam_abc');
+    expect(result?.enrollment.first_class).toBe('pending');
+    const kinds = result?.timeline.map((entry) => entry.kind) ?? [];
+    expect(kinds).toEqual(
+      expect.arrayContaining([
+        'enrollment.link.created',
+        'enrollment.link.opened',
+        'enrollment.form.submitted',
+        'student.enrolled',
+      ])
+    );
+    expect(kinds).not.toContain('whatsapp.sent');
   });
 });

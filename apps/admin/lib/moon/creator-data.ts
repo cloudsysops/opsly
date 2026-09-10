@@ -11,6 +11,7 @@ import {
   loadProjectEnvelopeByTenant,
   saveProjectEnvelope,
   setProjectApproval,
+  enqueueApprovedPublishJob,
   type ContentProjectEnvelope,
   type ContentProjectStatus,
 } from '@intcloudsysops/content-studio/studio';
@@ -79,11 +80,29 @@ export async function approveCreatorProject(
   if (rights.verdict === 'BLOCKED') {
     throw new Error(`RightsGate BLOCKED: ${rights.reasons.join('; ')}`);
   }
-  const next = setProjectApproval(envelope, {
+  const approved = setProjectApproval(envelope, {
     state: 'approved',
     approvedBy: reviewer,
     approvedAt: new Date().toISOString(),
     reviewNotes: `Moon human approval. Rights ${rights.verdict}`,
+  });
+  const next = enqueueApprovedPublishJob(approved);
+  await saveProjectEnvelope(next);
+}
+
+export async function rejectCreatorProject(
+  tenantId: string,
+  projectId: string,
+  reviewer: string,
+  notes?: string
+): Promise<void> {
+  const envelope = await loadProjectEnvelopeByTenant(tenantId, projectId);
+  assertSameTenant(envelope, tenantId);
+  const next = setProjectApproval(envelope, {
+    state: 'rejected',
+    approvedBy: reviewer,
+    approvedAt: new Date().toISOString(),
+    reviewNotes: notes ?? 'Moon human rejection',
   });
   await saveProjectEnvelope(next);
 }

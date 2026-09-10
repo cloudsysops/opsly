@@ -13,5 +13,7 @@ export * from './transcribe.js';
 export * from './pipeline.js';
 export * from './trends.js';
 export * from './publishing.js';
+export * from './highlight-score.js';
+export * from './session-artifacts.js';
 export * from './capabilities.js';
 export * from './universe-bridge.js';

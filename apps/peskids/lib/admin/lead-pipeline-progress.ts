@@ -22,7 +22,7 @@ export const LEAD_PIPELINE_STAGES: readonly LeadPipelineStage[] = [
   { id: 'new', label: 'Nuevo' },
   { id: 'contacted', label: 'Contactado' },
   { id: 'enrolled', label: 'Matriculado' },
-  { id: 'trial', label: 'Clase programada' },
+  { id: 'trial', label: 'Primera clase' },
 ] as const;
 
 export type LeadPipelineStepState = 'done' | 'current' | 'upcoming' | 'skipped';
@@ -69,7 +69,7 @@ export function buildLeadPipelineProgress(
   });
 
   const stages = LEAD_PIPELINE_STAGES.map((stage) =>
-    stage.id === 'trial' && firstClassAttended ? { ...stage, label: 'Primera clase' } : stage
+    stage.id === 'trial' ? { ...stage, label: firstClassAttended ? 'Primera clase asistida' : 'Primera clase' } : stage
   );
 
   return {
@@ -83,7 +83,7 @@ export function buildLeadPipelineProgress(
 export const LEAD_STATUS_LABEL: Record<LeadAdminStatus, string> = {
   new: 'Nuevo',
   contacted: 'Contactado',
-  trial: 'Clase programada',
+  trial: 'Matrícula / primera clase',
   enrolled: 'Matriculado',
   active: 'Activo',
   renewal: 'Renovación',

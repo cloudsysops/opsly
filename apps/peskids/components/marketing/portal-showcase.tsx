@@ -75,7 +75,7 @@ const adminLeads = [
   {
     name: 'Camila Restrepo',
     email: 'camila@correo.com',
-    note: 'Etapa 2 · solicita clase de prueba',
+    note: 'Etapa 2 · completar matrícula',
     tone: 'teal',
   },
   {

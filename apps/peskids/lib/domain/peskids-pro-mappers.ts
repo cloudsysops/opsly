@@ -35,8 +35,7 @@ export type FollowUpTypeLive = 'call' | 'email' | 'sms' | 'in-person';
 export type TwentyOpportunityStageSlug =
   | 'NEW'
   | 'CONTACTED'
-  | 'TRIAL_SCHEDULED'
-  | 'TRIAL_COMPLETED'
+  | 'ENROLLMENT'
   | 'ENROLLED'
   | 'LOST';
 
@@ -47,8 +46,7 @@ export function adminLeadStatusToPro(status: AdminLeadStatusLive): LeadStatus {
     case 'contacted':
       return 'contacted';
     case 'trial':
-      // Live admin collapses scheduled+completed into one stage.
-      return 'trial_scheduled';
+      return 'enrollment_in_progress';
     case 'enrolled':
       return 'enrolled';
     case 'archived':
@@ -66,8 +64,7 @@ export function proLeadStatusToAdmin(status: LeadStatus): AdminLeadStatusLive {
       return 'new';
     case 'contacted':
       return 'contacted';
-    case 'trial_scheduled':
-    case 'trial_completed':
+    case 'enrollment_in_progress':
       return 'trial';
     case 'enrolled':
       return 'enrolled';
@@ -87,7 +84,7 @@ export function platformLeadStatusToPro(status: PlatformLeadStatusLive): LeadSta
     case 'contacted':
       return 'contacted';
     case 'qualified':
-      return 'trial_scheduled';
+      return 'enrollment_in_progress';
     case 'converted':
       return 'enrolled';
     case 'lost':
@@ -105,8 +102,7 @@ export function proLeadStatusToPlatform(status: LeadStatus): PlatformLeadStatusL
       return 'new';
     case 'contacted':
       return 'contacted';
-    case 'trial_scheduled':
-    case 'trial_completed':
+    case 'enrollment_in_progress':
       return 'qualified';
     case 'enrolled':
       return 'converted';
@@ -125,10 +121,8 @@ export function proLeadStatusToTwentyStageSlug(status: LeadStatus): TwentyOpport
       return 'NEW';
     case 'contacted':
       return 'CONTACTED';
-    case 'trial_scheduled':
-      return 'TRIAL_SCHEDULED';
-    case 'trial_completed':
-      return 'TRIAL_COMPLETED';
+    case 'enrollment_in_progress':
+      return 'ENROLLMENT';
     case 'enrolled':
       return 'ENROLLED';
     case 'lost':
@@ -225,6 +219,8 @@ export function normalizeLeadSource(raw: string | null | undefined): LeadSource 
   if (['referral', 'friend', 'recomendacion', 'recomendación'].includes(value)) {
     return 'referral';
   }
+  if (['qr', 'qr_code', 'codigo qr'].includes(value)) return 'qr';
+  if (['ads', 'ad', 'paid', 'meta_ads', 'google_ads'].includes(value)) return 'ads';
   if (['whatsapp', 'wa', 'wsp'].includes(value)) return 'whatsapp';
   return 'other';
 }

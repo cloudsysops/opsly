@@ -75,6 +75,12 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
   {
     app: 'control',
     methods: ['GET'],
+    path: '/api/admin/compute-workers',
+    file: 'apps/api/app/api/admin/compute-workers/route.ts',
+  },
+  {
+    app: 'control',
+    methods: ['GET'],
     path: '/api/admin/mission-control/orchestrator',
     file: 'apps/api/app/api/admin/mission-control/orchestrator/route.ts',
   },

@@ -43,7 +43,7 @@ function buildConfirmationHtml(row: PeskidsLeadRow): string {
       <p>Recibimos tu interés en Peskids${
         modality ? ` (${modality})` : ''
       } para el grado <strong>${grade}</strong>.</p>
-      <p>Nuestro equipo te contactará pronto por WhatsApp o teléfono para agendar una clase de prueba.</p>
+      <p>Nuestro equipo te contactará pronto por WhatsApp o teléfono para enviarte el formulario de matrícula.</p>
       ${
         waLink ? `<p>Si quieres escribirnos ahora: <a href="${waLink}">abrir WhatsApp</a>.</p>` : ''
       }

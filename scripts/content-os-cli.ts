@@ -16,8 +16,13 @@ import {
   transcribeProject,
   discoverProjectClips,
   ingestOwnedVideo,
+  ingestPrecutHighlight,
+  preparePrecutHighlight,
+  prepareGameplaySession,
   copyEvidenceBundle,
 } from '../lib/content-studio/src/content-engine/pipeline.ts';
+import { enqueueApprovedPublishJob } from '../lib/content-studio/src/content-engine/publishing.ts';
+import type { GameplayCaptureSource } from '../lib/content-studio/src/content-engine/types.ts';
 import { getContentArtifactsRoot, getContentProjectArtifactsRoot } from '../lib/content-studio/src/content-engine/paths.ts';
 import { thumbnail } from '../lib/content-studio/src/content-engine/ffmpeg.ts';
 import { createManualTrendCandidate, saveTrendCandidate } from '../lib/content-studio/src/content-engine/trends.ts';
@@ -64,6 +69,44 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (cmd === 'ingest-highlight') {
+    if (!file) throw new Error('--file is required');
+    const envelope = await ingestPrecutHighlight({ tenantId: tenant, filePath: path.resolve(file) });
+    console.log(envelope.project.id);
+    return;
+  }
+
+  if (cmd === 'prepare-highlight') {
+    if (!file) throw new Error('--file is required');
+    const envelope = await preparePrecutHighlight({ tenantId: tenant, filePath: path.resolve(file) });
+    console.log(envelope.project.id);
+    return;
+  }
+
+  if (cmd === 'prepare-session') {
+    if (!file) throw new Error('--file is required');
+    const requestedSource = arg('--source') ?? 'nvidia_instant_replay';
+    const captureSources: readonly GameplayCaptureSource[] = [
+      'obs',
+      'nvidia_instant_replay',
+      'nvidia_highlight',
+      'synthetic',
+    ];
+    const captureSource = captureSources.find((item) => item === requestedSource);
+    if (!captureSource) {
+      throw new Error(`unsupported --source: ${requestedSource}`);
+    }
+    const envelope = await prepareGameplaySession({
+      tenantId: tenant,
+      filePath: path.resolve(file),
+      game: arg('--game') ?? 'unknown',
+      captureSource,
+      title: arg('--title'),
+    });
+    console.log(envelope.project.id);
+    return;
+  }
+
   if (cmd === 'transcribe') {
     const envelope = await loadProjectEnvelopeByTenant(tenant, projectId);
     const next = await transcribeProject(envelope);
@@ -98,10 +141,24 @@ async function main(): Promise<void> {
 
   if (cmd === 'approve') {
     const envelope = await loadProjectEnvelopeByTenant(tenant, projectId);
-    const next = setProjectApproval(envelope, {
+    const approved = setProjectApproval(envelope, {
       state: 'approved',
       approvedBy: arg('--by') ?? 'human',
       approvedAt: new Date().toISOString(),
+    });
+    const next = enqueueApprovedPublishJob(approved);
+    await saveProjectEnvelope(next);
+    console.log(next.project.status);
+    return;
+  }
+
+  if (cmd === 'reject') {
+    const envelope = await loadProjectEnvelopeByTenant(tenant, projectId);
+    const next = setProjectApproval(envelope, {
+      state: 'rejected',
+      approvedBy: arg('--by') ?? 'human',
+      approvedAt: new Date().toISOString(),
+      reviewNotes: arg('--notes') ?? 'Rejected in Content Studio review',
     });
     await saveProjectEnvelope(next);
     console.log(next.project.status);
@@ -201,7 +258,7 @@ async function main(): Promise<void> {
     return;
   }
 
-  console.log(`commands: create ingest transcribe discover-clips clips validate rights-check metadata approve list trend render-plan thumbnail slice render original commentary demo`);
+  console.log(`commands: create ingest ingest-highlight prepare-highlight prepare-session transcribe discover-clips clips validate rights-check metadata approve reject list trend render-plan thumbnail slice render original commentary demo`);
 }
 
 main().catch((error: unknown) => {

@@ -16,6 +16,22 @@ export type FfmpegOp =
   | 'titleCard'
   | 'overlayCharacter';
 
+export interface SilenceInterval {
+  start: number;
+  end: number;
+}
+
+export function parseSilenceDetectOutput(stderr: string): SilenceInterval[] {
+  const starts = [...stderr.matchAll(/silence_start:\s*(-?[\d.]+)/g)].map((m) => Number(m[1]));
+  const ends = [...stderr.matchAll(/silence_end:\s*(-?[\d.]+)/g)].map((m) => Number(m[1]));
+  const count = Math.min(starts.length, ends.length);
+  const intervals: SilenceInterval[] = [];
+  for (let i = 0; i < count; i += 1) {
+    intervals.push({ start: starts[i], end: ends[i] });
+  }
+  return intervals;
+}
+
 function assertSafePath(filePath: string): string {
   const resolved = path.resolve(filePath);
   if (resolved.includes('\0')) {
@@ -38,6 +54,28 @@ function runFfmpeg(args: string[]): Promise<void> {
         return;
       }
       reject(new Error(`ffmpeg failed (${code}): ${stderr.slice(-800)}`));
+    });
+  });
+}
+
+export function detectSilence(input: string, noiseDb = -30, minDurationSec = 0.5): Promise<SilenceInterval[]> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(
+      'ffmpeg',
+      ['-i', assertSafePath(input), '-af', `silencedetect=noise=${noiseDb}dB:d=${minDurationSec}`, '-f', 'null', '-'],
+      { stdio: ['ignore', 'ignore', 'pipe'] }
+    );
+    let stderr = '';
+    child.stderr.on('data', (chunk: Buffer) => {
+      stderr += chunk.toString();
+    });
+    child.on('error', reject);
+    child.on('close', (code) => {
+      if (code !== 0) {
+        reject(new Error(`ffmpeg silencedetect failed (${code}): ${stderr.slice(-800)}`));
+        return;
+      }
+      resolve(parseSilenceDetectOutput(stderr));
     });
   });
 }
@@ -312,6 +350,30 @@ export async function generateOwnedFixture(output: string, durationSec = 48): Pr
     'lavfi',
     '-i',
     `sine=f=440:d=${durationSec}`,
+    '-c:v',
+    'libx264',
+    '-c:a',
+    'aac',
+    '-shortest',
+    '-pix_fmt',
+    'yuv420p',
+    assertSafePath(output),
+  ]);
+}
+
+/** Synthetic gameplay with loud bursts separated by silence — for audio-peak discovery. */
+export async function generatePeakedGameplayFixture(output: string): Promise<void> {
+  fs.mkdirSync(path.dirname(output), { recursive: true });
+  await runFfmpeg([
+    '-y',
+    '-f',
+    'lavfi',
+    '-i',
+    'color=c=0x1a1a2e:s=1280x720:d=19',
+    '-f',
+    'lavfi',
+    '-i',
+    "sine=f=440:d=19,volume=eval=frame:volume='if(between(t,0,5)+between(t,7,12)+between(t,14,19),1,0)'",
     '-c:v',
     'libx264',
     '-c:a',

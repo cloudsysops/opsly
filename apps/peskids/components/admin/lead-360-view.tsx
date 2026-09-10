@@ -138,6 +138,10 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
   const [notesDraft, setNotesDraft] = useState('');
   const [showFollowupForm, setShowFollowupForm] = useState(false);
   const [followupDraft, setFollowupDraft] = useState<FollowupDraft>(() => emptyFollowupDraft());
+  const [enrollmentDraft, setEnrollmentDraft] = useState<{
+    url: string;
+    message: string;
+  } | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -154,6 +158,15 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
         trials: json.trials,
         aging_badge: json.aging_badge,
         timeline: json.timeline,
+        enrollment: json.enrollment ?? {
+          state: 'none',
+          expires_at: null,
+          family_ref: null,
+          family_link: null,
+          student_id: null,
+          first_class: null,
+          next_action: 'SEND_ENROLLMENT_LINK',
+        },
       });
       setStatusDraft(toAdminStatus(json.lead.status));
       setNotesDraft(json.lead.admin_notes ?? '');
@@ -353,6 +366,17 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
         )}
       </section>
 
+      <EnrollmentNextActionCard
+        leadId={leadId}
+        enrollment={payload.enrollment}
+        draft={enrollmentDraft}
+        busy={busy}
+        onBusyChange={setBusy}
+        onFeedback={setFeedback}
+        onDraft={setEnrollmentDraft}
+        onCompleted={load}
+      />
+
       {/* Quick Actions Panel */}
       <LeadQuickActions
         leadId={leadId}
@@ -367,15 +391,7 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
         leadName={lead.name}
         leadType={lead.lead_type}
         status={lead.status}
-        latestTrial={
-          payload?.trials.length
-            ? {
-                teacherName: payload.trials[payload.trials.length - 1].teacher_name,
-                scheduledDate: payload.trials[payload.trials.length - 1].scheduled_date,
-                scheduledTime: payload.trials[payload.trials.length - 1].scheduled_time,
-              }
-            : null
-        }
+        enrollmentUrl={enrollmentDraft?.url}
       />
 
       <Card accent="slate" className="border-pk-border">
@@ -624,5 +640,90 @@ export function Lead360View({ leadId }: Lead360ViewProps): React.ReactElement {
         </Card>
       )}
     </div>
+  );
+}
+
+type EnrollmentNextActionCardProps = {
+  leadId: string;
+  enrollment: Lead360Payload['enrollment'];
+  draft: { url: string; message: string } | null;
+  busy: boolean;
+  onBusyChange: (busy: boolean) => void;
+  onFeedback: (message: string) => void;
+  onDraft: (draft: { url: string; message: string } | null) => void;
+  onCompleted: () => Promise<void>;
+};
+
+function EnrollmentNextActionCard(props: EnrollmentNextActionCardProps): React.ReactElement {
+  const enrolled = props.enrollment.next_action === 'PREPARE_FIRST_CLASS';
+
+  const issueLink = async (): Promise<void> => {
+    props.onBusyChange(true);
+    props.onFeedback('');
+    try {
+      const response = await fetch(`/api/admin/leads/${props.leadId}/enrollment-link`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error(await readApiError(response, 'No se pudo crear el enlace'));
+      }
+      const json = (await response.json()) as {
+        enrollment_url?: string;
+        whatsapp_draft?: { message?: string };
+      };
+      if (json.enrollment_url && json.whatsapp_draft?.message) {
+        props.onDraft({ url: json.enrollment_url, message: json.whatsapp_draft.message });
+      }
+      props.onFeedback('Enlace de matrícula listo. Revisa el borrador y envía por WhatsApp.');
+      await props.onCompleted();
+    } catch (err) {
+      props.onFeedback(err instanceof Error ? err.message : 'Error al crear el enlace');
+    } finally {
+      props.onBusyChange(false);
+    }
+  };
+
+  return (
+    <Card accent="violet" className="border-pk-border">
+      <CardHeader>
+        <CardTitle className="text-base">Siguiente acción</CardTitle>
+        <CardDescription>
+          {enrolled
+            ? 'Matrícula completa. Prepara la primera clase. WhatsApp no se envía solo.'
+            : 'Genera el enlace opaco y revisa el borrador antes de enviar.'}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="flex flex-wrap gap-2">
+          <Badge tone={enrolled ? 'green' : 'amber'}>
+            {enrolled ? 'FIRST CLASS PENDING' : props.enrollment.state}
+          </Badge>
+          {props.enrollment.family_ref ? (
+            <Badge tone="teal">Familia {props.enrollment.family_link}</Badge>
+          ) : null}
+          {props.enrollment.student_id ? (
+            <Badge tone="violet">Estudiante vinculado</Badge>
+          ) : null}
+        </div>
+        {enrolled ? (
+          <p className="text-sm text-pk-sub">
+            NEXT ACTION: PREPARE FIRST CLASS. Usa el calendario / seguimiento existente. No hay un
+            segundo scheduler.
+          </p>
+        ) : (
+          <Button type="button" size="sm" disabled={props.busy} onClick={() => void issueLink()}>
+            SEND ENROLLMENT LINK
+          </Button>
+        )}
+        {props.draft ? (
+          <div className="rounded-xl border border-pk-border bg-pk-bg p-3 text-sm">
+            <p className="font-semibold text-pk-ink">Borrador ENROLLMENT_LINK</p>
+            <p className="mt-1 whitespace-pre-wrap text-pk-sub">{props.draft.message}</p>
+            <p className="mt-2 font-mono text-xs text-pk-mutedText">{props.draft.url}</p>
+          </div>
+        ) : null}
+      </CardContent>
+    </Card>
   );
 }

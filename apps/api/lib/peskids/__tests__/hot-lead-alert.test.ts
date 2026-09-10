@@ -71,6 +71,22 @@ describe('dispatchPeskidsHotLeadAlert', () => {
     });
   });
 
+  it('reuses a stable delivery_id so duplicate events do not create a new alert id', async () => {
+    process.env.PESKIDS_HOT_LEAD_ALERTS_ENABLED = 'true';
+    process.env.N8N_WEBHOOK_BASE_URL = 'https://n8n-peskids.op-sly.com/webhook';
+    const fetchMock = vi.mocked(fetch);
+    fetchMock.mockResolvedValue(new Response('{}', { status: 202 }));
+
+    const first = await dispatchPeskidsHotLeadAlert(sampleLead);
+    const second = await dispatchPeskidsHotLeadAlert(sampleLead);
+    expect(first.delivery_id).toBe('hot-lead:lead-hot-1');
+    expect(second.delivery_id).toBe(first.delivery_id);
+    const firstBody = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body));
+    const secondBody = JSON.parse(String(fetchMock.mock.calls[1]?.[1]?.body));
+    expect(firstBody.event_id).toBe(secondBody.event_id);
+    expect(firstBody.lead_id).toBe('lead-hot-1');
+  });
+
   it('returns failed when n8n base URL is missing and flag is on', async () => {
     process.env.PESKIDS_HOT_LEAD_ALERTS_ENABLED = 'true';
     const result = await dispatchPeskidsHotLeadAlert(sampleLead);

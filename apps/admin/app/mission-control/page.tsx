@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
 import useSWR from 'swr';
 
+import { ComputeWorkersPanel } from '../../components/ComputeWorkersPanel';
 import { LocalNodesPanel } from '../../components/LocalNodesPanel';
 import { getBaseUrl } from '../../lib/api-client';
 import type {
@@ -130,6 +131,10 @@ export default function MissionControlPage() {
               Refresh
             </button>
           </div>
+        </div>
+
+        <div className="mb-8">
+          <ComputeWorkersPanel />
         </div>
 
         <div className="mb-8">

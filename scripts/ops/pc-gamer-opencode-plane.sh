@@ -212,6 +212,10 @@ Environment=PORT=${OPENCODE_PORT}
 Environment=OPSLY_CLI_AGENT_TOKEN=${token}
 Environment=OPSLY_CLI_AGENT_CWD=${OVERNIGHT_WORKTREE}
 Environment=OPSLY_CLI_AGENT_ALLOWED_CWD_PREFIX=${OVERNIGHT_WORKTREE}
+Environment=OPSLY_OPENCODE_MODEL=ollama/llama3.2
+Environment=OLLAMA_HOST=127.0.0.1:11434
+Environment=OLLAMA_URL=http://127.0.0.1:11434
+Environment=PATH=${HOME}/.npm-global/bin:/usr/local/bin:/usr/bin:/bin
 ExecStart=${npx_bin} tsx ${ROOT}/scripts/cli-agent-service.ts
 Restart=on-failure
 RestartSec=10

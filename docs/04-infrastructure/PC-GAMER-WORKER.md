@@ -1,7 +1,7 @@
 ---
 status: active
 owner: operations
-last_review: 2026-08-14
+last_review: 2026-09-07
 type: infrastructure
 tags:
   - opsly/infrastructure
@@ -36,10 +36,15 @@ VPS vps-dragon (100.120.151.91) ── control plane siempre ON
 
 Conector: **Tailscale + Redis VPS + LLM Gateway**. Sin Swarm. Sin segundo orchestrator.
 
+**Regla:** el PC gamer **ejecuta**. La nube **decide y guarda el estado**. Si el PC se apaga, Opsly sigue; los jobs GPU quedan en BullMQ (`QUEUED`).
+
+Enrutar por **capacidad** (`gpu.nvidia`, `video.render`, `llm.local`, `ffmpeg`), no por hostname. Registro: [`config/compute-workers.json`](../../config/compute-workers.json). CLI: `npm run compute:workers` / `npm run compute:assign -- --job content.render.video`.
+
 ## Reglas no negociables
 
 1. **No** SSH a Internet; **no** abrir puerto 22 en el router.
-2. Preferir **Tailscale** (`Host pc-gamer` → user `devops` → `wsl -d Ubuntu`).
+2. Preferir **Tailscale** (`Host pc-gamer` → Windows OpenSSH → `wsl -d Ubuntu`).
+   User Linux: `devops`. Root WSL (bootstrap): `wsl -d Ubuntu -u root`.
 3. **No** almacenar en el PC: Doppler master/service tokens, AWS/GCP admin, `SUPABASE_SERVICE_ROLE_KEY` de prod, secretos de clientes, claves SSH productivas, GitHub PAT amplios, `PLATFORM_ADMIN_TOKEN`, Stripe live.
 4. Credenciales de **mínimo privilegio**: solo `REDIS_URL` (password de cola) + URLs Tailscale del gateway.
 5. El nodo **puede desaparecer** sin romper Opsly (fail-open prod).
@@ -49,6 +54,28 @@ Conector: **Tailscale + Redis VPS + LLM Gateway**. Sin Swarm. Sin segundo orches
 9. Jobs LLM de plataforma pasan por Gateway; **excepción documentada:** worker efímero con `OPSLY_OLLAMA_DIRECT` / `OLLAMA_URL` local ($0). OpenCode overnight usa CLI local, no el Gateway.
 10. **No** crear otro control plane / orchestrator / Redis de prod en el gamer.
 11. **No** encolar trabajo delicado si el nodo está offline (`check-pc-gamer-online.sh`).
+
+## sudo NOPASSWD (WSL `devops` only)
+
+SSH a `pc-gamer` cae en **CMD de Windows**. El usuario Linux `devops` vive en WSL Ubuntu. Para que un agente (Claude / overnight) instale paquetes y servicios **sin TTY**, el drop-in es:
+
+`/etc/sudoers.d/devops` → `devops ALL=(ALL) NOPASSWD: ALL`
+
+Eso **no** va al VPS (`100.120.151.91` / `vps-dragon`). El archivo existente `/etc/sudoers.d/opsly-ollama` (solo `systemctl` de Ollama) se deja.
+
+Aplicar / comprobar desde Mac:
+
+```bash
+./scripts/ops/setup-pc-gamer-sudoers.sh --dry-run
+./scripts/ops/setup-pc-gamer-sudoers.sh          # wsl -u root + visudo
+./scripts/ops/setup-pc-gamer-sudoers.sh --status # sudo -n true
+```
+
+Comprobación manual:
+
+```bash
+ssh pc-gamer wsl -d Ubuntu -- sudo -n true
+```
 
 Validación local de `.env.worker`:
 
@@ -146,6 +173,17 @@ MONEY_PRINTER_TURBO_URL=http://100.74.88.103:8080 \
 npm run content:bitsitos:publish -- --kit
 ```
 
+Primer job real en el bridge: `content.render.video` → FFmpeg title card + thumbnail (`scripts/ops/content-render-ffmpeg.mjs`). Si falta ffmpeg, el job **falla** (no hay MP4 placeholder). Los artefactos locales no son canónicos: sincronizar y guardar la referencia en Opsly.
+
+AI Board / Mission Control:
+
+```bash
+npm run compute:assign -- --job content.render.video
+npm run compute:assign -- --job ai.local.inference --apply   # requiere REDIS_URL Tailscale
+```
+
+Mission Control muestra un panel compacto **PC GAMER** (status, GPU/VRAM, heartbeat, cola). `GET /api/admin/compute-workers`.
+
 Docs: [`docs/brand/icso/YOUTUBE-KIDS-TECH-CHANNEL.md`](../brand/icso/YOUTUBE-KIDS-TECH-CHANNEL.md).
 
 ## Enviar trabajo solo si está disponible
@@ -228,7 +266,12 @@ swap=4GB
 | `scripts/ops/enqueue-overnight-opencode.sh` | Mac → encolar `local_opencode` |
 | `scripts/ops/pc-gamer-reconnect.sh` | Mac → SSH → levantar plano (+ `--with-opencode`) |
 | `scripts/setup-pc-gamer-worker.sh` | Bootstrap (delega a docker plane) |
-| `scripts/ops/pc-gamer-heartbeat.sh` | TTL heartbeat Redis |
+| `config/compute-workers.json` | Capacidades + job types (no hostname hardcode) |
+| `scripts/ops/compute-worker-router.mjs` | Router por capacidad; offline → job sigue `QUEUED` |
+| `scripts/ops/board-assign-gpu-job.mjs` | AI Board asigna GPU job (`--apply` encola BullMQ) |
+| `scripts/ops/content-render-ffmpeg.mjs` | Primer job real: title card MP4 + thumbnail |
+| `scripts/ops/pc-gamer-heartbeat.sh` | TTL heartbeat Redis (JSON GPU/VRAM/disk) |
+| `scripts/ops/setup-pc-gamer-sudoers.sh` | NOPASSWD `devops` en WSL (no VPS) |
 | `scripts/ops/check-pc-gamer-online.sh` | Gate antes de encolar |
 | `scripts/ops/assert-ephemeral-worker-env.sh` | Anti secretos maestros |
 | `OPSLY_WORKER_ALLOWLIST` | Filtra workers en `apps/orchestrator` |

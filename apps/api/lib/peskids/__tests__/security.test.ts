@@ -32,6 +32,10 @@ vi.mock('../repository', () => ({
   peskidsInsertFeedback: vi.fn(),
 }));
 
+vi.mock('../board-signal', () => ({
+  emitPeskidsLeadBoardEvent: vi.fn().mockResolvedValue(undefined),
+}));
+
 vi.mock('../hot-lead-alert', () => ({
   dispatchPeskidsHotLeadAlert: vi.fn().mockResolvedValue({
     ok: true,

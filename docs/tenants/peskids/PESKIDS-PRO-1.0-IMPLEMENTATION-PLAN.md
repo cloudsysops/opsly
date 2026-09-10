@@ -233,17 +233,15 @@ Contratos objetivo:
 
 Estos son tipos **objetivo**, no cambian ningún enum de Zod/CHECK constraint existente. La
 migración real de cada enum ocurre en el PR que la necesita (ver sección 7). En PR-PRO-0 los
-mappers documentan la adaptación (`trial`↔`trial_scheduled`, `archived`↔`lost`,
-`attended`↔`completed`) sin cablear runtime.
+mappers documentan la adaptación (`trial` leftover enum ↔ `enrollment_in_progress`, `archived`↔`lost`).
+Trial class is **not** a canonical stage — see [`CANONICAL-CUSTOMER-JOURNEY.md`](./CANONICAL-CUSTOMER-JOURNEY.md).
 
-Eventos de dominio (`apps/peskids/lib/events.ts`, catálogo `PESKIDS_PRO_EVENT_NAMES`):
+Eventos de dominio (`apps/peskids/lib/events.ts`, catálogo `PESKIDS_CANONICAL_EVENT_NAMES`):
 
-`lead.created` (ya real) · `lead.contacted` · `lead.status_changed` · `lead.lost` ·
-`followup.created` · `followup.completed` · `followup.overdue` · `trial.scheduled` ·
-`trial.completed` · `trial.no_show` · `student.enrolled`
+`lead.created` · `enrollment.form.submitted` · `first_class.scheduled` · `class.attended` ·
+`teacher.feedback.created` · `student.enrolled`
 
-Solo `lead.created`/`feedback.created`/`feedback.alert` se emiten hoy. El resto es catálogo, sin
-lógica runtime nueva (criterio de PR-PRO-0: si se elimina, la app se comporta igual).
+`trial.*` queda en `PESKIDS_DEPRECATED_TRIAL_EVENT_NAMES` solo por emisores leftover.
 
 ---
 

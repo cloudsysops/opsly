@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createProjectEnvelope, saveProjectEnvelope, writeAssetFromSource, addProjectRenderJob, setProjectApproval, setProjectMetadata } from './storage.js';
 import { discoverClips } from './clip-discovery.js';
+import { discoverClipsFromAudioPeaks } from './audio-peak-discovery.js';
 import { evaluateRightsGate, scoreOriginalContribution } from './rights.js';
 import { transcribeMedia, ownedFixtureTranscript, writeSidecarTranscript } from './transcribe.js';
 import {
@@ -18,12 +19,16 @@ import {
 } from './ffmpeg.js';
 import { getContentProjectArtifactsRoot, getContentProjectWorkingRoot, getContentTenantAssetsRoot } from './paths.js';
 import { buildContentMetadata } from './metadata.js';
+import { selectPrimaryCandidates } from './highlight-score.js';
+import { writeGameplayArtifactBundle } from './session-artifacts.js';
 import type {
   ClipCandidate,
   ContentMode,
   ContentProjectCreateInput,
   ContentProjectEnvelope,
   ContentProvenance,
+  ContentScene,
+  GameplayCaptureSource,
 } from './types.js';
 
 function ownedProvenance(tenantId: string): ContentProvenance {
@@ -37,6 +42,32 @@ function ownedProvenance(tenantId: string): ContentProvenance {
     attributionRequired: false,
     permissionEvidence: 'tenant-owned-fixture-or-upload',
   };
+}
+
+/**
+ * Keep the storyboard in sync with the clips that are actually rendered.
+ * Repurpose projects use the source asset as the scene reference; FFmpeg still
+ * performs the temporal extraction and vertical reframe during rendering.
+ */
+export function scenesFromClipCandidates(
+  project: ContentProjectEnvelope,
+  clips: ClipCandidate[],
+): ContentScene[] {
+  const sourceAsset = project.assets[0];
+  if (!sourceAsset) return [];
+
+  return clips.map((clip, index) => ({
+    id: `scene-${index + 1}`,
+    projectId: project.project.id,
+    order: index + 1,
+    durationMs: Math.max(1, Math.round(clip.duration * 1000)),
+    visualType: 'source_clip',
+    assetRefs: [sourceAsset.id],
+    caption: clip.hook.trim() || `${clip.category} highlight`,
+    transition: 'cut',
+    motion: 'static',
+    editorialBeat: 'WOW',
+  }));
 }
 
 export async function ingestOwnedVideo(options: {
@@ -53,7 +84,8 @@ export async function ingestOwnedVideo(options: {
       options.tenantId === 'peskids' ||
       options.tenantId === 'bitsitos' ||
       options.tenantId === 'splashitos' ||
-      options.tenantId === 'opsly-universe'
+      options.tenantId === 'opsly-universe' ||
+      options.tenantId === 'icso-gaming-tbd'
         ? options.tenantId
         : 'opsly-universe',
     series: 'creator-studio',
@@ -128,6 +160,163 @@ export async function discoverProjectClips(
   return next;
 }
 
+export async function discoverProjectClipsFromAudio(
+  envelope: ContentProjectEnvelope,
+  baseDir = process.cwd()
+): Promise<ContentProjectEnvelope> {
+  const sourceAsset = envelope.assets[0];
+  if (!sourceAsset) {
+    throw new Error('No source asset for audio-peak discovery');
+  }
+  const audioPath = path.join(
+    getContentTenantAssetsRoot(envelope.project.tenantId, baseDir),
+    `${sourceAsset.id}.wav`
+  );
+  const clipCandidates = await discoverClipsFromAudioPeaks(audioPath, { limit: 5 });
+  const next = {
+    ...envelope,
+    clipCandidates,
+    project: { ...envelope.project, status: 'edit' as const, updatedAt: new Date().toISOString() },
+  };
+  await saveProjectEnvelope(next, baseDir);
+  return next;
+}
+
+export async function ingestPrecutHighlight(options: {
+  tenantId: string;
+  filePath: string;
+  baseDir?: string;
+}): Promise<ContentProjectEnvelope> {
+  const baseDir = options.baseDir ?? process.cwd();
+  let envelope = await ingestOwnedVideo({
+    tenantId: options.tenantId,
+    filePath: options.filePath,
+    mode: 'original',
+    baseDir,
+  });
+  const probe = await probeMedia(options.filePath);
+  const clipCandidate: ClipCandidate = {
+    id: 'nvidia-highlight-001',
+    start: 0,
+    end: probe.duration,
+    duration: Number(probe.duration.toFixed(2)),
+    transcript: '',
+    hook: 'NVIDIA highlight',
+    category: 'nvidia_highlight',
+    score: 100,
+    reasons: ['nvidia_auto_highlight'],
+  };
+  envelope = {
+    ...envelope,
+    clipCandidates: [clipCandidate],
+    project: { ...envelope.project, status: 'edit', updatedAt: new Date().toISOString() },
+  };
+  await saveProjectEnvelope(envelope, baseDir);
+  return envelope;
+}
+
+export async function preparePrecutHighlight(options: {
+  tenantId: string;
+  filePath: string;
+  baseDir?: string;
+}): Promise<ContentProjectEnvelope> {
+  const baseDir = options.baseDir ?? process.cwd();
+  let envelope = await ingestPrecutHighlight({ ...options, baseDir });
+  envelope = await renderTopClips(envelope, baseDir, 1);
+  envelope = await rightsAndQueueApproval(envelope, baseDir);
+  writeGameplayArtifactBundle(envelope, baseDir);
+  await saveProjectEnvelope(envelope, baseDir);
+  return envelope;
+}
+
+export async function prepareGameplaySession(options: {
+  tenantId: string;
+  filePath: string;
+  baseDir?: string;
+  game?: string;
+  captureSource?: GameplayCaptureSource;
+  title?: string;
+  minScore?: number;
+  maxPrimary?: number;
+}): Promise<ContentProjectEnvelope> {
+  const baseDir = options.baseDir ?? process.cwd();
+  const sourceFile = path.resolve(options.filePath);
+  if (!fs.existsSync(sourceFile)) {
+    throw new Error(`GAMEPLAY_SOURCE_MISSING: ${sourceFile}`);
+  }
+  const startedAt = new Date().toISOString();
+  const probe = await probeMedia(sourceFile);
+  let envelope = await ingestOwnedVideo({
+    tenantId: options.tenantId,
+    filePath: sourceFile,
+    title: options.title ?? path.basename(sourceFile, path.extname(sourceFile)),
+    mode: 'original',
+    baseDir,
+  });
+  envelope = {
+    ...envelope,
+    session: {
+      sessionId: envelope.project.id,
+      tenant: options.tenantId,
+      channel: envelope.project.channel,
+      game: options.game ?? 'unknown',
+      startedAt,
+      endedAt: new Date().toISOString(),
+      sourceFile,
+      duration: probe.duration,
+      captureSource: options.captureSource ?? 'synthetic',
+      processingStatus: 'discovering',
+    },
+  };
+  await saveProjectEnvelope(envelope, baseDir);
+  envelope = await discoverProjectClipsFromAudio(envelope, baseDir);
+  const selected = selectPrimaryCandidates(envelope.clipCandidates ?? [], {
+    minScore: options.minScore,
+    maxPrimary: options.maxPrimary,
+  });
+  if (selected.primary.length === 0) {
+    throw new Error('NO_QUALITY_CANDIDATES: audio peaks existed but none passed the score floor');
+  }
+  envelope = {
+    ...envelope,
+    clipCandidates: [...selected.primary, ...selected.overflow],
+    selectedClipIds: selected.primary.map((clip) => clip.id),
+    session: envelope.session
+      ? { ...envelope.session, processingStatus: 'rendering' }
+      : envelope.session,
+  };
+  await saveProjectEnvelope(envelope, baseDir);
+  envelope = await renderTopClips(envelope, baseDir, selected.primary.length);
+  envelope = await rightsAndQueueApproval(envelope, baseDir);
+  if (envelope.session) {
+    envelope = {
+      ...envelope,
+      session: { ...envelope.session, processingStatus: 'ready_for_review' },
+    };
+  }
+  writeGameplayArtifactBundle(envelope, baseDir);
+  await saveProjectEnvelope(envelope, baseDir);
+  return envelope;
+}
+
+export function runContentQaCheck(envelope: ContentProjectEnvelope): string[] {
+  const flags: string[] = [];
+  const latestJob = envelope.renderJobs[0];
+  if (!latestJob) {
+    flags.push('no_render_job');
+  } else {
+    if (latestJob.status === 'failed') flags.push('render_failed');
+    if (latestJob.status === 'completed' && !latestJob.outputPath) flags.push('render_missing_output');
+  }
+  if (!envelope.clipCandidates || envelope.clipCandidates.length === 0) {
+    flags.push('no_clip_candidates');
+  }
+  if (envelope.rights?.verdict === 'BLOCKED') {
+    flags.push('rights_blocked');
+  }
+  return flags;
+}
+
 async function renderOneClip(
   envelope: ContentProjectEnvelope,
   clip: ClipCandidate,
@@ -177,7 +366,10 @@ export async function renderTopClips(
     outputPath: outputs[0],
     logs: outputs,
   };
-  let next = addProjectRenderJob(envelope, job);
+  let next = addProjectRenderJob({
+    ...envelope,
+    scenes: scenesFromClipCandidates(envelope, selected),
+  }, job);
   next = setProjectMetadata(next, buildContentMetadata(next));
   next = {
     ...next,
@@ -207,8 +399,9 @@ export async function rightsAndQueueApproval(
     { ...withScore, rights, project: { ...withScore.project, status: 'rights_review' } },
     { state: 'ready_for_review', reviewNotes: `Rights ${rights.verdict}` }
   );
-  await saveProjectEnvelope(queued, baseDir);
-  return queued;
+  const qaFlags = runContentQaCheck(queued);
+  await saveProjectEnvelope({ ...queued, qaFlags }, baseDir);
+  return { ...queued, qaFlags };
 }
 
 export async function runRepurposeSlice(options: {
