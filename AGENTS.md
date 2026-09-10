@@ -692,34 +692,40 @@ Week 4: Docs + runbook + MVP validation
 
 <!-- Actualizar al final de cada sesión. Sesiones pre-2026-05-26 → docs/history/AGENTS-SESSION-HISTORY.md -->
 
-### 📌 Sesión Activa (2026-09-07)
+### 📌 Sesión Activa (2026-09-10)
 
-**Tema:** Peskids RC `f27efea66` en staging + notas 🔄 alineadas a prod real
-**Branch:** `origin/main` = `f27efea66` (#1116). Este PR (#1118) solo tests `lib/` + docs.
-**Objetivo:** no mentirle al siguiente agente sobre SHAs, flags ni promote
+**Tema:** Peskids prod catch-up + Docker `--webpack` unblock + Claude Code handoff
+**Branch:** `origin/main` = `a176bd202` (#1168 hotfix). Prod live aligned.
+**Objetivo:** que Claude Code / CI no vuelvan a fallar el Deploy Peskids por flags Next inválidos
 
-**Live (verificado 2026-09-07 ~02:00 UTC / 21:00 Bogotá):**
-1. ✅ `main` = `f27efea66c37969bfcdce267a3aeb1c51ce4f226` (`feat(ops): night cleanup… (#1116)`)
-2. ✅ Staging `https://peskids-staging.op-sly.com/api/health` → 200, `environment=staging`, `environment_boundary.ok=true`, `git_sha=f27efea66`
-3. ✅ Prod `https://www.peskids.com/api/health` → 200, `git_sha=c4822d9e380e142c7b55df856c92027400363113`
-4. ✅ Prod **`hot_lead_alerts=true`**. Resto de flags n8n **`false`**. Staging: todos los flags `false`.
-5. ✅ #1116 mergeado. #1115 unificó checkout staging + migraciones 0103–0106 (no aplicar a prod).
-6. ✅ Cola stale cerrada: #1088/#1083/#1082/#992/#961/#935. #1117 auto-fix cerrado sin merge.
+**Live (verificado 2026-09-10 ~10:49 Bogotá / 15:49 UTC):**
+1. ✅ Prod `https://www.peskids.com/api/health` → 200, `environment=production`, `boundary.ok=true`, `git_sha=a176bd20210f9ddcb2bdec6bb1a264c64054b83a`
+2. ✅ Imagen `ghcr.io/cloudsysops/peskids:a176bd202…` (Deploy run `34497713615`, `force_daytime=true`)
+3. ✅ Prod **`hot_lead_alerts=true`**. Resto n8n flags **`false`**
+4. ✅ Home 200 · `/admin` 307→login · API plataforma supabase+redis ok
+5. ✅ Fix #1168: Dockerfile sin `next build --webpack` (Next 15.5)
+6. ✅ Claude↔Codex MCP bridge en `main` (#1163) + skill `opsly-claude-codex-review`
 
 **Pendiente:**
-- **Promote RC `f27efea66`** — HIGH; ventana `America/Bogota` 22:00–06:00; **gate humano**. No `force_daytime`. Workflow: Actions → Deploy Peskids → `workflow_dispatch` (`force_daytime=false`). Rebuilds prod image from that **git SHA** (tag `peskids:f27efea66…`); no reutilizar la imagen staging (`sha-f27efea66`, URL/Supabase QA).
-- **No encender** digest ni un segundo flag n8n. Hot-lead ya está ON en prod.
-- Humano: Auth `site_url` + allow list en **opsly-QA** (`hljetbbgiphpjbldebpo`) = solo `https://peskids-staging.op-sly.com`. MCP no lee Auth settings (403 / sin tool).
-- Humano: confirmar PITR en **opsly-prod** (`jkwykpldnitavhmtuzmo`). Drill de restore **solo contra opsly-QA**, nunca overwrite prod.
-- No aplicar `0098`/`0099`/`0103`–`0106` a prod.
+- **#1160** content independent AI review — label `night-merge`; merge solo 22:00–06:00 Bogotá
+- Humano: migración `apps/peskids/migrations/20260818_admin_data_backups.sql` en Supabase **prod** si el panel data-backup falla (zona roja)
+- Staging puede seguir en SHA anterior; no confundir con prod
+- No encender digest ni segundo flag n8n
+- No reintroducir `--webpack` en Dockerfile Peskids (guard CI)
 
 ### 📅 Sesiones Recientes
 
+**Sesión 2026-09-10 — Prod deploy unblock + CC handoff ✅**
+- ✅ Diagnóstico: prod sano pero atrás de `main`; Deploy fallaba por `--webpack`
+- ✅ #1168 merged + Deploy Peskids success → prod = `main` = `a176bd202`
+- ✅ Guard CI + docs para que Claude Code no repita el fallo
+- ⏳ #1160 night-merge; migración data-backup opcional humano
+
 **Sesión 2026-09-07 — Live-state correction (AI Review Board) ✅**
 - ✅ RC `f27efea66` smoke en staging (health + boundary + home + admin login)
-- ✅ Prod sigue `c4822d9e` con `hot_lead_alerts=true` — no pedir “encender hot-lead”
+- ✅ Prod seguía `c4822d9e` con `hot_lead_alerts=true` — no pedir “encender hot-lead”
 - ✅ #1118: 32 tests `lib/` (errors/security/config/observability); no mergear este draft antes del promote
-- ⏳ Promote prod de `f27efea66` después de 22:00 Bogotá + humano
+- ⏳ Promote prod de `f27efea66` después de 22:00 Bogotá + humano → **superseded 2026-09-10** (prod ahora `a176bd202`)
 
 **Sesión 2026-09-07 — PR queue cleanup + lib tests ✅**
 - ✅ 10 PRs mergeados (Peskids features, security, DB assurance, franchise cleanup, data-safety)
@@ -1633,15 +1639,19 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 ## 🔄 Próximo paso inmediato
 
-**Peskids RC:** `main` = staging = `f27efea66`. Prod = `c4822d9e` (`https://www.peskids.com`). Staging aislado: `https://peskids-staging.op-sly.com` (`environment_boundary.ok=true`). `peskids.op-sly.com` es 308 a www — **no** es prod ni QA. Hot-lead **ya ON** en prod; no encender digest. Promote: Actions → **Deploy Peskids** → `workflow_dispatch` en ventana 22:00–06:00 Bogotá, **mismo git SHA**, `force_daytime=false`. Checklist: [`docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md`](docs/tenants/peskids/CLIENT-REVIEW-2026-08-06.md).
+**Peskids LIVE:** prod = `main` = `a176bd202` (`https://www.peskids.com`). Hot-lead **ON**; digest **OFF**. `peskids.op-sly.com` → www (308). No re-promote salvo lag nuevo.
 
-**Plataforma:** API `https://api.op-sly.com/api/health` → 200. UFW SSH Tailscale-only. No mergear Content Studio / PC-gamer / auto-fix en masa. No `git push origin main` ni `--no-verify`.
+**Claude Code (al volver):** checklist en [`docs/03-agents/CLAUDE-CODEX-MCP-BRIDGE.md`](docs/03-agents/CLAUDE-CODEX-MCP-BRIDGE.md) § resume — worktree limpio, `gh auth`, smoke health, **no** `--webpack` en Dockerfile (CI: `scripts/ci/check-peskids-docker-build-flags.sh`). Builder=Claude / Reviewer=Codex.
 
-**Franchise:** #1098 canónico (sin Franchise OS in-house). `tenant_slug` = `peskids`. No aplicar `0098`/`0099`/`0103`–`0106` a prod sin humano.
+**Noche:** merge **#1160** (`night-merge`) content independent AI review. No mergear Content Studio en masa de día.
 
-**Capacidad VPS:** alerta memoria **activa** (~4 GiB) — `docs/runbooks/VPS-MEMORY-CAPS.md`. Compose `$` en `.env`: `scripts/ops/scan-env-dollar-interpolation.sh --env-file /opt/opsly/.env --dry-run` (solo nombres de clave).
+**Humano opcional:** aplicar `20260818_admin_data_backups.sql` en Supabase prod si hace falta el panel data-backup. No aplicar `0098`/`0099`/`0103`–`0106` a prod.
 
+**Plataforma:** API `https://api.op-sly.com/api/health` → 200. UFW SSH Tailscale-only. No `git push origin main` ni `--no-verify`.
 
+**Franchise:** #1098 canónico. `tenant_slug` = `peskids`.
+
+**Capacidad VPS:** alerta memoria **activa** (~4 GiB) — `docs/runbooks/VPS-MEMORY-CAPS.md`.
 
 **Status PRs Cleanup (2026-05-22 — SESSION FINAL):**
 
