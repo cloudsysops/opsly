@@ -107,24 +107,33 @@ real `ffmpeg`/`ffprobe` binary (a dev machine, the VPS, or CI running the
 new code path directly) rather than merged from a sandbox that can't render
 a single test frame.
 
+**Correction (2026-09-10) — direction.** This ADR originally framed the fix
+as "`content-studio/ffmpeg.ts` delegates to `lib/content-engine`'s
+`render/ffmpeg-adapter.ts`." That's backwards from the direction actually
+adopted since: `config/content-capabilities.json` and
+`docs/00-architecture/CONTENT-PIPELINE-CANONICAL.md` (#1159, merged to
+`main`) name `content-studio/ffmpeg.ts` as the **canonical** owner of
+`clip.extract`, `vertical.reframe`, and `captions` for the gameplay
+pipeline, and call `lib/content-engine`'s equivalents an **ADAPTER, for
+scene-compose only**. Any future consolidation adapts or folds
+`lib/content-engine` toward `content-studio`'s behavior — not the reverse.
+Nothing below should be read as content-studio calling into
+content-engine; it's the other direction, or a shared helper both packages
+call, once someone can verify it against real ffmpeg.
+
 ## What IS safe to unify whenever this is picked up
 
-No behavior risk, verifiable by type-check/unit test alone, no real ffmpeg
-needed:
+Only this survived closer scrutiny from a second review pass with zero
+behavior risk:
 
 - Add `@intcloudsysops/content-engine` as a dependency of
-  `@intcloudsysops/content-studio`.
-- `content-studio/ffmpeg.ts`'s `ffmpegAvailable()` → delegate to
-  `content-engine`'s `isFfmpegAvailable()` (identical `spawnSync ffmpeg
-  -version` check).
-- `probeMedia()` → delegate to `content-engine`'s `probe()`, mapping
-  `{durationSec, width, height}` → `{duration, width, height}` (pure field
-  rename, same ffprobe invocation).
-- The `FfmpegNotAvailableError` class shape (name + "not installed" message)
-  — three near-identical copies exist now, safe to consolidate since none of
-  its callers inspect anything but the error existing.
+  `@intcloudsysops/content-studio`, if/when a shared helper is actually
+  extracted. Adding the dependency alone changes nothing.
 
-## What needs a real ffmpeg before touching
+Everything else this ADR originally put in this bucket turned out to have
+real behavior differences on closer reading — moved to the section below.
+
+## What needs a real ffmpeg — or at least a contract test — before touching
 
 Anything that changes what ends up in the rendered file: `concat`/
 `concatVideos`, `thumbnail`/`generateThumbnail`, `verticalReframe`/`scale`,
@@ -133,6 +142,35 @@ Anything that changes what ends up in the rendered file: `concat`/
 shapes (would require touching every call site in both packages, and
 extending `content-engine`'s channel set to cover `peskids` and
 `icso-gaming-tbd`).
+
+**Correction (2026-09-10) — three more claims from the original "safe"
+list didn't hold up:**
+
+- **`ffmpegAvailable()` vs `isFfmpegAvailable()` are not interchangeable.**
+  `content-engine`'s `isFfmpegAvailable()` caches its `spawnSync` result in
+  a module-level variable *forever* — once `false`, always `false` for the
+  life of the process, even if `ffmpeg` becomes available later (PATH
+  change, mounted tool). `content-studio`'s `ffmpegAvailable()` re-checks
+  every call. A long-lived worker process (exactly what the PC-gamer plane
+  is) could get stuck reporting "no ffmpeg" after a transient hiccup on
+  first check. Needs an explicit cache-reset/retry contract before
+  delegating either way, not a drop-in swap.
+- **`probeMedia()` and `probe()` don't share a return contract, just similar
+  field names.** `content-engine`'s `probe()` falls back to stream-level
+  duration when the container-level `format.duration` is missing, and
+  leaves `width`/`height` as `undefined` when there's no video stream.
+  `content-studio`'s `probeMedia()` has no such fallback (returns `0` for
+  missing duration) and defaults missing dimensions to `0`, not
+  `undefined`. Downstream code (audio-peak discovery, persisted asset
+  metadata) may treat `0` and `undefined` differently — mapping one onto
+  the other needs the defaults made explicit and a contract test, not a
+  "pure field rename."
+- **Only two `FfmpegNotAvailableError` copies exist, not three, and
+  `content-studio/ffmpeg.ts` isn't one of them.** It has no such class —
+  `runFfmpeg()` there just rejects with the raw spawn/exit-code error.
+  Only `lib/content-engine` and `scripts/ops/content-render-ffmpeg.mjs`
+  define the named class. Giving `content-studio` one (or not) is a
+  separate design question, not a three-way merge.
 
 **Correction (2026-09-10):** `escapeDrawtext` (`content-engine`,
 `content-render-ffmpeg.mjs`) and `sanitizeDrawtext`
