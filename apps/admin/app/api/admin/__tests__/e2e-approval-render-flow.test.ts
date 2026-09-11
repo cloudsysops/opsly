@@ -215,7 +215,10 @@ async function getApprovalQueueAPI(supabase: MockSupabaseForAPI): Promise<Approv
     .select('*');
 
   if (error) {
-    throw new Error(error.message || 'Failed to fetch approval queue');
+    const message = typeof error === 'object' && error !== null && 'message' in error
+      ? (error as any).message
+      : String(error);
+    throw new Error(message || 'Failed to fetch approval queue');
   }
 
   const items = data ?? [];
@@ -243,7 +246,10 @@ async function getRenderMonitorAPI(supabase: MockSupabaseForAPI): Promise<Render
     .select('*');
 
   if (error) {
-    throw new Error(error.message || 'Failed to fetch render jobs');
+    const message = typeof error === 'object' && error !== null && 'message' in error
+      ? (error as any).message
+      : String(error);
+    throw new Error(message || 'Failed to fetch render jobs');
   }
 
   const jobs = data ?? [];
@@ -283,7 +289,10 @@ async function getApprovalDecisionsAPI(supabase: MockSupabaseForAPI) {
     .select('*');
 
   if (error) {
-    throw new Error(error.message || 'Failed to fetch approval decisions');
+    const message = typeof error === 'object' && error !== null && 'message' in error
+      ? (error as any).message
+      : String(error);
+    throw new Error(message || 'Failed to fetch approval decisions');
   }
 
   return {
