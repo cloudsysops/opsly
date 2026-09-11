@@ -162,7 +162,11 @@ export async function checkIpRateLimit(ip: string): Promise<RateLimitResult> {
   const nowMs = Date.now();
   const redis = await getRateLimitRedis();
   if (!redis) {
-    return { allowed: true, remaining: IP_RATE_LIMIT_MAX_REQUESTS, resetAt: new Date(nowMs + RATE_LIMIT_WINDOW_SECONDS * 1000) };
+    return {
+      allowed: true,
+      remaining: IP_RATE_LIMIT_MAX_REQUESTS,
+      resetAt: new Date(nowMs + RATE_LIMIT_WINDOW_SECONDS * 1000),
+    };
   }
 
   const key = ipRateLimitKey(ip);
@@ -185,7 +189,11 @@ export async function checkIpRateLimit(ip: string): Promise<RateLimitResult> {
     };
   } catch (error) {
     console.error('[rate-limiter] ip request failed', error);
-    return { allowed: true, remaining: IP_RATE_LIMIT_MAX_REQUESTS, resetAt: new Date(nowMs + RATE_LIMIT_WINDOW_SECONDS * 1000) };
+    return {
+      allowed: true,
+      remaining: IP_RATE_LIMIT_MAX_REQUESTS,
+      resetAt: new Date(nowMs + RATE_LIMIT_WINDOW_SECONDS * 1000),
+    };
   }
 }
 
