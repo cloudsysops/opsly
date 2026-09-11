@@ -9,20 +9,26 @@ reviewer_hint: codex
 phase: 2
 depends_on: agent-lab-01-inventory-012
 canon: docs/design/OPSLY-AGENT-LAB.md
+reconcile: docs/design/PR-1185-ARCHITECTURE-RECONCILIATION.md
 ---
 
-# Agent Lab 02 — Single job registry + agent registry (held)
+# Agent Lab 02 — Learning layer only (held)
 
-**Held** until `012-agent-lab-01-inventory.md` is `status: done`. Then set this file to `pending`.
+**Held** until inventory `012` is `done`.
 
-## Mission slice
+Implement / extend **`lib/agent-learning`** (evidence, review attach, trust, scorecards).
 
-Implement or extend **one** durable job registry and agent registry fields (capabilities, trust_level defaults = OBSERVE), wired to BullMQ/OpenClaw — no new orchestrator.
+Must reuse:
 
-Job contract minimum: job_id, objective, source_signal, priority, risk, required_capabilities, candidate_agent, model, inputs, acceptance_criteria, tests, status, attempt, result, evidence, review, human_decision.
+- `AgentTaskEnvelopeV1.request_id` as `task_id`
+- `lib/agent-task-core` for task creation / enqueue
+- `lib/external-agent-registry` for routing
 
-Agent registry minimum: agent_id, role, model, capabilities, trust_level, task_count, success_rate, supervisor_agreement, human_agreement, avg_latency, failure_rate.
+Must **not**:
 
-## Do not
+- create `JobRegistry` / parallel job store
+- use package name `job-registry`
+- direct BullMQ queue ownership
+- mix Content Studio Phase 2.2
 
-Fine-tune models. Self-promotion. Publish content. Bypass LLM Gateway for prod path.
+See ownership matrix in `docs/design/PR-1185-ARCHITECTURE-RECONCILIATION.md`.

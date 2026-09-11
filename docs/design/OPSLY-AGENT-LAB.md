@@ -14,6 +14,16 @@ tags:
 
 **Hard rule:** do **not** create another orchestrator. Extend OpenClaw + BullMQ + existing registries.
 
+## Hard rule: extend canonical task path
+
+```text
+AI Board → AgentTaskEnvelopeV1 → agent-task-core → external-agent-registry
+  → orchestrator/BullMQ → worker → result → agent-learning (evidence/trust)
+```
+
+See `docs/design/PR-1185-ARCHITECTURE-RECONCILIATION.md` and `config/agent-capability-owners.json`.  
+**Forbidden:** `lib/agent-job-registry` as a second task store (superseded by agent-learning).
+
 ## Activation (how prompts reach agents on a schedule)
 
 | Mechanism | Interval | What it does | Use for Agent Lab |

@@ -330,6 +330,27 @@ import { MigrationRunner } from '@intcloudsysops/migrations';
 - `docs/01-development/LIBRARY-MODULES.md` — Complete integration guide for all 13 modules
 - `config/modules.json` — Module registry with versions, owners, dependencies
 
+### Agent Lab / orchestration — anti-duplication (canonical)
+
+**Before building any agent/orchestration capability:**
+
+1. Search `AgentTaskEnvelopeV1` (`packages/types/src/agent-task.ts`)
+2. Search `lib/agent-task-core`
+3. Search `lib/external-agent-registry`
+4. Search orchestrator `AgentTaskRuntime` + BullMQ (`ADR-048`)
+5. Search `lib/ai-board`
+6. Search `lib/agent-learning` + `config/agent-capability-owners.json`
+
+If the capability exists → **EXTEND** the canonical owner.  
+If two implementations exist → **STOP** and reconcile (`docs/design/PR-1185-ARCHITECTURE-RECONCILIATION.md`).  
+If ownership is unclear → **BLOCK** and request architecture review.
+
+**Never** create a second: task registry, task envelope, router, worker registry, queue, or orchestrator.
+
+**Roles:** Claude = planner · Cursor = builder · Codex = independent reviewer (no edit during review). One builder + one reviewer per change set.
+
+Agent Lab owns evidence / trust / scorecards / eval — keyed by `request_id`. It does **not** own task creation.
+
 ---
 
 ## Skills disponibles para Claude modo supremo

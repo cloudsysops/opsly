@@ -213,6 +213,21 @@
         "OrchestratorAgentTaskClient"
       ]
     },
+    "agent-learning": {
+      "name": "@intcloudsysops/agent-learning",
+      "version": "0.1.0",
+      "path": "lib/agent-learning",
+      "owner": "platform",
+      "description": "Agent Lab learning layer: evidence/review/trust/scorecards keyed by AgentTask request_id — not a task registry",
+      "status": "experimental",
+      "dependencies": ["types"],
+      "mainFile": "lib/agent-learning/src/index.ts",
+      "exports": [
+        "AgentLearningStore",
+        "assertCanonicalTaskId",
+        "refuseIndependentTaskCreation"
+      ]
+    },
     "wompi-gateway": {
       "name": "@intcloudsysops/wompi-gateway",
       "version": "0.1.0",
