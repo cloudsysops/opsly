@@ -65,3 +65,7 @@ launchctl kickstart -k "gui/$(id -u)/com.opsly.pcgamerwatch"
 - `docs/04-infrastructure/PC-GAMER-WORKER.md`
 - `docs/design/AUTONOMOUS-INCOME-SERVICES.md`
 - Autodispatch overnight: `docs/runbooks/PC-GAMER-OVERNIGHT-AUTODISPATCH.md` (capa distinta: encola trabajo cuando ya está sano)
+
+## Docker name Conflict (stale container)
+
+If reconnect logs `Conflict. The container name "/opsly-pc-gamer-worker-openclaw" is already in use`, tip `main` `pc-gamer-docker-plane.sh` removes non-running name collisions before `compose up` and retries once with `--force-recreate`.
