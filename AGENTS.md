@@ -2696,6 +2696,44 @@ Esto es un problema de credenciales/red del entorno local, no del código. Revis
 
 ---
 
+## 🔄 Estado Actual (2026-09-11 — Duplicación Mauro/content-engine, 2 fixes de CI, AGENTS.md al día)
+
+**Agente:** Claude
+**Rama:** varios worktrees cortos (`worktree-fix-hermes-health-prompt-guard-build`, `worktree-fix-vendor-agent-skills-broken-submodule`, `worktree-docs-agents-session-update-2026-09-11`) — este archivo estaba **congelado desde 2026-09-04** pese a ser el mecanismo oficial de coordinación entre sesiones; esa brecha es en sí misma parte de lo que causó el hallazgo principal de abajo.
+
+### Hallazgo principal: dos sesiones ejecutaron el mismo plan de Mauro en paralelo
+
+Se diseñó un pipeline de gameplay para Mauro (spec + plan de 9 tareas en `docs/superpowers/plans/2026-09-08-mauro-gameplay-pipeline.md`, worktree `mauro-gameplay-pipeline-impl`, Tareas 1-6 implementadas y revisadas). Al verificar el estado de producción se descubrió que **otra sesión ejecutó el mismo plan en paralelo** y ya llegó a `main` primero (PRs #1155, #1158) — mismo nombre de canal (`icso-gaming-tbd`, mismo comentario de código literal), mismos nombres de función (`discoverProjectClipsFromAudio`, `ingestPrecutHighlight`, `runContentQaCheck`), más trabajo adicional (`prepareGameplaySession`, `highlight-score.ts`, `pc-gamer-clip-agent.py`). **Decisión (usuario, explícita):** abandonar el worktree local, `main` gana. Ledger de esa rama marcado `SUPERSEDED` con la causa raíz documentada.
+
+**Causa raíz real:** no fue falta de una regla (`CLAUDE.md` ya dice "reuse first"), fue que **nadie actualizó `AGENTS.md`** al cerrar sesión — ni yo hasta ahora, ni quien construyó #1155/#1158. El mecanismo de coordinación existe pero no se estaba usando.
+
+### Relacionado, ya encontrado por otra sesión (no duplicar)
+
+- `docs/adr/ADR-058-content-engine-duplication.md` (rama `docs/adr-content-engine-consolidation`, sesión previa, 2026-09-07): documenta que `lib/content-engine` (canónico, registrado) y `lib/content-studio/src/content-engine` (usado por Mauro, no registrado) son motores paralelos — consolidación **deliberadamente diferida** por falta de validación real de ffmpeg en ese sandbox. Esta máquina sí tiene ffmpeg — sigue pendiente si alguien quiere retomarlo, pero es su propio proyecto, no algo para colar en otro trabajo.
+- `docs/superpowers/specs/2026-09-09-content-vendor-research.md` (rama `docs/content-vendor-research`, Cursor): Auto-clipper/OpenCut/remotion-clip/TwitchDownloader/remotion-studio ya clonados y auditados en workspace hermano `/Users/dragon/cboteros/proyectos/opsly-content-research/` (fuera del monorepo). **No re-clonar.**
+- Skill `skills/user/opsly-content-studio/` — actualizado por otra sesión con un gate de anti-duplicación (`config/content-capabilities.json`, canon en `docs/00-architecture/CONTENT-PIPELINE-CANONICAL.md`) más estricto que la versión que yo dejé. Vigente, no revertir.
+
+### Fixes de CI cerrados esta sesión
+
+1. **PR #1181** — `hermes-health.yml` fallaba en cada corrida programada: el paso "Build orchestrator workspace deps" nunca compilaba `@intcloudsysops/prompt-guard` antes de `apps/ml` (que sí lo declara como dependencia) → `Cannot find module`. Fix de una línea, verificado localmente (build + type-check + `test:hermes` 14/14). Label `night-merge`.
+2. **PR #1182** — `vendor/agent-skills` era un gitlink de submódulo (`160000`) sin entrada en `.gitmodules` → directorio vacío en todo checkout + warning en cada limpieza de CI. Confirmado que nada lo usa (`scripts/load-agent-skills.js` usa `skills/vendor/agent-skills/`, con contenido real, como ruta primaria). Gitlink eliminado + puntero corregido en `.claude/CLAUDE.md`. Label `night-merge`.
+3. **Race condition en rollback de night-merge** (el que dejó el PR #1165 colgado el 2026-09-10) — investigado, **ya estaba arreglado** por `#1154` (`NIGHT_MERGE_AUTO_ROLLBACK_MERGE` default `"0"`, no auto-mergea su propio revert). Sin acción — evitado trabajo duplicado.
+
+### Bloqueante activo (viejo, sigue sin resolver)
+
+**PC-gamer sigue offline** (`check-pc-gamer-online.sh` → `online:false`) desde hace varios días de esta misma sesión. Bloquea: activación de `PR #1161` (Hermes `content-review` → ollama local, código listo/testeado/sin mergear, pendiente `HERMES_LOCAL_LLM_FIRST` + `OLLAMA_URL` + `REDIS_URL` en Doppler), cualquier trabajo real de "agentes autónomos con AI local" que se pidió esta sesión, y validación del watcher de gameplay.
+
+**Nota de terminología:** "Hermes" en este repo (`HermesTaskType`, enrutamiento de criticidad) **no es** el Hermes Agent de Nous Research (self-hosted, cron, Telegram) — mismo nombre, proyectos distintos. No confundir en futuras sesiones.
+
+### Próximos pasos
+
+1. Usuario: encender PC-gamer + Tailscale.
+2. Una vez online: activar `#1161` (Doppler) y verificar que ollama responde de verdad antes de llamarlo "funcionando".
+3. Definir alcance concreto de "autónomo" (qué tareas, qué límite de gasto, qué aprobación humana) antes de construir nada nuevo — pedido explícitamente por el usuario, no iniciado aún.
+4. Si se retoma ADR-058 (consolidación de motores), hacerlo con ffmpeg real disponible aquí — no repetir el trabajo ya hecho por la sesión previa.
+
+---
+
 ## Enlaces relacionados
 
 - [[.github/index|.github]]
