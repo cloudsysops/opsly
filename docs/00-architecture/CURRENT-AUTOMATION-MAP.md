@@ -90,18 +90,27 @@ flag as a decision, not something this PR invents.
 |---|---|---|
 | `nightly-fix.yml` | `schedule` (03:00 daily) | No — type-check/lint only, opens GitHub issues on failure |
 | `evolution-pipeline.yml` | `workflow_dispatch` | No — runs `tools/cli/main.py pipeline-run --dry-run` in a GitHub-hosted sandbox; does not call the orchestrator or BullMQ |
-| `health-check-validation-orchestrator.yml` | `schedule` (*/5 min) | No — a *different* "ValidationOrchestrator" health probe with Discord alerts, unrelated to AgentTask |
+| `health-check-validation-orchestrator.yml` | `schedule` (*/5 min) | No — a *different* "ValidationOrchestrator" health probe (GET `/internal/meta-optimizer/metrics` only) with Discord alerts, unrelated to AgentTask |
 | `qa-issue-notify.yml` | `issues: [opened, labeled]` | No — Discord notification only, no execution |
 | `night-merge.yml`, `production-change-window.yml`, `promote-production-canary.yml` | various | Deploy/merge gates, not task pickup |
+| `deploy.yml`, `deploy-peskids.yml`, `deploy-panini-lab.yml`, `peskids-staging.yml`, `setup-peskids-n8n.yml` | `push`/`workflow_run` (post-CI)/`workflow_dispatch` — never `pull_request` | No — join the tailnet via `tailscale/github-action@v4` (through `.github/actions/tailscale-connect`) but only to SSH `docker compose` deploy against the VPS; never call `/api/local/*` |
 
-**Finding: no GitHub Actions workflow in this repo can currently trigger the orchestrator.**
-This is not an oversight to casually fix — the orchestrator/Redis/BullMQ are reachable
-only via Tailscale (`vps-dragon@100.120.151.91`, per root CLAUDE.md), and GitHub-hosted
-runners are not on that tailnet. No self-hosted runner and no `tailscale/github-action`
-usage exist anywhere in `.github/workflows/`. Making a GitHub Action reach the
-orchestrator would require either a self-hosted runner on the tailnet or a Tailscale
-auth key added as a GitHub secret — an infra/security decision, not a code change this
-PR should make unilaterally.
+**Correction (verified by independent review):** an earlier version of this doc claimed
+no `tailscale/github-action` usage exists anywhere in `.github/workflows/`. That was
+wrong — it's used by the five deploy workflows listed above. The corrected finding:
+
+**No GitHub Actions workflow in this repo currently calls the orchestrator's `/api/local/*`
+routes**, even though the building blocks to do so already exist separately: the deploy
+workflows already join the tailnet (`TAILSCALE_AUTHKEY` secret, already in production use)
+and `cleanup-demos.yml` already uses a `PLATFORM_ADMIN_TOKEN` GitHub secret — but only
+against the public `apps/api` (`NEXT_PUBLIC_APP_URL/api/tenants`), a different surface
+than the orchestrator's `:3011` routes. Nothing today combines tailnet access with
+`PLATFORM_ADMIN_TOKEN` to reach the orchestrator from CI. Doing so deliberately would
+reuse `tailscale-connect` plus a `PLATFORM_ADMIN_TOKEN` secret scoped to the orchestrator
+— no new self-hosted runner or new auth mechanism required — but it's still a
+security-relevant scope decision (this GitHub-public repo could then enqueue orchestrator
+work from a workflow run) that should be made deliberately, not added as a side effect of
+this PR.
 
 ## Security finding (per doc 021's explicit ask)
 
