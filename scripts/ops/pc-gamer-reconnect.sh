@@ -8,21 +8,26 @@
 #   ./scripts/ops/pc-gamer-reconnect.sh --wait 600
 #   ./scripts/ops/pc-gamer-reconnect.sh --use-host-ollama
 #   ./scripts/ops/pc-gamer-reconnect.sh --with-opencode
+#   ./scripts/ops/pc-gamer-reconnect.sh --dump-plan
+#
+# Default branch is main. Override only with PC_GAMER_BRANCH for a named experiment.
 #
 set -euo pipefail
 
 DRY_RUN=false
+DO_DUMP_PLAN=false
 WAIT_SEC=0
 USE_HOST_OLLAMA=false
 PULL_MODEL=false
 WITH_OPENCODE=false
 SSH_HOST="${PC_GAMER_SSH_HOST:-pc-gamer}"
 REMOTE_ROOT="${PC_GAMER_OPSLY_ROOT:-/home/devops/opsly}"
-BRANCH="${PC_GAMER_BRANCH:-feat/pc-gamer-worker-plane}"
+BRANCH="${PC_GAMER_BRANCH:-main}"
 
 for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY_RUN=true ;;
+    --dump-plan) DO_DUMP_PLAN=true ;;
     --wait)
       shift_wait=1
       ;;
@@ -33,7 +38,7 @@ for arg in "$@"; do
     --pull-model) PULL_MODEL=true ;;
     --with-opencode) WITH_OPENCODE=true ;;
     -h|--help)
-      sed -n '2,18p' "$0"
+      sed -n '2,20p' "$0"
       exit 0
       ;;
   esac
@@ -85,6 +90,13 @@ remote_bash() {
   ssh -o BatchMode=yes -o ConnectTimeout=25 "$SSH_HOST" \
     wsl -d Ubuntu -u root -e bash -s <<<"$script"
 }
+
+if [[ "$DO_DUMP_PLAN" == "true" ]]; then
+  echo "DEFAULT_BRANCH=${BRANCH}"
+  echo "RECONNECT_DEFAULT_IS_MAIN=$([ "$BRANCH" = "main" ] && echo 1 || echo 0)"
+  echo "REMOTE_ROOT=${REMOTE_ROOT}"
+  exit 0
+fi
 
 echo "[reconnect] host=$SSH_HOST branch=$BRANCH"
 

@@ -10,6 +10,10 @@
 #   ./scripts/ops/pc-gamer-docker-plane.sh --down
 #   ./scripts/ops/pc-gamer-docker-plane.sh --status
 #   ./scripts/ops/pc-gamer-docker-plane.sh --install-autostart
+#   ./scripts/ops/pc-gamer-docker-plane.sh --dump-plan [--with-content] [--use-host-ollama]
+#
+# One compose project. Never a second `up` for moneyprinter (orphans SIGTERM the worker).
+# --down is operator-only. Autostart must not ExecStop --down on session recycle.
 #
 set -euo pipefail
 
@@ -17,6 +21,7 @@ DRY_RUN=false
 DO_UP=false
 DO_DOWN=false
 DO_STATUS=false
+DO_DUMP_PLAN=false
 PULL_MODEL=false
 INSTALL_AUTOSTART=false
 STOP_NATIVE=true
@@ -29,13 +34,14 @@ for arg in "$@"; do
     --up) DO_UP=true ;;
     --down) DO_DOWN=true ;;
     --status) DO_STATUS=true ;;
+    --dump-plan) DO_DUMP_PLAN=true ;;
     --pull-model) PULL_MODEL=true ;;
     --install-autostart) INSTALL_AUTOSTART=true ;;
     --keep-native) STOP_NATIVE=false ;;
     --use-host-ollama) USE_HOST_OLLAMA=true ;;
     --with-content) WITH_CONTENT=true ;;
     -h|--help)
-      sed -n '2,22p' "$0"
+      sed -n '2,24p' "$0"
       exit 0
       ;;
     *)
@@ -50,14 +56,41 @@ ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 cd "$ROOT"
 
 ENV_WORKER="${ROOT}/.env.worker"
-COMPOSE_BASE=(-f infra/docker-compose.opslyquantum.yml)
-# Overlay GPU solo si existe y no estamos en host-Ollama (WSL suele no tener nvidia-ctk).
-if [[ "$USE_HOST_OLLAMA" != "true" && -f infra/docker-compose.opslyquantum.gpu.yml ]]; then
-  COMPOSE_BASE+=(-f infra/docker-compose.opslyquantum.gpu.yml)
-fi
-COMPOSE_WORKERS=("${COMPOSE_BASE[@]}" -f infra/docker-compose.pc-gamer-workers.yml)
-COMPOSE_MPT=(-f infra/docker-compose.pc-gamer-moneyprinter.yml)
+# Single project: workers + optional moneyprinter in ONE compose invocation.
+# A second `docker compose -f moneyprinter.yml up` under project `infra` treats
+# worker-openclaw as an orphan and SIGTERMs it (crash loop: Up < 1s).
+COMPOSE_FILES=()
+COMPOSE_SERVICES=()
 OLLAMA_MODEL="${OLLAMA_MODEL:-llama3.2}"
+export COMPOSE_IGNORE_ORPHANS=1
+export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-infra}"
+
+build_compose_plan() {
+  COMPOSE_FILES=(-f infra/docker-compose.opslyquantum.yml)
+  if [[ "$USE_HOST_OLLAMA" != "true" && -f infra/docker-compose.opslyquantum.gpu.yml ]]; then
+    COMPOSE_FILES+=(-f infra/docker-compose.opslyquantum.gpu.yml)
+  fi
+  COMPOSE_FILES+=(-f infra/docker-compose.pc-gamer-workers.yml)
+  # Always attach moneyprinter file so a later --with-content up cannot orphan the worker.
+  if [[ -f infra/docker-compose.pc-gamer-moneyprinter.yml ]]; then
+    COMPOSE_FILES+=(-f infra/docker-compose.pc-gamer-moneyprinter.yml)
+  fi
+  if [[ "$USE_HOST_OLLAMA" == "true" ]]; then
+    COMPOSE_SERVICES=(worker-openclaw)
+  else
+    COMPOSE_SERVICES=(ollama worker-openclaw)
+  fi
+  if [[ "$WITH_CONTENT" == "true" ]]; then
+    COMPOSE_SERVICES+=(moneyprinter-bridge)
+  fi
+}
+
+compose() {
+  docker compose "${COMPOSE_FILES[@]}" \
+    --env-file "${ENV_WORKER}" \
+    --env-file infra/opslyquantum.env \
+    "$@"
+}
 
 run() {
   if [[ "$DRY_RUN" == "true" ]]; then
@@ -138,25 +171,29 @@ ensure_env() {
   fi
 }
 
+dump_plan() {
+  build_compose_plan
+  echo "COMPOSE_IGNORE_ORPHANS=1"
+  echo "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}"
+  echo "UNIFIED_UP=1"
+  echo "SECOND_COMPOSE_UP=0"
+  echo "EXEC_STOP_DOWN=0"
+  echo "WITH_CONTENT=${WITH_CONTENT}"
+  echo "USE_HOST_OLLAMA=${USE_HOST_OLLAMA}"
+  echo "COMPOSE_FILES=${COMPOSE_FILES[*]}"
+  echo "SERVICES=${COMPOSE_SERVICES[*]}"
+}
+
 compose_up() {
   need_docker
   ensure_env
   stop_native_competitors
-  local services=(worker-openclaw)
+  build_compose_plan
   if [[ "$USE_HOST_OLLAMA" == "true" ]]; then
     echo "[pc-gamer-docker] Using host Ollama — starting worker only"
-  else
-    services=(ollama worker-openclaw)
   fi
-  echo "[pc-gamer-docker] docker compose up -d ${services[*]}"
-  run docker compose "${COMPOSE_WORKERS[@]}" \
-    --env-file "$ENV_WORKER" \
-    --env-file infra/opslyquantum.env \
-    up -d "${services[@]}"
-  if [[ "$WITH_CONTENT" == "true" ]]; then
-    echo "[pc-gamer-docker] starting moneyprinter-bridge…"
-    run docker compose "${COMPOSE_MPT[@]}" --env-file "$ENV_WORKER" up -d moneyprinter-bridge
-  fi
+  echo "[pc-gamer-docker] docker compose up -d ${COMPOSE_SERVICES[*]} (unified, ignore_orphans=1)"
+  run compose up -d "${COMPOSE_SERVICES[@]}"
   if [[ "$PULL_MODEL" == "true" && "$USE_HOST_OLLAMA" != "true" && "$DRY_RUN" != "true" ]]; then
     echo "[pc-gamer-docker] Pulling ${OLLAMA_MODEL}…"
     docker exec opslyquantum-ollama ollama pull "$OLLAMA_MODEL" || true
@@ -174,16 +211,25 @@ compose_up() {
 
 compose_down() {
   need_docker
-  run docker compose "${COMPOSE_WORKERS[@]}" \
-    --env-file "${ENV_WORKER:-/dev/null}" \
-    --env-file infra/opslyquantum.env \
-    stop worker-openclaw ollama 2>/dev/null || true
-  run docker compose "${COMPOSE_WORKERS[@]}" stop worker-openclaw ollama 2>/dev/null || true
-  run docker compose "${COMPOSE_MPT[@]}" stop moneyprinter-bridge 2>/dev/null || true
+  build_compose_plan
+  # Operator-only. Autostart unit must not call this on ExecStop.
+  echo "[pc-gamer-docker] stopping plane services (operator --down)"
+  if [[ -f "$ENV_WORKER" && -f infra/opslyquantum.env ]]; then
+    run compose stop worker-openclaw ollama moneyprinter-bridge 2>/dev/null || true
+  else
+    run docker compose "${COMPOSE_FILES[@]}" stop worker-openclaw ollama moneyprinter-bridge 2>/dev/null || true
+  fi
 }
 
 show_status() {
   need_docker || true
+  build_compose_plan
+  echo "=== compose project ${COMPOSE_PROJECT_NAME} ==="
+  if [[ -f "$ENV_WORKER" && -f infra/opslyquantum.env ]]; then
+    docker compose "${COMPOSE_FILES[@]}" --env-file "$ENV_WORKER" --env-file infra/opslyquantum.env ps || true
+  else
+    docker compose "${COMPOSE_FILES[@]}" ps || true
+  fi
   echo "=== docker ==="
   docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' 2>/dev/null | grep -E 'NAME|opsly|ollama' || docker ps --format 'table {{.Names}}\t{{.Status}}' | head -15
   echo "=== health ==="
@@ -220,7 +266,6 @@ Type=oneshot
 RemainAfterExit=yes
 WorkingDirectory=${ROOT}
 ExecStart=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh --up
-ExecStop=${ROOT}/scripts/ops/pc-gamer-docker-plane.sh --down
 TimeoutStartSec=600
 
 [Install]
@@ -260,8 +305,13 @@ EOF
 }
 
 # default: status if nothing else
-if [[ "$DO_UP$DO_DOWN$DO_STATUS$INSTALL_AUTOSTART" == "falsefalsefalsefalse" ]]; then
+if [[ "$DO_UP$DO_DOWN$DO_STATUS$INSTALL_AUTOSTART$DO_DUMP_PLAN" == "falsefalsefalsefalsefalse" ]]; then
   DO_STATUS=true
+fi
+
+if [[ "$DO_DUMP_PLAN" == "true" ]]; then
+  dump_plan
+  exit 0
 fi
 
 [[ "$DO_UP" == "true" ]] && compose_up
