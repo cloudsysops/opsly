@@ -1,7 +1,7 @@
 ---
 status: active
 owner: operations
-last_review: 2026-09-07
+last_review: 2026-09-11
 type: infrastructure
 tags:
   - opsly/infrastructure
@@ -285,6 +285,13 @@ swap=4GB
 Allowed now: **CPython stdlib only** (`/usr/bin/python3`, 3.12). No `pip install`, venv, torch, whisper, opencv, ultralytics, or numpy until a later approved capability needs them.
 
 `scripts/ops/pc-gamer-clip-agent.py` lives on **PR #1155**, not on gamer `main` until that PR merges and the host pulls the exact SHA. Proof after that pull: `python3 scripts/ops/pc-gamer-clip-agent.py --help`, then one local highlight with `OPSLY_CONTENT_PUBLISHING=disabled`. Do not add Auto-clipper / Remotion / Whisper / OpenCV / YOLO before that proof.
+
+## Archivos (continuación — autonomía Mac)
+
+| Path | Uso |
+|------|-----|
+| `scripts/ops/pc-gamer-watch.sh` | **Launchd watcher:** Tailscale online + worker no sano → `pc-gamer-reconnect.sh` (main) |
+| `infra/launchd/com.opsly.pcgamerwatch.plist` | LaunchAgent cada 120s (Mac opsly-admin) |
 | `docs/runbooks/PC-GAMER-MAURO-SCHEDULE.md` | Cómo ajustar horas con el dueño |
 | `docs/runbooks/OVERNIGHT-OPENCODE-GAMER.md` | Runbook crecimiento overnight |
 | `scripts/ops/start-mac-local-agents-worker.sh` | Worker Mac solo cola `local-agents` |
@@ -293,6 +300,7 @@ Allowed now: **CPython stdlib only** (`/usr/bin/python3`, 3.12). No `pip install
 | `scripts/ops/ensure-overnight-autodispatch-launchd.sh` | Instalar LaunchAgent del autodispatch (5 min, Doppler) |
 | `infra/launchd/com.opsly.pc-gamer-autodispatch.plist` | LaunchAgent: corre el autodispatch cada 5 min |
 | `docs/runbooks/PC-GAMER-OVERNIGHT-AUTODISPATCH.md` | Runbook del autodispatch overnight |
+| `docs/design/AUTONOMOUS-INCOME-SERVICES.md` | Blueprint: Content OS → Moon → ingresos sin romper Peskids |
 
 ## Relacionado
 
