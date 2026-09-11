@@ -64,6 +64,7 @@ COPY --from=builder /repo/packages/types ./packages/types
 COPY --from=builder /repo/apps/mcp ./apps/mcp
 COPY --from=builder /repo/lib/services ./lib/services
 COPY --from=builder /repo/lib/content-studio ./lib/content-studio
+COPY --from=builder /repo/lib/universe ./lib/universe
 COPY --from=builder /repo/lib/pattern-catalog ./lib/pattern-catalog
 COPY --from=builder /repo/lib/sigma-harness ./lib/sigma-harness
 COPY --from=builder /repo/lib/prompt-guard ./lib/prompt-guard
