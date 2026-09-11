@@ -21,6 +21,8 @@ import { getContentProjectArtifactsRoot, getContentProjectWorkingRoot, getConten
 import { buildContentMetadata } from './metadata.js';
 import { selectPrimaryCandidates } from './highlight-score.js';
 import { writeGameplayArtifactBundle } from './session-artifacts.js';
+import { runIndependentReviewLoop } from './review-loop.js';
+import { buildRightsManifest } from './review-policy.js';
 import type {
   ClipCandidate,
   ContentMode,
@@ -395,13 +397,15 @@ export async function rightsAndQueueApproval(
   });
   const withScore = { ...envelope, contribution };
   const rights = evaluateRightsGate(withScore);
-  const queued = setProjectApproval(
-    { ...withScore, rights, project: { ...withScore.project, status: 'rights_review' } },
-    { state: 'ready_for_review', reviewNotes: `Rights ${rights.verdict}` }
-  );
-  const qaFlags = runContentQaCheck(queued);
-  await saveProjectEnvelope({ ...queued, qaFlags }, baseDir);
-  return { ...queued, qaFlags };
+  const withRights = {
+    ...withScore,
+    rights,
+    rightsManifest: buildRightsManifest({ ...withScore, rights }),
+    project: { ...withScore.project, status: 'rights_review' as const },
+  };
+  const qaFlags = runContentQaCheck(withRights);
+  const reviewed = await runIndependentReviewLoop({ ...withRights, qaFlags }, baseDir);
+  return reviewed;
 }
 
 export async function runRepurposeSlice(options: {

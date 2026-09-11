@@ -14,18 +14,22 @@ export function writeGameplayArtifactBundle(
 ): string {
   const artifacts = getContentProjectArtifactsRoot(envelope.project.id, baseDir);
   fs.mkdirSync(artifacts, { recursive: true });
-  const firstOutput = envelope.renderJobs[0]?.outputPath;
+  const currentVersion = envelope.aiReview?.versions.find((item) => item.id === envelope.aiReview?.currentVersionId);
+  const firstOutput = currentVersion?.path ?? envelope.renderJobs[0]?.outputPath;
   if (firstOutput && fs.existsSync(firstOutput)) {
     fs.copyFileSync(firstOutput, path.join(artifacts, 'final.mp4'));
   }
   writeJson(path.join(artifacts, 'metadata.json'), envelope.metadata ?? {});
+  writeJson(path.join(artifacts, 'review.json'), envelope.aiReview ?? null);
   writeJson(path.join(artifacts, 'rights.json'), {
-    GAMEPLAY_RIGHTS: envelope.project.mode === 'original' ? 'ORIGINAL' : 'UNKNOWN',
-    MUSIC_RIGHTS: 'UNKNOWN',
-    ASSET_RIGHTS: envelope.project.mode === 'original' ? 'ORIGINAL' : 'UNKNOWN',
+    GAMEPLAY_RIGHTS: envelope.rightsManifest?.GAMEPLAY_RIGHTS ?? (envelope.project.mode === 'original' ? 'OWNED' : 'UNKNOWN'),
+    MUSIC_RIGHTS: envelope.rightsManifest?.MUSIC_RIGHTS ?? 'UNKNOWN',
+    ASSET_RIGHTS: envelope.rightsManifest?.ASSET_RIGHTS ?? (envelope.project.mode === 'original' ? 'OWNED' : 'UNKNOWN'),
+    DRAGON_ASSETS: envelope.rightsManifest?.DRAGON_ASSETS ?? 'NONE',
+    THUMBNAIL_ASSETS: envelope.rightsManifest?.THUMBNAIL_ASSETS ?? 'UNKNOWN',
     verdict: envelope.rights?.verdict ?? 'UNKNOWN',
     reasons: envelope.rights?.reasons ?? [],
-    publishReady: envelope.rights?.verdict !== 'BLOCKED' && envelope.approval?.state === 'approved',
+    publishReady: false,
   });
   const captionLines = (envelope.clipCandidates ?? [])
     .map((clip, index) => `${index + 1}\n00:00:00,000 --> 00:00:${String(Math.min(8, Math.round(clip.duration))).padStart(2, '0')},000\n${clip.hook}\n`)
@@ -39,6 +43,9 @@ export function writeGameplayArtifactBundle(
     CAPTIONS_VALID: fs.existsSync(captionsPath) && captionLines.trim().length > 0,
     RIGHTS_PASS: envelope.rights?.verdict !== 'BLOCKED',
     HOOK_PRESENT: (envelope.clipCandidates ?? []).some((clip) => clip.hook.trim().length > 0),
+    AI_DECISION: envelope.aiReview?.decision ?? null,
+    AI_SCORE: envelope.aiReview?.score?.total ?? null,
+    AI_ROUND: envelope.aiReview?.round ?? 0,
   });
   writeJson(path.join(artifacts, 'manifest.json'), {
     projectId: envelope.project.id,

@@ -19,7 +19,10 @@ export {
   suggestCharactersForTopic,
 } from './universe-bridge.js';
 export { evaluateRightsGate } from './rights.js';
-export { enqueueApprovedPublishJob } from './publishing.js';
+export { enqueueApprovedPublishJob, enqueueApprovedPublishJobs } from './publishing.js';
+export { buildDistributionPackages, writeDistributionManifest } from './distribution.js';
+export { buildRightsManifest } from './review-policy.js';
+export { publishingPlatformValues } from './types.js';
 export { proposeTransformativeAngle, scoreOpportunity } from './angles.js';
 export { CONTENT_OS_CAPABILITIES, contentOsCapabilityMap } from './capabilities.js';
 export type {
@@ -28,4 +31,6 @@ export type {
   TrendCandidate,
   BrandKit,
   RightsGateResult,
+  PublishingPlatform,
+  IndependentReviewState,
 } from './types.js';

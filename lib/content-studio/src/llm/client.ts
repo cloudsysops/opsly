@@ -55,6 +55,58 @@ export class AnthropicDirectClient implements LLMClient {
 
 // ─── LLM Gateway (internal) ───────────────────────────────────────────────────
 
+/** Gateway routing preference (not an Ollama tag). `cheap`/`llama` → llama_local first. */
+export type GatewayRoutingModel =
+  | 'sonnet'
+  | 'haiku'
+  | 'cheap'
+  | 'llama'
+  | 'balanced'
+  | 'fable'
+  | 'opus'
+  | 'code';
+
+export interface GatewayReviewOptions {
+  model?: GatewayRoutingModel | string;
+  maxTokens?: number;
+  requestId?: string;
+  feature?: string;
+}
+
+const GATEWAY_ROUTING_ALIASES = new Set<string>([
+  'sonnet',
+  'haiku',
+  'cheap',
+  'llama',
+  'balanced',
+  'fable',
+  'opus',
+  'code',
+]);
+
+/**
+ * Resolve Content OS review model from env.
+ * - Known gateway aliases pass through (`cheap` preferred for local Ollama).
+ * - Ollama tags like `qwen3:14b` / `gemma3:12b` map to `cheap` (llama_local first);
+ *   the actual weights are selected by gateway `OLLAMA_MODEL`.
+ */
+export function resolveContentReviewRoutingModel(
+  envValue: string | undefined,
+  fallback: GatewayRoutingModel = 'cheap'
+): string {
+  const raw = (envValue ?? '').trim();
+  if (!raw) return fallback;
+  const lower = raw.toLowerCase();
+  if (GATEWAY_ROUTING_ALIASES.has(lower)) {
+    return lower === 'llama' ? 'cheap' : lower;
+  }
+  // Ollama-style tags or bare local model names → local-first routing
+  if (raw.includes(':') || /^[a-z0-9][a-z0-9._-]*$/i.test(raw)) {
+    return 'cheap';
+  }
+  return fallback;
+}
+
 export class GatewayClient implements LLMClient {
   private readonly gatewayUrl: string;
   private readonly tenantSlug: string;
@@ -68,6 +120,21 @@ export class GatewayClient implements LLMClient {
   }
 
   async complete(system: string, user: string, maxTokens = 2048): Promise<string> {
+    return this.review(system, user, { maxTokens });
+  }
+
+  /**
+   * Single gateway-backed LLM call for content review. All LLM traffic flows
+   * through the LLM Gateway (OpenClaw) — never a direct provider or a local
+   * model endpoint. `requestId` is recorded for traceability (tenant_slug +
+   * request_id), in line with the platform's zero-bypass rule.
+   */
+  async review(
+    system: string,
+    user: string,
+    options: GatewayReviewOptions = {}
+  ): Promise<string> {
+    const { model = 'cheap', maxTokens = 2048, requestId, feature = 'content_studio' } = options;
     const resp = await fetch(`${this.gatewayUrl}/v1/chat`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -76,9 +143,10 @@ export class GatewayClient implements LLMClient {
         system,
         messages: [{ role: 'user', content: user }],
         max_tokens: maxTokens,
-        model: 'sonnet',
+        model,
         skip_repo_context: true,
-        feature: 'content_studio',
+        feature,
+        request_id: requestId,
       }),
     });
 

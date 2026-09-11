@@ -43,7 +43,10 @@ export {
   createLLMClient,
   AnthropicDirectClient,
   GatewayClient,
+  resolveContentReviewRoutingModel,
   type LLMClient,
+  type GatewayRoutingModel,
+  type GatewayReviewOptions,
 } from './llm/client.js';
 export { generateAvatarPrompt, generateAvatarPrompts } from './generators/avatar-prompt.js';
 export {

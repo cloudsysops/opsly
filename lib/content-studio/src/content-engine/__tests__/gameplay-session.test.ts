@@ -64,6 +64,7 @@ describe.skipIf(!ffmpegAvailable())('prepareGameplaySession', () => {
     expect(existsSync(sourceFile)).toBe(true);
     expect(envelope.project.status).toBe('human_review');
     expect(envelope.approval?.state).toBe('ready_for_review');
+    expect(envelope.aiReview?.state).toMatch(/ready_for_human_approval|human_review_required|ai_approved/);
     expect(envelope.session?.processingStatus).toBe('ready_for_review');
     expect(envelope.session?.sourceFile).toBe(sourceFile);
     expect(envelope.selectedClipIds?.length).toBeGreaterThanOrEqual(1);
@@ -96,5 +97,5 @@ describe.skipIf(!ffmpegAvailable())('prepareGameplaySession', () => {
     expect(queued.publishJobs).toHaveLength(1);
     expect(queued.publishJobs?.[0]?.status).toBe('queued');
     expect(queued.publishJobs?.[0]?.url).toBeUndefined();
-  }, 90_000);
+  }, 180_000);
 });

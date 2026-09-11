@@ -21,8 +21,10 @@ import {
   prepareGameplaySession,
   copyEvidenceBundle,
 } from '../lib/content-studio/src/content-engine/pipeline.ts';
-import { enqueueApprovedPublishJob } from '../lib/content-studio/src/content-engine/publishing.ts';
-import type { GameplayCaptureSource } from '../lib/content-studio/src/content-engine/types.ts';
+import { enqueueApprovedPublishJobs } from '../lib/content-studio/src/content-engine/publishing.ts';
+import { buildDistributionPackages, writeDistributionManifest } from '../lib/content-studio/src/content-engine/distribution.ts';
+import type { GameplayCaptureSource, PublishingPlatform } from '../lib/content-studio/src/content-engine/types.ts';
+import { publishingPlatformValues } from '../lib/content-studio/src/content-engine/types.ts';
 import { getContentArtifactsRoot, getContentProjectArtifactsRoot } from '../lib/content-studio/src/content-engine/paths.ts';
 import { thumbnail } from '../lib/content-studio/src/content-engine/ffmpeg.ts';
 import { createManualTrendCandidate, saveTrendCandidate } from '../lib/content-studio/src/content-engine/trends.ts';
@@ -146,7 +148,16 @@ async function main(): Promise<void> {
       approvedBy: arg('--by') ?? 'human',
       approvedAt: new Date().toISOString(),
     });
-    const next = enqueueApprovedPublishJob(approved);
+    const requested = (arg('--platforms') ?? 'youtube').split(',').map((item) => item.trim());
+    const platforms = requested.filter((item): item is PublishingPlatform =>
+      publishingPlatformValues.includes(item as PublishingPlatform),
+    );
+    const packaged = {
+      ...approved,
+      distributionPackages: buildDistributionPackages(approved),
+    };
+    writeDistributionManifest(packaged, packaged.distributionPackages ?? []);
+    const next = enqueueApprovedPublishJobs(packaged, platforms.length ? platforms : ['youtube']);
     await saveProjectEnvelope(next);
     console.log(next.project.status);
     return;
@@ -258,7 +269,7 @@ async function main(): Promise<void> {
     return;
   }
 
-  console.log(`commands: create ingest ingest-highlight prepare-highlight prepare-session transcribe discover-clips clips validate rights-check metadata approve reject list trend render-plan thumbnail slice render original commentary demo`);
+  console.log(`commands: create ingest ingest-highlight prepare-highlight prepare-session transcribe discover-clips clips validate rights-check metadata approve [--platforms youtube,tiktok,instagram,facebook,x] reject list trend render-plan thumbnail slice render original commentary demo`);
 }
 
 main().catch((error: unknown) => {

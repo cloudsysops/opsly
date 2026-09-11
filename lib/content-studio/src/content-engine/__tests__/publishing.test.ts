@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { enqueueApprovedPublishJob } from '../publishing.js';
+import { enqueueApprovedPublishJob, enqueueApprovedPublishJobs } from '../publishing.js';
 import type { ContentProjectEnvelope } from '../types.js';
 
 function envelope(state: 'ready_for_review' | 'approved' | 'rejected'): ContentProjectEnvelope {
@@ -39,6 +39,11 @@ describe('enqueueApprovedPublishJob', () => {
 
   it('blocks enqueue without approval', () => {
     expect(() => enqueueApprovedPublishJob(envelope('ready_for_review'))).toThrow(/BLOCKED_PUBLISH/);
+  });
+
+  it('records one queued job per selected platform', () => {
+    const next = enqueueApprovedPublishJobs(envelope('approved'), ['youtube', 'tiktok', 'x']);
+    expect(next.publishJobs?.map((job) => job.platform)).toEqual(['youtube', 'tiktok', 'x']);
   });
 
   it('blocks auto-publish even after approval', () => {
