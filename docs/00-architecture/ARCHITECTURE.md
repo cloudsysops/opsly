@@ -200,6 +200,7 @@ sequenceDiagram
 - `TENANT-INCUBATION-LIFECYCLE.md`
 - `docs/adr/ADR-031-experimental-consolidation.md`
 - `docs/adr/ADR-032-scripts-organization.md`
+- `docs/00-architecture/ENGINEERING-CONTROL-LOOP.md`
 
 # Opsly Architecture
 
