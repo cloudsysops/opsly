@@ -19,7 +19,8 @@ name: tenant_twenty_peskids
 x-deploy-twenty-server: &deploy-twenty-server
   resources:
     limits:
-      memory: 640M
+      # Twenty 2026 images OOM under 640M/512 heap (peskids crash-loop Restarts>1700).
+      memory: 1024M
     reservations:
       memory: 256M
 
@@ -43,7 +44,7 @@ services:
     image: twentycrm/twenty:${TWENTY_IMAGE_TAG:-latest}
     container_name: twenty_peskids
     restart: unless-stopped
-    mem_limit: 640m
+    mem_limit: 1024m
     deploy: *deploy-twenty-server
     volumes:
       - twenty-peskids-data:/app/packages/twenty-server/.local-storage
@@ -63,7 +64,7 @@ services:
       EMAIL_FROM_ADDRESS: ${TWENTY_PESKIDS_EMAIL_FROM:-no-reply@op-sly.com}
       EMAIL_FROM_NAME: ${TWENTY_PESKIDS_EMAIL_FROM_NAME:-Peskids CRM}
       EMAIL_SYSTEM_ADDRESS: ${TWENTY_PESKIDS_EMAIL_FROM:-no-reply@op-sly.com}
-      NODE_OPTIONS: ${TWENTY_NODE_OPTIONS:---max-old-space-size=512}
+      NODE_OPTIONS: ${TWENTY_NODE_OPTIONS:---max-old-space-size=768}
     depends_on:
       twenty-db:
         condition: service_healthy
