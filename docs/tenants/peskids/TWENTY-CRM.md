@@ -138,7 +138,25 @@ Ver `.n8n/1-workflows/crm/` y `docs/n8n-workflows/crm/README.md`.
 ```bash
 ./scripts/tenants/verify-twenty-stack.sh --probe-api
 TWENTY_SMOKE_EXPECT_IDS=true ./scripts/tenants/twenty-crm-smoke.sh --tenant peskids
+curl -sfk https://crm-peskids.op-sly.com/healthz
 ```
+
+### Si `twenty_peskids` no está healthy (OOM)
+
+Síntoma: `Restarts` altos, logs `JavaScript heap out of memory`, `/healthz` 404 vía Traefik.
+
+Causa típica: cap **640M** + heap **512** insuficientes para imagen `twentycrm/twenty:latest` (2026-09).
+
+Remedio (compose canónico): `mem_limit` **1024m**, `TWENTY_NODE_OPTIONS=--max-old-space-size=768`. Postgres `twenty_peskids_db` suele seguir healthy — **no** borrar el volumen `twenty-peskids-db`.
+
+```bash
+# VPS
+grep TWENTY_NODE_OPTIONS /opt/opsly/.env
+docker compose --env-file /opt/opsly/.env -f infra/docker-compose.twenty.yml up -d twenty-server twenty-worker
+docker inspect twenty_peskids --format '{{.State.Health.Status}}'
+```
+
+Ver `docs/runbooks/VPS-MEMORY-CAPS.md`.
 
 Tests unitarios:
 
