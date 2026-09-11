@@ -31,12 +31,14 @@ exec >>"$LOG" 2>&1
 echo "[night-merge] start $(TZ=America/Bogota date) prs=${PRS[*]}"
 
 while true; do
+  # Force decimal: leading zeros make bash treat HHMM as octal (0607 → wrong window).
   H=$(TZ=America/Bogota date +%H%M)
-  if [[ "$H" -ge 2200 || "$H" -lt 600 ]]; then
-    echo "[night-merge] window open H=$H"
+  H10=$((10#$H))
+  if [[ "$H10" -ge 2200 || "$H10" -lt 600 ]]; then
+    echo "[night-merge] window open H=$H (dec=$H10)"
     break
   fi
-  echo "[night-merge] wait H=$H"
+  echo "[night-merge] wait H=$H (dec=$H10)"
   sleep 120
 done
 
