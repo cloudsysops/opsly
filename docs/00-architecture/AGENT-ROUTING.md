@@ -43,3 +43,26 @@ PLATFORM_ADMIN_TOKEN=... npm run agent:assign-task -- \
 ```
 
 Use `--no-auto-start` when the bridge is managed elsewhere. The LLM Gateway remains the model boundary.
+
+
+## Engineering control loop
+
+Agent routing is one stage of the wider supervised engineering loop:
+
+```text
+GitHub night-queue task
+  -> dispatcher sync/pickup
+  -> local prompt watcher
+  -> POST /api/local/prompt-submit
+  -> BullMQ local-agents
+  -> routed builder agent
+  -> branch / tests / PR
+  -> independent reviewer
+  -> merge/deploy gate
+```
+
+GitHub is the durable engineering audit trail; BullMQ is the canonical active AgentTask runtime store.
+
+Builder and reviewer must be different agents.
+
+See `docs/00-architecture/ENGINEERING-CONTROL-LOOP.md`.
