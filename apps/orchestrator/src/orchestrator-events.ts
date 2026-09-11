@@ -15,7 +15,15 @@
  */
 
 import type { OrchestratorJob } from './types.js';
-import { orchestratorQueue, agentClassifierQueue, hermesOrchestrationQueue } from './queue.js';
+import {
+  orchestratorQueue,
+  agentClassifierQueue,
+  hermesOrchestrationQueue,
+  contentVideoQueue,
+  contentImageQueue,
+  contentCaptionQueue,
+  contentGenerationQueue,
+} from './queue.js';
 
 interface Event {
   event: string;
@@ -151,7 +159,15 @@ export interface QueueMetrics {
 }
 
 export async function getQueueMetrics(): Promise<QueueMetrics[]> {
-  const queues = [orchestratorQueue, agentClassifierQueue, hermesOrchestrationQueue];
+  const queues = [
+    orchestratorQueue,
+    agentClassifierQueue,
+    hermesOrchestrationQueue,
+    contentVideoQueue,
+    contentImageQueue,
+    contentCaptionQueue,
+    contentGenerationQueue,
+  ];
   const metrics: QueueMetrics[] = [];
 
   for (const queue of queues) {

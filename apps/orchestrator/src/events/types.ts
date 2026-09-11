@@ -3,6 +3,7 @@ export type OpslyEvent =
   | 'tenant.suspended'
   | 'job.completed'
   | 'job.failed'
+  | 'job.enqueued'
   | 'llm.called'
   | 'invite.sent'
   | 'agent.status'
@@ -15,4 +16,8 @@ export type OpslyEvent =
   | 'agent.task.failed'
   | 'policy.violation'
   | 'validation.feedback.applied'
-  | 'openclaw_router_decision';
+  | 'openclaw_router_decision'
+  | 'content.generation.triggered'
+  | 'content.video.queued'
+  | 'content.image.queued'
+  | 'content.caption.queued';

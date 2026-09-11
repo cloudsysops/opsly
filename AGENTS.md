@@ -568,81 +568,30 @@ See `docs/tenants/peskids/EXTRACTION-PLAN.md`:
 
 ---
 
-## 🔄 Phase 2 — Content Studio (2026-05-18)
+## 🔄 Phase 2 — Content Studio
 
-**Branch:** `feat/content-studio-phase2`  
-**Status:** Architecture scaffolded, MVP planning  
-**Deliverable:** Tenant + Opsly brand content generation from runtime events
+**Status:** Multi-domain platform, production-ready components + phase 2.2+ integrations pending  
+**Canonical Scope:** `docs/00-architecture/CONTENT-STUDIO-ACTUAL-SCOPE.md`  
+**Branch:** `claude/content-studio-scope-gWrk2` (scope clarification)  
+**Module:** `lib/content-studio/` (~5,000 LOC, 44 files, 5 domains)
 
-### Context
+### Summary
 
-PR #352 (session resume) rebased and merged; Phase 1 (LOCAL-FIRST) complete. Now designing Content Studio — safe multi-platform publishing without secrets exposure, without auto-publish by default.
+Content Studio is FAR AHEAD of the Phase 2.1 MVP described in earlier AGENTS.md. Components:
 
-### Phase 2.1 MVP Scope
+✅ **Phase 2.1 (Social Captions)** — Event-driven social copy, per-platform, compliance-checked, BullMQ approval  
+✅ **Phase 2.2 (AI + Rendering)** — Claude generation, MoneyPrinterTurbo video adapter, YouTube publisher  
+✅ **Phase 2.3 (Video Production)** — Full pipeline (episodes, series, characters, campaigns, FFmpeg)  
+🔄 **Phase 2.4** — Analytics + A/B testing (future)
 
-**NOT included yet:**
-- Image generation
-- API publishing (Instagram, LinkedIn, X, TikTok, YouTube, etc.)
-- Auto-scheduling
+**Next Actions:**
+1. Supabase schema + RLS for drafts, events, renders
+2. Orchestrator event loop → content drafts
+3. Admin UI (approval queue, render status, publish history)
+4. Integration tests (E2E: event → draft → approval → render → publish)
+5. Multi-language support (EN + ES)
 
-**Included:**
-- Event → Story mapping (6 event types)
-- Caption generation (per-platform)
-- Avatar + art direction prompts
-- Compliance checker (no secrets regex)
-- Approval queue (BullMQ)
-- Copy/paste kit (text export)
-- Mission Control UI (drafts + calendar)
-
-### Modules Being Built
-
-```
-lib/content-studio/
-├── src/types.ts (ContentEvent, TenantContentProfile, ContentDraft)
-├── src/mappers/
-├── src/generators/
-├── src/checkers/
-├── src/adapters/
-└── __tests__/
-```
-
-### Key Files
-
-- `docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md` — Full spec
-- `lib/content-studio/` — Core library
-- `apps/orchestrator/` — Event ingestion (BullMQ)
-- `apps/admin/` — Approval queue UI (future)
-- `apps/mission-control/` — Content Studio tab (future)
-
-### Phase 2.1 Timeline
-
-Week 1: RuntimeToStoryMapper + CaptionGenerator  
-Week 2: ComplianceChecker + ContentApprovalQueue  
-Week 3: CopyPasteKit + Mission Control UI  
-Week 4: Docs + runbook + MVP validation
-
----
-
-### Qué evitamos por ahora
-
-- Segundo orchestrator, segundo motor de contexto, o reestructurar `infra/` sin necesidad.
-- DAG engine complejo, LangGraph/CrewAI como dependencia runtime obligatoria, K8s.
-- Sustituir BullMQ o MCP por alternativas paralelas.
-
-### Orden de ejecución
-
-1. **Opsly core estable**: runtime, sesiones, governance, deploy y recovery.
-2. **Adapters / skills**: LangGraph, n8n y OpenHands solo como integración fina, sin duplicar el control plane.
-3. **MCP seguro**: permisos mínimos, separación read/write/shell/secrets y zero-trust para acciones sensibles.
-4. **Mission Control**: jobs, workers, sessions, branches y health.
-5. **Fork solo si hace falta**: crear una integración nueva únicamente cuando el adapter no permita lo que necesitamos.
-
-### Errores que rompen la arquitectura (checklist de PR)
-
-- Carpeta raíz `agents/` fuera del patrón `apps/agents/*`.
-- Duplicar `apps/context-builder` dentro de orchestrator sin decisión.
-- Cambios breaking en colas o en contratos HTTP sin versión/ADR.
-- Features grandes sin paso intermedio en `AGENTS.md` / sin validación.
+**Read the full scope:** `docs/00-architecture/CONTENT-STUDIO-ACTUAL-SCOPE.md` (2026-09-11, session gWrk2)
 
 ### Documentación y prompts
 

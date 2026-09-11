@@ -39,7 +39,13 @@ export type JobType =
   /** Super Orchestrator v2 - inteligente multi-agente */
   | 'super_orchestrator'
   /** Content Studio → MoneyPrinterTurbo video rendering. Payload: `ContentVideoPayload`. */
-  | 'content_video';
+  | 'content_video'
+  /** Content image generation via AI (DALL-E, Midjourney, etc). Payload: `ContentImagePayload`. */
+  | 'content_image'
+  /** AI caption generation for content. Payload: `ContentCaptionPayload`. */
+  | 'content_caption'
+  /** Content generation prep and orchestration. Payload: `ContentGenerationPayload`. */
+  | 'content_generation';
 
 export interface TestValidationPayload {
   type: 'test_validation';
@@ -69,6 +75,69 @@ export interface TerminalTaskPayload {
   tenant_slug: string;
   timeout_seconds?: number;
   cwd?: string;
+}
+
+/**
+ * Payload for video content generation jobs (MoneyPrinterTurbo rendering).
+ * Triggered by event loop wiring on runtime events.
+ */
+export interface ContentVideoJobPayload {
+  type: 'content_video';
+  tenant_slug: string;
+  request_id?: string;
+  draft_id?: string;
+  draft?: Record<string, unknown>;
+  preset?: Record<string, unknown>;
+  mpt_base_url?: string;
+  mpt_api_key?: string;
+  trigger_event?: string;
+  /** Metadata about what triggered this job */
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Payload for image content generation jobs (DALL-E, Midjourney, etc).
+ */
+export interface ContentImageJobPayload {
+  type: 'content_image';
+  tenant_slug: string;
+  request_id?: string;
+  image_prompt: string;
+  style?: string;
+  aspect_ratio?: '1:1' | '16:9' | '9:16';
+  quality?: 'standard' | 'hd';
+  trigger_event?: string;
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Payload for caption generation jobs (AI caption generation).
+ */
+export interface ContentCaptionJobPayload {
+  type: 'content_caption';
+  tenant_slug: string;
+  request_id?: string;
+  content_id?: string;
+  content_text?: string;
+  languages?: string[];
+  platform?: string;
+  trigger_event?: string;
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Payload for orchestrating content generation pipeline.
+ * Coordinates image, caption, and video generation.
+ */
+export interface ContentGenerationPayload {
+  type: 'content_generation';
+  tenant_slug: string;
+  request_id?: string;
+  pipeline?: Array<'image' | 'caption' | 'video'>;
+  content_topic?: string;
+  platforms?: string[];
+  trigger_event?: string;
+  metadata?: Record<string, unknown>;
 }
 
 /**
