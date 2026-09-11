@@ -9,12 +9,13 @@ tags:
   - phase-2
 ---
 
-# Content Studio — Actual Scope & Implementation Status
+# Content Studio — Actual Scope: 10 Domains, Phase 2.1–2.3 Status
 
 **Branch:** `claude/content-studio-scope-gWrk2`  
-**Last Updated:** 2026-09-11  
+**Last Updated:** 2026-09-11 (AUDIT CORRECTED)  
 **Module Size:** ~5,000 LOC (44 TypeScript files)  
-**Status:** Multi-domain platform, beyond Phase 2.1 MVP
+**Canonical Sources:** CONTENT-PRODUCTION-MVP.md (2026-08-11) + RENDERING-ENGINE.md (2026-05-08)  
+**Status:** Multi-domain platform: phases 2.1 complete, 2.2 partial, 2.3 code-ready
 
 ---
 
@@ -39,7 +40,7 @@ The codebase contains **FAR MORE** than the Phase 2.1 MVP described in AGENTS.md
 
 ---
 
-## The Five Domains
+## The 10 Domains (Corrected)
 
 ### Domain 1: Social Captions (Marketing Event-Driven)
 
@@ -69,19 +70,21 @@ The codebase contains **FAR MORE** than the Phase 2.1 MVP described in AGENTS.md
 - X / Twitter
 - Discord (webhooks)
 
-**Status:** ✅ Fully implemented, tested, in use.
+**Status:** ✅ IMPLEMENTED. ⚠️ NOT INTEGRATED with orchestrator event loop yet.
 
-**Next:** Connect to runtime event bus (orchestrator), enable multi-language (ES/EN).
+**Next:** Wire orchestrator event bus → content drafts, enable multi-language (ES/EN fully working).
 
 ---
 
-### Domain 2: AI Content Generation (Claude-Powered)
+### Domain 2: AI Content Generation (LLM Gateway)
 
-**What it does:** Generates creative content (story hooks, captions, scripts) using Claude via Anthropic or gateway routing.
+**What it does:** Generates creative content (story hooks, captions, scripts) via internal LLM Gateway, model 'sonnet' hardcoded.
 
 **Files:**
 - `src/generators/ai-content-generator.ts` — Structured prompts for story/caption/script generation (Zod schemas)
-- `src/llm/client.ts` — LLM client abstraction (Anthropic direct or gateway with routing bias: cost/balanced/quality)
+- `src/llm/client.ts` — LLM client abstraction:
+  - **CANONICAL:** `GatewayClient` → internal LLM Gateway (port 3010), model 'sonnet' hardcoded
+  - **TEST-ONLY:** `AnthropicDirectClient` (for testing, not production)
 - `src/presets/tenant-content-presets.ts` — Per-tenant personas (opsly, technology, motivation)
 
 **Topics:**
@@ -94,40 +97,40 @@ Each has:
 - Hashtag templates
 - Platform-specific character limits
 
-**LLM Routing:**
+**LLM Routing (ACTUAL):**
 ```typescript
 interface LLMClient {
-  call(params: {
-    prompt: string;
-    system?: string;
-    model?: 'claude-opus-5' | 'claude-sonnet-5' | 'claude-haiku-4-5';
-    routing_bias?: 'cost' | 'balanced' | 'quality';
-  }): Promise<string>;
+  complete(system: string, user: string, maxTokens?: number): Promise<string>;
 }
+// Canonical path: GatewayClient → Gateway → model 'sonnet'
+// No runtime routing_bias selection (model is pinned)
 ```
 
-Supports:
-- Direct Anthropic API (highest quality, costlier)
-- Gateway routing (fallback logic, cost awareness)
+**Status:** ✅ IMPLEMENTED with bilingual output (ES/EN), Zod validation, prompt engineering.
+⚠️ CANONICAL PATH IS GATEWAY, not direct Anthropic.
 
-**Status:** ✅ Implemented with bilingual output (ES/EN), Zod validation, prompt engineering.
-
-**Next:** Integrate with orchestrator event loop, cache common prompts, add A/B testing hooks.
+**Next:** Integrate with orchestrator event loop, enable prompt caching, add A/B testing hooks.
 
 ---
 
-### Domain 3: Video Rendering (MoneyPrinterTurbo)
+### Domain 3: Video Rendering (Dry-Run → External Services)
 
-**What it does:** Submits approved content drafts to external rendering service for video generation.
+**What it does:** Generates render plans (dry-run, informational). Phase 2.2 will wire to MoneyPrinterTurbo or other providers.
 
 **Files:**
-- `src/rendering/moneyprinterturbo.ts` — Adapter for MoneyPrinterTurbo API
-- `src/rendering/episode-render-plan.ts` — Orchestrate multi-episode renders
+- `src/rendering/moneyprinterturbo.ts` — **TYPE-SAFE ADAPTER, NOT INTEGRATED**. Supports API call structure but never invoked in production.
+- `src/rendering/episode-render-plan.ts` — Builds dry-run render plans (no external API calls)
 
-**Supported:**
+**Current Capability (Phase 2.1):**
+- Dry-run render plans only
+- Validates episode readiness (blocks idea-stage episodes)
+- Generates manifest with asset references
+- **NO EXTERNAL API CALLS** (informational only)
+
+**Future Capability (Phase 2.2):**
+- Wire `buildEpisodeRenderPlan()` output to MoneyPrinterTurbo API
 - Video aspect ratios: 9:16 (Reels/TikTok), 1:1 (Instagram), 16:9 (YouTube)
-- Batched rendering (multiple videos in one request)
-- Render status polling
+- Batched rendering, render status polling
 - Asset manifest validation (URLs, thumbnails, subtitles)
 
 **Safety:**
@@ -135,22 +138,23 @@ Supports:
 - Tenant isolation in manifests
 - Request integrity checks (tenant_slug, request_id, draft_id match)
 
-**Status:** ✅ Complete, awaiting integration with content draft approval flow.
+**Status:** ⚠️ CODE-READY but NOT INTEGRATED. Dry-run only, per CONTENT-PRODUCTION-MVP.md (2026-08-11).
 
-**Next:** Wire into BullMQ approval queue, implement retry logic, add render status tracking in Supabase.
+**Next (Phase 2.2):** Wire into approval queue, integrate MoneyPrinterTurbo calls, add render status tracking in Supabase.
 
 ---
 
-### Domain 4: YouTube Publishing
+### Domain 4: YouTube Publishing (Adapter Complete)
 
-**What it does:** Direct upload to YouTube using OAuth2 credentials.
+**What it does:** Google API wrapper for YouTube video.insert() calls. CLI tool exists for manual publishing.
 
 **Files:**
 - `src/publishers/youtube.ts` — Google API wrapper (`videos.insert`, playlist support)
+- `scripts/content/youtube-publish.ts` — CLI tool for manual upload
 
 **Features:**
 - Privacy status control (public, unlisted, private)
-- COPPA compliance (made_for_kids flag mandatory)
+- COPPA compliance (made_for_kids flag mandatory, enforced at lines 35–37)
 - Playlist insertion
 - Tag/category management
 - Credentials from Doppler (never hardcoded)
@@ -160,9 +164,9 @@ Supports:
 - No defaults for compliance flags
 - Credentials validation on init
 
-**Status:** ✅ Implemented, awaiting orchestrator integration.
+**Status:** ✅ IMPLEMENTED. ⚠️ E2E publishing NOT PROVEN in CI (adapter exists, integration status unclear).
 
-**Next:** Add error handling + retry, metadata enrichment from draft, publish audit trail.
+**Next (Phase 2.2):** Wire into admin UI, add error handling + retry, metadata enrichment from draft, publish audit trail, E2E test integration.
 
 ---
 
@@ -228,7 +232,56 @@ Supports:
 - `src/campaigns/CampaignManager.ts` — Campaign calendar, production status
 - `src/campaigns/schema.ts` — Campaign data model
 
-**Status:** ✅ Implemented.
+**Status:** ✅ IMPLEMENTED, CODE-READY. Not yet integrated with runtime.
+
+---
+
+## Domains 6–10 (Additional)
+
+### Domain 6: Character Management
+
+**Files:**
+- `src/characters/CharacterRegistry.ts` — Load persistent character profiles
+- `src/characters/schema.ts` — Zod schema for CharacterProfile
+
+**Status:** ✅ IMPLEMENTED (Opsly Founder, Luna, Wavo, The Traveler, NØVA).  
+Character Bible finalized; used by series/episodes for consistent narration.
+
+### Domain 7: Series Registry
+
+**Files:**
+- `src/series/SeriesRegistry.ts` — Load/manage series metadata
+- `src/series/schema.ts` — Zod schema for Series
+
+**Status:** ✅ IMPLEMENTED (Opsly Origins, Peski Lab, Build With Opsly, Parallel Path).  
+Series continuity enforced; see `data/content/canon/CONTINUITY-RULES.md`.
+
+### Domain 8: Episode Production
+
+**Files:**
+- `src/episodes/EpisodeManager.ts` — Load episodes, validate, check compliance
+- `src/episodes/schema.ts` — Zod schema for Episode structure
+
+**Status:** ✅ IMPLEMENTED. Pilot episode fully scripted; 15 episodes at idea stage (per CONTENT-PRODUCTION-MVP.md).  
+CLI: `npm run content:episode -- <episode-id>` shows full script + scenes.
+
+### Domain 9: Campaign Planning
+
+**Files:**
+- `src/campaigns/CampaignManager.ts` — Load campaign, build calendar, compute status
+- `src/campaigns/schema.ts` — Zod schema for Campaign
+
+**Status:** ✅ IMPLEMENTED. 30-day launch campaign with production status tracking.  
+CLI: `npm run content:calendar` shows schedule joined with live status.
+
+### Domain 10: Portal/Narrative Environments
+
+**Files:**
+- `config/content-formats.json` — Format definitions (NOVA_REACTS, NOVA_EXPLAINS, REALITY_CHECK, etc.)
+- `config/content-portals.json` — Portal definitions (FUTURE, LAB, HUMAN, WILD, MOVE)
+
+**Status:** ✅ IMPLEMENTED. 7 format templates with scene structure, pace, visual treatment.  
+Portal system defines narrative context (NØVA's future lab, THE TRAVELER's unknown worlds, etc.).
 
 ---
 
@@ -270,21 +323,22 @@ Supports:
 
 ---
 
-### ✅ Phase 2.2 (In Progress — AI + Rendering)
+### 🔄 Phase 2.2 (In Progress — AI + Rendering)
 
-**Definition:** Claude-powered generation + external video rendering.
+**Definition:** LLM Gateway generation + dry-run render plans (external rendering wired in Phase 2.3).
 
 **Deliverables:**
-- [x] AIContentGenerator (Claude prompts for ES/EN)
-- [x] LLMClient (direct + gateway routing)
-- [x] MoneyPrinterTurboAdapter (rendering service integration)
-- [x] YouTubePublisher (direct API upload)
+- [x] AIContentGenerator (Claude prompts for ES/EN, via Gateway)
+- [x] LLMClient (GatewayClient canonical; AnthropicDirectClient test-only)
+- [x] Dry-run render plans (MoneyPrinterTurbo NOT CALLED yet)
+- [x] YouTubePublisher adapter (E2E integration status unclear)
 
-**Status:** ✅ Code complete, needs:
+**Status:** 🔄 CODE-READY but PARTIALLY INTEGRATED. Needs:
 - Orchestrator integration (event loop)
+- MoneyPrinterTurbo wiring into render pipeline
 - Supabase schema for drafts/renders
-- Admin UI for render status
-- Retry + error handling
+- Admin UI for render status & approval workflow
+- YouTube E2E testing
 
 ---
 
@@ -313,18 +367,23 @@ Supports:
 
 ## What's Missing (Gaps)
 
-### Infrastructure
+### Integration (CRITICAL)
 
-- [ ] **Supabase schema** — `content_drafts`, `content_events`, `content_renders`, `video_projects`, `episodes`, `series`, `characters`, `campaigns`
+- [ ] **Event bus wiring** — Orchestrator → runtime events → ContentEventSelector (UNWIRED)
+- [ ] **Approval workflow UI** — BullMQ approval queue exists, admin UI missing
+- [ ] **Render integration** — MoneyPrinterTurbo adapter written but not called
+
+### Infrastructure (OPTIONAL for Phase 2.1)
+
+- [ ] **Supabase schema** — Optional for Phase 2.1 (dry-run only). Required Phase 2.2+ for state persistence.
 - [ ] **RLS policies** — Tenant isolation on all tables
 - [ ] **Audit tables** — Log all approvals, publishes, renders
 
-### Integration
+### Publishing
 
-- [ ] **Event bus** — Runtime events → ContentEventSelector in orchestrator
-- [ ] **Approval workflow** — BullMQ jobs with admin UI
-- [ ] **Render status tracking** — Poll MoneyPrinterTurbo, update draft state
+- [ ] **Render status tracking** — Poll MoneyPrinterTurbo, update draft state (Phase 2.2)
 - [ ] **Publish audit trail** — Log successful/failed publishes per platform
+- [ ] **YouTube E2E** — Verify end-to-end integration (adapter exists, not proven)
 
 ### Admin UI
 
@@ -413,16 +472,16 @@ Supports:
 
 **Implication:** Approval queue (BullMQ) is non-negotiable infrastructure.
 
-### 4. LLM Routing for Cost/Quality Trade-off
+### 4. LLM Gateway as Canonical Path (NOT routing bias)
 
-**Decision:** Support multiple Claude models (Opus/Sonnet/Haiku) with runtime routing bias.
+**Decision:** Route ALL generation through internal LLM Gateway; model 'sonnet' hardcoded (no runtime selection).
 
 **Rationale:**
-- Opus: highest quality (story hooks, complex prompts)
-- Sonnet: balanced (captions, routine generation)
-- Haiku: low cost (simple templates, high volume)
+- Internal Gateway provides unified cost tracking + routing
+- Model pinned to 'sonnet' for consistency
+- Anthropic direct client available for testing only, not production
 
-**Implication:** Tenant can configure routing in profile; orchestrator honors it.
+**Implication:** No tenant-level model selection; orchestrator cannot override model choice. Gateway manages fallback logic internally.
 
 ### 5. Tenant Isolation at Every Boundary
 
@@ -434,6 +493,23 @@ Supports:
 - Audit trail per tenant
 
 **Implication:** Supabase RLS on all content tables; `tenant_slug` on every query.
+
+---
+
+## CLI Fragmentation (Consolidation Pending)
+
+**Issue:** Three overlapping command-line interfaces exist without clear consolidation path.
+
+| CLI | Purpose | Status | Note |
+|-----|---------|--------|------|
+| `content-os-cli.ts` | Primary: ingest, validate, transcribe, discover-clips, render-plan | ✅ ACTIVE | "OS" = Operating System; preferred interface |
+| `content-cli.ts` | Legacy: duplicate commands (list, create, validate, render-plan, render) | 🟡 DUPLICATE | Per ADR-036 consolidation, should be deprecated |
+| `content-engine.ts` | Approval/rejection workflow (approve, reject commands) | ✅ ACTIVE | Separate concern, may remain |
+| Shell wrappers | `content-studio-enqueue.sh`, `content-studio-publish-youtube.sh` | 🟡 PARTIAL | Manual orchestration; not automated |
+
+**Recommendation:** Adopt `content-os-cli.ts` as canonical. Deprecate `content-cli.ts` per ADR-036.
+
+**Impact on Scope:** Unclear which CLI is used in production. Tests may require all three.
 
 ---
 
@@ -461,14 +537,14 @@ lib/content-studio/
 │   │   └── copy-paste-kit.ts             # Export formats
 │   │
 │   ├── llm/
-│   │   └── client.ts                     # Anthropic + gateway routing
+│   │   └── client.ts                     # LLM Gateway (canonical) + Anthropic (test-only)
 │   │
 │   ├── presets/
 │   │   └── tenant-content-presets.ts     # Personas (opsly, tech, motivation)
 │   │
 │   ├── rendering/
-│   │   ├── moneyprinterturbo.ts          # External render adapter
-│   │   └── episode-render-plan.ts        # Multi-episode orchestration
+│   │   ├── moneyprinterturbo.ts          # External render adapter (dry-run, not wired)
+│   │   └── episode-render-plan.ts        # Dry-run plans only (Phase 2.2+)
 │   │
 │   ├── publishers/
 │   │   └── youtube.ts                    # Google API wrapper
@@ -506,7 +582,7 @@ lib/content-studio/
 │   │   └── schema.ts
 │   │
 │   └── __tests__/
-│       └── (44 test files)
+│       └── (test status unknown: vitest unavailable in audit environment)
 │
 ├── package.json
 ├── tsconfig.json
