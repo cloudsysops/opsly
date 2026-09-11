@@ -56,8 +56,10 @@ if [[ -z "${REDIS_URL:-}" ]]; then
   exit 1
 fi
 
+# NOTE: redis-cli can exit 0 while printing NOAUTH/WRONGPASS — require literal OK.
 if command -v redis-cli >/dev/null 2>&1; then
-  if redis-cli -u "$REDIS_URL" SET "$KEY" "$VALUE" EX "$TTL" >/dev/null 2>&1; then
+  CLI_OUT="$(redis-cli -u "$REDIS_URL" --no-auth-warning SET "$KEY" "$VALUE" EX "$TTL" 2>/dev/null || true)"
+  if [[ "${CLI_OUT}" == "OK" ]]; then
     echo "[pc-gamer-heartbeat] OK (redis-cli) key=$KEY ttl=${TTL}s"
     exit 0
   fi
