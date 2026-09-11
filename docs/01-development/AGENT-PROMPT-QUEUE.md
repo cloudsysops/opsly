@@ -114,6 +114,8 @@ PLATFORM_ADMIN_TOKEN="<token>" npm run opsly:local-prompt-watcher:once
 
 Prompts versionados para la noche: `docs/01-development/night-queue/` — `dispatch-prompt-queue.sh` los copia a `.cursor/prompts/queue/` (gitignored) y abre OpenCode. n8n: `docs/n8n-workflows/night-agent-queue.json` (HTTP al orchestrator; **no** escribe `docs/ACTIVE-PROMPT.md`).
 
+**Agent Lab (supervisor → worker → review → learn):** diseño `docs/design/OPSLY-AGENT-LAB.md`; fases en `night-queue/012-agent-lab-*` (`pending` / `held`). Activación periódica Mac: `./scripts/ops/install-night-agent-launchd.sh` → `com.opsly.prompt-queue-opencode` cada 10 min. Pilots GPU solo vía overnight autodispatch + `config/pc-gamer-schedule.json`. No nuevo orquestador.
+
 Si no existe el script, basta con listar la carpeta `queue/` manualmente; el protocolo sigue siendo válido.
 
 ## Relación con otras carpetas
