@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "updated_at": "2026-09-11",
+  "principle": "Public code, private execution. Every execution node has a unique identity, least privilege, independent revocation, and no secret material committed to Git.",
+  "trusted_task_source": {
+    "repository": "cloudsysops/opsly",
+    "allowed_paths": [
+      "docs/01-development/night-queue/"
+    ],
+    "require_trusted_author": true,
+    "require_trusted_branch": true,
+    "require_task_contract": true,
+    "reject_issue_body_as_instruction": true,
+    "reject_pr_body_as_instruction": true,
+    "reject_comment_as_instruction": true,
+    "reject_diff_content_as_instruction": true
+  },
+  "nodes": [
+    {
+      "node_id": "macbook-personal-01",
+      "role": "engineering-dispatcher",
+      "status": "planned",
+      "network": "tailscale",
+      "credentials": {
+        "token_env": "OPSLY_NODE_TOKEN_MACBOOK_PERSONAL_01",
+        "token_storage": "doppler_or_os_keychain",
+        "shared_token": false
+      },
+      "capabilities": [
+        "task.pickup",
+        "agent.dispatch",
+        "git.branch",
+        "git.push",
+        "pr.create"
+      ],
+      "forbidden": [
+        "direct-main-write",
+        "auto-merge",
+        "auto-production-deploy",
+        "read-unscoped-secrets"
+      ]
+    },
+    {
+      "node_id": "pc-gamer-openclaw-01",
+      "role": "compute-worker",
+      "status": "active",
+      "network": "tailscale-outbound",
+      "credentials": {
+        "token_env": "OPSLY_NODE_TOKEN_PC_GAMER_01",
+        "token_storage": "doppler_or_os_secret_store",
+        "shared_token": false
+      },
+      "capabilities": [
+        "llm.local",
+        "gpu.compute",
+        "video.render",
+        "image.generate",
+        "embedding",
+        "ffmpeg"
+      ],
+      "forbidden": [
+        "release-authority",
+        "production-database",
+        "unscoped-auth-secrets",
+        "direct-main-write",
+        "auto-production-deploy"
+      ]
+    },
+    {
+      "node_id": "vps-dragon-control-01",
+      "role": "control-plane",
+      "status": "active",
+      "network": "tailscale",
+      "credentials": {
+        "token_env": "OPSLY_NODE_TOKEN_VPS_DRAGON_01",
+        "token_storage": "doppler",
+        "shared_token": false
+      },
+      "capabilities": [
+        "orchestrator",
+        "queue",
+        "policy",
+        "runtime",
+        "observability"
+      ],
+      "forbidden": [
+        "trust-unverified-github-content",
+        "accept-anonymous-agent-submit"
+      ]
+    }
+  ],
+  "future_node_defaults": {
+    "status": "disabled_until_enrolled",
+    "network": "tailscale",
+    "unique_credentials_required": true,
+    "default_deny": true,
+    "capabilities": [],
+    "forbidden": [
+      "direct-main-write",
+      "auto-merge",
+      "auto-production-deploy",
+      "read-unscoped-secrets"
+    ]
+  }
+}
