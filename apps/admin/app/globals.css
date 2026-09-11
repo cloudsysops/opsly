@@ -100,7 +100,10 @@ body {
 }
 
 .cyber-hover {
-  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
 }
 
 .cyber-hover:hover {
@@ -162,8 +165,7 @@ body {
 .ops-auth-backdrop {
   background:
     radial-gradient(ellipse 90% 55% at 50% -15%, rgba(0, 255, 255, 0.16), transparent 55%),
-    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(157, 0, 255, 0.12), transparent 45%),
-    #0a0e27;
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(157, 0, 255, 0.12), transparent 45%), #0a0e27;
 }
 
 @media (prefers-reduced-motion: reduce) {
