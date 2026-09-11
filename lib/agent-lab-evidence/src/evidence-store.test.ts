@@ -115,7 +115,6 @@ describe('EvidenceStore', () => {
   });
 
   it('demotes an agent after 3 consecutive failures', () => {
-    store.promoteIfEligible; // no-op sanity
     const agent = store.getAgent('agent-1');
     if (agent) agent.trust_level = 'trusted';
 
