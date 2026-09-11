@@ -177,6 +177,10 @@ The physical readiness path validates:
 5. readiness doctor;
 6. zero AI task sessions at healthy idle.
 
+**Agent Lab (supervisor → worker → review → learn):** diseño `docs/design/OPSLY-AGENT-LAB.md`; fases en `night-queue/012-agent-lab-*` (ver estado real en cada archivo). Activación periódica Mac: `./scripts/ops/install-night-agent-launchd.sh` → `com.opsly.prompt-queue-opencode` cada 10 min. Pilots GPU solo vía overnight autodispatch + `config/pc-gamer-schedule.json`. No nuevo orquestador.
+
+Si no existe el script, basta con listar la carpeta `queue/` manualmente; el protocolo sigue siendo válido.
+
 The health deadline defaults to 90 seconds and is bounded by `OPSLY_MAC_HEALTH_WAIT_SECONDS` between 10 and 300 seconds.
 
 ## Gamer physical acceptance
