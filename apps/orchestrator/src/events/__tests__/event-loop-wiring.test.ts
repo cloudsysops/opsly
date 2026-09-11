@@ -81,7 +81,7 @@ describe('Event Loop Wiring', () => {
         timestamp: new Date().toISOString(),
       };
 
-      const jobIds = await handleRuntimeEvent(mockQueue, 'tenant.onboarded', eventData);
+      await handleRuntimeEvent(mockQueue, 'tenant.onboarded', eventData);
 
       // Should still enqueue because 'plan !== startup' OR 'auto_generate_intro_content === true'
       // But plan is startup and auto_generate is false, so should skip

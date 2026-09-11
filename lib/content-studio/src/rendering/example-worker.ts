@@ -41,7 +41,7 @@ export function initializeRenderManager(): RenderQueueManager {
  * ```
  */
 export async function planVideoRender(manager: RenderQueueManager, request: VideoRenderRequest) {
-  const { buildVideoRenderPlan, validateRenderPlanReady } = await import(
+  const { buildVideoRenderPlan } = await import(
     './video-render-plan.js'
   );
 

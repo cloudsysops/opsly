@@ -16,7 +16,6 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import type { Queue } from 'bullmq';
-import { createClient } from '@supabase/supabase-js';
 import type { OrchestratorJob } from '../../types.js';
 import type { OpslyEvent } from '../types.js';
 import {
@@ -456,7 +455,7 @@ describe('E2E Flow: Event → Draft → Approval → Render → Publish', () => 
       });
 
       // Then update
-      const { data, error } = await mockSupabase
+      const { error } = await mockSupabase
         .schema('platform')
         .from('approval_queue')
         .update({
@@ -478,7 +477,7 @@ describe('E2E Flow: Event → Draft → Approval → Render → Publish', () => 
         tenant_slug: TEST_CONTEXT.tenant_slug,
       });
 
-      const { data, error } = await mockSupabase
+      const { error } = await mockSupabase
         .schema('platform')
         .from('approval_queue')
         .update({

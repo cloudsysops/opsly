@@ -10,7 +10,7 @@
  * @author Claude Haiku 4.5
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 // Mock types for Supabase responses
 interface ApprovalQueueItem {
@@ -214,10 +214,11 @@ async function getApprovalQueueAPI(supabase: MockSupabaseForAPI): Promise<Approv
     .from('approval_queue')
     .select('*');
 
-  if (error) {
-    const message = typeof error === 'object' && error !== null && 'message' in error
-      ? (error as any).message
-      : String(error);
+  if (error as any) {
+    const errorObj = error as any;
+    const message = typeof errorObj === 'object' && errorObj !== null && 'message' in errorObj
+      ? errorObj.message
+      : String(errorObj);
     throw new Error(message || 'Failed to fetch approval queue');
   }
 
@@ -245,10 +246,11 @@ async function getRenderMonitorAPI(supabase: MockSupabaseForAPI): Promise<Render
     .from('render_jobs')
     .select('*');
 
-  if (error) {
-    const message = typeof error === 'object' && error !== null && 'message' in error
-      ? (error as any).message
-      : String(error);
+  if (error as any) {
+    const err = error as any;
+    const message = typeof err === 'object' && err !== null && 'message' in err
+      ? err.message
+      : String(err);
     throw new Error(message || 'Failed to fetch render jobs');
   }
 
@@ -288,10 +290,11 @@ async function getApprovalDecisionsAPI(supabase: MockSupabaseForAPI) {
     .from('approval_gate_decisions')
     .select('*');
 
-  if (error) {
-    const message = typeof error === 'object' && error !== null && 'message' in error
-      ? (error as any).message
-      : String(error);
+  if (error as any) {
+    const err = error as any;
+    const message = typeof err === 'object' && err !== null && 'message' in err
+      ? err.message
+      : String(err);
     throw new Error(message || 'Failed to fetch approval decisions');
   }
 
