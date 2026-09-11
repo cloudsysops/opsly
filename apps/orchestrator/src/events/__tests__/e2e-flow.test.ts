@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { Queue } from 'bullmq';
+import type { Queue } from 'bullmq';
 import { createClient } from '@supabase/supabase-js';
 import type { OrchestratorJob } from '../../types.js';
 import type { OpslyEvent } from '../types.js';
@@ -60,7 +60,7 @@ class MockSupabaseClient {
           // Approval queue operations
           insert: async (data: unknown) => {
             if (tableName === 'approval_queue') {
-              this.approvalQueue.push(data);
+              this.approvalQueue.push(data as any);
               return { data: [data], error: null };
             }
             return { data: null, error: null };
@@ -71,7 +71,7 @@ class MockSupabaseClient {
                 (item: any) => item.id === (data as any).id
               );
               if (idx >= 0) {
-                this.approvalQueue[idx] = { ...this.approvalQueue[idx], ...data };
+                this.approvalQueue[idx] = { ...this.approvalQueue[idx], ...(data as any) };
               }
             }
             return { data: [data], error: null };
@@ -205,7 +205,7 @@ describe('E2E Flow: Event → Draft → Approval → Render → Publish', () => 
         timestamp: new Date().toISOString(),
       };
 
-      const jobIds = await handleRuntimeEvent(mockQueue, event, eventData);
+      const jobIds = await handleRuntimeEvent(mockQueue as any, event, eventData);
 
       expect(jobIds).toHaveLength(1);
       expect(jobIds[0]).toBeDefined();
@@ -234,7 +234,7 @@ describe('E2E Flow: Event → Draft → Approval → Render → Publish', () => 
         timestamp: new Date().toISOString(),
       };
 
-      const jobIds = await handleRuntimeEvent(mockQueue, event, eventData);
+      const jobIds = await handleRuntimeEvent(mockQueue as any, event, eventData);
 
       expect(jobIds).toHaveLength(1);
       const enqueuedJobs = mockQueue.getJobs();
@@ -261,7 +261,7 @@ describe('E2E Flow: Event → Draft → Approval → Render → Publish', () => 
         timestamp: new Date().toISOString(),
       };
 
-      const jobIds = await handleRuntimeEvent(mockQueue, event, eventData);
+      const jobIds = await handleRuntimeEvent(mockQueue as any, event, eventData);
 
       expect(jobIds).toHaveLength(1);
     });
@@ -276,7 +276,7 @@ describe('E2E Flow: Event → Draft → Approval → Render → Publish', () => 
         timestamp: new Date().toISOString(),
       };
 
-      const jobIds = await handleRuntimeEvent(mockQueue, event, eventData);
+      const jobIds = await handleRuntimeEvent(mockQueue as any, event, eventData);
 
       expect(jobIds).toHaveLength(1);
     });
@@ -290,7 +290,7 @@ describe('E2E Flow: Event → Draft → Approval → Render → Publish', () => 
         timestamp: new Date().toISOString(),
       };
 
-      const jobIds = await handleRuntimeEvent(mockQueue, event, eventData);
+      const jobIds = await handleRuntimeEvent(mockQueue as any, event, eventData);
 
       expect(jobIds).toHaveLength(0);
     });
@@ -304,7 +304,7 @@ describe('E2E Flow: Event → Draft → Approval → Render → Publish', () => 
         timestamp: new Date().toISOString(),
       };
 
-      const jobIds = await handleRuntimeEvent(mockQueue, event, eventData);
+      const jobIds = await handleRuntimeEvent(mockQueue as any, event, eventData);
 
       expect(jobIds).toHaveLength(0);
     });
@@ -356,7 +356,7 @@ describe('E2E Flow: Event → Draft → Approval → Render → Publish', () => 
         agent_role: 'builder',
       };
 
-      const jobId = await enqueueContentGenerationJob(mockQueue, job);
+      const jobId = await enqueueContentGenerationJob(mockQueue as any, job);
 
       expect(jobId).toBeDefined();
       expect(typeof jobId).toBe('string');
@@ -379,7 +379,7 @@ describe('E2E Flow: Event → Draft → Approval → Render → Publish', () => 
         timestamp: new Date().toISOString(),
       };
 
-      const jobIds = await handleRuntimeEvent(mockQueue, event, eventData);
+      const jobIds = await handleRuntimeEvent(mockQueue as any, event, eventData);
 
       expect(jobIds).toHaveLength(1);
       // Idempotency key ensures same event doesn't enqueue duplicate jobs
@@ -781,7 +781,7 @@ describe('E2E Flow: Event → Draft → Approval → Render → Publish', () => 
       };
 
       // Step 1.5: Verify event triggers job enqueue
-      const jobIds = await handleRuntimeEvent(mockQueue, event, eventData);
+      const jobIds = await handleRuntimeEvent(mockQueue as any, event, eventData);
       expect(jobIds).toHaveLength(1);
 
       // Step 2: Draft added to approval queue
@@ -903,7 +903,7 @@ describe('E2E Flow: Event → Draft → Approval → Render → Publish', () => 
         timestamp: new Date().toISOString(),
       };
 
-      const jobIds = await handleRuntimeEvent(mockQueue, event, eventData);
+      const jobIds = await handleRuntimeEvent(mockQueue as any, event, eventData);
       expect(jobIds).toHaveLength(1);
 
       // Step 2: Added to approval queue
@@ -1009,7 +1009,7 @@ describe('E2E Flow: Event → Draft → Approval → Render → Publish', () => 
         timestamp: new Date().toISOString(),
       };
 
-      const jobIds = await handleRuntimeEvent(mockQueue, event, eventData);
+      const jobIds = await handleRuntimeEvent(mockQueue as any, event, eventData);
 
       expect(jobIds).toHaveLength(0);
       expect(mockQueue.getJobs()).toHaveLength(0);
@@ -1022,7 +1022,7 @@ describe('E2E Flow: Event → Draft → Approval → Render → Publish', () => 
         timestamp: new Date().toISOString(),
       };
 
-      const jobIds = await handleRuntimeEvent(mockQueue, event, eventData);
+      const jobIds = await handleRuntimeEvent(mockQueue as any, event, eventData);
 
       // Unknown events should not enqueue jobs (no mapping found)
       expect(jobIds).toHaveLength(0);
@@ -1103,7 +1103,7 @@ describe('E2E Flow: Event → Draft → Approval → Render → Publish', () => 
     it('should initialize event loop wiring', async () => {
       const cleanup = await startEventLoopWiring({
         enabled: true,
-        contentVideoQueue: mockQueue,
+        contentVideoQueue: mockQueue as any,
       });
 
       expect(cleanup).toBeDefined();
@@ -1115,7 +1115,7 @@ describe('E2E Flow: Event → Draft → Approval → Render → Publish', () => 
     it('should handle disabled event loop wiring', async () => {
       const cleanup = await startEventLoopWiring({
         enabled: false,
-        contentVideoQueue: mockQueue,
+        contentVideoQueue: mockQueue as any,
       });
 
       expect(cleanup).toBeDefined();
@@ -1133,7 +1133,7 @@ describe('E2E Flow: Event → Draft → Approval → Render → Publish', () => 
 
       const cleanup = await startEventLoopWiring({
         enabled: true,
-        contentVideoQueue: mockQueue,
+        contentVideoQueue: mockQueue as any,
         customMappings: [customMapping],
       });
 
