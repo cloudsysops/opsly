@@ -1,6 +1,7 @@
 import { setupLangSmithTracing } from './agents/langsmith.js';
 import { processIntent } from './engine.js';
 import { subscribeEvents } from './events/bus.js';
+import { handleRuntimeEvent, startEventLoopWiring } from './events/event-loop-wiring.js';
 import { startOrchestratorHealthServer } from './health-server.js';
 import { startRuntimeGovernorSweeper } from './lib/runtime-governor-sweeper.js';
 import { drainMeteringOperations } from './metering/usage-events-meter.js';
@@ -17,6 +18,10 @@ import {
   connection,
   hermesOrchestrationQueue,
   orchestratorQueue,
+  contentVideoQueue,
+  contentImageQueue,
+  contentCaptionQueue,
+  contentGenerationQueue,
 } from './queue.js';
 import { closeCircuitBreakerRedis } from './resilience/circuit-breaker.js';
 import { closeJobStateStore } from './state/store.js';
@@ -80,13 +85,61 @@ async function runEventSubscription(teamManager: TeamManager): Promise<AsyncClea
         } catch (err) {
           console.error('[orchestrator] assignToTeam(deploy) failed', err);
         }
+        // Also trigger content generation if enabled
+        if (process.env.OPSLY_EVENT_LOOP_CONTENT_GENERATION_ENABLED === 'true') {
+          try {
+            const contentJobIds = await handleRuntimeEvent(contentVideoQueue, event, eventData);
+            if (contentJobIds.length > 0) {
+              console.log('[orchestrator] tenant.onboarded → content generation jobs', contentJobIds);
+            }
+          } catch (err) {
+            console.error('[orchestrator] content generation event handling failed', err);
+          }
+        }
         break;
       }
       case 'job.completed': {
         console.log(`[orchestrator] Job completado: ${String(eventData.job_id ?? '')}`);
+        // Handle content generation for job completions if configured
+        if (process.env.OPSLY_EVENT_LOOP_CONTENT_GENERATION_ENABLED === 'true') {
+          try {
+            const contentJobIds = await handleRuntimeEvent(contentVideoQueue, event, eventData);
+            if (contentJobIds.length > 0) {
+              console.log('[orchestrator] job.completed → content generation jobs', contentJobIds);
+            }
+          } catch (err) {
+            console.error('[orchestrator] content generation event handling failed', err);
+          }
+        }
+        break;
+      }
+      case 'validation.feedback.applied':
+      case 'agent.task.completed': {
+        // Handle content generation for these events if enabled
+        if (process.env.OPSLY_EVENT_LOOP_CONTENT_GENERATION_ENABLED === 'true') {
+          try {
+            const contentJobIds = await handleRuntimeEvent(contentVideoQueue, event, eventData);
+            if (contentJobIds.length > 0) {
+              console.log(`[orchestrator] ${event} → content generation jobs`, contentJobIds);
+            }
+          } catch (err) {
+            console.error('[orchestrator] content generation event handling failed', err);
+          }
+        }
         break;
       }
       default: {
+        // Try to route other events to content generation if enabled
+        if (process.env.OPSLY_EVENT_LOOP_CONTENT_GENERATION_ENABLED === 'true') {
+          try {
+            const contentJobIds = await handleRuntimeEvent(contentVideoQueue, event, eventData);
+            if (contentJobIds.length > 0) {
+              console.log(`[orchestrator] ${event} → content generation jobs`, contentJobIds);
+            }
+          } catch (err) {
+            // Silently ignore if no mapping found
+          }
+        }
         break;
       }
     }
@@ -288,6 +341,10 @@ async function main(): Promise<void> {
   cleanupTasks.push(async () => orchestratorQueue.close());
   cleanupTasks.push(async () => agentClassifierQueue.close());
   cleanupTasks.push(async () => hermesOrchestrationQueue.close());
+  cleanupTasks.push(async () => contentVideoQueue.close());
+  cleanupTasks.push(async () => contentImageQueue.close());
+  cleanupTasks.push(async () => contentCaptionQueue.close());
+  cleanupTasks.push(async () => contentGenerationQueue.close());
   cleanupTasks.push(async () => closeWebhookQueue());
   cleanupTasks.push(async () => closeJobStateStore());
   cleanupTasks.push(async () => closeOrchestratorRedis());
@@ -298,6 +355,20 @@ async function main(): Promise<void> {
       cleanupTasks.push(await runEventSubscription(teamManager));
     } catch (err) {
       console.error('[orchestrator] runEventSubscription', err);
+    }
+  }
+
+  // Initialize Event Loop Wiring for Content Generation
+  if (shouldRunControlPlane(role) && process.env.OPSLY_EVENT_LOOP_WIRING_ENABLED !== 'false') {
+    try {
+      const eventLoopCleanup = await startEventLoopWiring({
+        enabled: process.env.OPSLY_EVENT_LOOP_CONTENT_GENERATION_ENABLED === 'true',
+        contentVideoQueue,
+      });
+      cleanupTasks.push(eventLoopCleanup);
+      console.log('[orchestrator] Event loop wiring initialized');
+    } catch (err) {
+      console.error('[orchestrator] Event loop wiring initialization failed', err);
     }
   }
 

@@ -101,6 +101,12 @@ export default function MissionControlPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
+              href="/mission-control/approvals"
+              className="px-4 py-2 rounded-lg font-medium transition-colors bg-violet-700/90 hover:bg-violet-600 text-white border border-violet-500/40"
+            >
+              Approvals & Renders
+            </Link>
+            <Link
               href="/mission-control/office"
               className="px-4 py-2 rounded-lg font-medium transition-colors bg-emerald-700/90 hover:bg-emerald-600 text-white border border-emerald-500/40"
             >

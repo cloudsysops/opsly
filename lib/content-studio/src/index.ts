@@ -57,6 +57,18 @@ export {
   type MoneyPrinterTurboPayload,
   type MoneyPrinterTurboRenderClientOptions,
 } from './rendering/moneyprinterturbo.js';
+export {
+  buildVideoRenderPlan,
+  validateRenderPlanReady,
+  type VideoRenderPlan,
+} from './rendering/video-render-plan.js';
+export {
+  RenderQueueManager,
+  InMemoryRenderQueueStorage,
+  type RenderQueueEntry,
+  type RenderQueueManagerConfig,
+  type RenderQueueStorage,
+} from './rendering/render-queue-manager.js';
 export * as contentEngine from './content-engine/index.js';
 
 export { buildEpisodeRenderPlan, type EpisodeRenderPlan } from './rendering/episode-render-plan.js';

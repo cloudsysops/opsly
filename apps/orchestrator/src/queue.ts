@@ -57,6 +57,42 @@ export const hermesOrchestrationQueue = new Queue('hermes-orchestration', {
   },
 });
 
+/** Content Video Generation Queue: MoneyPrinterTurbo video rendering jobs. */
+export const contentVideoQueue = new Queue('content-video', {
+  connection,
+  defaultJobOptions: {
+    attempts: 2,
+    backoff: { type: 'exponential', delay: 2000 },
+  },
+});
+
+/** Content Image Generation Queue: AI-powered image generation. */
+export const contentImageQueue = new Queue('content-image', {
+  connection,
+  defaultJobOptions: {
+    attempts: 2,
+    backoff: { type: 'exponential', delay: 2000 },
+  },
+});
+
+/** Content Caption Generation Queue: AI caption generation. */
+export const contentCaptionQueue = new Queue('content-caption', {
+  connection,
+  defaultJobOptions: {
+    attempts: 2,
+    backoff: { type: 'exponential', delay: 2000 },
+  },
+});
+
+/** Content Generation Orchestration Queue: Coordinates full content generation pipeline. */
+export const contentGenerationQueue = new Queue('content-generation', {
+  connection,
+  defaultJobOptions: {
+    attempts: 2,
+    backoff: { type: 'exponential', delay: 3000 },
+  },
+});
+
 export async function enqueueJob(job: OrchestratorJob) {
   const opts = buildQueueAddOptions(job);
 
