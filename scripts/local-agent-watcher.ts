@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 /**
  * @deprecated Use `scripts/local-prompt-watcher.ts` (same flow, maintained). This duplicate may be removed after callers migrate.
+ *
+ * Security: no active callers found (scripts/_archived/run-local-agent-system.sh only).
+ * Fails closed on missing PLATFORM_ADMIN_TOKEN — see docs/01-development/night-queue/021-agent-security-usage-mission-control.md.
  */
 import * as fs from 'fs';
 import * as path from 'path';
@@ -50,7 +53,13 @@ class LocalPromptWatcher {
     this.responsesDir = path.join(this.promptsDir, 'responses');
     this.metadataPath = path.join(this.promptsDir, '.metadata.json');
     this.orchestratorUrl = options.orchestratorUrl;
-    this.orchestratorToken = options.orchestratorToken || process.env.PLATFORM_ADMIN_TOKEN || 'local-dev';
+    const resolvedToken = options.orchestratorToken?.trim() || process.env.PLATFORM_ADMIN_TOKEN?.trim() || '';
+    if (resolvedToken.length === 0) {
+      throw new Error(
+        '[LocalWatcher] PLATFORM_ADMIN_TOKEN not set — refusing to start with no auth token (fail closed).'
+      );
+    }
+    this.orchestratorToken = resolvedToken;
   }
 
   async initialize() {

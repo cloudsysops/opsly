@@ -24,6 +24,27 @@ cd "${ROOT}"
 log() { printf '[queue] %s\n' "$*"; }
 notify() { ./scripts/notify-discord.sh "$1" "$2" "${3:-info}" >/dev/null 2>&1 || true; }
 
+# Sync latest night-queue tasks from GitHub before seeding. Fast-forward only —
+# never resets/discards local work, never forces a branch change. Best-effort:
+# a stale/dirty tree or offline host just means "seed from whatever is on disk",
+# not a hard failure (this bridge must not block on network flakiness).
+if [[ "${DRY_RUN}" != "1" ]] && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  if [[ -z "$(git status --porcelain 2>/dev/null)" ]]; then
+    branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")"
+    if [[ -n "${branch}" && "${branch}" != "HEAD" ]]; then
+      if git pull --ff-only origin "${branch}" >/dev/null 2>&1; then
+        log "synced ${branch} from origin (ff-only)"
+      else
+        log "git pull --ff-only skipped/failed (offline or diverged) — seeding from local checkout"
+      fi
+    else
+      log "detached HEAD — skipping git sync, seeding from local checkout"
+    fi
+  else
+    log "working tree dirty — skipping git sync, seeding from local checkout"
+  fi
+fi
+
 # Seed gitignored .cursor/prompts/queue/ from tracked docs/01-development/night-queue/
 QUEUE_DIR="${ROOT}/.cursor/prompts/queue"
 SEED_DIR="${ROOT}/docs/01-development/night-queue"
