@@ -198,3 +198,23 @@ The reusable component is:
 `canon event → game event → content project → review → distribution`
 
 A second game should be able to use this pipeline with a different universe.
+
+
+## Prelaunch growth loop
+
+Campaign:
+`data/content/campaigns/astral-arena-prelaunch-45-days/campaign.json`
+
+Product growth gates:
+`config/games/astral-arena-launch-loop.json`
+
+The campaign is deliberately **not** an automatic publishing schedule. Dates are
+editorial planning slots. Moon approval is still required.
+
+Before Steam Coming Soon exists:
+- CTA = follow development / play preview.
+
+After Steam Coming Soon is verified live:
+- CTA may switch to wishlist.
+
+This prevents content from advertising a Steam destination that does not exist yet.
