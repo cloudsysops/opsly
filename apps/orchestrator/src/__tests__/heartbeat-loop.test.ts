@@ -12,7 +12,6 @@ describe('startOrchestratorHeartbeatLoop', () => {
       { intervalMs: 20_000, record }
     );
 
-    await vi.runAllTicks();
     expect(record).toHaveBeenCalledTimes(1);
     expect(record).toHaveBeenLastCalledWith('mac-local-agents-worker', { role: 'worker' });
 
@@ -39,7 +38,8 @@ describe('startOrchestratorHeartbeatLoop', () => {
       { intervalMs: 20_000, record, onError }
     );
 
-    await vi.runAllTicks();
+    await Promise.resolve();
+    await Promise.resolve();
     expect(onError).toHaveBeenCalledTimes(1);
 
     stop();
