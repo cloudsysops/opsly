@@ -28,6 +28,39 @@ const ALL = [
 
 export const CANONICAL_WORLDS: UniverseWorld[] = [
   {
+    id: 'technolia',
+    slug: 'technolia',
+    name: 'TECHNOLIA',
+    description:
+      'A buildable technology civilization connected to Astral Arena. Guardians gather resources, research software architecture, construct machines, defend safe cyber ranges, assemble a starship, and progressively reveal the stellar map.',
+    visualIdentity: {
+      palette: ['deep navy', 'electric blue', 'royal purple', 'antique gold', 'crystal cyan'],
+      architecture:
+        'Modular Nexus settlements, gateway towers, observatories, queues as luminous docks, worker foundries, data vaults, starship yards, and distributed stellar outposts',
+      atmosphere: 'Constructive strategy, discovery, engineering, defense, and visible progression',
+      lighting: 'Clean technological glow with warm gold guidance lights; readable systems over neon clutter',
+      motifs: ['network graphs', 'crystal circuits', 'modular buildings', 'star maps', 'Nexus rings', 'dragon-current routes'],
+      negatives: [
+        'real-world exploit instructions',
+        'military realism as the core fantasy',
+        'grimdark cyberpunk',
+        'opaque technology with no learning purpose',
+      ],
+    },
+    themes: ['building', 'systems thinking', 'security', 'resilience', 'exploration', 'cooperation'],
+    allowedCharacters: ASTRAL_ARENA_CAST,
+    educationalDomains: [
+      'software architecture',
+      'distributed systems',
+      'cybersecurity defense',
+      'observability',
+      'platform engineering',
+      'resource planning',
+    ],
+    transitions: ['astral-arena', 'nexus', 'future', 'lab', 'unknown'],
+    portalSymbol: 'crystal circuit inside a starship ring',
+  },
+  {
     id: 'astral-arena',
     slug: 'astral-arena',
     name: 'ASTRAL ARENA',
@@ -58,7 +91,7 @@ export const CANONICAL_WORLDS: UniverseWorld[] = [
       'teamwork and emotional learning',
       'fictional creature ecology clearly labeled as fiction',
     ],
-    transitions: ['nexus', 'unknown'],
+    transitions: ['nexus', 'unknown', 'technolia'],
     portalSymbol: 'woven star inside an open Nexus ring',
   },
   {
