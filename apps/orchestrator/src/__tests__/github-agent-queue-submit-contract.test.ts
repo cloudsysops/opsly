@@ -1,10 +1,8 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
-const testDir = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(testDir, '../../../..');
+const repoRoot = path.resolve(__dirname, '../../../..');
 const source = readFileSync(
   path.join(repoRoot, 'scripts/ops/github-agent-queue-submit.mjs'),
   'utf8'
