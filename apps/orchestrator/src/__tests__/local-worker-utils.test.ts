@@ -38,6 +38,7 @@ describe('local-worker-utils', () => {
     expect(jobTypeForLocalAgent('openai')).toBe('local_openai');
     expect(jobTypeForLocalAgent('hermes')).toBe('local_hermes');
     expect(jobTypeForLocalAgent('decepticon')).toBe('local_decepticon');
+    expect(jobTypeForLocalAgent('openclaw')).toBe('local_openclaw');
   });
 
   it('job type is idempotent for Opsly ids', () => {
@@ -49,11 +50,13 @@ describe('local-worker-utils', () => {
     expect(agentForLocalJobType('local_cursor')).toBe('local_cursor');
     expect(agentForLocalJobType('local_codex')).toBe('local_codex');
     expect(agentForLocalJobType('local_hermes')).toBe('local_hermes');
+    expect(agentForLocalJobType('local_openclaw')).toBe('local_openclaw');
   });
 
   it('defaults unknown agent values to local_cursor', () => {
     expect(normalizeLocalAgentKind('bogus')).toBe('local_cursor');
     expect(normalizeLocalAgentKind('opencode')).toBe('local_opencode');
+    expect(normalizeLocalAgentKind('openclaw')).toBe('local_openclaw');
   });
 
   it('parses OPSLY_LOCAL_AGENT_KINDS host allowlist', () => {
