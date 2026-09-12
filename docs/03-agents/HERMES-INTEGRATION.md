@@ -7,11 +7,11 @@ tags:
   - opsly/agents
 ---
 
-# Hermes — capa de orquestación de agentes (Opsly)
+# Opsly Task Coordinator — legacy Hermes module
 
 ## Qué es
 
-**Hermes** es una capa **dentro de `apps/orchestrator`** que coordina el ciclo de vida de tareas (`platform.hermes_state`) y las enruta a agentes lógicos (Cursor, Claude, **Ollama/LLM local** vía cola `ollama`, GitHub Actions, Notion) **reutilizando**:
+**Opsly Task Coordinator** es el nombre canónico para la capa interna hoy ubicada en `apps/orchestrator/src/hermes/**`. **No es el Hermes Agent upstream de Nous Research.** Esta capa interna que coordina el ciclo de vida de tareas (`platform.hermes_state`) y las enruta a agentes lógicos (Cursor, Claude, **Ollama/LLM local** vía cola `ollama`, GitHub Actions, Notion) **reutilizando**:
 
 - Colas **BullMQ** existentes (`openclaw`, `hermes-orchestration`)
 - **Redis** (heartbeat `hermes:heartbeat` vía cliente de medición cuando existe `REDIS_URL`)
@@ -74,3 +74,24 @@ Incluye `__tests__/hermes.test.ts` y `src/hermes/__tests__/context-enricher.test
 
 - [[03-agents/README|03-agents]]
 - [[brain/README|Brain Central]]
+
+
+## Hermes Agent upstream
+
+El nombre **Hermes Agent** se reserva para el runtime/binario externo upstream.
+
+Opsly lo integrará mediante el external-agent registry y un adapter/bridge, con capacidades acotadas. No se debe asumir que `HERMES_ENABLED`, las tablas `platform.hermes_*` o el directorio `src/hermes/` significan que Hermes Agent upstream está instalado o corriendo.
+
+## Packaging
+
+El Opsly Task Coordinator corre **dentro del Orquestador Opsly**.
+
+Hermes Agent upstream puede correr como:
+
+- proceso/daemon en Mac;
+- proceso o contenedor en PC Gamer;
+- proceso/contenedor en VPS/futuro worker;
+
+según el caso de uso.
+
+La topología canónica está en `docs/00-architecture/AGENT-RUNTIME-TOPOLOGY.md`.
