@@ -21,7 +21,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 ROOT="${REPO_ROOT:-${ROOT}}"
 SEED_DIR="${ROOT}/docs/01-development/night-queue"
 QUEUE_DIR="${ROOT}/.cursor/prompts/queue"
-ALLOWED_STATUS='pending|held|done|blocked|superseded|partial'
+ALLOWED_STATUS='pending|held|done|blocked|superseded|partial|processing|failed'
 
 errors=0
 warnings=0
