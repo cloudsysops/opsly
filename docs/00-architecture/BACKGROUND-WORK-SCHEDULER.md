@@ -139,3 +139,14 @@ rather than assumed safe.
 - `docs/00-architecture/CURRENT-AUTOMATION-MAP.md` (heartbeat gap first found here)
 - `config/compute-workers.json` (existing capability-routing conventions this reuses in spirit)
 - `config/pc-gamer-schedule.json`, `scripts/ops/pc-gamer-gameplay-watcher.mjs` (existing gaming-lock signal to be wired by callers)
+
+
+## Stacked follow-up: selection + concurrency
+
+The stacked follow-up branch adds three pure modules:
+
+- `background-task-selector.mjs`: selects at most one pending, safe, non-duplicate task.
+- `concurrency-guard.mjs`: enforces one background task per Mac/Gamer by default and a hard coordinator-only invariant on the VPS.
+- `background-work-decision.mjs`: composes IdleWindowPolicy + TaskSelector + ConcurrencyGuard into `RUN | NO_CAPACITY | NO_SAFE_TASK`.
+
+These modules still do **not** enqueue work. That is deliberate: dispatch must be wired only after the canonical #1226 ephemeral AgentTask path is integrated, so this scheduler cannot accidentally recreate a parallel runtime.
