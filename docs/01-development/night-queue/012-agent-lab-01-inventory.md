@@ -1,6 +1,6 @@
 ---
 id: agent-lab-01-inventory-012
-status: pending
+status: done
 owner: opsly-night-agent
 created: 2026-09-11
 requires_pr: true
@@ -35,7 +35,37 @@ Read first: `docs/design/OPSLY-AGENT-LAB.md`
 
 ## Acceptance
 
-- [ ] Design reuse table verified with real paths
-- [ ] One recommended persistence surface for the job registry
-- [ ] Gaps listed without implementing them
-- [ ] PR or branch with doc-only updates if the design map needed corrections
+- [x] Design reuse table verified with real paths
+- [x] One recommended persistence surface for the job registry
+- [x] Gaps listed without implementing them
+- [x] PR or branch with doc-only updates if the design map needed corrections
+
+---
+
+## Respuesta agente (2026-09-12T10:35:00Z)
+
+- **Estado:** hecho
+- **Job:** agent-lab-01-inventory-012
+- **Agente:** cursor
+- **Rol:** executor
+- **Rama / PR:** `docs/agent-lab-012-inventory` (PR al abrir)
+
+### ARCHITECTURE_MAP
+
+All rows in the design reuse table verified on disk (orchestrator, ai-board, agent-task-core, types envelope, external-agent-registry, agent-services/capabilities, pc-gamer scripts+schedule, content-studio, night-queue+dispatch, agent-learning, capability owners, LLM gateway, ownership note, background scheduler scripts). Mission Control scorecards for Lab remain a soft gap (UI exists; Lab metrics not wired).
+
+Duplicate risk: do **not** reintroduce `lib/agent-job-registry` or `lib/agent-lab-evidence`.
+
+### JOB_REGISTRY_RECOMMENDATION
+
+**Extend `lib/agent-task-core` + `AgentTaskEnvelopeV1`** as the single task identity/lifecycle surface. Runtime status stays orchestrator BullMQ + Redis `JobState` (ADR-048). `lib/ai-board` stays domain mapping only. `lib/agent-learning` attaches evidence/trust by `request_id` and must not create tasks.
+
+### GAPS
+
+Trust auto-promotion thresholds; eval/export pipeline; prompt versioning; MC Lab scorecards wiring; durable Mac orch LaunchAgent script in git; night-queue status parser treating partial responses as `unknown`.
+
+### NEXT_PHASE_FILE
+
+`docs/01-development/night-queue/013-agent-lab-02-registry.md` — unhold to `pending` after this lands.
+
+- **Cómo verificar:** `test -d lib/agent-learning && test -f docs/design/OPSLY-AGENT-LAB.md`; read updated reuse/gaps sections; `node scripts/ops/night-queue-status.mjs`
