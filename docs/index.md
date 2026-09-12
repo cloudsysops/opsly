@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: architecture
-last_review: 2026-05-10
+last_review: 2026-09-12
 ---
 
 # Opsly Brain — índice Obsidian (MOC)
@@ -15,6 +15,7 @@ Punto de entrada compacto del vault. Política de carpetas:
 - [`README.md`](README.md) — mapa del vault
 - [`STRUCTURE-GUARDRAILS.md`](STRUCTURE-GUARDRAILS.md) — reglas de ubicación
 - [`openapi-opsly-api.yaml`](00-architecture/openapi-opsly-api.yaml) — contrato API (subset)
+- Runtime de agentes: [`00-architecture/AGENT-RUNTIME-ARCHITECTURE.md`](00-architecture/AGENT-RUNTIME-ARCHITECTURE.md) · mapa actual [`00-architecture/CURRENT-AUTOMATION-MAP.md`](00-architecture/CURRENT-AUTOMATION-MAP.md) · estado [`01-development/AGENT-RUNTIME-STATUS-2026-09-12.md`](01-development/AGENT-RUNTIME-STATUS-2026-09-12.md)
 - Ciclo de vida de tenants: [`00-architecture/TENANT-INCUBATION-LIFECYCLE.md`](00-architecture/TENANT-INCUBATION-LIFECYCLE.md), [`04-infrastructure/VPS-PROVISIONING-STANDARD.md`](04-infrastructure/VPS-PROVISIONING-STANDARD.md), [`runbooks/MIGRATION-CHECKLIST.md`](runbooks/MIGRATION-CHECKLIST.md)
 - Opsly Moon (control plane): [`00-architecture/OPSLY-MOON.md`](00-architecture/OPSLY-MOON.md), [`00-architecture/OPSLY-MOON-AUDIT.md`](00-architecture/OPSLY-MOON-AUDIT.md), [`00-architecture/OPSLY-MOON-DATA-SOURCES.md`](00-architecture/OPSLY-MOON-DATA-SOURCES.md), [`00-architecture/OPSLY-MOON-ROUTE-MAP.md`](00-architecture/OPSLY-MOON-ROUTE-MAP.md) · runbooks [`runbooks/OPSLY-MOON-OPERATIONS.md`](runbooks/OPSLY-MOON-OPERATIONS.md)
 - Stubs de compatibilidad: [`stubs/README.md`](stubs/README.md)
