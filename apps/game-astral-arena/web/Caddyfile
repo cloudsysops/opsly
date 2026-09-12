@@ -9,8 +9,8 @@
     Cache-Control "public, max-age=300"
   }
 
-  @immutable path *.wasm *.pck *.js
-  header @immutable Cache-Control "public, max-age=31536000, immutable"
+  @gamefiles path *.wasm *.pck *.js
+  header @gamefiles Cache-Control "public, max-age=60, must-revalidate"
 
   try_files {path} {path}/ /index.html
   file_server
