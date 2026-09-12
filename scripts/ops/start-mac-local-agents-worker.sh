@@ -29,6 +29,8 @@ node -e '
 export OPSLY_ORCHESTRATOR_ROLE=worker
 export OPSLY_HEARTBEAT_SERVICE_NAME="${OPSLY_HEARTBEAT_SERVICE_NAME:-mac-local-agents-worker}"
 export OPSLY_WORKER_ALLOWLIST=local-agents
+# Keep local_opencode reserved for the PC Gamer worker so BullMQ routing is deterministic.
+export OPSLY_LOCAL_AGENT_KINDS="${OPSLY_LOCAL_AGENT_KINDS:-local_cursor,local_claude,local_copilot,local_codex,local_openai,local_hermes,local_decepticon,local_aider,local_goose,local_playwright}"
 export OPSLY_LOCAL_AGENT_UNIFIED_ONLY=true
 
 # Persistent autonomous/experimental loops are intentionally disabled.
