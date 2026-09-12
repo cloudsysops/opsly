@@ -270,17 +270,50 @@ check_control_plane_and_queue() {
   fi
 }
 
-# Heartbeat: apps/orchestrator/src/infra/heartbeat.ts defines
-# recordOrchestratorHeartbeat() but, as of this check's authoring, nothing in
-# the orchestrator calls it yet. Reporting a real FAIL/PASS against a
-# mechanism nothing writes to would be theater — name the gap instead.
+# Heartbeat freshness is exposed by the authenticated local control plane.
+# Before the heartbeat endpoint is deployed, this remains a WARN rather than
+# fabricating a PASS. Once available, stale/missing canonical Mac services are
+# a real blocker.
 check_heartbeat() {
-  local callers
-  callers="$(grep -rl "recordOrchestratorHeartbeat(" apps/orchestrator/src --include="*.ts" 2>/dev/null | grep -v "infra/heartbeat.ts" || true)"
-  if [[ -z "${callers}" ]]; then
-    warn heartbeat "recordOrchestratorHeartbeat() exists but has no caller yet — heartbeat freshness cannot be checked until a service writes one"
+  if [[ -z "${PLATFORM_ADMIN_TOKEN:-}" ]]; then
+    warn heartbeat "PLATFORM_ADMIN_TOKEN absent in this shell — run doctor through doppler to verify heartbeat freshness"
+    return
+  fi
+
+  local base_url="${OPSLY_ORCHESTRATOR_URL:-http://127.0.0.1:3011}"
+  local cfg response code
+  cfg="$(mktemp "${TMPDIR:-/tmp}/opsly-heartbeat-curl.XXXXXX")"
+  chmod 600 "${cfg}"
+  printf 'silent\nshow-error\nheader = "Authorization: Bearer %s"\n' "${PLATFORM_ADMIN_TOKEN}" >"${cfg}"
+
+  code="$(
+    curl -sS -o "${cfg}.body" -w '%{http_code}' -K "${cfg}"       "${base_url}/api/local/heartbeats" 2>/dev/null || true
+  )"
+  response="$(cat "${cfg}.body" 2>/dev/null || true)"
+  rm -f "${cfg}" "${cfg}.body"
+
+  if [[ "${code}" == "404" || -z "${code}" ]]; then
+    warn heartbeat "heartbeat freshness endpoint not deployed yet"
+    return
+  fi
+  if [[ "${code}" != "200" ]]; then
+    fail heartbeat "heartbeat endpoint returned HTTP ${code}"
+    return
+  fi
+
+  if node -e '
+    const body = JSON.parse(process.argv[1]);
+    const expected = new Set(["mac-orchestrator", "mac-local-agents-worker"]);
+    const rows = Array.isArray(body.heartbeats) ? body.heartbeats : [];
+    for (const row of rows) {
+      if (row && typeof row.service_name === "string") expected.delete(row.service_name);
+      if (!row?.alive || typeof row.age_ms !== "number" || row.age_ms > 60000) process.exit(2);
+    }
+    if (expected.size > 0 || body.all_alive !== true) process.exit(3);
+  ' "${response}" 2>/dev/null; then
+    pass heartbeat "mac-orchestrator and mac-local-agents-worker heartbeats are fresh"
   else
-    warn heartbeat "heartbeat writer(s) found (${callers}) but this doctor does not yet read/verify freshness — follow-up needed"
+    fail heartbeat "one or more canonical Mac heartbeats are missing or stale"
   fi
 }
 
