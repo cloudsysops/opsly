@@ -105,15 +105,34 @@ if [[ "$DRY_RUN" == "1" ]]; then
   exit 0
 fi
 
-log "waiting for bridges/orchestrator to report healthy (up to 30s)"
-for _ in $(seq 1 30); do
+log "waiting for bridges/orchestrator to report healthy (hard deadline: 30s)"
+health_deadline=$((SECONDS + 30))
+all_up=0
+
+while (( SECONDS < health_deadline )); do
   all_up=1
+
   for port in 5002 5004 5005 5007 3011; do
-    curl -sf --max-time 1 "http://127.0.0.1:${port}/health" >/dev/null 2>&1 || all_up=0
+    if (( SECONDS >= health_deadline )); then
+      all_up=0
+      break
+    fi
+
+    if ! curl -sf --connect-timeout 1 --max-time 1       "http://127.0.0.1:${port}/health" >/dev/null 2>&1; then
+      all_up=0
+    fi
   done
+
   [[ "$all_up" == "1" ]] && break
-  sleep 1
+
+  if (( SECONDS < health_deadline )); then
+    sleep 1
+  fi
 done
+
+if [[ "$all_up" != "1" ]]; then
+  log "health deadline reached; readiness doctor will report the exact unhealthy endpoint(s)"
+fi
 
 log "running readiness doctor through Doppler (FAIL blocks; WARN remains visible)"
 doppler run --project ops-intcloudsysops --config prd --   ./scripts/ops/mac-ephemeral-runtime-doctor.sh
