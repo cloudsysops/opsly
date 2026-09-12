@@ -331,6 +331,15 @@ jobs:
       - name: compute-worker policy tests
         run: node --test scripts/ops/__tests__/compute-worker-router.test.mjs scripts/ops/__tests__/content-render-ffmpeg.test.mjs
 
+      - name: Golden runtime topology contracts
+        run: |
+          node --test \
+            scripts/ops/__tests__/golden-runtime-contract.test.mjs \
+            scripts/ops/__tests__/ephemeral-agent-lifecycle.test.mjs \
+            scripts/ops/__tests__/mac-local-agent-routing.test.mjs \
+            scripts/ops/__tests__/pc-gamer-opencode-plane.test.mjs \
+            scripts/ops/__tests__/mac-ephemeral-runtime.test.mjs
+
       - name: Peskids Docker next-build flags (no --webpack on Next 15.5)
         run: bash scripts/ci/check-peskids-docker-build-flags.sh
 
