@@ -146,3 +146,20 @@ export {
   type PhysicalCollectibleCandidate,
   type PhysicalObjectCategory,
 } from './physical-collectibles.js';
+
+export {
+  ASTRAL_DUEL_FIGHTERS,
+  ASTRAL_DUEL_RULESET,
+  GAME_MODE_BLUEPRINT,
+  battleActionKindValues,
+  createBattleState,
+  fighterDefinition,
+  gamePresentationModeValues,
+  type BattleAbilityDefinition,
+  type BattleActionKind,
+  type BattleFighterDefinition,
+  type BattleRuleset,
+  type BattleRuntimeFighter,
+  type BattleRuntimeState,
+  type GamePresentationMode,
+} from './game-modes.js';
