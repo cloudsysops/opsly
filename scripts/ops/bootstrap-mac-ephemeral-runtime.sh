@@ -53,7 +53,18 @@ if [[ ! -f /tmp/opsly-mac-redis.env ]]; then
   echo "missing /tmp/opsly-mac-redis.env; create the localhost Redis override before Mac bootstrap" >&2
   exit 78
 fi
-if ! grep -Eq '^REDIS_URL=redis://(127\.0\.0\.1|localhost)(:|/)' /tmp/opsly-mac-redis.env; then
+if ! (
+  set -a
+  # shellcheck disable=SC1091
+  source /tmp/opsly-mac-redis.env
+  set +a
+  node -e '
+    const raw = process.env.REDIS_URL;
+    if (!raw) process.exit(1);
+    const host = new URL(raw).hostname;
+    process.exit(host === "127.0.0.1" || host === "localhost" ? 0 : 1);
+  ' >/dev/null 2>&1
+); then
   echo "/tmp/opsly-mac-redis.env must point REDIS_URL at localhost/127.0.0.1" >&2
   exit 78
 fi
