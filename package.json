@@ -212,8 +212,8 @@
     "test:pc-gamer-opencode": "node --test scripts/ops/__tests__/pc-gamer-opencode-plane.test.mjs",
     "game:astral:content-pack": "tsx scripts/games/generate-astral-arena-content-pack.ts",
     "game:astral:validate": "node scripts/games/validate-astral-arena-game.mjs",
-    "game:astral:transmedia:validate": "tsx scripts/games/validate-astral-transmedia.ts",
-    "game:astral:content-series:validate": "tsx scripts/games/validate-astral-content-series.ts"
+    "game:astral:transmedia:validate": "node scripts/games/validate-astral-transmedia.mjs",
+    "game:astral:content-series:validate": "node scripts/games/validate-astral-content-series.mjs"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
