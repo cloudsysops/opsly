@@ -1,13 +1,18 @@
 ---
-status: draft
+status: historical
 owner: operations
-last_review: 2026-05-24
+last_review: 2026-09-12
 type: doc
 tags:
   - opsly/doc
 ---
 
 # Parallel Agent Execution Architecture
+
+> Historical architecture note. Do not use this document as the current execution topology.
+> Canonical runtime: [AGENT-RUNTIME-ARCHITECTURE.md](../00-architecture/AGENT-RUNTIME-ARCHITECTURE.md).
+> Current Opsly execution uses AgentTaskEnvelopeV1, BullMQ, registry-driven real runtimes, Session Manager and ephemeral per-task sessions. Persistent/mock service diagrams below are retained only for historical context.
+
 
 ## Overview
 
