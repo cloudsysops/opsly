@@ -88,3 +88,28 @@ export {
   type CyberDefense,
   type CyberThreat,
 } from './cyber-arena.js';
+
+export {
+  TECHNOLIA_WORLD_ID,
+  TECHNOLIA_STARTING_RESOURCES,
+  TECHNOLIA_BUILDINGS,
+  TECHNOLIA_TECH_TREE,
+  STARSHIP_MODULES,
+  TECHNOLIA_MAP,
+  technoliaResourceValues,
+  technoliaEraValues,
+  createTechnoliaProgression,
+  constructBuilding,
+  researchTechnology,
+  installStarshipModule,
+  discoverTechnoliaRegion,
+  resolveTechnoliaEra,
+  type TechnoliaResource,
+  type TechnoliaEra,
+  type TechnoliaBuilding,
+  type TechnoliaTechnology,
+  type StarshipModule,
+  type TechnoliaRegion,
+  type TechnoliaProgressionState,
+  type ResourceCost,
+} from './technolia.js';
