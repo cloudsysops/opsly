@@ -6,7 +6,28 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT"
 
+if [[ ! -f /tmp/opsly-mac-redis.env ]]; then
+  echo "[mac-worker] missing /tmp/opsly-mac-redis.env" >&2
+  exit 78
+fi
+
+set -a
+# shellcheck disable=SC1091
+source /tmp/opsly-mac-redis.env
+set +a
+
+node -e '
+  const raw = process.env.REDIS_URL;
+  if (!raw) process.exit(1);
+  const host = new URL(raw).hostname;
+  process.exit(host === "127.0.0.1" || host === "localhost" ? 0 : 1);
+' >/dev/null 2>&1 || {
+  echo "[mac-worker] REDIS_URL must point to localhost/127.0.0.1" >&2
+  exit 78
+}
+
 export OPSLY_ORCHESTRATOR_ROLE=worker
+export OPSLY_HEARTBEAT_SERVICE_NAME="${OPSLY_HEARTBEAT_SERVICE_NAME:-mac-local-agents-worker}"
 export OPSLY_WORKER_ALLOWLIST=local-agents
 export OPSLY_LOCAL_AGENT_UNIFIED_ONLY=true
 
