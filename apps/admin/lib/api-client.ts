@@ -715,4 +715,36 @@ export async function executeAgentIdeMcpTool(
   });
 }
 
+
+export type AdminRevenueOverviewResponse = {
+  generated_at: string;
+  tenant_slug: string | null;
+  source: string;
+  partners: { total: number; active: number };
+  offers: { total: number; active: number };
+  referrals: { total: number; by_status: Record<string, number> };
+  attribution: { total: number; agent_attributed: number };
+  open_pipeline_by_currency: Record<string, number>;
+  converted_gmv_by_currency: Record<string, number>;
+  commissions_by_currency: Record<
+    string,
+    { expected: number; confirmed: number; paid: number; receivable: number }
+  >;
+  payouts_by_currency: Record<
+    string,
+    { expected: number; pending: number; received: number; disputed: number }
+  >;
+};
+
+export async function getAdminRevenueOverview(
+  tenantSlug?: string
+): Promise<AdminRevenueOverviewResponse> {
+  const search = new URLSearchParams();
+  if (tenantSlug && tenantSlug.length > 0) {
+    search.set('tenant_slug', tenantSlug);
+  }
+  const suffix = search.size > 0 ? `?${search.toString()}` : '';
+  return request<AdminRevenueOverviewResponse>(`/api/admin/revenue/overview${suffix}`);
+}
+
 export type { OllamaDemoJobStatus } from './types';
