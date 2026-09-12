@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: architecture
-last_review: 2026-05-10
+last_review: 2026-09-12
 ---
 
 # Opsly Documentation Brain
@@ -18,6 +18,7 @@ carpeta correcta antes de crear o editar documentación.
 - Reglas de estructura: [`STRUCTURE-GUARDRAILS.md`](STRUCTURE-GUARDRAILS.md).
 - Índice compacto Obsidian (MOC de todo el vault): [`index.md`](index.md).
 - Ciclo documental (plan, pruebas, docs, índices, sin tareas a medias): [`01-development/DOCUMENTATION-LIFECYCLE.md`](01-development/DOCUMENTATION-LIFECYCLE.md).
+- Runtime canónico de agentes: [`00-architecture/AGENT-RUNTIME-ARCHITECTURE.md`](00-architecture/AGENT-RUNTIME-ARCHITECTURE.md); estado actual: [`01-development/AGENT-RUNTIME-STATUS-2026-09-12.md`](01-development/AGENT-RUNTIME-STATUS-2026-09-12.md).
 
 ## Brain Map
 
@@ -66,6 +67,7 @@ Redirecciones cortas; el índice está en [`stubs/README.md`](stubs/README.md).
 | [`REPO-MAP.md`](REPO-MAP.md)                                                           | **Estructura del monorepo:** qué editar (VISION/AGENTS), whitelist raíz, scripts |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md)                                                   | Control plane vs data plane, Traefik, redes                                |
 | [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md)                           | VPS control + workers remotos (Mac 2011), Redis Tailscale                  |
+| [`00-architecture/AGENT-RUNTIME-ARCHITECTURE.md`](00-architecture/AGENT-RUNTIME-ARCHITECTURE.md) | **Canon agentes:** runtime real, AgentTaskEnvelopeV1, Mac/Gamer, Session Manager, write approval |
 | [`HYBRID-OPSLY-ADMIN.md`](HYBRID-OPSLY-ADMIN.md)                                       | **Centro de mando** (Mac `opsly-admin`): Cursor, MCP, Git, DragonB, SSH    |
 | [`runbooks/e2e-hybrid-write.md`](runbooks/e2e-hybrid-write.md)                         | E2E escritura API `/api/tools/execute`, deploy `app`, Trivy                |
 | [`runbooks/VPS-DISK-SECURITY-SCAN.md`](runbooks/VPS-DISK-SECURITY-SCAN.md)             | Disco VPS, Trivy, `cleanup-vps.sh`                                         |
