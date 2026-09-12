@@ -121,3 +121,28 @@ export {
   type TechnoliaProgressionState,
   type ResourceCost,
 } from './technolia.js';
+
+export {
+  CONSOLE_HISTORY,
+  LEARNING_MISSIONS,
+  learningTrackValues,
+  missionById,
+  missionsForTrack,
+  type ConsoleHistoryNode,
+  type LearningMission,
+  type LearningTrack,
+} from './learning-arcade.js';
+
+export {
+  PHYSICAL_CAPTURE_RULES,
+  captureStatusValues,
+  physicalObjectCategoryValues,
+  applyCaptureAnalysis,
+  approvePhysicalCollectible,
+  createCollectibleCandidate,
+  type CaptureAnalysisProposal,
+  type CaptureStatus,
+  type PhysicalCollectible,
+  type PhysicalCollectibleCandidate,
+  type PhysicalObjectCategory,
+} from './physical-collectibles.js';
