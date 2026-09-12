@@ -4,9 +4,17 @@ import {
   GAME_SCHEMA_VERSION,
   OBSERVATION_EVENT_TYPES,
 } from './constants.js';
+import { astralElementValues, zodiacSignValues } from './astral-affinity.js';
 
 const NonEmpty = z.string().min(1);
 const SchemaVersion = z.literal(GAME_SCHEMA_VERSION);
+
+export const AstralAffinityProfileSchema = z.object({
+  sign: z.enum(zodiacSignValues),
+  element: z.enum(astralElementValues),
+  title: NonEmpty,
+  unlockedTechniqueIds: z.array(NonEmpty).min(1),
+});
 
 export const ExplorerIdentitySchema = z.object({
   schemaVersion: SchemaVersion,
@@ -17,6 +25,7 @@ export const ExplorerIdentitySchema = z.object({
     companionCharacterId: z.string().min(1).optional(),
   }),
   interestTags: z.array(NonEmpty).default([]),
+  astralAffinity: AstralAffinityProfileSchema.optional(),
 });
 
 export const PlayerProfileSchema = z.object({
