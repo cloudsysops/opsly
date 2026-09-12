@@ -1,6 +1,9 @@
 extends Control
 
 func _ready() -> void:
+    $Center/VBox/QuickPlay.pressed.connect(func():
+        get_tree().change_scene_to_file("res://scenes/quick_play.tscn")
+    )
     $Center/VBox/Story3D.pressed.connect(func():
         get_tree().change_scene_to_file("res://scenes/crystal_temple.tscn")
     )
