@@ -81,7 +81,7 @@ check_required_commands() {
 
 check_optional_runtimes() {
   local cmd
-  for cmd in opencode claude codex hermes; do
+  for cmd in opencode claude codex hermes openclaw; do
     if command -v "${cmd}" >/dev/null 2>&1; then
       pass "runtime:${cmd}" "installed"
     else
@@ -213,7 +213,8 @@ check_launchd_infra() {
     com.opsly.bridge.opencode \
     com.opsly.bridge.claude \
     com.opsly.bridge.codex \
-    com.opsly.bridge.hermes
+    com.opsly.bridge.hermes \
+    com.opsly.bridge.openclaw
   do
     if launchctl print "gui/$(id -u)/${label}" >/dev/null 2>&1; then
       pass "launchd:${label}" "loaded"
@@ -251,6 +252,16 @@ check_bridges() {
   check_bridge_health 5002 claude
   check_bridge_health 5005 codex
   check_bridge_health 5007 hermes
+  if command -v openclaw >/dev/null 2>&1; then
+    check_bridge_health 5012 openclaw
+    if openclaw agent exec --help >/dev/null 2>&1; then
+      pass runtime:openclaw_exec "openclaw agent exec is available for headless one-shot execution"
+    else
+      fail runtime:openclaw_exec "openclaw is installed but agent exec is unavailable"
+    fi
+  else
+    warn bridge:openclaw "OpenClaw runtime not installed; canonical bridge remains held"
+  fi
 }
 
 # VPS/control-plane + queue reachability share one canonical script
@@ -359,7 +370,7 @@ check_no_forbidden_persistent_runtime() {
     sessions="$(tmux list-sessions -F '#{session_name}' 2>/dev/null | grep '^opsly-task-' || true)"
   fi
   local proc any_running=0
-  for proc in opencode hermes codex claude; do
+  for proc in opencode hermes codex claude openclaw; do
     if pgrep -x "${proc}" >/dev/null 2>&1; then
       any_running=1
       if [[ -z "${sessions}" ]]; then
