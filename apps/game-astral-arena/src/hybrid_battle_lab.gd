@@ -28,8 +28,16 @@ func _ready() -> void:
         "astral_arena/session/companion_id",
         "orion-shepherd"
     ))
+    var play_mode := str(ProjectSettings.get_setting(
+        "astral_arena/session/play_mode",
+        "SINGLE_PLAYER"
+    ))
+    var player_party: Array = [guardian_id, companion_id]
+    if play_mode == "SISTERS_COOP":
+        player_party = ["arena", "brissa", companion_id]
+
     state = runtime.start(
-        [guardian_id, companion_id],
+        player_party,
         first_encounter.get("opponent", ["shadow-scout"])
     )
     _build_ability_buttons()
@@ -58,9 +66,15 @@ func _build_ability_buttons() -> void:
     if player.is_empty():
         return
 
-    _append_fighter_buttons(player[0], "GUARDIÁN")
-    if player.size() > 1:
-        _append_fighter_buttons(player[1], "COMPAÑERO")
+    for index in range(player.size()):
+        var fighter: Dictionary = player[index]
+        var prefix := "COMPAÑERO"
+        var fighter_id := str(fighter.get("fighter_id", ""))
+        if fighter_id == "arena":
+            prefix = "ARENA"
+        elif fighter_id == "brissa":
+            prefix = "BRISSA"
+        _append_fighter_buttons(fighter, prefix)
 
 func _append_fighter_buttons(fighter: Dictionary, prefix: String) -> void:
     var fighter_id := str(fighter.get("fighter_id", ""))
@@ -102,6 +116,15 @@ func _refresh_views() -> void:
 
     view_2d.call("render_battle_state", state, runtime.fighter_defs)
     view_3d.call("render_battle_state", state, runtime.fighter_defs)
+
+    var aura_color := str(ProjectSettings.get_setting(
+        "astral_arena/session/aura_color",
+        "#8b5cf6"
+    ))
+    if view_2d.has_method("apply_player_color"):
+        view_2d.call("apply_player_color", aura_color)
+    if view_3d.has_method("apply_player_color"):
+        view_3d.call("apply_player_color", aura_color)
 
     var winner := str(state.get("winner", ""))
     if winner != "":
