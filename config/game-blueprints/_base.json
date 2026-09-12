@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "product_type": "game",
+  "engine": {
+    "adapter": "godot",
+    "version": "4.7.2",
+    "language": "gdscript",
+    "render_mode": "3d"
+  },
+  "opsly_contracts": {
+    "canon_owner": "@intcloudsysops/universe",
+    "game_rules_owner": "@intcloudsysops/game-core",
+    "web_view_model_owner": "@intcloudsysops/game-web",
+    "content_owner": "@intcloudsysops/content-studio",
+    "control_plane_authoritative": true
+  },
+  "runtime_contract": {
+    "content_pack": "generated/game-content.pack.json",
+    "save_format": "opsly-game-save-v1",
+    "offline_first": true,
+    "production_credentials_allowed": false,
+    "live_ai_required_for_core_loop": false
+  },
+  "shared_modules": [
+    "input",
+    "controller",
+    "settings",
+    "save-load",
+    "localization",
+    "accessibility",
+    "audio-bus",
+    "scene-routing",
+    "mission-runtime",
+    "inventory",
+    "collectibles",
+    "content-pack-loader",
+    "gameplay-capture",
+    "steam-adapter",
+    "telemetry-adapter"
+  ],
+  "content_pipeline": {
+    "gameplay_capture": true,
+    "content_os_channel": "{game_slug}",
+    "human_approval_required": true
+  },
+  "distribution": {
+    "primary": "steam",
+    "launch_platforms": ["windows-x64"],
+    "later_platforms": ["linux-x64", "steam-deck", "macos"]
+  },
+  "security": {
+    "secrets_in_repo": false,
+    "steam_credentials_in_game": false,
+    "pc_gamer_is_authority": false
+  }
+}
