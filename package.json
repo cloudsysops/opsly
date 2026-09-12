@@ -185,7 +185,8 @@
     "opsly:mac:install": "bash scripts/ops/install-mac-ephemeral-runtime-launchd.sh",
     "opsly:mac:doctor": "bash scripts/ops/mac-ephemeral-runtime-doctor.sh",
     "opsly:mac:doctor:strict": "bash scripts/ops/mac-ephemeral-runtime-doctor.sh --strict",
-    "test:mac-ephemeral-runtime": "node --test scripts/ops/__tests__/mac-ephemeral-runtime.test.mjs"
+    "test:mac-ephemeral-runtime": "node --test scripts/ops/__tests__/mac-ephemeral-runtime.test.mjs",
+    "opsly:mac:bootstrap": "bash scripts/ops/bootstrap-mac-ephemeral-runtime.sh"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
