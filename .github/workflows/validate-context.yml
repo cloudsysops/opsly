@@ -3,7 +3,12 @@ name: Validate agent context
 
 on:
   push:
+    branches: [main]
   pull_request:
+
+concurrency:
+  group: context-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate:

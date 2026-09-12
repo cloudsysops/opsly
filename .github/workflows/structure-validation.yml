@@ -8,6 +8,10 @@ on:
     branches: [main]
   workflow_call:
 
+concurrency:
+  group: structure-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate-structure:
     runs-on: ubuntu-latest
