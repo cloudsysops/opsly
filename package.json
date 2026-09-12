@@ -211,7 +211,8 @@
     "pc-gamer:opencode:autostart": "bash scripts/ops/pc-gamer-opencode-plane.sh --up --install-autostart",
     "test:pc-gamer-opencode": "node --test scripts/ops/__tests__/pc-gamer-opencode-plane.test.mjs",
     "game:astral:content-pack": "tsx scripts/games/generate-astral-arena-content-pack.ts",
-    "game:astral:validate": "node scripts/games/validate-astral-arena-game.mjs"
+    "game:astral:validate": "node scripts/games/validate-astral-arena-game.mjs",
+    "game:astral:transmedia:validate": "tsx scripts/games/validate-astral-transmedia.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",

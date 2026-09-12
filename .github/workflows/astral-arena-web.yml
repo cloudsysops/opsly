@@ -50,6 +50,9 @@ jobs:
       - name: Validate product contract
         run: node scripts/games/validate-astral-arena-game.mjs
 
+      - name: Validate transmedia continuity
+        run: npm run game:astral:transmedia:validate
+
       - name: Prove reusable blueprint
         shell: bash
         run: |

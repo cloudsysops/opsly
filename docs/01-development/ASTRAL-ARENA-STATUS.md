@@ -191,3 +191,27 @@ Steam, Web and Windows never own game canon.
 7. Install from Steam private/playtest branch.
 8. Produce real gameplay screenshots/trailer from Content OS.
 9. Submit store page/build for Valve review only after feature claims are verified.
+
+
+## Transmedia franchise layer
+
+Implemented in Content Studio:
+
+- `ContentProjectEnvelope.transmedia`;
+- generic `bindTransmediaContext()`;
+- Astral Arena Season 1 manifest;
+- mission ↔ story event ↔ episode mapping;
+- gameplay build SHA/capture-marker linkage;
+- Moon Creator Studio **Franchise** tab;
+- CI continuity validation.
+
+Canonical machine-readable map:
+
+`config/games/astral-arena-transmedia.json`
+
+Architecture:
+
+`docs/01-development/ASTRAL-ARENA-TRANSMEDIA.md`
+
+This does not create a second canon. Universe remains canonical; Content Studio
+owns transformation/production/distribution.

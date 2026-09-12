@@ -51,6 +51,7 @@ const requiredFiles = [
   'tools/steam/astral-arena/depot_build_windows.vdf.template',
   'apps/game-astral-arena/src/adapters/steam_adapter.gd',
   'config/games/astral-arena-steam-store.json',
+  'config/games/astral-arena-transmedia.json',
 ];
 
 for (const relativePath of requiredFiles) {
