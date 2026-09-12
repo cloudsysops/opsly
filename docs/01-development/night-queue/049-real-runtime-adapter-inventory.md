@@ -1,6 +1,6 @@
 ---
 id: real-runtime-adapter-inventory-049
-status: pending
+status: held
 priority: P2
 agent: local_claude
 owner: platform
@@ -11,6 +11,7 @@ requires_pr: true
 requires_approval: false
 paid_infra_required: false
 production_deploy: false
+blocked_by: github-queue-write-approval-051
 autonomy: supervised
 estimated_minutes: 30
 resource_class: small
