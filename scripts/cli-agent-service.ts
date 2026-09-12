@@ -378,6 +378,7 @@ async function runCommand(
   } finally {
     await stopSession(session.sessionId).catch(() => undefined);
     await fsp.rm(configPath, { force: true }).catch(() => undefined);
+    await fsp.rm(resultPath, { force: true }).catch(() => undefined);
   }
 }
 
