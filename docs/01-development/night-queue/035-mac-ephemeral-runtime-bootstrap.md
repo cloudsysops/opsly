@@ -18,7 +18,7 @@ Bring the physical Mac to the canonical runtime model without starting any persi
 
 Persistent:
 - BullMQ local-agents worker
-- prompt dispatcher
+- prompt watcher + trusted seed timer
 - authenticated localhost bridges
 - heartbeats/control services
 
@@ -105,7 +105,7 @@ Do not kill unrelated interactive developer sessions without identifying them.
 ## Step 5 — install canonical launchd services
 
 ```bash
-npm run opsly:mac:install
+npm run opsly:mac:bootstrap
 sleep 5
 npm run opsly:mac:doctor:strict
 ```
@@ -114,7 +114,8 @@ Inspect:
 
 ```bash
 launchctl print gui/$(id -u)/com.opsly.local-agents-worker
-launchctl print gui/$(id -u)/com.opsly.prompt-queue
+launchctl print gui/$(id -u)/com.opsly.prompt-watcher
+launchctl print gui/$(id -u)/com.opsly.prompt-seed
 launchctl print gui/$(id -u)/com.opsly.bridge.opencode
 launchctl print gui/$(id -u)/com.opsly.bridge.claude
 launchctl print gui/$(id -u)/com.opsly.bridge.codex
