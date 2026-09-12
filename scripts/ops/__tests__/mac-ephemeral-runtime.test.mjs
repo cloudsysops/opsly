@@ -41,11 +41,8 @@ test('canonical installer never hardcodes a founder home directory', () => {
 });
 
 
-test('launchd runtime includes the canonical Mac orchestrator starter', async () => {
-  const source = await readFile(
-    new URL('../install-mac-ephemeral-runtime-launchd.sh', import.meta.url),
-    'utf8'
-  );
+test('launchd runtime includes the canonical Mac orchestrator starter', () => {
+  const source = readFileSync('scripts/ops/install-mac-ephemeral-runtime-launchd.sh', 'utf8');
   assert.match(source, /com\.opsly\.orchestrator-mac/);
   assert.match(source, /\.\/scripts\/ops\/start-orchestrator-mac\.sh/);
 });
