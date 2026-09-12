@@ -84,16 +84,59 @@ else
     AWS_ARGS+=(--endpoint-url "${S3_ENDPOINT_URL}")
   fi
 
-  mapfile -t OBJECTS < <(
-    aws s3 ls "s3://${S3_BUCKET}/${S3_PREFIX}/${BACKUP_DATE}/" "${AWS_ARGS[@]}" 2>/dev/null       | awk '{print $4}'       | grep -E '^peskids-schemas-.*\.sql\.gz$'       | sort
-  )
+  OBJECT="$(
+    aws s3 ls "s3://${S3_BUCKET}/${S3_PREFIX}/${BACKUP_DATE}/" "${AWS_ARGS[@]}" 2>/dev/null \
+      | awk '{print $4}' \
+      | grep -E '^peskids-schemas-.*\.sql\.gz
+  BACKUP_FILE="$TMP_ROOT/$OBJECT"
+  SHA_FILE="${BACKUP_FILE}.sha256"
+  SRC="s3://${S3_BUCKET}/${S3_PREFIX}/${BACKUP_DATE}/${OBJECT}"
 
-  if [[ "${#OBJECTS[@]}" -eq 0 ]]; then
+  if [[ "$DRY_RUN" == "true" ]]; then
+    echo "[peskids-restore] DRY-RUN: download $SRC and checksum"
+  else
+    aws s3 cp "$SRC" "$BACKUP_FILE" "${AWS_ARGS[@]}"
+    aws s3 cp "${SRC}.sha256" "$SHA_FILE" "${AWS_ARGS[@]}"
+  fi
+fi
+
+echo "[peskids-restore] target=isolated"
+echo "[peskids-restore] backup=$(basename "$BACKUP_FILE")"
+
+if [[ "$DRY_RUN" == "true" ]]; then
+  echo "[peskids-restore] DRY-RUN: verify SHA256"
+  echo "[peskids-restore] DRY-RUN: gzip -cd backup | psql RESTORE_DB_CONNECTION_STRING"
+  echo "[peskids-restore] DRY-RUN: no production target permitted"
+  exit 0
+fi
+
+EXPECTED="$(awk '{print $1}' "$SHA_FILE" | head -n1)"
+ACTUAL="$(sha256sum "$BACKUP_FILE" | awk '{print $1}')"
+if [[ -z "$EXPECTED" || "$EXPECTED" != "$ACTUAL" ]]; then
+  echo "Checksum mismatch; refusing restore." >&2
+  exit 1
+fi
+
+echo "[peskids-restore] checksum verified"
+
+# Fail before mutating if the archive cannot be decompressed.
+gzip -t "$BACKUP_FILE"
+
+# Restore into the isolated target. The archive contains the real Peskids/public/platform
+# object names and should therefore be restored into a dedicated scratch database/project.
+gzip -cd "$BACKUP_FILE" | psql "${RESTORE_DB_CONNECTION_STRING}" -v ON_ERROR_STOP=1
+
+echo "[peskids-restore] restore complete"
+echo "[peskids-restore] NEXT: run DB assurance + row-count/application smoke against the isolated target."
+ \
+      | sort \
+      | tail -n1
+  )"
+
+  if [[ -z "${OBJECT}" ]]; then
     echo "No Peskids backup found for date=$BACKUP_DATE" >&2
     exit 1
   fi
-
-  OBJECT="${OBJECTS[-1]}"
   BACKUP_FILE="$TMP_ROOT/$OBJECT"
   SHA_FILE="${BACKUP_FILE}.sha256"
   SRC="s3://${S3_BUCKET}/${S3_PREFIX}/${BACKUP_DATE}/${OBJECT}"
