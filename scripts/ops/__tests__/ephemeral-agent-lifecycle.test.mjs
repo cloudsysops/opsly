@@ -19,7 +19,10 @@ test('CLI bridge delegates execution to Session Manager instead of direct spawn'
 test('persistent autonomous agent launchers are disabled', () => {
   assert.match(launcher, /DEPRECATED/);
   assert.match(launcher, /exit 2/);
-  assert.doesNotMatch(launcher, /nohup/);
+  // A bare /nohup/ match also fires on the deprecation message itself
+  // ("Do not run AI runtimes in nohup loops.") — check for an actual
+  // invocation (nohup at the start of a command line) instead.
+  assert.doesNotMatch(launcher, /^\s*nohup\s/m);
   assert.doesNotMatch(superagents, /start-agents-autopilot\.sh/);
 });
 
