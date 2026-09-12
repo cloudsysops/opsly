@@ -184,7 +184,7 @@ services:
   # OpenClaw headless one-shot bridge.
   # Uses `openclaw agent exec` through the generic authenticated CLI bridge.
   openclaw:
-    enabled: true
+    enabled: false
     url: "http://localhost:5012"
     env_var: "OPSLY_OPENCLAW_AGENT_URL"
     type: "http"
@@ -235,7 +235,6 @@ defaults:
     - "aider"
     - "goose"
     - "playwright"
-    - "openclaw"
 
 # Scaling configuration (for future remote/Docker deployments)
 # Example: Move Cursor to different machine by changing URL
