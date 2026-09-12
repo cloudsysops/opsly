@@ -25,6 +25,7 @@ completed: 2026-09-12
 - Eval dataset: `registerEvalCase` / `recordEvalResult` / `listEvalResults`
 - Prompt + model performance: `getPromptPerformance` / `getModelPerformance`
 - `taskIdFromEnvelope` → `AgentTaskEnvelopeV1.request_id`
+- `resolveEffectiveStatus` in `night-queue-status.mjs` (prefer `done` over stale metadata `unknown`)
 
 ## Still not in scope (later)
 
