@@ -6,6 +6,7 @@ import useSWR from 'swr';
 
 import { ComputeWorkersPanel } from '../../components/ComputeWorkersPanel';
 import { LocalNodesPanel } from '../../components/LocalNodesPanel';
+import { PortfolioControlPanel } from '../../components/mission-control/PortfolioControlPanel';
 import { getBaseUrl } from '../../lib/api-client';
 import type {
   AgentTeamsResponse,
@@ -131,6 +132,10 @@ export default function MissionControlPage() {
               Refresh
             </button>
           </div>
+        </div>
+
+        <div className="mb-8">
+          <PortfolioControlPanel />
         </div>
 
         <div className="mb-8">

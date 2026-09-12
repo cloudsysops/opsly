@@ -1,0 +1,301 @@
+{
+  "version": 1,
+  "operating_model": "solo-founder-agent-agile",
+  "sprint": {
+    "cadence_days": 7,
+    "goal": "Ship trusted autonomous engineering loop while advancing security and first revenue-adjacent product work",
+    "planning_owner": "founder",
+    "execution_model": "agent_parallel_with_human_approval_gates"
+  },
+  "policies": {
+    "wip_limits": {
+      "max_active_build_workstreams": 4,
+      "max_high_risk_workstreams": 1,
+      "max_production_touching_workstreams": 1,
+      "max_open_founder_decisions": 3
+    },
+    "notify_founder_for": [
+      "P0",
+      "P1",
+      "READY_FOR_DECISION"
+    ],
+    "suppress": [
+      "routine_success",
+      "raw_logs",
+      "unchanged_health",
+      "agent_chatter"
+    ],
+    "builder_must_not_review_own_work": true,
+    "no_dual_edit": true
+  },
+  "definition_of_ready": [
+    "objective_clear",
+    "owner_assigned",
+    "scope_defined",
+    "non_goals_defined",
+    "acceptance_criteria_defined",
+    "risk_classified",
+    "dependencies_known"
+  ],
+  "definition_of_done": [
+    "focused_pr_or_durable_artifact",
+    "required_tests_pass",
+    "ci_green_on_exact_sha",
+    "independent_review_complete",
+    "evidence_persisted_in_github",
+    "runtime_verified_when_applicable",
+    "follow_up_recorded"
+  ],
+  "workstreams": [
+    {
+      "id": "mac-e2e",
+      "name": "Mac Engineering Loop E2E",
+      "priority": "P1",
+      "owner": "chatgpt-supervisor",
+      "reviewer": "independent-reviewer",
+      "status": "review",
+      "risk": "medium",
+      "production_touching": false,
+      "depends_on": [
+        "pr-1204"
+      ],
+      "pr": 1204,
+      "next_action": "Get #1204 green, verify Mac readiness, then run #1197 smoke"
+    },
+    {
+      "id": "trusted-execution",
+      "name": "Trusted Execution / Node Auth",
+      "priority": "P1",
+      "owner": "claude-builder",
+      "reviewer": "independent-reviewer",
+      "status": "building",
+      "risk": "high",
+      "production_touching": false,
+      "depends_on": [
+        "pr-1196"
+      ],
+      "pr": 1196,
+      "next_action": "Finish TaskSourceGuard review, then build PR-B per-node auth"
+    },
+    {
+      "id": "agent-lab",
+      "name": "Agent Lab Canonicalization",
+      "priority": "P2",
+      "owner": "cursor-repair",
+      "reviewer": "claude-reviewer",
+      "status": "ready",
+      "risk": "medium",
+      "production_touching": false,
+      "depends_on": [],
+      "pr": 1190,
+      "next_action": "Choose one canonical package between #1187 and #1190"
+    },
+    {
+      "id": "career-agent",
+      "name": "Career Agent MVP",
+      "priority": "P2",
+      "owner": "opencode-builder",
+      "reviewer": "claude-reviewer",
+      "status": "ready",
+      "risk": "low",
+      "production_touching": false,
+      "depends_on": [
+        "parallel-workpack"
+      ],
+      "pr": 1205,
+      "next_action": "Implement profile/job schemas, scoring, evidence linking and READY_TO_APPLY flow"
+    },
+    {
+      "id": "peskids-change-window",
+      "name": "Peskids Blast-Radius Policy",
+      "priority": "P2",
+      "owner": "chatgpt-supervisor",
+      "reviewer": "independent-reviewer",
+      "status": "review",
+      "risk": "medium",
+      "production_touching": false,
+      "depends_on": [],
+      "pr": 1195,
+      "next_action": "Obtain reviewer confirmation and merge when approved"
+    },
+    {
+      "id": "peskids-production-guardian",
+      "name": "Peskids Production Guardian",
+      "priority": "P0",
+      "owner": "opsly-supervisor",
+      "reviewer": "independent-reviewer",
+      "status": "ready",
+      "risk": "high",
+      "production_touching": true,
+      "depends_on": [
+        "pr-1195"
+      ],
+      "pr": null,
+      "issue": 1193,
+      "next_action": "Prove current runtime with read-only evidence and add guardrails; no unattended production mutation."
+    },
+    {
+      "id": "health-tourism-demo",
+      "name": "Health Tourism Colombia Demo",
+      "priority": "P0",
+      "owner": "product-builder-agent",
+      "reviewer": "founder-product-review",
+      "status": "ready",
+      "risk": "medium",
+      "production_touching": false,
+      "depends_on": [],
+      "pr": null,
+      "issue": 1192,
+      "next_action": "Audit REAL/PARTIAL/MISSING and ship smallest synthetic provider→catalog→quote→case→booking demo slice."
+    },
+    {
+      "id": "pc-gamer-worker",
+      "name": "PC Gamer Local Agent Worker",
+      "priority": "P0",
+      "owner": "platform-builder-agent",
+      "reviewer": "independent-reviewer",
+      "status": "ready",
+      "risk": "medium",
+      "production_touching": false,
+      "depends_on": [
+        "trusted-execution"
+      ],
+      "pr": null,
+      "issue": 1191,
+      "next_action": "Bring compute worker online through existing orchestrator/BullMQ path with local inference smoke and Mission Control visibility."
+    }
+  ],
+  "portfolio_mode": "revenue_first",
+  "backlog_health": {
+    "observed_open_issues": 290,
+    "observed_open_prs": 39,
+    "automated_issues": 281,
+    "tenant_health_issues": 275,
+    "pre_june_2026_issues": 287,
+    "policy": "Automated/stale historical alerts do not count as founder WIP. Triage them separately with conservative stale/closure rules."
+  },
+  "company_readiness": {
+    "model": "startup-readiness",
+    "gates": {
+      "ready_to_bill": [
+        "legal_entity_confirmed",
+        "business_banking_separated",
+        "terms_privacy_baseline",
+        "customer_contract_path",
+        "production_guardrails"
+      ],
+      "ready_for_enterprise_sales": [
+        "access_control_documented",
+        "agent_audit_log",
+        "backup_restore_tested",
+        "sla_defined",
+        "unit_economics_visible",
+        "dr_plan_documented",
+        "dpa_available_when_applicable"
+      ]
+    },
+    "workstreams": [
+      {
+        "id": "legal-corporate",
+        "name": "Legal & Corporate",
+        "priority": "P0",
+        "owner": "founder",
+        "reviewer": "external-legal-review",
+        "status": "ready",
+        "risk": "high",
+        "next_action": "Confirm Opsly ownership under the existing company entity; create ToS/Privacy/DPA/IP assignment checklist for counsel review.",
+        "evidence_required": [
+          "entity_record",
+          "terms",
+          "privacy_policy",
+          "dpa_template",
+          "ip_assignment_policy"
+        ]
+      },
+      {
+        "id": "trust-compliance",
+        "name": "Trust & Compliance",
+        "priority": "P0",
+        "owner": "security-governance-agent",
+        "reviewer": "founder",
+        "status": "ready",
+        "risk": "high",
+        "next_action": "Build SOC2-aligned control inventory, prove agent audit logging coverage, and execute one backup restore drill.",
+        "evidence_required": [
+          "control_matrix",
+          "audit_log_sample",
+          "restore_drill_report",
+          "current_security_scan"
+        ]
+      },
+      {
+        "id": "product-reliability",
+        "name": "Product Reliability & Economics",
+        "priority": "P1",
+        "owner": "platform-product-agent",
+        "reviewer": "founder",
+        "status": "ready",
+        "risk": "medium",
+        "next_action": "Define SLA by plan, tenant margin model, and documented DR/RTO/RPO assumptions.",
+        "evidence_required": [
+          "sla",
+          "tenant_margin_report",
+          "dr_plan",
+          "rto_rpo"
+        ]
+      },
+      {
+        "id": "go-to-market",
+        "name": "Go-To-Market",
+        "priority": "P0",
+        "owner": "founder",
+        "reviewer": "product-strategy-agent",
+        "status": "ready",
+        "risk": "medium",
+        "next_action": "Choose flagship offer, package Peskids case study with measurable outcomes, and define agency licensing offer.",
+        "evidence_required": [
+          "flagship_decision",
+          "case_study",
+          "pricing_offer",
+          "pipeline_targets"
+        ]
+      },
+      {
+        "id": "finance-ops",
+        "name": "Finance Operations",
+        "priority": "P0",
+        "owner": "founder",
+        "reviewer": "accounting-review",
+        "status": "ready",
+        "risk": "high",
+        "next_action": "Confirm separate banking/bookkeeping and establish monthly P&L + quarterly tax estimate workflow.",
+        "evidence_required": [
+          "banking_separation",
+          "bookkeeping_system",
+          "monthly_pnl",
+          "tax_calendar"
+        ]
+      },
+      {
+        "id": "ai-governance",
+        "name": "AI Governance",
+        "priority": "P0",
+        "owner": "security-governance-agent",
+        "reviewer": "founder",
+        "status": "building",
+        "risk": "high",
+        "next_action": "Version an auditable human-approval policy and extend action logs from PR evidence to tenant-data/tool access events.",
+        "evidence_required": [
+          "ai_policy",
+          "approval_matrix",
+          "agent_action_audit",
+          "incident_response_boundary"
+        ]
+      }
+    ],
+    "assumptions": {
+      "cve_gate": "Do not use README Sprint-4/CVE wording as a gate without current scan evidence.",
+      "regulated_data": "Do not classify a tenant as HIPAA/PHI-regulated solely from vertical name; perform data-flow and contractual applicability review."
+    }
+  }
+}
