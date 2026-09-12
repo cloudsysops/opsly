@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-09-07
+last_review: 2026-09-12
 ---
 
 # Opsly — Contexto del Agente
@@ -41,6 +41,8 @@ Aplica a **todos** los agentes (Cursor, Claude, OpenCode, Copilot, Jules, worker
 **Planificación por sprint (IA + producto):** [`ROADMAP.md`](ROADMAP.md) (timeline semanal, milestones). **Guía técnica capa IA:** [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md) (TypeScript, rutas reales en `apps/*`).
 
 **Orquestación de agentes:** [`docs/design/AGENT-ORCHESTRATION-INDEX.md`](docs/design/AGENT-ORCHESTRATION-INDEX.md) — índice maestro (**elegir ruta A, B o C** como foco); fallover / repair queue (diseño): [`docs/orchestrator/REPAIR-QUEUE.md`](docs/orchestrator/REPAIR-QUEUE.md).
+
+**Runtime canónico de agentes:** [`docs/00-architecture/AGENT-RUNTIME-ARCHITECTURE.md`](docs/00-architecture/AGENT-RUNTIME-ARCHITECTURE.md). Antes de modificar workers, bridges, scheduler, Mac/Gamer o GitHub Agent Queue: leer ese documento. `AgentTaskEnvelopeV1` + BullMQ + `external-agent-registry` + Session Manager + sesiones efímeras son el boundary actual. Roles/personas antiguas no implican procesos AI persistentes.
 
 **Shadow deployment Super Agent (nuevo):** [`docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md`](docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md), diseño `context-builder-v2` en `apps/context-builder-v2/src/design/architecture.md`, script `scripts/rollback-super-agent.sh`, overlay `infra/docker-compose.super-agent.yml`.
 
