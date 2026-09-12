@@ -28,6 +28,7 @@ import {
   handleTerminalSessionStop,
   handleLocalControlMode,
   handleLocalState,
+  handleLocalQueueHealth,
   handleLocalPromptSubmit,
   handleExternalAgentsRegistry,
   handleValidationMetrics,
@@ -151,6 +152,7 @@ function buildRouter(): Router {
   r.post('/api/local/prompt-submit', handleLocalPromptSubmit);
   r.post('/api/local/control-mode', handleLocalControlMode);
   r.get('/api/local/state', handleLocalState);
+  r.get('/api/local/queue-health', handleLocalQueueHealth);
   r.get('/api/local/external-agents', handleExternalAgentsRegistry);
   r.get('/internal/external-agents/registry', handleExternalAgentsRegistry);
 

@@ -157,3 +157,28 @@ export async function enqueueLocalAgentJob(
 
   return bull;
 }
+
+
+export async function probeLocalAgentQueue(): Promise<{
+  ok: boolean;
+  redis_ping: string;
+  queue: string;
+  counts: Record<string, number>;
+}> {
+  const client = (await localAgentQueue.client) as unknown as { ping: () => Promise<string> };
+  const redisPing = await client.ping();
+  const counts = await localAgentQueue.getJobCounts(
+    'waiting',
+    'active',
+    'delayed',
+    'failed',
+    'completed',
+    'paused'
+  );
+  return {
+    ok: redisPing === 'PONG',
+    redis_ping: redisPing,
+    queue: 'local-agents',
+    counts,
+  };
+}

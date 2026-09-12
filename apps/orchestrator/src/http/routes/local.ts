@@ -1,6 +1,6 @@
 import type { RouteContext } from '../router.js';
 import { verifyPlatformAdminToken, parseBody, assertTenantSlugOrThrow, enrichAutonomyMetadata, randomUUID } from '../utils.js';
-import { enqueueJob, enqueueLocalAgentJob } from '../../queue.js';
+import { enqueueLocalAgentJob, probeLocalAgentQueue } from '../../queue.js';
 import type { OrchestratorJob } from '../../types.js';
 import {
   getLocalControlMode,
@@ -121,6 +121,27 @@ export async function handleLocalState(ctx: RouteContext): Promise<void> {
     });
   } catch (err) {
     errorResponse(ctx.res, 500, String(err));
+  }
+}
+
+export async function handleLocalQueueHealth(ctx: RouteContext): Promise<void> {
+  if (!verifyPlatformAdminToken(ctx.req)) {
+    errorResponse(ctx.res, 401, 'unauthorized');
+    return;
+  }
+  try {
+    const probe = await probeLocalAgentQueue();
+    if (!probe.ok) {
+      jsonResponse(ctx.res, 503, probe);
+      return;
+    }
+    jsonResponse(ctx.res, 200, probe);
+  } catch (err) {
+    jsonResponse(ctx.res, 503, {
+      ok: false,
+      queue: 'local-agents',
+      error: err instanceof Error ? err.message : String(err),
+    });
   }
 }
 
