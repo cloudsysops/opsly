@@ -1,0 +1,97 @@
+extends Node
+
+const BattleRuntime = preload("res://src/runtime/battle_runtime.gd")
+
+@onready var view_2d: Control = $View2D
+@onready var view_3d: Node3D = $View3D
+@onready var mode_label: Label = $HUD/Top/Mode
+@onready var round_label: Label = $HUD/Top/Round
+@onready var player_label: Label = $HUD/Top/PlayerStats
+@onready var enemy_label: Label = $HUD/Top/EnemyStats
+@onready var log_label: Label = $HUD/Bottom/Log
+@onready var ability_box: HBoxContainer = $HUD/Bottom/Abilities
+
+var runtime := BattleRuntime.new()
+var current_mode := "2D"
+var pack: Dictionary = {}
+var state: Dictionary = {}
+
+func _ready() -> void:
+    pack = ProjectSettings.get_setting("astral_arena/runtime/content_pack", {})
+    runtime.configure(pack)
+    var first_encounter: Dictionary = pack.get("battle", {}).get("first_encounter", {})
+    state = runtime.start(
+        first_encounter.get("player", ["arena", "brissa"]),
+        first_encounter.get("opponent", ["shadow-scout"])
+    )
+    _build_ability_buttons()
+    _set_mode("2D")
+    _refresh_views()
+
+func _unhandled_input(event: InputEvent) -> void:
+    if event.is_action_pressed("switch_presentation"):
+        _set_mode("3D" if current_mode == "2D" else "2D")
+        get_viewport().set_input_as_handled()
+    elif event.is_action_pressed("return_to_hub"):
+        get_tree().change_scene_to_file("res://scenes/mode_hub.tscn")
+
+func _set_mode(mode: String) -> void:
+    current_mode = mode
+    view_2d.visible = mode == "2D"
+    view_3d.visible = mode == "3D"
+    mode_label.text = "PRESENTACIÓN: %s · TAB cambia sin reiniciar batalla" % mode
+    _refresh_views()
+
+func _build_ability_buttons() -> void:
+    for child in ability_box.get_children():
+        child.queue_free()
+
+    var player: Array = state.get("player", [])
+    if player.is_empty():
+        return
+
+    var fighter_id := str(player[0].get("fighter_id", "arena"))
+    for raw_ability in runtime.ability_list_for(fighter_id):
+        var ability: Dictionary = raw_ability
+        var button := Button.new()
+        button.text = "%s · %d⚡" % [
+            str(ability.get("name", ability.get("id", "?"))),
+            int(ability.get("energyCost", 0))
+        ]
+        var ability_id := str(ability.get("id", ""))
+        button.pressed.connect(func(): _use_ability(ability_id))
+        ability_box.add_child(button)
+
+func _use_ability(ability_id: String) -> void:
+    state = runtime.perform_player_action(ability_id)
+    _refresh_views()
+
+func _refresh_views() -> void:
+    if state.is_empty():
+        return
+
+    round_label.text = "RONDA %d" % int(state.get("round", 1))
+    player_label.text = _side_summary(state.get("player", []))
+    enemy_label.text = _side_summary(state.get("opponent", []))
+
+    var log: Array = state.get("log", [])
+    log_label.text = "\n".join(log)
+
+    view_2d.call("render_battle_state", state, runtime.fighter_defs)
+    view_3d.call("render_battle_state", state, runtime.fighter_defs)
+
+    var winner := str(state.get("winner", ""))
+    if winner != "":
+        mode_label.text = "BATALLA TERMINADA · GANADOR: %s · vista actual %s" % [winner, current_mode]
+
+func _side_summary(side: Array) -> String:
+    var parts: Array[String] = []
+    for raw_fighter in side:
+        var fighter: Dictionary = raw_fighter
+        var definition: Dictionary = runtime.definition_for(str(fighter.get("fighter_id", "")))
+        parts.append("%s HP:%d EN:%d" % [
+            str(definition.get("name", fighter.get("fighter_id", "?"))),
+            int(fighter.get("health", 0)),
+            int(fighter.get("energy", 0))
+        ])
+    return " · ".join(parts)
