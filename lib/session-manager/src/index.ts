@@ -15,6 +15,7 @@ import {
   tmuxNewSession,
   tmuxSendKeys,
   tmuxSessionName,
+  tmuxWaitUntilGone,
 } from './tmux.js';
 import type {
   CreateSessionInput,
@@ -73,7 +74,7 @@ export async function getSession(sessionId: string): Promise<RuntimeSessionMetad
 
 export async function createSession(input: CreateSessionInput): Promise<RuntimeSessionMetadata> {
   const sessionId = randomUUID();
-  const tmuxName = tmuxSessionName(sessionId);
+  const tmuxName = input.tmuxSessionName?.trim() || tmuxSessionName(sessionId);
   const ts = nowIso();
   const workspace = resolveWorkspacePath(input.workspace);
   const meta: RuntimeSessionMetadata = {
@@ -169,4 +170,14 @@ export function mapLifecycleFromStatus(status: RuntimeSessionStatus): string {
     default:
       return 'QUEUED';
   }
+}
+
+
+export async function waitForSessionExit(sessionId: string, timeoutMs = 300000): Promise<RuntimeSessionMetadata> {
+  const meta = await loadSession(sessionId);
+  if (!meta) {
+    throw new Error(`Session not found: ${sessionId}`);
+  }
+  await tmuxWaitUntilGone(meta.tmuxSessionName, timeoutMs);
+  return touch(meta, { status: 'stopped' });
 }
