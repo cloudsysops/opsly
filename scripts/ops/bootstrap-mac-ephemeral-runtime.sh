@@ -83,6 +83,7 @@ if [[ "$SKIP_CI" != "1" ]]; then
   log "building execution boundary packages"
   run npm run build --workspace=@intcloudsysops/session-manager
   run npm run build --workspace=@intcloudsysops/agent-task-core
+  run npm run build --workspace=@intcloudsysops/ai-board
   run npm run build --workspace=@intcloudsysops/orchestrator
 
   log "running focused canonical runtime tests"

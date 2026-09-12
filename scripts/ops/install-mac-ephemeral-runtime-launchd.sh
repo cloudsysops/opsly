@@ -81,7 +81,7 @@ EOF
     if [[ "$secret_mode" == "raw" ]]; then
       cat <<EOF
     <string>/bin/bash</string>
-    <string>-lc</string>
+    <string>-c</string>
     <string>cd '$ROOT' &amp;&amp; $command</string>
 EOF
     else
@@ -92,7 +92,7 @@ EOF
     <string>--config</string><string>prd</string>
     <string>--</string>
     <string>/bin/bash</string>
-    <string>-lc</string>
+    <string>-c</string>
     <string>cd '$ROOT' &amp;&amp; $command</string>
 EOF
     fi
