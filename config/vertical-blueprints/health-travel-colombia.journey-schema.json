@@ -1,0 +1,142 @@
+{
+  "schema_version": "HealthTravelJourneyV1",
+  "description": "Commercial/coordination journey contract. Not a clinical record.",
+  "required": [
+    "journey_id",
+    "tenant_slug",
+    "traveler_ref",
+    "status",
+    "requested_service",
+    "destination_country"
+  ],
+  "fields": {
+    "journey_id": {
+      "type": "string"
+    },
+    "tenant_slug": {
+      "type": "string"
+    },
+    "traveler_ref": {
+      "type": "string"
+    },
+    "attribution_key": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "enum": [
+        "lead",
+        "qualified",
+        "provider_shortlist",
+        "consultation_scheduled",
+        "quoted",
+        "booked",
+        "travel_confirmed",
+        "in_colombia",
+        "follow_up",
+        "completed",
+        "cancelled"
+      ]
+    },
+    "requested_service": {
+      "type": "string"
+    },
+    "destination_country": {
+      "const": "CO"
+    },
+    "destination_city": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "provider_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "consultation_booking_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "quote_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "travel_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "lodging_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "transport_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "companion_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "preferred_language": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "mobility_coordination": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "commission_referral_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "next_action": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "next_action_owner": {
+      "enum": [
+        "traveler",
+        "provider",
+        "opsly",
+        "partner",
+        null
+      ]
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "forbidden_fields": [
+    "diagnosis",
+    "medical_history",
+    "clinical_notes",
+    "prescription",
+    "lab_results",
+    "imaging",
+    "treatment_decision"
+  ]
+}
