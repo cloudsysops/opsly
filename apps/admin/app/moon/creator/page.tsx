@@ -203,49 +203,79 @@ export default async function MoonCreatorPage({
       ) : null}
 
       {tab === 'franchise' ? (
-        data.projects.filter((item) => item.transmedia).length === 0 ? (
+        !data.franchise ? (
           <MoonEmptyState
-            title="Sin proyectos transmedia"
-            description="Los proyectos ligados a juego/historia aparecerán aquí con misión, episodio y superficies."
+            title="Franchise registry unavailable"
+            description="No se pudo cargar el manifest transmedia de Astral Arena."
           />
         ) : (
-          <div className="grid gap-3 lg:grid-cols-2">
-            {data.projects
-              .filter((item) => item.transmedia)
-              .map((item) => (
-                <MoonCard key={item.project.id} className="space-y-2 p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm text-slate-100">{item.project.title}</p>
-                      <p className="font-mono text-[10px] uppercase text-violet-300">
-                        {item.transmedia?.franchiseId} · {item.transmedia?.seasonId}
+          <div className="space-y-5">
+            <div className="grid gap-3 md:grid-cols-4">
+              <MoonCard className="p-4">
+                <p className="font-mono text-[10px] uppercase text-slate-500">Season</p>
+                <p className="mt-1 text-sm text-slate-100">{data.franchise.seasonTitle}</p>
+              </MoonCard>
+              <MoonCard className="p-4">
+                <p className="font-mono text-[10px] uppercase text-slate-500">Missions</p>
+                <p className="mt-1 text-2xl text-slate-50">{data.franchise.summary.missions}</p>
+              </MoonCard>
+              <MoonCard className="p-4">
+                <p className="font-mono text-[10px] uppercase text-slate-500">Episodes</p>
+                <p className="mt-1 text-2xl text-slate-50">{data.franchise.summary.episodes}</p>
+              </MoonCard>
+              <MoonCard className="p-4">
+                <p className="font-mono text-[10px] uppercase text-slate-500">Content projects</p>
+                <p className="mt-1 text-2xl text-slate-50">{data.franchise.summary.contentProjects}</p>
+              </MoonCard>
+            </div>
+
+            <MoonCard className="p-4">
+              <p className="font-mono text-[10px] uppercase text-violet-300">
+                {data.franchise.franchiseId} · {data.franchise.seasonId}
+              </p>
+              <p className="mt-1 text-lg text-slate-100">{data.franchise.title}</p>
+              <p className="mt-2 text-sm text-slate-400">{data.franchise.thesis}</p>
+            </MoonCard>
+
+            {data.franchise.chapters.map((chapter) => (
+              <div key={chapter.id} className="space-y-3">
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-violet-300">
+                    {chapter.id} · {chapter.status}
+                  </p>
+                  <h3 className="text-lg text-slate-100">{chapter.title}</h3>
+                  <p className="text-sm text-slate-400">{chapter.contentArc}</p>
+                </div>
+                <div className="grid gap-3 lg:grid-cols-2">
+                  {chapter.events.map((event) => (
+                    <MoonCard key={event.id} className="space-y-2 p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm text-slate-100">{event.title}</p>
+                          <p className="font-mono text-[10px] text-slate-500">{event.episodeId}</p>
+                        </div>
+                        <MoonStatusBadge tone={event.contentProjectStatus === 'published' ? 'healthy' : 'unknown'}>
+                          {event.contentProjectStatus ?? event.episodeProductionStatus ?? event.status}
+                        </MoonStatusBadge>
+                      </div>
+                      <p className="font-mono text-[11px] text-slate-400">
+                        Mission: {event.missionIds.join(' · ')}
                       </p>
-                    </div>
-                    <MoonStatusBadge tone={toneForStatus(item.project.status)}>
-                      {item.project.status}
-                    </MoonStatusBadge>
-                  </div>
-                  <p className="text-xs text-slate-400">
-                    Story event: {item.transmedia?.storyEventId}
-                  </p>
-                  <p className="font-mono text-[11px] text-slate-500">
-                    Missions: {(item.transmedia?.missionIds ?? []).join(' · ') || 'none'}
-                  </p>
-                  <p className="font-mono text-[11px] text-slate-500">
-                    Characters: {(item.transmedia?.characterIds ?? []).join(' · ') || 'none'}
-                  </p>
-                  <div className="flex flex-wrap gap-1">
-                    {(item.transmedia?.surfaces ?? []).map((surface) => (
-                      <span
-                        key={surface}
-                        className="rounded border border-white/10 px-2 py-1 font-mono text-[10px] text-slate-300"
-                      >
-                        {surface}
-                      </span>
-                    ))}
-                  </div>
-                </MoonCard>
-              ))}
+                      <div className="flex flex-wrap gap-1">
+                        {event.surfaces.map((surface) => (
+                          <span
+                            key={surface}
+                            className="rounded border border-white/10 px-2 py-1 font-mono text-[10px] text-slate-300"
+                          >
+                            {surface}
+                          </span>
+                        ))}
+                      </div>
+                    </MoonCard>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         )
       ) : null}

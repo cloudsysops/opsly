@@ -16,6 +16,8 @@ COPY --from=deps /repo/node_modules ./node_modules
 COPY --from=deps /repo/package.json ./package.json
 COPY --from=deps /repo/package-lock.json ./package-lock.json
 COPY apps/admin ./apps/admin
+COPY config/games/astral-arena-transmedia.json ./config/games/astral-arena-transmedia.json
+COPY data/content/series/astral-arena ./data/content/series/astral-arena
 # Monorepo libs imported from apps/admin (runtime, design tokens, shared UI)
 COPY lib ./lib
 WORKDIR /repo/apps/admin
@@ -43,6 +45,8 @@ ENV HOSTNAME=0.0.0.0
 COPY --from=builder /repo/apps/admin/.next/standalone ./
 COPY --from=builder /repo/apps/admin/.next/static ./apps/admin/.next/static
 COPY --from=builder /repo/apps/admin/public ./apps/admin/public
+COPY --from=builder /repo/config ./config
+COPY --from=builder /repo/data ./data
 
 WORKDIR /app/apps/admin
 

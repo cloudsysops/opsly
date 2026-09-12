@@ -215,3 +215,25 @@ Architecture:
 
 This does not create a second canon. Universe remains canonical; Content Studio
 owns transformation/production/distribution.
+
+
+## Franchise Control Board
+
+Moon Creator Studio now includes a **Franchise** control board backed by the
+transmedia manifest and the real Content Studio series.
+
+It shows:
+- Season 1;
+- chapter status;
+- 16 story-event/mission slots;
+- episode IDs;
+- editorial production state;
+- runtime ContentProject status when present;
+- target surfaces.
+
+The first four episodes exist as real Content Studio storyboards under:
+
+`data/content/series/astral-arena/episodes/`
+
+This series references Universe character IDs via `character_source: universe`;
+canonical character definitions are not duplicated into `data/content/characters`.

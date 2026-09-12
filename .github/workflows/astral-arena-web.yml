@@ -53,6 +53,9 @@ jobs:
       - name: Validate transmedia continuity
         run: npm run game:astral:transmedia:validate
 
+      - name: Validate Astral Content Studio series
+        run: npm run game:astral:content-series:validate
+
       - name: Prove reusable blueprint
         shell: bash
         run: |
