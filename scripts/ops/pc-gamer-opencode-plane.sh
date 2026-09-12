@@ -16,6 +16,8 @@ DO_UP=false
 DO_DOWN=false
 DO_STATUS=false
 INSTALL_AUTOSTART=false
+PULL_MODEL=""
+DOCTOR=false
 
 for arg in "$@"; do
   case "$arg" in
@@ -24,6 +26,8 @@ for arg in "$@"; do
     --down) DO_DOWN=true ;;
     --status) DO_STATUS=true ;;
     --install-autostart) INSTALL_AUTOSTART=true ;;
+    --doctor) DOCTOR=true ;;
+    --pull-model=*) PULL_MODEL="${arg#*=}" ;;
     -h|--help)
       sed -n '2,10p' "$0"
       exit 0
@@ -48,6 +52,96 @@ COMPOSE_WORKERS=("${COMPOSE_BASE[@]}" -f infra/docker-compose.pc-gamer-workers.y
 OVERNIGHT_WORKTREE="${OPSLY_OVERNIGHT_WORKTREE:-$HOME/opsly-overnight}"
 OVERNIGHT_BRANCH="${OPSLY_OVERNIGHT_BRANCH:-overnight/opencode}"
 OPENCODE_PORT="${OPSLY_OPENCODE_PORT:-5004}"
+OPENCODE_BIND="${OPSLY_OPENCODE_BIND:-127.0.0.1}"
+OLLAMA_URL="${OLLAMA_URL:-http://127.0.0.1:11434}"
+MODEL_PREFERENCE="${OPSLY_LOCAL_MODEL_PREFERENCE:-qwen3-coder,qwen2.5-coder,devstral,gpt-oss,codestral,llama3.2}"
+
+
+ollama_models_json() {
+  curl -sf --max-time 5 "${OLLAMA_URL%/}/api/tags"
+}
+
+resolve_local_model() {
+  if [[ -n "${OPSLY_OPENCODE_MODEL:-}" ]]; then
+    printf '%s\n' "${OPSLY_OPENCODE_MODEL}"
+    return 0
+  fi
+
+  local json
+  json="$(ollama_models_json 2>/dev/null || true)"
+  [[ -n "$json" ]] || return 1
+
+  MODELS_JSON="$json" node - "$MODEL_PREFERENCE" <<'NODE'
+const prefs = String(process.argv[2] || '')
+  .split(',')
+  .map((v) => v.trim().toLowerCase())
+  .filter(Boolean);
+const body = JSON.parse(process.env.MODELS_JSON || '{"models":[]}');
+const names = (body.models || [])
+  .map((m) => String(m.name || m.model || '').trim())
+  .filter(Boolean);
+for (const pref of prefs) {
+  const match = names.find((name) => name.toLowerCase().startsWith(pref));
+  if (match) {
+    process.stdout.write('ollama/' + match);
+    process.exit(0);
+  }
+}
+if (names[0]) {
+  process.stdout.write('ollama/' + names[0]);
+  process.exit(0);
+}
+process.exit(1);
+NODE
+}
+
+doctor() {
+  local failures=0
+  echo "=== Opsly PC Gamer Local-First Doctor ==="
+
+  if curl -sf --max-time 5 "${OLLAMA_URL%/}/api/tags" >/dev/null; then
+    echo "[PASS] Ollama reachable: $OLLAMA_URL"
+  else
+    echo "[FAIL] Ollama unreachable: $OLLAMA_URL"
+    failures=$((failures+1))
+  fi
+
+  if command -v opencode >/dev/null 2>&1; then
+    echo "[PASS] OpenCode binary: $(command -v opencode)"
+  else
+    echo "[FAIL] OpenCode binary not found"
+    failures=$((failures+1))
+  fi
+
+  local selected=""
+  selected="$(resolve_local_model 2>/dev/null || true)"
+  if [[ -n "$selected" ]]; then
+    echo "[PASS] selected model: $selected"
+  else
+    echo "[FAIL] no Ollama model available"
+    failures=$((failures+1))
+  fi
+
+  if [[ "$OPENCODE_BIND" == "127.0.0.1" || "$OPENCODE_BIND" == "localhost" ]]; then
+    echo "[WARN] bridge is localhost-only; set OPSLY_OPENCODE_BIND to the Gamer Tailscale IP for remote Mac dispatch"
+  else
+    echo "[PASS] remote bridge bind: $OPENCODE_BIND:$OPENCODE_PORT"
+  fi
+
+  if [[ -f "$ENV_WORKER" ]]; then
+    echo "[PASS] worker env present: $ENV_WORKER"
+  else
+    echo "[FAIL] worker env missing: $ENV_WORKER"
+    failures=$((failures+1))
+  fi
+
+  if [[ "$failures" -eq 0 ]]; then
+    echo "LOCAL_FIRST_READY"
+    return 0
+  fi
+  echo "LOCAL_FIRST_NOT_READY failures=$failures"
+  return 1
+}
 
 run() {
   if [[ "$DRY_RUN" == "true" ]]; then
@@ -123,8 +217,14 @@ ensure_worktree() {
 }
 
 start_bridge() {
+  local selected_model
+  selected_model="$(resolve_local_model 2>/dev/null || true)"
+  if [[ -z "$selected_model" ]]; then
+    echo "[pc-gamer-opencode] ERROR: no Ollama model available for OpenCode" >&2
+    exit 1
+  fi
   if [[ "$DRY_RUN" == "true" ]]; then
-    echo "[dry-run] start cli-agent-service opencode :${OPENCODE_PORT} cwd=$OVERNIGHT_WORKTREE"
+    echo "[dry-run] start cli-agent-service opencode :${OPENCODE_PORT} cwd=$OVERNIGHT_WORKTREE model=$selected_model"
     return 0
   fi
   local token
@@ -137,6 +237,9 @@ start_bridge() {
     OPSLY_CLI_AGENT_TOKEN="$token" \
     OPSLY_CLI_AGENT_CWD="$OVERNIGHT_WORKTREE" \
     OPSLY_CLI_AGENT_ALLOWED_CWD_PREFIX="$OVERNIGHT_WORKTREE" \
+    OPSLY_CLI_AGENT_BIND="$OPENCODE_BIND" \
+    OPSLY_OPENCODE_MODEL="$selected_model" \
+    OLLAMA_URL="$OLLAMA_URL" \
     setsid nohup npx tsx "${ROOT}/scripts/cli-agent-service.ts" \
     >"${ROOT}/runtime/logs/pc-gamer-opencode-bridge.log" 2>&1 &
   disown || true
@@ -173,11 +276,14 @@ compose_down() {
 show_status() {
   echo "=== OpenCode plane ==="
   echo "worktree: $OVERNIGHT_WORKTREE"
-  curl -sf --max-time 3 "http://127.0.0.1:${OPENCODE_PORT}/health" 2>/dev/null || echo "bridge: DOWN (:${OPENCODE_PORT})"
+  echo "bind: $OPENCODE_BIND"
+  curl -sf --max-time 3 "http://${OPENCODE_BIND}:${OPENCODE_PORT}/health" 2>/dev/null || echo "bridge: DOWN (:${OPENCODE_PORT})"
   echo
   if [[ -f "$ENV_WORKER" ]]; then
     grep -E '^OPSLY_WORKER_ALLOWLIST=|^OPSLY_OPENCODE_AGENT_URL=|^OPSLY_LOCAL_AGENT_UNIFIED_ONLY=|^OPSLY_LOCAL_AGENT_KINDS=' "$ENV_WORKER" || true
   fi
+  echo "selected_model: $(resolve_local_model 2>/dev/null || echo unavailable)"
+  echo "ollama_url: $OLLAMA_URL"
   echo "=== systemd ==="
   systemctl --user is-active opsly-pc-gamer-opencode.service 2>/dev/null || echo "opsly-pc-gamer-opencode.service not installed/active"
 }
@@ -198,6 +304,12 @@ install_autostart() {
   token="$(grep '^OPSLY_CLI_AGENT_TOKEN=' "$ENV_WORKER" | cut -d= -f2-)"
   local npx_bin
   npx_bin="$(command -v npx)"
+  local selected_model
+  selected_model="$(resolve_local_model 2>/dev/null || true)"
+  [[ -n "$selected_model" ]] || {
+    echo "[pc-gamer-opencode] ERROR: no Ollama model available for OpenCode" >&2
+    exit 1
+  }
 
   cat >"$unit" <<EOF
 [Unit]
@@ -212,9 +324,10 @@ Environment=PORT=${OPENCODE_PORT}
 Environment=OPSLY_CLI_AGENT_TOKEN=${token}
 Environment=OPSLY_CLI_AGENT_CWD=${OVERNIGHT_WORKTREE}
 Environment=OPSLY_CLI_AGENT_ALLOWED_CWD_PREFIX=${OVERNIGHT_WORKTREE}
-Environment=OPSLY_OPENCODE_MODEL=ollama/llama3.2
+Environment=OPSLY_CLI_AGENT_BIND=${OPENCODE_BIND}
+Environment=OPSLY_OPENCODE_MODEL=${selected_model}
 Environment=OLLAMA_HOST=127.0.0.1:11434
-Environment=OLLAMA_URL=http://127.0.0.1:11434
+Environment=OLLAMA_URL=${OLLAMA_URL}
 Environment=PATH=${HOME}/.npm-global/bin:/usr/local/bin:/usr/bin:/bin
 ExecStart=${npx_bin} tsx ${ROOT}/scripts/cli-agent-service.ts
 Restart=on-failure
@@ -229,7 +342,16 @@ EOF
   echo "[pc-gamer-opencode] autostart enabled"
 }
 
-if [[ "$DO_UP$DO_DOWN$DO_STATUS$INSTALL_AUTOSTART" == "falsefalsefalsefalse" ]]; then
+if [[ -n "$PULL_MODEL" ]]; then
+  if [[ "$DRY_RUN" == "true" ]]; then
+    echo "[dry-run] ollama pull $PULL_MODEL"
+  else
+    command -v ollama >/dev/null 2>&1 || { echo "ollama CLI not found" >&2; exit 1; }
+    ollama pull "$PULL_MODEL"
+  fi
+fi
+
+if [[ "$DO_UP$DO_DOWN$DO_STATUS$INSTALL_AUTOSTART$DOCTOR" == "falsefalsefalsefalsefalse" ]]; then
   DO_STATUS=true
 fi
 
@@ -237,5 +359,6 @@ fi
 [[ "$DO_DOWN" == "true" ]] && compose_down
 [[ "$INSTALL_AUTOSTART" == "true" ]] && install_autostart
 [[ "$DO_STATUS" == "true" ]] && show_status
+[[ "$DOCTOR" == "true" ]] && doctor
 
 echo "[pc-gamer-opencode] done."
