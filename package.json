@@ -188,7 +188,11 @@
     "opsly:background:dispatch": "node scripts/ops/background-scheduler-dispatch.mjs",
     "opsly:background:dispatch:json": "node scripts/ops/background-scheduler-dispatch.mjs --json",
     "opsly:background:dispatch:execute": "node scripts/ops/background-scheduler-dispatch.mjs --execute",
-    "test:background-scheduler-dispatch": "node --test scripts/ops/__tests__/background-scheduler-dispatch.test.mjs"
+    "test:background-scheduler-dispatch": "node --test scripts/ops/__tests__/background-scheduler-dispatch.test.mjs",
+    "opsly:background:launchd:dry-run": "bash scripts/ops/install-background-scheduler-launchd.sh --dry-run",
+    "opsly:background:launchd:enable": "bash scripts/ops/install-background-scheduler-launchd.sh --enable",
+    "opsly:background:launchd:remove": "bash scripts/ops/install-background-scheduler-launchd.sh --remove",
+    "test:background-scheduler-launchd": "node --test scripts/ops/__tests__/background-scheduler-launchd.test.mjs"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
