@@ -36,4 +36,40 @@ export const CANONICAL_LORE: LoreNote[] = [
     relatedCharacterIds: ['traveler', 'nova', 'kai'],
     relatedWorldIds: ['nexus', 'unknown'],
   },
+  {
+    id: 'astral-arena-nexus-realm',
+    title: 'Astral Arena is a Nexus realm',
+    summary:
+      'Astral Arena is a fictional family adventure realm of the wider Nexus. Arena and Brissa repair connections between worlds rather than conquering them.',
+    fictionVsScience: 'fiction',
+    relatedCharacterIds: ['arena', 'brissa', 'nx-7', 'altair'],
+    relatedWorldIds: ['astral-arena', 'nexus'],
+  },
+  {
+    id: 'astral-dragons-are-conscious',
+    title: 'Astral Dragons are guardians, never property',
+    summary:
+      'Astral Dragons are conscious living guardians tied to Nexus Currents. They may choose alliances but are never pets, owned mounts, or weapons.',
+    fictionVsScience: 'fiction',
+    relatedCharacterIds: ['asterion', 'pyra', 'nebryx', 'umbriel'],
+    relatedWorldIds: ['astral-arena'],
+  },
+  {
+    id: 'winged-ascension-is-cosmic',
+    title: 'Winged Ascension is cosmic, not religious',
+    summary:
+      'Winged Ascension manifests angel-like wings as a fictional Nexus energy response symbolizing protection, freedom, and cooperation. It does not make theological claims.',
+    fictionVsScience: 'fiction',
+    relatedCharacterIds: ['arena', 'brissa', 'orion-shepherd', 'aurora-unicorn', 'nx-7'],
+    relatedWorldIds: ['astral-arena'],
+  },
+  {
+    id: 'umbra-last-memory-thread',
+    title: 'The last thread of Umbra',
+    summary:
+      'The Season 1 resolution favors restoration over destruction: Umbriel helps reveal the last memory-thread connecting Señor Sombra to the Guardian Umbra once was.',
+    fictionVsScience: 'fiction',
+    relatedCharacterIds: ['umbra', 'umbriel', 'arena', 'brissa', 'altair'],
+    relatedWorldIds: ['astral-arena'],
+  },
 ];
