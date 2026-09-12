@@ -87,7 +87,7 @@ Phased prompts live in `docs/01-development/night-queue/012-agent-lab-*.md` (see
 3. ~~**Prompt / model performance**~~ — **done in 013** (`getPromptPerformance` / `getModelPerformance`).
 4. **Mission Control scorecards UI** — Lab metrics not yet a first-class MC panel.
 5. ~~**Mac durable orch LaunchAgent script**~~ — **done in 012** (`scripts/ops/start-orchestrator-mac.sh`).
-6. **night-queue status parser** — partial «Respuesta» can still confuse status displays.
+6. ~~**night-queue status parser**~~ — **mitigated in 013** (`resolveEffectiveStatus` prefers frontmatter `done` over stale metadata `unknown`).
 
 ## Phase order after 012
 
