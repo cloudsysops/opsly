@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import useSWR from 'swr';
 
 import { ComputeWorkersPanel } from '@/components/ComputeWorkersPanel';
+import { RevenueOverviewPanel } from '@/components/RevenueOverviewPanel';
 import {
   LocalNodesPanel,
   type RuntimeNodesPayload,
@@ -375,6 +376,10 @@ export function MissionControlCockpit() {
             </div>
           </div>
         </section>
+
+        <div className="mt-5">
+          <RevenueOverviewPanel />
+        </div>
 
         <section className="mt-5 grid gap-5 xl:grid-cols-[1fr_1fr]">
           <div className="rounded-2xl border border-cyan-500/15 bg-slate-950/70 p-4">
