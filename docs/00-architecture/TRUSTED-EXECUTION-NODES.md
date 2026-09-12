@@ -119,6 +119,8 @@ Do not execute it.
 
 Every execution node gets a unique stable `node_id`.
 
+`status` describes whether the physical/runtime node is present or planned. It does **not** mean per-node authentication is already enforced. `auth_enforcement` is tracked separately; until TaskSourceGuard + per-node credentials land, active legacy nodes remain explicitly marked as pending per-node enforcement.
+
 Current/planned identities:
 
 - `macbook-personal-01` — engineering dispatcher/workstation;
