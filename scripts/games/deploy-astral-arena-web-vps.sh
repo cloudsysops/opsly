@@ -20,7 +20,7 @@ actual_digest="${repo_digest##*@}"
 
 docker rm -f "$container" 2>/dev/null || true
 
-docker run -d   --name "$container"   --restart unless-stopped   --network traefik-public   --label traefik.enable=true   --label traefik.docker.network=traefik-public   --label "traefik.http.routers.astral-arena-web.rule=Host(`$host`)"   --label traefik.http.routers.astral-arena-web.entrypoints=websecure   --label traefik.http.routers.astral-arena-web.tls=true   --label traefik.http.routers.astral-arena-web.tls.certresolver=letsencrypt   --label traefik.http.services.astral-arena-web.loadbalancer.server.port=8080   "$ASTRAL_ARENA_WEB_IMAGE" >/dev/null
+docker run -d   --name "$container"   --restart unless-stopped   --network traefik-public   --label traefik.enable=true   --label traefik.docker.network=traefik-public   --label "traefik.http.routers.astral-arena-web.rule=Host(\`$host\`)"   --label traefik.http.routers.astral-arena-web.entrypoints=websecure   --label traefik.http.routers.astral-arena-web.tls=true   --label traefik.http.routers.astral-arena-web.tls.certresolver=letsencrypt   --label traefik.http.services.astral-arena-web.loadbalancer.server.port=8080   "$ASTRAL_ARENA_WEB_IMAGE" >/dev/null
 
 for attempt in {1..30}; do
   if docker exec "$container" wget -q -O /dev/null http://127.0.0.1:8080/index.html; then
