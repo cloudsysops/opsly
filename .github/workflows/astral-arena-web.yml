@@ -11,6 +11,7 @@ on:
       - 'lib/universe/**'
       - 'scripts/games/**'
       - '.github/workflows/astral-arena-web.yml'
+      - '.dockerignore'
   pull_request:
     paths:
       - 'apps/game-astral-arena/**'
