@@ -1,7 +1,10 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {
+  ASTRAL_DUEL_FIGHTERS,
+  ASTRAL_DUEL_RULESET,
   CYBER_BATTLES,
+  GAME_MODE_BLUEPRINT,
   TECHNOLIA_BUILDINGS,
   TECHNOLIA_STARTING_RESOURCES,
   TECHNOLIA_TECH_TREE,
@@ -83,6 +86,15 @@ const pack = {
     product.firstPlayable.cyberArena.includes(item.id),
   ),
   learning_arcade: product.firstPlayable.learningArcade.map((id) => missionById(id)),
+  presentation_modes: GAME_MODE_BLUEPRINT,
+  battle: {
+    ruleset: ASTRAL_DUEL_RULESET,
+    fighters: ASTRAL_DUEL_FIGHTERS,
+    first_encounter: {
+      player: ['arena', 'brissa'],
+      opponent: ['shadow-scout'],
+    },
+  },
 };
 
 await fs.mkdir(path.dirname(OUTPUT), { recursive: true });
