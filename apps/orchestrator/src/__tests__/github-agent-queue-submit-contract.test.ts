@@ -58,6 +58,13 @@ describe('GitHub Agent Queue submitter contract', () => {
     expect(source).toContain('job did not reach a terminal state');
   });
 
+  it('can require an exact terminal acceptance marker', () => {
+    expect(source).toContain("OPSLY_GITHUB_AGENT_EXPECT_MARKER || ''");
+    expect(source).toContain('completed job did not return the expected acceptance marker');
+    expect(source).toContain('GITHUB_AGENT_QUEUE_MARKER_OK=');
+    expect(source).toContain("for (const key of ['result', 'response', 'output', 'text'])");
+  });
+
   it('requires orchestrator URL and platform admin token instead of embedding credentials', () => {
     expect(source).toContain('OPSLY_ORCHESTRATOR_URL is required');
     expect(source).toContain('PLATFORM_ADMIN_TOKEN is required');
