@@ -51,3 +51,10 @@ export type {
   WorldInstance,
 } from './types.js';
 export type { GameRuntime } from './runtime.js';
+
+export {
+  ASTRAL_ARENA_PORTAL_ID,
+  ASTRAL_ARENA_WORLD_ID,
+  getAstralArenaMission,
+  getAstralArenaMissions,
+} from './astral-arena.js';
