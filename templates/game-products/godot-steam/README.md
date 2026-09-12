@@ -31,3 +31,35 @@ Reuse:
 - capture hooks,
 - Steam adapter,
 - telemetry adapter.
+
+
+## Reusable presentation modes
+
+The blueprint supports three presentation modes:
+
+- `2D` — top-down/tactical/lightweight presentation.
+- `3D` — immersive world and cinematic presentation.
+- `HYBRID` — one gameplay state rendered by both.
+
+`src/runtime/presentation_router.gd` is the reusable boundary. It owns **no canon** and
+does not calculate battle results. It keeps the shared runtime state alive while
+renderers are swapped.
+
+Expected renderer contract:
+
+```gdscript
+func render_state(state: Dictionary) -> void:
+    # draw only — never mutate canonical gameplay state here
+    pass
+```
+
+A mode change must preserve at minimum:
+
+- turn/round;
+- health;
+- energy;
+- effects;
+- inventory;
+- mission context.
+
+The next game can replace every visual asset and still reuse this contract.
