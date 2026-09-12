@@ -114,6 +114,27 @@ PLATFORM_ADMIN_TOKEN="<token>" npm run opsly:local-prompt-watcher:once
 
 Prompts versionados para la noche: `docs/01-development/night-queue/` — `dispatch-prompt-queue.sh` los copia a `.cursor/prompts/queue/` (gitignored) y abre OpenCode. n8n: `docs/n8n-workflows/night-agent-queue.json` (HTTP al orchestrator; **no** escribe `docs/ACTIVE-PROMPT.md`).
 
+### Cron Mac (pull + validar prompts)
+
+En el Mac runner (`opsly-mac-runner` en `main`), instalar crontab idempotente:
+
+```bash
+# dry-run
+./scripts/ops/install-mac-prompt-cron.sh --dry-run
+# crontab: pull cada 5 min + validate cada 10 min
+./scripts/ops/install-mac-prompt-cron.sh
+# opcional: también LaunchAgents
+./scripts/ops/install-mac-prompt-cron.sh --launchd-also
+```
+
+| Script | Qué hace |
+|--------|----------|
+| `scripts/ops/mac-runner-pull.sh` | `git fetch` + `pull --ff-only` solo en `main` y árbol limpio |
+| `scripts/ops/validate-prompt-queue.sh` | Valida frontmatter (`id`/`status`) en `night-queue/` y `.cursor/prompts/queue/` — **no** ejecuta Markdown |
+| `scripts/ops/mac-prompt-cron-tick.sh` | Tick combinado (pull → validate) |
+
+Logs: `~/Library/Logs/opsly/opsly-mac-runner-pull.log` y `opsly-prompt-queue-validate.log`.
+
 Si no existe el script, basta con listar la carpeta `queue/` manualmente; el protocolo sigue siendo válido.
 
 ## Relación con otras carpetas
