@@ -1,0 +1,24 @@
+name: Astral Arena Game Product
+
+on:
+  pull_request:
+    paths:
+      - 'apps/game-astral-arena/**'
+      - 'config/games/astral-arena.json'
+      - 'config/game-blueprints/**'
+      - 'scripts/games/**'
+      - 'lib/game-core/**'
+      - 'lib/universe/**'
+      - '.github/workflows/astral-arena-game.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-product:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Astral Arena product structure
+        run: node scripts/games/validate-astral-arena-game.mjs
