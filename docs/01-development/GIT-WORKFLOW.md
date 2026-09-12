@@ -34,6 +34,10 @@ Objetivo: **una línea base (`main`) estable**, cambios integrados por **PR**, y
 
 Si varios agentes tocan el mismo tema, **una rama coordinada** o PRs encadenados (merge del primero y rebase del segundo sobre `main`), no muchas ramas divergentes sin merge.
 
+**Convención de worktrees para agentes en paralelo:** ver
+[`03-agents/WORKTREE-CONVENTION.md`](../03-agents/WORKTREE-CONVENTION.md)
+(`1 worktree = 1 agente + 1 tema`, bajo `.worktrees/<agente>/<tema>/`).
+
 ## Regla de sesión
 
 ### Preservación de trabajo entre máquinas
