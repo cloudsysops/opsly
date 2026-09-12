@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs';
 const dispatcher = readFileSync('scripts/ops/dispatch-prompt-queue.sh', 'utf8');
 const installer = readFileSync('scripts/ops/install-mac-ephemeral-runtime-launchd.sh', 'utf8');
 const worker = readFileSync('scripts/ops/start-mac-local-agents-worker.sh', 'utf8');
+const bootstrap = readFileSync('scripts/ops/bootstrap-mac-ephemeral-runtime.sh', 'utf8');
 
 test('dispatcher never launches persistent OpenCode TUI', () => {
   assert.doesNotMatch(dispatcher, /osascript/);
@@ -26,7 +27,6 @@ test('persistent Mac worker is control infrastructure only', () => {
   assert.match(worker, /OPSLY_CLI_AGENT_TOKEN/);
 });
 
-
 test('launchd topology keeps watcher persistent and seeding separate', () => {
   assert.match(installer, /com\.opsly\.prompt-watcher/);
   assert.match(installer, /com\.opsly\.prompt-seed/);
@@ -40,13 +40,11 @@ test('canonical installer never hardcodes a founder home directory', () => {
   assert.doesNotMatch(installer, /\/Users\/cboteros\//);
 });
 
-
 test('launchd runtime includes the canonical Mac orchestrator starter', () => {
   const source = readFileSync('scripts/ops/install-mac-ephemeral-runtime-launchd.sh', 'utf8');
   assert.match(source, /com\.opsly\.orchestrator-mac/);
   assert.match(source, /\.\/scripts\/ops\/start-orchestrator-mac\.sh/);
 });
-
 
 test('orchestrator starter does not pin a personal Node version', () => {
   const source = readFileSync('scripts/ops/start-orchestrator-mac.sh', 'utf8');
@@ -56,11 +54,18 @@ test('orchestrator starter does not pin a personal Node version', () => {
   assert.doesNotMatch(source, /\/Users\/cboteros\//);
 });
 
-
 test('Mac worker sources localhost Redis override before consuming BullMQ', () => {
   const source = readFileSync('scripts/ops/start-mac-local-agents-worker.sh', 'utf8');
   assert.match(source, /\/tmp\/opsly-mac-redis\.env/);
   assert.match(source, /source \/tmp\/opsly-mac-redis\.env/);
   assert.match(source, /127\.0\.0\.1/);
   assert.match(source, /OPSLY_HEARTBEAT_SERVICE_NAME/);
+});
+
+test('Mac bootstrap health wait is portable and bounded by one deadline', () => {
+  assert.doesNotMatch(bootstrap, /\bseq\b/);
+  assert.match(bootstrap, /health_deadline=\$\(\(SECONDS \+ 30\)\)/);
+  assert.match(bootstrap, /while \(\( SECONDS < health_deadline \)\)/);
+  assert.match(bootstrap, /if \(\( SECONDS >= health_deadline \)\)/);
+  assert.match(bootstrap, /--max-time 1/);
 });
