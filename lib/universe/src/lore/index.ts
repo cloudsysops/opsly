@@ -64,6 +64,24 @@ export const CANONICAL_LORE: LoreNote[] = [
     relatedWorldIds: ['astral-arena'],
   },
   {
+    id: 'astral-birth-affinity',
+    title: 'Birth Affinity is fictional customization, not destiny',
+    summary:
+      'Astral Arena may derive a Fire, Earth, Air, or Water starting affinity from a birth date and zodiac sign as a fictional game mechanic. It must never be presented as science, diagnosis, personality truth, or destiny. Store the derived affinity rather than the player birth date whenever possible.',
+    fictionVsScience: 'mixed-must-separate',
+    relatedCharacterIds: ['arena', 'brissa', 'altair', 'nx-7'],
+    relatedWorldIds: ['astral-arena'],
+  },
+  {
+    id: 'cyber-arena-safe-simulation',
+    title: 'Cyber Arena teaches architecture through safe simulation',
+    summary:
+      'Cyber battles model fictional attacks only inside disposable game state. Every threat must teach its matching defense and software-architecture reason; no real targets, credentials, exploit payloads, malware, persistence, or evasion are part of the game.',
+    fictionVsScience: 'mixed-must-separate',
+    relatedCharacterIds: ['nx-7', 'altair', 'arena', 'brissa'],
+    relatedWorldIds: ['astral-arena', 'lab'],
+  },
+  {
     id: 'umbra-last-memory-thread',
     title: 'The last thread of Umbra',
     summary:
