@@ -87,7 +87,7 @@ export async function createAstralArenaProject(
       audience: 'family',
       format: input.format ?? 'youtube_short',
       mode: 'original',
-      portal: 'UNKNOWN',
+      portal: kind === 'story' ? 'ASTRAL_ARENA' : 'TECHNOLIA',
       formatTemplate: 'ASTRAL_STORY',
       question: input.hook,
       emotion: 'wonder, courage, curiosity, teamwork',
