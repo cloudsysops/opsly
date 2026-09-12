@@ -174,3 +174,53 @@ Still intentionally separate:
 - AgentTask enqueue waits for the canonical Mac ephemeral runtime integration;
 - GitHub-visible atomic claim/writeback remains the final automation step;
 - no second queue, watcher, or orchestrator is introduced.
+
+
+## Phase 3 — governed dispatch
+
+`scripts/ops/background-scheduler-dispatch.mjs` closes the scheduler decision-to-submit gap without adding another queue or orchestrator.
+
+Flow:
+
+```text
+ResourceProbe
+→ IdleWindowPolicy
+→ TaskSelector
+→ ConcurrencyGuard
+→ reusable CloudCostPolicy
+→ local single-instance lock
+→ local anti-duplicate state
+→ governed /api/local/prompt-submit
+→ AgentTaskEnvelopeV1
+→ canonical local-agents queue
+→ Session Manager / ephemeral runtime
+→ terminal job status
+```
+
+Safety rules:
+
+- dry-run is the default;
+- `--execute` alone is insufficient;
+- execution also requires `OPSLY_BACKGROUND_EXECUTION_ENABLED=true`;
+- the first execution implementation is Mac-only;
+- VPS remains coordinator-only;
+- every autonomously executable workpack must declare owner, environment, cost class and numeric estimated cost;
+- missing/unknown/non-zero cost fails closed under the existing free-first policy;
+- submitted/running task IDs are retained in ignored local state under `.cursor/runtime/background-scheduler/state.json`;
+- a single-instance directory lock prevents overlapping scheduler dispatch loops;
+- the scheduler calls the canonical governed endpoint and never spawns an AI CLI directly.
+
+Operator commands:
+
+```bash
+npm run opsly:background:dispatch
+npm run opsly:background:dispatch:json
+
+# after the Mac runtime has passed GO LIVE:
+OPSLY_BACKGROUND_EXECUTION_ENABLED=true \
+PLATFORM_ADMIN_TOKEN=... \
+npm run opsly:background:dispatch:execute
+```
+
+The initial safe workpack is:
+`docs/01-development/night-queue/044-background-runtime-self-check.md`.

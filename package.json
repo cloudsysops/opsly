@@ -184,7 +184,11 @@
     "opsly:resource-probe": "node scripts/ops/resource-probe.mjs",
     "test:background-scheduler": "node --test scripts/ops/__tests__/resource-probe.test.mjs scripts/ops/__tests__/idle-window-policy.test.mjs scripts/ops/__tests__/background-task-selector.test.mjs scripts/ops/__tests__/concurrency-guard.test.mjs scripts/ops/__tests__/background-work-decision.test.mjs scripts/ops/__tests__/night-queue-candidates.test.mjs scripts/ops/__tests__/background-scheduler-preview.test.mjs",
     "opsly:background:preview": "node scripts/ops/background-scheduler-preview.mjs",
-    "opsly:background:preview:json": "node scripts/ops/background-scheduler-preview.mjs --json"
+    "opsly:background:preview:json": "node scripts/ops/background-scheduler-preview.mjs --json",
+    "opsly:background:dispatch": "node scripts/ops/background-scheduler-dispatch.mjs",
+    "opsly:background:dispatch:json": "node scripts/ops/background-scheduler-dispatch.mjs --json",
+    "opsly:background:dispatch:execute": "node scripts/ops/background-scheduler-dispatch.mjs --execute",
+    "test:background-scheduler-dispatch": "node --test scripts/ops/__tests__/background-scheduler-dispatch.test.mjs"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
