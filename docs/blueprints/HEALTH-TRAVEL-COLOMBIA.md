@@ -90,3 +90,44 @@ Recommended first operational shape:
 - approved transport/lodging partners;
 - manual provider shortlist approval;
 - human approval before outbound offers.
+
+
+## Provider scoring contract
+
+Provider selection is policy-driven, not commission-driven.
+
+Hard gates:
+- approved provider;
+- active contract;
+- reviewed credentials;
+- requested service fit;
+- destination fit.
+
+Weighted score:
+- service fit 25%;
+- credential quality 20%;
+- availability 15%;
+- language 10%;
+- logistics 10%;
+- price transparency 10%;
+- response SLA 5%;
+- verified quality evidence 5%.
+
+Commercial terms are shown separately. They may never override a failed hard gate.
+
+Canonical policy:
+`config/vertical-blueprints/health-travel-colombia.provider-scoring.json`
+
+## Intake contract
+
+The commercial intake explicitly excludes diagnosis/history/labs/imaging/prescriptions/genetic data.
+
+Canonical contract:
+`config/vertical-blueprints/health-travel-colombia.intake-schema.json`
+
+## Travel source policy
+
+Travel/lodging/transport offers prefer official APIs, approved affiliate feeds and contracted local providers. Prices must be current and cancellation terms visible; no automatic booking.
+
+Canonical policy:
+`config/vertical-blueprints/health-travel-colombia.travel-source-policy.json`
