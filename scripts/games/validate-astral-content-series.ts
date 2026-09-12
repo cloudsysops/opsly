@@ -12,12 +12,16 @@ const series = JSON.parse(
   await fs.readFile(path.join(root, 'data/content/series/astral-arena/series.json'), 'utf8'),
 ) as { episode_count: number };
 
-const firstChapterDirs = ['001-awakening', '002-orion', '003-aurora', '004-nx7'];
-const episodes: Array<{ id: string; series_id: string; episode_number: number; production: { status: string } }> = [];
+const episodesRoot = path.join(root, 'data/content/series/astral-arena/episodes');
+const episodeDirs = (await fs.readdir(episodesRoot, { withFileTypes: true }))
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name)
+  .sort();
 
-for (const dir of firstChapterDirs) {
+const episodes: Array<{ id: string; series_id: string; episode_number: number; production: { status: string } }> = [];
+for (const dir of episodeDirs) {
   const episode = JSON.parse(
-    await fs.readFile(path.join(root, 'data/content/series/astral-arena/episodes', dir, 'episode.json'), 'utf8'),
+    await fs.readFile(path.join(episodesRoot, dir, 'episode.json'), 'utf8'),
   );
   episodes.push(episode);
 }
@@ -34,6 +38,16 @@ for (const episode of episodes) {
   }
 }
 
+if (episodes.length !== series.episode_count) {
+  errors.push(`episode files ${episodes.length} != series episode_count ${series.episode_count}`);
+}
+
+for (const event of manifest.storyEvents) {
+  if (!episodes.some((episode) => episode.id === event.episodeId)) {
+    errors.push(`transmedia episode slot missing from Content Studio: ${event.episodeId}`);
+  }
+}
+
 const numbers = episodes.map((episode) => episode.episode_number);
 if (new Set(numbers).size !== numbers.length) errors.push('duplicate episode_number in first chapter');
 
@@ -44,5 +58,5 @@ if (errors.length) {
 }
 
 console.log(
-  `Astral Content Studio series: OK · ${episodes.length} scripted episodes · ${series.episode_count} Season 1 slots`,
+  `Astral Content Studio series: OK · ${episodes.length} episode slots · ${series.episode_count} Season 1 slots`,
 );

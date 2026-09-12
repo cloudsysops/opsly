@@ -56,8 +56,17 @@ export interface AstralFranchiseView {
   };
 }
 
+function repoRootCandidates(): string[] {
+  return [
+    process.env.OPSLY_REPO_ROOT,
+    path.resolve(process.cwd(), '../..'),
+    process.cwd(),
+  ].filter((value): value is string => Boolean(value));
+}
+
 async function readRepoJson(relativePath: string): Promise<unknown> {
-  const candidates = [
+  const candidates = repoRootCandidates();
+
     process.env.OPSLY_REPO_ROOT,
     path.resolve(process.cwd(), '../..'),
     process.cwd(),
@@ -103,24 +112,25 @@ async function loadAstralFranchiseView(
     };
 
     const episodeProduction = new Map<string, string>();
-    const seriesRoot = 'data/content/series/astral-arena/episodes';
-    for (const event of manifest.storyEvents) {
+    const seriesRelative = 'data/content/series/astral-arena/episodes';
+    for (const root of repoRootCandidates()) {
       try {
-        const entries = await Promise.all(
-          ['001-awakening', '002-orion', '003-aurora', '004-nx7'].map(async (dir) => {
-            const raw = (await readRepoJson(`${seriesRoot}/${dir}/episode.json`)) as {
-              id: string;
-              production?: { status?: string };
-            };
-            return raw;
-          }),
-        );
-        for (const episode of entries) {
-          episodeProduction.set(episode.id, episode.production?.status ?? 'unknown');
+        const absolute = path.join(root, seriesRelative);
+        const dirs = await fs.readdir(absolute, { withFileTypes: true });
+        for (const dir of dirs) {
+          if (!dir.isDirectory()) continue;
+          try {
+            const raw = JSON.parse(
+              await fs.readFile(path.join(absolute, dir.name, 'episode.json'), 'utf8'),
+            ) as { id: string; production?: { status?: string } };
+            episodeProduction.set(raw.id, raw.production?.status ?? 'unknown');
+          } catch {
+            // A malformed editorial slot is surfaced by CI; Moon skips it here.
+          }
         }
         break;
       } catch {
-        break;
+        // Try next repository root candidate.
       }
     }
 

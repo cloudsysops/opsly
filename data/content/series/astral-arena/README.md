@@ -20,8 +20,8 @@ Sources of truth:
 - S01E03 — Aurora Chooses
 - S01E04 — NX-7 Wakes Up
 
-Episodes 5–16 already have reserved IDs in the transmedia manifest and should be
-scripted as their game missions mature.
+Episodes 5–16 now exist as **idea-stage editorial slots** with no authored scenes.
+They reserve production identity without inventing canon before their game missions mature.
 
 ## Rule
 
