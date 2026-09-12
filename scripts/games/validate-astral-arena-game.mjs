@@ -31,6 +31,9 @@ const requiredFiles = [
   'apps/game-astral-arena/src/player_controller.gd',
   'apps/game-astral-arena/src/crystal_temple.gd',
   'apps/game-astral-arena/generated/game-content.pack.json',
+  'apps/game-astral-arena/web/Caddyfile',
+  'apps/game-astral-arena/web/Dockerfile',
+  'scripts/games/deploy-astral-arena-web-vps.sh',
 ];
 
 for (const relativePath of requiredFiles) {
@@ -70,6 +73,12 @@ const exportPreset = fs.readFileSync(
 );
 if (!exportPreset.includes('platform="Windows Desktop"')) {
   fail('Windows Desktop export preset is required');
+}
+if (!exportPreset.includes('name="Web"') || !exportPreset.includes('platform="Web"')) {
+  fail('Web export preset is required');
+}
+if (!exportPreset.includes('variant/thread_support=false')) {
+  fail('Web preview must remain single-threaded unless hosting headers are reviewed');
 }
 
 if (!process.exitCode) {
