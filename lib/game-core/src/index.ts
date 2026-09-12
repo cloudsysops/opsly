@@ -148,7 +148,9 @@ export {
 } from './physical-collectibles.js';
 
 export {
+  ASTRAL_COMPANIONS,
   ASTRAL_DUEL_FIGHTERS,
+  COMPANION_FAMILIES,
   ASTRAL_DUEL_RULESET,
   GAME_MODE_BLUEPRINT,
   battleActionKindValues,
@@ -156,6 +158,8 @@ export {
   fighterDefinition,
   gamePresentationModeValues,
   type BattleAbilityDefinition,
+  type CompanionDefinition,
+  type CompanionFamily,
   type BattleActionKind,
   type BattleFighterDefinition,
   type BattleRuleset,
