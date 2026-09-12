@@ -5,9 +5,12 @@ FROM node:20-alpine AS deps
 WORKDIR /repo
 COPY package.json package-lock.json ./
 COPY apps/admin/package.json ./apps/admin/
+COPY lib/capacity-alert/package.json ./lib/capacity-alert/
 COPY lib/components/package.json ./lib/components/
+COPY lib/content-studio/package.json ./lib/content-studio/
 COPY lib/runtime/package.json ./lib/runtime/
 COPY lib/universe/package.json ./lib/universe/
+COPY packages/types/package.json ./packages/types/
 RUN npm ci --ignore-scripts
 
 FROM node:20-alpine AS builder
