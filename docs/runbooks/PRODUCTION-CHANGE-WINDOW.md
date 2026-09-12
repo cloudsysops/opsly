@@ -6,7 +6,7 @@ last_review: 2026-07-27
 
 # Ventana de cambios en producción (noche)
 
-Peskids y el control plane Opsly están **operativos de día**. Para no interferir con matrículas, WhatsApp, admin y clases:
+Peskids está **operativo de día**. La ventana nocturna protege únicamente cambios cuyo blast radius puede afectar Peskids o superficies compartidas de producción.
 
 ## Regla
 
@@ -15,7 +15,8 @@ Peskids y el control plane Opsly están **operativos de día**. Para no interfer
 | Promoción/deploy a producción de runtime / infra / migraciones | Solo en **ventana nocturna** `America/Bogota` **22:00–06:00** |
 | Deploy a VPS / GHCR de Peskids (u otros tenants en prod) | Misma ventana nocturna |
 | Docs, skills, reglas Cursor, copy sin runtime | **Sí de día** (sin label) |
-| Cambio mínimo que **no** afecta producción ni operación | De día solo con label GitHub **`safe-daytime`** |
+| Cambio fuera del blast radius de Peskids (agentes, tooling interno, docs, research, etc.) | **Sí de día** si CI/review pasan |
+| Cambio ambiguo que el gate marca como impacto pero un reviewer confirma que no afecta Peskids | De día con label GitHub **`safe-daytime`** |
 | Emergencia (outage / seguridad) | De día con label **`hotfix-prod`** + aprobación humana |
 
 ## Ventana nocturna
@@ -24,27 +25,35 @@ Peskids y el control plane Opsly están **operativos de día**. Para no interfer
 - Horario permitido: **22:00 inclusive → 06:00 exclusive**
 - Fuera de esa franja, la promoción de producción falla. El merge a `main` no despliega Peskids.
 
-## Paths de impacto (noche o hotfix)
+## Paths con impacto Peskids (noche o hotfix)
 
-- `apps/**` (incluye Peskids, API, portal, admin, …)
+Impacto directo:
+- `apps/peskids/**`
+- `apps/peskids-franchise/**`
+- `apps/intcloudsysops/**` (contiene superficies, runtime y migraciones Peskids actualmente dispersas)
+- `.n8n/1-workflows/peskids/**`
+- `scripts/peskids*`
+- workflows específicos de deploy/setup Peskids
+
+Superficies compartidas que pueden afectar Peskids:
+- `apps/api/**`
 - `infra/**`
 - `supabase/**`
-- `scripts/` de deploy/VPS/peskids (`*deploy*`, `peskids-*`, `vps-*`, …)
-- `.github/workflows/deploy*.yml`
+- `packages/**`
+- `lib/**`
+- scripts/workflows de deploy/VPS/onboarding compartidos
+- `package.json` / `package-lock.json`
 
-## Paths seguros de día (solo estos en el PR)
+Cambios fuera de ese blast radius —por ejemplo orchestrator, agent tooling, prompts, docs o Mission Control no desplegado junto con Peskids— pueden mergearse de día si CI y revisión están verdes.
 
-- `docs/**`, `*.md` de gobernanza, `.cursor/**`, `.agents/**`, `skills/**`
-- Plantillas GitHub que no despliegan
-
-Si el PR mezcla docs + `apps/peskids` → se trata como impacto prod.
+Si el PR mezcla docs + `apps/peskids` → se trata como impacto Peskids.
 
 ## Labels
 
 | Label | Uso |
 |-------|-----|
 | `night-merge` | Cola de **merge automático nocturno** (01:00 Bogotá): CI verde de día (este label **pasa** el gate `production-change-window` sin autorizar merge diurno) → squash-merge → Deploy → smoke → rollback si falla. Ver [`NIGHT-MERGE.md`](NIGHT-MERGE.md) |
-| `safe-daytime` | Humano certifica: no afecta prod/ops; merge de día OK |
+| `safe-daytime` | Reviewer certifica: el cambio marcado por el gate no puede afectar Peskids; merge de día OK |
 | `hotfix-prod` | Emergencia; merge/deploy de día OK |
 
 ## Merge mientras duermes
@@ -55,7 +64,7 @@ Si el PR mezcla docs + `apps/peskids` → se trata como impacto prod.
 
 ## Agentes / Cursor
 
-Se puede mergear Peskids/runtime de día cuando CI y revisión estén verdes; no se puede promover a producción de día. `night-merge` queda para compatibilidad. Ver `.cursor/rules/production-change-window.mdc`.
+Los agentes pueden mergear de día cambios fuera del blast radius de Peskids cuando CI y revisión estén verdes. Si el cambio toca o puede afectar Peskids, el merge queda para la ventana nocturna salvo `safe-daytime` revisado o `hotfix-prod`. Ver `.cursor/rules/production-change-window.mdc`.
 
 ## Nightly merge + upgrades + cleanup
 

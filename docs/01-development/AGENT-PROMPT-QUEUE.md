@@ -11,11 +11,13 @@ tags:
 
 Objetivo: que **desde el móvil o el equipo** se dejen instrucciones en git y el agente en Cursor las **encuentre, ejecute y deje constancia** de forma ordenada.
 
-## Límites honestos (importante)
+## Estado actual y límites
 
-- **Cursor no ejecuta prompts solo** mientras el IDE está cerrado: hace falta **abrir una sesión** y disparar la cola (mensaje en el chat o `@archivo`).
-- **No** reutilizar en local el patrón del VPS `docs/ACTIVE-PROMPT.md` + `cursor-prompt-monitor` para ejecutar líneas como shell sin revisión: es **riesgo RCE** si alguien malicioso puede editar el repo.
-- Lo que sí podemos es: **convención de carpetas + formato + una frase fija** en el chat para que el agente lea la cola y responda en el sitio acordado.
+- La cola **sí puede ejecutarse sin copiar manualmente cada prompt** cuando el dispatcher local y `scripts/local-prompt-watcher.ts` están activos.
+- GitHub es la fuente durable de tareas versionadas; `.cursor/prompts/queue/` es una cola local derivada y gitignored.
+- El dispatcher debe sincronizar el repo de forma segura antes de sembrar la cola local; nunca debe hacer reset/merge destructivo sobre un árbol sucio.
+- **No** ejecutar bloques shell contenidos en Markdown como si fueran comandos confiables. El watcher envía la tarea al Orchestrator, que aplica auth/policy/runtime controls.
+- Si el dispatcher/watchers no están activos, el fallback sigue siendo ejecución manual desde Cursor/Claude/Codex.
 
 ## Rutas recomendadas
 
@@ -65,7 +67,7 @@ Luego:
 1. Si `requires_pr: true` y hay cambios: **PR** según `docs/01-development/GIT-WORKFLOW.md`.
 2. Cambiar en la cabecera `status: done` (o mover el archivo a `done/` si preferís solo estado por ruta).
 
-## Cómo **disparar** la ejecución en Cursor (local)
+## Ejecución manual de respaldo
 
 En el chat, una sola línea (copiable desde el móvil):
 
@@ -112,7 +114,7 @@ PLATFORM_ADMIN_TOKEN="<token>" npm run opsly:local-prompt-watcher:once
 ./scripts/next-prompt-in-queue.sh
 ```
 
-Prompts versionados para la noche: `docs/01-development/night-queue/` — `dispatch-prompt-queue.sh` los copia a `.cursor/prompts/queue/` (gitignored) y abre OpenCode. n8n: `docs/n8n-workflows/night-agent-queue.json` (HTTP al orchestrator; **no** escribe `docs/ACTIVE-PROMPT.md`).
+Prompts versionados: `docs/01-development/night-queue/` es la cola durable en GitHub. `scripts/ops/dispatch-prompt-queue.sh` sincroniza el repo de forma segura, copia tareas pendientes a `.cursor/prompts/queue/` (gitignored) y dispara la ruta local existente. n8n: `docs/n8n-workflows/night-agent-queue.json` puede llamar al orchestrator; **no** escribe `docs/ACTIVE-PROMPT.md`.
 
 Si no existe el script, basta con listar la carpeta `queue/` manualmente; el protocolo sigue siendo válido.
 
@@ -127,3 +129,8 @@ Si no existe el script, basta con listar la carpeta `queue/` manualmente; el pro
 
 - [[01-development/README|01-development]]
 - [[brain/README|Brain Central]]
+
+
+## Control loop canónico
+
+El flujo completo y las reglas de builder/reviewer, máquinas, seguridad, merge y notificaciones están en `docs/00-architecture/ENGINEERING-CONTROL-LOOP.md`.

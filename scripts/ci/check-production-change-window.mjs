@@ -1,7 +1,13 @@
 #!/usr/bin/env node
 /**
- * Production change window gate (America/Bogota night).
+ * Peskids production change-window gate (America/Bogota night).
  * Exit 0 = allowed; exit 1 = blocked.
+ *
+ * Policy:
+ * - Changes that directly touch Peskids or shared runtime surfaces that can affect
+ *   Peskids require the night window (or an explicit override).
+ * - Changes outside the Peskids production blast radius may merge during daytime
+ *   when normal CI/review gates pass.
  *
  * Usage:
  *   node scripts/ci/check-production-change-window.mjs --check-now
@@ -16,41 +22,46 @@ const TIME_ZONE = 'America/Bogota';
 const WINDOW_START_HOUR = 22; // inclusive
 const WINDOW_END_HOUR = 6; // exclusive
 
-/** Paths that require night window (or hotfix / safe-daytime label). */
-const PROD_IMPACT_PREFIXES = [
-  'apps/',
+/**
+ * Direct Peskids runtime surfaces.
+ *
+ * Keep this list intentionally explicit. The old policy treated almost every
+ * app/package/script as production-impact, which blocked unrelated Opsly agent,
+ * tooling, documentation, and internal-platform changes during the day.
+ */
+const PESKIDS_DIRECT_PREFIXES = [
+  'apps/peskids/',
+  'apps/peskids-franchise/',
+  'apps/intcloudsysops/',
+  '.n8n/1-workflows/peskids/',
+];
+
+const PESKIDS_DIRECT_MATCHERS = [
+  /^scripts\/peskids/i,
+  /^\.github\/workflows\/(deploy-peskids|peskids-|setup-peskids)/i,
+];
+
+/**
+ * Shared runtime surfaces with a plausible Peskids blast radius.
+ *
+ * These stay conservative: API/database/infrastructure/dependency changes can
+ * affect Peskids even when the path does not contain "peskids".
+ */
+const PESKIDS_SHARED_PREFIXES = [
+  'apps/api/',
   'infra/',
   'supabase/',
   'packages/',
   'lib/',
 ];
 
-const PROD_IMPACT_PATH_MATCHERS = [
+const PESKIDS_SHARED_MATCHERS = [
   /^\.github\/workflows\/deploy/i,
   /^scripts\/.*deploy/i,
-  /^scripts\/peskids/i,
   /^scripts\/vps-/i,
   /^scripts\/onboard-/i,
   /^package\.json$/,
   /^package-lock\.json$/,
-];
-
-/** If every changed path matches these, daytime merge is OK without labels. */
-const SAFE_DAYTIME_MATCHERS = [
-  /^docs\//,
-  /^\.cursor\//,
-  /^\.agents\//,
-  /^skills\//,
-  /^AGENTS\.md$/,
-  /^VISION\.md$/,
-  /^ROADMAP\.md$/,
-  /^README\.md$/,
-  /^SECURITY\.md$/,
-  /^CONTRIBUTING\.md$/,
-  /^CODE_OF_CONDUCT\.md$/,
-  /^\.github\/(PULL_REQUEST_TEMPLATE|ISSUE_TEMPLATE|CODEOWNERS|copilot-instructions)/i,
-  /^\.github\/AGENTS\.md$/,
-  /\.md$/i,
 ];
 
 function bogotaParts(date = new Date()) {
@@ -81,26 +92,29 @@ function normalizePath(p) {
     .replace(/\\/g, '/');
 }
 
-function isSafeDaytimePath(path) {
-  const p = normalizePath(path);
-  if (!p) return true;
-  return SAFE_DAYTIME_MATCHERS.some((re) => re.test(p));
-}
-
-function isProdImpactPath(path) {
+function matchesAny(path, prefixes, matchers) {
   const p = normalizePath(path);
   if (!p) return false;
-  if (PROD_IMPACT_PREFIXES.some((prefix) => p.startsWith(prefix))) return true;
-  return PROD_IMPACT_PATH_MATCHERS.some((re) => re.test(p));
+  if (prefixes.some((prefix) => p.startsWith(prefix))) return true;
+  return matchers.some((re) => re.test(p));
 }
 
-function classifyPaths(paths) {
+function classifyPeskidsImpact(paths) {
   const normalized = [...new Set(paths.map(normalizePath).filter(Boolean))];
-  const prod = normalized.filter(isProdImpactPath);
-  const unsafe = normalized.filter((p) => !isSafeDaytimePath(p));
-  // Impact if any prod path OR any path not in the safe allowlist.
-  const hasImpact = prod.length > 0 || unsafe.length > 0;
-  return { normalized, prod, unsafe, hasImpact };
+  const direct = normalized.filter((p) =>
+    matchesAny(p, PESKIDS_DIRECT_PREFIXES, PESKIDS_DIRECT_MATCHERS)
+  );
+  const shared = normalized.filter((p) =>
+    matchesAny(p, PESKIDS_SHARED_PREFIXES, PESKIDS_SHARED_MATCHERS)
+  );
+  const impact = [...new Set([...direct, ...shared])];
+  return {
+    normalized,
+    direct,
+    shared,
+    impact,
+    hasPeskidsImpact: impact.length > 0,
+  };
 }
 
 function truthy(v) {
@@ -124,7 +138,6 @@ function parseArgs(argv) {
       out.mode = argv[i + 1] || 'pr';
       i += 1;
     } else if (a === '--paths') {
-      // remaining until next flag
       while (i + 1 < argv.length && !argv[i + 1].startsWith('--')) {
         out.paths.push(argv[i + 1]);
         i += 1;
@@ -181,10 +194,13 @@ function main() {
     process.exit(1);
   }
 
-  // PR mode
-  const { hasImpact, prod, unsafe, normalized } = classifyPaths(args.paths);
-  if (!hasImpact) {
-    console.log(`ok daytime-safe paths only (${normalized.length} files)`);
+  const { hasPeskidsImpact, impact, direct, shared, normalized } =
+    classifyPeskidsImpact(args.paths);
+
+  if (!hasPeskidsImpact) {
+    console.log(
+      `ok daytime merge: no Peskids production impact detected (${normalized.length} files)`
+    );
     process.exit(0);
   }
 
@@ -195,20 +211,20 @@ function main() {
         ? ' [label/force]'
         : '';
     console.log(
-      `ok production-impact PR (${stamp})${tag} impact=${prod.length || unsafe.length}`
+      `ok Peskids-impact PR (${stamp})${tag} impact=${impact.length} direct=${direct.length} shared=${shared.length}`
     );
     process.exit(0);
   }
 
   console.error(
     [
-      `❌ Merge/deploy de impacto en producción bloqueado de día.`,
+      `❌ Merge con posible impacto Peskids bloqueado de día.`,
       `   Zona: ${TIME_ZONE} | Ventana permitida: ${WINDOW_START_HOUR}:00–${WINDOW_END_HOUR}:00 | Ahora: ${stamp}`,
-      `   Paths de impacto (muestra): ${(prod.length ? prod : unsafe).slice(0, 12).join(', ')}`,
+      `   Paths de impacto (muestra): ${impact.slice(0, 12).join(', ')}`,
       `   Opciones:`,
-      `   1) Label night-merge (CI verde de día; merge automático a la 01:00 Bogotá)`,
+      `   1) Label night-merge (CI puede quedar verde; merge diferido a la noche)`,
       `   2) Esperar a la noche y mergear entonces`,
-      `   3) Label safe-daytime si el cambio NO afecta prod/ops`,
+      `   3) Label safe-daytime SOLO si un reviewer confirma que el cambio no puede afectar Peskids`,
       `   4) Label hotfix-prod solo para emergencia`,
       `   Doc: docs/runbooks/PRODUCTION-CHANGE-WINDOW.md`,
     ].join('\n')
