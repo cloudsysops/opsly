@@ -1,0 +1,13 @@
+"AppBuild"
+{
+  "AppID" "{{STEAM_APP_ID}}"
+  "Desc" "Astral Arena Windows build {{BUILD_VERSION}}"
+  "Preview" "0"
+  "SetLive" "{{STEAM_BRANCH}}"
+  "ContentRoot" "../content/"
+  "BuildOutput" "../output/"
+  "Depots"
+  {
+    "{{STEAM_WINDOWS_DEPOT_ID}}" "depot_windows.vdf"
+  }
+}
