@@ -180,7 +180,8 @@
     "compute:workers": "node scripts/ops/compute-worker-router.mjs --status",
     "compute:assign": "node scripts/ops/board-assign-gpu-job.mjs",
     "test:compute-workers": "node --test scripts/ops/__tests__/compute-worker-router.test.mjs scripts/ops/__tests__/content-render-ffmpeg.test.mjs",
-    "test:dispatch-prompt-queue": "node --test scripts/ops/__tests__/dispatch-prompt-queue-trust-gate.test.mjs"
+    "test:dispatch-prompt-queue": "node --test scripts/ops/__tests__/dispatch-prompt-queue-trust-gate.test.mjs",
+    "test:ephemeral-agents": "node --test scripts/ops/__tests__/ephemeral-agent-lifecycle.test.mjs && npm test --workspace=@intcloudsysops/session-manager && npm test --workspace=@intcloudsysops/orchestrator -- src/__tests__/local-agent-http-worker.test.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
