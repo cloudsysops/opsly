@@ -152,6 +152,38 @@ describe('local prompt-submit → local-agents queue', () => {
     expect(jobArg.payload.agent_task?.execution_mode).toBe('enqueue');
   });
 
+  it('review role produces a read-only AgentTaskEnvelopeV1 that does not require write approval', async () => {
+    const { status } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'local',
+        request_id: 'ghq-safe-review-001',
+        agent: 'local_opencode',
+        agent_role: 'review',
+        prompt_body: 'Inspect repository state without modifying files',
+        context: { requires_pr: false },
+      },
+      {
+        Authorization: 'Bearer test-platform-admin',
+        'x-autonomy-approved': 'true',
+      }
+    );
+
+    expect(status).toBe(202);
+    const call0 = enqueueLocalAgentJob.mock.calls[0];
+    expect(call0).toBeDefined();
+    const jobArg = call0![0] as {
+      payload: {
+        agent_task?: {
+          selected_agent: string;
+          constraints: { write_allowed: boolean };
+        };
+      };
+    };
+    expect(jobArg.payload.agent_task?.selected_agent).toBe('local_opencode');
+    expect(jobArg.payload.agent_task?.constraints.write_allowed).toBe(false);
+  });
   it('uses frontmatter agent from prompt_content', async () => {
     const { status, raw } = await postJson(
       port,
