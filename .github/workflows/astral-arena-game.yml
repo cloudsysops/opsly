@@ -29,6 +29,20 @@ jobs:
       - name: Validate Astral Arena product structure
         run: node scripts/games/validate-astral-arena-game.mjs
 
+      - name: Prove game blueprint can scaffold a second clean product
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x scripts/provisioning/clone-game-launch.sh
+          scripts/provisioning/clone-game-launch.sh             --blueprint godot-steam             --slug guardian-lab             --title "Guardian Lab"             --dry-run > /tmp/guardian-lab-blueprint.txt
+          grep -q '"game_slug": "guardian-lab"' /tmp/guardian-lab-blueprint.txt
+          grep -q '"title": "Guardian Lab"' /tmp/guardian-lab-blueprint.txt
+          if grep -Eiq 'Arena Botero|Brissa Botero|Señor Sombra|astral-arena-universe' /tmp/guardian-lab-blueprint.txt; then
+            echo "Blueprint leaked Astral Arena-specific canon into second product" >&2
+            exit 1
+          fi
+          echo "Reusable game blueprint smoke: OK"
+
   godot-headless:
     runs-on: ubuntu-latest
     needs: validate-product
