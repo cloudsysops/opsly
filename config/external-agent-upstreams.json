@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "principle": "Clone external agent runtimes outside the Opsly repository; Opsly integrates through explicit CLI/HTTP bridges and keeps execution policy in Opsly.",
+  "install_root_env": "OPSLY_EXTERNAL_AGENTS_HOME",
+  "default_install_root": "~/.opsly/external-agents",
+  "upstreams": [
+    {
+      "id": "hermes-agent",
+      "role": "planning-review-task-decomposition",
+      "repository": "https://github.com/NousResearch/Hermes-Agent.git",
+      "command": "hermes",
+      "clone_dir": "hermes-agent",
+      "required": true,
+      "activation": "local-http-bridge",
+      "bridge_port": 5007,
+      "notes": "Prefer Hermes managed install for runtime; clone is retained for source inspection/contribution."
+    },
+    {
+      "id": "openclaw",
+      "role": "personal-agent-gateway-runtime",
+      "repository": "https://github.com/openclaw/openclaw.git",
+      "command": "openclaw",
+      "clone_dir": "openclaw",
+      "required": true,
+      "activation": "opsly-wrapper",
+      "notes": "Use Opsly orchestrator as control-plane; OpenClaw is an external runtime/tooling surface, not a replacement orchestrator."
+    },
+    {
+      "id": "opencode",
+      "role": "primary-open-source-builder",
+      "repository": "https://github.com/anomalyco/opencode.git",
+      "command": "opencode",
+      "clone_dir": "opencode",
+      "required": true,
+      "activation": "local-http-bridge",
+      "bridge_port": 5004
+    },
+    {
+      "id": "goose",
+      "role": "general-purpose-fallback-agent",
+      "repository": "https://github.com/aaif-goose/goose.git",
+      "command": "goose",
+      "clone_dir": "goose",
+      "required": false,
+      "activation": "local-http-bridge",
+      "bridge_port": 5010
+    }
+  ],
+  "forbidden": [
+    "git-submodule-in-opsly",
+    "vendored-upstream-source-in-opsly",
+    "shared-unscoped-secrets",
+    "public-agent-ingress",
+    "automatic-production-deploy",
+    "direct-main-write"
+  ]
+}
