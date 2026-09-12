@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-09-11",
+  "updated_at": "2026-09-12",
   "principle": "Opsly does not invent AI agents. Opsly assigns temporary roles to real external runtimes/binaries and internal non-agent capabilities.",
   "clone_root": "~/.opsly/external-agents",
   "clone_policy": "reviewed tag + exact commit SHA; never track default branch for execution",
@@ -28,10 +28,11 @@
       "id": "opencode",
       "repo": "anomalyco/opencode",
       "placement": [
-        "mac"
+        "mac",
+        "pc-gamer"
       ],
       "kind": "external-agent-runtime",
-      "role": "implementation"
+      "role": "implementation-local-first"
     },
     {
       "id": "goose",
@@ -85,5 +86,11 @@
     "FFmpeg",
     "Playwright test runner"
   ],
-  "lifecycle": "AgentTask -> trusted source/node auth -> capability routing -> ephemeral tmux session -> real CLI/runtime -> evidence -> teardown"
+  "lifecycle": "AgentTask -> trusted source/node auth -> capability routing -> ephemeral tmux session -> real CLI/runtime -> evidence -> teardown",
+  "local_first": {
+    "primary_execution_path": "opencode + ollama on pc-gamer",
+    "fallback_execution_path": "opencode on mac with locally reachable ollama",
+    "cloud_policy": "optional accelerator only; paid/cloud runtime requires existing approval and cost policy",
+    "zero_subscription_goal": true
+  }
 }
