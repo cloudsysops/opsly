@@ -23,6 +23,9 @@ workflows y decisiones.
 - [[brain/tenants/README|Tenants MOC]] — tenants y contexto comercial/operativo.
 - [[brain/workflows/README|Workflows MOC]] — n8n, OpenClaw, Shield, billing y CRM.
 - [[brain/architecture/README|Architecture MOC]] — decisiones y mapas tecnicos.
+- [[brain/founder/README|Founder MOC]] — carrera, biografía profesional, aprendizaje y portfolio.
+- [[brain/startup/README|Startup MOC]] — estrategia Opsly/ICSO y conocimiento de negocio.
+- [[brain/homelab/README|Homelab MOC]] — capacidad, storage, hardware y evolución de infraestructura.
 
 ## Mapa
 
@@ -58,3 +61,8 @@ flowchart LR
   Graphyfi --> OpenClaw["OpenClaw"]
   ContextBuilder --> Agents["Codex / Claude / Cursor / OpenCode / Hermes"]
 ```
+
+
+## Arquitectura de conocimiento
+
+La separación canónica entre GitHub, Brain, Context Builder y memoria operacional está definida en `docs/00-architecture/BRAIN-KNOWLEDGE-ARCHITECTURE.md`.
