@@ -13,7 +13,10 @@
       "required": true,
       "activation": "local-http-bridge",
       "bridge_port": 5007,
-      "notes": "Prefer Hermes managed install for runtime; clone is retained for source inspection/contribution."
+      "notes": "Prefer Hermes managed install for runtime; clone is retained for source inspection/contribution.",
+      "tag": "v2026.9.7",
+      "commit": "2237be355906fbe6065ce1815711eee52b2d646e",
+      "tag_signature_verified": false
     },
     {
       "id": "openclaw",
@@ -23,7 +26,10 @@
       "clone_dir": "openclaw",
       "required": true,
       "activation": "opsly-wrapper",
-      "notes": "Use Opsly orchestrator as control-plane; OpenClaw is an external runtime/tooling surface, not a replacement orchestrator."
+      "notes": "Use Opsly orchestrator as control-plane; OpenClaw is an external runtime/tooling surface, not a replacement orchestrator.",
+      "tag": "v2026.7.1-2",
+      "commit": "0790d9f593ad30c940ed93b5872a8cf6d6f3cf8c",
+      "tag_signature_verified": true
     },
     {
       "id": "opencode",
@@ -33,7 +39,10 @@
       "clone_dir": "opencode",
       "required": true,
       "activation": "local-http-bridge",
-      "bridge_port": 5004
+      "bridge_port": 5004,
+      "tag": "v1.18.30",
+      "commit": "3104c1428ec91f809e5ab86631300de41eb6952e",
+      "tag_signature_verified": null
     },
     {
       "id": "goose",
@@ -43,7 +52,10 @@
       "clone_dir": "goose",
       "required": false,
       "activation": "local-http-bridge",
-      "bridge_port": 5010
+      "bridge_port": 5010,
+      "tag": "v1.35.0",
+      "commit": "be66b3d10573baea5ab69798c1bdf3d028a08695",
+      "tag_signature_verified": null
     }
   ],
   "forbidden": [
@@ -53,5 +65,12 @@
     "public-agent-ingress",
     "automatic-production-deploy",
     "direct-main-write"
-  ]
+  ],
+  "pin_policy": {
+    "mode": "tag_and_commit_sha",
+    "update_process": "manual_review_then_manifest_change",
+    "allow_tracking_default_branch": false,
+    "verify_checked_out_commit": true,
+    "note": "A new upstream release is never consumed until its tag/commit is reviewed and this manifest changes through PR."
+  }
 }
