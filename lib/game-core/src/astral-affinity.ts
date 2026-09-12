@@ -145,3 +145,43 @@ export function resolveAstralAffinity(birthDate: string | Date): AstralAffinity 
     visualLanguage: meta.visual,
   };
 }
+
+export interface AstralTechSpecialization {
+  element: AstralElement;
+  architectureFocus: string[];
+  favoredTechnoliaSystems: string[];
+  gameplayBonus: string;
+}
+
+export const ASTRAL_TECH_SPECIALIZATIONS: Record<AstralElement, AstralTechSpecialization> = {
+  FIRE: {
+    element: 'FIRE',
+    architectureFocus: ['compute', 'energy', 'workers', 'propulsion'],
+    favoredTechnoliaSystems: ['nx-foundry', 'shipyard', 'wing-drive'],
+    gameplayBonus: 'Energy and compute upgrades require less Astral Energy in affinity-aware game modes.',
+  },
+  EARTH: {
+    element: 'EARTH',
+    architectureFocus: ['storage', 'durability', 'backup', 'resilience'],
+    favoredTechnoliaSystems: ['memory-vault', 'backup-archive', 'resilience-grid'],
+    gameplayBonus: 'Defensive and recovery structures gain an extra stability tier.',
+  },
+  AIR: {
+    element: 'AIR',
+    architectureFocus: ['networking', 'routing', 'edge', 'observability'],
+    favoredTechnoliaSystems: ['portal-gateway', 'observatory', 'navigation-core'],
+    gameplayBonus: 'Exploration routes and network upgrades become visible one step earlier.',
+  },
+  WATER: {
+    element: 'WATER',
+    architectureFocus: ['data flow', 'queues', 'recovery', 'adaptation'],
+    favoredTechnoliaSystems: ['dragon-queue', 'memory-core', 'event-engine'],
+    gameplayBonus: 'Flow-control and recovery actions restore more system health after simulated incidents.',
+  },
+};
+
+export function getAstralTechSpecialization(
+  element: AstralElement,
+): AstralTechSpecialization {
+  return ASTRAL_TECH_SPECIALIZATIONS[element];
+}
