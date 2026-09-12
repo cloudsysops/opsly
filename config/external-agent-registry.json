@@ -347,8 +347,8 @@
       "bridge_port": 5012,
       "endpoint_env": "OPSLY_OPENCLAW_AGENT_URL",
       "default_model": "opsly:balanced",
-      "write_access": false,
-      "risk_ceiling": "medium",
+      "write_access": true,
+      "risk_ceiling": "high",
       "capabilities": [
         "research",
         "planning",
@@ -358,6 +358,7 @@
       "provider": "openclaw",
       "runtime": "cli",
       "supported_task_types": [
+        "code",
         "research",
         "planning",
         "documentation",
@@ -373,7 +374,7 @@
         "hermes-cli",
         "goose-cli"
       ],
-      "enabled": true
+      "enabled": false
     }
   }
 }
