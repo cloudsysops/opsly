@@ -30,6 +30,8 @@ Peskids está **operativo de día**. La ventana nocturna protege únicamente cam
 Impacto directo:
 - `apps/peskids/**`
 - `apps/peskids-franchise/**`
+- `apps/intcloudsysops/**` (contiene superficies, runtime y migraciones Peskids actualmente dispersas)
+- `.n8n/1-workflows/peskids/**`
 - `scripts/peskids*`
 - workflows específicos de deploy/setup Peskids
 
