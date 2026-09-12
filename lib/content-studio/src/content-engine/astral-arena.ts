@@ -1,5 +1,6 @@
 import { composeUniverseForProject } from './universe-bridge.js';
 import { createProjectEnvelope, saveProjectEnvelope } from './storage.js';
+import { bindTransmediaContext, type TransmediaSurface } from './transmedia.js';
 import type { ContentFormat, ContentProjectEnvelope, ContentScene } from './types.js';
 
 export type AstralContentKind = 'story' | 'technolia' | 'cyber';
@@ -14,6 +15,15 @@ export interface AstralArenaProjectInput {
   format?: ContentFormat;
   durationSec?: number;
   baseDir?: string;
+  seasonId?: string;
+  chapterId?: string;
+  storyEventId?: string;
+  missionIds?: string[];
+  companionIds?: string[];
+  worldIds?: string[];
+  surfaces?: TransmediaSurface[];
+  gameplayBuildSha?: string;
+  captureMarkers?: string[];
 }
 
 function defaultCharacters(kind: AstralContentKind): string[] {
@@ -105,10 +115,24 @@ export async function createAstralArenaProject(
       updatedAt: new Date().toISOString(),
     },
   };
-  envelope.universeContext = composeUniverseForProject(
-    envelope,
-    input.characterIds ?? defaultCharacters(kind),
-  );
+  const characterIds = input.characterIds ?? defaultCharacters(kind);
+  envelope.universeContext = composeUniverseForProject(envelope, characterIds);
+  envelope = bindTransmediaContext(envelope, {
+    franchiseId: 'astral-arena',
+    seasonId: input.seasonId ?? 'season-01-guardians-of-the-nexus',
+    chapterId: input.chapterId,
+    storyEventId: input.storyEventId ?? input.episodeId,
+    missionIds: input.missionIds ?? [],
+    episodeId: input.episodeId,
+    characterIds,
+    companionIds: input.companionIds ?? [],
+    worldIds: input.worldIds ?? [],
+    surfaces: input.surfaces ?? ['STORY_EPISODE', 'SHORT', 'SOCIAL'],
+    continuity: 'CANON',
+    source: input.gameplayBuildSha ? 'mixed' : 'scripted_story',
+    gameplayBuildSha: input.gameplayBuildSha,
+    captureMarkers: input.captureMarkers,
+  });
   await saveProjectEnvelope(envelope, baseDir);
   return envelope;
 }

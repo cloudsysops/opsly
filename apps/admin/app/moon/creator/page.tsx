@@ -20,6 +20,7 @@ const TAB_LABELS: Record<(typeof CREATOR_TABS)[number], string> = {
   trends: 'Trends',
   productions: 'Productions',
   clips: 'Clips',
+  franchise: 'Franchise',
   characters: 'Characters',
   brands: 'Brands',
   calendar: 'Calendar',
@@ -197,6 +198,54 @@ export default async function MoonCreatorPage({
                 </MoonCard>
               ))
             )}
+          </div>
+        )
+      ) : null}
+
+      {tab === 'franchise' ? (
+        data.projects.filter((item) => item.transmedia).length === 0 ? (
+          <MoonEmptyState
+            title="Sin proyectos transmedia"
+            description="Los proyectos ligados a juego/historia aparecerán aquí con misión, episodio y superficies."
+          />
+        ) : (
+          <div className="grid gap-3 lg:grid-cols-2">
+            {data.projects
+              .filter((item) => item.transmedia)
+              .map((item) => (
+                <MoonCard key={item.project.id} className="space-y-2 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm text-slate-100">{item.project.title}</p>
+                      <p className="font-mono text-[10px] uppercase text-violet-300">
+                        {item.transmedia?.franchiseId} · {item.transmedia?.seasonId}
+                      </p>
+                    </div>
+                    <MoonStatusBadge tone={toneForStatus(item.project.status)}>
+                      {item.project.status}
+                    </MoonStatusBadge>
+                  </div>
+                  <p className="text-xs text-slate-400">
+                    Story event: {item.transmedia?.storyEventId}
+                  </p>
+                  <p className="font-mono text-[11px] text-slate-500">
+                    Missions: {(item.transmedia?.missionIds ?? []).join(' · ') || 'none'}
+                  </p>
+                  <p className="font-mono text-[11px] text-slate-500">
+                    Characters: {(item.transmedia?.characterIds ?? []).join(' · ') || 'none'}
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {(item.transmedia?.surfaces ?? []).map((surface) => (
+                      <span
+                        key={surface}
+                        className="rounded border border-white/10 px-2 py-1 font-mono text-[10px] text-slate-300"
+                      >
+                        {surface}
+                      </span>
+                    ))}
+                  </div>
+                </MoonCard>
+              ))}
           </div>
         )
       ) : null}

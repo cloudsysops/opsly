@@ -25,6 +25,7 @@ export const CREATOR_TABS = [
   'trends',
   'productions',
   'clips',
+  'franchise',
   'characters',
   'brands',
   'calendar',
