@@ -469,12 +469,22 @@ export function constructBuilding(
   if (state.buildings.includes(buildingId)) return state;
   const building = TECHNOLIA_BUILDINGS.find((item) => item.id === buildingId);
   if (!building) throw new Error(`Unknown Technolia building: ${buildingId}`);
+  const unlocked =
+    buildingId === 'nexus-core' ||
+    state.buildings.some((id) =>
+      TECHNOLIA_BUILDINGS.find((candidate) => candidate.id === id)?.unlocks.includes(buildingId),
+    ) ||
+    state.technologies.some((id) =>
+      TECHNOLIA_TECH_TREE.find((candidate) => candidate.id === id)?.unlocks.includes(buildingId),
+    );
+  if (!unlocked) throw new Error(`BUILDING_LOCKED:${buildingId}`);
   if (!canAfford(state, building.cost)) throw new Error('INSUFFICIENT_TECHNOLIA_RESOURCES');
-  return {
+  const next = {
     ...state,
     resources: spend(state, building.cost),
     buildings: [...state.buildings, buildingId],
   };
+  return { ...next, era: resolveTechnoliaEra(next) };
 }
 
 export function researchTechnology(
