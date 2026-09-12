@@ -320,7 +320,7 @@ export function MissionControlCockpit() {
               <div className="space-y-3">
                 <CloudChip name="Supabase" role="transactional data" state="connected" />
                 <CloudChip name="Cloudflare R2" role="evidence / artifacts" state="planned" />
-                <CloudChip name="GCP BigQuery" role="analytics / telemetry" state="configured" />
+                <CloudChip name="GCP BigQuery" role="analytics / telemetry" state="planned" />
                 <CloudChip name="GCP Cloud Run" role="stateless integrations" state="planned" />
                 <CloudChip name="Oracle DR" role="backup observer" state="planned" />
                 <CloudChip name="AWS" role="optional integrations" state="planned" />
