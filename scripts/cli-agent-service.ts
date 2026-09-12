@@ -62,6 +62,7 @@ function defaultPortFor(name: string): string {
     aider: '5009',
     goose: '5010',
     playwright: '5011',
+    openclaw: '5012',
   };
   return ports[name] || '5099';
 }
@@ -148,6 +149,20 @@ function commandFor(prompt: string, body: ExecuteRequest): CommandSpec {
           '--max-turns',
           String(body.max_steps ?? process.env.HERMES_MAX_TURNS ?? 8),
           ...(body.model ? ['-m', body.model] : []),
+        ],
+      };
+    case 'openclaw':
+      return {
+        command: 'openclaw',
+        args: [
+          'agent',
+          'exec',
+          '--cwd',
+          cwd,
+          '--timeout',
+          String(positiveInteger(process.env.OPSLY_OPENCLAW_TIMEOUT_SECONDS, 300)),
+          ...(body.model ? ['--model', body.model] : []),
+          prompt,
         ],
       };
     case 'openai':
@@ -267,6 +282,8 @@ function buildChildEnv(): NodeJS.ProcessEnv {
     'OPENCODE_CONFIG',
     'GOOSE_CONFIG_DIR',
     'HERMES_HOME',
+    'OPENCLAW_HOME',
+    'OPENCLAW_CONFIG_PATH',
     'NODE_OPTIONS',
     'OLLAMA_HOST',
     'OLLAMA_URL',
@@ -308,6 +325,7 @@ function roleSuffix(agentName: string, requestedRole?: string): string {
   if (role.includes('debug')) return 'debug';
   if (role.includes('review')) return 'review';
   if (agentName === 'hermes') return 'plan';
+  if (agentName === 'openclaw') return 'run';
   if (agentName === 'opencode') return 'build';
   if (agentName === 'codex' || agentName === 'openai') return 'debug';
   if (agentName === 'claude') return 'review';
