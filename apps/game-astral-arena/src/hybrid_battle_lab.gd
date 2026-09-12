@@ -98,8 +98,8 @@ func _append_fighter_buttons(fighter: Dictionary, prefix: String) -> void:
         ]
         var action_fighter_id := fighter_id
         var action_ability_id := str(ability.get("id", ""))
-        button.pressed.connect(func():
-            _use_fighter_ability(action_fighter_id, action_ability_id)
+        button.pressed.connect(
+            _use_fighter_ability.bind(action_fighter_id, action_ability_id)
         )
         ability_box.add_child(button)
 
