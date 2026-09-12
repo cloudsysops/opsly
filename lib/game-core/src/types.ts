@@ -14,6 +14,7 @@ import {
   RewardSchema,
   SessionStateSchema,
   WorldInstanceSchema,
+  AstralAffinityProfileSchema,
 } from './schemas.js';
 
 export type ExplorerIdentity = z.infer<typeof ExplorerIdentitySchema>;
@@ -30,6 +31,7 @@ export type Ability = z.infer<typeof AbilitySchema>;
 export type GameEvent = z.infer<typeof GameEventSchema>;
 export type GraphEdge = z.infer<typeof GraphEdgeSchema>;
 export type SessionState = z.infer<typeof SessionStateSchema>;
+export type AstralAffinityProfile = z.infer<typeof AstralAffinityProfileSchema>;
 
 export interface StartSessionInput {
   tenantSlug: string;
@@ -41,4 +43,5 @@ export interface ChooseExplorerInput {
   palette?: ExplorerIdentity['appearance']['palette'];
   companionCharacterId?: string;
   interestTags?: string[];
+  astralAffinity?: AstralAffinityProfile;
 }
