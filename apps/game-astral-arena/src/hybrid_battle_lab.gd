@@ -20,8 +20,16 @@ func _ready() -> void:
     pack = ProjectSettings.get_setting("astral_arena/runtime/content_pack", {})
     runtime.configure(pack)
     var first_encounter: Dictionary = pack.get("battle", {}).get("first_encounter", {})
+    var guardian_id := str(ProjectSettings.get_setting(
+        "astral_arena/session/guardian_id",
+        first_encounter.get("player", ["arena"])[0]
+    ))
+    var companion_id := str(ProjectSettings.get_setting(
+        "astral_arena/session/companion_id",
+        "orion-shepherd"
+    ))
     state = runtime.start(
-        first_encounter.get("player", ["arena", "brissa"]),
+        [guardian_id, companion_id],
         first_encounter.get("opponent", ["shadow-scout"])
     )
     _build_ability_buttons()
@@ -50,20 +58,35 @@ func _build_ability_buttons() -> void:
     if player.is_empty():
         return
 
-    var fighter_id := str(player[0].get("fighter_id", "arena"))
-    for raw_ability in runtime.ability_list_for(fighter_id):
-        var ability: Dictionary = raw_ability
+    _append_fighter_buttons(player[0], "GUARDIÁN")
+    if player.size() > 1:
+        _append_fighter_buttons(player[1], "COMPAÑERO")
+
+func _append_fighter_buttons(fighter: Dictionary, prefix: String) -> void:
+    var fighter_id := str(fighter.get("fighter_id", ""))
+    var abilities := runtime.ability_list_for(fighter_id)
+    var max_buttons := min(3, abilities.size())
+    for index in range(max_buttons):
+        var ability: Dictionary = abilities[index]
         var button := Button.new()
-        button.text = "%s · %d⚡" % [
+        button.text = "%s · %s · %d⚡" % [
+            prefix,
             str(ability.get("name", ability.get("id", "?"))),
             int(ability.get("energyCost", 0))
         ]
-        var ability_id := str(ability.get("id", ""))
-        button.pressed.connect(func(): _use_ability(ability_id))
+        var action_fighter_id := fighter_id
+        var action_ability_id := str(ability.get("id", ""))
+        button.pressed.connect(func():
+            _use_fighter_ability(action_fighter_id, action_ability_id)
+        )
         ability_box.add_child(button)
 
 func _use_ability(ability_id: String) -> void:
     state = runtime.perform_player_action(ability_id)
+    _refresh_views()
+
+func _use_fighter_ability(fighter_id: String, ability_id: String) -> void:
+    state = runtime.perform_player_action_for(fighter_id, ability_id)
     _refresh_views()
 
 func _refresh_views() -> void:
