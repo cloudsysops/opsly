@@ -88,16 +88,18 @@ describe('POST /api/governance/consent security', () => {
 
     const response = await POST(request);
     expect(response.status).toBe(201);
-    expect(audit.logAuditEvent).toHaveBeenCalledWith(expect.objectContaining({
-      tenant_slug: 'test-tenant',
-      action: 'CONSENT_RECORD',
-      resource: expect.stringContaining('consent:'),
-      metadata: expect.objectContaining({
-        subject_email: 'u***l@example.com',
-        consent_type: 'treatment',
-        policy_id: 'privacy-policy',
-        policy_version: '1.0',
-      }),
-    }));
+    expect(audit.logAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tenant_slug: 'test-tenant',
+        action: 'CONSENT_RECORD',
+        resource: expect.stringContaining('consent:'),
+        metadata: expect.objectContaining({
+          subject_email: 'u***l@example.com',
+          consent_type: 'treatment',
+          policy_id: 'privacy-policy',
+          policy_version: '1.0',
+        }),
+      })
+    );
   });
 });
