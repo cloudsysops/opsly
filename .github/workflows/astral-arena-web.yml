@@ -30,15 +30,34 @@ env:
   WEB_IMAGE: 'ghcr.io/cloudsysops/astral-arena-web'
 
 jobs:
+  validate-product:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate product contract
+        run: node scripts/games/validate-astral-arena-game.mjs
+
+      - name: Prove reusable blueprint
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x scripts/provisioning/clone-game-launch.sh
+          scripts/provisioning/clone-game-launch.sh \
+            --blueprint godot-steam \
+            --slug guardian-lab \
+            --title "Guardian Lab" \
+            --dry-run > /tmp/guardian-lab-blueprint.txt
+          grep -q '"game_slug": "guardian-lab"' /tmp/guardian-lab-blueprint.txt
+          ! grep -Eiq 'Arena Botero|Brissa Botero|Señor Sombra' /tmp/guardian-lab-blueprint.txt
+
   build-web:
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v4
-
-      - name: Validate product contract
-        run: node scripts/games/validate-astral-arena-game.mjs
 
       - name: Cache Godot editor
         id: cache-editor
@@ -123,7 +142,7 @@ jobs:
 
   publish-image:
     if: github.event_name == 'workflow_dispatch' && inputs.deploy == true
-    needs: build-web
+    needs: [validate-product, build-web]
     runs-on: ubuntu-latest
     permissions:
       contents: read

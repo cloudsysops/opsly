@@ -1,0 +1,73 @@
+name: PR Run Janitor
+
+on:
+  pull_request:
+    types: [synchronize, reopened]
+
+concurrency:
+  group: pr-run-janitor-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: read
+
+jobs:
+  cancel-obsolete:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel obsolete queued/in-progress runs for this PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const currentRunId = context.runId;
+            const currentHeadSha = context.payload.pull_request.head.sha;
+            const headRef = context.payload.pull_request.head.ref;
+            const prNumber = context.payload.pull_request.number;
+
+            const statuses = ['queued', 'in_progress'];
+            let cancelled = 0;
+
+            for (const status of statuses) {
+              for await (const response of github.paginate.iterator(
+                github.rest.actions.listWorkflowRunsForRepo,
+                { owner, repo, status, per_page: 100 }
+              )) {
+                for (const run of response.data) {
+                  if (run.id === currentRunId) continue;
+
+                  const samePrBranch =
+                    run.head_branch === headRef ||
+                    run.head_branch === `refs/pull/${prNumber}/head`;
+
+                  if (!samePrBranch) continue;
+                  if (run.head_sha === currentHeadSha) continue;
+
+                  try {
+                    await github.rest.actions.cancelWorkflowRun({
+                      owner,
+                      repo,
+                      run_id: run.id,
+                    });
+                    cancelled += 1;
+                    core.info(
+                      `cancelled obsolete run ${run.id} ${run.name} ${run.head_sha}`
+                    );
+                  } catch (error) {
+                    if (error.status === 409) {
+                      core.info(`run ${run.id} already completed/cancelled`);
+                      continue;
+                    }
+                    throw error;
+                  }
+                }
+              }
+            }
+
+            core.summary
+              .addHeading('PR run janitor')
+              .addRaw(`Cancelled obsolete runs: ${cancelled}`)
+              .write();

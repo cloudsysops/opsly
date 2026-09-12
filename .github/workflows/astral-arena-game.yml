@@ -1,16 +1,12 @@
 name: Astral Arena Game Product
 
 on:
-  pull_request:
-    paths:
-      - 'apps/game-astral-arena/**'
-      - 'config/games/astral-arena.json'
-      - 'config/game-blueprints/**'
-      - 'scripts/games/**'
-      - 'lib/game-core/**'
-      - 'lib/universe/**'
-      - '.github/workflows/astral-arena-game.yml'
   workflow_dispatch:
+  workflow_call:
+
+concurrency:
+  group: astral-game-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -45,7 +41,6 @@ jobs:
 
   godot-headless:
     runs-on: ubuntu-latest
-    needs: validate-product
     steps:
       - uses: actions/checkout@v4
 
