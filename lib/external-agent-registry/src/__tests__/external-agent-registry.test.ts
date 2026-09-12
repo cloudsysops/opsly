@@ -32,6 +32,44 @@ describe('external-agent-registry', () => {
     expect(openclaw?.enabled).toBe(false);
   });
 
+  it('does not select disabled OpenClaw even when explicitly requested', async () => {
+    const registry = await loadExternalAgentRegistry(REPO_ROOT);
+    const result = routeAgentTask(registry, {
+      schema_version: 'AgentTaskEnvelopeV1',
+      request_id: 'req-openclaw-held',
+      correlation_id: 'corr-openclaw-held',
+      tenant_slug: 'opsly-internal',
+      task_type: 'review',
+      task: 'read-only runtime acceptance',
+      requested_agent: 'local_openclaw',
+      selected_agent: 'local_openclaw',
+      skills: ['opsly-context'],
+      constraints: {
+        open_source_only: false,
+        local_only: true,
+        browser_allowed: false,
+        network_allowed: false,
+        write_allowed: false,
+        file_scope: [],
+        max_tokens: 800,
+      },
+      execution_mode: 'dry_run',
+      source: 'test',
+      actor: 'test',
+      created_at: new Date().toISOString(),
+      timeout_ms: 120000,
+      max_attempts: 1,
+      budget: { max_tokens: 800 },
+      metadata: {},
+      fallback_agents: [],
+    });
+    expect(result.selected_agent).not.toBe('openclaw-cli');
+    expect(result.rejected_candidates).toContainEqual({
+      agent: 'openclaw-cli',
+      reason: 'AGENT_DISABLED',
+    });
+  });
+
   it('routes architecture to claude-code', async () => {
     const registry = await loadExternalAgentRegistry(REPO_ROOT);
     const resolved = routeExternalWorker(registry, { intent: 'architecture' });
