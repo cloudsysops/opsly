@@ -4,6 +4,7 @@
  * Listens on 'local-agents' queue for jobs with names derived from LocalAgentKind:
  * - local_cursor, local_claude, local_copilot, local_opencode
  * - local_codex, local_openai, local_hermes, local_decepticon
+ * - local_aider, local_goose, local_playwright, local_openclaw
  *
  * Routes to appropriate HTTP endpoint based on job.name
  * Integrates with ValidationOrchestrator for validation → decision → commit flow
