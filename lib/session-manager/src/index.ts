@@ -74,7 +74,9 @@ export async function getSession(sessionId: string): Promise<RuntimeSessionMetad
 
 export async function createSession(input: CreateSessionInput): Promise<RuntimeSessionMetadata> {
   const sessionId = randomUUID();
-  const tmuxName = input.tmuxSessionName?.trim() || tmuxSessionName(sessionId);
+  const tmuxName = input.tmuxSessionName?.trim()
+    ? tmuxSessionName(input.tmuxSessionName.trim().replace(/^opsly-/, ''))
+    : tmuxSessionName(sessionId);
   const ts = nowIso();
   const workspace = resolveWorkspacePath(input.workspace);
   const meta: RuntimeSessionMetadata = {
