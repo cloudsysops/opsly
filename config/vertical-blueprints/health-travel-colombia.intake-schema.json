@@ -1,0 +1,109 @@
+{
+  "schema_version": "HealthTravelIntakeV1",
+  "purpose": "Commercial and coordination intake only; not a clinical record.",
+  "required": [
+    "traveler_ref",
+    "origin_country",
+    "requested_service_category",
+    "preferred_dates",
+    "preferred_language",
+    "consent_to_contact"
+  ],
+  "fields": {
+    "traveler_ref": {
+      "type": "string"
+    },
+    "origin_country": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 2
+    },
+    "requested_service_category": {
+      "type": "string"
+    },
+    "preferred_city": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "preferred_dates": {
+      "type": "object",
+      "properties": {
+        "earliest": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "latest": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        }
+      }
+    },
+    "budget_range": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "min": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "max": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        }
+      }
+    },
+    "companions": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "preferred_language": {
+      "type": "string"
+    },
+    "mobility_coordination": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "consent_to_contact": {
+      "const": true
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2000
+    }
+  },
+  "forbidden_fields": [
+    "diagnosis",
+    "medical_history",
+    "clinical_notes",
+    "prescriptions",
+    "lab_results",
+    "imaging",
+    "genetic_data"
+  ]
+}
