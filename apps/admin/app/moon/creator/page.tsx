@@ -274,13 +274,15 @@ export default async function MoonCreatorPage({
                 </div>
                 {item.aiReview ? (
                   <p className="font-mono text-[11px] text-slate-400">
-                    AI {item.aiReview.decision ?? item.aiReview.state} · score {item.aiReview.score?.total ?? '—'} · r
-                    {item.aiReview.round}/{item.aiReview.maxRounds} · {item.aiReview.currentVersionId ?? 'v?'}
+                    AI {item.aiReview.decision ?? item.aiReview.state} · score{' '}
+                    {item.aiReview.score?.total ?? '—'} · r{item.aiReview.round}/
+                    {item.aiReview.maxRounds} · {item.aiReview.currentVersionId ?? 'v?'}
                   </p>
                 ) : null}
                 {(item.aiReview?.findings ?? []).slice(0, 3).map((finding) => (
                   <p key={finding.finding_id} className="font-mono text-[11px] text-amber-200/80">
-                    {finding.severity} {finding.finding_id} {finding.timecode_start}s–{finding.timecode_end}s · {finding.issue}
+                    {finding.severity} {finding.finding_id} {finding.timecode_start}s–
+                    {finding.timecode_end}s · {finding.issue}
                   </p>
                 ))}
                 {(item.clipCandidates ?? []).length > 0 ? (
@@ -300,7 +302,11 @@ export default async function MoonCreatorPage({
                     <div className="flex flex-wrap gap-2 text-[11px] text-slate-300">
                       {['youtube', 'tiktok', 'instagram', 'facebook', 'x'].map((platform) => (
                         <label key={platform} className="inline-flex items-center gap-1">
-                          <input type="checkbox" name={`platform_${platform}`} defaultChecked={platform === 'youtube'} />
+                          <input
+                            type="checkbox"
+                            name={`platform_${platform}`}
+                            defaultChecked={platform === 'youtube'}
+                          />
                           {platform}
                         </label>
                       ))}
