@@ -81,6 +81,14 @@ export function toBackgroundCandidate(fileName, content) {
     estimatedMinutes: Number(fm.estimated_minutes ?? 30),
     requiresPr: fm.requires_pr === true,
     owner: String(fm.owner ?? ''),
+    costClass: String(fm.cost_class ?? '').trim() || null,
+    estimatedCostUsd:
+      fm.estimated_cost_usd === undefined ? null : Number(fm.estimated_cost_usd),
+    environment: String(fm.environment ?? '').trim() || null,
+    architecturePatterns: String(fm.architecture_patterns ?? '')
+      .split(',')
+      .map((v) => v.trim())
+      .filter(Boolean),
     body_preview: body.slice(0, 280),
   };
 }
