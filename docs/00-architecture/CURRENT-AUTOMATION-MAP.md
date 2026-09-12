@@ -69,6 +69,16 @@ tree is dirty, HEAD is detached, or the remote is unreachable. This is the small
 bridge named in the task: it does not add a webhook, a new queue, or a new orchestrator —
 it closes the one missing step in the existing chain.
 
+**Trust gate added (per independent review):** the sync/dispatch is only allowed when the
+checked-out branch equals a trusted branch (`main` by default, overridable via
+`NIGHT_QUEUE_TRUSTED_BRANCH`). An automatic execution machine must not treat "whatever
+branch happens to be checked out" as an implicitly trusted task source — a feature/local
+branch on the dispatching machine must never become an accidental task source. Detached
+HEAD and any non-trusted branch both refuse automatic dispatch with a logged reason.
+Covered by `scripts/ops/__tests__/dispatch-prompt-queue-trust-gate.test.mjs` (clean
+trusted branch, non-trusted branch, detached HEAD, and a custom configured trusted
+branch — 5 cases). **CI wiring pending** — see "Known gap" below.
+
 ## Machine roles (do not conflate)
 
 Two different physical machines already have two different jobs in this repo; a single
@@ -148,6 +158,22 @@ marked **UNKNOWN**, not "safe."
   frontmatter `status:` field is never written back to by any script in this repo. State
   changes (`pending` -> `done`) are manual edits today. ChatGPT/an operator watching
   GitHub cannot currently see "claimed"/"running" state without a human updating the file.
+
+## Known gap: trust-gate test not yet wired into ci.yml
+
+`npm run test:dispatch-prompt-queue` exists and passes locally (5/5), but is **not**
+yet a step in `.github/workflows/ci.yml`. The credential available to the agent that
+built this PR lacks the GitHub `workflow` OAuth scope required to modify files under
+`.github/workflows/` (both `git push` and the GitHub API returned "Insufficient scope:
+required workflow"). Someone with that scope needs to add, in the `scripts-check` job
+of `ci.yml`, right after the `compute-worker policy tests` step:
+
+```yaml
+      - name: dispatch-prompt-queue trust gate tests
+        run: node --test scripts/ops/__tests__/dispatch-prompt-queue-trust-gate.test.mjs
+```
+
+This is a one-line, additive, non-destructive CI step — no other change needed.
 
 ## Answer to the core question
 
