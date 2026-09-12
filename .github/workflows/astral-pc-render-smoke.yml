@@ -1,0 +1,205 @@
+name: Astral PC Gamer Render Smoke
+
+on:
+  push:
+    branches:
+      - 'ops/astral-pc-render-smoke-20260912'
+    paths:
+      - '.github/workflows/astral-pc-render-smoke.yml'
+      - 'runtime/astral-render-request/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: astral-pc-render-smoke
+  cancel-in-progress: true
+
+jobs:
+  render-smoke:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+      PC_TAILSCALE_IP: '100.74.88.103'
+      SMOKE_RUN_ID: ${{ github.run_id }}
+      SMOKE_REQUEST_ID: astral-${{ github.run_id }}
+      SMOKE_DRAFT_ID: astral-pc-smoke-${{ github.run_id }}
+      SMOKE_TITLE: 'Astral Arena · The Sisters Awaken · PC Gamer Render Test'
+      REMOTE_RESULT: /tmp/astral-pc-render-${{ github.run_id }}.json
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Connect Tailscale
+        if: env.TAILSCALE_AUTHKEY != ''
+        uses: ./.github/actions/tailscale-connect
+        with:
+          authkey: ${{ env.TAILSCALE_AUTHKEY }}
+          ping_host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+
+      - name: Probe PC gamer worker and render bridge
+        shell: bash
+        run: |
+          set +e
+          echo "PC gamer worker health:"
+          curl -fsS --max-time 5 "http://${PC_TAILSCALE_IP}:3011/health"
+          worker_rc=$?
+          echo
+          echo "PC gamer render bridge health:"
+          curl -fsS --max-time 5 "http://${PC_TAILSCALE_IP}:8080/health"
+          bridge_rc=$?
+          echo
+          echo "worker_probe_rc=${worker_rc}"
+          echo "bridge_probe_rc=${bridge_rc}"
+          exit 0
+
+      - name: Enqueue lightweight Astral render and wait
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          SMOKE_RUN_ID: ${{ env.SMOKE_RUN_ID }}
+          SMOKE_REQUEST_ID: ${{ env.SMOKE_REQUEST_ID }}
+          SMOKE_DRAFT_ID: ${{ env.SMOKE_DRAFT_ID }}
+          SMOKE_TITLE: ${{ env.SMOKE_TITLE }}
+          REMOTE_RESULT: ${{ env.REMOTE_RESULT }}
+        with:
+          host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          timeout: 2m
+          command_timeout: 4m
+          envs: SMOKE_RUN_ID,SMOKE_REQUEST_ID,SMOKE_DRAFT_ID,SMOKE_TITLE,REMOTE_RESULT
+          script: |
+            set -euo pipefail
+            rm -f "$REMOTE_RESULT"
+            set +e
+            docker exec -i               -e SMOKE_REQUEST_ID="$SMOKE_REQUEST_ID"               -e SMOKE_DRAFT_ID="$SMOKE_DRAFT_ID"               -e SMOKE_TITLE="$SMOKE_TITLE"               opsly_orchestrator               node --input-type=module >"$REMOTE_RESULT" <<'NODE'
+            import { Job, Queue, QueueEvents } from 'bullmq';
+
+            function connectionFromUrl(value) {
+              const parsed = new URL(value);
+              return {
+                host: parsed.hostname,
+                port: Number(parsed.port || 6379),
+                username: parsed.username ? decodeURIComponent(parsed.username) : undefined,
+                password: parsed.password ? decodeURIComponent(parsed.password) : undefined,
+                maxRetriesPerRequest: null,
+              };
+            }
+
+            const connection = connectionFromUrl(process.env.REDIS_URL);
+            const queueName = 'content-video';
+            const queue = new Queue(queueName, { connection });
+            const events = new QueueEvents(queueName, { connection });
+            await events.waitUntilReady();
+
+            const requestId = process.env.SMOKE_REQUEST_ID;
+            const draftId = process.env.SMOKE_DRAFT_ID;
+            const title = process.env.SMOKE_TITLE;
+            const payload = {
+              tenant_slug: 'astral-arena',
+              request_id: requestId,
+              draft_id: draftId,
+              draft: {
+                id: draftId,
+                tenant_slug: 'astral-arena',
+                event_id: 'story-awakening-sisters',
+                title,
+                story_hook: 'PC gamer render smoke for Astral Arena Chapter 1.',
+                captions: [],
+                image_prompt: '',
+                reel_script: [
+                  {
+                    scene: 'pc-gamer-smoke',
+                    copy: 'Arena + Brissa · Guardians of the Nexus',
+                    duration_sec: 6,
+                  },
+                ],
+                call_to_action: '',
+                compliance_flags: ['not_peskids', 'no_customer_pii', 'smoke_test'],
+                state: 'approved',
+                copy_paste_kit: {
+                  instagram_caption: '',
+                  facebook_caption: '',
+                  linkedin_caption: '',
+                  x_caption: '',
+                  tiktok_script: '',
+                  youtube_shorts_script: '',
+                },
+              },
+              preset: {
+                slug: 'astral-pc-smoke',
+                label: 'Astral PC gamer smoke',
+                platforms: [],
+                pillars: [],
+                tone_of_voice: 'friendly',
+                language: 'both',
+                visual_style: 'astral-arena',
+                aspect_ratio: '16:9',
+                target_duration_sec: 6,
+                approval_required: true,
+                render_provider: 'moneyprinterturbo',
+              },
+            };
+
+            const jobId = `astral-pc-smoke:${requestId}`;
+            const job = await queue.add('render', payload, {
+              jobId,
+              removeOnComplete: 50,
+              removeOnFail: 50,
+            });
+
+            const startedAt = Date.now();
+            try {
+              const result = await job.waitUntilFinished(events, 120000);
+              console.log(JSON.stringify({
+                ok: true,
+                queue: queueName,
+                jobId: job.id,
+                durationMs: Date.now() - startedAt,
+                result,
+              }, null, 2));
+            } catch (error) {
+              const current = await Job.fromId(queue, job.id);
+              const state = current ? await current.getState() : 'missing';
+              console.log(JSON.stringify({
+                ok: false,
+                queue: queueName,
+                jobId: job.id,
+                state,
+                failedReason: current?.failedReason ?? null,
+                error: error instanceof Error ? error.message : String(error),
+              }, null, 2));
+              process.exitCode = 2;
+            } finally {
+              await events.close();
+              await queue.close();
+            }
+            NODE
+            rc=$?
+            set -e
+            echo "=== render evidence ==="
+            cat "$REMOTE_RESULT" || true
+            exit "$rc"
+
+      - name: Download render evidence from VPS
+        if: always()
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: ${{ env.REMOTE_RESULT }}
+          target: render-evidence
+          strip_components: 2
+          overwrite: true
+
+      - name: Upload render evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: astral-pc-render-smoke-${{ github.run_id }}
+          path: render-evidence
+          retention-days: 7
+          if-no-files-found: warn
