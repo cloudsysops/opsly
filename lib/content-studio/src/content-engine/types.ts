@@ -27,6 +27,8 @@ export const contentPortalValues = [
   'LAB',
   'ORIGINS',
   'UNKNOWN',
+  'ASTRAL_ARENA',
+  'TECHNOLIA',
 ] as const;
 export type ContentPortal = (typeof contentPortalValues)[number];
 
