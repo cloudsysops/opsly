@@ -1,6 +1,6 @@
 ---
 id: agent-lab-02-registry-013
-status: held
+status: pending
 owner: opsly-night-agent
 created: 2026-09-11
 requires_pr: true
@@ -12,9 +12,9 @@ canon: docs/design/OPSLY-AGENT-LAB.md
 reconcile: docs/design/PR-1185-ARCHITECTURE-RECONCILIATION.md
 ---
 
-# Agent Lab 02 — Learning layer only (held)
+# Agent Lab 02 — Learning layer only
 
-**Held** until inventory `012` is `done`.
+**Unheld** after inventory `012` = `done` (2026-09-12).
 
 Implement / extend **`lib/agent-learning`** (evidence, review attach, trust, scorecards).
 
