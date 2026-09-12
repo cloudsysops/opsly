@@ -50,8 +50,9 @@
         "mac",
         "pc-gamer-optional"
       ],
-      "kind": "external-runtime",
-      "role": "auxiliary-runtime"
+      "kind": "external-agent-runtime",
+      "role": "headless-agent-runtime",
+      "execution_entrypoint": "openclaw agent exec"
     }
   ],
   "install_as_binary_not_clone": [
