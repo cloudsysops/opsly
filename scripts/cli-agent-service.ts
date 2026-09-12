@@ -297,26 +297,20 @@ function redact(value: string): string {
   return redactSecrets(value);
 }
 
-function appendLimited(current: string, chunk: Buffer): string {
-  const next = current + chunk.toString();
-  if (Buffer.byteLength(next, 'utf8') <= outputLimitBytes) {
-    return next;
-  }
-
-  const truncated = Buffer.from(next).subarray(0, outputLimitBytes).toString('utf8');
-  return `${truncated}\n[opsly] output truncated at ${outputLimitBytes} bytes`;
-}
-
 function safeTaskToken(value: string): string {
   return value.replace(/[^a-zA-Z0-9_-]/g, '-').replace(/-+/g, '-').slice(0, 40) || 'task';
 }
 
 function roleSuffix(agentName: string, requestedRole?: string): string {
   const role = requestedRole?.trim().toLowerCase() || '';
-  if (agentName === 'hermes' || role.includes('plan')) return 'plan';
-  if (agentName === 'opencode' || role.includes('build') || role.includes('implement')) return 'build';
-  if (agentName === 'codex' || agentName === 'openai' || role.includes('debug')) return 'debug';
-  if (agentName === 'claude' || role.includes('review')) return 'review';
+  if (role.includes('plan')) return 'plan';
+  if (role.includes('build') || role.includes('implement')) return 'build';
+  if (role.includes('debug')) return 'debug';
+  if (role.includes('review')) return 'review';
+  if (agentName === 'hermes') return 'plan';
+  if (agentName === 'opencode') return 'build';
+  if (agentName === 'codex' || agentName === 'openai') return 'debug';
+  if (agentName === 'claude') return 'review';
   return 'run';
 }
 
