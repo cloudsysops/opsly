@@ -729,21 +729,29 @@ Week 4: Docs + runbook + MVP validation
 **Tema:** Reconciliación post-duplicación de Mauro + revisión/estado de PR #1194 (engineering control loop) + documentación para no repetir el ciclo
 **Branch actual del worktree:** `feat/pr-1185-agent-lab-reconcile` (no confundir con la rama del PR #1194, que es `claude/engineering-control-loop-audit`)
 
-**Hallazgo de esta sesión (verificado vía API pública de GitHub, sin token):**
-1. ✅ PR #1194 **sigue abierto y en draft** — creado 2026-09-11 23:31, sin mergear. Head = `claude/engineering-control-loop-audit` @ `a8fcc0e`.
-2. ✅ Contenido del PR confirmado exacto (2 fixes + 1 doc):
-   - `scripts/ops/dispatch-prompt-queue.sh` — `git pull --ff-only` seguro antes de sembrar (skip en dirty tree / detached HEAD / offline / DRY_RUN)
-   - `scripts/local-agent-watcher.ts` — token deja de caer a `'local-dev'`; ahora fails closed
-   - `docs/00-architecture/CURRENT-AUTOMATION-MAP.md` — mapa de automatización
-3. ✅ CI del commit `a8fcc0e`: **todos verdes** (build, lint, test-unit/integration, scripts-check, secret-scan, Trivy, validate-structure, check-canonical-sources, npm audit). `production-change-window` falló **una vez** por error de git del runner (`exit 128`) y quedó **verde** en el re-run. `validate-doppler` / `Docker Scout` = skipped (por diseño, sin secrets).
+**Estado real de PR #1194 (confirmado por el dueño del ciclo, 2026-09-11):**
+- HEAD actual: `ffe63b8` (la rama avanzó respecto al `a8fcc0e` del reporte previo).
+- **Funcionalmente aprobado, pero NO merge-ready todavía** — falta CI completo.
+
+**Ya sólido (✅):**
+- Trust gate implementado ✅
+- 5 tests de branch-trust ✅
+- Tercera revisión independiente de Codex ✅ **APPROVE**
+- Production change window ✅ · Security scan ✅ · Secret scan ✅ · Trivy ✅
+- Structure validation ✅ · Workflow lint ✅ · Docs governance ✅ · Agent context ✅ · Dependency audit ✅ · Mergeable ✅
+
+**Único pendiente (⏳):**
+- Job **`lint`** del workflow general de CI sigue en `npm ci` + build de workspace deps para type-check; **aún no llegó a TypeScript ni al resto de gates** de ese job.
+- **Decisión correcta: NO MERGE hasta que ese CI termine verde.**
+
+**Follow-up no bloqueante (cerrar después del merge):**
+- El test nuevo (branch-trust) **no está cableado en `ci.yml`** porque el agente no tenía scope `workflow`. No invalida el fix; hay que cerrarlo para que el test no dependa de ejecución local.
+
+**Siguiente hito (tras merge):** ya NO es documentación — es el **E2E real**: GitHub → Mac → Orchestrator → agente → PR.
 
 **Bloqueante de esta sesión (heredado, sin resolver):**
 - `gh` CLI con token inválido (`401`) → no puedo mergear/reviewar/aprobar vía `gh`; git **sí** funciona por SSH (`git ls-remote` OK). Para consultar estado se usó `curl` a la API pública sin token.
 - Sin SSH/Tailscale a Mac/PC-Gamer → no se puede verificar LaunchAgent (`launchctl list`) ni `PLATFORM_ADMIN_TOKEN` real vía Doppler.
-
-**Pendiente real de #1194 (no hacer de nuevo):**
-- Necesita review independiente (Codex) + salir de draft + merge. Builder ≠ reviewer aún no se cumple.
-- Tras merge: verificar en máquina con acceso real: `git pull`, `launchctl list | grep opsly`, y `PLATFORM_ADMIN_TOKEN` vía Doppler.
 
 ### 📅 Sesiones Recientes
 
@@ -752,6 +760,12 @@ Week 4: Docs + runbook + MVP validation
 - ✅ Confirmado el ciclo que causó la duplicación de Mauro: AGENTS.md no se actualizó al cerrar sesiones previas
 - ✅ Este archivo ahora refleja el estado real de #1194 para que la próxima sesión no reintente el mismo trabajo
 - ⛔ `gh` inválido (401); git por SSH OK; sin acceso a Mac/PC-Gamer para verificación física
+
+**Sesión 2026-09-11 (actualización) — PR #1194 funcionalmente aprobado, NO merge-ready aún ✅**
+- ✅ HEAD `ffe63b8`; trust gate + 5 tests branch-trust; Codex **APPROVE** (3ª revisión); security/secret/Trivy/structure/workflow-lint/docs/agent-context/audit/mergeable todos ✅
+- ⏳ Único pendiente: job **`lint`** sigue en `npm ci` + build deps, no llegó a TypeScript → **NO MERGE hasta terminar verde**
+- ⏳ Follow-up no bloqueante: el test nuevo no está cableado en `ci.yml` (agente sin scope `workflow`) — cerrar después
+- 📌 Próximo hito post-merge: E2E real GitHub → Mac → Orchestrator → agente → PR
 
 **Sesión 2026-09-10 — Prod deploy unblock + CC handoff ✅**
 - ✅ Diagnóstico: prod sano pero atrás de `main`; Deploy fallaba por `--webpack`
