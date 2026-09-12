@@ -58,3 +58,33 @@ export {
   getAstralArenaMission,
   getAstralArenaMissions,
 } from './astral-arena.js';
+
+export {
+  astralElementValues,
+  zodiacSignValues,
+  elementForSign,
+  resolveAstralAffinity,
+  zodiacSignFromBirthDate,
+  type AstralAffinity,
+  type AstralElement,
+  type AstralTechnique,
+  type ZodiacSign,
+} from './astral-affinity.js';
+
+export {
+  CYBER_ARENA_ID,
+  CYBER_ARENA_SAFETY_RULES,
+  CYBER_BATTLES,
+  NEXUS_STARTER_ARCHITECTURE,
+  cyberDefenseValues,
+  cyberThreatValues,
+  evaluateCyberDefense,
+  type ArchitectureEdge,
+  type ArchitectureNode,
+  type ArchitectureNodeKind,
+  type CyberArchitecture,
+  type CyberBattle,
+  type CyberBattleResult,
+  type CyberDefense,
+  type CyberThreat,
+} from './cyber-arena.js';
