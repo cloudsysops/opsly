@@ -4,6 +4,8 @@ name: Structure Validation
 on:
   pull_request:
     branches: [main, develop]
+    paths-ignore:
+      - 'apps/game-astral-arena/**'
   push:
     branches: [main]
   workflow_call:

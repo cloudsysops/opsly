@@ -6,6 +6,8 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+    paths-ignore:
+      - 'apps/game-astral-arena/**'
 
 concurrency:
   group: ci-${{ github.event.pull_request.number || github.ref }}

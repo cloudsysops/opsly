@@ -1,6 +1,16 @@
 name: Astral Arena Web Preview
 
 on:
+  push:
+    branches:
+      - 'preview/astral-arena'
+    paths:
+      - 'apps/game-astral-arena/**'
+      - 'config/games/astral-arena.json'
+      - 'lib/game-core/**'
+      - 'lib/universe/**'
+      - 'scripts/games/**'
+      - '.github/workflows/astral-arena-web.yml'
   pull_request:
     paths:
       - 'apps/game-astral-arena/**'
@@ -18,7 +28,7 @@ on:
         default: false
 
 concurrency:
-  group: astral-arena-web-${{ github.ref }}
+  group: astral-arena-web-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
@@ -283,7 +293,7 @@ jobs:
 
 
   publish-staging:
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    if: (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'push' && github.ref == 'refs/heads/preview/astral-arena')
     needs: build-web
     runs-on: ubuntu-latest
     environment: staging
@@ -324,7 +334,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tag }}
 
   deploy-staging:
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    if: (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'push' && github.ref == 'refs/heads/preview/astral-arena')
     needs: [build-web, publish-staging]
     runs-on: ubuntu-latest
     environment: staging
