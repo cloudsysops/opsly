@@ -72,3 +72,8 @@ func _refresh_ui() -> void:
 
     if current_step >= 3:
         interaction_label.text = "Primer vínculo completado — el Templo está despertando."
+
+
+func _unhandled_input(event: InputEvent) -> void:
+    if event.is_action_pressed("return_to_hub"):
+        get_tree().change_scene_to_file("res://scenes/mode_hub.tscn")
