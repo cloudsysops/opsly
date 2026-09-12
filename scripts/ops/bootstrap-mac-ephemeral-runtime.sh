@@ -105,8 +105,8 @@ if [[ "$DRY_RUN" == "1" ]]; then
   exit 0
 fi
 
-log "waiting for bridges/orchestrator to report healthy (hard deadline: 30s)"
-health_deadline=$((SECONDS + 30))
+log "waiting for bridges/orchestrator to report healthy (hard deadline: 90s)"
+health_deadline=$((SECONDS + 90))
 all_up=0
 
 while (( SECONDS < health_deadline )); do

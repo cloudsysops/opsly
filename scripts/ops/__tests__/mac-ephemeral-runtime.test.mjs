@@ -64,7 +64,7 @@ test('Mac worker sources localhost Redis override before consuming BullMQ', () =
 
 test('Mac bootstrap health wait is portable and bounded by one deadline', () => {
   assert.doesNotMatch(bootstrap, /\bseq\b/);
-  assert.match(bootstrap, /health_deadline=\$\(\(SECONDS \+ 30\)\)/);
+  assert.match(bootstrap, /health_deadline=\$\(\(SECONDS \+ 90\)\)/);
   assert.match(bootstrap, /while \(\( SECONDS < health_deadline \)\)/);
   assert.match(bootstrap, /if \(\( SECONDS >= health_deadline \)\)/);
   assert.match(bootstrap, /--max-time 1/);
