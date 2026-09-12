@@ -4,13 +4,15 @@
 # The OpenCode CLI itself is NEVER kept alive here; execution is per AgentTask
 # inside an ephemeral tmux session managed by Session Manager.
 # Does not execute Markdown as shell (not ACTIVE-PROMPT RCE).
-# Usage: ./scripts/ops/dispatch-prompt-queue.sh [--dry-run]
+# Usage: ./scripts/ops/dispatch-prompt-queue.sh [--dry-run] [--seed-only]
 set -euo pipefail
 
 DRY_RUN=0
+SEED_ONLY=0
 for arg in "$@"; do
   case "${arg}" in
     --dry-run) DRY_RUN=1 ;;
+    --seed-only) SEED_ONLY=1 ;;
     -h|--help)
       sed -n '2,6p' "$0"
       exit 0
@@ -77,6 +79,11 @@ if [[ -d "${SEED_DIR}" ]]; then
   done
 fi
 
+if [[ "${SEED_ONLY}" == "1" ]]; then
+  log "seed-only complete; persistent watcher owns submission"
+  exit 0
+fi
+
 next="$(bash scripts/next-prompt-in-queue.sh || true)"
 if ! grep -q 'Siguiente pendiente:' <<<"${next}"; then
   log "no pending prompt in .cursor/prompts/queue/"
@@ -101,9 +108,11 @@ fi
 
 notify "🤖 Agent queue" "Dispatching governed task for ${prompt_file}" info
 
-if ! pgrep -f 'cli-agent-service.ts' >/dev/null 2>&1; then
-  log "starting local OpenCode service (port 5004)"
-  npx tsx scripts/opsly-agent-cli.ts start opencode || true
+bridge_health="$(curl -fsS --max-time 3 http://127.0.0.1:5004/health 2>/dev/null || true)"
+if [[ -z "${bridge_health}" ]] || ! grep -q '"agent":"opencode"' <<<"${bridge_health}"; then
+  log "OpenCode bridge is not healthy on 127.0.0.1:5004 — refusing ad-hoc detached startup"
+  log "install/start canonical launchd runtime: ./scripts/ops/install-mac-ephemeral-runtime-launchd.sh"
+  exit 1
 fi
 
 if [[ -z "${PLATFORM_ADMIN_TOKEN:-}" ]]; then
