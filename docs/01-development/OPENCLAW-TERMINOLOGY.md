@@ -17,7 +17,8 @@ Evita usar **«OpenClaw»** solo para referirte al servicio Docker de colas: en 
 | -------------- | ------ | -------------- |
 | **OpenClaw CLI** | Binario **`openclaw`** (OpenClaw 2026.x), Node **≥ 22.12**. Gateway WebSocket, `tui`, `agent`, `onboard`, canales, etc. | Máquina operador o VPS; **no** es el contenedor `opsly_orchestrator`. |
 | **Orquestador Opsly** (o **BullMQ Orchestrator**) | Servicio **`apps/orchestrator`**: colas BullMQ, workers, `processIntent`, health típico **3011**. Incluye **módulos TypeScript** bajo `src/openclaw/` (router/control layer) — es código de **rutado Opsly**, no el binario npm. | Docker `opsly_orchestrator` + Redis. |
-| **Capa OpenClaw (código)** | Reglas `applyOpenClawControlLayer`, `registry`, `runOpenClawController` dentro del **Orquestador Opsly**. | Repo: `apps/orchestrator/src/openclaw/`. |
+| **Opsly Agent Control Layer** | Nombre canónico para las reglas internas hoy ubicadas en `apps/orchestrator/src/openclaw/`: policy, routing, governance y contratos. **No es OpenClaw upstream.** | Dentro del Orquestador Opsly. |
+| **OpenClaw upstream runtime** | Binario/gateway/agent runtime externo. Puede correr como proceso, daemon o contenedor en Mac, PC Gamer, VPS o futuros nodos. | Worker externo; nunca reemplaza al Orquestador Opsly. |
 | **MCP Opsly** | Servidor de herramientas para agentes externos. | Docker `opsly_mcp`, puerto **3003**. |
 | **Cola Redis `openclaw`** | Nombre de **cola BullMQ** (historial); no implica que el CLI esté corriendo. | Redis compartido. |
 
@@ -34,7 +35,8 @@ Si alguien dice «orquestador» sin calificar, en Opsly lo por defecto es **Orqu
 
 - Decís **«levantá el OpenClaw CLI»** o **`openclaw gateway`** → el npm global.  
 - Decís **«el orquestador no encola»** o **«revisá BullMQ»** → **Orquestador Opsly** (`apps/orchestrator`).  
-- Decís **«el router OpenClaw eligió local_claude»** → **capa TS** dentro del orquestador.
+- Decís **«Opsly Agent Control Layer eligió local_claude»** → módulos internos actualmente bajo `src/openclaw/`.
+- Decís **«OpenClaw ejecutó la tarea»** → debe significar explícitamente el runtime upstream externo.
 
 ## Comandos útiles
 
@@ -60,3 +62,8 @@ npm run dev --workspace=@intcloudsysops/orchestrator
 
 - [[01-development/README|01-development]]
 - [[brain/README|Brain Central]]
+
+
+## Topología canónica
+
+Ver `docs/00-architecture/AGENT-RUNTIME-TOPOLOGY.md` para la separación entre control plane, procesos host, contenedores, Hermes Agent upstream, OpenClaw upstream, Mac y PC Gamer.
