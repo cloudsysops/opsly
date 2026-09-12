@@ -1,0 +1,55 @@
+name: Astral Mac Runner Smoke
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'preview/astral-arena'
+    paths:
+      - 'apps/game-astral-arena/**'
+      - 'scripts/games/**'
+      - '.github/workflows/astral-mac-runner-smoke.yml'
+
+concurrency:
+  group: astral-mac-smoke
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: [self-hosted, macOS, astral-fast, godot]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Runner identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "host=$(hostname)"
+          echo "arch=$(uname -m)"
+          sw_vers
+          df -h .
+
+      - name: Verify required tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v git
+          command -v node
+          command -v npm
+          if command -v godot >/dev/null 2>&1; then
+            godot --version
+          elif command -v godot4 >/dev/null 2>&1; then
+            godot4 --version
+          elif [[ -x "/Applications/Godot.app/Contents/MacOS/Godot" ]]; then
+            /Applications/Godot.app/Contents/MacOS/Godot --version
+          else
+            echo "::error::Godot 4.7.2 not installed on Mac runner"
+            exit 1
+          fi
+
+      - name: Validate Astral game contract
+        run: node scripts/games/validate-astral-arena-game.mjs
