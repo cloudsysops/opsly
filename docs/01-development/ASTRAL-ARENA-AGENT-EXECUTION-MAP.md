@@ -25,6 +25,7 @@ This file is the execution map for parallel agents. GitHub issues are the source
 
 #1313 Content capture can run in parallel after gameplay events exist.
 #1314 Blueprint graduation runs independently and must not import Astral canon.
+#1316 Web preview can proceed once a Web export is produced; it is independent from Steam publishing.
 ```
 
 ## Workpack A — Crystal Temple runtime
@@ -118,3 +119,19 @@ Every agent must preserve:
 8. Cyber Arena remains isolated/simulated.
 9. Child characters remain age-appropriate and family-safe.
 10. New reusable components need a smoke test before blueprint graduation.
+
+
+## Workpack G — Browser preview
+
+Issue: #1316
+
+Target: `https://astral-arena.op-sly.com`
+
+Deliver:
+- Godot Web export;
+- immutable static image;
+- Traefik route + TLS;
+- browser smoke test.
+
+The current Web preset is single-threaded to maximize compatibility.
+Steam remains the commercial desktop target.
