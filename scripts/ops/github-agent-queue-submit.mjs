@@ -93,6 +93,16 @@ async function request(url, init = {}) {
   return { response, body };
 }
 
+function terminalResultText(output) {
+  if (typeof output === 'string') return output.trim();
+  if (!output || typeof output !== 'object') return '';
+  for (const key of ['result', 'response', 'output', 'text']) {
+    const value = output[key];
+    if (typeof value === 'string') return value.trim();
+  }
+  return '';
+}
+
 const file = process.argv[2];
 if (!file) {
   console.error('usage: github-agent-queue-submit.mjs <workpack.md>');
@@ -172,6 +182,7 @@ console.log(`DISPATCHED job_id=${jobId}`);
 
 const pollSeconds = Number(process.env.OPSLY_GITHUB_AGENT_POLL_SECONDS || 300);
 const requireCompletion = process.env.OPSLY_GITHUB_AGENT_REQUIRE_COMPLETION === 'true';
+const expectedMarker = (process.env.OPSLY_GITHUB_AGENT_EXPECT_MARKER || '').trim();
 const deadline = Date.now() + pollSeconds * 1000;
 while (Date.now() < deadline) {
   await new Promise((r) => setTimeout(r, 5000));
@@ -187,8 +198,22 @@ while (Date.now() < deadline) {
   const state = String(status.body.status || status.body.state || '').toLowerCase();
   console.log(`status=${state || 'unknown'}`);
   if (['completed','done','success'].includes(state)) {
-    console.log('GITHUB_AGENT_QUEUE_COMPLETED');
     const output = status.body.returnvalue ?? status.body.result ?? status.body.output;
+    if (expectedMarker) {
+      const actual = terminalResultText(output);
+      if (actual !== expectedMarker) {
+        console.error(
+          JSON.stringify(
+            { expected_marker: expectedMarker, actual_result: actual || null, output },
+            null,
+            2
+          )
+        );
+        throw new Error('completed job did not return the expected acceptance marker');
+      }
+      console.log(`GITHUB_AGENT_QUEUE_MARKER_OK=${expectedMarker}`);
+    }
+    console.log('GITHUB_AGENT_QUEUE_COMPLETED');
     if (output !== undefined && output !== null) {
       console.log(
         (typeof output === 'string' ? output : JSON.stringify(output)).slice(0, 4000)
