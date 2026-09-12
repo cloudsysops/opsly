@@ -19,12 +19,15 @@ This directory is the first real consumer of the reusable Opsly `godot-steam` ga
 
 4. Press **F6/F5**.
 
-Current playable placeholder:
-- walk through the Crystal Temple;
-- mouse/right-stick camera;
-- jump;
-- interact with Arena and Brissa crystals;
-- mission text comes from the Opsly content pack.
+Current playable surfaces:
+- Family Quick Play;
+- single-player;
+- Sisters local co-op;
+- selectable companion and aura;
+- Hybrid Battle Lab with live 2D ↔ 3D switching;
+- 2D top-down world;
+- 3D Crystal Temple;
+- mission/content data from the Opsly content pack.
 
 ## Controls
 
@@ -112,3 +115,33 @@ node scripts/games/render-astral-steampipe.mjs
 
 Steam remains an adapter. The standalone Windows build must continue to run without
 Steam installed or Steamworks initialized.
+
+
+## Verified CI status — 2026-09-12
+
+### Web
+
+The complete Web staging pipeline has succeeded at least once:
+
+- run `34724858943`;
+- staging path `https://peskids-staging.op-sly.com/astral-arena/`.
+
+### Windows
+
+First successful Windows x64 artifact:
+
+- run `34725562503`;
+- artifact `astral-arena-windows-10cc0c54c81752f150208f7c6c77fe998f2ec978`;
+- digest `sha256:4146a33a8b7b0e6d27ed49d651b83fb6e7869e6d37134e2884b23bc59603c63d`.
+
+This proves export/package generation. A Windows runtime playtest is still required.
+
+## Documentation index
+
+- product status: `docs/01-development/ASTRAL-ARENA-STATUS.md`;
+- execution map: `docs/01-development/ASTRAL-ARENA-AGENT-EXECUTION-MAP.md`;
+- CI fast lane: `docs/01-development/ASTRAL-ARENA-CI-FAST-LANE.md`;
+- Mac runner: `docs/01-development/ASTRAL-MAC-RUNNER.md`;
+- legacy reuse: `docs/01-development/ASTRAL-ARENA-LEGACY-REUSE-MATRIX.md`;
+- Steam readiness: `docs/01-development/ASTRAL-ARENA-STEAM-RELEASE.md`;
+- reusable game blueprint: `docs/blueprints/GAME-PRODUCT-BLUEPRINT.md`.

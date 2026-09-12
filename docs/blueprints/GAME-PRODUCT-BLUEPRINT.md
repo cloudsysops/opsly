@@ -50,8 +50,12 @@ blueprint for the Astral Arena family because Phaser 4 is intentionally a 2D eng
         ┌───────────▼────────────┐
         │  Godot Game Blueprint │
         │                        │
+        │ 2D / 3D presenters    │
+        │ hybrid state router    │
         │ input / controller     │
         │ save / settings        │
+        │ battle runtime         │
+        │ companion contracts    │
         │ mission interpreter    │
         │ inventory              │
         │ UI / scenes            │
@@ -75,6 +79,9 @@ blueprint for the Astral Arena family because Phaser 4 is intentionally a 2D eng
 - save/load versioning;
 - localization;
 - scene router;
+- presentation router (2D / 3D / hybrid);
+- renderer-independent battle state;
+- reusable companion-family contract;
 - generic mission interpreter;
 - inventory / collectibles;
 - generic tech-tree interpreter;
@@ -180,3 +187,22 @@ A shared feature enters the blueprint only after:
 3. the feature has a stable contract and smoke test.
 
 This prevents the blueprint from becoming a giant speculative framework.
+
+
+## Proven blueprint capabilities from Astral Arena
+
+As of 2026-09-12, the first consumer has validated:
+
+- Godot 4.7.2 headless import;
+- Web export and staging deployment;
+- Windows x64 export artifact;
+- 2D presentation;
+- 3D presentation;
+- live hybrid 2D ↔ 3D switching with shared battle state;
+- family quick-play flow;
+- data-driven companion catalog;
+- SteamPipe preparation contract.
+
+This does **not** automatically graduate every Astral implementation into the shared
+blueprint. Graduation still requires a second clean consumer/smoke product without
+Astral-specific canon.

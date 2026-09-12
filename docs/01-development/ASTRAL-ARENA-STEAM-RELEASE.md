@@ -28,7 +28,7 @@
 
 ## Technical gates
 
-### Gate A — Windows artifact
+### Gate A — Windows artifact ✅ first CI artifact produced
 
 Expected:
 
@@ -39,9 +39,17 @@ dist/astral-arena/
 └── SHA256SUMS.txt
 ```
 
-The build must launch without Godot Editor or repository files.
+The first CI artifact was produced successfully:
 
-### Gate B — SteamPipe package
+- run `34725562503`;
+- source SHA `10cc0c54c81752f150208f7c6c77fe998f2ec978`;
+- artifact `astral-arena-windows-10cc0c54c81752f150208f7c6c77fe998f2ec978`;
+- artifact digest `sha256:4146a33a8b7b0e6d27ed49d651b83fb6e7869e6d37134e2884b23bc59603c63d`.
+
+CI export is proven. The remaining Gate A runtime check is to launch the artifact
+outside Godot Editor on a Windows machine and complete a smoke playtest.
+
+### Gate B — SteamPipe package 🟡 implementation ready, real IDs pending
 
 Environment-only IDs:
 
@@ -58,7 +66,7 @@ node scripts/games/render-astral-steampipe.mjs
 
 No upload occurs during generation.
 
-### Gate C — private Steam installation
+### Gate C — private Steam installation 🔒 blocked on Steamworks onboarding
 
 After Steam credentials exist:
 
@@ -92,3 +100,34 @@ Optional:
 - Steam Deck verification.
 
 Game rules and save schema remain Steam-independent.
+
+
+## Store claim policy
+
+Do not mark Steam store features merely because architecture exists.
+
+Publish only after verification:
+- Online Co-op;
+- Online PvP;
+- Steam Achievements;
+- Steam Cloud;
+- Steam Deck support/verification.
+
+Safe current claims after gameplay QA may include:
+- single-player;
+- local co-op;
+- family-friendly;
+- 2D/3D hybrid presentation;
+- turn-based/ability-driven combat.
+
+Final store wording still requires human approval and must match the reviewed build.
+
+## Release environments
+
+Recommended GitHub protection:
+
+- `staging`: browser preview only;
+- `steam-playtest`: private SteamPipe upload, explicit approval;
+- `steam-release`: public promotion, explicit approval and release checklist.
+
+Do not reuse the normal staging deploy credentials for Steam.

@@ -74,3 +74,19 @@ Default install:
 
 The download for export templates is large (~1.3 GB), so the script skips it when
 templates are already present.
+
+
+## Current status
+
+Repository support is implemented.
+
+As of 2026-09-12, the Mac-specific workflows exist but remain blocked until the
+physical MacBook is registered and online with the required labels.
+
+Expected first verification after registration:
+
+1. `Astral Mac Runner Smoke` succeeds;
+2. `Astral Mac Web Build` exports the same product as hosted CI;
+3. hosted and Mac artifacts can be compared by product contract/checksums.
+
+The Mac runner is an optimization/capacity lane, not a release authority.

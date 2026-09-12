@@ -52,3 +52,44 @@ Target:
 Do not register one self-hosted runner process and expect parallel jobs. Each GitHub
 Actions runner process executes one job at a time. To consume two jobs in parallel,
 run two isolated runner instances with separate work directories and bounded resources.
+
+
+## Current result
+
+The workflow cleanup reduced the observed backlog from roughly **229 queued runs**
+to the low tens during the 2026-09-12 session.
+
+Key mechanisms now in place:
+
+- `cancel-in-progress` for PR-scoped workflows;
+- `PR Run Janitor` for obsolete runs;
+- no duplicate feature-branch `push + pull_request` CI where unnecessary;
+- game-only fast lane;
+- preview branch;
+- Mac self-hosted lane prepared.
+
+## Astral build lanes
+
+```
+feat/astral-arena-universe
+        │
+        └─ integration PR / shared contracts
+
+preview/astral-arena
+        │
+        ├─ Web Preview
+        ├─ Windows Artifact
+        ├─ Mac Runner Smoke
+        └─ Mac Web Build
+```
+
+Use the preview branch for rapid game artifact iteration. Do not use it as the
+canonical merge target.
+
+## Proven artifacts
+
+- Web staging pipeline: successful run `34724858943`.
+- Windows x64 artifact: successful run `34725562503`.
+
+The next capacity improvement is not more YAML; it is registering trusted self-hosted
+runners so Godot jobs do not compete with the monorepo GitHub-hosted queue.

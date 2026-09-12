@@ -18,14 +18,14 @@ This file is the execution map for parallel agents. GitHub issues are the source
         └──────┬───────┘
                │
                ▼
-#1311 Windows x64 build
+#1311 Windows x64 artifact ✅ first artifact built
                │
                ▼
-#1302 SteamPipe private build
+#1302 SteamPipe package ⏳ blocked only on real Steam IDs/account for upload
 
 #1313 Content capture can run in parallel after gameplay events exist.
 #1314 Blueprint graduation runs independently and must not import Astral canon.
-#1316 Web preview can proceed once a Web export is produced; it is independent from Steam publishing.
+#1316 Web preview ✅ staging pipeline has completed successfully.
 ```
 
 ## Workpack A — Crystal Temple runtime
@@ -61,17 +61,26 @@ Deliver:
 
 Reusable code must avoid Astral-specific names where possible.
 
-## Workpack C — PC Gamer Windows build
+## Workpack C — Windows build / PC Gamer validation
 
 Issue: #1311
 
-Deliver:
-- Godot 4.7.2 cache/install on authorized runner;
-- export templates;
+Delivered in CI:
+- Godot 4.7.2 verified editor/templates;
 - headless import;
 - Windows x64 export;
 - GitHub artifact;
 - manifest + SHA-256.
+
+First successful artifact:
+- run `34725562503`;
+- artifact `astral-arena-windows-10cc0c54c81752f150208f7c6c77fe998f2ec978`;
+- digest `sha256:4146a33a8b7b0e6d27ed49d651b83fb6e7869e6d37134e2884b23bc59603c63d`.
+
+Remaining acceptance:
+- install/launch outside Godot Editor;
+- validate on Windows/PC gamer;
+- later install through Steam private branch.
 
 Never store Steam credentials in repository or executable.
 
@@ -125,7 +134,10 @@ Every agent must preserve:
 
 Issue: #1316
 
-Target: `https://astral-arena.op-sly.com`
+Primary future host: `https://astral-arena.op-sly.com`
+
+Current working staging path:
+`https://peskids-staging.op-sly.com/astral-arena/`
 
 Deliver:
 - Godot Web export;
@@ -135,3 +147,35 @@ Deliver:
 
 The current Web preset is single-threaded to maximize compatibility.
 Steam remains the commercial desktop target.
+
+
+## Workpack H — Family quick play / Hybrid Battle
+
+Status: implemented in PR #1300.
+
+Playable path:
+
+`JUGAR AHORA → single-player or Sisters Co-op → guardian/companion/aura → Hybrid Battle`
+
+The same battle state can be presented as 2D or 3D at runtime. Presenters must not
+own battle truth.
+
+## Workpack I — Companion Forge foundation
+
+Current implementation includes seven data-driven companion families. Legacy
+Tamagotchi concepts are being reused only as domain ideas; the old service is not a
+runtime dependency.
+
+## Workpack J — Steam release lane
+
+Issues: #1302, #1303, #1311
+
+Implemented:
+- Windows artifact workflow;
+- SteamPipe VDF templates;
+- SteamPipe renderer;
+- SteamAdapter;
+- store asset manifest;
+- fail-closed IDs/secrets policy.
+
+Blocked externally on Steamworks onboarding and real AppID/DepotID for actual upload.

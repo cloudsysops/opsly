@@ -178,3 +178,26 @@ No legacy service becomes authoritative.
 5. Tech-card/deck adapter.
 6. Guild/Constellation social layer.
 7. Mobile-specific UX later.
+
+
+## Migration progress — 2026-09-12
+
+Already materialized in the new Opsly game line:
+
+- **Battle presentation** → Godot 2D/3D/hybrid presenters with shared state;
+- **Companion concept** → seven reusable companion families in Game Core/content pack;
+- **Family gameplay** → single-player + local Sisters co-op;
+- **Web product** → real Godot Web export/staging instead of legacy marketing demo;
+- **Windows product** → real Godot Windows artifact pipeline;
+- **Steam boundary** → distribution adapter and SteamPipe preparation without legacy services.
+
+Still planned/not complete:
+
+- authoritative online multiplayer protocol;
+- Astral Elo;
+- Mission Contract v2;
+- tech-card adapter;
+- Guild/Constellation social layer.
+
+The legacy repository remains reference material only; no legacy server has become
+authoritative in the current product.
