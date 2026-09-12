@@ -2,9 +2,10 @@ import http from 'node:http';
 import { once } from 'node:events';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { enqueueJob, enqueueLocalAgentJob } = vi.hoisted(() => ({
+const { enqueueJob, enqueueLocalAgentJob, probeLocalAgentQueue } = vi.hoisted(() => ({
   enqueueJob: vi.fn(async () => ({ id: 'openclaw-job' })),
   enqueueLocalAgentJob: vi.fn(async () => ({ id: 'local-agents-job' })),
+  probeLocalAgentQueue: vi.fn(async () => ({ ok: true, redis_ping: 'PONG', queue: 'local-agents', counts: { waiting: 0 } })),
 }));
 
 vi.mock('../src/queue.js', async (importOriginal) => {
@@ -13,10 +14,40 @@ vi.mock('../src/queue.js', async (importOriginal) => {
     ...actual,
     enqueueJob,
     enqueueLocalAgentJob,
+    probeLocalAgentQueue,
   };
 });
 
 import { startOrchestratorHealthServer } from '../src/health-server.js';
+
+function getJson(
+  port: number,
+  path: string,
+  extraHeaders: Record<string, string> = {}
+): Promise<{ status: number; raw: string }> {
+  return new Promise((resolve, reject) => {
+    const req = http.request(
+      {
+        hostname: '127.0.0.1',
+        port,
+        path,
+        method: 'GET',
+        headers: extraHeaders,
+      },
+      (res) => {
+        let raw = '';
+        res.on('data', (c: Buffer) => {
+          raw += c.toString();
+        });
+        res.on('end', () => {
+          resolve({ status: res.statusCode ?? 0, raw });
+        });
+      }
+    );
+    req.on('error', reject);
+    req.end();
+  });
+}
 
 function postJson(
   port: number,
@@ -83,6 +114,26 @@ describe('health-server queue routing (local prompt vs sandbox)', () => {
         });
       })
   );
+
+  it('GET /api/local/queue-health authenticates and probes Redis/BullMQ', async () => {
+    const { status, raw } = await getJson(port, '/api/local/queue-health', {
+      Authorization: 'Bearer test-platform-admin',
+    });
+
+    expect(status).toBe(200);
+    expect(JSON.parse(raw)).toMatchObject({
+      ok: true,
+      redis_ping: 'PONG',
+      queue: 'local-agents',
+    });
+    expect(probeLocalAgentQueue).toHaveBeenCalledTimes(1);
+  });
+
+  it('GET /api/local/queue-health returns 401 without admin auth', async () => {
+    const { status } = await getJson(port, '/api/local/queue-health');
+    expect(status).toBe(401);
+    expect(probeLocalAgentQueue).not.toHaveBeenCalled();
+  });
 
   it('POST /api/local/prompt-submit enqueues on local-agents via enqueueLocalAgentJob (job.type local_cursor)', async () => {
     const { status, raw } = await postJson(
