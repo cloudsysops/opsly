@@ -173,5 +173,129 @@
     "tenant_health_issues": 275,
     "pre_june_2026_issues": 287,
     "policy": "Automated/stale historical alerts do not count as founder WIP. Triage them separately with conservative stale/closure rules."
+  },
+  "company_readiness": {
+    "model": "startup-readiness",
+    "gates": {
+      "ready_to_bill": [
+        "legal_entity_confirmed",
+        "business_banking_separated",
+        "terms_privacy_baseline",
+        "customer_contract_path",
+        "production_guardrails"
+      ],
+      "ready_for_enterprise_sales": [
+        "access_control_documented",
+        "agent_audit_log",
+        "backup_restore_tested",
+        "sla_defined",
+        "unit_economics_visible",
+        "dr_plan_documented",
+        "dpa_available_when_applicable"
+      ]
+    },
+    "workstreams": [
+      {
+        "id": "legal-corporate",
+        "name": "Legal & Corporate",
+        "priority": "P0",
+        "owner": "founder",
+        "reviewer": "external-legal-review",
+        "status": "ready",
+        "risk": "high",
+        "next_action": "Confirm Opsly ownership under the existing company entity; create ToS/Privacy/DPA/IP assignment checklist for counsel review.",
+        "evidence_required": [
+          "entity_record",
+          "terms",
+          "privacy_policy",
+          "dpa_template",
+          "ip_assignment_policy"
+        ]
+      },
+      {
+        "id": "trust-compliance",
+        "name": "Trust & Compliance",
+        "priority": "P0",
+        "owner": "security-governance-agent",
+        "reviewer": "founder",
+        "status": "ready",
+        "risk": "high",
+        "next_action": "Build SOC2-aligned control inventory, prove agent audit logging coverage, and execute one backup restore drill.",
+        "evidence_required": [
+          "control_matrix",
+          "audit_log_sample",
+          "restore_drill_report",
+          "current_security_scan"
+        ]
+      },
+      {
+        "id": "product-reliability",
+        "name": "Product Reliability & Economics",
+        "priority": "P1",
+        "owner": "platform-product-agent",
+        "reviewer": "founder",
+        "status": "ready",
+        "risk": "medium",
+        "next_action": "Define SLA by plan, tenant margin model, and documented DR/RTO/RPO assumptions.",
+        "evidence_required": [
+          "sla",
+          "tenant_margin_report",
+          "dr_plan",
+          "rto_rpo"
+        ]
+      },
+      {
+        "id": "go-to-market",
+        "name": "Go-To-Market",
+        "priority": "P0",
+        "owner": "founder",
+        "reviewer": "product-strategy-agent",
+        "status": "ready",
+        "risk": "medium",
+        "next_action": "Choose flagship offer, package Peskids case study with measurable outcomes, and define agency licensing offer.",
+        "evidence_required": [
+          "flagship_decision",
+          "case_study",
+          "pricing_offer",
+          "pipeline_targets"
+        ]
+      },
+      {
+        "id": "finance-ops",
+        "name": "Finance Operations",
+        "priority": "P0",
+        "owner": "founder",
+        "reviewer": "accounting-review",
+        "status": "ready",
+        "risk": "high",
+        "next_action": "Confirm separate banking/bookkeeping and establish monthly P&L + quarterly tax estimate workflow.",
+        "evidence_required": [
+          "banking_separation",
+          "bookkeeping_system",
+          "monthly_pnl",
+          "tax_calendar"
+        ]
+      },
+      {
+        "id": "ai-governance",
+        "name": "AI Governance",
+        "priority": "P0",
+        "owner": "security-governance-agent",
+        "reviewer": "founder",
+        "status": "building",
+        "risk": "high",
+        "next_action": "Version an auditable human-approval policy and extend action logs from PR evidence to tenant-data/tool access events.",
+        "evidence_required": [
+          "ai_policy",
+          "approval_matrix",
+          "agent_action_audit",
+          "incident_response_boundary"
+        ]
+      }
+    ],
+    "assumptions": {
+      "cve_gate": "Do not use README Sprint-4/CVE wording as a gate without current scan evidence.",
+      "regulated_data": "Do not classify a tenant as HIPAA/PHI-regulated solely from vertical name; perform data-flow and contractual applicability review."
+    }
   }
 }
