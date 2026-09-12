@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "principle": "Install only capabilities that an Opsly node is authorized to execute. No duplicate orchestrators, queues, memory systems, or release authority.",
+  "nodes": {
+    "mac_engineering": {
+      "role": "engineering",
+      "required": [
+        "git",
+        "gh",
+        "node",
+        "npm",
+        "python3",
+        "tailscale",
+        "doppler"
+      ],
+      "recommended": [
+        "cursor",
+        "claude",
+        "codex",
+        "opencode",
+        "hermes",
+        "goose",
+        "playwright"
+      ],
+      "forbidden": [
+        "production-database-credentials",
+        "release-authority-bypass"
+      ],
+      "repo": "cloudsysops/opsly",
+      "notes": [
+        "External agent repositories are managed separately by the reviewed superagents installer when that PR is merged."
+      ]
+    },
+    "pc_gamer_compute": {
+      "role": "ephemeral-compute",
+      "required": [
+        "git",
+        "node",
+        "npm",
+        "python3",
+        "tailscale",
+        "doppler",
+        "ffmpeg",
+        "ffprobe",
+        "nvidia-smi",
+        "ollama"
+      ],
+      "recommended": [
+        "cuda-runtime"
+      ],
+      "phase2": [
+        "faster-whisper",
+        "torch",
+        "transformers",
+        "opencv",
+        "comfyui"
+      ],
+      "forbidden": [
+        "production-database-credentials",
+        "customer-pii",
+        "release-authority",
+        "direct-main-push",
+        "public-redis",
+        "public-ollama"
+      ],
+      "repo": "cloudsysops/opsly",
+      "worker_id": "pc-gamer-openclaw-01"
+    },
+    "vps_control_plane": {
+      "role": "control-plane",
+      "required": [
+        "git",
+        "docker",
+        "docker-compose",
+        "tailscale",
+        "doppler",
+        "aws"
+      ],
+      "recommended": [],
+      "forbidden": [
+        "write-capable-external-agent",
+        "ollama-gpu-runtime",
+        "content-rendering",
+        "arbitrary-shell-agent"
+      ],
+      "repo": "cloudsysops/opsly"
+    }
+  }
+}
