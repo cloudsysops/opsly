@@ -177,12 +177,14 @@ describe('local prompt-submit → local-agents queue', () => {
       payload: {
         agent_task?: {
           selected_agent: string;
-          constraints: { write_allowed: boolean };
+          constraints: { write_allowed: boolean; network_allowed: boolean; browser_allowed: boolean };
         };
       };
     };
     expect(jobArg.payload.agent_task?.selected_agent).toBe('local_opencode');
     expect(jobArg.payload.agent_task?.constraints.write_allowed).toBe(false);
+    expect(jobArg.payload.agent_task?.constraints.network_allowed).toBe(false);
+    expect(jobArg.payload.agent_task?.constraints.browser_allowed).toBe(false);
   });
   it('uses frontmatter agent from prompt_content', async () => {
     const { status, raw } = await postJson(
