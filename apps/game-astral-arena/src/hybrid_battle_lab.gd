@@ -9,7 +9,7 @@ const BattleRuntime = preload("res://src/runtime/battle_runtime.gd")
 @onready var player_label: Label = $HUD/Top/PlayerStats
 @onready var enemy_label: Label = $HUD/Top/EnemyStats
 @onready var log_label: Label = $HUD/Bottom/Log
-@onready var ability_box: HBoxContainer = $HUD/Bottom/Abilities
+@onready var ability_box: HFlowContainer = $HUD/Bottom/Abilities
 
 var runtime := BattleRuntime.new()
 var current_mode := "2D"
