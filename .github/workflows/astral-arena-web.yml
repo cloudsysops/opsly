@@ -261,3 +261,122 @@ jobs:
           done
           echo "::error::Public preview did not become healthy: $url"
           exit 1
+
+
+  publish-staging:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    needs: build-web
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      digest: ${{ steps.image.outputs.digest }}
+      tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download browser artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: astral-arena-web-${{ github.sha }}
+          path: dist/astral-arena-web
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Resolve staging image tag
+        id: meta
+        shell: bash
+        run: echo "tag=${WEB_IMAGE}:staging-${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push staging image
+        id: image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/game-astral-arena/web/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tag }}
+
+  deploy-staging:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    needs: [build-web, publish-staging]
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      contents: read
+      packages: read
+    env:
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+      ASTRAL_STAGING_URL: https://peskids-staging.op-sly.com/astral-arena/
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Connect Tailscale for SSH
+        if: env.TAILSCALE_AUTHKEY != ''
+        uses: ./.github/actions/tailscale-connect
+        with:
+          authkey: ${{ env.TAILSCALE_AUTHKEY }}
+          ping_host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+
+      - name: Deploy isolated Astral Arena staging route
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          GITHUB_DEPLOY_TOKEN: ${{ github.token }}
+          GITHUB_DEPLOY_ACTOR: ${{ github.actor }}
+          ASTRAL_IMAGE: ${{ needs.publish-staging.outputs.tag }}
+          ASTRAL_DIGEST: ${{ needs.publish-staging.outputs.digest }}
+          RELEASE_SHA: ${{ github.sha }}
+        with:
+          host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          timeout: 5m
+          command_timeout: 20m
+          envs: GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR,ASTRAL_IMAGE,ASTRAL_DIGEST,RELEASE_SHA
+          script: |
+            set -euo pipefail
+            echo "$GITHUB_DEPLOY_TOKEN" | docker login ghcr.io -u "$GITHUB_DEPLOY_ACTOR" --password-stdin
+            docker pull "$ASTRAL_IMAGE"
+            repo_digest="$(docker image inspect --format '{{index .RepoDigests 0}}' "$ASTRAL_IMAGE")"
+            actual_digest="${repo_digest##*@}"
+            [ "$actual_digest" = "$ASTRAL_DIGEST" ] || {
+              echo "Digest mismatch: $actual_digest != $ASTRAL_DIGEST" >&2
+              exit 1
+            }
+
+            docker rm -f astral-arena-web-staging 2>/dev/null || true
+            docker run -d               --name astral-arena-web-staging               --restart unless-stopped               --network traefik-public               --label traefik.enable=true               --label traefik.docker.network=traefik-public               --label 'traefik.http.routers.astral-arena-staging.rule=Host(`peskids-staging.op-sly.com`) && PathPrefix(`/astral-arena`)'               --label traefik.http.routers.astral-arena-staging.priority=200               --label traefik.http.routers.astral-arena-staging.entrypoints=websecure               --label traefik.http.routers.astral-arena-staging.tls=true               --label traefik.http.routers.astral-arena-staging.tls.certresolver=letsencrypt               --label traefik.http.routers.astral-arena-staging.middlewares=astral-arena-staging-strip               --label traefik.http.middlewares.astral-arena-staging-strip.stripprefix.prefixes=/astral-arena               --label traefik.http.services.astral-arena-staging.loadbalancer.server.port=8080               --label "opsly.release.sha=$RELEASE_SHA"               "$ASTRAL_IMAGE" >/dev/null
+
+            for attempt in $(seq 1 30); do
+              if docker exec astral-arena-web-staging wget -q -O /dev/null http://127.0.0.1:8080/index.html; then
+                echo "Astral Arena staging container: OK"
+                exit 0
+              fi
+              sleep 2
+            done
+            docker logs astral-arena-web-staging --tail 100 >&2 || true
+            exit 1
+
+      - name: Public staging smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 18); do
+            if body="$(curl -fsSL --max-time 15 "$ASTRAL_STAGING_URL" 2>/dev/null)" && printf '%s' "$body" | grep -qi '<canvas\|godot'; then
+              echo "Playable preview: $ASTRAL_STAGING_URL"
+              echo "### 🎮 Astral Arena playable preview" >> "$GITHUB_STEP_SUMMARY"
+              echo "$ASTRAL_STAGING_URL" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            echo "Waiting for staging route ($attempt/18)..."
+            sleep 10
+          done
+          echo "::error::Astral Arena staging route did not become healthy"
+          exit 1
