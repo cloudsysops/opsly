@@ -5,25 +5,25 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 PID_FILE="${PID_FILE:-runtime/logs/agents-autopilot.pid}"
-LOG_FILE="${LOG_FILE:-runtime/logs/agents-autopilot.log}"
 
-if [[ ! -f "$PID_FILE" ]]; then
-  echo "status=stopped"
-  echo "pid_file=$PID_FILE"
-  exit 0
-fi
+echo "status=deprecated"
+echo "execution_model=ephemeral-tmux-per-agent-task"
 
-pid="$(cat "$PID_FILE" 2>/dev/null || true)"
-if [[ -z "$pid" ]]; then
-  echo "status=unknown pid_file_empty"
+if [[ -f "$PID_FILE" ]]; then
+  pid="$(cat "$PID_FILE" 2>/dev/null || true)"
+  if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
+    echo "legacy_process=running pid=$pid"
+    echo "action=run ./scripts/stop-agents-autopilot.sh"
+    exit 1
+  fi
+  echo "legacy_pid_file=stale"
+  echo "action=remove stale pid file or run stop script"
   exit 1
 fi
 
-if kill -0 "$pid" 2>/dev/null; then
-  echo "status=running pid=$pid"
-  echo "log=$LOG_FILE"
-  exit 0
+if command -v tmux >/dev/null 2>&1; then
+  count="$(tmux list-sessions -F '#{session_name}' 2>/dev/null | grep -c '^opsly-task-' || true)"
+  echo "active_ephemeral_sessions=$count"
 fi
 
-echo "status=stale pid=$pid"
-exit 1
+exit 0
