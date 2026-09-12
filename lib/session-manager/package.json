@@ -2,7 +2,7 @@
   "name": "@intcloudsysops/session-manager",
   "version": "1.0.0",
   "private": true,
-  "description": "Opsly tmux session manager for persistent agent runtime",
+  "description": "Opsly tmux session manager for bounded ephemeral task runtimes",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
