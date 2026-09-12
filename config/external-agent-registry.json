@@ -11,8 +11,7 @@
     "review": "hermes-cli",
     "security_review": "decepticon-cli",
     "tests": "playwright-runner",
-    "assistant": "copilot-cli",
-    "assistant_openclaw": "openclaw-cli"
+    "assistant": "copilot-cli"
   },
   "workers": {
     "claude-code": {
