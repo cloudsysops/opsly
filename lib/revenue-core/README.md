@@ -15,7 +15,7 @@ Partner
 
 The database schema is defined by:
 
-`supabase/migrations/20260912_revenue_core.sql`
+`supabase/migrations/0101_revenue_core.sql`
 
 ## Example
 
