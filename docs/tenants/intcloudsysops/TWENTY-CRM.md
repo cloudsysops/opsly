@@ -11,7 +11,7 @@ tenant: intcloudsysops
 
 ## Objetivo
 
-Migrar el intake comercial de **GoHighLevel (agencia)** a **Twenty CRM + Supabase + n8n**, sin afectar otros tenants (Peskids usa flags y credenciales distintas).
+Operar el intake comercial sobre **Twenty CRM + Supabase + n8n**. GoHighLevel is EOL and is retained only as historical migration context.
 
 ## Estado en repo (2026-06-09)
 
