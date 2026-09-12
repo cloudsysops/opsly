@@ -6,7 +6,14 @@
     "project_file": "project.godot",
     "main_scene": "res://scenes/bootstrap.tscn",
     "content_pack_path": "res://generated/game-content.pack.json",
-    "windows_export_preset": "Windows Desktop"
+    "windows_export_preset": "Windows Desktop",
+    "presentation_modes": [
+      "2D",
+      "3D",
+      "HYBRID"
+    ],
+    "hybrid_switch_action": "switch_presentation",
+    "shared_battle_state": true
   },
   "steam": {
     "app_id": null,
