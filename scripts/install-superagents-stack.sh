@@ -55,17 +55,39 @@ have() { command -v "$1" >/dev/null 2>&1; }
 log() { printf '[superagents:install] %s\n' "$*"; }
 warn() { printf '[superagents:install] WARN: %s\n' "$*" >&2; }
 
-clone_or_update() {
+clone_pinned() {
   local name="$1"
   local url="$2"
+  local tag="$3"
+  local commit_sha="$4"
   local dir="$AGENTS_HOME/$name"
+
   if [[ -d "$dir/.git" ]]; then
-    log "update $name"
-    run git -C "$dir" fetch --prune origin
-    run git -C "$dir" pull --ff-only
+    log "refresh refs for $name"
+    run git -C "$dir" fetch --tags --prune origin
   else
     log "clone $name -> $dir"
-    run git clone --filter=blob:none --depth 1 "$url" "$dir"
+    run git clone --filter=blob:none --no-checkout "$url" "$dir"
+    run git -C "$dir" fetch --tags --prune origin
+  fi
+
+  log "checkout pinned $name tag=$tag commit=$commit_sha"
+  run git -C "$dir" checkout --detach "$commit_sha"
+
+  if [[ "$DRY_RUN" == false ]]; then
+    local actual
+    actual="$(git -C "$dir" rev-parse HEAD)"
+    if [[ "$actual" != "$commit_sha" ]]; then
+      echo "Pinned checkout mismatch for $name: expected=$commit_sha actual=$actual" >&2
+      exit 1
+    fi
+    local tag_target
+    tag_target="$(git -C "$dir" rev-list -n 1 "$tag" 2>/dev/null || true)"
+    if [[ "$tag_target" != "$commit_sha" ]]; then
+      echo "Pinned tag mismatch for $name: tag=$tag expected=$commit_sha actual=$tag_target" >&2
+      exit 1
+    fi
+    log "verified $name @ $commit_sha"
   fi
 }
 
@@ -124,10 +146,10 @@ start_bridge() {
 mkdir -p "$AGENTS_HOME" runtime/logs
 
 if [[ "$CLONE" == true ]]; then
-  clone_or_update "hermes-agent" "https://github.com/NousResearch/Hermes-Agent.git"
-  clone_or_update "openclaw" "https://github.com/openclaw/openclaw.git"
-  clone_or_update "opencode" "https://github.com/anomalyco/opencode.git"
-  clone_or_update "goose" "https://github.com/aaif-goose/goose.git"
+  clone_pinned "hermes-agent" "https://github.com/NousResearch/Hermes-Agent.git" "v2026.9.7" "2237be355906fbe6065ce1815711eee52b2d646e"
+  clone_pinned "openclaw" "https://github.com/openclaw/openclaw.git" "v2026.7.1-2" "0790d9f593ad30c940ed93b5872a8cf6d6f3cf8c"
+  clone_pinned "opencode" "https://github.com/anomalyco/opencode.git" "v1.18.30" "3104c1428ec91f809e5ab86631300de41eb6952e"
+  clone_pinned "goose" "https://github.com/aaif-goose/goose.git" "v1.35.0" "be66b3d10573baea5ab69798c1bdf3d028a08695"
 fi
 
 if [[ "$INSTALL" == true ]]; then
