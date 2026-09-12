@@ -105,7 +105,15 @@ if [[ "$DRY_RUN" == "1" ]]; then
   exit 0
 fi
 
-sleep 3
+log "waiting for bridges/orchestrator to report healthy (up to 30s)"
+for _ in $(seq 1 30); do
+  all_up=1
+  for port in 5002 5004 5005 5007 3011; do
+    curl -sf --max-time 1 "http://127.0.0.1:${port}/health" >/dev/null 2>&1 || all_up=0
+  done
+  [[ "$all_up" == "1" ]] && break
+  sleep 1
+done
 
 log "running readiness doctor through Doppler (FAIL blocks; WARN remains visible)"
 doppler run --project ops-intcloudsysops --config prd --   ./scripts/ops/mac-ephemeral-runtime-doctor.sh
