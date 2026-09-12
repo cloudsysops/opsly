@@ -52,6 +52,7 @@ COMPOSE_WORKERS=("${COMPOSE_BASE[@]}" -f infra/docker-compose.pc-gamer-workers.y
 OVERNIGHT_WORKTREE="${OPSLY_OVERNIGHT_WORKTREE:-$HOME/opsly-overnight}"
 OVERNIGHT_BRANCH="${OPSLY_OVERNIGHT_BRANCH:-overnight/opencode}"
 OPENCODE_PORT="${OPSLY_OPENCODE_PORT:-5004}"
+OPENCODE_BIND="${OPSLY_OPENCODE_BIND:-127.0.0.1}"
 OLLAMA_URL="${OLLAMA_URL:-http://127.0.0.1:11434}"
 MODEL_PREFERENCE="${OPSLY_LOCAL_MODEL_PREFERENCE:-qwen3-coder,qwen2.5-coder,devstral,gpt-oss,codestral,llama3.2}"
 
@@ -119,6 +120,12 @@ doctor() {
   else
     echo "[FAIL] no Ollama model available"
     failures=$((failures+1))
+  fi
+
+  if [[ "$OPENCODE_BIND" == "127.0.0.1" || "$OPENCODE_BIND" == "localhost" ]]; then
+    echo "[WARN] bridge is localhost-only; set OPSLY_OPENCODE_BIND to the Gamer Tailscale IP for remote Mac dispatch"
+  else
+    echo "[PASS] remote bridge bind: $OPENCODE_BIND:$OPENCODE_PORT"
   fi
 
   if [[ -f "$ENV_WORKER" ]]; then
@@ -230,6 +237,7 @@ start_bridge() {
     OPSLY_CLI_AGENT_TOKEN="$token" \
     OPSLY_CLI_AGENT_CWD="$OVERNIGHT_WORKTREE" \
     OPSLY_CLI_AGENT_ALLOWED_CWD_PREFIX="$OVERNIGHT_WORKTREE" \
+    OPSLY_CLI_AGENT_BIND="$OPENCODE_BIND" \
     OPSLY_OPENCODE_MODEL="$selected_model" \
     OLLAMA_URL="$OLLAMA_URL" \
     setsid nohup npx tsx "${ROOT}/scripts/cli-agent-service.ts" \
@@ -268,7 +276,8 @@ compose_down() {
 show_status() {
   echo "=== OpenCode plane ==="
   echo "worktree: $OVERNIGHT_WORKTREE"
-  curl -sf --max-time 3 "http://127.0.0.1:${OPENCODE_PORT}/health" 2>/dev/null || echo "bridge: DOWN (:${OPENCODE_PORT})"
+  echo "bind: $OPENCODE_BIND"
+  curl -sf --max-time 3 "http://${OPENCODE_BIND}:${OPENCODE_PORT}/health" 2>/dev/null || echo "bridge: DOWN (:${OPENCODE_PORT})"
   echo
   if [[ -f "$ENV_WORKER" ]]; then
     grep -E '^OPSLY_WORKER_ALLOWLIST=|^OPSLY_OPENCODE_AGENT_URL=|^OPSLY_LOCAL_AGENT_UNIFIED_ONLY=|^OPSLY_LOCAL_AGENT_KINDS=' "$ENV_WORKER" || true
@@ -315,6 +324,7 @@ Environment=PORT=${OPENCODE_PORT}
 Environment=OPSLY_CLI_AGENT_TOKEN=${token}
 Environment=OPSLY_CLI_AGENT_CWD=${OVERNIGHT_WORKTREE}
 Environment=OPSLY_CLI_AGENT_ALLOWED_CWD_PREFIX=${OVERNIGHT_WORKTREE}
+Environment=OPSLY_CLI_AGENT_BIND=${OPENCODE_BIND}
 Environment=OPSLY_OPENCODE_MODEL=${selected_model}
 Environment=OLLAMA_HOST=127.0.0.1:11434
 Environment=OLLAMA_URL=${OLLAMA_URL}
