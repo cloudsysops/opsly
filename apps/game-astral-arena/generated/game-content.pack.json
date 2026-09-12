@@ -13,15 +13,31 @@
       "id": "arena",
       "name": "Arena Botero Gomez",
       "role": "Tejedora del Nexo",
-      "palette": ["royal purple", "antique gold"],
-      "abilities": ["Astral Threads", "Star Leap", "Nexus Stitching"]
+      "palette": [
+        "royal purple",
+        "antique gold"
+      ],
+      "abilities": [
+        "Astral Threads",
+        "Star Leap",
+        "Nexus Stitching"
+      ]
     },
     {
       "id": "brissa",
       "name": "Brissa Botero Gomez",
       "role": "Guardiana de las Constelaciones",
-      "palette": ["deep blue", "royal purple", "rose pink", "antique gold"],
-      "abilities": ["Astroshield", "Star Jump", "Nexus Sight"]
+      "palette": [
+        "deep blue",
+        "royal purple",
+        "rose pink",
+        "antique gold"
+      ],
+      "abilities": [
+        "Astroshield",
+        "Star Jump",
+        "Nexus Sight"
+      ]
     },
     {
       "id": "orion-shepherd",
@@ -45,10 +61,26 @@
       "title": "Dos Firmas Astrales",
       "summary": "Arena and Brissa cross the Crystal Temple threshold and awaken Astral Threads and Nexus Sight.",
       "steps": [
-        { "id": "follow-star-thread", "prompt": "Sigue el hilo estelar hacia los cristales.", "kind": "explore" },
-        { "id": "awaken-arena", "prompt": "Activa el cristal púrpura-dorado de Arena.", "kind": "connect" },
-        { "id": "awaken-brissa", "prompt": "Activa el cristal azul de Brissa.", "kind": "connect" },
-        { "id": "protect-together", "prompt": "Combina hilo y escudo para despertar el Templo.", "kind": "create" }
+        {
+          "id": "follow-star-thread",
+          "prompt": "Sigue el hilo estelar hacia los cristales.",
+          "kind": "explore"
+        },
+        {
+          "id": "awaken-arena",
+          "prompt": "Activa el cristal púrpura-dorado de Arena.",
+          "kind": "connect"
+        },
+        {
+          "id": "awaken-brissa",
+          "prompt": "Activa el cristal azul de Brissa.",
+          "kind": "connect"
+        },
+        {
+          "id": "protect-together",
+          "prompt": "Combina hilo y escudo para despertar el Templo.",
+          "kind": "create"
+        }
       ]
     },
     {
@@ -56,9 +88,21 @@
       "title": "El que Encuentra lo Perdido",
       "summary": "Orion refuses to abandon trapped people and becomes the Earth Guardian.",
       "steps": [
-        { "id": "read-orion-signal", "prompt": "Observa qué intenta mostrar Orion.", "kind": "explore" },
-        { "id": "locate-survivors", "prompt": "Usa Visión del Nexo para localizar a los atrapados.", "kind": "explore" },
-        { "id": "open-rescue-path", "prompt": "Conecta el hilo de Arena con la ruta segura de Brissa.", "kind": "connect" }
+        {
+          "id": "read-orion-signal",
+          "prompt": "Observa qué intenta mostrar Orion.",
+          "kind": "explore"
+        },
+        {
+          "id": "locate-survivors",
+          "prompt": "Usa Visión del Nexo para localizar a los atrapados.",
+          "kind": "explore"
+        },
+        {
+          "id": "open-rescue-path",
+          "prompt": "Conecta el hilo de Arena con la ruta segura de Brissa.",
+          "kind": "connect"
+        }
       ]
     },
     {
@@ -66,9 +110,21 @@
       "title": "El Bosque sin Cielo",
       "summary": "The team discovers Aurora, the Astral Unicorn.",
       "steps": [
-        { "id": "track-dark-lake", "prompt": "Sigue a Orion hasta el lago oculto.", "kind": "explore" },
-        { "id": "listen-before-acting", "prompt": "Escucha antes de usar la fuerza.", "kind": "explore" },
-        { "id": "light-path", "prompt": "Conecta el camino de luz de Aurora con los Hilos Astrales.", "kind": "connect" }
+        {
+          "id": "track-dark-lake",
+          "prompt": "Sigue a Orion hasta el lago oculto.",
+          "kind": "explore"
+        },
+        {
+          "id": "listen-before-acting",
+          "prompt": "Escucha antes de usar la fuerza.",
+          "kind": "explore"
+        },
+        {
+          "id": "light-path",
+          "prompt": "Conecta el camino de luz de Aurora con los Hilos Astrales.",
+          "kind": "connect"
+        }
       ]
     },
     {
@@ -76,9 +132,21 @@
       "title": "El Robot que Recuerda",
       "summary": "The Guardians reactivate NX-7 and recover the first damaged record of Umbra.",
       "steps": [
-        { "id": "find-core", "prompt": "Encuentra el núcleo de NX-7.", "kind": "explore" },
-        { "id": "sync-four-signatures", "prompt": "Sincroniza cuatro firmas guardianas.", "kind": "connect" },
-        { "id": "recover-umbra-file", "prompt": "Reconstruye el registro dañado de Umbra.", "kind": "create" }
+        {
+          "id": "find-core",
+          "prompt": "Encuentra el núcleo de NX-7.",
+          "kind": "explore"
+        },
+        {
+          "id": "sync-four-signatures",
+          "prompt": "Sincroniza cuatro firmas guardianas.",
+          "kind": "connect"
+        },
+        {
+          "id": "recover-umbra-file",
+          "prompt": "Reconstruye el registro dañado de Umbra.",
+          "kind": "create"
+        }
       ]
     }
   ],
@@ -92,7 +160,11 @@
       "ALLOY": 60,
       "TRUST": 10
     },
-    "first_buildings": ["nexus-core", "portal-gateway", "memory-vault"],
+    "first_buildings": [
+      "nexus-core",
+      "portal-gateway",
+      "memory-vault"
+    ],
     "first_technology": "structured-requests"
   },
   "cyber_arena": [
@@ -104,5 +176,186 @@
     "console-001-game-loop",
     "homelab-001-inventory",
     "pi-001-boot"
-  ]
+  ],
+  "presentation_modes": {
+    "schemaVersion": 1,
+    "modes": [
+      {
+        "id": "story-3d",
+        "presentation": "3D",
+        "purpose": "Narrative exploration, construction, cinematic encounters, and Steam-first play."
+      },
+      {
+        "id": "world-2d",
+        "presentation": "2D",
+        "purpose": "Top-down exploration, fast prototyping, web-friendly missions, and collection loops."
+      },
+      {
+        "id": "battle-lab-hybrid",
+        "presentation": "HYBRID",
+        "purpose": "Run one deterministic battle state through 2D tactical and 3D arena presentations."
+      }
+    ],
+    "sharedSystems": [
+      "content-pack",
+      "missions",
+      "battle-rules",
+      "inventory",
+      "collectibles",
+      "progression",
+      "save-load",
+      "telemetry"
+    ]
+  },
+  "battle": {
+    "ruleset": {
+      "id": "astral-duel-v1",
+      "name": "Astral Duel",
+      "turnModel": "ALTERNATING_SPEED",
+      "presentationModes": [
+        "2D",
+        "3D",
+        "HYBRID"
+      ],
+      "maxPartySize": 3,
+      "winCondition": "DEFEAT_ALL_OPPONENTS",
+      "energyRegenerationPerTurn": 12,
+      "defenseReductionPercent": 45
+    },
+    "fighters": [
+      {
+        "id": "arena",
+        "name": "Arena",
+        "maxHealth": 90,
+        "maxEnergy": 120,
+        "speed": 94,
+        "abilities": [
+          {
+            "id": "astral-thread",
+            "name": "Hilo Astral",
+            "kind": "ATTACK",
+            "power": 24,
+            "energyCost": 18,
+            "description": "A focused astral thread that damages a Shadow target."
+          },
+          {
+            "id": "nexus-stitch",
+            "name": "Costura del Nexo",
+            "kind": "SUPPORT",
+            "power": 20,
+            "energyCost": 24,
+            "description": "Restores an ally by repairing a damaged Nexus connection."
+          },
+          {
+            "id": "thread-snare",
+            "name": "Red de Hilos",
+            "kind": "CONTROL",
+            "power": 12,
+            "energyCost": 20,
+            "description": "Restrains an opponent and reduces the impact of its next action."
+          }
+        ]
+      },
+      {
+        "id": "brissa",
+        "name": "Brissa",
+        "maxHealth": 108,
+        "maxEnergy": 105,
+        "speed": 82,
+        "abilities": [
+          {
+            "id": "nova-pulse",
+            "name": "Pulso Nova",
+            "kind": "ATTACK",
+            "power": 22,
+            "energyCost": 17,
+            "description": "A constellation pulse that weakens Shadow energy."
+          },
+          {
+            "id": "astroshield",
+            "name": "Astroescudo",
+            "kind": "DEFEND",
+            "power": 0,
+            "energyCost": 14,
+            "description": "Raises a constellation shield for the next incoming action."
+          },
+          {
+            "id": "nexus-sight",
+            "name": "Visión del Nexo",
+            "kind": "SUPPORT",
+            "power": 16,
+            "energyCost": 18,
+            "description": "Reads the battle field and restores team energy."
+          }
+        ]
+      },
+      {
+        "id": "orion-shepherd",
+        "name": "Orion",
+        "maxHealth": 116,
+        "maxEnergy": 80,
+        "speed": 88,
+        "abilities": [
+          {
+            "id": "guardian-rush",
+            "name": "Carga Guardiana",
+            "kind": "ATTACK",
+            "power": 26,
+            "energyCost": 16,
+            "description": "A fast guardian rush that protects the team by drawing pressure."
+          },
+          {
+            "id": "rescue-guard",
+            "name": "Guardia de Rescate",
+            "kind": "DEFEND",
+            "power": 0,
+            "energyCost": 12,
+            "description": "Orion braces to reduce incoming damage."
+          },
+          {
+            "id": "shadow-track",
+            "name": "Rastro de Sombra",
+            "kind": "CONTROL",
+            "power": 10,
+            "energyCost": 14,
+            "description": "Marks a hidden Shadow weakness for the next team action."
+          }
+        ]
+      },
+      {
+        "id": "shadow-scout",
+        "name": "Explorador Sombra",
+        "maxHealth": 82,
+        "maxEnergy": 70,
+        "speed": 74,
+        "abilities": [
+          {
+            "id": "shadow-pulse",
+            "name": "Pulso Sombrío",
+            "kind": "ATTACK",
+            "power": 18,
+            "energyCost": 12,
+            "description": "Synthetic enemy action used only inside the battle lab."
+          },
+          {
+            "id": "shadow-guard",
+            "name": "Velo Sombrío",
+            "kind": "DEFEND",
+            "power": 0,
+            "energyCost": 10,
+            "description": "Synthetic defensive action."
+          }
+        ]
+      }
+    ],
+    "first_encounter": {
+      "player": [
+        "arena",
+        "brissa"
+      ],
+      "opponent": [
+        "shadow-scout"
+      ]
+    }
+  }
 }
