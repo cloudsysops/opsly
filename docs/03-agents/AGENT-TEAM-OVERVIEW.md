@@ -1,10 +1,14 @@
 ---
 title: "Opsly 2.0 Agent Team Overview"
 date: 2026-05-08
-status: active
+status: historical
 ---
 
 # The Complete Opsly 2.0 Agent Team
+
+> Historical role/persona design. These names are conceptual roles and do **not** describe the canonical runtime topology or imply persistent AI processes.
+>
+> For current execution architecture, use [Canonical Agent Runtime Architecture](../00-architecture/AGENT-RUNTIME-ARCHITECTURE.md). Real runtimes are registry-driven through `config/external-agent-registry.json`, `AgentTaskEnvelopeV1`, BullMQ, Session Manager and ephemeral task sessions.
 
 ## 8 Specialized Agents + 1 Human Leader
 

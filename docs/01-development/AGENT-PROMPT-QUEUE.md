@@ -1,110 +1,114 @@
 ---
-status: draft
+status: canon
 owner: operations
 last_review: 2026-09-12
 type: guide
 tags:
   - opsly/development
+  - opsly/agents
 ---
 
-# Cola de prompts para agentes (local / Cursor)
+# Agent Task Queues
 
-Objetivo: que **desde el móvil o el equipo** se dejen instrucciones en git y el agente en Cursor las **encuentre, ejecute y deje constancia** de forma ordenada.
+Opsly has multiple task-entry surfaces, but only one governed runtime path.
 
-## Modelo canónico actual
+Canonical architecture:
+[Agent Runtime Architecture](../00-architecture/AGENT-RUNTIME-ARCHITECTURE.md).
 
-Opsly ya no depende de mantener Cursor/OpenCode abierto ni de agentes AI persistentes.
-
-La cola entra por el camino gobernado:
+## One execution path
 
 ```text
-tracked night-queue / local queue
-→ LocalPromptWatcher / governed submit
-→ AgentTaskEnvelopeV1
-→ BullMQ local-agents
-→ authenticated CLI bridge
-→ Session Manager
-→ ephemeral tmux opsly-task-*
-→ real runtime
-→ result/evidence
-→ teardown
+tracked/local/GitHub task source
+  ↓
+governed submit
+  ↓
+POST /api/local/prompt-submit
+  ↓
+AgentTaskEnvelopeV1
+  ↓
+policy / approval
+  ↓
+BullMQ local-agents
+  ↓
+eligible worker
+  ↓
+authenticated bridge
+  ↓
+Session Manager
+  ↓
+ephemeral opsly-task-* session
+  ↓
+real runtime
+  ↓
+result / evidence
+  ↓
+teardown
 ```
 
-Invariantes:
-- el checkout automático solo confía en la rama configurada (por defecto `main`);
-- `PLATFORM_ADMIN_TOKEN` es obligatorio;
-- no se ejecuta Markdown como shell;
-- el runtime AI nace por tarea y se destruye al terminar;
-- estado sano en idle = **0 sesiones `opsly-task-*`**;
-- no hay fallback silencioso a payloads legacy salvo break-glass explícito y temporal.
+No queue integration may bypass the orchestrator by spawning a real AI runtime directly.
 
-## Rutas recomendadas
+## Queue surfaces
 
-| Rol | Ruta | Notas |
-|-----|------|--------|
-| Prompts **pendientes** | `.cursor/prompts/queue/*.md` | Un archivo = una tarea; nombre `NNN-breve-titulo.md` (NNN = 001, 002…). |
-| Prompts **hechos** (archivo) | `.cursor/prompts/done/` | Tras completar: **mover** el `.md` de `queue/` → `done/` (o renombrar con prefijo `done-`). |
-| **Respuesta del agente** | Mismo archivo, sección final *o* par `queue/001-x.md` + `queue/001-x.response.md` | Elige **una** convención por repo y cúmplela siempre. |
+### 1. Tracked night/background workpacks
 
-Convención **recomendada en este repo**: respuesta **al final del mismo archivo** en una sección fija (menos archivos sueltos).
+Canonical tracked backlog:
 
-## Formato del prompt (cabecera YAML mínima)
+`docs/01-development/night-queue/*.md`
 
-Al inicio del `.md` en `queue/`:
+These workpacks carry safety metadata such as:
 
-```yaml
----
-id: local-services-001
-status: pending
-owner: optional-github-handle
-created: 2026-05-03
-requires_pr: true
----
-```
+- status;
+- priority;
+- agent;
+- owner;
+- environment;
+- cost class;
+- estimated cost;
+- PR/write intent;
+- approval requirement;
+- production deploy;
+- paid infra;
+- resource class;
+- node type.
 
-Cuerpo: instrucciones en Markdown (qué construir, rutas, criterios de hecho).
+The background scheduler compiles these into candidates and selects only eligible work.
 
-## Dónde y cómo **dejar la respuesta** (obligatorio para el agente)
+### 2. Local prompt queue
 
-Al terminar (o si bloquea), el agente **añade** al mismo archivo (debajo del cuerpo original, sin borrar el pedido):
+Local transient queue:
 
-```markdown
----
+`.cursor/prompts/queue/*.md`
 
-## Respuesta agente (ISO-8601 UTC)
+It is gitignored and can be seeded from tracked workpacks.
 
-- **Estado:** hecho | parcial | bloqueado
-- **Rama / PR:** …
-- **Commits:** …
-- **Qué se hizo:** …
-- **Qué falta / riesgos:** …
-- **Cómo verificar:** comandos o URLs
-```
-
-Luego:
-
-1. Si `requires_pr: true` y hay cambios: **PR** según `docs/01-development/GIT-WORKFLOW.md`.
-2. Cambiar en la cabecera `status: done` (o mover el archivo a `done/` si preferís solo estado por ruta).
-
-## Cómo disparar una pasada
-
-El dispatcher sincroniza de forma fast-forward-only la rama confiable, si el árbol está limpio, y siembra la cola local desde los workpacks versionados:
-
-```bash
-./scripts/ops/dispatch-prompt-queue.sh
-```
-
-Para inspeccionar sin ejecutar:
+Use:
 
 ```bash
 ./scripts/ops/dispatch-prompt-queue.sh --dry-run
 ```
 
-El dispatcher **no abre Terminal ni arranca un CLI AI persistente**. Verifica el camino gobernado y deja la ejecución real al worker/bridge/Session Manager.
+for inspection.
 
-## Servicios locales permitidos
+The dispatcher does not execute Markdown as shell and must not start a persistent AI runtime.
 
-El repo incluye un watcher mantenido:
+### 3. GitHub Agent Queue
+
+The private `opsly-control` repository can stage governed workpacks that call the canonical submitter in `opsly/main`.
+
+Current autonomous policy is read-only.
+
+Eligible work must be zero-cost local work and must not request:
+
+- production deployment;
+- paid infrastructure;
+- approval-required sensitive execution;
+- autonomous PR/write capability.
+
+Write-capable GitHub work remains blocked until the typed approval design in workpack 051 is implemented.
+
+## Local watcher
+
+The maintained local watcher submits work through the orchestrator:
 
 ```bash
 PLATFORM_ADMIN_TOKEN="<token>" \
@@ -112,64 +116,105 @@ ORCHESTRATOR_URL="http://localhost:3011" \
 npm run opsly:local-prompt-watcher
 ```
 
-Comportamiento:
-
-- Escucha `.cursor/prompts/queue/*.md`.
-- Procesa todos los prompts con `status: pending` al arrancar y luego los nuevos cambios.
-- Lee `docs/01-development/ACTIVE-PROMPT.md` como contexto operativo para cada job.
-- Envía el contenido a `POST /api/local/prompt-submit`; **no ejecuta bloques shell del Markdown**.
-- Hace polling de `/api/job-status/{job_id}`.
-- Añade la sección `## Respuesta agente (...)` en el mismo archivo y cambia `status` a `done` o `failed`.
-
-Para procesar una sola pasada y salir:
+Single pass:
 
 ```bash
 PLATFORM_ADMIN_TOKEN="<token>" npm run opsly:local-prompt-watcher:once
 ```
 
+The watcher:
 
-## Puesta en marcha del nodo Mac
+- reads pending prompt files;
+- submits to `POST /api/local/prompt-submit`;
+- polls terminal status;
+- writes bounded response metadata;
+- does not execute Markdown shell blocks.
 
-Después de instalar/bootstrappear los servicios persistentes permitidos, el gate físico final es:
+## Git trust
+
+Automatic tracked-task pickup must use a trusted branch, normally `main`.
+
+Fast-forward sync may be used only when safe; dirty trees, detached HEADs or untrusted branches must not become automatic task sources.
+
+## Runtime invariants
+
+- `PLATFORM_ADMIN_TOKEN` is required for governed local submit;
+- `AgentTaskEnvelopeV1` is the canonical execution contract;
+- legacy payload fallback is break-glass only;
+- runtime invocation is ephemeral;
+- healthy idle means zero `opsly-task-*` sessions;
+- real runtime names come from `config/external-agent-registry.json`;
+- roles such as planner/reviewer/developer do not imply persistent processes.
+
+## Read vs write work
+
+Read-only work may execute without write approval when all other policy gates pass.
+
+Write-capable autonomous work is currently held.
+
+Do not infer write approval from:
+
+- a scheduler flag;
+- a GitHub label alone;
+- an HTTP header alone.
+
+Future write approval must be typed, bound to exact task identity and validated inside `AgentTaskRuntime`.
+
+## Physical Mac activation
+
+Canonical activation:
 
 ```bash
-doppler run --project ops-intcloudsysops --config prd -- npm run opsly:mac:go-live
+npm run opsly:mac:activate
 ```
 
-Ese comando verifica en una sola pasada:
+The physical readiness path validates:
 
-1. readiness doctor sin blockers;
-2. cero sesiones AI antes de empezar;
-3. control plane + cola `local-agents`;
-4. submit gobernado;
-5. ejecución real vía runtime efímero;
-6. polling de estado;
-7. evidencia bounded local;
-8. teardown;
-9. retorno a cero sesiones `opsly-task-*`.
+1. prerequisites;
+2. Doppler access;
+3. execution-boundary builds;
+4. bridge/orchestrator health;
+5. readiness doctor;
+6. zero AI task sessions at healthy idle.
 
-Un PASS de CI no sustituye este smoke físico. El nodo no se considera E2E validado hasta obtener evidencia desde el Mac real.
+The health deadline defaults to 90 seconds and is bounded by `OPSLY_MAC_HEALTH_WAIT_SECONDS` between 10 and 300 seconds.
 
-## Detección manual sin peligro
+## Gamer physical acceptance
 
-- **Opcional:** script solo lectura que lista el siguiente pendiente (para humano o para pegar salida en el chat):
+The target acceptance path is:
 
-```bash
-./scripts/next-prompt-in-queue.sh
+```text
+GitHub
+→ canonical submitter
+→ AgentTaskEnvelopeV1
+→ BullMQ local-agents
+→ PC Gamer
+→ OpenCode
+→ Ollama
+→ exact GAMER_OPENCODE_OK
+→ terminal success
+→ teardown
 ```
 
-Prompts versionados para la noche: `docs/01-development/night-queue/` — `dispatch-prompt-queue.sh` los copia a `.cursor/prompts/queue/` (gitignored) y usa el camino gobernado del orchestrator. n8n: `docs/n8n-workflows/night-agent-queue.json` (HTTP al orchestrator; **no** escribe `docs/ACTIVE-PROMPT.md`).
+A merely queued job or generic completion is not sufficient.
 
-Si no existe el script, basta con listar la carpeta `queue/` manualmente; el protocolo sigue siendo válido.
+## Current runtime workpacks
 
-## Relación con otras carpetas
+```text
+045  pending  read-only audit
+046  held     write-capable
+047  held     write-capable
+048  held     write-capable
+049  held     write-capable
+050  pending  Gamer-only physical acceptance
+051  held     typed write approval
+```
 
-- `.cursor/prompts/*.md` **fuera** de `queue/` pueden ser **plantillas o referencia** (no son tarea hasta que alguien copie o enlace desde `queue/`).
-- No confundir con **skills** (`skills/user/…`): la cola es **tareas puntuales** del producto/sprint; las skills son procedimiento reutilizable.
+See the operational snapshot:
+[AGENT-RUNTIME-STATUS-2026-09-12.md](AGENT-RUNTIME-STATUS-2026-09-12.md).
 
----
+## Related
 
-## Enlaces relacionados
-
-- [[01-development/README|01-development]]
-- [[brain/README|Brain Central]]
+- [Canonical runtime architecture](../00-architecture/AGENT-RUNTIME-ARCHITECTURE.md)
+- [Current automation map](../00-architecture/CURRENT-AUTOMATION-MAP.md)
+- [Background scheduler](../00-architecture/BACKGROUND-WORK-SCHEDULER.md)
