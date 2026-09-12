@@ -70,13 +70,12 @@ resolve_local_model() {
   json="$(ollama_models_json 2>/dev/null || true)"
   [[ -n "$json" ]] || return 1
 
-  node - "$MODEL_PREFERENCE" <<'NODE' <<<"$json"
-const fs = require('fs');
+  MODELS_JSON="$json" node - "$MODEL_PREFERENCE" <<'NODE'
 const prefs = String(process.argv[2] || '')
   .split(',')
   .map((v) => v.trim().toLowerCase())
   .filter(Boolean);
-const body = JSON.parse(fs.readFileSync(0, 'utf8'));
+const body = JSON.parse(process.env.MODELS_JSON || '{"models":[]}');
 const names = (body.models || [])
   .map((m) => String(m.name || m.model || '').trim())
   .filter(Boolean);
