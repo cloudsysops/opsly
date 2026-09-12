@@ -65,7 +65,19 @@ fi
 # Seed gitignored .cursor/prompts/queue/ from tracked docs/01-development/night-queue/
 QUEUE_DIR="${ROOT}/.cursor/prompts/queue"
 SEED_DIR="${ROOT}/docs/01-development/night-queue"
-mkdir -p "${QUEUE_DIR}"
+RUNTIME_DIR="${ROOT}/.cursor/runtime"
+LOCK_DIR="${RUNTIME_DIR}/dispatch-prompt-queue.lock"
+mkdir -p "${QUEUE_DIR}" "${RUNTIME_DIR}"
+
+# Atomic single-dispatcher claim. Prevents overlapping LaunchAgent/manual runs
+# from submitting the same pending prompt concurrently. The lock is local and
+# ephemeral; BullMQ request_id/jobId dedupe remains the second line of defense.
+if ! mkdir "${LOCK_DIR}" 2>/dev/null; then
+  log "another dispatcher instance holds ${LOCK_DIR} — skipping this cycle"
+  exit 0
+fi
+cleanup_dispatch_lock() { rmdir "${LOCK_DIR}" >/dev/null 2>&1 || true; }
+trap cleanup_dispatch_lock EXIT
 if [[ -d "${SEED_DIR}" ]]; then
   for src in "${SEED_DIR}"/*.md; do
     [[ -f "${src}" ]] || continue
