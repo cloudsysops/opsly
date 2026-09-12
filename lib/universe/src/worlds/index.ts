@@ -1,5 +1,19 @@
 import type { UniverseWorld } from '../types.js';
 
+const ASTRAL_ARENA_CAST = [
+  'arena',
+  'brissa',
+  'orion-shepherd',
+  'aurora-unicorn',
+  'nx-7',
+  'altair',
+  'umbra',
+  'asterion',
+  'pyra',
+  'nebryx',
+  'umbriel',
+];
+
 const ALL = [
   'traveler',
   'nova',
@@ -13,6 +27,40 @@ const ALL = [
 ];
 
 export const CANONICAL_WORLDS: UniverseWorld[] = [
+  {
+    id: 'astral-arena',
+    slug: 'astral-arena',
+    name: 'ASTRAL ARENA',
+    description:
+      'A family fantasy-sci-fi realm inside the wider Nexus: Crystal Temple, Celestial City, the Forest Without Sky, Dragon Sanctuaries, living Nexus Currents, and the Great Rift. Arena and Brissa are its central sister-heroes.',
+    visualIdentity: {
+      palette: ['night navy', 'royal purple', 'deep blue', 'rose pink', 'antique gold', 'star white'],
+      architecture:
+        'Floating crystal temples, luminous bridges, constellation cities, dragon sanctuaries, ring portals, and ancient technology grown into living geometry',
+      atmosphere: 'Wonder, movement, family warmth, cosmic danger without horror',
+      lighting: 'Cinematic starlight, purple-blue volumetric glow, warm gold faces, restrained pink energy accents',
+      motifs: ['woven star threads', 'constellation shields', 'winged Nexus rings', 'dragon currents', 'crystal gates'],
+      negatives: [
+        'gore',
+        'horror-child imagery',
+        'hypersexualized child heroes',
+        'religious iconography presented as theology',
+        'trademarked superhero costume imitation',
+        'generic neon cyberpunk overload',
+      ],
+    },
+    themes: ['sisterhood', 'repair', 'memory', 'courage', 'cooperation', 'second chances'],
+    allowedCharacters: ASTRAL_ARENA_CAST,
+    educationalDomains: [
+      'astronomy-lite clearly separated from fantasy',
+      'maps and systems',
+      'technology responsibility',
+      'teamwork and emotional learning',
+      'fictional creature ecology clearly labeled as fiction',
+    ],
+    transitions: ['nexus', 'unknown'],
+    portalSymbol: 'woven star inside an open Nexus ring',
+  },
   {
     id: 'nexus',
     slug: 'nexus',
