@@ -10,6 +10,7 @@ test('Mac local-agents worker does not consume local_opencode by default', async
   const match = source.match(/OPSLY_LOCAL_AGENT_KINDS="\$\{OPSLY_LOCAL_AGENT_KINDS:-([^}]+)\}"/);
   assert.ok(match);
   assert.doesNotMatch(match[1], /local_opencode/);
+  assert.doesNotMatch(match[1], /local_openclaw/);
   assert.match(match[1], /local_hermes/);
   assert.match(match[1], /local_codex/);
 });
