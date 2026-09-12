@@ -27,6 +27,7 @@ echo "==> Build internal packages (required before tsc / vitest)"
 (cd lib/agent-task-core && npm run build)
 (cd lib/git-branch-orchestrator && npm run build)
 (cd lib/session-manager && npm run build)
+(cd lib/ai-board && npm run build)
 (cd lib/runtime && npm run build)
 (cd lib/voice-messaging && npm run build)
 (cd lib/content-studio && npm run build)
