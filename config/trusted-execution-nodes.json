@@ -38,7 +38,8 @@
         "auto-merge",
         "auto-production-deploy",
         "read-unscoped-secrets"
-      ]
+      ],
+      "auth_enforcement": "not_enrolled"
     },
     {
       "node_id": "pc-gamer-openclaw-01",
@@ -64,7 +65,8 @@
         "unscoped-auth-secrets",
         "direct-main-write",
         "auto-production-deploy"
-      ]
+      ],
+      "auth_enforcement": "legacy_shared_auth_pending_per_node_enforcement"
     },
     {
       "node_id": "vps-dragon-control-01",
@@ -86,7 +88,8 @@
       "forbidden": [
         "trust-unverified-github-content",
         "accept-anonymous-agent-submit"
-      ]
+      ],
+      "auth_enforcement": "legacy_shared_auth_pending_per_node_enforcement"
     }
   ],
   "future_node_defaults": {
@@ -100,6 +103,7 @@
       "auto-merge",
       "auto-production-deploy",
       "read-unscoped-secrets"
-    ]
+    ],
+    "auth_enforcement": "disabled_until_enrolled"
   }
 }
