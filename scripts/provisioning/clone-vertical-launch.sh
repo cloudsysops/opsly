@@ -14,7 +14,7 @@ FORCE=false
 usage() {
   cat <<'EOF'
 Usage: ./scripts/provisioning/clone-vertical-launch.sh \
-  --vertical swim-school|barberia|restaurante|hotel|ventas|marketplace|whatsapp-first \
+  --vertical swim-school|barberia|restaurante|hotel|ventas|marketplace|whatsapp-first|health-travel-colombia \
   --slug <tenant-slug> \
   --business-name "Name" \
   --domain slug.op-sly.com \
