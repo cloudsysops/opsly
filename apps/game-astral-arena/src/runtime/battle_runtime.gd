@@ -28,10 +28,16 @@ func snapshot() -> Dictionary:
     return state.duplicate(true)
 
 func perform_player_action(ability_id: String) -> Dictionary:
+    var actor := _first_alive(state.get("player", []))
+    if actor.is_empty():
+        return snapshot()
+    return perform_player_action_for(str(actor.get("fighter_id", "")), ability_id)
+
+func perform_player_action_for(fighter_id: String, ability_id: String) -> Dictionary:
     if state.is_empty() or str(state.get("winner", "")) != "":
         return snapshot()
 
-    var actor := _first_alive(state.get("player", []))
+    var actor := _fighter_by_id(state.get("player", []), fighter_id)
     var target := _first_alive(state.get("opponent", []))
     if actor.is_empty() or target.is_empty():
         _refresh_winner()
@@ -70,6 +76,13 @@ func _make_side(ids: Array) -> Array:
             "control": 0
         })
     return side
+
+func _fighter_by_id(side: Array, fighter_id: String) -> Dictionary:
+    for raw_fighter in side:
+        var fighter: Dictionary = raw_fighter
+        if str(fighter.get("fighter_id", "")) == fighter_id and int(fighter.get("health", 0)) > 0:
+            return fighter
+    return {}
 
 func _first_alive(side: Array) -> Dictionary:
     for raw_fighter in side:
