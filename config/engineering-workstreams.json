@@ -117,6 +117,61 @@
       "depends_on": [],
       "pr": 1195,
       "next_action": "Obtain reviewer confirmation and merge when approved"
+    },
+    {
+      "id": "peskids-production-guardian",
+      "name": "Peskids Production Guardian",
+      "priority": "P0",
+      "owner": "opsly-supervisor",
+      "reviewer": "independent-reviewer",
+      "status": "ready",
+      "risk": "high",
+      "production_touching": true,
+      "depends_on": [
+        "pr-1195"
+      ],
+      "pr": null,
+      "issue": 1193,
+      "next_action": "Prove current runtime with read-only evidence and add guardrails; no unattended production mutation."
+    },
+    {
+      "id": "health-tourism-demo",
+      "name": "Health Tourism Colombia Demo",
+      "priority": "P0",
+      "owner": "product-builder-agent",
+      "reviewer": "founder-product-review",
+      "status": "ready",
+      "risk": "medium",
+      "production_touching": false,
+      "depends_on": [],
+      "pr": null,
+      "issue": 1192,
+      "next_action": "Audit REAL/PARTIAL/MISSING and ship smallest synthetic provider→catalog→quote→case→booking demo slice."
+    },
+    {
+      "id": "pc-gamer-worker",
+      "name": "PC Gamer Local Agent Worker",
+      "priority": "P0",
+      "owner": "platform-builder-agent",
+      "reviewer": "independent-reviewer",
+      "status": "ready",
+      "risk": "medium",
+      "production_touching": false,
+      "depends_on": [
+        "trusted-execution"
+      ],
+      "pr": null,
+      "issue": 1191,
+      "next_action": "Bring compute worker online through existing orchestrator/BullMQ path with local inference smoke and Mission Control visibility."
     }
-  ]
+  ],
+  "portfolio_mode": "revenue_first",
+  "backlog_health": {
+    "observed_open_issues": 290,
+    "observed_open_prs": 39,
+    "automated_issues": 281,
+    "tenant_health_issues": 275,
+    "pre_june_2026_issues": 287,
+    "policy": "Automated/stale historical alerts do not count as founder WIP. Triage them separately with conservative stale/closure rules."
+  }
 }
