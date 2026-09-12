@@ -65,6 +65,7 @@ write_plist() {
   local mode="$2"
   local command="$3"
   local interval="${4:-}"
+  local secret_mode="${5:-doppler}"
 
   local path="$DEST/$label.plist"
   {
@@ -76,6 +77,15 @@ write_plist() {
   <key>Label</key><string>$label</string>
   <key>ProgramArguments</key>
   <array>
+EOF
+    if [[ "$secret_mode" == "raw" ]]; then
+      cat <<EOF
+    <string>/bin/bash</string>
+    <string>-lc</string>
+    <string>cd '$ROOT' &amp;&amp; $command</string>
+EOF
+    else
+      cat <<EOF
     <string>$DOPPLER_BIN</string>
     <string>run</string>
     <string>--project</string><string>ops-intcloudsysops</string>
@@ -84,6 +94,9 @@ write_plist() {
     <string>/bin/bash</string>
     <string>-lc</string>
     <string>cd '$ROOT' &amp;&amp; $command</string>
+EOF
+    fi
+    cat <<EOF
   </array>
   <key>WorkingDirectory</key><string>$ROOT</string>
   <key>EnvironmentVariables</key>
@@ -110,7 +123,7 @@ EOF
   mv "$path.tmp" "$path"
 }
 
-write_plist com.opsly.orchestrator-mac keepalive "./scripts/ops/start-orchestrator-mac.sh"
+write_plist com.opsly.orchestrator-mac keepalive "./scripts/ops/start-orchestrator-mac.sh" "" raw
 write_plist com.opsly.local-agents-worker keepalive "./scripts/ops/start-mac-local-agents-worker.sh"
 write_plist com.opsly.prompt-watcher keepalive "npm run opsly:local-prompt-watcher"
 write_plist com.opsly.prompt-seed interval "./scripts/ops/dispatch-prompt-queue.sh --seed-only" 600
