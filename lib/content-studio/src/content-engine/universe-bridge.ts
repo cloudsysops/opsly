@@ -135,8 +135,16 @@ export function composeUniverseForProject(envelope: ContentProjectEnvelope, char
   const topic =
     envelope.project.learningGoal ?? envelope.project.question ?? envelope.project.title;
   const characterIds = characterIdsOverride?.length ? characterIdsOverride : featuredCharacterIdsForChannel(channel);
+  const astralTopic = topic.toLowerCase();
+  const worldId =
+    channel === 'astral-arena'
+      ? /(technolia|cyber|arquitectura|architecture|build|constru|nave|ship|software)/.test(astralTopic)
+        ? 'technolia'
+        : 'astral-arena'
+      : undefined;
   const context = universe.getContext({
     characters: characterIds.length > 0 ? characterIds : undefined,
+    worldId,
     topic,
     audience: audienceForProject(envelope.project.audience),
     tenant,
