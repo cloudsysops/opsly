@@ -24,6 +24,44 @@ cd "${ROOT}"
 log() { printf '[queue] %s\n' "$*"; }
 notify() { ./scripts/notify-discord.sh "$1" "$2" "${3:-info}" >/dev/null 2>&1 || true; }
 
+# Trust gate: an automatic execution machine must not treat "whatever branch
+# happens to be checked out" as the task source. Only the trusted branch
+# (main by default) may drive automatic dispatch. DISPATCH_QUEUE_TEST_BRANCH
+# is a test-only seam (never set in production) to make this gate testable
+# without depending on the real checkout's branch.
+TRUSTED_BRANCH="${NIGHT_QUEUE_TRUSTED_BRANCH:-main}"
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  log "not inside a git work tree — refusing automatic dispatch"
+  exit 0
+fi
+current_branch="${DISPATCH_QUEUE_TEST_BRANCH:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")}"
+if [[ -z "${current_branch}" || "${current_branch}" == "HEAD" ]]; then
+  log "detached HEAD — not the trusted branch (${TRUSTED_BRANCH}), refusing automatic dispatch"
+  exit 0
+fi
+if [[ "${current_branch}" != "${TRUSTED_BRANCH}" ]]; then
+  log "checked out branch '${current_branch}' is not the trusted branch '${TRUSTED_BRANCH}' — refusing automatic dispatch"
+  exit 0
+fi
+
+# Sync latest night-queue tasks from GitHub before seeding. Fast-forward only —
+# never resets/discards local work, never forces a branch change. Best-effort:
+# a stale/dirty tree or offline host just means "seed from whatever is on disk",
+# not a hard failure (this bridge must not block on network flakiness).
+if [[ "${DRY_RUN}" != "1" ]]; then
+  if [[ -z "$(git status --porcelain 2>/dev/null)" ]]; then
+    if git pull --ff-only origin "${TRUSTED_BRANCH}" >/dev/null 2>&1; then
+      log "synced ${TRUSTED_BRANCH} from origin (ff-only)"
+    else
+      log "git pull --ff-only skipped/failed (offline or diverged) — seeding from local checkout"
+    fi
+  else
+    log "working tree dirty — skipping git sync, seeding from local checkout"
+  fi
+else
+  log "DRY_RUN — on trusted branch ${TRUSTED_BRANCH}, skipping git sync step"
+fi
+
 # Seed gitignored .cursor/prompts/queue/ from tracked docs/01-development/night-queue/
 QUEUE_DIR="${ROOT}/.cursor/prompts/queue"
 SEED_DIR="${ROOT}/docs/01-development/night-queue"
