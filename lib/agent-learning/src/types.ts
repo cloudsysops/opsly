@@ -22,6 +22,11 @@ export type AgentLearningProfile = {
   human_agreement: number;
   avg_latency_ms: number;
   failure_count: number;
+  execution_count?: number;
+  review_count?: number;
+  supervisor_review_count?: number;
+  human_review_count?: number;
+  critical_failure_count?: number;
   last_failure_at?: string;
 };
 
@@ -48,6 +53,7 @@ export type ReviewEvidence = {
   decision: ReviewDecision;
   findings: string[];
   score: number;
+  critical_failure?: boolean;
   repair_suggestion?: string;
 };
 
@@ -77,3 +83,14 @@ export const TRUST_LEVELS: TrustLevel[] = [
   'trusted',
   'autonomous_low_risk',
 ];
+
+
+export type AgentLearningSnapshot = {
+  schema_version: 'AgentLearningSnapshotV1';
+  generated_at: string;
+  profiles: AgentLearningProfile[];
+  executions: ExecutionEvidence[];
+  reviews: ReviewEvidence[];
+  records: LearningRecord[];
+  promotion_policies: PromotionPolicy[];
+};
