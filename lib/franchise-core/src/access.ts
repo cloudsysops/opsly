@@ -81,6 +81,15 @@ export function canWriteOpening(role: FranchiseRole): AccessDecision {
   return deny('opening_forbidden');
 }
 
+export function canReadOpsCatalog(role: FranchiseRole): AccessDecision {
+  if (role === 'teacher') return deny('teacher_cannot_read_ops_catalog');
+  return AUDIT_READ.has(role) || role === 'franchise_staff' ? allow('ops_catalog_read') : deny('ops_catalog_forbidden');
+}
+
+export function canWriteOpsCatalog(role: FranchiseRole): AccessDecision {
+  return canWriteOpening(role).allow ? allow('ops_catalog_write') : deny('ops_catalog_write_forbidden');
+}
+
 export function canWriteFinancial(role: FranchiseRole): AccessDecision {
   if (role === 'teacher' || role === 'auditor' || role === 'franchise_staff') {
     return deny('financial_write_forbidden');

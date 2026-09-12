@@ -1,7 +1,9 @@
 import type {
   Audit,
   AuditFinding,
+  BrandStandard,
   CorrectiveAction,
+  DocumentReference,
   FranchiseAgreement,
   Franchisee,
   OpeningTask,
@@ -9,7 +11,11 @@ import type {
   RoyaltyPayment,
   RoyaltyRule,
   SalesReport,
+  Supplier,
+  SupportCase,
   Territory,
+  TrainingCompletion,
+  TrainingRequirement,
 } from '@intcloudsysops/franchise-core';
 import type { FranchiseActor } from './actor.js';
 
@@ -48,6 +54,7 @@ export type FranchiseStore = {
   getCalculationByKey(actor: FranchiseActor, idempotencyKey: string): Promise<RoyaltyCalculation | null>;
   listCalculations(actor: FranchiseActor): Promise<RoyaltyCalculation[]>;
   insertPayment(actor: FranchiseActor, row: Omit<RoyaltyPayment, 'id'>): Promise<RoyaltyPayment>;
+  listPayments(actor: FranchiseActor): Promise<RoyaltyPayment[]>;
   insertAuditTemplate(
     actor: FranchiseActor,
     row: { id?: string; name: string; version: number; questions: unknown }
@@ -77,6 +84,21 @@ export type FranchiseStore = {
     unitId: string,
     patch: { status: 'opening' | 'active'; openingStatus: string | null }
   ): Promise<void>;
+  insertBrandStandard(actor: FranchiseActor, row: Omit<BrandStandard, 'id'>): Promise<BrandStandard>;
+  listBrandStandards(actor: FranchiseActor): Promise<BrandStandard[]>;
+  insertSupplier(actor: FranchiseActor, row: Omit<Supplier, 'id'>): Promise<Supplier>;
+  listSuppliers(actor: FranchiseActor): Promise<Supplier[]>;
+  insertTrainingRequirement(actor: FranchiseActor, row: Omit<TrainingRequirement, 'id'>): Promise<TrainingRequirement>;
+  listTrainingRequirements(actor: FranchiseActor): Promise<TrainingRequirement[]>;
+  insertTrainingCompletion(actor: FranchiseActor, row: Omit<TrainingCompletion, 'id'>): Promise<TrainingCompletion>;
+  listTrainingCompletions(actor: FranchiseActor): Promise<TrainingCompletion[]>;
+  insertSupportCase(actor: FranchiseActor, row: Omit<SupportCase, 'id' | 'createdAt'>): Promise<SupportCase>;
+  listSupportCases(actor: FranchiseActor): Promise<SupportCase[]>;
+  insertDocument(
+    actor: FranchiseActor,
+    row: Omit<DocumentReference, 'id'> & { unitId?: string | null }
+  ): Promise<DocumentReference>;
+  listDocuments(actor: FranchiseActor): Promise<DocumentReference[]>;
   insertChangeLog(input: {
     tenantId: string;
     actorId: string;

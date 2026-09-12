@@ -10,11 +10,17 @@ import {
   nextRoyaltyRuleVersion,
   openingBlockers,
   reminderEvents,
+  supplierBlocksProcurement,
   type DocumentReference,
   type OpeningChecklist,
   type RoyaltyRule,
   type SalesReport,
+  type Supplier,
+  type SupportCase,
   type TaskStatus,
+  type TrainingCompletion,
+  type TrainingRequirement,
+  type BrandStandard,
 } from '@intcloudsysops/franchise-core';
 import type { FranchiseActor } from './actor.js';
 import {
@@ -22,6 +28,8 @@ import {
   assertAuditRead,
   assertOpeningRead,
   assertOpeningWrite,
+  assertOpsCatalogRead,
+  assertOpsCatalogWrite,
   assertRoyaltyRead,
   assertRoyaltyWrite,
   assertUnitScope,
@@ -441,20 +449,130 @@ export function createFranchiseService(store: FranchiseStore) {
     async listReminders(actor: FranchiseActor, nowIso = new Date().toISOString()) {
       await this.requireSchema();
       assertOpeningRead(actor.role);
-      const [agreements, calculations, audits, openings] = await Promise.all([
+      const [agreements, calculations, payments, audits, openings, suppliers, training, support] = await Promise.all([
         this.listAgreements(actor).catch(() => []),
         this.listRoyalties(actor).catch(() => []),
+        store.listPayments(actor).catch(() => []),
         this.listAudits(actor).catch(() => []),
         this.listOpenings(actor),
+        this.listSuppliers(actor).catch(() => []),
+        this.listTrainingCompletions(actor).catch(() => []),
+        this.listSupportCases(actor).catch(() => []),
       ]);
       return reminderEvents({
         nowIso,
         agreements,
         calculations,
-        payments: [],
+        payments,
         audits,
         checklists: openings.map((row) => row.checklist),
+        suppliers,
+        trainingCompletions: training,
+        supportCases: support,
       });
+    },
+
+    async createBrandStandard(actor: FranchiseActor, input: Omit<BrandStandard, 'id' | 'tenantId'>) {
+      await this.requireSchema();
+      assertOpsCatalogWrite(actor.role);
+      const created = await store.insertBrandStandard(actor, { ...input, tenantId: actor.tenantId });
+      await store.insertChangeLog({
+        tenantId: actor.tenantId,
+        actorId: actor.actorId,
+        entity: 'brand_standard',
+        entityId: created.id,
+        action: 'create',
+        before: null,
+        after: created,
+        reason: actor.requestId,
+      });
+      return { standard: created };
+    },
+
+    async listBrandStandards(actor: FranchiseActor) {
+      await this.requireSchema();
+      assertOpsCatalogRead(actor.role);
+      return store.listBrandStandards(actor);
+    },
+
+    async createSupplier(actor: FranchiseActor, input: Omit<Supplier, 'id' | 'tenantId'>) {
+      await this.requireSchema();
+      assertOpsCatalogWrite(actor.role);
+      const created = await store.insertSupplier(actor, { ...input, tenantId: actor.tenantId });
+      return {
+        supplier: created,
+        event: supplierBlocksProcurement(created)
+          ? franchiseEvent(FRANCHISE_EVENTS.supplierSuspended, {
+              tenantId: actor.tenantId,
+              unitId: null,
+              occurredAt: new Date().toISOString(),
+              payload: { supplierId: created.id, status: created.status },
+            })
+          : null,
+      };
+    },
+
+    async listSuppliers(actor: FranchiseActor) {
+      await this.requireSchema();
+      assertOpsCatalogRead(actor.role);
+      return store.listSuppliers(actor);
+    },
+
+    async createTrainingRequirement(actor: FranchiseActor, input: Omit<TrainingRequirement, 'id' | 'tenantId'>) {
+      await this.requireSchema();
+      assertOpsCatalogWrite(actor.role);
+      return { requirement: await store.insertTrainingRequirement(actor, { ...input, tenantId: actor.tenantId }) };
+    },
+
+    async listTrainingRequirements(actor: FranchiseActor) {
+      await this.requireSchema();
+      assertOpsCatalogRead(actor.role);
+      return store.listTrainingRequirements(actor);
+    },
+
+    async recordTrainingCompletion(actor: FranchiseActor, input: Omit<TrainingCompletion, 'id' | 'tenantId'>) {
+      await this.requireSchema();
+      assertOpsCatalogWrite(actor.role);
+      assertUnitScope(actor, input.unitId);
+      return { completion: await store.insertTrainingCompletion(actor, { ...input, tenantId: actor.tenantId }) };
+    },
+
+    async listTrainingCompletions(actor: FranchiseActor) {
+      await this.requireSchema();
+      assertOpsCatalogRead(actor.role);
+      const rows = await store.listTrainingCompletions(actor);
+      return rows.filter((row) => canScope(actor, row.unitId));
+    },
+
+    async createSupportCase(actor: FranchiseActor, input: Omit<SupportCase, 'id' | 'tenantId' | 'createdAt'>) {
+      await this.requireSchema();
+      assertOpsCatalogWrite(actor.role);
+      assertUnitScope(actor, input.unitId);
+      const created = await store.insertSupportCase(actor, { ...input, tenantId: actor.tenantId });
+      return { case: created };
+    },
+
+    async listSupportCases(actor: FranchiseActor) {
+      await this.requireSchema();
+      assertOpsCatalogRead(actor.role);
+      const rows = await store.listSupportCases(actor);
+      return rows.filter((row) => canScope(actor, row.unitId));
+    },
+
+    async registerDocument(
+      actor: FranchiseActor,
+      input: Omit<DocumentReference, 'id' | 'tenantId'> & { unitId?: string | null }
+    ) {
+      await this.requireSchema();
+      assertOpsCatalogWrite(actor.role);
+      if (input.unitId) assertUnitScope(actor, input.unitId);
+      return { document: await store.insertDocument(actor, { ...input, tenantId: actor.tenantId }) };
+    },
+
+    async listDocuments(actor: FranchiseActor) {
+      await this.requireSchema();
+      assertOpsCatalogRead(actor.role);
+      return store.listDocuments(actor);
     },
   };
 }

@@ -23,6 +23,11 @@ type AgreementBoardRow = {
 };
 type CalcRow = { id: string; royaltyDueMinor: number; ruleVersion: number; calculatedAt: string; unitId: string };
 type AuditRow = { id: string; unitId: string; status: string; auditor: string };
+type OpsPayload = {
+  standards: Array<{ id: string; code: string; title: string }>;
+  suppliers: Array<{ id: string; name: string; status: string }>;
+  support: Array<{ id: string; category: string; status: string }>;
+};
 type OpeningRow = {
   canActivate: boolean;
   blockers: Array<{ id: string; phase: string; title: string }>;
@@ -49,6 +54,7 @@ export function FranchiseOsPanel(): React.ReactElement {
   const [board, setBoard] = useState<AgreementBoardRow[]>([]);
   const [calculations, setCalculations] = useState<CalcRow[]>([]);
   const [audits, setAudits] = useState<AuditRow[]>([]);
+  const [ops, setOps] = useState<OpsPayload>({ standards: [], suppliers: [], support: [] });
   const [openings, setOpenings] = useState<OpeningRow[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -57,10 +63,11 @@ export function FranchiseOsPanel(): React.ReactElement {
   async function load(): Promise<void> {
     setLoading(true);
     try {
-      const [viewRes, unitsRes, openingRes] = await Promise.all([
+      const [viewRes, unitsRes, openingRes, opsRes] = await Promise.all([
         fetch(`/api/admin/franchise-os?view=${view}`, { credentials: 'include' }),
         fetch('/api/admin/franchise-os?view=units', { credentials: 'include' }),
         fetch('/api/admin/franchise-os?view=openings', { credentials: 'include' }),
+        fetch('/api/admin/franchises/ops', { credentials: 'include' }),
       ]);
       const json = (await viewRes.json()) as {
         territories?: TerritoryRow[];
@@ -73,8 +80,16 @@ export function FranchiseOsPanel(): React.ReactElement {
       };
       const unitsJson = (await unitsRes.json()) as { units?: UnitRow[] };
       const openingJson = (await openingRes.json()) as { openings?: OpeningRow[] };
+      const opsJson = (await opsRes.json()) as OpsPayload;
       if (unitsRes.ok) setUnits(unitsJson.units ?? []);
       setOpenings(openingRes.ok ? openingJson.openings ?? [] : []);
+      if (opsRes.ok) {
+        setOps({
+          standards: opsJson.standards ?? [],
+          suppliers: opsJson.suppliers ?? [],
+          support: opsJson.support ?? [],
+        });
+      }
       if (!viewRes.ok) {
         throw new Error(
           json.code === 'FRANCHISE_SCHEMA_NOT_AVAILABLE' ? json.code : json.error || 'No se pudo cargar Franchise OS'
@@ -249,6 +264,7 @@ export function FranchiseOsPanel(): React.ReactElement {
               ))}
             </ul>
             <AuditForm unitId={firstUnit} />
+            <OpsCatalogControls unitId={firstUnit} ops={ops} onSubmit={postJson} />
           </CardContent>
         </Card>
       ) : null}
@@ -490,6 +506,73 @@ function OpeningControls(props: {
       {current && current.blockers.length > 0 ? (
         <p className="text-xs text-amber-700">{current.blockers.length} bloqueos de activación</p>
       ) : null}
+    </div>
+  );
+}
+
+function OpsCatalogControls(props: {
+  unitId: string;
+  ops: OpsPayload;
+  onSubmit: (path: string, body: Record<string, unknown>) => Promise<void>;
+}): React.ReactElement {
+  return (
+    <div className="space-y-3 border-t border-pk-border pt-4">
+      <p className="text-sm font-medium text-pk-ink">Estándares, proveedores y soporte</p>
+      <p className="text-xs text-pk-sub">
+        Catálogo de red. Recordatorios son eventos de dominio; sin n8n ni firma electrónica.
+      </p>
+      <ul className="space-y-1 text-xs text-pk-sub">
+        {props.ops.standards.map((row) => (
+          <li key={row.id}>
+            estándar {row.code} · {row.title}
+          </li>
+        ))}
+        {props.ops.suppliers.map((row) => (
+          <li key={row.id}>
+            proveedor {row.name} · {row.status}
+          </li>
+        ))}
+        {props.ops.support.map((row) => (
+          <li key={row.id}>
+            caso {row.category} · {row.status}
+          </li>
+        ))}
+      </ul>
+      <form
+        className="flex flex-wrap gap-2"
+        onSubmit={(event) => {
+          event.preventDefault();
+          const form = new FormData(event.currentTarget);
+          void props.onSubmit('/api/admin/franchises/ops', {
+            kind: 'standards',
+            category: 'facility',
+            code: String(form.get('code') ?? ''),
+            title: String(form.get('title') ?? ''),
+            requirement: String(form.get('requirement') ?? ''),
+          });
+        }}
+      >
+        <input name="code" required placeholder="Código" className="rounded border border-pk-border px-2 py-1" />
+        <input name="title" required placeholder="Título" className="rounded border border-pk-border px-2 py-1" />
+        <input name="requirement" required placeholder="Requisito" className="rounded border border-pk-border px-2 py-1" />
+        <Button type="submit" size="sm">Añadir estándar</Button>
+      </form>
+      <form
+        className="flex flex-wrap gap-2"
+        onSubmit={(event) => {
+          event.preventDefault();
+          const form = new FormData(event.currentTarget);
+          void props.onSubmit('/api/admin/franchises/ops', {
+            kind: 'support',
+            unitId: props.unitId,
+            category: String(form.get('category') ?? ''),
+            slaHours: 24,
+          });
+        }}
+      >
+        <input name="category" required placeholder="Caso de soporte" className="rounded border border-pk-border px-2 py-1" />
+        <Button type="submit" size="sm" disabled={!props.unitId}>Abrir caso</Button>
+      </form>
     </div>
   );
 }

@@ -402,6 +402,17 @@ export type SupportCase = {
   slaHours: number | null;
   assignedTo: string | null;
   resolution: string | null;
+  createdAt: IsoDateTime;
+};
+
+export type TrainingCompletion = {
+  id: string;
+  tenantId: TenantId;
+  unitId: string;
+  requirementId: string;
+  completedAt: IsoDateTime;
+  expiresAt: IsoDateTime | null;
+  status: TrainingStatus;
 };
 
 export type ChangeAuditEntry = {

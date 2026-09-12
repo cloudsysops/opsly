@@ -1,6 +1,7 @@
 import type {
   Audit,
   AuditFinding,
+  BrandStandard,
   CorrectiveAction,
   DocumentReference,
   FranchiseAgreement,
@@ -11,8 +12,12 @@ import type {
   RoyaltyPayment,
   RoyaltyRule,
   SalesReport,
+  Supplier,
+  SupportCase,
   Territory,
   TerritoryGeometry,
+  TrainingCompletion,
+  TrainingRequirement,
 } from '@intcloudsysops/franchise-core';
 import { FRANCHISE_SCHEMA_NOT_AVAILABLE, FranchisePersistenceError, isUndefinedTable, schemaMissingError } from './errors.js';
 import type { FranchiseStore } from './store.js';
@@ -303,6 +308,13 @@ export function createPgFranchiseStore(rawQuery: SqlQuery): FranchiseStore {
       );
       return mapPayment(rows[0]);
     },
+    async listPayments(actor) {
+      const rows = await query<Record<string, unknown>>(
+        `SELECT * FROM platform.royalty_payments WHERE tenant_id = $1 ORDER BY paid_at DESC NULLS LAST`,
+        [actor.tenantId]
+      );
+      return rows.map(mapPayment);
+    },
     async insertAuditTemplate(actor, row) {
       const rows = await query<{ id: string }>(
         `INSERT INTO platform.audit_templates (id, tenant_id, name, version, questions)
@@ -475,6 +487,119 @@ export function createPgFranchiseStore(rawQuery: SqlQuery): FranchiseStore {
          WHERE tenant_id = $1 AND id = $2`,
         [actor.tenantId, unitId, patch.status, patch.openingStatus]
       );
+    },
+    async insertBrandStandard(actor, row) {
+      const rows = await query<Record<string, unknown>>(
+        `INSERT INTO platform.brand_standards
+           (tenant_id, category, code, title, requirement, evidence_type, severity, version)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
+        [actor.tenantId, row.category, row.code, row.title, row.requirement, row.evidenceType, row.severity, row.version]
+      );
+      return mapBrandStandard(rows[0]);
+    },
+    async listBrandStandards(actor) {
+      const rows = await query<Record<string, unknown>>(
+        `SELECT * FROM platform.brand_standards WHERE tenant_id = $1 ORDER BY code, version`,
+        [actor.tenantId]
+      );
+      return rows.map(mapBrandStandard);
+    },
+    async insertSupplier(actor, row) {
+      const rows = await query<Record<string, unknown>>(
+        `INSERT INTO platform.franchise_suppliers (tenant_id, name, category, status, policy)
+         VALUES ($1,$2,$3,$4,$5) RETURNING *`,
+        [actor.tenantId, row.name, row.category, row.status, row.policy]
+      );
+      return mapSupplier(rows[0]);
+    },
+    async listSuppliers(actor) {
+      const rows = await query<Record<string, unknown>>(
+        `SELECT * FROM platform.franchise_suppliers WHERE tenant_id = $1 ORDER BY name`,
+        [actor.tenantId]
+      );
+      return rows.map(mapSupplier);
+    },
+    async insertTrainingRequirement(actor, row) {
+      const rows = await query<Record<string, unknown>>(
+        `INSERT INTO platform.training_requirements
+           (tenant_id, external_ref, role, required, valid_for_months, certification_required)
+         VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
+        [actor.tenantId, row.externalRef, row.role, row.required, row.validForMonths, row.certificationRequired]
+      );
+      return mapTrainingRequirement(rows[0]);
+    },
+    async listTrainingRequirements(actor) {
+      const rows = await query<Record<string, unknown>>(
+        `SELECT * FROM platform.training_requirements WHERE tenant_id = $1 ORDER BY external_ref`,
+        [actor.tenantId]
+      );
+      return rows.map(mapTrainingRequirement);
+    },
+    async insertTrainingCompletion(actor, row) {
+      const rows = await query<Record<string, unknown>>(
+        `INSERT INTO platform.training_completions
+           (tenant_id, unit_id, requirement_id, completed_at, expires_at, status)
+         VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
+        [actor.tenantId, row.unitId, row.requirementId, row.completedAt, row.expiresAt, row.status]
+      );
+      return mapTrainingCompletion(rows[0]);
+    },
+    async listTrainingCompletions(actor) {
+      const rows = await query<Record<string, unknown>>(
+        `SELECT * FROM platform.training_completions WHERE tenant_id = $1 ORDER BY completed_at DESC`,
+        [actor.tenantId]
+      );
+      return rows.map(mapTrainingCompletion);
+    },
+    async insertSupportCase(actor, row) {
+      const rows = await query<Record<string, unknown>>(
+        `INSERT INTO platform.support_cases
+           (tenant_id, unit_id, category, priority, status, sla_hours, assigned_to, resolution)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
+        [
+          actor.tenantId,
+          row.unitId,
+          row.category,
+          row.priority,
+          row.status,
+          row.slaHours,
+          row.assignedTo,
+          row.resolution,
+        ]
+      );
+      return mapSupportCase(rows[0]);
+    },
+    async listSupportCases(actor) {
+      const rows = await query<Record<string, unknown>>(
+        `SELECT * FROM platform.support_cases WHERE tenant_id = $1 ORDER BY created_at DESC`,
+        [actor.tenantId]
+      );
+      return rows.map(mapSupportCase);
+    },
+    async insertDocument(actor, row) {
+      const rows = await query<Record<string, unknown>>(
+        `INSERT INTO platform.franchise_documents
+           (tenant_id, unit_id, kind, uri, visibility, owner_scope, version, expires_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
+        [
+          actor.tenantId,
+          row.unitId ?? null,
+          row.kind,
+          row.uri,
+          row.visibility,
+          row.ownerScope,
+          row.version,
+          row.expiresAt,
+        ]
+      );
+      return mapDocument(rows[0]);
+    },
+    async listDocuments(actor) {
+      const rows = await query<Record<string, unknown>>(
+        `SELECT * FROM platform.franchise_documents WHERE tenant_id = $1 ORDER BY created_at DESC`,
+        [actor.tenantId]
+      );
+      return rows.map(mapDocument);
     },
     async insertChangeLog(input) {
       await query(
@@ -684,5 +809,82 @@ function mapOpeningTask(row: Record<string, unknown>): OpeningTask {
     required: Boolean(row.required),
     status: row.status as OpeningTask['status'],
     evidence: (row.evidence as DocumentReference | null) ?? null,
+  };
+}
+
+function mapBrandStandard(row: Record<string, unknown>): BrandStandard {
+  return {
+    id: String(row.id),
+    tenantId: String(row.tenant_id),
+    category: String(row.category),
+    code: String(row.code),
+    title: String(row.title),
+    requirement: String(row.requirement),
+    evidenceType: row.evidence_type as BrandStandard['evidenceType'],
+    severity: row.severity as BrandStandard['severity'],
+    version: Number(row.version),
+  };
+}
+
+function mapSupplier(row: Record<string, unknown>): Supplier {
+  return {
+    id: String(row.id),
+    tenantId: String(row.tenant_id),
+    name: String(row.name),
+    category: String(row.category),
+    status: row.status as Supplier['status'],
+    policy: row.policy as Supplier['policy'],
+  };
+}
+
+function mapTrainingRequirement(row: Record<string, unknown>): TrainingRequirement {
+  return {
+    id: String(row.id),
+    tenantId: String(row.tenant_id),
+    externalRef: String(row.external_ref),
+    role: row.role as TrainingRequirement['role'],
+    required: Boolean(row.required),
+    validForMonths: row.valid_for_months == null ? null : Number(row.valid_for_months),
+    certificationRequired: Boolean(row.certification_required),
+  };
+}
+
+function mapTrainingCompletion(row: Record<string, unknown>): TrainingCompletion {
+  return {
+    id: String(row.id),
+    tenantId: String(row.tenant_id),
+    unitId: String(row.unit_id),
+    requirementId: String(row.requirement_id),
+    completedAt: asIso(row.completed_at as Date | string),
+    expiresAt: row.expires_at ? asIso(row.expires_at as Date | string) : null,
+    status: row.status as TrainingCompletion['status'],
+  };
+}
+
+function mapSupportCase(row: Record<string, unknown>): SupportCase {
+  return {
+    id: String(row.id),
+    tenantId: String(row.tenant_id),
+    unitId: String(row.unit_id),
+    category: String(row.category),
+    priority: row.priority as SupportCase['priority'],
+    status: row.status as SupportCase['status'],
+    slaHours: row.sla_hours == null ? null : Number(row.sla_hours),
+    assignedTo: row.assigned_to ? String(row.assigned_to) : null,
+    resolution: row.resolution ? String(row.resolution) : null,
+    createdAt: asIso(row.created_at as Date | string),
+  };
+}
+
+function mapDocument(row: Record<string, unknown>): DocumentReference {
+  return {
+    id: String(row.id),
+    tenantId: String(row.tenant_id),
+    kind: row.kind as DocumentReference['kind'],
+    uri: String(row.uri),
+    visibility: row.visibility as DocumentReference['visibility'],
+    ownerScope: row.owner_scope as DocumentReference['ownerScope'],
+    version: String(row.version),
+    expiresAt: row.expires_at ? asIso(row.expires_at as Date | string) : null,
   };
 }

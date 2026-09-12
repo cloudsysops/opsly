@@ -86,6 +86,51 @@ describe('franchise reminder contracts', () => {
     expect(names).toContain('opening.task.due');
   });
 
+  it('emits supplier, training, and support SLA reminder contracts', () => {
+    const events = reminderEvents({
+      nowIso: NOW,
+      suppliers: [
+        {
+          id: 's1',
+          tenantId: 't',
+          name: 'Blocked Co',
+          category: 'equipment',
+          status: 'suspended',
+          policy: 'mandatory',
+        },
+      ],
+      trainingCompletions: [
+        {
+          id: 'tc1',
+          tenantId: 't',
+          unitId: 'u1',
+          requirementId: 'tr1',
+          completedAt: '2025-01-01T00:00:00.000Z',
+          expiresAt: '2026-08-01T00:00:00.000Z',
+          status: 'completed',
+        },
+      ],
+      supportCases: [
+        {
+          id: 'sc1',
+          tenantId: 't',
+          unitId: 'u1',
+          category: 'ops',
+          priority: 'high',
+          status: 'open',
+          slaHours: 4,
+          assignedTo: null,
+          resolution: null,
+          createdAt: '2026-08-19T00:00:00.000Z',
+        },
+      ],
+    });
+    const names = events.map((event) => event.name);
+    expect(names).toContain('supplier.suspended');
+    expect(names).toContain('training.expired');
+    expect(names).toContain('support.sla.breached');
+  });
+
   it('skips paid royalties and completed opening tasks', () => {
     const calc: RoyaltyCalculation = {
       id: 'c-paid',

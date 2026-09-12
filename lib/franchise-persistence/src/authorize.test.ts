@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { assertAgreementRead, assertOpeningRead, assertOpeningWrite, assertRoyaltyRead, assertRoyaltyWrite, assertUnitScope } from './authorize.js';
+import { assertAgreementRead, assertOpeningRead, assertOpeningWrite, assertOpsCatalogRead, assertOpsCatalogWrite, assertRoyaltyRead, assertRoyaltyWrite, assertUnitScope } from './authorize.js';
 import { FranchisePersistenceError } from './errors.js';
 import type { FranchiseActor } from './actor.js';
 
@@ -36,5 +36,8 @@ describe('franchise persistence authorize', () => {
     expect(() => assertOpeningWrite('teacher')).toThrow(FranchisePersistenceError);
     expect(() => assertOpeningWrite('auditor')).toThrow(FranchisePersistenceError);
     expect(() => assertOpeningRead('auditor')).not.toThrow();
+    expect(() => assertOpsCatalogRead('teacher')).toThrow(FranchisePersistenceError);
+    expect(() => assertOpsCatalogWrite('auditor')).toThrow(FranchisePersistenceError);
+    expect(() => assertOpsCatalogRead('auditor')).not.toThrow();
   });
 });

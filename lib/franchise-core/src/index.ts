@@ -43,6 +43,7 @@ export {
   type SalesSource,
   type SupportCase,
   type Supplier,
+  type TrainingCompletion,
   type TaskStatus,
   type Territory,
   type TerritoryExclusiveFor,
@@ -79,14 +80,21 @@ export {
   canReadAudits,
   canReadNetwork,
   canReadOpening,
+  canReadOpsCatalog,
   canReadRoyalties,
   canWriteFinancial,
   canWriteOpening,
+  canWriteOpsCatalog,
   mapTenantStaffRole,
   type AccessDecision,
 } from './access.js';
 export { FRANCHISE_EVENTS, franchiseEvent, type FranchiseEvent, type FranchiseEventName } from './events.js';
 export { reminderEvents, type ReminderInputs } from './reminders.js';
+export {
+  supplierBlocksProcurement,
+  supportSlaBreached,
+  trainingCompletionExpired,
+} from './ops.js';
 export {
   missingMapProvider,
   type GeocodeQuery,

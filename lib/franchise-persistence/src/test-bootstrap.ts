@@ -148,9 +148,11 @@ export async function bootstrapFranchiseDb(url: string): Promise<Harness> {
   const sql0098 = readFileSync(join(REPO_ROOT, 'supabase/migrations/0098_franchise_core.sql'), 'utf8');
   const sql0099 = readFileSync(join(REPO_ROOT, 'supabase/migrations/0099_franchise_core_rls.sql'), 'utf8');
   const sql0100 = readFileSync(join(REPO_ROOT, 'supabase/migrations/0100_franchise_opening_workflows.sql'), 'utf8');
+  const sql0101 = readFileSync(join(REPO_ROOT, 'supabase/migrations/0101_franchise_ops_catalog.sql'), 'utf8');
   await pool.query(sql0098);
   await pool.query(sql0099);
   await pool.query(sql0100);
+  await pool.query(sql0101);
   await pool.query(`GRANT USAGE ON SCHEMA platform TO authenticated`);
   await pool.query(`GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA platform TO authenticated`);
   await pool.query(`GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA platform TO authenticated`);

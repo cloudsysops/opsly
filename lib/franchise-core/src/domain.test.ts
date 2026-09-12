@@ -3,9 +3,11 @@ import {
   canAccessUnit,
   canReadAgreements,
   canReadOpening,
+  canReadOpsCatalog,
   canReadRoyalties,
   canWriteFinancial,
   canWriteOpening,
+  canWriteOpsCatalog,
   mapTenantStaffRole,
 } from './access.js';
 import { assertFranchiseeDistinctFromUnit, ownedUnitDefaults, UnitModelError } from './units.js';
@@ -71,6 +73,10 @@ describe('access control', () => {
     expect(canReadOpening('auditor').allow).toBe(true);
     expect(canWriteOpening('auditor').allow).toBe(false);
     expect(canWriteOpening('franchise_admin').allow).toBe(true);
+    expect(canReadOpsCatalog('teacher').allow).toBe(false);
+    expect(canReadOpsCatalog('auditor').allow).toBe(true);
+    expect(canWriteOpsCatalog('auditor').allow).toBe(false);
+    expect(canWriteOpsCatalog('franchise_admin').allow).toBe(true);
   });
 });
 

@@ -1,5 +1,14 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { OpeningTask } from '@intcloudsysops/franchise-core';
+import type {
+  BrandStandard,
+  DocumentReference,
+  OpeningTask,
+  RoyaltyPayment,
+  Supplier,
+  SupportCase,
+  TrainingCompletion,
+  TrainingRequirement,
+} from '@intcloudsysops/franchise-core';
 import { isUndefinedTable, schemaMissingError } from './errors.js';
 import type { FranchiseStore } from './store.js';
 
@@ -437,6 +446,28 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
       );
       return { ...row, id: String(data.id), tenantId: actor.tenantId };
     },
+    async listPayments(actor) {
+      const { data, error } = await platform()
+        .from('royalty_payments')
+        .select('*')
+        .eq('tenant_id', actor.tenantId)
+        .order('paid_at', { ascending: false });
+      if (error) {
+        if (isUndefinedTable(error)) throw schemaMissingError();
+        throw error;
+      }
+      return (data ?? []).map((row) => ({
+        id: String(row.id),
+        tenantId: actor.tenantId,
+        calculationId: String(row.calculation_id),
+        amountMinor: Number(row.amount_minor),
+        currency: String(row.currency),
+        status: row.status as RoyaltyPayment['status'],
+        method: row.method as RoyaltyPayment['method'],
+        externalReference: row.external_reference ? String(row.external_reference) : null,
+        paidAt: row.paid_at ? String(row.paid_at) : null,
+      }));
+    },
     async insertAuditTemplate(actor, row) {
       const data = await run(
         platform()
@@ -724,6 +755,185 @@ function createRestFranchiseStore(client: SupabaseClient): FranchiseStore {
       if (error && isUndefinedTable(error)) throw schemaMissingError();
       if (error) throw error;
     },
+    async insertBrandStandard(actor, row) {
+      const data = await run(
+        platform()
+          .from('brand_standards')
+          .insert({
+            tenant_id: actor.tenantId,
+            category: row.category,
+            code: row.code,
+            title: row.title,
+            requirement: row.requirement,
+            evidence_type: row.evidenceType,
+            severity: row.severity,
+            version: row.version,
+          })
+          .select('*')
+          .maybeSingle()
+      );
+      return mapBrandStandardRow(data, actor.tenantId);
+    },
+    async listBrandStandards(actor) {
+      const { data, error } = await platform()
+        .from('brand_standards')
+        .select('*')
+        .eq('tenant_id', actor.tenantId)
+        .order('code', { ascending: true });
+      if (error) {
+        if (isUndefinedTable(error)) throw schemaMissingError();
+        throw error;
+      }
+      return (data ?? []).map((row) => mapBrandStandardRow(row, actor.tenantId));
+    },
+    async insertSupplier(actor, row) {
+      const data = await run(
+        platform()
+          .from('franchise_suppliers')
+          .insert({
+            tenant_id: actor.tenantId,
+            name: row.name,
+            category: row.category,
+            status: row.status,
+            policy: row.policy,
+          })
+          .select('*')
+          .maybeSingle()
+      );
+      return mapSupplierRow(data, actor.tenantId);
+    },
+    async listSuppliers(actor) {
+      const { data, error } = await platform()
+        .from('franchise_suppliers')
+        .select('*')
+        .eq('tenant_id', actor.tenantId)
+        .order('name', { ascending: true });
+      if (error) {
+        if (isUndefinedTable(error)) throw schemaMissingError();
+        throw error;
+      }
+      return (data ?? []).map((row) => mapSupplierRow(row, actor.tenantId));
+    },
+    async insertTrainingRequirement(actor, row) {
+      const data = await run(
+        platform()
+          .from('training_requirements')
+          .insert({
+            tenant_id: actor.tenantId,
+            external_ref: row.externalRef,
+            role: row.role,
+            required: row.required,
+            valid_for_months: row.validForMonths,
+            certification_required: row.certificationRequired,
+          })
+          .select('*')
+          .maybeSingle()
+      );
+      return mapTrainingRequirementRow(data, actor.tenantId);
+    },
+    async listTrainingRequirements(actor) {
+      const { data, error } = await platform()
+        .from('training_requirements')
+        .select('*')
+        .eq('tenant_id', actor.tenantId)
+        .order('external_ref', { ascending: true });
+      if (error) {
+        if (isUndefinedTable(error)) throw schemaMissingError();
+        throw error;
+      }
+      return (data ?? []).map((row) => mapTrainingRequirementRow(row, actor.tenantId));
+    },
+    async insertTrainingCompletion(actor, row) {
+      const data = await run(
+        platform()
+          .from('training_completions')
+          .insert({
+            tenant_id: actor.tenantId,
+            unit_id: row.unitId,
+            requirement_id: row.requirementId,
+            completed_at: row.completedAt,
+            expires_at: row.expiresAt,
+            status: row.status,
+          })
+          .select('*')
+          .maybeSingle()
+      );
+      return mapTrainingCompletionRow(data, actor.tenantId);
+    },
+    async listTrainingCompletions(actor) {
+      const { data, error } = await platform()
+        .from('training_completions')
+        .select('*')
+        .eq('tenant_id', actor.tenantId)
+        .order('completed_at', { ascending: false });
+      if (error) {
+        if (isUndefinedTable(error)) throw schemaMissingError();
+        throw error;
+      }
+      return (data ?? []).map((row) => mapTrainingCompletionRow(row, actor.tenantId));
+    },
+    async insertSupportCase(actor, row) {
+      const data = await run(
+        platform()
+          .from('support_cases')
+          .insert({
+            tenant_id: actor.tenantId,
+            unit_id: row.unitId,
+            category: row.category,
+            priority: row.priority,
+            status: row.status,
+            sla_hours: row.slaHours,
+            assigned_to: row.assignedTo,
+            resolution: row.resolution,
+          })
+          .select('*')
+          .maybeSingle()
+      );
+      return mapSupportCaseRow(data, actor.tenantId);
+    },
+    async listSupportCases(actor) {
+      const { data, error } = await platform()
+        .from('support_cases')
+        .select('*')
+        .eq('tenant_id', actor.tenantId)
+        .order('created_at', { ascending: false });
+      if (error) {
+        if (isUndefinedTable(error)) throw schemaMissingError();
+        throw error;
+      }
+      return (data ?? []).map((row) => mapSupportCaseRow(row, actor.tenantId));
+    },
+    async insertDocument(actor, row) {
+      const data = await run(
+        platform()
+          .from('franchise_documents')
+          .insert({
+            tenant_id: actor.tenantId,
+            unit_id: row.unitId ?? null,
+            kind: row.kind,
+            uri: row.uri,
+            visibility: row.visibility,
+            owner_scope: row.ownerScope,
+            version: row.version,
+            expires_at: row.expiresAt,
+          })
+          .select('*')
+          .maybeSingle()
+      );
+      return mapDocumentRow(data, actor.tenantId);
+    },
+    async listDocuments(actor) {
+      const { data, error } = await platform()
+        .from('franchise_documents')
+        .select('*')
+        .eq('tenant_id', actor.tenantId)
+        .order('created_at', { ascending: false });
+      if (error) {
+        if (isUndefinedTable(error)) throw schemaMissingError();
+        throw error;
+      }
+      return (data ?? []).map((row) => mapDocumentRow(row, actor.tenantId));
+    },
     async insertChangeLog(input) {
       const { error } = await platform()
         .from('franchise_change_log')
@@ -755,6 +965,83 @@ function mapOpeningTaskRow(row: Record<string, unknown>): OpeningTask {
     dueDate: row.due_date ? String(row.due_date).slice(0, 10) : null,
     required: Boolean(row.required),
     status: row.status as OpeningTask['status'],
-    evidence: (row.evidence as import('@intcloudsysops/franchise-core').DocumentReference | null) ?? null,
+    evidence: (row.evidence as DocumentReference | null) ?? null,
+  };
+}
+
+function mapBrandStandardRow(row: Record<string, unknown>, tenantId: string): BrandStandard {
+  return {
+    id: String(row.id),
+    tenantId,
+    category: String(row.category),
+    code: String(row.code),
+    title: String(row.title),
+    requirement: String(row.requirement),
+    evidenceType: row.evidence_type as BrandStandard['evidenceType'],
+    severity: row.severity as BrandStandard['severity'],
+    version: Number(row.version),
+  };
+}
+
+function mapSupplierRow(row: Record<string, unknown>, tenantId: string): Supplier {
+  return {
+    id: String(row.id),
+    tenantId,
+    name: String(row.name),
+    category: String(row.category),
+    status: row.status as Supplier['status'],
+    policy: row.policy as Supplier['policy'],
+  };
+}
+
+function mapTrainingRequirementRow(row: Record<string, unknown>, tenantId: string): TrainingRequirement {
+  return {
+    id: String(row.id),
+    tenantId,
+    externalRef: String(row.external_ref),
+    role: row.role as TrainingRequirement['role'],
+    required: Boolean(row.required),
+    validForMonths: row.valid_for_months == null ? null : Number(row.valid_for_months),
+    certificationRequired: Boolean(row.certification_required),
+  };
+}
+
+function mapTrainingCompletionRow(row: Record<string, unknown>, tenantId: string): TrainingCompletion {
+  return {
+    id: String(row.id),
+    tenantId,
+    unitId: String(row.unit_id),
+    requirementId: String(row.requirement_id),
+    completedAt: String(row.completed_at),
+    expiresAt: row.expires_at ? String(row.expires_at) : null,
+    status: row.status as TrainingCompletion['status'],
+  };
+}
+
+function mapSupportCaseRow(row: Record<string, unknown>, tenantId: string): SupportCase {
+  return {
+    id: String(row.id),
+    tenantId,
+    unitId: String(row.unit_id),
+    category: String(row.category),
+    priority: row.priority as SupportCase['priority'],
+    status: row.status as SupportCase['status'],
+    slaHours: row.sla_hours == null ? null : Number(row.sla_hours),
+    assignedTo: row.assigned_to ? String(row.assigned_to) : null,
+    resolution: row.resolution ? String(row.resolution) : null,
+    createdAt: String(row.created_at),
+  };
+}
+
+function mapDocumentRow(row: Record<string, unknown>, tenantId: string): DocumentReference {
+  return {
+    id: String(row.id),
+    tenantId,
+    kind: row.kind as DocumentReference['kind'],
+    uri: String(row.uri),
+    visibility: row.visibility as DocumentReference['visibility'],
+    ownerScope: row.owner_scope as DocumentReference['ownerScope'],
+    version: String(row.version),
+    expiresAt: row.expires_at ? String(row.expires_at) : null,
   };
 }

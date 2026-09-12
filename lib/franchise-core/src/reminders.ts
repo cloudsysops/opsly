@@ -1,7 +1,17 @@
 import { agreementExpiryAlerts } from './agreement.js';
 import { FRANCHISE_EVENTS, franchiseEvent, type FranchiseEvent } from './events.js';
 import { canActivateUnit, openingBlockers } from './opening.js';
-import type { Audit, FranchiseAgreement, OpeningChecklist, RoyaltyCalculation, RoyaltyPayment } from './types.js';
+import { supplierBlocksProcurement, supportSlaBreached, trainingCompletionExpired } from './ops.js';
+import type {
+  Audit,
+  FranchiseAgreement,
+  OpeningChecklist,
+  RoyaltyCalculation,
+  RoyaltyPayment,
+  Supplier,
+  SupportCase,
+  TrainingCompletion,
+} from './types.js';
 
 const MS_PER_DAY = 86_400_000;
 const ROYALTY_OVERDUE_AFTER_DAYS = 7;
@@ -13,6 +23,9 @@ export type ReminderInputs = {
   payments?: readonly RoyaltyPayment[];
   audits?: readonly Audit[];
   checklists?: readonly OpeningChecklist[];
+  suppliers?: readonly Supplier[];
+  trainingCompletions?: readonly TrainingCompletion[];
+  supportCases?: readonly SupportCase[];
 };
 
 function dateOnly(iso: string): string {
@@ -117,6 +130,45 @@ function openingReminders(nowIso: string, checklists: readonly OpeningChecklist[
   return events;
 }
 
+function supplierReminders(nowIso: string, suppliers: readonly Supplier[]): FranchiseEvent[] {
+  return suppliers
+    .filter(supplierBlocksProcurement)
+    .map((supplier) =>
+      franchiseEvent(FRANCHISE_EVENTS.supplierSuspended, {
+        tenantId: supplier.tenantId,
+        unitId: null,
+        occurredAt: nowIso,
+        payload: { supplierId: supplier.id, status: supplier.status },
+      })
+    );
+}
+
+function trainingReminders(nowIso: string, rows: readonly TrainingCompletion[]): FranchiseEvent[] {
+  return rows
+    .filter((row) => trainingCompletionExpired(row, nowIso))
+    .map((row) =>
+      franchiseEvent(FRANCHISE_EVENTS.trainingExpired, {
+        tenantId: row.tenantId,
+        unitId: row.unitId,
+        occurredAt: nowIso,
+        payload: { completionId: row.id, requirementId: row.requirementId },
+      })
+    );
+}
+
+function supportReminders(nowIso: string, rows: readonly SupportCase[]): FranchiseEvent[] {
+  return rows
+    .filter((row) => supportSlaBreached(row, nowIso))
+    .map((row) =>
+      franchiseEvent(FRANCHISE_EVENTS.supportSlaBreached, {
+        tenantId: row.tenantId,
+        unitId: row.unitId,
+        occurredAt: nowIso,
+        payload: { caseId: row.id, slaHours: row.slaHours ?? 0 },
+      })
+    );
+}
+
 /** Domain reminder contracts only. Does not send email, Discord, or n8n. */
 export function reminderEvents(input: ReminderInputs): FranchiseEvent[] {
   return [
@@ -124,5 +176,8 @@ export function reminderEvents(input: ReminderInputs): FranchiseEvent[] {
     ...royaltyReminders(input.nowIso, input.calculations ?? [], input.payments ?? []),
     ...auditReminders(input.nowIso, input.audits ?? []),
     ...openingReminders(input.nowIso, input.checklists ?? []),
+    ...supplierReminders(input.nowIso, input.suppliers ?? []),
+    ...trainingReminders(input.nowIso, input.trainingCompletions ?? []),
+    ...supportReminders(input.nowIso, input.supportCases ?? []),
   ];
 }

@@ -85,3 +85,12 @@ describe('GET /api/admin/franchises/openings', () => {
     expect(res.status).toBe(401);
   });
 });
+
+describe('GET /api/admin/franchises/ops', () => {
+  it('rejects unauthenticated requests', async () => {
+    validateStaffRequestMock.mockResolvedValue({ ok: false, status: 401, error: 'Unauthorized' });
+    const { GET } = await import('../../franchises/ops/route');
+    const res = await GET(request('/api/admin/franchises/ops') as never);
+    expect(res.status).toBe(401);
+  });
+});

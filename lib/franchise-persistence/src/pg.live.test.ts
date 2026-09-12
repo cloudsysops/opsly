@@ -46,7 +46,7 @@ describe('franchise persistence live postgres', () => {
     await h?.pool.end();
   });
 
-  it('replays 0098+0099+0100 without destroying 0090-shaped units', async () => {
+  it('replays 0098+0099+0100+0101 without destroying 0090-shaped units', async () => {
     const sql0098 = (await import('node:fs')).readFileSync(
       new URL('../../../supabase/migrations/0098_franchise_core.sql', import.meta.url),
       'utf8'
@@ -59,9 +59,14 @@ describe('franchise persistence live postgres', () => {
       new URL('../../../supabase/migrations/0100_franchise_opening_workflows.sql', import.meta.url),
       'utf8'
     );
+    const sql0101 = (await import('node:fs')).readFileSync(
+      new URL('../../../supabase/migrations/0101_franchise_ops_catalog.sql', import.meta.url),
+      'utf8'
+    );
     await h.pool.query(sql0098);
     await h.pool.query(sql0099);
     await h.pool.query(sql0100);
+    await h.pool.query(sql0101);
     const units = await h.pool.query<{ code: string }>(
       `SELECT code FROM platform.franchise_units WHERE tenant_id = $1 ORDER BY code`,
       [h.tenantA]
@@ -452,6 +457,84 @@ describe('franchise persistence live postgres', () => {
       expect(cross.rowCount).toBe(0);
     } finally {
       await releaseAuthenticated(otherTenant);
+    }
+  });
+
+  it('persists ops catalog and denies teacher/unit crossover', async () => {
+    const network = actor(h);
+    const standard = await service.createBrandStandard(network, {
+      category: 'facility',
+      code: 'POOL-SAFE',
+      title: 'Pool safety',
+      requirement: 'Visible rescue equipment',
+      evidenceType: 'photo',
+      severity: 'high',
+      version: 1,
+    });
+    const supplier = await service.createSupplier(network, {
+      name: 'Blocked Co',
+      category: 'equipment',
+      status: 'suspended',
+      policy: 'mandatory',
+    });
+    expect(supplier.event?.name).toBe('supplier.suspended');
+    const requirement = await service.createTrainingRequirement(network, {
+      externalRef: 'lifeguard-l1',
+      role: 'franchise_staff',
+      required: true,
+      validForMonths: 12,
+      certificationRequired: true,
+    });
+    await service.recordTrainingCompletion(network, {
+      unitId: h.unitA,
+      requirementId: requirement.requirement.id,
+      completedAt: '2025-01-01T00:00:00.000Z',
+      expiresAt: '2026-01-01T00:00:00.000Z',
+      status: 'completed',
+    });
+    await service.createSupportCase(network, {
+      unitId: h.unitA,
+      category: 'ops',
+      priority: 'urgent',
+      status: 'open',
+      slaHours: 1,
+      assignedTo: null,
+      resolution: null,
+    });
+    await service.registerDocument(network, {
+      kind: 'brand_guide',
+      uri: 'https://example.invalid/brand.pdf',
+      visibility: 'network',
+      ownerScope: 'network',
+      version: '1',
+      expiresAt: null,
+    });
+    expect((await service.listBrandStandards(network)).some((row) => row.id === standard.standard.id)).toBe(true);
+
+    const teacher = await asAuthenticated(h.pool, { userId: h.userTeacher, role: 'teacher', jwtRole: 'teacher' });
+    try {
+      const hidden = await teacher.query(`SELECT id FROM platform.brand_standards`);
+      expect(hidden.rowCount).toBe(0);
+      await expect(
+        teacher.query(
+          `INSERT INTO platform.support_cases (tenant_id, unit_id, category) VALUES ($1,$2,'ops')`,
+          [h.tenantA, h.unitA]
+        )
+      ).rejects.toThrow();
+    } finally {
+      await releaseAuthenticated(teacher);
+    }
+
+    const unitAdmin = await asAuthenticated(h.pool, {
+      userId: h.userUnitA,
+      role: 'franchise_admin',
+      jwtRole: 'franchise_admin',
+    });
+    try {
+      const cases = await unitAdmin.query(`SELECT unit_id FROM platform.support_cases`);
+      expect(cases.rows.every((row) => row.unit_id === h.unitA)).toBe(true);
+    } finally {
+      await releaseAuthenticated(unitAdmin);
     }
   });
 });

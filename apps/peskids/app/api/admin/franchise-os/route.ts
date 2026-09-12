@@ -91,6 +91,17 @@ export async function GET(req: NextRequest) {
       return successJson(requestId, { ok: true, view, openings, reminders });
     }
 
+    if (view === 'ops') {
+      const [standards, suppliers, training, support, documents] = await Promise.all([
+        service.listBrandStandards(actor),
+        service.listSuppliers(actor),
+        service.listTrainingCompletions(actor),
+        service.listSupportCases(actor),
+        service.listDocuments(actor),
+      ]);
+      return successJson(requestId, { ok: true, view, standards, suppliers, training, support, documents });
+    }
+
     return errorJson(requestId, 'Unknown view', 400);
   } catch (err) {
     const persist = franchiseErrorResponse(requestId, err);
