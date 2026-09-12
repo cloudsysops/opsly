@@ -82,6 +82,24 @@ export const CANONICAL_LORE: LoreNote[] = [
     relatedWorldIds: ['astral-arena', 'lab'],
   },
   {
+    id: 'technolia-build-to-understand',
+    title: 'Technolia teaches architecture by building it',
+    summary:
+      'Technolia is a fictional strategy-progression world where structures map to real software concepts: gateway, identity, API, queue, workers, database, secrets, observability, backups, resilience, and distributed systems. Progress comes from understanding and operating the architecture.',
+    fictionVsScience: 'mixed-must-separate',
+    relatedCharacterIds: ['arena', 'brissa', 'nx-7', 'altair'],
+    relatedWorldIds: ['technolia', 'astral-arena'],
+  },
+  {
+    id: 'technolia-starship-is-a-composed-system',
+    title: 'The Guardian starship is a composed system',
+    summary:
+      'The Technolia starship is assembled from navigation, identity, event, memory, and propulsion modules. The fiction mirrors modular software architecture: independent capabilities connected through explicit contracts and observable dependencies.',
+    fictionVsScience: 'mixed-must-separate',
+    relatedCharacterIds: ['nx-7', 'brissa', 'asterion', 'arena'],
+    relatedWorldIds: ['technolia'],
+  },
+  {
     id: 'umbra-last-memory-thread',
     title: 'The last thread of Umbra',
     summary:
