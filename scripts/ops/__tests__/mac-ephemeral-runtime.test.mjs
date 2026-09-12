@@ -55,3 +55,12 @@ test('orchestrator starter does not pin a personal Node version', () => {
   assert.doesNotMatch(source, /\/Users\/dragon\//);
   assert.doesNotMatch(source, /\/Users\/cboteros\//);
 });
+
+
+test('Mac worker sources localhost Redis override before consuming BullMQ', () => {
+  const source = readFileSync('scripts/ops/start-mac-local-agents-worker.sh', 'utf8');
+  assert.match(source, /\/tmp\/opsly-mac-redis\.env/);
+  assert.match(source, /source \/tmp\/opsly-mac-redis\.env/);
+  assert.match(source, /127\.0\.0\.1/);
+  assert.match(source, /OPSLY_HEARTBEAT_SERVICE_NAME/);
+});
