@@ -1,24 +1,36 @@
 # Astral Arena SteamPipe
 
-This directory contains **templates only**. Steam AppID/depot IDs are assigned by Steamworks and must not be invented or committed as fake production values.
+This directory contains **templates only**. Real Steam AppID, DepotID and credentials are
+never committed.
 
-## Required environment / local values
+## Prepare a private SteamPipe package
 
-- Steamworks AppID
-- Windows depot ID
-- dedicated Steam build account
-- local Steamworks SDK ContentBuilder path
+First build the Windows artifact into `dist/astral-arena`, then:
 
-Never commit passwords or Steam Guard secrets.
+```bash
+STEAM_APP_ID=123456 \
+STEAM_DEPOT_WINDOWS_ID=123457 \
+STEAM_BUILD_DESC="private playtest $(git rev-parse --short HEAD)" \
+node scripts/games/render-astral-steampipe.mjs
+```
 
-## Initial shipping model
+Generated files live under:
 
-1. Build the Windows game into a clean staging directory.
-2. Copy staged files into Steamworks `ContentBuilder/content/astral-arena/windows`.
-3. Render the VDF templates with the real AppID/depot IDs locally or in an authorized release job.
-4. Upload to a private Steam beta branch first.
-5. Install through the Steam client on a clean machine.
-6. Run smoke tests.
-7. Promote manually after human approval.
+`dist/steam/astral-arena/`
 
-Steamworks integration APIs (achievements, cloud saves, etc.) are a later phase. SteamPipe delivery comes first.
+The generator fails closed when:
+- IDs are missing or non-numeric;
+- the Windows build does not contain `AstralArena.exe`;
+- a template token remains unresolved.
+
+## Upload boundary
+
+No Steam credentials are stored here and this template does **not** auto-upload.
+
+When Steamworks onboarding is complete, add a dedicated, least-privilege Steam build
+account and a protected GitHub environment such as `steam-release`. The upload job
+must require human approval and must never run on pull requests.
+
+Recommended promotion flow:
+
+`Windows artifact → SteamPipe prepare → private branch/playtest → human QA → promote`

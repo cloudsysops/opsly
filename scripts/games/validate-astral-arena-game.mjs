@@ -45,6 +45,12 @@ const requiredFiles = [
   'apps/game-astral-arena/web/Caddyfile',
   'apps/game-astral-arena/web/Dockerfile',
   'scripts/games/deploy-astral-arena-web-vps.sh',
+  'scripts/games/package-astral-arena-windows.sh',
+  'scripts/games/render-astral-steampipe.mjs',
+  'tools/steam/astral-arena/app_build.vdf.template',
+  'tools/steam/astral-arena/depot_build_windows.vdf.template',
+  'apps/game-astral-arena/src/adapters/steam_adapter.gd',
+  'config/games/astral-arena-steam-store.json',
 ];
 
 for (const relativePath of requiredFiles) {
@@ -91,6 +97,12 @@ if (product && pack) {
   if (product.steam?.appId !== null) {
     fail('Steam AppID must remain null in repository config; inject real ID at release time');
   }
+  if (product.steam?.depotIds?.windows !== null) {
+    fail('Steam Windows DepotID must remain null in repository config; inject real ID at release time');
+  }
+  if (product.steam?.credentialsInRepo !== false) {
+    fail('Steam credentials must never be stored in repository config');
+  }
 }
 
 const project = fs.readFileSync(path.join(root, 'apps/game-astral-arena/project.godot'), 'utf8');
@@ -122,4 +134,15 @@ if (!exportPreset.includes('variant/thread_support=false')) {
 
 if (!process.exitCode) {
   console.log('Astral Arena game product validation: OK');
+}
+
+const steamTemplatePaths = [
+  'tools/steam/astral-arena/app_build.vdf.template',
+  'tools/steam/astral-arena/depot_build_windows.vdf.template',
+];
+for (const relativePath of steamTemplatePaths) {
+  const contents = fs.readFileSync(path.join(root, relativePath), 'utf8');
+  if (/\b\d{5,}\b/.test(contents)) {
+    fail(`Steam template must not contain hard-coded numeric IDs: ${relativePath}`);
+  }
 }

@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "game": "astral-arena",
+  "store": "steam",
+  "positioning": {
+    "title": "Astral Arena: Guardians of the Nexus",
+    "shortDescriptionDraftStatus": "pending-human-approval",
+    "tagsDraft": [
+      "Adventure",
+      "RPG",
+      "Family Friendly",
+      "Co-op",
+      "Turn-Based Combat"
+    ],
+    "featuresPublishOnlyWhenVerified": [
+      "Online Co-op",
+      "Online PvP",
+      "Steam Achievements",
+      "Steam Cloud"
+    ]
+  },
+  "assets": [
+    {
+      "id": "header-capsule",
+      "size": "920x430",
+      "source": "content-os",
+      "status": "pending"
+    },
+    {
+      "id": "small-capsule",
+      "size": "462x174",
+      "source": "content-os",
+      "status": "pending"
+    },
+    {
+      "id": "main-capsule",
+      "size": "1232x706",
+      "source": "content-os",
+      "status": "pending"
+    },
+    {
+      "id": "vertical-capsule",
+      "size": "748x896",
+      "source": "content-os",
+      "status": "pending"
+    },
+    {
+      "id": "library-capsule",
+      "size": "600x900",
+      "source": "content-os",
+      "status": "pending"
+    },
+    {
+      "id": "library-hero",
+      "size": "3840x1240",
+      "source": "content-os",
+      "status": "pending"
+    },
+    {
+      "id": "screenshots",
+      "minimum": 5,
+      "preferredResolution": "1920x1080",
+      "source": "real-gameplay-capture",
+      "status": "pending"
+    },
+    {
+      "id": "gameplay-trailer",
+      "source": "content-os-from-real-gameplay",
+      "status": "pending"
+    }
+  ],
+  "review": {
+    "contentSurvey": "pending",
+    "aiDisclosureReview": "required-before-submit",
+    "storePageReview": "pending",
+    "buildReview": "pending"
+  },
+  "release": {
+    "comingSoon": "pending",
+    "wishlistCapture": "pending",
+    "privateBranch": "playtest",
+    "publicRelease": "blocked-until-human-approval"
+  }
+}

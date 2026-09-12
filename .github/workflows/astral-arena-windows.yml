@@ -1,0 +1,134 @@
+name: Astral Arena Windows Artifact
+
+on:
+  workflow_dispatch:
+    inputs:
+      prepare_steampipe:
+        description: 'Prepare SteamPipe VDF package when repository variables contain Steam IDs'
+        required: false
+        default: false
+        type: boolean
+  push:
+    branches:
+      - 'preview/astral-arena'
+    paths:
+      - 'apps/game-astral-arena/**'
+      - 'config/games/astral-arena.json'
+      - 'scripts/games/package-astral-arena-windows.sh'
+      - 'scripts/games/render-astral-steampipe.mjs'
+      - 'tools/steam/astral-arena/**'
+      - '.github/workflows/astral-arena-windows.yml'
+
+concurrency:
+  group: astral-windows-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  GODOT_VERSION: '4.7.2'
+  GODOT_EDITOR_SHA256: 'cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4'
+  GODOT_TEMPLATES_SHA256: 'f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011'
+  GODOT_EDITOR_ZIP: 'Godot_v4.7.2-stable_linux.x86_64.zip'
+  GODOT_TEMPLATES_FILE: 'Godot_v4.7.2-stable_export_templates.tpz'
+
+jobs:
+  windows-export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Astral product
+        run: node scripts/games/validate-astral-arena-game.mjs
+
+      - name: Cache Godot editor
+        id: cache-editor
+        uses: actions/cache@v4
+        with:
+          path: .tools/godot
+          key: astral-windows-editor-${{ runner.os }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_EDITOR_SHA256 }}
+
+      - name: Download verified Godot editor
+        if: steps.cache-editor.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .tools/godot
+          curl --fail --location --retry 3             "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/${GODOT_EDITOR_ZIP}"             --output "/tmp/${GODOT_EDITOR_ZIP}"
+          echo "${GODOT_EDITOR_SHA256}  /tmp/${GODOT_EDITOR_ZIP}" | sha256sum --check -
+          unzip -q "/tmp/${GODOT_EDITOR_ZIP}" -d .tools/godot
+          chmod +x ".tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64"
+
+      - name: Cache export templates
+        id: cache-templates
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/godot/export_templates/4.7.2.stable
+          key: astral-windows-templates-${{ runner.os }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_TEMPLATES_SHA256 }}
+
+      - name: Download verified export templates
+        if: steps.cache-templates.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3             "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/${GODOT_TEMPLATES_FILE}"             --output "/tmp/${GODOT_TEMPLATES_FILE}"
+          echo "${GODOT_TEMPLATES_SHA256}  /tmp/${GODOT_TEMPLATES_FILE}" | sha256sum --check -
+          rm -rf /tmp/godot-export-templates
+          mkdir -p /tmp/godot-export-templates
+          unzip -q "/tmp/${GODOT_TEMPLATES_FILE}" -d /tmp/godot-export-templates
+          target="$HOME/.local/share/godot/export_templates/4.7.2.stable"
+          rm -rf "$target"
+          mkdir -p "$target"
+          cp -a /tmp/godot-export-templates/templates/. "$target/"
+
+      - name: Import project
+        shell: bash
+        run: |
+          set -euo pipefail
+          .tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64             --headless --editor --path apps/game-astral-arena --quit
+
+      - name: Export Windows x64
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf dist/astral-arena
+          mkdir -p dist/astral-arena
+          output="$GITHUB_WORKSPACE/dist/astral-arena/AstralArena.exe"
+          .tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64             --headless             --verbose             --path apps/game-astral-arena             --export-release "Windows Desktop" "$output"
+          test -s "$output"
+
+      - name: Package and checksum
+        shell: bash
+        env:
+          RELEASE_SHA: ${{ github.sha }}
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: |
+          set -euo pipefail
+          chmod +x scripts/games/package-astral-arena-windows.sh
+          scripts/games/package-astral-arena-windows.sh
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: astral-arena-windows-${{ github.sha }}
+          path: dist/astral-arena
+          retention-days: 14
+          if-no-files-found: error
+
+      - name: Prepare SteamPipe package
+        if: github.event_name == 'workflow_dispatch' && inputs.prepare_steampipe
+        env:
+          STEAM_APP_ID: ${{ vars.STEAM_APP_ID }}
+          STEAM_DEPOT_WINDOWS_ID: ${{ vars.STEAM_DEPOT_WINDOWS_ID }}
+          STEAM_BUILD_DESC: "GitHub private build ${{ github.sha }}"
+        run: node scripts/games/render-astral-steampipe.mjs
+
+      - name: Upload SteamPipe package
+        if: github.event_name == 'workflow_dispatch' && inputs.prepare_steampipe
+        uses: actions/upload-artifact@v4
+        with:
+          name: astral-arena-steampipe-${{ github.sha }}
+          path: dist/steam/astral-arena
+          retention-days: 7
+          if-no-files-found: error

@@ -89,3 +89,26 @@ The Web Preview workflow is configured to publish same-repository PR builds to:
 `https://peskids-staging.op-sly.com/astral-arena/`
 
 This is an isolated Traefik path and does not replace the Peskids staging application.
+
+
+## Windows / Steam packaging
+
+Build contract:
+
+```
+dist/astral-arena/
+├── AstralArena.exe
+├── SHA256SUMS.txt
+└── build-manifest.json
+```
+
+Prepare SteamPipe only after real Steam IDs exist:
+
+```bash
+STEAM_APP_ID=... \
+STEAM_DEPOT_WINDOWS_ID=... \
+node scripts/games/render-astral-steampipe.mjs
+```
+
+Steam remains an adapter. The standalone Windows build must continue to run without
+Steam installed or Steamworks initialized.
