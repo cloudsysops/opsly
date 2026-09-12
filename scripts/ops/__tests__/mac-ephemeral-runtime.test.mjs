@@ -39,3 +39,13 @@ test('canonical installer never hardcodes a founder home directory', () => {
   assert.doesNotMatch(installer, /\/Users\/dragon\//);
   assert.doesNotMatch(installer, /\/Users\/cboteros\//);
 });
+
+
+test('launchd runtime includes the canonical Mac orchestrator starter', async () => {
+  const source = await readFile(
+    new URL('../install-mac-ephemeral-runtime-launchd.sh', import.meta.url),
+    'utf8'
+  );
+  assert.match(source, /com\.opsly\.orchestrator-mac/);
+  assert.match(source, /\.\/scripts\/ops\/start-orchestrator-mac\.sh/);
+});
