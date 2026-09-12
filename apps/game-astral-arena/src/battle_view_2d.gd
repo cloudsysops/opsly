@@ -3,6 +3,7 @@ extends Control
 @onready var player_card: Panel = $PlayerCard
 @onready var player_name: Label = $PlayerCard/Name
 @onready var player_hp: ProgressBar = $PlayerCard/HP
+@onready var player_sprite: Polygon2D = $PlayerCard/Sprite
 @onready var enemy_card: Panel = $EnemyCard
 @onready var enemy_name: Label = $EnemyCard/Name
 @onready var enemy_hp: ProgressBar = $EnemyCard/HP
@@ -26,3 +27,7 @@ func _render_card(
     label.text = str(definition.get("name", id))
     hp.max_value = float(definition.get("maxHealth", 100))
     hp.value = float(fighter.get("health", 0))
+
+
+func apply_player_color(html_color: String) -> void:
+    player_sprite.color = Color.from_string(html_color, player_sprite.color)
