@@ -20,6 +20,8 @@ COPY --from=deps /repo/package.json ./package.json
 COPY --from=deps /repo/package-lock.json ./package-lock.json
 COPY apps/admin ./apps/admin
 COPY config/games/astral-arena-transmedia.json ./config/games/astral-arena-transmedia.json
+COPY config/games/astral-arena-launch-loop.json ./config/games/astral-arena-launch-loop.json
+COPY config/games/astral-arena-chapter-01-production.json ./config/games/astral-arena-chapter-01-production.json
 COPY data/content/series/astral-arena ./data/content/series/astral-arena
 # Monorepo libs imported from apps/admin (runtime, design tokens, shared UI)
 COPY lib ./lib

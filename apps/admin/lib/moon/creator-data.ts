@@ -21,7 +21,6 @@ import {
   type PublishingPlatform,
 } from '@intcloudsysops/content-studio/studio';
 
-
 export interface AstralFranchiseEventView {
   id: string;
   title: string;
@@ -41,6 +40,30 @@ export interface AstralFranchiseChapterView {
   events: AstralFranchiseEventView[];
 }
 
+export interface AstralLaunchPhaseView {
+  id: string;
+  status: string;
+  entryGate: string;
+  exitGate: string;
+  cta: string;
+  outputs: string[];
+}
+
+export interface AstralProductionDeliverableView {
+  type: string;
+  aspect: string;
+  targetSec?: number;
+  source: string;
+}
+
+export interface AstralProductionEpisodeView {
+  episodeId: string;
+  storyEventId: string;
+  missionIds: string[];
+  captureMarkers: string[];
+  deliverables: AstralProductionDeliverableView[];
+}
+
 export interface AstralFranchiseView {
   franchiseId: string;
   title: string;
@@ -48,11 +71,20 @@ export interface AstralFranchiseView {
   seasonTitle: string;
   thesis: string;
   chapters: AstralFranchiseChapterView[];
+  launchPhases: AstralLaunchPhaseView[];
+  productionPack: {
+    title: string;
+    approval: string;
+    publishPolicy: string;
+    totalDeliverables: number;
+    episodes: AstralProductionEpisodeView[];
+  } | null;
   summary: {
     missions: number;
     episodes: number;
     contentProjects: number;
     publishedProjects: number;
+    deliverables: number;
   };
 }
 
@@ -65,28 +97,56 @@ function repoRootCandidates(): string[] {
 }
 
 async function readRepoJson(relativePath: string): Promise<unknown> {
-  const candidates = repoRootCandidates();
-
-    process.env.OPSLY_REPO_ROOT,
-    path.resolve(process.cwd(), '../..'),
-    process.cwd(),
-  ].filter((value): value is string => Boolean(value));
-
-  for (const root of candidates) {
+  for (const root of repoRootCandidates()) {
     try {
       return JSON.parse(await fs.readFile(path.join(root, relativePath), 'utf8'));
     } catch {
-      // Try next root. Local monorepo and standalone container use different cwd values.
+      // Local monorepo and standalone container use different cwd values.
     }
   }
   throw new Error(`CREATOR_REPO_DATA_MISSING: ${relativePath}`);
+}
+
+async function loadEpisodeProductionMap(): Promise<Map<string, string>> {
+  const episodeProduction = new Map<string, string>();
+  const seriesRelative = 'data/content/series/astral-arena/episodes';
+
+  for (const root of repoRootCandidates()) {
+    try {
+      const absolute = path.join(root, seriesRelative);
+      const dirs = await fs.readdir(absolute, { withFileTypes: true });
+      for (const dir of dirs) {
+        if (!dir.isDirectory()) continue;
+        try {
+          const raw = JSON.parse(
+            await fs.readFile(path.join(absolute, dir.name, 'episode.json'), 'utf8'),
+          ) as { id: string; production?: { status?: string } };
+          episodeProduction.set(raw.id, raw.production?.status ?? 'unknown');
+        } catch {
+          // CI validates malformed editorial slots; Moon skips them here.
+        }
+      }
+      break;
+    } catch {
+      // Try next candidate root.
+    }
+  }
+
+  return episodeProduction;
 }
 
 async function loadAstralFranchiseView(
   projects: ContentProjectEnvelope[],
 ): Promise<AstralFranchiseView | null> {
   try {
-    const manifest = (await readRepoJson('config/games/astral-arena-transmedia.json')) as {
+    const [manifestRaw, launchRaw, productionRaw, episodeProduction] = await Promise.all([
+      readRepoJson('config/games/astral-arena-transmedia.json'),
+      readRepoJson('config/games/astral-arena-launch-loop.json'),
+      readRepoJson('config/games/astral-arena-chapter-01-production.json'),
+      loadEpisodeProductionMap(),
+    ]);
+
+    const manifest = manifestRaw as {
       franchiseId: string;
       title: string;
       season: {
@@ -111,28 +171,16 @@ async function loadAstralFranchiseView(
       }>;
     };
 
-    const episodeProduction = new Map<string, string>();
-    const seriesRelative = 'data/content/series/astral-arena/episodes';
-    for (const root of repoRootCandidates()) {
-      try {
-        const absolute = path.join(root, seriesRelative);
-        const dirs = await fs.readdir(absolute, { withFileTypes: true });
-        for (const dir of dirs) {
-          if (!dir.isDirectory()) continue;
-          try {
-            const raw = JSON.parse(
-              await fs.readFile(path.join(absolute, dir.name, 'episode.json'), 'utf8'),
-            ) as { id: string; production?: { status?: string } };
-            episodeProduction.set(raw.id, raw.production?.status ?? 'unknown');
-          } catch {
-            // A malformed editorial slot is surfaced by CI; Moon skips it here.
-          }
-        }
-        break;
-      } catch {
-        // Try next repository root candidate.
-      }
-    }
+    const launch = launchRaw as {
+      phases: AstralLaunchPhaseView[];
+    };
+
+    const production = productionRaw as {
+      title: string;
+      approval: string;
+      publishPolicy: string;
+      episodes: AstralProductionEpisodeView[];
+    };
 
     const eventByMission = new Map<string, (typeof manifest.storyEvents)[number]>();
     for (const event of manifest.storyEvents) {
@@ -167,7 +215,14 @@ async function loadAstralFranchiseView(
         }),
     }));
 
-    const franchiseProjects = projects.filter((item) => item.transmedia?.franchiseId === manifest.franchiseId);
+    const franchiseProjects = projects.filter(
+      (item) => item.transmedia?.franchiseId === manifest.franchiseId,
+    );
+    const totalDeliverables = production.episodes.reduce(
+      (sum, episode) => sum + episode.deliverables.length,
+      0,
+    );
+
     return {
       franchiseId: manifest.franchiseId,
       title: manifest.title,
@@ -175,11 +230,25 @@ async function loadAstralFranchiseView(
       seasonTitle: manifest.season.title,
       thesis: manifest.season.thesis,
       chapters,
+      launchPhases: launch.phases,
+      productionPack: {
+        title: production.title,
+        approval: production.approval,
+        publishPolicy: production.publishPolicy,
+        totalDeliverables,
+        episodes: production.episodes,
+      },
       summary: {
-        missions: manifest.season.chapters.reduce((sum, chapter) => sum + chapter.missionIds.length, 0),
+        missions: manifest.season.chapters.reduce(
+          (sum, chapter) => sum + chapter.missionIds.length,
+          0,
+        ),
         episodes: manifest.storyEvents.length,
         contentProjects: franchiseProjects.length,
-        publishedProjects: franchiseProjects.filter((item) => item.project.status === 'published').length,
+        publishedProjects: franchiseProjects.filter(
+          (item) => item.project.status === 'published',
+        ).length,
+        deliverables: totalDeliverables,
       },
     };
   } catch {
@@ -238,7 +307,10 @@ export async function loadCreatorStudioData(): Promise<{
     portals: loadContentPortals(),
     formats: loadContentFormats(),
     characters: loadContentCharacters(),
-    brands: presets.map((preset) => ({ channel: preset.channel, kit: brandKitFromPreset(preset) })),
+    brands: presets.map((preset) => ({
+      channel: preset.channel,
+      kit: brandKitFromPreset(preset),
+    })),
     franchise: await loadAstralFranchiseView(projects),
   };
 }
@@ -247,7 +319,7 @@ export async function approveCreatorProject(
   tenantId: string,
   projectId: string,
   reviewer: string,
-  platforms: PublishingPlatform[] = ['youtube']
+  platforms: PublishingPlatform[] = ['youtube'],
 ): Promise<void> {
   const envelope = await loadProjectEnvelopeByTenant(tenantId, projectId);
   assertSameTenant(envelope, tenantId);
@@ -266,7 +338,10 @@ export async function approveCreatorProject(
     distributionPackages: buildDistributionPackages(approved),
   };
   writeDistributionManifest(packaged, packaged.distributionPackages ?? []);
-  const next = enqueueApprovedPublishJobs(packaged, platforms.length ? platforms : ['youtube']);
+  const next = enqueueApprovedPublishJobs(
+    packaged,
+    platforms.length ? platforms : ['youtube'],
+  );
   await saveProjectEnvelope(next);
 }
 
@@ -274,7 +349,7 @@ export async function rejectCreatorProject(
   tenantId: string,
   projectId: string,
   reviewer: string,
-  notes?: string
+  notes?: string,
 ): Promise<void> {
   const envelope = await loadProjectEnvelopeByTenant(tenantId, projectId);
   assertSameTenant(envelope, tenantId);
@@ -288,5 +363,7 @@ export async function rejectCreatorProject(
 }
 
 export function parseCreatorTab(value: string | undefined): CreatorTab {
-  return CREATOR_TABS.includes(value as CreatorTab) ? (value as CreatorTab) : 'overview';
+  return CREATOR_TABS.includes(value as CreatorTab)
+    ? (value as CreatorTab)
+    : 'overview';
 }
