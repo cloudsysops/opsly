@@ -20,7 +20,7 @@ export {
   handleTerminalSessionOutput,
   handleTerminalSessionStop,
 } from './terminal.js';
-export { handleLocalControlMode, handleLocalState, handleLocalPromptSubmit } from './local.js';
+export { handleLocalControlMode, handleLocalState, handleLocalQueueHealth, handleLocalPromptSubmit } from './local.js';
 export { handleExternalAgentsRegistry } from './external-agents.js';
 export {
   handleValidationMetrics,
