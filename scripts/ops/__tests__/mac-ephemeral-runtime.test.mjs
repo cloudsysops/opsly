@@ -46,3 +46,12 @@ test('launchd runtime includes the canonical Mac orchestrator starter', () => {
   assert.match(source, /com\.opsly\.orchestrator-mac/);
   assert.match(source, /\.\/scripts\/ops\/start-orchestrator-mac\.sh/);
 });
+
+
+test('orchestrator starter does not pin a personal Node version', () => {
+  const source = readFileSync('scripts/ops/start-orchestrator-mac.sh', 'utf8');
+  assert.match(source, /command -v node/);
+  assert.doesNotMatch(source, /v22\.22\.3/);
+  assert.doesNotMatch(source, /\/Users\/dragon\//);
+  assert.doesNotMatch(source, /\/Users\/cboteros\//);
+});
