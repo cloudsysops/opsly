@@ -206,6 +206,7 @@ check_launchd_infra() {
   fi
   local label
   for label in \
+    com.opsly.orchestrator-mac \
     com.opsly.local-agents-worker \
     com.opsly.prompt-watcher \
     com.opsly.prompt-seed \
