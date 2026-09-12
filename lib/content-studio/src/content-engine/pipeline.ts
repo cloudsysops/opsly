@@ -97,7 +97,7 @@ export async function ingestOwnedVideo(options: {
     audience: options.tenantId === 'astral-arena' ? 'family' : 'general',
     format: 'youtube_short',
     mode: options.mode ?? 'repurpose',
-    portal: options.tenantId === 'astral-arena' ? 'UNKNOWN' : 'FUTURE',
+    portal: options.tenantId === 'astral-arena' ? 'ASTRAL_ARENA' : 'FUTURE',
     formatTemplate: options.tenantId === 'astral-arena' ? 'ASTRAL_GAMEPLAY' : options.mode === 'commentary' ? 'NOVA_REACTS' : 'NOVA_EXPLAINS',
     question: options.tenantId === 'astral-arena' ? '¿Qué momento del Nexo merece convertirse en historia?' : '¿Puede una IA reemplazar a un programador?',
   };
