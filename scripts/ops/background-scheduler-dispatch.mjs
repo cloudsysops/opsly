@@ -184,6 +184,29 @@ export async function runBackgroundScheduler(options = {}) {
       };
     }
 
+    if (preview.node_type !== 'mac') {
+      return {
+        ...preview,
+        decision: 'EXECUTION_NODE_UNSUPPORTED',
+        executed: false,
+        cost_gate: costGate,
+        blockers: ['BACKGROUND_EXECUTION_CURRENTLY_MAC_ONLY'],
+      };
+    }
+
+    const executionEnabled =
+      options.executionEnabled ??
+      process.env.OPSLY_BACKGROUND_EXECUTION_ENABLED === 'true';
+    if (!executionEnabled) {
+      return {
+        ...preview,
+        decision: 'EXECUTION_DISABLED',
+        executed: false,
+        cost_gate: costGate,
+        blockers: ['OPSLY_BACKGROUND_EXECUTION_ENABLED_NOT_TRUE'],
+      };
+    }
+
     const token = options.adminToken ?? process.env.PLATFORM_ADMIN_TOKEN;
     if (!token) {
       return {
@@ -364,7 +387,14 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     }
   }
 
-  if (['DISPATCH_FAILED', 'FAILED', 'AUTH_BLOCKED', 'COST_GATE_BLOCKED'].includes(report.decision)) {
+  if ([
+    'DISPATCH_FAILED',
+    'FAILED',
+    'AUTH_BLOCKED',
+    'COST_GATE_BLOCKED',
+    'EXECUTION_NODE_UNSUPPORTED',
+    'EXECUTION_DISABLED',
+  ].includes(report.decision)) {
     process.exitCode = 1;
   }
 }
