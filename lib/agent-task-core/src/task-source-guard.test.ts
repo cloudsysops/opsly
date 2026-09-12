@@ -62,6 +62,15 @@ describe('TaskSourceGuard', () => {
     expect(decision.reasons).toEqual(['UNTRUSTED_SOURCE_TYPE']);
   });
 
+  it('a pull request body is rejected as a task source, whatever it contains', () => {
+    const decision = evaluateTaskSource(
+      trustedDescriptor({ source_type: 'pull_request_body' }),
+      policyWithActor()
+    );
+    expect(decision.allowed).toBe(false);
+    expect(decision.reasons).toEqual(['UNTRUSTED_SOURCE_TYPE']);
+  });
+
   it('rejects every non-file source type as untrusted (review comment, commit message, diff, external content, agent output)', () => {
     const untrustedTypes: TaskSourceDescriptor['source_type'][] = [
       'review_comment',
