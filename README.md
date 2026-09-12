@@ -164,6 +164,20 @@ Capa opcional de **orquestación multi-agente**, LLM unificado y contexto de ses
 
 Imágenes GHCR: `intcloudsysops-{api,admin,portal,mcp,llm-gateway,orchestrator,context-builder}` (ver `.github/workflows/deploy.yml`).
 
+
+### Local agent bridge security
+
+The local CLI agent HTTP bridges are **local-only by default** and bind to `127.0.0.1` unless `OPSLY_CLI_AGENT_BIND` is explicitly changed.
+
+| Variable | Purpose | Security requirement |
+| --- | --- | --- |
+| `OPSLY_CLI_AGENT_TOKEN` | Bearer token required by local CLI agent bridges | Required before enabling automated execution; store in Doppler/OS secret store; never commit or print it |
+| `OPSLY_CLI_AGENT_BIND` | Bind address for bridge HTTP server | Keep `127.0.0.1` by default. Do not expose to LAN/Tailscale/public interfaces until node auth + capability policy are enforced |
+| `OPSLY_CLI_AGENT_ALLOWED_CWD_PREFIX` | Filesystem scope for bridge execution | Restrict to the intended repo/worktree root |
+| `OPSLY_CLI_AGENT_DRY_RUN` | Disable real agent execution when set to `1` | Use for bootstrap/smoke where appropriate |
+
+A bridge being reachable or a binary being installed does **not** imply execution authority. Opsly policy, trusted task source, node identity and approval boundaries remain authoritative.
+
 ## Prerequisites
 
 - VPS Ubuntu 24 con Docker (y Docker Compose plugin) instalado
