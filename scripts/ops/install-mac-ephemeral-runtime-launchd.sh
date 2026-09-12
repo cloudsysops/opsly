@@ -38,6 +38,7 @@ fi
 mkdir -p "$DEST" "$LOG_DIR"
 
 labels=(
+  com.opsly.orchestrator-mac
   com.opsly.local-agents-worker
   com.opsly.prompt-watcher
   com.opsly.prompt-seed
@@ -109,6 +110,7 @@ EOF
   mv "$path.tmp" "$path"
 }
 
+write_plist com.opsly.orchestrator-mac keepalive "./scripts/ops/start-orchestrator-mac.sh"
 write_plist com.opsly.local-agents-worker keepalive "./scripts/ops/start-mac-local-agents-worker.sh"
 write_plist com.opsly.prompt-watcher keepalive "npm run opsly:local-prompt-watcher"
 write_plist com.opsly.prompt-seed interval "./scripts/ops/dispatch-prompt-queue.sh --seed-only" 600
