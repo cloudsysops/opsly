@@ -5,7 +5,7 @@
   header {
     X-Content-Type-Options "nosniff"
     Referrer-Policy "same-origin"
-    Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    Permissions-Policy "camera=(self), microphone=(), geolocation=()"
     Cache-Control "public, max-age=300"
   }
 
