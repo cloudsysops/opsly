@@ -101,6 +101,25 @@ Validación local de `.env.worker`:
 - Notify Discord operativo crítico como único canal
 - `PLATFORM_ADMIN_TOKEN` / Doppler master (encolar solo desde Mac)
 
+
+
+## Relación con Hermes Agent y OpenClaw upstream
+
+El PC Gamer puede hospedar **runtimes externos** como Hermes Agent upstream y OpenClaw upstream, pero sigue siendo un **compute/execution node**, no el control plane.
+
+Packaging permitido:
+
+- Ollama como servicio local o contenedor;
+- OpenClaw upstream como daemon/proceso o contenedor;
+- Hermes Agent upstream como daemon/proceso o contenedor;
+- workers BullMQ de Opsly en Docker/servicio.
+
+Todos deben operar bajo capabilities del nodo y sin release authority, producción DB, secretos no acotados o direct-main-write.
+
+La decisión, estado durable, policy y auditoría permanecen en el Opsly Orchestrator/control plane.
+
+Ver: `docs/00-architecture/AGENT-RUNTIME-TOPOLOGY.md`.
+
 ## Bootstrap canónico — Docker plane (recomendado)
 
 Cuando el PC está **encendido + Tailscale**, el plano durable es Docker (Ollama + worker). Si está apagado, Peskids sigue; solo se difiere trabajo GPU.
