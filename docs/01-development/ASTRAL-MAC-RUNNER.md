@@ -17,16 +17,22 @@ review and an ephemeral/isolation model.
 
 ## Install
 
-1. In GitHub, open:
-   `cloudsysops/opsly → Settings → Actions → Runners → New self-hosted runner`.
-2. Generate/copy the short-lived registration token.
-3. On the MacBook:
+Fastest path on the MacBook when GitHub CLI is already authenticated:
 
 ```bash
 git fetch origin
 git checkout feat/astral-arena-universe
-chmod +x scripts/ops/install-mac-github-runner.sh
-RUNNER_TOKEN='PASTE_SHORT_LIVED_TOKEN' ./scripts/ops/install-mac-github-runner.sh
+chmod +x scripts/ops/bootstrap-mac-astral-runner.sh
+./scripts/ops/bootstrap-mac-astral-runner.sh
+```
+
+The bootstrap requests the short-lived runner registration token through your local
+`gh` authentication, so the token does not need to be copied into chat or committed.
+
+Manual fallback:
+
+```bash
+RUNNER_TOKEN='SHORT_LIVED_TOKEN' ./scripts/ops/bootstrap-mac-astral-runner.sh
 ```
 
 The installer:
@@ -52,3 +58,19 @@ accept:
 This adds one true concurrent job. A second runner process on the same Mac would add
 another slot, but start with one to avoid exhausting a 16 GB MacBook during Godot +
 Cursor/VS Code use.
+
+
+## Automatic Godot install
+
+`scripts/ops/install-mac-godot.sh` installs:
+- Godot 4.7.2 macOS universal app;
+- Godot 4.7.2 export templates.
+
+Both downloads are verified against the official release SHA-256 values.
+
+Default install:
+- editor: `~/Applications/Godot.app`;
+- templates: `~/Library/Application Support/Godot/export_templates/4.7.2.stable`.
+
+The download for export templates is large (~1.3 GB), so the script skips it when
+templates are already present.

@@ -36,6 +36,8 @@ jobs:
             bin="$(command -v godot)"
           elif command -v godot4 >/dev/null 2>&1; then
             bin="$(command -v godot4)"
+          elif [[ -x "$HOME/Applications/Godot.app/Contents/MacOS/Godot" ]]; then
+            bin="$HOME/Applications/Godot.app/Contents/MacOS/Godot"
           elif [[ -x "/Applications/Godot.app/Contents/MacOS/Godot" ]]; then
             bin="/Applications/Godot.app/Contents/MacOS/Godot"
           else

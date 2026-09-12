@@ -44,6 +44,8 @@ jobs:
             godot --version
           elif command -v godot4 >/dev/null 2>&1; then
             godot4 --version
+          elif [[ -x "$HOME/Applications/Godot.app/Contents/MacOS/Godot" ]]; then
+            "$HOME/Applications/Godot.app/Contents/MacOS/Godot" --version
           elif [[ -x "/Applications/Godot.app/Contents/MacOS/Godot" ]]; then
             /Applications/Godot.app/Contents/MacOS/Godot --version
           else
