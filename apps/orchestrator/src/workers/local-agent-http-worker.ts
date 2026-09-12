@@ -179,6 +179,10 @@ export function shouldWaitForAcceptedResponse(result: Record<string, unknown>): 
   return result.accepted === true && !stringField(result, ['response_path']);
 }
 
+export function allowLegacyLocalAgentPayload(env: NodeJS.ProcessEnv = process.env): boolean {
+  return env.OPSLY_ALLOW_LEGACY_LOCAL_AGENT_PAYLOAD === 'true';
+}
+
 async function processLocalAgentJob(
   jobType: string,
   prompt_content: string,
@@ -390,6 +394,12 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
             signal,
             model
           );
+        if (payload.agent_task === undefined && !allowLegacyLocalAgentPayload()) {
+          throw new UnrecoverableError(
+            'AGENT_TASK_REQUIRED: local agent execution requires AgentTaskEnvelopeV1'
+          );
+        }
+
         const result = payload.agent_task === undefined
           ? await process()
           : await (async () => {
