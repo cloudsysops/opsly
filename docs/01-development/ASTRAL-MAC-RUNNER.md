@@ -1,0 +1,54 @@
+# MacBook Astral Runner
+
+Purpose: add trusted build capacity without waiting behind GitHub-hosted Opsly jobs.
+
+## Security boundary
+
+`cloudsysops/opsly` is a public repository. The Mac runner must **not** execute
+arbitrary pull-request code.
+
+The Mac-specific workflows are intentionally limited to:
+
+- trusted pushes to `preview/astral-arena`;
+- explicit `workflow_dispatch`.
+
+Do not add `pull_request` to a self-hosted Mac workflow without a separate security
+review and an ephemeral/isolation model.
+
+## Install
+
+1. In GitHub, open:
+   `cloudsysops/opsly → Settings → Actions → Runners → New self-hosted runner`.
+2. Generate/copy the short-lived registration token.
+3. On the MacBook:
+
+```bash
+git fetch origin
+git checkout feat/astral-arena-universe
+chmod +x scripts/ops/install-mac-github-runner.sh
+RUNNER_TOKEN='PASTE_SHORT_LIVED_TOKEN' ./scripts/ops/install-mac-github-runner.sh
+```
+
+The installer:
+- detects Intel vs Apple Silicon;
+- downloads the matching official GitHub Actions runner;
+- verifies the pinned SHA-256 for v2.337.0;
+- registers labels `astral-fast,godot,mac-build`;
+- installs/starts the runner service.
+
+## Godot
+
+Install Godot 4.7.2 and export templates before running the Web build. The workflows
+accept:
+- `godot` in PATH;
+- `godot4` in PATH;
+- `/Applications/Godot.app/Contents/MacOS/Godot`.
+
+## Workflows
+
+- `Astral Mac Runner Smoke`: proves runner/toolchain health.
+- `Astral Mac Web Build`: imports and exports the actual Astral Arena Web build.
+
+This adds one true concurrent job. A second runner process on the same Mac would add
+another slot, but start with one to avoid exhausting a 16 GB MacBook during Godot +
+Cursor/VS Code use.

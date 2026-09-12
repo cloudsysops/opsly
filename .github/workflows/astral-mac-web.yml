@@ -1,0 +1,80 @@
+name: Astral Mac Web Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'preview/astral-arena'
+    paths:
+      - 'apps/game-astral-arena/**'
+      - 'config/games/astral-arena.json'
+      - 'lib/game-core/**'
+      - 'lib/universe/**'
+      - 'scripts/games/**'
+      - '.github/workflows/astral-mac-web.yml'
+
+concurrency:
+  group: astral-mac-web
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  web-build:
+    runs-on: [self-hosted, macOS, astral-fast, godot]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve Godot binary
+        id: godot
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v godot >/dev/null 2>&1; then
+            bin="$(command -v godot)"
+          elif command -v godot4 >/dev/null 2>&1; then
+            bin="$(command -v godot4)"
+          elif [[ -x "/Applications/Godot.app/Contents/MacOS/Godot" ]]; then
+            bin="/Applications/Godot.app/Contents/MacOS/Godot"
+          else
+            echo "::error::Godot 4.7.2 is required on the Mac runner"
+            exit 1
+          fi
+          echo "bin=$bin" >> "$GITHUB_OUTPUT"
+          "$bin" --version
+
+      - name: Validate product
+        run: node scripts/games/validate-astral-arena-game.mjs
+
+      - name: Import Godot project
+        shell: bash
+        run: |
+          set -euo pipefail
+          "${{ steps.godot.outputs.bin }}"             --headless             --editor             --path apps/game-astral-arena             --quit
+
+      - name: Export Web build
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf dist/astral-arena-web
+          mkdir -p dist/astral-arena-web
+          "${{ steps.godot.outputs.bin }}"             --headless             --path apps/game-astral-arena             --export-release "Web" ../../dist/astral-arena-web/index.html
+
+      - name: Smoke artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s dist/astral-arena-web/index.html
+          find dist/astral-arena-web -maxdepth 1 -type f -name '*.wasm' -size +0c | grep -q .
+          find dist/astral-arena-web -maxdepth 1 -type f -name '*.pck' -size +0c | grep -q .
+          sha256sum dist/astral-arena-web/* > dist/astral-arena-web/SHA256SUMS.txt
+
+      - name: Upload Web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: astral-arena-web-mac-${{ github.sha }}
+          path: dist/astral-arena-web
+          retention-days: 7
+          if-no-files-found: error
