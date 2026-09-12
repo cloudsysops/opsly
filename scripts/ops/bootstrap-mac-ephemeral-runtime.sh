@@ -85,8 +85,10 @@ fi
 
 sleep 3
 
-log "running strict doctor through Doppler"
-doppler run --project ops-intcloudsysops --config prd --   ./scripts/ops/mac-ephemeral-runtime-doctor.sh --strict
+log "running readiness doctor through Doppler (FAIL blocks; WARN remains visible)"
+doppler run --project ops-intcloudsysops --config prd --   ./scripts/ops/mac-ephemeral-runtime-doctor.sh
+
+log "note: use npm run opsly:mac:doctor:strict for an audit that escalates known WARN findings"
 
 log "bootstrap complete"
 log "healthy idle = bridges/worker/watcher alive; zero AI task sessions unless work is active"
