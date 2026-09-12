@@ -237,3 +237,15 @@ The first four episodes exist as real Content Studio storyboards under:
 
 This series references Universe character IDs via `character_source: universe`;
 canonical character definitions are not duplicated into `data/content/characters`.
+
+
+## Chapter 1 production pack
+
+Chapter 1 now expands into a machine-readable production queue:
+
+`config/games/astral-arena-chapter-01-production.json`
+
+Current scope: **24 deliverables** across the first four episodes.
+
+The pack is planning/orchestration only. Content OS v2 + Moon remain the production
+and approval path.

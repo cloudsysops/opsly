@@ -213,7 +213,9 @@
     "game:astral:content-pack": "tsx scripts/games/generate-astral-arena-content-pack.ts",
     "game:astral:validate": "node scripts/games/validate-astral-arena-game.mjs",
     "game:astral:transmedia:validate": "node scripts/games/validate-astral-transmedia.mjs",
-    "game:astral:content-series:validate": "node scripts/games/validate-astral-content-series.mjs"
+    "game:astral:content-series:validate": "node scripts/games/validate-astral-content-series.mjs",
+    "content:astral:chapter1:plan": "node scripts/content/astral-chapter1-plan.mjs",
+    "content:astral:chapter1:plan:json": "node scripts/content/astral-chapter1-plan.mjs --json"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",

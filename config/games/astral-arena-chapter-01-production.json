@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "franchiseId": "astral-arena",
+  "seasonId": "season-01-guardians-of-the-nexus",
+  "chapterId": "chapter-01-awakening",
+  "title": "The Awakening — Production Pack",
+  "approval": "moon-human-required",
+  "publishPolicy": "never-auto-publish",
+  "defaultCta": {
+    "beforeSteamComingSoon": "Play the preview / follow development",
+    "afterSteamComingSoon": "Wishlist on Steam"
+  },
+  "episodes": [
+    {
+      "episodeId": "astral-s01e01-awakening",
+      "storyEventId": "story-awakening-sisters",
+      "missionIds": [
+        "awakening-sisters-001"
+      ],
+      "captureMarkers": [
+        "first-crystal-awakens",
+        "sisters-connect",
+        "portal-revealed"
+      ],
+      "deliverables": [
+        {
+          "type": "episode-master",
+          "aspect": "16:9",
+          "targetSec": 75,
+          "source": "mixed-story-gameplay"
+        },
+        {
+          "type": "short",
+          "aspect": "9:16",
+          "targetSec": 30,
+          "source": "gameplay-highlight"
+        },
+        {
+          "type": "short",
+          "aspect": "9:16",
+          "targetSec": 45,
+          "source": "story-cut"
+        },
+        {
+          "type": "thumbnail",
+          "aspect": "16:9",
+          "source": "approved-canon-art+gameplay"
+        },
+        {
+          "type": "trailer-beat",
+          "aspect": "16:9",
+          "targetSec": 8,
+          "source": "sisters-connect"
+        },
+        {
+          "type": "steam-screenshot-candidate",
+          "aspect": "16:9",
+          "source": "real-gameplay"
+        }
+      ]
+    },
+    {
+      "episodeId": "astral-s01e02-orion",
+      "storyEventId": "story-orion-guardian",
+      "missionIds": [
+        "orion-earth-guardian-001"
+      ],
+      "captureMarkers": [
+        "orion-arrives",
+        "guardian-rush",
+        "team-bond"
+      ],
+      "deliverables": [
+        {
+          "type": "episode-master",
+          "aspect": "16:9",
+          "targetSec": 75,
+          "source": "mixed-story-gameplay"
+        },
+        {
+          "type": "short",
+          "aspect": "9:16",
+          "targetSec": 30,
+          "source": "guardian-rush"
+        },
+        {
+          "type": "short",
+          "aspect": "9:16",
+          "targetSec": 45,
+          "source": "team-bond"
+        },
+        {
+          "type": "thumbnail",
+          "aspect": "16:9",
+          "source": "approved-canon-art+gameplay"
+        },
+        {
+          "type": "trailer-beat",
+          "aspect": "16:9",
+          "targetSec": 8,
+          "source": "guardian-rush"
+        },
+        {
+          "type": "steam-screenshot-candidate",
+          "aspect": "16:9",
+          "source": "real-gameplay"
+        }
+      ]
+    },
+    {
+      "episodeId": "astral-s01e03-aurora",
+      "storyEventId": "story-aurora-guardian",
+      "missionIds": [
+        "aurora-magic-guardian-001"
+      ],
+      "captureMarkers": [
+        "aurora-reveal",
+        "prism-charge",
+        "nexus-purified"
+      ],
+      "deliverables": [
+        {
+          "type": "episode-master",
+          "aspect": "16:9",
+          "targetSec": 75,
+          "source": "mixed-story-gameplay"
+        },
+        {
+          "type": "short",
+          "aspect": "9:16",
+          "targetSec": 30,
+          "source": "aurora-reveal"
+        },
+        {
+          "type": "short",
+          "aspect": "9:16",
+          "targetSec": 45,
+          "source": "nexus-purified"
+        },
+        {
+          "type": "thumbnail",
+          "aspect": "16:9",
+          "source": "approved-canon-art+gameplay"
+        },
+        {
+          "type": "trailer-beat",
+          "aspect": "16:9",
+          "targetSec": 8,
+          "source": "prism-charge"
+        },
+        {
+          "type": "steam-screenshot-candidate",
+          "aspect": "16:9",
+          "source": "real-gameplay"
+        }
+      ]
+    },
+    {
+      "episodeId": "astral-s01e04-nx7",
+      "storyEventId": "story-nx7-awakening",
+      "missionIds": [
+        "nx7-awakening-001"
+      ],
+      "captureMarkers": [
+        "nx7-boot",
+        "logic-pulse",
+        "technolia-first-view"
+      ],
+      "deliverables": [
+        {
+          "type": "episode-master",
+          "aspect": "16:9",
+          "targetSec": 75,
+          "source": "mixed-story-gameplay"
+        },
+        {
+          "type": "short",
+          "aspect": "9:16",
+          "targetSec": 30,
+          "source": "nx7-boot"
+        },
+        {
+          "type": "short",
+          "aspect": "9:16",
+          "targetSec": 45,
+          "source": "technolia-first-view"
+        },
+        {
+          "type": "thumbnail",
+          "aspect": "16:9",
+          "source": "approved-canon-art+gameplay"
+        },
+        {
+          "type": "trailer-beat",
+          "aspect": "16:9",
+          "targetSec": 8,
+          "source": "technolia-first-view"
+        },
+        {
+          "type": "steam-screenshot-candidate",
+          "aspect": "16:9",
+          "source": "real-gameplay"
+        }
+      ]
+    }
+  ],
+  "qualityGates": [
+    "real-gameplay-claims-only",
+    "universe-canon-check",
+    "content-os-independent-review",
+    "rights-gate",
+    "moon-human-approval"
+  ]
+}
