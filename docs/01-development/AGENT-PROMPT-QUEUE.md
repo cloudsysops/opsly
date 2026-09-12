@@ -1,7 +1,7 @@
 ---
 status: draft
 owner: operations
-last_review: 2026-05-24
+last_review: 2026-09-12
 type: guide
 tags:
   - opsly/development
@@ -11,11 +11,32 @@ tags:
 
 Objetivo: que **desde el móvil o el equipo** se dejen instrucciones en git y el agente en Cursor las **encuentre, ejecute y deje constancia** de forma ordenada.
 
-## Límites honestos (importante)
+## Modelo canónico actual
 
-- **Cursor no ejecuta prompts solo** mientras el IDE está cerrado: hace falta **abrir una sesión** y disparar la cola (mensaje en el chat o `@archivo`).
-- **No** reutilizar en local el patrón del VPS `docs/ACTIVE-PROMPT.md` + `cursor-prompt-monitor` para ejecutar líneas como shell sin revisión: es **riesgo RCE** si alguien malicioso puede editar el repo.
-- Lo que sí podemos es: **convención de carpetas + formato + una frase fija** en el chat para que el agente lea la cola y responda en el sitio acordado.
+Opsly ya no depende de mantener Cursor/OpenCode abierto ni de agentes AI persistentes.
+
+La cola entra por el camino gobernado:
+
+```text
+tracked night-queue / local queue
+→ LocalPromptWatcher / governed submit
+→ AgentTaskEnvelopeV1
+→ BullMQ local-agents
+→ authenticated CLI bridge
+→ Session Manager
+→ ephemeral tmux opsly-task-*
+→ real runtime
+→ result/evidence
+→ teardown
+```
+
+Invariantes:
+- el checkout automático solo confía en la rama configurada (por defecto `main`);
+- `PLATFORM_ADMIN_TOKEN` es obligatorio;
+- no se ejecuta Markdown como shell;
+- el runtime AI nace por tarea y se destruye al terminar;
+- estado sano en idle = **0 sesiones `opsly-task-*`**;
+- no hay fallback silencioso a payloads legacy salvo break-glass explícito y temporal.
 
 ## Rutas recomendadas
 
@@ -65,21 +86,23 @@ Luego:
 1. Si `requires_pr: true` y hay cambios: **PR** según `docs/01-development/GIT-WORKFLOW.md`.
 2. Cambiar en la cabecera `status: done` (o mover el archivo a `done/` si preferís solo estado por ruta).
 
-## Cómo **disparar** la ejecución en Cursor (local)
+## Cómo disparar una pasada
 
-En el chat, una sola línea (copiable desde el móvil):
+El dispatcher sincroniza de forma fast-forward-only la rama confiable, si el árbol está limpio, y siembra la cola local desde los workpacks versionados:
 
-```text
-Ejecuta la cola de prompts: lee .cursor/prompts/queue/, elige el primero con status pending, sigue docs/01-development/AGENT-PROMPT-QUEUE.md y deja la sección «Respuesta agente».
+```bash
+./scripts/ops/dispatch-prompt-queue.sh
 ```
 
-O abrir un prompt concreto:
+Para inspeccionar sin ejecutar:
 
-```text
-@.cursor/prompts/queue/001-mi-tarea.md Ejecuta y deja respuesta según AGENT-PROMPT-QUEUE.md
+```bash
+./scripts/ops/dispatch-prompt-queue.sh --dry-run
 ```
 
-## Daemon local seguro
+El dispatcher **no abre Terminal ni arranca un CLI AI persistente**. Verifica el camino gobernado y deja la ejecución real al worker/bridge/Session Manager.
+
+## Servicios locales permitidos
 
 El repo incluye un watcher mantenido:
 
@@ -104,6 +127,29 @@ Para procesar una sola pasada y salir:
 PLATFORM_ADMIN_TOKEN="<token>" npm run opsly:local-prompt-watcher:once
 ```
 
+
+## Puesta en marcha del nodo Mac
+
+Después de instalar/bootstrappear los servicios persistentes permitidos, el gate físico final es:
+
+```bash
+doppler run --project ops-intcloudsysops --config prd -- npm run opsly:mac:go-live
+```
+
+Ese comando verifica en una sola pasada:
+
+1. readiness doctor sin blockers;
+2. cero sesiones AI antes de empezar;
+3. control plane + cola `local-agents`;
+4. submit gobernado;
+5. ejecución real vía runtime efímero;
+6. polling de estado;
+7. evidencia bounded local;
+8. teardown;
+9. retorno a cero sesiones `opsly-task-*`.
+
+Un PASS de CI no sustituye este smoke físico. El nodo no se considera E2E validado hasta obtener evidencia desde el Mac real.
+
 ## Detección manual sin peligro
 
 - **Opcional:** script solo lectura que lista el siguiente pendiente (para humano o para pegar salida en el chat):
@@ -112,7 +158,7 @@ PLATFORM_ADMIN_TOKEN="<token>" npm run opsly:local-prompt-watcher:once
 ./scripts/next-prompt-in-queue.sh
 ```
 
-Prompts versionados para la noche: `docs/01-development/night-queue/` — `dispatch-prompt-queue.sh` los copia a `.cursor/prompts/queue/` (gitignored) y abre OpenCode. n8n: `docs/n8n-workflows/night-agent-queue.json` (HTTP al orchestrator; **no** escribe `docs/ACTIVE-PROMPT.md`).
+Prompts versionados para la noche: `docs/01-development/night-queue/` — `dispatch-prompt-queue.sh` los copia a `.cursor/prompts/queue/` (gitignored) y usa el camino gobernado del orchestrator. n8n: `docs/n8n-workflows/night-agent-queue.json` (HTTP al orchestrator; **no** escribe `docs/ACTIVE-PROMPT.md`).
 
 Si no existe el script, basta con listar la carpeta `queue/` manualmente; el protocolo sigue siendo válido.
 
