@@ -5,7 +5,7 @@
 #   ./scripts/mac-admin-orchestrator-worker.sh check
 #   ./scripts/mac-admin-orchestrator-worker.sh cursor-service [--port=5001]
 #   ./scripts/mac-admin-orchestrator-worker.sh worker
-#   ./scripts/mac-admin-orchestrator-worker.sh autopilot [args... pasan a agents-autopilot.sh]
+#   ./scripts/mac-admin-orchestrator-worker.sh sessions
 #
 # Requiere: doppler CLI, Node/npm, REDIS_URL en Doppler (ops-intcloudsysops / prd por defecto).
 #
@@ -82,10 +82,13 @@ cmd_worker() {
   doppler_run "${ROOT}/scripts/run-orchestrator-worker.sh"
 }
 
-cmd_autopilot() {
-  shift || true
-  export USE_DOPPLER="${USE_DOPPLER:-true}"
-  exec "${ROOT}/scripts/agents-autopilot.sh" "$@"
+cmd_sessions() {
+  echo "==> Opsly ephemeral task sessions"
+  if ! command -v tmux >/dev/null 2>&1; then
+    echo "tmux no encontrado." >&2
+    exit 2
+  fi
+  tmux list-sessions -F '#{session_name}' 2>/dev/null | grep '^opsly-task-' || true
 }
 
 main() {
@@ -94,7 +97,11 @@ main() {
     check) cmd_check ;;
     cursor-service) cmd_cursor_service "$@" ;;
     worker) cmd_worker ;;
-    autopilot) cmd_autopilot "$@" ;;
+    sessions) cmd_sessions ;; 
+    autopilot)
+      echo "DEPRECATED: autopilot persistente está deshabilitado. Usa AgentTask + sesiones tmux efímeras." >&2
+      exit 2
+      ;;
     -h|--help|help)
       usage
       exit 0
