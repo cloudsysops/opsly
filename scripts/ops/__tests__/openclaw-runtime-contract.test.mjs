@@ -26,6 +26,7 @@ test('OpenClaw is registered as an external runtime but held from automatic rout
 });
 
 test('OpenClaw uses the authenticated generic bridge and headless one-shot exec', () => {
+  assert.equal(services.services.local_openclaw.enabled, false);
   assert.equal(services.services.local_openclaw.url, 'http://localhost:5012');
   assert.equal(services.services.local_openclaw.envUrl, 'OPSLY_OPENCLAW_AGENT_URL');
   assert.equal(
