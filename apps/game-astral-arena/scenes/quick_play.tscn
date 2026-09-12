@@ -45,6 +45,22 @@ layout_mode = 2
 text = "Escoge Guardián, compañero y aura."
 horizontal_alignment = 1
 
+[node name="ModeLabel" type="Label" parent="Center/VBox"]
+layout_mode = 2
+text = "Modo"
+
+[node name="Mode" type="OptionButton" parent="Center/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(620, 56)
+
+[node name="NicknameLabel" type="Label" parent="Center/VBox"]
+layout_mode = 2
+text = "Nombre del jugador (opcional)"
+
+[node name="Nickname" type="LineEdit" parent="Center/VBox"]
+layout_mode = 2
+placeholder_text = "Tu nombre o alias"
+
 [node name="GuardianLabel" type="Label" parent="Center/VBox"]
 layout_mode = 2
 text = "Guardián"
@@ -60,6 +76,14 @@ text = "Compañero Astral"
 [node name="Companion" type="OptionButton" parent="Center/VBox"]
 layout_mode = 2
 custom_minimum_size = Vector2(620, 56)
+
+[node name="CompanionNameLabel" type="Label" parent="Center/VBox"]
+layout_mode = 2
+text = "Nombre de tu compañero (opcional)"
+
+[node name="CompanionName" type="LineEdit" parent="Center/VBox"]
+layout_mode = 2
+placeholder_text = "Ej. Orion, Nova, Rayo..."
 
 [node name="AuraLabel" type="Label" parent="Center/VBox"]
 layout_mode = 2
