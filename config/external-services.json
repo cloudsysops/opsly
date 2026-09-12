@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "services": {
+    "twenty": {
+      "displayName": "Twenty CRM",
+      "repository": "https://github.com/twentyhq/twenty.git",
+      "installPath": "~/.opsly/external-services/twenty",
+      "reviewedRef": "twenty/v2.39.0",
+      "role": "canonical-crm",
+      "updatePolicy": "manual-review-only",
+      "vendoredIntoOpsly": false,
+      "forkRequired": false,
+      "notes": "Resolve and record the exact commit SHA during bootstrap. Never track main in production."
+    }
+  }
+}
