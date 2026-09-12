@@ -148,7 +148,7 @@
       "description": "playwright portal E2E and browser QA local runner"
     },
     "local_openclaw": {
-      "enabled": true,
+      "enabled": false,
       "external_cli": "openclaw",
       "url": "http://localhost:5012",
       "envUrl": "OPSLY_OPENCLAW_AGENT_URL",
