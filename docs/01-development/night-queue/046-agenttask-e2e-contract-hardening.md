@@ -1,6 +1,6 @@
 ---
 id: agenttask-e2e-contract-hardening-046
-status: pending
+status: held
 priority: P1
 agent: local_opencode
 owner: platform
@@ -11,6 +11,7 @@ requires_pr: true
 requires_approval: false
 paid_infra_required: false
 production_deploy: false
+blocked_by: github-queue-write-approval-051
 autonomy: supervised
 estimated_minutes: 35
 resource_class: medium
