@@ -19,7 +19,7 @@ function appendLimited(current, chunk) {
 
 let stdout = '';
 let stderr = '';
-let exitCode = 1;
+let exitCode;
 
 try {
   const child = spawn(config.command, config.args || [], {
