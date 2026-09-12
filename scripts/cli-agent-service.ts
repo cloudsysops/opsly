@@ -240,7 +240,7 @@ function safeEquals(left: string, right: string): boolean {
 }
 
 function isAuthorized(req: express.Request): boolean {
-  if (!executeToken) return true;
+  if (!executeToken) return false;
   const authHeader = req.header('authorization') || '';
   const bearer = authHeader.match(/^Bearer\s+(.+)$/i)?.[1]?.trim() || '';
   return bearer.length > 0 && safeEquals(bearer, executeToken);
@@ -364,7 +364,8 @@ app.get('/health', (_req, res) => {
     dry_run: dryRun,
     cwd,
     allowed_root: allowedRoot,
-    auth_required: Boolean(executeToken),
+    auth_required: true,
+    auth_configured: Boolean(executeToken),
     in_flight_job_id: inFlightJobId,
     output_limit_bytes: outputLimitBytes,
     timeout_ms: timeoutMs,
@@ -377,6 +378,16 @@ app.post('/execute', async (req, res) => {
   const jobId = body.job_id || randomUUID();
 
   try {
+    if (!executeToken) {
+      res.status(503).json({
+        success: false,
+        job_id: jobId,
+        errorCode: 'AUTH_NOT_CONFIGURED',
+        error: 'agent bridge execution token is not configured',
+      });
+      return;
+    }
+
     if (!isAuthorized(req)) {
       res.status(401).json({
         success: false,
