@@ -2,7 +2,10 @@ import { NextResponse } from 'next/server';
 import type { RedisClientType } from 'redis';
 
 import { requireAdminAccess } from '../../../../lib/auth';
-import { buildComputeWorkerSnapshot, getComputeWorkersRegistry } from '../../../../lib/compute-worker-snapshot';
+import {
+  buildComputeWorkerSnapshot,
+  getComputeWorkersRegistry,
+} from '../../../../lib/compute-worker-snapshot';
 
 function getRedisUrl(): string {
   return process.env.REDIS_URL?.trim() ?? '';
@@ -17,7 +20,10 @@ async function createRedis(): Promise<RedisClientType> {
   return createClient({ url }) as RedisClientType;
 }
 
-async function readQueue(redis: RedisClientType, name: string): Promise<{
+async function readQueue(
+  redis: RedisClientType,
+  name: string
+): Promise<{
   waiting: number;
   active: number;
   completed: number;
@@ -59,7 +65,7 @@ export async function GET(request: Request): Promise<Response> {
       buildComputeWorkerSnapshot(heartbeats, {
         'content-video': emptyQueue,
         openclaw: emptyQueue,
-      }),
+      })
     );
   }
 }
