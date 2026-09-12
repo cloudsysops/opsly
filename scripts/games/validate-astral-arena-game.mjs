@@ -33,9 +33,11 @@ const requiredFiles = [
   'apps/game-astral-arena/scenes/mode_hub.tscn',
   'apps/game-astral-arena/scenes/world_2d.tscn',
   'apps/game-astral-arena/scenes/hybrid_battle_lab.tscn',
+  'apps/game-astral-arena/scenes/quick_play.tscn',
   'apps/game-astral-arena/src/mode_hub.gd',
   'apps/game-astral-arena/src/world_2d.gd',
   'apps/game-astral-arena/src/hybrid_battle_lab.gd',
+  'apps/game-astral-arena/src/quick_play.gd',
   'apps/game-astral-arena/src/battle_view_2d.gd',
   'apps/game-astral-arena/src/battle_view_3d.gd',
   'apps/game-astral-arena/src/runtime/battle_runtime.gd',
@@ -74,6 +76,11 @@ if (product && pack) {
   if (!pack.battle?.ruleset?.presentationModes?.includes('2D') ||
       !pack.battle?.ruleset?.presentationModes?.includes('3D')) {
     fail('battle ruleset must support both 2D and 3D presentation');
+  }
+
+  const companionFamilies = new Set((pack.companions ?? []).map((companion) => companion.family));
+  for (const family of ['REAL_PET', 'FUTURIST_AI', 'PREHISTORIC', 'ASTRAL_DRAGON', 'FANTASY', 'MYTHIC_LEGEND', 'CELESTIAL']) {
+    if (!companionFamilies.has(family)) fail(`companion catalog missing family ${family}`);
   }
 
   const fighterIds = new Set((pack.battle?.fighters ?? []).map((fighter) => fighter.id));
