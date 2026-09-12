@@ -40,6 +40,14 @@ func _ready() -> void:
         player_party,
         first_encounter.get("opponent", ["shadow-scout"])
     )
+    $HUD/Actions/SwitchView.pressed.connect(func():
+        _set_mode("3D" if current_mode == "2D" else "2D")
+    )
+    $HUD/Actions/Restart.pressed.connect(_restart_battle)
+    $HUD/Actions/Home.pressed.connect(func():
+        get_tree().change_scene_to_file("res://scenes/mode_hub.tscn")
+    )
+
     _build_ability_buttons()
     _set_mode("2D")
     _refresh_views()
@@ -141,3 +149,7 @@ func _side_summary(side: Array) -> String:
             int(fighter.get("energy", 0))
         ])
     return " · ".join(parts)
+
+
+func _restart_battle() -> void:
+    get_tree().reload_current_scene()
