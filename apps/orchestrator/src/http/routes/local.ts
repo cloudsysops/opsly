@@ -1,6 +1,6 @@
 import type { RouteContext } from '../router.js';
 import { verifyPlatformAdminToken, parseBody, assertTenantSlugOrThrow, enrichAutonomyMetadata, randomUUID } from '../utils.js';
-import { enqueueJob, enqueueLocalAgentJob, probeLocalAgentQueue } from '../../queue.js';
+import { enqueueLocalAgentJob, probeLocalAgentQueue } from '../../queue.js';
 import type { OrchestratorJob } from '../../types.js';
 import {
   getLocalControlMode,
