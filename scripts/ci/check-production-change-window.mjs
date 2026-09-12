@@ -32,6 +32,8 @@ const WINDOW_END_HOUR = 6; // exclusive
 const PESKIDS_DIRECT_PREFIXES = [
   'apps/peskids/',
   'apps/peskids-franchise/',
+  'apps/intcloudsysops/',
+  '.n8n/1-workflows/peskids/',
 ];
 
 const PESKIDS_DIRECT_MATCHERS = [
