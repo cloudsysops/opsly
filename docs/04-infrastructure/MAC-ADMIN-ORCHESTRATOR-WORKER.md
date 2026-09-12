@@ -7,7 +7,7 @@ tags:
   - opsly/infrastructure
 ---
 
-# Mac principal (opsly-admin) — Worker del orquestador + herramientas locales (autopilot)
+# Mac principal (opsly-admin) — Worker + ejecución efímera de runtimes
 
 Objetivo: que el **control plane** siga en el **VPS** y tu **Mac** consuma colas BullMQ de forma segura, ejecutando jobs que invocan **Cursor** (HTTP local) u otros endpoints configurados en `config/agent-services.json`.
 
@@ -27,7 +27,7 @@ Objetivo: que el **control plane** siga en el **VPS** y tu **Mac** consuma colas
 | Redis + control plane | VPS | Encolado, TeamManager, API |
 | `OPSLY_ORCHESTRATOR_MODE=worker-enabled` | Mac opsly-admin | Workers BullMQ + cola `local-agents` |
 | `scripts/cursor-agent-service.ts` | Mac | `POST /execute` → Cursor + `.cursor/responses/` |
-| `./scripts/agents-autopilot.sh` | Mac (o VPS según runbook) | Ticks Hermes / smoke / encolados |
+| Session Manager + tmux efímero | Mac | Crea `opsly-task-<id>-<role>` solo mientras un AgentTask ejecuta un runtime real |
 
 ## Paso 1 — Red y Doppler
 
@@ -74,18 +74,25 @@ Health local (si el health server está activo en el proceso):
 curl -sS http://127.0.0.1:3011/health | head -c 400
 ```
 
-## Paso 5 — Autopilot (opcional)
+## Paso 5 — Observar sesiones efímeras
 
-El script ya usa Doppler cuando `USE_DOPPLER=true`:
+No se inicia un autopilot persistente.
 
 ```bash
-cd /ruta/al/repo
-./scripts/mac-admin-orchestrator-worker.sh autopilot
+./scripts/mac-admin-orchestrator-worker.sh sessions
+tmux list-sessions -F '#{session_name}' | grep '^opsly-task-' || true
 ```
 
-O directamente: `./scripts/agents-autopilot.sh` (equivale si ya tienes env cargado).
+Para inspección humana de una tarea activa:
 
-**Orden recomendado al arrancar:** (1) Cursor service → (2) worker → (3) autopilot si lo usas en esta máquina.
+```bash
+tmux attach -t opsly-task-<id>-<role>
+```
+
+Separarse sin matar la tarea: `Ctrl+b`, luego `d`.
+
+El bridge HTTP puede permanecer disponible como infraestructura autenticada. El proceso de Hermes/OpenCode/Codex/Claude existe solo durante la sesión de la tarea y la sesión se destruye al finalizar o fallar.
+
 
 ## Variables útiles (Doppler / `.env` local gitignored)
 

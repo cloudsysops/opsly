@@ -20,6 +20,7 @@ import {
 import { recordOpenClawIntentQueued } from '../../openclaw/runtime-events.js';
 import { jsonResponse, errorResponse } from '../router.js';
 import { agentTaskEnvelopeV1Schema } from '@intcloudsysops/types/agent-task';
+import { buildAgentTaskEnvelope, inferTaskType } from '@intcloudsysops/agent-task-core';
 
 const MAX_RECENT_LOCAL_JOBS = 25;
 
@@ -188,6 +189,9 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
     typeof b.context === 'object' && b.context !== null ? (b.context as Record<string, unknown>) : {};
   const requestId = typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
 
+  const agentKind = resolveLocalPromptAgentKind(b, promptForAgentResolve);
+  const jobType = jobTypeForLocalAgent(agentKind);
+
   const taskEnvelopeRaw = b.agent_task;
   const taskEnvelopeResult =
     taskEnvelopeRaw === undefined ? null : agentTaskEnvelopeV1Schema.safeParse(taskEnvelopeRaw);
@@ -199,17 +203,66 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
     );
     return;
   }
-  const taskEnvelope = taskEnvelopeResult?.success ? taskEnvelopeResult.data : undefined;
+
+  const roleHint = agentRole.trim().toLowerCase();
+  const inferredType = inferTaskType(
+    promptForWorker,
+    roleHint.includes('plan')
+      ? 'planning'
+      : roleHint.includes('review')
+        ? 'review'
+        : roleHint.includes('debug')
+          ? 'code'
+          : roleHint.includes('build') || roleHint.includes('implement')
+            ? 'code'
+            : undefined
+  );
+  const requiresPr = context.requires_pr === true;
+  const writeAllowed =
+    requiresPr ||
+    roleHint.includes('build') ||
+    roleHint.includes('implement') ||
+    roleHint.includes('debug');
+
+  const taskEnvelope = taskEnvelopeResult?.success
+    ? taskEnvelopeResult.data
+    : buildAgentTaskEnvelope({
+        task: promptForWorker,
+        tenantSlug,
+        taskType: inferredType,
+        selectedAgent: jobType,
+        requestedAgent: agentKind,
+        requestId,
+        correlationId:
+          typeof b.correlation_id === 'string' && b.correlation_id.trim().length > 0
+            ? b.correlation_id.trim()
+            : requestId,
+        executionMode: 'enqueue',
+        localOnly: true,
+        writeAllowed,
+        source: 'local-prompt-submit',
+        actor: 'system',
+        metadata: {
+          generated_by: 'orchestrator',
+          agent_role: agentRole,
+          goal,
+          requires_pr: requiresPr,
+          ...context,
+        },
+      });
+
   if (
-    taskEnvelope &&
-    (taskEnvelope.tenant_slug !== tenantSlug || taskEnvelope.request_id !== requestId)
+    taskEnvelope.tenant_slug !== tenantSlug ||
+    taskEnvelope.request_id !== requestId ||
+    taskEnvelope.selected_agent !== jobType
   ) {
-    errorResponse(ctx.res, 400, 'AgentTaskEnvelopeV1 tenant_slug/request_id mismatch');
+    errorResponse(
+      ctx.res,
+      400,
+      'AgentTaskEnvelopeV1 tenant_slug/request_id/selected_agent mismatch'
+    );
     return;
   }
-
-  const agentKind = resolveLocalPromptAgentKind(b, promptForAgentResolve);
-  const jobType = jobTypeForLocalAgent(agentKind);
 
   const job: OrchestratorJob = {
     type: jobType as OrchestratorJob['type'],
@@ -219,7 +272,7 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
       max_steps: maxSteps,
       goal,
       context,
-      ...(taskEnvelope ? { agent_task: taskEnvelope } : {}),
+      agent_task: taskEnvelope,
       job_id: requestId,
     },
     tenant_slug: tenantSlug,

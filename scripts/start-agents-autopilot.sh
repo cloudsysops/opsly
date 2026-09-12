@@ -1,27 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$ROOT"
+cat >&2 <<'EOF'
+DEPRECATED: persistent AI agent autopilot is disabled.
 
-mkdir -p runtime/logs
-PID_FILE="${PID_FILE:-runtime/logs/agents-autopilot.pid}"
-LOG_FILE="${LOG_FILE:-runtime/logs/agents-autopilot.log}"
+Opsly canonical execution is:
+AgentTask -> policy/node auth -> capability routing -> Session Manager
+-> ephemeral tmux task session -> real external CLI/runtime -> evidence -> teardown.
 
-if [[ -f "$PID_FILE" ]]; then
-  old_pid="$(cat "$PID_FILE" 2>/dev/null || true)"
-  if [[ -n "${old_pid}" ]] && kill -0 "${old_pid}" 2>/dev/null; then
-    echo "agents-autopilot ya está corriendo pid=${old_pid}"
-    exit 0
-  fi
-  rm -f "$PID_FILE"
-fi
+Keep only control infrastructure persistent (BullMQ workers, prompt watchers,
+authenticated bridges, heartbeats). Do not run AI runtimes in nohup loops.
 
-chmod +x "$ROOT/scripts/agents-autopilot.sh"
-nohup "$ROOT/scripts/agents-autopilot.sh" >>"$LOG_FILE" 2>&1 &
-new_pid="$!"
-echo "$new_pid" >"$PID_FILE"
-
-echo "agents-autopilot iniciado pid=${new_pid}"
-echo "log: $LOG_FILE"
-echo "pid: $PID_FILE"
+See: docs/03-agents/EXTERNAL-RUNTIME-POLICY.md
+EOF
+exit 2
