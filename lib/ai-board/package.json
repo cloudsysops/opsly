@@ -2,7 +2,7 @@
   "name": "@intcloudsysops/ai-board",
   "version": "0.1.0",
   "private": true,
-  "description": "AI Board signal-to-job mapping and automation policy. Not a decision engine — reuses AgentTask policy + Orchestrator queues.",
+  "description": "AI Board signal-to-job mapping and automation policy. Not a decision engine \u2014 reuses AgentTask policy + Orchestrator queues.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,7 +14,7 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "type-check": "tsc --noEmit",
     "test": "vitest run"
   },
