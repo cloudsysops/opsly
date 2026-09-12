@@ -1,7 +1,7 @@
 ---
 status: draft
 owner: operations
-last_review: 2026-05-24
+last_review: 2026-09-12
 type: architecture
 tags:
   - opsly/architecture
@@ -14,15 +14,18 @@ Estado: Activa (Semana 1 — Operational Maturity)
 
 ## Decisión
 
-Opsly adopta una política **local-first** para inferencia IA:
+Opsly adopta una política **local-first / subscription-independent** para inferencia y coding:
 
-- Primera opción: Ollama local en `opsly-mac2011`.
-- Fallback cloud: proveedor cloud cuando el intento local excede `1s` o falla.
-- Error graceful: si no hay ruta permitida por perfil, se retorna error controlado.
+- Primera opción de implementación: **OpenCode + Ollama en PC Gamer** (GPU, costo de tokens $0).
+- Segunda opción: OpenCode en Mac contra un Ollama local/remoto permitido.
+- El Mac/VPS controlan y encolan; el PC Gamer ejecuta cómputo pesado. El Gamer no es un segundo control plane.
+- Cloud/Cursor/Codex/Claude son aceleradores opcionales, no dependencias operativas.
+- Cualquier ruta pagada sigue pasando por Cost Governance + Approval Gate.
+- Si no hay capacidad local y el perfil es `free-always`, el trabajo queda esperando capacidad en vez de consumir una suscripción.
 
 ## Perfiles Operativos
 
-- `free-always`: solo local; sin fallback cloud.
+- `free-always`: solo local; sin fallback cloud. Si PC Gamer/Mac local no están disponibles, la tarea espera capacidad.
 - `hybrid`: local + fallback cloud.
 - `cloud-only`: cloud directo (legacy compatible).
 
@@ -87,3 +90,42 @@ Los budgets se definen por variables `DAILY_BUDGET_*`.
 
 - [[00-architecture/README|00-architecture]]
 - [[brain/README|Brain Central]]
+
+
+## Coding runtime local-first
+
+La ruta canónica para tareas de implementación es:
+
+```text
+AgentTaskEnvelopeV1
+→ BullMQ local-agents
+→ capability routing
+→ PC Gamer online?
+   ├─ yes → OpenCode → Ollama GPU
+   └─ no  → Mac local-capable runtime / WAITING_FOR_CAPACITY
+→ evidence
+→ teardown
+```
+
+Comandos operativos:
+
+```bash
+npm run pc-gamer:opencode:doctor
+npm run pc-gamer:opencode:status
+npm run pc-gamer:opencode:up
+npm run pc-gamer:opencode:autostart
+```
+
+Selección de modelo:
+1. `OPSLY_OPENCODE_MODEL` explícito, si existe;
+2. inventario real de `OLLAMA_URL/api/tags`;
+3. preferencia configurable `OPSLY_LOCAL_MODEL_PREFERENCE`;
+4. si no hay modelo disponible, fail closed.
+
+El script **no descarga modelos automáticamente** durante `--up`. La descarga requiere una acción explícita:
+
+```bash
+./scripts/ops/pc-gamer-opencode-plane.sh --pull-model=<modelo>
+```
+
+Esto evita consumo inesperado de disco/red y mantiene la política free-first auditable.
