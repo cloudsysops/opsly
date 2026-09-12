@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Install canonical Opsly Mac launchd services.
-# Persistent services: local-agents worker, prompt dispatcher, authenticated bridges.
+# Persistent services: local-agents worker, prompt watcher, authenticated bridges.
+# A lightweight seed timer copies trusted tracked tasks into the local queue.
 # AI CLIs remain ephemeral per AgentTask inside tmux.
 set -euo pipefail
 
@@ -38,7 +39,8 @@ mkdir -p "$DEST" "$LOG_DIR"
 
 labels=(
   com.opsly.local-agents-worker
-  com.opsly.prompt-queue
+  com.opsly.prompt-watcher
+  com.opsly.prompt-seed
   com.opsly.bridge.opencode
   com.opsly.bridge.claude
   com.opsly.bridge.codex
@@ -108,7 +110,8 @@ EOF
 }
 
 write_plist com.opsly.local-agents-worker keepalive "./scripts/ops/start-mac-local-agents-worker.sh"
-write_plist com.opsly.prompt-queue interval "./scripts/ops/dispatch-prompt-queue.sh" 600
+write_plist com.opsly.prompt-watcher keepalive "npm run opsly:local-prompt-watcher"
+write_plist com.opsly.prompt-seed interval "./scripts/ops/dispatch-prompt-queue.sh --seed-only" 600
 write_plist com.opsly.bridge.opencode keepalive "npm run opsly:local-opencode-service"
 write_plist com.opsly.bridge.claude keepalive "npm run opsly:local-claude-service"
 write_plist com.opsly.bridge.codex keepalive "npm run opsly:local-codex-service"
