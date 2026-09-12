@@ -55,7 +55,6 @@ func _ready() -> void:
 
     mode_select.item_selected.connect(func(_index): _refresh_summary())
     guardian_select.item_selected.connect(func(_index): _refresh_summary())
-    companion_select.item_selected.connect(func(_index): _refresh_summary())
     aura_select.item_selected.connect(func(_index): _refresh_summary())
     companion_select.item_selected.connect(func(_index):
         companion_name_input.text = str(_selected_companion().get("name", ""))
