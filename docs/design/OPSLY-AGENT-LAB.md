@@ -80,20 +80,20 @@ Phased prompts live in `docs/01-development/night-queue/012-agent-lab-*.md` (see
 | `lib/ai-board` | Domain signal → board job mapping (Peskids-scoped patterns) | General Agent Lab job store |
 | `lib/agent-learning` | Evidence / review / trust / scorecards keyed by `request_id` | Task creation |
 
-## Gaps (inventory only — do not implement here)
+## Gaps
 
-1. **Trust promotion/demotion policy** — levels named in design; no automated thresholds wired to agent-learning yet.
-2. **Experience / eval datasets** — EvidenceRecord types exist in agent-learning; no continuous export pipeline.
-3. **Prompt versioning + performance** — called out in ownership table as not yet implemented.
+1. ~~**Trust promotion/demotion policy**~~ — **done in 013** (`DEFAULT_PROMOTION_POLICIES` + demotion floors; no auto `autonomous_low_risk`).
+2. ~~**Eval datasets (in-memory)**~~ — **done in 013** (`registerEvalCase` / `recordEvalResult`). Continuous durable export still open.
+3. ~~**Prompt / model performance**~~ — **done in 013** (`getPromptPerformance` / `getModelPerformance`).
 4. **Mission Control scorecards UI** — Lab metrics not yet a first-class MC panel.
-5. **Mac durable orch LaunchAgent** — local `com.opsly.orchestrator-mac` needs script in repo (`scripts/ops/start-orchestrator-mac.sh`) + Redis localhost override documented.
-6. **night-queue status parser** — `012` can show as `unknown` when queue copy has partial «Respuesta» while `status: pending` remains.
+5. ~~**Mac durable orch LaunchAgent script**~~ — **done in 012** (`scripts/ops/start-orchestrator-mac.sh`).
+6. ~~**night-queue status parser**~~ — **mitigated in 013** (`resolveEffectiveStatus` prefers frontmatter `done` over stale metadata `unknown`).
 
 ## Phase order after 012
 
 | File | When |
 |------|------|
-| `013-agent-lab-02-registry.md` | **Next** — extend `lib/agent-learning` only (unhold when 012=`done`) |
+| `013-agent-lab-02-registry.md` | **Done** 2026-09-12 — learning layer extensions |
 | later night-queue Agent Lab phases | After 013 green + Codex review |
 | Video / highlight pilots | Only after registry/learning MVP; respect PC-gamer schedule |
 

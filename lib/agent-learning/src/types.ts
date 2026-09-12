@@ -70,6 +70,62 @@ export type PromotionPolicy = {
   min_success_rate: number;
 };
 
+/** Holdout / shadow tournament case — never creates a task by itself. */
+export type EvalCase = {
+  eval_id: string;
+  dataset_id: string;
+  /** Optional link to a prior canonical task; empty means synthetic fixture only. */
+  task_id?: CanonicalTaskId;
+  objective: string;
+  expected_signal?: string;
+  tags: string[];
+  created_at: string;
+};
+
+export type EvalResult = {
+  eval_id: string;
+  dataset_id: string;
+  task_id: CanonicalTaskId;
+  agent_id: string;
+  model: string;
+  prompt_version: string;
+  score: number;
+  passed: boolean;
+  recorded_at: string;
+  notes?: string;
+};
+
+export type PromptPerformance = {
+  prompt_version: string;
+  samples: number;
+  success_rate: number;
+  avg_latency_ms: number;
+  avg_review_score: number;
+};
+
+export type ModelPerformance = {
+  model: string;
+  samples: number;
+  success_rate: number;
+  avg_latency_ms: number;
+  avg_review_score: number;
+};
+
+export type AgentScorecard = {
+  agent_id: string;
+  model: string;
+  role: string;
+  trust_level: TrustLevel;
+  task_count: number;
+  success_rate: number;
+  supervisor_agreement: number;
+  human_agreement: number;
+  avg_latency_ms: number;
+  failure_count: number;
+  last_failure_at?: string;
+  capabilities: string[];
+};
+
 export const TRUST_LEVELS: TrustLevel[] = [
   'observe',
   'shadow',
