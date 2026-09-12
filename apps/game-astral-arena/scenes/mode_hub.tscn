@@ -46,6 +46,11 @@ theme_override_font_sizes/font_size = 20
 text = "Un solo canon y estado · múltiples presentaciones"
 horizontal_alignment = 1
 
+[node name="QuickPlay" type="Button" parent="Center/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(520, 82)
+text = "▶ JUGAR AHORA · Guardián + Compañero"
+
 [node name="Story3D" type="Button" parent="Center/VBox"]
 layout_mode = 2
 custom_minimum_size = Vector2(520, 72)
