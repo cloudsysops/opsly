@@ -48,6 +48,16 @@ if [[ -n "$(git status --porcelain)" ]]; then
 fi
 
 log "repo=$ROOT branch=$branch"
+
+if [[ ! -f /tmp/opsly-mac-redis.env ]]; then
+  echo "missing /tmp/opsly-mac-redis.env; create the localhost Redis override before Mac bootstrap" >&2
+  exit 78
+fi
+if ! grep -Eq '^REDIS_URL=redis://(127\.0\.0\.1|localhost)(:|/)' /tmp/opsly-mac-redis.env; then
+  echo "/tmp/opsly-mac-redis.env must point REDIS_URL at localhost/127.0.0.1" >&2
+  exit 78
+fi
+
 log "checking Doppler required secrets without printing values"
 if [[ "$DRY_RUN" == "1" ]]; then
   log "[dry-run] would verify REDIS_URL, PLATFORM_ADMIN_TOKEN, OPSLY_CLI_AGENT_TOKEN"
