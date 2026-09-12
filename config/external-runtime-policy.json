@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "updated_at": "2026-09-11",
+  "principle": "Opsly does not invent AI agents. Opsly assigns temporary roles to real external runtimes/binaries and internal non-agent capabilities.",
+  "clone_root": "~/.opsly/external-agents",
+  "clone_policy": "reviewed tag + exact commit SHA; never track default branch for execution",
+  "repositories_now": [
+    {
+      "id": "opsly",
+      "repo": "cloudsysops/opsly",
+      "placement": [
+        "mac",
+        "vps",
+        "pc-gamer"
+      ],
+      "kind": "first-party-monorepo"
+    },
+    {
+      "id": "hermes",
+      "repo": "NousResearch/Hermes-Agent",
+      "placement": [
+        "mac"
+      ],
+      "kind": "external-agent-runtime",
+      "role": "planning"
+    },
+    {
+      "id": "opencode",
+      "repo": "anomalyco/opencode",
+      "placement": [
+        "mac"
+      ],
+      "kind": "external-agent-runtime",
+      "role": "implementation"
+    },
+    {
+      "id": "goose",
+      "repo": "aaif-goose/goose",
+      "placement": [
+        "mac"
+      ],
+      "kind": "external-agent-runtime",
+      "role": "fallback-tool-use"
+    },
+    {
+      "id": "openclaw",
+      "repo": "openclaw/openclaw",
+      "placement": [
+        "mac",
+        "pc-gamer-optional"
+      ],
+      "kind": "external-runtime",
+      "role": "auxiliary-runtime"
+    }
+  ],
+  "install_as_binary_not_clone": [
+    "Claude Code",
+    "Codex CLI",
+    "Cursor",
+    "GitHub Copilot",
+    "Ollama",
+    "FFmpeg",
+    "Python",
+    "Node.js",
+    "CUDA",
+    "Tailscale",
+    "Doppler"
+  ],
+  "deferred_repositories": [
+    {
+      "id": "comfyui",
+      "repo": "comfyanonymous/ComfyUI",
+      "condition": "Only after PC Gamer phase-1 telemetry and media runtime are stable"
+    }
+  ],
+  "not_agents": [
+    "BullMQ worker",
+    "Session Manager",
+    "TaskSourceGuard",
+    "Capability Router",
+    "Approval Gate",
+    "Mission Control",
+    "LLM Gateway",
+    "Ollama model",
+    "FFmpeg",
+    "Playwright test runner"
+  ],
+  "lifecycle": "AgentTask -> trusted source/node auth -> capability routing -> ephemeral tmux session -> real CLI/runtime -> evidence -> teardown"
+}
