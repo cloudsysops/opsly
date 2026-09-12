@@ -159,12 +159,31 @@ function renderUnknown(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }
 
-function decommentMarkdownPrompt(content: string): string {
-  return content
-    .split('\n')
-    .map((line) => line.replace(/^#\s?/, ''))
-    .join('\n')
-    .trim();
+/**
+ * Shell monitor (`cursor-prompt-monitor`) may store ACTIVE-PROMPT with `#` lines
+ * so it is not executed as shell. NEVER strip those markers when building an
+ * LLM/agent prompt — that would turn commented ops runbooks into live instructions
+ * (e.g. prod tenant DB/VPS work) and inject them into every queue task.
+ */
+function sanitizeActivePromptContext(content: string): string {
+  const trimmed = content.trim();
+  if (!trimmed) {
+    return '';
+  }
+  // If the file is primarily shell-monitor comment lines, do not pass it to agents.
+  const lines = trimmed.split('\n');
+  const codeLines = lines.filter((line) => {
+    const t = line.trim();
+    return t.length > 0 && !t.startsWith('#') && t !== '---';
+  });
+  const commentLines = lines.filter((line) => line.trim().startsWith('#'));
+  if (commentLines.length > 0 && codeLines.length === 0) {
+    return '';
+  }
+  if (commentLines.length >= Math.max(3, lines.length * 0.7)) {
+    return '';
+  }
+  return trimmed;
 }
 
 class LocalPromptWatcher {
@@ -245,7 +264,7 @@ class LocalPromptWatcher {
   private async readActivePromptContext(): Promise<string> {
     try {
       const content = await fsp.readFile(this.activePromptPath, 'utf-8');
-      return decommentMarkdownPrompt(content);
+      return sanitizeActivePromptContext(content);
     } catch {
       return '';
     }
