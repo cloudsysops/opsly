@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-09-07
+last_review: 2026-09-11
 ---
 
 # Opsly — Contexto del Agente
@@ -720,28 +720,34 @@ Week 4: Docs + runbook + MVP validation
 
 <!-- Actualizar al final de cada sesión. Sesiones pre-2026-05-26 → docs/history/AGENTS-SESSION-HISTORY.md -->
 
-### 📌 Sesión Activa (2026-09-10)
+### 📌 Sesión Activa (2026-09-11)
 
-**Tema:** Peskids prod catch-up + Docker `--webpack` unblock + Claude Code handoff
-**Branch:** `origin/main` = `a176bd202` (#1168 hotfix). Prod live aligned.
-**Objetivo:** que Claude Code / CI no vuelvan a fallar el Deploy Peskids por flags Next inválidos
+**Tema:** Reconciliación post-duplicación de Mauro + revisión/estado de PR #1194 (engineering control loop) + documentación para no repetir el ciclo
+**Branch actual del worktree:** `feat/pr-1185-agent-lab-reconcile` (no confundir con la rama del PR #1194, que es `claude/engineering-control-loop-audit`)
 
-**Live (verificado 2026-09-10 ~10:49 Bogotá / 15:49 UTC):**
-1. ✅ Prod `https://www.peskids.com/api/health` → 200, `environment=production`, `boundary.ok=true`, `git_sha=a176bd20210f9ddcb2bdec6bb1a264c64054b83a`
-2. ✅ Imagen `ghcr.io/cloudsysops/peskids:a176bd202…` (Deploy run `34497713615`, `force_daytime=true`)
-3. ✅ Prod **`hot_lead_alerts=true`**. Resto n8n flags **`false`**
-4. ✅ Home 200 · `/admin` 307→login · API plataforma supabase+redis ok
-5. ✅ Fix #1168: Dockerfile sin `next build --webpack` (Next 15.5)
-6. ✅ Claude↔Codex MCP bridge en `main` (#1163) + skill `opsly-claude-codex-review`
+**Hallazgo de esta sesión (verificado vía API pública de GitHub, sin token):**
+1. ✅ PR #1194 **sigue abierto y en draft** — creado 2026-09-11 23:31, sin mergear. Head = `claude/engineering-control-loop-audit` @ `a8fcc0e`.
+2. ✅ Contenido del PR confirmado exacto (2 fixes + 1 doc):
+   - `scripts/ops/dispatch-prompt-queue.sh` — `git pull --ff-only` seguro antes de sembrar (skip en dirty tree / detached HEAD / offline / DRY_RUN)
+   - `scripts/local-agent-watcher.ts` — token deja de caer a `'local-dev'`; ahora fails closed
+   - `docs/00-architecture/CURRENT-AUTOMATION-MAP.md` — mapa de automatización
+3. ✅ CI del commit `a8fcc0e`: **todos verdes** (build, lint, test-unit/integration, scripts-check, secret-scan, Trivy, validate-structure, check-canonical-sources, npm audit). `production-change-window` falló **una vez** por error de git del runner (`exit 128`) y quedó **verde** en el re-run. `validate-doppler` / `Docker Scout` = skipped (por diseño, sin secrets).
 
-**Pendiente:**
-- **#1160** content independent AI review — label `night-merge`; merge solo 22:00–06:00 Bogotá
-- Humano: migración `apps/peskids/migrations/20260818_admin_data_backups.sql` en Supabase **prod** si el panel data-backup falla (zona roja)
-- Staging puede seguir en SHA anterior; no confundir con prod
-- No encender digest ni segundo flag n8n
-- No reintroducir `--webpack` en Dockerfile Peskids (guard CI)
+**Bloqueante de esta sesión (heredado, sin resolver):**
+- `gh` CLI con token inválido (`401`) → no puedo mergear/reviewar/aprobar vía `gh`; git **sí** funciona por SSH (`git ls-remote` OK). Para consultar estado se usó `curl` a la API pública sin token.
+- Sin SSH/Tailscale a Mac/PC-Gamer → no se puede verificar LaunchAgent (`launchctl list`) ni `PLATFORM_ADMIN_TOKEN` real vía Doppler.
+
+**Pendiente real de #1194 (no hacer de nuevo):**
+- Necesita review independiente (Codex) + salir de draft + merge. Builder ≠ reviewer aún no se cumple.
+- Tras merge: verificar en máquina con acceso real: `git pull`, `launchctl list | grep opsly`, y `PLATFORM_ADMIN_TOKEN` vía Doppler.
 
 ### 📅 Sesiones Recientes
+
+**Sesión 2026-09-11 — PR #1194 state check + doc post-duplicación Mauro ✅**
+- ✅ Verificado vía API pública que #1194 está open/draft, contenido exacto, CI verde (production-change-window verde tras re-run; doppler/scout skipped por diseño)
+- ✅ Confirmado el ciclo que causó la duplicación de Mauro: AGENTS.md no se actualizó al cerrar sesiones previas
+- ✅ Este archivo ahora refleja el estado real de #1194 para que la próxima sesión no reintente el mismo trabajo
+- ⛔ `gh` inválido (401); git por SSH OK; sin acceso a Mac/PC-Gamer para verificación física
 
 **Sesión 2026-09-10 — Prod deploy unblock + CC handoff ✅**
 - ✅ Diagnóstico: prod sano pero atrás de `main`; Deploy fallaba por `--webpack`
@@ -1666,6 +1672,8 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 ---
 
 ## 🔄 Próximo paso inmediato
+
+**PR #1194 (nuevo, verificado 2026-09-11):** sigue **abierto y en draft** (`claude/engineering-control-loop-audit` @ `a8fcc0e`). CI verde (production-change-window verde tras re-run; doppler/scout skipped). **No re-hacer el trabajo** — 2 fixes ya hechos: git-sync `--ff-only` en `dispatch-prompt-queue.sh` + fail-closed en `local-agent-watcher.ts`, más `CURRENT-AUTOMATION-MAP.md`. Lo que falta NO es código: review independiente de Codex + salir de draft + merge. Luego verificar en máquina con acceso real: `git pull`, `launchctl list | grep opsly`, `PLATFORM_ADMIN_TOKEN` vía Doppler.
 
 **Peskids LIVE:** prod = `main` = `a176bd202` (`https://www.peskids.com`). Hot-lead **ON**; digest **OFF**. `peskids.op-sly.com` → www (308). No re-promote salvo lag nuevo.
 
