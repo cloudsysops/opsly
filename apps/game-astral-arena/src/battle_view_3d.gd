@@ -38,3 +38,13 @@ func render_battle_state(state: Dictionary, definitions: Dictionary) -> void:
             1.0
         )
         enemy_mesh.scale = Vector3.ONE * e_ratio
+
+
+func apply_player_color(html_color: String) -> void:
+    var color := Color.from_string(html_color, Color(0.45, 0.15, 0.92, 1))
+    var material := StandardMaterial3D.new()
+    material.albedo_color = color
+    material.emission_enabled = true
+    material.emission = color.darkened(0.45)
+    material.emission_energy_multiplier = 2.0
+    player_mesh.material_override = material
