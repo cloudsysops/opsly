@@ -30,6 +30,15 @@ const requiredFiles = [
   'apps/game-astral-arena/src/bootstrap.gd',
   'apps/game-astral-arena/src/player_controller.gd',
   'apps/game-astral-arena/src/crystal_temple.gd',
+  'apps/game-astral-arena/scenes/mode_hub.tscn',
+  'apps/game-astral-arena/scenes/world_2d.tscn',
+  'apps/game-astral-arena/scenes/hybrid_battle_lab.tscn',
+  'apps/game-astral-arena/src/mode_hub.gd',
+  'apps/game-astral-arena/src/world_2d.gd',
+  'apps/game-astral-arena/src/hybrid_battle_lab.gd',
+  'apps/game-astral-arena/src/battle_view_2d.gd',
+  'apps/game-astral-arena/src/battle_view_3d.gd',
+  'apps/game-astral-arena/src/runtime/battle_runtime.gd',
   'apps/game-astral-arena/generated/game-content.pack.json',
   'apps/game-astral-arena/web/Caddyfile',
   'apps/game-astral-arena/web/Dockerfile',
@@ -57,6 +66,21 @@ if (product && pack) {
     if (!characterIds.has(required)) fail(`content pack missing character ${required}`);
   }
 
+  const modes = new Set((pack.presentation_modes?.modes ?? []).map((mode) => mode.presentation));
+  for (const mode of ['2D', '3D', 'HYBRID']) {
+    if (!modes.has(mode)) fail(`content pack missing presentation mode ${mode}`);
+  }
+
+  if (!pack.battle?.ruleset?.presentationModes?.includes('2D') ||
+      !pack.battle?.ruleset?.presentationModes?.includes('3D')) {
+    fail('battle ruleset must support both 2D and 3D presentation');
+  }
+
+  const fighterIds = new Set((pack.battle?.fighters ?? []).map((fighter) => fighter.id));
+  for (const fighter of ['arena', 'brissa', 'shadow-scout']) {
+    if (!fighterIds.has(fighter)) fail(`battle pack missing fighter ${fighter}`);
+  }
+
   if (product.steam?.appId !== null) {
     fail('Steam AppID must remain null in repository config; inject real ID at release time');
   }
@@ -65,6 +89,14 @@ if (product && pack) {
 const project = fs.readFileSync(path.join(root, 'apps/game-astral-arena/project.godot'), 'utf8');
 if (!project.includes('run/main_scene="res://scenes/bootstrap.tscn"')) {
   fail('project.godot must boot through bootstrap.tscn');
+}
+
+const bootstrap = fs.readFileSync(path.join(root, 'apps/game-astral-arena/src/bootstrap.gd'), 'utf8');
+if (!bootstrap.includes('res://scenes/mode_hub.tscn')) {
+  fail('Astral Arena must boot into the 2D/3D/hybrid mode hub');
+}
+if (!bootstrap.includes('switch_presentation')) {
+  fail('hybrid presentation switch input is required');
 }
 
 const exportPreset = fs.readFileSync(
