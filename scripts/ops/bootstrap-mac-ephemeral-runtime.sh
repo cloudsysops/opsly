@@ -105,8 +105,14 @@ if [[ "$DRY_RUN" == "1" ]]; then
   exit 0
 fi
 
-log "waiting for bridges/orchestrator to report healthy (hard deadline: 30s)"
-health_deadline=$((SECONDS + 30))
+HEALTH_WAIT_SECONDS="${OPSLY_MAC_HEALTH_WAIT_SECONDS:-90}"
+if ! [[ "$HEALTH_WAIT_SECONDS" =~ ^[0-9]+$ ]] || (( HEALTH_WAIT_SECONDS < 10 || HEALTH_WAIT_SECONDS > 300 )); then
+  echo "OPSLY_MAC_HEALTH_WAIT_SECONDS must be an integer between 10 and 300" >&2
+  exit 2
+fi
+
+log "waiting for bridges/orchestrator to report healthy (hard deadline: ${HEALTH_WAIT_SECONDS}s)"
+health_deadline=$((SECONDS + HEALTH_WAIT_SECONDS))
 all_up=0
 
 while (( SECONDS < health_deadline )); do
