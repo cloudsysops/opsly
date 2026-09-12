@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {
+  ASTRAL_COMPANIONS,
   ASTRAL_DUEL_FIGHTERS,
   ASTRAL_DUEL_RULESET,
   CYBER_BATTLES,
@@ -87,6 +88,7 @@ const pack = {
   ),
   learning_arcade: product.firstPlayable.learningArcade.map((id) => missionById(id)),
   presentation_modes: GAME_MODE_BLUEPRINT,
+  companions: ASTRAL_COMPANIONS,
   battle: {
     ruleset: ASTRAL_DUEL_RULESET,
     fighters: ASTRAL_DUEL_FIGHTERS,
