@@ -177,10 +177,15 @@ function sanitizeActivePromptContext(content: string): string {
     return t.length > 0 && !t.startsWith('#') && t !== '---';
   });
   const commentLines = lines.filter((line) => line.trim().startsWith('#'));
+  // Shell-monitor ACTIVE-PROMPT is almost entirely `#` lines (plus YAML ---).
+  // Treat that as non-agent context even if a few frontmatter lines remain.
   if (commentLines.length > 0 && codeLines.length === 0) {
     return '';
   }
-  if (commentLines.length >= Math.max(3, lines.length * 0.7)) {
+  if (commentLines.length >= Math.max(3, codeLines.length * 2)) {
+    return '';
+  }
+  if (trimmed.includes('cursor-prompt-monitor')) {
     return '';
   }
   return trimmed;
