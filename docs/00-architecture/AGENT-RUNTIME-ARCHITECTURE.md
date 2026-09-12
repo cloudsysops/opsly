@@ -86,12 +86,40 @@ Examples currently wired through authenticated bridges include:
 | Claude Code | `local_claude` | :5002 |
 | OpenCode | `local_opencode` | :5004 |
 | Codex CLI | `local_codex` | :5005 |
-| Hermes Agent | registered Hermes runtime kind | :5007 |
-| OpenClaw | registered external runtime / worker capability | registry-driven |
+| Hermes Agent | `local_hermes` | :5007 |
+| OpenClaw CLI | `local_openclaw` | :5012 (registered, held/disabled until physical acceptance) |
 
 Ports are deployment details. The registry and runtime adapter configuration are authoritative.
 
 Names such as planner, developer, reviewer, architect or QA are **roles**, not proof that a dedicated persistent process exists.
+
+
+## OpenClaw CLI runtime
+
+OpenClaw CLI is distinct from the historical Opsly TypeScript "OpenClaw" control layer and from the BullMQ queue named `openclaw`.
+
+The canonical external runtime adapter uses:
+
+```text
+local_openclaw
+→ authenticated bridge :5012
+→ Session Manager
+→ ephemeral opsly-task-* session
+→ openclaw agent exec
+```
+
+`openclaw agent exec` is used because it is a one-shot embedded/headless execution path. The persistent OpenClaw Gateway/TUI is not the canonical Opsly AgentTask runtime.
+
+Security posture before physical acceptance:
+
+- the external registry entry remains `enabled:false`;
+- the agent service remains disabled for worker routing;
+- the default Mac worker allowlist excludes `local_openclaw`;
+- the launchd bridge may be installed as infrastructure, but no AgentTask may be routed to it automatically;
+- OpenClaw is treated as write-capable/high-risk because its effective tool policy may allow filesystem mutation or host exec;
+- a read-only physical smoke requires an explicit restrictive OpenClaw tool policy.
+
+Physical acceptance is tracked in workpack 052 and must return exactly `OPENCLAW_OK`.
 
 ## AgentTaskEnvelopeV1
 
