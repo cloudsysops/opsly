@@ -22,6 +22,16 @@ describe('external-agent-registry', () => {
     expect(registry.workers['opencode']?.opsly_job_type).toBe('local_opencode');
   });
 
+  it('registers OpenClaw but keeps it disabled until physical acceptance', async () => {
+    const registry = await loadExternalAgentRegistry(REPO_ROOT);
+    const openclaw = registry.workers['openclaw-cli'];
+    expect(openclaw?.command).toBe('openclaw');
+    expect(openclaw?.opsly_job_type).toBe('local_openclaw');
+    expect(openclaw?.bridge_port).toBe(5012);
+    expect(openclaw?.write_access).toBe(true);
+    expect(openclaw?.enabled).toBe(false);
+  });
+
   it('routes architecture to claude-code', async () => {
     const registry = await loadExternalAgentRegistry(REPO_ROOT);
     const resolved = routeExternalWorker(registry, { intent: 'architecture' });
