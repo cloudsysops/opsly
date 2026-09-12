@@ -1,0 +1,128 @@
+{
+  "vertical_blueprint_id": "health-travel-colombia",
+  "industry": "health travel coordination",
+  "country": "CO",
+  "timezone": "America/Bogota",
+  "crm_provider": "twenty",
+  "offer_type": "international_care_journey",
+  "target_markets": [
+    "US",
+    "CA",
+    "LATAM"
+  ],
+  "destination_cities": [
+    "Medellin",
+    "Bogota",
+    "Cartagena"
+  ],
+  "form_fields": [
+    "traveler_name",
+    "phone",
+    "email",
+    "origin_country",
+    "preferred_city",
+    "requested_service",
+    "preferred_dates",
+    "budget_range",
+    "companions",
+    "language",
+    "mobility_requirements",
+    "consent_to_contact"
+  ],
+  "cta_text": "Solicita una coordinacion inicial",
+  "landing_routes": [
+    "/",
+    "/health-travel",
+    "/colombia"
+  ],
+  "crm_pipeline_name": "International Care Journey",
+  "approval_boundary": "approval-first",
+  "external_services": [
+    "twenty",
+    "chatwoot",
+    "calcom",
+    "shlink"
+  ],
+  "n8n_workflows": [
+    "lead-intake",
+    "provider-shortlist-request",
+    "consultation-booking",
+    "quote-followup",
+    "journey-reminders",
+    "commission-attribution"
+  ],
+  "journey_stages": [
+    "lead",
+    "qualified",
+    "provider_shortlist",
+    "consultation_scheduled",
+    "quoted",
+    "booked",
+    "travel_confirmed",
+    "in_colombia",
+    "follow_up",
+    "completed"
+  ],
+  "provider_types": [
+    "health_provider",
+    "travel_provider",
+    "lodging_provider",
+    "transport_provider",
+    "recovery_support",
+    "experience_provider"
+  ],
+  "revenue_records": [
+    "platform.revenue_partners",
+    "platform.revenue_offers",
+    "platform.revenue_attributions",
+    "platform.revenue_referrals",
+    "platform.revenue_commission_events",
+    "platform.revenue_payouts"
+  ],
+  "brand_basic": {
+    "tone": "bilingual, reassuring, transparent, concierge-first"
+  },
+  "modules": [
+    "lead-capture",
+    "follow-up",
+    "simple-crm",
+    "approval-queue",
+    "weekly-report",
+    "booking-concierge",
+    "partner-commissions"
+  ],
+  "safety_boundaries": [
+    "Opsly coordinates commercial and travel workflows; licensed providers make clinical decisions.",
+    "No diagnosis, prescribing, treatment selection, or medical-record system in this blueprint.",
+    "Do not store detailed clinical records in CRM/revenue tables.",
+    "Provider credential and contract review is required before marketplace activation.",
+    "Referral/commission terms must be legally and contractually permitted before activation.",
+    "Post-procedure tourism or wellness suggestions require provider clearance when clinically relevant."
+  ],
+  "data_minimization": {
+    "allowed": [
+      "contact details",
+      "requested service category",
+      "preferred city/dates",
+      "budget range",
+      "language",
+      "mobility coordination requirements",
+      "provider/booking references",
+      "travel coordination references",
+      "commercial attribution and commission references"
+    ],
+    "prohibited_without_separate_compliance_review": [
+      "diagnosis details",
+      "full medical history",
+      "imaging",
+      "lab records",
+      "prescriptions",
+      "clinical notes"
+    ]
+  },
+  "risk_notes": [
+    "Do not estimate medical savings unless a comparable source quote exists.",
+    "Do not rank providers only by commission.",
+    "Travel inventory should come from approved APIs/feeds or manually verified partners."
+  ]
+}
