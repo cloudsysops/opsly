@@ -1,10 +1,11 @@
 #!/usr/bin/env npx tsx
 
 import express from 'express';
-import { spawn } from 'node:child_process';
 import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { promises as fsp } from 'node:fs';
+import { resolve, join } from 'node:path';
+import { createSession, sendCommand, stopSession, waitForSessionExit } from '@intcloudsysops/session-manager';
 import { guardLlmTextPrompt } from '@intcloudsysops/prompt-guard';
 import {
   classifySpawnError,
@@ -240,7 +241,7 @@ function safeEquals(left: string, right: string): boolean {
 }
 
 function isAuthorized(req: express.Request): boolean {
-  if (!executeToken) return true;
+  if (!executeToken) return false;
   const authHeader = req.header('authorization') || '';
   const bearer = authHeader.match(/^Bearer\s+(.+)$/i)?.[1]?.trim() || '';
   return bearer.length > 0 && safeEquals(bearer, executeToken);
@@ -306,54 +307,78 @@ function appendLimited(current: string, chunk: Buffer): string {
   return `${truncated}\n[opsly] output truncated at ${outputLimitBytes} bytes`;
 }
 
-function runCommand(spec: CommandSpec): Promise<{ stdout: string; stderr: string; code: number | null }> {
-  return new Promise((resolvePromise, reject) => {
-    validateWorkspaceScope();
+function safeTaskToken(value: string): string {
+  return value.replace(/[^a-zA-Z0-9_-]/g, '-').replace(/-+/g, '-').slice(0, 40) || 'task';
+}
 
-    const resolved = resolveAgentCommand(spec.command);
-    const child = spawn(resolved, spec.args, {
+function roleSuffix(agentName: string, requestedRole?: string): string {
+  const role = requestedRole?.trim().toLowerCase() || '';
+  if (agentName === 'hermes' || role.includes('plan')) return 'plan';
+  if (agentName === 'opencode' || role.includes('build') || role.includes('implement')) return 'build';
+  if (agentName === 'codex' || agentName === 'openai' || role.includes('debug')) return 'debug';
+  if (agentName === 'claude' || role.includes('review')) return 'review';
+  return 'run';
+}
+
+function shellQuote(value: string): string {
+  return `'${value.replace(/'/g, `'\\''`)}'`;
+}
+
+async function runCommand(
+  spec: CommandSpec,
+  body: ExecuteRequest,
+  jobId: string
+): Promise<{ stdout: string; stderr: string; code: number | null; session: string }> {
+  validateWorkspaceScope();
+
+  const resolved = resolveAgentCommand(spec.command);
+  const runtimeRoot = resolve(process.env.OPSLY_RUNTIME_STATE_DIR || join(repoRoot, 'runtime', 'agent-sessions'));
+  const executionDir = join(runtimeRoot, 'executions', safeTaskToken(jobId));
+  await fsp.mkdir(executionDir, { recursive: true, mode: 0o700 });
+
+  const configPath = join(executionDir, 'execution.json');
+  const resultPath = join(executionDir, 'result.json');
+  const runnerPath = resolve(repoRoot, 'scripts/ops/ephemeral-cli-runner.mjs');
+  const tmuxName = `opsly-task-${safeTaskToken(jobId)}-${roleSuffix(agent, body.agent_role)}`;
+
+  await fsp.writeFile(
+    configPath,
+    JSON.stringify({
+      command: resolved,
+      args: spec.args,
       cwd,
-      detached: true,
       env: buildChildEnv(),
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
+      outputLimitBytes,
+      resultPath,
+    }),
+    { mode: 0o600 }
+  );
 
-    let stdout = '';
-    let stderr = '';
-    let timedOut = false;
-    const timeout = setTimeout(() => {
-      timedOut = true;
-      if (child.pid) {
-        process.kill(-child.pid, 'SIGTERM');
-        setTimeout(() => {
-          try {
-            if (child.pid) process.kill(-child.pid, 'SIGKILL');
-          } catch {
-            // Process already exited.
-          }
-        }, 5000).unref();
-      }
-    }, timeoutMs);
-
-    child.stdout.on('data', (chunk) => {
-      stdout = appendLimited(stdout, chunk);
-    });
-    child.stderr.on('data', (chunk) => {
-      stderr = appendLimited(stderr, chunk);
-    });
-    child.on('error', (error) => {
-      clearTimeout(timeout);
-      reject(error);
-    });
-    child.on('close', (code) => {
-      clearTimeout(timeout);
-      if (timedOut) {
-        reject(new Error(`Agent ${agent} timed out after ${timeoutMs}ms`));
-        return;
-      }
-      resolvePromise({ stdout: redact(stdout), stderr: redact(stderr), code });
-    });
+  const session = await createSession({
+    name: tmuxName,
+    agentId: agent,
+    jobId,
+    workspace: cwd,
+    tmuxSessionName: tmuxName,
   });
+
+  try {
+    const command = `node ${shellQuote(runnerPath)} ${shellQuote(configPath)}; exit`;
+    await sendCommand({ sessionId: session.sessionId, command });
+    await waitForSessionExit(session.sessionId, timeoutMs);
+
+    const raw = await fsp.readFile(resultPath, 'utf8');
+    const parsed = JSON.parse(raw) as { stdout?: string; stderr?: string; exitCode?: number };
+    return {
+      stdout: redact(parsed.stdout || ''),
+      stderr: redact(parsed.stderr || ''),
+      code: Number.isInteger(parsed.exitCode) ? parsed.exitCode! : 1,
+      session: tmuxName,
+    };
+  } finally {
+    await stopSession(session.sessionId).catch(() => undefined);
+    await fsp.rm(configPath, { force: true }).catch(() => undefined);
+  }
 }
 
 app.get('/health', (_req, res) => {
@@ -364,7 +389,9 @@ app.get('/health', (_req, res) => {
     dry_run: dryRun,
     cwd,
     allowed_root: allowedRoot,
-    auth_required: Boolean(executeToken),
+    auth_required: true,
+    auth_configured: Boolean(executeToken),
+    execution_model: 'ephemeral-tmux-session',
     in_flight_job_id: inFlightJobId,
     output_limit_bytes: outputLimitBytes,
     timeout_ms: timeoutMs,
@@ -377,6 +404,16 @@ app.post('/execute', async (req, res) => {
   const jobId = body.job_id || randomUUID();
 
   try {
+    if (!executeToken) {
+      res.status(503).json({
+        success: false,
+        job_id: jobId,
+        errorCode: 'AUTH_NOT_CONFIGURED',
+        error: 'execution bridge authentication is not configured',
+      });
+      return;
+    }
+
     if (!isAuthorized(req)) {
       res.status(401).json({
         success: false,
@@ -428,7 +465,7 @@ app.post('/execute', async (req, res) => {
 
     inFlightJobId = jobId;
     const spec = commandFor(prompt, body);
-    const result = await runCommand(spec);
+    const result = await runCommand(spec, body, jobId);
     const content = result.stdout.trim() || result.stderr.trim();
 
     const selectedModel = body.model || process.env.OPSLY_OPENCODE_MODEL?.trim() || agent;
@@ -446,6 +483,7 @@ app.post('/execute', async (req, res) => {
       durationMs: Date.now() - started,
       runtime: agent,
       model: selectedModel,
+      session: result.session,
     });
   } catch (error) {
     const classified = classifySpawnError(error);
