@@ -22,6 +22,8 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 ROOT="${REPO_ROOT:-${ROOT}}"
 cd "${ROOT}"
 
+export OPSLY_HEARTBEAT_SERVICE_NAME="${OPSLY_HEARTBEAT_SERVICE_NAME:-mac-orchestrator}"
+
 if [[ ! -f /tmp/opsly-mac-redis.env ]]; then
   echo "missing /tmp/opsly-mac-redis.env (REDIS_URL host must be 127.0.0.1 — Doppler uses Docker DNS 'redis')" >&2
   exit 78
