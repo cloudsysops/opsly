@@ -165,7 +165,7 @@ export async function probeLocalAgentQueue(): Promise<{
   queue: string;
   counts: Record<string, number>;
 }> {
-  const client = await localAgentQueue.client;
+  const client = (await localAgentQueue.client) as unknown as { ping: () => Promise<string> };
   const redisPing = await client.ping();
   const counts = await localAgentQueue.getJobCounts(
     'waiting',
