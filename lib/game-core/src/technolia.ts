@@ -43,6 +43,16 @@ export interface TechnoliaTechnology {
   unlocks: string[];
 }
 
+export interface TechnoliaMachine {
+  id: string;
+  name: string;
+  role: string;
+  architectureAnalogy: string;
+  requires: string[];
+  cost: ResourceCost[];
+  affinity?: 'FIRE' | 'EARTH' | 'AIR' | 'WATER';
+}
+
 export interface StarshipModule {
   id: string;
   name: string;
@@ -67,6 +77,7 @@ export interface TechnoliaProgressionState {
   buildings: string[];
   technologies: string[];
   shipModules: string[];
+  machines: string[];
   discoveredRegions: string[];
 }
 
@@ -319,6 +330,68 @@ export const TECHNOLIA_TECH_TREE: TechnoliaTechnology[] = [
   },
 ];
 
+export const TECHNOLIA_MACHINES: TechnoliaMachine[] = [
+  {
+    id: 'zephyr-scout',
+    name: 'Explorador Zephyr',
+    role: 'Maps unknown terrain, routes, and signal paths.',
+    architectureAnalogy: 'Network discovery and service routing.',
+    requires: ['portal-gateway'],
+    cost: [
+      { resource: 'ALLOY', amount: 15 },
+      { resource: 'ASTRAL_ENERGY', amount: 15 },
+    ],
+    affinity: 'AIR',
+  },
+  {
+    id: 'terra-builder',
+    name: 'Constructor Terra',
+    role: 'Repairs structures and reinforces critical foundations.',
+    architectureAnalogy: 'Infrastructure automation and durable state management.',
+    requires: ['memory-vault'],
+    cost: [
+      { resource: 'ALLOY', amount: 20 },
+      { resource: 'NEXUS_CRYSTAL', amount: 15 },
+    ],
+    affinity: 'EARTH',
+  },
+  {
+    id: 'pyra-reactor-drone',
+    name: 'Drone Reactor Pyra',
+    role: 'Moves portable energy to workers and ship systems.',
+    architectureAnalogy: 'Compute capacity and workload scheduling.',
+    requires: ['nx-foundry'],
+    cost: [
+      { resource: 'ALLOY', amount: 20 },
+      { resource: 'ASTRAL_ENERGY', amount: 25 },
+    ],
+    affinity: 'FIRE',
+  },
+  {
+    id: 'tide-repair-swarm',
+    name: 'Enjambre Marea',
+    role: 'Restores damaged links and redirects overloaded flows.',
+    architectureAnalogy: 'Traffic shaping, recovery automation, and resilient data flow.',
+    requires: ['dragon-queue'],
+    cost: [
+      { resource: 'DATA', amount: 15 },
+      { resource: 'ASTRAL_ENERGY', amount: 15 },
+    ],
+    affinity: 'WATER',
+  },
+  {
+    id: 'nx-sentinel',
+    name: 'Centinela NX',
+    role: 'Observes systems and reports abnormal state without autonomous retaliation.',
+    architectureAnalogy: 'Monitoring agent and defensive detection sensor.',
+    requires: ['observatory'],
+    cost: [
+      { resource: 'DATA', amount: 20 },
+      { resource: 'KNOWLEDGE', amount: 20 },
+    ],
+  },
+];
+
 export const STARSHIP_MODULES: StarshipModule[] = [
   {
     id: 'navigation-core',
@@ -448,6 +521,7 @@ export function createTechnoliaProgression(): TechnoliaProgressionState {
     buildings: [],
     technologies: [],
     shipModules: [],
+    machines: [],
     discoveredRegions: ['crystal-landing'],
   };
 }
@@ -505,6 +579,27 @@ export function researchTechnology(
     ...state,
     resources: spend(state, technology.cost),
     technologies: [...state.technologies, technologyId],
+  };
+}
+
+export function buildTechnoliaMachine(
+  state: TechnoliaProgressionState,
+  machineId: string,
+): TechnoliaProgressionState {
+  if (state.machines.includes(machineId)) return state;
+  const machine = TECHNOLIA_MACHINES.find((item) => item.id === machineId);
+  if (!machine) throw new Error(`Unknown Technolia machine: ${machineId}`);
+  const missing = machine.requires.filter(
+    (requirement) =>
+      !state.buildings.includes(requirement) &&
+      !state.technologies.includes(requirement),
+  );
+  if (missing.length > 0) throw new Error(`MISSING_REQUIREMENTS:${missing.join(',')}`);
+  if (!canAfford(state, machine.cost)) throw new Error('INSUFFICIENT_TECHNOLIA_RESOURCES');
+  return {
+    ...state,
+    resources: spend(state, machine.cost),
+    machines: [...state.machines, machineId],
   };
 }
 
