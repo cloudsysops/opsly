@@ -10,6 +10,7 @@ export const contentChannelValues = [
   // Placeholder slug — youth/adult gaming channel, brand/name not decided yet.
   // Rename everywhere this string appears once branding lands.
   'icso-gaming-tbd',
+  'astral-arena',
 ] as const;
 export type ContentChannel = (typeof contentChannelValues)[number];
 
@@ -47,6 +48,8 @@ export const contentFormatTemplateValues = [
   'SPORT_SCIENCE',
   'OPSLY_STORY',
   'SPLASHITOS_LEARNS',
+  'ASTRAL_STORY',
+  'ASTRAL_GAMEPLAY',
 ] as const;
 export type ContentFormatTemplate = (typeof contentFormatTemplateValues)[number];
 
