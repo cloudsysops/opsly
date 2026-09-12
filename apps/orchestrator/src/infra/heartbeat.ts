@@ -65,3 +65,67 @@ export function startOrchestratorHeartbeatLoop(
     clearInterval(timer);
   };
 }
+
+
+export interface OrchestratorHeartbeatSnapshot {
+  service_name: string;
+  alive: boolean;
+  ts: number | null;
+  age_ms: number | null;
+  metadata: Record<string, unknown>;
+}
+
+export async function readOrchestratorHeartbeat(
+  serviceName: string,
+  nowMs = Date.now()
+): Promise<OrchestratorHeartbeatSnapshot> {
+  const redis = getOrchestratorRedis();
+  if (!redis) {
+    return {
+      service_name: serviceName,
+      alive: false,
+      ts: null,
+      age_ms: null,
+      metadata: {},
+    };
+  }
+
+  const raw = await redis.get(`heartbeat:${serviceName}`);
+  if (!raw) {
+    return {
+      service_name: serviceName,
+      alive: false,
+      ts: null,
+      age_ms: null,
+      metadata: {},
+    };
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as {
+      ts?: unknown;
+      metadata?: unknown;
+    };
+    const ts = typeof parsed.ts === 'number' && Number.isFinite(parsed.ts) ? parsed.ts : null;
+    const metadata =
+      parsed.metadata && typeof parsed.metadata === 'object' && !Array.isArray(parsed.metadata)
+        ? (parsed.metadata as Record<string, unknown>)
+        : {};
+    const ageMs = ts === null ? null : Math.max(0, nowMs - ts);
+    return {
+      service_name: serviceName,
+      alive: ts !== null && ageMs !== null && ageMs <= HEARTBEAT_TTL_SECONDS * 1000,
+      ts,
+      age_ms: ageMs,
+      metadata,
+    };
+  } catch {
+    return {
+      service_name: serviceName,
+      alive: false,
+      ts: null,
+      age_ms: null,
+      metadata: {},
+    };
+  }
+}
