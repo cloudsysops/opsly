@@ -1,0 +1,122 @@
+{
+  "version": 1,
+  "operating_model": "solo-founder-agent-agile",
+  "sprint": {
+    "cadence_days": 7,
+    "goal": "Ship trusted autonomous engineering loop while advancing security and first revenue-adjacent product work",
+    "planning_owner": "founder",
+    "execution_model": "agent_parallel_with_human_approval_gates"
+  },
+  "policies": {
+    "wip_limits": {
+      "max_active_build_workstreams": 4,
+      "max_high_risk_workstreams": 1,
+      "max_production_touching_workstreams": 1,
+      "max_open_founder_decisions": 3
+    },
+    "notify_founder_for": [
+      "P0",
+      "P1",
+      "READY_FOR_DECISION"
+    ],
+    "suppress": [
+      "routine_success",
+      "raw_logs",
+      "unchanged_health",
+      "agent_chatter"
+    ],
+    "builder_must_not_review_own_work": true,
+    "no_dual_edit": true
+  },
+  "definition_of_ready": [
+    "objective_clear",
+    "owner_assigned",
+    "scope_defined",
+    "non_goals_defined",
+    "acceptance_criteria_defined",
+    "risk_classified",
+    "dependencies_known"
+  ],
+  "definition_of_done": [
+    "focused_pr_or_durable_artifact",
+    "required_tests_pass",
+    "ci_green_on_exact_sha",
+    "independent_review_complete",
+    "evidence_persisted_in_github",
+    "runtime_verified_when_applicable",
+    "follow_up_recorded"
+  ],
+  "workstreams": [
+    {
+      "id": "mac-e2e",
+      "name": "Mac Engineering Loop E2E",
+      "priority": "P1",
+      "owner": "chatgpt-supervisor",
+      "reviewer": "independent-reviewer",
+      "status": "review",
+      "risk": "medium",
+      "production_touching": false,
+      "depends_on": [
+        "pr-1204"
+      ],
+      "pr": 1204,
+      "next_action": "Get #1204 green, verify Mac readiness, then run #1197 smoke"
+    },
+    {
+      "id": "trusted-execution",
+      "name": "Trusted Execution / Node Auth",
+      "priority": "P1",
+      "owner": "claude-builder",
+      "reviewer": "independent-reviewer",
+      "status": "building",
+      "risk": "high",
+      "production_touching": false,
+      "depends_on": [
+        "pr-1196"
+      ],
+      "pr": 1196,
+      "next_action": "Finish TaskSourceGuard review, then build PR-B per-node auth"
+    },
+    {
+      "id": "agent-lab",
+      "name": "Agent Lab Canonicalization",
+      "priority": "P2",
+      "owner": "cursor-repair",
+      "reviewer": "claude-reviewer",
+      "status": "ready",
+      "risk": "medium",
+      "production_touching": false,
+      "depends_on": [],
+      "pr": 1190,
+      "next_action": "Choose one canonical package between #1187 and #1190"
+    },
+    {
+      "id": "career-agent",
+      "name": "Career Agent MVP",
+      "priority": "P2",
+      "owner": "opencode-builder",
+      "reviewer": "claude-reviewer",
+      "status": "ready",
+      "risk": "low",
+      "production_touching": false,
+      "depends_on": [
+        "parallel-workpack"
+      ],
+      "pr": 1205,
+      "next_action": "Implement profile/job schemas, scoring, evidence linking and READY_TO_APPLY flow"
+    },
+    {
+      "id": "peskids-change-window",
+      "name": "Peskids Blast-Radius Policy",
+      "priority": "P2",
+      "owner": "chatgpt-supervisor",
+      "reviewer": "independent-reviewer",
+      "status": "review",
+      "risk": "medium",
+      "production_touching": false,
+      "depends_on": [],
+      "pr": 1195,
+      "next_action": "Obtain reviewer confirmation and merge when approved"
+    }
+  ]
+}
