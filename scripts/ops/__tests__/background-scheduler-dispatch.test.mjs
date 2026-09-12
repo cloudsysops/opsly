@@ -70,3 +70,121 @@ test('scheduler state path is expected to live under ignored .cursor runtime', a
   );
   assert.equal(true, true);
 });
+
+
+test('dispatcher dry-run reaches READY_TO_DISPATCH for explicit zero-cost safe work', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'opsly-bg-run-'));
+  const queueDir = path.join(root, 'docs/01-development/night-queue');
+  await mkdir(queueDir, { recursive: true });
+  await mkdir(path.join(root, 'config'), { recursive: true });
+
+  await writeFile(
+    path.join(queueDir, '001-safe.md'),
+    `---
+id: safe-task
+status: pending
+priority: P1
+agent: local_codex
+owner: platform
+environment: local
+cost_class: free
+estimated_cost_usd: 0
+requires_pr: false
+requires_approval: false
+paid_infra_required: false
+production_deploy: false
+resource_class: small
+node_types: mac
+---
+Inspect docs read-only and report findings.
+`,
+  );
+
+  await writeFile(
+    path.join(root, 'config/cloud-cost-policy.json'),
+    JSON.stringify(policy),
+  );
+
+  const { runBackgroundScheduler } = await import('../background-scheduler-dispatch.mjs');
+  const report = await runBackgroundScheduler({
+    root,
+    queueDir,
+    execute: false,
+    policyPath: path.join(root, 'config/cloud-cost-policy.json'),
+    runtimeDir: path.join(root, '.cursor/runtime/background-scheduler'),
+    previewOptions: {
+      nodeType: 'mac',
+      snapshot: {
+        ram_free_gb: 12,
+        ram_total_gb: 16,
+        cpu_load_pct: 20,
+        cpu_count: 8,
+        has_gpu: false,
+      },
+      maxResourceClass: 'small',
+    },
+  });
+
+  assert.equal(report.decision, 'READY_TO_DISPATCH');
+  assert.equal(report.executed, false);
+  assert.equal(report.selected.id, 'safe-task');
+  assert.equal(report.cost_gate.ok, true);
+});
+
+test('execute remains blocked until explicit execution flag is enabled', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'opsly-bg-exec-'));
+  const queueDir = path.join(root, 'docs/01-development/night-queue');
+  await mkdir(queueDir, { recursive: true });
+  await mkdir(path.join(root, 'config'), { recursive: true });
+
+  await writeFile(
+    path.join(queueDir, '001-safe.md'),
+    `---
+id: safe-task
+status: pending
+priority: P1
+agent: local_codex
+owner: platform
+environment: local
+cost_class: free
+estimated_cost_usd: 0
+requires_pr: false
+requires_approval: false
+paid_infra_required: false
+production_deploy: false
+resource_class: small
+node_types: mac
+---
+Inspect docs read-only.
+`,
+  );
+  await writeFile(
+    path.join(root, 'config/cloud-cost-policy.json'),
+    JSON.stringify(policy),
+  );
+
+  const { runBackgroundScheduler } = await import('../background-scheduler-dispatch.mjs');
+  const report = await runBackgroundScheduler({
+    root,
+    queueDir,
+    execute: true,
+    executionEnabled: false,
+    adminToken: 'not-used-because-disabled',
+    policyPath: path.join(root, 'config/cloud-cost-policy.json'),
+    runtimeDir: path.join(root, '.cursor/runtime/background-scheduler'),
+    previewOptions: {
+      nodeType: 'mac',
+      snapshot: {
+        ram_free_gb: 12,
+        ram_total_gb: 16,
+        cpu_load_pct: 20,
+        cpu_count: 8,
+        has_gpu: false,
+      },
+      maxResourceClass: 'small',
+    },
+  });
+
+  assert.equal(report.decision, 'EXECUTION_DISABLED');
+  assert.equal(report.executed, false);
+});
