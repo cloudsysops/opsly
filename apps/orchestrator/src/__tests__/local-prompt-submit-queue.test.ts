@@ -133,11 +133,23 @@ describe('local prompt-submit → local-agents queue', () => {
     const jobArg = call0![0] as {
       type: string;
       tenant_slug: string;
-      payload: { prompt_content: string };
+      payload: {
+        prompt_content: string;
+        agent_task?: {
+          schema_version: string;
+          tenant_slug: string;
+          selected_agent: string;
+          execution_mode: string;
+        };
+      };
     };
     expect(jobArg.type).toBe('local_cursor');
     expect(jobArg.tenant_slug).toBe('acme');
     expect(jobArg.payload.prompt_content).toBe('Hello local worker');
+    expect(jobArg.payload.agent_task?.schema_version).toBe('AgentTaskEnvelopeV1');
+    expect(jobArg.payload.agent_task?.tenant_slug).toBe('acme');
+    expect(jobArg.payload.agent_task?.selected_agent).toBe('local_cursor');
+    expect(jobArg.payload.agent_task?.execution_mode).toBe('enqueue');
   });
 
   it('uses frontmatter agent from prompt_content', async () => {
@@ -256,6 +268,53 @@ describe('local prompt-submit → local-agents queue', () => {
 
     expect(status).toBe(400);
     expect(raw).toMatch(/mismatch/i);
+    expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+  });
+
+  it('rejects AgentTaskEnvelopeV1 selected_agent mismatch', async () => {
+    const requestId = 'req-agent-mismatch';
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'academy-demo',
+        request_id: requestId,
+        agent: 'opencode',
+        prompt_body: 'implement safely',
+        agent_task: {
+          schema_version: 'AgentTaskEnvelopeV1',
+          request_id: requestId,
+          correlation_id: requestId,
+          tenant_slug: 'academy-demo',
+          task_type: 'code',
+          task: 'implement safely',
+          selected_agent: 'local_claude',
+          skills: [],
+          constraints: {
+            open_source_only: false,
+            local_only: true,
+            browser_allowed: false,
+            network_allowed: false,
+            write_allowed: true,
+            file_scope: [],
+            max_tokens: 1600,
+          },
+          execution_mode: 'enqueue',
+          source: 'opsly',
+          actor: 'system',
+          created_at: '2026-09-11T12:00:00.000Z',
+          timeout_ms: 120000,
+          max_attempts: 2,
+          budget: { max_tokens: 1600 },
+          metadata: {},
+          fallback_agents: [],
+        },
+      },
+      { Authorization: 'Bearer test-platform-admin' }
+    );
+
+    expect(status).toBe(400);
+    expect(raw).toMatch(/selected_agent mismatch/i);
     expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
   });
 
