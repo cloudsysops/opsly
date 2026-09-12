@@ -41,7 +41,8 @@ fi
 
 labels=(
   com.opsly.local-agents-worker
-  com.opsly.prompt-queue
+  com.opsly.prompt-watcher
+  com.opsly.prompt-seed
   com.opsly.bridge.opencode
   com.opsly.bridge.claude
   com.opsly.bridge.codex
@@ -54,6 +55,44 @@ for label in "${labels[@]}"; do
     warn "launchd $label not loaded"
   fi
 done
+
+
+bridge_check() {
+  local port="$1"
+  local expected="$2"
+  local body
+  body="$(curl -fsS --max-time 3 "http://127.0.0.1:${port}/health" 2>/dev/null || true)"
+  if [[ -z "$body" ]] || ! grep -q "\"agent\":\"${expected}\"" <<<"$body"; then
+    fail "bridge ${expected} unhealthy on 127.0.0.1:${port}"
+    return
+  fi
+  if ! grep -q '"auth_required":true' <<<"$body" || ! grep -q '"auth_configured":true' <<<"$body"; then
+    fail "bridge ${expected} auth not fail-closed/configured"
+    return
+  fi
+  if ! grep -q '"execution_model":"ephemeral-tmux-session"' <<<"$body"; then
+    fail "bridge ${expected} not using ephemeral-tmux-session"
+    return
+  fi
+  pass "bridge ${expected} healthy port=${port}"
+}
+
+bridge_check 5004 opencode
+bridge_check 5002 claude
+bridge_check 5005 codex
+bridge_check 5007 hermes
+
+if [[ -n "${PLATFORM_ADMIN_TOKEN:-}" ]]; then
+  if ./scripts/ops/check-local-agent-readiness.sh >/tmp/opsly-readiness.$ 2>&1; then
+    pass "queue local-agents ready"
+  else
+    fail "queue local-agents not ready"
+    tail -20 /tmp/opsly-readiness.$ || true
+  fi
+  rm -f /tmp/opsly-readiness.$
+else
+  warn "PLATFORM_ADMIN_TOKEN absent; queue readiness skipped (run doctor through Doppler)"
+fi
 
 if tmux list-sessions -F '#{session_name}' 2>/dev/null | grep -q '^opsly-task-'; then
   pass "ephemeral task sessions active"
