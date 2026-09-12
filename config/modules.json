@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "description": "Opsly Library Modules Registry",
-  "lastUpdated": "2026-09-09T00:00:00Z",
+  "lastUpdated": "2026-09-12T04:25:00Z",
   "modules": {
     "prompts": {
       "name": "@intcloudsysops/prompts",
@@ -13,7 +13,11 @@
       "dependencies": [],
       "governance": "lib/prompts/GOVERNANCE.md",
       "mainFile": "lib/prompts/index.ts",
-      "exports": ["registry", "loader", "schemas"]
+      "exports": [
+        "registry",
+        "loader",
+        "schemas"
+      ]
     },
     "observability": {
       "name": "@intcloudsysops/observability",
@@ -25,7 +29,11 @@
       "dependencies": [],
       "governance": "lib/observability/GOVERNANCE.md",
       "mainFile": "lib/observability/index.ts",
-      "exports": ["logger", "metrics", "tracing"]
+      "exports": [
+        "logger",
+        "metrics",
+        "tracing"
+      ]
     },
     "components": {
       "name": "@intcloudsysops/components",
@@ -37,7 +45,11 @@
       "dependencies": [],
       "governance": "lib/components/GOVERNANCE.md",
       "mainFile": "lib/components/index.ts",
-      "exports": ["ui", "hooks", "styles"]
+      "exports": [
+        "ui",
+        "hooks",
+        "styles"
+      ]
     },
     "evaluation": {
       "name": "@intcloudsysops/evaluation",
@@ -46,10 +58,16 @@
       "owner": "claude",
       "description": "Testing, validation, and quality metrics framework",
       "status": "stable",
-      "dependencies": ["prompts"],
+      "dependencies": [
+        "prompts"
+      ],
       "governance": "lib/evaluation/GOVERNANCE.md",
       "mainFile": "lib/evaluation/index.ts",
-      "exports": ["validators", "metrics", "test-runners"]
+      "exports": [
+        "validators",
+        "metrics",
+        "test-runners"
+      ]
     },
     "errors": {
       "name": "@intcloudsysops/errors",
@@ -61,7 +79,14 @@
       "dependencies": [],
       "governance": "lib/errors/GOVERNANCE.md",
       "mainFile": "lib/errors/index.ts",
-      "exports": ["AppError", "ValidationError", "AuthError", "NotFoundError", "RateLimitError", "handleError"]
+      "exports": [
+        "AppError",
+        "ValidationError",
+        "AuthError",
+        "NotFoundError",
+        "RateLimitError",
+        "handleError"
+      ]
     },
     "services": {
       "name": "@intcloudsysops/services",
@@ -70,10 +95,16 @@
       "owner": "claude",
       "description": "Repository pattern with multi-tenant isolation",
       "status": "stable",
-      "dependencies": ["errors"],
+      "dependencies": [
+        "errors"
+      ],
       "governance": "lib/services/GOVERNANCE.md",
       "mainFile": "lib/services/index.ts",
-      "exports": ["Repository", "BaseRepository", "MockRepository"]
+      "exports": [
+        "Repository",
+        "BaseRepository",
+        "MockRepository"
+      ]
     },
     "config": {
       "name": "@intcloudsysops/config",
@@ -85,7 +116,12 @@
       "dependencies": [],
       "governance": "lib/config/GOVERNANCE.md",
       "mainFile": "lib/config/index.ts",
-      "exports": ["getConfig", "getFeatureFlags", "Config", "FeatureFlags"]
+      "exports": [
+        "getConfig",
+        "getFeatureFlags",
+        "Config",
+        "FeatureFlags"
+      ]
     },
     "security": {
       "name": "@intcloudsysops/security",
@@ -97,7 +133,13 @@
       "dependencies": [],
       "governance": "lib/security/GOVERNANCE.md",
       "mainFile": "lib/security/index.ts",
-      "exports": ["generateToken", "verifyToken", "encryptSecret", "decryptSecret", "redactPII"]
+      "exports": [
+        "generateToken",
+        "verifyToken",
+        "encryptSecret",
+        "decryptSecret",
+        "redactPII"
+      ]
     },
     "api": {
       "name": "@intcloudsysops/api-utils",
@@ -106,10 +148,18 @@
       "owner": "claude",
       "description": "Unified API response format and versioning",
       "status": "stable",
-      "dependencies": ["errors"],
+      "dependencies": [
+        "errors"
+      ],
       "governance": "lib/api/GOVERNANCE.md",
       "mainFile": "lib/api/index.ts",
-      "exports": ["createResponse", "createErrorResponse", "APIResponse", "PaginationParams", "API_VERSIONS"]
+      "exports": [
+        "createResponse",
+        "createErrorResponse",
+        "APIResponse",
+        "PaginationParams",
+        "API_VERSIONS"
+      ]
     },
     "workflow": {
       "name": "@intcloudsysops/workflow",
@@ -118,10 +168,18 @@
       "owner": "claude",
       "description": "Safe agent execution with timeouts and cost tracking",
       "status": "stable",
-      "dependencies": ["config", "observability", "telemetry"],
+      "dependencies": [
+        "config",
+        "observability",
+        "telemetry"
+      ],
       "governance": "lib/workflow/GOVERNANCE.md",
       "mainFile": "lib/workflow/index.ts",
-      "exports": ["executeWithTimeout", "ExecutionContext", "ExecutionResult"]
+      "exports": [
+        "executeWithTimeout",
+        "ExecutionContext",
+        "ExecutionResult"
+      ]
     },
     "telemetry": {
       "name": "@intcloudsysops/telemetry",
@@ -130,10 +188,16 @@
       "owner": "claude",
       "description": "Cost and performance tracking per agent",
       "status": "stable",
-      "dependencies": ["config"],
+      "dependencies": [
+        "config"
+      ],
       "governance": "lib/telemetry/GOVERNANCE.md",
       "mainFile": "lib/telemetry/index.ts",
-      "exports": ["Telemetry", "CostBreakdown", "PerformanceMetrics"]
+      "exports": [
+        "Telemetry",
+        "CostBreakdown",
+        "PerformanceMetrics"
+      ]
     },
     "testing": {
       "name": "@intcloudsysops/testing",
@@ -145,7 +209,11 @@
       "dependencies": [],
       "governance": "lib/testing/GOVERNANCE.md",
       "mainFile": "lib/testing/index.ts",
-      "exports": ["runTest", "TestCase", "TestResult"]
+      "exports": [
+        "runTest",
+        "TestCase",
+        "TestResult"
+      ]
     },
     "migrations": {
       "name": "@intcloudsysops/migrations",
@@ -157,7 +225,10 @@
       "dependencies": [],
       "governance": "lib/migrations/GOVERNANCE.md",
       "mainFile": "lib/migrations/index.ts",
-      "exports": ["MigrationRunner", "Migration"]
+      "exports": [
+        "MigrationRunner",
+        "Migration"
+      ]
     },
     "opsly-core": {
       "name": "@intcloudsysops/opsly-core",
@@ -168,7 +239,12 @@
       "status": "experimental",
       "dependencies": [],
       "mainFile": "packages/opsly-core/src/index.ts",
-      "exports": ["createOpslyCore", "TenantConfig", "AgentRuntime", "EventLogStore"]
+      "exports": [
+        "createOpslyCore",
+        "TenantConfig",
+        "AgentRuntime",
+        "EventLogStore"
+      ]
     },
     "conversational-runtime": {
       "name": "@intcloudsysops/conversational-runtime",
@@ -177,9 +253,15 @@
       "owner": "platform",
       "description": "Channel layer (InputMessage → AgentResponse) over opsly-core",
       "status": "experimental",
-      "dependencies": ["opsly-core"],
+      "dependencies": [
+        "opsly-core"
+      ],
       "mainFile": "lib/conversational-runtime/src/index.ts",
-      "exports": ["createConversationalRuntime", "InputMessage", "AgentResponse"]
+      "exports": [
+        "createConversationalRuntime",
+        "InputMessage",
+        "AgentResponse"
+      ]
     },
     "ai-board": {
       "name": "@intcloudsysops/ai-board",
@@ -204,7 +286,9 @@
       "owner": "platform",
       "description": "Reusable AgentTaskEnvelopeV1 helpers, deterministic assign/route, policy and Orchestrator client",
       "status": "experimental",
-      "dependencies": ["external-agent-registry"],
+      "dependencies": [
+        "external-agent-registry"
+      ],
       "mainFile": "lib/agent-task-core/src/index.ts",
       "exports": [
         "assignAgentTask",
@@ -220,7 +304,9 @@
       "owner": "platform",
       "description": "Agent Lab learning layer: evidence/review/trust/scorecards keyed by AgentTask request_id — not a task registry",
       "status": "experimental",
-      "dependencies": ["types"],
+      "dependencies": [
+        "types"
+      ],
       "mainFile": "lib/agent-learning/src/index.ts",
       "exports": [
         "AgentLearningStore",
@@ -288,7 +374,9 @@
       "owner": "operations",
       "description": "Content OS v2 gameplay/commentary pipeline (canonical) plus event-draft adapters. See config/content-capabilities.json.",
       "status": "stable",
-      "dependencies": ["universe"],
+      "dependencies": [
+        "universe"
+      ],
       "governance": "lib/content-studio/GOVERNANCE.md",
       "mainFile": "lib/content-studio/src/content-engine/index.ts",
       "exports": [
@@ -305,10 +393,16 @@
       "owner": "operations",
       "description": "Scene-compose ADAPTER (stills→ffmpeg). Not Mauro gameplay. Character canon from @intcloudsysops/universe.",
       "status": "stable",
-      "dependencies": ["universe"],
+      "dependencies": [
+        "universe"
+      ],
       "governance": "lib/content-engine/GOVERNANCE.md",
       "mainFile": "lib/content-engine/src/index.ts",
-      "exports": ["loadCanonCharacter", "validateProject", "compose"]
+      "exports": [
+        "loadCanonCharacter",
+        "validateProject",
+        "compose"
+      ]
     },
     "game-core": {
       "name": "@intcloudsysops/game-core",
@@ -317,7 +411,9 @@
       "owner": "operations",
       "description": "Opsly Universe game contracts and First Portal loop. Consumes Universe; does not own canon.",
       "status": "experimental",
-      "dependencies": ["universe"],
+      "dependencies": [
+        "universe"
+      ],
       "governance": "lib/game-core/GOVERNANCE.md",
       "mainFile": "lib/game-core/src/index.ts",
       "exports": [
@@ -333,7 +429,10 @@
       "owner": "operations",
       "description": "First Portal play adapter: Game Core actions to view-models. No character canon.",
       "status": "experimental",
-      "dependencies": ["game-core", "universe"],
+      "dependencies": [
+        "game-core",
+        "universe"
+      ],
       "governance": "lib/game-web/GOVERNANCE.md",
       "mainFile": "lib/game-web/src/index.ts",
       "exports": [
@@ -341,47 +440,132 @@
         "viewFromSave",
         "createMemoryStorage"
       ]
+    },
+    "revenue-core": {
+      "name": "@intcloudsysops/revenue-core",
+      "version": "0.1.0",
+      "path": "lib/revenue-core",
+      "owner": "platform",
+      "description": "Tenant-safe partner, attribution, referral and commission primitives. Records revenue facts; never moves money.",
+      "status": "experimental",
+      "dependencies": [],
+      "governance": "lib/revenue-core/GOVERNANCE.md",
+      "mainFile": "lib/revenue-core/src/index.ts",
+      "exports": [
+        "quoteCommission",
+        "summarizeCommissionEvents"
+      ]
     }
   },
   "consumers": {
     "apps/orchestrator": {
-      "depends": ["prompts", "observability", "evaluation", "errors", "workflow", "config", "security"]
+      "depends": [
+        "prompts",
+        "observability",
+        "evaluation",
+        "errors",
+        "workflow",
+        "config",
+        "security"
+      ]
     },
     "apps/api": {
-      "depends": ["prompts", "observability", "evaluation", "errors", "api", "security", "config", "services", "telemetry", "prompt-guard"]
+      "depends": [
+        "prompts",
+        "observability",
+        "evaluation",
+        "errors",
+        "api",
+        "security",
+        "config",
+        "services",
+        "telemetry",
+        "prompt-guard"
+      ]
     },
     "apps/gateway": {
-      "depends": ["observability", "errors", "security", "config", "telemetry", "workflow"]
+      "depends": [
+        "observability",
+        "errors",
+        "security",
+        "config",
+        "telemetry",
+        "workflow"
+      ]
     },
     "apps/portal": {
-      "depends": ["components", "observability", "security", "api", "telemetry"]
+      "depends": [
+        "components",
+        "observability",
+        "security",
+        "api",
+        "telemetry"
+      ]
     },
     "apps/admin": {
-      "depends": ["components", "observability", "security", "api", "services", "mission-control-kit"]
+      "depends": [
+        "components",
+        "observability",
+        "security",
+        "api",
+        "services",
+        "mission-control-kit",
+        "revenue-core"
+      ]
     },
     "lib/content-studio": {
-      "depends": ["universe"]
+      "depends": [
+        "universe"
+      ]
     },
     "lib/content-engine": {
-      "depends": ["universe"]
+      "depends": [
+        "universe"
+      ]
     },
     "apps/icso": {
-      "depends": ["mission-control-kit", "services", "game-web", "game-core", "universe"]
+      "depends": [
+        "mission-control-kit",
+        "services",
+        "game-web",
+        "game-core",
+        "universe"
+      ]
     },
     "apps/local-services": {
-      "depends": ["components", "observability", "prompts", "security", "api", "config"]
+      "depends": [
+        "components",
+        "observability",
+        "prompts",
+        "security",
+        "api",
+        "config"
+      ]
     },
     "tools/agents": {
-      "depends": ["prompts", "observability", "security", "config", "telemetry"]
+      "depends": [
+        "prompts",
+        "observability",
+        "security",
+        "config",
+        "telemetry"
+      ]
     },
     "lib/game-core": {
-      "depends": ["universe"]
+      "depends": [
+        "universe"
+      ]
     },
     "lib/game-web": {
-      "depends": ["game-core", "universe"]
+      "depends": [
+        "game-core",
+        "universe"
+      ]
     },
     "apps/peskids": {
-      "depends": ["services"]
+      "depends": [
+        "services"
+      ]
     }
   },
   "policies": {
