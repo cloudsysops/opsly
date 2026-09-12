@@ -60,6 +60,17 @@ describe('session-manager dry-run', () => {
     expect(logs.length).toBeGreaterThan(0);
   });
 
+  it('normalizes explicit ephemeral task session names', async () => {
+    const created = await createSession({
+      name: 'build',
+      agentId: 'opencode',
+      jobId: 'job-42',
+      workspace: '/tmp/opsly',
+      tmuxSessionName: 'opsly-task-job 42-build',
+    });
+    expect(created.tmuxSessionName).toBe('opsly-task-job_42-build');
+  });
+
   it('stopSession marks stopped', async () => {
     const created = await createSession({
       name: 'stop',
