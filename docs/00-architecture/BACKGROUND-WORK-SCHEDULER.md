@@ -139,3 +139,38 @@ rather than assumed safe.
 - `docs/00-architecture/CURRENT-AUTOMATION-MAP.md` (heartbeat gap first found here)
 - `config/compute-workers.json` (existing capability-routing conventions this reuses in spirit)
 - `config/pc-gamer-schedule.json`, `scripts/ops/pc-gamer-gameplay-watcher.mjs` (existing gaming-lock signal to be wired by callers)
+
+
+## Phase 2 — selection and visibility
+
+The next scheduler increment adds pure, non-dispatching decision logic:
+
+- `scripts/ops/background-task-selector.mjs`
+  - selects at most one pending safe task;
+  - rejects blocked, active/duplicate, recently completed, approval-required, paid-infra and production-deploy work;
+  - respects node type and resource class;
+  - prioritizes P1 → P2 → P3, then smaller/shorter tasks.
+
+- `scripts/ops/concurrency-guard.mjs`
+  - Mac max 1 background task by default;
+  - Gamer max 1;
+  - fleet max 2;
+  - VPS is a hard coordinator-only invariant and cannot be made executable by caller override.
+
+- `scripts/ops/background-work-decision.mjs`
+  - composes IdleWindowPolicy + TaskSelector + ConcurrencyGuard;
+  - returns `RUN | NO_CAPACITY | NO_SAFE_TASK`;
+  - does not enqueue work.
+
+- `scripts/ops/night-queue-candidates.mjs`
+  - compiles tracked `docs/01-development/night-queue/*.md` workpacks into normalized candidates.
+
+- `scripts/ops/night-queue-status.mjs`
+  - combines tracked task state with local queue metadata for operator visibility;
+  - supports text and JSON output.
+
+Still intentionally separate:
+- cost gate wiring uses the already-merged free-first policy;
+- AgentTask enqueue waits for the canonical Mac ephemeral runtime integration;
+- GitHub-visible atomic claim/writeback remains the final automation step;
+- no second queue, watcher, or orchestrator is introduced.
