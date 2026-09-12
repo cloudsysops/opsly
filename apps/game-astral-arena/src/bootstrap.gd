@@ -1,7 +1,7 @@
 extends Node
 
 const CONTENT_PACK_PATH := "res://generated/game-content.pack.json"
-const FIRST_SCENE := "res://scenes/crystal_temple.tscn"
+const FIRST_SCENE := "res://scenes/mode_hub.tscn"
 
 func _ready() -> void:
     _install_default_input_map()
@@ -37,12 +37,16 @@ func _install_default_input_map() -> void:
     _ensure_key_action("move_right", KEY_D)
     _ensure_key_action("interact", KEY_E)
     _ensure_key_action("jump", KEY_SPACE)
-    _ensure_key_action("toggle_mouse", KEY_ESCAPE)
+    _ensure_key_action("toggle_mouse", KEY_F2)
+    _ensure_key_action("switch_presentation", KEY_TAB)
+    _ensure_key_action("return_to_hub", KEY_ESCAPE)
 
     _ensure_joy_axis("move_left", JOY_AXIS_LEFT_X, -1.0)
     _ensure_joy_axis("move_right", JOY_AXIS_LEFT_X, 1.0)
     _ensure_joy_axis("move_forward", JOY_AXIS_LEFT_Y, -1.0)
     _ensure_joy_axis("move_back", JOY_AXIS_LEFT_Y, 1.0)
+    _ensure_joy_button("switch_presentation", JOY_BUTTON_Y)
+    _ensure_joy_button("return_to_hub", JOY_BUTTON_BACK)
 
 func _ensure_key_action(action: StringName, keycode: Key) -> void:
     if not InputMap.has_action(action):
@@ -60,4 +64,14 @@ func _ensure_joy_axis(action: StringName, axis: JoyAxis, value: float) -> void:
     var event := InputEventJoypadMotion.new()
     event.axis = axis
     event.axis_value = value
+    InputMap.action_add_event(action, event)
+
+func _ensure_joy_button(action: StringName, button: JoyButton) -> void:
+    if not InputMap.has_action(action):
+        InputMap.add_action(action)
+    for existing in InputMap.action_get_events(action):
+        if existing is InputEventJoypadButton and existing.button_index == button:
+            return
+    var event := InputEventJoypadButton.new()
+    event.button_index = button
     InputMap.action_add_event(action, event)
