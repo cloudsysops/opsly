@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "game_slug": "astral-arena",
+  "title": "Astral Arena: Guardians of the Nexus",
+  "build_profile": "steam-vertical-slice",
+  "world": {
+    "id": "astral-arena",
+    "name": "ASTRAL ARENA",
+    "starting_location": "crystal-temple"
+  },
+  "characters": [
+    {
+      "id": "arena",
+      "name": "Arena Botero Gomez",
+      "role": "Tejedora del Nexo",
+      "palette": ["royal purple", "antique gold"],
+      "abilities": ["Astral Threads", "Star Leap", "Nexus Stitching"]
+    },
+    {
+      "id": "brissa",
+      "name": "Brissa Botero Gomez",
+      "role": "Guardiana de las Constelaciones",
+      "palette": ["deep blue", "royal purple", "rose pink", "antique gold"],
+      "abilities": ["Astroshield", "Star Jump", "Nexus Sight"]
+    },
+    {
+      "id": "orion-shepherd",
+      "name": "Orion",
+      "role": "German Shepherd Earth Guardian"
+    },
+    {
+      "id": "aurora-unicorn",
+      "name": "Aurora",
+      "role": "Astral Unicorn Magic Guardian"
+    },
+    {
+      "id": "nx-7",
+      "name": "NX-7",
+      "role": "Technology Guardian"
+    }
+  ],
+  "missions": [
+    {
+      "id": "awakening-sisters-001",
+      "title": "Dos Firmas Astrales",
+      "summary": "Arena and Brissa cross the Crystal Temple threshold and awaken Astral Threads and Nexus Sight.",
+      "steps": [
+        { "id": "follow-star-thread", "prompt": "Sigue el hilo estelar hacia los cristales.", "kind": "explore" },
+        { "id": "awaken-arena", "prompt": "Activa el cristal púrpura-dorado de Arena.", "kind": "connect" },
+        { "id": "awaken-brissa", "prompt": "Activa el cristal azul de Brissa.", "kind": "connect" },
+        { "id": "protect-together", "prompt": "Combina hilo y escudo para despertar el Templo.", "kind": "create" }
+      ]
+    },
+    {
+      "id": "orion-earth-guardian-001",
+      "title": "El que Encuentra lo Perdido",
+      "summary": "Orion refuses to abandon trapped people and becomes the Earth Guardian.",
+      "steps": [
+        { "id": "read-orion-signal", "prompt": "Observa qué intenta mostrar Orion.", "kind": "explore" },
+        { "id": "locate-survivors", "prompt": "Usa Visión del Nexo para localizar a los atrapados.", "kind": "explore" },
+        { "id": "open-rescue-path", "prompt": "Conecta el hilo de Arena con la ruta segura de Brissa.", "kind": "connect" }
+      ]
+    },
+    {
+      "id": "aurora-magic-guardian-001",
+      "title": "El Bosque sin Cielo",
+      "summary": "The team discovers Aurora, the Astral Unicorn.",
+      "steps": [
+        { "id": "track-dark-lake", "prompt": "Sigue a Orion hasta el lago oculto.", "kind": "explore" },
+        { "id": "listen-before-acting", "prompt": "Escucha antes de usar la fuerza.", "kind": "explore" },
+        { "id": "light-path", "prompt": "Conecta el camino de luz de Aurora con los Hilos Astrales.", "kind": "connect" }
+      ]
+    },
+    {
+      "id": "nx7-awakening-001",
+      "title": "El Robot que Recuerda",
+      "summary": "The Guardians reactivate NX-7 and recover the first damaged record of Umbra.",
+      "steps": [
+        { "id": "find-core", "prompt": "Encuentra el núcleo de NX-7.", "kind": "explore" },
+        { "id": "sync-four-signatures", "prompt": "Sincroniza cuatro firmas guardianas.", "kind": "connect" },
+        { "id": "recover-umbra-file", "prompt": "Reconstruye el registro dañado de Umbra.", "kind": "create" }
+      ]
+    }
+  ],
+  "technolia": {
+    "starting_era": "SPARK_ERA",
+    "starting_resources": {
+      "ASTRAL_ENERGY": 120,
+      "NEXUS_CRYSTAL": 80,
+      "KNOWLEDGE": 40,
+      "DATA": 20,
+      "ALLOY": 60,
+      "TRUST": 10
+    },
+    "first_buildings": ["nexus-core", "portal-gateway", "memory-vault"],
+    "first_technology": "structured-requests"
+  },
+  "cyber_arena": [
+    "cyber-001-bot-swarm",
+    "cyber-002-credential-storm",
+    "cyber-003-injection-echo"
+  ],
+  "learning_arcade": [
+    "console-001-game-loop",
+    "homelab-001-inventory",
+    "pi-001-boot"
+  ]
+}
