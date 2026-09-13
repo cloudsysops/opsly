@@ -57,6 +57,31 @@ function countryCode(country: string): string | null {
   return null;
 }
 
+export function shouldPauseSyncedProvider(params: {
+  externalRef: string | null | undefined;
+  status: string | null | undefined;
+  activeProviderRefs: ReadonlySet<string>;
+}): boolean {
+  const ref = params.externalRef?.trim() ?? '';
+  return Boolean(ref) && params.status !== 'paused' && !params.activeProviderRefs.has(ref);
+}
+
+export function healthTravelOfferIdentity(partnerId: string, externalRef: string): string {
+  return `${partnerId}:${externalRef}`;
+}
+
+export function shouldPauseSyncedOffer(params: {
+  partnerId: string | null | undefined;
+  externalRef: string | null | undefined;
+  status: string | null | undefined;
+  activeOfferKeys: ReadonlySet<string>;
+}): boolean {
+  const partnerId = params.partnerId?.trim() ?? '';
+  const externalRef = params.externalRef?.trim() ?? '';
+  if (!partnerId || !externalRef || params.status === 'paused') return false;
+  return !params.activeOfferKeys.has(healthTravelOfferIdentity(partnerId, externalRef));
+}
+
 export function buildHealthTravelOfferPatch(
   offer: HealthTravelCatalog['offers'][number],
   metadata: Record<string, unknown>
@@ -215,7 +240,7 @@ export async function syncHealthTravelCatalog(
       skippedUnassigned += 1;
       continue;
     }
-    activeOfferKeys.add(`${partnerId}:${offer.id}`);
+    activeOfferKeys.add(healthTravelOfferIdentity(partnerId, offer.id));
 
     const existing = await platform
       .from('revenue_offers')
@@ -285,7 +310,13 @@ export async function syncHealthTravelCatalog(
 
   for (const partner of syncedPartners.data ?? []) {
     const externalRef = typeof partner.external_ref === 'string' ? partner.external_ref : '';
-    if (!externalRef || activeProviderRefs.has(externalRef) || partner.status === 'paused') continue;
+    if (
+      !shouldPauseSyncedProvider({
+        externalRef,
+        status: partner.status,
+        activeProviderRefs,
+      })
+    ) continue;
 
     const paused = await platform
       .from('revenue_partners')
@@ -311,8 +342,14 @@ export async function syncHealthTravelCatalog(
   for (const offer of syncedOffers.data ?? []) {
     const externalRef = typeof offer.external_ref === 'string' ? offer.external_ref : '';
     const partnerId = typeof offer.partner_id === 'string' ? offer.partner_id : '';
-    const activeKey = `${partnerId}:${externalRef}`;
-    if (!externalRef || activeOfferKeys.has(activeKey) || offer.status === 'paused') continue;
+    if (
+      !shouldPauseSyncedOffer({
+        partnerId,
+        externalRef,
+        status: offer.status,
+        activeOfferKeys,
+      })
+    ) continue;
 
     const paused = await platform
       .from('revenue_offers')

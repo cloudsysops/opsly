@@ -58,6 +58,24 @@ describe('Health Travel end-to-end ingress', () => {
     delete process.env.OPSLY_EVENT_BUS_TOKEN;
   });
 
+  it('rejects oversized event bodies before persistence', async () => {
+    process.env.HEALTH_TRAVEL_EVENT_WEBHOOK_SECRET = 'secret';
+    const oversized = 'x'.repeat(17 * 1024);
+    const response = await handleHealthTravelEventRequest(
+      new Request('https://api.op-sly.com/api/integrations/health-travel/events', {
+        method: 'POST',
+        headers: {
+          'content-length': String(Buffer.byteLength(oversized)),
+          'x-opsly-signature': 'sha256=' + '0'.repeat(64),
+        },
+        body: oversized,
+      })
+    );
+
+    expect(response.status).toBe(413);
+    expect(consumeMock).not.toHaveBeenCalled();
+  });
+
   it('validates exact-body HMAC', () => {
     const raw = JSON.stringify(envelope());
     const signature = createHmac('sha256', 'secret').update(raw).digest('hex');
@@ -116,6 +134,45 @@ describe('Health Travel end-to-end ingress', () => {
       revenue: { receipt_id: 'receipt-1', status: 'applied' },
       board: { attempted: true, accepted: true, status: 202 },
     });
+  });
+
+  it('accepts a Revenue-persisted event when AI Board times out', async () => {
+    vi.useFakeTimers();
+    process.env.HEALTH_TRAVEL_EVENT_WEBHOOK_SECRET = 'secret';
+    process.env.OPSLY_EVENT_BUS_URL = 'http://orchestrator:3011/events';
+    consumeMock.mockResolvedValue({
+      duplicate: false,
+      receiptId: 'receipt-timeout',
+      status: 'applied',
+      attributionId: 'attr-1',
+      referralId: null,
+      commissionEventId: null,
+      reconciliationRequired: [],
+    });
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((_url: string, init?: RequestInit) =>
+        new Promise<Response>((_resolve, reject) => {
+          init?.signal?.addEventListener('abort', () => {
+            reject(new DOMException('Aborted', 'AbortError'));
+          });
+        })
+      )
+    );
+
+    const raw = JSON.stringify(envelope());
+    const promise = handleHealthTravelEventRequest(signedRequest(raw));
+    await vi.advanceTimersByTimeAsync(1100);
+    const response = await promise;
+
+    expect(response.status).toBe(202);
+    await expect(response.json()).resolves.toMatchObject({
+      accepted: true,
+      revenue: { receipt_id: 'receipt-timeout' },
+      board: { attempted: true, accepted: false, status: null },
+    });
+    vi.useRealTimers();
   });
 
   it('accepts a Revenue-persisted event even if AI Board is not configured', async () => {
