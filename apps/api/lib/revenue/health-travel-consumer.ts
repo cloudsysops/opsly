@@ -401,6 +401,51 @@ async function claimReceipt(
   return { claimed: false, receipt: current.data as RevenueReceiptRow, claimToken: null };
 }
 
+export function mergeHealthTravelAttributionFacts(
+  existing: {
+    first_touch_at: string;
+    last_touch_at: string;
+    campaign: string | null;
+    channel: string | null;
+  },
+  incoming: {
+    firstTouchAt: string;
+    lastTouchAt: string;
+    campaign: string | null;
+    channel: string | null;
+  }
+) {
+  return {
+    first_touch_at: minIso(existing.first_touch_at, incoming.firstTouchAt),
+    last_touch_at: maxIso(existing.last_touch_at, incoming.lastTouchAt),
+    campaign: existing.campaign ?? incoming.campaign,
+    channel: existing.channel ?? incoming.channel,
+  };
+}
+
+export function mergeHealthTravelReferralState(
+  existing: {
+    status: string;
+    converted_at: string | null;
+    offer_id: string | null;
+  },
+  incoming: {
+    status: HealthTravelReferralStatus;
+    convertedAt: string | null;
+    offerId: string | null;
+    occurredAt: string;
+  }
+) {
+  const status = nextHealthTravelReferralStatus(existing.status, incoming.status);
+  return {
+    status,
+    offerId: incoming.offerId ?? existing.offer_id ?? null,
+    convertedAt:
+      existing.converted_at ??
+      (status === 'converted' ? incoming.convertedAt ?? incoming.occurredAt : null),
+  };
+}
+
 async function upsertAttribution(
   platform: PlatformDb,
   tenantId: string,
@@ -441,12 +486,7 @@ async function upsertAttribution(
     }
 
     const row = existing.data as RevenueAttributionRow;
-    const updatePayload = {
-      first_touch_at: minIso(row.first_touch_at, plan.attribution.firstTouchAt),
-      last_touch_at: maxIso(row.last_touch_at, plan.attribution.lastTouchAt),
-      campaign: row.campaign ?? plan.attribution.campaign,
-      channel: row.channel ?? plan.attribution.channel,
-    };
+    const updatePayload = mergeHealthTravelAttributionFacts(row, plan.attribution);
 
     let update = platform
       .from('revenue_attributions')
@@ -479,15 +519,24 @@ async function resolvePartner(platform: PlatformDb, tenantId: string, externalRe
   return result.data?.id ? String(result.data.id) : null;
 }
 
-function validateOfferAtEventTime(
+export function validateOfferAtEventTime(
   offer: RevenueOfferRow,
   occurredAt: string
 ): string | null {
   const eventMs = Date.parse(occurredAt);
-  if (offer.valid_from && eventMs < Date.parse(offer.valid_from)) {
+  const validFromMs = offer.valid_from ? Date.parse(offer.valid_from) : null;
+  const validUntilMs = offer.valid_until ? Date.parse(offer.valid_until) : null;
+
+  if (
+    (validFromMs !== null && !Number.isFinite(validFromMs)) ||
+    (validUntilMs !== null && !Number.isFinite(validUntilMs))
+  ) {
+    return 'offer_terms_validity_invalid';
+  }
+  if (validFromMs !== null && eventMs < validFromMs) {
     return 'offer_terms_not_yet_valid_at_event_time';
   }
-  if (offer.valid_until && eventMs > Date.parse(offer.valid_until)) {
+  if (validUntilMs !== null && eventMs > validUntilMs) {
     return 'offer_terms_expired_at_event_time';
   }
   if (!offer.valid_from && !offer.valid_until && offer.status !== 'active') {
@@ -584,15 +633,17 @@ async function upsertReferral(params: {
     }
 
     const row = existing.data as RevenueReferralRow;
-    const status = nextHealthTravelReferralStatus(row.status, referralPlan.status);
-    const offerId = params.offerId ?? row.offer_id ?? null;
+    const merged = mergeHealthTravelReferralState(row, {
+      status: referralPlan.status,
+      convertedAt: referralPlan.convertedAt,
+      offerId: params.offerId,
+      occurredAt: params.event.occurredAt,
+    });
     const updatePayload: Record<string, unknown> = {
       attribution_id: params.attributionId,
-      offer_id: offerId,
-      status,
-      converted_at:
-        row.converted_at ??
-        (status === 'converted' ? referralPlan.convertedAt ?? params.event.occurredAt : null),
+      offer_id: merged.offerId,
+      status: merged.status,
+      converted_at: merged.convertedAt,
     };
     const incomingCurrency = params.event.data.currency?.trim().toUpperCase();
     if (incomingCurrency) updatePayload.currency = incomingCurrency;
@@ -619,7 +670,7 @@ async function upsertReferral(params: {
   throw new Error('Referral update failed after concurrent retries');
 }
 
-function commissionExternalRef(params: {
+export function commissionExternalRef(params: {
   offer: RevenueOfferRow;
   referralId: string;
   paymentIdentity: string | null;
