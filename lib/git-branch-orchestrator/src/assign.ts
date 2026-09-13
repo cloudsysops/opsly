@@ -18,6 +18,13 @@ import { materializeBranchPlan, ghCreatePullRequest } from './github.js';
 import { buildMergeAdvisorReport } from './merge-advisor.js';
 import type { BranchRegistryEntry, MergeAdvisorReport } from './types.js';
 
+export interface BranchDispatchClaimEvidence {
+  version: 'dispatch-claim-v1';
+  claim_id: string;
+  task_id: string;
+  workstream: string;
+}
+
 export interface AssignWorkerInput {
   tenant_slug: string;
   initiative: string;
@@ -28,6 +35,7 @@ export interface AssignWorkerInput {
   parent_branch?: string;
   session_id?: string;
   request_id?: string;
+  dispatch_claim?: BranchDispatchClaimEvidence;
   materialize_git?: boolean;
   repo_path?: string;
   open_pr?: boolean;
@@ -73,6 +81,23 @@ function findExistingTask(
 export async function assignWorkerToBranch(
   input: AssignWorkerInput,
 ): Promise<AssignWorkerResult> {
+  if (input.materialize_git) {
+    const claim = input.dispatch_claim;
+    if (
+      !claim ||
+      claim.version !== 'dispatch-claim-v1' ||
+      !claim.claim_id.trim() ||
+      !claim.task_id.trim() ||
+      !claim.workstream.trim() ||
+      !input.request_id?.trim() ||
+      claim.claim_id !== input.request_id.trim()
+    ) {
+      throw new Error(
+        'DISPATCH_CLAIM_REQUIRED: materialize_git requires verified dispatch-claim-v1 evidence bound to request_id'
+      );
+    }
+  }
+
   const policy = await loadGitBranchPolicy();
   const initiativeSlug = slugifyTask(input.initiative);
   const taskSlug = slugifyTask(input.task_slug);
@@ -138,7 +163,7 @@ export async function assignWorkerToBranch(
       const pr = await ghCreatePullRequest({
         cwd,
         title: `[${entry.job_id}] ${input.title ?? taskSlug}`,
-        body: `Opsly Git Branch Orchestrator\n\n- Worker: ${workerId}\n- Job: ${entry.job_id}\n- Target: ${integration}\n`,
+        body: `Opsly Git Branch Orchestrator\n\n- Worker: ${workerId}\n- Job: ${entry.job_id}\n- Target: ${integration}\n- Dispatch-Claim: ${input.dispatch_claim?.claim_id ?? 'none'}\n- Task-Id: ${input.dispatch_claim?.task_id ?? taskSlug}\n- Workstream: ${input.dispatch_claim?.workstream ?? initiativeSlug}\n`,
         head: entry.branch_name,
         base: integration,
       });
