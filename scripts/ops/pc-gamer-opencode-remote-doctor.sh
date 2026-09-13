@@ -7,6 +7,15 @@ cd "$ROOT"
 SSH_HOST="${PC_GAMER_SSH_HOST:-pc-gamer}"
 REMOTE_REPO="${PC_GAMER_REPO_ROOT:-~/opsly}"
 
+if ! [[ "$SSH_HOST" =~ ^[A-Za-z0-9_.@:-]+$ ]]; then
+  echo "BLOCKED: invalid PC_GAMER_SSH_HOST" >&2
+  exit 2
+fi
+if ! [[ "$REMOTE_REPO" =~ ^[A-Za-z0-9_./~:-]+$ ]]; then
+  echo "BLOCKED: invalid PC_GAMER_REPO_ROOT" >&2
+  exit 2
+fi
+
 if ! command -v ssh >/dev/null 2>&1; then
   echo "BLOCKED: ssh command not found" >&2
   exit 3
