@@ -8,6 +8,7 @@ const note = document.querySelector('#feedback-note');
 const ideasEl = document.querySelector('#idea-list');
 let runtime = null;
 let activeGame = null;
+let activeSession = null;
 
 function cardMarkup(game, cloneLab = false) {
   const source = cloneLab ? `<div class="source">OPEN SOURCE STUDY · ${game.source.path}</div>` : '';
@@ -44,11 +45,39 @@ function loadScript(src) {
   });
 }
 
+function loadPlaytests(){ try{return JSON.parse(localStorage.getItem('astral-games-lab-playtests')||'[]');}catch{return [];} }
+function savePlaytests(items){ localStorage.setItem('astral-games-lab-playtests',JSON.stringify(items)); }
+function finishSession(reason){
+  if(!activeSession) return;
+  let score=null;
+  try{ score=runtime?.getScore?.() ?? null; }catch{}
+  const endedAt=new Date();
+  const items=loadPlaytests();
+  items.unshift({
+    ...activeSession,
+    endedAt:endedAt.toISOString(),
+    durationSeconds:Math.max(0,Math.round((endedAt.getTime()-new Date(activeSession.startedAt).getTime())/1000)),
+    score,
+    reason
+  });
+  savePlaytests(items.slice(0,200));
+  activeSession=null;
+}
+
 async function openGame(id) {
+  finishSession('switched');
   activeGame = allGames.find(g => g.id === id);
   if (!activeGame) return;
   runtime?.stop();
   runtime = null;
+  note.textContent='';
+  activeSession={
+    gameId:activeGame.id,
+    title:activeGame.title,
+    startedAt:new Date().toISOString(),
+    feedback:null,
+    source:activeGame.source?.path || 'opsly-original'
+  };
   title.textContent = activeGame.title;
   desc.textContent = activeGame.description;
   playground.hidden = false;
@@ -70,6 +99,7 @@ async function openGame(id) {
 }
 
 document.querySelector('#close-game').addEventListener('click', () => {
+  finishSession('closed');
   runtime?.stop(); runtime = null; playground.hidden = true;
 });
 
@@ -105,6 +135,7 @@ function renderIdeas(){
 document.querySelectorAll('[data-feedback]').forEach(btn => btn.addEventListener('click',()=>{
   if(!activeGame) return;
   const type=btn.dataset.feedback;
+  if(activeSession) activeSession.feedback=type;
   if(type==='clone'){
     const name=window.prompt('Nombre para tu versión Astral:', activeGame.title+' · Astral Remix');
     if(!name) return;
@@ -126,6 +157,11 @@ document.querySelectorAll('[data-feedback]').forEach(btn => btn.addEventListener
     localStorage.setItem('astral-feedback-'+activeGame.id,type);
   }
 }));
+
+document.querySelector('#export-playtests').addEventListener('click',()=>{
+  const blob=new Blob([JSON.stringify(loadPlaytests(),null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='astral-games-lab-playtests.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);
+});
 
 document.querySelector('#export-ideas').addEventListener('click',()=>{
   const blob=new Blob([JSON.stringify(loadIdeas(),null,2)],{type:'application/json'});
