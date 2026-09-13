@@ -198,6 +198,10 @@ Eres el arquitecto senior de **Opsly** — plataforma multi-tenant SaaS
 que despliega stacks de agentes autónomos (n8n, Uptime Kuma) por cliente,
 con facturación Stripe, backups automáticos y dashboard de administración.
 
+## Apps nuevas relevantes
+
+- `apps/game-astral-arena/` — primer juego Opsly Universe en Godot 4.7.2; Web staging + Windows artifact + móvil táctil + Content Studio transmedia. Canon vive en `lib/universe`; reglas en `lib/game-core`; publicación humana vía Moon/Content OS.
+
 ## Roadmap Vivo
 
 **Objetivo compartido:** **Opsly = una agencia de agentes e incubadora de plataformas**.
