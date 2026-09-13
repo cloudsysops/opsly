@@ -153,19 +153,62 @@
   "technolia": {
     "starting_era": "SPARK_ERA",
     "starting_resources": {
-      "ASTRAL_ENERGY": 120,
-      "NEXUS_CRYSTAL": 80,
-      "KNOWLEDGE": 40,
-      "DATA": 20,
-      "ALLOY": 60,
-      "TRUST": 10
+      "ASTRAL_ENERGY": 240,
+      "NEXUS_CRYSTAL": 100,
+      "KNOWLEDGE": 450,
+      "DATA": 140,
+      "ALLOY": 150,
+      "TRUST": 80
     },
     "first_buildings": [
-      "nexus-core",
-      "portal-gateway",
-      "memory-vault"
+      {
+        "id": "nexus-core",
+        "name": "Núcleo del Nexo",
+        "era": "SPARK_ERA",
+        "purpose": "Main base and power coordinator.",
+        "softwareAnalogy": "Control plane: knows desired state and coordinates services.",
+        "cost": [
+          { "resource": "ASTRAL_ENERGY", "amount": 30 },
+          { "resource": "NEXUS_CRYSTAL", "amount": 20 }
+        ],
+        "unlocks": ["portal-gateway", "memory-vault"]
+      },
+      {
+        "id": "portal-gateway",
+        "name": "Torre Portal",
+        "era": "SPARK_ERA",
+        "purpose": "Controls entry into the settlement and routes travelers.",
+        "softwareAnalogy": "Edge gateway / reverse proxy / rate-limit boundary.",
+        "cost": [
+          { "resource": "ALLOY", "amount": 20 },
+          { "resource": "ASTRAL_ENERGY", "amount": 20 }
+        ],
+        "unlocks": ["identity-citadel"]
+      },
+      {
+        "id": "memory-vault",
+        "name": "Bóveda de Memoria",
+        "era": "SPARK_ERA",
+        "purpose": "Stores discoveries, maps, and mission state.",
+        "softwareAnalogy": "Primary database with durable state.",
+        "cost": [
+          { "resource": "NEXUS_CRYSTAL", "amount": 25 },
+          { "resource": "DATA", "amount": 10 }
+        ],
+        "unlocks": ["backup-archive"]
+      }
     ],
-    "first_technology": "structured-requests"
+    "first_technologies": [
+      {
+        "id": "structured-requests",
+        "name": "Mensajes Estructurados",
+        "era": "SPARK_ERA",
+        "lesson": "Systems are easier to reason about when inputs have explicit shapes and validation.",
+        "requires": ["nexus-core"],
+        "cost": [{ "resource": "KNOWLEDGE", "amount": 15 }],
+        "unlocks": ["input-validation"]
+      }
+    ]
   },
   "cyber_arena": [
     "cyber-001-bot-swarm",
