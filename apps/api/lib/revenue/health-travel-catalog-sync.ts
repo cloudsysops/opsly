@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { z } from 'zod';
 import { getServiceClient } from '../supabase/client';
+import { resolveHealthTravelTenantSlug } from './health-travel-tenant';
 
 const providerSchema = z.object({
   id: z.string().min(1),
@@ -149,11 +150,12 @@ export type HealthTravelCatalogSyncResult = Readonly<{
 }>;
 
 export async function syncHealthTravelCatalog(
-  tenantSlug = 'health-travel-colombia'
+  tenantSlug?: string
 ): Promise<HealthTravelCatalogSyncResult> {
+  const resolvedTenantSlug = resolveHealthTravelTenantSlug(tenantSlug);
   const catalog = await fetchCatalog();
   const platform = getServiceClient().schema('platform') as any;
-  const tenantId = await resolveTenantId(platform, tenantSlug);
+  const tenantId = await resolveTenantId(platform, resolvedTenantSlug);
 
   let providerCreated = 0;
   let providerUpdated = 0;
@@ -363,7 +365,7 @@ export async function syncHealthTravelCatalog(
   }
 
   return {
-    tenant_slug: tenantSlug,
+    tenant_slug: resolvedTenantSlug,
     source_generated_at: catalog.generated_at,
     providers: {
       created: providerCreated,
