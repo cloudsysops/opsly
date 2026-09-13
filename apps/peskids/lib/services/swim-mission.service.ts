@@ -105,7 +105,7 @@ export async function createSwimMissionAssignment(
     idempotency_key: input.idempotency_key ?? null,
   };
 
-  let query = db
+  const insertResult = await db
     .from('swim_mission_assignments')
     .insert(payload)
     .select(
@@ -113,9 +113,16 @@ export async function createSwimMissionAssignment(
     )
     .single();
 
-  let result = await query;
+  let assignment: SwimMissionAssignmentRow;
+  let created = false;
 
-  if (result.error && input.idempotency_key) {
+  if (!insertResult.error && insertResult.data) {
+    assignment = insertResult.data as SwimMissionAssignmentRow;
+    created = true;
+  } else if (
+    input.idempotency_key &&
+    insertResult.error?.code === '23505'
+  ) {
     const existing = await db
       .from('swim_mission_assignments')
       .select(
@@ -125,28 +132,28 @@ export async function createSwimMissionAssignment(
       .eq('idempotency_key', input.idempotency_key)
       .maybeSingle();
 
-    if (!existing.error && existing.data) {
-      result = { data: existing.data, error: null } as typeof result;
+    if (existing.error || !existing.data) {
+      throw new Error('Unable to resolve idempotent swim mission assignment');
     }
-  }
 
-  if (result.error || !result.data) {
+    assignment = existing.data as SwimMissionAssignmentRow;
+  } else {
     throw new Error('Unable to create swim mission assignment');
   }
 
-  const assignment = result.data as SwimMissionAssignmentRow;
-
-  await emitEvent('swim.mission.assigned', {
-    assignment_id: assignment.id,
-    student_id: assignment.student_id,
-    mission_slug: input.mission_slug,
-    assigned_by_type: assignment.assigned_by_type,
-    assignment_mode: assignment.assignment_mode,
-    rule_id: assignment.assigned_by_rule_id,
-    workflow_id: assignment.assigned_by_workflow_id,
-    reason: assignment.reason,
-    due_at: assignment.due_at,
-  });
+  if (created) {
+    await emitEvent('swim.mission.assigned', {
+      assignment_id: assignment.id,
+      student_id: assignment.student_id,
+      mission_slug: input.mission_slug,
+      assigned_by_type: assignment.assigned_by_type,
+      assignment_mode: assignment.assignment_mode,
+      rule_id: assignment.assigned_by_rule_id,
+      workflow_id: assignment.assigned_by_workflow_id,
+      reason: assignment.reason,
+      due_at: assignment.due_at,
+    });
+  }
 
   return assignment;
 }
