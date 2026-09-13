@@ -11,6 +11,7 @@
  * Optional env:
  *   GITHUB_REPOSITORY (default: cloudsysops/opsly)
  *   RECONCILIATION_OUTPUT (default: pr-reconciliation-inventory.json)
+ *   RECONCILIATION_POLICY (default: config/pr-reconciliation-policy.json)
  */
 
 import fs from 'node:fs/promises';
@@ -18,6 +19,14 @@ import fs from 'node:fs/promises';
 const repository = process.env.GITHUB_REPOSITORY || 'cloudsysops/opsly';
 const token = process.env.GITHUB_TOKEN;
 const outputPath = process.env.RECONCILIATION_OUTPUT || 'pr-reconciliation-inventory.json';
+const policyPath = process.env.RECONCILIATION_POLICY || 'config/pr-reconciliation-policy.json';
+const policy = JSON.parse(await fs.readFile(policyPath, 'utf8'));
+const protectedPatterns = (policy.protected?.patterns || []).map((pattern) => String(pattern).toLowerCase());
+
+if (protectedPatterns.length === 0) {
+  console.error(`Reconciliation policy has no protected patterns: ${policyPath}`);
+  process.exit(2);
+}
 
 if (!token) {
   console.error('GITHUB_TOKEN is required');
@@ -61,21 +70,14 @@ async function listOpenPulls() {
 }
 
 function containsProtectedSurface(pull, files) {
-  const text = `${pull.title}\n${pull.body || ''}\n${pull.head.ref}`.toLowerCase();
-  const protectedText = /(peskids|production|prod\b|n8n|doppler|dns|traefik|supabase migration|database migration)/.test(text);
-  const protectedFiles = files.some((file) => {
-    const name = file.filename.toLowerCase();
-    return (
-      name.includes('peskids') ||
-      name.includes('production') ||
-      name.includes('n8n') ||
-      name.includes('doppler') ||
-      name.includes('traefik') ||
-      name.includes('/migrations/') ||
-      name.startsWith('supabase/migrations/')
-    );
-  });
-  return protectedText || protectedFiles;
+  const candidates = [
+    pull.title,
+    pull.body || '',
+    pull.head.ref,
+    ...files.map((file) => file.filename),
+  ].map((value) => String(value).toLowerCase());
+
+  return protectedPatterns.some((pattern) => candidates.some((candidate) => candidate.includes(pattern)));
 }
 
 function supersededByReference(pull, comments, openPullNumbers) {
@@ -189,7 +191,7 @@ const payload = {
     autoMerge: false,
     autoDeploy: false,
     mutateProduction: false,
-    protectedSurfaces: ['peskids', 'production', 'n8n', 'doppler', 'dns', 'traefik', 'migrations'],
+    protectedSurfaces: protectedPatterns,
   },
   summary,
   pullRequests: records,
