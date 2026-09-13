@@ -47,3 +47,17 @@ export type {
   IndependentVerificationInputV1,
   IndependentVerificationV1,
 } from './verification-v1.js';
+
+export {
+  INTELLIGENCE_EVAL_DATASET_V1,
+  buildIntelligenceScorecardV1,
+  compareIntelligenceStrategiesV1,
+} from './intelligence-scorecard-v1.js';
+export type {
+  IntelligenceEvalScenarioKindV1,
+  EvalCostClassV1,
+  IntelligenceEvalScenarioV1,
+  IntelligenceEvalObservationV1,
+  IntelligenceScorecardV1,
+  IntelligenceStrategyComparisonV1,
+} from './intelligence-scorecard-v1.js';
