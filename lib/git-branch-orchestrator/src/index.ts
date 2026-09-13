@@ -54,6 +54,7 @@ export {
   assignWorkerToBranch,
   type AssignWorkerInput,
   type AssignWorkerResult,
+  type BranchDispatchClaimEvidence,
 } from './assign.js';
 
 export { buildMergeAdvisorReport } from './merge-advisor.js';
