@@ -37,6 +37,7 @@ import {
   completeTaskDispatchClaim,
   parseDispatchClaimLease,
   releaseTaskDispatchClaim,
+  renewTaskDispatchClaim,
 } from '../task-claim-store.js';
 
 interface LocalAgentPayload {
@@ -466,6 +467,16 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
           );
         }
 
+        const dispatchLease = parseDispatchClaimLease(payload.context?.dispatch_claim);
+        if (dispatchLease) {
+          const ownership = await renewTaskDispatchClaim(dispatchLease);
+          if (!ownership.renewed) {
+            throw new UnrecoverableError(
+              'DISPATCH_CLAIM_LOST: active ownership lease is no longer held by this job'
+            );
+          }
+        }
+
         const result = payload.agent_task === undefined
           ? await process()
           : await (async () => {
@@ -512,6 +523,22 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
                 : { success: true, execution_time_ms: runtimeResult.duration_ms };
             })();
 
+        if (!result.success) {
+          throw new Error(result.error || 'local agent adapter returned success=false');
+        }
+
+        const validationAction = result.validation_decision?.action;
+        if (validationAction === 'iterate') {
+          throw new Error(
+            `VALIDATION_ITERATE: ${result.validation_decision?.reason || 'another iteration is required'}`
+          );
+        }
+        if (validationAction === 'escalate') {
+          throw new UnrecoverableError(
+            `VALIDATION_ESCALATE: ${result.validation_decision?.reason || 'human escalation is required'}`
+          );
+        }
+
         const elapsed = Date.now() - t0;
         logWorkerLifecycle('complete', 'local-agents', job, { duration_ms: elapsed });
 
@@ -523,11 +550,7 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
           logWorkerError('local-agents', `${jobType} job ${job.id} failed: ${result.error}`);
         }
 
-        await finalizeDispatchClaimForPayload(
-          payload,
-          result.success ? 'completed' : 'failed',
-          result.success ? 'completed' : 'completed_with_error'
-        );
+        await finalizeDispatchClaimForPayload(payload, 'completed', 'validated_terminal_success');
         return result;
       } catch (err) {
         const elapsed = Date.now() - t0;
