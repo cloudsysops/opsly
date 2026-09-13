@@ -48,7 +48,7 @@ CREATE INDEX IF NOT EXISTS idx_revenue_event_receipts_lead
 -- "no commission event yet" before either insert commits.
 CREATE UNIQUE INDEX IF NOT EXISTS uq_revenue_commission_event_external_source
   ON platform.revenue_commission_events(tenant_id, referral_id, source, external_ref)
-  WHERE external_ref IS NOT NULL;
+  WHERE source = 'smile-trip-care' AND external_ref IS NOT NULL;
 
 DROP TRIGGER IF EXISTS revenue_event_receipts_updated_at
   ON platform.revenue_event_receipts;
