@@ -34,6 +34,7 @@ import { createValidationOrchestrator } from '../lib/validation/validation-orche
 import { writeValidationGuard } from '../lib/validation/validation-utils.js';
 import { AgentTaskRuntime } from '../runtime/agent-task-runtime.js';
 import {
+  completeTaskDispatchClaim,
   parseDispatchClaimLease,
   releaseTaskDispatchClaim,
 } from '../task-claim-store.js';
@@ -188,16 +189,42 @@ export function allowLegacyLocalAgentPayload(env: NodeJS.ProcessEnv = process.en
   return env.OPSLY_ALLOW_LEGACY_LOCAL_AGENT_PAYLOAD === 'true';
 }
 
-async function releaseDispatchClaimForPayload(
+async function finalizeDispatchClaimForPayload(
   payload: LocalAgentPayload,
+  outcome: 'completed' | 'failed',
   reason: string
 ): Promise<void> {
   const lease = parseDispatchClaimLease(payload.context?.dispatch_claim);
   if (!lease) return;
 
   try {
+    if (outcome === 'completed') {
+      const result = await completeTaskDispatchClaim(lease);
+      if (!result.tombstoneWritten) {
+        logWorkerWarn(
+          'local-agents',
+          'Completed task could not write ALREADY_DONE tombstone; claim may have expired',
+          {
+            claim_id: lease.claimId,
+            task_id: lease.taskId,
+            workstream: lease.workstream,
+            reason,
+          }
+        );
+        return;
+      }
+      logWorkerInfo('local-agents', 'Completed dispatch claim and preserved task tombstone', {
+        claim_id: lease.claimId,
+        task_id: lease.taskId,
+        workstream: lease.workstream,
+        released_keys: result.released,
+        reason,
+      });
+      return;
+    }
+
     const released = await releaseTaskDispatchClaim(lease);
-    logWorkerInfo('local-agents', 'Released dispatch ownership claim', {
+    logWorkerInfo('local-agents', 'Released failed dispatch ownership claim', {
       claim_id: lease.claimId,
       task_id: lease.taskId,
       workstream: lease.workstream,
@@ -205,9 +232,9 @@ async function releaseDispatchClaimForPayload(
       reason,
     });
   } catch (err) {
-    // A leaked claim is bounded by TTL. Do not convert successful agent work into
-    // a failed job merely because Redis cleanup could not be confirmed.
-    logWorkerWarn('local-agents', 'Dispatch claim release failed; TTL will recover it', {
+    // A leaked active claim is bounded by TTL. Do not rewrite the task result
+    // merely because Redis cleanup/tombstoning could not be confirmed.
+    logWorkerWarn('local-agents', 'Dispatch claim finalization failed; TTL will recover active locks', {
       claim_id: lease.claimId,
       task_id: lease.taskId,
       error: sanitizeLocalAgentError(err instanceof Error ? err.message : String(err)),
@@ -496,7 +523,11 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
           logWorkerError('local-agents', `${jobType} job ${job.id} failed: ${result.error}`);
         }
 
-        await releaseDispatchClaimForPayload(payload, result.success ? 'completed' : 'completed_with_error');
+        await finalizeDispatchClaimForPayload(
+          payload,
+          result.success ? 'completed' : 'failed',
+          result.success ? 'completed' : 'completed_with_error'
+        );
         return result;
       } catch (err) {
         const elapsed = Date.now() - t0;
@@ -520,7 +551,7 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
         }
 
         if (isFinalBullAttempt(job, err)) {
-          await releaseDispatchClaimForPayload(payload, 'terminal_failure');
+          await finalizeDispatchClaimForPayload(payload, 'failed', 'terminal_failure');
         } else {
           logWorkerInfo('local-agents', 'Retaining dispatch claim across BullMQ retry', {
             job_id,
