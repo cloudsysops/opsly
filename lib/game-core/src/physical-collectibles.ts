@@ -26,6 +26,7 @@ export const captureStatusValues = [
 ] as const;
 
 export type CaptureStatus = (typeof captureStatusValues)[number];
+export type FaceDetectionAction = 'NOT_RUN' | 'CLEAR' | 'REVIEW' | 'REJECT_OR_CROP';
 
 export interface PhysicalCollectibleCandidate {
   id: string;
@@ -40,7 +41,7 @@ export interface PhysicalCollectibleCandidate {
   privacy: {
     exifStripped: boolean;
     locationStored: false;
-    faceDetectionAction: 'NOT_RUN' | 'REVIEW' | 'REJECT_OR_CROP';
+    faceDetectionAction: FaceDetectionAction;
   };
   provenance: {
     submittedByPlayer: true;
@@ -66,6 +67,7 @@ export interface CaptureAnalysisProposal {
   category: PhysicalObjectCategory;
   confidence: number;
   unlockCandidates: string[];
+  faceDetectionAction?: Exclude<FaceDetectionAction, 'NOT_RUN'>;
 }
 
 /**
@@ -118,6 +120,10 @@ export function applyCaptureAnalysis(
     confidence: proposal.confidence,
     unlockCandidates: [...new Set(proposal.unlockCandidates)],
     status: proposal.confidence >= 0.85 ? 'CANDIDATE' : 'NEEDS_USER_CONFIRMATION',
+    privacy: {
+      ...candidate.privacy,
+      faceDetectionAction: proposal.faceDetectionAction ?? candidate.privacy.faceDetectionAction,
+    },
   };
 }
 
@@ -130,6 +136,9 @@ export function approvePhysicalCollectible(
   if (!confirmedLabel.trim()) throw new Error('COLLECTIBLE_LABEL_REQUIRED');
   if (!['CANDIDATE', 'NEEDS_USER_CONFIRMATION'].includes(candidate.status)) {
     throw new Error('COLLECTIBLE_NOT_REVIEWABLE');
+  }
+  if (candidate.privacy.faceDetectionAction !== 'CLEAR') {
+    throw new Error(`FACE_REVIEW_REQUIRED:${candidate.privacy.faceDetectionAction}`);
   }
   return {
     id: candidate.id,
