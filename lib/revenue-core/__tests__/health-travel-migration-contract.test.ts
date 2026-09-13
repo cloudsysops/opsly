@@ -14,6 +14,14 @@ describe('0102 Health Travel revenue receipts migration', () => {
     expect(migration).toContain('ENABLE ROW LEVEL SECURITY');
   });
 
+  it('prevents duplicate commission estimates for the same external Health Travel event', () => {
+    expect(migration).toContain('uq_revenue_commission_event_external_source');
+    expect(migration).toContain(
+      'ON platform.revenue_commission_events(tenant_id, referral_id, source, external_ref)'
+    );
+    expect(migration).toContain('WHERE external_ref IS NOT NULL');
+  });
+
   it('references Revenue Core ledgers instead of duplicating them', () => {
     expect(migration).toContain('platform.revenue_attributions');
     expect(migration).toContain('platform.revenue_referrals');
