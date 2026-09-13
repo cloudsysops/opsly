@@ -238,6 +238,8 @@ jobs:
           set -euo pipefail
           test -s dist/astral-arena-web/index.html
           test -s dist/astral-arena-web/app.js
+          test -s dist/astral-arena-web/manifest.webmanifest
+          test -s dist/astral-arena-web/sw.js
           test -s dist/astral-arena-web/originals.js
           test -s dist/astral-arena-web/emulator.html
           test -s dist/astral-arena-web/clone-lab/upstream-catalog.js
@@ -395,15 +397,25 @@ jobs:
         run: |
           set -euo pipefail
           url="https://${ASTRAL_ARENA_WEB_HOST}/"
+          arena_url="${url}astral-arena/"
           for attempt in $(seq 1 12); do
-            if body="$(curl -fsSL --max-time 15 "$url" 2>/dev/null)" && printf '%s' "$body" | grep -qi '<canvas\|godot'; then
-              echo "Astral Arena public preview: OK — $url"
+            games_ok=0
+            arena_ok=0
+            if body="$(curl -fsSL --max-time 15 "$url" 2>/dev/null)" && printf '%s' "$body" | grep -q 'Opsly Games'; then
+              games_ok=1
+            fi
+            if arena_body="$(curl -fsSL --max-time 15 "$arena_url" 2>/dev/null)" && printf '%s' "$arena_body" | grep -qi '<canvas\|godot'; then
+              arena_ok=1
+            fi
+            if [ "$games_ok" -eq 1 ] && [ "$arena_ok" -eq 1 ]; then
+              echo "Opsly Games public preview: OK — $url"
+              echo "Astral Arena nested preview: OK — $arena_url"
               exit 0
             fi
-            echo "Waiting for DNS/TLS/Traefik ($attempt/12)..."
+            echo "Waiting for Games + Astral Arena preview ($attempt/12)..."
             sleep 10
           done
-          echo "::error::Public preview did not become healthy: $url"
+          echo "::error::Public Games preview did not become healthy: $url"
           exit 1
 
 
@@ -496,7 +508,7 @@ jobs:
             }
 
             docker rm -f astral-arena-web-staging 2>/dev/null || true
-            docker run -d               --name astral-arena-web-staging               --restart unless-stopped               --network traefik-public               --label traefik.enable=true               --label traefik.docker.network=traefik-public               --label 'traefik.http.routers.opsly-games-staging.rule=Host(`peskids-staging.op-sly.com`) && PathPrefix(`/games`)'               --label traefik.http.routers.opsly-games-staging.priority=210               --label traefik.http.routers.opsly-games-staging.entrypoints=websecure               --label traefik.http.routers.opsly-games-staging.tls=true               --label traefik.http.routers.opsly-games-staging.tls.certresolver=letsencrypt               --label traefik.http.routers.opsly-games-staging.middlewares=opsly-games-staging-strip               --label traefik.http.routers.opsly-games-staging.service=astral-arena-staging               --label traefik.http.middlewares.opsly-games-staging-strip.stripprefix.prefixes=/games               --label 'traefik.http.routers.astral-arena-staging.rule=Host(`peskids-staging.op-sly.com`) && PathPrefix(`/astral-arena`)'               --label traefik.http.routers.astral-arena-staging.priority=200               --label traefik.http.routers.astral-arena-staging.entrypoints=websecure               --label traefik.http.routers.astral-arena-staging.tls=true               --label traefik.http.routers.astral-arena-staging.tls.certresolver=letsencrypt               --label traefik.http.routers.astral-arena-staging.middlewares=astral-arena-staging-strip               --label traefik.http.routers.astral-arena-staging.service=astral-arena-staging               --label traefik.http.middlewares.astral-arena-staging-strip.stripprefix.prefixes=/astral-arena               --label traefik.http.services.astral-arena-staging.loadbalancer.server.port=8080               --label "opsly.release.sha=$RELEASE_SHA"               "$ASTRAL_IMAGE" >/dev/null
+            docker run -d               --name astral-arena-web-staging               --restart unless-stopped               --network traefik-public               --label traefik.enable=true               --label traefik.docker.network=traefik-public               --label 'traefik.http.routers.opsly-games-staging.rule=Host(`peskids-staging.op-sly.com`) && PathPrefix(`/games`)'               --label traefik.http.routers.opsly-games-staging.priority=210               --label traefik.http.routers.opsly-games-staging.entrypoints=websecure               --label traefik.http.routers.opsly-games-staging.tls=true               --label traefik.http.routers.opsly-games-staging.tls.certresolver=letsencrypt               --label traefik.http.routers.opsly-games-staging.middlewares=opsly-games-staging-strip               --label traefik.http.routers.opsly-games-staging.service=astral-arena-staging               --label traefik.http.middlewares.opsly-games-staging-strip.stripprefix.prefixes=/games               --label 'traefik.http.routers.astral-arena-staging.rule=Host(`peskids-staging.op-sly.com`) && PathPrefix(`/astral-arena`)'               --label traefik.http.routers.astral-arena-staging.priority=200               --label traefik.http.routers.astral-arena-staging.entrypoints=websecure               --label traefik.http.routers.astral-arena-staging.tls=true               --label traefik.http.routers.astral-arena-staging.tls.certresolver=letsencrypt               --label traefik.http.routers.astral-arena-staging.middlewares=astral-arena-legacy-redirect               --label traefik.http.routers.astral-arena-staging.service=astral-arena-staging               --label 'traefik.http.middlewares.astral-arena-legacy-redirect.redirectregex.regex=^https://peskids-staging\\.op-sly\\.com/astral-arena/?(.*)'               --label 'traefik.http.middlewares.astral-arena-legacy-redirect.redirectregex.replacement=https://peskids-staging.op-sly.com/games/astral-arena/${1}'               --label traefik.http.middlewares.astral-arena-legacy-redirect.redirectregex.permanent=true               --label traefik.http.services.astral-arena-staging.loadbalancer.server.port=8080               --label "opsly.release.sha=$RELEASE_SHA"               "$ASTRAL_IMAGE" >/dev/null
 
             for attempt in $(seq 1 30); do
               if docker exec astral-arena-web-staging wget -q -O /dev/null http://127.0.0.1:8080/index.html; then
