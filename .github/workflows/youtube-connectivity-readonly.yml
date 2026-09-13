@@ -38,6 +38,16 @@ jobs:
       - name: Install JS dependencies without lifecycle scripts
         run: npm ci --ignore-scripts
 
+      - name: Report non-secret YouTube routing metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          doppler run --project ops-intcloudsysops --config prd --preserve-env -- bash -lc '
+            echo "youtube_default_channel=${YOUTUBE_UPLOAD_DEFAULT_CHANNEL:-unset}"
+            echo "youtube_bitsitos_channel_id=${YOUTUBE_BITSITOS_CHANNEL_ID:-unset}"
+            echo "youtube_splashitos_channel_id=${YOUTUBE_SPLASHITOS_CHANNEL_ID:-unset}"
+          '
+
       - name: Run read-only YouTube connectivity doctor
         id: doctor
         continue-on-error: true
