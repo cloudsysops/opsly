@@ -42,6 +42,15 @@ jobs:
           RECONCILIATION_WORKPACKS: pr-reconciliation-workpacks.json
         run: node scripts/ops/pr-reconciliation-workpacks.mjs
 
+      - name: Build supervised AgentTaskEnvelopeV1 tasks
+        env:
+          RECONCILIATION_WORKPACKS: pr-reconciliation-workpacks.json
+          RECONCILIATION_AGENT_ENVELOPES: pr-reconciliation-agent-envelopes.json
+        run: node scripts/ops/pr-reconciliation-agent-envelopes.mjs
+
+      - name: Validate reconciliation envelope contract
+        run: node --test scripts/ops/__tests__/pr-reconciliation-agent-envelopes.test.mjs
+
       - name: Publish reconciliation artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -49,6 +58,7 @@ jobs:
           path: |
             pr-reconciliation-inventory.json
             pr-reconciliation-workpacks.json
+            pr-reconciliation-agent-envelopes.json
           if-no-files-found: error
           retention-days: 7
 
@@ -59,6 +69,7 @@ jobs:
           const fs = require('fs');
           const inventory = JSON.parse(fs.readFileSync('pr-reconciliation-inventory.json', 'utf8'));
           const workpacks = JSON.parse(fs.readFileSync('pr-reconciliation-workpacks.json', 'utf8'));
+          const envelopes = JSON.parse(fs.readFileSync('pr-reconciliation-agent-envelopes.json', 'utf8'));
           console.log('# PR Reconciliation Inventory');
           console.log('');
           console.log(`Generated: ${inventory.generatedAt}`);
@@ -70,10 +81,12 @@ jobs:
           }
           console.log('');
           console.log(`Actionable supervised workpacks: **${workpacks.count}**`);
+          console.log(`Prepared AgentTaskEnvelopeV1 tasks: **${envelopes.count}**`);
           console.log(`Recommended maximum parallel workers: **${workpacks.maxParallelismRecommendation}**`);
           console.log('');
           console.log('## Safety invariants');
-          console.log('- Read-only inventory and workpack generation only');
+          console.log('- Read-only inventory/workpack/envelope preparation');
+          console.log('- Agent envelopes are SUPERVISED_ONLY and dispatchAllowed=false');
           console.log('- No auto-merge');
           console.log('- No production deploy');
           console.log('- No safe-daytime or hotfix-prod application');
