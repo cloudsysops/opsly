@@ -195,7 +195,7 @@
     "opsly:mac:doctor:strict": "bash scripts/ops/mac-ephemeral-runtime-doctor.sh --strict",
     "opsly:mac:go-live": "bash scripts/ops/mac-go-live-e2e.sh",
     "opsly:mac:install": "bash scripts/ops/install-mac-ephemeral-runtime-launchd.sh",
-    "test:ephemeral-agents": "node --test scripts/ops/__tests__/ephemeral-agent-lifecycle.test.mjs && npm test --workspace=@intcloudsysops/session-manager && npm test --workspace=@intcloudsysops/orchestrator -- src/__tests__/local-agent-http-worker.test.ts",
+    "test:ephemeral-agents": "node --test scripts/ops/__tests__/ephemeral-agent-lifecycle.test.mjs scripts/ops/__tests__/legacy-superagents-failclosed.test.mjs && npm test --workspace=@intcloudsysops/session-manager && npm test --workspace=@intcloudsysops/orchestrator -- src/__tests__/local-agent-http-worker.test.ts",
     "test:mac-ephemeral-runtime": "node --test scripts/ops/__tests__/mac-ephemeral-runtime.test.mjs",
     "test:mac-ephemeral-runtime-doctor": "node --test scripts/ops/__tests__/mac-ephemeral-runtime-doctor.test.mjs",
     "test:mac-go-live": "node --test scripts/ops/__tests__/mac-go-live-e2e.test.mjs",
