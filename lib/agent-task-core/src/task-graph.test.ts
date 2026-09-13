@@ -45,6 +45,17 @@ describe('TaskGraphV1', () => {
     ]);
   });
 
+  it('serializes conflict keys after canonical runtime normalization', () => {
+    expect(
+      planTaskGraphWaves(
+        graph([node('a', [], 'API / Retry'), node('b', [], '  api / retry  ')])
+      )
+    ).toEqual([
+      { index: 0, taskIds: ['a'] },
+      { index: 1, taskIds: ['b'] },
+    ]);
+  });
+
   it('rejects unresolved dependencies', () => {
     const result = validateTaskGraph(graph([node('a', ['missing'])]));
     expect(result.valid).toBe(false);
