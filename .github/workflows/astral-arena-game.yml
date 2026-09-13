@@ -63,13 +63,13 @@ jobs:
           chmod +x ".tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64"
 
       - name: Verify Godot version
-        run: .tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --version
+        run: '".tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64" --version'
 
       - name: Import project and compile GDScript headlessly
         shell: bash
         run: |
           set -euo pipefail
-          .tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64             --headless             --editor             --path apps/game-astral-arena             --quit
+          ".tools/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64"             --headless             --editor             --path apps/game-astral-arena             --quit
 
       - name: Validate imported project
         shell: bash
