@@ -139,7 +139,7 @@ export async function syncHealthTravelCatalog(
   let skippedUnassigned = 0;
   const partnerIds = new Map<string, string>();
   const activeProviderRefs = new Set(catalog.providers.map((provider) => provider.id));
-  const activeOfferRefs = new Set(catalog.offers.map((offer) => offer.id));
+  const activeOfferKeys = new Set<string>();
 
   for (const provider of catalog.providers) {
     const existing = await platform
@@ -215,6 +215,7 @@ export async function syncHealthTravelCatalog(
       skippedUnassigned += 1;
       continue;
     }
+    activeOfferKeys.add(`${partnerId}:${offer.id}`);
 
     const existing = await platform
       .from('revenue_offers')
@@ -299,7 +300,7 @@ export async function syncHealthTravelCatalog(
 
   const syncedOffers = await platform
     .from('revenue_offers')
-    .select('id, external_ref, status, metadata')
+    .select('id, partner_id, external_ref, status, metadata')
     .eq('tenant_id', tenantId)
     .contains('metadata', { source_system: 'smile-trip-care' });
 
@@ -309,7 +310,9 @@ export async function syncHealthTravelCatalog(
 
   for (const offer of syncedOffers.data ?? []) {
     const externalRef = typeof offer.external_ref === 'string' ? offer.external_ref : '';
-    if (!externalRef || activeOfferRefs.has(externalRef) || offer.status === 'paused') continue;
+    const partnerId = typeof offer.partner_id === 'string' ? offer.partner_id : '';
+    const activeKey = `${partnerId}:${externalRef}`;
+    if (!externalRef || activeOfferKeys.has(activeKey) || offer.status === 'paused') continue;
 
     const paused = await platform
       .from('revenue_offers')
