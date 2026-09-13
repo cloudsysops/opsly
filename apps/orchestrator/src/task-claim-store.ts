@@ -13,6 +13,9 @@ const CLAIM_KEY_PREFIX = 'opsly:dispatch-claim:v1';
 const DEFAULT_CLAIM_TTL_MS = 4 * 60 * 60 * 1000;
 const MIN_CLAIM_TTL_MS = 60_000;
 const MAX_CLAIM_TTL_MS = 8 * 60 * 60 * 1000;
+const DEFAULT_COMPLETED_TASK_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+const MIN_COMPLETED_TASK_TTL_MS = 24 * 60 * 60 * 1000;
+const MAX_COMPLETED_TASK_TTL_MS = 90 * 24 * 60 * 60 * 1000;
 
 export interface DispatchClaimRequest extends DispatchClaimInput {
   tenantSlug: string;
@@ -53,6 +56,17 @@ function boundedTtlMs(raw = process.env.OPSLY_DISPATCH_CLAIM_TTL_MS): number {
   return Math.min(MAX_CLAIM_TTL_MS, Math.max(MIN_CLAIM_TTL_MS, Math.floor(parsed)));
 }
 
+function boundedCompletedTaskTtlMs(
+  raw = process.env.OPSLY_DISPATCH_COMPLETED_TASK_TTL_MS
+): number {
+  const parsed = Number(raw ?? DEFAULT_COMPLETED_TASK_TTL_MS);
+  if (!Number.isFinite(parsed)) return DEFAULT_COMPLETED_TASK_TTL_MS;
+  return Math.min(
+    MAX_COMPLETED_TASK_TTL_MS,
+    Math.max(MIN_COMPLETED_TASK_TTL_MS, Math.floor(parsed))
+  );
+}
+
 function descriptorRedisKey(tenantSlug: string, descriptor: DispatchClaimDescriptor): string {
   const digest = createHash('sha256')
     .update(`${descriptor.dimension}\0${descriptor.value}`)
@@ -70,6 +84,7 @@ function encodeOwner(
     task_id: request.taskId,
     workstream: request.workstream,
     owner: request.owner ?? null,
+    state: 'active',
     descriptor,
   })}`;
 }
@@ -78,10 +93,15 @@ function parseOwner(raw: string | null): {
   claimId: string | null;
   taskId: string | null;
   workstream: string | null;
+  state: 'active' | 'completed';
 } {
-  if (!raw) return { claimId: null, taskId: null, workstream: null };
+  if (!raw) {
+    return { claimId: null, taskId: null, workstream: null, state: 'active' };
+  }
   const separator = raw.indexOf('|');
-  if (separator < 0) return { claimId: raw || null, taskId: null, workstream: null };
+  if (separator < 0) {
+    return { claimId: raw || null, taskId: null, workstream: null, state: 'active' };
+  }
   const claimId = raw.slice(0, separator) || null;
   try {
     const parsed = JSON.parse(raw.slice(separator + 1)) as Record<string, unknown>;
@@ -89,9 +109,10 @@ function parseOwner(raw: string | null): {
       claimId,
       taskId: typeof parsed.task_id === 'string' ? parsed.task_id : null,
       workstream: typeof parsed.workstream === 'string' ? parsed.workstream : null,
+      state: parsed.state === 'completed' ? 'completed' : 'active',
     };
   } catch {
-    return { claimId, taskId: null, workstream: null };
+    return { claimId, taskId: null, workstream: null, state: 'active' };
   }
 }
 
@@ -206,7 +227,7 @@ export async function acquireTaskDispatchClaim(
       acquired: false,
       conflict: {
         descriptor,
-        decision: classifyDispatchConflict(descriptor),
+        decision: classifyDispatchConflict(descriptor, owner.state),
         existingClaimId: owner.claimId,
         existingTaskId: owner.taskId,
         existingWorkstream: owner.workstream,
@@ -227,6 +248,74 @@ export async function acquireTaskDispatchClaim(
       acquiredAt: acquiredAt.toISOString(),
       expiresAt: new Date(acquiredAt.getTime() + ttlMs).toISOString(),
     },
+  };
+}
+
+export async function completeTaskDispatchClaim(
+  lease: DispatchClaimLease
+): Promise<{ released: number; tombstoneWritten: boolean }> {
+  if (lease.version !== DISPATCH_CLAIM_VERSION || !lease.claimId.trim()) {
+    return { released: 0, tombstoneWritten: false };
+  }
+
+  const taskDescriptor = lease.descriptors.find(
+    (descriptor) => descriptor.dimension === 'task'
+  );
+  if (!taskDescriptor) {
+    return { released: 0, tombstoneWritten: false };
+  }
+
+  const orderedDescriptors = [
+    taskDescriptor,
+    ...lease.descriptors.filter((descriptor) => descriptor.dimension !== 'task'),
+  ];
+  const keys = orderedDescriptors.map((descriptor) =>
+    descriptorRedisKey(lease.tenantSlug, descriptor)
+  );
+  const completedTtlMs = boundedCompletedTaskTtlMs();
+  const completedOwner =
+    lease.claimId +
+    '|' +
+    JSON.stringify({
+      request_id: lease.claimId,
+      task_id: lease.taskId,
+      workstream: lease.workstream,
+      owner: null,
+      state: 'completed',
+      descriptor: taskDescriptor,
+    });
+
+  const script = `
+    local prefix = ARGV[1] .. '|'
+    local taskCurrent = redis.call('GET', KEYS[1])
+    if not taskCurrent or string.sub(taskCurrent, 1, string.len(prefix)) ~= prefix then
+      return {0, 0}
+    end
+
+    redis.call('PSETEX', KEYS[1], ARGV[2], ARGV[3])
+    local released = 0
+    for i = 2, #KEYS do
+      local current = redis.call('GET', KEYS[i])
+      if current and string.sub(current, 1, string.len(prefix)) == prefix then
+        released = released + redis.call('DEL', KEYS[i])
+      end
+    end
+    return {1, released}
+  `;
+
+  const client = (await localAgentQueue.client) as unknown as RedisLike;
+  const raw = (await client.eval(
+    script,
+    keys.length,
+    ...keys,
+    lease.claimId,
+    completedTtlMs,
+    completedOwner
+  )) as [number | string, number | string] | unknown[];
+
+  return {
+    tombstoneWritten: Number(raw?.[0]) === 1,
+    released: Number(raw?.[1] ?? 0),
   };
 }
 
