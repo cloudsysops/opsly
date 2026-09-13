@@ -171,7 +171,9 @@ jobs:
           test -s dist/astral-arena-web/games/index.html
           test -s dist/astral-arena-web/games/emulator.html
           test -s dist/astral-arena-web/games/originals.js
-          sha256sum dist/astral-arena-web/* > dist/astral-arena-web/SHA256SUMS.txt
+          find dist/astral-arena-web -type f ! -name 'SHA256SUMS.txt' -print0 \
+            | sort -z \
+            | xargs -0 sha256sum > dist/astral-arena-web/SHA256SUMS.txt
           echo "Astral Arena browser export: OK"
 
       - name: Upload browser artifact
