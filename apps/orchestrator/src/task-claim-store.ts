@@ -110,7 +110,11 @@ function stringList(value: unknown): string[] {
         );
       }
     } catch {
-      // Fall through to comma-separated parsing.
+      return trimmed
+        .slice(1, -1)
+        .split(',')
+        .map((item) => item.trim().replace(/^['"]|['"]$/g, ''))
+        .filter(Boolean);
     }
   }
   return trimmed
