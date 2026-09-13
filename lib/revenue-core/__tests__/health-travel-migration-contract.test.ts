@@ -19,7 +19,9 @@ describe('0102 Health Travel revenue receipts migration', () => {
     expect(migration).toContain(
       'ON platform.revenue_commission_events(tenant_id, referral_id, source, external_ref)'
     );
-    expect(migration).toContain('WHERE external_ref IS NOT NULL');
+    expect(migration).toContain(
+      "WHERE source = 'smile-trip-care' AND external_ref IS NOT NULL"
+    );
   });
 
   it('references Revenue Core ledgers instead of duplicating them', () => {
