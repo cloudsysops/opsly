@@ -1,7 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createHmac } from 'node:crypto';
 
-const consumeMock = vi.fn();
+const { consumeMock } = vi.hoisted(() => ({
+  consumeMock: vi.fn(),
+}));
 
 vi.mock('../revenue/health-travel-consumer', () => ({
   consumeHealthTravelRevenueEvent: consumeMock,
