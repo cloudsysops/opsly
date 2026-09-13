@@ -50,8 +50,11 @@ function assertSafe(meta) {
     requireBooleanField(meta, key);
   }
 
-  if (meta.agent !== 'local_opencode') {
-    throw new Error('GitHub Agent Queue currently permits only agent=local_opencode');
+  const allowedAgents = new Set(['local_opencode', 'local_hermes', 'local_openclaw']);
+  if (!allowedAgents.has(String(meta.agent))) {
+    throw new Error(
+      'GitHub Agent Queue permits only governed local_opencode, local_hermes, or local_openclaw'
+    );
   }
   if (!['pending','ready'].includes(String(meta.status))) {
     throw new Error('status must be pending or ready');
@@ -133,7 +136,7 @@ const payload = {
   tenant_slug: 'local',
   request_id: requestId,
   idempotency_key: requestId,
-  agent: 'local_opencode',
+  agent: String(meta.agent),
   agent_role: 'review',
   max_steps: Number(meta.max_steps || 6),
   goal: String(meta.title || meta.id),
@@ -145,6 +148,9 @@ const payload = {
     github_run_id: process.env.GITHUB_RUN_ID || null,
     workpack_id: meta.id,
     workpack_file: file,
+    workstream: meta.workstream || null,
+    conflict_key: meta.conflict_key || null,
+    depends_on: meta.depends_on || null,
     priority: meta.priority,
     owner: meta.owner,
     environment: meta.environment,
@@ -180,8 +186,13 @@ if (submit.body.prepared_only === true || submit.body.job_id === null || submit.
 const jobId = String(submit.body.job_id);
 console.log(`DISPATCHED job_id=${jobId}`);
 
-const pollSeconds = Number(process.env.OPSLY_GITHUB_AGENT_POLL_SECONDS || 300);
 const requireCompletion = process.env.OPSLY_GITHUB_AGENT_REQUIRE_COMPLETION === 'true';
+if (!requireCompletion) {
+  console.log(`DISPATCHED_PENDING job_id=${jobId} (queued for governed parallel execution)`);
+  process.exit(0);
+}
+
+const pollSeconds = Number(process.env.OPSLY_GITHUB_AGENT_POLL_SECONDS || 300);
 const expectedMarker = (process.env.OPSLY_GITHUB_AGENT_EXPECT_MARKER || '').trim();
 const deadline = Date.now() + pollSeconds * 1000;
 while (Date.now() < deadline) {
@@ -227,8 +238,4 @@ while (Date.now() < deadline) {
   }
 }
 
-if (requireCompletion) {
-  throw new Error(`job did not reach a terminal state within ${pollSeconds}s: ${jobId}`);
-}
-
-console.log(`DISPATCHED_PENDING job_id=${jobId} (task remains queued or active)`);
+throw new Error(`job did not reach a terminal state within ${pollSeconds}s: ${jobId}`);
