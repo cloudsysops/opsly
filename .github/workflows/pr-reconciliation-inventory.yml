@@ -36,11 +36,19 @@ jobs:
           RECONCILIATION_OUTPUT: pr-reconciliation-inventory.json
         run: node scripts/ops/pr-reconciliation-inventory.mjs
 
-      - name: Publish inventory artifact
+      - name: Build supervised reconciliation workpacks
+        env:
+          RECONCILIATION_INVENTORY: pr-reconciliation-inventory.json
+          RECONCILIATION_WORKPACKS: pr-reconciliation-workpacks.json
+        run: node scripts/ops/pr-reconciliation-workpacks.mjs
+
+      - name: Publish reconciliation artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: pr-reconciliation-inventory
-          path: pr-reconciliation-inventory.json
+          name: pr-reconciliation
+          path: |
+            pr-reconciliation-inventory.json
+            pr-reconciliation-workpacks.json
           if-no-files-found: error
           retention-days: 7
 
@@ -50,6 +58,7 @@ jobs:
           node <<'NODE' >> "$GITHUB_STEP_SUMMARY"
           const fs = require('fs');
           const inventory = JSON.parse(fs.readFileSync('pr-reconciliation-inventory.json', 'utf8'));
+          const workpacks = JSON.parse(fs.readFileSync('pr-reconciliation-workpacks.json', 'utf8'));
           console.log('# PR Reconciliation Inventory');
           console.log('');
           console.log(`Generated: ${inventory.generatedAt}`);
@@ -60,9 +69,14 @@ jobs:
             console.log(`| ${lane} | ${count} |`);
           }
           console.log('');
+          console.log(`Actionable supervised workpacks: **${workpacks.count}**`);
+          console.log(`Recommended maximum parallel workers: **${workpacks.maxParallelismRecommendation}**`);
+          console.log('');
           console.log('## Safety invariants');
-          console.log('- Read-only inventory only');
+          console.log('- Read-only inventory and workpack generation only');
           console.log('- No auto-merge');
           console.log('- No production deploy');
+          console.log('- No safe-daytime or hotfix-prod application');
           console.log('- Peskids/production/runtime-sensitive surfaces are classified PROTECTED');
+          console.log('- Every workpack has one exclusive PR/branch lock key and expected head SHA');
           NODE
