@@ -46,31 +46,18 @@ async function gh(path) {
   return response.json();
 }
 
+async function listPaged(path) {
+  const values = [];
+  for (let page = 1; ; page += 1) {
+    const separator = path.includes('?') ? '&' : '?';
+    const batch = await gh(`${path}${separator}per_page=100&page=${page}`);
+    values.push(...batch);
+    if (batch.length < 100) return values;
+  }
+}
+
 async function listOpenPulls() {
-  const pulls = [];
-  for (let page = 1; ; page += 1) {
-    const batch = await gh(`/repos/${owner}/${repo}/pulls?state=open&per_page=100&page=${page}`);
-    pulls.push(...batch);
-    if (batch.length < 100) return pulls;
-  }
-}
-
-async function listAllReviews(prNumber) {
-  const reviews = [];
-  for (let page = 1; ; page += 1) {
-    const batch = await gh(`/repos/${owner}/${repo}/pulls/${prNumber}/reviews?per_page=100&page=${page}`);
-    reviews.push(...batch);
-    if (batch.length < 100) return reviews;
-  }
-}
-
-async function listIssueComments(prNumber) {
-  const comments = [];
-  for (let page = 1; ; page += 1) {
-    const batch = await gh(`/repos/${owner}/${repo}/issues/${prNumber}/comments?per_page=100&page=${page}`);
-    comments.push(...batch);
-    if (batch.length < 100) return comments;
-  }
+  return listPaged(`/repos/${owner}/${repo}/pulls?state=open`);
 }
 
 function containsProtectedSurface(pull, files) {
@@ -94,8 +81,6 @@ function containsProtectedSurface(pull, files) {
 function supersededByReference(pull, comments, openPullNumbers) {
   const haystack = [pull.body || '', ...comments.map((comment) => comment.body || '')].join('\n');
   const matches = [...haystack.matchAll(/supersed(?:e|es|ed|ing)[^#\n]{0,80}#(\d+)/gi)];
-  // This PR is superseded only if another open PR explicitly points at it.
-  // The reverse relation is handled in the second pass.
   return matches.map((match) => Number(match[1])).filter((number) => openPullNumbers.has(number));
 }
 
@@ -112,9 +97,9 @@ function unresolvedReviewState(reviews) {
 }
 
 function checkSummary(checkRuns) {
-  const requiredLike = checkRuns.filter((run) => !['skipped', 'neutral'].includes(run.conclusion));
-  const pending = requiredLike.filter((run) => !run.conclusion || ['queued', 'in_progress', 'waiting', 'pending'].includes(run.status));
-  const failed = requiredLike.filter((run) => ['failure', 'timed_out', 'cancelled', 'action_required', 'startup_failure'].includes(run.conclusion));
+  const relevant = checkRuns.filter((run) => !['skipped', 'neutral'].includes(run.conclusion));
+  const pending = relevant.filter((run) => !run.conclusion || ['queued', 'in_progress', 'waiting', 'pending'].includes(run.status));
+  const failed = relevant.filter((run) => ['failure', 'timed_out', 'cancelled', 'action_required', 'startup_failure'].includes(run.conclusion));
   return {
     total: checkRuns.length,
     pending: pending.map((run) => run.name),
@@ -141,9 +126,9 @@ const records = [];
 for (const pull of pulls) {
   const [detail, files, reviews, comments, compare, checks] = await Promise.all([
     gh(`/repos/${owner}/${repo}/pulls/${pull.number}`),
-    gh(`/repos/${owner}/${repo}/pulls/${pull.number}/files?per_page=100`),
-    listAllReviews(pull.number),
-    listIssueComments(pull.number),
+    listPaged(`/repos/${owner}/${repo}/pulls/${pull.number}/files`),
+    listPaged(`/repos/${owner}/${repo}/pulls/${pull.number}/reviews`),
+    listPaged(`/repos/${owner}/${repo}/issues/${pull.number}/comments`),
     gh(`/repos/${owner}/${repo}/compare/${encodeURIComponent(pull.base.ref)}...${encodeURIComponent(pull.head.ref)}`),
     gh(`/repos/${owner}/${repo}/commits/${pull.head.sha}/check-runs?per_page=100`),
   ]);
