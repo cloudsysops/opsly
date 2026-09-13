@@ -3,8 +3,7 @@ import { createHmac, randomUUID } from 'node:crypto';
 
 const ingressUrl = process.env.HEALTH_TRAVEL_INGRESS_URL?.trim();
 const secret = process.env.HEALTH_TRAVEL_EVENT_WEBHOOK_SECRET?.trim();
-const tenantId =
-  process.env.HEALTH_TRAVEL_TENANT_ID?.trim() || 'health-travel-colombia';
+const tenantId = process.env.HEALTH_TRAVEL_TENANT_ID?.trim();
 const providerId =
   process.env.HT_SMOKE_PROVIDER_ID?.trim() || 'smoke-provider-001';
 const packageId =
@@ -12,9 +11,9 @@ const packageId =
 const requireResolvedCatalog =
   process.env.HT_SMOKE_REQUIRE_RESOLVED_CATALOG === 'true';
 
-if (!ingressUrl || !secret) {
+if (!ingressUrl || !secret || !tenantId) {
   console.error(
-    'Missing HEALTH_TRAVEL_INGRESS_URL or HEALTH_TRAVEL_EVENT_WEBHOOK_SECRET'
+    'Missing HEALTH_TRAVEL_INGRESS_URL, HEALTH_TRAVEL_EVENT_WEBHOOK_SECRET, or HEALTH_TRAVEL_TENANT_ID'
   );
   process.exit(2);
 }
