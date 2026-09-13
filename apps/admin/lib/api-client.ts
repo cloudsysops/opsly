@@ -727,3 +727,17 @@ export async function getHealthTravelRuntimeSummary(
     `/api/admin/health-travel/summary?${search.toString()}`
   );
 }
+
+export type HealthTravelCatalogSyncResponse = {
+  ok: boolean;
+  tenant_slug: string;
+  source_generated_at: string;
+  providers: { created: number; updated: number };
+  offers: { created: number; updated: number; skipped_unassigned: number };
+};
+
+export async function syncHealthTravelCatalog(): Promise<HealthTravelCatalogSyncResponse> {
+  return request<HealthTravelCatalogSyncResponse>('/api/admin/health-travel/sync-catalog', {
+    method: 'POST',
+  });
+}
