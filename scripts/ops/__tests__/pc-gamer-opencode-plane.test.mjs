@@ -42,3 +42,12 @@ test('PC Gamer OpenCode bridge lifecycle is systemd-managed and contains no nohu
   assert.doesNotMatch(source, /\bdisown\b/);
   assert.doesNotMatch(source, /pkill -f/);
 });
+
+
+test('PC Gamer bridge stays loopback-only because worker uses host networking', async () => {
+  const source = await readFile(scriptFile, 'utf8');
+  assert.match(source, /OPENCODE_BIND="\$\{OPSLY_OPENCODE_BIND:-127\.0\.0\.1\}"/);
+  assert.match(source, /bridge is loopback-only/);
+  assert.match(source, /bridge must stay loopback-only/);
+  assert.doesNotMatch(source, /set OPSLY_OPENCODE_BIND to the Gamer Tailscale IP/);
+});
