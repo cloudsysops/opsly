@@ -1,0 +1,12 @@
+{
+  "name": "Opsly Games",
+  "short_name": "Games",
+  "description": "Play, discover and remix games in Opsly Games.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#060812",
+  "theme_color": "#070914",
+  "categories": ["games", "entertainment", "education"]
+}
