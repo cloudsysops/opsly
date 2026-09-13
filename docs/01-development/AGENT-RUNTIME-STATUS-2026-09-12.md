@@ -22,7 +22,7 @@ This is an operational snapshot. Architecture remains canonical in
 - bridge/orchestrator health polling replaced fixed startup sleeps;
 - Mac health deadline is configurable and bounded;
 - `ai-board` clean-build coverage was added to main API/orchestrator/release paths;
-- background runtime workpacks 045–051 were created;
+- background runtime workpacks 045–052 were created;
 - write-capable workpacks 046–049 and 051 are held pending typed approval;
 - Gamer physical acceptance workpack 050 is pending on the Gamer node.
 
@@ -65,6 +65,22 @@ Purpose:
 - BullMQ `returnvalue` is preserved.
 
 This PR is queued through `night-merge` after green checks.
+
+
+### OpenClaw canonical adapter — staged
+
+Current branch work prepares OpenClaw as a first-class external runtime without enabling autonomous routing:
+
+- Opsly kind: `local_openclaw`;
+- bridge: `:5012`;
+- one-shot entrypoint: `openclaw agent exec`;
+- authenticated generic CLI bridge;
+- Session Manager / ephemeral tmux lifecycle;
+- registry and service routing disabled until physical acceptance;
+- Mac default worker allowlist excludes `local_openclaw`;
+- acceptance workpack 052 is held and requires exact `OPENCLAW_OK`.
+
+This deliberately replaces the older persistent/superagents bootstrap direction.
 
 ## opsly-control
 
@@ -109,6 +125,7 @@ Recovery is documented in the private control repo:
 049  held     runtime adapter documentation changes
 050  pending  Gamer-only physical acceptance
 051  held     typed write-approval chain
+052  held     OpenClaw physical acceptance
 ```
 
 ## Definition of done for the current runtime milestone

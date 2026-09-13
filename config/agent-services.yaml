@@ -180,6 +180,26 @@ services:
     health_check_interval_ms: 60000
     description: "Goose local CLI bridge service"
 
+
+  # OpenClaw headless one-shot bridge.
+  # Uses `openclaw agent exec` through the generic authenticated CLI bridge.
+  openclaw:
+    enabled: false
+    url: "http://localhost:5012"
+    env_var: "OPSLY_OPENCLAW_AGENT_URL"
+    type: "http"
+    agent_role: "reviewer"
+    capabilities:
+      - research
+      - planning
+      - documentation
+      - tool-use
+    timeout_ms: 300000
+    retry_attempts: 1
+    retry_backoff_ms: 3000
+    health_check_interval_ms: 60000
+    description: "OpenClaw headless agent exec local CLI bridge service"
+
   # Playwright frontend QA bridge
   playwright:
     enabled: true
@@ -232,6 +252,7 @@ environments:
     aider: "http://localhost:5009"
     goose: "http://localhost:5010"
     playwright: "http://localhost:5011"
+    openclaw: "http://localhost:5012"
 
   local:
     cursor: "http://localhost:5001"
@@ -245,6 +266,7 @@ environments:
     aider: "http://localhost:5009"
     goose: "http://localhost:5010"
     playwright: "http://localhost:5011"
+    openclaw: "http://localhost:5012"
 
   tailscale:
     cursor: "http://opsly-mac2011:5001"     # MacBook via Tailscale
@@ -256,6 +278,7 @@ environments:
     aider: "http://opsly-admin:5009"
     goose: "http://opsly-admin:5010"
     playwright: "http://opsly-admin:5011"
+    openclaw: "http://opsly-admin:5012"
     # Orchestrator stays on VPS via normal config
 
   remote:
@@ -267,6 +290,7 @@ environments:
     aider: "http://192.168.1.100:5009"
     goose: "http://192.168.1.100:5010"
     playwright: "http://192.168.1.100:5011"
+    openclaw: "http://192.168.1.100:5012"
 
   docker:
     cursor: "http://cursor-container:5001"
@@ -277,3 +301,4 @@ environments:
     aider: "http://aider-container:5009"
     goose: "http://goose-container:5010"
     playwright: "http://playwright-container:5011"
+    openclaw: "http://openclaw-container:5012"

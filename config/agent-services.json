@@ -4,7 +4,9 @@
     "enabled": true,
     "description": "All agents use brain:research for 60-70% token savings",
     "token_savings_target": "60-70%",
-    "mcp_tools_required": ["brain:research"],
+    "mcp_tools_required": [
+      "brain:research"
+    ],
     "rule_hierarchy": [
       "1. Query exists in docs/brain/ → use brain:research",
       "2. Search code locally → grep/find",
@@ -20,7 +22,10 @@
       "how does",
       "funcionamiento"
     ],
-    "onboarding_skills": ["opsly-context", "opsly-brain-researcher"]
+    "onboarding_skills": [
+      "opsly-context",
+      "opsly-brain-researcher"
+    ]
   },
   "services": {
     "local_cursor": {
@@ -141,6 +146,16 @@
       "timeoutMs": 300000,
       "retries": 1,
       "description": "playwright portal E2E and browser QA local runner"
+    },
+    "local_openclaw": {
+      "enabled": false,
+      "external_cli": "openclaw",
+      "url": "http://localhost:5012",
+      "envUrl": "OPSLY_OPENCLAW_AGENT_URL",
+      "type": "http",
+      "timeoutMs": 300000,
+      "retries": 1,
+      "description": "OpenClaw headless agent exec local CLI bridge service"
     }
   }
 }

@@ -335,6 +335,7 @@ export const OPSLY_LOCAL_AGENT_EXTERNAL_CLI: Record<LocalAgentKind, string> = {
   local_aider: 'aider',
   local_goose: 'goose',
   local_playwright: 'playwright',
+  local_openclaw: 'openclaw',
 };
 
 /** Map CLI-style short names to canonical Opsly service ids (`local_*`). */
@@ -350,6 +351,7 @@ export const EXTERNAL_CLI_TO_OPSLY_LOCAL_AGENT: Readonly<Record<string, LocalAge
   aider: 'local_aider',
   goose: 'local_goose',
   playwright: 'local_playwright',
+  openclaw: 'local_openclaw',
 };
 
 /** Canonical Opsly id for a local HTTP bridge (BullMQ job name = this string). */
@@ -364,7 +366,8 @@ export type LocalAgentKind =
   | 'local_decepticon'
   | 'local_aider'
   | 'local_goose'
-  | 'local_playwright';
+  | 'local_playwright'
+  | 'local_openclaw';
 
 export const LOCAL_AGENT_KINDS: readonly LocalAgentKind[] = [
   'local_cursor',
@@ -378,6 +381,7 @@ export const LOCAL_AGENT_KINDS: readonly LocalAgentKind[] = [
   'local_aider',
   'local_goose',
   'local_playwright',
+  'local_openclaw',
 ];
 
 /**
@@ -419,6 +423,7 @@ export function localAgentKindToWorkerConcurrencyKey(kind: LocalAgentKind): Work
     local_aider: 'local-aider',
     local_goose: 'local-goose',
     local_playwright: 'local-playwright',
+    local_openclaw: 'local-openclaw',
   };
   return map[kind];
 }
