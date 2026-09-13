@@ -149,6 +149,21 @@ async function getOrCreateReceipt(
   }
   if (existing.data) return existing.data;
 
+  if (plan.receipt.dedupeKey) {
+    const existingByDedupe = await platform
+      .from('revenue_event_receipts')
+      .select('id, processing_status, attribution_id, referral_id, commission_event_id')
+      .eq('tenant_id', tenantId)
+      .eq('source_system', event.sourceSystem)
+      .eq('dedupe_key', plan.receipt.dedupeKey)
+      .maybeSingle();
+
+    if (existingByDedupe.error) {
+      throw new Error(`Revenue receipt dedupe lookup failed: ${existingByDedupe.error.message}`);
+    }
+    if (existingByDedupe.data) return existingByDedupe.data;
+  }
+
   const inserted = await platform
     .from('revenue_event_receipts')
     .insert({
@@ -169,8 +184,8 @@ async function getOrCreateReceipt(
 
   if (!inserted.error && inserted.data) return inserted.data;
 
-  // A concurrent delivery may have won the unique(event) race.
-  const raced = await platform
+  // A concurrent delivery may have won either unique key race.
+  const racedByEvent = await platform
     .from('revenue_event_receipts')
     .select('id, processing_status, attribution_id, referral_id, commission_event_id')
     .eq('tenant_id', tenantId)
@@ -178,12 +193,29 @@ async function getOrCreateReceipt(
     .eq('external_event_id', event.externalEventId)
     .maybeSingle();
 
-  if (raced.error || !raced.data) {
-    throw new Error(
-      `Revenue receipt insert failed: ${inserted.error?.message ?? raced.error?.message ?? 'unknown'}`
-    );
+  if (racedByEvent.error) {
+    throw new Error(`Revenue receipt race lookup failed: ${racedByEvent.error.message}`);
   }
-  return raced.data;
+  if (racedByEvent.data) return racedByEvent.data;
+
+  if (plan.receipt.dedupeKey) {
+    const racedByDedupe = await platform
+      .from('revenue_event_receipts')
+      .select('id, processing_status, attribution_id, referral_id, commission_event_id')
+      .eq('tenant_id', tenantId)
+      .eq('source_system', event.sourceSystem)
+      .eq('dedupe_key', plan.receipt.dedupeKey)
+      .maybeSingle();
+
+    if (racedByDedupe.error) {
+      throw new Error(`Revenue receipt dedupe race lookup failed: ${racedByDedupe.error.message}`);
+    }
+    if (racedByDedupe.data) return racedByDedupe.data;
+  }
+
+  throw new Error(
+    `Revenue receipt insert failed: ${inserted.error?.message ?? 'unknown'}`
+  );
 }
 
 async function upsertAttribution(
@@ -212,7 +244,8 @@ async function upsertAttribution(
         campaign: plan.attribution.campaign,
         channel: plan.attribution.channel,
       })
-      .eq('id', existing.data.id);
+      .eq('id', existing.data.id)
+      .eq('tenant_id', tenantId);
     if (update.error) throw new Error(`Attribution update failed: ${update.error.message}`);
     return String(existing.data.id);
   }
@@ -233,10 +266,24 @@ async function upsertAttribution(
     .select('id')
     .single();
 
-  if (inserted.error || !inserted.data?.id) {
-    throw new Error(`Attribution insert failed: ${inserted.error?.message ?? 'missing id'}`);
+  if (!inserted.error && inserted.data?.id) {
+    return String(inserted.data.id);
   }
-  return String(inserted.data.id);
+
+  // Another delivery may have created the same tenant-scoped attribution concurrently.
+  const raced = await platform
+    .from('revenue_attributions')
+    .select('id')
+    .eq('tenant_id', tenantId)
+    .eq('attribution_key', plan.attribution.attributionKey)
+    .maybeSingle();
+
+  if (raced.error || !raced.data?.id) {
+    throw new Error(
+      `Attribution insert failed: ${inserted.error?.message ?? raced.error?.message ?? 'missing id'}`
+    );
+  }
+  return String(raced.data.id);
 }
 
 async function resolvePartner(platform: PlatformDb, tenantId: string, externalRef: string) {
@@ -305,7 +352,8 @@ async function upsertReferral(params: {
           (status === 'converted' ? referralPlan.convertedAt ?? params.event.occurredAt : null),
         currency: params.event.data.currency?.toUpperCase() || undefined,
       })
-      .eq('id', row.id);
+      .eq('id', row.id)
+      .eq('tenant_id', params.tenantId);
     if (update.error) throw new Error(`Referral update failed: ${update.error.message}`);
     return row.id;
   }
@@ -329,10 +377,25 @@ async function upsertReferral(params: {
     .select('id')
     .single();
 
-  if (inserted.error || !inserted.data?.id) {
-    throw new Error(`Referral insert failed: ${inserted.error?.message ?? 'missing id'}`);
+  if (!inserted.error && inserted.data?.id) {
+    return String(inserted.data.id);
   }
-  return String(inserted.data.id);
+
+  // Preserve idempotency when concurrent deliveries race on the referral unique key.
+  const raced = await params.platform
+    .from('revenue_referrals')
+    .select('id')
+    .eq('tenant_id', params.tenantId)
+    .eq('partner_id', params.partnerId)
+    .eq('external_ref', referralPlan.externalRef)
+    .maybeSingle();
+
+  if (raced.error || !raced.data?.id) {
+    throw new Error(
+      `Referral insert failed: ${inserted.error?.message ?? raced.error?.message ?? 'missing id'}`
+    );
+  }
+  return String(raced.data.id);
 }
 
 async function maybeCreateCommissionEvent(params: {
@@ -367,6 +430,7 @@ async function maybeCreateCommissionEvent(params: {
     .select('id')
     .eq('tenant_id', params.tenantId)
     .eq('referral_id', params.referralId)
+    .eq('source', 'smile-trip-care')
     .eq('external_ref', externalRef)
     .maybeSingle();
 
@@ -396,12 +460,28 @@ async function maybeCreateCommissionEvent(params: {
     .select('id')
     .single();
 
-  if (inserted.error || !inserted.data?.id) {
+  if (!inserted.error && inserted.data?.id) {
+    return String(inserted.data.id);
+  }
+
+  // The migration enforces a unique tenant/referral/source/external_ref key.
+  // If another delivery won that race, return the canonical row instead of
+  // fabricating a duplicate estimate or failing a harmless retry.
+  const raced = await params.platform
+    .from('revenue_commission_events')
+    .select('id')
+    .eq('tenant_id', params.tenantId)
+    .eq('referral_id', params.referralId)
+    .eq('source', 'smile-trip-care')
+    .eq('external_ref', externalRef)
+    .maybeSingle();
+
+  if (raced.error || !raced.data?.id) {
     throw new Error(
-      `Commission event insert failed: ${inserted.error?.message ?? 'missing id'}`
+      `Commission event insert failed: ${inserted.error?.message ?? raced.error?.message ?? 'missing id'}`
     );
   }
-  return String(inserted.data.id);
+  return String(raced.data.id);
 }
 
 export async function consumeHealthTravelRevenueEvent(
@@ -485,7 +565,8 @@ export async function consumeHealthTravelRevenueEvent(
       error_code: reconciliation[0] ?? null,
       metadata: { reconciliation_reasons: reconciliation },
     })
-    .eq('id', receipt.id);
+    .eq('id', receipt.id)
+    .eq('tenant_id', tenantId);
 
   if (update.error) throw new Error(`Revenue receipt update failed: ${update.error.message}`);
 
