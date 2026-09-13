@@ -80,19 +80,29 @@ jobs:
 
           PR_COUNT="$(gh pr list --repo "${{ github.repository }}" \
             --head "${BRANCH}" --state open --json number --jq 'length')"
-          if [ "${PR_COUNT}" = "0" ]; then
-            PR_BODY="$(printf '%s\n\n%s\n\n%s' \
-              "Automated ESLint/Prettier fixes triggered by push to main." \
-              "Triggered by commit \`${SHA_SHORT}\`. Review before merging." \
-              "Workflow: ${RUN_URL}")"
-            gh pr create \
-              --repo "${{ github.repository }}" \
-              --base main \
-              --head "${BRANCH}" \
-              --title "chore: auto-fix code quality (${DATE} ${SHA_SHORT})" \
-              --body "${PR_BODY}"
-          else
+          if [ "${PR_COUNT}" != "0" ]; then
             echo "PR already open for ${BRANCH}; skipping."
+            exit 0
           fi
 
-          echo "✅ PR created (not direct push) for branch ${BRANCH}"
+          # Cap open auto-fix PRs to avoid unbounded noise under the night window.
+          OPEN_AUTOFIX="$(gh pr list --repo "${{ github.repository }}" \
+            --state open --search 'auto-fix/push in:head' --json number --jq 'length')"
+          if [ "${OPEN_AUTOFIX}" -ge 5 ]; then
+            echo "::notice::Skipping auto-fix PR: ${OPEN_AUTOFIX} already open. Cleanup first."
+            exit 0
+          fi
+
+          PR_BODY="$(printf '%s\n\n%s\n\n%s' \
+            "Automated ESLint/Prettier fixes triggered by push to main." \
+            "Triggered by commit \`${SHA_SHORT}\`. Review before merging." \
+            "Workflow: ${RUN_URL}")"
+          gh pr create \
+            --repo "${{ github.repository }}" \
+            --base main \
+            --head "${BRANCH}" \
+            --title "chore: auto-fix code quality (${DATE} ${SHA_SHORT})" \
+            --body "${PR_BODY}" \
+            --label "safe-daytime"
+
+          echo "✅ PR created (safe-daytime) for branch ${BRANCH}"
