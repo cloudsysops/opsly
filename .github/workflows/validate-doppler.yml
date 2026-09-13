@@ -7,16 +7,24 @@ name: Validate Doppler Config
 
 on:
   push:
-  pull_request:
+  # This job requires repository secrets. Use pull_request_target so the workflow
+  # executes trusted base-revision code instead of code controlled by the PR.
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   validate-doppler:
     runs-on: ubuntu-latest
-    # Repo-level secrets (DOPPLER_TOKEN_PRD/STG) are available in pull_request;
-    # restrict push runs to main to avoid redundant checks on every feature push.
-    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+    # Run for PR activity or pushes to main. Never execute PR-head code with Doppler secrets.
+    if: github.event_name == 'pull_request_target' || github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout trusted base revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          persist-credentials: false
 
       - name: Install Doppler CLI
         run: |
