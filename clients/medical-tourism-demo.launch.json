@@ -1,0 +1,75 @@
+{
+  "vertical_blueprint_id": "health-travel-colombia",
+  "tenant_slug": "medical-tourism-demo",
+  "business_name": "Medical Tourism Demo",
+  "industry": "health travel coordination",
+  "country": "CO",
+  "timezone": "America/Bogota",
+  "domain": "medical-tourism-demo.example.invalid",
+  "primary_email": "medical-tourism-demo@example.invalid",
+  "offer_type": "international_care_journey",
+  "lead_sources": ["synthetic-fixture"],
+  "crm_provider": "supabase-only",
+  "crm_pipeline_name": "Synthetic Health Travel Journey",
+  "landing_routes": ["/health-travel"],
+  "brand_basic": {
+    "tone": "bilingual, transparent, demo-only"
+  },
+  "form_fields": [
+    "traveler_name",
+    "origin_country",
+    "preferred_city",
+    "requested_service",
+    "preferred_dates",
+    "budget_range",
+    "consent_to_contact"
+  ],
+  "cta_text": "Run synthetic coordination demo",
+  "fallback_behavior": "Persist synthetic coordination events only; no external communication, booking, payment, or clinical action.",
+  "n8n_workflows": [],
+  "supabase_records": [
+    "platform.tenants",
+    "platform.revenue_partners",
+    "platform.revenue_offers",
+    "platform.revenue_attributions",
+    "platform.revenue_referrals",
+    "platform.revenue_commission_events",
+    "platform.revenue_event_receipts"
+  ],
+  "health_checks": [
+    "GET /api/admin/health-travel/summary",
+    "Revenue receipt query for tenant medical-tourism-demo"
+  ],
+  "smoke_tests": [
+    "Validate synthetic catalog fixture",
+    "Run signed seven-event golden path",
+    "Assert durable Revenue receipts",
+    "Assert unresolved mappings fail strict mode"
+  ],
+  "manual_steps": [
+    "Keep external payments disabled.",
+    "Keep external communications disabled.",
+    "Do not attach real patient or clinical data.",
+    "Do not promote this fixture to a public production tenant."
+  ],
+  "risk_notes": [
+    "Synthetic fixture only.",
+    "No diagnosis, prescribing, treatment selection, or clinical records.",
+    "No real provider identity or commission terms."
+  ],
+  "next_commands": [
+    "./scripts/provisioning/bootstrap-tenant.sh --launch clients/medical-tourism-demo.launch.json --dry-run",
+    "HEALTH_TRAVEL_TENANT_ID=medical-tourism-demo npm run smoke:health-travel:staging"
+  ],
+  "approval_boundary": "approval-first",
+  "extraction_ready": false,
+  "extraction_notes": "Sandbox exists only to validate provider -> catalog -> quote -> case -> booking mechanics before any real Colombia Health Journey tenant is created.",
+  "modules": ["health-travel"],
+  "pattern_ids": ["incubator-app"],
+  "wacrm": {
+    "enabled": false,
+    "public_url": "https://medical-tourism-demo.example.invalid",
+    "sync_twenty": "none",
+    "primary_whatsapp_provider": "none"
+  }
+}
