@@ -12,6 +12,7 @@ const [html, app] = await Promise.all([
 ]);
 
 const requiredIds = [
+  'install-games',
   'favorites-filter',
   'surprise-top',
   'surprise-game',
@@ -49,6 +50,7 @@ for (const id of requiredIds) {
 }
 
 const requiredHandlers = [
+  "document.querySelector('#install-games')?.addEventListener",
   "document.querySelector('#surprise-game').addEventListener",
   "document.querySelector('#surprise-top').addEventListener",
   "document.querySelector('#close-game').addEventListener",
@@ -92,6 +94,8 @@ for (const attrs of buttonTags) {
 }
 
 if (!html.includes('Opsly Games')) errors.push('missing-games-brand');
+if (!html.includes('rel="manifest"')) errors.push('missing-web-manifest');
+if (!app.includes("navigator.serviceWorker.register('./sw.js')")) errors.push('missing-service-worker-registration');
 if (!app.includes("id: 'astral-arena'")) errors.push('missing-astral-arena-first-party-game');
 if (!app.includes("playUrl: './astral-arena/'")) errors.push('wrong-astral-arena-route');
 
