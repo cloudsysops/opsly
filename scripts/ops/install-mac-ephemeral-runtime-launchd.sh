@@ -46,6 +46,7 @@ labels=(
   com.opsly.bridge.claude
   com.opsly.bridge.codex
   com.opsly.bridge.hermes
+  com.opsly.bridge.openclaw
 )
 
 bootout() {
@@ -131,6 +132,7 @@ write_plist com.opsly.bridge.opencode keepalive "npm run opsly:local-opencode-se
 write_plist com.opsly.bridge.claude keepalive "npm run opsly:local-claude-service"
 write_plist com.opsly.bridge.codex keepalive "npm run opsly:local-codex-service"
 write_plist com.opsly.bridge.hermes keepalive "npm run opsly:local-hermes-service"
+write_plist com.opsly.bridge.openclaw keepalive "npm run opsly:local-openclaw-service"
 
 if [[ "$DRY_RUN" == "1" ]]; then
   echo "[launchd] DRY-RUN generated plists in $DEST"
