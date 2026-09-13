@@ -19,10 +19,16 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
         </Link>
         {variant === 'marketing' ? (
           <div className="flex items-center gap-2 sm:gap-3">
-            <nav className="hidden items-center gap-5 text-sm font-semibold md:flex">
+            <nav className="flex items-center gap-2 text-sm font-semibold sm:gap-4">
+              <Link
+                href="/games"
+                className="inline-flex min-h-10 items-center rounded-full bg-[#E9F8F5] px-4 font-extrabold text-[#087D78] transition hover:bg-[#D6F1EC]"
+              >
+                Juego
+              </Link>
               <Link
                 href="/familias/login"
-                className="text-[#004C63] transition hover:text-[#2DB7B0]"
+                className="hidden text-[#004C63] transition hover:text-[#2DB7B0] md:inline-flex"
               >
                 Acceso familias
               </Link>
@@ -35,7 +41,7 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
               aria-label="Ver perfil de Peskids en Instagram"
             >
               <Instagram className="h-4 w-4 shrink-0 text-white" aria-hidden />
-              <span>Ver Instagram</span>
+              <span className="hidden sm:inline">Ver Instagram</span>
             </Link>
           </div>
         ) : null}
