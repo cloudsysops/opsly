@@ -12,8 +12,9 @@ on:
 jobs:
   validate-doppler:
     runs-on: ubuntu-latest
-    # Skip on non-main branches (feature branches don't have Doppler secrets configured)
-    if: github.ref == 'refs/heads/main'
+    # Repo-level secrets (DOPPLER_TOKEN_PRD/STG) are available in pull_request;
+    # restrict push runs to main to avoid redundant checks on every feature push.
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
 
