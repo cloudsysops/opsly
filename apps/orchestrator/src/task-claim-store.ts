@@ -11,6 +11,7 @@ import { localAgentQueue } from './queue.js';
 
 const CLAIM_KEY_PREFIX = 'opsly:dispatch-claim:v1';
 const REPOSITORY_LOCK_SCOPE = 'repository';
+const PATH_INDEX_KEY = `${CLAIM_KEY_PREFIX}:${REPOSITORY_LOCK_SCOPE}:path-index`;
 const DEFAULT_CLAIM_TTL_MS = 4 * 60 * 60 * 1000;
 const MIN_CLAIM_TTL_MS = 60_000;
 const MAX_CLAIM_TTL_MS = 8 * 60 * 60 * 1000;
@@ -200,28 +201,98 @@ export async function acquireTaskDispatchClaim(
   request: DispatchClaimRequest
 ): Promise<DispatchClaimResult> {
   const descriptors = buildDispatchClaimDescriptors(request);
-  const keys = descriptors.map((descriptor) => descriptorRedisKey(request.tenantSlug, descriptor));
+  const descriptorKeys = descriptors.map((descriptor) =>
+    descriptorRedisKey(request.tenantSlug, descriptor)
+  );
   const ttlMs = boundedTtlMs();
   const claimId = request.requestId;
   const values = descriptors.map((descriptor) => encodeOwner(claimId, request, descriptor));
+  const pathDescriptors = descriptors
+    .map((descriptor, index) => ({ descriptor, index: index + 1 }))
+    .filter(({ descriptor }) => descriptor.dimension === 'path');
 
+  // The repository-wide path index stores normalized path -> expiring descriptor key.
+  // Its hash fields need no independent TTL: every acquisition removes stale entries
+  // whose referenced descriptor key has expired. The entire overlap check + claim
+  // creation happens inside one Lua script, so ancestor/descendant path ownership is
+  // atomic rather than a best-effort preflight.
   const script = `
-    for i = 1, #KEYS do
+    local ttl = tonumber(ARGV[1])
+    local descriptorCount = tonumber(ARGV[2])
+    local pathIndexKey = KEYS[descriptorCount + 1]
+
+    local function overlaps(a, b)
+      if a == b then return true end
+      if string.len(a) < string.len(b)
+        and string.sub(b, 1, string.len(a)) == a
+        and string.sub(b, string.len(a) + 1, string.len(a) + 1) == '/' then
+        return true
+      end
+      if string.len(b) < string.len(a)
+        and string.sub(a, 1, string.len(b)) == b
+        and string.sub(a, string.len(b) + 1, string.len(b) + 1) == '/' then
+        return true
+      end
+      return false
+    end
+
+    for i = 1, descriptorCount do
       local current = redis.call('GET', KEYS[i])
       if current then
         return {0, i, current}
       end
     end
-    for i = 1, #KEYS do
-      redis.call('PSETEX', KEYS[i], ARGV[1], ARGV[i + 1])
+
+    local pathCount = tonumber(ARGV[descriptorCount + 3])
+    local indexed = redis.call('HGETALL', pathIndexKey)
+    for e = 1, #indexed, 2 do
+      local existingPath = indexed[e]
+      local existingKey = indexed[e + 1]
+      local existingOwner = redis.call('GET', existingKey)
+      if not existingOwner then
+        redis.call('HDEL', pathIndexKey, existingPath)
+      else
+        for p = 1, pathCount do
+          local pairBase = descriptorCount + 4 + ((p - 1) * 2)
+          local requestDescriptorIndex = tonumber(ARGV[pairBase])
+          local requestedPath = ARGV[pairBase + 1]
+          if overlaps(existingPath, requestedPath) then
+            return {0, requestDescriptorIndex, existingOwner}
+          end
+        end
+      end
     end
-    return {1, #KEYS, ''}
+
+    for i = 1, descriptorCount do
+      redis.call('PSETEX', KEYS[i], ttl, ARGV[i + 2])
+    end
+
+    for p = 1, pathCount do
+      local pairBase = descriptorCount + 4 + ((p - 1) * 2)
+      local requestDescriptorIndex = tonumber(ARGV[pairBase])
+      local requestedPath = ARGV[pairBase + 1]
+      redis.call('HSET', pathIndexKey, requestedPath, KEYS[requestDescriptorIndex])
+    end
+
+    return {1, descriptorCount, ''}
   `;
 
   const client = (await localAgentQueue.client) as unknown as RedisLike;
-  const raw = (await client.eval(script, keys.length, ...keys, ttlMs, ...values)) as
-    | [number | string, number | string, string]
-    | unknown[];
+  const pathArgs = pathDescriptors.flatMap(({ descriptor, index }) => [
+    String(index),
+    descriptor.value,
+  ]);
+  const raw = (await client.eval(
+    script,
+    descriptorKeys.length + 1,
+    ...descriptorKeys,
+    PATH_INDEX_KEY,
+    ttlMs,
+    descriptorKeys.length,
+    ...values,
+    pathDescriptors.length,
+    ...pathArgs
+  )) as [number | string, number | string, string] | unknown[];
   const acquired = Number(raw?.[0]) === 1;
 
   if (!acquired) {
@@ -253,6 +324,118 @@ export async function acquireTaskDispatchClaim(
       acquiredAt: acquiredAt.toISOString(),
       expiresAt: new Date(acquiredAt.getTime() + ttlMs).toISOString(),
     },
+  };
+}
+
+export async function renewTaskDispatchClaim(
+  lease: DispatchClaimLease
+): Promise<{ renewed: boolean; renewedKeys: number; expiresAt: string }> {
+  if (lease.version !== DISPATCH_CLAIM_VERSION || !lease.claimId.trim()) {
+    return { renewed: false, renewedKeys: 0, expiresAt: lease.expiresAt };
+  }
+  const keys = lease.descriptors.map((descriptor) =>
+    descriptorRedisKey(lease.tenantSlug, descriptor)
+  );
+  if (keys.length === 0) {
+    return { renewed: false, renewedKeys: 0, expiresAt: lease.expiresAt };
+  }
+
+  const ttlMs = boundedTtlMs();
+  const script = `
+    local prefix = ARGV[1] .. '|'
+    for i = 1, #KEYS do
+      local current = redis.call('GET', KEYS[i])
+      if not current or string.sub(current, 1, string.len(prefix)) ~= prefix then
+        return 0
+      end
+    end
+    for i = 1, #KEYS do
+      redis.call('PEXPIRE', KEYS[i], ARGV[2])
+    end
+    return #KEYS
+  `;
+  const client = (await localAgentQueue.client) as unknown as RedisLike;
+  const renewedKeys = Number(
+    await client.eval(script, keys.length, ...keys, lease.claimId, ttlMs)
+  );
+  return {
+    renewed: renewedKeys === keys.length,
+    renewedKeys,
+    expiresAt: new Date(Date.now() + ttlMs).toISOString(),
+  };
+}
+
+export async function renewQueuedDispatchClaims(): Promise<{
+  scanned: number;
+  renewed: number;
+  lost: number;
+}> {
+  const jobs = await localAgentQueue.getJobs(
+    ['waiting', 'active', 'delayed', 'prioritized', 'waiting-children'],
+    0,
+    999,
+    true
+  );
+  let renewed = 0;
+  let lost = 0;
+
+  for (const job of jobs) {
+    const data =
+      typeof job.data === 'object' && job.data !== null
+        ? (job.data as Record<string, unknown>)
+        : {};
+    const payload =
+      typeof data.payload === 'object' && data.payload !== null
+        ? (data.payload as Record<string, unknown>)
+        : {};
+    const context =
+      typeof payload.context === 'object' && payload.context !== null
+        ? (payload.context as Record<string, unknown>)
+        : {};
+    const lease = parseDispatchClaimLease(context.dispatch_claim);
+    if (!lease) continue;
+
+    const result = await renewTaskDispatchClaim(lease);
+    if (result.renewed) renewed += 1;
+    else lost += 1;
+  }
+
+  return { scanned: jobs.length, renewed, lost };
+}
+
+export function startDispatchClaimHeartbeatLoop(
+  intervalMs = Math.min(60_000, Math.max(10_000, Math.floor(boundedTtlMs() / 3)))
+): () => void {
+  let running = false;
+  let stopped = false;
+
+  const tick = async (): Promise<void> => {
+    if (running || stopped) return;
+    running = true;
+    try {
+      const result = await renewQueuedDispatchClaims();
+      if (result.lost > 0) {
+        console.error(
+          `[dispatch-claim] lost ownership for ${result.lost} queued/active job(s); workers will fail closed`
+        );
+      }
+    } catch (error) {
+      console.error(
+        '[dispatch-claim] heartbeat sweep failed',
+        error instanceof Error ? error.message : String(error)
+      );
+    } finally {
+      running = false;
+    }
+  };
+
+  const timer = setInterval(() => void tick(), intervalMs);
+  timer.unref?.();
+  void tick();
+
+  return () => {
+    stopped = true;
+    clearInterval(timer);
   };
 }
 
