@@ -18,7 +18,7 @@ var aura_index := 0
 
 const MODES := [
     {"id": "SINGLE_PLAYER", "label": "1 jugador · Guardián + compañero"},
-    {"id": "SISTERS_COOP", "label": "2 jugadores local · Arena + Brissa + compañero"},
+    {"id": "SISTERS_COOP", "label": "1 jugador · Arena + Brissa + compañero"},
 ]
 
 const GUARDIANS := [
@@ -124,7 +124,7 @@ func _refresh_summary() -> void:
     var guardian: Dictionary = GUARDIANS[guardian_index]
     var companion := _selected_companion()
     var aura: Dictionary = AURAS[aura_index]
-    var mode_text := "Arena + Brissa cooperativo" if mode_index == 1 else str(guardian["label"])
+    var mode_text := "Arena + Brissa en equipo · 1 jugador" if mode_index == 1 else str(guardian["label"])
     var player_name := nickname_input.text.strip_edges()
     var companion_name := companion_name_input.text.strip_edges()
 
