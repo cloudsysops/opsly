@@ -5,10 +5,7 @@ import { useMemo } from 'react';
 import useSWR from 'swr';
 
 import { ComputeWorkersPanel } from '@/components/ComputeWorkersPanel';
-import {
-  LocalNodesPanel,
-  type RuntimeNodesPayload,
-} from '@/components/LocalNodesPanel';
+import { LocalNodesPanel, type RuntimeNodesPayload } from '@/components/LocalNodesPanel';
 import { getBaseUrl } from '@/lib/api-client';
 import type {
   AgentTeamsResponse,
@@ -148,27 +145,27 @@ export function MissionControlCockpit() {
   const { data: orchestratorData } = useSWR<OrchestratorStatus>(
     `${baseUrl}/api/admin/mission-control/orchestrator`,
     fetcher,
-    { refreshInterval: 5000 },
+    { refreshInterval: 5000 }
   );
   const { data: openClawData } = useSWR<OpenClawSnapshot>(
     `${baseUrl}/api/admin/mission-control/openclaw`,
     fetcher,
-    { refreshInterval: 3000 },
+    { refreshInterval: 3000 }
   );
   const { data: teamsData } = useSWR<AgentTeamsResponse>(
     `${baseUrl}/api/admin/mission-control/teams`,
     fetcher,
-    { refreshInterval: 10000 },
+    { refreshInterval: 10000 }
   );
   const { data: runtimeData } = useSWR<RuntimeNodesPayload>(
     `${baseUrl}/api/runtime/nodes/status`,
     fetcher,
-    { refreshInterval: 5000 },
+    { refreshInterval: 5000 }
   );
   const { data: computeData } = useSWR<ComputeWorkersPayload>(
     `${baseUrl}/api/admin/compute-workers`,
     fetcher,
-    { refreshInterval: 10000 },
+    { refreshInterval: 10000 }
   );
 
   const queueWaiting = orchestratorData?.queue.waiting ?? 0;
@@ -180,7 +177,7 @@ export function MissionControlCockpit() {
   const tmuxSessionCount = runtimeData?.sessionCount ?? 0;
   const workerCount = Object.keys(orchestratorData?.workers ?? {}).length;
   const activeWorkerCount = Object.values(orchestratorData?.workers ?? {}).filter(
-    (worker) => worker.active > 0,
+    (worker) => worker.active > 0
   ).length;
   const teams = teamsData?.teams ?? [];
   const onlineTeams = teams.filter((team) => team.status === 'active').length;
@@ -188,10 +185,7 @@ export function MissionControlCockpit() {
   const policyViolations = openClawData?.recent_policy_violations.length ?? 0;
 
   const healthyIdle =
-    aiRuntimeCount === 0 &&
-    tmuxSessionCount === 0 &&
-    queueActive === 0 &&
-    policyViolations === 0;
+    aiRuntimeCount === 0 && tmuxSessionCount === 0 && queueActive === 0 && policyViolations === 0;
 
   const runtimeQueues = runtimeData?.queues ?? [];
   const totalDepth = runtimeQueues.reduce((sum, q) => sum + q.depth, 0);
@@ -232,39 +226,92 @@ export function MissionControlCockpit() {
           </div>
 
           <div className="flex flex-wrap gap-2 text-xs">
-            <Link href="/mission-control/office" className="rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 hover:border-cyan-500/50">
+            <Link
+              href="/mission-control/office"
+              className="rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 hover:border-cyan-500/50"
+            >
               Office
             </Link>
-            <Link href="/mission-control/chat" className="rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 hover:border-cyan-500/50">
+            <Link
+              href="/mission-control/chat"
+              className="rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 hover:border-cyan-500/50"
+            >
               Chat
             </Link>
-            <Link href="/mission-control/foundation" className="rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 hover:border-cyan-500/50">
+            <Link
+              href="/mission-control/foundation"
+              className="rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 hover:border-cyan-500/50"
+            >
               Foundation
             </Link>
-            <Link href="/mission-control/incubation" className="rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 hover:border-cyan-500/50">
+            <Link
+              href="/mission-control/incubation"
+              className="rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 hover:border-cyan-500/50"
+            >
               Incubation
             </Link>
           </div>
         </header>
 
         <section className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-7">
-          <MetricCard label="Agents online" value={onlineTeams} detail={`${teams.length} team records`} accent="cyan" />
-          <MetricCard label="AI runtimes" value={aiRuntimeCount} detail={healthyIdle ? 'healthy idle' : 'runtime activity detected'} accent="emerald" />
-          <MetricCard label="Tasks in queue" value={queueWaiting + totalDepth} detail={`${queueActive} active`} accent="violet" />
-          <MetricCard label="Workers" value={workerCount} detail={`${activeWorkerCount} active now`} accent="amber" />
-          <MetricCard label="tmux sessions" value={tmuxSessionCount} detail="ephemeral runtime sessions" accent="cyan" />
-          <MetricCard label="OpenClaw intents" value={openClawRunning} detail={`${policyViolations} recent violations`} accent={policyViolations > 0 ? 'rose' : 'emerald'} />
-          <MetricCard label="System" value={healthyIdle ? 'IDLE' : 'BUSY'} detail={healthyIdle ? '0 AI runtimes is healthy' : 'work in progress'} accent={healthyIdle ? 'emerald' : 'amber'} />
+          <MetricCard
+            label="Agents online"
+            value={onlineTeams}
+            detail={`${teams.length} team records`}
+            accent="cyan"
+          />
+          <MetricCard
+            label="AI runtimes"
+            value={aiRuntimeCount}
+            detail={healthyIdle ? 'healthy idle' : 'runtime activity detected'}
+            accent="emerald"
+          />
+          <MetricCard
+            label="Tasks in queue"
+            value={queueWaiting + totalDepth}
+            detail={`${queueActive} active`}
+            accent="violet"
+          />
+          <MetricCard
+            label="Workers"
+            value={workerCount}
+            detail={`${activeWorkerCount} active now`}
+            accent="amber"
+          />
+          <MetricCard
+            label="tmux sessions"
+            value={tmuxSessionCount}
+            detail="ephemeral runtime sessions"
+            accent="cyan"
+          />
+          <MetricCard
+            label="OpenClaw intents"
+            value={openClawRunning}
+            detail={`${policyViolations} recent violations`}
+            accent={policyViolations > 0 ? 'rose' : 'emerald'}
+          />
+          <MetricCard
+            label="System"
+            value={healthyIdle ? 'IDLE' : 'BUSY'}
+            detail={healthyIdle ? '0 AI runtimes is healthy' : 'work in progress'}
+            accent={healthyIdle ? 'emerald' : 'amber'}
+          />
         </section>
 
         <section className="grid gap-5 xl:grid-cols-[1.65fr_1fr]">
           <div className="rounded-2xl border border-cyan-500/20 bg-slate-950/75 p-4 shadow-2xl shadow-cyan-950/20">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
-                <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">Live topology</h2>
-                <p className="text-xs text-slate-500">Only current API/runtime evidence is shown as connected.</p>
+                <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">
+                  Live topology
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Only current API/runtime evidence is shown as connected.
+                </p>
               </div>
-              <div className={`rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.14em] ${tone(localNodeOnline)}`}>
+              <div
+                className={`rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.14em] ${tone(localNodeOnline)}`}
+              >
                 {localNodeOnline ? 'control path healthy' : 'partial telemetry'}
               </div>
             </div>
@@ -275,7 +322,11 @@ export function MissionControlCockpit() {
                   name="VPS / Control Plane"
                   role="BullMQ · policy · orchestrator"
                   online={Boolean(orchestratorData)}
-                  detail={orchestratorData ? `mode ${orchestratorData.mode} · role ${orchestratorData.role}` : 'not reporting'}
+                  detail={
+                    orchestratorData
+                      ? `mode ${orchestratorData.mode} · role ${orchestratorData.role}`
+                      : 'not reporting'
+                  }
                 />
                 {nodes.map((node) => (
                   <NodeChip
@@ -304,16 +355,32 @@ export function MissionControlCockpit() {
                 <div className="absolute h-40 w-40 rounded-full border border-emerald-500/20" />
                 <div className="relative z-10 w-44 rounded-2xl border border-cyan-400/50 bg-slate-950/95 p-5 text-center shadow-[0_0_60px_rgba(34,211,238,.2)]">
                   <div className="digital-readout text-lg text-cyan-200">OPSLY</div>
-                  <div className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">Control Plane</div>
+                  <div className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">
+                    Control Plane
+                  </div>
                   <div className="mt-4 grid grid-cols-2 gap-2 text-[10px]">
-                    <div className="rounded border border-violet-500/30 bg-violet-500/10 p-2 text-violet-200">BullMQ</div>
-                    <div className="rounded border border-cyan-500/30 bg-cyan-500/10 p-2 text-cyan-200">Policy</div>
-                    <div className="rounded border border-emerald-500/30 bg-emerald-500/10 p-2 text-emerald-200">Session Mgr</div>
-                    <div className="rounded border border-amber-500/30 bg-amber-500/10 p-2 text-amber-200">Evidence</div>
+                    <div className="rounded border border-violet-500/30 bg-violet-500/10 p-2 text-violet-200">
+                      BullMQ
+                    </div>
+                    <div className="rounded border border-cyan-500/30 bg-cyan-500/10 p-2 text-cyan-200">
+                      Policy
+                    </div>
+                    <div className="rounded border border-emerald-500/30 bg-emerald-500/10 p-2 text-emerald-200">
+                      Session Mgr
+                    </div>
+                    <div className="rounded border border-amber-500/30 bg-amber-500/10 p-2 text-amber-200">
+                      Evidence
+                    </div>
                   </div>
                 </div>
                 <div className="absolute bottom-4 left-4 right-4 flex flex-wrap justify-center gap-2 text-[10px] text-slate-500">
-                  <span>AgentTaskEnvelopeV1</span><span>→</span><span>tmux ephemeral</span><span>→</span><span>real runtime</span><span>→</span><span>teardown</span>
+                  <span>AgentTaskEnvelopeV1</span>
+                  <span>→</span>
+                  <span>tmux ephemeral</span>
+                  <span>→</span>
+                  <span>real runtime</span>
+                  <span>→</span>
+                  <span>teardown</span>
                 </div>
               </div>
 
@@ -332,45 +399,93 @@ export function MissionControlCockpit() {
             <div className="rounded-2xl border border-violet-500/20 bg-slate-950/75 p-4">
               <div className="mb-3 flex items-center justify-between">
                 <div>
-                  <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">Queue & runtimes</h2>
+                  <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">
+                    Queue & runtimes
+                  </h2>
                   <p className="text-xs text-slate-500">BullMQ and ephemeral execution state.</p>
                 </div>
-                <span className="font-mono text-xs text-violet-300">{queueWaiting + queueActive} open</span>
+                <span className="font-mono text-xs text-violet-300">
+                  {queueWaiting + queueActive} open
+                </span>
               </div>
-              <QueueRow name="orchestrator" waiting={queueWaiting} active={queueActive} failed={queueFailed} />
+              <QueueRow
+                name="orchestrator"
+                waiting={queueWaiting}
+                active={queueActive}
+                failed={queueFailed}
+              />
               {runtimeQueues.slice(0, 6).map((queue) => (
-                <QueueRow key={queue.name} name={queue.name} waiting={queue.waiting} active={queue.active} failed={queue.failed} />
+                <QueueRow
+                  key={queue.name}
+                  name={queue.name}
+                  waiting={queue.waiting}
+                  active={queue.active}
+                  failed={queue.failed}
+                />
               ))}
             </div>
 
             <div className="rounded-2xl border border-emerald-500/20 bg-slate-950/75 p-4">
               <div className="mb-3 flex items-center justify-between">
                 <div>
-                  <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">Runtime health</h2>
+                  <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">
+                    Runtime health
+                  </h2>
                   <p className="text-xs text-slate-500">Healthy idle is a first-class invariant.</p>
                 </div>
-                <span className={`rounded-full border px-2 py-1 text-[10px] font-semibold ${tone(healthyIdle, !healthyIdle)}`}>
+                <span
+                  className={`rounded-full border px-2 py-1 text-[10px] font-semibold ${tone(healthyIdle, !healthyIdle)}`}
+                >
                   {healthyIdle ? 'HEALTHY IDLE' : 'ACTIVE'}
                 </span>
               </div>
               <div className="grid gap-2 text-xs">
-                <div className="flex justify-between border-b border-slate-800 py-2"><span className="text-slate-500">AI runtimes</span><span className="font-mono text-slate-200">{aiRuntimeCount}</span></div>
-                <div className="flex justify-between border-b border-slate-800 py-2"><span className="text-slate-500">tmux sessions</span><span className="font-mono text-slate-200">{tmuxSessionCount}</span></div>
-                <div className="flex justify-between border-b border-slate-800 py-2"><span className="text-slate-500">OpenClaw in progress</span><span className="font-mono text-slate-200">{openClawRunning}</span></div>
-                <div className="flex justify-between py-2"><span className="text-slate-500">policy violations</span><span className={`font-mono ${policyViolations ? 'text-rose-300' : 'text-emerald-300'}`}>{policyViolations}</span></div>
+                <div className="flex justify-between border-b border-slate-800 py-2">
+                  <span className="text-slate-500">AI runtimes</span>
+                  <span className="font-mono text-slate-200">{aiRuntimeCount}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-800 py-2">
+                  <span className="text-slate-500">tmux sessions</span>
+                  <span className="font-mono text-slate-200">{tmuxSessionCount}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-800 py-2">
+                  <span className="text-slate-500">OpenClaw in progress</span>
+                  <span className="font-mono text-slate-200">{openClawRunning}</span>
+                </div>
+                <div className="flex justify-between py-2">
+                  <span className="text-slate-500">policy violations</span>
+                  <span
+                    className={`font-mono ${policyViolations ? 'text-rose-300' : 'text-emerald-300'}`}
+                  >
+                    {policyViolations}
+                  </span>
+                </div>
               </div>
             </div>
 
             <div className="rounded-2xl border border-cyan-500/20 bg-slate-950/75 p-4">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">System activity</h2>
+              <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">
+                System activity
+              </h2>
               <div className="mt-3 space-y-2">
-                {activity.length ? activity.map((row, index) => (
-                  <div key={`${row.label}-${index}`} className="rounded-lg border border-slate-800/80 bg-black/20 p-2 text-xs">
-                    <div className={`font-mono ${row.tone}`}>{row.label}</div>
-                    <div className="mt-1 text-[11px] text-slate-500">{row.meta}</div>
-                    {row.when ? <div className="text-[10px] text-slate-600">{new Date(row.when).toLocaleTimeString()}</div> : null}
-                  </div>
-                )) : <div className="text-xs text-slate-500">No live activity reported yet.</div>}
+                {activity.length ? (
+                  activity.map((row, index) => (
+                    <div
+                      key={`${row.label}-${index}`}
+                      className="rounded-lg border border-slate-800/80 bg-black/20 p-2 text-xs"
+                    >
+                      <div className={`font-mono ${row.tone}`}>{row.label}</div>
+                      <div className="mt-1 text-[11px] text-slate-500">{row.meta}</div>
+                      {row.when ? (
+                        <div className="text-[10px] text-slate-600">
+                          {new Date(row.when).toLocaleTimeString()}
+                        </div>
+                      ) : null}
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-xs text-slate-500">No live activity reported yet.</div>
+                )}
               </div>
             </div>
           </div>
@@ -380,23 +495,35 @@ export function MissionControlCockpit() {
           <div className="rounded-2xl border border-cyan-500/15 bg-slate-950/70 p-4">
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">Node detail</h2>
-                <p className="text-xs text-slate-500">Live local runtime and capability registry.</p>
+                <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">
+                  Node detail
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Live local runtime and capability registry.
+                </p>
               </div>
-              <span className="text-[10px] uppercase tracking-[0.16em] text-slate-500">{runtimeData?.timestamp ? new Date(runtimeData.timestamp).toLocaleTimeString() : 'waiting'}</span>
+              <span className="text-[10px] uppercase tracking-[0.16em] text-slate-500">
+                {runtimeData?.timestamp
+                  ? new Date(runtimeData.timestamp).toLocaleTimeString()
+                  : 'waiting'}
+              </span>
             </div>
             <LocalNodesPanel />
           </div>
 
           <div className="rounded-2xl border border-violet-500/15 bg-slate-950/70 p-4">
             <div className="mb-4">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">Compute detail</h2>
+              <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">
+                Compute detail
+              </h2>
               <p className="text-xs text-slate-500">PC Gamer / GPU workers and media queue.</p>
             </div>
             <ComputeWorkersPanel />
 
             <div className="mt-4 rounded-xl border border-slate-800 bg-black/20 p-4">
-              <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">Real runtimes</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">
+                Real runtimes
+              </h3>
               <div className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">
                 {[
                   ['Hermes', 'planning'],
@@ -406,14 +533,18 @@ export function MissionControlCockpit() {
                   ['Goose', 'fallback/tools'],
                   ['OpenClaw', 'auxiliary'],
                 ].map(([name, role]) => (
-                  <div key={name} className="rounded-lg border border-slate-800 bg-slate-950/80 p-3">
+                  <div
+                    key={name}
+                    className="rounded-lg border border-slate-800 bg-slate-950/80 p-3"
+                  >
                     <div className="font-mono text-slate-200">{name}</div>
                     <div className="text-[10px] text-slate-500">{role}</div>
                   </div>
                 ))}
               </div>
               <p className="mt-3 text-[11px] text-slate-600">
-                Catalog only. These are not counted as running unless runtime/session telemetry reports them.
+                Catalog only. These are not counted as running unless runtime/session telemetry
+                reports them.
               </p>
             </div>
           </div>
@@ -421,7 +552,10 @@ export function MissionControlCockpit() {
 
         <footer className="mt-5 flex flex-col gap-2 border-t border-cyan-500/10 py-4 text-[10px] uppercase tracking-[0.16em] text-slate-600 sm:flex-row sm:items-center sm:justify-between">
           <span>Multi-cloud · multi-runtime · one control plane</span>
-          <span>{gamerOnline ? 'compute online' : 'compute not reporting'} · {healthyIdle ? 'ready for work' : 'work executing'}</span>
+          <span>
+            {gamerOnline ? 'compute online' : 'compute not reporting'} ·{' '}
+            {healthyIdle ? 'ready for work' : 'work executing'}
+          </span>
         </footer>
       </div>
     </div>
