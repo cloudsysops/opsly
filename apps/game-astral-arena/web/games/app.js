@@ -1,3 +1,14 @@
+const firstPartyGames = [
+  {
+    id: 'astral-arena',
+    title: 'Astral Arena',
+    icon: '✦',
+    description: 'El juego principal del Astral Universe: historia, exploración 2D/3D, batalla híbrida y juego cooperativo.',
+    tags: ['adventure', '2P', 'touch', 'Astral Universe'],
+    playUrl: './games/astral-arena/',
+    source: { path: 'opsly/astral-arena', license: 'Opsly original' },
+  },
+];
 const retroGames = window.ASTRAL_RETRO_GAMES || [];
 const cloneGames = window.ASTRAL_CLONE_LAB_GAMES || [];
 const upstreamGames = window.ASTRAL_UPSTREAM_GAMES || [];
@@ -12,16 +23,18 @@ const STORAGE = Object.freeze({
 function normalizeGame(game, kind) {
   const tags = Array.isArray(game.tags) ? game.tags : [];
   const isUpstream = kind === 'upstream';
+  const isFirstParty = kind === 'first-party';
   return {
     ...game,
     kind,
     tags,
-    touchReady: !isUpstream || tags.includes('mobile') || tags.includes('touch'),
+    touchReady: isFirstParty || !isUpstream || tags.includes('mobile') || tags.includes('touch'),
     source: game.source || null,
   };
 }
 
 const allGames = [
+  ...firstPartyGames.map(game => normalizeGame(game, 'first-party')),
   ...retroGames.map(game => normalizeGame(game, 'retro')),
   ...cloneGames.map(game => normalizeGame(game, 'clone')),
   ...upstreamGames.map(game => normalizeGame(game, 'upstream')),
@@ -43,6 +56,7 @@ const dom = {
   feedbackNote: document.querySelector('#feedback-note'),
   activeFavorite: document.querySelector('#active-favorite'),
   rotateHint: document.querySelector('#rotate-hint'),
+  firstParty: document.querySelector('#first-party-grid'),
   featured: document.querySelector('#featured-grid'),
   retro: document.querySelector('#game-grid'),
   clone: document.querySelector('#clone-game-grid'),
@@ -122,6 +136,7 @@ function categoryMatches(game, filter) {
 }
 
 function kindLabel(game) {
+  if (game.kind === 'first-party') return 'OPSLY GAME';
   if (game.kind === 'upstream') return 'OPEN-SOURCE ORIGINAL';
   if (game.kind === 'clone') return 'ASTRAL REMIX';
   return 'OPSLY ORIGINAL';
@@ -234,6 +249,7 @@ function featuredGames() {
 }
 
 function renderAll() {
+  renderCollection(dom.firstParty, firstPartyGames.map(game => byId.get(game.id)).filter(Boolean));
   renderCollection(dom.featured, featuredGames());
   renderCollection(dom.clone, cloneGames.map(game => byId.get(game.id)).filter(Boolean));
   renderCollection(dom.upstream, upstreamGames.map(game => byId.get(game.id)).filter(Boolean));
@@ -361,7 +377,7 @@ async function launchGame(id) {
   setTheaterVisible(true);
   updateOrientationHint();
 
-  if (game.kind === 'upstream') {
+  if (game.kind === 'upstream' || game.kind === 'first-party') {
     dom.frame.hidden = false;
     dom.touch.hidden = true;
 
@@ -426,7 +442,7 @@ function setControl(name, value) {
 }
 
 function updateOrientationHint() {
-  if (!activeGame || activeGame.kind === 'upstream') {
+  if (!activeGame || activeGame.kind === 'upstream' || activeGame.kind === 'first-party') {
     dom.rotateHint.hidden = true;
     return;
   }
