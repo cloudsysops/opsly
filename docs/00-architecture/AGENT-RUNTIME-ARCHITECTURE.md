@@ -83,15 +83,18 @@ Required GitHub workpack identity:
 
 The Orchestrator acquires all claim dimensions atomically. If any dimension is held:
 
-- exact task collision → `JOIN_EXISTING`;
+- exact active task collision → `JOIN_EXISTING`;
+- exact successfully completed task tombstone → `ALREADY_DONE`;
 - conflict/semantic/path collision → `CONFLICT_BLOCKED`;
-- no BullMQ job is created.
+- no BullMQ job is created for any of these outcomes.
 
 Invariant for governed autonomous work:
 
 `NO CLAIM → NO BRANCH → NO WORKTREE → NO EXECUTION`.
 
-Claims survive BullMQ retries, release only on terminal completion/failure, and have a bounded TTL for crash recovery. Client-supplied claim leases are discarded; only the Orchestrator may mint/release them.
+Active claims survive BullMQ retries. Failed terminal work releases all scopes; successful terminal work releases conflict/semantic/path scopes but retains a bounded exact-task tombstone so the same workpack returns `ALREADY_DONE`. Active claims have bounded expiry for crash recovery. Client-supplied claim leases are discarded; only the Orchestrator may mint/release/finalize them.
+
+Any write-capable local AgentTask (generated or caller-supplied `write_allowed=true`) must have claimable `workstream + conflict_key` metadata before execution. Read-only manual work can remain claim-free. Physical branch creation through the existing Git Branch Orchestrator is also held unless dispatch-claim evidence is bound to the same request.
 
 `TaskGraphV1` remains the dependency/parallel-wave planner. `DispatchClaimV1` is the runtime admission lock that makes conflict metadata enforceable.
 
