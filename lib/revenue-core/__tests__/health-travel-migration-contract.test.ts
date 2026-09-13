@@ -11,7 +11,19 @@ describe('0102 Health Travel revenue receipts migration', () => {
   it('provides tenant-scoped event idempotency', () => {
     expect(migration).toContain('platform.revenue_event_receipts');
     expect(migration).toContain('UNIQUE (tenant_id, source_system, external_event_id)');
+    expect(migration).toContain('uq_revenue_event_receipts_dedupe_key');
+    expect(migration).toContain('WHERE dedupe_key IS NOT NULL');
     expect(migration).toContain('ENABLE ROW LEVEL SECURITY');
+  });
+
+  it('prevents duplicate commission estimates for the same external Health Travel event', () => {
+    expect(migration).toContain('uq_revenue_commission_event_external_source');
+    expect(migration).toContain(
+      'ON platform.revenue_commission_events(tenant_id, referral_id, source, external_ref)'
+    );
+    expect(migration).toContain(
+      "WHERE source = 'smile-trip-care' AND external_ref IS NOT NULL"
+    );
   });
 
   it('references Revenue Core ledgers instead of duplicating them', () => {
