@@ -49,6 +49,16 @@ type ReceiptRow = {
   occurred_at: string;
 };
 
+export function resolveHealthTravelTenantSlug(params?: {
+  tenantSlug?: string;
+}): string {
+  return (
+    params?.tenantSlug?.trim() ||
+    process.env.HEALTH_TRAVEL_TENANT_SLUG?.trim() ||
+    'medical-tourism-demo'
+  );
+}
+
 function clampWindowDays(value: number): number {
   if (!Number.isFinite(value)) return DEFAULT_WINDOW_DAYS;
   return Math.max(1, Math.min(Math.floor(value), 90));
@@ -165,10 +175,7 @@ export async function getHealthTravelRuntimeSummary(params?: {
   tenantSlug?: string;
   windowDays?: number;
 }): Promise<HealthTravelRuntimeSummary> {
-  const tenantSlug =
-    params?.tenantSlug?.trim() ||
-    process.env.HEALTH_TRAVEL_TENANT_SLUG?.trim() ||
-    'medical-tourism-demo';
+  const tenantSlug = resolveHealthTravelTenantSlug(params);
   const windowDays = clampWindowDays(params?.windowDays ?? DEFAULT_WINDOW_DAYS);
   const platform = getServiceClient().schema('platform') as any;
 
