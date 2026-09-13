@@ -23,7 +23,7 @@ vi.mock('bullmq', () => {
 const queueMocks = vi.hoisted(() => ({
   enqueueJob: vi.fn((..._args: unknown[]) => Promise.resolve({ id: 'openclaw-job' })),
   enqueueLocalAgentJob: vi.fn((..._args: unknown[]) => Promise.resolve({ id: 'local-agents-job' })),
-  getLocalAgentJobById: vi.fn((..._args: unknown[]) => Promise.resolve(null)),
+  getLocalAgentJobById: vi.fn(async (..._args: unknown[]): Promise<any> => null),
   localAgentJobIdFor: vi.fn((job: { type?: string; request_id?: string }) =>
     `${job.type || 'local'}-${job.request_id || 'request'}`
   ),
