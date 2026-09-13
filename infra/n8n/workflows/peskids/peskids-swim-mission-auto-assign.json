@@ -1,0 +1,67 @@
+{
+  "id": "peskids-swim-mission-auto-assign",
+  "name": "Peskids - Swim mission auto assign",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "peskids-swim-mission-auto-assign",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Swim Mission Event",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "peskids-swim-mission-auto-assign"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body || $json;\nif ($env.PESKIDS_SWIM_MISSION_AUTOMATION_ENABLED !== 'true') return [];\nif (body.assignment_mode && body.assignment_mode !== 'auto_assign_safe') throw new Error('Only auto_assign_safe is executable in this workflow');\nfor (const key of ['student_id','mission_slug','rule_id','idempotency_key']) { if (!body[key]) throw new Error('Missing ' + key); }\nreturn [{ json: { student_id: body.student_id, mission_slug: body.mission_slug, reason: body.reason || null, due_at: body.due_at || null, assignment_mode: 'auto_assign_safe', rule_id: body.rule_id, workflow_id: 'peskids-swim-mission-auto-assign', idempotency_key: body.idempotency_key } }];"
+      },
+      "id": "guard",
+      "name": "Guard Safe Assignment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [280, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ ($env.PESKIDS_PUBLIC_URL || 'https://www.peskids.com').replace(/\\/$/, '') + '/api/internal/swim-missions/assignments' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "x-internal-secret", "value": "={{ $env.PESKIDS_INTERNAL_SECRET }}" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": { "timeout": 10000 }
+      },
+      "id": "assign",
+      "name": "Create Canonical Assignment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [580, 0]
+    }
+  ],
+  "connections": {
+    "Swim Mission Event": {
+      "main": [[{ "node": "Guard Safe Assignment", "type": "main", "index": 0 }]]
+    },
+    "Guard Safe Assignment": {
+      "main": [[{ "node": "Create Canonical Assignment", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "timezone": "America/Bogota"
+  },
+  "meta": {
+    "opsly_note": "Disabled by default. Requires PESKIDS_SWIM_MISSION_AUTOMATION_ENABLED=true and canonical Peskids internal secret. Only academy-approved dry-land missions may be auto-assigned."
+  }
+}

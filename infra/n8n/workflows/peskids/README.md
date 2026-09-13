@@ -8,6 +8,7 @@ Source of truth for **Peskids Pro 1.0** automation exports.
 | Daily digest + Discord gate | `peskids-daily-digest.json` | `false` |
 | Operational notify | `peskids-operational-notify.json` | `false` |
 | Lead aging scan 24h/48h | `peskids-lead-aging-scan.json` | `false` |
+| Swim mission safe auto-assign | `peskids-swim-mission-auto-assign.json` | `false` |
 
 Legacy / fuller catalog remains in `.n8n/1-workflows/peskids/` (including the older
 5-minute poll hot-lead that queried `public.leads`). Prefer these Pro exports for
@@ -37,3 +38,6 @@ Support WhatsApp alerts use the existing `peskids-notify` webhook and require
 `PESKIDS_SUPPORT_WHATSAPP` in E.164 format. They send a summary and a protected
 lead link; they do not send the document number. Enable the hot-lead flag only
 after the n8n workflow and support number have been verified in staging.
+
+
+Swim mission automation additionally requires `PESKIDS_SWIM_MISSION_AUTOMATION_ENABLED=true`, `PESKIDS_PUBLIC_URL`, and the existing `PESKIDS_INTERNAL_SECRET`. Keep the export inactive until staging proves the canonical assignment API, idempotency and staff override path.
