@@ -39,7 +39,7 @@ const CHANNEL_FEATURED_FALLBACK: Record<ContentChannel, readonly string[]> = {
 };
 
 function worldIdToPortal(worldId: string): ContentPortal | null {
-  const upper = worldId.trim().toUpperCase();
+  const upper = worldId.trim().toUpperCase().replace(/-/g, '_');
   if (!PORTAL_SET.has(upper)) return null;
   return upper as ContentPortal;
 }
