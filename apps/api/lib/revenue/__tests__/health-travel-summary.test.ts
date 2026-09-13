@@ -1,7 +1,29 @@
 import { describe, expect, it } from 'vitest';
-import { summarizeHealthTravelReceipts } from '../health-travel-summary';
+import {
+  resolveHealthTravelTenantSlug,
+  summarizeHealthTravelReceipts,
+} from '../health-travel-summary';
 
 describe('summarizeHealthTravelReceipts', () => {
+  it('resolves tenant slug param -> env -> safe sandbox default', () => {
+    const previous = process.env.HEALTH_TRAVEL_TENANT_SLUG;
+    delete process.env.HEALTH_TRAVEL_TENANT_SLUG;
+
+    expect(resolveHealthTravelTenantSlug()).toBe('medical-tourism-demo');
+
+    process.env.HEALTH_TRAVEL_TENANT_SLUG = 'env-health-demo';
+    expect(resolveHealthTravelTenantSlug()).toBe('env-health-demo');
+    expect(
+      resolveHealthTravelTenantSlug({ tenantSlug: 'explicit-health-demo' })
+    ).toBe('explicit-health-demo');
+
+    if (previous === undefined) {
+      delete process.env.HEALTH_TRAVEL_TENANT_SLUG;
+    } else {
+      process.env.HEALTH_TRAVEL_TENANT_SLUG = previous;
+    }
+  });
+
   it('separates business activity from connectivity and aggregates canonical events', () => {
     const summary = summarizeHealthTravelReceipts(
       [
