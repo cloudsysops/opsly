@@ -7,6 +7,13 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('Games is the product home and Astral Arena is nested inside it', async ({ page }) => {
+  await page.route('**/astral-arena/index.html', route =>
+    route.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><title>Astral fixture</title>' })
+  );
+  await page.route('**/astral-arena/', route =>
+    route.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><title>Astral fixture</title>' })
+  );
+
   await expect(page.getByRole('heading', { name: 'Todo empieza en Games.' })).toBeVisible();
   await expect(page.locator('#first-party-grid [data-card-game="astral-arena"]')).toBeVisible();
   await page.locator('#first-party-grid [data-play="astral-arena"]').click();
@@ -93,6 +100,13 @@ test('clone idea button stores a named remix', async ({ page }) => {
 });
 
 test('surprise button opens a touch-ready game', async ({ page }) => {
+  await page.route('**/astral-arena/index.html', route =>
+    route.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><title>Astral fixture</title>' })
+  );
+  await page.route('**/astral-arena/', route =>
+    route.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><title>Astral fixture</title>' })
+  );
+
   await page.getByRole('button', { name: '📱 iPhone' }).click();
   await page.locator('#surprise-game').click();
   await expect(page.locator('#game-theater')).toBeVisible();
