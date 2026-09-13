@@ -24,7 +24,7 @@ func _open_games_lab() -> void:
     if OS.has_feature("web"):
         JavaScriptBridge.eval("""
             (() => {
-              const gamesHome = new URL('../../', window.location.href);
+              const gamesHome = new URL('../', window.location.href);
               window.top.location.href = gamesHome.href;
             })();
         """)
