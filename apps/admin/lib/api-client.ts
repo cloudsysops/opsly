@@ -734,8 +734,8 @@ export type HealthTravelCatalogSyncResponse = {
   ok: boolean;
   tenant_slug: string;
   source_generated_at: string;
-  providers: { created: number; updated: number };
-  offers: { created: number; updated: number; skipped_unassigned: number };
+  providers: { created: number; updated: number; paused: number };
+  offers: { created: number; updated: number; paused: number; skipped_unassigned: number };
 };
 
 export async function syncHealthTravelCatalog(): Promise<HealthTravelCatalogSyncResponse> {
