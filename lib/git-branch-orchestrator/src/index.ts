@@ -60,13 +60,6 @@ export {
 export { buildMergeAdvisorReport } from './merge-advisor.js';
 
 export {
-  isGitDryRun,
-  gitCreateBranch,
-  ghCreatePullRequest,
-  materializeBranchPlan,
-} from './github.js';
-
-export {
   buildBranchHygieneReport,
   buildIntegrationMergeAdvisor,
   type BranchHygieneReport,
