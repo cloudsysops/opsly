@@ -53,3 +53,5 @@ jobs:
         run: |
           echo "youtube_doctor_step_outcome=${{ steps.doctor.outcome }}"
           echo "Live connectivity is informational for this code PR; unit/CI gates remain authoritative."
+
+# fresh recheck trigger: 2026-09-13T18:03:00-04:00
